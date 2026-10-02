@@ -176,3 +176,4 @@
 {"date":"2026-10-01","key":"commagribiofuels","name":"Biofuels","theme":"Commodities Agriculture","state":"turn_down","since":"2026-09-28","score":0.31,"n_members":9,"breadth":0.889,"dd_from_peak":-3.19,"up_from_trough":45.59}
 {"date":"2026-10-01","key":"energybaseoilrefining","name":"Oil Refining","theme":"Energy Traditional","state":"turn_down","since":"2026-09-28","score":0.309,"n_members":11,"breadth":0.727,"dd_from_peak":-3.99,"up_from_trough":48.09}
 {"date":"2026-10-01","key":"transportationmaritime","name":"Maritime","theme":"Transportation & Logistics","state":"turn_down","since":"2026-09-28","score":0.096,"n_members":7,"breadth":0.571,"dd_from_peak":0.0,"up_from_trough":74.82}
+{"date":"2026-10-01","key":"wearablessoftware","name":"Software","theme":"Wearables","state":"turn_down","since":"2026-10-01","score":0.808,"n_members":5,"breadth":1.0,"dd_from_peak":-4.01,"up_from_trough":26.05}

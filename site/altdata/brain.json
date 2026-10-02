@@ -6,14 +6,14 @@
     "granted": false,
     "lift_lb": null,
     "reason": "insufficient-n: n=17 < min_n=25",
-    "evidence_asof": "2026-10-01",
-    "evaluated_at": "2026-10-01T20:08:40+00:00"
+    "evidence_asof": "2026-10-02",
+    "evaluated_at": "2026-10-02T10:53:29+00:00"
   },
-  "generated_at": "2026-10-01T20:08:40.349438+00:00",
-  "state_asof": "2026-10-01",
+  "generated_at": "2026-10-02T10:53:29.621050+00:00",
+  "state_asof": "2026-10-02",
   "model": "claude-opus-4-8",
-  "regime_read": "The strongest measured alignment is in semiconductors/AI infrastructure and federal technology spending, but signal quality varies: MU and MSFT combine five distinct channels, while IBM and BAH show narrower contract-led setups. PLTR has strong convergence but is already extended, and the unscored track record requires modest conviction.",
-  "regime_read_zh": "\u5f53\u524d\u6700\u5f3a\u7684\u591a\u6e90\u4fe1\u53f7\u96c6\u4e2d\u5728\u534a\u5bfc\u4f53\u3001AI\u57fa\u7840\u8bbe\u65bd\u53ca\u8054\u90a6\u79d1\u6280\u652f\u51fa\uff0c\u4f46\u4fe1\u53f7\u8d28\u91cf\u4e0d\u4e00\uff1aMU\u4e0eMSFT\u5747\u6709\u4e94\u4e2a\u72ec\u7acb\u6e20\u9053\u5171\u632f\uff0c\u800cIBM\u548cBAH\u66f4\u504f\u5411\u7531\u653f\u5e9c\u5408\u540c\u9a71\u52a8\u7684\u7a84\u5e45\u903b\u8f91\u3002PLTR\u867d\u5171\u632f\u8f83\u5f3a\u4f46\u5df2\u660e\u663e\u5ef6\u4f38\uff0c\u4e14\u5386\u53f2\u5224\u65ad\u5c1a\u672a\u8fdb\u5165\u8bc4\u5206\u9636\u6bb5\uff0c\u56e0\u6b64\u6574\u4f53\u7f6e\u4fe1\u5ea6\u5e94\u4fdd\u6301\u514b\u5236\u3002",
+  "regime_read": "Convergence is concentrated in semiconductors, federal IT/defense, and AI infrastructure, but several signals mix fundamental activity with sentiment or affiliations rather than independently confirmed buying. With no scored track record yet, conviction remains modest; extended PLTR and CRWD should not be chased.",
+  "regime_read_zh": "\u5f53\u524d\u4fe1\u53f7\u4e3b\u8981\u6c47\u805a\u4e8e\u534a\u5bfc\u4f53\u3001\u8054\u90a6\u653f\u5e9cIT/\u56fd\u9632\u53caAI\u57fa\u7840\u8bbe\u65bd\uff0c\u4f46\u4e0d\u5c11\u7ec4\u5408\u5c06\u57fa\u672c\u9762\u6d3b\u52a8\u4e0e\u60c5\u7eea\u6216\u5173\u8054\u5173\u7cfb\u6df7\u5728\u4e00\u8d77\uff0c\u5e76\u975e\u5747\u4e3a\u72ec\u7acb\u786e\u8ba4\u7684\u4e70\u5165\u4fe1\u53f7\u3002\u7531\u4e8e\u5c1a\u65e0\u5df2\u8bc4\u5206\u6218\u7ee9\uff0c\u6574\u4f53\u7f6e\u4fe1\u5ea6\u5e94\u4fdd\u6301\u514b\u5236\uff1b\u5df2\u660e\u663e\u5ef6\u4f38\u7684PLTR\u548cCRWD\u4e0d\u5b9c\u8ffd\u6da8\u3002",
   "theses": [
     {
       "ticker": "MU",
@@ -21,21 +21,21 @@
       "conviction": "medium",
       "action": "ACCUMULATE",
       "horizon_d": 60,
-      "thesis": "MU has one of the cleanest non-extended alignments: accelerating government grants, strongly positive measured insider activity, a substantial patent cluster, and bullish demand sentiment coincide with the newly introduced Memory Chip Competitiveness Assessment Act [gov_grant] [insider_mspr] [patent_cluster] [stocktwits_bull] [bill:HR10170]. The Ro Khanna affiliation adds a disclosed policy-network connection but is qualitative rather than proof of an informational edge [actor:Ro Khanna].",
-      "thesis_zh": "MU\u662f\u672a\u660e\u663e\u5ef6\u4f38\u6807\u7684\u4e2d\u5171\u632f\u8f83\u6e05\u6670\u7684\u4e00\u53ea\uff1a\u653f\u5e9c\u8865\u52a9\u52a0\u901f\u3001\u663e\u8457\u4e3a\u6b63\u7684\u5185\u90e8\u4eba\u6d3b\u52a8\u3001\u8f83\u5927\u7684\u4e13\u5229\u96c6\u7fa4\u548c\u770b\u591a\u9700\u6c42\u60c5\u7eea\u540c\u65f6\u51fa\u73b0\uff0c\u5e76\u4e0e\u65b0\u63d0\u51fa\u7684\u300a2026\u5e74\u5b58\u50a8\u82af\u7247\u7ade\u4e89\u529b\u8bc4\u4f30\u6cd5\u6848\u300b\u65b9\u5411\u4e00\u81f4 [gov_grant] [insider_mspr] [patent_cluster] [stocktwits_bull] [bill:HR10170]\u3002Ro Khanna\u7684\u5173\u8054\u63d0\u4f9b\u4e86\u5df2\u62ab\u9732\u7684\u653f\u7b56\u7f51\u7edc\u8054\u7cfb\uff0c\u4f46\u5b83\u53ea\u662f\u5b9a\u6027\u4fe1\u606f\uff0c\u5e76\u4e0d\u8bc1\u660e\u5b58\u5728\u4fe1\u606f\u4f18\u52bf [actor:Ro Khanna]\u3002",
+      "thesis": "MU has the cleanest policy-and-operating convergence: accelerating federal grants, a large patent cluster, strongly positive insider-purchase signal, and the proposed Memory Chip Competitiveness Assessment Act all point toward sustained strategic attention to domestic advanced memory [gov_grant] [insider_mspr] [patent_cluster] [bill:HR10170]. Bullish retail sentiment is supportive but is the least durable component [stocktwits_bull].",
+      "thesis_zh": "MU\u5448\u73b0\u51fa\u6700\u6e05\u6670\u7684\u653f\u7b56\u4e0e\u7ecf\u8425\u4fe1\u53f7\u6c47\u805a\uff1a\u8054\u90a6\u8865\u52a9\u52a0\u901f\u3001\u8f83\u5927\u7684\u4e13\u5229\u96c6\u7fa4\u3001\u5f3a\u52b2\u7684\u5185\u90e8\u4eba\u4e70\u5165\u4fe1\u53f7\uff0c\u4ee5\u53ca\u300a2026\u5e74\u5b58\u50a8\u82af\u7247\u7ade\u4e89\u529b\u8bc4\u4f30\u6cd5\u6848\u300b\uff0c\u5171\u540c\u6307\u5411\u7f8e\u56fd\u5148\u8fdb\u5b58\u50a8\u4ea7\u4e1a\u6301\u7eed\u83b7\u5f97\u6218\u7565\u5173\u6ce8 [gov_grant] [insider_mspr] [patent_cluster] [bill:HR10170]\u3002\u6563\u6237\u60c5\u7eea\u504f\u591a\u63d0\u4f9b\u8f85\u52a9\uff0c\u4f46\u5c5e\u4e8e\u6700\u4e0d\u6301\u4e45\u7684\u90e8\u5206 [stocktwits_bull]\u3002",
       "second_order": [
-        "AMAT \u2014 memory-capacity investment would tend to support semiconductor-equipment demand [patent_cluster] [congress_cluster]",
-        "Semiconductor equipment \u2014 domestic advanced-memory investment implies additional fabrication-tool demand [bill:HR10170]"
+        "AMAT \u2014 domestic memory-capacity investment would support semiconductor-equipment demand",
+        "U.S. semiconductor-equipment theme \u2014 greater domestic memory investment implies additional fabrication-tool spending"
       ],
       "evidence": [
         "gov_grant",
         "insider_mspr",
         "patent_cluster",
         "stocktwits_bull",
-        "actor:Ro Khanna",
-        "bill:HR10170"
+        "bill:HR10170",
+        "actor:Ro Khanna"
       ],
-      "dissent": "The grant amount is limited relative to MU's operating scale, while insider and social-sentiment measures may be backward-looking or crowded [gov_grant] [insider_mspr] [stocktwits_bull].",
+      "dissent": "The grant acceleration is only 1.6x, the legislation merely requires a study, and memory pricing remains cyclical, so policy attention may not translate into near-term earnings.",
       "weighted_score": 2.1,
       "channels": [
         "affiliation",
@@ -44,11 +44,11 @@
         "patent_cluster",
         "stocktwits_bull"
       ],
-      "rs_vs_spy_60d": 11.3,
+      "rs_vs_spy_60d": 12.9,
       "extended": false,
       "scorable": true,
       "falsifier": {
-        "text": "Government-grant acceleration reverses and measured insider activity turns net negative while memory-policy legislation fails to advance.",
+        "text": "Federal support stops accelerating and MU's insider-purchase signal reverses while advanced-memory investment plans weaken.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "MU",
@@ -58,52 +58,47 @@
           "horizon_d": 60
         }
       },
-      "check_by": "2026-12-24"
+      "check_by": "2026-12-25"
     },
     {
-      "ticker": "MSFT",
+      "ticker": "BAH",
       "lean": "overweight",
       "conviction": "medium",
       "action": "ACCUMULATE",
       "horizon_d": 60,
-      "thesis": "MSFT combines measured application demand, developer momentum, a large patent cluster, and two disclosed strategic-network links, including its factual partnership with Sam Altman [app_demand] [github_momentum] [patent_cluster] [actor:Sam Altman] [actor:Bill Ackman]. The Trump-linked buy signal is an additional independent channel [trump], although 60-day relative strength is already close to the desk's extension boundary, making entry discipline important.",
-      "thesis_zh": "MSFT\u540c\u65f6\u5177\u5907\u5e94\u7528\u9700\u6c42\u3001\u5f00\u53d1\u8005\u52a8\u80fd\u3001\u8f83\u5927\u7684\u4e13\u5229\u96c6\u7fa4\u4ee5\u53ca\u4e24\u6761\u5df2\u62ab\u9732\u7684\u6218\u7565\u7f51\u7edc\u8054\u7cfb\uff0c\u5176\u4e2d\u5305\u62ec\u4e0eSam Altman\u7684\u4e8b\u5b9e\u6027\u5408\u4f5c\u5173\u7cfb [app_demand] [github_momentum] [patent_cluster] [actor:Sam Altman] [actor:Bill Ackman]\u3002\u7279\u6717\u666e\u5173\u8054\u7684\u4e70\u5165\u4fe1\u53f7\u6784\u6210\u53e6\u4e00\u72ec\u7acb\u6e20\u9053 [trump]\uff0c\u4f46\u517660\u65e5\u76f8\u5bf9\u5f3a\u5ea6\u5df2\u63a5\u8fd1\u672c\u684c\u7684\u5ef6\u4f38\u9608\u503c\uff0c\u5165\u573a\u7eaa\u5f8b\u5c24\u4e3a\u91cd\u8981\u3002",
+      "thesis": "BAH combines accelerating federal-contract activity with a positive Trump-linked signal and a special-situation marker, creating a more coherent government-services setup than sentiment-led clusters [gov_contract_accel] [trump] [special_situation]. The 4.15x contract acceleration is the central measured signal, while the upcoming earnings date offers a near-term checkpoint rather than proof of the thesis.",
+      "thesis_zh": "BAH\u540c\u65f6\u51fa\u73b0\u8054\u90a6\u5408\u540c\u6d3b\u52a8\u52a0\u901f\u3001\u6b63\u5411\u7279\u6717\u666e\u5173\u8054\u4fe1\u53f7\u548c\u7279\u6b8a\u60c5\u5f62\u6807\u8bb0\uff0c\u76f8\u6bd4\u4e3b\u8981\u7531\u60c5\u7eea\u63a8\u52a8\u7684\u7ec4\u5408\uff0c\u5176\u653f\u5e9c\u670d\u52a1\u903b\u8f91\u66f4\u4e3a\u8fde\u8d2f [gov_contract_accel] [trump] [special_situation]\u30024.15\u500d\u5408\u540c\u52a0\u901f\u662f\u6838\u5fc3\u5b9e\u6d4b\u4fe1\u53f7\uff0c\u800c\u5373\u5c06\u5230\u6765\u7684\u8d22\u62a5\u53ea\u662f\u8fd1\u671f\u68c0\u9a8c\u8282\u70b9\uff0c\u5e76\u975e\u8bba\u70b9\u672c\u8eab\u7684\u8bc1\u660e\u3002",
       "second_order": [
-        "NVDA \u2014 continued cloud and AI application demand supports accelerator consumption [app_demand] [github_momentum]",
-        "Data-center power infrastructure \u2014 sustained AI workloads imply greater power and facility requirements [app_demand] [github_momentum]"
+        "PLTR \u2014 broader federal data-modernization spending could support adjacent analytics procurement",
+        "Federal cybersecurity and consulting theme \u2014 stronger agency procurement can flow through to implementation contractors"
       ],
       "evidence": [
-        "app_demand",
-        "github_momentum",
-        "patent_cluster",
-        "trump",
-        "actor:Sam Altman",
-        "actor:Bill Ackman"
-      ],
-      "dissent": "The signals may largely reflect an already well-recognized AI narrative, and relative performance leaves less margin before the name becomes extended [app_demand] [github_momentum].",
-      "weighted_score": 2.1,
-      "channels": [
-        "affiliation",
-        "app_demand",
-        "github_momentum",
-        "patent_cluster",
+        "gov_contract_accel",
+        "special_situation",
         "trump"
       ],
-      "rs_vs_spy_60d": 29.9,
+      "dissent": "Federal awards can be lumpy, and the special-situation and political signals may overlap with the same procurement narrative rather than represent fully independent demand.",
+      "weighted_score": 1.6,
+      "channels": [
+        "gov_contract_accel",
+        "special_situation",
+        "trump"
+      ],
+      "rs_vs_spy_60d": 10.5,
       "extended": false,
       "scorable": true,
       "falsifier": {
-        "text": "Application-demand and developer-momentum measures weaken together while the strategic AI partnership ceases to support product adoption.",
+        "text": "New federal awards normalize sharply and management does not convert the recent contract activity into improved backlog or outlook.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "MSFT",
+          "subject_ticker": "BAH",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
           "horizon_d": 60
         }
       },
-      "check_by": "2026-12-24"
+      "check_by": "2026-12-25"
     },
     {
       "ticker": "IBM",
@@ -111,29 +106,29 @@
       "conviction": "low",
       "action": "AVOID",
       "horizon_d": 45,
-      "thesis": "IBM presents a contrarian contract-led setup: a sharp measured acceleration in recent federal-contract activity aligns with the pack's largest patent count and meaningful open-source/model-download activity [gov_contract_accel] [patent_cluster] [github_momentum]. Its substantial underperformance versus SPY means the entry is not extended, but the three-channel convergence and nearby earnings date warrant low conviction.",
-      "thesis_zh": "IBM\u5448\u73b0\u51fa\u9006\u5411\u3001\u5408\u540c\u9a71\u52a8\u7684\u673a\u4f1a\uff1a\u8fd1\u671f\u8054\u90a6\u5408\u540c\u6d3b\u52a8\u5927\u5e45\u52a0\u901f\uff0c\u540c\u65f6\u4e0e\u672c\u8bc1\u636e\u5305\u4e2d\u6700\u9ad8\u7684\u4e13\u5229\u6570\u91cf\u53ca\u6709\u610f\u4e49\u7684\u5f00\u6e90/\u6a21\u578b\u4e0b\u8f7d\u6d3b\u52a8\u76f8\u547c\u5e94 [gov_contract_accel] [patent_cluster] [github_momentum]\u3002\u5176\u76f8\u5bf9SPY\u663e\u8457\u843d\u540e\uff0c\u56e0\u800c\u5e76\u672a\u5ef6\u4f38\uff0c\u4f46\u53ea\u6709\u4e09\u4e2a\u6e20\u9053\u5171\u632f\u4e14\u4e34\u8fd1\u8d22\u62a5\uff0c\u6545\u7f6e\u4fe1\u5ea6\u7ef4\u6301\u8f83\u4f4e\u3002",
+      "thesis": "IBM's extreme federal-contract acceleration aligns with a broad patent cluster and open-source development momentum, while its substantial relative underperformance leaves the setup unextended [gov_contract_accel] [patent_cluster] [github_momentum]. The signal is potentially contrarian, but the unusually large acceleration figure may reflect a very small comparison base or one-off award, keeping conviction low.",
+      "thesis_zh": "IBM\u7684\u8054\u90a6\u5408\u540c\u6781\u5feb\u52a0\u901f\u4e0e\u5e7f\u6cdb\u4e13\u5229\u96c6\u7fa4\u3001\u5f00\u6e90\u5f00\u53d1\u52a8\u80fd\u5f62\u6210\u547c\u5e94\uff0c\u540c\u65f6\u5176\u663e\u8457\u76f8\u5bf9\u843d\u540e\u610f\u5473\u7740\u5f53\u524d\u5e76\u672a\u5ef6\u4f38 [gov_contract_accel] [patent_cluster] [github_momentum]\u3002\u8fd9\u662f\u4e00\u4e2a\u6f5c\u5728\u7684\u9006\u5411\u673a\u4f1a\uff0c\u4f46\u5f02\u5e38\u5de8\u5927\u7684\u52a0\u901f\u500d\u6570\u53ef\u80fd\u6e90\u4e8e\u6781\u4f4e\u57fa\u6570\u6216\u4e00\u6b21\u6027\u5408\u540c\uff0c\u56e0\u6b64\u4ec5\u7ed9\u4e88\u4f4e\u7f6e\u4fe1\u5ea6\u3002",
       "second_order": [
-        "Federal IT modernization \u2014 accelerating contract awards imply continued agency technology spending [gov_contract_accel]",
-        "Enterprise AI software \u2014 patent and developer activity suggest ongoing commercialization efforts [patent_cluster] [github_momentum]"
+        "BAH \u2014 expanding federal technology programs can require consulting and implementation support",
+        "Federal AI and hybrid-cloud modernization theme \u2014 contract growth suggests continuing agency infrastructure demand"
       ],
       "evidence": [
         "gov_contract_accel",
         "patent_cluster",
         "github_momentum"
       ],
-      "dissent": "The extreme acceleration rate may come from a depressed comparison base, and severe relative underperformance may signal fundamental weakness rather than opportunity [gov_contract_accel].",
+      "dissent": "The 3110.85x acceleration is vulnerable to a base effect, and patents plus GitHub activity do not by themselves establish commercial monetization.",
       "weighted_score": 1.6,
       "channels": [
         "github_momentum",
         "gov_contract_accel",
         "patent_cluster"
       ],
-      "rs_vs_spy_60d": -29.9,
+      "rs_vs_spy_60d": -27.5,
       "extended": false,
       "scorable": true,
       "falsifier": {
-        "text": "Federal-contract activity normalizes toward its prior baseline and developer activity declines after the next earnings report.",
+        "text": "The contract surge proves to be a one-off award and subsequent federal bookings return to the prior run rate.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "IBM",
@@ -143,7 +138,7 @@
           "horizon_d": 45
         }
       },
-      "check_by": "2026-12-03",
+      "check_by": "2026-12-04",
       "clamped": "lean 'overweight' \u2192 'underweight' (deterministic witness); action 'ACCUMULATE' \u2192 'AVOID' (deterministic ceiling)",
       "det_baseline": {
         "action": "AVOID",
@@ -156,23 +151,23 @@
       "lean": "overweight",
       "conviction": "low",
       "action": "WATCH",
-      "horizon_d": 45,
-      "thesis": "PLTR has genuine five-channel alignment led by accelerating federal contracts, unanimous measured analyst and Stocktwits bullishness, retail attention, and disclosed political/fund links [gov_contract_accel] [analyst_upgrade_cluster] [stocktwits_bull] [retail_buzz] [actor:Marjorie Taylor Greene] [actor:Cathie Wood]. However, its 60-day relative strength exceeds the desk's extension threshold, so the evidence supports watching for a reset rather than chasing.",
-      "thesis_zh": "PLTR\u786e\u6709\u4e94\u6e20\u9053\u5171\u632f\uff0c\u6838\u5fc3\u5305\u62ec\u8054\u90a6\u5408\u540c\u52a0\u901f\u3001\u5206\u6790\u5e08\u4e0eStocktwits\u4e00\u81f4\u504f\u591a\u3001\u6563\u6237\u5173\u6ce8\uff0c\u4ee5\u53ca\u5df2\u62ab\u9732\u7684\u653f\u6cbb\u4eba\u7269\u548c\u57fa\u91d1\u5173\u8054 [gov_contract_accel] [analyst_upgrade_cluster] [stocktwits_bull] [retail_buzz] [actor:Marjorie Taylor Greene] [actor:Cathie Wood]\u3002\u4f46\u517660\u65e5\u76f8\u5bf9\u5f3a\u5ea6\u5df2\u8d85\u8fc7\u672c\u684c\u7684\u5ef6\u4f38\u9608\u503c\uff0c\u56e0\u6b64\u5e94\u7b49\u5f85\u56de\u8c03\u91cd\u7f6e\uff0c\u800c\u975e\u8ffd\u9ad8\u3002",
+      "horizon_d": 60,
+      "thesis": "PLTR has genuine multi-channel alignment through 3.2x government-contract acceleration, uniformly bullish analyst signals, disclosed ownership by Marjorie Taylor Greene, and Cathie Wood affiliation [gov_contract_accel] [analyst_upgrade_cluster] [actor:Marjorie Taylor Greene] [actor:Cathie Wood]. However, retail and Stocktwits enthusiasm overlap, and the shares are already extended at +41.0 percentage points versus SPY over 60 days, so the evidence supports watching for a reset rather than chasing [retail_buzz] [stocktwits_bull].",
+      "thesis_zh": "PLTR\u786e\u6709\u591a\u6e20\u9053\u6c47\u805a\uff1a\u653f\u5e9c\u5408\u540c\u52a0\u901f3.2\u500d\u3001\u5206\u6790\u5e08\u4fe1\u53f7\u4e00\u81f4\u504f\u591a\u3001Marjorie Taylor Greene\u62ab\u9732\u6301\u4ed3\uff0c\u4ee5\u53caCathie Wood\u5173\u8054 [gov_contract_accel] [analyst_upgrade_cluster] [actor:Marjorie Taylor Greene] [actor:Cathie Wood]\u3002\u4f46\u6563\u6237\u70ed\u5ea6\u4e0eStocktwits\u60c5\u7eea\u5b58\u5728\u91cd\u53e0\uff0c\u800c\u4e14\u8fc7\u53bb60\u65e5\u76f8\u5bf9SPY\u9886\u514841.0\u4e2a\u767e\u5206\u70b9\uff0c\u5df2\u5c5e\u5ef6\u4f38\uff0c\u56e0\u6b64\u66f4\u9002\u5408\u7b49\u5f85\u56de\u64a4\uff0c\u800c\u975e\u8ffd\u6da8 [retail_buzz] [stocktwits_bull]\u3002",
       "second_order": [
-        "BAH \u2014 broader federal analytics and modernization spending can support adjacent contractors [gov_contract_accel]",
-        "Federal fraud-detection technology \u2014 proposed DOJ information-sharing and enforcement measures could expand analytics demand [bill:HRES1530]"
+        "BAH \u2014 continued federal data-platform adoption can create integration and consulting work",
+        "Federal fraud-enforcement technology theme \u2014 H.R. 9576 could increase demand for cross-agency data sharing if it advances"
       ],
       "evidence": [
         "gov_contract_accel",
         "analyst_upgrade_cluster",
-        "stocktwits_bull",
         "retail_buzz",
+        "stocktwits_bull",
         "actor:Marjorie Taylor Greene",
         "actor:Cathie Wood",
         "bill:HRES1530"
       ],
-      "dissent": "Unanimously bullish analyst and retail readings can indicate crowded positioning, making valuation or momentum compression especially damaging [analyst_upgrade_cluster] [stocktwits_bull] [retail_buzz].",
+      "dissent": "The strongest non-contract signals are crowded sentiment indicators, and the extended price already may discount continued federal growth.",
       "weighted_score": 2.05,
       "channels": [
         "affiliation",
@@ -181,69 +176,70 @@
         "retail_buzz",
         "stocktwits_bull"
       ],
-      "rs_vs_spy_60d": 37.0,
+      "rs_vs_spy_60d": 41.0,
       "extended": true,
       "scorable": true,
       "falsifier": {
-        "text": "Federal-contract acceleration drops below prior-period levels while bullish analyst revisions reverse.",
+        "text": "Government-contract acceleration falls back toward its prior pace while the stock remains priced at an extended relative-performance level.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "PLTR",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 45
-        }
-      },
-      "check_by": "2026-12-03"
-    },
-    {
-      "ticker": "BAH",
-      "lean": "overweight",
-      "conviction": "low",
-      "action": "ACCUMULATE",
-      "horizon_d": 60,
-      "thesis": "BAH offers a narrower but coherent federal-spending read: government-contract activity is accelerating, a special-situation signal is present, and the Trump-linked channel points in the same direction [gov_contract_accel] [special_situation] [trump]. Proposed federal fraud-enforcement and law-enforcement information-sharing measures provide a plausible demand catalyst for government technology and consulting work [bill:HRES1530], but the absence of additional operating-demand channels keeps conviction low.",
-      "thesis_zh": "BAH\u63d0\u4f9b\u4e86\u8f83\u7a84\u4f46\u903b\u8f91\u4e00\u81f4\u7684\u8054\u90a6\u652f\u51fa\u673a\u4f1a\uff1a\u653f\u5e9c\u5408\u540c\u6d3b\u52a8\u6b63\u5728\u52a0\u901f\uff0c\u7279\u6b8a\u60c5\u5f62\u4fe1\u53f7\u51fa\u73b0\uff0c\u7279\u6717\u666e\u5173\u8054\u6e20\u9053\u4e5f\u6307\u5411\u540c\u4e00\u65b9\u5411 [gov_contract_accel] [special_situation] [trump]\u3002\u62df\u8bae\u4e2d\u7684\u8054\u90a6\u53cd\u6b3a\u8bc8\u6267\u6cd5\u53ca\u6267\u6cd5\u673a\u6784\u4fe1\u606f\u5171\u4eab\u63aa\u65bd\uff0c\u53ef\u80fd\u4e3a\u653f\u5e9c\u79d1\u6280\u4e0e\u54a8\u8be2\u4e1a\u52a1\u5e26\u6765\u9700\u6c42\u50ac\u5316 [bill:HRES1530]\uff1b\u4f46\u7531\u4e8e\u7f3a\u5c11\u66f4\u591a\u7ecf\u8425\u9700\u6c42\u6e20\u9053\uff0c\u7f6e\u4fe1\u5ea6\u4fdd\u6301\u8f83\u4f4e\u3002",
-      "second_order": [
-        "PLTR \u2014 expanded federal enforcement and information sharing can increase demand for government data platforms [bill:HRES1530]",
-        "Federal cybersecurity and analytics \u2014 agency modernization would benefit contractors exposed to secure data integration [gov_contract_accel] [bill:HRES1530]"
-      ],
-      "evidence": [
-        "gov_contract_accel",
-        "special_situation",
-        "trump",
-        "bill:HRES1530"
-      ],
-      "dissent": "Only three channels align, and the special-situation and Trump-linked signals provide little detail about durable operating improvement [special_situation] [trump].",
-      "weighted_score": 1.6,
-      "channels": [
-        "gov_contract_accel",
-        "special_situation",
-        "trump"
-      ],
-      "rs_vs_spy_60d": 8.2,
-      "extended": false,
-      "scorable": true,
-      "falsifier": {
-        "text": "Federal-contract acceleration turns negative and the proposed enforcement legislation fails to progress beyond House consideration.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "BAH",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
           "horizon_d": 60
         }
       },
-      "check_by": "2026-12-24"
+      "check_by": "2026-12-25"
+    },
+    {
+      "ticker": "CRWD",
+      "lean": "overweight",
+      "conviction": "low",
+      "action": "WATCH",
+      "horizon_d": 45,
+      "thesis": "CRWD shows alignment across congressional buying, 13F additions, analyst upgrades, and a positive Trump-linked signal [congress_buy] [13f_add] [analyst_upgrade_cluster] [trump]. Those channels are directionally supportive, but there is no contract or product-demand measurement in the cluster, and the stock is already extended at +36.5 percentage points versus SPY over 60 days; the entry is therefore gone for now.",
+      "thesis_zh": "CRWD\u5728\u56fd\u4f1a\u8bae\u5458\u4e70\u5165\u300113F\u589e\u6301\u3001\u5206\u6790\u5e08\u4e0a\u8c03\u4ee5\u53ca\u6b63\u5411\u7279\u6717\u666e\u5173\u8054\u4fe1\u53f7\u4e4b\u95f4\u5f62\u6210\u4e00\u81f4\u65b9\u5411 [congress_buy] [13f_add] [analyst_upgrade_cluster] [trump]\u3002\u8fd9\u4e9b\u6e20\u9053\u5177\u6709\u652f\u6301\u4f5c\u7528\uff0c\u4f46\u7ec4\u5408\u4e2d\u7f3a\u5c11\u5408\u540c\u6216\u4ea7\u54c1\u9700\u6c42\u7684\u5b9e\u6d4b\u6570\u636e\uff0c\u800c\u4e14\u8fc7\u53bb60\u65e5\u76f8\u5bf9SPY\u9886\u514836.5\u4e2a\u767e\u5206\u70b9\uff0c\u5df2\u660e\u663e\u5ef6\u4f38\uff0c\u56e0\u6b64\u5f53\u524d\u4e70\u70b9\u5df2\u7ecf\u9519\u8fc7\u3002",
+      "second_order": [
+        "Cybersecurity software theme \u2014 institutional and political buying suggests continued attention to security spending",
+        "MSFT \u2014 enterprise-security demand can also support integrated cloud-security platforms"
+      ],
+      "evidence": [
+        "congress_buy",
+        "13f_add",
+        "analyst_upgrade_cluster",
+        "trump"
+      ],
+      "dissent": "Institutional, congressional, and analyst signals may all be reacting to the same prior price strength rather than anticipating new fundamental acceleration.",
+      "weighted_score": 1.7,
+      "channels": [
+        "13f_add",
+        "analyst_upgrade_cluster",
+        "congress_buy",
+        "trump"
+      ],
+      "rs_vs_spy_60d": 36.5,
+      "extended": true,
+      "scorable": true,
+      "falsifier": {
+        "text": "Congressional and institutional additions reverse without a corresponding improvement in measured customer or contract demand.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "CRWD",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 45
+        }
+      },
+      "check_by": "2026-12-04"
     }
   ],
   "track_record": {
     "schema": "altdata_brain_track_record.v1",
     "as_of": "2026-10-01",
     "scored_total": 0,
-    "open": 26,
+    "open": 27,
     "unscored_soft": 0,
     "expired": 0,
     "overall": {

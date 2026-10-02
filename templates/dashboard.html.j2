@@ -15529,13 +15529,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% endif %}{# /policy_lever #}
 
 
-  {# Combined "Regime — now & where it's headed": the current-regime HMM probability and the
-     base-effect forward path, merged into one scorecard (were two near-identical panels).
-     Stage-B: macro mode has this inside the policy tray (sx-policy-v2). Kept here for
-     stocks mode (stocks sees the regime-read panel if policy_lever data is present). #}
-  {% set be_note_en = 'Growth is point-in-time back to 1997; inflation uses latest-revision data until the core-CPI/PCE vintages backfill.' %}
-  {% set be_note_zh = '增长为 1997 年以来的时点数据；通胀在核心 CPI／PCE 修订版历史回填前使用最新修订数据。' %}
-  {% if mode != 'macro' %}{% include "_regime_read_panel.html.j2" %}{% endif %}
+  {# Regime read panel moved out of this macro-only section (MO-PAID-001_FIX_R1): the old
+     `mode != 'macro'` guard here was unreachable (the surrounding `mode == 'macro'`
+     block opens at line 2622 and closes at line 16081 with no else), so the two-axis
+     base-effect forward path rendered on no page. The reachable stocks-mode include
+     now sits below, just after `{% endif %}{# /market_state B4 #}`. #}
 
 
   {# ==================== RELEASE RADAR (MRI PR-D / W11-H MRI-R39) ====================
@@ -16166,6 +16164,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     <a class="scx-more" href="macro.html#dlg-risk"><span class="l-en">Risk radar →</span><span class="l-zh">风险雷达 →</span></a>
   </div>
   {% endif %}{# /market_state B4 #}
+  {# Regime — now & where it's headed: the two-axis base-effect forward path (MO-PAID-001).
+     Until 2026-10-02 this include sat inside the macro-only block behind `mode != 'macro'`
+     and therefore rendered on no page (MO-PAID-001_FIX_R1). Stocks mode is its host;
+     `_regime_read_panel.html.j2` hides itself unless latest.base_effect carries both axes. #}
+  {% include "_regime_read_panel.html.j2" %}
   {% if action_board %}
   {% include "_us_act_now_board.html.j2" %}
     {% set _su = us_standouts if (us_standouts and us_standouts.buy) else None %}

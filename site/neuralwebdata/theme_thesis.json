@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
-  "as_of": "2026-10-01",
-  "generated_at": "2026-10-01T20:27:19Z",
+  "as_of": "2026-10-02",
+  "generated_at": "2026-10-02T11:10:42Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -28,10 +28,10 @@
   "theses": [
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-01",
+      "as_of": "2026-10-02",
       "thesis_id": "ai_semiconductors.v1",
-      "content_hash": "sha256:a94c3bc4c3a0c837a0800b01d2fe50000694be63fcf0ce628b647c147c8e9d45",
-      "prev_content_hash": "sha256:6a8ea1b3be1be3ac0d8058a81adb6514e907ac446523ba9898e8061b932f7bdd",
+      "content_hash": "sha256:ecd90c434f38c0c4d2d6bcf3c3e3b35d39c4c3fe7bdb335446ea4e2917d0ad77",
+      "prev_content_hash": "sha256:a94c3bc4c3a0c837a0800b01d2fe50000694be63fcf0ce628b647c147c8e9d45",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -106,7 +106,7 @@
                 "condition_met": false
               },
               {
-                "as_of": "2026-10-01",
+                "as_of": "2026-10-02",
                 "value": 0.497,
                 "condition_met": false
               }
@@ -155,10 +155,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-01",
+      "as_of": "2026-10-02",
       "thesis_id": "memory_storage.v1",
-      "content_hash": "sha256:939c1130504300d6e81945dea898f9e646d76d405c27a682c7508ec5b9bccf8a",
-      "prev_content_hash": "sha256:5a8eba3f2cf76f881d944a515f221f94796725868b2d3f41c58ad4ae892d832b",
+      "content_hash": "sha256:ab28b2e60371e7dccefd334de53bb07a9a9faf5e26ced08ae066972a23027dc5",
+      "prev_content_hash": "sha256:939c1130504300d6e81945dea898f9e646d76d405c27a682c7508ec5b9bccf8a",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -224,7 +224,7 @@
                 "condition_met": false
               },
               {
-                "as_of": "2026-10-01",
+                "as_of": "2026-10-02",
                 "value": 0.755,
                 "condition_met": false
               }
@@ -508,10 +508,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-01",
+      "as_of": "2026-10-02",
       "thesis_id": "robotics_automation.v1",
-      "content_hash": "sha256:bc68b00d1b540d65d9b6bd5a94c4082cc9e03ee768a83039d8e0f26a9cedf88c",
-      "prev_content_hash": "sha256:4235fe287e2afcd2dd6bcce86605d50c7b001d78d6e9d71367d54e18e75ce183",
+      "content_hash": "sha256:8a3d208682bedfb85b569601343808b8d2e2237706a863e22814fefd8d3c40a7",
+      "prev_content_hash": "sha256:bc68b00d1b540d65d9b6bd5a94c4082cc9e03ee768a83039d8e0f26a9cedf88c",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -577,7 +577,7 @@
           "rule_en": "If reshoring basket score falls below 30 or moves to 'avoid' label, the industrial-capex driver underpinning automation demand is weakening.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=63.0"
+          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=66.0"
         },
         {
           "id": "robo_f3",
@@ -1578,7 +1578,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-10-01T20:27:19Z",
-  "inputs_hash": "sha256:7438a02faa5dd92efb044be9b88f503ac59b60df781e9a6a6d0cd62ea4b821ec",
+  "produced_at": "2026-10-02T11:10:42Z",
+  "inputs_hash": "sha256:881d5bb22b4bf5e5af4c5aab305da04988da9baae995910be50f2fd58e2fe607",
   "tier": "display"
 }

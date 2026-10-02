@@ -1,5 +1,5 @@
 {
-  "asof": "2026-10-01",
+  "asof": "2026-10-02",
   "universe_n": 2943,
   "n_with_chip": 248,
   "counts_by_state": {
@@ -162,7 +162,7 @@
       "band": "washed",
       "score_pct": 0.107,
       "whale": 41.2,
-      "whale_chg": -16.7
+      "whale_chg": -16.8
     },
     {
       "ticker": "ATO",
@@ -217,7 +217,7 @@
       "state": "neutral",
       "band": "washed",
       "score_pct": 0.012,
-      "whale": 40.8,
+      "whale": 40.7,
       "whale_chg": -5.5
     },
     {
@@ -785,7 +785,7 @@
       "state": "neutral",
       "band": "neutral",
       "score_pct": 0.302,
-      "whale": 51.2,
+      "whale": 51.1,
       "whale_chg": 2.6
     },
     {
@@ -794,7 +794,7 @@
       "band": "neutral",
       "score_pct": 0.234,
       "whale": 53.0,
-      "whale_chg": 5.3
+      "whale_chg": 5.2
     },
     {
       "ticker": "GD",
@@ -1546,7 +1546,7 @@
       "band": "washed",
       "score_pct": 0.077,
       "whale": 39.4,
-      "whale_chg": -15.7
+      "whale_chg": -15.8
     },
     {
       "ticker": "REGN",
@@ -1761,7 +1761,7 @@
       "state": "neutral",
       "band": "washed",
       "score_pct": 0.149,
-      "whale": 45.8,
+      "whale": 45.9,
       "whale_chg": -7.9
     },
     {

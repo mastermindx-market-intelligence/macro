@@ -1077,3 +1077,198 @@ class TestMeasuredMicrostructureLedgerColumns:
         assert row["vol_gt_oi_ratio"] is None
         # Finite siblings in the same block are unaffected.
         assert row["at_bid_share"] == pytest.approx(0.2)
+
+
+# ── 13. SPY label-window contract ────────────────────────────────────────────
+#
+# A spy_excess_h comparison (ticker_fwd_ret_h - spy_fwd_ret_h) is only
+# evaluable when the two forward windows cover the SAME actual trading dates.
+# If SPY is missing a bar at the native fill or the native fill+h position
+# (e.g. SPY holiday, ticker-only session), the SPY window shifts to a
+# different date span and the difference would compare different label
+# windows — non-evaluable; the column stays None. Absolute native metrics
+# (ticker fwd_ret_h, fwd_mfe_h, fwd_mdd_h) are preserved regardless.
+
+class TestSpyLabelWindowContract:
+    """SPY label-window contract: spy_excess_h requires identical native fill
+    AND identical native endpoint dates on the two series."""
+
+    def test_matching_dates_positive_path(self):
+        """When ticker and SPY share the same business-day calendar, the
+        label-window contract is satisfied: spy_excess_h is the difference
+        of the two forward returns."""
+        from engine.flow_signals_grade import _grade_event
+
+        # snap_loc("2026-06-02") lands at bar 1, fill = 2.
+        # fwd_ret_5 = close[fill+5] / close[fill] - 1 = close[7] / close[2] - 1.
+        # Want ticker fwd_ret_5 = 0.05 (entry 100, exit 105) and SPY 0.02
+        # (entry 200, exit 204) → excess 0.03.
+        n = 9
+        dates = pd.date_range("2026-06-01", periods=n, freq="B")
+        ticker_prices = [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 105.0, 105.0]
+        spy_prices    = [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 204.0, 204.0]
+        close = pd.Series(ticker_prices, index=dates, dtype=float)
+        spy = pd.Series(spy_prices, index=dates, dtype=float)
+
+        result = _grade_event(
+            event_id="spy_match",
+            ticker="AAPL",
+            session_date="2026-06-02",
+            dte_bucket="1_7d",
+            close=close,
+            spy_close=spy,
+        )
+        assert result["graded_ok"] is True
+        assert result["reason_code"] == "ok"
+        assert result["fwd_ret_5"] is not None
+        assert result["fwd_ret_5"] == pytest.approx(0.05, abs=1e-9)
+        assert result["spy_excess_5"] is not None
+        assert result["spy_excess_5"] == pytest.approx(0.03, abs=1e-9)
+
+    def test_spy_missing_native_fill_leaves_excess_null(self):
+        """If SPY is missing a bar at the ticker's native fill date, the SPY
+        window opens on a different calendar day and the comparison is
+        non-evaluable. spy_excess_h MUST stay None while the absolute
+        ticker fwd_ret_h is still populated."""
+        from engine.flow_signals_grade import _grade_event
+
+        # Ticker has bars on 2026-06-01, 06-02 (signal), 06-03 (fill), 06-04, ...
+        # SPY is missing 2026-06-03 — its fill lands one bar later, on 06-04.
+        # Same length overall so len() checks do not save us; the dates
+        # themselves are the differentiator.
+        ticker_dates = pd.date_range("2026-06-01", periods=9, freq="B")
+        spy_dates = pd.DatetimeIndex([
+            pd.Timestamp("2026-06-01"),
+            pd.Timestamp("2026-06-02"),
+            # 2026-06-03 MISSING — SPY holiday
+            pd.Timestamp("2026-06-04"),
+            pd.Timestamp("2026-06-05"),
+            pd.Timestamp("2026-06-08"),
+            pd.Timestamp("2026-06-09"),
+            pd.Timestamp("2026-06-10"),
+            pd.Timestamp("2026-06-11"),
+            pd.Timestamp("2026-06-12"),
+        ])
+        ticker_prices = [100.0, 100.0, 100.0, 102.0, 103.0, 104.0, 105.0, 106.0, 107.0]
+        spy_prices    = [200.0, 200.0,        201.0, 202.0, 202.5, 203.0, 203.5, 204.0, 204.5]
+        close = pd.Series(ticker_prices, index=ticker_dates, dtype=float)
+        spy = pd.Series(spy_prices, index=spy_dates, dtype=float)
+
+        result = _grade_event(
+            event_id="spy_missing_fill",
+            ticker="AAPL",
+            session_date="2026-06-02",
+            dte_bucket="1_7d",
+            close=close,
+            spy_close=spy,
+        )
+        assert result["graded_ok"] is True
+        assert result["fwd_ret_5"] is not None
+        # Label windows differ: ticker fill 06-03 → endpoint 06-10; SPY fill
+        # 06-04 → endpoint 06-11. Both endpoints drift together.
+        assert result["spy_excess_5"] is None, (
+            "SPY excess must be None when SPY's native fill date does not "
+            "match the ticker's native fill date — label-window mismatch "
+            "is non-evaluable per the contract."
+        )
+
+    def test_spy_missing_intermediate_shifts_endpoint(self):
+        """If SPY is missing a bar between fill and fill+h, SPY's native
+        fill+h date is later than the ticker's. spy_excess_h MUST stay None
+        while the absolute metric is preserved."""
+        from engine.flow_signals_grade import _grade_event
+
+        ticker_dates = pd.date_range("2026-06-01", periods=9, freq="B")
+        # SPY: bar at 2026-06-03 (fill) exists, but bar at 2026-06-04 (the
+        # bar that would be ticker fill+1) is missing — so SPY's fill+5
+        # endpoint lands on 2026-06-11 instead of the ticker's 2026-06-10.
+        # June 3 + 5 business days = June 10.
+        spy_dates = pd.DatetimeIndex([
+            pd.Timestamp("2026-06-01"),
+            pd.Timestamp("2026-06-02"),
+            pd.Timestamp("2026-06-03"),
+            # 2026-06-04 MISSING (intermediate)
+            pd.Timestamp("2026-06-05"),
+            pd.Timestamp("2026-06-08"),
+            pd.Timestamp("2026-06-09"),
+            pd.Timestamp("2026-06-10"),  # ticker's fill+5
+            pd.Timestamp("2026-06-11"),  # SPY's fill+5 (one bar late)
+            pd.Timestamp("2026-06-12"),
+        ])
+        ticker_prices = [100.0, 100.0, 100.0, 102.0, 103.0, 104.0, 105.0, 106.0, 107.0]
+        spy_prices    = [200.0, 200.0, 200.0,       201.0, 202.0, 202.5, 203.0, 203.5, 204.0]
+        close = pd.Series(ticker_prices, index=ticker_dates, dtype=float)
+        spy = pd.Series(spy_prices, index=spy_dates, dtype=float)
+
+        result = _grade_event(
+            event_id="spy_missing_intermediate",
+            ticker="AAPL",
+            session_date="2026-06-02",
+            dte_bucket="1_7d",
+            close=close,
+            spy_close=spy,
+        )
+        assert result["graded_ok"] is True
+        assert result["fwd_ret_5"] is not None
+        # Endpoints differ: ticker 06-10, SPY 06-11.
+        assert result["spy_excess_5"] is None, (
+            "SPY excess must be None when SPY's native fill+h date differs "
+            "from the ticker's — label-window mismatch is non-evaluable."
+        )
+
+    def test_spy_excess_independent_per_horizon_8_30d(self):
+        """For an 8_30d bucket (horizon=21d), the label-window contract is
+        checked per horizon. A series that has matching dates throughout the
+        21d window should yield a populated spy_excess_21."""
+        from engine.flow_signals_grade import _grade_event
+
+        # snap_loc("2026-06-02") lands at bar 1, fill = 2.
+        # fwd_ret_21 = close[fill+21] / close[fill] - 1 = close[23] / close[2] - 1.
+        n = 24
+        dates = pd.date_range("2026-06-01", periods=n, freq="B")
+        ticker_prices = [100.0] * 24
+        ticker_prices[2] = 100.0
+        ticker_prices[23] = 115.0
+        spy_prices = [200.0] * 24
+        spy_prices[2] = 200.0
+        spy_prices[23] = 210.0
+
+        close = pd.Series(ticker_prices, index=dates, dtype=float)
+        spy = pd.Series(spy_prices, index=dates, dtype=float)
+
+        result = _grade_event(
+            event_id="spy_21d_match",
+            ticker="AAPL",
+            session_date="2026-06-02",
+            dte_bucket="8_30d",
+            close=close,
+            spy_close=spy,
+        )
+        assert result["graded_ok"] is True
+        assert result["fwd_ret_21"] is not None
+        assert result["fwd_ret_21"] == pytest.approx(0.15, abs=1e-9)
+        assert result["spy_excess_21"] is not None
+        assert result["spy_excess_21"] == pytest.approx(0.10, abs=1e-9)
+
+    def test_spy_none_preserves_absolute_metrics(self):
+        """spy_close=None is the pre-existing fast-path; absolute metrics
+        still populate, no SPY columns are written, no exception is raised."""
+        from engine.flow_signals_grade import _grade_event
+
+        n = 11
+        dates = pd.date_range("2026-06-01", periods=n, freq="B")
+        close = pd.Series([100.0] * n, index=dates, dtype=float)
+
+        result = _grade_event(
+            event_id="no_spy",
+            ticker="AAPL",
+            session_date="2026-06-02",
+            dte_bucket="1_7d",
+            close=close,
+            spy_close=None,
+        )
+        assert result["graded_ok"] is True
+        assert result["fwd_ret_5"] is not None
+        assert result["spy_excess_5"] is None
+        for h in (5, 21, 63, 126):
+            assert result[f"spy_excess_{h}"] is None

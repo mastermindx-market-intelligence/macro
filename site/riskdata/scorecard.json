@@ -1,14 +1,14 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-10-02T05:52:29+00:00",
+  "generated_at": "2026-10-02T11:59:05+00:00",
   "markets": {
     "us": {
-      "asof_last_row": "2026-09-30",
+      "asof_last_row": "2026-10-01",
       "monitoring": {
         "log_fresh": true,
         "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 16,
+        "awaiting_maturity": 17,
         "backlog_cutoff_bd": 28,
         "graded_n": 42
       },
@@ -60,16 +60,16 @@
       },
       "probability_audit": {
         "definition": "us_issued_probability_audit.v1",
-        "as_of": "2026-10-01",
+        "as_of": "2026-10-02",
         "target": "SPY close-relative loss >=5%; future 5/10/21 closing observations",
-        "input_rows": 58,
+        "input_rows": 59,
         "min_display_n": 5,
         "horizons": {
           "h5": {
             "n": 42,
-            "excluded_n": 16,
+            "excluded_n": 17,
             "excluded": {
-              "ungraded": 16
+              "ungraded": 17
             },
             "from": "2026-06-23",
             "through": "2026-08-31",
@@ -128,9 +128,9 @@
           },
           "h10": {
             "n": 42,
-            "excluded_n": 16,
+            "excluded_n": 17,
             "excluded": {
-              "ungraded": 16
+              "ungraded": 17
             },
             "from": "2026-06-23",
             "through": "2026-08-31",
@@ -189,9 +189,9 @@
           },
           "h21": {
             "n": 42,
-            "excluded_n": 16,
+            "excluded_n": 17,
             "excluded": {
-              "ungraded": 16
+              "ungraded": 17
             },
             "from": "2026-06-23",
             "through": "2026-08-31",
@@ -264,13 +264,13 @@
           "latest_engine_source_sha256": "31668c7fe097cdf631edb6cca6e77990b40afdb3d4cb37d27596336689afe70d",
           "latest_source_bundle_sha256": "f4c5c3af2c51543ac3e44c8637463f579580ab2c52cfb4418d69e98b0fd97bb6",
           "latest_calibration_sha256": "801d15ae2b50d622c153b47863af0e27e1ce080d9fd7bc2d478cee2bc27ebc54",
-          "same_model_issued_n": 3,
+          "same_model_issued_n": 4,
           "same_model_graded_n": 0,
-          "awaiting_maturity": 3,
+          "awaiting_maturity": 4,
           "prior_model_issued_n": 2,
           "model_fingerprints_seen": 2,
           "from": "2026-09-28",
-          "through": "2026-09-30",
+          "through": "2026-10-01",
           "issue_excluded": {
             "missing_issue_receipt": 53
           },
@@ -337,10 +337,10 @@
             "current_model_validated": false,
             "public_validation_ready": false,
             "cohort": {
-              "issued_n": 3,
-              "span_days": 2,
+              "issued_n": 4,
+              "span_days": 3,
               "from": "2026-09-28",
-              "through": "2026-09-30"
+              "through": "2026-10-01"
             },
             "thresholds": {
               "min_issued_sessions": 252,
@@ -416,7 +416,7 @@
       "asof_last_row": "2026-09-30",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 2,
         "ungraded_backlog": 0,
         "awaiting_maturity": 17,
         "backlog_cutoff_bd": 28,
@@ -487,7 +487,7 @@
       "asof_last_row": "2026-09-30",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 2,
         "ungraded_backlog": 0,
         "awaiting_maturity": 18,
         "backlog_cutoff_bd": 28,
@@ -555,12 +555,12 @@
       }
     },
     "ca": {
-      "asof_last_row": "2026-09-30",
+      "asof_last_row": "2026-10-01",
       "monitoring": {
         "log_fresh": true,
         "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 13,
+        "awaiting_maturity": 14,
         "backlog_cutoff_bd": 28,
         "graded_n": 33
       },
@@ -612,14 +612,14 @@
       }
     },
     "kr": {
-      "asof_last_row": "2026-10-01",
+      "asof_last_row": "2026-10-02",
       "monitoring": {
         "log_fresh": true,
         "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
         "awaiting_maturity": 13,
         "backlog_cutoff_bd": 28,
-        "graded_n": 21
+        "graded_n": 22
       },
       "windows": {
         "full": {
@@ -636,10 +636,10 @@
             "precursor_rate": null
           },
           "calm": {
-            "n": 18,
+            "n": 19,
             "dd_missed": 8,
-            "quiet": 10,
-            "quiet_rate": 0.556
+            "quiet": 11,
+            "quiet_rate": 0.579
           },
           "by_scare": {},
           "recovery": null
@@ -658,10 +658,10 @@
             "precursor_rate": null
           },
           "calm": {
-            "n": 18,
+            "n": 19,
             "dd_missed": 8,
-            "quiet": 10,
-            "quiet_rate": 0.556
+            "quiet": 11,
+            "quiet_rate": 0.579
           },
           "by_scare": {},
           "recovery": null
@@ -669,14 +669,14 @@
       }
     },
     "jp": {
-      "asof_last_row": "2026-10-01",
+      "asof_last_row": "2026-10-02",
       "monitoring": {
         "log_fresh": true,
         "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
         "awaiting_maturity": 15,
         "backlog_cutoff_bd": 28,
-        "graded_n": 18
+        "graded_n": 19
       },
       "windows": {
         "full": {
@@ -693,10 +693,10 @@
             "precursor_rate": 0.4
           },
           "calm": {
-            "n": 11,
+            "n": 12,
             "dd_missed": 2,
-            "quiet": 9,
-            "quiet_rate": 0.818
+            "quiet": 10,
+            "quiet_rate": 0.833
           },
           "by_scare": {
             "rate_shock": {
@@ -722,10 +722,10 @@
             "precursor_rate": 0.4
           },
           "calm": {
-            "n": 11,
+            "n": 12,
             "dd_missed": 2,
-            "quiet": 9,
-            "quiet_rate": 0.818
+            "quiet": 10,
+            "quiet_rate": 0.833
           },
           "by_scare": {
             "rate_shock": {
@@ -743,7 +743,7 @@
       "asof_last_row": "2026-10-01",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 0,
+        "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
         "awaiting_maturity": 14,
         "backlog_cutoff_bd": 28,
@@ -838,7 +838,7 @@
       "asof_last_row": "2026-10-01",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 0,
+        "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
         "awaiting_maturity": 14,
         "backlog_cutoff_bd": 28,
@@ -906,14 +906,14 @@
       }
     },
     "au": {
-      "asof_last_row": "2026-10-01",
+      "asof_last_row": "2026-10-02",
       "monitoring": {
         "log_fresh": true,
         "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
         "awaiting_maturity": 14,
         "backlog_cutoff_bd": 28,
-        "graded_n": 24
+        "graded_n": 25
       },
       "windows": {
         "full": {
@@ -924,9 +924,9 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 14,
+            "n": 15,
             "tp": 0,
-            "tn": 14,
+            "tn": 15,
             "precursor_rate": 0.0
           },
           "calm": {
@@ -946,9 +946,9 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 14,
+            "n": 15,
             "tp": 0,
-            "tn": 14,
+            "tn": 15,
             "precursor_rate": 0.0
           },
           "calm": {
@@ -966,7 +966,7 @@
       "asof_last_row": "2026-10-01",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 0,
+        "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
         "awaiting_maturity": 13,
         "backlog_cutoff_bd": 28,
@@ -1023,7 +1023,7 @@
       "asof_last_row": "2026-10-01",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 0,
+        "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
         "awaiting_maturity": 13,
         "backlog_cutoff_bd": 28,
