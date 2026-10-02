@@ -168,7 +168,7 @@
           </div>
           {% if m.get('status') == 'experimental_model_context' and m.get('display_value') is string %}
             <div class="nd-model-read">
-              <span>{{ bi('Mastermind model benchmark','Mastermind 模型基准') }}</span>
+              <span>{% if m.get('basis') == 'combined_v1_benchmark_augmented' %}{{ bi('Mastermind blended benchmark','Mastermind 混合基准') }}{% else %}{{ bi('Mastermind model benchmark','Mastermind 模型基准') }}{% endif %}</span>
               <p class="nd-model-value">{{ m.display_value }}{% if m.get('unit') == 'percent' %}<span>%</span>{% endif %}</p>
             </div>
             <p class="nd-official-period">{{ bi('Reference period','数据时期') }} · {{ m.get('period') or '—' }}</p>
