@@ -203,6 +203,17 @@ def _capture_one(browser, base, *, width, height, locale, theme):
             """,
             timeout=8000,
         )
+        # Wait for the theme-toggle flourish (.sky-fx sun/moon orb) to clear.
+        # theme.js inserts the orb on theme change and removes it after ~1.1s
+        # via setTimeout(..., 1100). The wait succeeds at once if the page was
+        # never toggled, and otherwise waits for the orb to leave the DOM so
+        # the screenshot depicts the served steady state, not a 1.1s animation.
+        page.wait_for_function(
+            "() => !document.querySelector('.sky-fx')", timeout=5000
+        )
+        sky_fx_count = page.evaluate(
+            "() => document.querySelectorAll('.sky-fx').length"
+        )
         page.wait_for_timeout(120)
 
         # Pull everything we need in one evaluate: PAGE-relative bboxes of map
@@ -318,6 +329,7 @@ def _capture_one(browser, base, *, width, height, locale, theme):
             "panel_clip": panel_clip,
             "png_map": png_map,
             "png_panel": png_panel,
+            "sky_fx_count": sky_fx_count,
         }
     finally:
         context.close()
@@ -391,6 +403,7 @@ def main():
                                     cell["gbr_data_news"] = got["gbr_data_news"]
                                     cell["data_news_gbr"] = got["data_news_gbr"]
                                     cell["container_box"] = got["container"]
+                                    cell["extras"] = {"sky_fx_count": got["sky_fx_count"]}
                                 else:
                                     cell["selector"] = "#event-pins"
                                     cell["rows"] = got["rows"]

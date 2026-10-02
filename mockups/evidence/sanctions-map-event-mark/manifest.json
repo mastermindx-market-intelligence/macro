@@ -5,10 +5,10 @@
   "route_kind": "intelligence_desk",
   "subject": "public-news event mark (MO-PAID-008 / #7377) over the ISO3 base map (MO-DELTA-031)",
   "source": "origin/main site/sanctions_map.html — served byte-identical 2026-10-02",
-  "source_commit": "7c6b74696ccb77974af175e5729013aa4fd33224",
+  "source_commit": "ac1256abb7953c4030fe6ecbf4d4848fd64a0dbf",
   "page_sha256": "b5f14ab46b6a7c91787a38f3dd044526c43379bfd3eca2daff9984057ce883af",
-  "generated_at": "2026-10-02T12:38:52Z",
-  "capture_tool_module_sha256": "17db3cee7b4740dbef97139e16bf7f42c34a863328227329971db4e48638df5f",
+  "generated_at": "2026-10-02T12:58:19Z",
+  "capture_tool_module_sha256": "90e2ef3c6923a6e02f763e209317edb6b66f329412aab81fe18068f4f9490010",
   "cells": [
     {
       "file": "cells/map-gbr-mark-dark-en-desktop.png",
@@ -32,11 +32,11 @@
         "width": 1180,
         "height": 696.34375
       },
-      "sha256": "6e08ba3375169c189c2b43bc98300f6e44f9e88e3fb6bda15ce650680b4d869c",
-      "bytes": 174046,
+      "sha256": "b8e6edad5c1611913e3ea31772dd25611bbd47ed953c8bb472f173a653b6e035",
+      "bytes": 136915,
       "width": 1180,
       "height": 696,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "figure.sm-map[data-news-gbr]",
       "gbr_data_news": "1",
       "data_news_gbr": "1",
@@ -45,6 +45,9 @@
         "y": 337.34375,
         "w": 1142,
         "h": 571
+      },
+      "extras": {
+        "sky_fx_count": 0
       }
     },
     {
@@ -73,7 +76,7 @@
       "bytes": 156686,
       "width": 1180,
       "height": 606,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "#event-pins",
       "rows": 14,
       "panel_text": "Official press today\nPublic official press from Europe, shown on this map.\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nBank of England\nUnited Kingdom\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\n",
@@ -104,11 +107,11 @@
         "width": 1180,
         "height": 697.34375
       },
-      "sha256": "810d14b16564745c5abd78c87fabb38357a01b6901359286052f41d60a08186d",
-      "bytes": 189658,
+      "sha256": "cbc8bd6d1df9fe07d6f81b9ef2b5f8e7f84249dbf8a44686d44461c339ece4da",
+      "bytes": 154696,
       "width": 1180,
       "height": 697,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "figure.sm-map[data-news-gbr]",
       "gbr_data_news": "1",
       "data_news_gbr": "1",
@@ -117,6 +120,9 @@
         "y": 337.34375,
         "w": 1142,
         "h": 572
+      },
+      "extras": {
+        "sky_fx_count": 0
       }
     },
     {
@@ -145,7 +151,7 @@
       "bytes": 154270,
       "width": 1180,
       "height": 606,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "#event-pins",
       "rows": 14,
       "panel_text": "Official press today\nPublic official press from Europe, shown on this map.\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nBank of England\nUnited Kingdom\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\n",
@@ -176,11 +182,11 @@
         "width": 1180,
         "height": 703.34375
       },
-      "sha256": "0dca1fb3cb0c8e0bf82e745f4e0d45151800c83056d94b9380fa2c8b5a0172a4",
-      "bytes": 175003,
+      "sha256": "874beebd7b1c7d56351342529a750868e420c98400608c0d8bd21c035e0b9081",
+      "bytes": 137982,
       "width": 1180,
       "height": 703,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "figure.sm-map[data-news-gbr]",
       "gbr_data_news": "1",
       "data_news_gbr": "1",
@@ -189,6 +195,9 @@
         "y": 357.34375,
         "w": 1142,
         "h": 571
+      },
+      "extras": {
+        "sky_fx_count": 0
       }
     },
     {
@@ -217,7 +226,7 @@
       "bytes": 148857,
       "width": 1180,
       "height": 648,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "#event-pins",
       "rows": 14,
       "panel_text": "今日官方新闻\n欧洲官方公开新闻，显示于本图。\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n英格兰银行\n英国\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n",
@@ -248,11 +257,11 @@
         "width": 1180,
         "height": 704.34375
       },
-      "sha256": "d83623fe765d4a211aaaef9c19bc53c11d32d321c336659def2aaa631aeccb3c",
-      "bytes": 191192,
+      "sha256": "714d61a4910337ea2097d3e2458cc59eefee12ef241589b32774628f4daecdc6",
+      "bytes": 155584,
       "width": 1180,
       "height": 704,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "figure.sm-map[data-news-gbr]",
       "gbr_data_news": "1",
       "data_news_gbr": "1",
@@ -261,6 +270,9 @@
         "y": 357.34375,
         "w": 1142,
         "h": 572
+      },
+      "extras": {
+        "sky_fx_count": 0
       }
     },
     {
@@ -289,7 +301,7 @@
       "bytes": 145999,
       "width": 1180,
       "height": 648,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "#event-pins",
       "rows": 14,
       "panel_text": "今日官方新闻\n欧洲官方公开新闻，显示于本图。\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n英格兰银行\n英国\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n",
@@ -320,11 +332,11 @@
         "width": 350,
         "height": 329.34375
       },
-      "sha256": "5210e4deaa2d1181aaaa4574997b8de54a35db8f95414296810eeafac2d80294",
-      "bytes": 53384,
+      "sha256": "c26e74c046720be225ec02e31cae78d64b4efff1a13a02c4f039b155f0619650",
+      "bytes": 32482,
       "width": 350,
       "height": 329,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "figure.sm-map[data-news-gbr]",
       "gbr_data_news": "1",
       "data_news_gbr": "1",
@@ -333,6 +345,9 @@
         "y": 495.34375,
         "w": 312,
         "h": 156
+      },
+      "extras": {
+        "sky_fx_count": 0
       }
     },
     {
@@ -357,11 +372,11 @@
         "width": 350,
         "height": 1223.34375
       },
-      "sha256": "e3ae0aa27e20238b8145d1f2958764cef9d891db20058aff875657d21b95b317",
-      "bytes": 167481,
+      "sha256": "0da79ee5eb1fd66fd20ac096f50d30c834b338571393390b6806cd47e04075fc",
+      "bytes": 167756,
       "width": 350,
       "height": 1223,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "#event-pins",
       "rows": 14,
       "panel_text": "Official press today\nPublic official press from Europe, shown on this map.\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nBank of England\nUnited Kingdom\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\n",
@@ -392,11 +407,11 @@
         "width": 350,
         "height": 330.34375
       },
-      "sha256": "96f56d7bec7689806ee4afdb9456f7a0328f6c113341c5bdb47d7f01d516223a",
-      "bytes": 56966,
+      "sha256": "4474a1f636fd54cf984aab4f2a464959a97cdd869bd4b88df138d66f67e6e7e8",
+      "bytes": 35786,
       "width": 350,
       "height": 330,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "figure.sm-map[data-news-gbr]",
       "gbr_data_news": "1",
       "data_news_gbr": "1",
@@ -405,6 +420,9 @@
         "y": 495.34375,
         "w": 312,
         "h": 157
+      },
+      "extras": {
+        "sky_fx_count": 0
       }
     },
     {
@@ -429,11 +447,11 @@
         "width": 350,
         "height": 1223.34375
       },
-      "sha256": "8e36a5cb899bb880b107084c71c688fa2dd29070cd9e120fe637c5007967fb23",
-      "bytes": 165661,
+      "sha256": "bbf67774416f85a8a24a954da2216f8bc51e1356d631328031bc72bae0f2aa22",
+      "bytes": 165810,
       "width": 350,
       "height": 1223,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "#event-pins",
       "rows": 14,
       "panel_text": "Official press today\nPublic official press from Europe, shown on this map.\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nBank of England\nUnited Kingdom\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\nEuropean Commission\nEuropean Union\n",
@@ -464,11 +482,11 @@
         "width": 350,
         "height": 309.34375
       },
-      "sha256": "fddd6b2b89322975109b37c3f13b8da11c7d9a9f31a2346c89b3a70c0f97768a",
-      "bytes": 53778,
+      "sha256": "5bc7e6c87c32e6f2176fae62df3bf7d47b70c4ed9f26f230d9b6885b85c9612b",
+      "bytes": 33444,
       "width": 350,
       "height": 309,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "figure.sm-map[data-news-gbr]",
       "gbr_data_news": "1",
       "data_news_gbr": "1",
@@ -477,6 +495,9 @@
         "y": 467.34375,
         "w": 312,
         "h": 156
+      },
+      "extras": {
+        "sky_fx_count": 0
       }
     },
     {
@@ -501,11 +522,11 @@
         "width": 350,
         "height": 1226.34375
       },
-      "sha256": "9c11f4c1c049092037c788af282d5cac47b3fd09fe838a32525b974de16a8b45",
-      "bytes": 161059,
+      "sha256": "2608f3cd6e9315f303d75919a4d5b24ffb53d39963be9450b3060c6eca610e81",
+      "bytes": 161279,
       "width": 350,
       "height": 1226,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "#event-pins",
       "rows": 14,
       "panel_text": "今日官方新闻\n欧洲官方公开新闻，显示于本图。\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n英格兰银行\n英国\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n",
@@ -536,11 +557,11 @@
         "width": 350,
         "height": 310.34375
       },
-      "sha256": "896f7c2cb79e716488d1deeaee6f1207ed253f860170924caa18dcd32cbb8be1",
-      "bytes": 56501,
+      "sha256": "061095788bd49bfe59bb7d8c2938d033cb30363368b29fa3e53ce9867bc880e5",
+      "bytes": 36449,
       "width": 350,
       "height": 310,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "figure.sm-map[data-news-gbr]",
       "gbr_data_news": "1",
       "data_news_gbr": "1",
@@ -549,6 +570,9 @@
         "y": 467.34375,
         "w": 312,
         "h": 157
+      },
+      "extras": {
+        "sky_fx_count": 0
       }
     },
     {
@@ -573,11 +597,11 @@
         "width": 350,
         "height": 1226.34375
       },
-      "sha256": "a579c5e0bc1c3e4356d032ffbc80f739c99ae67cfe42fed00b33bc46780816b4",
-      "bytes": 159252,
+      "sha256": "a3c4149dfd7b1edbb2b356a8bea35646258eb738f6b64321c2315a3f8cb69eb1",
+      "bytes": 159394,
       "width": 350,
       "height": 1226,
-      "captured": "2026-10-02T12:38:52Z",
+      "captured": "2026-10-02T12:58:19Z",
       "selector": "#event-pins",
       "rows": 14,
       "panel_text": "今日官方新闻\n欧洲官方公开新闻，显示于本图。\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n英格兰银行\n英国\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n欧盟委员会\n欧盟\n",
