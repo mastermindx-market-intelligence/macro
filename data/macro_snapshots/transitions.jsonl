@@ -361,3 +361,9 @@
 {"asof": "2026-10-01", "domain": "commodity", "field": "commodity_mtf_grade", "from_value": "TREND-FOLLOW", "to_value": "AVOID", "macro_context_id": "80cb602631ef4c73"}
 {"asof": "2026-10-01", "domain": "commodity", "field": "commodity_ladder", "from_value": "TURN SIGNALED", "to_value": "BOTTOM WATCH", "macro_context_id": "80cb602631ef4c73"}
 {"asof": "2026-10-01", "domain": "china", "field": "china_quad", "from_value": "Q4", "to_value": "Q3", "macro_context_id": "80cb602631ef4c73"}
+{"asof": "2026-10-02", "domain": "us", "field": "us_gamma_regime", "from_value": "short", "to_value": "long", "macro_context_id": "688b257b68589bf3"}
+{"asof": "2026-10-02", "domain": "us", "field": "us_vrp_state", "from_value": "rich (vol overpriced \u2014 constructive)", "to_value": "normal", "macro_context_id": "688b257b68589bf3"}
+{"asof": "2026-10-02", "domain": "transmission", "field": "yield_curve_regime", "from_value": "bear_flattener", "to_value": "bear_steepener", "macro_context_id": "688b257b68589bf3"}
+{"asof": "2026-10-02", "domain": "commodity", "field": "commodity_mtf_grade", "from_value": "AVOID", "to_value": "CAUTION", "macro_context_id": "688b257b68589bf3"}
+{"asof": "2026-10-02", "domain": "commodity", "field": "commodity_ladder", "from_value": "BOTTOM WATCH", "to_value": "COUNTERTREND BOUNCE", "macro_context_id": "688b257b68589bf3"}
+{"asof": "2026-10-02", "domain": "canada", "field": "canada_overlay_state", "from_value": "Neutral", "to_value": "Risk-off", "macro_context_id": "688b257b68589bf3"}

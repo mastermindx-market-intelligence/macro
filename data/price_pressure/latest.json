@@ -2,7 +2,7 @@
   "schema": "price_pressure.v1",
   "engine_version": "price_pressure.v1",
   "asof": "2026-09-30",
-  "generated_utc": "2026-10-01T20:20:15+00:00",
+  "generated_utc": "2026-10-02T11:04:34+00:00",
   "display_only": true,
   "authority": {
     "can_rank": false,
@@ -54,7 +54,7 @@
     "character": {
       "verdict": "clear",
       "primary_label": "Credit stress",
-      "asof": "2026-09-30",
+      "asof": "2026-10-01",
       "source": "data/regime/latest.json#market_drivers"
     },
     "banner": "Today's pressure is name-by-name, not market-wide.",
