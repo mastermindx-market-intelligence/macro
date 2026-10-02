@@ -57,6 +57,15 @@ _CASES = {
         "parser": "pce",
         "actual": {"headline_mom": -0.1, "core_mom": 0.1, "unit": "percent"},
     },
+    "GDP": {
+        "date": "2026-07-30",
+        "reference_period": "Q2 2026",
+        "publisher": "U.S. Bureau of Economic Analysis",
+        "source_id": "bea_gdp",
+        "source_url": "https://www.bea.gov/news/2026/gdp-advance-estimate-2nd-quarter-2026",
+        "parser": "gdp",
+        "actual": {"real_gdp_annualized": 3.0, "unit": "percent"},
+    },
     "CLAIMS": {
         "date": "2026-08-06",
         "reference_period": "August 1, 2026",
@@ -144,6 +153,7 @@ def _publication(event_type: str = "CPI") -> dict:
         ("PPI", [("ppi_finaldemand", "2026-06", 0.2)]),
         ("NFP", [("nfp", "2026-07", 57.0)]),
         ("PCE", [("pce_headline", "2026-06", -0.1), ("pce_core", "2026-06", 0.1)]),
+        ("GDP", [("gdp_real_annualized", "2026-Q2", 3.0)]),
         ("CLAIMS", [("claims", "2026-08-06", 199.0)]),
     ],
 )
@@ -180,6 +190,43 @@ def test_agency_source_id_and_parser_contracts_fail_closed(event_type: str) -> N
     bad["parser"]["version"] = 2
     assert normalize_publication(bad) == []
 
+
+
+def test_gdp_quarter_reference_must_match_parser_and_source_period() -> None:
+    mismatch = _publication("GDP")
+    mismatch["reference_period"] = "Q1 2026"
+    assert normalize_publication(mismatch) == []
+
+    malformed = _publication("GDP")
+    malformed["reference_period"] = "second quarter"
+    malformed["actual"]["reference_period"] = "second quarter"
+    assert normalize_publication(malformed) == []
+
+
+def test_gdp_regular_schedule_fallback_accepts_only_previous_quarter() -> None:
+    regular = _publication("GDP")
+    regular.pop("reference_period")
+    rows = normalize_publication(regular)
+    assert [(row["release"], row["period"], row["actual"]) for row in rows] == [
+        ("gdp_real_annualized", "2026-Q2", 3.0)
+    ]
+    assert rows[0]["unit"] == "percent_annualized"
+    assert rows[0]["published_precision"] == 1
+    assert rows[0]["period_resolution"] == "validated_parser_period_against_regular_release_schedule"
+
+    current_quarter = _publication("GDP")
+    current_quarter["reference_period"] = "Q3 2026"
+    current_quarter["actual"]["reference_period"] = "Q3 2026"
+    assert normalize_publication(current_quarter) == []
+
+
+def test_gdp_receipt_integrity_rejects_period_drift() -> None:
+    row = normalize_publication(_publication("GDP"))[0]
+    assert receipt_integrity_errors(row) == []
+    drifted = {**row, "period": "2026-Q1"}
+    errors = receipt_integrity_errors(drifted)
+    assert "reference_period_target_mismatch" in errors
+    assert "receipt_id_mismatch" in errors
 
 def test_unofficial_domain_or_missing_hash_fails_closed() -> None:
     bad = _publication("CPI")
