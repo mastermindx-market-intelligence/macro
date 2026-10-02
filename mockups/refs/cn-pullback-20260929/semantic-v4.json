@@ -1,0 +1,110 @@
+{
+  "kind": "cn_pullback_semantic_lifecycle_repair_v4",
+  "operation": "cn-pullback-lifecycle-20260929-sol-001",
+  "pr": 8188,
+  "semantic_source_commit": "b5b8fa0505b95b49b28483b3737a6932d2dedf17",
+  "supersedes_final_candidate_receipt": "mockups/refs/cn-pullback-20260929/semantic-v3.json",
+  "superseded_receipt_sha256": "6c537651eb544af6102650a7bab662300dce80fc4808961582632f08dceaba1f",
+  "contract": {
+    "onset_reference": "trailing 63 settled closes including the current close",
+    "warmup": "state becomes available at exactly 63 valid settled closes",
+    "active_episode": "once onset is confirmed, the episode peak remains frozen until explicit resolution",
+    "trend_repair": "20 consecutive closes above the 20-close average, rising 20-close average, a new high within the trailing 20 closes, and at least 21 observed sessions without a new low",
+    "missing_session_safety": "persistence resets across an unobserved expected session; 25 contiguous observations are required before a rising-20-vs-five-sessions-ago comparison can qualify trend repair"
+  },
+  "adversarial_findings": [
+    {
+      "id": "exact_63_close_reference",
+      "prior_defect": "rolling onset peak included a 64th close for one extra session",
+      "repaired_by": "d0e6199dc6fa3b5e700ef4612ced6477ab12aa41",
+      "discriminator": "110, sixty-one 100 closes, 109, 104.5 => DEVELOPING -4.1284% from 109 under exact-63; incorrect 64-close window => false -5% shock"
+    },
+    {
+      "id": "trend_repair_20_close_high",
+      "prior_defect": "price > max(prices[i-20:i]) compared against 20 prior closes and therefore required a 21-close high",
+      "repaired_by": "b5b8fa0505b95b49b28483b3737a6932d2dedf17",
+      "discriminator": "old 95 spike exactly 20 closes before latest; latest 94 exceeds the prior 19 closes but not the 21st-close-old 95; all other repair conditions satisfied => must repair"
+    },
+    {
+      "id": "trend_repair_contiguous_basis",
+      "prior_defect": "trend repair required 40 contiguous observations although the declared rule and rising-20-vs-five-sessions-ago calculation require 25",
+      "repaired_by": "b5b8fa0505b95b49b28483b3737a6932d2dedf17",
+      "discriminator": "active episode + one missing expected session + 25 contiguous improving closes; persistence and moving-average inputs are fully re-established at 25 and must be eligible for repair"
+    }
+  ],
+  "regression": {
+    "focused": {
+      "passed": 58,
+      "seconds": 16.77,
+      "exit_code": 0
+    },
+    "owning": {
+      "passed": 280,
+      "seconds": 14.74,
+      "exit_code": 0
+    },
+    "p0b_full": {
+      "passed": 136,
+      "seconds": 55.76,
+      "exit_code": 0
+    }
+  },
+  "historical_real_input_stability": {
+    "asof": "2026-09-29",
+    "shanghai": {
+      "phase": "underway",
+      "active": true,
+      "resolution": null,
+      "drawdown_pct": -10.0276,
+      "recent_63_drawdown_pct": -5.6013,
+      "peak_session": "2026-05-13",
+      "low_session": "2026-07-17",
+      "loss_recovered_pct": 11.08,
+      "source_digest": "441bc90dbc43d9d7d53dea5f2afb4137110bf9e87d5e5599c227578e579dd024"
+    },
+    "csi300_etf": {
+      "phase": "underway",
+      "active": true,
+      "drawdown_pct": -12.1985,
+      "recent_63_drawdown_pct": -10.3946,
+      "peak_session": "2026-05-13",
+      "low_session": "2026-09-29"
+    },
+    "shenzhen": {
+      "phase": "underway",
+      "active": true,
+      "drawdown_pct": -20.0733,
+      "recent_63_drawdown_pct": -17.4002,
+      "peak_session": "2026-07-01",
+      "low_session": "2026-09-28"
+    }
+  },
+  "source_sha256": {
+    "lib/pullback_observation.py": "5b0a8735f94e6d26c1840dbc9fa378f690fe018963b1e8116e80ee48cda882b6",
+    "tests/test_pullback_observation.py": "cf102ae786b7050361db807bfdc16252653490296d148a961d61a14aa66f54d3"
+  },
+  "integration": {
+    "prior_p0b_manifest_repair_commit": "4fbeadd4141f6db21b33de118ad8198366cab8ca",
+    "p0b_manifest_sha256": "3b47aff24f61643a8f12c30a6def760b8ac4342f911b945349567e00870a9f1d",
+    "last_immutable_contract_delta": {
+      "candidate": "b86ed1168bb9c48f4aaa98728ea4883503e5ac03",
+      "base": "e2234d4b7487b44496c960851aa6096839d7e248",
+      "merge_tree": "ad263ffab7e1d24eb44670f443f79075cd318ab2",
+      "introduced": 0,
+      "inherited": 0,
+      "seconds": 245.6,
+      "exit_code": 0
+    },
+    "exact_head_ci_for_b86": "superseded_by_new_semantic_source_once_v4_is_published"
+  },
+  "ui_evidence_reuse": {
+    "basis": "No adapter, builder, template, JS, CSS, dialog or visual-output byte changed in the v4 semantic repair; Sep-29 observed display value and source digest are unchanged.",
+    "visual_proof": "mockups/refs/cn-pullback-20260929/release-proof.json",
+    "independent_semantic_review_required": true
+  },
+  "protected_procedure_commit": "cfd3b996a2bf286f86375a5243232e027d58f724",
+  "protected_index_blob": "4b0189a75d559d963365097485e8509a49c70e23",
+  "production_proven": false,
+  "independent_review": "outstanding",
+  "effect_unknown": null
+}
