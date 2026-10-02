@@ -1,14 +1,14 @@
 {
   "schema": "altdata_track_record.v1",
   "as_of": "2026-10-01",
-  "scored_total": 288,
-  "open": 341,
+  "scored_total": 286,
+  "open": 343,
   "unscored_soft": 0,
   "expired": 17,
   "overall": {
-    "n": 288,
-    "hits": 157,
-    "misses": 131,
+    "n": 286,
+    "hits": 156,
+    "misses": 130,
     "hit_rate": 0.545,
     "dir_accuracy": 0.413
   },
@@ -28,18 +28,18 @@
       "dir_accuracy": null
     },
     "low": {
-      "n": 288,
-      "hits": 157,
-      "misses": 131,
+      "n": 286,
+      "hits": 156,
+      "misses": 130,
       "hit_rate": 0.545,
       "dir_accuracy": 0.413
     }
   },
   "by_kind": {
     "rel_return": {
-      "n": 288,
-      "hits": 157,
-      "misses": 131,
+      "n": 286,
+      "hits": 156,
+      "misses": 130,
       "hit_rate": 0.545,
       "dir_accuracy": 0.413
     },
@@ -52,26 +52,8 @@
     }
   },
   "by_regime": {},
-  "calibration_note": "288 scored, hit-rate 0.545 (directional accuracy 0.413).",
+  "calibration_note": "286 scored, hit-rate 0.545 (directional accuracy 0.413).",
   "recent": [
-    {
-      "id": "2026-07-02-BWXT-altconv",
-      "subject": "BWXT alt-data convergence",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.3092,
-      "check_by": "2026-10-01"
-    },
-    {
-      "id": "2026-07-02-KR-altconv",
-      "subject": "KR alt-data convergence",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.0332,
-      "check_by": "2026-10-01"
-    },
     {
       "id": "2026-07-01-JCI-altconv",
       "subject": "JCI alt-data convergence",
@@ -143,8 +125,26 @@
       "outcome": "hit",
       "realized": 0.1734,
       "check_by": "2026-09-27"
+    },
+    {
+      "id": "2026-06-28-FDX-altconv",
+      "subject": "FDX alt-data convergence",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.1607,
+      "check_by": "2026-09-27"
+    },
+    {
+      "id": "2026-06-28-AES-altconv",
+      "subject": "AES alt-data convergence",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0445,
+      "check_by": "2026-09-27"
     }
   ],
-  "calibration_note_zh": "\u5df2\u8bc4\u5206 288 \u6761\uff0c\u547d\u4e2d\u7387 0.545\uff08\u65b9\u5411\u51c6\u786e\u7387 0.413\uff09\u3002",
+  "calibration_note_zh": "\u5df2\u8bc4\u5206 286 \u6761\uff0c\u547d\u4e2d\u7387 0.545\uff08\u65b9\u5411\u51c6\u786e\u7387 0.413\uff09\u3002",
   "note": "Alt-data convergence theses graded vs SPY. Context-only \u2014 the signal earns a scored vote only once this track record shows forward edge."
 }

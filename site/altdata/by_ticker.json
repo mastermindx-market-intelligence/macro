@@ -1,7 +1,7 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-10-02",
-  "generated_utc": "2026-10-02T05:11:22.213059+00:00",
+  "generated_utc": "2026-10-02T06:31:24.535507+00:00",
   "n_tickers": 2788,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
@@ -1337,17 +1337,6 @@
       ],
       "weighted_score": 0.55,
       "material_8k_30d": 20,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "CTVA": {
-      "ticker": "CTVA",
-      "channels": [
-        "material_8k"
-      ],
-      "weighted_score": 0.55,
-      "material_8k_30d": 9,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
