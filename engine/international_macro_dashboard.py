@@ -22,6 +22,7 @@ from typing import Any
 import pandas as pd
 import yaml
 
+from engine.country_dossier import build_dossier_block, normalize_dossier
 from lib import config
 
 SCHEMA = "international_macro_dashboard.v1"
@@ -1101,6 +1102,7 @@ def build_country_view(
         "sources": source_rows,
         "caveat_en": spec.caveat_en,
         "caveat_zh": spec.caveat_zh,
+        "dossier": normalize_dossier(build_dossier_block(cc, today=today)),
         "navigation": [
             {
                 "cc": other.cc,
@@ -1137,6 +1139,27 @@ def validate_view(view: dict[str, Any]) -> None:
         raise ValueError("decision score must be an integer in [0, 100]")
     if not view.get("metrics") or not view.get("sources") or not view.get("lenses"):
         raise ValueError("dashboard view is missing required evidence planes")
+    dossier = view.get("dossier")
+    if not isinstance(dossier, dict) or dossier.get("schema") != "country_dossier.v1":
+        raise ValueError("country dossier block missing or wrong schema")
+    if dossier.get("state") == "invalid":
+        # A context-only dossier must never fail the whole country build (its own
+        # module docstring promises "Never raises into the build" — a curator typo
+        # is not a liveness incident). Warn, leave the block untouched, and let
+        # the template's typed-null card print the honest "being re-checked" copy.
+        reason = dossier.get("reason")
+        print(
+            f"::warning title=country-dossier-invalid::{view.get('cc')} {reason}",
+            flush=True,
+        )
+    if dossier.get("state") not in {
+        "ok",
+        "no_coverage",
+        "stale",
+        "rights_suppressed",
+        "invalid",
+    }:
+        raise ValueError("unknown country dossier state")
 
 
 def source_catalog() -> dict[str, list[dict[str, str]]]:
