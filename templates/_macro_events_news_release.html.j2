@@ -128,6 +128,9 @@
   'ar_model':['AR benchmark','AR 基准'],
   'cleveland_nowcast':['Cleveland benchmark','克利夫兰联储基准']
 } %}
+{% set stance_labels = {'hawkish':['Hawkish','鹰派'],'neutral':['Neutral','中性'],'dovish':['Dovish','鸽派']} %}
+{% set guidance_labels = {'easing':['Easing','转向宽松'],'on_hold':['On hold','维持不变'],'tightening':['Tightening','转向收紧'],'neutral':['Neutral','中性'],'hawkish':['Hawkish','偏鹰'],'dovish':['Dovish','偏鸽']} %}
+{% set axis_labels = {'inflation':['Inflation','通胀'],'growth':['Growth','增长']} %}
 {% set ns = namespace(metrics=[],experimental=0,historical=0,benchonly=0) %}
 {% if ev and ev.get('metrics') is sequence and ev.get('metrics') is not string and ev.get('metrics') is not mapping %}
   {% for m in ev.metrics %}
@@ -167,6 +170,47 @@
       <p class="nd-official-missing">{{ bi('Expectation context is unavailable for this release.','此次数据暂无可用的预期背景。') }}</p>
     {% else %}
       <p class="nd-expectation-intro">{{ bi('Use these as separate reference points, not as a market-survey substitute or trading instruction.','这些仅是彼此独立的参考点，不能替代市场机构调查，也不是交易指令。') }}</p>
+      {% set anatomy = ev.get('release_anatomy') if ev and ev.get('release_anatomy') is mapping else none %}
+      {% set quirks = anatomy.get('quirk_flags') if anatomy and anatomy.get('quirk_flags') is sequence and anatomy.get('quirk_flags') is not string and anatomy.get('quirk_flags') is not mapping else [] %}
+      {% set policy = anatomy.get('policy_backdrop') if anatomy and anatomy.get('policy_backdrop') is mapping else {} %}
+      {% if anatomy and (quirks or policy or anatomy.get('policy_reason')) %}
+      <section class="nd-release-anatomy">
+        <div class="nd-anatomy-heading">
+          <div><span class="nd-eyebrow-mini">{{ bi('RELEASE ANATOMY','数据公布解剖') }}</span><h5>{{ bi('What could complicate this print?','哪些因素可能增加本次数据解读难度？') }}</h5></div>
+          <span class="nd-tag nd-tag-neutral">{{ bi('Context only','仅背景') }}</span>
+        </div>
+        <p class="nd-anatomy-intro">{{ bi('Deterministic calendar and policy context from the matched Release Radar record. These conditions do not predict the direction of the result or market reaction.','以下为与本次 Release Radar 记录精确匹配的日历与政策背景。这些条件并不预测数据结果或市场反应方向。') }}</p>
+        {% if anatomy.get('status') == 'partial' %}<p class="nd-evidence-cutoff">{{ bi('Context coverage is partial','背景覆盖不完整') }} · {{ anatomy.get('matched_release_count') }}/{{ anatomy.get('expected_release_count') }} {{ bi('matched measures','项指标匹配') }}</p>{% endif %}
+        {% if quirks %}
+        <div class="nd-quirk-list">
+          {% for q in quirks if q is mapping %}
+          <article class="nd-quirk-card">
+            <span class="nd-quirk-icon" aria-hidden="true">!</span>
+            <div><strong>{{ bi(q.get('en') or q.get('code'), q.get('zh') or q.get('en') or q.get('code')) }}</strong>
+              {% set cu = q.get('cite_url') %}
+              {% if cu is string and cu.startswith('https://') and '\\' not in cu and '\n' not in cu and '\r' not in cu %}<a class="nd-text-link" href="{{ cu }}" target="_blank" rel="noopener noreferrer">{{ bi('Source note','来源说明') }} ↗<span class="nd-sr-only">{{ bi('(opens in a new tab)','（在新标签页打开）') }}</span></a>
+              {% elif q.get('citation') %}<span class="nd-quirk-citation">{{ q.get('citation') }}</span>{% endif %}
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% if policy %}
+        <div class="nd-policy-context">
+          <div class="nd-policy-label"><span class="nd-eyebrow-mini">{{ bi('POLICY BACKDROP','政策背景') }}</span>{% if anatomy.get('regime_axis') in axis_labels %}{% set al = axis_labels.get(anatomy.regime_axis) %}<span>{{ bi('Primary axis','主要轴线') }} · {{ bi(al[0],al[1]) }}</span>{% endif %}</div>
+          <dl>
+            {% if policy.get('fed_stance') in stance_labels %}{% set sl=stance_labels.get(policy.fed_stance) %}<div><dt>{{ bi('Fed stance','美联储立场') }}</dt><dd>{{ bi(sl[0],sl[1]) }}</dd></div>{% endif %}
+            {% if policy.get('gap_bp') is number %}<div><dt>{{ bi('Market vs dots','市场 vs 点阵') }}</dt><dd>{{ '%+.0f'|format(policy.gap_bp) }} bp</dd></div>{% endif %}
+            {% if policy.get('implied_cuts_12m') is number %}<div><dt>{{ bi('Implied cuts · 12m','隐含降息 · 12个月') }}</dt><dd>{{ '%.1f'|format(policy.implied_cuts_12m) }}</dd></div>{% endif %}
+            {% if policy.get('next_fomc') %}<div><dt>{{ bi('Next FOMC','下次 FOMC') }}</dt><dd>{{ policy.next_fomc }}</dd></div>{% endif %}
+            {% if policy.get('guidance_direction') in guidance_labels %}{% set gl=guidance_labels.get(policy.guidance_direction) %}<div><dt>{{ bi('Guidance','指引方向') }}</dt><dd>{{ bi(gl[0],gl[1]) }}</dd></div>{% endif %}
+          </dl>
+        </div>
+        {% elif anatomy.get('policy_reason') == 'cross_metric_mismatch' %}
+        <p class="nd-official-missing">{{ bi('Policy backdrop is withheld because the matched release measures disagree.','匹配到的指标在政策背景上存在不一致，因此暂不展示该部分。') }}</p>
+        {% endif %}
+      </section>
+      {% endif %}
       <div class="nd-expectation-metrics">
       {% for m in ns.metrics %}
         {% set label = labels.get(m.get('metric_id'), ['Release measure','数据指标']) %}
