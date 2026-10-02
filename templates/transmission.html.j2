@@ -712,7 +712,9 @@ html[data-theme="light"] .cm-cos-list{background:transparent}
     {# widest single named channel = the headline blast; per-channel detail in the ? tip #}
     {% set wide_ch = namespace(flag=none, label=none, n=-1, un=0) %}
     {% for flag, chan in ch.blast.items() %}{% if (chan.n or 0) > wide_ch.n %}{% set wide_ch.flag = flag %}{% set wide_ch.label = chan.label %}{% set wide_ch.n = chan.n or 0 %}{% set wide_ch.un = chan.unevaluable or 0 %}{% endif %}{% endfor %}
-    <div class="cm-row" style="--accent:{{ '#e07a2f' if st=='propagating' else ('var(--red)' if st=='expressed' else 'var(--amber)') }}">
+    {# chain landing anchor — the `transmission` return target in the A/B context contract
+       (mastermind.market-ontology-context/v1): `#tx-chain-<mo_chain>`, chain id verbatim #}
+    <div class="cm-row" id="tx-chain-{{ ch.id }}" style="--accent:{{ '#e07a2f' if st=='propagating' else ('var(--red)' if st=='expressed' else 'var(--amber)') }}">
       <span class="cm-dot {{ st }} live" aria-hidden="true"></span>
       <div class="cm-main">
         <div class="cm-name">{{ b(ch.label) }}</div>

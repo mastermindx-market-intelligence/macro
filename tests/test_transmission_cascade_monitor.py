@@ -363,3 +363,21 @@ def test_cos_aliases_none_renders_unavailable_state_with_zero_company_anchors():
         assert "今晚无法提供公司链接" in b
         assert "company links unavailable tonight" in b
         assert not _re.search(r"<a\b[^>]*href=", b), b[:240]
+
+
+def test_monitor_rows_carry_the_chain_landing_anchor():
+    """Every Cascade Monitor row is the landing target of the A/B context contract's
+    `transmission` return link (`#tx-chain-<mo_chain>`, chain id verbatim) — the id the
+    continuation publisher emits as `mo_chain` is the same `id` the row renders, so a
+    Terminal return lands on the chain it left from. One anchor per armed chain, none
+    elsewhere in the segment, and the id is never case-folded or re-punctuated."""
+    import re
+    subset = _subset()
+    seg = _monitor_segment(_render(subset))
+    armed = [c for c in subset["chains"] if c["state"] in ("arming", "propagating", "expressed")]
+    assert armed, "fixture must carry at least one armed chain"
+    anchors = re.findall(r'<div class="cm-row" id="tx-chain-([^"]+)"', seg)
+    assert sorted(anchors) == sorted(c["id"] for c in armed), (anchors, [c["id"] for c in armed])
+    assert seg.count('id="tx-chain-') == len(armed)
+    for c in armed:
+        assert f'id="tx-chain-{c["id"]}"' in seg
