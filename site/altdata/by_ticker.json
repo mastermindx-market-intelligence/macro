@@ -1,7 +1,7 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-10-02",
-  "generated_utc": "2026-10-02T11:33:55.774624+00:00",
+  "generated_utc": "2026-10-02T17:07:21.184560+00:00",
   "n_tickers": 2795,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
@@ -2445,15 +2445,17 @@
     "TXN": {
       "ticker": "TXN",
       "channels": [
+        "analyst_upgrade_cluster",
         "patent_cluster"
       ],
-      "weighted_score": 0.4,
+      "weighted_score": 0.75,
       "patents": 271,
+      "analyst_bull_ratio": 1.0,
       "days_to_earnings": 18,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 12.0,
       "congress_position_usd": 135407000.0,
-      "convergence_score": 1,
+      "convergence_score": 2,
       "trump_linked": false,
       "affiliated": false
     },
@@ -2953,18 +2955,6 @@
       ],
       "weighted_score": 0.35,
       "analyst_bull_ratio": 0.83,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "VEEV": {
-      "ticker": "VEEV",
-      "channels": [
-        "analyst_upgrade_cluster"
-      ],
-      "weighted_score": 0.35,
-      "analyst_bull_ratio": 1.0,
-      "congress_position_usd": 78002000.0,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -4717,6 +4707,15 @@
       "weighted_score": 0.2,
       "congress_position_usd": 79120000.0,
       "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "VEEV": {
+      "ticker": "VEEV",
+      "channels": [],
+      "weighted_score": 0,
+      "congress_position_usd": 78002000.0,
+      "convergence_score": 0,
       "trump_linked": false,
       "affiliated": false
     },

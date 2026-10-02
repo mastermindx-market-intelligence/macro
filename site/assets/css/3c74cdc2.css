@@ -26,7 +26,6 @@ html[data-theme="light"] .panel{box-shadow:var(--card-shadow)}
 #sm-hatch line{stroke:var(--muted);stroke-width:.6;stroke-opacity:.30}
 .sm-map[data-hi] .wm-c[data-iso3]{fill-opacity:.14}
 .sm-map[data-hi] .wm-c.is-hi{fill-opacity:.85;stroke:var(--ink-link);stroke-width:1}
-.wm-c[data-news="1"],
 .sm-map[data-news-gbr="1"] .wm-c[data-iso3="GBR"]{stroke:var(--ink-link);stroke-width:1.2}
 
 html[data-theme="light"] .wm-c{fill:color-mix(in srgb, var(--text) 6%, var(--panel));
@@ -40,7 +39,6 @@ html[data-theme="light"] .sm-map{border:1px solid var(--line);
   border-radius:var(--r-card,12px);box-shadow:var(--card-shadow)}
 html[data-theme="light"] .sm-map[data-hi] .wm-c.is-hi{fill-opacity:.52;
   stroke:var(--ink-link);stroke-width:1.5;filter:none}
-html[data-theme="light"] .wm-c[data-news="1"],
 html[data-theme="light"] .sm-map[data-news-gbr="1"] .wm-c[data-iso3="GBR"]{stroke:var(--ink-link);stroke-width:1.5}
 
 .sm-legend{display:flex;flex-wrap:wrap;gap:14px;list-style:none;padding:0;
@@ -85,3 +83,4 @@ html[data-theme="light"] .sm-legend [data-rung="x"] i{opacity:.45}
   .sm-legend{gap:10px;font-size:var(--fs-micro)}
   .sm-cards{grid-template-columns:1fr}
 }
+@media (max-width:600px){.sm-map[data-news-gbr="1"] .wm-c[data-iso3="GBR"]{stroke-width:1.8} html[data-theme="light"] .sm-map[data-news-gbr="1"] .wm-c[data-iso3="GBR"]{stroke-width:2}}
