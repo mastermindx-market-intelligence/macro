@@ -399,3 +399,30 @@ def test_payroll_market_implied_raw_count_is_withheld_without_explicit_unit_cont
     assert metric["benchmarks"]["naive_prior"] == 217.0
     assert "market_implied" not in metric["benchmarks"]
     assert metric["market_implied_status"] == "unit_basis_unqualified"
+
+
+def test_missing_model_point_can_still_surface_same-unit_reference_benchmarks():
+    payload = forecast_payload()
+    payload["upcoming"] = [{
+        "release": "nfp",
+        "release_type": "nfp",
+        "period": "2026-09",
+        "release_date": "2026-10-02",
+        "projection": {"point": None},
+        "benchmark_set": {
+            "naive_prior": 217.0,
+            "trailing_3m": 122.0,
+            "market_implied": {"source": "kalshi", "implied_median": 97000.0, "asof": "2026-10-01"},
+        },
+        "model_epoch": "champion_legacy_target_v1",
+        "target_epoch": "legacy_cross_vintage_initial_levels_v0",
+        "cutoff_label": "T-1",
+    }]
+    event = {"type": "NFP", "date": "2026-10-02", "reference_period": "2026-09"}
+    out = view.event_expectation_context(event, payload, as_of=ASOF)
+    metric = out["metrics"][0]
+    assert out["status"] == "available"
+    assert metric["status"] == "benchmark_context"
+    assert metric["point"] is None
+    assert metric["benchmarks"] == {"naive_prior": 217.0, "trailing_3m": 122.0}
+    assert metric["market_implied_status"] == "unit_basis_unqualified"
