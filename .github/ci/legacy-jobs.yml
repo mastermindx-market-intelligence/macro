@@ -6787,6 +6787,8 @@ jobs:
       - "site/index.html"
       - "site/leader_radar.html"
       - "site/macro.html"
+      - "site/macro-events-news.css"
+      - "site/macro-events-news.js"
       - "site/measurementdata/measurement_data.js"
       - "site/news.html"
       - "site/prophet/showcase.json"
@@ -14138,6 +14140,19 @@ jobs:
       - "tests/test_cn_track_ledger_eras.py"
       - "tests/test_confluence_veto_leg_telemetry.py"
       - "tests/test_dashboard_template_render.py"
+      # Events & News R2 component: isolated rendering/data suites plus its optional
+      # controlled-browser proof. Browser collection skips when Playwright is absent;
+      # the code-gate owner still names the suite so it can never become an unrun test.
+      - "tests/test_macro_events_news_r2.py"
+      - "tests/test_events_news_release_evidence.py"
+      - "tests/test_events_news_release_render.py"
+      - "tests/test_events_news_release_expectations.py"
+      - "tests/test_events_news_release_expectations_render.py"
+      - "tests/test_events_news_release_browser.py"
+      - "tests/events_news_release_fixture.py"
+      - "tests/events_news_release_browser_support.py"
+      - "tests/fixtures/events_news_official_receipts.json"
+      - "tests/fixtures/events_news_actual_defects.json"
       - "tests/test_macro_sector_desk.py"
       # us_stocks S2 compression (W7-A 7056 heal): tests/test_us_stocks_s2_compression.py
       # renders the same dashboard.html.j2 template (mode=stocks) and imports engine.i18n,
@@ -17389,6 +17404,10 @@ jobs:
       - "tests/test_us_board_priority_ui.py"
       # Templates the renders load by name.
       - "templates/_macro_sector_desk.html.j2"
+      - "templates/_macro_events_news.html.j2"
+      - "templates/_macro_events_news_release.html.j2"
+      - "templates/macro-events-news.css"
+      - "templates/macro-events-news.js"
       - "templates/dashboard.html.j2"
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
@@ -17513,6 +17532,12 @@ jobs:
         run: >-
           python -m pytest
           tests/test_dashboard_template_render.py
+          tests/test_macro_events_news_r2.py
+          tests/test_events_news_release_evidence.py
+          tests/test_events_news_release_render.py
+          tests/test_events_news_release_expectations.py
+          tests/test_events_news_release_expectations_render.py
+          tests/test_events_news_release_browser.py
           tests/test_macro_sector_desk.py
           tests/test_macro_risk_dialog.py
           tests/test_risk_envelope_radar_integration.py
