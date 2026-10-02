@@ -394,15 +394,12 @@ MARKET_BOARDS: tuple[dict, ...] = (
     {
         "market": "intl",
         "label": "International",
-        # NOTE: this board's ``as_of`` is None on every commit in main's history —
-        # compute_intl_alpha carries no as_of on any return path (documented at
-        # scripts/build_intl_library.py, adversarial review D1, PR #5674), so the
-        # stamp never reaches the artifact.  D therefore reports International as
-        # INDETERMINATE every run and says why, rather than inventing a verdict.
-        # tests/test_nightly_liveness.py pins that as a KNOWN blind spot so the day
-        # the builder starts stamping, the test is what tells us to expect a grade.
+        # build_intl_library stamps this board from its session anchor
+        # (alpha as_of -> max built-record asof -> wall-clock only as a last-resort).
+        # International spans disjoint exchange calendars, so the weekday-union
+        # approximation and its +2 tolerance remain the honest freshness ceiling.
         "path": "site/factordata/intl_setups.json",
-        "stamp_known_absent": True,
+        "stamp_known_absent": False,
         "field": "as_of",
         "calendar": "weekday",
         "max_sessions_behind": 3,   # 1 + the +2 weekday-approximation tolerance
