@@ -176,3 +176,27 @@ def test_payroll_benchmark_units_are_readable_and_unqualified_market_count_is_hi
     assert "122k" in text
     assert "97000" not in text
     assert "unit basis" in text
+
+
+def test_benchmark_only_context_remains_useful_when_model_point_is_absent():
+    payload = forecast_payload()
+    payload["upcoming"] = [{
+        "release": "nfp",
+        "release_type": "nfp",
+        "period": "2026-09",
+        "release_date": "2026-10-02",
+        "projection": {"point": None},
+        "benchmark_set": {"naive_prior": 217.0, "trailing_3m": 122.0},
+        "model_epoch": "champion_legacy_target_v1",
+        "target_epoch": "legacy_cross_vintage_initial_levels_v0",
+        "cutoff_label": "T-1",
+    }]
+    event = {"type": "NFP", "date": "2026-10-02", "reference_period": "2026-09"}
+    event["expectation_context"] = view.event_expectation_context(event, payload, as_of=ASOF)
+    s = soup_for(event)
+    panel = s.select_one(".nd-expectation-context")
+    text = panel.get_text(" ", strip=True)
+    assert "Benchmarks only" in text
+    assert "No model point is presented" in text
+    assert "217k" in text and "122k" in text
+    assert not panel.select(".nd-model-value")
