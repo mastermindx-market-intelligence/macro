@@ -133,3 +133,17 @@ def test_expectation_styles_and_behavior_are_mirrored_to_site_assets():
     assert template_js == site_js
     assert "data-nd-deep" in template_js
     assert ".nd-expectation-context" in template_css
+
+
+def test_stale_forecast_context_explains_withholding_and_hides_numbers():
+    payload = forecast_payload()
+    payload["asof"] = "2026-09-28T20:21:25Z"
+    event = cpi_event()
+    event["expectation_context"] = view.event_expectation_context(
+        event, payload, as_of=ASOF)
+    s = soup_for(event)
+    panel = s.select_one(".nd-expectation-context")
+    text = panel.get_text(" ", strip=True)
+    assert "Release Radar context is stale" in text
+    assert not panel.select(".nd-model-value")
+    assert "0.48%" not in text
