@@ -161,8 +161,13 @@ def _replay(records: list[tuple[date, float]], is_session: Callable[[date], bool
                 if (pending["streak"] >= RULES.onset_closes
                         or below + 1e-12 >= RULES.shock_drawdown):
                     low_i = min(range(ref_i, i + 1), key=lambda j: prices[j])
+                    # If the first pending close was the trough and
+                    # today's second close confirms while rebounding, today is
+                    # already one observed session without a new low. Pending
+                    # confirmation cannot span a missing expected session, so
+                    # i-low_i is the exact contiguous count since that trough.
                     episode = {"peak_index": ref_i, "start_index": i,
-                               "low_index": low_i, "no_new_low_closes": 0,
+                               "low_index": low_i, "no_new_low_closes": i - low_i,
                                "reclaim_streak": 0, "phase": "underway",
                                "transitions": [(i, "underway")]}
                     pending = None

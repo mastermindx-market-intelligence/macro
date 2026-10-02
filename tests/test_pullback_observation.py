@@ -82,6 +82,18 @@ def test_first_bounce_is_not_recovery_or_a_probability():
     assert read["drawdown_pct"] == -8.0
 
 
+def test_confirmation_rebound_counts_as_first_session_without_new_low():
+    rows = rows_for([97.0, 98.0, 99.0, 99.2])
+    confirmed = result(rows[:-2])
+    assert confirmed["phase"] == "underway"
+    assert confirmed["low_session"] == rows[-4][0]
+    assert confirmed["onset_session"] == rows[-3][0]
+    assert confirmed["no_new_low_closes"] == 1
+    stable = result(rows)
+    assert stable["no_new_low_closes"] == 3
+    assert stable["phase"] == "stabilizing"
+
+
 def test_stabilization_then_failed_repair_keeps_the_same_reference():
     rows = rows_for([95.0, 90.0, 91.0, 92.0, 93.0])
     stable = result(rows)
