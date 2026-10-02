@@ -17543,17 +17543,15 @@ jobs:
     paths:
       # The eight suites the step runs, plus helper suites they import.
       - "tests/test_dashboard_template_render.py"
-      # Events & News R2: source/render contracts plus controlled-browser proof.
-      # Browser collection import-skips when Playwright is absent in this standing
-      # job, but the suite and its helpers remain explicitly owned here.
+      # Events & News R2: deterministic source/render contracts. The optional
+      # Playwright geometry suite remains outside this exclusive static-closure
+      # job; see its explicit unrun waiver and local Chromium evidence.
       - "tests/test_macro_events_news_r2.py"
       - "tests/test_events_news_release_evidence.py"
       - "tests/test_events_news_release_render.py"
       - "tests/test_events_news_release_expectations.py"
       - "tests/test_events_news_release_expectations_render.py"
-      - "tests/test_events_news_release_browser.py"
       - "tests/events_news_release_fixture.py"
-      - "tests/events_news_release_browser_support.py"
       - "tests/fixtures/events_news_official_receipts.json"
       - "tests/fixtures/events_news_actual_defects.json"
       # #7798: source-dated Hottest Desk leadership/recommendation contract.
@@ -17707,7 +17705,6 @@ jobs:
           tests/test_events_news_release_render.py
           tests/test_events_news_release_expectations.py
           tests/test_events_news_release_expectations_render.py
-          tests/test_events_news_release_browser.py
           tests/test_macro_sector_desk.py
           tests/test_macro_risk_dialog.py
           tests/test_risk_envelope_radar_integration.py
