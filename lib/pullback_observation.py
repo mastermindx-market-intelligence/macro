@@ -191,10 +191,14 @@ def _replay(records: list[tuple[date, float]], is_session: Callable[[date], bool
             resolution = None
             if episode["reclaim_streak"] >= RULES.reclaim_closes:
                 resolution = "prior_high_reclaimed"
-            elif (contiguous >= 40 and rising20
+            # A rising 20-close average versus five sessions ago needs
+            # 25 contiguous observations after any gap. "New 20-close high"
+            # means today's close exceeds the preceding 19 closes; comparing
+            # against 20 prior closes would silently require a 21-close high.
+            elif (contiguous >= 25 and rising20
                   and above20 >= RULES.trend_repair_above_ma_closes
                   and episode["no_new_low_closes"] >= RULES.trend_repair_no_low_closes
-                  and price > max(prices[i - 20:i])):
+                  and price > max(prices[i - 19:i])):
                 resolution = "trend_repaired_below_prior_high"
             if resolution:
                 phase = "repaired"

@@ -142,6 +142,37 @@ def test_trend_repair_rearms_without_a_fake_new_pullback():
     assert reads[-1]["recent_63_drawdown_pct"] < 0
 
 
+def test_trend_repair_new_20_close_high_excludes_the_21st_close():
+    # The old 95 spike is exactly 20 closes before the latest row. It is
+    # outside a trailing 20-close high but inside an accidental 21-close high.
+    # All other trend-repair conditions are already satisfied.
+    tail = [95.0, 80.0] + [80.0] * 28
+    tail += [95.0] + [90.0 + i * (4.0 / 19.0) for i in range(20)]
+    read = result(rows_for(tail))
+    assert read["phase"] == "repaired"
+    assert read["active"] is False
+    assert read["resolution"] == "trend_repaired_below_prior_high"
+    assert read["close"] == 94.0
+    assert read["peak_close"] == 100.0  # trend repair is below the old high
+
+
+def test_trend_repair_accepts_25_contiguous_closes_after_a_gap():
+    # The rising-20-vs-five-sessions-ago comparison needs 25 contiguous
+    # observations. Forty was an undocumented extra delay and is not needed.
+    rows = rows_for([95.0, 80.0] + [80.0] * 30)
+    skipped = next_session(date.fromisoformat(rows[-1][0]))
+    day = next_session(skipped)
+    for i in range(25):
+        rows.append((day.isoformat(), 81.0 + i * 0.5))
+        day = next_session(day)
+    read = result(rows)
+    assert read["contiguous_closes"] == 25
+    assert read["no_new_low_closes"] >= 21
+    assert read["phase"] == "repaired"
+    assert read["active"] is False
+    assert read["resolution"] == "trend_repaired_below_prior_high"
+
+
 @pytest.mark.parametrize("value", [None, True, 0.0, -1.0, float("nan"), float("inf"), "100"])
 def test_invalid_closes_never_become_zero_or_calm(value):
     read = result(rows_for([value]))
