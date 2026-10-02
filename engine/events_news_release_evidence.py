@@ -356,7 +356,7 @@ def _expectation_reference_binding(event: Mapping[str, Any]) -> dict[str, Any]:
     return {name: event.get(name) for name in official._EXPLICIT_REFERENCE_FIELDS}
 
 
-def _clean_benchmark_set(value: Any) -> dict[str, Any]:
+def _clean_benchmark_set(value: Any, unit: str) -> dict[str, Any]:
     """Return only owner-defined display benchmarks; never relabel them as survey data."""
     if not isinstance(value, Mapping):
         return {}
@@ -376,7 +376,10 @@ def _clean_benchmark_set(value: Any) -> dict[str, Any]:
             item["asof"] = asof
         if _finite_number(median):
             item["implied_median"] = median
-        if item.get("source") and "implied_median" in item:
+        # CPI-family implied medians share the percent target basis. Payroll
+        # market ladders currently arrive as raw job counts while the model
+        # target is thousands and carry no explicit unit contract. Fail closed.
+        if item.get("source") and "implied_median" in item and unit == "percent":
             out["market_implied"] = item
     return out
 
@@ -483,7 +486,15 @@ def _future_expectation_metric(
     result.update(point)
     result.update({
         "period": period,
-        "benchmarks": _clean_benchmark_set(row.get("benchmark_set")),
+        "benchmarks": _clean_benchmark_set(row.get("benchmark_set"), unit),
+        "market_implied_status": (
+            "unit_basis_unqualified"
+            if unit == "thousands"
+            and isinstance(row.get("benchmark_set"), Mapping)
+            and isinstance(row.get("benchmark_set", {}).get("market_implied"), Mapping)
+            and _finite_number(row.get("benchmark_set", {}).get("market_implied", {}).get("implied_median"))
+            else None
+        ),
         "model_epoch": row.get("model_epoch") if isinstance(row.get("model_epoch"), str) else None,
         "target_epoch": row.get("target_epoch") if isinstance(row.get("target_epoch"), str) else None,
         "cutoff_label": row.get("cutoff_label") if isinstance(row.get("cutoff_label"), str) else None,
