@@ -13,8 +13,8 @@ from pathlib import Path
 import sys
 from typing import Any
 
-if __package__ in {None, ""}:
-    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 from engine.provider_codex_reset_economics import (
     AccountObservation, BankedReset, PreviewPolicy, ResetEconomicsError,
