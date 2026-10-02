@@ -152,6 +152,8 @@
     </div>
     {% if not ev %}
       <p class="nd-official-missing">{{ bi('The expectation context does not match this event or snapshot. No benchmark is shown.','预期背景与此事件或快照不匹配，暂不显示基准。') }}</p>
+    {% elif ev.get('reason') == 'forecast_stale' %}
+      <p class="nd-official-missing">{{ bi('Release Radar context is stale. Model and benchmark values are withheld until a fresh build is available.','Release Radar 背景数据已过期。在获得新的构建结果前，模型和基准数值暂不展示。') }}</p>
     {% elif ev.get('reason') %}
       <p class="nd-official-missing">{{ bi('Expectation context is unavailable for this release.','此次数据暂无可用的预期背景。') }}</p>
     {% else %}
