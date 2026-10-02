@@ -25,6 +25,10 @@ INTEGRATION_BASE_SHA = "5332d876e75837c158c6f42a2862734451bb7158"
 # 2026-10-02 wave 3 (same writer, D17 as F03 owner): MO-PAID-073 PARTIAL->PROVEN_LIVE (freshness = designed T+1 cadence);
 # MO-PAID-077/008 carry served receipts (states unchanged); MO-PAID-006 child text corrected. All four are union rows,
 # so the outside-union digest is unchanged.
+# 2026-10-02 wave 5 (same writer, D21 as F01 owner): MO-PAID-001 BUILT_NOT_PROVEN->PROVEN_LIVE (render 36998130756 + served
+# us_stocks.html == main with id=regime-read); MO-PAID-008 RETRACTS the 07:5xZ 'no pin layer' receipt (layer live since #7377, D26),
+# MO-DELTA-009 (#6958 closed), MO-PAID-011 (natural run observed), MO-PAID-023 (#8267 merged) MO-PAID-006 (plane merged #8276) restamped, states
+# unchanged. All are union rows, so the outside-union digest is unchanged.
 OUTSIDE_UNION_SHA256 = "cb9c1bf581b30bbb75e9fa3fd1f7f953d01f313dff98601dddc45e37ba43ef3c"
 CAPABILITY_STATES = {"NOT_BUILT", "SPEC_ONLY", "PARTIAL", "BUILT_NOT_PROVEN", "PROVEN_LIVE"}
 
@@ -126,8 +130,8 @@ EXPECTED = {
   ],
   "MO-PAID-001": [
     "UPGRADE_EXISTING_OWNER",
-    "BUILT_NOT_PROVEN"
-  ],
+    "PROVEN_LIVE"
+  ],  # D21 2026-10-02: BUILT_NOT_PROVEN->PROVEN_LIVE (render + served proof)
   "MO-PAID-002": [
     "UPGRADE_EXISTING_OWNER",
     "PARTIAL"
