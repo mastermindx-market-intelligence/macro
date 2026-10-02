@@ -171,8 +171,31 @@ def test_r2_partial_malformed_data_is_disclosed():
     assert not d.select_one('.nd-data-caveat').has_attr('hidden')
 
 def test_r2_multiple_clocks_and_identity_escaped_without_imputation():
-    h={'title':'Story','pub_date':'2026-09-28','seendate':'2026-09-29T01:00:00Z','first_seen_utc':'2026-09-28T15:00:00Z','event_id':'<svg onload=alert(1)>'}
+    h={'title':'Story','url':'https://example.com/story','source_name':'Reuters',
+       'pub_date':'2026-09-28','seendate':'2026-09-29T01:00:00Z',
+       'first_seen_utc':'2026-09-28T15:00:00Z','event_id':'<svg onload=alert(1)>'}
     d=dom(macro_news={'headlines':[h]});r=d.select_one('.nd-story')
     assert r['data-nd-published']==h['pub_date'] and r['data-nd-seen']==h['seendate']
     assert r['data-nd-first-seen']==h['first_seen_utc']
+    trail=r.select_one('.nd-story-source-trail')
+    assert trail and not trail.has_attr('open')
+    text=trail.get_text(' ',strip=True)
+    assert 'Publisher' in text and 'Reuters' in text
+    assert 'Published · source clock' in text
+    assert 'Seen · source clock' in text
+    assert 'First seen · ledger clock' in text
+    assert 'Correction lineage' in text and 'Not supplied to this component' in text
+    assert 'does not mean the source has never changed' in text
+    source_link=trail.select_one('a[href]')
+    assert source_link['href']=='https://example.com/story'
+    assert source_link['target']=='_blank'
+    assert set(source_link['rel'])=={'noopener','noreferrer'}
     assert not d.select('svg[onload]')
+
+
+def test_r2_story_source_trail_does_not_impute_missing_clocks():
+    d=dom(macro_news={'headlines':[{'title':'Story','source_name':'Reuters'}]})
+    trail=d.select_one('.nd-story-source-trail')
+    text=trail.get_text(' ',strip=True)
+    assert text.count('Not supplied') >= 4
+    assert 'Correction lineage' in text
