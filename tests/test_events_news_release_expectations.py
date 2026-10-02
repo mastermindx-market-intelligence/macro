@@ -450,3 +450,46 @@ def test_missing_frozen_model_date_is_not_treated_as_ex_ante():
     out = view.event_expectation_context(
         pce_event(), payload, as_of=ASOF, official_evidence=official_pce())
     assert out["metrics"][0]["reason"] == "frozen_cutoff_invalid"
+
+
+def test_composer_keeps_future_expectations_when_official_source_is_unavailable():
+    event = cpi_event()
+    before = deepcopy(event)
+    out = view.compose_event_intelligence(
+        [event], None, forecast_payload(), as_of=ASOF)
+    assert event == before
+    assert out[0]["official_evidence"]["reason"] == "source_unavailable"
+    assert out[0]["expectation_context"]["status"] == "available"
+
+
+def test_composer_binds_historical_model_row_to_exact_projected_receipt(policy):
+    actuals = receipts(policy)
+    payload = forecast_payload()
+    payload["upcoming"] = []
+    scored = scored_pce(True)
+    for scored_row, actual_row in zip(scored, actuals):
+        scored_row["actual_receipt_id"] = actual_row["receipt_id"]
+        scored_row["actual"] = actual_row["actual"]
+        scored_row["period"] = actual_row["period"]
+    payload["last_scored_all_forward"] = scored
+    event = dict(EVENT)
+    out = view.compose_event_intelligence(
+        [event], actuals, payload, as_of=ASOF, defects_path=policy)
+    assert out[0]["official_evidence"]["status"] == "available"
+    context = out[0]["expectation_context"]
+    assert context["status"] == "available"
+    assert all(m["status"] == "historical_model_comparison" for m in context["metrics"])
+    assert [m["difference"] for m in context["metrics"]] == pytest.approx([-0.01, -0.03])
+
+
+def test_composer_preserves_official_result_when_forecast_source_is_unavailable(policy):
+    actuals = receipts(policy)
+    out = view.compose_event_intelligence(
+        [dict(EVENT)], actuals, None, as_of=ASOF, defects_path=policy)
+    assert out[0]["official_evidence"]["status"] == "available"
+    assert out[0]["expectation_context"]["reason"] == "forecast_source_unavailable"
+
+
+def test_composer_preserves_absent_event_source_as_absent():
+    assert view.compose_event_intelligence(
+        None, [], forecast_payload(), as_of=ASOF) is None
