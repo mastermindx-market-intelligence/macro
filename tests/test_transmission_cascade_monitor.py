@@ -376,7 +376,7 @@ def test_monitor_rows_carry_the_chain_landing_anchor():
     seg = _monitor_segment(_render(subset))
     armed = [c for c in subset["chains"] if c["state"] in ("arming", "propagating", "expressed")]
     assert armed, "fixture must carry at least one armed chain"
-    anchors = re.findall(r'<div class="cm-row" id="tx-chain-([^"]+)"', seg)
+    anchors = re.findall(r'<div class="cm-main" id="tx-chain-([^"]+)"', seg)
     assert sorted(anchors) == sorted(c["id"] for c in armed), (anchors, [c["id"] for c in armed])
     assert seg.count('id="tx-chain-') == len(armed)
     for c in armed:
