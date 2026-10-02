@@ -1612,6 +1612,8 @@ jobs:
       - "lib/ai_costs.py"
       - "lib/closes_panel.py"
       - "lib/cn_calendar.py"
+      - "lib/china_pullback_view.py"
+      - "lib/pullback_observation.py"
       - "lib/delisted_symbols.py"
       - "lib/filing_value_units.py"
       - "lib/forex_link.py"
