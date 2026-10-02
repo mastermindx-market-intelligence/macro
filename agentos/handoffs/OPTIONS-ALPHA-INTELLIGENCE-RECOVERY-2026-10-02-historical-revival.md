@@ -13,27 +13,30 @@ changed:
   - path: research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md
     what: "Define existing owners, study-freeze requirements and finite empirical acceptance."
 verified:
+  - claim: "Episode-only exploratory results are reproducible; historical alpha is not established."
+    command: "python reports/artifacts/options_historical_signal_science_20261002_reproduce.py --repo /path/to/macro --protocol reports/artifacts/options_historical_signal_science_20261002_protocol.json"
+    result: "9641 episodes, 7843 H+60 and 30327 session outcomes passed full stored-evidence validators. All 36 result cells independently reproduced to 1e-14; all target-aligned-true cells are empty. No campaign or M1 archive read, original price-source replay, model fit or option PnL."
   - claim: "#7401 method records landed without semantic changes."
     command: "git fetch origin main; git rev-parse origin/main:research/options_estate/OPTIONS_ALPHA_FLOW_SCORE_EVALUATION_AMENDMENT_2026-09-19.md origin/main:agentos/decisions/DEC-OPTIONS-ALPHA-FS-EVALUATION-CONTRACT.md"
     result: "Merged dc4fd0766709188cba8d16a9fc16479c0e9c110f; blobs 1ce62fc8407f7fb39ad6fb5b8899d6d5d309d5e2 and b2d5210b2d5193e8b63908eddaea6bfc66fcbe79 match the independent review."
   - claim: "The existing M2 fabric is accessible independently of the unfinished Executive app ingress."
     command: "M2 /Users/chriswong/.local/bin/pool status; native remote_lane_v8.sh mini2 options_science_20261002_method_fix"
-    result: "Broker mastermind.provider_capacity.v1 observed. First child attempt refused capacity (rc78, no source effects); reconciled terminal before retry. Retry assigned isolated mini2 workspace and began MiniMax-M3 execution."
+    result: "Broker mastermind.provider_capacity.v1 observed. First child attempt refused capacity (rc78, no source effects); reconciled terminal before retry. Retry completed MiniMax-M3 execution and produced #8268. GLM follow-ups failed before source work because local proxy health was unavailable; clean source/no live worker state was reconciled before MiniMax retries."
   - claim: "Source records and compiled DNR synchronization validate."
     command: "python3 scripts/agentos.py validate; python3 scripts/check_blocklist_drift.py; git diff --check"
-    result: "1431 records; 0 errors, 117 advisory warnings. Blocklist drift OK; whitespace check clean."
+    result: "1432 records; 0 errors, 117 advisory warnings. Blocklist drift OK; whitespace check clean."
 unverified:
   - claim: "The empirical mission is complete."
     what_would_verify: "Actual supported historical datasets, frozen studies, reproducible empirical results and independent review."
   - claim: "The method worker's code is accepted."
     what_would_verify: "Read back its exact pushed head, inspect diff/tests, independently review and pass release checks."
 decisions: ["DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY"]
-discoveries: []
-prs: [7401, 7395]
+discoveries: ["DSC:OPTIONS-EPISODE-PROXY-COVERAGE-20261002"]
+prs: [7401, 7395, 8266, 8268]
 unresolved:
   - "M1 Theta archive connector path was explicitly denied; exact-path access permission requested, not bypassed."
-  - "#7395 was refreshed normally from reviewed 8357c8b to 1c5f2927d9372ca97da219023e27ca022a16f641; method blobs unchanged, fresh CI still owed."
-  - "Full FS trainer contract repairs, retained PIT coverage and actual historical studies remain."
+  - "#7395 at c668082eaae9dfd2a9f79af5d5f440aad92f12ec corrects only the prose-policy key after its normal base refresh. Independent root review passed; binding CI/merge remains to be observed."
+  - "Full FS trainer contract repairs, retained PIT coverage and OOS historical studies remain. The completed proxy description is not historical validation."
 next_actions:
   - "Review/finish method child options_science_20261002_method_fix through the existing native M2 fabric; reconcile same identity before retry."
   - "Finish this source package and #7395 through normal checks/review/merge."

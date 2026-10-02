@@ -121,6 +121,10 @@ waves:
       Apply DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY: complete fit-free source/PIT
       coverage and method repairs, freeze individual studies before outcome access,
       then report actual supported historical findings and unsupported cells.
+      The pinned episode-only descriptive study is complete: 36 cells reproduced, all
+      observed labels are proxies and no aligned-true cell exists. See the 2026-10-02
+      report and DSC:OPTIONS-EPISODE-PROXY-COVERAGE-20261002. Broader validation still
+      needs archive access, known-at/aligned labels and a frozen OOS study.
       Reuse the existing Options owners; no production or promotion authority.
   - id: OA-3
     title: Exact-option NBBO lifecycle and outcome contract under existing owners
@@ -150,6 +154,7 @@ decisions:
   - "DEC:OPTIONS-ALPHA-CAMPAIGN-CALIBRATION-ARCHITECTURE"
   - "DEC:AD-OPTIONS-CANONICAL-SOURCE-THETADATA"
 discoveries:
+  - "DSC:OPTIONS-EPISODE-PROXY-COVERAGE-20261002"
   - "DSC:OPTIONS-ALPHA-DEAD-UI-MASKS-LIVE-EVIDENCE-ESTATE"
 landmines:
   - >
@@ -191,6 +196,9 @@ do_not_redo:
   - "Deleting, truncating, restamping or regenerating the Sep-03 campaign-outcome incident as clean history; #7398 freezes quarantine-not-rewrite semantics."
   - "Collapsing Workbench scenario context, Alpha research candidates and Tactical setup timing into one Options confidence/super-score."
 artifacts:
+  - reports/artifacts/options_historical_signal_science_20261002.md
+  - reports/artifacts/options_historical_signal_science_20261002.json
+  - reports/artifacts/options_historical_signal_science_20261002_protocol.json
   - agentos/decisions/DEC-OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY.md
   - research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md
   - docs/superpowers/specs/2026-08-27-options-alpha-intelligence-recovery-design.md
