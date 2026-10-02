@@ -94,12 +94,9 @@ KNOWN_OFFENDERS: dict[str, str] = {
     "templates/dashboard.html.j2::.tm-state-tag.is-live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
     "templates/dashboard.html.j2::body.page-macro .cb-live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
     "templates/heatmap.js::' + '.hm-dot.live": "L3 unflagged surfaces (source-only swap)",
-    "templates/hk.html.j2::.tm-state-tag.is-live": "L2 tokens + status ink (paired theme.css; P0B receipt remint + research_screener ?v= re-pin)",
     "templates/news.html.j2::.nx-eyebrow .live": "L3 unflagged surfaces (source-only swap)",
     "templates/news.html.j2::.nx-kick .live": "L3 unflagged surfaces (source-only swap)",
     "templates/sector_central.html.j2::.ftr-strip-token.live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
-    "templates/theme.css::.dtp-chip--live": "L2 tokens + status ink (paired theme.css; P0B receipt remint + research_screener ?v= re-pin)",
-    "templates/theme.css::.dtp-token.live": "L2 tokens + status ink (paired theme.css; P0B receipt remint + research_screener ?v= re-pin)",
 }
 SET_VAR_RE = re.compile(
     r"\{%-?\s*set\s+(\w+)\s*=\s*'var\((--[A-Za-z0-9_-]+)\)'",
