@@ -15,9 +15,16 @@ The identity law is EXACT and is the only thing the module does:
     require aliases.resolve(VENDOR, current_symbol, decision_date) == security_id  # else NoLink.round_trip_mismatch
 
 The continuation is rendered against the Terminal app at
-``TERMINAL_ANALYSIS_URL``. The href carries ONLY ``symbol``, ``page``, ``mo_chain``,
-``mo_channel``, ``mo_asof``, ``mo_security_id`` — the routing authority is
-``symbol`` (the verified current alias). No source text, no receipts, no JSON.
+``TERMINAL_ANALYSIS_URL``. The href carries ONLY ``symbol``, ``page``, ``mo_from``,
+``mo_chain``, ``mo_channel``, ``mo_asof``, ``mo_security`` — the routing authority
+is ``symbol`` (the verified current alias). No source text, no receipts, no JSON.
+The ``mo_*`` keys are the recorded MarketOntology context vocabulary
+(research/market_intelligence_productization/MARKET_ONTOLOGY_MO_J1_JOINED_RESEARCH_JOURNEY_2026-09-25.md
+§5): ``mo_security`` is the opaque hint key (never ``mo_security_id``), and
+``mo_from`` is the closed origin enum — this publisher lives on transmission.html,
+so it emits ``mo_from=transmission``; the Terminal helper admits that value only
+once its enum is widened, and until then rejects the context exactly as it
+rejected the ``mo_from``-less href before (CEO A ruling, macro#6819, 2026-10-02).
 
 ``enrich_display_chains`` is the page-adapter projection: it walks the
 display-subset chains (from engine.transmission_publish.derive_display_subset),
@@ -45,9 +52,13 @@ from lib.dataos.identity import VendorAliasTable
 
 CONTINUATION_VENDOR = "store"
 TERMINAL_ANALYSIS_URL = "https://app.mastermind-x.com/analysis"
+# Closed-enum origin value for the recorded ``mo_from`` key: this publisher is
+# the transmission page, never the ontology explorer. One value, never derived
+# from a caller URL.
+CONTINUATION_ORIGIN = "transmission"
 
 _ALLOWED_QUERY_KEYS = frozenset({
-    "symbol", "page", "mo_chain", "mo_channel", "mo_asof", "mo_security_id",
+    "symbol", "page", "mo_from", "mo_chain", "mo_channel", "mo_asof", "mo_security",
 })
 
 
@@ -92,18 +103,19 @@ def _build_href(
     channel_id: str,
     chain_asof: str,
 ) -> str:
-    """Build the Terminal href with the EXACT six keys (urlencoded).
+    """Build the Terminal href with the EXACT seven keys (urlencoded).
 
     ``symbol`` is the routing authority — it must match the verified current
-    alias. ``mo_security_id`` is an opaque navigation hint, never an alternate
-    key."""
+    alias. ``mo_security`` is an opaque navigation hint, never an alternate
+    key; ``mo_from`` is the fixed origin ``CONTINUATION_ORIGIN``."""
     parts = [
         ("symbol", symbol),
         ("page", "intelligence"),
+        ("mo_from", CONTINUATION_ORIGIN),
         ("mo_chain", chain_id),
         ("mo_channel", channel_id),
         ("mo_asof", chain_asof),
-        ("mo_security_id", security_id),
+        ("mo_security", security_id),
     ]
     qs = "&".join(f"{quote(k, safe='')}={quote(v, safe='')}" for k, v in parts)
     return f"{TERMINAL_ANALYSIS_URL}?{qs}"
