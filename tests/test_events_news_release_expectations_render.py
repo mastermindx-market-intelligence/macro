@@ -120,4 +120,4 @@ def test_expectation_context_autoescapes_owner_fields():
     s = soup_for(event)
     panel = s.select_one(".nd-expectation-context")
     assert not panel.select("img")
-    assert "onerror" in panel.get_text()
+    assert "onerror" not in panel.get_text()\n    assert "use different inputs" in panel.get_text(" ", strip=True)
