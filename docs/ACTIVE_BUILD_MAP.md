@@ -2,33 +2,39 @@
 
 # Active Build Map
 
-Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window): 500  |  base: `a11f47561ff8a8ec47212923c9640d2a21baed7f`
+Generated: 2026-10-02T11:27:02.412412+00:00  |  Open PRs: 100  |  Merged (window): 500  |  base: `f311e0608d0b82c6f90198f1bfc4ec9923146ea5`
 
 ## Open PRs
 
 | PR | Title | Branch | Updated | Flags |
 |----|-------|--------|---------|-------|
+| #8276 | feat(intl-macro): rights-gated country dossier plane (MO-PAID-006 schema child, D18) | `claude/mo-paid-006-schema-r1-fable` | 2026-10-02 | — |
+| #8271 | feat(prophet-w3): add guarded post-floor validation report | `claude/ssd-prophet-w3-guardrail-20261002-5167b974f63e6828` | 2026-10-02 | DRAFT / ⚠ protected:1 |
+| #8270 | perf(charts): fix slow-device Plotly startup race | `sol/web-mobile-chart-performance-20261002` | 2026-10-02 | DRAFT |
+| #8265 | F05-017 R1: fair-share per-family glance selection + family_tally lens | `claude/f05-017-family-fair-glance-7696c918` | 2026-10-02 | DRAFT |
+| #8260 | feat(ontology): answer-first WTI path and existing-Brain evidence handoff | `sol/web-marketontology-r23-r24-route-20261001` | 2026-10-02 | DRAFT / ⚠ CONFLICTING / ⚠ protected:1 |
+| #8259 | fix(validation): fence Special Situations prior-event windows | `sol/special-situations-control-boundary-20261002` | 2026-10-02 | DRAFT |
+| #8258 | fix(catalysts): exclude event-overlapping pre-event controls | `claude/catalyst-pre-event-boundary-20261002` | 2026-10-02 | DRAFT |
 | #8257 | [HOLD-FOR-SOL] Granular, source-dated regime intelligence in Mastermind AI | `claude/ssd-granular-regime-context-20261001-b4fa9445a470c68c` | 2026-10-02 | DRAFT / ⚠ protected:4 |
-| #8255 | [CODEX][PREVIEW] Deterministic reset economics and limits viewer | `claude/codex-reset-economics-20261001-sol-001` | 2026-10-02 | DRAFT |
+| #8255 | [CODEX][PREVIEW] Deterministic reset economics and limits viewer | `claude/codex-reset-economics-20261001-sol-001` | 2026-10-02 | — |
 | #8250 | [GMI Industrials][T02] Enroll Exponent/Pentair issuer profiles | `codex/industrials-t02-issuer-enrollment-20260930-sol-001` | 2026-10-01 | DRAFT |
 | #8249 | feat(prophet): add pure Daily Brief compositor contract | `sol/prophet-daily-brief-compositor-20260930` | 2026-10-01 | DRAFT |
 | #8245 | feat(earnings): bind economic evidence into existing private generations (CDV-1 Task 4) | `claude/cdv1-t4-private-publication-v2` | 2026-10-01 | DRAFT |
 | #8243 | [HOLD] Forex: connect dated movement evidence and truthful interpretation to the dashboard | `claude/forex-kinematics-r12-20260930-sol-c1` | 2026-10-02 | DRAFT |
-| #8242 | [Agent OS] Preserve Web communications source repairs and live-proof boundary | `sol/web-executive-communications-continuity-20260930-c3-001` | 2026-10-01 | — |
+| #8242 | [Agent OS] Preserve Web communications source repairs and live-proof boundary | `sol/web-executive-communications-continuity-20260930-c3-001` | 2026-10-02 | — |
 | #8241 | [HOLD] Bonds: integrate Paper R11 duration review into the existing route | `claude/bonds-duration-r11-20260930-sol-c1` | 2026-10-02 | DRAFT |
 | #8240 | feat(prophet): compile source-bound Early Leadership evidence | `sol/prophet-early-leadership-evidence-v1-20260930` | 2026-10-02 | DRAFT |
 | #8237 | docs(agentos): preserve four-Codex/four-Claude headless convergence | `sol/headless-eight-realm-convergence-20260930` | 2026-09-30 | — |
-| #8229 | feat(prophet): add independent peer continuity evidence | `sol/prophet-leadership-evidence-v1-20260929` | 2026-10-02 | DRAFT |
-| #8201 | fix(options): preserve decision-time source clocks in Flow history | `claude/options-flow-source-clocks-20260929-sol` | 2026-09-30 | DRAFT |
+| #8201 | fix(options): preserve decision-time source clocks in Flow history | `claude/options-flow-source-clocks-20260929-sol` | 2026-09-30 | DRAFT / ⚠ CONFLICTING |
 | #8196 | feat(china): integrate receipt-bound economy overview and macro dialogs | `worktree-china-macro-evidence-20260929-sol-001` | 2026-10-01 | DRAFT / files-truncated |
 | #8192 | feat(prophet): verify prospective H1 nightly accrual | `sol/prophet-h1-accrual-checker-20260929` | 2026-10-01 | ⚠ protected:1 |
 | #8191 | [HOLD: verification blocked] feat(options): daily expansion and source coverage | `claude/options-coverage-expansion-20260929` | 2026-09-30 | DRAFT |
 | #8189 | feat(prophet): version earnings evidence semantics without changing C1 default | `sol/prophet-earnings-semantics-v1-20260929` | 2026-10-02 | DRAFT |
-| #8188 | [MAS-258][DRAFT/HOLD] Show observed China pullbacks separately from forecast risk | `claude/ssd-cn-pullback-lifecycle-20260929-68e848e41de4db74` | 2026-10-02 | DRAFT |
+| #8188 | [MAS-258][DRAFT/HOLD] Show observed China pullbacks separately from forecast risk | `claude/ssd-cn-pullback-lifecycle-20260929-68e848e41de4db74` | 2026-10-02 | DRAFT / files-truncated |
 | #8186 | HOLD: Events & News R2 official-result component — integration blocked | `sol/macro-events-news-desk-20260929-sol-001` | 2026-10-02 | DRAFT |
 | #8184 | fix(china): link dashboard sectors to detail pages | `sol/china-sector-detail-links-20260929` | 2026-09-29 | ⚠ CONFLICTING |
 | #8183 | fix(dataos): bind selected price reads to exact source evidence | `sol/dataos-selected-price-evidence-20260929` | 2026-10-02 | — |
-| #8182 | research(medtech): establish Catalyst R1 regulatory and materiality contract | `sol/medtech-catalyst-r1-20260929` | 2026-10-02 | ⚠ CONFLICTING |
+| #8182 | research(medtech): establish Catalyst R1 regulatory and materiality contract | `sol/medtech-catalyst-r1-20260929` | 2026-10-02 | — |
 | #8154 | [HOLD-FOR-SOL] fix(risk): preserve Reflex metadata and registry source isolation | `claude/prophet-reflex-record-integrity-20260928` | 2026-09-29 | DRAFT / ⚠ protected:1 |
 | #8144 | fix(china): wire a coherent Tushare-first live heatmap | `sol/china-heatmap-live-stream-20260927` | 2026-09-28 | DRAFT / ⚠ protected:2 |
 | #8142 | ops: auto-heal wedged M2 GitHub runner listeners | `sol/m2-runner-watchdog-20260928` | 2026-09-28 | — |
@@ -51,7 +57,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8081 | feat(policy-watch): recover official-event feed on current main for R6 | `sol/policy-watch-r6-production-20260926` | 2026-09-27 | DRAFT |
 | #8079 | docs(catalysts): Wave 1 four Web CEO research/design handoffs | `sol/catalyst-wave1-four-web-ceos-20260927` | 2026-09-29 | DRAFT |
 | #8076 | [DRAFT] Audit Massive PIT universe against Data OS identity | `sol/web-market-experience-pit-universe-20260927` | 2026-09-27 | DRAFT / ⚠ protected:1 |
-| #8069 | [HOLD-FOR-SOL] research(prophet): Q06 SEC comparable-revenue capture | `claude/prophet-economic-evidence-research-20260926-sol-001` | 2026-09-30 | DRAFT |
+| #8069 | [HOLD-FOR-SOL] research(prophet): Q06 SEC comparable-revenue capture | `claude/prophet-economic-evidence-research-20260926-sol-001` | 2026-10-02 | DRAFT / ⚠ CONFLICTING |
 | #8068 | docs(forex): R4 production-port map + qualified design evidence | `sol/forex-design-r2-20260926` | 2026-09-27 | DRAFT |
 | #8066 | [NORTH STAR][W3][CONTRACT] Guard Yahoo archive refresh before full refetch | `sol/northstar-w3-yahoo-basis-refresh-20260926` | 2026-09-27 | DRAFT |
 | #8064 | [NORTH STAR][W3] Bound SRC-A1 revision lineage scans | `sol/northstar-w3-revisions-index-20260926` | 2026-09-28 | — |
@@ -102,12 +108,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #7923 | [RIC][HOLD-FOR-SOL] Separate matched-contract changes from policy-path roll | `claude/rates-policy-constituents-20260924-sol-002` | 2026-09-25 | DRAFT |
 | #7909 | [RIC][RESEARCH][HOLD-FOR-SOL] Rates direction and oscillator swing studies | `claude/rates-direction-20260924-sol-001` | 2026-09-25 | DRAFT / ⚠ CONFLICTING / ⚠ protected:1 |
 | #7907 | docs(marketontology): Sol-led restart, B recovery and research-to-delivery packets | `sol/marketontology-meta-ceo-restart-20260924` | 2026-09-26 | DRAFT |
-| #7899 | feat(themes): preserve event-first thesis evidence and SEC context | `sol/sector-strength-measurement-20260922` | 2026-09-24 | ⚠ CONFLICTING |
-| #7897 | [DRAFT/HOLD] Revalidate China Risk Radar probability and hazard claims | `sol/cn-risk-p1-revalidation-20260923` | 2026-09-25 | DRAFT |
-| #7893 | [GMI C][RESEARCH/HOLD] Automation, mobility and connected-systems qualification | `sol/gmi-theme-research-c-20260924` | 2026-09-24 | DRAFT |
-| #7892 | [GMI][RESEARCH/HOLD] Wave 1 B — healthcare, longevity and wearables | `sol/gmi-theme-research-b-20260924` | 2026-09-24 | DRAFT |
-| #7891 | [DRAFT/HOLD] Technology ex-Semiconductors Economic Change — implementation carrier | `claude/ssd-technology-ex-semis-impl-c887181119dd2aaf` | 2026-10-01 | DRAFT |
-| #7890 | [GMI A][RESEARCH/HOLD] Three cases and 19-leaf assessment returned for Meta-CEO review | `sol/gmi-theme-research-a-20260924` | 2026-09-24 | DRAFT |
 
 > ⚠ CONFLICTING means mergeStateStatus=DIRTY — pull_request CI is suppressed on conflicting PRs (known repo failure mode).
 
@@ -115,11 +115,15 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 
 | PR A | PR B | Shared files | Files |
 |------|------|-------------|-------|
+| #8260 | #7949 | 5 | `.github/ci/legacy-jobs.yml`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json`, `site/ontology.html`, `site/theme.js` |
+| #8260 | #8188 | 4 | `.github/ci/legacy-jobs.yml`, `mockups/evidence/prophet-p0b-zero-fouc/manifest.json`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json` |
 | #8188 | #7949 | 4 | `.github/ci/legacy-jobs.yml`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json`, `mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json` |
 | #8257 | #8245 | 3 | `.github/ci/legacy-jobs.yml`, `app/deploy/update.sh`, `tests/test_deploy_update_self_heal.py` |
 | #8245 | #8144 | 3 | `.github/ci/legacy-jobs.yml`, `app/deploy/update.sh`, `tests/test_ci_pack.py` |
-| #8196 | #8188 | 3 | `.github/ci/legacy-jobs.yml`, `scripts/build_china.py`, `templates/china.html.j2` |
 | #8196 | #8144 | 3 | `.github/ci/legacy-jobs.yml`, `app/deploy/Caddyfile`, `config/site_access.yml` |
+| #8260 | #8257 | 2 ⚠ | `.github/ci/legacy-jobs.yml`, `engine/neuralweb/brain_gateway.py` |
+| #8260 | #8014 | 2 ⚠ | `engine/neuralweb/brain_gateway.py`, `tests/test_brain_gateway.py` |
+| #8260 | #8005 | 2 ⚠ | `engine/neuralweb/brain_gateway.py`, `tests/test_brain_gateway.py` |
 | #8257 | #8189 | 2 | `.github/ci/legacy-jobs.yml`, `app/deploy/update.sh` |
 | #8257 | #8144 | 2 | `.github/ci/legacy-jobs.yml`, `app/deploy/update.sh` |
 | #8257 | #7992 | 2 | `.github/ci/legacy-jobs.yml`, `app/deploy/update.sh` |
@@ -128,6 +132,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8245 | #8061 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
 | #8245 | #7992 | 2 | `.github/ci/legacy-jobs.yml`, `app/deploy/update.sh` |
 | #8245 | #7982 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
+| #8196 | #8188 | 2 | `.github/ci/legacy-jobs.yml`, `scripts/build_china.py` |
 | #8192 | #8091 | 2 | `.github/ci/legacy-jobs.yml`, `engine/us_context_vector.py` |
 | #8189 | #8144 | 2 | `.github/ci/legacy-jobs.yml`, `app/deploy/update.sh` |
 | #8189 | #7992 | 2 | `.github/ci/legacy-jobs.yml`, `app/deploy/update.sh` |
@@ -143,12 +148,163 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8061 | #7982 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
 | #8014 | #8005 | 2 ⚠ | `engine/neuralweb/brain_gateway.py`, `tests/test_brain_gateway.py` |
 | #7982 | #7963 | 2 | `scripts/build_ticker_pages.py`, `templates/ticker.html.j2` |
+| #8276 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8260 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8243 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8189 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8186 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8183 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8182 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8154 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8144 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8141 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8276 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8260 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8243 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8189 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8186 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8183 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8182 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8154 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8144 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8141 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8271 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8243 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8189 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8186 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8183 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8182 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8154 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8144 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8141 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8260 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8259 | #8258 | 1 | `scripts/validate_special_situations.py` |
+| #8258 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8243 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8189 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8186 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8183 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8182 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8154 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8144 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8141 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8258 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8257 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8257 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8257 | #8243 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8257 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8257 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8257 | #8229 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8257 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8257 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8257 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -163,6 +319,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8257 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8257 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8257 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8257 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8257 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8257 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8257 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -177,15 +334,11 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8257 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8257 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8257 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8257 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8257 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8257 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8250 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8250 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8250 | #8243 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8250 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8250 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8250 | #8229 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8250 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8250 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8250 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -202,6 +355,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8250 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8250 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8250 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8250 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8250 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8250 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8250 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -215,14 +369,10 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8250 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8250 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8250 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8250 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8250 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8250 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8249 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8249 | #8243 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8249 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8249 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8249 | #8229 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8249 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8249 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8249 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -239,6 +389,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8249 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8249 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8249 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8249 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8249 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8249 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8249 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -252,13 +403,9 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8249 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8249 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8249 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8249 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8249 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8249 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8245 | #8243 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8245 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8245 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8245 | #8229 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8245 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8245 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8245 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -272,6 +419,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8245 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8245 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8245 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8245 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8245 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8245 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8245 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -282,12 +430,8 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8245 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8245 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8245 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8245 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8245 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8245 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8243 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8243 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8243 | #8229 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8243 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8243 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8243 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -305,6 +449,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8243 | #8096 | 1 | `scripts/build_forex.py` |
 | #8243 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8243 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8243 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8243 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8243 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8243 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -318,11 +463,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8243 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8243 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8243 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8243 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8243 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8243 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8241 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8241 | #8229 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8241 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8241 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8241 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -339,6 +480,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8241 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8241 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8241 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8241 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8241 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8241 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8241 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -352,10 +494,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8241 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8241 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8241 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8241 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8241 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8241 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8240 | #8229 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8240 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8240 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8240 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -372,6 +510,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8240 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8240 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8240 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8240 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8240 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8240 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8240 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -385,41 +524,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8240 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8240 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8240 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8240 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8240 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8240 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8189 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8186 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8183 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8182 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8154 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8144 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8141 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8229 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8196 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8196 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8196 | #8189 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -434,6 +538,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8196 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8196 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8196 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8196 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8196 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8196 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8196 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -447,9 +552,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8196 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8196 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8196 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8196 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8196 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8196 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8192 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8192 | #8189 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8192 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -463,6 +565,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8192 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8192 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8192 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8192 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8192 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8192 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8192 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -476,9 +579,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8192 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8192 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8192 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8191 | #8189 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8191 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8191 | #8186 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -492,6 +592,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8191 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8191 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8191 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8191 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8191 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8191 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8191 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -505,9 +606,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8191 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8191 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8191 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8189 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8189 | #8186 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8189 | #8183 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -519,6 +617,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8189 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8189 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8189 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8189 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8189 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8189 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8189 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -531,11 +630,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8189 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8189 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8189 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8189 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8189 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8189 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8188 | #8186 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8184 | 1 | `templates/china.html.j2` |
 | #8188 | #8183 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8188 | #8182 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8188 | #8154 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -546,6 +641,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8188 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8188 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8188 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8188 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8188 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8188 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8188 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -558,9 +654,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8188 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8188 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8188 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8186 | #8183 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8186 | #8182 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8186 | #8154 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -571,6 +664,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8186 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8186 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8186 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8186 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8186 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8186 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8186 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -584,9 +678,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8186 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8186 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8186 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8186 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8186 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8186 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8183 | #8182 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8183 | #8154 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8183 | #8144 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -596,6 +687,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8183 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8183 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8183 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8183 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8183 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8183 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8183 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -609,9 +701,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8183 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8183 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8183 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8182 | #8154 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8182 | #8144 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8182 | #8141 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -620,6 +709,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8182 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8182 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8182 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8182 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8182 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8182 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8182 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -633,9 +723,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8182 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8182 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8182 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8154 | #8144 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8154 | #8141 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8154 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -643,6 +730,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8154 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8154 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8154 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8154 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8154 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8154 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8154 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -656,14 +744,12 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8154 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8154 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8154 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8144 | #8141 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8144 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8144 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8144 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8144 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8144 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8144 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8144 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8144 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -675,14 +761,12 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8144 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8144 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8144 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8141 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8141 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8141 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8141 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8141 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8141 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8141 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8141 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8141 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -697,13 +781,11 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8141 | #7963 | 1 | `scripts/ci/daily_engine_prophet_checkpoint.sh` |
 | #8141 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8141 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8136 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8136 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8136 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8136 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8136 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8136 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8136 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8136 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -717,12 +799,10 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8136 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8136 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8136 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8125 | #8108 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8125 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8125 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8125 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8125 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8125 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8125 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -736,11 +816,9 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8125 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8125 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8125 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8108 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8108 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8108 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8108 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8108 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8108 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -754,10 +832,8 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8108 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8108 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8108 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8108 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8108 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8108 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8091 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8091 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8091 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8091 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8091 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -769,9 +845,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8091 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8091 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8091 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8076 | #8069 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8076 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8076 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8076 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -784,9 +858,19 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8076 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8076 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8076 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8069 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8069 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8069 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8069 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8069 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8069 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8069 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8069 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8069 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8069 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8069 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8069 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8069 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8061 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8061 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8061 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -798,9 +882,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8061 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8061 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8061 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8057 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8057 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8057 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -812,9 +893,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8057 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8057 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8057 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8050 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8050 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8050 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -825,9 +903,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8050 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8050 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8050 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8045 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8045 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8045 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -837,9 +912,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8045 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8045 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8045 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8041 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8041 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8041 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -848,9 +920,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8041 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8041 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8041 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8041 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8041 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8041 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8039 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8039 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8039 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
@@ -858,63 +927,48 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8039 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8039 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8039 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8039 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8039 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8039 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8022 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8022 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8022 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8022 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8022 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8022 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8022 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8022 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8022 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8012 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8012 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8012 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8012 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8012 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8012 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8012 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8012 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #8008 | #7949 | 1 | `tests/test_macro_command_p4_copy.py` |
 | #7992 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
 | #7992 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #7992 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #7992 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7992 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7992 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7992 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #7983 | #7909 | 1 ⚠ | `data/trial_ledger.jsonl` |
 | #7982 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
 | #7982 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #7982 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7982 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7982 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7982 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #7978 | #7949 | 1 | `templates/dashboard.html.j2` |
 | #7976 | #7949 | 1 | `.github/ci/legacy-jobs.yml` |
 | #7976 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7976 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7976 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7976 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #7949 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7949 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7949 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7949 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 | #7940 | #7923 | 1 | `tests/test_rates_command.py` |
-| #7909 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7909 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7909 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7899 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7899 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7897 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
 
 ## Recently Merged (last 14 days) (showing most recent 500; window truncated)
 
 | PR | Title | Merged |
 |----|-------|--------|
+| #8275 | fix(stocks): make the two-axis regime read reachable on us_stocks (MO-PAID-001_FIX_R1) | 2026-10-02 |
+| #8274 | records(marketontology): F00C wave 4 — MO-PAID-006 acceptance narrowed (D18) + F02 rights-map amendments | 2026-10-02 |
+| #8273 | agentos(dsc): Homebrew bash 5.3.9 hangs every heredoc ≥512 B — bash sub.sh lanes wedge before admission on m2 | 2026-10-02 |
+| #8272 | records(marketontology): F00C wave 3 — MO-PAID-073 PROVEN_LIVE (D17) + served receipts + program fold | 2026-10-02 |
+| #8269 | records(marketontology): F00C wave 2 — F06–F13 census consumed by the single writer; MO-PAID-001 → BUILT_NOT_PROVEN (D15) | 2026-10-02 |
+| #8268 | fix(options): preserve BH and SPY label-window contracts | 2026-10-02 |
+| #8267 | fix(uk_policy_brain): route model calls through llm_auth waterfall + retry on failure | 2026-10-02 |
+| #8266 | research(options): reopen historical studies and record proxy findings | 2026-10-02 |
+| #8264 | docs(marketontology): CEO B wave-1 records — F06–F13 census row evidence + continuation handoff | 2026-10-02 |
+| #8263 | records(marketontology): CEO A program file + F00C ledger reconciliation (D7/D10) | 2026-10-02 |
+| #8262 | feat(transmission): chain landing anchor id="tx-chain-<chain>" on Cascade Monitor rows | 2026-10-02 |
+| #8261 | fix(transmission): continuation href uses the recorded mo_* vocabulary (mo_from=transmission, mo_security) | 2026-10-02 |
 | #8256 | Fix US Prophet Today preview collapsing to two Featured names | 2026-10-02 |
 | #8254 | Fix Prophet international freshness stamping and monitoring | 2026-10-02 |
 | #8251 | r2-delivery-plane: re-pin drifted evidence receipts/anchors + register the two unregistered publisher dirs | 2026-10-01 |
@@ -930,6 +984,7 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #8232 | feat(earnings): derive bounded source-linked economic explanations (CDV-1 Task 3) | 2026-09-30 |
 | #8231 | docs(cdv1): correct the r3 packet record and restore the dropped T2/T3 rulings | 2026-09-30 |
 | #8230 | docs(cdv1): record the Task 1 merge and the parallel T2/T3 dispatch | 2026-09-30 |
+| #8229 | feat(prophet): add independent peer continuity evidence | 2026-10-02 |
 | #8228 | agentos(dsc): a canvas price-axis strip is a quantised witness | 2026-09-29 |
 | #8227 | agentos(dsc): public/data is staged as a hardlink farm, outside the transaction | 2026-09-29 |
 | #8226 | docs(agentos): correct the inertness mechanism dropped by #8225's SHA pin | 2026-09-29 |
@@ -1402,19 +1457,6 @@ Generated: 2026-10-02T05:25:05.956118+00:00  |  Open PRs: 100  |  Merged (window
 | #7459 | [MAIN-RED-REPAIR] fix(ci): align hosted-first pack predicate contract | 2026-09-20 |
 | #7458 | fix(theme-graph): preserve parquet evidence refs on PIT cutover | 2026-09-20 |
 | #7457 | feat(prophet): surface leaders waiting for entry | 2026-09-20 |
-| #7456 | Restore canonical China macro dashboard | 2026-09-19 |
-| #7454 | orch(audit): record macro PR #7447 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-20 |
-| #7451 | [MO-B F09 W8-1] Cash runway on the debt-maturity ladder: one annual filing's cash, operating cash and equipment spend → months of runway + next-12-month cover (MO-PAID-059 / MO-DELTA-018 second slice) | 2026-09-20 |
-| #7450 | fix(government-revenue): clarify workspace and repair mobile interactions | 2026-09-20 |
-| #7449 | fix(ui-evidence): require real interaction proof for inline CSS | 2026-09-19 |
-| #7448 | orch(audit): record macro PR #7407 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-22 |
-| #7447 | [MO-B F00C records] append-only pass after #7390: 8 union rows; 14 rows held for Sol's re-pin | 2026-09-19 |
-| #7446 | orch(audit): record macro PR #7436 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
-| #7445 | fix(policy-watch): simplify confidence and track-record UX | 2026-09-20 |
-| #7444 | orch(audit): record macro PR #7411 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
-| #7442 | fix(bonds): clarify snapshot and calibration UX | 2026-09-20 |
-| #7440 | orch(audit): record macro PR #7425 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
-| #7439 | orch(audit): record macro PR #7362 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
 
 ---
 
