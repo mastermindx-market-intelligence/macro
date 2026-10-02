@@ -14,7 +14,11 @@ from pathlib import Path
 CSV_PATH = Path("research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv")
 MANIFEST_PATH = Path("research/market_intelligence_productization/F00C_TERMINAL_WAVE_RECONCILIATION_MANIFEST_2026-09-09.json")
 INTEGRATION_BASE_SHA = "5332d876e75837c158c6f42a2862734451bb7158"
-OUTSIDE_UNION_SHA256 = "a4fdb5812267ae203faa009ea97dd8c9da3e203c3676d8b4abd33fd95b6355ab"
+# Re-pinned 2026-10-02 by the single lawful F00C writer (CEO A seat ruling D7 over
+# F00A_CENSUS_R1 @ main 32d22a9b; CEO B verifies, never writes). The only outside-union
+# row D7 touched is MO-PAID-072 (restamped `state_delta`, state unchanged). Prior digest:
+# a4fdb5812267ae203faa009ea97dd8c9da3e203c3676d8b4abd33fd95b6355ab.
+OUTSIDE_UNION_SHA256 = "cb9c1bf581b30bbb75e9fa3fd1f7f953d01f313dff98601dddc45e37ba43ef3c"
 CAPABILITY_STATES = {"NOT_BUILT", "SPEC_ONLY", "PARTIAL", "BUILT_NOT_PROVEN", "PROVEN_LIVE"}
 
 UNION_ROWS = set([
@@ -131,8 +135,8 @@ EXPECTED = {
   ],
   "MO-PAID-005": [
     "UPGRADE_EXISTING_OWNER",
-    "PARTIAL"
-  ],
+    "PROVEN_LIVE"
+  ],  # D7 2026-10-02: PARTIAL->PROVEN_LIVE
   "MO-PAID-025": [
     "NEW_BOUNDED_BUILD",
     "NOT_BUILT"
@@ -155,20 +159,20 @@ EXPECTED = {
   ],
   "MO-PAID-008": [
     "NEW_BOUNDED_BUILD",
-    "PARTIAL"
-  ],
+    "BUILT_NOT_PROVEN"
+  ],  # D7 2026-10-02: PARTIAL->BUILT_NOT_PROVEN
   "MO-PAID-023": [
     "UPGRADE_EXISTING_OWNER",
-    "PROVEN_LIVE"
-  ],
+    "PARTIAL"
+  ],  # D7 2026-10-02: PROVEN_LIVE->PARTIAL
   "MO-PAID-034": [
     "UPGRADE_EXISTING_OWNER",
     "PROVEN_LIVE"
   ],
   "MO-DELTA-033": [
     "NEW_BOUNDED_BUILD",
-    "SPEC_ONLY"
-  ],
+    "PARTIAL"
+  ],  # D7 2026-10-02: SPEC_ONLY->PARTIAL
   "MO-DELTA-034": [
     "NEW_BOUNDED_BUILD",
     "BUILT_NOT_PROVEN"
@@ -203,8 +207,8 @@ EXPECTED = {
   ],
   "MO-PAID-070": [
     "NEW_BOUNDED_BUILD",
-    "SPEC_ONLY"
-  ],
+    "PARTIAL"
+  ],  # D7 2026-10-02: SPEC_ONLY->PARTIAL
   "MO-PAID-073": [
     "EXACT_EQUIVALENT",
     "PARTIAL"
@@ -223,8 +227,8 @@ EXPECTED = {
   ],
   "MO-PAID-077": [
     "NEW_BOUNDED_BUILD",
-    "PARTIAL"
-  ],
+    "BUILT_NOT_PROVEN"
+  ],  # D7 2026-10-02: PARTIAL->BUILT_NOT_PROVEN
   "MO-DELTA-004": [
     "PROJECTION_ONLY",
     "PARTIAL"
@@ -483,7 +487,10 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     r = _rows()
 
     uk = r["MO-PAID-023"]
-    assert uk["capability_state_c2"] == "PROVEN_LIVE"
+    # D7 (2026-10-02): PROVEN_LIVE->PARTIAL — the desk still renders but the served
+    # policy_watch.html reads model_unavailable (MO-PAID-023_UK_DIAG_R1: placement fault
+    # + latent fallback defect). Sol's #7351 closure receipt stays pinned below.
+    assert uk["capability_state_c2"] == "PARTIAL"
     assert "no_new" in (uk["state_delta"] + uk["missing_contract_or_proof"])
     assert "#7351" in uk["missing_contract_or_proof"]
 
