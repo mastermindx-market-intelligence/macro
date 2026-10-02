@@ -51,6 +51,61 @@ def test_future_model_context_is_secondary_and_street_survey_gap_is_explicit():
     assert len(panel.select("[data-nd-deep]")) == 2
 
 
+
+def test_release_anatomy_renders_quirk_source_and_policy_without_directional_copy():
+    payload = forecast_payload()
+    policy = {
+        "fed_stance": "hawkish",
+        "gap_bp": 7,
+        "implied_cuts_12m": -4.0,
+        "next_fomc": "2026-10-28",
+        "guidance_direction": "on_hold",
+    }
+    flag = {
+        "code": "cpi_health_insurance_reset",
+        "en": "CPI health-insurance retained-earnings update",
+        "zh": "CPI医疗保险留存收益更新",
+        "cite": "https://www.bls.gov/opub/mlr/2023/article/incorporating-new-estimates-into-the-cpi.htm",
+    }
+    for row in payload["upcoming"]:
+        row["policy_backdrop"] = dict(policy)
+        row["regime_axis"] = "inflation"
+        row["quirk_flags"] = [dict(flag)]
+    event = cpi_event()
+    event["expectation_context"] = view.event_expectation_context(
+        event, payload, as_of=ASOF)
+    s = soup_for(event)
+    anatomy = s.select_one(".nd-release-anatomy")
+    assert anatomy
+    text = anatomy.get_text(" ", strip=True)
+    assert "What could complicate this print?" in text
+    assert flag["en"] in text
+    assert "Fed stance" in text and "Hawkish" in text
+    assert "Market vs dots" in text and "+7 bp" in text
+    assert "Implied cuts" in text and "-4.0" in text
+    assert "Next FOMC" in text and "2026-10-28" in text
+    assert "Guidance" in text and "On hold" in text
+    assert "Primary axis" in text and "Inflation" in text
+    assert "do not predict the direction" in text
+    link = anatomy.select_one(".nd-quirk-card a")
+    assert link and link["href"].startswith("https://www.bls.gov/")
+    assert link["target"] == "_blank"
+    assert set(link["rel"]) == {"noopener", "noreferrer"}
+
+
+def test_release_anatomy_conflicting_policy_is_withheld_in_render():
+    payload = forecast_payload()
+    payload["upcoming"][0]["policy_backdrop"] = {"fed_stance": "hawkish"}
+    payload["upcoming"][1]["policy_backdrop"] = {"fed_stance": "dovish"}
+    event = cpi_event()
+    event["expectation_context"] = view.event_expectation_context(
+        event, payload, as_of=ASOF)
+    s = soup_for(event)
+    text = s.select_one(".nd-release-anatomy").get_text(" ", strip=True)
+    assert "Policy backdrop is withheld because the matched release measures disagree." in text
+    assert "Hawkish" not in text and "Dovish" not in text
+
+
 def test_cold_start_and_accuracy_limits_are_visible_but_not_first_read_noise():
     event = cpi_event()
     event["expectation_context"] = view.event_expectation_context(
