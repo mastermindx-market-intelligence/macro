@@ -1,6 +1,6 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-10-01T19:43:50+00:00",
+  "generated_at": "2026-10-02T03:57:34+00:00",
   "markets": {
     "us": {
       "asof_last_row": "2026-09-30",
@@ -612,14 +612,14 @@
       }
     },
     "kr": {
-      "asof_last_row": "2026-09-23",
+      "asof_last_row": "2026-10-01",
       "monitoring": {
-        "log_fresh": false,
-        "last_logged_days_ago": 8,
+        "log_fresh": true,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 15,
+        "awaiting_maturity": 13,
         "backlog_cutoff_bd": 28,
-        "graded_n": 18
+        "graded_n": 21
       },
       "windows": {
         "full": {
@@ -636,10 +636,10 @@
             "precursor_rate": null
           },
           "calm": {
-            "n": 15,
-            "dd_missed": 7,
-            "quiet": 8,
-            "quiet_rate": 0.533
+            "n": 18,
+            "dd_missed": 8,
+            "quiet": 10,
+            "quiet_rate": 0.556
           },
           "by_scare": {},
           "recovery": null
@@ -658,10 +658,10 @@
             "precursor_rate": null
           },
           "calm": {
-            "n": 15,
-            "dd_missed": 7,
-            "quiet": 8,
-            "quiet_rate": 0.533
+            "n": 18,
+            "dd_missed": 8,
+            "quiet": 10,
+            "quiet_rate": 0.556
           },
           "by_scare": {},
           "recovery": null
@@ -669,14 +669,14 @@
       }
     },
     "jp": {
-      "asof_last_row": "2026-09-25",
+      "asof_last_row": "2026-10-01",
       "monitoring": {
-        "log_fresh": false,
-        "last_logged_days_ago": 6,
+        "log_fresh": true,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 16,
+        "awaiting_maturity": 15,
         "backlog_cutoff_bd": 28,
-        "graded_n": 16
+        "graded_n": 18
       },
       "windows": {
         "full": {
@@ -693,10 +693,10 @@
             "precursor_rate": 0.4
           },
           "calm": {
-            "n": 9,
+            "n": 11,
             "dd_missed": 2,
-            "quiet": 7,
-            "quiet_rate": 0.778
+            "quiet": 9,
+            "quiet_rate": 0.818
           },
           "by_scare": {
             "rate_shock": {
@@ -722,10 +722,10 @@
             "precursor_rate": 0.4
           },
           "calm": {
-            "n": 9,
+            "n": 11,
             "dd_missed": 2,
-            "quiet": 7,
-            "quiet_rate": 0.778
+            "quiet": 9,
+            "quiet_rate": 0.818
           },
           "by_scare": {
             "rate_shock": {
@@ -740,14 +740,14 @@
       }
     },
     "tw": {
-      "asof_last_row": "2026-09-24",
+      "asof_last_row": "2026-10-01",
       "monitoring": {
-        "log_fresh": false,
-        "last_logged_days_ago": 7,
+        "log_fresh": true,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 16,
+        "awaiting_maturity": 14,
         "backlog_cutoff_bd": 28,
-        "graded_n": 17
+        "graded_n": 20
       },
       "windows": {
         "full": {
@@ -764,9 +764,9 @@
             "precursor_rate": null
           },
           "calm": {
-            "n": 5,
+            "n": 8,
             "dd_missed": 0,
-            "quiet": 5,
+            "quiet": 8,
             "quiet_rate": 1.0
           },
           "by_scare": {
@@ -805,9 +805,9 @@
             "precursor_rate": null
           },
           "calm": {
-            "n": 5,
+            "n": 8,
             "dd_missed": 0,
-            "quiet": 5,
+            "quiet": 8,
             "quiet_rate": 1.0
           },
           "by_scare": {
@@ -835,14 +835,14 @@
       }
     },
     "in": {
-      "asof_last_row": "2026-09-25",
+      "asof_last_row": "2026-10-01",
       "monitoring": {
-        "log_fresh": false,
-        "last_logged_days_ago": 6,
+        "log_fresh": true,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 15,
+        "awaiting_maturity": 14,
         "backlog_cutoff_bd": 28,
-        "graded_n": 18
+        "graded_n": 20
       },
       "windows": {
         "full": {
@@ -859,10 +859,10 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 11,
-            "dd_missed": 1,
+            "n": 13,
+            "dd_missed": 3,
             "quiet": 10,
-            "quiet_rate": 0.909
+            "quiet_rate": 0.769
           },
           "by_scare": {
             "capital_flow": {
@@ -888,10 +888,10 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 11,
-            "dd_missed": 1,
+            "n": 13,
+            "dd_missed": 3,
             "quiet": 10,
-            "quiet_rate": 0.909
+            "quiet_rate": 0.769
           },
           "by_scare": {
             "capital_flow": {
@@ -906,14 +906,14 @@
       }
     },
     "au": {
-      "asof_last_row": "2026-09-25",
+      "asof_last_row": "2026-10-01",
       "monitoring": {
-        "log_fresh": false,
-        "last_logged_days_ago": 6,
+        "log_fresh": true,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 17,
+        "awaiting_maturity": 14,
         "backlog_cutoff_bd": 28,
-        "graded_n": 20
+        "graded_n": 24
       },
       "windows": {
         "full": {
@@ -930,9 +930,9 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 6,
+            "n": 10,
             "dd_missed": 0,
-            "quiet": 6,
+            "quiet": 10,
             "quiet_rate": 1.0
           },
           "by_scare": {},
@@ -952,9 +952,9 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 6,
+            "n": 10,
             "dd_missed": 0,
-            "quiet": 6,
+            "quiet": 10,
             "quiet_rate": 1.0
           },
           "by_scare": {},
@@ -963,14 +963,14 @@
       }
     },
     "gb": {
-      "asof_last_row": "2026-09-25",
+      "asof_last_row": "2026-10-01",
       "monitoring": {
-        "log_fresh": false,
-        "last_logged_days_ago": 6,
+        "log_fresh": true,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 15,
+        "awaiting_maturity": 13,
         "backlog_cutoff_bd": 28,
-        "graded_n": 20
+        "graded_n": 23
       },
       "windows": {
         "full": {
@@ -987,9 +987,9 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 12,
+            "n": 15,
             "dd_missed": 0,
-            "quiet": 12,
+            "quiet": 15,
             "quiet_rate": 1.0
           },
           "by_scare": {},
@@ -1009,9 +1009,9 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 12,
+            "n": 15,
             "dd_missed": 0,
-            "quiet": 12,
+            "quiet": 15,
             "quiet_rate": 1.0
           },
           "by_scare": {},
@@ -1020,14 +1020,14 @@
       }
     },
     "ez": {
-      "asof_last_row": "2026-09-25",
+      "asof_last_row": "2026-10-01",
       "monitoring": {
-        "log_fresh": false,
-        "last_logged_days_ago": 6,
+        "log_fresh": true,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 14,
+        "awaiting_maturity": 13,
         "backlog_cutoff_bd": 28,
-        "graded_n": 21
+        "graded_n": 23
       },
       "windows": {
         "full": {
@@ -1044,9 +1044,9 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 7,
+            "n": 9,
             "dd_missed": 0,
-            "quiet": 7,
+            "quiet": 9,
             "quiet_rate": 1.0
           },
           "by_scare": {},
@@ -1066,9 +1066,9 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 7,
+            "n": 9,
             "dd_missed": 0,
-            "quiet": 7,
+            "quiet": 9,
             "quiet_rate": 1.0
           },
           "by_scare": {},

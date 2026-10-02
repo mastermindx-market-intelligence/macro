@@ -151,7 +151,7 @@
   },
   {
    "t": "RBA.TO",
-   "nm": "RB GLOBAL INC",
+   "nm": "Rb Global",
    "sec": "Industrials",
    "grp": "setting_up",
    "d": "2026-09-25",
@@ -382,7 +382,7 @@
   },
   {
    "t": "WN.TO",
-   "nm": "WESTON GEORGE",
+   "nm": "George Weston",
    "sec": "Consumer Staples",
    "grp": "setting_up",
    "d": "2026-09-25",
@@ -1029,7 +1029,7 @@
   },
   {
    "t": "WN.TO",
-   "nm": "WESTON GEORGE",
+   "nm": "George Weston",
    "sec": "Consumer Staples",
    "grp": "setting_up",
    "d": "2026-09-21",
@@ -1941,7 +1941,7 @@
   },
   {
    "t": "WN.TO",
-   "nm": "WESTON GEORGE",
+   "nm": "George Weston",
    "sec": "Consumer Staples",
    "grp": "setting_up",
    "d": "2026-09-15",
@@ -4088,7 +4088,7 @@
   },
   {
    "t": "LUN.TO",
-   "nm": "LUNDIN MINING CORP.",
+   "nm": "Lundin Mining",
    "sec": "Materials",
    "grp": "setting_up",
    "d": "2026-08-31",
@@ -5703,7 +5703,7 @@
   },
   {
    "t": "LUN.TO",
-   "nm": "LUNDIN MINING CORP.",
+   "nm": "Lundin Mining",
    "sec": "Materials",
    "grp": "setting_up",
    "d": "2026-08-24",
@@ -5969,7 +5969,7 @@
   },
   {
    "t": "LUN.TO",
-   "nm": "LUNDIN MINING CORP.",
+   "nm": "Lundin Mining",
    "sec": "Materials",
    "grp": "setting_up",
    "d": "2026-08-21",
@@ -8090,7 +8090,7 @@
    },
    {
     "t": "LUN.TO",
-    "nm": "LUNDIN MINING CORP.",
+    "nm": "Lundin Mining",
     "sec": "Materials",
     "grp": "setting_up",
     "d": "2026-08-12",
@@ -10161,7 +10161,7 @@
    },
    {
     "t": "LUN.TO",
-    "nm": "LUNDIN MINING CORP.",
+    "nm": "Lundin Mining",
     "sec": "Materials",
     "grp": "setting_up",
     "d": "2026-07-28",
@@ -10522,7 +10522,7 @@
    },
    {
     "t": "LUN.TO",
-    "nm": "LUNDIN MINING CORP.",
+    "nm": "Lundin Mining",
     "sec": "Materials",
     "grp": "setting_up",
     "d": "2026-07-27",
@@ -10902,7 +10902,7 @@
    },
    {
     "t": "WN.TO",
-    "nm": "WESTON GEORGE",
+    "nm": "George Weston",
     "sec": "Consumer Staples",
     "grp": "setting_up",
     "d": "2026-07-24",
@@ -10959,7 +10959,7 @@
    },
    {
     "t": "CAE.TO",
-    "nm": "CAE INC",
+    "nm": "Cae",
     "sec": "Industrials",
     "grp": "setting_up",
     "d": "2026-07-24",
@@ -11928,7 +11928,7 @@
    },
    {
     "t": "WN.TO",
-    "nm": "WESTON GEORGE",
+    "nm": "George Weston",
     "sec": "Consumer Staples",
     "grp": "setting_up",
     "d": "2026-07-17",
@@ -14398,7 +14398,7 @@
    },
    {
     "t": "EMA.TO",
-    "nm": "EMERA INCORPORATED",
+    "nm": "Emera Inc",
     "sec": "Utilities",
     "grp": "setting_up",
     "d": "2026-06-30",
