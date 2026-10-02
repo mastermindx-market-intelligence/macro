@@ -196,9 +196,9 @@ def compose_context(sources: dict, *, now: datetime,
     emit('membership', 'regime', '/quad_vector', vector, vector.get('asof'), {
         'probabilities': probabilities,
         'interpretation': 'current_model_membership' if probabilities else None,
-        'gaining_quad': _quad(tm.get('gaining')),
-        'losing_quad': _quad(tm.get('losing')),
-        'window_sessions': _count(tm.get('window_sessions'), 'window_sessions', errors),
+        'gaining_quad': _quad(tm.get('gaining')) if probabilities else None,
+        'losing_quad': _quad(tm.get('losing')) if probabilities else None,
+        'window_sessions': _count(tm.get('window_sessions'), 'window_sessions', errors) if probabilities else None,
         'forecast_probability': None,
     }, 'current_membership_distribution', issues=errors,
        stale=vector.get('stale') is True,
@@ -437,7 +437,8 @@ def render_context(ctx: dict, char_budget: int = 1800, *, lang: str = 'en') -> s
             suffix = f'; {age} calendar days old'
         if d.get('issues'):
             suffix += '; partial input'
-        rows.append((key, f'{label} [{stamp}{suffix}]: {text}'))
+        clock = 'observed' if _dict(d.get('source')).get('clock_semantics') == 'source_observation_date' else 'snapshot'
+        rows.append((key, f'{label} [{clock} {stamp}{suffix}]: {text}'))
 
     def v(key):
         return _dict(_dict(dims.get(key)).get('values'))

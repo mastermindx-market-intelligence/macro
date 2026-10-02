@@ -2267,6 +2267,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "site/basketdata/breadth_split.json"
+      - "site/basketdata/vol_weather.json"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
@@ -9567,6 +9569,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "site/basketdata/breadth_split.json"
+      - "site/basketdata/vol_weather.json"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
@@ -12034,6 +12038,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "site/basketdata/breadth_split.json"
+      - "site/basketdata/vol_weather.json"
       - "engine/narrative_crossmarket.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
@@ -15770,6 +15776,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "site/basketdata/breadth_split.json"
+      - "site/basketdata/vol_weather.json"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation

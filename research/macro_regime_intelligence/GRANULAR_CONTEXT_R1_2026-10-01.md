@@ -111,3 +111,47 @@ this proves saved-input wiring, not a current production tape or model response.
 No new provider call, production deployment, merge, independent review or capital
 effect has occurred. Full mission remains incomplete. Forecasting/evaluation,
 Portfolio and other product consumers remain separate outstanding obligations.
+
+## Current cumulative checkpoint - qualification patch
+
+Published implementation carrier: Macro #8257, branch
+`claude/ssd-granular-regime-context-20261001-b4fa9445a470c68c`; first head
+`8b70b47aa7ebaf4c808ce52a7a5e2980aeeec62e`. Same operation and own SSD worktree.
+The qualification patch preserves snapshot-versus-observation language in actual
+prompts and quarantines membership momentum when its probability vector is invalid.
+Both real chat loops were exercised with provider transport fixtures, paid and free.
+No paid model invocation, private source dump, new portfolio policy or guest access.
+
+Verified local scopes:585 focused tests;937 passed in the actual existing gateway
+CI command (five inherited dependency deprecation warnings, no skips). Initial
+owning-command failures were three missing sparse artifacts; exact unchanged
+source copies fixed them, with no test guard or expectation weakened. The precise
+copies and source hashes are in verification_20261001.json.
+
+The first contract-delta run concluded with eight introduced/zero inherited
+findings:breadth_split.json and vol_weather.json were absent from the import closure
+of four existing exclusive jobs. The patch adds exactly those eight paths. Its
+concluded recheck and current-head hosted checks remain owed; old-head green is
+not transferred. All applicable independently owned source/return fences remain.
+
+Read-only production metadata succeeded: deployed Macro head45f20aac7dfca5a31716a02df021caca550c6fab,
+with a fresh VPS quote file and the named regime input files present. A subsequent
+production-artifact capture was blocked by OpenAI safety checks. It was not retried,
+repackaged, split, delegated or moved to another carrier. Exact local receipt/prefix
+readback found no capture effect. This is not live candidate, provider or browser proof.
+Do not repeat that blocked capture in a later session as a new operation.
+
+Independent reviewer placement requested via the existing #agent-dispatch carrier
+C0BSBM78V1N/1790904235.348469, operation
+granular-regime-context-review-20261001-001. Preferred Terra, capacity-selectable,
+non-Pro included route, no receiver/ACK/START or watcher. Source is still Draft and
+HOLD-FOR-SOL. Placement is not running review, and no autonomous background work is
+claimed. Final review must bind the newly published qualification head explicitly.
+
+Exact next actions: conclude the repaired contract-delta and current source checks;
+publish/read back this same branch; provide the exact immutable head to existing
+review placement; adjudicate a real independent return; release only with applicable
+CI and permissible production verification. While those external gates are open,
+advance only independently safe in-scope work. The original end-to-end mission is
+incomplete:forecast/evaluation/history, rates-path comparison, broader regional and
+Portfolio adoption are not replaced by this first customer-context increment.

@@ -426,3 +426,64 @@ def test_regime_suite_has_one_existing_code_gate_owner():
               if any('tests/test_regime_context.py' in str(step.get('run',''))
                      for step in job.get('steps',[]))]
     assert owners == [('unrun-brain-gateway','code')]
+
+
+@pytest.mark.parametrize('streaming', [False, True])
+@pytest.mark.parametrize('paid', [False, True])
+def test_actual_chat_loops_deliver_entitled_context_to_provider(tmp_path, monkeypatch, streaming, paid):
+    from types import SimpleNamespace
+    from engine.neuralweb import brain_gateway as gw
+    _write_sources(tmp_path)
+    monkeypatch.setenv('MACRO_LIVE_DIR', str(tmp_path / 'site/live'))
+    monkeypatch.setattr(gw, '_resolve_tier', lambda *a, **k: {
+        'tier': 'essential' if paid else 'free', 'status': 'active',
+        'features': ['site_full'] if paid else [],
+    })
+    # The provider transport alone is a fixture: real entitlement consumption,
+    # packet assembly, prompt construction and loop completion run unchanged.
+    class Client:
+        def __init__(self):
+            self.messages = self
+            self.calls = []
+        def create(self, **kwargs):
+            self.calls.append(copy.deepcopy(kwargs))
+            return SimpleNamespace(
+                content=[SimpleNamespace(type='text', text='The fixture response is complete.')],
+                stop_reason='end_turn',
+                usage=SimpleNamespace(input_tokens=10, output_tokens=10),
+            )
+    client = Client()
+    args = ('What regime are we in?', 'fast', [], {}, tmp_path, tmp_path,
+            'http://127.0.0.1:3100', client, 'deepseek-chat', 500, 1)
+    if streaming:
+        events = list(gw._run_brain_loop_stream(*args, meta_event={'type':'meta'}, user_id='fixture-user'))
+        parsed = [json.loads(e[6:]) for e in events if e.startswith('data: ')]
+        assert any(e.get('type') == 'done' for e in parsed)
+    else:
+        result = gw._run_brain_loop(*args, user_id='fixture-user')
+        assert result[0]
+    assert client.calls
+    messages = client.calls[0]['messages']
+    content = next(m['content'] for m in reversed(messages) if m['role'] == 'user')
+    prompt = content if isinstance(content, str) else '\n'.join(b.get('text','') for b in content if isinstance(b,dict))
+    assert ('REGIME DETAIL' in prompt) is paid
+    assert ('2.91%' in prompt) is paid
+    assert ('57.1%' in prompt) is paid
+    assert 'sha256' not in prompt
+    if paid:
+        assert '[USER QUESTION]' in prompt
+    else:
+        assert 'What regime are we in?' in prompt
+
+
+def test_snapshot_and_observation_dates_are_not_rendered_as_the_same_clock():
+    text = rc.render_context(rc.compose_context(sources(), now=NOW), char_budget=10000)
+    assert 'Real 10Y [snapshot 2026-09-30' in text
+    assert 'VIX implied index vol [observed 2026-10-01' in text
+
+
+def test_invalid_membership_distribution_cannot_support_momentum_claim():
+    s=sources();s['regime']['quad_vector']['p']['Q1']=.8
+    d=rc.compose_context(s, now=NOW)['dimensions']['membership']
+    assert not d['values']
+    assert 'invalid_membership_distribution' in d['issues']

@@ -5,7 +5,7 @@
   "mission_complete": false,
   "checks": {
     "focused_tests": {
-      "passed": 579,
+      "passed": 585,
       "failed": 0,
       "skipped": 0,
       "command": "python3 -m pytest tests/test_regime_context.py tests/test_market_packet.py tests/test_brain_analyst_doctrine.py tests/test_brain_analyst_wiring.py tests/test_deploy_update_self_heal.py -q"
@@ -24,6 +24,35 @@
       "command": "python3 scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --validate-only --gate code",
       "jobs_validated": 168,
       "jobs_executed": 0
+    },
+    "owning_gateway_ci_command": {
+      "passed": 937,
+      "failed": 0,
+      "skipped": 0,
+      "warnings": 5,
+      "command": "python3 -m pytest tests/test_brain_gateway.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py -q",
+      "scope": "actual existing CI pytest command; not the entire job"
+    },
+    "prompt_path": {
+      "nonstream_paid": true,
+      "nonstream_free": true,
+      "stream_paid": true,
+      "stream_free": true,
+      "provider_transport": "fixture only; no model inference",
+      "actual_prompt_construction": true
+    },
+    "qualification_red": {
+      "snapshot_clock_missing_from_render": true,
+      "malformed_membership_still_carried_momentum": true,
+      "both_repaired": true,
+      "public_prompt_marker_fixture_expectation_corrected": "no fabricated delimiter when all public grounding is absent"
+    },
+    "contract_delta": {
+      "first_run_introduced": 8,
+      "first_run_inherited": 0,
+      "finding": "two new product paths absent from four existing exclusive job closures",
+      "repair": "eight exact path declarations, no exemption or job/gate change",
+      "recheck": "pending on qualification commit"
     }
   },
   "real_saved_input": {
@@ -40,20 +69,21 @@
     "inputs_unchanged": true,
     "populated_dimensions": 15,
     "dimensions": 15,
-    "default_packet_chars": 3828,
+    "default_packet_chars": 3884,
     "packet_budget": 4200,
     "detail_retained": true,
     "actual_gateway_paid_retains_detail": true,
-    "actual_gateway_public_omits_detail": true
+    "actual_gateway_public_omits_detail": true,
+    "compact_detail_chars": 1793
   },
   "source_sha256": {
-    "engine/neuralweb/regime_context.py": "55dfccdfd4f433a862f5d88612571db23a09dac1c6fe99aacd3545b0e52fad40",
+    "engine/neuralweb/regime_context.py": "3df464036852eb64607e332785f10e79f64ccefdc3401ca28dbed37cf418f9e5",
     "engine/neuralweb/market_packet.py": "a676116b139236501f42b9f2e810e0cbbd524d48facc2fe99c86403c08e4db51",
     "engine/neuralweb/brain_gateway.py": "234dc1624c66cf7184663657c0df5b590baf7db4f677d5c4d1f213ca98b64783",
     "engine/neuralweb/analyst/lens_regime.md": "b95367b744b487997e94c1f367604c19ae4fd7336839d65ffb7d1001606699be",
-    "tests/test_regime_context.py": "d6a56b768a6e674c2a4e7a4ba338265a19b4d62396b386414421bf2d96962471",
+    "tests/test_regime_context.py": "4a757985d5747c924e9b37e503aa4ed4566596af2ccf85e4ae812a6c73512656",
     "tests/test_deploy_update_self_heal.py": "bdf2bf4bced176d518a2e696bb926f973b350a03bbcdae60ab13e43d0abd2c1b",
-    ".github/ci/legacy-jobs.yml": "94f47451592725f5fec88c72ecb070def2a74c8b80723e8346eabfd6349e4a9c",
+    ".github/ci/legacy-jobs.yml": "cc51a9fe0e33e005d6455c2516f562047c1794d7f65b017c2c0db51dea0cfd02",
     "app/deploy/update.sh": "700a92baf60d527c5f888e23771ba05f96cd1d198179267c0a838b1b6de3f399"
   },
   "limitations": [
@@ -63,5 +93,60 @@
     "Current-only source snapshots are not PIT-certified replay.",
     "No rank, gate, size, trade, forecast or hazard authority; full blackboards are never rendered.",
     "Rates-path comparison, validated transitions, history/evaluation and Portfolio consumers remain outstanding."
-  ]
+  ],
+  "test_dependency_materialization": {
+    "method": "unchanged exact git show bytes from original base; no production access",
+    "files": [
+      {
+        "path": "site/mm_brain.js",
+        "bytes": 256822,
+        "sha256": "2a93db87caf50914a82024a985fd20adb6757e36cc05bd005f6b014bfafb7828"
+      },
+      {
+        "path": "data/reference/security_master.parquet",
+        "bytes": 79371,
+        "sha256": "86d6d0550ce79e5fe90ab496ad8434bcc921a0cc54ccfd7d92b4f687dd8f4b90"
+      },
+      {
+        "path": "data/reference/vendor_aliases.parquet",
+        "bytes": 41898,
+        "sha256": "e894f183f1396272a6b9cf1401de4283fb2b831b79397fc08bab1599d2462656"
+      }
+    ],
+    "test_guard_changes": false
+  },
+  "production_preflight": {
+    "observed_head": "45f20aac7dfca5a31716a02df021caca550c6fab",
+    "read_only_ssh_metadata": "succeeded; current live quote file and required regime inputs exist",
+    "candidate_deployed": false,
+    "deeper_capture": "OpenAI safety check blocked the attempted production-artifact capture; no retry or alternate carrier",
+    "capture_reconciliation": "No production_input_probe receipt or owned capture-prefix directory exists; no capture result claimed",
+    "held_effect": "none observed"
+  },
+  "independent_review": {
+    "state": "WAITING_CAPACITY",
+    "operation_key": "granular-regime-context-review-20261001-001",
+    "carrier": "C0BSBM78V1N/1790904235.348469",
+    "preferred_avenue": "Terra",
+    "receiver": null,
+    "started": false,
+    "watcher": null
+  },
+  "source_integration": {
+    "current_main": "45f20aac7dfca5a31716a02df021caca550c6fab",
+    "checked_paths": [
+      "engine/neuralweb/regime_context.py",
+      "engine/neuralweb/market_packet.py",
+      "engine/neuralweb/brain_gateway.py",
+      "engine/neuralweb/analyst/lens_regime.md",
+      "tests/test_regime_context.py",
+      "tests/test_deploy_update_self_heal.py",
+      ".github/ci/legacy-jobs.yml",
+      "app/deploy/update.sh",
+      "config/site_access.yml",
+      "lib/tiers.py"
+    ],
+    "changed_since_base": [],
+    "scope": "bounded owned/dependency paths; not estate-wide liveness"
+  }
 }
