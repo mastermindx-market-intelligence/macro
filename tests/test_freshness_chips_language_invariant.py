@@ -84,7 +84,6 @@ LIVE_NOT_FRESHNESS_SELECTORS: dict[str, str] = {
 # a new offender appears (fix the rule — never add it here) AND when an entry stops
 # offending (delete the entry in the same PR that fixed the surface).
 KNOWN_OFFENDERS: dict[str, str] = {
-    "templates/basket_detail.html.j2::.ftr-ls-pill.live": "L4 basket (fingerprinted site/basket*/ stylesheet projection)",
 }
 SET_VAR_RE = re.compile(
     r"\{%-?\s*set\s+(\w+)\s*=\s*'var\((--[A-Za-z0-9_-]+)\)'",
