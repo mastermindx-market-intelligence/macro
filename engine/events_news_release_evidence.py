@@ -389,6 +389,152 @@ def _clean_benchmark_set(value: Any, unit: str) -> dict[str, Any]:
     return out
 
 
+
+_QUIRK_CODES = {
+    "cpi_weight_update", "cpi_health_insurance_reset",
+    "nfp_benchmark_revision", "nfp_five_week_gap", "claims_holiday_week",
+    "active_strike", "nfp_preliminary_benchmark", "government_shutdown",
+    "census_hiring", "hurricane_landfall",
+}
+_FED_STANCES = {"hawkish", "neutral", "dovish"}
+_GUIDANCE_DIRECTIONS = {"easing", "on_hold", "tightening", "neutral", "hawkish", "dovish"}
+_REGIME_AXES = {"inflation", "growth"}
+
+
+def _safe_https_reference(value: Any) -> str | None:
+    if not isinstance(value, str) or not value.startswith("https://"):
+        return None
+    try:
+        parsed = urlsplit(value)
+        if (
+            parsed.scheme != "https"
+            or not parsed.hostname
+            or parsed.username
+            or parsed.password
+            or parsed.port not in (None, 443)
+            or "\\" in value
+            or any(ord(ch) < 33 for ch in value)
+        ):
+            return None
+    except ValueError:
+        return None
+    return value
+
+
+def _clean_policy_backdrop(value: Any) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        return {}
+    out: dict[str, Any] = {}
+    stance = value.get("fed_stance")
+    if isinstance(stance, str) and stance in _FED_STANCES:
+        out["fed_stance"] = stance
+    gap = value.get("gap_bp")
+    if _finite_number(gap) and abs(gap) <= 2000:
+        out["gap_bp"] = gap
+    cuts = value.get("implied_cuts_12m")
+    if _finite_number(cuts) and abs(cuts) <= 40:
+        out["implied_cuts_12m"] = cuts
+    fomc = official._parse_iso_date(value.get("next_fomc"))
+    if fomc is not None:
+        out["next_fomc"] = fomc.isoformat()
+    guidance = value.get("guidance_direction")
+    if isinstance(guidance, str) and guidance in _GUIDANCE_DIRECTIONS:
+        out["guidance_direction"] = guidance
+    return out
+
+
+def _clean_quirk_flags(rows: Sequence[Mapping[str, Any]]) -> list[dict[str, str]]:
+    out: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for row in rows:
+        flags = row.get("quirk_flags")
+        if not isinstance(flags, Sequence) or isinstance(flags, (str, bytes)):
+            continue
+        for raw in flags:
+            if not isinstance(raw, Mapping):
+                continue
+            code = raw.get("code")
+            en = raw.get("en")
+            zh = raw.get("zh")
+            if (
+                not isinstance(code, str)
+                or code not in _QUIRK_CODES
+                or code in seen
+                or not isinstance(en, str)
+                or not en.strip()
+                or len(en) > 500
+            ):
+                continue
+            item = {
+                "code": code,
+                "en": en.strip(),
+                "zh": zh.strip() if isinstance(zh, str) and zh.strip() and len(zh) <= 500 else en.strip(),
+            }
+            cite = raw.get("cite")
+            url = _safe_https_reference(cite)
+            if url is not None:
+                item["cite_url"] = url
+            elif isinstance(cite, str) and cite.strip() and "://" not in cite and len(cite) <= 300:
+                item["citation"] = cite.strip()
+            out.append(item)
+            seen.add(code)
+    return out
+
+
+def _event_release_anatomy(
+    event_type: str,
+    event_day: str,
+    expected_period: str | None,
+    forecast: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    """Project deterministic release context from exact matching Release Radar rows."""
+    specs = official._TARGETS.get(event_type)
+    rows = forecast.get("upcoming")
+    if not specs or not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
+        return None
+
+    matched: list[Mapping[str, Any]] = []
+    matched_releases: set[str] = set()
+    for release, _value_key, _metric_id, _unit, _scale in specs:
+        candidates = [
+            row for row in rows
+            if isinstance(row, Mapping)
+            and row.get("release_type") == release
+            and row.get("release_date") == event_day
+            and (expected_period is None or row.get("period") == expected_period)
+        ]
+        if len(candidates) == 1:
+            matched.append(candidates[0])
+            matched_releases.add(release)
+    if not matched:
+        return None
+
+    policies = [_clean_policy_backdrop(row.get("policy_backdrop")) for row in matched]
+    nonempty_policies = [policy for policy in policies if policy]
+    policy: dict[str, Any] = {}
+    policy_reason = None
+    if nonempty_policies:
+        if all(candidate == nonempty_policies[0] for candidate in nonempty_policies):
+            policy = nonempty_policies[0]
+        else:
+            policy_reason = "cross_metric_mismatch"
+
+    axes = {
+        row.get("regime_axis") for row in matched
+        if isinstance(row.get("regime_axis"), str) and row.get("regime_axis") in _REGIME_AXES
+    }
+    regime_axis = next(iter(axes)) if len(axes) == 1 else None
+    return {
+        "status": "complete" if len(matched_releases) == len(specs) else "partial",
+        "matched_release_count": len(matched_releases),
+        "expected_release_count": len(specs),
+        "regime_axis": regime_axis,
+        "policy_backdrop": policy,
+        "policy_reason": policy_reason,
+        "quirk_flags": _clean_quirk_flags(matched),
+    }
+
+
 def _forecast_point(row: Mapping[str, Any], unit: str) -> dict[str, Any]:
     """Project the producer-declared primary model context without choosing a new winner."""
     base = {
@@ -689,6 +835,12 @@ def event_expectation_context(
         result["reason"] = reference_error
         return result
 
+    cutoff_day = cutoff.astimezone(_NY).date()
+    result["release_anatomy"] = (
+        _event_release_anatomy(event_type, day.isoformat(), expected, forecast)
+        if day >= cutoff_day else None
+    )
+
     official_metrics: dict[str, Mapping[str, Any]] = {}
     if (
         isinstance(official_evidence, Mapping)
@@ -706,7 +858,6 @@ def event_expectation_context(
                 if isinstance(metric, Mapping) and isinstance(metric.get("release"), str):
                     official_metrics[metric["release"]] = metric
 
-    cutoff_day = cutoff.astimezone(_NY).date()
     projected: list[dict[str, Any]] = []
     for release, _value_key, _metric_id, _unit, _scale in specs:
         official_metric = official_metrics.get(release)
