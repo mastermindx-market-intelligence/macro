@@ -146,7 +146,11 @@ def _replay(records: list[tuple[date, float]], is_session: Callable[[date], bool
         above20 = above20 + 1 if i >= 19 and price > ma20 else 0
         if i < RULES.reference_closes:
             continue
-        peak_i = _peak(records, max(reference_floor, i - RULES.reference_closes), i + 1)
+        # Exact trailing window: RULES.reference_closes includes today's
+        # settled close. Keeping i-reference_closes would retain a 64th close
+        # for one extra session and could turn an aged-out high into a false
+        # shock/onset. The display's recent_63_drawdown uses the same basis.
+        peak_i = _peak(records, max(reference_floor, i - RULES.reference_closes + 1), i + 1)
         if episode is None:
             ref_i = pending["peak_index"] if pending else peak_i
             below = 1.0 - price / prices[ref_i]

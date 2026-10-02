@@ -249,3 +249,27 @@ def test_rules_are_versioned_descriptions_not_fitted_probabilities():
     assert RULES.version == "close_path.v1"
     assert RULES.onset_drawdown == 0.02 and RULES.shock_drawdown == 0.05
     assert RULES.reference_closes == 63
+
+
+def test_reference_window_is_exactly_63_closes_not_64():
+    # The 110 high is the 64th close from the latest row and must be aged out.
+    # With a 63-close reference the latest 98 is a first 2% developing close;
+    # retaining 64 closes would incorrectly classify a >5% shock underway.
+    rows = rows_for([], baseline=0)
+    values = [110.0] + [100.0] * 62 + [98.0]
+    day = date(2025, 1, 2)
+    rows = []
+    for value in values:
+        while not session(day):
+            day += timedelta(days=1)
+        rows.append((day.isoformat(), value))
+        day += timedelta(days=1)
+    read = result(rows)
+    assert read["phase"] == "developing"
+    assert read["active"] is False
+    assert read["drawdown_pct"] == -2.0
+    assert read["recent_63_drawdown_pct"] == -2.0
+    assert read["peak_close"] == 100.0
+    assert read["peak_session"] == rows[-2][0]  # equal highs use the most recent close
+    assert read["peak_session"] != rows[0][0]
+    assert read["onset_session"] is None
