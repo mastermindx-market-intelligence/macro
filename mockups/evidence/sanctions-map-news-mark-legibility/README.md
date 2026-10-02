@@ -130,3 +130,49 @@ bundled static fixtures served from a local `python http.server` on
 127.0.0.1. Re-runs produce byte-identical PNGs (the events parquet is
 hard-coded to 2026-10-02 / 2026-10-01; only the `generated_at` ISO
 timestamp and `capture_tool_module_sha256` move between runs).
+## Independent review of this receipt (Opus read-only, 2026-10-02)
+
+Verdict: **PARTIAL — releasable.** Nothing open is major; the served-route proof after the
+render is still owed because these cells are fixture renders.
+
+- **D1 (UK mark sub-pixel at 390) — CLOSED.** Geometry-registered 21×21 census centred on
+  the UK at 390 px: blue pixels **47/441 dark (en, zh) · 49/441 light (en, zh)**, up from
+  1/441 on the #8290 receipt; an Iberia control box reads 0/441. Desktop UK box: 169 (dark)
+  / 206 (light). Computed stroke 1.25 px desktop, 1.5 px mobile, non-scaling, all 16 cells.
+- **D4 (mark outranks data on light) — CLOSED on desktop, OPEN on mobile.** Desktop: the
+  row-highlight stroke is ≈1.71 px solid vs the 1.25 px dashed mark (≈62 % ink), so the mark
+  is lighter. Mobile: the highlight is ≈0.47 px while the mark is 1.5 px (≈3.2×), and on
+  light-mobile the mark is the most saturated object on the map (mean RGB 82,122,237) over
+  pale rung fills — a direct trade-off of the 1.5 px D1 rule. Minor.
+- **D6 (zh rows: English titles unmarked; 欧盟 broke) — CLOSED.** "标题为官方英文原文。" shows
+  in zh only; 欧盟 / 英国 / "英格兰银行 英国" stay on one line at 390; `single_line_spans`
+  true in all 16 cells.
+- **D7 (heading said "today" over two days) — CLOSED.** "Official press · last 2 days" /
+  "官方新闻 · 近两日" over rows dated 2026-10-02 and 2026-10-01.
+- **D8 (new, minor): at 390 the "dashed" mark renders solid.** The UK is ≈8×8 px, and a
+  1.5 px stroke with `13 8` dashes closes every gap: connected components = 1 on both
+  mobile themes vs 14 (dark) / 9 (light) on desktop. The legend still shows a dashed square,
+  so a 390 reader sees a filled UK keyed by a dashed outline. Rule: the `@media
+  (max-width:600px)` block in `templates/sanctions_map.html.j2`.
+- **D9 (nit, evidence hygiene):** the floating "Ask Mastermind" button is captured inside
+  the cells — it clips the map's right edge on desktop and covers the end of the stance line
+  in the mobile panels. Not a defect of this PR; hides copy in the receipt.
+- **D10 (nit):** the fix map above mislabels defect IDs — legend / heading / zh note are
+  tagged "(D7)" and the mobile stroke "(D6)"; they correspond to D4, D7, D6 and D1.
+- **D11 (nit):** fixture realism — an ECB statement is attributed to "European Commission /
+  EU"; no EA/EFTA row exercises `nowrap` on the long names at 390; `capture.py`'s per-locale
+  h2 check passes in either locale because `h2_text` carries both strings; no cell covers
+  `public_news_state == 'ok'` with only non-UK rows (legend key with no mark — consistent
+  with the rung legend's behaviour).
+
+Dark as a design: PASS (command centre — lifted land on a deep panel, calm blended-blue
+dashed mark, no glow; data outranks the mark at both widths). Light as a design: PASS on
+desktop, PARTIAL on mobile (a real research-workspace treatment — inset hairline frame,
+card shadow, pale land — but at 390 the saturated solid UK out-ranks the pale data: D4-mobile,
+D8). EN/ZH equivalent in both themes.
+
+Method: the PR's own `_worldmap_base` SVG was rasterised and cross-correlated with each
+cell's land mask (fit 0.980–0.988) to place the UK box (SVG x 478.97–504.67, y 87.13–111.22,
+padded 2 px); "blue" = b−r>40 and b−g>15. Every manifest sha256 matched the file bytes; every
+cell reports `scroll_w_le_viewport` true. Open items D4-mobile and D8 are carried to the next
+F02 round; nothing here blocks the merge of this fix.
