@@ -35,7 +35,7 @@ the row says so), or an explicitly accepted exclusion. `MISSION_COMPLETE: false`
 | W0 bind + reconcile | ACK/START; verify A0 writer; verify A1 contract; census; F05 spec | ACK+START on #6819; A1 defects named with file:line; 3 lanes launched with watchers | DONE 06:30Z (lanes RUNNING) |
 | W1 R23/R24 independent review | REVIEW_8260_R1 (re-pinned to head `b5951927bef3`, pushed 06:20Z) | verdict ACCEPT/REQUEST_REPAIR/REJECT with numbered defects posted on #8260; 8 unrun gateway cases run | RUNNING |
 | W1 F00 reconciliation | F00A_CENSUS_R1 → seat ruling | 51/51 rows with receipts; seat rules stale/ready/blocked; ledger edit only by seat | RUNNING |
-| W1 A1 publisher fix | (pending B accept) build lane on `engine/transmission_company_continuation.py` + tests | `mo_security` + `mo_from=transmission`; tests RED→GREEN; contract-delta green; PR merged + served | NOT STARTED (spec frozen A-side; enum widening is B-side) |
+| W1 A1 publisher fix | seat-executed under L.7 (Sol 5946604516: decide and proceed on interface choices) | `mo_security` + `mo_from=transmission`; 40 tests green; contract-delta 0/0; PR #8261 merged; served proof NATURAL-TIME (chains dormant → zero CTAs) | PR #8261 OPEN, armed, CI running |
 | W2 F05 consequences | F05_017_SPEC_R1 → seat freeze → build lane | spec with 3 candidates + acceptance ≤10 items; then build | SPEC RUNNING |
 | W2+ F01/F02/F03 | per census ruling | one PR per bounded row; merged + proven | NOT STARTED |
 
@@ -44,8 +44,11 @@ the row says so), or an explicitly accepted exclusion. `MISSION_COMPLETE: false`
 | lane | tier/model | worktree (SSD policy root) | base | sentinel / record | budget | state |
 |---|---|---|---|---|---|---|
 | REVIEW_8260_R1 | native Opus `reviewer` (Chairman authorized Opus subagents 06:32Z) | `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/ceo-a-r8260-review-4a64755e14b48662` (detached **`b5951927bef3`**, site materialized) | merge-base `8c297aa73e39` | `.lane/REVIEW_8260_R1.md`; verdict line `REVIEW_8260_R1: <V> b5951927` | ~24 turns | RUNNING 06:36Z |
-| F00A_CENSUS_R1 | `oc-free` local lane (mimo-v2.6-flash-free), task_class census | `…/ceo-a-f00-census-f7d84e4452460f5e` (main `32d22a9b2f68`) | — | `F00A_CENSUS_R1: <V> 32d22a9b` in scratchpad `out/F00A_CENSUS_R1.out`; `.lane/F00A_RECONCILIATION_2026-10-02.csv` | 90 min | LAUNCHED 06:44Z (procs alive=0); fallback = grok with `POOL_ESCALATION_REASON` |
+| F00A_CENSUS_R1 | native Opus `reviewer` (verification framing; local lanes refused: glm host policy, grok leaf-escalation, oc-free load gate 20.9>16) | `…/ceo-a-f00-census-f7d84e4452460f5e` (main `32d22a9b2f68`) | — | `F00A_CENSUS_R1: <V> 32d22a9b` in scratchpad `out/F00A_CENSUS_R1.out`; `.lane/F00A_RECONCILIATION_2026-10-02.csv` | ~24 turns | RUNNING 06:50Z |
 | F05_017_SPEC_R1 | native Opus `orchestrator` (+fable-mode) | `…/ceo-a-f05-analysis-14c08a6b113f0ee0` (main `32d22a9b2f68`) | — | `.lane/F05_017_SPEC_R1.md`; `F05_017_SPEC_R1: <V> 32d22a9b` | ~1 run | RUNNING 06:40Z |
+
+| A1_PUBLISHER_FIX | seat-executed (L.7: no worker started, custody held, no other owner, no EFFECT_UNKNOWN) | `…/ceo-a-a1-publisher-24ef4b3d2549490f` branch `claude/ssd-ceo-a-a1-publisher-24ef4b3d2549490f` | main `9ed7e31a4be9` | **PR #8261** head `9b7ed9bd85ef`, `merge-on-green` armed 07:05Z; watcher `scratchpad/out/WATCH_8261.out` (300 s × 30) | CI 30–45 min | DELIVERED → CI |
+| RECIPROCAL_ATTENTION | CronCreate `83db50fe` hourly :13 (session-only, 7-day expiry) | — | — | reads Slack thread since ts 1790922338.230299 + #6819 comments since 5946701303 | hourly | WATCH_ARMED 06:58Z |
 
 Packets are in the seat scratchpad `pkts/` (copied here only if a successor needs them). Lanes never
 post, label, ready or merge; the seat does. Kit: `~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/ext/sub.sh`.
@@ -61,6 +64,12 @@ DECIDED
   `{ontology, transmission}`; publisher emits `mo_from=transmission`; return rebuilt from validated ids.
   Rejected: relocating the publisher onto ontology.html (fabricates origin). Flip condition: #763
   already widens the enum differently.
+
+- D4 (06:50Z) Sol addendum 5946604516 consumed (posted 06:16Z, before my binding): DECIDE AND PROCEED on
+  A/B interface choices → the A-side publisher fix is executed by the seat now (L.7 conditions held; #763
+  file list clears the flip condition); B's enum widening remains B-side; no regression while it lands.
+- D5 (06:50Z) Census framed as verification of the ledger's claims and run on the native Opus `reviewer`
+  after four local-lane refusals (two equivalent no-delta cycles ban a third — L.4).
 
 FACTS (verified this session, command named)
 - Publisher keys: `grep -n mo_ engine/transmission_company_continuation.py` → six keys, no `mo_from`;
@@ -80,7 +89,8 @@ FACTS (verified this session, command named)
 
 OPEN
 - O1 CEO B binding/ACK not yet observed; A1 ruling awaits B (flip condition cleared by #763 file list).
-- O2 #8260 pack results pending; independent review pending.
+- O2 #8260 pack results pending; independent review RUNNING (resumed after 24-turn limit); `ci-authority/codex/merge-queue-pilot` red unclassified.
+- O6 #8261 CI → merge → (natural-time) served href proof; B's Terminal enum widening to accept `mo_from=transmission`.
 - O3 Which F01–F05 rows are ready bounded tasks (census).
 - O4 MO-PAID-017 spec freeze.
 - O5 Natural-time/authenticated proofs (F01 premarket, F03 RTH) — owners and windows to be scheduled.
