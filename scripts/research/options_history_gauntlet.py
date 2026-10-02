@@ -123,9 +123,21 @@ def _load_oi_root(root: str, years: list[int]) -> pd.DataFrame | None:
 def _bh_fdr(pvals: dict[str, float], k_family: int = _BH_FAMILY_K,
             alpha: float = _BH_ALPHA) -> dict[str, dict]:
     """Benjamini-Hochberg FDR correction over a pre-stated family.
-    pvals: {label: p_value}. Returns {label: {raw_p, bh_p, reject, rank}}.
+    pvals: {label: p_value}. Returns {label: {raw_p, bh_adj_p, reject_h0, rank}}.
     k_family: the total pre-registered family size (cells with n<30 excluded but
     their "slot" still counts in denominator, per strict BH convention).
+
+    Rejection derives from the canonical BH step-up: reject every rank through
+    the largest passing rank — equivalent to rejecting iff adj_p_i <= alpha,
+    where adj_p_i = min over j>=i of (k_family * p_(sorted_j) / j). The
+    adjusted p-values are non-decreasing with sorted rank, so the rejection
+    set is a downward initial segment of the rank ordering.
+
+    The defect removed by this contract was legacy independent per-rank
+    thresholding (compare each rank's raw p to (i/k) * alpha independently).
+    That form can produce non-monotone rejection sets — a higher rank can
+    reject while a lower rank does not — because each per-rank decision
+    ignores every larger-rank outcome.
     """
     labels = list(pvals.keys())
     pvs = np.array([pvals[l] for l in labels])
@@ -133,16 +145,19 @@ def _bh_fdr(pvals: dict[str, float], k_family: int = _BH_FAMILY_K,
     ranks = np.empty(len(pvs), dtype=int)
     ranks[order] = np.arange(1, len(pvs) + 1)
 
-    # BH threshold: reject H0 if p_i <= (rank_i / k_family) * alpha
-    bh_thresholds = (ranks / k_family) * alpha
-    reject = pvs <= bh_thresholds
-
-    # BH-adjusted p-value = min over all j>=rank of (k_family * p_j / j)
+    # BH-adjusted p-value = min over j>=rank of (k_family * p_j / j).
+    # Non-decreasing with sorted rank by construction; clipped to [0, 1]
+    # so it is directly thresholdable against alpha.
     adj_pvs = np.empty(len(pvs))
     for i, r in enumerate(ranks):
         future_ratios = [(k_family * pvs[order[j]] / (j + 1)) for j in range(r - 1, len(pvs))]
         adj_pvs[i] = min(future_ratios) if future_ratios else pvs[i]
     adj_pvs = np.clip(adj_pvs, 0, 1)
+
+    # Rejection from the canonical step-up: an item is rejected iff its
+    # BH-adjusted p-value clears alpha. The largest rank whose adj_p clears
+    # alpha defines the cut; every rank at or below that rank is rejected.
+    reject = adj_pvs <= alpha
 
     return {
         labels[i]: {
@@ -1132,8 +1147,14 @@ _CELL_KEY_FNS = {
     "DOI-H": lambda r: f"DOI.{r['era']}.{r['condition']}.{r['horizon']}",
 }
 
-# Only the OI-window study has genuinely pre-2016 eras (Era1 = 2012-15).
-_PRE2016_ERAS = {"DOI-H": {"Era1"}}
+# Only the OI-window study has genuinely pre-2016 eras (Era0 = 2012-2015).
+# Per _OI_ERAS above, Era0 spans 2012-01-01 to 2015-12-31 and is the only
+# pre-2016 era; Era1 (2016-01-01 to 2019-12-31) is post-2016 and the
+# era-amendment auto-death rule does NOT apply to it. SC-8 (fix-round-2
+# 2026-07-05) corrected this map; the prior {"DOI-H": {"Era1"}} mapping was
+# a labeling error and would have wrongly auto-killed any signal whose only
+# post-2016 early-era cell was Era1.
+_PRE2016_ERAS = {"DOI-H": {"Era0"}}
 
 
 def _fill_global_rejects_and_decay(results: dict, global_bh: dict[str, dict]) -> None:
