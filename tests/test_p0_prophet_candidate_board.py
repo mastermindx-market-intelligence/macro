@@ -208,8 +208,8 @@ def test_a_today_uses_owner_featured_preview_without_entry_promotion():
     assert soup.select_one('#us-src-btn-plan[data-src="plans"]')
 
 
-def test_a_today_full_featured_preview_is_independent_of_screener_prefix():
-    """Today must not collapse when the 3-row Screener shell contains non-Featured rows."""
+def test_a_today_featured_projection_stays_out_of_public_screener_shell():
+    """The six-row paid shelf is derived from full owner order without leaking into shell."""
     from bs4 import BeautifulSoup
 
     rows = []
@@ -240,24 +240,24 @@ def test_a_today_full_featured_preview_is_independent_of_screener_prefix():
         "ranking": {"featured_count": 9},
     }
     shell, gate, _locked = bs._split_us_board(source, 3, gated=True)
-    today_rows = bs._us_today_featured_preview(source, 6)
+    paid_today = bs._us_today_featured_preview(source, 6)
+    assert [r["ticker"] for r in paid_today] == [
+        "FTR0", "FTR1", "FTR2", "FTR3", "FTR4", "FTR5",
+    ]
+
+    # The static HTML still sees only the protected three-row Screener prefix.
     html = _render_stocks({
         "us_standouts": shell,
         "gate": gate,
-        "us_today_featured": today_rows,
         "us_prophet_book": _prophet_book(),
     })
     soup = BeautifulSoup(html, "html.parser")
-
     today = soup.select_one("#us-today")
     assert today["data-today-total"] == "9"
-    assert today["data-today-visible"] == "6"
+    assert today["data-today-visible"] == "2"
     assert [c["data-ticker"] for c in today.select("#us-today-grid .pvcard")] == [
-        "FTR0", "FTR1", "FTR2", "FTR3", "FTR4", "FTR5",
+        "FTR0", "FTR1",
     ]
-    assert "this 6-card preview is not a pick quota" in today.get_text(" ", strip=True)
-
-    # The protected Screener boundary remains the original three-row prefix.
     assert [c["data-ticker"] for c in soup.select("#us-cand-grid .pvcard")] == [
         "FTR0", "FTR1", "NONF",
     ]
