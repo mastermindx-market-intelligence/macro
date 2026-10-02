@@ -42,7 +42,8 @@ def test_future_model_context_is_secondary_and_street_survey_gap_is_explicit():
     text = panel.get_text(" ", strip=True)
     assert "Expectations & benchmarks" in text
     assert "Street survey" in text and "Not connected" in text
-    assert "Mastermind model benchmark" in text
+    assert "Mastermind blended benchmark" in text
+    assert text.count("Mastermind model benchmark") == 1
     assert "0.48%" in text and "0.27%" in text
     assert "Cleveland benchmark" in text
     assert "Market-implied median" in text
