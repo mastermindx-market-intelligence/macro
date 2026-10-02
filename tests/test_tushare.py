@@ -482,3 +482,24 @@ def test_crowding_prefers_tushare_valuation(monkeypatch, tmp_path):
     df = cc._valuation_df()
     assert df is not None and "ticker" in df.columns and "pe_pctile" in df.columns
     assert len(df) == 2          # per-NAME frame (not the 1-row whole-A anchor)
+
+
+def test_query_accepts_bounded_timeout_override(monkeypatch):
+    monkeypatch.setenv("TUSHARE_TOKEN", "test-token")
+    monkeypatch.setattr(tc, "_last_call", {})
+    observed = {}
+
+    def _post(url, **kwargs):
+        observed.update(kwargs)
+        return _Resp({
+            "code": 0,
+            "data": {"fields": ["ts_code"], "items": [["600519.SH"]]},
+        })
+
+    monkeypatch.setattr(tc.requests, "post", _post)
+    frame = tc.query(
+        "rt_k", ts_code="6*.SH,3*.SZ,0*.SZ",
+        _timeout=5.0, _retries=0,
+    )
+    assert frame is not None
+    assert observed["timeout"] == 5.0

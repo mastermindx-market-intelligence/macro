@@ -30,6 +30,8 @@ DISPLAY / FEED ONLY — never a scored input on its own.
 """
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
+
 import logging
 import re
 import time
@@ -394,32 +396,58 @@ def fetch_yahoo(symbols: list[str]) -> dict:
     return out
 
 
-def fetch_tencent_cn(symbols: list[str]) -> tuple[dict, list[str], str]:
+def fetch_tencent_cn(
+    symbols: list[str],
+    *,
+    batch_size: int = _TENCENT_BATCH,
+    max_workers: int = 1,
+    timeout: int = 12,
+    retries: int = 2,
+) -> tuple[dict, list[str], str]:
     """Return (current_quotes, transport_fallback_symbols, status) for mainland names.
 
-    A successful response is authoritative even when one requested symbol produces
-    no current quote (for example a suspended/no-trade placeholder filtered by the
-    parser). Yahoo fallback is therefore used only for batches whose Tencent
-    transport/envelope failed, never to turn an explicit no-trade state back into
-    a delayed pseudo-live quote.
+    Default execution remains serial.  The full-market heatmap caller may opt into
+    bounded parallel batches; every successful batch is still authoritative for
+    no-trade names, and only transport/envelope failures enter ``fallback``.
     """
+    if batch_size <= 0 or max_workers <= 0:
+        raise ValueError("Tencent batch_size and max_workers must be positive")
+    batches = list(_chunks(symbols, batch_size))
+
+    def fetch_batch(batch: list[str]) -> tuple[dict[str, dict], list[str], bool]:
+        codes = [_tencent_code(symbol) for symbol in batch]
+        text = _http_text(
+            _TENCENT_QUOTES + ",".join(codes),
+            timeout=timeout,
+            retries=retries,
+        )
+        if text is None or not _TENCENT_RECORD_RE.search(text):
+            return {}, list(batch), False
+        parsed = parse_tencent_quotes(text)
+        current = {}
+        for symbol in batch:
+            key = str(symbol).strip().upper()
+            if key in parsed:
+                current[key] = parsed[key]
+        return current, [], True
+
+    if max_workers == 1 or len(batches) <= 1:
+        results = [fetch_batch(batch) for batch in batches]
+    else:
+        with ThreadPoolExecutor(max_workers=min(max_workers, len(batches))) as pool:
+            results = list(pool.map(fetch_batch, batches))
+
     out: dict[str, dict] = {}
     fallback: list[str] = []
     responded_batches = 0
     failed_batches = 0
-    for batch in _chunks(symbols, _TENCENT_BATCH):
-        codes = [_tencent_code(s) for s in batch]
-        text = _http_text(_TENCENT_QUOTES + ",".join(codes))
-        if text is None or not _TENCENT_RECORD_RE.search(text):
-            fallback.extend(batch)
+    for current, failed, responded in results:
+        out.update(current)
+        fallback.extend(failed)
+        if responded:
+            responded_batches += 1
+        else:
             failed_batches += 1
-            continue
-        responded_batches += 1
-        parsed = parse_tencent_quotes(text)
-        for sym in batch:
-            key = str(sym).strip().upper()
-            if key in parsed:
-                out[key] = parsed[key]
     if responded_batches == 0:
         status = "no_response"
     elif failed_batches:

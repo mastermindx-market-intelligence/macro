@@ -82,6 +82,161 @@ def _abs_age_min(raw: Any, now: datetime) -> float | None:
     return (now - stamp.astimezone(timezone.utc)).total_seconds() / 60.0
 
 
+_CN_HEATMAP_REQUIRED_PHASES = frozenset({
+    "morning", "session_break", "afternoon", "closing_auction",
+    "post_close", "closed",
+})
+_CN_HEATMAP_STATUS = {
+    "morning": "live",
+    "session_break": "break",
+    "afternoon": "live",
+    "closing_auction": "auction",
+    "post_close": "closed",
+    "closed": "closed",
+    "pre_open": "pre_open",
+    "holiday": "holiday",
+    "weekend": "weekend",
+}
+
+
+def _finite_float(value: Any) -> float | None:
+    if isinstance(value, bool):
+        return None
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return None
+    return parsed if parsed == parsed and abs(parsed) != float("inf") else None
+
+
+def _nonnegative_int(value: Any) -> int | None:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        return None
+    return value
+
+
+def _evaluate_china_heatmap_live(
+    failures: list[str], checks: dict[str, Any], current: datetime,
+) -> None:
+    check = checks.get("china_heatmap_live")
+    coarse_session = current.weekday() < 5 and 1 <= current.hour < 8
+    if not isinstance(check, dict):
+        if coarse_session:
+            failures.append(
+                "china_heatmap_live: check absent from /api/status during the "
+                "mainland session — deploy the status projection"
+            )
+        return
+
+    expected_phase = check.get("expected_phase")
+    if not isinstance(expected_phase, str) or expected_phase not in _CN_HEATMAP_STATUS:
+        if check.get("status") == "missing" and not coarse_session:
+            return
+        failures.append("china_heatmap_live: expected_phase missing or invalid")
+        return
+    required = expected_phase in _CN_HEATMAP_REQUIRED_PHASES
+    if expected_phase == "closed" and check.get("source_required") is False:
+        required = False
+    if check.get("status") == "missing":
+        if required:
+            failures.append(
+                f"china_heatmap_live: artifact missing during {expected_phase}"
+            )
+        return
+    if check.get("error"):
+        failures.append("china_heatmap_live: artifact unreadable")
+        return
+
+    if (
+        check.get("schema") != "china_heatmap_live.v1"
+        or check.get("market") != "china"
+        or check.get("map_type") != "stocks"
+    ):
+        failures.append("china_heatmap_live: malformed identity")
+    if check.get("phase") != expected_phase or check.get("phase_ok") is not True:
+        failures.append(
+            f"china_heatmap_live: phase mismatch "
+            f"(artifact={check.get('phase')!r}, expected={expected_phase!r})"
+        )
+    expected_status = "unavailable" if check.get("source") is None else _CN_HEATMAP_STATUS[expected_phase]
+    if check.get("artifact_status") != expected_status:
+        failures.append(
+            "china_heatmap_live: status/phase mismatch "
+            f"(status={check.get('artifact_status')!r}, expected={expected_status!r})"
+        )
+    if (
+        check.get("baseline_ok") is not True
+        or check.get("baseline_asof") != check.get("served_baseline_asof")
+    ):
+        failures.append(
+            "china_heatmap_live: daily baseline mismatch "
+            f"(overlay={check.get('baseline_asof')!r}, "
+            f"served={check.get('served_baseline_asof')!r})"
+        )
+
+    heartbeat = _finite_float(check.get("heartbeat_age_sec"))
+    if heartbeat is None:
+        failures.append("china_heatmap_live: producer heartbeat age missing or invalid")
+    elif heartbeat < -5 or heartbeat > 120:
+        failures.append(
+            f"china_heatmap_live: producer heartbeat stale at {heartbeat:.1f}s "
+            "(allowed -5.0..120.0s)"
+        )
+
+    requested = _nonnegative_int(check.get("requested"))
+    resolved = _nonnegative_int(check.get("resolved"))
+    quote_count = _nonnegative_int(check.get("quotes_count"))
+    coverage = _finite_float(check.get("coverage"))
+    if (
+        requested is None or requested <= 0 or resolved is None
+        or quote_count is None or resolved != quote_count or resolved > requested
+    ):
+        failures.append("china_heatmap_live: quote accounting mismatch")
+    elif coverage is None or abs(coverage - resolved / requested) > 1e-9:
+        failures.append("china_heatmap_live: coverage accounting mismatch")
+    elif required and coverage < 0.95:
+        failures.append(
+            f"china_heatmap_live: coverage low at {coverage:.1%} (minimum 95.0%)"
+        )
+
+    breadth_n = _nonnegative_int(check.get("breadth_n"))
+    breadth_adv = _nonnegative_int(check.get("breadth_adv"))
+    breadth_dec = _nonnegative_int(check.get("breadth_dec"))
+    breadth_flat = _nonnegative_int(check.get("breadth_flat"))
+    breadth_pct = _finite_float(check.get("breadth_pct_up"))
+    if (
+        resolved is None or breadth_n is None or breadth_adv is None
+        or breadth_dec is None or breadth_flat is None
+        or breadth_n != resolved
+        or breadth_adv + breadth_dec + breadth_flat != breadth_n
+        or breadth_pct is None
+        or abs(breadth_pct - (100 * breadth_adv / breadth_n if breadth_n else 0)) > 1e-8
+    ):
+        failures.append("china_heatmap_live: breadth accounting mismatch")
+
+    source = check.get("source")
+    fallback = check.get("fallback")
+    if source not in (None, "tushare-rt-k", "tencent") or not isinstance(fallback, bool):
+        failures.append("china_heatmap_live: source disclosure invalid")
+    elif (source == "tushare-rt-k" and fallback) or (source == "tencent" and not fallback):
+        failures.append("china_heatmap_live: source/fallback mismatch")
+    if source is None and (resolved or check.get("usable") is True):
+        failures.append("china_heatmap_live: absent source cannot carry usable quotes")
+    if required:
+        if check.get("usable") is not True:
+            failures.append(
+                f"china_heatmap_live: not usable during {expected_phase}"
+            )
+        source_lag = _finite_float(check.get("source_lag_sec"))
+        if source_lag is None:
+            failures.append("china_heatmap_live: source clock lag missing or invalid")
+        elif source_lag < -5 or source_lag > 45:
+            failures.append(
+                f"china_heatmap_live: source clock lag {source_lag:.1f}s "
+                "(allowed -5.0..45.0s)"
+            )
+
+
 def evaluate(payload: dict[str, Any], *, now: datetime | None = None) -> list[str]:
     """Return human-readable health failures; an empty list is healthy."""
     current = now or datetime.now(timezone.utc)
@@ -179,6 +334,7 @@ def evaluate(payload: dict[str, Any], *, now: datetime | None = None) -> list[st
         _require_age(failures, checks, "risk_state", 6)
     if weekday and 1 <= hour < 9:
         _require_age(failures, checks, "china_risk_state", 6)
+    _evaluate_china_heatmap_live(failures, checks, current)
     # CN Breathing Platform (CN-PR-1, spec §5). ABSENT-OK until the first ship:
     # the status endpoint does not grow a key until the evaluator is live, and
     # requiring it here would red the whole dead-man on every existing box.

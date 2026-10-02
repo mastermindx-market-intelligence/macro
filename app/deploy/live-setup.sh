@@ -5,6 +5,8 @@
 #   macro-live-fast     every ~60s: official release watcher, display quotes,
 #                       staggered overlay/risk/China state, 10-min heatmap
 #   macro-live-snapshot every ~5m:  full-universe quote snapshot + US/HK baskets
+#   macro-live-china-heatmap persistent: Tushare-first two-second A-share
+#                       heatmap overlay with bounded Tencent fallback
 #   macro-live-bars     hourly RTH: external intraday cache + flow pulse
 #   macro-live-prophet  every ~5m in the ET session: Prophet Live provisional states
 #                       (reads the two lanes above off disk, publishes R2 + the GATED
@@ -59,10 +61,12 @@ fail_safe_exit() {
       macro-live-fast.timer \
       macro-live-snapshot.timer \
       macro-live-bars.timer >/dev/null 2>&1 || true
+    systemctl disable --now macro-live-china-heatmap.service >/dev/null 2>&1 || true
     systemctl stop \
       macro-live-fast.service \
       macro-live-snapshot.service \
-      macro-live-bars.service >/dev/null 2>&1 || true
+      macro-live-bars.service \
+      macro-live-china-heatmap.service >/dev/null 2>&1 || true
     if [ -d "$PUBLIC_DIR" ]; then
       failed_dir="$BASE_DIR/public.failed.$(date -u +%Y%m%dT%H%M%SZ)"
       mv "$PUBLIC_DIR" "$failed_dir" || true
@@ -141,6 +145,7 @@ for unit in \
   macro-live-fast.service macro-live-fast.timer \
   macro-live-snapshot.service macro-live-snapshot.timer \
   macro-live-bars.service macro-live-bars.timer \
+  macro-live-china-heatmap.service \
   macro-live-prophet.service macro-live-prophet.timer \
   macro-live-closepass.service macro-live-closepass.timer \
   macro-live-breadth.service macro-live-breadth.timer
@@ -162,6 +167,10 @@ log "[4/6] smoke test publication + fast lane"
 set +e
 systemctl start macro-live-fast.service
 smoke_rc=$?
+if [ "$smoke_rc" -eq 0 ]; then
+  systemctl start macro-live-china-heatmap.service
+  smoke_rc=$?
+fi
 set -e
 if [ "$smoke_rc" -ne 0 ]; then
   log "smoke test failed; recent service log:"
@@ -173,6 +182,14 @@ test -s "$LIVE_DIR/quotes.json"
 "$VENV/bin/python" -c \
   'import json,sys; d=json.load(open(sys.argv[1])); assert int((d.get("meta") or {}).get("resolved") or 0) >= 5' \
   "$LIVE_DIR/quotes.json"
+for _ in $(seq 1 20); do
+  [ -s "$LIVE_DIR/china_heatmap.json" ] && break
+  sleep 1
+done
+test -s "$LIVE_DIR/china_heatmap.json"
+"$VENV/bin/python" -c \
+  'import json,sys; d=json.load(open(sys.argv[1])); assert d.get("schema") == "china_heatmap_live.v1"' \
+  "$LIVE_DIR/china_heatmap.json"
 
 log "[5/6] enable replacement timers"
 # macro-live-prophet, macro-live-closepass and macro-live-breadth are armed here too,
@@ -184,6 +201,7 @@ systemctl enable --now \
   macro-live-fast.timer \
   macro-live-snapshot.timer \
   macro-live-bars.timer \
+  macro-live-china-heatmap.service \
   macro-live-prophet.timer \
   macro-live-closepass.timer \
   macro-live-breadth.timer >/dev/null
@@ -202,4 +220,5 @@ systemctl list-timers \
   macro-live-fast.timer macro-live-snapshot.timer macro-live-bars.timer \
   macro-live-prophet.timer macro-live-closepass.timer macro-live-breadth.timer \
   --no-pager
+systemctl is-active macro-live-china-heatmap.service
 log "After production freshness is verified, set GitHub repository variable VPS_LIVE_PRIMARY=true."

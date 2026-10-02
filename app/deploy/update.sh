@@ -1708,6 +1708,27 @@ if systemctl is-enabled macro-live-fast.timer >/dev/null 2>&1 && \
 	fi
 fi
 
+# CHINA HEATMAP LIVE — persistent two-second overlay publisher. Unlike the
+# three oneshot lanes above, code changes must restart this long-running process.
+# Keep the trigger to the exact producer/contract/source/consumer carrier set;
+# unrelated live-plane deploys must not churn the China socket/poller.
+if systemctl is-enabled macro-live-fast.timer >/dev/null 2>&1 && \
+   { echo "$CHANGED" | grep -qE '^(app/deploy/macro-live-china-heatmap\.service|scripts/build_china_heatmap_live\.py|engine/china_heatmap_live\.py|collectors/tushare_client\.py|engine/live_quotes\.py|templates/heatmap\.js|site/heatmap\.js)$' || \
+     [ ! -f /etc/systemd/system/macro-live-china-heatmap.service ]; }; then
+	CHINA_HEATMAP_LIVE_UNIT="$APP_DIR/app/deploy/macro-live-china-heatmap.service"
+	if systemd-analyze verify "$CHINA_HEATMAP_LIVE_UNIT"; then
+		install -m 0644 "$CHINA_HEATMAP_LIVE_UNIT" /etc/systemd/system/macro-live-china-heatmap.service
+		systemctl daemon-reload
+		if systemctl is-enabled macro-live-china-heatmap.service >/dev/null 2>&1; then
+			systemctl restart macro-live-china-heatmap.service
+		else
+			systemctl enable --now macro-live-china-heatmap.service
+		fi
+	else
+		echo "macro-update: refusing China heatmap live unit update — systemd-analyze verify failed" >&2
+	fi
+fi
+
 # PROPHET LIVE evaluator lane (research/PROPHET_LIVE_INTRADAY_SIGNALS_MASTERPLAN_BY_FABLE.md
 # §4.2a). Its own block, not a fourth entry in the list above, for two reasons: the
 # three lanes there are ONE orchestrator invoked with three --lane arguments, and

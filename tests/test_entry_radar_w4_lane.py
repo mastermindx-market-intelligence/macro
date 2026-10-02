@@ -162,7 +162,8 @@ def _update_block() -> str:
     assert "# LIVE ENTRY RADAR lanes" in UPDATE_SH, "no entry-radar block in update.sh"
     block = UPDATE_SH.split("# LIVE ENTRY RADAR lanes")[1]
     ends = [block.index(marker) for marker in
-            ("# CUSTOMER-TABLE BACKUP", "# PRESS-FEEDS is a long-running daemon")
+            ("# MORNING ORIENTATION PREMARKET EDITION", "# CUSTOMER-TABLE BACKUP",
+             "# PRESS-FEEDS is a long-running daemon")
             if marker in block]
     assert ends, "no sibling block follows the entry-radar block in update.sh"
     return block[:min(ends)]
@@ -712,9 +713,10 @@ def test_the_public_live_exceptions_are_still_exactly_the_reviewed_files():
     # fetchable on purpose by #6105 (2026-08-20) and neither copy of this list was
     # updated, so both have been red on main since. Healed together — a pack is one
     # check, so healing only one copy would deadlock the other.
-    assert live_public == ["/live/breadth.json", "/live/flow_pulse.json",
-                           "/live/intraday_quotes.json", "/live/quotes.json",
-                           "/live/release_publications.json", "/live/staleness.json"]
+    assert live_public == ["/live/breadth.json", "/live/china_heatmap.json",
+                           "/live/flow_pulse.json", "/live/intraday_quotes.json",
+                           "/live/quotes.json", "/live/release_publications.json",
+                           "/live/staleness.json"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
