@@ -1,0 +1,358 @@
+{
+  "page_id": "news.html#nxConsequence",
+  "route": "/news_fixture.html",
+  "registry_route": "/news.html",
+  "route_kind": "news_family_tally_tip",
+  "subject": ".lens-q (family_tally LENS trigger)",
+  "selector": "#nxConsequence",
+  "open_by": "keyboard_focus (Tab from page heading → direct focus() → focusin dispatch)",
+  "generated_at": "2026-10-02T10:55:12Z",
+  "fixture": {
+    "type": "fixture-rendered news.html.j2",
+    "fixture_vm_summary": "8 rows across earnings_call/research_vault/macro_release with non-trivial family_tally (3 named/3/2 shown, regime_flip/risk_band none_named, earnings no_events)"
+  },
+  "cells": [
+    {
+      "viewport": "desktop",
+      "locale": "en",
+      "theme": "dark",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "open_by": "keyboard_focus",
+      "captured": true,
+      "file": "cells/2f70bc65a5241c2e.png",
+      "alias": "family-tally-tip-dark-en-desktop.png",
+      "sha256": "2f70bc65a5241c2e14b3a6f3b6c9020012bac3ae43a215c71e327dd1ec560e33",
+      "bytes": 61678,
+      "width": 1008,
+      "height": 415,
+      "applied_theme": "dark",
+      "applied_locale": "en",
+      "overlay": "clean",
+      "focus_info": {
+        "activeIsLens": true,
+        "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
+        "outlineWidth": "3px",
+        "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px",
+        "tabindex": null,
+        "type": "button",
+        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "hasDataTipEn": true,
+        "hasDataTipZh": true
+      }
+    },
+    {
+      "viewport": "desktop",
+      "locale": "en",
+      "theme": "light",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "open_by": "keyboard_focus",
+      "captured": true,
+      "file": "cells/153337142a2d41ad.png",
+      "alias": "family-tally-tip-light-en-desktop.png",
+      "sha256": "153337142a2d41ad18a03e7b4b88ba3f91cff8f4487a830e2c2c7f5750ec4c81",
+      "bytes": 70261,
+      "width": 1008,
+      "height": 415,
+      "applied_theme": "light",
+      "applied_locale": "en",
+      "overlay": "clean",
+      "focus_info": {
+        "activeIsLens": true,
+        "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
+        "outlineWidth": "3px",
+        "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px",
+        "tabindex": null,
+        "type": "button",
+        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "hasDataTipEn": true,
+        "hasDataTipZh": true
+      }
+    },
+    {
+      "viewport": "desktop",
+      "locale": "zh",
+      "theme": "dark",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "open_by": "keyboard_focus",
+      "captured": true,
+      "file": "cells/9f987d0859cf24f0.png",
+      "alias": "family-tally-tip-dark-zh-desktop.png",
+      "sha256": "9f987d0859cf24f0223f1cbd21039a229d960554041f0bab7dafd680e1e127f1",
+      "bytes": 70562,
+      "width": 1008,
+      "height": 395,
+      "applied_theme": "dark",
+      "applied_locale": "zh",
+      "overlay": "clean",
+      "focus_info": {
+        "activeIsLens": true,
+        "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
+        "outlineWidth": "3px",
+        "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px",
+        "tabindex": null,
+        "type": "button",
+        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "hasDataTipEn": true,
+        "hasDataTipZh": true
+      }
+    },
+    {
+      "viewport": "desktop",
+      "locale": "zh",
+      "theme": "light",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "open_by": "keyboard_focus",
+      "captured": true,
+      "file": "cells/371d19b1af3524a3.png",
+      "alias": "family-tally-tip-light-zh-desktop.png",
+      "sha256": "371d19b1af3524a38b30cec4fb2d51eea2b776501b981298f1b9d9048e4819a0",
+      "bytes": 80036,
+      "width": 1008,
+      "height": 395,
+      "applied_theme": "light",
+      "applied_locale": "zh",
+      "overlay": "clean",
+      "focus_info": {
+        "activeIsLens": true,
+        "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
+        "outlineWidth": "3px",
+        "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px",
+        "tabindex": null,
+        "type": "button",
+        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "hasDataTipEn": true,
+        "hasDataTipZh": true
+      }
+    },
+    {
+      "viewport": "mobile",
+      "locale": "en",
+      "theme": "dark",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "open_by": "keyboard_focus",
+      "captured": true,
+      "file": "cells/5bdc3e7b3ec29d98.png",
+      "alias": "family-tally-tip-dark-en-mobile.png",
+      "sha256": "5bdc3e7b3ec29d9806080fb7dae9f445ab61dada6bcac0b578fa660e59ba2709",
+      "bytes": 111910,
+      "width": 320,
+      "height": 883,
+      "applied_theme": "dark",
+      "applied_locale": "en",
+      "overlay": "clean",
+      "focus_info": {
+        "activeIsLens": true,
+        "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
+        "outlineWidth": "3px",
+        "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px",
+        "tabindex": null,
+        "type": "button",
+        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "hasDataTipEn": true,
+        "hasDataTipZh": true
+      }
+    },
+    {
+      "viewport": "mobile",
+      "locale": "en",
+      "theme": "light",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "open_by": "keyboard_focus",
+      "captured": true,
+      "file": "cells/76cd0920142d4ff0.png",
+      "alias": "family-tally-tip-light-en-mobile.png",
+      "sha256": "76cd0920142d4ff001c3930a66957f6c548b9bcf6878170da720c3265cffa01e",
+      "bytes": 120988,
+      "width": 320,
+      "height": 883,
+      "applied_theme": "light",
+      "applied_locale": "en",
+      "overlay": "clean",
+      "focus_info": {
+        "activeIsLens": true,
+        "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
+        "outlineWidth": "3px",
+        "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px",
+        "tabindex": null,
+        "type": "button",
+        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "hasDataTipEn": true,
+        "hasDataTipZh": true
+      }
+    },
+    {
+      "viewport": "mobile",
+      "locale": "zh",
+      "theme": "dark",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "open_by": "keyboard_focus",
+      "captured": true,
+      "file": "cells/e92cf7f87796d50f.png",
+      "alias": "family-tally-tip-dark-zh-mobile.png",
+      "sha256": "e92cf7f87796d50fd009a73bb2ccf3ede4940c7c01d579142e74a9f6204efb53",
+      "bytes": 111054,
+      "width": 320,
+      "height": 863,
+      "applied_theme": "dark",
+      "applied_locale": "zh",
+      "overlay": "clean",
+      "focus_info": {
+        "activeIsLens": true,
+        "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
+        "outlineWidth": "3px",
+        "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px",
+        "tabindex": null,
+        "type": "button",
+        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "hasDataTipEn": true,
+        "hasDataTipZh": true
+      }
+    },
+    {
+      "viewport": "mobile",
+      "locale": "zh",
+      "theme": "light",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "open_by": "keyboard_focus",
+      "captured": true,
+      "file": "cells/33b166f4d5b3bb61.png",
+      "alias": "family-tally-tip-light-zh-mobile.png",
+      "sha256": "33b166f4d5b3bb614f681958760f105a35a33863e612d4ac54ce8285d5a69cef",
+      "bytes": 118501,
+      "width": 320,
+      "height": 863,
+      "applied_theme": "light",
+      "applied_locale": "zh",
+      "overlay": "clean",
+      "focus_info": {
+        "activeIsLens": true,
+        "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
+        "outlineWidth": "3px",
+        "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px",
+        "tabindex": null,
+        "type": "button",
+        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "hasDataTipEn": true,
+        "hasDataTipZh": true
+      }
+    }
+  ],
+  "keyboard_probes": [
+    {
+      "tabs_to_reach_lens": 1,
+      "tab_reached_lens": true,
+      "tip_state_on_focus": {
+        "activeIsLens": true,
+        "popoverExists": true,
+        "popoverIsOpen": true,
+        "popoverDisplay": "block",
+        "popoverVisibility": "visible",
+        "popoverOpacity": "0.852552",
+        "popoverRole": "tooltip"
+      },
+      "after_esc": {
+        "popoverExists": true,
+        "popoverIsOpen": false,
+        "popoverDisplay": "block",
+        "popoverVisibility": "visible"
+      },
+      "focus_ring": {
+        "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
+        "outlineWidth": "3px",
+        "outlineColor": "color(srgb 0.356863 0.607843 0.941176)",
+        "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px"
+      },
+      "theme": "dark",
+      "locale": "en"
+    },
+    {
+      "tabs_to_reach_lens": 1,
+      "tab_reached_lens": true,
+      "tip_state_on_focus": {
+        "activeIsLens": true,
+        "popoverExists": true,
+        "popoverIsOpen": true,
+        "popoverDisplay": "block",
+        "popoverVisibility": "visible",
+        "popoverOpacity": "0.914883",
+        "popoverRole": "tooltip"
+      },
+      "after_esc": {
+        "popoverExists": true,
+        "popoverIsOpen": false,
+        "popoverDisplay": "block",
+        "popoverVisibility": "visible"
+      },
+      "focus_ring": {
+        "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
+        "outlineWidth": "3px",
+        "outlineColor": "color(srgb 0.159686 0.354667 0.917647)",
+        "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px"
+      },
+      "theme": "light",
+      "locale": "en"
+    },
+    {
+      "tabs_to_reach_lens": 1,
+      "tab_reached_lens": true,
+      "tip_state_on_focus": {
+        "activeIsLens": true,
+        "popoverExists": true,
+        "popoverIsOpen": true,
+        "popoverDisplay": "block",
+        "popoverVisibility": "visible",
+        "popoverOpacity": "0.852287",
+        "popoverRole": "tooltip"
+      },
+      "after_esc": {
+        "popoverExists": true,
+        "popoverIsOpen": false,
+        "popoverDisplay": "block",
+        "popoverVisibility": "visible"
+      },
+      "focus_ring": {
+        "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
+        "outlineWidth": "3px",
+        "outlineColor": "color(srgb 0.356863 0.607843 0.941176)",
+        "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px"
+      },
+      "theme": "dark",
+      "locale": "zh"
+    },
+    {
+      "tabs_to_reach_lens": 1,
+      "tab_reached_lens": true,
+      "tip_state_on_focus": {
+        "activeIsLens": true,
+        "popoverExists": true,
+        "popoverIsOpen": true,
+        "popoverDisplay": "block",
+        "popoverVisibility": "visible",
+        "popoverOpacity": "0.851919",
+        "popoverRole": "tooltip"
+      },
+      "after_esc": {
+        "popoverExists": true,
+        "popoverIsOpen": false,
+        "popoverDisplay": "block",
+        "popoverVisibility": "visible"
+      },
+      "focus_ring": {
+        "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
+        "outlineWidth": "3px",
+        "outlineColor": "color(srgb 0.159686 0.354667 0.917647)",
+        "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px"
+      },
+      "theme": "light",
+      "locale": "zh"
+    }
+  ]
+}

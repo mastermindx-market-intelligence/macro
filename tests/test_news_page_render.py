@@ -400,8 +400,6 @@ def test_consequence_card_date_is_plain_not_raw_iso():
                 "title_en": "AAA reported earnings",
                 "title_zh": "AAA公布业绩",
                 "direct_tickers": ["AAA"],
-                "second_order_tickers": [],
-                "second_order_truncated": False,
             },
             {
                 "event_id": "cev-b",
@@ -411,8 +409,6 @@ def test_consequence_card_date_is_plain_not_raw_iso():
                 "title_en": "BBB reported earnings",
                 "title_zh": "BBB公布业绩",
                 "direct_tickers": ["BBB"],
-                "second_order_tickers": [],
-                "second_order_truncated": False,
             },
             {
                 "event_id": "cev-c",
@@ -422,8 +418,6 @@ def test_consequence_card_date_is_plain_not_raw_iso():
                 "title_en": "CCC reported earnings",
                 "title_zh": "CCC公布业绩",
                 "direct_tickers": ["CCC"],
-                "second_order_tickers": [],
-                "second_order_truncated": False,
             },
         ],
     }
@@ -462,8 +456,6 @@ def test_consequence_one_row_renders_card_not_empty():
             "title_en": "AAPL reported earnings",
             "title_zh": "AAPL公布业绩",
             "direct_tickers": ["AAPL"],
-            "second_order_tickers": [],
-            "second_order_truncated": False,
         }],
     }
     html = _env().get_template("news.html.j2").render(**vm)
@@ -498,8 +490,6 @@ def test_consequence_fallback_label_renders():
             "title_en": "AAPL reported earnings",
             "title_zh": "AAPL公布业绩",
             "direct_tickers": ["AAPL"],
-            "second_order_tickers": [],
-            "second_order_truncated": False,
         }],
     }
     html = _env().get_template("news.html.j2").render(**vm)
@@ -529,8 +519,6 @@ def test_consequence_zh_earnings_card_has_no_ascii_spaces():
             "title_en": "AAPL reported earnings",
             "title_zh": "AAPL公布业绩",
             "direct_tickers": ["AAPL"],
-            "second_order_tickers": [],
-            "second_order_truncated": False,
         }],
     }
     html = _env().get_template("news.html.j2").render(**vm)
@@ -563,8 +551,6 @@ def test_consequence_stance_and_section_line_once_each_locale():
             "title_en": "AAPL reported earnings",
             "title_zh": "AAPL公布业绩",
             "direct_tickers": ["AAPL"],
-            "second_order_tickers": [],
-            "second_order_truncated": False,
             "note_en": None,
             "note_zh": None,
         }],
@@ -606,8 +592,6 @@ def test_consequence_flip_note_renders_without_size_slot():
             "title_en": "Canada's macro backdrop turned from stagflation to reflation",
             "title_zh": "加拿大宏观环境由滞胀转向再通胀",
             "direct_tickers": ["EWC"],
-            "second_order_tickers": [],
-            "second_order_truncated": False,
             "note_en": "changed direction twice this week — unstable",
             "note_zh": "本周两度转向——尚不稳定",
         }],
@@ -633,9 +617,50 @@ def test_template_and_built_page_omit_no_named_ticker_branch():
     assert "未点名标的" not in html
 
 
-def test_second_order_only_row_prints_also_watching_not_named():
-    """Q1=strip: rows are closed-key (no second_order_*), the Also-tile branch
-    is gone, and "Also watching" / "同时关注" never appear in the section."""
+def test_row_without_direct_tickers_never_prints_named():
+    """F05-017 R2 D3: a row with ``direct_tickers == []`` (closed-key
+    contract; second-order events stripped per Q1=strip) renders the
+    ticker badge as absent in BOTH locales — never the "Also watching"
+    / "同时关注" branch, never "Named" / "点名", never "No named ticker"
+    / "未点名标的"."""
+    vm = _full_vm()
+    vm["chronicle_impact"] = {
+        "stance_en": "Recent market events and the names they touch — shown only when an event maps to a named exposure.",
+        "stance_zh": "近期市场事件及其涉及的标的——仅在事件对应到明确标的时显示。",
+        "reason_en": None,
+        "reason_zh": None,
+        "empty_kind": None,
+        "window_label_en": "Events from 31 Aug to 7 Sep 2026",
+        "window_label_zh": "2026年8月31日至9月7日的事件",
+        "rows": [{
+            "event_id": "cev-so",
+            "event_time": "2026-09-07",
+            "event_time_en": "7 Sep 2026",
+            "event_time_zh": "2026年9月7日",
+            "title_en": "A regime event without series title",
+            "title_zh": "宏观环境事件（无系列标题）",
+            "direct_tickers": [],
+            "note_en": None,
+            "note_zh": None,
+        }],
+    }
+    html = _env().get_template("news.html.j2").render(**vm)
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    section = html[start:end]
+    assert "Also watching" not in section
+    assert "同时关注" not in section
+    # Direct-ticker absence is honest: no "Named" / "点名" chip.
+    assert '<span class="l-en">Named</span>' not in section
+    assert '<span class="l-zh">点名</span>' not in section
+    # The dead branch is gone.
+    assert "No named ticker" not in section
+    assert "未点名标的" not in section
+
+
+def test_row_with_direct_tickers_prints_named():
+    """F05-017 R2 D3: the companion to the test above — a direct-ticker
+    row renders the "Named" / "点名" chip in BOTH locales."""
     vm = _full_vm()
     vm["chronicle_impact"] = {
         "stance_en": "Recent market events and the names they touch — shown only when an event maps to a named exposure.",
@@ -661,13 +686,9 @@ def test_second_order_only_row_prints_also_watching_not_named():
     start = html.index('id="nxConsequence"')
     end = html.index("</section>", start)
     section = html[start:end]
-    assert "Also watching" not in section
-    assert "同时关注" not in section
-    assert "NVDA" in section
     assert '<span class="l-en">Named</span>' in section
     assert '<span class="l-zh">点名</span>' in section
-    assert "No named ticker" not in section
-    assert "未点名标的" not in section
+    assert "NVDA" in section
 
 
 def test_build_site_passes_unfiltered_event_spine_to_glance():
@@ -943,30 +964,8 @@ console.log(JSON.stringify({passed:true}));
 # --------------------------------------------------------------------------- #
 # F05-017 family_tally tip + closed-key row guards
 # --------------------------------------------------------------------------- #
-def _format_state_phrase(state, in_window, named):
-    """Mirror impact._format_state(...) used to assemble the tip strings."""
-    if state == "no_events":
-        return "no events this week", "本周无事件"
-    if state == "none_named":
-        return (f"{in_window} events, none name a single stock",
-                f"{in_window}个事件，均未点名个股")
-    return (f"{in_window} events, {named} name a stock",
-            f"{in_window}个事件，{named}个点名个股")
-
-
-def _build_tip(tally):
-    en_parts = ["This week by event type —"]
-    zh_parts = ["本周按事件类型——"]
-    for ft in tally:
-        in_w = int(ft.get("in_window") or 0)
-        named_n = int(ft.get("named") or 0)
-        shown_n = int(ft.get("shown") or 0)
-        phr_en, phr_zh = _format_state_phrase(ft["state"], in_w, named_n)
-        en_parts.append(f"{ft['label_en']} ({shown_n}/{in_w}): {phr_en}")
-        zh_parts.append(f"{ft['label_zh']}({shown_n}/{in_w}):{phr_zh}")
-    en_parts.append("Cards show only events that name a stock.")
-    zh_parts.append("卡片仅展示点名的个股事件。")
-    return " ".join(en_parts), " ".join(zh_parts)
+from engine.chronicle import impact as _impact_mod  # R5 — use the engine's
+                                                       # tip output, not a mirror.
 
 
 def _ci_with_rows(extra_rows=None, tally=None, **overrides):
@@ -990,7 +989,10 @@ def _ci_with_rows(extra_rows=None, tally=None, **overrides):
          "label_zh": "风险雷达变化", "state": "no_events", "in_window": 0,
          "named": 0, "shown": 0},
     ]
-    tip_en, tip_zh = _build_tip(base_tally)
+    # R5: the render test imports the engine's tip formatter rather than
+    # mirroring it. Any change to R1 punctuation / R2 pluralization shows
+    # up in BOTH this test path and the engine's own tip test.
+    tip_en, tip_zh = _impact_mod.build_family_tally_tip(base_tally)
     base = {
         "stance_en": "Recent market events and the names they touch — shown only when an event maps to a named exposure.",
         "stance_zh": "近期市场事件及其涉及的标的——仅在事件对应到明确标的时显示。",
@@ -1014,9 +1016,10 @@ def _ci_with_rows(extra_rows=None, tally=None, **overrides):
         base["rows"] = extra_rows
     base.update(overrides)
     if "family_tally" in overrides or tally is not None:
-        # If caller overrode tally, recompute the tip strings.
-        base["family_tally_tip_en"], base["family_tally_tip_zh"] = _build_tip(
-            base["family_tally"])
+        # If caller overrode tally, recompute via the engine's formatter.
+        base["family_tally_tip_en"], base["family_tally_tip_zh"] = (
+            _impact_mod.build_family_tally_tip(base["family_tally"])
+        )
     return base
 
 
@@ -1041,7 +1044,7 @@ def test_family_tally_tip_is_lens_q_button_with_both_locale_attrs():
     assert tip_en.endswith("Cards show only events that name a stock.")
     assert tip_zh.endswith("卡片仅展示点名的个股事件。")
     # Per-family state phrases present in both locales.
-    assert "Earnings reports (1/3):" in section or "Earnings reports:" in section
+    assert "Earnings reports (1/3):" in section
     assert "业绩公告" in section
     assert "Earnings calls" in section
     assert "业绩电话会" in section
@@ -1090,6 +1093,61 @@ def test_family_tally_tip_omitted_when_tally_missing():
             "direct_tickers": ["AAPL"], "note_en": None, "note_zh": None,
         }],
     }
+    html = _env().get_template("news.html.j2").render(**vm)
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    section = html[start:end]
+    assert '<button type="button" class="lens-q"' not in section
+    assert "data-tip-en" not in section
+
+
+def test_family_tally_tip_full_width_zh_punctuation():
+    """F05-017 R1: ZH segments use full-width U+FF08 / U+FF09 parens and
+    U+FF1A colon; segments joined with U+FF1B (；). EN uses ASCII with
+    "; " joins and ". " before the close. The EN-side aria-label mirrors
+    tip_en verbatim per the sibling idiom (``bonds.html.j2:5``)."""
+    vm = _full_vm()
+    vm["chronicle_impact"] = _ci_with_rows()
+    html = _env().get_template("news.html.j2").render(**vm)
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    section = html[start:end]
+    m = re.search(
+        r'data-tip-en="([^"]+)"\s+data-tip-zh="([^"]+)"',
+        section,
+    )
+    assert m, section
+    tip_en = m.group(1)
+    tip_zh = m.group(2)
+    # ZH: full-width parens + colon inside each segment.
+    assert "（" in tip_zh
+    assert "）" in tip_zh
+    assert "：" in tip_zh
+    # ZH segments joined by U+FF1B.
+    assert "；" in tip_zh
+    # ZH close preceded by full-width period (U+3002).
+    assert "。卡片仅展示点名的个股事件。" in tip_zh
+    # EN: ASCII parens + colon, joined with "; ", close preceded by ". ".
+    assert "; " in tip_en
+    assert ". Cards show only events that name a stock." in tip_en
+    # R2 plurals: with named=1, EN shows "1 name a stock" (singular).
+    assert "1 name a stock" in tip_en
+    assert "1 names a stock" not in tip_en
+
+
+def test_family_tally_tip_omitted_on_newest_200_fallback_window():
+    """F05-017 R8: window_mode == newest_200_fallback emits NO tip — the
+    ``family_tally_tip_en/zh`` keys are empty strings, the template renders
+    no ``.lens-q`` button, and there is no ``data-tip-en`` attribute.
+    """
+    vm = _full_vm()
+    vm["chronicle_impact"] = _ci_with_rows(
+        window_mode="newest_200_fallback",
+        window_label_en="Latest 200 recorded events",
+        window_label_zh="最近记录的200个事件",
+        family_tally_tip_en="",
+        family_tally_tip_zh="",
+    )
     html = _env().get_template("news.html.j2").render(**vm)
     start = html.index('id="nxConsequence"')
     end = html.index("</section>", start)
@@ -1161,7 +1219,7 @@ def test_consequence_honest_empty_all_families_fixture_in_en_and_zh():
          "label_zh": "风险雷达变化", "state": "no_events", "in_window": 0,
          "named": 0, "shown": 0},
     ]
-    tip_en, tip_zh = _build_tip(tally)
+    tip_en, tip_zh = _impact_mod.build_family_tally_tip(tally)
     vm["chronicle_impact"] = {
         "stance_en": None,
         "stance_zh": None,
@@ -1191,19 +1249,20 @@ def test_consequence_honest_empty_all_families_fixture_in_en_and_zh():
     )
     assert m, section
     tip_en, tip_zh = m.group(2), m.group(3)
-    for label_en, label_zh in [
-        ("Research notes", "研究纪要"),
-        ("Economic data", "经济数据"),
-        ("Earnings reports", "业绩公告"),
-        ("Earnings calls", "业绩电话会"),
-        ("Macro backdrop shifts", "宏观环境转向"),
-        ("Risk radar shifts", "风险雷达变化"),
-    ]:
-        assert label_en in tip_en, f"missing {label_en} in EN tip"
-        assert label_zh in tip_zh, f"missing {label_zh} in ZH tip"
-    # Plain-word state phrases appear in the tip (not raw slugs).
-    assert "none name a single stock" in tip_en or "no events this week" in tip_en
-    assert "均未点名个股" in tip_zh or "本周无事件" in tip_zh
+    # R4 — single-string assertion per label, not a disjunctive chain.
+    assert "Research notes (0/4): 4 events, none name a single stock" in tip_en
+    assert "Economic data (0/2): 2 events, none name a single stock" in tip_en
+    assert "Earnings reports (0/0): no events this week" in tip_en
+    assert "Earnings calls (0/0): no events this week" in tip_en
+    assert "Macro backdrop shifts (0/1): 1 event, none name a single stock" in tip_en
+    assert "Risk radar shifts (0/0): no events this week" in tip_en
+    # ZH labels (full-width parens + colon).
+    assert "研究纪要（0/4）：4个事件，均未点名个股" in tip_zh
+    assert "经济数据（0/2）：2个事件，均未点名个股" in tip_zh
+    assert "业绩公告（0/0）：本周无事件" in tip_zh
+    assert "业绩电话会（0/0）：本周无事件" in tip_zh
+    assert "宏观环境转向（0/1）：1个事件，均未点名个股" in tip_zh
+    assert "风险雷达变化（0/0）：本周无事件" in tip_zh
     # Raw family slugs never appear anywhere in the section.
     for slug in ("earnings_call", "macro_release", "regime_flip", "risk_band",
                  "research_vault", "prophet_ledger"):

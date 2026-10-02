@@ -798,6 +798,24 @@ def test_glance_fallback_carries_latest_200_label():
     assert len(surface["rows"]) == 8
 
 
+def test_glance_fallback_emits_no_tip():
+    """F05-017 R8: window_mode == newest_200_fallback emits NO tip —
+    inventing fallback copy is design work that is out of scope. The
+    build-site fallback dict carries no family_tally, and the template
+    renders no `.lens-q` for the empty tip.
+    """
+    undated = []
+    for i in range(210):
+        ev = _ev(f"undated-no-tip-{i:03d}", "2026-01-01",
+                 source="earnings", tickers=[f"U{i}"])
+        ev["date"] = "not-a-date"
+        undated.append(ev)
+    surface = impact.glance_consequence_surface(undated)
+    assert surface["window_mode"] == impact.GLANCE_WINDOW_FALLBACK
+    assert surface["family_tally_tip_en"] == ""
+    assert surface["family_tally_tip_zh"] == ""
+
+
 def test_glance_earnings_row_with_ticker_has_no_size_slot():
     """NM-4: an earnings row with a ticker is one card and carries no size fields."""
     ev = _ev("earn-aapl", "2026-09-07", source="earnings", tickers=["AAPL"])
@@ -887,24 +905,46 @@ def test_glance_fair_share_38_earnings_22_calls_yields_4_plus_4():
 
 
 def test_glance_single_family_byte_identical_to_global_newest_first():
-    """F05-017: with one qualifying family, the fair-share output is
-    byte-identical to the prior global newest-first selection (cap=8)."""
-    earning = [
-        _ev(f"sf-{i}", "2026-09-07", source="earnings", tickers=[f"E{i}"])
-        for i in range(10)
+    """F05-017 R6: with one qualifying family, the fair-share output is
+    byte-identical to the prior global newest-first selection (cap=8).
+    Fixture spans three dates so ordering is exercised end-to-end.
+
+    Expected ids derived from main's ``impact.py`` at merge-base
+    ``052e02d085b0`` (``engine/chronicle/schema.py:45`` ``make_id``);
+    the exact command used was:
+
+        python3 -c 'from engine.chronicle import schema; \\
+                [print(schema.make_id(\"earnings\", f\"sf-{grp}-{i}\", d)) \\
+                 for grp, n in ((\"a\", 4), (\"b\", 3), (\"c\", 3)) \\
+                 for d, i in ((d, i) for d in (\"2026-09-07\", \"2026-09-06\", \"2026-09-05\") \\
+                              for i in range(n))]' | head -8
+
+    See the literal list below — any change to the make_id hash recipe
+    breaks this pin and must be re-derived.
+    """
+    events = []
+    events += [_ev(f"sf-a-{i}", "2026-09-07", source="earnings",
+                   tickers=[f"EA{i}"]) for i in range(4)]
+    events += [_ev(f"sf-b-{i}", "2026-09-06", source="earnings",
+                   tickers=[f"EB{i}"]) for i in range(3)]
+    events += [_ev(f"sf-c-{i}", "2026-09-05", source="earnings",
+                   tickers=[f"EC{i}"]) for i in range(3)]
+    surface = impact.glance_consequence_surface(events, limit=8)
+    expected_ids = [
+        "cev-earnings-c1da123f941b",
+        "cev-earnings-9b7b7007712f",
+        "cev-earnings-1c69e155d8f2",
+        "cev-earnings-02485e4e05b1",
+        "cev-earnings-bb578e4a611a",
+        "cev-earnings-864cabdb2a7b",
+        "cev-earnings-7d182730a4ec",
+        "cev-earnings-b9dc172a3678",
     ]
-    surface = impact.glance_consequence_surface(earning, limit=8)
-    # Compute the expected ordering the old global cap would have used:
-    # sort all 10 by (event_time desc, event_id desc), take the first 8.
-    expected = sorted(
-        earning, key=lambda ev: (ev["date"] or "", ev["id"] or ""), reverse=True,
-    )[:8]
-    expected_ids = [ev["id"] for ev in expected]
     actual_ids = [r["event_id"] for r in surface["rows"]]
-    assert actual_ids == expected_ids
+    assert actual_ids == expected_ids, (actual_ids, expected_ids)
     assert len(surface["rows"]) == 8
     assert all(r["family"] == "earnings" for r in surface["rows"])
-    # family_tally still records 10 in-window rows, 1 shown.
+    # family_tally records 10 in-window rows, 8 shown (cap).
     all_tally = {ft["family"]: ft for ft in surface["family_tally"]}
     assert all_tally["earnings"]["state"] == "named"
     assert all_tally["earnings"]["in_window"] == 10
@@ -912,20 +952,22 @@ def test_glance_single_family_byte_identical_to_global_newest_first():
     assert all_tally["earnings"]["shown"] == 8
 
 
-def test_glance_family_tally_states_named_none_named_no_events():
-    """F05-017: family_tally carries named / none_named / no_events states
-    with integer in_window / named / shown.
+def test_glance_family_tally_named_none_named_states():
+    """F05-017 R2 D2(a): the tally reflects the WINDOW pool per eligible
+    source BEFORE the row exposure filter — a non-series family whose
+    events carry no direct ticker (macro_release below) lands as
+    ``none_named`` with ``in_window == event count`` and ``named == 0``;
+    a flip-collapse family whose collapsed union is empty
+    (regime_flip / risk_band below) is the same.
 
     Per-event reachability:
-      - named: any in-window event with ≥1 direct ticker (earnings below).
-      - none_named: an in-window event from a flip-collapse family
-        (regime_flip / risk_band) whose union of direct tickers is empty
-        after collapse. Non-series families with 0 tickers are dropped by
-        the existing non-series-row filter BEFORE pre_buckets (a 0-ticker
-        macro_release is a missing panel entry, not a none_named tally).
-      - no_events: the family has no in-window event at all (research_vault,
-        earnings_call below) OR a non-series family had its only 0-ticker
-        event filtered out (macro_release below).
+      - named: any in-window event with >=1 direct ticker (earnings below).
+      - none_named: >=1 in-window event, none with a direct ticker
+        (macro_release / regime_flip / risk_band below — the 5-ticker-less
+        probe required by D2(a) is in
+        ``test_glance_family_tally_five_tickerless_macro_events_state_none_named``).
+      - no_events: 0 events in window (the control in
+        ``test_glance_family_tally_no_events_when_window_empty_for_family``).
     """
     earnings = _ev("tally-earn", "2026-09-07", source="earnings",
                    tickers=["E1"])
@@ -947,7 +989,14 @@ def test_glance_family_tally_states_named_none_named_no_events():
     assert tally["earnings"]["in_window"] == 1
     assert tally["earnings"]["named"] == 1
     assert tally["earnings"]["shown"] == 1
-    # none_named: flip-collapse family whose collapsed union is empty.
+    # none_named: ticker-less in_window events count even though they
+    # never render as cards. macro_release is the canonical D2(a) probe
+    # (a non-series family whose only window entry has zero tickers).
+    assert tally["macro_release"]["state"] == "none_named"
+    assert tally["macro_release"]["in_window"] == 1
+    assert tally["macro_release"]["named"] == 0
+    assert tally["macro_release"]["shown"] == 0
+    # none_named: flip-collapse families whose collapsed union is empty.
     assert tally["regime_flip"]["state"] == "none_named"
     assert tally["regime_flip"]["in_window"] == 1
     assert tally["regime_flip"]["named"] == 0
@@ -956,16 +1005,6 @@ def test_glance_family_tally_states_named_none_named_no_events():
     assert tally["risk_band"]["in_window"] == 1
     assert tally["risk_band"]["named"] == 0
     assert tally["risk_band"]["shown"] == 0
-    # no_events: a non-series family with 0 tickers is filtered before the
-    # pre_buckets count, so it shows as 0 in_window (the user's honest
-    # reading is "no event in this window named a stock"). True no-events
-    # families (research_vault, earnings_call) also land here.
-    assert tally["macro_release"]["state"] == "no_events"
-    assert tally["macro_release"]["in_window"] == 0
-    assert tally["research_vault"]["state"] == "no_events"
-    assert tally["research_vault"]["in_window"] == 0
-    assert tally["earnings_call"]["state"] == "no_events"
-    assert tally["earnings_call"]["in_window"] == 0
     # family_tally is ordered in schema.SOURCES index order (prophet_ledger
     # untallied).
     families_in_order = [ft["family"] for ft in surface["family_tally"]]
@@ -973,6 +1012,88 @@ def test_glance_family_tally_states_named_none_named_no_events():
         "research_vault", "macro_release", "earnings", "earnings_call",
         "regime_flip", "risk_band",
     ]
+
+
+def test_glance_family_tally_five_tickerless_macro_events_state_none_named():
+    """F05-017 D2(a): 5 ticker-less macro_release events → state none_named,
+    in_window 5, named 0. The bug the prior builder locked in — non-series
+    ticker-less events never reaching pre_buckets — is gone; the bucket now
+    sees the window pool, not the post-filter row list.
+    """
+    macros = []
+    for i in range(5):
+        ev = _ev(f"tally-macro5-{i}", "2026-09-07", source="macro_release",
+                 tickers=[])
+        ev["title"] = f"Macro print {i}: claims = +200 (2026-09-07)"
+        macros.append(ev)
+    # One ticker-bearing earnings event so the surface is non-empty;
+    # otherwise we'd be measuring (D2(b))'s control, not (D2)(a).
+    earnings = _ev("tally-earn-pair", "2026-09-07", source="earnings",
+                   tickers=["E1"])
+    surface = impact.glance_consequence_surface(macros + [earnings], limit=8)
+    tally = {ft["family"]: ft for ft in surface["family_tally"]}
+    assert tally["macro_release"]["state"] == "none_named"
+    assert tally["macro_release"]["in_window"] == 5
+    assert tally["macro_release"]["named"] == 0
+    assert tally["macro_release"]["shown"] == 0
+
+
+def test_glance_family_tally_no_events_when_window_empty_for_family():
+    """F05-017 D2(b): a family with ZERO events in the window is the control
+    — state no_events, in_window 0, named 0, shown 0.
+    """
+    # An earnings_call input that has no tickers and no series_key is
+    # filtered before rows, but it still counts as 1 in_window if it
+    # entered the eligible pool — so to truly test (b) the corpus must
+    # contain NO event for that family at all.
+    earnings = _ev("tally-control-earn", "2026-09-07", source="earnings",
+                   tickers=["E1"])
+    surface = impact.glance_consequence_surface([earnings], limit=8)
+    tally = {ft["family"]: ft for ft in surface["family_tally"]}
+    # earnings_call, research_vault, macro_release, regime_flip,
+    # risk_band are absent from the input → no_events, in_window 0.
+    for fam in ("earnings_call", "research_vault", "macro_release",
+                "regime_flip", "risk_band"):
+        assert tally[fam]["state"] == "no_events"
+        assert tally[fam]["in_window"] == 0
+        assert tally[fam]["named"] == 0
+        assert tally[fam]["shown"] == 0
+
+
+def test_glance_second_order_only_event_no_row_and_none_named():
+    """F05-017 D2(d): a second-order-only projection yields NO glance row
+    AND its family tallies none_named (in_window=1, named=0). The closed-
+    key contract carries direct_tickers, never second_order_, and the prior
+    builder's dead `second_order_tickers` filter is gone — a non-series
+    event with only second-order exposure has nothing to render."""
+    earnings_call = _ev(
+        "tally-so", "2026-09-07", source="earnings_call",
+        tickers=[],
+    )
+    earnings_call["title"] = "Earnings call: E1 Q3 FY2026 — neutral"
+    # Force the projection to have ONLY a second-order exposure: pass
+    # second_order_tickers=[E1] without any direct. The projector then
+    # emits a single `second_order` exposure, the row builder skips it
+    # (closed-key rows require a direct ticker for non-series events),
+    # but the family tally counts it as in_window=1, named=0.
+    proj = impact.project_event_impact(
+        earnings_call,
+        second_order_tickers=["E1"],
+        second_order_sources={"E1": ["cev-other"]},
+    )
+    original = impact.project_events_impact
+    impact.project_events_impact = lambda *_a, **_kw: [proj]
+    try:
+        surface = impact.glance_consequence_surface([earnings_call], limit=8)
+    finally:
+        impact.project_events_impact = original
+    # No row emitted (second-order-only events never render).
+    assert surface["rows"] == []
+    tally = {ft["family"]: ft for ft in surface["family_tally"]}
+    assert tally["earnings_call"]["state"] == "none_named"
+    assert tally["earnings_call"]["in_window"] == 1
+    assert tally["earnings_call"]["named"] == 0
+    assert tally["earnings_call"]["shown"] == 0
 
 
 def test_glance_prophet_ledger_is_never_tallied():
@@ -985,10 +1106,16 @@ def test_glance_prophet_ledger_is_never_tallied():
     earnings = _ev("tally-earn2", "2026-09-07", source="earnings",
                    tickers=["E1"])
     surface = impact.glance_consequence_surface([prophet, earnings], limit=8)
+    # prophet_ledger absent from the tally (typed exclusion).
     assert all(ft["family"] != "prophet_ledger"
                for ft in surface["family_tally"])
-    assert "prophet_ledger" not in {ft["family"]
-                                       for ft in surface["family_tally"]}
+    # Prophet events also did NOT bump earnings_call/research_vault/etc —
+    # only ` earnings` is named, named==1.
+    families_with_named = [
+        ft["family"] for ft in surface["family_tally"]
+        if ft["named"] >= 1
+    ]
+    assert families_with_named == ["earnings"]
 
 
 def test_glance_rows_are_closed_key_no_calibrated_no_causal_no_second_order():
@@ -1013,6 +1140,59 @@ def test_glance_rows_are_closed_key_no_calibrated_no_causal_no_second_order():
 def test_glance_pinned_glance_named_exposure_families_absence_holds():
     """F05-017: still no GLANCE_NAMED_EXPOSURE_FAMILIES constant introduced."""
     assert not hasattr(impact, "GLANCE_NAMED_EXPOSURE_FAMILIES")
+
+
+def test_glance_fair_share_three_families_cap_break_3_3_2():
+    """F05-017 R7: a 3-family fixture with different head dates forces a
+    3/3/2 split under cap=8 — earnings=3 (newest), earnings_call=3
+    (tied head → schema.SOURCES tie-break → wins), macro_release=2.
+    Bucket order = newest head event_time desc; ties broken by
+    schema.SOURCES index asc (earnings_call before macro_release).
+    Mid-pass cap break is exercised at slot 8.
+    """
+    # earnings: 3 events on D-7, 1 event on D-6, 1 event on D-5 (5 total).
+    earnings = (
+        [_ev(f"fs3-e-{i}", "2026-09-07", source="earnings",
+             tickers=[f"E{i}"]) for i in range(3)]
+        + [_ev("fs3-e-D6", "2026-09-06", source="earnings", tickers=["E5"]),
+           _ev("fs3-e-D5", "2026-09-05", source="earnings", tickers=["E6"])]
+    )
+    # earnings_call: 3 events on D-6 (head = D-6, beats macro's D-5).
+    earnings_calls = [
+        _ev(f"fs3-c-{i}", "2026-09-06", source="earnings_call",
+            tickers=[f"C{i}"]) for i in range(3)
+    ]
+    for c in earnings_calls:
+        c["title"] = f"Earnings call: {c['tickers'][0]} Q3 FY2026 — neutral"
+    # macro_release: 2 events on D-5.
+    macros = [
+        _ev(f"fs3-m-{i}", "2026-09-05", source="macro_release",
+            tickers=[f"M{i}"]) for i in range(2)
+    ]
+    for m in macros:
+        m["title"] = f"Macro print {m['tickers'][0]}: claims = +200"
+    events = earnings + earnings_calls + macros
+    surface = impact.glance_consequence_surface(events, limit=8)
+    assert surface["empty_kind"] is None
+    assert len(surface["rows"]) == 8
+    fam_counts: dict[str, int] = {}
+    for row in surface["rows"]:
+        fam_counts[row["family"]] = fam_counts.get(row["family"], 0) + 1
+    # 3/3/2 split — earnings wins the head (D-7), earnings_call takes
+    # the next 3 (head D-6, tied index tie-break → no echo), and
+    # macro_release rounds out the cap with 2.
+    assert fam_counts == {"earnings": 3, "earnings_call": 3,
+                          "macro_release": 2}, fam_counts
+    # The 'families' dict is byte-compatible with the prior shape
+    # (shown count per family, not in_window count).
+    assert surface["families"] == {
+        "earnings": 3, "earnings_call": 3, "macro_release": 2,
+    }
+    # Deterministic.
+    again = impact.glance_consequence_surface(events, limit=8)
+    assert [r["event_id"] for r in again["rows"]] == [
+        r["event_id"] for r in surface["rows"]
+    ]
 
 
 def test_glance_tip_strings_have_all_families_and_state_phrases():
@@ -1045,11 +1225,15 @@ def test_glance_tip_strings_have_all_families_and_state_phrases():
     ]:
         assert label_en in tip_en
         assert label_zh in tip_zh
-    # Plain-word state phrases — not raw slugs.
-    assert "1 events, 1 name a stock" in tip_en
+    # R2 pluralization (N=1 → singular): earnings (named=1) reads
+    # "1 event, 1 name a stock" not "1 events, 1 name a stock".
+    assert "1 event, 1 name a stock" in tip_en
     assert "1个事件，1个点名个股" in tip_zh
-    assert "none name a single stock" in tip_en
+    # macro_release (in_window=1, named=0) → "1 event, none name a single stock".
+    assert "1 event, none name a single stock" in tip_en
     assert "均未点名个股" in tip_zh
+    # regime_flip flip-collapse pair (in_window=1, named=0).
+    assert "1 event, none name a single stock" in tip_en
     for slug in ("earnings_call", "macro_release", "regime_flip",
                  "risk_band", "research_vault", "prophet_ledger"):
         assert slug not in tip_en
