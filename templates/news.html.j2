@@ -1023,12 +1023,18 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
 
 {# F05/MO-PAID-017 consequence glance — News Feed entry point, not Market-Feed.
    Single-column wrapper (not nx-cols). Reuses existing .nx-rel cards.
-   Dark/light treatments live in the page stylesheet above. #}
+   Dark/light treatments live in the page stylesheet above.
+   F05-017: family_tally tip is a single string-tier LENS trigger (lens-q)
+   appended to the window-label line. Rows are closed-key — no further-
+   reach branch remains (Q1=strip). The build-site fallback dict carries no
+   family_tally key, so the trigger is omitted in the no-tally case. #}
 {% set CI = chronicle_impact if chronicle_impact is mapping else none %}
+{% set _tip_en = (CI.family_tally_tip_en if CI and CI.family_tally_tip_en else '') %}
+{% set _tip_zh = (CI.family_tally_tip_zh if CI and CI.family_tally_tip_zh else '') %}
 <section class="nx-consequence" id="nxConsequence" aria-label="Event consequences">
     <h2 class="nx-sec-hd">{{ t('Event consequences','事件影响') }}</h2>
     {% if CI and CI.window_label_en %}
-    <p class="nx-sub">{{ t(CI.window_label_en, CI.window_label_zh or CI.window_label_en) }}</p>
+    <p class="nx-sub">{{ t(CI.window_label_en, CI.window_label_zh or CI.window_label_en) }}{% if _tip_en %} <button type="button" class="lens-q" aria-label="{{ _tip_en }}" data-tip-en="{{ _tip_en }}" data-tip-zh="{{ _tip_zh }}">?</button>{% endif %}</p>
     {% endif %}
     {% if CI and CI.rows and CI.stance_en %}
     <p class="nx-sub">{{ t(CI.stance_en, CI.stance_zh or CI.stance_en) }}</p>
@@ -1063,19 +1069,7 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
           <span>{{ t(row.note_en, row.note_zh or row.note_en) }}</span>
         </div>
         {% endif %}
-        {% if row.second_order_tickers %}
-        <div class="nx-meta">
-          <span>{{ t('Also watching','同时关注') }}</span>
-          {% for tk in row.second_order_tickers[:4] %}<a class="nx-tk" href="stock.html#{{ tk|e }}">{{ tk }}</a>{% endfor %}
-        </div>
-        {% elif row.second_order_truncated %}
-        <div class="nx-meta">
-          <span>{{ t('Also-watching list not available yet', '同时关注列表暂不可用') }}</span>
-          <span class="sep">·</span>
-          <span>{{ t('too many weak matches were dropped', '弱关联过多已全部剔除') }}
-            <span class="num">({{ row.second_order_dropped_count or 0 }})</span></span>
-        </div>
-        {% endif %}
+        {# F05-017: rows are closed-key; no further-reach branch remains. #}
       </div>
       {% endfor %}
     </div>

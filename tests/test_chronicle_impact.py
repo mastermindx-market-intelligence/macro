@@ -192,7 +192,8 @@ def test_broad_theme_fails_closed_through_glance_surface_window():
         corpus, eligible_themes=impact._eligible_themes(corpus))}
     assert "earnings" in projections[report["id"]]["second_order_theme_refused"]
     named_row = next(r for r in surface["rows"] if r["event_id"] == named[0]["id"])
-    assert named_row["second_order_tickers"] == []
+    # Q1=strip: second_order_* keys are absent from glance rows.
+    assert "second_order_tickers" not in named_row
 
 
 def test_second_order_ambiguous_cap_refuses_all_and_prints_dropped_count():
@@ -321,7 +322,11 @@ def test_glance_consequence_surface_explicitly_does_not_serve_market_feed():
     assert surface["event_count"] == 3
     assert surface["empty_kind"] is None
     assert [r["direct_tickers"] for r in surface["rows"]] == [["C"], ["B"], ["A"]]
-    assert surface["rows"][0]["calibrated_impact"] is None
+    # Candidate A / F10 NO-CALIBRATED-FIELD: calibrated_impact is absent
+    # from closed-key rows (was previously is None).
+    assert "calibrated_impact" not in surface["rows"][0]
+    assert "calibrated_impact_reason" not in surface["rows"][0]
+    assert "causal_label" not in surface["rows"][0]
 
 
 def test_glance_consequence_surface_null_on_empty():
@@ -850,6 +855,205 @@ def test_glance_flip_collapse_earlier_ticker_later_state():
     assert row["note_zh"] == impact.FLIP_UNSTABLE_ZH
     assert row["direct_tickers"] == ["SPY"]
     assert "size_en" not in row
+
+
+def test_glance_fair_share_38_earnings_22_calls_yields_4_plus_4():
+    """F05-017 fair-share: 38 earnings + 22 calls on a single date → 4+4."""
+    earnings = [
+        _ev(f"fshare-earn-{i:02d}", "2026-09-07", source="earnings",
+            tickers=[f"EAR{i:02d}"])
+        for i in range(38)
+    ]
+    calls = [
+        _ev(f"fshare-call-{i:02d}", "2026-09-07", source="earnings_call",
+            tickers=[f"CALL{i:02d}"])
+        for i in range(22)
+    ]
+    # Earnings call titles must match the regex branch.
+    for c in calls:
+        c["title"] = f"Earnings call: {c['tickers'][0]} Q3 FY2026 — neutral"
+    surface = impact.glance_consequence_surface(earnings + calls, limit=8)
+    assert surface["empty_kind"] is None
+    assert len(surface["rows"]) == 8
+    fam_counts = {}
+    for row in surface["rows"]:
+        fam_counts[row["family"]] = fam_counts.get(row["family"], 0) + 1
+    assert fam_counts == {"earnings": 4, "earnings_call": 4}, fam_counts
+    # Fair-share is deterministic.
+    again = impact.glance_consequence_surface(earnings + calls, limit=8)
+    assert [r["event_id"] for r in again["rows"]] == [
+        r["event_id"] for r in surface["rows"]
+    ]
+
+
+def test_glance_single_family_byte_identical_to_global_newest_first():
+    """F05-017: with one qualifying family, the fair-share output is
+    byte-identical to the prior global newest-first selection (cap=8)."""
+    earning = [
+        _ev(f"sf-{i}", "2026-09-07", source="earnings", tickers=[f"E{i}"])
+        for i in range(10)
+    ]
+    surface = impact.glance_consequence_surface(earning, limit=8)
+    # Compute the expected ordering the old global cap would have used:
+    # sort all 10 by (event_time desc, event_id desc), take the first 8.
+    expected = sorted(
+        earning, key=lambda ev: (ev["date"] or "", ev["id"] or ""), reverse=True,
+    )[:8]
+    expected_ids = [ev["id"] for ev in expected]
+    actual_ids = [r["event_id"] for r in surface["rows"]]
+    assert actual_ids == expected_ids
+    assert len(surface["rows"]) == 8
+    assert all(r["family"] == "earnings" for r in surface["rows"])
+    # family_tally still records 10 in-window rows, 1 shown.
+    all_tally = {ft["family"]: ft for ft in surface["family_tally"]}
+    assert all_tally["earnings"]["state"] == "named"
+    assert all_tally["earnings"]["in_window"] == 10
+    assert all_tally["earnings"]["named"] == 10
+    assert all_tally["earnings"]["shown"] == 8
+
+
+def test_glance_family_tally_states_named_none_named_no_events():
+    """F05-017: family_tally carries named / none_named / no_events states
+    with integer in_window / named / shown.
+
+    Per-event reachability:
+      - named: any in-window event with ≥1 direct ticker (earnings below).
+      - none_named: an in-window event from a flip-collapse family
+        (regime_flip / risk_band) whose union of direct tickers is empty
+        after collapse. Non-series families with 0 tickers are dropped by
+        the existing non-series-row filter BEFORE pre_buckets (a 0-ticker
+        macro_release is a missing panel entry, not a none_named tally).
+      - no_events: the family has no in-window event at all (research_vault,
+        earnings_call below) OR a non-series family had its only 0-ticker
+        event filtered out (macro_release below).
+    """
+    earnings = _ev("tally-earn", "2026-09-07", source="earnings",
+                   tickers=["E1"])
+    macro = _ev("tally-macro", "2026-09-07", source="macro_release",
+                tickers=[])
+    macro["title"] = "Macro print: claims = +200 (2026-09-07)"
+    regime = _ev("tally-regime", "2026-09-07", source="regime_flip",
+                 tickers=[])
+    regime["title"] = "CANADA regime: Q1 Goldilocks → Q3 Stagflation"
+    risk = _ev("tally-risk", "2026-09-07", source="risk_band",
+               tickers=[])
+    risk["title"] = "Risk band: oil supply shock probability 0.7"
+    surface = impact.glance_consequence_surface(
+        [earnings, macro, regime, risk], limit=8,
+    )
+    tally = {ft["family"]: ft for ft in surface["family_tally"]}
+    # named: earnings with a direct ticker.
+    assert tally["earnings"]["state"] == "named"
+    assert tally["earnings"]["in_window"] == 1
+    assert tally["earnings"]["named"] == 1
+    assert tally["earnings"]["shown"] == 1
+    # none_named: flip-collapse family whose collapsed union is empty.
+    assert tally["regime_flip"]["state"] == "none_named"
+    assert tally["regime_flip"]["in_window"] == 1
+    assert tally["regime_flip"]["named"] == 0
+    assert tally["regime_flip"]["shown"] == 0
+    assert tally["risk_band"]["state"] == "none_named"
+    assert tally["risk_band"]["in_window"] == 1
+    assert tally["risk_band"]["named"] == 0
+    assert tally["risk_band"]["shown"] == 0
+    # no_events: a non-series family with 0 tickers is filtered before the
+    # pre_buckets count, so it shows as 0 in_window (the user's honest
+    # reading is "no event in this window named a stock"). True no-events
+    # families (research_vault, earnings_call) also land here.
+    assert tally["macro_release"]["state"] == "no_events"
+    assert tally["macro_release"]["in_window"] == 0
+    assert tally["research_vault"]["state"] == "no_events"
+    assert tally["research_vault"]["in_window"] == 0
+    assert tally["earnings_call"]["state"] == "no_events"
+    assert tally["earnings_call"]["in_window"] == 0
+    # family_tally is ordered in schema.SOURCES index order (prophet_ledger
+    # untallied).
+    families_in_order = [ft["family"] for ft in surface["family_tally"]]
+    assert families_in_order == [
+        "research_vault", "macro_release", "earnings", "earnings_call",
+        "regime_flip", "risk_band",
+    ]
+
+
+def test_glance_prophet_ledger_is_never_tallied():
+    """F05-017: prophet_ledger (typed exclusion from glance) never appears in
+    family_tally, even when present in the input."""
+    prophet = _ev("tally-prophet", "2026-09-07", source="prophet_ledger",
+                  tickers=["FBRT"])
+    prophet["title"] = "Prophet close: FBRT BULL → T1_HIT (+10% in 25d)"
+    prophet["kind"] = "signal_close"
+    earnings = _ev("tally-earn2", "2026-09-07", source="earnings",
+                   tickers=["E1"])
+    surface = impact.glance_consequence_surface([prophet, earnings], limit=8)
+    assert all(ft["family"] != "prophet_ledger"
+               for ft in surface["family_tally"])
+    assert "prophet_ledger" not in {ft["family"]
+                                       for ft in surface["family_tally"]}
+
+
+def test_glance_rows_are_closed_key_no_calibrated_no_causal_no_second_order():
+    """F10 NO-CALIBRATED-FIELD + Q1=strip: row key set is the whitelist only."""
+    listed = _ev("closed-key-1", "2026-09-07", source="earnings",
+                tickers=["AAPL"])
+    surface = impact.glance_consequence_surface([listed], limit=8)
+    expected_keys = {
+        "event_id", "event_time", "event_time_en", "event_time_zh",
+        "known_at", "family", "title", "title_en", "title_zh",
+        "direct_tickers", "note_en", "note_zh",
+    }
+    for row in surface["rows"]:
+        assert set(row.keys()) == expected_keys, row
+    for forbidden in ("calibrated_impact", "calibrated_impact_reason",
+                      "causal_label", "second_order_tickers",
+                      "second_order_truncated", "second_order_candidate_count",
+                      "second_order_dropped_count"):
+        assert all(forbidden not in row for row in surface["rows"])
+
+
+def test_glance_pinned_glance_named_exposure_families_absence_holds():
+    """F05-017: still no GLANCE_NAMED_EXPOSURE_FAMILIES constant introduced."""
+    assert not hasattr(impact, "GLANCE_NAMED_EXPOSURE_FAMILIES")
+
+
+def test_glance_tip_strings_have_all_families_and_state_phrases():
+    """F05-017: family_tally_tip_en / _zh enumerate every eligible family in
+    schema.SOURCES order with the plain-word state phrase in each locale."""
+    earnings = _ev("tip-earn1", "2026-09-07", source="earnings",
+                   tickers=["E1"])
+    macro = _ev("tip-macro1", "2026-09-07", source="macro_release",
+                tickers=[])
+    macro["title"] = "Macro print: claims = +200 (2026-09-07)"
+    regime = _ev("tip-regime1", "2026-09-07", source="regime_flip",
+                 tickers=[])
+    regime["title"] = "CANADA regime: Q1 Goldilocks → Q3 Stagflation"
+    surface = impact.glance_consequence_surface(
+        [earnings, macro, regime], limit=8,
+    )
+    tip_en = surface["family_tally_tip_en"]
+    tip_zh = surface["family_tally_tip_zh"]
+    assert tip_en.startswith("This week by event type")
+    assert tip_en.endswith("Cards show only events that name a stock.")
+    assert tip_zh.startswith("本周按事件类型")
+    assert tip_zh.endswith("卡片仅展示点名的个股事件。")
+    for label_en, label_zh in [
+        ("Research notes", "研究纪要"),
+        ("Economic data", "经济数据"),
+        ("Earnings reports", "业绩公告"),
+        ("Earnings calls", "业绩电话会"),
+        ("Macro backdrop shifts", "宏观环境转向"),
+        ("Risk radar shifts", "风险雷达变化"),
+    ]:
+        assert label_en in tip_en
+        assert label_zh in tip_zh
+    # Plain-word state phrases — not raw slugs.
+    assert "1 events, 1 name a stock" in tip_en
+    assert "1个事件，1个点名个股" in tip_zh
+    assert "none name a single stock" in tip_en
+    assert "均未点名个股" in tip_zh
+    for slug in ("earnings_call", "macro_release", "regime_flip",
+                 "risk_band", "research_vault", "prophet_ledger"):
+        assert slug not in tip_en
+        assert slug not in tip_zh
 
 
 def test_glance_flip_collapse_neither_ticker_yields_zero_rows():

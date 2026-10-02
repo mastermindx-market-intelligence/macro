@@ -634,7 +634,8 @@ def test_template_and_built_page_omit_no_named_ticker_branch():
 
 
 def test_second_order_only_row_prints_also_watching_not_named():
-    """NM-B: a second-order-only row prints Also watching / 同时关注, never Named."""
+    """Q1=strip: rows are closed-key (no second_order_*), the Also-tile branch
+    is gone, and "Also watching" / "同时关注" never appear in the section."""
     vm = _full_vm()
     vm["chronicle_impact"] = {
         "stance_en": "Recent market events and the names they touch — shown only when an event maps to a named exposure.",
@@ -645,15 +646,13 @@ def test_second_order_only_row_prints_also_watching_not_named():
         "window_label_en": "Events from 31 Aug to 7 Sep 2026",
         "window_label_zh": "2026年8月31日至9月7日的事件",
         "rows": [{
-            "event_id": "cev-so",
+            "event_id": "cev-nvda",
             "event_time": "2026-09-07",
             "event_time_en": "7 Sep 2026",
             "event_time_zh": "2026年9月7日",
-            "title_en": "Research note on AI spending",
-            "title_zh": "关于人工智能开支的研究纪要",
-            "direct_tickers": [],
-            "second_order_tickers": ["NVDA"],
-            "second_order_truncated": False,
+            "title_en": "NVDA reported earnings",
+            "title_zh": "NVDA公布业绩",
+            "direct_tickers": ["NVDA"],
             "note_en": None,
             "note_zh": None,
         }],
@@ -662,11 +661,11 @@ def test_second_order_only_row_prints_also_watching_not_named():
     start = html.index('id="nxConsequence"')
     end = html.index("</section>", start)
     section = html[start:end]
-    assert "Also watching" in section
-    assert "同时关注" in section
+    assert "Also watching" not in section
+    assert "同时关注" not in section
     assert "NVDA" in section
-    assert '<span class="l-en">Named</span>' not in section
-    assert '<span class="l-zh">点名</span>' not in section
+    assert '<span class="l-en">Named</span>' in section
+    assert '<span class="l-zh">点名</span>' in section
     assert "No named ticker" not in section
     assert "未点名标的" not in section
 
@@ -939,3 +938,273 @@ console.log(JSON.stringify({passed:true}));
     result = subprocess.run([node, "-e", harness + "\n" + script + "\n" + checks], capture_output=True, text=True, timeout=15)
     assert result.returncode == 0, result.stdout + result.stderr
     assert json.loads(result.stdout)["passed"]
+
+
+# --------------------------------------------------------------------------- #
+# F05-017 family_tally tip + closed-key row guards
+# --------------------------------------------------------------------------- #
+def _format_state_phrase(state, in_window, named):
+    """Mirror impact._format_state(...) used to assemble the tip strings."""
+    if state == "no_events":
+        return "no events this week", "本周无事件"
+    if state == "none_named":
+        return (f"{in_window} events, none name a single stock",
+                f"{in_window}个事件，均未点名个股")
+    return (f"{in_window} events, {named} name a stock",
+            f"{in_window}个事件，{named}个点名个股")
+
+
+def _build_tip(tally):
+    en_parts = ["This week by event type —"]
+    zh_parts = ["本周按事件类型——"]
+    for ft in tally:
+        in_w = int(ft.get("in_window") or 0)
+        named_n = int(ft.get("named") or 0)
+        shown_n = int(ft.get("shown") or 0)
+        phr_en, phr_zh = _format_state_phrase(ft["state"], in_w, named_n)
+        en_parts.append(f"{ft['label_en']} ({shown_n}/{in_w}): {phr_en}")
+        zh_parts.append(f"{ft['label_zh']}({shown_n}/{in_w}):{phr_zh}")
+    en_parts.append("Cards show only events that name a stock.")
+    zh_parts.append("卡片仅展示点名的个股事件。")
+    return " ".join(en_parts), " ".join(zh_parts)
+
+
+def _ci_with_rows(extra_rows=None, tally=None, **overrides):
+    base_tally = tally if tally is not None else [
+        {"family": "research_vault", "label_en": "Research notes",
+         "label_zh": "研究纪要", "state": "no_events", "in_window": 0,
+         "named": 0, "shown": 0},
+        {"family": "macro_release", "label_en": "Economic data",
+         "label_zh": "经济数据", "state": "no_events", "in_window": 0,
+         "named": 0, "shown": 0},
+        {"family": "earnings", "label_en": "Earnings reports",
+         "label_zh": "业绩公告", "state": "named", "in_window": 3,
+         "named": 1, "shown": 1},
+        {"family": "earnings_call", "label_en": "Earnings calls",
+         "label_zh": "业绩电话会", "state": "named", "in_window": 2,
+         "named": 2, "shown": 0},
+        {"family": "regime_flip", "label_en": "Macro backdrop shifts",
+         "label_zh": "宏观环境转向", "state": "no_events", "in_window": 0,
+         "named": 0, "shown": 0},
+        {"family": "risk_band", "label_en": "Risk radar shifts",
+         "label_zh": "风险雷达变化", "state": "no_events", "in_window": 0,
+         "named": 0, "shown": 0},
+    ]
+    tip_en, tip_zh = _build_tip(base_tally)
+    base = {
+        "stance_en": "Recent market events and the names they touch — shown only when an event maps to a named exposure.",
+        "stance_zh": "近期市场事件及其涉及的标的——仅在事件对应到明确标的时显示。",
+        "reason_en": None,
+        "reason_zh": None,
+        "empty_kind": None,
+        "window_label_en": "Events from 31 Aug to 7 Sep 2026",
+        "window_label_zh": "2026年8月31日至9月7日的事件",
+        "families": {"earnings": 1},
+        "family_tally": base_tally,
+        "family_tally_tip_en": tip_en,
+        "family_tally_tip_zh": tip_zh,
+        "rows": [{
+            "event_id": "cev-aapl", "event_time": "2026-09-07",
+            "event_time_en": "7 Sep 2026", "event_time_zh": "2026年9月7日",
+            "title_en": "AAPL reported earnings", "title_zh": "AAPL公布业绩",
+            "direct_tickers": ["AAPL"], "note_en": None, "note_zh": None,
+        }],
+    }
+    if extra_rows is not None:
+        base["rows"] = extra_rows
+    base.update(overrides)
+    if "family_tally" in overrides or tally is not None:
+        # If caller overrode tally, recompute the tip strings.
+        base["family_tally_tip_en"], base["family_tally_tip_zh"] = _build_tip(
+            base["family_tally"])
+    return base
+
+
+def test_family_tally_tip_is_lens_q_button_with_both_locale_attrs():
+    """F05-017: the family_tally trigger is a <button.lens-q> with both data-tip-*."""
+    vm = _full_vm()
+    vm["chronicle_impact"] = _ci_with_rows()
+    html = _env().get_template("news.html.j2").render(**vm)
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    section = html[start:end]
+    assert '<button type="button" class="lens-q"' in section
+    m = re.search(
+        r'<button type="button" class="lens-q"\s+aria-label="([^"]+)"\s+data-tip-en="([^"]+)"\s+data-tip-zh="([^"]+)">\?</button>',
+        section,
+    )
+    assert m, section
+    aria, tip_en, tip_zh = m.group(1), m.group(2), m.group(3)
+    assert aria == tip_en, "aria-label must mirror tip's aria-label"
+    assert tip_en.startswith("This week by event type")
+    assert tip_zh.startswith("本周按事件类型")
+    assert tip_en.endswith("Cards show only events that name a stock.")
+    assert tip_zh.endswith("卡片仅展示点名的个股事件。")
+    # Per-family state phrases present in both locales.
+    assert "Earnings reports (1/3):" in section or "Earnings reports:" in section
+    assert "业绩公告" in section
+    assert "Earnings calls" in section
+    assert "业绩电话会" in section
+    assert "Research notes" in section
+    assert "研究纪要" in section
+    assert "Economic data" in section
+    assert "经济数据" in section
+    assert "Macro backdrop shifts" in section
+    assert "宏观环境转向" in section
+    assert "Risk radar shifts" in section
+    assert "风险雷达变化" in section
+
+
+def test_family_tally_tip_no_raw_family_slug_in_section_or_tip():
+    """F05-017: raw family keys (earnings_call / macro_release / etc.) never
+    appear as visible text or inside any data-tip-* attribute."""
+    vm = _full_vm()
+    vm["chronicle_impact"] = _ci_with_rows()
+    html = _env().get_template("news.html.j2").render(**vm)
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    section = html[start:end]
+    for slug in ("earnings_call", "macro_release", "regime_flip", "risk_band",
+                 "research_vault", "prophet_ledger"):
+        assert slug not in section, f"raw family slug leaked: {slug!r}"
+
+
+def test_family_tally_tip_omitted_when_tally_missing():
+    """F05-017: the build-site fallback dict lacks family_tally; the trigger
+    must be omitted (NOT a broken empty button)."""
+    vm = _full_vm()
+    vm["chronicle_impact"] = {
+        "stance_en": "Recent market events and the names they touch — shown only when an event maps to a named exposure.",
+        "stance_zh": "近期市场事件及其涉及的标的——仅在事件对应到明确标的时显示。",
+        "reason_en": None,
+        "reason_zh": None,
+        "empty_kind": None,
+        "window_label_en": "Events from 31 Aug to 7 Sep 2026",
+        "window_label_zh": "2026年8月31日至9月7日的事件",
+        # NO family_tally — this is the fallback dict shape.
+        "families": {"earnings": 1},
+        "rows": [{
+            "event_id": "cev-aapl", "event_time": "2026-09-07",
+            "event_time_en": "7 Sep 2026", "event_time_zh": "2026年9月7日",
+            "title_en": "AAPL reported earnings", "title_zh": "AAPL公布业绩",
+            "direct_tickers": ["AAPL"], "note_en": None, "note_zh": None,
+        }],
+    }
+    html = _env().get_template("news.html.j2").render(**vm)
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    section = html[start:end]
+    assert '<button type="button" class="lens-q"' not in section
+    assert "data-tip-en" not in section
+
+
+def test_consequence_section_no_calibrated_causal_or_market_feed():
+    """F05-017 / F10 NO-CALIBRATED-FIELD: row keys never include calibrated_* /
+    causal_label or second_order_*; the section never prints them; Market Feed
+    (the explicitly-unserved alias) is gone too."""
+    template = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
+    for forbidden in (
+        "calibrated_impact", "calibrated_impact_reason", "causal_label",
+        "second_order_tickers", "second_order_truncated",
+        "second_order_candidate_count", "second_order_dropped_count",
+        "Market Feed",
+    ):
+        assert forbidden not in template, f"template leaks {forbidden!r}"
+    vm = _full_vm()
+    vm["chronicle_impact"] = _ci_with_rows()
+    html = _env().get_template("news.html.j2").render(**vm)
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    section = html[start:end]
+    for forbidden in (
+        "calibrated", "causal", "Market Feed", "Also watching", "同时关注",
+    ):
+        assert forbidden not in section, f"section leaks {forbidden!r}"
+
+
+def test_consequence_nx_sub_line_count_at_most_three_with_tip():
+    """F05-017: the section still has <= 3 stacked .nx-sub lines; the lens-q
+    trigger is appended to the window-label line, not as a 4th stacked line."""
+    vm = _full_vm()
+    vm["chronicle_impact"] = _ci_with_rows()
+    html = _env().get_template("news.html.j2").render(**vm)
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    section = html[start:end]
+    nx_sub_count = section.count('<p class="nx-sub"')
+    assert nx_sub_count <= 3, f"got {nx_sub_count} nx-sub lines"
+    assert '<button type="button" class="lens-q"' in section
+
+
+def test_consequence_honest_empty_all_families_fixture_in_en_and_zh():
+    """F05-017: an all-families fixture (macro / regime / risk / research / etc.,
+    ticker-less) renders the typed empty plus a tip naming each family's
+    state in plain words, in both EN and ZH."""
+    vm = _full_vm()
+    tally = [
+        {"family": "research_vault", "label_en": "Research notes",
+         "label_zh": "研究纪要", "state": "none_named", "in_window": 4,
+         "named": 0, "shown": 0},
+        {"family": "macro_release", "label_en": "Economic data",
+         "label_zh": "经济数据", "state": "none_named", "in_window": 2,
+         "named": 0, "shown": 0},
+        {"family": "earnings", "label_en": "Earnings reports",
+         "label_zh": "业绩公告", "state": "no_events", "in_window": 0,
+         "named": 0, "shown": 0},
+        {"family": "earnings_call", "label_en": "Earnings calls",
+         "label_zh": "业绩电话会", "state": "no_events", "in_window": 0,
+         "named": 0, "shown": 0},
+        {"family": "regime_flip", "label_en": "Macro backdrop shifts",
+         "label_zh": "宏观环境转向", "state": "none_named", "in_window": 1,
+         "named": 0, "shown": 0},
+        {"family": "risk_band", "label_en": "Risk radar shifts",
+         "label_zh": "风险雷达变化", "state": "no_events", "in_window": 0,
+         "named": 0, "shown": 0},
+    ]
+    tip_en, tip_zh = _build_tip(tally)
+    vm["chronicle_impact"] = {
+        "stance_en": None,
+        "stance_zh": None,
+        "reason_en": "No event with a named market exposure in the last 7 days.",
+        "reason_zh": "近7天没有带明确市场敞口的事件。",
+        "empty_kind": "no_named_exposure",
+        "window_label_en": "Events from 31 Aug to 7 Sep 2026",
+        "window_label_zh": "2026年8月31日至9月7日的事件",
+        "families": {},
+        "family_tally": tally,
+        "family_tally_tip_en": tip_en,
+        "family_tally_tip_zh": tip_zh,
+        "rows": [],
+    }
+    html = _env().get_template("news.html.j2").render(**vm)
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    section = html[start:end]
+    # Typed empty visible in BOTH locales.
+    assert "No event with a named market exposure in the last 7 days." in section
+    assert "近7天没有带明确市场敞口的事件。" in section
+    assert "nx-empty-lead" in section
+    # Tip is present, naming each family in plain words in both locales.
+    m = re.search(
+        r'<button type="button" class="lens-q"\s+aria-label="([^"]+)"\s+data-tip-en="([^"]+)"\s+data-tip-zh="([^"]+)">\?</button>',
+        section,
+    )
+    assert m, section
+    tip_en, tip_zh = m.group(2), m.group(3)
+    for label_en, label_zh in [
+        ("Research notes", "研究纪要"),
+        ("Economic data", "经济数据"),
+        ("Earnings reports", "业绩公告"),
+        ("Earnings calls", "业绩电话会"),
+        ("Macro backdrop shifts", "宏观环境转向"),
+        ("Risk radar shifts", "风险雷达变化"),
+    ]:
+        assert label_en in tip_en, f"missing {label_en} in EN tip"
+        assert label_zh in tip_zh, f"missing {label_zh} in ZH tip"
+    # Plain-word state phrases appear in the tip (not raw slugs).
+    assert "none name a single stock" in tip_en or "no events this week" in tip_en
+    assert "均未点名个股" in tip_zh or "本周无事件" in tip_zh
+    # Raw family slugs never appear anywhere in the section.
+    for slug in ("earnings_call", "macro_release", "regime_flip", "risk_band",
+                 "research_vault", "prophet_ledger"):
+        assert slug not in section, f"raw family slug leaked: {slug!r}"
