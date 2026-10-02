@@ -281,3 +281,49 @@ html[data-theme="light"] #dlg-news .nd-official-metric{background:var(--panel);b
 
 #dlg-news #nd-detail-title:focus{outline:2px solid var(--link);outline-offset:4px;border-radius:4px}
 @media(max-width:767px){#dlg-news .nd-detail .nd-event.nd-detail-selected>.nd-event-date{display:none}}
+
+
+/* Expectations stay subordinate to official facts. The surface separates
+   street-survey absence, model context and market/naive benchmarks. */
+#dlg-news .nd-expectation-context{margin-top:12px;border-top:1px solid var(--line);min-width:0}
+#dlg-news .nd-expectation-context>summary,#dlg-news .nd-expectation-method>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;list-style:none;cursor:pointer;color:var(--link);font-size:var(--fs-sm);font-weight:600}
+#dlg-news .nd-expectation-context summary::-webkit-details-marker{display:none}
+#dlg-news .nd-expectation-status{display:flex;align-items:center;gap:10px;color:var(--muted);font-weight:400}
+#dlg-news .nd-expectation-body{padding:4px 0 12px;min-width:0}
+#dlg-news .nd-survey-gap{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;padding:14px 16px;border:1px dashed var(--line);border-radius:10px;background:var(--panel2)}
+#dlg-news .nd-survey-gap>div{display:flex;flex-direction:column;gap:4px;min-width:150px}
+#dlg-news .nd-survey-gap strong{font-size:var(--fs-body);line-height:1.5;color:var(--text)}
+#dlg-news .nd-survey-gap p{margin:0;max-width:620px;font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+#dlg-news .nd-eyebrow-mini{font-size:var(--fs-label);font-weight:650;letter-spacing:.08em;line-height:1.4;color:var(--muted)}
+#dlg-news .nd-expectation-intro{margin:14px 0 0;font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+#dlg-news .nd-expectation-metrics{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;align-items:stretch}
+#dlg-news .nd-expectation-metric{flex:1 1 260px;min-width:0;padding:18px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
+#dlg-news .nd-expectation-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+#dlg-news .nd-expectation-heading h5{margin:0;font-size:var(--fs-body);line-height:1.5;font-weight:650;color:var(--text)}
+#dlg-news .nd-model-read{margin-top:16px}
+#dlg-news .nd-model-read>span{display:block;font-size:var(--fs-label);font-weight:600;line-height:1.5;letter-spacing:.04em;color:var(--muted)}
+#dlg-news .nd-model-value{margin:4px 0 0;font-size:var(--fs-h1);font-weight:650;line-height:1.2;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--text)}
+#dlg-news .nd-model-value>span{font-size:var(--fs-h2);font-weight:500;padding-left:3px}
+#dlg-news .nd-model-range,#dlg-news .nd-model-difference,#dlg-news .nd-model-warning{margin:8px 0 0;font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+#dlg-news .nd-model-difference{color:var(--text)}
+#dlg-news .nd-model-warning{padding-left:10px;border-left:2px solid var(--warn)}
+#dlg-news .nd-benchmark-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}
+#dlg-news .nd-benchmark-cell{display:flex;flex-direction:column;gap:3px;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+#dlg-news .nd-benchmark-cell span{font-size:var(--fs-label);line-height:1.45;color:var(--muted)}
+#dlg-news .nd-benchmark-cell strong{font-size:var(--fs-body);font-variant-numeric:tabular-nums;color:var(--text)}
+#dlg-news .nd-benchmark-cell small{font-size:var(--fs-label);line-height:1.45;color:var(--muted);overflow-wrap:anywhere}
+#dlg-news .nd-expectation-method{margin-top:14px;border-top:1px solid var(--line)}
+#dlg-news .nd-expectation-method dl{display:grid;grid-template-columns:minmax(110px,auto) minmax(0,1fr);gap:8px 16px;margin:8px 0 0;font-size:var(--fs-sm);line-height:1.55}
+#dlg-news .nd-expectation-method dt{color:var(--muted)}
+#dlg-news .nd-expectation-method dd{margin:0;color:var(--text);overflow-wrap:anywhere}
+html[data-theme="light"] #dlg-news .nd-expectation-body{background:var(--panel2);border-radius:var(--r-card,12px);padding:16px}
+html[data-theme="light"] #dlg-news .nd-expectation-metric{background:var(--panel);box-shadow:var(--card-shadow)}
+@media(max-width:767px){
+  #dlg-news .nd-survey-gap{flex-direction:column;gap:10px}
+  #dlg-news .nd-expectation-metrics{flex-direction:column}
+  #dlg-news .nd-expectation-metric{flex-basis:auto;padding:16px}
+  #dlg-news .nd-benchmark-grid{grid-template-columns:minmax(0,1fr)}
+  #dlg-news .nd-expectation-method dl{grid-template-columns:minmax(0,1fr);gap:2px}
+  #dlg-news .nd-expectation-method dd{margin-bottom:8px}
+  html[data-theme="light"] #dlg-news .nd-detail .nd-expectation-body{padding:12px}
+}
