@@ -440,7 +440,7 @@ def test_payroll_market_implied_raw_count_is_withheld_without_explicit_unit_cont
     assert metric["market_implied_status"] == "unit_basis_unqualified"
 
 
-def test_missing_model_point_can_still_surface_same-unit_reference_benchmarks():
+def test_missing_model_point_can_still_surface_same_unit_reference_benchmarks():
     payload = forecast_payload()
     payload["upcoming"] = [{
         "release": "nfp",
