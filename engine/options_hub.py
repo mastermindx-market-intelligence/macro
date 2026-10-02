@@ -615,6 +615,24 @@ def compute_gex(
     by_delta_rows = _by_call_delta(g)
 
     # ── by expiry ─────────────────────────────────────────────────────────────
+    # Preserve support for the newly exposed lenses before pandas' sum can turn
+    # an all-NaN group into zero. Counts refer ONLY to this admitted input frame,
+    # not collection completeness or the full listed option universe.
+    expiry_support = {}
+    for exp, group in g.groupby("expiration"):
+        support = {"basis": "admitted_input_contracts"}
+        for lens in ("vanna", "charm"):
+            values = group[f"_net_{lens}"].to_numpy(dtype=float)
+            valid = np.isfinite(values)
+            known = int(valid.sum())
+            subtotal = _f(float(values[valid].sum()) / 1e6, 4) if known else None
+            support[lens] = {
+                "known_contracts": known,
+                "admitted_contracts": int(len(group)),
+                "known_net": subtotal,
+            }
+        expiry_support[str(pd.Timestamp(exp).date())] = support
+
     by_exp = g.groupby("expiration").agg(
         gamma_net=("_net_gex", "sum"),
         delta_net=("_net_delta", "sum"),
@@ -622,16 +640,25 @@ def compute_gex(
         charm_net=("_net_charm", "sum"),
     ).reset_index()
     by_exp["expiration"] = pd.to_datetime(by_exp["expiration"]).dt.date.astype(str)
-    by_expiry_rows = [
-        {
+    by_expiry_rows = []
+    for row in by_exp.itertuples():
+        support = expiry_support[row.expiration]
+        projected = {
             "exp": row.expiration,
             "gamma_net": _f(row.gamma_net / 1e6, 4),
             "delta_net": _f(row.delta_net / 1e6, 4),
-            "vanna_net": _f(row.vanna_net / 1e6, 4),
-            "charm_net": _f(row.charm_net / 1e6, 4),
+            "exposure_support": support,
         }
-        for row in by_exp.itertuples()
-    ]
+        for lens in ("vanna", "charm"):
+            detail = support[lens]
+            # This is completeness within admitted inputs only. Partial known
+            # values remain available separately without a complete-net claim.
+            projected[f"{lens}_net"] = (
+                detail["known_net"]
+                if detail["known_contracts"] == detail["admitted_contracts"]
+                else None
+            )
+        by_expiry_rows.append(projected)
     by_expiry_rows.sort(key=lambda r: r["exp"])
 
     # ── coverage superset (CONTRACT: {n_contracts, asof, oi_date, n_days, since}) ─
