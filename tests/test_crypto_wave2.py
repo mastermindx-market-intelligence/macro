@@ -736,3 +736,85 @@ def test_universe_future_observation_cannot_replace_the_recorded_snapshot(tmp_pa
     assert snapshot["as_of"] == "2026-09-26"
     assert [r["symbol"] for r in snapshot["rows"]] == ["BTC"]
     assert snapshot["excluded"][0]["reason"] == "FUTURE_OBSERVATION"
+
+
+# R15: the first-read surface consumes the existing market and budget contracts.
+def _r15_overview(allocation, *, history=True):
+    source=(ROOT/'templates/crypto.html.j2').read_text()
+    macro=source[source.index('{% macro t('):source.index('<!DOCTYPE html>')]
+    start=source.index('  <section class="crypto-shelf hero"')
+    end=source.index('    {# Universe snapshot receipt #}',start)
+    env=Environment(autoescape=True)
+    return env.from_string(macro+source[start:end]).render(
+        market={'stance':'Mixed participation','stance_zh':'参与度分化','summary':'Daily context only.',
+                'summary_zh':'仅为每日背景。','total_tone':'flat','dominance_tone':'flat','fear_tone':'flat',
+                'total_state':'Mixed','dominance_state':'Stable','fear_state':'Neutral',
+                'history':{'dates':['2026-01-01','2026-01-02'] if history else [],'vals':[1,2] if history else []}},
+        allocation=allocation,as_of='2026-01-02',market_total='$3.2T',market_30d='+2.0%',
+        dominance='58.0%',dominance_30d='-1.0%',fear='50',total_state_zh='分化',
+        dominance_state_zh='稳定',fear_state_zh='中性',tape='<svg data-preserved-market-tape="true"></svg>',
+        breadth={'available':False,'eligible':3,'required':10,'positive':None},universe_count=50,
+        universe_snapshot={'as_of':'2026-01-01'})
+
+
+@pytest.mark.parametrize('kind,exposure,available,budget_available',[
+    ('available',60,True,True),('available',0,True,True),
+    ('breakdown-unavailable',60,False,True),('unavailable',None,False,False),
+])
+def test_r15_overview_separates_recorded_budget_from_market_context(kind,exposure,available,budget_available):
+    html=_r15_overview({'available':available,'budget_available':budget_available,'exposure':exposure,
+        'cash':None if exposure is None else 100-exposure,'decision_as_of':'2026-01-02',
+        'reason_en':'Source unavailable','reason_zh':'来源暂不可用'})
+    assert f'data-desk-budget-state="{kind}"' in html
+    assert 'data-preserved-market-tape' in html
+    assert 'data-desk-budget-value' in html and 'data-desk-decision-date' in html
+    assert 'Recorded model budget' in html and '已记录的模型预算' in html
+    assert 'Not your account holdings' in html and '并非您的账户持仓' in html
+    assert 'Market context is not an allocation instruction.' in html
+    if exposure is None:
+        assert 'data-desk-budget-value>—<' in html
+        assert 'data-desk-cash-value' not in html
+    else:
+        assert f'data-desk-budget-value>{exposure}%' in html
+        assert f'data-desk-cash-value>{100-exposure}%' in html
+    assert 'Next 24' not in html and 'crash probability' not in html.lower()
+
+
+def test_r15_missing_market_history_does_not_render_a_fake_tape():
+    html=_r15_overview({'available':False,'budget_available':False,'exposure':None,'decision_as_of':None},history=False)
+    assert 'data-market-history-state="unavailable"' in html
+    assert 'data-preserved-market-tape' not in html
+    assert 'Market history unavailable' in html and '市场历史暂不可用' in html
+    assert 'data-desk-budget-state="unavailable"' in html
+
+
+def test_r15_navigation_uses_existing_research_sections_without_new_state_owner():
+    source=(ROOT/'templates/crypto.html.j2').read_text()
+    assert 'data-crypto-desk-nav' in source
+    for target in ['crypto-overview','market-board','money-flows','leverage-heat','allocation']:
+        assert f'href="#{target}"' in source and f'id="{target}"' in source
+    assert 'data-desk-budget-value' in source
+    assert 'crypto_overview.json' not in source and 'localStorage.setItem' not in source
+    assert len(re.findall(r'data-shelf="H[1-8]"',source))==8
+
+
+def test_r15_crypto_does_not_reintroduce_unqualified_annualized_funding():
+    source=(ROOT/'templates/crypto.html.j2').read_text()
+    start=source.index('data-shelf="H4"');end=source.index('data-shelf="H5"')
+    h4=source[start:end]
+    assert 'data-crypto-funding-state="interval-unqualified"' in h4
+    assert 'Settlement interval not established' in h4 and '尚未确认结算间隔' in h4
+    assert 'fmt_pct(market.heat.funding.value)' not in h4
+    assert 'Funding · annualized' not in h4
+
+
+def test_r15_assistant_entry_reuses_shared_owner_without_covering_the_desk():
+    source=(ROOT/'templates/crypto.html.j2').read_text()
+    assert 'data-crypto-brain' in source
+    assert 'body.crypto-page.crypto-desk-ready #mmb-boot' in source
+    assert 'body.crypto-page.crypto-desk-ready #mmb-launch' in source
+    assert "window.MMBrain.open()" in source
+    assert "document.getElementById('mmb-boot')" in source
+    assert "MM_BRAIN_CFG" not in source and 'src="mm_brain.js"' not in source
+    assert 'fetch(' not in source
+    assert "observer.disconnect()" in source
