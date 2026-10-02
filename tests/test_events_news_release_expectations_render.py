@@ -121,3 +121,14 @@ def test_expectation_context_autoescapes_owner_fields():
     panel = s.select_one(".nd-expectation-context")
     assert not panel.select("img")
     assert "onerror" not in panel.get_text()\n    assert "use different inputs" in panel.get_text(" ", strip=True)
+
+
+def test_expectation_styles_and_behavior_are_mirrored_to_site_assets():
+    template_css = (ROOT / "templates" / "macro-events-news.css").read_text()
+    site_css = (ROOT / "site" / "macro-events-news.css").read_text()
+    template_js = (ROOT / "templates" / "macro-events-news.js").read_text()
+    site_js = (ROOT / "site" / "macro-events-news.js").read_text()
+    assert template_css == site_css
+    assert template_js == site_js
+    assert "data-nd-deep" in template_js
+    assert ".nd-expectation-context" in template_css
