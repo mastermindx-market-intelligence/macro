@@ -35,9 +35,11 @@ the row says so), or an explicitly accepted exclusion. `MISSION_COMPLETE: false`
 | W0 bind + reconcile | ACK/START; verify A0 writer; verify A1 contract; census; F05 spec | ACK+START on #6819; A1 defects named with file:line; 3 lanes launched with watchers | DONE 06:30Z (lanes RUNNING) |
 | W1 R23/R24 independent review | REVIEW_8260_R1 (re-pinned to head `b5951927bef3`, pushed 06:20Z) | verdict ACCEPT/REQUEST_REPAIR/REJECT with numbered defects posted on #8260; 8 unrun gateway cases run | DELIVERED → judged by artifact → **REQUEST_REPAIR `b5951927` posted** (#8260 comment 5947033387, 07:03Z) |
 | W1 F00 reconciliation | F00A_CENSUS_R1 → seat ruling | 51/51 rows with receipts; seat rules stale/ready/blocked; ledger edit only by seat | DELIVERED `PARTIAL 32d22a9b` (served bodies not fetched) → **seat RULED D7** (posted #6819 5947067308); ledger edit pending in records PR |
-| W1 A1 publisher fix | seat-executed under L.7 (Sol 5946604516: decide and proceed on interface choices) | `mo_security` + `mo_from=transmission`; 40 tests green; contract-delta 0/0; PR #8261 merged; served proof NATURAL-TIME (chains dormant → zero CTAs) | PR #8261 OPEN, armed, CI running |
-| W2 F05 consequences | F05_017_SPEC_R1 → seat freeze → build lane | spec with 3 candidates + acceptance ≤10 items; then build | DELIVERED `PASS 32d22a9b` → **FROZEN D8: Candidate A** (Q1 strip, Q2 not-a-ranker); build lane awaits an admitting external host |
-| W2+ F01/F02/F03 | per census ruling | one PR per bounded row; merged + proven | NOT STARTED |
+| W1 A1 publisher fix | seat-executed under L.7 (Sol 5946604516: decide and proceed on interface choices) | `mo_security` + `mo_from=transmission`; 40 tests green; contract-delta 0/0; PR #8261 merged; served proof NATURAL-TIME (chains dormant → zero CTAs) | **MERGED** 07:11:27Z `8ad7d79538f8`, landed by per-path blob compare vs fresh `origin/main`; served proof natural-time (seven dormant chains → zero CTAs) |
+| W2 F05 consequences | F05_017_SPEC_R1 → seat freeze → build lane | spec with 3 candidates + acceptance ≤10 items; then build | DELIVERED `PASS 32d22a9b` → **FROZEN D8: Candidate A** (Q1 strip, Q2 not-a-ranker); BUILD R1 DELIVERED PR #8265 `4c0670bffd94` (mini2 MiniMax) → Opus RO review **FAIL** (tip `shown`=0, ticker-less → false `no_events`, inverted test, READY not DRAFT, §8 evidence missing) → **REQUEST_REPAIR R2** lane RUNNING 08:08Z; seat converted #8265 to DRAFT |
+| W2+ F01/F02/F03 | per census ruling | one PR per bounded row; merged + proven | STARTED 08:1xZ — F01 MO-PAID-001: Gate 19 RULED D15 + dead-include fix lane RUNNING; F02 MO-PAID-023: UK desk fix PR #8267 DRAFT DELIVERED → review REQUEST_REPAIR → R3 lane RUNNING |
+| W1 records | seat-executed records PRs (single F00 writer) | program file + F00C ledger edits merged; regression test re-pinned | **#8263 MERGED** 08:12:00Z `49243a40796a` (D7 15 rows, D10, test re-pin; head update-branched `ada03501→4ae295b8`, merged by exact head) |
+| W1 TX anchor | seat-executed (L.7) | `id="tx-chain-<ch.id>"` on the Cascade Monitor row + test pin; merged; SHA posted to B | **#8262** armed; first head RED on design ratchet (D13) → repaired `d44814e37fb8` → sweeper update-branched to `13247a050e46` (main merged in, 2-file diff unchanged); checks pending 08:08Z; watcher 300 s |
 
 ## 3 Lane matrix
 
@@ -53,6 +55,16 @@ the row says so), or an explicitly accepted exclusion. `MISSION_COMPLETE: false`
 | F05_017_BUILD | external lane (remote_sub.sh → m1/mini2; m2 admits no local glm/minimax) | TBD | main | Candidate A per `.lane/F05_017_SPEC_R1.md`; owned files impact.py, news.html.j2, test_chronicle_impact.py, test_news_page_render.py | 1 PR | packet `pkts/F05_017_BUILD_R1.pkt` (17 KB, frozen spec inlined); host_pick 07:26Z: glm NONE, **minimax → mini2 (0.69) / m1 (0.56)**, cursor → ubuntu1; dispatch via `remote_sub.sh mini2 minimax` next |
 | RECIPROCAL_ATTENTION | CronCreate `83db50fe` hourly :13 (session-only, 7-day expiry) | — | — | reads Slack thread since ts 1790922338.230299 + #6819 comments since 5946701303 | hourly | WATCH_ARMED 06:58Z |
 
+| MO-PAID-023_FIX_R1 | external MiniMax (m1) | m1 `.claude/worktrees/mo-paid-023-uk-desk-fallback-92e3c028` | main | `rs_20261002T072352Z_44341` | 2 h | **FAILED/REJECTED** 07:38Z — spawned a native Sonnet child, killed at the 600 s ceiling, zero artifacts → ruling D14 |
+| MO-PAID-023_FIX_R2 | external MiniMax (m1), D14 block | same worktree reused | main `dc4fd0766709` | `rs_20261002T074141Z_79887`; `MO-PAID-023_FIX_R1: PASS e2c6df52e35` | 2 h | **DELIVERED** 08:01Z → **PR #8267** DRAFT head `e2c6df52e35e` (2 owned files; 27 passed full + minimal venv; curated_exclusive 2; llm_auth control 80) → Opus RO review → REQUEST_REPAIR |
+| REVIEW_8267_R1 | native Opus `reviewer` (RO) | scratch `rv8267/` | — | packet in seat transcript | 24 t | DELIVERED 08:2xZ PARTIAL → **REQUEST_REPAIR** (D1 MAJOR timeout 15 s→600 s+retries in a 10-min job; D2–D5 minor; D6–D7 nit); cure CONFIRMED by probe |
+| MO-PAID-023_FIX_R3 | external MiniMax (m1), D14 block | same worktree | branch head `e2c6df52e35e` | `rs_20261002T081605Z_81593`; `MO-PAID-023_FIX_R3: <V> <head12>`; `out/MO-PAID-023_FIX_R3.out` | 2 h | **RUNNING** 08:16Z (defects D1–D7 + seat rulings: `_DEFAULTS` client_timeout_s=15/max_retries=0, autouse clear_dead, WARNINGs, retry cap 3, 3-tuple usage, AST T4) |
+| F05_017_BUILD_R1 | external MiniMax (mini2) | mini2 `claude/f05-017-family-fair-glance-7696c918` | main `052e02d085b0` | `rs_20261002T071028Z_17425`; `out/F05_017_BUILD_R1.out` | 2 h | **DELIVERED** → PR #8265 `4c0670bffd94` (4 owned files, no CSS, no screenshots, READY not DRAFT) |
+| REVIEW_8265_R1 | native Opus `reviewer` (RO) | scratch `rv/` | — | — | 24 t + 1 nudge | DELIVERED **FAIL** → REQUEST_REPAIR (M1–M5, m1–m8, n1–n2; live-corpus tips quoted) |
+| F05_017_FIX_R2 | external MiniMax (mini2), D14 block | mini2 worktree on the PR branch | branch head `4c0670bffd94` | `rs_20261002T080818Z_62381`; `F05_017_FIX_R2: <V> <head12>`; `out/F05_017_FIX_R2.out` | 2 h | **RUNNING** 08:08Z (D1–D7 + rulings R1–R9; packet `pkts/F05_017_FIX_R2.pkt` 27,866 B with the R1 spec appended) |
+| MO-PAID-001_REVIEW | native Opus `reviewer` (RO, pre-build verification) | seat worktree | main | — | 24 t + 1 nudge | DELIVERED PARTIAL — MAJOR: `templates/dashboard.html.j2:15538` include is unreachable (nested `mode != 'macro'` inside `mode == 'macro'` 2622–16081); row host claim REFUTED; 2-axis only; HMM partial unincluded |
+| MO-PAID-001_FIX_R1 | external MiniMax (mini2), D14 block | mini2 fresh off `origin/main` → `claude/mo-paid-001-regime-read-reachable-<mmddHHMM>` | main | `rs_20261002T080842Z_63320`; `MO-PAID-001_FIX_R1: <V> <head12>`; `out/MO-PAID-001_FIX_R1.out` | 2 h | **RUNNING** 08:08Z (relocate include after `{# /market_state B4 #}`; T1–T4; 8-cell evidence `mockups/evidence/us-stocks-regime-read/`) |
+| RECORDS_W2 | seat-executed | `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/ceo-a-mo-records-w2-62290ddd9b6a9511` branch `claude/ssd-ceo-a-mo-records-w2-62290ddd9b6a9511` | main `49243a40796a` | this file + F00C ledger (F06–F13 rows from #8264) + test re-pin | 1 PR | IN PROGRESS 08:3xZ |
 Packets are in the seat scratchpad `pkts/` (copied here only if a successor needs them). Lanes never
 post, label, ready or merge; the seat does. Kit: `~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/ext/sub.sh`.
 
@@ -81,6 +93,12 @@ DECIDED
 - D11 (07:30Z) #8261 watcher re-based as a harness-tracked background task (the nohup process could not re-invoke the seat); same for #8262; both exclude the by-design `ci-authority/codex/merge-queue-pilot` X.
 - D9 (07:10Z) Pin to B: return target host `https://www.mastermind-x.com` (apex 301→www), path `/transmission.html`, anchor `#tx-chain-<mo_chain>` verbatim, `mo_channel`/`mo_asof` excluded; anchor shipped by TX_ANCHOR_PR; until merged B's no-fragment default stands. Q1 answered YES at schema/field level (both sides read `transmission_chains.v1`; value-level diff vs `ACCEPTED_CHAINS` unproven); Q2 YES (`rev` integer; emitted-sample unproven).
 
+- D12 (07:25Z) MO-PAID-023 (UK desk) = class (b) placement fault + latent (c) code defect (`mark_seen` unconditional after a failed model call → served `policy_watch.html` reads `model_unavailable` forever; first bad `453c767db15e` 09-28T08:43Z). FIX WARRANTED, bounded; external MiniMax lane; owned files `engine/uk_policy_brain.py` + `tests/test_uk_policy_brain.py`; returns a DRAFT PR only. Collision check: 0 open PRs, 0 DNR mentions.
+- D13 (07:3xZ) Never retokenise inherited accent debt inside an anchor PR: #8262's first head went RED on the design ratchet (`enforce-added`, `--accent: "#e07a2f"` literal landing on a diff-added line); repair moved the anchor id to `.cm-main` so the `.cm-row` tag stays byte-identical to main (the accent is consumed by `.cm-hops i.on`/`.lnk.on`, so it is not dead code).
+- D14 (07:38Z) Every external-lane packet carries an EXECUTION MODE block (execute in-process; no subagents/Agent/Task/background jobs; no "awaiting completion notification"; a return saying launched/awaiting is a FAILED return). Cause: the R1 UK lane spawned a native child and died at the 600 s ceiling with zero artifacts. Adopted by CEO B (5947742998 §5).
+- A-Q1 (07:5xZ) Terminal keeps `mo_chain` opaque (shape-only validation); unknown ids degrade silently to the default view; no "not admitted" page for J1. Accepted by B (5947742998 §3).
+- D15 (08:1xZ) **Gate 19 RULED as `WS:MARKET-OS` F01 owner — ANSWER 2.** The two-axis growth/inflation base-effect regime read is the product; the labeled four-axis panel is NOT the current ask (competitor-parity `context_only` line; a labor axis = new scoring, gauntlet-gated; liquidity served by GLT). The four-axis child is CLOSED; the HMM-probability partial stays retired (`quad_vector` serves its data). The dead include (`dashboard.html.j2:15538`) is a BUG fixed by its own bounded lane (MO-PAID-001_FIX_R1); row MO-PAID-001 host claim refuted → `BUILT_NOT_PROVEN` (applied in this records wave). Posted decision-ready on #6819 (5947990768); stands unless a Sol edge objects.
+- D16 (08:2xZ) #8267 review rulings: R3 of the R2 packet AMENDED (the old urllib path DID read `cfg.get("timeout", 15)`; `_DEFAULTS` gains `client_timeout_s: 15`, `client_max_retries: 0`); retry cap `model_attempts` = 3 then `mark_seen(model_unavailable=True)`; WARNINGs on silent paths; 3-tuple `_do_call` for usage rows; AST-based T4. Commissioned as MO-PAID-023_FIX_R3.
 FACTS (verified this session, command named)
 - Live receipts 07:08Z (`curl -s https://www.mastermind-x.com/...`): `transmission.html` 141,208 B, `class="cm-row` 0, `id="tx-chain-` 0, `id="cos-q-` 0, `cm-card`/`cm-eyebrow`/`cm-quiet` 1 each; apex `/transmission.html` → `301 https://www.mastermind-x.com/transmission.html`. `us_stocks.html` 707,512 B carries NO `data-uk-*`/`id="uk-*"` marker and no `id="regime-read"` — the UK desk's page is to be confirmed by the diagnosis lane (the census grepped a rendered page at HEAD, not necessarily `us_stocks.html`).
 - Open-PR collision check (`gh pr list --state open --limit 60 --json files`, 07:08Z): only #8261 touches `engine/transmission_company_continuation.py`; nothing open touches `engine/chronicle/impact.py`, `templates/news.html.j2`, or `templates/transmission.html.j2`.
@@ -100,6 +118,14 @@ FACTS (verified this session, command named)
 - #8260 head MOVED 06:20Z: `82cdd9bf` → `b5951927bef3` ("fix(ontology): distinguish readings from requirements and results"; +93/−29 in site/templates ontology.js, site/ontology.html, tests/test_ontology_explorer_brain_browser.py). Checks 06:31Z: 8 success, 4 skipped, 13 pending, 1 FAILURE = `ci-authority/codex/merge-queue-pilot` (run 110731868589) — classification pending in review.
 - Terminal #763 (`gh pr view 763`): OPEN draft, head `cf8ddbbf25dc`, branch `claude/mo-b-j1b-2-context-strip-20260927`; files = AnalysisWorkspace/ThesisWorkspace/MarketOntologyContextStrip(+css,+test)/e2e spec — does NOT touch `terminal/lib/marketOntologyContext.ts`, so the D3 flip condition is NOT triggered.
 
+- Fixture href verified by RUNNING main's merged builder (`git archive origin/main engine lib tests/...` + import), bytes == Sol's 5947456527 string: `https://app.mastermind-x.com/analysis?symbol=AAPL&page=intelligence&mo_from=transmission&mo_chain=dollar_ch&mo_channel=em_revenue&mo_asof=2026-09-25&mo_security=SEC%3A0%3AAAPL`.
+- MO-PAID-073 hub receipt 07:46Z (`curl -s`): `/api/hub/oi` 200 11,190 B (schema/asof/movers), `/api/hub/hot` 200 21,522 B (schema/asof/by_premium/by_volume); both `asof=2026-09-30` at 2026-10-02T07:46Z (one EOD behind; `cache private,no-store`) — hub JSON PROVEN SERVED, freshness lag undiagnosed → PARTIAL stays.
+- Regime read today: `_base_effect_strip.html.j2` is included ONLY by `_regime_read_panel.html.j2`, which is included ONLY at the dead site → renders on NO page (`grep -n '_base_effect_strip\|_regime_read_panel' templates/*.j2`). `.bfwd*` CSS is global (`templates/theme.css:1738+`). Open "regime" PRs (30) touch none of these includes.
+- External fabric 08:06Z: `remote_sub.sh auto glm …` refused at the seat with `ECONOMIC_POLICY_REFUSED unknown_task_class` (needs `POOL_TASK_CLASS` + explicit model; mini2 has no GLM key); the refusal exits rc 0 after one log line → an instant "completion" is a refusal. Every lane that delivered today ran `minimax` mode (LEASE_OK → POLICY_CURRENT).
+- Sweeper update-branch moved BOTH armed heads while checks concluded (#8263 `ada03501→4ae295b8`, #8262 `d44814e3→13247a050e46`); each new tip is a merge of main `dc4fd0766709` into the branch with the diff vs main unchanged — verified by `git rev-list --parents -1` + `git diff --stat origin/main...origin/<branch>` before merging by exact head.
+- Carrier state 08:2xZ: consumed through B R5 5947742998; A posts 5947661320 (R5) and 5947990768 (R6). B asks A only for #8262's merge SHA. #8264 MERGED `a2adf9b53f56` (B wave-1 records: F06–F09 + F10–F13 census row evidence for this writer).
+- F06–F13 census reconciliation (writer, ~08:30Z): 79/79 ledger rows covered by #8264's two files; 78 cells confirmed; MO-PAID-057 is a census MISREAD (KEEP PARTIAL); MO-PAID-020's producer `scripts/ticker_cik_collision_census.py` EXISTS (the lane checked `engine/`). Applied: MO-PAID-001→BUILT_NOT_PROVEN (D15), MO-PAID-073 receipt, MO-PAID-057 note. Receipt doc `research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_F06_F13_CENSUS_RECONCILIATION_2026-10-02.md`; agentos handoff `agentos/handoffs/WS-MARKET-OS-2026-10-02-ceo-a-f01-f05-wave1.md`.
+- #8265 review (live corpus 2026-09-30, 179 events in window): old vs new ids identical today; starved weeks 21→0 over 52 weekly dates; EN tip read `Earnings calls (0/27)` while 8 cards rendered; 78 `research_vault` + 3 `macro_release` ticker-less events reported as `no_events`.
 OPEN
 - O1 CEO B binding/ACK not yet observed; A1 ruling awaits B (flip condition cleared by #763 file list).
 - O2 CLOSED 07:03Z (review posted; pilot red classified by design). Sol's repair response on #8260 is the next counterpart edge.
@@ -107,18 +133,26 @@ OPEN
 - O3 CLOSED (D7). O7 Which page hosts the UK desk (`data-uk-state`)? — diagnosis lane.
 - O4 CLOSED (D8). O8 Which remote host admits the F05 build lane (remote_sub.sh m1/mini2 gates: load1 < load_gate, active < max_active).
 - O5 Natural-time/authenticated proofs (F01 premarket, F03 RTH) — owners and windows to be scheduled.
+- O1 CLOSED (B bound; A-side ruling accepted via #763 scope + 5947742998). O6: #8261 MERGED; served href proof still natural-time (dormant chains). O7 CLOSED (`policy_watch.html`; D12). O8 CLOSED (mini2/m1 MiniMax mode; see FACTS on glm refusal).
+- O9 F05_017_FIX_R2 return → judge by artifact against D1–D7 → Opus re-review if MAJORs remain → merge chain (template PR: shared `render.yml` lane for live proof).
+- O10 MO-PAID-023_FIX_R3 return → judge against D1–D7 → merge chain for #8267 → served `policy_watch.html` state after the next sentinel cycle (placement fault is a separate record).
+- O11 MO-PAID-001_FIX_R1 return → judge (T1–T4, 8-cell evidence) → merge → render-lane live proof of `#regime-read` on `us_stocks.html`.
+- O12 #8262 merge (watcher) → post the squash SHA to B on #6819 (B's only ask) → B's one-round #763 follow-up.
+- O13 Consume #8264's F06–F13 census rows into the F00C ledger (single writer) in this records wave; re-pin the outside-union digest with a dated note.
 
 NEXT
-- TX_ANCHOR_PR: test pin → commit → push → PR → arm last → merged → post SHA to B on #6819.
-- Records PR from this branch (program file + F00C ledger D7/D10) — opened this cycle, arm last, merge.
-- Consume MO-PAID-023_UK_DIAG return; dispatch F05_017_BUILD_R1 via `remote_sub.sh mini2 minimax` (dry-run first).
-- Carry #8261 to MERGED (watcher); record the natural-time proof gap.
+- RECORDS_W2: fold deltas (this edit) + F06–F13 ledger consumption + test re-pin → commit → push → PR → arm LAST → merged → verify by blob compare.
+- Judge the three running lane returns by artifact (O9/O10/O11); REQUEST_REPAIR with numbered defects or ACCEPT → own each merge chain to live proof.
+- #8262: on watcher MERGED, fetch main alone, blob-compare the 2 paths, post the SHA to B.
+- MO-PAID-073 freshness-lag diagnosis (read-only) when a lane slot frees; MO-PAID-006 F02 owner-resolution memo (external draft lane).
 
 ## 5 Open rulings / holds
 
 - #8260: no hold; Sol-owned draft. Do not arm, ready or merge from this seat.
 - HL-0 (Paper) NOT FOR BUILD. VPS hold withdrawn (5865644644) — do not resurrect.
 - Rights gates unchanged: MO-PAID-003/004 (FX/commodity), 048/049/050 (military/AIS/satellite).
+- Gate 19 (hold docket :626-650) RULED D15 by this seat as F01 owner (ANSWER 2 — two-axis read is the product); stands unless Sol objects on #6819 (5947990768). No lane may add a labor/liquidity axis or restore the HMM partial.
+- #8265 and #8267 are DRAFT by seat decision until their repair rounds are judged; never arm or ready them from another seat.
 
 ## 6 Do-not-redo
 
@@ -127,3 +161,5 @@ NEXT
 - Affected-company production readback (5867924084): seven dormant chains, zero CTAs = correct negative
   state; never synthesize activated origins/companies.
 - Do not rebuild from stale NOT_BUILT cells; reconcile first (census lane).
+- Merged this program: #8261 `8ad7d79538f8` (A1 publisher), #8263 `49243a40796a` (D7 ledger + program file). The F05 selection algorithm in #8265 is CORRECT (deterministic, closed-key, 21→0 starved weeks) — repair the tip/tests only, never redesign Candidate A.
+- MO-PAID-023: the cure in #8267 is CONFIRMED by probe (transient failure no longer marks seen); do not re-diagnose — only the R3 defects remain.

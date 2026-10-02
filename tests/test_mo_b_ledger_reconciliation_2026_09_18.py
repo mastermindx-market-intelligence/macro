@@ -18,6 +18,10 @@ INTEGRATION_BASE_SHA = "5332d876e75837c158c6f42a2862734451bb7158"
 # F00A_CENSUS_R1 @ main 32d22a9b; CEO B verifies, never writes). The only outside-union
 # row D7 touched is MO-PAID-072 (restamped `state_delta`, state unchanged). Prior digest:
 # a4fdb5812267ae203faa009ea97dd8c9da3e203c3676d8b4abd33fd95b6355ab.
+# 2026-10-02 wave 2 (same writer, D15 as F01 owner): MO-PAID-001 PARTIAL->BUILT_NOT_PROVEN
+# (the two-axis regime read is built but its only include is dead, dashboard.html.j2:15538);
+# MO-PAID-073 and MO-PAID-057 restamped (state unchanged). All three are union rows, so the
+# outside-union digest is unchanged; CEO B's F06-F13 census (#8264) confirmed 78/79 cells.
 OUTSIDE_UNION_SHA256 = "cb9c1bf581b30bbb75e9fa3fd1f7f953d01f313dff98601dddc45e37ba43ef3c"
 CAPABILITY_STATES = {"NOT_BUILT", "SPEC_ONLY", "PARTIAL", "BUILT_NOT_PROVEN", "PROVEN_LIVE"}
 
@@ -119,7 +123,7 @@ EXPECTED = {
   ],
   "MO-PAID-001": [
     "UPGRADE_EXISTING_OWNER",
-    "PARTIAL"
+    "BUILT_NOT_PROVEN"
   ],
   "MO-PAID-002": [
     "UPGRADE_EXISTING_OWNER",
