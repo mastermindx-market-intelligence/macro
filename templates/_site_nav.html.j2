@@ -54,3 +54,4 @@
     </div>
   </div>
 </nav>
+{% if all_tools_enabled is defined and all_tools_enabled is sameas true %}{% include "_all_tools_menu.html.j2" %}{% else %}{{ "\n" }}{% endif %}

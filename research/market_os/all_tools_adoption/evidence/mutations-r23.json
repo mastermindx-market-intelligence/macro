@@ -1,0 +1,138 @@
+{
+  "source_sha256": "89fe95472ae4aa6004aa8fc267faf1f268785baf1ef3669a10f5fa6fc26ef53f",
+  "cases": [
+    {
+      "name": "redraw_revalidation_removed",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 71 - withdrawn destination stays unavailable after language",
+        "not ok 72 - withdrawn destination stays unavailable after search",
+        "not ok 73 - withdrawn destination stays unavailable after clear",
+        "not ok 74 - withdrawn destination stays unavailable after category",
+        "not ok 75 - withdrawn destination stays unavailable after all",
+        "not ok 76 - withdrawn destination stays unavailable after refresh",
+        "not ok 77 - render directly revalidates href without observer delivery",
+        "not ok 78 - render directly revalidates target without observer delivery",
+        "not ok 79 - render directly revalidates hidden without observer delivery",
+        "not ok 80 - render directly revalidates group-disabled without observer delivery",
+        "not ok 88 - a withdrawn focused destination returns to menu heading during repaint",
+        "not ok 91 - unavailable snapshot is refreshed only on explicit reopen",
+        "not ok 92 - withdrawn state survives source toggle until the menu is reopened",
+        "not ok 93 - unavailable row is removed from sequential keyboard destinations",
+        "not ok 94 - an unrelated valid destination stays navigable during withdrawal",
+        "not ok 97 - locale preserves unavailable count and snapshot ordering"
+      ],
+      "sha256": "a4bffeed6e6eaa805e0cfef0d238d56b8b2abb624488ce4154642a0a0fb66f2d"
+    },
+    {
+      "name": "auxclick_guard_removed",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 82 - auxclick cannot use a withdrawn link before observer flush"
+      ],
+      "sha256": "65eb692de733d83b4367c1bc2bf1b35d66d3ec6ebb933be61bca14df76aecfd6"
+    },
+    {
+      "name": "contextmenu_guard_removed",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 83 - contextmenu cannot use a withdrawn link before observer flush"
+      ],
+      "sha256": "1bce69bb4aeb7ab2048464b4cfefb003d595d96fc90cdafa4d664c33ac8b2367"
+    },
+    {
+      "name": "destination_focus_removed",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 87 - language change keeps keyboard focus on the same destination",
+        "not ok 88 - a withdrawn focused destination returns to menu heading during repaint"
+      ],
+      "sha256": "43986058213de3a6b9fa446b26d33180ec4c23252a037fedeb57cac0dfd7c9e8"
+    },
+    {
+      "name": "withdrawal_latch_removed",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 92 - withdrawn state survives source toggle until the menu is reopened"
+      ],
+      "sha256": "8fa06c856f5e8615e4a2bf504688e75bf70cb7448016caa7f9b5cf31f88de9a8"
+    },
+    {
+      "name": "duplicate_mount",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 41 - the renderer does not create more than one active source-driven menu in a document"
+      ],
+      "sha256": "ba2bed653a4066bbec200c9bf9986bc4e09bbb0d0c2cd86a26dfc5da861021ad"
+    },
+    {
+      "name": "context_erased",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 17 - composing Chinese does not render the unfinished query",
+        "not ok 27 - reopen clears search but does not change any source selection",
+        "not ok 38 - opening prepares the current source group rather than unrelated countries",
+        "not ok 39 - research page starts with its own source group while all destinations remain reachable"
+      ],
+      "sha256": "a7b3952b53ca5e3b62b78779764b6ade217ba491a016e3c09193419ddf7a796a"
+    },
+    {
+      "name": "svg_handler_copied",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 43 - source blueprint shapes survive but executable SVG nodes do not"
+      ],
+      "sha256": "3effb40f318720c32b3923f96cc0b06134c1b12de9681ec20ba0c4acfaca3ee1"
+    },
+    {
+      "name": "changed_target_ignored",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 40 - a source link changing its tab behavior is disabled until refreshed",
+        "not ok 78 - render directly revalidates target without observer delivery"
+      ],
+      "sha256": "f96dd4ba45356b646f621ea588ea527d7c7556d7e0537b3362a9968f4d4902ea"
+    },
+    {
+      "name": "server_disabled_ignored",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 32 - disabled source group cannot leak a child into the menu",
+        "not ok 80 - render directly revalidates group-disabled without observer delivery"
+      ],
+      "sha256": "539bbf171caaa574b89f3ab731be736c2095471fff4bed7b818252071b751816"
+    },
+    {
+      "name": "unsafe_origin_accepted",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 56 - rejects unsafe href \"https://evil.invalid/tool\"",
+        "not ok 58 - rejects unsafe href \"//evil.invalid\"",
+        "not ok 60 - rejects unsafe href \"https://app.mastermind-x.com.evil.invalid\""
+      ],
+      "sha256": "c5ce136b3dd3ec63de9f5fd9240c46008220113939788b8780b984d7207e8d5f"
+    },
+    {
+      "name": "ime_filters_early",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 17 - composing Chinese does not render the unfinished query"
+      ],
+      "sha256": "dcec1a9e1c893d9317836195d6c0a0df3a589b77f00c8a16baa5149fe74f9089"
+    }
+  ],
+  "detected": 12,
+  "total": 12
+}
