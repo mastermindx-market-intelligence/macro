@@ -1269,10 +1269,13 @@ jobs:
       - "engine/company_intelligence/qa_exchange.py"
       - "engine/company_intelligence/qa_reconstruction.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/events.py"
       - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
       - "engine/company_intelligence/qa_exchange.py"
       - "engine/company_intelligence/qa_reconstruction.py"
       - "engine/company_intelligence/event_id_adapter.py"
@@ -1483,6 +1486,8 @@ jobs:
       - "engine/grading.py"
       - "engine/grading_stats.py"
       - "engine/group_flow.py"
+      # Prophet independent peer evidence lives in the same pure source owner.
+      - "tests/test_group_flow.py"
       - "engine/hazard_score.py"
       - "engine/hold.py"
       - "engine/holdings_signals.py"
@@ -1976,6 +1981,11 @@ jobs:
       # returns on the first non-zero step).
       - name: ticker<->CIK collision census + C5 renderer robustness (W7B F06-5)
         run: python -m pytest tests/test_ticker_cik_collision_census.py -q
+      # Prophet Early Leadership uses these outcome-blind peer observations. Keep
+      # the focused contract executable on ordinary code PRs; the larger display
+      # owner remains in its existing gate:data lane.
+      - name: Prophet independent peer continuity research contract
+        run: python -m pytest tests/test_group_flow.py -q
 
   chronicle-suite:
     if: ${{ false }}
@@ -6787,8 +6797,6 @@ jobs:
       - "site/index.html"
       - "site/leader_radar.html"
       - "site/macro.html"
-      - "site/macro-events-news.css"
-      - "site/macro-events-news.js"
       - "site/measurementdata/measurement_data.js"
       - "site/news.html"
       - "site/prophet/showcase.json"
@@ -7256,11 +7264,21 @@ jobs:
       - scripts/check_self_mod_fence.py
       - scripts/worktree_gc.py
       # The launchd wrapper is the process that actually performs the sweep, and its
-      # own failures were invisible for a month (15 of 45 runs died mid-run with only a
-      # traceback in a log). Its suite reads the wrapper's SOURCE as well as importing
-      # it, so inference cannot reach this pair — the same reason .claude/hooks/** is
-      # declared above. closure widening 2026-09-29.
+      # own failures were invisible for a month. Its suite reads the wrapper's SOURCE as
+      # well as importing it, so inference cannot reach this pair — the same reason
+      # .claude/hooks/** is declared above. closure widening 2026-09-29.
+      #
+      # CORRECTED 2026-09-29 (W17): this comment said "15 of 45 runs died mid-run with only
+      # a traceback in a log". 15 of 45 wrote no completion marker, but only 13 CRASHED —
+      # the other 2 are the fail-closed refusal path returning without printing one, which
+      # is the guard working. Counting an absent marker as a death over-counts by exactly
+      # the number of code paths that exit quietly.
       - scripts/worktree_gc_launchd.py
+      # The external liveness check (W17). It is report-only and imports nothing from the
+      # sweeper, but its suite imports IT, so the job that owns the subject must re-run when
+      # either moves. A new pytest suite named by no `run:` step is exactly what
+      # contract-delta refuses, and it refused this one.
+      - scripts/worktree_gc_liveness.py
       - tests/test_agent_worktree_roots.py
       - tests/test_agentos_compile.py
       - tests/test_agentos_schema.py
@@ -7315,6 +7333,7 @@ jobs:
       - tests/test_warp_session_start_sparse.py
       - tests/test_worktree_gc.py
       - tests/test_worktree_gc_launchd.py
+      - tests/test_worktree_gc_liveness.py
       - tests/test_worktree_placement.py
       - tests/test_worktree_sparse.py
     # F2 (Metabolism Phase 0 / R-AUT-5): self-modification fence.
@@ -7351,7 +7370,7 @@ jobs:
         # host that has hit runner ENOSPC twice. tests/test_worktree_gc.py ran in NO
         # workflow before this line; it is grandfathered-dark rather than waived, so
         # contract-delta never asked for it.
-        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_execution_continuation_law.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_gc_launchd.py tests/test_worktree_placement.py tests/test_worktree_sparse.py -q
+        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_execution_continuation_law.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_gc_launchd.py tests/test_worktree_gc_liveness.py tests/test_worktree_placement.py tests/test_worktree_sparse.py -q
       - name: self-mod-fence live check (loop PR + immutable → BLOCKED)
         run: |
           # CI_HEAD_REF is the validated API identity published by the upgraded
@@ -12945,7 +12964,7 @@ jobs:
         run: >-
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
       - name: Shared Prophet card - record identity and explicit unavailable action
-        run: python -m pytest tests/test_prophet_card_shared.py -q
+        run: python -m pytest tests/test_prophet_card_shared.py tests/test_prophet_plan_relation.py -q
       - name: Prophet Today and Company context - owner selection and typed responses
         run: python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "today or company_context"
       - name: stock-brief context health (R2 context must yield a nonempty batch)
@@ -13412,12 +13431,15 @@ jobs:
       - "engine/company_intelligence/documents.py"
       - "engine/company_intelligence/event_id_adapter.py"
       - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
       - "engine/company_intelligence/qa_exchange.py"
       - "engine/company_intelligence/qa_reconstruction.py"
       - "engine/company_intelligence/events.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/pg_envelope.py"
       # 2026-08-26 widening (PR #6454): #6376 (E3-B AAPL canonical
       # qa_exchange publication) added qa_exchange/qa_reconstruction to this
       # job's suite closure; the coverage audit reds without them.
@@ -14140,19 +14162,6 @@ jobs:
       - "tests/test_cn_track_ledger_eras.py"
       - "tests/test_confluence_veto_leg_telemetry.py"
       - "tests/test_dashboard_template_render.py"
-      # Events & News R2 component: isolated rendering/data suites plus its optional
-      # controlled-browser proof. Browser collection skips when Playwright is absent;
-      # the code-gate owner still names the suite so it can never become an unrun test.
-      - "tests/test_macro_events_news_r2.py"
-      - "tests/test_events_news_release_evidence.py"
-      - "tests/test_events_news_release_render.py"
-      - "tests/test_events_news_release_expectations.py"
-      - "tests/test_events_news_release_expectations_render.py"
-      - "tests/test_events_news_release_browser.py"
-      - "tests/events_news_release_fixture.py"
-      - "tests/events_news_release_browser_support.py"
-      - "tests/fixtures/events_news_official_receipts.json"
-      - "tests/fixtures/events_news_actual_defects.json"
       - "tests/test_macro_sector_desk.py"
       # us_stocks S2 compression (W7-A 7056 heal): tests/test_us_stocks_s2_compression.py
       # renders the same dashboard.html.j2 template (mode=stocks) and imports engine.i18n,
@@ -14415,6 +14424,152 @@ jobs:
         run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py tests/test_fda_supply_probes_mixed.py -q
       - name: FDA sweep completeness regression probes (duplicate dedupe keys)
         run: python -m pytest tests/test_fda_sweep_duplicate_key_completeness.py -q
+
+  earnings-economic-source-selection:
+    # CDV-1 Task 2: preserve private PG acquisition currentness and revision clocks.
+    # The suite exercises the existing SEC discovery seam with synthetic fixtures only.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "tests/test_pg_economic_source_selection.py"
+      - "scripts/refresh_event_workspaces.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/economic_observations.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/earnings_transcript_intake.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/company_intelligence_reader.py"
+      - "engine/press/earnings_adapter.py"
+      - "scripts/publish_company_intelligence_r2.py"
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "tests/earnings_economic_fixtures.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the earnings source-selection suite
+        # requests: scripts.refresh_event_workspaces imports
+        # engine.neuralweb.company_intelligence_reader at module scope, and that
+        # module imports requests at module scope.
+        run: pip install pytest pyyaml requests
+      - name: PG private acquisition source selection
+        run: python -m pytest tests/test_pg_economic_source_selection.py -q
+
+  earnings-economic-dossier:
+    # CDV-1 Task 1: private PG issuer-profile economics at source scope. The fifteen
+    # frozen suites use only original synthetic HTML. The F1-Q envelope suites read
+    # exact public SEC EDGAR exhibits, committed gzipped under tests/fixtures/pg_envelope/
+    # by the decision owner's direction on #7905; nothing read from them is published.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/economic_observations.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/__init__.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/press/earnings_adapter.py"
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "tests/earnings_economic_fixtures.py"
+      - "tests/test_pg_economic_observations.py"
+      - "tests/test_pg_economic_observations_probes.py"
+      - "tests/test_pg_economic_observations_probes_r2.py"
+      - "tests/test_pg_economic_observations_probes_r3.py"
+      - "tests/test_pg_economic_observations_probes_r4.py"
+      - "tests/test_pg_economic_observations_probes_r5.py"
+      - "tests/test_pg_economic_observations_probes_r6.py"
+      - "tests/test_pg_economic_observations_probes_r7.py"
+      - "tests/test_pg_economic_observations_probes_r8.py"
+      - "tests/test_pg_economic_observations_probes_r9.py"
+      - "tests/test_pg_economic_observations_probes_r10.py"
+      - "tests/test_pg_economic_observations_probes_r11.py"
+      - "tests/test_pg_economic_observations_probes_r12.py"
+      - "tests/test_pg_economic_observations_probes_r13.py"
+      - "tests/test_pg_economic_observations_probes_r14.py"
+      - "tests/test_pg_economic_observations_probes_r15.py"
+      - "tests/test_pg_envelope_f1.py"
+      - "tests/test_pg_envelope_f1_probes_r1.py"
+      - "tests/test_pg_envelope_f1_probes_r2.py"
+      - "tests/test_pg_envelope_f1_probes_r3.py"
+      - "tests/test_pg_envelope_f1_probes_r4.py"
+      - "tests/test_pg_envelope_f1_probes_r5.py"
+      - "tests/test_pg_envelope_f1_probes_r6.py"
+      - "tests/test_pg_envelope_f1_probes_r7.py"
+      - "tests/test_pg_envelope_f1_probes_r8.py"
+      - "tests/test_pg_envelope_f1_probes_r9.py"
+      - "tests/test_pg_envelope_f1_probes_r10.py"
+      - "tests/fixtures/pg_envelope/**"
+      - "engine/earnings_narrative/economic_interpretation.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "tests/earnings_economic_interpretation_fixtures.py"
+      - "tests/test_earnings_economic_interpretation.py"
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: PG source-scoped economic observations
+        run: python -m pytest tests/test_pg_economic_observations.py tests/test_pg_economic_observations_probes.py tests/test_pg_economic_observations_probes_r2.py tests/test_pg_economic_observations_probes_r3.py tests/test_pg_economic_observations_probes_r4.py tests/test_pg_economic_observations_probes_r5.py tests/test_pg_economic_observations_probes_r6.py tests/test_pg_economic_observations_probes_r7.py tests/test_pg_economic_observations_probes_r8.py tests/test_pg_economic_observations_probes_r9.py tests/test_pg_economic_observations_probes_r10.py tests/test_pg_economic_observations_probes_r11.py tests/test_pg_economic_observations_probes_r12.py tests/test_pg_economic_observations_probes_r13.py tests/test_pg_economic_observations_probes_r14.py tests/test_pg_economic_observations_probes_r15.py tests/test_pg_envelope_f1.py tests/test_pg_envelope_f1_probes_r1.py tests/test_pg_envelope_f1_probes_r2.py tests/test_pg_envelope_f1_probes_r3.py tests/test_pg_envelope_f1_probes_r4.py tests/test_pg_envelope_f1_probes_r5.py tests/test_pg_envelope_f1_probes_r6.py tests/test_pg_envelope_f1_probes_r7.py tests/test_pg_envelope_f1_probes_r8.py tests/test_pg_envelope_f1_probes_r9.py tests/test_pg_envelope_f1_probes_r10.py tests/test_earnings_economic_interpretation.py -q
 
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
@@ -17388,6 +17543,19 @@ jobs:
     paths:
       # The eight suites the step runs, plus helper suites they import.
       - "tests/test_dashboard_template_render.py"
+      # Events & News R2: source/render contracts plus controlled-browser proof.
+      # Browser collection import-skips when Playwright is absent in this standing
+      # job, but the suite and its helpers remain explicitly owned here.
+      - "tests/test_macro_events_news_r2.py"
+      - "tests/test_events_news_release_evidence.py"
+      - "tests/test_events_news_release_render.py"
+      - "tests/test_events_news_release_expectations.py"
+      - "tests/test_events_news_release_expectations_render.py"
+      - "tests/test_events_news_release_browser.py"
+      - "tests/events_news_release_fixture.py"
+      - "tests/events_news_release_browser_support.py"
+      - "tests/fixtures/events_news_official_receipts.json"
+      - "tests/fixtures/events_news_actual_defects.json"
       # #7798: source-dated Hottest Desk leadership/recommendation contract.
       - "tests/test_macro_sector_desk.py"
       # #7859: volatility-placement tests used to live only in gate:data
@@ -17426,6 +17594,8 @@ jobs:
       - "site/flowleaders/leaders.json"
       - "site/leaderradar/radar.json"
       - "site/macro.html"
+      - "site/macro-events-news.css"
+      - "site/macro-events-news.js"
       - "site/marketdata/subsector_rotation.json"
       - "site/master_brief.json"
       - "site/qledger/track_record.json"
@@ -17708,10 +17878,13 @@ jobs:
       - "engine/company_intelligence/documents.py"
       - "engine/company_intelligence/event_id_adapter.py"
       - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
       - "engine/company_intelligence/events.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/qa_exchange.py"
       - "engine/company_intelligence/qa_reconstruction.py"
       - "engine/company_intelligence/views.py"
@@ -17870,6 +18043,8 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/qa_exchange.py"
       - "engine/company_intelligence/qa_reconstruction.py"
       - "engine/company_intelligence/views.py"
@@ -17896,6 +18071,10 @@ jobs:
       - "scripts/refresh_event_workspaces.py"
       - "engine/fundamental_forensics/industrials_result_cash.py"
       - "tests/test_industrials_result_cash.py"
+      # IND-T06 (IND-R214): the financial-dossier suite. Registered in the same
+      # change that created it - a suite CI never selects is a guard that cannot
+      # fail, and this job is the whole program's only exclusive gate:code job.
+      - "tests/test_industrials_financial_dossier.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -17913,7 +18092,7 @@ jobs:
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
-        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py -q
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py -q
 
   house-law-registry-code:
     if: ${{ false }}
