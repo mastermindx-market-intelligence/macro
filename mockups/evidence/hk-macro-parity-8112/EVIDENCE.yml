@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/hk.html.j2
+manifest: mockups/evidence/hk-macro-parity-8112/manifest.json

@@ -465,7 +465,10 @@ def test_page_wires_the_shared_partial_at_the_existing_dialog_id(page, px):
     assert src.count(f'id="{px}-dlg-risk"') == 0, "a second hand-rolled body survived"
     # the JS the entry points call is untouched
     assert f"window.{px}OpenDlg={px}OpenDlg" in src
-    assert f"{px}OpenDlg('{px}-dlg-risk')" in src
+    # HK passes the actual opener for focus return, including popup links.
+    # Canada's existing invocation remains pinned unchanged.
+    opener = f"{px}OpenDlg('{px}-dlg-risk'" + (",this)" if px == "hkx" else ")")
+    assert opener in src
 
 
 # ---------------------------------------------------------------------------

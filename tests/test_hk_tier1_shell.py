@@ -650,6 +650,7 @@ def test_capture_script_declares_hover_and_focus_force_states():
 
 
 def test_popover_building_state_is_honest_when_thresholds_absent():
+    # Missing owner readings do not establish that a build is running (#8112 R4).
     vm = _make_vm()
     ms = dict(vm["market_state"])
     ms["components"] = []
@@ -658,5 +659,7 @@ def test_popover_building_state_is_honest_when_thresholds_absent():
     html = _render(market_state=ms)
     pop = html[html.find('id="hkx-pop-signals"'):html.find('id="hkx-pop-risk"')]
     assert "Building…" not in pop
-    assert "The checks are still building" in pop
-    assert "检查仍在积累" in pop
+    assert "Factor data unavailable" in pop
+    assert "因子数据暂不可用" in pop
+    assert "The checks are still building" not in pop
+    assert "检查仍在积累" not in pop
