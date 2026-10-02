@@ -126,11 +126,26 @@ def _source_ref(row: Mapping[str, Any]) -> str:
     return _text(row.get("source_ref"), "source_ref_missing_or_invalid")
 
 
+_SETUP_LINEAGE_FIELDS = ("identity_epoch", "episode_id", "candidate_generation_id")
+
+
+def _setup_lineage(row: Mapping[str, Any], owner: str) -> dict[str, str | None]:
+    """Preserve an existing owner's complete binding; never allocate or infer it."""
+    values = {field: row.get(field) for field in _SETUP_LINEAGE_FIELDS}
+    if all(value is None for value in values.values()):
+        return values
+    if any(value is None for value in values.values()):
+        raise EarlyLeadershipEvidenceError(f"{owner}_setup_lineage_incomplete")
+    return {field: _text(value, f"{owner}_setup_lineage_invalid")
+            for field, value in values.items()}
+
+
 def _candidate(row: Mapping[str, Any], decision: datetime) -> dict[str, Any]:
     keys = {
         "schema", "issuer_id", "security_id", "ticker", "theme_id", "asof",
         "known_at", "return_window_sessions", "return_basis",
         "stock_return", "market_return", "market_id", "source_ref",
+        *_SETUP_LINEAGE_FIELDS,
     }
     _closed(row, keys, "candidate")
     if row.get("schema") != CANDIDATE_SCHEMA:
@@ -141,6 +156,7 @@ def _candidate(row: Mapping[str, Any], decision: datetime) -> dict[str, Any]:
     if asof > known or known > decision:
         raise EarlyLeadershipEvidenceError("candidate_clock_invalid")
     return {
+        **_setup_lineage(row, "candidate"),
         "issuer_id": _text(row.get("issuer_id"), "candidate_issuer_invalid"),
         "security_id": _text(row.get("security_id"), "candidate_security_invalid"),
         "ticker": _text(row.get("ticker"), "candidate_ticker_invalid"),
@@ -327,7 +343,8 @@ def _exposure(row: Mapping[str, Any], decision: datetime) -> dict[str, Any]:
 
 
 def _setup(row: Mapping[str, Any], decision: datetime) -> dict[str, Any]:
-    keys = {"schema", "state", "observed_at", "known_at", "source_ref", "invalidation_ref"}
+    keys = {"schema", "issuer_id", "security_id", "state", "observed_at",
+            "known_at", "source_ref", "invalidation_ref", *_SETUP_LINEAGE_FIELDS}
     _closed(row, keys, "setup")
     if row.get("schema") != SETUP_SCHEMA:
         raise EarlyLeadershipEvidenceError("setup_schema_invalid")
@@ -342,6 +359,9 @@ def _setup(row: Mapping[str, Any], decision: datetime) -> dict[str, Any]:
     if invalidation is not None:
         invalidation = _text(invalidation, "setup_invalidation_ref_invalid")
     return {
+        **_setup_lineage(row, "setup"),
+        "issuer_id": _text(row.get("issuer_id"), "setup_issuer_invalid"),
+        "security_id": _text(row.get("security_id"), "setup_security_invalid"),
         "state": state,
         "observed_at": _iso(observed),
         "known_at": _iso(known),
@@ -352,8 +372,8 @@ def _setup(row: Mapping[str, Any], decision: datetime) -> dict[str, Any]:
 
 def _geometry(row: Mapping[str, Any], decision: datetime) -> dict[str, Any]:
     keys = {
-        "schema", "current_price", "invalidation_price", "chase_boundary",
-        "target_price", "quote_asof", "known_at", "source_ref",
+        "schema", "issuer_id", "security_id", "current_price", "invalidation_price", "chase_boundary",
+        "target_price", "quote_asof", "known_at", "source_ref", *_SETUP_LINEAGE_FIELDS,
     }
     _closed(row, keys, "geometry")
     if row.get("schema") != GEOMETRY_SCHEMA:
@@ -377,6 +397,9 @@ def _geometry(row: Mapping[str, Any], decision: datetime) -> dict[str, Any]:
         raise EarlyLeadershipEvidenceError("geometry_clock_invalid")
     risk = current - invalidation
     return {
+        **_setup_lineage(row, "geometry"),
+        "issuer_id": _text(row.get("issuer_id"), "geometry_issuer_invalid"),
+        "security_id": _text(row.get("security_id"), "geometry_security_invalid"),
         "current_price": current,
         "invalidation_price": invalidation,
         "chase_boundary": chase,
@@ -411,6 +434,20 @@ def build_early_leadership_evidence(
     exposure = _exposure(economic_exposure, decision)
     setup = _setup(setup_observation, decision)
     geometry = _geometry(entry_geometry, decision)
+
+    for owner, name in ((setup, "setup"), (geometry, "geometry")):
+        if owner["issuer_id"] != cand["issuer_id"]:
+            raise EarlyLeadershipEvidenceError(f"{name}_issuer_mismatch")
+        if owner["security_id"] != cand["security_id"]:
+            raise EarlyLeadershipEvidenceError(f"{name}_security_mismatch")
+    lineages = {tuple(owner[field] for field in _SETUP_LINEAGE_FIELDS)
+                for owner in (cand, setup, geometry)}
+    if len(lineages) != 1:
+        raise EarlyLeadershipEvidenceError("setup_lineage_mismatch")
+    lineage = {
+        "state": "BOUND" if cand["episode_id"] is not None else "UNAVAILABLE",
+        **{field: cand[field] for field in _SETUP_LINEAGE_FIELDS},
+    }
 
     if peer["candidate_issuer_id"] != cand["issuer_id"]:
         raise EarlyLeadershipEvidenceError("peer_candidate_issuer_mismatch")
@@ -458,6 +495,7 @@ def build_early_leadership_evidence(
         and theme["rights_state"] not in {"RIGHTS_BLOCKED", "UNAVAILABLE"}
         and exposure["economic_exposure_confirmed"]
         and setup["state"] != "UNKNOWN"
+        and lineage["state"] == "BOUND"
     )
     if mandatory_ready:
         research_state = "READY_FOR_RESEARCH_COMPARISON"
@@ -477,6 +515,7 @@ def build_early_leadership_evidence(
         "ticker": cand["ticker"],
         "theme_id": cand["theme_id"],
         "research_state": research_state,
+        "setup_lineage": lineage,
         "candidate_measurement": cand,
         "peer_ex_candidate": peer,
         "theme_state_projection": theme,

@@ -590,6 +590,12 @@ def _leadership_inputs():
         "known_at": "2026-09-29T20:09:00Z",
         "source_ref": "entry-owner:aaa",
     }
+    lineage = {"identity_epoch": "epoch_0", "episode_id": "fixture:episode:AAA:1",
+               "candidate_generation_id": "fixture:candidate-generation:1"}
+    for row in (candidate, setup, geometry):
+        row.update(lineage)
+    for row in (setup, geometry):
+        row.update(issuer_id=_ISSUER, security_id=_SECURITY)
     return candidate, peer, theme, exposure, setup, geometry
 
 
@@ -803,3 +809,113 @@ class TestEarlyLeadershipEvidenceContract:
         assert left["evidence_id"].startswith("pele:")
         left["research_features"]["theme_acceleration"] = 999
         assert _build_leadership() == right
+
+
+# Independent review #8240/5935977271: owner identity is data, not source-ref prose.
+def _bound_leadership_values():
+    candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+    lineage = {"identity_epoch": "epoch_0", "episode_id": "fixture:episode:AAA:1",
+               "candidate_generation_id": "fixture:candidate-generation:1"}
+    for row in (candidate, setup, geometry):
+        row.update(lineage)
+    for row in (setup, geometry):
+        row.update(issuer_id=candidate["issuer_id"], security_id=candidate["security_id"])
+    return {"candidate": candidate, "peer_ex_candidate": peer, "theme_state": theme,
+            "economic_exposure": exposure, "setup_observation": setup, "entry_geometry": geometry}
+
+
+def _bound_leadership(values):
+    return build_early_leadership_evidence(decision_at=_DECISION, **values)
+
+
+def test_bound_leadership_keeps_owner_identity_lineage_and_numeric_features():
+    values = _bound_leadership_values()
+    original = copy.deepcopy(values)
+    result = _bound_leadership(values)
+    assert result["research_state"] == "READY_FOR_RESEARCH_COMPARISON"
+    assert result["setup_lineage"]["state"] == "BOUND"
+    for owner in ("candidate_measurement", "setup_observation", "entry_geometry"):
+        assert result[owner]["issuer_id"] == values["candidate"]["issuer_id"]
+        assert result[owner]["security_id"] == values["candidate"]["security_id"]
+        assert result[owner]["episode_id"] == "fixture:episode:AAA:1"
+    assert result["research_features"]["risk_to_invalidation_pct"] == 0.05
+    assert result["research_features"]["gross_reward_risk"] == 3.0
+    assert values == original
+    assert all(flag is False for flag in result["authority"].values())
+
+
+@pytest.mark.parametrize("owner,prefix", [("setup_observation", "setup"), ("entry_geometry", "geometry")])
+@pytest.mark.parametrize("field,identity", [("issuer_id", "issuer"), ("security_id", "security")])
+def test_bound_leadership_refuses_independent_wrong_security_or_issuer(owner, prefix, field, identity):
+    values = _bound_leadership_values()
+    values[owner][field] = "fixture:OTHER"
+    with pytest.raises(EarlyLeadershipEvidenceError, match=f"{prefix}_{identity}_mismatch"):
+        _bound_leadership(values)
+
+
+@pytest.mark.parametrize("owner,prefix", [("setup_observation", "setup"), ("entry_geometry", "geometry")])
+@pytest.mark.parametrize("field,identity", [("issuer_id", "issuer"), ("security_id", "security")])
+def test_bound_leadership_requires_explicit_owner_identity(owner, prefix, field, identity):
+    values = _bound_leadership_values()
+    values[owner].pop(field)
+    with pytest.raises(EarlyLeadershipEvidenceError, match=f"{prefix}_{identity}_invalid"):
+        _bound_leadership(values)
+
+
+@pytest.mark.parametrize("owner", ["candidate", "setup_observation", "entry_geometry"])
+@pytest.mark.parametrize("field", ["identity_epoch", "episode_id", "candidate_generation_id"])
+def test_bound_leadership_refuses_same_security_wrong_lineage(owner, field):
+    values = _bound_leadership_values()
+    values[owner][field] = "fixture:other-lineage"
+    with pytest.raises(EarlyLeadershipEvidenceError, match="setup_lineage_mismatch"):
+        _bound_leadership(values)
+
+
+@pytest.mark.parametrize("owner", ["candidate", "setup_observation", "entry_geometry"])
+def test_bound_leadership_refuses_partial_lineage(owner):
+    values = _bound_leadership_values()
+    values[owner].pop("candidate_generation_id")
+    with pytest.raises(EarlyLeadershipEvidenceError, match="setup_lineage_incomplete"):
+        _bound_leadership(values)
+
+
+def test_unbound_leadership_accrues_without_minting_setup_readiness():
+    values = _bound_leadership_values()
+    for owner in ("candidate", "setup_observation", "entry_geometry"):
+        for field in ("identity_epoch", "episode_id", "candidate_generation_id"):
+            values[owner].pop(field)
+    result = _bound_leadership(values)
+    assert result["research_state"] == "ACCRUING"
+    assert result["setup_lineage"] == {
+        "state": "UNAVAILABLE", "identity_epoch": None, "episode_id": None,
+        "candidate_generation_id": None,
+    }
+    assert result["research_features"]["risk_to_invalidation_pct"] == 0.05
+    assert all(flag is False for flag in result["authority"].values())
+
+
+def test_owner_identity_is_not_inferred_from_opaque_ref_text():
+    values = _bound_leadership_values()
+    values["setup_observation"]["source_ref"] = "opaque:BBB-looking-text"
+    values["entry_geometry"]["source_ref"] = "opaque:different-display-ticker"
+    assert _bound_leadership(values)["research_state"] == "READY_FOR_RESEARCH_COMPARISON"
+
+
+def test_matched_other_security_control_is_accepted_but_swaps_are_refused():
+    values = _bound_leadership_values()
+    other = copy.deepcopy(values)
+    other["candidate"]["ticker"] = "BBB"
+    for owner in ("candidate", "setup_observation", "entry_geometry"):
+        other[owner].update(issuer_id="fixture:ISS:BBB", security_id="fixture:SEC:BBB",
+                            episode_id="fixture:episode:BBB:1")
+    other["peer_ex_candidate"].update(candidate_issuer_id="fixture:ISS:BBB", candidate_security_id="fixture:SEC:BBB")
+    other["economic_exposure"]["issuer_id"] = "fixture:ISS:BBB"
+    other["setup_observation"].update(state="CONFIRMED", source_ref="toi:setup:bbb")
+    other["entry_geometry"].update(invalidation_price=85.0, target_price=130.0, source_ref="entry-owner:bbb")
+    assert _bound_leadership(other)["research_state"] == "READY_FOR_RESEARCH_COMPARISON"
+    for owners in (("setup_observation",), ("entry_geometry",), ("setup_observation", "entry_geometry")):
+        swapped = copy.deepcopy(values)
+        for owner in owners:
+            swapped[owner] = other[owner]
+        with pytest.raises(EarlyLeadershipEvidenceError, match="issuer_mismatch"):
+            _bound_leadership(swapped)

@@ -144,3 +144,28 @@ The existing B10/H1 scientific owner should compare, on a common eligible popula
 This decomposition is essential: apparent stock-selection improvement that comes only from being in the right sector is not evidence of better member selection.
 
 Entry/B4, holding policy, portfolio capacity and market risk remain separate decisions.
+
+
+## 2026-10-02 independent-review repair
+
+Setup and entry-geometry observations now require the canonical `issuer_id` and
+`security_id` supplied by their existing owners. Each joins independently to the
+stock-window observation; a matching ticker or opaque `source_ref` is not a join.
+
+The candidate, setup and geometry may carry the existing B1 lineage tuple
+`identity_epoch`, `episode_id`, `candidate_generation_id`. Values are copied, not
+allocated or inferred. A partial tuple or disagreement across the three owners
+refuses the envelope. Complete matching tuples produce `setup_lineage.state=BOUND`.
+If all three owners lack lineage, numeric descriptive evidence can still accrue,
+but lineage remains `UNAVAILABLE` and the envelope cannot claim setup-bound
+`READY_FOR_RESEARCH_COMPARISON`. This does not establish a producer integration
+or replace canonical source authentication.
+
+The code-gated `washout-turn-organ` CI owner now executes the existing outcome-blind
+`test_prophet_fusion_w3_structural.py` suite, retaining its existing automatic
+dependency inference. The data-gated `unrun-picks-boards` owner retains its workload
+and gains only its missing explicit compiler dependency. Path coverage alone is
+not hosted execution proof. Independent re-review and the new exact-head hosted
+result remain required; source-owned ThemeState and H1 evaluation/rights admission
+are separate. No numerical feature definitions, rank, B1/B4, plan, sizing or
+trading authority are changed.
