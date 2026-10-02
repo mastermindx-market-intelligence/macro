@@ -25,8 +25,10 @@ def policy(tmp_path):
 def publication(family='PCE', **changes):
     c=official._SOURCE_CONTRACTS[family]
     raw={'reference_period':'August 2026','unit':c['raw_unit'],
-         'headline_mom':.3,'core_mom':.2,'payroll_change':175000,'initial_claims':203000}
+         'headline_mom':.3,'core_mom':.2,'payroll_change':175000,'initial_claims':203000,
+         'real_gdp_annualized':3.0}
     if family=='CLAIMS': raw['reference_period']='September 26, 2026'
+    if family=='GDP': raw['reference_period']='Q2 2026'
     p={'type':family,'date':'2026-09-30','data_ready':True,
        'source_url':f"https://www.{c['host']}/fixture/not-live",'source_sha256':'a'*64,
        'publisher':c['publisher'],'source_id':c['source_id'],
@@ -50,13 +52,12 @@ def project(policy, rows, event=None, cutoff=ASOF):
 
 def test_canonical_dependency_identity_is_known():
     # Private registry interfaces are deliberately pinned; no parallel mapping.
-    assert set(official._TARGETS)=={'CPI','PPI','PCE','NFP','CLAIMS'}
-    assert 'GDP' not in official._TARGETS
+    assert set(official._TARGETS)=={'CPI','PPI','PCE','GDP','NFP','CLAIMS'}
     for specs in official._TARGETS.values():
         for release,_,metric,unit,scale in specs:
             assert official._SPEC_BY_RELEASE[release]==(metric,unit,scale)
 
-@pytest.mark.parametrize('family,n',[('CPI',2),('PPI',1),('PCE',2),('NFP',1),('CLAIMS',1)])
+@pytest.mark.parametrize('family,n',[('CPI',2),('PPI',1),('PCE',2),('GDP',1),('NFP',1),('CLAIMS',1)])
 def test_each_family_reuses_canonical_units(policy,family,n):
     ev={'type':family,'date':'2026-09-30'}
     before=receipts(policy,family);rows=deepcopy(before)
@@ -66,12 +67,16 @@ def test_each_family_reuses_canonical_units(policy,family,n):
     assert rows==before and 'official_evidence' not in ev
     assert [m['actual'] for m in v['metrics']]==[r['actual'] for r in rows]
     assert all(m['sequence']=='first' for m in v['metrics'])
+    if family=='GDP':
+        assert v['metrics'][0]['display_value']=='3.0'
+        assert v['metrics'][0]['unit']=='percent_annualized'
+        assert v['metrics'][0]['period']=='2026-Q2'
     if family=='NFP': assert v['metrics'][0]['display_value']=='175'
     if family=='CLAIMS': assert v['metrics'][0]['display_value']=='203'
 
 @pytest.mark.parametrize('ev,reason',[(None,'invalid_event'),({},'invalid_event'),
     ({'type':'pce','date':'2026-09-30'},'unsupported_event_type'),
-    ({'type':'GDP','date':'2026-09-30'},'unsupported_event_type'),
+    ({'type':'FOMC','date':'2026-09-30'},'unsupported_event_type'),
     ({'label':'PCE','date':'2026-09-30'},'invalid_event'),
     ({'type':[],'date':'2026-09-30'},'invalid_event'),
     ({'type':'PCE','date':'2026-02-30'},'invalid_event')])
@@ -80,6 +85,39 @@ def test_event_identity_is_typed_not_inferred(policy,ev,reason):
     assert v['reason']==reason and not v['metrics']
 
 @pytest.mark.parametrize('cutoff',['2026-09-30','2026-09-30 13:00','invalid',None,'2026-09-30T25:00:00Z'])
+
+def test_gdp_reference_binding_uses_quarter_not_month_guessing(policy):
+    rows=receipts(policy,'GDP')
+    event={'type':'GDP','date':'2026-09-30','reference_period':'Q2 2026'}
+    v=project(policy,rows,event)
+    assert v['status']=='available'
+    assert v['metrics'][0]['period']=='2026-Q2'
+    assert v['metrics'][0]['unit']=='percent_annualized'
+
+    drift={**event,'reference_period':'Q1 2026'}
+    withheld=project(policy,rows,drift)
+    assert withheld['status']=='unavailable'
+    assert all(m['reason']=='reference_period_mismatch' for m in withheld['metrics'])
+
+
+def test_gdp_result_without_forecast_context_stays_fact_only(policy):
+    rows=receipts(policy,'GDP')
+    event={'type':'GDP','date':'2026-09-30','reference_period':'Q2 2026'}
+    attached=view.attach_event_actual_evidence(
+        [event],rows,as_of=ASOF,defects_path=policy)
+    assert attached[0]['official_evidence']['status']=='available'
+    expectation=view.event_expectation_context(
+        attached[0],
+        {'schema':'release_forecast.v2','asof':ASOF,'display_only':True,
+         'authority':{'can_score':False,'can_size':False,'can_trade':False},
+         'methodology_status':{'street_consensus':'unavailable'},
+         'upcoming':[],'last_scored_all_forward':[]},
+        as_of=ASOF,official_evidence=attached[0]['official_evidence'])
+    assert expectation['status']=='unavailable'
+    assert expectation['street_survey_status']=='unavailable'
+    assert expectation['metrics'][0]['reason']=='no_matching_frozen_model_context'
+
+
 def test_invalid_cutoff_has_no_values(policy,cutoff):
     v=project(policy,receipts(policy),cutoff=cutoff)
     assert v['reason']=='invalid_as_of' and v['metrics']==[]
