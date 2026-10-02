@@ -343,6 +343,10 @@ _BENCHMARK_KEYS = (
     "naive_prior", "trailing_3m", "trailing_4w", "ar_model", "cleveland_nowcast",
 )
 
+# Existing release-radar consumer policy degrades context after two calendar days.
+# Keep this popup at least as conservative; this does not change the producer.
+_FORECAST_MAX_AGE_DAYS = 2
+
 
 def _finite_number(value: Any) -> bool:
     return type(value) in (int, float) and math.isfinite(value)
@@ -637,7 +641,20 @@ def event_expectation_context(
     if artifact_asof > cutoff:
         result["reason"] = "forecast_after_snapshot"
         return result
+    artifact_age_days = (cutoff.date() - artifact_asof.date()).days
     result["artifact_asof"] = artifact_asof.isoformat()
+    result["artifact_age_days"] = artifact_age_days
+    result["freshness_max_age_days"] = _FORECAST_MAX_AGE_DAYS
+    if artifact_age_days > _FORECAST_MAX_AGE_DAYS:
+        result["reason"] = "forecast_stale"
+        return result
+    capture_health = forecast.get("capture_health")
+    if isinstance(capture_health, Mapping):
+        nightly_gap = capture_health.get("nightly_gap_days")
+        result["nightly_gap_days"] = nightly_gap if type(nightly_gap) is int and nightly_gap >= 0 else None
+        if type(nightly_gap) is int and nightly_gap > _FORECAST_MAX_AGE_DAYS:
+            result["reason"] = "forecast_stale"
+            return result
     result["methodology"] = {
         "forecast_epoch": methodology.get("forecast_epoch") if isinstance(methodology.get("forecast_epoch"), str) else None,
         "accuracy_claim": methodology.get("accuracy_claim") if isinstance(methodology.get("accuracy_claim"), str) else None,
