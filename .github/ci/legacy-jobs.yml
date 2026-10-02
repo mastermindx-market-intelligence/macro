@@ -8015,6 +8015,7 @@ jobs:
       - "tests/test_ofac_sdn_collector.py"
       - "tests/test_sanctions_map_engine.py"
       - "tests/test_sanctions_map_event_pins.py"
+      - "tests/test_sanctions_map_news_mark_legibility.py"
       - "tests/test_sanctions_map_nav.py"
       - "tests/test_sanctions_map_page.py"
       - "tests/test_worldmap_base.py"
@@ -8033,7 +8034,7 @@ jobs:
         run: pip install pytest pandas numpy pyyaml jinja2 requests pyarrow
       # O21c 2026-10-02 (contract-delta unrun-suite): the builder-side no-post-render-stamp suite is wired here with its subject scripts/build_sanctions_map.py.
       - name: sanctions map engine + page + nav + worldmap + OFAC collector
-        run: python -m pytest tests/test_sanctions_map_engine.py tests/test_sanctions_map_page.py tests/test_sanctions_map_nav.py tests/test_worldmap_base.py tests/test_ofac_sdn_collector.py tests/test_sanctions_map_event_pins.py tests/test_build_sanctions_map_no_path_stamp.py
+        run: python -m pytest tests/test_sanctions_map_engine.py tests/test_sanctions_map_page.py tests/test_sanctions_map_nav.py tests/test_worldmap_base.py tests/test_ofac_sdn_collector.py tests/test_sanctions_map_event_pins.py tests/test_build_sanctions_map_no_path_stamp.py tests/test_sanctions_map_news_mark_legibility.py
 
   itr-turn-rotation:
     if: ${{ false }}
