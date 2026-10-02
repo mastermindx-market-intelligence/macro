@@ -327,3 +327,18 @@ html[data-theme="light"] #dlg-news .nd-expectation-metric{background:var(--panel
   #dlg-news .nd-expectation-method dd{margin-bottom:8px}
   html[data-theme="light"] #dlg-news .nd-detail .nd-expectation-body{padding:12px}
 }
+
+
+/* Releases separate recently-qualified results from forward schedule context. */
+#dlg-news .nd-release-group-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:4px 0 10px}
+#dlg-news .nd-release-group-heading>div{min-width:0}
+#dlg-news .nd-release-group-heading h4{margin:2px 0 0;font-size:var(--fs-body);line-height:1.5;font-weight:650;color:var(--text)}
+#dlg-news .nd-release-group-heading p{max-width:220px;margin:0;font-size:var(--fs-label);line-height:1.55;text-align:right;color:var(--muted)}
+#dlg-news .nd-release-group-divider{margin-top:14px;padding-top:16px;border-top:1px solid var(--line)}
+#dlg-news .nd-event-result{padding-left:10px;border-left:2px solid var(--info)}
+#dlg-news .nd-event-result .nd-event-date{background:var(--panel2)}
+@media(max-width:767px){
+  #dlg-news .nd-release-group-heading{flex-direction:column;gap:4px}
+  #dlg-news .nd-release-group-heading p{max-width:none;text-align:left}
+  #dlg-news .nd-event-result{padding-left:8px}
+}
