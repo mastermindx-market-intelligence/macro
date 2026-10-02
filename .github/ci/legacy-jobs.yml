@@ -358,7 +358,6 @@ jobs:
       - "tests/fixtures/am_edition_fixture/site/master_brief.json"
       - "tests/fixtures/am_edition_legacy_snapshot_dd20710c.json"
       - "tests/test_am_edition_producer.py"
-      - "tests/test_capture_am_edition_evidence.py"
       # 2026-09-24 A-MOR-2b lane B (VPS premarket owner): the live lane wraps
       # the producer and shares its import graph (scripts.build_am_edition) so
       # it rides the producer gate. The contract-delta differential gate refuses
@@ -2698,6 +2697,7 @@ jobs:
       - "scripts/capture_am_edition_evidence.py"
       - "tests/test_am_edition_page.py"
       - "tests/test_am_edition_producer.py"
+      - "tests/test_capture_am_edition_evidence.py"
       # MOR-2b lane C seat round 2026-09-25 (contract-delta): the am_edition
       # page suite now renders the aibrief band through tests/test_aibrief_page
       # (its closure reaches the shared theme/nav/landing CSS), reads the shared
