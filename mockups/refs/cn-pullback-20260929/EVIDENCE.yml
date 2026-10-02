@@ -1,0 +1,9 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/china.html.j2
+  - templates/_risk_radar_dlg.html.j2
+  - templates/_pullback_observation.html.j2
+  - templates/_pullback_observation.css.j2
+  - templates/_pullback_observation.js.j2
+  - site/china.html
+manifest: mockups/refs/cn-pullback-20260929/manifest.json

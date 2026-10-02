@@ -1,0 +1,109 @@
+{
+  "kind": "cn_pullback_semantic_lifecycle_repair_v5",
+  "operation": "cn-pullback-lifecycle-20260929-sol-001",
+  "pr": 8188,
+  "semantic_source_commit": "77d44235b9ac279f24174efc552afa436b53509a",
+  "supersedes_final_candidate_receipt": "mockups/refs/cn-pullback-20260929/semantic-v4.json",
+  "superseded_receipt_sha256": "84e1607f4cc1591bb3ffc20f37c156e2239bd91a7307fcab6fdf46261ec1eeb5",
+  "contract": {
+    "onset_reference": "trailing 63 settled closes including the current close",
+    "warmup": "state becomes available at exactly 63 valid settled closes",
+    "active_episode": "once onset is confirmed, the episode peak remains frozen until explicit resolution",
+    "stabilization": "three observed sessions without a new low plus a close above the five-close average",
+    "recovery": "five consecutive closes above the 20-close average, a rising 20-close average, and ten observed sessions without a new low",
+    "trend_repair": "20 consecutive closes above the 20-close average, rising 20-close average, a new high within the trailing 20 closes, and at least 21 observed sessions without a new low",
+    "missing_session_safety": "persistence resets across an unobserved expected session; moving-average comparisons retain their previously documented contiguous-observation guards"
+  },
+  "adversarial_findings": [
+    {
+      "id": "exact_63_close_reference",
+      "repaired_by": "d0e6199dc6fa3b5e700ef4612ced6477ab12aa41",
+      "summary": "rolling onset peak previously retained a 64th close for one extra session"
+    },
+    {
+      "id": "trend_repair_window_boundaries",
+      "repaired_by": "b5b8fa0505b95b49b28483b3737a6932d2dedf17",
+      "summary": "trend repair previously required a 21-close high and an undocumented 40 contiguous observations"
+    },
+    {
+      "id": "confirmation_rebound_no_low_count",
+      "repaired_by": "77d44235b9ac279f24174efc552afa436b53509a",
+      "prior_defect": "when the first pending >=2% decline was the trough and the second close confirmed while rebounding, the confirmation close was not counted as the first observed session without a new low",
+      "repair": "initialize no_new_low_closes to the exact contiguous distance from the detected trough to confirmation; pending confirmation cannot span a missing expected session",
+      "discriminator": "97.0 first pending trough, 98.0 confirmation rebound, then 99.0 and 99.2 => confirmation has no_new_low_closes=1 and the fourth close reaches stabilization with count=3"
+    }
+  ],
+  "regression": {
+    "focused": {
+      "passed": 59,
+      "seconds": 4.34,
+      "exit_code": 0,
+      "scope": "observer + China view + integration"
+    },
+    "owning": {
+      "passed": 281,
+      "seconds": 10.54,
+      "exit_code": 0,
+      "scope": "11 China/shared owner suites"
+    },
+    "p0b_provenance": {
+      "unchanged_since_commit": "4fbeadd4141f6db21b33de118ad8198366cab8ca",
+      "prior_full_suite_passed": 136,
+      "manifest_sha256": "3b47aff24f61643a8f12c30a6def760b8ac4342f911b945349567e00870a9f1d"
+    }
+  },
+  "historical_real_input_stability": {
+    "asof": "2026-09-29",
+    "shanghai": {
+      "phase": "underway",
+      "active": true,
+      "drawdown_pct": -10.0276,
+      "recent_63_drawdown_pct": -5.6013,
+      "peak_session": "2026-05-13",
+      "low_session": "2026-07-17",
+      "loss_recovered_pct": 11.08,
+      "no_new_low_closes": 51,
+      "source_digest": "441bc90dbc43d9d7d53dea5f2afb4137110bf9e87d5e5599c227578e579dd024"
+    },
+    "csi300_etf": {
+      "phase": "underway",
+      "active": true,
+      "drawdown_pct": -12.1985,
+      "recent_63_drawdown_pct": -10.3946,
+      "peak_session": "2026-05-13",
+      "low_session": "2026-09-29",
+      "loss_recovered_pct": 0.0,
+      "no_new_low_closes": 0
+    },
+    "shenzhen": {
+      "phase": "underway",
+      "active": true,
+      "drawdown_pct": -20.0733,
+      "recent_63_drawdown_pct": -17.4002,
+      "peak_session": "2026-07-01",
+      "low_session": "2026-09-28",
+      "loss_recovered_pct": 0.76,
+      "no_new_low_closes": 1
+    }
+  },
+  "source_sha256": {
+    "lib/pullback_observation.py": "5020a646dc47679b773319d72aed6fe42f4a1d2f673aba51d3b2d6635baf672b",
+    "tests/test_pullback_observation.py": "64f8cd438c9c409802621a2c1a4b99a28a8d283ce9594f9c3cf5991a1eebcb9d"
+  },
+  "integration": {
+    "base": "32d22a9b2f681fa98b7fcc01064901a6bce5bb88",
+    "merge_tree": "42dd18e8184c517459b0cfdd014f16adbb1caaf8",
+    "conflict_free": true,
+    "prior_exact_head_ci": "b86ed1168bb9c48f4aaa98728ea4883503e5ac03 is superseded for release acceptance once v5 is published"
+  },
+  "ui_evidence_reuse": {
+    "basis": "No adapter, builder, template, JS, CSS, dialog, illustration, or Sep-29 displayed output byte changed in v5; the semantic counter repair changes only lifecycle timing in the rebound-confirmation boundary case.",
+    "visual_proof": "mockups/refs/cn-pullback-20260929/release-proof.json",
+    "independent_semantic_review_required": true
+  },
+  "protected_procedure_commit": "d1e111fffe6839869198048ac5b7137b4ade2fa1",
+  "protected_index_blob": "4b0189a75d559d963365097485e8509a49c70e23",
+  "production_proven": false,
+  "independent_review": "outstanding",
+  "effect_unknown": null
+}

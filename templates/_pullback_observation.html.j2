@@ -1,0 +1,91 @@
+{# One settled-price view; forecasts and entry permission remain separate. #}
+{% macro t(en, zh) -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{%- endmacro %}
+{% macro stamp(o) -%}
+<div class="pbx-stamp">{{ t('Settled close', '收盘价格') }} <time datetime="{{ o.asof or '' }}">{{ o.asof or '—' }}</time></div>
+{%- endmacro %}
+{% macro expiry() -%}
+<div class="pbx-expiry" role="status">{{ t('Awaiting a newer close. This assessment is no longer current.', '等待更新收盘数据，此评估已非当前状态。') }}</div>
+{%- endmacro %}
+{% macro loss_ruler(o) -%}
+{% if o.available and o.loss_recovered_pct is not none %}
+<div class="pbx-recovery">
+  <div class="pbx-line"><span>{{ t('Loss recovered', '已收复跌幅') }}</span><strong>{{ '%.0f'|format(o.loss_recovered_pct) }}%</strong></div>
+  <div class="pbx-ruler" aria-hidden="true"><span style="width:{{ o.loss_recovered_pct }}%"></span><i style="left:{{ o.loss_recovered_pct }}%"></i></div>
+  <div class="pbx-ruler-labels"><span>{{ t('Trough', '低点') }}</span><span>{{ t('Reference high', '参考高点') }}</span></div>
+</div>
+{% endif %}
+{%- endmacro %}
+{% macro forecast(v) -%}
+<div class="pbx-forecast">
+  <div class="pbx-line"><span>{{ t('Risk intensity', '风险强度') }}</span><strong>{% if v.score is not none %}{{ '%.0f'|format(v.score) }}<small> / 100</small>{% else %}—{% endif %}</strong></div>
+  <div class="pbx-line"><span>{{ t('≥5% future fall · 21 sessions', '未来21个交易日跌幅≥5%') }}</span><strong>{% if v.probability is not none %}{{ '%.0f'|format(v.probability*100) }}%{% else %}{{ t('Unavailable', '暂无') }}{% endif %}</strong></div>
+</div>
+{%- endmacro %}
+{% macro card(v) -%}
+{% set o = v.observation %}
+<section class="cnx-card pbx pbx-card pbx-{{ v.tone }}" data-pb-phase="{{ v.phase }}" data-pb-valid-until="{{ o.valid_until or '' }}" data-pb-asof="{{ o.asof or '' }}" data-pb-digest="{{ o.get('source_digest') or '' }}">
+  <div class="pbx-heading"><h3>{{ t(v.headline_en, v.headline_zh) }}</h3><span class="pbx-state">{{ t('PRICE', '价格') }}</span></div>
+  {{ expiry() }}
+  <div class="pbx-current">
+    <div class="pbx-number">{{ v.value }}</div>
+    <div class="pbx-basis">{{ t(o.benchmark_en, o.benchmark_zh) }}{% if o.available %} · {{ t('from', '距') }} {{ o.peak_session }} {{ t('high', '高点') }}{% endif %}</div>
+    {% if o.available %}<div class="pbx-chart">{{ v.chart_html|safe }}</div>{% else %}<div class="pbx-null-art" aria-hidden="true"><span></span><i></i><span></span></div>{% endif %}
+    {% if o.available and o.loss_recovered_pct is not none %}{{ loss_ruler(o) }}{% else %}<p class="pbx-meaning">{{ t(v.meaning_en, v.meaning_zh) }}</p>{% endif %}
+  </div>
+  {{ forecast(v) }}
+  <div class="pbx-footer">{{ stamp(o) }}<button type="button" class="pbx-open" onclick="cnxOpenDlg('cnx-dlg-risk')">{{ t('Explore', '查看') }}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button></div>
+</section>
+{%- endmacro %}
+{% macro compact(v) -%}
+{% set o = v.observation %}
+<div class="pbx pbx-compact pbx-{{ v.tone }}" data-pb-valid-until="{{ o.valid_until or '' }}">
+  <div class="pbx-heading"><h3>{{ t(v.headline_en, v.headline_zh) }}</h3><strong>{{ v.value }}</strong></div>
+  {{ expiry() }}
+  <div class="pbx-current"><p>{{ t(v.meaning_en, v.meaning_zh) }}</p>{% if o.available %}<div class="pbx-basis">{{ t(o.benchmark_en, o.benchmark_zh) }} · {{ o.peak_session }} {{ t('reference high', '参考高点') }}</div>{% endif %}</div>
+  {{ stamp(o) }}
+</div>
+{%- endmacro %}
+{% macro detail(v) -%}
+{% set o = v.observation %}
+<section class="pbx pbx-detail pbx-{{ v.tone }}" data-pb-phase="{{ v.phase }}" data-pb-valid-until="{{ o.valid_until or '' }}" data-pb-asof="{{ o.asof or '' }}" data-pb-digest="{{ o.get('source_digest') or '' }}">
+  <div class="pbx-heading"><div><div class="pbx-eyebrow">{{ t('OBSERVED MARKET PATH', '已发生的市场走势') }}</div><h2>{{ t(v.headline_en, v.headline_zh) }}</h2></div>{{ stamp(o) }}</div>
+  {{ expiry() }}
+  <div class="pbx-current">
+    <div class="pbx-detail-grid">
+      <div class="pbx-read"><div class="pbx-number">{{ v.value }}</div><div class="pbx-basis">{{ t(o.benchmark_en, o.benchmark_zh) }}{% if o.available %}<br>{{ t('From the', '距') }} {{ o.peak_session }} {{ t('closing high', '收盘高点') }}{% endif %}</div><p class="pbx-meaning">{{ t(v.meaning_en, v.meaning_zh) }}</p></div>
+      <div class="pbx-chart">{% if o.available %}{{ v.detail_chart_html|safe }}{% else %}<div class="pbx-null-art" aria-hidden="true"><span></span><i></i><span></span></div>{% endif %}</div>
+    </div>
+    {% if o.available %}
+    <div class="pbx-evidence-grid">
+      <div>{{ loss_ruler(o) }}<p class="pbx-note">{{ t('Measured distance from the low to the reference high—not recovery odds.', '衡量低点至参考高点之间已修复的距离，并非修复概率。') }}</p></div>
+      <div class="pbx-confirmation">
+        <div class="pbx-line"><span>{{ t('Index confirmation', '指数确认') }}</span><strong>{{ o.index_confirmation.declining }} / {{ o.index_confirmation.available }} {{ t('declining', '走弱') }}</strong></div>
+        <div class="pbx-index-strip" aria-hidden="true">{% for i in o.indices %}<span class="{% if not i.available %}pbx-missing{% elif i.declining %}pbx-declining{% else %}pbx-neutral{% endif %}"></span>{% endfor %}</div>
+        <p class="pbx-note">{{ t('Index evidence, not stock breadth.', '指数证据，不等于个股广度。') }} {{ o.index_confirmation.available }}/{{ o.index_confirmation.total }} {{ t('sources current.', '来源为当前数据。') }}</p>
+      </div>
+    </div>
+    <div class="pbx-history-heading"><h3>{{ t('Price history', '价格历程') }}</h3><span>{{ t('Reconstructed from closes', '依据收盘价格重建') }}</span></div>
+    <ol class="pbx-timeline">
+      {% for event in o.timeline %}
+      {% set labels = {'peak':('Reference high','参考高点'), 'confirmed':('Decline confirmed','确认回撤'), 'low':('Lowest close','最低收盘'), 'latest':('Latest close','最新收盘')} %}
+      <li class="pbx-event-{{ event.kind }}"><span class="pbx-event-dot" aria-hidden="true"></span><span class="pbx-event-label">{{ t(labels[event.kind][0], labels[event.kind][1]) }}</span><time datetime="{{ event.date }}">{{ event.date }}</time><strong>{{ '{:,.2f}'.format(event.close) }}</strong></li>
+      {% endfor %}
+    </ol>
+    <div class="pbx-index-table">
+      <div class="pbx-line pbx-table-head"><span>{{ t('Index / proxy', '指数 / 代理') }}</span><span>{{ t('From recent 63-close high', '距最近63次收盘高点') }}</span></div>
+      {% for i in o.indices %}<div class="pbx-line"><span>{{ t(i.label_en, i.label_zh) }}</span><strong>{% if i.available %}{{ '%.1f'|format(i.drawdown_pct) }}%{% else %}{{ t('Unavailable', '暂无') }}{% endif %}</strong></div>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  <details class="pbx-method"><summary>{{ t('What confirms each phase?', '各阶段如何确认？') }}</summary>
+    <div class="pbx-method-copy">
+      <p>{{ t('A pullback starts after two consecutive settled closes at least 2% below the same recent reference high, or one close at least 5% below it. Its reference then stays fixed.', '连续两次收盘较同一近期参考高点下跌至少2%，或单次收盘下跌至少5%，确认回撤；之后参考高点保持固定。') }}</p>
+      <p>{{ t('Stabilizing needs three observed sessions without a new low and a close above the five-close average. Recovering needs a rising 20-close average, five closes above it and ten sessions without a new low. Missing sessions reset confirmation counters.', '止跌观察需要三个已观测交易日未创新低，且收盘高于五次收盘均线。修复中需要20次收盘均线向上、连续五次收于其上，以及十个交易日未创新低。缺失交易日会重置确认计数。') }}</p>
+      <p>{{ t('Resolution requires two closes reclaiming the high, or sustained trend repair: twenty closes above the 20-close average, a new 20-close high and 21 sessions without a new low. Trend repair below the old high does not mean the loss was fully recovered.', '结束回撤需要连续两次收盘收复高点，或持续趋势修复：连续20次收于20次收盘均线上方、创20次收盘新高，且21个交易日未创新低。低于旧高点的趋势修复，不代表跌幅已全部收复。') }}</p>
+      <p>{{ t('These versioned rules describe price behavior. They do not issue buy permission, change the risk score, or prove that historical warnings were sent. The timeline uses today’s source vintage, not first-known alert history.', '这些版本化规则仅描述价格行为，不授予买入权限、不改变风险评分，也不证明曾经发出预警。时间线使用当前来源版本，并非首次已知预警记录。') }}</p>
+      {% if o.available %}<p>{{ t('The headline keeps the original down-leg high; the index table uses each index’s recent 63-close high. They are different references.', '标题保留本轮下跌原始高点；指数表使用各自最近63次收盘高点，两者参考基准不同。') }}</p>{% endif %}
+    </div>
+  </details>
+  <div class="pbx-limit">{{ t('Price repair is not a new-entry signal. Follow the separate risk and entry checks.', '价格修复不是新的入场信号，仍须遵循独立风险与入场检查。') }}</div>
+</section>
+{%- endmacro %}

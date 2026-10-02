@@ -1,0 +1,43 @@
+{
+  "kind": "cn_pullback_integration_repair_evidence",
+  "operation": "cn-pullback-lifecycle-20260929-sol-001",
+  "pr": 8188,
+  "repair_commit": "787c3e56fd5df90a92ad8e7059f68de829a232df",
+  "tested_implementation_commit": "0d518d026630c47d817ff2a1813fee56d9d1f5a1",
+  "evidence_commit_before_repair": "c9727559b767ecf2affec9662a71c8c08678345e",
+  "macro_original_base": "650e2ebbe08046bedf10e7eec39def3f62073103",
+  "integration_base": "e3e8c40f969a60c4778f7856a68b78b0a1d3299c",
+  "merge_tree": "36fe03b55244b53b291c77e874659cd34f9e25c0",
+  "protected_procedure_commit": "12ae50fa35254f99719bbeed82fde6e1f1423104",
+  "protected_index_blob": "4b0189a75d559d963365097485e8509a49c70e23",
+  "skillpack_version": "1.0.1",
+  "ci_failures_repaired": {
+    "contract_delta_scope": ["lib/china_pullback_view.py", "lib/pullback_observation.py"],
+    "p0b_receipt_closure": ["templates/_risk_radar_dlg.html.j2"],
+    "generated_site_owner": "site/china.html removed from net source PR diff; nightly/render publication remains owner"
+  },
+  "p0b_receipts": {
+    "rendered_fixture.json": "cc249c89f2922dd23c5c65d1e16fb56330c0411a24e3f13df73a86dbd2f336ad",
+    "mobile-layout.json": "9431cc689c5c18d0aedd2c53d20e671c4ab9bb01a9235c0dbaab43ef8e884054",
+    "mobile-layout-canada.json": "b491c8fbc4b434df66e2d222a0a00e24ecfb49ac0568139e085608b5036b0df8"
+  },
+  "p0b_browser": {"hk_pass": true, "ca_pass": true, "chromium": "152.0.7977.8"},
+  "repair_tests": {
+    "passed": 22,
+    "seconds": 93.81,
+    "exit_code": 0,
+    "scope": "P0B closure/selftest + receipt-closure suite + curated exclusive import-closure test"
+  },
+  "contract_delta": {
+    "base": "e3e8c40f969a60c4778f7856a68b78b0a1d3299c",
+    "introduced": 0,
+    "inherited": 0,
+    "wall_seconds": 242.7,
+    "exit_code": 0
+  },
+  "prior_release_proof": "mockups/refs/cn-pullback-20260929/release-proof.json",
+  "production_proven": false,
+  "independent_review": "outstanding",
+  "effect_unknown": null,
+  "excluded_local_outputs": "Unrelated data/regime/scorecard/stock/sector/history outputs and untracked duplicate evidence images remain local and unstaged."
+}

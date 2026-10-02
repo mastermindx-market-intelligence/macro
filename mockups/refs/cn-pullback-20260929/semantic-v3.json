@@ -1,0 +1,67 @@
+{
+  "kind": "cn_pullback_semantic_boundary_repair_v3",
+  "operation": "cn-pullback-lifecycle-20260929-sol-001",
+  "pr": 8188,
+  "semantic_source_commit": "d0e6199dc6fa3b5e700ef4612ced6477ab12aa41",
+  "supersedes_attempt": "mockups/refs/cn-pullback-20260929/semantic-v2.json",
+  "contract": {
+    "reference": "trailing 63 settled closes including the current close",
+    "warmup": "state becomes available at exactly 63 valid settled closes",
+    "active_episode": "once onset is confirmed, the episode peak remains frozen until explicit resolution; rolling-window age-out never clears it"
+  },
+  "boundary_discriminator": {
+    "input": "110, then sixty-one 100 closes, then 109, then 104.5",
+    "prior_close": "109 is only 0.9091% below 110, so no episode exists before the boundary row",
+    "exact_63": "110 ages out; 104.5 is -4.1284% from 109 => developing, not active",
+    "incorrect_64": "110 remains; 104.5 is -5.0% => false shock/underway",
+    "tests": [
+      "test_exactly_63_closes_is_sufficient_for_a_reference_state",
+      "test_reference_window_is_exactly_63_closes_not_64",
+      "test_peak_aging_out_is_not_recovery"
+    ]
+  },
+  "focused_regression": {
+    "passed": 56,
+    "seconds": 13.6,
+    "exit_code": 0
+  },
+  "owning_regression": {
+    "passed": 278,
+    "seconds": 13.13,
+    "exit_code": 0
+  },
+  "historical_real_input_stability": {
+    "asof": "2026-09-29",
+    "phase": "underway",
+    "active": true,
+    "drawdown_pct": -10.0276,
+    "recent_63_drawdown_pct": -5.6013,
+    "peak_session": "2026-05-13",
+    "low_session": "2026-07-17",
+    "loss_recovered_pct": 11.08,
+    "source_digest": "441bc90dbc43d9d7d53dea5f2afb4137110bf9e87d5e5599c227578e579dd024",
+    "headline": "Pullback underway",
+    "display_value": "-10.0%"
+  },
+  "source_sha256": {
+    "lib/pullback_observation.py": "ca0896af2f8e0355fd5f3754be04d6063466e7cb5ab864ff5c9f7e01e126c7b3",
+    "tests/test_pullback_observation.py": "4ef9fd31445a28901e76ec2cbc913f8738813bbad88c83b37235e3a54813ce8a"
+  },
+  "p0b_evidence_rebind": {
+    "commit": "4fbeadd4141f6db21b33de118ad8198366cab8ca",
+    "manifest_sha256": "3b47aff24f61643a8f12c30a6def760b8ac4342f911b945349567e00870a9f1d",
+    "fixture_sha256": "cc249c89f2922dd23c5c65d1e16fb56330c0411a24e3f13df73a86dbd2f336ad",
+    "hk_receipt_sha256": "9431cc689c5c18d0aedd2c53d20e671c4ab9bb01a9235c0dbaab43ef8e884054",
+    "ca_receipt_sha256": "b491c8fbc4b434df66e2d222a0a00e24ecfb49ac0568139e085608b5036b0df8"
+  },
+  "ui_evidence_reuse": {
+    "basis": "Adapter, builder, template, JS, CSS, shared-dialog and browser-verifier blobs are unchanged from the accepted local UI proof; the Sep-29 observed output and source digest are unchanged.",
+    "visual_proof": "mockups/refs/cn-pullback-20260929/release-proof.json",
+    "requires_independent_semantic_review": true
+  },
+  "protected_procedure_commit": "cfd3b996a2bf286f86375a5243232e027d58f724",
+  "protected_index_blob": "4b0189a75d559d963365097485e8509a49c70e23",
+  "production_proven": false,
+  "independent_review": "outstanding",
+  "effect_unknown": null
+}

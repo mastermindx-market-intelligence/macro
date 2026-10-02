@@ -1,0 +1,247 @@
+{
+  "kind": "actual_built_page_browser_evidence",
+  "not_production_deployment": true,
+  "source_head": "0d518d026630c47d817ff2a1813fee56d9d1f5a1",
+  "source_uncommitted_diff": "",
+  "html_sha256": "589f408229cfa77ee93435bd40dfeea89ff4a6616ad07a2ee0f2613d09221665",
+  "page": "site/china.html",
+  "observed_asof": "2026-09-29",
+  "generated_at": "2026-09-29T11:16:47.855606+00:00",
+  "checks": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "language": "en",
+      "card": {
+        "width": 444,
+        "height": 455.515625,
+        "overflow": false,
+        "padding": 20,
+        "buttonHeight": 44
+      },
+      "aria": "Observed Shanghai closing drawdown, zero marks the reference high",
+      "errors": [],
+      "keyboard_return": true,
+      "expiry_demoted": true,
+      "source_digest": "441bc90dbc43d9d7d53dea5f2afb4137110bf9e87d5e5599c227578e579dd024"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "card": {
+        "width": 444,
+        "height": 455.515625,
+        "overflow": false,
+        "padding": 20,
+        "buttonHeight": 44
+      },
+      "aria": "上证综指收盘回撤；参考高点与日期标于图表上方。",
+      "errors": [],
+      "keyboard_return": true,
+      "expiry_demoted": true,
+      "source_digest": "441bc90dbc43d9d7d53dea5f2afb4137110bf9e87d5e5599c227578e579dd024"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "language": "en",
+      "card": {
+        "width": 444,
+        "height": 455.515625,
+        "overflow": false,
+        "padding": 20,
+        "buttonHeight": 44
+      },
+      "aria": "Observed Shanghai closing drawdown, zero marks the reference high",
+      "errors": [],
+      "keyboard_return": true,
+      "expiry_demoted": true,
+      "source_digest": "441bc90dbc43d9d7d53dea5f2afb4137110bf9e87d5e5599c227578e579dd024"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "language": "zh",
+      "card": {
+        "width": 444,
+        "height": 455.515625,
+        "overflow": false,
+        "padding": 20,
+        "buttonHeight": 44
+      },
+      "aria": "上证综指收盘回撤；参考高点与日期标于图表上方。",
+      "errors": [],
+      "keyboard_return": true,
+      "expiry_demoted": true,
+      "source_digest": "441bc90dbc43d9d7d53dea5f2afb4137110bf9e87d5e5599c227578e579dd024"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "language": "en",
+      "card": {
+        "width": 354,
+        "height": 455.515625,
+        "overflow": false,
+        "padding": 20,
+        "buttonHeight": 44
+      },
+      "aria": "Observed Shanghai closing drawdown, zero marks the reference high",
+      "errors": [],
+      "keyboard_return": true,
+      "expiry_demoted": true,
+      "source_digest": "441bc90dbc43d9d7d53dea5f2afb4137110bf9e87d5e5599c227578e579dd024"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "card": {
+        "width": 354,
+        "height": 455.515625,
+        "overflow": false,
+        "padding": 20,
+        "buttonHeight": 44
+      },
+      "aria": "上证综指收盘回撤；参考高点与日期标于图表上方。",
+      "errors": [],
+      "keyboard_return": true,
+      "expiry_demoted": true,
+      "source_digest": "441bc90dbc43d9d7d53dea5f2afb4137110bf9e87d5e5599c227578e579dd024"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "language": "en",
+      "card": {
+        "width": 354,
+        "height": 455.515625,
+        "overflow": false,
+        "padding": 20,
+        "buttonHeight": 44
+      },
+      "aria": "Observed Shanghai closing drawdown, zero marks the reference high",
+      "errors": [],
+      "keyboard_return": true,
+      "expiry_demoted": true,
+      "source_digest": "441bc90dbc43d9d7d53dea5f2afb4137110bf9e87d5e5599c227578e579dd024"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "language": "zh",
+      "card": {
+        "width": 354,
+        "height": 455.515625,
+        "overflow": false,
+        "padding": 20,
+        "buttonHeight": 44
+      },
+      "aria": "上证综指收盘回撤；参考高点与日期标于图表上方。",
+      "errors": [],
+      "keyboard_return": true,
+      "expiry_demoted": true,
+      "source_digest": "441bc90dbc43d9d7d53dea5f2afb4137110bf9e87d5e5599c227578e579dd024"
+    }
+  ],
+  "normal_motion_and_no_script": true,
+  "images": [
+    {
+      "path": "page-hero-dark-en-1440.png",
+      "sha256": "f563c06419a65bfd14bcd198ef9585f69c97671983189cf7039beda6af174efe"
+    },
+    {
+      "path": "page-card-dark-en-1440.png",
+      "sha256": "dce2c99d73509c6bdc96987822394a6752cba325f938922541cc0c688b366827"
+    },
+    {
+      "path": "page-dialog-dark-en-1440.png",
+      "sha256": "c6b759b5e50e1a221fdf5f4827c6a8acfc584b3a0029e23ae304e5350e517a48"
+    },
+    {
+      "path": "page-hero-dark-zh-1440.png",
+      "sha256": "01327fef417cca677c304abc6b528373c818b4dcfb66b2c233a8e8d08255d7cf"
+    },
+    {
+      "path": "page-card-dark-zh-1440.png",
+      "sha256": "83b76342b3a082f751f59b281c85186867a2fa37e1d5bc55179436cbf97258de"
+    },
+    {
+      "path": "page-dialog-dark-zh-1440.png",
+      "sha256": "a20674a7d484916e8a17dd6a260113ad2e3ceadd056f527c8eaf65ee6833a4c9"
+    },
+    {
+      "path": "page-hero-light-en-1440.png",
+      "sha256": "2c2150651300343a759ef1e7cfb1b7c896ca9594dbf8f37455af9a98173b5efe"
+    },
+    {
+      "path": "page-card-light-en-1440.png",
+      "sha256": "501f6349d5bbb5ca5a747304ed48982930d891dfc69b460b34a5fdd7d26388ec"
+    },
+    {
+      "path": "page-dialog-light-en-1440.png",
+      "sha256": "d3d87d7b47b21e18c06b20a65ef452e9673cce4300f122f903e0eba4738e9dae"
+    },
+    {
+      "path": "page-hero-light-zh-1440.png",
+      "sha256": "0df9e4aab7c843b169167e67c5b4eb77cbbffe4a17185643800d4b7310d89bc1"
+    },
+    {
+      "path": "page-card-light-zh-1440.png",
+      "sha256": "b8b380b41cfbe9da6bb8b244d7a3841cc256040a649a6374875ddf004d7a1005"
+    },
+    {
+      "path": "page-dialog-light-zh-1440.png",
+      "sha256": "e9bf9d9c598c3d5ec6b1516e871e5dc403f4af2f2331bfc51ee9de09dc9d94c7"
+    },
+    {
+      "path": "page-hero-dark-en-390.png",
+      "sha256": "4f2568b3fc424db0adc0e97f963dd95c57b364550b6874fcf80c3115a0cf2419"
+    },
+    {
+      "path": "page-card-dark-en-390.png",
+      "sha256": "b586a5b5742a72f36f6e00558bfb9354fda0aeb13f85e519f926000364ecc7bf"
+    },
+    {
+      "path": "page-dialog-dark-en-390.png",
+      "sha256": "9ec0191737d7efaa754338fae1af47394a4d55463509a0cbfda3b12360e4b68e"
+    },
+    {
+      "path": "page-hero-dark-zh-390.png",
+      "sha256": "dfea6c77cf246bf991d8433b158e9c6041907a3691b2e235120c487c9eca814f"
+    },
+    {
+      "path": "page-card-dark-zh-390.png",
+      "sha256": "71ee096b0d9419e8b8894af0ebf47031d6d8775b32d54d1aac544c4193136758"
+    },
+    {
+      "path": "page-dialog-dark-zh-390.png",
+      "sha256": "5796079e9b4398cc5ae37076ae08e0adf4db5f69683dc13ed43908c47c5d210f"
+    },
+    {
+      "path": "page-hero-light-en-390.png",
+      "sha256": "c78eef090458ad7a6c9d53064ef3a68207999629047638875ee179416c9d8ef7"
+    },
+    {
+      "path": "page-card-light-en-390.png",
+      "sha256": "057f2343d431cc73aa09f124cbc585b6438ffb584cff240b42d1d2707e14ef6f"
+    },
+    {
+      "path": "page-dialog-light-en-390.png",
+      "sha256": "2ac8bc53d3b2cafbaf0ac7ee2880bd079e6fad800ddd89a00c29e5062870b073"
+    },
+    {
+      "path": "page-hero-light-zh-390.png",
+      "sha256": "144726022076b4391e760d8c24cb65cb963fdca441cf23e197335ccb9ee196dc"
+    },
+    {
+      "path": "page-card-light-zh-390.png",
+      "sha256": "83bc66eef99d2711892d7ddf7edadef2c41a1a5cbb61bae866e73148d47a0449"
+    },
+    {
+      "path": "page-dialog-light-zh-390.png",
+      "sha256": "4a2360a6a3d487befa4aea88f713eba2195574932da8d92a4828850136ec1cc2"
+    }
+  ]
+}

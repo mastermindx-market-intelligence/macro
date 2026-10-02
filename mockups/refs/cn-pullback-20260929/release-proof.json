@@ -1,0 +1,49 @@
+{
+  "kind": "cn_pullback_release_evidence",
+  "source_commit": "0d518d026630c47d817ff2a1813fee56d9d1f5a1",
+  "macro_base": "650e2ebbe08046bedf10e7eec39def3f62073103",
+  "protected_procedure_commit": "939f1d003701bcfee566665531b369cfb28b180a",
+  "index_blob": "94d1af402598894372858793a5b1931019c5fa77",
+  "operation": "cn-pullback-lifecycle-20260929-sol-001",
+  "pr": 8188,
+  "generated_at": "2026-09-29T11:47:55.845971+00:00",
+  "source_files_sha256": {
+    "lib/pullback_observation.py": "e2e90f053a976a13e3581c8bd4372c12ef6dfbc7b7c5af7abe1e68433e7ae5dc",
+    "lib/china_pullback_view.py": "bf24496d5a08f2afdfdeee0f0487128912a893cda6ac166e17611e8df1e5e60b",
+    "scripts/build_china.py": "5eb838e50a6c78ce5c4a941eea060bf373171afcfea69e690690730e6ed9432a",
+    "templates/_pullback_observation.html.j2": "9e9fbe66033c2e520e59f734b0fb5b2275b22ec6bf301c48740a4d6b1dbe7514",
+    "templates/_pullback_observation.css.j2": "5958e2e6ca2c24c8d5008b8af0c087e0bbc559c4f97a83d79001e52d0056b0d2",
+    "templates/_pullback_observation.js.j2": "73fb25026804a69e192e2ca5d987c55315b08ecf0ee4a051f3a48d7dd503bbf6",
+    "templates/_risk_radar_dlg.html.j2": "765f97fcd712a59a89ae057ab6b13e906181ed31cf1f745941812e7e32211343",
+    "templates/china.html.j2": "9add41cceedc2df77774db65c06eb26d0d95478846878b6e9301993c6fd00faf",
+    "tests/test_pullback_observation.py": "6bd049bea238c0b9c83efb89320cd1a8814854b7f2e9073214dfa2b619fc4da0",
+    "tests/test_china_pullback_view.py": "f8bccca66c6db3d4f1be9e93fed173dd4a5a219a3c3636d15b95c3a3af6e4317",
+    "tests/test_china_pullback_integration.py": "a4294cf69ed5e11d9892a63f4312dd4f897fd5d4af030dace6fd689332698728",
+    ".github/ci/legacy-jobs.yml": "c2a7738a89dbe957e003ec6cc34952f94dca87f9b5fef6f9e4518c61588ebf47",
+    "site/china.html": "589f408229cfa77ee93435bd40dfeea89ff4a6616ad07a2ee0f2613d09221665",
+    "research/grey_deer/verify_cn_pullback_page.py": "475e322f4f2b66997a7d910f8b176258a6c783fd8cdef23180b4fd9862e53447"
+  },
+  "html_sha256": "589f408229cfa77ee93435bd40dfeea89ff4a6616ad07a2ee0f2613d09221665",
+  "tests": {
+    "passed": 276,
+    "seconds": 13.71,
+    "process": 51024,
+    "exit_code": 0,
+    "log": "tests.txt",
+    "sha256": "bfee49fa01f6909287b42c4f2acaa632faefc6a6103e0f2c1aecc23bcdec5f6b"
+  },
+  "page_variants": 8,
+  "canonical_capture": {
+    "process": 63743,
+    "exit_code": 0,
+    "runtime_seconds": 138.61,
+    "reconciled_on": "Studio Direct",
+    "captured": 24,
+    "manifest_sha256": "33b72c406fc3a261d3e136a29b830b775821f84fb5b78e671b9126b9349ad30d"
+  },
+  "source_digest": "441bc90dbc43d9d7d53dea5f2afb4137110bf9e87d5e5599c227578e579dd024",
+  "production_proven": false,
+  "independent_review": "outstanding",
+  "effect_unknown": null,
+  "excluded_dev_outputs": "Unrelated data/regime/scorecard/stock/sector/history outputs remain local and are not staged; no cleanup attempted."
+}

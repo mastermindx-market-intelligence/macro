@@ -1,0 +1,9 @@
+{
+  "kind": "cn_pullback_semantic_boundary_repair_attempt",
+  "status": "superseded",
+  "source_commit": "3bb6c856a78385c81868bcea884df4beca3cb9c7",
+  "superseded_by_source": "d0e6199dc6fa3b5e700ef4612ced6477ab12aa41",
+  "superseded_by_receipt": "mockups/refs/cn-pullback-20260929/semantic-v3.json",
+  "reason": "The first discriminator treated a 64th-close-old high as if it could simply age out, but with a 63-close warm-up that high had already triggered a real episode one session earlier. Frozen-episode persistence must keep that high. The v3 discriminator prevents any prior episode before isolating the 63-vs-64 boundary.",
+  "do_not_use_for_acceptance": true
+}
