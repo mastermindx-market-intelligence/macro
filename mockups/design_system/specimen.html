@@ -5,33 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mastermind Design System — Specimen (visual constitution)</title>
 <!-- The specimen links the REAL theme.css + tier_preview.css so it always renders
-     current law. Everything in the "proposed" style block below is DS-PR-0
-     material and is deleted from here when those tokens land. MOCKUP TIER ONLY:
-     nothing imports this page in production. All NEW primitives are namespaced
-     .mx-* (red-team 2026-08-12: unprefixed names collide with 11+ existing
+     current law. DS-PR-0a (PR #7849) landed the §2.2 scales EXCEPT --sp-2/--sp-3/--r-*/
+     --t-fast, plus the .mx-tbl/.mx-tblbox/.mx-tabset/.mx-rail primitives. Everything left
+     in the "proposed" block below is DS-PR-0c material (deferred because live pages
+     already consume those names or classes) and is deleted from here when it lands.
+     MOCKUP TIER ONLY: nothing imports this page in production. All NEW primitives are
+     namespaced .mx-* (red-team 2026-08-12: unprefixed names collide with 11+ existing
      page-local class families across templates/). -->
 <link rel="stylesheet" href="../../templates/theme.css">
 <link rel="stylesheet" href="../../templates/tier_preview.css">
 <style>
-/* ═══ PROPOSED — DS-PR-0 tokens (master doc §2.2); delete when landed ═══ */
+/* ═══ PROPOSED — DS-PR-0c (deferred) tokens (master doc §2.2); delete when landed ═══ */
 :root{
-  --fs-display:46px; --fs-num-xl:38px; --fs-h1:28px; --fs-num-lg:22px; --fs-h2:17px;
-  --fs-md:15px; --fs-body:14px; --fs-h3:14px; --fs-sm:12.5px; --fs-label:11px; --fs-micro:10px;
-  /* spacing = the shipped body.page-macro scale, renumbered contiguously (its
-     shipped --sp-8:32 becomes --sp-7; 44 is the shipped footer/section band) */
-  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:32px; --sp-8:44px;
-  --gap-grid:18px; /* named legacy constant (site-wide .grid gap), not a step */
+  --sp-2:8px; --sp-3:12px;
   --r-ctl:8px; --r-btn:10px; --r-card:12px; --r-panel:14px; --r-pill:999px;
-  --t-fast:.16s; --t-med:.2s; --t-slow:.55s;
-  --ease-std:ease; --ease-lift:cubic-bezier(.2,.7,.3,1);
-  --shadow-hover:0 14px 30px -16px color-mix(in srgb, var(--link) 40%, transparent);
-  --ser-1:#5b9bf0; --ser-2:#d4a017; --ser-3:#0ea5e9; --ser-4:#e08b45;
-  /* text-grade rung for the tier accent (raw #7c5cff measures 3.97-4.35:1 as text
-     — under the 4.5 floor in BOTH themes; rung re-measured per the ink-ceiling law) */
-  --ink-tier:color-mix(in srgb, var(--mx-tier-accent,#7c5cff) 78%, var(--text));
+  --t-fast:.16s;
 }
-html[data-theme="light"]{ --ser-1:#2f63c4; --ser-2:#8f6a04; --ser-3:#0284c7; --ser-4:#b06a25;
-  --ink-tier:color-mix(in srgb, var(--mx-tier-accent,#7c5cff) 72%, var(--text)); }
 /* CJK: no tracking / no uppercase mangling on zh (DS-PR-0 lands the estate rule) */
 html[data-lang="zh"] :is(h1,h2,h3,.eyebrow,.mx-vh-word,.mockup-note){ letter-spacing:0; text-transform:none; }
 
@@ -92,17 +81,6 @@ html[data-lang="zh"] .mx-vh .mx-vh-word{ letter-spacing:0; }
   .mx-chg-row{ flex-wrap:wrap; row-gap:4px; }
   .mx-chg-what{ flex-basis:100%; order:3; }
 }
-.mx-tbl{ width:100%; min-width:420px; border-collapse:collapse; font-size:var(--fs-sm); }
-.mx-tbl th{ font-size:var(--fs-micro); font-weight:700; letter-spacing:.08em; text-transform:uppercase;
-  color:var(--muted); text-align:left; padding:6px 10px; border-bottom:1px solid var(--line); }
-.mx-tbl td{ padding:7px 10px; border-bottom:1px solid color-mix(in srgb, var(--line) 55%, transparent); font-variant-numeric:tabular-nums; }
-.mx-tbl tr:hover td{ background:color-mix(in srgb, var(--panel2) 60%, transparent); }
-.mx-tblbox{ overflow-x:auto; }
-.mx-tabset{ display:flex; gap:2px; border-bottom:1px solid var(--line); margin-bottom:10px; }
-.mx-tabset button{ appearance:none; background:none; border:none; border-bottom:2px solid transparent;
-  color:var(--muted); font:600 var(--fs-sm)/1 var(--font-ui); padding:8px 12px; cursor:pointer;
-  transition:color var(--t-fast) var(--ease-std), border-color var(--t-fast) var(--ease-std); }
-.mx-tabset button[aria-selected="true"]{ color:var(--text); border-bottom-color:var(--link); }
 .mx-callout{ border-left:3px solid var(--c,var(--ink-info)); border-radius:0 var(--r-ctl) var(--r-ctl) 0;
   background:color-mix(in srgb, var(--c,var(--ink-info)) 8%, var(--panel)); padding:10px 14px; font-size:var(--fs-sm); }
 .mx-callout b{ color:var(--c,var(--ink-info)); }
@@ -123,14 +101,6 @@ html[data-lang="zh"] .mx-vh .mx-vh-word{ letter-spacing:0; }
 .mx-disc .mx-disc-body{ padding:0 14px 12px; color:var(--muted); font-size:var(--fs-sm); }
 /* lifecycle rail — stage encoded by WEIGHT only (packet §0): future=hollow,
    done=filled muted, current=larger solid + thicker segment + 700 label. No hue. */
-.mx-rail{ display:flex; align-items:flex-start; gap:0; margin:8px 0; padding:0; }
-.mx-rail li{ list-style:none; flex:1; position:relative; padding-top:16px; font-size:var(--fs-micro); color:var(--muted); text-align:center; }
-.mx-rail li::before{ content:""; position:absolute; top:5px; left:0; right:0; height:2px; background:var(--line); }
-.mx-rail li::after{ content:""; position:absolute; top:1px; left:calc(50% - 5px); width:8px; height:8px; border-radius:50%; background:var(--panel); border:2px solid var(--muted); }
-.mx-rail li.done::after{ background:var(--muted); }
-.mx-rail li.now{ color:var(--text); font-weight:700; }
-.mx-rail li.now::before{ height:3px; background:var(--text); }
-.mx-rail li.now::after{ top:-1px; left:calc(50% - 6px); width:12px; height:12px; background:var(--text); border-color:var(--text); }
 /* count ladder — control form; active cell = weight (solid underline + 800), never hue */
 .mx-ladder{ display:flex; align-items:stretch; gap:0; border:1px solid var(--line); border-radius:var(--r-btn); overflow:hidden; }
 .mx-ladder .mx-lad-total{ padding:8px 14px; font-weight:800; font-size:var(--fs-md); border-right:1px solid var(--line); background:var(--panel2); }
