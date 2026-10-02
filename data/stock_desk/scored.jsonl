@@ -528,3 +528,5 @@
 {"id": "2026-09-30-MMSI-20261001213157-5", "ticker": "MMSI", "subject": "MMSI", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-21", "outcome": "unscored", "scored_at": "2026-10-01T21:31:58.971015+00:00"}
 {"id": "2026-10-01-PPLI-20261002155237-3", "ticker": "PPLI", "subject": "PPLI", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-29", "outcome": "unscored", "scored_at": "2026-10-02T15:52:39.397009+00:00"}
 {"id": "2026-10-01-MMSI-20261002155237-5", "ticker": "MMSI", "subject": "MMSI", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-22", "outcome": "unscored", "scored_at": "2026-10-02T15:52:39.397023+00:00"}
+{"id": "2026-10-01-PPLI-20261002180907-3", "ticker": "PPLI", "subject": "PPLI", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-29", "outcome": "unscored", "scored_at": "2026-10-02T18:09:08.670393+00:00"}
+{"id": "2026-10-01-MMSI-20261002180907-5", "ticker": "MMSI", "subject": "MMSI", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-22", "outcome": "unscored", "scored_at": "2026-10-02T18:09:08.670404+00:00"}
