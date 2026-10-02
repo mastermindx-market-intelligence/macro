@@ -4917,11 +4917,12 @@ def _us_board_gate_cfg() -> dict:
         cfg = config.load().get("us_board_gate") or {}
         return {"gated": bool(cfg.get("gated", False)),
                 "preview_rows": int(cfg.get("preview_rows") or 3),
+                "today_preview_rows": int(cfg.get("today_preview_rows") or 6),
                 "panels": bool(cfg.get("panels", False)),
                 "panel_preview_rows": int(cfg.get("panel_preview_rows")
                                           or US_PANEL_PREVIEW_DEFAULT)}
     except Exception:  # noqa: BLE001
-        return {"gated": False, "preview_rows": 3,
+        return {"gated": False, "preview_rows": 3, "today_preview_rows": 6,
                 "panels": False, "panel_preview_rows": US_PANEL_PREVIEW_DEFAULT}
 
 
@@ -5037,6 +5038,22 @@ def us_stance_projection(entry_status: "str | None", board_read: "dict | None") 
         return {"verb": _US_STANCE_VERB_BY_STATUS.get(br_status, "wait"),
                 "stance_basis": "board_read"}
     return {"verb": None, "stance_basis": "no_read"}
+
+
+def _us_today_featured_preview(
+    us_standouts: "dict | None", preview_rows: int
+) -> list[dict]:
+    """Bounded Today shelf from the FULL owner-ordered Featured population.
+
+    The Screener gate intentionally exposes only a prefix of buy. Today used
+    to filter that already-sliced prefix, so a healthy 12-name Featured shelf
+    could collapse to two visible cards merely because rank #3 was not Featured.
+    This projection reads the full board before the split, preserves owner order,
+    and changes neither membership nor timing/entry semantics.
+    """
+    rows = (us_standouts or {}).get("buy") or []
+    limit = max(0, int(preview_rows))
+    return [row for row in rows if row.get("featured")][:limit]
 
 
 def _split_us_board(us_standouts: "dict | None", preview_rows: int, *, gated: bool = True):
@@ -7317,6 +7334,8 @@ def main() -> int:
     # an overridden copy of vm, and the withheld remainder is written to
     # site/premiumdata/us_stocks.json regardless of the switch (empty when off).
     _us_gate_cfg = _us_board_gate_cfg()
+    _us_today_featured = _us_today_featured_preview(
+        vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
     _us_shell_su, _us_gate, _us_locked = _split_us_board(
         vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
     # P-MP1-SHELL central act, §8b: the SAME re-plumb as the candidate split
@@ -7362,6 +7381,7 @@ def main() -> int:
     write_page(out_st, env.get_template("dashboard.html.j2").render(
         **{**vm, **_us_pov, "us_standouts": _us_shell_su,
            "gate": _us_gate, "pgate": _us_pgate,
+           "us_today_featured": _us_today_featured,
            "us_prophet_book": _us_life_shell, "life_gate": _us_life_gate,
            "us_prophet_episodes": _us_life_episodes,
            "us_prophet_book_error": us_prophet_book_error,
@@ -7745,6 +7765,8 @@ def main() -> int:
                 # payload from THIS generation — otherwise the re-render would bake
                 # the fresh board's full row set straight into the shell and
                 # silently reopen the leak on every one-build-lag refresh.
+                _us_today_featured2 = _us_today_featured_preview(
+                    vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
                 _us_shell_su2, _us_gate2, _us_locked2 = _split_us_board(
                     vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
                 # The plan book is not touched by this one-build-lag re-render
@@ -7788,6 +7810,7 @@ def main() -> int:
                 write_page(site / "us_stocks.html", _dash.render(
                     **{**vm, **_us_pov2, "us_standouts": _us_shell_su2,
                        "gate": _us_gate2, "pgate": _us_pgate2,
+                       "us_today_featured": _us_today_featured2,
                        "us_prophet_book": _us_life_shell2, "life_gate": _us_life_gate2,
                        "us_prophet_episodes": _us_life_episodes2,
                        "us_prophet_book_error": us_prophet_book_error,

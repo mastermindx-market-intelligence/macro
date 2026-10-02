@@ -7405,6 +7405,10 @@ china_special_situations:
 us_board_gate:
   gated: true
   preview_rows: 3
+  # Today is a separate bounded Featured shelf, not the Screener prefix.
+  # Keep enough names on the landing view to communicate real board breadth
+  # without widening the protected Screener or historical Plans payloads.
+  today_preview_rows: 6
   # The four panels ADJACENT to the board on the same page — "More fresh
   # triggers" (.topsetups), "Market leaders" (.topsetups.leaders-strip),
   # "Recently fired" (.pbr-l), the Act-Now board (#action-board) and the theme

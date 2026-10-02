@@ -208,6 +208,62 @@ def test_a_today_uses_owner_featured_preview_without_entry_promotion():
     assert soup.select_one('#us-src-btn-plan[data-src="plans"]')
 
 
+def test_a_today_full_featured_preview_is_independent_of_screener_prefix():
+    """Today must not collapse when the 3-row Screener shell contains non-Featured rows."""
+    from bs4 import BeautifulSoup
+
+    rows = []
+    for i in range(9):
+        rows.append(_board_row(
+            ticker=f"FTR{i}", name=f"Featured {i}", lane="bottoming",
+            stage=("live" if i < 3 else "setting_up"), featured=True,
+            entry_signal={
+                "status": "buy_now",
+                "buy_zone": {"low": 40.0 + i, "high": 41.0 + i},
+            },
+        ))
+        if i == 1:
+            rows.append(_board_row(
+                ticker="NONF", name="Non Featured", lane="continuation",
+                stage="live", featured=False,
+                entry_signal={
+                    "status": "buy_now",
+                    "buy_zone": {"low": 70.0, "high": 71.0},
+                },
+            ))
+
+    source = {
+        "as_of": "2026-09-24",
+        "buy": rows,
+        "ran": [],
+        "eligible": len(rows),
+        "ranking": {"featured_count": 9},
+    }
+    shell, gate, _locked = bs._split_us_board(source, 3, gated=True)
+    today_rows = bs._us_today_featured_preview(source, 6)
+    html = _render_stocks({
+        "us_standouts": shell,
+        "gate": gate,
+        "us_today_featured": today_rows,
+        "us_prophet_book": _prophet_book(),
+    })
+    soup = BeautifulSoup(html, "html.parser")
+
+    today = soup.select_one("#us-today")
+    assert today["data-today-total"] == "9"
+    assert today["data-today-visible"] == "6"
+    assert [c["data-ticker"] for c in today.select("#us-today-grid .pvcard")] == [
+        "FTR0", "FTR1", "FTR2", "FTR3", "FTR4", "FTR5",
+    ]
+    assert "this 6-card preview is not a pick quota" in today.get_text(" ", strip=True)
+
+    # The protected Screener boundary remains the original three-row prefix.
+    assert [c["data-ticker"] for c in soup.select("#us-cand-grid .pvcard")] == [
+        "FTR0", "FTR1", "NONF",
+    ]
+    assert gate["preview"] == 3 and gate["locked"] == len(rows) - 3
+
+
 def test_a_today_zero_does_not_replace_candidates_default():
     rows = [_board_row(
         ticker="AAA", name="A", stage="live", lane="bottoming", featured=False,

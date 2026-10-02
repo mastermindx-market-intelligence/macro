@@ -273,10 +273,10 @@ def test_us_board_gate_cfg_reads_config_yml_and_is_fail_soft():
     import scripts.build_site as bs
 
     cfg = _us_board_gate_cfg()
-    assert cfg == {"gated": True, "preview_rows": 3,
+    assert cfg == {"gated": True, "preview_rows": 3, "today_preview_rows": 6,
                    "panels": True, "panel_preview_rows": 3}, (
         "config.yml us_board_gate must be {gated: true, preview_rows: 3, "
-        "panels: true, panel_preview_rows: 3} — update this test deliberately "
+        "today_preview_rows: 6, panels: true, panel_preview_rows: 3} — update this test deliberately "
         "if that switch changes")
 
     real_config = bs.config
