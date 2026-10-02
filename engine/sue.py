@@ -367,6 +367,8 @@ def reported_change(
     pct = None if before == 0 else diff / abs(before)
     if pct is not None and not isfinite(pct):
         pct = None
+    if pct is not None and not isfinite(pct * 100.0):
+        raise EvidenceError("reported-change percent overflow")
     return {
         "schema": SCHEMA,
         "kind": "COMPARABLE_REPORTED_CHANGE",
@@ -556,7 +558,15 @@ def matched_revisions(
         else None
     )
     matched_mean = mean(delta) if delta else None
+    # statistics.median's even case adds the middle values before halving.
+    # mean uses exact accumulation, avoiding an infinite intermediate sum.
+    ordered = sorted(delta)
+    count = len(ordered)
+    matched_median = mean(ordered[(count - 1) // 2:count // 2 + 1]) if count else None
     residual = naive - matched_mean if naive is not None and matched_mean is not None else None
+    if any(value is not None and not isfinite(value)
+           for value in (naive, matched_mean, matched_median, residual)):
+        raise EvidenceError("revision aggregate overflow")
     return {
         "schema": SCHEMA,
         "kind": "FIXED_CONTRIBUTOR_FIXED_PERIOD_REVISION",
@@ -569,7 +579,7 @@ def matched_revisions(
         "entered": sorted(right.keys() - left.keys()),
         "exited": sorted(left.keys() - right.keys()),
         "matched_mean_change": matched_mean,
-        "matched_median_change": median(delta) if delta else None,
+        "matched_median_change": matched_median,
         "upward_share": sum(value > 0 for value in delta) / len(delta) if delta else None,
         "naive_changing_roster_mean_change": naive,
         "roster_difference_residual": residual,
@@ -718,6 +728,7 @@ def factual_dossier(
     guidance_updates: Sequence[Mapping[str, Any]] = (),
     profit_bridges: Sequence[Mapping[str, Any]] = (),
     valuation_case: Mapping[str, Any] | None = None,
+    cash_flows: Sequence[Mapping[str, Any]] = (),
 ) -> dict[str, Any]:
     """Assemble factual evidence while preserving every downstream authority boundary."""
     required_text(event_id, "event_id")
@@ -808,6 +819,9 @@ def factual_dossier(
             raise EvidenceError("profitability bridge is from the future")
         no_child_authority(item)
 
+    for cash in cash_flows:
+        _validate_cash_flow_case(cash,issuer_id=issuer_id,event_id=event_id,decision_at=decision_at)
+
     if per_share is not None:
         if not isinstance(per_share, Mapping) or per_share.get("schema") != SCHEMA or per_share.get("kind") != "PER_SHARE_BRIDGE":
             raise EvidenceError("invalid per-share evidence")
@@ -846,6 +860,7 @@ def factual_dossier(
            if guidance_updates else {}),
         **({"profitability_bridges": [deepcopy(dict(item)) for item in profit_bridges]}
            if profit_bridges else {}),
+        **({"cash_flow_reconciliations":[deepcopy(dict(item)) for item in cash_flows]} if cash_flows else {}),
         "limitations": limitations,
         "authority": {
             "rank": False,
@@ -1256,6 +1271,35 @@ def earnings_evidence_brief(dossier: Mapping[str, Any]) -> dict[str, Any]:
              "revenue_component": bridge.get("revenue_component"),
              "margin_component": bridge.get("margin_component")}))
 
+    if not rows("cash_flow_reconciliations"):
+        missing.append("MATCHED_PERIOD_CASH_FLOW_RECONCILIATION")
+    for index,cash in enumerate(rows("cash_flow_reconciliations")):
+        _validate_cash_flow_case(cash,issuer_id=issuer,event_id=event,decision_at=dossier["decision_at"])
+        ref=f"cash_flow_reconciliations[{index}]"
+        ni=cash["reported_net_income"];ocf=cash["reported_operating_cash"]
+        target=counters if ni>0 and ocf<=0 else context
+        target.append(item("PROFIT_WITHOUT_POSITIVE_OPERATING_CASH" if target is counters else "OPERATING_CASH_RECONCILIATION",
+            "Reported profit was not accompanied by positive operating cash this period; timing and source components still require assessment." if target is counters else
+            "Operating cash and accounting profit differ; the reconciliation does not prove that cash generation will recur.",
+            ref,{"reported_net_income":ni,"reported_operating_cash":ocf,
+                 "cash_minus_income":cash["cash_minus_income"],
+                 "reconciliation_state":cash["reconciliation_state"]}))
+        if cash["reconciliation_state"]!="COMPLETE_RECONCILIATION":
+            missing.append("COMPLETE_CASH_FLOW_COMPONENT_RECONCILIATION")
+        components=cash["component_totals"]
+        if components.get("WORKING_CAPITAL",0)>0:
+            context.append(item("WORKING_CAPITAL_CASH_RELEASE",
+                "Reported working-capital changes added operating cash; this is not automatically recurring earnings.",ref,
+                {"reported_working_capital_contribution":components["WORKING_CAPITAL"]}))
+        if components.get("SHARE_BASED_COMPENSATION",0)!=0:
+            context.append(item("NONCASH_COMPENSATION_RECONCILIATION",
+                "Share-based compensation is a reported noncash adjustment; its add-back is not evidence of cost-free equity financing.",ref,
+                {"reported_share_based_compensation":components["SHARE_BASED_COMPENSATION"]}))
+        if cash["cash_less_gross_capex"] is not None:
+            context.append(item("OPERATING_CASH_LESS_GROSS_CAPEX",
+                "Operating cash less gross property-and-equipment outflows excludes issuer-specific adjustments and is not cash available for distribution.",ref,
+                {"cash_less_gross_capex":cash["cash_less_gross_capex"]}))
+
     for scenario_key, expected_kind in (("per_share_bridge", "PER_SHARE_BRIDGE"), ("entry_economics", "ENTRY_ECONOMICS")):
         scenario_child = dossier.get(scenario_key)
         if scenario_child is not None:
@@ -1510,3 +1554,143 @@ def _validate_valuation_case(item: Mapping[str, Any], *, issuer_id: str, event_i
             raise EvidenceError("valuation scenario arithmetic or shape mismatch")
     except (KeyError, TypeError):
         raise EvidenceError("valuation scenario fields are incomplete") from None
+
+
+@dataclass(frozen=True)
+class CashFlowComponent:
+    """One disjoint, signed statement adjustment supplied by the source owner.
+
+    This is not an inference from balance-sheet changes or a recurrence estimate.
+    Positive amounts increase reported operating cash relative to net income.
+    """
+    item_id: str
+    category: str
+    fact: Actual
+
+    def __post_init__(self) -> None:
+        required_text(self.item_id, "cash flow component id")
+        if not isinstance(self.category, str) or self.category not in {
+            "DEPRECIATION_AMORTIZATION", "SHARE_BASED_COMPENSATION",
+            "WORKING_CAPITAL", "OTHER_NONCASH", "OTHER",
+        }:
+            raise EvidenceError("cash flow component category invalid")
+        if not isinstance(self.fact, Actual) or self.fact.basis.metric != "cash_flow_adjustment":
+            raise EvidenceError("cash flow component requires qualified adjustment fact")
+
+
+def cash_flow_reconciliation(
+    income: Actual, operating_cash: Actual, *,
+    components: Sequence[CashFlowComponent] = (),
+    source_reconciliation_complete: bool,
+    capex_outflow: Actual | None = None,
+    decision_at: str,
+) -> dict[str, Any]:
+    """Explain one matched-period cash/earnings bridge, not forecast persistence.
+
+    CFO = income + signed reported adjustments. Completeness comes from the
+    existing source owner AND numeric reconciliation, never a zero residual alone.
+    CFO less gross capex is explicitly named, not an issuer-adjusted FCF measure,
+    distributable cash, Ball et al. cash profitability, or a live ranking signal.
+    """
+    from math import fsum
+    if not isinstance(income, Actual) or not isinstance(operating_cash, Actual):
+        raise EvidenceError("cash flow requires qualified income and operating cash")
+    if type(source_reconciliation_complete) is not bool:
+        raise EvidenceError("cash flow explicit completeness state required")
+    rows=tuple(components)
+    if len(rows)>128 or any(not isinstance(row,CashFlowComponent) for row in rows):
+        raise EvidenceError("cash flow components invalid")
+    if len({row.item_id for row in rows})!=len(rows):
+        raise EvidenceError("cash flow duplicate component")
+    if income.basis.metric!="net_income" or operating_cash.basis.metric!="operating_cash_flow":
+        raise EvidenceError("cash flow metric mismatch")
+    facts=[income,operating_cash,*[row.fact for row in rows]]
+    if capex_outflow is not None:
+        if not isinstance(capex_outflow,Actual) or capex_outflow.basis.metric!="capital_expenditures":
+            raise EvidenceError("cash flow capex metric invalid")
+        if float(capex_outflow.value)<0:
+            raise EvidenceError("cash flow capex must be an explicit positive outflow magnitude")
+        facts.append(capex_outflow)
+    decision=aware_utc(decision_at,"cash flow decision_at")
+    def key(value: Actual) -> tuple[str,...]:
+        b=value.basis
+        return (b.issuer_id,b.fiscal_period,b.period_role,b.period_start,b.period_end,
+                b.currency,b.unit,b.accounting_basis,b.share_basis)
+    if income.basis.share_basis!="NOT_APPLICABLE":
+        raise EvidenceError("cash flow cannot mix per-share with total amounts")
+    if any(key(fact)!=key(income) for fact in facts):
+        raise EvidenceError("cash flow issuer or exact reporting-period basis mismatch")
+    if any(fact.event_id!=income.event_id for fact in facts):
+        raise EvidenceError("cash flow source event mismatch")
+    if any(aware_utc(fact.available_at)>decision for fact in facts):
+        raise EvidenceError("cash flow evidence unavailable at decision")
+    if any(date.fromisoformat(fact.basis.period_end)>aware_utc(fact.public_at).date() for fact in facts):
+        raise EvidenceError("cash flow reporting period not completed")
+    ni,ocf=float(income.value),float(operating_cash.value)
+    try:
+        reported_adjustments=fsum(float(row.fact.value) for row in rows)
+        residual=fsum([ocf,-ni,-reported_adjustments])
+        gap=ocf-ni
+        category_totals={category:fsum(float(row.fact.value) for row in rows if row.category==category)
+                         for category in sorted({row.category for row in rows})}
+        cash_less_capex=None if capex_outflow is None else ocf-float(capex_outflow.value)
+    except (OverflowError,ValueError) as exc:
+        raise EvidenceError("cash flow arithmetic overflow") from exc
+    if any(not isfinite(v) for v in [reported_adjustments,residual,gap,*category_totals.values()]
+           +([] if cash_less_capex is None else [cash_less_capex])):
+        raise EvidenceError("cash flow arithmetic overflow")
+    reconciles=isclose(residual,0,rel_tol=0,abs_tol=1e-12*max(1,abs(ni),abs(ocf),abs(reported_adjustments)))
+    state=("COMPLETE_RECONCILIATION" if reconciles else "UNRECONCILED") if source_reconciliation_complete else "PARTIAL_RECONCILIATION"
+    ratio=ocf/ni if ni>0 else None
+    ratio_reason="NONPOSITIVE_INCOME" if ni<=0 else None
+    if ratio is not None and not isfinite(ratio):
+        ratio=None;ratio_reason="RATIO_OUT_OF_RANGE"
+    return {
+        "schema":SCHEMA,"kind":"CASH_FLOW_RECONCILIATION",
+        "issuer_id":income.basis.issuer_id,"event_id":income.event_id,
+        "basis":asdict(income.basis),"decision_at":decision_at,
+        "source_inputs":{"income":asdict(income),"operating_cash":asdict(operating_cash),
+                         "components":[asdict(row) for row in rows],
+                         "capex_outflow":None if capex_outflow is None else asdict(capex_outflow)},
+        "reported_net_income":ni,"reported_operating_cash":ocf,
+        "cash_minus_income":gap,"operating_cash_to_positive_income":ratio,
+        "ratio_unavailable_reason":ratio_reason,
+        "source_reconciliation_complete":source_reconciliation_complete,
+        "reconciliation_state":state,"reported_adjustments_total":reported_adjustments,
+        "unexplained_residual":residual,"component_totals":category_totals,
+        "gross_capex_outflow":None if capex_outflow is None else float(capex_outflow.value),
+        "cash_less_gross_capex":cash_less_capex,
+        "cash_after_capex_interpretation":"OPERATING_CASH_MINUS_GROSS_PPE_OUTFLOW_NOT_ISSUER_ADJUSTED_OR_DISTRIBUTABLE_CASH",
+        "quality_interpretation":"PERIOD_ACCOUNTING_RECONCILIATION_NOT_RECURRING_CASH_OR_RETURN_FORECAST",
+        "source_refs":[fact.source_ref for fact in facts],
+        "source_available_at":[fact.available_at for fact in facts],
+        "rank_authority":False,"entry_authority":False,
+    }
+
+
+def _validate_cash_flow_case(item: Mapping[str,Any], *, issuer_id: str,
+                             event_id: str, decision_at: str) -> None:
+    """Recompute this function's closed output; never trust a recomputed hash."""
+    import json
+    if (not isinstance(item,Mapping) or item.get("schema")!=SCHEMA
+            or item.get("kind")!="CASH_FLOW_RECONCILIATION"):
+        raise EvidenceError("cash flow dossier evidence invalid")
+    if item.get("issuer_id")!=issuer_id or item.get("event_id")!=event_id:
+        raise EvidenceError("cash flow dossier identity mismatch")
+    if aware_utc(str(item.get("decision_at")))>aware_utc(decision_at):
+        raise EvidenceError("cash flow dossier evidence is from the future")
+    def actual(raw):
+        if not isinstance(raw,Mapping):raise EvidenceError("cash flow input fact invalid")
+        values=dict(raw);values["basis"]=MetricBasis(**values["basis"]);return Actual(**values)
+    try:
+        raw=item["source_inputs"]
+        expected=cash_flow_reconciliation(actual(raw["income"]),actual(raw["operating_cash"]),
+            components=tuple(CashFlowComponent(x["item_id"],x["category"],actual(x["fact"])) for x in raw["components"]),
+            source_reconciliation_complete=item["source_reconciliation_complete"],
+            capex_outflow=None if raw["capex_outflow"] is None else actual(raw["capex_outflow"]),
+            decision_at=item["decision_at"])
+        canonical=lambda obj:json.dumps(obj,sort_keys=True,separators=(",",":"),allow_nan=False)
+        if canonical(expected)!=canonical(dict(item)):
+            raise EvidenceError("cash flow dossier arithmetic or provenance changed")
+    except (KeyError,TypeError,OverflowError) as exc:
+        raise EvidenceError("cash flow dossier input contract invalid") from exc

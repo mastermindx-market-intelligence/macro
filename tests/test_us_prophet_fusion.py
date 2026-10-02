@@ -1975,3 +1975,236 @@ class TestEarningsValuationScenario:
         brief=sue_engine.earnings_evidence_brief(d)
         assert brief["valuation_scenario"]["status"]=="PE_MODEL_NOT_APPLICABLE_NONPOSITIVE_EARNINGS"
         assert "maximum_reference_price_for_hurdle" not in brief["valuation_scenario"]
+
+
+class TestEarningsFiniteOutput:
+    """Exact review regressions; extreme synthetic values are not market cases."""
+    H = TestEarningsEvidenceEngine
+
+    def test_reported_percent_overflow_is_typed_error(self):
+        current=self.H._actual(1e308)
+        prior=self.H._actual(1,basis=self.H._basis(fiscal_period="FY2025 Q3",
+            start="2025-03-30",end="2025-06-28"))
+        with pytest.raises(sue_engine.EvidenceError,match="overflow"):
+            sue_engine.reported_change(current,prior,decision_at="2026-07-30T21:00:00Z")
+
+    def test_even_median_avoids_overflowing_intermediate_sum(self):
+        import json
+        rows=[self.H._forecast(c,0,"2026-07-01T00:00:00Z",c+"0") for c in ["A","B"]]
+        rows += [self.H._forecast(c,1e308,"2026-07-15T00:00:00Z",c+"1") for c in ["A","B"]]
+        out=sue_engine.matched_revisions(rows,basis=self.H._basis(),
+            before="2026-07-02T00:00:00Z",after="2026-07-16T00:00:00Z")
+        assert out["matched_median_change"]==1e308
+        json.dumps(out,allow_nan=False)
+
+    def test_changing_roster_aggregate_overflow_is_not_serialized(self):
+        rows=[self.H._forecast("OLD",-1e308,"2026-07-01T00:00:00Z","old",
+                valid_until="2026-07-10T00:00:00Z"),
+              self.H._forecast("NEW",1e308,"2026-07-15T00:00:00Z","new")]
+        with pytest.raises(sue_engine.EvidenceError,match="overflow"):
+            sue_engine.matched_revisions(rows,basis=self.H._basis(),
+                before="2026-07-02T00:00:00Z",after="2026-07-16T00:00:00Z")
+
+    def test_ordinary_reported_change_retains_numeric_contract(self):
+        import json
+        current=self.H._actual(12)
+        prior=self.H._actual(10,basis=self.H._basis(fiscal_period="FY2025 Q3",
+            start="2025-03-30",end="2025-06-28"))
+        out=sue_engine.reported_change(current,prior,decision_at="2026-07-30T21:00:00Z")
+        assert out["change_pct"]==20 and out["change_fraction"]==.2
+        json.dumps(out,allow_nan=False)
+
+
+class TestCashFlowReconciliation:
+    H=TestEarningsEvidenceEngine
+    decision="2026-07-30T21:00:00Z"
+
+    @classmethod
+    def fact(cls,metric,value,**kwargs):
+        from dataclasses import replace
+        b=cls.H._basis(metric=metric)
+        b=replace(b,**kwargs.pop("basis_changes",{}))
+        return cls.H._actual(value,basis=b,source_ref="fixture:cash:"+metric,**kwargs)
+
+    @classmethod
+    def component(cls,item_id,value,category="WORKING_CAPITAL",**kwargs):
+        return sue_engine.CashFlowComponent(item_id,category,cls.fact("cash_flow_adjustment",value,**kwargs))
+
+    @classmethod
+    def build(cls,ni=100,cfo=160,complete=True,components=None,capex=40):
+        return sue_engine.cash_flow_reconciliation(cls.fact("net_income",ni),cls.fact("operating_cash_flow",cfo),
+            components=components if components is not None else [
+                cls.component("da",20,"DEPRECIATION_AMORTIZATION"),
+                cls.component("sbc",10,"SHARE_BASED_COMPENSATION"),
+                cls.component("wc",30)],
+            source_reconciliation_complete=complete,
+            capex_outflow=None if capex is None else cls.fact("capital_expenditures",capex),
+            decision_at=cls.decision)
+
+    @classmethod
+    def dossier(cls,case):
+        return sue_engine.factual_dossier(event_id=case["event_id"],issuer_id=case["issuer_id"],
+            decision_at=cls.decision,source_contract_refs=["fixture:qualified_cash_input"],cash_flows=[case])
+
+    def test_source_components_reconcile_without_automatic_quality_bonus(self):
+        import json
+        out=self.build()
+        assert out["reconciliation_state"]=="COMPLETE_RECONCILIATION"
+        assert out["reported_adjustments_total"]==60 and out["unexplained_residual"]==0
+        assert out["operating_cash_to_positive_income"]==1.6
+        assert out["cash_less_gross_capex"]==120
+        assert out["component_totals"]["WORKING_CAPITAL"]==30
+        brief=sue_engine.earnings_evidence_brief(self.dossier(out))
+        assert brief["supporting_facts"]==[]
+        assert {x["code"] for x in brief["context_facts"]}>={"WORKING_CAPITAL_CASH_RELEASE","NONCASH_COMPENSATION_RECONCILIATION","OPERATING_CASH_LESS_GROSS_CAPEX"}
+        assert all(x is False for x in brief["authority"].values())
+        json.dumps(out,allow_nan=False);json.dumps(brief,allow_nan=False)
+
+    def test_profit_with_negative_operating_cash_is_visible_counterevidence(self):
+        out=self.build(cfo=-20,components=[self.component("wc",-120)],capex=None)
+        brief=sue_engine.earnings_evidence_brief(self.dossier(out))
+        assert out["operating_cash_to_positive_income"]==-.2
+        assert out["cash_less_gross_capex"] is None
+        assert any(x["code"]=="PROFIT_WITHOUT_POSITIVE_OPERATING_CASH" for x in brief["counterevidence"])
+
+    @pytest.mark.parametrize("income,cash",[(0,10),(-100,-20),(-100,20)])
+    def test_nonpositive_income_has_no_misleading_conversion_ratio(self,income,cash):
+        out=self.build(ni=income,cfo=cash,components=[],complete=False)
+        assert out["operating_cash_to_positive_income"] is None
+        assert out["ratio_unavailable_reason"]=="NONPOSITIVE_INCOME"
+        assert out["reconciliation_state"]=="PARTIAL_RECONCILIATION"
+
+    def test_zero_residual_does_not_certify_missing_components(self):
+        out=self.build(ni=100,cfo=100,components=[],complete=False)
+        assert out["unexplained_residual"]==0
+        assert out["reconciliation_state"]=="PARTIAL_RECONCILIATION"
+        assert out["component_totals"]=={}
+        assert "COMPLETE_CASH_FLOW_COMPONENT_RECONCILIATION" in sue_engine.earnings_evidence_brief(self.dossier(out))["not_established"]
+
+    def test_incorrect_complete_assertion_is_unreconciled_not_a_pass(self):
+        out=self.build(cfo=200)
+        assert out["unexplained_residual"]==40
+        assert out["reconciliation_state"]=="UNRECONCILED"
+        brief=sue_engine.earnings_evidence_brief(self.dossier(out))
+        assert "COMPLETE_CASH_FLOW_COMPONENT_RECONCILIATION" in brief["not_established"]
+
+    def test_partial_reported_adjustments_are_not_filled_with_zeros(self):
+        out=self.build(components=[self.component("da",20,"DEPRECIATION_AMORTIZATION")],complete=False)
+        assert out["unexplained_residual"]==40
+        assert "WORKING_CAPITAL" not in out["component_totals"]
+
+    def test_same_amounts_different_sources_of_cash_are_not_independent_votes(self):
+        one=self.build(components=[self.component("da",60,"DEPRECIATION_AMORTIZATION")])
+        two=self.build(components=[self.component("wc",60)])
+        assert one["operating_cash_to_positive_income"]==two["operating_cash_to_positive_income"]
+        assert one["component_totals"]!=two["component_totals"]
+        assert all(sue_engine.earnings_evidence_brief(self.dossier(x))["supporting_facts"]==[] for x in [one,two])
+
+    def test_capex_outflow_sign_cannot_be_guessed(self):
+        with pytest.raises(sue_engine.EvidenceError,match="outflow magnitude"):
+            self.build(capex=-40)
+
+    @pytest.mark.parametrize("changes",[
+        {"issuer_id":"cik:other"},{"period_role":"NINE_MONTHS"},
+        {"period_start":"2026-01-01"},{"period_end":"2026-06-28"},
+        {"fiscal_period":"FY2026 9M"},{"currency":"EUR"},{"unit":"USD"},
+        {"accounting_basis":"ADJUSTED"},{"share_basis":"DILUTED"}])
+    def test_cash_comparison_refuses_inconsistent_reporting_basis(self,changes):
+        with pytest.raises(sue_engine.EvidenceError,match="basis mismatch"):
+            sue_engine.cash_flow_reconciliation(self.fact("net_income",100),
+                self.fact("operating_cash_flow",100,basis_changes=changes),
+                source_reconciliation_complete=False,decision_at=self.decision)
+
+    def test_cash_components_cannot_come_from_another_event(self):
+        with pytest.raises(sue_engine.EvidenceError,match="event mismatch"):
+            self.build(components=[self.component("wc",60,event_id="other-event")])
+
+    def test_future_adjustment_cannot_enter_an_earlier_decision(self):
+        with pytest.raises(sue_engine.EvidenceError,match="unavailable"):
+            self.build(components=[self.component("wc",60,available_at="2026-07-31T00:00:00Z")])
+
+    def test_duplicate_statement_item_is_refused(self):
+        row=self.component("wc",30)
+        with pytest.raises(sue_engine.EvidenceError,match="duplicate"):
+            self.build(components=[row,row])
+
+    @pytest.mark.parametrize("complete",[None,1,"true"])
+    def test_completeness_is_explicit_boolean(self,complete):
+        with pytest.raises(sue_engine.EvidenceError,match="completeness"):
+            self.build(complete=complete)
+
+    def test_capex_does_not_equal_issuer_adjusted_free_cash_flow(self):
+        out=self.build(ni=8539,cfo=17525,components=[],complete=False,capex=15857)
+        assert out["cash_less_gross_capex"]==1668
+        assert out["cash_less_gross_capex"]!=3721
+        assert "NOT_ISSUER_ADJUSTED" in out["cash_after_capex_interpretation"]
+
+    def test_micron_annual_statement_values_reconcile_in_synthetic_clock_fixture(self):
+        components=[self.component("da",8352,"DEPRECIATION_AMORTIZATION"),
+            self.component("sbc",972,"SHARE_BASED_COMPENSATION"),
+            self.component("ar",-1776),self.component("inventory",520),
+            self.component("ap",862),self.component("other_current_liabilities",-272),
+            self.component("other",328,"OTHER")]
+        # Numeric exercise only; source period/clock classes are fictional here.
+        out=self.build(ni=8539,cfo=17525,components=components,capex=15857)
+        assert out["reported_adjustments_total"]==8986 and out["unexplained_residual"]==0
+        assert out["component_totals"]["WORKING_CAPITAL"]==-666
+        assert out["reconciliation_state"]=="COMPLETE_RECONCILIATION"
+
+    def test_common_unit_scaling_preserves_ratios_and_state(self):
+        from dataclasses import replace
+        original=self.build();scale=1e6
+        inputs=original["source_inputs"]
+        def actual(raw):
+            basis=sue_engine.MetricBasis(**{**raw["basis"],"unit":"USD"})
+            return sue_engine.Actual(**{**raw,"basis":basis,"value":raw["value"]*scale})
+        rescaled=sue_engine.cash_flow_reconciliation(actual(inputs["income"]),actual(inputs["operating_cash"]),
+            components=[sue_engine.CashFlowComponent(x["item_id"],x["category"],actual(x["fact"])) for x in inputs["components"]],
+            source_reconciliation_complete=True,capex_outflow=actual(inputs["capex_outflow"]),decision_at=self.decision)
+        assert rescaled["operating_cash_to_positive_income"]==original["operating_cash_to_positive_income"]
+        assert rescaled["cash_less_gross_capex"]==original["cash_less_gross_capex"]*scale
+        assert rescaled["reconciliation_state"]==original["reconciliation_state"]
+
+    def test_child_recomputation_refuses_altered_explanation(self):
+        from copy import deepcopy
+        for key,value in [("reported_operating_cash",999),("unexplained_residual",99),
+            ("rank_authority",1),("cash_less_gross_capex",999),("reconciliation_state","ALL_GOOD")]:
+            with pytest.raises(sue_engine.EvidenceError,match="changed"):
+                out=deepcopy(self.build());out[key]=value;self.dossier(out)
+
+    def test_cross_issuer_and_cross_event_dossier_refuse(self):
+        out=self.build()
+        for kwargs in [{"issuer_id":"other","event_id":out["event_id"]},
+                       {"issuer_id":out["issuer_id"],"event_id":"other"}]:
+            with pytest.raises(sue_engine.EvidenceError,match="identity"):
+                sue_engine.factual_dossier(**kwargs,decision_at=self.decision,
+                    source_contract_refs=["fixture"],cash_flows=[out])
+
+    def test_future_dossier_cut_refused(self):
+        out=self.build()
+        with pytest.raises(sue_engine.EvidenceError,match="future"):
+            sue_engine.factual_dossier(issuer_id=out["issuer_id"],event_id=out["event_id"],
+                decision_at="2026-07-30T20:59:59Z",source_contract_refs=["fixture"],cash_flows=[out])
+
+    def test_output_copies_do_not_share_inputs_or_dossier(self):
+        from copy import deepcopy
+        out=self.build();before=deepcopy(out);d=self.dossier(out)
+        d["cash_flow_reconciliations"][0]["source_inputs"]["components"][0]["fact"]["value"]=999
+        assert out==before
+
+    def test_no_cash_inputs_are_truthfully_missing_in_existing_brief(self):
+        d=sue_engine.factual_dossier(event_id="fixture",issuer_id="cik:fixture",
+            decision_at=self.decision,source_contract_refs=["fixture"])
+        assert "cash_flow_reconciliations" not in d
+        assert "MATCHED_PERIOD_CASH_FLOW_RECONCILIATION" in sue_engine.earnings_evidence_brief(d)["not_established"]
+
+    def test_tiny_positive_income_does_not_serialize_infinite_ratio(self):
+        import json
+        out=self.build(ni=1e-308,cfo=1e308,components=[],complete=False,capex=None)
+        assert out["operating_cash_to_positive_income"] is None
+        assert out["ratio_unavailable_reason"]=="RATIO_OUT_OF_RANGE"
+        json.dumps(out,allow_nan=False)
+
+    def test_extreme_cash_gap_returns_typed_overflow(self):
+        with pytest.raises(sue_engine.EvidenceError,match="overflow"):
+            self.build(ni=-1e308,cfo=1e308,components=[],complete=False,capex=None)

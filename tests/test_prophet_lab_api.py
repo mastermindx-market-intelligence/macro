@@ -860,6 +860,8 @@ def test_full_native_earnings_route_preserves_b1_d5_and_source_field(monkeypatch
     assert brief["supporting_facts"][0]["values"]["change_pct"]==pytest.approx(16.356501765281383)
     assert "QUALIFIED_PRE_RELEASE_EXPECTATION" in brief["not_established"]
     assert "CURRENT_MARKET_AND_PORTFOLIO_PERMISSION" in brief["not_established"]
+    assert "MATCHED_PERIOD_CASH_FLOW_RECONCILIATION" in brief["not_established"]
+    assert "cash_flow_reconciliations" not in body["dossier"]
     assert all(v is False for v in brief["authority"].values())
     assert reads==["evt_cik0000320193_2026q3_results"]
     assert body["is_original_as_run_recommendation"] is False
