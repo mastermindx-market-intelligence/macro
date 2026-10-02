@@ -1324,3 +1324,14 @@ class TestErrorEventNoText(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+# The supplied-evidence preview cases belong to the existing Codex runner/budget
+# CI owner; explicit imports make collection visible without creating a dark suite.
+from tests.codex_reset_preview_cli_cases import (  # noqa: E402,F401
+    test_round_trip_preserves_the_pure_owner_decision,
+    test_actual_cli_entrypoint_in_a_fresh_process,
+    test_untrusted_input_does_not_leak_or_bypass_gates,
+    test_duplicate_json_keys_are_refused,
+    test_input_is_bounded,
+    test_no_eligible_account_is_a_valid_report_not_authorization,
+)
