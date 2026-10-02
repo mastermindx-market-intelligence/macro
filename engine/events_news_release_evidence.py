@@ -78,7 +78,12 @@ def _reference(event: Mapping[str, Any], event_type: str) -> tuple[str | None, s
     supplied = [event[k] for k in official._EXPLICIT_REFERENCE_FIELDS if event.get(k) not in (None, "")]
     if not supplied:
         return None, None
-    parse = official._parse_week_reference if event_type == "CLAIMS" else official._parse_month_reference
+    if event_type == "CLAIMS":
+        parse = official._parse_week_reference
+    elif event_type == "GDP":
+        parse = official._parse_quarter_reference
+    else:
+        parse = official._parse_month_reference
     values = [parse(v) for v in supplied]
     if any(v is None for v in values):
         return None, "invalid_reference_period"
