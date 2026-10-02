@@ -2695,6 +2695,7 @@ jobs:
       - "templates/am_edition.html.j2"
       - "scripts/build_am_edition.py"
       - "scripts/capture_am_edition_evidence.py"
+      - "scripts/capture_page_evidence.py"
       - "tests/test_am_edition_page.py"
       - "tests/test_am_edition_producer.py"
       - "tests/test_capture_am_edition_evidence.py"
