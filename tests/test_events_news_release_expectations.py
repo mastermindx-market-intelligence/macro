@@ -133,6 +133,7 @@ def scored_pce(eligible=True):
             "period": "2026-08",
             "release_date": "2026-09-30",
             "actual_receipt_id": "official_actual:headline",
+            "actual": 0.30,
             "frozen_projection_point": 0.31,
             "frozen_projection_p10": 0.17,
             "frozen_projection_p90": 0.42,
@@ -154,6 +155,7 @@ def scored_pce(eligible=True):
             "period": "2026-08",
             "release_date": "2026-09-30",
             "actual_receipt_id": "official_actual:core",
+            "actual": 0.20,
             "frozen_projection_point": 0.23,
             "frozen_projection_p10": 0.10,
             "frozen_projection_p90": 0.36,
@@ -277,6 +279,7 @@ def test_ineligible_historical_evaluation_withholds_point_and_difference():
     payload["last_scored_all_forward"] = scored_pce(False)
     out = view.event_expectation_context(
         pce_event(), payload, as_of=ASOF, official_evidence=official_pce())
+    assert out["status"] == "unavailable"
     assert all(m["status"] == "comparison_withheld" for m in out["metrics"])
     assert all(m["reason"] == "evaluation_ineligible" for m in out["metrics"])
     assert all(m["point"] is None for m in out["metrics"])
@@ -322,3 +325,16 @@ def test_attach_expectation_context_returns_copies_and_keeps_malformed_members()
     assert out[0]["expectation_context"]["status"] == "available"
     assert out[1] is None
     assert view.attach_event_expectation_context(None, forecast_payload(), as_of=ASOF) is None
+
+
+def test_historical_model_row_must_bind_the_same_actual_value():
+    payload = forecast_payload()
+    payload["upcoming"] = []
+    rows = scored_pce(True)
+    rows[0]["actual"] = 0.31
+    payload["last_scored_all_forward"] = rows
+    out = view.event_expectation_context(
+        pce_event(), payload, as_of=ASOF, official_evidence=official_pce())
+    assert out["metrics"][0]["status"] == "comparison_withheld"
+    assert out["metrics"][0]["reason"] == "actual_binding_mismatch"
+    assert out["metrics"][0]["point"] is None
