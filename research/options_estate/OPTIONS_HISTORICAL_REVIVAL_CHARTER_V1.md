@@ -17,9 +17,12 @@ Mastermind's signal-history ledger retains lens directions, not the raw Options 
 history; it cannot substitute for the historical data estate. No new collector, store,
 scheduler, campaign identity, outcome ledger, Issue Desk or score-control plane is needed.
 
-The existing Options evaluation research path is the intended execution home. Signal
-Foundry's static hand-curated and compiled blockers remain effective: this charter does
-not create a Foundry exception and topics must not be renamed to evade its screen.
+Execute through existing Options research owners such as
+`scripts/research/options_history_gauntlet.py` and, after its required repairs,
+`scripts/ops_train_flow_score.py`. These paths do not route studies through
+Signal Foundry; Foundry admission is not a prerequisite for this scope. Its static
+hand-curated and compiled blockers continue to govern Foundry candidates. This charter
+adds no Foundry exception and does not permit renaming a candidate to evade that screen.
 
 ## Research scope and authority
 

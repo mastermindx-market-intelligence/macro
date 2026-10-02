@@ -316,22 +316,22 @@ entries:
 
   - topic: 'Signed-charm / charm-intensity narratives'
     key: KILL-CHARM-NARRATIVES
-    verdict: 'KILLED — vol/size confound, trail-RV IC .5–.6 **Chairman research reopening 2026-10-02; DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY:** Retain the vol/size-confound finding as negative evidence. OPTIONS-HISTORICAL-REVIVAL-V1 may preregister replication, successor or interaction studies with the confound control. No production/scoring/promotion authority.'
-    source: 'OPEX vanna/charm adjudication (2026-07-06)'
+    verdict: 'KILLED — vol/size confound, trail-RV IC .5–.6. Research exception: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY; production restrictions retained.'
+    source: 'OPEX vanna/charm adjudication (2026-07-06); Chairman research reopening 2026-10-02: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY and research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md'
     section: 2
     section_name: killed_signal_families
 
   - topic: 'DOI (options delta-OI family)'
     key: KILL-DOI-FAMILY
-    verdict: 'DEAD **Chairman research reopening 2026-10-02; DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY:** Retain the tested construction and result as negative evidence. OPTIONS-HISTORICAL-REVIVAL-V1 permits preregistered DOI replication, successors and interactions/composites in research only; no production/scoring/promotion authority.'
-    source: 'Options→NW entry-intelligence W-E1 gauntlet'
+    verdict: 'DEAD. Research exception: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY; production restrictions retained.'
+    source: 'Options→NW entry-intelligence W-E1 gauntlet; Chairman research reopening 2026-10-02: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY and research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md'
     section: 2
     section_name: killed_signal_families
 
   - topic: 'Skew-deceleration'
     key: KILL-SKEW-DECELERATION
-    verdict: 'UNSUPPORTED **Chairman research reopening 2026-10-02; DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY:** Retain the unsupported finding. OPTIONS-HISTORICAL-REVIVAL-V1 permits preregistered replication, successors and interactions/composites in research only; no production/scoring/promotion authority.'
-    source: 'Options→NW entry-intelligence W-E1 gauntlet'
+    verdict: 'UNSUPPORTED. Research exception: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY; production restrictions retained.'
+    source: 'Options→NW entry-intelligence W-E1 gauntlet; Chairman research reopening 2026-10-02: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY and research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md'
     section: 2
     section_name: killed_signal_families
 
@@ -729,8 +729,8 @@ entries:
 
   - topic: 'Theta tape'
     key: HOLD-THETA-TAPE
-    verdict: 'SUSPENDED **Chairman research reopening 2026-10-02; DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY:** OPTIONS-HISTORICAL-REVIVAL-V1 may evaluate canonical recorded tape in preregistered research, including interactions/composites. This does not rearm Final3, permit tick-rule direction, create a collector or confer production/scoring/promotion authority.'
-    source: 'Final3-lobes program (2026-07-06)'
+    verdict: 'SUSPENDED. Research exception: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY; production restrictions retained.'
+    source: 'Final3-lobes program (2026-07-06); Chairman research reopening 2026-10-02: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY and research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md'
     section: 4
     section_name: held_suspended
 
