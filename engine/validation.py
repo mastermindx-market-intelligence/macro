@@ -670,17 +670,19 @@ def top_correlated_pairs(df, k: int = 8, thresh: float = 0.6) -> list:
 # you screened (the DSR deflates one strategy — FDR deflates the family). All pure
 # numpy/pandas, no scipy/sklearn.
 # --------------------------------------------------------------------------- #
-def rank_ic(signal, fwd) -> float:
+def rank_ic(signal, fwd, *, min_names: int = 10) -> float:
     """Cross-sectional rank IC on ONE date: Spearman correlation between a signal
     cross-section and the forward return across the universe. Higher = the signal
-    ranks winners above losers that period. NaN if fewer than 10 joint names."""
+    ranks winners above losers that period. NaN if fewer than `min_names` joint
+    names. Default ``min_names=10`` is byte-compatible with every existing caller;
+    a reader may opt into the mathematical minimum of 2 via the keyword."""
     j = pd.concat([pd.Series(signal).rename("s"), pd.Series(fwd).rename("f")], axis=1).dropna()
-    if len(j) < 10:
+    if len(j) < int(min_names):
         return float("nan")
     return float(j["s"].rank().corr(j["f"].rank()))
 
 
-def newey_west_tstat(x, lags: int = 4) -> dict:
+def newey_west_tstat(x, lags: int = 4, *, unrounded: bool = False) -> dict:
     """HAC (Newey-West) t-stat for the MEAN of `x`. Overlapping forward-return
     windows serially-correlate a signal's per-date stats, so a plain t-stat
     overstates significance; the Bartlett-weighted long-run variance corrects it.
@@ -692,7 +694,11 @@ def newey_west_tstat(x, lags: int = 4) -> dict:
     a caller (and any artifact it publishes) can never advertise a correction the series
     was too short to receive; ``lags_requested`` keeps the ask visible beside it. A
     requested 21 on n=10 corrects only 9 lags, and printing the 21 is how an
-    under-corrected t reads as a fully-corrected one (2026-08-03 experiments audit)."""
+    under-corrected t reads as a fully-corrected one (2026-08-03 experiments audit).
+
+    ``unrounded=False`` (default) keeps the historical rounded mean/se/t/p bytes.
+    ``unrounded=True`` exposes the exact mean/se/t from the same centered residual
+    and n-denominator Bartlett estimator; the normal p remains a diagnostic only."""
     import math
     a = np.asarray(pd.Series(x).dropna(), float)
     n = len(a)
@@ -708,8 +714,12 @@ def newey_west_tstat(x, lags: int = 4) -> dict:
         var += 2.0 * (1.0 - j / (L + 1)) * gj           # Bartlett kernel weight
     se = math.sqrt(max(var, 1e-18) / n)
     t = mean / se if se else float("nan")
+    p = 2.0 * (1.0 - _norm_cdf(abs(t)))
+    if unrounded:
+        return {"mean": mean, "se": se, "t": t, "p": p, "n": n,
+                "lags": L, "lags_requested": int(lags)}
     return {"mean": round(mean, 5), "se": round(se, 5), "t": round(t, 3),
-            "p": round(2.0 * (1.0 - _norm_cdf(abs(t))), 4), "n": n,
+            "p": round(p, 4), "n": n,
             "lags": L, "lags_requested": int(lags)}
 
 
