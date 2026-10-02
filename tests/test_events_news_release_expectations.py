@@ -426,3 +426,27 @@ def test_missing_model_point_can_still_surface_same-unit_reference_benchmarks():
     assert metric["point"] is None
     assert metric["benchmarks"] == {"naive_prior": 217.0, "trailing_3m": 122.0}
     assert metric["market_implied_status"] == "unit_basis_unqualified"
+
+
+def test_historical_model_row_must_be_frozen_before_release_day():
+    payload = forecast_payload()
+    payload["upcoming"] = []
+    rows = scored_pce(True)
+    rows[0]["frozen_asof_night"] = "2026-09-30"
+    payload["last_scored_all_forward"] = rows
+    out = view.event_expectation_context(
+        pce_event(), payload, as_of=ASOF, official_evidence=official_pce())
+    assert out["metrics"][0]["status"] == "comparison_withheld"
+    assert out["metrics"][0]["reason"] == "frozen_cutoff_invalid"
+    assert out["metrics"][0]["point"] is None
+
+
+def test_missing_frozen_model_date_is_not_treated_as_ex_ante():
+    payload = forecast_payload()
+    payload["upcoming"] = []
+    rows = scored_pce(True)
+    rows[0]["frozen_asof_night"] = None
+    payload["last_scored_all_forward"] = rows
+    out = view.event_expectation_context(
+        pce_event(), payload, as_of=ASOF, official_evidence=official_pce())
+    assert out["metrics"][0]["reason"] == "frozen_cutoff_invalid"
