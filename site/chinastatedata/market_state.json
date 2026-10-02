@@ -1,7 +1,7 @@
 {
   "schema": "china_market_state.v1",
-  "as_of": "2026-10-01",
-  "generated_utc": "2026-10-01T17:53:12Z",
+  "as_of": "2026-10-02",
+  "generated_utc": "2026-10-02T17:28:58Z",
   "authority": {
     "tier": "context_only",
     "why": [
@@ -88,7 +88,7 @@
     "names_ref": "site/chinastatedata/microstructure.json#name_packets"
   },
   "policy": {
-    "as_of": "2026-10-01",
+    "as_of": "2026-10-02",
     "policy_impulse": "neutral",
     "transmission_channel": [],
     "recent_event_count": 10,
@@ -126,15 +126,15 @@
     ],
     "staleness": {
       "per_source_days": {
-        "lpr": 11,
-        "rrr": 512,
-        "fr007": 1,
-        "communiques": 156
+        "lpr": 12,
+        "rrr": 513,
+        "fr007": 2,
+        "communiques": 157
       }
     }
   },
   "rotation": {
-    "as_of": "2026-10-01",
+    "as_of": "2026-10-02",
     "sector_phase_distribution": {
       "Bottoming": 39,
       "Topping": 7,
@@ -158,7 +158,7 @@
       "LAGGARD: Agriculture ranked #29/31 (-26.3%) — among the weakest this leg"
     ],
     "ths_heat": {
-      "as_of": "2026-10-01",
+      "as_of": "2026-10-02",
       "basket_count": 237,
       "above_200d_pct": 22.4,
       "hot_baskets": [
@@ -389,16 +389,16 @@
   },
   "external": {
     "yield_curve": {
-      "as_of": "2026-09-30",
+      "as_of": "2026-10-01",
       "staleness_days": 1,
-      "cn_10y": 1.6822,
-      "cn_2y": 1.2665,
-      "cn_slope_10_2": 0.41569999999999996,
-      "cn_us_10y_spread": -3.6078
+      "cn_10y": null,
+      "cn_2y": null,
+      "cn_slope_10_2": null,
+      "cn_us_10y_spread": null
     },
     "cgb_curve": {
       "as_of": "2026-09-30",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "m3": 1.1611,
       "y1": 1.2197,
       "y5": 1.409,
@@ -407,13 +407,13 @@
       "slope_10y_3m": 0.5211
     },
     "usdcnh": {
-      "quote": 6.6715,
-      "chg_pct": -0.6,
-      "as_of": "Sep 30, 2026"
+      "quote": 6.6725,
+      "chg_pct": -0.5,
+      "as_of": "Oct 02, 2026"
     },
     "dxy": {
-      "quote": 101.36,
-      "chg": 2.4,
+      "quote": 101.87,
+      "chg": 2.7,
       "label": "DXY"
     }
   },
