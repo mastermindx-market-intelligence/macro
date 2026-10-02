@@ -747,24 +747,30 @@ entries:
       any_of:
         - 'signed.{0,30}charm.{0,30}charm'
     reason: >
-      KILLED — vol/size confound, trail-RV IC .5–.6
-    source: 'OPEX vanna/charm adjudication (2026-07-06)'
+      KILLED — vol/size confound, trail-RV IC .5–.6. Research
+      exception: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY;
+      production restrictions retained.
+    source: 'OPEX vanna/charm adjudication (2026-07-06); Chairman research reopening 2026-10-02: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY and research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md'
 
   - id: BL-G046
     match:
       any_of:
         - 'options.{0,30}delta.{0,30}family'
     reason: >
-      DEAD
-    source: 'Options→NW entry-intelligence W-E1 gauntlet'
+      DEAD. Research exception:
+      DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY; production
+      restrictions retained.
+    source: 'Options→NW entry-intelligence W-E1 gauntlet; Chairman research reopening 2026-10-02: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY and research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md'
 
   - id: BL-G047
     match:
       any_of:
         - 'skew.{0,30}deceleration'
     reason: >
-      UNSUPPORTED
-    source: 'Options→NW entry-intelligence W-E1 gauntlet'
+      UNSUPPORTED. Research exception:
+      DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY; production
+      restrictions retained.
+    source: 'Options→NW entry-intelligence W-E1 gauntlet; Chairman research reopening 2026-10-02: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY and research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md'
 
   - id: BL-G048
     match:
@@ -1300,8 +1306,10 @@ entries:
       any_of:
         - 'theta.{0,30}tape'
     reason: >
-      SUSPENDED
-    source: 'Final3-lobes program (2026-07-06)'
+      SUSPENDED. Research exception:
+      DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY; production
+      restrictions retained.
+    source: 'Final3-lobes program (2026-07-06); Chairman research reopening 2026-10-02: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY and research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md'
 
   - id: BL-G105
     match:
