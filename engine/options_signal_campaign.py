@@ -318,6 +318,16 @@ def _verify_receipt(
     return count
 
 
+def verify_campaign_receipt(
+    receipt: object,
+    snapshot: LedgerSnapshot,
+    expected_path: str | None = None,
+) -> int:
+    return _verify_receipt(
+        receipt, snapshot, snapshot.label if expected_path is None else expected_path
+    )
+
+
 def _episode_id(source: str, source_event_id: str) -> str:
     return _stable_id("osep", EPISODE_SCHEMA, source, source_event_id)
 
@@ -1297,6 +1307,7 @@ __all__ = [
     "derive_campaign_revisions",
     "derive_campaign_outcomes",
     "load_ledger",
+    "verify_campaign_receipt",
     "run",
     "validate_campaign",
     "validate_campaign_outcome",

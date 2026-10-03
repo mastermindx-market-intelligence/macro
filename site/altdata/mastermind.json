@@ -1,17 +1,17 @@
 {
   "schema": "altdata.mastermind.v1",
   "as_of": "2026-10-03",
-  "generated_utc": "2026-10-03T05:51:11.339009+00:00",
+  "generated_utc": "2026-10-03T12:57:51.913752+00:00",
   "contract": "Actionable alt-data axis for the Mastermind bot. Each signal: signal_score 0-100 (composite of weighted convergence + brain conviction + price confirm \u2212 extension), action \u2208 {ACCUMULATE,WATCH,AVOID}, direction \u2208 {long,short,neutral}, source \u2208 {brain,deterministic}. The bot sizes through its OWN risk framework; this is an input, not an order. Brain calls are graded vs SPY (see calibration). An extended name is never ACCUMULATE. trump_linked / affiliations flag actor ties. rolling_over names (off_high\u2264\u221215% AND 20d<0 AND below 50dma) appear in broken_signals only \u2014 crowd attention, NOT entries. entry_tier (T1/T2/T3) = validated confluence buy gate signal.",
-  "regime_read": "Convergence is concentrated in semiconductors, federal IT/defense, and AI infrastructure, but several signals mix fundamental activity with sentiment or affiliations rather than independently confirmed buying. With no scored track record yet, conviction remains modest; extended PLTR and CRWD should not be chased.",
+  "regime_read": "The strongest measured alignment sits in semiconductors and federal technology spending: MU and AMAT combine institutional or insider signals with patent activity, while BAH and IBM show contracting acceleration [insider_mspr] [congress_cluster] [patent_cluster] [gov_contract_accel]. Sentiment-heavy convergence deserves less weight, and PLTR is already extended; with no scored track record, overall conviction remains modest.",
   "brain_present": true,
   "brain_usable": true,
   "article3": {
     "granted": false,
     "lift_lb": null,
     "reason": "insufficient-n: n=17 < min_n=25",
-    "evidence_asof": "2026-10-02",
-    "evaluated_at": "2026-10-02T10:53:29+00:00"
+    "evidence_asof": "2026-10-03",
+    "evaluated_at": "2026-10-03T09:13:42+00:00"
   },
   "is_context_only": true,
   "calibration": {
@@ -25,7 +25,7 @@
   "signals": [
     {
       "ticker": "MU",
-      "signal_score": 86,
+      "signal_score": 84,
       "conviction": "medium",
       "action": "ACCUMULATE",
       "direction": "long",
@@ -40,7 +40,7 @@
         "stocktwits_bull"
       ],
       "trump_linked": false,
-      "rs_vs_spy_60d": 12.9,
+      "rs_vs_spy_60d": 5.8,
       "no_price_data": false,
       "extended": false,
       "rolling_over": false,
@@ -56,13 +56,13 @@
         }
       ],
       "n_affiliated_actors": 1,
-      "thesis": "MU has the cleanest policy-and-operating convergence: accelerating federal grants, a large patent cluster, strongly positive insider-purchase signal, and the proposed Memory Chip Competitiveness Assessment Act all point toward sustained strategic attention to domestic advanced memory [gov_grant] [insider_mspr] [patent_cluster] [bill:HR10170]. Bullish retail sentiment is supportive but is the least durable component [stocktwits_bull].",
+      "thesis": "MU has the broadest non-extended alignment: accelerating government grants, strongly positive insider-purchase intensity, and a large patent cluster provide three distinct fundamental or positioning signals [gov_grant] [insider_mspr] [patent_cluster]. Bullish Stocktwits sentiment and the disclosed Ro Khanna affiliation add corroboration but are weaker evidence [stocktwits_bull] [actor:Ro Khanna].",
       "second_order": [
-        "AMAT \u2014 domestic memory-capacity investment would support semiconductor-equipment demand",
-        "U.S. semiconductor-equipment theme \u2014 greater domestic memory investment implies additional fabrication-tool spending"
+        "Semiconductor-equipment theme \u2014 sustained memory investment would support fabrication-tool demand.",
+        "HBM and advanced-packaging supply chain \u2014 stronger memory demand would increase capacity and packaging requirements."
       ],
       "falsifier": {
-        "text": "Federal support stops accelerating and MU's insider-purchase signal reverses while advanced-memory investment plans weaken.",
+        "text": "Government-grant acceleration reverses and insider-purchase intensity turns non-positive without a corresponding improvement in operating demand.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "MU",
@@ -141,7 +141,7 @@
       "off_high_252": -0.5,
       "ret_20d": 2.5,
       "above_50dma": true,
-      "entry_tier": "T2",
+      "entry_tier": null,
       "affiliations": [
         {
           "actor": "Jensen Huang",
@@ -233,6 +233,37 @@
       "clamped": null
     },
     {
+      "ticker": "CRWD",
+      "signal_score": 64,
+      "conviction": "high",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.7,
+      "convergence_score": 4,
+      "channels": [
+        "13f_add",
+        "analyst_upgrade_cluster",
+        "congress_buy",
+        "trump"
+      ],
+      "trump_linked": true,
+      "rs_vs_spy_60d": 33.5,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": 0.0,
+      "ret_20d": 25.6,
+      "above_50dma": true,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
       "ticker": "PLTR",
       "signal_score": 59,
       "conviction": "low",
@@ -249,7 +280,7 @@
         "stocktwits_bull"
       ],
       "trump_linked": false,
-      "rs_vs_spy_60d": 41.0,
+      "rs_vs_spy_60d": 43.6,
       "no_price_data": false,
       "extended": true,
       "rolling_over": false,
@@ -270,20 +301,20 @@
         }
       ],
       "n_affiliated_actors": 2,
-      "thesis": "PLTR has genuine multi-channel alignment through 3.2x government-contract acceleration, uniformly bullish analyst signals, disclosed ownership by Marjorie Taylor Greene, and Cathie Wood affiliation [gov_contract_accel] [analyst_upgrade_cluster] [actor:Marjorie Taylor Greene] [actor:Cathie Wood]. However, retail and Stocktwits enthusiasm overlap, and the shares are already extended at +41.0 percentage points versus SPY over 60 days, so the evidence supports watching for a reset rather than chasing [retail_buzz] [stocktwits_bull].",
+      "thesis": "PLTR has genuine operating-plus-positioning convergence through accelerating government contracts, unanimous analyst bullishness, disclosed political and fund links, and strong retail sentiment [gov_contract_accel] [analyst_upgrade_cluster] [actor:Marjorie Taylor Greene] [actor:Cathie Wood] [retail_buzz] [stocktwits_bull]. However, it is explicitly extended after materially outperforming SPY, so the evidence supports WATCH rather than a new accumulation entry.",
       "second_order": [
-        "BAH \u2014 continued federal data-platform adoption can create integration and consulting work",
-        "Federal fraud-enforcement technology theme \u2014 H.R. 9576 could increase demand for cross-agency data sharing if it advances"
+        "BAH \u2014 federal procurement strength can spill into adjacent government consulting and implementation work.",
+        "IBM \u2014 federal data modernization can support established enterprise infrastructure and services providers."
       ],
       "falsifier": {
-        "text": "Government-contract acceleration falls back toward its prior pace while the stock remains priced at an extended relative-performance level.",
+        "text": "Government-contract acceleration reverses while retail bullishness remains elevated and price leadership breaks down.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "PLTR",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 60
+          "horizon_d": 45
         }
       },
       "clamped": null
@@ -335,37 +366,6 @@
         }
       ],
       "n_affiliated_actors": 4,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "AMAT",
-      "signal_score": 56,
-      "conviction": "high",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 2.2,
-      "convergence_score": 4,
-      "channels": [
-        "analyst_upgrade_cluster",
-        "congress_cluster",
-        "patent_cluster",
-        "unusual_options"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -10.8,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": false,
-      "off_high_252": -25.2,
-      "ret_20d": 23.9,
-      "above_50dma": true,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -452,50 +452,6 @@
       "thesis": null,
       "second_order": [],
       "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "CRWD",
-      "signal_score": 49,
-      "conviction": "low",
-      "action": "WATCH",
-      "direction": "long",
-      "source": "brain",
-      "weighted_score": 1.7,
-      "convergence_score": 4,
-      "channels": [
-        "13f_add",
-        "analyst_upgrade_cluster",
-        "congress_buy",
-        "trump"
-      ],
-      "trump_linked": true,
-      "rs_vs_spy_60d": 36.5,
-      "no_price_data": false,
-      "extended": true,
-      "rolling_over": false,
-      "off_high_252": 0.0,
-      "ret_20d": 25.6,
-      "above_50dma": true,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": "CRWD shows alignment across congressional buying, 13F additions, analyst upgrades, and a positive Trump-linked signal [congress_buy] [13f_add] [analyst_upgrade_cluster] [trump]. Those channels are directionally supportive, but there is no contract or product-demand measurement in the cluster, and the stock is already extended at +36.5 percentage points versus SPY over 60 days; the entry is therefore gone for now.",
-      "second_order": [
-        "Cybersecurity software theme \u2014 institutional and political buying suggests continued attention to security spending",
-        "MSFT \u2014 enterprise-security demand can also support integrated cloud-security platforms"
-      ],
-      "falsifier": {
-        "text": "Congressional and institutional additions reverse without a corresponding improvement in measured customer or contract demand.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "CRWD",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 45
-        }
-      },
       "clamped": null
     },
     {
@@ -771,7 +727,7 @@
       "off_high_252": -20.5,
       "ret_20d": 5.7,
       "above_50dma": true,
-      "entry_tier": null,
+      "entry_tier": "T1",
       "affiliations": [],
       "n_affiliated_actors": 0,
       "thesis": null,
@@ -1154,13 +1110,42 @@
       "second_order": [],
       "falsifier": null,
       "clamped": null
+    },
+    {
+      "ticker": "TSM",
+      "signal_score": 29,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.85,
+      "convergence_score": 2,
+      "channels": [
+        "congress_buy",
+        "patent_cluster"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": 5.8,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": -0.7,
+      "ret_20d": 13.7,
+      "above_50dma": true,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
     }
   ],
   "broken_signals": [
     {
       "ticker": "BAH",
-      "signal_score": 75,
-      "conviction": "medium",
+      "signal_score": 61,
+      "conviction": "low",
       "action": "ACCUMULATE",
       "direction": "long",
       "source": "brain",
@@ -1172,7 +1157,7 @@
         "trump"
       ],
       "trump_linked": true,
-      "rs_vs_spy_60d": 10.5,
+      "rs_vs_spy_60d": 4.8,
       "no_price_data": false,
       "extended": false,
       "rolling_over": true,
@@ -1182,20 +1167,20 @@
       "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
-      "thesis": "BAH combines accelerating federal-contract activity with a positive Trump-linked signal and a special-situation marker, creating a more coherent government-services setup than sentiment-led clusters [gov_contract_accel] [trump] [special_situation]. The 4.15x contract acceleration is the central measured signal, while the upcoming earnings date offers a near-term checkpoint rather than proof of the thesis.",
+      "thesis": "BAH offers a compact federal-spending read: government-contract activity accelerated alongside a reported Trump-linked buy signal and a special-situation flag [gov_contract_accel] [trump] [special_situation]. Its non-extended relative performance leaves an actionable entry, but only three channels are present and two may reflect the same policy backdrop.",
       "second_order": [
-        "PLTR \u2014 broader federal data-modernization spending could support adjacent analytics procurement",
-        "Federal cybersecurity and consulting theme \u2014 stronger agency procurement can flow through to implementation contractors"
+        "PLTR \u2014 federal technology procurement can support adjacent data and analytics vendors, though its shares are already extended.",
+        "Federal IT-services theme \u2014 broader agency modernization and enforcement spending can lift sector backlogs."
       ],
       "falsifier": {
-        "text": "New federal awards normalize sharply and management does not convert the recent contract activity into improved backlog or outlook.",
+        "text": "Federal contract awards normalize without translating into sustained backlog or revenue momentum.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "BAH",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 60
+          "horizon_d": 45
         }
       },
       "clamped": null
@@ -1330,14 +1315,8 @@
       "ret_20d": -9.7,
       "above_50dma": false,
       "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Bill Ackman",
-          "rel": "AFFILIATES_WITH",
-          "kind": "fund"
-        }
-      ],
-      "n_affiliated_actors": 1,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -1992,7 +1971,7 @@
         "patent_cluster"
       ],
       "trump_linked": false,
-      "rs_vs_spy_60d": -27.5,
+      "rs_vs_spy_60d": -26.7,
       "no_price_data": false,
       "extended": false,
       "rolling_over": true,
@@ -2002,20 +1981,20 @@
       "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
-      "thesis": "IBM's extreme federal-contract acceleration aligns with a broad patent cluster and open-source development momentum, while its substantial relative underperformance leaves the setup unextended [gov_contract_accel] [patent_cluster] [github_momentum]. The signal is potentially contrarian, but the unusually large acceleration figure may reflect a very small comparison base or one-off award, keeping conviction low.",
+      "thesis": "IBM's sharp government-contract acceleration aligns with the pack's largest patent count and measurable open-source momentum [gov_contract_accel] [patent_cluster] [github_momentum]. Its substantial 60-day underperformance means the signal is not being chased, but the extreme acceleration reading may be distorted by a very small comparison base.",
       "second_order": [
-        "BAH \u2014 expanding federal technology programs can require consulting and implementation support",
-        "Federal AI and hybrid-cloud modernization theme \u2014 contract growth suggests continuing agency infrastructure demand"
+        "BAH \u2014 broader federal technology spending can support adjacent government-services contractors.",
+        "Enterprise AI infrastructure theme \u2014 deployment activity can benefit hybrid-cloud, consulting and systems-integration demand."
       ],
       "falsifier": {
-        "text": "The contract surge proves to be a one-off award and subsequent federal bookings return to the prior run rate.",
+        "text": "Government-contract momentum falls back toward its prior pace and open-source activity fails to produce commercial demand.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "IBM",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 45
+          "horizon_d": 60
         }
       },
       "clamped": "lean 'overweight' \u2192 'underweight' (deterministic witness); action 'ACCUMULATE' \u2192 'AVOID' (deterministic ceiling)"
@@ -2107,107 +2086,6 @@
         }
       ],
       "n_affiliated_actors": 1,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "BWXT",
-      "signal_score": 13,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 0.65,
-      "convergence_score": 2,
-      "channels": [
-        "congress_buy",
-        "news_sentiment"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -28.3,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -42.5,
-      "ret_20d": -12.1,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "IBM",
-      "signal_score": 13,
-      "conviction": "low",
-      "action": "AVOID",
-      "direction": "short",
-      "source": "brain",
-      "weighted_score": 1.6,
-      "convergence_score": 3,
-      "channels": [
-        "github_momentum",
-        "gov_contract_accel",
-        "patent_cluster"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -27.5,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -31.0,
-      "ret_20d": -2.6,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": "IBM's extreme federal-contract acceleration aligns with a broad patent cluster and open-source development momentum, while its substantial relative underperformance leaves the setup unextended [gov_contract_accel] [patent_cluster] [github_momentum]. The signal is potentially contrarian, but the unusually large acceleration figure may reflect a very small comparison base or one-off award, keeping conviction low.",
-      "second_order": [
-        "BAH \u2014 expanding federal technology programs can require consulting and implementation support",
-        "Federal AI and hybrid-cloud modernization theme \u2014 contract growth suggests continuing agency infrastructure demand"
-      ],
-      "falsifier": {
-        "text": "The contract surge proves to be a one-off award and subsequent federal bookings return to the prior run rate.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "IBM",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 45
-        }
-      },
-      "clamped": "lean 'overweight' \u2192 'underweight' (deterministic witness); action 'ACCUMULATE' \u2192 'AVOID' (deterministic ceiling)"
-    },
-    {
-      "ticker": "NFLX",
-      "signal_score": 13,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 0.55,
-      "convergence_score": 2,
-      "channels": [
-        "app_demand",
-        "stocktwits_bull"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -13.0,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -45.3,
-      "ret_20d": -18.0,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
