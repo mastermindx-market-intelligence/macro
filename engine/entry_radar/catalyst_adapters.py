@@ -29,12 +29,8 @@ _SUPPORTED_FORMS = frozenset({"8-K", "8-K/A"})
 COMPANY_EVENT_OWNER = "company_intelligence.event_workspace"
 COMPANY_EVENT_EVIDENCE_PREFIX = "company-intelligence-workspace:"
 _COMPANY_EVENT_BLOCKING_STATES = frozenset({
-    "started",
-    "completed_partial",
     "complete",
     "corrected",
-    "derived_ready",
-    "distributed",
 })
 
 
@@ -140,7 +136,7 @@ def adapt_company_intelligence_earnings_workspace(
     state = str(lifecycle.get("state") or "").strip()
     if state not in _COMPANY_EVENT_BLOCKING_STATES:
         raise CatalystContextError(
-            f"Company Intelligence lifecycle state {state!r} is not an admitted post-release state"
+            f"Company Intelligence lifecycle state {state!r} is not an admitted published results state"
         )
 
     source_available = _require_ts(
