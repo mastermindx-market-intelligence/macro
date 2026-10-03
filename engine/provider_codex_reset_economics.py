@@ -90,10 +90,15 @@ class _Path:
     rescued_value: Fraction = Fraction(0)
     latency: int = 0
     normalized_burn: Fraction = Fraction(0)
+    expiry_tiebreak: Fraction = Fraction(0)
 
     def score(self) -> tuple:
+        # A second expiring constraint must not disappear behind max-rescue.
+        # This dimension only resolves an otherwise identical economic path;
+        # it cannot overrule useful work, reset scarcity, burn or latency.
         return (self.utility, len(self.steps), -self.nonexpiring_resets_spent,
-                self.rescued_value, -self.resets_spent, -self.normalized_burn, -self.latency)
+                self.rescued_value, -self.resets_spent, -self.normalized_burn,
+                -self.latency, self.expiry_tiebreak)
 
 
 def _integer(value: object, label: str, minimum: int = 0, maximum: int = 10**12) -> int:
@@ -278,6 +283,13 @@ def _forecast(a: AccountObservation, now: int, policy: PreviewPolicy) -> _Path:
             # Count this useful task once even if both original limits expire.
             saved = max((urgency(w.reset_at) for original, w in zip(still_original, windows)
                          if original), default=Fraction(0))
+            # Mean urgency is a dimensionless final tie-break, NOT extra saved
+            # quota. It stays <= 1 per task, is unchanged by an identical
+            # duplicated constraint, and retains a non-maximal window's expiry.
+            # Renewed/cancelled original windows contribute zero, not a new bonus.
+            expiry_tiebreak = sum((urgency(w.reset_at) if original else Fraction(0)
+                                  for original, w in zip(still_original, windows)),
+                                 Fraction(0)) / len(windows)
             candidate = _Path(((task.task_id, start, end, credit_id),) + tail.steps,
                               task.utility + tail.utility,
                               nonexpiring + tail.nonexpiring_resets_spent,
@@ -285,7 +297,8 @@ def _forecast(a: AccountObservation, now: int, policy: PreviewPolicy) -> _Path:
                               rescue + saved + tail.rescued_value,
                               task.utility * (end - task.ready_at) + tail.latency,
                               max(Fraction(c, w.capacity) for c, w in zip(quote, windows))
-                              + tail.normalized_burn)
+                              + tail.normalized_burn,
+                              expiry_tiebreak + tail.expiry_tiebreak)
             if candidate.score() > best.score():
                 best = candidate
         return best
@@ -358,6 +371,7 @@ def preview_codex_resets(observations: tuple[AccountObservation, ...], *, now: i
                "banked_resets_spent_forecast": path.resets_spent,
                "resource_value_forecast": str(path.rescued_value),
                "normalized_burn_forecast": str(path.normalized_burn),
+               "expiry_tiebreak_forecast": str(path.expiry_tiebreak),
                "steps_forecast": [{"task_id": tid, "start_at": start, "finish_at": end,
                                    "banked_reset_id": reset} for tid, start, end, reset in path.steps]}
         candidates.append(row)

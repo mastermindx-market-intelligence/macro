@@ -119,9 +119,18 @@ The deterministic lexicographic objective is: completed approved utility and tas
 count; preserve resets that outlive the supplied horizon when outcomes are equal;
 recover imminent expiring resources net of forfeiture/free-refill opportunity;
 fewer reset entitlements spent; lower measured normalized native burn; lower
-weighted completion delay. Existing account focus and depletion fraction are only
-final tie breakers, followed by stable account identity. A 24-hour continuous
-urgency horizon is a policy parameter, not a discontinuous switch at hour 24.
+weighted completion delay. Before account focus, depletion fraction and stable
+identity, an otherwise-equal path uses a final mean-original-window-urgency
+comparison (`expiry_tiebreak_forecast`). This is dimensionless preference, not
+additional rescued quota: each task contributes at most one, identical duplicate
+constraints preserve the mean, and cancelled/renewed originals contribute zero.
+It cannot overrule utility, reset scarcity, normalized burn or completion delay.
+This closes the dominance blind spot where equal short resets at +12000 seconds
+masked weekly resets at +43200 versus +500000 seconds: both maximum resource
+scores were 31/36, but the sooner weekly account now wins the final comparison
+(49/72 versus 31/72) rather than losing to its account name or current focus.
+A 24-hour continuous urgency horizon is a policy parameter, not a discontinuous
+switch at hour 24.
 Hashes make a decision replayable; they are not authentication or approval.
 
 Important limitation: this is a conservative per-account, finite-prefix forecast,

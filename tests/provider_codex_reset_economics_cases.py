@@ -346,7 +346,7 @@ def test_native_unit_rescaling_preserves_economic_decision(scaled_window):
         remaining=window.remaining * 101, reserve=window.reserve * 101)},
         tasks=tuple(replace(t, **{scaled_window + "_cost": getattr(t, scaled_window + "_cost") * 101}) for t in jobs))
     first, second = selected(preview(row)), selected(preview(scaled))
-    for field in ("resource_value_forecast", "normalized_burn_forecast", "steps_forecast"):
+    for field in ("resource_value_forecast", "normalized_burn_forecast", "steps_forecast", "expiry_tiebreak_forecast"):
         assert first[field] == second[field]
 
 
@@ -371,5 +371,55 @@ def test_exchanging_window_labels_preserves_the_constraint_decision():
                       tasks=tuple(replace(t, short_cost=t.weekly_cost, weekly_cost=t.short_cost)
                                   for t in jobs))
     before, after = selected(preview(row)), selected(preview(swapped))
-    for field in ("resource_value_forecast", "normalized_burn_forecast", "steps_forecast"):
+    for field in ("resource_value_forecast", "normalized_burn_forecast", "steps_forecast", "expiry_tiebreak_forecast"):
         assert before[field] == after[field]
+
+
+@pytest.mark.parametrize("window", ["short", "weekly"])
+@pytest.mark.parametrize("names", [("z-soon", "a-late"), ("a-soon", "z-late")])
+def test_nonmaximal_window_expiry_breaks_otherwise_equal_account_tie(window, names):
+    soon_name, late_name = names
+    jobs = (task("one", cost=20, duration=30),)
+    common = {"short_in": 12000} if window == "weekly" else {"week_in": 60}
+    field = "week_in" if window == "weekly" else "short_in"
+    sooner, later = (43200, 500000) if window == "weekly" else (600, 18000)
+    soon = account(soon_name, tasks=jobs, **common, **{field: sooner})
+    late = account(late_name, tasks=jobs, **common, **{field: later})
+    for order in ((soon, late), (late, soon)):
+        result = preview(*order, preferred_account_id=late_name)
+        candidates = {r["account_id"]: r for r in result["candidates"]}
+        assert candidates[soon_name]["resource_value_forecast"] == candidates[late_name]["resource_value_forecast"]
+        assert result["selected_account_id"] == soon_name
+        assert result["proposed_action"] == "RUN_CANDIDATE"
+        assert result["live_admission"] is False
+
+
+@pytest.mark.parametrize("advantage", ["burn", "latency"])
+def test_expiry_tiebreak_cannot_overrule_measured_burn_or_latency(advantage):
+    fast_cheap = task("one", cost=10, duration=30)
+    costlier = replace(fast_cheap, short_cost=20, weekly_cost=20) if advantage == "burn" else replace(fast_cheap, duration_seconds=60)
+    efficient = account("efficient", tasks=(fast_cheap,), week_in=500000)
+    expiring = account("expiring", tasks=(costlier,), week_in=43200)
+    assert preview(expiring, efficient)["selected_account_id"] == "efficient"
+
+
+@pytest.mark.parametrize("with_reset", [False, True])
+def test_expiry_tiebreak_preserves_redundant_constraint_equivalence(with_reset):
+    jobs = (task("one", cost=20), task("two", cost=20))
+    row = account(tasks=jobs, week_left=0 if with_reset else 50, week_in=1200,
+                  resets=(BankedReset("r", NOW + 100),) if with_reset else ())
+    both = replace(row, short=row.weekly)
+    only = replace(both, short=None, tasks=tuple(replace(t, short_cost=None) for t in jobs))
+    duplicate, single = selected(preview(both)), selected(preview(only))
+    assert duplicate["expiry_tiebreak_forecast"] == single["expiry_tiebreak_forecast"]
+    assert duplicate["resource_value_forecast"] == single["resource_value_forecast"]
+    assert duplicate["steps_forecast"] == single["steps_forecast"]
+
+
+def test_expiry_tiebreak_drops_cancelled_or_expired_original_windows():
+    from fractions import Fraction
+    jobs = (task("one", cost=1, duration=120), task("two", cost=1))
+    row = account(tasks=jobs, short_in=60, week_in=500000)
+    assert Fraction(selected(preview(row))["expiry_tiebreak_forecast"]) == Fraction(1439, 2880)
+    reset_row = account(week_left=0, resets=(BankedReset("r", NOW + 300),))
+    assert selected(preview(reset_row))["expiry_tiebreak_forecast"] == "0"

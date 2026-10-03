@@ -1383,6 +1383,10 @@ from tests.provider_codex_reset_economics_cases import (  # noqa: E402,F401
     test_native_unit_rescaling_preserves_economic_decision,
     test_natural_refill_during_reset_latency_does_not_spend_a_credit,
     test_exchanging_window_labels_preserves_the_constraint_decision,
+    test_nonmaximal_window_expiry_breaks_otherwise_equal_account_tie,
+    test_expiry_tiebreak_cannot_overrule_measured_burn_or_latency,
+    test_expiry_tiebreak_preserves_redundant_constraint_equivalence,
+    test_expiry_tiebreak_drops_cancelled_or_expired_original_windows,
 )
 
 

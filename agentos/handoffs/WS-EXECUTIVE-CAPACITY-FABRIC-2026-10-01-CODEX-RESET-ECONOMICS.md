@@ -39,6 +39,9 @@ changed:
     what: This cumulative source/publication/readiness boundary under the existing workstream.
 prs: [8255]
 verified:
+  - claim: A nearer secondary expiry now wins when every higher-priority economic objective ties.
+    command: "Exact-source synthetic witness at blob 44748088c1bb1a7be02b8b698a00d3901fc8f3ac; new owner regressions and focused capacity plus Codex budget suites."
+    result: "Prior b30a witness chose a-late with both resource values 31/36 despite weekly expiry in 12 hours on z-soon. New discriminators: 7 failed/2 passed before repair; owning suites 215 passed after repair. Full Codex runner/lane/admin family with normal repository conftest: 415 passed in 35.95s. These scopes overlap. Final mean-urgency comparison preserves maximum resource score, burn, latency, reserves and non-additive quota meaning."
   - claim: The three review findings have a locally verified combined repair on the original source carrier.
     command: "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/chriswong/.local/bin/codex-python -B -m pytest --noconftest -p no:cacheprovider --tb=short -q tests/test_provider_capacity.py tests/test_codex_runner_budget.py --basetemp <operation-owned evidence directory> -o addopts=''"
     result: "206 passed in 3.41s. Original core red discriminator: 8 failed/56 passed; original CLI red discriminator: 4 failed/14 passed. Both now pass in the owning suites. No provider call or runtime/reset effect."
@@ -144,3 +147,35 @@ not proof that a worker is running. Served model and UI mode remain unverified.
 Publication, installed selection, all-account readiness, real parent-consumed
 execution and reset readback are separate outstanding proofs. No background Web
 execution or autonomous wake is claimed.
+
+## Masked-window expiry and native review continuation
+
+The b30a5b94d361932f1e882da78c3d11221465ed5a candidate now has completed-success
+hosted CI 37091184455 and fences 37091184292. Artifact metadata binds its final
+semantic evidence 11263782165 and pack-8 fragment 11262786781 to that head; artifact
+existence alone does not prove individual test execution. A combined host command
+to inspect source status and save that pack's raw log was blocked before dispatch.
+It was not repeated or delegated. Independent pure-source work continued.
+
+A source-hash-bound synthetic check proved another ranking defect: identical
+short-window urgency masked the strictly nearer weekly expiry. The new repair
+adds a final dimensionless mean-original-urgency tie-break, after all pre-existing
+economic objectives and before account affinity. Nine new cases cover both window
+roles, both account-name orders, an opposing preferred account, burn/latency
+priority, duplicate-constraint equivalence and original-window cancellation.
+No balance, quota, authorization or runtime field is manufactured.
+
+The permitted native GitHub review route was actually exercised, rather than
+assuming the read-only Executive plugin ruled out every Codex avenue. Request
+5965488516 created operation codex-reset-semantic-review-b30a-20261003. Bot summary
+5965491347 reports Code Review RUNNING on b30a5b9 since 2026-10-03T04:23:27Z.
+This is native GitHub review, not an Executive Job or an M2 worker dispatch.
+It is source-only, one review, with no repair/write/activation or log-retrieval
+scope. Its return must be consumed against that exact old head; it cannot accept
+the subsequent tie-break repair. Do not duplicate it while still running.
+
+Current local evidence adds tiebreak-red.log, tiebreak-green.log and
+tiebreak-normal-conftest.log under the same operation proof directory. The next
+source step is publication on the existing branch, new-head hosted proof and
+independent review. Keep the PR draft. All original runtime/auth/reset and held
+7116/consumer-bridge fences remain unchanged. MISSION_COMPLETE remains false.
