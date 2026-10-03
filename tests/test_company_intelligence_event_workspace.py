@@ -1034,8 +1034,65 @@ def test_writer_never_reads_a_wall_clock(tmp_path: Path, monkeypatch) -> None:
 def test_row_observed_before_source_available_is_refused(tmp_path: Path) -> None:
     ws = _nest_row(source_available_at="2026-07-30T16:30:00Z", observed_at="2026-07-29T16:30:00Z")
     out = tmp_path / "company_intelligence"
-    with pytest.raises(WorkspaceError, match="observed_at precedes source_available_at"):
+    with pytest.raises(WorkspaceError, match=f"{EVENT_ID}: observed_at precedes source_available_at"):
         write_workspace_generation(out, {EVENT_ID: ws})
+
+
+@pytest.mark.parametrize("field", ["observed_at", "source_available_at"])
+def test_v3_unparseable_clock_refusal_names_event_and_field(tmp_path: Path, field: str) -> None:
+    ws = _nest_row(source_available_at="2026-07-30T16:30:00Z", observed_at="2026-07-30T18:00:00Z")
+    lifecycle = dict(ws["lifecycle"])
+    lifecycle[field] = "garbage"
+    ws["lifecycle"] = lifecycle
+    out = tmp_path / "company_intelligence"
+    with pytest.raises(WorkspaceError, match=EVENT_ID) as exc_info:
+        write_workspace_generation(out, {EVENT_ID: ws})
+    assert field in str(exc_info.value)
+
+
+def test_v3_precedence_refusal_names_the_event(tmp_path: Path) -> None:
+    ws = _nest_row(source_available_at="2026-07-30T16:30:00Z", observed_at="2026-07-29T16:30:00Z")
+    out = tmp_path / "company_intelligence"
+    with pytest.raises(WorkspaceError, match=EVENT_ID):
+        write_workspace_generation(out, {EVENT_ID: ws})
+
+
+def test_v3_naive_lifecycle_timestamp_is_read_as_utc(tmp_path: Path) -> None:
+    naive = _nest_row(source_available_at="2026-07-02T00:00:00", observed_at="2026-07-02T00:00:00")
+    zulu = _nest_row(source_available_at="2026-07-02T00:00:00Z", observed_at="2026-07-02T00:00:00Z")
+    out_naive = tmp_path / "naive"
+    out_zulu = tmp_path / "zulu"
+    gen_naive = write_workspace_generation(out_naive, {EVENT_ID: naive})
+    gen_zulu = write_workspace_generation(out_zulu, {EVENT_ID: zulu})
+    man_naive = json.loads((gen_naive / "manifest.json").read_text(encoding="utf-8"))
+    man_zulu = json.loads((gen_zulu / "manifest.json").read_text(encoding="utf-8"))
+    assert man_naive["generated_at"] == man_zulu["generated_at"]
+    assert man_naive["generation_id"] == man_zulu["generation_id"]
+
+
+def test_v3_manifest_with_an_extra_key_is_refused(tmp_path: Path) -> None:
+    ws = _nest_row(source_available_at="2026-07-30T16:30:00Z", observed_at="2026-07-30T18:00:00Z")
+    out = tmp_path / "company_intelligence"
+    generation = write_workspace_generation(out, {EVENT_ID: ws})
+    manifest = json.loads((generation / "manifest.json").read_text(encoding="utf-8"))
+    manifest["extra_top_level_key"] = "surprise"
+    with pytest.raises(WorkspaceError, match="keys mismatch"):
+        validate_workspace_manifest(manifest)
+
+
+def test_writer_validates_generation_clocks_before_publishing(tmp_path: Path, monkeypatch) -> None:
+    import engine.company_intelligence.event_workspace as ew
+
+    def _probe(*_args, **_kwargs):
+        raise WorkspaceError("probe")
+
+    monkeypatch.setattr(ew, "validate_generation_clocks", _probe)
+    ws = _nest_row(source_available_at="2026-07-30T16:30:00Z", observed_at="2026-07-30T18:00:00Z")
+    out = tmp_path / "company_intelligence"
+    marker = out / "event_workspaces" / "manifest.json"
+    with pytest.raises(WorkspaceError, match="probe"):
+        write_workspace_generation(out, {EVENT_ID: ws})
+    assert not marker.exists()
 
 
 def test_row_missing_observed_at_is_refused_naming_event_and_field(tmp_path: Path) -> None:

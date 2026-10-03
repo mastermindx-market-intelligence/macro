@@ -126,6 +126,7 @@ class WorkspaceError(ContractError):
 
 
 def _utc(value: object, *, field_name: str) -> datetime:
+    # Naive ISO timestamps (no timezone) are interpreted as UTC by convention.
     if isinstance(value, datetime):
         parsed = value
     elif isinstance(value, date):
@@ -470,7 +471,7 @@ def _lifecycle_clock(
     value = lifecycle.get(field)
     try:
         return _utc(value, field_name=field)
-    except WorkspaceError:
+    except (WorkspaceError, ValueError, TypeError):
         raise WorkspaceError(f"{event_id}: lifecycle.{field} missing or unparseable") from None
 
 
@@ -481,7 +482,7 @@ def _generation_clocks(cleaned: Mapping[str, Mapping[str, Any]]) -> tuple[str, s
         observed_dt = _lifecycle_clock(row, event_id, "observed_at")
         source_dt = _lifecycle_clock(row, event_id, "source_available_at")
         if observed_dt < source_dt:
-            raise WorkspaceError("observed_at precedes source_available_at")
+            raise WorkspaceError(f"{event_id}: observed_at precedes source_available_at")
         latest_observed = observed_dt if latest_observed is None else max(latest_observed, observed_dt)
         latest_source = source_dt if latest_source is None else max(latest_source, source_dt)
     if latest_observed is None or latest_source is None:
@@ -633,6 +634,13 @@ def write_workspace_generation(
         event_id: _strip_private(payload)
         for event_id, payload in workspaces.items()
     }
+    for event_id, payload in list(cleaned.items()):
+        row = dict(payload)
+        lifecycle = dict(row.get("lifecycle") or {})
+        lifecycle["observed_at"] = _iso(_lifecycle_clock(row, event_id, "observed_at"))
+        lifecycle["source_available_at"] = _iso(_lifecycle_clock(row, event_id, "source_available_at"))
+        row["lifecycle"] = lifecycle
+        cleaned[event_id] = row
     generated, source_clock = _generation_clocks(cleaned)
     generation_id = _generation_identity_v3(
         cleaned,

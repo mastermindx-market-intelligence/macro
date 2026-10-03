@@ -1614,6 +1614,78 @@ def test_no_op_gate_accepts_a_v3_marker(tmp_path: Path) -> None:
     assert [key for key, _ in fake.puts[first_puts:]] == []
 
 
+def test_noop_candidate_keeps_the_real_previous_generation_id(tmp_path: Path) -> None:
+    from engine.company_intelligence.contracts import canonical_json_bytes
+
+    fake = _FakeR2()
+    assert _refresh(tmp_path, fake) == 0
+    g0 = _marker(tmp_path)
+    prior_g0 = json.loads(
+        (
+            tmp_path
+            / "event_workspaces"
+            / "generations"
+            / g0["generation_id"]
+            / "workspaces"
+            / f"{FLAGSHIP_EVENT_ID}.json"
+        ).read_text(encoding="utf-8")
+    )
+    mutated = EXHIBIT.read_text(encoding="utf-8") + "\n<!-- chain step -->\n"
+    raw_g0 = canonical_json_bytes(g0)
+    assert _refresh(
+        tmp_path,
+        fake,
+        http_get=_http_get_factory(mutated),
+        prior_workspace=prior_g0,
+        current_marker_loader=lambda: (raw_g0, g0),
+    ) == 0
+    g1 = _marker(tmp_path)
+    assert g1["generation_id"] != g0["generation_id"]
+    assert g1["previous_generation_id"] == g0["generation_id"]
+    g0_sha = sha256(
+        (tmp_path / "event_workspaces" / "generations" / g0["generation_id"] / "manifest.json").read_bytes()
+    ).hexdigest()
+    assert g1["previous_manifest_sha256"] == g0_sha
+    g1_sha = sha256(
+        (tmp_path / "event_workspaces" / "generations" / g1["generation_id"] / "manifest.json").read_bytes()
+    ).hexdigest()
+    prior_g1 = json.loads(
+        (
+            tmp_path
+            / "event_workspaces"
+            / "generations"
+            / g1["generation_id"]
+            / "workspaces"
+            / f"{FLAGSHIP_EVENT_ID}.json"
+        ).read_text(encoding="utf-8")
+    )
+    raw_g1 = canonical_json_bytes(g1)
+    first_puts = len(fake.puts)
+    assert _refresh(
+        tmp_path,
+        fake,
+        http_get=_http_get_factory(mutated),
+        prior_workspace=prior_g1,
+        current_marker_loader=lambda: (raw_g1, g1),
+    ) == 0
+    g1_again = _marker(tmp_path)
+    assert g1_again["generation_id"] == g1["generation_id"]
+    assert [key for key, _ in fake.puts[first_puts:]] == []
+
+    mutated_again = mutated + "\n<!-- second chain step -->\n"
+    assert _refresh(
+        tmp_path,
+        fake,
+        http_get=_http_get_factory(mutated_again),
+        prior_workspace=prior_g1,
+        current_marker_loader=lambda: (raw_g1, g1),
+    ) == 0
+    g2 = _marker(tmp_path)
+    assert g2["generation_id"] != g1["generation_id"]
+    assert g2["previous_generation_id"] == g1["generation_id"]
+    assert g2["previous_manifest_sha256"] == g1_sha
+
+
 def test_chained_generations_never_carry_a_clock_earlier_than_a_row_observation(tmp_path: Path) -> None:
     fake = _FakeR2()
     dhi_event_id = "evt_cik0000882184_2026q3_results"
