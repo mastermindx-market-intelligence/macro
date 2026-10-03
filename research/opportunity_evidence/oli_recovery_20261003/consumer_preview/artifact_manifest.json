@@ -1,0 +1,55 @@
+{
+  "kind": "synthetic_consumer_implementation_artifacts",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 6278,
+      "sha256": "63a9d49836387f7ab592b1083a3f9531cc11b36ac8bcc6fc29f77b09f4a75273"
+    },
+    {
+      "path": "preview_contract.py",
+      "bytes": 11684,
+      "sha256": "501470b27a016407ae700c9bf627712116cc26c107eacf49eb93e6a91022d32a"
+    },
+    {
+      "path": "fixtures.py",
+      "bytes": 4709,
+      "sha256": "81d86349d0d11288eb565b183f7f2401e55a69805e1b791b0e6e52aad7548c51"
+    },
+    {
+      "path": "render_preview.py",
+      "bytes": 1389,
+      "sha256": "e6f8607f396fa7a08bf302d8cad934ffff1704358907d59159c7dc4308599d80"
+    },
+    {
+      "path": "test_preview_contract.py",
+      "bytes": 13179,
+      "sha256": "9b83acdccda47b0be433063f54ed1addd421fca3f08a22ecc19139a1fbd87a56"
+    },
+    {
+      "path": "preview_template.html",
+      "bytes": 16983,
+      "sha256": "09c6ddc9be2d728103be14d5f8c1d9127c8926ea95c16bf83d71bbd94aa32016"
+    },
+    {
+      "path": "preview.html",
+      "bytes": 126684,
+      "sha256": "a843a05ff4f1b89f41e8f4e45b14bd2333e874c34d28535912122525f03dc1c1"
+    },
+    {
+      "path": "preview_views.json",
+      "bytes": 152096,
+      "sha256": "e4f99bfbb11ed29531d5b832b30a48a2140d695ca306ccef71f303f172f59844"
+    },
+    {
+      "path": "browser_verify.py",
+      "bytes": 4768,
+      "sha256": "2d3f2ae7e251cc6cce77f1c9990870e03ddcba191571c918fc6a756f3f204121"
+    },
+    {
+      "path": "verification_receipt.json",
+      "bytes": 846,
+      "sha256": "3ad043cbb2c416ed8b534dceaf58a830e7e7f59d6e78b07da21988f7e836f347"
+    }
+  ]
+}

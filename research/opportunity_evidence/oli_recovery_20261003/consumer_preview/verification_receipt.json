@@ -1,0 +1,31 @@
+{
+  "scope": "synthetic C0/P0 preview; not native integration or production proof",
+  "unit_tests": {
+    "command": "python -m unittest -v test_preview_contract",
+    "tests": 49,
+    "passed": 49,
+    "failed": 0
+  },
+  "initial_tdd": {
+    "tests": 42,
+    "passed": 41,
+    "failed": 1,
+    "finding": "Future geometry basis passed an earlier observation clock; corrected at the preview boundary."
+  },
+  "javascript_parse": "PASS",
+  "scenario_count": 10,
+  "audiences": [
+    "public",
+    "private synthetic fixture"
+  ],
+  "browser": {
+    "attempted": true,
+    "completed_cases": 0,
+    "status": "BLOCKED",
+    "error": "Page.goto net::ERR_BLOCKED_BY_ADMINISTRATOR for file:///mnt/data/oli_preview/preview.html",
+    "no_visual_or_browser_acceptance": true
+  },
+  "live_sources": 0,
+  "production_effects": 0,
+  "forecast_values": 0
+}

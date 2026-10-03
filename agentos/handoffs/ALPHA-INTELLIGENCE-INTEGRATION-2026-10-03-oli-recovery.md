@@ -118,3 +118,13 @@ BACKGROUND_WORKER_OR_WAKE: none
 ## Current archive and implementation edge
 
 Protected procedure re-pinned to Mastermind `7cff784b47556464eb6ec20445fcf5e659c5b64d`; current Chairman consent resolves only original-package public publication and directs continued execution. Same operation, branch and PR retained. Next independent unit: implement the internal C0/P0 preview and adversarial cases, using only native source facts or explicitly synthetic fixtures and no production-contract widening. Existing W1/W2/scientific/production acceptance remains pending.
+
+## Latest implementation milestone
+
+The original archive is published and byte-verified at `76e3653c20519b22f6b66698015a667688fcf1fd`. The active continuation has now implemented `research/opportunity_evidence/oli_recovery_20261003/consumer_preview/` on the same branch/PR, without touching incumbent native paths. It is a synthetic-only contract exercise and functional HTML reference, not a production adapter or new truth owner.
+
+Verification: 49 new unit tests PASS; generated JavaScript parse PASS. Initial TDD caught a future-geometry basis-time defect before correction. Ten synthetic scenarios and two fixture audiences preserve phase/new-entry/private Plan separation, clock/reference binding, correction and absence semantics, null forecasts and all-false authority. Full native integration and scientific replay were not tested.
+
+Browser file-URL navigation was blocked by administrator policy before rendering: zero browser matrix cases and zero screenshots. No policy weakening or rerouted browser attempt. A separate Studio current-source census was safety-status-blocked before dispatch and was not retried; this does not invalidate the verified archive/preview effects or grant any source-custody transfer.
+
+Exact next action: independent review of this candidate, then existing-owner native version/entry/identity and denominator/landmark adoption before #7963-backed real-source P0 wiring. Keep Draft; native implementation, current-base/Agent OS/hosted proof, private authentication, production browser proof and research admission remain pending. No model-originated confidence, orders, management actions, new OLI store, job, worker or automatic wake.
