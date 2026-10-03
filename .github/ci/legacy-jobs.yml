@@ -1202,6 +1202,50 @@ jobs:
         run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py -q
 
   session-anchor-era:
+    # 2026-10-03 Temporal Grain W1A qualification: the six mechanical suites
+    # add CLI/subprocess edges whose inferred fallback would smear this job onto
+    # unrelated code probes. Curate the measured concrete closure instead of
+    # raising fleet packing ceilings. The curated-closure test remains the guard:
+    # a future concrete import/read outside this declaration must red.
+    scope: exclusive
+    paths:
+      # incumbent absolute-session / §7 anchor closure
+      - "engine/__init__.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/confluence_tiers.py"
+      - "engine/hysteresis.py"
+      - "engine/indicators.py"
+      - "engine/session_anchor.py"
+      - "engine/signal_gate.py"
+      - "engine/signal_quality.py"
+      - "engine/technicals.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "site/factordata/basket_washout_state.json"
+      - "tests/test_session_anchor_invariance.py"
+      - "tests/test_sq_anchor_invariance.py"
+      - "tests/test_confluence_resample_runtime.py"
+      # Temporal Grain W1A closure
+      - "engine/trial_ledger.py"
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/stock_technicals.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/identity.py"
+      - "scripts/__init__.py"
+      - "scripts/research/__init__.py"
+      - "scripts/research/run_temporal_scale_artifact_attack.py"
+      - "scripts/research/temporal_scale/**"
+      - "research/signal_engine/temporal_scale/external_evidence/**"
+      - "tests/test_temporal_scale_contracts.py"
+      - "tests/test_temporal_scale_chart_export.py"
+      - "tests/test_temporal_scale_kernel_memory.py"
+      - "tests/test_temporal_scale_session_bars.py"
+      - "tests/test_temporal_scale_parity.py"
+      - "tests/test_temporal_scale_artifact_attack.py"
     # Absolute session-calendar anchor, both eras. The confluence 2D/3D + fortnight
     # buckets (era abs-session-2026-08-06, ruling research/SESSION_ANCHOR_ABSOLUTE_
     # CALENDAR_ADJUDICATION_BY_FABLE.md, #4732) and the §7 marker engine (era
