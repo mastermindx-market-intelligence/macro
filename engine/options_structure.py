@@ -214,7 +214,14 @@ def _bounded_category_share(value: object) -> float | None:
         return None
     if not isinstance(value, (int, float)):
         return None
-    share = float(value)
+    # float() conversion can raise on numeric types that are individually
+    # representable but not float-convertible (e.g. an int too large to fit a
+    # C double raises OverflowError).  Any such failure means "not a usable
+    # fraction" → unknown (None), never a coerced zero or a crash.
+    try:
+        share = float(value)
+    except (OverflowError, ValueError, TypeError):
+        return None
     if not math.isfinite(share) or share < 0.0 or share > 1.0:
         return None
     return share
@@ -232,7 +239,14 @@ def _finite_nonneg_amount(value: object) -> float | None:
         return None
     if not isinstance(value, (int, float)):
         return None
-    amount = float(value)
+    # float() conversion can raise on numeric types that are individually
+    # representable but not float-convertible (e.g. an int too large to fit a
+    # C double raises OverflowError).  Any such failure means INVALID → None;
+    # it is never coerced to a valid zero and never propagates a crash.
+    try:
+        amount = float(value)
+    except (OverflowError, ValueError, TypeError):
+        return None
     if not math.isfinite(amount) or amount < 0.0:
         return None
     return amount

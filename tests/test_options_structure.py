@@ -935,7 +935,7 @@ class TestCategoryProxy:
         assert cp["share"] == pytest.approx(0.80)
 
     @pytest.mark.parametrize("bad", [
-        None, True, False, "abc", "", "2000000", float("inf"), float("-inf"),
+        None, True, False, "abc", "", "2000000", 10 ** 400, float("inf"), float("-inf"),
         float("nan"), -100.0,
     ])
     def test_bad_premium_is_invalid_no_mass(self, bad):
@@ -1008,3 +1008,54 @@ class TestCategoryProxy:
         ]
         for c in aggregate_chain_heat(events, min_premium_mn=3.0, min_alerts=2):
             assert c["category_proxy"]["source_certified_accepted"] is False
+
+    @pytest.mark.parametrize("bad_premium", [
+        2 ** 1024,                                   # int too large for a C double
+        10 ** 309,                                   # just over the float ceiling
+        json.loads("9" * 401),                       # 401-digit JSON integer
+    ])
+    def test_oversized_int_premium_invalid_no_mass_two_siblings_retained(
+        self, bad_premium,
+    ):
+        """An int too large to float-convert is INVALID (not a crash): no mass,
+        count 1, share None — the two valid 2M siblings are retained intact."""
+        ev1 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:10"))
+        ev_bad = {"root": "SPY", "strike": 530.0, "exp": "2026-07-18",
+                  "right": "P", "premium": bad_premium, "ts": _ts("10:20")}
+        result = aggregate_chain_heat([ev1, ev2, ev_bad], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        c = result[0]
+        # both valid 2M siblings survive: 4M total; alert_count counts every
+        # event (existing semantics), the invalid one is tallied separately.
+        assert c["total_premium_mn"] == pytest.approx(4.0)
+        assert c["alert_count"] == 3
+        cp = c["category_proxy"]
+        assert cp["invalid_premium_count"] == 1
+        assert cp["share"] is None
+        assert cp["known_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["unknown_premium_usd"] == pytest.approx(0.0)
+        assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+        json.dumps(c, allow_nan=False)           # strict JSON must succeed
+
+    def test_oversized_int_ask_share_and_category_share_ignored_json_safe(self):
+        """Oversized-int ask_share/category_proxy_share are not float-convertible:
+        both are ignored → ask_share None / proxy unknown, never a crash, and the
+        resulting campaign is strict-JSON clean."""
+        big = 10 ** 400
+        ev1 = _make_event(premium=2_000_000.0, ask_share=big,
+                          category_proxy_share=big, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, ask_share=big,
+                          category_proxy_share=big, ts=_ts("10:10"))
+        result = aggregate_chain_heat([ev1, ev2], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        c = result[0]
+        assert c["ask_share"] is None            # ignored, None fallback retained
+        assert c["lean"] == "contested"
+        cp = c["category_proxy"]
+        assert cp["share"] is None               # unknown, not a fake neutral
+        assert cp["invalid_premium_count"] == 0  # premium itself was valid
+        assert cp["known_premium_usd"] == pytest.approx(0.0)
+        assert cp["unknown_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+        json.dumps(c, allow_nan=False)           # strict JSON must succeed
