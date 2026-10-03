@@ -40,6 +40,46 @@ def _window(chain: pd.DataFrame, S: float, cfg: dict) -> pd.DataFrame:
                  & (chain["iv"] > 0) & (chain["oi"] > 0)].copy()
 
 
+# Absolute near-zero band for the net repriced dealer-gamma REGIME, in DOLLARS PER
+# ``pct_move`` — the same units as ``gamma_profile``'s ``net`` array and
+# ``compute_gex``'s ``net_gex_bn * 1e9``. |net gamma at S| <= REGIME_EPS is
+# indeterminate, so ``gamma_regime`` is None rather than a synthesised long/short sign.
+REGIME_EPS = 1e-8
+
+
+def _valid_spot(S) -> bool:
+    """True only for a finite, strictly positive numeric spot."""
+    if isinstance(S, bool) or not isinstance(S, (int, float, np.integer, np.floating)):
+        return False
+    return bool(np.isfinite(S)) and S > 0
+
+
+def _usable_rows(c: pd.DataFrame):
+    """The exact rows ``gamma_profile`` reprices: finite K/T/iv, at least 20 of them.
+
+    Returns ``(K, T, sig, oi, sgn)`` float arrays (dealer sign: call +1 / put -1) or
+    None when the chain is too thin."""
+    g = c.dropna(subset=["K", "T", "iv"])
+    if len(g) < 20:
+        return None
+    return (g["K"].to_numpy(float), g["T"].to_numpy(float), g["iv"].to_numpy(float),
+            g["oi"].to_numpy(float),
+            np.where(g["is_call"].to_numpy(bool), 1.0, -1.0))
+
+
+def _repriced_net(K, T, sig, oi, sgn, cfg: dict, Sx: float) -> float:
+    """Net dealer gamma RE-PRICED at one spot ``Sx`` — dollars per ``pct_move``.
+
+    Same European Black-Scholes gamma and r/q/multiplier/pct_move conventions as
+    ``gamma_profile`` (which is this function sampled on its ±25% grid): call +OI,
+    put -OI on the assumption dealer long-call / short-put book."""
+    r, q, mult, pm = cfg["r"], cfg["q"], cfg["contract_multiplier"], cfg["pct_move"]
+    sqrtT = np.sqrt(T)
+    d1 = (np.log(Sx / K) + (r - q + 0.5 * sig * sig) * T) / (sig * sqrtT)
+    gamma = np.exp(-q * T) * np.exp(-0.5 * d1 * d1) / SQRT2PI / (Sx * sig * sqrtT)
+    return float(np.sum(sgn * gamma * oi * mult * Sx * Sx * pm))
+
+
 def gamma_profile(c: pd.DataFrame, S: float, cfg: dict):
     """Net dealer gamma RE-PRICED across a ±25% spot grid — the exposure PROFILE.
 
@@ -51,22 +91,16 @@ def gamma_profile(c: pd.DataFrame, S: float, cfg: dict):
 
     Returns ``(grid, net, flips)`` — numpy arrays of trial spots and net dealer gamma
     in dollars per ``pct_move`` at each, plus every zero-crossing (interpolated) —
-    or ``(None, None, [])`` when the chain is too thin to re-price.
+    or ``(None, None, [])`` when the spot is invalid or the chain is too thin.
     """
-    g = c.dropna(subset=["K", "T", "iv"])
-    if len(g) < 20 or not (S > 0):
+    if not _valid_spot(S):
         return None, None, []
-    K = g["K"].to_numpy(float); T = g["T"].to_numpy(float)
-    sig = g["iv"].to_numpy(float); oi = g["oi"].to_numpy(float)
-    sgn = np.where(g["is_call"].to_numpy(bool), 1.0, -1.0)
-    r, q, mult, pm = cfg["r"], cfg["q"], cfg["contract_multiplier"], cfg["pct_move"]
-    sqrtT = np.sqrt(T)
+    rows = _usable_rows(c)
+    if rows is None:
+        return None, None, []
+    K, T, sig, oi, sgn = rows
     grid = S * np.linspace(0.75, 1.25, 101)
-    net = np.empty(len(grid))
-    for i, Sx in enumerate(grid):
-        d1 = (np.log(Sx / K) + (r - q + 0.5 * sig * sig) * T) / (sig * sqrtT)
-        gamma = np.exp(-q * T) * np.exp(-0.5 * d1 * d1) / SQRT2PI / (Sx * sig * sqrtT)
-        net[i] = float(np.sum(sgn * gamma * oi * mult * Sx * Sx * pm))
+    net = np.array([_repriced_net(K, T, sig, oi, sgn, cfg, Sx) for Sx in grid])
     flips = []
     for i in range(len(grid) - 1):
         if net[i] == 0.0 or (net[i] < 0) != (net[i + 1] < 0):
@@ -76,18 +110,32 @@ def gamma_profile(c: pd.DataFrame, S: float, cfg: dict):
 
 
 def _gamma_flip(c: pd.DataFrame, S: float, cfg: dict):
-    """Zero-gamma spot via a ±25% spot grid reevaluation (clone of
-    collectors/deribit._gamma_flip, with the equity multiplier + r/q). ABOVE flip =
-    net long gamma (dealers dampen / pin); BELOW = net short (dealers amplify).
-    Returns (flip, signed dist-to-flip %, regime). Thin wrapper over
-    ``gamma_profile`` — one grid evaluation, one definition."""
+    """Zero-gamma crossing + regime for the CURRENT spot.
+
+    Returns ``(flip, signed_dist_pct, gamma_regime)``. ``flip`` is the zero-crossing
+    of the repriced ±25% profile NEAREST to ``S`` and ``signed_dist_pct`` is its signed
+    distance — a separate quantity, kept as such. ``gamma_regime`` is read from the
+    SAME repriced curve AT the actual spot ``S``, NEVER from ``S`` relative to the
+    nearest crossing, so a curve whose gamma sign runs opposite its slope (e.g. a
+    call-heavy-lower / put-heavy-upper "descending" book) still reports its true sign.
+
+    ``gamma_regime`` is ``"long"``/``"short"``, or None for an invalid spot, a too-thin
+    chain, nonfinite repricing, or |net gamma at S| <= REGIME_EPS (dollars per
+    ``pct_move``) — never a synthesised sign."""
+    if not _valid_spot(S):
+        return None, None, None
     grid, net, flips = gamma_profile(c, S, cfg)
     if grid is None:
         return None, None, None
-    if not flips:
-        return None, None, ("long" if net[len(grid) // 2] >= 0 else "short")
-    flip = min(flips, key=lambda f: abs(f - S))
-    return float(flip), round(100.0 * (S - flip) / S, 2), ("long" if S >= flip else "short")
+    flip = min(flips, key=lambda f: abs(f - S)) if flips else None
+    dist = round(100.0 * (S - flip) / S, 2) if flip is not None else None
+    rows = _usable_rows(c)
+    val = _repriced_net(*rows, cfg, float(S)) if rows is not None else float("nan")
+    if not np.isfinite(val) or abs(val) <= REGIME_EPS:
+        regime = None
+    else:
+        regime = "long" if val > 0 else "short"
+    return (float(flip) if flip is not None else None), dist, regime
 
 
 def _max_pain(c: pd.DataFrame):

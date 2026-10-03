@@ -6,13 +6,15 @@ rests on. Engine tests assert the economic behaviour (call-heavy -> +GEX, magnet
 at the max dollar-gamma strikes, fragility tiering).
 """
 import math
+import warnings
 
 import numpy as np
 import pandas as pd
 import pytest
 
 from engine.greeks import bs_greeks
-from engine.gex_engine import compute_gex
+from engine.gex_engine import (DEFAULTS, REGIME_EPS, _gamma_flip, _window,
+                               compute_gex, gamma_profile)
 
 R, Q = 0.03, 0.01
 
@@ -173,3 +175,199 @@ def test_gamma_profile_thin_chain_declines():
     ])
     grid, net, flips = gamma_profile(few, S, dict(DEFAULTS))
     assert grid is None and net is None and flips == []
+
+
+# ── gamma REGIME provenance: regime from the repriced curve AT S ────────────────────
+# Defect (options-mechanics-witness.py, macro capsule): ``_gamma_flip`` derived the
+# regime from the current spot's LOCATION relative to the nearest zero-crossing
+# ("S >= flip"), which is correct only for an ascending curve. On a "descending" book
+# (call-heavy lower strikes / put-heavy upper strikes) the sign of the curve at S is
+# the OPPOSITE of that location test, so the published regime contradicted the
+# published curve. The regime is now read from the repriced curve AT the actual spot S
+# — never from flip location — with an absolute near-zero band of REGIME_EPS dollars
+# per ``pct_move`` mapping to gamma_regime None (indeterminate).
+#
+# Witness recipe (immutable research): lower strikes 95.00+0.01j, upper 105.00+0.01j,
+# T=30/365, iv=0.2, oi=100, multiplier=100; "descending" = lower calls + upper puts.
+
+WITNESS_T = 30.0 / 365.0
+
+
+def _witness_chain(orientation):
+    low_call = orientation == "descending"
+    rows = [dict(K=95.0 + j * 0.01, T=WITNESS_T, iv=0.2, oi=100.0, is_call=low_call)
+            for j in range(10)]
+    rows += [dict(K=105.0 + j * 0.01, T=WITNESS_T, iv=0.2, oi=100.0, is_call=not low_call)
+             for j in range(10)]
+    if orientation == "all_calls":
+        for r in rows:
+            r["is_call"] = True
+    elif orientation == "all_puts":
+        for r in rows:
+            r["is_call"] = False
+    return pd.DataFrame(rows)
+
+
+def _direct_net_gamma_at(c, S, cfg):
+    """Independent same-state direct gamma: bs_greeks at spot S (not the profile
+    grid), dealer sign call +1 / put -1, in dollars per ``pct_move``."""
+    mult, pm = cfg["contract_multiplier"], cfg["pct_move"]
+    total = 0.0
+    for r in c.itertuples():
+        g = bs_greeks(S, r.K, r.T, r.iv, bool(r.is_call), cfg["r"], cfg["q"])[1]
+        total += (1.0 if r.is_call else -1.0) * g * r.oi * mult * S * S * pm
+    return total
+
+
+def test_regime_descending_uses_own_curve_sign_not_nearest_flip():
+    """The witness counterexample: a descending book is POSITIVE at S=98 and NEGATIVE
+    at S=101, the opposite of "S vs nearest flip". The old orientation logic returned
+    short/long here — this test fails against it."""
+    cfg = dict(DEFAULTS)
+    c = _witness_chain("descending")
+
+    flip, dist, regime = _gamma_flip(c, 98.0, cfg)
+    assert flip == pytest.approx(99.75550734870933, abs=1e-6)
+    assert dist == pytest.approx(-1.79, abs=0.01)
+    assert regime == "long", "own curve at S=98 is positive — flip location is the bug"
+    assert _direct_net_gamma_at(c, 98.0, cfg) > 0
+
+    flip, dist, regime = _gamma_flip(c, 101.0, cfg)
+    assert flip == pytest.approx(99.75550988739006, abs=1e-6)
+    assert dist == pytest.approx(1.23, abs=0.01)
+    assert regime == "short", "own curve at S=101 is negative"
+    assert _direct_net_gamma_at(c, 101.0, cfg) < 0
+
+
+def test_regime_ascending_matches_own_curve_sign():
+    cfg = dict(DEFAULTS)
+    c = _witness_chain("ascending")
+    for spot, expected in [(98.0, "short"), (101.0, "long")]:
+        _, _, regime = _gamma_flip(c, spot, cfg)
+        assert regime == expected
+        assert (regime == "long") == (_direct_net_gamma_at(c, spot, cfg) > 0)
+
+
+def test_regime_no_crossing_all_call_all_put():
+    cfg = dict(DEFAULTS)
+    calls = _witness_chain("all_calls")
+    flip, dist, regime = _gamma_flip(calls, 101.0, cfg)
+    assert flip is None and dist is None
+    assert regime == "long" and _direct_net_gamma_at(calls, 101.0, cfg) > 0
+
+    puts = _witness_chain("all_puts")
+    flip, dist, regime = _gamma_flip(puts, 101.0, cfg)
+    assert flip is None and dist is None
+    assert regime == "short" and _direct_net_gamma_at(puts, 101.0, cfg) < 0
+
+
+def test_regime_multiple_roots_nearest_crossing_and_own_sign():
+    """Several zero-crossings: the reported flip is the NEAREST, while the regime at S
+    still comes from the curve at S (not from S's side of the nearest crossing)."""
+    cfg = dict(DEFAULTS)
+    rows = []
+    for j in range(10):
+        rows.append(dict(K=80.0 + j * 0.01, T=WITNESS_T, iv=0.2, oi=5000.0, is_call=True))
+    for j in range(10):
+        rows.append(dict(K=100.0 + j * 0.01, T=WITNESS_T, iv=0.2, oi=5000.0, is_call=False))
+    for j in range(10):
+        rows.append(dict(K=120.0 + j * 0.01, T=WITNESS_T, iv=0.2, oi=5000.0, is_call=True))
+    c = pd.DataFrame(rows)
+    spot = 95.0
+    _, _, flips = gamma_profile(c, spot, cfg)
+    assert len(flips) >= 2, "fixture must carry multiple zero-crossings"
+    flip, dist, regime = _gamma_flip(c, spot, cfg)
+    assert flip == pytest.approx(min(flips, key=lambda f: abs(f - spot)))
+    assert dist == pytest.approx(round(100.0 * (spot - flip) / spot, 2))
+    assert regime == "short"
+    assert _direct_net_gamma_at(c, spot, cfg) < 0
+
+
+def test_regime_near_zero_band_is_none_indeterminate():
+    cfg = dict(DEFAULTS)
+    assert REGIME_EPS == 1e-8
+    rows = []
+    for _ in range(10):
+        rows.append(dict(K=100.0, T=WITNESS_T, iv=0.25, oi=1.0, is_call=True))
+        rows.append(dict(K=100.0, T=WITNESS_T, iv=0.25, oi=1.0, is_call=False))
+    c = pd.DataFrame(rows)
+    assert abs(_direct_net_gamma_at(c, 100.0, cfg)) <= REGIME_EPS
+    _, _, regime = _gamma_flip(c, 100.0, cfg)
+    assert regime is None, "inside the near-zero band the regime is indeterminate"
+
+
+@pytest.mark.parametrize("bad_spot", [0.0, -1.0, float("nan"), float("inf"),
+                                      float("-inf"), None, True])
+def test_regime_rejects_invalid_spot(bad_spot):
+    cfg = dict(DEFAULTS)
+    assert _gamma_flip(_witness_chain("descending"), bad_spot, cfg) == (None, None, None)
+
+
+def test_regime_declines_malformed_and_thin_input():
+    cfg = dict(DEFAULTS)
+    S = 100.0
+    empty = pd.DataFrame(columns=["K", "T", "iv", "oi", "is_call"])
+    assert _gamma_flip(empty, S, cfg) == (None, None, None)
+    assert gamma_profile(empty, S, cfg) == (None, None, [])
+    nan_rows = pd.DataFrame([dict(K=float("nan"), T=WITNESS_T, iv=0.2, oi=100.0,
+                                  is_call=True) for _ in range(20)])
+    assert _gamma_flip(nan_rows, S, cfg) == (None, None, None)
+    thin = pd.DataFrame([dict(K=100.0 + j * 0.01, T=WITNESS_T, iv=0.2, oi=100.0,
+                              is_call=(j % 2 == 0)) for j in range(19)])
+    assert _gamma_flip(thin, S, cfg) == (None, None, None)
+    ok = pd.DataFrame([dict(K=100.0 + j * 0.01, T=WITNESS_T, iv=0.2, oi=100.0,
+                            is_call=(j % 2 == 0)) for j in range(20)])
+    assert _gamma_flip(ok, S, cfg)[2] in ("long", "short")
+
+
+@pytest.mark.parametrize("bad_row", [
+    dict(T=WITNESS_T, iv=0.0, oi=100.0),   # zero vol -> nonfinite gamma
+    dict(T=0.0, iv=0.2, oi=100.0),         # zero tenor -> nonfinite gamma
+])
+def test_regime_nonfinite_repricing_is_unavailable(bad_row):
+    cfg = dict(DEFAULTS)
+    rows = [dict(K=100.0 + j * 0.01, is_call=(j % 2 == 0), **bad_row) for j in range(20)]
+    c = pd.DataFrame(rows)
+    with np.errstate(all="ignore"), warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        flip, dist, regime = _gamma_flip(c, 100.0, cfg)
+    assert regime is None, "failed repricing must not synthesize a sign"
+
+
+def test_regime_input_order_permutation_is_invariant():
+    cfg = dict(DEFAULTS)
+    c = _witness_chain("descending")
+    baseline = _gamma_flip(c, 98.0, cfg)
+    shuffled = _gamma_flip(c.iloc[::-1].reset_index(drop=True), 98.0, cfg)
+    assert shuffled[2] == baseline[2]
+    assert shuffled[0] == pytest.approx(baseline[0])
+
+
+def test_regime_matches_direct_gamma_across_spot_grid():
+    """Same chosen rows: the profile-repriced regime and an independent bs_greeks
+    evaluation at S agree wherever |gamma| exceeds REGIME_EPS."""
+    cfg = dict(DEFAULTS)
+    rows = []
+    for k in range(80, 121, 2):
+        rows.append(dict(K=float(k), T=0.08, iv=0.25, oi=3000.0 if k >= 100 else 50.0,
+                         is_call=True))
+        rows.append(dict(K=float(k), T=0.08, iv=0.25, oi=3000.0 if k < 100 else 50.0,
+                         is_call=False))
+    c = pd.DataFrame(rows)
+    for spot in (90.0, 95.0, 98.0, 100.0, 102.0, 108.0):
+        direct = _direct_net_gamma_at(c, spot, cfg)
+        _, _, regime = _gamma_flip(c, spot, cfg)
+        if abs(direct) <= REGIME_EPS:
+            assert regime is None
+        else:
+            assert (regime == "long") == (direct > 0)
+
+
+def test_compute_gex_regime_agrees_with_its_own_net_gex():
+    """Integration: the published regime must share the sign of the same-state net GEX
+    the summary already reports (both repriced at the actual spot)."""
+    c = _witness_chain("descending")
+    for spot, expected in [(98.0, "long"), (101.0, "short")]:
+        out = compute_gex(c, spot)
+        assert out["gamma_regime"] == expected
+        assert (out["gamma_regime"] == "long") == (out["net_gex_bn"] > 0)
