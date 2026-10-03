@@ -97,6 +97,8 @@ OUT_DIR   = "live_flow_out"
 STATE_DIR = "live_flow_state"
 EVENT_STAGE_SCHEMA = "live_flow.event_stage/v1"
 EVENT_STAGE_RETAIN_SESSIONS = 64
+PRIOR_SESSION_WAL_QUARANTINE_SCHEMA = "live_flow.prior_session_wal_quarantine/v1"
+PRIOR_SESSION_WAL_CLASSIFICATION = "cross_session_decision_clock_nonadmissible"
 
 # Prospective Market Memory capture is opt-in and private. The poller queues a
 # request only after both owner receipts are fsynced. Historical/manual runs
@@ -720,15 +722,7 @@ def _prepare_event_stage_batch(session_date: str, events: list[dict]) -> list[di
             )
         except (TypeError, ValueError) as exc:
             raise RuntimeError("event staging requires timezone-aware causal clocks") from exc
-        if any(value.tzinfo is None for value in (event_dt, observed_dt, decision_dt)):
-            raise RuntimeError("event staging requires timezone-aware causal clocks")
-        if not (event_dt <= observed_dt <= decision_dt):
-            raise RuntimeError("event staging clock order must be event <= observed <= decision")
-        event_session = event_dt.astimezone(ET).date().isoformat()
-        if event_session != session_date:
-            raise RuntimeError(
-                f"event {event_id} belongs to {event_session}, not stage {session_date}"
-            )
+        _validate_learning_event_clocks(session_date, event)
         if not _event_inside_regular_session(session_date, event):
             raise RuntimeError(
                 f"event {event_id} is outside the regular-session learning window"
@@ -747,6 +741,43 @@ def _prepare_event_stage_batch(session_date: str, events: list[dict]) -> list[di
             )
         })
     return prepared
+
+
+def _validate_learning_event_clocks(session_date: str, event: dict) -> None:
+    event_id = event.get("id")
+    if (
+        type(event_id) is not str
+        or not event_id
+        or event_id != event_id.strip()
+    ):
+        raise RuntimeError("learning event requires a normalized string id")
+    try:
+        event_dt = datetime.fromisoformat(str(event.get("ts") or "").replace("Z", "+00:00"))
+        observed_dt = datetime.fromisoformat(
+            str(event.get("observed_at") or "").replace("Z", "+00:00")
+        )
+        decision_dt = datetime.fromisoformat(
+            str(event.get("decision_at") or "").replace("Z", "+00:00")
+        )
+    except (TypeError, ValueError) as exc:
+        raise RuntimeError(
+            f"learning event {event_id} requires timezone-aware causal clocks"
+        ) from exc
+    if any(value.tzinfo is None for value in (event_dt, observed_dt, decision_dt)):
+        raise RuntimeError(
+            f"learning event {event_id} requires timezone-aware causal clocks"
+        )
+    if not (event_dt <= observed_dt <= decision_dt):
+        raise RuntimeError(
+            f"learning event {event_id} violates event <= observed <= decision"
+        )
+    if any(
+        value.astimezone(ET).date().isoformat() != session_date
+        for value in (event_dt, observed_dt, decision_dt)
+    ):
+        raise RuntimeError(
+            f"learning event {event_id} leaves session date {session_date}"
+        )
 
 
 def _parse_event_stage_bytes(
@@ -1627,10 +1658,28 @@ def _save_day_state(session_date: str, state: dict) -> Path:
         from engine.live_flow import DAY_STATE_VERSION as _DSV  # noqa: PLC0415
         raw: dict = {}
         raw["schema_version"] = _DSV   # Item 2: stamp version for forward-compat checks
-        raw["emitted_ids"] = list(state.get("emitted_ids", set()))
-        raw["all_events"]  = state.get("all_events", [])
+        pending_learning_events = state.get("pending_learning_events", [])
+        if not isinstance(pending_learning_events, list):
+            raise RuntimeError("day_state pending_learning_events must be a list")
+        all_events = state.get("all_events", [])
+        if not isinstance(all_events, list):
+            raise RuntimeError("day_state all_events must be a list")
+        emitted_ids = state.get("emitted_ids", set())
+        if not isinstance(emitted_ids, (set, list)):
+            raise RuntimeError("day_state emitted_ids must be a set or list")
+        emitted_id_list = list(emitted_ids)
+        for event in pending_learning_events:
+            if not isinstance(event, dict):
+                raise RuntimeError("day_state pending_learning_events entries must be objects")
+            _validate_learning_event_clocks(session_date, event)
+            if {
+                "available_at", "published_at", "source_snapshot_asof", "anchor_strategy",
+            }.intersection(event):
+                raise RuntimeError("pending learning events contain post-durability fields")
+        raw["emitted_ids"] = emitted_id_list
+        raw["all_events"]  = all_events
         raw["root_gross_today"] = state.get("root_gross_today", {})
-        raw["pending_learning_events"] = state.get("pending_learning_events", [])
+        raw["pending_learning_events"] = pending_learning_events
         raw["cycle_watermarks"] = state.get("cycle_watermarks", {})
         # Source age survives a process restart.  A fully failed recovery cycle
         # must keep the last represented response clock instead of looking new.
@@ -1725,6 +1774,8 @@ def _drain_pending_learning_events(
     }
     pending_ids: list[str] = []
     for event in pending:
+        if not isinstance(event, dict):
+            raise RuntimeError("pending learning WAL entries must be objects")
         event_id = event.get("id") if isinstance(event, dict) else None
         if (
             type(event_id) is not str
@@ -1734,6 +1785,7 @@ def _drain_pending_learning_events(
             raise RuntimeError("pending learning WAL contains an invalid event id")
         if durable_fields.intersection(event):
             raise RuntimeError("pending learning WAL contains post-durability fields")
+        _validate_learning_event_clocks(session_date, event)
         pending_ids.append(event_id)
     if len(set(pending_ids)) != len(pending_ids):
         raise RuntimeError("pending learning WAL contains duplicate event ids")
@@ -1798,6 +1850,224 @@ def _drain_pending_learning_events(
 
 DAY_STATE_RETENTION_DAYS_DEFAULT = 5
 _DAY_STATE_RE = re.compile(r"^day_state_(\d{4}-\d{2}-\d{2})(?:\.tmp)?\.json$")
+_QUARANTINE_RE = re.compile(
+    r"^prior_session_wal_quarantine_(\d{4}-\d{2}-\d{2})\.json$"
+)
+
+
+def _prior_session_wal_quarantine_receipt_path(session_date: str) -> Path:
+    return _state_dir() / "quarantine" / (
+        f"prior_session_wal_quarantine_{session_date}.json"
+    )
+
+
+def _canonical_utc_timestamp_required(value: object, *, field: str) -> datetime:
+    timestamp = _canonical_utc_timestamp(value, field=field)
+    return datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+
+
+def _exact_incident_incident(
+    expectations: object,
+    *,
+    field: str,
+) -> dict:
+    if not isinstance(expectations, dict):
+        raise RuntimeError(f"{field} must be an object")
+    if set(expectations) != {
+        "deployed_sha",
+        "state_sha256",
+        "session_date",
+        "schema_version",
+        "pending_event_count",
+        "ordered_event_id_sha256",
+        "observed_at_min",
+        "observed_at_max",
+        "decision_at_min",
+        "decision_at_max",
+    }:
+        raise RuntimeError(f"{field} has an invalid field set")
+    if expectations.get("deployed_sha") != "bffd9931b2e37b5011fe50e0633f62c356879dd8":
+        raise RuntimeError(f"{field} has an unexpected deployed source identity")
+    if expectations.get("session_date") != "2026-09-28":
+        raise RuntimeError(f"{field} has an unexpected session")
+    if type(expectations.get("state_sha256")) is not str or not re.fullmatch(
+        r"[a-f0-9]{64}", expectations["state_sha256"]
+    ):
+        raise RuntimeError(f"{field} has an invalid protected state identity")
+    if type(expectations.get("ordered_event_id_sha256")) is not str or not re.fullmatch(
+        r"[a-f0-9]{64}", expectations["ordered_event_id_sha256"]
+    ):
+        raise RuntimeError(f"{field} has an invalid ordered-ID digest")
+    if expectations.get("schema_version") != 5:
+        raise RuntimeError(f"{field} has an unexpected day-state schema")
+    if expectations.get("pending_event_count") != 170:
+        raise RuntimeError(f"{field} has an unexpected pending-event count")
+    expected_clocks = {
+        "observed_at_min": "2026-09-28T13:37:09.179619Z",
+        "observed_at_max": "2026-09-28T13:38:55.752263Z",
+        "decision_at_min": "2026-09-30T23:51:45.034847Z",
+        "decision_at_max": "2026-09-30T23:53:18.537416Z",
+    }
+    for clock_field, expected in expected_clocks.items():
+        _canonical_utc_timestamp_required(expectations[clock_field], field=clock_field)
+        if expectations[clock_field] != expected:
+            raise RuntimeError(f"{field}.{clock_field} is unexpected")
+    return expectations
+
+
+def _read_prior_session_wal_quarantine_receipt(
+    session_date: str,
+    *,
+    quarantine_dir: Path | None = None,
+) -> dict | None:
+    if quarantine_dir is None:
+        quarantine_dir = _state_dir() / "quarantine"
+    path = quarantine_dir / (
+        f"prior_session_wal_quarantine_{session_date}.json"
+    )
+    if not path.exists():
+        return None
+    try:
+        receipt = _strict_json_loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        raise RuntimeError(f"malformed prior-session WAL quarantine receipt: {path}") from exc
+    if not isinstance(receipt, dict):
+        raise RuntimeError(f"prior-session WAL quarantine receipt is not an object: {path}")
+    return receipt
+
+
+def _validate_prior_session_wal_quarantine(
+    session_date: str,
+    *,
+    quarantine_dir: Path | None = None,
+) -> bool:
+    """Validate one reviewed prior-session WAL without making it admissible."""
+    if quarantine_dir is None:
+        quarantine_dir = _state_dir() / "quarantine"
+    path = quarantine_dir / (
+        f"prior_session_wal_quarantine_{session_date}.json"
+    )
+    receipt = _read_prior_session_wal_quarantine_receipt(
+        session_date, quarantine_dir=quarantine_dir,
+    )
+    if receipt is None:
+        return False
+
+    required = {
+        "schema",
+        "classification",
+        "review_reference",
+        "incident",
+        "protected_source",
+        "day_state",
+    }
+    if set(receipt) != required:
+        raise RuntimeError(f"prior-session WAL quarantine receipt has an invalid shape: {path}")
+    if receipt.get("schema") != PRIOR_SESSION_WAL_QUARANTINE_SCHEMA:
+        raise RuntimeError(f"prior-session WAL quarantine receipt has a wrong schema: {path}")
+    if receipt.get("classification") != PRIOR_SESSION_WAL_CLASSIFICATION:
+        raise RuntimeError(f"prior-session WAL quarantine receipt has a wrong classification: {path}")
+    if type(receipt.get("review_reference")) is not str or not receipt["review_reference"].strip():
+        raise RuntimeError(f"prior-session WAL quarantine receipt has no review reference: {path}")
+    incident = _exact_incident_incident(receipt.get("incident"), field="quarantine incident")
+
+    protected_source = receipt.get("protected_source")
+    if not isinstance(protected_source, dict):
+        raise RuntimeError(f"prior-session WAL quarantine receipt has invalid provenance: {path}")
+    if set(protected_source) != {"sha256", "bytes"}:
+        raise RuntimeError(f"prior-session WAL quarantine receipt has invalid provenance: {path}")
+    if protected_source.get("sha256") != incident["state_sha256"]:
+        raise RuntimeError(f"prior-session WAL quarantine receipt has mismatched provenance: {path}")
+
+    state_path = _state_dir() / f"day_state_{session_date}.json"
+    if not state_path.exists():
+        raise RuntimeError(f"quarantined prior-session day_state is absent: {state_path}")
+    raw = state_path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != incident["state_sha256"]:
+        raise RuntimeError(f"quarantined prior-session day_state changed: {state_path}")
+    if type(protected_source.get("bytes")) is not int or protected_source["bytes"] != len(raw):
+        raise RuntimeError(f"prior-session WAL quarantine receipt has a mismatched byte count: {path}")
+    try:
+        state = _strict_json_loads(raw.decode("utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        raise RuntimeError(f"quarantined prior-session day_state is malformed: {state_path}") from exc
+    if not isinstance(state, dict):
+        raise RuntimeError(f"quarantined prior-session day_state is not an object: {state_path}")
+    if state.get("schema_version") != incident["schema_version"]:
+        raise RuntimeError(f"quarantined prior-session day_state has a mismatched schema: {state_path}")
+    if state.get("session_date") not in (None, session_date):
+        raise RuntimeError(f"quarantined prior-session day_state has a mismatched session: {state_path}")
+    pending = state.get("pending_learning_events")
+    if not isinstance(pending, list) or len(pending) != incident["pending_event_count"]:
+        raise RuntimeError(f"quarantined prior-session day_state has a mismatched count: {state_path}")
+    event_ids: list[str] = []
+    observed: list[datetime] = []
+    decisions: list[datetime] = []
+    durable_fields = {
+        "available_at", "published_at", "source_snapshot_asof", "anchor_strategy",
+    }
+    for event in pending:
+        if not isinstance(event, dict):
+            raise RuntimeError(f"quarantined prior-session day_state has an invalid WAL: {state_path}")
+        event_id = event.get("id")
+        if type(event_id) is not str or not event_id or event_id != event_id.strip():
+            raise RuntimeError(f"quarantined prior-session day_state has an invalid WAL id: {state_path}")
+        if durable_fields.intersection(event):
+            raise RuntimeError(f"quarantined prior-session WAL has availability fields: {state_path}")
+        observed.append(
+            _canonical_utc_timestamp_required(event.get("observed_at"), field="observed_at")
+        )
+        decisions.append(
+            _canonical_utc_timestamp_required(event.get("decision_at"), field="decision_at")
+        )
+        event_ids.append(event_id)
+    if len(set(event_ids)) != len(event_ids):
+        raise RuntimeError(f"quarantined prior-session day_state has duplicate WAL IDs: {state_path}")
+    ordered_digest = hashlib.sha256(
+        b"".join(f"{event_id}\n".encode("utf-8") for event_id in event_ids)
+    ).hexdigest()
+    if ordered_digest != incident["ordered_event_id_sha256"]:
+        raise RuntimeError(f"quarantined prior-session day_state changed WAL order: {state_path}")
+    if min(observed).isoformat().replace("+00:00", "Z") != incident["observed_at_min"]:
+        raise RuntimeError(f"quarantined prior-session day_state changed observed clocks: {state_path}")
+    if max(observed).isoformat().replace("+00:00", "Z") != incident["observed_at_max"]:
+        raise RuntimeError(f"quarantined prior-session day_state changed observed clocks: {state_path}")
+    if min(decisions).isoformat().replace("+00:00", "Z") != incident["decision_at_min"]:
+        raise RuntimeError(f"quarantined prior-session day_state changed decision clocks: {state_path}")
+    if max(decisions).isoformat().replace("+00:00", "Z") != incident["decision_at_max"]:
+        raise RuntimeError(f"quarantined prior-session day_state changed decision clocks: {state_path}")
+    if state.get("all_events") != []:
+        raise RuntimeError(f"quarantined prior-session day_state has display events: {state_path}")
+    for field in ("root_source_receipts", "root_ticker_receipts"):
+        receipts = state.get(field)
+        if not isinstance(receipts, dict):
+            raise RuntimeError(f"quarantined prior-session day_state has invalid source receipts: {state_path}")
+        for root, clock in receipts.items():
+            _canonical_utc_timestamp_required(clock, field=f"{field}.{root}")
+    if state.get("source_asof") is not None:
+        _canonical_utc_timestamp_required(
+            state.get("source_asof"), field="day_state.source_asof",
+        )
+
+    stage_path = _event_stage_path(session_date)
+    try:
+        stage_raw = stage_path.read_bytes() if stage_path.exists() else b""
+    except Exception as exc:  # noqa: BLE001
+        raise RuntimeError(f"cannot inspect canonical event stage for quarantine: {stage_path}") from exc
+    if stage_raw:
+        try:
+            decisions_by_id, _available, _capture = _parse_event_stage_bytes(
+                session_date, stage_raw, path=stage_path, require_complete=False,
+            )
+        except Exception as exc:  # noqa: BLE001
+            raise RuntimeError(
+                f"malformed canonical event stage conflicts with quarantine: {stage_path}"
+            ) from exc
+        if set(decisions_by_id).intersection(event_ids):
+            raise RuntimeError(
+                f"canonical event stage conflicts with quarantined IDs: {stage_path}"
+            )
+    return True
 
 
 def _stale_pending_learning_sessions(current_session: str) -> list[str]:
@@ -1810,6 +2080,7 @@ def _stale_pending_learning_sessions(current_session: str) -> list[str]:
     and are never backdated with a clock from a later exchange date.
     """
     stale: list[str] = []
+    quarantine_dir = _state_dir() / "quarantine"
     for path in sorted(_state_dir().glob("day_state_*.json")):
         match = _DAY_STATE_RE.fullmatch(path.name)
         if match is None:
@@ -1828,8 +2099,14 @@ def _stale_pending_learning_sessions(current_session: str) -> list[str]:
         pending = payload.get("pending_learning_events", [])
         if not isinstance(pending, list):
             raise RuntimeError(f"retained prior day_state has invalid pending WAL: {path}")
-        if pending:
+        if pending and _read_prior_session_wal_quarantine_receipt(
+            session, quarantine_dir=quarantine_dir,
+        ) is None:
             stale.append(session)
+        if pending:
+            _validate_prior_session_wal_quarantine(
+                session, quarantine_dir=quarantine_dir,
+            )
     return stale
 
 
@@ -1869,11 +2146,30 @@ def _prune_day_states(session_date: str, cfg: dict) -> None:
     sessions (default 5).  The current session's file is never touched; every
     deletion is logged.  INERT: never raises.
     """
+    # A malformed quarantine receipt must block retention, not merely warn:
+    # otherwise the sweep could delete the protected raw state after the inner
+    # per-file handler converted the integrity failure into a warning.
+    quarantine_receipts = {
+        match.group(1)
+        for match in (
+            _QUARANTINE_RE.fullmatch(path.name)
+            for path in (_state_dir() / "quarantine").glob(
+                "prior_session_wal_quarantine_*.json"
+            )
+        )
+        if match is not None
+    }
+    for session in quarantine_receipts:
+        _validate_prior_session_wal_quarantine(session)
     try:
         keep_days = int(cfg.get("state_retention_days", DAY_STATE_RETENTION_DAYS_DEFAULT))
         sdir = _state_dir()
         names = sorted(p.name for p in sdir.glob("day_state_*") if p.is_file())
-        doomed = _select_prunable_day_states(names, session_date, keep_days)
+        doomed = [
+            name for name in _select_prunable_day_states(names, session_date, keep_days)
+            if _DAY_STATE_RE.match(name) is None
+            or _DAY_STATE_RE.match(name).group(1) not in quarantine_receipts
+        ]
         if not doomed:
             log.debug("poller: day_state retention sweep — nothing to prune (keep=%d sessions)",
                       keep_days)
@@ -2282,6 +2578,32 @@ def _session_date(override: str | None = None) -> str:
     if override:
         return override
     return datetime.now(ET).strftime("%Y-%m-%d")
+
+
+def _current_session_matches_frozen_run(session_date: str, now_fn=None) -> bool:
+    try:
+        current_date = (
+            now_fn() if now_fn is not None else datetime.now(ET)
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise RuntimeError("cannot determine the current live-flow exchange date") from exc
+    return current_date.astimezone(ET).date().isoformat() == session_date
+
+
+def _session_rollover(
+    session_date: str,
+    day_state: dict,
+    now_fn=None,
+) -> str | None:
+    if _current_session_matches_frozen_run(session_date, now_fn=now_fn):
+        return None
+    if day_state.get("pending_learning_events"):
+        log.error(
+            "poller: exchange-session rollover found a pending learning WAL; preserving state"
+        )
+        return "pending"
+    log.info("poller: exchange-session rollover found no pending WAL; exiting cleanly")
+    return "empty"
 
 
 # ── single-cycle logic ────────────────────────────────────────────────────────
@@ -2970,6 +3292,15 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
         "--once", action="store_true",
         help="Run one mutating live-output cycle; not a smoke test",
     )
+    parser.add_argument(
+        "--recover-reviewed-prior-session-wal",
+        nargs=7,
+        metavar=(
+            "SESSION", "STATE_SHA256", "ORDERED_ID_SHA256", "PENDING_COUNT",
+            "OBSERVED_MIN_MAX", "DECISION_MIN_MAX", "REVIEW_REFERENCE",
+        ),
+        help="Write the explicit reviewed prior-session WAL quarantine receipt",
+    )
     parser.add_argument("--date",  metavar="YYYY-MM-DD",
                         help="Legacy diagnostic override; unsafe for smoke/PIT staging")
     parser.add_argument("--roots", nargs="+", metavar="ROOT",
@@ -2982,6 +3313,48 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
                              "(use with launchd StartCalendarInterval)")
     parser.add_argument("--verbose", "-v", action="store_true")
     args = parser.parse_args(argv)
+
+    if args.recover_reviewed_prior_session_wal is not None:
+        if args.date or args.once:
+            log.error(
+                "poller: quarantine recovery cannot be combined with --date or --once"
+            )
+            return 2
+        session, state_sha, ordered_sha, count_text, observed_pair, decision_pair, review = (
+            args.recover_reviewed_prior_session_wal
+        )
+        try:
+            payload = {
+                "schema": PRIOR_SESSION_WAL_QUARANTINE_SCHEMA,
+                "classification": PRIOR_SESSION_WAL_CLASSIFICATION,
+                "review_reference": review,
+                "incident": {
+                    "deployed_sha": "bffd9931b2e37b5011fe50e0633f62c356879dd8",
+                    "state_sha256": state_sha,
+                    "session_date": session,
+                    "schema_version": 5,
+                    "pending_event_count": int(count_text),
+                    "ordered_event_id_sha256": ordered_sha,
+                    "observed_at_min": observed_pair.split(",", 1)[0],
+                    "observed_at_max": observed_pair.split(",", 1)[1],
+                    "decision_at_min": decision_pair.split(",", 1)[0],
+                    "decision_at_max": decision_pair.split(",", 1)[1],
+                },
+                "protected_source": None,
+            }
+            incident = _exact_incident_incident(payload["incident"], field="CLI incident")
+            payload["protected_source"] = {
+                "sha256": incident["state_sha256"],
+                "bytes": (_state_dir() / f"day_state_{session}.json").stat().st_size,
+            }
+            receipt_path = _prior_session_wal_quarantine_receipt_path(session)
+            _atomic_write_json(receipt_path, payload)
+            _validate_prior_session_wal_quarantine(session)
+            log.info("poller: reviewed prior-session WAL quarantine receipt validated: %s", receipt_path)
+            return 0
+        except Exception as exc:  # noqa: BLE001
+            log.error("poller: reviewed prior-session WAL quarantine failed: %s", exc)
+            return 1
 
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
@@ -2996,6 +3369,9 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
         log.info("poller: retention_hours overridden to %d (CLI)", args.retention_hours)
 
     session_date = _session_date(args.date)
+    if args.date:
+        log.error("poller: --date is diagnostic-only and cannot run a write-capable poller")
+        return 2
     log.info("poller: session_date=%s once=%s", session_date, args.once)
     _OPTIONS_CONTEXT_DISPATCHER = _initialize_options_context_dispatcher(
         session_date, historical=bool(args.date),
@@ -3030,6 +3406,12 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
     except Exception as exc:  # noqa: BLE001
         log.error("poller: startup learning-WAL recovery failed: %s", exc, exc_info=True)
         return 1
+
+    rollover = _session_rollover(session_date, day_state)
+    if rollover == "pending":
+        return 1
+    if rollover == "empty":
+        return 0
 
     # The clean outside-RTH exit remains zero, so launchd's SuccessfulExit=false
     # policy will not respawn it. Crash/Theta failures are nonzero and retry after
@@ -3158,6 +3540,11 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
     previous_cycle_started_perf: float | None = None
     while True:
         loop_t0 = time.perf_counter()
+        rollover = _session_rollover(session_date, day_state)
+        if rollover == "pending":
+            return 1
+        if rollover == "empty":
+            return 0
         cycle_started_at = _utc_now_iso()
         observed_start_to_start_sec = (
             loop_t0 - previous_cycle_started_perf

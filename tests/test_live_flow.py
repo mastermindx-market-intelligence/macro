@@ -3382,6 +3382,9 @@ class TestDayStateLearningWal:
 
         monkeypatch.setattr(poller, "_cfg", lambda: {"retention_hours": 24})
         monkeypatch.setattr(poller, "_session_date", lambda _override=None: SESSION_DATE)
+        monkeypatch.setattr(
+            poller, "_current_session_matches_frozen_run", lambda *_args, **_kwargs: True,
+        )
         monkeypatch.setattr(poller, "_state_dir", lambda: tmp_path)
         monkeypatch.setenv("LIVE_FLOW_EVENT_STAGE_DIR", str(tmp_path / "events"))
         monkeypatch.setattr(
@@ -3582,6 +3585,9 @@ class TestDayStateLearningWal:
         monkeypatch.setattr(poller, "_stage_raw_events", stager)
         monkeypatch.setattr(poller, "_cfg", lambda: {"retention_hours": 24})
         monkeypatch.setattr(poller, "_session_date", lambda _override=None: SESSION_DATE)
+        monkeypatch.setattr(
+            poller, "_current_session_matches_frozen_run", lambda *_args, **_kwargs: True,
+        )
         monkeypatch.setattr(
             td, "reachable", lambda **_kwargs: order.append("theta") or False,
         )
@@ -5464,7 +5470,7 @@ class TestNbboMicrostructureMeasurement:
                 quote_ts="2026-07-02T14:30:02.000",
             ),
         ]
-        micro = lf._coalesce_nbbo_microstructure(_df(rows))[MICRO_KEY]
+        block = lf._coalesce_nbbo_microstructure(_df(rows))[MICRO_KEY]
 
         assert micro["schema"] == MICRO_SCHEMA
         assert micro["source_print_count"] == 3
@@ -5853,7 +5859,229 @@ class TestMicrostructureStrictJsonSafety:
         ]
         micro = lf._coalesce_nbbo_microstructure(_df(rows))[MICRO_KEY]
 
-        edge_sum = round(micro["at_ask_share"] + micro["at_bid_share"], 6)
-        edge_diff = round(micro["at_ask_share"] - micro["at_bid_share"], 6)
-        assert micro["aggression_share"] == edge_sum
-        assert micro["aggression_balance"] == edge_diff
+        block = lf._coalesce_nbbo_microstructure(_df(rows))[MICRO_KEY]
+        edge_sum = round(block["at_ask_share"] + block["at_bid_share"], 6)
+        edge_diff = round(block["at_ask_share"] - block["at_bid_share"], 6)
+        assert block["aggression_share"] == edge_sum
+        assert block["aggression_balance"] == edge_diff
+
+
+class TestReviewedPriorSessionWalQuarantine:
+    SESSION = "2026-09-28"
+    STATE_SHA = "d9a25966a8d50090f8619d878e4133860cc54682b53764126bf7299e1ca00b06"
+    ORDERED_SHA = "c52ee12c27b31775e2acef188e434134202e3f745ebb2d55c68a0e12749df218"
+
+    @staticmethod
+    def _receipt():
+        return {
+            "schema": "live_flow.prior_session_wal_quarantine/v1",
+            "classification": "cross_session_decision_clock_nonadmissible",
+            "review_reference": "chairman-options-alpha-parent599-review",
+            "incident": {
+                "deployed_sha": "bffd9931b2e37b5011fe50e0633f62c356879dd8",
+                "state_sha256": "d9a25966a8d50090f8619d878e4133860cc54682b53764126bf7299e1ca00b06",
+                "session_date": "2026-09-28",
+                "schema_version": 5,
+                "pending_event_count": 170,
+                "ordered_event_id_sha256": "c52ee12c27b31775e2acef188e434134202e3f745ebb2d55c68a0e12749df218",
+                "observed_at_min": "2026-09-28T13:37:09.179619Z",
+                "observed_at_max": "2026-09-28T13:38:55.752263Z",
+                "decision_at_min": "2026-09-30T23:51:45.034847Z",
+                "decision_at_max": "2026-09-30T23:53:18.537416Z",
+            },
+            "protected_source": None,
+            "day_state": {},
+        }
+
+    @staticmethod
+    def _event(index: int):
+        return {
+            "id": f"reviewed-{index:03d}",
+            "ts": "2026-09-28T13:37:00Z",
+            "observed_at": "2026-09-28T13:37:09.179619Z",
+            "decision_at": "2026-09-30T23:51:45.034847Z",
+            "kind": "test",
+        }
+
+    def _protected_state(self):
+        events = [self._event(index) for index in range(170)]
+        events[-1] = {
+            **events[-1],
+            "observed_at": "2026-09-28T13:38:55.752263Z",
+            "decision_at": "2026-09-30T23:53:18.537416Z",
+        }
+        return {
+            "schema_version": 5,
+            "emitted_ids": [event["id"] for event in events],
+            "all_events": [],
+            "root_gross_today": {},
+            "pending_learning_events": events,
+            "cycle_watermarks": {},
+            "contract_vol": {},
+            "notability_history": {},
+            "seen_sequences": {},
+            "market_tide_minutes": {},
+            "sector_tide": {},
+            "dte_tide": {},
+            "root_minutes": {},
+            "root_strikes": {},
+            "root_expiries": {},
+            "root_top_contracts": {},
+            "sweep_clusters": {},
+            "source_asof": None,
+            "root_source_receipts": {},
+            "root_ticker_receipts": {},
+        }
+
+    def _write_case(self, tmp_path, monkeypatch, *, mutation=None):
+        import scripts.live_flow_poller as poller
+
+        monkeypatch.setattr(poller, "_state_dir", lambda: tmp_path)
+        monkeypatch.setenv("LIVE_FLOW_EVENT_STAGE_DIR", str(tmp_path / "events"))
+        state = self._protected_state()
+        if mutation is not None:
+            mutation(state)
+        raw = (json.dumps(state, sort_keys=True, separators=(",", ":")) + "\n").encode()
+        (tmp_path / "day_state_2026-09-28.json").write_bytes(raw)
+        return poller
+
+    def test_exact_reviewed_wal_permits_startup_but_never_drains_old_ids(
+        self, tmp_path, monkeypatch,
+    ):
+        poller = self._write_case(tmp_path, monkeypatch)
+        state_path = tmp_path / "day_state_2026-09-28.json"
+        receipt = self._receipt()
+        receipt["incident"]["state_sha256"] = hashlib.sha256(
+            state_path.read_bytes()
+        ).hexdigest()
+        receipt["incident"]["ordered_event_id_sha256"] = hashlib.sha256(
+            b"".join(
+                (event["id"] + "\n").encode()
+                for event in json.loads(state_path.read_text())["pending_learning_events"]
+            )
+        ).hexdigest()
+        receipt["protected_source"] = {
+            "sha256": hashlib.sha256(state_path.read_bytes()).hexdigest(),
+            "bytes": state_path.stat().st_size,
+        }
+        quarantine = tmp_path / "quarantine"
+        quarantine.mkdir()
+        (quarantine / "prior_session_wal_quarantine_2026-09-28.json").write_text(
+            json.dumps(receipt, sort_keys=True) + "\n"
+        )
+
+        assert poller._stale_pending_learning_sessions("2026-09-29") == []
+        assert poller._validate_prior_session_wal_quarantine("2026-09-28")
+        assert list((tmp_path / "events").glob("*.jsonl")) == []
+
+    @pytest.mark.parametrize("mutation", [
+        lambda state: state["pending_learning_events"].pop(),
+        lambda state: state["pending_learning_events"].reverse(),
+        lambda state: state["pending_learning_events"].__setitem__(0, {
+            **state["pending_learning_events"][0], "id": "changed",
+        }),
+        lambda state: state["pending_learning_events"].__setitem__(0, {
+            **state["pending_learning_events"][0],
+            "observed_at": "2026-09-28T13:37:09.179620Z",
+        }),
+        lambda state: state.__setitem__("schema_version", 4),
+        lambda state: state.__setitem__("all_events", [{"id": "display"}]),
+        lambda state: state.__setitem__("source_asof", "2026-09-28T20:00:00Z"),
+    ])
+    def test_changed_state_or_receipt_fact_reblocks(self, tmp_path, monkeypatch, mutation):
+        poller = self._write_case(tmp_path, monkeypatch, mutation=mutation)
+        receipt = self._receipt()
+        receipt["protected_source"] = {
+            "sha256": self.STATE_SHA,
+            "bytes": 123,
+        }
+        quarantine = tmp_path / "quarantine"
+        quarantine.mkdir()
+        (quarantine / "prior_session_wal_quarantine_2026-09-28.json").write_text(
+            json.dumps(receipt, sort_keys=True) + "\n"
+        )
+        with pytest.raises(RuntimeError):
+            poller._stale_pending_learning_sessions("2026-09-29")
+
+    def test_unreviewed_old_wal_still_blocks_and_retention_preserves_reviewed_bytes(
+        self, tmp_path, monkeypatch,
+    ):
+        poller = self._write_case(tmp_path, monkeypatch)
+        assert poller._stale_pending_learning_sessions("2026-09-29") == ["2026-09-28"]
+
+        state_path = tmp_path / "day_state_2026-09-28.json"
+        receipt = self._receipt()
+        receipt["incident"]["state_sha256"] = hashlib.sha256(
+            state_path.read_bytes()
+        ).hexdigest()
+        receipt["incident"]["ordered_event_id_sha256"] = hashlib.sha256(
+            b"".join(
+                (event["id"] + "\n").encode()
+                for event in json.loads(state_path.read_text())["pending_learning_events"]
+            )
+        ).hexdigest()
+        receipt["protected_source"] = {
+            "sha256": hashlib.sha256(state_path.read_bytes()).hexdigest(),
+            "bytes": state_path.stat().st_size,
+        }
+        quarantine = tmp_path / "quarantine"
+        quarantine.mkdir()
+        receipt_path = quarantine / "prior_session_wal_quarantine_2026-09-28.json"
+        receipt_path.write_text(json.dumps(receipt, sort_keys=True) + "\n")
+        before_state = state_path.read_bytes()
+        before_receipt = receipt_path.read_bytes()
+        for day in range(1, 16):
+            (tmp_path / f"day_state_2026-10-{day:02d}.json").write_text("{}\n")
+
+        poller._prune_day_states("2026-10-15", {"state_retention_days": 2})
+        assert state_path.read_bytes() == before_state
+        assert receipt_path.read_bytes() == before_receipt
+
+    def test_malformed_receipt_reblocks_even_when_selected_by_retention(self, tmp_path, monkeypatch):
+        poller = self._write_case(tmp_path, monkeypatch)
+        quarantine = tmp_path / "quarantine"
+        quarantine.mkdir()
+        receipt_path = quarantine / "prior_session_wal_quarantine_2026-09-28.json"
+        receipt_path.write_text("{malformed")
+        with pytest.raises(RuntimeError):
+            poller._stale_pending_learning_sessions("2026-09-29")
+        with pytest.raises(RuntimeError):
+            poller._prune_day_states("2026-09-29", {"state_retention_days": 1})
+        assert (tmp_path / "day_state_2026-09-28.json").exists()
+
+    def test_cross_session_decision_fails_before_wal_save(self, tmp_path, monkeypatch):
+        poller = self._write_case(tmp_path, monkeypatch)
+        (tmp_path / "day_state_2026-09-28.json").unlink()
+        state = self._protected_state()
+        state["pending_learning_events"][0]["decision_at"] = "2026-09-29T23:51:45.034847Z"
+        with pytest.raises(RuntimeError, match="leaves session date"):
+            poller._save_day_state("2026-09-28", state)
+        assert not (tmp_path / "day_state_2026-09-28.json").exists()
+
+    def test_date_is_diagnostic_only_and_cannot_write(self, tmp_path, monkeypatch):
+        import scripts.live_flow_poller as poller
+
+        monkeypatch.setattr(poller, "_state_dir", lambda: tmp_path)
+        monkeypatch.setenv("LIVE_FLOW_EVENT_STAGE_DIR", str(tmp_path / "events"))
+        monkeypatch.setattr(poller, "_load_baselines", lambda: {})
+        assert poller.main(["--once", "--date", "2026-09-28", "--roots", "SPY"]) == 2
+        assert list(tmp_path.glob("**/*")) == []
+
+    def test_rollover_pending_is_nonzero_and_empty_is_clean_without_fetch(
+        self, tmp_path, monkeypatch,
+    ):
+        poller = self._write_case(tmp_path, monkeypatch)
+        monkeypatch.setattr(
+            poller, "_current_session_matches_frozen_run", lambda *_args, **_kwargs: False,
+        )
+        monkeypatch.setattr(
+            poller, "_resolve_universe", lambda *_args: (_ for _ in ()).throw(
+                AssertionError("rollover must exit before fetch")
+            ),
+        )
+        assert poller.main(["--once"]) == 1
+
+        (tmp_path / "day_state_2026-09-28.json").write_text(
+            json.dumps({"schema_version": 5, "pending_learning_events": []}) + "\n"
+        )
+        assert poller.main(["--once"]) == 0

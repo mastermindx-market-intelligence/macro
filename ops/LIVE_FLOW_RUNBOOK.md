@@ -917,6 +917,40 @@ Automatic retention already prunes old, proven day states. There is no generic
 manual state-wipe command, and neither bare `--once` nor historical `--date` is a
 valid recovery or smoke test.
 
+### Reviewed prior-session WAL quarantine
+
+The only reviewed prior-session incident eligible for this receipt is the
+Chairman Options Alpha parent599 case recorded here:
+
+| Protected fact | Required exact value |
+|---|---|
+| Deployed source SHA | `bffd9931b2e37b5011fe50e0633f62c356879dd8` |
+| Day state SHA-256 | `d9a25966a8d50090f8619d878e4133860cc54682b53764126bf7299e1ca00b06` |
+| Session / schema / count | `2026-09-28` / `5` / `170` |
+| Ordered event-ID SHA-256 | `c52ee12c27b31775e2acef188e434134202e3f745ebb2d55c68a0e12749df218` |
+| Observed clock range | `2026-09-28T13:37:09.179619Z..2026-09-28T13:38:55.752263Z` |
+| Decision clock range | `2026-09-30T23:51:45.034847Z..2026-09-30T23:53:18.537416Z` |
+
+On the protected source host, an operator who has independently reviewed this
+table may create the receipt with `--recover-reviewed-prior-session-wal`. The
+seven arguments are the session, both SHA-256 values, count, the observed
+minimum and maximum separated by a comma, the decision minimum and maximum
+separated by a comma, and the operator review reference. The command writes
+`data/live_flow_state/quarantine/prior_session_wal_quarantine_2026-09-28.json`
+atomically, fsyncs it, and validates the exact raw state hash, session, schema,
+count, ordered IDs, clock bounds, classification, stage absence, and absence of
+availability/source-clock facts before returning. It never changes the state or
+event stage, never drains the quarantined IDs, and never grants learning,
+candidate, publication, or training authority.
+
+Once validated, normal collection may start a fresh current-session state, but
+retention must keep both the protected raw state and its receipt. A missing,
+malformed, changed, or stage-conflicting receipt fails closed. The receipt is
+not an automatic rule for future prior-session WALs; each future case requires
+its own reviewed, source-identity-bound receipt. `--date` is now read-only in
+practice and is rejected before any state, stage, output, retention, or
+publication write.
+
 ## Day-state size guard
 
 The poller logs a warning if the day-state JSON exceeds 50 MB:
