@@ -1,0 +1,45 @@
+{
+  "operation": "china-macro-evidence-upgrade-20260929-sol-001",
+  "source_head": "56ae3b9b8af4b0137d1a6a01e08ee6a76db59380",
+  "prior_head": "511514654a8d637653c6504297f611e4b1fdf181",
+  "mission_complete": false,
+  "capability_state": "BUILT_NOT_PROVEN",
+  "finding_origin": "C2 independent core audit at61e78896, unchanged at511514",
+  "review_thread": "C0C5FCK1F45/1791009607.260079",
+  "defect": "Equal values and qualified nulls skipped monotonic receipt checks, allowing stale incoming metadata to win the normal store merge.",
+  "repair": "Existing receipt tuples require valid old/new digests, catalog definition, admitted source lineage and chronology; exact replay or genuinely forward acquisition/publication only. Truly unreceipted equal legacy values/gaps retain compatibility. Any conflict withholds the entire incoming column.",
+  "tests": {
+    "tests": 537,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "negative_control": {
+    "source": "511514654a8d637653c6504297f611e4b1fdf181",
+    "failures": 3,
+    "real_parquet_store": true,
+    "cases": [
+      "older equal value must not replace newer receipt",
+      "older non-null must not replace newer qualified null",
+      "older receipt must not revalidate a withdrawal masked by combine_first"
+    ],
+    "raw_output_retention": "exact raw log/XML preserved in operation scratch; compact assertion results and raw hashes committed"
+  },
+  "preserved": [
+    "unreceipted equal legacy enrichment",
+    "exact replay including null and zero",
+    "forward equal-value receipt",
+    "valid new publication/acquisition revision",
+    "newer reactivation after qualified null",
+    "whole-column seasonal-vintage hold"
+  ],
+  "source_acquisitions": 0,
+  "production_writes": 0,
+  "ui_or_auth_changes": 0,
+  "focused_warnings": "4 existing temporary-Chromium cleanup warnings",
+  "review_status": "repair supplied for independent reassessment, not self-approved",
+  "files": {
+    "negative-control.json": "d12d0b5c24bac35d2c4307044642e1f8d2a2aca3fe8721fd3badff05962e7218",
+    "tests.xml": "baf09858270483a71fd04f6bedfd1b5c11998938c98cd981bcbe023cdb15aaf2"
+  }
+}

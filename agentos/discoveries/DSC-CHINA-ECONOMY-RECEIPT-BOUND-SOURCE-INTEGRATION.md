@@ -97,3 +97,13 @@ property captures supplement the original evidence. See
 C2's prior R9 source-only advisory PASS is consumed; it is not full-release review.
 Production installation/entitlement and independent full-candidate review remain
 explicit gates. No source-use hold or runtime permission was changed.
+
+## R11 monotonic receipts independent of value equality
+
+C2 identified a stale-receipt shortcut for equal numbers and qualified nulls.
+Source `56ae3b9b8af4b0137d1a6a01e08ee6a76db59380` checks receipt ordering before either can be
+replaced. The real Parquet/store negative control fails the old source in three
+cases;537 focused tests pass the repair. Whole-column holds, valid forward
+revisions, exact replay and unreceipted legacy equality remain. See
+`research/CHINA_ECONOMY_R11_RECEIPT_MONOTONICITY.md`. Independent repair review
+and new-head CI remain gates; no new article fetch or production write.
