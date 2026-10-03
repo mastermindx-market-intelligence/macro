@@ -1,18 +1,18 @@
 {
   "schema": "market_structure_context.v1",
-  "asof": "2026-09-23",
-  "built_at": "2026-09-23T17:11:44.521201+00:00",
+  "asof": "2026-10-02",
+  "built_at": "2026-10-03T05:59:08.612146+00:00",
   "is_context_only": true,
   "display_only": true,
   "gamma": {
     "regime": "long",
-    "net_gex_bn": 91.651732,
-    "net_gex_pctile": 90.9,
-    "gamma_flip": 7655.884679,
-    "spot": 7764.6401,
-    "dist_to_flip_pct": 1.40065,
-    "days_in_regime": 5,
-    "days_in_regime_observed": 5,
+    "net_gex_bn": 50.136114,
+    "net_gex_pctile": 73.8,
+    "gamma_flip": 7659.028261,
+    "spot": 7722.7202,
+    "dist_to_flip_pct": 0.824735,
+    "days_in_regime": 2,
+    "days_in_regime_observed": 2,
     "series_start": "2026-06-15",
     "history": [
       {
@@ -399,16 +399,57 @@
         "regime": "long",
         "flip": 7655.884679,
         "spot": 7764.6401
+      },
+      {
+        "date": "2026-09-25",
+        "net_gex_bn": 67.656514,
+        "regime": "long",
+        "flip": 7671.127946,
+        "spot": 7743.4102
+      },
+      {
+        "date": "2026-09-28",
+        "net_gex_bn": 11.397656,
+        "regime": "long",
+        "flip": 7670.436658,
+        "spot": 7683.6899
+      },
+      {
+        "date": "2026-09-29",
+        "net_gex_bn": 0.553038,
+        "regime": "long",
+        "flip": 7670.207799,
+        "spot": 7670.8398
+      },
+      {
+        "date": "2026-09-30",
+        "net_gex_bn": -7.246814,
+        "regime": "short",
+        "flip": 7660.602243,
+        "spot": 7651.54
+      },
+      {
+        "date": "2026-10-01",
+        "net_gex_bn": 3.252434,
+        "regime": "long",
+        "flip": 7662.092996,
+        "spot": 7666.4502
+      },
+      {
+        "date": "2026-10-02",
+        "net_gex_bn": 50.136114,
+        "regime": "long",
+        "flip": 7659.028261,
+        "spot": 7722.7202
       }
     ],
     "coverage": {
-      "last_obs": "2026-09-23",
-      "expected_last_session": "2026-09-22",
+      "last_obs": "2026-10-02",
+      "expected_last_session": "2026-10-02",
       "sessions_behind": 0,
       "window_sessions": 20,
       "missing_recent": [
-        "2026-09-01",
-        "2026-09-02"
+        "2026-09-24"
       ],
       "missing_in_regime": [],
       "complete": false
@@ -416,10 +457,10 @@
   },
   "systematic": {
     "vc": {
-      "alloc_bn": 269.61561,
-      "alloc_frac": 0.898719,
-      "flow_1d_bn": 6.48046,
-      "flow_5d_bn": 4.88449,
+      "alloc_bn": 273.482972,
+      "alloc_frac": 0.91161,
+      "flow_1d_bn": -0.061501,
+      "flow_5d_bn": 4.31712,
       "state": "adding",
       "flow_window_n": 5,
       "aum_bn": 300.0,
@@ -427,81 +468,17 @@
       "series_start": "1927-12-30"
     },
     "cta": {
-      "score": 0.820304,
-      "z": -0.226961,
-      "flow_1d": -0.132947,
-      "flow_5d": 0.313858,
-      "state": "adding",
+      "score": 0.713632,
+      "z": -0.348411,
+      "flow_1d": 0.118561,
+      "flow_5d": -0.07868,
+      "state": "cutting",
       "flow_window_n": 5,
-      "cta_near_flat": false
+      "cta_near_flat": true
     },
-    "agreement": "aligned_adding",
+    "agreement": "split",
     "flow_window_n": 5,
     "history": [
-      {
-        "date": "2024-09-24",
-        "vc_alloc_bn": 188.408744,
-        "vc_flow_bn": 0.101945,
-        "cta_score": 1.154407,
-        "cta_flow": 0.107331,
-        "spx_close": 5732.930176
-      },
-      {
-        "date": "2024-09-25",
-        "vc_alloc_bn": 188.315406,
-        "vc_flow_bn": -0.093338,
-        "cta_score": 1.038999,
-        "cta_flow": -0.115409,
-        "spx_close": 5722.259766
-      },
-      {
-        "date": "2024-09-26",
-        "vc_alloc_bn": 188.157175,
-        "vc_flow_bn": -0.158231,
-        "cta_score": 1.150182,
-        "cta_flow": 0.111183,
-        "spx_close": 5745.370117
-      },
-      {
-        "date": "2024-09-27",
-        "vc_alloc_bn": 188.449817,
-        "vc_flow_bn": 0.292642,
-        "cta_score": 1.136056,
-        "cta_flow": -0.014126,
-        "spx_close": 5738.169922
-      },
-      {
-        "date": "2024-09-30",
-        "vc_alloc_bn": 188.328957,
-        "vc_flow_bn": -0.12086,
-        "cta_score": 1.152361,
-        "cta_flow": 0.016306,
-        "spx_close": 5762.47998
-      },
-      {
-        "date": "2024-10-01",
-        "vc_alloc_bn": 187.276268,
-        "vc_flow_bn": -1.052689,
-        "cta_score": 1.049718,
-        "cta_flow": -0.102644,
-        "spx_close": 5708.75
-      },
-      {
-        "date": "2024-10-02",
-        "vc_alloc_bn": 187.570655,
-        "vc_flow_bn": 0.294387,
-        "cta_score": 1.267469,
-        "cta_flow": 0.217752,
-        "spx_close": 5709.540039
-      },
-      {
-        "date": "2024-10-03",
-        "vc_alloc_bn": 187.864584,
-        "vc_flow_bn": 0.293929,
-        "cta_score": 1.373075,
-        "cta_flow": 0.105606,
-        "spx_close": 5699.939941
-      },
       {
         "date": "2024-10-04",
         "vc_alloc_bn": 186.817432,
@@ -4431,97 +4408,129 @@
         "spx_close": 7764.700195
       },
       {
+        "date": "2026-09-22",
+        "vc_alloc_bn": 272.871902,
+        "vc_flow_bn": 9.736752,
+        "cta_score": 1.022586,
+        "cta_flow": 0.069334,
+        "spx_close": 7764.640137
+      },
+      {
         "date": "2026-09-23",
-        "vc_alloc_bn": 269.61561,
-        "vc_flow_bn": 6.48046,
-        "cta_score": 0.820304,
-        "cta_flow": -0.132947,
-        "spx_close": 7704.080078
+        "vc_alloc_bn": 269.911642,
+        "vc_flow_bn": -2.960261,
+        "cta_score": 0.739338,
+        "cta_flow": -0.283249,
+        "spx_close": 7706.029785
+      },
+      {
+        "date": "2026-09-24",
+        "vc_alloc_bn": 269.899673,
+        "vc_flow_bn": -0.011968,
+        "cta_score": 0.700647,
+        "cta_flow": -0.038691,
+        "spx_close": 7704.129883
+      },
+      {
+        "date": "2026-09-25",
+        "vc_alloc_bn": 269.165851,
+        "vc_flow_bn": -0.733822,
+        "cta_score": 0.792313,
+        "cta_flow": 0.091666,
+        "spx_close": 7743.410156
+      },
+      {
+        "date": "2026-09-28",
+        "vc_alloc_bn": 271.436769,
+        "vc_flow_bn": 2.270918,
+        "cta_score": 0.67376,
+        "cta_flow": -0.118552,
+        "spx_close": 7683.689941
+      },
+      {
+        "date": "2026-09-29",
+        "vc_alloc_bn": 273.738022,
+        "vc_flow_bn": 2.301253,
+        "cta_score": 0.601712,
+        "cta_flow": -0.072048,
+        "spx_close": 7670.839844
+      },
+      {
+        "date": "2026-09-30",
+        "vc_alloc_bn": 273.647745,
+        "vc_flow_bn": -0.090277,
+        "cta_score": 0.57175,
+        "cta_flow": -0.029962,
+        "spx_close": 7651.540039
+      },
+      {
+        "date": "2026-10-01",
+        "vc_alloc_bn": 273.544473,
+        "vc_flow_bn": -0.103272,
+        "cta_score": 0.595071,
+        "cta_flow": 0.023321,
+        "spx_close": 7666.450195
+      },
+      {
+        "date": "2026-10-02",
+        "vc_alloc_bn": 273.482972,
+        "vc_flow_bn": -0.061501,
+        "cta_score": 0.713632,
+        "cta_flow": 0.118561,
+        "spx_close": 7722.720215
       }
     ]
   },
   "vol": {
-    "rv21": 0.105611,
-    "rv63": 0.11127,
+    "rv21": 0.104893,
+    "rv63": 0.109696,
     "rv_cross_state": "calm",
     "vix_curve": [
       {
         "tenor": "M1",
-        "settle": 17.3607,
-        "dte": 29
+        "settle": 17.648,
+        "dte": 19
       },
       {
         "tenor": "M2",
-        "settle": 18.2032,
-        "dte": 57
+        "settle": 18.3449,
+        "dte": 47
       },
       {
         "tenor": "M3",
-        "settle": 18.5995,
-        "dte": 85
+        "settle": 18.7966,
+        "dte": 75
       },
       {
         "tenor": "M4",
-        "settle": 19.4117,
-        "dte": 120
+        "settle": 19.4502,
+        "dte": 110
       },
       {
         "tenor": "M5",
-        "settle": 19.8875,
-        "dte": 148
+        "settle": 19.9486,
+        "dte": 138
       },
       {
         "tenor": "M6",
-        "settle": 20.0639,
-        "dte": 176
+        "settle": 20.125,
+        "dte": 166
       }
     ],
-    "vix_curve_slope": 2.7032,
+    "vix_curve_slope": 2.477,
     "series_start_curve": "2026-04-16"
   },
   "dispersion": {
-    "cor1m": 7.59,
+    "cor1m": 8.05,
     "cor1m_regime": "dispersion",
-    "cor1m_1y_delta": -4.96,
-    "cor1m_pctile_2y": 7.9,
+    "cor1m_1y_delta": -1.33,
+    "cor1m_pctile_2y": 11.7,
     "cor1m_pctile_lo": 20,
     "cor1m_pctile_hi": 80,
     "cor1m_available": true,
-    "cor3m": 9.53,
-    "dspx": 36.38,
+    "cor3m": 11.48,
+    "dspx": 35.57,
     "history": [
-      {
-        "date": "2024-09-24",
-        "cor1m": 12.47
-      },
-      {
-        "date": "2024-09-25",
-        "cor1m": 12.22
-      },
-      {
-        "date": "2024-09-26",
-        "cor1m": 10.82
-      },
-      {
-        "date": "2024-09-27",
-        "cor1m": 12.36
-      },
-      {
-        "date": "2024-09-30",
-        "cor1m": 10.92
-      },
-      {
-        "date": "2024-10-01",
-        "cor1m": 14.68
-      },
-      {
-        "date": "2024-10-02",
-        "cor1m": 13.85
-      },
-      {
-        "date": "2024-10-03",
-        "cor1m": 14.55
-      },
       {
         "date": "2024-10-04",
         "cor1m": 11.24
@@ -6489,35 +6498,76 @@
       {
         "date": "2026-09-22",
         "cor1m": 7.59
+      },
+      {
+        "date": "2026-09-23",
+        "cor1m": 8.79
+      },
+      {
+        "date": "2026-09-24",
+        "cor1m": 9.17
+      },
+      {
+        "date": "2026-09-25",
+        "cor1m": 8.01
+      },
+      {
+        "date": "2026-09-28",
+        "cor1m": 9.03
+      },
+      {
+        "date": "2026-09-29",
+        "cor1m": 9.28
+      },
+      {
+        "date": "2026-09-30",
+        "cor1m": 9.09
+      },
+      {
+        "date": "2026-10-01",
+        "cor1m": 9.6
+      },
+      {
+        "date": "2026-10-02",
+        "cor1m": 8.05
       }
     ]
   },
   "week_map": {
-    "week_start": "2026-09-21",
-    "week_end": "2026-09-25",
-    "locked_close": 7650.5,
-    "locked_at": "2026-09-18T00:00:00",
-    "band_1sigma_lo": 7523.09,
-    "band_1sigma_hi": 7777.91,
-    "band_2sigma_lo": 7395.67,
-    "band_2sigma_hi": 7905.33,
-    "gamma_flip": 7655.884679,
-    "implied_weekly_pct": 1.67,
+    "week_start": "2026-10-05",
+    "week_end": "2026-10-09",
+    "locked_close": 7722.72,
+    "locked_at": "2026-10-02T00:00:00",
+    "band_1sigma_lo": 7587.25,
+    "band_1sigma_hi": 7858.19,
+    "band_2sigma_lo": 7451.78,
+    "band_2sigma_hi": 7993.66,
+    "gamma_flip": 7659.028261,
+    "implied_weekly_pct": 1.75,
     "source": "spx_iv30_scaled_5d"
   },
   "state_changes": {
-    "vs_asof": "2026-09-21",
-    "items": []
+    "vs_asof": "2026-10-01",
+    "items": [
+      {
+        "key": "cor1m_regime",
+        "from": "normal",
+        "to": "dispersion",
+        "note_en": "Correlation regime: Normal correlation → Dispersion (stock-picker's market)",
+        "note_zh": "相关性机制：正常相关性 → 分散（选股市场）",
+        "display_only": true
+      }
+    ]
   },
   "prev_state": {
-    "as_of": "2026-09-21",
+    "as_of": "2026-10-01",
     "state": {
       "gamma_regime": "long",
       "vc_state": "adding",
-      "cta_state": "adding",
-      "agreement": "aligned_adding",
+      "cta_state": "cutting",
+      "agreement": "split",
       "rv_cross_state": "calm",
-      "cor1m_regime": "dispersion"
+      "cor1m_regime": "normal"
     }
   }
 }

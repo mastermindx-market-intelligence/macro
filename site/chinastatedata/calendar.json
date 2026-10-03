@@ -1,33 +1,9 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-09-23",
-  "generated_at_utc": "2026-09-23T15:26:08.273614+00:00",
+  "asof": "2026-09-30",
+  "generated_at_utc": "2026-10-02T17:28:59.745562+00:00",
   "horizon_days": 45,
   "entries": [
-    {
-      "date": "2026-09-24",
-      "window_end": null,
-      "etype": "omo_mlf_tender",
-      "label_en": "PBoC MLF tender — 1年期, RMB 800bn",
-      "label_zh": "央行中期借贷便利（MLF）操作：1年期，8,000亿元",
-      "region": "cn",
-      "impact": "high",
-      "source_class": "feed",
-      "source": "china_omo.operations",
-      "approx": false
-    },
-    {
-      "date": "2026-09-25",
-      "window_end": null,
-      "etype": "HK_TRADE",
-      "label_en": "HK external trade",
-      "label_zh": "香港对外商品贸易",
-      "region": "hk",
-      "impact": "medium",
-      "source_class": "static",
-      "source": "engine.hk_event_calendar",
-      "approx": true
-    },
     {
       "date": "2026-09-30",
       "window_end": null,
@@ -123,6 +99,18 @@
       "source_class": "rule",
       "source": "engine.china_event_calendar",
       "approx": true
+    },
+    {
+      "date": "2026-10-08",
+      "window_end": null,
+      "etype": "omo_outright_repo_tender",
+      "label_en": "PBoC outright reverse repo tender — 3个月, RMB 1,200bn, matures 2027-01-05",
+      "label_zh": "央行买断式逆回购操作：3个月，12,000亿元，到期 2027-01-05",
+      "region": "cn",
+      "impact": "medium",
+      "source_class": "feed",
+      "source": "china_omo.operations",
+      "approx": false
     },
     {
       "date": "2026-10-12",
@@ -361,6 +349,90 @@
       "region": "hk",
       "impact": "high",
       "source_class": "rule",
+      "source": "engine.hk_event_calendar",
+      "approx": false
+    },
+    {
+      "date": "2026-11-09",
+      "window_end": null,
+      "etype": "FXRES",
+      "label_en": "FX reserves (SAFE)",
+      "label_zh": "外汇储备（外管局）",
+      "region": "cn",
+      "impact": "medium",
+      "source_class": "rule",
+      "source": "engine.china_event_calendar",
+      "approx": true
+    },
+    {
+      "date": "2026-11-09",
+      "window_end": null,
+      "etype": "TRADE",
+      "label_en": "Customs trade (exports/imports)",
+      "label_zh": "海关进出口数据",
+      "region": "cn",
+      "impact": "high",
+      "source_class": "rule",
+      "source": "engine.china_event_calendar",
+      "approx": true
+    },
+    {
+      "date": "2026-11-10",
+      "window_end": null,
+      "etype": "CPI",
+      "label_en": "CPI (consumer prices)",
+      "label_zh": "CPI（居民消费价格）",
+      "region": "cn",
+      "impact": "high",
+      "source_class": "static",
+      "source": "engine.china_event_calendar",
+      "approx": false
+    },
+    {
+      "date": "2026-11-10",
+      "window_end": null,
+      "etype": "CREDIT",
+      "label_en": "Money supply, RMB loans & TSF",
+      "label_zh": "货币供应、人民币贷款与社融",
+      "region": "cn",
+      "impact": "high",
+      "source_class": "rule",
+      "source": "engine.china_event_calendar",
+      "approx": true
+    },
+    {
+      "date": "2026-11-10",
+      "window_end": null,
+      "etype": "PPI",
+      "label_en": "PPI (producer prices)",
+      "label_zh": "PPI（工业生产者价格）",
+      "region": "cn",
+      "impact": "high",
+      "source_class": "static",
+      "source": "engine.china_event_calendar",
+      "approx": false
+    },
+    {
+      "date": "2026-11-12",
+      "window_end": null,
+      "etype": "US_CPI",
+      "label_en": "US CPI",
+      "label_zh": "美国 CPI",
+      "region": "hk",
+      "impact": "high",
+      "source_class": "static",
+      "source": "engine.hk_event_calendar",
+      "approx": false
+    },
+    {
+      "date": "2026-11-13",
+      "window_end": null,
+      "etype": "HK_GDP",
+      "label_en": "HK GDP",
+      "label_zh": "香港 GDP",
+      "region": "hk",
+      "impact": "high",
+      "source_class": "static",
       "source": "engine.hk_event_calendar",
       "approx": false
     }

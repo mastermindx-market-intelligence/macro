@@ -1,24 +1,26 @@
 {
-  "date": "2026-09-23",
+  "date": "2026-10-03",
   "regime": "mixed / no clear trend",
-  "breadth": 0.08,
+  "breadth": 0.23,
   "favored": [
     "equity_us",
     "copper",
-    "equity_intl"
+    "equity_intl",
+    "equity_em",
+    "dollar"
   ],
-  "correlation": "converging",
-  "asof": "2026-09-23",
+  "correlation": "diversified",
+  "asof": "2026-10-03",
   "flows": {
     "schema": "crossasset_flows.v2",
     "display_only": true,
     "regime": "mixed / no clear trend",
     "correlation": {
-      "verdict": "converging",
-      "absorption_pctile": 0.49,
+      "verdict": "diversified",
+      "absorption_pctile": 0.37,
       "n_markets": 6,
-      "absorption_ratio": 0.363,
-      "mean_abs_corr": 0.237,
+      "absorption_ratio": 0.351,
+      "mean_abs_corr": 0.221,
       "dominant_cluster": [
         "US",
         "Commodities",
@@ -26,7 +28,6 @@
         "Dollar"
       ],
       "spark_w": [
-        0.374,
         0.35,
         0.328,
         0.344,
@@ -129,11 +130,12 @@
         0.392,
         0.361,
         0.352,
-        0.363
+        0.337,
+        0.351
       ],
-      "spark_asof": "2026-09-25"
+      "spark_asof": "2026-10-02"
     },
-    "breadth": 0.08,
+    "breadth": 0.23,
     "trend_top": [
       {
         "asset": "equity_us",
@@ -151,24 +153,24 @@
         "z": 1.0
       },
       {
+        "asset": "equity_em",
+        "trend": "up",
+        "z": 1.0
+      },
+      {
+        "asset": "dollar",
+        "trend": "up",
+        "z": 0.67
+      },
+      {
         "asset": "equity_sm",
-        "trend": "mixed",
-        "z": 0.33
-      },
-      {
-        "asset": "credit_hy",
-        "trend": "mixed",
-        "z": 0.33
-      },
-      {
-        "asset": "gold",
         "trend": "mixed",
         "z": 0.33
       }
     ],
     "trend_summary": {
       "n": 13,
-      "n_up": 3,
+      "n_up": 5,
       "n_down": 2
     },
     "intermarket": [
@@ -176,25 +178,25 @@
         "pair": "copper_gold",
         "ratio": 0.002,
         "trend": "elevated",
-        "pctile": 82.0
+        "pctile": 81.0
       },
       {
         "pair": "gold_silver",
-        "ratio": 66.461,
+        "ratio": 69.398,
         "trend": "mid",
-        "pctile": 26.0
+        "pctile": 39.0
       },
       {
         "pair": "oil_gold",
-        "ratio": 0.021,
+        "ratio": 0.022,
         "trend": "mid",
-        "pctile": 68.0
+        "pctile": 72.0
       },
       {
         "pair": "stocks_gold",
-        "ratio": 0.178,
+        "ratio": 0.185,
         "trend": "mid",
-        "pctile": 57.0
+        "pctile": 72.0
       }
     ],
     "carry": {
@@ -203,7 +205,7 @@
           "key": "rates_term",
           "label_en": "Rates term-spread (10y-3m)",
           "label_zh": "\u5229\u7387\u671f\u9650\u5229\u5dee (10\u5e74-3\u6708)",
-          "value": 0.94,
+          "value": 1.24,
           "unit": "%",
           "state": "positive carry"
         },
@@ -225,46 +227,46 @@
           "leader": "Dollar",
           "follower": "HK",
           "lag": 1,
-          "r": 0.275,
-          "t": 4.495,
-          "q": 0.0
-        },
-        {
-          "leader": "US",
-          "follower": "HK",
-          "lag": 1,
-          "r": 0.307,
-          "t": 4.067,
+          "r": 0.266,
+          "t": 4.297,
           "q": 0.0
         },
         {
           "leader": "Crypto",
           "follower": "HK",
           "lag": 1,
-          "r": 0.263,
-          "t": 4.029,
-          "q": 0.005
+          "r": 0.27,
+          "t": 4.1,
+          "q": 0.0
+        },
+        {
+          "leader": "US",
+          "follower": "HK",
+          "lag": 1,
+          "r": 0.311,
+          "t": 4.092,
+          "q": 0.0
         },
         {
           "leader": "US",
           "follower": "China",
           "lag": 1,
-          "r": 0.25,
-          "t": 3.658,
-          "q": 0.0112
+          "r": 0.257,
+          "t": 3.727,
+          "q": 0.0075
         },
         {
           "leader": "Crypto",
           "follower": "China",
           "lag": 1,
-          "r": 0.179,
-          "t": 2.979,
-          "q": 0.087
+          "r": 0.188,
+          "t": 3.134,
+          "q": 0.051
         }
       ],
       "stable": false,
       "lead_asset": {
-        "name": "US",
+        "name": "Crypto",
         "n_followers": 2
       },
       "n_significant": 5,
@@ -278,47 +280,66 @@
       "impulse_13w": null
     },
     "funding_stress": {
-      "asof": "2026-09-21",
+      "asof": "2026-10-01",
       "state": "calm",
-      "score": 19.0,
-      "spread_bp": -3.0
+      "score": 52.0,
+      "spread_bp": -1.0
     },
     "confirm": {
-      "verdict": "confirm",
-      "agree_pct": 100,
-      "n_blind_flags": 0,
-      "flags_top": [],
-      "asof": "2026-09-21"
+      "verdict": "diverge",
+      "agree_pct": 0,
+      "n_blind_flags": 2,
+      "flags_top": [
+        {
+          "key": "credit",
+          "en": "High-yield credit widening from tight \u2014 credit risk-appetite turning (partly-leading via the EBP family, but often coincident with equity stress).",
+          "zh": "\u9ad8\u6536\u76ca\u4fe1\u7528\u4ece\u504f\u7d27\u8d70\u9614 \u2014 \u4fe1\u7528\u98ce\u9669\u504f\u597d\u8f6c\u5411\uff08\u7ecfEBP\u5177\u90e8\u5206\u9886\u5148\u6027\uff0c\u4f46\u5e38\u4e0e\u80a1\u7968\u538b\u529b\u540c\u6b65\uff09\u3002",
+          "severity": "medium",
+          "owner": "bonds",
+          "lead": "leading",
+          "equity_blind": true
+        },
+        {
+          "key": "sovereign",
+          "en": "Euro-periphery fragmentation elevated (BTP-Bund) \u2014 sovereign stress at the European core.",
+          "zh": "\u6b27\u5143\u533a\u5916\u56f4\u5206\u5316\u504f\u9ad8\uff08BTP-Bund\uff09\u2014 \u6b27\u6d32\u6838\u5fc3\u4e3b\u6743\u538b\u529b\u3002",
+          "severity": "medium",
+          "owner": "bonds",
+          "lead": "coincident",
+          "equity_blind": true
+        }
+      ],
+      "asof": "2026-10-01"
     },
     "dollar": {
-      "usd_dir": "weakening",
+      "usd_dir": "flat",
       "regime": "Global reflation",
-      "risk": "risk-on",
+      "risk": "risk-off",
       "corr_top": [
         {
           "key": "GC=F",
-          "corr": -0.6
-        },
-        {
-          "key": "HG=F",
-          "corr": -0.5
+          "corr": -0.58
         },
         {
           "key": "EEM",
-          "corr": -0.45
+          "corr": -0.44
+        },
+        {
+          "key": "SPY",
+          "corr": -0.41
         }
       ],
       "unstable_n": 0,
       "fx_stress": {
-        "dominant": null,
+        "dominant": "dollar_wrecking_ball",
         "top_key": "dollar_wrecking_ball",
-        "top_val": 24.3
+        "top_val": 60.8
       }
     },
     "shadow": {
-      "pressure_pctile": 0.49,
-      "incumbent_state": "calm",
-      "shadow_state": "calm",
+      "pressure_pctile": 0.37,
+      "incumbent_state": "caution",
+      "shadow_state": "caution",
       "escalated": false
     },
     "note": "display-only regime read; TSMOM fails DSR (cross-asset-phase0), lead/lag=lag-1 timezone (cross-asset-leadlag-phase0) \u2014 not a strategy/hedge-ratio"

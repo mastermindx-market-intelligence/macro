@@ -1343,6 +1343,210 @@
       "at": "2026-09-23T20:21:53.364916+00:00",
       "activated": false,
       "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51010": {
+      "id": "wh-2026-09-24-presidential-message-on-the-beatification-of-archbishop-fulton-j-sheen",
+      "at": "2026-09-24T15:05:55.393356+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51007": {
+      "id": "wh-2026-09-24-first-lady-melania-trump-releases-details-on-the-state-dinner-with-his-excellenc",
+      "at": "2026-09-24T15:05:57.368297+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51033": {
+      "id": "wh-2026-09-24-first-lady-melania-trump-and-madame-peng-liyuan-visit-smithsonian-national-museu",
+      "at": "2026-09-24T19:09:45.751987+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51096": {
+      "id": "wh-2026-09-25-first-lady-melania-trump-highlights-art-culture-and-the-next-generation-during-s",
+      "at": "2026-09-25T18:36:15.715047+00:00",
+      "activated": false,
+      "importance": 20
+    },
+    "https://www.whitehouse.gov/?p=51099": {
+      "id": "wh-2026-09-25-president-trump-first-lady-conclude-historic-china-state-visit",
+      "at": "2026-09-25T22:19:31.908156+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51134": {
+      "id": "wh-2026-09-25-congressional-bills-h-r-3657-h-r-7250-s-550-s-603-s-759-and-s-790-signed-into-la",
+      "at": "2026-09-25T22:19:33.462690+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51135": {
+      "id": "wh-2026-09-25-gold-star-mothers-and-familys-day-2026",
+      "at": "2026-09-25T22:19:34.586497+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51104": {
+      "id": "wh-2026-09-25-presidential-public-service-announcements-are-nothing-new",
+      "at": "2026-09-25T22:19:36.175391+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=51256": {
+      "id": "wh-2026-09-26-fact-sheet-president-donald-j-trump-advances-a-fair-and-reciprocal-relationship-",
+      "at": "2026-09-26T07:41:15.025334+00:00",
+      "activated": true,
+      "importance": 74
+    },
+    "https://www.whitehouse.gov/?p=51258": {
+      "id": "wh-2026-09-26-presidential-message-on-national-hunting-and-fishing-day",
+      "at": "2026-09-26T17:09:57.816340+00:00",
+      "activated": false,
+      "importance": 18
+    },
+    "https://www.whitehouse.gov/?p=51277": {
+      "id": "wh-2026-09-28-u-s-china-board-of-trade",
+      "at": "2026-09-28T08:56:36.243266+00:00",
+      "activated": true,
+      "importance": 78
+    },
+    "https://www.whitehouse.gov/?p=51510": {
+      "id": "wh-2026-09-28-president-trump-calls-on-congress-to-save-college-sports",
+      "at": "2026-09-29T01:56:49.598430+00:00",
+      "activated": false,
+      "importance": 20
+    },
+    "https://www.whitehouse.gov/?p=51499": {
+      "id": "wh-2026-09-28-nominations-sent-to-the-senate-e1fc",
+      "at": "2026-09-29T01:56:50.891041+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=51496": {
+      "id": "wh-2026-09-28-mined-melted-and-poured-in-america-president-trump-reverses-years-of-anti-mining",
+      "at": "2026-09-29T01:57:07.744054+00:00",
+      "activated": true,
+      "importance": 72
+    },
+    "https://www.whitehouse.gov/?p=51585": {
+      "id": "wh-2026-09-29-streamlining-access-to-government-services-through-america-gov",
+      "at": "2026-09-29T15:51:19.012629+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=51583": {
+      "id": "wh-2026-09-29-fact-sheet-president-donald-j-trump-streamlines-access-to-government-services-th",
+      "at": "2026-09-29T15:51:20.720990+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=51602": {
+      "id": "wh-2026-09-29-first-lady-melania-trump-announces-2026-fall-garden-tours",
+      "at": "2026-09-29T20:46:46.007610+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=51607": {
+      "id": "wh-2026-09-29-fact-sheet-president-donald-j-trump-eliminates-disease-carrying-pests-and-restor",
+      "at": "2026-09-30T00:26:51.474304+00:00",
+      "activated": false,
+      "importance": 12
+    },
+    "https://www.whitehouse.gov/?p=51617": {
+      "id": "wh-2026-09-29-eliminating-disease-carrying-pests-and-restoring-enjoyment-of-the-great-outdoors",
+      "at": "2026-09-30T00:27:05.924184+00:00",
+      "activated": false,
+      "importance": 58
+    },
+    "https://www.whitehouse.gov/?p=51618": {
+      "id": "wh-2026-09-29-fact-sheet-president-donald-j-trump-inaugurates-the-era-of-super-intelligence",
+      "at": "2026-09-30T00:27:07.303126+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51615": {
+      "id": "wh-2026-09-29-inaugurating-the-era-of-super-intelligence",
+      "at": "2026-09-30T00:27:08.537687+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51634": {
+      "id": "wh-2026-09-30-adobe-amazon-intel-starlink-google-and-zoom-partner-with-first-lady-melania-trum",
+      "at": "2026-09-30T13:42:42.522520+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=51747": {
+      "id": "wh-2026-09-30-icymi-president-trump-announces-largest-ever-steel-plant-coming-to-iowa",
+      "at": "2026-09-30T19:19:31.537340+00:00",
+      "activated": true,
+      "importance": 72
+    },
+    "https://www.whitehouse.gov/?p=51745": {
+      "id": "wh-2026-09-30-congressional-bill-s-2398-signed-into-law",
+      "at": "2026-09-30T19:19:40.632715+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=52044": {
+      "id": "wh-2026-10-01-nearly-two-years-in-president-trump-is-still-stacking-historic-wins-at-record-sp",
+      "at": "2026-10-01T19:31:42.813361+00:00",
+      "activated": false,
+      "importance": 30
+    },
+    "https://www.whitehouse.gov/?p=52037": {
+      "id": "wh-2026-10-01-democrats-unanimously-vote-against-the-stop-insider-trading-act",
+      "at": "2026-10-01T19:31:47.996976+00:00",
+      "activated": false,
+      "importance": 30
+    },
+    "https://www.whitehouse.gov/?p=52069": {
+      "id": "wh-2026-10-01-52069",
+      "at": "2026-10-01T23:52:38.157432+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=52051": {
+      "id": "wh-2026-10-01-new-report-dsa-policies-would-cost-americans-trillions",
+      "at": "2026-10-01T23:52:39.870295+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=52161": {
+      "id": "wh-2026-10-02-national-manufacturing-day-2026",
+      "at": "2026-10-02T22:57:47.885635+00:00",
+      "activated": false,
+      "importance": 10
+    },
+    "https://www.whitehouse.gov/?p=52159": {
+      "id": "wh-2026-10-02-presidential-message-on-national-cybersecurity-awareness-month",
+      "at": "2026-10-02T22:57:49.496639+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=52157": {
+      "id": "wh-2026-10-02-presidential-message-on-national-domestic-violence-awareness-month",
+      "at": "2026-10-02T22:57:50.769272+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=52151": {
+      "id": "wh-2026-10-02-presidential-message-on-national-breast-cancer-awareness-month-a680",
+      "at": "2026-10-02T22:57:52.802868+00:00",
+      "activated": false,
+      "importance": 10
+    },
+    "tw-2026-09-21-tga-release": {
+      "id": "tw-2026-09-21-tga-release",
+      "at": "2026-10-02T22:58:03.529675+00:00",
+      "activated": true,
+      "importance": 78
+    },
+    "https://www.whitehouse.gov/?p=52173": {
+      "id": "wh-2026-10-03-fact-sheet-president-donald-j-trump-announces-medicare-improvement-fund-payments",
+      "at": "2026-10-03T08:05:54.785908+00:00",
+      "activated": true,
+      "importance": 62
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

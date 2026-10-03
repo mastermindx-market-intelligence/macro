@@ -213,6 +213,47 @@ def load_skew_source(root: Path) -> dict | None:
     return _load(root / "site" / "options_skew" / "latest.json")
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# F03-W3-2 — payoff-fold catalyst chip
+#
+# The envelope's `macro_calendar` block (F03-W3-2, see producer at
+# scripts/build_options_catalyst_links.py::_macro_calendar) is the SAME
+# calendar the binder reads; the chip is purely a comparison between two
+# dates that artifact hands the page (the calendar's `fomc[].date` vs the
+# card's `expiration`).  This loader is DELIBERATELY SEPARATE from the
+# pinned workspace loader for the same reason as
+# load_intel_brief / load_payoff_lab / load_skew_source above (the
+# tests/test_render_options_workspace_scope.py suite pins the pinned
+# workspace loader's literal source — adding the chip store to that
+# pinned set would mutate the byte-equal expectation).
+# ─────────────────────────────────────────────────────────────────────────────
+_CATALYST_LINKS_SCHEMA = "mastermind.options_catalyst_links/v1"
+
+
+def load_catalyst_links(root: Path) -> dict | None:
+    """Fail-soft loader for the catalyst-links envelope's `macro_calendar`.
+
+    Written by scripts/build_options_catalyst_links.py (schema
+    mastermind.options_catalyst_links/v1, F03-W3-2 ADDS the additive
+    `macro_calendar` key).  Absent / corrupt / wrong-schema / missing-key
+    → None; the chip then renders absent on every card and the page falls
+    back to its pre-F03-W3-2 shape (no behaviour change for callers that
+    never pass the result through).  Schema is checked verbatim — the
+    producer is the only legitimate writer of this artifact, and any other
+    schema is a contract break."""
+    payload = _load(root / "site" / "options_catalyst_links" / "latest.json")
+    if not isinstance(payload, dict):
+        return None
+    if payload.get("schema") != _CATALYST_LINKS_SCHEMA:
+        return None
+    macro_calendar = payload.get("macro_calendar")
+    if not isinstance(macro_calendar, dict):
+        return None
+    if not isinstance(macro_calendar.get("fomc"), list):
+        return None
+    return payload
+
+
 _SKEW_NOTE_EN = (
     "Put-skew history comes from two sources. The earlier Polygon feed covers "
     "{polygon_first}–{polygon_last} alongside ThetaData end-of-day option "
@@ -1315,11 +1356,198 @@ def _payoff_lab_bracket(root: dict, stores: dict) -> dict | None:
     }
 
 
-def build_payoff_lab(payload: dict | None, stores: dict) -> dict:
+def _payoff_lab_catalyst(expiration: str | None, card_asof: str | None,
+                          calendar: dict | None) -> dict | None:
+    """F03-W3-2 — the per-card "Fed decision before this expiry?" chip.
+
+    Tri-state law (the chip is ABSENT — never printed as "none" — when ANY of
+    these are true; an honest "unknown" is silence, not a fabricated "No"):
+
+      · `calendar` is None (load_catalyst_links returned None, or the caller
+        threaded None through — i.e. wrong schema, missing key, corrupt
+        file, or absent envelope);
+      · `expiration` is not a YYYY-MM-DD ISO date (the fold has no expiry
+        to compare against);
+      · `card_asof` is not a YYYY-MM-DD ISO date (the comparison needs a
+        "this close" anchor);
+      · `expiration` > `calendar["horizon_end"]` (the calendar cannot see
+        that far — comparing would be a guess);
+      · `calendar["asof"]` is more than 7 calendar days older than
+        `card_asof` (a rotten calendar is not a calendar).
+
+    Otherwise:
+      · "before-expiry" when ≥ 1 FOMC date d satisfies `card_asof < d <=
+        expiration` (strict after the close, on or before expiry).  The chip
+        names the FIRST such date; the tip lists every one.
+      · "clear" when the calendar covers the expiry and no FOMC date lies
+        in that window.
+
+    Returns a dict with `state`, `chip_en`, `chip_zh`, `tip_en`, `tip_zh`,
+    `calendar_asof`.  The chip's word "FOMC" never reaches user copy
+    (the doctrinally plain form is "Fed decision"); the calendar's asof is
+    part of the tooltip so the reader sees which nightly's calendar the
+    chip is reading (see the producer docstring's lag note) — formatted as
+    a human-readable date word via the same fold formatters the chip uses
+    for its expiry text, never the raw ISO string (plain-language polish).
+    """
+    if not isinstance(calendar, dict):
+        return None
+    expiry_text = _parse_iso_date(expiration)
+    card_text = _parse_iso_date(card_asof)
+    cal_asof_text = _parse_iso_date(calendar.get("asof"))
+    horizon_end_text = _parse_iso_date(calendar.get("horizon_end"))
+    if not (expiry_text and card_text and cal_asof_text and horizon_end_text):
+        return None
+    # Strict ISO date comparison (both sides already YYYY-MM-DD strings of
+    # equal length — ISO lexical order equals calendar order).
+    if expiry_text > horizon_end_text:
+        return None
+    if _days_between(cal_asof_text, card_text) > 7:
+        return None
+
+    # Filter to dates strictly inside the window, then sort — the chip names
+    # the SOONEST such date; producer output is already sorted but a hand-
+    # written unsorted `fomc` list must still pick the right "first".
+    fomc_dates: list[str] = []
+    for entry in calendar.get("fomc") or []:
+        if not isinstance(entry, dict):
+            continue
+        d = _parse_iso_date(entry.get("date"))
+        if d and card_text < d <= expiry_text:
+            fomc_dates.append(d)
+    fomc_dates.sort()
+
+    # The calendar's as-of date in the fold's own human date-word form.
+    # Reusing the existing `expiry` formatters keeps ZH paragraph polish:
+    # `日历截至10月23日。` lands as a single Chinese sentence rather than
+    # an ISO string stuck into a Chinese one.
+    calendar_asof_en = _payoff_lab_expiry_en(cal_asof_text)
+    calendar_asof_zh = _payoff_lab_expiry_zh(cal_asof_text)
+
+    if fomc_dates:
+        # Chip names the FIRST such date (the soonest Fed decision inside the
+        # window); the tooltip lists every date.  Two-date form uses
+        # "and so does <other>"; three-or-more dates switch the EN verb to
+        # "do" + comma list (the window can hold at most 2 FOMC dates at
+        # 63 d, but the helper must remain correct on hand-injected
+        # test fixtures).
+        first = fomc_dates[0]
+        first_en = _payoff_lab_expiry_en(first)
+        first_zh = _payoff_lab_expiry_zh(first)
+        expiry_en = _payoff_lab_expiry_en(expiration)
+        expiry_zh = _payoff_lab_expiry_zh(expiration)
+        others_dates = fomc_dates[1:]
+        chip_en = f"Fed decision {first_en} lands before this expiry"
+        chip_zh = f"美联储{first_zh}议息在到期前"
+        if len(fomc_dates) == 2:
+            # Spec named the two-date form: "and so does <other>".
+            other_en = _payoff_lab_expiry_en(others_dates[0])
+            other_zh = _payoff_lab_expiry_zh(others_dates[0])
+            tail_en = f", and so does {other_en}"
+            tail_zh = f"，{other_zh}亦然"
+            others_en_text = None  # not used in the two-date form
+            others_zh_text = None
+        elif len(fomc_dates) >= 3:
+            # Verb agreement fix (MINOR 2): ≥ 3 dates switch the EN verb
+            # from "does" (singular) to "do" (plural of "Fed decisions").
+            others_en_text = ", ".join(_payoff_lab_expiry_en(d) for d in others_dates)
+            others_zh_text = "、".join(_payoff_lab_expiry_zh(d) for d in others_dates)
+            tail_en = f", and so do {others_en_text}"
+            tail_zh = f"，{others_zh_text}亦然"
+            other_en = other_zh = None
+        else:
+            # One date — no tail.
+            tail_en = ""
+            tail_zh = ""
+            others_en_text = others_zh_text = None
+            other_en = other_zh = None
+        if len(fomc_dates) == 1:
+            tip_en = (
+                f"The Federal Reserve's rate decision on {first_en} falls inside "
+                f"the {expiry_en} expiry these structures use. "
+                f"Prices here were set at this close; a scheduled decision inside "
+                f"the window is context, not a signal. Calendar as of {calendar_asof_en}."
+            )
+            tip_zh = (
+                f"美联储{first_zh}的利率决定落在这些结构所用的{expiry_zh}到期日之前。"
+                f"此处价格以本次收盘计算；窗口内的既定议息只是背景信息，不是信号。"
+                f"日历截至{calendar_asof_zh}。"
+            )
+        else:
+            tip_en = (
+                f"The Federal Reserve's rate decision on {first_en} falls inside "
+                f"the {expiry_en} expiry these structures use{tail_en}. "
+                f"Prices here were set at this close; a scheduled decision inside "
+                f"the window is context, not a signal. Calendar as of {calendar_asof_en}."
+            )
+            tip_zh = (
+                f"美联储{first_zh}的利率决定落在这些结构所用的{expiry_zh}到期日之前{tail_zh}。"
+                f"此处价格以本次收盘计算；窗口内的既定议息只是背景信息，不是信号。"
+                f"日历截至{calendar_asof_zh}。"
+            )
+        return {
+            "state": "before-expiry",
+            "chip_en": chip_en, "chip_zh": chip_zh,
+            "tip_en": tip_en, "tip_zh": tip_zh,
+            "calendar_asof": cal_asof_text,
+        }
+
+    expiry_en = _payoff_lab_expiry_en(expiration)
+    expiry_zh = _payoff_lab_expiry_zh(expiration)
+    return {
+        "state": "clear",
+        "chip_en": "No Fed decision before this expiry",
+        "chip_zh": "到期前无美联储议息",
+        "tip_en": (
+            f"No Federal Reserve rate decision is scheduled between this close "
+            f"and the {expiry_en} expiry. Calendar as of {calendar_asof_en}."
+        ),
+        "tip_zh": (
+            f"本次收盘至{expiry_zh}到期之间没有既定的美联储利率决定。"
+            f"日历截至{calendar_asof_zh}。"
+        ),
+        "calendar_asof": cal_asof_text,
+    }
+
+
+def _parse_iso_date(value) -> str | None:
+    """A YYYY-MM-DD ISO date string or None; rejects partial / malformed."""
+    if not isinstance(value, str) or len(value) < 10:
+        return None
+    head = value[:10]
+    try:
+        parsed = date.fromisoformat(head)
+    except ValueError:
+        return None
+    if parsed.isoformat() != head:
+        return None
+    return head
+
+
+def _days_between(a_iso: str, b_iso: str) -> int:
+    """Calendar-day difference b_iso − a_iso (signed).  Inputs are YYYY-MM-DD."""
+    try:
+        a = date.fromisoformat(a_iso)
+        b = date.fromisoformat(b_iso)
+    except ValueError:
+        return 0
+    return (b - a).days
+
+
+def build_payoff_lab(payload: dict | None, stores: dict, *,
+                     catalyst_links: dict | None = None) -> dict:
     """Adapter for the index-ETF payoff lab — per-symbol card_dict, keyed by
     SPY / QQQ / IWM only (SPX has no chain in the lab; DIA is not a card on
     this page).  Returns `{}` when the payload is absent, accrual_state is
-    'absent', roots is empty, or no root carries a BUILT structure."""
+    'absent', roots is empty, or no root carries a BUILT structure.
+
+    `catalyst_links` is the F03-W3-2 catalyst-links envelope (passed through
+    load_catalyst_links) — its `macro_calendar` key is the same calendar the
+    binder reads, and `_payoff_lab_catalyst` decides per-card whether to
+    emit a "Fed decision before this expiry?" chip.  Optional and additive
+    (default None → no chip on any card; pre-F03-W3-2 callers see no
+    behaviour change).
+    """
     out: dict[str, dict] = {}
     if not isinstance(payload, dict):
         return out
@@ -1389,12 +1617,22 @@ def build_payoff_lab(payload: dict | None, stores: dict) -> dict:
         if ledger_asof and card_asof and str(ledger_asof) != str(card_asof):
             asof_note_en = f"Structures as of {ledger_asof}"
             asof_note_zh = f"结构定价截至 {ledger_asof}"
+        # F03-W3-2 — catalyst chip.  Driven by the SAME catalyst_links
+        # envelope the loader returns (so the producer is the only writer of
+        # the calendar — never a second calendar reader).  None → chip
+        # absent, the template's `{% if lab.catalyst %}` short-circuits.
+        macro_calendar = (
+            catalyst_links.get("macro_calendar")
+            if isinstance(catalyst_links, dict) else None
+        )
+        catalyst = _payoff_lab_catalyst(expiry_iso, card_asof, macro_calendar)
         out[sym] = {
             "expiry_en": expiry_en, "expiry_zh": expiry_zh,
             "tenor_days": tenor_days,
             "summary_en": summary_en, "summary_zh": summary_zh,
             "rows": rows, "bracket": bracket,
             "asof_note_en": asof_note_en, "asof_note_zh": asof_note_zh,
+            "catalyst": catalyst,
         }
     if not any_built:
         return {}
@@ -2144,6 +2382,7 @@ def _missing_stores(stores: dict) -> list[str]:
 
 def build_context(root: Path, stores: dict | None = None, intel_brief: dict | None = None,
                   payoff_lab: dict | None = None, skew_source: dict | None = None,
+                  catalyst_links: dict | None = None,
                   *, now: datetime | None = None) -> dict:
     """Assemble the whole workspace context from the committed stores.
 
@@ -2165,6 +2404,15 @@ def build_context(root: Path, stores: dict | None = None, intel_brief: dict | No
     context keys and the template branch silently emits no note.  See
     load_skew_source() above for the loader and skew_source_note() for the
     plain-language sentence builder.
+
+    `catalyst_links` is the F03-W3-2 catalyst-links envelope
+    (site/options_catalyst_links/latest.json), kept OUT of `stores`/
+    the pinned workspace loader for the same pinned-workspace-scope
+    reason as `intel_brief` / `payoff_lab` / `skew_source`.  Default
+    None → every card renders the fold WITHOUT a catalyst chip;
+    pre-F03-W3-2 callers see no behaviour change.  See
+    load_catalyst_links() above for the loader and
+    _payoff_lab_catalyst() for the per-card chip builder.
     """
     stores = load_stores(root) if stores is None else stores
 
@@ -2208,7 +2456,7 @@ def build_context(root: Path, stores: dict | None = None, intel_brief: dict | No
         # F03-W2-5b · index-ETF payoff lab fold on the four index cards.  Pass-
         # through — see build_payoff_lab() above; an empty/absent payload
         # renders {} and the fold's Jinja guard `{% if lab %}` short-circuits.
-        "payoff_lab": build_payoff_lab(payoff_lab, stores),
+        "payoff_lab": build_payoff_lab(payoff_lab, stores, catalyst_links=catalyst_links),
         # F03-W2-4c · skew source-break note (Directional read foot).  Two
         # parallel string keys so the template can render `t(en, zh)` without
         # one conditional on the other.  Both are None when there is no break
@@ -2294,9 +2542,11 @@ def _sector_zh_json(stores: dict) -> str:
 
 def render(root: Path, stores: dict | None = None, intel_brief: dict | None = None,
            payoff_lab: dict | None = None, skew_source: dict | None = None,
+           catalyst_links: dict | None = None,
            *, now: datetime | None = None) -> str:
     """Render options.html.j2 and return the HTML string."""
-    ctx = build_context(root, stores, intel_brief, payoff_lab, skew_source, now=now)
+    ctx = build_context(root, stores, intel_brief, payoff_lab, skew_source,
+                        catalyst_links, now=now)
     env = Environment(
         loader=FileSystemLoader(str(root / "templates")),
         autoescape=True,
@@ -2329,8 +2579,12 @@ def main(argv: list[str] | None = None) -> int:
         intel_brief = load_intel_brief(root)
         payoff_lab = load_payoff_lab(root)
         skew_source = load_skew_source(root)
+        # F03-W3-2 — additive load; load_catalyst_links is fail-soft (None
+        # when the envelope is missing / wrong schema / has no macro_calendar).
+        catalyst_links = load_catalyst_links(root)
         html = render(root, stores=stores, intel_brief=intel_brief,
-                      payoff_lab=payoff_lab, skew_source=skew_source)
+                      payoff_lab=payoff_lab, skew_source=skew_source,
+                      catalyst_links=catalyst_links)
 
         out_path.parent.mkdir(parents=True, exist_ok=True)
         # write_page is the ONLY write path. The fail-soft law above covers a
@@ -2341,7 +2595,8 @@ def main(argv: list[str] | None = None) -> int:
         from lib.pages import write_page  # noqa: PLC0415
         write_page(out_path, html)
 
-        ctx = build_context(root, stores, intel_brief, payoff_lab, skew_source)
+        ctx = build_context(root, stores, intel_brief, payoff_lab, skew_source,
+                            catalyst_links)
         sess = ctx["session"]
         log.info(
             "options workspace -> %s | session=%s coverage=%s/%s (%s%%) quality=%s missing=%s aib=%s",

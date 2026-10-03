@@ -355,6 +355,18 @@ OWNER_VALUE: dict[str, dict[str, str]] = {
     "QUIET": _pair("Quiet", "平静"),
     "ELEVATED": _pair("Elevated", "警戒"),
     "ARMED": _pair("Armed", "已触发"),
+    # Bond desk cycle phase (`scripts/build_bonds.py` `PHASE`, the owner's closed
+    # vocabulary {recession, early, mid, late}), republished by the national_debt
+    # workspace as the categorical `bond_desk_cycle_phase` (pass-through, never
+    # re-derived). The 2026-10-02 regime bake deslugged `recession` into an
+    # untranslated "Recession" ZH span on macro_national_debt_liabilities.html
+    # (copy-law red, ci-pack-10 on main). Same EN/ZH pairs the bond desk page
+    # itself renders; pinned by tests/test_macro_suite_pages.py::
+    # test_bond_desk_cycle_phase_tokens_have_reviewed_pairs.
+    "recession": _pair("Recession", "衰退"),
+    "early": _pair("Early-cycle recovery", "周期早段复苏"),
+    "mid": _pair("Mid-cycle", "周期中段"),
+    "late": _pair("Late-cycle", "周期晚段"),
 }
 
 # --- metric identities -------------------------------------------------------

@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "EFC-BULL-20260818",
-  "asof": "2026-09-23",
-  "phase": "triggered_pre_t1",
-  "detection_phase": "triggered_pre_t1",
-  "management_confidence": 24.4,
-  "raw_confidence": 24.0,
-  "delta_vs_base": -35.6,
-  "recommended_action": "hold",
-  "human_state": "Stalling",
+  "asof": "2026-10-02",
+  "phase": "invalidated",
+  "detection_phase": "invalidated",
+  "management_confidence": 10.5,
+  "raw_confidence": 8.0,
+  "delta_vs_base": -49.5,
+  "recommended_action": "invalidated",
+  "human_state": "Invalidated",
   "components": {
-    "validity": 26.4,
+    "validity": 0.0,
     "progress": 0.0,
-    "pace": 1.1,
-    "retention": 50.0,
-    "overlay": 61.0
+    "pace": 0.0,
+    "retention": 0.0,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.373,
+    "dist_to_stop_r": -0.198,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 77.8,
-    "p1": -0.4181,
-    "p2": -0.209,
+    "horizon_pct_used": 97.8,
+    "p1": -0.7985,
+    "p2": -0.3992,
     "p3": null,
-    "move_r": -0.627,
+    "move_r": -1.198,
     "mfe_r": 0.0,
-    "mae_r": -0.718
+    "mae_r": -1.198
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 3.814697180359872e-08,
-  "_mae": -1.2700004196167,
+  "_mae": -2.1199998474121102,
   "_max_p1": 1.4367974313973165e-08,
   "_first_trigger_ts": "2026-08-19",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 35,
-  "tau": 0.7778
+  "days_elapsed": 44,
+  "tau": 0.9778
 }
