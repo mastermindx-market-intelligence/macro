@@ -245,9 +245,10 @@ def macro_window_provenance(
                         except (TypeError, ValueError):
                             # Defensive: a comparison that cannot be resolved
                             # (e.g. tz-aware coverage vs. naive source dates
-                            # surviving _per_value_source_dates, or an
-                            # out-of-order timestamp index). The leg's finite
-                            # rows become unknown_inputs rather than raising.
+                            # surviving _per_value_source_dates). The leg's
+                            # finite rows become unknown_inputs rather than
+                            # raising.
+                            log.warning("regime_v2_pit: %s source-date comparison failed; leg marked unknown_inputs", leg)
                             unknown |= finite
                             revised = pd.Series(False, index=index)
         window, minimum, lag = spec["smooth_rows"], spec["min_periods"], spec["lag_rows"]

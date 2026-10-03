@@ -453,6 +453,39 @@ def test_active_component_with_invalid_endpoint_is_unknown(invalid):
     assert result.iloc[300]["macro_window_basis"] == "unknown_inputs"
 
 
+@pytest.mark.parametrize("invalid", [np.inf, -np.inf, "bad"])
+def test_invalid_value_inside_a_smoothed_window_is_unknown(invalid):
+    """sticky_cpi is the only leg whose smooth_rows=63/min_periods=21 window
+    can hold at least 21 finite rows while still containing a bad value. The
+    `invalid` branch (raw.notna() & ~finite) is what catches it: rolling counts
+    of `finite` stay above `min_periods`, so `usable`/`complete` remain True,
+    and only the unknown_count contribution from the `invalid` series flips
+    the row's label to `unknown_inputs`."""
+    from scripts import build_regime_v2_pit as builder
+    # Build a CLEAN source once from the sticky_cpi fixture (before any
+    # injection) so the per-value path's source_date=NaT branch cannot mask
+    # whether the invalid-endpoint check itself forced unknown_inputs.
+    frame_clean, active_clean, coverage_clean = _window_fixture("sticky_cpi")
+    clean_source = frame_clean["sticky_cpi"]
+    # CONTROL: with a clean frame, row 300 must NOT be unknown_inputs —
+    # the smoothed sticky_cpi leg sits entirely post-coverage there.
+    result_clean, _ = builder.macro_window_provenance(
+        frame_clean, active_clean, coverage_clean,
+        sources={"sticky_cpi": clean_source})
+    assert result_clean.iloc[300]["macro_window_basis"] != "unknown_inputs"
+    # INJECTED: same fixture, same clean source; only the feature column
+    # has the bad value at row 290 (inside the 63-row window ending at row 300,
+    # well past row-100 coverage and far from row 0). With the invalid-endpoint
+    # check enabled, row 300 must be unknown_inputs.
+    frame, active, coverage = _window_fixture("sticky_cpi")
+    if invalid == "bad":
+        frame["sticky_cpi"] = frame["sticky_cpi"].astype(object)
+    frame.iloc[290, 0] = invalid
+    result, _ = builder.macro_window_provenance(
+        frame, active, coverage, sources={"sticky_cpi": clean_source})
+    assert result.iloc[300]["macro_window_basis"] == "unknown_inputs"
+
+
 def test_window_basis_does_not_use_later_rows_or_change_inputs():
     from scripts import build_regime_v2_pit as builder
     frame, active, coverage = _window_fixture("sticky_cpi")
@@ -829,12 +862,13 @@ def test_tz_aware_source_index_normalises_to_naive_utc():
     assert result.iloc[164]["macro_window_basis"] == "initial_vintage_inputs"
 
 
-def test_all_three_tz_aware_inputs_fall_back_to_unknown_without_raising():
+def test_all_three_tz_aware_inputs_fall_back_to_unknown_without_raising(caplog):
     """F6/T3: when the feature index, the coverage start, AND the source are
-    ALL tz-aware, the per-value comparison still completes without raising;
-    the leg's finite rows are unknown_inputs. Covers the residual case where
-    the (first.tzinfo is None) != (index.tz is None) parity check passes but
-    the source_dates < first comparison still fails on a tz vs naive boundary.
+    ALL tz-aware, the per-value comparison RAISES and the builder catches it
+    via the (TypeError, ValueError) handler; the leg's finite rows are
+    unknown_inputs. Covers the residual case where the
+    (first.tzinfo is None) != (index.tz is None) parity check passes but the
+    source_dates < first comparison still fails on a tz vs naive boundary.
     """
     from scripts import build_regime_v2_pit as builder
     count = 200
@@ -853,15 +887,20 @@ def test_all_three_tz_aware_inputs_fall_back_to_unknown_without_raising():
         features, active, coverage, sources={"payrolls": source})
     payroll_basis = states_payroll_basis(result, builder)
     assert (payroll_basis == "unknown_inputs").all()
+    # The except block must log exactly one WARNING naming the failed leg
+    # so the receipt can attribute the fallback rather than calling it silent.
+    warning_records = [
+        record for record in caplog.records
+        if record.levelname == "WARNING"
+        and "source-date comparison failed" in record.getMessage()
+    ]
+    assert len(warning_records) == 1
 
 
 def states_payroll_basis(result, builder):
-    """Helper: extract the payrolls leg's basis series from the audit's by_leg block."""
-    # The result frame's macro_window_basis collapses across legs, so we
-    # assert the payrolls leg specifically by rebuilding its label path:
-    # if any leg is unknown, the row is unknown_inputs. With only payrolls
-    # active and tz-aware across the board, the per-value path falls back
-    # to unknown_inputs -> the row label is unknown_inputs for every row.
+    """Helper: returns the cross-leg `macro_window_basis` column from the
+    result frame; with only payrolls active that equals the payrolls leg's
+    label (no other leg contributes a different value)."""
     return result["macro_window_basis"]
 
 

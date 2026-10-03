@@ -198,7 +198,7 @@ The two review-pass rounds also landed F2 (source de-duplication), F6
   constructs. Parity is asserted on the SYNTHETIC fixture only; the
   seven real-store tests are skipped wherever the store is absent. The
   store is tracked at data/fred_vintage/vintages.parquet (and the
-  regime_history.parquet sidecar at data/regime/regime_history.parquet);
+  regime_history.parquet — the regime history artifact — at data/regime/regime_history.parquet);
   a full checkout materialises the bytes and the seven tests run, while
   sparse session worktrees omit data/ and the tests are skipped on the
   `_HAVE_STORE` gate. No CI run was observed in this lane. The `pit_class`, `fallback_notes` and every numeric
