@@ -1,0 +1,18 @@
+{
+  "drop_equity_proceeds": {
+    "exit": 1,
+    "intended_assertion_failure": true,
+    "log_sha256": "10307930aab9b15dd6d3c3c72835d25548658b2e62b51d570d6519b515adbcb1"
+  },
+  "erase_interim_breach": {
+    "exit": 1,
+    "intended_assertion_failure": true,
+    "log_sha256": "09a0a0095e6ace97cbe84a80f3693faf7efe91526f9fb5c03c298754bf15a0bd"
+  },
+  "ignore_dilution_in_hurdle": {
+    "exit": 1,
+    "intended_assertion_failure": true,
+    "log_sha256": "8164f1d922c62cf21ebb7d67e3117d0e368495932c75ba978537e98bf33676cc"
+  },
+  "source_restored": true
+}
