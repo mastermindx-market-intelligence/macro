@@ -10,6 +10,8 @@
 
 [Source census v2](02_SOURCE_CENSUS_AND_REUSE_MAP.md) recovers the missing Temporal Grain dependency, existing TOI wave and artifact contracts, current-source V4 custody references, producer/consumer boundaries, data qualification requirements and observed fabric limitations. It links the detailed plans already owned by those programmes rather than inventing a parallel system.
 
+[Deep Research all-weather research programme](09_DEEP_RESEARCH_PROPHET_ALL_WEATHER_PROGRAM_2026-10-03.md) adds the October 3 source synthesis and executable scientific agenda for indicator x regime x timeframe x theme confluence: temporal-grain controls, 2D/3D phase robustness, matched filter memory, rotation-speed/confirmation-cost interactions, regime reconstruction, theme-restriction tests, indicator-family redundancy, entry-versus-management decomposition, dependence-aware inference and a prioritized experiment portfolio. **It is a research architecture and source synthesis, not a claim that the planned broad backtests or implementation were completed.**
+
 The [Agent OS handoff pointer](../../../agentos/handoffs/PROPHET-REGIME-INDICATOR-2026-10-04-ASTRA-CEO.md) keeps the same mission and publication boundary recoverable. It is on this documentation branch; it does not change incumbent runtime or workstream ownership.
 
 ## What revision 2 materially adds
