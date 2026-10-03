@@ -5,9 +5,13 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import sys
 from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any
+
+_REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_REPO))
 
 from scripts.collect_release_target_vintages import (
     collect_release_target_vintages,

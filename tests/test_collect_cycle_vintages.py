@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
 import runpy
 import subprocess
 import sys
@@ -12,6 +13,8 @@ import pandas as pd
 import pytest
 
 from scripts.collect_cycle_vintages import CYCLE_SERIES, collect_cycle_vintages
+
+REPO = Path(__file__).resolve().parents[1]
 
 
 def _frame(series_id: str) -> pd.DataFrame:
@@ -74,6 +77,40 @@ def test_dry_run_writes_nothing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
     assert not (tmp_path / "data").exists()
 
 
+def test_cli_help_runs_from_foreign_cwd_without_pythonpath(
+    tmp_path: Path,
+):
+    """REPO-pin guarantee: the script must run from any cwd with a clean
+    PYTHONPATH and no FRED_API_KEY. --help exits before any provider is touched.
+    """
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("PYTHONPATH", "FRED_API_KEY")
+    }
+    env.pop("PYTHONPATH", None)
+    env.pop("FRED_API_KEY", None)
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(REPO / "scripts" / "collect_cycle_vintages.py"),
+            "--help",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=120,
+    )
+
+    assert completed.returncode == 0, (
+        f"stdout={completed.stdout!r}\nstderr={completed.stderr!r}"
+    )
+    assert "usage" in completed.stdout.lower()
+
+
 def test_unsupported_series_is_rejected(tmp_path: Path):
     with pytest.raises(ValueError, match="unsupported collector series 'CPIAUCSL'"):
         collect_cycle_vintages(
@@ -83,6 +120,40 @@ def test_unsupported_series_is_rejected(tmp_path: Path):
             fetcher=_fetcher,
         )
     assert not (tmp_path / "data").exists()
+
+
+def test_cli_help_runs_from_foreign_cwd_without_pythonpath(
+    tmp_path: Path,
+):
+    """REPO-pin guarantee: the script must run from any cwd with a clean
+    PYTHONPATH and no FRED_API_KEY. --help exits before any provider is touched.
+    """
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("PYTHONPATH", "FRED_API_KEY")
+    }
+    env.pop("PYTHONPATH", None)
+    env.pop("FRED_API_KEY", None)
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(REPO / "scripts" / "collect_cycle_vintages.py"),
+            "--help",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=120,
+    )
+
+    assert completed.returncode == 0, (
+        f"stdout={completed.stdout!r}\nstderr={completed.stderr!r}"
+    )
+    assert "usage" in completed.stdout.lower()
 
 
 def test_release_target_store_is_untouched(tmp_path: Path):
@@ -202,6 +273,40 @@ def test_cli_without_a_key_skips_cleanly(
     assert not (tmp_path / "data").exists()
 
 
+def test_cli_help_runs_from_foreign_cwd_without_pythonpath(
+    tmp_path: Path,
+):
+    """REPO-pin guarantee: the script must run from any cwd with a clean
+    PYTHONPATH and no FRED_API_KEY. --help exits before any provider is touched.
+    """
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("PYTHONPATH", "FRED_API_KEY")
+    }
+    env.pop("PYTHONPATH", None)
+    env.pop("FRED_API_KEY", None)
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(REPO / "scripts" / "collect_cycle_vintages.py"),
+            "--help",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=120,
+    )
+
+    assert completed.returncode == 0, (
+        f"stdout={completed.stdout!r}\nstderr={completed.stderr!r}"
+    )
+    assert "usage" in completed.stdout.lower()
+
+
 def test_missing_key_skips_cleanly_and_writes_no_files(tmp_path: Path):
     receipt = collect_cycle_vintages(
         repo_root=tmp_path,
@@ -212,3 +317,37 @@ def test_missing_key_skips_cleanly_and_writes_no_files(tmp_path: Path):
     assert receipt["status"] == "skipped"
     assert receipt["reason"] == "missing_fred_api_key"
     assert not (tmp_path / "data").exists()
+
+
+def test_cli_help_runs_from_foreign_cwd_without_pythonpath(
+    tmp_path: Path,
+):
+    """REPO-pin guarantee: the script must run from any cwd with a clean
+    PYTHONPATH and no FRED_API_KEY. --help exits before any provider is touched.
+    """
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("PYTHONPATH", "FRED_API_KEY")
+    }
+    env.pop("PYTHONPATH", None)
+    env.pop("FRED_API_KEY", None)
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(REPO / "scripts" / "collect_cycle_vintages.py"),
+            "--help",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=120,
+    )
+
+    assert completed.returncode == 0, (
+        f"stdout={completed.stdout!r}\nstderr={completed.stderr!r}"
+    )
+    assert "usage" in completed.stdout.lower()

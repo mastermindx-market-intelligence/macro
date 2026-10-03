@@ -1475,6 +1475,19 @@ lanes:
           durably absent.
           inputs: [FRED_API_KEY]
           outputs: [data/fred_vintage/release_targets/manifest.json]
+      - id: collect_cycle_vintages
+        module: scripts.collect_cycle_vintages
+        note: >
+          non-fatal; ALFRED full-vintage matrices for the Cycle (a) diagnostic
+          cohort NEWORDER / ISRATIO / INDPRO, reused from the release-target
+          collector. The requested cohort is staged before publication; validation
+          failures leave the last-good stores untouched, while any interrupted
+          source mutation has both completion markers durably absent. The
+          cycle store and the release-target store are written to disjoint
+          target_subdirs under data/fred_vintage/ and never alias through a
+          shared identifier.
+          inputs: [FRED_API_KEY]
+          outputs: [data/fred_vintage/cycle_vintages/manifest.json]
       - id: collect_release_cpi_official_truth
         module: scripts.collect_release_cpi_official_truth
         note: >
