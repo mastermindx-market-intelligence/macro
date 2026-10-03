@@ -55,20 +55,55 @@ def _extra() -> pd.DataFrame:
     return x[["extra", "close", "low", "high"]]
 
 
+def _neg_zero() -> pd.DataFrame:
+    x = _base()
+    x.iloc[0, 0] = -0.0
+    x.iloc[4, 2] = 0.0
+    return x
+
+
+def _tz_shift() -> pd.DataFrame:
+    x = _base()
+    x.index = pd.date_range("2026-01-05 23:30", periods=6, freq="D", tz="UTC").tz_convert(
+        "Pacific/Kiritimati"
+    )
+    return x
+
+
+# Frozen copy of the loop on main before the column-wise builder; never edit it to match new code.
+def _frozen_old_loop(frame) -> str:
+    rows = []
+    index = pd.DatetimeIndex(frame.index)
+    for position in range(len(frame)):
+        row = [index[position].date().isoformat()]
+        for column in ("high", "low", "close"):
+            try:
+                value = float(frame[column].iloc[position])
+            except (TypeError, ValueError):
+                value = float("nan")
+            row.append(None if not np.isfinite(value) else value)
+        rows.append(row)
+    return sha16(rows)
+
+
 FAST = {
     "plain": _base,
     "nonfinite": _nonfinite,
-    "empty": lambda: _base().iloc[:0],
     "int": lambda: _base().round().astype("int64"),
     "float32": lambda: _base().astype("float32"),
     "tz": _tz,
     "extra_col": _extra,
+    "neg_zero": _neg_zero,
+    "tz_shift": _tz_shift,
 }
 SLOW = {
     "object": _object,
     "nat": _nat,
     "Int64": lambda: _base().round().astype("Int64"),
     "bool": lambda: _base() > 2,
+    "empty": lambda: _base().iloc[:0],
+    "empty_no_columns": lambda: pd.DataFrame(index=pd.DatetimeIndex([])),
+    "empty_missing_close": lambda: pd.DataFrame({"high": [], "low": []}, index=pd.DatetimeIndex([])),
 }
 #: Digests the cell-by-cell loop produced on main before the column-wise builder existed.
 PINNED = {
@@ -83,6 +118,10 @@ PINNED = {
     "nat": "4fdddab3296c2ac2",
     "Int64": "c4270da38bbc1ac8",
     "bool": "0c02b53397d1b5d5",
+    "neg_zero": "769250833a213528",
+    "tz_shift": "abbee96a52d6de99",
+    "empty_no_columns": "4f53cda18c2baa0c",
+    "empty_missing_close": "4f53cda18c2baa0c",
 }
 
 
@@ -107,6 +146,33 @@ def test_digests_are_the_ones_the_old_loop_produced(name):
     assert lp.substrate_fingerprint(make()) == PINNED[name]
 
 
+@pytest.mark.parametrize("name", sorted(FAST) + sorted(SLOW))
+def test_every_fixture_equals_the_frozen_old_loop(name):
+    frame = (FAST.get(name) or SLOW[name])()
+    assert lp.substrate_fingerprint(frame) == _frozen_old_loop(frame)
+
+
+def test_neg_zero_and_local_date_are_distinguished():
+    neg = _neg_zero()
+    assert lp.substrate_fingerprint(neg) != lp.substrate_fingerprint(_base())
+    plain_neg = _base()
+    plain_neg.iloc[0, 0] = 0.0
+    plain_neg.iloc[4, 2] = 0.0
+    assert lp.substrate_fingerprint(neg) != lp.substrate_fingerprint(plain_neg)
+    tz_frame = _tz_shift()
+    utc_frame = tz_frame.copy()
+    utc_frame.index = utc_frame.index.tz_convert("UTC")
+    assert lp.substrate_fingerprint(tz_frame) != lp.substrate_fingerprint(utc_frame)
+
+
+def test_nonempty_frame_missing_a_column_raises_like_the_old_loop():
+    frame = _base().drop(columns=["low"])
+    with pytest.raises(KeyError):
+        lp.substrate_fingerprint(frame)
+    with pytest.raises(KeyError):
+        _frozen_old_loop(frame)
+
+
 def test_non_finite_cells_are_none_and_the_rest_are_floats():
     rows = lp._fingerprint_rows_fast(_nonfinite())
     assert rows[0] == ["2026-01-05", 1.5, 1.0, 1.2]
@@ -127,6 +193,9 @@ def test_random_frames_agree():
         frame = pd.DataFrame(values, index=pd.bdate_range("2020-01-01", periods=n),
                              columns=["high", "low", "close"])
         fast = lp._fingerprint_rows_fast(frame)
+        if n == 0:
+            assert fast is None
+            continue
         assert fast is not None
         assert json.dumps(fast) == json.dumps(lp._fingerprint_rows_slow(frame))
 

@@ -711,10 +711,13 @@ def _fingerprint_rows_fast(frame: pd.DataFrame) -> list[list[Any]] | None:
 
     Taken only for plain numpy float/integer columns under an index with no missing
     timestamp — the shape ``_frozen_frame`` always produces.  Anything else (object,
-    boolean, nullable or duplicated columns, a NaT in the index) returns None.
+    boolean, nullable or duplicated columns, a NaT in the index, an empty frame or
+    a missing column) returns None.
     """
     index = pd.DatetimeIndex(frame.index)
     if index.hasnans:
+        return None
+    if len(frame) == 0 or any(column not in frame.columns for column in _SUBSTRATE_COLUMNS):
         return None
     columns: list[list[Any]] = []
     for column in _SUBSTRATE_COLUMNS:
