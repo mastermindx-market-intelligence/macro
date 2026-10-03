@@ -465,6 +465,8 @@ def _attach_transmission_edges(
     edges: list[dict],
     as_of: str,
     driver_node_id: str,
+    *,
+    now: datetime | None = None,
 ) -> None:
     """Attach rate/inflation transmission chains as ordered mechanism edges.
 
@@ -521,7 +523,7 @@ def _attach_transmission_edges(
             entity = ", ".join(measured_assets[:3]) if measured_assets else "transmission channel"
 
             node_id = f"transmission_{chain_id}_order{order_num}"
-            chain_clock = _classify_source_clock(chain_as_of)
+            chain_clock = _classify_source_clock(chain_as_of, now)
             nodes.append(_make_node(
                 node_id=node_id,
                 as_of=chain_clock["as_of"],
@@ -645,6 +647,8 @@ def _build_pathway(
     as_of: str,
     pathway_role: str = "primary",
     source_as_of: str | None = None,
+    *,
+    now: datetime | None = None,
 ) -> dict:
     """Build one pathway dict from market_drivers emitted structures.
 
@@ -675,7 +679,7 @@ def _build_pathway(
 
     # Per R1/R2, the driver carries the source clock. R3/R4 are surfaced via
     # `as_of_reason` so the reader can reject future/unknown defensively.
-    driver_clock = _classify_source_clock(source_as_of)
+    driver_clock = _classify_source_clock(source_as_of, now)
 
     nodes.append(_make_node(
         node_id=driver_node_id,
@@ -741,6 +745,7 @@ def _build_pathway(
         edges=edges,
         as_of=as_of,
         driver_node_id=driver_node_id,
+        now=now,
     )
 
     # Coverage score: fresh readable required legs / total required legs.
@@ -789,7 +794,7 @@ def _build_pathway(
     return rec
 
 
-def _build_factor_rotation_pathway(fi_state: dict, as_of: str, source_as_of: str | None = None) -> dict:
+def _build_factor_rotation_pathway(fi_state: dict, as_of: str, source_as_of: str | None = None, *, now: datetime | None = None) -> dict:
     """Build a minimal factor_rotation pathway from factor_intelligence_state.
 
     `as_of` is the build date. `source_as_of` is the actual source clock
@@ -805,7 +810,7 @@ def _build_factor_rotation_pathway(fi_state: dict, as_of: str, source_as_of: str
     else:
         sr_label = str(sr)
 
-    clock = _classify_source_clock(source_as_of)
+    clock = _classify_source_clock(source_as_of, now)
 
     driver_node_id = "driver_factor_rotation"
     nodes = [_make_node(
@@ -957,6 +962,7 @@ def compile(root: Path | None = None, *, now: datetime | None = None) -> dict:  
         primary_pathway = _build_pathway(
             primary_driver, primary_driver, md, chains, as_of, "primary",
             source_as_of=md_clock["as_of"],
+            now=built_dt,
         )
         primary_pathway["family"] = primary_family
 
@@ -1006,6 +1012,7 @@ def compile(root: Path | None = None, *, now: datetime | None = None) -> dict:  
             alt_pw = _build_pathway(
                 alt_d, alt_d, alt_md, chains, as_of, "alternate",
                 source_as_of=md_clock["as_of"],
+                now=built_dt,
             )
             alt_pw["family"] = alt_family
             pathways.append(alt_pw)
@@ -1065,6 +1072,7 @@ def compile(root: Path | None = None, *, now: datetime | None = None) -> dict:  
                     scare_pw = _build_pathway(
                         mapped_family, mapped_family, scare_md, chains, as_of, "primary",
                         source_as_of=rr_clock["as_of"],
+                        now=built_dt,
                     )
                     scare_pw["source_trigger"] = "risk_radar"
                     scare_pw["scare"] = dominant_scare
@@ -1095,6 +1103,7 @@ def compile(root: Path | None = None, *, now: datetime | None = None) -> dict:  
                             alt_pw = _build_pathway(
                                 d, d, alt_md, chains, as_of, "alternate",
                                 source_as_of=rr_clock["as_of"],
+                                now=built_dt,
                             )
                             alt_pw["family"] = alt_family
                             pathways.append(alt_pw)
@@ -1109,7 +1118,7 @@ def compile(root: Path | None = None, *, now: datetime | None = None) -> dict:  
         fi_clock = _classify_source_clock(fi_asof, built_dt)
 
         if fi_state and fi_clock["as_of_reason"] in ("available", "stale") and _has_persistent_factor_flip(fi_state):
-            pathways.append(_build_factor_rotation_pathway(fi_state, as_of, source_as_of=fi_clock["as_of"]))
+            pathways.append(_build_factor_rotation_pathway(fi_state, as_of, source_as_of=fi_clock["as_of"], now=built_dt))
 
     # (4) no attributable driver — no_pathway.
     # RUL-CC-12 §4 deviation (ratified 2026-07-06): snap boolean lives in

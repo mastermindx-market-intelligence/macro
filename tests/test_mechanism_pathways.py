@@ -1145,3 +1145,54 @@ class TestDependentLegsR7:
         assert primary.get("independent_confirmations_disallowed") is True, (
             "R7 requires explicit insufficient-confirmation marker on single-source pathways"
         )
+
+
+# ---------------------------------------------------------------------------
+# C3 (slice 2): compile(now=...) must thread its clock into every
+# source-clock classification made during the compile call tree
+# (_attach_transmission_edges, _build_pathway, _build_factor_rotation_pathway).
+# ---------------------------------------------------------------------------
+
+class TestCompileThreadsNowToSourceClockClassifiers:
+    """C3: a compile(now=...) call must read its injected clock for every
+    _classify_source_clock() call made during the compile, not the patched
+    wall clock. The autouse `_fixed_compiler_clock` fixture pins
+    `_utcnow()` to 2026-10-02T23:00Z — without C3, every node would inherit
+    that patched value while the pathway itself used the injected `now`,
+    producing a pathway with `available` and nodes with `future_dated`.
+    """
+
+    def test_compile_now_threads_to_every_source_clock_classifier(self, tmp_path):
+        """All source asofs = 2030-01-01; compile(now=2030-01-02T00:00Z).
+        Without C3, the three call sites (:524/:678/:808) read `_utcnow()`
+        (2026-10-02T23:00Z) → source 2030-01-01 is future_dated. With C3
+        they read the injected `now` → source is 1 calendar day old →
+        available.
+        """
+        future_past_asof = "2030-01-01"  # 1 day before the injected now
+        regime = _make_regime(
+            md_asof=future_past_asof,
+            rr_asof=future_past_asof,
+        )
+        transmission = _default_transmission(asof=future_past_asof)
+        root = _make_regime_files(tmp_path, regime, transmission)
+
+        injected_now = datetime(2030, 1, 2, 0, 0, tzinfo=timezone.utc)
+        result = compile(root=root, now=injected_now)
+
+        pathways = result.get("pathways", [])
+        assert pathways, (
+            f"C3: compile(now=2030-01-02) on asof=2030-01-01 fixture must "
+            f"produce at least one pathway, got {result.get('no_pathway')!r}"
+        )
+        primary = pathways[0]
+        assert primary.get("as_of_reason") == "available", (
+            f"C3: pathway as_of_reason must be 'available' (source 1 day "
+            f"before injected now), got {primary.get('as_of_reason')!r}"
+        )
+        for node in primary.get("nodes", []):
+            assert node.get("as_of_reason") == "available", (
+                f"C3: node {node.get('node_id')!r} as_of_reason must be "
+                f"'available', got {node.get('as_of_reason')!r} "
+                f"(red proof: this would be 'future_dated' if C3 is not in)"
+            )
