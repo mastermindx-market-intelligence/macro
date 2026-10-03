@@ -205,3 +205,10 @@ def test_offline_preview_reuses_canonical_evidence_palette():
    assert declaration is not None,name
    assert declaration.group(0) in tokens,name
  assert '--font-ui:' in tokens
+
+
+
+def test_breadth_summary_includes_steady_domains_in_the_fixed_denominator():
+ text=(ROOT/'templates/_china_economy_lens.html.j2').read_text()
+ for category in ['improving','fading','steady','mixed','unknown']:
+  assert 'E.breadth.counts.'+category in text

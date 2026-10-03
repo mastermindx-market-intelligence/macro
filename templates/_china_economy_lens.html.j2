@@ -18,7 +18,7 @@
     <p class="eco-window-warning">{{ t('The two-month comparison is weaker for all three.','三项数据的二月比较均偏弱。') if E.all_three_shorter_windows_weaker else t('Compare more than one window before calling a turn.','判断转折前须比较多个窗口。') }}</p></div>
     <aside class="eco-breadth" aria-label="Growth domain breadth" data-aria-en="Growth domain breadth" data-aria-zh="增长领域广度"><div class="eco-eyebrow">{{ t('HOW BROAD IS THE MOVE?','变化有多广泛？') }}</div>
       <div class="eco-breadth-track">{% for d in E.domains %}<a href="#eco-domain-{{ d.id }}" class="eco-tile {{ d.momentum }}"><b>{{ d.symbol }}</b><span>{{ t(d.title_en,d.title_zh) }}</span></a>{% endfor %}</div>
-      <p>{{ E.breadth.counts.improving }} {{ t('improving','改善') }} · {{ E.breadth.counts.fading }} {{ t('fading','转弱') }} · {{ E.breadth.counts.mixed }} {{ t('mixed','分化') }} · {{ E.breadth.counts.unknown }} {{ t('unrated','不足') }}</p>
+      <p>{{ E.breadth.counts.improving }} {{ t('improving','改善') }} · {{ E.breadth.counts.fading }} {{ t('fading','转弱') }} · {{ E.breadth.counts.steady }} {{ t('little change','变化不大') }} · {{ E.breadth.counts.mixed }} {{ t('mixed','分化') }} · {{ E.breadth.counts.unknown }} {{ t('unrated','不足') }}</p>
       <small>{{ t('Six fixed domains—not a GDP score.','固定六领域，不是GDP评分。') }}</small>
     </aside>
   </div>
