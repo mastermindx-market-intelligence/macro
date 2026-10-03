@@ -177,3 +177,85 @@ changes no selector, match rule, horizon, cost, statistic or gate threshold, and
       abort: the count, the exception types and the code sha of each attempt. The abort receipt records the
       exception type and the traceback file:line frames only — no message text and no outcome number. A run
       that persisted or printed any outcome value is the registered run and is never repeated.
+
+## Amendment 2 (pre-outcome, 2026-10-03)
+
+Adopted BEFORE any outcome of the study was computed, read or inferred, and before the consumer opened any
+bar of the D0 capture: only the capture's directory listing and its manifest metadata have been read. It
+fixes how the registered run reads its inputs, what it writes before the first outcome call, and how an
+attempt that does not finish is recorded. It changes no selector, match rule, horizon, cost, statistic or
+gate threshold, and no ruling 1-31 is edited. This file's sha256 before the amendment:
+3cc6cfe17855395d146a984eeada83e6dd01d09111e36bbe592b334dc68f654a.
+
+32. **Inputs.** The run reads the nine `<SYMBOL>.5m.json` files of the D0 capture (the eight symbols and
+    QQQ) through the accepted R1-A loader (`terminal_tactical_r1_study._load_symbol`), unchanged. It refuses
+    unless all of these hold:
+    - the manifest file's sha256 is the pinned value of ruling 24 (`input_manifest_sha256_mismatch`);
+    - the Terminal checkout's HEAD is the frozen config's `terminal_dependency_sha`
+      (`terminal_dependency_head_mismatch`);
+    - every symbol has a 5-minute manifest row with status `captured` or `previously_captured` and a sha256
+      (`manifest_5m_missing`), and the file's bytes hash to it (`input_digest_mismatch`);
+    - the Terminal qualification does not report the file missing, unreadable, malformed or empty, and
+      reports no whole-file diagnostic other than `invalid_bar` (`input_qualification_failed`).
+    Whole-file diagnostics are published per symbol. Nothing is sorted, filled, de-duplicated or fetched
+    again; a duplicate or out-of-order clock refuses the run (the loader's `input_clock_order`).
+33. **Session list.** The scheduled sessions are the dates from `start` to `end` for which the Terminal
+    calendar projection has a session window. For every calendar date in that range the projection and the
+    Macro calendar (`lib.nyse_calendar.is_session`, `engine.session_digest.session_window_et`) must agree on
+    whether the date is a session and on its open and close minute. Any disagreement refuses the run
+    (`session_calendar_disagreement`); no date is added or dropped to reconcile them.
+34. **Session frames.** A symbol's bars for a session are every loaded row whose decoded true start time lies
+    in `[open, close)` of that session, in file order. The run refuses (`session_clock_disagreement`) unless
+    those are exactly the rows whose capture wall-clock date is the session date and whose wall-clock minute
+    lies in `[open, close)`. The frozen constructor receives that frame as it is; whether the session is
+    complete and whether its prefix is usable are the constructor's own diagnostics, and they are counted in
+    the coverage file.
+35. **Daily table.** The inputs to the prior ATR and the beta are one (high, low, close) row per COMPLETE
+    regular session, complete in the R1-A sense (`_regular`): the session's regular-window bars are exactly
+    the expected 5-minute grid for that session's own window, so a complete shortened session has a row. A
+    missing or incomplete session has no row and is never filled; the frozen `build_prior_normalization`
+    decides availability from that table. Sessions without a row are listed per symbol in the coverage file.
+36. **What is written, and when.** Into a new directory outside Git the run writes `coverage.json`,
+    `events.jsonl`, `census.jsonl` and `pools.jsonl`; then runs the ruling-31 preflight; then writes
+    `pre_outcome_receipt.json` holding the sha256 of each of those four files, the pools digest, the counts
+    and the code sha. Only then is the first outcome computed. Outcomes are held in memory, aggregated, and
+    written once at the end: `result.json`, `report.md`, `rows.jsonl`, `outcomes.jsonl`. The result repeats
+    the pre-outcome hashes and carries the sha256 of the two private row files. Git receives `result.json`
+    and `report.md` unchanged; the other six files stay outside Git (ruling 24).
+37. **Descriptive table (ruling 19; no gate role).** For each of the 60 cells: the number of selected events,
+    how many have an available outcome and how many are censored, with the censor reasons; and, over the
+    available rows only and weighting every event equally, the count, mean (`math.fsum(values)/n`) and
+    median of `raw_return`, `net_return`, `benchmark_return`, `beta_residual`, `net_beta_residual`, `mfe`,
+    `mae`, `candidate_delay_atr`, `episode_delay_atr` and `remaining_to_prior_close_atr`; and tallies over all
+    rows of `touch`, `lod_status`, `candidate_lod_status`, `candidate_lod_survives`, `episode_lod_status` and
+    `episode_lod_survives`. These describe the selected events alone. The gate uses the matched deltas of
+    rulings 7-14 and nothing from this table.
+38. **Network.** For the whole run `socket.socket`, `socket.create_connection` and `socket.getaddrinfo` are
+    replaced by refusals (`network_path_refused`). The run reads local files only.
+39. **Test receipt and code identity.** The run requires a JUnit file produced by running the five suites
+    `tests/test_tactical_research.py`, `tests/test_tactical_research_cli.py`,
+    `tests/test_tactical_r1b_pools.py`, `tests/test_tactical_r1b_aggregate.py` and
+    `tests/test_tactical_r1b_run.py` at the export of the reviewed head, in the same interpreter environment
+    that executes the study. It refuses if the file holds no test case or any failure, error or skip
+    (`test_receipt_not_clean`), or if any of the five suites is absent (`test_receipt_missing_suite`). The
+    file's sha256, the case count and every case name go into the leak audit. `--code-sha` is the reviewed
+    carrier head; the run records the sha256 of each code file it executed, and publication checks each
+    against `git show <code-sha>:<path>`. The run also records the Python, numpy and pandas versions.
+40. **Attempts that do not finish (applies ruling 31).** Every attempt that ends in a refusal or an exception
+    writes `abort-<nnn>.json` to the abort directory: the stage reached, the exception type, the traceback
+    `file:line` frames, the code sha, the UTC time and three flags (`before_any_market_input`,
+    `outcome_stage_started`, `outcome_values_persisted`). The result publishes every such receipt.
+    - An attempt refused at stage `arguments` or `admission` has read no market input. It is recorded, and
+      may be repeated once the argument or environment defect is corrected; no code change is needed.
+    - An attempt that stops at `inputs`, `construction`, `pools`, `preflight`, `outcomes` or `aggregate` has
+      written and printed no outcome value. It may be re-run only after the defect is fixed in a reviewed
+      commit, and the fix may not change any selector, match rule, horizon, cost, statistic or gate threshold.
+    - The output directory of an attempt that reached `pools` is kept and never used again
+      (`output_directory_exists`). Its four pre-outcome files hold no outcome and may be read to diagnose the
+      defect. No outcome-stage value is ever dumped for diagnosis.
+    - Once any receipt carries `outcome_values_persisted` other than `false`, every later attempt is refused
+      (`registered_run_already_persisted`): that attempt was the registered run.
+    - The process prints stage names and counts. After a market input has been read, the text of an error is
+      printed only when the outcome stages have not started and the text is one of the runner's own refusal
+      codes (lower-case words joined by underscores, optionally followed by `:` and a symbol); otherwise only
+      the exception type is printed.
