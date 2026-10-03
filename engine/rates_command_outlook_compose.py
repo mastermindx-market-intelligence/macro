@@ -694,7 +694,10 @@ def pick_baseline(
     ``status`` and ``as_of`` (where ``as_of`` comes from
     ``row["source"]["as_of"]``); missing row keys read as ``None``. The
     function never looks at git, files or the wall clock, and never
-    mutates ``previous``.
+    mutates ``previous``; nothing it returns shares an object with it.
+    A row id that is not a string, an id that appears twice, and a
+    ``session_of`` that returns anything but a plain date all read as
+    ``previous_unreadable``.
     """
     if previous is None:
         return {"status": "absent", "reason": "no_earlier_projection"}
@@ -706,11 +709,14 @@ def pick_baseline(
     evidence_in = previous.get("evidence")
     if not isinstance(evidence_in, list):
         return {"status": "absent", "reason": "previous_unreadable"}
+    seen_ids: set[str] = set()
     for row in evidence_in:
         if not isinstance(row, dict):
             return {"status": "absent", "reason": "previous_unreadable"}
-        if "id" not in row:
+        row_id = row.get("id")
+        if not isinstance(row_id, str) or row_id in seen_ids:
             return {"status": "absent", "reason": "previous_unreadable"}
+        seen_ids.add(row_id)
         if not isinstance(row.get("source"), dict):
             return {"status": "absent", "reason": "previous_unreadable"}
 
@@ -738,14 +744,16 @@ def pick_baseline(
         prev_session = session_of(cutoff_dt)
     except Exception:
         return {"status": "absent", "reason": "previous_unreadable"}
+    if not isinstance(prev_session, date) or isinstance(prev_session, datetime):
+        return {"status": "absent", "reason": "previous_unreadable"}
 
     if prev_session < us_session:
         evidence_out: dict[str, dict[str, Any]] = {}
         for row in evidence_in:
             source = row.get("source") or {}
             evidence_out[row.get("id")] = {
-                "values": row.get("values"),
-                "owner_verdict": row.get("owner_verdict"),
+                "values": copy.deepcopy(row.get("values")),
+                "owner_verdict": copy.deepcopy(row.get("owner_verdict")),
                 "status": row.get("status"),
                 "as_of": source.get("as_of"),
             }
