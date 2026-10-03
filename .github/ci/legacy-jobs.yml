@@ -2743,6 +2743,7 @@ jobs:
       - "tests/test_options_issue_desk.py"
       - "tests/test_options_issue_desk_api.py"
       - "tests/test_options_episode_outcome_coverage.py"
+      - "tests/test_options_alpha_candidate_feed.py"
       - "tests/test_options_matrix.py"
       - "tests/test_options_payoff.py"
       - "tests/test_options_market_memory_local_receipts.py"
@@ -2824,6 +2825,8 @@ jobs:
           -q -rs
       - name: options signal campaign v2 (immutable revisions, causal anchors, exact checkpoint)
         run: python -m pytest tests/test_options_signal_campaign.py -q
+      - name: options alpha candidate feed v2 (source-only formations, immutable prefixes, publication receipt contract)
+        run: python -m pytest tests/test_options_alpha_candidate_feed.py -q
       - name: MSC R2.2-A Light U-CHAIN packets + monotonic R2 discovery publication
         run: python -m pytest tests/test_options_structure_intraday.py tests/test_build_options_structure_intraday.py -q
       - name: W0a-B chain-snapshot durable bucket receipts and source-install proofs
