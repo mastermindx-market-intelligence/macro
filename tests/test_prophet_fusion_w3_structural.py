@@ -919,3 +919,105 @@ def test_matched_other_security_control_is_accepted_but_swaps_are_refused():
             swapped[owner] = other[owner]
         with pytest.raises(EarlyLeadershipEvidenceError, match="issuer_mismatch"):
             _bound_leadership(swapped)
+
+
+# Program-CEO clock-integrity blocker 5966124623: preserve exact UTC instants.
+def _clock_inputs(asof="2026-09-29T20:00:00.100Z"):
+    candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+    for row in (candidate, peer, theme):
+        row["asof"] = asof
+    for row in (candidate, peer, theme):
+        row["known_at"] = "2026-09-29T20:05:00.100Z"
+    setup["observed_at"] = "2026-09-29T19:55:00.100Z"
+    setup["known_at"] = "2026-09-29T19:56:00.100Z"
+    exposure["known_at"] = "2026-09-29T19:57:00.100Z"
+    geometry["quote_asof"] = "2026-09-29T20:08:00.100Z"
+    geometry["known_at"] = "2026-09-29T20:09:00.100Z"
+    return candidate, peer, theme, exposure, setup, geometry
+
+
+@pytest.mark.parametrize("owner", ["candidate", "peer", "theme"])
+def test_subsecond_measurement_mismatch_is_refused_and_cannot_alias_evidence_id(owner):
+    candidate, peer, theme, exposure, setup, geometry = _clock_inputs()
+    matched = build_early_leadership_evidence(
+        decision_at="2026-09-29T20:10:00.100Z",
+        candidate=candidate, peer_ex_candidate=peer, theme_state=theme,
+        economic_exposure=exposure, setup_observation=setup, entry_geometry=geometry,
+    )
+    changed = {"candidate": candidate, "peer": peer, "theme": theme}[owner]
+    changed["asof"] = "2026-09-29T20:00:00.900Z"
+    with pytest.raises(EarlyLeadershipEvidenceError, match="measurement_asof_mismatch"):
+        build_early_leadership_evidence(
+            decision_at="2026-09-29T20:10:00.100Z",
+            candidate=candidate, peer_ex_candidate=peer, theme_state=theme,
+            economic_exposure=exposure, setup_observation=setup, entry_geometry=geometry,
+        )
+    assert matched["candidate_measurement"]["asof"] == "2026-09-29T20:00:00.100000Z"
+
+
+def test_semantically_equal_subsecond_spellings_canonicalize_to_one_instant():
+    candidate, peer, theme, exposure, setup, geometry = _clock_inputs()
+    candidate["asof"] = "2026-09-29T20:00:00.100Z"
+    peer["asof"] = "2026-09-29T20:00:00.100000Z"
+    theme["asof"] = "2026-09-29T20:00:00.100000Z"
+    out = build_early_leadership_evidence(
+        decision_at="2026-09-29T20:10:00.100000Z",
+        candidate=candidate, peer_ex_candidate=peer, theme_state=theme,
+        economic_exposure=exposure, setup_observation=setup, entry_geometry=geometry,
+    )
+    assert out["candidate_measurement"]["asof"] == "2026-09-29T20:00:00.100000Z"
+    assert out["peer_ex_candidate"]["asof"] == out["candidate_measurement"]["asof"]
+    assert out["theme_state_projection"]["asof"] == out["candidate_measurement"]["asof"]
+
+
+@pytest.mark.parametrize("delta", ["2026-09-29T20:10:00.000001Z", "2026-09-29T20:10:00.900Z"])
+@pytest.mark.parametrize("owner", ["candidate", "peer", "theme", "exposure", "setup", "geometry"])
+def test_subsecond_future_known_at_is_refused_for_every_owner(delta, owner):
+    candidate, peer, theme, exposure, setup, geometry = _clock_inputs("2026-09-29T20:00:00Z")
+    mapping = {
+        "candidate": candidate, "peer": peer, "theme": theme, "exposure": exposure,
+        "setup": setup, "geometry": geometry,
+    }[owner]
+    mapping["known_at"] = delta
+    with pytest.raises(EarlyLeadershipEvidenceError, match="clock_invalid|future_evidence"):
+        build_early_leadership_evidence(
+            decision_at="2026-09-29T20:10:00Z",
+            candidate=candidate, peer_ex_candidate=peer, theme_state=theme,
+            economic_exposure=exposure, setup_observation=setup, entry_geometry=geometry,
+        )
+
+
+def test_exact_subsecond_known_at_boundary_is_accepted_and_content_addressed():
+    candidate, peer, theme, exposure, setup, geometry = _clock_inputs("2026-09-29T20:00:00Z")
+    decision = "2026-09-29T20:10:00.900Z"
+    for row in (candidate, peer, theme, exposure, setup, geometry):
+        row["known_at"] = decision
+    out = build_early_leadership_evidence(
+        decision_at=decision, candidate=candidate, peer_ex_candidate=peer,
+        theme_state=theme, economic_exposure=exposure, setup_observation=setup,
+        entry_geometry=geometry,
+    )
+    assert out["decision_at"] == "2026-09-29T20:10:00.900000Z"
+    assert out["candidate_measurement"]["known_at"] == out["decision_at"]
+    assert out["peer_ex_candidate"]["known_at"] == out["decision_at"]
+    assert out["theme_state_projection"]["known_at"] == out["decision_at"]
+    assert out["economic_exposure"]["known_at"] == out["decision_at"]
+    assert out["setup_observation"]["known_at"] == out["decision_at"]
+    assert out["entry_geometry"]["known_at"] == out["decision_at"]
+
+
+def test_material_owner_clock_change_changes_evidence_identity():
+    candidate, peer, theme, exposure, setup, geometry = _clock_inputs()
+    first = build_early_leadership_evidence(
+        decision_at="2026-09-29T20:10:00.100Z",
+        candidate=candidate, peer_ex_candidate=peer, theme_state=theme,
+        economic_exposure=exposure, setup_observation=setup, entry_geometry=geometry,
+    )
+    candidate2, peer2, theme2, exposure2, setup2, geometry2 = _clock_inputs()
+    peer2["known_at"] = "2026-09-29T20:05:00.900Z"
+    second = build_early_leadership_evidence(
+        decision_at="2026-09-29T20:10:00.100Z",
+        candidate=candidate2, peer_ex_candidate=peer2, theme_state=theme2,
+        economic_exposure=exposure2, setup_observation=setup2, entry_geometry=geometry2,
+    )
+    assert first["evidence_id"] != second["evidence_id"]

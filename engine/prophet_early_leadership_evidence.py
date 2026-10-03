@@ -102,7 +102,10 @@ def _utc(value: Any, name: str) -> datetime:
 
 
 def _iso(dt: datetime) -> str:
-    return dt.astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+    """Canonical UTC text without discarding a material subsecond instant."""
+    utc = dt.astimezone(timezone.utc)
+    timespec = "microseconds" if utc.microsecond else "seconds"
+    return utc.isoformat(timespec=timespec).replace("+00:00", "Z")
 
 
 def _require_known(row: Mapping[str, Any], decision: datetime) -> str:
@@ -457,7 +460,12 @@ def build_early_leadership_evidence(
         raise EarlyLeadershipEvidenceError("exposure_issuer_mismatch")
     if len({cand["theme_id"], peer["theme_id"], theme["theme_id"], exposure["theme_id"]}) != 1:
         raise EarlyLeadershipEvidenceError("theme_identity_mismatch")
-    if cand["asof"] != peer["asof"] or cand["asof"] != theme["asof"]:
+    measurement_instants = (
+        _utc(cand["asof"], "candidate_asof_invalid"),
+        _utc(peer["asof"], "peer_asof_invalid"),
+        _utc(theme["asof"], "theme_asof_invalid"),
+    )
+    if not (measurement_instants[0] == measurement_instants[1] == measurement_instants[2]):
         raise EarlyLeadershipEvidenceError("measurement_asof_mismatch")
     if peer["membership_vintage"] != theme["membership_vintage"]:
         raise EarlyLeadershipEvidenceError("membership_vintage_mismatch")
