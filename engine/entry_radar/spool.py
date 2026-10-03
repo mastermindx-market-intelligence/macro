@@ -397,6 +397,8 @@ def tap_hot_tape_events(events: Iterable[Any], *,
     vintage is a real degradation of PIT quality, and saying so is cheaper than
     inventing a vintage.
     """
+    from engine.entry_radar.producers.base import finite_or_none
+
     stamp = now or utcnow()
     asof = source_asof or stamp
     clamped = asof > stamp
@@ -411,8 +413,6 @@ def tap_hot_tape_events(events: Iterable[Any], *,
             continue
         kind = str(get("kind") or get("event") or get("reason") or "move").strip() or "move"
         val = get("change_pct")
-        from engine.entry_radar.producers.base import finite_or_none
-
         value = finite_or_none(val)
         try:
             out.append(Nomination(

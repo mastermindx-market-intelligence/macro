@@ -97,8 +97,20 @@ def test_nomination_refuses_bool_source_value():
 def test_nomination_accepts_numpy_scalars():
     import numpy as np
 
-    _nomination(source_value=np.float32(1.5))
-    _nomination(source_value=np.int64(3))
+    n32 = _nomination(source_value=np.float32(1.5))
+    assert type(n32.source_value) is float and n32.source_value == 1.5
+    n64 = _nomination(source_value=np.int64(3))
+    assert type(n64.source_value) is int and n64.source_value == 3
+    nf = _nomination(source_value=np.float64(2.5))
+    assert type(nf.source_value) is float
+    for n in (n32, n64, nf):
+        json.dumps(n.to_dict(), allow_nan=False)
+
+
+def test_builtin_numbers_are_stored_unchanged():
+    assert type(_nomination(source_value=3).source_value) is int
+    assert type(_nomination(source_value=2.5).source_value) is float
+    assert _nomination(source_value=None).source_value is None
 
 
 def test_nomination_refuses_string_source_value():
@@ -210,6 +222,20 @@ def test_flow_pulse_row_with_nan_rvol_keeps_the_nomination(tmp_path):
     got = read_flow_pulse(path, now=NOW, cfg=_cfg())
     assert len(got.read.nominations) == 1
     assert got.read.nominations[0].source_value is None
+
+
+def test_spool_writes_a_pass_holding_a_numpy_scalar_nomination(tmp_path):
+    import numpy as np
+
+    nom = _nomination(source_value=np.float32(1.5))
+    read = ProducerRead(source_id="test:scalar", status="ok", nominations=(nom,))
+    spool = NominationSpool(local_dir=tmp_path, prefix="t")
+    bus = NominationBus(spool=spool)
+    assert bus.ingest_read(read, now=NOW) == 1
+    assert bus.spool_keys
+    blob = (tmp_path / bus.spool_keys[0]).read_text(encoding="utf-8")
+    payload = json.loads(blob, parse_constant=_reject_nonstandard_constants)
+    assert payload["nominations"][0]["source_value"] == 1.5
 
 
 def test_spool_accepts_a_pass_that_had_a_nan_row(tmp_path):

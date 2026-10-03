@@ -217,6 +217,10 @@ class Nomination:
         if self.ttl_until is not None:
             object.__setattr__(self, "ttl_until", _require_aware("ttl_until", self.ttl_until))
         self._validate()
+        value = self.source_value
+        if value is not None and type(value) not in (int, float):
+            plain = int(value) if isinstance(value, numbers.Integral) else float(value)
+            object.__setattr__(self, "source_value", plain)
 
     def _validate(self) -> None:
         if not _TICKER_RE.match(self.ticker):
