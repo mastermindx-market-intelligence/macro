@@ -8899,8 +8899,10 @@ jobs:
     # authored mapping against its own rules, pins its reading table by hash,
     # and compares every condition with the contract's tables. Code-gated on
     # purpose: the job that owns the neighbouring rates-command suites is
-    # data-gated and never runs on a pull request. Offline, stdlib only; no
-    # market artifact is read and nothing here ranks, gates or forecasts.
+    # data-gated and never runs on a pull request. Offline, stdlib plus pyyaml;
+    # no market artifact is read and nothing here ranks, gates or forecasts.
+    # The rule-pin suite hashes the source of every producer decision the table
+    # cites, so a producer or config edit runs this job and fails until re-read.
     paths:
       - "config/regime_outlook_mapping_v2.json"
       - "engine/rates_command_outlook.py"
@@ -8908,6 +8910,18 @@ jobs:
       - "tests/fixtures/regime_outlook/readings_golden_v2.json"
       - "tests/test_rates_command_outlook.py"
       - "tests/test_rates_command_outlook_readings.py"
+      - "config.yml"
+      - "config/regime_outlook_rule_pins.json"
+      - "engine/__init__.py"
+      - "engine/conditions.py"
+      - "engine/fed_path.py"
+      - "engine/leadership_crack.py"
+      - "engine/market_state.py"
+      - "engine/rate_inflation_transmission.py"
+      - "engine/regime.py"
+      - "engine/yield_curve.py"
+      - "engine/yield_momentum.py"
+      - "tests/test_rates_command_outlook_rule_pins.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -8916,9 +8930,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install test dependencies
-        run: pip install pytest
-      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings
-        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py -q
+        run: pip install pytest pyyaml
+      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings, producer rule pins
+        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py tests/test_rates_command_outlook_rule_pins.py -q
 
   ric-w2-surface:
     if: ${{ false }}
