@@ -1,63 +1,67 @@
 ---
 key: CHINA-ECONOMY-RECEIPT-BOUND-SOURCE-INTEGRATION
 claim: >
-  The China economy candidate can traverse the existing ChinaMacroAdapter and
-  run_adapter into the owned local parquet store, then the existing China
-  builder into both China pages. This is local integration proof, not live
-  production acceptance. Source values must match their per-column receipt;
-  dataframe column-wise merges must not lend old metadata to changed values.
+  The China economy candidate uses the existing collector/store/builder path.
+  Latest available economic pace retains its actual reference month while
+  current-month domain votes require current evidence. Protected detail is
+  removed on sign-out/account change and stale responses cannot restore it.
+  These are candidate source and local browser results, not live acceptance.
 falsifier: >
-  Run python3 -m pytest -q tests/test_china_economy_acquisition.py
-  tests/test_china_economy_parser.py tests/test_china_economy_store.py:
-  an altered value admitted under an old receipt, a mixed seasonal revision,
-  or a missing source silently populated from review data refutes the contract.
-  A failed real build or JSON/UI mismatch refutes the corresponding integration
-  claim; browser and production claims are explicitly not made.
+  Run tests/test_china_economy_acquisition.py, tests/test_china_economy.py,
+  tests/test_china_economy_store.py and tests/test_china_economy_page_payload.py.
+  A mismatched value/definition admitted under a receipt, stale pace counted as
+  a current vote, fabricated monthly history, or detail retained after sign-out
+  refutes the corresponding claim. Actual gateway and deployment remain gates.
 so_what: >
-  Continue issue #8185 in the same owned source lane. Preserve the original
-  four dialogs and the 128-series catalog, but do not report all catalog series
-  as acquired. The current source-detail qualification admits 84 series but
-  still covers only two of six growth-domain directions; withhold the overall
-  direction. Keep legacy monthly FAI amounts separate from official comparable
-  cumulative growth, even when both observations refer to the same month.
+  Continue issue #8185 and PR #8196 in the existing owned branch. Do not replay
+  the accepted full collector to reproduce old data. Keep the five NBS families
+  on their independent sequential publication clocks and hold unexplained
+  source gaps. September current coverage and August pace describe different
+  periods; neither the 128-series catalog nor historical 84-reading coverage
+  establishes a fully observed current economy.
 kind: landmine
-verified_at: 2026-09-30
+verified_at: 2026-10-03
 verified_by: >
-  Sol attended integration: python3 -m scripts.build_china completed with
-  RENDER_NO_DRIP=1 and CHINA_VM_DUMP=1; installed ChinaMacroAdapter qualified
-  through collectors.base.run_adapter; source-final.xml records 358 passed
-  with zero failures/errors/skips. Evidence manifest and exact
-  local receipt paths are in research/CHINA_ECONOMY_SOURCE_INTEGRATION_20260929.md.
-  Machine/client chart-value, unit and definition parity was checked on the
-  actual builder output, not the separately transcribed research preview.
-  The subsequent focused suite records 482 passed in focused-final-v2.xml;
-  read research/CHINA_ECONOMY_DETAIL_AND_FAI_BASIS_20260929.md and its r3
-  source/ingestion/build receipts for the new 31 readings and same-owner FAI
-  correction. Original evidence hashes are not rewritten.
-scope: [macro, collectors/china_macro.py, collectors/china_economy_adapter.py, engine/china_economy_store.py, scripts/build_china.py]
+  Sol attended source and browser qualification. R8 source commits
+  07e9b7a5e20600966b16473478aae159a2a8849a and
+  3e8238bd9c78e982eab84744574928baea4e01f4. Exact tests, browser captures,
+  source hashes and public/protected JSON readback are in
+  research/CHINA_ECONOMY_R8_RELEASE_READINESS.md and the existing evidence folder.
+  Tests using synthetic sessions prove client behavior, not actual entitlement.
+scope: [macro, collectors/china_macro.py, collectors/china_economy_adapter.py, engine/china_economy_store.py, scripts/build_china.py, templates/china-economy.js]
 confidence: verified
 ---
 
-The source-access denial from the prior turn was resolved by an observed
-allowlist change and a successful read of the exact existing worktree. The
-worktree was not recreated, relocated, reset or accessed through another carrier.
-Its five earlier changed/untracked files were backed up and reconciled by exact
-preimage hashes before the source package was applied once and read back.
+## Current continuation
 
-A separate browser administrator refusal remains unresolved. Collector success,
-static HTML parsing, a passing focused test suite and a GitHub PR do not prove
-browser behavior, authentication, installed production identity or acceptance.
+Same operation `china-macro-evidence-upgrade-20260929-sol-001`, native worktree
+`china-macro-evidence-20260929-sol-001`, Studio_Direct source carrier. Source and
+evidence commits do not imply merge, collector installation or production proof.
+Keep the PR draft until its remaining release gates are actually satisfied.
 
-The raw-source acquisition configuration remains disabled in the shipped example.
-Qualification used an instance-local configuration, not a production enrollment.
-The observed FAI discrepancy is resolved at the new evidence binding: the
-legacy BASE_SAME matches single-month amount arithmetic, not comparable YTD
-growth. The NBS value occupies a separate column in the same table and both
-new views share its receipt admission. Every original legacy date/value and
-index name is preserved; no strategy computation was changed. Export basis,
-fiscal acquisition, wider histories and commercial redistribution review remain open.
+The shared theme remains the original pinned bytes, SHA256
+`4a7e32977b2ccfe6776748d2b4c680b46727a156514de9da428e00c76449911f`.
+Only the China components own their responsive changes. Anonymous overview and
+protected evidence JSON keep the existing site-access/Caddy boundary; do not
+open a data prefix to make a script work. In-page session transitions subscribe
+to MDXAuth rather than creating another authentication or entitlement owner.
 
-The original browser refusal and an additional unclear OpenAI refusal of a
-compound UI/CI/palette/browser-source read remain action-scoped gates. Neither
-was retried through another route. No visual, authenticated gateway or release
-acceptance follows from this independent data-unit completion.
+NBS numeric extraction keeps conspicuous attribution and the publisher's
+copyright/purpose restrictions. SAFE commercial republication remains on
+permission/legal hold; NEA and MOF remain outside initial automatic enrollment.
+A five-family configuration committed to the candidate is not an installed
+production configuration. Source-readonly Executive preflight is not dispatch.
+
+## Preserved accepted work
+
+R3's 84 current readings refer to its August snapshot. Do not label them current
+for September. Every legacy FAI monthly value remains separate from official
+NBS comparable YTD `fai_ytd_yoy`, definition `investment_ytd.nbs_comparable.v2`.
+Do not reverse that repair, fabricate historical vintages or reinterpret a
+calendar rollover as an economic deterioration. R4 anonymous captures and R5
+synthetic-session tests are historical evidence, not actual signed-in transport.
+
+Original reports, receipts and source revisions remain under
+`research/china_economy_integration_20260929/`; they are not rewritten. Earlier
+conversation references to PR #8219 and SHA307cdd were wrong; the real carrier is
+PR #8196. The research-only six-period services brief is not installed data.

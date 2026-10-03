@@ -1,0 +1,149 @@
+{
+  "operation": "china-macro-evidence-upgrade-20260929-sol-001",
+  "observed_at": "2026-10-03T05:01:47.480733+00:00",
+  "mission_complete": false,
+  "capability_state": "BUILT_NOT_PROVEN",
+  "source_head": "3e8238bd9c78e982eab84744574928baea4e01f4",
+  "source_commits": [
+    "07e9b7a5e20600966b16473478aae159a2a8849a",
+    "021fb1c7f47e4086528da1e6bbfad3dd274d0b0c",
+    "426c98c5e3ac5d86181eeb25f3ba7ab6b5ebb020",
+    "3e8238bd9c78e982eab84744574928baea4e01f4"
+  ],
+  "previous_remote": "471d8ca3d4456687ecfbeda17545a82e1ddc9488",
+  "protected_pin": "bdf2a972e68a70270c24d4b5d61a4d60edc4f288",
+  "tests": {
+    "tests": 471,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "junit_sha256": "089a6861a8c3909cca1ecc48fb143b914290e442494a0f599b05589c65c2f5e6",
+  "build": {
+    "china.html": {
+      "bytes": 821797,
+      "sha256": "46f203c53042beefaf0457992b6cb63fe7b2f7147a130aa1727ac7896015c6ce",
+      "duplicate_ids": 0,
+      "deep_templates_in_html": 0
+    },
+    "china_stocks.html": {
+      "bytes": 1117111,
+      "sha256": "c52cff8a91141088730806712a0e88111e0629d23e1e0eccd289f010e91f06aa",
+      "duplicate_ids": 0,
+      "deep_templates_in_html": 0
+    }
+  },
+  "economy": {
+    "assessment_month": "2026-09",
+    "counts": {
+      "catalog": 128,
+      "valid_current": 25,
+      "diagnostics": 11
+    },
+    "domain_coverage": 1,
+    "headline": "Economic direction needs more evidence.",
+    "activity_pulse": {
+      "assessment_period": "2026-09",
+      "coverage_basis": "latest_available_per_series_not_current_month_votes",
+      "reference_periods": {
+        "industrial_sa": "2026-08",
+        "retail_sa": "2026-08",
+        "investment_sa": "2026-08"
+      },
+      "all_current_for_assessment": false,
+      "metric_ids": [
+        "industrial_sa",
+        "retail_sa",
+        "investment_sa"
+      ],
+      "improving_3m": 3,
+      "improving_2m": 0,
+      "window_sensitive": 3,
+      "covered_3m": 3,
+      "universe": 3,
+      "gdp_weighted": false,
+      "method_en": "Three independently reported SA activity series. Each 3-month window is compounded and compared with its preceding 3 months; a separate 2-month check exposes window sensitivity.",
+      "method_zh": "三项独立公布的季调活动序列。三月窗口按复利累计并与前一三月比较；二月窗口另作敏感性检查。"
+    }
+  },
+  "protected_detail": {
+    "status": "ok",
+    "metrics": 128,
+    "sha256": "ff75e43f36036261a01027804daf13c6d794b1f9cd1b682937ea54f56db948f9",
+    "client_canonical_parity": true
+  },
+  "visual_evidence": [
+    {
+      "manifest": "mockups/evidence/china-economy-r8-release/manifest.json",
+      "sha256": "22037d4020f8401b8ae8eee55af433e17bc24d6b007703c33cdce76bf6e80ede",
+      "source": "3e8238bd9c78e982eab84744574928baea4e01f4",
+      "pages": 1,
+      "rest_states": 8,
+      "interaction_states": 16,
+      "uncaught_errors": 0,
+      "failed_responses": 0,
+      "document_horizontal_overflow": false
+    },
+    {
+      "manifest": "mockups/evidence/china-macro-dialogs-r8-final/manifest.json",
+      "sha256": "34f9926dd3969399c3568eb5a152d0446208db5ad6f9dfe8ff2aff6c9e616e21",
+      "source": "426c98c5e3ac5d86181eeb25f3ba7ab6b5ebb020",
+      "pages": 4,
+      "rest_states": 32,
+      "interaction_states": 0,
+      "uncaught_errors": 0,
+      "failed_responses": 0,
+      "document_horizontal_overflow": false
+    },
+    {
+      "manifest": "mockups/evidence/china-policy-interaction-r8/manifest.json",
+      "sha256": "1685abe683ab3dbe5421cc9545c78f4964919a8cd444dc0563c47f3491eb771b",
+      "source": "426c98c5e3ac5d86181eeb25f3ba7ab6b5ebb020",
+      "pages": 1,
+      "rest_states": 8,
+      "interaction_states": 16,
+      "uncaught_errors": 0,
+      "failed_responses": 0,
+      "document_horizontal_overflow": false
+    }
+  ],
+  "local_structural_delta": {
+    "base": "da1f7730b84a7f8758e5b1e81ed0de8e0718a9a0",
+    "introduced": 0,
+    "inherited": 0,
+    "exact_pushed_head_ci_still_required": true
+  },
+  "source_files": {
+    ".github/ci/legacy-jobs.yml": "73c0aeac92b6b08ab696eb6054cd5a2b177ed03ff30a1b263b9ad786f08aebe5",
+    "collectors/china_economy_acquisition.py": "828bc8fc9ecf69d26528da4bb1464e0d2ac4a17a88e73c5b6eb5e5f59a23f133",
+    "collectors/china_economy_adapter.py": "957c45752454d18adf8e6693ab4836765f9562a3bc86295b0604738ce51d8989",
+    "collectors/china_economy_release_parser.py": "047eed691c13910d7512a6e1fb15f026f9feacd142192c8c0d4b74eda5524048",
+    "collectors/china_macro.py": "0d8b40acbecded8b0f1b7f8836c394eff4598ab79d5c0eb09b3b4fd4e03bf122",
+    "config.yml": "a720f47b6d8d5e03280e20bfa5f4bd99a995f2c4c0590dc6a9ee44d5059faa3a",
+    "config/china_economy_acquisition_example.json": "DELETED",
+    "docs/QUAL_DATA_COMPLIANCE.md": "236a88b4beda1278f6c036d546bf5d345780b15d8c70e94bdb9a30e6dd2841aa",
+    "engine/china_economy.py": "31274e965aa7b5e225884bfe8dafc2210efae656d28f0df94efd979c911b719e",
+    "engine/china_economy_view.py": "b3d68f08ad179ed4c2dec31f08dd4b0b968c0c629a6d1e93b596ddac173d72d0",
+    "site/china-economy.css": "a6ec28eda744d663d829498cc8e4675ce26d300cf91c85bdbd6c7b462a23cde5",
+    "site/china-economy.js": "f64a084e725f6dad1a3e843f6de23d35d240fc733635f90da8d85ada63454b87",
+    "site/china-macro-evidence.css": "aecd52af4ef9e1ad1dcdee95e2efd505a874dd3172d9767a49709a4c3232f164",
+    "templates/_china_economy_lens.html.j2": "ca28746969ad2602f2c29a055abb3baa76ebc13c2fa6532559182903774cc01b",
+    "templates/china-economy.css": "a6ec28eda744d663d829498cc8e4675ce26d300cf91c85bdbd6c7b462a23cde5",
+    "templates/china-economy.js": "f64a084e725f6dad1a3e843f6de23d35d240fc733635f90da8d85ada63454b87",
+    "templates/china-macro-evidence.css": "aecd52af4ef9e1ad1dcdee95e2efd505a874dd3172d9767a49709a4c3232f164",
+    "tests/china_economy_auth_harness.cjs": "b6203052b8041961c9ca7efaeb1c78a8c997b16affa55c65abbc597188b7fe6a",
+    "tests/test_china_economy.py": "6e4cc8161013ac2f4f0c473763bf504ce3c4a2ba8da30b5a974f5c186dbe4a46",
+    "tests/test_china_economy_acquisition.py": "2aee7f7405ef53e4cabe33fecbfc2e79ed83f947f1c6946408390652836e901e",
+    "tests/test_china_economy_additional_parsers.py": "e62687784d9df9f303cb7b775163e1b6b6732a79d6c9a7b1878c04314faf7261",
+    "tests/test_china_economy_page_payload.py": "77f717b27b25df637c06efbdaf3eb9cec846606307879c427b4126371c68a459",
+    "tests/test_china_economy_view.py": "4200bba0fcc90b50a02570a5497699587c3d2f4a4bd2fe07e965dd233ff1fac3",
+    "tests/test_china_macro_evidence_view.py": "6e05e2cf0740021a11ba1748330972a1a82684db8f910afdcb6ec8dffd44749c"
+  },
+  "unaccepted": [
+    "independent review",
+    "real signed-in gateway/tier proof",
+    "production config installation and data collection",
+    "protected merge and non-Vercel deployment",
+    "installed live source identity"
+  ]
+}
