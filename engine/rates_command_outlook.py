@@ -482,7 +482,7 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
         # value or a needs entry that is not a path.
         r4_bad = False
         for key, value in guard.items():
-            if key.endswith("_path") and not key.startswith("copy_"):
+            if key.endswith("_path"):
                 if not isinstance(value, list):
                     errors.append(f"{field_id}: guard {key} is not a path list")
                     r4_bad = True

@@ -1136,6 +1136,14 @@ def test_lint_flags_a_string_guard_path_without_routing(mapping: dict) -> None:
     assert rco.lint_mapping(edited) == [expected]
 
 
+@pytest.mark.parametrize("key", ["copy_path", "copy_clock_path", "own_clock_path"])
+def test_lint_flags_a_copied_path_that_is_not_a_path_list(mapping: dict, key: str) -> None:
+    edited = copy.deepcopy(mapping)
+    field = next(f for f in edited["fields"] if f["guard"]["kind"] == "same_run_owner_copy")
+    field["guard"][key] = "asof"
+    assert rco.lint_mapping(edited) == [f"{field['field_id']}: guard {key} is not a path list"]
+
+
 def test_lint_flags_a_needs_entry_that_is_not_a_path_list(mapping: dict) -> None:
     edited = _with_string_needs_entry(mapping)
     field_id = next(
