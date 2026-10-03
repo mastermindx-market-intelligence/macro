@@ -172,3 +172,72 @@ def test_required_sources_cannot_be_empty():
 def test_duplicate_source_read_is_refused():
     with pytest.raises(CatalystContextError):
         _assess(source_reads=[_read(), _read()])
+
+
+from engine.entry_radar.catalyst_adapters import adapt_edgar_earnings_item_202
+
+
+def _item202_row(**overrides):
+    row = {
+        "ticker": "NVDA",
+        "cik": 1045810,
+        "accession": "0001045810-26-000123",
+        "form": "8-K",
+        "filing_date": "2026-10-02",
+        "acceptance_datetime": "2026-10-02T14:00:00Z",
+        "report_date": "2026-09-30",
+        "items": "2.02,9.01",
+    }
+    row.update(overrides)
+    return row
+
+
+def test_edgar_item202_adapter_uses_canonical_filing_identity_and_observed_clock():
+    got = adapt_edgar_earnings_item_202(
+        _item202_row(accession="000104581026000123"),
+        owner_observed_at=T0,
+    )
+    assert got.native_id == "0001045810:0001045810-26-000123"
+    assert got.evidence_ref == "sec-edgar-item202:0001045810:0001045810-26-000123"
+    assert got.event_kind == "earnings_results_item_2_02"
+    assert got.owner_disposition == "blocking"
+    assert got.source_available_at < got.known_at
+
+
+def test_edgar_item202_amendment_is_distinct_blocking_presence_evidence():
+    got = adapt_edgar_earnings_item_202(
+        _item202_row(form="8-K/A"), owner_observed_at=T0,
+    )
+    assert got.event_kind == "earnings_results_item_2_02_amendment"
+    assert got.owner_disposition == "blocking"
+
+
+@pytest.mark.parametrize("items", ["12.02,9.01", "2.020", "9.01", ""])
+def test_edgar_item202_adapter_requires_exact_item_token(items):
+    with pytest.raises(CatalystContextError):
+        adapt_edgar_earnings_item_202(_item202_row(items=items), owner_observed_at=T0)
+
+
+def test_edgar_item202_adapter_refuses_non_8k_forms():
+    with pytest.raises(CatalystContextError):
+        adapt_edgar_earnings_item_202(_item202_row(form="10-Q"), owner_observed_at=T0)
+
+
+def test_edgar_item202_adapter_refuses_missing_canonical_identity():
+    with pytest.raises(CatalystContextError):
+        adapt_edgar_earnings_item_202(_item202_row(accession=""), owner_observed_at=T0)
+
+
+def test_edgar_item202_adapter_refuses_missing_acceptance_clock():
+    with pytest.raises(CatalystContextError):
+        adapt_edgar_earnings_item_202(
+            _item202_row(acceptance_datetime=""), owner_observed_at=T0,
+        )
+
+
+def test_edgar_item202_adapter_refuses_observation_before_source_availability():
+    with pytest.raises(CatalystContextError):
+        adapt_edgar_earnings_item_202(
+            _item202_row(acceptance_datetime="2026-10-02T14:31:00Z"),
+            owner_observed_at=T0,
+        )
