@@ -153,6 +153,20 @@ def test_owner_radar_episode_id_is_passed_through_without_wrapper_identity():
     assert payload["radar_episode_id"] == "deadbeefdeadbeef"
     assert "tactical_episode_ref" not in payload
 
+@pytest.mark.parametrize(
+    "bad_id",
+    [
+        "radar:episode:deadbeef",
+        "mastermind.live_entry_episode.v1:deadbeef",
+        "DEADBEEFDEADBEEF",
+        "deadbeef",
+        "g" * 16,
+    ],
+)
+def test_surrogate_or_malformed_radar_episode_identity_is_refused(bad_id):
+    with pytest.raises(CatalystContextError):
+        _assess(radar_episode_id=bad_id)
+
 
 def test_output_is_deterministic_and_contains_no_strength_fields():
     got = _assess(
