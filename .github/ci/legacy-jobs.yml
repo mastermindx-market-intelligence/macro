@@ -5197,6 +5197,18 @@ jobs:
       # stdlib + pytest only (reads workflow/dag/builder text; imports no builder).
       - name: render-lane scope contract (flow_desk must stay express-wired)
         run: python -m pytest tests/test_render_flow_desk_scope.py -q
+      # PR #8320 (2026-10-03) — Asia ownership fence. Asia's broad `git add`
+      # stages (collect: `git add data/ site/qledger/`; engine: `git add data/
+      # site/`) can otherwise acquire the Options PIT episode / campaign-v2 files
+      # that the narrow Options publishers OWN. scripts/ci/options_signal_nightly.sh
+      # exclude-broad is bracketed around each broad `git add` so neither the
+      # collect nor the engine commit can smuggle an Options artifact onto the
+      # Asia lane. Belongs HERE (workflow-yaml) because the suite reads
+      # .github/workflows/asia-close.yml as text and asserts the surrounding
+      # structure, identical shape to test_render_intl_scope.py and friends.
+      # stdlib + pytest only (re, pathlib); no data/ or site/ reads.
+      - name: asia-close.yml asia ownership fence (Options PIT/campaign narrow roots must not enter broad staging)
+        run: python -m pytest tests/test_china_heatmap_freshness.py -q
       # Sparse session-worktree profile (policy R8). #5531 landed the suite
       # named by no run: step — the same class the unrun census now gates —
       # so pack-1 went red on every PR the moment it merged. It belongs HERE
