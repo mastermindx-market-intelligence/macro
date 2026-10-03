@@ -267,8 +267,8 @@ def test_no_source_cluster_no_independence_claim():
 
 
 def test_overlapping_training_outcomes_purged():
-    train=[{'snapshot_id':'ok','decision_at':'2026-09-01T00:00:00Z','exit_at':'2026-09-03T00:00:00Z'},
-           {'snapshot_id':'leak','decision_at':'2026-09-02T00:00:00Z','exit_at':'2026-09-05T00:00:00Z'}]
+    train=[{'snapshot_id':'ok','decision_at':'2026-09-01T00:00:00Z','exit_at':'2026-09-03T00:00:00Z','outcome_known_at':'2026-09-03T00:01:00Z'},
+           {'snapshot_id':'leak','decision_at':'2026-09-02T00:00:00Z','exit_at':'2026-09-05T00:00:00Z','outcome_known_at':'2026-09-05T00:01:00Z'}]
     valid=[{'decision_at':'2026-09-05T00:00:00Z'}]
     assert q.purged_training_ids(train,valid)==['ok']
 
@@ -365,3 +365,30 @@ def test_future_known_evidence_does_not_change_historical_view():
 @pytest.mark.parametrize('bad',[float('nan'),float('inf'),None,True])
 def test_direct_ic_helper_does_not_rank_invalid_values(bad):
     assert q.rank_ic([1,bad,3],[1,2,3]) is None
+
+
+def test_nonfinite_derived_return_never_marked_measured():
+    p=packet()
+    next(r for r in p['prices'] if r['ticker']=='G0M0' and r['session']=='2026-09-28')['open']=1e-300
+    next(r for r in p['prices'] if r['ticker']=='G0M0' and r['session']=='2026-10-02')['close']=1e308
+    result=single(p)
+    assert result['status']=='UNAVAILABLE'
+    assert 'forward_excess' not in result
+
+
+def test_label_preserves_latest_outcome_knowledge_clock():
+    result=single()
+    assert result['outcome_known_at']=='2026-10-02T20:01:00+00:00'
+
+
+def test_train_label_known_after_validation_start_is_purged():
+    train=[{'snapshot_id':'late-label','decision_at':'2026-09-01T00:00:00Z',
+            'exit_at':'2026-09-03T00:00:00Z','outcome_known_at':'2026-09-06T00:00:00Z'}]
+    assert q.purged_training_ids(train,[{'decision_at':'2026-09-05T00:00:00Z'}])==[]
+
+
+def test_train_label_with_unknown_knowledge_clock_is_refused():
+    train=[{'snapshot_id':'unknown','decision_at':'2026-09-01T00:00:00Z',
+            'exit_at':'2026-09-03T00:00:00Z'}]
+    with pytest.raises(q.QualificationError,match='OUTCOME_KNOWLEDGE_CLOCK_REQUIRED'):
+        q.purged_training_ids(train,[{'decision_at':'2026-09-05T00:00:00Z'}])
