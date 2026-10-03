@@ -19,6 +19,7 @@ from typing import Any, Iterable, Sequence
 from engine.entry_radar.contracts import AUTHORITY_BLOCK, SOURCE_STATUSES, iso, parse_ts
 
 SCHEMA = "mastermind.entry_radar.catalyst_context.v1"
+RADAR_EPISODE_SCHEMA = "mastermind.live_entry_episode.v1"
 OWNER_DISPOSITIONS = frozenset({"blocking", "soft", "nonblocking", "unknown"})
 CONTEXT_STATES = frozenset({
     "blocking_event_observed",
@@ -144,10 +145,10 @@ class CatalystEvidence:
 
 @dataclass(frozen=True, slots=True)
 class CatalystContext:
-    """Point-in-time catalyst context attached to an existing Radar episode reference."""
+    """Point-in-time catalyst context attached to an owner-issued Radar episode id."""
 
     ticker: str
-    tactical_episode_ref: str
+    radar_episode_id: str
     decision_at: datetime
     context_state: str
     coverage_complete: bool
@@ -170,7 +171,8 @@ class CatalystContext:
         return {
             "schema": self.schema,
             "ticker": self.ticker,
-            "tactical_episode_ref": self.tactical_episode_ref,
+            "radar_episode_schema": RADAR_EPISODE_SCHEMA,
+            "radar_episode_id": self.radar_episode_id,
             "decision_at": iso(self.decision_at),
             "context_state": self.context_state,
             "coverage_complete": self.coverage_complete,
@@ -203,7 +205,7 @@ def _dedupe_evidence(evidence: Iterable[CatalystEvidence]) -> tuple[CatalystEvid
 def assess_catalyst_context(
     *,
     ticker: str,
-    tactical_episode_ref: str,
+    radar_episode_id: str,
     decision_at: datetime,
     required_sources: Sequence[str],
     source_reads: Sequence[CatalystSourceRead],
@@ -216,7 +218,7 @@ def assess_catalyst_context(
     observed in the declared covered sources by decision_at".
     """
     symbol = _require_text("ticker", ticker).upper()
-    episode_ref = _require_text("tactical_episode_ref", tactical_episode_ref)
+    episode_id = _require_text("radar_episode_id", radar_episode_id)
     decision = _require_ts("decision_at", decision_at)
 
     required = tuple(sorted({_require_text("required_source", s) for s in required_sources}))
@@ -266,7 +268,7 @@ def assess_catalyst_context(
     ordered_reads = tuple(sorted(source_reads, key=lambda r: r.source_id))
     return CatalystContext(
         ticker=symbol,
-        tactical_episode_ref=episode_ref,
+        radar_episode_id=episode_id,
         decision_at=decision,
         context_state=state,
         coverage_complete=coverage_complete,
