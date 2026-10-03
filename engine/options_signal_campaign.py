@@ -1393,12 +1393,27 @@ def _derive_campaign_outcomes_from_maps(
     session_map: dict[tuple[str, str], LedgerRow],
     h60: LedgerSnapshot,
     session: LedgerSnapshot,
+    *,
+    reserved_keys: Iterable[tuple[str, str]] = (),
 ) -> tuple[list[dict[str, Any]], int]:
-    occupied_keys = (
+    existing_keys = (
         frozenset(existing_rows)
         if isinstance(existing_rows, dict)
         else frozenset(_campaign_outcome_key(item.value) for item in existing_rows)
     )
+    reserved = frozenset(reserved_keys)
+    for key in reserved:
+        if (
+            not isinstance(key, tuple)
+            or len(key) != 2
+            or not all(isinstance(part, str) for part in key)
+        ):
+            raise CampaignContractError("reserved campaign outcome key is malformed")
+    if existing_keys & reserved:
+        raise CampaignContractError(
+            "reserved campaign outcome key is already admitted"
+        )
+    occupied_keys = existing_keys | reserved
     fresh: list[dict[str, Any]] = []
     pending = 0
     for campaign_item in campaigns.rows:
@@ -1927,8 +1942,10 @@ def _plan(
             activation_receipt=activation_receipt,
         )
         outcome_source = effective_view.admitted_rows
+        reserved_outcome_keys = effective_view.quarantined_keys
     else:
         outcome_source = outcomes.rows
+        reserved_outcome_keys: Iterable[tuple[str, str]] = ()
     existing_outcomes = _outcome_history(
         outcome_source,
         campaign_history,
@@ -1954,6 +1971,7 @@ def _plan(
         session_map,
         h60,
         session,
+        reserved_keys=reserved_outcome_keys,
     )
     outcomes_after = _append_snapshot(outcomes, new_outcomes)
     next_checkpoint = _build_checkpoint(

@@ -478,6 +478,11 @@ def test_v1_default_output_and_incident_rejection_are_unchanged(
     monkeypatch.setattr(
         campaign_engine, "_verify_policy_prefixes", _small_verify_policy_prefixes
     )
+    # Bypass the schema-strict _outcome_history walk: the synthetic rows
+    # here are intentionally minimal (no campaign_id / source_outcome_prefix)
+    # because this test focuses on the V1 default checkpoint + torn-line
+    # rejection path, not on a real source-anchored outcome. Production
+    # count / hash checks remain active inside build_effective_outcome_view.
     monkeypatch.setattr(
         campaign_engine,
         "_outcome_history",
@@ -700,14 +705,34 @@ def test_derivation_does_not_reissue_quarantined_or_admitted_keys() -> None:
     outcomes = _snapshot([quarantined], "outcomes")
     fresh, pending = _derive_campaign_outcomes_from_maps(
         campaigns,
-        iter((quarantined,)),
+        {},
         {},
         {},
         outcomes,
         outcomes,
+        reserved_keys=[_campaign_outcome_key(quarantined.value)],
     )
     assert fresh == []
     assert pending == 5
+
+
+def test_derivation_rejects_admitted_reserved_key_overlap() -> None:
+    row = _row("overlap", 1)
+    campaign = _row("campaign", 1)
+    campaign.value["members"] = [{"episode_id": "episode"}]
+    campaigns = _snapshot([campaign], "campaigns")
+    outcomes = _snapshot([row], "outcomes")
+    key = _campaign_outcome_key(row.value)
+    with pytest.raises(CampaignContractError, match="already admitted"):
+        _derive_campaign_outcomes_from_maps(
+            campaigns,
+            {key: row.value},
+            {},
+            {},
+            outcomes,
+            outcomes,
+            reserved_keys=[key],
+        )
 
 
 def test_derivation_honours_iterable_occupied_keys() -> None:
@@ -794,7 +819,22 @@ def _install_synthetic_runtime(
             raise CampaignContractError(
                 "synthetic source shorter than synthetic incident"
             )
+        if (
+            _prefix_sha256(small_campaigns, campaign_count)
+            != generation["campaigns"]["prefix_sha256"]
+        ):
+            raise CampaignContractError("synthetic campaign prefix changed")
+        if (
+            _prefix_sha256(small_outcomes, outcome_count)
+            != generation["outcomes"]["prefix_sha256"]
+        ):
+            raise CampaignContractError("synthetic outcome prefix changed")
         lawful_count = lawful_dict["records"]
+        if (
+            _prefix_sha256(small_outcomes, lawful_count)
+            != lawful_dict["prefix_sha256"]
+        ):
+            raise CampaignContractError("synthetic lawful prefix changed")
         if (
             quarantine_dict["start_row"] != lawful_count + 1
             or quarantine_dict["end_row"] != outcome_count
@@ -806,10 +846,39 @@ def _install_synthetic_runtime(
     monkeypatch.setattr(
         campaign_engine, "_verify_policy_prefixes", _small_verify_policy_prefixes
     )
+    # Bypass the schema-strict _outcome_history walk: the synthetic rows
+    # here are intentionally minimal (no campaign_id / source_outcome_prefix)
+    # because the runtime tests focus on _plan / EffectiveOutcomeView /
+    # checkpoint-last atomicity rather than a real source-anchored outcome.
+    # Production count / hash checks remain active inside
+    # build_effective_outcome_view. We do, however, return the synthetic
+    # admitted (revision, horizon) keys as the existing-rows dict so a
+    # retry that runs after a partial crash does not re-append rows the
+    # previous run already wrote.
+    def _small_outcome_history(
+        existing: Any, *args: Any, **kwargs: Any
+    ) -> dict[tuple[str, str], dict[str, Any]]:
+        rows: dict[tuple[str, str], dict[str, Any]] = {}
+        rows_iter = (
+            existing.rows if isinstance(existing, LedgerSnapshot) else existing
+        )
+        for item in rows_iter:
+            value = item.value
+            key = (
+                value["campaign_revision_id"],
+                value["horizon"],
+            )
+            if key in rows:
+                raise CampaignContractError(
+                    "duplicate campaign outcome semantic key"
+                )
+            rows[key] = value
+        return rows
+
     monkeypatch.setattr(
         campaign_engine,
         "_outcome_history",
-        lambda *args, **kwargs: {},
+        _small_outcome_history,
     )
 
     def _small_validate_checkpoint(row: dict[str, Any]) -> None:
@@ -845,7 +914,9 @@ def _install_synthetic_runtime(
         # synthetic checkpoint without tripping production const values.
         if not path.exists():
             return None
-        return json.loads(path.read_bytes())
+        value = json.loads(path.read_bytes())
+        _small_validate_checkpoint(value)
+        return value
 
     monkeypatch.setattr(
         campaign_engine, "_load_checkpoint", _small_load_checkpoint
@@ -1196,6 +1267,240 @@ def test_checkpoint_last_atomic_append_idempotent_replay(
     assert (root / campaign_engine.CAMPAIGNS_PATH).read_bytes() == first_campaigns
     assert (root / campaign_engine.OUTCOMES_PATH).read_bytes() == first_outcomes
 
+
+
+def _runtime_episode_and_h60() -> tuple[dict[str, Any], dict[str, Any]]:
+    """One schema-valid source episode and terminal H+60 source outcome.
+
+    The 15:03 ET availability makes H+60 cross the regular-session close, so
+    the frozen source contract requires an incomplete (but still derivable)
+    H+60 outcome without any price evidence.
+    """
+    source = "synthetic-live-flow"
+    source_event_id = "synthetic-event-1"
+    episode_id = campaign_engine._episode_id(source, source_event_id)
+    authority = {
+        "may_originate": False,
+        "may_rank": False,
+        "may_gate": False,
+        "may_size": False,
+        "may_escalate": False,
+        "may_trade": False,
+        "may_publish_pick": False,
+        "may_train_prophet": False,
+    }
+    episode = {
+        "schema": "options.signal_episode/v1",
+        "episode_id": episode_id,
+        "source": source,
+        "source_event_id": source_event_id,
+        "event_time": "2026-10-01T19:00:00Z",
+        "observed_at": "2026-10-01T19:01:00Z",
+        "decision_at": "2026-10-01T19:02:00Z",
+        "available_at": "2026-10-01T19:03:00Z",
+        "published_at": None,
+        "anchor_strategy": "durable_available_at",
+        "session_date": "2026-10-01",
+        "ticker": "TEST",
+        "contract": {"right": "C", "expiration": "2026-10-16", "strike": 100},
+        "decision": {
+            "disposition": "abstain",
+            "reason": "synthetic test source",
+            "underlying_direction": "none",
+            "option_action": "none",
+            "authority": authority,
+        },
+        "feature_snapshot": {
+            "premium_usd": 1000,
+            "selection_rule": "premium_floor/v1",
+            "selection_floor_usd": 0,
+            "selection_root_class": "single_name",
+            "contracts": 1,
+            "avg_option_trade_price": 10,
+            "flow_side": "mixed",
+            "dte": 15,
+            "moneyness_bucket": "unknown",
+            "vol_gt_prior_oi": None,
+            "repeated": False,
+            "swept": False,
+        },
+        "provenance": {
+            "source_schema": "live_flow.event_stage/v1",
+            "source_artifact": "live_flow/events/2026-10-01.jsonl",
+            "source_snapshot_asof": "2026-10-01T19:03:00Z",
+            "feature_cutoff": "2026-10-01T19:03:00Z",
+            "signing_source": "tape",
+            "oi_vintage": None,
+            "oi_vintage_rule": "latest_available_chain_before_session",
+        },
+        "quality": {
+            "availability_exact": True,
+            "trade_direction_reliability": "soft",
+            "option_quote_outcome_eligible": False,
+            "source_baseline": "floor",
+        },
+    }
+    unavailable_measurement = {
+        "version": "h60-aligned-bars/v1",
+        "kind": "unavailable",
+        "target_aligned": False,
+        "training_eligible": False,
+        "training_ineligibility_reasons": ["outcome_incomplete"],
+        "window": {"start": None, "end": None},
+    }
+    unavailable_underlying = {
+        "status": "unavailable",
+        "entry_time": None,
+        "exit_time": None,
+        "entry_price": None,
+        "exit_price": None,
+        "ret": None,
+        "mfe": None,
+        "mae": None,
+        "entry_delay_minutes": None,
+        "exit_delay_minutes": None,
+        "bar_seconds": None,
+        "path_basis": None,
+        "evidence": None,
+    }
+    unavailable_provenance = {
+        "price_source": None,
+        "price_vintage": None,
+        "price_delay_minutes": None,
+        "source_receipt_schema": None,
+        "source_available_at": None,
+        "source_file_sha256": None,
+        "source_file_row_count": None,
+        "source_file_first_time": None,
+        "source_file_last_time": None,
+        "adjusted": None,
+        "price_basis": None,
+        "timestamp_basis": None,
+    }
+    h60 = {
+        "schema": "options.signal_episode_outcome/v1",
+        "outcome_id": campaign_engine._stable_id(
+            "oout", "options.signal_episode_outcome/v1", "h60-aligned-bars/v1", episode_id, 60
+        ),
+        "episode_id": episode_id,
+        "horizon_minutes": 60,
+        "status": "incomplete",
+        "reason": "horizon_crosses_session_close",
+        "horizon_anchor": episode["available_at"],
+        "target_time": "2026-10-01T20:03:00Z",
+        "computed_at": "2026-10-01T20:04:00Z",
+        "matured_at": "2026-10-01T20:03:00Z",
+        "measurement": unavailable_measurement,
+        "underlying": unavailable_underlying,
+        "option": {
+            "status": "unavailable",
+            "reason": "no_executable_nbbo_quote_path",
+            "quote_basis": None,
+            "ret": None,
+            "mfe": None,
+            "mae": None,
+        },
+        "provenance": unavailable_provenance,
+        "label_authority": "research_only",
+    }
+    return episode, h60
+
+
+def _write_runtime_source(root: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    episode, h60 = _runtime_episode_and_h60()
+    episode_raw = canonical_bytes(episode)
+    episode_item = LedgerRow(episode, 1, episode_raw, _sha256(episode_raw))
+    episode_snapshot = _snapshot([episode_item], campaign_engine.EPISODES_PATH)
+    campaign = campaign_engine._campaign_payload(
+        campaign_engine._group_key(episode), [episode_item], episode_snapshot, None
+    )
+    (root / campaign_engine.EPISODES_PATH).write_bytes(episode_raw + b"\n")
+    (root / campaign_engine.H60_PATH).write_bytes(canonical_bytes(h60) + b"\n")
+    return episode, h60, campaign
+
+
+def test_plan_reserves_quarantined_key_while_its_source_is_derivable(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root, policy, _, _ = _install_synthetic_runtime(
+        monkeypatch, tmp_path, lawful=0, quarantine=1, tail=0
+    )
+    _episode, _h60, campaign = _write_runtime_source(root)
+    quarantined_value = dict(_row("reserved-derivable", 1, computed_at=COMPUTED_AT).value)
+    quarantined_value["campaign_revision_id"] = campaign["campaign_revision_id"]
+    quarantined_raw = canonical_bytes(quarantined_value)
+    quarantined = LedgerRow(
+        quarantined_value, 1, quarantined_raw, _sha256(quarantined_raw)
+    )
+    outcomes_path = root / campaign_engine.OUTCOMES_PATH
+    original_outcomes = quarantined.raw + b"\n"
+    outcomes_path.write_bytes(original_outcomes)
+    # Bind the test-only correction descriptor to the actual quarantined raw row.
+    policy = _small_policy(
+        campaign_count=0,
+        lawful_count=0,
+        incident_count=1,
+        quarantine_count=1,
+        computed_at=COMPUTED_AT,
+        campaign_snapshot=_snapshot([], campaign_engine.CAMPAIGNS_PATH),
+        outcome_snapshot=_snapshot([quarantined], campaign_engine.OUTCOMES_PATH),
+    )
+    monkeypatch.setattr(
+        campaign_engine.CorrectionPolicy, "load_canonical", lambda root_dir=None: policy
+    )
+    receipt_path = tmp_path / "receipt.json"
+    receipt_path.write_bytes(canonical_bytes(_receipt(policy)) + b"\n")
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+
+    summary = campaign_engine.run(
+        root_dir=root, correction_activation_receipt_path=receipt_path
+    )
+    assert summary["campaign_revisions_appended"] == 1
+    assert summary["campaign_outcomes_appended"] == 0
+    assert summary["campaign_outcomes_pending"] == 5
+    assert outcomes_path.read_bytes() == original_outcomes
+
+
+def test_checkpoint_last_crash_retries_real_append_to_identical_v2_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root, policy, _, _ = _install_synthetic_runtime(
+        monkeypatch, tmp_path, lawful=0, quarantine=1, tail=0
+    )
+    _write_runtime_source(root)
+    receipt_path = tmp_path / "receipt.json"
+    receipt_path.write_bytes(canonical_bytes(_receipt(policy)) + b"\n")
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+
+    def _crash_before_checkpoint() -> None:
+        raise RuntimeError("injected checkpoint-last crash")
+
+    with pytest.raises(RuntimeError, match="checkpoint-last crash"):
+        campaign_engine.run(
+            root_dir=root,
+            correction_activation_receipt_path=receipt_path,
+            before_checkpoint=_crash_before_checkpoint,
+        )
+    assert not (root / campaign_engine.CHECKPOINT_PATH).exists()
+    outputs_after_crash = (root / campaign_engine.OUTCOMES_PATH).read_bytes()
+    campaigns_after_crash = (root / campaign_engine.CAMPAIGNS_PATH).read_bytes()
+    assert outputs_after_crash.count(b"\n") == 2
+    assert campaigns_after_crash.count(b"\n") == 1
+
+    retry = campaign_engine.run(
+        root_dir=root, correction_activation_receipt_path=receipt_path
+    )
+    checkpoint = (root / campaign_engine.CHECKPOINT_PATH).read_bytes()
+    assert retry["campaign_revisions_appended"] == 0
+    assert retry["campaign_outcomes_appended"] == 0
+    assert (root / campaign_engine.OUTCOMES_PATH).read_bytes() == outputs_after_crash
+    assert (root / campaign_engine.CAMPAIGNS_PATH).read_bytes() == campaigns_after_crash
+    assert json.loads(checkpoint)["schema"] == campaign_engine.CAMPAIGN_CHECKPOINT_V2_SCHEMA
+
+    campaign_engine.run(root_dir=root, correction_activation_receipt_path=receipt_path)
+    assert (root / campaign_engine.CHECKPOINT_PATH).read_bytes() == checkpoint
+    assert (root / campaign_engine.OUTCOMES_PATH).read_bytes() == outputs_after_crash
+    assert (root / campaign_engine.CAMPAIGNS_PATH).read_bytes() == campaigns_after_crash
 
 def test_v1_unchanged_when_inactive(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
