@@ -54,7 +54,9 @@ waves:
     next_action: >
       HOLD outcomes. First accept DEC:TEMPORAL-GRAIN-ADAPTIVE-SIGNAL-CLOCK-RECOVERY, current-main
       qualify PR #6803, then commit an executable cohort/recipe/rights/availability preregistration
-      with no blanks. Run only identity/parity/GAKD/memory/PIT mechanics and typed abstention.
+      with no blanks. For a U.S.-equity cohort, consume accepted TOI W2-0 or another exact canonical
+      source-plane rights/clock receipt; this workstream may not self-admit that data plane. Run only
+      identity/parity/GAKD/memory/PIT mechanics and typed abstention.
   - id: W1B
     title: Separately preregistered localization and risk-utility mechanism diagnosis
     status: todo
