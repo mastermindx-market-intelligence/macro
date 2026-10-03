@@ -2935,6 +2935,12 @@ jobs:
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
       - "tests/test_build_chain_heat.py"
+      # Fable structural adapter: frozen research inputs are runtime dependencies.
+      - "tests/test_options_structure.py"
+      - "tests/test_options_pilot_study_adapter.py"
+      - "scripts/options_pilot_study_adapter.py"
+      - "research/options_intelligence/2026-10-03/pilot-study-spec.v1.json"
+      - "research/options_intelligence/2026-10-03/pilot-p3-reference.py"
       - "tests/test_build_options_prophet.py"
       - "tests/test_build_options_screener.py"
       - "tests/test_build_options_structure_intraday.py"
@@ -3043,7 +3049,7 @@ jobs:
       - name: F03 catalyst-linkage read-model (typed unbound/ambiguous/stale states, fail-loud contract key, zero authority)
         run: python -m pytest tests/test_options_catalyst_link.py -q
       - name: flow derivative source clocks (enrich + chain heat, fail-closed provenance)
-        run: python -m pytest tests/test_flow_enrich.py tests/test_build_chain_heat.py -q
+        run: python -m pytest tests/test_flow_enrich.py tests/test_build_chain_heat.py tests/test_options_structure.py tests/test_options_pilot_study_adapter.py -q
       - name: ThetaData PIT store (narrow OI projection, exact-date filter, cache bypass)
         run: python -m pytest tests/test_thetadata_store.py -q
       - name: AD-1T1 ThetaData T1 daily incremental maintainer (legacy characterization, --daily hostile suite, launchd scheduler)
