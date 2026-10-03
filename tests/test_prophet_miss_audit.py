@@ -437,7 +437,7 @@ _ARTIFACT_KEYS = {
     "schema", "price_through", "tier", "authority", "bases", "summary",
     "top63_excluder_hist", "top63_excluder_family_hist", "top21_excluder_hist",
     "veto_leg_hist", "runner_sector_hist", "eligible_today_sector_hist",
-    "conversion", "themes", "basket_misses", "name_score_scorecard",
+    "conversion", "themes", "subtheme_funnel", "basket_misses", "name_score_scorecard",
     "scan_tier",
     "priority_score_scorecard",
     # ANTICIPATION §6.6 — entry status -> forward outcome, the evidence loop that revises
@@ -450,6 +450,8 @@ _SUMMARY_KEYS = {
     "top63_eligible_today_n", "top63_never_eligible_n", "top63_never_eligible_pct",
     "top63_eligible_days", "top21_n", "top21_eligible_today_n", "conversion_rate",
     "conversion_n", "basket_misses_n", "basket_scored_n",
+    "subtheme_emerging_n", "subtheme_leadership_gaps_n",
+    "subtheme_featured_coverage_pct",
 }
 
 
