@@ -55,6 +55,7 @@ from engine.options_signal_episode import (
     load_jsonl,
     load_session_outcomes,
     normalize_price_bars,
+    prepare_price_bars,
     validate_episode,
     validate_outcome,
     validate_outcome_against_episode,
@@ -513,20 +514,20 @@ def _canonical_utc(value: object) -> str:
 
 def _price_snapshot(
     intraday_root: Path, ticker: str,
-) -> tuple[pd.DataFrame | None, dict[str, Any] | None]:
+) -> tuple[pd.DataFrame | None, dict[str, Any] | None, Any | None]:
     """Read one receipt-bound immutable parquet byte snapshot without TOCTOU."""
     source = intraday_root / f"{ticker}.parquet"
     receipt_path = intraday_root / f"{ticker}.parquet.receipt.json"
     source_exists = source.exists()
     receipt_exists = receipt_path.exists()
     if not source_exists and not receipt_exists:
-        return None, None
+        return None, None, None
     # Existing deployments already carry mutable Polygon parquets that predate
     # this causal sidecar.  Until the collector successfully refreshes that
     # ticker, those bytes are not admissible evidence but they are not ledger
     # corruption either: leave its outcome pending and let other tickers accrue.
     if source_exists and not receipt_exists:
-        return None, None
+        return None, None, None
     if receipt_exists and not source_exists:
         raise ContractError(
             f"price snapshot pair is incomplete for {ticker}: "
@@ -569,18 +570,20 @@ def _price_snapshot(
         for field in ("source_available_at", "first_time", "last_time"):
             _canonical_utc(receipt.get(field))
         frame = pd.read_parquet(io.BytesIO(raw))
-        normalized = normalize_price_bars(frame)
-        if normalized.empty or type(receipt.get("row_count")) is not int:
-            raise ValueError("receipt source frame is empty")
-        if receipt["row_count"] != len(normalized):
+        # Build the typed prepared wrapper after every immutable-bytes,
+        # readback, hash and receipt check has passed. The wrapper's
+        # row_count / first_time / last_time gate the receipt against the
+        # normalized frame; raw callers keep their original path.
+        prepared = prepare_price_bars(frame, ticker=ticker)
+        if type(receipt.get("row_count")) is not int:
+            raise ValueError("receipt row count is missing or non-integer")
+        if receipt["row_count"] != prepared.row_count:
             raise ValueError("receipt row count disagrees with source bytes")
-        first = normalized.index.min().to_pydatetime().astimezone(timezone.utc)
-        last = normalized.index.max().to_pydatetime().astimezone(timezone.utc)
-        if receipt["first_time"] != first.isoformat().replace("+00:00", "Z"):
+        if receipt["first_time"] != prepared.first_time:
             raise ValueError("receipt first timestamp disagrees with source bytes")
-        if receipt["last_time"] != last.isoformat().replace("+00:00", "Z"):
+        if receipt["last_time"] != prepared.last_time:
             raise ValueError("receipt last timestamp disagrees with source bytes")
-        return frame, receipt
+        return frame, receipt, prepared
     except Exception as exc:  # noqa: BLE001
         if isinstance(exc, ContractError):
             raise
@@ -771,13 +774,22 @@ def run(
                 summary["write_skipped"] = "COLLECT_LANE is not nightly"
 
     intraday_root = _intraday_root(repo, data_root)
-    price_cache: dict[str, tuple[pd.DataFrame | None, dict[str, Any] | None]] = {}
+    price_cache: dict[str, tuple[pd.DataFrame | None, dict[str, Any] | None, Any | None]] = {}
     price_cache_errors: set[str] = set()
+    # Per-run typed prepared price-bars seam. Built only after the snapshot's
+    # immutable-bytes/readback/hash/receipt checks pass; reused across the H+60
+    # and every session consumer for the same ticker so normalize_price_bars
+    # runs at most once per snapshot instead of once per dispersion×horizon.
+    # Lifetime is bounded to this ``run`` invocation — never module-global.
+    from time import perf_counter as _perf_counter
+    _h60_phase_started = _perf_counter()
     with _BuildPhase("h60_derivation"):
         outcomes: list[dict[str, Any]] = []
+        h60_attempts = 0
         for episode_id, episode in by_episode.items():
             if episode_id in resolved_episodes:
                 continue
+            h60_attempts += 1
             ticker = str(episode.get("ticker") or "")
             price_source = _price_source_label(repo, intraday_root, ticker)
             # Resolve clocks before touching the mutable price cache. Session-close
@@ -796,7 +808,7 @@ def run(
             if attempt.get("reason") == "missing_price_receipt":
                 if ticker not in price_cache:
                     price_cache[ticker] = _price_snapshot(intraday_root, ticker)
-                frame, receipt = price_cache[ticker]
+                frame, receipt, prepared = price_cache[ticker]
                 bar_seconds = receipt.get("bar_seconds") if receipt is not None else None
                 price_delay_minutes = (
                     receipt.get("vendor_delay_minutes") if receipt is not None else None
@@ -809,6 +821,7 @@ def run(
                     bar_seconds=bar_seconds,
                     price_delay_minutes=price_delay_minutes,
                     price_receipt=receipt,
+                    prepared_bars=prepared,
                 )
             status = attempt.get("status")
             if status == "complete":
@@ -821,6 +834,20 @@ def run(
                 summary["outcomes_pending"] += 1
                 reason = str(attempt.get("reason") or "unknown")
                 summary["pending_reasons"][reason] = summary["pending_reasons"].get(reason, 0) + 1
+            if h60_attempts % 250 == 0:
+                log.info(
+                    "options_episode_h60_progress attempted=%d unresolved_total=%d "
+                    "complete=%d terminal_incomplete=%d pending=%d "
+                    "snapshot_tickers=%d prepared_tickers=%d elapsed_seconds=%.3f",
+                    h60_attempts,
+                    h60_attempts - summary["outcomes_complete"] - summary["outcomes_terminal_incomplete"],
+                    summary["outcomes_complete"],
+                    summary["outcomes_terminal_incomplete"],
+                    summary["outcomes_pending"],
+                    len(price_cache),
+                    sum(item[2] is not None for item in price_cache.values()),
+                    max(0.0, _perf_counter() - _h60_phase_started),
+                )
 
     if not dry_run:
         with _BuildPhase("h60_append"):
@@ -831,12 +858,15 @@ def run(
 
     with _BuildPhase("session_derivation"):
         session_outcomes: list[dict[str, Any]] = []
+        session_attempts = 0
+        _session_phase_started = _perf_counter()
         for episode_id, episode in by_episode.items():
             ticker = str(episode.get("ticker") or "")
             price_source = _price_source_label(repo, intraday_root, ticker)
             for horizon in SESSION_HORIZONS:
                 if (episode_id, horizon) in resolved_session_keys:
                     continue
+                session_attempts += 1
                 attempt = derive_session_outcome(
                     episode,
                     horizon,
@@ -867,7 +897,7 @@ def run(
                             "episode_id": episode_id, "horizon": horizon,
                         }
                     else:
-                        frame, receipt = price_cache[ticker]
+                        frame, receipt, prepared = price_cache[ticker]
                         bar_seconds = receipt.get("bar_seconds") if receipt is not None else None
                         price_delay_minutes = (
                             receipt.get("vendor_delay_minutes") if receipt is not None else None
@@ -881,6 +911,7 @@ def run(
                             bar_seconds=bar_seconds,
                             price_delay_minutes=price_delay_minutes,
                             price_receipt=receipt,
+                            prepared_bars=prepared,
                         )
                 status = attempt.get("status")
                 if status == "complete":
@@ -894,6 +925,20 @@ def run(
                     reason = str(attempt.get("reason") or "unknown")
                     summary["session_pending_reasons"][reason] = (
                         summary["session_pending_reasons"].get(reason, 0) + 1
+                    )
+                if session_attempts % 250 == 0:
+                    log.info(
+                        "options_episode_session_progress attempted=%d "
+                        "unresolved_total=%d complete=%d terminal_incomplete=%d pending=%d "
+                        "snapshot_tickers=%d prepared_tickers=%d elapsed_seconds=%.3f",
+                        session_attempts,
+                        session_attempts - summary["session_outcomes_complete"] - summary["session_outcomes_terminal_incomplete"],
+                        summary["session_outcomes_complete"],
+                        summary["session_outcomes_terminal_incomplete"],
+                        summary["session_outcomes_pending"],
+                        len(price_cache),
+                        sum(item[2] is not None for item in price_cache.values()),
+                        max(0.0, _perf_counter() - _session_phase_started),
                     )
 
     if not dry_run:
