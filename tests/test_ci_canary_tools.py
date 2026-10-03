@@ -1441,15 +1441,428 @@ def test_runner_admission_hook_js_wires_m1_nightly_2_profile() -> None:
     m1 = (ROOT / "ops" / "runner-host" / "m1" / "run_guarded_runner.sh").read_text(
         encoding="utf-8"
     )
-    # the canary default is preserved for every existing runner root
+    # the canary default is preserved for every existing M1 runner
     assert 'ACTIONS_RUNNER_HOOK_JOB_STARTED="$guard_root/runner_admission_m1_canary.js"' in m1
     assert "MASTERMIND_CI_PROFILE=m1-canary" in m1
     # and the m1-nightly-2 root now binds the new profile + hook
     assert 'runner_admission_m1_nightly_2.js' in m1
     assert "MASTERMIND_CI_PROFILE=m1-nightly-2" in m1
-    # the binding is keyed off the runner root basename — never the host name —
-    # so a host-name clone cannot widen admission
-    assert 'basename "$runner_root"' in m1
+    # the binding is fail-closed and driven by the *configured* agentName
+    # written into `.runner` by the official `config.sh` registration —
+    # NEVER by the directory basename of the runner root. The M1 LaunchAgent
+    # invokes the wrapper with `/Users/chriswong/actions-runner-2`, whose
+    # basename is `actions-runner-2`, not `m1-nightly-2`; trusting the
+    # basename here would silently leave every M1 listener on the canary
+    # profile. The wrapper delegates the binding to the pure helper.
+    assert 'basename "$runner_root"' not in m1
+    assert '"$guard_root/runner_binding.py" "$runner_root"' in m1
+    assert '"$guard_root/runner_binding.py" --extract-profile "$binding_line"' in m1
+    assert "exit 78" in m1
+    # the canary default does NOT depend on any case branch against the
+    # basename — the only branch is the profile-name case derived from the
+    # helper's JSON output, so an additional `actions-runner-N` root
+    # without a matching `(root, agentName)` pair in the helper refuses.
+    assert "case \"$(basename" not in m1
+    # the helper module is checked in alongside the wrapper
+    assert (ROOT / "ops" / "runner-host" / "common" / "runner_binding.py").is_file()
+
+
+# ── AD-1T2: runner_binding.py — fail-closed trusted-local-identity ────────────
+# These tests exercise the actual helper used by run_guarded_runner.sh with
+# production-shaped (canonical root, configured agentName) pairs. We do NOT
+# create real `/Users/...` paths on CI: the helper's `CANONICAL_BINDINGS`
+# module dict is monkey-patched to point at a `tmp_path` so the resolver
+# still performs the exact-match check on real fs objects.
+
+import plistlib  # noqa: E402  — local import keeps the module's surface stable
+
+BINDING = load(
+    "runner_binding", ROOT / "ops" / "runner-host" / "common" / "runner_binding.py"
+)
+
+
+def _write_runner_identity(runner_root: Path, agent_name: str) -> Path:
+    """Materialise a production-shaped ``.runner`` plist at ``runner_root``.
+
+    The real GitHub Actions runner writes ``.runner`` as an XML plist via
+    ``config.sh``; ``plutil -extract agentName raw -o -`` reads it back.
+    Mirror that shape here so the helper's extractor is exercised on real
+    bytes, not on a fake.
+    """
+    runner_file = runner_root / ".runner"
+    with runner_file.open("wb") as handle:
+        plistlib.dump({"agentName": agent_name}, handle)
+    return runner_file
+
+
+@pytest.fixture
+def canonical_bindings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """Yield ``(canonical_root_for_m1_nightly_2, agent_name)`` and patch the
+    helper's table so the production-shaped path is the tmp path.  Three
+    canonical roots are wired in (m1-nightly-2, m1-nightly-1, m1-light-1) so
+    every binding decision is covered without materialising /Users.
+    """
+
+    runner_2 = tmp_path / "actions-runner-2"
+    runner_1 = tmp_path / "actions-runner-1"
+    runner_3 = tmp_path / "actions-runner-3"
+    for root in (runner_2, runner_1, runner_3):
+        root.mkdir()
+
+    monkeypatch.setitem(
+        BINDING.CANONICAL_BINDINGS,
+        (str(runner_2), "m1-nightly-2"),
+        "m1-nightly-2",
+    )
+    monkeypatch.setitem(
+        BINDING.CANONICAL_BINDINGS,
+        (str(runner_1), "m1-nightly-1"),
+        "m1-canary",
+    )
+    monkeypatch.setitem(
+        BINDING.CANONICAL_BINDINGS,
+        (str(runner_3), "m1-light-1"),
+        "m1-canary",
+    )
+    return {
+        "runner_2": runner_2,
+        "runner_1": runner_1,
+        "runner_3": runner_3,
+        "agent_m1_nightly_2": "m1-nightly-2",
+        "agent_m1_nightly_1": "m1-nightly-1",
+        "agent_m1_light_1": "m1-light-1",
+    }
+
+
+def _plutil_extract_agent_name(runner_file: str) -> str:
+    """Mirror the production ``/usr/bin/plutil -extract agentName raw -o -``
+    extractor so the helper is exercised against the real plist bytes written
+    by :func:`_write_runner_identity`. ``plistlib`` parses XML and binary plist
+    formats identically to ``plutil``.
+    """
+    with open(runner_file, "rb") as handle:
+        document = plistlib.load(handle)
+    value = document.get("agentName", "")
+    assert isinstance(value, str), (
+        f"plistlib parsed a non-string agentName: {value!r} from {runner_file}"
+    )
+    return value
+
+
+def test_runner_binding_binds_production_shaped_m1_nightly_2(
+    canonical_bindings, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Production case: ``/Users/chriswong/actions-runner-2`` with
+    ``.runner`` carrying ``agentName="m1-nightly-2"`` binds the producer
+    profile. RED-first on the previous (basename-based) head because the
+    real runner root basename is ``actions-runner-2``, not ``m1-nightly-2``.
+    """
+
+    runner_root = canonical_bindings["runner_2"]
+    _write_runner_identity(runner_root, "m1-nightly-2")
+
+    profile, agent_name = BINDING.resolve_profile(
+        str(runner_root),
+        isfile=os.path.isfile,
+        isdir=os.path.isdir,
+        extract_agent_name=_plutil_extract_agent_name,
+    )
+    assert profile == "m1-nightly-2", (
+        "production-shaped (root=actions-runner-2, agentName=m1-nightly-2) "
+        "must bind the m1-nightly-2 producer profile"
+    )
+    assert agent_name == "m1-nightly-2"
+
+
+def test_runner_binding_refuses_missing_runner_identity_file(
+    canonical_bindings,
+) -> None:
+    """A runner root with no ``.runner`` file refuses (exit 78 in the
+    wrapper). RED-first on the previous head: missing .runner must NOT
+    silently fall back to the canary profile.
+    """
+
+    runner_root = canonical_bindings["runner_2"]
+    # intentionally do NOT write a .runner file
+    with pytest.raises(BINDING.RunnerBindingRefused) as excinfo:
+        BINDING.resolve_profile(
+            str(runner_root),
+            isfile=os.path.isfile,
+            isdir=os.path.isdir,
+            extract_agent_name=_plutil_extract_agent_name,
+        )
+    assert ".runner" in str(excinfo.value)
+
+
+def test_runner_binding_refuses_malformed_runner_identity_file(
+    canonical_bindings, tmp_path: Path
+) -> None:
+    """A ``.runner`` file the production extractor cannot parse refuses.
+    RED-first: malformed .runner used to silently bind the canary profile
+    because the basename of actions-runner-2 never matched the basename
+    case; the new helper refuses ANY non-empty property-list parse error.
+    """
+
+    runner_root = canonical_bindings["runner_2"]
+    runner_root.mkdir(exist_ok=True)
+    (runner_root / ".runner").write_text("this is not a plist", encoding="utf-8")
+
+    def malformed_extractor(_path: str) -> str:
+        raise plistlib.InvalidFileException("not a plist")
+
+    with pytest.raises(BINDING.RunnerBindingRefused) as excinfo:
+        BINDING.resolve_profile(
+            str(runner_root),
+            isfile=os.path.isfile,
+            isdir=os.path.isdir,
+            extract_agent_name=malformed_extractor,
+        )
+    assert "unreadable" in str(excinfo.value)
+
+
+def test_runner_binding_refuses_empty_agent_name(
+    canonical_bindings,
+) -> None:
+    """``agentName`` present but empty refuses. RED-first: the previous
+    wrapper did not consult the .runner file at all.
+    """
+
+    runner_root = canonical_bindings["runner_2"]
+    _write_runner_identity(runner_root, "")
+
+    with pytest.raises(BINDING.RunnerBindingRefused) as excinfo:
+        BINDING.resolve_profile(
+            str(runner_root),
+            isfile=os.path.isfile,
+            isdir=os.path.isdir,
+            extract_agent_name=_plutil_extract_agent_name,
+        )
+    assert "agentName" in str(excinfo.value)
+
+
+def test_runner_binding_refuses_other_root_claiming_m1_nightly_2(
+    canonical_bindings, tmp_path: Path
+) -> None:
+    """An UNRELATED runner root whose ``.runner`` claims
+    ``agentName="m1-nightly-2"`` refuses — never gets the producer profile.
+    RED-first: the previous basename-based wrapper matched any root whose
+    directory name was ``m1-nightly-2`` and bound the producer profile;
+    a hostile clone at /Users/chriswong/actions-runner-evil with a forged
+    ``.runner`` would have been admitted. The new helper requires BOTH
+    the canonical root AND the configured agentName to match.
+    """
+
+    other_root = tmp_path / "actions-runner-evil"
+    other_root.mkdir()
+    _write_runner_identity(other_root, "m1-nightly-2")
+
+    with pytest.raises(BINDING.RunnerBindingRefused) as excinfo:
+        BINDING.resolve_profile(
+            str(other_root),
+            isfile=os.path.isfile,
+            isdir=os.path.isdir,
+            extract_agent_name=_plutil_extract_agent_name,
+        )
+    assert "canonical binding" in str(excinfo.value)
+    assert "actions-runner-evil" in str(excinfo.value)
+
+
+def test_runner_binding_refuses_canonical_root_wrong_identity(
+    canonical_bindings,
+) -> None:
+    """The canonical actions-runner-2 root with the WRONG agentName refuses
+    (e.g. a misconfigured ``.runner`` carrying ``m1-nightly-1`` would
+    otherwise silently widen admission).
+    """
+
+    runner_root = canonical_bindings["runner_2"]
+    _write_runner_identity(runner_root, "m1-nightly-1")
+
+    with pytest.raises(BINDING.RunnerBindingRefused) as excinfo:
+        BINDING.resolve_profile(
+            str(runner_root),
+            isfile=os.path.isfile,
+            isdir=os.path.isdir,
+            extract_agent_name=_plutil_extract_agent_name,
+        )
+    assert "canonical binding" in str(excinfo.value)
+
+
+def test_runner_binding_preserves_existing_canary_m1_nightly_1(
+    canonical_bindings,
+) -> None:
+    """The existing M1 canary listener at the actions-runner-1 root retains
+    the m1-canary profile. RED-first on the previous head would have
+    refused because the previous wrapper hardcoded m1-canary as the default
+    for any non-m1-nightly-2 basename — the new helper makes that
+    canary retention a deliberate (root, agentName) match.
+    """
+
+    runner_root = canonical_bindings["runner_1"]
+    _write_runner_identity(runner_root, "m1-nightly-1")
+
+    profile, agent_name = BINDING.resolve_profile(
+        str(runner_root),
+        isfile=os.path.isfile,
+        isdir=os.path.isdir,
+        extract_agent_name=_plutil_extract_agent_name,
+    )
+    assert profile == "m1-canary"
+    assert agent_name == "m1-nightly-1"
+
+
+def test_runner_binding_preserves_existing_canary_m1_light_1(
+    canonical_bindings,
+) -> None:
+    """The third M1 canary listener at the actions-runner-3 root retains
+    the m1-canary profile.
+    """
+
+    runner_root = canonical_bindings["runner_3"]
+    _write_runner_identity(runner_root, "m1-light-1")
+
+    profile, agent_name = BINDING.resolve_profile(
+        str(runner_root),
+        isfile=os.path.isfile,
+        isdir=os.path.isdir,
+        extract_agent_name=_plutil_extract_agent_name,
+    )
+    assert profile == "m1-canary"
+    assert agent_name == "m1-light-1"
+
+
+def test_runner_binding_refuses_non_absolute_runner_root(
+    canonical_bindings,
+) -> None:
+    """A relative runner_root path refuses. RED-first: the previous wrapper
+    passed whatever LaunchAgent handed it to ``basename`` without checking
+    the path was absolute, so a misconfigured plist could not fail closed.
+    """
+
+    with pytest.raises(BINDING.RunnerBindingRefused) as excinfo:
+        BINDING.resolve_profile(
+            "relative/actions-runner-2",
+            isfile=os.path.isfile,
+            isdir=os.path.isdir,
+            extract_agent_name=_plutil_extract_agent_name,
+        )
+    assert "absolute" in str(excinfo.value)
+
+
+def test_runner_binding_refuses_missing_runner_root(
+    canonical_bindings, tmp_path: Path
+) -> None:
+    """A runner_root path that does not exist refuses. The wrapper would
+    have falled through to the ``*)`` case and silently bound the canary
+    profile; the new helper refuses with the actionable root cause.
+    """
+
+    ghost = tmp_path / "actions-runner-ghost"
+    with pytest.raises(BINDING.RunnerBindingRefused) as excinfo:
+        BINDING.resolve_profile(
+            str(ghost),
+            isfile=os.path.isfile,
+            isdir=os.path.isdir,
+            extract_agent_name=_plutil_extract_agent_name,
+        )
+    assert "does not exist" in str(excinfo.value) or "not a directory" in str(
+        excinfo.value
+    )
+
+
+def test_runner_binding_main_module_emits_run_50_binding_for_canonical(
+    canonical_bindings, monkeypatch: pytest.MonkeyPatch, capsys
+) -> None:
+    """The helper's CLI emits a single ``RUNNER_BINDING=`` JSON line and
+    exits 0 for a canonical pair. RED-first: the previous wrapper did not
+    produce a receipt; the new helper surfaces the (root, agentName,
+    profile) tuple to ``_diag`` for post-incident forensics.
+    """
+
+    runner_root = canonical_bindings["runner_2"]
+    _write_runner_identity(runner_root, "m1-nightly-2")
+
+    monkeypatch.setattr(sys, "argv", ["runner_binding.py", str(runner_root)])
+    rc = BINDING.main()
+    assert rc == 0
+    out_lines = [
+        line
+        for line in capsys.readouterr().out.splitlines()
+        if line.startswith("RUNNER_BINDING=")
+    ]
+    assert len(out_lines) == 1
+    payload = json.loads(out_lines[0].split("=", 1)[1])
+    assert payload["profile"] == "m1-nightly-2"
+    assert payload["agent_name"] == "m1-nightly-2"
+    assert payload["runner_root"] == str(runner_root)
+
+
+def test_runner_binding_main_module_refuses_with_exit_78_and_emits_gh_error(
+    canonical_bindings, monkeypatch: pytest.MonkeyPatch, capsys
+) -> None:
+    """The helper's CLI emits a line-start ``::error`` annotation and
+    exits 78 (EX_CONFIG) for any refused binding. The wrapper exits 78
+    BEFORE Runner.Listener starts, so launchd retries the listener after
+    the host operator fixes the real fault.
+    """
+
+    runner_root = canonical_bindings["runner_2"]
+    # no .runner file at all — refused binding
+
+    monkeypatch.setattr(sys, "argv", ["runner_binding.py", str(runner_root)])
+    rc = BINDING.main()
+    captured = capsys.readouterr()
+    assert rc == 78
+    assert captured.out.startswith("::error title=runner-binding::"), (
+        f"refusal must emit a line-start GitHub annotation; got: {captured.out!r}"
+    )
+    assert ".runner" in captured.out
+
+
+def test_runner_binding_extract_profile_subcommand(
+    canonical_bindings, monkeypatch: pytest.MonkeyPatch, capsys
+) -> None:
+    """The helper's ``--extract-profile`` subcommand pulls a single field
+    out of a previously-emitted ``RUNNER_BINDING=`` line. The wrapper uses
+    this rather than ``jq`` so the helper module owns the schema contract.
+    """
+
+    binding_line = json.dumps(
+        {
+            "schema": "runner.binding.v1",
+            "runner_root": "/Users/chriswong/actions-runner-2",
+            "agent_name": "m1-nightly-2",
+            "profile": "m1-nightly-2",
+        },
+        sort_keys=True,
+    )
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["runner_binding.py", "--extract-profile", binding_line, "profile"],
+    )
+    rc = BINDING.main()
+    assert rc == 0
+    assert capsys.readouterr().out == "m1-nightly-2"
+
+
+def test_runner_binding_extract_profile_refuses_malformed_input(
+    monkeypatch: pytest.MonkeyPatch, capsys
+) -> None:
+    """``--extract-profile`` on a non-JSON line emits ``::error`` and
+    exits 78 — the wrapper would never silently fall back to the canary
+    profile from a corrupt receipt.
+    """
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["runner_binding.py", "--extract-profile", "not-json{", "profile"],
+    )
+    rc = BINDING.main()
+    captured = capsys.readouterr()
+    assert rc == 78
+    assert captured.out.startswith("::error title=runner-binding::")
 
 
 def test_runner_service_seals_runtime_and_binds_host_admission() -> None:
@@ -1482,6 +1895,9 @@ def test_runner_service_seals_runtime_and_binds_host_admission() -> None:
     )
     assert 'ACTIONS_RUNNER_HOOK_JOB_STARTED="$guard_root/runner_admission_m1_canary.js"' in m1
     assert "MASTERMIND_CI_PROFILE=m1-canary" in m1
+    # AD-1T2 binding must go through the helper, not the directory basename.
+    assert 'basename "$runner_root"' not in m1
+    assert '"$guard_root/runner_binding.py" "$runner_root"' in m1
     hook = (
         ROOT / "ops" / "runner-host" / "common" / "runner_admission_hook.js"
     ).read_text(encoding="utf-8")

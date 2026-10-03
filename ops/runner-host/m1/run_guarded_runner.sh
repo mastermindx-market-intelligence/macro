@@ -28,22 +28,45 @@ if [ -f "$runner_root/.env" ]; then
     export "$key=$value"
   done < "$runner_root/.env"
 fi
-# ── AD-1T2 PROFILE BINDING ───────────────────────────────────────────────────
-# Each runner root carries the runner's canonical name (the basename of its
-# directory — e.g. `m1-canary` or `m1-nightly-2`). The admission hook profile
-# is derived from THAT name, never from the host's hostname, so the canary
-# root preserves its existing profile and only the new m1-nightly-2 root
-# receives the AD-1T2 producer-lane profile. This is the binding the ruling
-# pins: profile m1-nightly-2 is allowed ONLY on the runner named m1-nightly-2,
-# preserving every other runner's profile intact.
-case "$(basename "$runner_root")" in
+# ── AD-1T2 PROFILE BINDING (fail-closed trusted-local-identity) ────────────
+# Profile binding is driven by the *configured* agentName written into
+# `.runner` by the official `config.sh` registration — NEVER by the directory
+# basename. The canary default binding is preserved for every existing M1
+# listener; the new m1-nightly-2 binding activates only when the canonical
+# runner root AND the configured agentName both match the production pair.
+# A misrouted, missing, unreadable, malformed or mismatched `.runner` exits
+# 78 (EX_CONFIG) BEFORE Runner.Listener starts, so launchd can retry after
+# the host operator fixes the real fault rather than launching a listener
+# that has silently lost its admission surface. No workflow-injected env
+# override and no friendly-directory-name assumption — see
+# `ops/runner-host/common/runner_binding.py` for the (root, agentName)
+# canonical table the wrapper consults.
+binding_line=$("$guard_root/runner_binding.py" "$runner_root") \
+  || {
+    # runner_binding already printed ::error title=runner-binding::… and exited 78.
+    exit 78
+  }
+export RUNNER_BINDING="$binding_line"
+# Pull the profile out of the JSON the helper emitted. python3 is the only
+# portable JSON parser on the M1 host (no jq, no jq -e at the wrapper
+# boundary); the helper contract pins the schema field so this stays cheap.
+profile=$("$guard_root/runner_binding.py" --extract-profile "$binding_line") \
+  || {
+    echo "::error title=runner-binding::could not parse profile from $binding_line" >&2
+    exit 78
+  }
+case "$profile" in
   m1-nightly-2)
     export ACTIONS_RUNNER_HOOK_JOB_STARTED="$guard_root/runner_admission_m1_nightly_2.js"
     export MASTERMIND_CI_PROFILE=m1-nightly-2
     ;;
-  *)
+  m1-canary)
     export ACTIONS_RUNNER_HOOK_JOB_STARTED="$guard_root/runner_admission_m1_canary.js"
     export MASTERMIND_CI_PROFILE=m1-canary
+    ;;
+  *)
+    echo "::error title=runner-binding::unknown profile $profile from $binding_line" >&2
+    exit 78
     ;;
 esac
 cd "$runner_root"
