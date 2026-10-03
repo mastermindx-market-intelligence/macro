@@ -566,6 +566,17 @@ class _ZhTextExtractor(HTMLParser):
         if self._stack:
             self._stack.pop()
 
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        # D57 NIT 7: HTMLParser's default routes `<br/>` through handle_starttag
+        # (which pushes nothing for a void tag) and then handle_endtag (which
+        # pops) — one self-closing void tag inside an `l-en` span would unmask
+        # the English that follows it. A void tag is a no-op; a self-closing
+        # non-void tag pushes and pops symmetrically.
+        if tag.lower() in self._VOID_TAGS:
+            return
+        self.handle_starttag(tag, attrs)
+        self.handle_endtag(tag)
+
     def handle_data(self, data: str) -> None:
         if not any(self._stack):
             self._chunks.append(data)
@@ -820,3 +831,55 @@ def test_zh_extractor_does_not_leak_text_after_a_nested_child_in_an_en_span() ->
         "ZH extractor dropped text from the trailing <span class='l-en'> "
         "when a nested child popped the old depth counter (R3 stack fix)."
     )
+
+
+def test_zh_text_extractor_keeps_english_masked_across_self_closing_void_tags() -> None:
+    """D57 NIT 7 — a `<br/>` inside an `l-en` span must not pop the span's
+    context: before the `handle_startendtag` override the English that
+    followed the tag leaked into the ZH-visible text."""
+    html = '<span class="l-en"><br/>English only</span><span class="l-zh">中文</span>'
+    assert _zh_visible_text(html) == "中文"
+    assert _zh_visible_text('<span class="l-en">EN<br>more</span><span class="l-zh">中</span>') == "中"
+
+
+def test_capture_finalize_rewrites_scratch_relative_cell_paths_into_cells_dir() -> None:
+    """R4b (D57 review round): the stitched sub-manifests are scratch-relative
+    (`cells.rest/…`, `cells.interaction/…`) while the PNGs are copied into the
+    receipt's `cells/`; `check_ui_visual_evidence.py` resolves `file` against the
+    receipt dir, so an un-normalized manifest fails with one missing-file finding
+    per cell (measured on the R4 recapture: 52). finalize_manifest must rewrite the
+    paths, leave excluded rows alone, and be idempotent."""
+    import importlib.util
+
+    repo = Path(__file__).resolve().parents[1]
+    module_path = repo / "mockups" / "evidence" / "mo-paid-006-dossier-page" / "capture.py"
+    spec = importlib.util.spec_from_file_location("mo_paid_006_capture", module_path)
+    assert spec is not None and spec.loader is not None
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    stitched = {
+        "schema": "mastermind.p0_evidence.v2",
+        "pages": [{
+            "page_id": "euro_area",
+            "route": "/international_macro/euro_area.html",
+            "states": [
+                {"viewport": "desktop", "locale": "en", "theme": "dark", "captured": True,
+                 "file": "cells.rest/9fd42742bc6c6fa3.png"},
+                {"viewport": "desktop", "locale": "en", "theme": "dark", "captured": True,
+                 "force_state": "imd_dossier_headline_hover",
+                 "file": "cells.interaction/14d8cf84096182b8--imd_dossier_headline_hover.png"},
+                {"viewport": "desktop", "locale": "en", "theme": "dark", "captured": False,
+                 "force_state": "imd_dossier_headline_focus", "expected_miss_reason": "no headline"},
+            ],
+        }],
+    }
+    once = mod.finalize_manifest(stitched, template_commit="a" * 40, site_commit="b" * 40)
+    files = [s["file"] for s in once["pages"][0]["states"]]
+    assert files == ["cells/9fd42742bc6c6fa3.png",
+                     "cells/14d8cf84096182b8--imd_dossier_headline_hover.png"], files
+    assert len(once["excluded"]) == 1 and "file" not in once["excluded"][0]
+    twice = mod.finalize_manifest(once, template_commit="a" * 40, site_commit="b" * 40)
+    assert [s["file"] for s in twice["pages"][0]["states"]] == files
+    assert twice["totals"] == once["totals"] == {
+        "pages": 1, "states_attempted": 2, "states_captured": 2, "expected_miss_excluded": 1}

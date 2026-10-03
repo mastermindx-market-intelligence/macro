@@ -428,7 +428,7 @@ html[data-theme="light"] .imd-dossier-chip{border-style:solid}
         <p class="imd-dossier-outage" role="status"><strong>{{ t('Official statements could not be loaded this time.','本次未能载入官方声明。') }}</strong> {{ t('The rest of this page is unaffected. We will try again at the next refresh.','本页其余内容不受影响，下次刷新时将重试。') }}</p>
         {% endif %}
         {% if DOS_ITEMS %}
-        <ol class="imd-dossier-list" aria-label="Official policy statements">
+        <ol class="imd-dossier-list">
           {% for it in DOS_ITEMS[:5] %}
           <li class="imd-dossier-item" data-source-key="{{ it.source_key|e }}">
             <time class="imd-dossier-date" datetime="{{ it.published|e }}">{{ it.published[:10]|e }}</time>

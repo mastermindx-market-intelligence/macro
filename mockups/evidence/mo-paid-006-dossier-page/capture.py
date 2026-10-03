@@ -118,18 +118,18 @@ _FIXTURES: list[dict[str, Any]] = [
             {
                 "source_key": "boe_news",
                 "publisher": "Bank of England",
-                "title": "Monetary Policy Committee minutes, September 2026 meeting",
-                "url": "https://www.bankofengland.co.uk/news/2026/09/mpc-mpc-minutes-sept-2026",
-                "published": "2026-09-24T12:00:00Z",
+                "title": "Bank Rate maintained at 3.75% — October 2026 summary",
+                "url": "https://www.bankofengland.co.uk/news/2026/10/bank-rate-oct-2026",
+                "published": "2026-10-02T11:00:00Z",
                 "rights_state": "VERIFIED_PUBLIC_REUSE",
                 "rights_basis": "Open Government Licence v3.0 — Crown copyright.",
             },
             {
                 "source_key": "boe_news",
                 "publisher": "Bank of England",
-                "title": "Bank Rate maintained at 3.75% — October 2026 summary",
-                "url": "https://www.bankofengland.co.uk/news/2026/10/bank-rate-oct-2026",
-                "published": "2026-10-02T11:00:00Z",
+                "title": "Monetary Policy Committee minutes, September 2026 meeting",
+                "url": "https://www.bankofengland.co.uk/news/2026/09/mpc-mpc-minutes-sept-2026",
+                "published": "2026-09-24T12:00:00Z",
                 "rights_state": "VERIFIED_PUBLIC_REUSE",
                 "rights_basis": "Open Government Licence v3.0 — Crown copyright.",
             },
@@ -296,6 +296,19 @@ LEADERSHIP_EN = "Leadership statements: no rights-cleared source."
 LEADERSHIP_ZH = "领导层表态：暂无获准转载的来源。"
 
 
+def _settle(page) -> None:
+    """Wait for theme.js to apply the soft-contrast palette before any colour
+    probe, then settle. D57 NIT 4: a fixed 400 ms wait raced `html.soft-contrast`
+    and two R2 dom rows sampled the light `--text` pre-palette (#1c2430 ->
+    `--ink-link` 0.151216/0.344784/0.902588 instead of 0.159686/0.354667/0.917647).
+    A page without theme.js is still probed; its row records soft_contrast=false."""
+    try:
+        page.wait_for_function("() => document.documentElement.classList.contains('soft-contrast')", timeout=5000)
+    except Exception:  # noqa: BLE001 — absence is recorded on the row, never hidden
+        pass
+    page.wait_for_timeout(250)
+
+
 def _dom_probe(browser, base_url: str, *, route: str, viewport: tuple[int, int], theme: str, locale: str) -> dict[str, Any]:
     """One matrix point: navigate, apply state, and probe the DOM fields
     the S3 acceptance list names. Returns a dict ready to merge into a
@@ -321,7 +334,7 @@ def _dom_probe(browser, base_url: str, *, route: str, viewport: tuple[int, int],
         if resp is None or not getattr(resp, "ok", False):
             raise RuntimeError(f"HTTP {getattr(resp, 'status', 'none')}")
         page.wait_for_function("() => !!document.querySelector('#official-statements')", timeout=8000)
-        page.wait_for_timeout(400)  # settle
+        _settle(page)
 
         info = page.evaluate(
             r"""
@@ -363,7 +376,8 @@ def _dom_probe(browser, base_url: str, *, route: str, viewport: tuple[int, int],
                 l: cs.paddingLeft, r: cs.paddingRight, t: cs.paddingTop, b: cs.paddingBottom,
               };
               const items = card.querySelectorAll('.imd-dossier-item');
-              const stanceAttr = card.getAttribute('data-dossier-stance');
+              const stanceEl = card.querySelector('[data-dossier-stance]');
+              const stanceAttr = stanceEl ? stanceEl.getAttribute('data-dossier-stance') : card.getAttribute('data-dossier-stance');
               const leadershipNode = card.querySelector('[data-dossier-leadership]');
               const lNode = leadershipNode ? leadershipNode.querySelector('.l-en, .l-zh') : null;
               const leadershipText = lNode ? (lNode.textContent || '').trim() : '';
@@ -384,6 +398,7 @@ def _dom_probe(browser, base_url: str, *, route: str, viewport: tuple[int, int],
                 card_padding: cardPad,
                 item_count: items.length,
                 stance_attr: stanceAttr,
+              soft_contrast: document.documentElement.classList.contains('soft-contrast'),
                 leadership_text: leadershipText,
                 scroll_w: scrollW,
                 viewport_w: viewW,
@@ -426,7 +441,7 @@ def _hover_probe(browser, base_url: str, *, route: str, theme: str, locale: str 
         if resp is None or not getattr(resp, "ok", False):
             raise RuntimeError(f"HTTP {getattr(resp, 'status', 'none')}")
         page.wait_for_function("() => !!document.querySelector('#official-statements .imd-dossier-headline')", timeout=8000)
-        page.wait_for_timeout(400)
+        _settle(page)
         page.hover("#official-statements .imd-dossier-headline")
         page.wait_for_timeout(200)
         info = page.evaluate(
@@ -467,7 +482,7 @@ def _focus_probe(browser, base_url: str, *, route: str, theme: str, locale: str 
         if resp is None or not getattr(resp, "ok", False):
             raise RuntimeError(f"HTTP {getattr(resp, 'status', 'none')}")
         page.wait_for_function("() => !!document.querySelector('#official-statements .imd-dossier-headline')", timeout=8000)
-        page.wait_for_timeout(400)
+        _settle(page)
         page.focus("#official-statements .imd-dossier-headline")
         page.wait_for_timeout(200)
         info = page.evaluate(
@@ -579,7 +594,11 @@ def finalize_manifest(merged: dict[str, Any], *, template_commit: str, site_comm
     `captured: false` row is a finding, never an exemption; (3) pin totals, the
     tool hash, and both commits that fix what the pixels show (`source_commit` =
     the template head whose bytes were rendered; `scope.site_fixture_commit` =
-    the origin/main site the scratch copy was materialized from). Idempotent."""
+    the origin/main site the scratch copy was materialized from); (4) rewrite every
+    state's `file` to `cells/<name>` — the stitched sub-manifests are scratch-relative
+    (`cells.rest/…`, `cells.interaction/…`) while the PNGs are copied into the receipt's
+    `cells/`, and the checker resolves `file` against the receipt dir (measured on the
+    R4 recapture: gate rc=1 with one missing-file finding per cell, 52). Idempotent."""
     out = dict(merged)
     excluded: list[dict[str, Any]] = [dict(x) for x in (out.get("excluded") or [])]
     pages: list[dict[str, Any]] = []
@@ -599,6 +618,9 @@ def finalize_manifest(merged: dict[str, Any], *, template_commit: str, site_comm
                     or "no .imd-dossier-headline on this route",
                 })
                 continue
+            cell_file = state.get("file")
+            if isinstance(cell_file, str) and cell_file:
+                state = dict(state, file=f"cells/{Path(cell_file).name}")
             keep.append(state)
         pages.append(dict(page, states=keep))
     out["pages"] = pages
@@ -625,7 +647,7 @@ def finalize_manifest(merged: dict[str, Any], *, template_commit: str, site_comm
     }
     module_sha = _sha256_hex(Path(__file__).resolve().read_bytes())
     out["tool"] = {"module_ref": "mockups/evidence/mo-paid-006-dossier-page/capture.py",
-                   "version": "2", "module_sha256": module_sha}
+                   "version": "3", "module_sha256": module_sha}
     out["capture_tool_module_sha256"] = module_sha
     scope = dict(out.get("scope") or {})
     if site_commit:
@@ -768,6 +790,7 @@ def main() -> int:
     merged: dict[str, Any] = {
         "schema": "mastermind.p0_evidence.v2",
         "generated_at": _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "fixture_pages": page_sha,
         "source_commit": source_commit,
         "scope": {
             "lanes": ["MO-PAID-006_PAGE_EVIDENCE_R2"],
@@ -811,9 +834,20 @@ def main() -> int:
     merged = finalize_manifest(merged, template_commit=_git("rev-parse", "HEAD", cwd=_REPO).decode().strip(),
                                site_commit=source_commit)
     (OUT_DIR / "manifest.json").write_text(
-        json.dumps(merged, indent=2, ensure_ascii=False),
+        json.dumps(merged, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
+
+    # The receipt dir holds exactly the referenced cells: Phase B also shoots the
+    # unforced desktop/en rest cell of each covered route (6 PNGs the interaction
+    # filter drops), and a recapture leaves the previous run's cells behind.
+    referenced = {Path(s["file"]).name for p in merged["pages"] for s in p["states"] if s.get("file")}
+    pruned = 0
+    for png in sorted(CELLS_DIR.glob("*.png")):
+        if png.name not in referenced:
+            png.unlink()
+            pruned += 1
+    print(f"cells/: {len(referenced)} referenced PNGs kept, {pruned} unreferenced pruned", flush=True)
 
     # Phase D: DOM pass — 40 rest rows + 12 hover/focus values.
     if args.skip_dom and (OUT_DIR / "dom.json").exists():
@@ -852,6 +886,7 @@ def main() -> int:
                                         "item_count": info.get("item_count"),
                                         "leadership_text": info.get("leadership_text"),
                                         "stance_attr": info.get("stance_attr"),
+                                        "soft_contrast": info.get("soft_contrast"),
                                         "headline_color_rest": info.get("headline_color"),
                                         "link_ink": info.get("link_ink"),
                                         "text_ink": info.get("text_ink"),

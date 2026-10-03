@@ -28,18 +28,26 @@ real production routes and their bytes here are re-rendered from
 markup), so a reader can compare any captured cell against the live
 page at the same composition.
 
-## The 40-cell matrix
+## The 52-state matrix (40 rest + 12 interaction)
 
 5 routes × 2 themes (dark/light) × 2 locales (en/zh) × 2 viewports
-(desktop 1440 / mobile 390) = **40 cells**, each with:
+(desktop 1440 / mobile 390) = **40 rest cells**, plus **12 interaction
+cells** (`hover` and `focus` on `#official-statements .imd-dossier-headline`,
+desktop/en × dark/light, on the three routes that render a headline —
+`euro_area`, `united_kingdom`, `united_kingdom_no_stance`). The 8
+hover/focus attempts on `japan` and `euro_area--outage` are listed in the
+manifest's top-level `excluded` with `expected_miss: true` — those routes
+render no headline, so there is nothing to hover or focus. Each rest cell has:
 
-- a full-page PNG: `cells/<page_id>-<theme>-<lang>-<viewport>.png`
-- a `#official-statements` crop: `cells/crops/<page_id>-<theme>-<lang>-<viewport>.png`
+- a full-page PNG: `cells/<page_id>-<theme>-<lang>-<viewport>.png` (there
+  are no separate crops; the full-page cell is the record)
 - a DOM fact row in `dom.json` (`card_present`, `dossier_state`,
   `item_count`, `leadership_text`, `stance_attr`, `chip_count`,
   `rail_width`, `rail_display`, `card_background`, `list_background`,
   `chip_border_style`, `scroll_w`, `viewport_w`, `card_bbox`,
-  `card_within_viewport`, `title_attr_count`)
+  `card_within_viewport`, `title_attr_count`, `headline_color_rest/hover/focus`,
+  `headline_decoration_hover/focus`, `headline_outline_focus`, `card_padding`,
+  `link_ink`, `text_ink`, `soft_contrast`)
 - a manifest state in `manifest.json` (p0_evidence.v2; `applied_theme`,
   `applied_locale`, `viewport_width`, `sha256`, `bytes`, `width`,
   `height`)
@@ -149,12 +157,11 @@ never relies on a hover tooltip to communicate.
 
 ## What was NOT captured
 
-- Hover/focus states are not captured. The card's CSS has a single
-  headline hover (`color: var(--ink-link)` dark /
-  `text-decoration: underline` light) and a focus-visible outline
-  (`outline: 2px solid var(--link); outline-offset: 2px`); neither is
-  required as a separate interaction state beyond the headline hover,
-  which is observable in the dark/light treatment contrast above.
+- Hover/focus are captured only at desktop/en: touch viewports have no
+  hover, and the locale does not change the hover/focus rules (the
+  headline text is the same source literal in both spans). The 8
+  attempts on the two no-headline routes are the manifest's `excluded`
+  rows, not failures.
 - The EZ `a.imd-dossier-more` (link to `#europe-news`, "Full Europe
   official press wire") is conditional on BOTH `europe_news` (the
   fetched wire packet) AND `D.cc == 'EZ'`. The capture here did not
@@ -166,12 +173,37 @@ never relies on a hover tooltip to communicate.
 ## Reproduction
 
 ```sh
-# 1. Render 5 fixture pages into a scratch site from the branch's template.
-SCR=$(mktemp -d)
-python3 "$SCR/render_pages.py" "$SCR"
-
-# 3. Capture the 40 cells.
-python3 "$SCR/capture.py" "$SCR"
+# From the repo root, in a FULL (non-sparse) checkout with Playwright + jinja2:
+python3 mockups/evidence/mo-paid-006-dossier-page/capture.py
+# Re-shape an existing manifest without recapturing (idempotent):
+python3 mockups/evidence/mo-paid-006-dossier-page/capture.py --finalize-only
+# Gate (what CI runs with the PR diff):
+git diff <merge-base> HEAD -- templates/international_macro.html.j2 > /tmp/d.diff
+python3 scripts/check_ui_visual_evidence.py --diff-file /tmp/d.diff --repo-root .
 ```
 
 No credentials. No network beyond the local fixture server.
+
+## Provenance and the R4 refresh (D57 review round)
+
+- `tool.module_sha256` is the sha256 of the committed `capture.py`, and in
+  R4 that is the exact module that produced every cell (R2 pinned an edited
+  module — its `finalize_manifest()` was added after the pictures were taken;
+  corrected here).
+- `fixture_pages` in the manifest records the sha256 and byte count of each
+  fixture HTML render the cells were captured against, so the pixels are
+  tied to the markup the branch's template produced.
+- The `united_kingdom` fixture lists its two items newest-first, matching
+  the engine's `reverse=True` sort, so the card's "Latest" date equals the
+  top row's date (R2 showed Latest 2026-09-24 above a 2026-10-02 row).
+- Every colour probe waits for theme.js's `html.soft-contrast` palette and
+  records `soft_contrast` on the row (R2 rows sampled two light cells before
+  the palette applied: `--ink-link` 0.151216/0.344784/0.902588 vs
+  0.159686/0.354667/0.917647 — a capture race, not a design difference).
+- `stance_attr` is read from `.imd-dossier-read`, where the template puts it.
+- The list `<ol>` no longer carries an EN-only `aria-label`; the labelled
+  `<article>` and its bilingual heading name it.
+- Unchanged on purpose: for a non-null leadership line the ZH span shows the
+  English source literal (the plane carries no translation and the LLM may
+  not originate one); the test pins that as `SENTINEL-LEAD` ×2.
+- **Cell paths and pruning (R4b).** The stitched sub-manifests are scratch-relative (`cells.rest/…`, `cells.interaction/…`); `finalize_manifest` rewrites every `file` to `cells/<name>` (the checker resolves against the receipt dir — the un-normalized R4 manifest failed the gate with 52 missing-file findings), and the full run then prunes every PNG under `cells/` that no state references (Phase B's 6 unforced rest shots and any stale cells from an earlier capture). The directory therefore holds exactly the 52 referenced cells.
