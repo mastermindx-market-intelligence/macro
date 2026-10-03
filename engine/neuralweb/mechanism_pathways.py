@@ -837,9 +837,11 @@ def _build_factor_rotation_pathway(fi_state: dict, as_of: str, source_as_of: str
     )]
     edges: list[dict] = []
 
-    # R6: zero-edge pathway cannot claim coverage; set null + reason. The
-    # reader re-derives from the source clock; the producer never stamps 1.0.
-    coverage_basis = "zero_edge_no_coverage_claim"
+    # R6: zero-edge pathway cannot claim coverage. The reader re-derives
+    # from the source clock; the producer never stamps 1.0. Coverage is
+    # withheld via `coverage_score=None` and the reason is recorded in the
+    # additive `coverage_withheld_reason` field — `coverage_basis` is
+    # reserved for pathways that do emit a basis string (e.g. scare_trigger).
     return {
         "family": "factor_rotation",
         "driver": "factor_rotation",
@@ -850,7 +852,7 @@ def _build_factor_rotation_pathway(fi_state: dict, as_of: str, source_as_of: str
         "direction_zh": f"因子风格轮动: {sr_label}",
         "confidence_ceiling": "context_only",
         "coverage_score": None,
-        "coverage_basis": coverage_basis,
+        "coverage_withheld_reason": "zero_edge_no_coverage_claim",
         "coherence": "partial",
         "stale_legs": [],
         "nodes": nodes,

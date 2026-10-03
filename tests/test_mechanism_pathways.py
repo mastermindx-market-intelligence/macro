@@ -1169,6 +1169,44 @@ class TestFactorRotationClock:
             f"got {primary['coverage_score']!r}"
         )
 
+    def test_factor_rotation_records_withheld_reason_not_basis(self, tmp_path):
+        """C7: factor-rotation pathway must explain withheld coverage via
+        the additive `coverage_withheld_reason` field, and must NOT stamp
+        a `coverage_basis` value that re-means the field for consumers
+        (consumers' fallback chain still triggers 'n/a' on this pathway).
+        """
+        fresh_past = _FRESH_ASOF
+        regime = _make_regime(
+            md_verdict="quiet",
+            rr_state="calm",
+            rr_dominant_scare="",
+            md_asof=fresh_past,
+        )
+        regime.pop("regime_one", None)
+        factor_path = tmp_path / "data/neuralweb/factor_intelligence_state.json"
+        factor_path.parent.mkdir(parents=True, exist_ok=True)
+        factor_path.write_text(json.dumps({
+            "as_of": fresh_past,
+            "style_regime": "flip_pending",
+            "flips": [{"from": "value", "to": "growth"}],
+        }), encoding="utf-8")
+        _make_regime_files(tmp_path, regime)
+        result = compile(root=tmp_path, now=_TEST_NOW)
+        factor = [p for p in result.get("pathways", [])
+                 if p["family"] == "factor_rotation"]
+        assert factor, "factor rotation pathway expected"
+        primary = factor[0]
+        # Explanation lives in its own field, not in coverage_basis.
+        assert "coverage_basis" not in primary, (
+            f"factor pathway must not set coverage_basis (a consumed field); "
+            f"got {primary.get('coverage_basis')!r}"
+        )
+        assert primary.get("coverage_withheld_reason") == "zero_edge_no_coverage_claim", (
+            f"factor pathway must explain withheld coverage in its own field; "
+            f"got {primary.get('coverage_withheld_reason')!r}"
+        )
+        assert primary.get("coverage_score") is None
+
 
 class TestDependentLegsR7:
     """R7: dependent legs derived from one source record must not be counted
