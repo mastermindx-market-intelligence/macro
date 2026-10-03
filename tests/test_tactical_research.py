@@ -173,3 +173,158 @@ def test_future_duplicate_outside_outcome_path_is_ignored():
     b=bars([100.,100.,100.])
     out=api().fixed_outcome(source,b,BASE,BASE+600,1.,2.,[BASE,BASE+300])
     assert out['status']=='available' and out['raw_return']==pytest.approx(.02)
+
+# TTI R1-B v4 fixed-outcome / LOD research tests. Outcome evaluation lives
+# outside W3 detector suites so PIT-23 remains outcome-blind. Synthetic only.
+def _ttib_config():
+    return (Path(__file__).resolve().parents[1] /
+            "research/species/tti_r1b/config_v4.json").read_bytes()
+
+
+# Moved byte-for-byte in substance from the W3 suite after PIT-23 correctly
+# rejected outcome-shaped test identifiers there.
+def _ttib_outcome_frames(day=None):
+    from datetime import date
+    import pandas as pd
+    from engine.session_digest import session_window_et
+    day = day or date(2026, 9, 17)
+    start, close = session_window_et(day)
+    index = pd.date_range(start, close - pd.Timedelta(minutes=5), freq='5min')
+    stock = pd.DataFrame([[100.0, 100.2, 99.8, 100.0, 100.0] for _ in index],
+                         index=index, columns=['open','high','low','close','volume'])
+    qqq = pd.DataFrame([[100.0, 100.1, 99.9, 100.0, 100.0] for _ in index],
+                       index=index, columns=['open','high','low','close','volume'])
+    return stock, qqq
+
+
+def _ttib_outcome_event(day=None):
+    from datetime import date, timedelta
+    from engine.session_digest import session_window_et
+    day = day or date(2026, 9, 17)
+    start, _ = session_window_et(day)
+    return {
+        'selector': 'EXHAUSTION_RECLAIM',
+        'anchor_id': f'AMD:{day.isoformat()}:synthetic',
+        'candidate_at': (start + timedelta(minutes=15)).isoformat(),   # 09:45 decision
+        'decision_at': (start + timedelta(minutes=25)).isoformat(),    # 09:55 confirmation
+        'entry_reference_at': (start + timedelta(minutes=30)).isoformat(),
+        'confirmation_delay_bars': 2,
+        'processing_latency_minutes': 5,
+        'candidate_low': 99.0,
+        'episode_low': 98.8,
+        'prior_atr': 2.0,
+        'previous_regular_close': 101.0,
+        'authority': 'research_construction_only',
+    }
+
+
+def test_TTIB_outcome_uses_delayed_entry_open_and_exact_30m_path():
+    from datetime import date, timedelta
+    from engine.entry_radar.tactical_exhaustion import measure_event_outcome
+    from engine.session_digest import session_window_et
+    day=date(2026,9,17); start,_=session_window_et(day)
+    stock,qqq=_ttib_outcome_frames(day); event=_ttib_outcome_event(day)
+    # Confirmation path undercuts candidate low, but no later break of episode low.
+    stock.loc[start+timedelta(minutes=20),'low']=98.8
+    # Fixed 30m path: target first at second post-entry bar, end +0.6%.
+    stock.loc[start+timedelta(minutes=35),'high']=101.2
+    stock.loc[start+timedelta(minutes=55),['high','close']]=[100.7,100.6]
+    qqq.loc[start+timedelta(minutes=55),['high','close']]=[100.3,100.2]
+    got=measure_event_outcome(stock,qqq,event=event,session=day,horizon='30m',
+                              beta=2.0,cost_bps=25,config_bytes=_ttib_config())
+    assert got['status']=='available'
+    assert got['entry_open']==pytest.approx(100.0)
+    assert got['raw_return']==pytest.approx(0.006)
+    assert got['benchmark_return']==pytest.approx(0.002)
+    assert got['beta_residual']==pytest.approx(0.002)
+    assert got['net_beta_residual']==pytest.approx(-0.0005)
+    assert got['touch']=='target_first'
+    assert got['candidate_lod_survives'] is False
+    assert got['episode_lod_survives'] is True
+    assert got['candidate_delay_atr']==pytest.approx(0.5)
+    assert got['episode_delay_atr']==pytest.approx(0.6)
+    assert got['remaining_to_prior_close_atr']==pytest.approx(0.5)
+    assert got['execution_proven'] is False and got['may_trade'] is False
+
+
+def test_TTIB_outcome_same_bar_touch_stays_ambiguous():
+    from datetime import date, timedelta
+    from engine.entry_radar.tactical_exhaustion import measure_event_outcome
+    from engine.session_digest import session_window_et
+    day=date(2026,9,17); start,_=session_window_et(day)
+    stock,qqq=_ttib_outcome_frames(day); event=_ttib_outcome_event(day)
+    stock.loc[start+timedelta(minutes=35),['high','low']]=[101.2,98.8]
+    got=measure_event_outcome(stock,qqq,event=event,session=day,horizon='30m',
+                              beta=1.0,cost_bps=10,config_bytes=_ttib_config())
+    assert got['touch']=='same_bar_ambiguous'
+
+
+def test_TTIB_outcome_missing_or_zero_volume_bar_censors_exact_path_not_fire():
+    from datetime import date, timedelta
+    from engine.entry_radar.tactical_exhaustion import measure_event_outcome
+    from engine.session_digest import session_window_et
+    day=date(2026,9,17); start,_=session_window_et(day); event=_ttib_outcome_event(day)
+    stock,qqq=_ttib_outcome_frames(day)
+    missing=stock.drop(start+timedelta(minutes=40))
+    got=measure_event_outcome(missing,qqq,event=event,session=day,horizon='30m',
+                              beta=1.0,cost_bps=25,config_bytes=_ttib_config())
+    assert got['status']=='censored' and got['reason']=='stock_path_missing_or_ambiguous'
+    stock2,qqq2=_ttib_outcome_frames(day); stock2.loc[start+timedelta(minutes=40),'volume']=0
+    got2=measure_event_outcome(stock2,qqq2,event=event,session=day,horizon='30m',
+                               beta=1.0,cost_bps=25,config_bytes=_ttib_config())
+    assert got2['status']=='censored' and got2['reason']=='stock_path_invalid'
+
+
+def test_TTIB_outcome_missing_benchmark_never_becomes_zero_market_return():
+    from datetime import date, timedelta
+    from engine.entry_radar.tactical_exhaustion import measure_event_outcome
+    from engine.session_digest import session_window_et
+    day=date(2026,9,17); start,_=session_window_et(day); event=_ttib_outcome_event(day)
+    stock,qqq=_ttib_outcome_frames(day); qqq=qqq.drop(start+timedelta(minutes=40))
+    got=measure_event_outcome(stock,qqq,event=event,session=day,horizon='30m',
+                              beta=1.5,cost_bps=25,config_bytes=_ttib_config())
+    assert got['status']=='available'
+    assert got['benchmark_return'] is None and got['beta_residual'] is None
+    assert got['net_beta_residual'] is None
+
+
+def test_TTIB_outcome_horizon_does_not_read_future_corrupt_bar_but_lod_becomes_unavailable():
+    from datetime import date, timedelta
+    import math
+    from engine.entry_radar.tactical_exhaustion import measure_event_outcome
+    from engine.session_digest import session_window_et
+    day=date(2026,9,17); start,_=session_window_et(day); event=_ttib_outcome_event(day)
+    stock,qqq=_ttib_outcome_frames(day)
+    # This is well after the 30m endpoint; fixed return remains measurable, LOD is not.
+    stock.loc[start+timedelta(minutes=180),'high']=float('nan')
+    got=measure_event_outcome(stock,qqq,event=event,session=day,horizon='30m',
+                              beta=1.0,cost_bps=25,config_bytes=_ttib_config())
+    assert got['status']=='available'
+    assert got['candidate_lod_survives'] is None and got['episode_lod_survives'] is None
+    assert got['lod_status']=='unavailable'
+
+
+def test_TTIB_outcome_close_horizon_requires_every_remaining_session_bar():
+    from datetime import date, timedelta
+    from engine.entry_radar.tactical_exhaustion import measure_event_outcome
+    from engine.session_digest import session_window_et
+    day=date(2026,9,17); start,_=session_window_et(day); event=_ttib_outcome_event(day)
+    stock,qqq=_ttib_outcome_frames(day)
+    stock=stock.drop(start+timedelta(minutes=300))
+    got=measure_event_outcome(stock,qqq,event=event,session=day,horizon='close',
+                              beta=1.0,cost_bps=25,config_bytes=_ttib_config())
+    assert got['status']=='censored'
+    assert got['reason']=='stock_path_missing_or_ambiguous'
+
+
+def test_TTIB_outcome_refuses_retargeted_config_cost_or_event_clock():
+    from datetime import date, timedelta
+    from engine.entry_radar.tactical_exhaustion import measure_event_outcome
+    from engine.session_digest import session_window_et
+    day=date(2026,9,17); start,_=session_window_et(day); stock,qqq=_ttib_outcome_frames(day)
+    event=_ttib_outcome_event(day)
+    with pytest.raises(ValueError,match='cost'):
+        measure_event_outcome(stock,qqq,event=event,session=day,horizon='30m',beta=1.0,cost_bps=17,config_bytes=_ttib_config())
+    bad=dict(event); bad['entry_reference_at']=(start+timedelta(minutes=31)).isoformat()
+    got=measure_event_outcome(stock,qqq,event=bad,session=day,horizon='30m',beta=1.0,cost_bps=25,config_bytes=_ttib_config())
+    assert got['status']=='censored' and got['reason']=='entry_off_session_grid'

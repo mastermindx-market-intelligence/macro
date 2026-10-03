@@ -1,0 +1,12 @@
+{
+  "cases_passed": 9,
+  "config_sha256": "62628e9666dda22565c6f6123b80044b86a7fe5ae51f6bd3bd9b6f9915d74bed",
+  "execution_latency_bars": 1,
+  "grid_cells": 60,
+  "market_data_read": false,
+  "outcomes_opened": false,
+  "prereg_sha256": "3b3d44979715dcf43b1e71a678c9b263485bdef124abaef959fee60273571aa7",
+  "schema": "terminal_tactical.r1b_v3_synthetic_spec_check.v1",
+  "study_id": "tti-r1b-exhaustion-reclaim-v3",
+  "trial_ledger_modified": false
+}
