@@ -4,19 +4,40 @@ Consumes the incumbent artifact, never runs its producer or changes market truth
 Dates describe owner snapshots; association-table directions are not observations
 of realized transmission. Neither coverage nor link counts are causal confidence.
 
-2026-10-03 clock and aggregate repair (R3/R5/R6):
+One clock rule (R4 — applies equally to compiler and reader):
+  - value missing / None / "" / unparseable string / ANY non-string
+    (e.g. the int 20261002) / NAIVE datetime string → `unknown_date`.
+  - timezone-aware datetime later than now → `future_dated`.
+  - date-only D with D > (now_utc + 14h).date() → `future_dated`
+    (Kiritimati is the furthest forward inhabited zone).
+  - calendar age >= _STALE_DAYS (5) → `stale`.
+  - otherwise → `available`.
+
+2026-10-03 clock and aggregate repair (R3/R5/R6 + reader-side E1–E6):
   - R3 (defence in depth): the reader independently rejects future-dated and
-    unknown-dated node clocks. A future source clock is "future" only when
-    the date is later than the latest calendar date anywhere on Earth at
-    `now` (see `_LATEST_EARTH_DATE_OFFSET_HOURS`).
+    unknown-dated node clocks.
   - R5 (legacy artifacts): only artifacts carrying `clock_basis=source_clock_v1`
     may have their node dates counted as verified source observation dates.
     Unmarked (legacy) artifacts → node dates are disclosed as
     `time_unverified_observation_links`; they never increment
     `reported_observation_links`.
-  - R6 (aggregates earned): zero-edge pathways derive coverage / coherence
-    from their own source clock. Aggregates are NOT copied from the producer
-    when surviving evidence does not support them.
+  - R6 (aggregates earned): pathway-level coverage / coherence / direction
+    text are passed through ONLY when ALL hold:
+        (i)   the artifact carries the clock_basis marker;
+        (ii)  the pathway's own source clock is `available`;
+        (iii) at least one element qualifies — a well-formed edge with both
+              endpoints present and an `available` source clock, OR for a
+              pathway type that legitimately has zero edges (factor rotation),
+              the pathway's own `available` clock plus a trigger node with
+              `available` clock;
+        (iv)  no declared edge is malformed.
+      Otherwise coverage → None, coherence → 'unknown', direction_en/zh → None,
+      and ONE bounded reason from the closed set
+      {legacy_time_unverified, no_qualifying_evidence, malformed_edges,
+       pathway_clock_stale, pathway_clock_future, pathway_clock_unknown}.
+  - R7 (duplicates are not separate observations): `reported_observation_links`
+    counts DISTINCT (src_node, dst_node, evidence_refs) links; surplus copies
+    go to the additive `duplicate_observation_links` count.
 """
 from __future__ import annotations
 
@@ -120,9 +141,9 @@ def _base(now: datetime) -> dict:
         'pathways': [], 'no_pathway': None, 'gaps': [],
         'historical_replay_eligible': False, 'causal_identification_established': False,
         'evidence_summary': {key: 0 for key in (
-            'reported_observation_links', 'contextual_transmission_links',
-            'theory_links', 'conflicted_links', 'unavailable_links', 'stale_links',
-            'time_unverified_observation_links')},
+            'reported_observation_links', 'duplicate_observation_links',
+            'contextual_transmission_links', 'theory_links', 'conflicted_links',
+            'unavailable_links', 'stale_links', 'time_unverified_observation_links')},
         'note': ('Owner-reported observations, historical associations and theory are distinct. '
                  'Coverage is readability, not probability; links are not independent votes. '
                  'A snapshot date is not the time a market mechanism began. '
@@ -226,19 +247,16 @@ def project_evidence(payload: Any, *, now: datetime) -> dict:
         p['omitted_nodes'], p['omitted_edges'] = max(0, len(nodes) - MAX_NODES), max(0, len(edges) - MAX_EDGES)
         p['nodes'] = [_node(n, now, is_repaired=is_repaired) for n in nodes[:MAX_NODES] if isinstance(n, dict)]
         indexed = {n['node_id']: n for n in p['nodes'] if n['node_id'] and ids[n['node_id']] == 1}
-        # R6: zero-edge pathways are qualified by the pathway's own source clock,
-        # not by a producer-stamped coverage. If the pathway's clock is stale
-        # / future / unknown, coverage and coherence are withheld.
-        if not edges and p['coverage_score'] is not None and (
-            p['reading_status'] in ('stale', 'future_dated', 'unknown_date')
-            or any(n.get('reading_status') in ('stale', 'future_dated', 'unknown_date') for n in p['nodes'])
-        ):
-            p['coverage_score'] = None
-            p['coherence'] = 'unknown'
-            p['gaps'].append('zero_edge_pathway_source_clock_unusable')
+        # R6 / E1 qualification is computed AFTER the edge loop (post-loop
+        # qualification) — the loop records what each edge looks like, then
+        # we decide whether the producer's positive aggregate (coverage /
+        # coherence / direction_en / direction_zh) survives.
+        malformed_edges = False
+        seen_observation_links: set[tuple] = set()
         for raw_edge in edges[:MAX_EDGES]:
             if not isinstance(raw_edge, dict):
                 p['gaps'].append('invalid_edge')
+                malformed_edges = True
                 continue
             e = {k: _token(raw_edge.get(k)) for k in ('src_node', 'dst_node', 'mechanism_type', 'expected_lag')}
             e['evidence_refs'] = _refs(raw_edge.get('evidence_refs'))
@@ -294,16 +312,73 @@ def project_evidence(payload: Any, *, now: datetime) -> dict:
                 n is not None and n.get('reading_status') not in _BAD_CLOCKS
                 for n in endpoints
             )
-            if category == 'reported_observation_links' and (
-                not is_repaired or not leg_endpoints_ok
-            ):
-                if not is_repaired:
-                    category = 'time_unverified_observation_links'
+            if category == 'reported_observation_links' and not is_repaired:
+                # Legacy artifacts may not count any per-node date as a verified
+                # source observation. Measured "observation" edges are reclassified
+                # as time-unverified disclosures — the leg nodes still expose
+                # their values, but the link is not a vote for coverage /
+                # observation counting. The marker-present-but-bad-clock case
+                # cannot reach category='reported_observation_links' here:
+                # earlier gates (line ~280) already demote a bad-clock edge to
+                # status='missing', which routes category to 'unavailable_links'.
+                category = 'time_unverified_observation_links'
+            # R7 / E2: duplicates are not separate observations. Distinct
+            # observation links are keyed by (src_node, dst_node, evidence_refs);
+            # surplus copies route to the additive `duplicate_observation_links`.
+            if category == 'reported_observation_links':
+                link_id = (e['src_node'], e['dst_node'], tuple(e['evidence_refs']))
+                if link_id in seen_observation_links:
+                    category = 'duplicate_observation_links'
                 else:
-                    category = 'unavailable_links'
-                    e['status'] = 'missing'
+                    seen_observation_links.add(link_id)
             summary[category] += 1
             p['edges'].append(e)
+        # E1 post-loop qualification: a pathway's positive aggregate
+        # (coverage, coherence, direction_en/zh) is passed through ONLY when
+        # ALL hold — (i) the artifact carries the clock_basis marker;
+        # (ii) the pathway's own source clock is `available`;
+        # (iii) at least one element qualifies — a well-formed edge with both
+        #       endpoints present and an `available` source clock, OR for a
+        #       pathway type that legitimately has zero edges (factor rotation),
+        #       the pathway's own `available` clock plus a trigger node with
+        #       `available` clock; (iv) no declared edge was malformed.
+        # Otherwise coverage → None, coherence → 'unknown', direction_en/zh →
+        # None, and ONE bounded reason from the closed set.
+        _PATHWAY_CLOCK_REASONS = {
+            'stale': 'pathway_clock_stale',
+            'future_dated': 'pathway_clock_future',
+            'unknown_date': 'pathway_clock_unknown',
+        }
+        withhold_reason = None
+        if not is_repaired:
+            withhold_reason = 'legacy_time_unverified'
+        elif p['reading_status'] in _PATHWAY_CLOCK_REASONS:
+            withhold_reason = _PATHWAY_CLOCK_REASONS[p['reading_status']]
+        elif malformed_edges:
+            withhold_reason = 'malformed_edges'
+        elif not edges:
+            # Zero-edge pathway: qualifies only with an available trigger node.
+            has_trigger = any(
+                n.get('pathway_role') == 'trigger'
+                and n.get('reading_status') not in _BAD_CLOCKS
+                for n in p['nodes']
+            )
+            if not has_trigger:
+                withhold_reason = 'no_qualifying_evidence'
+        else:
+            qualified_edge = any(
+                e.get('status') == 'measured'
+                for e in p['edges']
+            )
+            if not qualified_edge:
+                withhold_reason = 'no_qualifying_evidence'
+        if withhold_reason is not None:
+            p['coverage_score'] = None
+            p['coherence'] = 'unknown'
+            p['direction_en'] = None
+            p['direction_zh'] = None
+            if withhold_reason not in p['gaps']:
+                p['gaps'].append(withhold_reason)
         out['pathways'].append(p)
     no_path = _obj(payload.get('no_pathway'))
     if no_path:

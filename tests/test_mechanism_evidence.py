@@ -249,7 +249,7 @@ def test_compiler_carries_transmission_wrapper_date_not_driver_clock(tmp_path, m
         chain.pop('asof', None)
     _make_regime_files(tmp_path, regime, tx)
     monkeypatch.setattr(mp, '_is_stale', lambda *a: False)
-    output = mp.compile(root=tmp_path)
+    output = mp.compile(root=tmp_path, now=NOW)
     nodes = [n for p in output['pathways'] for n in p['nodes'] if n['domain'] == 'transmission']
     assert nodes and {n['as_of'] for n in nodes} == {'2026-09-30'}
     assert json.loads((tmp_path / 'data/transmission/latest.json').read_text()) == tx
@@ -585,3 +585,258 @@ def test_unparseable_clock_yields_unknown_date_with_reason(where, value, expecte
         assert out['pathways'][0]['reading_status'] == expected
     else:
         assert out['pathways'][0]['nodes'][1]['reading_status'] == expected
+
+
+# ---------------------------------------------------------------------------
+# 2026-10-03 reader repair (E1–E6 — aggregates earned by the reader)
+# ---------------------------------------------------------------------------
+
+_CLOSED_REASONS = frozenset({
+    'legacy_time_unverified', 'no_qualifying_evidence', 'malformed_edges',
+    'pathway_clock_stale', 'pathway_clock_future', 'pathway_clock_unknown',
+})
+
+
+def _assert_withheld(pathway, *, reason):
+    assert pathway['coverage_score'] is None, (
+        f"E1: coverage must be withheld, got {pathway['coverage_score']!r}"
+    )
+    assert pathway['coherence'] == 'unknown', (
+        f"E1: coherence must be withheld, got {pathway['coherence']!r}"
+    )
+    assert pathway['direction_en'] is None and pathway['direction_zh'] is None, (
+        f"E1: direction must be withheld, got {pathway['direction_en']!r} / {pathway['direction_zh']!r}"
+    )
+    assert reason in _CLOSED_REASONS, f"reason {reason!r} must be in closed set"
+    assert reason in pathway['gaps'], (
+        f"E1: reason {reason!r} must be appended to pathway gaps, got {pathway['gaps']!r}"
+    )
+
+
+def _factor_rotation_payload(as_of='2026-10-02', *, mark=True, nodes=None):
+    p = {
+        'schema': 'neuralweb.mechanism_pathways.v1', 'as_of': '2026-10-02',
+        'pathways': [{
+            'family': 'factor_rotation', 'driver': 'factor_rotation',
+            'pathway_role': 'primary', 'as_of': as_of,
+            'direction_en': 'Factor rotation to value', 'direction_zh': '因子轮动到价值',
+            'coverage_score': 1.0, 'coherence': 'partial',
+            'stale_legs': [],
+            'nodes': nodes if nodes is not None else [
+                {'node_id': 'driver_factor_rotation', 'as_of': as_of,
+                 'domain': 'factor_rotation', 'pathway_role': 'trigger',
+                 'source_artifact': 'data/neuralweb/factor_intelligence_state.json',
+                 'entity': 'factor_rotation', 'value': None,
+                 'source_tier': 'context_only', 'lag_class': 'same_day'},
+            ],
+            'edges': [],
+        }],
+        'no_pathway': None,
+    }
+    if mark:
+        p['clock_basis'] = 'source_clock_v1'
+    return p
+
+
+def test_e1_probe_a_legacy_zero_edge_factor_rotation_withholds_aggregates():
+    """E1 probe A: legacy artifact (no clock_basis) with fresh zero-edge
+    factor rotation must NOT pass through producer's (1.0, 'partial').
+    Coverage None, coherence 'unknown', direction withheld, reason
+    'legacy_time_unverified'.
+    """
+    p = _factor_rotation_payload(as_of='2026-10-02', mark=False)
+    out = project(p)
+    pathway = out['pathways'][0]
+    _assert_withheld(pathway, reason='legacy_time_unverified')
+
+
+def test_e1_probe_d_legacy_with_measured_edges_withholds_aggregates():
+    """E1 probe D: legacy artifact with measured edges must withhold the
+    aggregate even though the leg-edge becomes time_unverified.
+    Coverage None, coherence 'unknown', direction withheld, reason
+    'legacy_time_unverified'.
+    """
+    p = artifact()
+    p.pop('clock_basis', None)
+    out = project(p)
+    pathway = out['pathways'][0]
+    _assert_withheld(pathway, reason='legacy_time_unverified')
+    assert out['evidence_summary']['reported_observation_links'] == 0
+    assert out['evidence_summary']['time_unverified_observation_links'] >= 1
+
+
+def test_e1_probe_f_marked_with_malformed_edges_withholds_aggregates():
+    """E1 probe F: marked artifact whose edges list contains ['junk', 7, None]
+    must withhold — no declared edge survives, plus three invalid_edge gaps.
+    """
+    p = artifact()
+    p['clock_basis'] = 'source_clock_v1'
+    p['pathways'][0]['edges'] = ['junk', 7, None]
+    out = project(p)
+    pathway = out['pathways'][0]
+    _assert_withheld(pathway, reason='malformed_edges')
+    assert sum(1 for g in pathway['gaps'] if g == 'invalid_edge') == 3
+
+
+def test_e1_probe_g_marked_empty_nodes_and_edges_withholds_aggregates():
+    """E1 probe G: marked artifact with nodes=[] and edges=[] must withhold.
+    No trigger node, no edges — no qualifying evidence.
+    """
+    p = _factor_rotation_payload(mark=True, nodes=[])
+    p['pathways'][0]['nodes'] = []
+    p['pathways'][0]['edges'] = []
+    out = project(p)
+    pathway = out['pathways'][0]
+    _assert_withheld(pathway, reason='no_qualifying_evidence')
+
+
+def test_e1_probe_b_marked_stale_zero_edge_factor_rotation_withholds():
+    """E1 probe B: marked artifact with STALE zero-edge factor rotation
+    pathway (as_of 2026-09-20, NOW 2026-10-02T23Z). Pathway clock is stale.
+    Coverage None, coherence 'unknown', direction withheld, reason
+    'pathway_clock_stale'.
+    """
+    p = _factor_rotation_payload(as_of='2026-09-20', mark=True)
+    out = project(p)
+    pathway = out['pathways'][0]
+    _assert_withheld(pathway, reason='pathway_clock_stale')
+
+
+def test_e1_positive_control_marked_fresh_with_measured_edge_passes():
+    """E1 positive control: marked artifact, fresh clock, one measured
+    edge — the producer aggregate IS shown (the rule cannot be satisfied
+    by withholding everything).
+    """
+    p = artifact()
+    p['clock_basis'] = 'source_clock_v1'
+    p['pathways'][0]['direction_en'] = 'Rising real yields'
+    p['pathways'][0]['direction_zh'] = '实际收益率上行'
+    out = project(p)
+    pathway = out['pathways'][0]
+    assert pathway['coverage_score'] == 1.0
+    assert pathway['coherence'] == 'supported'
+    assert pathway['direction_en'] == 'Rising real yields'
+    assert pathway['direction_zh'] == '实际收益率上行'
+
+
+def test_e2_duplicate_observation_link_counted_once_with_surplus():
+    """E2: four copies of the same leg edge → reported_observation_links=1,
+    duplicate_observation_links=3. Same (src, dst, evidence_refs) tuple
+    is one distinct link; surplus copies go to the additive duplicate count.
+    """
+    p = artifact()
+    p['clock_basis'] = 'source_clock_v1'
+    p['pathways'][0]['edges'] *= 4  # 2 → 8 edges; first two are the duplicates pair
+    out = project(p)
+    summary = out['evidence_summary']
+    assert summary['reported_observation_links'] == 1
+    assert summary['duplicate_observation_links'] == 3
+
+
+@pytest.mark.parametrize('as_of,now_dt,should_be_future', [
+    # now=2026-10-02T12:00Z → latest_earth_date = 2026-10-03
+    ('2026-10-03', datetime(2026, 10, 2, 12, 0, tzinfo=timezone.utc), False),  # Kiritimati past midnight
+    ('2026-10-04', datetime(2026, 10, 2, 12, 0, tzinfo=timezone.utc), True),
+    ('2026-10-03', datetime(2026, 10, 2, 9, 0, tzinfo=timezone.utc), True),  # no zone past midnight yet
+])
+def test_e3_latest_earth_date_boundary_for_date_only(as_of, now_dt, should_be_future):
+    """E3: pin the R4 boundary. A date-only clock D is 'future' only when
+    D > (now_utc + 14h).date() — the latest calendar date anywhere on Earth.
+    """
+    from engine.neuralweb import mechanism_evidence
+    p = artifact()
+    p['clock_basis'] = 'source_clock_v1'
+    p['pathways'][0]['as_of'] = as_of
+    out = mechanism_evidence.project_evidence(p, now=now_dt)
+    status = out['pathways'][0]['reading_status']
+    if should_be_future:
+        assert status == 'future_dated', (
+            f"E3: {as_of} @ now={now_dt} must be future_dated, got {status!r}"
+        )
+    else:
+        assert status != 'future_dated', (
+            f"E3: {as_of} @ now={now_dt} must NOT be future_dated, got {status!r}"
+        )
+
+
+@pytest.mark.parametrize('value,expected_status', [
+    (None, 'unknown_date'),
+    ('', 'unknown_date'),
+    ('not-a-date', 'unknown_date'),
+    ([], 'unknown_date'),
+    (20261002, 'unknown_date'),                # int is unparseable
+    ('2026-10-04', 'future_dated'),             # date-only > latest_earth at NOW
+    ('2026-10-02T22:30:00-01:00', 'future_dated'),  # tz-aware later than NOW
+    ('2026-10-02T23:30:00+00:00', 'future_dated'),
+    ('2020-01-01', 'stale'),                    # date-only calendar-age >= 5d
+    ('2026-10-02', 'available'),
+    ('2026-10-03', 'available'),                # one day ahead — still on Earth today
+])
+def test_e4_parity_table_for_clock_classifier(value, expected_status):
+    """E4: parametrised parity table — every row feeds the reader's clock
+    classifier and asserts the status. NOW = 2026-10-02T23:00:00Z.
+    """
+    from engine.neuralweb import mechanism_evidence
+    p = artifact()
+    p['clock_basis'] = 'source_clock_v1'
+    p['pathways'][0]['as_of'] = value
+    out = mechanism_evidence.project_evidence(p, now=NOW)
+    assert out['pathways'][0]['reading_status'] == expected_status, (
+        f"E4: clock {value!r} expected {expected_status!r}, "
+        f"got {out['pathways'][0]['reading_status']!r}"
+    )
+
+
+def test_e5_compiler_call_in_this_module_injects_now():
+    """E5: every compile() call in tests/test_mechanism_evidence.py must
+    pass an explicit now=. Inspect the source to prove it.
+    """
+    import ast
+    src = Path(__file__).read_text()
+    tree = ast.parse(src)
+    bad = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'compile':
+            kwargs = {kw.arg for kw in node.keywords}
+            if 'now' not in kwargs:
+                bad.append(node.lineno)
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr == 'compile':
+            kwargs = {kw.arg for kw in node.keywords}
+            if 'now' not in kwargs:
+                bad.append(node.lineno)
+    assert not bad, f"E5: compile() calls at lines {bad} must pass now="
+
+
+def test_e6_unreachable_else_branch_is_removed():
+    """E6: the unreachable `else: category='unavailable_links'; e['status']='missing'`
+    branch inside the reported-observation-links reclassification must be
+    removed. Probe via AST: the surrounding reclassification must keep
+    only the legacy branch.
+    """
+    import ast
+    src = Path(__file__).parents[1] / 'engine/neuralweb/mechanism_evidence.py'
+    tree = ast.parse(src.read_text())
+    found_unreachable = False
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.If):
+            continue
+        # Look for an `if not is_repaired: ... else: category='unavailable_links'` shape
+        if not (node.orelse and len(node.orelse) == 1 and isinstance(node.orelse[0], ast.If)):
+            continue
+        inner = node.orelse[0]
+        # inner.test must be `not is_repaired`
+        if not (isinstance(inner.test, ast.UnaryOp) and isinstance(inner.test.op, ast.Not)
+                and isinstance(inner.test.operand, ast.Name)
+                and inner.test.operand.id == 'is_repaired'
+                and inner.body):
+            continue
+        first_body = inner.body[0]
+        if (isinstance(first_body, ast.Assign)
+                and isinstance(first_body.value, ast.Constant)
+                and first_body.value.value == 'unavailable_links'):
+            found_unreachable = True
+            break
+    assert not found_unreachable, (
+        "E6: unreachable `else: category='unavailable_links'` branch is still "
+        "present in mechanism_evidence.py; remove it."
+    )
