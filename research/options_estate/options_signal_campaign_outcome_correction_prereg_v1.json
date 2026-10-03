@@ -164,7 +164,7 @@
   },
   "implementation_constraints": {
     "source_owner": "existing_options_signal_campaign_owner",
-    "implementation_may_start_before_7265_closes": false,
+    "implementation_may_start_before_7265_closes_only_if_same_authorized_writer_continues": true,
     "manifest_or_policy_is_data_control_not_a_new_ledger": true,
     "row_range_special_case_in_engine_code": false,
     "incident_identity_must_come_from_reviewed_manifest_or_policy": true,

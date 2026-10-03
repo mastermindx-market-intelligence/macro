@@ -255,7 +255,7 @@ The correction is accepted only after **all** of the following clear:
 
 Failed or missing postcondition = `NOT_ACCEPTED`: preserve raw history, return to the existing owner, no automatic retry. Synthetic or manual runs cannot substitute for the normal nightly. No automatic retry or raw-history rollback is authorized.
 
-The correction implementation **may not start while #7265 remains the active writer on the campaign engine/tests**.
+The correction implementation **may not start while #7265 remains the active writer on the campaign engine/tests, unless the same authorized writer continues under its existing custody** (matching §10.1 condition 3 and the JSON `implementation_entry_preconditions`).
 
 ## 11. Implementation constraints
 
