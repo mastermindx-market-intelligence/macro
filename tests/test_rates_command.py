@@ -382,7 +382,7 @@ class TestDiffChanges:
         usd_items = [i for i in items if i["key"] == "usd_dir"]
         assert len(usd_items) == 1
         assert usd_items[0]["en"] == "Dollar direction: strengthening → flat"
-        assert usd_items[0]["zh"] == "美元方向：走强 → 持平"
+        assert usd_items[0]["zh"] == "美元方向：走强 → 横盘"
 
     def test_usd_dir_dict_side_skipped(self):
         prev = _cs(); prev["usd_dir"] = {"state": "QUIET"}

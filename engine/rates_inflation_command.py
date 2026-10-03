@@ -138,8 +138,8 @@ _INFL_DIR_ZH: dict[str, str] = {
 
 _USD_DIR_ZH: dict[str, str] = {
     "strengthening": "走强",
-    "weakening": "走弱",
-    "flat": "持平",
+    "weakening": "走软",
+    "flat": "横盘",
 }
 
 _DIFF_ORDER: list[str] = [
