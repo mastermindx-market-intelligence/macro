@@ -18,11 +18,11 @@ import numpy as np
 import pandas as pd
 
 SOURCE = 'b4f95f98ef80b8cbb4636afbd723b5091658e1f1'
-SPEC_COMMIT = '8bc732d4c15c020bcafe068a9fad8a096e9d6e5e'
+SPEC_COMMIT = '8431a5452f561caafd60277c9393aa9260a5983b'
 CANDIDATES = ('QQQ', 'IWM', 'SOXX')
 HORIZON = 10
 COST_PP = .20
-START, END, INPUT_END = '2006-01-03', '2025-12-31', '2026-01-31'
+START, END, INPUT_END = '2007-01-03', '2025-12-31', '2026-01-31'
 AUTHORITY = {k: False for k in ('rank', 'entry', 'size', 'trade', 'promotion')}
 
 
@@ -186,7 +186,7 @@ def contrasts(rows,period_start,period_end,draws=1000,seed=20261003):
 
 def summarize(rows):
     results={}
-    for name,a,b in [('early','2006-01-03','2014-12-31'),('later','2015-01-01','2025-12-31'),('combined',START,END)]:
+    for name,a,b in [('early',START,'2014-12-31'),('later','2015-01-01','2025-12-31'),('combined',START,END)]:
         part=[r for r in rows if a<=r['signal_date']<=b];cells=[]
         for family in ('price_macd','rsi_macd'):
             for grain in ('1D','2D','3D','1W'):
