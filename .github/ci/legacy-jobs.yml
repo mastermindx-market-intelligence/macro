@@ -522,10 +522,12 @@ jobs:
       - "engine/options_signal_episode_contract.py"
       - "engine/ledger_lane.py"
       - "engine/session_digest.py"
-      # lib helpers the campaign engine imports at module scope
+      # lib helpers the campaign engine imports at module scope.
+      # The episode builder now imports the shared raw-byte stage parser.
       - "lib/__init__.py"
       - "lib/config.py"
       - "lib/nyse_calendar.py"
+      - "lib/live_flow_event_stage.py"
       # schemas the composer validates against (CAMPAIGN_SCHEMA +
       # CANDIDATE_FEED_V2_SCHEMA_FILENAME + ACTIVATION_RECEIPT_SCHEMA_FILENAME
       # + CANDIDATE_IDENTITY_SCHEMA_FILENAME + MICROSTRUCTURE_SCHEMA_FILENAME
@@ -5958,6 +5960,8 @@ jobs:
       - "lib/__init__.py"
       - "lib/config.py"
       - "lib/nyse_calendar.py"
+      # scripts/build_options_signal_episode.py imports the shared stage parser.
+      - "lib/live_flow_event_stage.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

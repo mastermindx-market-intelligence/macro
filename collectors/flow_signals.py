@@ -52,6 +52,8 @@ from typing import Any
 
 import pandas as pd
 
+from lib.live_flow_event_stage import parse_stage_bytes
+
 log = logging.getLogger(__name__)
 
 # ── constants ─────────────────────────────────────────────────────────────────
@@ -59,6 +61,7 @@ LEDGER_DIR = "flow_signals"
 LEDGER_FILE = "ledger.parquet"
 R2_ARCHIVE_PREFIX = "live_flow/archive/"
 R2_FEED_KEY = "live_flow/feed_current.json"
+R2_EVENT_PREFIX = "live_flow/events/"
 ARCHIVE_WINDOW_HOURS = 48
 
 # Detector version loaded from config/flow_detector.yml at module import.
@@ -119,6 +122,14 @@ _EVENT_COLS = [
     "detector_version",
     "source",         # 'live_feed'
     "ingested_at",    # aware-UTC ISO string
+    # Immutable FS-5 stage evidence.  Absent for archive/feed display fallback.
+    "decision_at",
+    "available_at",
+    "source_stage_observed_at",
+    "source_stage_key",
+    "source_stage_schema",
+    "source_stage_prefix_records",
+    "source_stage_prefix_sha256",
 ]
 
 
@@ -417,6 +428,16 @@ def _events_from_blob(blob: dict, session_date_hint: str | None = None) -> list[
             "detector_version": detector_version,
             "source":          "live_feed",
             "ingested_at":     ingested_at,
+            # Archive/feed_current are display continuity inputs only.  Keep
+            # every FS-5 receipt field explicitly absent; never synthesize a
+            # stage clock from ingestion or object metadata.
+            "decision_at": None,
+            "available_at": None,
+            "source_stage_observed_at": None,
+            "source_stage_key": None,
+            "source_stage_schema": None,
+            "source_stage_prefix_records": None,
+            "source_stage_prefix_sha256": None,
         }
         results.append(row)
 
@@ -553,6 +574,84 @@ def _r2_feed_current(s3, bucket: str) -> dict | None:
     return _fetch_r2_json(s3, bucket, R2_FEED_KEY)
 
 
+def _utc_now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _event_stage_keys_within_window(s3, bucket: str,
+                                    window_hours: int = ARCHIVE_WINDOW_HOURS,
+                                    now: datetime | None = None) -> list[str]:
+    """Return only recent date-keyed stages; never use R2 listing as replay."""
+    try:
+        keys: list[str] = []
+        token = None
+        while True:
+            request: dict[str, Any] = {"Bucket": bucket, "Prefix": R2_EVENT_PREFIX}
+            if token:
+                request["ContinuationToken"] = token
+            page = s3.list_objects_v2(**request)
+            keys.extend(str(item.get("Key") or "") for item in page.get("Contents") or [])
+            if not page.get("IsTruncated"):
+                break
+            token = page.get("NextContinuationToken")
+            if not token:
+                return []
+    except Exception as exc:  # noqa: BLE001
+        log.warning("flow_signals: list event-stage keys failed: %s", exc)
+        return []
+    current = now or datetime.now(timezone.utc)
+    cutoff_date = (current - timedelta(hours=window_hours)).date()
+    upper_date = current.date()
+    valid: list[str] = []
+    for key in keys:
+        if not key.startswith(R2_EVENT_PREFIX) or not key.endswith(".jsonl"):
+            continue
+        session = key[len(R2_EVENT_PREFIX):-len(".jsonl")]
+        try:
+            parsed = datetime.strptime(session, "%Y-%m-%d").date()
+        except ValueError:
+            continue
+        if parsed.isoformat() == session and cutoff_date <= parsed <= upper_date:
+            valid.append(key)
+    return sorted(valid)
+
+
+def _fetch_staged_rows(s3, bucket: str, key: str) -> list[dict[str, Any]] | None:
+    """Fetch one stage and bind new rows to original-byte prefix receipts.
+
+    The observation clock is sampled after ``Body.read`` completes.  It is never
+    derived from R2 metadata, local ingestion, or the poller's local durability
+    clock (``available_at``).
+    """
+    session = key[len(R2_EVENT_PREFIX):-len(".jsonl")]
+    try:
+        raw = s3.get_object(Bucket=bucket, Key=key)["Body"].read()
+        observed_at = _utc_now_iso()
+        paired = parse_stage_bytes(
+            raw, expected_session_date=session, source_stage_key=key,
+        )
+    except Exception as exc:  # noqa: BLE001
+        log.warning("flow_signals: staged event key %s rejected: %s", key, exc)
+        return None
+    rows: list[dict[str, Any]] = []
+    for item in paired:
+        normalized = _events_from_blob({"session_date": session, "events": [item["event"]]})
+        if len(normalized) != 1:
+            continue
+        row = normalized[0]
+        row.update({
+            "decision_at": item["decision_at"],
+            "available_at": item["available_at"],
+            "source_stage_observed_at": observed_at,
+            "source_stage_key": item["source_stage_key"],
+            "source_stage_schema": item["source_stage_schema"],
+            "source_stage_prefix_records": item["source_stage_prefix_records"],
+            "source_stage_prefix_sha256": item["source_stage_prefix_sha256"],
+        })
+        rows.append(row)
+    return rows
+
+
 # ── main harvest function ─────────────────────────────────────────────────────
 
 def harvest(dry_run: bool = False) -> int:
@@ -581,6 +680,16 @@ def harvest(dry_run: bool = False) -> int:
     # ── 1. R2 archive blobs ───────────────────────────────────────────────────
     n_archive_blobs = 0
     if s3 is not None:
+        # FS-5 science source: append-only staged evidence wins before the
+        # archive/display paths.  The bounded date window avoids history replay.
+        for key in _event_stage_keys_within_window(s3, bucket, ARCHIVE_WINDOW_HOURS):
+            staged_rows = _fetch_staged_rows(s3, bucket, key)
+            if staged_rows is None:
+                continue
+            for row in staged_rows:
+                eid = row["event_id"]
+                if eid not in existing_ids and eid not in all_new_rows:
+                    all_new_rows[eid] = row
         archive_keys = _archive_keys_within_window(s3, bucket, ARCHIVE_WINDOW_HOURS)
         log.info("flow_signals: found %d archive blobs within %dh window",
                  len(archive_keys), ARCHIVE_WINDOW_HOURS)

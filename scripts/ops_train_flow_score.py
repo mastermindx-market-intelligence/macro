@@ -71,6 +71,7 @@ VERDICT LAW:
   - Never writes "validated" anywhere (CI-guarded).
   - manifest kill_eval is evidence, not a published verdict (FS-5 owns verdicts).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -82,7 +83,7 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import numpy as np
 import pandas as pd
@@ -98,6 +99,11 @@ from lib.flow_score_geometry import (
     validate_population_partition,
     validate_split_geometry,
 )
+from lib.flow_score_admission import (
+    AdmissionError,
+    validate_admission_receipt,
+    verify_raw_stage_receipts,
+)
 
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
@@ -106,6 +112,7 @@ log = logging.getLogger(__name__)
 
 
 # ── repo / path helpers ───────────────────────────────────────────────────────
+
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parent.parent
@@ -129,6 +136,7 @@ def _models_dir(cfg: dict) -> Path:
 
 
 # ── config loader ─────────────────────────────────────────────────────────────
+
 
 def _load_config() -> dict:
     import yaml
@@ -170,6 +178,7 @@ def _detector_version() -> str:
 
 # ── git sha helper ─────────────────────────────────────────────────────────────
 
+
 def _git_sha() -> str:
     try:
         return subprocess.check_output(
@@ -181,6 +190,7 @@ def _git_sha() -> str:
 
 
 # ── sha256 file hash ──────────────────────────────────────────────────────────
+
 
 def _sha256_file(path: Path) -> str:
     h = hashlib.sha256()
@@ -283,6 +293,7 @@ def apply_population_filter(
 # ── cohort loaders ─────────────────────────────────────────────────────────────
 # Reuse ops_flow_cohorts.py load_cohort for single-source guard.
 
+
 def _load_serving_cohorts(flow_dir: Path, bucket: str, cfg: dict) -> pd.DataFrame:
     """Load and concatenate serving-distribution cohort frames (tape_recon + live_feed ledger).
 
@@ -360,6 +371,7 @@ def _check_no_eod_proxy_in_calibration(df: pd.DataFrame, context: str) -> None:
 
 
 # ── feature / label assembly ───────────────────────────────────────────────────
+
 
 def _feature_columns(cfg: dict, bucket: str) -> list[str]:
     """Return the feature column list for a bucket, adding DTE interaction if configured."""
@@ -484,7 +496,63 @@ def _build_label(df: pd.DataFrame, grades_df: pd.DataFrame, bucket: str, cfg: di
     return label
 
 
+def _join_grade_boundaries(
+    df: pd.DataFrame, grades_df: pd.DataFrame, bucket: str, cfg: dict
+) -> pd.DataFrame:
+    """Open grades only after source admission and bind the native bucket end."""
+    label_col = cfg.get("label_columns", {}).get(bucket)
+    if not label_col:
+        raise ValueError(f"ops_train: no label_column configured for bucket={bucket}")
+    horizons = _registered_horizons(bucket)
+    if label_col != f"spy_excess_{horizons[0]}":
+        raise ValueError("ops_train: registered_label_mismatch")
+    end_cols = tuple(f"outcome_end_session_{horizon}" for horizon in horizons)
+    excess_cols = tuple(f"spy_excess_{horizon}" for horizon in horizons)
+    required = ("event_id", *excess_cols, "graded_ok", "fill_date", *end_cols)
+    missing = [column for column in required if column not in grades_df.columns]
+    if missing:
+        raise ValueError("ops_train: grade boundaries missing: " + ",".join(missing))
+    grade_subset = grades_df[list(required)].copy()
+    if grade_subset["event_id"].astype(str).duplicated().any():
+        raise ValueError("ops_train: duplicate_grade_event_id")
+    joined = df.merge(grade_subset, on="event_id", how="left", suffixes=("", "_grade"))
+    excess = pd.to_numeric(joined[label_col], errors="coerce")
+    joined["_label"] = (excess > 0).astype(float)
+    graded_ok = joined["graded_ok"].map(lambda value: type(value) is bool and value)
+    all_horizons_mature = pd.Series(True, index=joined.index)
+    for column in excess_cols:
+        all_horizons_mature &= np.isfinite(
+            pd.to_numeric(joined[column], errors="coerce")
+        )
+    joined.loc[~graded_ok | ~all_horizons_mature, "_label"] = float("nan")
+    # Receipt plans the existing registered convention; a grader may not shift
+    # dates after the fact to rescue a late source receipt.
+    if (
+        "planned_fill_date" not in joined
+        or "planned_outcome_end_sessions" not in joined
+    ):
+        raise ValueError("ops_train: admitted receipt missing planned boundaries")
+    if (
+        not joined["fill_date"]
+        .astype(str)
+        .eq(joined["planned_fill_date"].astype(str))
+        .all()
+    ):
+        raise ValueError("ops_train: actual_fill_date_mismatch")
+    for horizon, end_col in zip(horizons, end_cols):
+        planned = joined["planned_outcome_end_sessions"].map(
+            lambda value: value.get(str(horizon)) if isinstance(value, dict) else None
+        )
+        if not joined[end_col].astype(str).eq(planned.astype(str)).all():
+            raise ValueError(
+                f"ops_train: actual_outcome_end_session_mismatch:{horizon}"
+            )
+    joined["outcome_end_session"] = joined[f"outcome_end_session_{max(horizons)}"]
+    return joined
+
+
 # ── CV geometry ───────────────────────────────────────────────────────────────
+
 
 def _assign_time_blocks(df: pd.DataFrame, n_groups: int, date_col: str = "session_date") -> pd.Series:
     """Assign complete canonical sessions to contiguous blocks or fail closed."""
@@ -588,6 +656,7 @@ def _group_fold_splits(
 
 # ── CPCV paths counter ─────────────────────────────────────────────────────────
 
+
 def _cpcv_path_count(n_groups: int, k_test: int) -> int:
     """C(n_groups, k_test) = number of CPCV selection paths."""
     from math import comb
@@ -595,6 +664,7 @@ def _cpcv_path_count(n_groups: int, k_test: int) -> int:
 
 
 # ── model fit helper ──────────────────────────────────────────────────────────
+
 
 def _fit_model(
     X_train: pd.DataFrame,
@@ -636,6 +706,7 @@ def _fit_model(
 
 # ── training loop ─────────────────────────────────────────────────────────────
 
+
 def _expand_grid(grid: dict) -> list[dict]:
     """Expand a hyperparameter grid dict into a list of param dicts."""
     import itertools
@@ -655,28 +726,49 @@ def _auc_score(y_true: np.ndarray, y_score: np.ndarray) -> float:
         return float("nan")
 
 
+def _legacy_id_partition(partition: object) -> dict[str, set[str]] | None:
+    """Return a pre-v1 four-list id map, or None when the document is not that shape.
+
+    A v1 receipt is never handled here. An id list that does not cover the source
+    cohort keeps the existing membership no-fit and does not open grades.
+    """
+    names = ("train", "calibration_fit", "calibration_eval", "final_oos")
+    if not isinstance(partition, dict) or partition.get("schema") == "flow_signals.fs5_partition/v1":
+        return None
+    if set(partition) != set(names) or any(not isinstance(partition[name], list) for name in names):
+        return None
+    return {name: {str(event_id) for event_id in partition[name]} for name in names}
+
+
+def _legacy_membership_no_fit(partition: dict[str, set[str]], serving_df: pd.DataFrame):
+    """Existing explicit no-fit for a pre-v1 id list. Exact covers are not decided here."""
+    if "event_id" not in serving_df.columns:
+        return make_no_fit_health("method_geometry_unavailable:partition_membership_mismatch")
+    received_ids = set(serving_df["event_id"].astype(str))
+    if any(not members for members in partition.values()):
+        return make_no_fit_health("building_history/method_geometry_unavailable")
+    if set().union(*partition.values()) != received_ids:
+        return make_no_fit_health("method_geometry_unavailable:partition_membership_mismatch")
+    if sum(map(len, partition.values())) != len(received_ids):
+        return make_no_fit_health("method_geometry_unavailable:partition_not_disjoint")
+    return None
+
+
 def train_bucket(
     bucket: str,
     cfg: dict,
     flow_dir: Path,
     dry_run: bool = False,
+    stage_receipt_resolver: Callable[[str], bytes] | None = None,
 ) -> dict | None:
     """Train and calibrate a flow-score model for one bucket.
 
     Returns manifest dict on success, None on failure.
 
-    Steps (with amendment-section citations):
-      1. Load serving cohorts (§3.1): tape_recon + live_feed
-      2. Join grades (§2.1): excess-vs-SPY label
-      3. Population filter (§3.3): index-root exclusion / OI readmission
-      4. Build features (§3.4)
-      5. Temporal holdout split: last 20% of rows by date for calibration (§5)
-      6. Group-fold CV (§4.1-§4.2): purged k-fold with embargo + underlying grouping
-      7. Hyperparameter grid search with CPCV selection (§4.3)
-      8. Uniqueness weights (§4.4)
-      9. Calibration: isotonic on temporal holdout (§5)
-     10. N floor check (§7): deployable=False if below floor
-     11. Artifact write (§4 artifact spec)
+    Source-only admission and original stage verification precede grades.
+    Every frozen member must mature at its predeclared native fill/end sessions.
+    The four ordered root-disjoint populations then pass unchanged FS-5
+    geometry, embargo, N-floor, calibration and final-OOS laws before fitting.
     """
     log.info("ops_train: starting bucket=%s, dry_run=%s", bucket, dry_run)
 
@@ -689,13 +781,6 @@ def train_bucket(
     # Guard: eod_proxy must NEVER be in serving cohorts
     _check_no_eod_proxy_in_calibration(serving_df, context="serving cohort (train_bucket)")
 
-    # ── load grades and partition receipt (§2.1 + FS-5 amendment §5) ───────────
-    grades_path = flow_dir / "grades.parquet"
-    if not grades_path.exists():
-        log.warning("ops_train[%s]: grades.parquet not found — skipping", bucket)
-        return None
-    grades_df = pd.read_parquet(grades_path)
-
     partition_path = flow_dir / "fs5_partition.json"
     if not partition_path.exists():
         log.warning("ops_train[%s]: no FS-5 partition receipt — building history/no-fit", bucket)
@@ -703,9 +788,23 @@ def train_bucket(
 
     # ── filter by model_bucket ────────────────────────────────────────────────
     bucket_map = cfg.get("model_bucket_map", {})
-    if "dte_bucket" in serving_df.columns:
-        valid_dte_buckets = [k for k, v in bucket_map.items() if v == bucket]
-        serving_df = serving_df[serving_df["dte_bucket"].isin(valid_dte_buckets)].copy()
+    if "dte_bucket" not in serving_df.columns:
+        return make_no_fit_health(
+            "method_geometry_unavailable:source_dte_bucket_missing"
+        )
+    valid_dte_buckets = [k for k, v in bucket_map.items() if v == bucket]
+    serving_df = serving_df[serving_df["dte_bucket"].isin(valid_dte_buckets)].copy()
+
+    # Source ledgers are bucketed by DTE.  Bind this exact requested model bucket
+    # before admission; never overwrite a contradictory pre-existing identity.
+    if "model_bucket" in serving_df.columns:
+        if not serving_df["model_bucket"].astype(str).eq(bucket).all():
+            return make_no_fit_health(
+                "method_geometry_unavailable:source_model_bucket_mismatch"
+            )
+    else:
+        serving_df = serving_df.copy()
+        serving_df["model_bucket"] = bucket
 
     if serving_df.empty:
         log.warning("ops_train[%s]: no rows after dte_bucket filter — skipping", bucket)
@@ -720,37 +819,46 @@ def train_bucket(
         pop_stats["oi_readmitted_n"], pop_stats["total_output"],
     )
 
-    # ── build labels (amendment §2.1) ────────────────────────────────────────
-    label_series = _build_label(serving_df, grades_df, bucket, cfg)
-    # Merge label back to serving_df
-    if "event_id" in serving_df.columns:
-        serving_df = serving_df.copy()
-        serving_df["_label"] = label_series.reindex(serving_df["event_id"].values).values
-    else:
-        serving_df = serving_df.copy()
-        serving_df["_label"] = float("nan")
-
-    # Drop rows with missing labels (not yet graded or grade unavailable)
-    labeled = serving_df.dropna(subset=["_label"]).copy()
-    if labeled.empty:
-        log.warning("ops_train[%s]: no labeled rows after grade join — skipping", bucket)
-        return None
-
-    # FS-5 geometry gates are pure and run before any feature matrix or estimator
-    # construction. They are guarded because legacy loaders can still return old rows.
+    # The receipt is the outcome-blind gate.  Do not even stat/read grades or
+    # construct a feature matrix until the complete frozen source cohort passes.
     try:
-        geometry_intervals = canonical_intervals(labeled)
-    except GeometryError as exc:
-        log.warning("ops_train[%s]: invalid FS-5 geometry — building history/no-fit: %s", bucket, exc)
-        return make_no_fit_health(f"method_geometry_unavailable:{exc}")
-    if geometry_intervals.empty:
-        log.warning("ops_train[%s]: no eligible FS-5 geometry — building history/no-fit", bucket)
-        return make_no_fit_health("building_history/method_geometry_unavailable")
+        partition = json.loads(partition_path.read_text())
+        legacy_members = _legacy_id_partition(partition)
+        if legacy_members is not None:
+            # Pre-v1 id lists are not source receipts. A mismatch is the existing
+            # no-fit and must not be hidden behind a later outcome-column error.
+            # An exact cover still falls through: only a v1 receipt may be admitted,
+            # and grades stay unread until that admission returns.
+            legacy_no_fit = _legacy_membership_no_fit(legacy_members, serving_df)
+            if legacy_no_fit is not None:
+                return legacy_no_fit
+        if stage_receipt_resolver is None:
 
-    # ── explicit ordered FS-5 population receipt (amendment §5/§6) ─────────────
-    # Legacy 80/20 is not three populations. Only an explicit receipt naming all
-    # ordered, disjoint, label-window-separated populations can reach a fit.
-    partition = json.loads(partition_path.read_text())
+            def stage_receipt_resolver(key: str) -> bytes:
+                # Lazily reached only after structural membership validation;
+                # reread raw bytes and never restamp source_stage_observed_at.
+                from collectors.flow_signals import _r2_bucket, _r2_client
+
+                source_client, source_bucket = _r2_client(), _r2_bucket()
+                if source_client is None:
+                    raise AdmissionError("admission_raw_stage_resolver_unavailable")
+                return source_client.get_object(Bucket=source_bucket, Key=key)[
+                    "Body"
+                ].read()
+
+        expected_study = cfg.get("fs5_admission_studies", {}).get(bucket)
+        admitted = validate_admission_receipt(
+            partition,
+            serving_df,
+            bucket=bucket,
+            validation_at=pd.Timestamp.now(tz="UTC"),
+            expected_study=expected_study,
+            stage_receipt_resolver=stage_receipt_resolver,
+        )
+    except (AdmissionError, ValueError, json.JSONDecodeError) as exc:
+        log.warning("ops_train[%s]: source admission unavailable: %s", bucket, exc)
+        return make_no_fit_health(f"method_geometry_unavailable:{exc}")
+
     configured_horizons = _configured_horizons(cfg)
     if configured_horizons != dict(BUCKET_HORIZONS):
         raise GeometryError(
@@ -762,47 +870,44 @@ def train_bucket(
         int(cfg.get("embargo_days", {}).get(bucket, 0)),
         max(required_horizons),
     )
-    population_names = ("train", "calibration_fit", "calibration_eval", "final_oos")
-    partition_members = {
-        name: set(map(str, partition.get(name, [])))
-        for name in population_names
-    }
-    received_ids = set(labeled["event_id"].astype(str))
-    if any(not members for members in partition_members.values()):
-        return make_no_fit_health("building_history/method_geometry_unavailable")
-    if set().union(*partition_members.values()) != received_ids:
-        return make_no_fit_health("method_geometry_unavailable:partition_membership_mismatch")
-    if sum(map(len, partition_members.values())) != len(received_ids):
-        return make_no_fit_health("method_geometry_unavailable:partition_not_disjoint")
-
-    train_df = labeled[labeled["event_id"].astype(str).isin(partition_members["train"])].copy()
-    cal_fit_df = labeled[
-        labeled["event_id"].astype(str).isin(partition_members["calibration_fit"])
-    ].copy()
-    cal_eval_df = labeled[
-        labeled["event_id"].astype(str).isin(partition_members["calibration_eval"])
-    ].copy()
-    final_oos_df = labeled[
-        labeled["event_id"].astype(str).isin(partition_members["final_oos"])
-    ].copy()
-
-    plans = {
-        name: build_geometry_plan(frame, model_bucket=bucket)
-        for name, frame in (
-            ("train", train_df),
-            ("calibration_fit", cal_fit_df),
-            ("calibration_eval", cal_eval_df),
-            ("final_oos", final_oos_df),
-        )
-    }
+    grades_path = flow_dir / "grades.parquet"
+    if not grades_path.exists():
+        return make_no_fit_health("building_history/grades_unavailable")
+    grades_df = pd.read_parquet(grades_path)
     try:
+        labeled = _join_grade_boundaries(admitted, grades_df, bucket, cfg)
+    except ValueError as exc:
+        return make_no_fit_health(f"method_geometry_unavailable:{exc}")
+    # Complete prospective cohort only: no mature-member dropping or expansion.
+    if labeled["_label"].isna().any():
+        return make_no_fit_health("building_history/frozen_cohort_not_fully_mature")
+    train_df = labeled[labeled["population"] == "train"].copy()
+    cal_fit_df = labeled[labeled["population"] == "calibration_fit"].copy()
+    cal_eval_df = labeled[labeled["population"] == "calibration_eval"].copy()
+    final_oos_df = labeled[labeled["population"] == "final_oos"].copy()
+
+    # Existing immutable FS-5 geometry remains the final interval/embargo law.
+    try:
+        plans = {
+            name: build_geometry_plan(frame, model_bucket=bucket)
+            for name, frame in (
+                ("train", train_df),
+                ("calibration_fit", cal_fit_df),
+                ("calibration_eval", cal_eval_df),
+                ("final_oos", final_oos_df),
+            )
+        }
         validate_population_partition(
             plans,
             requested_bucket=bucket,
-        horizon_columns=_available_grade_horizons(grades_df),
+            horizon_columns=_available_grade_horizons(grades_df),
         )
     except GeometryError as exc:
-        log.warning("ops_train[%s]: invalid FS-5 partition — building history/no-fit: %s", bucket, exc)
+        log.warning(
+            "ops_train[%s]: invalid FS-5 partition — building history/no-fit: %s",
+            bucket,
+            exc,
+        )
         return make_no_fit_health(f"method_geometry_unavailable:{exc}")
 
     y_all = labeled["_label"].astype(float).values
@@ -859,6 +964,7 @@ def train_bucket(
 
     # ── uniqueness weights (amendment §4.4) ───────────────────────────────────
     from lib.flow_score import uniqueness_weights as _uw
+
     # embargo_days already set during holdout split above
     w_series = _uw(train_df, horizon_days=embargo_days)
     # Align weights to train_df event_ids
@@ -1314,6 +1420,7 @@ def _try_r2_upload(artifact_dir: Path, bucket: str, version: int, cfg: dict) -> 
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
+
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(

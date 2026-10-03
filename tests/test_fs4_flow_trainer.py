@@ -1411,6 +1411,34 @@ class TestInvalidRequestedFoldCannotFit:
             "final_oos": all_ids[3 * quarter:],
         }
         (flow_dir / "fs5_partition.json").write_text(json.dumps(partition))
+        # Admission now rejects source geometry columns and requires a v1 receipt
+        # before grades. This test isolates the fold gate, so admission returns the
+        # already-covered cohort and grades carry the same native fill/end.
+        grades = pd.read_parquet(flow_dir / "grades.parquet")
+        boundaries = df[["event_id", "fill_date", "outcome_end_session"]].copy()
+        boundaries["event_id"] = boundaries["event_id"].astype(str)
+        grades["event_id"] = grades["event_id"].astype(str)
+        grades = grades.merge(boundaries, on="event_id", how="left")
+        grades = grades.rename(columns={"outcome_end_session": "outcome_end_session_21"})
+        grades.to_parquet(flow_dir / "grades.parquet", index=False)
+        fill_by_id = boundaries.set_index("event_id")["fill_date"].astype(str)
+        end_by_id = boundaries.set_index("event_id")["outcome_end_session"].astype(str)
+
+        def _admit_covered_cohort(receipt, source_rows, **_kwargs):
+            frame = source_rows.drop(columns=["fill_date", "outcome_end_session"]).copy()
+            assigned = {}
+            for name, members in receipt.items():
+                for event_id in members:
+                    assigned[str(event_id)] = name
+            event_ids = frame["event_id"].astype(str)
+            frame["population"] = event_ids.map(assigned)
+            frame["planned_fill_date"] = event_ids.map(fill_by_id).to_numpy()
+            frame["planned_outcome_end_sessions"] = [
+                {"21": end} for end in event_ids.map(end_by_id)
+            ]
+            return frame
+
+        monkeypatch.setattr(trainer, "validate_admission_receipt", _admit_covered_cohort)
         cfg.update(
             k_folds=0,
             n_groups=4,
