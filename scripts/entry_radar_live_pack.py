@@ -412,10 +412,10 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
 
     # --- idempotency: the pack for this session may already be current -------
     if state is not None and not args.force:
-        existing = lp.load_pack(state)
-        if existing is not None and existing.as_of == as_of.isoformat():
+        current = lp.current_pack_identity(state)
+        if current is not None and current["as_of"] == as_of.isoformat():
             print(f"entry-radar-pack already current for {as_of.isoformat()} "
-                  f"(pack_hash {existing.pack_hash}) — nothing to do", flush=True)
+                  f"(pack_hash {current['pack_hash']}) — nothing to do", flush=True)
             return 0
 
     # --- 1. the probe set, through the W1 machinery --------------------------
