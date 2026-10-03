@@ -454,3 +454,38 @@ def test_existing_code_job_owns_carry_suite_and_published_artifact_producers():
         "engine/contagion.py",
         "engine/conditions.py",
     } <= paths
+
+
+@pytest.mark.parametrize("bad", [0, 1, -1, 123456789, 0.0, 1.5])
+def test_date_helper_rejects_numeric_epoch_coercion(bad):
+    assert _mod()._date(bad) is None
+
+
+def test_latest_point_numeric_index_is_invalid_not_epoch_date():
+    frame = pd.DataFrame({"value": [1.5]}, index=[123456789])
+    got = _mod()._latest_point(frame, "fixture")
+    assert got["status"] == "invalid"
+    assert got["value"] is None
+    assert got["calculated_through"] is None
+
+
+@pytest.mark.parametrize("good, expected", [
+    ("2026-09-29", "2026-09-29"),
+    (pd.Timestamp("2026-09-29"), "2026-09-29"),
+])
+def test_date_helper_preserves_actual_date_like_inputs(good, expected):
+    assert _mod()._date(good) == expected
+
+
+def test_numeric_regime_asof_never_becomes_1970_artifact_date():
+    regime = {
+        "asof": 123456789,
+        "conditions": {"systemic_stress": {
+            "a2p2_spread_bps": 16,
+            "cp_bill_spread_bps": 0,
+            "cp_stress": "normal",
+        }},
+    }
+    got = _mod().collect_funding_context(lambda *_: None, {}, regime)
+    assert got["a2p2_spread"]["artifact_as_of"] is None
+    assert got["cp_bill_spread"]["artifact_as_of"] is None

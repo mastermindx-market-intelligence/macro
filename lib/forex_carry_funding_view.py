@@ -37,6 +37,10 @@ def _measure(value: object, unit: str, *, lo: float | None = None,
 
 
 def _date(value: object) -> str | None:
+    # pandas interprets numeric scalars as nanoseconds from the Unix epoch.
+    # Numeric values are valid for measures, but never for date identity.
+    if isinstance(value, (bool, Real)):
+        return None
     try:
         stamp = pd.Timestamp(value)
     except (TypeError, ValueError, OverflowError):
