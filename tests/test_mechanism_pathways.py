@@ -483,6 +483,62 @@ class TestStaleTriggerGuard:
         assert np_rec is not None
         assert np_rec.get("printed") is True
 
+    def test_stale_transmission_attaches_no_chain_and_leaves_coverage_unchanged(self, tmp_path):
+        """C5: a stale transmission source must not attach any chain to the
+        primary pathway. The primary pathway's coverage_score must equal the
+        value produced when the transmission file is missing altogether.
+        """
+        # driver_key="real_rate_shock" puts the pathway in rates_families so
+        # _attach_transmission_edges WOULD attach a chain if admitted.
+        rates_scores = [
+            {"driver": "real_rate_shock", "label": "Real-rate shock",
+             "label_zh": "实际利率冲击", "family": "real_rate_shock",
+             "projection": -1.5, "strength": 1.5, "direction": "Real-rate shock"},
+        ]
+        regime_with_stale_tx = _make_regime(
+            md_verdict="clear",
+            md_primary="real_rate_shock",
+            md_scores=rates_scores,
+            md_direction="Real-rate shock",
+            md_direction_zh="实际利率冲击",
+            md_runner_up="",
+        )
+        # transmission fixture with asof=STALE
+        stale_tx = _default_transmission(asof=_STALE_ASOF)
+        _make_regime_files(tmp_path, regime_with_stale_tx, transmission=stale_tx)
+        result_stale = compile(root=tmp_path, now=_TEST_NOW)
+        pathways_stale = result_stale.get("pathways", [])
+        assert pathways_stale, "real_rate_shock family clear verdict must build a primary pathway"
+        primary_stale = pathways_stale[0]
+        # No transmission chain may attach when source clock is stale.
+        tx_nodes = [n for n in primary_stale["nodes"] if n.get("domain") == "transmission"]
+        tx_edges = [
+            e for e in primary_stale["edges"]
+            if "transmission" in str(e.get("src_node", "")) or "transmission" in str(e.get("dst_node", ""))
+        ]
+        assert tx_nodes == [], (
+            f"stale transmission source must yield no chain nodes, got {tx_nodes!r}"
+        )
+        assert tx_edges == [], (
+            f"stale transmission source must yield no chain edges, got {tx_edges!r}"
+        )
+        # Coverage must equal the value with NO transmission file present.
+        regime_no_tx = _make_regime(
+            md_verdict="clear",
+            md_primary="real_rate_shock",
+            md_scores=rates_scores,
+            md_direction="Real-rate shock",
+            md_direction_zh="实际利率冲击",
+            md_runner_up="",
+        )
+        _make_regime_files(tmp_path, regime_no_tx)
+        result_no_tx = compile(root=tmp_path, now=_TEST_NOW)
+        primary_no_tx = result_no_tx["pathways"][0]
+        assert primary_stale["coverage_score"] == primary_no_tx["coverage_score"], (
+            f"stale-tx coverage_score must equal no-tx coverage_score; "
+            f"stale={primary_stale['coverage_score']!r} no_tx={primary_no_tx['coverage_score']!r}"
+        )
+
 
 class TestCoverageScore:
     def test_coverage_score_present(self, tmp_path):
@@ -1044,6 +1100,43 @@ class TestFactorRotationClock:
         driver = primary["nodes"][0]
         assert driver["as_of"] == fresh_past, (
             f"factor driver node as_of must be source clock, got {driver['as_of']!r}"
+        )
+
+    def test_stale_factor_state_yields_no_factor_pathway_with_disclosure(self, tmp_path):
+        """C5: a stale factor source clock must not build a factor-rotation
+        pathway; the no_pathway disclosure must name the stale source.
+        """
+        regime = _make_regime(
+            md_verdict="quiet",
+            rr_state="calm",
+            rr_dominant_scare="",
+        )
+        _make_regime_files(tmp_path, regime)
+        fi_dir = tmp_path / "data" / "neuralweb"
+        fi_dir.mkdir(parents=True, exist_ok=True)
+        # _STALE_ASOF ("2000-01-01") classifies as 'stale' against _TEST_NOW (2026-10-02).
+        (fi_dir / "factor_intelligence_state.json").write_text(
+            json.dumps({
+                "as_of": _STALE_ASOF,
+                "style_regime": "flip_pending",
+                "flips": [{"from": "value", "to": "growth"}],
+            }),
+            encoding="utf-8",
+        )
+        result = compile(root=tmp_path, now=_TEST_NOW)
+        # No factor-rotation pathway may be emitted on a stale factor source.
+        factor_pathways = [
+            p for p in result.get("pathways", []) if p.get("family") == "factor_rotation"
+        ]
+        assert factor_pathways == [], (
+            f"stale factor source must yield no factor pathway, got {factor_pathways!r}"
+        )
+        # Disclosure names the stale source.
+        np_rec = result.get("no_pathway")
+        assert np_rec is not None, "no_pathway record required when stale factor source"
+        tc = np_rec.get("trigger_context") or {}
+        assert "factor" in str(tc).lower(), (
+            f"trigger_context must name the stale factor source, got {tc!r}"
         )
 
 

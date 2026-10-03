@@ -933,11 +933,13 @@ def compile(root: Path | None = None, *, now: datetime | None = None) -> dict:  
         tx_clock = _classify_source_clock(tx_asof, built_dt)
         # data/transmission/latest.json is not synapse-registered (pre-existing gap);
         # use named constant rather than a silent hardcoded default.
-        # Acceptable clock reasons here: available OR stale (we surface chains
-        # even when stale, because the chains carry their own per-order clocks;
-        # future/unknown are dropped — those chains cannot claim source
-        # observation status at all).
-        if tx_clock["as_of_reason"] in ("available", "stale"):
+        # C5 (slice 3): only `available` transmission sources may attach chains.
+        # Stale transmission sources are NOT admitted as pathway evidence; the
+        # chains carry per-order clocks but the wrapper itself is stale, so
+        # the upstream lineage cannot be verified end-to-end. Future/unknown
+        # reasons are still dropped — those chains cannot claim source
+        # observation status at all.
+        if tx_clock["as_of_reason"] == "available":
             # The upstream chain builder does not repeat its wrapper clock.
             # Preserve an explicit chain clock (including an unknown one); only
             # an absent key inherits THIS source's snapshot, never a driver date.
@@ -1122,8 +1124,25 @@ def compile(root: Path | None = None, *, now: datetime | None = None) -> dict:  
         fi_sla = _get_sla(reg, "factor-intelligence-state")
         fi_clock = _classify_source_clock(fi_asof, built_dt)
 
-        if fi_state and fi_clock["as_of_reason"] in ("available", "stale") and _has_persistent_factor_flip(fi_state):
+        if fi_state and fi_clock["as_of_reason"] == "available" and _has_persistent_factor_flip(fi_state):
             pathways.append(_build_factor_rotation_pathway(fi_state, as_of, source_as_of=fi_clock["as_of"], now=built_dt))
+        elif fi_state and fi_clock["as_of_reason"] == "stale" and no_pathway_rec is None:
+            # C5 (slice 3): a stale factor source is NOT admitted as pathway
+            # evidence. Surface the skipped source in the existing no_pathway
+            # disclosure (trigger_stale reason + trigger_context naming the
+            # stale source) so the reader can see why no factor pathway was
+            # built. The disclosure reuses the existing _no_pathway schema
+            # (no new status word, no new structure).
+            no_pathway_rec = {
+                "reason": "trigger_stale",
+                "printed": True,
+                "trigger_context": {
+                    "source": "data/neuralweb/factor_intelligence_state.json",
+                    "asof": str(fi_asof),
+                    "as_of_reason": "stale",
+                    "sla_days": _STALE_DAYS,
+                },
+            }
 
     # (4) no attributable driver — no_pathway.
     # RUL-CC-12 §4 deviation (ratified 2026-07-06): snap boolean lives in
