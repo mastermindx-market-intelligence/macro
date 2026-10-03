@@ -36,7 +36,7 @@ INTEGRATION_BASE_SHA = "5332d876e75837c158c6f42a2862734451bb7158"
 # 2026-10-02 wave 7 (same writer): MO-PAID-017 restamped PRODUCTION_PROOF (D49, served news.html == main),
 # MO-PAID-011 (O26 minors merged #8283 + receipt #8289, D36/D47) and MO-PAID-008 (O21 family landed, D46/D48)
 # restamped — states unchanged, all three are union rows, outside-union digest unchanged.
-OUTSIDE_UNION_SHA256 = "cb9c1bf581b30bbb75e9fa3fd1f7f953d01f313dff98601dddc45e37ba43ef3c"
+OUTSIDE_UNION_SHA256 = "3b8a93ce1ee08f64b3536df5a95e18861fc14fba4087cb436fd38c559a1df2a8"
 CAPABILITY_STATES = {"NOT_BUILT", "SPEC_ONLY", "PARTIAL", "BUILT_NOT_PROVEN", "PROVEN_LIVE"}
 
 UNION_ROWS = set([
@@ -277,7 +277,7 @@ EXPECTED = {
   ],
   "MO-DELTA-002": [
     "NEW_BOUNDED_BUILD",
-    "NOT_BUILT"
+    "PROVEN_LIVE"
   ],
   "MO-PAID-020": [
     "UPGRADE_EXISTING_OWNER",
@@ -353,7 +353,7 @@ EXPECTED = {
   ],
   "MO-PAID-059": [
     "NEW_BOUNDED_BUILD",
-    "PARTIAL"
+    "PROVEN_LIVE"
   ],
   "MO-PAID-060": [
     "UPGRADE_EXISTING_OWNER",
@@ -590,6 +590,52 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     assert briefs["capability_state_c2"] == "PARTIAL"
     assert "subscription intake only" in briefs["real_producer"]
     assert "cadence producer" in briefs["missing_contract_or_proof"]
+    # W8 (2026-10-03, D63): the producer exists but is DORMANT in production; the gap is
+    # activation authority + one natural delivery proof, never BUILD_NEW.
+    assert "DORMANT" in briefs["missing_contract_or_proof"]
+    assert "RECURRING_BRIEFS_ENABLE" in briefs["missing_contract_or_proof"]
+    assert "build_recurring_briefs.py" in briefs["real_producer"]
+    assert briefs["next_bounded_child"].startswith("ACTIVATION, not BUILD_NEW")
+
+    # W8 D61/D62/D64 (Sol 5966652470 rows 1-4): stale NOT_BUILT / "still open" premises removed.
+    screener = r["MO-DELTA-002"]
+    assert screener["capability_state_c2"] == "PROVEN_LIVE"
+    assert "research_screener.py" in screener["real_producer"]
+    assert "never a trade ranker" in screener["acceptance_test"]
+    for row_id in ("MO-DELTA-018", "MO-PAID-059"):
+        assert r[row_id]["capability_state_c2"] == "PROVEN_LIVE"
+        assert "stocks/AAPL.html" in r[row_id]["real_consumer"]
+        assert "SEPARATE capability" in r[row_id]["missing_contract_or_proof"]
+    thesis = r["MO-PAID-054"]
+    assert thesis["capability_state_c2"] == "PARTIAL"
+    assert "#577 is MERGED" in thesis["state_delta"]
+    assert "#577 OPEN" not in thesis["missing_contract_or_proof"]
+
+    # W8b D66-D71 (CEO B 5966674775; Sol 5966690034/5966717632/5966734154/5966757712/5966757713/5966776979/5966790439).
+    covenant = r["MO-PAID-062"]
+    assert covenant["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert "covenant_terms.py" in covenant["real_producer"]
+    assert "observations 0" in covenant["state_delta"]
+    assert "never a second covenant-text producer" in covenant["next_bounded_child"]
+    scenario = r["MO-PAID-026"]
+    assert scenario["capability_state_c2"] == "PROVEN_LIVE"
+    assert "valuation_scenario.py" in scenario["real_producer"]
+    assert "Cautious $98.23 / Base $140.57 / Upbeat $188.43" in scenario["state_delta"]
+    assert "MO-PAID-022/035" in scenario["missing_contract_or_proof"]
+    analog = r["MO-PAID-045"]
+    assert analog["capability_state_c2"] == "PARTIAL"
+    assert "analog_pit.py" in analog["real_producer"]
+    assert analog["next_bounded_child"].startswith("WAITING_DEPENDENCY")
+    assert "#7755" in r["MO-PAID-039"]["real_consumer"]
+    assert r["MO-PAID-039"]["missing_contract_or_proof"].startswith("PROOF-ONLY")
+    accuracy = r["MO-DELTA-007"]
+    assert accuracy["capability_state_c2"] == "PARTIAL"
+    assert "#554 7e15e50" in accuracy["state_delta"]
+    assert accuracy["missing_contract_or_proof"].startswith("ADVANCEMENT PATH + REAL-USER PROOF")
+    constructor = r["MO-DELTA-003"]
+    assert constructor["capability_state_c2"] == "PARTIAL"
+    assert "0023_portfolio_targets.sql" in constructor["real_producer"]
+    assert constructor["missing_contract_or_proof"].startswith("ROLE dimension only")
 
     f07 = r["MO-DELTA-017"]
     assert f07["capability_state_c2"] == "NOT_BUILT"

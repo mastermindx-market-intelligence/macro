@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.confluence_sequence.v1",
   "artifact_id": "confluence-sequence",
-  "asof": "2026-10-02",
+  "asof": "2026-10-03",
   "tier": "display",
   "is_context_only": true,
   "display_only": true,
@@ -311,8 +311,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-28",
-      "n_sessions_in_tape": 4,
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 5,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -2721,7 +2721,7 @@
       "strength_slope": 0.0,
       "state": "gone",
       "last_as_of": "2026-09-11",
-      "n_sessions_in_tape": 10,
+      "n_sessions_in_tape": 11,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -3579,7 +3579,7 @@
       "strength_slope": 0.0,
       "state": "gone",
       "last_as_of": "2026-09-30",
-      "n_sessions_in_tape": 19,
+      "n_sessions_in_tape": 20,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -4309,6 +4309,17 @@
       "n_independent_confirming_latest": 2.0
     },
     {
+      "subject": "C",
+      "direction": 1,
+      "horizon": "63.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-07-28",
+      "n_sessions_in_tape": 1,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
       "subject": "CHD",
       "direction": 1,
       "horizon": "5.0",
@@ -4489,10 +4500,10 @@
       "direction": 1,
       "horizon": "21.0",
       "persistence_streak": 0,
-      "strength_slope": null,
+      "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-07-28",
-      "n_sessions_in_tape": 1,
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 2,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -5393,8 +5404,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-28",
-      "n_sessions_in_tape": 6,
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 7,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -5446,10 +5457,10 @@
       "direction": -1,
       "horizon": "21.0",
       "persistence_streak": 0,
-      "strength_slope": null,
+      "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-02",
-      "n_sessions_in_tape": 1,
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 2,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -6075,8 +6086,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-24",
-      "n_sessions_in_tape": 7,
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 8,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -6955,8 +6966,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-28",
-      "n_sessions_in_tape": 9,
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 10,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -7065,8 +7076,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-26",
-      "n_sessions_in_tape": 6,
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 7,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -7316,11 +7327,11 @@
       "direction": -1,
       "horizon": "21.0",
       "persistence_streak": 0,
-      "strength_slope": 1.0,
+      "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-24",
-      "n_sessions_in_tape": 2,
-      "n_independent_confirming_latest": 3.0
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 3,
+      "n_independent_confirming_latest": 2.0
     },
     {
       "subject": "RTX",
@@ -7822,10 +7833,10 @@
       "direction": -1,
       "horizon": "21.0",
       "persistence_streak": 0,
-      "strength_slope": null,
+      "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-26",
-      "n_sessions_in_tape": 1,
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 2,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -7912,8 +7923,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-28",
-      "n_sessions_in_tape": 2,
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 3,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -7975,6 +7986,17 @@
       "subject": "BAH",
       "direction": -1,
       "horizon": "5.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 1,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
+      "subject": "BAH",
+      "direction": -1,
+      "horizon": "21.0",
       "persistence_streak": 0,
       "strength_slope": null,
       "state": "gone",
@@ -8049,6 +8071,17 @@
       "n_independent_confirming_latest": 2.0
     },
     {
+      "subject": "MA",
+      "direction": -1,
+      "horizon": "21.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 1,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
       "subject": "MKTX",
       "direction": -1,
       "horizon": "5.0",
@@ -8057,6 +8090,17 @@
       "state": "gone",
       "last_as_of": "2026-09-04",
       "n_sessions_in_tape": 2,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
+      "subject": "MKTX",
+      "direction": -1,
+      "horizon": "21.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 1,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -8517,24 +8561,24 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-10-01",
-      "n_sessions_in_tape": 28
+      "last_as_of": "2026-10-02",
+      "n_sessions_in_tape": 29
     },
     {
       "pair_id": "briefing-divergences",
-      "persistence_streak": 1,
+      "persistence_streak": 2,
       "strength_slope": 0.0,
       "state": "stable",
-      "last_as_of": "2026-10-02",
-      "n_sessions_in_tape": 55
+      "last_as_of": "2026-10-03",
+      "n_sessions_in_tape": 56
     },
     {
       "pair_id": "regime_vector-vs-risk_radar",
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-09-30",
-      "n_sessions_in_tape": 9
+      "last_as_of": "2026-10-01",
+      "n_sessions_in_tape": 10
     },
     {
       "pair_id": "regime-vs-market_state",
@@ -8557,13 +8601,13 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-09-30",
-      "n_sessions_in_tape": 2
+      "last_as_of": "2026-10-01",
+      "n_sessions_in_tape": 3
     }
   ],
-  "n_tape_rows": 2159,
+  "n_tape_rows": 2179,
   "gaps": [],
   "produced_by": "engine/neuralweb/confluence_sequence.py",
-  "produced_at": "2026-10-02T10:53:28Z",
+  "produced_at": "2026-10-03T09:13:41Z",
   "authority_check": []
 }

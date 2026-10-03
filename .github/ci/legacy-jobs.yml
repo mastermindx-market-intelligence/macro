@@ -980,6 +980,13 @@ jobs:
       # Unnamed suites never run in this manifest; leaving W6 off this line would
       # ship the ranking path dark.
       #
+      # TTI R1-A (2026-09-17) joins the SAME step: tests/test_tactical_research.py and
+      # tests/test_tactical_research_cli.py pin the registered corrected-history research
+      # primitives and offline consumer under Radar ownership. They are hermetic with
+      # caller-supplied/captured fixtures only, emit no live events, and add no dependency
+      # beyond pandas/numpy/pytest already installed by this job. Their CI ownership here
+      # is execution coverage only; it grants no rank/alert/size/trade authority.
+      #
       # W4.1 (2026-08-18/19, live-transport correction) joins the SAME step:
       # tests/test_entry_radar_w41_transport.py is the real-envelope contract
       # battery (entry_radar.events/v1 spool envelope -> W5's read_spool_events,
@@ -988,7 +995,7 @@ jobs:
       # guard). Hermetic: tmp_path spool files + synthetic packs, no data/, no
       # site/, no network. Unnamed suites never run in this manifest.
       - name: entry-radar W1+W2+W3+W4+W4.1+W5+W6 — probe universe, entry_event.v1 store, G0 parity, C1-C5 PIT battery, live pack + episode ledger + live evaluator, live-transport correction, W5 prereg gates + forward evidence, RP1 Research Priority
-        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py -q
+        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py -q
 
   session-anchor-era:
     # Absolute session-calendar anchor, both eras. The confluence 2D/3D + fortnight
@@ -5194,6 +5201,18 @@ jobs:
       # stdlib + pytest only (reads workflow/dag/builder text; imports no builder).
       - name: render-lane scope contract (flow_desk must stay express-wired)
         run: python -m pytest tests/test_render_flow_desk_scope.py -q
+      # PR #8320 (2026-10-03) — Asia ownership fence. Asia's broad `git add`
+      # stages (collect: `git add data/ site/qledger/`; engine: `git add data/
+      # site/`) can otherwise acquire the Options PIT episode / campaign-v2 files
+      # that the narrow Options publishers OWN. scripts/ci/options_signal_nightly.sh
+      # exclude-broad is bracketed around each broad `git add` so neither the
+      # collect nor the engine commit can smuggle an Options artifact onto the
+      # Asia lane. Belongs HERE (workflow-yaml) because the suite reads
+      # .github/workflows/asia-close.yml as text and asserts the surrounding
+      # structure, identical shape to test_render_intl_scope.py and friends.
+      # stdlib + pytest only (re, pathlib); no data/ or site/ reads.
+      - name: asia-close.yml asia ownership fence (Options PIT/campaign narrow roots must not enter broad staging)
+        run: python -m pytest tests/test_china_heatmap_freshness.py -q
       # Sparse session-worktree profile (policy R8). #5531 landed the suite
       # named by no run: step — the same class the unrun census now gates —
       # so pack-1 went red on every PR the moment it merged. It belongs HERE
@@ -13375,10 +13394,12 @@ jobs:
       - scripts/capture_hk_tier1_shell.py
       - site/assets/js/company-intelligence-dossier.js
       - templates/ticker.html.j2
+      - templates/international_macro.html.j2
       - tests/test_ticker_pages.py
       # MO-PAID-006 schema child (#8276): this job runs the dossier suite (step below), so the
       # exclusive scope must name the suite file itself.
       - tests/test_international_macro_dossier.py
+      - tests/test_international_macro_dossier_page.py
       # HK-H2 closure widening 2026-09-21 (contract-delta): the hub copy pass
       # import closure now reaches the marketing/intel/indicator modules below.
       - "engine/indicators_m2.py"
@@ -14390,6 +14411,8 @@ jobs:
       # above. Measured 15 passed in 1.1s on the lane host.
       - name: international macro country dossier (MO-PAID-006 schema child, #8276)
         run: python -m pytest tests/test_international_macro_dossier.py -q
+      - name: international macro dossier page child (MO-PAID-006 PAGE R1)
+        run: python -m pytest tests/test_international_macro_dossier_page.py -q
   prophet-us-b4-prereg-registration:
     # PROPHET US B4 entry-policy calibration PREREGISTRATION (R6 wave 1, seat ruling
     # R6-PREREG-01, PR #7823). tests/test_b4_entry_policy_calibration_prereg.py pins the

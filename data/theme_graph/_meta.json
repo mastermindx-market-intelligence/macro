@@ -1,5 +1,5 @@
 {
-  "belief_time": "2026-10-02",
+  "belief_time": "2026-10-03",
   "capability_counts": {
     "measurement_candidate": 505,
     "semantic_only": 138
@@ -12,7 +12,7 @@
       "symbol": "IBIT"
     }
   ],
-  "computed_at": "2026-10-02T08:55:03Z",
+  "computed_at": "2026-10-03T07:11:43Z",
   "counts": {
     "capability": 644,
     "edges": 24706,
