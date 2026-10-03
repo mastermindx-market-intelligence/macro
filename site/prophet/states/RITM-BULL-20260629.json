@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "RITM-BULL-20260629",
-  "asof": "2026-10-01",
+  "asof": "2026-10-02",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
-  "management_confidence": 34.5,
-  "raw_confidence": 33.3,
-  "delta_vs_base": -25.5,
+  "management_confidence": 32.4,
+  "raw_confidence": 32.0,
+  "delta_vs_base": -27.6,
   "recommended_action": "trim",
   "human_state": "Deep Giveback \u2014 Reassess",
   "components": {
-    "validity": 74.0,
+    "validity": 47.4,
     "progress": 32.8,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.8,
+    "dist_to_stop_r": 0.575,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 191.1,
-    "p1": -0.1333,
-    "p2": -0.0667,
+    "horizon_pct_used": 193.3,
+    "p1": -0.2833,
+    "p2": -0.1417,
     "p3": null,
-    "move_r": -0.2,
+    "move_r": -0.425,
     "mfe_r": 1.613,
-    "mae_r": -0.2
+    "mae_r": -0.425
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.290000114440918,
-  "_mae": -0.1599996948242186,
+  "_mae": -0.33999999999999986,
   "_max_p1": 1.0750000953674324,
   "_first_trigger_ts": "2026-08-08",
   "_first_t1_ts": "2026-08-13",
   "_first_t2_ts": null,
-  "days_elapsed": 86,
-  "tau": 1.9111
+  "days_elapsed": 87,
+  "tau": 1.9333
 }

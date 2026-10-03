@@ -1,218 +1,218 @@
 {
-  "last_run": "2026-10-02T16:39:55.459287+00:00",
+  "last_run": "2026-10-03T04:06:10.818267+00:00",
   "sources": {
     "cot": {
       "source": "cot",
       "status": "ok",
       "rows": 30,
-      "last_date": "2026-09-22",
+      "last_date": "2026-09-29",
       "error": null,
       "notes": [
-        "frozen tail: cot_natgas last=2022-02-01 age=1704d",
-        "frozen tail: cot_heating_oil last=2013-11-05 age=4714d"
+        "frozen tail: cot_natgas last=2022-02-01 age=1705d",
+        "frozen tail: cot_heating_oil last=2013-11-05 age=4715d"
       ],
       "probed_at": null,
-      "elapsed_sec": 22.6,
-      "checked_at": "2026-10-02T03:05:53.022009+00:00"
+      "elapsed_sec": 27.2,
+      "checked_at": "2026-10-03T04:06:10.819390+00:00"
     },
     "fred": {
       "source": "fred",
       "status": "ok",
-      "rows": 681561,
+      "rows": 681611,
       "last_date": "2029-01-01",
       "error": null,
       "notes": [
-        "frozen tail: CSUSHPISA last=2026-07-01 age=93d",
-        "frozen tail: HOUST last=2026-08-01 age=62d",
-        "frozen tail: M2SL last=2026-08-01 age=62d",
-        "frozen tail: JPNASSETS last=2026-08-01 age=62d",
-        "frozen tail: PAYEMS last=2026-08-01 age=62d",
-        "frozen tail: INDPRO last=2026-08-01 age=62d",
-        "frozen tail: SAHMREALTIME last=2026-08-01 age=62d",
-        "frozen tail: RECPROUSM156N last=2026-08-01 age=62d",
-        "frozen tail: GDPNOW last=2026-07-01 age=93d",
-        "frozen tail: STICKCPIM157SFRBATL last=2026-08-01 age=62d",
-        "frozen tail: CORESTICKM157SFRBATL last=2026-08-01 age=62d",
-        "frozen tail: FLEXCPIM157SFRBATL last=2026-08-01 age=62d",
-        "frozen tail: MEDCPIM158SFRBCLE last=2026-08-01 age=62d",
-        "frozen tail: CPIAUCSL last=2026-08-01 age=62d",
-        "frozen tail: CPILFESL last=2026-08-01 age=62d",
-        "frozen tail: PCEPI last=2026-08-01 age=62d",
-        "frozen tail: PCEPILFE last=2026-08-01 age=62d",
-        "frozen tail: PPIFIS last=2026-08-01 age=62d",
-        "frozen tail: PPIFES last=2026-08-01 age=62d",
-        "frozen tail: ECIALLCIV last=2026-04-01 age=184d",
-        "frozen tail: ECIWAG last=2026-04-01 age=184d",
-        "frozen tail: CUSR0000SASLE last=2026-08-01 age=62d",
-        "frozen tail: CUSR0000SAH1 last=2026-08-01 age=62d",
-        "frozen tail: CUSR0000SAF11 last=2026-08-01 age=62d",
-        "frozen tail: CUUR0000SAG1 last=2026-08-01 age=62d",
-        "frozen tail: CUSR0000SACL1E last=2026-08-01 age=62d",
-        "frozen tail: EXPINF1YR last=2026-09-01 age=31d",
-        "frozen tail: EXPINF5YR last=2026-09-01 age=31d",
-        "frozen tail: EXPINF10YR last=2026-09-01 age=31d",
-        "frozen tail: UMCSENT last=2026-08-01 age=62d",
-        "frozen tail: MICH last=2026-08-01 age=62d",
-        "frozen tail: AWHMAN last=2026-08-01 age=62d",
-        "frozen tail: PERMIT last=2026-08-01 age=62d",
-        "frozen tail: NEWORDER last=2026-08-01 age=62d",
-        "frozen tail: W875RX1 last=2026-08-01 age=62d",
-        "frozen tail: CMRMTSPL last=2026-07-01 age=93d",
-        "frozen tail: UEMPMEAN last=2026-08-01 age=62d",
-        "frozen tail: ISRATIO last=2026-07-01 age=93d",
-        "frozen tail: BUSLOANS last=2026-08-01 age=62d",
-        "frozen tail: MPRIME last=2026-09-01 age=31d",
-        "frozen tail: CUSR0000SAS last=2026-08-01 age=62d",
-        "frozen tail: USREC last=2026-09-01 age=31d",
-        "frozen tail: IRSTCI01JPM156N last=2026-08-01 age=62d",
-        "frozen tail: IR3TIB01AUM156N last=2026-08-01 age=62d",
-        "frozen tail: IR3TIB01GBM156N last=2026-01-01 age=274d",
-        "frozen tail: IR3TIB01CAM156N last=2026-08-01 age=62d",
-        "frozen tail: IR3TIB01CHM156N last=2026-08-01 age=62d",
-        "frozen tail: IRLTLT01EZM156N last=2026-01-01 age=274d",
-        "frozen tail: IRLTLT01JPM156N last=2026-08-01 age=62d",
-        "frozen tail: IRLTLT01GBM156N last=2026-08-01 age=62d",
-        "frozen tail: IRLTLT01AUM156N last=2026-08-01 age=62d",
-        "frozen tail: IRLTLT01CAM156N last=2026-08-01 age=62d",
-        "frozen tail: IRLTLT01CHM156N last=2026-08-01 age=62d",
-        "frozen tail: RBUSBIS last=2026-07-01 age=93d",
-        "frozen tail: RBXMBIS last=2026-07-01 age=93d",
-        "frozen tail: RBJPBIS last=2026-07-01 age=93d",
-        "frozen tail: RBGBBIS last=2026-07-01 age=93d",
-        "frozen tail: RBAUBIS last=2026-07-01 age=93d",
-        "frozen tail: RBCABIS last=2026-07-01 age=93d",
-        "frozen tail: RBCHBIS last=2026-07-01 age=93d",
-        "frozen tail: RBMXBIS last=2026-07-01 age=93d",
-        "frozen tail: RBBRBIS last=2026-07-01 age=93d",
-        "frozen tail: RBCNBIS last=2026-07-01 age=93d",
-        "frozen tail: TCU last=2026-08-01 age=62d",
-        "frozen tail: MCUMFN last=2026-08-01 age=62d",
-        "frozen tail: CAPUTLG3344S last=2026-08-01 age=62d",
-        "frozen tail: CAPUTLG334S last=2026-08-01 age=62d",
-        "frozen tail: CAPUTLG331S last=2026-08-01 age=62d",
-        "frozen tail: CAPUTLG211S last=2026-08-01 age=62d",
-        "frozen tail: IPG3344S last=2026-08-01 age=62d",
-        "frozen tail: CAPG3344S last=2026-08-01 age=62d",
-        "frozen tail: MNFCTRIRSA last=2026-07-01 age=93d",
-        "frozen tail: AMTMUO last=2026-07-01 age=93d",
-        "frozen tail: AMTMVS last=2026-07-01 age=93d",
-        "frozen tail: DGORDER last=2026-08-01 age=62d",
-        "frozen tail: PCU334413334413 last=2026-08-01 age=62d",
-        "frozen tail: PCU331110331110 last=2026-08-01 age=62d",
-        "frozen tail: DTCISA156MSFRBPHI last=2026-09-01 age=31d",
-        "frozen tail: DTMUAMFRBDAL last=2026-09-01 age=31d",
-        "frozen tail: PFGIUAMFRBDAL last=2026-09-01 age=31d",
-        "frozen tail: IPG2211S last=2026-08-01 age=62d",
-        "frozen tail: IPG2211A2N last=2026-08-01 age=62d",
-        "frozen tail: IPUTIL last=2026-08-01 age=62d",
-        "frozen tail: CAPUTLG2211S last=2026-08-01 age=62d",
-        "frozen tail: CAPUTLG2211A2S last=2026-08-01 age=62d",
-        "frozen tail: WPU0543 last=2026-08-01 age=62d",
-        "frozen tail: PCU221122221122 last=2026-08-01 age=62d",
-        "frozen tail: APU000072610 last=2026-08-01 age=62d",
-        "frozen tail: JTSJOL last=2026-08-01 age=62d",
-        "frozen tail: ADPMNUSNERSA last=2026-09-01 age=31d",
-        "frozen tail: UNRATE last=2026-08-01 age=62d",
-        "frozen tail: RSAFS last=2026-08-01 age=62d",
-        "frozen tail: USPRIV last=2026-08-01 age=62d",
-        "frozen tail: USGOVT last=2026-08-01 age=62d",
-        "frozen tail: CES0500000003 last=2026-08-01 age=62d",
-        "frozen tail: AWHAETP last=2026-08-01 age=62d",
-        "frozen tail: TRMMEANCPIM158SFRBCLE last=2026-08-01 age=62d",
-        "frozen tail: JTSQUR last=2026-08-01 age=62d",
-        "frozen tail: TOTALSL last=2026-07-01 age=93d",
-        "frozen tail: REVOLSL last=2026-07-01 age=93d",
-        "frozen tail: NONREVSL last=2026-07-01 age=93d",
-        "frozen tail: PSAVERT last=2026-08-01 age=62d",
-        "frozen tail: DSPIC96 last=2026-08-01 age=62d",
-        "frozen tail: DRCCLACBS last=2026-04-01 age=184d",
-        "frozen tail: DRSFRMACBS last=2026-04-01 age=184d",
-        "frozen tail: BOPGSTB last=2026-07-01 age=93d",
-        "frozen tail: BOPTEXP last=2026-07-01 age=93d",
-        "frozen tail: BOPTIMP last=2026-07-01 age=93d",
-        "frozen tail: IR last=2026-08-01 age=62d",
-        "frozen tail: IQ last=2026-08-01 age=62d"
+        "frozen tail: CSUSHPISA last=2026-07-01 age=94d",
+        "frozen tail: HOUST last=2026-08-01 age=63d",
+        "frozen tail: M2SL last=2026-08-01 age=63d",
+        "frozen tail: JPNASSETS last=2026-08-01 age=63d",
+        "frozen tail: PAYEMS last=2026-09-01 age=32d",
+        "frozen tail: INDPRO last=2026-08-01 age=63d",
+        "frozen tail: SAHMREALTIME last=2026-09-01 age=32d",
+        "frozen tail: RECPROUSM156N last=2026-08-01 age=63d",
+        "frozen tail: GDPNOW last=2026-07-01 age=94d",
+        "frozen tail: STICKCPIM157SFRBATL last=2026-08-01 age=63d",
+        "frozen tail: CORESTICKM157SFRBATL last=2026-08-01 age=63d",
+        "frozen tail: FLEXCPIM157SFRBATL last=2026-08-01 age=63d",
+        "frozen tail: MEDCPIM158SFRBCLE last=2026-08-01 age=63d",
+        "frozen tail: CPIAUCSL last=2026-08-01 age=63d",
+        "frozen tail: CPILFESL last=2026-08-01 age=63d",
+        "frozen tail: PCEPI last=2026-08-01 age=63d",
+        "frozen tail: PCEPILFE last=2026-08-01 age=63d",
+        "frozen tail: PPIFIS last=2026-08-01 age=63d",
+        "frozen tail: PPIFES last=2026-08-01 age=63d",
+        "frozen tail: ECIALLCIV last=2026-04-01 age=185d",
+        "frozen tail: ECIWAG last=2026-04-01 age=185d",
+        "frozen tail: CUSR0000SASLE last=2026-08-01 age=63d",
+        "frozen tail: CUSR0000SAH1 last=2026-08-01 age=63d",
+        "frozen tail: CUSR0000SAF11 last=2026-08-01 age=63d",
+        "frozen tail: CUUR0000SAG1 last=2026-08-01 age=63d",
+        "frozen tail: CUSR0000SACL1E last=2026-08-01 age=63d",
+        "frozen tail: EXPINF1YR last=2026-09-01 age=32d",
+        "frozen tail: EXPINF5YR last=2026-09-01 age=32d",
+        "frozen tail: EXPINF10YR last=2026-09-01 age=32d",
+        "frozen tail: UMCSENT last=2026-08-01 age=63d",
+        "frozen tail: MICH last=2026-08-01 age=63d",
+        "frozen tail: AWHMAN last=2026-09-01 age=32d",
+        "frozen tail: PERMIT last=2026-08-01 age=63d",
+        "frozen tail: NEWORDER last=2026-08-01 age=63d",
+        "frozen tail: W875RX1 last=2026-08-01 age=63d",
+        "frozen tail: CMRMTSPL last=2026-07-01 age=94d",
+        "frozen tail: UEMPMEAN last=2026-09-01 age=32d",
+        "frozen tail: ISRATIO last=2026-07-01 age=94d",
+        "frozen tail: BUSLOANS last=2026-08-01 age=63d",
+        "frozen tail: MPRIME last=2026-09-01 age=32d",
+        "frozen tail: CUSR0000SAS last=2026-08-01 age=63d",
+        "frozen tail: USREC last=2026-09-01 age=32d",
+        "frozen tail: IRSTCI01JPM156N last=2026-08-01 age=63d",
+        "frozen tail: IR3TIB01AUM156N last=2026-08-01 age=63d",
+        "frozen tail: IR3TIB01GBM156N last=2026-01-01 age=275d",
+        "frozen tail: IR3TIB01CAM156N last=2026-08-01 age=63d",
+        "frozen tail: IR3TIB01CHM156N last=2026-08-01 age=63d",
+        "frozen tail: IRLTLT01EZM156N last=2026-01-01 age=275d",
+        "frozen tail: IRLTLT01JPM156N last=2026-08-01 age=63d",
+        "frozen tail: IRLTLT01GBM156N last=2026-08-01 age=63d",
+        "frozen tail: IRLTLT01AUM156N last=2026-08-01 age=63d",
+        "frozen tail: IRLTLT01CAM156N last=2026-08-01 age=63d",
+        "frozen tail: IRLTLT01CHM156N last=2026-08-01 age=63d",
+        "frozen tail: RBUSBIS last=2026-07-01 age=94d",
+        "frozen tail: RBXMBIS last=2026-07-01 age=94d",
+        "frozen tail: RBJPBIS last=2026-07-01 age=94d",
+        "frozen tail: RBGBBIS last=2026-07-01 age=94d",
+        "frozen tail: RBAUBIS last=2026-07-01 age=94d",
+        "frozen tail: RBCABIS last=2026-07-01 age=94d",
+        "frozen tail: RBCHBIS last=2026-07-01 age=94d",
+        "frozen tail: RBMXBIS last=2026-07-01 age=94d",
+        "frozen tail: RBBRBIS last=2026-07-01 age=94d",
+        "frozen tail: RBCNBIS last=2026-07-01 age=94d",
+        "frozen tail: TCU last=2026-08-01 age=63d",
+        "frozen tail: MCUMFN last=2026-08-01 age=63d",
+        "frozen tail: CAPUTLG3344S last=2026-08-01 age=63d",
+        "frozen tail: CAPUTLG334S last=2026-08-01 age=63d",
+        "frozen tail: CAPUTLG331S last=2026-08-01 age=63d",
+        "frozen tail: CAPUTLG211S last=2026-08-01 age=63d",
+        "frozen tail: IPG3344S last=2026-08-01 age=63d",
+        "frozen tail: CAPG3344S last=2026-08-01 age=63d",
+        "frozen tail: MNFCTRIRSA last=2026-07-01 age=94d",
+        "frozen tail: AMTMUO last=2026-08-01 age=63d",
+        "frozen tail: AMTMVS last=2026-08-01 age=63d",
+        "frozen tail: DGORDER last=2026-08-01 age=63d",
+        "frozen tail: PCU334413334413 last=2026-08-01 age=63d",
+        "frozen tail: PCU331110331110 last=2026-08-01 age=63d",
+        "frozen tail: DTCISA156MSFRBPHI last=2026-09-01 age=32d",
+        "frozen tail: DTMUAMFRBDAL last=2026-09-01 age=32d",
+        "frozen tail: PFGIUAMFRBDAL last=2026-09-01 age=32d",
+        "frozen tail: IPG2211S last=2026-08-01 age=63d",
+        "frozen tail: IPG2211A2N last=2026-08-01 age=63d",
+        "frozen tail: IPUTIL last=2026-08-01 age=63d",
+        "frozen tail: CAPUTLG2211S last=2026-08-01 age=63d",
+        "frozen tail: CAPUTLG2211A2S last=2026-08-01 age=63d",
+        "frozen tail: WPU0543 last=2026-08-01 age=63d",
+        "frozen tail: PCU221122221122 last=2026-08-01 age=63d",
+        "frozen tail: APU000072610 last=2026-08-01 age=63d",
+        "frozen tail: JTSJOL last=2026-08-01 age=63d",
+        "frozen tail: ADPMNUSNERSA last=2026-09-01 age=32d",
+        "frozen tail: UNRATE last=2026-09-01 age=32d",
+        "frozen tail: RSAFS last=2026-08-01 age=63d",
+        "frozen tail: USPRIV last=2026-09-01 age=32d",
+        "frozen tail: USGOVT last=2026-09-01 age=32d",
+        "frozen tail: CES0500000003 last=2026-09-01 age=32d",
+        "frozen tail: AWHAETP last=2026-09-01 age=32d",
+        "frozen tail: TRMMEANCPIM158SFRBCLE last=2026-08-01 age=63d",
+        "frozen tail: JTSQUR last=2026-08-01 age=63d",
+        "frozen tail: TOTALSL last=2026-07-01 age=94d",
+        "frozen tail: REVOLSL last=2026-07-01 age=94d",
+        "frozen tail: NONREVSL last=2026-07-01 age=94d",
+        "frozen tail: PSAVERT last=2026-08-01 age=63d",
+        "frozen tail: DSPIC96 last=2026-08-01 age=63d",
+        "frozen tail: DRCCLACBS last=2026-04-01 age=185d",
+        "frozen tail: DRSFRMACBS last=2026-04-01 age=185d",
+        "frozen tail: BOPGSTB last=2026-07-01 age=94d",
+        "frozen tail: BOPTEXP last=2026-07-01 age=94d",
+        "frozen tail: BOPTIMP last=2026-07-01 age=94d",
+        "frozen tail: IR last=2026-08-01 age=63d",
+        "frozen tail: IQ last=2026-08-01 age=63d"
       ],
       "probed_at": null,
-      "elapsed_sec": 138.6,
-      "checked_at": "2026-10-02T03:05:53.021229+00:00"
+      "elapsed_sec": 129.4,
+      "checked_at": "2026-10-03T04:06:10.818363+00:00"
     },
     "yahoo": {
       "source": "yahoo",
       "status": "ok",
-      "rows": 168712,
-      "last_date": "2026-10-02",
+      "rows": 164979,
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 46.9,
-      "checked_at": "2026-10-02T03:05:53.021249+00:00"
+      "elapsed_sec": 63.8,
+      "checked_at": "2026-10-03T04:06:10.818387+00:00"
     },
     "treasury": {
       "source": "treasury",
       "status": "ok",
-      "rows": 22,
-      "last_date": "2026-09-30",
+      "rows": 23,
+      "last_date": "2026-10-01",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 2.6,
-      "checked_at": "2026-10-02T03:05:53.021262+00:00"
+      "elapsed_sec": 2.8,
+      "checked_at": "2026-10-03T04:06:10.818403+00:00"
     },
     "nyfed": {
       "source": "nyfed",
       "status": "ok",
       "rows": 1285,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 5.7,
-      "checked_at": "2026-10-02T03:05:53.021273+00:00"
+      "elapsed_sec": 8.8,
+      "checked_at": "2026-10-03T04:06:10.818416+00:00"
     },
     "breadth": {
       "source": "breadth",
       "status": "ok",
-      "rows": 677,
+      "rows": 678,
       "last_date": "2026-10-01",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 30.6,
-      "checked_at": "2026-10-02T03:05:53.021283+00:00"
+      "elapsed_sec": 47.3,
+      "checked_at": "2026-10-03T04:06:10.818429+00:00"
     },
     "cboe_putcall": {
       "source": "cboe_putcall",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 6.5,
-      "checked_at": "2026-10-02T03:05:53.021323+00:00"
+      "elapsed_sec": 6.7,
+      "checked_at": "2026-10-03T04:06:10.818478+00:00"
     },
     "cboe_gex": {
       "source": "cboe_gex",
       "status": "ok",
       "rows": 11,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 15.3,
-      "checked_at": "2026-10-02T03:05:53.021332+00:00"
+      "elapsed_sec": 15.2,
+      "checked_at": "2026-10-03T04:06:10.818489+00:00"
     },
     "sentiment_naaim": {
       "source": "sentiment_naaim",
-      "status": "dead",
+      "status": "failed",
       "rows": 0,
       "last_date": null,
-      "error": "circuit open (47 consecutive failures)",
+      "error": "ValueError: NAAIM since-inception workbook link not found on page",
       "notes": [],
-      "probed_at": null,
-      "elapsed_sec": 0.0,
-      "checked_at": "2026-10-02T03:05:53.021430+00:00"
+      "probed_at": "2026-10-03T01:35:48.880157+00:00",
+      "elapsed_sec": 0.6,
+      "checked_at": "2026-10-03T04:06:10.818616+00:00"
     },
     "sentiment_aaii": {
       "source": "sentiment_aaii",
@@ -222,142 +222,142 @@
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 0.8,
-      "checked_at": "2026-10-02T03:05:53.021439+00:00"
+      "elapsed_sec": 0.9,
+      "checked_at": "2026-10-03T04:06:10.818627+00:00"
     },
     "sector_flows": {
       "source": "sector_flows",
       "status": "ok",
       "rows": 11,
-      "last_date": "2026-09-30",
-      "error": null,
-      "notes": [],
-      "probed_at": null,
-      "elapsed_sec": 1.1,
-      "checked_at": "2026-10-02T03:05:53.021458+00:00"
-    },
-    "holdings": {
-      "source": "holdings",
-      "status": "ok",
-      "rows": 1,
-      "last_date": "2026-10-01",
-      "error": null,
-      "notes": [],
-      "probed_at": null,
-      "elapsed_sec": 1.5,
-      "checked_at": "2026-10-02T03:05:53.021477+00:00"
-    },
-    "fundamentals": {
-      "source": "fundamentals",
-      "status": "failed",
-      "rows": 0,
-      "last_date": null,
-      "error": "ValueError: fundamentals/sector_estimates: all-NaN after cleaning",
-      "notes": [],
-      "probed_at": null,
-      "elapsed_sec": 11.2,
-      "checked_at": "2026-10-02T03:05:53.021532+00:00"
-    },
-    "coinmetrics": {
-      "source": "coinmetrics",
-      "status": "ok",
-      "rows": 64,
       "last_date": "2026-10-01",
       "error": null,
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 0.8,
-      "checked_at": "2026-10-02T03:05:53.021834+00:00"
+      "checked_at": "2026-10-03T04:06:10.818651+00:00"
     },
-    "okx": {
-      "source": "okx",
-      "status": "ok",
-      "rows": 637,
-      "last_date": "2026-10-02",
-      "error": null,
-      "notes": [],
-      "probed_at": null,
-      "elapsed_sec": 3.4,
-      "checked_at": "2026-10-02T03:05:53.021862+00:00"
-    },
-    "deribit": {
-      "source": "deribit",
-      "status": "ok",
-      "rows": 5,
-      "last_date": "2026-10-02",
-      "error": null,
-      "notes": [],
-      "probed_at": null,
-      "elapsed_sec": 2.0,
-      "checked_at": "2026-10-02T03:05:53.021878+00:00"
-    },
-    "feargreed": {
-      "source": "feargreed",
-      "status": "ok",
-      "rows": 3162,
-      "last_date": "2026-10-02",
-      "error": null,
-      "notes": [],
-      "probed_at": null,
-      "elapsed_sec": 0.9,
-      "checked_at": "2026-10-02T03:05:53.021886+00:00"
-    },
-    "coingecko": {
-      "source": "coingecko",
+    "holdings": {
+      "source": "holdings",
       "status": "ok",
       "rows": 1,
       "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 0.6,
-      "checked_at": "2026-10-02T03:05:53.021899+00:00"
+      "elapsed_sec": 1.5,
+      "checked_at": "2026-10-03T04:06:10.818674+00:00"
     },
-    "defillama": {
-      "source": "defillama",
+    "fundamentals": {
+      "source": "fundamentals",
       "status": "ok",
-      "rows": 5326,
+      "rows": 5834,
       "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 3.2,
-      "checked_at": "2026-10-02T03:05:53.021917+00:00"
+      "elapsed_sec": 5.7,
+      "checked_at": "2026-10-03T04:06:10.818745+00:00"
+    },
+    "coinmetrics": {
+      "source": "coinmetrics",
+      "status": "ok",
+      "rows": 65,
+      "last_date": "2026-10-02",
+      "error": null,
+      "notes": [],
+      "probed_at": null,
+      "elapsed_sec": 0.6,
+      "checked_at": "2026-10-03T04:06:10.819158+00:00"
+    },
+    "okx": {
+      "source": "okx",
+      "status": "ok",
+      "rows": 636,
+      "last_date": "2026-10-03",
+      "error": null,
+      "notes": [],
+      "probed_at": null,
+      "elapsed_sec": 3.5,
+      "checked_at": "2026-10-03T04:06:10.819207+00:00"
+    },
+    "deribit": {
+      "source": "deribit",
+      "status": "ok",
+      "rows": 6,
+      "last_date": "2026-10-03",
+      "error": null,
+      "notes": [],
+      "probed_at": null,
+      "elapsed_sec": 1.9,
+      "checked_at": "2026-10-03T04:06:10.819219+00:00"
+    },
+    "feargreed": {
+      "source": "feargreed",
+      "status": "ok",
+      "rows": 3163,
+      "last_date": "2026-10-03",
+      "error": null,
+      "notes": [],
+      "probed_at": null,
+      "elapsed_sec": 0.8,
+      "checked_at": "2026-10-03T04:06:10.819231+00:00"
+    },
+    "coingecko": {
+      "source": "coingecko",
+      "status": "ok",
+      "rows": 1,
+      "last_date": "2026-10-03",
+      "error": null,
+      "notes": [],
+      "probed_at": null,
+      "elapsed_sec": 0.7,
+      "checked_at": "2026-10-03T04:06:10.819242+00:00"
+    },
+    "defillama": {
+      "source": "defillama",
+      "status": "ok",
+      "rows": 5329,
+      "last_date": "2026-10-03",
+      "error": null,
+      "notes": [],
+      "probed_at": null,
+      "elapsed_sec": 3.3,
+      "checked_at": "2026-10-03T04:06:10.819267+00:00"
     },
     "mempool": {
       "source": "mempool",
       "status": "ok",
       "rows": 33,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [
-        "frozen tail: difficulty last=2026-09-19 age=13d"
+        "frozen tail: difficulty last=2026-09-19 age=14d"
       ],
       "probed_at": null,
-      "elapsed_sec": 1.1,
-      "checked_at": "2026-10-02T03:05:53.021927+00:00"
+      "elapsed_sec": 1.2,
+      "checked_at": "2026-10-03T04:06:10.819279+00:00"
     },
     "bgeo": {
       "source": "bgeo",
       "status": "ok",
-      "rows": 17,
-      "last_date": "2026-10-01",
-      "error": null,
-      "notes": [],
-      "probed_at": null,
-      "elapsed_sec": 19.6,
-      "checked_at": "2026-10-02T03:05:53.021843+00:00"
-    },
-    "coinbase": {
-      "source": "coinbase",
-      "status": "ok",
-      "rows": 32,
+      "rows": 22,
       "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 3.3,
-      "checked_at": "2026-10-02T03:05:53.021853+00:00"
+      "elapsed_sec": 19.7,
+      "checked_at": "2026-10-03T04:06:10.819177+00:00"
+    },
+    "coinbase": {
+      "source": "coinbase",
+      "status": "ok",
+      "rows": 40,
+      "last_date": "2026-10-03",
+      "error": null,
+      "notes": [],
+      "probed_at": null,
+      "elapsed_sec": 3.5,
+      "checked_at": "2026-10-03T04:06:10.819196+00:00"
     },
     "china_macro": {
       "source": "china_macro",
@@ -419,59 +419,59 @@
     "smallcap_breadth": {
       "source": "smallcap_breadth",
       "status": "ok",
-      "rows": 1455,
+      "rows": 1454,
       "last_date": "2026-10-01",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 35.3,
-      "checked_at": "2026-10-02T03:05:53.021293+00:00"
+      "elapsed_sec": 50.8,
+      "checked_at": "2026-10-03T04:06:10.818441+00:00"
     },
     "etf_holdings": {
       "source": "etf_holdings",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 171.5,
-      "checked_at": "2026-10-02T03:05:53.021486+00:00"
+      "elapsed_sec": 163.6,
+      "checked_at": "2026-10-03T04:06:10.818686+00:00"
     },
     "sector_holdings": {
       "source": "sector_holdings",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 14.5,
-      "checked_at": "2026-10-02T03:05:53.021514+00:00"
+      "elapsed_sec": 14.7,
+      "checked_at": "2026-10-03T04:06:10.818721+00:00"
     },
     "stock_prices": {
       "source": "stock_prices",
       "status": "ok",
-      "rows": 4921,
-      "last_date": "2026-09-30",
+      "rows": 46117,
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [
-        "frozen tail: EA last=2026-08-04 age=59d"
+        "frozen tail: EA last=2026-08-04 age=60d"
       ],
       "probed_at": null,
-      "elapsed_sec": 15.3,
-      "checked_at": "2026-10-02T03:05:53.021523+00:00"
+      "elapsed_sec": 16.3,
+      "checked_at": "2026-10-03T04:06:10.818733+00:00"
     },
     "stock_fundamentals": {
       "source": "stock_fundamentals",
-      "status": "failed",
-      "rows": 0,
-      "last_date": null,
-      "error": "ValueError: stock_fundamentals/snapshots: all-NaN after cleaning",
+      "status": "ok",
+      "rows": 1,
+      "last_date": "2026-10-02",
+      "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 263.0,
-      "checked_at": "2026-10-02T03:05:53.021542+00:00"
+      "elapsed_sec": 158.0,
+      "checked_at": "2026-10-03T04:06:10.818757+00:00"
     },
     "china_universe": {
       "source": "china_universe",
@@ -488,23 +488,23 @@
       "source": "midcap_breadth",
       "status": "ok",
       "rows": 1454,
-      "last_date": "2026-09-30",
+      "last_date": "2026-10-01",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 22.3,
-      "checked_at": "2026-10-02T03:05:53.021303+00:00"
+      "elapsed_sec": 32.4,
+      "checked_at": "2026-10-03T04:06:10.818453+00:00"
     },
     "cboe_skew": {
       "source": "cboe_skew",
       "status": "ok",
-      "rows": 9238,
-      "last_date": "2026-09-30",
+      "rows": 9240,
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 0.9,
-      "checked_at": "2026-10-02T03:05:53.021341+00:00"
+      "elapsed_sec": 1.1,
+      "checked_at": "2026-10-03T04:06:10.818501+00:00"
     },
     "fedboard_ebp": {
       "source": "fedboard_ebp",
@@ -513,11 +513,11 @@
       "last_date": "2026-07-01",
       "error": null,
       "notes": [
-        "frozen tail: ebp last=2025-09-01 age=396d"
+        "frozen tail: ebp last=2025-09-01 age=397d"
       ],
       "probed_at": null,
-      "elapsed_sec": 0.7,
-      "checked_at": "2026-10-02T03:05:53.021382+00:00"
+      "elapsed_sec": 0.8,
+      "checked_at": "2026-10-03T04:06:10.818557+00:00"
     },
     "eia": {
       "source": "eia",
@@ -527,8 +527,8 @@
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 129.1,
-      "checked_at": "2026-10-02T03:05:53.022037+00:00"
+      "elapsed_sec": 129.9,
+      "checked_at": "2026-10-03T04:06:10.819425+00:00"
     },
     "china_margin": {
       "source": "china_margin",
@@ -589,26 +589,23 @@
       "source": "cboe_vix_futures",
       "status": "ok",
       "rows": 12,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 7.7,
-      "checked_at": "2026-10-02T03:05:53.021372+00:00"
+      "elapsed_sec": 8.8,
+      "checked_at": "2026-10-03T04:06:10.818544+00:00"
     },
     "sovereign": {
       "source": "sovereign",
       "status": "ok",
-      "rows": 39784,
-      "last_date": "2026-09-30",
+      "rows": 39825,
+      "last_date": "2026-10-01",
       "error": null,
-      "notes": [
-        "frozen tail: jgb_2y last=2026-08-31 age=32d",
-        "frozen tail: jgb_10y last=2026-08-31 age=32d"
-      ],
+      "notes": [],
       "probed_at": null,
-      "elapsed_sec": 10.5,
-      "checked_at": "2026-10-02T03:05:53.021392+00:00"
+      "elapsed_sec": 11.9,
+      "checked_at": "2026-10-03T04:06:10.818569+00:00"
     },
     "frbsf_sentiment": {
       "source": "frbsf_sentiment",
@@ -619,7 +616,7 @@
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 1.1,
-      "checked_at": "2026-10-02T03:05:53.022019+00:00"
+      "checked_at": "2026-10-03T04:06:10.819401+00:00"
     },
     "french": {
       "source": "french",
@@ -629,74 +626,74 @@
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 2.6,
-      "checked_at": "2026-10-02T03:05:53.022029+00:00"
+      "elapsed_sec": 2.4,
+      "checked_at": "2026-10-03T04:06:10.819413+00:00"
     },
     "edgar_13f": {
       "source": "edgar_13f",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 29.9,
-      "checked_at": "2026-10-02T03:05:53.022081+00:00"
+      "elapsed_sec": 32.2,
+      "checked_at": "2026-10-03T04:06:10.819482+00:00"
     },
     "ofr_fsi": {
       "source": "ofr_fsi",
       "status": "ok",
-      "rows": 60921,
-      "last_date": "2026-09-29",
+      "rows": 60930,
+      "last_date": "2026-09-30",
       "error": null,
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 0.9,
-      "checked_at": "2026-10-02T03:05:53.021411+00:00"
+      "checked_at": "2026-10-03T04:06:10.818593+00:00"
     },
     "rate_futures": {
       "source": "rate_futures",
       "status": "ok",
       "rows": 66,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 5.1,
-      "checked_at": "2026-10-02T03:05:53.021420+00:00"
+      "elapsed_sec": 5.9,
+      "checked_at": "2026-10-03T04:06:10.818605+00:00"
     },
     "ofr": {
       "source": "ofr",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 5.1,
-      "checked_at": "2026-10-02T03:05:53.021551+00:00"
+      "elapsed_sec": 5.0,
+      "checked_at": "2026-10-03T04:06:10.818768+00:00"
     },
     "prediction_markets": {
       "source": "prediction_markets",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 7.2,
-      "checked_at": "2026-10-02T03:05:53.022173+00:00"
+      "elapsed_sec": 8.0,
+      "checked_at": "2026-10-03T04:06:10.819596+00:00"
     },
     "bis": {
       "source": "bis",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 36.9,
-      "checked_at": "2026-10-02T03:05:53.022208+00:00"
+      "elapsed_sec": 31.7,
+      "checked_at": "2026-10-03T04:06:10.819641+00:00"
     },
     "china_property": {
       "source": "china_property",
@@ -715,106 +712,106 @@
     "uncertainty_indices": {
       "source": "uncertainty_indices",
       "status": "ok",
-      "rows": 30498,
-      "last_date": "2026-10-01",
+      "rows": 30499,
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 2.5,
-      "checked_at": "2026-10-02T03:05:53.022072+00:00"
+      "elapsed_sec": 2.3,
+      "checked_at": "2026-10-03T04:06:10.819471+00:00"
     },
     "treasury_auctions": {
       "source": "treasury_auctions",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-01",
-      "error": null,
-      "notes": [],
-      "probed_at": null,
-      "elapsed_sec": 4.6,
-      "checked_at": "2026-10-02T03:05:53.022216+00:00"
-    },
-    "canada_prices": {
-      "source": "canada_prices",
-      "status": "ok",
-      "rows": 352,
       "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.1,
-      "checked_at": "2026-10-02T03:05:53.021757+00:00"
+      "elapsed_sec": 4.4,
+      "checked_at": "2026-10-03T04:06:10.819652+00:00"
+    },
+    "canada_prices": {
+      "source": "canada_prices",
+      "status": "ok",
+      "rows": 6324,
+      "last_date": "2026-10-02",
+      "error": null,
+      "notes": [],
+      "probed_at": null,
+      "elapsed_sec": 1.8,
+      "checked_at": "2026-10-03T04:06:10.819038+00:00"
     },
     "canada_macro": {
       "source": "canada_macro",
       "status": "ok",
-      "rows": 73438,
-      "last_date": "2026-10-01",
+      "rows": 73442,
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [
-        "frozen tail: house_prices last=2026-01-01 age=274d"
+        "frozen tail: house_prices last=2026-01-01 age=275d"
       ],
       "probed_at": null,
-      "elapsed_sec": 21.3,
-      "checked_at": "2026-10-02T03:05:53.021767+00:00"
+      "elapsed_sec": 24.3,
+      "checked_at": "2026-10-03T04:06:10.819051+00:00"
     },
     "canada_breadth": {
       "source": "canada_breadth",
       "status": "ok",
       "rows": 729,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 4.9,
-      "checked_at": "2026-10-02T03:05:53.021776+00:00"
+      "elapsed_sec": 4.7,
+      "checked_at": "2026-10-03T04:06:10.819069+00:00"
     },
     "canada_universe": {
       "source": "canada_universe",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-01",
-      "error": null,
-      "notes": [],
-      "probed_at": null,
-      "elapsed_sec": 13.3,
-      "checked_at": "2026-10-02T03:05:53.021785+00:00"
-    },
-    "intl_prices": {
-      "source": "intl_prices",
-      "status": "ok",
-      "rows": 34720,
       "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 4.6,
-      "checked_at": "2026-10-02T03:05:53.021794+00:00"
+      "elapsed_sec": 13.4,
+      "checked_at": "2026-10-03T04:06:10.819081+00:00"
+    },
+    "intl_prices": {
+      "source": "intl_prices",
+      "status": "ok",
+      "rows": 113612,
+      "last_date": "2026-10-03",
+      "error": null,
+      "notes": [],
+      "probed_at": null,
+      "elapsed_sec": 2.2,
+      "checked_at": "2026-10-03T04:06:10.819092+00:00"
     },
     "intl_macro": {
       "source": "intl_macro",
       "status": "ok",
-      "rows": 26485,
-      "last_date": "2026-10-01",
+      "rows": 26487,
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [
-        "frozen tail: JP_gdp last=2026-04-01 age=184d",
-        "frozen tail: KR_cpi_yoy last=2025-04-01 age=549d",
-        "frozen tail: KR_gdp last=2026-04-01 age=184d",
-        "frozen tail: IN_cpi_yoy last=2025-03-01 age=580d",
-        "frozen tail: AU_cpi_yoy last=2025-01-01 age=639d",
-        "frozen tail: AU_gdp last=2026-04-01 age=184d",
-        "frozen tail: GB_short_3m last=2026-01-01 age=274d",
-        "frozen tail: GB_cpi_yoy last=2025-03-01 age=580d",
-        "frozen tail: GB_unemployment last=2026-05-01 age=154d",
-        "frozen tail: GB_gdp last=2026-04-01 age=184d",
-        "frozen tail: EZ_yield_10y last=2026-01-01 age=274d",
-        "frozen tail: EZ_short_3m last=2026-01-01 age=274d",
-        "frozen tail: EZ_gdp last=2026-04-01 age=184d"
+        "frozen tail: JP_gdp last=2026-04-01 age=185d",
+        "frozen tail: KR_cpi_yoy last=2025-04-01 age=550d",
+        "frozen tail: KR_gdp last=2026-04-01 age=185d",
+        "frozen tail: IN_cpi_yoy last=2025-03-01 age=581d",
+        "frozen tail: AU_cpi_yoy last=2025-01-01 age=640d",
+        "frozen tail: AU_gdp last=2026-04-01 age=185d",
+        "frozen tail: GB_short_3m last=2026-01-01 age=275d",
+        "frozen tail: GB_cpi_yoy last=2025-03-01 age=581d",
+        "frozen tail: GB_unemployment last=2026-05-01 age=155d",
+        "frozen tail: GB_gdp last=2026-04-01 age=185d",
+        "frozen tail: EZ_yield_10y last=2026-01-01 age=275d",
+        "frozen tail: EZ_short_3m last=2026-01-01 age=275d",
+        "frozen tail: EZ_gdp last=2026-04-01 age=185d"
       ],
       "probed_at": null,
-      "elapsed_sec": 33.5,
-      "checked_at": "2026-10-02T03:05:53.021807+00:00"
+      "elapsed_sec": 57.6,
+      "checked_at": "2026-10-03T04:06:10.819109+00:00"
     },
     "intl_universe": {
       "source": "intl_universe",
@@ -824,8 +821,8 @@
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 81.1,
-      "checked_at": "2026-10-02T03:05:53.021816+00:00"
+      "elapsed_sec": 158.7,
+      "checked_at": "2026-10-03T04:06:10.819121+00:00"
     },
     "jodi": {
       "source": "jodi",
@@ -835,8 +832,8 @@
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 5.1,
-      "checked_at": "2026-10-02T03:05:53.022046+00:00"
+      "elapsed_sec": 7.2,
+      "checked_at": "2026-10-03T04:06:10.819436+00:00"
     },
     "worldbank": {
       "source": "worldbank",
@@ -846,8 +843,8 @@
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 12.8,
-      "checked_at": "2026-10-02T03:05:53.022055+00:00"
+      "elapsed_sec": 1.8,
+      "checked_at": "2026-10-03T04:06:10.819448+00:00"
     },
     "hk_property": {
       "source": "hk_property",
@@ -940,13 +937,13 @@
     "wikipedia_btc": {
       "source": "wikipedia_btc",
       "status": "ok",
-      "rows": 4110,
+      "rows": 4111,
       "last_date": "2026-09-30",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.1,
-      "checked_at": "2026-10-02T03:05:53.021937+00:00"
+      "elapsed_sec": 1.2,
+      "checked_at": "2026-10-03T04:06:10.819291+00:00"
     },
     "hk_southbound_holdings": {
       "source": "hk_southbound_holdings",
@@ -962,101 +959,101 @@
     "farside": {
       "source": "farside",
       "status": "ok",
-      "rows": 699,
-      "last_date": "2026-10-01",
+      "rows": 700,
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.5,
-      "checked_at": "2026-10-02T03:05:53.021946+00:00"
+      "elapsed_sec": 1.6,
+      "checked_at": "2026-10-03T04:06:10.819303+00:00"
     },
     "usaspending": {
       "source": "usaspending",
       "status": "ok",
-      "rows": 52,
+      "rows": 50,
       "last_date": "2026-10-01",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1150.6,
-      "checked_at": "2026-10-02T03:05:53.022191+00:00"
+      "elapsed_sec": 152.2,
+      "checked_at": "2026-10-03T04:06:10.819618+00:00"
     },
     "quiver_congress": {
       "source": "quiver_congress",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.0,
-      "checked_at": "2026-10-02T03:05:53.022226+00:00"
+      "elapsed_sec": 1.1,
+      "checked_at": "2026-10-03T04:06:10.819664+00:00"
     },
     "quiver_senate": {
       "source": "quiver_senate",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 0.9,
-      "checked_at": "2026-10-02T03:05:53.022234+00:00"
+      "elapsed_sec": 0.7,
+      "checked_at": "2026-10-03T04:06:10.819675+00:00"
     },
     "quiver_house": {
       "source": "quiver_house",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 3.9,
-      "checked_at": "2026-10-02T03:05:53.022242+00:00"
+      "elapsed_sec": 0.8,
+      "checked_at": "2026-10-03T04:06:10.819686+00:00"
     },
     "quiver_lobbying": {
       "source": "quiver_lobbying",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 1.4,
-      "checked_at": "2026-10-02T03:05:53.022251+00:00"
+      "checked_at": "2026-10-03T04:06:10.819697+00:00"
     },
     "quiver_govcontracts": {
       "source": "quiver_govcontracts",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 0.9,
-      "checked_at": "2026-10-02T03:05:53.022259+00:00"
+      "elapsed_sec": 2.5,
+      "checked_at": "2026-10-03T04:06:10.819708+00:00"
     },
     "quiver_offexchange": {
       "source": "quiver_offexchange",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 0.8,
-      "checked_at": "2026-10-02T03:05:53.022268+00:00"
+      "checked_at": "2026-10-03T04:06:10.819720+00:00"
     },
     "quiver_insiders": {
       "source": "quiver_insiders",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.1,
-      "checked_at": "2026-10-02T03:05:53.022277+00:00"
+      "elapsed_sec": 1.8,
+      "checked_at": "2026-10-03T04:06:10.819731+00:00"
     },
     "quiver_flights": {
       "source": "quiver_flights",
@@ -1067,29 +1064,29 @@
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 0.0,
-      "checked_at": "2026-10-02T03:05:53.022286+00:00"
+      "checked_at": "2026-10-03T04:06:10.819742+00:00"
     },
     "quiver_patents": {
       "source": "quiver_patents",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 58.8,
-      "checked_at": "2026-10-02T03:05:53.022294+00:00"
+      "elapsed_sec": 8.9,
+      "checked_at": "2026-10-03T04:06:10.819754+00:00"
     },
     "quiver_wsb": {
       "source": "quiver_wsb",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 0.9,
-      "checked_at": "2026-10-02T03:05:53.022303+00:00"
+      "checked_at": "2026-10-03T04:06:10.819765+00:00"
     },
     "quiver_twitter": {
       "source": "quiver_twitter",
@@ -1100,40 +1097,40 @@
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 0.0,
-      "checked_at": "2026-10-02T03:05:53.022312+00:00"
+      "checked_at": "2026-10-03T04:06:10.819777+00:00"
     },
     "quiver_sec13f": {
       "source": "quiver_sec13f",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 2.0,
-      "checked_at": "2026-10-02T03:05:53.022321+00:00"
+      "elapsed_sec": 1.4,
+      "checked_at": "2026-10-03T04:06:10.819787+00:00"
     },
     "quiver_sec13f_changes": {
       "source": "quiver_sec13f_changes",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 2.2,
-      "checked_at": "2026-10-02T03:05:53.022330+00:00"
+      "elapsed_sec": 2.3,
+      "checked_at": "2026-10-03T04:06:10.819799+00:00"
     },
     "quiver_cnbc": {
       "source": "quiver_cnbc",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 0.8,
-      "checked_at": "2026-10-02T03:05:53.022339+00:00"
+      "elapsed_sec": 0.6,
+      "checked_at": "2026-10-03T04:06:10.819810+00:00"
     },
     "quiver_spacs": {
       "source": "quiver_spacs",
@@ -1144,54 +1141,65 @@
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 0.0,
-      "checked_at": "2026-10-02T03:05:53.022348+00:00"
+      "checked_at": "2026-10-03T04:06:10.819821+00:00"
     },
     "quiver_trump": {
       "source": "quiver_trump",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 0.6,
-      "checked_at": "2026-10-02T03:05:53.022357+00:00"
+      "elapsed_sec": 0.5,
+      "checked_at": "2026-10-03T04:06:10.819832+00:00"
     },
     "quiver_corpdonors": {
       "source": "quiver_corpdonors",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.0,
-      "checked_at": "2026-10-02T03:05:53.022365+00:00"
+      "elapsed_sec": 0.9,
+      "checked_at": "2026-10-03T04:06:10.819843+00:00"
     },
     "quiver_news": {
       "source": "quiver_news",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 0.9,
-      "checked_at": "2026-10-02T03:05:53.022374+00:00"
+      "checked_at": "2026-10-03T04:06:10.819854+00:00"
     },
     "quiver_congressholdings": {
       "source": "quiver_congressholdings",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 0.6,
-      "checked_at": "2026-10-02T03:05:53.022383+00:00"
+      "elapsed_sec": 1.1,
+      "checked_at": "2026-10-03T04:06:10.819865+00:00"
     },
     "quiver_bills": {
       "source": "quiver_bills",
+      "status": "ok",
+      "rows": 1,
+      "last_date": "2026-10-03",
+      "error": null,
+      "notes": [],
+      "probed_at": null,
+      "elapsed_sec": 3.9,
+      "checked_at": "2026-10-03T04:06:10.819876+00:00"
+    },
+    "finra_short_volume": {
+      "source": "finra_short_volume",
       "status": "ok",
       "rows": 1,
       "last_date": "2026-10-02",
@@ -1199,150 +1207,139 @@
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 7.2,
-      "checked_at": "2026-10-02T03:05:53.022392+00:00"
-    },
-    "finra_short_volume": {
-      "source": "finra_short_volume",
-      "status": "ok",
-      "rows": 1,
-      "last_date": "2026-10-01",
-      "error": null,
-      "notes": [],
-      "probed_at": null,
-      "elapsed_sec": 9.9,
-      "checked_at": "2026-10-02T03:05:53.021641+00:00"
+      "checked_at": "2026-10-03T04:06:10.818880+00:00"
     },
     "edgar_trumpflow": {
       "source": "edgar_trumpflow",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 6.9,
-      "checked_at": "2026-10-02T03:05:53.022150+00:00"
+      "checked_at": "2026-10-03T04:06:10.819574+00:00"
     },
     "quiver_watchlist": {
       "source": "quiver_watchlist",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 51.9,
-      "checked_at": "2026-10-02T03:05:53.022410+00:00"
+      "elapsed_sec": 40.3,
+      "checked_at": "2026-10-03T04:06:10.819899+00:00"
     },
     "edgar_8k": {
       "source": "edgar_8k",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 407.2,
-      "checked_at": "2026-10-02T03:05:53.022089+00:00"
+      "elapsed_sec": 425.4,
+      "checked_at": "2026-10-03T04:06:10.819493+00:00"
     },
     "openfda": {
       "source": "openfda",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 21.9,
-      "checked_at": "2026-10-02T03:05:53.021597+00:00"
+      "elapsed_sec": 23.3,
+      "checked_at": "2026-10-03T04:06:10.818825+00:00"
     },
     "huggingface": {
       "source": "huggingface",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 11.1,
-      "checked_at": "2026-10-02T03:05:53.021605+00:00"
+      "elapsed_sec": 11.6,
+      "checked_at": "2026-10-03T04:06:10.818836+00:00"
     },
     "grants_gov": {
       "source": "grants_gov",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 2.3,
-      "checked_at": "2026-10-02T03:05:53.021615+00:00"
+      "checked_at": "2026-10-03T04:06:10.818847+00:00"
     },
     "clinicaltrials": {
       "source": "clinicaltrials",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 17.5,
-      "checked_at": "2026-10-02T03:05:53.021624+00:00"
+      "elapsed_sec": 18.1,
+      "checked_at": "2026-10-03T04:06:10.818858+00:00"
     },
     "finnhub_altdata": {
       "source": "finnhub_altdata",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 600.5,
-      "checked_at": "2026-10-02T03:05:53.021633+00:00"
+      "elapsed_sec": 532.1,
+      "checked_at": "2026-10-03T04:06:10.818869+00:00"
     },
     "polygon_news": {
       "source": "polygon_news",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 392.1,
-      "checked_at": "2026-10-02T03:05:53.021705+00:00"
+      "elapsed_sec": 101.9,
+      "checked_at": "2026-10-03T04:06:10.818969+00:00"
     },
     "github_repos": {
       "source": "github_repos",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 25.9,
-      "checked_at": "2026-10-02T03:05:53.021713+00:00"
+      "elapsed_sec": 24.5,
+      "checked_at": "2026-10-03T04:06:10.818980+00:00"
     },
     "sam_gov": {
       "source": "sam_gov",
-      "status": "ok",
-      "rows": 1,
-      "last_date": "2026-10-02",
-      "error": null,
+      "status": "failed",
+      "rows": 0,
+      "last_date": null,
+      "error": "ReadTimeout: HTTPSConnectionPool(host='api.sam.gov', port=443): Read timed out. (read timeout=60)",
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.4,
-      "checked_at": "2026-10-02T03:05:53.021722+00:00"
+      "elapsed_sec": 63.4,
+      "checked_at": "2026-10-03T04:06:10.818992+00:00"
     },
     "cboe_vvix": {
       "source": "cboe_vvix",
       "status": "ok",
-      "rows": 5116,
-      "last_date": "2026-10-01",
+      "rows": 5117,
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.0,
-      "checked_at": "2026-10-02T03:05:53.021353+00:00"
+      "elapsed_sec": 0.9,
+      "checked_at": "2026-10-03T04:06:10.818513+00:00"
     },
     "china_pboc": {
       "source": "china_pboc",
@@ -1370,23 +1367,23 @@
       "source": "openfigi",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.5,
-      "checked_at": "2026-10-02T03:05:53.022159+00:00"
+      "elapsed_sec": 0.8,
+      "checked_at": "2026-10-03T04:06:10.819585+00:00"
     },
     "beneficial_ownership": {
       "source": "beneficial_ownership",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 33.9,
-      "checked_at": "2026-10-02T03:05:53.022106+00:00"
+      "elapsed_sec": 81.9,
+      "checked_at": "2026-10-03T04:06:10.819517+00:00"
     },
     "china_yield_spread": {
       "source": "china_yield_spread",
@@ -1435,13 +1432,13 @@
     "wiki_pageviews": {
       "source": "wiki_pageviews",
       "status": "ok",
-      "rows": 144322,
-      "last_date": "2026-09-30",
+      "rows": 144323,
+      "last_date": "2026-10-01",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 648.6,
-      "checked_at": "2026-10-02T03:05:53.021449+00:00"
+      "elapsed_sec": 744.0,
+      "checked_at": "2026-10-03T04:06:10.818638+00:00"
     },
     "china_stocks": {
       "source": "china_stocks",
@@ -1596,8 +1593,8 @@
     },
     "polygon_gex_accrual": {
       "status": "empty",
-      "date": "2026-10-01",
-      "session": "2026-10-01",
+      "date": "2026-10-02",
+      "session": "2026-10-02",
       "health": "failed",
       "census": {
         "attempted_underlyings": 5,
@@ -1616,11 +1613,11 @@
         "requested_underlyings": 375,
         "coverage_pct": 0.0
       },
-      "checked_at": "2026-10-02T03:05:53.022414+00:00"
+      "checked_at": "2026-10-03T04:06:10.819904+00:00"
     },
     "options_flow_creds": {
       "status": "creds_present",
-      "checked_at": "2026-10-02T03:05:53.022414+00:00"
+      "checked_at": "2026-10-03T04:06:10.819904+00:00"
     },
     "finra_ats_transparency": {
       "source": "finra_ats_transparency",
@@ -1630,30 +1627,30 @@
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.3,
-      "checked_at": "2026-10-02T03:05:53.021660+00:00"
+      "elapsed_sec": 1.5,
+      "checked_at": "2026-10-03T04:06:10.818902+00:00"
     },
     "massive_stock_day": {
       "source": "massive_stock_day",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.6,
-      "checked_at": "2026-10-02T03:05:53.021748+00:00"
+      "elapsed_sec": 33.8,
+      "checked_at": "2026-10-03T04:06:10.819027+00:00"
     },
     "intl_etf": {
       "source": "intl_etf",
       "status": "ok",
-      "rows": 1012,
-      "last_date": "2026-09-30",
+      "rows": 1035,
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.5,
-      "checked_at": "2026-10-02T03:05:53.021825+00:00"
+      "elapsed_sec": 1.2,
+      "checked_at": "2026-10-03T04:06:10.819133+00:00"
     },
     "lbnl_queue": {
       "source": "lbnl_queue",
@@ -1663,19 +1660,19 @@
       "error": "lbnl_queue: no reachable Queued Up data file \u2014 https://emp.lbl.gov/sites/default/files/queued_up_data_through_2026.xlsx -> HTTP 404; https://emp.lbl.gov/sites/default/files/queued_up_data_through_2025.xlsx -> HTTP 404; https://emp.lbl.gov/sites/default/files/queued_up_data_through_2024.xlsx -> HTTP 404; https://emp.lbl.gov/sites/default/files/queued_up_data.xlsx -> HTTP 404. LBNL publishes annually and now serves files from date-scoped folders (/sites/default/files/<YYYY-MM>/), so the flat URL pattern is dead; the HTML index at https://emp.lbl.gov/queues is WAF-challenged to non-browser clients, so the current filename has to be read off that page by a human and set as LBNL_QUEUE_XLSX_URL (or dropped in as a refreshed seed). Serving the committed seed interconnection_queue.json meanwhile (asof_year in-file) \u2014 engine leg stays live.",
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 3.4,
-      "checked_at": "2026-10-02T03:05:53.021955+00:00"
+      "elapsed_sec": 3.3,
+      "checked_at": "2026-10-03T04:06:10.819314+00:00"
     },
     "federal_register": {
       "source": "federal_register",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 86.3,
-      "checked_at": "2026-10-02T03:05:53.022199+00:00"
+      "elapsed_sec": 88.5,
+      "checked_at": "2026-10-03T04:06:10.819630+00:00"
     },
     "tape_flow_forward": {
       "status": "ok",
@@ -1701,23 +1698,23 @@
       "source": "cleveland_nowcast",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 2.6,
-      "checked_at": "2026-10-02T03:05:53.022063+00:00"
+      "elapsed_sec": 2.8,
+      "checked_at": "2026-10-03T04:06:10.819459+00:00"
     },
     "edgar_dilution": {
       "source": "edgar_dilution",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 14.1,
-      "checked_at": "2026-10-02T03:05:53.022115+00:00"
+      "elapsed_sec": 4.0,
+      "checked_at": "2026-10-03T04:06:10.819528+00:00"
     },
     "gaming_ny": {
       "source": "gaming_ny",
@@ -1727,8 +1724,8 @@
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 2.4,
-      "checked_at": "2026-10-02T03:05:53.021973+00:00"
+      "elapsed_sec": 2.7,
+      "checked_at": "2026-10-03T04:06:10.819337+00:00"
     },
     "gaming_nj": {
       "source": "gaming_nj",
@@ -1739,7 +1736,7 @@
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 0.2,
-      "checked_at": "2026-10-02T03:05:53.021983+00:00"
+      "checked_at": "2026-10-03T04:06:10.819348+00:00"
     },
     "gaming_pgcb": {
       "source": "gaming_pgcb",
@@ -1749,8 +1746,8 @@
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.4,
-      "checked_at": "2026-10-02T03:05:53.021991+00:00"
+      "elapsed_sec": 1.7,
+      "checked_at": "2026-10-03T04:06:10.819360+00:00"
     },
     "gaming_nv": {
       "source": "gaming_nv",
@@ -1761,29 +1758,29 @@
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 0.0,
-      "checked_at": "2026-10-02T03:05:53.022000+00:00"
+      "checked_at": "2026-10-03T04:06:10.819377+00:00"
     },
     "kalshi_releases": {
       "source": "kalshi_releases",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.3,
-      "checked_at": "2026-10-02T03:05:53.022182+00:00"
+      "elapsed_sec": 2.2,
+      "checked_at": "2026-10-03T04:06:10.819607+00:00"
     },
     "tsa": {
       "source": "tsa",
       "status": "ok",
-      "rows": 2830,
-      "last_date": "2026-09-30",
+      "rows": 2831,
+      "last_date": "2026-10-01",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 0.8,
-      "checked_at": "2026-10-02T03:05:53.021964+00:00"
+      "elapsed_sec": 0.9,
+      "checked_at": "2026-10-03T04:06:10.819326+00:00"
     },
     "hk_cbbc": {
       "source": "hk_cbbc",
@@ -1833,41 +1830,41 @@
       "status": "ok",
       "n_leaders": 116,
       "base_json": "site/flowtracker/base.json",
-      "as_of": "2026-10-02T09:00:59.924447+00:00",
-      "checked_at": "2026-10-02T09:00:59.924447+00:00"
+      "as_of": "2026-10-03T07:18:48.412107+00:00",
+      "checked_at": "2026-10-03T07:18:48.412107+00:00"
     },
     "broad_flows": {
       "source": "broad_flows",
-      "status": "failed",
-      "rows": 0,
-      "last_date": null,
-      "error": "RuntimeError: broad_flows: only 0/5 tickers succeeded (errors: ['SPY', 'QQQ', 'IWM', 'RSP', 'DIA'])",
+      "status": "ok",
+      "rows": 5,
+      "last_date": "2026-10-02",
+      "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 5.5,
-      "checked_at": "2026-10-02T03:05:53.021467+00:00"
+      "elapsed_sec": 3.2,
+      "checked_at": "2026-10-03T04:06:10.818662+00:00"
     },
     "finnhub_transcripts": {
       "source": "finnhub_transcripts",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 5.4,
-      "checked_at": "2026-10-02T03:05:53.021678+00:00"
+      "elapsed_sec": 4.0,
+      "checked_at": "2026-10-03T04:06:10.818932+00:00"
     },
     "stocktwits": {
       "source": "stocktwits",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 138.5,
-      "checked_at": "2026-10-02T03:05:53.021687+00:00"
+      "elapsed_sec": 141.6,
+      "checked_at": "2026-10-03T04:06:10.818944+00:00"
     },
     "imf_weo": {
       "source": "imf_weo",
@@ -1877,19 +1874,19 @@
       "error": "RuntimeError: imf_weo: all indicators/countries failed",
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 83.9,
-      "checked_at": "2026-10-02T03:05:53.021731+00:00"
+      "elapsed_sec": 59.4,
+      "checked_at": "2026-10-03T04:06:10.819003+00:00"
     },
     "symbol_directory": {
       "source": "symbol_directory",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 2.0,
-      "checked_at": "2026-10-02T03:05:53.022098+00:00"
+      "elapsed_sec": 1.8,
+      "checked_at": "2026-10-03T04:06:10.819505+00:00"
     },
     "flow_signals": {
       "status": "ok",
@@ -1903,35 +1900,35 @@
     "cboe_cor_vol": {
       "source": "cboe_cor_vol",
       "status": "ok",
-      "rows": 17701,
-      "last_date": "2026-10-01",
+      "rows": 17706,
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 5.0,
-      "checked_at": "2026-10-02T03:05:53.021363+00:00"
+      "checked_at": "2026-10-03T04:06:10.818532+00:00"
     },
     "corp_bond_holdings": {
       "source": "corp_bond_holdings",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 10.7,
-      "checked_at": "2026-10-02T03:05:53.021495+00:00"
+      "elapsed_sec": 10.4,
+      "checked_at": "2026-10-03T04:06:10.818698+00:00"
     },
     "finra_corp_bonds": {
       "source": "finra_corp_bonds",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 5.2,
-      "checked_at": "2026-10-02T03:05:53.021504+00:00"
+      "elapsed_sec": 5.3,
+      "checked_at": "2026-10-03T04:06:10.818710+00:00"
     },
     "tape_flow_episodes": {
       "status": "empty",
@@ -1960,29 +1957,29 @@
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 0.0,
-      "checked_at": "2026-10-02T03:05:53.021696+00:00"
+      "checked_at": "2026-10-03T04:06:10.818956+00:00"
     },
     "russell_breadth": {
       "source": "russell_breadth",
       "status": "ok",
-      "rows": 945,
-      "last_date": "2026-10-01",
+      "rows": 947,
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 108.6,
-      "checked_at": "2026-10-02T03:05:53.021313+00:00"
+      "elapsed_sec": 118.3,
+      "checked_at": "2026-10-03T04:06:10.818466+00:00"
     },
     "geo_revenue": {
       "source": "geo_revenue",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 107.5,
-      "checked_at": "2026-10-02T03:05:53.022142+00:00"
+      "elapsed_sec": 117.5,
+      "checked_at": "2026-10-03T04:06:10.819562+00:00"
     },
     "china_board_breadth": {
       "source": "china_board_breadth",
@@ -2098,67 +2095,67 @@
       "source": "crypto_universe",
       "status": "ok",
       "rows": 50,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.2,
-      "checked_at": "2026-10-02T03:05:53.021908+00:00"
+      "elapsed_sec": 1.1,
+      "checked_at": "2026-10-03T04:06:10.819255+00:00"
     },
     "usaspending_awards": {
       "source": "usaspending_awards",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1006.7,
-      "checked_at": "2026-10-02T03:05:53.021560+00:00"
+      "elapsed_sec": 309.9,
+      "checked_at": "2026-10-03T04:06:10.818779+00:00"
     },
     "sec_capital_structure": {
       "source": "sec_capital_structure",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 5326.1,
-      "checked_at": "2026-10-02T03:05:53.022124+00:00"
+      "elapsed_sec": 4700.7,
+      "checked_at": "2026-10-03T04:06:10.819539+00:00"
     },
     "usaspending_subawards": {
       "source": "usaspending_subawards",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 71.4,
-      "checked_at": "2026-10-02T03:05:53.021569+00:00"
+      "elapsed_sec": 70.7,
+      "checked_at": "2026-10-03T04:06:10.818791+00:00"
     },
     "usaspending_idv_graph": {
       "source": "usaspending_idv_graph",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 21.9,
-      "checked_at": "2026-10-02T03:05:53.021578+00:00"
+      "elapsed_sec": 28.9,
+      "checked_at": "2026-10-03T04:06:10.818802+00:00"
     },
     "ibkr_borrow": {
       "source": "ibkr_borrow",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-01",
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 2.3,
-      "checked_at": "2026-10-02T03:05:53.021651+00:00"
+      "checked_at": "2026-10-03T04:06:10.818892+00:00"
     },
     "finra_otc_nonats": {
       "source": "finra_otc_nonats",
@@ -2168,30 +2165,30 @@
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.0,
-      "checked_at": "2026-10-02T03:05:53.021669+00:00"
+      "elapsed_sec": 1.1,
+      "checked_at": "2026-10-03T04:06:10.818914+00:00"
     },
     "sec_capital_structure_companyfacts": {
       "source": "sec_capital_structure_companyfacts",
-      "status": "dead",
+      "status": "failed",
       "rows": 0,
       "last_date": null,
-      "error": "circuit open (45 consecutive failures)",
+      "error": "CompanyFactsIntakeError: Company Facts external head witness is unreadable",
       "notes": [],
-      "probed_at": null,
-      "elapsed_sec": 0.0,
-      "checked_at": "2026-10-02T03:05:53.022133+00:00"
+      "probed_at": "2026-10-03T03:51:17.644267+00:00",
+      "elapsed_sec": 0.4,
+      "checked_at": "2026-10-03T04:06:10.819551+00:00"
     },
     "sbir_awards": {
       "source": "sbir_awards",
-      "status": "dead",
+      "status": "failed",
       "rows": 0,
       "last_date": null,
-      "error": "circuit open (42 consecutive failures)",
+      "error": "SbirRateLimitError: SBIR public API refused the request with HTTP 403; the published limit is 10 requests per 600s",
       "notes": [],
-      "probed_at": null,
-      "elapsed_sec": 0.0,
-      "checked_at": "2026-10-02T03:05:53.021588+00:00"
+      "probed_at": "2026-10-03T02:01:28.561503+00:00",
+      "elapsed_sec": 0.7,
+      "checked_at": "2026-10-03T04:06:10.818813+00:00"
     },
     "china_visits": {
       "source": "china_visits",
@@ -2208,12 +2205,12 @@
       "source": "quiver_appratings",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-10-02",
+      "last_date": "2026-10-03",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.1,
-      "checked_at": "2026-10-02T03:05:53.022401+00:00"
+      "elapsed_sec": 2.2,
+      "checked_at": "2026-10-03T04:06:10.819888+00:00"
     },
     "ofac_sdn": {
       "source": "ofac_sdn",
@@ -2223,19 +2220,19 @@
       "error": "RuntimeError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 6.4,
-      "checked_at": "2026-10-02T03:05:53.021401+00:00"
+      "elapsed_sec": 6.2,
+      "checked_at": "2026-10-03T04:06:10.818581+00:00"
     },
     "gold_china_basis": {
       "source": "gold_china_basis",
       "status": "ok",
-      "rows": 16,
-      "last_date": "2026-10-01",
+      "rows": 17,
+      "last_date": "2026-10-02",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 2.4,
-      "checked_at": "2026-10-02T03:05:53.021740+00:00"
+      "elapsed_sec": 2.6,
+      "checked_at": "2026-10-03T04:06:10.819015+00:00"
     }
   },
   "circuit_breaker": {
@@ -2246,11 +2243,11 @@
     "cot": 0,
     "cboe_putcall": 0,
     "cboe_gex": 0,
-    "sentiment_naaim": 47,
+    "sentiment_naaim": 48,
     "sentiment_aaii": 0,
     "sector_flows": 0,
     "holdings": 0,
-    "fundamentals": 1,
+    "fundamentals": 0,
     "fred": 0,
     "coinmetrics": 0,
     "okx": 0,
@@ -2270,7 +2267,7 @@
     "etf_holdings": 0,
     "sector_holdings": 0,
     "stock_prices": 0,
-    "stock_fundamentals": 1,
+    "stock_fundamentals": 0,
     "china_universe": 0,
     "midcap_breadth": 0,
     "cboe_skew": 0,
@@ -2359,7 +2356,7 @@
     "hk_stocks": 0,
     "grants_gov": 0,
     "finnhub_altdata": 0,
-    "sam_gov": 0,
+    "sam_gov": 1,
     "china_stocks_raw": 0,
     "china_tushare": 0,
     "china_official_corpora": 0,
@@ -2389,10 +2386,10 @@
     "hk_cbbc_sld": 0,
     "hk_hkexnews": 0,
     "hk_gdelt": 0,
-    "broad_flows": 1,
+    "broad_flows": 0,
     "finnhub_transcripts": 0,
     "stocktwits": 0,
-    "imf_weo": 2,
+    "imf_weo": 3,
     "symbol_directory": 0,
     "cboe_cor_vol": 0,
     "corp_bond_holdings": 0,
@@ -2417,16 +2414,16 @@
     "usaspending_idv_graph": 0,
     "ibkr_borrow": 0,
     "finra_otc_nonats": 0,
-    "sec_capital_structure_companyfacts": 45,
-    "sbir_awards": 42,
+    "sec_capital_structure_companyfacts": 46,
+    "sbir_awards": 43,
     "china_visits": 0,
-    "ofac_sdn": 2,
+    "ofac_sdn": 3,
     "gold_china_basis": 0
   },
   "circuit_breaker_probe": {
-    "sentiment_naaim": "2026-10-01T08:05:50.904772+00:00",
-    "sec_capital_structure_companyfacts": "2026-10-01T10:40:19.984897+00:00",
-    "sbir_awards": "2026-10-01T08:31:48.882426+00:00"
+    "sentiment_naaim": "2026-10-03T01:35:48.880157+00:00",
+    "sec_capital_structure_companyfacts": "2026-10-03T03:51:17.644267+00:00",
+    "sbir_awards": "2026-10-03T02:01:28.561503+00:00"
   },
   "stale_series": [
     {
@@ -2474,168 +2471,168 @@
       "series": "house_prices",
       "last_obs": "2026-01-01",
       "cadence_days": 45,
-      "age_days": 274,
-      "detected_at": "2026-10-02T01:14:54.541192+00:00"
+      "age_days": 275,
+      "detected_at": "2026-10-03T02:19:05.617573+00:00"
     },
     {
       "group": "intl_macro",
       "series": "JP_gdp",
       "last_obs": "2026-04-01",
       "cadence_days": 45,
-      "age_days": 184,
-      "detected_at": "2026-10-02T01:15:50.689011+00:00"
+      "age_days": 185,
+      "detected_at": "2026-10-03T02:20:23.498920+00:00"
     },
     {
       "group": "intl_macro",
       "series": "KR_cpi_yoy",
       "last_obs": "2025-04-01",
       "cadence_days": 45,
-      "age_days": 549,
-      "detected_at": "2026-10-02T01:15:50.689017+00:00"
+      "age_days": 550,
+      "detected_at": "2026-10-03T02:20:23.498925+00:00"
     },
     {
       "group": "intl_macro",
       "series": "KR_gdp",
       "last_obs": "2026-04-01",
       "cadence_days": 45,
-      "age_days": 184,
-      "detected_at": "2026-10-02T01:15:50.689019+00:00"
+      "age_days": 185,
+      "detected_at": "2026-10-03T02:20:23.498926+00:00"
     },
     {
       "group": "intl_macro",
       "series": "IN_cpi_yoy",
       "last_obs": "2025-03-01",
       "cadence_days": 45,
-      "age_days": 580,
-      "detected_at": "2026-10-02T01:15:50.689020+00:00"
+      "age_days": 581,
+      "detected_at": "2026-10-03T02:20:23.498928+00:00"
     },
     {
       "group": "intl_macro",
       "series": "AU_cpi_yoy",
       "last_obs": "2025-01-01",
       "cadence_days": 45,
-      "age_days": 639,
-      "detected_at": "2026-10-02T01:15:50.689022+00:00"
+      "age_days": 640,
+      "detected_at": "2026-10-03T02:20:23.498929+00:00"
     },
     {
       "group": "intl_macro",
       "series": "AU_gdp",
       "last_obs": "2026-04-01",
       "cadence_days": 45,
-      "age_days": 184,
-      "detected_at": "2026-10-02T01:15:50.689023+00:00"
+      "age_days": 185,
+      "detected_at": "2026-10-03T02:20:23.498930+00:00"
     },
     {
       "group": "intl_macro",
       "series": "GB_short_3m",
       "last_obs": "2026-01-01",
       "cadence_days": 45,
-      "age_days": 274,
-      "detected_at": "2026-10-02T01:15:50.689025+00:00"
+      "age_days": 275,
+      "detected_at": "2026-10-03T02:20:23.498931+00:00"
     },
     {
       "group": "intl_macro",
       "series": "GB_cpi_yoy",
       "last_obs": "2025-03-01",
       "cadence_days": 45,
-      "age_days": 580,
-      "detected_at": "2026-10-02T01:15:50.689027+00:00"
+      "age_days": 581,
+      "detected_at": "2026-10-03T02:20:23.498932+00:00"
     },
     {
       "group": "intl_macro",
       "series": "GB_unemployment",
       "last_obs": "2026-05-01",
       "cadence_days": 45,
-      "age_days": 154,
-      "detected_at": "2026-10-02T01:15:50.689028+00:00"
+      "age_days": 155,
+      "detected_at": "2026-10-03T02:20:23.498934+00:00"
     },
     {
       "group": "intl_macro",
       "series": "GB_gdp",
       "last_obs": "2026-04-01",
       "cadence_days": 45,
-      "age_days": 184,
-      "detected_at": "2026-10-02T01:15:50.689029+00:00"
+      "age_days": 185,
+      "detected_at": "2026-10-03T02:20:23.498935+00:00"
     },
     {
       "group": "intl_macro",
       "series": "EZ_yield_10y",
       "last_obs": "2026-01-01",
       "cadence_days": 45,
-      "age_days": 274,
-      "detected_at": "2026-10-02T01:15:50.689031+00:00"
+      "age_days": 275,
+      "detected_at": "2026-10-03T02:20:23.498936+00:00"
     },
     {
       "group": "intl_macro",
       "series": "EZ_short_3m",
       "last_obs": "2026-01-01",
       "cadence_days": 45,
-      "age_days": 274,
-      "detected_at": "2026-10-02T01:15:50.689032+00:00"
+      "age_days": 275,
+      "detected_at": "2026-10-03T02:20:23.498937+00:00"
     },
     {
       "group": "intl_macro",
       "series": "EZ_gdp",
       "last_obs": "2026-04-01",
       "cadence_days": 45,
-      "age_days": 184,
-      "detected_at": "2026-10-02T01:15:50.689033+00:00"
+      "age_days": 185,
+      "detected_at": "2026-10-03T02:20:23.498938+00:00"
     },
     {
       "group": "mempool",
       "series": "difficulty",
       "last_obs": "2026-09-19",
       "cadence_days": 3,
-      "age_days": 13,
-      "detected_at": "2026-10-02T01:17:49.322296+00:00"
+      "age_days": 14,
+      "detected_at": "2026-10-03T02:23:39.713602+00:00"
     },
     {
       "group": "fred",
       "series": "CSUSHPISA",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302381+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660432+00:00"
     },
     {
       "group": "fred",
       "series": "HOUST",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302389+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660439+00:00"
     },
     {
       "group": "fred",
       "series": "M2SL",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302392+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660441+00:00"
     },
     {
       "group": "fred",
       "series": "JPNASSETS",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302393+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660442+00:00"
     },
     {
       "group": "fred",
       "series": "PAYEMS",
-      "last_obs": "2026-08-01",
+      "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302395+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660444+00:00"
     },
     {
       "group": "fred",
       "series": "INDPRO",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302397+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660446+00:00"
     },
     {
       "group": "fred",
@@ -2648,706 +2645,706 @@
     {
       "group": "fred",
       "series": "SAHMREALTIME",
-      "last_obs": "2026-08-01",
+      "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302398+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660447+00:00"
     },
     {
       "group": "fred",
       "series": "RECPROUSM156N",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302400+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660448+00:00"
     },
     {
       "group": "fred",
       "series": "GDPNOW",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302401+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660449+00:00"
     },
     {
       "group": "fred",
       "series": "STICKCPIM157SFRBATL",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302403+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660451+00:00"
     },
     {
       "group": "fred",
       "series": "CORESTICKM157SFRBATL",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302404+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660452+00:00"
     },
     {
       "group": "fred",
       "series": "FLEXCPIM157SFRBATL",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302406+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660453+00:00"
     },
     {
       "group": "fred",
       "series": "MEDCPIM158SFRBCLE",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302407+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660454+00:00"
     },
     {
       "group": "fred",
       "series": "CPIAUCSL",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302409+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660456+00:00"
     },
     {
       "group": "fred",
       "series": "CPILFESL",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302411+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660457+00:00"
     },
     {
       "group": "fred",
       "series": "PCEPI",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302412+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660458+00:00"
     },
     {
       "group": "fred",
       "series": "PCEPILFE",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302414+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660460+00:00"
     },
     {
       "group": "fred",
       "series": "PPIFIS",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302415+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660461+00:00"
     },
     {
       "group": "fred",
       "series": "PPIFES",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302417+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660462+00:00"
     },
     {
       "group": "fred",
       "series": "ECIALLCIV",
       "last_obs": "2026-04-01",
       "cadence_days": 5,
-      "age_days": 184,
-      "detected_at": "2026-10-02T00:09:47.302418+00:00"
+      "age_days": 185,
+      "detected_at": "2026-10-03T01:29:20.660463+00:00"
     },
     {
       "group": "fred",
       "series": "ECIWAG",
       "last_obs": "2026-04-01",
       "cadence_days": 5,
-      "age_days": 184,
-      "detected_at": "2026-10-02T00:09:47.302419+00:00"
+      "age_days": 185,
+      "detected_at": "2026-10-03T01:29:20.660464+00:00"
     },
     {
       "group": "fred",
       "series": "CUSR0000SASLE",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302421+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660465+00:00"
     },
     {
       "group": "fred",
       "series": "CUSR0000SAH1",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302422+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660467+00:00"
     },
     {
       "group": "fred",
       "series": "EXPINF1YR",
       "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 31,
-      "detected_at": "2026-10-02T00:09:47.302428+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660472+00:00"
     },
     {
       "group": "fred",
       "series": "EXPINF5YR",
       "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 31,
-      "detected_at": "2026-10-02T00:09:47.302430+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660473+00:00"
     },
     {
       "group": "fred",
       "series": "EXPINF10YR",
       "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 31,
-      "detected_at": "2026-10-02T00:09:47.302432+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660475+00:00"
     },
     {
       "group": "fred",
       "series": "UMCSENT",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302433+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660476+00:00"
     },
     {
       "group": "fred",
       "series": "MICH",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302434+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660477+00:00"
     },
     {
       "group": "fred",
       "series": "AWHMAN",
-      "last_obs": "2026-08-01",
+      "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302436+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660481+00:00"
     },
     {
       "group": "fred",
       "series": "PERMIT",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302437+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660482+00:00"
     },
     {
       "group": "fred",
       "series": "NEWORDER",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302439+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660484+00:00"
     },
     {
       "group": "fred",
       "series": "W875RX1",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302441+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660485+00:00"
     },
     {
       "group": "fred",
       "series": "CMRMTSPL",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302442+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660486+00:00"
     },
     {
       "group": "fred",
       "series": "UEMPMEAN",
-      "last_obs": "2026-08-01",
+      "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302443+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660488+00:00"
     },
     {
       "group": "fred",
       "series": "ISRATIO",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302445+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660489+00:00"
     },
     {
       "group": "fred",
       "series": "BUSLOANS",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302446+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660491+00:00"
     },
     {
       "group": "fred",
       "series": "MPRIME",
       "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 31,
-      "detected_at": "2026-10-02T00:09:47.302447+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660494+00:00"
     },
     {
       "group": "fred",
       "series": "CUSR0000SAS",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302449+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660495+00:00"
     },
     {
       "group": "fred",
       "series": "USREC",
       "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 31,
-      "detected_at": "2026-10-02T00:09:47.302451+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660497+00:00"
     },
     {
       "group": "fred",
       "series": "IRSTCI01JPM156N",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302453+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660498+00:00"
     },
     {
       "group": "fred",
       "series": "IR3TIB01AUM156N",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302454+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660499+00:00"
     },
     {
       "group": "fred",
       "series": "IR3TIB01GBM156N",
       "last_obs": "2026-01-01",
       "cadence_days": 5,
-      "age_days": 274,
-      "detected_at": "2026-10-02T00:09:47.302456+00:00"
+      "age_days": 275,
+      "detected_at": "2026-10-03T01:29:20.660500+00:00"
     },
     {
       "group": "fred",
       "series": "IR3TIB01CAM156N",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302457+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660501+00:00"
     },
     {
       "group": "fred",
       "series": "IR3TIB01CHM156N",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302458+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660502+00:00"
     },
     {
       "group": "fred",
       "series": "IRLTLT01EZM156N",
       "last_obs": "2026-01-01",
       "cadence_days": 5,
-      "age_days": 274,
-      "detected_at": "2026-10-02T00:09:47.302460+00:00"
+      "age_days": 275,
+      "detected_at": "2026-10-03T01:29:20.660503+00:00"
     },
     {
       "group": "fred",
       "series": "IRLTLT01JPM156N",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302461+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660504+00:00"
     },
     {
       "group": "fred",
       "series": "IRLTLT01GBM156N",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302463+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660505+00:00"
     },
     {
       "group": "fred",
       "series": "IRLTLT01AUM156N",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302464+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660507+00:00"
     },
     {
       "group": "fred",
       "series": "IRLTLT01CAM156N",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302465+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660508+00:00"
     },
     {
       "group": "fred",
       "series": "IRLTLT01CHM156N",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302466+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660509+00:00"
     },
     {
       "group": "fred",
       "series": "RBUSBIS",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302467+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660510+00:00"
     },
     {
       "group": "fred",
       "series": "RBXMBIS",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302469+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660511+00:00"
     },
     {
       "group": "fred",
       "series": "RBJPBIS",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302470+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660512+00:00"
     },
     {
       "group": "fred",
       "series": "RBGBBIS",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302471+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660513+00:00"
     },
     {
       "group": "fred",
       "series": "RBAUBIS",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302473+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660514+00:00"
     },
     {
       "group": "fred",
       "series": "RBCABIS",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302474+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660516+00:00"
     },
     {
       "group": "fred",
       "series": "RBCHBIS",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302475+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660517+00:00"
     },
     {
       "group": "fred",
       "series": "RBMXBIS",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302477+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660518+00:00"
     },
     {
       "group": "fred",
       "series": "RBBRBIS",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302478+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660519+00:00"
     },
     {
       "group": "fred",
       "series": "RBCNBIS",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302479+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660520+00:00"
     },
     {
       "group": "fred",
       "series": "TCU",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302480+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660521+00:00"
     },
     {
       "group": "fred",
       "series": "MCUMFN",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302481+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660522+00:00"
     },
     {
       "group": "fred",
       "series": "CAPUTLG3344S",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302483+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660523+00:00"
     },
     {
       "group": "fred",
       "series": "CAPUTLG334S",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302484+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660524+00:00"
     },
     {
       "group": "fred",
       "series": "CAPUTLG331S",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302487+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660525+00:00"
     },
     {
       "group": "fred",
       "series": "CAPUTLG211S",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302488+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660526+00:00"
     },
     {
       "group": "fred",
       "series": "IPG3344S",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302490+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660528+00:00"
     },
     {
       "group": "fred",
       "series": "CAPG3344S",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302491+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660529+00:00"
     },
     {
       "group": "fred",
       "series": "MNFCTRIRSA",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302492+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660530+00:00"
     },
     {
       "group": "fred",
       "series": "AMTMUO",
-      "last_obs": "2026-07-01",
+      "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302493+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660531+00:00"
     },
     {
       "group": "fred",
       "series": "AMTMVS",
-      "last_obs": "2026-07-01",
+      "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302495+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660532+00:00"
     },
     {
       "group": "fred",
       "series": "DGORDER",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302496+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660533+00:00"
     },
     {
       "group": "fred",
       "series": "PCU334413334413",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302497+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660534+00:00"
     },
     {
       "group": "fred",
       "series": "PCU331110331110",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302499+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660535+00:00"
     },
     {
       "group": "fred",
       "series": "DTCISA156MSFRBPHI",
       "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 31,
-      "detected_at": "2026-10-02T00:09:47.302500+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660536+00:00"
     },
     {
       "group": "fred",
       "series": "DTMUAMFRBDAL",
       "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 31,
-      "detected_at": "2026-10-02T00:09:47.302501+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660537+00:00"
     },
     {
       "group": "fred",
       "series": "PFGIUAMFRBDAL",
       "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 31,
-      "detected_at": "2026-10-02T00:09:47.302502+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660538+00:00"
     },
     {
       "group": "fred",
       "series": "IPG2211S",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302504+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660539+00:00"
     },
     {
       "group": "fred",
       "series": "IPG2211A2N",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302505+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660540+00:00"
     },
     {
       "group": "fred",
       "series": "IPUTIL",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302506+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660541+00:00"
     },
     {
       "group": "fred",
       "series": "CAPUTLG2211S",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302508+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660542+00:00"
     },
     {
       "group": "fred",
       "series": "CAPUTLG2211A2S",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302509+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660543+00:00"
     },
     {
       "group": "fred",
       "series": "WPU0543",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302510+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660544+00:00"
     },
     {
       "group": "fred",
       "series": "PCU221122221122",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302512+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660546+00:00"
     },
     {
       "group": "fred",
       "series": "APU000072610",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302513+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660547+00:00"
     },
     {
       "group": "fred",
       "series": "JTSJOL",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302514+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660548+00:00"
     },
     {
       "group": "fred",
       "series": "ADPMNUSNERSA",
       "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 31,
-      "detected_at": "2026-10-02T00:09:47.302516+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660549+00:00"
     },
     {
       "group": "fred",
       "series": "UNRATE",
-      "last_obs": "2026-08-01",
+      "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302517+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660550+00:00"
     },
     {
       "group": "fred",
       "series": "RSAFS",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302518+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660551+00:00"
     },
     {
       "group": "fred",
       "series": "USPRIV",
-      "last_obs": "2026-08-01",
+      "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302519+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660553+00:00"
     },
     {
       "group": "fred",
       "series": "USGOVT",
-      "last_obs": "2026-08-01",
+      "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302520+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660554+00:00"
     },
     {
       "group": "fred",
       "series": "CES0500000003",
-      "last_obs": "2026-08-01",
+      "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302522+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660555+00:00"
     },
     {
       "group": "fred",
       "series": "AWHAETP",
-      "last_obs": "2026-08-01",
+      "last_obs": "2026-09-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302523+00:00"
+      "age_days": 32,
+      "detected_at": "2026-10-03T01:29:20.660556+00:00"
     },
     {
       "group": "yahoo",
       "series": "CNH=F",
       "last_obs": "2026-09-11",
       "cadence_days": 5,
-      "age_days": 18,
-      "detected_at": "2026-09-29T04:32:37.169187+00:00"
+      "age_days": 22,
+      "detected_at": "2026-10-03T05:45:14.296721+00:00"
     },
     {
       "group": "china",
@@ -3386,56 +3383,56 @@
       "series": "TRMMEANCPIM158SFRBCLE",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302524+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660557+00:00"
     },
     {
       "group": "fred",
       "series": "JTSQUR",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302525+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660558+00:00"
     },
     {
       "group": "cot",
       "series": "cot_natgas",
       "last_obs": "2022-02-01",
       "cadence_days": 12,
-      "age_days": 1704,
-      "detected_at": "2026-10-02T01:18:22.724603+00:00"
+      "age_days": 1705,
+      "detected_at": "2026-10-03T02:24:18.504278+00:00"
     },
     {
       "group": "cot",
       "series": "cot_heating_oil",
       "last_obs": "2013-11-05",
       "cadence_days": 12,
-      "age_days": 4714,
-      "detected_at": "2026-10-02T01:18:22.724609+00:00"
+      "age_days": 4715,
+      "detected_at": "2026-10-03T02:24:18.504284+00:00"
     },
     {
       "group": "fred",
       "series": "CUSR0000SAF11",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302423+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660468+00:00"
     },
     {
       "group": "fred",
       "series": "CUUR0000SAG1",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302425+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660469+00:00"
     },
     {
       "group": "fred",
       "series": "CUSR0000SACL1E",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302426+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660471+00:00"
     },
     {
       "group": "fred",
@@ -3634,8 +3631,8 @@
       "series": "ebp",
       "last_obs": "2025-09-01",
       "cadence_days": 45,
-      "age_days": 396,
-      "detected_at": "2026-10-02T00:14:36.262572+00:00"
+      "age_days": 397,
+      "detected_at": "2026-10-03T01:35:23.469909+00:00"
     },
     {
       "group": "canada_breadth",
@@ -3658,104 +3655,104 @@
       "series": "EA",
       "last_obs": "2026-08-04",
       "cadence_days": 5,
-      "age_days": 59,
-      "detected_at": "2026-10-02T00:29:33.926874+00:00"
+      "age_days": 60,
+      "detected_at": "2026-10-03T01:51:49.521397+00:00"
     },
     {
       "group": "fred",
       "series": "TOTALSL",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302526+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660559+00:00"
     },
     {
       "group": "fred",
       "series": "REVOLSL",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302527+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660561+00:00"
     },
     {
       "group": "fred",
       "series": "NONREVSL",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302529+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660562+00:00"
     },
     {
       "group": "fred",
       "series": "PSAVERT",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302530+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660563+00:00"
     },
     {
       "group": "fred",
       "series": "DSPIC96",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302531+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660564+00:00"
     },
     {
       "group": "fred",
       "series": "DRCCLACBS",
       "last_obs": "2026-04-01",
       "cadence_days": 5,
-      "age_days": 184,
-      "detected_at": "2026-10-02T00:09:47.302532+00:00"
+      "age_days": 185,
+      "detected_at": "2026-10-03T01:29:20.660565+00:00"
     },
     {
       "group": "fred",
       "series": "DRSFRMACBS",
       "last_obs": "2026-04-01",
       "cadence_days": 5,
-      "age_days": 184,
-      "detected_at": "2026-10-02T00:09:47.302533+00:00"
+      "age_days": 185,
+      "detected_at": "2026-10-03T01:29:20.660566+00:00"
     },
     {
       "group": "fred",
       "series": "BOPGSTB",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302535+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660567+00:00"
     },
     {
       "group": "fred",
       "series": "BOPTEXP",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302536+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660569+00:00"
     },
     {
       "group": "fred",
       "series": "BOPTIMP",
       "last_obs": "2026-07-01",
       "cadence_days": 5,
-      "age_days": 93,
-      "detected_at": "2026-10-02T00:09:47.302537+00:00"
+      "age_days": 94,
+      "detected_at": "2026-10-03T01:29:20.660569+00:00"
     },
     {
       "group": "fred",
       "series": "IR",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302538+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660571+00:00"
     },
     {
       "group": "fred",
       "series": "IQ",
       "last_obs": "2026-08-01",
       "cadence_days": 5,
-      "age_days": 62,
-      "detected_at": "2026-10-02T00:09:47.302539+00:00"
+      "age_days": 63,
+      "detected_at": "2026-10-03T01:29:20.660574+00:00"
     },
     {
       "group": "china_stocks",

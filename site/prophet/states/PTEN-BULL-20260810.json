@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PTEN-BULL-20260810",
-  "asof": "2026-10-01",
+  "asof": "2026-10-02",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 40.5,
@@ -10,21 +10,21 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 96.5,
-    "progress": 0.0,
-    "pace": 20.7,
-    "retention": 0.0,
-    "overlay": 59.0
+    "validity": 100.0,
+    "progress": 7.7,
+    "pace": 19.3,
+    "retention": 10.2,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.974,
-    "dist_to_t1_r": 1.5,
-    "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 115.6,
-    "p1": -0.0173,
-    "p2": -0.0087,
+    "dist_to_stop_r": 1.082,
+    "dist_to_t1_r": 1.418,
+    "dist_to_t2_r": 2.918,
+    "horizon_pct_used": 117.8,
+    "p1": 0.0545,
+    "p2": 0.0273,
     "p3": null,
-    "move_r": -0.026,
+    "move_r": 0.082,
     "mfe_r": 0.803,
     "mae_r": -0.033
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 52,
-  "tau": 1.1556
+  "days_elapsed": 53,
+  "tau": 1.1778
 }

@@ -4731,3 +4731,8 @@
 {"date":"2026-10-02","ticker":"NOVT","departed":true,"left_desk":"2026-10-02","last_rank":null,"last_score":14}
 {"date":"2026-10-02","ticker":"NOW","departed":true,"left_desk":"2026-10-02","last_rank":30,"last_score":29}
 {"date":"2026-10-02","ticker":"OXY","departed":true,"left_desk":"2026-10-02","last_rank":null,"last_score":20}
+{"date":"2026-10-02","ticker":"BMY","rank":30,"score":30,"lean":1,"broken":false}
+{"date":"2026-10-02","ticker":"SABR","rank":null,"score":23,"lean":1,"broken":true}
+{"date":"2026-10-02","ticker":"BWXT","rank":null,"score":13,"lean":1,"broken":true}
+{"date":"2026-10-02","ticker":"IBM","rank":null,"score":13,"lean":1,"broken":true}
+{"date":"2026-10-02","ticker":"NFLX","rank":null,"score":13,"lean":1,"broken":true}

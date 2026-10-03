@@ -2,11 +2,11 @@
   "schema": "crypto.class_state/v1",
   "tier": "display",
   "display_only": true,
-  "as_of": "2026-10-02",
+  "as_of": "2026-10-03",
   "market": {
-    "stance": "Advancing with wider participation",
+    "stance": "Advancing, led by Bitcoin",
     "total_state": "Rising",
-    "dominance_state": "Falling",
+    "dominance_state": "Steady",
     "fear_state": "Greedy",
     "breadth_state": "Broad"
   },
@@ -26,13 +26,13 @@
       "trend": "Advancing",
       "risk": "Stressed",
       "relative": "Leading Bitcoin",
-      "coverage": "3,776 daily observations from Coinbase daily OHLCV."
+      "coverage": "3,777 daily observations from Coinbase daily OHLCV."
     },
     "SOL": {
       "trend": "Advancing",
       "risk": "Stressed",
       "relative": "Leading Bitcoin",
-      "coverage": "1,934 daily observations from Coinbase daily OHLCV."
+      "coverage": "1,935 daily observations from Coinbase daily OHLCV."
     }
   }
 }

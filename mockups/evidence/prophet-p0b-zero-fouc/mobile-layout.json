@@ -13,7 +13,7 @@
   },
   "browser": {
     "engine": "chromium",
-    "version": "153.0.8010.12"
+    "version": "151.0.7922.34"
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
@@ -541,7 +541,7 @@
     "site/stocktable.js": "c5387799d9ba5988f4b8859eb34d8fac3f91e36584ba78e567a2384c083eb22c",
     "site/tablesort.js": "484d93337c0288b95b920d82d893600c97d7e4313c715d6bd9263222c9e4cc78",
     "site/theme.css": "d6d5207461084867fa835042037b0393deccb193498e946b2c5eef414d0c4f0e",
-    "site/theme.js": "8683471719b6718595b14dc57ac1db622fdba304ecfd9b17b30cbbc2f9617187"
+    "site/theme.js": "405fef2c35728dd698029dd4de382bb04caa193b7480e3471b2e1b48136af303"
   },
   "viewport": {
     "width": 390,
@@ -3193,7 +3193,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-dark-390.png",
           "width": 390,
-          "sha256": "c2013b3f8b960eb30467bd5aa96a12ebbb6136bc943bd54b99c7d0ebcfbea715",
+          "sha256": "4d9e6e32785c53dac873b5f9d3503ce7d72ac3d15281566617ceacf9d5f74d78",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png"
         },
         "console_exceptions": [],
@@ -4577,7 +4577,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-dark-1440.png",
           "width": 1440,
-          "sha256": "fff64f1b5b0971d503711eccf0797faa3676c0036a5185de2d3c45613e97c13b",
+          "sha256": "1222e1b8547642fc92588e16c505537fa2283d308869f242d8352d951efd3fe1",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png"
         },
         "console_exceptions": [],
@@ -5961,7 +5961,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-light-390.png",
           "width": 390,
-          "sha256": "748b4e6c3f26d44ea1a56668921864d8fb611bf72ada18c9f8f94c9e202dd357",
+          "sha256": "7da4ae947d84d33f2436a1552f50a973a785603567e16742efcd6d0dbfd3cc5e",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png"
         },
         "console_exceptions": [],
@@ -7345,7 +7345,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-light-1440.png",
           "width": 1440,
-          "sha256": "736751b2ce069879b6bf9567d960d5ca811b804655f3c127a6811ece86f5f036",
+          "sha256": "f76afb32ca254ef1e63b92a3c5b58df73a5ca43ff3960f9a332de8355b1b1ecb",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png"
         },
         "console_exceptions": [],
@@ -8729,7 +8729,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-dark-390.png",
           "width": 390,
-          "sha256": "46a284d251978403abb559d72891c5783592957f652a139b9f0453c6bc47aa9f",
+          "sha256": "d3e052d64ce5c3a2a7536974dfcf4596e463e7d8c392b325f067714146d79d5f",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png"
         },
         "console_exceptions": [],
@@ -10113,7 +10113,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-dark-1440.png",
           "width": 1440,
-          "sha256": "35d31ec5356ef00aeeb01e582139fe10a90c86d25e1fb5490b8147da06aef713",
+          "sha256": "a24354464e429498b28a5ca22371c9f988a2c08baa408db9376a8e11080dd00b",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png"
         },
         "console_exceptions": [],
@@ -11497,7 +11497,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-light-390.png",
           "width": 390,
-          "sha256": "4900738b613943fff6b695146301febfc3e82216be82e876249f625da34f74d1",
+          "sha256": "d3a438987d3fab13a98a2dce1cee8c79553dc85bc7615fddad97551a9633ac87",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png"
         },
         "console_exceptions": [],
@@ -12881,7 +12881,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-light-1440.png",
           "width": 1440,
-          "sha256": "fbe97d2a20c5c9540e6e3f18bfb54fbee3bc319cc6f64b3c05672ee26d22a950",
+          "sha256": "311a22b4bf879f91573555a049eed38e3e41c2851026c97b0967a2b35ce101f8",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png"
         },
         "console_exceptions": [],
