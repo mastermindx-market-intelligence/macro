@@ -236,6 +236,7 @@ def _latest_earth_date(now: datetime | None = None) -> "date":
     now = now or _utcnow()
     if now.tzinfo is None:
         now = now.replace(tzinfo=timezone.utc)
+    now = now.astimezone(timezone.utc)
     return (now + timedelta(hours=_LATEST_EARTH_DATE_OFFSET_HOURS)).date()
 
 
@@ -288,6 +289,9 @@ def _classify_source_clock(asof_val: Any, now: datetime | None = None) -> dict:
             age_now = (now or _utcnow())
             if now is None:
                 age_now = _utcnow()
+            if age_now.tzinfo is None:
+                age_now = age_now.replace(tzinfo=timezone.utc)
+            age_now = age_now.astimezone(timezone.utc)
             age_days = (age_now.date() - day).days
             if age_days >= _STALE_DAYS:
                 return {"as_of": s, "as_of_reason": "stale"}
@@ -302,6 +306,7 @@ def _classify_source_clock(asof_val: Any, now: datetime | None = None) -> dict:
         ref_now = now or _utcnow()
         if ref_now.tzinfo is None:
             ref_now = ref_now.replace(tzinfo=timezone.utc)
+        ref_now = ref_now.astimezone(timezone.utc)
         if dt_utc > ref_now:
             return {"as_of": dt_utc.isoformat(), "as_of_reason": "future_dated"}
         age_days = (ref_now.date() - dt_utc.date()).days
@@ -654,8 +659,9 @@ def _build_pathway(
     source_as_of: str | None = None,
     *,
     now: datetime | None = None,
+    driver_source: str = "market_drivers",
 ) -> dict:
-    """Build one pathway dict from market_drivers emitted structures.
+    """Build one pathway from emitted driver fields and their source subrecord.
 
     `as_of` is the build date (artifact-level metadata). `source_as_of` is the
     actual observation date the source emitted; it is the clock the reader
@@ -689,8 +695,8 @@ def _build_pathway(
     nodes.append(_make_node(
         node_id=driver_node_id,
         as_of=driver_clock["as_of"],
-        domain="market_drivers",
-        source_artifact="data/regime/latest.json#market_drivers",
+        domain=driver_source,
+        source_artifact=f"data/regime/latest.json#{driver_source}",
         entity=family,
         observation_en=_sanitize_text(direction_en or headline_en),
         observation_zh=direction_zh or "",
@@ -700,7 +706,10 @@ def _build_pathway(
         source_tier="display",
         lag_class="same_day",
         pathway_role="trigger",
-        evidence_refs=["market_drivers.primary"],
+        evidence_refs=(
+            ["risk_radar.dominant_scare", "risk_radar.top_score"]
+            if driver_source == "risk_radar" else ["market_drivers.primary"]
+        ),
         as_of_reason=driver_clock["as_of_reason"],
     ))
 
@@ -1085,6 +1094,7 @@ def compile(root: Path | None = None, *, now: datetime | None = None) -> dict:  
                         mapped_family, mapped_family, scare_md, chains, as_of, "primary",
                         source_as_of=rr_clock["as_of"],
                         now=built_dt,
+                        driver_source="risk_radar",
                     )
                     scare_pw["source_trigger"] = "risk_radar"
                     scare_pw["scare"] = dominant_scare
@@ -1114,7 +1124,7 @@ def compile(root: Path | None = None, *, now: datetime | None = None) -> dict:  
                             }
                             alt_pw = _build_pathway(
                                 d, d, alt_md, chains, as_of, "alternate",
-                                source_as_of=rr_clock["as_of"],
+                                source_as_of=md_clock["as_of"],
                                 now=built_dt,
                             )
                             alt_pw["family"] = alt_family

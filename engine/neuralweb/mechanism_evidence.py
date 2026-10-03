@@ -215,6 +215,9 @@ def project_evidence(payload: Any, *, now: datetime) -> dict:
             out['gaps'].append('invalid_pathway')
             continue
         p = {k: _token(raw.get(k)) for k in ('family', 'driver', 'pathway_role', 'coverage_basis')}
+        # Optional producer disclosure; keep legacy coverage_basis semantics.
+        if (reason := _token(raw.get('coverage_withheld_reason'))) is not None:
+            p['coverage_withheld_reason'] = reason
         p.update(_stamp(raw.get('as_of'), now))
         p.update(nodes=[], edges=[], gaps=[], confidence_ceiling='context_only')
         p['coherence'] = raw.get('coherence') if raw.get('coherence') in ('supported', 'partial', 'conflicted') else 'unknown'

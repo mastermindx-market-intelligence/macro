@@ -1561,3 +1561,59 @@ def test_refused_factor_state_yields_no_factor_pathway_with_disclosure(
         f"reason {expected_reason!r} (not a stale literal), got "
         f"{tc.get('as_of_reason')!r}"
     )
+
+
+# Selective42a qualification: preserve all incumbent assertions above.
+_OFFSET_CLOCK_CASES = [
+    ('2026-10-03', '2026-10-02T09:59:59+00:00', 'future_dated'),
+    ('2026-10-03', '2026-10-02T10:00:00+00:00', 'available'),
+    ('2026-10-03', '2026-10-02T10:00:01+00:00', 'available'),
+    ('2026-09-28', '2026-10-02T23:59:59+00:00', 'available'),
+    ('2026-09-28', '2026-10-03T00:00:00+00:00', 'stale'),
+    ('2026-09-28', '2026-10-03T00:00:01+00:00', 'stale'),
+    ('2026-10-02T18:00:00+08:00', '2026-10-02T09:59:59+00:00', 'future_dated'),
+    ('2026-10-02T09:00:00-01:00', '2026-10-02T10:00:00+00:00', 'available'),
+    ('2026-10-02T18:00:00+08:00', '2026-10-02T10:00:01+00:00', 'available'),
+    ('2026-09-28T23:00:00+00:00', '2026-10-02T23:59:59+00:00', 'available'),
+    ('2026-09-28T23:00:00+00:00', '2026-10-03T00:00:00+00:00', 'stale'),
+    ('2026-09-28T23:00:00+00:00', '2026-10-03T00:00:01+00:00', 'stale'),
+]
+
+
+@pytest.mark.parametrize('offset_minutes', [-720, 0, 330, 840])
+@pytest.mark.parametrize('source_clock,instant,expected', _OFFSET_CLOCK_CASES)
+def test_source_clock_equivalent_observation_offsets(source_clock, instant, expected, offset_minutes):
+    from engine.neuralweb.mechanism_pathways import _latest_earth_date
+    utc_now = datetime.fromisoformat(instant)
+    other_now = utc_now.astimezone(timezone(timedelta(minutes=offset_minutes)))
+    assert other_now == utc_now
+    actual = _classify_source_clock(source_clock, now=other_now)
+    assert actual == _classify_source_clock(source_clock, now=utc_now)
+    assert actual['as_of_reason'] == expected
+    assert _latest_earth_date(other_now) == _latest_earth_date(utc_now)
+
+
+@pytest.mark.parametrize('source_clock', ['2026-10-03', '2026-09-28T12:00:00Z', '2026-10-02T09:00:00'])
+def test_naive_observation_clock_keeps_existing_utc_assumption(source_clock):
+    naive_now = datetime(2026, 10, 2, 9, 30)
+    assert _classify_source_clock(source_clock, now=naive_now) == _classify_source_clock(
+        source_clock, now=naive_now.replace(tzinfo=timezone.utc),
+    )
+
+
+@pytest.mark.parametrize('offset_minutes', [-720, 0, 330, 840])
+def test_offset_normalization_does_not_rewrite_build_metadata(tmp_path, offset_minutes):
+    observed = datetime(2026, 10, 2, 23, 30, tzinfo=timezone.utc).astimezone(
+        timezone(timedelta(minutes=offset_minutes)),
+    )
+    regime = _make_regime(md_asof='2026-10-03', rr_asof='2026-10-03')
+    _make_regime_files(tmp_path, regime)
+    result = compile(tmp_path, now=observed)
+    assert result['built'] == observed.isoformat()
+    assert result['as_of'] == observed.strftime('%Y-%m-%d')
+    assert result['clock_basis'] == 'source_clock_v1'
+    assert result['pathways']
+    nodes = [node for pathway in result['pathways'] for node in pathway['nodes']]
+    assert nodes and all(node['as_of'] == '2026-10-03' for node in nodes)
+    assert all(node['as_of_reason'] == 'available' for node in nodes)
+
