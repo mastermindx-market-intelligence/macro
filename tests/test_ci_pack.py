@@ -4578,6 +4578,21 @@ CURATED_EXCLUSIVE = {
     # (site/**, data/**) onto them — files that cannot move either verdict.
     "validated-claims-source",
     "validated-claims-contract",
+    # 2026-10-03 Terminal599 OA-1C canonical-history repair (#8342 follow-up):
+    # the options-alpha candidate feed composer is a code-plane artifact
+    # (engine/options_alpha_candidate_feed.py + every schema it validates
+    # against + the formation policy v2 JSON + the architecture / OA-1C
+    # DECs), not a flow-surface data artefact. The composer was previously
+    # registered on the gate:data flow-surface job; that lane's broader
+    # site/templates/data ownership was reaching the test path through
+    # opaque-fallback inference, and a future edit to a flow-surface file
+    # could select this suite without the right behavioural checks running.
+    # The exclusive declaration pins the exact transitive closure of the
+    # composer (campaign engine + signal episode + ledger lane + session
+    # digest + lib helpers + OPTIONS_SIGNAL_CAMPAIGN_V2_PREREG the test
+    # reaches through dynamic importlib loads); widening is always the
+    # safe direction.
+    "options-alpha-candidate-feed",
 }
 
 
