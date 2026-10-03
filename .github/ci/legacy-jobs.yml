@@ -412,9 +412,9 @@ jobs:
     # every source-side custody boundary a contract: candidate_identity =
     # sha256(policy_id, campaign_id, first_qualifying_campaign_revision_id),
     # frozen_formation is sealed against the canonical campaign-row bytes,
-    # first-qualifying is gated by formation formed_at (a late qualifier that
-    # arrived AFTER this revision's formed_at cannot retroactively qualify
-    # this revision — only a later revision whose formed_at follows it can),
+    # first-qualifying uses the frozen decision-clock policy: measured evidence
+    # is eligible only when available_at <= decision_at; an already sealed
+    # candidate retains its immutable first qualifying revision on later replay,
     # versioned_updates reflects exactly the physical-prefix membership,
     # the publication receipt splits snapshot binding from
     # transition validation, the transition requires the exact immediate
@@ -436,6 +436,7 @@ jobs:
     scope: exclusive
     paths:
       # composer + transitive engine closure
+      - "engine/__init__.py"
       - "engine/options_alpha_candidate_feed.py"
       - "engine/options_signal_campaign.py"
       - "engine/options_signal_episode.py"
@@ -444,6 +445,7 @@ jobs:
       - "engine/session_digest.py"
       # lib helpers the campaign engine imports at module scope
       - "lib/__init__.py"
+      - "lib/config.py"
       - "lib/nyse_calendar.py"
       # schemas the composer validates against (CAMPAIGN_SCHEMA +
       # CANDIDATE_FEED_V2_SCHEMA_FILENAME + ACTIVATION_RECEIPT_SCHEMA_FILENAME
@@ -478,6 +480,25 @@ jobs:
       # test (recovery / new-host / 4 generations / 412 + payload race).
       - "scripts/publish_options_alpha_candidate_r2.py"
       - "tests/test_publish_options_alpha_candidate_r2.py"
+      # daily caller + post-formation outcome enrichment closure
+      - "scripts/__init__.py"
+      - "scripts/build_options_alpha_candidate_feed.py"
+      - "engine/options_alpha_candidate_outcome_enrichment.py"
+      - "tests/test_build_options_alpha_candidate_feed.py"
+      - "tests/test_options_alpha_candidate_outcome_enrichment.py"
+      - "tests/test_options_signal_campaign_effective_view.py"
+      # enrichment validates effective campaign outcomes and correction binding
+      - "contracts/options/options.signal_campaign_outcome.v1.schema.json"
+      - "contracts/options/options.signal_campaign_checkpoint.v1.schema.json"
+      - "contracts/options/options.signal_campaign_checkpoint.v2.schema.json"
+      - "contracts/options/options.signal_episode.v1.schema.json"
+      - "contracts/options/options.signal_episode_outcome.v1.schema.json"
+      - "contracts/options/options.signal_episode_session_outcome.v1.schema.json"
+      - "contracts/options/polygon.intraday_price_receipt.v1.schema.json"
+      - "research/options_estate/options_signal_campaign_outcome_correction_prereg_v1.json"
+      # the daily caller exercises the canonical event-stage parser for its
+      # measured original-decision projection.
+      - "scripts/build_options_signal_episode.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -491,7 +512,12 @@ jobs:
         # in the campaign engine. requests: the engine's HTTP-side helpers.
         run: pip install pytest jsonschema pandas pyarrow pyyaml exchange-calendars requests
       - name: options alpha candidate feed v2 (pure receipt-bound composer, frozen formation, late-qualifier boundary, publication receipt snapshot vs transition) + CAS publisher behavioural suite
-        run: python -m pytest tests/test_options_alpha_candidate_feed.py tests/test_publish_options_alpha_candidate_r2.py -q
+        run: >-
+          PYTHONPATH=tests:scripts python -m pytest
+          tests/test_options_alpha_candidate_feed.py
+          tests/test_publish_options_alpha_candidate_r2.py
+          tests/test_build_options_alpha_candidate_feed.py
+          tests/test_options_alpha_candidate_outcome_enrichment.py -q
 
   all-exports-resolve:
     if: ${{ false }}

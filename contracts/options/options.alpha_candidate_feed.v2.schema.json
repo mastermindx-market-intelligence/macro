@@ -515,6 +515,326 @@
         },
         "versioned_updates": {
           "$ref": "#/$defs/candidate/properties/versioned_updates"
+        },
+        "post_formation_outcomes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schema",
+            "join_revision_id",
+            "horizons"
+          ],
+          "properties": {
+            "schema": {
+              "const": "options.alpha_candidate_post_formation_outcomes/v1"
+            },
+            "join_revision_id": {
+              "type": "string",
+              "pattern": "^ocrev_[a-f0-9]{24}$"
+            },
+            "horizons": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "h60",
+                "eod",
+                "1d",
+                "3d",
+                "5d",
+                "10d"
+              ],
+              "properties": {
+                "h60": {
+                  "$ref": "#/$defs/postFormationOutcome"
+                },
+                "eod": {
+                  "$ref": "#/$defs/postFormationOutcome"
+                },
+                "1d": {
+                  "$ref": "#/$defs/postFormationOutcome"
+                },
+                "3d": {
+                  "$ref": "#/$defs/postFormationOutcome"
+                },
+                "5d": {
+                  "$ref": "#/$defs/postFormationOutcome"
+                },
+                "10d": {
+                  "$ref": "#/$defs/postFormationOutcome"
+                }
+              }
+            }
+          }
+        },
+        "campaign_context": {
+          "$ref": "#/$defs/campaignContext"
+        }
+      }
+    },
+    "postFormationOutcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "campaign_outcome_id",
+        "campaign_revision_id",
+        "horizon",
+        "source_physical_ordinal",
+        "source_physical_row_sha256",
+        "status",
+        "reason",
+        "campaign_available_at",
+        "computed_at",
+        "target_time",
+        "matured_at",
+        "underlying",
+        "source_outcome",
+        "source_outcome_prefix"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "available",
+            "pending",
+            "unavailable"
+          ]
+        },
+        "campaign_outcome_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^ocout_[a-f0-9]{24}$"
+        },
+        "campaign_revision_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^ocrev_[a-f0-9]{24}$"
+        },
+        "horizon": {
+          "enum": [
+            "h60",
+            "eod",
+            "1d",
+            "3d",
+            "5d",
+            "10d"
+          ]
+        },
+        "source_physical_ordinal": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "source_physical_row_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "campaign_available_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "computed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "target_time": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "matured_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "underlying": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "ret",
+                "mfe",
+                "mae"
+              ],
+              "properties": {
+                "status": {
+                  "enum": [
+                    "complete",
+                    "unavailable"
+                  ]
+                },
+                "ret": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "mfe": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "mae": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "source_outcome": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "row",
+                "row_sha256",
+                "schema",
+                "outcome_id",
+                "episode_id",
+                "horizon_anchor",
+                "price_receipt_sha256",
+                "price_source",
+                "price_vintage",
+                "source_receipt_schema"
+              ],
+              "properties": {
+                "path": {
+                  "enum": [
+                    "data/options_signal_episode/outcomes_h60.jsonl",
+                    "data/options_signal_episode/outcomes_session.jsonl"
+                  ]
+                },
+                "row": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "row_sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "schema": {
+                  "enum": [
+                    "options.signal_episode_outcome/v1",
+                    "options.signal_episode_session_outcome/v1"
+                  ]
+                },
+                "outcome_id": {
+                  "type": "string",
+                  "pattern": "^oout_[a-f0-9]{24}$"
+                },
+                "episode_id": {
+                  "type": "string",
+                  "pattern": "^osep_[a-f0-9]{24}$"
+                },
+                "horizon_anchor": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "price_receipt_sha256": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "price_source": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "price_vintage": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                },
+                "source_receipt_schema": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "source_outcome_prefix": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "records",
+                "prefix_sha256"
+              ],
+              "properties": {
+                "path": {
+                  "enum": [
+                    "data/options_signal_episode/outcomes_h60.jsonl",
+                    "data/options_signal_episode/outcomes_session.jsonl"
+                  ]
+                },
+                "records": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "prefix_sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
+          ]
         }
       }
     },
@@ -1011,6 +1331,109 @@
         },
         "may_create_tactical_event": {
           "const": false
+        }
+      }
+    },
+    "campaignContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "campaign_revision_id",
+        "group",
+        "flow_side_counts",
+        "intent"
+      ],
+      "properties": {
+        "schema": {
+          "const": "options.alpha_candidate_campaign_context/v1"
+        },
+        "campaign_revision_id": {
+          "type": "string",
+          "pattern": "^ocrev_[a-f0-9]{24}$"
+        },
+        "group": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "session_date",
+            "ticker",
+            "right",
+            "expiration",
+            "strike",
+            "strike_key"
+          ],
+          "properties": {
+            "session_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "ticker": {
+              "type": "string",
+              "pattern": "^[A-Z0-9.^=-]+$"
+            },
+            "right": {
+              "enum": [
+                "C",
+                "P"
+              ]
+            },
+            "expiration": {
+              "type": "string",
+              "format": "date"
+            },
+            "strike": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "strike_key": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]*[1-9])?$"
+            }
+          }
+        },
+        "flow_side_counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "~buy",
+            "~sell",
+            "mixed"
+          ],
+          "properties": {
+            "~buy": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "~sell": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "mixed": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "intent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "opening_closing",
+            "direction_reliability",
+            "accumulation_distribution"
+          ],
+          "properties": {
+            "opening_closing": {
+              "const": "unavailable"
+            },
+            "direction_reliability": {
+              "const": "soft"
+            },
+            "accumulation_distribution": {
+              "const": "unavailable"
+            }
+          }
         }
       }
     }

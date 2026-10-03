@@ -19,7 +19,7 @@
 #                     paths and remove only campaign-v2 builder-owned additions.
 #                     Both publishers leave HEAD unchanged, so all same-run narrow
 #                     mutations are removed before the broad engine commit.
-#   assert-integrity  Terminal fail-closed gate over all four workflow outcomes.
+#   assert-integrity  Terminal fail-closed gate over episode, campaign, and candidate outcomes.
 
 set -euo pipefail
 
@@ -581,11 +581,12 @@ assert_integrity() {
   if [ "${OIP_EPISODE_BUILD_OUTCOME:-}" = success ] && \
      [ "${OIP_EPISODE_PUBLISH_OUTCOME:-}" = success ] && \
      [ "${OIP_CAMPAIGN_BUILD_OUTCOME:-}" = success ] && \
-     [ "${OIP_CAMPAIGN_PUBLISH_OUTCOME:-}" = success ]; then
+     [ "${OIP_CAMPAIGN_PUBLISH_OUTCOME:-}" = success ] && \
+     [ "${OIP_CANDIDATE_BUILD_OUTCOME:-}" = success ]; then
     echo "OIP PIT integrity passed"
     return 0
   fi
-  echo "::error title=OIP PIT integrity::episode/campaign build or narrow publication failed"
+  echo "::error title=OIP PIT integrity::episode/campaign/candidate build or narrow publication failed"
   return 1
 }
 
