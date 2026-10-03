@@ -158,6 +158,83 @@ def _window_phrases(prior_rows: list[dict], book: list[dict]) -> set[str]:
     return acc
 
 
+def _source_locator(row: dict) -> str:
+    """Stable source locator for revision grouping, backward-compatible with old rows."""
+    v = str(row.get("source_locator_id") or "").strip()
+    if v:
+        return v
+    basis = f"{str(row.get('organ') or '').strip()}|{str(row.get('url') or '').strip()}"
+    return hashlib.sha1(basis.encode("utf-8")).hexdigest()[:16]
+
+
+def _content_fingerprint(row: dict) -> str:
+    """Use the collector fingerprint when present; derive it for legacy rows."""
+    v = str(row.get("content_sha256") or "").strip()
+    if v:
+        return v
+    text = f"{str(row.get('title') or '')}\n{str(row.get('body') or '')}"
+    return hashlib.sha256(text.encode("utf-8")).hexdigest() if text.strip() else ""
+
+
+def _separate_document_revisions(
+    today_rows: list[dict],
+    prior_rows: list[dict],
+) -> tuple[list[dict], list[dict], list[dict]]:
+    """Remove same-locator body/title revisions from normal novelty comparison.
+
+    An official page changing at the same source locator is evidence of a source
+    revision, not automatically evidence that policy language newly appeared or
+    disappeared.  Return clean today/prior rows plus explicit revision receipts.
+    """
+    by_locator: dict[str, list[dict]] = {}
+    for r in list(prior_rows) + list(today_rows):
+        by_locator.setdefault(_source_locator(r), []).append(r)
+
+    today_ids = {id(r) for r in today_rows}
+    revised_locators: set[str] = set()
+    revisions: list[dict] = []
+
+    for locator, rows in by_locator.items():
+        ordered = sorted(
+            rows,
+            key=lambda r: (
+                str(r.get("_crawled_at") or ""),
+                _content_fingerprint(r),
+                str(r.get("doc_id") or ""),
+            ),
+        )
+        prev: dict | None = None
+        for row in ordered:
+            if id(row) not in today_ids:
+                prev = row
+                continue
+            if prev is not None:
+                before = _content_fingerprint(prev)
+                after = _content_fingerprint(row)
+                if before and after and before != after:
+                    revised_locators.add(locator)
+                    revisions.append({
+                        "source_locator_id": locator,
+                        "organ": row.get("organ"),
+                        "url": row.get("url"),
+                        "title": row.get("title"),
+                        "source_published_at": row.get("seendate"),
+                        "observed_at": row.get("_crawled_at"),
+                        "previous_observed_at": prev.get("_crawled_at"),
+                        "supersedes_content_sha256": before,
+                        "content_sha256": after,
+                        "classification": "SOURCE_CONTENT_CHANGED_UNVERIFIED",
+                    })
+            prev = row
+
+    if not revised_locators:
+        return today_rows, prior_rows, revisions
+
+    clean_today = [r for r in today_rows if _source_locator(r) not in revised_locators]
+    clean_prior = [r for r in prior_rows if _source_locator(r) not in revised_locators]
+    return clean_today, clean_prior, revisions
+
+
 # --------------------------------------------------------------------------- #
 # event id — stable, content-defined
 # --------------------------------------------------------------------------- #
@@ -314,6 +391,7 @@ def compute_events(corpus_rows: list[dict], asof: str,
         by_organ.setdefault(str(r.get("organ") or ""), []).append(r)
 
     events: list[dict] = []
+    document_revisions: list[dict] = []
     cold: list[str] = []
 
     for organ, rows in by_organ.items():
@@ -322,32 +400,47 @@ def compute_events(corpus_rows: list[dict], asof: str,
         today_rows, prior_rows = _split_today_prior(rows, asof_day, window_days)
         if not today_rows:
             continue
+
+        # CIE-09: same-locator source revisions are explicitly preserved but
+        # cannot self-promote into ordinary APPEARED/DROPPED/LEAD_SHIFT novelty.
+        today_cmp, prior_cmp, revisions = _separate_document_revisions(
+            today_rows, prior_rows
+        )
+        document_revisions.extend(revisions)
+
         # appeared / dropped
-        evs, cold_start = diff_organ(organ, today_rows, prior_rows, book, asof_day)
+        evs, cold_start = diff_organ(organ, today_cmp, prior_cmp, book, asof_day)
         events.extend(evs)
         if cold_start:
             cold.append(organ)
         # lead-shift only for the layout organ (People's Daily); compare today's
         # lead vs the most recent prior crawl day's lead.
-        if any(int(r.get("layout_rank", -1)) >= 0 for r in today_rows):
-            prior_days = sorted({_crawl_day(r) for r in prior_rows
+        if any(int(r.get("layout_rank", -1)) >= 0 for r in today_cmp):
+            prior_days = sorted({_crawl_day(r) for r in prior_cmp
                                  if _crawl_day(r) < asof_day}, reverse=True)
             prior_layout: list[dict] = []
             if prior_days:
                 pd_day = prior_days[0]
-                prior_layout = [r for r in prior_rows if _crawl_day(r) == pd_day]
+                prior_layout = [r for r in prior_cmp if _crawl_day(r) == pd_day]
             events.extend(
-                diff_lead_shift(today_rows, prior_layout, book, organ, asof_day))
+                diff_lead_shift(today_cmp, prior_layout, book, organ, asof_day))
 
     counts = {
         "n_events": len(events),
         "n_appeared": sum(1 for e in events if e["kind"] == "APPEARED"),
         "n_dropped": sum(1 for e in events if e["kind"] == "DROPPED"),
         "n_lead_shift": sum(1 for e in events if e["kind"] == "LEAD_SHIFT"),
+        "n_document_revisions": len(document_revisions),
         "n_cold_start_organs": len(cold),
     }
-    return {"schema": SCHEMA, "asof": asof_day, "events": events,
-            "cold_start_organs": sorted(cold), "counts": counts}
+    return {
+        "schema": SCHEMA,
+        "asof": asof_day,
+        "events": events,
+        "document_revisions": document_revisions,
+        "cold_start_organs": sorted(cold),
+        "counts": counts,
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -555,10 +648,11 @@ def run(asof: date | str | None = None, root: Path | str | None = None,
     result["n_claims"] = n_claims
     result["is_context_only"] = True
     log.info("communique_diff.run: %s events (%s appeared / %s dropped / "
-             "%s lead-shift) — %d→qbus, %d→qledger (%d clock-refused), "
-             "cold_start=%s",
+             "%s lead-shift) + %s source revisions — %d→qbus, %d→qledger "
+             "(%d clock-refused), cold_start=%s",
              result["counts"]["n_events"], result["counts"]["n_appeared"],
              result["counts"]["n_dropped"], result["counts"]["n_lead_shift"],
+             result["counts"].get("n_document_revisions", 0),
              n_bus, n_claims, result.get("n_claims_clock_refused", 0),
              result["cold_start_organs"])
     return result
