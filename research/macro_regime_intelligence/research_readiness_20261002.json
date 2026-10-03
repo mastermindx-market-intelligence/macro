@@ -677,7 +677,7 @@
   "provenance": {
     "regeneration": {
       "command": "git show bf6921873ea40f5868e0428d04fd38f78cc62c11:data/signal_archive/track_record.parquet > /tmp/track_record_canonical.parquet && python3 -m research.macro_regime_intelligence.research_readiness_probe --archive /tmp/track_record_canonical.parquet --expected-sha256 52593efe19c6a248a56e956e5223b480fab9bb6a8838a750aace513f0e86be5b --merge-base bf6921873ea40f5868e0428d04fd38f78cc62c11",
-      "script_sha256": "051753df458b5e82374c77f4165efdf9c1c1fd260ff61a70c8da517110d188da",
+      "script_sha256": "6b17f3d783f6291960b34bb9e08ea17901543fc8d7a51cafd16a561e0c0c09dd",
       "archive_sha256": "52593efe19c6a248a56e956e5223b480fab9bb6a8838a750aace513f0e86be5b",
       "archive_bytes": 10903975,
       "merge_base": "bf6921873ea40f5868e0428d04fd38f78cc62c11",
@@ -711,6 +711,7 @@
         "post_cushion_breach",
         "terminal_state_clean15_126",
         "terminal_state_clean8_21",
+        "trade_mae",
         "trade_ret"
       ],
       "regenerate_diff": [],

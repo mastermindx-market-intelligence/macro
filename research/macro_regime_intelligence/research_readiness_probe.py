@@ -89,15 +89,25 @@ OUTCOME_FORBIDDEN_NAMES: frozenset[str] = frozenset(OUTCOME_COLUMNS) | frozenset
 def _is_forbidden(name: str) -> bool:
     """Return True if ``name`` is an outcome/return column the script may not read.
 
-    A name is forbidden if it is in :data:`OUTCOME_FORBIDDEN_NAMES`, OR if it
-    starts with ``fwd_`` or ``exit_``, OR if it contains ``outcome``,
-    ``trade_ret``, ``mfe``, ``mdd`` or ``terminal_state`` (as a substring).
+    The first line of defence is the receipt pin (see :func:`_pin_columns_read_to_receipt`);
+    the second is this blocklist. The comparison is case-insensitive: the name is
+    lower-cased first. A name is forbidden if it is in
+    :data:`OUTCOME_FORBIDDEN_NAMES`, OR if it starts with ``fwd_``, ``exit_``,
+    ``forward_`` or ``future_``, OR if it contains ``outcome``, ``trade_ret``,
+    ``mfe``, ``mdd``, ``mae``, ``pnl``, ``drawdown`` or ``terminal_state``
+    (as a substring).
     """
-    if name in OUTCOME_FORBIDDEN_NAMES:
+    lowered = name.lower()
+    if lowered in {n.lower() for n in OUTCOME_FORBIDDEN_NAMES}:
         return True
-    if name.startswith("fwd_") or name.startswith("exit_"):
+    if (lowered.startswith("fwd_") or lowered.startswith("exit_")
+            or lowered.startswith("forward_") or lowered.startswith("future_")):
         return True
-    return any(needle in name for needle in ("outcome", "trade_ret", "mfe", "mdd", "terminal_state"))
+    return any(
+        needle in lowered
+        for needle in ("outcome", "trade_ret", "mfe", "mdd", "mae", "pnl",
+                       "drawdown", "terminal_state")
+    )
 
 
 def _assert_columns_read_safe() -> None:
@@ -113,6 +123,43 @@ def _assert_columns_read_safe() -> None:
                 f"COLUMNS_READ contains a forbidden outcome column: {col!r}; "
                 "remove it from COLUMNS_READ before any data read"
             )
+
+
+def _pin_columns_read_to_receipt(receipt: dict[str, Any]) -> None:
+    """Pre-read guard: pin ``COLUMNS_READ`` to the receipt's ``source.columns_read``.
+
+    Runs BEFORE any data read (and after :func:`_assert_columns_read_safe`) so
+    widening the in-script read list requires a visible receipt edit. The
+    comparison is order- and identity-sensitive (``list(COLUMNS_READ) ==
+    receipt["source"]["columns_read"]``); a mismatch exits non-zero naming
+    the names that appear in each list but not the other, plus any duplicates
+    at either side, so an unintended re-add is caught on a single read.
+    """
+    expected = receipt.get("source", {}).get("columns_read")
+    if expected is None:
+        sys.stderr.write(
+            "receipt has no source.columns_read; refusing to run without a pin\n"
+        )
+        sys.exit(2)
+    actual = list(COLUMNS_READ)
+    expected_list = list(expected)
+    if actual != expected_list:
+        only_actual = [c for c in actual if c not in expected_list]
+        only_receipt = [c for c in expected_list if c not in actual]
+        duplicates_actual = sorted({c for c in actual if actual.count(c) > 1})
+        duplicates_receipt = sorted(
+            {c for c in expected_list if expected_list.count(c) > 1}
+        )
+        sys.stderr.write(
+            "COLUMNS_READ does not match receipt source.columns_read; "
+            f"len(COLUMNS_READ)={len(actual)} "
+            f"len(receipt)={len(expected_list)} "
+            f"only in COLUMNS_READ={only_actual!r} "
+            f"only in receipt={only_receipt!r} "
+            f"duplicates in COLUMNS_READ={duplicates_actual!r} "
+            f"duplicates in receipt={duplicates_receipt!r}\n"
+        )
+        sys.exit(2)
 
 
 def _archive_schema_names(path: Path) -> list[str]:
@@ -131,7 +178,12 @@ RECEIPT_PATH = Path(__file__).with_name("research_readiness_20261002.json")
 DEFAULT_ARCHIVE = Path("data/signal_archive/track_record.parquet")
 EXPECTED_SHA256 = "52593efe19c6a248a56e956e5223b480fab9bb6a8838a750aace513f0e86be5b"
 EXPECTED_BYTES = 10903975
-DEFAULT_MERGE_BASE = "bf6921873ea40f5868e0428d04fd38f78cc62c11"
+# Canonical archive commit on main. Distinct from ``DEFAULT_MERGE_BASE`` (the
+# pre-change engine module commit the oracle compares against) because the
+# archive bytes are pinned to a specific main descendant; renaming either is
+# a receipt change.
+ARCHIVE_COMMIT = "bf6921873ea40f5868e0428d04fd38f78cc62c11"
+DEFAULT_MERGE_BASE = ARCHIVE_COMMIT
 
 
 def _sha256_of(path: Path) -> str:
@@ -145,12 +197,14 @@ def _sha256_of(path: Path) -> str:
 def _assert_outcome_free(df_columns: list[str]) -> None:
     """Post-read guard: the loaded columns must equal ``COLUMNS_READ`` exactly.
 
-    The read is performed with ``columns=list(COLUMNS_READ)`` so the loaded
-    frame should match one-for-one. If anything else appears — including a
-    forbidden outcome column that slipped past the pre-read guard — the
-    read went somewhere the script does not authorise; the assertion names
-    the discrepancy so a future contributor cannot silently widen the allow
-    list.
+    This check enforces the ORDER and IDENTITY of the columns the read actually
+    returned against the list ``COLUMNS_READ`` declares. The pre-read blocklist
+    guard (:func:`_assert_columns_read_safe`) and the receipt pin
+    (:func:`_pin_columns_read_to_receipt`) are what stop anyone from widening
+    the allow list in the first place; this check exists to confirm the read
+    went where the script authorises and to name any discrepancy if it did
+    not — including a forbidden outcome column that slipped past either of
+    those two earlier gates.
     """
     loaded = list(df_columns)
     expected = list(COLUMNS_READ)
@@ -383,9 +437,10 @@ def _two_way_diff(receipt_val: Any, regen_val: Any,
     """Two-way field-by-field diff: a key present on only one side is a failure.
 
     Used for the receipt-vs-regeneration check. ``skip_keys`` is a tuple of
-    dict keys (compared at the current level only) whose values are not
-    compared — used to exclude the free-text ``note`` fields whose wording
-    is the engine's, not the receipt's, contract.
+    dict keys whose values are not compared at any depth — the same skip
+    propagates to every recursive call so ``note`` (which carries the engine's
+    free-text wording rather than a numeric contract) is excluded at every
+    level where it appears, not just at the level the caller passed in.
 
     Output lines name the dotted path of the divergence and a short reason
     so a reviewer can locate the failure on a single read.
@@ -483,6 +538,16 @@ def main(argv: list[str] | None = None) -> int:
     # silently widening the allow-list.
     _assert_columns_read_safe()
 
+    # --- R1d: pin the read list to the receipt ----------------------------------
+    # Load the committed receipt before any data read and require its
+    # ``source.columns_read`` to equal ``COLUMNS_READ`` exactly (order and
+    # identity). Widening the in-script read list therefore requires a
+    # visible receipt edit. Exits non-zero naming the names that appear in
+    # each list but not the other, plus any duplicates, so an unintended
+    # re-add is caught on a single read.
+    receipt = json.loads(args.receipt.read_text())
+    _pin_columns_read_to_receipt(receipt)
+
     repo_root = Path(__file__).resolve().parent.parent.parent
     # Walk up looking for the actual git toplevel in case the script is symlinked.
     import subprocess
@@ -518,7 +583,9 @@ def main(argv: list[str] | None = None) -> int:
     win = _within_each_stamping_window(df)
     jm = _joint_macro_cells(df)
 
-    receipt = json.loads(args.receipt.read_text())
+    # Receipt was already loaded + pinned by ``_pin_columns_read_to_receipt``
+    # before any data read; reuse the same dict so the ``--emit-json`` path
+    # below writes a single coherent receipt.
     drift: list[str] = []
 
     # --- R2: full, two-way regeneration check --------------------------------
@@ -600,7 +667,7 @@ def main(argv: list[str] | None = None) -> int:
                 "archive_bytes": args.archive.stat().st_size,
                 "merge_base": args.merge_base,
                 "archive_source": {
-                    "commit": args.merge_base,
+                    "commit": ARCHIVE_COMMIT,
                     "path": "data/signal_archive/track_record.parquet",
                     "bytes": EXPECTED_BYTES,
                     "sha256": args.expected_sha256,
