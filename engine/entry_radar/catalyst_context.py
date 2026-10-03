@@ -14,9 +14,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Iterable, Sequence
+from typing import TYPE_CHECKING, Any, Iterable, Mapping, Sequence
 
 from engine.entry_radar.contracts import AUTHORITY_BLOCK, SOURCE_STATUSES, iso, parse_ts
+
+if TYPE_CHECKING:
+    from engine.entry_radar.live_ledger import LiveEpisode
 
 SCHEMA = "mastermind.entry_radar.catalyst_context.v1"
 RADAR_EPISODE_SCHEMA = "mastermind.live_entry_episode.v1"
@@ -283,4 +286,55 @@ def assess_catalyst_context(
         unknown_evidence_refs=tuple(groups["unknown"]),
         nonblocking_evidence_refs=tuple(groups["nonblocking"]),
         late_evidence_refs=tuple(sorted(row.evidence_ref for row in late)),
+    )
+
+
+def assess_catalyst_context_for_live_episode(
+    *,
+    episode: "LiveEpisode | Mapping[str, Any]",
+    decision_at: datetime,
+    required_sources: Sequence[str],
+    source_reads: Sequence[CatalystSourceRead],
+    evidence: Sequence[CatalystEvidence],
+) -> CatalystContext:
+    """Bind catalyst context to one validated owner-issued Radar live episode.
+
+    This is a read-only composition seam. It does not mutate the episode, append catalyst
+    references to ``LiveEpisode.evidence_refs``, or mint an alternate episode address.
+    """
+    from engine.entry_radar.live_ledger import (  # noqa: PLC0415
+        LedgerError,
+        LiveEpisode,
+        compute_episode_id,
+    )
+
+    if isinstance(episode, LiveEpisode):
+        record = episode
+    elif isinstance(episode, Mapping):
+        try:
+            record = LiveEpisode.from_dict(episode)
+        except (LedgerError, KeyError, TypeError, ValueError) as exc:
+            raise CatalystContextError(f"invalid Live Entry Radar episode: {exc}") from exc
+    else:
+        raise CatalystContextError("episode must be a LiveEpisode or its exact mapping")
+
+    expected_id = compute_episode_id(
+        ticker=record.ticker,
+        detector_id=record.detector_id,
+        variant=record.variant,
+        first_armed_at=record.first_armed_at,
+    )
+    if record.episode_id != expected_id:
+        raise CatalystContextError(
+            f"Radar episode_id {record.episode_id!r} does not match owner identity "
+            f"tuple (expected {expected_id!r})"
+        )
+
+    return assess_catalyst_context(
+        ticker=record.ticker,
+        radar_episode_id=record.episode_id,
+        decision_at=decision_at,
+        required_sources=required_sources,
+        source_reads=source_reads,
+        evidence=evidence,
     )
