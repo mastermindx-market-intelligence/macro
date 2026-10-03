@@ -837,7 +837,7 @@ def test_compose_missing_final_micro_on_revision_one_defers_to_revision_two(
             snapshot_one, micro_map=missing_final, activation=ACTIVATION_RECEIPT
         )
     )
-    assert initial["header"]["candidate_count"] == 0
+    assert initial["header"]["formed_candidate_count"] == 0
     assert "FINAL_MEMBER_MICROSTRUCTURE_MISSING" in initial["abstentions"][0]["reasons"]
 
     third = {
@@ -1188,6 +1188,7 @@ def test_compose_previous_feed_duplicate_candidate_id_fails_closed(
 
     tampered = copy.deepcopy(first)
     tampered["formed_candidates"].append(copy.deepcopy(first["formed_candidates"][0]))  # duplicate id
+    tampered["header"]["formed_candidate_count"] = len(tampered["formed_candidates"])
     tampered = _reseal_feed(tampered)
 
     with pytest.raises(CandidateFeedContractError, match="unique candidate_ids"):
@@ -1462,7 +1463,7 @@ def test_compose_summarise_returns_stable_diagnostic(
 
     summary = summarise(feed)
     assert summary["feed_id"] == feed["feed_id"]
-    assert summary["candidate_count"] == 1
+    assert summary["formed_candidate_count"] == 1
     assert summary["policy_id"] == "oa_member_persistent_measured_campaign/v2"
     assert summary["fence_state"] == "post_activation"
     assert summary["publication_claim"] == "source_only_no_publication_effect"
@@ -1570,13 +1571,13 @@ def test_compose_prior_feed_integrity_binds_header_source_and_formation(
         )
 
     header_tamper = copy.deepcopy(first)
-    header_tamper["header"]["candidate_count"] = 2
+    header_tamper["header"]["formed_candidate_count"] = 2
     header_tamper["header"]["header_digest_sha256"] = "0" * 64
     with pytest.raises(CandidateFeedContractError, match="header seal"):
         invoke(header_tamper)
 
     header_reseal = _reseal_feed(copy.deepcopy(first))
-    header_reseal["header"]["candidate_count"] = 2
+    header_reseal["header"]["formed_candidate_count"] = 2
     with pytest.raises(CandidateFeedContractError, match="header seal"):
         invoke(header_reseal)
 
@@ -1828,6 +1829,10 @@ def test_late_earlier_qualifier_and_physical_update_interval(tmp_path: Path, mon
     monkeypatch.setenv("COLLECT_LANE", "nightly")
     specs = _episodes_for(True, count=2)
     third = {"source_event_id":"evt-002","available_at":"2026-08-13T14:02:00Z","session_date":"2026-08-13"}
+    # Build incrementally so the campaign engine emits two revisions
+    # (one at 2 members, one at 3 members) rather than collapsing to a
+    # single revision with all members at first sight.
+    _build_campaign_snapshot(tmp_path, episodes_specs=specs, monkeypatch=monkeypatch)
     snapshot = _build_campaign_snapshot(tmp_path, episodes_specs=specs + [third], monkeypatch=monkeypatch)
     micro = {x["source_event_id"]: _micro_for(x["source_event_id"], available_at=x["available_at"]) for x in specs + [third]}
     micro[specs[-1]["source_event_id"]] = _micro_for(specs[-1]["source_event_id"], available_at="2026-08-13T14:01:30Z")
