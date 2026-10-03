@@ -29,6 +29,12 @@ Binding adjacent owners:
 
 The R0 output carries an opaque existing `tactical_episode_ref`; it never mints or rewrites that identity.
 
+Radar's `mastermind.live_entry_episode.v1.evidence_refs` field remains owned by the incumbent
+Radar entry-event ledger and is populated from the episode's existing `event_ids`. Catalyst
+context does **not** append issuer-event/catalyst references into that field and does not mutate
+the live episode record. The join is an external research projection keyed by the existing
+tactical episode reference; owner-native catalyst refs remain inside the separate R0 context.
+
 ## 2. Killed constructions that remain killed
 
 This R0 must not reopen the following Mastermind laws:
@@ -151,6 +157,7 @@ The first implementation must prove:
 - exact duplicate evidence is idempotent;
 - conflicting duplicate evidence is rejected;
 - tactical episode reference is passed through exactly, not reminted;
+- the incumbent live episode record and its `evidence_refs` are not mutated by catalyst attachment;
 - output is deterministic;
 - every authority flag remains false;
 - `required_sources` cannot be empty.
