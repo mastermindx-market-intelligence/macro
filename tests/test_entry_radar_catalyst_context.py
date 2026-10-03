@@ -8,6 +8,7 @@ from engine.entry_radar.catalyst_context import (
     CatalystContextError,
     CatalystEvidence,
     CatalystSourceRead,
+    RADAR_EPISODE_SCHEMA,
     assess_catalyst_context,
 )
 
@@ -52,7 +53,7 @@ def _event(
 def _assess(**overrides):
     kwargs = dict(
         ticker="NVDA",
-        tactical_episode_ref="radar:episode:abc123",
+        radar_episode_id="0123456789abcdef",
         decision_at=T0,
         required_sources=["issuer_events"],
         source_reads=[_read()],
@@ -144,9 +145,13 @@ def test_conflicting_duplicate_evidence_fails_closed_at_contract_boundary():
         _assess(evidence=[a, b])
 
 
-def test_episode_reference_is_passed_through_not_reminted():
-    got = _assess(tactical_episode_ref="mastermind.live_entry_episode.v1:deadbeef")
-    assert got.tactical_episode_ref == "mastermind.live_entry_episode.v1:deadbeef"
+def test_owner_radar_episode_id_is_passed_through_without_wrapper_identity():
+    got = _assess(radar_episode_id="deadbeefdeadbeef")
+    payload = got.to_dict()
+    assert got.radar_episode_id == "deadbeefdeadbeef"
+    assert payload["radar_episode_schema"] == RADAR_EPISODE_SCHEMA
+    assert payload["radar_episode_id"] == "deadbeefdeadbeef"
+    assert "tactical_episode_ref" not in payload
 
 
 def test_output_is_deterministic_and_contains_no_strength_fields():
@@ -380,7 +385,7 @@ def test_known_company_blocking_event_remains_visible_when_coverage_is_incomplet
     )
     got = assess_catalyst_context(
         ticker="NVDA",
-        tactical_episode_ref="radar:episode:abc123",
+        radar_episode_id="0123456789abcdef",
         decision_at=T0,
         required_sources=["company_intelligence"],
         source_reads=[],
