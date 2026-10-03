@@ -147,6 +147,8 @@ _DATA_DIRS = {
                   # host that holds the ThetaData store, and a lost host means a lost
                   # rebuild input. Not in DEFAULT_DIRS: the ops lane publishes it
                   # explicitly (--dirs index_gex_history), never the nightly render.
+                  # When that dir is selected, INDEX_GEX_HISTORY_STORE replaces only
+                  # the local directory. Unset stays config.ROOT/data/index_gex_history.
     "options_skew",  # MO-PAID-013 W2-2 (A-F03-W2-2): ThetaData skew-accrual lane
                   # producer ledger (data/options_skew/snapshots.parquet,
                   # TRACKED on origin/main — bootstrap = 238,595 bytes /
@@ -547,8 +549,31 @@ def _manifest_ok(new_count: int, remote: dict | None, floor: float = 0.5) -> tup
     return True, f"{new_count} files (was {old})"
 
 
+def _index_gex_history_store_override(dirs) -> Path | None:
+    """Local directory for index_gex_history, or None to keep the default.
+
+    Honored only when that directory is selected. Unset keeps
+    config.ROOT/data/index_gex_history. A present empty, blank, relative,
+    missing, or non-directory value fails before ``_client`` and before any
+    network effect. Other directories do not consult this variable.
+    """
+    if "index_gex_history" not in dirs:
+        return None
+    if "INDEX_GEX_HISTORY_STORE" not in os.environ:
+        return None
+    raw = os.environ["INDEX_GEX_HISTORY_STORE"]
+    path = Path(raw)
+    if raw.strip() == "" or not path.is_absolute() or not path.is_dir():
+        raise SystemExit(
+            "INDEX_GEX_HISTORY_STORE must be an absolute existing directory, "
+            f"not {raw!r}"
+        )
+    return path
+
+
 def publish(dirs, dry_run: bool = False, workers: int = 32,
             manifest: bool = True, force_manifest: bool = False) -> int:
+    index_store = _index_gex_history_store_override(dirs)
     s3 = _client(workers)
     if s3 is None:
         log.info("no R2 creds (R2_ENDPOINT/ACCESS_KEY_ID/SECRET_ACCESS_KEY) — skip")
@@ -577,6 +602,8 @@ def publish(dirs, dry_run: bool = False, workers: int = 32,
             _store_overrides["thetadata_eod"] = _theta
     if ts := os.environ.get("ATTENTION_STORE"):
         _store_overrides["attention"] = Path(ts)
+    if index_store is not None:
+        _store_overrides["index_gex_history"] = index_store
     for d in dirs:
         # Per-ticker parquet stores live under data/<dir>, not site/<dir>.
         if d in _DATA_DIRS:

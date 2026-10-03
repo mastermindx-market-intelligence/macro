@@ -338,14 +338,17 @@ acquisition. Do not touch `flow-ops-wt/.git`. Do not copy `.env`, keys, the
 publisher sparse clone, or a broad `data/` tree. The Actions runner is not
 an allowed route while free disk space is under the 200 GiB floor.
 
-| Lane | Code root the job runs | Physical state that stays put | The only symlink |
+| Lane | Code root the job runs | Physical state that stays put | Output binding |
 |---|---|---|---|
-| Index history | `/Users/chriswong/indexgex-ops-wt` | `/Users/chriswong/flow-ops-wt/data/index_gex_history` | `indexgex-ops-wt/data/index_gex_history` points at that exact directory |
+| Index history | `/Users/chriswong/indexgex-ops-wt` | `/Users/chriswong/flow-ops-wt/data/index_gex_history` | no symlink; `INDEXGEX_ARTIFACT_ROOT=/Users/chriswong/flow-ops-wt/data/index_gex_history` |
 | Options matrix | `/Users/chriswong/optionsmatrix-ops-wt` | `/Users/chriswong/flow-ops-wt/data/live_flow_out/options_matrix` | `optionsmatrix-ops-wt/data/live_flow_out/options_matrix` points at that exact directory |
 | Options Hub output | `/Users/chriswong/optionshub-ops-wt` | `/Users/chriswong/hub-ops-wt/data/live_flow_out/options_hub` | `optionshub-ops-wt/data/live_flow_out/options_hub` points at that exact directory |
 
-Create one of those symlinks only after `lstat` shows the physical target is
-the directory that already exists. Do not replace that target.
+Index history has no symlink. The five tracked files stay in the code checkout's
+git tree, and the lane writes only the physical directory named by
+`INDEXGEX_ARTIFACT_ROOT`. Create a matrix or Hub output symlink only after
+`lstat` shows the physical target is the directory that already exists. Do not
+replace that target. Do not create an index-history symlink.
 
 Hub inputs are not a broad data symlink and they are not a copy inside the
 new clone. They stay ordinary files and directories under
@@ -367,6 +370,12 @@ relative path, a missing path, or a path that is not a directory is refused
 before the job writes, calls the network, or computes. A shell root must be
 an absolute directory that already contains that lane's code.
 
+An unset `INDEXGEX_ARTIFACT_ROOT` uses `$REPO/data/index_gex_history`, which
+must already exist. A present empty or blank value does not select that
+default. A present empty, blank, relative, missing, or non-directory artifact
+root is refused before Python, credentials, the builder, or publish. The
+runner does not create that directory.
+
 The index template keeps `.env` at `/Users/chriswong/flow-ops-wt/.env` and
 keeps the key path `/Users/chriswong/.ssh/macro_dashboard_deploy`. The
 publisher helper stays
@@ -383,9 +392,10 @@ from `/Users/chriswong/hub-ops-wt`. Labels, calendars, log paths, throttles,
 resource limits, and interpreters are unchanged.
 
 After merge, acceptance is read-only: the commit, the engine hash, a clean
-clone, the three symlinks via `lstat`, imports from each clone, and launchd
-showing only the intended root changes. A later scheduled run, owned by the
-runtime operator, is the only live proof. A hand launch is not acceptance.
+clone, the matrix and Hub output symlinks via `lstat`, the index artifact
+root with no index symlink, imports from each clone, and launchd showing only
+the intended root changes. A later scheduled run, owned by the runtime
+operator, is the only live proof. A hand launch is not acceptance.
 
 > **Read `*.stderr.log`, not `*.stdout.log`.**  The poller logs through Python's
 > `logging`, which writes to **stderr**.  `/tmp/liveflow.stdout.log` sits at

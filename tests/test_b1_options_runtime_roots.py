@@ -57,6 +57,8 @@ FAKE_PYTHON = textwrap.dedent(
             "argv": argv,
             "cwd": os.getcwd(),
             "pythonpath": os.environ.get("PYTHONPATH"),
+            "index_store": os.environ.get("INDEX_GEX_HISTORY_STORE"),
+            "index_store_set": "INDEX_GEX_HISTORY_STORE" in os.environ,
         }
         with log.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(row) + "\\n")
@@ -74,8 +76,13 @@ FAKE_PYTHON = textwrap.dedent(
         if rc != 0:
             sys.exit(rc)
         mode = os.environ.get("B1_MANIFEST", "ok")
-        art = Path("data") / "index_gex_history"
-        art.mkdir(parents=True, exist_ok=True)
+        if "--out" in argv:
+            art = Path(argv[argv.index("--out") + 1])
+        else:
+            art = Path("data") / "index_gex_history"
+        if not art.is_dir():
+            sys.stderr.write("fake builder: --out is not an existing directory\\n")
+            sys.exit(97)
         roots = {"SPY": [2017], "QQQ": [2017], "IWM": [2017], "DIA": [2017]}
         refused = {}
         if mode == "partial":
@@ -84,9 +91,10 @@ FAKE_PYTHON = textwrap.dedent(
             refused = {"DIA": "shrunk"}
         names = ["SPY.parquet", "QQQ.parquet", "IWM.parquet", "DIA.parquet"]
         skip = os.environ.get("B1_SKIP_FILE", "")
+        token = os.environ.get("B1_FILE_TOKEN", "x")
         for name in names:
             if name != skip:
-                (art / name).write_text("x", encoding="utf-8")
+                (art / name).write_text(token, encoding="utf-8")
         (art / "_manifest.json").write_text(
             json.dumps({"roots_read": roots, "roots_refused_shrink": refused}),
             encoding="utf-8",
@@ -168,6 +176,15 @@ def _code_repo(path: Path, script_name: str) -> Path:
     scripts.mkdir(parents=True, exist_ok=True)
     (scripts / script_name).write_text("# fixture\\n", encoding="utf-8")
     return path
+
+
+def _legacy_artifact(repo: Path) -> Path:
+    art = repo / "data" / "index_gex_history"
+    art.mkdir(parents=True)
+    return art
+
+
+_FIVE = ("SPY.parquet", "QQQ.parquet", "IWM.parquet", "DIA.parquet", "_manifest.json")
 
 
 def _live_paths_unchanged() -> None:
@@ -262,6 +279,10 @@ def test_engine_hash_and_production_pins_are_unchanged() -> None:
     assert 'MACHINE_GIT="$RUNTIME/scripts/macro_machine_git.py"' in index
     assert 'REMOTE_URL="git@github.com:mastermindx-market-intelligence/macro.git"' in index
     assert 'ART_DIR="data/index_gex_history"' in index
+    assert 'ARTIFACT_ROOT="$REPO/$ART_DIR"' in index
+    assert '--out "$ARTIFACT_ROOT"' in index
+    assert 'INDEX_GEX_HISTORY_STORE="$ARTIFACT_ROOT"' in index
+    assert 'cp "$ARTIFACT_ROOT/$f" "$ART_DIR/$f"' in index
     assert f'PYTHON="{REAL_PYTHON}"' in index
     assert 'export PYTHONPATH="$REPO"' in index
     assert "SPY.parquet QQQ.parquet IWM.parquet DIA.parquet _manifest.json" in index
@@ -283,6 +304,7 @@ def test_engine_hash_and_production_pins_are_unchanged() -> None:
 def test_index_explicit_root_publishes_r2_before_git(tmp_path: Path) -> None:
     fake_py, fake_git, log = _write_fakes(tmp_path)
     repo = _code_repo(tmp_path / "explicit-root", "build_index_gex_history.py")
+    legacy = _legacy_artifact(repo)
     push = tmp_path / "push-repo"
     script = _index_copy(tmp_path, fake_py, fake_git, push)
     wrong = tmp_path / "wrong-cwd"
@@ -305,9 +327,15 @@ def test_index_explicit_root_publishes_r2_before_git(tmp_path: Path) -> None:
     push_at = next(i for i, row in enumerate(rows) if row["kind"] == "git" and "push" in row["argv"])
     assert build_at < gate_at < r2_at < push_at
     assert rows[r2_at]["argv"] == ["-m", "scripts.publish_r2", "--dirs", "index_gex_history", "--no-manifest"]
+    assert rows[build_at]["argv"] == ["-m", "scripts.build_index_gex_history", "--out", _plain(legacy)]
+    assert rows[build_at]["index_store_set"] is False
+    assert rows[r2_at]["index_store"] == _plain(legacy)
+    assert rows[gate_at]["argv"][1] == _plain(legacy / "_manifest.json")
     assert rows[build_at]["cwd"] == _plain(repo)
     assert rows[build_at]["pythonpath"] == _plain(repo)
     assert rows[gate_at]["pythonpath"] == _plain(repo)
+    for name in _FIVE:
+        assert (push / "data" / "index_gex_history" / name).is_file()
     assert list(wrong.iterdir()) == []
     _live_paths_unchanged()
 
@@ -315,6 +343,7 @@ def test_index_explicit_root_publishes_r2_before_git(tmp_path: Path) -> None:
 def test_index_empty_and_unset_select_the_default_expression(tmp_path: Path) -> None:
     fake_py, fake_git, log = _write_fakes(tmp_path)
     default_repo = _code_repo(tmp_path / "default-root", "build_index_gex_history.py")
+    legacy = _legacy_artifact(default_repo)
     other = _code_repo(tmp_path / "other-root", "build_index_gex_history.py")
     push = tmp_path / "push-repo"
     script = _index_copy(tmp_path, fake_py, fake_git, push, default_root=_plain(default_repo))
@@ -330,6 +359,8 @@ def test_index_empty_and_unset_select_the_default_expression(tmp_path: Path) -> 
         rows = _rows(log)
         assert rows[0]["cwd"] == _plain(default_repo)
         assert rows[0]["pythonpath"] == _plain(default_repo)
+        assert rows[0]["argv"] == ["-m", "scripts.build_index_gex_history", "--out", _plain(legacy)]
+        assert rows[0]["index_store_set"] is False
         assert rows[0]["cwd"] != _plain(other)
         assert rows[0]["cwd"] != _plain(wrong)
     _live_paths_unchanged()
@@ -419,6 +450,7 @@ def test_index_gate_stops_a_bad_rebuild_and_r2_failure_still_pushes(
 ) -> None:
     fake_py, fake_git, log = _write_fakes(tmp_path)
     repo = _code_repo(tmp_path / "repo", "build_index_gex_history.py")
+    _legacy_artifact(repo)
     script = _index_copy(tmp_path, fake_py, fake_git, tmp_path / "push-repo")
     env = _base_env(
         log,
@@ -439,6 +471,141 @@ def test_index_gate_stops_a_bad_rebuild_and_r2_failure_still_pushes(
         assert "gate" not in kinds
     else:
         assert "gate" in kinds
+    _live_paths_unchanged()
+
+
+def test_index_distinct_artifact_root_is_the_only_output_store(tmp_path: Path) -> None:
+    fake_py, fake_git, log = _write_fakes(tmp_path)
+    repo = _code_repo(tmp_path / "code", "build_index_gex_history.py")
+    decoy = _legacy_artifact(repo)
+    (decoy / "SPY.parquet").write_text("decoy-code-tree", encoding="utf-8")
+    artifact = tmp_path / "physical-store"
+    artifact.mkdir()
+    push = tmp_path / "push-repo"
+    script = _index_copy(tmp_path, fake_py, fake_git, push)
+    result = _run(
+        script,
+        _base_env(
+            log,
+            MACRO_INDEX_GEX_HISTORY_ROOT=_plain(repo),
+            INDEXGEX_ARTIFACT_ROOT=_plain(artifact),
+            B1_FILE_TOKEN="from-artifact",
+        ),
+        tmp_path,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    rows = _rows(log)
+    build = next(row for row in rows if row["kind"] == "build")
+    gate = next(row for row in rows if row["kind"] == "gate")
+    r2 = next(row for row in rows if row["kind"] == "r2")
+    assert build["argv"] == ["-m", "scripts.build_index_gex_history", "--out", _plain(artifact)]
+    assert build["index_store_set"] is False
+    assert gate["argv"][1] == _plain(artifact / "_manifest.json")
+    assert r2["index_store"] == _plain(artifact)
+    assert r2["argv"] == ["-m", "scripts.publish_r2", "--dirs", "index_gex_history", "--no-manifest"]
+    assert rows.index(build) < rows.index(gate) < rows.index(r2)
+    assert (decoy / "SPY.parquet").read_text(encoding="utf-8") == "decoy-code-tree"
+    published = push / "data" / "index_gex_history"
+    for name in ("SPY.parquet", "QQQ.parquet", "IWM.parquet", "DIA.parquet"):
+        assert (published / name).read_text(encoding="utf-8") == "from-artifact"
+        assert (artifact / name).read_text(encoding="utf-8") == "from-artifact"
+    assert (published / "_manifest.json").read_text(encoding="utf-8") == (
+        artifact / "_manifest.json"
+    ).read_text(encoding="utf-8")
+    _live_paths_unchanged()
+
+
+def test_index_skip_engine_copies_the_artifact_root_not_the_code_tree(tmp_path: Path) -> None:
+    fake_py, fake_git, log = _write_fakes(tmp_path)
+    repo = _code_repo(tmp_path / "code", "build_index_gex_history.py")
+    decoy = _legacy_artifact(repo)
+    (decoy / "SPY.parquet").write_text("decoy", encoding="utf-8")
+    artifact = tmp_path / "physical-store"
+    artifact.mkdir()
+    for name in _FIVE:
+        (artifact / name).write_text(f"seeded-{name}", encoding="utf-8")
+    push = tmp_path / "push-repo"
+    script = _index_copy(tmp_path, fake_py, fake_git, push)
+    result = _run(
+        script,
+        _base_env(
+            log,
+            MACRO_INDEX_GEX_HISTORY_ROOT=_plain(repo),
+            INDEXGEX_ARTIFACT_ROOT=_plain(artifact),
+            INDEXGEX_SKIP_ENGINE="1",
+        ),
+        tmp_path,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    rows = _rows(log)
+    assert [row["kind"] for row in rows if row["kind"] != "git"] == ["r2"]
+    assert rows[0]["index_store"] == _plain(artifact)
+    assert "gate" not in [row["kind"] for row in rows]
+    published = push / "data" / "index_gex_history"
+    for name in _FIVE:
+        assert (published / name).read_text(encoding="utf-8") == f"seeded-{name}"
+    assert (decoy / "SPY.parquet").read_text(encoding="utf-8") == "decoy"
+    _live_paths_unchanged()
+
+
+@pytest.mark.parametrize("value", ["", "   ", "\t", "relative/store", "./relative"])
+def test_index_present_bad_artifact_root_fails_before_side_effects(tmp_path: Path, value: str) -> None:
+    fake_py, fake_git, log = _write_fakes(tmp_path)
+    repo = _code_repo(tmp_path / "code", "build_index_gex_history.py")
+    script = _index_copy(tmp_path, fake_py, fake_git, tmp_path / "push-repo")
+    env = _base_env(
+        log,
+        MACRO_INDEX_GEX_HISTORY_ROOT=_plain(repo),
+        INDEXGEX_ARTIFACT_ROOT=value,
+    )
+    env.pop("MACRO_PUBLISH_GIT_SSH_KEY")
+    result = _run(script, env, tmp_path)
+    assert result.returncode == 1
+    assert "absolute existing directory" in result.stdout + result.stderr
+    assert "MACRO_PUBLISH_GIT_SSH_KEY is required" not in result.stdout + result.stderr
+    assert _rows(log) == []
+    assert not (repo / "data").exists()
+    _live_paths_unchanged()
+
+
+def test_index_missing_or_file_artifact_root_is_not_created(tmp_path: Path) -> None:
+    fake_py, fake_git, log = _write_fakes(tmp_path)
+    repo = _code_repo(tmp_path / "code", "build_index_gex_history.py")
+    script = _index_copy(tmp_path, fake_py, fake_git, tmp_path / "push-repo")
+    missing = tmp_path / "missing-store"
+    marker = tmp_path / "not-a-directory"
+    marker.write_text("x", encoding="utf-8")
+    for value in (_plain(missing), _plain(marker)):
+        log.write_text("", encoding="utf-8")
+        env = _base_env(
+            log,
+            MACRO_INDEX_GEX_HISTORY_ROOT=_plain(repo),
+            INDEXGEX_ARTIFACT_ROOT=value,
+        )
+        env.pop("MACRO_PUBLISH_GIT_SSH_KEY")
+        result = _run(script, env, tmp_path)
+        assert result.returncode == 1
+        assert "not an existing directory" in result.stdout + result.stderr
+        assert "MACRO_PUBLISH_GIT_SSH_KEY is required" not in result.stdout + result.stderr
+        assert _rows(log) == []
+    assert not missing.exists()
+    assert marker.read_text(encoding="utf-8") == "x"
+    _live_paths_unchanged()
+
+
+def test_index_unset_artifact_root_does_not_create_the_legacy_directory(tmp_path: Path) -> None:
+    fake_py, fake_git, log = _write_fakes(tmp_path)
+    repo = _code_repo(tmp_path / "code", "build_index_gex_history.py")
+    script = _index_copy(tmp_path, fake_py, fake_git, tmp_path / "push-repo")
+    env = _base_env(log, MACRO_INDEX_GEX_HISTORY_ROOT=_plain(repo))
+    env.pop("MACRO_PUBLISH_GIT_SSH_KEY")
+    result = _run(script, env, tmp_path)
+    assert result.returncode == 1
+    assert _plain(repo / "data" / "index_gex_history") in result.stdout + result.stderr
+    assert "not an existing directory" in result.stdout + result.stderr
+    assert "MACRO_PUBLISH_GIT_SSH_KEY is required" not in result.stdout + result.stderr
+    assert _rows(log) == []
+    assert not (repo / "data" / "index_gex_history").exists()
     _live_paths_unchanged()
 
 
@@ -596,6 +763,7 @@ def test_plist_semantics_change_only_the_designated_roots() -> None:
         "/usr/bin/env",
         "MACRO_PUBLISH_GIT_SSH_KEY=/Users/chriswong/.ssh/macro_dashboard_deploy",
         "MACRO_INDEX_GEX_HISTORY_ROOT=/Users/chriswong/indexgex-ops-wt",
+        "INDEXGEX_ARTIFACT_ROOT=/Users/chriswong/flow-ops-wt/data/index_gex_history",
         "PYTHONPATH=/Users/chriswong/indexgex-ops-wt",
         "/bin/sh",
         "/Users/chriswong/indexgex-ops-wt/ops/launchd/run_index_gex_history.sh",
@@ -658,11 +826,16 @@ def test_plist_semantics_change_only_the_designated_roots() -> None:
     assert "R2_" not in json.dumps(index) + json.dumps(matrix) + json.dumps(hub)
 
 
-def test_runbook_records_the_three_symlinks_and_hub_input_authority() -> None:
+def test_runbook_records_output_bindings_and_hub_input_authority() -> None:
     text = " ".join(RUNBOOK.read_text(encoding="utf-8").split())
     assert "The table above is the installed measurement." in text
     assert "/Users/chriswong/indexgex-ops-wt" in text
     assert "/Users/chriswong/flow-ops-wt/data/index_gex_history" in text
+    assert "INDEXGEX_ARTIFACT_ROOT=/Users/chriswong/flow-ops-wt/data/index_gex_history" in text
+    assert "Index history has no symlink." in text
+    assert "indexgex-ops-wt/data/index_gex_history points at" not in text
+    assert "`optionsmatrix-ops-wt/data/live_flow_out/options_matrix` points at that exact directory" in text
+    assert "`optionshub-ops-wt/data/live_flow_out/options_hub` points at that exact directory" in text
     assert "/Users/chriswong/optionsmatrix-ops-wt" in text
     assert "/Users/chriswong/flow-ops-wt/data/live_flow_out/options_matrix" in text
     assert "/Users/chriswong/optionshub-ops-wt" in text

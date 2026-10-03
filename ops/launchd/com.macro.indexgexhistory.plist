@@ -7,7 +7,7 @@
 
   WHAT IT RUNS
     ops/launchd/run_index_gex_history.sh
-      -> python -m scripts.build_index_gex_history   (rebuild 2017-> for SPY/QQQ/IWM/DIA)
+      -> python -m scripts.build_index_gex_history --out "$INDEXGEX_ARTIFACT_ROOT"
       -> python -m scripts.publish_r2 --dirs index_gex_history --no-manifest  (offsite)
       -> commit + push data/index_gex_history/ from a standalone $HOME push repo
 
@@ -71,6 +71,7 @@
       /usr/bin/env \
       MACRO_PUBLISH_GIT_SSH_KEY=/Users/chriswong/.ssh/macro_dashboard_deploy \
       MACRO_INDEX_GEX_HISTORY_ROOT=/Users/chriswong/indexgex-ops-wt \
+      INDEXGEX_ARTIFACT_ROOT=/Users/chriswong/flow-ops-wt/data/index_gex_history \
       PYTHONPATH=/Users/chriswong/indexgex-ops-wt \
       /bin/sh \
       /Users/chriswong/indexgex-ops-wt/ops/launchd/run_index_gex_history.sh
@@ -81,6 +82,7 @@
       /usr/bin/env \
       MACRO_PUBLISH_GIT_SSH_KEY=/Users/chriswong/.ssh/macro_dashboard_deploy \
       MACRO_INDEX_GEX_HISTORY_ROOT=/Users/chriswong/indexgex-ops-wt \
+      INDEXGEX_ARTIFACT_ROOT=/Users/chriswong/flow-ops-wt/data/index_gex_history \
       PYTHONPATH=/Users/chriswong/indexgex-ops-wt \
       /bin/sh \
       /Users/chriswong/indexgex-ops-wt/ops/launchd/run_index_gex_history.sh
@@ -105,6 +107,7 @@
     <string>/usr/bin/env</string>
     <string>MACRO_PUBLISH_GIT_SSH_KEY=/Users/chriswong/.ssh/macro_dashboard_deploy</string>
     <string>MACRO_INDEX_GEX_HISTORY_ROOT=/Users/chriswong/indexgex-ops-wt</string>
+    <string>INDEXGEX_ARTIFACT_ROOT=/Users/chriswong/flow-ops-wt/data/index_gex_history</string>
     <string>PYTHONPATH=/Users/chriswong/indexgex-ops-wt</string>
     <string>/bin/sh</string>
     <string>/Users/chriswong/indexgex-ops-wt/ops/launchd/run_index_gex_history.sh</string>

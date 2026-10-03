@@ -759,11 +759,17 @@ def test_m1_publishers_use_only_the_private_safe_machine_git_seam(runner_name: s
     assert " push origin " not in text
     assert 'fetch --no-tags --no-recurse-submodules --depth 1 "$REMOTE_URL"' in text
     assert 'push --recurse-submodules=no "$REMOTE_URL" HEAD:refs/heads/main' in text
+    artifact_binding = ""
+    if runner_name == "run_index_gex_history.sh":
+        artifact_binding = (
+            "#     INDEXGEX_ARTIFACT_ROOT=/Users/chriswong/flow-ops-wt/data/index_gex_history \\\n"
+        )
     post_source_manual_binding = (
         "/Users/chriswong/macro-publisher-runtime/ops/launchd/run_with_env.sh \\\n"
         "#     /Users/chriswong/flow-ops-wt/.env \\\n"
         "#     /usr/bin/env \\\n"
         "#     MACRO_PUBLISH_GIT_SSH_KEY=/Users/chriswong/.ssh/macro_dashboard_deploy \\\n"
+        f"{artifact_binding}"
         "#     PYTHONPATH=/Users/chriswong/flow-ops-wt \\\n"
         "#     /bin/sh \\\n"
         f"#     /Users/chriswong/macro-publisher-runtime/ops/launchd/{runner_name}"
@@ -802,6 +808,7 @@ def test_m1_publisher_launch_contract_separates_current_launcher_from_pinned_eng
             "/usr/bin/env",
             "MACRO_PUBLISH_GIT_SSH_KEY=/Users/chriswong/.ssh/macro_dashboard_deploy",
             "MACRO_INDEX_GEX_HISTORY_ROOT=/Users/chriswong/indexgex-ops-wt",
+            "INDEXGEX_ARTIFACT_ROOT=/Users/chriswong/flow-ops-wt/data/index_gex_history",
             "PYTHONPATH=/Users/chriswong/indexgex-ops-wt",
             "/bin/sh",
             "/Users/chriswong/indexgex-ops-wt/ops/launchd/run_index_gex_history.sh",
