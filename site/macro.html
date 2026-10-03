@@ -499,7 +499,7 @@
             <div class="ms-alerts-wrap">
               <label class="ms-alerts" for="ms-alerts-toggle" tabindex="0" aria-haspopup="dialog" aria-controls="ms-alerts-pop">
                 <span class="dot"></span><span class="l-en">Fired alerts</span><span class="l-zh">已触发警报</span>
-                <span class="ct">1</span>
+                <span class="ct">12</span>
               </label>
               <div class="ms-alerts-pop" id="ms-alerts-pop" role="dialog" aria-label="Fired alerts · 已触发警报">
                 <div class="ms-pop-head">
@@ -513,6 +513,105 @@
                   
                   
                   
+                  
+                  
+                  
+                  <a class="ms-sig sev-warn" href="macro_context.html#board">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🧲</span><span class="ms-sig-title"><span class="l-en">Options “gravity” flipped — bigger swings more likely</span><span class="l-zh">期权“引力”反转 — 波动可能加大</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">GEX: net GEX changed sign (net +73bn, spot vs flip +0.8%)</span><span class="l-zh">GEX：净 GEX 转变方向（净 +73bn，现价相对翻转点 +0.8%）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">Dealer gamma (GEX) measures how options hedging pushes the market around. Positive gamma damps moves (calmer); negative amplifies them (sharper swings, both ways). This flag means that backdrop just changed — expect the market to move more freely until it flips back.</span><span class="l-zh">做市商 gamma（GEX）衡量期权对冲如何推动市场。正 gamma 抑制波动（更平静）；负 gamma 放大波动（双向更剧烈）。此信号表示该背景刚刚改变 —在它再次反转前，市场可能波动得更自由。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Medium — changes the volatility backdrop, not the direction.</span><span class="l-zh">中 — 改变的是波动背景，而非方向。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-warn" data-ms-jump href="#health">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🔌</span><span class="ms-sig-title"><span class="l-en">2 data sources went dark</span><span class="l-zh">2 个数据源中断</span></span><span class="ms-sig-jump"><span class="l-en">View ↓</span><span class="l-zh">查看 ↓</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">Sources &#39;imf_weo&#39;, &#39;ofac_sdn&#39; marked dead after repeated failures — collectors skipped until they recover; affected signals degrade</span><span class="l-zh">数据源 &#39;imf_weo&#39;、&#39;ofac_sdn&#39; 连续多次失败后被标记为中断 — 采集器暂停直至恢复；相关信号置信度下降</span></div>
+                    <div class="ms-sig-what"><span class="l-en">Multiple feeds this dashboard relies on failed several runs in a row, so they&#39;re paused until they recover. Any signals that depend on them automatically lose confidence until they&#39;re back. This is a plumbing notice, not a market signal.</span><span class="l-zh">本仪表盘依赖的多个数据源连续多次失败，已暂停直至恢复。依赖它们的信号会自动降低置信度，直到其恢复。这是系统管线提示，并非市场信号。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Plumbing — data health, not a market signal.</span><span class="l-zh">管线 — 数据健康度，而非市场信号。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">ARKK: manager cut AMD by -28% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKK：经理 减仓 AMD 仓位 -28%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">ARKK: manager added NVDA by +20% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKK：经理 加仓 NVDA 仓位 +20%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">ARKK: manager added VCYT by +22% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKK：经理 加仓 VCYT 仓位 +22%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">ARKK: manager added ARKY by +23% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKK：经理 加仓 ARKY 仓位 +23%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">ARKK: manager added RKLB UQ by +30% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKK：经理 加仓 RKLB UQ 仓位 +30%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">ARKW: manager cut AMD by -31% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKW：经理 减仓 AMD 仓位 -31%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">ARKW: manager cut P by -23% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKW：经理 减仓 P 仓位 -23%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">ARKW: manager added NVDA by +26% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKW：经理 加仓 NVDA 仓位 +26%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">ARKW: manager added ABNB by +46% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKW：经理 加仓 ABNB 仓位 +46%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
+                  </a>
                   
                   
                   
@@ -956,8 +1055,8 @@
             <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             <circle cx="12" cy="17" r="1" fill="currentColor"/>
           </svg>
-          <span class="l-en">Risk building &middot; 91</span>
-          <span class="l-zh">风险积聚 &middot; 91</span>
+          <span class="l-en">Risk building &middot; 84</span>
+          <span class="l-zh">风险积聚 &middot; 84</span>
           <span class="gde-button-context" id="gde-button-context" data-gde-stage="FRAGILE"><span class="l-en">Fragile internals</span><span class="l-zh">内部脆弱</span></span>
         </button>
         
@@ -4847,15 +4946,15 @@
               <stop offset="100%" stop-color="var(--isle-policy)" stop-opacity="0"/>
             </linearGradient>
           </defs>
-          <path d="M0,32.0 L30,30.8 L60,23.0 L90,13.7 L120,0.0 L120,36 L0,36 Z" fill="url(#plSpkGrad)"/>
-          <polyline points="0,32.0 30,30.8 60,23.0 90,13.7 120,0.0" fill="none" stroke="var(--isle-policy)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+          <path d="M0,32.0 L30,30.8 L60,23.1 L90,13.1 L120,0.0 L120,36 L0,36 Z" fill="url(#plSpkGrad)"/>
+          <polyline points="0,32.0 30,30.8 60,23.1 90,13.1 120,0.0" fill="none" stroke="var(--isle-policy)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
         </svg>
         <div class="plf-spark-label">
           
-          <span class="l-en">Market prices ~3 hikes over the next 12m (funds 3.88% → 4.70%)</span>
+          <span class="l-en">Market prices ~3 hikes over the next 12m (funds 3.88% → 4.71%)</span>
           
           
-          <span class="l-zh">市场为未来12个月定价约加息3次（基金利率 3.88% → 4.70%）</span>
+          <span class="l-zh">市场为未来12个月定价约加息3次（基金利率 3.88% → 4.71%）</span>
           
           
         </div>
@@ -4870,8 +4969,8 @@
         
         
         <span class="plf-chip">
-          <span class="l-en">6 speeches this week</span>
-          <span class="l-zh">本周6次政策发声</span>
+          <span class="l-en">5 speeches this week</span>
+          <span class="l-zh">本周5次政策发声</span>
         </span>
         
       </div>
@@ -4902,13 +5001,13 @@
       
       <div class="mx5-ai-ticker-pills">
         
+        <span class="mx5-ai-ticker-pill">USO</span>
+        
         <span class="mx5-ai-ticker-pill">QQQ</span>
         
         <span class="mx5-ai-ticker-pill">MU</span>
         
-        <span class="mx5-ai-ticker-pill">SPY</span>
-        
-        <span class="mx5-ai-ticker-pill">GLD</span>
+        <span class="mx5-ai-ticker-pill">NVDA</span>
         
       </div>
       
@@ -4916,14 +5015,14 @@
       <div class="mx5-ai-body">
         
         <span class="l-en">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">4 High-Impact Items</span><br>
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">5 High-Impact Items</span><br>
           Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">jobs &amp; labor</span><br>
-          4 high-impact signals across channels
+          5 high-impact signals across channels
         </span>
         <span class="l-zh">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">4 条高影响信息</span><br>
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">5 条高影响信息</span><br>
           主线：<span style="color:var(--mx5-accent-ink);font-weight:600">就业</span><br>
-          4 条高影响信号
+          5 条高影响信号
         </span>
         
       </div>
@@ -4969,8 +5068,8 @@
         
         
         <div class="mx5-card-badge" style="color:var(--mx5-warn-ink);background:var(--mx5-warn-dim);border:1px solid rgba(245,158,11,.20);">
-          <span class="l-en">1 need action · of 1</span>
-          <span class="l-zh">1 条需处理 · 共 1 条</span>
+          <span class="l-en">2 need action · of 12</span>
+          <span class="l-zh">2 条需处理 · 共 12 条</span>
         </div>
         
       </div>
@@ -4978,6 +5077,23 @@
       
       
       <div class="mx5-alerts-list">
+        
+        
+        
+        <div class="mx5-alert-item warn">
+          <div class="mx5-alert-dot warn"></div>
+          <div class="mx5-alert-content">
+            <div class="mx5-alert-title warn">
+              <span style="font-size:12px;margin-right:3px">🧲</span>
+              <span class="l-en">Options “gravity” flipped — bigger swings more likely</span>
+              <span class="l-zh">期权“引力”反转 — 波动可能加大</span>
+            </div>
+            <div class="mx5-alert-detail">
+              <span class="l-en">Options hedging just flipped from damping moves to amplifying them — expect bigger swings both ways.</span>
+              <span class="l-zh">期权对冲由抑制波动转为放大波动——双向波动可能加大。</span>
+            </div>
+          </div>
+        </div>
         
         
         
@@ -5006,11 +5122,11 @@
             <div class="mx5-alert-title">
               <span class="mx5-alert-k"><span class="l-en">Headline</span><span class="l-zh">头条</span></span>
               <span style="font-size:12px;margin-right:3px">📰</span>
-              <span class="l-en">Micron beats on earnings and issues strong guidance as data center revenue jumps…</span>
-              <span class="l-zh">美光盈利超预期并发布强劲指引，数据中心营收激增11倍</span>
+              <span class="l-en">Traders now see little chance of a Fed rate hike in October after weak jobs repo…</span>
+              <span class="l-zh">疲软就业报告后，交易员认为美联储10月加息可能性渺茫</span>
             </div>
             <div class="mx5-alert-detail">
-              <span>CNBC - Tech</span> · 
+              <span>CNBC - Stock Blog</span> · 
               <span style="color:var(--mx5-warn-ink,#9c6212);font-weight:600"><span class="l-en">High impact</span><span class="l-zh">高影响</span></span>
             </div>
           </div>
@@ -5024,8 +5140,8 @@
       <div class="mx5-alert-footer">
         <span>
           
-          <span class="l-en">1 need action · of 1</span>
-          <span class="l-zh">1 条需处理 · 共 1 条</span>
+          <span class="l-en">2 need action · of 12</span>
+          <span class="l-zh">2 条需处理 · 共 12 条</span>
           
         </span>
         <button type="button" class="gbtn gbtn-sm gbtn-quiet" onclick="event.stopPropagation();mx5OpenDlg('dlg-news')">
@@ -5102,7 +5218,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2L2 21h20L12 2z"/><path d="M12 9v5M12 17h.01"/></svg>
             <span class="l-en">Risk building</span><span class="l-zh">风险升温</span>
           </div>
-          <div class="wnx-state"><span class="l-en">Risk 91</span><span class="l-zh">风险 91</span></div>
+          <div class="wnx-state"><span class="l-en">Risk 84</span><span class="l-zh">风险 84</span></div>
           <div class="wnx-line"><span class="l-en">See exactly what would make it worse</span><span class="l-zh">看清什么会让它恶化</span></div>
           <span class="wnx-go"><span class="l-en">Open risk radar</span><span class="l-zh">打开风险雷达</span> &rarr;</span>
         </a>
@@ -5236,7 +5352,7 @@
               <span class="v2chip c-warn" style="font-size:9px;padding:1px 5px;margin-left:6px;vertical-align:middle"><span class="l-en">WEAKEST</span><span class="l-zh">最弱</span></span>
             </div>
             
-            <div class="mx5-dlg-factor-read"><span class="l-en">Breadth 4%ile of 2y; a divergence vs price</span><span class="l-zh">广度处于两年 4 百分位；与价格背离</span></div>
+            <div class="mx5-dlg-factor-read"><span class="l-en">Breadth 5%ile of 2y; a divergence vs price</span><span class="l-zh">广度处于两年 5 百分位；与价格背离</span></div>
             
           </div>
           <div>
@@ -5628,28 +5744,32 @@
         
         
         
+        
+        
+        
+        
   <div class="mx5-dlg-eyebrow"><span class="l-en">Market-implied benchmark &mdash; what traders price, not our read</span><span class="l-zh">市场隐含基准 &mdash; 交易者定价，非本系统观点</span></div>
   <div class="fbm-bench">
     
     
     <div class="fbm-bench-row">
-      <div class="fbm-bench-odds">74<small>%</small></div>
+      <div class="fbm-bench-odds">82<small>%</small></div>
       <div class="fbm-bench-body">
         <div class="fbm-bench-outcome"><span class="l-en">No change</span><span class="l-zh">按兵不动</span></div>
         <div class="fbm-bench-label"><span class="l-en">Next Fed decision</span><span class="l-zh">下次美联储决议</span></div>
       </div>
       
       <div class="fbm-bench-arrow pos"
-           data-tip-en="Odds moved +41.0 points since the last update."
-           data-tip-zh="自上次更新以来概率变动 +41.0 个百分点。">
-        ▲ +41.0
+           data-tip-en="Odds moved +8.0 points since the last update."
+           data-tip-zh="自上次更新以来概率变动 +8.0 个百分点。">
+        ▲ +8.0
       </div>
       
     </div>
     
     
     <div class="fbm-bench-row">
-      <div class="fbm-bench-odds">97<small>%</small></div>
+      <div class="fbm-bench-odds">96<small>%</small></div>
       <div class="fbm-bench-body">
         <div class="fbm-bench-outcome"><span class="l-en">0 (0 bps)</span><span class="l-zh">0 (0 bps)</span></div>
         <div class="fbm-bench-label"><span class="l-en">Fed cuts this year</span><span class="l-zh">今年降息次数</span></div>
@@ -5669,6 +5789,22 @@
       <div class="fbm-bench-body">
         <div class="fbm-bench-outcome"><span class="l-en">US recession by end of 2026?</span><span class="l-zh">US recession by end of 2026?</span></div>
         <div class="fbm-bench-label"><span class="l-en">US recession</span><span class="l-zh">美国衰退</span></div>
+      </div>
+      
+      <div class="fbm-bench-arrow neg"
+           data-tip-en="Odds moved -1.0 points since the last update."
+           data-tip-zh="自上次更新以来概率变动 -1.0 个百分点。">
+        ▼ -1.0
+      </div>
+      
+    </div>
+    
+    
+    <div class="fbm-bench-row">
+      <div class="fbm-bench-odds">38<small>%</small></div>
+      <div class="fbm-bench-body">
+        <div class="fbm-bench-outcome"><span class="l-en">2.5%</span><span class="l-zh">2.5%</span></div>
+        <div class="fbm-bench-label"><span class="l-en">CPI outcome market</span><span class="l-zh">CPI市场预期</span></div>
       </div>
       
     </div>
@@ -5774,12 +5910,12 @@
           <div class="mx5-dlg-idx-card">
             <div class="mx5-dlg-idx-ticker">DJI</div>
             <div class="mx5-dlg-idx-name">Dow Jones</div>
-            <div class="mx5-dlg-idx-px nb-px" data-sym="^DJI" data-mkt="us" data-bare>50,926.56</div>
-            <div class="mx5-dlg-idx-chg up nb-chg" data-sym="^DJI" data-mkt="us">+0.04%</div>
+            <div class="mx5-dlg-idx-px nb-px" data-sym="^DJI" data-mkt="us" data-bare>51,176.96</div>
+            <div class="mx5-dlg-idx-chg up nb-chg" data-sym="^DJI" data-mkt="us">+0.49%</div>
             <div class="mx5-dlg-idx-chips">
               
               
-              <span class="mx5-dlg-idx-chip wn" title="Distance from 52-week high">-6.3% <span class="l-en">off high</span><span class="l-zh">距高</span></span>
+              <span class="mx5-dlg-idx-chip wn" title="Distance from 52-week high">-5.8% <span class="l-en">off high</span><span class="l-zh">距高</span></span>
               
               
               <span class="mx5-dlg-idx-chip mt" title="vs 50-day moving average"><span class="l-en">Below 50-day ✕</span><span class="l-zh">低于50日线 ✕</span></span>
@@ -5792,7 +5928,7 @@
               
               
               
-              <span class="mx5-dlg-idx-chip mt" title="Momentum reading: 35 of 100"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span>
+              <span class="mx5-dlg-idx-chip mt" title="Momentum reading: 39 of 100"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span>
               
             </div>
           </div>
@@ -5806,12 +5942,12 @@
           <div class="mx5-dlg-idx-card">
             <div class="mx5-dlg-idx-ticker">RUT</div>
             <div class="mx5-dlg-idx-name">Russell 2000</div>
-            <div class="mx5-dlg-idx-px nb-px" data-sym="^RUT" data-mkt="us" data-bare>2,806.63</div>
-            <div class="mx5-dlg-idx-chg up nb-chg" data-sym="^RUT" data-mkt="us">+0.35%</div>
+            <div class="mx5-dlg-idx-px nb-px" data-sym="^RUT" data-mkt="us" data-bare>2,832.89</div>
+            <div class="mx5-dlg-idx-chg up nb-chg" data-sym="^RUT" data-mkt="us">+0.94%</div>
             <div class="mx5-dlg-idx-chips">
               
               
-              <span class="mx5-dlg-idx-chip wn" title="Distance from 52-week high">-8.5% <span class="l-en">off high</span><span class="l-zh">距高</span></span>
+              <span class="mx5-dlg-idx-chip wn" title="Distance from 52-week high">-7.7% <span class="l-en">off high</span><span class="l-zh">距高</span></span>
               
               
               <span class="mx5-dlg-idx-chip mt" title="vs 50-day moving average"><span class="l-en">Below 50-day ✕</span><span class="l-zh">低于50日线 ✕</span></span>
@@ -5824,7 +5960,7 @@
               
               
               
-              <span class="mx5-dlg-idx-chip mt" title="Momentum reading: 33 of 100"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span>
+              <span class="mx5-dlg-idx-chip mt" title="Momentum reading: 40 of 100"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span>
               
             </div>
           </div>
@@ -5965,7 +6101,7 @@
           <div class="riskdlg-brief-top">
             <span class="riskdlg-state"><span class="l-en">CAUTION</span><span class="l-zh">警戒</span></span>
             
-            <span class="riskdlg-score">91<small>/100</small></span>
+            <span class="riskdlg-score">84<small>/100</small></span>
             
           </div>
           <div class="riskdlg-domain"><span class="l-en">Rates / inflation shock</span><span class="l-zh">利率/通胀冲击</span></div>
@@ -6086,7 +6222,7 @@
 
 
 <section class="riskdlg-context" id="risk-envelope-band" aria-labelledby="gde-title"
-         data-bundle-id="47e5a80d7356631d" data-settled-session="2026-10-01" data-coherence="MIXED">
+         data-bundle-id="85c88ae31768c306" data-settled-session="2026-10-01" data-coherence="MIXED">
   <div class="gde-head">
     <h3 id="gde-title"><span class="l-en">Market internals</span><span class="l-zh">市场内部</span></h3>
     <span class="gde-coherence">
@@ -6183,7 +6319,7 @@
               
                 <tr>
                   <td class="l"><span class="l-en">Cross-asset scares</span><span class="l-zh">跨资产风险扫描</span></td>
-                  <td class="tnum">caution · 91</td>
+                  <td class="tnum">caution · 84</td>
                   <td class="tnum">2026-10-01</td>
                   <td>
                     <span class="l-en">This session</span><span class="l-zh">本交易日</span>
@@ -6198,7 +6334,7 @@
           
 
           <p class="gde-receipt tnum">
-            grey-deer-v1-2026-08-19 · bundle 47e5a80d7356631d ·
+            grey-deer-v1-2026-08-19 · bundle 85c88ae31768c306 ·
             coverage DEGRADED ·
             coherence MIXED (scope market_reads) ·
             stage FRAGILE (observed_settled_evidence) ·
@@ -6228,12 +6364,12 @@
           <div class="riskdlg-sec-h"><span class="l-en">What&#39;s driving it?</span><span class="l-zh">原因是什么？</span></div>
           <div class="riskdlg-drv-list">
           
-          <div class="riskdlg-drv" data-isle="risk" data-lens-kind="caution" data-tip-en="Leading leg at the 95th percentile of its trailing 504-session range — higher = more stretched." data-tip-zh="领先因素处于其过去 504 个交易日区间的 95 分位——越高越极端。">
+          <div class="riskdlg-drv" data-isle="risk" data-lens-kind="caution" data-tip-en="Leading leg at the 90th percentile of its trailing 504-session range — higher = more stretched." data-tip-zh="领先因素处于其过去 504 个交易日区间的 90 分位——越高越极端。">
             <span class="rkc-sig-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span>
             <div class="rkc-sig-body">
               <div class="rkc-sig-lbl"><span class="l-en">Leading</span><span class="l-zh">领先信号</span></div>
               
-              <div class="rkc-sig-state"><span class="l-en">Real yields jumping</span><span class="l-zh">实际利率跳升</span> <span class="l-en">— sharply</span><span class="l-zh">— 显著</span></div>
+              <div class="rkc-sig-state"><span class="l-en">Bond-market volatility (MOVE)</span><span class="l-zh">债市波动率（MOVE）</span> <span class="l-en">— sharply</span><span class="l-zh">— 显著</span></div>
             </div>
             <span class="rkc-sig-tip">?</span>
             
@@ -6248,13 +6384,13 @@
               <div class="rlx-viz" style="--rlx-c:var(--isle-risk,#e05c5c)">
                 <div class="rlx-bars">
                   <div class="rlx-bar-row">
-                    <span class="rlx-bar-lbl"><span class="l-en">Real yields jumping</span><span class="l-zh">实际利率跳升</span></span>
-                    <span class="rlx-bar-track"><span class="rlx-bar-fill" style="--rlx-w:95%"></span></span>
+                    <span class="rlx-bar-lbl"><span class="l-en">Bond-market volatility (MOVE)</span><span class="l-zh">债市波动率（MOVE）</span></span>
+                    <span class="rlx-bar-track"><span class="rlx-bar-fill" style="--rlx-w:90%"></span></span>
                   </div>
                   
                   <div class="rlx-bar-row">
-                    <span class="rlx-bar-lbl"><span class="l-en">Bond-market volatility (MOVE)</span><span class="l-zh">债市波动率（MOVE）</span></span>
-                    <span class="rlx-bar-track"><span class="rlx-bar-fill muted" style="--rlx-w:90%"></span></span>
+                    <span class="rlx-bar-lbl"><span class="l-en">Real yields jumping</span><span class="l-zh">实际利率跳升</span></span>
+                    <span class="rlx-bar-track"><span class="rlx-bar-fill muted" style="--rlx-w:60%"></span></span>
                   </div>
                   
                 </div>
@@ -6267,8 +6403,8 @@
                 </div>
               </div>
               <div class="lens-receipt">
-                <span class="l-en">95th pctile · second at 90th · trailing 504 sessions · display context</span>
-                <span class="l-zh">95 分位 · 次高 90 分位 · 过去 504 个交易日 · 展示背景</span>
+                <span class="l-en">90th pctile · second at 60th · trailing 504 sessions · display context</span>
+                <span class="l-zh">90 分位 · 次高 60 分位 · 过去 504 个交易日 · 展示背景</span>
               </div>
             </span>
           </div>
@@ -6487,7 +6623,7 @@
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">20d</span><span class="l-zh">20日</span></span>
-                    <span class="row-pop-val" style="color:var(--up)">+3.0%</span>
+                    <span class="row-pop-val" style="color:var(--up)">+5.0%</span>
                   </div>
                   
                   
@@ -6734,13 +6870,13 @@
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">20d</span><span class="l-zh">20日</span></span>
-                    <span class="row-pop-val" style="color:var(--down)">-4.0%</span>
+                    <span class="row-pop-val" style="color:var(--down)">-3.6%</span>
                   </div>
                   
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">off-high</span><span class="l-zh">距高</span></span>
-                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-6.8%</span>
+                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-6.4%</span>
                   </div>
                   
                 </div>
@@ -6829,13 +6965,13 @@
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">20d</span><span class="l-zh">20日</span></span>
-                    <span class="row-pop-val" style="color:var(--up)">+6.4%</span>
+                    <span class="row-pop-val" style="color:var(--up)">+6.7%</span>
                   </div>
                   
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">off-high</span><span class="l-zh">距高</span></span>
-                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-23.4%</span>
+                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-23.2%</span>
                   </div>
                   
                 </div>
@@ -6924,13 +7060,13 @@
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">20d</span><span class="l-zh">20日</span></span>
-                    <span class="row-pop-val" style="color:var(--up)">+3.4%</span>
+                    <span class="row-pop-val" style="color:var(--up)">+3.2%</span>
                   </div>
                   
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">off-high</span><span class="l-zh">距高</span></span>
-                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-5.4%</span>
+                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-5.6%</span>
                   </div>
                   
                 </div>
@@ -7092,13 +7228,13 @@
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">20d</span><span class="l-zh">20日</span></span>
-                    <span class="row-pop-val" style="color:var(--down)">-6.8%</span>
+                    <span class="row-pop-val" style="color:var(--down)">-6.2%</span>
                   </div>
                   
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">off-high</span><span class="l-zh">距高</span></span>
-                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-15.4%</span>
+                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-14.8%</span>
                   </div>
                   
                 </div>
@@ -7187,13 +7323,13 @@
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">20d</span><span class="l-zh">20日</span></span>
-                    <span class="row-pop-val" style="color:var(--down)">-3.8%</span>
+                    <span class="row-pop-val" style="color:var(--down)">-3.4%</span>
                   </div>
                   
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">off-high</span><span class="l-zh">距高</span></span>
-                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-4.5%</span>
+                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-4.1%</span>
                   </div>
                   
                 </div>
@@ -7282,13 +7418,13 @@
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">20d</span><span class="l-zh">20日</span></span>
-                    <span class="row-pop-val" style="color:var(--down)">-3.4%</span>
+                    <span class="row-pop-val" style="color:var(--down)">-2.9%</span>
                   </div>
                   
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">off-high</span><span class="l-zh">距高</span></span>
-                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-5.1%</span>
+                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-4.4%</span>
                   </div>
                   
                 </div>
@@ -7410,18 +7546,18 @@
           
           
           <div class="riskdlg-scare" data-band="sc-band-high" data-reading-state="AVAILABLE">
-            <span class="rkc-sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12"/><circle cx="8" cy="8" r="2.2"/><circle cx="16" cy="16" r="2.2"/></svg></span>
+            <span class="rkc-sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 7H7a4 4 0 000 8h3"/><path d="M14 7h3a4 4 0 014 4"/><path d="M8 11h5"/><path d="M18 15l3 4M21 15l-3 4"/></svg></span>
             <span class="sc-name">
-              <span class="l-en">Rates / inflation shock</span>
-              <span class="l-zh">利率/通胀冲击</span>
+              <span class="l-en">Credit stress</span>
+              <span class="l-zh">信用压力</span>
               
               
             </span>
-            <div class="sc-bar-track"><div class="sc-bar-fill" style="width:91.0%;background:var(--down)"></div></div>
-            <span class="sc-score" style="color:var(--down)">91.0</span>
+            <div class="sc-bar-track"><div class="sc-bar-fill" style="width:84.8%;background:var(--down)"></div></div>
+            <span class="sc-score" style="color:var(--down)">84.8</span>
             <span class="sc-band sc-band-high">
-              <span class="l-en">risk-off</span>
-              <span class="l-zh">避险</span>
+              <span class="l-en">elevated</span>
+              <span class="l-zh">走高</span>
             </span>
           </div>
           
@@ -7435,15 +7571,15 @@
           
           
           <div class="riskdlg-scare" data-band="sc-band-high" data-reading-state="AVAILABLE">
-            <span class="rkc-sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 7H7a4 4 0 000 8h3"/><path d="M14 7h3a4 4 0 014 4"/><path d="M8 11h5"/><path d="M18 15l3 4M21 15l-3 4"/></svg></span>
+            <span class="rkc-sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12"/><circle cx="8" cy="8" r="2.2"/><circle cx="16" cy="16" r="2.2"/></svg></span>
             <span class="sc-name">
-              <span class="l-en">Credit stress</span>
-              <span class="l-zh">信用压力</span>
+              <span class="l-en">Rates / inflation shock</span>
+              <span class="l-zh">利率/通胀冲击</span>
               
               
             </span>
-            <div class="sc-bar-track"><div class="sc-bar-fill" style="width:83.2%;background:var(--down)"></div></div>
-            <span class="sc-score" style="color:var(--down)">83.2</span>
+            <div class="sc-bar-track"><div class="sc-bar-fill" style="width:84.0%;background:var(--down)"></div></div>
+            <span class="sc-score" style="color:var(--down)">84.0</span>
             <span class="sc-band sc-band-high">
               <span class="l-en">elevated</span>
               <span class="l-zh">走高</span>
@@ -7467,8 +7603,8 @@
               
               
             </span>
-            <div class="sc-bar-track"><div class="sc-bar-fill" style="width:77.5%;background:var(--down)"></div></div>
-            <span class="sc-score" style="color:var(--down)">77.5</span>
+            <div class="sc-bar-track"><div class="sc-bar-fill" style="width:77.7%;background:var(--down)"></div></div>
+            <span class="sc-score" style="color:var(--down)">77.7</span>
             <span class="sc-band sc-band-high">
               <span class="l-en">caution</span>
               <span class="l-zh">谨慎</span>
@@ -7490,15 +7626,13 @@
               <span class="l-en">Global breadth breakdown</span>
               <span class="l-zh">全球广度破位</span>
               
-              <span style="font-size:10px;font-weight:400;color:var(--ink-3,rgba(255,255,255,.36));margin-left:5px"><span class="l-en">· data 2 days behind</span><span class="l-zh">· 数据滞后2天</span></span>
-              
               
             </span>
-            <div class="sc-bar-track"><div class="sc-bar-fill" style="width:66.7%;background:var(--warn)"></div></div>
-            <span class="sc-score" style="color:var(--warn)">66.7</span>
+            <div class="sc-bar-track"><div class="sc-bar-fill" style="width:68.1%;background:var(--warn)"></div></div>
+            <span class="sc-score" style="color:var(--warn)">68.1</span>
             <span class="sc-band sc-band-watch">
-              <span class="l-en">watch</span>
-              <span class="l-zh">警惕</span>
+              <span class="l-en">caution</span>
+              <span class="l-zh">谨慎</span>
             </span>
           </div>
           
@@ -7840,12 +7974,12 @@
               <div class="rkc-mood-lens-top">
                 <span class="rkc-mood-lens-name"><span class="l-en">Risk appetite</span><span class="l-zh">风险偏好</span></span>
                 <span class="rkc-mood-scoreline">
-                  <strong class="rkc-mood-score">41</strong><span class="rkc-mood-unit">/100</span>
-                  <span class="chip c-muted"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span>
+                  <strong class="rkc-mood-score">34</strong><span class="rkc-mood-unit">/100</span>
+                  <span class="chip c-down"><span class="l-en">Fear</span><span class="l-zh">恐惧</span></span>
                 </span>
               </div>
-              <div class="rkc-mood-mini-track" role="img" aria-label="Risk appetite 41 out of 100">
-                <span class="rkc-mood-pin" style="--rkc-pos:41%"></span>
+              <div class="rkc-mood-mini-track" role="img" aria-label="Risk appetite 34 out of 100">
+                <span class="rkc-mood-pin" style="--rkc-pos:34%"></span>
               </div>
             </div>
             
@@ -8336,44 +8470,44 @@
             </linearGradient>
           </defs>
           
-          <path class="fbm-chart-area" d="M50,110.1 L185.0,107.3 L320.0,88.7 L455.0,66.4 L590,33.9 L590,150 L50,150 Z" fill="url(#plxChartGrad)"/>
+          <path class="fbm-chart-area" d="M50,110.4 L185.0,107.6 L320.0,89.1 L455.0,65.2 L590,33.8 L590,150 L50,150 Z" fill="url(#plxChartGrad)"/>
           
-          <line x1="50" y1="110.1" x2="590" y2="110.1" stroke="rgba(255,255,255,.18)" stroke-width="1" stroke-dasharray="4,4"/>
+          <line x1="50" y1="110.4" x2="590" y2="110.4" stroke="rgba(255,255,255,.18)" stroke-width="1" stroke-dasharray="4,4"/>
           
-          <polyline class="fbm-chart-line" style="--dash:760" points="50,110.1 185.0,107.3 320.0,88.7 455.0,66.4 590,33.9" fill="none" stroke="var(--isle-policy)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-          
-          
-          
-          
-          <circle class="fbm-chart-node" cx="50" cy="110.1" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="50" y="102.1" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">3.88%</text>
-          
-          
-          
-          <circle class="fbm-chart-node" cx="185.0" cy="107.3" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="185.0" y="99.3" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">3.91%</text>
-          
-          
-          
-          <circle class="fbm-chart-node" cx="320.0" cy="88.7" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="320.0" y="80.7" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">4.11%</text>
-          
-          
-          
-          <circle class="fbm-chart-node" cx="455.0" cy="66.4" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="455.0" y="58.400000000000006" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">4.35%</text>
-          
-          
-          
-          <circle class="fbm-chart-node" cx="590" cy="33.9" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="590" y="25.9" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">4.70%</text>
+          <polyline class="fbm-chart-line" style="--dash:760" points="50,110.4 185.0,107.6 320.0,89.1 455.0,65.2 590,33.8" fill="none" stroke="var(--isle-policy)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
           
           
           
           
+          <circle class="fbm-chart-node" cx="50" cy="110.4" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
+          <text class="fbm-chart-node" x="50" y="102.4" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">3.88%</text>
           
           
-          <polygon class="fbm-chart-diamond" points="455.0,83.6 461.0,89.6 455.0,95.6 449.0,89.6" fill="var(--warn,#f59e0b)" fill-opacity=".85"/>
+          
+          <circle class="fbm-chart-node" cx="185.0" cy="107.6" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
+          <text class="fbm-chart-node" x="185.0" y="99.6" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">3.91%</text>
+          
+          
+          
+          <circle class="fbm-chart-node" cx="320.0" cy="89.1" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
+          <text class="fbm-chart-node" x="320.0" y="81.1" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">4.11%</text>
+          
+          
+          
+          <circle class="fbm-chart-node" cx="455.0" cy="65.2" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
+          <text class="fbm-chart-node" x="455.0" y="57.2" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">4.37%</text>
+          
+          
+          
+          <circle class="fbm-chart-node" cx="590" cy="33.8" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
+          <text class="fbm-chart-node" x="590" y="25.799999999999997" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">4.71%</text>
+          
+          
+          
+          
+          
+          
+          <polygon class="fbm-chart-diamond" points="455.0,84.1 461.0,90.1 455.0,96.1 449.0,90.1" fill="var(--warn,#f59e0b)" fill-opacity=".85"/>
           
           
           
@@ -8419,11 +8553,11 @@
         
         <div class="plx-chart-caption">
           
-          <span class="l-en">At end-2026 the market implies 4.01% vs the Fed&#39;s 4.10% median dot (-9bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+1.10pp).</span>
+          <span class="l-en">At end-2026 the market implies 4.01% vs the Fed&#39;s 4.10% median dot (-9bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+1.03pp).</span>
           
           
           
-          <span class="l-zh">在end-2026，市场隐含 4.01% 对比美联储 4.10% 的中位点（-9基点 — 市场与美联储基本一致）。近端远期利差为正——近端未为降息定价（+1.10个百分点）。</span>
+          <span class="l-zh">在end-2026，市场隐含 4.01% 对比美联储 4.10% 的中位点（-9基点 — 市场与美联储基本一致）。近端远期利差为正——近端未为降息定价（+1.03个百分点）。</span>
           
           
           
@@ -8479,7 +8613,7 @@
         </div>
         <div class="plx-jaw-counts">
           <div class="plx-jaw-count-box">
-            <div class="plx-jaw-count-num">6</div>
+            <div class="plx-jaw-count-num">5</div>
             <div class="plx-jaw-count-lbl">
               <span class="l-en">speeches 7d</span><span class="l-zh">7日发声</span>
             </div>
@@ -8495,7 +8629,7 @@
         
         
         
-        <div class="plx-jaw-bar-track"><div class="plx-jaw-bar-fill" style="width:60%"></div></div>
+        <div class="plx-jaw-bar-track"><div class="plx-jaw-bar-fill" style="width:50%"></div></div>
         
         <div class="plx-jaw-ts">
           <span class="l-en">Last event: 2026-10-01</span>
@@ -8530,9 +8664,9 @@
               
               
               <div class="plx-lever-stoch"
-                   data-tip-en="Setup gauge (stochastic %K): 19/100 — how coiled this lever's asset is; state is set by the Armed/Quiet flag, not this bar"
-                   data-tip-zh="蓄势程度（随机指标%K）：19/100 — 状态以“已触发/平静”标记为准，非此条形">
-                <div class="plx-lever-stoch-fill" style="width:19%;background:color-mix(in srgb,var(--isle-policy) 55%,transparent)"></div>
+                   data-tip-en="Setup gauge (stochastic %K): 16/100 — how coiled this lever's asset is; state is set by the Armed/Quiet flag, not this bar"
+                   data-tip-zh="蓄势程度（随机指标%K）：16/100 — 状态以“已触发/平静”标记为准，非此条形">
+                <div class="plx-lever-stoch-fill" style="width:16%;background:color-mix(in srgb,var(--isle-policy) 55%,transparent)"></div>
               </div>
               
               
@@ -8806,6 +8940,30 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
             <div style="flex:1;min-width:0">
               <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px">
                 <div style="font-size:13px;font-weight:600;color:var(--mx5-warn)">
+                  <span style="font-size:12px;margin-right:3px">🧲</span>
+                  <span class="l-en">Options “gravity” flipped — bigger swings more likely</span><span class="l-zh">期权“引力”反转 — 波动可能加大</span>
+                </div>
+                
+                
+                <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(245,158,11,.12);color:var(--mx5-warn-ink,#9c6212);border:1px solid rgba(245,158,11,.22);white-space:nowrap"><span class="l-en">Watch</span><span class="l-zh">关注</span></span>
+                
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">GEX: net GEX changed sign (net +73bn, spot vs flip +0.8%)</span><span class="l-zh">GEX：净 GEX 转变方向（净 +73bn，现价相对翻转点 +0.8%）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">Dealer gamma (GEX) measures how options hedging pushes the market around. Positive gamma damps moves (calmer); negative amplifies them (sharper swings, both ways). This flag means that backdrop just changed — expect the market to move more freely until it flips back.</span><span class="l-zh">做市商 gamma（GEX）衡量期权对冲如何推动市场。正 gamma 抑制波动（更平静）；负 gamma 放大波动（双向更剧烈）。此信号表示该背景刚刚改变 —在它再次反转前，市场可能波动得更自由。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:12px;background:rgba(245,158,11,.06);border-radius:10px;border:1px solid rgba(245,158,11,.18)">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--mx5-warn);flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+                <div style="font-size:13px;font-weight:600;color:var(--mx5-warn)">
                   <span style="font-size:12px;margin-right:3px">📅</span>
                   <span class="l-en">Major event on deck — expect bigger swings either way</span><span class="l-zh">重大事件临近 — 双向波动或加大</span>
                 </div>
@@ -8826,12 +8984,279 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         
+        <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Context</span><span class="l-zh">背景</span></span><div class="isle-head-line"></div></div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;opacity:.8">
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🔌</span>
+                  <span class="l-en">2 data sources went dark</span><span class="l-zh">2 个数据源中断</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">Sources &#39;imf_weo&#39;, &#39;ofac_sdn&#39; marked dead after repeated failures — collectors skipped until they recover; affected signals degrade</span><span class="l-zh">数据源 &#39;imf_weo&#39;、&#39;ofac_sdn&#39; 连续多次失败后被标记为中断 — 采集器暂停直至恢复；相关信号置信度下降</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">Multiple feeds this dashboard relies on failed several runs in a row, so they&#39;re paused until they recover. Any signals that depend on them automatically lose confidence until they&#39;re back. This is a plumbing notice, not a market signal.</span><span class="l-zh">本仪表盘依赖的多个数据源连续多次失败，已暂停直至恢复。依赖它们的信号会自动降低置信度，直到其恢复。这是系统管线提示，并非市场信号。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🐳</span>
+                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKK: manager cut AMD by -28% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKK：经理 减仓 AMD 仓位 -28%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🐳</span>
+                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKK: manager added NVDA by +20% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKK：经理 加仓 NVDA 仓位 +20%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🐳</span>
+                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKK: manager added VCYT by +22% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKK：经理 加仓 VCYT 仓位 +22%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🐳</span>
+                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKK: manager added ARKY by +23% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKK：经理 加仓 ARKY 仓位 +23%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🐳</span>
+                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKK: manager added RKLB UQ by +30% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKK：经理 加仓 RKLB UQ 仓位 +30%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🐳</span>
+                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKW: manager cut AMD by -31% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKW：经理 减仓 AMD 仓位 -31%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🐳</span>
+                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKW: manager cut P by -23% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKW：经理 减仓 P 仓位 -23%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🐳</span>
+                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKW: manager added NVDA by +26% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKW：经理 加仓 NVDA 仓位 +26%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🐳</span>
+                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKW: manager added ABNB by +46% of position (2026-09-21..2026-10-02, flow-normalized)</span><span class="l-zh">ARKW：经理 加仓 ABNB 仓位 +46%（2026-09-21..2026-10-02，已按资金流标准化）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+        </div>
+        
         
         
         
         <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Market Intelligence</span><span class="l-zh">市场情报</span></span><div class="isle-head-line"></div></div>
         
         <div class="nbx-list">
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://www.cnbc.com/2026/10/02/fed-rate-hike-odds-decline-after-september-jobs-report.html" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
+              <span class="nbx-title"><span class="l-en">Traders now see little chance of a Fed rate hike in October after weak jobs report</span><span class="l-zh">疲软就业报告后，交易员认为美联储10月加息可能性渺茫</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Oct 2</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://www.cnbc.com/2026/10/02/cerebras-stock-hits-post-ipo-low-on-nvidia-pressure-lockup-expiration.html" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Deals</span><span class="l-zh">并购/IPO</span></span>
+              <span class="nbx-title"><span class="l-en">Cerebras stock hits post-IPO low, tumbling 20% for the week on Nvidia pressure and lockup expiration</span><span class="l-zh">Cerebras股价创IPO后新低，因英伟达压力和锁定期到期本周暴跌20%</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Oct 2</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4650005-oil-prices-drop-as-g7-nations-pledge-to-release-diesel-stocks-saudis-said-planning-attack-on-houthis?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Oil prices drop as G7 nations pledge to release diesel stocks; Saudis said planning attack on Houthis</span><span class="l-zh">七国集团承诺释放柴油库存，油价下跌；沙特据悉计划袭击胡塞武装</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Oct 2</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4649978-petrobras-makes-another-oil-discovery-in-brazils-foz-do-amazonas-basin?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Petrobras makes another oil discovery in Brazil&#39;s Foz do Amazonas basin</span><span class="l-zh">Petrobras在巴西亚马孙河口盆地再获石油发现</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Oct 2</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
           
           
           
@@ -8855,10 +9280,10 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
           
           
           
-          <a class="nbx-item" href="https://www.cnbc.com/2026/10/02/nike-nke-stock-q1-earnings-layoffs.html" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4649985-gold-futures-turn-lower-as-weak-us-payrolls-fail-to-sustain-gains?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Labor</span><span class="l-zh">就业</span></span>
-              <span class="nbx-title"><span class="l-en">Nike shares plummet 10% after weak revenue outlook and layoff plans underway</span><span class="l-zh">耐克股价暴跌10%，此前营收前景疲软且裁员计划正在推进</span></span>
+              <span class="nbx-title"><span class="l-en">Gold futures turn lower as weak U.S. payrolls fail to sustain gains</span><span class="l-zh">疲软美国就业数据未能维持涨势，黄金期货转跌</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -8891,24 +9316,6 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4649782-goldman-sachs-stock-enters-bear-market-territory?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Goldman Sachs stock enters bear market territory</span><span class="l-zh">高盛股价进入熊市区间</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 2</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
           <a class="nbx-item" href="https://www.cnbc.com/2026/09/30/were-raising-our-micron-price-target-after-an-incredible-quarter-and-robust-outlook.html" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Guidance</span><span class="l-zh">指引</span></span>
@@ -8927,10 +9334,10 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4649787-first-solar-files-patent-infringement-lawsuit-against-chinas-ja-solar-corning-subsidiary?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4649589-most-and-least-shorted-utilities-stocks-with-up-to-2b-market-cap-as-of-september-end?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">First Solar files patent infringement lawsuit against China&#39;s JA Solar, Corning subsidiary</span><span class="l-zh">First Solar对中国晶澳科技和康宁子公司提起专利侵权诉讼</span></span>
+              <span class="nbx-title"><span class="l-en">Most and least shorted utilities stocks with up to $2B market cap as of September end</span><span class="l-zh">截至9月底市值不超过20亿美元的多空头头寸最多和最少的公用事业股</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -8945,64 +9352,10 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
           
           
           
-          <a class="nbx-item" href="https://www.cnbc.com/2026/10/02/oil-wti-brent-diesel-stock-release-europe.html" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Oil prices fall over 3% on report of potential diesel, crude stock release; Brent back below $100</span><span class="l-zh">因有报道称可能释放柴油和原油库存，油价下跌超过3%；布伦特原油回落至100美元以下</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 2</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.npr.org/2026/10/02/nx-s1-5987754/labor-department-to-release-september-jobs-report" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Labor</span><span class="l-zh">就业</span></span>
-              <span class="nbx-title"><span class="l-en">Labor Department to release September jobs report</span><span class="l-zh">劳工部将发布9月就业报告</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 2</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.bea.gov/news/2026/gdp-third-estimate-industries-corporate-profits-state-gdp-and-state-personal-income-2nd" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.marketwatch.com/story/falling-wages-soaring-energy-prices-and-inflation-its-beginning-to-look-a-lot-like-the-1970s-d645cbca?mod=mw_rss_topstories" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Inflation</span><span class="l-zh">通胀</span></span>
-              <span class="nbx-title"><span class="l-en">GDP, (Third Estimate), Industries, Corporate Profits, State GDP, and State Personal Income, 2nd Quarter 2026; State PCE, 2025</span><span class="l-zh">GDP（第三次估算）、行业、企业利润、州GDP和州个人收入，2026年第二季度；州PCE，2025年</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">official</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 30</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://seekingalpha.com/news/4649789-medicare-drug-pricing-model-impact-only-four-firms?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Medicare drug pricing model to affect only four firms after Trump’s MFN policy</span><span class="l-zh">特朗普的最惠国政策后，Medicare药品定价模式将仅影响四家公司</span></span>
+              <span class="nbx-title"><span class="l-en">Falling wages, soaring energy prices and inflation: It’s beginning to look a lot like the 1970s</span><span class="l-zh">工资下降、能源价格飙升和通胀：越来越像1970年代</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -10875,7 +11228,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
     <summary><span class="l-en">Data health</span><span class="l-zh">数据健康度</span>
       <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">Observed health entries for data sources this dashboard depends on. No entries means health is unavailable, not healthy. OK = fresh. STALE = no new data lately (signal confidence reduced automatically). FAILED = today&#39;s fetch broke (yesterday&#39;s data still used). BLOCKED = a known, documented limitation — not a malfunction. DEAD = failed 3+ runs and paused until it recovers.</span><span class="l-zh">本仪表盘依赖数据源的已观测健康记录。没有记录表示健康状态不可用，并不代表正常。OK = 新鲜。STALE = 近期无新数据（信号置信度已自动下调）。FAILED = 今日抓取失败（仍沿用昨日数据）。BLOCKED = 已知且有记录的限制 — 并非故障。DEAD = 连续 3 次以上失败，已暂停直至恢复。</span></span></span>
       
-      <span class="fold-stat">12 <span class="l-en">need attention</span><span class="l-zh">需关注</span> · 190 <span class="l-en">sources</span><span class="l-zh">数据源</span></span>
+      <span class="fold-stat">10 <span class="l-en">need attention</span><span class="l-zh">需关注</span> · 190 <span class="l-en">sources</span><span class="l-zh">数据源</span></span>
       <span class="fold-caret">▾</span>
     </summary>
     <table>
@@ -10886,7 +11239,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10895,7 +11248,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>17</td><td>2026-10-01</td>
+        <td>22</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10904,7 +11257,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-01</td>
+        <td>1</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10913,7 +11266,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>677</td><td>2026-10-01</td>
+        <td>678</td><td>2026-10-01</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10921,9 +11274,9 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         <td class="l">broad_flows</td>
         
         
-        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
-        <td>0</td><td>—</td>
-        <td class="l muted">RuntimeError: broad_flows: only 0/5 tickers succeeded (errors: [&#39;SPY&#39;, &#39;QQQ&#39;, &#39;IWM&#39;, &#39;RSP&#39;</td>
+        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td>5</td><td>2026-10-02</td>
+        <td class="l muted"></td>
       </tr>
       
       <tr>
@@ -10931,7 +11284,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>729</td><td>2026-10-01</td>
+        <td>729</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10940,7 +11293,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>73438</td><td>2026-10-01</td>
+        <td>73442</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10949,7 +11302,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>352</td><td>2026-10-02</td>
+        <td>6324</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10958,7 +11311,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-01</td>
+        <td>1</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10967,7 +11320,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>17701</td><td>2026-10-01</td>
+        <td>17706</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10976,7 +11329,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>11</td><td>2026-10-01</td>
+        <td>11</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10985,7 +11338,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-01</td>
+        <td>1</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10994,7 +11347,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>9238</td><td>2026-09-30</td>
+        <td>9240</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11003,7 +11356,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>12</td><td>2026-10-01</td>
+        <td>12</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11012,7 +11365,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>5116</td><td>2026-10-01</td>
+        <td>5117</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11336,7 +11689,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11345,7 +11698,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11354,7 +11707,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>32</td><td>2026-10-02</td>
+        <td>40</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11363,7 +11716,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11372,7 +11725,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>64</td><td>2026-10-01</td>
+        <td>65</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11381,7 +11734,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-01</td>
+        <td>1</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11390,7 +11743,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>30</td><td>2026-09-22</td>
+        <td>30</td><td>2026-09-29</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11399,7 +11752,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>50</td><td>2026-10-02</td>
+        <td>50</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11408,7 +11761,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>5326</td><td>2026-10-02</td>
+        <td>5329</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11417,7 +11770,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>5</td><td>2026-10-02</td>
+        <td>6</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11426,7 +11779,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-01</td>
+        <td>1</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11435,7 +11788,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11444,7 +11797,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11453,7 +11806,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11471,7 +11824,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-01</td>
+        <td>1</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11480,7 +11833,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>699</td><td>2026-10-01</td>
+        <td>700</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11489,7 +11842,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>3162</td><td>2026-10-02</td>
+        <td>3163</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11507,7 +11860,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11516,7 +11869,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11525,7 +11878,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11543,7 +11896,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-01</td>
+        <td>1</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11561,7 +11914,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-01</td>
+        <td>1</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11588,7 +11941,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>681561</td><td>2029-01-01</td>
+        <td>681611</td><td>2029-01-01</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11605,9 +11958,9 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         <td class="l">fundamentals</td>
         
         
-        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
-        <td>0</td><td>—</td>
-        <td class="l muted">ValueError: fundamentals/sector_estimates: all-NaN after cleaning</td>
+        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td>5834</td><td>2026-10-02</td>
+        <td class="l muted"></td>
       </tr>
       
       <tr>
@@ -11651,7 +12004,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11660,7 +12013,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11669,7 +12022,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>16</td><td>2026-10-01</td>
+        <td>17</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11687,7 +12040,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11885,7 +12238,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-01</td>
+        <td>1</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11894,7 +12247,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11903,7 +12256,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-01</td>
+        <td>1</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11921,7 +12274,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1012</td><td>2026-09-30</td>
+        <td>1035</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11930,7 +12283,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>26485</td><td>2026-10-01</td>
+        <td>26487</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11939,7 +12292,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>34720</td><td>2026-10-02</td>
+        <td>113612</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11975,7 +12328,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11993,7 +12346,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12002,7 +12355,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>33</td><td>2026-10-02</td>
+        <td>33</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12011,7 +12364,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1454</td><td>2026-09-30</td>
+        <td>1454</td><td>2026-10-01</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12020,7 +12373,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1285</td><td>2026-10-01</td>
+        <td>1285</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12038,7 +12391,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-01</td>
+        <td>1</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12047,7 +12400,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>60921</td><td>2026-09-29</td>
+        <td>60930</td><td>2026-09-30</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12056,7 +12409,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>637</td><td>2026-10-02</td>
+        <td>636</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12065,7 +12418,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12074,7 +12427,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12101,7 +12454,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12110,7 +12463,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-01</td>
+        <td>1</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12119,7 +12472,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12128,7 +12481,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12137,7 +12490,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12146,7 +12499,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12155,7 +12508,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12164,7 +12517,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12182,7 +12535,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12191,7 +12544,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12200,7 +12553,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12209,7 +12562,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12218,7 +12571,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12227,7 +12580,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12236,7 +12589,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12245,7 +12598,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12254,7 +12607,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12263,7 +12616,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12281,7 +12634,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12299,7 +12652,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12308,7 +12661,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12317,7 +12670,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>66</td><td>2026-10-01</td>
+        <td>66</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12326,12 +12679,30 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>945</td><td>2026-10-01</td>
+        <td>947</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
       <tr>
         <td class="l">sam_gov</td>
+        
+        
+        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
+        <td>0</td><td>—</td>
+        <td class="l muted">ReadTimeout: HTTPSConnectionPool(host=&#39;api.sam.gov&#39;, port=443): Read timed out. (read time</td>
+      </tr>
+      
+      <tr>
+        <td class="l">sbir_awards</td>
+        
+        
+        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
+        <td>0</td><td>—</td>
+        <td class="l muted">SbirRateLimitError: SBIR public API refused the request with HTTP 403; the published limit</td>
+      </tr>
+      
+      <tr>
+        <td class="l">sec_capital_structure</td>
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
@@ -12340,30 +12711,12 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
       </tr>
       
       <tr>
-        <td class="l">sbir_awards</td>
-        
-        
-        <td class="l"><span class="pill pill-dead"><span class="l-en">dead</span><span class="l-zh">已停用</span></span></td>
-        <td>0</td><td>—</td>
-        <td class="l muted">circuit open (42 consecutive failures)</td>
-      </tr>
-      
-      <tr>
-        <td class="l">sec_capital_structure</td>
-        
-        
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-01</td>
-        <td class="l muted"></td>
-      </tr>
-      
-      <tr>
         <td class="l">sec_capital_structure_companyfacts</td>
         
         
-        <td class="l"><span class="pill pill-dead"><span class="l-en">dead</span><span class="l-zh">已停用</span></span></td>
+        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
         <td>0</td><td>—</td>
-        <td class="l muted">circuit open (45 consecutive failures)</td>
+        <td class="l muted">CompanyFactsIntakeError: Company Facts external head witness is unreadable</td>
       </tr>
       
       <tr>
@@ -12371,7 +12724,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>11</td><td>2026-09-30</td>
+        <td>11</td><td>2026-10-01</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12380,7 +12733,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-01</td>
+        <td>1</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12397,9 +12750,9 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         <td class="l">sentiment_naaim</td>
         
         
-        <td class="l"><span class="pill pill-dead"><span class="l-en">dead</span><span class="l-zh">已停用</span></span></td>
+        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
         <td>0</td><td>—</td>
-        <td class="l muted">circuit open (47 consecutive failures)</td>
+        <td class="l muted">ValueError: NAAIM since-inception workbook link not found on page</td>
       </tr>
       
       <tr>
@@ -12407,7 +12760,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1455</td><td>2026-10-01</td>
+        <td>1454</td><td>2026-10-01</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12416,7 +12769,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>39784</td><td>2026-09-30</td>
+        <td>39825</td><td>2026-10-01</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12424,9 +12777,9 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         <td class="l">stock_fundamentals</td>
         
         
-        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
-        <td>0</td><td>—</td>
-        <td class="l muted">ValueError: stock_fundamentals/snapshots: all-NaN after cleaning</td>
+        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td>1</td><td>2026-10-02</td>
+        <td class="l muted"></td>
       </tr>
       
       <tr>
@@ -12434,7 +12787,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>4921</td><td>2026-09-30</td>
+        <td>46117</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12443,7 +12796,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12452,7 +12805,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12488,7 +12841,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>22</td><td>2026-09-30</td>
+        <td>23</td><td>2026-10-01</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12497,7 +12850,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-01</td>
+        <td>1</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12506,7 +12859,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>2830</td><td>2026-09-30</td>
+        <td>2831</td><td>2026-10-01</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12515,7 +12868,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>30498</td><td>2026-10-01</td>
+        <td>30499</td><td>2026-10-02</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12524,7 +12877,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>52</td><td>2026-10-01</td>
+        <td>50</td><td>2026-10-01</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12533,7 +12886,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12542,7 +12895,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12551,7 +12904,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-02</td>
+        <td>1</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12560,7 +12913,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>144322</td><td>2026-09-30</td>
+        <td>144323</td><td>2026-10-01</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12569,7 +12922,7 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>4110</td><td>2026-09-30</td>
+        <td>4111</td><td>2026-09-30</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12587,15 +12940,15 @@ Today&#39;s clear driver is widening credit spreads. Markets remain calm, but th
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>168712</td><td>2026-10-02</td>
+        <td>164979</td><td>2026-10-03</td>
         <td class="l muted"></td>
       </tr>
       
     </table>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-10-03 01:34 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-10-03 06:50 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-10-03 01:34 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-10-03 06:50 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
   </details>
   
