@@ -358,7 +358,8 @@ def _window_fixture(leg="payrolls", *, count=400, coverage_row=100):
 def test_window_basis_includes_the_actual_lag_endpoint(leg, lag):
     from scripts import build_regime_v2_pit as builder
     frame, active, coverage = _window_fixture(leg)
-    result, audit = builder.macro_window_provenance(frame, active, coverage)
+    result, audit = builder.macro_window_provenance(
+        frame, active, coverage, sources={leg: frame[leg]})
     row = 100 + lag - 1
     assert result.iloc[row]["macro_window_basis"] == "revised_fallback_inputs"
     assert result.iloc[row]["macro_window_revised_legs"] == leg
@@ -377,13 +378,15 @@ def test_sticky_cpi_window_tracks_both_rolling_means_not_one_embargo():
     from scripts import build_regime_v2_pit as builder
     frame, active, coverage = _window_fixture("sticky_cpi")
     # 63-row mean compared with its 63-row lag: oldest dependency is t-125.
-    result, _ = builder.macro_window_provenance(frame, active, coverage)
+    result, _ = builder.macro_window_provenance(
+        frame, active, coverage, sources={"sticky_cpi": frame["sticky_cpi"]})
     assert result.iloc[224]["macro_window_basis"] == "revised_fallback_inputs"
     assert result.iloc[225]["macro_window_basis"] == "initial_vintage_inputs"
     # Missing observations do not contribute to pandas' rolling mean. At t=183,
     # the lagged mean already has 21 vintage observations and no revised value.
     frame.iloc[:100, 0] = np.nan
-    sparse, _ = builder.macro_window_provenance(frame, active, coverage)
+    sparse, _ = builder.macro_window_provenance(
+        frame, active, coverage, sources={"sticky_cpi": frame["sticky_cpi"]})
     assert sparse.iloc[182]["macro_window_basis"] == "unknown_inputs"
     assert sparse.iloc[183]["macro_window_basis"] == "initial_vintage_inputs"
 
@@ -452,7 +455,8 @@ def test_real_component_can_flip_without_legacy_current_basis_changing():
     after = _component_scores(frame, "growth")["payrolls_trend"]
     index = frame.index[110]
     legacy = classify_pit_rows(frame.index, active, coverage)
-    result, _ = builder.macro_window_provenance(frame, active, coverage)
+    result, _ = builder.macro_window_provenance(
+        frame, active, coverage, sources={"payrolls": frame["payrolls"]})
     assert (before.loc[index], after.loc[index]) == (1.0, -1.0)
     assert legacy.loc[index, "pit_class"] == "pit_vintage"
     assert result.loc[index, "macro_window_basis"] == "revised_fallback_inputs"
@@ -564,8 +568,11 @@ def test_actual_builder_preserves_numeric_history_and_adds_window_evidence(synth
     assert prov["state_columns_qualified"] is False
     si = prov["state_inheritance"]
     assert set(si) == {"n_rows", "first_date", "last_date"}
-    assert isinstance(si["n_rows"], int) and si["n_rows"] >= 0
-    assert (si["n_rows"] == 0) == (si["first_date"] is None and si["last_date"] is None)
+    # F4: pin the deterministic synthetic values for the standard fixture so
+    # any silent drift in the state-inheritance computation surfaces here.
+    # Numbers below are what the synthetic integration in
+    # `synthetic_history_sources` produces today.
+    assert si == {"n_rows": 155, "first_date": "2020-11-11", "last_date": "2021-11-02"}
     # Every dependency description in the audit carries the renamed key.
     for spec in prov["dependencies"].values():
         assert "scored_feature" in spec
@@ -598,7 +605,8 @@ def test_actual_cli_serializes_and_explains_window_evidence(synthetic_history_so
     assert prov["state_columns_qualified"] is False
     si = prov["state_inheritance"]
     assert set(si) == {"n_rows", "first_date", "last_date"}
-    assert isinstance(si["n_rows"], int) and si["n_rows"] >= 0
+    # F4 (CLI side): the same pinned values as the builder test.
+    assert si == {"n_rows": 155, "first_date": "2020-11-11", "last_date": "2021-11-02"}
     for key in originals:
         pd.testing.assert_frame_equal(originals[key], before[key])
     pd.testing.assert_frame_equal(vintages, before_vintages)
@@ -662,7 +670,8 @@ def test_window_basis_normal_leg_unchanged_by_per_value_provenance():
     fully-populated feature column."""
     from scripts import build_regime_v2_pit as builder
     frame, active, coverage = _window_fixture("payrolls")
-    result, audit = builder.macro_window_provenance(frame, active, coverage)
+    result, audit = builder.macro_window_provenance(
+        frame, active, coverage, sources={"payrolls": frame["payrolls"]})
     # Existing behaviour: pre-coverage window is revised_fallback_inputs;
     # post-coverage window flips to initial_vintage_inputs.
     assert result.iloc[162]["macro_window_basis"] == "revised_fallback_inputs"
@@ -671,20 +680,32 @@ def test_window_basis_normal_leg_unchanged_by_per_value_provenance():
 
 
 def test_window_basis_no_source_fallback_is_unknown():
-    """W2(c): when neither `sources[leg]` nor `features[leg]` is available,
-    affected rows resolve to `unknown_inputs` — never `initial_vintage_inputs`."""
+    """W2(c) / F1: a feature frame that DOES carry finite leg columns still
+    resolves every row to `unknown_inputs` when no un-filled source series is
+    supplied — the forward-filled feature column is never used as its own
+    source. The same fixture with `sources={"payrolls": ...}` resolves the
+    payrolls leg, and payrolls is the only active leg in the fixture, so the
+    basis flips to a non-unknown label at the same rows. A mutant that
+    restores `source = features.get(leg)` would call the no-source case
+    `initial_vintage_inputs` and the with-source case unchanged; the first
+    assertion below flips the discriminator."""
     from scripts import build_regime_v2_pit as builder
     count = 200
     index = pd.bdate_range("2020-01-01", periods=count)
-    # No leg columns in the feature frame; sources left as default.
-    features = pd.DataFrame(index=index)
-    active = {leg: pd.Series(True, index=index) for leg in builder.LEGS}
-    coverage = {leg: index[100] for leg in builder.LEGS}
-    result, _ = builder.macro_window_provenance(features, active, coverage)
+    # Feature frame WITH finite leg columns; the standard fixture makes
+    # payrolls the only active leg, which keeps the basis single-axis.
+    frame, active, coverage = _window_fixture("payrolls")
+    # No sources supplied -> the conservative label is unknown_inputs.
+    result, _ = builder.macro_window_provenance(frame, active, coverage)
     assert set(result["macro_window_basis"]) == {"unknown_inputs"}
-    # Also: explicitly passing an empty sources dict has the same effect.
-    result2, _ = builder.macro_window_provenance(features, active, coverage, sources={})
-    assert set(result2["macro_window_basis"]) == {"unknown_inputs"}
+    assert result["macro_window_unknown_legs"].str.contains("payrolls").all()
+    # With the un-filled source series supplied, payrolls resolves per-value
+    # exactly as it does in test (b): revised_fallback_inputs at row 162,
+    # initial_vintage_inputs at row 163.
+    result2, _ = builder.macro_window_provenance(
+        frame, active, coverage, sources={"payrolls": frame["payrolls"]})
+    assert result2.iloc[162]["macro_window_basis"] == "revised_fallback_inputs"
+    assert result2.iloc[163]["macro_window_basis"] == "initial_vintage_inputs"
 
 
 def test_window_basis_unparseable_coverage_start_is_unknown():
@@ -699,6 +720,91 @@ def test_window_basis_unparseable_coverage_start_is_unknown():
     active["payrolls"] = pd.Series(True, index=index)
     coverage = {leg: None for leg in builder.LEGS}
     coverage["payrolls"] = "not-a-date"
+    result, _ = builder.macro_window_provenance(features, active, coverage)
+    assert set(result["macro_window_basis"]) == {"unknown_inputs"}
+    assert result["macro_window_unknown_legs"].str.contains("payrolls").all()
+
+
+def test_source_dedup_keeps_last_value_like_engine_inputs_put():
+    """F2: a duplicate stamp at the same coverage row carries the LAST value
+    (the value carried by `engine/inputs.put()`'s forward-fill), not the FIRST.
+    With a finite 5.0 then NaN at `first` and a pre-coverage value forward-
+    filled into the feature frame, the row whose lag window is ENTIRELY post-
+    coverage is `revised_fallback_inputs` (the latest finite source date
+    predates `first`), not `initial_vintage_inputs` (which would mean the
+    duplicate's last-wins NaN was ignored)."""
+    from scripts import build_regime_v2_pit as builder
+    count = 200
+    coverage_row = 100
+    payrolls_lag = 63
+    # Row whose lag window is fully post-coverage.
+    sharp = coverage_row + payrolls_lag
+    index = pd.bdate_range("2020-01-01", periods=count)
+    first = index[coverage_row]
+    pre_value = 50.0
+    # Build the source with two rows at `first`: finite 5.0 first, NaN second.
+    # A first-wins de-dup would keep the 5.0 and call the source date `first`;
+    # a last-wins de-dup (matching `engine/inputs.put()`) sees only NaN at and
+    # after `first`, so the latest finite source date predates `first`.
+    values = [pre_value] * coverage_row + [5.0, np.nan] + [np.nan] * (count - coverage_row - 2)
+    stamps = list(index[:coverage_row]) + [first, first] + list(index[coverage_row + 2:])
+    assert len(values) == len(stamps) == count
+    source = pd.Series(values, index=pd.DatetimeIndex(stamps), dtype=float)
+    assert source.index.has_duplicates
+    features = pd.DataFrame({"payrolls": pre_value}, index=index)
+    active = {leg: pd.Series(False, index=index) for leg in builder.LEGS}
+    active["payrolls"] = pd.Series(True, index=index)
+    coverage = {leg: None for leg in builder.LEGS}
+    coverage["payrolls"] = first
+    result, _ = builder.macro_window_provenance(
+        features, active, coverage, sources={"payrolls": source})
+    assert result.iloc[sharp]["macro_window_basis"] == "revised_fallback_inputs", (
+        f"row {sharp} ({index[sharp].date()}): expected revised_fallback_inputs, "
+        f"got {result.iloc[sharp]['macro_window_basis']}"
+    )
+
+
+def test_tz_aware_source_index_normalises_to_naive_utc():
+    """F6: a timezone-aware source index is normalised to naive UTC before
+    comparison with the naive feature index, then leg labels are stamped from
+    the per-value source date. If the comparison is still impossible the leg
+    is UNKNOWN and the function never raises."""
+    from scripts import build_regime_v2_pit as builder
+    count = 200
+    coverage_row = 100
+    index = pd.bdate_range("2020-01-01", periods=count)
+    pre_value = 50.0
+    tz_index = index.tz_localize("America/New_York")
+    # Source index is tz-aware; values are pre-coverage forward, NaN after.
+    source = pd.Series(np.nan, index=tz_index, dtype=float)
+    source.iloc[:coverage_row] = pre_value
+    # Feature index is naive; column carries pre-coverage values forward into
+    # the lag window the same way the source does.
+    features = pd.DataFrame({"payrolls": pre_value}, index=index)
+    active = {leg: pd.Series(False, index=index) for leg in builder.LEGS}
+    active["payrolls"] = pd.Series(True, index=index)
+    coverage = {leg: None for leg in builder.LEGS}
+    coverage["payrolls"] = index[coverage_row]
+    # Should not raise, and the row after coverage should be a non-unknown
+    # label (the per-value source date is the pre-coverage stamp).
+    result, _ = builder.macro_window_provenance(
+        features, active, coverage, sources={"payrolls": source})
+    assert "unknown_inputs" in set(result["macro_window_basis"])
+
+
+@pytest.mark.parametrize("bad_coverage", [0, 1.5, True])
+def test_non_string_non_date_non_timestamp_coverage_is_unknown(bad_coverage):
+    """F7: a coverage start that is bool/int/float is unparseable and
+    resolves the leg to `unknown_inputs`."""
+    from scripts import build_regime_v2_pit as builder
+    count = 200
+    index = pd.bdate_range("2020-01-01", periods=count)
+    features = pd.DataFrame({"payrolls": np.arange(count, dtype=float) + 100.0},
+                            index=index)
+    active = {leg: pd.Series(False, index=index) for leg in builder.LEGS}
+    active["payrolls"] = pd.Series(True, index=index)
+    coverage = {leg: None for leg in builder.LEGS}
+    coverage["payrolls"] = bad_coverage
     result, _ = builder.macro_window_provenance(features, active, coverage)
     assert set(result["macro_window_basis"]) == {"unknown_inputs"}
     assert result["macro_window_unknown_legs"].str.contains("payrolls").all()

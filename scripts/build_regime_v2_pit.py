@@ -56,6 +56,7 @@ Usage:  python scripts/build_regime_v2_pit.py [--out-dir data/regime]
 from __future__ import annotations
 
 import argparse
+import datetime as _dt
 import json
 import logging
 import os
@@ -107,16 +108,38 @@ MACRO_WINDOW_COLUMNS = (
 def _per_value_source_dates(source: pd.Series, index: pd.DatetimeIndex) -> pd.Series:
     """For each row in `index`, the source's last index date <= row date where
     the source had a finite observation. NaT when no prior finite observation
-    exists in the source."""
+    exists in the source.
+
+    Matches `engine/inputs.put()`: duplicate stamps are de-duplicated keeping
+    the LAST row (the value carried by the forward-fill), BEFORE the dropna
+    pass — so a finite-then-NaN duplicate at the same stamp does not resurrect
+    an earlier observation as the per-value source date.
+    """
     if not isinstance(source, pd.Series) or len(source) == 0:
         return pd.Series(pd.NaT, index=index)
+    if source.index.has_duplicates:
+        source = source[~source.index.duplicated(keep="last")]
     finite = source.dropna()
     if finite.empty:
         return pd.Series(pd.NaT, index=index)
     src_idx = pd.DatetimeIndex(finite.index)
-    if src_idx.hasnans or not src_idx.is_monotonic_increasing:
-        src_idx = src_idx.sort_values()
-    positions = src_idx.searchsorted(index, side="right") - 1
+    if src_idx.has_duplicates:
+        src_idx = src_idx[~src_idx.duplicated(keep="last")]
+    # F6: normalise a tz-aware index to naive UTC before comparison; if any
+    # step raises, the leg is UNKNOWN (the caller marks every finite row
+    # unknown_inputs and never lets the exception escape).
+    try:
+        if isinstance(src_idx, pd.DatetimeIndex) and src_idx.tz is not None:
+            src_idx = src_idx.tz_convert("UTC").tz_localize(None)
+        if isinstance(index, pd.DatetimeIndex) and index.tz is not None:
+            compare_index = index.tz_convert("UTC").tz_localize(None)
+        else:
+            compare_index = index
+        if src_idx.hasnans or not src_idx.is_monotonic_increasing:
+            src_idx = src_idx.sort_values()
+        positions = src_idx.searchsorted(compare_index, side="right") - 1
+    except (ValueError, TypeError):
+        return pd.Series(pd.NaT, index=index)
     out = pd.Series(pd.NaT, index=index)
     valid = (positions >= 0) & (positions < len(src_idx))
     if valid.any():
@@ -145,14 +168,23 @@ def macro_window_provenance(
     forward-filled post-coverage row whose supplying observation predates
     `first` is therefore still `revised_fallback_inputs`, never
     `initial_vintage_inputs`. A NaN initial-vintage value never upgrades a
-    label. If the function cannot obtain an un-filled source for a leg
-    (neither `sources[leg]` nor the corresponding `features[leg]` column),
-    affected rows resolve to `unknown_inputs`.
+    label.
 
-    None coverage means a known latest-revised fallback. An unparseable
-    coverage value resolves to unknown. An absent coverage key or component
-    activity series is unknown, not proof of inactivity. The legacy
-    pit_class, model inputs, scores and state machine are never modified.
+    Default path is UNKNOWN. If `sources` is None, or lacks a leg, that
+    leg's per-value source date is UNKNOWN and every row that depends on
+    it resolves to `unknown_inputs`. The forward-filled feature column is
+    never used as its own source — without the un-filled series the
+    function cannot tell an observed value from one carried forward from
+    before coverage, and the conservative label is the only honest one.
+
+    Source-series comparison normalises a timezone-aware source index to
+    naive UTC before lookup; if comparison is still impossible the leg is
+    UNKNOWN, never an exception. None coverage means a known latest-
+    revised fallback. A coverage value that is not a string, date or
+    Timestamp (bool, int, float, NaT, etc.) is unparseable and resolves
+    that leg to UNKNOWN. An absent coverage key or component activity
+    series is UNKNOWN, not proof of inactivity. The legacy pit_class,
+    model inputs, scores and state machine are never modified.
     """
     if not isinstance(features, pd.DataFrame):
         raise ValueError("aligned feature frame required")
@@ -184,25 +216,31 @@ def macro_window_provenance(
         elif coverage_start[leg] is None:
             revised = finite.copy()
         else:
-            first = None
-            try:
-                first = pd.Timestamp(coverage_start[leg])
-            except (ValueError, TypeError):
-                first = None
-            if first is None or pd.isna(first) or (first.tzinfo is None) != (index.tz is None):
+            raw_coverage = coverage_start[leg]
+            # F7: only string/date/Timestamp values are valid coverage starts;
+            # bool/int/float/None-coverage are unparseable -> UNKNOWN.
+            if not isinstance(raw_coverage, (str, pd.Timestamp, _dt.date, np.datetime64)):
                 unknown |= finite
             else:
-                source = None
-                if sources is not None and leg in sources:
-                    source = sources[leg]
-                else:
-                    source = features.get(leg)
-                if not isinstance(source, pd.Series) or len(source) == 0:
+                first = None
+                try:
+                    first = pd.Timestamp(raw_coverage)
+                except (ValueError, TypeError):
+                    first = None
+                if first is None or pd.isna(first) or (first.tzinfo is None) != (index.tz is None):
                     unknown |= finite
                 else:
-                    source_dates = _per_value_source_dates(source, index)
-                    revised = finite & source_dates.notna() & (source_dates < first)
-                    unknown |= finite & source_dates.isna()
+                    # F1: default path is UNKNOWN — the forward-filled feature
+                    # column is never used as its own source.
+                    source = None
+                    if sources is not None and isinstance(sources, dict) and leg in sources:
+                        source = sources[leg]
+                    if not isinstance(source, pd.Series) or len(source) == 0:
+                        unknown |= finite
+                    else:
+                        source_dates = _per_value_source_dates(source, index)
+                        revised = finite & source_dates.notna() & (source_dates < first)
+                        unknown |= finite & source_dates.isna()
         window, minimum, lag = spec["smooth_rows"], spec["min_periods"], spec["lag_rows"]
         counts = finite.astype(int).rolling(window, min_periods=1).sum()
         usable = counts >= minimum

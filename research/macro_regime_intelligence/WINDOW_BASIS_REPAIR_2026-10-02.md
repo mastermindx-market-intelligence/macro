@@ -120,6 +120,8 @@ existing code job; the frozen #8301 source is untouched. No test or gate is remo
 
 Five independent reviews of the candidate agreed on the same repair surface;
 this section is a dated correction, not a rewrite of the history above.
+The two review-pass rounds also landed F2 (source de-duplication), F6
+(tz-aware source index) and F7 (bool/int/float coverage values).
 
 - **Per-value provenance (W2).** The `revised` label is now decided from the
   per-value source date — the last index date at which the un-forward-filled
@@ -129,13 +131,33 @@ this section is a dated correction, not a rewrite of the history above.
   `initial_vintage_inputs`. A NaN initial-vintage value never upgrades a
   label. The function accepts a new keyword-only `sources=` argument; in
   `build_frames` it is the `overrides` dict (the merged live + panel
-  series). When neither `sources[leg]` nor `features[leg]` is available,
-  affected rows resolve to `unknown_inputs` (test (c) below). Synthetic
-  test (a) — sparse source, pre-coverage ffill into the first N post-coverage
-  rows — labels the window `revised_fallback_inputs` and was RED before the
-  fix (`row 163 expected revised_fallback_inputs, got initial_vintage_inputs`)
-  and GREEN after. Test (b) confirms a normal leg with finite initial values
-  is unchanged.
+  series). When `sources` is None, or lacks a leg, that leg's per-value
+  source date is UNKNOWN and every row that depends on it resolves to
+  `unknown_inputs` — the forward-filled feature column is never used as
+  its own source, because without the un-filled series the function
+  cannot tell an observed value from one carried forward from before
+  coverage. Synthetic test (a) — sparse source, pre-coverage ffill into
+  the first N post-coverage rows — labels the window
+  `revised_fallback_inputs` and was RED before the fix (`row 163 expected
+  revised_fallback_inputs, got initial_vintage_inputs`) and GREEN after.
+  Test (b) confirms a normal leg with finite initial values is unchanged.
+  Test (c) discriminates: with finite leg columns and NO source supplied,
+  every row is `unknown_inputs`; with `sources={"payrolls": ...}`, the
+  lag window resolves per-value.
+- **Source de-duplication (F2).** A duplicate stamp in the source index
+  keeps the LAST row, matching `engine/inputs.put()`'s forward-fill rule,
+  BEFORE the dropna pass — so a finite-then-NaN duplicate at the same
+  stamp does not resurrect an earlier observation as the per-value source
+  date. Test: a duplicate (5.0 then NaN) at `first` with a pre-coverage
+  value forward-filled; row 163 (lag window fully post-coverage) is
+  `revised_fallback_inputs`, not `initial_vintage_inputs`. RED first at
+  cfe9a249 (no-dedup mutant returns `initial_vintage_inputs`).
+- **Source-index timezone handling (F6).** A tz-aware source index is
+  normalised to naive UTC before comparison; if any step raises, the leg
+  is UNKNOWN and never escapes as an exception. One test.
+- **Non-string/date/Timestamp coverage (F7).** A coverage value that is
+  bool, int or float (e.g. 0, 1.5, True) is unparseable and resolves the
+  leg to `unknown_inputs`. Parametrised test covers 0, 1.5, True.
 - **State scope (W3).** The audit gains `state_columns_qualified: false` and
   a measured `state_inheritance` object (count and first/last date of rows
   whose `macro_window_basis` is `initial_vintage_inputs` while the start of
@@ -144,6 +166,9 @@ this section is a dated correction, not a rewrite of the history above.
   available, then attached to the audit. The source registry now spells out
   that the `macro_window_*` columns qualify slow-component INPUT windows
   only and do NOT qualify `quad`, `pending_quad` or any state column.
+  `state_inheritance` is pinned to `{n_rows: 155, first_date: 2020-11-11,
+  last_date: 2021-11-02}` on both the builder and CLI tests; an
+  empty-mapping mutant fails (F4 quoted).
 - **Explicit qualification flags (W1).** The function audit and the
   serialized sidecar both assert every `*_verified` /
   `legacy_pit_class_changed` / `numeric_model_changed` /
@@ -161,7 +186,16 @@ this section is a dated correction, not a rewrite of the history above.
   resolves that leg to `unknown_inputs` instead of raising; covered by a
   new test passing the string `"not-a-date"`.
 - **Behaviour preservation (W6).** No pre-existing test changes except
-  where it reads the renamed key. The legacy `pit_class`, `fallback_notes`
-  and four-column window basis remain byte-identical on the saved source
-  for the same inputs. The builder was NOT run against any real or
-  production data store and nothing was written under `data/`.
+  where it reads the renamed key OR passes an explicit `sources=`
+  argument built from the same un-filled series the fixture already
+  constructs. Parity is asserted on the SYNTHETIC fixture only; the
+  seven real-store tests are skipped outside a full data-store checkout
+  and run in CI. The `pit_class`, `fallback_notes` and every numeric
+  regime column are unchanged on the same inputs; the W2 window-basis
+  labels are intentionally more conservative (the default path is now
+  `unknown_inputs` and the per-value path may downgrade a row that
+  row-date logic would have called `initial_vintage_inputs`). The
+  builder was NOT run against any real or production data store, no
+  producer outside `build_frames` calls `macro_window_provenance`, and
+  nothing was written under `data/`. The size of the label change on
+  real history is NOT measured in this PR.

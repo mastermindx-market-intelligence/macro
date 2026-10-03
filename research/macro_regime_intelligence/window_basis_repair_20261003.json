@@ -1,13 +1,13 @@
 {
-  "operation": "regime-window-basis-repair-20261003-001",
+  "operation": "regime-window-basis-repair-20261003-002",
   "lane": "claude/gri-8304-window-basis-repair-20261003",
   "parent_operation": "regime-window-basis-20261002-astra-001",
   "parent_receipt": "research/macro_regime_intelligence/window_basis_verification_20261002.json",
   "capability_state": "BUILT_NOT_PROVEN",
   "mission_complete": false,
   "source_sha256": {
-    "scripts/build_regime_v2_pit.py": "8206fdb9aa8a9d52537a5c97a9d10ffdfbd383fb5f62ac8876cc3502d8829ad7",
-    "tests/test_regime_v2_pit.py": "cb0cdaea73f0f2f1935b0367598a7e056ae21ddba6f9ee322bd943b1c632d8c4",
+    "scripts/build_regime_v2_pit.py": "54c36c243608435005dead8d3715b50606f4bae6f478dedb1124076678c26f65",
+    "tests/test_regime_v2_pit.py": "6bd3fc8d916b5f08b267c48523ee0caf147f65d29cdad575f2754aa135bd33ad",
     "config/synapse.yml": "2d85326ef5545605529afa6aa36a8c339c3d341e1d1cc97bbf9c43b2eb07fbc6"
   },
   "source_renames": {
@@ -44,10 +44,15 @@
   "test_evidence": {
     "W1_six_flags": "flipping each of the six qualification flags to True in turn surfaces failing tests in the parameterized lag-endpoint test, the actual builder test, and the actual CLI test; 6 red lines captured in the lane run",
     "W2_per_value_provenance": "row 163 (post-coverage, lag window entirely post-coverage) labels revised_fallback_inputs with the per-value fix; row-date logic returns initial_vintage_inputs at the same row, producing the RED line in test (a); test (b) confirms normal legs unchanged; test (c) confirms unknown when no source is available",
-    "W3_state_scope": "state_columns_qualified=False and state_inheritance {n_rows, first_date, last_date} are asserted on both the builder test and the CLI test",
+    "W3_state_scope": "state_columns_qualified=False and state_inheritance {n_rows: 155, first_date: 2020-11-11, last_date: 2021-11-02} are pinned on both the builder test and the CLI test",
     "W4_rename": "spec[\"scored_feature\"] is asserted by the dependency-description test; spec[\"feature\"] is no longer present",
-    "W5_unparseable_coverage": "coverage_start=\"not-a-date\" resolves that leg to unknown_inputs instead of raising",
-    "W6_preservation": "no pre-existing test modified except where it reads the renamed key; pit_class and fallback_notes parity still asserted on the saved source"
+    "W5_unparseable_coverage": "coverage_start=\"not-a-date\" resolves that leg to unknown_inputs instead of raising; F7 parametrised test (0, 1.5, True) extends this to bool/int/float",
+    "W6_preservation": "parity is asserted on the SYNTHETIC fixture only; the seven real-store tests are skipped outside a full data-store checkout and run in CI",
+    "F1_default_unknown": "without an un-filled source for a leg the leg resolves to unknown_inputs; the parametrized lag-endpoint test, the sticky-CPI test, the real-component test and test (b) are kept green by passing sources={leg: frame[leg]}; test (c) was rewritten to discriminate (F3 mutant quoted failing)",
+    "F2_source_dedup": "duplicate stamps keep the last row before dropna, matching engine/inputs.put; test_source_dedup_keeps_last_value_like_engine_inputs_put fails under a no-dedup mutant (row 163 returns initial_vintage_inputs instead of revised_fallback_inputs)",
+    "F6_tz_aware": "a timezone-aware source index is normalised to naive UTC before comparison; comparison failures return NaT and the leg is unknown_inputs",
+    "test_counts": "36 passed, 7 skipped (the 7 are the real-store tests; 5 new tests added: F2 dedup, F6 tz-aware, F7 parametrised bool/int/float; F4 state_inheritance pinned in the existing builder + CLI tests)",
+    "size_of_label_change_on_real_history": "NOT measured in this PR"
   },
   "out_of_scope": [
     "engine/**",
@@ -61,6 +66,7 @@
     "no write under data/",
     "no gh mutations",
     "no force-push",
-    "no push to the original PR branch"
+    "no push to the original PR branch",
+    "no measurement of the size of the window-basis label change on real history"
   ]
 }
