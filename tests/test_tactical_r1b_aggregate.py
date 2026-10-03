@@ -264,3 +264,26 @@ def test_no_control_fraction_and_reasons():
         "matched_control_floor_not_met": n1,
         "qqq_sign_unavailable": n2,
     }
+
+
+def test_same_week_number_in_two_years_is_two_blocks():
+    assert agg.week_blocks([("2025-06-16", 1.0), ("2026-06-15", 3.0)]) == [[1.0], [3.0]]
+
+
+def test_interval_lower_bound_of_exactly_zero_fails():
+    early_days = weekdays(60, start=date(2025, 6, 16))
+    late_days = weekdays(60, start=date(2025, 10, 13))
+    rows = []
+    for day in early_days + late_days:
+        rows.append({
+            "selector": "EXHAUSTION_RECLAIM", "horizon": "60m", "cost_bps": 25,
+            "symbol": "AAA", "date": day.isoformat(),
+            "candidate_bin": 19, "decision_bin": 19,
+            "selected_return": 0.0, "selected_touch": "neither",
+            "pool_availability": "AVAILABLE", "pool_reason": None, "matched_count": 10,
+            "control_returns_a": [0.0] * 10, "control_returns_b": [0.0] * 10,
+        })
+    g = agg.gate(rows, cfg=CFG)
+    for r in agg.READINGS:
+        assert g["readings"][r]["summary"]["interval"] == (0.0, 0.0)
+        assert g["readings"][r]["bullet_2_interval"] is False
