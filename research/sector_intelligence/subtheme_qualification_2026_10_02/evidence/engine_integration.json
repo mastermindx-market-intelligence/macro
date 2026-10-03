@@ -1,0 +1,53 @@
+{
+  "scope": "ISOLATED_EXACT_SOURCE_TESTS_NOT_FULL_IMPORT_CHAIN_OR_MARKET_BACKTEST",
+  "source_base": "25b8892e28c4610f7453beab72585d201338c1f4",
+  "procedure_pin": "bdf2a972e68a70270c24d4b5d61a4d60edc4f288",
+  "files": {
+    "engine/subsector_track_record.py": {
+      "bytes": 36868,
+      "git_blob": "c6b410f696669f3ef191b748c754c1562c871776",
+      "sha256": "d8d13b060eb19ac63a58b3fab0c813fdd98511ce588be75f96e346360e558096"
+    },
+    "tests/test_subsector_track_record.py": {
+      "bytes": 44888,
+      "git_blob": "6ea52dcda32a54255c3cc585943958b5fa6d93ea",
+      "sha256": "c245b54c2252f5e0d83df1bf9e571d78cadff3602e6875568531568ff6e84ba9"
+    }
+  },
+  "tests": {
+    "initial_owner_and_guard_suite_passed": 162,
+    "new_first_batch_failed_before_repair": 16,
+    "new_first_batch_passed_before_repair": 2,
+    "intermediate_failed": 1,
+    "intermediate_failure": "undefined ic_ir serialized as NaN",
+    "final_expected_cases": 183,
+    "price_io_and_config_imports_replaced": true,
+    "unmocked_price_io": "RAISE",
+    "production_import_chain_tested": false,
+    "final_passed": 183,
+    "final_log_sha256": "84a49c5593fe1feb9370b35736cfdcee3d86c7d3acbf09b7c7846b1fa9c18fa5"
+  },
+  "changes": [
+    "Exact NYSE-session horizons and maturity",
+    "Every frozen member requires covered finite return; no survivor renormalization",
+    "Both score fields share finite rows and nonconstant IC dates",
+    "Undefined derived statistics become null",
+    "Observed nonoverlapping windows cap elapsed-span window counts",
+    "No order-dependent global comparison winner",
+    "Explicit remaining price-provenance qualification limit"
+  ],
+  "not_claimed": [
+    "raw-market replay",
+    "historical knowledge-time qualification",
+    "corporate-action or delisting validation",
+    "executable trading returns",
+    "independent review",
+    "production acceptance"
+  ],
+  "held_actions": [
+    "latest M2 parquet/tree-coverage inspection explicitly platform-blocked",
+    "earlier public-result inspection not adjudicated"
+  ],
+  "live_rank_size_trade_change": false,
+  "publication_scope": "Existing draft PR; source-only; no merge or deployment"
+}

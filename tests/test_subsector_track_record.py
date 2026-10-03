@@ -885,3 +885,112 @@ def test_track_record_head_to_head_is_paired_and_order_invariant():
     assert a["by_horizon"]["5"]["gap"]==pytest.approx(0.1)
     assert a["by_horizon"]["21"]["gap"]==pytest.approx(-0.2)
     assert a["by_horizon"]==b["by_horizon"]
+
+# Complete-basket and identical-date regressions for the canonical evaluator.
+def _integrity_fake_prices(monkeypatch, values, missing=None):
+    monkeypatch.setattr(S, '_level_asof', lambda *args: 100.0)
+    monkeypatch.setattr(S, '_close_at', lambda *args: 100.0)
+    monkeypatch.setattr(S, '_covers', lambda ticker, *args: ticker != missing)
+    monkeypatch.setattr(S, '_member_ret', lambda ticker, *args: values.get(ticker, 0.0))
+
+
+def test_track_integrity_missing_loser_does_not_become_a_winning_basket(tmp_path, monkeypatch):
+    values = {'A':.08, 'B':.03, 'C':-.05, 'D':None}
+    _integrity_fake_prices(monkeypatch, values)
+    assert S._fwd_basket(['A','B','C','D'], tmp_path, '2026-09-25', 5) is None
+
+
+def test_track_integrity_complete_basket_retains_all_initial_weights(tmp_path, monkeypatch):
+    values = {'A':.08, 'B':.03, 'C':-.05, 'D':-.20}
+    _integrity_fake_prices(monkeypatch, values)
+    assert S._fwd_basket(list(values), tmp_path, '2026-09-25', 5) == pytest.approx(-.035)
+
+
+def test_track_integrity_each_member_requires_horizon_coverage(tmp_path, monkeypatch):
+    values = {'A':.08, 'B':.03, 'C':-.05, 'D':-.20}
+    _integrity_fake_prices(monkeypatch, values, missing='D')
+    assert S._fwd_basket(list(values), tmp_path, '2026-09-25', 5) is None
+
+
+@pytest.mark.parametrize('bad', [float('nan'), float('inf'), True, '0.02', -2.0])
+def test_track_integrity_invalid_member_return_is_unavailable(tmp_path, monkeypatch, bad):
+    values = {'A':.08, 'B':.03, 'C':bad}
+    _integrity_fake_prices(monkeypatch, values)
+    assert S._fwd_basket(list(values), tmp_path, '2026-09-25', 5) is None
+
+
+@pytest.mark.parametrize('members', [['A','A','B'], ['A','B',''], ['A','B',' c ']])
+def test_track_integrity_ambiguous_member_population_is_unavailable(tmp_path, monkeypatch, members):
+    _integrity_fake_prices(monkeypatch, {'A':.08, 'B':.03, 'C':.05})
+    assert S._fwd_basket(members, tmp_path, '2026-09-25', 5) is None
+
+
+def _integrity_rows():
+    rows = []
+    for day in range(7):
+        for j in range(10):
+            rows.append({'date':['2026-09-14','2026-09-15','2026-09-16','2026-09-17','2026-09-18','2026-09-21','2026-09-22'][day], 'key':f'k{j}',
+                         'score':float(j), 'score_v2':float(-j) if day < 6 else 0.,
+                         'fwd':j*.01, 'stage':'neutral'})
+    return rows
+
+
+def test_track_integrity_pair_uses_identical_nonconstant_dates():
+    pair = S._paired_daily_ic(_integrity_rows(), 5)
+    assert pair['n_paired']==70 and pair['n_scored_paired']==60
+    assert pair['n_paired_ic_dates']==6
+    assert pair['paired_ic_dates']==['2026-09-14','2026-09-15','2026-09-16','2026-09-17','2026-09-18','2026-09-21']
+    assert pair['score_ic']==pytest.approx(1.)
+    assert pair['score_ic_v2']==pytest.approx(-1.)
+
+
+@pytest.mark.parametrize('bad', [float('nan'), float('inf'), True, '2.5'])
+def test_track_integrity_pair_drops_nonfinite_or_nonnumeric_scores(bad):
+    rows = _integrity_rows()[:60]
+    rows[0]['score_v2']=bad
+    pair = S._paired_daily_ic(rows, 5)
+    assert pair['n_paired']==59
+    assert pair['n_scored_paired']==50
+    assert pair['n_paired_ic_dates']==5
+    assert pair['score_ic'] is None and pair['score_ic_v2'] is None
+
+
+def test_track_integrity_compute_retains_shared_population_receipt(tmp_path, monkeypatch):
+    rows = _integrity_rows()
+    monkeypatch.setattr(S, '_load', lambda root: rows)
+    monkeypatch.setattr(S, '_matured', lambda *args: rows)
+    out=S.compute(today='2026-10-02', root=tmp_path, horizons=[5])
+    assert out['horizons']['5']['comparison']['n_paired_ic_dates']==6
+    assert out['head_to_head']['by_horizon']['5']['n_scored_paired']==60
+    assert out['head_to_head']['leader'] is None
+    json.dumps(out, allow_nan=False)
+
+
+def test_track_integrity_sparse_dates_do_not_manufacture_observation_windows():
+    got=S._window_span(['2025-01-02','2026-09-25'], 21)
+    assert got['indep_windows']<=2
+
+
+
+def test_track_integrity_price_values_are_numeric_and_finite(tmp_path, monkeypatch):
+    monkeypatch.setattr(S, '_close_at', lambda *args: 100.0)
+    for bad in [float('nan'), float('inf'), True, '100', 0., -1.]:
+        monkeypatch.setattr(S, '_level_asof', lambda *args: bad)
+        assert S._member_ret('A', tmp_path, '2026-09-25', '2026-10-02') is None
+    monkeypatch.setattr(S, '_level_asof', lambda *args: 100.0)
+    for bad in [float('nan'), float('inf'), True, '100', -1.]:
+        monkeypatch.setattr(S, '_close_at', lambda *args: bad)
+        assert S._member_ret('A', tmp_path, '2026-09-25', '2026-10-02') is None
+
+
+def test_track_integrity_actual_zero_terminal_value_is_not_missing(tmp_path, monkeypatch):
+    monkeypatch.setattr(S, '_level_asof', lambda *args: 100.0)
+    monkeypatch.setattr(S, '_close_at', lambda *args: 0.0)
+    assert S._member_ret('A', tmp_path, '2026-09-25', '2026-10-02') == -1.0
+
+
+def test_track_integrity_output_discloses_remaining_provenance_limit(tmp_path):
+    out=S.compute(today='2026-10-02', root=tmp_path)
+    assert out['is_context_only'] is True
+    assert out['price_provenance_qualification']=='NOT_ESTABLISHED_BY_THIS_EVALUATOR'
+    assert out['comparison_population_policy']=='same_rows_same_valid_ic_dates'

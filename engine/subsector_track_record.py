@@ -9,8 +9,9 @@ unproven signal is flagged rather than trusted.
 Structure mirrors engine.hub_track_record (Pattern B) with one real change: a
 subsector has no price series, so its forward return is the **equal-weight mean
 forward return of its FROZEN member tickers**, SPY-relative. Members are frozen
-at snapshot time (no survivorship drift); only members we actually hold prices
-for are used, and a subsector with too few priceable members is left unscored.
+at snapshot time. Every frozen member must have a finite covered return;
+missing members leave the whole basket unscored. Historical source availability
+and adjusted-price provenance remain separate qualification requirements.
 
   1. snapshot(subsectors, member_map, today) — append today's per-subsector
      {date, key, score, stage, lean, members} to data/subsector_rotation/
@@ -54,21 +55,12 @@ _HORIZONS = (5, 10, 21, 63)
 _BENCH = "SPY"
 _MIN_PRICED = 3              # a subsector needs ≥ this many priceable members to be scored
 _MIN_PROVEN_N = 40          # matured cross-sectional ROWS before a horizon can be called "proven"
-# INDEPENDENT-WINDOW FLOOR (2026-08-03 experiments audit). _MIN_PROVEN_N counts matured
-# cross-sectional rows — one date of 268 subsectors satisfies it outright — while the gate it
-# guards is a TIME-SERIES statistic on the per-date IC. On 2026-08-03 the 21d horizon shipped
-# verdict="validated" off 10 IC-days spanning 12 CALENDAR days: ~0.4 non-overlapping 21-day
-# windows, i.e. one market episode graded ten times. Rows are not evidence; independent
-# windows are. A horizon may only be called proven once its matured IC-day span covers at
-# least this many NON-OVERLAPPING horizon-length windows:
-#
-#     indep_windows = (last_ic_date - first_ic_date).days / (horizon_d * 7 / 5)
-#
-# The 7/5 converts the horizon from trading days (how _HORIZONS is expressed) to the calendar
-# days the span is measured in — 21 trading days ≈ 29.4 calendar days. Six windows is the
-# floor, not a target: it is the smallest span at which the episodes being averaged can differ.
+# Conservative observation-window floor, not statistical independence proof.
+# Rows from one cross-section are not independent market episodes. Use the
+# exact-session span AND the observed disjoint forward-window count, whichever
+# is smaller. Six remains the existing minimum; no promotion threshold is lowered.
 _MIN_INDEP_WINDOWS = 6.0
-_TD_TO_CALENDAR = 7.0 / 5.0  # trading days → calendar days
+_TD_TO_CALENDAR = 7.0 / 5.0  # compatibility only; no longer used to count trading days → calendar days
 
 
 def _now_iso() -> str:
@@ -239,24 +231,100 @@ def _session_horizon_end(start: date | str, horizon_sessions: int) -> str:
             remaining -= 1
     return d.isoformat()
 
+def _finite_number(value):
+    """Finite numeric evidence, never booleans or numeric-looking strings."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return False
+    try:
+        return math.isfinite(value)
+    except (ValueError, TypeError, OverflowError):
+        return False
+
+def _ic_by_date(rows: list, fields: tuple[str, ...]) -> tuple[dict, int, int]:
+    """One shared finite-row AND nonconstant-date population for all fields."""
+    grouped = {}
+    for row in rows:
+        if (isinstance(row, dict) and isinstance(row.get('date'), str)
+                and _finite_number(row.get('fwd'))
+                and all(_finite_number(row.get(field)) for field in fields)):
+            grouped.setdefault(row['date'], []).append(row)
+    counts = sum(len(day) for day in grouped.values())
+    by_date, used = {}, 0
+    for stamp, day in sorted(grouped.items()):
+        outcomes = [row['fwd'] for row in day]
+        if len(day) < 10 or len(set(outcomes)) < 2:
+            continue
+        values = [[row[field] for row in day] for field in fields]
+        if any(len(set(xs)) < 2 for xs in values):
+            continue
+        correlations = [V.rank_ic(xs, outcomes) for xs in values]
+        if not all(_finite_number(value) for value in correlations):
+            continue
+        by_date[stamp] = correlations
+        used += len(day)
+    return by_date, counts, used
+
+def _summarize_ic(by_date: dict, horizon_d: int, column: int) -> dict:
+    values = [row[column] for row in by_date.values()]
+    summary = (V.ic_summary(values, periods_per_year=2 * horizon_d)
+               if len(values) >= 6 else {'n_days': len(values)})
+    # Undefined statistics must serialize as unavailable, not JavaScript NaN.
+    summary = {key: (None if isinstance(value, float) and not math.isfinite(value)
+                     else value) for key, value in summary.items()}
+    summary.update(_window_span(list(by_date), horizon_d))
+    summary['ic_dates'] = list(by_date)
+    return summary
+
+def _paired_daily_ic(rows: list, horizon_d: int) -> dict:
+    """Paired comparisons never average different finite-IC date sets."""
+    by_date, candidate_rows, used_rows = _ic_by_date(rows, ('score', 'score_v2'))
+    baseline = _summarize_ic(by_date, horizon_d, 0)
+    challenger = _summarize_ic(by_date, horizon_d, 1)
+    return {
+        'n_paired': candidate_rows,
+        'n_scored_paired': used_rows,
+        'n_paired_ic_dates': len(by_date),
+        'paired_ic_dates': list(by_date),
+        'score_ic': baseline.get('mean_ic'),
+        'score_ic_v2': challenger.get('mean_ic'),
+        'score_ic_t_hac': baseline.get('t_hac'),
+        'score_ic_t_hac_v2': challenger.get('t_hac'),
+    }
+
+
 def _member_ret(ticker: str, root: Path, start: str, end: str) -> float | None:
     p0, p1 = _level_asof(ticker, root, start), _close_at(ticker, root, end)
-    if p0 in (None, 0) or p1 is None:
+    if not _finite_number(p0) or not _finite_number(p1) or p0 <= 0 or p1 < 0:
         return None
-    return float(p1 / p0 - 1.0)
+    value = p1 / p0 - 1.0
+    return float(value) if _finite_number(value) else None
 
 
 def _fwd_basket(members: list, root: Path, start: str, horizon_d: int) -> float | None:
-    """Equal-weight frozen-member return over exactly horizon_d NYSE sessions, minus SPY."""
+    """Complete frozen equal-weight basket; missing members never disappear."""
     try:
+        if not isinstance(members, list) or len(members) < _MIN_PRICED:
+            return None
+        if any(not isinstance(t, str) or not t or t != t.strip().upper() for t in members):
+            return None
+        if len(set(members)) != len(members):
+            return None
         end = _session_horizon_end(start, horizon_d)
-        rets = [r for t in (members or []) if (r := _member_ret(t, root, start, end)) is not None]
-        if len(rets) < _MIN_PRICED:
+        rets = []
+        for ticker in members:
+            if not _covers(ticker, root, end):
+                return None
+            value = _member_ret(ticker, root, start, end)
+            if not _finite_number(value) or value < -1:
+                return None
+            rets.append(value)
+        if not _covers(_BENCH, root, end):
             return None
-        b0, b1 = _level_asof(_BENCH, root, start), _close_at(_BENCH, root, end)
-        if b0 in (None, 0) or b1 is None:
+        benchmark = _member_ret(_BENCH, root, start, end)
+        if not _finite_number(benchmark) or benchmark < -1:
             return None
-        return float(sum(rets) / len(rets) - (b1 / b0 - 1.0))
+        result = math.fsum(r / len(members) for r in rets) - benchmark
+        return float(result) if _finite_number(result) else None
     except Exception:  # noqa: BLE001
         return None
 
@@ -270,7 +338,7 @@ def _matured(rows: list, root: Path, horizon_d: int, today: date) -> list[dict]:
             if not _covers(_BENCH, root, end):
                 continue
             fwd = _fwd_basket(r.get("members"), root, r["date"], horizon_d)
-            if fwd is None:
+            if not _finite_number(fwd):
                 continue
             out.append({**r, "fwd": fwd})
         except Exception:  # noqa: BLE001
@@ -278,25 +346,37 @@ def _matured(rows: list, root: Path, horizon_d: int, today: date) -> list[dict]:
     return out
 
 def _window_span(ic_dates: list, horizon_d: int) -> dict:
-    """Exact NYSE-session span of IC dates and non-overlapping horizon windows."""
+    """Session span capped by observed nonoverlapping forward windows.
+
+    This is a conservative sample-size guard, not proof of statistical independence.
+    Empty years between two observed dates do not create additional observations.
+    """
+    empty = {"ic_first_date": None, "ic_last_date": None, "ic_span_days": 0,
+             "ic_span_sessions": 0, "span_windows": 0.0,
+             "nonoverlapping_ic_observations": 0, "indep_windows": 0.0}
     if not ic_dates:
-        return {"ic_first_date": None, "ic_last_date": None,
-                "ic_span_days": 0, "ic_span_sessions": 0, "indep_windows": 0.0}
-    first, last = min(ic_dates), max(ic_dates)
+        return empty
     try:
-        first_d, last_d = _as_date(first), _as_date(last)
-        if first_d is None or last_d is None:
-            raise ValueError("unparseable IC date")
-        first_s = nyse_calendar.last_session_on_or_before(first_d)
-        last_s = nyse_calendar.last_session_on_or_before(last_d)
-        span_days = max(0, (last_s - first_s).days)
-        span_sessions = max(0, len(nyse_calendar.sessions_between(first_s, last_s)) - 1)
+        if isinstance(horizon_d, bool) or not isinstance(horizon_d, int) or horizon_d <= 0:
+            return empty
+        parsed = [_as_date(d) for d in ic_dates]
+        if any(d is None for d in parsed):
+            return empty
+        dates = sorted({nyse_calendar.last_session_on_or_before(d) for d in parsed})
+        first, last = dates[0], dates[-1]
+        span_sessions = max(0, len(nyse_calendar.sessions_between(first, last)) - 1)
+        count, prior_end = 0, None
+        for stamp in dates:
+            if prior_end is None or stamp >= prior_end:
+                count += 1
+                prior_end = date.fromisoformat(_session_horizon_end(stamp, horizon_d))
+        windows = span_sessions / horizon_d
+        return {"ic_first_date": first.isoformat(), "ic_last_date": last.isoformat(),
+                "ic_span_days": (last-first).days, "ic_span_sessions": span_sessions,
+                "span_windows": windows, "nonoverlapping_ic_observations": count,
+                "indep_windows": min(windows, float(count))}
     except Exception:  # noqa: BLE001
-        span_days, span_sessions = 0, 0
-    win = max(1, int(horizon_d))
-    return {"ic_first_date": first, "ic_last_date": last,
-            "ic_span_days": span_days, "ic_span_sessions": span_sessions,
-            "indep_windows": round(span_sessions / win, 2)}
+        return empty
 
 def _iid_t(ic: dict) -> float | None:
     """Plain iid t of the per-date IC series — mean / (sd / sqrt(n)). The NO-correction
@@ -343,30 +423,9 @@ def _gate_t(ic: dict, horizon_d: int) -> tuple[float | None, bool]:
     return (float(t_hac), False)
 
 
-def _daily_ic(rows: list, horizon_d: int, field: str = "score") -> dict:
-    """Per-date cross-sectional IC of a score field vs forward return → HAC summary.
-    The Newey-West lag is the horizon (overlapping windows autocorrelate at lag h).
-
-    Also discloses the CALENDAR SPAN those IC-days cover and the non-overlapping
-    horizon-windows it buys (`ic_span_days` / `indep_windows`) — the promotion gate reads
-    the windows, because a row count cannot tell one episode from six."""
-    by_date: dict[str, list] = {}
-    for r in rows:
-        by_date.setdefault(r["date"], []).append(r)
-    ics, ic_dates = [], []
-    for d, day in sorted(by_date.items()):
-        xs = [r.get(field) for r in day if r.get(field) is not None]
-        fwd = [r["fwd"] for r in day if r.get(field) is not None]
-        if len(xs) < 10 or len(set(xs)) < 2 or len(set(fwd)) < 2:
-            continue
-        ic = V.rank_ic(xs, fwd)
-        if ic == ic:
-            ics.append(ic)
-            ic_dates.append(d)
-    out = (V.ic_summary(ics, periods_per_year=2 * horizon_d) if len(ics) >= 6
-           else {"n_days": len(ics)})
-    out.update(_window_span(ic_dates, horizon_d))
-    return out
+def _daily_ic(rows: list, horizon_d: int, field: str = 'score') -> dict:
+    by_date, _, _ = _ic_by_date(rows, (field,))
+    return _summarize_ic(by_date, horizon_d, 0)
 
 
 def _by_stage(rows: list, field: str = "stage") -> dict:
@@ -423,6 +482,9 @@ def _head_to_head(out_h: dict) -> dict:
             "n": e.get("n_matured"),
             "n_v2": v2.get("n_matured"),
             "n_paired": pair.get("n_paired"),
+            "n_scored_paired": pair.get("n_scored_paired"),
+            "n_paired_ic_dates": pair.get("n_paired_ic_dates"),
+            "paired_ic_dates": pair.get("paired_ic_dates"),
             "ic": a,
             "ic_v2": b,
             "gap": (round(b - a, 4) if (a is not None and b is not None) else None),
@@ -432,7 +494,7 @@ def _head_to_head(out_h: dict) -> dict:
     return {
         "by_horizon": rows,
         "leader": None,
-        "note": ("Paired same-row ICs are reported separately by horizon. No global winner "
+        "note": ("Paired same-row, same-valid-date ICs are reported separately by horizon. No global winner "
                  "is declared from unequal populations or horizon iteration order."),
         "note_zh": ("各周期仅报告同一批成对样本的信息系数；不再根据不等样本或周期遍历顺序"
                     "给出全局胜者。"),
@@ -577,11 +639,8 @@ def compute(today: date | str | None = None, root: Path | None = None,
             mat_v2 = [r for r in mat if r.get("score_v2") is not None]
             ic_v2 = _daily_ic(mat_v2, h, field="score_v2")
             # Head-to-head claims must use an identical population. Keep standalone
-            # incumbent/v2 diagnostics above, but compare only rows carrying BOTH scores.
-            mat_pair = [r for r in mat
-                        if r.get("score") is not None and r.get("score_v2") is not None]
-            ic_pair = _daily_ic(mat_pair, h, field="score")
-            ic_v2_pair = _daily_ic(mat_pair, h, field="score_v2")
+            # incumbent/v2 diagnostics above; both fields share valid rows AND IC dates.
+            pair = _paired_daily_ic(mat, h)
             t_gate, anticon = _gate_t(ic, h)
             out_h[str(h)] = {
                 "n_matured": len(mat),
@@ -604,13 +663,7 @@ def compute(today: date | str | None = None, root: Path | None = None,
                     "score_ic_t_hac": ic_v2.get("t_hac"),
                     "by_stage": _by_stage(mat_v2, field="stage_v2"),
                 },
-                "comparison": {
-                    "n_paired": len(mat_pair),
-                    "score_ic": ic_pair.get("mean_ic"),
-                    "score_ic_v2": ic_v2_pair.get("mean_ic"),
-                    "score_ic_t_hac": ic_pair.get("t_hac"),
-                    "score_ic_t_hac_v2": ic_v2_pair.get("t_hac"),
-                },
+                "comparison": pair,
             }
             if h == 21:                                  # error ledger from the 21d window
                 misses = _recent_misses(mat, h)
@@ -636,7 +689,11 @@ def compute(today: date | str | None = None, root: Path | None = None,
         note, note_zh = _note_for(verdict, lead_time)
         return {
             "schema": SCHEMA, "as_of": today_dt.isoformat(), "generated_at": _now_iso(),
-            "is_context_only": True, "n_snapshots": len(rows), "n_days": n_days,
+            "is_context_only": True,
+            "evaluation_basis": "closed_session_information_content",
+            "outcome_coverage_policy": "all_frozen_members_required",
+            "comparison_population_policy": "same_rows_same_valid_ic_dates",
+            "price_provenance_qualification": "NOT_ESTABLISHED_BY_THIS_EVALUATOR", "n_snapshots": len(rows), "n_days": n_days,
             "horizons": out_h, "lead_time_d": lead_time, "peak_score_ic": peak_ic,
             "proven": proven, "any_matured": any_matured, "verdict": verdict,
             "note": note, "note_zh": note_zh,
@@ -659,7 +716,11 @@ def compute(today: date | str | None = None, root: Path | None = None,
     except Exception as e:  # noqa: BLE001
         log.warning("subsector track compute failed: %s", e)
         return {"schema": SCHEMA, "as_of": _session_stamp(today), "generated_at": _now_iso(),
-                "is_context_only": True, "n_snapshots": 0, "n_days": 0, "horizons": {},
+                "is_context_only": True,
+                "evaluation_basis": "closed_session_information_content",
+                "outcome_coverage_policy": "all_frozen_members_required",
+                "comparison_population_policy": "same_rows_same_valid_ic_dates",
+                "price_provenance_qualification": "NOT_ESTABLISHED_BY_THIS_EVALUATOR", "n_snapshots": 0, "n_days": 0, "horizons": {},
                 "lead_time_d": None, "peak_score_ic": None, "proven": {}, "any_matured": False,
                 "verdict": "accruing", "note": f"compute error ({e}) — accruing, degrade-safe.",
                 "note_zh": f"计算出错（{e}）——累积中，降级安全。",
