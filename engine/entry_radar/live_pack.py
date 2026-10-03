@@ -1439,6 +1439,45 @@ def pointer_path(state_dir: Path | str) -> Path:
     return pack_root(state_dir) / _POINTER_NAME
 
 
+def current_pack_identity(state_dir: Path | str) -> dict[str, str] | None:
+    """The current pack's ``as_of`` and ``pack_hash``, from the pointer and manifest ALONE.
+
+    Reads two small JSON files and checks that the substrate file exists; it
+    never opens the substrate parquet.  ``None`` means "no pack a builder may
+    treat as current": a missing, unreadable or non-object pointer or manifest,
+    a pointer whose ``as_of`` is not a plain ISO date or whose ``pack_hash`` is
+    empty, a missing substrate file, or a pointer that disagrees with its
+    manifest on ``as_of`` or ``pack_hash``.
+    """
+    root = pack_root(state_dir)
+    try:
+        pointer = json.loads((root / _POINTER_NAME).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(pointer, dict):
+        return None
+    as_of, pack_hash = pointer.get("as_of"), pointer.get("pack_hash")
+    if not (isinstance(as_of, str) and isinstance(pack_hash, str) and pack_hash):
+        return None
+    try:
+        if date.fromisoformat(as_of).isoformat() != as_of:
+            return None
+    except ValueError:
+        return None
+    session_dir = root / as_of
+    try:
+        manifest = json.loads((session_dir / _MANIFEST_NAME).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(manifest, dict):
+        return None
+    if manifest.get("as_of") != as_of or manifest.get("pack_hash") != pack_hash:
+        return None
+    if not (session_dir / _SUBSTRATE_NAME).is_file():
+        return None
+    return {"as_of": as_of, "pack_hash": pack_hash}
+
+
 def _substrate_frame(pack: LivePack) -> pd.DataFrame:
     rows: list[dict[str, Any]] = []
     for ticker in sorted(pack.substrate):
