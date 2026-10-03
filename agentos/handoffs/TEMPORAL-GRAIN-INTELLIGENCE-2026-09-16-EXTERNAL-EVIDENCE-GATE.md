@@ -2,7 +2,7 @@
 workstream: WS:TEMPORAL-GRAIN-INTELLIGENCE
 session: Web Sol / Mac-Studio / sol/temporal-grain-w1a-gakd-20260903
 model: sol
-ended_because: records_only_closure
+ended_because: complete
 mission: >
   Advance W1A from a prose-only external-data blocker to deterministic typed abstention packets for
   the motivating WMT and silver charts, without guessing chart identity, substituting a proxy feed,
