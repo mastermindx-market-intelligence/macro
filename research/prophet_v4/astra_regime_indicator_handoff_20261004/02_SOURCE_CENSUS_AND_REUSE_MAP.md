@@ -1,133 +1,168 @@
-# Source census and reuse map
+# Source census v2: verified dependencies and existing execution plans
 
-## 1. Source identity and what the pin proves
+**Audit date:** 2026-10-04. **Purpose:** repair the published handoff's incomplete source navigation, missing dependencies and stale-state assumptions. This is a census of existing implementation and existing plans, not a replacement for the blocked, unpublished chapter 03 or a new execution authority.
 
-This package was authored against Macro `f5c2e829fef0a9891df0527a4bf74f280aaa0813` (tree `7199758d2388d2af6e96f159d7c055de4df9ad2d`), Mastermind `d1594f3c7ae750db3f14b4eebf0de3460f84267a`, and the observed Terminal master ref `863f678658e2211b5a48daa99404686dfaa117f2`. Default branches and repository names were retrieved through the live GitHub connector. Macro permits source writes for this connection; this does not waive review or deployment gates.
+The [original census](https://github.com/mastermindx-market-intelligence/macro/blob/b598819bcecc2ef98e5848f473df9b21bd045118/research/prophet_v4/astra_regime_indicator_handoff_20261004/02_SOURCE_CENSUS_AND_REUSE_MAP.md) remains immutable. Its research shelves remain useful; the corrections below take precedence as evidence about what was checked in this audit.
 
-A pin fixes an observation, not the receiver's future execution base. Re-pin protected procedure once on pickup; inspect relevant deltas rather than repeating the entire census after unrelated commits. Terminal's ref was checked, but no fresh terminal-wide functional audit was performed during handoff preparation.
+## 1. Exact observations, not assumed current deployment
 
-Protected INDEX is compatible with bootstrap major 1, schema `mastermind.sol_skillpack.v1`, skillpack 1.0.1. ACTIVE_EXECUTION's blob `9fed10f7cc7a2f4323d039b406f7c0715445e22e` matched the version already read during continuation. SESSION_RELIABILITY was not enrolled in this pinned INDEX; do not guess a file or treat its earlier missing path as a global work blocker. Load it from the same commit if the receiver's current accepted INDEX enrolls it.
-
-## 2. Decisive sources
-
-### S1 - incumbent indicator and temporal semantics: checked at handoff source pin
-
-[engine/confluence_tiers.py](https://github.com/mastermindx-market-intelligence/macro/blob/f5c2e829fef0a9891df0527a4bf74f280aaa0813/engine/confluence_tiers.py)
-
-Read lines 1-64 during preparation. Blob: `004eda921766922e146d35acc6ee2bc646e96854`. Confirms RSI-MACD rather than ordinary price MACD, 14/14/60/5 constants, StochRSI 14/3/3, the absolute-session era and distinct event/observation/provisional dates. It does not prove every downstream caller or deployed release uses the expected path. Read the calculation and callers for reproduction.
-
-### S2 - existing absolute anchor: inspected in preceding continuation
-
-[engine/session_anchor.py](https://github.com/mastermindx-market-intelligence/macro/blob/b4f95f98ef80b8cbb4636afbd723b5091658e1f1/engine/session_anchor.py)
-
-Earlier source blob: `0cfc9857cd240788542f1dc6d94eb55d4a68a513`. This is an existing implementation, not a missing proposed module. Read its current revision, `lib/nyse_calendar.py`, the associated absolute-calendar adjudication and its actual consumers. Audit unsupported-market fallback, reference coverage and late vendor corrections. Do not replace it with pandas `3B`, series-start counting or a new calendar registry.
-
-Related existing paths: `research/SESSION_ANCHOR_ABSOLUTE_CALENDAR_ADJUDICATION_BY_FABLE.md`, `engine/canon.py`, `engine/technicals.py`, `tests/test_confluence_resample_runtime.py`, `tests/test_confluence_warmup_floor.py`. The inspected runtime test only covers W-FRI/ME and exact accepted known-date behavior; it is not by itself a full 2D/3D invariance proof.
-
-### S3 - exact frozen fast-cycle experiment: checked at handoff source pin
-
-[Phase-22 preregistration](https://github.com/mastermindx-market-intelligence/macro/blob/f5c2e829fef0a9891df0527a4bf74f280aaa0813/research/prophet_v4/US_PROPHET_PHASE22_FAST_CYCLE_REGIME_PROSPECTIVE_PREREG_2026-09-19.md)
-
-Blob: `8eeeef8c3f61e474383815ba6ff26b92e5d1795e`. Read lines 1-220. This is the authority for the experiment's population, start boundary, primary/secondary tests, availability rules and no-peek floors; recover any later amendment before execution. Companion configuration: `research/prophet_v4/us_prophet_phase22_fast_cycle_regime_prereg_v1.json`.
-
-Related discovery: `agentos/discoveries/DSC-PROPHET-PHASE21-TWO-DEFECT-MECHANISM-AND-PHASE22-PROSPECTIVE-TEST.md`. The Phase-21 synthesis digest is retained in the research intake. Its local location must be resolved; no raw file recovery is claimed here.
-
-### S4 - one Prophet platform, multiple strategies: checked at handoff source pin
-
-[Multi-strategy and cycle-capture decision](https://github.com/mastermindx-market-intelligence/macro/blob/f5c2e829fef0a9891df0527a4bf74f280aaa0813/agentos/decisions/DEC-PROPHET-ONE-PLATFORM-MULTI-STRATEGY-AND-CYCLE-CAPTURE.md)
-
-Blob: `08d1676fb1007334043c7e737196d0192360b232`. Read lines 1-75. Preserves one platform, canonical candidate/evidence/availability/outcome owners, distinct strategy sleeves and separately governed risk. Rejects a single universal all-weather rank, a duplicate Prophet per strategy and a fused macro scorecard.
-
-Companions for full pickup: `research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md` and `agentos/decisions/DEC-PROPHET-CYCLE-CAPTURE-REUSES-LONG-HOLD-AND-MARKET-NATIVE-OWNERS.md`.
-
-### S5 - conditional information can earn authority: checked at handoff source pin
-
-[Earned conditional authority decision](https://github.com/mastermindx-market-intelligence/macro/blob/f5c2e829fef0a9891df0527a4bf74f280aaa0813/agentos/decisions/DEC-PROPHET-ZERO-AUTHORITY-SUPERSEDED-BY-EARNED-CONDITIONAL-AUTHORITY.md)
-
-Blob: `d26131a2c2396dc5dc69279745377d05b6765aea`. Read lines 1-65. The permanent blanket ban on information families was superseded. A versioned model can be a promotion unit, but an unconditional composite or confirming-desk count is not restored. The old champion name inside this historical decision is not a current deployment receipt; census current champion/version separately.
-
-Companions: `research/PROPHET_CONDITIONAL_FUSION_MASTERPLAN_BY_FABLE.md`, `agentos/workstreams/WS-PROPHET-CONDITIONAL-FUSION.md`, `agentos/decisions/DEC-PROPHET-FUSION-IS-THE-CANONICAL-US-RANKER.md`, `engine/us_prophet_fusion.py`, `engine/prophet_arena.py`, `research/prophet_fusion/families.yml`.
-
-### S6 - technical catalog, species and two product queues: inspected in preceding continuation
-
-[TOI owner decision](https://github.com/mastermindx-market-intelligence/macro/blob/b4f95f98ef80b8cbb4636afbd723b5091658e1f1/agentos/decisions/DEC-TECHNICAL-OPPORTUNITY-INTELLIGENCE-CANONICAL-OWNERSHIP-AND-TWO-QUEUE-LAW.md)
-
-Canonical primitives remain in `engine/tech_catalog.py`; scientific species in `engine/species_registry.py` and `data/species/registry.json`; trial/grading/promotion in existing evaluation systems. FORMING/ARMED anticipation is separate from TRIGGERED/CONFIRMED actionability. Occurrence states also include extension, exhaustion, invalidation and fakeout. Terminal is a consumer, not a second semantic owner. Re-read current source before editing.
-
-### S7 - contrary empirical result and estimability: checked at handoff source pin
-
-[Regime-reliability adjudication](https://github.com/mastermindx-market-intelligence/macro/blob/f5c2e829fef0a9891df0527a4bf74f280aaa0813/research/REGIME_RELIABILITY_FACTOR_CROWDING_ADJUDICATION.md)
-
-Blob: `8d189014d01dd61268cdcd55907a7df2eef86afe`. Read lines 78-151. The reported null is construction- and outcome-specific; do not promote it into a permanent information-family ban. Do not ignore it either. Related existing code/report: `engine/regime_conditioning_coverage.py`, `tests/test_regime_conditioning_coverage.py`, `scripts/regime_reliability_phase0.py`, `reports/regime-reliability-phase0.md`.
-
-### S8 - existing theme-state dependency and ownership: historical recommendation, not a fresh ruling
-
-[D1/D3/W3B merge-order recommendation](https://github.com/mastermindx-market-intelligence/macro/blob/85932a1b7ce0e597ad73e713f7528101e4ef58d9/research/prophet_v4/D1_D3_W3B_MERGE_ORDER_RECOMMENDATION.md)
-
-This earlier recommendation identified GMI as ThemeState owner and identity/membership/PIT readiness as predecessors to a Prophet consumer. It is expressly a recommendation. Resolve the actual accepted decision and latest GMI checkpoint, including `agentos/decisions/DEC-GMI-THEME-GRAPH-END-TO-END-COMPLETION-OWNERSHIP-SEQUENCING.md` and `agentos/workstreams/WS-GMI-THEME-GRAPH.md`. Do not mistake its old coverage percentages for current data readiness.
-
-## 3. Existing program owners to recover, not recreate
-
-| Concern | Existing owner/surface to inspect | What this project should add, if absent |
+| Surface | Observation | What it proves |
 |---|---|---|
-| Runtime, budgets, provider placement, fleet execution | Mastermind Executive OS / Model Router / Capacity / workspace custody | Bounded admitted research/build jobs, not a second executor or queue |
-| Organizational continuity | Macro `agentos/` | Current handoff and decisions through existing protocols |
-| Regime facts | `risk_radar` -> `market_state` -> `regime_vector`, plus `regime_one`, `regime_coherence`, rates/liquidity owners | Qualified historical reconstruction and conditional evaluation, not a competing fused verdict |
-| Primitive indicators | `engine/tech_catalog.py`, `engine/technicals.py`, technical lab / Terminal implementations | Definition/provenance audit, missing reusable adapters and parity tests |
-| Setup identity and scientific lifecycle | `engine/species_registry.py`, `data/species/registry.json` | Registered distinct challenger species and evidence, not another species database |
-| Current structural occurrence | Technical Opportunity Intelligence | Sequence, confirmation cost and remaining-opportunity descriptors within its contract |
-| Tactical event production | Live Entry Radar | Same-cut evidence durability, not alternate C2/C4 identities |
-| Theme identity and state | GMI / `engine/theme_graph/` | Historical membership/coverage and leader-persistence consumer evidence |
-| Prophet episodes and planes | V4 B1 identity; B3 maturity; B4 availability; D5 evidence | Contract-compatible adapters and strategy views; verify actual build status first |
-| Ranking and model comparison | Existing Conditional Fusion / arena / current champion | Measured incremental challengers, no unconditional replacement score |
-| Outcomes and promotion | Evaluation OS / QLedger / TrialLedger | Required experiments and evidence envelopes under existing ownership |
-| Portfolio exposure and sizing | Existing Portfolio/Risk owner | Separate risk-aware validation after strategy evidence; no LLM sizing |
-| User consumption | Macro dashboard and mastermind-terminal | One coherent explanation and lifecycle across both real surfaces |
+| Protected procedure | Mastermind `d1594f3c7ae750db3f14b4eebf0de3460f84267a`; INDEX blob `4b0189a75d559d963365097485e8509a49c70e23` | Protected master source, compatible bootstrap major 1 / skillpack 1.0.1; not installed runtime parity |
+| Product/research source | Macro `02fb67891222f9710c2a16b1fa6feb917996cab7` | Immutable source used for the new document/code reads below |
+| Original handoff | Macro `b598819bcecc2ef98e5848f473df9b21bd045118`, PR #8363 | Five published Markdown files; draft and unmerged when audited |
+| Terminal | Previously observed master `863f678658e2211b5a48daa99404686dfaa117f2` | Historical navigation only; Terminal was not re-audited in this revision |
+| Executive read | Server 1.3.1, generated `2026-10-03T20:45:33Z` | This installed runtime reported read-only mode; not a fleet-wide availability verdict |
+| Fabric read | Generated `2026-10-03T20:45:43Z`; observation digest `eb54d17d7ac2147f187325da3a74902f2d9204db7176a90cd1fb0411471660f3` | This arm reported `ceo_submit_armed: false`; root provenance partial/unjoined; no dispatch performed |
 
-## 4. Research and plan shelves already discovered
+Local names are aliases: `/mastermind` is GitHub `mastermindx-market-intelligence/Mastermind` (master); `/macro-main` is `mastermindx-market-intelligence/macro` (main); `/charting-app` is `mastermindx-market-intelligence/mastermind-terminal` (master). Resolve the actual managed workspace and remote before edits. Do not open or reset a historical folder merely because its name resembles an alias.
 
-These paths are navigation from preceding source census, not claims that every plan is shipped or was freshly reread during packaging. Resolve status, amendments and current artifact paths before building.
+A read of an old document at new main proves the document exists at new main; it does not update the dates, empirical population or live status described inside it.
 
-**Prophet architecture and evaluation:**
-`research/PROPHET_MASTERPLAN_BY_FABLE.md`; `research/PROPHET_US_TREND_INTELLIGENCE_MASTERPLAN_BY_FABLE.md`; `research/PROPHET_US_SUPERINTELLIGENCE_ROADMAP_BY_FABLE.md`; `research/PROPHET_CN_SUPERINTELLIGENCE_ROADMAP_BY_FABLE.md`; `research/MASTERMIND_PROPHET_EVAL_SPEC.md`; `research/PROPHET_PIT_REPLAY_HARNESS_V1.md`; `research/PROPHET_LEARNING_LOOP_MASTERPLAN_BY_FABLE.md`; `research/prophet_v4/PROPHET_US_V4_RECOVERY_AND_INTELLIGENCE_GRAPH_OS_MASTERPLAN_BY_SOL_2026-08-17.md`.
+## 2. Newly recovered dependencies the first handoff omitted
 
-**Timing, availability and failure analysis:**
-`research/prophet_us_audit/ENTRY_LATENESS_FORENSIC_2026-08-07.md`; `research/prophet_us_audit/EARLY_ADMISSION_BAKEOFF_2026-08-11.md`; `research/PROPHET_US_MISSED_IGNITIONS_MASTERPLAN_BY_FABLE.md`; `research/PROPHET_US_IGNITION_LAYER_W8_BY_FABLE.md`; `research/prophet/cpu_leadership/CONVERGENCE_AND_DELIVERY_2026-09-21.md`; `research/prophet/cpu_leadership/ENTRY_DIRECT_EXTENSION_CHALLENGER_FINDINGS_2026-09-21.md`; `research/prophet/cpu_leadership/ENTRY_RS_THRESHOLD_FINDINGS_2026-09-21.md`; `research/prophet/cpu_leadership/PREMARKET_ENTRY_FINDINGS_2026-09-21.md`.
+### 2.1 Temporal Grain Intelligence already owns the central clock-mechanism question
 
-**Regime, breadth, participation and historical atlas:**
-`research/SP500_NASDAQ_REGIME_ROTATION_ATLAS_2013_2026.md`; `research/artifacts/sp500_nasdaq_regime_rotation_2013_2026/methodology.json`; `research/REGIME_V2_PIT_DIVERGENCE_AUDIT.md`; `research/FACTOR_INTELLIGENCE_MASTERPLAN_BY_FABLE.md`; `research/REGIME_DISLOCATION_RECAL_PROPOSAL.md`; `research/MEGACAP_SUCTION_FIELD_GUIDE.md`; `research/MEGACAP_LEADERSHIP_COHERENCE_MASTERPLAN_BY_FABLE.md`; `research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md`; `research/ROTATION_EVENTS_V2_MASTERPLAN_BY_FABLE.md`; `research/ROTATION_COMMAND_MASTERPLAN_BY_FABLE.md`; `research/participation_flow_intelligence/`.
+[WS:TEMPORAL-GRAIN-INTELLIGENCE][temporal] separates:
 
-The prior Library search found `PFI_WEB_CEO_MASTER_PACKET.md`. Its useful point was to separate opportunity-universe width from aggregate market risk and keep participation/flow context owner-backed. It was an authoring packet, not evidence its children ran. Do not import its suggested time budgets or deployment status as current law.
+- **G: grain**, the sampling/bar interval;
+- **A: anchor/session**, the boundary and included trading sessions;
+- **K: kernel memory**, smoothing and effective historical memory;
+- **D: data/instrument plane**, feed, instrument, adjustment, venue and futures-roll identity.
 
-**Technical and long-hold prior art:**
-`research/STOCKINVEST_TECH_INDICATOR_SUITE_PROGRAM.md`; `research/long_hold/WASHOUT_TIMEFRAME_HYPOTHESIS.md`; `reports/mwr_timeframe_personality.md`; `scripts/research/mwr_timeframe_personality_scan.py`; `engine/advanced_indicators.py`; `engine/indicators.py`; `engine/indicators_m2.py`; `engine/tech_confluence.py`; Signal Foundry and technical-catalog sources found through their registries.
+This is directly relevant to the claim that 1D, 2D and 3D usefulness changed. A comparison which changes all four cannot attribute its result to timeframe alone.
 
-**Cross-market and theme work:**
-`research/cn_prophet_audit/SEMICON_LEADERSHIP_AUDIT_2026-09-21.md`; `research/cn_prophet_audit/CHINA_LEADERSHIP_CONTINUATION_2026-09-22.md`; CN flow, chase, exit, precursor and persistence audits in that directory; `research/PROPHET_HK_CANADA_REVAMP_EXECUTION_PACKET_2026_08_18.md`; `research/theme_graph/THEME_GRAPH_END_TO_END_COMPLETION_FREEZE_2026-08-27.md`.
+**Verified stale projection:** the workstream still describes W0 as `awaiting_ci`, but [PR #6790][pr6790] is merged, with merge SHA `db5d20c45db123a2e133d9c1a28387ec9f23a545` and merge time `2026-09-03T09:51:05Z`. The merge is architecture/records proof, not empirical proof, not evidence of W1A execution and not automatic closure of any separately required acceptance.
 
-Do not transplant a CN result to US without testing session structure, shorting/limit rules, liquidity, instrument universe and point-in-time feature differences.
+The existing sequence is W1A exact recipe/parity/mechanical attack -> separately preregistered W1B localization/risk utility -> outcome-blind W2 structure-to-kernel derivation -> W3 instrument-disjoint confirmation -> adjudication. W1A may conclude only ARTIFACT, UNRESOLVED_DATA or MECHANICALLY_SURVIVES. Fewer crosses or smoother lines cannot establish usefulness.
 
-## 5. Data surfaces to census before promising coverage
+Existing detailed plans, not new proposed files:
 
-Existing paths identified earlier include:
+- `research/signal_engine/temporal_scale/CHARACTERISTIC_MARKET_TIME_SIGNAL_GRAIN_ARCHITECTURE_FREEZE_2026-09-03.md`
+- `docs/superpowers/specs/2026-09-03-characteristic-market-time-signal-grain-design.md`
+- `docs/superpowers/plans/2026-09-03-temporal-grain-gakd-artifact-attack-r1.md`
+- `research/signal_engine/temporal_scale/CHARACTERISTIC_MARKET_TIME_W0_ADVERSARIAL_REVIEW_AMENDMENT_2026-09-03.md`
 
-- `data/stocks/`, `data/yahoo/`, `data/baskets/ohlcv/`, country stores and `data/fred/`;
-- `data/us_board_ledger/retro_grades.parquet`, board outcome/track artifacts, `data/prophet/ledger.jsonl`;
-- `data/us_prophet_rank/candidates.parquet`, context-vector and candidate/episode records;
-- `data/signal_archive/track_record.parquet`, `data/regime/regime_v2_pit.parquet`;
-- existing Entry Radar forward evidence, QLedger and `data/trial_ledger.jsonl`;
-- `data/species/registry.json`, theme-graph and Neural Web theme histories, research-vault catalogs.
+WMT and silver remain selected discovery examples. Their outcomes cannot establish generalization. This sibling does not replace the broad TOI data/clock admission audit.
 
-For each surface record owner, immutable revision/digest, observation range, markets, instruments, adjustment convention, sessions, first-known/vintage support, eligibility universe, delistings, gaps, revisions, rights, intended use and known contamination. File count is not usable history. A deep OHLC history does not imply historical subtheme membership or first-known macro releases. A current stock universe can be survivorship-biased even if its price series are long.
+### 2.2 Technical Opportunity Intelligence already has explicit research/build boundaries
 
-## 6. No-redo and source-collision register
+[WS:TECHNICAL-OPPORTUNITY-INTELLIGENCE][toi] defines the first complete vertical as Compression Release on completed Weekly/Daily/4H inputs, real anticipation/actionability occurrences, product plus Terminal rendering, prospective evidence and species-specific adjudication. W0 records are merged; the source records W1 and W2-0 as undispatched. That last statement must be reconciled against current runtime/carriers before creating children.
 
-Recover current `research/DO_NOT_REBUILD.md` and its compiled registry before proposing any rule. Known relevant identifiers include `DNR:KILL-WASHOUT-TURN`, `DNR:KILL-ROTATION-CYCLE-CONFLUENCE`, `DNR:KILL-REGIME-SCORECARD`, `DNR:KILL-FUSED-COMPOSITE`, `DNR:KILL-PROPHET-POP-MERGE`, `DNR:KILL-OUTCOME-AUDITION`, `DNR:KILL-LLM-ORIGINATION`, `DNR:KILL-OFFHORIZON-VERDICTS` and positioning-fusion amendments. A different hypothesis must explain exactly how it differs from the killed construction.
+| Existing wave | Assigned output in existing source | Entry dependency | Evidence needed to move on |
+|---|---|---|---|
+| W1 | Method/formula/alias/dependency-family census | W0 and current custody | Source receipts, method passports, local implementation coverage, rights and equivalence validators |
+| W2-0 | Broad US data, clocks, corrections, coverage, rights and Terminal parity | W0 and current custody | Store contracts, clock fixtures, coverage and parity receipts; explicit ADMIT/HOLD/REJECT |
+| W2 | Bounded existing-owner substrate repair, only when needed | Accepted W2-0 | Required input contract actually works; not another generic data platform |
+| W3 | Compression Release preregistration and family tournament | Accepted W1 AND W2-0 | Frozen population, methods and outcome ruler; accountable result rather than a picked winner |
+| W4 | Current per-security occurrence and two-queue snapshot | W3 adjudication | Source-backed state transitions, invalidation, correction and missing-data behavior |
+| W5 | Product, detail view and Terminal consumption | W4 contract | Same occurrence identity/state on real consumer surfaces |
+| W6 | Production shadow accrual | W5 | Real producer-to-ledger-to-product evidence, not fixtures only |
+| W7 | Species-level disposition | Qualified W6 evidence | Kill/version/accrue/display/bounded-consumer ruling |
+| W8 | Bottom/top reversal vertical | W7 and Durable Bottom/Species law | A separately tested construction, not a renamed killed washout seed |
 
-Known existing workstreams: `WS:PROPHET-US-V4-RECOVERY`, `WS:PROPHET-US-ENTRY-TIMING`, `WS:PROPHET-CONDITIONAL-FUSION`, `WS:TECHNICAL-OPPORTUNITY-INTELLIGENCE`, `WS:LIVE-ENTRY-RADAR`, `WS:GMI-THEME-GRAPH`, `WS:PROPHET-US-AVAILABILITY`, `WS:PROPHET-HK-CA-REVAMP`, plus Evaluation/identity/earnings owners. Their files may lag actual code; recover current checkpoints and active source leases rather than following an old next_action blindly. The entry-timing workstream read in the preceding continuation still pointed at an August bake verification, which is evidence to reconcile, not proof it remains the next action.
+Monthly, true intraday and sector/theme/basket objects remain in the long-term scope. Weekly/Daily/4H is the first proving slice, not the user's final scope and not a reason to ignore 12H/2D/3D research. Wider clocks need their own admitted data/definition, not synthetic daily-to-intraday reconstruction.
 
-Historical PRs named inside Phase 22 are collision leads only. Inspect live state before touching their files. This handoff does not assign or overwrite an active sibling branch, TrialLedger prefix, deployment or runtime operation.
+### 2.3 Prophet V4 has an incumbent programme and reserved source custody
 
-## 7. Confidence boundary
+[Current V4 workstream][v4ws] names the Fable Meta-CEO operation `prophet-us-fable-meta-ceo-20260923-001`, carrier #6805, and incumbent carriers #7581/#7180/#7572. These are retrieval targets, not a claim that those operators are alive or that their leases have expired. The Chairman requests Astra as the new principal, but that does not transfer a started writer or clear an uncertain effect.
 
-The source pins and decisive excerpts above are independently recoverable. The broader census is a substantial navigation map, not an assertion of a completed repository-wide or production audit. The highest-value next step is targeted verification of current champion, clocks, full decision populations, PIT feature availability and active owners, then concrete implementation through those owners.
+Astra's first custody read must distinguish accountable leadership, live worker assignment, exclusive source lease and unresolved effect. Preserve path-disjoint progress while reconciling the exact incumbent carrier. Do not demand an acknowledgement from a historical title as a substitute for checking the current owner.
+
+## 3. Where the real product goals and contracts already live
+
+The [V4 master plan, sections 0-2][v4plan] provides explicit user outcomes: early evidence before slow confirmation; server-authoritative current entry availability; no green entry after a valid zone is consumed; full searchable candidates; missing-aware intelligence; cohort-honest grading; same-tape legacy control. These are existing product requirements, not proof they are shipped.
+
+The [contract/owner map][owners] is detailed but contains dated capability snapshots. Use its interface ownership, then inspect current implementations and latest amendments before accepting its historical statuses.
+
+| Question | Existing producer/owner | Consumer boundary and important distinction |
+|---|---|---|
+| Which security is this? | Data OS `lib/dataos/identity.py`, `VendorAliasTable`, security/issuer master | Exact issuer/security/listing identity is NOT Stock Identity's behavioral fingerprint |
+| Which expert event occurred? | Live Entry Radar `mastermind.entry_event.v1` and its immutable experts | Do not collapse C2/C4, create a second event bus, or treat a display snapshot as a firing expert |
+| Which durable opportunity episode? | V4 B1, `prophet.candidate_episode/v1` | Radar's `mastermind.live_entry_episode.v1` is not an alias or surrogate |
+| What technical maturity? | B3/current occurrence owners | Confirmation is independent of buyability and intelligence quality |
+| Is a trade available at this price/time? | B4/current entry-availability owner | Reconcile `engine/entry_signal.py`; do not mint a competing zone/stop/chase calculation |
+| What evidence was known then? | D5 adapters and upstream owners | Earnings admission requires both source availability AND system observation at/before cut; a current workspace read is not a historical revision read |
+| Which theme/subtheme and state? | GMI/theme graph, identity-resolution bridge and lawful memberships | Do not substitute legacy context-vector theme fields for canonical ThemeState |
+| How are candidates ranked? | Conditional Fusion, accepted members/version and current board definition | D5 evidence-family presence is not a vote; a new challenger must earn authority |
+| Who owns outcomes? | Evaluation OS, QLedger and established board/episode/plan graders | Do not confuse the execution-policy arena with the rank/fusion arena; preserve distinct denominators |
+| Is the product actually fresh? | Existing settlement/publication/freshness owners | Wall-clock `asof`, GitHub success and artifact creation are not served economic-session proof |
+| Who sizes exposure? | Portfolio/Risk | Prophet research context, an LLM narrative and a classifier are not sizing authority |
+
+The source also records prior concerns about unpopulated control legs and plan-benchmark columns. Treat those as audit questions until current schemas and actual rows are checked; do not present August counts as current October measurements.
+
+## 4. Exact existing research artifact contracts to reuse
+
+### TOI W1: method passports, not thousands of independent indicator names
+
+The [W1 evidence-census commission][w1] already specifies:
+
+- `research/technical_opportunity/W1_EVIDENCE_CENSUS.md`
+- `research/technical_opportunity/w1_method_passports.jsonl`
+- `research/technical_opportunity/w1_alias_equivalence.json`
+- `research/technical_opportunity/w1_source_receipts.json`
+- `research/technical_opportunity/w1_local_coverage.json`
+- `research/technical_opportunity/W1_REPORT.md`
+- validators `validate_toi_w1_passports.py`, `validate_toi_w1_equivalence.py`, `validate_toi_w1_sources.py` under `scripts/research/`, and `tests/test_toi_w1_census.py`.
+
+These are **specified deliverables**, not files proven implemented by this audit. The passport includes formula, parameters, source/rights, causal family, dependency family, role, required columns, actionable lag, repaint behavior, implementation coverage, equivalence, owner disposition, failure modes and baseline. This directly addresses the Chairman's request to go beyond MACD/RSI without counting aliases as independent confirmation.
+
+[Current `engine/tech_catalog.py`][catalog] already separates legacy and Technical Lab modules. Inspected families include directional trend, recency/price pressure, compression/release, efficiency, breakout channels, volume money flow/participation, adaptive/ATR trends, rank momentum, path risk, relative strength, bar/fractal structure and challenger cycle/gap transforms. Its `role`, `dependency_family`, `actionable_lag`, `challenger_only` and `entry_stack_blocked` metadata are central to reuse. Display availability is not validated predictive authority.
+
+### TOI W2-0: data and clocks
+
+The [W2 data/clock commission][w2] specifies store contracts, clock matrix, coverage receipts, Terminal parity receipts, rights matrix, architecture freeze, report, validators and `tests/test_toi_w2_data_clock.py` under the same existing research owner.
+
+Its requirements include distinct `4H-CLOCK` and `195M-RTH` definitions. The 390-minute US regular session is not two uniform four-hour bars. Explicitly handle the 9:30-13:30 and 13:30-16:00 alternative, two 195-minute bars, early closes, DST, holidays, missing intervals, corrections and completed-bar known time. No pooling across constructions. No synthetic 12H/4H series derived from daily bars.
+
+Its store contract requires price basis, timestamp/session basis, availability support, corporate-action policy, PIT status, delisted coverage, ticker-reuse guard and separate research/storage/subscriber/public rights. A successful API call proves none of those independently.
+
+### Existing clock repair, not a missing invention
+
+The incumbent cascade uses `engine/session_anchor.py`, the absolute-session era `abs-session-2026-08-06`, and RSI-MACD 14/14/60/5 plus StochRSI 14/3/3. Preserve that baseline. Existing tests include `tests/test_confluence_resample_runtime.py` and `tests/test_confluence_warmup_floor.py`; the inspected runtime test covers W-FRI/ME parity, not every 2D/3D property. Audit actual call sites and seed/warmup semantics before claiming residual defects.
+
+## 5. Existing empirical work that changes the research direction
+
+| Source | Newly recovered implication | Interpretation ceiling |
+|---|---|---|
+| [2013-July 2026 regime/rotation atlas][atlas] | Existing historical sector analysis and a weekly price-MACD study; regime spans deliberately chosen ex post | Not a decision-time state reconstruction; QQQ is Nasdaq-100, not the Composite; not Prophet RSI-MACD |
+| [RS-threshold study][rs] | The .75-.85 band does not validate the .75 gate as protection; hotter >=.85 comparison has more continuation failure in its specified test | Sector-ETF proxy, not point-in-time AI subthemes or production gate promotion |
+| [Direct extension study][extension] | Existing 1.5-ATR boundary was NO-GO as an entry gate | Keep the measured null; do not revive it just because 'remaining opportunity' is an attractive phrase |
+| [Phase-22 preregistration][phase22] | Exact future C2/same-cut C4 test and availability floors already specified | No new MACD-age threshold; no premature outcome read; no claim accrual started from the prereg alone |
+| Regime-reliability adjudication | Broad family-by-regime forward-drawdown construction had a scoped null and poor rich-state coverage | Neither proof of universal conditional alpha nor a ban on every distinct conditional experiment |
+
+The research audit contains the numerical tables and external-primary-source interpretation limits. None was re-run on raw internal data in this handoff revision.
+
+## 6. Data inventory: questions which must receive measured answers
+
+Existing candidate paths include `data/stocks/`, `data/yahoo/`, `data/baskets/ohlcv/`, `data/fred/`, `data/regime/regime_v2_pit.parquet`, `data/signal_archive/track_record.parquet`, `data/us_board_ledger/retro_grades.parquet`, `data/prophet/ledger.jsonl`, monthly US context-vector candidates, canonical episodes, Radar forward data, QLedger, TrialLedger and theme histories.
+
+Astra needs one owner-backed inventory, not a claim that the count of parquet files equals usable history. For every dataset measure: first/last date; eligible universe by date; native security identity; delistings; adjustment convention; timezone and session; observation, publication, ingestion and decision clocks; vintage/correction support; coverage by regime and horizon; stale gaps; license/retention; immutable digest; and prior outcome exposure.
+
+Separate final-vintage historical reconstructions, source-vintage as-observed reconstructions and genuinely live-forward evidence. They answer different questions. Today's theme membership cannot be used to claim a historical theme return. An old macro observation date cannot substitute for historical first-known time. Never read a no-peek experiment's outcomes to fill this inventory; operational counts and missingness suffice.
+
+## 7. Fabric takeover facts, not imaginary dispatch instructions
+
+The current connector exposes read-only `executive_state`, `executive_fabric`, `executive_job` and intent-status reads, plus `submit_ceo_intent`. The submission contract creates a QUEUED job and explicitly does not dispatch. The observed arm was disarmed; no dummy submission was made.
+
+This is an exact arm-level observation, not evidence that every fabric avenue is unusable. On takeover discover the current approved dispatch/admission path, source custody, budget and eligible model/harness separately. Do not invent raw provider commands, endpoint names or aliases to compensate. No worker was started by this audit.
+
+The Chairman permits Astra principal orchestration with fabric-only labor and multi-level suborchestration, including eligible Grok, Cursor, GLM 5.3 and Sol 6.1 routes. Model names are preferences, not readiness receipts. Suborchestrators receive bounded scopes, input/output contracts, budget and independent review requirements; they use the same fabric and never ChatGPT-native subagent spawning. Easy/medium work should not consume Astra when an eligible worker can meet its bar. Astra retains scientific disputes, cross-owner decisions and acceptance.
+
+## 8. What remains unverified
+
+Current production champion/version; latest actual plan/candidate/episode performance; historical data and theme availability; complete consumer parity; live W1A/W1/W2-0 execution; Phase-22 start receipt and qualified accrual; current Fable/carrier custody; full fleet route eligibility; and production release proof remain open. The first package's missing chapters remain missing. This repair provides verified navigation to existing plans and corrects evidence, without claiming to publish the previously blocked new master plan.
+
+[temporal]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md
+[pr6790]: https://github.com/mastermindx-market-intelligence/macro/pull/6790
+[toi]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/agentos/workstreams/WS-TECHNICAL-OPPORTUNITY-INTELLIGENCE.md
+[v4ws]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/agentos/workstreams/WS-PROPHET-US-V4-RECOVERY.md
+[v4plan]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/research/prophet_v4/PROPHET_US_V4_RECOVERY_AND_INTELLIGENCE_GRAPH_OS_MASTERPLAN_BY_SOL_2026-08-17.md
+[owners]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/research/prophet_v4/CONTRACT_AND_OWNER_MAP.md
+[w1]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/research/TECHNICAL_OPPORTUNITY_INTELLIGENCE_W1_EVIDENCE_CENSUS_HANDOFF_2026-08-27.md
+[w2]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/research/TECHNICAL_OPPORTUNITY_INTELLIGENCE_W2_DATA_CLOCK_HANDOFF_2026-08-27.md
+[catalog]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/engine/tech_catalog.py
+[atlas]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/research/SP500_NASDAQ_REGIME_ROTATION_ATLAS_2013_2026.md
+[rs]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/research/prophet/cpu_leadership/ENTRY_RS_THRESHOLD_FINDINGS_2026-09-21.md
+[extension]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/research/prophet/cpu_leadership/ENTRY_DIRECT_EXTENSION_CHALLENGER_FINDINGS_2026-09-21.md
+[phase22]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/research/prophet_v4/US_PROPHET_PHASE22_FAST_CYCLE_REGIME_PROSPECTIVE_PREREG_2026-09-19.md
