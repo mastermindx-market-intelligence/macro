@@ -73,9 +73,9 @@ verified:
       session-anchor-era / temporal_scale targets.
     result: >
       Both current main and #6803 retain session-anchor-era and its three incumbent anchor suites.
-      #6803 additionally appends seven test_temporal_scale_* files that cannot appear on current main
+      #6803 additionally appends six test_temporal_scale_* files that cannot appear on current main
       before the implementation merges. Current-main code acceptance therefore needs a surgical
-      composition of the current manifest plus those seven targets, not restoration of the old manifest.
+      composition of the current manifest plus those six targets, not restoration of the old manifest.
   - claim: The existing Massive/Radar minute path is candidate V2-M substrate evidence, not a broad PIT-panel admission.
     command: >
       Read research/licenses/MASSIVE_ENTITLEMENT_RECORD.md, engine/entry_radar/vendor_minutes.py,
