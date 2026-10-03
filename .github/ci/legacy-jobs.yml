@@ -4637,6 +4637,9 @@ jobs:
       # `scripts/worktree_sparse.py`. `scope: exclusive` means this list REPLACES
       # inference, so an undeclared dependency stops selecting the job when it changes.
       - "scripts/sparse_guard.py"
+      # EXP1 deterministic expectation query and hermetic consumer tests.
+      - "scripts/query_k3e_expectation_surface.py"
+      - "tests/test_k3e_expectation_surface.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4670,6 +4673,11 @@ jobs:
       # dependency beyond the pytest/pyyaml line already installed above.
       - name: "output health contract (Eval OS T4)"
         run: python -m pytest tests/test_output_health.py -q
+
+      - name: "EXP1 deterministic K3E expectation query consumer"
+        run: |
+          python scripts/query_k3e_expectation_surface.py --help
+          python -m pytest --noconftest tests/test_k3e_expectation_surface.py -q
 
   neural-web-core:
     if: ${{ false }}
