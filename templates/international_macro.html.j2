@@ -187,6 +187,44 @@ body.imd-lock{overflow:hidden}
 /* after the include: a class-pair selector outranks the card's own phone rule, so the
    mobile padding has to be restated at this specificity to survive. */
 @media(max-width:560px){.imd-radar .rrx{padding:16px}}
+/* MO-PAID-006 dossier card. DARK = command center: lifted inner well (--panel2), link-tinted rail at .45, flat status dots. LIGHT (below) = research workspace: white material, hairlines, no rail, underline on hover. */
+.imd-dossier{position:relative;margin-top:12px;padding:18px 20px 18px 24px}
+.imd-dossier::before{content:"";position:absolute;inset:14px auto 14px 0;width:3px;border-radius:var(--r-pill,999px);background:var(--link);opacity:.45}
+.imd-dossier-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 10px}
+.imd-dossier-head h3{margin:0;font-size:var(--fs-h3);letter-spacing:-.01em}
+.imd-dossier-asof{color:var(--muted);font:600 var(--fs-micro) var(--imd-num);font-variant-numeric:tabular-nums}
+.imd-dossier-list{list-style:none;margin:0;padding:0 12px;display:grid;border-radius:var(--r-ctl,8px);background:var(--panel2)}
+.imd-dossier-item{display:grid;grid-template-columns:92px minmax(0,1fr);gap:14px;padding:10px 0;border-top:1px solid var(--imd-hair)}
+.imd-dossier-item:first-child{border-top:0}
+.imd-dossier-date{font:700 11.5px var(--imd-num);color:var(--muted);font-variant-numeric:tabular-nums;padding-top:1px}
+.imd-dossier-headline{display:block;color:var(--text);font-size:13px;font-weight:650;line-height:1.4;overflow-wrap:anywhere;text-decoration:none}
+.imd-dossier-headline:hover{color:var(--ink-link)}
+.imd-dossier-headline:focus-visible,.imd-dossier-more:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.imd-dossier-meta{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:4px;color:var(--muted);font-size:var(--fs-micro)}
+.imd-dossier-pub{font-weight:700;color:var(--text);opacity:.72}
+.imd-dossier-lead,.imd-dossier-note{margin:10px 0 0;color:var(--muted);font-size:11px}
+.imd-dossier-outage{margin:0 0 10px;padding:9px 12px;border-radius:var(--r-ctl,8px);border:1px dashed var(--line);background:var(--panel2);color:var(--ink-warn);font-size:12px}
+.imd-dossier-outage strong{color:var(--text)}
+.imd-dossier-read{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:12px;padding-top:10px;border-top:1px dashed var(--imd-hair)}
+.imd-dossier-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:var(--r-pill,999px);border:1px dashed var(--line);color:var(--text);font-size:11px;font-weight:700;white-space:nowrap}
+.imd-dossier-chip i{width:6px;height:6px;border-radius:var(--r-pill,999px);background:var(--muted)}
+.imd-dossier-chip--ok i{background:var(--ink-ok)}
+.imd-dossier-chip--warn i{background:var(--warn)}
+.imd-dossier-chip--act i{background:var(--act)}
+.imd-dossier-disc{color:var(--muted);font-size:11px}
+.imd-dossier-more{display:inline-block;margin-top:10px;font-size:11px}
+.imd-dossier-empty{padding:16px 8px}
+html[data-lang="zh"] .imd-dossier-head h3{letter-spacing:0}
+/* LIGHT TREATMENT — research workspace: solid white material, hairline border, no rail, no inner well, underline on hover, solid chip border. */
+html[data-theme="light"] .imd-dossier{background:var(--panel);backdrop-filter:none;-webkit-backdrop-filter:none;border:1px solid var(--line);box-shadow:var(--card-shadow);padding-left:20px}
+html[data-theme="light"] .imd-dossier::before{display:none}
+html[data-theme="light"] .imd-dossier-list{padding:0;background:transparent}
+html[data-theme="light"] .imd-dossier-item{border-top-color:var(--line)}
+html[data-theme="light"] .imd-dossier-headline:hover{text-decoration:underline;text-underline-offset:2px}
+html[data-theme="light"] .imd-dossier-outage{color:var(--muted)}
+html[data-theme="light"] .imd-dossier-read{border-top-color:var(--line)}
+html[data-theme="light"] .imd-dossier-chip{border-style:solid}
+@media(max-width:430px){.imd-dossier-head{display:block}.imd-dossier-asof{display:block;margin-top:4px}.imd-dossier-item{grid-template-columns:1fr;gap:2px}.imd-dossier-list{padding:0 10px}html[data-theme="light"] .imd-dossier-list{padding:0}}
 @media(max-width:1100px){
   body.imd-page{padding:16px}
   .imd-hero{grid-template-columns:1fr}.imd-transition-list{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -375,6 +413,58 @@ body.imd-lock{overflow:hidden}
       </article>
       {% else %}<div class="imd-card na">{{ t('No verified dates available.','暂无已核实日期。') }}</div>{% endfor %}
     </div>
+      {# MO-PAID-006 PAGE CHILD — rights-gated official-policy-statements dossier (intl_country_dossier.v1); leadership is the D18 null; GB stance is a non-authoritative read (D52) #}
+      {% set DOS = D.dossier if (D.dossier is defined and D.dossier) else none %}
+      {% if DOS %}
+      {% set DOS_PUB_ZH = {'ec_presscorner':'欧盟委员会','boe_news':'英格兰银行'} %}
+      {% set DOS_STANCE = {'supportive':['Reads as supportive','读作偏支持','ok'],'restrictive':['Reads as restrictive','读作偏收紧','warn'],'mixed':['Reads as mixed','读作方向不一','act'],'routine':['Routine business','例行事务','muted']} %}
+      {% set DOS_ITEMS = (DOS['items'] or []) | selectattr('rights_state','equalto','VERIFIED_PUBLIC_REUSE') | list %}
+      <article class="imd-card imd-dossier" id="official-statements" data-dossier-state="{{ DOS.state|e }}" aria-labelledby="imd-dossier-title">
+        <header class="imd-dossier-head">
+          <h3 id="imd-dossier-title">{{ t('Official policy statements','官方政策声明') }}</h3>
+          {% if DOS_ITEMS %}<span class="imd-dossier-asof">{{ t('Latest','最新') }} <time datetime="{{ DOS_ITEMS[0].published|e }}">{{ DOS_ITEMS[0].published[:10]|e }}</time></span>{% endif %}
+        </header>
+        {% if DOS.state == 'source_outage' %}
+        <p class="imd-dossier-outage" role="status"><strong>{{ t('Official statements could not be loaded this time.','本次未能载入官方声明。') }}</strong> {{ t('The rest of this page is unaffected. We will try again at the next refresh.','本页其余内容不受影响，下次刷新时将重试。') }}</p>
+        {% endif %}
+        {% if DOS_ITEMS %}
+        <ol class="imd-dossier-list" aria-label="Official policy statements">
+          {% for it in DOS_ITEMS[:5] %}
+          <li class="imd-dossier-item" data-source-key="{{ it.source_key|e }}">
+            <time class="imd-dossier-date" datetime="{{ it.published|e }}">{{ it.published[:10]|e }}</time>
+            <div class="imd-dossier-body">
+              <a class="imd-dossier-headline" href="{{ it.url|e }}" target="_blank" rel="noopener" lang="en">{{ it.title|e }}</a>
+              <div class="imd-dossier-meta">
+                <span class="imd-dossier-pub"><span class="l-en">{{ it.publisher|e }}</span><span class="l-zh">{{ DOS_PUB_ZH.get(it.source_key, it.publisher)|e }}</span></span>
+                <span class="imd-dossier-rights" data-rights-basis="{{ it.rights_basis|e }}">{{ t('Reuse basis','转载依据') }}: {{ it.rights_basis.split(' — ')[0]|e }}</span>
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+        </ol>
+        <p class="imd-dossier-note">{{ t('Headlines are shown exactly as the publisher released them.','标题为官方英文原文，未作翻译。') }}</p>
+        {% elif DOS.state != 'source_outage' %}
+        <div class="mx-empty imd-dossier-empty" role="status">
+          <div class="mx-empty-line">{{ t('No official statements shown for this market yet.','本市场暂未展示官方声明。') }}</div>
+          <div class="mx-empty-why">{{ t('We have no source here we are cleared to republish.','我们尚无获准转载的官方来源。') }}</div>
+        </div>
+        {% endif %}
+        <p class="imd-dossier-lead" data-dossier-leadership><span class="l-en">Leadership statements: {{ DOS.leadership|e }}.</span><span class="l-zh">领导层表态：暂无获准转载的来源。</span></p>
+        {% if D.cc == 'GB' %}
+        {% set sc = DOS_STANCE.get(DOS.stance.label) if (DOS.stance and DOS.stance.authoritative is sameas false) else none %}
+        <div class="imd-dossier-read" data-dossier-stance="{{ (DOS.stance.label if sc else 'none')|e }}">
+          {% if sc %}
+          <span class="imd-dossier-chip imd-dossier-chip--{{ sc[2] }}"><i aria-hidden="true"></i>{{ t(sc[0],sc[1]) }}</span>
+          <span class="imd-dossier-disc">{{ t("An assistant's read of HM Treasury's latest announcement — context, not a verdict.",'助手对英国财政部最新公告的解读——仅供参考，并非定论。') }}</span>
+          <span class="imd-dossier-disc">{{ t('Crown copyright, reused under the Open Government Licence v3.0.','英国王室版权，依据开放政府许可 v3.0 使用。') }}</span>
+          {% else %}
+          <span class="imd-dossier-disc">{{ t('No plain-word read of HM Treasury announcements right now.','目前没有英国财政部公告的平实解读。') }}</span>
+          {% endif %}
+        </div>
+        {% endif %}
+        {% if europe_news and D.cc == 'EZ' %}<a class="imd-dossier-more" href="#europe-news">{{ t('Full Europe official press wire','欧洲官方新闻全表') }}</a>{% endif %}
+      </article>
+      {% endif %}
   </section>
 
   {% if europe_news %}
