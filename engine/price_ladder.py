@@ -192,7 +192,9 @@ def _basis_for_selected(source: str | None, column: str | None) -> str | None:
     if source is None:
         return None
     if source == "closes_cache_UNADJUSTED":
-        return AdjustmentBasis.RAW.value
+        # The legacy fallback tag is not native basis evidence: breadth downloads
+        # adjusted Close and its cache may mix/rebase adjustment vintages.
+        return None
     if source == "yahoo" and column == "close_price":
         return AdjustmentBasis.SADJ.value
     if source in ADJUSTED_SOURCES and (column == "close" or source == "baskets_extras"):
