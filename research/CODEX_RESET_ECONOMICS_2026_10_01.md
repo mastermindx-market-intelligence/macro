@@ -70,9 +70,13 @@ provider semantics, not an account-name round robin.
 `engine/provider_codex_reset_economics.py` is a pure Provider Control helper.
 It supplements, and does not replace, the generic quota-economics owner in held
 Macro #7116. Its frozen inputs are qualified account/model observations, independent
-shared-resource identities, two native window budgets and reserves, individually
-known banked entitlements, measured task costs/durations, and the existing owner's
-ordered task prefix. It creates no queue or lease and performs no I/O.
+shared-resource identities, one or two applicable native window budgets and
+reserves, individually known banked entitlements, measured task costs/durations,
+and the existing owner's ordered task prefix. It creates no queue or lease and
+performs no I/O. Each window key is mandatory; an explicit null means the native
+owner attests that constraint is not applicable. Missing, malformed or unknown
+observations are not null. Costs for a non-applicable window must also be null;
+at least one real native constraint is required.
 
 Before any comparison it requires the first lawful suitability tier, verified
 binding and eligibility, native evidence, no active claim, a CLEAR effect state,
@@ -82,10 +86,34 @@ account/shared-resource aliases cannot manufacture capacity.
 
 For each idle account, memoized bounded lookahead compares natural-window waits,
 work before resetting, and a finite banked reset immediately before useful demand.
-It keeps the owner's task order and checks both rolling windows and reserves.
-Manual reset simulations discard the old renewal date. Clock calculations are
-forecasts only. State-budget exhaustion refuses the candidate rather than presenting
-a truncated search as optimal.
+It keeps the owner's task order and checks every applicable rolling window and
+reserve. Manual reset simulations discard each old renewal date; original-window
+expiry rewards stop independently after natural renewal or redemption. The
+forecast rechecks natural refills at reset completion, avoiding a reset that would
+be a no-op after the configured latency. Clock calculations are forecasts only.
+State-budget exhaustion refuses the candidate rather than presenting a truncated
+search as optimal.
+
+The resource-value heuristic uses joint capacity rather than adding overlapping
+windows. For each remaining ordered task prefix, compute the number of complete
+plus fractional tasks supported by each window's spendable balance, using each
+task's measured cost in that window's units. Joint capacity is the minimum across
+applicable constraints. Reset gain is joint full capacity minus joint current
+capacity; forfeiture is joint current capacity. Cancelled free-refill opportunity
+is the maximum, not the sum, of urgency-weighted window prefix capacities. Each
+completed task earns only the maximum relevant original-window expiry reward,
+never two rewards for consuming the same task through two limits. These are
+conservative ranking heuristics, not monetary values or independent additive
+quota pools. Identical duplicated constraints, exchanging window labels and
+rescaling native units must leave the economic decision invariant.
+
+Core and CLI regression cases have one owning import in
+`tests/test_codex_runner_budget.py`, which is executed by the existing
+`codex-research-engine` PR code gate. The data-gated provider-capacity suite does
+not substitute for PR-hosted execution. A collection guard requires every case
+function to be exported through that code-gate owner; no workflow or CI manifest
+is changed by this repair. Actual hosted collection/execution remains a separate
+acceptance check after the repaired head is published.
 
 The deterministic lexicographic objective is: completed approved utility and task
 count; preserve resets that outlive the supplied horizon when outcomes are equal;

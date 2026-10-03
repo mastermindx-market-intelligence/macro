@@ -89,3 +89,52 @@ def test_no_eligible_account_is_a_valid_report_not_authorization(tmp_path, capsy
     result = json.loads(capsys.readouterr().out)
     assert result["status"] == "NO_ELIGIBLE_CANDIDATE"
     assert result["proposed_action"] == "NONE"
+
+
+@pytest.mark.parametrize("absent", ["short", "weekly"])
+@pytest.mark.parametrize("mode", ["json", "text"])
+def test_real_cli_preserves_explicit_native_window_absence(tmp_path, absent, mode):
+    raw = request()
+    row = raw["observations"][0]
+    active = "weekly" if absent == "short" else "short"
+    row[absent] = None
+    row["tasks"][0][absent + "_cost"] = None
+    row[active]["remaining"] = row[active]["capacity"]
+    path = tmp_path / "one-window.json"
+    path.write_text(json.dumps(raw))
+    before = path.read_bytes()
+    command = [sys.executable, str(Path(__file__).parents[1] / "scripts/preview_codex_reset_economics.py"),
+               str(path), "--format", mode]
+    result = subprocess.run(command, capture_output=True, text=True, timeout=10)
+    assert result.returncode == 0
+    assert not result.stderr
+    assert path.read_bytes() == before
+    if mode == "json":
+        report = json.loads(result.stdout)
+        assert report["proposed_action"] == "RUN_CANDIDATE"
+        assert report["candidates"][0][absent + "_remaining"] is None
+        assert report["candidates"][0]["banked_resets_spent_forecast"] == 0
+        assert report["live_admission"] is False
+    else:
+        assert "not applicable" in result.stdout
+        assert "None/None" not in result.stdout
+        assert "No reset execution is authorized" in result.stdout
+
+
+@pytest.mark.parametrize("missing", ["short", "weekly"])
+def test_missing_native_window_key_is_not_explicit_not_applicable(missing):
+    raw = request()
+    del raw["observations"][0][missing]
+    with pytest.raises(ValueError):
+        parse_request(raw)
+
+
+def test_null_window_with_fabricated_cost_stays_a_closed_cli_error(tmp_path, capsys):
+    raw = request()
+    raw["observations"][0]["short"] = None
+    path = tmp_path / "inconsistent.json"
+    path.write_text(json.dumps(raw))
+    assert main([str(path)]) == 2
+    output = capsys.readouterr()
+    assert not output.out
+    assert output.err == "Invalid or unavailable reset-preview evidence.\n"

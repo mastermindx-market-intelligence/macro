@@ -49,8 +49,13 @@ def parse_request(raw: Any) -> dict:
         if not isinstance(item, dict):
             raise ResetEconomicsError("invalid observation")
         row = dict(item)
-        row["short"] = _record(Window, row.get("short"))
-        row["weekly"] = _record(Window, row.get("weekly"))
+        for name in ("short", "weekly"):
+            if name not in row:
+                raise ResetEconomicsError("native window applicability is missing")
+            # Only an explicit null attests not-applicable. A missing key, empty
+            # record or fabricated zero window is still invalid evidence.
+            if row[name] is not None:
+                row[name] = _record(Window, row[name])
         for name, cls, limit in (("banked_resets", BankedReset, 8), ("tasks", TaskQuote, 12)):
             if not isinstance(row.get(name), list) or len(row[name]) > limit:
                 raise ResetEconomicsError("invalid bounded evidence list")
@@ -86,8 +91,14 @@ def render_text(preview: dict) -> str:
              "Action: " + preview["proposed_action"], ""]
     for row in preview["candidates"]:
         lines.append(row["account_id"] + " / " + row["provider_model"])
-        lines.append("  Weekly: {weekly_remaining}/{weekly_capacity}; short: {short_remaining}/{short_capacity} native units".format(**row))
-        lines.append("  Weekly reset Unix: {weekly_reset_at}; known unexpired resets: {banked_reset_count}".format(**row))
+        balances = {name: ("not applicable" if row[name + "_capacity"] is None else
+                    str(row[name + "_remaining"]) + "/" + str(row[name + "_capacity"]) + " native units")
+                    for name in ("weekly", "short")}
+        reset_times = {name: ("not applicable" if row[name + "_reset_at"] is None else
+                       str(row[name + "_reset_at"])) for name in ("weekly", "short")}
+        lines.append("  Weekly: {weekly}; short: {short}".format(**balances))
+        lines.append("  Reset Unix - weekly: {weekly}; short: {short}".format(**reset_times))
+        lines.append("  Known unexpired resets: {banked_reset_count}".format(**row))
         lines.append("  " + (row["reason"] or "Eligible in forecast; native revalidation and claim still required."))
         lines.append("  Forecast jobs: {completed_tasks_forecast}; resets spent: {banked_resets_spent_forecast}".format(**row))
     lines.extend(["", "Input digest: " + preview["input_digest"],

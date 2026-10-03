@@ -251,3 +251,125 @@ def test_input_objects_are_immutable_and_both_rolling_windows_bind_each_task():
     assert steps[1]["start_at"] == NOW + 1200
     assert a.weekly.remaining == 100
     assert a.short.remaining == 100
+
+
+@pytest.mark.parametrize("soon_name,late_name", [("z-soon", "a-late"), ("a-soon", "z-late")])
+def test_expiring_short_capacity_wins_independently_of_lexical_id(soon_name, late_name):
+    jobs = (task("j", cost=20, duration=30),)
+    soon = account(soon_name, short_left=20, short_in=60, tasks=jobs)
+    late = account(late_name, short_left=20, short_in=18000, tasks=jobs)
+    for order in ((soon, late), (late, soon)):
+        assert preview(*order)["selected_account_id"] == soon_name
+
+
+@pytest.mark.parametrize("absent", ["short", "weekly"])
+def test_explicitly_inapplicable_window_is_not_fabricated(absent):
+    quote = replace(task("j"), **{absent + "_cost": None})
+    row = replace(account(tasks=(quote,), resets=(BankedReset("r", NOW + 900),)),
+                  **{absent: None})
+    result = preview(row)
+    chosen = selected(result)
+    assert chosen[absent + "_remaining"] is None
+    assert chosen[absent + "_capacity"] is None
+    assert chosen[absent + "_reset_at"] is None
+    assert chosen["completed_tasks_forecast"] == 1
+    assert chosen["banked_resets_spent_forecast"] == 0
+    assert result["proposed_action"] == "RUN_CANDIDATE"
+    assert result["live_admission"] is False
+
+
+@pytest.mark.parametrize("absent", ["short", "weekly"])
+@pytest.mark.parametrize("invented_cost", [0, 10, True])
+def test_inapplicable_window_cannot_carry_a_fabricated_cost(absent, invented_cost):
+    quote = replace(task("j"), **{absent + "_cost": invented_cost})
+    with pytest.raises(ResetEconomicsError):
+        preview(replace(account(tasks=(quote,)), **{absent: None}))
+
+
+def test_absence_of_every_native_constraint_is_not_unlimited_capacity():
+    quote = replace(task("j"), short_cost=None, weekly_cost=None)
+    with pytest.raises(ResetEconomicsError):
+        preview(replace(account(tasks=(quote,)), short=None, weekly=None))
+
+
+@pytest.mark.parametrize("absent", ["short", "weekly"])
+def test_single_window_still_requires_measurement_and_fresh_observation(absent):
+    active = "weekly" if absent == "short" else "short"
+    quote = replace(task("j"), **{absent + "_cost": None, active + "_cost": None})
+    row = replace(account(tasks=(quote,)), **{absent: None})
+    assert preview(row)["candidates"][0]["reason"] == "COST_OR_DURATION_UNKNOWN"
+    row = replace(row, tasks=(replace(quote, **{active + "_cost": 10}),))
+    row = replace(row, **{active: replace(getattr(row, active), reset_at=NOW)})
+    assert preview(row)["candidates"][0]["reason"] == "OBSERVATION_CROSSED_RESET_BOUNDARY"
+
+
+@pytest.mark.parametrize("with_reset", [False, True])
+def test_identical_constraints_do_not_double_count_task_resource_value(with_reset):
+    jobs = (task("one", cost=20), task("two", cost=20))
+    row = account(tasks=jobs, week_left=0 if with_reset else 50,
+                  week_in=1200, resets=(BankedReset("r", NOW + 100),) if with_reset else ())
+    both = replace(row, short=row.weekly)
+    only = replace(both, short=None,
+                   tasks=tuple(replace(t, short_cost=None) for t in jobs))
+    two, one = selected(preview(both)), selected(preview(only))
+    for field in ("resource_value_forecast", "normalized_burn_forecast",
+                  "steps_forecast", "banked_resets_spent_forecast"):
+        assert two[field] == one[field]
+
+
+def test_original_short_window_reward_ends_after_its_natural_renewal():
+    from fractions import Fraction
+    jobs = (task("one", cost=1, duration=120), task("two", cost=1))
+    result = selected(preview(account(tasks=jobs, short_in=60)))
+    assert result["completed_tasks_forecast"] == 2
+    assert Fraction(result["resource_value_forecast"]) == Fraction(86400 - 60, 86400)
+
+
+def test_reset_reanchors_short_window_and_cancels_its_old_refill():
+    jobs = (task("first", cost=100, due=100),
+            task("second", ready=300, due=1000, cost=100))
+    row = account(short_left=0, short_in=200, tasks=jobs,
+                  resets=(BankedReset("r", NOW + 1000),))
+    row = replace(row, weekly=replace(row.weekly, capacity=1000, remaining=1000))
+    result = selected(preview(row))
+    assert result["completed_tasks_forecast"] == 1
+    assert result["banked_resets_spent_forecast"] == 1
+
+
+@pytest.mark.parametrize("scaled_window", ["short", "weekly"])
+def test_native_unit_rescaling_preserves_economic_decision(scaled_window):
+    jobs = (task("one", cost=5), task("two", cost=95))
+    row = account(short_left=20, week_left=20, tasks=jobs,
+                  resets=(BankedReset("r", NOW + 300),))
+    window = getattr(row, scaled_window)
+    scaled = replace(row, **{scaled_window: replace(window, capacity=window.capacity * 101,
+        remaining=window.remaining * 101, reserve=window.reserve * 101)},
+        tasks=tuple(replace(t, **{scaled_window + "_cost": getattr(t, scaled_window + "_cost") * 101}) for t in jobs))
+    first, second = selected(preview(row)), selected(preview(scaled))
+    for field in ("resource_value_forecast", "normalized_burn_forecast", "steps_forecast"):
+        assert first[field] == second[field]
+
+
+@pytest.mark.parametrize("absent", ["short", "weekly"])
+def test_natural_refill_during_reset_latency_does_not_spend_a_credit(absent):
+    active = "weekly" if absent == "short" else "short"
+    quote = replace(task("j", due=90, duration=30), **{absent + "_cost": None})
+    row = replace(account(tasks=(quote,), resets=(BankedReset("r", NOW + 80),)),
+                  **{absent: None})
+    row = replace(row, **{active: replace(getattr(row, active), remaining=0, reset_at=NOW + 15)})
+    chosen = selected(preview(row))
+    assert chosen["banked_resets_spent_forecast"] == 0
+    assert chosen["steps_forecast"][0]["start_at"] == NOW + 15
+
+
+def test_exchanging_window_labels_preserves_the_constraint_decision():
+    jobs = (replace(task("one", cost=15), short_cost=30),
+            replace(task("two", ready=90, cost=45), short_cost=20))
+    row = account(tasks=jobs, short_left=30, week_left=50, short_in=120,
+                  week_in=600, resets=(BankedReset("r", NOW + 200),))
+    swapped = replace(row, short=row.weekly, weekly=row.short,
+                      tasks=tuple(replace(t, short_cost=t.weekly_cost, weekly_cost=t.short_cost)
+                                  for t in jobs))
+    before, after = selected(preview(row)), selected(preview(swapped))
+    for field in ("resource_value_forecast", "normalized_burn_forecast", "steps_forecast"):
+        assert before[field] == after[field]

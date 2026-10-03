@@ -23,24 +23,37 @@ changed:
     what: >
       Closed-schema read-only JSON/text limits viewer for supplied owner evidence;
       bounded input, duplicate-field rejection and secret-free diagnostics.
-  - path: tests/test_provider_codex_reset_economics.py
-    what: Counterfactual, deadline, renewal, shared-resource, unknown-data and deterministic replay tests.
-  - path: tests/test_codex_reset_preview_cli.py
-    what: Actual subprocess CLI verification plus adversarial input and no-authority tests.
+  - path: tests/provider_codex_reset_economics_cases.py
+    what: Counterfactual, deadline, one-window, renewal, overlapping-resource and deterministic replay cases.
+  - path: tests/codex_reset_preview_cli_cases.py
+    what: Real JSON/text subprocess verification including explicit not-applicable windows, missing-key refusal and no effects.
+  - path: tests/test_codex_runner_budget.py
+    what: Single PR code-gate collector for all core and CLI cases, with a guard against uncollected additions.
+  - path: tests/test_provider_capacity.py
+    what: Removes the duplicate data-gate-only core-case import; existing capacity assertions remain.
   - path: research/CODEX_RESET_ECONOMICS_2026_10_01.md
     what: >
       Primary-source pricing/reset research, current account/runtime census,
       conservative-policy limitations, exact owner integration and promotion gates.
   - path: agentos/handoffs/WS-EXECUTIVE-CAPACITY-FABRIC-2026-10-01-CODEX-RESET-ECONOMICS.md
     what: This cumulative source/publication/readiness boundary under the existing workstream.
-prs: [1127]
+prs: [8255]
 verified:
-  - claim: The reset forecast, CLI consumer and existing capacity contract suites pass locally.
-    command: "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/chriswong/.local/bin/codex-python -B -m pytest --noconftest -q tests/test_provider_codex_reset_economics.py tests/test_codex_reset_preview_cli.py tests/test_provider_capacity.py -o addopts=''"
-    result: "94 passed in 2.65s; normal repository-wide conftest was deliberately excluded for this focused source suite."
+  - claim: The three review findings have a locally verified combined repair on the original source carrier.
+    command: "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/chriswong/.local/bin/codex-python -B -m pytest --noconftest -p no:cacheprovider --tb=short -q tests/test_provider_capacity.py tests/test_codex_runner_budget.py --basetemp <operation-owned evidence directory> -o addopts=''"
+    result: "206 passed in 3.41s. Original core red discriminator: 8 failed/56 passed; original CLI red discriminator: 4 failed/14 passed. Both now pass in the owning suites. No provider call or runtime/reset effect."
+  - claim: All core and CLI cases collect under the existing PR code-gate owner, not only the data gate.
+    command: "pytest --noconftest -p no:cacheprovider --collect-only -q tests/test_codex_runner_budget.py; run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --gate code --pack-count 12 --plan-only --changed-files-file <actual changed paths>"
+    result: "168 owner cases collect, including 67 core and 18 CLI cases plus the new collection guard. Planner selects codex-research-engine in pack 8. Hosted execution on the repaired head is still required; workflow and CI manifest are unchanged."
+  - claim: Simultaneous quota constraints are not summed into duplicate task capacity.
+    command: "Owner cases for identical-constraint equivalence, unit rescaling, window-label exchange, original-window expiry and reset-clock cancellation."
+    result: "Joint spendable prefix is a minimum across applicable windows; one task earns at most one maximum expiry reward. Explicit nulls remain not applicable and missing fields remain invalid. Conservative advisory heuristic only, not global allocation proof."
+  - claim: The initial reset helper and CLI passed the original focused source campaign before review.
+    command: "Historical initial helper, preview and provider-capacity campaign recorded on Macro PR 8255."
+    result: "94 passed in 2.65s; superseded for current acceptance by the repaired owner-suite evidence above."
   - claim: Mastermind native reset metadata and model-economics source candidate passed its six targeted suites and was published.
     command: "Six-target pytest command in Mastermind #1127; studio_git_commit_current_changes and studio_git_push_current_branch for codex-quota-economics-20261001-sol-001."
-    result: "150 passed in 1.41s; commit/push APPLIED, clean, remote equals a27afa5bcb7b183eaf22d2e8172fff3f2d6eb09d; Mastermind #1127 OPEN, not merged or installed."
+    result: "Historical 150-pass source campaign and exact a27afa5b publication. Subsequent GitHub readback proves Mastermind 1127 merged as 12ae50fa35254f99719bbeed82fde6e1f1423104. Source acceptance is not installed all-account capability."
   - claim: M2 Switcher holds six cached ChatGPT entries, not six verified live worker identities.
     command: "Redacted Python inspection of ~/.codex-switcher/accounts.json: count, auth_mode, plan_type and bool(auth_data) only."
     result: "Six entries with auth_data present; four pro labels and two self_serve_business_prolite labels. No auth bytes or emails exported."
@@ -48,14 +61,14 @@ verified:
     command: "codex --version; codex app-server generate-json-schema --out <owned temporary directory>; inspect only reset parameter/response schema metadata."
     result: "0.159.2; export exit 0; required idempotencyKey, optional creditId, response outcome. Temporary generated schema removed after inspection."
   - claim: Installed Executive is still readonly with no active execution.
-    command: "Mastermind_Executive_V2.executive_state at 2026-10-01T23:38:08Z."
-    result: "Mastermind c7407c6c77ef82cc6590401e80cc8f1868dc9085, Macro 88804ed7079700c598bb8e04aa64307d1335402d; one AVAILABLE registry worker, zero active Attempts, zero queued/running Jobs."
+    command: "Mastermind_Executive_V2.executive_state at 2026-10-03T02:38:59Z."
+    result: "Installed Mastermind b3627c580dd37ac1c167f59ac4b7555a4330edef and Macro 88804ed7079700c598bb8e04aa64307d1335402d; readonly, one AVAILABLE registry row, zero queued/running Jobs and active Attempts. No worker dispatch is claimed."
   - claim: The denied consumer-bridge write did not change its original target.
     command: "git status --short; tail control_plane/capacity_economics_projection.py; existence check of the proposed synthetic_macro_preview.json."
     result: "Tool safety-status block occurred before dispatch; projection unchanged, proposed fixture absent. No replay through another tool/account/payload."
   - claim: The Agent OS record store validates with this handoff present.
     command: "/Users/chriswong/.local/bin/codex-python scripts/agentos.py validate"
-    result: "1425 records; 0 errors; 105 existing review/staleness warnings; exit 0."
+    result: "Current repair validation: 1425 records; 0 errors; 106 warnings; exit 0. Warnings remain visible in the operation evidence log and are not acceptance of live state."
 unverified:
   - claim: All intended ChatGPT accounts are enrolled, authenticated, entitled and independently reservable.
     what_would_verify: Existing enrollment owner's per-principal receipt, refresh custody, native limits/model access and real qualified worker evidence; cached Switcher rows are insufficient.
@@ -101,5 +114,33 @@ owned by held #7116; installed execution remains owned by #703 / original Produc
 01a0bd6f-78ba-7581-afac-135b87e2d39c and Runtime
 01a0e296-2e89-7960-a591-67e1e6b5c6d5. No custody transfer is implied.
 
-No dialogue worker or watcher was started by this source operation. A GitHub
-publication/comment is delivery only, not native pickup or execution acceptance.
+## Current combined repair frontier
+
+MISSION_COMPLETE: false. The original operation continues on its existing Macro
+branch from reviewed head aa5850a98731f60ded5a4843226449ce21226cbc. Current procedure
+pin is Mastermind bdf2a972e68a70270c24d4b5d61a4d60edc4f288; SESSION_RELIABILITY is
+not enrolled. The working source repairs the short-window ranking, actual PR
+code-gate collection, and explicit weekly-only/native-window applicability gaps.
+Joint capacity is not an additive sum of simultaneous quotas. The noncanonical
+v2 patch is superseded by this combined source repair, not blindly copied.
+
+Local proof lives at
+`/Volumes/Mastermind/evidence/codex-quota-economics-20261001-sol-001/repair-window-proof`:
+owner-tests.log, code-owner-collection.log, ci-plan.json, and unrun-audit.log.
+These are source/test artifacts only. The next action is exact source publication,
+new-head independent review and genuine hosted execution of the core cases.
+PR 8255 is draft while that evidence is outstanding. Review 5389563572 remains
+unresolved until a reviewer accepts the repaired immutable head.
+
+The attempted pre-repair GitHub continuity comment was blocked before dispatch;
+there is no receipt and it was not retried through another carrier. This is not
+an uncertain source write. All earlier denied bridge/manifest/7116 actions remain
+fenced. No source lock was removed, no account reset was redeemed and no runtime
+worker was started. Direct bounded repair is used because no admitted pre-effect
+worker is available and the joint-window contract required principal judgment.
+The earlier Slack review child was closed PRE_START; GitHub review requests are
+not proof that a worker is running. Served model and UI mode remain unverified.
+
+Publication, installed selection, all-account readiness, real parent-consumed
+execution and reset readback are separate outstanding proofs. No background Web
+execution or autonomous wake is claimed.

@@ -58,8 +58,9 @@ class AccountObservation:
     calibration_id: str
     observed_at: int
     valid_until: int
-    short: Window
-    weekly: Window
+    # Explicit None is owner-attested not-applicable, never missing observation.
+    short: Window | None
+    weekly: Window | None
     banked_resets: tuple[BankedReset, ...]
     tasks: tuple[TaskQuote, ...]
     binding_verified: bool = False
@@ -123,8 +124,11 @@ def _validate(a: AccountObservation, now: int, tier: str, policy: PreviewPolicy)
     for value in (a.account_id, a.shared_resource_id, a.provider_model,
                   a.suitability_tier, a.observation_id, a.calibration_id):
         _identity(value)
-    _window(a.short)
-    _window(a.weekly)
+    windows = tuple(w for w in (a.short, a.weekly) if w is not None)
+    if not windows:
+        raise ResetEconomicsError("no applicable native window")
+    for window in windows:
+        _window(window)
     _integer(a.observed_at, "observed_at")
     _integer(a.valid_until, "valid_until")
     _integer(a.active_claims, "active_claims")
@@ -149,11 +153,19 @@ def _validate(a: AccountObservation, now: int, tier: str, policy: PreviewPolicy)
         _integer(task.utility, "utility", 1, 10**6)
         if task.deadline < task.ready_at or task.deadline > now + policy.max_forecast_seconds:
             raise ResetEconomicsError("invalid or unbounded task horizon")
-        if any(x is None for x in (task.duration_seconds, task.short_cost, task.weekly_cost)):
+        if task.duration_seconds is None:
             measurements_unknown = True
-        for name in ("duration_seconds", "short_cost", "weekly_cost"):
-            if getattr(task, name) is not None:
-                _integer(getattr(task, name), name, 1)
+        else:
+            _integer(task.duration_seconds, "duration_seconds", 1)
+        for name, window in (("short_cost", a.short), ("weekly_cost", a.weekly)):
+            cost = getattr(task, name)
+            if window is None:
+                if cost is not None:
+                    raise ResetEconomicsError("cost for inapplicable native window")
+            elif cost is None:
+                measurements_unknown = True
+            else:
+                _integer(cost, name, 1)
     if measurements_unknown:
         return "COST_OR_DURATION_UNKNOWN"
     if a.suitability_tier != tier:
@@ -168,98 +180,118 @@ def _validate(a: AccountObservation, now: int, tier: str, policy: PreviewPolicy)
         return "RENEWAL_SEMANTICS_UNKNOWN"
     if not a.observed_at <= now < a.valid_until or now - a.observed_at > policy.max_observation_age_seconds:
         return "STALE_OR_FUTURE_OBSERVATION"
-    if min(a.short.reset_at, a.weekly.reset_at) <= now:
+    if min(w.reset_at for w in windows) <= now:
         return "OBSERVATION_CROSSED_RESET_BOUNDARY"
     return None
 
 
 def _forecast(a: AccountObservation, now: int, policy: PreviewPolicy) -> _Path:
-    """Compare work-conserving natural waits versus finite banked resets.
+    """Compare the fixed useful prefix under all applicable native constraints.
 
-    Tasks retain the owner's order; only this idle account's forecast changes.
-    Neither reordering the task queue nor multi-worker scheduling happens here.
-    The state cap refuses the candidate instead of returning a truncated optimum.
+    None contributes no constraint or cost. Simultaneous limits are not additive
+    credit pools: usable prefix capacity is their minimum, and one completed task
+    earns at most one expiry-rescue unit. This is a bounded advisory score, not a
+    portfolio optimum or a valuation of demand beyond the supplied horizon.
     """
     horizon = max((t.deadline for t in a.tasks), default=now)
     credits = tuple(sorted(a.banked_resets, key=lambda c: (c.expires_at, c.reset_id)))
+    specs = tuple((name, window) for name, window in
+                  (("short_cost", a.short), ("weekly_cost", a.weekly)) if window is not None)
+    windows = tuple(window for _, window in specs)
+    costs = tuple(tuple(getattr(task, name) for name, _ in specs) for task in a.tasks)
     expanded = 0
 
     def urgency(deadline: int) -> Fraction:
         return Fraction(max(0, policy.urgency_seconds - max(0, deadline - now)), policy.urgency_seconds)
 
-    def refresh(balance: int, reset_at: int, start: int, window: Window) -> tuple[int, int]:
-        # Zero is forecast-only: timer awaits first use, never a native observation.
-        return (window.capacity, 0) if reset_at and start >= reset_at else (balance, reset_at)
+    def refresh(balances: tuple[int, ...], resets: tuple[int, ...], start: int):
+        # Zero is internal forecast state: the renewed timer awaits first use.
+        pairs = tuple((w.capacity, 0) if r and start >= r else (b, r)
+                      for b, r, w in zip(balances, resets, windows))
+        return tuple(b for b, _ in pairs), tuple(r for _, r in pairs)
+
+    def prefix_capacity(i: int, j: int, balance: int) -> Fraction:
+        """Demand-capped task equivalents in this window's own native units."""
+        available = max(0, balance - windows[j].reserve)
+        supported = Fraction(0)
+        for quote in costs[i:]:
+            cost = quote[j]
+            assert cost is not None
+            used = min(available, cost)
+            supported += Fraction(used, cost)
+            available -= used
+            if used < cost:
+                break
+        return supported
 
     @lru_cache(maxsize=None)
-    def visit(i: int, t: int, sr: int, sa: int, wr: int, wa: int, mask: int, original_window: bool) -> _Path:
+    def visit(i: int, t: int, balances: tuple[int, ...], resets: tuple[int, ...],
+              mask: int, originals: tuple[bool, ...]) -> _Path:
         nonlocal expanded
         expanded += 1
         if expanded > policy.max_states_per_account:
             raise ResetEconomicsError("FORECAST_STATE_BUDGET_EXCEEDED")
         if i == len(a.tasks):
             return _Path()
-        task = a.tasks[i]
-        cost_s, cost_w, duration = task.short_cost, task.weekly_cost, task.duration_seconds
-        assert cost_s is not None and cost_w is not None and duration is not None
-        if cost_s > a.short.capacity - a.short.reserve or cost_w > a.weekly.capacity - a.weekly.reserve:
+        task, quote = a.tasks[i], costs[i]
+        duration = task.duration_seconds
+        assert duration is not None and all(c is not None for c in quote)
+        if any(c > w.capacity - w.reserve for c, w in zip(quote, windows)):
             return _Path()
         ready = max(t, task.ready_at)
         latest = task.deadline - duration
-        options: list[tuple[int, int, int, int, int, int, str | None, Fraction, int]] = []
-        # Earliest natural availability; an expired timer only starts on use.
-        ns, nsa = refresh(sr, sa, ready, a.short)
-        nw, nwa = refresh(wr, wa, ready, a.weekly)
-        natural = ready
-        if ns - a.short.reserve < cost_s:
-            natural = max(natural, nsa)
-        if nw - a.weekly.reserve < cost_w:
-            natural = max(natural, nwa)
-        ns, nsa = refresh(sr, sa, natural, a.short)
-        nw, nwa = refresh(wr, wa, natural, a.weekly)
-        if natural <= latest and ns - a.short.reserve >= cost_s and nw - a.weekly.reserve >= cost_w:
-            options.append((natural, ns, nsa, nw, nwa, mask, None, Fraction(0), 0))
-        # Reset immediately before useful demand, never just to start a timer.
+        options = []
+        nb, nr = refresh(balances, resets, ready)
+        natural = max((ready, *(r for b, r, w, c in zip(nb, nr, windows, quote)
+                               if b - w.reserve < c)))
+        nb, nr = refresh(balances, resets, natural)
+        if natural <= latest and all(b - w.reserve >= c for b, w, c in zip(nb, windows, quote)):
+            options.append((natural, nb, nr, mask, None, Fraction(0), 0))
+        # A reset is considered only immediately before real demand. Observe the
+        # forecast at completion so a natural refill during latency is not reset twice.
         for ci, credit in enumerate(credits):
             start = ready + policy.reset_latency_seconds
             if not mask & (1 << ci) or start >= credit.expires_at or start > latest:
                 continue
-            bs, bsa = refresh(sr, sa, ready, a.short)
-            bw, bwa = refresh(wr, wa, ready, a.weekly)
-            if bs == a.short.capacity and bw == a.weekly.capacity:
-                continue  # provider would not consume a no-op reset
-            # Resource score is task-equivalent capacity, not cash or percentages
-            # compared across unlike plans. Cap rescue at actual remaining demand.
-            demand = sum(t.weekly_cost or 0 for t in a.tasks[i:])
-            gain = Fraction(min(a.weekly.capacity - bw, demand), cost_w)
-            forfeited = Fraction(bw, cost_w)
-            lost_near_refill = Fraction(min(a.weekly.capacity, demand), cost_w) * urgency(bwa) if bwa else Fraction(0)
-            rescue = gain * urgency(credit.expires_at) - forfeited - lost_near_refill
-            options.append((start, a.short.capacity, 0, a.weekly.capacity, 0,
-                            mask ^ (1 << ci), credit.reset_id, rescue,
-                            int(credit.expires_at > horizon)))
+            rb, rr = refresh(balances, resets, start)
+            if all(b == w.capacity for b, w in zip(rb, windows)):
+                continue
+            before = min(prefix_capacity(i, j, b) for j, b in enumerate(rb))
+            full = tuple(prefix_capacity(i, j, w.capacity) for j, w in enumerate(windows))
+            gain = min(full) - before
+            # Cancelled free refills are an opportunity penalty, not another
+            # pool. Max, never sum, keeps overlapping windows from multiplying it.
+            lost_refill = max((value * urgency(r) for value, r in zip(full, rr) if r),
+                              default=Fraction(0))
+            rescue = gain * urgency(credit.expires_at) - before - lost_refill
+            options.append((start, tuple(w.capacity for w in windows),
+                            tuple(0 for _ in windows), mask ^ (1 << ci),
+                            credit.reset_id, rescue, int(credit.expires_at > horizon)))
         best = _Path()
-        for start, bs, bsa, bw, bwa, next_mask, credit_id, rescue, nonexpiring in options:
+        for start, bs, rs, next_mask, credit_id, rescue, nonexpiring in options:
             end = start + duration
-            tail = visit(i + 1, end, bs - cost_s,
-                         bsa or start + a.short.period_seconds,
-                         bw - cost_w, bwa or start + a.weekly.period_seconds, next_mask,
-                         original_window and credit_id is None and start < a.weekly.reset_at)
-            # Only rescue capacity from the original, observed weekly window.
-            saved = Fraction(cost_w, cost_w) * urgency(a.weekly.reset_at) if original_window and credit_id is None and start < a.weekly.reset_at else Fraction(0)
+            still_original = tuple(original and credit_id is None and start < w.reset_at
+                                   for original, w in zip(originals, windows))
+            tail = visit(i + 1, end, tuple(b - c for b, c in zip(bs, quote)),
+                         tuple(r or start + w.period_seconds for r, w in zip(rs, windows)),
+                         next_mask, still_original)
+            # Count this useful task once even if both original limits expire.
+            saved = max((urgency(w.reset_at) for original, w in zip(still_original, windows)
+                         if original), default=Fraction(0))
             candidate = _Path(((task.task_id, start, end, credit_id),) + tail.steps,
                               task.utility + tail.utility,
                               nonexpiring + tail.nonexpiring_resets_spent,
                               int(credit_id is not None) + tail.resets_spent,
                               rescue + saved + tail.rescued_value,
                               task.utility * (end - task.ready_at) + tail.latency,
-                              max(Fraction(cost_s, a.short.capacity), Fraction(cost_w, a.weekly.capacity)) + tail.normalized_burn)
+                              max(Fraction(c, w.capacity) for c, w in zip(quote, windows))
+                              + tail.normalized_burn)
             if candidate.score() > best.score():
                 best = candidate
         return best
 
-    return visit(0, now, a.short.remaining, a.short.reset_at, a.weekly.remaining,
-                 a.weekly.reset_at, (1 << len(credits)) - 1, True)
+    return visit(0, now, tuple(w.remaining for w in windows), tuple(w.reset_at for w in windows),
+                 (1 << len(credits)) - 1, tuple(True for _ in windows))
 
 
 def preview_codex_resets(observations: tuple[AccountObservation, ...], *, now: int,
@@ -314,9 +346,12 @@ def preview_codex_resets(observations: tuple[AccountObservation, ...], *, now: i
         row = {"account_id": a.account_id, "provider_model": a.provider_model,
                "observation_id": a.observation_id, "calibration_id": a.calibration_id,
                "eligible_for_preview": reason is None, "reason": reason,
-               "weekly_remaining": a.weekly.remaining, "weekly_capacity": a.weekly.capacity,
-               "short_remaining": a.short.remaining, "short_capacity": a.short.capacity,
-               "weekly_reset_at": a.weekly.reset_at, "short_reset_at": a.short.reset_at,
+               "weekly_remaining": a.weekly.remaining if a.weekly is not None else None,
+               "weekly_capacity": a.weekly.capacity if a.weekly is not None else None,
+               "short_remaining": a.short.remaining if a.short is not None else None,
+               "short_capacity": a.short.capacity if a.short is not None else None,
+               "weekly_reset_at": a.weekly.reset_at if a.weekly is not None else None,
+               "short_reset_at": a.short.reset_at if a.short is not None else None,
                "banked_reset_count": len([c for c in a.banked_resets if c.expires_at > now]),
                "nearest_banked_expiry": min((c.expires_at for c in a.banked_resets if c.expires_at > now), default=None),
                "completed_utility_forecast": path.utility, "completed_tasks_forecast": len(path.steps),
@@ -328,8 +363,10 @@ def preview_codex_resets(observations: tuple[AccountObservation, ...], *, now: i
         candidates.append(row)
         if reason is None:
             # Existing focus is only a final tie breaker, never a priority gate.
+            remaining_fraction = min(Fraction(w.remaining, w.capacity)
+                                     for w in (a.short, a.weekly) if w is not None)
             ranked.append((path.score() + (a.account_id == preferred_account_id,
-                                           -Fraction(a.weekly.remaining, a.weekly.capacity)), a.account_id))
+                                           -remaining_fraction), a.account_id))
     ranked.sort(key=lambda r: r[1])
     ranked.sort(key=lambda r: r[0], reverse=True)
     selected = ranked[0][1] if ranked else None

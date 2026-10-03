@@ -1334,4 +1334,64 @@ from tests.codex_reset_preview_cli_cases import (  # noqa: E402,F401
     test_duplicate_json_keys_are_refused,
     test_input_is_bounded,
     test_no_eligible_account_is_a_valid_report_not_authorization,
+    test_real_cli_preserves_explicit_native_window_absence,
+    test_missing_native_window_key_is_not_explicit_not_applicable,
+    test_null_window_with_fabricated_cost_stays_a_closed_cli_error,
 )
+
+# Core counterfactuals share this existing PR code-gate owner. The provider-
+# capacity suite is data-gated and cannot prove these regressions on PRs.
+from tests.provider_codex_reset_economics_cases import (  # noqa: E402,F401
+    test_expiring_weekly_capacity_beats_fresh_account,
+    test_no_work_never_spends_reset_or_starts_a_timer,
+    test_exhausted_account_uses_available_banked_reset_for_urgent_real_work,
+    test_imminent_free_reset_beats_spending_nonexpiring_banked_reset,
+    test_free_reset_wait_is_not_allowed_to_miss_task_deadline,
+    test_drain_before_reset_when_credit_survives_the_first_task,
+    test_reset_before_drain_when_otherwise_credit_expires_and_work_cannot_finish,
+    test_reset_is_finite_not_a_new_daily_or_weekly_entitlement,
+    test_reset_reanchors_week_and_cancels_the_original_free_refill,
+    test_reset_is_not_done_before_future_work_arrives,
+    test_noop_reset_not_spent_on_full_windows,
+    test_short_window_can_trigger_reset_even_with_weekly_capacity,
+    test_expired_token_and_token_expiring_during_operation_are_unusable,
+    test_candidate_gates_cannot_be_overridden_by_economics,
+    test_observation_crossing_reset_requires_real_readback,
+    test_missing_measurements_are_not_zero_cost,
+    test_reserves_remain_even_after_reset,
+    test_shared_quota_aliases_cannot_multiply_capacity,
+    test_candidates_must_represent_same_queue_not_better_invented_work,
+    test_same_inputs_replay_identically_including_input_order,
+    test_existing_focus_is_preserved_only_after_real_priority_comparison,
+    test_budget_exhaustion_never_claims_an_optimum_or_routes_candidate,
+    test_no_live_authority_no_account_data_mutation_and_no_secret_fields,
+    test_invalid_measurements_are_rejected,
+    test_lower_measured_burn_beats_faster_expensive_model_in_same_qualified_tier,
+    test_expensive_model_is_used_when_only_it_can_meet_the_deadline,
+    test_credit_input_order_does_not_change_replay_digest,
+    test_policy_cannot_weaken_freshness_or_bounded_work,
+    test_unknown_first_measurement_does_not_hide_malformed_later_quote,
+    test_input_objects_are_immutable_and_both_rolling_windows_bind_each_task,
+    test_expiring_short_capacity_wins_independently_of_lexical_id,
+    test_explicitly_inapplicable_window_is_not_fabricated,
+    test_inapplicable_window_cannot_carry_a_fabricated_cost,
+    test_absence_of_every_native_constraint_is_not_unlimited_capacity,
+    test_single_window_still_requires_measurement_and_fresh_observation,
+    test_identical_constraints_do_not_double_count_task_resource_value,
+    test_original_short_window_reward_ends_after_its_natural_renewal,
+    test_reset_reanchors_short_window_and_cancels_its_old_refill,
+    test_native_unit_rescaling_preserves_economic_decision,
+    test_natural_refill_during_reset_latency_does_not_spend_a_credit,
+    test_exchanging_window_labels_preserves_the_constraint_decision,
+)
+
+
+def test_all_reset_case_functions_are_bound_to_this_pr_code_gate():
+    from tests import codex_reset_preview_cli_cases, provider_codex_reset_economics_cases
+
+    for module in (codex_reset_preview_cli_cases, provider_codex_reset_economics_cases):
+        cases = {name: value for name, value in vars(module).items()
+                 if name.startswith("test_") and callable(value)}
+        assert cases, "the owning case module must not be empty"
+        for name, case in cases.items():
+            assert globals().get(name) is case, "uncollected reset regression: " + name
