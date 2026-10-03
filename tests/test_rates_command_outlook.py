@@ -27,9 +27,10 @@ from engine import rates_command_outlook as rco  # noqa: E402
 
 CONTRACT = REPO / "research" / "macro_regime_intelligence" / "STATE_PATH_AND_SCIENCE_CONTRACT_2026-10-03.md"
 
-# A change to fields, paths, families or retired ids is a new mapping version:
-# add `regime_outlook_mapping_v2.json` beside this one, never re-pin this hash.
-READING_TABLE_SHA256 = "5d9a168a09b32387eb0b5642ff4246a4a8c49b02a6c9cabd5dae99efae65c642"
+# A change to artifacts, fields, paths, families or retired ids is a new
+# mapping version: add `regime_outlook_mapping_v2.json` beside this one,
+# never re-pin this hash.
+READING_TABLE_SHA256 = "966a8595e1c719618740d8af8502086d4da64876f6aab18d8ad2302903fa6196"
 
 PATH_IDS = (
     "orderly_disinflation",
@@ -78,6 +79,14 @@ def test_reading_table_hash_is_pinned(mapping: dict) -> None:
     assert rco.reading_table_sha256(mapping) == READING_TABLE_SHA256, (
         "the reading table changed: that is a new mapping version, not an edit to this one"
     )
+
+
+def test_reading_table_hash_covers_the_artifact_list(mapping: dict) -> None:
+    """Changing which artifact letter a field reads also changes the pin."""
+    moved = copy.deepcopy(mapping)
+    base = rco.reading_table_sha256(mapping)
+    moved["artifacts"]["T"] = "data/treasury/curve_observation.json"
+    assert rco.reading_table_sha256(moved) != base
 
 
 def test_reading_table_hash_ignores_notes_but_not_tokens(mapping: dict) -> None:
@@ -170,9 +179,13 @@ def _m_token_the_owner_never_publishes(m: dict) -> str:
 
 
 def _m_one_field_read_two_inconsistent_ways(m: dict) -> str:
-    # RI-1 mirrors OD-1 today; make it disagree on what the not-fitting side is
-    _row(m, "RI-1")["does_not_fit"] = ["steady"]
-    return "RI-1: neither identical to nor a mirror of OD-1"
+    # LH-1 mirrors DS-1 on L.state today; move BROKEN onto LH-1's fits so the
+    # two rows are no longer the same row nor its mirror, without adding a
+    # token that would put L1 first. The error names DS-1 because it sits
+    # later in file order than LH-1.
+    _row(m, "LH-1")["fits"] = ["INTACT", "BROKEN"]
+    _row(m, "LH-1")["does_not_fit"] = ["CRACKING"]
+    return "DS-1: neither identical to nor a mirror of LH-1"
 
 
 def _m_same_row_under_another_statement(m: dict) -> str:
@@ -221,6 +234,105 @@ def _m_reading_list_gains_a_word(m: dict) -> str:
     return "readings differ from the closed list"
 
 
+def _m_token_in_two_columns(m: dict) -> str:
+    # L1 — duplicate a 'fits' token into 'does_not_fit' of the same row
+    row = _row(m, "OD-1")
+    copied = row["fits"][0]
+    row["does_not_fit"] = [copied, *row["does_not_fit"]]
+    return f"OD-1: token {copied!r} is in two columns"
+
+
+def _m_owner_token_in_no_column(m: dict) -> str:
+    # L2 — drop a side token from a row's column so an owner token is in no
+    # column. Use TP-1 which is the only row on the 10y turn_watch field, so
+    # the identical-or-mirror rule cannot fire first.
+    row = _row(m, "TP-1")
+    dropped = "extreme_high_watch"
+    row["does_not_fit"] = [t for t in row["does_not_fit"] if t != dropped]
+    return f"TP-1: owner token {dropped!r} is in no column"
+
+
+def _m_statement_id_shared_across_fields(m: dict) -> str:
+    # L3-i across fields — give a later read row the statement_id of an
+    # earlier read row on a different field. TP-1 sits later in file order
+    # than OD-1, so TP-1 is the later row and OD-1 the earlier.
+    earlier = _row(m, "OD-1")  # field T.state.inflation.direction
+    later = _row(m, "TP-1")  # field T.yield_momentum.series.10y.turn_watch
+    later["statement_id"] = earlier["statement_id"]
+    return (
+        f"{later['condition_id']}: statement_id identity disagrees with row identity "
+        f"vs {earlier['condition_id']}"
+    )
+
+
+def _m_open_statement_id_reused_by_a_read_row(m: dict) -> str:
+    # L3-ii — give a read row the statement_id of an open row. The error
+    # names the open row whose statement_id was reused.
+    open_row = _row(m, "OD-8")
+    read_row = _row(m, "TP-1")
+    read_row["statement_id"] = open_row["statement_id"]
+    return f"{open_row['condition_id']}: statement_id of an open row is reused"
+
+
+def _m_numeric_row_malformed(m: dict) -> str:
+    # L4 malformed — change RI-6's `op` to an unsupported token
+    row = _row(m, "RI-6")
+    row["does_not_fit"][0]["op"] = "lt"
+    return "RI-6: numeric row has a malformed entry"
+
+
+def _m_numeric_row_does_not_partition(m: dict) -> str:
+    # L4 partition — RI-6's `ge 1` -> `ge 2` so 1 is no longer covered by an eq
+    row = _row(m, "RI-6")
+    row["does_not_fit"][0]["value"] = 2
+    return "RI-6: numeric row does not partition the integers"
+
+
+def _m_two_rows_read_a_turn_watch(m: dict) -> str:
+    # L5 — add a second read row for the 10y turn_watch field. Deep-copy TP-1
+    # and append a fresh condition_id to a different path than technical_pause
+    field_id = "T.yield_momentum.series.10y.turn_watch"
+    source = _row(m, "TP-1")
+    new_condition = copy.deepcopy(source)
+    new_condition["condition_id"] = "LP-8"
+    new_condition["statement_id"] = "long_end_turn_also_forming"
+    # append to long_end_premium_shock path
+    for path in m["paths"]:
+        if path["path_id"] == "long_end_premium_shock":
+            path["conditions"].append(new_condition)
+            break
+    return f"{field_id}: more than one row reads a turn watch"
+
+
+def _m_guard_kind_outside_list(m: dict) -> str:
+    # L6 kind — T.state.inflation.direction's guard kind is not in the closed list
+    field_id = "T.state.inflation.direction"
+    _field(m, field_id)["guard"]["kind"] = "always_admit"
+    return f"{field_id}: guard kind 'always_admit' is not in the closed list"
+
+
+def _m_guard_default_token_not_owner(m: dict) -> str:
+    # L6 default token — T.state.inflation.direction's default_token is not
+    # one of its owner tokens
+    field_id = "T.state.inflation.direction"
+    _field(m, field_id)["guard"]["default_token"] = "falling"
+    return f"{field_id}: guard default token is not an owner token"
+
+
+def _m_guard_missing_token_not_owner(m: dict) -> str:
+    # L6 missing token — R.liquidity_quality.label's missing_token is not
+    # one of its owner tokens
+    field_id = "R.liquidity_quality.label"
+    _field(m, field_id)["guard"]["missing_token"] = "tight"
+    return f"{field_id}: guard missing token is not an owner token"
+
+
+def _m_rationale_is_whitespace(m: dict) -> str:
+    # L7 — whitespace-only rationale
+    _row(m, "OD-1")["rationale"] = "   \t  "
+    return "OD-1: no rationale"
+
+
 MUTANTS = (
     _m_retired_id,
     _m_duplicate_id,
@@ -239,6 +351,17 @@ MUTANTS = (
     _m_verdict_class_outside_the_list,
     _m_clock_semantics_outside_the_list,
     _m_reading_list_gains_a_word,
+    _m_token_in_two_columns,
+    _m_owner_token_in_no_column,
+    _m_statement_id_shared_across_fields,
+    _m_open_statement_id_reused_by_a_read_row,
+    _m_numeric_row_malformed,
+    _m_numeric_row_does_not_partition,
+    _m_two_rows_read_a_turn_watch,
+    _m_guard_kind_outside_list,
+    _m_guard_default_token_not_owner,
+    _m_guard_missing_token_not_owner,
+    _m_rationale_is_whitespace,
 )
 
 
@@ -254,6 +377,7 @@ def test_lint_names_each_broken_rule(mapping: dict, mutate) -> None:
 # --------------------------------------------------------------------------
 # the file says what the contract's tables say
 # --------------------------------------------------------------------------
+
 
 _PATH_HEADER = re.compile(r"^\*\*`([a-z_]+)`\*\*$")
 _ROW = re.compile(r"^\| ([A-Z]{2}-\d+) \|")
@@ -348,3 +472,198 @@ def test_every_read_row_points_at_the_field_the_contract_names(mapping: dict) ->
         last = field["path"][-1]
         assert isinstance(last, str)
         assert _TICKED.findall(cell)[0].split(".")[-1] == last, (condition["condition_id"], cell, field["path"])
+
+
+# --------------------------------------------------------------------------
+# parity tests against the contract's A.0 and A.1 tables (R3(d))
+# --------------------------------------------------------------------------
+
+
+def _split_a1_section() -> tuple[int, int]:
+    lines = CONTRACT.read_text(encoding="utf-8").splitlines()
+    start = next(i for i, line in enumerate(lines) if line.startswith("### A.1 "))
+    end = next(i for i, line in enumerate(lines) if line.startswith("### A.2 "))
+    return start, end
+
+
+def _contract_a0_families() -> list[tuple[str, str]]:
+    """Return [(family_id, coverage), ...] in document order from A.0."""
+    lines = CONTRACT.read_text(encoding="utf-8").splitlines()
+    a0_start = next(i for i, line in enumerate(lines) if line.startswith("### A.0 "))
+    a1_start = next(i for i, line in enumerate(lines) if line.startswith("### A.1 "))
+    body = " ".join(lines[a0_start + 1:a1_start])
+    sections = []
+    for label, coverage in (
+        ("With at least one admitted field:", "admitted"),
+        ("With evidence but no admitted reading:", "evidence_only"),
+        ("With no audited owner field:", "no_owner"),
+    ):
+        idx = body.find(label)
+        assert idx != -1, label
+        after = body[idx + len(label):]
+        # take text up to the next full stop
+        stop = after.find(".")
+        text = after if stop == -1 else after[:stop]
+        sections.append((text, coverage))
+    families: list[tuple[str, str]] = []
+    for text, coverage in sections:
+        for fid in _TICKED.findall(text):
+            families.append((fid, coverage))
+    return families
+
+
+def test_contract_family_list_equals_the_mapping(mapping: dict) -> None:
+    families = _contract_a0_families()
+    assert len(families) == 22
+    expected = [(f["evidence_family_id"], f["coverage"]) for f in mapping["families"]]
+    assert families == expected
+
+
+def _parse_field_cell(cell: str) -> tuple[str, list]:
+    """Parse the Field cell of an A.1 row into (artifact, path)."""
+    artifact = cell.split(" ", 1)[0]
+    backticked = _TICKED.findall(cell)
+    assert backticked, cell
+    path_text = backticked[0]
+
+    # If <tenor> appears, expand once per tenor in the parenthesised list
+    # that follows the backticked item.
+    if "<tenor>" in path_text:
+        # find "(...)" following the closing backtick
+        after_tick = cell.split("`", 2)[2]
+        tenors_match = re.search(r"\(([^)]+)\)", after_tick)
+        assert tenors_match, cell
+        tenors = [t.strip() for t in tenors_match.group(1).split(",")]
+        paths = []
+        for tenor in tenors:
+            expanded = path_text.replace("<tenor>", tenor)
+            paths.append(_split_path(expanded))
+        return artifact, paths
+
+    return artifact, [_split_path(path_text)]
+
+
+def _split_path(text: str) -> list:
+    """Split a dotted path, expanding `name[key=value]` segments."""
+    parts: list = []
+    for segment in text.split("."):
+        match = re.match(r"^([A-Za-z_][A-Za-z0-9_]*)\[([A-Za-z_][A-Za-z0-9_]*)=([A-Za-z_][A-Za-z0-9_]*)\]$", segment)
+        if match:
+            parts.append(match.group(1))
+            parts.append({match.group(2): match.group(3)})
+        else:
+            parts.append(segment)
+    return parts
+
+
+def _parse_tokens_cell(cell: str):
+    """Parse the Tokens cell of an A.1 row.
+
+    Returns a dict for the integer contract token (``{"type": "integer"}``)
+    and a list otherwise.
+    """
+    if re.search(r"\binteger\b", cell):
+        return {"type": "integer"}
+    out: list = []
+    for match in re.finditer(r"`([^`]+)`|\b(true|false|null)\b", cell):
+        if match.group(1) is not None:
+            out.append(match.group(1))
+        else:
+            word = match.group(2)
+            if word == "null":
+                out.append(None)
+            else:
+                out.append(word == "true")
+    return out
+
+
+def _parse_middle_cell(cell: str) -> list:
+    """Parse the Middle cell of an A.1 row."""
+    cell = cell.strip()
+    if cell.startswith("none"):
+        return []
+    ticked = _TICKED.findall(cell)
+    if ticked:
+        token = ticked[0]
+        if token == "null":
+            return [None]
+        try:
+            return [{"op": "eq", "value": int(token)}]
+        except ValueError:
+            return [token]
+    # no backticked token
+    return []
+
+
+def _parse_class_cell(cell: str) -> str:
+    """Parse the Class cell of an A.1 row: first word without a trailing comma."""
+    first = cell.split()[0]
+    return first.rstrip(",")
+
+
+def _parse_family_cell(cell: str) -> str:
+    """Parse the Family cell of an A.1 row: the backticked id."""
+    ticked = _TICKED.findall(cell)
+    assert ticked, cell
+    return ticked[0]
+
+
+_A1_ROW = re.compile(r"^\| [A-Z] ")
+
+
+def _contract_a1_fields() -> list[dict]:
+    """Parse every A.1 row into a flat list of dicts (one per tenor expansion)."""
+    lines = CONTRACT.read_text(encoding="utf-8").splitlines()
+    start, end = _split_a1_section()
+    rows: list[dict] = []
+    for line in lines[start + 1:end]:
+        if not _A1_ROW.match(line):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        assert len(cells) == 8, line
+        _field_cell, _tokens_cell, middle_cell, *_, family_cell = (cells[0], cells[1], cells[2], cells[3], cells[4], cells[5], cells[6], cells[7])
+        # re-parse in canonical order
+        field_cell = cells[0]
+        tokens_cell = cells[1]
+        middle_cell = cells[2]
+        class_cell = cells[3]
+        family_cell = cells[7]
+
+        artifact, paths = _parse_field_cell(field_cell)
+        tokens = _parse_tokens_cell(tokens_cell)
+        middle = _parse_middle_cell(middle_cell)
+        verdict_class = _parse_class_cell(class_cell)
+        family_id = _parse_family_cell(family_cell)
+
+        if len(paths) > 1:
+            # tenor expansion — one entry per tenor, all sharing the other cells
+            for path in paths:
+                rows.append(
+                    {
+                        "artifact": artifact,
+                        "path": path,
+                        "tokens": tokens,
+                        "middle_tokens": middle,
+                        "verdict_class": verdict_class,
+                        "evidence_family_id": family_id,
+                    }
+                )
+        else:
+            rows.append(
+                {
+                    "artifact": artifact,
+                    "path": paths[0],
+                    "tokens": tokens,
+                    "middle_tokens": middle,
+                    "verdict_class": verdict_class,
+                    "evidence_family_id": family_id,
+                }
+            )
+    return rows
+
+
+def test_contract_field_table_equals_the_mapping(mapping: dict) -> None:
+    rows = _contract_a1_fields()
+    assert len(rows) == 21
+    expected = [{k: f[k] for k in ("artifact", "path", "tokens", "middle_tokens", "verdict_class", "evidence_family_id")} for f in mapping["fields"]]
+    assert rows == expected

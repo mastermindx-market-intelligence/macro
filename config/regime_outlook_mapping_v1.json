@@ -4,7 +4,7 @@
   "contract": "research/macro_regime_intelligence/STATE_PATH_AND_SCIENCE_CONTRACT_2026-10-03.md",
   "contract_revision": "3.1",
   "producer_pin": "5f20adbd6be6b136b2efe41585bd4ef964b5bf2e",
-  "note": "Machine form of Appendix A (A.0, A.1, A.4 and the A.2 fields an A.4 row or A.1 note names). An authored display-tier vocabulary: never tested against outcomes, never a rank, gate or forecast. A change to `fields`, `paths`, `families` or `retired_condition_ids` is a new mapping version.",
+  "note": "Machine form of Appendix A: A.0, A.1, A.4, and the A.2 fields an A.4 row or A.1 note names. An authored display-tier vocabulary: never tested against outcomes, never a rank, gate or forecast. A change to `artifacts`, `fields`, `paths`, `families` or `retired_condition_ids` is a new mapping version.",
   "artifacts": {
     "T": "data/transmission/latest.json",
     "R": "data/regime/latest.json",
@@ -422,6 +422,128 @@
       }
     },
     {
+      "field_id": "T.yield_momentum.series.2y.turn_watch",
+      "artifact": "T",
+      "path": [
+        "yield_momentum",
+        "series",
+        "2y",
+        "turn_watch"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "rolldown_forming",
+        "extreme_high_watch",
+        "rollup_forming",
+        "extreme_low_watch",
+        null
+      ],
+      "middle_tokens": [
+        null
+      ],
+      "verdict_class": "composite",
+      "evidence_family_id": "treasury_curve",
+      "producer": "engine/yield_momentum.py:159-182,274-275,297-300",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "yield_momentum",
+          "series",
+          "2y",
+          "as_of"
+        ],
+        "semantics": "source_observation_date"
+      },
+      "guard": {
+        "kind": "turn_watch_null",
+        "applies_to": "null_token",
+        "status_path": [
+          "yield_momentum",
+          "series",
+          "2y",
+          "status"
+        ],
+        "status_required": "available",
+        "qualified_path": [
+          "yield_momentum",
+          "series",
+          "2y",
+          "path_qualified"
+        ],
+        "needs": [
+          [
+            "yield_momentum",
+            "series",
+            "2y",
+            "velocity_bp",
+            "22d"
+          ]
+        ],
+        "null_is_middle_when_guarded": true
+      }
+    },
+    {
+      "field_id": "T.yield_momentum.series.5y.turn_watch",
+      "artifact": "T",
+      "path": [
+        "yield_momentum",
+        "series",
+        "5y",
+        "turn_watch"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "rolldown_forming",
+        "extreme_high_watch",
+        "rollup_forming",
+        "extreme_low_watch",
+        null
+      ],
+      "middle_tokens": [
+        null
+      ],
+      "verdict_class": "composite",
+      "evidence_family_id": "treasury_curve",
+      "producer": "engine/yield_momentum.py:159-182,274-275,297-300",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "yield_momentum",
+          "series",
+          "5y",
+          "as_of"
+        ],
+        "semantics": "source_observation_date"
+      },
+      "guard": {
+        "kind": "turn_watch_null",
+        "applies_to": "null_token",
+        "status_path": [
+          "yield_momentum",
+          "series",
+          "5y",
+          "status"
+        ],
+        "status_required": "available",
+        "qualified_path": [
+          "yield_momentum",
+          "series",
+          "5y",
+          "path_qualified"
+        ],
+        "needs": [
+          [
+            "yield_momentum",
+            "series",
+            "5y",
+            "velocity_bp",
+            "22d"
+          ]
+        ],
+        "null_is_middle_when_guarded": true
+      }
+    },
+    {
       "field_id": "T.yield_momentum.series.10y.turn_watch",
       "artifact": "T",
       "path": [
@@ -475,6 +597,128 @@
             "yield_momentum",
             "series",
             "10y",
+            "velocity_bp",
+            "22d"
+          ]
+        ],
+        "null_is_middle_when_guarded": true
+      }
+    },
+    {
+      "field_id": "T.yield_momentum.series.20y.turn_watch",
+      "artifact": "T",
+      "path": [
+        "yield_momentum",
+        "series",
+        "20y",
+        "turn_watch"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "rolldown_forming",
+        "extreme_high_watch",
+        "rollup_forming",
+        "extreme_low_watch",
+        null
+      ],
+      "middle_tokens": [
+        null
+      ],
+      "verdict_class": "composite",
+      "evidence_family_id": "treasury_curve",
+      "producer": "engine/yield_momentum.py:159-182,274-275,297-300",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "yield_momentum",
+          "series",
+          "20y",
+          "as_of"
+        ],
+        "semantics": "source_observation_date"
+      },
+      "guard": {
+        "kind": "turn_watch_null",
+        "applies_to": "null_token",
+        "status_path": [
+          "yield_momentum",
+          "series",
+          "20y",
+          "status"
+        ],
+        "status_required": "available",
+        "qualified_path": [
+          "yield_momentum",
+          "series",
+          "20y",
+          "path_qualified"
+        ],
+        "needs": [
+          [
+            "yield_momentum",
+            "series",
+            "20y",
+            "velocity_bp",
+            "22d"
+          ]
+        ],
+        "null_is_middle_when_guarded": true
+      }
+    },
+    {
+      "field_id": "T.yield_momentum.series.30y.turn_watch",
+      "artifact": "T",
+      "path": [
+        "yield_momentum",
+        "series",
+        "30y",
+        "turn_watch"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "rolldown_forming",
+        "extreme_high_watch",
+        "rollup_forming",
+        "extreme_low_watch",
+        null
+      ],
+      "middle_tokens": [
+        null
+      ],
+      "verdict_class": "composite",
+      "evidence_family_id": "treasury_curve",
+      "producer": "engine/yield_momentum.py:159-182,274-275,297-300",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "yield_momentum",
+          "series",
+          "30y",
+          "as_of"
+        ],
+        "semantics": "source_observation_date"
+      },
+      "guard": {
+        "kind": "turn_watch_null",
+        "applies_to": "null_token",
+        "status_path": [
+          "yield_momentum",
+          "series",
+          "30y",
+          "status"
+        ],
+        "status_required": "available",
+        "qualified_path": [
+          "yield_momentum",
+          "series",
+          "30y",
+          "path_qualified"
+        ],
+        "needs": [
+          [
+            "yield_momentum",
+            "series",
+            "30y",
             "velocity_bp",
             "22d"
           ]
@@ -641,7 +885,7 @@
       "middle_tokens": [],
       "verdict_class": "composite",
       "evidence_family_id": "credit_and_funding",
-      "producer": "engine/regime.py:111-124,127",
+      "producer": "engine/regime.py:111-124,218-227",
       "clock": {
         "artifact": "R",
         "path": [
