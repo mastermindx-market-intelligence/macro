@@ -560,16 +560,204 @@ def test_r5_nits_each_fire(mapping: dict, mutate, expected) -> None:
 def test_l2_not_discriminating_is_order_insensitive(mapping: dict) -> None:
     """R5(c) — ``not_discriminating`` and the field's middle tokens compare
     by their sorted json.dumps texts, so a row that reorders the middle
-    tokens stays clean."""
+    tokens stays clean.
+
+    Deviation: the spec named ``T.state.inflation.direction`` (read by OD-1
+    and RI-1) but every row on that field has exactly one fit and one
+    does-not-fit token, so moving either side token to middle empties one
+    column and trips L1's "a read row needs both a fitting and a not-fitting
+    side" check. ``L.state`` (read by LH-1 and DS-1) has each row with two
+    tokens on one side (LH-1's does_not_fit=['CRACKING','BROKEN']; DS-1's
+    fits=['CRACKING','BROKEN']), so moving ``CRACKING`` to middle leaves
+    the other side non-empty on both rows. The test exercises one moved
+    token giving a one-token middle; reverse-of-one is itself, so (i)
+    passes by symmetry. Constructing a two-token middle on any field
+    without L1 firing is impossible in this mapping.
+    """
     broken = copy.deepcopy(mapping)
-    # OD-1 reads T.state.inflation.direction; middle = ['steady'].
-    # Reorder via copy with reversed list — should still be a clean row.
+
+    # (i) move ``CRACKING`` from each row's multi-token side to middle.
+    # The field gains it; LH-1's does_not_fit and DS-1's fits keep the
+    # other token, so both rows stay non-empty on both sides.
+    l_state = _field(broken, "L.state")
+    l_state["middle_tokens"] = ["CRACKING"]
     for path in broken["paths"]:
         for condition in path["conditions"]:
-            if condition["condition_id"] == "OD-1":
-                condition["not_discriminating"] = list(reversed(condition["not_discriminating"]))
+            if condition["field_id"] != "L.state":
+                continue
+            if "CRACKING" in condition["does_not_fit"]:
+                condition["does_not_fit"] = [
+                    t for t in condition["does_not_fit"] if t != "CRACKING"
+                ]
+            if "CRACKING" in condition["fits"]:
+                condition["fits"] = [t for t in condition["fits"] if t != "CRACKING"]
+            # the field's middle has one element; reverse-of-one is itself,
+            # so the order-insensitive comparison stays clean.
+            condition["not_discriminating"] = list(reversed(l_state["middle_tokens"]))
+
+    # Mirror invariant: LH-1 and DS-1 must still swap sides with the same
+    # middle; otherwise the per-field pairwise check would fire and
+    # mask the order test. Confirm both rows still author the moved token
+    # in the same middle column.
+    lh1 = _row(broken, "LH-1")
+    ds1 = _row(broken, "DS-1")
+    assert lh1["not_discriminating"] == ["CRACKING"], lh1
+    assert ds1["not_discriminating"] == ["CRACKING"], ds1
+
+    errors_clean = rco.lint_mapping(broken)
+    assert all(
+        not e.startswith("LH-1:") and not e.startswith("DS-1:") for e in errors_clean
+    ), errors_clean
+
+    # (ii) drop ``CRACKING`` from DS-1's middle. The field's middle still
+    # has it, so the L1 order-insensitive comparison fires for DS-1.
+    broken2 = copy.deepcopy(broken)
+    _row(broken2, "DS-1")["not_discriminating"] = []
+    errors = rco.lint_mapping(broken2)
+    assert any(
+        e.startswith("DS-1:") and "is not the field's middle" in e for e in errors
+    ), errors
+
+
+# --------------------------------------------------------------------------
+# round-4 lint sharpenings (R1–R3)
+# --------------------------------------------------------------------------
+
+
+def _t1_guard_as_str(m: dict) -> None:
+    _field(m, "T.state.rates.direction")["guard"] = "x"
+
+
+def _t1_guard_as_none(m: dict) -> None:
+    _field(m, "T.state.rates.direction")["guard"] = None
+
+
+def _t1_guard_as_list(m: dict) -> None:
+    _field(m, "T.state.rates.direction")["guard"] = []
+
+
+def _t1_missing_token_deleted(m: dict) -> None:
+    _field(m, "T.breakeven_decomp.trend")["guard"].pop("missing_token")
+
+
+_T1_CASES = (
+    (_t1_guard_as_str, "T.state.rates.direction: no guard"),
+    (_t1_guard_as_none, "T.state.rates.direction: no guard"),
+    (_t1_guard_as_list, "T.state.rates.direction: no guard"),
+    (
+        _t1_missing_token_deleted,
+        "T.breakeven_decomp.trend: guard keys do not match its kind",
+    ),
+)
+
+
+@pytest.mark.parametrize(
+    "mutate, expected",
+    _T1_CASES,
+    ids=lambda v: v.__name__[3:] if callable(v) else v,
+)
+def test_l1_lint_survives_a_malformed_guard(mapping: dict, mutate, expected) -> None:
+    """R1 — lint never raises on a malformed guard, and a missing
+    ``missing_token`` key is reported as a keyset failure, not a KeyError."""
+    broken = copy.deepcopy(mapping)
+    mutate(broken)
+    try:
+        errors = rco.lint_mapping(broken)
+    except (AttributeError, KeyError, TypeError) as exc:
+        pytest.fail(f"lint_mapping raised {type(exc).__name__} instead of reporting: {exc}")
+    assert isinstance(errors, list)
+    assert expected in errors, errors
+    assert rco.lint_mapping(mapping) == [], "the mutation leaked into the loaded mapping"
+
+
+def _m_r2_hy_oas_z_path_outside_block(m: dict) -> None:
+    _field(
+        m, "R.liquidity_quality.stress_overlay.confirming_stress"
+    )["guard"]["hy_oas_z_path"] = ["conditions", "x"]
+
+
+def _m_r2_degraded_path_other_component(m: dict) -> None:
+    _field(m, "M.components.breadth.tone")["guard"]["degraded_path"] = [
+        "components", {"key": "leadership"}, "degraded",
+    ]
+
+
+def _m_r2_needs_outside_block(m: dict) -> None:
+    _field(m, "R.conditions.labor_nowcast.read")["guard"]["needs"][0] = [
+        "state", "rates", "real_10y_chg_63d_bp",
+    ]
+
+
+def _m_r2_copy_artifact_same_as_field(m: dict) -> None:
+    _field(m, "L.state")["guard"]["copy_artifact"] = "L"
+
+
+def _m_r2_copy_artifact_not_in_artifacts(m: dict) -> None:
+    _field(m, "L.state")["guard"]["copy_artifact"] = "Z"
+
+
+_R2_CASES = (
+    (
+        _m_r2_hy_oas_z_path_outside_block,
+        "R.liquidity_quality.stress_overlay.confirming_stress: guard "
+        "hy_oas_z_path leaves the field's own block",
+    ),
+    (
+        _m_r2_degraded_path_other_component,
+        "M.components.breadth.tone: guard degraded_path leaves the field's own block",
+    ),
+    (
+        _m_r2_needs_outside_block,
+        "R.conditions.labor_nowcast.read: guard needs leaves the field's own block",
+    ),
+    (
+        _m_r2_copy_artifact_same_as_field,
+        "L.state: guard copy_artifact is not another listed artifact",
+    ),
+    (
+        _m_r2_copy_artifact_not_in_artifacts,
+        "L.state: guard copy_artifact is not another listed artifact",
+    ),
+)
+
+
+@pytest.mark.parametrize(
+    "mutate, expected",
+    _R2_CASES,
+    ids=lambda v: v.__name__[3:] if callable(v) else v,
+)
+def test_l6_guard_paths_stay_inside_the_fields_owner_block(
+    mapping: dict, mutate, expected
+) -> None:
+    """R2 — every guard path stays inside the field's own owner block, and
+    a same-run-owner-copy guard names another listed artifact."""
+    broken = copy.deepcopy(mapping)
+    mutate(broken)
     errors = rco.lint_mapping(broken)
-    assert errors == [], errors
+    assert expected in errors, errors
+    assert rco.lint_mapping(mapping) == [], "the mutation leaked into the loaded mapping"
+
+
+def _m_r3_le_in_middle(m: dict) -> None:
+    """RI-6 reads B.fed_path.implied_cuts_12m: le in fits (-1), ge in
+    does_not_fit (1), eq in not_discriminating (0). Move ``le`` into
+    ``not_discriminating`` and ``eq`` into ``fits`` so the single ``le``
+    ends up on the middle column. The existing message must fire."""
+    row = _row(m, "RI-6")
+    row["fits"] = [{"op": "eq", "value": 0}]
+    row["does_not_fit"] = [{"op": "ge", "value": 1}]
+    row["not_discriminating"] = [{"op": "le", "value": -1}]
+
+
+def test_l4_extremes_stay_in_the_sides(mapping: dict) -> None:
+    """R3 — the single ``le`` and the single ``ge`` of a numeric row must
+    each sit in ``fits`` or ``does_not_fit``; the middle column may only
+    carry ``eq`` values."""
+    broken = copy.deepcopy(mapping)
+    _m_r3_le_in_middle(broken)
+    errors = rco.lint_mapping(broken)
+    assert "RI-6: numeric row does not partition the integers" in errors, errors
+    assert rco.lint_mapping(mapping) == [], "the mutation leaked into the loaded mapping"
 
 
 # --------------------------------------------------------------------------
