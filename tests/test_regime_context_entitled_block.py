@@ -426,7 +426,7 @@ def test_paid_digest_within_composed_budget(tmp_path):
     paid = mp.digest(tmp_path, include_regime_detail=True)
     # Use the literals the engine ships, so a constant rename can't drift this.
     base_budget = mp.DEFAULT_CHAR_BUDGET
-    block_budget = rc.render_context.__defaults__[0]  # 1800
+    block_budget = mp.REGIME_DETAIL_BLOCK_BUDGET  # 2000, single source
     cap = base_budget + block_budget + 2  # two newlines + section header
     assert len(paid) <= cap, (
         f"paid digest {len(paid)} chars exceeds "

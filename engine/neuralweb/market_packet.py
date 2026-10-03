@@ -83,7 +83,7 @@ DEFAULT_CHAR_BUDGET = 4200
 # absent from _SECTION_ORDER: an entitled user pays for the block, never the
 # base sections that an unentitled user keeps. DEFAULT_CHAR_BUDGET caps only
 # the BASE section rendering loop, never the block itself.
-REGIME_DETAIL_BLOCK_BUDGET = 1800
+REGIME_DETAIL_BLOCK_BUDGET = 2000
 REGIME_DETAIL_INSERT_AFTER = "DRIVERS"
 
 # ---------------------------------------------------------------------------
