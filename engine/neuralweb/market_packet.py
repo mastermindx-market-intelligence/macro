@@ -78,6 +78,14 @@ log = logging.getLogger(__name__)
 PACKET_VERSION = 1
 DEFAULT_CHAR_BUDGET = 4200
 
+# REGIME_DETAIL is rendered under ITS OWN budget and spliced into the kept
+# list after the DRIVERS section (see render_digest). It is intentionally
+# absent from _SECTION_ORDER: an entitled user pays for the block, never the
+# base sections that an unentitled user keeps. DEFAULT_CHAR_BUDGET caps only
+# the BASE section rendering loop, never the block itself.
+REGIME_DETAIL_BLOCK_BUDGET = 1800
+REGIME_DETAIL_INSERT_AFTER = "DRIVERS"
+
 # ---------------------------------------------------------------------------
 # Live-dir resolution ladder
 # ---------------------------------------------------------------------------
@@ -330,10 +338,12 @@ _REGIONS: tuple[_Region, ...] = (
 
 _SECTION_ORDER: tuple[str, ...] = (
     "HEADER", "TAPE", "CURVE", "FLAGS", "SHOCK", "EVENTS", "DRIVERS",
-    "REGIME_DETAIL", "RATES", "VOL", "BREADTH", "LEADERS", "REGIONAL", "CROSSASSET", "CNBOARD", "DESK", "WATCH",
+    "RATES", "VOL", "BREADTH", "LEADERS", "REGIONAL", "CROSSASSET", "CNBOARD", "DESK", "WATCH",
     # PRESSURE sits LAST on purpose: it is single-name display context, so it is
-    # the first thing the char budget should drop. Appending here changes no
-    # existing section's drop priority.
+    # the first thing the char budget should drop. REGIME_DETAIL is NOT in this
+    # order — it is rendered under REGIME_DETAIL_BLOCK_BUDGET and spliced in
+    # after DRIVERS (see render_digest). Adding a section here changes the
+    # base drop loop's eviction order for every base section.
     "PRESSURE",
 )
 _NEVER_DROP: frozenset[str] = frozenset({"HEADER", "TAPE"})
@@ -1975,27 +1985,78 @@ def render_digest(packet: dict, char_budget: int = DEFAULT_CHAR_BUDGET,
     except Exception as exc:  # noqa: BLE001
         log.debug("market_packet: render_digest failed (%s)", exc)
         return ""
-    if not sections:
+    has_any_base = any(packet.get(key) for key, _fn in _RENDERERS.values())
+    kept: list[tuple[str, str]] = []
+    if has_any_base:
+        header = _HEADER.format(basis=packet.get("basis") or _BASIS_NO_TAPE)
+        kept = [("HEADER", header)] + sections
+        try:
+            budget = int(char_budget)
+        except (TypeError, ValueError):
+            budget = DEFAULT_CHAR_BUDGET
+
+        def total(rows: list[tuple[str, str]]) -> int:
+            return len("\n".join(t for _n, t in rows))
+
+        while total(kept) > budget:
+            idx = next((i for i in range(len(kept) - 1, -1, -1)
+                        if kept[i][0] not in _NEVER_DROP), None)
+            if idx is None:
+                break
+            kept.pop(idx)
+        # If the drop loop left only the HEADER behind AND no block is owed,
+        # the digest is empty (matches the pre-repair contract).
+        if len(kept) <= 1 and not packet.get("regime_detail"):
+            return ""
+    elif packet.get("regime_detail"):
+        # No base sections, but the block is owed. Render HEADER + block so a
+        # sparse/paid prompt still carries the regime context.
+        header = _HEADER.format(basis=packet.get("basis") or _BASIS_NO_TAPE)
+        kept = [("HEADER", header)]
+    else:
+        # Truly empty world — keep pre-repair behaviour.
         return ""
 
-    header = _HEADER.format(basis=packet.get("basis") or _BASIS_NO_TAPE)
-    kept = [("HEADER", header)] + sections
-    try:
-        budget = int(char_budget)
-    except (TypeError, ValueError):
-        budget = DEFAULT_CHAR_BUDGET
+    # REGIME_DETAIL block: opt-in by entitlement, rendered under ITS OWN
+    # budget so it never participates in the base drop loop. For identical
+    # packet inputs, removing the block from the entitled digest must yield
+    # EXACTLY the non-entitled digest — paid users gain the block and never
+    # lose a base section to it.
+    detail_text = ""
+    if packet.get("regime_detail"):
+        try:
+            detail_text = _render_regime_detail(packet) or ""
+        except Exception as exc:  # noqa: BLE001
+            log.debug("market_packet: REGIME_DETAIL render failed (%s)", exc)
+            detail_text = ""
+    if detail_text:
+        # Honour the block's own compact budget so a cap change cannot quietly
+        # break the additive invariant (K1).
+        if len(detail_text) > REGIME_DETAIL_BLOCK_BUDGET:
+            try:
+                detail_text = _regime_context.render_context(
+                    packet["regime_detail"],
+                    char_budget=REGIME_DETAIL_BLOCK_BUDGET,
+                    lang="zh" if _zh(packet) else "en",
+                )
+            except Exception as exc:  # noqa: BLE001
+                log.debug("market_packet: REGIME_DETAIL rebudget failed (%s)",
+                          exc)
+                detail_text = ""
+        if detail_text:
+            insert_after_idx = next(
+                (i for i, (n, _t) in enumerate(kept)
+                 if n == REGIME_DETAIL_INSERT_AFTER),
+                None,
+            )
+            if insert_after_idx is None:
+                # Defensive: DRIVERS missing (rendered empty), splice after
+                # HEADER so the block always lands in the digest.
+                kept.insert(1, ("REGIME_DETAIL", detail_text))
+            else:
+                kept.insert(insert_after_idx + 1,
+                             ("REGIME_DETAIL", detail_text))
 
-    def total(rows: list[tuple[str, str]]) -> int:
-        return len("\n".join(t for _n, t in rows))
-
-    while total(kept) > budget:
-        idx = next((i for i in range(len(kept) - 1, -1, -1)
-                    if kept[i][0] not in _NEVER_DROP), None)
-        if idx is None:
-            break
-        kept.pop(idx)
-    if len(kept) <= 1:
-        return ""
     return "\n".join(t for _n, t in kept)
 
 
