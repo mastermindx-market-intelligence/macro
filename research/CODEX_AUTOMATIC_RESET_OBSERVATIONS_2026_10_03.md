@@ -62,7 +62,10 @@ stays unavailable; it cannot borrow legacy quota. A historical captured response
 with an empty map is preserved as a negative compatibility fixture. Normalizer
 field tests now use the documented populated-map form.
 
-When supplied, ordinary_usage_allowed survives normalization. False/null block
+When supplied, ordinary_usage_allowed survives normalization even when quota
+measurements are incomplete. Such a partial result contains only permission and
+observation time, not invented N/A windows. The real budget consumer denies
+incomplete quota even when the permission value is true. False/null also block
 ordinary local budget admission; a later field-less response cannot erase this
 newer-protocol constraint. Legacy field-absent behavior remains compatible, not
 proof of permission. No private account identifier is persisted by this addition.

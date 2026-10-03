@@ -25,11 +25,11 @@ verified:
     result: Original source allowed after refill, then denied at 100 percent and restored the older deadline after the delayed reply.
   - claim: Current targeted owner suite covers the repaired observations and actual loop consumer.
     command: pytest --noconftest tests/test_codex_runner_budget.py with isolated basetemp and no provider calls.
-    result: 104 passed and 29 subtests passed; includes 22 new test methods over the base owner suite.
+    result: 107 passed and 37 subtests passed; includes 25 new test methods over the base owner suite.
   - claim: Production changes preserve the broader Codex family.
     command: pytest tests/test_codex_runner_budget.py tests/test_codex_lanes.py tests/test_admin_codex.py with normal repository conftest.
     result: >
-      Final campaign: 342 passed and 29 subtests passed in 42.38s, with normal
+      Final campaign: 345 passed and 37 subtests passed in 37.33s, with normal
       conftest and isolated basetemp. The preliminary 338-pass campaign had four
       inherited temporary-cleanup warnings; its log is preserved.
   - claim: The existing reset planner removes a proposed banked reset after fresh gifted capacity.
@@ -42,7 +42,7 @@ unresolved:
   - New source needs exact-head review and hosted checks; no release or installed activation follows from local proof.
   - Macro8255 remains subject to its original review5389563572; its latest native497 review returned no major issues.
   - A resolve call for inline thread PRRT_kwDOS4LjIs6okiIg lost its response; same-carrier readback still showed unresolved, and no retry was issued.
-  - Mastermind1158 is in the original protected merge queue; insertion is not merge or installation.
+  - Mastermind1158 merged as29a1e89975be319e7fc955283e048c34c2364dff through the protected queue; installation remains unproven. Its clean original workspace remains preserved by the canonical cleanup observer after branch deletion.
 next_actions:
   - Complete source review and hosted acceptance, then use the normal release path with exact-head and current-base checks.
   - Consume the original1158 queue result and8255 review/check outcomes without duplicating workers or replaying unknown effects.
@@ -64,3 +64,26 @@ Mastermind bdf2a972e68a70270c24d4b5d61a4d60edc4f288.
 Evidence: /Volumes/Mastermind/evidence/codex-observed-reset-refresh-20261003-sol-001.
 No provider reset, auth repair, account switch, runtime job, service change or new
 watcher was performed. Parent mission remains incomplete.
+
+## Partial-payload repair and current source continuation
+
+Initial source3820d093e4b69f181975d83e2706ef2e3e7f4dac is published on Macro8311.
+Native review request5966663297 received the Codex bot eyes acknowledgement;
+no terminal review or native summary was observed at the latest read. Do not
+start a second reviewer or let an old-head result approve this subsequent repair.
+
+A further direct discriminator found that an explicit ordinaryUsageAllowed signal
+could disappear when quota fields were incomplete. The native consumer now
+returns only the validated permission and observation time in that case; missing
+measurements do not become N/A. The existing budget owner denies that partial
+packet even with permission=true. Invalid numeric overflow cannot erase a denial.
+Original partial-payload checks: six failing subtests; overflow checks: two failing
+subtests. Repaired full existing family345PASS/37subtests; no native provider call.
+Only the same five source/test/document paths remain in scope.
+
+The actual1158 queue CI37104300662 and frontend37104300678 passed at29a1;
+reviewed and merged tree0fe475ba40ff7fd7f5d65df1ce12e5a1a09a12b5 is identical.
+Release receipt SHA2565109d2fbb94b146cee899d148fe9189dcaaa437ed552ef602f0c9fee8c7bcdc7.
+Mastermind703 return5966720657 preserves installation/account gates. Macro8255
+CI37102216371 is now SUCCESS; original reviewer adjudication5966703370 remains
+requested, not accepted. No pending reset, source or runtime effect was replayed.

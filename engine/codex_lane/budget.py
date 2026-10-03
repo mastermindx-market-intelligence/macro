@@ -222,6 +222,8 @@ def can_run(
         if isinstance(observed_limits, dict) and "ordinary_usage_allowed" in observed_limits:
             if observed_limits["ordinary_usage_allowed"] is not True:
                 return False, "provider_usage_not_allowed_or_unknown"
+            if not _complete_rate_limits(observed_limits):
+                return False, "provider_quota_incomplete"
 
         # 1. paused_until check
         paused_until_str = state.get("paused_until") or ""
@@ -302,7 +304,10 @@ def _complete_rate_limits(rl: object) -> bool:
         if not isinstance(window, dict):
             return False
         value = window.get("used_percent")
-        if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
+        try:
+            if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
+                return False
+        except (OverflowError, TypeError, ValueError):
             return False
         present = True
     return present
@@ -319,7 +324,11 @@ def _apply_rate_limits_to_state(state: dict, rl: dict) -> bool:
     This lane assumes its existing single-account binding; plan_type is only a
     diagnostic, not a verified account identity or authorization.
     """
-    if not _complete_rate_limits(rl):
+    complete = _complete_rate_limits(rl)
+    permission_observed = (isinstance(rl, dict) and "ordinary_usage_allowed" in rl
+                           and (rl["ordinary_usage_allowed"] is None
+                                or type(rl["ordinary_usage_allowed"]) is bool))
+    if not complete and not permission_observed:
         return False
     now = _now_utc()
     stamp = rl.get("fetched_at")
@@ -333,11 +342,14 @@ def _apply_rate_limits_to_state(state: dict, rl: dict) -> bool:
         return False
     if previous_time is not None and (observed is None or observed <= previous_time):
         return False
-    rl = copy.deepcopy(rl)
+    # Unknown measurements are not safe evidence to persist as quota or N/A.
+    # Keep only the independently validated permission and its observation time.
+    rl = (copy.deepcopy(rl) if complete else
+          {"ordinary_usage_allowed": rl["ordinary_usage_allowed"], "fetched_at": stamp})
     if not stamp:
         rl["fetched_at"] = _to_iso(now)
     state["rate_limits"] = rl
-    state["degraded"] = False
+    state["degraded"] = not complete
 
     # FIX 2: plan_type change detection (wrong-account tripwire)
     new_plan_type = rl.get("plan_type")
@@ -453,7 +465,8 @@ def note_rate_limits(rl: dict | None, root: str | Path | None = None) -> None:
         now = _now_utc()
         # Receipt-time stamping of a legacy result is not a fresh native read.
         # A read already in flight before a newer failure cannot clear it.
-        fresh = (observed is not None and 0 <= (now - observed).total_seconds() <= 600
+        fresh = (_complete_rate_limits(rl) and observed is not None
+                 and 0 <= (now - observed).total_seconds() <= 600
                  and (last_transition is None or observed >= last_transition)
                  and ("ordinary_usage_allowed" not in rl or rl["ordinary_usage_allowed"] is True))
         if paused_dt is not None and paused_dt > now and fresh:

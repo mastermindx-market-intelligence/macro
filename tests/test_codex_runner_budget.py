@@ -1412,6 +1412,53 @@ class TestObservedResetRefresh(unittest.TestCase):
             "resetsAt": int((self.now + timedelta(days=7)).timestamp())}, "secondary": None}})
         self.assertEqual(normalized["primary"]["used_percent"], 105)
 
+    def test_native_permission_survives_incomplete_quota_and_blocks_cached_health(self):
+        for index, allowed in enumerate((False, None, True)):
+            with self.subTest(allowed=allowed):
+                root = self.root / str(index)
+                healthy = {**self.snapshot(5, age=60), "ordinary_usage_allowed": True}
+                note_rate_limits(healthy, root=root)
+                self.assertTrue(can_run(root=root)[0])
+                packet = self.fetch_native({"ordinaryUsageAllowed": allowed,
+                    "rateLimits": {"primary": {"usedPercent": "invalid"}, "secondary": None}})
+                self.assertIsNotNone(packet)
+                self.assertEqual(packet["ordinary_usage_allowed"], allowed)
+                self.assertNotIn("primary", packet)
+                self.assertNotIn("secondary", packet)
+                packet["fetched_at"] = _to_iso(self.now)
+                note_rate_limits(packet, root=root)
+                self.assertFalse(can_run(root=root)[0])
+                state = load_state(root)
+                self.assertEqual(state["rate_limits"], packet)
+                self.assertTrue(state["degraded"])
+                # A subsequent actual complete, permitted read can recover.
+                with patch("engine.codex_lane.budget._now_utc", return_value=self.now + timedelta(seconds=1)):
+                    restored = {**self.snapshot(7, age=-1, reset_days=7), "ordinary_usage_allowed": True}
+                    note_rate_limits(restored, root=root)
+                    self.assertTrue(can_run(root=root)[0])
+
+    def test_numeric_overflow_cannot_drop_native_permission(self):
+        for field in ("usedPercent", "resetsAt"):
+            with self.subTest(field=field):
+                window = {"usedPercent": 0, "windowDurationMins": 10080,
+                          "resetsAt": int((self.now + timedelta(days=7)).timestamp())}
+                window[field] = 10 ** 1000
+                packet = self.fetch_native({"ordinaryUsageAllowed": False,
+                    "rateLimits": {"primary": window, "secondary": None}})
+                self.assertIsNotNone(packet)
+                self.assertIs(packet["ordinary_usage_allowed"], False)
+                self.assertNotIn("primary", packet)
+
+    def test_native_denial_survives_missing_named_bucket(self):
+        for buckets in ({}, None, {"other": {}}):
+            with self.subTest(buckets=buckets):
+                packet = self.fetch_native({"ordinaryUsageAllowed": False,
+                                           "rateLimitsByLimitId": buckets})
+                self.assertIsNotNone(packet)
+                self.assertIs(packet["ordinary_usage_allowed"], False)
+                self.assertNotIn("primary", packet)
+                self.assertNotIn("secondary", packet)
+
     def test_applied_snapshot_is_detached_from_caller_mutation(self):
         from engine.codex_lane.budget import _apply_rate_limits_to_state
         incoming = self.snapshot(7, age=0)
