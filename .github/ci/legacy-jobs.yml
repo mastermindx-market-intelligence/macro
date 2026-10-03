@@ -41,6 +41,44 @@ jobs:
       - name: daily scope through canonical archive writer and consumer
         run: python -m pytest tests/test_yahoo_universe_backfill.py -q
 
+  live-flow-recovery-guards:
+    if: ${{ false }}
+    gate: code
+    # PR #8322 round 2: carved-out WAL/cycle-recovery guards.
+    # Tests/test_live_flow_recovery.py holds the day-state WAL
+    # ordering + the production-pin quarantine cases; the two sibling
+    # test files exercise the same scripts/ engine helpers they depend
+    # on (live_flow_poller.py + build_flow_archive.py +
+    # build_flow_surface.py + engine/live_flow.py). Ordinary `paths:`
+    # inference (not `scope: exclusive`) until closure is verified.
+    paths:
+      - "engine/live_flow.py"
+      - "engine/session_digest.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "ops/LIVE_FLOW_RUNBOOK.md"
+      - "scripts/live_flow_poller.py"
+      - "scripts/build_flow_archive.py"
+      - "scripts/build_flow_surface.py"
+      - "tests/test_flow_archive.py"
+      - "tests/test_live_flow_recovery.py"
+      - "tests/test_live_flow_tiering.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: install live-flow recovery suite dependencies
+        # Proven transitively-imported deps only: pytest is the runner,
+        # pandas/numpy are the poller+engine live_flow lazy imports,
+        # pyyaml is lib/config.py's actual import (test_live_flow_tiering
+        # also imports yaml directly). No pyarrow, no requests, no extras.
+        run: pip install pytest pandas numpy pyyaml
+      - name: live-flow WAL/cycle-recovery + sibling suites
+        run: python -m pytest tests/test_live_flow_recovery.py tests/test_live_flow_tiering.py tests/test_flow_archive.py -q
+
   inline-js:
     if: ${{ false }}
     gate: data
