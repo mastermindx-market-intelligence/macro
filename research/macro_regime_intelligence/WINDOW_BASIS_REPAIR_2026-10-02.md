@@ -111,3 +111,7 @@ repair of the source defect already reproduced in this mission. No Executive Job
 reviewer START, provider invocation or autonomous watcher is claimed. Review and
 release remain held until independent exact-source review, repository checks and
 current-base integration are complete. The parent mission remains incomplete.
+
+Prepublication composition found the two test additions competing at the same
+CI insertion point. This candidate moves only its own step earlier in the same
+existing code job; the frozen #8301 source is untouched. No test or gate is removed.

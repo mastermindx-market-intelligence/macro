@@ -8,7 +8,7 @@
     "scripts/build_regime_v2_pit.py": "47c8cf21882f2ef492dc382d8af4dde38c6b8d9438dc9956ef1973afee72449e",
     "tests/test_regime_v2_pit.py": "a7e93087b86bb4d4b22979f09d11e06177928040f511e0ae653d7f0996951290",
     "config/synapse.yml": "9796321a9c9883b7a88e7bea2af68e98a6e8c0b0d07235ada96548532ff4b0f5",
-    ".github/ci/legacy-jobs.yml": "abef08a5719dc6bf01b8a652ae959b3c1c9f625d604c91347bf66b058442966f",
+    ".github/ci/legacy-jobs.yml": "71e016d725dbd702072ea4be4b33272938fac3e12de09d91cbde4c2f68997ff4",
     "config/unrun_test_baseline.json": "692376fb2b208871c19853ce12907c2e5d6bfd9986e45d573fffd1dfb4b9b49a"
   },
   "tests": {
@@ -170,5 +170,11 @@
   ],
   "no_new_provider_calls": true,
   "no_production_data_write": true,
-  "no_forecasting_claim": true
+  "no_forecasting_claim": true,
+  "sibling_integration": {
+    "readiness_head": "f6665b70b6307f667d31e148fa288e90daa2c6bf",
+    "initial_composition": "CI insertion-point conflict only",
+    "repair": "move this test step earlier in same code job; preserve sibling suite and all existing commands",
+    "post_repair": "pending exact committed composition"
+  }
 }

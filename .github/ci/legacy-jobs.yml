@@ -15297,6 +15297,8 @@ jobs:
         # pandas.read_html is exercised by the ETF sponsor-registry parser;
         # pandas alone does not provide an HTML parser on a clean runner.
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn lxml
+      - name: regime history input-window provenance - source basis, legacy parity, CLI consumer
+        run: python -m pytest tests/test_regime_v2_pit.py -q
       - name: spotlight tilt — W9-B US demotion is display-only + the tilt still moves weighted markets
         run: python -m pytest tests/test_spotlight.py -q
       - name: etf_pulse sector leg + analyst delta channel — each pins the data branch it exercises
@@ -15338,8 +15340,6 @@ jobs:
         run: python -m pytest tests/test_etf_partial_nav_sleeve.py -q
       - name: sector_central board order — fast-lens rotation rank, failing open to conviction
         run: python -m pytest tests/test_sector_central.py -q
-      - name: regime history input-window provenance - source basis, legacy parity, CLI consumer
-        run: python -m pytest tests/test_regime_v2_pit.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH B (2026-07-27) ─────────────────────────────
   # The template-surface share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
