@@ -293,7 +293,9 @@ def _paired_daily_ic(rows: list, horizon_d: int) -> dict:
 
 
 def _member_ret(ticker: str, root: Path, start: str, end: str) -> float | None:
-    p0, p1 = _level_asof(ticker, root, start), _close_at(ticker, root, end)
+    # Exact session prices: do not carry an earlier close into this horizon.
+    p0 = _level_asof(ticker, root, start, max_stale_days=0)
+    p1 = _close_at(ticker, root, end, max_stale_days=0)
     if not _finite_number(p0) or not _finite_number(p1) or p0 <= 0 or p1 < 0:
         return None
     value = p1 / p0 - 1.0
@@ -692,6 +694,7 @@ def compute(today: date | str | None = None, root: Path | None = None,
             "is_context_only": True,
             "evaluation_basis": "closed_session_information_content",
             "outcome_coverage_policy": "all_frozen_members_required",
+            "price_endpoint_policy": "exact_session_close_no_asof_carry",
             "comparison_population_policy": "same_rows_same_valid_ic_dates",
             "price_provenance_qualification": "NOT_ESTABLISHED_BY_THIS_EVALUATOR", "n_snapshots": len(rows), "n_days": n_days,
             "horizons": out_h, "lead_time_d": lead_time, "peak_score_ic": peak_ic,
@@ -719,6 +722,7 @@ def compute(today: date | str | None = None, root: Path | None = None,
                 "is_context_only": True,
                 "evaluation_basis": "closed_session_information_content",
                 "outcome_coverage_policy": "all_frozen_members_required",
+                "price_endpoint_policy": "exact_session_close_no_asof_carry",
                 "comparison_population_policy": "same_rows_same_valid_ic_dates",
                 "price_provenance_qualification": "NOT_ESTABLISHED_BY_THIS_EVALUATOR", "n_snapshots": 0, "n_days": 0, "horizons": {},
                 "lead_time_d": None, "peak_score_ic": None, "proven": {}, "any_matured": False,

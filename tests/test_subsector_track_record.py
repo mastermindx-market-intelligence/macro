@@ -34,8 +34,8 @@ def _fake_prices(monkeypatch):
     # entry = 100 for everyone; exit encodes the move via a per-ticker table.
     exit_px = {"W": 110.0, "L": 90.0, "SPY": 100.0}   # W up 10%, L down 10%, SPY flat
     monkeypatch.setattr(S, "_covers", lambda t, root, end: True)
-    monkeypatch.setattr(S, "_level_asof", lambda t, root, start: 100.0)
-    monkeypatch.setattr(S, "_close_at", lambda t, root, end: exit_px.get(t[0] if t != "SPY" else "SPY", 100.0))
+    monkeypatch.setattr(S, "_level_asof", lambda t, root, start, **kwargs: 100.0)
+    monkeypatch.setattr(S, "_close_at", lambda t, root, end, **kwargs: exit_px.get(t[0] if t != 'SPY' else 'SPY', 100.0))
 
 
 def _write_rows(tmp_path, rows):
@@ -888,8 +888,8 @@ def test_track_record_head_to_head_is_paired_and_order_invariant():
 
 # Complete-basket and identical-date regressions for the canonical evaluator.
 def _integrity_fake_prices(monkeypatch, values, missing=None):
-    monkeypatch.setattr(S, '_level_asof', lambda *args: 100.0)
-    monkeypatch.setattr(S, '_close_at', lambda *args: 100.0)
+    monkeypatch.setattr(S, '_level_asof', lambda *args, **kwargs: 100.0)
+    monkeypatch.setattr(S, '_close_at', lambda *args, **kwargs: 100.0)
     monkeypatch.setattr(S, '_covers', lambda ticker, *args: ticker != missing)
     monkeypatch.setattr(S, '_member_ret', lambda ticker, *args: values.get(ticker, 0.0))
 
@@ -973,19 +973,19 @@ def test_track_integrity_sparse_dates_do_not_manufacture_observation_windows():
 
 
 def test_track_integrity_price_values_are_numeric_and_finite(tmp_path, monkeypatch):
-    monkeypatch.setattr(S, '_close_at', lambda *args: 100.0)
+    monkeypatch.setattr(S, '_close_at', lambda *args, **kwargs: 100.0)
     for bad in [float('nan'), float('inf'), True, '100', 0., -1.]:
-        monkeypatch.setattr(S, '_level_asof', lambda *args: bad)
+        monkeypatch.setattr(S, '_level_asof', lambda *args, **kwargs: bad)
         assert S._member_ret('A', tmp_path, '2026-09-25', '2026-10-02') is None
-    monkeypatch.setattr(S, '_level_asof', lambda *args: 100.0)
+    monkeypatch.setattr(S, '_level_asof', lambda *args, **kwargs: 100.0)
     for bad in [float('nan'), float('inf'), True, '100', -1.]:
-        monkeypatch.setattr(S, '_close_at', lambda *args: bad)
+        monkeypatch.setattr(S, '_close_at', lambda *args, **kwargs: bad)
         assert S._member_ret('A', tmp_path, '2026-09-25', '2026-10-02') is None
 
 
 def test_track_integrity_actual_zero_terminal_value_is_not_missing(tmp_path, monkeypatch):
-    monkeypatch.setattr(S, '_level_asof', lambda *args: 100.0)
-    monkeypatch.setattr(S, '_close_at', lambda *args: 0.0)
+    monkeypatch.setattr(S, '_level_asof', lambda *args, **kwargs: 100.0)
+    monkeypatch.setattr(S, '_close_at', lambda *args, **kwargs: 0.0)
     assert S._member_ret('A', tmp_path, '2026-09-25', '2026-10-02') == -1.0
 
 
@@ -994,3 +994,49 @@ def test_track_integrity_output_discloses_remaining_provenance_limit(tmp_path):
     assert out['is_context_only'] is True
     assert out['price_provenance_qualification']=='NOT_ESTABLISHED_BY_THIS_EVALUATOR'
     assert out['comparison_population_policy']=='same_rows_same_valid_ic_dates'
+
+# Exercise real price readers over synthetic parquet files, never market stores.
+def _exact_session_parquets(root, omitted=None):
+    directory=root/'data'/'yahoo'
+    directory.mkdir(parents=True)
+    dates=pd.to_datetime(['2026-09-24','2026-09-25','2026-10-01','2026-10-02','2026-10-05'])
+    for ticker in ['A','B','C','SPY']:
+        values=[100.,100.,110.,120.,140.] if ticker!='SPY' else [100.]*5
+        frame=pd.DataFrame({'close':values},index=dates)
+        if omitted and ticker=='C': frame=frame.drop(pd.Timestamp(omitted))
+        frame.to_parquet(directory/f'{ticker}.parquet')
+
+
+def test_exact_session_prices_reject_missing_exit_despite_later_coverage(tmp_path):
+    _exact_session_parquets(tmp_path,omitted='2026-10-02')
+    assert S._covers('C',tmp_path,'2026-10-02') is True
+    assert S._fwd_basket(['A','B','C'],tmp_path,'2026-09-25',5) is None
+
+
+def test_exact_session_prices_reject_missing_entry_despite_prior_close(tmp_path):
+    _exact_session_parquets(tmp_path,omitted='2026-09-25')
+    assert S._covers('C',tmp_path,'2026-10-02') is True
+    assert S._fwd_basket(['A','B','C'],tmp_path,'2026-09-25',5) is None
+
+
+def test_exact_session_prices_complete_frozen_basket_uses_exact_closes(tmp_path):
+    _exact_session_parquets(tmp_path)
+    assert S._fwd_basket(['A','B','C'],tmp_path,'2026-09-25',5)==pytest.approx(.20)
+
+
+def test_exact_session_prices_legacy_non_session_stamp_is_not_silently_traded(tmp_path):
+    _exact_session_parquets(tmp_path)
+    # A calendar-dated legacy observation is not an exact-session entry price.
+    assert S._fwd_basket(['A','B','C'],tmp_path,'2026-09-26',5) is None
+
+
+def test_exact_session_prices_member_reader_requests_zero_staleness(tmp_path,monkeypatch):
+    calls=[]
+    def level(ticker,root,stamp,max_stale_days=None):
+        calls.append(('start',max_stale_days));return 100.
+    def close(ticker,root,stamp,max_stale_days=None):
+        calls.append(('end',max_stale_days));return 120.
+    monkeypatch.setattr(S,'_level_asof',level)
+    monkeypatch.setattr(S,'_close_at',close)
+    assert S._member_ret('A',tmp_path,'2026-09-25','2026-10-02')==pytest.approx(.20)
+    assert calls==[('start',0),('end',0)]

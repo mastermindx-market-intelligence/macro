@@ -1,53 +1,164 @@
 {
-  "scope": "ISOLATED_EXACT_SOURCE_TESTS_NOT_FULL_IMPORT_CHAIN_OR_MARKET_BACKTEST",
-  "source_base": "25b8892e28c4610f7453beab72585d201338c1f4",
+  "scope": "AUTHOR_TESTS_REAL_IMPORTS_AND_SYNTHETIC_PARQUET_IO_NOT_MARKET_PERFORMANCE",
+  "source_base": "40586f0eb969e108d2cf87348e1f4f48c9050702",
   "procedure_pin": "bdf2a972e68a70270c24d4b5d61a4d60edc4f288",
+  "previous_receipt": {
+    "commit": "40586f0eb969e108d2cf87348e1f4f48c9050702",
+    "path": "research/sector_intelligence/subtheme_qualification_2026_10_02/evidence/engine_integration.json",
+    "git_blob": "36fbbc6974fa1854b71c4abee66883a4f604a325"
+  },
+  "python": "3.14.7",
+  "pytest": "9.1.1",
   "files": {
     "engine/subsector_track_record.py": {
-      "bytes": 36868,
-      "git_blob": "c6b410f696669f3ef191b748c754c1562c871776",
-      "sha256": "d8d13b060eb19ac63a58b3fab0c813fdd98511ce588be75f96e346360e558096"
+      "bytes": 37137,
+      "git_blob": "7a20c1f4704eb429dfe68aa98f523dd047c0d8b1",
+      "sha256": "0b35cfb86a31c29d2b3f9af446949b17db432cc4891e1293d38b74ff7a527ed9"
     },
     "tests/test_subsector_track_record.py": {
-      "bytes": 44888,
-      "git_blob": "6ea52dcda32a54255c3cc585943958b5fa6d93ea",
-      "sha256": "c245b54c2252f5e0d83df1bf9e571d78cadff3602e6875568531568ff6e84ba9"
+      "bytes": 47160,
+      "git_blob": "073dabbd6a6b47d8ff5adb0a47b029f8f54c6314",
+      "sha256": "3d017320df8ab11e1cc4c60b7789c0d18e7a33b5258d8a21f9d6d7e8b6f90e85"
+    },
+    "tests/test_subsector_significance_guard.py": {
+      "bytes": 13288,
+      "git_blob": "50adfe27c73e95e420bf6e9c700455afd8c92935",
+      "sha256": "8183bc61f594147410b73c7efb818d2b26ddcd7db5d9e9579e939e5425f2f092"
     }
   },
   "tests": {
-    "initial_owner_and_guard_suite_passed": 162,
-    "new_first_batch_failed_before_repair": 16,
-    "new_first_batch_passed_before_repair": 2,
-    "intermediate_failed": 1,
-    "intermediate_failure": "undefined ic_ir serialized as NaN",
-    "final_expected_cases": 183,
-    "price_io_and_config_imports_replaced": true,
-    "unmocked_price_io": "RAISE",
-    "production_import_chain_tested": false,
-    "final_passed": 183,
-    "final_log_sha256": "84a49c5593fe1feb9370b35736cfdcee3d86c7d3acbf09b7c7846b1fa9c18fa5"
+    "prior_isolated_cases": 183,
+    "prior_cases_with_real_imports_passed": 183,
+    "new_exact_price_cases_pre_repair_failed": 4,
+    "new_exact_price_cases_pre_repair_passed": 1,
+    "final_passed": 188,
+    "real_price_and_config_modules_imported": true,
+    "synthetic_parquet_io_exercised": true,
+    "signature_only_mock_changes": {
+      "owner_suite": 10,
+      "significance_suite": 2
+    },
+    "no_test_skips_or_waivers_added": true,
+    "red_log": {
+      "bytes": 4565,
+      "git_blob": "47fca79a9628995340924ba32d09e4005fe7c829",
+      "sha256": "c6f2d207cd60fb8d9715193168e32462b97cde1d819c2696bd4419cc46898a9f"
+    },
+    "green_log": {
+      "bytes": 260,
+      "git_blob": "19819908999365b832650906c8da68a41a336d2e",
+      "sha256": "16ed3aee9d1bbf09e02151b2a449b6d754bc7f4f6815b1bc6b4f6e60301db408"
+    }
+  },
+  "renderer": {
+    "scope": "exact drawTrackRecord function in Node VM; not browser or CSS proof",
+    "source_blob": "37b458e44ce11534c394bcb0929f70e5be540c60",
+    "cases": [
+      {
+        "case": "measured",
+        "language": "en",
+        "passed": true,
+        "html_bytes": 2915
+      },
+      {
+        "case": "measured",
+        "language": "zh",
+        "passed": true,
+        "html_bytes": 2882
+      },
+      {
+        "case": "empty",
+        "language": "en",
+        "passed": true,
+        "html_bytes": 2887
+      },
+      {
+        "case": "empty",
+        "language": "zh",
+        "passed": true,
+        "html_bytes": 2877
+      },
+      {
+        "case": "missing",
+        "language": "en",
+        "passed": true,
+        "html_bytes": 0
+      },
+      {
+        "case": "missing",
+        "language": "zh",
+        "passed": true,
+        "html_bytes": 0
+      }
+    ]
+  },
+  "synthetic_producer_output": {
+    "bytes": 9216,
+    "git_blob": "bb433c1d70cbe0bbaad4181b41554adfe062ecdc",
+    "sha256": "e2413bb09f2050339a641a864ca60c77f3cb409c06be8ad678870f249c769795"
+  },
+  "dependency_sources": {
+    "lib/config.py": {
+      "bytes": 1131,
+      "git_blob": "b6fc888269876242597da354aaa726c20ed95802",
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+    },
+    "lib/ticker_aliases.py": {
+      "bytes": 3461,
+      "git_blob": "7d1aacd5c32209f9e47461f50287db25e2404a65",
+      "sha256": "6a6da16e40de28e9ac3eb9f319ca6b1a137a479656101b590b9264211e3e70fd"
+    },
+    "engine/desk_ledger.py": {
+      "bytes": 6683,
+      "git_blob": "379028a7bf1fbf4ec96c86e39eeb0339b1d69381",
+      "sha256": "9e079f7d26e3a60e75ee651140612c2efd6a9d00a9405ac5c424fe219600dbc2"
+    },
+    "engine/master_brain.py": {
+      "bytes": 142755,
+      "git_blob": "67bf21c6bb387505bd4c8b237804ba664181ff38",
+      "sha256": "9d58cfe754f365206be998d95b29a60cf2a54df46a1cad8ac7788fae66a16b70"
+    },
+    "engine/desk_scorer.py": {
+      "bytes": 21038,
+      "git_blob": "fdffc74187f5f322981a7f39ccb9d5519a1450fc",
+      "sha256": "d1629aa70b66f7bee53d41a4710fc9d5b3ccb062f10bacabc22079b2ae7a6e77"
+    },
+    "engine/ai_desk.py": {
+      "bytes": 41592,
+      "git_blob": "f171e4e61d5da2cb002e7d5be692ffa31e6f852f",
+      "sha256": "d895b14bdb86db0f536c10ea03a0360de10c440e6b4b8d2c3ba7bc83ae65d94b"
+    },
+    "engine/catalyst_tone.py": {
+      "bytes": 31503,
+      "git_blob": "0540c15eefbff8944730c3ea6e1df1b9c5fe9b84",
+      "sha256": "1856dc10ea0c9fc480517d50b1b8488303ea29dbc18c7b86cd11d29ea0e7dbb0"
+    },
+    "engine/ai_desk_scorer.py": {
+      "bytes": 6660,
+      "git_blob": "d949a7d9deda72bc497f52bae7abd7eca6b59adc",
+      "sha256": "083c2ed200d2771921407e5c792a52962c463fd52eaa3e6b513b9b1b2f348550"
+    }
   },
   "changes": [
-    "Exact NYSE-session horizons and maturity",
-    "Every frozen member requires covered finite return; no survivor renormalization",
-    "Both score fields share finite rows and nonconstant IC dates",
-    "Undefined derived statistics become null",
-    "Observed nonoverlapping windows cap elapsed-span window counts",
-    "No order-dependent global comparison winner",
-    "Explicit remaining price-provenance qualification limit"
-  ],
-  "not_claimed": [
-    "raw-market replay",
-    "historical knowledge-time qualification",
-    "corporate-action or delisting validation",
-    "executable trading returns",
-    "independent review",
-    "production acceptance"
+    "Exact NYSE-session horizons and zero-staleness entry/exit prices",
+    "Every frozen member must have complete finite covered outcomes",
+    "Both models use identical finite rows and valid IC dates",
+    "Undefined statistics are null, not NaN",
+    "Actual observed nonoverlapping windows cap span-based counts",
+    "No horizon-order-dependent global winner",
+    "Explicit remaining historical price-provenance qualification limit"
   ],
   "held_actions": [
-    "latest M2 parquet/tree-coverage inspection explicitly platform-blocked",
-    "earlier public-result inspection not adjudicated"
+    "latest actual M2 parquet/tree coverage inspection explicitly platform-blocked",
+    "earlier public historical result inspection remains unadjudicated"
   ],
-  "live_rank_size_trade_change": false,
-  "publication_scope": "Existing draft PR; source-only; no merge or deployment"
+  "not_claimed": [
+    "actual Mastermind historical replay",
+    "corporate action and delisting provenance",
+    "historical knowledge-time qualification",
+    "independent scientific review",
+    "browser or CSS verification",
+    "profitable strategy or production deployment"
+  ],
+  "live_rank_size_trade_change": false
 }
