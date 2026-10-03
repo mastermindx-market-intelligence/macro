@@ -128,7 +128,7 @@
       unavailable:['Economic evidence is temporarily unavailable. The overview is still available.','经济证据暂不可用，您仍可查看上方总览。']
     };
     var message=lock.querySelector('p');
-    if(message && words[state]) message.innerHTML='<span class="lang-en">'+words[state][0]+'</span><span class="lang-zh">'+words[state][1]+'</span>';
+    if(message && words[state]) message.innerHTML='<span class="l-en">'+words[state][0]+'</span><span class="l-zh">'+words[state][1]+'</span>';
     var actions=lock.querySelector('.eco-deep-lock-actions');
     if(actions){
       var signIn=actions.querySelector('a:first-child');
@@ -138,7 +138,7 @@
       if(state==='unavailable'){
         retry=document.createElement('button'); retry.type='button';
         retry.className='eco-export'; retry.setAttribute('data-eco-retry','');
-        retry.innerHTML='<span class="lang-en">Retry</span><span class="lang-zh">重试</span>';
+        retry.innerHTML='<span class="l-en">Retry</span><span class="l-zh">重试</span>';
         actions.appendChild(retry);
       }
     }

@@ -69,3 +69,11 @@ def test_real_client_auth_lifecycle_without_credentials_or_network():
         cwd=root,text=True,capture_output=True,timeout=20,check=False)
     assert result.returncode==0,result.stdout+result.stderr
     assert 'PASS: anonymous, later sign-in' in result.stdout
+
+
+
+def test_auth_state_copy_uses_the_existing_site_language_classes():
+    root=Path(__file__).resolve().parents[1]
+    js=(root/'templates/china-economy.js').read_text()
+    assert 'class="lang-en"' not in js and 'class="lang-zh"' not in js
+    assert 'class="l-en"' in js and 'class="l-zh"' in js
