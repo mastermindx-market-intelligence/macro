@@ -1,22 +1,19 @@
-"""asia-close.yml — China heatmap freshness + staging guard.
+"""asia-close.yml — Asia ownership fence (Options PIT/campaign narrow roots).
 
-Pin two semantic invariants of the Asia close workflow:
-
-* the China heatmap is REPUBLISHED post-rebase against the exact post-rebase
-  tree, with a single run-stable ``CHINA_HEATMAP_GENERATED_UTC`` identity that
-  owns both the first publish and every repair;
-* the Options PIT episode root and the campaign-v2 root are OWNED by their
-  narrow publishers. Asia's broad ``git add data/ site/qledger/`` (collect
-  stage) and ``git add data/ site/`` (engine stage) are bracketed by
-  ``bash scripts/ci/options_signal_nightly.sh exclude-broad`` so neither the
-  collect nor the engine commit can smuggle an Options artifact onto the Asia
-  lane.
+The Options PIT episode root and the campaign-v2 root are OWNED by their
+narrow publishers. Asia's broad ``git add data/ site/qledger/`` (collect
+stage) and ``git add data/ site/`` (engine stage) are bracketed by
+``bash scripts/ci/options_signal_nightly.sh exclude-broad`` so neither the
+collect nor the engine commit can smuggle an Options artifact onto the Asia
+lane.
 
 Ported from the 7193 integration proof (commit
 a465e45e9082096432b31ca9989799b4207d486b).  Only the fixture step names that
 delimit the collect and engine sections are adapted to current main; the
 semantic assertion (two ``exclude-broad`` calls bracket each broad ``git
-add``) is unchanged.
+add``) is unchanged. Filename kept for the PR-8320 contract-delta wiring
+audit; the test asserts the Asia ownership fence, not China heatmap
+freshness.
 """
 from __future__ import annotations
 
