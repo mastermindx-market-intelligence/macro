@@ -221,13 +221,24 @@ def _bil(en: str, zh: str) -> dict:
 # current STATE
 # --------------------------------------------------------------------------- #
 def current_state(f: pd.DataFrame) -> dict:
+    def _num(col: str) -> float | None:
+        # None when the column is absent OR its tail observation is missing;
+        # a real zero observation still returns 0.0.
+        if col not in f:
+            return None
+        v = _last(f.get(col, pd.Series(dtype=float)))
+        return round(v, 2) if v is not None else None
+
     real = _last(f.get("us10y_real", pd.Series(dtype=float)))
     real_pct = _pctile(f["us10y_real"]) if "us10y_real" in f else None
     real_chg = (_last(f["us10y_real"]) - _last(f["us10y_real"].shift(63))
                 if "us10y_real" in f and len(f["us10y_real"].dropna()) > 63 else None)
-    rate_regime = ("restrictive" if (real_pct or 0) >= 0.70 else
-                   "accommodative" if (real_pct is not None and real_pct <= 0.30) else "neutral")
-    rate_dir = ("rising" if (real_chg or 0) > 0.1 else "falling" if (real_chg or 0) < -0.1 else "stable")
+    rate_regime = (None if real_pct is None else
+                   "restrictive" if real_pct >= 0.70 else
+                   "accommodative" if real_pct <= 0.30 else "neutral")
+    rate_dir = (None if real_chg is None else
+                "rising" if real_chg > 0.1 else
+                "falling" if real_chg < -0.1 else "stable")
 
     # TURN WATCH (display-tier). The 63d `direction` key certifies a fresh turn LAST by
     # construction — a peak forming at a restrictive extreme still reads "rising" for weeks.
@@ -249,52 +260,83 @@ def current_state(f: pd.DataFrame) -> dict:
     core_pce = _last(f.get("core_pce_yoy", pd.Series(dtype=float)))
     core_pce_3m = _last(f.get("core_pce_3m_ann", pd.Series(dtype=float)))
     accel = (core_pce_3m - core_pce) if (core_pce is not None and core_pce_3m is not None) else None
-    infl_regime = ("above target" if (core_pce or 0) > 2.3 else
-                   "at target" if (core_pce is not None and core_pce <= 2.3 and core_pce >= 1.7) else "below target")
-    infl_dir = ("re-accelerating" if (accel or 0) > 0.2 else "cooling" if (accel or 0) < -0.2 else "steady")
+    infl_regime = (None if core_pce is None else
+                   "above target" if core_pce > 2.3 else
+                   "at target" if core_pce >= 1.7 else "below target")
+    infl_dir = (None if accel is None else
+                "re-accelerating" if accel > 0.2 else
+                "cooling" if accel < -0.2 else "steady")
 
     be10 = _last(f.get("breakeven_10y", pd.Series(dtype=float)))
     be55 = _last(f.get("breakeven_5y5y", pd.Series(dtype=float)))
     model5 = _last(f.get("infl_exp_5y", pd.Series(dtype=float)))
     survey1 = _last(f.get("umich_infl_exp", pd.Series(dtype=float)))
     wedge = (be55 - model5) if (be55 is not None and model5 is not None) else None
-    anchoring = ("drifting up" if (wedge or 0) > 0.3 else "drifting down" if (wedge or 0) < -0.3 else "anchored")
+    anchoring = (None if wedge is None else
+                 "drifting up" if wedge > 0.3 else
+                 "drifting down" if wedge < -0.3 else "anchored")
+
+    # bracket = the non-None tokens, in order, joined by ", "
+    rate_words = [w for w in (rate_regime, rate_dir) if w is not None]
+    infl_words = [w for w in (infl_regime, infl_dir) if w is not None]
+
+    if real is None:
+        rates_label_en = "—"
+        rates_label_zh = "—"
+    elif turn_watch == "rolldown_forming":
+        rates_label_en = f"Real 10y {real:.2f}% (restrictive — rolling down from the extreme)"
+        rates_label_zh = f"实际10年期 {real:.2f}%（偏紧，自极值回落）"
+    elif turn_watch == "extreme_watch":
+        rates_label_en = (f"Real 10y {real:.2f}% ({', '.join(rate_words)} — at a 5y extreme)"
+                          if rate_words else f"Real 10y {real:.2f}% (at a 5y extreme)")
+        rates_label_zh = (f"实际10年期 {real:.2f}%（{ {'restrictive':'偏紧','accommodative':'宽松','neutral':'中性'}.get(rate_regime, rate_regime) }，处于5年极值）"
+                          if rate_regime is not None else f"实际10年期 {real:.2f}%（处于5年极值）")
+    else:
+        rates_label_en = (f"Real 10y {real:.2f}% ({', '.join(rate_words)})"
+                          if rate_words else f"Real 10y {real:.2f}%")
+        rates_label_zh = (f"实际10年期 {real:.2f}%（{ {'restrictive':'偏紧','accommodative':'宽松','neutral':'中性'}.get(rate_regime, rate_regime) }）"
+                          if rate_regime is not None else f"实际10年期 {real:.2f}%")
+
+    if core_pce is None:
+        infl_label_en = "—"
+        infl_label_zh = "—"
+    else:
+        infl_label_en = (f"Core PCE {core_pce:.1f}% ({', '.join(infl_words)})"
+                         if infl_words else f"Core PCE {core_pce:.1f}%")
+        infl_label_zh = (f"核心PCE {core_pce:.1f}%（{ {'above target':'高于目标','at target':'达标','below target':'低于目标'}.get(infl_regime, infl_regime) }）"
+                         if infl_regime is not None else f"核心PCE {core_pce:.1f}%")
+
+    if be55 is None or model5 is None or anchoring is None:
+        exp_label_en = "—"
+        exp_label_zh = "—"
+    else:
+        exp_label_en = f"5y5y breakeven {be55:.2f}% vs model {model5:.2f}% ({anchoring})"
+        exp_label_zh = f"5年5年盈亏平衡 {be55:.2f}% vs 模型 {model5:.2f}%（{ {'drifting up':'上行脱锚','drifting down':'下行','anchored':'锚定'}.get(anchoring, anchoring) }）"
 
     return {
         "rates": {
             "real_10y": round(real, 2) if real is not None else None,
             "real_10y_pctile": real_pct,
             "real_10y_chg_63d_bp": round(real_chg * 100, 0) if real_chg is not None else None,
-            "nominal_10y": round(_last(f.get("us10y", pd.Series(dtype=float))) or 0, 2) if "us10y" in f else None,
-            "curve_2s10s": round(_last(f.get("spread_2s10s", pd.Series(dtype=float))) or 0, 2) if "spread_2s10s" in f else None,
-            "curve_tp_adj": round(_last(f.get("curve_tp_adj", pd.Series(dtype=float))) or 0, 2) if "curve_tp_adj" in f else None,
-            "policy_gap": round(_last(f.get("rate_expectations_proxy", pd.Series(dtype=float))) or 0, 2) if "rate_expectations_proxy" in f else None,
+            "nominal_10y": _num("us10y"),
+            "curve_2s10s": _num("spread_2s10s"),
+            "curve_tp_adj": _num("curve_tp_adj"),
+            "policy_gap": _num("rate_expectations_proxy"),
             "regime": rate_regime, "direction": rate_dir,
             "real_10y_chg_22d_bp": round(real_chg22 * 100, 0) if real_chg22 is not None else None,
             "turn_watch": turn_watch,
-            "label": _bil(
-                (f"Real 10y {real:.2f}% (restrictive — rolling down from the extreme)"
-                 if turn_watch == "rolldown_forming" else
-                 f"Real 10y {real:.2f}% ({rate_regime}, {rate_dir} — at a 5y extreme)"
-                 if turn_watch == "extreme_watch" else
-                 f"Real 10y {real:.2f}% ({rate_regime}, {rate_dir})") if real is not None else "—",
-                (f"实际10年期 {real:.2f}%（偏紧，自极值回落）"
-                 if turn_watch == "rolldown_forming" else
-                 f"实际10年期 {real:.2f}%（{ {'restrictive':'偏紧','accommodative':'宽松','neutral':'中性'}.get(rate_regime, rate_regime) }，处于5年极值）"
-                 if turn_watch == "extreme_watch" else
-                 f"实际10年期 {real:.2f}%（{ {'restrictive':'偏紧','accommodative':'宽松','neutral':'中性'}.get(rate_regime, rate_regime) }）") if real is not None else "—"),
+            "label": _bil(rates_label_en, rates_label_zh),
         },
         "inflation": {
             "core_pce_yoy": round(core_pce, 2) if core_pce is not None else None,
-            "core_cpi_yoy": round(_last(f.get("core_cpi_yoy", pd.Series(dtype=float))) or 0, 2) if "core_cpi_yoy" in f else None,
-            "headline_cpi_yoy": round(_last(f.get("headline_cpi_yoy", pd.Series(dtype=float))) or 0, 2) if "headline_cpi_yoy" in f else None,
+            "core_cpi_yoy": _num("core_cpi_yoy"),
+            "headline_cpi_yoy": _num("headline_cpi_yoy"),
             "core_pce_3m_ann": round(core_pce_3m, 2) if core_pce_3m is not None else None,
-            "ppi_core_yoy": round(_last(f.get("ppi_core_yoy", pd.Series(dtype=float))) or 0, 2) if "ppi_core_yoy" in f else None,
-            "eci_comp_yoy": round(_last(f.get("eci_comp_yoy", pd.Series(dtype=float))) or 0, 2) if "eci_comp_yoy" in f else None,
+            "ppi_core_yoy": _num("ppi_core_yoy"),
+            "eci_comp_yoy": _num("eci_comp_yoy"),
             "vs_target_pp": round(core_pce - 2.0, 2) if core_pce is not None else None,
             "regime": infl_regime, "direction": infl_dir,
-            "label": _bil(f"Core PCE {core_pce:.1f}% ({infl_regime}, {infl_dir})" if core_pce is not None else "—",
-                          f"核心PCE {core_pce:.1f}%（{ {'above target':'高于目标','at target':'达标','below target':'低于目标'}.get(infl_regime, infl_regime) }）" if core_pce is not None else "—"),
+            "label": _bil(infl_label_en, infl_label_zh),
         },
         "expectations": {
             "breakeven_10y": round(be10, 2) if be10 is not None else None,
@@ -303,8 +345,7 @@ def current_state(f: pd.DataFrame) -> dict:
             "survey_1y": round(survey1, 2) if survey1 is not None else None,
             "market_minus_model_bp": round(wedge * 100, 0) if wedge is not None else None,
             "anchoring": anchoring,
-            "label": _bil(f"5y5y breakeven {be55:.2f}% vs model {model5:.2f}% ({anchoring})" if (be55 is not None and model5 is not None) else "—",
-                          f"5年5年盈亏平衡 {be55:.2f}% vs 模型 {model5:.2f}%（{ {'drifting up':'上行脱锚','drifting down':'下行','anchored':'锚定'}.get(anchoring, anchoring) }）" if (be55 is not None and model5 is not None) else "—"),
+            "label": _bil(exp_label_en, exp_label_zh),
         },
     }
 

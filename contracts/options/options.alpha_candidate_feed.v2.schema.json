@@ -15,9 +15,7 @@
     "activation",
     "source_receipts",
     "formed_candidates",
-    "candidates",
     "abstentions",
-    "degraded",
     "publication_claim",
     "authority"
   ],
@@ -45,9 +43,7 @@
         "eligibility_state",
         "deterministic_seed",
         "formed_candidate_count",
-        "candidate_count",
         "abstention_count",
-        "degraded_count",
         "header_digest_sha256"
       ],
       "properties": {
@@ -73,15 +69,7 @@
           "type": "integer",
           "minimum": 0
         },
-        "candidate_count": {
-          "type": "integer",
-          "minimum": 0
-        },
         "abstention_count": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "degraded_count": {
           "type": "integer",
           "minimum": 0
         },
@@ -106,22 +94,10 @@
         "$ref": "#/$defs/formedCandidate"
       }
     },
-    "candidates": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/candidate"
-      }
-    },
     "abstentions": {
       "type": "array",
       "items": {
         "$ref": "#/$defs/abstention"
-      }
-    },
-    "degraded": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/degraded"
       }
     },
     "publication_claim": {
@@ -306,7 +282,7 @@
         "path",
         "records",
         "prefix_sha256",
-    "schema"
+        "schema"
       ],
       "properties": {
         "path": {
@@ -321,7 +297,7 @@
           "type": "string",
           "pattern": "^[a-f0-9]{64}$"
         },
-    "schema": {
+        "schema": {
           "const": "options.signal_campaign/v2"
         }
       }
@@ -463,10 +439,17 @@
         "current_disposition": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["state", "reasons"],
+          "required": [
+            "state",
+            "reasons"
+          ],
           "properties": {
             "state": {
-              "enum": ["research_candidate", "abstain", "degraded"]
+              "enum": [
+                "research_candidate",
+                "abstain",
+                "degraded"
+              ]
             },
             "reasons": {
               "type": "array",
@@ -517,7 +500,11 @@
           }
         },
         "state": {
-          "enum": ["research_candidate", "abstain", "degraded"]
+          "enum": [
+            "research_candidate",
+            "abstain",
+            "degraded"
+          ]
         },
         "reasons": {
           "type": "array",
@@ -735,8 +722,13 @@
             },
             "microstructure_row_digest_sha256": {
               "oneOf": [
-                {"type": "string", "pattern": "^[a-f0-9]{64}$"},
-                {"type": "null"}
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "policy_digest_sha256": {
