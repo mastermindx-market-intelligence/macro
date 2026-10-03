@@ -1,4 +1,4 @@
-"""Regime outlook verdict mapping — loader, hash and lint (display research).
+"""Regime outlook verdict mapping — loader, hash, lint and path readings (display research).
 
 The mapping in ``config/regime_outlook_mapping_v1.json`` is the machine form of
 Appendix A of
@@ -8,15 +8,17 @@ which owner tokens count as fitting, not fitting, or not telling the paths
 apart.
 
 It is an authored vocabulary. It was never tested against outcomes, and it
-produces no rank, gate, size or forecast. This module only loads the file,
-hashes it, and checks that it is internally consistent; it reads no market
-artifact and takes no clock.
+produces no rank, gate, size or forecast. This module loads the file, hashes
+it, checks that it is internally consistent, and reads the owner files a
+caller hands it into those four words. It opens no market artifact itself and
+takes no clock.
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -476,3 +478,348 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
                     break
 
     return errors
+
+
+UNREADABLE_STATUSES = ("missing", "unknown_date", "future_dated", "stale", "partial")
+ADMISSION_ISSUES = (
+    "missing",
+    "owner_default_on_missing",
+    "contains_sign_only_leg",
+    "owner_sign_inconsistent",
+    "owner_did_not_write",
+    "partial",
+    "malformed",
+)
+
+
+def _dedupe_keep_first(*tuples: tuple[str, ...]) -> tuple[str, ...]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for tup in tuples:
+        for word in tup:
+            if word not in seen:
+                seen.add(word)
+                out.append(word)
+    return tuple(out)
+
+
+READING_REASONS = _dedupe_keep_first(OPEN_REASONS, ADMISSION_ISSUES, UNREADABLE_STATUSES)
+
+
+class _AbsentType:
+    """Sentinel for a failed resolution. Distinct from None (JSON null)."""
+
+    _instance: "_AbsentType | None" = None
+
+    def __new__(cls) -> "_AbsentType":
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __repr__(self) -> str:
+        return "ABSENT"
+
+    def __bool__(self) -> bool:
+        return False
+
+
+ABSENT = _AbsentType()
+
+
+def resolve(doc: Any, path: list[Any]) -> Any:
+    """Walk ``path`` into ``doc``; return ABSENT on any failed step.
+
+    A string segment requires the current value to be a dict with that key.
+    A dict segment requires the current value to be a list and selects the
+    one element whose entries all equal the selector's. Anything else is
+    ABSENT.
+    """
+    if not isinstance(doc, dict):
+        return ABSENT
+    cur: Any = doc
+    for segment in path:
+        if isinstance(segment, str):
+            if not isinstance(cur, dict) or segment not in cur:
+                return ABSENT
+            cur = cur[segment]
+        elif isinstance(segment, dict):
+            if not isinstance(cur, list):
+                return ABSENT
+            matches = [
+                item
+                for item in cur
+                if isinstance(item, dict)
+                and all(item.get(k) == v for k, v in segment.items())
+            ]
+            if len(matches) != 1:
+                return ABSENT
+            cur = matches[0]
+        else:
+            return ABSENT
+    return cur
+
+
+def finite(x: Any) -> bool:
+    """True only for a non-bool int or float that is a finite number."""
+    if isinstance(x, bool):
+        return False
+    if not isinstance(x, (int, float)):
+        return False
+    return math.isfinite(x)
+
+
+def same(a: Any, b: Any) -> bool:
+    """Strict equality that distinguishes True from 1 and None from 0."""
+    return type(a) is type(b) and a == b
+
+
+def _matches(entry_list: list[Any], token: Any) -> bool:
+    """True when ``token`` matches one entry of a condition column."""
+    for entry in entry_list:
+        if isinstance(entry, dict):
+            op = entry.get("op")
+            value = entry.get("value")
+            if isinstance(token, bool) or not isinstance(token, (int, float)):
+                continue
+            if op == "le" and token <= value:
+                return True
+            if op == "ge" and token >= value:
+                return True
+            if op == "eq" and token == value:
+                return True
+        elif same(token, entry):
+            return True
+    return False
+
+
+def admit_fields(mapping: dict[str, Any], artifacts: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Return the admission verdict for every field in the mapping.
+
+    A missing artifact, a non-dict artifact, a missing path, a None the row
+    does not list as a token, a guard refusal or a token outside the row's
+    owner vocabulary is refused with the matching issue word. The function
+    does not compare fields or paths and never touches the mapping or the
+    artifacts in place.
+    """
+    fields = mapping["fields"]
+    out: dict[str, dict[str, Any]] = {}
+    for field in fields:
+        field_id = field["field_id"]
+        artifact_letter = field["artifact"]
+        artifact_doc = artifacts.get(artifact_letter)
+        if not isinstance(artifact_doc, dict):
+            out[field_id] = {"admitted": False, "token": None, "issue": "missing"}
+            continue
+
+        token = resolve(artifact_doc, field["path"])
+        if token is ABSENT:
+            out[field_id] = {"admitted": False, "token": None, "issue": "missing"}
+            continue
+
+        if token is None:
+            tokens_field = field.get("tokens")
+            if not (isinstance(tokens_field, list) and None in tokens_field):
+                out[field_id] = {"admitted": False, "token": None, "issue": "missing"}
+                continue
+
+        if field["kind"] == "market_pricing":
+            if not (isinstance(token, int) and not isinstance(token, bool)):
+                out[field_id] = {"admitted": False, "token": None, "issue": "malformed"}
+                continue
+
+        guard = field["guard"]
+        kind = guard["kind"]
+        issue: str | None = None
+
+        if kind == "default_token_needs":
+            if same(token, guard["default_token"]):
+                ok = True
+                for need_path in guard["needs"]:
+                    if not finite(resolve(artifact_doc, need_path)):
+                        ok = False
+                        break
+                if not ok:
+                    issue = "owner_default_on_missing"
+        elif kind == "owner_publishes_null":
+            if token is None:
+                issue = "missing"
+        elif kind == "owner_missing_token":
+            if same(token, guard["missing_token"]):
+                issue = "missing"
+        elif kind == "turn_watch_null":
+            if token is None:
+                status_val = resolve(artifact_doc, guard["status_path"])
+                qualified_val = resolve(artifact_doc, guard["qualified_path"])
+                status_ok = status_val == guard["status_required"]
+                qualified_ok = qualified_val is True
+                needs_ok = True
+                for need_path in guard["needs"]:
+                    if not finite(resolve(artifact_doc, need_path)):
+                        needs_ok = False
+                        break
+                if not (status_ok and qualified_ok and needs_ok):
+                    issue = "owner_default_on_missing"
+        elif kind == "credit_stress_leg":
+            if token is not True and token is not False:
+                issue = "malformed"
+            else:
+                z = resolve(artifact_doc, guard["hy_oas_z_path"])
+                n = resolve(artifact_doc, guard["nfci_path"])
+                z_finite = finite(z)
+                n_finite = finite(n)
+                if token is True:
+                    admitted = (z_finite and z > 1.00) or (n_finite and n < 0)
+                else:
+                    admitted = z_finite and n_finite and n < 0
+                if not admitted:
+                    if z_finite and n_finite:
+                        issue = "contains_sign_only_leg"
+                    else:
+                        issue = "owner_default_on_missing"
+        elif kind == "component_not_degraded":
+            degraded_val = resolve(artifact_doc, guard["degraded_path"])
+            if degraded_val is not False:
+                issue = "partial"
+        elif kind == "same_run_owner_copy":
+            other_doc = artifacts.get(guard["copy_artifact"])
+            copy_val = resolve(other_doc, guard["copy_path"])
+            own_clock = resolve(artifact_doc, guard["own_clock_path"])
+            copy_clock = resolve(other_doc, guard["copy_clock_path"])
+            present_ok = copy_val is not ABSENT and copy_val is not None
+            own_clock_ok = isinstance(own_clock, str) and len(own_clock) > 0
+            copy_clock_ok = isinstance(copy_clock, str) and len(copy_clock) > 0
+            clocks_equal = own_clock_ok and copy_clock_ok and own_clock == copy_clock
+            if not (present_ok and own_clock_ok and copy_clock_ok and clocks_equal):
+                issue = guard["fail_issue"]
+        elif kind == "sign_consistency":
+            other = resolve(artifact_doc, guard["other_path"])
+            if not finite(other) or not (token * other <= 0):
+                issue = guard["fail_issue"]
+
+        if issue is not None:
+            out[field_id] = {"admitted": False, "token": None, "issue": issue}
+            continue
+
+        tokens_field = field.get("tokens")
+        if isinstance(tokens_field, list):
+            if not any(same(token, entry) for entry in tokens_field):
+                out[field_id] = {"admitted": False, "token": None, "issue": "malformed"}
+                continue
+
+        out[field_id] = {"admitted": True, "token": token, "issue": None}
+    return out
+
+
+def roll_up(readings: list[str]) -> str:
+    """Reduce one family's condition readings to one family reading word.
+
+    Members outside READINGS raise ValueError. ``unknown`` and
+    ``not_discriminating`` are ignored; what remains decides the roll-up.
+    An empty family rolls to ``unknown`` unless a member was
+    ``not_discriminating``, in which case it rolls to ``not_discriminating``.
+    """
+    for r in readings:
+        if r not in READINGS:
+            raise ValueError(f"reading {r!r} is not one of {READINGS}")
+    kept = [r for r in readings if r == "fits" or r == "does_not_fit"]
+    fits = sum(1 for r in kept if r == "fits")
+    does_not_fit = sum(1 for r in kept if r == "does_not_fit")
+    if fits and does_not_fit:
+        return "mixed"
+    if fits:
+        return "fits"
+    if does_not_fit:
+        return "does_not_fit"
+    if any(r == "not_discriminating" for r in readings):
+        return "not_discriminating"
+    return "unknown"
+
+
+def read_paths(
+    mapping: dict[str, Any],
+    artifacts: dict[str, Any],
+    *,
+    unreadable: dict[str, str] | None = None,
+) -> list[dict[str, Any]]:
+    """Read every path condition and roll it up by evidence family.
+
+    Returns one dict per authored path, in the mapping's order, each with
+    the keys ``path_id``, ``family``, ``conditions`` and ``family_readings``
+    and nothing else. ``unreadable`` maps a field id to a clock status; a
+    key that is not a field id or a value outside UNREADABLE_STATUSES raises
+    ValueError before anything is read. The function never orders paths by
+    a reading and never totals them.
+    """
+    field_ids = {f["field_id"] for f in mapping["fields"]}
+    if unreadable:
+        for fid, status in unreadable.items():
+            if fid not in field_ids:
+                raise ValueError(f"unknown field_id {fid!r} in unreadable")
+            if status not in UNREADABLE_STATUSES:
+                raise ValueError(
+                    f"unreadable status {status!r} for {fid!r} is not in {UNREADABLE_STATUSES}"
+                )
+
+    admissions = admit_fields(mapping, artifacts)
+
+    result: list[dict[str, Any]] = []
+    for path in mapping["paths"]:
+        conditions: list[dict[str, Any]] = []
+        for cond in path["conditions"]:
+            row: dict[str, Any] = {
+                "condition_id": cond["condition_id"],
+                "statement_id": cond["statement_id"],
+                "field_id": cond["field_id"],
+                "reading": None,
+                "reason": None,
+            }
+            fid = cond["field_id"]
+            if fid is None:
+                row["reading"] = "unknown"
+                row["reason"] = cond["open_reason"]
+            elif unreadable is not None and fid in unreadable:
+                row["reading"] = "unknown"
+                row["reason"] = unreadable[fid]
+            else:
+                admission = admissions[fid]
+                if not admission["admitted"]:
+                    row["reading"] = "unknown"
+                    row["reason"] = admission["issue"]
+                else:
+                    token = admission["token"]
+                    reading: str | None = None
+                    for column in _TOKEN_COLUMNS:
+                        if _matches(cond[column], token):
+                            reading = column
+                            break
+                    if reading is None:
+                        row["reading"] = "unknown"
+                        row["reason"] = "malformed"
+                    else:
+                        row["reading"] = reading
+                        row["reason"] = None
+            conditions.append(row)
+
+        family_order: list[str] = []
+        family_readings_map: dict[str, list[str]] = {}
+        for cond_in, cond_out in zip(path["conditions"], conditions):
+            fam = cond_in["evidence_family_id"]
+            if fam not in family_readings_map:
+                family_order.append(fam)
+                family_readings_map[fam] = []
+            family_readings_map[fam].append(cond_out["reading"])
+        family_rows = [
+            {"evidence_family_id": fam, "reading": roll_up(family_readings_map[fam])}
+            for fam in family_order
+        ]
+
+        result.append(
+            {
+                "path_id": path["path_id"],
+                "family": path["family"],
+                "conditions": conditions,
+                "family_readings": family_rows,
+            }
+        )
+    return result
+
