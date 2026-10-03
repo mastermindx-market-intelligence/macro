@@ -9,7 +9,12 @@ from __future__ import annotations
 
 import pytest
 
-from scripts.build_chain_heat import build_envelope, _enrich_events, _SIDE_TO_ASK_SHARE
+from scripts.build_chain_heat import (
+    build_envelope,
+    _enrich_events,
+    _SIDE_TO_ASK_SHARE,
+    _SIDE_TO_CATEGORY_PROXY_SHARE,
+)
 from engine.options_structure import aggregate_chain_heat
 
 
@@ -66,6 +71,45 @@ class TestEnrichEvents:
         events = [{"side": "~buy"}]
         _enrich_events(events)
         assert "ask_share" not in events[0]
+
+    # ── category_proxy_share seam (additive, independent of ask_share) ────────
+
+    def test_category_proxy_buy_side_mapped(self):
+        out = _enrich_events([{"side": "~buy"}])
+        assert out[0]["category_proxy_share"] == pytest.approx(0.80)
+
+    def test_category_proxy_sell_side_mapped(self):
+        out = _enrich_events([{"side": "~sell"}])
+        assert out[0]["category_proxy_share"] == pytest.approx(0.20)
+
+    def test_category_proxy_mixed_is_known_half(self):
+        out = _enrich_events([{"side": "mixed"}])
+        assert out[0]["category_proxy_share"] == pytest.approx(0.50)
+
+    def test_category_proxy_unknown_side_is_none(self):
+        out = _enrich_events([{"side": None}])
+        assert out[0]["category_proxy_share"] is None
+
+    def test_category_proxy_key_always_present(self):
+        out = _enrich_events([{"side": "mystery"}])
+        assert "category_proxy_share" in out[0]
+        assert out[0]["category_proxy_share"] is None
+
+    def test_preexisting_category_proxy_share_is_not_trusted(self):
+        events = [{"side": "~sell", "category_proxy_share": 0.99}]
+        out = _enrich_events(events)
+        assert out[0]["category_proxy_share"] == pytest.approx(0.20)
+
+    def test_category_proxy_independent_of_legacy_ask_share(self):
+        events = [{"side": "~buy", "ask_share": 0.42}]
+        out = _enrich_events(events)
+        assert out[0]["ask_share"] == pytest.approx(0.42)            # legacy kept
+        assert out[0]["category_proxy_share"] == pytest.approx(0.80)  # seam recomputed
+
+    def test_category_proxy_mapping_values(self):
+        assert _SIDE_TO_CATEGORY_PROXY_SHARE["~buy"] == pytest.approx(0.80)
+        assert _SIDE_TO_CATEGORY_PROXY_SHARE["~sell"] == pytest.approx(0.20)
+        assert _SIDE_TO_CATEGORY_PROXY_SHARE["mixed"] == pytest.approx(0.50)
 
 
 # ─── build_envelope ───────────────────────────────────────────────────────────
@@ -204,6 +248,33 @@ class TestBuildEnvelope:
         build_envelope([campaign], "2026-07-08", "2026-07-08T20:00:00Z")
         assert set(campaign.keys()) == original_keys
 
+    def test_category_proxy_object_preserved_through_envelope(self):
+        """The nested additive object survives build_envelope unchanged."""
+        campaign = self._minimal_campaign()
+        campaign["category_proxy"] = {
+            "schema": "options_flow.category_proxy/v1",
+            "basis": "side_category",
+            "share": 0.8,
+            "known_premium_usd": 4_000_000.0,
+            "unknown_premium_usd": 1_000_000.0,
+            "source_premium_usd": 5_000_000.0,
+            "invalid_premium_count": 0,
+            "source_certified_accepted": False,
+        }
+        env = build_envelope([campaign], "2026-07-08", "2026-07-08T20:00:00Z")
+        cp = env["campaigns"][0]["category_proxy"]
+        assert cp == campaign["category_proxy"]
+        assert cp["schema"] == "options_flow.category_proxy/v1"
+        assert cp["basis"] == "side_category"
+        assert cp["source_certified_accepted"] is False
+
+    def test_legacy_campaign_without_object_stays_legacy(self):
+        """A legacy campaign (no category_proxy) is not silently upgraded."""
+        campaign = self._minimal_campaign()
+        env = build_envelope([campaign], "2026-07-08", "2026-07-08T20:00:00Z")
+        assert "category_proxy" not in env["campaigns"][0]
+        assert env["campaigns"][0]["ask_share"] == pytest.approx(0.80)
+
 
 # ─── end-to-end: aggregate + wrap ─────────────────────────────────────────────
 
@@ -289,6 +360,70 @@ class TestEndToEnd:
         for i, c in enumerate(env["campaigns"]):
             missing = ui_keys - set(c.keys())
             assert not missing, f"campaign[{i}] missing keys: {missing}"
+
+    def test_category_proxy_fields_roundtrip_envelope(self):
+        """aggregate → build_envelope: the fresh object keeps every field."""
+        events = _enrich_events(self._feed_events())
+        raw = aggregate_chain_heat(events, min_premium_mn=3.0, min_alerts=2,
+                                   session_date="2026-07-08")
+        env = build_envelope(raw, "2026-07-08", "2026-07-08T20:00:00Z")
+        expected_share = {"SMH": 0.80, "QQQ": 0.20}
+        for c in env["campaigns"]:
+            cp = c["category_proxy"]
+            assert set(cp.keys()) == {
+                "schema", "basis", "share", "known_premium_usd",
+                "unknown_premium_usd", "source_premium_usd",
+                "invalid_premium_count", "source_certified_accepted",
+            }
+            assert cp["schema"] == "options_flow.category_proxy/v1"
+            assert cp["basis"] == "side_category"
+            assert cp["source_certified_accepted"] is False
+            # side category maps deterministically; coverage is complete here
+            assert cp["share"] == pytest.approx(expected_share[c["ticker"]])
+            assert cp["unknown_premium_usd"] == pytest.approx(0.0)
+            assert cp["source_premium_usd"] == pytest.approx(cp["known_premium_usd"])
+
+    def test_legacy_ask_share_042_not_promoted_to_category_proxy(self):
+        """A measured-looking legacy ask_share never becomes the new proxy."""
+        events = [
+            {"id": "a", "ts": "2026-07-08T10:00:00Z", "root": "SMH", "right": "C",
+             "exp": "2026-09-18", "strike": 530.0, "premium": 2_000_000.0,
+             "side": None, "ask_share": 0.42},
+            {"id": "b", "ts": "2026-07-08T10:10:00Z", "root": "SMH", "right": "C",
+             "exp": "2026-09-18", "strike": 530.0, "premium": 2_000_000.0,
+             "side": None, "ask_share": 0.42},
+        ]
+        raw = aggregate_chain_heat(_enrich_events(events), min_premium_mn=3.0,
+                                   min_alerts=2, session_date="2026-07-08")
+        assert len(raw) == 1
+        c = raw[0]
+        assert c["ask_share"] == pytest.approx(0.42)          # legacy preserved
+        assert c["category_proxy"]["share"] is None            # unknown category
+        assert c["category_proxy"]["share"] != pytest.approx(0.42)
+
+    def test_equal_premium_same_category_different_quotes_proxy_stays_08(self):
+        """Same category, equal premium, different quotes → proxy still .8."""
+        events = [
+            {"id": "a", "ts": "2026-07-08T10:00:00Z", "root": "SMH", "right": "C",
+             "exp": "2026-09-18", "strike": 530.0, "premium": 2_000_000.0,
+             "side": "~buy", "ask_share": 0.42},
+            {"id": "b", "ts": "2026-07-08T10:10:00Z", "root": "SMH", "right": "C",
+             "exp": "2026-09-18", "strike": 530.0, "premium": 2_000_000.0,
+             "side": "~buy", "ask_share": 0.91},
+        ]
+        raw = aggregate_chain_heat(_enrich_events(events), min_premium_mn=3.0,
+                                   min_alerts=2, session_date="2026-07-08")
+        c = raw[0]
+        assert c["category_proxy"]["share"] == pytest.approx(0.80)
+        assert c["ask_share"] == pytest.approx(0.665, abs=0.001)
+        assert c["category_proxy"]["share"] != pytest.approx(c["ask_share"])
+
+    def test_no_fixture_promotes_source_certified_accepted(self):
+        events = _enrich_events(self._feed_events())
+        raw = aggregate_chain_heat(events, min_premium_mn=3.0, min_alerts=2,
+                                   session_date="2026-07-08")
+        for c in raw:
+            assert c["category_proxy"]["source_certified_accepted"] is False
 
 
 def test_publisher_does_not_write_when_source_time_is_invalid(tmp_path, monkeypatch):

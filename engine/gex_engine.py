@@ -54,17 +54,80 @@ def _valid_spot(S) -> bool:
     return bool(np.isfinite(S)) and S > 0
 
 
-def _usable_rows(c: pd.DataFrame):
-    """The exact rows ``gamma_profile`` reprices: finite K/T/iv, at least 20 of them.
+_REQUIRED_COLUMNS = ("K", "T", "iv", "oi", "is_call")
+_POSITIVE_FIELDS = ("K", "T", "iv", "oi")
+_CFG_NUMERIC_FIELDS = ("r", "q")
+_CFG_POSITIVE_FIELDS = ("contract_multiplier", "pct_move")
 
-    Returns ``(K, T, sig, oi, sgn)`` float arrays (dealer sign: call +1 / put -1) or
-    None when the chain is too thin."""
-    g = c.dropna(subset=["K", "T", "iv"])
-    if len(g) < 20:
+
+def _usable_rows(c: pd.DataFrame):
+    """The exact rows ``gamma_profile`` reprices — ``(K, T, sig, oi, sgn)`` float arrays
+    (dealer sign: call +1 / put -1) or None.
+
+    A row counts only when it is genuine inventory: K, T, iv and oi are finite and
+    strictly positive, and ``is_call`` is a real boolean (``None``/strings/NA are
+    rejected, never coerced). Fewer than 20 usable rows, missing columns, or a
+    malformed frame return None rather than raising."""
+    try:
+        if c is None or not all(col in c.columns for col in _REQUIRED_COLUMNS):
+            return None
+        ic = c["is_call"]
+        if not pd.api.types.is_bool_dtype(ic) or bool(ic.isna().any()):
+            return None
+        cols = {name: pd.to_numeric(c[name], errors="coerce").to_numpy(float)
+                for name in _POSITIVE_FIELDS}
+        keep = np.ones(len(c), dtype=bool)
+        for arr in cols.values():
+            keep &= np.isfinite(arr) & (arr > 0)
+        if int(keep.sum()) < 20:
+            return None
+        sgn = np.where(ic.to_numpy(dtype=bool)[keep], 1.0, -1.0)
+        return cols["K"][keep], cols["T"][keep], cols["iv"][keep], cols["oi"][keep], sgn
+    except (KeyError, TypeError, ValueError, AttributeError):
         return None
-    return (g["K"].to_numpy(float), g["T"].to_numpy(float), g["iv"].to_numpy(float),
-            g["oi"].to_numpy(float),
-            np.where(g["is_call"].to_numpy(bool), 1.0, -1.0))
+
+
+def _valid_cfg(cfg: dict) -> bool:
+    """True only for a cfg whose ``r``/``q`` are finite numbers and whose
+    ``contract_multiplier``/``pct_move`` are finite and strictly positive."""
+    try:
+        for name in _CFG_NUMERIC_FIELDS:
+            v = cfg[name]
+            if isinstance(v, bool) or not isinstance(v, (int, float, np.integer, np.floating)):
+                return False
+            if not np.isfinite(v):
+                return False
+        for name in _CFG_POSITIVE_FIELDS:
+            v = cfg[name]
+            if isinstance(v, bool) or not isinstance(v, (int, float, np.integer, np.floating)):
+                return False
+            if not np.isfinite(v) or v <= 0:
+                return False
+        return True
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
+def _sampled_crossings(grid, net):
+    """Spot values where the sampled profile brackets a change of sign.
+
+    A crossing is recorded only where two ADJACENT samples lie outside the near-zero
+    ``REGIME_EPS`` band with opposite sign, or where a sample is EXACTLY zero and its
+    two finite neighbours are opposite-signed. An all-zero / all-within-band plateau
+    has no unique root and yields none. Roots are linearly interpolated within their
+    bracketing pair; the finite grid is a sample and this list is not a certified
+    inventory of the curve's continuous roots."""
+    signs = np.where(np.abs(net) <= REGIME_EPS, 0, np.where(net > 0, 1, -1))
+    flips = []
+    for i in range(len(grid) - 1):
+        if signs[i] != 0 and signs[i + 1] != 0 and signs[i] != signs[i + 1]:
+            y0, y1, x0, x1 = net[i], net[i + 1], grid[i], grid[i + 1]
+            flips.append(float(x0 - y0 * (x1 - x0) / (y1 - y0)) if y1 != y0 else float(x0))
+    for i in range(1, len(grid) - 1):
+        if (net[i] == 0.0 and signs[i - 1] != 0 and signs[i + 1] != 0
+                and signs[i - 1] != signs[i + 1]):
+            flips.append(float(grid[i]))
+    return sorted(flips)
 
 
 def _repriced_net(K, T, sig, oi, sgn, cfg: dict, Sx: float) -> float:
@@ -90,10 +153,13 @@ def gamma_profile(c: pd.DataFrame, S: float, cfg: dict):
     one quantity drifting apart).
 
     Returns ``(grid, net, flips)`` — numpy arrays of trial spots and net dealer gamma
-    in dollars per ``pct_move`` at each, plus every zero-crossing (interpolated) —
-    or ``(None, None, [])`` when the spot is invalid or the chain is too thin.
+    in dollars per ``pct_move`` at each, plus the interpolated spot roots bracketed by
+    adjacent sampled sign changes. The grid is a finite sample, so ``flips`` is not a
+    certified inventory of the curve's continuous roots. ``(None, None, [])`` is
+    returned for an invalid spot, a thin / non-boolean / malformed chain, or a
+    nonfinite cfg or repriced sample — never a fabricated or nonfinite root.
     """
-    if not _valid_spot(S):
+    if not _valid_spot(S) or not _valid_cfg(cfg):
         return None, None, []
     rows = _usable_rows(c)
     if rows is None:
@@ -101,12 +167,9 @@ def gamma_profile(c: pd.DataFrame, S: float, cfg: dict):
     K, T, sig, oi, sgn = rows
     grid = S * np.linspace(0.75, 1.25, 101)
     net = np.array([_repriced_net(K, T, sig, oi, sgn, cfg, Sx) for Sx in grid])
-    flips = []
-    for i in range(len(grid) - 1):
-        if net[i] == 0.0 or (net[i] < 0) != (net[i + 1] < 0):
-            x0, x1, y0, y1 = grid[i], grid[i + 1], net[i], net[i + 1]
-            flips.append(float(x0 - y0 * (x1 - x0) / (y1 - y0) if y1 != y0 else x0))
-    return grid, net, flips
+    if not np.all(np.isfinite(net)):
+        return None, None, []
+    return grid, net, _sampled_crossings(grid, net)
 
 
 def _gamma_flip(c: pd.DataFrame, S: float, cfg: dict):
@@ -121,13 +184,17 @@ def _gamma_flip(c: pd.DataFrame, S: float, cfg: dict):
 
     ``gamma_regime`` is ``"long"``/``"short"``, or None for an invalid spot, a too-thin
     chain, nonfinite repricing, or |net gamma at S| <= REGIME_EPS (dollars per
-    ``pct_move``) — never a synthesised sign."""
-    if not _valid_spot(S):
+    ``pct_move``) — never a synthesised sign. When no unique crossing exists (an
+    all-zero / near-zero plateau, or a malformed book) the whole triple is
+    ``(None, None, None)``: a near-zero regime must not keep a fabricated ``flip=S``."""
+    if not _valid_spot(S) or not _valid_cfg(cfg):
         return None, None, None
     grid, net, flips = gamma_profile(c, S, cfg)
     if grid is None:
         return None, None, None
     flip = min(flips, key=lambda f: abs(f - S)) if flips else None
+    if flip is not None and not np.isfinite(flip):
+        flip = None
     dist = round(100.0 * (S - flip) / S, 2) if flip is not None else None
     rows = _usable_rows(c)
     val = _repriced_net(*rows, cfg, float(S)) if rows is not None else float("nan")

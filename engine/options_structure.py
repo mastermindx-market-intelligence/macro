@@ -199,6 +199,27 @@ def _campaign_lean(ask_share: float | None) -> str:
     return "contested"
 
 
+_CATEGORY_PROXY_SCHEMA = "options_flow.category_proxy/v1"
+_CATEGORY_PROXY_BASIS = "side_category"
+
+
+def _bounded_category_share(value: object) -> float | None:
+    """Return a finite, bounded [0, 1] category-proxy share, else ``None``.
+
+    ``None`` means the category is *unknown* (or the supplied value is not a
+    usable fraction) — never a measured neutral.  Booleans are rejected so
+    ``True`` cannot masquerade as ``1.0``.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    if not isinstance(value, (int, float)):
+        return None
+    share = float(value)
+    if not math.isfinite(share) or share < 0.0 or share > 1.0:
+        return None
+    return share
+
+
 def aggregate_chain_heat(
     events: list[dict],
     min_premium_mn: float = _CHAIN_HEAT_PREMIUM_MN_DEFAULT,
@@ -218,7 +239,8 @@ def aggregate_chain_heat(
         engine/live_flow.py:process_batch).  Required keys per event:
             root, strike, exp (YYYY-MM-DD), right ("C"|"P" or "CALL"/"PUT"),
             premium (float, in dollars), ts (ISO-8601 str).
-        Optional keys: ask_share (float 0-1).
+        Optional keys: ask_share (float 0-1, legacy lean input),
+        category_proxy_share (float 0-1 or None, side-category proxy input).
     min_premium_mn:
         Minimum total_premium_mn ($ millions) for a campaign to be emitted.
         Default 3.0 (matches MomoEdge $3M gate; operator-adjustable).
@@ -237,6 +259,16 @@ def aggregate_chain_heat(
     -------
     List of campaign dicts sorted by total_premium_mn descending.  Each dict
     matches the ChainHeatCampaign field layout (serialisable as-is).
+
+    Legacy fields (total_premium_mn, alert_count, span_minutes, first_seen,
+    ask_share, lean, direction_reliability, authority_tier) are byte-for-byte
+    unchanged.  A distinct, additive ``category_proxy`` object is emitted on
+    every campaign; its ``share`` is the side-category mapping over the
+    KNOWN-premium denominator, while ``source_premium_usd`` carries the full
+    selected recorded premium (known + unknown).  Callers that never supply
+    ``category_proxy_share`` get an unknown proxy (``share=None``).  This is
+    selected raw recorded premium, NOT complete economic turnover, and it is
+    never a measured NBBO.
 
     Reliability contract
     --------------------
@@ -271,6 +303,14 @@ def aggregate_chain_heat(
                 "alert_count": 0,
                 "ask_prem_sum": 0.0,
                 "total_prem_for_ask": 0.0,
+                # category_proxy accumulators (SEPARATE from legacy ask_share).
+                # Known = valid bounded share; unknown = no/!usable share.
+                # source = all valid (nonnegative finite) recorded premium.
+                "cat_proxy_num": 0.0,
+                "cat_proxy_known_prem": 0.0,
+                "cat_proxy_unknown_prem": 0.0,
+                "cat_proxy_source_prem": 0.0,
+                "cat_proxy_invalid_count": 0,
                 "ts_list": [],
             }
 
@@ -290,6 +330,21 @@ def aggregate_chain_heat(
                 g["total_prem_for_ask"]  += prem
             except (TypeError, ValueError):
                 pass
+
+        # category_proxy contribution — explicitly named and INDEPENDENT of the
+        # legacy ask_share path above.  Never uses ask_share as the new proxy and
+        # never infers a measured NBBO from categories.  Only nonnegative finite
+        # premium is admitted; anything else is counted, not silently accepted.
+        cat_share_ev = _bounded_category_share(ev.get("category_proxy_share"))
+        if math.isfinite(prem) and prem >= 0.0:
+            g["cat_proxy_source_prem"] += prem
+            if cat_share_ev is not None:
+                g["cat_proxy_num"]         += cat_share_ev * prem
+                g["cat_proxy_known_prem"]  += prem
+            else:
+                g["cat_proxy_unknown_prem"] += prem
+        else:
+            g["cat_proxy_invalid_count"] += 1
 
     campaigns: list[dict] = []
     for key, g in groups.items():
@@ -331,6 +386,28 @@ def aggregate_chain_heat(
 
         lean = _campaign_lean(ask_share)
 
+        # category_proxy aggregate: numerator / KNOWN premium denominator, with
+        # the full selected source premium (known + unknown) carried alongside
+        # so coverage is visible.  Any invalid amount forces share=None so we
+        # never present an incomplete mass as complete.  Legacy (converted)
+        # neutral is NOT re-labelled as a measurement.
+        cat_known   = g["cat_proxy_known_prem"]
+        cat_invalid = g["cat_proxy_invalid_count"]
+        if cat_invalid > 0 or cat_known <= 0.0:
+            cat_share_out: float | None = None
+        else:
+            cat_share_out = round(g["cat_proxy_num"] / cat_known, 4)
+        category_proxy = {
+            "schema":                  _CATEGORY_PROXY_SCHEMA,
+            "basis":                   _CATEGORY_PROXY_BASIS,
+            "share":                   cat_share_out,
+            "known_premium_usd":       round(cat_known, 2),
+            "unknown_premium_usd":     round(g["cat_proxy_unknown_prem"], 2),
+            "source_premium_usd":      round(g["cat_proxy_source_prem"], 2),
+            "invalid_premium_count":   cat_invalid,
+            "source_certified_accepted": False,
+        }
+
         # DTE from expiry string relative to session_date (PIT-safe; pure).
         # When session_date is None, dte is left as None — the writer stamps
         # it using the correct session date before persisting.
@@ -366,6 +443,7 @@ def aggregate_chain_heat(
             "lean":                lean,
             "direction_reliability": "soft",
             "authority_tier":      AUTHORITY_DISPLAY,
+            "category_proxy":      category_proxy,
         })
 
     campaigns.sort(key=lambda c: c["total_premium_mn"], reverse=True)

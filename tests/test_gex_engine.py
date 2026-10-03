@@ -371,3 +371,50 @@ def test_compute_gex_regime_agrees_with_its_own_net_gex():
         out = compute_gex(c, spot)
         assert out["gamma_regime"] == expected
         assert (out["gamma_regime"] == "long") == (out["net_gex_bn"] > 0)
+
+
+def test_regime_near_zero_cancelled_book_returns_unavailable_triple():
+    """A call/put-cancelled ATM book is identically zero across the grid: the plateau
+    has no unique crossing, so the FULL triple is (None, None, None) — never a
+    fabricated flip at S with dist 0.0."""
+    cfg = dict(DEFAULTS)
+    rows = []
+    for _ in range(10):
+        rows.append(dict(K=100.0, T=WITNESS_T, iv=0.25, oi=1.0, is_call=True))
+        rows.append(dict(K=100.0, T=WITNESS_T, iv=0.25, oi=1.0, is_call=False))
+    c = pd.DataFrame(rows)
+    assert abs(_direct_net_gamma_at(c, 100.0, cfg)) <= REGIME_EPS
+    grid, net, flips = gamma_profile(c, 100.0, cfg)
+    assert grid is not None and flips == []
+    assert np.all(net == 0.0)
+    assert _gamma_flip(c, 100.0, cfg) == (None, None, None)
+
+
+@pytest.mark.parametrize("bad_row", [
+    dict(K=0.0, T=WITNESS_T, iv=0.2, oi=100.0, is_call=True),            # K <= 0
+    dict(K=float("inf"), T=WITNESS_T, iv=0.2, oi=100.0, is_call=True),   # K nonfinite
+    dict(K=100.0, T=WITNESS_T, iv=0.2, oi=-1e12, is_call=True),          # oi <= 0
+    dict(K=100.0, T=WITNESS_T, iv=0.2, oi=float("nan"), is_call=True),   # oi nonfinite
+])
+def test_regime_invalid_row_does_not_pad_the_20_row_floor(bad_row):
+    """19 genuine rows + one invalid row is still thin: K/T/iv/oi must be finite and
+    strictly positive, so an invalid row can never open the 20-row gate."""
+    cfg = dict(DEFAULTS)
+    rows = [dict(K=100.0 + j * 0.01, T=WITNESS_T, iv=0.2, oi=100.0, is_call=(j % 2 == 0))
+            for j in range(19)]
+    rows.append(bad_row)
+    c = pd.DataFrame(rows)
+    with np.errstate(all="ignore"), warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        assert _gamma_flip(c, 100.0, cfg) == (None, None, None)
+    assert _gamma_flip(pd.DataFrame(rows[:-1]), 100.0, cfg) == (None, None, None)
+
+
+@pytest.mark.parametrize("value", [None, "False", "True", 1, 0])
+def test_regime_non_boolean_is_call_is_unavailable(value):
+    """is_call must be a real boolean; object / None / string / int tapes are not
+    coerced into a long/short label."""
+    cfg = dict(DEFAULTS)
+    rows = [dict(K=100.0 + j * 0.01, T=WITNESS_T, iv=0.2, oi=100.0, is_call=value)
+            for j in range(20)]
+    assert _gamma_flip(pd.DataFrame(rows), 100.0, cfg) == (None, None, None)
