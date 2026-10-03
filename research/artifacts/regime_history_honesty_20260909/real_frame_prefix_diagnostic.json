@@ -1,0 +1,34 @@
+{
+  "source_pin": "477b9c3f449e451063634f1078fc6ce47e209648",
+  "source_frame_sha256": "71b7fe8185c3d2bde8f97909116b411bcd5e3ca831244564a0012ea1fda8f0d2",
+  "source_rows": 25748,
+  "withheld_later_rows": 63,
+  "shared_reconstructed_dates": 189,
+  "changed_at_published_precision": 184,
+  "maximum_absolute_probability_difference": 0.0255,
+  "maximum_difference_date": "2025-12-29",
+  "earlier_fit": {
+    "date": "2025-12-29",
+    "Q1": 0.6386,
+    "Q2": 0.276,
+    "Q3": 0.0019,
+    "Q4": 0.0834
+  },
+  "later_fit": {
+    "date": "2025-12-29",
+    "Q1": 0.6641,
+    "Q2": 0.2571,
+    "Q3": 0.0018,
+    "Q4": 0.0769
+  },
+  "scope": "reconstruction diagnostic on the same committed frame; not as-issued PIT replay, causal forecasting proof, or portfolio performance",
+  "model_source_sha256": "87ac138f72eec82ece48e0f69eafb452debf51ae126a5e237fbbcf21520087e0",
+  "fitted_rows": {
+    "prefix": 15404,
+    "full": 15467
+  },
+  "fit_cutoffs": {
+    "prefix": "2026-06-11",
+    "full": "2026-09-08"
+  }
+}

@@ -1,0 +1,188 @@
+{
+  "axes": {
+    "regime_at_entry": {
+      "axis": "regime_at_entry",
+      "n_rows_total": 59880,
+      "n_rows_stamped": 59877,
+      "coverage": 0.9999,
+      "n_states": 3,
+      "states": {
+        "bear": {
+          "rows": 14600,
+          "months": 727
+        },
+        "bull": {
+          "rows": 34824,
+          "months": 760
+        },
+        "choppy": {
+          "rows": 10453,
+          "months": 739
+        }
+      },
+      "months_total": 767,
+      "min_state_months": 727,
+      "verdict": "estimable",
+      "estimable": true,
+      "reason": "3 states, thinnest spans 727 months",
+      "span": [
+        "1962-11-29",
+        "2026-09-03"
+      ]
+    },
+    "quad_hard_label": {
+      "axis": "quad_hard_label",
+      "n_rows_total": 59880,
+      "n_rows_stamped": 433,
+      "coverage": 0.0072,
+      "n_states": 2,
+      "states": {
+        "Q1": {
+          "rows": 228,
+          "months": 1
+        },
+        "Q2": {
+          "rows": 205,
+          "months": 3
+        }
+      },
+      "months_total": 3,
+      "min_state_months": 1,
+      "verdict": "insufficient_coverage",
+      "estimable": false,
+      "reason": "stamped on 0.7% of rows (floor 20%)",
+      "span": [
+        "2026-07-01",
+        "2026-09-03"
+      ]
+    },
+    "vol_regime": {
+      "axis": "vol_regime",
+      "n_rows_total": 59880,
+      "n_rows_stamped": 433,
+      "coverage": 0.0072,
+      "n_states": 1,
+      "states": {
+        "normalizing": {
+          "rows": 433,
+          "months": 3
+        }
+      },
+      "months_total": 3,
+      "min_state_months": 3,
+      "verdict": "insufficient_coverage",
+      "estimable": false,
+      "reason": "stamped on 0.7% of rows (floor 20%)",
+      "span": [
+        "2026-07-01",
+        "2026-09-03"
+      ]
+    },
+    "fused_risk_label": {
+      "axis": "fused_risk_label",
+      "n_rows_total": 59880,
+      "n_rows_stamped": 433,
+      "coverage": 0.0072,
+      "n_states": 4,
+      "states": {
+        "caution": {
+          "rows": 125,
+          "months": 2
+        },
+        "elevated": {
+          "rows": 46,
+          "months": 1
+        },
+        "neutral": {
+          "rows": 193,
+          "months": 3
+        },
+        "risk-on": {
+          "rows": 69,
+          "months": 1
+        }
+      },
+      "months_total": 3,
+      "min_state_months": 1,
+      "verdict": "insufficient_coverage",
+      "estimable": false,
+      "reason": "stamped on 0.7% of rows (floor 20%)",
+      "span": [
+        "2026-07-01",
+        "2026-09-03"
+      ]
+    },
+    "rate_pressure": {
+      "axis": "rate_pressure",
+      "n_rows_total": 59880,
+      "n_rows_stamped": 406,
+      "coverage": 0.0068,
+      "n_states": 2,
+      "states": {
+        "neutral": {
+          "rows": 21,
+          "months": 1
+        },
+        "pressure": {
+          "rows": 385,
+          "months": 3
+        }
+      },
+      "months_total": 3,
+      "min_state_months": 1,
+      "verdict": "insufficient_coverage",
+      "estimable": false,
+      "reason": "stamped on 0.7% of rows (floor 20%)",
+      "span": [
+        "2026-07-06",
+        "2026-09-03"
+      ]
+    },
+    "risk_radar_state": {
+      "axis": "risk_radar_state",
+      "n_rows_total": 59880,
+      "n_rows_stamped": 433,
+      "coverage": 0.0072,
+      "n_states": 3,
+      "states": {
+        "calm": {
+          "rows": 85,
+          "months": 2
+        },
+        "caution": {
+          "rows": 216,
+          "months": 2
+        },
+        "watch": {
+          "rows": 132,
+          "months": 3
+        }
+      },
+      "months_total": 3,
+      "min_state_months": 2,
+      "verdict": "insufficient_coverage",
+      "estimable": false,
+      "reason": "stamped on 0.7% of rows (floor 20%)",
+      "span": [
+        "2026-07-01",
+        "2026-09-03"
+      ]
+    }
+  },
+  "estimable_axes": [
+    "regime_at_entry"
+  ],
+  "any_estimable": true,
+  "n_rows": 59880,
+  "status": "ok",
+  "gates": {
+    "min_coverage": 0.2,
+    "min_states": 2,
+    "min_months_per_state": 12
+  },
+  "note": "months, not rows, are the independent unit; an axis that is not 'estimable' cannot carry a regime-conditional claim",
+  "source_pin": "477b9c3f449e451063634f1078fc6ce47e209648",
+  "source_path": "data/signal_archive/track_record.parquet",
+  "source_sha256": "9154b2be75ead4914643ac02fa00cb7638c5aaac5963600c78a92cab83cdc94f",
+  "scope": "existing support gate only; no outcome fitting, reliability-grid reconstruction, authority promotion, or reopening of the prior scoped null"
+}
