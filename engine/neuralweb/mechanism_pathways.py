@@ -1131,11 +1131,12 @@ def compile(root: Path | None = None, *, now: datetime | None = None) -> dict:  
 
         if fi_state and fi_clock["as_of_reason"] == "available" and _has_persistent_factor_flip(fi_state):
             pathways.append(_build_factor_rotation_pathway(fi_state, as_of, source_as_of=fi_clock["as_of"], now=built_dt))
-        elif fi_state and fi_clock["as_of_reason"] == "stale" and no_pathway_rec is None:
-            # C5 (slice 3): a stale factor source is NOT admitted as pathway
-            # evidence. Surface the skipped source in the existing no_pathway
-            # disclosure (trigger_stale reason + trigger_context naming the
-            # stale source) so the reader can see why no factor pathway was
+        elif fi_state and fi_clock["as_of_reason"] in ("stale", "future_dated", "unknown_date") and no_pathway_rec is None:
+            # C5 (slice 3): a refused factor source (stale, future-dated or
+            # undated) is NOT admitted as pathway evidence. Surface the
+            # skipped source in the existing no_pathway disclosure
+            # (trigger_stale reason + trigger_context naming the refused
+            # source) so the reader can see why no factor pathway was
             # built. The disclosure reuses the existing _no_pathway schema
             # (no new status word, no new structure).
             no_pathway_rec = {
@@ -1144,7 +1145,7 @@ def compile(root: Path | None = None, *, now: datetime | None = None) -> dict:  
                 "trigger_context": {
                     "source": "data/neuralweb/factor_intelligence_state.json",
                     "asof": str(fi_asof),
-                    "as_of_reason": "stale",
+                    "as_of_reason": fi_clock["as_of_reason"],
                     "sla_days": _STALE_DAYS,
                 },
             }

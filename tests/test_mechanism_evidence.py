@@ -9,6 +9,13 @@ from pathlib import Path
 
 import pytest
 
+from engine.neuralweb import mechanism_evidence as _mechanism_evidence_mod
+
+# Captured at module import (before any fixture can wrap it via
+# monkeypatch.setattr on the module attribute) so the real-clock seam test
+# below exercises the un-patched function object directly.
+_REAL_READ_EVIDENCE = _mechanism_evidence_mod.read_evidence
+
 NOW = datetime(2026, 10, 2, 23, 0, tzinfo=timezone.utc)
 
 
@@ -838,4 +845,48 @@ def test_e6_unreachable_else_branch_is_removed():
     assert not found_unreachable, (
         "E6: unreachable `else: category='unavailable_links'` branch is still "
         "present in mechanism_evidence.py; remove it."
+    )
+
+
+def test_z1_zero_edge_pathway_with_stale_trigger_node_withholds_aggregates():
+    """Z1: a zero-edge factor pathway needs an AVAILABLE trigger node.
+    A hand-built pathway whose own clock is available (dated same day as
+    NOW) and whose only trigger node carries a stale date (12 days before
+    NOW) must NOT pass through producer's (1.0, 'partial'). Coverage None,
+    coherence 'unknown', direction withheld, reason 'no_qualifying_evidence'.
+    """
+    stale_as_of = '2026-09-20'  # 12 days before NOW (2026-10-02T23Z)
+    nodes = [
+        {'node_id': 'driver_factor_rotation', 'as_of': stale_as_of,
+         'domain': 'factor_rotation', 'pathway_role': 'trigger',
+         'source_artifact': 'data/neuralweb/factor_intelligence_state.json',
+         'entity': 'factor_rotation', 'value': None,
+         'source_tier': 'context_only', 'lag_class': 'same_day'},
+    ]
+    p = _factor_rotation_payload(as_of=NOW.date().isoformat(), mark=True, nodes=nodes)
+    out = project(p)
+    pathway = out['pathways'][0]
+    _assert_withheld(pathway, reason='no_qualifying_evidence')
+
+
+def test_read_evidence_without_injected_now_uses_the_real_clock(tmp_path):
+    """Z3: one test that runs the reader's real (un-injected) clock.
+    The fixed_reader_clock fixture wraps read_evidence with a partial(now=NOW),
+    so the default branch — the one the gateway uses in production — is
+    otherwise never exercised. Call the un-wrapped function captured at
+    module import; verify observed_at is timezone-aware with zero utcoffset
+    and within 5 seconds of the real wall clock.
+    """
+    out = _REAL_READ_EVIDENCE(tmp_path)
+    observed = datetime.fromisoformat(out['observed_at'])
+    assert observed.tzinfo is not None, (
+        f"Z3: observed_at must be tz-aware, got {observed!r}"
+    )
+    assert observed.utcoffset() == timezone.utc.utcoffset(observed), (
+        f"Z3: observed_at must carry zero utcoffset (UTC), got "
+        f"{observed.utcoffset()!r}"
+    )
+    delta = abs((datetime.now(timezone.utc) - observed).total_seconds())
+    assert delta < 5, (
+        f"Z3: observed_at must be within 5s of wall clock, got delta={delta}s"
     )

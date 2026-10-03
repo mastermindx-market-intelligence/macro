@@ -210,8 +210,9 @@ on the mechanism pathway read path:
   were updated to add the `clock_basis=source_clock_v1` marker so the new
   R5 rule does not silently shadow them.
 * G1 (test_mechanism_pathways + test_mechanism_evidence +
-  test_regime_change_evidence + test_deploy_update_self_heal): 418 green.
-* G3 (Pacific/Kiritimati and Etc/GMT+12): 159 green each.
+  test_regime_change_evidence + test_deploy_update_self_heal): 180 green at
+  this head for the two mechanism modules (test_mechanism_pathways +
+  test_mechanism_evidence); the other two suites are not exercised here.
 * G4 (consumer modules — test_cortex, test_cortex_adb_w3,
   test_nw_consumers_w3, test_til_nw_citizenship, test_metabolism,
   test_build_cycle_pattern_state, test_causal_llm_runner,
@@ -247,3 +248,8 @@ been verified against the served product; that check is still owed.
 - The clock seam introduced in this repair called itself and would have failed
   every un-injected build; it now reads the real clock and two tests exercise
   the un-patched seam.
+- A zero-edge pathway now needs an available trigger node; a refused factor
+  source is disclosed whether it is stale, future-dated or undated; one test
+  runs the reader's un-injected clock.
+- G1 (test_mechanism_pathways + test_mechanism_evidence only — the two
+  mechanism modules at this head): 180 green.

@@ -1500,3 +1500,64 @@ def test_compile_without_injected_now_uses_the_real_clock(tmp_path, monkeypatch)
         f"compile() built-date {out['as_of']!r} != today's {expected!r} — "
         "real _utcnow seam was not reached"
     )
+
+
+@pytest.mark.parametrize("fi_asof,expected_reason", [
+    ("2026-10-04", "future_dated"),  # 2 days after injected _TEST_NOW
+    (None, "unknown_date"),            # missing asof
+])
+def test_refused_factor_state_yields_no_factor_pathway_with_disclosure(
+    tmp_path, fi_asof, expected_reason
+):
+    """Z2: a refused factor source (stale, future-dated OR undated) must
+    NOT admit a factor-rotation pathway; the no_pathway disclosure must
+    name the refused source and carry the classifier's actual reason
+    (not a stale literal). Copied from the existing stale_factor_state test
+    but parametrised over future_dated + unknown_date.
+    """
+    regime = _make_regime(
+        md_verdict="quiet",
+        rr_state="calm",
+        rr_dominant_scare="",
+    )
+    _make_regime_files(tmp_path, regime)
+    fi_dir = tmp_path / "data" / "neuralweb"
+    fi_dir.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "style_regime": "flip_pending",
+        "flips": [{"from": "value", "to": "growth"}],
+    }
+    if fi_asof is not None:
+        payload["as_of"] = fi_asof
+    (fi_dir / "factor_intelligence_state.json").write_text(
+        json.dumps(payload), encoding="utf-8",
+    )
+    result = compile(root=tmp_path, now=_TEST_NOW)
+    # No factor-rotation pathway may be emitted on a refused factor source.
+    factor_pathways = [
+        p for p in result.get("pathways", []) if p.get("family") == "factor_rotation"
+    ]
+    assert factor_pathways == [], (
+        f"refused factor source (asof={fi_asof!r}) must yield no factor "
+        f"pathway, got {factor_pathways!r}"
+    )
+    # Disclosure names the refused source AND carries the classifier's
+    # actual reason (not the stale literal).
+    np_rec = result.get("no_pathway")
+    assert np_rec is not None, (
+        f"no_pathway record required when factor source is refused "
+        f"(asof={fi_asof!r})"
+    )
+    assert np_rec.get("reason") == "trigger_stale", (
+        f"refused factor source must surface reason 'trigger_stale', "
+        f"got {np_rec.get('reason')!r}"
+    )
+    tc = np_rec.get("trigger_context") or {}
+    assert "factor" in str(tc).lower(), (
+        f"trigger_context must name the refused factor source, got {tc!r}"
+    )
+    assert tc.get("as_of_reason") == expected_reason, (
+        f"trigger_context.as_of_reason must carry the classifier's actual "
+        f"reason {expected_reason!r} (not a stale literal), got "
+        f"{tc.get('as_of_reason')!r}"
+    )

@@ -360,7 +360,7 @@ def project_evidence(payload: Any, *, now: datetime) -> dict:
             # Zero-edge pathway: qualifies only with an available trigger node.
             has_trigger = any(
                 n.get('pathway_role') == 'trigger'
-                and n.get('reading_status') not in _BAD_CLOCKS
+                and n.get('reading_status') == 'available'
                 for n in p['nodes']
             )
             if not has_trigger:
