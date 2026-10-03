@@ -179,7 +179,8 @@ waves:
     status: done
     depends_on: [p1]
     next_action: >
-      CURRENT DISPOSITION 2026-10-03: CLOSED / SUPERSEDED-IN-PART by P1-R3/R3A; the retained implementation is part of the accepted P1 chain. Historical pre-supersession proof text below is preserved as provenance, not the current frontier.\n      BUILT_NOT_PROVEN (built 2026-08-22, merged with this record):
+      CURRENT DISPOSITION 2026-10-03: CLOSED / SUPERSEDED-IN-PART by P1-R3/R3A; the retained implementation is part of the accepted P1 chain. Historical pre-supersession proof text below is preserved as provenance, not the current frontier.
+      BUILT_NOT_PROVEN (built 2026-08-22, merged with this record):
       collectors/china_filings.py gained key_anomaly()/
       normalize_announcement_id()/partition_by_key_integrity() (pure, owns
       the natural-key predicate) and write_filings() now partitions
@@ -232,7 +233,8 @@ waves:
     status: done
     depends_on: [p1r2]
     next_action: >
-      CURRENT DISPOSITION 2026-10-03: DONE / PROVEN_LIVE by the accepted P1-R3A natural production receipt, asia-close run 32626503385; Sol adjudicated P1 DONE / PROVEN_LIVE on 2026-08-24. Historical proof-owed text below describes the pre-receipt state and is retained as provenance.\n      WHY THIS WAVE EXISTS: P1-R2 fixed the silent-drop MECHANISM but left the
+      CURRENT DISPOSITION 2026-10-03: DONE / PROVEN_LIVE by the accepted P1-R3A natural production receipt, asia-close run 32626503385; Sol adjudicated P1 DONE / PROVEN_LIVE on 2026-08-24. Historical proof-owed text below describes the pre-receipt state and is retained as provenance.
+      WHY THIS WAVE EXISTS: P1-R2 fixed the silent-drop MECHANISM but left the
       exclusion's LIFETIME and SCOPE at their inherited defaults (per-run,
       plane-global), which fail in opposite directions depending only on where
       the malformed row sits — and those two places are jointly exhaustive, so
