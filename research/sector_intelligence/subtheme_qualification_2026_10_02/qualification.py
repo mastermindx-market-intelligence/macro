@@ -11,7 +11,7 @@ import hashlib
 import json
 import math
 import statistics
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -36,7 +36,10 @@ def instant(value: str) -> datetime:
 def number(value: Any, *, positive: bool = False) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise QualificationError("NUMERIC_VALUE_REQUIRED")
-    x = float(value)
+    try:
+        x = float(value)
+    except (ValueError, TypeError, OverflowError) as exc:
+        raise QualificationError("NUMERIC_RANGE_INVALID") from exc
     if not math.isfinite(x) or (positive and x <= 0):
         raise QualificationError("FINITE_POSITIVE_REQUIRED" if positive else "FINITE_REQUIRED")
     return x
@@ -46,6 +49,12 @@ def session_axis(rows: Sequence[Mapping[str, Any]]) -> tuple[list[str], dict[str
     dates = [r["session"] for r in rows]
     if not dates or dates != sorted(set(dates)):
         raise QualificationError("SESSION_AXIS_NOT_UNIQUE_SORTED")
+    for d in dates:
+        try:
+            if date.fromisoformat(d).isoformat() != d:
+                raise ValueError("noncanonical date")
+        except (TypeError, ValueError) as exc:
+            raise QualificationError("INVALID_SESSION_DATE") from exc
     prev_close = None
     for row in rows:
         op, cl = instant(row["open_at"]), instant(row["close_at"])
@@ -78,7 +87,7 @@ def frozen_members(signal: Mapping[str, Any]) -> list[dict[str, Any]]:
         ):
             raise QualificationError("MEMBERSHIP_NOT_EFFECTIVE")
         out.append({**m, "weight": number(m["weight"], positive=True)})
-    total = sum(m["weight"] for m in out)
+    total = number(sum(m["weight"] for m in out), positive=True)
     return [{**m, "weight": m["weight"] / total} for m in out]
 
 
@@ -86,8 +95,10 @@ def peer_ex_issuer(members: Sequence[Mapping[str, Any]], issuer_id: str) -> list
     """Remove ALL listings of the candidate issuer; empty peers stay empty."""
     kept = [{**m, "weight": number(m["weight"], positive=True)}
             for m in members if m["issuer_id"] != issuer_id]
-    total = sum(m["weight"] for m in kept)
-    return [{**m, "weight": m["weight"] / total} for m in kept] if total else []
+    if not kept:
+        return []
+    total = number(sum(m["weight"] for m in kept), positive=True)
+    return [{**m, "weight": m["weight"] / total} for m in kept]
 
 
 def evidence_at(records: Sequence[Mapping[str, Any]], cutoff: str) -> dict[str, Any]:
@@ -100,11 +111,12 @@ def evidence_at(records: Sequence[Mapping[str, Any]], cutoff: str) -> dict[str, 
     claims: dict[str, Mapping[str, Any]] = {}
     seen = set()
     for r in records:
-        known, published = instant(r["known_at"]), instant(r["published_at"])
-        if published > known:
-            raise QualificationError("PUBLICATION_AFTER_KNOWLEDGE")
+        known = instant(r["known_at"])
         if known > t:
             continue
+        published = instant(r["published_at"])
+        if published > known:
+            raise QualificationError("PUBLICATION_AFTER_KNOWLEDGE")
         key = (r["claim_id"], known)
         if key in seen:
             raise QualificationError("AMBIGUOUS_CLAIM_VERSION")
@@ -214,7 +226,10 @@ def ranks(values: Sequence[float]) -> list[float]:
 def rank_ic(a: Sequence[float], b: Sequence[float]) -> float | None:
     if len(a) != len(b) or len(a) < 3:
         return None
-    x, y = ranks(a), ranks(b)
+    try:
+        x, y = ranks([number(v) for v in a]), ranks([number(v) for v in b])
+    except QualificationError:
+        return None
     mx, my = statistics.mean(x), statistics.mean(y)
     den = math.sqrt(sum((v-mx)**2 for v in x) * sum((v-my)**2 for v in y))
     return sum((u-mx)*(v-my) for u, v in zip(x, y)) / den if den else None
