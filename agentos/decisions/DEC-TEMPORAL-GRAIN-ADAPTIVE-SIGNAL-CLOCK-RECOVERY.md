@@ -51,7 +51,7 @@ evidence:
   - "GitHub PR #6790 merged as db5d20c45db123a2e133d9c1a28387ec9f23a545 and remains the W0 architecture source."
   - "GitHub PR #6803 remains OPEN/DRAFT at 070aee561f43ad6988e943f9ea2d48c2ec103e24 and records W1A UNRESOLVED_DATA for WMT and silver."
   - "Blob census against Macro main f5c2e829fef0a9891df0527a4bf74f280aaa0813 found no current-main edits to #6803 Temporal Grain research/code/test paths; the shared .github/ci/legacy-jobs.yml is the material integration collision."
-  - "#6803 .github/ci/legacy-jobs.yml blob 98da7db430c263000d73d7334293b94924e1894d and current-main blob 59520ca7640d4a7caaca0f5bf005a4cdf3d11dcf both contain session-anchor-era; the #6803 command appends seven test_temporal_scale_* targets that current main cannot name because those files are still unmerged."
+  - "#6803 .github/ci/legacy-jobs.yml blob 98da7db430c263000d73d7334293b94924e1894d and current-main blob 59520ca7640d4a7caaca0f5bf005a4cdf3d11dcf both contain session-anchor-era; the #6803 command appends six test_temporal_scale_* targets that current main cannot name because those files are still unmerged."
   - "DNR:KILL-OUTCOME-AUDITION closes per-name outcome-selected timing tools while preserving outcome-blind structure measurement as the lawful path."
   - "The 2026-10-03 Adaptive Signal Clock research synthesis identifies the fixed equal-weight multiscale ensemble and same-covariate multiresolution no-selector model as principal challengers, and recommends bands/multiscale/abstention over one-hot timeframe selection."
 affects:
