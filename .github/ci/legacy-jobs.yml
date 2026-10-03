@@ -12455,6 +12455,13 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn pillow
+      # SRC-A1 is a hermetic research audit. Name its CLI as well as its
+      # suite: the selector cannot resolve the suite's sibling-file
+      # spec_from_file_location import through Path.with_name().
+      - name: information-to-price SRC-A1 source clocks, identity and attempt denominator
+        run: |
+          python research/alpha_intelligence/expectation_market_dynamics/information_to_price_audit.py --help
+          python -m pytest research/alpha_intelligence/expectation_market_dynamics/test_information_to_price_audit.py -q
       # F10-X1 implication-card contract and rendered Measurement projection
       # stay in the existing factor/measurement owner lane. Register both new
       # suites on arrival so their artifact-identity, zero-authority, bilingual,

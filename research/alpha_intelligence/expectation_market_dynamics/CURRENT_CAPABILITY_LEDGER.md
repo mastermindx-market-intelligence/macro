@@ -1,5 +1,25 @@
 # K3E Current Capability Ledger
 
+## Latest evidence update — 2026-10-03
+
+The source-only Information-to-Price initiation is indexed in Macro #8309 and
+`INFORMATION_TO_PRICE_PROGRAM_2026-10-03.md`. The reviewed, executable audit and
+its exact-input report are documented in `VERIFICATION_AND_NEXT_GATE_2026-10-03.md`.
+At input SHA `ff420e6841a2468e4b718340cff240abbef114f1`, the retained source has
+473,200 observations, 8,583 attempts and substantial actual re-observation
+lineage. The 27 empty-consensus measurement defects are all in the known
+August 26 pre-repair C2 cohort; later cohorts do not violate that criterion.
+Concrete source-body witnesses now exercise all five formerly unexercised
+behaviors, with native producer/acceptance qualifications in the new receipt.
+
+**Accepted capability states remain unchanged:** SRC-A1 is `BUILT_NOT_PROVEN`,
+EXP-1 and downstream phases remain gated. This evidence update does not itself
+promote a collector, install code or admit a predictive experiment. Resolve the
+actual source-component receipts under the existing contract; neither a
+run-level success badge nor an unrelated engine-tail failure replaces that
+assessment. The August record below is retained as dated history, not a claim
+that no re-observations have occurred since then.
+
 Date pinned: 2026-08-26
 Macro `origin/main` observed at pin time: `fe84261a206e`
 (main advances continuously — live GitHub evidence outranks this pin for later
