@@ -43,7 +43,7 @@ waves:
       Do not start an ECP scraper or ingest third-party bid aggregators.
   - id: C1
     title: Display-tier CSG Guangdong goods adapter (receipts only)
-    status: blocked
+    status: todo
     depends_on: [C0]
     next_action: >
       RIGHTS_BLOCKED. Targeted 2026-10-03 verification confirms the public CSG
