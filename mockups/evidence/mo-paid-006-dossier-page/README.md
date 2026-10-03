@@ -39,15 +39,12 @@ hover/focus attempts on `japan` and `euro_area--outage` are listed in the
 manifest's top-level `excluded` with `expected_miss: true` — those routes
 render no headline, so there is nothing to hover or focus. Each rest cell has:
 
-- a full-page PNG: `cells/<page_id>-<theme>-<lang>-<viewport>.png` (there
-  are no separate crops; the full-page cell is the record)
-- a DOM fact row in `dom.json` (`card_present`, `dossier_state`,
-  `item_count`, `leadership_text`, `stance_attr`, `chip_count`,
-  `rail_width`, `rail_display`, `card_background`, `list_background`,
-  `chip_border_style`, `scroll_w`, `viewport_w`, `card_bbox`,
-  `card_within_viewport`, `title_attr_count`, `headline_color_rest/hover/focus`,
-  `headline_decoration_hover/focus`, `headline_outline_focus`, `card_padding`,
-  `link_ink`, `text_ink`, `soft_contrast`)
+- a full-page PNG under `cells/`, HASH-named — `cells/<sha16>.png` for a rest
+  cell, `cells/<sha16>--<force_state>.png` for an interaction cell; the
+  manifest's per-state `file` is the resolver, never a filename pattern
+  (there are no separate crops; the full-page cell is the record)
+- a DOM fact row in `dom.json` carrying exactly these keys (R4c, read from
+  the committed file): `applied_locale`, `applied_theme`, `card_bbox`, `card_padding`, `card_present`, `chip_border_style`, `dossier_state`, `headline_color_focus`, `headline_color_hover`, `headline_color_rest`, `headline_decoration_focus`, `headline_decoration_hover`, `headline_outline_focus`, `item_count`, `leadership_text`, `leadership_text_visible`, `link_ink`, `locale`, `more_link_count`, `more_link_href`, `page_id`, `rail_display`, `requested_locale`, `requested_theme`, `route`, `scroll_w`, `soft_contrast`, `soft_contrast_focus`, `soft_contrast_hover`, `stance_attr`, `text_ink`, `theme`, `title_attr_count`, `viewport`, `viewport_height`, `viewport_w`, `viewport_width`
 - a manifest state in `manifest.json` (p0_evidence.v2; `applied_theme`,
   `applied_locale`, `viewport_width`, `sha256`, `bytes`, `width`,
   `height`)
@@ -140,20 +137,29 @@ differ in six observable ways:
 ## DOM-record summary
 
 40/40 cells pass `card_present: true`. `dossier_state` matches the
-fixture for every cell. Leadership literal is exact in both languages
-across all 40 cells (en: `Leadership statements: no rights-cleared
-source.` 20/20; zh: `领导层表态：暂无获准转载的来源。` 20/20).
+fixture for every cell. Leadership literal per LOCALE span (R4c — the probe
+now reads `.l-zh` for zh rows; R2–R4b matched `.l-en, .l-zh` in document
+order and recorded the EN span for both locales): en `Leadership
+statements: no rights-cleared source.` 20/20; zh
+`领导层表态：暂无获准转载的来源。` 20/20. The VISIBLE span
+(`leadership_text_visible`, the one not `display:none` under the lang
+toggle) equals the locale span on 40/40 rows. `applied_theme` /
+`applied_locale` are read from `html[data-theme]` / `html[data-lang]`
+(observed, not echoed — R2–R4b echoed the request): observed theme equals
+the requested theme on 40/40 rows, observed lang equals the
+requested locale on 40/40 rows.
 
 `rail_display` (computed `::before`) DIFFERS across themes as
 required: dark = `block` (rail is drawn), light = `none` (rail is
 hidden). `chip_border_style` differs as required on the GB-with-stance
 cells: dark = `dashed`, light = `solid`.
 
-All 20 mobile cells satisfy `scroll_w <= viewport_w` — the card sits
-inside the 390-px viewport with no horizontal overflow. All 40 cells
-satisfy `card_within_viewport` (the card's right edge ≤ viewport
-width). `title_attr_count` is 0 on every cell — the dossier slice
-never relies on a hover tooltip to communicate.
+20/20 mobile cells satisfy `scroll_w <= viewport_w` — the card sits
+inside the 390-px viewport with no horizontal overflow. 40/40 cells
+have `card_bbox.x + card_bbox.w <= viewport_w` (derived from `card_bbox`;
+there is no `card_within_viewport` key — R2–R4b named one that the probe
+never wrote). `title_attr_count` is 0 on 40/40 cells — the dossier
+slice never relies on a hover tooltip to communicate.
 
 ## What was NOT captured
 
@@ -164,9 +170,13 @@ never relies on a hover tooltip to communicate.
   rows, not failures.
 - The EZ `a.imd-dossier-more` (link to `#europe-news`, "Full Europe
   official press wire") is conditional on BOTH `europe_news` (the
-  fetched wire packet) AND `D.cc == 'EZ'`. The capture here did not
-  feed an `europe_news` packet, so the link is absent on every EZ
-  cell. The link's CSS is the standard `.imd-dossier-more` rule; its
+  fetched wire packet) AND `D.cc == 'EZ'`. The fixture builder in
+  capture.py feeds EZ an `europe_news` packet with no items, so the
+  link is MEASURED (`more_link_count`), not assumed: present on
+  16/16 EZ cells — both EZ fixtures, `euro_area` and
+  `euro_area_outage` (href `#europe-news`) — and absent on
+  24/24 non-EZ cells — R2–R4b claimed it absent on every
+  EZ cell, which was stale. The link's CSS is the standard `.imd-dossier-more` rule; its
   presence/absence is pinned by build-lane test 12
   (`tests/test_international_macro_dossier_page.py`).
 
@@ -197,7 +207,7 @@ No credentials. No network beyond the local fixture server.
   the engine's `reverse=True` sort, so the card's "Latest" date equals the
   top row's date (R2 showed Latest 2026-09-24 above a 2026-10-02 row).
 - Every colour probe waits for theme.js's `html.soft-contrast` palette and
-  records `soft_contrast` on the row (R2 rows sampled two light cells before
+  records `soft_contrast` on the row (R2 rows sampled light cells before
   the palette applied: `--ink-link` 0.151216/0.344784/0.902588 vs
   0.159686/0.354667/0.917647 — a capture race, not a design difference).
 - `stance_attr` is read from `.imd-dossier-read`, where the template puts it.
@@ -207,3 +217,35 @@ No credentials. No network beyond the local fixture server.
   English source literal (the plane carries no translation and the LLM may
   not originate one); the test pins that as `SENTINEL-LEAD` ×2.
 - **Cell paths and pruning (R4b).** The stitched sub-manifests are scratch-relative (`cells.rest/…`, `cells.interaction/…`); `finalize_manifest` rewrites every `file` to `cells/<name>` (the checker resolves against the receipt dir — the un-normalized R4 manifest failed the gate with 52 missing-file findings), and the full run then prunes every PNG under `cells/` that no state references (Phase B's 6 unforced rest shots and any stale cells from an earlier capture). The directory therefore holds exactly the 52 referenced cells.
+- **R4c (CEO A seat-direct, L.7) — `source_commit` is now a TRUE pin.** The
+  R4b receipt pinned `source_commit` 550223c9 while three of its five fixture
+  pages were rendered from the worktree's 40fe0576 bytes (the `aria-label`
+  removal) — a false pin the D57 delta review called MAJOR. `capture.py` now
+  REFUSES to run when the worktree template's blob differs from
+  `HEAD:templates/international_macro.html.j2` (`--allow-dirty-template` exists
+  only for an uncommitted debug run), and the manifest `scope` records
+  `template_blob`, `template_blob_at_source_commit` and
+  `template_matches_source_commit`. This receipt: template blob `2c29b7cf4c44`
+  == HEAD blob at `40fe05769d1c` (true); `tests/test_international_macro_dossier_page.py`
+  pins the recorded blob to the committed template, so a template edit without a
+  recapture reds CI. The R4c commit changes no template byte, so the pin stays
+  true in the committed tree.
+- **Full recapture by one module** (tool version 4, `d26164d4d380`) on the
+  same mini2 host, at HEAD 40fe0576 with a clean worktree: 52 attempted / 52 captured / 8 expected-miss excluded; dom rows 40.
+- **ZH leadership probe** reads the `.l-zh` span for zh rows and records the
+  visible span (`leadership_text_visible`); see "DOM-record summary".
+- **Interaction probes** record `soft_contrast` too: `soft_contrast_hover` true
+  on 6/6 hover-bearing rows, `soft_contrast_focus` true on
+  6/6 focus-bearing rows (the palette had settled before
+  every interaction colour was read).
+- `scope.lanes` names the actual producers: the R2 MiniMax lane and the CEO A
+  seat-direct R4/R4b/R4c rounds (the lane was dead; L.7 conditions held).
+- **Sol C2 readback 5966143369 closed in R4c:** `applied_theme`/`applied_locale`
+  are observed DOM attributes (requested inputs kept as `requested_*`);
+  `--finalize-only` preserves the recorded `source_commit` and refuses when the
+  worktree template is not that commit's blob (no re-attribution of earlier
+  pixels to HEAD); the EZ wire link is measured per cell (`more_link_count`,
+  `more_link_href`) instead of asserted absent; README named-path and
+  Chinese-DOM claims replaced by the run's counts above.
+- `soft_contrast` reads true on 39/40 rest rows in this run (the palette-settle
+  caveat above applies to the remainder; the interaction rows settle before every read).

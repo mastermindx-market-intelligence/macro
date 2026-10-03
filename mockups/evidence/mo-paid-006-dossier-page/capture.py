@@ -202,6 +202,23 @@ def _git_origin_main_blob(relpath: str) -> bytes:
     return _git("show", f"origin/main:{relpath}")
 
 
+_TEMPLATE_REL = "templates/international_macro.html.j2"
+_LANES = [
+    "MO-PAID-006_PAGE_EVIDENCE_R2 (MiniMax lane on mini2 — the R2 receipt)",
+    "CEO A seat-direct R4 / R4b / R4c under L.7 on mini2 (lane dead, no worker on the artifact)",
+]
+
+
+def _template_provenance(repo: Path) -> tuple[str, str, bool]:
+    """(worktree blob, HEAD blob, equal) for the dossier template. The fixture
+    pages are rendered from the WORKTREE bytes, so `source_commit` (= HEAD) is a
+    true pin only when the two blobs agree — R4b pinned 550223c9 while 3/5
+    fixture renders carried 40fe0576 bytes (Opus review MAJOR, 2026-10-03)."""
+    wt = _git("hash-object", _TEMPLATE_REL, cwd=repo).decode().strip()
+    head = _git("rev-parse", f"HEAD:{_TEMPLATE_REL}", cwd=repo).decode().strip()
+    return wt, head, wt == head
+
+
 def _sha256_hex(b: bytes) -> str:
     return hashlib.sha256(b).hexdigest()
 
@@ -338,7 +355,7 @@ def _dom_probe(browser, base_url: str, *, route: str, viewport: tuple[int, int],
 
         info = page.evaluate(
             r"""
-            () => {
+            (locale) => {
               const card = document.querySelector('#official-statements');
               if (!card) return {error: 'no-card'};
               const cs = window.getComputedStyle(card);
@@ -379,8 +396,15 @@ def _dom_probe(browser, base_url: str, *, route: str, viewport: tuple[int, int],
               const stanceEl = card.querySelector('[data-dossier-stance]');
               const stanceAttr = stanceEl ? stanceEl.getAttribute('data-dossier-stance') : card.getAttribute('data-dossier-stance');
               const leadershipNode = card.querySelector('[data-dossier-leadership]');
-              const lNode = leadershipNode ? leadershipNode.querySelector('.l-en, .l-zh') : null;
+              // R4c: read the span for the PROBED locale — '.l-en, .l-zh' always
+              // matched '.l-en' (document order), so ZH rows recorded the EN literal.
+              const lNode = leadershipNode ? leadershipNode.querySelector(locale === 'zh' ? '.l-zh' : '.l-en') : null;
               const leadershipText = lNode ? (lNode.textContent || '').trim() : '';
+              // The span the reader actually sees (the other is display:none under the lang toggle).
+              const lVisible = leadershipNode
+                ? (Array.from(leadershipNode.querySelectorAll('.l-en, .l-zh')).find(n => window.getComputedStyle(n).display !== 'none') || null)
+                : null;
+              const leadershipVisibleText = lVisible ? (lVisible.textContent || '').trim() : '';
               const scrollW = document.documentElement.scrollWidth;
               const viewW = window.innerWidth;
               const cr = card.getBoundingClientRect();
@@ -400,6 +424,11 @@ def _dom_probe(browser, base_url: str, *, route: str, viewport: tuple[int, int],
                 stance_attr: stanceAttr,
               soft_contrast: document.documentElement.classList.contains('soft-contrast'),
                 leadership_text: leadershipText,
+                leadership_text_visible: leadershipVisibleText,
+                observed_theme: document.documentElement.getAttribute('data-theme'),
+                observed_lang: document.documentElement.getAttribute('data-lang'),
+                more_link_count: card.querySelectorAll('a.imd-dossier-more').length,
+                more_link_href: (function () { const a = card.querySelector('a.imd-dossier-more'); return a ? a.getAttribute('href') : null; })(),
                 scroll_w: scrollW,
                 viewport_w: viewW,
                 card_bbox: {x: cr.left, y: cr.top, w: cr.width, h: cr.height},
@@ -407,10 +436,15 @@ def _dom_probe(browser, base_url: str, *, route: str, viewport: tuple[int, int],
                 dossier_state: card.getAttribute('data-dossier-state'),
               };
             }
-            """
+            """,
+            locale,
         )
-        info["applied_theme"] = theme
-        info["applied_locale"] = locale
+        # R4c: applied_* are OBSERVED from the DOM (html[data-theme] / html[data-lang]) —
+        # R2–R4b echoed the requested inputs (Sol C2 5966143369 §1). Requested kept apart.
+        info["requested_theme"] = theme
+        info["requested_locale"] = locale
+        info["applied_theme"] = info.get("observed_theme")
+        info["applied_locale"] = info.get("observed_lang")
         return info
     finally:
         context.close()
@@ -450,7 +484,8 @@ def _hover_probe(browser, base_url: str, *, route: str, theme: str, locale: str 
               const h = document.querySelector('#official-statements .imd-dossier-headline');
               if (!h) return null;
               const cs = window.getComputedStyle(h);
-              return {color: cs.color, decoration: cs.textDecorationLine};
+              return {color: cs.color, decoration: cs.textDecorationLine,
+                      soft_contrast: document.documentElement.classList.contains('soft-contrast')};
             }
             """
         )
@@ -496,6 +531,7 @@ def _focus_probe(browser, base_url: str, *, route: str, theme: str, locale: str 
                 decoration: cs.textDecorationLine,
                 outline: cs.outlineStyle + ' ' + cs.outlineWidth + ' ' + cs.outlineColor,
                 outline_offset: cs.outlineOffset,
+                soft_contrast: document.documentElement.classList.contains('soft-contrast'),
               };
             }
             """
@@ -580,7 +616,9 @@ def _interaction_filter(manifest: dict[str, Any]) -> dict[str, Any]:
 # --- Main -------------------------------------------------------------------
 
 
-def finalize_manifest(merged: dict[str, Any], *, template_commit: str, site_commit: str | None) -> dict[str, Any]:
+def finalize_manifest(merged: dict[str, Any], *, template_commit: str, site_commit: str | None,
+                      template_blob: str | None = None,
+                      template_blob_at_source_commit: str | None = None) -> dict[str, Any]:
     """Re-shape the stitched manifest into the canonical `mastermind.p0_evidence.v2`
     receipt shape that `scripts/capture_page_evidence.py` emits and
     `scripts/check_ui_visual_evidence.py` validates. Three things the stitch
@@ -647,11 +685,19 @@ def finalize_manifest(merged: dict[str, Any], *, template_commit: str, site_comm
     }
     module_sha = _sha256_hex(Path(__file__).resolve().read_bytes())
     out["tool"] = {"module_ref": "mockups/evidence/mo-paid-006-dossier-page/capture.py",
-                   "version": "3", "module_sha256": module_sha}
+                   "version": "4", "module_sha256": module_sha}
     out["capture_tool_module_sha256"] = module_sha
     scope = dict(out.get("scope") or {})
     if site_commit:
         scope["site_fixture_commit"] = site_commit
+    scope["lanes"] = list(_LANES)
+    scope.setdefault("template", _TEMPLATE_REL)
+    if template_blob is not None:
+        # R4c: the blob the pixels were rendered from, and whether it IS the blob
+        # `source_commit` carries — a mismatch is refused in main() before capture.
+        scope["template_blob"] = template_blob
+        scope["template_blob_at_source_commit"] = template_blob_at_source_commit
+        scope["template_matches_source_commit"] = (template_blob == template_blob_at_source_commit)
     out["scope"] = scope
     out["source_commit"] = template_commit
     out["source"] = ("scratch site materialized from origin/main site/ with euro_area, united_kingdom, "
@@ -679,14 +725,39 @@ def main() -> int:
                         help="re-shape OUT_DIR/manifest.json into the canonical v2 receipt shape "
                              "(axes incl. force states, expected misses -> excluded, totals, tool, commits) "
                              "without recapturing; idempotent")
+    parser.add_argument("--allow-dirty-template", action="store_true",
+                        help="debug aid: capture although templates/international_macro.html.j2 differs "
+                             "from HEAD's blob; the receipt then records template_matches_source_commit=false "
+                             "and must never be committed")
     args = parser.parse_args()
+
+    # R4c: refuse a FALSE `source_commit` pin — the pixels come from the worktree
+    # template; HEAD is their provenance only when the two blobs agree.
+    tpl_wt, tpl_head, tpl_ok = _template_provenance(_REPO)
+    if not tpl_ok and not args.allow_dirty_template:
+        print(f"  ✗ {_TEMPLATE_REL} in the worktree (blob {tpl_wt[:12]}) differs from HEAD's blob "
+              f"({tpl_head[:12]}); commit the template first — a receipt pinned to HEAD would lie "
+              "about the bytes it depicts (--allow-dirty-template only for an uncommitted debug run)",
+              flush=True)
+        return 2
+    print(f"  template blob {tpl_wt[:12]} vs HEAD:{_TEMPLATE_REL} {tpl_head[:12]} → equal={tpl_ok}", flush=True)
 
     if args.finalize_only:
         path = OUT_DIR / "manifest.json"
         current = json.loads(path.read_text(encoding="utf-8"))
         site_commit = (current.get("scope") or {}).get("site_fixture_commit") or current.get("source_commit")
-        template_commit = _git("rev-parse", "HEAD", cwd=_REPO).decode().strip()
-        final = finalize_manifest(current, template_commit=template_commit, site_commit=site_commit)
+        # R4c: --finalize-only PRESERVES the original capture identity — it never re-attributes
+        # earlier pixels to the current HEAD (Sol C2 5966143369 §3); the worktree template must
+        # still be the blob the recorded source_commit carries, else recapture.
+        template_commit = current.get("source_commit") or _git("rev-parse", "HEAD", cwd=_REPO).decode().strip()
+        tpl_at_source = _git("rev-parse", f"{template_commit}:{_TEMPLATE_REL}", cwd=_REPO).decode().strip()
+        if tpl_at_source != tpl_wt and not args.allow_dirty_template:
+            print(f"  ✗ --finalize-only refused: worktree template blob {tpl_wt[:12]} differs from "
+                  f"{template_commit[:12]}:{_TEMPLATE_REL} ({tpl_at_source[:12]}) — the receipt's pixels were "
+                  "rendered from the recorded source_commit; recapture instead of re-attributing", flush=True)
+            return 2
+        final = finalize_manifest(current, template_commit=template_commit, site_commit=site_commit,
+                                  template_blob=tpl_wt, template_blob_at_source_commit=tpl_at_source)
         path.write_text(json.dumps(final, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         t = final["totals"]
         print(f"Finalized {path}: pages={t['pages']} attempted={t['states_attempted']} captured={t['states_captured']} "
@@ -793,7 +864,7 @@ def main() -> int:
         "fixture_pages": page_sha,
         "source_commit": source_commit,
         "scope": {
-            "lanes": ["MO-PAID-006_PAGE_EVIDENCE_R2"],
+            "lanes": list(_LANES),
             "template": "templates/international_macro.html.j2",
             "data_fixture": "origin/main data/international_macro/{EZ,GB,JP}_latest.json + inlined dossier payloads",
         },
@@ -832,7 +903,8 @@ def main() -> int:
         return 2
 
     merged = finalize_manifest(merged, template_commit=_git("rev-parse", "HEAD", cwd=_REPO).decode().strip(),
-                               site_commit=source_commit)
+                               site_commit=source_commit,
+                               template_blob=tpl_wt, template_blob_at_source_commit=tpl_head)
     (OUT_DIR / "manifest.json").write_text(
         json.dumps(merged, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
@@ -882,9 +954,14 @@ def main() -> int:
                                         "theme": theme,
                                         "applied_theme": info.get("applied_theme"),
                                         "applied_locale": info.get("applied_locale"),
+                                        "requested_theme": info.get("requested_theme"),
+                                        "requested_locale": info.get("requested_locale"),
+                                        "more_link_count": info.get("more_link_count"),
+                                        "more_link_href": info.get("more_link_href"),
                                         "dossier_state": info.get("dossier_state"),
                                         "item_count": info.get("item_count"),
                                         "leadership_text": info.get("leadership_text"),
+                                        "leadership_text_visible": info.get("leadership_text_visible"),
                                         "stance_attr": info.get("stance_attr"),
                                         "soft_contrast": info.get("soft_contrast"),
                                         "headline_color_rest": info.get("headline_color"),
@@ -931,6 +1008,7 @@ def main() -> int:
                                         and r["viewport"] == "desktop"):
                                     r["headline_color_hover"] = (info or {}).get("color")
                                     r["headline_decoration_hover"] = (info or {}).get("decoration")
+                                    r["soft_contrast_hover"] = (info or {}).get("soft_contrast")
                                     break
                             print(f"  ✓ hover {fixture['page_id']} {theme} en desktop", flush=True)
                         except Exception as exc:
@@ -949,6 +1027,7 @@ def main() -> int:
                                     r["headline_color_focus"] = (info or {}).get("color")
                                     r["headline_decoration_focus"] = (info or {}).get("decoration")
                                     r["headline_outline_focus"] = (info or {}).get("outline")
+                                    r["soft_contrast_focus"] = (info or {}).get("soft_contrast")
                                     break
                             print(f"  ✓ focus {fixture['page_id']} {theme} en desktop", flush=True)
                         except Exception as exc:

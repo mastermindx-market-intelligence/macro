@@ -28,6 +28,7 @@ scripts/build_international_macro.py :97-102.
 from __future__ import annotations
 
 import datetime
+import hashlib
 import json
 import re
 import subprocess
@@ -883,3 +884,52 @@ def test_capture_finalize_rewrites_scratch_relative_cell_paths_into_cells_dir() 
     assert [s["file"] for s in twice["pages"][0]["states"]] == files
     assert twice["totals"] == once["totals"] == {
         "pages": 1, "states_attempted": 2, "states_captured": 2, "expected_miss_excluded": 1}
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_mo_paid_006_receipt_template_blob_is_the_committed_template():
+    """R4c: the receipt's pixels were rendered from the worktree template, so the
+    manifest records that blob; it must equal the committed template's blob (git
+    blob id = sha1(b"blob <len>\\0" + bytes)). A template edit without a recapture
+    reds this — the committed receipt is the evidence of record for the card."""
+    repo = Path(__file__).resolve().parents[1]
+    manifest = json.loads((repo / "mockups/evidence/mo-paid-006-dossier-page/manifest.json")
+                          .read_text(encoding="utf-8"))
+    scope = manifest["scope"]
+    data = (repo / "templates/international_macro.html.j2").read_bytes()
+    blob = hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+    assert scope["template_matches_source_commit"] is True
+    assert scope["template_blob"] == scope["template_blob_at_source_commit"] == blob, (
+        f"receipt template blob {scope['template_blob'][:12]} != committed template blob {blob[:12]} — "
+        "re-run mockups/evidence/mo-paid-006-dossier-page/capture.py after editing the template")
+    assert manifest["tool"]["version"] == "4"
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_mo_paid_006_dom_rows_record_the_locale_leadership_span():
+    """R4c: ZH rows carry the ZH span literal (R2–R4b recorded `.l-en` for both
+    locales), and every row's VISIBLE span is the locale's span."""
+    repo = Path(__file__).resolve().parents[1]
+    rows = json.loads((repo / "mockups/evidence/mo-paid-006-dossier-page/dom.json").read_text(encoding="utf-8"))
+    assert len(rows) == 40
+    for r in rows:
+        prefix = "领导层表态：" if r["locale"] == "zh" else "Leadership statements:"
+        assert r["leadership_text"].startswith(prefix), (r["page_id"], r["locale"], r["leadership_text"])
+        assert r["leadership_text_visible"] == r["leadership_text"], (
+            r["page_id"], r["locale"], r["theme"], r["viewport"], r["leadership_text_visible"])
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_mo_paid_006_dom_rows_observe_theme_lang_and_wire_link():
+    """R4c: applied_theme/applied_locale are OBSERVED html[data-theme]/[data-lang]
+    (R2–R4b echoed the request); the EZ wire link is measured per cell."""
+    repo = Path(__file__).resolve().parents[1]
+    rows = json.loads((repo / "mockups/evidence/mo-paid-006-dossier-page/dom.json").read_text(encoding="utf-8"))
+    assert len(rows) == 40
+    for r in rows:
+        assert r["applied_theme"] == r["theme"] == r["requested_theme"], (r["page_id"], r["theme"], r["applied_theme"])
+        assert r["applied_locale"] == r["locale"] == r["requested_locale"], (r["page_id"], r["locale"], r["applied_locale"])
+        if r["page_id"] in ("euro_area", "euro_area_outage"):  # both EZ fixtures (D.cc == 'EZ')
+            assert r["more_link_count"] == 1 and r["more_link_href"] == "#europe-news", (r["page_id"], r["more_link_href"])
+        else:
+            assert r["more_link_count"] == 0, (r["page_id"], r["more_link_count"])
