@@ -6,6 +6,7 @@ No browser; verifies the CSS and the rendered HTML for both states
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -82,7 +83,6 @@ def test_t7_mobile_mark_never_dashed_below_600():
 
 
 def test_t8_mobile_legend_key_matches_mark_per_theme():
-    import re
     mobile = _mobile_slice(TEMPLATE)
     # base GBR mark stroke-opacity (.85); light override is the second rule (.85)
     base_mark_op = re.search(
@@ -130,7 +130,6 @@ def test_t9_desktop_key_matches_mark():
     # Outside the @media (max-width:600px) block, the desktop rules must remain
     # untouched: legend key is 1.25px dashed, BOTH GBR mark rules (base + light)
     # carry stroke-width:1.25 and a stroke-dasharray value that is not "none".
-    import re
     mobile = _mobile_slice(TEMPLATE)
     before = TEMPLATE[: TEMPLATE.index(mobile)]
     after = TEMPLATE[TEMPLATE.index(mobile) + len(mobile):]
@@ -165,7 +164,6 @@ def test_t10_mobile_block_has_no_colour_literals():
 
 
 def test_t11_390_is_inside_breakpoint():
-    import re
     mobile = _mobile_slice(TEMPLATE)
     m = re.search(r"max-width:(\d+)px", mobile)
     assert m, "O28: @media max-width not found in mobile block"
@@ -179,70 +177,135 @@ def test_t6_labels_never_break_mid_word():
 
 
 # --------------------------------------------------------------------------- #
-# t12 — D54 choice ↔ receipt drift guard
+# t12 — D58 measured-floor + D54(i) chroma-order ↔ receipt drift guard
 # --------------------------------------------------------------------------- #
-def test_t12_mobile_mark_is_not_quieter_than_light_floor():
-    """O28 R2 (D54): the chosen OD/OL values pinned in the template
-    MUST match the values the mobile-key receipt recorded. A drift
-    between the CSS and the receipt means the template was changed
-    without re-running the sweep — fail closed."""
+def test_t12_mobile_mark_clears_the_measured_floor_and_chroma_order():
+    """O28 R3 (D58 amends D54(ii)): the chosen (W, OD, OL) pinned in the
+    template MUST clear FLOOR computed from baseline.json per D58 on
+    every cell of dom.json; light chroma must remain <= dark chroma per
+    locale (D54(i)); key_mark_parity must hold on every cell; the
+    @media block parsed from the template and dom.json's `o28_block`
+    AND rendered gbr_stroke_width/opacity must all agree. A drift
+    between any two of those means the template was changed without
+    re-running the sweep — fail closed. rung3_mean_chroma is display
+    ONLY (D58) and must never be compared with < in this file."""
     import json as _json
-    import re as _re
 
-    dom_path = (
-        ROOT / "mockups" / "evidence" / "sanctions-map-mobile-key" / "dom.json"
-    )
-    assert dom_path.is_file(), (
-        f"O28 R2: missing mobile-key receipt at {dom_path} — "
-        "run capture.py with the chosen (W, OD, OL) first."
-    )
+    receipt_dir = ROOT / "mockups" / "evidence" / "sanctions-map-mobile-key"
+    dom_path = receipt_dir / "dom.json"
+    base_path = receipt_dir / "baseline.json"
+    assert dom_path.is_file(), f"O28 R3: missing dom.json at {dom_path}"
+    assert base_path.is_file(), f"O28 R3: missing baseline.json at {base_path}"
+
     dom = _json.loads(dom_path.read_text(encoding="utf-8"))
-    cells = dom.get("cells", {})
-    # O28 R2 receipt captures all four (theme × locale) cells; the
-    # opacities must agree across locales for each theme.
+    base = _json.loads(base_path.read_text(encoding="utf-8"))
+    cells = dom["cells"]
+    base_cells = base["cells"]
+
+    # (D58 FLOOR) = 20 if min(baseline_dark, baseline_light) >= 25,
+    # else min(baseline_dark, baseline_light).  baseline.json carries the
+    # origin/main mark being replaced (dashed 13 8, W=1.5, full opacity).
+    base_dark = base_cells["dark-en"]["uk_box_blue_px"]
+    base_light = base_cells["light-en"]["uk_box_blue_px"]
+    floor = 20 if min(base_dark, base_light) >= 25 else min(base_dark, base_light)
+    assert floor == 20, (
+        f"O28 R3: FLOOR={floor} from baseline({base_dark}, {base_light}); expected 20"
+    )
+
+    # (a)+(c)+(d) every cell — FLOOR, parity, rendered width/opacity
     for theme in ("dark", "light"):
-        opacities = []
         for locale in ("en", "zh"):
             key = f"{theme}-{locale}"
-            assert key in cells, f"O28 R2: missing cell {key} in dom.json"
-            opacities.append(cells[key]["gbr_stroke_opacity"])
-        assert opacities[0] == opacities[1], (
-            f"O28 R2: {theme} mark opacity drift across locales: {opacities}"
+            row = cells[key]
+            assert row["uk_box_blue_px"] >= floor, (
+                f"O28 R3: {key} uk_box_blue_px={row['uk_box_blue_px']} < FLOOR={floor}"
+            )
+            assert row["key_mark_parity"] is True, (
+                f"O28 R3: {key} key_mark_parity={row['key_mark_parity']}; must be True"
+            )
+            assert row["gbr_stroke_width"] == "1.25px", (
+                f"O28 R3: {key} gbr_stroke_width={row['gbr_stroke_width']} != 1.25px"
+            )
+            assert abs(float(row["gbr_stroke_opacity"]) - 0.85) < 1e-6, (
+                f"O28 R3: {key} gbr_stroke_opacity={row['gbr_stroke_opacity']} != 0.85"
+            )
+
+    # (b) D54(i) per locale: light mark_mean_chroma <= dark mark_mean_chroma
+    for locale in ("en", "zh"):
+        d = cells[f"dark-{locale}"]["mark_mean_chroma"]
+        l = cells[f"light-{locale}"]["mark_mean_chroma"]
+        assert l <= d, (
+            f"O28 R3: light mark_mean_chroma {l} > dark {d} for locale {locale}"
         )
 
-    dark_od = cells["dark-en"]["gbr_stroke_opacity"]
-    light_ol = cells["light-en"]["gbr_stroke_opacity"]
-    expected_dark = ".85"
-    expected_light = ".85"
-    # Browser computed style reports "0.85" while CSS source writes
-    # ".85" — compare numerically.
-    assert abs(float(dark_od) - float(expected_dark)) < 1e-6, (
-        f"O28 R2: receipt dark opacity {dark_od} must equal CSS value {expected_dark}"
+    # (e) dom.json o28_block agrees with the parsed @media block AND the
+    # rendered stroke width/opacity on every row.
+    mobile = _mobile_slice(TEMPLATE)
+    m_w_od = re.search(
+        r"stroke-width:([^;]+);stroke-dasharray:none;stroke-opacity:([^}]+)}",
+        mobile,
     )
-    assert abs(float(light_ol) - float(expected_light)) < 1e-6, (
-        f"O28 R2: receipt light opacity {light_ol} must equal CSS value {expected_light}"
+    assert m_w_od, "O28 R3: mobile block missing W/dasharray/opacity triple"
+    css_w = m_w_od.group(1)
+    css_dark_od = m_w_od.group(2)
+
+    m_light_od = re.search(
+        r"html\[data-theme=\"light\"\]\s+\.sm-map\[data-news-gbr=\"1\"]"
+        r"\s+\.wm-c\[data-iso3=\"GBR\"\]\{stroke-opacity:([^}]+)\}",
+        mobile,
+    )
+    assert m_light_od, "O28 R3: light mark opacity override missing"
+    css_light_od = m_light_od.group(1)
+
+    m_legend = re.search(
+        r"\.sm-legend\s+\.sm-legend-news\s+i\{border:([^p]+)px solid var"
+        r"\(--ink-link\);opacity:([^}]+)\}",
+        mobile,
+    )
+    assert m_legend, "O28 R3: legend border/opacity rule missing"
+    css_legend_w = m_legend.group(1)
+    css_legend_op = m_legend.group(2)
+
+    block = dom["o28_block"]
+    assert block["width"] == css_w, (
+        f"O28 R3: dom o28_block.width={block['width']} != CSS {css_w}"
+    )
+    assert block["dark_opacity"] == css_dark_od, (
+        f"O28 R3: dom o28_block.dark_opacity={block['dark_opacity']} != CSS {css_dark_od}"
+    )
+    assert block["light_opacity"] == css_light_od, (
+        f"O28 R3: dom o28_block.light_opacity={block['light_opacity']} != CSS {css_light_od}"
     )
 
-    # Confirm the template still carries the same opacities.
-    mobile = _mobile_slice(TEMPLATE)
-    base_mark_op = _re.search(
-        r"data-news-gbr=\"1\"\]\s+\.wm-c\[data-iso3=\"GBR\"\][^\{]*\{[^}]*stroke-opacity:(\.\d+)",
-        mobile,
+    # CSS-source legend border 1.25 (Chromium rounds rendered to 1px at DPR 1 —
+    # this is why key_mark_parity is computed from the SOURCE CSS).
+    assert css_legend_w == "1.25", (
+        f"O28 R3: legend CSS-source border width {css_legend_w} != 1.25"
     )
-    assert base_mark_op, "O28 R2: CSS base mark stroke-opacity not found"
-    assert abs(float(base_mark_op.group(1)) - float(dark_od)) < 1e-6, (
-        f"O28 R2: CSS dark opacity {base_mark_op.group(1)} "
-        f"drifts from receipt {dark_od}"
+    assert css_legend_op == ".85", (
+        f"O28 R3: legend CSS opacity {css_legend_op} != .85"
     )
-    light_mark_op = _re.search(
-        r"html\[data-theme=\"light\"\]\s+\.sm-map\[data-news-gbr=\"1\"\]\s+\.wm-c\[data-iso3=\"GBR\"\]\{stroke-opacity:(\.\d+)\}",
-        mobile,
-    )
-    assert light_mark_op, "O28 R2: CSS light mark stroke-opacity not found"
-    assert abs(float(light_mark_op.group(1)) - float(light_ol)) < 1e-6, (
-        f"O28 R2: CSS light opacity {light_mark_op.group(1)} "
-        f"drifts from receipt {light_ol}"
-    )
+
+    # rendered gbr_stroke_width on every row equals the CSS-source width
+    for theme in ("dark", "light"):
+        for locale in ("en", "zh"):
+            row = cells[f"{theme}-{locale}"]
+            assert row["gbr_stroke_width"] == f"{css_w}px", (
+                f"O28 R3: rendered {theme}-{locale} gbr_stroke_width="
+                f"{row['gbr_stroke_width']} != CSS width {css_w}px"
+            )
+            assert abs(float(row["gbr_stroke_opacity"]) - float(css_dark_od)) < 1e-6, (
+                f"O28 R3: rendered {theme}-{locale} gbr_stroke_opacity="
+                f"{row['gbr_stroke_opacity']} != CSS opacity {css_dark_od}"
+            )
+
+    # (f) rung3_mean_chroma is display-only (D58); any ordering comparison
+    # against it in this file would re-couple the spec to a metric D58 retired.
+    src = Path(__file__).read_text(encoding="utf-8")
+    for pat in (r"<\s*rung3_mean_chroma", r"rung3_mean_chroma\s*<"):
+        assert not re.search(pat, src), (
+            f"O28 R3: file contains comparison against display-only metric; /{pat}/ matched"
+        )
 
 
 # --------------------------------------------------------------------------- #
@@ -303,7 +366,6 @@ def test_t4_render_with_uk_event_includes_legend_key_and_heading_and_zh_note(_vm
 
 
 def test_t5_render_with_no_recent_event_has_no_legend_key_or_zh_note(_vm_with_no_recent_event):
-    import re
     assert _vm_with_no_recent_event["public_news_state"] == "none_recent"
     assert _vm_with_no_recent_event["public_news"] == []
     html = _render(_vm_with_no_recent_event)

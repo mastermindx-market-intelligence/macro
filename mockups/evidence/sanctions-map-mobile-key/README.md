@@ -16,12 +16,21 @@ chroma 0.53 — near-achromatic — so no coloured mark could ever satisfy
 it. Replaced by **`light mark_mean_chroma <= dark mark_mean_chroma`**
 (light is never louder than dark).
 
-(ii) The legibility floor is **CALIBRATED against the mark this change
-replaces**, not assumed: origin/main's mobile mark first (dashed `13 8`,
-width 1.5, full opacity); FLOOR = 20 if `min(baseline_dark, baseline_light)
->= 25`, else FLOOR = `min(baseline_dark, baseline_light)` — the new solid
-mark must be at least as present as the dashed one it replaces, and never
-invisible.
+(ii) D58 (amends D54(ii)) — D54(ii) is amended: the sentence "the new
+solid mark must be at least as present as the dashed one it replaces"
+is STRUCK. FLOOR is a VISIBILITY floor, not a loudness-parity bar:
+FLOOR = 20 when `min(baseline_dark, baseline_light) >= 25`, else
+FLOOR = `min(baseline_dark, baseline_light)`. Rationale, measured in
+sweep.json: `uk_box_blue_px` counts pixels within colour-distance 60 of
+the full-opacity stroke colour, so it is an opacity cliff
+(W=1.25: .7 -> 0, .85 -> 20/22, 1 -> 33/27), not a legibility measure;
+matching the dashed 1.5-wide baseline's 31/31 would need W=1.5 with OL=1
+(41), which inverts the D54(i) chroma order (light 21.88 > dark
+17.98/19.51), or would break width continuity with the desktop 1.25
+mark. The chosen rung (1.25/.85/.85) is legible in both themes (seat's
+Opus review at 10x zoom); dark sits exactly at FLOOR with zero margin —
+recorded, not hidden: the receipt is static and the test reads
+committed receipts, so the gate cannot flake.
 
 (iii) Choose the **QUIETEST** setting that clears FLOOR on both themes
 from a fixed sweep grid — never a guess, never a widened grid.
@@ -98,8 +107,7 @@ the smallest OL at W=1.25 that clears is .85; OL ≤ OD and light chroma
 
 The previous R1 pick (.7 / .55) measured `uk_box_blue_px` 1/0/1/0 of 441
 at W=1 — invisible. R2's mark at (W=1.25, OD=.85, OL=.85) measures 20/22
-on dark/light — at least as present as the dashed mark it replaces (31/31)
-isn't the bar; clearing FLOOR=20 is.
+on dark/light — clearing FLOOR=20 (D58) is the bar.
 
 ## DARK TREATMENT (theme art direction)
 
@@ -122,18 +130,26 @@ isn't the bar; clearing FLOOR=20 is.
   (D54(i) withdrew the chroma-louder-than-rung3 test; light vs dark
   is now constrained by `light chroma ≤ dark chroma`, which holds at
   this choice).
-- Visual treatment: research workspace, hairline discipline, shadow
-  instead of glow — the SAME solid hairline as dark, calibrated to the
-  same legibility floor.
+- Visual treatment: research workspace, hairline discipline — the
+  SAME solid hairline as dark, calibrated to the same legibility floor.
 
 ## Mechanisms that intentionally differ (dark vs light)
 
-- The CSS carries TWO light overrides (one on the GBR mark, one on the
-  legend key) that pin `opacity .85` explicitly. These are kept even
-  when OL = OD (`.85`) — they pin the **parity contract** (theme
-  attribute is named in the source so future OD/OL changes can
-  re-diverge without re-deciding the parity semantics). The marks
-  themselves are otherwise identical in dark and light.
+None — the mark is a shared 1.25 hairline at .85 in both themes by
+design (token-only difference: `--ink-link` resolves to each theme's
+link ink). Judged as a design in each theme: dark reads as a calm
+outline on the `--panel2` map; light as a crisp saturated hairline on
+the near-white map — the most saturated element in the frame, accepted
+for a single small annotation.
+
+## DOM record
+
+`key_mark_parity` is derived from the SOURCE CSS (legend border 1.25px
+vs stroke 1.25), not from the rendered border — Chromium rounds a
+1.25px border to 1px at DPR 1 (`legend_news_i_border_width: "1px"`).
+
+dark `uk_box_blue_px` = 20 = FLOOR — zero margin, recorded; static
+receipt, deterministic test.
 
 ## D9 disclosure (page chrome)
 
