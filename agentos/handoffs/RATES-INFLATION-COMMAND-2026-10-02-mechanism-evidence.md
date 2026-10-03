@@ -29,6 +29,8 @@ changed:
     what: Enroll both mechanism suites in the existing unrun-brain-gateway code job.
   - path: config/unrun_test_baseline.json
     what: Remove exactly the now-enrolled producer suite; no added exemption.
+  - path: tests/test_deploy_update_self_heal.py
+    what: Test both exact restart predicates and actual shell behavior without weakening the existing closure checks.
   - path: app/deploy/update.sh
     what: Include the new read helper and imported mechanism module in the existing API restart closure.
 verified:
@@ -100,3 +102,10 @@ campaign. Eight chat-loop scenarios used fixture provider responses, not live
 models. Evidence is explanation_evidence_20261002.json beside the research note.
 Existing world-state production code and snapshot/transition stores are unchanged.
 Formal review, applicable hosted checks and normal release remain required.
+
+Published carrier: Macro PR8306, initial head12bb9532a1e1. A necessary restart
+integration repair eliminates its actual conflict with8257, while preserving
+all three incumbent candidates. The new exact source has259 passing restart
+tests including seven actual-shell parity cases. The original1186-test result
+is retained at12bb; no misleading aggregate count is created. Publication of
+the repair and current-head validation/review remain the next release steps.

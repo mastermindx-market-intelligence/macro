@@ -117,3 +117,16 @@ the source pin; actual read dispatch, unchanged files, unchanged other raw and
 plain-word blocks, and the typed count/time limits are verified. Source hashes,
 compact results, mutation results and final source hashes are in
 explanation_evidence_20261002.json. Full raw data is not duplicated in this PR.
+
+## Integration repair before release
+
+Initial candidate12bb9532a1e1 was published in #8306. A real composition with
+held #8257 conflicted on the long API restart expression. The repair restores
+that existing expression unchanged and adds a separate, exact three-module
+predicate inside the SAME API_RESTART_NEEDED block/transaction. No extra
+restart owner or broader wildcard exists. The test extractor now covers both
+OR-equivalent predicates, and seven cases execute the actual Bash block to
+prove matching and nonmatching behavior rather than trusting regex text alone.
+259 restart tests pass. Composition with #8257 is conflict-free; that source
+branch is untouched. Initial1186 tests remain bound to12bb, with unchanged
+mechanism/change/consumer implementation. Current-head CI remains separate.
