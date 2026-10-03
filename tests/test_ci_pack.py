@@ -4579,8 +4579,8 @@ CURATED_EXCLUSIVE = {
     "validated-claims-source",
     "validated-claims-contract",
     # 2026-10-03: the cycle-vintage collector (#7871). Exclusive because the
-    # suite drives the collector through runpy/subprocess and its paths are
-    # the suite's import closure plus the files it reads.
+    # suite drives the collector through runpy/subprocess; its paths are
+    # exactly the suite's import closure.
     "cycle-vintage-collector",
 }
 

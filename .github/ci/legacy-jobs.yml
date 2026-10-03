@@ -12875,9 +12875,10 @@ jobs:
     # gate:data and never runs on a PR, so the cycle-vintage suite (which
     # drives the same collector through runpy/subprocess) was named by a run:
     # step there and dark on every PR. Curated to a gate:code job of its own,
-    # exclusive because the suite's opaque runpy/subprocess edges would let
-    # inferred curation smear engine/collectors/lib/scripts onto every packing
-    # probe; its paths are the suite's import closure plus the files it reads.
+    # exclusive because the suite's opaque runpy/subprocess edges would widen
+    # its inferred fallback to scripts/** and data/**, pulling the job onto
+    # the scripts/build_free_content.py packing probe; its paths are exactly
+    # the suite's import closure.
     paths:
       - "scripts/collect_cycle_vintages.py"
       - "scripts/collect_release_target_vintages.py"
@@ -12897,7 +12898,7 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml requests
-      - name: cycle-vintage collector — reuse of the release-target collector, series identity, registry and workflow wiring
+      - name: cycle-vintage collector — cohort and manifest, store isolation, CPI completion boundary, missing-key skip, CLI (mocked fetch)
         run: python -m pytest tests/test_collect_cycle_vintages.py -q
 
   unrun-brain-desks:
