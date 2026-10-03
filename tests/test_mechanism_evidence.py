@@ -4,11 +4,22 @@ from __future__ import annotations
 import copy
 import json
 from datetime import datetime, timezone
+from functools import partial
 from pathlib import Path
 
 import pytest
 
 NOW = datetime(2026, 10, 2, 23, 0, tzinfo=timezone.utc)
+
+
+@pytest.fixture
+def fixed_reader_clock(monkeypatch):
+    """Keep real dispatcher/gateway reads on the fixture's observation clock."""
+    from engine.neuralweb import mechanism_evidence
+    monkeypatch.setattr(
+        mechanism_evidence, 'read_evidence',
+        partial(mechanism_evidence.read_evidence, now=NOW),
+    )
 
 
 def artifact():
@@ -53,6 +64,7 @@ def project(payload):
     return project_evidence(payload, now=NOW)
 
 
+@pytest.mark.usefixtures('fixed_reader_clock')
 @pytest.mark.parametrize('via_ask', [False, True])
 def test_existing_read_routes_enforce_context_and_classify_links(tmp_path, via_ask):
     p = artifact()
@@ -65,6 +77,7 @@ def test_existing_read_routes_enforce_context_and_classify_links(tmp_path, via_a
     else:
         from engine.neuralweb.cortex import _tool_read_mechanism_pathways
         out = _tool_read_mechanism_pathways(tmp_path, {})
+    assert out['observed_at'] == NOW.isoformat()
     assert out['is_context_only'] is True and out['display_only'] is True
     assert out['not_a_signal'] is True and out['authority']['may_size'] is False
     assert not out['authority'].get('may_trade', False)
@@ -240,6 +253,7 @@ def test_compiler_carries_transmission_wrapper_date_not_driver_clock(tmp_path, m
     assert json.loads((tmp_path / 'data/transmission/latest.json').read_text()) == tx
 
 
+@pytest.mark.usefixtures('fixed_reader_clock')
 @pytest.mark.parametrize('streaming', [False, True])
 @pytest.mark.parametrize('date_state', ['healthy', 'future', 'stale'])
 def test_actual_gateway_tool_result_reaches_model_with_evidence_qualifiers(tmp_path, monkeypatch, streaming, date_state):
@@ -277,11 +291,15 @@ def test_actual_gateway_tool_result_reaches_model_with_evidence_qualifiers(tmp_p
                for b in m['content'] if isinstance(b, dict) and b.get('type') == 'tool_result']
     assert results
     result = json.loads(results[0]['content'])
+    assert result['observed_at'] == NOW.isoformat()
     assert result['is_context_only'] is True
     assert result['causal_identification_established'] is False
     assert result['pathways'][0]['edges'][1]['observed_sign'] is None
     assert result['pathways'][0]['edges'][1]['prior_sign'] == 'negative'
-    if date_state != 'healthy':
+    if date_state == 'healthy':
+        assert result['evidence_summary']['reported_observation_links'] == 1
+        assert result['evidence_summary']['contextual_transmission_links'] == 1
+    else:
         assert result['evidence_summary']['reported_observation_links'] == 0
         assert result['pathways'][0]['edges'][0]['status'] == ('missing' if date_state == 'future' else 'stale')
 

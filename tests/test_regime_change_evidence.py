@@ -4,11 +4,22 @@ from __future__ import annotations
 import copy
 import json
 from datetime import datetime, timezone
+from functools import partial
 from pathlib import Path
 
 import pytest
 
 NOW = datetime(2026, 10, 3, 3, 0, tzinfo=timezone.utc)
+
+
+@pytest.fixture
+def fixed_reader_clock(monkeypatch):
+    """Keep real dispatcher/gateway reads on the fixture's observation clock."""
+    from engine.neuralweb import regime_change_evidence
+    monkeypatch.setattr(
+        regime_change_evidence, 'read_world_state_evidence',
+        partial(regime_change_evidence.read_world_state_evidence, now=NOW),
+    )
 
 
 def row(day='2026-10-02', field='us_rate_pressure', before='neutral', after='pressure'):
@@ -111,6 +122,7 @@ def test_other_world_state_blocks_are_not_recomputed_or_relabelled():
     assert project(legacy) == legacy
 
 
+@pytest.mark.usefixtures('fixed_reader_clock')
 @pytest.mark.parametrize('via_ask', [False, True])
 def test_actual_world_state_read_path_retains_qualified_changes(tmp_path, via_ask):
     source = state([row(), row('2099-01-01')]);p = tmp_path / 'data/neuralweb/world_state.json'
@@ -122,6 +134,9 @@ def test_actual_world_state_read_path_retains_qualified_changes(tmp_path, via_as
         from engine.neuralweb.cortex import _tool_read_world_state
         out = _tool_read_world_state(tmp_path, {})
     assert out['regime'] == source['regime']
+    assert out['macro_deltas']['window_end'] == NOW.date().isoformat()
+    assert out['macro_deltas']['reading_status'] == 'available'
+    assert out['macro_deltas']['n_transitions_14d'] == 1
     assert out['macro_deltas']['event_time_verified'] is False
     assert out['macro_deltas']['excluded']['future_dated'] == 1
     assert before == p.read_bytes()
@@ -153,6 +168,7 @@ def test_excessive_source_projection_does_not_select_a_misleading_prefix():
     assert d['reason'] == 'projection_exceeds_record_limit'
 
 
+@pytest.mark.usefixtures('fixed_reader_clock')
 @pytest.mark.parametrize('streaming', [False, True])
 def test_actual_chat_tool_result_keeps_change_count_and_time_limits(tmp_path, monkeypatch, streaming):
     from types import SimpleNamespace
@@ -187,6 +203,8 @@ def test_actual_chat_tool_result_keeps_change_count_and_time_limits(tmp_path, mo
     assert results
     out = json.loads(results[0]['content']);d = out['macro_deltas']
     assert out['regime'] == source['regime']
+    assert d['window_end'] == NOW.date().isoformat()
+    assert d['reading_status'] == 'available'
     assert d['n_transitions_14d'] == 1 and d['owner_reported_count'] == 20
     assert d['event_time_verified'] is False and d['coverage_complete'] is False
     assert d['excluded']['future_dated'] == 1
