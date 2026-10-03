@@ -476,7 +476,11 @@ class QuoteEvidence:
             raise Oa3InvalidError(
                 "EVIDENCE_COMPUTED_BEFORE_RETRIEVAL: retrieval_observed_at follows computed_at"
             )
-        # Strict JSON parse.  On failure, parsed_payload must be None and
+        # Preserve the caller-provided parsed view until it is checked against
+        # the exact raw response. A direct constructor must not substitute a
+        # convenient payload for bytes the source did not send.
+        supplied_payload = self.parsed_payload
+        # Strict JSON parse. On failure, parsed_payload must be None and
         # parse_error must carry the label; the wrapper must NOT fabricate
         # a parsed_payload from the empty default.  This is the load-bearing
         # distinction between QUOTE_RESPONSE_INVALID (unavailable) and
@@ -486,14 +490,38 @@ class QuoteEvidence:
                 self.raw_bytes, label=f"oa3 {self.role} quote raw bytes"
             )
         except cohort.NbboCohortError as exc:
+            if supplied_payload is not None:
+                raise Oa3InvalidError(
+                    f"oa3 {self.role} quote parsed_payload disagrees with malformed raw_bytes"
+                ) from exc
             object.__setattr__(self, "parse_error", f"QUOTE_RESPONSE_INVALID:{exc}")
+            object.__setattr__(self, "parsed_payload", None)
         else:
             if not isinstance(parsed_from_bytes, list):
+                if supplied_payload is not None:
+                    raise Oa3InvalidError(
+                        f"oa3 {self.role} quote parsed_payload disagrees with raw_bytes"
+                    )
                 object.__setattr__(
                     self, "parse_error",
                     f"QUOTE_RESPONSE_INVALID:not_a_json_array",
                 )
+                object.__setattr__(self, "parsed_payload", None)
             else:
+                try:
+                    supplied_normalized = (
+                        [dict(item) for item in supplied_payload]
+                        if supplied_payload is not None
+                        else None
+                    )
+                except (TypeError, ValueError) as exc:
+                    raise Oa3InvalidError(
+                        f"oa3 {self.role} quote parsed_payload is not a sequence of mappings"
+                    ) from exc
+                if supplied_normalized != parsed_from_bytes:
+                    raise Oa3InvalidError(
+                        f"oa3 {self.role} quote parsed_payload disagrees with raw_bytes"
+                    )
                 # parsed_payload is parsed correctly; deep-freeze it.  Each
                 # element is a MappingProxyType over a deep-copied dict so a
                 # caller who fetches parsed_payload[0] cannot mutate the
@@ -945,6 +973,10 @@ def _validate_evidence_selected_event(evidence: QuoteEvidence) -> _datetime_cls 
         return None
     if quote is None:
         return None
+    if quote.event_at > evidence.response_observed_at:
+        raise Oa3InvalidError(
+            "EVIDENCE_SELECTED_EVENT_FUTURE: selected quote event_at exceeds response_observed_at"
+        )
     if quote.event_at > evidence.retrieval_observed_at:
         raise Oa3InvalidError(
             "EVIDENCE_SELECTED_EVENT_FUTURE: selected quote event_at exceeds retrieval_observed_at"
@@ -1375,6 +1407,21 @@ def _build_pending_fixture(
     return record
 
 
+def _bind_expression_receipt(
+    record: dict[str, Any],
+    *,
+    upstream_digest_sha: str,
+    raw_sha: str,
+    raw_size: int,
+) -> dict[str, Any]:
+    """Attach original ExpressionReceipt evidence to a record of any status."""
+
+    record["expression_upstream_digest_sha256"] = upstream_digest_sha
+    record["expression_raw_response_sha256"] = raw_sha
+    record["expression_raw_response_bytes"] = raw_size
+    return record
+
+
 def _placeholder_evidence_for_block(
     role: str, canonical: dict[str, Any]
 ) -> QuoteEvidence:
@@ -1557,18 +1604,26 @@ def evaluate(
             )
         except (cohort.NbboSourceError, cohort.NbboCohortError):
             entry_quote_for_block = None
-    if entry_evidence.retrieval_observed_at < entry_window_end:
-        return _build_pending_fixture(
-            canonical=canonical,
-            receipt_payload=raw_expression,
-            entry_evidence=entry_evidence,
-            exit_evidence=exit_evidence,
-            entry_block=_evidence_block(
-                entry_evidence,
-                quote=entry_quote_for_block,
-                parse_error=None,
+    if (
+        entry_evidence.request_started_at < entry_window_end
+        or entry_evidence.retrieval_observed_at < entry_window_end
+    ):
+        return _bind_expression_receipt(
+            _build_pending_fixture(
+                canonical=canonical,
+                receipt_payload=raw_expression,
+                entry_evidence=entry_evidence,
+                exit_evidence=exit_evidence,
+                entry_block=_evidence_block(
+                    entry_evidence,
+                    quote=entry_quote_for_block,
+                    parse_error=None,
+                ),
+                exit_block=_empty_evidence_block(ROLE_EXIT),
             ),
-            exit_block=_empty_evidence_block(ROLE_EXIT),
+            upstream_digest_sha=upstream_digest,
+            raw_sha=expression_raw_sha,
+            raw_size=expression_raw_size,
         )
 
     # Per-role contract must equal the expression contract
@@ -1728,18 +1783,26 @@ def evaluate(
         )
 
     # Exit window maturity BEFORE terminal quote outcomes (Ruling C).
-    if exit_evidence.retrieval_observed_at < exit_window_end:
-        return _build_pending_fixture(
-            canonical=canonical,
-            receipt_payload=raw_expression,
-            entry_evidence=entry_evidence,
-            exit_evidence=exit_evidence,
-            entry_block=_evidence_block(
-                entry_evidence, quote=entry_quote, parse_error=None
+    if (
+        exit_evidence.request_started_at < exit_window_end
+        or exit_evidence.retrieval_observed_at < exit_window_end
+    ):
+        return _bind_expression_receipt(
+            _build_pending_fixture(
+                canonical=canonical,
+                receipt_payload=raw_expression,
+                entry_evidence=entry_evidence,
+                exit_evidence=exit_evidence,
+                entry_block=_evidence_block(
+                    entry_evidence, quote=entry_quote, parse_error=None
+                ),
+                exit_block=_evidence_block(
+                    exit_evidence, quote=None, parse_error=None
+                ),
             ),
-            exit_block=_evidence_block(
-                exit_evidence, quote=None, parse_error=None
-            ),
+            upstream_digest_sha=upstream_digest,
+            raw_sha=expression_raw_sha,
+            raw_size=expression_raw_size,
         )
 
     # Parse exit evidence (raw source JSON).  Malformed source JSON is

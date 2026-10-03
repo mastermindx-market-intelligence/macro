@@ -54,7 +54,9 @@ EXIT_WINDOW = timedelta(seconds=oa3.EXIT_WINDOW_SECONDS)
 
 
 def _request_clock() -> datetime:
-    return ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10)
+    # A terminal quote outcome needs a request made after its full 60-second
+    # evidence window has closed; normal fixtures use that capture discipline.
+    return ENTRY_END_UTC + timedelta(milliseconds=10)
 
 
 def _response_clock() -> datetime:
@@ -256,20 +258,26 @@ def _evidence(
     computed_at: datetime,
     rows: list[dict],
 ) -> oa3.QuoteEvidence:
+    query_end_at = boundary_at + timedelta(
+        seconds=(
+            oa3.EXIT_WINDOW_SECONDS
+            if role == oa3.ROLE_EXIT
+            else oa3.ENTRY_WINDOW_SECONDS
+        )
+    )
     # Causal law: for the exit role, request_started_at must not precede
     # the exit boundary (the exit window opens at entry.event_at + 60m);
     # honor a caller-passed clock when it is already >= the boundary.  Same
     # for response_observed_at — it must clear request_started_at.
     if role == oa3.ROLE_EXIT:
-        if request_started_at < boundary_at:
-            request_started_at = boundary_at + timedelta(milliseconds=10)
+        if request_started_at < query_end_at:
+            request_started_at = query_end_at + timedelta(milliseconds=10)
         if response_observed_at < request_started_at:
             response_observed_at = request_started_at + timedelta(milliseconds=10)
         if retrieval_observed_at < response_observed_at:
             retrieval_observed_at = response_observed_at + timedelta(milliseconds=10)
         if computed_at < retrieval_observed_at:
             computed_at = retrieval_observed_at + timedelta(milliseconds=10)
-    query_end_at = boundary_at + timedelta(seconds=oa3.EXIT_WINDOW_SECONDS if role == oa3.ROLE_EXIT else oa3.ENTRY_WINDOW_SECONDS)
     raw_bytes = _payload_bytes(*rows)
     return oa3.quote_evidence_from_bytes(
         role=role,
@@ -544,12 +552,16 @@ def test_early_now_is_pending_before_entry_window_matures() -> None:
 
     contract = _contract_for(_expression())
     retrieval = ENTRY_AVAILABLE_UTC + timedelta(seconds=5)
+    # In-window request/response are required so the clocks clear the
+    # integrity check (request < response < retrieval) AND the request
+    # sits inside the 60-second window so the new pending discipline
+    # fires.
     entry_ev = _evidence(
         role="entry",
         contract=contract,
         boundary_at=ENTRY_AVAILABLE_UTC,
-        request_started_at=_request_clock(),
-        response_observed_at=_response_clock(),
+        request_started_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        response_observed_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=20),
         retrieval_observed_at=retrieval,
         computed_at=retrieval,
         rows=[],
@@ -558,8 +570,8 @@ def test_early_now_is_pending_before_entry_window_matures() -> None:
         role="exit",
         contract=contract,
         boundary_at=ENTRY_AVAILABLE_UTC + EXIT_HORIZON,
-        request_started_at=_request_clock(),
-        response_observed_at=_response_clock(),
+        request_started_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        response_observed_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=20),
         retrieval_observed_at=retrieval,
         computed_at=retrieval,
         rows=[],
@@ -581,12 +593,16 @@ def test_pending_after_entry_window_but_before_exit_window() -> None:
     entry_rows = [_row_at(entry_event, ask="2.30", ask_size=10, ask_exchange=11, ask_condition=50)]
     retrieval_at = entry_event + timedelta(minutes=5)  # well before exit_start
     contract = _contract_for(_expression())
+    # The entry evidence is a late snapshot inside the window; request and
+    # response sit inside the window too so the pending discipline fires
+    # for the entry side while clocks clear the integrity check.
+    # response_observed_at clears the selected event at 2s (event <= response).
     entry_ev = _evidence(
         role="entry",
         contract=contract,
         boundary_at=ENTRY_AVAILABLE_UTC,
-        request_started_at=_request_clock(),
-        response_observed_at=_response_clock(),
+        request_started_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        response_observed_at=entry_event + timedelta(seconds=1),
         retrieval_observed_at=retrieval_at,
         computed_at=retrieval_at,
         rows=entry_rows,
@@ -1435,12 +1451,15 @@ def test_early_close_horizon_crosses_close_is_excluded() -> None:
     contract = _contract_for(receipt)
     # Retrieval must clear the entry window end (Ruling C: unconditional maturity).
     retrieval_at = near_close + timedelta(seconds=62)
+    # Request after the entry window end so the new pending discipline
+    # does NOT fire; this isolates the HORIZON_CROSSES_SESSION_CLOSE
+    # exclusion path from the entry-side pending path.
     entry_ev = _evidence(
         role="entry",
         contract=contract,
         boundary_at=near_close,
-        request_started_at=near_close + timedelta(milliseconds=10),
-        response_observed_at=near_close + timedelta(milliseconds=20),
+        request_started_at=near_close + timedelta(seconds=60, milliseconds=10),
+        response_observed_at=near_close + timedelta(seconds=60, milliseconds=20),
         retrieval_observed_at=retrieval_at,
         computed_at=retrieval_at + timedelta(milliseconds=10),
         rows=[_quote_row(
@@ -1535,15 +1554,18 @@ def test_record_carries_per_role_clocks_distinct() -> None:
     entry_rows = [_row_at(entry_event, ask="2.30", ask_size=10, ask_exchange=11, ask_condition=50)]
     exit_rows = [_row_at(exit_event, bid="2.40", bid_size=10, bid_exchange=11, bid_condition=50, ask="2.50", ask_size=12)]
     contract = _contract_for(_expression())
-    entry_request = ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10)
-    entry_response = entry_request + timedelta(seconds=1)
+    # Request after the entry window end so the new pending discipline
+    # does NOT fire; response clears the selected event at 5s
+    # (event <= response per RULING A-H invariant).
+    entry_request = ENTRY_END_UTC + timedelta(milliseconds=10)
+    entry_response = ENTRY_END_UTC + timedelta(seconds=1)
     # Retrieval must land AFTER the entry window end (Ruling C: window maturity
     # is unconditional) AND after the selected entry event (Ruling B).
     entry_retrieval = ENTRY_END_UTC + timedelta(seconds=2)
     entry_computed = entry_retrieval + timedelta(milliseconds=10)
-    exit_request = exit_event - timedelta(milliseconds=10)
+    exit_request = exit_event + timedelta(seconds=55, milliseconds=10)  # past exit_query_end_at
     exit_response = exit_request + timedelta(milliseconds=20)
-    exit_retrieval = exit_event + timedelta(seconds=2)
+    exit_retrieval = exit_event + timedelta(seconds=60)
     exit_computed = exit_retrieval + timedelta(milliseconds=10)
     entry_ev = _evidence(
         role="entry",
@@ -1583,16 +1605,20 @@ def test_evidence_computed_before_retrieval_is_invalid() -> None:
     exit_rows = [_row_at(exit_event, bid="2.40", bid_size=10, bid_exchange=11, bid_condition=50, ask="2.50", ask_size=12)]
     contract = _contract_for(_expression())
     retrieval = ENTRY_AVAILABLE_UTC + timedelta(seconds=10)
+    # Raw clocks preceding retrieval so the integrity check is satisfied
+    # and the only violation is computed < retrieval.
+    raw_request = ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10)
+    raw_response = ENTRY_AVAILABLE_UTC + timedelta(milliseconds=20)
     with pytest.raises(oa3.Oa3InvalidError, match="EVIDENCE_COMPUTED_BEFORE_RETRIEVAL"):
         oa3.quote_evidence_from_bytes(
             role="entry",
             contract=contract,
             boundary_at=ENTRY_AVAILABLE_UTC,
             query_end_at=ENTRY_END_UTC,
-            query=_expected_query(contract, ENTRY_AVAILABLE_UTC, _request_clock(), ENTRY_END_UTC),
+            query=_expected_query(contract, ENTRY_AVAILABLE_UTC, raw_request, ENTRY_END_UTC),
             raw_bytes=_payload_bytes(*entry_rows),
-            request_started_at=_request_clock(),
-            response_observed_at=_response_clock(),
+            request_started_at=raw_request,
+            response_observed_at=raw_response,
             retrieval_observed_at=retrieval,
             computed_at=retrieval - timedelta(milliseconds=10),
         )
@@ -2324,12 +2350,15 @@ def test_pending_until_whole_60s_window_elapsed_normal_close() -> None:
 
     contract = _contract_for(_expression())
     retrieval = ENTRY_AVAILABLE_UTC + timedelta(seconds=30)  # inside window
+    # Clocks inside the window: request/response precede retrieval so the
+    # integrity check passes; the request < window_end clause of the
+    # pending discipline still fires (window has not matured).
     entry_ev = _evidence(
         role="entry",
         contract=contract,
         boundary_at=ENTRY_AVAILABLE_UTC,
-        request_started_at=_request_clock(),
-        response_observed_at=_response_clock(),
+        request_started_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        response_observed_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=20),
         retrieval_observed_at=retrieval,
         computed_at=retrieval,
         rows=[],
@@ -2338,8 +2367,8 @@ def test_pending_until_whole_60s_window_elapsed_normal_close() -> None:
         role="exit",
         contract=contract,
         boundary_at=ENTRY_AVAILABLE_UTC + EXIT_HORIZON,
-        request_started_at=_request_clock(),
-        response_observed_at=_response_clock(),
+        request_started_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        response_observed_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=20),
         retrieval_observed_at=retrieval,
         computed_at=retrieval,
         rows=[],
@@ -2666,17 +2695,20 @@ def test_red_future_selected_event_with_ordered_clocks_is_invalid() -> None:
     exit_rows = [_row_at(exit_event, bid="2.40", bid_size=10, bid_exchange=11, bid_condition=50, ask="2.50", ask_size=12)]
     contract = _contract_for(_expression())
     # Retrieval at +3s (still inside window); entry event at +5s — selected
-    # event is FUTURE relative to retrieval.
+    # event is FUTURE relative to retrieval. Raw clocks clear the
+    # integrity check (request < response < retrieval).
+    raw_request = ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10)
+    raw_response = ENTRY_AVAILABLE_UTC + timedelta(milliseconds=20)
     entry_ev = _evidence(
         role="entry", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
-        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        request_started_at=raw_request, response_observed_at=raw_response,
         retrieval_observed_at=ENTRY_AVAILABLE_UTC + timedelta(seconds=3),
         computed_at=ENTRY_AVAILABLE_UTC + timedelta(seconds=3, milliseconds=10),
         rows=entry_rows,
     )
     exit_ev = _evidence(
         role="exit", contract=contract, boundary_at=entry_event + EXIT_HORIZON,
-        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        request_started_at=raw_request, response_observed_at=raw_response,
         retrieval_observed_at=ENTRY_AVAILABLE_UTC + timedelta(seconds=3),
         computed_at=ENTRY_AVAILABLE_UTC + timedelta(seconds=3, milliseconds=10),
         rows=exit_rows,
@@ -2695,15 +2727,21 @@ def test_red_quote_present_but_pre_window_maturity_is_pending() -> None:
     entry_rows = [_row_at(entry_event, ask="2.30", ask_size=10, ask_exchange=11, ask_condition=50)]
     contract = _contract_for(_expression())
     retrieval = ENTRY_AVAILABLE_UTC + timedelta(seconds=10)
+    # Clocks inside the 60-second window — request/response precede
+    # retrieval so the integrity check passes; pending fires on the
+    # request < window_end clause.  response_observed_at clears the
+    # selected event at 2s (event <= response per RULING A-H invariant).
     entry_ev = _evidence(
         role="entry", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
-        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        request_started_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        response_observed_at=entry_event + timedelta(milliseconds=20),
         retrieval_observed_at=retrieval, computed_at=retrieval,
         rows=entry_rows,
     )
     exit_ev = _evidence(
         role="exit", contract=contract, boundary_at=entry_event + EXIT_HORIZON,
-        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        request_started_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        response_observed_at=entry_event + timedelta(milliseconds=20),
         retrieval_observed_at=retrieval, computed_at=retrieval,
         rows=[],
     )
@@ -2733,6 +2771,154 @@ def test_red_request_before_full_window_ends_is_pending() -> None:
     )
     record = oa3.evaluate(_expression_receipt(), entry_evidence=entry_ev, exit_evidence=exit_ev)
     assert record["status"] == "pending"
+
+
+def test_red_midwindow_request_stays_pending_after_late_retrieval() -> None:
+    """Retrieval after the end cannot turn an early request into full-window evidence."""
+
+    expression = _expression_receipt()
+    contract = _contract_for(_expression())
+    entry_event = ENTRY_AVAILABLE_UTC + timedelta(seconds=5)
+    # request_started_at sits before the window end so the new pending
+    # discipline fires; response_observed_at clears the selected event
+    # at 5s (event <= response per RULING A-H invariant).
+    entry_ev = _evidence(
+        role="entry",
+        contract=contract,
+        boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        response_observed_at=entry_event + timedelta(milliseconds=20),
+        retrieval_observed_at=ENTRY_END_UTC + timedelta(seconds=2),
+        computed_at=ENTRY_END_UTC + timedelta(seconds=2, milliseconds=10),
+        rows=[_row_at(entry_event, ask="2.30", ask_size=10, ask_exchange=11, ask_condition=50)],
+    )
+    exit_ev = _evidence(
+        role="exit",
+        contract=contract,
+        boundary_at=entry_event + EXIT_HORIZON,
+        request_started_at=_request_clock(),
+        response_observed_at=_response_clock(),
+        retrieval_observed_at=_retrieval_after(entry_event),
+        computed_at=_retrieval_after(entry_event) + timedelta(milliseconds=10),
+        rows=[],
+    )
+
+    record = oa3.evaluate(expression, entry_evidence=entry_ev, exit_evidence=exit_ev)
+
+    assert record["status"] == "pending"
+    assert record["expression_upstream_digest_sha256"] == expression.upstream_digest_sha256
+    assert record["expression_raw_response_sha256"] == expression.raw_sha256
+    assert record["expression_raw_response_bytes"] == expression.raw_size
+
+
+def test_red_selected_event_after_response_is_invalid_before_pending() -> None:
+    """A source event cannot be selected if it follows the source response clock."""
+
+    contract = _contract_for(_expression())
+    entry_event = ENTRY_AVAILABLE_UTC + timedelta(seconds=5)
+    entry_ev = _evidence(
+        role="entry",
+        contract=contract,
+        boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        response_observed_at=ENTRY_AVAILABLE_UTC + timedelta(seconds=1),
+        retrieval_observed_at=ENTRY_END_UTC + timedelta(seconds=2),
+        computed_at=ENTRY_END_UTC + timedelta(seconds=2, milliseconds=10),
+        rows=[_row_at(entry_event, ask="2.30", ask_size=10, ask_exchange=11, ask_condition=50)],
+    )
+    exit_ev = _evidence(
+        role="exit",
+        contract=contract,
+        boundary_at=entry_event + EXIT_HORIZON,
+        request_started_at=_request_clock(),
+        response_observed_at=_response_clock(),
+        retrieval_observed_at=_retrieval_after(entry_event),
+        computed_at=_retrieval_after(entry_event) + timedelta(milliseconds=10),
+        rows=[],
+    )
+
+    record = oa3.evaluate(_expression_receipt(), entry_evidence=entry_ev, exit_evidence=exit_ev)
+
+    assert record["status"] == "invalid"
+    assert record["reason"] == "EVIDENCE_SELECTED_EVENT_FUTURE"
+
+
+@pytest.mark.parametrize("noncanonical", [False, True])
+def test_red_pending_preserves_original_expression_receipt_bytes(
+    noncanonical: bool,
+) -> None:
+    """Both canonical and whitespace-variant receipt bytes stay bound while pending."""
+
+    payload = _expression()
+    raw = (
+        json.dumps(payload, indent=2, sort_keys=False).encode("utf-8")
+        if noncanonical
+        else cohort.canonical_json_bytes(payload)
+    )
+    upstream = sha256(
+        cohort.canonical_json_bytes(_canonical_fields_for_digest(payload))
+    ).hexdigest()
+    expression = oa3.ExpressionReceipt(
+        raw_bytes=raw,
+        parsed_payload=payload,
+        upstream_digest_sha256=upstream,
+    )
+    contract = _contract_for(payload)
+    entry_ev = _evidence(
+        role="entry",
+        contract=contract,
+        boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        response_observed_at=ENTRY_AVAILABLE_UTC + timedelta(seconds=1),
+        retrieval_observed_at=ENTRY_END_UTC + timedelta(seconds=2),
+        computed_at=ENTRY_END_UTC + timedelta(seconds=2, milliseconds=10),
+        rows=[],
+    )
+    exit_ev = _evidence(
+        role="exit",
+        contract=contract,
+        boundary_at=ENTRY_AVAILABLE_UTC + EXIT_HORIZON,
+        request_started_at=_request_clock(),
+        response_observed_at=_response_clock(),
+        retrieval_observed_at=_retrieval_after(ENTRY_AVAILABLE_UTC),
+        computed_at=_retrieval_after(ENTRY_AVAILABLE_UTC) + timedelta(milliseconds=10),
+        rows=[],
+    )
+
+    record = oa3.evaluate(expression, entry_evidence=entry_ev, exit_evidence=exit_ev)
+
+    assert record["status"] == "pending"
+    assert record["expression_upstream_digest_sha256"] == upstream
+    assert record["expression_raw_response_sha256"] == sha256(raw).hexdigest()
+    assert record["expression_raw_response_bytes"] == len(raw)
+
+
+def test_red_direct_quote_evidence_rejects_raw_payload_disagreement() -> None:
+    """The public dataclass cannot detach a parsed view from source raw bytes."""
+
+    contract = _contract_for(_expression())
+    query = _expected_query(contract, ENTRY_AVAILABLE_UTC, _request_clock(), ENTRY_END_UTC)
+    clocks = {
+        "request_started_at": _request_clock(),
+        "response_observed_at": _response_clock(),
+        "retrieval_observed_at": RETRIEVAL_AT,
+        "computed_at": COMPUTED_UTC,
+    }
+    with pytest.raises(oa3.Oa3InvalidError, match="disagrees"):
+        oa3.QuoteEvidence(
+            role="entry", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
+            query_end_at=ENTRY_END_UTC, query=query, raw_bytes=b"not json",
+            parsed_payload=[], parse_error=None, endpoint=cohort.SOURCE_ENDPOINT,
+            **clocks,
+        )
+    with pytest.raises(oa3.Oa3InvalidError, match="disagrees"):
+        oa3.QuoteEvidence(
+            role="entry", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
+            query_end_at=ENTRY_END_UTC, query=query,
+            raw_bytes=_payload_bytes(_row_at(ENTRY_AVAILABLE_UTC + timedelta(seconds=5))),
+            parsed_payload=[], parse_error=None, endpoint=cohort.SOURCE_ENDPOINT,
+            **clocks,
+        )
 
 
 def test_red_naive_clock_in_evidence_is_invalid() -> None:
