@@ -1673,6 +1673,10 @@ on:
       - "tests/test_render_builder_ownership.py"
       - "tests/test_render_dead_asset_gate.py"
       - "tests/test_render_canada_scope.py"
+      # asia-close.yml Asia ownership fence (job: workflow-yaml). .github/workflows/**
+      # already reaches asia-close.yml itself; this entry is so a test-only edit
+      # still starts CI, per the two-halves law.
+      - "tests/test_china_heatmap_freshness.py"
       # OIP E8 options integrity suites (job: workflow-yaml). engine/**, scripts/** and
       # .github/workflows/** already reach their subjects; these entries are so a
       # TEST-ONLY edit still starts CI, per the two-halves law.

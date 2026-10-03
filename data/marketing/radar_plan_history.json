@@ -2,6 +2,35 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-03",
+      "tickers": [
+        "AIO",
+        "CR",
+        "DKS",
+        "DVN",
+        "EBAY",
+        "EGBN",
+        "ELF",
+        "FIX",
+        "FTI",
+        "GBR",
+        "GME",
+        "GNRC",
+        "ITW",
+        "KLAC",
+        "LMAT",
+        "MKSI",
+        "MRSH",
+        "NTCT",
+        "ORCL",
+        "OTTR",
+        "PTC",
+        "PVH",
+        "ROK",
+        "WABC"
+      ]
+    },
+    {
       "as_of": "2026-10-02",
       "tickers": [
         "AAP",
@@ -158,43 +187,6 @@
         "VTRS",
         "WABC",
         "XRAY"
-      ]
-    },
-    {
-      "as_of": "2026-09-26",
-      "tickers": [
-        "AAPL",
-        "AEP",
-        "ANIP",
-        "BKR",
-        "CDNS",
-        "CHRW",
-        "CMS",
-        "COHU",
-        "DAL",
-        "EBAY",
-        "EGBN",
-        "ELF",
-        "ETRA",
-        "GAP",
-        "ITW",
-        "KLAC",
-        "KMT",
-        "LMAT",
-        "MAR",
-        "NCT",
-        "PBH",
-        "POST",
-        "RBLX",
-        "REX",
-        "TBBK",
-        "TLN",
-        "TTD",
-        "VTRS",
-        "WBD",
-        "WING",
-        "WMT",
-        "WS"
       ]
     }
   ]
