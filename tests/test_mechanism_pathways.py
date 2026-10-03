@@ -1139,6 +1139,36 @@ class TestFactorRotationClock:
             f"trigger_context must name the stale factor source, got {tc!r}"
         )
 
+    def test_factor_rotation_zero_edge_never_claims_coverage_score(self, tmp_path):
+        """C6: the factor-rotation pathway's coverage_score must be None,
+        not a fabricated number. With zero edges, coverage cannot be claimed.
+        """
+        fresh_past = _FRESH_ASOF
+        regime = _make_regime(
+            md_verdict="quiet",
+            rr_state="calm",
+            rr_dominant_scare="",
+            md_asof=fresh_past,
+        )
+        regime.pop("regime_one", None)
+        factor_path = tmp_path / "data/neuralweb/factor_intelligence_state.json"
+        factor_path.parent.mkdir(parents=True, exist_ok=True)
+        factor_path.write_text(json.dumps({
+            "as_of": fresh_past,
+            "style_regime": "flip_pending",
+            "flips": [{"from": "value", "to": "growth"}],
+        }), encoding="utf-8")
+        _make_regime_files(tmp_path, regime)
+        result = compile(root=tmp_path, now=_TEST_NOW)
+        pathways = result.get("pathways", [])
+        factor = [p for p in pathways if p["family"] == "factor_rotation"]
+        assert factor, "factor rotation pathway expected"
+        primary = factor[0]
+        assert primary["coverage_score"] is None, (
+            f"factor-rotation pathway must withhold coverage (None), "
+            f"got {primary['coverage_score']!r}"
+        )
+
 
 class TestDependentLegsR7:
     """R7: dependent legs derived from one source record must not be counted
