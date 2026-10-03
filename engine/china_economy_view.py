@@ -1,6 +1,8 @@
 """Presentation for the additive economy lens. Reuses the existing SVG adapter."""
 from copy import deepcopy
 import calendar
+import hashlib
+import json
 from urllib.parse import urlparse
 from engine.china_economy import month_index,month_from_index
 from engine.china_macro_evidence_view import chart_svg
@@ -147,11 +149,24 @@ def prepare_economy_view(economy):
  return v
 
 
+def publication_snapshot_id(publication):
+ """Correlate views of one publication; not an auth token or source signature.
+
+ Hash canonical JSON, not pretty-printed file bytes. Include values, periods,
+ definitions and provenance so a same-month revision also changes identity.
+ No source rows or credentials are exposed by the anonymous projection.
+ """
+ canonical=json.dumps(publication,ensure_ascii=False,sort_keys=True,
+                      separators=(',',':'),allow_nan=False).encode('utf-8')
+ return hashlib.sha256(canonical).hexdigest()
+
+
 def client_publication(publication, *, include_metrics=True):
  """Bound the HTML projection; the complete evidence stays behind its data URL."""
  economy=publication.get('economy')
+ snapshot_id=publication_snapshot_id(publication)
  if not include_metrics:
-  return {'economy':None,'detail_href':'china_economy_detail.json',
+  return {'economy':None,'snapshot_id':snapshot_id,'detail_href':'china_economy_detail.json',
           'download_href':'china_macro_evidence.json',
           'projection':'public_shell_locked_detail'}
  if not isinstance(economy,dict):
@@ -161,5 +176,5 @@ def client_publication(publication, *, include_metrics=True):
  data['groups']=[{'id':g['id']} for g in economy.get('groups',[])]
  data['metrics']={ident:{k:deepcopy(m[k]) for k in ('chart','unit','definition_id')}
                   for ident,m in economy.get('metrics',{}).items()}
- return {'economy':data,'download_href':'china_macro_evidence.json',
+ return {'economy':data,'snapshot_id':snapshot_id,'download_href':'china_macro_evidence.json',
          'projection':'client_interaction_only_not_full_evidence'}

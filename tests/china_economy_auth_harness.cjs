@@ -11,20 +11,21 @@ class Target{
   contains(){return true;}
   focus(){} scrollIntoView(){} replaceChildren(){} click(){} remove(){}
 }
-function harness(){
+const SNAPSHOT='a'.repeat(64);
+function harness(snapshot=SNAPSHOT){
   const root=new Target(),slot=new Target(),lock=new Target(),message=new Target(),actions=new Target(),signIn=new Target();
   const select=new Target(),exporter=new Target(),explorer=new Target(),library=new Target(),selected=new Target(),template=new Target();
   template.content={cloneNode(){return {};}};
-  let deep=false,markup='LOCKED',retry=null,session=null;
+  let deep=false,markup='LOCKED',retry=null,reload=null,reloads=0,session=null;
   Object.defineProperty(slot,'innerHTML',{get:()=>markup,set(v){markup=v;deep=v==='DEEP';}});
-  actions.querySelector=s=>s==='a:first-child'?signIn:retry;
-  actions.appendChild=n=>{retry=n;n.remove=()=>{retry=null;};};
+  actions.querySelector=s=>s==='a:first-child'?signIn:s==='[data-eco-retry]'?retry:s==='[data-eco-reload]'?reload:null;
+  actions.appendChild=n=>{if(Object.hasOwn(n.attrs,'data-eco-reload')){reload=n;n.remove=()=>{reload=null;};}else{retry=n;n.remove=()=>{retry=null;};}};
   lock.querySelector=s=>s==='p'?message:actions;
-  const window=new Target();
+  const window=new Target();window.location={reload(){reloads++;}};
   window.MDXAuth={hasSession:()=>!!session,client:()=>Promise.resolve({auth:{getSession:()=>Promise.resolve({data:{session}})}})};
   const document={documentElement:new Target(),body:new Target(),createElement:()=>new Target(),getElementById(id){
     if(id==='china-economy')return root;
-    if(id==='eco-json')return {textContent:JSON.stringify({economy:null,detail_href:'china_economy_detail.json'})};
+    if(id==='eco-json')return {textContent:JSON.stringify({economy:null,snapshot_id:snapshot,detail_href:'china_economy_detail.json'})};
     if(id==='eco-detail-slot')return slot;
     if(id==='eco-detail-lock')return deep?null:lock;
     if(!deep)return null;
@@ -38,11 +39,11 @@ function harness(){
   function auth(id,event=id?'SIGNED_IN':'SIGNED_OUT'){
     session=id?{user:{id}}:null;window.emit('mdx-auth',{detail:{user:session?.user||null,event}});
   }
-  const payload=()=>({schema:'mastermind.china_economy_detail_payload.v1',status:'ok',reference_period:'2026-09',html:'DEEP',client:{economy:{schema:'mastermind.china_economy_lens.v1',reference_period:'2026-09',metrics:{industrial_sa:{chart:{dates:[],vals:[]},unit:'%',definition_id:'fixture'}},groups:[]}}});
+  const payload=()=>({schema:'mastermind.china_economy_detail_payload.v1',status:'ok',snapshot_id:SNAPSHOT,reference_period:'2026-09',html:'DEEP',client:{snapshot_id:SNAPSHOT,economy:{schema:'mastermind.china_economy_lens.v1',reference_period:'2026-09',metrics:{industrial_sa:{chart:{dates:[],vals:[]},unit:'%',definition_id:'fixture'}},groups:[]}}});
   function respond(i,status=200,body=payload()){
     requests[i].resolve({ok:status===200,status,json:()=>Promise.resolve(body)});
   }
-  return {root,slot,window,requests,auth,respond,payload,get retry(){return retry;},get deep(){return deep;}};
+  return {root,slot,window,requests,auth,respond,payload,get retry(){return retry;},get reload(){return reload;},get reloads(){return reloads;},get deep(){return deep;}};
 }
 const tick=async()=>{for(let i=0;i<5;i++)await new Promise(setImmediate);};
 (async()=>{
@@ -71,7 +72,27 @@ const tick=async()=>{for(let i=0;i<5;i++)await new Promise(setImmediate);};
     assert.equal(h.deep,false);assert.equal(h.root.dataset.ecoDetailState,'unavailable');
   }
   h=harness();h.auth('A');await tick();h.respond(0,500);await tick();
-  h.root.emit('click',{target:{closest:()=>h.retry},preventDefault(){}});await tick();
+  h.root.emit('click',{target:{closest:s=>s==='[data-eco-retry]'?h.retry:null},preventDefault(){}});await tick();
   assert.equal(h.requests.length,2);h.respond(1);await tick();assert.equal(h.deep,true);
+  // Self-consistent old-month and same-month revisions cannot cross snapshots.
+  for(const change of [
+    p=>{p.reference_period=p.client.economy.reference_period='2025-01';p.snapshot_id=p.client.snapshot_id='b'.repeat(64);},
+    p=>{p.snapshot_id=p.client.snapshot_id='b'.repeat(64);},
+    p=>{delete p.snapshot_id;},p=>{delete p.client.snapshot_id;},
+    p=>{p.snapshot_id='not-a-digest';},p=>{p.client.snapshot_id='b'.repeat(64);}
+  ]){
+    h=harness();h.auth('A');await tick();const obsolete=h.payload();change(obsolete);
+    h.respond(0,200,obsolete);await tick();
+    assert.equal(h.deep,false,'A different publication must not hydrate the overview');
+    assert.equal(h.root.dataset.ecoDetailState,'outdated');assert.ok(h.reload);
+    assert.equal(h.retry,null);assert.equal(h.window.EconomyLens,undefined);
+    h.auth('A','TOKEN_REFRESHED');await tick();assert.equal(h.requests.length,1);
+    h.root.emit('click',{target:{closest:s=>s==='[data-eco-reload]'?h.reload:null},preventDefault(){}});
+    assert.equal(h.reloads,1);assert.equal(h.requests.length,1);
+  }
+  for(const identity of [null,'bad',undefined]){
+    h=harness(identity===undefined?null:identity);h.auth('A');await tick();h.respond(0);await tick();
+    assert.equal(h.deep,false);assert.equal(h.root.dataset.ecoDetailState,'outdated');
+  }
   console.log('PASS: anonymous, later sign-in, dedup, sign-out cleanup, stale response, account switch, 401/403/500, malformed JSON, explicit retry');
 })().catch(error=>{console.error(error);process.exit(1);});

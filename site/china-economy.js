@@ -125,16 +125,25 @@
       loading:['Loading the economic evidence…','正在加载经济证据…'],
       forbidden:['Your account does not currently have access to the full evidence library.','当前账户暂无完整证据库的访问权限。'],
       unauthenticated:['Your session has expired. Sign in again to check access.','登录状态已过期，请重新登录以查看访问权限。'],
-      unavailable:['Economic evidence is temporarily unavailable. The overview is still available.','经济证据暂不可用，您仍可查看上方总览。']
+      unavailable:['Economic evidence is temporarily unavailable. The overview is still available.','经济证据暂不可用，您仍可查看上方总览。'],
+      outdated:['The evidence has been updated since this page loaded. Refresh the page to view a matching overview and evidence.','证据已在此页面加载后更新。请刷新页面，使总览与详细证据保持一致。']
     };
     var message=lock.querySelector('p');
     if(message && words[state]) message.innerHTML='<span class="l-en">'+words[state][0]+'</span><span class="l-zh">'+words[state][1]+'</span>';
     var actions=lock.querySelector('.eco-deep-lock-actions');
     if(actions){
       var signIn=actions.querySelector('a:first-child');
-      if(signIn) signIn.hidden=state==='forbidden' || state==='loading';
+      if(signIn) signIn.hidden=state==='forbidden' || state==='loading' || state==='outdated';
       var retry=actions.querySelector('[data-eco-retry]');
       if(retry) retry.remove();
+      var reload=actions.querySelector('[data-eco-reload]');
+      if(reload) reload.remove();
+      if(state==='outdated'){
+        reload=document.createElement('button'); reload.type='button';
+        reload.className='eco-export'; reload.setAttribute('data-eco-reload','');
+        reload.innerHTML='<span class="l-en">Refresh page</span><span class="l-zh">刷新页面</span>';
+        actions.appendChild(reload);
+      }
       if(state==='unavailable'){
         retry=document.createElement('button'); retry.type='button';
         retry.className='eco-export'; retry.setAttribute('data-eco-retry','');
@@ -156,12 +165,17 @@
     if (!payload || payload.schema!=='mastermind.china_economy_detail_payload.v1' ||
         payload.status!=='ok' || typeof payload.html!=='string' || !payload.client ||
         !payload.client.economy || payload.client.economy.schema!=='mastermind.china_economy_lens.v1' ||
-        payload.reference_period!==payload.client.economy.reference_period) return false;
+        payload.reference_period!==payload.client.economy.reference_period) return 'unavailable';
+    // Fail closed on a partial publication rollout, cached old JSON, or a
+    // same-month revision. The digest correlates data; server auth still owns access.
+    var expected=initialPublication.snapshot_id;
+    if(typeof expected!=='string' || !/^[a-f0-9]{64}$/.test(expected) ||
+       payload.snapshot_id!==expected || payload.client.snapshot_id!==expected) return 'outdated';
     slot.innerHTML=payload.html;
     if(activate(payload.client)){
-      slot.classList.remove('eco-deep-lock'); setStatus('ready'); return true;
+      slot.classList.remove('eco-deep-lock'); return 'ready';
     }
-    slot.innerHTML=gateHTML; return false;
+    slot.innerHTML=gateHTML; return 'unavailable';
   }
   function loadDetail(){
     if(!userId || attempted) return;
@@ -181,7 +195,7 @@
         return response.json();
       })
       .then(function(payload){
-        if(current() && acceptedResponse && !installDetail(payload)) setStatus('unavailable');
+        if(current() && acceptedResponse) setStatus(installDetail(payload));
       })
       .catch(function(error){if(current() && error.name!=='AbortError') setStatus('unavailable');})
       .then(function(){if(current()) activeRequest=null;});
@@ -214,6 +228,8 @@
     inspectSession(false);
   }
   root.addEventListener('click',function(event){
+    var reload=event.target.closest && event.target.closest('[data-eco-reload]');
+    if(reload && root.contains(reload)){event.preventDefault();window.location.reload();return;}
     var target=event.target.closest && event.target.closest('[data-eco-retry]');
     if(target && root.contains(target)){event.preventDefault();inspectSession(true);return;}
     if(root.dataset.ecoDetailReady==='true') return;

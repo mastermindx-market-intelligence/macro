@@ -2102,6 +2102,7 @@ def main() -> int:
         import json as _macro_json
         _detail_payload = {
             "schema": "mastermind.china_economy_detail_payload.v1",
+            "snapshot_id": vm["economy_client_publication"]["snapshot_id"],
             "status": "unavailable",
             "reference_period": (_macro_evidence.get("economy") or {}).get("reference_period"),
             "client": None,

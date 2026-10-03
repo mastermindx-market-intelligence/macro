@@ -77,3 +77,52 @@ def test_auth_state_copy_uses_the_existing_site_language_classes():
     js=(root/'templates/china-economy.js').read_text()
     assert 'class="lang-en"' not in js and 'class="lang-zh"' not in js
     assert 'class="l-en"' in js and 'class="l-zh"' in js
+
+
+def test_snapshot_identity_binds_public_and_protected_views_without_disclosing_rows():
+    import re
+    from engine.china_economy_view import publication_snapshot_id
+    original=sample()
+    public=client_publication(original,include_metrics=False)
+    detail=client_publication(original)
+    assert re.fullmatch(r'[a-f0-9]{64}',public['snapshot_id'])
+    assert public['snapshot_id']==detail['snapshot_id']==publication_snapshot_id(original)
+    assert 'industrial_sa' not in json.dumps(public)
+    assert public['economy'] is None
+
+
+def test_snapshot_identity_covers_same_month_value_and_receipt_revisions():
+    from engine.china_economy_view import publication_snapshot_id
+    original=sample();prior=publication_snapshot_id(original)
+    for change in ('value','definition','period','source','panel'):
+        revised=deepcopy(original)
+        if change=='value':revised['economy']['metrics']['industrial_sa']['chart']['vals'][-1]=.55
+        if change=='definition':revised['economy']['metrics']['industrial_sa']['definition_id']='revised'
+        if change=='period':revised['economy']['reference_period']='2026-09'
+        if change=='source':revised['economy']['source_receipt']='new-vintage'
+        if change=='panel':revised['panels']['large']='new-panel-value'
+        assert publication_snapshot_id(revised)!=prior,change
+    assert publication_snapshot_id(original)==prior
+
+
+def test_snapshot_identity_ignores_dictionary_insertion_order_and_rejects_nan():
+    import pytest
+    from engine.china_economy_view import publication_snapshot_id
+    a={'b':[1,None,2.5],'a':{'z':3,'x':'国家统计局'}}
+    b={'a':{'x':'国家统计局','z':3},'b':[1,None,2.5]}
+    assert publication_snapshot_id(a)==publication_snapshot_id(b)
+    with pytest.raises(ValueError):publication_snapshot_id({'x':float('nan')})
+
+
+def test_builder_uses_public_identity_for_protected_payload():
+    root=Path(__file__).resolve().parents[1]
+    build=(root/'scripts/build_china.py').read_text()
+    assert '"snapshot_id": vm["economy_client_publication"]["snapshot_id"]' in build
+
+
+def test_snapshot_refresh_copy_uses_existing_locale_classes():
+    root=Path(__file__).resolve().parents[1]
+    js=(root/'templates/china-economy.js').read_text()
+    assert 'Refresh page</span><span class="l-zh">刷新页面' in js
+    assert "window.location.reload()" in js
+    assert "setInterval" not in js
