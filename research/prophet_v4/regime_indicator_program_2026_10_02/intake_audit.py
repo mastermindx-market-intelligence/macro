@@ -164,6 +164,15 @@ IDENTITY = ("population_digest", "decision_cut_digest", "target_definition",
 CLOCK = ("instrument_plane", "feed", "session", "timezone", "anchor", "adjustment")
 
 
+def _bar_policy(item: Mapping[str, Any]) -> str | None:
+    # Preserve the original complete-only manifest. A live provisional view must
+    # instead declare an independently qualified, decision-cut-bound snapshot.
+    explicit = item.get("bar_observation_policy")
+    if explicit is not None:
+        return explicit
+    return "completed_only" if item.get("completed_bars_only") is True else None
+
+
 def audit_comparison(left: Mapping[str, Any], right: Mapping[str, Any], *,
                      contrast: str) -> dict[str, Any]:
     """Audit paired-owner manifests. It neither reads outcomes nor selects a winner.
@@ -171,7 +180,9 @@ def audit_comparison(left: Mapping[str, Any], right: Mapping[str, Any], *,
     `grain_memory_matched` means a grain-only comparison. `policy_bundle` allows
     differing clocks/kernels but cannot be reported as a pure timeframe effect.
     For a pure grain comparison the caller supplies an exact declared memory-law
-    identity, not a rounded nominal period count.
+    identity, not a rounded nominal period count. Complete-only histories and
+    qualified as-of provisional snapshots are distinct valid observation policies;
+    a finalized full-history stream never substitutes for the latter.
     """
     if contrast not in {"grain_memory_matched", "kernel", "session", "policy_bundle"}:
         raise ValueError("unknown contrast")
@@ -189,14 +200,30 @@ def audit_comparison(left: Mapping[str, Any], right: Mapping[str, Any], *,
             reasons.append(f"{side}:invalid_target_horizon")
         if item.get("target_horizon_unit") not in {"exchange_sessions", "clock_hours", "calendar_days"}:
             reasons.append(f"{side}:unqualified_horizon_unit")
-        if item.get("completed_bars_only") is not True:
-            reasons.append(f"{side}:unqualified_bar_completion")
+        policy = _bar_policy(item)
+        if policy == "completed_only":
+            if item.get("completed_bars_only") is not True:
+                reasons.append(f"{side}:unqualified_bar_completion")
+        elif policy == "asof_snapshot":
+            if type(item.get("completed_bars_only")) is not bool:
+                reasons.append(f"{side}:unqualified_bar_completion")
+            if item.get("asof_snapshot_qualified") is not True:
+                reasons.append(f"{side}:unqualified_asof_snapshot")
+            if item.get("snapshot_cut_digest") != item.get("decision_cut_digest"):
+                reasons.append(f"{side}:asof_snapshot_cut_mismatch")
+            receipt = item.get("asof_snapshot_receipt")
+            if not isinstance(receipt, str) or not receipt.strip():
+                reasons.append(f"{side}:missing_asof_snapshot_receipt")
+        else:
+            reasons.append(f"{side}:unqualified_bar_observation_policy")
         if item.get("warmup_qualified") is not True:
             reasons.append(f"{side}:unqualified_warmup")
     for key in IDENTITY:
         if left.get(key) != right.get(key):
             reasons.append(f"unpaired:{key}")
     if contrast != "policy_bundle":
+        if _bar_policy(left) != _bar_policy(right):
+            reasons.append("confounded:bar_observation_policy")
         same = [k for k in CLOCK if contrast != "session" or k not in {"session", "anchor"}]
         if contrast != "kernel":
             same.append("kernel_memory_law")
@@ -210,7 +237,10 @@ def audit_comparison(left: Mapping[str, Any], right: Mapping[str, Any], *,
                     "kernel": ("kernel_memory_law",),
                     "session": ("session", "anchor"),
                     "policy_bundle": (*CLOCK, "grain", "kernel_memory_law", "species_id")}
-    if not any(left.get(k) != right.get(k) for k in changed_axis[contrast]):
+    changed = any(left.get(k) != right.get(k) for k in changed_axis[contrast])
+    if contrast == "policy_bundle":
+        changed = changed or _bar_policy(left) != _bar_policy(right)
+    if not changed:
         reasons.append("no_declared_treatment_difference")
     if left == right:
         reasons.append("self_comparison")
