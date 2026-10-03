@@ -11,7 +11,10 @@ from engine.entry_radar.catalyst_context import (
     assess_catalyst_context,
 )
 
-from engine.entry_radar.catalyst_adapters import (\n    adapt_company_intelligence_earnings_workspace,\n    adapt_edgar_earnings_item_202,\n)
+from engine.entry_radar.catalyst_adapters import (
+    adapt_company_intelligence_earnings_workspace,
+    adapt_edgar_earnings_item_202,
+)
 
 T0 = datetime(2026, 10, 2, 14, 30, tzinfo=timezone.utc)
 
@@ -242,4 +245,147 @@ def test_edgar_item202_adapter_refuses_observation_before_source_availability():
             _item202_row(acceptance_datetime="2026-10-02T14:31:00Z"),
             owner_observed_at=T0,
         )
-\n\ndef _company_workspace(\n    *,\n    state="complete",\n    event_id="evt_cik0001045810_2026q3_results",\n    listing_ticker="NVDA",\n    source_available_at="2026-10-02T14:00:00Z",\n    observed_at="2026-10-02T14:05:00Z",\n    generated_at="2026-10-02T14:10:00Z",\n    generation_id="aaaaaaaaaaaaaaaaaaaaaaaa",\n):\n    return {\n        "schema": "event_workspace.v1",\n        "event_id": event_id,\n        "aliases": [],\n        "issuer": {\n            "company_id": "cik:0001045810",\n            "display_name": "NVIDIA Corporation",\n            "listings": [{"ticker": listing_ticker}],\n        },\n        "fiscal_period": {"year": 2026, "quarter": 3, "calendar_end": "2026-09-30"},\n        "lifecycle": {\n            "state": state,\n            "source_available_at": source_available_at,\n            "observed_at": observed_at,\n        },\n        "completeness": {},\n        "facts": [],\n        "deltas": [],\n        "guidance": [],\n        "claims": [],\n        "sources": [],\n        "warnings": [],\n        "generation_id": generation_id,\n        "generated_at": generated_at,\n        "authority": "context_only",\n        "prophet_flags": {\n            "may_rank": False,\n            "may_size": False,\n            "may_gate": False,\n            "prophet_authority": False,\n        },\n        "claim_citations_pending": False,\n        "qa_exchanges": [],\n    }\n\n\ndef test_company_workspace_adapter_preserves_exact_owner_version_and_consumer_clock():\n    got = adapt_company_intelligence_earnings_workspace(\n        _company_workspace(), ticker="NVDA", owner_observed_at=T0,\n    )\n    version = "evt_cik0001045810_2026q3_results@aaaaaaaaaaaaaaaaaaaaaaaa"\n    assert got.native_id == version\n    assert got.evidence_ref == f"company-intelligence-workspace:{version}"\n    assert got.event_kind == "earnings_results_company_event"\n    assert got.owner_disposition == "blocking"\n    assert got.known_at == T0\n    assert got.source_available_at == datetime(2026, 10, 2, 14, 0, tzinfo=timezone.utc)\n\n\n@pytest.mark.parametrize(\n    "state",\n    ["started", "completed_partial", "complete", "corrected", "derived_ready", "distributed"],\n)\ndef test_company_workspace_adapter_accepts_only_frozen_post_release_states(state):\n    got = adapt_company_intelligence_earnings_workspace(\n        _company_workspace(state=state), ticker="NVDA", owner_observed_at=T0,\n    )\n    assert got.owner_disposition == "blocking"\n\n\n@pytest.mark.parametrize(\n    "state",\n    ["discovered", "scheduled", "rescheduled", "cancelled", "superseded"],\n)\ndef test_company_workspace_adapter_refuses_pre_release_or_terminal_noncurrent_states(state):\n    with pytest.raises(CatalystContextError):\n        adapt_company_intelligence_earnings_workspace(\n            _company_workspace(state=state), ticker="NVDA", owner_observed_at=T0,\n        )\n\n\ndef test_company_workspace_adapter_refuses_wrong_listing_ticker():\n    with pytest.raises(CatalystContextError):\n        adapt_company_intelligence_earnings_workspace(\n            _company_workspace(listing_ticker="AMD"), ticker="NVDA", owner_observed_at=T0,\n        )\n\n\ndef test_company_workspace_adapter_refuses_non_results_event_identity():\n    with pytest.raises(CatalystContextError):\n        adapt_company_intelligence_earnings_workspace(\n            _company_workspace(event_id="evt_cik0001045810_2026q3_call"),\n            ticker="NVDA",\n            owner_observed_at=T0,\n        )\n\n\ndef test_company_workspace_adapter_refuses_lifecycle_clock_inversion():\n    with pytest.raises(CatalystContextError):\n        adapt_company_intelligence_earnings_workspace(\n            _company_workspace(\n                source_available_at="2026-10-02T14:06:00Z",\n                observed_at="2026-10-02T14:05:00Z",\n            ),\n            ticker="NVDA",\n            owner_observed_at=T0,\n        )\n\n\ndef test_company_workspace_adapter_refuses_generation_before_owner_event_observation():\n    with pytest.raises(CatalystContextError):\n        adapt_company_intelligence_earnings_workspace(\n            _company_workspace(generated_at="2026-10-02T14:04:00Z"),\n            ticker="NVDA",\n            owner_observed_at=T0,\n        )\n\n\ndef test_company_workspace_adapter_refuses_consumer_clock_before_generation():\n    with pytest.raises(CatalystContextError):\n        adapt_company_intelligence_earnings_workspace(\n            _company_workspace(generated_at="2026-10-02T14:31:00Z"),\n            ticker="NVDA",\n            owner_observed_at=T0,\n        )\n\n\ndef test_known_company_blocking_event_remains_visible_when_coverage_is_incomplete():\n    evidence = adapt_company_intelligence_earnings_workspace(\n        _company_workspace(), ticker="NVDA", owner_observed_at=T0,\n    )\n    got = assess_catalyst_context(\n        ticker="NVDA",\n        tactical_episode_ref="radar:episode:abc123",\n        decision_at=T0,\n        required_sources=["company_intelligence"],\n        source_reads=[],\n        evidence=[evidence],\n    )\n    assert got.coverage_complete is False\n    assert got.context_state == "blocking_event_observed"\n    assert got.blocking_evidence_refs == (evidence.evidence_ref,)\n
+
+
+def _company_workspace(
+    *,
+    state="complete",
+    event_id="evt_cik0001045810_2026q3_results",
+    listing_ticker="NVDA",
+    source_available_at="2026-10-02T14:00:00Z",
+    observed_at="2026-10-02T14:05:00Z",
+    generated_at="2026-10-02T14:10:00Z",
+    generation_id="aaaaaaaaaaaaaaaaaaaaaaaa",
+):
+    return {
+        "schema": "event_workspace.v1",
+        "event_id": event_id,
+        "aliases": [],
+        "issuer": {
+            "company_id": "cik:0001045810",
+            "display_name": "NVIDIA Corporation",
+            "listings": [{"ticker": listing_ticker}],
+        },
+        "fiscal_period": {"year": 2026, "quarter": 3, "calendar_end": "2026-09-30"},
+        "lifecycle": {
+            "state": state,
+            "source_available_at": source_available_at,
+            "observed_at": observed_at,
+        },
+        "completeness": {},
+        "facts": [],
+        "deltas": [],
+        "guidance": [],
+        "claims": [],
+        "sources": [],
+        "warnings": [],
+        "generation_id": generation_id,
+        "generated_at": generated_at,
+        "authority": "context_only",
+        "prophet_flags": {
+            "may_rank": False,
+            "may_size": False,
+            "may_gate": False,
+            "prophet_authority": False,
+        },
+        "claim_citations_pending": False,
+        "qa_exchanges": [],
+    }
+
+
+def test_company_workspace_adapter_preserves_exact_owner_version_and_consumer_clock():
+    got = adapt_company_intelligence_earnings_workspace(
+        _company_workspace(), ticker="NVDA", owner_observed_at=T0,
+    )
+    version = "evt_cik0001045810_2026q3_results@aaaaaaaaaaaaaaaaaaaaaaaa"
+    assert got.native_id == version
+    assert got.evidence_ref == f"company-intelligence-workspace:{version}"
+    assert got.event_kind == "earnings_results_company_event"
+    assert got.owner_disposition == "blocking"
+    assert got.known_at == T0
+    assert got.source_available_at == datetime(2026, 10, 2, 14, 0, tzinfo=timezone.utc)
+
+
+@pytest.mark.parametrize(
+    "state",
+    ["started", "completed_partial", "complete", "corrected", "derived_ready", "distributed"],
+)
+def test_company_workspace_adapter_accepts_only_frozen_post_release_states(state):
+    got = adapt_company_intelligence_earnings_workspace(
+        _company_workspace(state=state), ticker="NVDA", owner_observed_at=T0,
+    )
+    assert got.owner_disposition == "blocking"
+
+
+@pytest.mark.parametrize(
+    "state",
+    ["discovered", "scheduled", "rescheduled", "cancelled", "superseded"],
+)
+def test_company_workspace_adapter_refuses_pre_release_or_terminal_noncurrent_states(state):
+    with pytest.raises(CatalystContextError):
+        adapt_company_intelligence_earnings_workspace(
+            _company_workspace(state=state), ticker="NVDA", owner_observed_at=T0,
+        )
+
+
+def test_company_workspace_adapter_refuses_wrong_listing_ticker():
+    with pytest.raises(CatalystContextError):
+        adapt_company_intelligence_earnings_workspace(
+            _company_workspace(listing_ticker="AMD"), ticker="NVDA", owner_observed_at=T0,
+        )
+
+
+def test_company_workspace_adapter_refuses_non_results_event_identity():
+    with pytest.raises(CatalystContextError):
+        adapt_company_intelligence_earnings_workspace(
+            _company_workspace(event_id="evt_cik0001045810_2026q3_call"),
+            ticker="NVDA",
+            owner_observed_at=T0,
+        )
+
+
+def test_company_workspace_adapter_refuses_lifecycle_clock_inversion():
+    with pytest.raises(CatalystContextError):
+        adapt_company_intelligence_earnings_workspace(
+            _company_workspace(
+                source_available_at="2026-10-02T14:06:00Z",
+                observed_at="2026-10-02T14:05:00Z",
+            ),
+            ticker="NVDA",
+            owner_observed_at=T0,
+        )
+
+
+def test_company_workspace_adapter_refuses_generation_before_owner_event_observation():
+    with pytest.raises(CatalystContextError):
+        adapt_company_intelligence_earnings_workspace(
+            _company_workspace(generated_at="2026-10-02T14:04:00Z"),
+            ticker="NVDA",
+            owner_observed_at=T0,
+        )
+
+
+def test_company_workspace_adapter_refuses_consumer_clock_before_generation():
+    with pytest.raises(CatalystContextError):
+        adapt_company_intelligence_earnings_workspace(
+            _company_workspace(generated_at="2026-10-02T14:31:00Z"),
+            ticker="NVDA",
+            owner_observed_at=T0,
+        )
+
+
+def test_known_company_blocking_event_remains_visible_when_coverage_is_incomplete():
+    evidence = adapt_company_intelligence_earnings_workspace(
+        _company_workspace(), ticker="NVDA", owner_observed_at=T0,
+    )
+    got = assess_catalyst_context(
+        ticker="NVDA",
+        tactical_episode_ref="radar:episode:abc123",
+        decision_at=T0,
+        required_sources=["company_intelligence"],
+        source_reads=[],
+        evidence=[evidence],
+    )
+    assert got.coverage_complete is False
+    assert got.context_state == "blocking_event_observed"
+    assert got.blocking_evidence_refs == (evidence.evidence_ref,)
