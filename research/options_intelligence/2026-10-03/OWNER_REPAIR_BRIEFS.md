@@ -2,6 +2,8 @@
 
 **Status:** ready for current-owner reconciliation and scoped implementation review. No dispatch, source repair or production action is performed by this document. These briefs refine W1/W2 in [ROADMAP_AND_HANDOFF.md](ROADMAP_AND_HANDOFF.md). They preserve the current four C0 owners, Terminal #599 coordination and existing carrier custody.
 
+**October 3 continuation:** the briefs now have a [prepared Fable packet](FABLE_STRUCTURAL_HANDOFF.md), [current owner/source delta](OWNER_DELTA_20261003.md), [83-case B1/B2 numerical reference](options-reference-kernels.md), [independently reviewed B3/B5 admission reference](SOURCE_ADMISSION_REVIEW.md), and [exact six-pilot study](PILOT_STUDY_SPEC_V1.md). [Principal decisions](PRINCIPAL_DECISIONS_20261003.md) accept their bounded research/engineering uses. Production paths remain with the incumbent owners; these references are not drop-in strict-schema extensions.
+
 ## B1. Correct gamma-regime orientation
 
 **Problem:** Macro `_gamma_flip` assigns long above/short below the nearest zero crossing. A descending crossing makes that regime disagree with the same producer's net-gamma curve at actual spot. The [executed witness](options-mechanics-witness.md) demonstrates both wrong-sign cases, with ascending and no-crossing controls.
@@ -12,7 +14,7 @@
 
 **Meaningful acceptance:** the supplied descending chain returns a local sign consistent with its own curve at S98 and S101; ascending and no-cross controls retain correct behavior. Include multi-root and near-zero examples, input permutations and a numerical tolerance tied to the declared units. Confirm current consumer compatibility for any state vocabulary change. Production incidence remains a separate bounded data audit; the synthetic finding alone does not quantify affected records.
 
-**Scope:** fix-free research wrapper/witness exists here; production implementation belongs to the incumbent producer. No new position store, pricing engine or activation gate is needed.
+**Scope:** the original counterexample and a working isolated reference now exist. The latter evaluates current spot separately, preserves detected root features/orientation and makes unknown/domain states explicit; finite grids do not prove continuous-root completeness. Production adaptation belongs to the incumbent producer. No new position store, pricing engine or activation gate is needed.
 
 ## B2. Separate strike distribution from finite hedge change
 
@@ -24,7 +26,7 @@
 
 **Scenario contract:** one hedge underlying/currency, stated signed inventory, scenario spot/IV/time rule, complete/partial coverage and model version. B=-sum n m Delta; H=S*×(B*−B0), positive underlying buy notional. This is an endpoint rehedge convention, not path cash/turnover or observed order flow. Market impact needs an additional model/evidence.
 
-**Meaningful acceptance:** unchanged spot/IV/time gives zero hedge change; down/up moves and long/short positions have correct directions; positions on both sides of spot contribute; matched-Gamma/different-maturity and different-IV books remain distinguishable by repricing; small shocks converge to the whole-book local approximation. Preserve unknown Greeks and partial totals. Exact tests and inputs are in the witness script/JSON.
+**Meaningful acceptance:** unchanged spot/IV/time gives zero hedge change; down/up moves and long/short positions have correct directions; positions on both sides of spot contribute; matched-Gamma/different-maturity and different-IV books remain distinguishable by repricing; small shocks converge to the whole-book local approximation. Preserve unknown Greeks and partial totals. The [reference kernels](options-reference-kernels.py) and [83-case result](options-reference-kernels-results.json) add heterogeneous multipliers, scope/overflow checks and a matched call-minus-put book with unchanged hedge units and zero trade despite changed hedge holding value.
 
 ## B3. Make chain proxy and measured flow distinct
 
@@ -48,7 +50,7 @@
 
 **Requested evidence:** through the existing owner, choose one already published board/run and retain exact code/input/model/publication references. Record non-null coverage, within-pool variation, member admission, duplicate-vector collapse, family aggregation and final ranking. A fit-free research comparison with the GEX member excluded can quantify that run's sensitivity if the source receipts support reproduction. It is not a production disable or a predictive-validation result.
 
-**Acceptance:** a traceable answer to whether the member was admitted and changed scores/ranks in the inspected run, or a specific unavailable-input state. The empirical protocol records B0 options-free research comparator, B1 actual incumbent and B2 incumbent plus the proposed new family, together with the cohort's selection lineage. No blanket global-gate claim survives the source evidence.
+**Acceptance:** a traceable answer to whether the member was admitted and changed scores/ranks in the inspected run, or a specific unavailable-input state. The initial run passes both source replay and independent rational calculation. The six-pilot protocol now uses the narrower target-trained B1-RI incumbent-information adapter, separately from the broader unfulfilled production-policy comparison. B0 input lineage and the cohort's selection lineage remain explicit. No blanket global-gate claim survives the source evidence.
 
 ## B5. Preserve Greek and artifact availability provenance
 
@@ -61,3 +63,5 @@
 **Acceptance:** current retained trade fields survive round trip; OI effective date differs correctly from availability; historical backfill cannot pass a captured consumer-PIT gate; strict candidate schema migration is explicit; quote-to-contract money scale and product clocks match reference data. Use the joint fixed/refitted-IV witness plus real qualified fixtures before selecting a Greek adapter.
 
 These five briefs are implementation inputs for the current owners. They do not authorize new scores, candidate actions, fills/P&L claims, process starts or publication effects. The larger Fable commission should carry their accepted source heads and integration receipts, with already-completed work excluded.
+
+**Current B5 routing:** #8201 already carries clock-retention changes needing exact review/natural evidence; #7417 already has semantic approval for sweep/package repair. #7306's future-clock repair remains reference-only, and #8310 v2 is commissioned with its original owner. The retained retrospective manifest has 429 present files but zero original-availability/vintage column lists. The latest source-chain timeout has an assigned performance audit. Consume those carriers and receipts rather than opening duplicate implementations or diagnosing the same timeout again.

@@ -9,7 +9,18 @@
 | Terminal protected source baseline | `a049d46fa2415d3949aae5efc0ee515b6667c7a0` |
 | Inactive candidate supplement #8310 | `a15ba9ae77826bf6a1d6fcb40022b6816b705e43` |
 
-### Metadata refresh at 09:30 UTC
+## Current continuation delta — owner evidence through 10:17 UTC
+
+Read [OWNER_DELTA_20261003.md](OWNER_DELTA_20261003.md) and its [50-source manifest](OWNER_DELTA_20261003.sources.json) for the current bounded custody review. Procedure is now pinned to protected Mastermind `20adcaf65c2dd1bb734ab06e215feb1a0eb65659`; Macro main source cut is `3d9969c15bba0f57b64da7592c0731cc8a0f2eac` and Terminal protected source is `41b8af2da46614cedd2a485214e53003d4f030fc`. The table above remains the original census evidence, not the current procedure pin.
+
+- The gamma-engine and Terminal hedge-profile/label blobs remain unchanged at the inspected current heads. The defects have working reviewed research references, while production adaptation remains pending.
+- #7417 already has semantic approval for sweep/package work. #8201 already contains clock-retention code but still needs exact independent review and natural retention evidence. #7306's clock repair is reference-only; #8310 v2 remains with its commissioned owner; #8313 and #8318 retain their scoped holds.
+- The exact #599 [09:36 owner receipt](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599#issuecomment-5967837521) reports #783 deployed for entitled transport. It separately reports the episode-chain ten-minute step timeout, forced exit and correct downstream publication skips; an existing owner is auditing performance. Root read this receipt but did not independently rerun the runtime audit.
+- Root inspected the historical input manifest at Macro `79e365faf358a7645e7d6aad0758dde6d8508ee7`, blob `397c42bab5530f816b8763d554e9551de14618f2`: 435 expected entries, 429 present, six missing, and zero nonempty original availability/vintage column lists. This is evidence about the retained manifest, not proof that every possible archive lacks such data.
+
+**New capability:** [principal decisions](PRINCIPAL_DECISIONS_20261003.md) accept the exact reviewed six-pilot engineering design; 83 mechanics assertions, 73 source-admission fixtures plus independent cases, 52 P3 numerical/chronology cases and a separate rational GEX reconstruction are preserved. [FABLE_STRUCTURAL_HANDOFF.md](FABLE_STRUCTURAL_HANDOFF.md) defines five implementation capsules. No source entitlement/build, captured-PIT history, actual fills, empirical power, sealed trial or production repair is inferred from these passes.
+
+### Historical metadata refresh at 09:30 UTC
 
 The program continued moving during this research turn. Terminal #783 is now **merged**, merge `41b8af2da46614cedd2a485214e53003d4f030fc`; this is source-integration evidence, not a deployment or candidate-publication claim. Macro #8318 remains draft but advanced to `0319f637d322698e39dfea19e731c64adc657f7d`; #7889 remains draft/held and advanced to `ba1ba7bd826b987705eda1abb67925571c3a002e`. #8310 and #8313 retain the heads recorded in the roadmap. The earlier census tables preserve their original observations.
 
@@ -69,7 +80,7 @@ The independent document review found eight concrete problems in the draft defin
 | Dealer positioning and exact mechanics | [CONTRACTS.md](CONTRACTS.md), catalogue and mechanics witness | Explicit inventory/scenario model; actual dealer state unknown |
 | Prophet schema/lifecycle | Contracts and ontology/product | Existing strict boundary and logical assessment overlay; migration pending |
 | Terminal design and competitive matrix | Ontology/product, Terminal census and competitor report | Existing surfaces mapped to decisions; advantage remains hypothesis |
-| Evaluation and economics | [RESEARCH_PROTOCOL.md](RESEARCH_PROTOCOL.md) | Detailed design; empirical packet freeze and data still owed |
-| Sequenced roadmap/kill criteria/Fable handoff | [ROADMAP_AND_HANDOFF.md](ROADMAP_AND_HANDOFF.md), [owner briefs](OWNER_REPAIR_BRIEFS.md) | Structural briefs prepared; Fable not dispatched |
+| Evaluation and economics | [RESEARCH_PROTOCOL.md](RESEARCH_PROTOCOL.md), [six-pilot specification](PILOT_STUDY_SPEC_V1.md), [review](PILOT_STUDY_REVIEW.md) | Exact engineering design accepted; empirical data/date/owner/power bindings still owed |
+| Sequenced roadmap/kill criteria/Fable handoff | [ROADMAP_AND_HANDOFF.md](ROADMAP_AND_HANDOFF.md), [five-capsule packet](FABLE_STRUCTURAL_HANDOFF.md) | Prepared for owner acceptance; Fable not dispatched |
 
 This is a substantial research foundation and a concrete next implementation/research frontier. Completion of these documents must not be reported as completion of the full Options Intelligence product or proof of its predictive value.

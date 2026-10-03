@@ -19,8 +19,10 @@
         "OIF35",
         "OIF37"
       ],
-      "primary_endpoint": "Next 30-minute underlying log high/low range, using the qualified bar source; incremental out-of-time prediction loss versus the frozen attention baseline. Unsigned activity has no bullish interpretation.",
-      "owner": "WS:INTRADAY-FLOW-P0-RECOVERY"
+      "primary_endpoint": "Next 30-minute exact underlying log high/low range after eligible consumer admission; B2-RI versus B1-RI squared loss under the accepted v1 specification. Exact boundary labels are required; unsigned activity has no bullish interpretation.",
+      "owner": "WS:INTRADAY-FLOW-P0-RECOVERY",
+      "engineering_specification": "PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; PRINCIPAL_DECISIONS_20261003.md",
+      "population": "Dynamic causally admitted and prequalified incumbent US-common-stock buy pool under the accepted v1 population rule; exact historical revisions required, never current constituents substituted for history."
     },
     "P2": {
       "name": "Signed dollar delta with matched-package ambiguity",
@@ -30,8 +32,10 @@
         "OIF35",
         "OIF37"
       ],
-      "primary_endpoint": "Next 30-minute underlying market/sector-residual log return from the first eligible decision mark; paired out-of-time prediction loss. Package exclusions, unknown coverage and quote-order sensitivity are fixed before evaluation.",
-      "owner": "WS:INTRADAY-FLOW-P0-RECOVERY"
+      "primary_endpoint": "Next 30-minute underlying market/sector-residual log return; B2-RI versus B1-RI squared loss under the exact as-of residual-label and causal-clock rules in the accepted v1 specification. Package/unknown/quality qualifications and diagnostics remain required.",
+      "owner": "WS:INTRADAY-FLOW-P0-RECOVERY",
+      "engineering_specification": "PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; PRINCIPAL_DECISIONS_20261003.md",
+      "population": "Dynamic causally admitted and prequalified incumbent US-common-stock buy pool under the accepted v1 population rule; exact historical revisions required, never current constituents substituted for history."
     },
     "P3": {
       "name": "ATM IV minus square-root physical-variance forecast",
@@ -40,9 +44,11 @@
         "OIF35",
         "OIF37"
       ],
-      "primary_endpoint": "QLIKE of a separately preregistered, frozen, strictly positive augmented VARIANCE forecast over the next 20 trading sessions at the same consumer-decision clock; score against matched ACT/365F RVar_H. Never score the possibly negative OIF19 residual directly. The augmented forecast mapping remains a preregistration gate.",
+      "primary_endpoint": "QLIKE of the fixed positive B2-RI variance forecast versus B1-RI over the next 20 NYSE sessions at the same consumer clock, against matched ACT/365F realized variance. The accepted specification fixes the mapping; the possibly negative OIF19 residual is never itself a variance forecast.",
       "owner": "WS:OPTIONS-CONTEXT-AUDIT-PREREG-V2",
-      "variance_forecast_mapping_gate": "Before P3 evaluation, specify and freeze the exact mapping from actual-incumbent inputs plus the residual to a strictly positive augmented conditional-variance forecast, its training/link/missingness rules, and the comparable strictly positive incumbent variance forecast. QLIKE=log(v_aug)+RVar_H/v_aug is applied to that variance forecast only. No augmented mapping is selected or validated in this catalog."
+      "variance_forecast_mapping_gate": "The exact positive multiplicative B2-RI mapping, beta domain, convex solver, training-only scaler and finite-value/refusal rules are fixed in PILOT_STUDY_SPEC_V1.md section 4, with the fixed B1-RI target adapter in Appendix A. beta=0 exactly recovers B1-RI; no second smear, clipping or failed-row fallback. QLIKE scores positive variance forecasts against nonnegative matched ACT/365F realized variance, including zero, never the signed OIF19 residual. Mapping choice is no longer an open design gate; causal historical forecast/snapshot receipts, fit qualification, owner acceptance and sealed empirical registration remain required. This is engineering acceptance, not fitted or empirically validated forecasting.",
+      "engineering_specification": "PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; PRINCIPAL_DECISIONS_20261003.md",
+      "population": "Dynamic causally admitted and prequalified incumbent US-common-stock buy pool under the accepted v1 population rule; exact historical revisions required, never current constituents substituted for history."
     },
     "P4": {
       "name": "Carry-adjusted matched IV spread",
@@ -52,8 +58,10 @@
         "OIF35",
         "OIF37"
       ],
-      "primary_endpoint": "Five-trading-day residual underlying return after a one-session skip, using a fixed weekly formation clock. Borrow-observed, low-fee and missing-borrow cohorts are reported separately.",
-      "owner": "WS:OPTIONS-CONTEXT-AUDIT-PREREG-V2"
+      "primary_endpoint": "Five-session market/sector-residual log return after a one-session skip from eligible Friday formation; B2-RI versus B1-RI squared loss under the accepted v1 specification. Borrow-observed, low-fee and missing-borrow cohorts remain explicit.",
+      "owner": "WS:OPTIONS-CONTEXT-AUDIT-PREREG-V2",
+      "engineering_specification": "PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; PRINCIPAL_DECISIONS_20261003.md",
+      "population": "Dynamic causally admitted and prequalified incumbent US-common-stock buy pool under the accepted v1 population rule; exact historical revisions required, never current constituents substituted for history."
     },
     "P5": {
       "name": "Explicit scenario hedge stress",
@@ -63,8 +71,9 @@
         "OIF12",
         "OIF34"
       ],
-      "primary_endpoint": "Next 10-minute realized variance conditional on frozen inventory scenarios and the incumbent price/volatility/liquidity baseline. This is predictive association, not identified causal dealer impact.",
-      "owner": "WS:OPTIONS-CONTEXT-AUDIT-PREREG-V2"
+      "primary_endpoint": "Numerical qualification first, then next 10-minute ACT/365F realized-variance QLIKE for the one fixed OIF13 inventory/shock augmentation versus B1-RI. Scenario alternatives are diagnostics; unknown dealer inventory and absent genuine incumbent ETF covariates prohibit stronger claims or invented forecasts.",
+      "owner": "WS:OPTIONS-CONTEXT-AUDIT-PREREG-V2",
+      "engineering_specification": "PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; PRINCIPAL_DECISIONS_20261003.md"
     },
     "P6": {
       "name": "Executable contract quality",
@@ -76,8 +85,18 @@
         "OIF38",
         "OIF40"
       ],
-      "primary_endpoint": "Expression coverage with valid contract/clock/quote evidence plus 60-second delta-hedged markouts under stated bid/ask simulated entry, latency and fee assumptions. This does not prove actual fills, depth beyond NBBO or profitable execution.",
-      "owner": "WS:OPTIONS-ALPHA-INTELLIGENCE-RECOVERY"
+      "primary_endpoint": "Observed 60-second full-fill implementation-shortfall MAE, B2-RI versus B1-RI, strictly conditional on actual complete fills and independently observed fees. Exact target, side/quantity/deadline, fit and missing/no-fill handling are fixed by the accepted v1 specification. Coverage and simulated hedged markouts are diagnostics; no actual-fill or cost-calibration result can be supplied by self-generated simulation.",
+      "owner": "WS:OPTIONS-ALPHA-INTELLIGENCE-RECOVERY",
+      "engineering_specification": "PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; PRINCIPAL_DECISIONS_20261003.md",
+      "endpoint_disposition": {
+        "date": "2026-10-03",
+        "decision_record": "PRINCIPAL_DECISIONS_20261003.md",
+        "disposition": "Actual full-fill cost MAE becomes the sole empirical primary. Previous coverage and simulated hedged-markout endpoint is preserved as diagnostic history, not an additional primary.",
+        "prior_catalog_sha256": "03f6e951dd838cc348472159d96a9eefe1c328879e720b09a2f4021aa57f7a82",
+        "prior_primary_endpoint_exact": "Expression coverage with valid contract/clock/quote evidence plus 60-second delta-hedged markouts under stated bid/ask simulated entry, latency and fee assumptions. This does not prove actual fills, depth beyond NBBO or profitable execution.",
+        "new_primary_endpoint": "Observed 60-second full-fill implementation-shortfall MAE, B2-RI versus B1-RI, strictly conditional on actual complete fills and independently observed fees. Exact target, side/quantity/deadline, fit and missing/no-fill handling are fixed by the accepted v1 specification. Coverage and simulated hedged markouts are diagnostics; no actual-fill or cost-calibration result can be supplied by self-generated simulation.",
+        "unchanged": "OIF35 raw relative-spread formula, primary feature assignment and required controls remain unchanged."
+      }
     }
   },
   "model_definitions": {
@@ -117,7 +136,7 @@
       "boundary": "Log-HAR/smearing is a candidate positive forecasting design, not a reproduced academic coefficient or asserted calibrated physical distribution.",
       "estimand": "vhat_P,H targets E[RVar_H | information_available_at_t]. sqrt(vhat_P,H) estimates the square root of that expected variance, not E[sqrt(RVar_H) | information] and not expected realized volatility.",
       "annualization": "Implied sigma and physical RVar_H must share the actual matched ACT/365F horizon/year basis. If an external realized-variance series is annualized as (252/n)*sum(r^2) for the SAME return interval, convert to ACT/365F variance by multiplying it by (n/252)/T_H; equivalently convert its volatility by sqrt((n/252)/T_H). Without the interval, n and annualization metadata, the comparison is unavailable. No unconverted 252/n quantity may be subtracted from calendar-year IV variance.",
-      "augmented_forecast_gate": "Before P3 evaluation, specify and freeze the exact mapping from actual-incumbent inputs plus the residual to a strictly positive augmented conditional-variance forecast, its training/link/missingness rules, and the comparable strictly positive incumbent variance forecast. QLIKE=log(v_aug)+RVar_H/v_aug is applied to that variance forecast only. No augmented mapping is selected or validated in this catalog."
+      "augmented_forecast_gate": "The exact positive multiplicative B2-RI mapping, beta domain, convex solver, training-only scaler and finite-value/refusal rules are fixed in PILOT_STUDY_SPEC_V1.md section 4, with the fixed B1-RI target adapter in Appendix A. beta=0 exactly recovers B1-RI; no second smear, clipping or failed-row fallback. QLIKE scores positive variance forecasts against nonnegative matched ACT/365F realized variance, including zero, never the signed OIF19 residual. Mapping choice is no longer an open design gate; causal historical forecast/snapshot receipts, fit qualification, owner acceptance and sealed empirical registration remain required. This is engineering acceptance, not fitted or empirically validated forecasting."
     },
     "borrow_projection": {
       "regressors": "X_fee=(1,b,b^2,Tbar,I_div,Spr_pair,log(F/S)); b is observed annual borrow fee decimal, Tbar OI-weighted remaining years, I_div known dividend before expiry, Spr_pair mean relative paired/wing quote spread as appropriate. All inputs are available at formation.",
@@ -127,9 +146,9 @@
     }
   },
   "shared_evaluation_contract": {
-    "baseline": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately.",
-    "design": "Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
-    "multiplicity": "Six pilot families only. Register all variants and joint family tests before evaluation; within-family BH findings are not global confirmation. Do not choose the best horizon, package rule or inventory scenario after observing outcomes.",
+    "baseline": "Accepted v1 engineering comparison: B2-RI versus B1-RI, the fixed target-trained adapter of a small causal incumbent-information summary, with the exact options-free-input B0 comparator and lineage audit. P1-P4 use the dynamic causally consumer-admitted US-common-stock buy pool and fixed qualifications; retain full eligible/failed census, revision/population identity and selection lineage. B0 inputs do not make the options-conditioned cohort options-free. P5/P6 retain distinct declared populations and require genuine incumbent covariate receipts for forecasting. The wider actual-production-policy/all-information incrementality goal remains separate and unsatisfied by any RI result. Exact definitions are in PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json.",
+    "design": "Follow the accepted v1 specification for labels, price sampling, units, clocks, training-only transforms, nested as-of/held-out B0 and B1-RI offsets, mature-label purging, losses, screening margins, deterministic bootstrap/power rules and typed refusals. Source/dataset/date/owner/power and empirical-registration bindings remain unaccepted. No extra model, horizon, transform or feature search is authorized. Controls remain required qualifications/diagnostics; a positive RI result is not automatically fully confounder-adjusted private information.",
+    "multiplicity": "Exactly six v1 primary hypotheses, Holm familywise .05 with blocked/unrun/invalid p=1, under the frozen specification. Its exact dependence, resampling, intervals, fixed power simulation and minimum-20-primary-calendar-block planning rules apply; these are not power proof or exact finite-sample guarantees. Queued variants do not become extra primaries. Prior #8286 BH results retain their original family.",
     "prior_evidence": "OA-2R/Macro #8286 is completed historical work: 60 evaluable cells, three within-family BH rejections reported, no repeat across all three eras, and historical alpha unvalidated. PIT provenance, fresh out-of-sample evidence and executable economics remain unproven. Exact-feature equivalence requires a trial fingerprint; these newly explicit variants do not erase or automatically inherit old statistics.",
     "authority": "No score activation, ranking, trade recommendation, admission veto, sizing, deployment or new operational state transition follows from this catalog.",
     "classification_validation": "Selectively reviewed labels cannot establish population precision or calibrated directional confidence. Any such estimate needs a prespecified held-out/random or properly weighted label sample, coverage and venue/condition limits.",
@@ -309,7 +328,7 @@
       "claimed_uses": {
         "proposed_only": true,
         "description": "Relative options attention adds information about subsequent range after price activity and measured execution-quality controls.",
-        "endpoint": "Next 30-minute underlying log high/low range, using the qualified bar source; incremental out-of-time prediction loss versus the frozen attention baseline. Unsigned activity has no bullish interpretation.",
+        "endpoint": "Next 30-minute exact underlying log high/low range after eligible consumer admission; B2-RI versus B1-RI squared loss under the accepted v1 specification. Exact boundary labels are required; unsigned activity has no bullish interpretation.",
         "not_authorized": "No score activation, ranking, trade recommendation, admission veto, sizing, deployment or new operational state transition follows from this catalog."
       },
       "confounders": [
@@ -321,7 +340,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject incremental utility if the paired loss improvement disappears after underlying dollar-volume, spread/age and coverage controls, or fails a frozen later period.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "observable_derived",
@@ -513,7 +532,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if results are explained by large option prices, expiry composition, spread inflation or same-time stock-volume surprise.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "observable_derived",
@@ -682,7 +701,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject claimed replication if altered maturity/adjustment/timing rules drive the result or a frozen modern holdout lacks incremental information.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "constrained_literature_benchmark",
@@ -905,7 +924,7 @@
       "claimed_uses": {
         "proposed_only": true,
         "description": "Quote-inferred net dollar-delta demand adds short-horizon return information after matched-package ambiguity and contemporaneous stock controls.",
-        "endpoint": "Next 30-minute underlying market/sector-residual log return from the first eligible decision mark; paired out-of-time prediction loss. Package exclusions, unknown coverage and quote-order sensitivity are fixed before evaluation.",
+        "endpoint": "Next 30-minute underlying market/sector-residual log return; B2-RI versus B1-RI squared loss under the exact as-of residual-label and causal-clock rules in the accepted v1 specification. Package/unknown/quality qualifications and diagnostics remain required.",
         "not_authorized": "No score activation, ranking, trade recommendation, admission veto, sizing, deployment or new operational state transition follows from this catalog."
       },
       "confounders": [
@@ -918,7 +937,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if the effect vanishes with strictly prior quotes, package/auction exclusion or high-coverage subsets, or fails out of time.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "inferred_proxy",
@@ -1152,7 +1171,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if total dollar delta or ongoing underlying momentum explains all apparent persistence, or result depends on missing-bin imputation.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "inferred_proxy",
@@ -1368,7 +1387,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject stronger-direction claims if the envelope crosses zero or outcome results depend on a single unverified package/sign rule.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "inferred_proxy_with_bounds",
@@ -1598,7 +1617,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if incremental variance forecast improvement vanishes after current IV, lagged RV, absolute delta flow and event controls.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "inferred_proxy",
@@ -1786,7 +1805,7 @@
       ],
       "falsification": {
         "feature_specific": "Not evaluable with public ThetaData alone; reject replication if plain vega, vendor IV, inferred customer identity or different maturity/timing replaces the source construction.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "external_label_benchmark",
@@ -1941,7 +1960,7 @@
       ],
       "falsification": {
         "feature_specific": "Unavailable without actual open/close and participant labels. Reject an OPRA replication claim even if inferred flow or volume>OI correlates with next-day OI.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "external_label_benchmark",
@@ -2192,7 +2211,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if the effect is quote bounce, stock-response timing, mark-delay selection or same-interval outcome leakage.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived_lagged_response",
@@ -2381,7 +2400,7 @@
       "claimed_uses": {
         "proposed_only": true,
         "description": "Unsigned convexity concentration conditions intraday volatility beyond raw OI and spot volatility.",
-        "endpoint": "Next 10-minute realized variance conditional on frozen inventory scenarios and the incumbent price/volatility/liquidity baseline. This is predictive association, not identified causal dealer impact.",
+        "endpoint": "P5 diagnostic/variant context: next 10-minute realized variance under declared inventory assumptions. The accepted sole primary is OIF13 versus the fixed B1-RI adapter in PILOT_STUDY_SPEC_V1.md. This control/queued feature is not an extra primary and does not establish actual-production-policy improvement or causal dealer impact.",
         "not_authorized": "No score activation, ranking, trade recommendation, admission veto, sizing, deployment or new operational state transition follows from this catalog."
       },
       "confounders": [
@@ -2393,7 +2412,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject mechanistic information if OI alone, maturity mix and spot/liquidity controls explain the effect or exact-time qualification removes it.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived_gross_context",
@@ -2586,7 +2605,7 @@
       "claimed_uses": {
         "proposed_only": true,
         "description": "Scenario sign and magnitude identify distinct conditional range regimes without asserting actual dealer ownership.",
-        "endpoint": "Next 10-minute realized variance conditional on frozen inventory scenarios and the incumbent price/volatility/liquidity baseline. This is predictive association, not identified causal dealer impact.",
+        "endpoint": "P5 diagnostic/variant context: next 10-minute realized variance under declared inventory assumptions. The accepted sole primary is OIF13 versus the fixed B1-RI adapter in PILOT_STUDY_SPEC_V1.md. This control/queued feature is not an extra primary and does not establish actual-production-policy improvement or causal dealer impact.",
         "not_authorized": "No score activation, ranking, trade recommendation, admission veto, sizing, deployment or new operational state transition follows from this catalog."
       },
       "confounders": [
@@ -2598,7 +2617,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject robust-sign claims if plausible preregistered inventories reverse sign; reject predictive utility if all fixed scenarios fail later-period baseline comparison.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "scenario",
@@ -2805,7 +2824,7 @@
       "claimed_uses": {
         "proposed_only": true,
         "description": "Explicit hedge-demand scenarios explain conditional intraday range beyond price/volatility/liquidity state.",
-        "endpoint": "Next 10-minute realized variance conditional on frozen inventory scenarios and the incumbent price/volatility/liquidity baseline. This is predictive association, not identified causal dealer impact.",
+        "endpoint": "Numerical qualification first, then next 10-minute ACT/365F realized-variance QLIKE for the one fixed OIF13 inventory/shock augmentation versus B1-RI. Scenario alternatives are diagnostics; unknown dealer inventory and absent genuine incumbent ETF covariates prohibit stronger claims or invented forecasts.",
         "not_authorized": "No score activation, ranking, trade recommendation, admission veto, sizing, deployment or new operational state transition follows from this catalog."
       },
       "confounders": [
@@ -2817,7 +2836,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject numeric validity if finite-difference hedge changes disagree with direct delta repricing; reject predictive claims if no preregistered scenario adds later-period information.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "full_revaluation_scenario",
@@ -3005,7 +3024,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject local approximation for cells that fail symmetric-vol-bump convergence or materially disagree with full ±1pp repricing; test remaining incremental utility out of time.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "scenario_derivative",
@@ -3194,7 +3213,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if sign/time-unit tests fail or linear charm diverges from full 600-second repricing beyond declared tolerances; no downstream forecast test rescues invalid units.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "scenario_derivative",
@@ -3382,7 +3401,7 @@
       "claimed_uses": {
         "proposed_only": true,
         "description": "Concentrated convexity has different range behavior from diffuse convexity at equal gross gamma.",
-        "endpoint": "Next 10-minute realized variance conditional on frozen inventory scenarios and the incumbent price/volatility/liquidity baseline. This is predictive association, not identified causal dealer impact.",
+        "endpoint": "P5 diagnostic/variant context: next 10-minute realized variance under declared inventory assumptions. The accepted sole primary is OIF13 versus the fixed B1-RI adapter in PILOT_STUDY_SPEC_V1.md. This control/queued feature is not an extra primary and does not establish actual-production-policy improvement or causal dealer impact.",
         "not_authorized": "No score activation, ranking, trade recommendation, admission veto, sizing, deployment or new operational state transition follows from this catalog."
       },
       "confounders": [
@@ -3394,7 +3413,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if strike count, missing wings, spot proximity or gross gamma alone explains the result.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived_gross_context",
@@ -3594,7 +3613,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject pinning/support interpretations if arbitrary nearby strikes or round numbers perform equally, or conditional outcomes show no incremental effect.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived_gross_context",
@@ -3761,7 +3780,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if contract disappearance, adjustments or missing-to-zero conversion explains the change, or no incremental next-session range information remains.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "observable_derived_delayed",
@@ -3972,7 +3991,7 @@
       "claimed_uses": {
         "proposed_only": true,
         "description": "The difference between ATM IV and the square root of forecast conditional expected annualized variance describes risk pricing or missing variance information beyond lagged realized variance and scheduled events; it is not ATM IV minus E[RVol_H].",
-        "endpoint": "QLIKE of a separately preregistered, frozen, strictly positive augmented VARIANCE forecast over the next 20 trading sessions at the same consumer-decision clock; score against matched ACT/365F RVar_H. Never score the possibly negative OIF19 residual directly. The augmented forecast mapping remains a preregistration gate.",
+        "endpoint": "QLIKE of the fixed positive B2-RI variance forecast versus B1-RI over the next 20 NYSE sessions at the same consumer clock, against matched ACT/365F realized variance. The accepted specification fixes the mapping; the possibly negative OIF19 residual is never itself a variance forecast.",
         "not_authorized": "No score activation, ranking, trade recommendation, admission veto, sizing, deployment or new operational state transition follows from this catalog."
       },
       "confounders": [
@@ -3984,8 +4003,8 @@
         "underlying feed changes"
       ],
       "falsification": {
-        "feature_specific": "After the strictly positive augmented-variance mapping is preregistered and frozen, reject forecast utility if its later-period QLIKE does not improve on the comparable actual-incumbent variance forecast, if matched-calendar labels remove the effect, or if only event-contaminated/missing-quote cohorts contribute. The residual itself is never supplied as the positive variance-forecast argument to QLIKE.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "feature_specific": "Evaluate the accepted positive B2-RI mapping against B1-RI under the frozen v1 QLIKE, margin, population and inference rules; reject the stated incremental forecast claim when those tests fail or required source/fit/coverage qualifications fail. The signed residual is never the variance argument. Any positive RI result does not prove native production-policy improvement or remove untested confounders.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived",
@@ -4019,8 +4038,8 @@
       ],
       "normalization_input": "raw declared scalar; RAW vectors keep each component in its own physical unit",
       "compact_scope": "09:35 snapshot; actual consumer-decision-to-20-session horizon on ACT/365F.",
-      "compact_test_or_limit": "sqrt(E[RVar_H]) is not E[RVol_H]. QLIKE scores a separately frozen positive augmented variance forecast; its mapping remains a preregistration gate.",
-      "preregistration_gate": "Before P3 evaluation, specify and freeze the exact mapping from actual-incumbent inputs plus the residual to a strictly positive augmented conditional-variance forecast, its training/link/missingness rules, and the comparable strictly positive incumbent variance forecast. QLIKE=log(v_aug)+RVar_H/v_aug is applied to that variance forecast only. No augmented mapping is selected or validated in this catalog."
+      "compact_test_or_limit": "sqrt(E[RVar_H]) is not E[RVol_H]. QLIKE scores the accepted positive B2-RI mapping versus B1-RI; the frozen specification controls fitting and numerical refusal. Empirical gates remain.",
+      "preregistration_gate": "The exact positive multiplicative B2-RI mapping, beta domain, convex solver, training-only scaler and finite-value/refusal rules are fixed in PILOT_STUDY_SPEC_V1.md section 4, with the fixed B1-RI target adapter in Appendix A. beta=0 exactly recovers B1-RI; no second smear, clipping or failed-row fallback. QLIKE scores positive variance forecasts against nonnegative matched ACT/365F realized variance, including zero, never the signed OIF19 residual. Mapping choice is no longer an open design gate; causal historical forecast/snapshot receipts, fit qualification, owner acceptance and sealed empirical registration remain required. This is engineering acceptance, not fitted or empirically validated forecasting."
     },
     {
       "id": "OIF20",
@@ -4198,7 +4217,7 @@
       "claimed_uses": {
         "proposed_only": true,
         "description": "A variance-scale residual captures different curvature of volatility risk compensation than a volatility difference.",
-        "endpoint": "QLIKE of a separately preregistered, frozen, strictly positive augmented VARIANCE forecast over the next 20 trading sessions at the same consumer-decision clock; score against matched ACT/365F RVar_H. Never score the possibly negative OIF19 residual directly. The augmented forecast mapping remains a preregistration gate.",
+        "endpoint": "Queued variance-residual experiment on the matched 20-session ACT/365F horizon, requiring its own versioned positive-forecast mapping and empirical registration. The accepted P3 primary uses OIF19; its fixed B2-RI mapping is not an unresolved design task and does not automatically admit OIF20.",
         "not_authorized": "No score activation, ranking, trade recommendation, admission veto, sizing, deployment or new operational state transition follows from this catalog."
       },
       "confounders": [
@@ -4210,7 +4229,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject distinct incremental utility if OIF19 or the underlying IV level explains all improvement; count this correlated variant within P3.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived_proxy",
@@ -4242,7 +4261,7 @@
       "normalization_input": "raw declared scalar; RAW vectors keep each component in its own physical unit",
       "compact_scope": "Same observations, horizon and training fit as OIF19.",
       "compact_test_or_limit": "VarResidual=VolResidual*(sigma+sqrt(vhat)); units and interpretations remain distinct. ATM IV squared is not model-free expected variance. QLIKE requires a positive augmented variance forecast.",
-      "preregistration_gate": "Before P3 evaluation, specify and freeze the exact mapping from actual-incumbent inputs plus the residual to a strictly positive augmented conditional-variance forecast, its training/link/missingness rules, and the comparable strictly positive incumbent variance forecast. QLIKE=log(v_aug)+RVar_H/v_aug is applied to that variance forecast only. No augmented mapping is selected or validated in this catalog."
+      "preregistration_gate": "Queued-variant gate only: the accepted P3 primary is OIF19 under the frozen B1-RI/B2-RI mapping. This feature is not that primary and does not inherit an accepted augmentation merely by belonging to P3. Any separate empirical variant requires a newly specified/versioned positive target-forecast mapping, baseline and multiplicity disposition before evaluation; QLIKE never scores a signed residual as variance."
     },
     {
       "id": "OIF21",
@@ -4418,7 +4437,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject useful information if the result is explained by ATM variance, wide wing spreads or incomplete strike coverage.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived_price_functional",
@@ -4451,7 +4470,7 @@
       "normalization_input": "raw declared scalar; RAW vectors keep each component in its own physical unit",
       "compact_scope": "European index; 21–45 DTE nearest 30; at least five eligible strikes.",
       "compact_test_or_limit": "Reject wing-spread/coverage artefacts; this truncated price integral is neither complete variance replication nor physical tail probability.",
-      "preregistration_gate": "Before P3 evaluation, specify and freeze the exact mapping from actual-incumbent inputs plus the residual to a strictly positive augmented conditional-variance forecast, its training/link/missingness rules, and the comparable strictly positive incumbent variance forecast. QLIKE=log(v_aug)+RVar_H/v_aug is applied to that variance forecast only. No augmented mapping is selected or validated in this catalog."
+      "preregistration_gate": "Queued-variant gate only: the accepted P3 primary is OIF19 under the frozen B1-RI/B2-RI mapping. This feature is not that primary and does not inherit an accepted augmentation merely by belonging to P3. Any separate empirical variant requires a newly specified/versioned positive target-forecast mapping, baseline and multiplicity disposition before evaluation; QLIKE never scores a signed residual as variance."
     },
     {
       "id": "OIF22",
@@ -4657,7 +4676,7 @@
       "claimed_uses": {
         "proposed_only": true,
         "description": "The matched relative option-price residual contains stock information beyond observable carry, lending fees, liquidity and catalyst timing.",
-        "endpoint": "Five-trading-day residual underlying return after a one-session skip, using a fixed weekly formation clock. Borrow-observed, low-fee and missing-borrow cohorts are reported separately.",
+        "endpoint": "Five-session market/sector-residual log return after a one-session skip from eligible Friday formation; B2-RI versus B1-RI squared loss under the accepted v1 specification. Borrow-observed, low-fee and missing-borrow cohorts remain explicit.",
         "not_authorized": "No score activation, ranking, trade recommendation, admission veto, sizing, deployment or new operational state transition follows from this catalog."
       },
       "confounders": [
@@ -4670,7 +4689,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject informational claims if low-fee and borrow-adjusted tests remove the effect, if asynchronous quotes explain it, or if frozen weekly holdout adds no baseline value.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived_borrow_residual",
@@ -4908,7 +4927,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject a private-information interpretation if fee adjustment or a low-fee restriction explains the apparent relation.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived_comparator",
@@ -5128,7 +5147,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if changing delta convention, borrow adjustment or one-sided liquidity controls removes the effect.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived_borrow_residual",
@@ -5364,7 +5383,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if borrowing, option liquidity or ATM volatility explains the effect, or it fails the later-period matched-sample test.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived_borrow_residual",
@@ -5591,7 +5610,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if front-IV level, dated event counts or ordinary RV mean reversion explains the effect.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived",
@@ -5623,7 +5642,7 @@
       "normalization_input": "raw declared scalar; RAW vectors keep each component in its own physical unit",
       "compact_scope": "09:35; total variance at 30 and 60 calendar days.",
       "compact_test_or_limit": "Test beyond front IV, events and RV mean reversion; negative forward variance is a quality flag, never clipped to zero.",
-      "preregistration_gate": "Before P3 evaluation, specify and freeze the exact mapping from actual-incumbent inputs plus the residual to a strictly positive augmented conditional-variance forecast, its training/link/missingness rules, and the comparable strictly positive incumbent variance forecast. QLIKE=log(v_aug)+RVar_H/v_aug is applied to that variance forecast only. No augmented mapping is selected or validated in this catalog."
+      "preregistration_gate": "Queued-variant gate only: the accepted P3 primary is OIF19 under the frozen B1-RI/B2-RI mapping. This feature is not that primary and does not inherit an accepted augmentation merely by belonging to P3. Any separate empirical variant requires a newly specified/versioned positive target-forecast mapping, baseline and multiplicity disposition before evaluation; QLIKE never scores a signed residual as variance."
     },
     {
       "id": "OIF27",
@@ -5813,7 +5832,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if matched non-event intervals show the same residual, release rescheduling removes the effect, or future calendar revisions contaminated formation.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived_event_context",
@@ -5844,7 +5863,7 @@
       "normalization_input": "raw declared scalar; RAW vectors keep each component in its own physical unit",
       "compact_scope": "Pre-event 09:35; both bracketing expiries 7–21 calendar DTE.",
       "compact_test_or_limit": "Use training non-event intervals and known-at calendars. Reject revised-calendar leakage; priced event uncertainty has no announcement sign.",
-      "preregistration_gate": "Before P3 evaluation, specify and freeze the exact mapping from actual-incumbent inputs plus the residual to a strictly positive augmented conditional-variance forecast, its training/link/missingness rules, and the comparable strictly positive incumbent variance forecast. QLIKE=log(v_aug)+RVar_H/v_aug is applied to that variance forecast only. No augmented mapping is selected or validated in this catalog."
+      "preregistration_gate": "Queued-variant gate only: the accepted P3 primary is OIF19 under the frozen B1-RI/B2-RI mapping. This feature is not that primary and does not inherit an accepted augmentation merely by belonging to P3. Any separate empirical variant requires a newly specified/versioned positive target-forecast mapping, baseline and multiplicity disposition before evaluation; QLIKE never scores a signed residual as variance."
     },
     {
       "id": "OIF28",
@@ -6047,7 +6066,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if RR25, borrow fees, event calendar or wing spread alone explains the result.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived_borrow_residual",
@@ -6222,7 +6241,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if time-of-day, introduction-era, total-volume or event controls explain the relation; volume activity cannot identify inventory effects.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "observable_derived",
@@ -6453,7 +6472,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if exact-time/refit-IV treatment, prior-quote ordering, package ambiguity or time-to-fixing controls remove the effect.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "inferred_proxy",
@@ -6668,7 +6687,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if raw volume, proximity to ATM, model-floor artefacts or session clock explain the apparent effect.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived_gross_flow",
@@ -6873,7 +6892,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if exact-time joint IV qualification fails; reject incremental utility if clock/ATM proximity and OIF15 fully explain any association.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "full_revaluation_scenario",
@@ -7062,7 +7081,7 @@
       "claimed_uses": {
         "proposed_only": true,
         "description": "Localized expiring convexity conditions short-term range beyond total gross gamma.",
-        "endpoint": "Next 10-minute realized variance conditional on frozen inventory scenarios and the incumbent price/volatility/liquidity baseline. This is predictive association, not identified causal dealer impact.",
+        "endpoint": "P5 diagnostic/variant context: next 10-minute realized variance under declared inventory assumptions. The accepted sole primary is OIF13 versus the fixed B1-RI adapter in PILOT_STUDY_SPEC_V1.md. This control/queued feature is not an extra primary and does not establish actual-production-policy improvement or causal dealer impact.",
         "not_authorized": "No score activation, ranking, trade recommendation, admission veto, sizing, deployment or new operational state transition follows from this catalog."
       },
       "confounders": [
@@ -7074,7 +7093,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject if gross gamma, ATM IV, strike-grid density or incomplete wings explains all association.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived_gross_context",
@@ -7284,7 +7303,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject a universal gamma correction if same-price IV refitting preserves gamma in the zero-carry reference case; reject any implementation that fails controlled repricing, derivative, scale or clock tests.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "quality_diagnostic",
@@ -7461,8 +7480,9 @@
       "claimed_uses": {
         "proposed_only": true,
         "description": "Quoted friction identifies expression-quality differences and confounding in apparent flow/surface signals.",
-        "endpoint": "Expression coverage with valid contract/clock/quote evidence plus 60-second delta-hedged markouts under stated bid/ask simulated entry, latency and fee assumptions. This does not prove actual fills, depth beyond NBBO or profitable execution.",
-        "not_authorized": "No score activation, ranking, trade recommendation, admission veto, sizing, deployment or new operational state transition follows from this catalog."
+        "endpoint": "Observed 60-second full-fill implementation-shortfall MAE, B2-RI versus B1-RI, strictly conditional on actual complete fills and independently observed fees. Exact target, side/quantity/deadline, fit and missing/no-fill handling are fixed by the accepted v1 specification. Coverage and simulated hedged markouts are diagnostics; no actual-fill or cost-calibration result can be supplied by self-generated simulation.",
+        "not_authorized": "No score activation, ranking, trade recommendation, admission veto, sizing, deployment or new operational state transition follows from this catalog.",
+        "prior_primary_endpoint_reference": "pilot_families.P6.endpoint_disposition.prior_primary_endpoint_exact"
       },
       "confounders": [
         "option-price denominator",
@@ -7472,8 +7492,8 @@
         "event liquidity"
       ],
       "falsification": {
-        "feature_specific": "Reject executable-quality claims if they rely on stale/zero-size quotes, fail after realistic latency and fees, or assume deeper liquidity than the quote supplies.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "feature_specific": "Reject the specified full-fill cost-forecast improvement when the accepted v1 MAE comparison/margin/inference fails, or when independent actual fill/fee or causal input evidence is absent. Retain all no-fill/partial/missing outcomes and conditional-full-fill claim limits. Quote coverage and simulated markouts are diagnostics and cannot validate their own costs.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "observed_quality_diagnostic",
@@ -7508,7 +7528,7 @@
       ],
       "normalization_input": "raw declared scalar; RAW vectors keep each component in its own physical unit",
       "compact_scope": "Exact decision quote; positive two-sided size and noncrossed spread.",
-      "compact_test_or_limit": "Test latency/fees and markout assumptions; a quoted spread does not prove a realizable fill or deeper book."
+      "compact_test_or_limit": "Primary: actual 60-second full-fill cost MAE under the accepted specification. Coverage and simulated markouts are diagnostics; a quote does not prove a fill or deeper book."
     },
     {
       "id": "OIF36",
@@ -7630,7 +7650,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject fill claims whenever depth below the requested size is assumed, quote sizes change before modeled arrival, or size semantics fail fixtures.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "observed_quality_diagnostic",
@@ -7824,7 +7844,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject quality claims if future/equal-order-ambiguous quotes enter, source counts are incomplete, or missing premium/contract mass is silently dropped.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "observed_quality_diagnostic",
@@ -8034,7 +8054,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject economic utility if conservative spread, latency and known-fee assumptions erase benefits; reject cost arithmetic if contract money/size units fail.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "quote_based_execution_scenario",
@@ -8265,7 +8285,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject predictive utility if bid/ask bounce, sign construction, missing terminal quotes or overlapping response/target windows explains it.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "model_derived_lagged_response",
@@ -8424,7 +8444,7 @@
       ],
       "falsification": {
         "feature_specific": "Reject clock validity if holiday/half-day/AM-fixing fixtures or qualified natural-session evidence contradict the stated cutoff; no useful numeric margin exists for an invented fixing instant.",
-        "shared_design": "Freeze the actual incumbent candidate policy/features, including any existing GEX or options context already consumed, plus its price/volume/realized-volatility/regime/catalyst inputs and the same candidate universe. Primary incrementality compares that incumbent versus incumbent+one prespecified family. A deliberately options-free comparator is separate, explicitly named, and cannot replace the actual-incumbent test. Coverage changes are reported separately. Use purged out-of-time evaluation; purge every overlapping outcome window. Fit all transforms, thresholds and model parameters on training only. Cluster uncertainty by dates and symbols as appropriate.",
+        "shared_design": "For the six accepted v1 primaries, use shared_evaluation_contract and PILOT_STUDY_SPEC_V1.md and pilot-study-spec.v1.json; the narrower B1-RI comparison does not satisfy the separate actual-production-policy goal. This does not activate queued variants or turn controls into extra primaries. Preserve prior evidence and all source/owner/empirical gates.",
         "failure_disposition": "Retain the null/negative result and coverage evidence; no production promotion. Further variants require a named new trial within the same family."
       },
       "implementation_class": "observed_reference_quality",
@@ -8948,5 +8968,31 @@
     "No new competitor search, repository write, production action, agent dispatch or policy activation occurred in this synthesis.",
     "External exchange labels, borrow data and actual entitlements remain separately qualified dependencies.",
     "Queued variants are not extra pilots and must not be activated through feature naming alone."
-  ]
+  ],
+  "engineering_design_adoption": {
+    "date": "2026-10-03",
+    "status": "ACCEPTED_FOR_BOUNDED_RESEARCH_ENGINEERING_ONLY",
+    "decision_record": "PRINCIPAL_DECISIONS_20261003.md",
+    "frozen_specification": {
+      "markdown": {
+        "path": "PILOT_STUDY_SPEC_V1.md",
+        "sha256": "f439d6df16f5437ce6bf996fefe1df891927f5539ece368d44cbe9098bf971f8"
+      },
+      "json": {
+        "path": "pilot-study-spec.v1.json",
+        "sha256": "e30796c158da18cffe1b581463ba6820ff33e9acbe8a4248b3fc068e67f70317"
+      }
+    },
+    "scope": "Evaluation metadata reconciliation only. Preserve all 40 feature IDs, six primary assignments, required controls and original raw formulas. Finite pilot formation, population, normalization, modeling and evaluation rules are specified by reference, without changing the broader catalogue definitions of queued variants.",
+    "not_accepted": [
+      "sealed empirical preregistration",
+      "source or owner acceptance",
+      "actual dataset or date availability",
+      "power sufficiency",
+      "empirical predictive result",
+      "production-policy incrementality",
+      "production authority"
+    ],
+    "input_hash_policy": "Hashes in the frozen specification and its reviews retain the exact historical input versions. This later catalogue revision does not rewrite those records."
+  }
 }

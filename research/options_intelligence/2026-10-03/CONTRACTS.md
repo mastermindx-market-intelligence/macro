@@ -2,6 +2,8 @@
 
 **Status:** proposed additive research contracts for incumbent owners. These are specifications, not schemas installed by this PR. Current production schemas and authority flags remain authoritative until their owners review a compatible change. Source evidence: [Macro census](options-macro-census.md), [Terminal census](options-terminal-census.md), [Theta audit](options-thetadata.md), [literature ledger](options-literature.md).
 
+**Reviewed reference implementations:** [B1/B2 mechanics](options-reference-kernels.md) now supply direct current-gamma classification, explicit sampled root features, signed strike sensitivity and complete/partial endpoint rehedging. [B3/B5 source admission](SOURCE_ADMISSION_SPEC.md) supplies measured/proxy/unknown denominators and source-to-consumer clock/identity fixtures with an [independent checker](source-admission-independent-check.py). [P3 positive variance](P3_REFERENCE_EVALUATOR.md) supplies the one-feature QLIKE link, numerical refusals and minimum training-chronology checks. [Principal decisions](PRINCIPAL_DECISIONS_20261003.md) accept these isolated uses only. The source reference's `captured_pit_eligible` is a synthetic-contract check, while `source_certified_accepted` remains false; no local pass authenticates real capture or extends the strict candidate schema.
+
 ## 1. One economic observation, several clocks
 
 Use the current event/artifact/candidate identities. A research transformation must reference its input identity, source revision and producer version; root plus timestamp is not a sufficient join key. Distinguish the following concepts even when a source cannot supply all of them.

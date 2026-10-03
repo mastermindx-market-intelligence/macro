@@ -5,6 +5,8 @@
 **Current implementation parent:** [Terminal #599](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599), with [#603](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/603)/[#723](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/723) workbench/integration continuity.  
 **Research carrier:** [Macro #8321](https://github.com/mastermindx-market-intelligence/macro/pull/8321).
 
+**Second-phase disposition:** [principal decisions](PRINCIPAL_DECISIONS_20261003.md) accept the exact six-pilot engineering design and reviewed reference implementations. [FABLE_STRUCTURAL_HANDOFF.md](FABLE_STRUCTURAL_HANDOFF.md) is the concrete five-capsule packet; [OWNER_DELTA_20261003.md](OWNER_DELTA_20261003.md) supplies the latest bounded source/custody evidence. Structural implementation awaits current owner/path/route acceptance. Empirical source, history, dates, power and actual-fill gates remain separate.
+
 ## 1. Sequence by dependency
 
 The current bottleneck is reliable evidence and explicit semantics, followed by incremental evaluation. More indicators or a redesigned command surface do not remove that dependency. Work packets below belong to the existing four C0 owners and must first reconcile current branch/source custody.
@@ -14,11 +16,11 @@ The current bottleneck is reliable evidence and explicit semantics, followed by 
 | W0. Current source qualification | Actual Theta build/access receipt, contract/clock/condition/correction field census, natural-session freshness, source-to-consumer identity | AD options and intraday flow owners; AD-1T2 #7889; live-flow recovery under #599 | Bounded redacted capability evidence, exact source revision, root/session coverage manifest, no replay labelled natural capture; existing recovery owner accepts publication |
 | W1. Semantics and consumer boundaries | Inventory all scores/proxies and actual Prophet consumers; preserve measured versus categorical chain fields; identify authority paths | Current Macro/Terminal censuses, GEX C1 fusion trace, active #8310 candidate work | A source-linked map of each claim and consumer; specific correction packet where semantics are false; no blanket claim that all GEX scoring is off |
 | W2. Numerical reference and scenarios | Joint IV/TTE parity, Greek units, exact economic clocks, repriced hedge change, multiple gamma crossings, partial exposure coverage | Existing Macro pricing kernel; FS-5 #8313; conditional producer #7306; Terminal #723/#768 | Network-free discriminating witnesses, code/source hashes, reviewed error conventions and scoped production repair proposal through original owner |
-| W3. Feature/label preregistration | Map 40 catalogue candidates to evidence/nulls; freeze six pilot families, primary endpoint/horizon, universe, baselines, transforms, splits and kill rules | Options-context and OA research owners; existing #8286 results and revival charter | Reviewable frozen study packet; explicit unavailable fields and borrow-data gap; no fit before the packet is accepted |
+| W3. Feature/label preregistration | Exact six-pilot engineering spec and review complete; bind actual source/history, dates, owner receipts and conditional power before empirical seal | Options-context and OA research owners; existing #8286 results and revival charter | Reviewed design plus still-unbound empirical manifests; no presumed PIT, power or trial acceptance |
 | W4. Observational/execution product integration | Correct labels/unknown states; exact contract and source clocks; coherent candidate revision; operator expression review | Terminal #592/#645/#686/#723/#768/#780/#781/#783; candidate #8310 | Existing exact-head review/release and responsive journey evidence; current-source freshness distinguished from UI deployment; no new candidate authority |
 | W5. Forward evidence and incremental study | Qualified capture; frozen evaluation; dependence/multiplicity/coverage controls; quote/latency/cost sensitivity | W0/W3; existing capture, outcome and evaluation stores | Captured-PIT manifests, sufficient independent observations or explicit underpowered result, paired baseline comparison and calibrated uncertainty |
 | W6. Exact-option economics | Fixed selection/entry/exit rules, deliverable/exercise, costs, missing exits, fill evidence or bounded simulation | Exact-option ruler #7405 merged; fixture evaluator #8318 active; current Issue Desk/Payoff | Reproducible option outcomes labelled simulated/observed, costs/coverage and decision utility; underlying returns remain separate |
-| W7. Fable implementation commission | Assemble accepted contracts, exact owned code boundaries, current receipts and feature-level decisions | W1–W4 can qualify structural work; W5/W6 required for predictive/economic claims | Single concrete implementation brief, independent review, named incumbent owners, no competing runtime/store/lifecycle, explicit authority ceiling |
+| W7. Fable implementation commission | Five-capsule packet prepared: B1, B2, B3, B5 and finite study adapter; bind actual owner/path acceptance and current execution route | W1–W4 can qualify structural work; W5/W6 required for predictive/economic claims | Concrete Fable packet and reviewed references now present; no competing runtime/store/lifecycle or dispatch yet |
 | W8. Limited promotion and monitoring | Policy evaluation, calibrated display/rank/gate only for admitted uses, ongoing drift/coverage monitoring | Accepted scientific and release gates, existing authority owner | Measured utility/costs, rollback criteria, drift review and receipts; no automatic graduation from a literature or fixture pass |
 
 W0 source inspection, W1 semantics, W2 mathematics and W3 study drafting can proceed in parallel. Existing W4 work should continue with its owners rather than waiting for every research hypothesis. W5 cannot establish trustworthy forward results on stale/replayed data. W7 can commission observation and numerical work before alpha validation if the brief explicitly limits claims; the broader predictive implementation remains gated.
@@ -61,7 +63,7 @@ At the source cuts inspected in this commission:
 | Terminal #667 | Merged and owner-reported deployed a049d46f | UI path is evidenced; September 25 source was stale in October 3 receipt |
 | Terminal #686 | Open, held publication refusal | No alternate transport/retry to evade typed publication precheck |
 | Terminal #780 | Original writer has qualified unpublished files | Preserve dirty bytes and writer custody; no overwrite |
-| Terminal #783 | Now merged at 41b8af2da46614cedd2a485214e53003d4f030fc on metadata refresh | Candidate transport source integrated; deployment/publication is not established by merge |
+| Terminal #783 | Merged at 41b8af2da46614cedd2a485214e53003d4f030fc; later #599 receipt reports canonical deployment | Entitled transport only; formed candidate publication and current natural-source proof remain separate |
 | Terminal #781/#723 | Existing active product/integration work | Consume current review/acceptance receipts; do not build replacement interfaces |
 
 PR heads are historical observations, not perpetual reservations. Before a future implementation action, read current metadata, exact diff, custody and owner receipts once; reconcile changes before touching source. The immutable census pins remain the baseline for findings in this packet.
@@ -70,7 +72,7 @@ PR heads are historical observations, not perpetual reservations. Before a futur
 
 1. **Hedge-profile interpretation:** source cumsums by contract strike while describing hypothetical spot-travel hedge transactions. The independent witness distinguishes exposure distribution from repriced whole-book hedge change. Preserve a cumulative-strike visualization if desired, but use the accepted Macro economics for a spot scenario.
 2. **Gamma regime orientation:** the existing gamma profile can cross from positive to negative; nearest-flip-above/below logic can label the wrong regime. Review the exact numerical witness and scope a source repair under current pricing ownership.
-3. **GEX reaches a different Prophet path:** a false stock-score gate does not establish absence from C1 fusion. Map actual field presence/admission and current runtime receipts before judging influence or changing policy.
+3. **GEX has a separate Prophet path, now audited on one run:** all 69 scores/ranks reproduce independently; GEX is excluded at 21/69 coverage, while deleting whole F5 moves 42 ranks. B4 is complete for that artifact. Preserve revision/consumer and upstream-lineage limits rather than repeating the same audit.
 4. **Chain proxy versus NBBO measurement:** `.80/.20/.50` categorical ask-share proxy and measured trade-location shares need distinct contracts and UI claims. Do not silently feed one into a model trained on the other.
 5. **Greek provenance:** EOD normalization needs explicit scrutiny of source/underlying clocks and model/IV/TTE inputs. An exact internal formula with ambiguous input time cannot support an exact-time claim.
 6. **Strict candidate schema:** the proposed context extension requires an intentional schema/version/consumer change; `additionalProperties: false` blocks silent insertion. Preserve current formation/revision semantics and all authority fields.
@@ -79,7 +81,7 @@ These are source/math findings. Production prevalence, affected live records and
 
 ## 4. Fable handoff packet
 
-The implementation handoff should contain the following concrete material, all committed to the same research carrier or linked immutable incumbent receipt:
+The [prepared five-capsule packet](FABLE_STRUCTURAL_HANDOFF.md) now carries the concrete implementation boundaries and acceptance tests below, with exact evidence versions. Existing owner/path/route acceptance is still required before dispatch:
 
 - A one-page mission: which questions are implemented, for which universe/horizon, with which claims permitted.
 - Current owner/custody map, exact source heads and the approved integration branch/worktree; existing uncommitted bytes and holds identified.
@@ -90,13 +92,13 @@ The implementation handoff should contain the following concrete material, all c
 - Explicit authority ceiling and later promotion gate. Unvalidated scores, P&L, inference and actions remain unavailable.
 - A continuation record identifying what changed, what was verified, what remains unproven, next actions and settled work not to repeat.
 
-**Current readiness:** the evidence review, source/math findings, 40-feature design and contract/roadmap are a substantial research foundation. Actual entitlement/build, fresh natural-session source acceptance, final empirical endpoint/universe freeze, borrow-data coverage and untouched forward evidence are still owed. The full predictive system is not implementation-accepted or scientifically validated. No Fable worker was dispatched by this commission.
+**Current readiness:** the evidence review, 40-feature catalogue, exact six-pilot design, 83-case mechanics reference, reviewed source-admission reference, 52-case P3 kernel and independent GEX replay are complete at their bounded research level. P1–P4 use the defined dynamic causal panel; the primary baseline is the narrower B1-RI research adapter. P6 requires actual fills. Actual entitlement/build, natural source/consumer qualification, historical snapshots, borrow coverage, empirical dates and feasible pretest power remain owed. The retained historical manifest has no original availability/vintage columns. The full predictive system is not implementation-accepted or scientifically validated. No Fable worker was dispatched.
 
 Structural implementation can be proposed after the independent review in this PR and current-owner reconciliation. It must not wait for alpha evidence to correct a mathematically false label, and it must not use that correction as permission to activate predictive policy.
 
 ## 5. Current execution and continuation
 
-Research publication is on `claude/options-intelligence-research-20261003`, based on Macro `6f5e78e94e8808582a650cdfa0fc3357040a179c`. Mastermind law pin is `6311283389c2e3d32b7d457d1ff3a524f107a32f`; Terminal census pin is `a049d46fa2415d3949aae5efc0ee515b6667c7a0`. Read the final [EXECUTION_STATE.md](EXECUTION_STATE.md) for the cumulative publication/verification record.
+Research publication remains on `claude/options-intelligence-research-20261003`, originally based on Macro `6f5e78e94e8808582a650cdfa0fc3357040a179c`. Current continuation law pin is protected Mastermind `20adcaf65c2dd1bb734ab06e215feb1a0eb65659`; original source pins remain immutable evidence. Read [EXECUTION_STATE.md](EXECUTION_STATE.md) for the cumulative verification record and PR description for the exact final published head/tree.
 
 Conversation agents completed bounded public/vendor/competitor/source research and mathematical/catalogue tasks. Their outputs are evidence inputs, reviewed and integrated by the principal. They are not M2 fabric execution receipts.
 
@@ -106,10 +108,10 @@ The cheaper signal-drafting conversation model separately failed at capacity bef
 
 ### Next continuation, in order
 
-1. Read this PR's current exact head, final evidence manifest and independent review; confirm active source/implementation owner changes since the census.
-2. Close any material research-definition defects found by the review, retaining evidence hashes and prior conclusions.
-3. Prepare owner-specific W1/W2 repair briefs from the demonstrated semantics/math findings; attach current PR dependencies and acceptance witnesses.
-4. Complete W0 capability/freshness evidence through the incumbent data owner and freeze the W3 pilot universe, endpoint/horizon and borrow-data plan.
-5. Commission the qualified structural slice to Fable when its concrete packet is accepted; keep predictive W5/W6 gates separate and continue the research program.
+1. Read the verified current #8321 head, principal decisions and manifest, then bind current incumbent custody and exact source/consumer paths for the first gamma-regime and Terminal-label slice. Reconcile only material changes since the owner delta.
+2. Use the prepared Fable capsule through a currently qualified route when its incumbent owner accepts it; preserve the original implementation carriers and strict consumer schemas.
+3. Obtain W0's redacted running-build/entitlement and natural source-to-consumer receipts through the existing owner. Consume the already assigned source-chain timeout audit instead of starting another.
+4. Implement the finite offline study adapter using synthetic/qualified development inputs; bind real historical snapshots, nested offsets, actual dates and pretest power before empirical sealing. P6 additionally needs independently authorized actual fill/fee records.
+5. Review exact implementation returns and natural producer/consumer evidence before release or scientific promotion. Preserve B4/#8286 closed work and the broader unfulfilled production-policy incrementality goal.
 
 The next action is not to repeat the academic search, rebuild the Terminal options workspace, rerun #8286 or launch a competing collector. Checkpoints preserve progress for another turn; they do not imply background execution after the active turn ends.

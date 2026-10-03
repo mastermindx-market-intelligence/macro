@@ -3,7 +3,7 @@
 **Commission:** `options-intelligence-deep-research-20261003-astra-001`  
 **Principal:** Astra Meta-CEO, acting on the Chairman's October 3 instruction.  
 **Carrier:** [Macro draft PR #8321](https://github.com/mastermindx-market-intelligence/macro/pull/8321).  
-**Status:** Research and architecture specification. No predictive feature has earned new production authority through this work.
+**Status:** Research and architecture specification; the six-pilot design is accepted for bounded research engineering under [PRINCIPAL_DECISIONS_20261003.md](PRINCIPAL_DECISIONS_20261003.md). This is not a sealed empirical preregistration, source/owner/power pass or production authority.
 
 ## 1. Executive decision
 
@@ -42,20 +42,24 @@ Every proposed feature must identify its question, observable inputs, units, ava
 
 “Tier One” here means first to qualify and evaluate. It does not mean that these features are already validated for production scoring.
 
+The exact accepted engineering design is [PILOT_STUDY_SPEC_V1.md](PILOT_STUDY_SPEC_V1.md), with its [JSON companion](pilot-study-spec.v1.json). Its frozen bytes define the finite target adapters, labels, price sampling, units, clocks, training, loss, inference and refusal rules. Historical input hashes in that specification and its reviews identify the versions actually reviewed; this later integration does not rewrite them.
+
 | Family | Question | Initial consumer | Primary empirical target | Main challenge |
 |---|---|---|---|---|
 | P1. Unusual activity with execution-quality context | Is there unusual, well-observed activity worth investigation? | Flow Desk and candidate review queue | Proposed OIF01 next-30-minute range forecast; discovery utility separately | Intraday seasonality, event activity, repeated counting and coverage selection |
 | P2. Signed dollar-delta flow with ambiguity retained | Does classified net directional exposure add information? | Research-only candidate support/counterevidence | Proposed OIF04 next-30-minute residual-return forecast | Aggressor error, package legs, carry trades and endogenous price response |
-| P3. ATM IV minus square-root physical-variance forecast | Does relative implied/physical uncertainty add information? | Risk state and expression comparison | Proposed OIF19 matched-20-session variance forecast; expression utility separately | Volatility/variance units, jumps, event premia, positive forecast mapping and leakage |
+| P3. ATM IV minus square-root physical-variance forecast | Does relative implied/physical uncertainty add information? | Risk state and expression comparison | OIF19 matched-20-session positive B2-RI variance forecast against B1-RI; expression utility separately | Volatility/variance units, jumps, event premia, causal forecast history and leakage |
 | P4. Carry-aware matched call/put relative pricing | Does residual relative pricing add thesis information? | Deterioration/support research | Proposed OIF22 five-session return after a one-session skip | Borrow costs, dividends, exercise, stale asynchronous quotes and old nulls |
 | P5. Conditional hedge stress under explicit inventories | How sensitive is a hypothetical inventory to spot, IV and time? | Exposure/Structure scenarios | Numerical correctness first; proposed next-10-minute variance test later | Unknown dealer inventory, surface dynamics and nonlinear expiry behavior |
-| P6. Executable contract quality | Is a particular expression observable, affordable and consistent with the thesis horizon? | Existing Issue Desk and Payoff/Plan work | Quote qualification, cost model calibration and exact-option utility | Spread, latency, fills, exercise, financing and missing exits |
+| P6. Executable contract quality | Does quoted spread add execution-cost information? | Existing Issue Desk and Payoff/Plan work | Actual 60-second full-fill implementation-shortfall MAE, conditional on observed complete fills | Fill/fee receipts, selection, latency and causal incumbent covariates; coverage and simulated markouts remain diagnostics |
 
 P1 and P6 can produce useful observational tools before directional alpha is established. P5 can produce an honest scenario tool before a dealer-position inference is established. Any candidate rank, gate, alert policy or size change needs a separate validated use and authority gate.
 
-These proposed primary horizons now match the catalogue. They are design selections to freeze with the empirical packet, not accepted study results. The 20-session OIF19 feature is a volatility-unit residual against the square root of a variance forecast; it is not expected realized volatility. OIF20's variance-unit residual is a separately queued variant. A possibly negative residual cannot itself be scored by a variance-forecast loss.
+These primary horizons and algorithms are accepted engineering design choices, not accepted empirical results. The 20-session OIF19 feature is a volatility-unit residual against the square root of a variance forecast; it is not expected realized volatility. The specification fixes its positive multiplicative B2-RI mapping, with zero coefficient exactly recovering B1-RI; QLIKE scores the positive variance forecasts. OIF20's variance-unit residual remains a separately queued variant.
 
-The pilot should first use a bounded universe with demonstrable natural-session coverage, selected before examining outcomes. SPY/QQQ/IWM and a frozen liquid single-name panel are candidate cohorts, subject to actual source qualification. SPX/SPXW require separate index-underlying, exercise and settlement contracts. Do not pool them with physical-delivery equity options merely because their field names match. Universe membership, delistings, symbol changes and missing observations must be auditable.
+P1–P4 use a frozen rule for a dynamic point-in-time population: US common stocks in the latest causally consumer-admitted incumbent buy-pool revision, followed by the specification's source, liquidity, quote, contract and history qualifications. Preserve the full eligible/failed census, exact population/revision identity and selection lineage. Today's constituents cannot become a historical universe. P5 retains its separate SPY/QQQ/IWM scenario population; P6 retains existing authorized order/plan records. Missing incumbent covariate receipts block the affected forecasting comparison, even when numerical or observation work can continue. SPX/SPXW need separate contracts and are outside v1.
+
+The tractable first comparison is **B2-RI versus B1-RI**, where B1-RI is the fixed target-trained adapter of a small, causal incumbent-information summary. Its options-free-input B0 uses the same options-conditioned stock cohort, subject to lineage audit. Improvement over this adapter would not prove outperformance of the actual production policy or all of its raw information. That wider actual-incumbent-policy objective remains a separate, unsatisfied research goal.
 
 ## 5. Architecture inside existing owners
 
@@ -90,7 +94,7 @@ Terminal #599 is the active implementation coordination carrier, with #603/#723 
 
 Treat trades, quotes and exchange messages as observations. Trade direction is an inference unless actually classified. Opening/closing, participant type and package membership each require their own evidence. An inferred buy call has positive option delta, but may be a closing hedge, one leg of a spread or part of a stock-option package. Its economic thesis is not uniquely determined.
 
-The feature set can nevertheless test whether carefully classified, sufficiently covered signed flow improves both an explicitly options-free research comparator and the actual incumbent model. The census identifies a source-wired GEX path in Prophet C1 fusion, so today's Prophet must not casually be called price-only. Evaluate raw and high-quality subsets together so that abstention cannot hide a poor coverage/accuracy tradeoff. Features derived from quote changes must compete with synchronized stock returns; a stale option quote reacting to an already-observed stock move is not leading information.
+The feature set can test improvement over an explicitly options-free-input comparator and the accepted B1-RI research adapter. A separate stronger study must test the actual incumbent policy before claiming production-policy improvement. The census identifies a source-wired GEX path in Prophet C1 fusion, so today's Prophet must not casually be called price-only. Evaluate raw and high-quality subsets together so that abstention cannot hide a poor coverage/accuracy tradeoff. Features derived from quote changes must compete with synchronized stock returns; a stale option quote reacting to an already-observed stock move is not leading information.
 
 Surface signals require coherent forwards, carry, exercise and quote times. IV spread, skew, term slope, risk reversals, butterflies, implied variance and tail prices answer different questions. Tail insurance prices describe the risk-neutral distribution and compensation for risk; physical crash probabilities require separate calibration. Event-spanning variance measures should use the event schedule available at decision time.
 
@@ -124,9 +128,9 @@ Terminal should make provenance visible where it affects decisions: observed ver
 
 ## 9. Evaluation, graduation and stopping
 
-[RESEARCH_PROTOCOL.md](RESEARCH_PROTOCOL.md) is the proposed research contract. It distinguishes observation qualification, mathematical correctness, association, out-of-time incremental prediction, calibrated decision utility and executable option economics. A pass at one level does not imply the next.
+[RESEARCH_PROTOCOL.md](RESEARCH_PROTOCOL.md) is the research governance and promotion contract; the frozen pilot specification supplies the accepted finite engineering rules. They distinguish observation qualification, mathematical correctness, association, out-of-time incremental prediction, calibrated decision utility and executable option economics. A pass at one level does not imply the next.
 
-Each pilot family gets one registered primary endpoint/horizon, the actual incumbent baseline and its options-augmented comparison, plus an audited options-free comparator and fixed diagnostics. Freeze inputs, splits, transformations, costs and multiplicity accounting before outcome inspection. Compare on a common eligible population and report the broader coverage/selection impact separately. Use dependence-aware uncertainty and require all training, tuning and calibration labels to mature before the test-model freeze. Preserve failed variants and negative results.
+Each pilot family has one specified primary endpoint/horizon, B1-RI and its one-feature B2-RI augmentation, plus the audited B0 comparator and fixed diagnostics. Exact algorithms, screening margins and multiplicity are fixed by the accepted specification; actual source receipts, datasets, dates, owner acceptance, power feasibility and empirical registration remain gates. Compare on a common eligible population and report coverage/selection separately. Preserve mature-label and nested historical-forecast requirements, failed variants and negative results. None of this satisfies the separate actual-production-policy incrementality goal.
 
 Kill or downgrade a feature when its claimed input is unobservable, its result disappears after a necessary confounder/latency/cost correction, its sign or calibration fails across regimes, or its operational burden exceeds demonstrated utility. Reclassify useful descriptive displays honestly. A negative study that prevents false confidence is a successful research deliverable.
 

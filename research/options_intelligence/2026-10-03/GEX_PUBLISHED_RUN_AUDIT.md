@@ -28,7 +28,7 @@ The emitter's timestamp, repository publication time, source observation date an
 
 ## 2. Exact replay result
 
-The audit re-extracted all eight registered members from preserved raw published fields. It independently recomputed the floors, within-pool percentiles, within-family duplicate collapse, family averages, final scores and ranks. It matched:
+The audit re-extracted all eight registered members from preserved raw published fields and replayed the pinned incumbent implementation's floors, within-pool percentiles, within-family duplicate collapse, family averages, final scores and ranks. The later [independent review](GEX_RUN_REVIEW.md) supplies a separately authored exact-rational calculation without importing the incumbent module. The replay matched:
 
 - all **69 published scores** at the producer's one-decimal precision;
 - all **69 ranks**, including stage buckets and ticker tie-breaking;
@@ -45,12 +45,14 @@ The admitted members were `alpha`, `off_high`, `tier_cascade`, `sue_fresh`, `sma
 
 Each comparison preserves the 69-name population, existing stages, registered signs and source arithmetic. No outcomes, training, gates, provider data, feature thresholds or production artifacts are altered.
 
-| Fixed-pool comparison | Raw scores changed | Published scores changed | Names whose rank moves | Maximum rank move | Top-30 names replaced |
+| Fixed-pool comparison | Literal producer float scores changed | Published scores changed | Names whose rank moves | Maximum rank move | Top-30 names replaced |
 |---|---:|---:|---:|---:|---:|
 | Remove only `gex_confirm_verdict` from the frozen admitted set | 0 | 0 | 0 | 0 | 0 |
 | Remove the entire `F5_FLOW_POSITIONING` family | 69 | 68 | 42 | 11 | 2 |
 
 For the family exclusion, mean absolute rank displacement is **1.53623**. Two top-30 names leave and two enter, so the symmetric-difference count is four. This is the same result as the board's stored whole-family diagnostic. Calling those 42 moves a “GEX effect” would be wrong: GEX did not vote, and the family deletion removes other evidence.
+
+**Independent precision qualification:** exact rational arithmetic changes 68 whole-F5 scores. The producer's 69 literal float inequalities include an approximately `7.105427357601002e-15` difference for MMSI, whose rational score is unchanged. This is numerical rounding noise, not a mathematical vote change. Published-score changes, rank movement and GEX-specific conclusions are unchanged. [gex-independent-replay.py](gex-independent-replay.py) preserves the independent calculation; its review also verifies the complete extract against the separately fetched full board.
 
 As a discriminating negative control, the audit deliberately changes the 48 missing GEX readings to the observed category `neutral` in an isolated copy. This **forbidden synthetic mutation** raises apparent coverage to 100%, admits GEX, changes all 69 scores and moves 40 ranks, replacing three top-30 names. It is a demonstration of why missing data must stay missing, not a suggested repair or a market result. Merely replacing unknown with a seemingly harmless neutral category can change the information set and all downstream averages.
 
