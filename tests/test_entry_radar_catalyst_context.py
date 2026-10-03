@@ -11,6 +11,8 @@ from engine.entry_radar.catalyst_context import (
     assess_catalyst_context,
 )
 
+from engine.entry_radar.catalyst_adapters import adapt_edgar_earnings_item_202
+
 T0 = datetime(2026, 10, 2, 14, 30, tzinfo=timezone.utc)
 
 
@@ -174,7 +176,6 @@ def test_duplicate_source_read_is_refused():
         _assess(source_reads=[_read(), _read()])
 
 
-from engine.entry_radar.catalyst_adapters import adapt_edgar_earnings_item_202
 
 
 def _item202_row(**overrides):
