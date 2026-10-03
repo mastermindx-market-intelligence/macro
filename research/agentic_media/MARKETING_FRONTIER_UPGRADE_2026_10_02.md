@@ -520,6 +520,76 @@ Evidence remains in the existing operation directory: m3-comparison-red.txt,
 m3-bound-panel-tests.txt, m3-mutation-proof.txt and m3-code-gated-step-tests.txt.
 The source candidate still needs independent review and exact-head hosted execution.
 
+### M2 CLI-presence repair and independent dependency findings
+
+Independent M2 review5399369155 found a real defect on28351/bf023: an explicitly
+empty shadow option could be mistaken for an absent option and enter the normal
+model-credit path. Nonempty owner plus explicitly empty return flags could also
+silently become prepare mode. That earlier fail-closed claim is superseded here.
+The repaired mode selector tests presence (`is not None`) separately from value,
+rejects empty/whitespace-only paths or incomplete pairs before IO, and enters legacy
+mode only when ALL shadow options are absent. Existing owner-only prepare and full
+nonempty triple behavior remain unchanged.
+
+Eight added regressions first gave6FAIL/2PASS, with zero providers called. After
+repair, the complete six-file caller/copy/comparison/scorer campaign passed727tests
+and57subtests. A separate actual-#7493-compiler fixture passed all39caller tests;
+restoring only the former truthiness selector in memory reproduces6intended failures
+and0errors, then restored39PASS. Source files are hash-verified before/after.
+Evidence: m2-empty-flags-red.txt, m2-empty-flags-complete-green.txt,
+m2-empty-flags-real-compiler.txt, m2-caller-repair-qualified/source-manifest.json.
+Caller blob27e0939772ef52a8f599836f6cd2b4802651c5ee; tests527a1c829e1ad61d82d8e8a989d0fe918af93858.
+
+M2 hosted step proof is now confirmed by both its canonical semantic fragment and
+the independent reviewer:68tests/55subtests passed on the prior M2 head. Its aggregate
+CI37101393962 was CANCELLED on the material M3 advance; never call that full-head
+acceptance. M3bf023 CI37102665361 was in progress with planner/contract-delta SUCCESS
+at the last observation; a repair head will require its own exact-head checks.
+
+M3 five-file blob readback matched bf023 exactly. Engine-only79/168 and CLI-only77/168
+PR plans select the incumbent owner; test-only2/168 remains qualified. Plan hashes
+2141ea7b505ed488f0baf88c7a2f279b48c3e15b4d3cff20903d66992e99356b and
+5a7d4f5c4c8aae842a426f9f19f78b647f209b7ad0aaff30164a225e77748beb.
+The first local engine-plan shell accidentally assigned zsh's special path variable;
+it did not execute Python. The bounded corrected invocation produced these proofs.
+M3+observed-main+#7493 compose cleanly to6854bc960bf53c409ed40863d1c46a0c555a9a05,
+preserving supplier/compiler and M3 source bytes; receipt m3-composed-source.json.
+
+The independent scoped review of #7489 found another release blocker: publisher
+caches/prepares media A, later outbox transition validates a fresh operator approval
+against current media B, and the prepared send can still contain A. Exact resolver,
+digest and transition functions at128b6c7c568ed7cefa6fd4339910fce43b06d0e5 reproduce
+this mismatch with an in-memory append sink. Old-approval/current-change rejects as
+a positive control. Zero provider calls or real ledger writes. Fix must bind the
+final frozen prepared send payload at the existing transition, then send those same
+values. This affects LaneA publisher and LaneC outbox; neither branch was modified.
+Review5399382182 and existing recovery #7479/comment5966376364 carry the precise
+repair. Registered LaneA/LaneC worktrees remain protected; locks do not prove live
+execution or grant this session their source custody. Keep this recovery action visible.
+
+### Real-event content reference, not a production or benchmark result
+
+The existing story batch's Rivian Oct2 event was traced to ORIGINAL issuer releases
+on SEC EDGAR, not licensed Research Vault bodies. Q1/Q2/Q3 deliveries10,365/12,194/19,248
+sum to41,807. Unchanged65,000-70,000 annual guidance implies23,193-28,193 in Q4,
+20.5%-46.5% above Q3 using decimal-half-up one place. These are arithmetic requirements,
+not forecasts or consensus beats. Original sources:
+https://www.sec.gov/Archives/edgar/data/1874178/000187417826000057/ex-9913q26deliveryproducti.htm
+https://www.sec.gov/Archives/edgar/data/1874178/000187417826000053/ex-9912q26rivianearningspr.htm
+
+Reference headline: Rivian's next quarter has a higher hurdle
+Reference body: $RIVN needs at least 20.5% more deliveries in Q4 than Q3 to reach unchanged annual guidance. The financial test is whether rising output improves automotive margins.
+
+The208-character two-part draft passed the actual compiler/shaped guard in the
+qualified fixture as REVIEW_REQUIRED/publish_authorized:false. It was authored in
+this attended session, not a summoned bot. First draft's claim-map/shape/numerical
+failures remain preserved; the draft was rewritten rather than weakening guards.
+No chart rendered, no human label, no price reaction claim, no X publication and no
+quality superiority inferred. The public fact projection SHA256 is
+c669d79330b1570655b381850088848e5f76743d6f6619c394d0eb09b20bb9b7; evidence remains
+rivn-20261002-editorial-example and #8302/comment5966342590. The expired reference
+brief may never be silently refreshed or used as current publication approval.
+
 ### Remaining mission and exact next actions
 
 1. Qualify this candidate in the actual code-gated planner/hosted step and obtain
@@ -529,10 +599,13 @@ The source candidate still needs independent review and exact-head hosted execut
 3. Connect the qualified caller through the existing admitted Runtime/artifact owner;
    require a consumed assignment and bound return. Protected Wake marks only
    codex-app-server implemented; Grok/ChatGPT activation needs its own owner proof.
-4. Extend existing golden-set/exemplar evaluation, never create a second label store.
-   Existing production batch gb-933c124e9669 has 60 stratified cases and ZERO human
-   labels; SHA256 34d531dfe9e2f8278652fca86cadf7af5d2d74c0d2b664e43dc03d83581b8437.
-   Stratified inclusion weights do not imply unweighted production prevalence.
+4. Run a preregistered real paired editorial study through the newly built existing
+   golden-set CLI after writer admission and rights-cleared input qualification.
+   Do not create a second label store or invent human labels. The old production
+   story batch gb-933c124e9669 has60stratified cases and ZERO human labels, SHA256
+   34d531dfe9e2f8278652fca86cadf7af5d2d74c0d2b664e43dc03d83581b8437; it is not a
+   paired editorial trial. Stratified inclusion weights do not imply unweighted
+   production prevalence. Reference drafts do not qualify model superiority.
 5. Rights-cleared inputs, independent semantic/media review and a newly approved
    X-visible publication remain required before live autonomy. No growth claim yet.
 

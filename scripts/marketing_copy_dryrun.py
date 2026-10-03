@@ -386,10 +386,15 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--frontier-response", metavar="JSON",
                     help="returned frontier draft; requires owner input and original issued brief")
     args = ap.parse_args(argv)
-    if args.frontier_issued or args.frontier_response:
-        if not (args.frontier_owner_input and args.frontier_issued and args.frontier_response):
-            ap.error("frontier evaluation requires owner input, issued brief and response")
-    if args.frontier_owner_input:
+    shadow_values = (args.frontier_owner_input, args.frontier_issued, args.frontier_response)
+    if any(value is not None for value in shadow_values):
+        if any(value is not None and not value.strip() for value in shadow_values):
+            ap.error("frontier input paths must be nonempty")
+        if args.frontier_owner_input is None:
+            ap.error("frontier mode requires current owner input")
+        has_return = args.frontier_issued is not None or args.frontier_response is not None
+        if has_return and (args.frontier_issued is None or args.frontier_response is None):
+            ap.error("frontier evaluation requires both issued brief and response")
         return _frontier_shadow_main(args)
 
     if args.shape:

@@ -301,5 +301,49 @@ class ShadowCallerTests(unittest.TestCase):
                     scope[name]()
 
 
+class EmptyShadowFlagsTests(unittest.TestCase):
+    """Presence, not truthiness, selects a no-provider shadow invocation."""
+
+    def assert_rejected(self, flags):
+        with tempfile.TemporaryDirectory() as temporary:
+            plan = Path(temporary) / "synthetic-plan.json"
+            plan.write_text("{}")
+            with patch.object(diagnostic, "_load_cfg", side_effect=AssertionError("LEGACY_MODEL_MODE_REACHED")), patch.object(diagnostic, "_frontier_shadow_main", side_effect=AssertionError("MALFORMED_FLAGS_REACHED_SHADOW_IO")), redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as error:
+                    diagnostic.main(flags + ["--plan", str(plan)])
+                self.assertEqual(error.exception.code, 2)
+
+    def test_empty_owner_input_rejects(self):
+        self.assert_rejected(["--frontier-owner-input", ""])
+
+    def test_empty_issued_rejects(self):
+        self.assert_rejected(["--frontier-issued", ""])
+
+    def test_empty_response_rejects(self):
+        self.assert_rejected(["--frontier-response", ""])
+
+    def test_all_empty_rejects(self):
+        self.assert_rejected(["--frontier-owner-input", "", "--frontier-issued", "", "--frontier-response", ""])
+
+    def test_present_owner_and_empty_pair_rejects(self):
+        self.assert_rejected(["--frontier-owner-input", "current.json", "--frontier-issued", "", "--frontier-response", ""])
+
+    def test_blank_owner_rejects_before_shadow_io(self):
+        self.assert_rejected(["--frontier-owner-input", "   "])
+
+    def test_nonempty_owner_with_single_return_option_rejects(self):
+        for flag in ("--frontier-issued", "--frontier-response"):
+            with self.subTest(flag=flag):
+                self.assert_rejected(["--frontier-owner-input", "current.json", flag, "input.json"])
+
+    def test_absent_shadow_options_preserve_legacy_mode(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            plan = Path(temporary) / "synthetic-plan.json"
+            plan.write_text("{}")
+            with patch.object(diagnostic, "_load_cfg", side_effect=RuntimeError("EXPECTED_LEGACY_ENTRY")), patch.object(diagnostic, "_frontier_shadow_main", side_effect=AssertionError("UNEXPECTED_SHADOW")):
+                with self.assertRaisesRegex(RuntimeError, "EXPECTED_LEGACY_ENTRY"):
+                    diagnostic.main(["--plan", str(plan)])
+
+
 if __name__ == "__main__":
     unittest.main()
