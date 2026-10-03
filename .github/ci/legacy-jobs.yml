@@ -8274,9 +8274,6 @@ jobs:
     #                                schema, dedup, incremental start-date, integration
     #   test_fred_series_alias_conflicts.py — no duplicate aliases across all fred.series
     #                                         groups (guards the KeyError outage)
-    #   test_collect_cycle_vintages.py — hermetic FRED vintage-collector contract
-    #                                    (mocked fetch, zero network). Sits in this
-    #                                    code-gated job so the merge gate executes it.
     # Zero network calls; all inputs are synthetic or committed files.
     runs-on: ubuntu-latest
     steps:
@@ -8287,7 +8284,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml openpyxl requests
       - name: CCW-W1 bond holdings parser + registry + FRED alias tests
-        run: python -m pytest tests/test_corp_bond_holdings.py tests/test_fred_series_alias_conflicts.py tests/test_fred_baml_archive.py tests/test_collect_cycle_vintages.py -v
+        run: python -m pytest tests/test_corp_bond_holdings.py tests/test_fred_series_alias_conflicts.py tests/test_fred_baml_archive.py -v
       - name: CCW-W5 FINRA corp bonds collector tests
         run: python -m pytest tests/test_finra_corp_bonds.py -v
 
@@ -12861,7 +12858,7 @@ jobs:
       # ledger, and the target-truth vintage collector.  xlrd is explicit so
       # the frozen 2012/2014 legacy-XLS BLS fixtures run rather than skip.
       - name: Release Radar — inflation truth, actuals, defects, target truth (#5153)
-        run: python -m pytest tests/test_inflation_intelligence.py tests/test_inflation_intelligence_nw.py tests/test_release_actuals.py tests/test_release_cpi_official_truth.py tests/test_release_cpi_target_history.py tests/test_release_defects.py tests/test_release_target_truth.py -q
+        run: python -m pytest tests/test_inflation_intelligence.py tests/test_inflation_intelligence_nw.py tests/test_release_actuals.py tests/test_release_cpi_official_truth.py tests/test_release_cpi_target_history.py tests/test_release_defects.py tests/test_release_target_truth.py tests/test_collect_cycle_vintages.py -q
       # Wave 2B: the coherent-target ridge is a display-only forward candidate.
       # Keep its frozen registry/prereg, truth-receipt closure, authority wall,
       # and combined_v1 exclusion under the release-forecast owner lane.
