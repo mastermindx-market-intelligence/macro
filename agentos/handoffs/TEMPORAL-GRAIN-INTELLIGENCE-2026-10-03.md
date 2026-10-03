@@ -1,6 +1,6 @@
 ---
 workstream: WS:TEMPORAL-GRAIN-INTELLIGENCE
-session: sol/adaptive-signal-clock-recovery-20261003
+session: claude/adaptive-signal-clock-recovery-20261003
 model: sol
 ended_because: ci_handoff
 mission: >
