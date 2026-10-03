@@ -1,0 +1,607 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "options.alpha_candidate_feed/v1",
+  "title": "Derived options-alpha research-candidate feed (inactive implementation carrier)",
+  "description": "Pure receipt-bound derived view composing canonical campaign evidence and measured microstructure. This carrier is implementation-only and inactive: it produces a feed artifact on caller-supplied inputs and never claims live publication, durable write, runtime activation, or any trading authority. The composer marks the output synthetic_until_publisher_validates_activation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "generated_at",
+    "feed_id",
+    "header",
+    "policy",
+    "activation",
+    "source_receipts",
+    "candidates",
+    "abstentions",
+    "degraded",
+    "publication_claim",
+    "authority"
+  ],
+  "properties": {
+    "schema": {"const": "options.alpha_candidate_feed/v1"},
+    "schema_version": {"const": 1},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "feed_id": {"type": "string", "pattern": "^oacf_[a-f0-9]{24}$"},
+    "header": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "composer_id",
+        "implementation_carrier",
+        "eligibility_state",
+        "deterministic_seed",
+        "candidate_count",
+        "abstention_count",
+        "degraded_count",
+        "header_digest_sha256"
+      ],
+      "properties": {
+        "composer_id": {"type": "string", "pattern": "^oacf_composer_[a-f0-9]{24}$"},
+        "implementation_carrier": {"type": "string", "minLength": 1},
+        "eligibility_state": {
+          "enum": [
+            "synthetic_until_publisher_validates_activation",
+            "preregistered_inactive_until_activation"
+          ]
+        },
+        "deterministic_seed": {"type": "string", "minLength": 1},
+        "candidate_count": {"type": "integer", "minimum": 0},
+        "abstention_count": {"type": "integer", "minimum": 0},
+        "degraded_count": {"type": "integer", "minimum": 0},
+        "header_digest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "policy": {"$ref": "#/$defs/policy"},
+    "activation": {"$ref": "#/$defs/activation"},
+    "source_receipts": {"$ref": "#/$defs/sourceReceipts"},
+    "candidates": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/candidate"}
+    },
+    "abstentions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/abstention"}
+    },
+    "degraded": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/degraded"}
+    },
+    "publication_claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim", "claim_reason"],
+      "properties": {
+        "claim": {"const": "caller_supplied_synthetic_only_no_live_publication"},
+        "claim_reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "authority": {"$ref": "#/$defs/falseAuthority"}
+  },
+  "$defs": {
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id",
+        "policy_version",
+        "policy_digest_sha256",
+        "policy_path",
+        "policy_schema"
+      ],
+      "properties": {
+        "policy_id": {"const": "oa_member_persistent_measured_campaign/v1"},
+        "policy_version": {"const": 1},
+        "policy_digest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "policy_path": {
+          "const": "research/options_estate/options_alpha_candidate_formation_policy_v1.json"
+        },
+        "policy_schema": {
+          "const": "options.alpha_candidate_formation_policy/v1"
+        }
+      }
+    },
+    "activation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "activation_receipt_id",
+        "activation_receipt_digest_sha256",
+        "activation_receipt_schema",
+        "activation_receipt_path",
+        "activation_preconditions",
+        "all_preconditions_cleared",
+        "fence_state",
+        "policy_freeze_at",
+        "activation_boundary_at"
+      ],
+      "properties": {
+        "activation_receipt_id": {
+          "type": ["string", "null"],
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "activation_receipt_digest_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "activation_receipt_schema": {
+          "const": "options.alpha_candidate_feed_activation_receipt/v1"
+        },
+        "activation_receipt_path": {
+          "const": "research/options_estate/options_alpha_candidate_feed_activation_receipt_v1.json"
+        },
+        "activation_preconditions": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "oa1t_measured_source_consumer_proven",
+              "ad1t2_consumer_availability_production_accepted",
+              "campaign_integrity_publication_runtime_accepted",
+              "source_collision_review_clear"
+            ]
+          },
+          "allOf": [
+            {"contains": {"const": "oa1t_measured_source_consumer_proven"}},
+            {"contains": {"const": "ad1t2_consumer_availability_production_accepted"}},
+            {"contains": {"const": "campaign_integrity_publication_runtime_accepted"}},
+            {"contains": {"const": "source_collision_review_clear"}}
+          ]
+        },
+        "all_preconditions_cleared": {"type": "boolean"},
+        "fence_state": {
+          "enum": [
+            "pre_policy_freeze",
+            "post_policy_freeze_pre_activation",
+            "post_activation"
+          ]
+        },
+        "policy_freeze_at": {"type": "string", "format": "date-time"},
+        "activation_boundary_at": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "format": "date-time"}
+          ]
+        }
+      }
+    },
+    "sourceReceipts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["campaigns", "microstructure_map", "prior_feed"],
+      "properties": {
+        "campaigns": {"$ref": "#/$defs/prefixReceipt"},
+        "microstructure_map": {"$ref": "#/$defs/microstructureReceipt"},
+        "prior_feed": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/priorFeedReceipt"}
+          ]
+        }
+      }
+    },
+    "prefixReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "records", "prefix_sha256", "source_schema"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "records": {"type": "integer", "minimum": 0},
+        "prefix_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "source_schema": {"const": "options.signal_campaign/v2"}
+      }
+    },
+    "microstructureReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "entries_count",
+        "entries_digest_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "options.trade_nbbo_microstructure/v1"},
+        "entries_count": {"type": "integer", "minimum": 0},
+        "entries_digest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "priorFeedReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feed_id",
+        "schema",
+        "feed_digest_sha256",
+        "policy_id",
+        "policy_digest_sha256",
+        "published_at",
+        "first_observation_preserved",
+        "candidate_identity_preserved"
+      ],
+      "properties": {
+        "feed_id": {"type": "string", "pattern": "^oacf_[a-f0-9]{24}$"},
+        "schema": {"const": "options.alpha_candidate_feed/v1"},
+        "feed_digest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "policy_id": {"const": "oa_member_persistent_measured_campaign/v1"},
+        "policy_digest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "published_at": {"type": "string", "format": "date-time"},
+        "first_observation_preserved": {"type": "boolean"},
+        "candidate_identity_preserved": {"type": "boolean"}
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "campaign_id",
+        "final_event_id",
+        "first_qualifying_campaign_revision_id",
+        "current_campaign_revision_id",
+        "source_formed_at",
+        "first_observed_at",
+        "decision_at",
+        "available_at",
+        "published_at",
+        "frozen_formation",
+        "measured",
+        "evidence_digests",
+        "missingness",
+        "contradictions",
+        "state",
+        "reasons",
+        "versioned_updates",
+        "current_revision"
+      ],
+      "properties": {
+        "candidate_id": {"type": "string", "pattern": "^oacnd_[a-f0-9]{24}$"},
+        "campaign_id": {"type": "string", "pattern": "^ocam_[a-f0-9]{24}$"},
+        "final_event_id": {"type": "string", "minLength": 1},
+        "first_qualifying_campaign_revision_id": {
+          "type": "string",
+          "pattern": "^ocrev_[a-f0-9]{24}$"
+        },
+        "current_campaign_revision_id": {
+          "type": "string",
+          "pattern": "^ocrev_[a-f0-9]{24}$"
+        },
+        "source_formed_at": {"type": "string", "format": "date-time"},
+        "first_observed_at": {"type": "string", "format": "date-time"},
+        "decision_at": {"type": "string", "format": "date-time"},
+        "available_at": {"type": "string", "format": "date-time"},
+        "published_at": {"type": "string", "format": "date-time"},
+        "frozen_formation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "campaign_revision_id",
+            "formed_at",
+            "policy_id",
+            "policy_version",
+            "policy_digest_sha256",
+            "policy_freeze_at",
+            "activation_boundary_at",
+            "policy_freeze_cleared",
+            "activation_boundary_cleared",
+            "campaign_member_count",
+            "final_member_event_id",
+            "measured_source_print_count",
+            "measured_nbbo_valid_print_count",
+            "measured_nbbo_premium_coverage",
+            "all_evidence_legs_within_decision_cutoff",
+            "evidence_digest_sha256",
+            "source_prefix_receipt"
+          ],
+          "properties": {
+            "campaign_revision_id": {
+              "type": "string",
+              "pattern": "^ocrev_[a-f0-9]{24}$"
+            },
+            "formed_at": {"type": "string", "format": "date-time"},
+            "policy_id": {"const": "oa_member_persistent_measured_campaign/v1"},
+            "policy_version": {"const": 1},
+            "policy_digest_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "policy_freeze_at": {"type": "string", "format": "date-time"},
+            "activation_boundary_at": {
+              "oneOf": [
+                {"type": "null"},
+                {"type": "string", "format": "date-time"}
+              ]
+            },
+            "policy_freeze_cleared": {"type": "boolean"},
+            "activation_boundary_cleared": {"type": "boolean"},
+            "campaign_member_count": {"type": "integer", "minimum": 2},
+            "final_member_event_id": {"type": "string", "minLength": 1},
+            "measured_source_print_count": {"type": "integer", "minimum": 1},
+            "measured_nbbo_valid_print_count": {"type": "integer", "minimum": 1},
+            "measured_nbbo_premium_coverage": {
+              "type": "number",
+              "exclusiveMinimum": 0.0,
+              "maximum": 1.0
+            },
+            "all_evidence_legs_within_decision_cutoff": {"type": "boolean"},
+            "evidence_digest_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "source_prefix_receipt": {"$ref": "#/$defs/prefixReceipt"}
+          }
+        },
+        "measured": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_print_count",
+            "nbbo_valid_print_count",
+            "nbbo_premium_coverage",
+            "source_premium_usd",
+            "nbbo_covered_premium_usd",
+            "schema",
+            "schema_digest_sha256"
+          ],
+          "properties": {
+            "source_print_count": {"type": "integer", "minimum": 1},
+            "nbbo_valid_print_count": {"type": "integer", "minimum": 1},
+            "nbbo_premium_coverage": {
+              "type": "number",
+              "exclusiveMinimum": 0.0,
+              "maximum": 1.0
+            },
+            "source_premium_usd": {"type": "number", "minimum": 0.0},
+            "nbbo_covered_premium_usd": {"type": "number", "minimum": 0.0},
+            "schema": {"const": "options.trade_nbbo_microstructure/v1"},
+            "schema_digest_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "evidence_digests": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "campaign_row_digest_sha256",
+            "microstructure_row_digest_sha256",
+            "policy_digest_sha256"
+          ],
+          "properties": {
+            "campaign_row_digest_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "microstructure_row_digest_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "policy_digest_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "missingness": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "contradictions": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "state": {"const": "research_candidate"},
+        "reasons": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "current_revision": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "campaign_revision_id",
+            "revision_number",
+            "formed_at"
+          ],
+          "properties": {
+            "campaign_revision_id": {
+              "type": "string",
+              "pattern": "^ocrev_[a-f0-9]{24}$"
+            },
+            "revision_number": {"type": "integer", "minimum": 1},
+            "formed_at": {"type": "string", "format": "date-time"}
+          }
+        },
+        "versioned_updates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "campaign_revision_id",
+              "revision_number",
+              "revision_digest_sha256",
+              "formed_at",
+              "first_observed_at",
+              "available_at",
+              "published_at",
+              "candidate_identity_unchanged"
+            ],
+            "properties": {
+              "campaign_revision_id": {
+                "type": "string",
+                "pattern": "^ocrev_[a-f0-9]{24}$"
+              },
+              "revision_number": {"type": "integer", "minimum": 1},
+              "revision_digest_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "formed_at": {"type": "string", "format": "date-time"},
+              "first_observed_at": {"type": "string", "format": "date-time"},
+              "available_at": {"type": "string", "format": "date-time"},
+              "published_at": {"type": "string", "format": "date-time"},
+              "candidate_identity_unchanged": {"type": "boolean"}
+            }
+          }
+        }
+      }
+    },
+    "abstention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "campaign_id",
+        "campaign_revision_id",
+        "formed_at",
+        "reasons",
+        "state",
+        "first_observed_at",
+        "available_at",
+        "published_at"
+      ],
+      "properties": {
+        "campaign_id": {"type": "string", "pattern": "^ocam_[a-f0-9]{24}$"},
+        "campaign_revision_id": {
+          "type": "string",
+          "pattern": "^ocrev_[a-f0-9]{24}$"
+        },
+        "formed_at": {"type": "string", "format": "date-time"},
+        "reasons": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "BEFORE_POLICY_FREEZE",
+              "BEFORE_ACTIVATION_BOUNDARY",
+              "CAMPAIGN_RECEIPT_INVALID",
+              "CAMPAIGN_NOT_PROSPECTIVE",
+              "INSUFFICIENT_CAMPAIGN_MEMBERS",
+              "FINAL_MEMBER_MICROSTRUCTURE_MISSING",
+              "NO_VALID_NBBO_MEASUREMENT",
+              "EVIDENCE_CLOCK_INVALID",
+              "SOURCE_EXPLICITLY_STALE_OR_UNAVAILABLE",
+              "UPSTREAM_AUTHORITY_VIOLATION"
+            ]
+          }
+        },
+        "state": {"const": "abstain"},
+        "first_observed_at": {"type": "string", "format": "date-time"},
+        "available_at": {"type": "string", "format": "date-time"},
+        "published_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "degraded": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "campaign_id",
+        "campaign_revision_id",
+        "formed_at",
+        "first_observed_at",
+        "retained_candidate_id",
+        "reasons",
+        "state",
+        "first_observation_preserved",
+        "decision_preserved",
+        "available_at",
+        "published_at"
+      ],
+      "properties": {
+        "campaign_id": {"type": "string", "pattern": "^ocam_[a-f0-9]{24}$"},
+        "campaign_revision_id": {
+          "type": "string",
+          "pattern": "^ocrev_[a-f0-9]{24}$"
+        },
+        "formed_at": {"type": "string", "format": "date-time"},
+        "first_observed_at": {"type": "string", "format": "date-time"},
+        "retained_candidate_id": {
+          "type": ["string", "null"],
+          "pattern": "^oacnd_[a-f0-9]{24}$"
+        },
+        "reasons": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "BEFORE_POLICY_FREEZE",
+              "BEFORE_ACTIVATION_BOUNDARY",
+              "CAMPAIGN_RECEIPT_INVALID",
+              "CAMPAIGN_NOT_PROSPECTIVE",
+              "INSUFFICIENT_CAMPAIGN_MEMBERS",
+              "FINAL_MEMBER_MICROSTRUCTURE_MISSING",
+              "NO_VALID_NBBO_MEASUREMENT",
+              "EVIDENCE_CLOCK_INVALID",
+              "SOURCE_EXPLICITLY_STALE_OR_UNAVAILABLE",
+              "UPSTREAM_AUTHORITY_VIOLATION"
+            ]
+          }
+        },
+        "state": {"const": "degraded"},
+        "first_observation_preserved": {"type": "boolean"},
+        "decision_preserved": {"type": "boolean"},
+        "available_at": {"type": "string", "format": "date-time"},
+        "published_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "falseAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "may_originate",
+        "may_rank",
+        "may_score",
+        "may_gate",
+        "may_size",
+        "may_issue",
+        "may_trade",
+        "may_publish_pick",
+        "may_train_prophet",
+        "may_feed_neural_web",
+        "may_select",
+        "may_escalate",
+        "may_compute_option_pnl",
+        "may_infer_bullish_bearish_probability",
+        "may_create_tactical_event"
+      ],
+      "properties": {
+        "may_originate": {"const": false},
+        "may_rank": {"const": false},
+        "may_score": {"const": false},
+        "may_gate": {"const": false},
+        "may_size": {"const": false},
+        "may_issue": {"const": false},
+        "may_trade": {"const": false},
+        "may_publish_pick": {"const": false},
+        "may_train_prophet": {"const": false},
+        "may_feed_neural_web": {"const": false},
+        "may_select": {"const": false},
+        "may_escalate": {"const": false},
+        "may_compute_option_pnl": {"const": false},
+        "may_infer_bullish_bearish_probability": {"const": false},
+        "may_create_tactical_event": {"const": false}
+      }
+    }
+  }
+}
