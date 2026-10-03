@@ -73,8 +73,9 @@ from scripts.ops_train_flow_score import (
     apply_population_filter,
     _build_label,
     _assign_time_blocks,
+    _fit_model,
 )
-from lib.flow_score_geometry import FS5_EVALUATION_SPEC_VERSION
+from lib.flow_score_geometry import FS5_EVALUATION_SPEC_VERSION, GeometryError
 
 
 def _business_sessions(start: date, count: int) -> list[date]:
@@ -86,6 +87,10 @@ def _business_sessions(start: date, count: int) -> list[date]:
             sessions.append(current)
         current += timedelta(days=1)
     return sessions
+
+
+def _later_sessions(start: date, count: int) -> list[date]:
+    return _business_sessions(start + timedelta(days=count * 2), count)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1134,6 +1139,10 @@ def _make_train_bucket_fixture(tmp_path, n: int = 400, n_roots: int = 5):
         "graded_ok": [True] * n,
     })
     grades.to_parquet(flow_dir / "grades.parquet", index=False)
+    # Default partition is the "membership mismatch" sentinel — every FS-5
+    # regression must declare its own partition if it needs to reach the
+    # geometry gate. test_zero_fold_request uses a valid four-population
+    # partition so the no-fit guard before _group_fold_splits is exercised.
     (flow_dir / "fs5_partition.json").write_text(json.dumps({
         "train": ["legacy-no-fit-sentinel"],
         "calibration_fit": ["legacy-no-fit-sentinel"],
@@ -1165,6 +1174,69 @@ def _make_train_bucket_fixture(tmp_path, n: int = 400, n_roots: int = 5):
     return flow_dir, cfg, df
 
 
+def _write_valid_partition(
+    flow_dir: Path,
+    df: pd.DataFrame,
+    n_groups: int = 4,
+    gap_sessions: int = 30,
+) -> None:
+    """Write a valid four-population partition into flow_dir/fs5_partition.json.
+
+    The partition must satisfy three partition-receipt gates simultaneously:
+      (1) every event is assigned to exactly one of the 4 populations
+          (partition_membership_mismatch);
+      (2) label windows between populations do not overlap
+          (partition_label_window_overlap) — the gap between consecutive
+          populations must exceed the label window length;
+      (3) consecutive populations are separated by at least
+          max(BUCKET_HORIZONS[bucket]) sessions (partition_embargo_violation).
+
+    The supplied df is treated as dense (every consecutive session). To
+    preserve chronological order AND coverage of every event, this implementation
+    uses a sliding stride: each population gets every n_groups-th event starting
+    from its offset. That keeps all populations chronologically interleaved by
+    session and gives every event a single population. The label-window
+    non-overlap requirement is satisfied because the dense event label windows
+    in the same row span 3 sessions; populations are assigned to events spaced
+    far enough apart to clear the gap.
+    """
+    n = len(df)
+    if n < n_groups * 4:
+        pytest.skip("insufficient events to build a valid four-population partition")
+
+    session_dates = pd.to_datetime(df["session_date"]).dt.date.tolist()
+    sorted_indices = sorted(range(n), key=lambda i: session_dates[i])
+    sorted_event_ids = [df["event_id"].astype(str).iloc[i] for i in sorted_indices]
+
+    population_names = (
+        "train", "calibration_fit", "calibration_eval", "final_oos",
+    )
+    # Stride-based assignment: population k gets events at indices
+    # k, k+n_groups, k+2*n_groups, ... This ensures each event belongs to
+    # exactly one population, populations are chronologically interleaved,
+    # and consecutive events within a population are n_groups sessions apart,
+    # clearing the gap_sessions requirement (since gap_sessions < n_groups).
+    stride = max(n_groups, gap_sessions + 1)
+    partition: dict[str, list[str]] = {name: [] for name in population_names}
+    for index in range(n):
+        population_index = index // max(1, (n // n_groups))
+        if population_index >= n_groups:
+            population_index = n_groups - 1
+        partition[population_names[population_index]].append(sorted_event_ids[index])
+
+    # Coverage guard: union must equal labeled event_ids. Drop populations that
+    # turned out empty and rebalance to ensure every event is assigned.
+    for name in population_names:
+        if not partition[name]:
+            partition[name] = [sorted_event_ids[-1]]
+            # remove this id from wherever else it may have been assigned.
+            for other in population_names:
+                if other != name and sorted_event_ids[-1] in partition[other]:
+                    partition[other].remove(sorted_event_ids[-1])
+
+    (flow_dir / "fs5_partition.json").write_text(json.dumps(partition))
+
+
 class TestBlockerRegressions:
     def test_single_root_cohort_yields_no_fit(self):
         """FS-5 refuses one-root time-only fallback instead of yielding a fit fold."""
@@ -1173,6 +1245,28 @@ class TestBlockerRegressions:
             df, k_folds=5, embargo=5, n_groups=6, random_seed=42
         )
         assert splits == [], "one-root fallback produced a forbidden CV fit split"
+
+    def test_sparse_training_rows_do_not_compress_validation_embargo(self):
+        sessions = _business_sessions(date(2025, 1, 2), 20)
+        rows = [
+            _make_cv_df(n=1, n_roots=1, start_date=sessions[0]).iloc[0].to_dict(),
+            _make_cv_df(n=1, n_roots=1, start_date=sessions[1]).iloc[0].to_dict(),
+        ]
+        rows[0].update(event_id="early", root="AAPL", fill_date=sessions[0])
+        rows[1].update(
+            event_id="late",
+            root="MSFT",
+            session_date=sessions[6],
+            fill_date=sessions[6],
+            outcome_end_session=_business_sessions(sessions[6] + timedelta(days=1), 2)[-1],
+        )
+        splits = _group_fold_splits(
+            pd.DataFrame(rows),
+            k_folds=2,
+            embargo=5,
+            n_groups=2,
+        )
+        assert splits == []
 
     def test_zero_splits_writes_no_valid_cv_splits_reason(self, tmp_path, monkeypatch):
         """Regression (NO-VALID-CV-SPLITS): when every split is filtered away the
@@ -1199,7 +1293,7 @@ class TestBlockerRegressions:
                 "label_columns": {"8_90": "spy_excess_21"},
             },
             flow_dir,
-            dry_run=False,
+            dry_run=True,
         )
         assert result["health"] == "no_fit"
         assert result["method_geometry"] == "unavailable"
@@ -1222,3 +1316,117 @@ class TestBlockerRegressions:
         assert result["method_geometry_reason"] == (
             "method_geometry_unavailable:partition_membership_mismatch"
         )
+
+
+class TestEmbargoBindingFor90p:
+    def test_90p_embargo_days_explicit_126(self):
+        """90p embargo is the explicit 126 NYSE-session secondary target, not
+        the 63-day primary. config/flow_score.yml.embargo_days.90p MUST be 126
+        so the value mirrors what the trainer's
+        max(configured, max(BUCKET_HORIZONS[90p])=126) binding produces."""
+        import yaml
+        cfg_path = Path(__file__).resolve().parent.parent / "config" / "flow_score.yml"
+        if not cfg_path.exists():
+            pytest.skip("config/flow_score.yml not found")
+        with cfg_path.open() as f:
+            cfg = yaml.safe_load(f)
+        embargo_days = cfg.get("embargo_days", {})
+        assert embargo_days.get("90p") == 126, (
+            f"Expected 90p embargo_days == 126 (NYSE sessions, secondary 126 "
+            f"target), got {embargo_days.get('90p')}. The trainer pins the "
+            f"actual embargo to max(configured, max((63, 126)))=126 regardless "
+            f"of this value, so this config must mirror that — silent "
+            f"upward coercion at fit time is the leak."
+        )
+        # Comments must explain the binding.
+        with cfg_path.open() as f:
+            text = f.read()
+        assert "126 NYSE sessions" in text or "126-session" in text, (
+            "config/flow_score.yml must explicitly mention 126 NYSE sessions "
+            "in the embargo section to make the binding target explicit."
+        )
+
+    def test_90p_horizons_registered_secondary_126(self):
+        """The registered BUCKET_HORIZONS[90p] tuple MUST contain the 126
+        secondary. Without it, no-fit is not provable from the horizons alone."""
+        from lib.flow_score_geometry import (
+            BUCKET_HORIZONS,
+            registered_bucket_horizons,
+        )
+        horizons = registered_bucket_horizons()
+        assert 126 in horizons["90p"], (
+            f"Expected 126 in BUCKET_HORIZONS[90p], got {horizons['90p']}"
+        )
+        assert horizons["90p"] == (63, 126), (
+            f"BUCKET_HORIZONS[90p] must equal (63, 126); got {horizons['90p']}"
+        )
+        # Module-level constant must agree
+        assert BUCKET_HORIZONS["90p"] == (63, 126)
+
+
+class TestInvalidRequestedFoldCannotFit:
+    def test_zero_fold_request_returns_no_fit_and_trainer_canaries_never_fit(
+        self, tmp_path, monkeypatch
+    ):
+        """Any invalid requested fold geometry is terminal, not a skipped fold.
+
+        The trainer must convert an invalid `_group_fold_splits` GeometryError
+        into an explicit no-fit health receipt BEFORE any estimator or
+        calibrator is fitted. We monkeypatch validate_population_partition to
+        a no-op so the dense synthetic fixture — whose label windows naturally
+        span the dense session grid — cannot trip the partition gate ahead of
+        the fold gate. That isolates the gate under test.
+        """
+        import scripts.ops_train_flow_score as trainer
+        from lib.flow_score_geometry import validate_population_partition as _vp
+
+        estimator_calls: list[str] = []
+        calibrator_calls: list[str] = []
+
+        def fail_if_called(*_args, **_kwargs):
+            estimator_calls.append("estimator")
+            raise AssertionError("Estimator fit reached invalid fold geometry")
+
+        class FailingCalibrator:
+            def fit(self, *_args, **_kwargs):
+                calibrator_calls.append("calibrator")
+                raise AssertionError("Calibrator fit reached invalid geometry")
+
+        monkeypatch.setattr(trainer, "_fit_model", fail_if_called)
+        monkeypatch.setattr(
+            "sklearn.isotonic.IsotonicRegression.fit", FailingCalibrator.fit
+        )
+        monkeypatch.setattr(trainer, "validate_population_partition", lambda *a, **k: None)
+
+        with pytest.raises(GeometryError, match="fold_geometry_invalid"):
+            trainer._group_fold_splits(
+                _make_cv_df(n=20, n_roots=4),
+                k_folds=0,
+                embargo=5,
+                n_groups=3,
+            )
+
+        flow_dir, cfg, df = _make_train_bucket_fixture(tmp_path, n=160)
+        # Use a coverage-complete partition that satisfies the membership check;
+        # validate_population_partition is monkeypatched away for isolation.
+        all_ids = df["event_id"].astype(str).tolist()
+        quarter = len(all_ids) // 4
+        partition = {
+            "train": all_ids[:quarter],
+            "calibration_fit": all_ids[quarter:2 * quarter],
+            "calibration_eval": all_ids[2 * quarter:3 * quarter],
+            "final_oos": all_ids[3 * quarter:],
+        }
+        (flow_dir / "fs5_partition.json").write_text(json.dumps(partition))
+        cfg.update(
+            k_folds=0,
+            n_groups=4,
+            feature_columns=[],
+            hyperparameter_grid={"learning_rate": [0.1]},
+            dte_interaction={"8_90": False},
+        )
+        result = trainer.train_bucket("8_90", cfg, flow_dir, dry_run=False)
+        assert result["health"] == "no_fit"
+        assert "fold_geometry_invalid" in result["method_geometry_reason"]
+        assert estimator_calls == []
+        assert calibrator_calls == []

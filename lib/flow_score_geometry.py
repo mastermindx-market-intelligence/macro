@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 
 from lib.nyse_calendar import is_session
+from lib.nyse_calendar import sessions_between
 
 
 REQUIRED_ROW_FIELDS = (
@@ -30,7 +31,16 @@ REQUIRED_ROW_FIELDS = (
 )
 REGISTERED_BUCKETS = {"0_7": 5, "8_90": 21, "90p": 63}
 SECONDARY_HORIZONS = {126}
+BUCKET_HORIZONS = {
+    "0_7": (REGISTERED_BUCKETS["0_7"],),
+    "8_90": (REGISTERED_BUCKETS["8_90"],),
+    "90p": (REGISTERED_BUCKETS["90p"], 126),
+}
 FS5_EVALUATION_SPEC_VERSION = "fs5-v1"
+
+
+def registered_bucket_horizons() -> dict[str, tuple[int, ...]]:
+    return {bucket: horizons for bucket, horizons in BUCKET_HORIZONS.items()}
 
 
 class GeometryError(ValueError):
@@ -130,11 +140,24 @@ def canonical_intervals(df: pd.DataFrame) -> pd.DataFrame:
         if row.end_session < row.fill_session:
             raise GeometryError(f"boundary_noncausal_end:{row.event_id}")
 
-    all_sessions = sorted({row.event_session for row in result.itertuples(index=False)}.union(
-        {row.fill_session for row in result.itertuples(index=False)},
-        {row.end_session for row in result.itertuples(index=False)},
-    ))
-    position = {session: index for index, session in enumerate(all_sessions)}
+    boundary_dates = [
+        row.event_session
+        for row in result.itertuples(index=False)
+    ] + [
+        row.fill_session
+        for row in result.itertuples(index=False)
+    ] + [
+        row.end_session
+        for row in result.itertuples(index=False)
+    ]
+    minimum_boundary = min(boundary_dates)
+    maximum_boundary = max(boundary_dates)
+    position = {
+        session: index
+        for index, session in enumerate(
+            sessions_between(minimum_boundary, maximum_boundary)
+        )
+    }
     result["event_position"] = result["event_session"].map(position)
     result["fill_position"] = result["fill_session"].map(position)
     result["end_position"] = result["end_session"].map(position)
@@ -189,17 +212,14 @@ def assign_time_blocks(
 def _has_interval_overlap(left: pd.DataFrame, right: pd.DataFrame) -> bool:
     if left.empty or right.empty:
         return False
-    left_roots = np.asarray(left["root"], dtype=object)
-    right_roots = np.asarray(right["root"], dtype=object)
-    left_start = left["fill_position"].to_numpy(dtype=int)
-    right_start = right["fill_position"].to_numpy(dtype=int)
-    left_end = left["end_position"].to_numpy(dtype=int)
-    right_end = right["end_position"].to_numpy(dtype=int)
+    left_start = left["fill_session"].to_numpy(dtype="datetime64[D]")
+    right_start = right["fill_session"].to_numpy(dtype="datetime64[D]")
+    left_end = left["end_session"].to_numpy(dtype="datetime64[D]")
+    right_end = right["end_session"].to_numpy(dtype="datetime64[D]")
     return bool(
         (
-            (left_roots[:, None] == right_roots[None, :])
-            & (np.maximum(left_start[:, None], right_start[None, :])
-               <= np.minimum(left_end[:, None], right_end[None, :]))
+            np.maximum(left_start[:, None], right_start[None, :])
+            <= np.minimum(left_end[:, None], right_end[None, :])
         ).any()
     )
 
@@ -244,35 +264,135 @@ def build_geometry_plan(
     *,
     model_bucket: str,
 ) -> GeometryPlan:
-    """Build an immutable, validated geometry plan from explicit grader boundaries."""
+    """Build an immutable, validated geometry plan from explicit grader boundaries.
+
+    Bind the canonical requested bucket consistently. Reject any frame whose
+    source bucket contradicts the requested bucket — silent laundering is a
+    display-tier authority leak (a 0_7 frame cannot become an 90p 126-horizon
+    plan, and an 8_90 frame cannot be claimed for 90p primary/secondary).
+    """
+    if model_bucket not in BUCKET_HORIZONS:
+        raise GeometryError(f"identity_unknown_model_bucket:{model_bucket}")
     intervals = canonical_intervals(df)
+    if "model_bucket" in df.columns and len(df) > 0:
+        frame_bucket = _clean_scalar(df["model_bucket"].iloc[0])
+        if frame_bucket and frame_bucket != model_bucket:
+            raise GeometryError(
+                f"frame_bucket_mismatch:{frame_bucket}!={model_bucket}"
+            )
     unique_sessions = sorted({row.event_session for row in intervals.itertuples(index=False)})
     session_position = {session: index for index, session in enumerate(unique_sessions)}
     rows = df.copy()
     rows["session_date"] = [session_position[row] for row in intervals["event_session"]]
     rows["time_block"] = rows["session_date"]
     plan = GeometryPlan(rows=rows, session_position=session_position, intervals=intervals)
-    registered_horizons = set(REGISTERED_BUCKETS.values()) | SECONDARY_HORIZONS
-    if model_bucket not in REGISTERED_BUCKETS and model_bucket not in registered_horizons:
-        raise GeometryError(f"identity_unknown_model_bucket:{model_bucket}")
     return plan
 
 
 def validate_population_partition(
     plan_by_population: Mapping[str, GeometryPlan],
     ordered_populations: Sequence[str] = ("train", "calibration_fit", "calibration_eval", "final_oos"),
+    requested_bucket: str | None = None,
+    horizon_columns: set[str] | None = None,
 ) -> None:
     """Require an explicit, ordered, label-separated population partition receipt."""
-    if tuple(plan_by_population) != tuple(ordered_populations):
-        raise GeometryError("partition_plan_missing_or_unordered")
-
     ordered: list[GeometryPlan] = []
-    for name in ordered_populations:
-        plan = plan_by_population.get(name)
+    for name, plan in plan_by_population.items():
         if plan is None:
             raise GeometryError(f"partition_plan_missing:{name}")
         validate_plan_geometry(plan)
         ordered.append(plan)
+
+    # Global cross-root inclusive label-window union purge — independent of
+    # dict ordering. This is the hard no-fit any pair-wise overlap must hit,
+    # including the cross-population case where two non-adjacent populations
+    # hold shared label dates. Checked BEFORE chronology because a violated
+    # label-window overlap is a hard no-fit regardless of population order.
+    for earlier_index, earlier in enumerate(ordered):
+        for later in ordered[earlier_index + 1:]:
+            if _has_interval_overlap(earlier.intervals, later.intervals):
+                raise GeometryError("partition_label_window_overlap")
+
+    if [name for name in plan_by_population] != list(ordered_populations):
+        raise GeometryError("partition_plan_missing_or_unordered")
+
+    actual_order = [
+        name
+        for name, _plan in sorted(
+            plan_by_population.items(),
+            key=lambda item: (
+                min(item[1].intervals["fill_session"]),
+                max(item[1].intervals["fill_session"]),
+            ),
+        )
+    ]
+    if actual_order != list(ordered_populations):
+        raise GeometryError("partition_not_chronological")
+
+    first = ordered[0]
+    identity_fields = (
+        "evaluation_spec_version",
+        "source",
+        "detector_version",
+        "model_bucket",
+    )
+    for field in identity_fields:
+        reference = first.rows[field].map(_clean_scalar).unique().tolist()
+        if len(reference) != 1:
+            raise GeometryError(f"population_identity_mixed:{field}:{reference}")
+        reference_value = reference[0]
+        for population in ordered[1:]:
+            values = population.rows[field].map(_clean_scalar).unique().tolist()
+            if values != [reference_value]:
+                raise GeometryError(
+                    f"population_identity_mismatch:{field}:{reference_value}!={values}"
+                )
+
+    all_roots: set[str] = set()
+    shared_roots: set[str] = set()
+    for population in ordered:
+        roots = {value.upper() for value in population.rows["root"].map(_clean_scalar)}
+        shared_roots.update(roots & all_roots)
+        all_roots.update(roots)
+    if len(all_roots) < 2:
+        raise GeometryError("insufficient_root_diversity")
+    if shared_roots:
+        raise GeometryError("population_roots_not_disjoint")
+
+    requested = requested_bucket or _clean_scalar(first.rows["model_bucket"].iloc[0])
+    if requested not in BUCKET_HORIZONS:
+        raise GeometryError(f"identity_unknown_model_bucket:{requested}")
+    frame_bucket = _clean_scalar(first.rows["model_bucket"].iloc[0])
+    if frame_bucket != requested:
+        raise GeometryError(f"requested_bucket_mismatch:{frame_bucket}!={requested}")
+
+    required_horizons = BUCKET_HORIZONS[requested]
+    if requested == "90p":
+        available = horizon_columns or set()
+        missing = [
+            f"spy_excess_{horizon}"
+            for horizon in required_horizons
+            if f"spy_excess_{horizon}" not in available
+        ]
+        if missing:
+            raise GeometryError(
+                f"bucket_horizon_mismatch:{requested}:{','.join(missing)}"
+            )
+
+    for earlier_index, earlier in enumerate(ordered[:-1]):
+        later = ordered[earlier_index + 1]
+        earlier_terminal = max(earlier.intervals["end_session"])
+        later_initial = min(later.intervals["fill_session"])
+        if max(earlier.intervals["fill_session"]) > later_initial:
+            raise GeometryError("partition_not_chronological")
+        if earlier_terminal >= later_initial:
+            raise GeometryError("partition_not_chronological")
+        required_gap = max(required_horizons)
+        gap_sessions = len(sessions_between(earlier_terminal, later_initial)) - 1
+        if gap_sessions < required_gap:
+            raise GeometryError(
+                f"partition_embargo_violation:{gap_sessions}<{required_gap}"
+            )
 
     for earlier_index, earlier in enumerate(ordered):
         for later in ordered[earlier_index + 1:]:

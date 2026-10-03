@@ -89,8 +89,10 @@ import pandas as pd
 
 from lib.flow_score_geometry import (
     GeometryError,
-    REGISTERED_BUCKETS,
+    BUCKET_HORIZONS,
+    registered_bucket_horizons,
     assign_time_blocks,
+    build_geometry_plan,
     canonical_intervals,
     make_no_fit_health,
     validate_population_partition,
@@ -133,6 +135,27 @@ def _load_config() -> dict:
     cfg_path = _repo_root() / "config" / "flow_score.yml"
     with cfg_path.open() as f:
         return yaml.safe_load(f)
+
+
+def _available_grade_horizons(grades_df: pd.DataFrame) -> set[str]:
+    return set(grades_df.columns)
+
+
+def _registered_horizons(bucket: str) -> tuple[int, ...]:
+    try:
+        return BUCKET_HORIZONS[bucket]
+    except KeyError as exc:
+        raise GeometryError(f"identity_unknown_model_bucket:{bucket}") from exc
+
+
+def _configured_horizons(cfg: dict) -> dict[str, tuple[int, ...]]:
+    configured = cfg.get("bucket_horizons")
+    if configured is None:
+        return dict(BUCKET_HORIZONS)
+    return {
+        str(bucket): tuple(int(horizon) for horizon in horizons)
+        for bucket, horizons in configured.items()
+    }
 
 
 def _detector_version() -> str:
@@ -508,7 +531,10 @@ def _group_fold_splits(
     working["_fold"] = working["time_block"].map(dict(zip(ordered_blocks, block_fold)))
 
     intervals = canonical_intervals(working)
-    horizon_sessions = max(REGISTERED_BUCKETS.values())
+    model_buckets = set(working["model_bucket"].astype(str))
+    if len(model_buckets) != 1:
+        raise GeometryError(f"identity_mixed:model_bucket:{sorted(model_buckets)}")
+    horizon_sessions = max(_registered_horizons(next(iter(model_buckets))))
     embargo_sessions = max(int(embargo), horizon_sessions)
     splits: list[tuple[np.ndarray, np.ndarray]] = []
     for fold_index in range(k_folds):
@@ -517,18 +543,45 @@ def _group_fold_splits(
             continue
         candidate_idx = np.flatnonzero(working["_fold"].ne(fold_index).to_numpy())
         validation_roots = set(intervals.iloc[validation_idx]["root"])
-        train_idx = candidate_idx[~intervals.iloc[candidate_idx]["root"].isin(validation_roots).to_numpy()]
-        try:
-            validate_split_geometry(
-                working,
-                train_idx,
-                validation_idx,
-                embargo_sessions=embargo_sessions,
-                horizon_sessions=horizon_sessions,
-                intervals=intervals,
-            )
-        except GeometryError:
+        train_idx = candidate_idx[
+            ~intervals.iloc[candidate_idx]["root"]
+            .isin(validation_roots)
+            .to_numpy()
+        ]
+        validation_fill = intervals.iloc[validation_idx]["fill_session"].to_numpy(
+            dtype="datetime64[D]"
+        )
+        validation_end = intervals.iloc[validation_idx]["end_session"].to_numpy(
+            dtype="datetime64[D]"
+        )
+        train_fill = intervals.iloc[train_idx]["fill_session"].to_numpy(
+            dtype="datetime64[D]"
+        )
+        train_end = intervals.iloc[train_idx]["end_session"].to_numpy(
+            dtype="datetime64[D]"
+        )
+        train_overlap = (
+            np.maximum(train_fill[:, None], validation_fill[None, :])
+            <= np.minimum(train_end[:, None], validation_end[None, :])
+        ).any(axis=1)
+        train_idx = train_idx[~train_overlap]
+        validation_union_start = int(
+            intervals.iloc[validation_idx]["fill_position"].min()
+        )
+        train_idx = train_idx[
+            intervals.iloc[train_idx]["end_position"].to_numpy(dtype=int)
+            < validation_union_start - embargo_sessions
+        ]
+        if len(train_idx) == 0:
             continue
+        validate_split_geometry(
+            working,
+            train_idx,
+            validation_idx,
+            embargo_sessions=embargo_sessions,
+            horizon_sessions=horizon_sessions,
+            intervals=intervals,
+        )
         splits.append((train_idx, validation_idx))
     return splits
 
@@ -694,6 +747,64 @@ def train_bucket(
         log.warning("ops_train[%s]: no eligible FS-5 geometry — building history/no-fit", bucket)
         return make_no_fit_health("building_history/method_geometry_unavailable")
 
+    # ── explicit ordered FS-5 population receipt (amendment §5/§6) ─────────────
+    # Legacy 80/20 is not three populations. Only an explicit receipt naming all
+    # ordered, disjoint, label-window-separated populations can reach a fit.
+    partition = json.loads(partition_path.read_text())
+    configured_horizons = _configured_horizons(cfg)
+    if configured_horizons != dict(BUCKET_HORIZONS):
+        raise GeometryError(
+            "bucket_horizon_contract_mismatch:"
+            f"{configured_horizons}!={BUCKET_HORIZONS}"
+        )
+    required_horizons = _registered_horizons(bucket)
+    embargo_days = max(
+        int(cfg.get("embargo_days", {}).get(bucket, 0)),
+        max(required_horizons),
+    )
+    population_names = ("train", "calibration_fit", "calibration_eval", "final_oos")
+    partition_members = {
+        name: set(map(str, partition.get(name, [])))
+        for name in population_names
+    }
+    received_ids = set(labeled["event_id"].astype(str))
+    if any(not members for members in partition_members.values()):
+        return make_no_fit_health("building_history/method_geometry_unavailable")
+    if set().union(*partition_members.values()) != received_ids:
+        return make_no_fit_health("method_geometry_unavailable:partition_membership_mismatch")
+    if sum(map(len, partition_members.values())) != len(received_ids):
+        return make_no_fit_health("method_geometry_unavailable:partition_not_disjoint")
+
+    train_df = labeled[labeled["event_id"].astype(str).isin(partition_members["train"])].copy()
+    cal_fit_df = labeled[
+        labeled["event_id"].astype(str).isin(partition_members["calibration_fit"])
+    ].copy()
+    cal_eval_df = labeled[
+        labeled["event_id"].astype(str).isin(partition_members["calibration_eval"])
+    ].copy()
+    final_oos_df = labeled[
+        labeled["event_id"].astype(str).isin(partition_members["final_oos"])
+    ].copy()
+
+    plans = {
+        name: build_geometry_plan(frame, model_bucket=bucket)
+        for name, frame in (
+            ("train", train_df),
+            ("calibration_fit", cal_fit_df),
+            ("calibration_eval", cal_eval_df),
+            ("final_oos", final_oos_df),
+        )
+    }
+    try:
+        validate_population_partition(
+            plans,
+            requested_bucket=bucket,
+        horizon_columns=_available_grade_horizons(grades_df),
+        )
+    except GeometryError as exc:
+        log.warning("ops_train[%s]: invalid FS-5 partition — building history/no-fit: %s", bucket, exc)
+        return make_no_fit_health(f"method_geometry_unavailable:{exc}")
+
     y_all = labeled["_label"].astype(float).values
     base_rate = float(y_all.mean())
     log.info("ops_train[%s]: labeled rows=%d, base_rate=%.4f", bucket, len(labeled), base_rate)
@@ -734,50 +845,6 @@ def train_bucket(
             feature_cols=feature_cols,
             dry_run=dry_run,
         )
-
-    # ── explicit ordered FS-5 population receipt (amendment §5/§6) ─────────────
-    # Legacy 80/20 is not three populations. Only an explicit receipt naming all
-    # ordered, disjoint, label-window-separated populations can reach a fit.
-    partition = json.loads(partition_path.read_text())
-    embargo_days = cfg.get("embargo_days", {}).get(bucket, REGISTERED_BUCKETS.get(bucket, 21))
-    population_names = ("train", "calibration_fit", "calibration_eval", "final_oos")
-    partition_members = {
-        name: set(map(str, partition.get(name, [])))
-        for name in population_names
-    }
-    received_ids = set(labeled["event_id"].astype(str))
-    if any(not members for members in partition_members.values()):
-        return make_no_fit_health("building_history/method_geometry_unavailable")
-    if set().union(*partition_members.values()) != received_ids:
-        return make_no_fit_health("method_geometry_unavailable:partition_membership_mismatch")
-    if sum(map(len, partition_members.values())) != len(received_ids):
-        return make_no_fit_health("method_geometry_unavailable:partition_not_disjoint")
-
-    train_df = labeled[labeled["event_id"].astype(str).isin(partition_members["train"])].copy()
-    cal_fit_df = labeled[
-        labeled["event_id"].astype(str).isin(partition_members["calibration_fit"])
-    ].copy()
-    cal_eval_df = labeled[
-        labeled["event_id"].astype(str).isin(partition_members["calibration_eval"])
-    ].copy()
-    final_oos_df = labeled[
-        labeled["event_id"].astype(str).isin(partition_members["final_oos"])
-    ].copy()
-
-    plans = {
-        name: build_geometry_plan(frame, model_bucket=bucket)
-        for name, frame in (
-            ("train", train_df),
-            ("calibration_fit", cal_fit_df),
-            ("calibration_eval", cal_eval_df),
-            ("final_oos", final_oos_df),
-        )
-    }
-    try:
-        validate_population_partition(plans)
-    except GeometryError as exc:
-        log.warning("ops_train[%s]: invalid FS-5 partition — building history/no-fit: %s", bucket, exc)
-        return make_no_fit_health(f"method_geometry_unavailable:{exc}")
 
     cal_df = pd.concat([cal_fit_df, cal_eval_df], ignore_index=True)
 
@@ -847,15 +914,25 @@ def train_bucket(
     )
 
     # Generate CV splits (amendment §4.1 / §4.2)
-    splits = _group_fold_splits(
-        train_df,
-        k_folds=k_folds,
-        embargo=embargo_days,
-        n_groups=n_groups,
-        underlying_col=_underlying_col_cv,
-        date_col="session_date" if "session_date" in train_df.columns else "session_date",
-        random_seed=random_seed,
-    )
+    try:
+        splits = _group_fold_splits(
+            train_df,
+            k_folds=k_folds,
+            embargo=embargo_days,
+            n_groups=n_groups,
+            underlying_col=_underlying_col_cv,
+            date_col="session_date" if "session_date" in train_df.columns else "session_date",
+            random_seed=random_seed,
+        )
+    except GeometryError as exc:
+        # Invalid CV geometry is terminal: no fit/calibrator/feature build is
+        # ever produced. The fold partition was never emitted, so we never
+        # produced a model and we never touched any estimator or calibrator.
+        log.warning(
+            "ops_train[%s]: invalid fold geometry — building history/no-fit: %s",
+            bucket, exc,
+        )
+        return make_no_fit_health(f"method_geometry_unavailable:{exc}")
 
     X_train_all = _build_features(train_df, feature_cols)
     y_train_all = train_df["_label"].astype(float).values
@@ -1076,8 +1153,6 @@ def _write_artifact(
     Manifest schema: flow_score.model_manifest/v1 (amendment §4 artifact spec).
     NEVER writes the word "validated" (CI-guarded).
     """
-    import joblib
-
     models_dir = _models_dir(cfg)
 
     # Find next version number
@@ -1101,6 +1176,8 @@ def _write_artifact(
             "deployable": deployable,
             "dry_run": True,
         }
+
+    import joblib
 
     artifact_dir.mkdir(parents=True, exist_ok=True)
     model_path = artifact_dir / "model.joblib"
