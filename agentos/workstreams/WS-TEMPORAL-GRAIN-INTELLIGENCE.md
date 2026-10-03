@@ -24,10 +24,13 @@ owns_paths:
   - docs/superpowers/plans/2026-09-03-temporal-grain-gakd-artifact-attack-r1.md
   - agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md
   - agentos/decisions/DEC-TEMPORAL-GRAIN-
+  - agentos/discoveries/DSC-TEMPORAL-GRAIN-
   - agentos/handoffs/TEMPORAL-GRAIN-INTELLIGENCE-
 decisions:
   - DEC:TEMPORAL-GRAIN-OWNERSHIP-AND-ZERO-AUTHORITY
   - DEC:TEMPORAL-GRAIN-ADAPTIVE-SIGNAL-CLOCK-RECOVERY
+discoveries:
+  - DSC:TEMPORAL-GRAIN-NARROW-MASSIVE-MINUTE-PLANE-PARTIAL
 waves:
   - id: W0
     title: Architecture, ownership, contracts, adversarial repair, plan and parent-state reconciliation
@@ -120,6 +123,7 @@ artifacts:
   - agentos/decisions/DEC-TEMPORAL-GRAIN-ADAPTIVE-SIGNAL-CLOCK-RECOVERY.md
   - research/signal_engine/temporal_scale/ADAPTIVE_SIGNAL_CLOCK_RECOVERY_ADJUDICATION_2026-10-03.md
   - research/signal_engine/temporal_scale/ADAPTIVE_SIGNAL_CLOCK_V2_PROTOCOL_BOUNDARY_2026-10-03.md
+  - agentos/discoveries/DSC-TEMPORAL-GRAIN-NARROW-MASSIVE-MINUTE-PLANE-PARTIAL.md
 next_action: >
   Accept and merge the records-only Adaptive Signal Clock recovery ruling if its exact-head checks
   and review pass. Then repair PR #6803's one identified current-main integration collision in
