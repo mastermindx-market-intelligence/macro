@@ -1,0 +1,15 @@
+{
+  "action": "existing_browser_same_origin_session_qualification",
+  "browser_window_created_by_this_turn": 1925911589,
+  "returncode": 0,
+  "result": {
+    "status": 200,
+    "authenticated": true,
+    "tier": "pro",
+    "cache": "private, no-store"
+  },
+  "error": "",
+  "credentials_read": false,
+  "credentials_created": false,
+  "entitled_user_proof": false
+}

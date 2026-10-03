@@ -1,0 +1,12 @@
+AssertionError [ERR_ASSERTION]: A different publication must not hydrate the overview
+
+true !== false
+
+    at /Users/chriswong/Documents/GitHub/macro/.claude/worktrees/china-macro-evidence-20260929-sol-001/tests/china_economy_auth_harness.cjs:86:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: true,
+  expected: false,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

@@ -65,3 +65,21 @@ Original reports, receipts and source revisions remain under
 `research/china_economy_integration_20260929/`; they are not rewritten. Earlier
 conversation references to PR #8219 and SHA307cdd were wrong; the real carrier is
 PR #8196. The research-only six-period services brief is not installed data.
+
+
+## R9 publication identity and real-session boundary
+
+R9 source `80638b56e3040b198c96cdfa63322d68c381a708` prevents the protected
+library from silently hydrating a different snapshot under the visible overview.
+The public and protected views share one canonical-publication digest; mismatches
+show Refresh page and remain closed. This is data correlation, not authentication.
+See `research/CHINA_ECONOMY_R9_PUBLICATION_CONSISTENCY.md` and the r9 receipts.
+
+The final relevant full-file suite passed507 tests and the expanded executable
+harness fails the old client at stale-snapshot admission. Eight explicit synthetic
+session/browser states supplement, rather than replace, R8's80 normal captures.
+Actual Chrome same-origin read proved an existing Pro session without reading any
+credential value. The current production registration stage returned204/allow and
+paywall stage204/off; uninstalled candidate paths503. This is NOT installed-candidate
+or paid-tier enforcement acceptance. No authenticated Free/Essential comparison,
+independent review, merge, deployment or source-use hold release is inferred.

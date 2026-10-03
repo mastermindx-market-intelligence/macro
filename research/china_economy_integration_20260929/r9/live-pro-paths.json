@@ -1,0 +1,54 @@
+{
+  "proof_class": "live_origin_existing_pro_browser_session_predeployment",
+  "observed_at": "2026-10-03T06:01:05.500160+00:00",
+  "returncode": 0,
+  "result": {
+    "rows": [
+      {
+        "path": "/china-economy.js",
+        "status": 503,
+        "content_type": "application/json",
+        "cache_control": "private, no-store",
+        "vary": "Cookie",
+        "regwall": null,
+        "paywall": null,
+        "bytes": 47
+      },
+      {
+        "path": "/china-macro-evidence.js",
+        "status": 503,
+        "content_type": "application/json",
+        "cache_control": "private, no-store",
+        "vary": "Cookie",
+        "regwall": null,
+        "paywall": null,
+        "bytes": 47
+      },
+      {
+        "path": "/china_economy_detail.json",
+        "status": 503,
+        "content_type": "application/json",
+        "cache_control": "private, no-store",
+        "vary": "Cookie",
+        "regwall": null,
+        "paywall": null,
+        "bytes": 47
+      },
+      {
+        "path": "/china_macro_evidence.json",
+        "status": 503,
+        "content_type": "application/json",
+        "cache_control": "private, no-store",
+        "vary": "Cookie",
+        "regwall": null,
+        "paywall": null,
+        "bytes": 47
+      }
+    ],
+    "complete": true
+  },
+  "error": "",
+  "credential_values_read": false,
+  "credential_values_created": false,
+  "candidate_installed": false
+}
