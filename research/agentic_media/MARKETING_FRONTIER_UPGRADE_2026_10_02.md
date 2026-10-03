@@ -448,6 +448,78 @@ Evidence: existing M2 evidence directory `marketing-frontier-upgrade-20261002`,
 merge, full application checkout, hosted new-head CI, admitted bot run or production
 acceptance. M2 changes require fresh independent review; M1 approval is not M2 approval.
 
+### M2 composition and planner receipts
+
+All five M2 file blobs were read back on published head28351d9a9b0d493178ab07e609715d9d8f8d8940.
+The canonical tracked-path producer plus actual code-gated PR planner selects
+unrun-marketing-desk for source-only (77/168 jobs) and test-only (2/168 jobs) changes,
+with no unowned path. Plan digests: af87665dfde45ff705f3a589771304824d87a44543efc04d87c57e5666434358
+and7e487a9c98515cf6613c6af8dde4ce4cdd8bfe5b9fc2f07a7fd4c1d1e8ebdec6.
+Earlier local invocations with missing identity, malformed inventory or omitted
+changed-from were diagnostics only, not qualifying selector evidence.
+
+Hosted M2 plan11266476717 binds mergec10e369af44e171f59bbdd846ddaa8cb7244fd7d,
+base58a341b98a4243af4a412563865bcfc1f374ca84 and subject28351d9a9b0d; owner
+pack9/job111141824737. Aggregate CI37101393962 was in progress at this receipt;
+fences37101393808 succeeded. Neither M1's approval nor a new review request is M2 approval.
+
+Current-main + M2 + exact #7493 source compose without conflict to tree
+0a7ac541092f501306825e20cb04c823846625bb; supplier compiler/config bytes stay exact.
+The shared test-file hunks compose to40932f4c479659ed5c6f5d6c8c6fa7c0a732a7e5.
+Supplier branch was not modified; its consumer receipt is #7493/comment5966166633.
+
+### M3 source increment: compare editorial quality without fabricated learning
+
+The existing golden_set module and marketing_golden_set CLI now support blinded
+baseline/frontier comparisons. This adds functions and subcommands to the incumbent
+evaluation owner, not a new scorer, label store, experiment registry or promotion
+controller. Existing story-worthiness labels and production corpus are unchanged.
+
+Each explicit case supplies one case_id, one event_id, a development/holdout split,
+one input_sha256 and evidence_ref, and baseline/frontier artifacts. Each artifact
+has that SAME input_sha256, decision (draft/abstain/unavailable), text, visual_ref
+and visual_sha256. A referenced visual requires its digest. Empty nondraft outputs
+remain explicit; generation unavailability is not disguised as editorial abstention.
+Input identity equality does not certify rights, facts or true source equivalence.
+
+The complete ordered case panel, seed and declared minimum are bound before review.
+Changed copy/image bytes, sample removal, split changes or a later lower minimum
+invalidate old judgments. Duplicate case/event IDs and duplicate judgments reject;
+multiple judges need upstream adjudication, not inflated sample size. Identical
+outputs cannot provide a directional win. Blinded CLI output contains reviewer
+cards only, never seed or private arm assignments; the evaluator reconstructs the
+mapping from the original owner input. This is practical blinding, not anonymity.
+
+Use `python3 scripts/marketing_golden_set.py editorial-blind cases.json --min-pairs 30`
+to print cards. Input has exactly `cases` and `seed`. The corresponding `editorial-eval`
+input adds `judgments`, each with comparison_id, choice (left/right/tie/neither),
+reviewer_ref and judgment_source=human. Human provenance is caller-attested; this
+CLI does not authenticate a person or manufacture human labels. Use the SAME
+minimum/seed/panel during evaluation. Only held-out events enter the reported
+preference counts; development judgments remain separately counted and excluded.
+
+Zero labels produce no-labels and null estimates, small n produces insufficient,
+and tied/neither votes do not become frontier wins. The existing exact binomial
+primitive reports a two-sided sign test on non-tied preferences when the declared
+minimum is met. Its independence assumption remains explicit; event ID uniqueness
+alone does not prove it. The estimate describes this finite unweighted panel, NOT
+population prevalence. Factual accuracy, investment efficacy and growth lift remain
+unmeasured. Every result keeps promotion_authorized=false; measured is not a win,
+acceptance, publishing permission or a model-routing change. A matched-input writing
+comparison also does not qualify the separate full research-and-editorial workflow.
+
+Initial M3 implementation gap:20/20 tests RED. Final comparator27 tests PASS,
+existing complete scoring-brain comparison campaign235PASS, and the actual revised
+code-gated step118PASS/55subtests. Four host temp-cleanup warnings remain disclosed.
+Disabling panel binding, holdout exclusion or human-source qualification in memory
+each makes its intended guard test fail; restored27PASS, source unchanged. All
+judgments in these tests are SYNTHETIC. No real writer/model comparison or human
+judgment collection has run, and no improvement is claimed from fixture outcomes.
+
+Evidence remains in the existing operation directory: m3-comparison-red.txt,
+m3-bound-panel-tests.txt, m3-mutation-proof.txt and m3-code-gated-step-tests.txt.
+The source candidate still needs independent review and exact-head hosted execution.
+
 ### Remaining mission and exact next actions
 
 1. Qualify this candidate in the actual code-gated planner/hosted step and obtain

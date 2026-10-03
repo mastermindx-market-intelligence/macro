@@ -738,3 +738,160 @@ def format_report(report: dict) -> str:
     lines.append(f"  beats salience : {report.get('beats_salience')}")
     lines.append(f"  note           : {report.get('note')}")
     return "\n".join(lines)
+
+
+# Editorial quality uses this same evaluation owner, but NOT story-rank labels.
+# Inputs/outputs are job-owned artifacts. These pure functions never read or
+# append the canonical label store, admit a provider, or promote a policy.
+EDITORIAL_COMPARISON_SCHEMA = "golden.editorial_comparison.v1"
+
+
+def _editorial_text(value: Any, maximum: int, *, empty: bool = False) -> str:
+    if type(value) is not str or len(value) > maximum or (not empty and not value.strip()):
+        raise ValueError("invalid_editorial_comparison")
+    value.encode("utf-8")
+    return value
+
+
+def _editorial_sha(value: Any) -> str:
+    if type(value) is not str or len(value) != 64 or any(c not in "0123456789abcdef" for c in value):
+        raise ValueError("invalid_editorial_digest")
+    return value
+
+
+def _editorial_digest(value: Any) -> str:
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
+                                    ensure_ascii=False, allow_nan=False).encode("utf-8")).hexdigest()
+
+
+def blind_editorial_pairs(cases: list[dict], *, seed: str, min_pairs: int = 30) -> dict:
+    """Export stable left/right cards plus a SEPARATE evaluator-only assignment.
+
+    The caller supplies rights-cleared outputs generated from identical input
+    digests and distinct underlying events. Neither equality nor an event id
+    proves rights, provenance, semantic equivalence or statistical independence.
+    Share only cards with judges; assignments/seed stay with the experiment owner.
+    Hiding arm labels is practical blinding, not adversarial anonymity.
+    """
+    _editorial_text(seed, 256)
+    if type(cases) is not list or len(cases) > 256:
+        raise ValueError("invalid_editorial_cases")
+    if type(min_pairs) is not int or not 1 <= min_pairs <= 1000:
+        raise ValueError("invalid_editorial_minimum")
+    # Freeze the complete ordered panel and declared threshold before labeling.
+    # Dropping cases or changing the minimum creates new comparison identities.
+    panel_sha = _editorial_digest({"schema": EDITORIAL_COMPARISON_SCHEMA,
+                                  "seed": seed, "minimum_pairs": min_pairs, "cases": cases})
+    cards, assignments = [], []
+    seen_ids, seen_events = set(), set()
+    fields = {"case_id", "event_id", "split", "input_sha256", "evidence_ref", "baseline", "frontier"}
+    artifact_fields = {"input_sha256", "decision", "text", "visual_ref", "visual_sha256"}
+    for case in cases:
+        if type(case) is not dict or set(case) != fields or case["split"] not in ("development", "holdout"):
+            raise ValueError("invalid_editorial_case")
+        case_id = _editorial_text(case["case_id"], 256)
+        event_id = _editorial_text(case["event_id"], 256)
+        if case_id != case_id.strip() or event_id != event_id.strip():
+            raise ValueError("noncanonical_editorial_identity")
+        if case_id in seen_ids or event_id in seen_events:
+            raise ValueError("duplicate_editorial_case_or_event")
+        seen_ids.add(case_id)
+        seen_events.add(event_id)
+        input_sha = _editorial_sha(case["input_sha256"])
+        evidence_ref = _editorial_text(case["evidence_ref"], 1024)
+        outputs = {}
+        for arm in ("baseline", "frontier"):
+            output = case[arm]
+            if type(output) is not dict or set(output) != artifact_fields:
+                raise ValueError("invalid_editorial_artifact")
+            if _editorial_sha(output["input_sha256"]) != input_sha:
+                raise ValueError("editorial_inputs_differ")
+            if output["decision"] not in ("draft", "abstain", "unavailable"):
+                raise ValueError("invalid_editorial_decision")
+            text = _editorial_text(output["text"], 4000, empty=output["decision"] != "draft")
+            visual = _editorial_text(output["visual_ref"], 1024, empty=True)
+            digest = output["visual_sha256"]
+            if (visual and not _editorial_sha(digest)) or (not visual and digest != ""):
+                raise ValueError("unbound_editorial_visual")
+            if output["decision"] != "draft" and (text or visual):
+                raise ValueError("nondraft_contains_editorial_output")
+            outputs[arm] = {"decision": output["decision"], "text": text,
+                            "visual_ref": visual, "visual_sha256": digest}
+        identity = _editorial_digest({"panel_sha256": panel_sha, "case_id": case_id})
+        comparison_id = "ec-" + identity
+        left_arm = "frontier" if int(identity[-1], 16) % 2 else "baseline"
+        right_arm = "baseline" if left_arm == "frontier" else "frontier"
+        cards.append({"comparison_id": comparison_id, "case_id": case_id,
+                      "split": case["split"], "evidence_ref": evidence_ref,
+                      "input_sha256": input_sha, "left": dict(outputs[left_arm]),
+                      "right": dict(outputs[right_arm])})
+        assignments.append({"comparison_id": comparison_id, "left_arm": left_arm,
+                            "right_arm": right_arm})
+    return {"schema": EDITORIAL_COMPARISON_SCHEMA, "cards": cards,
+            "assignments": assignments, "panel_sha256": panel_sha,
+            "minimum_pairs": min_pairs, "promotion_authorized": False}
+
+
+def evaluate_editorial_pairs(cases: list[dict], judgments: list[dict], *,
+                             seed: str, min_pairs: int = 30) -> dict:
+    """Aggregate supplied, adjudicated HUMAN preferences on holdout events only.
+
+    Uses the existing exact binomial primitive on non-tied preferences. The result
+    describes this finite case panel; it is NOT prevalence, causal growth, factual
+    accuracy or permission to publish. Human provenance is caller-attested, not
+    authenticated by a string. Duplicate judgments require upstream adjudication.
+    Min-pairs must be preregistered before inspection, never tuned to get a pass.
+    """
+    if type(min_pairs) is not int or not 1 <= min_pairs <= 1000:
+        raise ValueError("invalid_editorial_minimum")
+    if type(judgments) is not list or len(judgments) > 256:
+        raise ValueError("invalid_editorial_judgments")
+    bundle = blind_editorial_pairs(cases, seed=seed, min_pairs=min_pairs)
+    cards = {c["comparison_id"]: c for c in bundle["cards"]}
+    assignments = {a["comparison_id"]: a for a in bundle["assignments"]}
+    seen = set()
+    counts = {"baseline_wins": 0, "frontier_wins": 0, "ties": 0, "neither": 0,
+              "judged_holdout": 0, "excluded_development_judgments": 0}
+    for row in judgments:
+        if (type(row) is not dict or set(row) != {"comparison_id", "choice", "reviewer_ref", "judgment_source"}
+                or row["judgment_source"] != "human"):
+            raise ValueError("human_editorial_judgment_required")
+        _editorial_text(row["reviewer_ref"], 256)
+        identity = _editorial_text(row["comparison_id"], 80)
+        if identity in seen or identity not in cards:
+            raise ValueError("stale_duplicate_or_unknown_judgment")
+        seen.add(identity)
+        if row["choice"] not in ("left", "right", "tie", "neither"):
+            raise ValueError("invalid_editorial_choice")
+        if (row["choice"] in ("left", "right")
+                and cards[identity]["left"] == cards[identity]["right"]):
+            raise ValueError("identical_outputs_have_no_directional_preference")
+        if cards[identity]["split"] != "holdout":
+            counts["excluded_development_judgments"] += 1
+            continue
+        counts["judged_holdout"] += 1
+        if row["choice"] in ("left", "right"):
+            arm = assignments[identity][row["choice"] + "_arm"]
+            counts[arm + "_wins"] += 1
+        else:
+            counts["ties" if row["choice"] == "tie" else "neither"] += 1
+    informative = counts["baseline_wins"] + counts["frontier_wins"]
+    judged = counts["judged_holdout"]
+    state = "no-labels" if not judged else "insufficient" if judged < min_pairs else "measured"
+    holdout = [c for c in cases if c["split"] == "holdout"]
+    return {"schema": EDITORIAL_COMPARISON_SCHEMA, "state": state, **counts,
+            "panel_sha256": bundle["panel_sha256"],
+            "eligible_holdout": len(holdout), "unjudged_holdout": len(holdout)-judged,
+            "informative_pairs": informative, "minimum_pairs": min_pairs,
+            "baseline_abstentions": sum(c["baseline"]["decision"] == "abstain" for c in holdout),
+            "frontier_abstentions": sum(c["frontier"]["decision"] == "abstain" for c in holdout),
+            "baseline_unavailable": sum(c["baseline"]["decision"] == "unavailable" for c in holdout),
+            "frontier_unavailable": sum(c["frontier"]["decision"] == "unavailable" for c in holdout),
+            "frontier_preference_rate": counts["frontier_wins"]/informative if informative else None,
+            "p_value_two_sided": _binom_two_sided_p(counts["baseline_wins"], counts["frontier_wins"])
+                if state == "measured" and informative else None,
+            "estimator": "unweighted_finite_holdout_panel_not_population_prevalence",
+            "uncertainty": "exact_sign_test_conditional_on_non_tied_independent_event_pairs",
+            "judgment_provenance": "caller_attested_human_not_authenticated_by_this_function",
+            "factual_accuracy": "not_measured", "growth_lift": "not_measured",
+            "promotion_authorized": False}
