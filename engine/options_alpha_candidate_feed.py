@@ -479,7 +479,7 @@ def _validate_prior_feed(
         "activation_boundary_cleared": True,
         "candidate_identity_schema": CANDIDATE_IDENTITY_SCHEMA,
     }
-    for candidate in prior.get("candidates", ()):
+    for candidate in prior["formed_candidates"]:
         frozen = candidate["frozen_formation"]
         for field, expected in frozen_policy_checks.items():
             if frozen[field] != expected:
@@ -506,21 +506,34 @@ def _validate_prior_feed(
             f"prior_feed campaign prefix receipt is invalid: {exc}"
         ) from exc
     seen: set[str] = set()
-    for candidate in prior.get("candidates", ()):
+    seen_campaigns: set[str] = set()
+    formed = prior["formed_candidates"]
+    if prior["header"]["formed_candidate_count"] != len(formed):
+        raise CandidateFeedContractError("prior_feed formed candidate count disagrees")
+    for candidate in formed:
         if not isinstance(candidate, dict) or "candidate_id" not in candidate:
-            raise CandidateFeedContractError("prior_feed.candidate missing candidate_id")
+            raise CandidateFeedContractError("prior_feed.formed candidate missing candidate_id")
         cid = candidate["candidate_id"]
-        if cid in seen:
+        campaign_id = candidate.get("campaign_id")
+        if cid in seen or campaign_id in seen_campaigns:
             raise CandidateFeedContractError(
-                "prior_feed.candidates must have unique candidate_ids"
+                "prior_feed.formed_candidates must have unique candidate_ids and campaign_ids"
             )
         seen.add(cid)
+        seen_campaigns.add(campaign_id)
         _validate_prior_candidate_source(
             candidate,
             campaigns=campaigns,
             microstructure_map=microstructure_map,
             prior_source_ordinal=prior_source_ordinal,
         )
+        disposition = candidate.get("current_disposition")
+        if (
+            not isinstance(disposition, dict)
+            or candidate.get("state") != disposition.get("state")
+            or candidate.get("reasons") != disposition.get("reasons")
+        ):
+            raise CandidateFeedContractError("prior_feed formed candidate disposition aliases disagree")
     if prior.get("publication_claim", {}).get("claim") != (
         "source_only_no_publication_effect"
     ):
@@ -1266,33 +1279,31 @@ def compose_candidate_feed(
     source_prefix_receipt = _campaign_prefix_receipt(campaigns)
     micro_receipt = _microstructure_receipt(micro_map)
 
-    candidates: list[dict[str, Any]] = []
     abstentions: list[dict[str, Any]] = []
-    degraded: list[dict[str, Any]] = []
     formed_candidates: list[dict[str, Any]] = []
-
-    # Surface poisoned campaigns as abstentions FIRST so they are visible
-    # regardless of any grouping decisions.
-    for poisoned in poisoned_reasons:
-        abstentions.append(
-            _build_abstention(
-                poisoned["campaign"],
-                observation=decision_clock,
-                reasons=poisoned["reasons"],
-            )
-        )
 
     # Group revisions by campaign_id; ONE candidate per campaign, with the
     # latest revision as "current" and the earliest qualifying revision as
     # "first_qualifying" (frozen at formation).
     campaigns_by_id: dict[str, list[dict[str, Any]]] = {}
     view_ordinal_by_revision_id: dict[str, int] = {}
+    poisoned_by_revision = {
+        item["campaign"]["campaign_revision_id"]: item["reasons"]
+        for item in poisoned_reasons
+    }
     for view in campaign_views:
         cid = view.row["campaign_id"]
         campaigns_by_id.setdefault(cid, []).append(view.row)
         view_ordinal_by_revision_id[view.row["campaign_revision_id"]] = view.ordinal
+    for item in campaigns.rows:
+        row = item.value
+        if row.get("campaign_revision_id") in poisoned_by_revision:
+            campaigns_by_id.setdefault(row["campaign_id"], []).append(row)
+            view_ordinal_by_revision_id[row["campaign_revision_id"]] = item.ordinal
     for cid in campaigns_by_id:
-        campaigns_by_id[cid].sort(key=lambda row: row["formed_at"])
+        campaigns_by_id[cid].sort(
+            key=lambda row: view_ordinal_by_revision_id[row["campaign_revision_id"]]
+        )
 
     for cid, revisions in campaigns_by_id.items():
         current = revisions[-1]
@@ -1303,8 +1314,7 @@ def compose_candidate_feed(
         # ``candidates`` array is also consulted for older feeds.
         if prior is not None:
             prior_pool: list[dict[str, Any]] = []
-            prior_pool.extend(prior.get("formed_candidates", ()))
-            prior_pool.extend(prior.get("candidates", ()))
+            prior_pool.extend(prior["formed_candidates"])
             for item in prior_pool:
                 if item.get("campaign_id") == cid:
                     prior_candidate = item
@@ -1357,14 +1367,18 @@ def compose_candidate_feed(
             current["campaign_revision_id"]
         ]
 
-        reasons, micro, _ = _campaign_reasons(
-            current,
-            micro_map,
-            policy_freeze_at=freeze_at,
-            activation_boundary=activation_boundary,
-            observation=decision_clock,
-            source_health=health,
-        )
+        if current["campaign_revision_id"] in poisoned_by_revision:
+            reasons = list(poisoned_by_revision[current["campaign_revision_id"]])
+            micro = None
+        else:
+            reasons, micro, _ = _campaign_reasons(
+                current,
+                micro_map,
+                policy_freeze_at=freeze_at,
+                activation_boundary=activation_boundary,
+                observation=decision_clock,
+                source_health=health,
+            )
 
         # Late older micro: a microstructure record whose available_at
         # lies between formation formed_at and the current decision_clock
@@ -1376,8 +1390,8 @@ def compose_candidate_feed(
         disposition_state = "research_candidate"
         disposition_reasons: list[str] = []
 
-        if reasons and prior_candidate is not None:
-            # Previously formed but current state has reasons. Decide
+        if reasons and first_qualifying_revision_id is not None:
+            # A formed identity retains an explicit current disposition. Decide
             # between degraded (current measurement or evidence failure)
             # and abstain (policy/activation fences without measurement
             # failure).
@@ -1388,7 +1402,9 @@ def compose_candidate_feed(
                 "SOURCE_EXPLICITLY_STALE_OR_UNAVAILABLE",
                 "CAMPAIGN_RECEIPT_INVALID",
             }
-            if any(reason in measurement_reasons for reason in reasons):
+            if "UPSTREAM_AUTHORITY_VIOLATION" in reasons:
+                disposition_state = "abstain"
+            elif any(reason in measurement_reasons for reason in reasons):
                 disposition_state = "degraded"
             else:
                 disposition_state = "abstain"
@@ -1430,20 +1446,7 @@ def compose_candidate_feed(
                 formed_envelope["missingness"] = sorted(set(disposition_reasons))
             formed_candidates.append(formed_envelope)
 
-        if disposition_state == "research_candidate" and activation_boundary is not None and formed_record is not None:
-            candidates.append(formed_record)
-            continue
-
-        if prior_candidate is not None:
-            degraded.append(
-                _build_degraded(
-                    current,
-                    observation=decision_clock,
-                    prior_candidate=prior_candidate,
-                    reasons=reasons,
-                )
-            )
-        else:
+        if formed_record is None:
             abstentions.append(
                 _build_abstention(
                     current,
@@ -1513,7 +1516,7 @@ def compose_candidate_feed(
             "policy_digest_sha256": prior["policy"]["policy_digest_sha256"],
             "composed_at": prior["generated_at"],
             "first_observation_preserved": all(
-                isinstance(item, dict) for item in prior.get("candidates", ())
+                isinstance(item, dict) for item in prior["formed_candidates"]
             ),
             "candidate_identity_preserved": all(
                 item.get("candidate_id") == _candidate_identity(
@@ -1521,7 +1524,7 @@ def compose_candidate_feed(
                     item["campaign_id"],
                     item["first_qualifying_campaign_revision_id"],
                 )
-                for item in prior.get("candidates", ())
+                for item in prior["formed_candidates"]
             ),
         }
         if prior is not None
@@ -1542,9 +1545,7 @@ def compose_candidate_feed(
                 else "preregistered_inactive_until_activation"
             ),
             "deterministic_seed": seed,
-            "candidate_count": len(candidates),
             "abstention_count": len(abstentions),
-            "degraded_count": len(degraded),
             "formed_candidate_count": len(formed_candidates),
             "header_digest_sha256": "",  # filled below
         },
@@ -1555,10 +1556,8 @@ def compose_candidate_feed(
             "microstructure_map": micro_receipt,
             "prior_feed": prior_receipt,
         },
-        "candidates": candidates,
         "formed_candidates": formed_candidates,
         "abstentions": abstentions,
-        "degraded": degraded,
         "publication_claim": {
             "claim": "source_only_no_publication_effect",
             "claim_reason": (
@@ -1587,9 +1586,8 @@ def summarise(feed: dict[str, Any]) -> dict[str, Any]:
     return {
         "feed_id": feed["feed_id"],
         "generated_at": feed["generated_at"],
-        "candidate_count": feed["header"]["candidate_count"],
+        "formed_candidate_count": feed["header"]["formed_candidate_count"],
         "abstention_count": feed["header"]["abstention_count"],
-        "degraded_count": feed["header"]["degraded_count"],
         "formed_candidate_count": feed["header"]["formed_candidate_count"],
         "policy_id": feed["policy"]["policy_id"],
         "policy_digest_sha256": feed["policy"]["policy_digest_sha256"],
@@ -1614,150 +1612,129 @@ def validate_publication_receipt_binding(
     feed: dict[str, Any],
     payload: bytes,
     receipt: dict[str, Any],
-    receipt_chain: Sequence[dict[str, Any]] | None = None,
+    receipt_published_at: str | None = None,
 ) -> None:
-    """Validate exact local identity and payload binding without IO claims.
+    """Validate a snapshot's exact binding, not an historical transition.
 
-    ``receipt_chain`` is the optional, validated chronological list of prior
-    publication receipts (oldest first). When supplied, every candidate's
-    ``first_receipt_id`` MUST equal one of the receipt IDs in the chain or
-    the current receipt id, and the candidate's
-    ``first_consumer_published_at`` MUST equal the matching receipt's
-    ``payload_r2_confirmed_at`` when it is not the current receipt. New
-    candidate identifiers must reference the current receipt and carry a null
-    ``first_consumer_published_at`` (the publication effect is not yet
-    proven). Pure: no IO claims; only binding relationships are checked.
+    The optional publication clock is the separately observed receipt object's
+    external metadata. This pure function cannot prove IO or reconstruct an
+    overwritten receipt. Publishers MUST also validate the transition below.
     """
     _validate_schema(feed, CANDIDATE_FEED_V2_SCHEMA_FILENAME)
     _validate_schema(receipt, PUBLICATION_RECEIPT_SCHEMA_FILENAME)
     if payload != canonical_bytes(feed):
-        raise CandidateFeedContractError(
-            "publication receipt payload bytes do not canonicalize to the feed"
-        )
-    payload_digest = _sha256(payload)
-    expected_receipt_id = _expected_publication_receipt_id(payload_digest)
-    if receipt["receipt_id"] != expected_receipt_id:
-        raise CandidateFeedContractError(
-            "publication receipt identity is not derived from the payload hash"
-        )
+        raise CandidateFeedContractError("publication receipt payload bytes do not canonicalize to the feed")
+    unsealed = copy.deepcopy(feed)
+    unsealed["header"]["header_digest_sha256"] = ""
+    if feed["header"]["header_digest_sha256"] != _sha256(canonical_bytes(unsealed)):
+        raise CandidateFeedContractError("publication feed header seal is invalid")
+    digest = _sha256(payload)
+    if receipt["receipt_id"] != _expected_publication_receipt_id(digest):
+        raise CandidateFeedContractError("publication receipt identity is not derived from the payload hash")
     if receipt["feed_id"] != feed["feed_id"]:
-        raise CandidateFeedContractError(
-            "publication receipt feed_id disagrees with payload"
-        )
-    if receipt["payload_sha256"] != payload_digest:
-        raise CandidateFeedContractError(
-            "publication receipt payload hash disagrees with payload"
-        )
+        raise CandidateFeedContractError("publication receipt feed_id disagrees with payload")
+    if receipt["payload_sha256"] != digest:
+        raise CandidateFeedContractError("publication receipt payload hash disagrees with payload")
     if receipt["payload_bytes"] != len(payload):
-        raise CandidateFeedContractError(
-            "publication receipt payload size disagrees with payload"
-        )
-    expected_prefix = {
-        "path": feed["source_receipts"]["campaigns"]["path"],
-        "records": feed["source_receipts"]["campaigns"]["records"],
-        "prefix_sha256": feed["source_receipts"]["campaigns"]["prefix_sha256"],
-    }
-    if receipt["campaign_prefix"] != expected_prefix:
-        raise CandidateFeedContractError(
-            "publication receipt campaign prefix disagrees with payload"
-        )
-    if receipt["r2"]["payload_sha256"] != payload_digest:
-        raise CandidateFeedContractError(
-            "publication receipt R2 payload hash disagrees with payload"
-        )
-
-    # Canonicalize and order-check clocks: composition <= durability <=
-    # confirmed. ``generated_at`` is the composition clock on the feed.
-    composition_clock = _canonical_utc(feed["generated_at"], "feed.generated_at")[1]
-    durability_clock = _canonical_utc(
-        receipt["local_durability_confirmed_at"], "local_durability_confirmed_at"
-    )[1]
-    confirmed_clock = _canonical_utc(
-        receipt["payload_r2_confirmed_at"], "payload_r2_confirmed_at"
-    )[1]
-    if composition_clock > durability_clock:
-        raise CandidateFeedContractError(
-            "publication receipt clock ordering: durability predates composition"
-        )
-    if durability_clock > confirmed_clock:
-        raise CandidateFeedContractError(
-            "publication receipt clock ordering: confirmation predates durability"
-        )
-
-    # Coverage: map keys MUST equal the set of formed candidate ids. We
-    # draw the formed set from BOTH the legacy ``candidates`` array and
-    # the unified ``formed_candidates`` array, so the receipt validator
-    # covers every historically formed identity and never silently drops
-    # one. The receipt's candidate map must equal that union.
-    feed_candidates: set[str] = set()
-    for key in ("candidates", "formed_candidates"):
-        for item in feed.get(key, ()):
-            feed_candidates.add(item["candidate_id"])
-    if set(receipt["candidates"]) != feed_candidates:
-        raise CandidateFeedContractError(
-            "publication receipt candidate map disagrees with payload"
-        )
-
-    # Build the chain of accepted receipt IDs and their canonical R2
-    # confirmation clocks. The chain argument, when supplied, is the
-    # validated receipt history for this identity (oldest first); the
-    # current receipt itself and its declared prior_receipt are added
-    # automatically so the validator never rejects a legal current-only
-    # case.
-    chain: dict[str, datetime] = {}
-    for chain_receipt in receipt_chain or ():
-        chain_id = chain_receipt.get("receipt_id")
-        chain_clock_raw = chain_receipt.get("payload_r2_confirmed_at")
-        if not isinstance(chain_id, str) or not isinstance(chain_clock_raw, str):
-            raise CandidateFeedContractError(
-                "receipt_chain entries must be validated receipt dicts"
-            )
-        chain[chain_id] = _canonical_utc(
-            chain_clock_raw, "receipt_chain.payload_r2_confirmed_at"
-        )[1]
-    if receipt["prior_receipt"] is not None:
-        prior_id = receipt["prior_receipt"]["receipt_id"]
-        # If the explicit prior_receipt is also present in the chain,
-        # the receipt's own clock must match. Otherwise treat the
-        # prior_receipt block as the immediate anchor and require it to
-        # appear (the prior_receipt block itself is the proof of
-        # immediate carry).
-        if prior_id not in chain:
-            chain[prior_id] = confirmed_clock  # fallback: same clock class
-    current_receipt_id = receipt["receipt_id"]
-    chain[current_receipt_id] = confirmed_clock
-
+        raise CandidateFeedContractError("publication receipt payload size disagrees with payload")
+    prefix = {key: feed["source_receipts"]["campaigns"][key] for key in ("path", "records", "prefix_sha256")}
+    if receipt["campaign_prefix"] != prefix:
+        raise CandidateFeedContractError("publication receipt campaign prefix disagrees with payload")
+    if receipt["r2"]["payload_sha256"] != digest:
+        raise CandidateFeedContractError("publication receipt R2 payload hash disagrees with payload")
+    composition = _canonical_utc(feed["generated_at"], "feed.generated_at")[1]
+    durability = _canonical_utc(receipt["local_durability_confirmed_at"], "local_durability_confirmed_at")[1]
+    confirmed = _canonical_utc(receipt["payload_r2_confirmed_at"], "payload_r2_confirmed_at")[1]
+    if not composition <= durability <= confirmed:
+        raise CandidateFeedContractError("publication receipt clock ordering requires composition <= durability <= confirmation")
+    formed_ids = [item["candidate_id"] for item in feed["formed_candidates"]]
+    if (len(formed_ids) != len(set(formed_ids))
+            or feed["header"]["formed_candidate_count"] != len(formed_ids)
+            or set(receipt["candidates"]) != set(formed_ids)):
+        raise CandidateFeedContractError("publication receipt candidate map disagrees with payload")
+    external_clock = (
+        _canonical_utc(receipt_published_at, "receipt_published_at")[1]
+        if receipt_published_at is not None else None
+    )
+    prior = receipt["prior_receipt"]
+    if prior is not None and prior["receipt_id"] == receipt["receipt_id"]:
+        raise CandidateFeedContractError("publication receipt cannot name itself as prior")
     for entry in receipt["candidates"].values():
-        first_id = entry["first_receipt_id"]
-        first_clock = entry["first_consumer_published_at"]
-        if first_id not in chain:
-            raise CandidateFeedContractError(
-                "publication receipt first receipt identity is not in the accepted chain"
-            )
-        if first_id == current_receipt_id:
-            # New identity: not yet published; consumer clock must be
-            # null. The validator makes no IO claim — only that this
-            # receipt has not yet acquired a consumer publication effect.
-            if first_clock is not None:
-                raise CandidateFeedContractError(
-                    "publication receipt first receipt is current but consumer clock is set"
-                )
+        if entry["first_receipt_id"] == receipt["receipt_id"]:
+            if entry["first_consumer_published_at"] is not None:
+                raise CandidateFeedContractError("current first receipt must carry a null external publication clock")
         else:
-            # Historical carry: consumer clock MUST equal the historical
-            # receipt's payload_r2_confirmed_at, no future and no
-            # blind rewrites.
-            if first_clock is None:
-                raise CandidateFeedContractError(
-                    "publication receipt historical first receipt carries no consumer clock"
-                )
-            expected_clock = chain[first_id]
-            actual_clock = _canonical_utc(
-                first_clock, "first_consumer_published_at"
-            )[1]
-            if actual_clock != expected_clock:
-                raise CandidateFeedContractError(
-                    "publication receipt historical first consumer clock disagrees with chain anchor"
-                )
+            if prior is None or entry["first_consumer_published_at"] is None:
+                raise CandidateFeedContractError("historical first receipt requires a prior anchor and carried external publication clock")
+            first_clock = _canonical_utc(entry["first_consumer_published_at"], "first_consumer_published_at")[1]
+            if external_clock is not None and first_clock > external_clock:
+                raise CandidateFeedContractError("first publication is after the receipt object's publication metadata")
+    # External LastModified can have coarser precision than producer timestamps.
+    # It is not interchangeable with, or ordered against, payload confirmation.
+
+
+def validate_publication_receipt_transition(
+    *,
+    feed: dict[str, Any],
+    payload: bytes,
+    receipt: dict[str, Any],
+    prior_feed: dict[str, Any] | None = None,
+    prior_payload: bytes | None = None,
+    prior_receipt: dict[str, Any] | None = None,
+    prior_receipt_published_at: str | None = None,
+) -> None:
+    """Validate bootstrap or exact carry from the last sealed pair.
+
+    Only the immediately preceding pair and its separately observed receipt
+    metadata are needed, regardless of history length. Older first-publication
+    values are continuity assertions preserved from that validated pair, not
+    newly proven historical provider effects. Callers must obtain the metadata
+    with the same readback that supplies prior_receipt and enforce CAS in IO.
+    """
+    validate_publication_receipt_binding(feed=feed, payload=payload, receipt=receipt)
+    prior_args = (prior_feed, prior_payload, prior_receipt, prior_receipt_published_at)
+    if all(value is None for value in prior_args):
+        if receipt["prior_receipt"] is not None or feed["source_receipts"]["prior_feed"] is not None:
+            raise CandidateFeedContractError("bootstrap cannot claim an unvalidated prior pair")
+        return
+    if any(value is None for value in prior_args):
+        raise CandidateFeedContractError("continuation requires the complete prior pair and external receipt metadata")
+    validate_publication_receipt_binding(
+        feed=prior_feed, payload=prior_payload, receipt=prior_receipt,
+        receipt_published_at=prior_receipt_published_at,
+    )
+    expected_anchor = {key: prior_receipt[key] for key in ("receipt_id", "payload_sha256")}
+    if receipt["prior_receipt"] != expected_anchor:
+        raise CandidateFeedContractError("publication prior anchor disagrees with the exact prior pair")
+    if receipt["receipt_id"] == prior_receipt["receipt_id"]:
+        raise CandidateFeedContractError("unchanged sealed pair is an IO no-op, not a new transition")
+    source_prior = feed["source_receipts"]["prior_feed"]
+    if source_prior != {
+        "feed_id": prior_feed["feed_id"],
+        "schema": prior_feed["schema"],
+        "feed_digest_sha256": _sha256(prior_payload),
+        "policy_id": prior_feed["policy"]["policy_id"],
+        "policy_digest_sha256": prior_feed["policy"]["policy_digest_sha256"],
+        "composed_at": prior_feed["generated_at"],
+        "first_observation_preserved": True,
+        "candidate_identity_preserved": True,
+    }:
+        raise CandidateFeedContractError("feed continuation disagrees with the prior payload")
+    if _utc(feed["generated_at"], "generated_at") < _utc(prior_feed["generated_at"], "prior.generated_at"):
+        raise CandidateFeedContractError("feed continuation composition clock moved backwards")
+    old_entries = prior_receipt["candidates"]
+    if not set(old_entries).issubset(receipt["candidates"]):
+        raise CandidateFeedContractError("publication continuation lost a formed candidate")
+    for candidate_id, actual in receipt["candidates"].items():
+        old = old_entries.get(candidate_id)
+        if old is None:
+            expected = {"first_receipt_id": receipt["receipt_id"], "first_consumer_published_at": None}
+        elif old["first_receipt_id"] == prior_receipt["receipt_id"]:
+            expected = {"first_receipt_id": old["first_receipt_id"], "first_consumer_published_at": prior_receipt_published_at}
+        else:
+            expected = old
+        if actual != expected:
+            raise CandidateFeedContractError("publication continuation rewrote first receipt identity or external publication clock")
 
 
 __all__ = [
@@ -1775,5 +1752,6 @@ __all__ = [
     "canonical_bytes",
     "compose_candidate_feed",
     "validate_publication_receipt_binding",
+    "validate_publication_receipt_transition",
     "summarise",
 ]
