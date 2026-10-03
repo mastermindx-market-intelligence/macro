@@ -578,8 +578,18 @@ framework directories and are not assertion failures. R41 browser screenshots an
 `research/market_os/all_tools_adoption/evidence/r41-browser/`; the doubled-token scenario is not
 native browser 200% zoom, physical-device or assistive-technology acceptance.
 
+The branch-local Research Screener bake/cache gate is now reproduced and repaired through its
+existing owner. `HEAD:site/research_screener.html` does not equal a fresh `bake_html()` result after
+the shared navigation digest change; the working generated page does. The delta is limited to the
+current `navigation-refresh.css` stamp, current theme/watchstore stamps and the renderer's whitespace.
+`tests/test_research_screener.py` passes **32/32**, including H4.7 fresh-bake equality. This closes
+the stale generated-page mismatch on this carrier without weakening the assertion or introducing a
+second builder. Current `origin/main` has separately advanced to fresher Research Screener data/theme
+bytes, so eventual current-main reconciliation must preserve that newer source truth rather than
+copying this held branch's older payload forward.
+
 R41 does **not** release the PR hold. Remaining work is current-head publication/reconciliation,
-independent review/CI, the existing Research Screener/receipt dependency closure, R18/R19/PR7129,
-and eventual production proof/acceptance. Preserve the existing Draft/HOLD state; do not mark Ready,
-merge, broaden pilots or deploy from this checkpoint. The older statement that the nine R38 browser
+independent review/CI, the existing receipt dependency closure, R18/R19/PR7129, and eventual
+production proof/acceptance. Preserve the existing Draft/HOLD state; do not mark Ready, merge,
+broaden pilots or deploy from this checkpoint. The older statement that the nine R38 browser
 scenarios were unexecuted is historical and superseded by this section only for that browser lane.
