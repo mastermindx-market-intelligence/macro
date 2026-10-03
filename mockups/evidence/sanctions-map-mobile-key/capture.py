@@ -224,7 +224,22 @@ def _dist2(a, b):
     return sum((ai - bi) ** 2 for ai, bi in zip(a, b))
 
 
-def _capture_one(browser, base, *, locale, themes=THEMES, mobile_block=None):
+def _crop_names(cell_key, theme, *, baseline):
+    """Committed crop filenames for one cell.
+
+    R4: a `--baseline` run used to write the SAME `{theme}-{locale}-390-*.png`
+    names as the final-rung run, so whichever ran last silently overwrote the
+    other's crops (R3's orphan pass then deleted the baseline crops the README
+    lists). Baseline crops now carry the `baseline-` prefix the README and the
+    committed receipt have always used — `cells/baseline-{theme}-390.png` for
+    the UK zoom; the legend crop gains `-legend`.
+    """
+    if baseline:
+        return f"baseline-{theme}-390.png", f"baseline-{theme}-390-legend.png"
+    return f"{cell_key}-390-ukzoom.png", f"{cell_key}-390-legend.png"
+
+
+def _capture_one(browser, base, *, locale, themes=THEMES, mobile_block=None, baseline=False):
     theme_results = {}
     for theme in themes:
         context = browser.new_context(
@@ -423,8 +438,9 @@ def _capture_one(browser, base, *, locale, themes=THEMES, mobile_block=None):
             cell_key = f"{theme}-{locale}"
             digest_uk, w_uk, h_uk = _sha256_and_dims(png_uk)
             digest_leg, w_leg, h_leg = _sha256_and_dims(png_legend)
-            (CELLS_DIR / f"{cell_key}-390-ukzoom.png").write_bytes(png_uk)
-            (CELLS_DIR / f"{cell_key}-390-legend.png").write_bytes(png_legend)
+            uk_name, legend_name = _crop_names(cell_key, theme, baseline=baseline)
+            (CELLS_DIR / uk_name).write_bytes(png_uk)
+            (CELLS_DIR / legend_name).write_bytes(png_legend)
             theme_results[cell_key] = {
                 "applied_theme": info["applied_theme"],
                 "applied_locale": info["applied_locale"],
@@ -446,10 +462,10 @@ def _capture_one(browser, base, *, locale, themes=THEMES, mobile_block=None):
                 "mark_mean_chroma": mark_mean_chroma,
                 "rung3_bbox": r3,
                 "rung3_mean_chroma": rung3_mean_chroma,
-                "ukzoom_file": f"cells/{cell_key}-390-ukzoom.png",
+                "ukzoom_file": f"cells/{uk_name}",
                 "ukzoom_sha256": digest_uk,
                 "ukzoom_size": [w_uk, h_uk],
-                "legend_file": f"cells/{cell_key}-390-legend.png",
+                "legend_file": f"cells/{legend_name}",
                 "legend_sha256": digest_leg,
                 "legend_size": [w_leg, h_leg],
             }
@@ -527,7 +543,7 @@ def main():
             for locale in locales:
                 cells = _capture_one(
                     browser, base, locale=locale, themes=themes,
-                    mobile_block=mobile_block,
+                    mobile_block=mobile_block, baseline=args.baseline,
                 )
                 for k, v in cells.items():
                     dom["cells"][k] = v

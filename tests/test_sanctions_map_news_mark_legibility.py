@@ -294,9 +294,10 @@ def test_t12_mobile_mark_clears_the_measured_floor_and_chroma_order():
                 f"O28 R3: rendered {theme}-{locale} gbr_stroke_width="
                 f"{row['gbr_stroke_width']} != CSS width {css_w}px"
             )
-            assert abs(float(row["gbr_stroke_opacity"]) - float(css_dark_od)) < 1e-6, (
+            css_od = css_dark_od if theme == "dark" else css_light_od
+            assert abs(float(row["gbr_stroke_opacity"]) - float(css_od)) < 1e-6, (
                 f"O28 R3: rendered {theme}-{locale} gbr_stroke_opacity="
-                f"{row['gbr_stroke_opacity']} != CSS opacity {css_dark_od}"
+                f"{row['gbr_stroke_opacity']} != CSS {theme} opacity {css_od}"
             )
 
     # (f) rung3_mean_chroma is display-only (D58); any ordering comparison

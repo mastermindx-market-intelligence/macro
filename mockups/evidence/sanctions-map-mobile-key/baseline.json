@@ -45,13 +45,13 @@
         "h": 34.753662109375
       },
       "rung3_mean_chroma": 9.140589569160998,
-      "ukzoom_file": "cells/dark-en-390-ukzoom.png",
+      "ukzoom_file": "cells/baseline-dark-390.png",
       "ukzoom_sha256": "853a27b2d3e2ff428a2bca339f2fa08c98b6d05f1106f2ecbf21b9c598de2c58",
       "ukzoom_size": [
         28,
         27
       ],
-      "legend_file": "cells/dark-en-390-legend.png",
+      "legend_file": "cells/baseline-dark-390-legend.png",
       "legend_sha256": "b787d235dd1d427204bbd250963dafcc7e8839ddb4ac72a39278484167b1f498",
       "legend_size": [
         312,
@@ -89,13 +89,13 @@
         "h": 34.530914306640625
       },
       "rung3_mean_chroma": 0.5328798185941043,
-      "ukzoom_file": "cells/light-en-390-ukzoom.png",
+      "ukzoom_file": "cells/baseline-light-390.png",
       "ukzoom_sha256": "17f0e7812ae6724f3e1ec500d386d3b56600cf518c9ad2c512dcea3e7bcff9a4",
       "ukzoom_size": [
         27,
         27
       ],
-      "legend_file": "cells/light-en-390-legend.png",
+      "legend_file": "cells/baseline-light-390-legend.png",
       "legend_sha256": "184158238ca812707fd9832a856029881e1ac01249e12e0b9a575423de50b1ba",
       "legend_size": [
         312,
@@ -103,10 +103,10 @@
       ]
     }
   },
-  "source_commit": "da1f7730b84a7f8758e5b1e81ed0de8e0718a9a0",
+  "source_commit": "58246d950a0c02b4c169b803d53be2436499c4dd",
   "page_sha256": "240f6321298ce20c48f6b0304ece9980a4f9c28857b3ce6b613f872ee9df6d19",
-  "generated_at": "2026-10-03T04:17:54Z",
-  "capture_tool_module_sha256": "75d6e65de40cf80bd06c821c4506f2856751f79cebe644310a1cf087f4776290",
+  "generated_at": "2026-10-03T06:05:38Z",
+  "capture_tool_module_sha256": "d48820a76d890ae482c78f3c85bc224f53ac7301d4f48aac41da2fa9710d5a5d",
   "o28_block": {
     "width": "1",
     "dark_opacity": ".7",

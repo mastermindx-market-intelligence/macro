@@ -192,10 +192,10 @@
       ]
     }
   },
-  "source_commit": "da1f7730b84a7f8758e5b1e81ed0de8e0718a9a0",
+  "source_commit": "58246d950a0c02b4c169b803d53be2436499c4dd",
   "page_sha256": "240f6321298ce20c48f6b0304ece9980a4f9c28857b3ce6b613f872ee9df6d19",
-  "generated_at": "2026-10-03T04:25:01Z",
-  "capture_tool_module_sha256": "f885069505ca00e80e8b92f3b7df1079a69766a01391cc7fec46c95254c45038",
+  "generated_at": "2026-10-03T06:05:33Z",
+  "capture_tool_module_sha256": "d48820a76d890ae482c78f3c85bc224f53ac7301d4f48aac41da2fa9710d5a5d",
   "o28_block": {
     "width": "1.25",
     "dark_opacity": ".85",

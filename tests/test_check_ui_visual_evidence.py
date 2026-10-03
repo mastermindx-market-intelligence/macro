@@ -882,15 +882,41 @@ def test_tool_hash_coverage_attribution_resolves_on_sanctions_map_shape(tmp_path
 @pytest.mark.needs_full_checkout("mockups")
 def test_sanctions_map_manifest_tool_sha_list_default_element_is_first():
     """MINOR-4: the real committed sanctions_map manifest must satisfy the
-    attribution contract it documents — element 0 of tool.module_sha256 is
-    97b44358... (the default tool every unstamped cell implicitly used),
-    listed BEFORE 3301a5f9... (the tool sha only the one explicitly
-    re-captured theme_toggle_dark_to_light force_state cell carries). If this
-    order were ever wrong, fixing the manifest's list order is the ONLY
-    permitted manifest edit for this finding (ruling 4) — never the code."""
+    attribution contract it documents. Two lawful forms:
+
+    * LIST form (receipt of 2026-09-11 → 2026-10-02): element 0 of
+      tool.module_sha256 is 97b44358... (the default tool every unstamped
+      cell implicitly used), listed BEFORE 3301a5f9... (the tool sha only the
+      one explicitly re-captured theme_toggle_dark_to_light force_state cell
+      carries). If this order were ever wrong, fixing the manifest's list
+      order is the ONLY permitted manifest edit for this finding (ruling 4)
+      — never the code.
+    * STRING form (O28 R4, 2026-10-03, PR #8307): a FULL recapture of the
+      receipt by one run of one module writes that module's single sha, so
+      there is no default/stamped split left to order. Coherence is still
+      asserted — every per-cell `capture_tool_module_sha256` stamp (if any)
+      must name that same module; a string that does not cover a stamped
+      cell is the MINOR-4 defect reappearing and reds.
+
+    Either way the fix for a failure is the MANIFEST's attribution, never the
+    checker code."""
     manifest_path = guard.REPO_ROOT / "mockups" / "evidence" / "sanctions_map" / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     top_sha = manifest["tool"]["module_sha256"]
+    stamped = {
+        state.get("capture_tool_module_sha256")
+        for page in manifest["pages"]
+        for state in page["states"]
+        if state.get("capture_tool_module_sha256")
+    }
+    if isinstance(top_sha, str):
+        assert len(top_sha) == 64 and set(top_sha) <= set("0123456789abcdef"), (
+            f"sanctions_map manifest tool.module_sha256={top_sha!r} is not a sha256 hex digest")
+        assert stamped <= {top_sha}, (
+            f"sanctions_map manifest tool.module_sha256 is the single sha {top_sha[:12]}... but "
+            f"cells carry other stamps {sorted(s[:12] for s in stamped - {top_sha})} — list every "
+            "tool used (default first) in the MANIFEST, never the code")
+        return
     assert isinstance(top_sha, list) and len(top_sha) >= 1
     assert top_sha[0] == "97b4435815440fde008cd35b73c551cf704ba01ea71f18f04a2b23ebc7a0a6b7", (
         f"sanctions_map manifest tool.module_sha256[0]={top_sha[0]!r}, expected the default tool "
