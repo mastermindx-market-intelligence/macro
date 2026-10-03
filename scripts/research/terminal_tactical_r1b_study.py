@@ -31,6 +31,11 @@ PREREG_PATH = ROOT / "research/species/TTI_R1B_V4_PREREG.md"
 RECEIPT_PATH = ROOT / "research/species/tti_r1b/REGISTRATION_RECEIPT_V4.json"
 LEDGER_PATH = ROOT / "data/trial_ledger.jsonl"
 STUDY_ID = "tti-r1b-exhaustion-reclaim-v4"
+PREREG_SHA256 = "a8afab8d87cfe912aeaed02c105112869943433cf6b7bb7c765bd2768d0dfcd3"
+GRID_SHA256 = "151c0cb20af85537287413b4ecdeaf2ccad18232ed4eb0a20091cbd46cdb6b17"
+R1B_ROWS_SHA256 = "8fc5a844886cfa2d69ec25f38fd6948b4a4556e01829bea76338e94570def281"
+TRIAL_FAMILY = "entry_radar"
+STUDY_ROWS = 60
 UTC = timezone.utc
 
 
@@ -48,10 +53,42 @@ def _grid_cells(cfg: Mapping[str, Any]) -> list[dict[str, Any]]:
     ]
 
 
+def _grid_sha256(cfg: Mapping[str, Any]) -> str:
+    parts = sorted(
+        json.dumps(x, sort_keys=True, separators=(",", ":")) for x in _grid_cells(cfg)
+    )
+    return hashlib.sha256(("\n".join(parts) + "\n").encode("utf-8")).hexdigest()
+
+
+def registered_rows(raw_ledger: bytes) -> list[bytes]:
+    study_id_b = STUDY_ID.encode("utf-8")
+    selected: list[bytes] = []
+    for chunk in raw_ledger.split(b"\n"):
+        if not chunk.strip():
+            continue
+        try:
+            row = json.loads(chunk)
+        except json.JSONDecodeError:
+            if study_id_b in chunk:
+                raise ValueError("registered_row_unparseable") from None
+            continue
+        if not isinstance(row, dict):
+            if study_id_b in chunk:
+                raise ValueError("registered_row_unparseable")
+            continue
+        value = row.get("config")
+        if isinstance(value, dict) and value.get("study_id") == STUDY_ID:
+            selected.append(chunk)
+    return selected
+
+
+def _registered_rows_sha256(rows: Sequence[bytes]) -> str:
+    return hashlib.sha256(b"".join(line + b"\n" for line in rows)).hexdigest()
+
+
 def verify_admission(
     *, config_path: Path = CONFIG_PATH, prereg_path: Path = PREREG_PATH,
     receipt_path: Path = RECEIPT_PATH, ledger_path: Path = LEDGER_PATH,
-    enforce_receipt_ledger_sha: bool = True,
     before_input: Callable[[], None] | None = None,
 ) -> dict[str, Any]:
     """Verify frozen scientific identity and 60-cell registration before inputs."""
@@ -64,30 +101,40 @@ def verify_admission(
     prereg_sha = _sha(prereg_path)
     if config_sha != receipt.get("config_sha256") or config_sha != te.CONFIG_SHA256:
         raise ValueError("config_sha256_mismatch")
-    if prereg_sha != receipt.get("prereg_sha256"):
+    if prereg_sha != PREREG_SHA256 or prereg_sha != receipt.get("prereg_sha256"):
         raise ValueError("prereg_sha256_mismatch")
+    grid_sha = _grid_sha256(cfg)
+    if grid_sha != GRID_SHA256 or receipt.get("grid_sha256") != GRID_SHA256:
+        raise ValueError("grid_sha256_mismatch")
     if receipt.get("study_id") != STUDY_ID or receipt.get("family") != cfg.get("trial_family"):
+        raise ValueError("registration_receipt_identity_mismatch")
+    if cfg.get("trial_family") != TRIAL_FAMILY:
         raise ValueError("registration_receipt_identity_mismatch")
     if receipt.get("prefix_preserved") is not True:
         raise ValueError("registration_prefix_not_preserved")
     if receipt.get("market_outcomes_opened_before_registration") is not False:
         raise ValueError("registration_precedes_outcomes_not_proven")
     wanted = {json.dumps(x, sort_keys=True, separators=(",", ":")) for x in _grid_cells(cfg)}
-    if len(wanted) != int(cfg.get("full_grid_size", -1)) or len(wanted) != 60:
+    if len(wanted) != int(cfg.get("full_grid_size", -1)) or len(wanted) != STUDY_ROWS:
         raise ValueError("frozen_grid_size_mismatch")
     raw_ledger = ledger_path.read_bytes()
-    if enforce_receipt_ledger_sha and hashlib.sha256(raw_ledger).hexdigest() != receipt.get("ledger_after_sha256"):
-        raise ValueError("ledger_sha256_mismatch")
+    ledger_lines = sum(1 for chunk in raw_ledger.split(b"\n") if chunk.strip())
+    rows = registered_rows(raw_ledger)
+    if len(rows) != STUDY_ROWS:
+        raise ValueError(f"registered_grid_row_count_mismatch:{len(rows)}/{STUDY_ROWS}")
     found: set[str] = set()
-    for line in raw_ledger.decode("utf-8").splitlines():
-        if not line.strip():
-            continue
+    for line in rows:
         row = json.loads(line)
+        if row.get("family") != TRIAL_FAMILY:
+            raise ValueError("registered_row_family_mismatch")
         value = row.get("config")
-        if row.get("family") == cfg["trial_family"] and isinstance(value, dict) and value.get("study_id") == STUDY_ID:
+        if isinstance(value, dict):
             found.add(json.dumps(value, sort_keys=True, separators=(",", ":")))
     if found != wanted:
         raise ValueError(f"registered_grid_mismatch:{len(found)}/{len(wanted)}")
+    registered_rows_sha256 = _registered_rows_sha256(rows)
+    if registered_rows_sha256 != R1B_ROWS_SHA256:
+        raise ValueError("registered_rows_sha256_mismatch")
     if int(receipt.get("study_rows", -1)) != len(wanted):
         raise ValueError("registration_receipt_cell_count_mismatch")
     if before_input is not None:
@@ -98,7 +145,10 @@ def verify_admission(
         "registration_commit": receipt.get("registration_commit"),
         "config_sha256": config_sha,
         "prereg_sha256": prereg_sha,
+        "grid_sha256": grid_sha,
+        "registered_rows_sha256": registered_rows_sha256,
         "ledger_sha256": hashlib.sha256(raw_ledger).hexdigest(),
+        "ledger_lines": ledger_lines,
         "market_outcomes_opened_before_registration": False,
         "market_data_read": False,
         "outcomes_computed": False,

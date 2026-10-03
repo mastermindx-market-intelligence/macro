@@ -139,6 +139,29 @@ def r1b_study():
     return importlib.import_module("scripts.research.terminal_tactical_r1b_study")
 
 
+def _r1b_admission_paths():
+    return {
+        "config_path": ROOT / "research/species/tti_r1b/config_v4.json",
+        "prereg_path": ROOT / "research/species/TTI_R1B_V4_PREREG.md",
+        "receipt_path": ROOT / "research/species/tti_r1b/REGISTRATION_RECEIPT_V4.json",
+    }
+
+
+def _r1b_ledger_lines_bytes():
+    return [ln for ln in (ROOT / "data/trial_ledger.jsonl").read_bytes().split(b"\n") if ln.strip()]
+
+
+def _r1b_write_ledger(tmp_path, lines: list[bytes]) -> Path:
+    ledger = tmp_path / "ledger.jsonl"
+    ledger.write_bytes(b"\n".join(lines) + b"\n")
+    return ledger
+
+
+def _r1b_registered_line_indices(s, lines: list[bytes]) -> list[int]:
+    registered = set(s.registered_rows(b"\n".join(lines) + b"\n"))
+    return [i for i, ln in enumerate(lines) if ln in registered]
+
+
 def test_r1b_v4_admission_accepts_exact_registered_repo_state():
     receipt = r1b_study().verify_admission()
     assert receipt["study_id"] == "tti-r1b-exhaustion-reclaim-v4"
@@ -175,7 +198,180 @@ def test_r1b_v4_admission_refuses_missing_registered_cell(tmp_path):
     rows.pop(target[-1])
     ledger=tmp_path/"ledger.jsonl"; ledger.write_text("\n".join(map(json.dumps,rows))+"\n")
     with pytest.raises(ValueError, match="registered_grid"):
-        s.verify_admission(ledger_path=ledger, enforce_receipt_ledger_sha=False)
+        s.verify_admission(ledger_path=ledger, **_r1b_admission_paths())
+
+
+def test_r1b_admission_passes_branch_ledger_as_is(tmp_path):
+    s = r1b_study()
+    ledger = _r1b_write_ledger(tmp_path, _r1b_ledger_lines_bytes())
+    receipt = s.verify_admission(ledger_path=ledger, **_r1b_admission_paths())
+    assert receipt["study_cells"] == 60
+    assert receipt["registered_rows_sha256"] == (
+        "8fc5a844886cfa2d69ec25f38fd6948b4a4556e01829bea76338e94570def281"
+    )
+
+
+def test_r1b_admission_passes_when_other_rows_surround_and_interleave(tmp_path):
+    s = r1b_study()
+    lines = _r1b_ledger_lines_bytes()
+    idx = _r1b_registered_line_indices(s, lines)
+    assert len(idx) == 60
+    foreign = json.dumps({"family": "cortex", "config": {"study_id": "someone-else"}}).encode()
+    lines = lines[:idx[0]] + [foreign] + lines[idx[0]:]
+    idx = _r1b_registered_line_indices(s, lines)
+    mid = len(idx) // 2
+    lines = lines[: idx[mid] + 1] + [foreign] + lines[idx[mid] + 1 :]
+    lines = lines + [foreign]
+    ledger = _r1b_write_ledger(tmp_path, lines)
+    receipt = s.verify_admission(ledger_path=ledger, **_r1b_admission_paths())
+    assert receipt["registered_rows_sha256"] == (
+        "8fc5a844886cfa2d69ec25f38fd6948b4a4556e01829bea76338e94570def281"
+    )
+    assert receipt["ledger_lines"] == 1823
+
+
+@pytest.mark.parametrize(
+    "mutator,match",
+    [
+        ("remove_one", "registered_grid_row_count_mismatch:59/60"),
+        ("append_dup", "registered_grid_row_count_mismatch:61/60"),
+        ("append_all", "registered_grid_row_count_mismatch:120/60"),
+    ],
+)
+def test_r1b_admission_refuses_wrong_row_counts(tmp_path, mutator, match):
+    s = r1b_study()
+    lines = list(_r1b_ledger_lines_bytes())
+    idx = _r1b_registered_line_indices(s, lines)
+    registered = [lines[i] for i in idx]
+    if mutator == "remove_one":
+        lines.pop(idx[-1])
+    elif mutator == "append_dup":
+        lines.append(registered[0])
+    else:
+        lines.extend(registered)
+    ledger = _r1b_write_ledger(tmp_path, lines)
+    touched = []
+    with pytest.raises(ValueError, match=match):
+        s.verify_admission(
+            ledger_path=ledger,
+            before_input=lambda: touched.append(True),
+            **_r1b_admission_paths(),
+        )
+    assert touched == []
+
+
+def test_r1b_admission_refuses_a_one_character_change_in_any_registered_row(tmp_path):
+    s = r1b_study()
+    lines = _r1b_ledger_lines_bytes()
+    idx = _r1b_registered_line_indices(s, lines)
+    assert len(idx) == 60
+    for pos in idx:
+        trial = list(lines)
+        row = json.loads(trial[pos])
+        ts = row["ts"]
+        row["ts"] = ts[:-1] + ("0" if ts[-1] != "0" else "1")
+        trial[pos] = json.dumps(row, separators=(",", ":"), sort_keys=True).encode()
+        ledger = _r1b_write_ledger(tmp_path, trial)
+        with pytest.raises(ValueError, match="registered_rows_sha256_mismatch"):
+            s.verify_admission(ledger_path=ledger, **_r1b_admission_paths())
+
+
+def test_r1b_admission_refuses_reordered_registered_rows(tmp_path):
+    s = r1b_study()
+    lines = list(_r1b_ledger_lines_bytes())
+    idx = _r1b_registered_line_indices(s, lines)
+    i, j = idx[0], idx[1]
+    lines[i], lines[j] = lines[j], lines[i]
+    ledger = _r1b_write_ledger(tmp_path, lines)
+    touched = []
+    with pytest.raises(ValueError, match="registered_rows_sha256_mismatch"):
+        s.verify_admission(
+            ledger_path=ledger,
+            before_input=lambda: touched.append(True),
+            **_r1b_admission_paths(),
+        )
+    assert touched == []
+
+
+def test_r1b_admission_refuses_prereg_and_receipt_edited_together(tmp_path):
+    import hashlib
+
+    s = r1b_study()
+    paths = _r1b_admission_paths()
+    prereg = paths["prereg_path"].read_bytes()
+    changed_prereg = tmp_path / "prereg.md"
+    changed_prereg.write_bytes(prereg[:-1] + (b" " if prereg[-1:] != b" " else b"x"))
+    new_sha = hashlib.sha256(changed_prereg.read_bytes()).hexdigest()
+    receipt_doc = json.loads(paths["receipt_path"].read_text())
+    receipt_doc["prereg_sha256"] = new_sha
+    receipt = tmp_path / "receipt.json"
+    receipt.write_text(json.dumps(receipt_doc, sort_keys=True))
+    ledger = _r1b_write_ledger(tmp_path, _r1b_ledger_lines_bytes())
+    touched = []
+    with pytest.raises(ValueError, match="prereg_sha256_mismatch"):
+        s.verify_admission(
+            prereg_path=changed_prereg,
+            receipt_path=receipt,
+            ledger_path=ledger,
+            before_input=lambda: touched.append(True),
+            config_path=paths["config_path"],
+        )
+    assert touched == []
+
+
+def test_r1b_admission_refuses_receipt_grid_edit(tmp_path):
+    s = r1b_study()
+    paths = _r1b_admission_paths()
+    receipt_doc = json.loads(paths["receipt_path"].read_text())
+    receipt_doc["grid_sha256"] = "0" * 64
+    receipt = tmp_path / "receipt.json"
+    receipt.write_text(json.dumps(receipt_doc, sort_keys=True))
+    ledger = _r1b_write_ledger(tmp_path, _r1b_ledger_lines_bytes())
+    touched = []
+    with pytest.raises(ValueError, match="grid_sha256_mismatch"):
+        s.verify_admission(
+            receipt_path=receipt,
+            ledger_path=ledger,
+            before_input=lambda: touched.append(True),
+            **{k: v for k, v in paths.items() if k != "receipt_path"},
+        )
+    assert touched == []
+
+
+def test_r1b_admission_refuses_unparseable_row_naming_the_study(tmp_path):
+    s = r1b_study()
+    lines = list(_r1b_ledger_lines_bytes())
+    lines.append(
+        b'{"family":"entry_radar","config":{"study_id":"tti-r1b-exhaustion-reclaim-v4"'
+    )
+    ledger = _r1b_write_ledger(tmp_path, lines)
+    touched = []
+    with pytest.raises(ValueError, match="registered_row_unparseable"):
+        s.verify_admission(
+            ledger_path=ledger,
+            before_input=lambda: touched.append(True),
+            **_r1b_admission_paths(),
+        )
+    assert touched == []
+
+
+def test_r1b_admission_ignores_a_foreign_row_that_only_mentions_the_study(tmp_path):
+    s = r1b_study()
+    lines = list(_r1b_ledger_lines_bytes())
+    lines.append(
+        json.dumps(
+            {
+                "family": "entry_radar",
+                "config": {"study_id": "a-later-study"},
+                "note": "follows tti-r1b-exhaustion-reclaim-v4",
+            },
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode()
+    )
+    ledger = _r1b_write_ledger(tmp_path, lines)
+    receipt = s.verify_admission(ledger_path=ledger, **_r1b_admission_paths())
+    assert receipt["study_cells"] == 60
 
 
 def test_r1b_v4_verify_only_cli_reads_no_market_inputs():
