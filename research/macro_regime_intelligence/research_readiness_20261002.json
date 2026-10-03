@@ -673,5 +673,21 @@
     "Per-stock trend labels are not a date-level macro regime history.",
     "Signal rows and observed signal dates are not independent regime episodes.",
     "No threshold change, outcome analysis, old-study rerun or predictive promotion."
-  ]
+  ],
+  "provenance": {
+    "regeneration": {
+      "command": "python3 -m research.macro_regime_intelligence.research_readiness_probe",
+      "script_sha256": "5cdab8b45e4216e14c2fadb883aedd1fdf00d402369373063a7361870a3dd689",
+      "archive_sha256": "52593efe19c6a248a56e956e5223b480fab9bb6a8838a750aace513f0e86be5b",
+      "archive_bytes": 10903975,
+      "merge_base": "bf6921873ea40f5868e0428d04fd38f78cc62c11",
+      "regenerate_diff": [],
+      "regenerated_identical": true
+    },
+    "oracle": {
+      "old_assess_sha256": "9f9686203dfd0642fe81c8d27b1b6ac167eef9fd777f80c7cbe44ae42a9d8b5b",
+      "field_diffs": [],
+      "legacy_statistics_and_verdicts_identical": true
+    }
+  }
 }

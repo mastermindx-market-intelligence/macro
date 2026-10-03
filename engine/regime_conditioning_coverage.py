@@ -8,7 +8,8 @@ WHY THIS EXISTS
 `data/signal_archive/track_record.parquet` carries six candidate regime axes stamped on each
 signal (`regime_at_entry`, `quad_hard_label`, `vol_regime`, `fused_risk_label`,
 `rate_pressure`, `risk_radar_state`). Five of the six were added by the W0-stageB vector
-stamping and are therefore present on only the newest rows. As of the 2026-08 audit:
+stamping and are therefore present on only the newest rows. Historical 2026-08 audit
+snapshot (kept here for context — not refreshed by this revision):
 
     regime_at_entry   100.0% coverage, 1962-2026, 3 states   <- estimable
     quad_hard_label     0.4% coverage, 2026-07 only, 2 states
@@ -17,16 +18,24 @@ stamping and are therefore present on only the newest rows. As of the 2026-08 au
     fused_risk_label    0.4% coverage, 2026-07 only, 4 states
     risk_radar_state    0.4% coverage, 2026-07 only, 2 states
 
+See ``research/macro_regime_intelligence/research_readiness_20261002.json`` for the
+current measurable picture; the snapshot above is a 2026-08 reference, not a
+live reading.
+
 An axis observed in ONE state cannot support a conditional statement: E[outcome | regime]
 is undefined off the observed cell, and a table built on it reads as a comparison while
 being a constant. This is the trap the meter exists to make visible — a future study can
 otherwise compute a confident-looking 6x4 reliability grid from 235 rows in a single month
 and nothing in the stack would object.
 
-THE HONEST UNIT IS MONTHS, NOT ROWS. A board ledger with 2,282 rows across 18 trading days
-carries ~18 independent observations, not 2,282: same-day rows share the same market. Every
-count this module reports is a DISTINCT-MONTH count alongside the raw row count, and the
-gate binds on months.
+THE HONEST UNIT IS MONTHS, NOT ROWS — but a distinct-month count does NOT prove
+independence. A board ledger with 2,282 rows across 18 trading days carries ~18
+independent observations, not 2,282: same-day rows share the same market. Every count
+this module reports is a DISTINCT-MONTH count alongside the raw row count, the gate
+binds on months, and that gate is a row-pseudoreplication cap, not a statement about
+whether the months themselves are independent. Months derive from the signal ``date``,
+never from a vector's ``as-of`` date, so a vector stamped on the last day of one month
+contributes to the next month's count.
 
 GATE THRESHOLDS (frozen; changing them is a v2, not an edit)
 ------------------------------------------------------------
@@ -46,7 +55,10 @@ VERDICTS
 
 Consumers must treat anything other than "estimable" as a hard NO on regime-conditional
 claims for that axis. The meter never returns a reliability number and never ranks axes by
-outcome — it reports only what the sample can support.
+outcome — it reports only what the sample can support. A date-level repetition of a
+US-context axis (e.g. a vector whose ``as-of`` lags the signal ``date`` by 0-3 days) does
+not by itself establish cross-date independence; the verdict binds on months, not on the
+absence of same-day repeats.
 
 Reference: reports/regime-reliability-phase0.md (the measured null this meter generalizes).
 """

@@ -59,6 +59,18 @@ combinations; no such cell spans more than two distinct months. Those are observ
 combinations, not 19 independent regimes. The per-stock trend axis has multiple
 states on 8,336 common signal dates, which is consistent with its per-security
 scope and inconsistent with treating it as one global market label per date.
+The receipt's own within-window counters contradict that picture in a way the
+per-security reading does not explain: `fused_risk_label` carries more than one
+state on 3 stamped dates, and `risk_radar_state` carries more than one state on
+4 stamped dates, both over a stamping window of only 40 distinct stamped dates.
+These are date-level repetitions of a US-context axis, so the within-window
+multi-state count does not by itself prove independence across dates. The
+counter-observation traces to the US-context vector's `vector_asof` lag of
+0-3 days behind the signal `date`: across the 583 stamped rows, 6 rows carry a
+`vector_asof` whose calendar month differs from the signal `date`'s calendar
+month. Distinct-month counts throughout this report derive from the signal
+`date`, never from the vector's as-of date, so a vector stamped on the last day
+of one month still contributes to the next month's count.
 
 Complete counts, state cells, source identity and scope-grouped output are in
 `research_readiness_20261002.json`. That receipt compares the original and amended
@@ -89,6 +101,26 @@ their existing custody and release paths, not duplicated here. #8257 continues t
 current conversational context; #7441 already owns the natural/coached answer
 benchmark. No evaluator or chronology owner is replaced by this change.
 
+## Scope of the axis-scope claim
+
+The new `axis_scope` field reaches `engine.regime_conditioning_coverage.format_report`
+readers only. The change does not propagate the scope into either of the two
+existing regime consumers:
+
+- `engine/seasonality/regime.py:110` still lists `regime_at_entry` under
+  `"market"` in the `AUTHORIZED_AXES` allow-list. A research-readiness report
+  that calls `regime_at_entry` "security_price_trend" therefore disagrees with
+  the seasonality authorisation table on the same column.
+- `scripts/regime_reliability_phase0.py:135-138` re-emits the per-axis result
+  with `coverage / n_states / min_state_months / verdict / span` only; the
+  `axis_scope` field is dropped on the way out and does not appear in the
+  phase-0 owner record.
+
+Both are open follow-ups for the existing owners; neither was modified by
+this PR. Downstream readers of `format_report` see the new scope; the
+seasonality and phase-0 reliability pipelines continue to operate on their
+pre-existing, pre-scope axis naming.
+
 The old #7015 Studio review carrier was inspected at its exact retained result
 paths during this continuation: neither `review.exit` nor `result.md` was present,
 and no matching command line was found. This does not establish that the old
@@ -97,10 +129,12 @@ source/release recovery stays with that original operation.
 
 ## Verification and release boundary
 
-Thirteen new tests failed against the old implementation. The amended existing
-coverage suite passes 29 tests; that suite plus the track-record producer suite
-passes 95 tests. Four host temporary-cleanup warnings remain; no guard was disabled.
-The previously grandfathered coverage suite is now explicitly run by the existing
+Of the 13 tests added against the amended module, twelve fail against the old
+engine and the thirteenth asserts the new CI-ownership surface and fails only
+against the pre-amendment CI files. The amended existing coverage suite passes
+29 tests; that suite plus the track-record producer suite passes 95 tests. Four
+host temporary-cleanup warnings remain; no guard was disabled. The previously
+grandfathered coverage suite is now explicitly run by the existing
 `unrun-scoring-engine` code job; exactly one baseline entry was removed. No new
 job, workflow, runner, gate or exception was added.
 
