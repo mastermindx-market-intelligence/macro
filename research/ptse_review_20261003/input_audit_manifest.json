@@ -1,0 +1,25 @@
+{
+  "kind": "document_structure_audit_not_market_experiment",
+  "inputs": [
+    {
+      "file": "Pasted text(5)(1).txt",
+      "bytes": 36904,
+      "sha256": "db3b06b281cc5f07594073bfdac6cc7a9296aeecc9c18feb1c45d7074e323856",
+      "physical_lines": 1157,
+      "words": 5038,
+      "file_citation_tokens": 0,
+      "web_citation_tokens": 0,
+      "literal_http_urls": 0
+    },
+    {
+      "file": "deep-research-report (1).md",
+      "bytes": 65437,
+      "sha256": "52270fa085c1680f52bae5ea8c7b0382d26d60cf7d03f54ad12c873463171a1f",
+      "physical_lines": 656,
+      "words": 8080,
+      "file_citation_tokens": 104,
+      "web_citation_tokens": 28,
+      "literal_http_urls": 0
+    }
+  ]
+}
