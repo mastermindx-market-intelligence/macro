@@ -1,12 +1,12 @@
 """The regime outlook verdict mapping is consistent, pinned and equal to its contract.
 
-``config/regime_outlook_mapping_v1.json`` is an authored display-research
+``config/regime_outlook_mapping_v2.json`` is an authored display-research
 vocabulary (never tested against outcomes; no rank, gate or forecast). These
 tests keep three promises about it:
 
 * it obeys its own rules (``lint_mapping``), and each rule is shown to bite;
 * its reading table is pinned by hash, so a silent edit cannot keep the name
-  ``VERDICT_MAPPING_V1``;
+  ``VERDICT_MAPPING_V2``;
 * it says exactly what the contract's condition tables say.
 """
 
@@ -30,7 +30,7 @@ CONTRACT = REPO / "research" / "macro_regime_intelligence" / "STATE_PATH_AND_SCI
 # A change to artifacts, fields, paths, families or retired ids is a new
 # mapping version: add `regime_outlook_mapping_v2.json` beside this one,
 # never re-pin this hash.
-READING_TABLE_SHA256 = "966a8595e1c719618740d8af8502086d4da64876f6aab18d8ad2302903fa6196"
+READING_TABLE_SHA256 = "588f55df2e48edb3cc1c22459c51d218d039f311fe3e6ddea424d1687887181e"
 
 PATH_IDS = (
     "orderly_disinflation",
@@ -68,7 +68,7 @@ def _field(mapping: dict, field_id: str) -> dict:
 
 
 def test_mapping_names_its_version_tier_and_contract(mapping: dict) -> None:
-    assert mapping["mapping_version"] == rco.MAPPING_VERSION == "VERDICT_MAPPING_V1"
+    assert mapping["mapping_version"] == rco.MAPPING_VERSION == "VERDICT_MAPPING_V2"
     assert mapping["tier"] == "display_research"
     assert (REPO / mapping["contract"]) == CONTRACT
     assert CONTRACT.is_file()
@@ -107,8 +107,8 @@ def test_file_hash_is_the_hash_of_the_bytes_on_disk() -> None:
 
 def test_load_refuses_a_file_naming_another_version(tmp_path: Path) -> None:
     other = tmp_path / "mapping.json"
-    other.write_text('{"mapping_version": "VERDICT_MAPPING_V2"}', encoding="utf-8")
-    with pytest.raises(ValueError, match="VERDICT_MAPPING_V2"):
+    other.write_text('{"mapping_version": "VERDICT_MAPPING_V1"}', encoding="utf-8")
+    with pytest.raises(ValueError, match="VERDICT_MAPPING_V1"):
         rco.load_mapping(other)
 
 
