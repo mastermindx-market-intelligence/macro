@@ -261,6 +261,11 @@ def assert_published_spec_hashes() -> dict[str, str]:
 # the oracle — the SAME construction the live path will run
 # ---------------------------------------------------------------------------
 
+# Fast stoch agrees with canonical to ~1e-12; solver margins use strict comparisons.
+# Re-answer canonically when the fast K is within this band of OVERSOLD or of D so
+# the sign matches the canonical oracle at decision boundaries.
+ORACLE_TIE_BAND = 1e-9
+
 @dataclass(frozen=True, slots=True)
 class OracleFrame:
     """One name's frozen substrate, ready to be probed at a candidate price.
@@ -273,7 +278,9 @@ class OracleFrame:
 
     The fast path (``append_state``) answers "K and D if the next close were P"
     from state frozen at the last confirmed bar.  It agrees with the canonical path
-    within 1e-9 and the inversion proof re-checks it against the canonical oracle.
+    to about 1e-12 for a finite price; inside ORACLE_TIE_BAND of a decision
+    boundary the canonical path answers, so every strict comparison the solver makes
+    has the canonical sign.
     """
 
     ticker: str
@@ -291,9 +298,15 @@ class OracleFrame:
         return ic.last_finite(k_series), ic.last_finite(d_series)
 
     def kd(self, price: float) -> tuple[float | None, float | None]:
-        if self.append_state is not None:
-            return ic.stoch_rsi_kd_appended(self.append_state, float(price))
-        return self.kd_canonical(price)
+        if self.append_state is None:
+            return self.kd_canonical(price)
+        k, d = ic.stoch_rsi_kd_appended(self.append_state, float(price))
+        if k is not None and (
+            abs(float(k) - float(ic.OVERSOLD)) <= ORACLE_TIE_BAND
+            or (d is not None and abs(float(k) - float(d)) <= ORACLE_TIE_BAND)
+        ):
+            return self.kd_canonical(price)
+        return k, d
 
 
 def oracle_frame(
