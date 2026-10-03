@@ -1272,13 +1272,13 @@ def _beat_from(health: Mapping[str, Any], *, now: datetime,
 
 def _loaded_quote_count(quotes: Mapping[str, Any] | None,
                         tickers: Sequence[str]) -> int:
-    """How many probe tickers have an entry in the quote book (presence only)."""
+    """How many probe tickers have a quote row (a mapping) in the quote book."""
     if not isinstance(quotes, Mapping):
         return 0
     book = quotes.get("quotes")
     if not isinstance(book, Mapping):
         return 0
-    return sum(1 for ticker in tickers if ticker in book)
+    return sum(1 for ticker in tickers if isinstance(book.get(ticker), Mapping))
 
 
 def _refusal_payload(*, state: str, reasons: Sequence[str], now: datetime,

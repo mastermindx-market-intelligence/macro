@@ -131,7 +131,7 @@ def _board_read(path: Path, *, source_id: str, board_label: str,
                 rank = first_key(row, _RANK_KEYS)
                 try:
                     rank = int(rank) if rank is not None else pos
-                except (TypeError, ValueError):
+                except (TypeError, ValueError, OverflowError):
                     rank = pos
                 value = finite_or_none(first_key(row, _VALUE_KEYS))
                 if isinstance(rank, float):

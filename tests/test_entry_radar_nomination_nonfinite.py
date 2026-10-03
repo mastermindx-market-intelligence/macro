@@ -11,8 +11,8 @@ import pytest
 from engine.entry_radar.contracts import Nomination, NominationError, ProducerRead
 from engine.entry_radar.nomination_bus import NominationBus
 from engine.entry_radar.producers.base import finite_or_none
-from engine.entry_radar.producers import read_flow_pulse, read_us_standouts
-from engine.entry_radar.spool import NominationSpool
+from engine.entry_radar.producers import read_flow_pulse, read_group_pulse, read_ipo_calendar, read_us_standouts
+from engine.entry_radar.spool import NominationSpool, tap_hot_tape_events
 from engine.entry_radar.universe import load_config
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -89,9 +89,90 @@ def test_nomination_refuses_non_finite_source_value():
             _nomination(source_value=bad)
 
 
+def test_nomination_refuses_bool_source_value():
+    with pytest.raises(NominationError, match="source_value"):
+        _nomination(source_value=True)
+
+
+def test_nomination_accepts_numpy_scalars():
+    import numpy as np
+
+    _nomination(source_value=np.float32(1.5))
+    _nomination(source_value=np.int64(3))
+
+
+def test_nomination_refuses_string_source_value():
+    with pytest.raises(NominationError, match="source_value"):
+        _nomination(source_value="1.5")
+
+
 def test_nomination_refuses_non_finite_float_rank():
     with pytest.raises(NominationError, match="source_rank"):
         _nomination(source_rank=float("nan"))
+
+
+def test_hot_tape_event_with_nan_change_keeps_the_nomination():
+    events = [
+        {"ticker": "AAA", "kind": "surge", "change_pct": float("nan")},
+        {"ticker": "BBB", "kind": "surge", "change_pct": 2.5},
+    ]
+    noms = tap_hot_tape_events(events, source_asof=NOW, now=NOW)
+    assert len(noms) == 2
+    by_ticker = {n.ticker: n for n in noms}
+    assert by_ticker["AAA"].source_value is None
+    assert by_ticker["BBB"].source_value == 2.5
+
+
+def test_board_row_with_infinite_rank_keeps_the_nomination(tmp_path):
+    doc = _standouts_doc()
+    doc["buy"][0]["score_rank"] = float("inf")
+    path = tmp_path / "us_standouts.json"
+    path.write_text(json.dumps(doc, allow_nan=True), encoding="utf-8")
+    read = read_us_standouts(path, now=NOW, cfg=_cfg())
+    assert len(read.nominations) == 1
+    nom = read.nominations[0]
+    assert nom.ticker == "NVDA"
+    assert isinstance(nom.source_rank, int)
+    assert not isinstance(nom.source_rank, float)
+
+
+def test_basket_block_with_nan_ret_keeps_the_nomination(tmp_path):
+    path = tmp_path / "pulse.json"
+    path.write_text(
+        json.dumps(
+            {
+                "semis": {
+                    "as_of": ASOF,
+                    "direction": {
+                        "strongest": {"ticker": "ZZTOP", "ret": float("nan")},
+                    },
+                }
+            },
+            allow_nan=True,
+        ),
+        encoding="utf-8",
+    )
+    read = read_group_pulse(path, now=NOW, cfg=_cfg())
+    assert len(read.nominations) == 1
+    assert read.nominations[0].source_value is None
+
+
+def test_ipo_row_with_nan_value_keeps_the_nomination():
+    result = read_ipo_calendar(
+        rows=[
+            {
+                "ticker": "NEWCO",
+                "status": "priced",
+                "priced_date": "2026-08-10",
+                "offer_value_usd": float("nan"),
+                "as_of": ASOF,
+            }
+        ],
+        now=NOW,
+        cfg=_cfg(),
+    )
+    assert len(result.read.nominations) == 1
+    assert result.read.nominations[0].source_value is None
 
 
 def test_board_row_with_nan_value_keeps_the_nomination(tmp_path):

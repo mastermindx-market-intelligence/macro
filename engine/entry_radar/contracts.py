@@ -42,6 +42,8 @@ that justifies it existed.  That is the "nomination postdate test" row of the
 """
 from __future__ import annotations
 
+import numbers
+
 import logging
 import math
 import re
@@ -256,7 +258,7 @@ class Nomination:
 
         if self.source_value is not None:
             if isinstance(self.source_value, bool) or not isinstance(
-                self.source_value, (int, float)
+                self.source_value, numbers.Real
             ):
                 raise NominationError(
                     f"nomination for {self.ticker} carries a non-finite or non-numeric "

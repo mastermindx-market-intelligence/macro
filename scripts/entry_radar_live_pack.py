@@ -138,10 +138,22 @@ def _rss_fmt() -> str:
     return f"{v:.1f}" if v is not None else "na"
 
 
+def _rss_label() -> str:
+    try:
+        with open("/proc/self/statm", encoding="ascii") as fh:
+            parts = fh.read().split()
+        if len(parts) >= 2:
+            return "rss_mb"
+    except Exception:  # noqa: BLE001
+        pass
+    return "peak_rss_mb"
+
+
 @contextlib.contextmanager
 def _stage(name: str):
     rss = _rss_fmt()
-    print(f"entry-radar-pack stage={name} status=begin rss_mb={rss}", flush=True)
+    label = _rss_label()
+    print(f"entry-radar-pack stage={name} status=begin {label}={rss}", flush=True)
     t0 = time.monotonic()
     try:
         yield
@@ -150,7 +162,7 @@ def _stage(name: str):
         rss = _rss_fmt()
         print(
             f"entry-radar-pack stage={name} status=failed "
-            f"elapsed_s={elapsed:.3f} rss_mb={rss}",
+            f"elapsed_s={elapsed:.3f} {_rss_label()}={rss}",
             flush=True,
         )
         raise
@@ -159,7 +171,7 @@ def _stage(name: str):
         rss = _rss_fmt()
         print(
             f"entry-radar-pack stage={name} status=done "
-            f"elapsed_s={elapsed:.3f} rss_mb={rss}",
+            f"elapsed_s={elapsed:.3f} {_rss_label()}={rss}",
             flush=True,
         )
 
@@ -168,7 +180,7 @@ def _print_slice_progress(done: int, total: int, t0: float) -> None:
     elapsed = time.monotonic() - t0
     print(
         f"entry-radar-pack stage=slice_lanes progress={done}/{total} "
-        f"elapsed_s={elapsed:.3f} rss_mb={_rss_fmt()}",
+        f"elapsed_s={elapsed:.3f} {_rss_label()}={_rss_fmt()}",
         flush=True,
     )
 
@@ -467,7 +479,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
         elapsed = time.monotonic() - t_main
         print(
             f"entry-radar-pack stage=total status=refused "
-            f"elapsed_s={elapsed:.3f} rss_mb={_rss_fmt()}",
+            f"elapsed_s={elapsed:.3f} {_rss_label()}={_rss_fmt()}",
             flush=True,
         )
         return 5
@@ -520,7 +532,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
         elapsed = time.monotonic() - t_main
         print(
             f"entry-radar-pack stage=total status=done "
-            f"elapsed_s={elapsed:.3f} rss_mb={_rss_fmt()}",
+            f"elapsed_s={elapsed:.3f} {_rss_label()}={_rss_fmt()}",
             flush=True,
         )
         return 0
@@ -573,7 +585,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
     elapsed = time.monotonic() - t_main
     print(
         f"entry-radar-pack stage=total status=done "
-        f"elapsed_s={elapsed:.3f} rss_mb={_rss_fmt()}",
+        f"elapsed_s={elapsed:.3f} {_rss_label()}={_rss_fmt()}",
         flush=True,
     )
     return 0
