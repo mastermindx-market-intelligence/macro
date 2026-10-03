@@ -6,6 +6,19 @@ Assignment: [Macro #8309](https://github.com/mastermindx-market-intelligence/mac
 
 Existing owner: `WS:ALPHA-INTELLIGENCE-INTEGRATION`, K3E Expectation Market Dynamics / SRC-A1.
 
+## Subsequent native acceptance update
+
+After the initial R0 review, the parent completed the native source assessment in
+`SRC_A1_POST_REPAIR_ACCEPTANCE_2026-10-03.md`. It adds all-field UVV/V and selected-session
+retention proof, 34 passing incumbent cases, 11 independently reviewed companion cases,
+and the full independently checked `SRC_A1_OPERATING_RECEIPT_2026-10-03.json`.
+That separate assessment supports the proposed SRC-A1 `PROVEN_LIVE` transition in PR #8312;
+EXP-1 remains `NOT_BUILT` pending source publication and a fresh collision census.
+
+The initial R0 evidence below remains valid. Its pending native-acceptance items were
+subsequently discharged by the new receipt. The R0 audit's own diagnostic-only authority
+and its source/test/report hashes are unchanged.
+
 ## Decision and scope
 
 The stateless source-qualification diagnostic is implemented and independently reviewed. It was executed on the two exact existing SRC-A1 Git blobs. It detects known historical defects, preserves unknowns and excludes unsupported comparisons without rewriting source truth. This is implementation and source evidence; it is not financial evaluation, SRC-A1 promotion, live installation or EXP-1 acceptance.
@@ -152,7 +165,7 @@ Run-level success is insufficient attribution. Conversely, an unrelated later jo
 
 The generic GitHub fetch adapter did not expose Actions run listing. Supported read-only GitHub CLI listing supplied known run IDs; dedicated job reads and filtered CLI job metadata supplied these receipts. No workflow was dispatched, rerun, cancelled or modified for evidence.
 
-## Remaining acceptance and continuation
+## Initial R0 continuation — superseded by the acceptance supplement
 
 1. Complete the existing SRC-A1 owner acceptance assessment using the qualified post-repair scheduled cohorts, complete source/attempt reconciliation and the ten existing mutation gates. Scheduled KBH now supplies the anchored rollover witness; scheduled JBGS supplies partial-after-good preservation. A complete native acceptance record remains required.
 2. Record native SRC-A1 acceptance only when that evidence warrants it; until then the accepted ledger remains `BUILT_NOT_PROVEN`. Do not preserve the obsolete assertion that no re-observations have occurred.

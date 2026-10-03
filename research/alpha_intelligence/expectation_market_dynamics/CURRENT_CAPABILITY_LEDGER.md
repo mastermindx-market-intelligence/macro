@@ -12,13 +12,31 @@ August 26 pre-repair C2 cohort; later cohorts do not violate that criterion.
 Concrete source-body witnesses now exercise all five formerly unexercised
 behaviors, with native producer/acceptance qualifications in the new receipt.
 
-**Accepted capability states remain unchanged:** SRC-A1 is `BUILT_NOT_PROVEN`,
-EXP-1 and downstream phases remain gated. This evidence update does not itself
-promote a collector, install code or admit a predictive experiment. Resolve the
-actual source-component receipts under the existing contract; neither a
-run-level success badge nor an unrelated engine-tail failure replaces that
-assessment. The August record below is retained as dated history, not a claim
-that no re-observations have occurred since then.
+**Subsequent native acceptance: SRC-A1 is `PROVEN_LIVE` within its frozen
+prospective physical source contract**, as assessed in
+`SRC_A1_POST_REPAIR_ACCEPTANCE_2026-10-03.md`. This proposed canonical
+transition is carried by PR #8312. The complete operating receipt, all ten
+mutation gates, independently reviewed companion tests and actual scheduled
+source witnesses support it. The current collector is unchanged (Git blob
+`8f1d3d822543fd11e18b5a78b957259d43e4c164`).
+
+| Current capability | State and next gate |
+|---|---|
+| SRC-A1 prospective captured source | `PROVEN_LIVE` for the accepted writer and qualified later cohorts; the 27 historical defects stay retained and excluded |
+| EXP-1 expectation surface | `NOT_BUILT`; source prerequisite satisfied, fresh collision census and a separate bounded consumer PR still required |
+| MKT-1 / CPL-1 / PHASE-1 | `NOT_BUILT`; existing sequential prerequisites remain |
+| EVAL-0 / financial authority | Frozen and unchanged; no new trial, prediction, rank, sizing or execution authority |
+
+No collector code, native data, schedule or installation changed in this wave.
+Acceptance is not public-history certification, rights clearance, current
+freshness or economic eligibility. The old sentence below claiming an external
+row could not carry a deterministic session hash is superseded: such a hash is
+a consistency binding, not an unforgeable attestation. Component source and Git
+receipts remain necessary.
+
+The August record below is retained as **dated history**. Its FAIL remains true
+for C2, while its then-current unexercised-state and next-action claims are
+superseded by the October acceptance above.
 
 Date pinned: 2026-08-26
 Macro `origin/main` observed at pin time: `fe84261a206e`
@@ -32,7 +50,7 @@ Skillpack `INDEX.md` and skills loaded from that same protected SHA.
 Supersedes the 2026-08-25 revision, which predated the second natural
 collection and its audit.
 
-## Program state
+## Historical program state (2026-08-26)
 
 | capability | current state | evidence / note |
 |---|---|---|

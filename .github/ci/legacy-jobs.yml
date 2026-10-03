@@ -4625,6 +4625,8 @@ jobs:
       - "tests/test_check_intelligence_registry.py"
       - "tests/test_intelligence_registry.py"
       - "tests/test_output_health.py"
+      # SRC-A1 acceptance tests import the collector already owned above.
+      - "tests/test_equity_revisions_src_a1_acceptance.py"
       # sparse-guard closure widening 2026-09-29 (contract-delta): the two entry guards
       # this job's closure reaches now pin `scripts/sparse_guard.py`, which imports
       # `scripts/worktree_sparse.py`. `scope: exclusive` means this list REPLACES
@@ -4663,6 +4665,8 @@ jobs:
       # dependency beyond the pytest/pyyaml line already installed above.
       - name: "output health contract (Eval OS T4)"
         run: python -m pytest tests/test_output_health.py -q
+      - name: "SRC-A1 native lineage, failure preservation and legacy compatibility"
+        run: python -m pytest --noconftest tests/test_equity_revisions_src_a1_acceptance.py -q
 
   neural-web-core:
     if: ${{ false }}

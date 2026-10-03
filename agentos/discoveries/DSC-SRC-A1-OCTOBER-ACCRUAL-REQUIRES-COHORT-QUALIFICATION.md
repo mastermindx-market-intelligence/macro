@@ -12,8 +12,8 @@ falsifier: >
   --git-attempts-path data/revisions/expectation_attempts.parquet and compare the
   reported input SHA-256 values, row counts and integrity reasons.
 so_what: >
-  Resume the existing K3E SRC-A1 owner acceptance audit using qualified
-  post-repair cohorts and actual producer receipts. Do not rebuild a new
+  Use the completed existing K3E SRC-A1 owner acceptance receipt, which binds
+  qualified post-repair cohorts, all mutation gates and actual producer receipts. Do not rebuild a new
   Information-to-Price owner, treat long-form rows as independent episodes,
   rewrite historical defects, infer absent metadata, or advance EXP-1 from
   the raw row count. The August claim that no re-observations exist is stale.
@@ -55,7 +55,9 @@ acceptance evidence. A session hash is a consistency binding, not independent
 attestation; run-level success and unrelated job failure are both inadequate
 substitutes for examining the actual source component.
 
-This evidence updates source knowledge without promoting the collector.
+This discovery alone does not promote the collector. The subsequent complete
+owner assessment in `SRC_A1_POST_REPAIR_ACCEPTANCE_2026-10-03.md` supports the
+bounded `PROVEN_LIVE` transition, proposed through PR #8312.
 K3E remains the existing derived semantics owner; MAS-119 retains common
 expectation-baseline federation and existing DRL/residual owners retain
 residual computation. No predictive or portfolio authority is created.
