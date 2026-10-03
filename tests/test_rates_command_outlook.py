@@ -1072,3 +1072,78 @@ def test_contract_field_table_equals_the_mapping(mapping: dict) -> None:
     assert len(rows) == 21
     expected = [{k: f[k] for k in ("artifact", "path", "tokens", "middle_tokens", "verdict_class", "evidence_family_id")} for f in mapping["fields"]]
     assert rows == expected
+
+
+# --------------------------------------------------------------------------
+# R3 — a null token needs a guard that reads null
+# --------------------------------------------------------------------------
+
+
+def _with_null_appended_to_tokens(m: dict, field_id: str) -> dict:
+    out = copy.deepcopy(m)
+    for f in out["fields"]:
+        if f["field_id"] == field_id:
+            assert None not in f["tokens"], field_id
+            f["tokens"] = list(f["tokens"]) + [None]
+            break
+    return out
+
+
+def test_lint_flags_a_null_token_under_a_non_null_reading_guard(mapping: dict) -> None:
+    null_field = "T.breakeven_decomp.trend"  # guard kind owner_missing_token
+    assert rco._guard_kind(_field(mapping, null_field)) == "owner_missing_token"
+    edited = _with_null_appended_to_tokens(mapping, null_field)
+    expected = f"{null_field}: null is listed as a token but guard kind owner_missing_token does not read null"
+    assert rco.lint_mapping(edited) == [expected]
+
+
+def test_lint_remains_clean_for_the_real_mapping(mapping: dict) -> None:
+    assert rco.lint_mapping(mapping) == []
+
+
+# --------------------------------------------------------------------------
+# R4 — guard path values must be lists; guard ``needs`` must be a list of lists
+# --------------------------------------------------------------------------
+
+
+def _with_string_path(m: dict) -> dict:
+    out = copy.deepcopy(m)
+    for f in out["fields"]:
+        if rco._guard_kind(f) == "credit_stress_leg":
+            f["guard"]["hy_oas_z_path"] = "hy_oas_z"
+            return out
+    raise AssertionError("no credit_stress_leg field in mapping")
+
+
+def _with_string_needs_entry(m: dict) -> dict:
+    out = copy.deepcopy(m)
+    for f in out["fields"]:
+        if rco._guard_kind(f) == "default_token_needs":
+            needs = f["guard"]["needs"]
+            assert needs, f
+            f["guard"]["needs"] = ["not_a_list_entry"] + list(needs)
+            return out
+    raise AssertionError("no default_token_needs field in mapping")
+
+
+def test_lint_flags_a_string_guard_path_without_routing(mapping: dict) -> None:
+    edited = _with_string_path(mapping)
+    field_id = next(
+        f["field_id"] for f in edited["fields"]
+        if isinstance(f.get("guard"), dict) and f["guard"].get("hy_oas_z_path") == "hy_oas_z"
+    )
+    expected = f"{field_id}: guard hy_oas_z_path is not a path list"
+    assert rco.lint_mapping(edited) == [expected]
+
+
+def test_lint_flags_a_needs_entry_that_is_not_a_path_list(mapping: dict) -> None:
+    edited = _with_string_needs_entry(mapping)
+    field_id = next(
+        f["field_id"] for f in edited["fields"]
+        if isinstance(f.get("guard"), dict)
+        and isinstance(f["guard"].get("needs"), list)
+        and f["guard"]["needs"]
+        and not isinstance(f["guard"]["needs"][0], list)
+    )
+    expected = f"{field_id}: guard needs is not a path list"
+    assert rco.lint_mapping(edited) == [expected]

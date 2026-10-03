@@ -434,3 +434,86 @@ def test_guard_fixed_words_live_in_the_closed_admission_and_clock_sets():
         "stale",
     }
     assert issues | fail_status == expected
+
+
+# --- R1 — listed-null tokens on default-guarded rows are refused as "missing"
+
+
+@pytest.mark.parametrize(
+    "field_id",
+    (
+        "T.state.inflation.direction",
+        "T.state.inflation.regime",
+        "T.state.expectations.anchoring",
+        "T.state.rates.direction",
+        "T.state.rates.regime",
+    ),
+)
+def test_a_listed_null_on_a_default_guarded_row_is_refused_as_missing(field_id):
+    """A null token under a default_token_needs guard is refused, not admitted.
+
+    The five fields that list ``None`` among their owner tokens carry guard
+    kind ``default_token_needs``. The reader must refuse a None as
+    ``{"admitted": False, "token": None, "issue": "missing"}`` instead of
+    treating it as an admitted default.
+    """
+    base = copy.deepcopy(GOLDEN["base"])
+    path = next(f["path"] for f in MAPPING["fields"] if f["field_id"] == field_id)
+    *parents, last = path
+    node = base["T"]
+    for segment in parents:
+        node = node[segment]
+    node[last] = None
+
+    assert rco.admit_fields(MAPPING, base)[field_id] == {
+        "admitted": False,
+        "token": None,
+        "issue": "missing",
+    }
+
+
+# --- R2 — a malformed guard reads as malformed; every other field is unchanged
+
+
+def _with_field_guard_removed(m: dict, field_id: str) -> dict:
+    out = copy.deepcopy(m)
+    for f in out["fields"]:
+        if f["field_id"] == field_id:
+            del f["guard"]
+            return out
+    raise AssertionError(f"unknown field {field_id!r}")
+
+
+def _with_truncated_credit_stress_leg_guard(m: dict, field_id: str) -> dict:
+    out = copy.deepcopy(m)
+    for f in out["fields"]:
+        if f["field_id"] == field_id:
+            f["guard"] = {"kind": "credit_stress_leg"}
+            return out
+    raise AssertionError(f"unknown field {field_id!r}")
+
+
+def test_a_field_with_a_missing_or_truncated_guard_reads_as_malformed():
+    credit_stress_field = next(
+        f["field_id"] for f in MAPPING["fields"]
+        if rco._guard_kind(f) == "credit_stress_leg"
+    )
+
+    no_guard = _with_field_guard_removed(MAPPING, credit_stress_field)
+    truncated = _with_truncated_credit_stress_leg_guard(MAPPING, credit_stress_field)
+
+    base_admissions = rco.admit_fields(MAPPING, GOLDEN["base"])
+    expected_missing_guard = {"admitted": False, "token": None, "issue": "malformed"}
+    expected_truncated_guard = {"admitted": False, "token": None, "issue": "malformed"}
+
+    no_guard_admissions = rco.admit_fields(no_guard, GOLDEN["base"])
+    truncated_admissions = rco.admit_fields(truncated, GOLDEN["base"])
+
+    assert no_guard_admissions[credit_stress_field] == expected_missing_guard
+    assert truncated_admissions[credit_stress_field] == expected_truncated_guard
+
+    other_fields = [f for f in MAPPING["fields"] if f["field_id"] != credit_stress_field]
+    for f in other_fields:
+        fid = f["field_id"]
+        assert no_guard_admissions[fid] == base_admissions[fid], fid
+        assert truncated_admissions[fid] == base_admissions[fid], fid
