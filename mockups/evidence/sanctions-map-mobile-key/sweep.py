@@ -115,7 +115,14 @@ def _capture_grid_point(browser, *, theme, width, opacity, source_commit, page_s
         httpd, port = _serve(scratch)
         try:
             base = f"http://127.0.0.1:{port}"
-            cells = _capture_one(browser, base, locale="en", themes=(theme,))
+            # R5: crops go to the sweep's OWN scratch (deleted below) so a grid
+            # point can never overwrite cells/{theme}-en-390-*.png, and the grid
+            # point's block is the source-parity reference for this capture.
+            cells = _capture_one(
+                browser, base, locale="en", themes=(theme,),
+                mobile_block=_cap._build_mobile(width, od, ol),
+                cells_dir=scratch / "sweep_cells",
+            )
             cell = cells[f"{theme}-en"]
         finally:
             httpd.shutdown()
@@ -129,7 +136,14 @@ def _capture_grid_point(browser, *, theme, width, opacity, source_commit, page_s
         "uk_box_blue_px": cell["uk_box_blue_px"],
         "mark_mean_chroma": cell["mark_mean_chroma"],
         "rung3_mean_chroma": cell["rung3_mean_chroma"],
-        "key_mark_parity": cell["key_mark_parity"],
+        # S2 receipt semantics (sweep.json, R2): a SWEEP row's `key_mark_parity`
+        # is RENDERED-width parity — getComputedStyle() legend border vs SVG
+        # stroke — False for every W != 1 because Chromium rounds the HTML
+        # border to whole px (README §Sweep). dom.json's same-named field is
+        # SOURCE parity. Recorded explicitly (R5) so a re-run reproduces the
+        # committed column; the source form rides alongside under its own key.
+        "key_mark_parity": cell["gbr_stroke_width"] == cell["legend_news_i_border_width"],
+        "key_mark_parity_source": cell["key_mark_parity"],
         "gbr_stroke_width": cell["gbr_stroke_width"],
         "gbr_stroke_dasharray": cell["gbr_stroke_dasharray"],
         "gbr_stroke_opacity": cell["gbr_stroke_opacity"],

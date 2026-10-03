@@ -239,7 +239,12 @@ def _crop_names(cell_key, theme, *, baseline):
     return f"{cell_key}-390-ukzoom.png", f"{cell_key}-390-legend.png"
 
 
-def _capture_one(browser, base, *, locale, themes=THEMES, mobile_block=None, baseline=False):
+def _capture_one(browser, base, *, locale, themes=THEMES, mobile_block=None, baseline=False,
+                 cells_dir=None):
+    """Capture one locale across `themes`; crops land in `cells_dir` (default
+    the committed CELLS_DIR). R5: sweep.py passes its own scratch directory so a
+    grid-point capture can never overwrite the committed final-rung crops —
+    the same collision class R4 closed for `--baseline` runs."""
     theme_results = {}
     for theme in themes:
         context = browser.new_context(
@@ -439,8 +444,10 @@ def _capture_one(browser, base, *, locale, themes=THEMES, mobile_block=None, bas
             digest_uk, w_uk, h_uk = _sha256_and_dims(png_uk)
             digest_leg, w_leg, h_leg = _sha256_and_dims(png_legend)
             uk_name, legend_name = _crop_names(cell_key, theme, baseline=baseline)
-            (CELLS_DIR / uk_name).write_bytes(png_uk)
-            (CELLS_DIR / legend_name).write_bytes(png_legend)
+            out_dir = Path(cells_dir) if cells_dir else CELLS_DIR
+            out_dir.mkdir(parents=True, exist_ok=True)
+            (out_dir / uk_name).write_bytes(png_uk)
+            (out_dir / legend_name).write_bytes(png_legend)
             theme_results[cell_key] = {
                 "applied_theme": info["applied_theme"],
                 "applied_locale": info["applied_locale"],
@@ -561,12 +568,28 @@ def main():
     dom["page_sha256"] = page_sha256
     dom["generated_at"] = captured_iso
     dom["capture_tool_module_sha256"] = capture_tool_sha
-    dom["o28_block"] = {
-        "width": args.width,
-        "dark_opacity": args.dark_opacity,
-        "light_opacity": args.light_opacity,
-        "baseline": args.baseline,
-    }
+    if args.baseline:
+        # R5: materialize(baseline=True) ignores (W, OD, OL) and renders
+        # _OLD_MOBILE — the dashed D6 rule. Record THAT block (parsed from
+        # the constant, never typed), not the argument defaults.
+        import re as _re
+        m_old = _re.search(r"stroke-width:([\d.]+);stroke-dasharray:([^}]+)\}", _OLD_MOBILE)
+        assert m_old, "_OLD_MOBILE no longer carries stroke-width/dasharray"
+        dom["o28_block"] = {
+            "width": m_old.group(1),
+            "dark_opacity": None,
+            "light_opacity": None,
+            "stroke_dasharray": m_old.group(2),
+            "baseline": True,
+            "block": "_OLD_MOBILE",
+        }
+    else:
+        dom["o28_block"] = {
+            "width": args.width,
+            "dark_opacity": args.dark_opacity,
+            "light_opacity": args.light_opacity,
+            "baseline": False,
+        }
     (OUT_DIR / output_name).write_text(
         json.dumps(dom, indent=2, ensure_ascii=False)
     )

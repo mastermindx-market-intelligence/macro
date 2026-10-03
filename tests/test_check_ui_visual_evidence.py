@@ -884,6 +884,11 @@ def test_sanctions_map_manifest_tool_sha_list_default_element_is_first():
     """MINOR-4: the real committed sanctions_map manifest must satisfy the
     attribution contract it documents. Two lawful forms:
 
+    NAME NOTE (O28 R5): the test name predates the STRING form. Against the
+    live manifest (since 2026-10-03) the STRING branch below is the one that
+    runs; the LIST branch stays as the contract for any future mixed-tool
+    receipt and is exercised by the throwaway-manifest cases.
+
     * LIST form (receipt of 2026-09-11 → 2026-10-02): element 0 of
       tool.module_sha256 is 97b44358... (the default tool every unstamped
       cell implicitly used), listed BEFORE 3301a5f9... (the tool sha only the
@@ -912,6 +917,10 @@ def test_sanctions_map_manifest_tool_sha_list_default_element_is_first():
     if isinstance(top_sha, str):
         assert len(top_sha) == 64 and set(top_sha) <= set("0123456789abcdef"), (
             f"sanctions_map manifest tool.module_sha256={top_sha!r} is not a sha256 hex digest")
+        assert top_sha == "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16", (
+            f"sanctions_map manifest tool.module_sha256={top_sha[:12]}... is not the 1.3.0 module "
+            "8d753e28... that made the 2026-10-03 full recapture (PR #8307) — a NEW full recapture "
+            "by a different module updates this pin together with the MANIFEST, never the checker")
         assert stamped <= {top_sha}, (
             f"sanctions_map manifest tool.module_sha256 is the single sha {top_sha[:12]}... but "
             f"cells carry other stamps {sorted(s[:12] for s in stamped - {top_sha})} — list every "
