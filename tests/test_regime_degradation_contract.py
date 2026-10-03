@@ -6,6 +6,7 @@ and target-row qualification so incidental keywords cannot satisfy the contract.
 """
 import copy
 import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -15,6 +16,7 @@ from tests.test_regime_native_degradation import (
     NOW, dimension_for, inputs_for, target_row, run_gateway_prompt,
     fixed_consumer_clock,
 )
+from tests.test_regime_context import sources as _full_sources
 
 
 def owner(inputs, name):
@@ -279,3 +281,147 @@ def test_false_flag_and_unknown_prose_controls_in_actual_paid_prompt(
     row = target_row(run_gateway_prompt(tmp_path, monkeypatch, inputs, streaming), name)
     assert '; degraded:' not in row and '; partial input' not in row
     assert 'UNTRUSTED' not in row
+
+
+# ---------------------------------------------------------------------------
+# PR8257c — render-context repair contract
+# K2 + K9. Authority/forecast_probability/schema/dimensions/six-statuses
+# remain unchanged; this block tightens how `render_context` spends it.
+# ---------------------------------------------------------------------------
+
+
+# Every dimension key the fixture's sources() makes available. options_cor3m is
+# deliberately absent from the chip list, so it is NOT in the rendered brief
+# and is excluded from the label-presence contract.
+_RENDER_LABEL_TOKENS = (
+    'real 10y', 'participation', 'realized dispersion',
+    'vix implied index vol', 'dspx implied dispersion', 'cor1m implied correlation',
+    'estimate revisions', 'liquidity', 'credit/conditions', 'style',
+    'macro model', 'model membership', 'tracked ai-hardware damage cohort',
+    'nominal 10y',
+)
+
+
+def _render_at(read_offset_days):
+    read_dt = datetime(2026, 10, 1, 23, 0, tzinfo=timezone.utc) + timedelta(days=read_offset_days)
+    ctx = rc.compose_context(_full_sources(), now=read_dt)
+    # No explicit char_budget: use the function default so the test pins
+    # the default that ships in render_context, not an ad-hoc override.
+    return ctx, rc.render_context(ctx)
+
+
+@pytest.mark.parametrize('read_offset_days', [0, 2, 5, 6])
+def test_K2_four_date_matrix_renders_every_available_axis(read_offset_days):
+    """K2: no valid axis is dropped by position at the four read dates.
+
+    The pre-repair code spent ~22 chars per row on `; N calendar days old`,
+    which forced nominal 10y / membership / leadership damage out of the
+    char_budget brief once read dates moved past T+1. Restructured age
+    disclosure must keep every available dimension's label visible at every
+    test date at the function's DEFAULT char_budget.
+    """
+    ctx, text = _render_at(read_offset_days)
+    lower = text.lower()
+    assert 'omitted from compact brief' not in lower, (
+        f'read_offset_days={read_offset_days} unexpectedly omitted rows: {text!r}'
+    )
+    missing_labels = [tok for tok in _RENDER_LABEL_TOKENS if tok not in lower]
+    assert not missing_labels, (
+        f'read_offset_days={read_offset_days} missing labels: {missing_labels!r}\n'
+        f'rendered:\n{text}'
+    )
+    # Every dimension that survives the populate filter must still appear as a
+    # rendered row. options_cor3n is intentionally absent from the fixture.
+    available_dims = [k for k, d in ctx['dimensions'].items()
+                      if d.get('values') and d.get('status') in ('available', 'partial', 'stale')]
+    assert len(available_dims) >= 12, available_dims
+    # Schema / authority / forecast surface stay frozen.
+    assert ctx['schema'] == 'market_packet.regime_context.v1'
+    assert set(ctx['authority'].values()) == {False}
+    assert len(ctx['dimensions']) == 15
+    assert {d['status'] for d in ctx['dimensions'].values()} <= {
+        'available', 'partial', 'stale', 'missing', 'future_dated', 'unknown_date'}
+
+
+def test_K2_forced_small_budget_drops_in_priority_order_with_disclosure():
+    """K2: when the budget forces omissions, they follow the named priority.
+
+    The most-droppable dimension MUST be the FIRST to leave the brief; the
+    omission disclosure MUST be retained so consumers know which axes the
+    paid character budget cut. Pop() order is the reverse of the rendered
+    list, so `omitted` reads most-recent-dropped first.
+    """
+    ctx = rc.compose_context(_full_sources(), now=NOW)
+    # Pick a budget tight enough to force at least the four most-droppable
+    # options rows out, with no room to spare for `macro`. The text shrinks
+    # by ~30 chars per dropped row, so start from a value the full brief
+    # cannot fit and step down until 3 rows have been evicted.
+    text_full = rc.render_context(ctx, char_budget=10000)
+    full_len = len(text_full)
+    budget = full_len - 140  # claim full minus 140 chars forces ≥3 drops
+    text = rc.render_context(ctx, char_budget=budget)
+    assert 'Omitted from compact brief' in text
+    omit_match = text.split('Omitted from compact brief: ', 1)[1].split('.', 1)[0]
+    omitted = [x.strip() for x in omit_match.split(',')]
+    # options_cor3m is absent from the fixture, so it never appears.
+    # Pop() removes the END of `kept` first, and `kept` is sorted with the
+    # most-droppable at the tail. So the dropped order (chronological) is the
+    # declared priority: cor1m first, dspx second, vix third. The disclosure
+    # reads most-recent-dropped first → the LAST dropped (`vix`, the least
+    # droppable of the three) appears first in the string.
+    assert len(omitted) >= 3, f'expected ≥3 drops, got: {omitted!r}'
+    assert omitted[:3] == ['options vix', 'options dspx', 'options cor1m'], (
+        f'omission disclosure out of declared priority order: {omitted!r}'
+    )
+    # Disclosure keeps the omitted list — the function never silently drops.
+    assert 'Omitted from compact brief:' in text
+    # Surviving rows include the declared LEAST-droppable keys.
+    assert 'Macro model' in text or 'macro model' in text.lower()
+
+
+def test_K2_stale_row_keeps_its_stale_marker_and_own_date():
+    """K2: a stale dimension keeps its stale marker and per-row as_of stamp."""
+    s = _full_sources()
+    # Mark options_dspx as stale. Its as_of is 2026-09-30 in the fixture.
+    s['options']['chips'][1]['freshness'] = 'stale'
+    ctx = rc.compose_context(s, now=NOW)
+    text = rc.render_context(ctx)
+    lower = text.lower()
+    # Stale marker is preserved on the specific row.
+    assert 'stale/last-known' in text
+    # And the date the stale measurement is anchored to is still named in
+    # the same row (per-row date visibility).
+    dspx_line = next(line for line in text.split('\n')
+                     if 'dspx implied dispersion' in line.lower())
+    assert '2026-09-30' in dspx_line and 'stale/last-known' in dspx_line
+    # The age header also lists the date once — same data, two surfaces.
+    assert '2026-09-30' in lower
+    # Status remains a member of the frozen six.
+    assert ctx['dimensions']['options_dspx']['status'] == 'stale'
+
+
+def test_K9_average_correlation_is_labeled_as_proxy_en():
+    """K9: dispersion's `average_correlation` is named a variance-ratio proxy.
+
+    `engine/dispersion.py` computes `avg_corr` as a clipped equal-weight /
+    mean-variance ratio, not a mean pairwise correlation. The label MUST
+    prevent consumers from treating it as a calibrated average.
+    """
+    ctx = rc.compose_context(_full_sources(), now=NOW)
+    text = rc.render_context(ctx)
+    lower = text.lower()
+    assert 'correlation proxy (variance ratio)' in lower
+    # The previous plain "mean correlation" wording is gone.
+    assert 'mean correlation' not in lower
+    # The numeric value still appears next to the proxy label.
+    assert '0.06' in text
+
+
+def test_K9_average_correlation_is_labeled_as_proxy_zh():
+    """K9 ZH: dispersion's `average_correlation` carries the proxy wording."""
+    ctx = rc.compose_context(_full_sources(), now=NOW)
+    text = rc.render_context(ctx, lang='zh')
+    assert '相关性代理（方差比）' in text
+    assert 'mean correlation' not in text.lower()
+    # Numeric value still rendered.
+    assert '0.06' in text
