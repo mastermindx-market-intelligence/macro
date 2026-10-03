@@ -46,7 +46,7 @@ def _write_rows(tmp_path, rows):
 
 def test_maturation_grades_calls(tmp_path, monkeypatch):
     _fake_prices(monkeypatch)
-    d0 = (date(2026, 6, 28) - timedelta(days=30)).isoformat()
+    d0 = (date(2026, 6, 28) - timedelta(days=40)).isoformat()
     rows = [
         # emerging with WINNER members → fwd>0 → HIT
         {"date": d0, "key": "e_hit", "name": "Ehit", "theme": "T", "score": 2.5, "lean": 1,
@@ -843,3 +843,45 @@ def test_industry_reference_persistence_maturity_extends_beyond_entry_horizon():
     row={'snapshot_id':'example', 'decision_at':decision.isoformat()+'Z',
          'exit_at':actual_end.isoformat()+'Z', 'outcome_known_at':actual_end.isoformat()+'Z'}
     assert q.purged_training_ids([row],[{'decision_at':validation.isoformat()+'Z'}])==[]
+
+
+# --------------------------------------------------------------------------- #
+# Exact-session production evaluator repair (2026-10-02 continuation)
+# --------------------------------------------------------------------------- #
+def test_track_record_session_horizon_skips_weekends_and_holidays():
+    assert S._session_horizon_end("2026-09-25", 5) == "2026-10-02"
+    assert S._session_horizon_end("2026-09-04", 1) == "2026-09-08"  # Labor Day
+
+
+def test_track_record_maturity_waits_for_exact_session_horizon(tmp_path, monkeypatch):
+    rows=[{"date":"2026-09-25","key":"x","members":["A","B","C"],"score":1.0}]
+    monkeypatch.setattr(S, "_covers", lambda *args, **kwargs: True)
+    monkeypatch.setattr(S, "_fwd_basket", lambda *args, **kwargs: 0.1)
+    assert S._matured(rows, tmp_path, 5, date(2026, 9, 30)) == []
+    got=S._matured(rows, tmp_path, 5, date(2026, 10, 2))
+    assert len(got)==1 and got[0]["fwd"]==pytest.approx(0.1)
+
+
+def test_track_record_window_span_counts_actual_sessions():
+    got=S._window_span(["2026-09-04","2026-09-08"], 1)
+    assert got["ic_span_days"]==4
+    assert got["ic_span_sessions"]==1
+    assert got["indep_windows"]==1.0
+
+
+def test_track_record_head_to_head_is_paired_and_order_invariant():
+    h5={"n_matured":100,"score_ic":0.9,
+        "v2":{"n_matured":20,"score_ic":-0.8},
+        "comparison":{"n_paired":20,"score_ic":0.1,"score_ic_v2":0.2,
+                      "score_ic_t_hac":0.5,"score_ic_t_hac_v2":0.6}}
+    h21={"n_matured":80,"score_ic":-0.7,
+         "v2":{"n_matured":30,"score_ic":0.9},
+         "comparison":{"n_paired":30,"score_ic":0.3,"score_ic_v2":0.1,
+                       "score_ic_t_hac":0.4,"score_ic_t_hac_v2":0.2}}
+    a=S._head_to_head({"5":h5,"21":h21})
+    b=S._head_to_head({"21":h21,"5":h5})
+    assert a["leader"] is None and b["leader"] is None
+    assert a["by_horizon"]["5"]["n_paired"]==20
+    assert a["by_horizon"]["5"]["gap"]==pytest.approx(0.1)
+    assert a["by_horizon"]["21"]["gap"]==pytest.approx(-0.2)
+    assert a["by_horizon"]==b["by_horizon"]
