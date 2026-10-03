@@ -40,6 +40,7 @@ import json
 import math
 import os
 import re
+from dataclasses import dataclass
 from decimal import Decimal
 from datetime import date, datetime, timedelta, timezone
 from functools import lru_cache
@@ -1880,6 +1881,107 @@ def normalize_price_bars(frame: pd.DataFrame | None) -> pd.DataFrame:
     return out.dropna(how="all")
 
 
+@dataclass(frozen=True, slots=True)
+class _PreparedPriceBars:
+    """One normalized OHLC frame prepared for a single per-run snapshot.
+
+    The wrapper is intentionally shallow and read-only: the inner frame is
+    captured as an immutable view (pandas ``writeable`` flag cleared) so that
+    derive code cannot mutate the prepared cache. Construction is gated
+    through ``prepare_price_bars``; the leading underscore on every field
+    keeps the public surface explicit and prevents accidental bypass via
+    attribute assignment.
+
+    ``_PreparedPriceBars`` is a per-run seam: builders own one instance per
+    ticker, build it once after their snapshot's immutable-byte checks
+    complete, and reuse it across every H+60/session consumer that touches
+    the same snapshot. Nothing here is module-global and nothing survives
+    across builder invocations.
+    """
+
+    _ticker: str
+    _row_count: int
+    _first_time: str
+    _last_time: str
+    _frame: pd.DataFrame
+
+    @property
+    def ticker(self) -> str:
+        return self._ticker
+
+    @property
+    def row_count(self) -> int:
+        return self._row_count
+
+    @property
+    def first_time(self) -> str:
+        return self._first_time
+
+    @property
+    def last_time(self) -> str:
+        return self._last_time
+
+    @property
+    def frame(self) -> pd.DataFrame:
+        return self._frame
+
+
+def prepare_price_bars(
+    raw_frame: pd.DataFrame | None, *, ticker: str,
+) -> _PreparedPriceBars:
+    """Public factory for the per-run prepared price-bars seam.
+
+    Validates the ticker identity, rejects ``None`` or non-DataFrame inputs,
+    invokes :func:`normalize_price_bars` exactly once, and freezes the
+    resulting UTC-indexed OHLC frame behind the typed wrapper. Builders
+    receive the snapshot's already-validated raw frame; this factory is the
+    only sanctioned way to construct :class:`_PreparedPriceBars`, and the
+    returned wrapper's frame is marked read-only so derive code that
+    accidentally mutates it fails immediately at the pandas layer.
+    """
+    if not isinstance(ticker, str) or not ticker:
+        raise ContractError("prepare_price_bars requires a non-empty ticker")
+    if raw_frame is None:
+        raise ContractError(
+            f"prepare_price_bars requires a validated raw frame for {ticker}"
+        )
+    if not isinstance(raw_frame, pd.DataFrame):
+        raise ContractError(
+            f"prepare_price_bars requires a raw DataFrame input for {ticker}"
+        )
+    normalized = normalize_price_bars(raw_frame)
+    if normalized.empty:
+        raise ContractError(
+            f"prepare_price_bars: normalized frame is empty for {ticker}"
+        )
+    index = pd.to_datetime(normalized.index, utc=True)
+    first = (
+        index.min().to_pydatetime().astimezone(timezone.utc)
+        .isoformat().replace("+00:00", "Z")
+    )
+    last = (
+        index.max().to_pydatetime().astimezone(timezone.utc)
+        .isoformat().replace("+00:00", "Z")
+    )
+    try:
+        # Lock the underlying numpy storage when the array is a real ndarray.
+        # Older pandas may already present view-locked buffers, in which case
+        # this is a no-op. A mutation on the prepared frame will fail loudly
+        # in any derive that writes back through ``frame.values``.
+        normalized.values.setflags(write=False)
+    except (AttributeError, ValueError):
+        # Fallback: the frozen dataclass still blocks attribute writes; the
+        # array layer is best-effort.
+        pass
+    return _PreparedPriceBars(
+        _ticker=ticker,
+        _row_count=len(normalized),
+        _first_time=first,
+        _last_time=last,
+        _frame=normalized,
+    )
+
+
 def _terminal_incomplete(episode: dict[str, Any], *, reason: str,
                          computed_at: datetime, target_time: datetime) -> dict[str, Any]:
     row = {
@@ -2001,8 +2103,17 @@ def derive_session_outcome(
     bar_seconds: int | None = None,
     price_delay_minutes: int | None = None,
     price_receipt: dict[str, Any] | None = None,
+    prepared_bars: _PreparedPriceBars | None = None,
 ) -> dict[str, Any]:
-    """Derive one immutable close outcome without changing the H+60 v1 seam."""
+    """Derive one immutable close outcome without changing the H+60 v1 seam.
+
+    ``prepared_bars`` is an optional per-run seam: when the caller already
+    prepared the normalized OHLC frame for the same snapshot, the function
+    reuses it and skips the redundant ``normalize_price_bars`` invocation.
+    Callers that pass only the raw ``bars`` frame keep the historical path
+    — the normalizer still runs once. The seam is read-only; this function
+    never mutates the prepared frame.
+    """
     validate_episode(episode)
     if not isinstance(computed_at, datetime) or computed_at.tzinfo is None:
         raise ContractError("computed_at must be a timezone-aware datetime")
@@ -2040,7 +2151,7 @@ def derive_session_outcome(
             "status": "pending", "reason": "unknown_bar_cadence",
             "episode_id": episode["episode_id"], "horizon": horizon,
         }
-    frame = normalize_price_bars(bars)
+    frame = prepared_bars.frame if prepared_bars is not None else normalize_price_bars(bars)
     expected_sessions = nyse_calendar.sessions_between(episode_session, target_session)
     if len(expected_sessions) != horizon_sessions + 1:
         raise ContractError("session horizon mapping disagrees with the NYSE calendar")
@@ -2426,6 +2537,7 @@ def derive_h60_outcome(
     bar_seconds: int | None = None,
     price_delay_minutes: int | None = None,
     price_receipt: dict[str, Any] | None = None,
+    prepared_bars: _PreparedPriceBars | None = None,
 ) -> dict[str, Any]:
     """Derive a truthful same-session H+60 label or a non-persisted pending result.
 
@@ -2434,6 +2546,13 @@ def derive_h60_outcome(
     MFE and MAE describe the actual aligned-bar entry-to-exit window, which may
     end after the desired target. Measurement version/kind, alignment, bar size
     and source delay make coarse or delayed proxies training-ineligible.
+
+    ``prepared_bars`` is an optional per-run seam: when the caller already
+    prepared the normalized OHLC frame for the same snapshot, the function
+    reuses it and skips the redundant ``normalize_price_bars`` invocation.
+    Callers that pass only the raw ``bars`` frame keep the historical path
+    — the normalizer still runs once. The seam is read-only; this function
+    never mutates the prepared frame.
     """
     validate_episode(episode)
     if not isinstance(computed_at, datetime) or computed_at.tzinfo is None:
@@ -2480,7 +2599,7 @@ def derive_h60_outcome(
             "episode_id": episode["episode_id"],
         }
 
-    df = normalize_price_bars(bars)
+    df = prepared_bars.frame if prepared_bars is not None else normalize_price_bars(bars)
     session_df = df[(df.index >= pd.Timestamp(open_utc)) & (df.index < pd.Timestamp(close_utc))]
     entry_candidates = session_df[session_df.index >= pd.Timestamp(max(available, open_utc))]
     if entry_candidates.empty:
