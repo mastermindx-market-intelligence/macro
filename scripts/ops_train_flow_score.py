@@ -101,6 +101,10 @@ from lib.flow_score_geometry import (
 )
 from lib.flow_score_admission import (
     AdmissionError,
+    INDEX_ROOTS as _INDEX_ROOTS,
+    apply_population_filter,
+    canonical_index_root,
+    derived_model_bucket,
     validate_admission_study_identity,
     validate_admission_receipt,
     verify_raw_stage_receipts,
@@ -204,91 +208,11 @@ def _sha256_file(path: Path) -> str:
 # ── population filter ─────────────────────────────────────────────────────────
 # Amendment §3.3 — Table-H index-root prefilter.
 
-# Known index roots per amendment §3.3 (SPX/SPXW/NDX and their key variants).
-_INDEX_ROOTS: frozenset[str] = frozenset([
-    "SPX", "SPXW", "NDX", "RUT", "VIX", "VIXW",
-    "OEX", "XEO", "DJX", "MNX",
-])
-
-
 def _is_index_root(root: str | None) -> bool:
-    """Return True if root is an index instrument."""
+    """Return True if the canonical stripped root is an index instrument."""
     if root is None:
         return False
-    return str(root).upper() in _INDEX_ROOTS
-
-
-def apply_population_filter(
-    df: pd.DataFrame,
-    bucket: str,
-    index_roots: frozenset[str] | None = None,
-) -> tuple[pd.DataFrame, dict[str, int]]:
-    """Apply amendment §3.3 population filter.
-
-    Returns (filtered_df, population_stats).
-
-    population_stats keys:
-      index_excluded_n: rows excluded because index-root with OI <= 500
-      oi_readmitted_n: index-root rows re-admitted because prior-session OI > 500
-      zerodte_index_excluded_n: 0DTE index rows excluded (0_7 bucket only)
-      total_input: input row count
-      total_output: output row count
-
-    Rules:
-      1. Index-rooted events excluded from scored population by default.
-      2. Exception: prior-session OI > 500 (T-1, PIT) re-admits index-root events.
-         Population column 'prior_oi' or 'oi' used for this check; if absent,
-         the event stays excluded.
-      3. 0DTE index excluded from 0_7 entirely (amendment §3.3 last bullet).
-    """
-    if index_roots is None:
-        index_roots = _INDEX_ROOTS
-
-    n_in = len(df)
-    root_col = "root" if "root" in df.columns else None
-    is_idx = (
-        df[root_col].apply(lambda r: str(r).upper() in index_roots)
-        if root_col else pd.Series(False, index=df.index)
-    )
-
-    # Prior-session OI check: prefer 'prior_oi' col, fall back to 'oi'.
-    oi_col = None
-    for candidate in ("prior_oi", "oi", "open_interest"):
-        if candidate in df.columns:
-            oi_col = candidate
-            break
-
-    if oi_col is not None:
-        prior_oi = pd.to_numeric(df[oi_col], errors="coerce").fillna(0)
-        oi_readmitted = is_idx & (prior_oi > 500)
-    else:
-        prior_oi = pd.Series(0.0, index=df.index)
-        oi_readmitted = pd.Series(False, index=df.index)
-
-    # 0DTE index: always excluded from 0_7 (amendment §3.3 — "0DTE index excluded
-    # from S-FLOWML-0_7 entirely").
-    is_zerodte = pd.Series(False, index=df.index)
-    if "zerodte" in df.columns:
-        is_zerodte = df["zerodte"].astype(bool, errors="ignore")
-    elif "dte_bucket" in df.columns:
-        is_zerodte = df["dte_bucket"] == "0d"
-
-    zerodte_index_mask = is_idx & is_zerodte
-    if bucket == "0_7":
-        # 0DTE index always excluded from 0_7 (no OI exception)
-        excluded = is_idx & (~oi_readmitted | zerodte_index_mask)
-    else:
-        excluded = is_idx & ~oi_readmitted
-
-    kept = ~excluded
-    stats = {
-        "total_input": int(n_in),
-        "index_excluded_n": int((is_idx & ~oi_readmitted).sum()),
-        "oi_readmitted_n": int(oi_readmitted.sum()),
-        "zerodte_index_excluded_n": int(zerodte_index_mask.sum()),
-        "total_output": int(kept.sum()),
-    }
-    return df[kept].reset_index(drop=True), stats
+    return canonical_index_root(root) in _INDEX_ROOTS
 
 
 # ── cohort loaders ─────────────────────────────────────────────────────────────
@@ -751,41 +675,15 @@ def train_bucket(
         return make_no_fit_health("building_history/selected_source_unavailable")
     _check_no_eod_proxy_in_calibration(serving_df, context="serving cohort (train_bucket)")
 
-    # ── filter by model_bucket ────────────────────────────────────────────────
-    bucket_map = cfg.get("model_bucket_map", {})
     if "dte_bucket" not in serving_df.columns:
         return make_no_fit_health(
             "method_geometry_unavailable:source_dte_bucket_missing"
         )
-    valid_dte_buckets = [k for k, v in bucket_map.items() if v == bucket]
-    serving_df = serving_df[serving_df["dte_bucket"].isin(valid_dte_buckets)].copy()
+    source_df = serving_df
 
-    # Source ledgers are bucketed by DTE.  Bind this exact requested model bucket
-    # before admission; never overwrite a contradictory pre-existing identity.
-    if "model_bucket" in serving_df.columns:
-        if not serving_df["model_bucket"].astype(str).eq(bucket).all():
-            return make_no_fit_health(
-                "method_geometry_unavailable:source_model_bucket_mismatch"
-            )
-    else:
-        serving_df = serving_df.copy()
-        serving_df["model_bucket"] = bucket
-
-    if serving_df.empty:
-        log.warning("ops_train[%s]: no rows after dte_bucket filter — skipping", bucket)
-        return None
-
-    # ── population filter (amendment §3.3) ───────────────────────────────────
-    serving_df, pop_stats = apply_population_filter(serving_df, bucket)
-    log.info(
-        "ops_train[%s]: population filter: input=%d, excluded_index=%d, "
-        "readmitted_oi=%d, output=%d",
-        bucket, pop_stats["total_input"], pop_stats["index_excluded_n"],
-        pop_stats["oi_readmitted_n"], pop_stats["total_output"],
-    )
-
-    # The receipt is the outcome-blind gate.  Do not even stat/read grades or
-    # construct a feature matrix until the complete frozen source cohort passes.
+    # The receipt is the outcome-blind gate. Census comparison uses the full
+    # declared source, before the DTE slice and the index population filter.
+    # Do not stat or read grades until that gate passes.
     try:
         if stage_receipt_resolver is None:
 
@@ -803,7 +701,7 @@ def train_bucket(
 
         admitted = validate_admission_receipt(
             partition,
-            serving_df,
+            source_df,
             bucket=bucket,
             validation_at=pd.Timestamp.now(tz="UTC"),
             expected_study=expected_study,
@@ -812,6 +710,32 @@ def train_bucket(
     except (AdmissionError, ValueError, json.JSONDecodeError) as exc:
         log.warning("ops_train[%s]: source admission unavailable: %s", bucket, exc)
         return make_no_fit_health(f"method_geometry_unavailable:{exc}")
+
+    # Artifact stats keep the incumbent DTE slice and index filter. The model
+    # bucket is the derived one. A contradictory source column is not trusted.
+    serving_df = source_df.loc[
+        source_df["dte_bucket"].map(derived_model_bucket).eq(bucket)
+    ].copy()
+    if "model_bucket" in serving_df.columns:
+        declared = serving_df["model_bucket"].map(
+            lambda value: "" if value is None or pd.isna(value) else str(value).strip()
+        )
+        if declared.ne("").any() and not declared.loc[declared.ne("")].eq(bucket).all():
+            return make_no_fit_health(
+                "method_geometry_unavailable:source_model_bucket_mismatch"
+            )
+    else:
+        serving_df["model_bucket"] = bucket
+    if serving_df.empty:
+        log.warning("ops_train[%s]: no rows after dte_bucket filter — skipping", bucket)
+        return None
+    serving_df, pop_stats = apply_population_filter(serving_df, bucket)
+    log.info(
+        "ops_train[%s]: population filter: input=%d, excluded_index=%d, "
+        "readmitted_oi=%d, output=%d",
+        bucket, pop_stats["total_input"], pop_stats["index_excluded_n"],
+        pop_stats["oi_readmitted_n"], pop_stats["total_output"],
+    )
 
     configured_horizons = _configured_horizons(cfg)
     if configured_horizons != dict(BUCKET_HORIZONS):

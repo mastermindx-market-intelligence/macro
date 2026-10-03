@@ -11,6 +11,7 @@ import pytest
 from lib.flow_score_admission import (
     AdmissionError,
     SOURCE_FIELDS,
+    source_census_descriptor,
     validate_admission_receipt,
     write_admission_receipt,
 )
@@ -42,13 +43,25 @@ def admit(rows, receipt, expected):
     )
 
 
+def reseal(rows, receipt, expected):
+    """Bind the external seal to this submitted projection, not the prior one."""
+    census = source_census_descriptor(
+        rows,
+        sealed_at="2026-01-31T12:00:00Z",
+        bucket="8_90",
+        availability_cutoff=receipt["study"]["availability_cutoff"],
+    )
+    receipt["study"]["source_census"] = census
+    expected["source_census"] = copy.deepcopy(census)
+
+
 def test_real_raw_prefix_mutation_rejected_but_later_append_preserves_receipt():
     rows, receipt, expected = prepared()
     key = rows[0]["source_stage_key"]
     first = STAGE_BYTES[key]
     # Alter only raw whitespace: decoded economics stay identical, prefix proof does not.
     STAGE_BYTES[key] = first.replace(b"{", b"{ ", 1)
-    with pytest.raises(AdmissionError, match="raw_stage_receipt_mismatch"):
+    with pytest.raises(AdmissionError, match="raw_stage_prefix_mismatch"):
         admit(rows, receipt, expected)
     STAGE_BYTES[key] = first + first.replace(b'"a"', b'"later-unobserved"')
     accepted = admit(rows, receipt, expected)
@@ -75,6 +88,9 @@ def test_multiple_events_for_same_root_within_one_population_are_required():
         "event_id": "a2",
     }
     rows.append(second)
+    # a2 is a complete pre-cutoff projection. Seal that universe, then require
+    # the receipt to name it. A census miss must not hide the omission.
+    reseal(rows, receipt, expected)
     with pytest.raises(AdmissionError, match="eligible_member_omitted"):
         admit(rows, receipt, expected)
     member = {**receipt["populations"]["train"]["members"][0], **second}
@@ -122,6 +138,9 @@ def test_late_remote_observation_before_endpoint_is_ineligible():
     receipt["populations"]["train"]["members"][0]["source_stage_observed_at"] = rows[0][
         "source_stage_observed_at"
     ]
+    # Still inside the cutoff, so this clock is part of the sealed projection.
+    # The fill-open refusal has to fire after that seal, not instead of it.
+    reseal(rows, receipt, expected)
     with pytest.raises(AdmissionError, match="observed_after_planned_fill_open"):
         admit(rows, receipt, expected)
 

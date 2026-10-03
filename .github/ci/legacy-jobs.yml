@@ -6301,7 +6301,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml boto3 scikit-learn joblib
+        # jsonschema: collectors/flow_signals.py imports the stage parser, which
+        # imports engine/options_signal_episode.py at module scope.
+        run: pip install pytest pandas numpy pyarrow pyyaml boto3 scikit-learn joblib jsonschema
       - name: flow-signals ledger + grader unit tests
         run: python -m pytest tests/test_flow_signals.py -q
       - name: FS-4 scorer unit tests (Lane B)
@@ -6330,7 +6332,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pytest-mock pandas numpy pyarrow pyyaml requests boto3 scikit-learn joblib
+        # jsonschema: the FS-0 step imports collectors.flow_signals, and that
+        # module reaches engine/options_signal_episode.py at import time.
+        run: pip install pytest pytest-mock pandas numpy pyarrow pyyaml requests boto3 scikit-learn joblib jsonschema
       - name: FS-1 flow cohorts unit tests
         run: python -m pytest tests/test_fs1_flow_cohorts.py -q
       - name: FS-2 atlas builder unit tests
