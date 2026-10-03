@@ -13364,10 +13364,12 @@ jobs:
       - scripts/capture_hk_tier1_shell.py
       - site/assets/js/company-intelligence-dossier.js
       - templates/ticker.html.j2
+      - templates/international_macro.html.j2
       - tests/test_ticker_pages.py
       # MO-PAID-006 schema child (#8276): this job runs the dossier suite (step below), so the
       # exclusive scope must name the suite file itself.
       - tests/test_international_macro_dossier.py
+      - tests/test_international_macro_dossier_page.py
       # HK-H2 closure widening 2026-09-21 (contract-delta): the hub copy pass
       # import closure now reaches the marketing/intel/indicator modules below.
       - "engine/indicators_m2.py"
@@ -14379,6 +14381,8 @@ jobs:
       # above. Measured 15 passed in 1.1s on the lane host.
       - name: international macro country dossier (MO-PAID-006 schema child, #8276)
         run: python -m pytest tests/test_international_macro_dossier.py -q
+      - name: international macro dossier page child (MO-PAID-006 PAGE R1)
+        run: python -m pytest tests/test_international_macro_dossier_page.py -q
   prophet-us-b4-prereg-registration:
     # PROPHET US B4 entry-policy calibration PREREGISTRATION (R6 wave 1, seat ruling
     # R6-PREREG-01, PR #7823). tests/test_b4_entry_policy_calibration_prereg.py pins the
