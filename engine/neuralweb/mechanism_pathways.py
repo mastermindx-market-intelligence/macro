@@ -20,6 +20,54 @@ Implements:
     validated" must not appear in any generated text.
   - No ticker-level entities (RUL-CC-10).
   - Nulls printed with reasons (RUL-CC-4).
+  - 2026-10-03 clock and aggregate repair (R1–R8):
+      R1  Source clocks are CARRIED, never minted. Every driver /
+          evidence-leg / transmission node carries the actual as-of of
+          the source record it was computed from. The build date may
+          appear only in artifact-level build metadata (a "built"
+          additive field). Per-node and per-edge evidence dates are
+          never build dates.
+      R2  Unknown is NOT fresh. A source whose as-of is missing, empty
+          or unparseable yields an explicit null node clock plus an
+          `as_of_reason` of `unknown_date`. The compiler never
+          substitutes today, the file mtime, the wrapper date or a
+          sibling's date.
+      R3  Future is rejected at both ends. `_source_clock_usable`
+          (the replacement for `_is_stale`) treats future-dated and
+          unknown-dated sources as NOT usable, with reasons distinct
+          from stale. The reader independently rejects future/unknown
+          node clocks (defence in depth) — it must never trust that
+          the compiler filtered.
+      R4  One documented boundary rule. Timezone-aware datetimes are
+          compared exactly in UTC. A date-only source clock D is
+          "future" only when D > (now_utc + 14h).date() — the latest
+          calendar date anywhere on Earth at `now`. Date-only D is
+          "stale" by the existing age rule measured against
+          now_utc.date(). Naive datetimes follow whatever the module
+          already documents; if undocumented, treat as UTC.
+      R5  Legacy artifacts cannot launder either. Repaired artifacts
+          carry an additive `clock_basis` marker (`source_clock_v1`).
+          When the reader sees an artifact WITHOUT that marker it must
+          not count its node dates as verified source observation
+          dates: those links are disclosed as time-unverified (withheld
+          from `reported_observation_links`, reason stated), while the
+          fixed context-only authority fields and the theory/prior
+          content stay readable.
+      R6  Aggregates are earned, not copied. Pathway- and artifact-
+          level coverage / coherence / counts shown by the reader are
+          derived from (or validated against) the evidence elements
+          that survived qualification, independent of edge iteration.
+          Zero-edge pathways (factor rotation) are qualified by their
+          own pathway/source clocks.
+      R7  Dependent legs are not independent confirmations. When all
+          legs of a pathway derive from one source record the pathway
+          exposes `distinct_sources` (=1) and an
+          `independent_confirmations_disallowed` flag; coherence is
+          never an independent count of pseudo-votes.
+      R8  Authority is unchanged. is_context_only, display_only,
+          not_a_signal, may_size=False, no may_trade,
+          causal_identification_established=False, bounded reads and
+          malformed-input behaviour stay byte-compatible.
 
 RUL-CC-12 §4 deviation, ratified 2026-07-06: snap boolean is a site-builder
 product outside the RUL-CC-11 read-set (lives in data/regime/regime_snap.json
@@ -49,6 +97,11 @@ log = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 SCHEMA = "neuralweb.mechanism_pathways.v1"
+
+# 2026-10-03 clock-repair marker. Emitted on every artifact so the reader
+# can distinguish per-node dates that ARE source observation dates from
+# legacy build-stamped dates that masquerade as observations. See R5.
+CLOCK_BASIS_MARKER = "source_clock_v1"
 
 # Staleness threshold: 3 trading-day equivalents = 5 calendar days.
 # Mirrors engine/regime_prior.py _STALE_DAYS to cover long weekends without
@@ -163,6 +216,91 @@ def _is_stale(asof_val: Any, _sla_hours_ignored: int = 30) -> bool:
     return days >= _STALE_DAYS
 
 
+# Latest known date "today" on Earth at a given now_utc: per R4, the latest
+# calendar date that any timezone on Earth can have reached is (now_utc + 14h).date().
+# Kiritimati (UTC+14) is the furthest forward inhabited zone, so adding 14h
+# yields the date the date-line is currently on.
+_LATEST_EARTH_DATE_OFFSET_HOURS = 14
+
+
+def _latest_earth_date(now: datetime | None = None) -> "date":
+    """Return the latest calendar date anywhere on Earth at `now`.
+
+    Per R4 boundary rule: a date-only source clock D is "future" only when
+    D > _latest_earth_date(now_utc). At 14:00 UTC the date-line rolls forward,
+    so an asof equal to today_utc.date() is still acceptable.
+    """
+    from datetime import timedelta
+    now = now or datetime.now(tz=timezone.utc)
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=timezone.utc)
+    return (now + timedelta(hours=_LATEST_EARTH_DATE_OFFSET_HOURS)).date()
+
+
+def _classify_source_clock(asof_val: Any, now: datetime | None = None) -> dict:
+    """Return the R3/R4 status for a source-clock value.
+
+    Returns {'as_of': str|None, 'as_of_reason': str}. The compiler and the
+    reader both call this function (or its mirror). Reasons:
+      - 'unknown_date': missing / empty / unparseable / naive datetime
+      - 'future_dated': a valid clock whose date is later than
+        _latest_earth_date(now_utc) — admitted as NOT usable (R3)
+      - 'stale': valid clock older than _STALE_DAYS calendar days
+      - 'available': valid, in window, not future
+
+    This function never substitutes today or any other wrapper date for the
+    source's own. A missing source clock is `unknown_date`, not today.
+    """
+    out = {"as_of": None, "as_of_reason": "unknown_date"}
+    if asof_val is None:
+        return out
+    s = str(asof_val).strip()
+    if not s:
+        return out
+    try:
+        import re as _re
+        if _re.fullmatch(r"\d{4}-\d{2}-\d{2}", s):
+            from datetime import date
+            day = date.fromisoformat(s)
+            latest = _latest_earth_date(now)
+            if day > latest:
+                return {"as_of": s, "as_of_reason": "future_dated"}
+            age_now = (now or datetime.now(tz=timezone.utc))
+            if now is None:
+                age_now = datetime.now(tz=timezone.utc)
+            age_days = (age_now.date() - day).days
+            if age_days >= _STALE_DAYS:
+                return {"as_of": s, "as_of_reason": "stale"}
+            return {"as_of": s, "as_of_reason": "available"}
+        # Datetime path
+        dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            # Per R4: undocumented naive is treated as UTC.
+            dt = dt.replace(tzinfo=timezone.utc)
+        dt_utc = dt.astimezone(timezone.utc)
+        ref_now = now or datetime.now(tz=timezone.utc)
+        if ref_now.tzinfo is None:
+            ref_now = ref_now.replace(tzinfo=timezone.utc)
+        if dt_utc > ref_now:
+            return {"as_of": dt_utc.isoformat(), "as_of_reason": "future_dated"}
+        age_days = (ref_now.date() - dt_utc.date()).days
+        if age_days >= _STALE_DAYS:
+            return {"as_of": dt_utc.isoformat(), "as_of_reason": "stale"}
+        return {"as_of": dt_utc.isoformat(), "as_of_reason": "available"}
+    except (TypeError, ValueError, OverflowError):
+        return out
+
+
+def _source_clock_usable(asof_val: Any, now: datetime | None = None) -> bool:
+    """Return True iff the source clock is a verified observation date.
+
+    R3: future-dated and unknown-dated sources are NOT usable, with reasons
+    distinct from stale. `stale` is also not usable — callers needing a
+    distinction should use `_classify_source_clock` directly.
+    """
+    return _classify_source_clock(asof_val, now)["as_of_reason"] == "available"
+
+
 def _get_sla(reg: dict, artifact_name: str) -> int:
     """Return freshness_sla_hours for a registered artifact name.
 
@@ -181,10 +319,16 @@ def _get_sla(reg: dict, artifact_name: str) -> int:
 
 
 def _no_pathway(reason: str, as_of: str, trigger_context: dict | None = None) -> dict:
-    """Build a no_pathway record."""
+    """Build a no_pathway record.
+
+    Carries the R5 clock_basis marker so the reader knows every node date
+    in this artifact lineage is a source observation date — never a build
+    stamp — and may be evaluated against its own clock.
+    """
     rec: dict[str, Any] = {
         "schema": SCHEMA,
         "as_of": as_of,
+        "clock_basis": CLOCK_BASIS_MARKER,
         "display_only": True,
         "not_a_signal": True,
         "authority": AUTHORITY_BLOCK,
@@ -218,10 +362,21 @@ def _make_node(
     lag_class: str,
     pathway_role: str,
     evidence_refs: list[str] | None = None,
+    as_of_reason: str | None = None,
 ) -> dict:
+    """Build a node carrying the source-clock as_of (R1/R2).
+
+    `as_of` is the actual observation date the source emitted, NOT a build
+    date. `as_of_reason` is one of 'available'|'stale'|'future_dated'|
+    'unknown_date' — the reader uses it to qualify without re-deriving.
+    Per R2, unknown source clocks yield as_of=None with reason
+    'unknown_date'; per R3, future clocks carry the date with reason
+    'future_dated' so the reader can reject them.
+    """
     return {
         "node_id": node_id,
         "as_of": as_of,
+        "as_of_reason": as_of_reason or "unknown_date",
         "domain": domain,
         "source_artifact": source_artifact,
         "entity": entity,
@@ -350,9 +505,10 @@ def _attach_transmission_edges(
             entity = ", ".join(measured_assets[:3]) if measured_assets else "transmission channel"
 
             node_id = f"transmission_{chain_id}_order{order_num}"
+            chain_clock = _classify_source_clock(chain_as_of)
             nodes.append(_make_node(
                 node_id=node_id,
-                as_of=chain_as_of,
+                as_of=chain_clock["as_of"],
                 domain="transmission",
                 source_artifact="data/transmission/latest.json",
                 entity=entity,
@@ -365,6 +521,7 @@ def _attach_transmission_edges(
                 lag_class=lag_class,
                 pathway_role=f"transmission_order_{order_num}",
                 evidence_refs=[f"transmission.chains.{chain_id}.order{order_num}"],
+                as_of_reason=chain_clock["as_of_reason"],
             ))
 
             # Determine observed_sign from assets: majority verdict headwind/tailwind.
@@ -471,8 +628,15 @@ def _build_pathway(
     transmission_chains: list[dict],
     as_of: str,
     pathway_role: str = "primary",
+    source_as_of: str | None = None,
 ) -> dict:
-    """Build one pathway dict from market_drivers emitted structures."""
+    """Build one pathway dict from market_drivers emitted structures.
+
+    `as_of` is the build date (artifact-level metadata). `source_as_of` is the
+    actual observation date the source emitted; it is the clock the reader
+    should rate against, NOT the build date. Per R1/R2, every node carries
+    `source_as_of` (or None + 'unknown_date' when the source clock is missing).
+    """
     # Required legs from evidence_legs.
     # Do NOT apply max(1, ...) — scare-trigger pathways pass evidence_legs=[]
     # intentionally; coverage_denom=0 triggers the null-coverage path (F5).
@@ -493,9 +657,13 @@ def _build_pathway(
         headline.get("en", "") if isinstance(headline, dict) else ""
     )
 
+    # Per R1/R2, the driver carries the source clock. R3/R4 are surfaced via
+    # `as_of_reason` so the reader can reject future/unknown defensively.
+    driver_clock = _classify_source_clock(source_as_of)
+
     nodes.append(_make_node(
         node_id=driver_node_id,
-        as_of=as_of,
+        as_of=driver_clock["as_of"],
         domain="market_drivers",
         source_artifact="data/regime/latest.json#market_drivers",
         entity=family,
@@ -508,9 +676,10 @@ def _build_pathway(
         lag_class="same_day",
         pathway_role="trigger",
         evidence_refs=["market_drivers.primary"],
+        as_of_reason=driver_clock["as_of_reason"],
     ))
 
-    # Evidence leg nodes
+    # Evidence leg nodes — same source clock (legs derive from the same record).
     for i, leg in enumerate(ev_legs):
         leg_en = leg.get("en", f"leg_{i}")
         leg_zh = leg.get("zh", "")
@@ -518,7 +687,7 @@ def _build_pathway(
         leg_node_id = f"leg_{driver_key}_{i}"
         nodes.append(_make_node(
             node_id=leg_node_id,
-            as_of=as_of,
+            as_of=driver_clock["as_of"],
             domain="market_drivers",
             source_artifact="data/regime/latest.json#market_drivers",
             entity=leg_en,
@@ -531,6 +700,7 @@ def _build_pathway(
             lag_class="same_day",
             pathway_role="required_leg",
             evidence_refs=[f"market_drivers.evidence_legs[{i}]"],
+            as_of_reason=driver_clock["as_of_reason"],
         ))
         edges.append(_make_edge(
             src_node=driver_node_id,
@@ -573,11 +743,19 @@ def _build_pathway(
     agreement = md.get("agreement")
     coherence = _derive_coherence(agreement)
 
+    # R7: when all nodes derive from one source clock the pathway is NOT a
+    # basket of independent confirmations. Distinct-source count is 1 and
+    # the reader must not treat `coherence` as a vote total.
+    distinct_sources = 1 if driver_clock["as_of"] is not None else 0
+
     rec: dict[str, Any] = {
         "family": family,
         "driver": driver_key,
         "pathway_role": pathway_role,
-        "as_of": as_of,
+        # Pathway-level clock is the source clock (R1/R2). Build date lives
+        # at the artifact root, NOT here.
+        "as_of": driver_clock["as_of"],
+        "as_of_reason": driver_clock["as_of_reason"],
         "direction_en": _sanitize_text(direction_en),
         "direction_zh": direction_zh,
         "confidence_ceiling": "context_only",
@@ -586,24 +764,37 @@ def _build_pathway(
         "stale_legs": stale_legs,
         "nodes": nodes,
         "edges": edges,
+        "distinct_sources": distinct_sources,
+        "independent_confirmations_disallowed": distinct_sources == 1 and required_leg_count > 0,
+        "clock_basis": CLOCK_BASIS_MARKER,
     }
     if coverage_basis is not None:
         rec["coverage_basis"] = coverage_basis
     return rec
 
 
-def _build_factor_rotation_pathway(fi_state: dict, as_of: str) -> dict:
-    """Build a minimal factor_rotation pathway from factor_intelligence_state."""
+def _build_factor_rotation_pathway(fi_state: dict, as_of: str, source_as_of: str | None = None) -> dict:
+    """Build a minimal factor_rotation pathway from factor_intelligence_state.
+
+    `as_of` is the build date. `source_as_of` is the actual source clock
+    from factor_intelligence_state (R1/R2). The pathway's own `as_of` and the
+    driver node's `as_of` both carry the source clock; `as_of_reason`
+    qualifies it. Coverage is intentionally None for a zero-edge pathway
+    (R6) — the reader derives coverage from the surviving source clock,
+    not from a pre-stamped 1.0.
+    """
     sr = fi_state.get("style_regime", "")
     if isinstance(sr, dict):
         sr_label = sr.get("label", str(sr))
     else:
         sr_label = str(sr)
 
+    clock = _classify_source_clock(source_as_of)
+
     driver_node_id = "driver_factor_rotation"
     nodes = [_make_node(
         node_id=driver_node_id,
-        as_of=as_of,
+        as_of=clock["as_of"],
         domain="factor_rotation",
         source_artifact="data/neuralweb/factor_intelligence_state.json",
         entity="factor_rotation",
@@ -616,22 +807,31 @@ def _build_factor_rotation_pathway(fi_state: dict, as_of: str) -> dict:
         lag_class="same_day",
         pathway_role="trigger",
         evidence_refs=["factor_intelligence_state.style_regime"],
+        as_of_reason=clock["as_of_reason"],
     )]
     edges: list[dict] = []
 
+    # R6: zero-edge pathway cannot claim coverage; set null + reason. The
+    # reader re-derives from the source clock; the producer never stamps 1.0.
+    coverage_basis = "zero_edge_no_coverage_claim"
     return {
         "family": "factor_rotation",
         "driver": "factor_rotation",
         "pathway_role": "primary",
-        "as_of": as_of,
+        "as_of": clock["as_of"],
+        "as_of_reason": clock["as_of_reason"],
         "direction_en": f"Factor style rotation detected: {sr_label}",
         "direction_zh": f"因子风格轮动: {sr_label}",
         "confidence_ceiling": "context_only",
-        "coverage_score": 1.0,
+        "coverage_score": None,
+        "coverage_basis": coverage_basis,
         "coherence": "partial",
         "stale_legs": [],
         "nodes": nodes,
         "edges": edges,
+        "distinct_sources": 1 if clock["as_of"] is not None else 0,
+        "independent_confirmations_disallowed": True,  # zero-edge, by construction
+        "clock_basis": CLOCK_BASIS_MARKER,
     }
 
 
@@ -639,16 +839,31 @@ def _build_factor_rotation_pathway(fi_state: dict, as_of: str) -> dict:
 # Main compile function
 # ---------------------------------------------------------------------------
 
-def compile(root: Path | None = None) -> dict:  # noqa: A001
+def compile(root: Path | None = None, *, now: datetime | None = None) -> dict:  # noqa: A001
     """Compile and return the mechanism_pathways artifact.
 
     Never raises — returns a no_pathway artifact on any error.
     Implements RUL-CC-11 (read emitted artifacts only) and RUL-CC-12/13.
+    R1/R5 (2026-10-03): the artifact carries its own build date in
+    `built`, and per-pathway / per-node `as_of` are source observation
+    dates (not build dates). The artifact is stamped with `clock_basis`
+    so legacy artifacts (no marker) cannot launder build dates as
+    observations.
+
+    `now` (timezone-aware datetime) is the injected build/observation
+    clock for testing — never carried as a node date, only used to
+    classify source clocks. Tests must inject it to keep wall-clock
+    independence (F3).
     """
     if root is None:
         root = _repo_root()
 
-    as_of = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
+    # `as_of` is the BUILD date — it lives ONLY at the artifact root (R1).
+    # Per-node dates are NEVER this; they are the source record's own clock.
+    built_dt = now or datetime.now(tz=timezone.utc)
+    if built_dt.tzinfo is None:
+        built_dt = built_dt.replace(tzinfo=timezone.utc)
+    as_of = built_dt.strftime("%Y-%m-%d")
 
     # Load synapse registry for SLA lookups
     try:
@@ -672,11 +887,15 @@ def compile(root: Path | None = None) -> dict:  # noqa: A001
     # so their SLA is the registered "regime-latest" artifact SLA.
     regime_sla = _get_sla(reg, "regime-latest")
 
-    # Stale-trigger guard (RUL-CC-13)
-    if _is_stale(md_asof, regime_sla):
+    # Stale-trigger guard (RUL-CC-13). R3: a future-dated source must also
+    # trigger `trigger_stale`; the existing _is_stale admitted future dates
+    # (negative days) which was the F1 root cause. Reject future here.
+    md_clock = _classify_source_clock(md_asof, built_dt)
+    if md_clock["as_of_reason"] in ("stale", "future_dated", "unknown_date"):
         return _no_pathway(
             "trigger_stale", as_of,
-            {"source": "data/regime/latest.json", "asof": str(md_asof), "sla_days": _STALE_DAYS},
+            {"source": "data/regime/latest.json", "asof": str(md_asof),
+             "as_of_reason": md_clock["as_of_reason"], "sla_days": _STALE_DAYS},
         )
 
     # --- Load transmission/latest.json -----------------------------------
@@ -685,9 +904,14 @@ def compile(root: Path | None = None) -> dict:  # noqa: A001
     chains: list[dict] = []
     if transmission:
         tx_asof = transmission.get("asof")
+        tx_clock = _classify_source_clock(tx_asof, built_dt)
         # data/transmission/latest.json is not synapse-registered (pre-existing gap);
         # use named constant rather than a silent hardcoded default.
-        if not _is_stale(tx_asof, _TRANSMISSION_SLA_HOURS):
+        # Acceptable clock reasons here: available OR stale (we surface chains
+        # even when stale, because the chains carry their own per-order clocks;
+        # future/unknown are dropped — those chains cannot claim source
+        # observation status at all).
+        if tx_clock["as_of_reason"] in ("available", "stale"):
             # The upstream chain builder does not repeat its wrapper clock.
             # Preserve an explicit chain clock (including an unknown one); only
             # an absent key inherits THIS source's snapshot, never a driver date.
@@ -714,7 +938,10 @@ def compile(root: Path | None = None) -> dict:  # noqa: A001
             (s.get("family", primary_driver) for s in scores if s.get("driver") == primary_driver),
             primary_driver,
         )
-        primary_pathway = _build_pathway(primary_driver, primary_driver, md, chains, as_of, "primary")
+        primary_pathway = _build_pathway(
+            primary_driver, primary_driver, md, chains, as_of, "primary",
+            source_as_of=md_clock["as_of"],
+        )
         primary_pathway["family"] = primary_family
 
         # Coverage floor (RUL-CC-4): applies only when required legs exist
@@ -760,7 +987,10 @@ def compile(root: Path | None = None) -> dict:  # noqa: A001
                 "dominance_ratio": None,
                 "headline": alt_score_entry.get("direction", ""),
             }
-            alt_pw = _build_pathway(alt_d, alt_d, alt_md, chains, as_of, "alternate")
+            alt_pw = _build_pathway(
+                alt_d, alt_d, alt_md, chains, as_of, "alternate",
+                source_as_of=md_clock["as_of"],
+            )
             alt_pw["family"] = alt_family
             pathways.append(alt_pw)
 
@@ -773,10 +1003,15 @@ def compile(root: Path | None = None) -> dict:  # noqa: A001
         # risk_radar is a sub-block of data/regime/latest.json;
         # use the registered "regime-latest" SLA.
         rr_sla = _get_sla(reg, "regime-latest")
+        rr_clock = _classify_source_clock(rr_asof, built_dt)
 
         if dominant_scare and rr_state not in ("", "calm"):
-            if _is_stale(rr_asof, rr_sla):
-                return _no_pathway("trigger_stale", as_of, {"source": "risk_radar", "asof": str(rr_asof)})
+            if rr_clock["as_of_reason"] in ("stale", "future_dated", "unknown_date"):
+                return _no_pathway(
+                    "trigger_stale", as_of,
+                    {"source": "risk_radar", "asof": str(rr_asof),
+                     "as_of_reason": rr_clock["as_of_reason"]},
+                )
 
             if dominant_scare in _UNATTRIBUTED_SCARES:
                 no_pathway_rec = {
@@ -812,7 +1047,8 @@ def compile(root: Path | None = None) -> dict:  # noqa: A001
                         "headline": rr.get("headline_en", ""),
                     }
                     scare_pw = _build_pathway(
-                        mapped_family, mapped_family, scare_md, chains, as_of, "primary"
+                        mapped_family, mapped_family, scare_md, chains, as_of, "primary",
+                        source_as_of=rr_clock["as_of"],
                     )
                     scare_pw["source_trigger"] = "risk_radar"
                     scare_pw["scare"] = dominant_scare
@@ -840,7 +1076,10 @@ def compile(root: Path | None = None) -> dict:  # noqa: A001
                                 "dominance_ratio": None,
                                 "headline": s.get("direction", ""),
                             }
-                            alt_pw = _build_pathway(d, d, alt_md, chains, as_of, "alternate")
+                            alt_pw = _build_pathway(
+                                d, d, alt_md, chains, as_of, "alternate",
+                                source_as_of=rr_clock["as_of"],
+                            )
                             alt_pw["family"] = alt_family
                             pathways.append(alt_pw)
                             if len(pathways) >= 3:
@@ -851,9 +1090,10 @@ def compile(root: Path | None = None) -> dict:  # noqa: A001
         fi_state = _get_factor_rotation_state(root)
         fi_asof = fi_state.get("as_of") if fi_state else None
         fi_sla = _get_sla(reg, "factor-intelligence-state")
+        fi_clock = _classify_source_clock(fi_asof, built_dt)
 
-        if fi_state and not _is_stale(fi_asof, fi_sla) and _has_persistent_factor_flip(fi_state):
-            pathways.append(_build_factor_rotation_pathway(fi_state, as_of))
+        if fi_state and fi_clock["as_of_reason"] in ("available", "stale") and _has_persistent_factor_flip(fi_state):
+            pathways.append(_build_factor_rotation_pathway(fi_state, as_of, source_as_of=fi_clock["as_of"]))
 
     # (4) no attributable driver — no_pathway.
     # RUL-CC-12 §4 deviation (ratified 2026-07-06): snap boolean lives in
@@ -879,9 +1119,15 @@ def compile(root: Path | None = None) -> dict:  # noqa: A001
             }
 
     # --- Assemble artifact -----------------------------------------------
+    # R1/R5 (2026-10-03): the artifact-level `as_of` is the BUILD date. The
+    # R5 marker `clock_basis` distinguishes per-node source observation
+    # dates from legacy build-stamped dates; readers without the marker
+    # must not count node dates as verified source observations.
     artifact: dict[str, Any] = {
         "schema": SCHEMA,
-        "as_of": as_of,
+        "as_of": as_of,  # artifact-level build date (NOT a per-node clock)
+        "built": built_dt.isoformat(),  # explicit additive build timestamp
+        "clock_basis": CLOCK_BASIS_MARKER,  # R5 marker
         "display_only": True,
         "not_a_signal": True,
         "authority": AUTHORITY_BLOCK,

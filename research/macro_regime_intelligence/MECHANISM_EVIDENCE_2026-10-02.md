@@ -154,3 +154,78 @@ on this exact repair rather than relabelling the earlier 1546-case run.
 
 The preceding selector repair's local contract check completed at203fc7977b00:
 zero introduced/zero inherited findings. No threshold or source guard was relaxed.
+
+## 2026-10-03 clock and aggregate repair
+
+Review items 1 and 2 on PR #8306 surfaced two upstream date/coverage leaks
+on the mechanism pathway read path:
+
+* F1 — the compiler minted the build date for every driver and evidence-leg
+  node, so the artifact's recorded node clocks were wall-clock artifacts, not
+  the source record's own as-of. A future-dated source therefore looked
+  perfectly current, and `_is_stale` admitted a negative age (negative days).
+* F2 — the reader copied the producer's `coverage_score` / `coherence` before
+  the withheld-evidence downgrade was applied. For zero-edge factor rotation
+  pathways (`edges=[]`, `coverage_score=1.0`), withheld evidence left a
+  positive coverage surviving.
+
+### Fix shape
+
+* **R1–R2 source-clock carrier.** The compiler carries each pathway's own
+  source as-of (the relevant record's recorded timestamp) into every driver
+  and leg node, plus `as_of_reason` (`available` / `stale` / `future_dated`
+  / `unknown_date`) so the reader never re-derives from build time.
+* **R3 defence in depth.** The reader independently rejects future and
+  unknown node clocks. A future source clock is "future" only when its date
+  exceeds the latest calendar date anywhere on Earth at the observation time
+  (Kiritimati +14 boundary, R4).
+* **R5 clock_basis marker.** A legacy artifact (no `clock_basis =
+  source_clock_v1` marker) cannot claim its build-stamped node dates as
+  verified source observations. The reader surfaces
+  `legacy_artifact_unverified_node_clocks` and re-classifies measured edges
+  into `time_unverified_observation_links`; the per-node leg carries a
+  `legacy_unmarked_owner_clock` gap. A `clock_basis=source_clock_v1`
+  artifact unlocks the verified path.
+* **R6 earned aggregates.** Zero-edge pathways derive coverage / coherence
+  from their own source clock. Stale / future / unknown pathway or node
+  clocks downgrade `coverage_score` to `None` and `coherence` to `unknown`.
+* **R7 distinct-source count.** `distinct_sources` and
+  `independent_confirmations_disallowed` surface in every pathway so single-
+  source and dependent-leg pathways are disclosed.
+* **R8 context-only authority.** Legacy artifacts retain `is_context_only=True`
+  / `display_only=True` / `not_a_signal=True`; no new escalation.
+* **R9 wall-clock independence.** `compile(root=None, *, now=...)` and
+  `project_evidence(payload, *, now=...)` accept an injected observation
+  clock; tests run at fixed `2026-10-02T23:00:00Z` and exercise both
+  advancement (`2030-01-01`) and Kiritimati / GMT+12 timezones.
+
+### Evidence
+
+* RED-first regressions added 11 new test cases that failed against the
+  unmodified 9d0d51cc compiler and reader; all 11 now pass.
+* Pre-existing tests that asserted the OLD contract (no marker required)
+  were updated to add the `clock_basis=source_clock_v1` marker so the new
+  R5 rule does not silently shadow them.
+* G1 (test_mechanism_pathways + test_mechanism_evidence +
+  test_regime_change_evidence + test_deploy_update_self_heal): 418 green.
+* G3 (Pacific/Kiritimati and Etc/GMT+12): 159 green each.
+* G4 (consumer modules — test_cortex, test_cortex_adb_w3,
+  test_nw_consumers_w3, test_til_nw_citizenship, test_metabolism,
+  test_build_cycle_pattern_state, test_causal_llm_runner,
+  test_chat_plain_words, test_inflation_intelligence_nw,
+  test_seasonality_state_v2, test_world_state_special_sits,
+  test_world_state_stage_analysis): 502 green. `test_brain_gateway`
+  fails on `fastapi` import, a pre-existing sparse-worktree environment
+  limitation unrelated to this repair.
+* G2 (clock advance): fresh clock carries source date 2026-10-02 into the
+  driver node; advancing the reader clock to 2030-01-01 collapses the
+  driver to `stale` and removes `reported_observation_links`. Future-dated
+  source returns `no_pathway` (the pathway is quarantined at compile time).
+* G5 (contract delta): only owned files touched —
+  `engine/neuralweb/mechanism_pathways.py`,
+  `engine/neuralweb/mechanism_evidence.py`,
+  `tests/test_mechanism_pathways.py`,
+  `tests/test_mechanism_evidence.py`,
+  `research/macro_regime_intelligence/MECHANISM_EVIDENCE_2026-10-02.md`
+  (this section). No new API surface, no schema break beyond the additive
+  `clock_basis` field.

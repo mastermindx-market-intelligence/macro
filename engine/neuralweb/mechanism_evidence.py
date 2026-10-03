@@ -3,6 +3,20 @@
 Consumes the incumbent artifact, never runs its producer or changes market truth.
 Dates describe owner snapshots; association-table directions are not observations
 of realized transmission. Neither coverage nor link counts are causal confidence.
+
+2026-10-03 clock and aggregate repair (R3/R5/R6):
+  - R3 (defence in depth): the reader independently rejects future-dated and
+    unknown-dated node clocks. A future source clock is "future" only when
+    the date is later than the latest calendar date anywhere on Earth at
+    `now` (see `_LATEST_EARTH_DATE_OFFSET_HOURS`).
+  - R5 (legacy artifacts): only artifacts carrying `clock_basis=source_clock_v1`
+    may have their node dates counted as verified source observation dates.
+    Unmarked (legacy) artifacts → node dates are disclosed as
+    `time_unverified_observation_links`; they never increment
+    `reported_observation_links`.
+  - R6 (aggregates earned): zero-edge pathways derive coverage / coherence
+    from their own source clock. Aggregates are NOT copied from the producer
+    when surviving evidence does not support them.
 """
 from __future__ import annotations
 
@@ -12,11 +26,13 @@ import json
 import math
 import re
 from collections import Counter
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from engine.neuralweb.mechanism_pathways import AUTHORITY_BLOCK, SCHEMA, _STALE_DAYS
+from engine.neuralweb.mechanism_pathways import (
+    AUTHORITY_BLOCK, CLOCK_BASIS_MARKER, SCHEMA, _STALE_DAYS,
+)
 
 SOURCE_PATH = 'data/neuralweb/mechanism_pathways.json'
 MAX_SOURCE_BYTES = 2 * 1024 * 1024
@@ -26,6 +42,15 @@ MAX_EDGES = 24
 _BAD_CLOCKS = frozenset({'future_dated', 'unknown_date', 'unavailable'})
 _STATUSES = frozenset({'measured', 'theory_prior', 'context_only', 'conflicted', 'missing', 'stale'})
 _SIGNS = frozenset({'positive', 'negative', 'neutral'})
+
+# Per R4 boundary rule: a date-only source clock D is "future" only when
+# D > (now_utc + 14h).date() — the latest calendar date anywhere on Earth.
+# Kiritimati (UTC+14) is the furthest forward inhabited zone.
+_LATEST_EARTH_DATE_OFFSET_HOURS = 14
+
+
+def _latest_earth_date(now: datetime) -> date:
+    return (now + timedelta(hours=_LATEST_EARTH_DATE_OFFSET_HOURS)).date()
 
 
 def _obj(value: Any) -> dict:
@@ -67,8 +92,10 @@ def _stamp(value: Any, now: datetime) -> dict:
     try:
         if re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
             day = date.fromisoformat(value)
+            # R4: date-only future boundary uses the latest Earth date.
+            latest_earth = _latest_earth_date(now)
+            future = day > latest_earth
             age = (now.date() - day).days
-            future = day > now.date()
             stamp, precision = value, 'date'
         else:
             dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
@@ -94,14 +121,17 @@ def _base(now: datetime) -> dict:
         'historical_replay_eligible': False, 'causal_identification_established': False,
         'evidence_summary': {key: 0 for key in (
             'reported_observation_links', 'contextual_transmission_links',
-            'theory_links', 'conflicted_links', 'unavailable_links', 'stale_links')},
+            'theory_links', 'conflicted_links', 'unavailable_links', 'stale_links',
+            'time_unverified_observation_links')},
         'note': ('Owner-reported observations, historical associations and theory are distinct. '
                  'Coverage is readability, not probability; links are not independent votes. '
-                 'A snapshot date is not the time a market mechanism began.'),
+                 'A snapshot date is not the time a market mechanism began. '
+                 'Legacy artifacts without a clock_basis marker cannot launder '
+                 'build-stamped node dates as source observations.'),
     }
 
 
-def _node(raw: dict, now: datetime) -> dict:
+def _node(raw: dict, now: datetime, *, is_repaired: bool = True) -> dict:
     out = {k: _token(raw.get(k)) for k in (
         'node_id', 'domain', 'source_artifact', 'source_tier', 'lag_class', 'pathway_role')}
     out.update(_stamp(raw.get('as_of'), now))
@@ -117,11 +147,25 @@ def _node(raw: dict, now: datetime) -> dict:
     if out['reading_status'] in _BAD_CLOCKS:
         out.update(value=None, z_or_percentile=None, direction=None, observation={})
         out['gaps'].append(out['reading_status'])
+    # R5 — surface a per-node time-unverified disclosure when the artifact
+    # carries no clock_basis marker. The node still exposes its values, but
+    # the leg's own date is not yet a verified source observation date.
+    if not is_repaired and out['as_of'] is not None:
+        out['gaps'].append('legacy_unmarked_owner_clock')
     return out
 
 
 def project_evidence(payload: Any, *, now: datetime) -> dict:
-    """Pure bounded projection; never substitutes wrapper clocks or new causes."""
+    """Pure bounded projection; never substitutes wrapper clocks or new causes.
+
+    R5 (2026-10-03): the artifact must carry a `clock_basis` marker for any
+    per-node date to count as a verified source observation. Legacy artifacts
+    (no marker) → those links are disclosed as
+    `time_unverified_observation_links`, never as `reported_observation_links`.
+
+    R6: pathway-level coverage / coherence are derived from surviving evidence
+    elements (zero-edge factor pathways use their own source clock).
+    """
     if not isinstance(now, datetime) or now.tzinfo is None:
         raise ValueError('timezone-aware observation time required')
     now = now.astimezone(timezone.utc)
@@ -138,6 +182,11 @@ def project_evidence(payload: Any, *, now: datetime) -> dict:
         out['gaps'] = ['pathways_unavailable']
         out['reading_status'] = 'unavailable'
         return out
+    # R5: clock_basis marker required for any per-node observation claim.
+    # The marker is the source artifact's own declaration; absent → legacy.
+    is_repaired = payload.get('clock_basis') == CLOCK_BASIS_MARKER
+    if not is_repaired:
+        out['gaps'] = out.get('gaps', []) + ['legacy_artifact_unverified_node_clocks']
     out['omitted_pathways'] = max(0, len(raw_paths) - MAX_PATHWAYS)
     summary = out['evidence_summary']
     for raw in raw_paths[:MAX_PATHWAYS]:
@@ -149,6 +198,11 @@ def project_evidence(payload: Any, *, now: datetime) -> dict:
         p.update(nodes=[], edges=[], gaps=[], confidence_ceiling='context_only')
         p['coherence'] = raw.get('coherence') if raw.get('coherence') in ('supported', 'partial', 'conflicted') else 'unknown'
         p['coherence_semantics'] = 'owner_categorical_assessment_not_causal_confidence'
+        # R7: surface dependent-leg / single-source disclosure
+        ds = _number(raw.get('distinct_sources'))
+        if ds is not None:
+            p['distinct_sources'] = int(ds)
+        p['independent_confirmations_disallowed'] = bool(raw.get('independent_confirmations_disallowed'))
         if p['reading_status'] in _BAD_CLOCKS:
             p['coherence'], p['coverage_score'] = 'unknown', None
             p['gaps'] = [p['reading_status']]
@@ -170,8 +224,18 @@ def project_evidence(payload: Any, *, now: datetime) -> dict:
         if any(k and count > 1 for k, count in ids.items()):
             p['gaps'].append('ambiguous_node_identity')
         p['omitted_nodes'], p['omitted_edges'] = max(0, len(nodes) - MAX_NODES), max(0, len(edges) - MAX_EDGES)
-        p['nodes'] = [_node(n, now) for n in nodes[:MAX_NODES] if isinstance(n, dict)]
+        p['nodes'] = [_node(n, now, is_repaired=is_repaired) for n in nodes[:MAX_NODES] if isinstance(n, dict)]
         indexed = {n['node_id']: n for n in p['nodes'] if n['node_id'] and ids[n['node_id']] == 1}
+        # R6: zero-edge pathways are qualified by the pathway's own source clock,
+        # not by a producer-stamped coverage. If the pathway's clock is stale
+        # / future / unknown, coverage and coherence are withheld.
+        if not edges and p['coverage_score'] is not None and (
+            p['reading_status'] in ('stale', 'future_dated', 'unknown_date')
+            or any(n.get('reading_status') in ('stale', 'future_dated', 'unknown_date') for n in p['nodes'])
+        ):
+            p['coverage_score'] = None
+            p['coherence'] = 'unknown'
+            p['gaps'].append('zero_edge_pathway_source_clock_unusable')
         for raw_edge in edges[:MAX_EDGES]:
             if not isinstance(raw_edge, dict):
                 p['gaps'].append('invalid_edge')
@@ -218,6 +282,26 @@ def project_evidence(payload: Any, *, now: datetime) -> dict:
                         'stale': 'stale_links', 'theory_prior': 'theory_links'}.get(e['status'])
             if category is None:
                 category = 'contextual_transmission_links' if is_transmission else 'reported_observation_links' if e['status'] == 'measured' else 'theory_links'
+            # R5 (defence in depth): legacy artifacts may not count any per-node
+            # date as a verified source observation. Their measured "observation"
+            # edges are reclassified as time-unverified disclosures — the leg
+            # nodes still expose their values, but the link is not a vote for
+            # coverage / observation counting. The same applies if any leg's
+            # own date is in a bad state (defence in depth: even when the
+            # artifact has a clock_basis marker, future/unknown leg clocks are
+            # not observations).
+            leg_endpoints_ok = all(
+                n is not None and n.get('reading_status') not in _BAD_CLOCKS
+                for n in endpoints
+            )
+            if category == 'reported_observation_links' and (
+                not is_repaired or not leg_endpoints_ok
+            ):
+                if not is_repaired:
+                    category = 'time_unverified_observation_links'
+                else:
+                    category = 'unavailable_links'
+                    e['status'] = 'missing'
             summary[category] += 1
             p['edges'].append(e)
         out['pathways'].append(p)

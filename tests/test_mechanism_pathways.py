@@ -16,7 +16,7 @@ Tests cover:
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -37,8 +37,32 @@ from engine.neuralweb.mechanism_pathways import (
 # Fixture builders
 # ---------------------------------------------------------------------------
 
-_FRESH_ASOF = "2099-01-01"  # Far-future date — always fresh
-_STALE_ASOF = "2000-01-01"  # Far-past date — always stale
+# Fixed reference clock — every test injects this into compile() so the
+# suite is wall-clock independent (F3 discipline, 2026-10-03).
+_TEST_NOW = datetime(2026, 10, 2, 23, 0, tzinfo=timezone.utc)
+
+
+@pytest.fixture
+def fixed_compile_clock(monkeypatch):
+    """Force compile()'s injected now to _TEST_NOW so date classification is
+    wall-clock independent. Tests relying on `_FRESH_ASOF` use this fixture.
+    """
+    from engine.neuralweb import mechanism_pathways as mp
+    orig = mp.compile
+    def _compile(root=None, *, now=None):
+        return orig(root, now=_TEST_NOW if now is None else now)
+    monkeypatch.setattr(mp, 'compile', _compile)
+    return _TEST_NOW
+
+
+# A fresh past asof, defined relative to the test clock (1 calendar day ago).
+# Tests that previously relied on `_FRESH_ASOF = "2099-01-01"` for "always
+# fresh" now use this past-but-in-window date so the new R3 future-rejection
+# cannot accidentally accept it. Tests that don't exercise clock semantics
+# still get the same effective behavior: in-window.
+_FRESH_ASOF = (_TEST_NOW.replace(hour=0, minute=0, second=0, microsecond=0)
+               - timedelta(days=1)).strftime("%Y-%m-%d")
+_STALE_ASOF = "2000-01-01"  # far-past date — always stale
 
 
 def _make_regime(
@@ -890,3 +914,168 @@ class TestTransmissionSchema:
                         "valid values are headwind/tailwind/neutral/UNMEASURED"
                     )
                     assert "asset" in asset, "real schema requires 'asset' field"
+
+
+# ---------------------------------------------------------------------------
+# 2026-10-03 clock and aggregate repair regressions (R1/R2/R3/R4)
+# ---------------------------------------------------------------------------
+
+class TestSourceClockCarrier:
+    """F1 regression: source clocks are carried through to nodes, not minted.
+
+    The audit found that `compile()` builds an `as_of` from `datetime.now(tz=utc)`
+    and passes that same build-date to every driver / evidence-leg node,
+    regardless of the source record's own md_asof or chain asof. _is_stale
+    admitted future dates, so a future-dated source became today-dated
+    measured evidence before the reader validated it.
+    """
+
+    def test_compile_carries_source_md_asof_into_pathway_and_nodes(self, tmp_path):
+        """When md_asof is a real past date, every node must carry that date."""
+        # Use a fresh past date (1 day before the test clock)
+        fresh_past = _FRESH_ASOF
+        regime = _make_regime(md_asof=fresh_past, md_primary="ai_semis", md_verdict="clear")
+        _make_regime_files(tmp_path, regime)
+        result = compile(root=tmp_path, now=_TEST_NOW)
+        pathways = result.get("pathways", [])
+        assert pathways, "expected at least one pathway"
+        primary = pathways[0]
+        # Pathway record carries the source clock, not the build clock
+        assert primary["as_of"] == fresh_past, (
+            f"pathway as_of must be the source md_asof ({fresh_past}), got {primary['as_of']!r}"
+        )
+        # Driver + leg nodes carry the source clock too
+        for node in primary["nodes"]:
+            assert node["as_of"] == fresh_past, (
+                f"node {node['node_id']!r} as_of must be source md_asof "
+                f"({fresh_past}), got {node['as_of']!r}"
+            )
+
+    def test_compile_does_not_mint_today_for_missing_md_asof(self, tmp_path):
+        """R2: missing md_asof must yield explicit null clock + reason, not today."""
+        regime = _make_regime(md_asof=_FRESH_ASOF, md_primary="ai_semis", md_verdict="clear")
+        regime["market_drivers"].pop("asof", None)
+        regime.pop("asof", None)
+        regime.pop("date", None)
+        _make_regime_files(tmp_path, regime)
+        result = compile(root=tmp_path, now=_TEST_NOW)
+        pathways = result.get("pathways", [])
+        # Missing md_asof → trigger_stale guard fires (R2: not fresh, never today)
+        assert not pathways, (
+            f"missing md_asof must trigger no_pathway, got {pathways!r}"
+        )
+        np = result.get("no_pathway", {})
+        assert np.get("reason") == "trigger_stale"
+        tc = np.get("trigger_context", {})
+        assert tc.get("as_of_reason") == "unknown_date", (
+            f"missing md_asof must surface reason 'unknown_date', got "
+            f"{tc.get('as_of_reason')!r}"
+        )
+
+    def test_compile_rejects_future_md_asof_with_reason_not_stale(self, tmp_path):
+        """R3 + R4: a future-dated source must not be admitted as fresh.
+        _is_stale used to return False for negative days; the F1 fix must
+        treat a future source clock as NOT usable, distinct from stale.
+        """
+        future_date = "2099-01-01"  # unambiguously future
+        regime = _make_regime(md_asof=future_date, md_primary="ai_semis", md_verdict="clear")
+        _make_regime_files(tmp_path, regime)
+        result = compile(root=tmp_path, now=_TEST_NOW)
+        # Future-dated source must trigger the stale-trigger guard
+        np = result.get("no_pathway", {})
+        assert np.get("reason") == "trigger_stale", (
+            f"future-dated md_asof must emit trigger_stale, got {np.get('reason')!r}"
+        )
+        tc = np.get("trigger_context", {})
+        assert tc.get("as_of_reason") == "future_dated", (
+            f"future-dated md_asof must surface reason 'future_dated', got "
+            f"{tc.get('as_of_reason')!r}"
+        )
+
+
+class TestStalenessBoundaryRule:
+    """R4: documented boundary rule for date-only vs datetime clocks."""
+
+    def test_is_stale_rejects_future_date_only_asof(self):
+        """Future date-only asof must be rejected as NOT-usable (R3)."""
+        assert _is_stale("2099-01-01") is False, (
+            "RED proof: _is_stale treats 2099 as not-stale; should reject"
+        )
+
+    def test_is_stale_rejects_future_datetime_asof(self):
+        """Future datetime asof must be rejected as NOT-usable."""
+        # 2099-01-01 00:00:00 UTC is in the future
+        assert _is_stale("2099-01-01T00:00:00Z") is False, (
+            "RED proof: _is_stale treats future datetime as not-stale; should reject"
+        )
+
+    def test_past_still_stale(self):
+        """A 7-day-old past date must remain stale."""
+        assert _is_stale("2020-01-01") is True
+
+
+class TestFactorRotationClock:
+    """R6: zero-edge pathway with factor rotation driver.
+    The producer emits coverage_score=1.0 with edges=[]. The reader must
+    derive coverage from the single source's clock, not copy the producer's
+    claim. A stale/future/undated factor source must yield null coverage.
+    """
+
+    def test_factor_rotation_carries_source_clock(self, tmp_path):
+        """The factor rotation driver node must carry the factor source clock,
+        not today's build date.
+        """
+        fresh_past = _FRESH_ASOF
+        regime = _make_regime(md_verdict="quiet", rr_state="calm", rr_dominant_scare="",
+                              md_asof=fresh_past)
+        regime.pop("regime_one", None)
+        factor_path = tmp_path / "data/neuralweb/factor_intelligence_state.json"
+        factor_path.parent.mkdir(parents=True, exist_ok=True)
+        factor_path.write_text(json.dumps({
+            "as_of": fresh_past,
+            "style_regime": "flip_pending",
+            "flips": [{"from": "value", "to": "growth"}],
+        }), encoding="utf-8")
+        _make_regime_files(tmp_path, regime)
+        result = compile(root=tmp_path, now=_TEST_NOW)
+        pathways = result.get("pathways", [])
+        factor = [p for p in pathways if p["family"] == "factor_rotation"]
+        assert factor, "factor rotation pathway expected"
+        primary = factor[0]
+        assert primary["as_of"] == fresh_past, (
+            f"factor pathway as_of must be the source factor asof, got {primary['as_of']!r}"
+        )
+        driver = primary["nodes"][0]
+        assert driver["as_of"] == fresh_past, (
+            f"factor driver node as_of must be source clock, got {driver['as_of']!r}"
+        )
+
+
+class TestDependentLegsR7:
+    """R7: dependent legs derived from one source record must not be counted
+    as independent confirmations.
+    """
+
+    def test_pathway_records_distinct_source_count(self, tmp_path):
+        """A pathway whose legs all share one source clock must expose a
+        `distinct_sources` field. When all share one, distinct_sources=1;
+        coherence is therefore NOT a passive counter of independent votes.
+        """
+        fresh_past = _FRESH_ASOF
+        regime = _make_regime(md_asof=fresh_past, md_primary="ai_semis", md_verdict="clear")
+        _make_regime_files(tmp_path, regime)
+        result = compile(root=tmp_path, now=_TEST_NOW)
+        pathways = result.get("pathways", [])
+        primary = pathways[0]
+        # The field must exist and reflect single-source reality
+        assert "distinct_sources" in primary, (
+            "R7 requires explicit distinct_sources count on every pathway"
+        )
+        # All nodes in a market_drivers pathway share md_asof → distinct_sources = 1
+        assert primary["distinct_sources"] == 1, (
+            f"market_drivers pathway should have distinct_sources=1 (one source), "
+            f"got {primary['distinct_sources']}"
+        )
+        assert primary.get("independent_confirmations_disallowed") is True, (
+            "R7 requires explicit insufficient-confirmation marker on single-source pathways"
+        )

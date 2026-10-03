@@ -70,6 +70,7 @@ def test_existing_read_routes_enforce_context_and_classify_links(tmp_path, via_a
     p = artifact()
     p.update(is_context_only=False, display_only=False, not_a_signal=False)
     p['authority'] = {'may_trade': True, 'may_size': True}
+    p['clock_basis'] = 'source_clock_v1'
     path = write_artifact(tmp_path, p); before = path.read_bytes()
     if via_ask:
         from engine.neuralweb.ask_brain import _dispatch_read_tool
@@ -210,6 +211,7 @@ def test_malformed_edge_status_is_unavailable_not_a_crash(bad):
 
 def test_zero_is_an_observation_and_prose_cannot_be_its_substitute():
     p = artifact(); p['pathways'][0]['nodes'][1]['value'] = 0
+    p['clock_basis'] = 'source_clock_v1'
     assert project(p)['evidence_summary']['reported_observation_links'] == 1
     p['pathways'][0]['nodes'][1]['value'] = None
     p['pathways'][0]['nodes'][1]['observation'] = {'en': 'Strong confirmation'}
@@ -260,6 +262,7 @@ def test_actual_gateway_tool_result_reaches_model_with_evidence_qualifiers(tmp_p
     from types import SimpleNamespace
     from engine.neuralweb import brain_gateway as gw
     p = artifact()
+    p['clock_basis'] = 'source_clock_v1'
     if date_state != 'healthy':
         p['pathways'][0]['nodes'][1]['as_of'] = '2099-01-01' if date_state == 'future' else '2020-01-01'
     write_artifact(tmp_path, p)
@@ -346,3 +349,239 @@ def test_undated_pathway_does_not_keep_a_positive_coherence_claim():
     p = artifact();p['pathways'][0]['as_of'] = None
     path = project(p)['pathways'][0]
     assert path['coherence'] == 'unknown' and path['coverage_score'] is None
+
+
+# ---------------------------------------------------------------------------
+# 2026-10-03 clock and aggregate repair regressions (R3/R5/R6)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize('bad_clock', ['2099-01-01', None])
+def test_legacy_artifact_without_marker_does_not_count_node_dates_as_source(bad_clock):
+    """R5: an old artifact (no clock_basis marker) cannot launder its
+    build-stamped node dates as verified source observation dates. The
+    reader must disclose the limitation and withhold node dates from
+    reported_observation_links.
+    """
+    p = artifact()
+    # Remove any clock_basis marker the new producer might mint
+    p.pop('clock_basis', None)
+    p['pathways'][0].pop('clock_basis', None)
+    if bad_clock is not None:
+        p['pathways'][0]['nodes'][1]['as_of'] = bad_clock
+    out = project(p)
+    # Node dates from a legacy artifact cannot count as verified observations
+    summary = out['evidence_summary']
+    assert summary.get('time_unverified_observation_links', 0) >= 0
+    # Reported observations cannot include the legacy node
+    assert summary['reported_observation_links'] == 0
+    # The relevant node carries a time-unverified disclosure
+    node = out['pathways'][0]['nodes'][1]
+    assert any('time_unverified' in g or 'legacy_unmarked' in g for g in node['gaps']), (
+        f"legacy unmarked node must surface time-unverified disclosure, got {node.get('gaps')!r}"
+    )
+
+
+@pytest.mark.parametrize('bad_clock', ['2099-01-01', None])
+def test_reader_rejects_future_and_unknown_node_clocks_defence_in_depth(bad_clock):
+    """R3: the reader must independently reject future/unknown node clocks,
+    regardless of whether the compiler filtered. Defence in depth.
+    """
+    p = artifact()
+    p['pathways'][0]['nodes'][1]['as_of'] = bad_clock
+    out = project(p)
+    summary = out['evidence_summary']
+    node = out['pathways'][0]['nodes'][1]
+    if bad_clock is None:
+        assert node['reading_status'] == 'unknown_date'
+        assert 'unknown_date' in node['gaps']
+    else:
+        assert node['reading_status'] == 'future_dated'
+        assert 'future_dated' in node['gaps']
+    assert summary['reported_observation_links'] == 0
+    edge = out['pathways'][0]['edges'][0]
+    assert edge['status'] == 'missing'
+
+
+def test_factor_rotation_zero_edge_coverage_is_derived_not_copied():
+    """R6: factor rotation pathway with edges=[] and the producer's
+    coverage_score=1.0 must NOT pass that copy through when the source
+    clock is stale/future/unknown. The reader must derive coverage from
+    surviving evidence elements.
+    """
+    p = {
+        'schema': 'neuralweb.mechanism_pathways.v1', 'as_of': '2026-10-02',
+        'pathways': [{
+            'family': 'factor_rotation', 'driver': 'factor_rotation', 'pathway_role': 'primary',
+            'as_of': '2020-01-01',  # stale source clock
+            'direction_en': 'Factor rotation', 'direction_zh': '',
+            'coverage_score': 1.0,  # producer's copy
+            'coherence': 'supported',
+            'stale_legs': [],
+            'nodes': [
+                {'node_id': 'driver_factor_rotation', 'as_of': '2020-01-01',
+                 'domain': 'factor_rotation', 'pathway_role': 'trigger',
+                 'source_artifact': 'data/neuralweb/factor_intelligence_state.json',
+                 'entity': 'factor_rotation', 'value': None, 'source_tier': 'context_only',
+                 'lag_class': 'same_day'},
+            ],
+            'edges': [],  # zero-edge pathway
+        }],
+        'no_pathway': None,
+    }
+    out = project(p)
+    pathway = out['pathways'][0]
+    # Coverage must NOT be the producer's 1.0 when the source clock is stale
+    assert pathway['coverage_score'] is None, (
+        f"R6 RED proof: zero-edge pathway with stale source still copied "
+        f"coverage_score={pathway['coverage_score']!r}; must be None"
+    )
+    assert pathway['coherence'] in ('unknown', 'partial'), (
+        f"R6: coherence must reflect stale source, got {pathway['coherence']!r}"
+    )
+
+
+def test_aggregate_reflects_only_surviving_legs_mixed_pathway():
+    """R6: a mixed pathway with one fresh leg and one future-dated leg
+    must reflect that in its coverage / reported_observation_links count.
+    """
+    p = artifact()
+    # Make the leg (index 1) future-dated; keep driver fresh
+    p['pathways'][0]['nodes'][1]['as_of'] = '2099-01-01'
+    out = project(p)
+    summary = out['evidence_summary']
+    pathway = out['pathways'][0]
+    # Only one good observation survives
+    assert summary['reported_observation_links'] == 0  # edge becomes missing
+    assert summary['unavailable_links'] == 1
+    # Coverage reflects only survivors, not the producer's 1.0
+    assert pathway['coverage_score'] in (None, 0.5), (
+        f"R6: coverage must reflect survivors, got {pathway['coverage_score']!r}"
+    )
+
+
+@pytest.mark.parametrize('where,expected_status', [
+    ('root', 'future_dated'),
+    ('pathway', 'future_dated'),
+    ('node', 'future_dated'),
+])
+def test_future_dated_clock_at_any_level_quarantines(where, expected_status):
+    """R3 boundary: a future clock at the root, pathway, or node level must
+    surface the relevant status distinct from 'stale' and 'unknown_date'.
+    """
+    p = artifact()
+    p['pathways'][0].pop('clock_basis', None)
+    p.pop('clock_basis', None)
+    target = p if where == 'root' else p['pathways'][0] if where == 'pathway' else p['pathways'][0]['nodes'][1]
+    target['as_of'] = '2099-01-01'
+    out = project(p)
+    if where == 'root':
+        assert out['reading_status'] == expected_status
+    elif where == 'pathway':
+        assert out['pathways'][0]['reading_status'] == expected_status
+    else:
+        assert out['pathways'][0]['nodes'][1]['reading_status'] == expected_status
+
+
+def test_clock_basis_marker_required_for_verified_observation_links():
+    """R5: only artifacts that mark clock_basis=source_clock_v1 may have
+    their node dates counted as verified source observation dates.
+    Unmarked (legacy) artifacts → no reported_observation_links.
+    """
+    p = artifact()
+    # Do NOT add a clock_basis marker
+    assert 'clock_basis' not in p
+    out = project(p)
+    # Even with all good dates, legacy artifact → no reported observation links
+    assert out['evidence_summary']['reported_observation_links'] == 0
+    # Disclosure in summary
+    assert out['evidence_summary'].get('time_unverified_observation_links', 0) > 0
+
+
+def test_source_clock_v1_marker_unlocks_verified_observations():
+    """R5: a clock_basis=source_clock_v1 artifact may report verified observations."""
+    p = artifact()
+    p['clock_basis'] = 'source_clock_v1'
+    out = project(p)
+    assert out['evidence_summary']['reported_observation_links'] == 1
+
+
+def test_legacy_artifact_retains_context_only_authority():
+    """R8: legacy artifacts cannot claim any new authority. is_context_only,
+    display_only, not_a_signal stay True; may_size False; no new escalation.
+    """
+    p = artifact()
+    p.pop('clock_basis', None)
+    out = project(p)
+    assert out['is_context_only'] is True
+    assert out['display_only'] is True
+    assert out['not_a_signal'] is True
+    assert out['authority']['may_size'] is False
+    assert out.get('may_trade') is None or out.get('may_trade') is False
+    assert out['causal_identification_established'] is False
+
+
+def test_advancing_reader_clock_withholds_fresh_then_withheld():
+    """F3 regression. Same saved artifact, two clocks: one in-window yields
+    the legacy 'reported_observation_links'=1 with clock_basis marker;
+    advancing past the source's date makes the relevant nodes stale and
+    withholds them. Identical result semantics across both clock values
+    (only the status fields differ).
+    """
+    from engine.neuralweb.mechanism_evidence import project_evidence as _pe
+    p = artifact()
+    p['clock_basis'] = 'source_clock_v1'
+    p['as_of'] = '2026-10-02'
+    p['pathways'][0]['as_of'] = '2026-10-02'
+    for n in p['pathways'][0]['nodes']:
+        n['as_of'] = '2026-10-02'
+    out_fresh = _pe(p, now=datetime(2026, 10, 3, 0, 0, tzinfo=timezone.utc))
+    # Now advance well past freshness
+    out_late = _pe(p, now=datetime(2030, 1, 1, 0, 0, tzinfo=timezone.utc))
+    assert out_fresh['evidence_summary']['reported_observation_links'] == 1
+    assert out_late['evidence_summary']['reported_observation_links'] == 0
+    # Aggregate fields reflect this
+    assert out_late['evidence_summary']['stale_links'] >= 1
+
+
+def test_future_boundary_r4_date_only_past_latest_earth_date():
+    """R4 boundary: a date-only source D is "future" only when D >
+    (now_utc + 14h).date(). Test both sides of the boundary.
+    """
+    p = artifact()
+    p['clock_basis'] = 'source_clock_v1'
+    # now = NOW (2026-10-02 23:00 UTC). The "latest calendar date on Earth"
+    # is now_utc.date() + 1 if we cross 14:00 UTC. At 23:00 UTC on Oct 2,
+    # the latest date on Earth is Oct 3 (Kiritimati is +14).
+    # Oct 2 is "today" → available.
+    p['pathways'][0]['as_of'] = '2026-10-02'
+    out_today = project(p)
+    assert out_today['pathways'][0]['reading_status'] == 'available'
+    # Oct 3 is one day later than today in UTC, but is the latest date
+    # anywhere on Earth → still considered "today" under the R4 rule
+    p['pathways'][0]['as_of'] = '2026-10-03'
+    out_tomorrow = project(p)
+    assert out_tomorrow['pathways'][0]['reading_status'] in ('available', 'future_dated')
+    # Oct 4 is unambiguously future
+    p['pathways'][0]['as_of'] = '2026-10-04'
+    out_future = project(p)
+    assert out_future['pathways'][0]['reading_status'] == 'future_dated'
+
+
+@pytest.mark.parametrize('where,value,expected', [
+    ('root', 'not-a-date', 'unknown_date'),
+    ('pathway', '', 'unknown_date'),
+    ('node', [], 'unknown_date'),
+])
+def test_unparseable_clock_yields_unknown_date_with_reason(where, value, expected):
+    """R2: an unparseable clock is unknown, not fresh and not stale."""
+    p = artifact()
+    p['clock_basis'] = 'source_clock_v1'
+    target = p if where == 'root' else p['pathways'][0] if where == 'pathway' else p['pathways'][0]['nodes'][1]
+    target['as_of'] = value
+    out = project(p)
+    if where == 'root':
+        assert out['reading_status'] == expected
+    elif where == 'pathway':
+        assert out['pathways'][0]['reading_status'] == expected
+    else:
+        assert out['pathways'][0]['nodes'][1]['reading_status'] == expected
