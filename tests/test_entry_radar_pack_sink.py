@@ -29,6 +29,11 @@ def test_T2_proof_tap_collects_threshold_cases():
     assert tap.threshold_cases()
     assert lp.build_inversion_proof(
         pack, threshold_cases=tap.threshold_cases()) == lp.build_inversion_proof(default)
+    # The tap forwards every frame: the wrapped sink still holds the whole substrate.
+    assert sorted(pack.substrate) == sorted(default.substrate)
+    assert pack.substrate
+    for ticker in default.substrate:
+        pd.testing.assert_frame_equal(pack.substrate[ticker], default.substrate[ticker])
 
 
 class _RecordingSink:
@@ -105,6 +110,7 @@ def test_T6_with_proof_substrate_identity():
 
 def test_T7_threshold_cases_for_accepts_iso_or_date():
     pack = build()
+    compared = 0
     for row in pack.names:
         frame = pack.substrate.get(row.ticker)
         if frame is None:
@@ -113,6 +119,8 @@ def test_T7_threshold_cases_for_accepts_iso_or_date():
         date_cases = lp.threshold_cases_for(
             row, frame, next_session=date.fromisoformat(pack.next_session))
         assert iso_cases == date_cases
+        compared += len(iso_cases)
+    assert compared > 0
 
 
 def test_T8_proof_tap_threshold_cases_returns_fresh_list():
