@@ -1009,6 +1009,11 @@ def test_the_inactive_context_literal_is_the_one_the_guard_excludes() -> None:
     assert not GUARD._is_non_binding_check("ci-authority/main")
 
 
+def test_vercel_build_rate_limit_status_is_non_binding_in_ship_gate() -> None:
+    assert GUARD.VERCEL_STATUS_CONTEXT == "Vercel"
+    assert GUARD._is_non_binding_check("Vercel")
+
+
 @pytest.mark.parametrize(
     "runs",
     [

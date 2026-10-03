@@ -53,6 +53,9 @@ jobs:
           METAB_KEYS_ENABLED: ${{ vars.METAB_KEYS_ENABLED }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          # MO-PAID-023: activate the already-shipped UK desk on this credentialed
+          # sentinel. The engine still requires a provider and degrades fail-soft.
+          UK_POLICY_DESK_ENABLED: "1"
         run: |
           set +e
           ARGS=""

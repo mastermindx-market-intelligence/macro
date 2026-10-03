@@ -102,6 +102,10 @@ run_py "filing forensics workbench (build_fundamental_forensics)" scripts.build_
 # instead of killing the nightly.
 run_py "F01 macro workspace snapshots (build_macro_workspaces)" scripts.build_macro_workspaces
 run_py "macro dashboard + US stocks (build_site)" scripts.build_site
+# B-F06-4 research screener — AFTER the stock library (build_stock_library runs
+# inside build_site and writes site/stockdata/*.json). Pure view over those
+# objects + valuation_scenario.v1 rows. Display-tier; under 60s.
+run_py "research screener (build_research_screener)" scripts.build_research_screener
 # Ticker dossier pages (v2) — engine-internal, reads fresh site/stockdata/*.json
 # written by build_site above; rides the engine "commit engine outputs" git add.
 # Non-fatal: ::warning on failure, never aborts the render.

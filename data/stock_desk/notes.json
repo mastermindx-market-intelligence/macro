@@ -1,180 +1,174 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-17",
-  "generated_at": "2026-09-18T19:10:31.604708+00:00",
+  "as_of": "2026-10-01",
+  "generated_at": "2026-10-02T18:09:07.193108+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-17-EGBN-20260918191031-1",
-      "ticker": "EGBN",
-      "name": null,
+      "id": "2026-10-01-NVDA-20261002180907-1",
+      "ticker": "NVDA",
+      "name": "Nvidia Corp",
       "lean": "constructive",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The constructive base-building verdict is supported by the shipped residual-alpha selection and an unblocked, timely entry profile in an uptrend. Conviction stays low because accounting quality is flagged and historical constructive calls have shown weak directional accuracy.",
+      "thesis": "The base-building verdict is supported by an unblocked entry and intact trend, while the risk controls argue against overconfidence near the high. This is a fallible continuation lean, not a claim that its rank predicts returns.",
       "evidence": [
         "Verdict: Constructive \u2014 building a base",
-        "Selection axis: z 0.54, 58th percentile",
-        "Entry axis: z 0.91, unblocked",
-        "Board: TURN SIGNALED, direction up",
-        "Quality: accounting watch"
+        "Entry axis unblocked; price above 50-day and 200-day averages",
+        "Turn signaled with positive MACD",
+        "Accounting-quality flag: watch; only 2.9% below 52-week high"
       ],
-      "dissent": "The accounting-quality concern and slightly negative revisions could overwhelm the improving setup.",
+      "dissent": "The weekly timeframe remains mixed, the investor cycle is late, and accounting quality warrants scrutiny.",
       "falsifier": {
-        "text": "The turn fails and relative performance versus the S&P 500 is negative over the next 20 trading days.",
+        "text": "NVDA loses its 50-day average and underperforms the S&P 500 over the next 20 trading days.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "EGBN",
+          "subject_ticker": "NVDA",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
           "horizon_d": 20
         }
       },
-      "check_by": "2026-10-15",
+      "check_by": "2026-10-29",
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-09-17-SONO-20260918191031-2",
-      "ticker": "SONO",
-      "name": null,
+      "id": "2026-10-01-GAP-20261002180907-2",
+      "ticker": "GAP",
+      "name": "Gap Inc.",
       "lean": "constructive",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The constructive base-building verdict has the cleanest support here: favorable residual-alpha selection, an unblocked fresh entry, and strong quality without an accounting warning. Conviction remains low because the supplied record shows constructive directions have underperformed their chance benchmark.",
+      "thesis": "The constructive base verdict and unblocked new-cycle entry support a tentative relative-strength lean, moderated by the macro-risk tax and unresolved long-term trend. The weak historical accuracy of prior constructive calls keeps conviction low.",
       "evidence": [
         "Verdict: Constructive \u2014 building a base",
-        "Selection axis: z 0.86, 63rd percentile",
-        "Entry: FRESH BUY, unblocked",
-        "Quality axis: z 1.94, 77th percentile",
-        "Accounting flag: clean"
+        "New daily cycle with positive MACD and price above the 50-day average",
+        "Entry axis unblocked; accounting flag clean",
+        "Below the 200-day average and prior cycle was left-translated"
       ],
-      "dissent": "The stock remains 16.1% below its high, so the apparent base may instead be an incomplete recovery that continues to lag.",
+      "dissent": "The stock remains below its 200-day average, while an early-topping prior cycle and elevated macro sensitivity could make the rebound fail.",
       "falsifier": {
-        "text": "The fresh-buy setup fails and SONO underperforms the S&P 500 over the next 20 trading days.",
+        "text": "GAP falls back below its 50-day average and underperforms the S&P 500 over the next 20 trading days.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "SONO",
+          "subject_ticker": "GAP",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
           "horizon_d": 20
         }
       },
-      "check_by": "2026-10-15",
+      "check_by": "2026-10-29",
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-09-17-WAT-20260918191031-3",
-      "ticker": "WAT",
-      "name": null,
+      "id": "2026-10-01-PPLI-20261002180907-3",
+      "ticker": "PPLI",
+      "name": "People Inc.",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 15,
-      "thesis": "The verdict reports no clear edge, while the uptrend is extended and the health-care basket is deteriorating. The extension brake argues against chasing, but intact upward direction is not sufficient grounds for a relative short.",
+      "horizon_d": 20,
+      "thesis": "The deterministic verdict finds no clear edge: an unblocked short-term turn is offset by a stale event read, negative revisions, weak fundamentals, and an overdue investor cycle. The validated risk reshape supports waiting for clearer confirmation rather than assigning direction.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Selection axis: z -0.26, 46th percentile",
-        "Board: HOLD \u2014 EXTENDED, direction up",
-        "Sector basket caution: deteriorating",
-        "Entry axis: approximately neutral and unblocked"
+        "Selection axis near neutral; revisions z-score -0.39",
+        "Investor phase overdue and prior cycle left-translated",
+        "Net margin -4.3%, net-income growth -80.7%, accounting flag watch"
       ],
-      "dissent": "Momentum may persist at the high despite weak event context and sector deterioration, producing continued outperformance.",
+      "dissent": "Price is above both major moving averages with positive MACD, so the recent turn could develop into sustained relative strength.",
       "falsifier": {
-        "text": "WAT sustains positive relative performance versus the S&P 500 while its upward trend remains intact over the next 15 trading days.",
+        "text": "PPLI establishes sustained outperformance or underperformance versus the S&P 500 while holding above or breaking below both major moving averages.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-08",
+      "check_by": "2026-10-29",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-17-PLUS-20260918191031-4",
-      "ticker": "PLUS",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The fresh entry and tailwind are offset by an essentially neutral residual-selection reading, weak quality, and an accounting watch flag. With the deterministic verdict at no clear edge, the evidence does not justify a directional relative view.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Selection axis: z 0.05, 51st percentile",
-        "Entry axis: z 0.91, FRESH BUY",
-        "Quality axis: z -1.20, 32nd percentile",
-        "Accounting flag: watch"
-      ],
-      "dissent": "The favorable entry, upward direction, and positive revisions could develop into sustained relative strength.",
-      "falsifier": {
-        "text": "PLUS establishes sustained outperformance versus the S&P 500 with continued upward direction over the next 20 trading days.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-15",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-09-17-GATX-20260918191031-5",
-      "ticker": "GATX",
-      "name": null,
-      "lean": "constructive",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The constructive base-building verdict is backed by favorable residual selection and an unblocked turn signal while the stock remains below its high. The accounting watch and only middling quality keep this a low-conviction relative lean.",
-      "evidence": [
-        "Verdict: Constructive \u2014 building a base",
-        "Selection axis: z 0.25, 54th percentile",
-        "Entry axis: z 0.91, unblocked",
-        "Board: TURN SIGNALED, direction up",
-        "Quality: accounting watch"
-      ],
-      "dissent": "The turn may fail because selection support is modest and the accounting-quality flag could become consequential.",
-      "falsifier": {
-        "text": "The turn signal fails and GATX underperforms the S&P 500 over the next 20 trading days.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "GATX",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 20
-        }
-      },
-      "check_by": "2026-10-15",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-09-17-USPH-20260918191031-6",
-      "ticker": "USPH",
-      "name": null,
+      "id": "2026-10-01-BKE-20261002180907-4",
+      "ticker": "BKE",
+      "name": "The Buckle, Inc.",
       "lean": "cautious",
       "conviction": "medium",
       "horizon_d": 20,
-      "thesis": "This is an actual relative-weakness case rather than an extension-only short: the lagging verdict aligns with weak residual selection, negative momentum context, negative revisions, and an accounting watch. The cautious record is comparatively stronger, but still below the stated chance benchmark, limiting conviction to medium.",
+      "thesis": "The lagging verdict supplies an actual bearish signal rather than an extension-only warning: residual-alpha selection is weak, revisions are negative, and price remains below both major averages. The fresh-buy cycle prevents an avoid call, but the risk-adjusted lean is underperformance.",
       "evidence": [
         "Verdict: Lagging \u2014 relative weakness",
-        "Selection axis: z -0.74, 39th percentile",
-        "Momentum context: z -0.80",
-        "Revisions: z -0.50",
-        "Quality: accounting watch"
+        "Selection axis 36th percentile with revisions z-score -1.32",
+        "Price below the 50-day and 200-day averages",
+        "Fresh-buy cycle and clean accounting temper the bearish read"
       ],
-      "dissent": "The upward board direction and intact, unblocked entry could allow momentum to resume despite the weak cross-sectional profile.",
+      "dissent": "The daily and weekly cycles agree bullishly, with positive MACD and strong profitability, so the fresh turn could overpower the lagging profile.",
       "falsifier": {
-        "text": "USPH outperforms the S&P 500 over the next 20 trading days while maintaining its upward direction.",
+        "text": "BKE reclaims and holds its 50-day average while outperforming the S&P 500 over the next 20 trading days.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "USPH",
+          "subject_ticker": "BKE",
           "vs": "SPY",
           "op": ">",
           "threshold": 0.05,
           "horizon_d": 20
         }
       },
-      "check_by": "2026-10-15",
+      "check_by": "2026-10-29",
       "engine_verdict": "Lagging \u2014 relative weakness"
+    },
+    {
+      "id": "2026-10-01-MMSI-20261002180907-5",
+      "ticker": "MMSI",
+      "name": "Merit Medical Systems, Inc.",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 15,
+      "thesis": "The no-clear-edge verdict is appropriate because the bottoming attempt has not reclaimed the 10-day average and MACD remains negative. The entry risk control favors waiting; extension alone is not enough to take a bearish direction against a stock still above its 200-day average.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Still below the 10-day and 50-day averages; MACD negative",
+        "Entry axis unblocked but marked for extension",
+        "Price remains 12.4% above the 200-day average"
+      ],
+      "dissent": "The swing low, positive revisions, and intact 200-day trend could resolve into a successful rebound before full confirmation appears.",
+      "falsifier": {
+        "text": "MMSI reclaims its 10-day and 50-day averages with relative strength, or loses its 200-day average with sustained relative weakness.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-10-22",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-10-01-PAHC-20261002180907-6",
+      "ticker": "PAHC",
+      "name": "Phibro Animal Health",
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The base-building verdict and unblocked turn support a tentative constructive lean, with the risk controls limiting confidence because the weekly picture is mixed and the stock remains well below its 200-day average. The board score itself is not treated as return-predictive.",
+      "evidence": [
+        "Verdict: Constructive \u2014 building a base",
+        "Turn signaled; price reclaimed the 10-day and 50-day averages",
+        "Entry axis unblocked and accounting flag clean",
+        "Still 13.3% below the 200-day average with MACD not yet positive"
+      ],
+      "dissent": "The long-term trend remains damaged, quality is below average, and the nascent turn may fail before momentum becomes positive.",
+      "falsifier": {
+        "text": "PAHC loses its 50-day average and underperforms the S&P 500 over the next 20 trading days.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "PAHC",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 20
+        }
+      },
+      "check_by": "2026-10-29",
+      "engine_verdict": "Constructive \u2014 building a base"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."

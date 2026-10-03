@@ -36,6 +36,7 @@ from scripts.build_flow_leaders import (
     _personality_flags,
     _load_daily_close,
     _load_two_chain_days,
+    _load_options_entry,
     _build_membership_df,
     build,
     _ETF_SET,
@@ -82,6 +83,15 @@ def _make_tape_parquet(tmp: Path, ticker: str) -> None:
         },
         index=dates,
     ).to_parquet(str(out_dir / f"{ticker}.parquet"))
+
+
+def _make_options_entry_state(tmp: Path, ticker: str, gamma_regime) -> None:
+    """Write the options-entry display store consumed by Flow Leaders."""
+    out_dir = tmp / "data" / "options_entry"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(
+        {"ticker": [ticker], "gamma_regime": [gamma_regime]}
+    ).to_parquet(str(out_dir / "state.parquet"))
 
 
 def _make_site_dir(tmp: Path) -> Path:
@@ -346,6 +356,21 @@ class TestLoadTwoChainDays:
 
         assert set(d_t["oi"]) == {700}, f"flow day is not Thursday: {d_t['oi'].tolist()}"
         assert set(d_t1["oi"]) == {1000}, f"next day is not Friday: {d_t1['oi'].tolist()}"
+
+
+# ─────────────────────────────────────────────── _load_options_entry ──
+
+class TestLoadOptionsEntry:
+    def test_nan_gamma_regime_normalises_to_none(self, tmp_path):
+        """Missing parquet strings must never escape as float NaN."""
+        _make_options_entry_state(tmp_path, "AAPL", float("nan"))
+        out = _load_options_entry(tmp_path / "data")
+        assert out == {"AAPL": None}
+
+    def test_string_gamma_regime_is_preserved(self, tmp_path):
+        _make_options_entry_state(tmp_path, "AAPL", "short")
+        out = _load_options_entry(tmp_path / "data")
+        assert out == {"AAPL": "short"}
 
 
 # ──────────────────────────────────────────────────── ETF routing ──
@@ -642,18 +667,27 @@ class TestBuild:
         assert "board_b_rows[:" not in src
 
     def test_json_serializeable(self, tmp_path):
-        """leaders.json must be valid JSON with no NaN/inf values."""
+        """leaders.json is strict browser-parseable JSON, including missing strings."""
         _make_summary_parquet(tmp_path, "AAPL", n_sessions=3)
+        # Regression: production options_entry contained a missing gamma_regime
+        # that pandas materialised as plain float NaN.  json.dumps emitted the
+        # bare NaN token, so Terminal Response.json()/JSON.parse rejected the
+        # entire 195KB Flow Leaders document.
+        _make_options_entry_state(tmp_path, "AAPL", float("nan"))
         site_root = _make_site_dir(tmp_path)
         data_root = tmp_path / "data"
         tpl_root = _make_tpl_dir(self._repo)
         build(data_root=data_root, site_root=site_root, tpl_root=tpl_root)
         out = site_root / "flowleaders" / "leaders.json"
         text = out.read_text()
-        # Should parse without error
-        parsed = json.loads(text)
+
+        def _reject_constant(token: str):
+            raise ValueError(f"non-finite JSON constant: {token}")
+
+        parsed = json.loads(text, parse_constant=_reject_constant)
         assert isinstance(parsed, dict)
-        # "NaN" should NOT appear as a bare value (json.dumps would use None)
+        aapl = next(r for r in parsed["board_a"] if r["ticker"] == "AAPL")
+        assert aapl["gamma_regime"] is None
         assert "NaN" not in text
         assert "Infinity" not in text
 

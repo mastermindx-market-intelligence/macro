@@ -418,3 +418,31 @@ def test_proxy_omits_bearer_when_token_unset(monkeypatch):
 
     _payload, code = mastermind_proxy.forward_post("/api/mastermind_ai/run", {})
     assert code == 200 and seen["auth"] is None
+
+
+def test_orch_load_reuses_engine_settings_without_second_config_parse(tmp_path, monkeypatch):
+    """The engine loader already returns the settings block; admin must not parse config twice."""
+    class FakeOrchestratorLog:
+        @staticmethod
+        def load(_repo, limit=60):
+            assert limit == 60
+            return {
+                "entries": [],
+                "reviews": [],
+                "settings": {
+                    "review_every_n_runs": 7,
+                    "site_rows": 90,
+                    "ingest_bot_feedback": False,
+                    "brief_attention_nudges": False,
+                },
+            }
+
+    monkeypatch.setattr(neural_web, "_load_orchestrator_log", lambda: FakeOrchestratorLog)
+
+    def forbidden_fallback(_repo):
+        raise AssertionError("admin config fallback must not run after engine settings succeeded")
+
+    monkeypatch.setattr(neural_web, "_orch_settings", forbidden_fallback)
+    out = neural_web._orch_load(tmp_path)
+    assert out["settings"]["review_every_n_runs"] == 7
+    assert out["settings"]["brief_attention_nudges"] is False

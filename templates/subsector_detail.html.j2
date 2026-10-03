@@ -7,49 +7,105 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ group_name }} — Subsector Confluence</title>
+<title>{{ group_name }} — Intelligence Detail</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="../theme.css">
 <style>
-  * { box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font:14px/1.5 'Inter',-apple-system,"Segoe UI",Roboto,Helvetica,sans-serif; margin:0; padding:20px 0 30px; }
-  a { text-decoration:none; color:inherit; }
-  .wrap { padding:14px 16px; }
-  @media (min-width:1100px){ .wrap{ padding:16px max(28px,calc((100vw - 1320px)/2)); } }
-  .back { color:var(--muted); font-size:12.5px; display:inline-block; margin:2px 2px 12px; }
-  .dh { display:flex; flex-wrap:wrap; align-items:flex-start; gap:8px 18px; margin:2px 2px 6px; }
-  .dh h1 { font-size:22px; margin:0; font-weight:800; letter-spacing:-.015em; }
-  .dh .sct { color:var(--muted); font-size:12px; margin-top:3px; text-transform:uppercase; letter-spacing:.03em; }
-  .dh .badges { display:flex; gap:7px; align-items:center; margin-left:auto; flex-wrap:wrap; }
-  .tier { font-weight:800; font-size:12px; padding:2px 8px; border-radius:6px; color:#fff; }
-  .tier.T1{ background:var(--up); } .tier.T2{ background:#3da564; } .tier.T3{ background:var(--info); } .tier.T4{ background:#6b7cc4; } .tier.none{ background:var(--g-mid); color:var(--muted); }
-  .pill { font-size:11px; font-weight:700; padding:2px 9px; border-radius:10px; border:1px solid var(--line); }
-  .pill.buy{ color:var(--ink-up, var(--up)); border-color:color-mix(in srgb,var(--up) 45%,transparent); }
-  .pill.avoid{ color:var(--ink-down, var(--down)); border-color:color-mix(in srgb,var(--down) 45%,transparent); }
-  .pill.neutral{ color:var(--muted); } .pill.tactical,.pill.late{ color:var(--ink-orange, var(--orange)); }
-  .action { color:var(--text); font-size:13px; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--link); border-radius:9px; padding:9px 12px; margin:10px 2px 4px; max-width:108ch; }
-  .stats { display:flex; flex-wrap:wrap; gap:6px 18px; color:var(--muted); font-size:11.5px; margin:8px 2px 14px; }
-  .stats b { color:var(--text); font-weight:600; }
-  .chart-card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:8px; margin:6px 0 18px; }
-  #chart-host { width:100%; min-height:420px; }
-  h2 { font-size:15px; font-weight:700; margin:18px 2px 8px; }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font:14px/1.5 'Inter',-apple-system,"Segoe UI",Roboto,Helvetica,sans-serif;margin:0;padding:18px 0 30px}
+a{text-decoration:none;color:inherit}
+.wrap{padding:14px 16px}
+@media(min-width:1100px){.wrap{padding:16px max(28px,calc((100vw - 1320px)/2))}}
+.back{color:var(--muted);font-size:12.5px;display:inline-block;margin:2px 2px 12px}
+.pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:var(--r-pill,999px);border:1px solid var(--line);background:var(--panel2)}
+.pill.buy{color:var(--ink-up,var(--up));border-color:var(--up)}
+.pill.avoid{color:var(--ink-down,var(--down));border-color:var(--down)}
+.pill.tactical,.pill.late{color:var(--ink-orange,var(--orange))}
+.pill.neutral{color:var(--muted)}
+.tier{display:inline-flex;align-items:center;font-weight:800;font-size:10px;padding:3px 7px;border-radius:var(--r-ctl,8px);color:var(--bg);white-space:nowrap}
+.tier.T1{background:var(--up)}.tier.T2{background:var(--ok)}.tier.T3{background:var(--info)}.tier.T4{background:var(--g-mid)}.tier.none{background:var(--g-mid);color:var(--muted)}
+.action{color:var(--text);font-size:13px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--link);border-radius:var(--r-btn,10px);padding:10px 12px;margin:10px 0}
+.id-hero{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.75fr);gap:12px;margin:4px 0 12px}
+.id-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,14px);padding:18px}
+.id-eyebrow{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--link)}
+.id-title{font-size:30px;line-height:1.08;letter-spacing:-.025em;margin:7px 0 5px;font-weight:800}
+.id-subtitle{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.id-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.id-decision{display:flex;flex-direction:column;gap:12px;justify-content:space-between;background:var(--panel2)}
+.id-decision-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.id-decision-label{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.id-decision-read{font-size:16px;line-height:1.35;font-weight:750;margin-top:4px}
+.id-badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.id-decision-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.id-mini{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:9px}
+.id-mini .k,.id-stat .k,.id-evidence-cell .k{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.id-mini .v{font-size:12.5px;font-weight:700;margin-top:2px}
+.id-group-read{display:flex;align-items:center;justify-content:space-between;gap:18px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:14px 16px;margin:0 0 10px}
+.id-group-read-copy{min-width:0}
+.id-group-read h2{margin:0 0 4px;font-size:13px}
+.id-group-read p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.45}
+.id-callout{flex:none;max-width:280px;padding:7px 10px;border-radius:var(--r-pill,999px);background:var(--panel2);font-size:11px;font-weight:700;color:var(--ink-orange,var(--orange));text-align:center}
+.id-nav{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 12px}
+.id-nav a{padding:6px 10px;border-radius:var(--r-pill,999px);background:var(--panel2);border:1px solid var(--line);font-size:11.5px;color:var(--muted)}
+.id-nav a:first-child{background:var(--link);border-color:var(--link);color:var(--bg);font-weight:700}
+.id-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0 0 10px}
+.id-stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-btn,10px);padding:10px}
+.id-stat .v{display:block;margin-top:3px;font-size:15px;font-weight:700}
+.id-structure{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,14px);padding:12px;margin:0 0 16px}
+.id-section-hd{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:2px 2px 9px}
+.id-section-hd h2{margin:0;font-size:15px}
+.id-section-hd p{margin:2px 0 0;color:var(--muted);font-size:11px}
+.chart-card{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:8px;margin:0}
+#chart-host{width:100%;min-height:420px}
+.members-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
   table.tbl { width:100%; border-collapse:collapse; font-size:12.5px; }
   table.tbl th { text-align:left; color:var(--muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.03em; padding:6px 9px; border-bottom:1px solid var(--line); white-space:nowrap; }
   table.tbl td { padding:7px 9px; border-bottom:1px solid var(--line); white-space:nowrap; }
   table.tbl tr:hover td { background:var(--panel); }
   .tk { font-weight:700; } .num { font-variant-numeric:tabular-nums; } .pos{ color:var(--ink-up, var(--up)); } .neg{ color:var(--ink-down, var(--down)); }
   tr.buyable td { background:color-mix(in srgb,var(--up) 7%,transparent); }
-  .foot { color:var(--muted); font-size:11px; margin:22px 2px 0; line-height:1.6; max-width:108ch; border-top:1px solid var(--line); padding-top:12px; }
+.member-cards{display:none;gap:8px}
+.member-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:11px}
+.member-card.buyable{border-color:var(--up)}
+.member-card-top,.member-card-foot{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.member-card-foot{align-items:center;margin-top:8px}
+.member-symbol{font-size:14px;font-weight:800}
+.member-name{font-size:10.5px;color:var(--muted);margin-top:1px}
+.member-return{text-align:right;font-weight:700}
+.member-price{font-size:10.5px;color:var(--muted);font-weight:600;margin-top:2px}
+.member-read{font-size:10.5px;color:var(--muted);text-align:right}
+.id-evidence{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,14px);padding:14px;margin-top:16px}
+.id-evidence-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:9px}
+.id-evidence-cell{background:var(--panel2);border-radius:var(--r-ctl,8px);padding:9px}
+.id-evidence-cell .v{font-size:11.5px;font-weight:700;margin-top:2px}
+.foot{color:var(--muted);font-size:11px;margin:18px 2px 0;line-height:1.6;max-width:108ch;border-top:1px solid var(--line);padding-top:12px}
+@media(max-width:900px){
+  .id-hero{grid-template-columns:1fr}
+  .id-decision-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .id-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .id-evidence-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:640px){
+  body{padding-top:8px}.wrap{padding:10px 12px 24px}.back{margin-bottom:8px}
+  .id-card{padding:14px}.id-title{font-size:26px}
+  .id-decision-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .id-group-read{align-items:flex-start;flex-direction:column;gap:10px}.id-callout{max-width:none}
+  .id-nav{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px}.id-nav a{white-space:nowrap}
+  .id-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .members-table-wrap{display:none}.member-cards{display:grid}
+  .id-evidence-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #chart-host{min-height:310px}
+}
 </style>
 </head>
 <body>
 {% set nav_context_links = [
-  {'href': back_href | default('../subsectors.html'), 'icon': '💫', 'en': 'All subsectors', 'zh': '全部子行业'},
+  {'href': back_href | default('../subsectors.html'), 'icon': '💫', 'en': 'All groups', 'zh': '全部分组'},
 ] %}
 {% include "_site_nav.html.j2" %}
 
 <div class="wrap">
-  <a class="back" href="{{ back_href | default('../subsectors.html') }}">← {{ t('Subsector Confluence', '子行业汇聚') }}</a>
+  <a class="back" href="{{ back_href | default('../subsectors.html') }}">← {{ t('Intelligence groups', '情报分组') }}</a>
   <div id="app"></div>
 </div>
 
@@ -63,59 +119,96 @@
 const DETAIL = {{ detail_json|safe }};
 const CHART_KEY = {{ (chart_key | tojson) if chart_key else 'null' }};
 const HAS_SIGNALS = {{ 'true' if has_signals else 'false' }};
-const L = (en, zh) => `<span class="l-en">${en}</span><span class="l-zh">${zh == null ? en : zh}</span>`;
-const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const tierB = t => `<span class="tier ${t || 'none'}">${t || '—'}</span>`;
-const sgn = (x, d = 1) => (x == null || isNaN(x)) ? '<span class="num">–</span>' : `<span class="num ${x >= 0 ? 'pos' : 'neg'}">${x >= 0 ? '+' : ''}${Number(x).toFixed(d)}</span>`;
+const L = (en, zh) => '<span class="l-en">' + en + '</span><span class="l-zh">' + (zh == null ? en : zh) + '</span>';
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sgn = (x, d = 1) => (x == null || isNaN(x)) ? '<span class="num">–</span>' : '<span class="num ' + (x >= 0 ? 'pos' : 'neg') + '">' + (x >= 0 ? '+' : '') + Number(x).toFixed(d) + '</span>';
+const pageIdentity = DETAIL.kind === 'concept' || DETAIL.kind === 'basket' ? L("Theme Intelligence", "主题情报") : DETAIL.kind === 'sector' ? L("Sector Intelligence", "板块情报") : L("Subsector Intelligence", "子行业情报");
+const tierB = t => {
+  const key = t || 'none';
+  const en = {T1:'T1 · confirmed setup',T2:'T2 · early setup',T3:'T3 · forming',T4:'T4 · first sign',none:'—'};
+  const zh = {T1:'T1 · 已确认配置',T2:'T2 · 早期配置',T3:'T3 · 形成中',T4:'T4 · 初步迹象',none:'—'};
+  return '<span class="tier ' + esc(key) + '" data-tier="' + esc(key) + '" title="' + (key === 'none' ? '' : 'Technical tier ' + esc(key)) + '">' + L(en[key] || key, zh[key] || key) + '</span>';
+};
 
 function render() {
   const g = DETAIL.group || {}, e = g.entry || {}, r = g.regime || {};
   const app = document.getElementById('app');
   const cls = g['class'];
-  const badge = e.tier ? tierB(e.tier) + (e.buyable ? ' <span class="pill buy">' + (cls === 'forming' ? 'FORMING' : 'ENTRY-NOW') + '</span>' : '') : '';
-  const reg = `<span class="pill ${r.side || 'neutral'}">${esc(r.label || r.state || '—')}</span>`;
-  const nP = g.n_priced || g.n_members;
-  const thin = g.reliability === 'low' ? `<span class="pill late" title="fewer than 6 priced members — an equal-weight index this thin is driven by 1–2 names">⚠ ${L('thin · ' + nP + ' names', '偏薄 · ' + nP + ' 只')}</span>` : '';
+  const nMembers = g.n_members || 0;
+  const nPriced = g.n_priced == null ? nMembers : g.n_priced;
+  const reliability = g.reliability || 'unknown';
+  const badge = e.tier ? tierB(e.tier) + (e.buyable ? ' <span class="pill buy">' + L(cls === 'forming' ? 'setup forming' : 'entry setup active', cls === 'forming' ? '配置形成中' : '入场配置有效') + '</span>' : '') : '';
+  const regEn = r.label || r.label_zh || r.state || '—';
+  const regZh = r.label_zh || r.label || r.state || '—';
+  const reg = '<span class="pill ' + (r.side || 'neutral') + '">' + L(esc(regEn), esc(regZh)) + '</span>';
+  const thin = reliability === 'low' ? '<span class="pill late" title="fewer than 6 priced members — an equal-weight index this thin is driven by 1–2 names">⚠ ' + L('thin · ' + nPriced + ' names', '偏薄 · ' + nPriced + ' 只') + '</span>' : '';
   const kindLabel = DETAIL.kind_label_en ? L(DETAIL.kind_label_en, DETAIL.kind_label_zh || DETAIL.kind_label_en)
     : DETAIL.kind === 'concept' ? L('同花顺 concept basket', '同花顺概念篮子')
     : DETAIL.kind === 'basket' ? L('thematic basket', '主题篮子')
     : DETAIL.kind === 'sector' ? L('amalgamated complex', '汇聚综合体')
     : L('S&amp;P 500 sub-industry', '标普500子行业');
-  let h = `<div class="dh"><div><h1>${esc(g.label)}${g.label_zh ? ` <span style="color:var(--muted);font-weight:600;font-size:.66em">${esc(g.label_zh)}</span>` : ''}</h1><div class="sct">${esc(g.sector_zh || g.sector)} · ${kindLabel}</div></div>`
-    + `<div class="badges">${badge} ${reg} ${thin}</div></div>`;
-  if (thin) h += `<div class="action" style="border-left-color:var(--orange)">${L('⚠ Low-confidence: this concept has fewer than 6 priced members, so the equal-weight index is driven by 1–2 stocks and its tier &amp; regime read is high-variance. Judge the members individually.', '⚠ 低可信：该概念有价成分少于6只，等权指数由1-2只个股主导，层级与状态读数高波动。请逐一判断成分股。')}</div>`;
-  if (r.action) h += `<div class="action">${esc(r.action)}${e.reason ? ' · <span style="color:var(--muted)">' + esc(e.reason) + '</span>' : ''}</div>`;
-  h += `<div class="stats">`
-    + `<span>${L('as of', '截至')} <b>${esc(g.as_of)}</b></span>`
-    + `<span>${L('members', '成分')} <b>${g.n_priced || g.n_members}</b>${g.n_members && g.n_priced && g.n_priced !== g.n_members ? '/' + g.n_members : ''}</span>`
-    + (r.stoch_3d != null ? `<span>${L('Washout','超卖')} <b>${Math.round(r.stoch_3d)}</b>/100</span>` : '')
-    + (e.ticks != null ? `<span>${L('cross age', '交叉时长')} <b>${e.ticks} ${L('tick(s)', '格')}</b></span>` : '')
-    + (e.bars_to_cross != null ? `<span>${L('to cross', '距交叉')} <b>~${e.bars_to_cross}</b></span>` : '')
-    + (r.rs_60d != null ? `<span>RS60 ${sgn(r.rs_60d)}</span>` : '')
-    + (e.above200 != null ? `<span>${e.above200 ? L('above 200d ✓', '在200日上方 ✓') : L('below 200d', '在200日下方')}</span>` : '')
-    + `</div>`;
-  h += `<div class="chart-card"><div id="chart-host"></div><div style="color:var(--muted);font-size:10.5px;padding:4px 6px">${L('The group traded as one basket, every member weighted the same and rebased to the start. Buy / sell / cut marks are the read on that basket — shown for context only.', '把整组当成一个等权篮子来看，从起点归一。买／卖／止损标记是对这个篮子的研判——仅供参考。')}</div></div>`;
+  const actionEn = r.action || r.action_zh;
+  const actionZh = r.action_zh || r.action;
+  const actionRead = actionEn ? L(esc(actionEn), esc(actionZh)) : L('No current action note is available for this group.', '该组暂无当前行动说明。');
+  const reasonRead = e.reason ? esc(e.reason) : L('No additional entry blocker is published.', '暂无额外入场阻断说明。');
+  const setupState = e.buyable ? L('Entry setup active', '入场配置有效') : e.tier ? L('Setup not yet confirmed', '配置尚未确认') : L('No confirmed entry', '暂无确认入场');
+  const confidenceLabel = reliability === 'low' ? L('Low', '低') : reliability === 'med' ? L('Medium', '中') : reliability === 'high' ? L('High', '高') : L('Unknown', '未知');
+  const coverage = nMembers && nPriced !== nMembers ? nPriced + ' / ' + nMembers : String(nPriced || nMembers || '—');
+  const titleZh = g.label_zh ? ' <span style="color:var(--muted);font-weight:600;font-size:.58em">' + esc(g.label_zh) + '</span>' : '';
 
-  // member table
+  let h = '<section class="id-hero" id="overview">'
+    + '<div class="id-card"><div class="id-eyebrow">' + pageIdentity + '</div>'
+    + '<h1 class="id-title">' + esc(g.label) + titleZh + '</h1>'
+    + '<div class="id-subtitle"><span>' + esc(g.sector_zh || g.sector || '—') + '</span><span>·</span><span>' + kindLabel + '</span></div>'
+    + '<div class="id-meta"><span class="pill neutral">' + L('as of','截至') + ' ' + esc(g.as_of || '—') + '</span><span class="pill neutral">' + coverage + ' ' + L('members','成分') + '</span><span class="pill neutral">' + L('equal weight','等权') + '</span>' + thin + '</div></div>'
+    + '<div class="id-card id-decision"><div class="id-decision-top"><div><div class="id-decision-label">' + L('Current read','当前研判') + '</div><div class="id-decision-read">' + actionRead + '</div></div><div class="id-badges">' + badge + ' ' + reg + '</div></div>'
+    + '<div class="id-decision-grid"><div class="id-mini"><div class="k">' + L('Entry','入场') + '</div><div class="v">' + setupState + '</div></div><div class="id-mini"><div class="k">' + L('Reliability','可信度') + '</div><div class="v">' + confidenceLabel + '</div></div>'
+    + '<div class="id-mini"><div class="k">' + L('Coverage','覆盖') + '</div><div class="v">' + coverage + '</div></div><div class="id-mini"><div class="k">' + L('Method','方法') + '</div><div class="v">' + L('Equal-weight','等权') + '</div></div></div></div></section>';
+
+  h += '<section class="id-group-read"><div class="id-group-read-copy"><h2>' + L('Group read','整体读数') + '</h2><p>' + actionRead + ' · ' + reasonRead + '</p></div><div class="id-callout">' + (reliability === 'low' ? L('Judge members individually','请逐一判断成分股') : setupState) + '</div></section>';
+  if (reliability === 'low') h += '<div class="action" style="border-left-color:var(--orange)">' + L('⚠ Low-confidence: fewer than 6 priced members means this equal-weight read can be driven by 1–2 stocks. The aggregate stays descriptive; judge the members individually.', '⚠ 低可信：有价成分少于6只时，等权读数可能由1-2只个股主导。整体读数仅供描述，请逐一判断成分股。') + '</div>';
+
+  h += '<nav class="id-nav" aria-label="Detail sections"><a href="#overview">' + L('Overview','概览') + '</a><a href="#structure">' + L('Structure','结构') + '</a><a href="#members">' + L('Members','成分') + '</a><a href="#evidence">' + L('Evidence','证据') + '</a></nav>';
+
+  const stats = [];
+  if (r.stoch_3d != null) stats.push([L('Washout','超卖'), Math.round(r.stoch_3d) + ' / 100']);
+  if (r.rs_60d != null) stats.push(['RS60', sgn(r.rs_60d)]);
+  if (e.ticks != null) stats.push([L('Cross age','交叉时长'), e.ticks + ' ' + L('tick(s)','格')]);
+  if (e.bars_to_cross != null) stats.push([L('To cross','距交叉'), '~' + e.bars_to_cross]);
+  if (e.above200 != null) stats.push([L('200d trend','200日趋势'), e.above200 ? L('Above ✓','上方 ✓') : L('Below','下方')]);
+  if (stats.length) h += '<div class="id-stats">' + stats.map(x => '<div class="id-stat"><span class="k">' + x[0] + '</span><span class="v">' + x[1] + '</span></div>').join('') + '</div>';
+
+  h += '<section class="id-structure" id="structure"><div class="id-section-hd"><div><h2>' + L('Performance & structure','表现与结构') + '</h2><p>' + L('The group traded as one equal-weight basket; marks are context, not a trade instruction.','整组按等权篮子观察；标记仅供背景参考，并非交易指令。') + '</p></div><span class="pill neutral">' + esc(g.as_of || '—') + '</span></div><div class="chart-card"><div id="chart-host"></div></div></section>';
+
   const ms = g.members || [];
+  const behavesPill = m => m.behaves_as && m.behaves_as.home_id !== (g.basket_id || g.key) ? ' · <span class="pill behavesas" title="' + esc((m.behaves_as.homes || []).map(x => x.label + ' r20 ' + (x.corr20 == null ? '–' : x.corr20.toFixed(2))).join('; ')) + '">↔ ' + L('behaves-as ' + esc(m.behaves_as.home_label || ''), '类同 ' + esc(m.behaves_as.home_label_zh || m.behaves_as.home_label || '')) + '</span>' : '';
   if (ms.length) {
-    h += `<h2>${L('Members — which names are firing', '成分——哪些个股在触发')}</h2>`;
-    h += `<table class="tbl"><thead><tr><th>${L('Ticker', '代码')}</th><th>${L('Price', '价格')}</th><th>${L('Own tier', '自身层级')}</th><th>${L('20d', '20日')}</th><th>${L('vs subsector', '相对子行业')}</th><th>${L('Regime', '状态')}</th></tr></thead><tbody>`;
-    h += ms.map(m => `<tr class="${m.stock_buyable ? 'buyable' : ''}"><td class="tk"><a href="${DETAIL.stock_base || '../stock.html#'}${encodeURIComponent(m.ticker)}">${esc(m.ticker)}</a>${m.name_zh ? ` <span style="color:var(--muted);font-weight:400;font-size:.85em">${esc(m.name_zh)}</span>` : ''}</td>`
-      + `<td class="num">${m.price == null ? '–' : m.price.toFixed(2)}</td>`
-      + `<td>${tierB(m.stock_tier)}</td>`
-      + `<td>${sgn(m.ret_20d)}</td>`
-      + `<td>${sgn(m.vs_basket)}</td>`
-      + `<td style="color:var(--muted);font-size:11px">${esc(m.stock_state || '')}${m.behaves_as && m.behaves_as.home_id !== (g.basket_id || g.key) ? ` · <span class="pill behavesas" title="${esc((m.behaves_as.homes || []).map(h => h.label + ' r20 ' + (h.corr20 == null ? '–' : h.corr20.toFixed(2))).join('; '))}">↔ ${L('behaves-as ' + esc(m.behaves_as.home_label || ''), '类同 ' + esc(m.behaves_as.home_label_zh || m.behaves_as.home_label || ''))}</span>` : ''}</td></tr>`).join('');
-    h += `</tbody></table>`;
+    h += '<section id="members"><div class="id-section-hd"><div><h2>' + L('Members','成分') + '</h2><p>' + L('Who is actually carrying the group — same source rows, adapted to the viewport.','谁在真正带动该组——同一数据源，按屏幕宽度适配。') + '</p></div><span class="pill neutral">' + ms.length + ' ' + L('shown','只') + '</span></div>';
+    h += '<div class="members-table-wrap"><table class="tbl"><thead><tr><th>' + L('Ticker','代码') + '</th><th>' + L('Price','价格') + '</th><th>' + L('Own setup','自身配置') + '</th><th>' + L('20d','20日') + '</th><th>' + L('vs group','相对本组') + '</th><th>' + L('Read','研判') + '</th></tr></thead><tbody>';
+    h += ms.map(m => {
+      const zh = m.name_zh ? ' <span style="color:var(--muted);font-weight:400;font-size:.85em">' + esc(m.name_zh) + '</span>' : '';
+      const behaves = behavesPill(m);
+      return '<tr class="' + (m.stock_buyable ? 'buyable' : '') + '"><td class="tk"><a href="' + (DETAIL.stock_base || '../stock.html#') + encodeURIComponent(m.ticker) + '">' + esc(m.ticker) + '</a>' + zh + '</td><td class="num">' + (m.price == null ? '–' : Number(m.price).toFixed(2)) + '</td><td>' + tierB(m.stock_tier) + '</td><td>' + sgn(m.ret_20d) + '</td><td>' + sgn(m.vs_basket) + '</td><td style="color:var(--muted);font-size:11px">' + esc(m.stock_state || '') + behaves + '</td></tr>';
+    }).join('');
+    h += '</tbody></table></div>';
+    h += '<div class="member-cards">' + ms.map(m => '<article class="member-card ' + (m.stock_buyable ? 'buyable' : '') + '"><div class="member-card-top"><div><a class="member-symbol" href="' + (DETAIL.stock_base || '../stock.html#') + encodeURIComponent(m.ticker) + '">' + esc(m.ticker) + '</a><div class="member-name">' + esc(m.name_zh || '') + '</div></div><div class="member-return">' + sgn(m.ret_20d) + '<div class="member-price">' + L('Price','价格') + ' ' + (m.price == null ? '–' : Number(m.price).toFixed(2)) + '</div></div></div><div class="member-card-foot"><div>' + tierB(m.stock_tier) + '</div><div class="member-read">' + esc(m.stock_state || '') + ' · ' + L('vs group','相对本组') + ' ' + sgn(m.vs_basket) + behavesPill(m) + '</div></div></article>').join('') + '</div></section>';
+  } else {
+    h += '<section id="members"><div class="id-card"><div class="id-eyebrow">' + L('Members','成分') + '</div><p style="margin:6px 0 0;color:var(--muted)">' + L('Member detail is unavailable for this group.','该组暂无成分股明细。') + '</p></div></section>';
   }
-  h += `<div class="foot">${L('Equal-weight, today’s membership (descriptive, survivorship-tinted — not an out-of-sample backtest). EOD daily; calendar 3D buckets. Leak-free cascade. One door — confirm before acting; not alpha.', '等权，当前成分（描述性，含幸存者偏差——非样本外回测）。日终数据；日历三日分桶。无未来函数级联。仅一道门——行动前请确认；非阿尔法。')}</div>`;
-  app.innerHTML = h;
 
+  h += '<section class="id-evidence" id="evidence"><div class="id-section-hd"><div><h2>' + L('Evidence & data quality','证据与数据质量') + '</h2><p>' + L('Freshness, coverage and method stay in one predictable place.','新鲜度、覆盖率与方法集中在一个固定位置。') + '</p></div></div><div class="id-evidence-grid">'
+    + '<div class="id-evidence-cell"><div class="k">' + L('Freshness','新鲜度') + '</div><div class="v">' + esc(g.as_of || '—') + ' · ' + L('EOD daily','日终每日') + '</div></div>'
+    + '<div class="id-evidence-cell"><div class="k">' + L('Coverage','覆盖') + '</div><div class="v">' + coverage + '</div></div>'
+    + '<div class="id-evidence-cell"><div class="k">' + L('Method','方法') + '</div><div class="v">' + L('Equal-weight · current membership','等权 · 当前成分') + '</div></div>'
+    + '<div class="id-evidence-cell"><div class="k">' + L('Reliability','可信度') + '</div><div class="v">' + confidenceLabel + '</div></div></div></section>';
+  h += '<div class="foot">' + L('Descriptive, current-membership and survivorship-tinted — not an out-of-sample backtest. Calendar 3D buckets; leak-free cascade. Confirm before acting; this page does not size or originate a trade.','描述性、基于当前成分且含幸存者偏差——非样本外回测。日历三日分桶；无未来函数级联。行动前请确认；本页不决定仓位，也不发起交易。') + '</div>';
+
+  app.innerHTML = h;
   if (CHART_KEY && window.StockChart) {
     try {
       window.StockChart.mount(document.getElementById('chart-host'), CHART_KEY, {
-        name: g.label, ohlcDir: '../' + (DETAIL.ohlc_dir || 'subsectorohlc'),
+        name: g.label,
+        ohlcDir: '../' + (DETAIL.ohlc_dir || 'subsectorohlc'),
         signalsDir: HAS_SIGNALS ? '../' + (DETAIL.sig_dir || 'subsector_signals') : undefined
       });
     } catch (err) { console.error('chart mount failed', err); }
