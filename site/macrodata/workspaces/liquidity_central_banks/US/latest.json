@@ -168,12 +168,10 @@
     "status": "ABSENT"
   },
   "corrections": {
-    "changed_fingerprints": [
-      "cb_fed_balance_sheet_impulse_13w:cb_fed_balance_sheet_impulse_13w:bb3b5c93c59b1247"
-    ],
-    "correction_state": "superseded",
-    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "liquidity_central_banks-US-f6cac5e1f0e5523e"
+    "changed_fingerprints": [],
+    "correction_state": "none",
+    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
+    "predecessor_generation_id": "liquidity_central_banks-US-13f9fed62cc3b443"
   },
   "drivers": {
     "balance_sheet": [
@@ -266,11 +264,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-02T11:42:53Z",
+    "built_at": "2026-10-03T05:59:13Z",
     "calculation_as_of": "2026-09-04T11:03:41.497178+00:00",
-    "code_version": "ef74e010031234a2788b90d56eed14b166204f0a",
-    "content_sha256": "13f9fed62cc3b443e7c6ca0279d4d68443263cde2e78778af476d7abf69813b9",
-    "generation_id": "liquidity_central_banks-US-13f9fed62cc3b443",
+    "code_version": "f38a77de6ab59c2b13d2400e4baebcfdb4fceb21",
+    "content_sha256": "c338332a703505259d7b4448e37431185cd4ca2f66853424313da201028e1a8e",
+    "generation_id": "liquidity_central_banks-US-c338332a70350525",
     "producer": "engine.market_os.macro_workspaces.liquidity_central_banks",
     "rendered_at": null
   },
