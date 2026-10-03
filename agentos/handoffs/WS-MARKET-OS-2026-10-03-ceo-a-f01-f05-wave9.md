@@ -10,7 +10,7 @@ mission: >-
   record the MO-DELTA-007 scheduler owner identified by Sol 5966828357 (D74); record the #8300 and
   #8314 hand-merges (D75); then, on the covering render's SUCCESS and the served www.mastermind-x.com
   needles, restamp MO-PAID-006 PARTIAL→PROVEN_LIVE and MO-PAID-008 to PRODUCTION_PROOF (stage 2).
-  This is the wave-9 records checkpoint (2026-10-03 ~08:3xZ), not a session end.
+  This is the wave-9 records checkpoint (2026-10-03 ~10:09:16Z), not a session end.
 state_before: >-
   MO-PAID-011 still carried "natural-run live proof owed 2026-10-03" although the seat read the
   #8283 needles on the served page at 08:12:01Z; MO-DELTA-007's next child still said "identify
@@ -21,12 +21,15 @@ state_before: >-
   served CSS".
 changed:
   - path: "research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv"
-    what: "wave 9 stage 1 — MO-PAID-011 state_delta/next_bounded_child/adjudication_notes: O32 natural-run PUBLICATION proof read 08:12:01Z, scoped to the Saturday expiry path (D73), capability stays PARTIAL; MO-DELTA-007 next_bounded_child/adjudication_notes: scheduler owner `ops/terminal-data` recorded from Sol 5966828357, build owner CEO B (D74). Stage 2 (006/008 restamps) appended only on served proof."
+    what: "wave 9 — stage 2: MO-PAID-006 PARTIAL→PROVEN_LIVE (D76, served .com proof after render 37105009906), MO-PAID-008 PRODUCTION_PROOF (D77, hashed CSS asset), MO-PAID-077 W3-1b NOT RIPE on a frozen 2026-09-25 session (D78). Stage 1 — MO-PAID-011 state_delta/next_bounded_child/adjudication_notes: O32 natural-run PUBLICATION proof read 08:12:01Z, scoped to the Saturday expiry path (D73), capability stays PARTIAL; MO-DELTA-007 next_bounded_child/adjudication_notes: scheduler owner `ops/terminal-data` recorded from Sol 5966828357, build owner CEO B (D74). Stage 2 (006/008 restamps) appended only on served proof."
   - path: "tests/test_mo_b_ledger_reconciliation_2026_09_18.py"
-    what: "W9 stage-1 row-text assertions for MO-PAID-011 and MO-DELTA-007; OUTSIDE_UNION_SHA256 asserted UNCHANGED because every W9 row is a union row (the W8 note that 006/008/032 are outside the union was wrong)"
+    what: "EXPECTED[MO-PAID-006] → PROVEN_LIVE; W9 stage-1/2 row-text assertions for 011, 007, 006, 008, 077; OUTSIDE_UNION_SHA256 asserted UNCHANGED because every W9 row is a union row (the W8 note that 006/008/032 are outside the union was wrong)"
   - path: "research/MARKET_ONTOLOGY_CEO_A_CONTINUATION_HANDOFF_2026-10-02.md"
-    what: "program file — rulings D73–D75; wave-plan rows W8 (DONE) + W9; lane matrix rows for the render watcher 37108430882 and RECORDS_W9; facts for the consumed #6819 edges, the render-lane concurrency, the union-membership correction; O32/O33 CLOSED, O34 opened; N-W8/N-W9; §5 hold census 08:3xZ; §6 do-not-redo for O32, #8300/#8314, the 007 scheduler"
+    what: "program file — rulings D73–D78 (stage 2 adds 006 PROVEN_LIVE, O28 PRODUCTION_PROOF, F03 W3-1b NOT RIPE); wave-plan rows W8 (DONE) + W9; lane matrix rows for the render watcher 37108430882 and RECORDS_W9; facts for the consumed #6819 edges, the render-lane concurrency, the union-membership correction; O32/O33 CLOSED, O34 opened; N-W8/N-W9; §5 hold census 08:3xZ; §6 do-not-redo for O32, #8300/#8314, the 007 scheduler"
 verified:
+  - claim: "MO-PAID-006 is served on the five country routes with lawful dossier states and O28 is in the served stylesheet"
+    command: "/bin/bash served_proof_8300.sh; /bin/bash served_proof_8307.sh (both on www.mastermind-x.com after render 37105009906 SUCCESS)"
+    result: "8300 rc=0 — euro_area covered, united_kingdom covered, japan no_coverage, south_korea no_coverage, india no_coverage; 8307 OK — assets/css/1a59ecd9.css new_rule=1 old_rule=0 dash=0"
   - claim: "the served am_edition page changed through the natural timer slot and carries the three #8283 needles"
     command: "o32_probe.sh (curl https://www.mastermind-x.com/am_edition.html every 600 s from 08:12Z; sha256 + grep -c brief-link-built / mx-rw-zh- / data-dbase); pre-read saved 07:59:42Z"
     result: "07:59:42Z sha fdf894badb4f 74,329 B stamp 2026-10-02T13:07:04 needles 0/0/0 → 08:12:01Z sha 96db8a19f9f5 70,675 B stamp 2026-10-03T02:30:48 needles 1/1/1 (tick 1, probe exit 0); Ryan-Dot 5967066408 corroborates"
@@ -37,16 +40,15 @@ verified:
     command: "python3 w9_patch_s1.py <worktree> (asserts untouched lines byte-identical, union membership, digest unchanged); python3 -m pytest tests/test_mo_b_ledger_reconciliation_2026_09_18.py -q"
     result: "ledger lines changed [(12, MO-PAID-011), (126, MO-DELTA-007)]; OUTSIDE_UNION_SHA256 unchanged 3b8a93ce1ee0…; 5 passed"
 unverified:
-  - "MO-PAID-006 PROVEN_LIVE and MO-PAID-008 PRODUCTION_PROOF — render 37108430882 was RUNNING at stage-1 record time; stage 2 reads served_proof_8300.sh (five routes) and the sanctions_map CSS needles on .com before any restamp"
   - "MO-PAID-032 Saturday 14:00Z weekly natural run — read once after it concludes; dormant unless the lawful release owner provisioned RECURRING_BRIEFS_ENABLE; never dispatched"
 unresolved:
   - "Sol/B readback on #6819 for W9 after this PR merges (fence rebased to the newest consumed id first)"
   - "MO-DELTA-007 (2)→BUILT_NOT_PROVEN waits on CEO B's F13 Terminal build DELIVERED + deployed proof"
   - "tests/test_market_ontology_half_b_rights_docket.py and tests/test_market_ontology_f13_accuracy_ledger_spec.py stay RED ON MAIN (D72) — owners: the Half-B docket lane and the B-F13-4 spec lane, not this writer"
 next_actions:
-  - "On render 37108430882 SUCCESS: /bin/bash served_proof_8300.sh (expect rc=0) + sanctions_map CSS needles → stage-2 ledger restamps (006 PROVEN_LIVE, 008 PRODUCTION_PROOF) + EXPECTED['MO-PAID-006'] → PROVEN_LIVE + pin assertions → commit → push → PR → ONE watcher"
+  - "Push → PR → ONE watcher (stage 2 is committed)"
   - "Merge this records PR by hand on concluded checks (--match-head-commit), bare fetch, blob verify; post fenced PRODUCTION_PROOF notes on #8300 (>5967019473) and #8307 (>5967019622); readback on #6819"
-  - "If the render FAILS: diagnose from its log; never cancel or re-dispatch; one session owns recovery; the restamps wait"
+  - "F03 W3-1b: re-read main's latest.json only after session_date advances past 2026-09-25 (owner of the freeze: WS:INTRADAY-FLOW-P0-RECOVERY)"
 do_not_redo:
   - "O32 is PROVEN as a Saturday expiry-path PUBLICATION proof — never dispatch am_edition to 'complete' it; the weekday build read is a free observation, never a child (D73)"
   - "MO-DELTA-007's scheduler is `ops/terminal-data` (Sol 5966828357, D74) — never mint a cron, runtime esbuild import, or second scheduler; the build is CEO B's Terminal lane"
@@ -71,9 +73,10 @@ heads and blob-verified. The am_edition natural run fired at its 08:07Z VPS time
 dispatch by anyone and the served `www.mastermind-x.com/am_edition.html` now carries #8283's three
 needles — recorded on MO-PAID-011 as a PUBLICATION proof through the Saturday expiry path (the
 committed bake was served), not as a weekday producer-build proof. MO-DELTA-007 records the
-scheduler owner Sol named (`ops/terminal-data`; CEO B builds). The 006 PROVEN_LIVE and 008
-PRODUCTION_PROOF restamps are stage 2 of this wave and land only after render 37108430882
-succeeds and the served needles read — a render that has not concluded restamps nothing. Rulings
+scheduler owner Sol named (`ops/terminal-data`; CEO B builds). Render 37105009906 succeeded at 09:57:28Z and the served `.com` reads then moved
+MO-PAID-006 to PROVEN_LIVE and closed O28 at PRODUCTION_PROOF (D76/D77); the F03 W3-1b consumer
+ruling is NOT RIPE because the catalyst-links producer has re-read the same 2026-09-25 session since
+09-25 (D78) — an upstream R2 live_flow freeze, not an F03 build. Rulings
 D73–D75 and the lane matrix are in `research/MARKET_ONTOLOGY_CEO_A_CONTINUATION_HANDOFF_2026-10-02.md`;
 read its `## 4 Ledger` before any act. `MISSION_COMPLETE: false` — Sol acceptance of the
 MarketOntology program has not been given; the seat continues.
