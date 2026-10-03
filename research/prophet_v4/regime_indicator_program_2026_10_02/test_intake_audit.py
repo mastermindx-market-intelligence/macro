@@ -26,7 +26,7 @@ def evidence():
                 vintage_qualification='owner_verified', lookback_qualification='owner_verified')
 
 
-class LedgerTests(unittest.TestCase):
+class TestLedger(unittest.TestCase):
     def report(self, rows, q=(), r=()):
         return summarize_effective_ledger(rows, q, r, source_identity={'sha': 'frozen'})
 
@@ -82,7 +82,7 @@ class LedgerTests(unittest.TestCase):
         rows=[row('a')];before=copy.deepcopy(rows);self.report(rows);self.assertEqual(rows,before)
 
 
-class TimingTests(unittest.TestCase):
+class TestTiming(unittest.TestCase):
     def test_aware_cross_timezone(self):
         self.assertTrue(audit_information_cut([evidence()])['consistent'])
 
@@ -114,7 +114,7 @@ class TimingTests(unittest.TestCase):
         x=evidence();x['captured_at']=x['decision_at'];self.assertTrue(audit_information_cut([x])['consistent'])
 
 
-class ComparisonTests(unittest.TestCase):
+class TestComparison(unittest.TestCase):
     def pair(self):
         a=manifest();b=manifest();b['grain']='3D';return a,b
 
