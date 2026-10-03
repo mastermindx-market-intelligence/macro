@@ -41,6 +41,8 @@ The executable preregistration must specify, with immutable hashes or exact repo
 11. contamination/exposure ledger;
 12. inactive/delisted support or explicit target-population limitation.
 
+**Owner gate for U.S. equities:** `WS:TECHNICAL-OPPORTUNITY-INTELLIGENCE` W2-0 is the canonical broad U.S.-equity Daily/Weekly/4H data, clock, correction, coverage, rights and Terminal-parity archaeology. It remains `todo` as of this recovery. A U.S.-equity V2 cohort may not self-declare a load-bearing source plane `ADMIT`, infer rights from successful API access, or mint a competing data/clock contract. Its executable preregistration must either consume an accepted W2-0 store/clock/rights receipt for every load-bearing plane or bind another already-canonical owner receipt that proves the exact required use. Unknown rights remain unknown; a non-null source-rights reference is required before any intended use is treated as allowed.
+
 WMT 720-minute and motivating silver 480-minute cases may be described only as legacy discovery examples and are excluded from confirmation.
 
 ## 4. Allowed outcome-blind input families
