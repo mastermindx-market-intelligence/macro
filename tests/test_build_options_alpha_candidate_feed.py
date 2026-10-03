@@ -185,16 +185,18 @@ def test_active_real_composer_enricher_and_publisher_preserve_candidate_identity
         return rows
 
     s3 = FakeS3()
+    # Outcome rows record 2026-10-15 facts. The publication clock must not
+    # precede those facts; the August event session below stays historical.
     ticks = iter(
         [
-            "2026-08-13T14:30:00Z",
-            "2026-08-13T14:31:00Z",
-            "2026-08-13T14:32:00Z",
-            "2026-08-13T14:33:00Z",
-            "2026-08-13T14:34:00Z",
-            "2026-08-13T14:35:00Z",
-            "2026-08-13T14:36:00Z",
-            "2026-08-13T14:37:00Z",
+            "2026-10-16T15:00:00Z",
+            "2026-10-16T15:01:00Z",
+            "2026-10-16T15:02:00Z",
+            "2026-10-16T15:03:00Z",
+            "2026-10-16T15:04:00Z",
+            "2026-10-16T15:05:00Z",
+            "2026-10-16T15:06:00Z",
+            "2026-10-16T15:07:00Z",
         ]
     )
     clock = lambda: next(ticks)

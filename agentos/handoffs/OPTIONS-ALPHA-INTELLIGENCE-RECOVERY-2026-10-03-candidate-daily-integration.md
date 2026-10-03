@@ -4,167 +4,148 @@ session: mo-ext-fix-options-product-20261003-candidate-daily-integration
 model: codex
 ended_because: complete
 mission: >-
-  Adopt the prepared candidate-daily-integration patch
-  c91c61c3142c7c6e2365ac33b091fd408e9d8770c605045298b4d641cb230341 (81707 bytes, 11 paths) as
-  a stacked Draft PR on top of parent campaign PR #8350, wired into the existing daily pipeline,
-  with the inactive-safe fail-closed boundary, journal outside checkout, and the activation-
-  receipt gate enforced before any R2 effect or recovery.
+  Keep the existing draft PR #8358 (branch codex/options-alpha-candidate-daily-20261003,
+  base claude/mo-ext-fix-8342) as the sole carrier of the candidate daily integration.
+  Merge current parent #8350 and refuse admitted outcome facts dated after
+  feed.generated_at. Do not open, close, retarget, or activate anything.
 state_before: >-
-  Parent campaign PR #8350 (head 2a061e788db on claude/mo-ext-fix-8342) was migrated from
-  #8342 and is armed with merge-on-green, awaiting hosted CI. The pre-integration local
-  HEAD 1abc243b94295e867d12fd166bbd2a42948e76f1 is the parent-repair-derived clone of 8350 and
-  is the source-qualified base for this stacked PR. No additional composer, publisher, ledger,
-  score path, score plane, promotion path, or Issue Desk is created. The existing one publisher
-  scripts/publish_options_alpha_candidate_r2.py continues to own the fixed keys
-  options_alpha/candidate_feed.json and options_alpha/candidate_feed.receipt.json; the daily
-  builder was absent before dispatch and no second writer was minted by this change.
+  Draft PR #8358 already exists on codex/options-alpha-candidate-daily-20261003.
+  Its pre-repair head was 9837f2df94a8cc23a598edd6cd8a7f2ab8e00863. The historical
+  source parent of that stack was 1abc243b94295e867d12fd166bbd2a42948e76f1. Parent
+  campaign PR #8350 is open on claude/mo-ext-fix-8342 at 9999b5c9518ec0ac6829245b16aa374957de004e.
+  Closed PR #8356 and closed duplicate #8357 are not carriers. No second composer,
+  publisher, ledger, score path, score plane, promotion path, or Issue Desk exists.
+  scripts/publish_options_alpha_candidate_r2.py remains the only writer of
+  options_alpha/candidate_feed.json and options_alpha/candidate_feed.receipt.json.
 changed:
   - path: scripts/build_options_alpha_candidate_feed.py
-    what: "New inactive-safe CLI composer: preconditioned activation receipt, fail-closed bucket/client gate, pending-recovery activation-binding check, post-formation outcome enrichment join keyed by the frozen first qualifying revision."
+    what: "Inactive-safe CLI composer: preconditioned activation receipt, fail-closed bucket/client gate, pending-recovery activation-binding check, post-formation outcome enrichment join keyed by the frozen first qualifying revision."
   - path: scripts/publish_options_alpha_candidate_r2.py
-    what: "Added recover_pending_pair() that binds pending payload to current activation before replay; no recomposition."
+    what: "recover_pending_pair() binds a pending payload to the current activation before replay and does not recompose."
   - path: engine/options_alpha_candidate_outcome_enrichment.py
-    what: "Pure six-horizon underlying-outcome enrichment joining admitted rows from the effective view only; strict additive schema; strict campaign_context deep-copy from the frozen first revision; deep-copy/source-hash identity guarded."
+    what: "Six-horizon enrichment of admitted effective-view rows only. Recorded facts campaign_available_at, computed_at, and matured_at must not be later than the already validated feed.generated_at. target_time stays a scheduled horizon and may be in the future. CandidateOutcomeEnrichmentError is raised before any such row is published."
   - path: contracts/options/options.alpha_candidate_feed.v2.schema.json
-    what: "Strict additive v2 schema for post-formation outcomes + campaign_context block."
+    what: "Strict additive v2 schema for post-formation outcomes and the campaign_context block."
   - path: tests/test_build_options_alpha_candidate_feed.py
-    what: "Six dedicated build-feed cases: source loading, activation refusal, source/recovery refusal, malformed journal refusal, campaign-context deep-copy identity, idempotence."
+    what: "Dedicated build-feed cases. The active composer/enricher/publisher case now publishes at 2026-10-16T15:00:00Z so its October 15 outcome facts are not future relative to feed.generated_at. The August event session is unchanged."
   - path: tests/test_publish_options_alpha_candidate_r2.py
-    what: "Updated publisher suite for recover_pending_pair path including activation binding."
+    what: "Publisher suite covers recover_pending_pair, including activation binding."
   - path: tests/test_options_alpha_candidate_outcome_enrichment.py
-    what: "Four dedicated enrichment cases: real view joins, malformed-row rejection, campaign context deep-copy, wrong revision/source-hash refusal."
+    what: "Enrichment cases plus three negative cases that set campaign_available_at, computed_at, or matured_at to 2999 and expect CandidateOutcomeEnrichmentError. The fixture observation clock is 2026-10-16T15:00:00Z, after the existing 2026-10-15 facts."
   - path: tests/test_options_signal_episode.py
-    what: "Inserted candidate step between campaign checkpoint and XSR; asserted candidate block gates all four prior successes, uses --publication-lock $HOME/.local/state/mastermind/options-alpha-candidate/publication.lock, and renames the terminal integrity test to require OIP_CANDIDATE_BUILD_OUTCOME in the fail-closed gate."
+    what: "Candidate step sits between the campaign checkpoint and XSR. It gates on the four prior successes, uses the publication lock outside the checkout, and the terminal integrity test requires OIP_CANDIDATE_BUILD_OUTCOME."
   - path: scripts/ci/options_signal_nightly.sh
-    what: "assert-integrity() now requires OIP_CANDIDATE_BUILD_OUTCOME in addition to the four prior outcomes."
+    what: "assert-integrity() requires OIP_CANDIDATE_BUILD_OUTCOME in addition to the four prior outcomes."
   - path: .github/workflows/daily.yml
-    what: "New step options_alpha_candidate_feed (id) gated on all four prior exact successes, 5min timeout-minutes, continue-on-error true, env R2 secrets, run python -m scripts.build_options_alpha_candidate_feed --publication-lock $HOME/.local/state/mastermind/options-alpha-candidate/publication.lock; new env OIP_CANDIDATE_BUILD_OUTCOME plumbed into assert-integrity."
+    what: "options_alpha_candidate_feed step is gated on the four prior successes, times out in 5 minutes, continues on error, and runs the candidate builder with the publication lock. OIP_CANDIDATE_BUILD_OUTCOME is passed into assert-integrity."
   - path: .github/ci/legacy-jobs.yml
-    what: "options-alpha-candidate-feed scope:exclusive paths widened to 44 declared paths covering the new composer + enrichment closure; dedicated 111-test pytest command expanded with PYTHONPATH=tests:scripts prefix and the two new test files."
+    what: "options-alpha-candidate-feed exclusive paths cover the composer and enrichment closure. The dedicated pytest command includes the build and enrichment suites."
   - path: agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-03-candidate-daily-integration.md
-    what: "This handoff record (no WS/DEC/DSC mint; canonical episode/campaign owners preserved)."
-prs: [8357]
+    what: "This record. Carrier is existing draft PR #8358. No new WS/DEC/DSC."
+prs: [8358]
 verified:
-  - claim: "Patch SHA-256 matches and applies cleanly at the parent head."
-    command: "sha256sum /private/tmp/options-candidate-daily-enrichment-complete.patch; git apply --check /private/tmp/options-candidate-daily-enrichment-complete.patch; git apply /private/tmp/options-candidate-daily-enrichment-complete.patch"
-    result: "c91c61c3142c7c6e2365ac33b091fd408e9d8770c605045298b4d641cb230341 81707 bytes; --check exit 0; apply exit 0; git status shows 7 modified + 4 new files matching the 11-path patch."
-  - claim: "The dedicated 111-test command passes against the parent-repair-derived base."
+  - claim: "Availability-guard patch matches the ruled bytes and applies on the post-merge tree."
+    command: "shasum -a 256 /private/tmp/options-candidate-outcome-availability-guard-v2.patch; git apply --check /private/tmp/options-candidate-outcome-availability-guard-v2.patch"
+    result: "4754 bytes, SHA-256 5e47f5d27f69eb0db0824da3e43defece645455f1c0712922c5e0bafab4539b0; apply --check exit 0. The patch touches only the enrichment module and its test."
+  - claim: "On the pre-guard head the three negative cases publish future recorded facts."
+    command: "PYTHONPATH=tests:scripts python3 -m pytest tests/test_options_alpha_candidate_outcome_enrichment.py::test_future_recorded_outcome_clock_refuses_before_exposure -q --tb=line"
+    result: "3 failed in 2.00s. Each case failed with 'DID NOT RAISE CandidateOutcomeEnrichmentError' for campaign_available_at, computed_at, and matured_at."
+  - claim: "The four dedicated candidate suites pass after the guard."
     command: "PYTHONPATH=tests:scripts python3 -m pytest tests/test_options_alpha_candidate_feed.py tests/test_publish_options_alpha_candidate_r2.py tests/test_build_options_alpha_candidate_feed.py tests/test_options_alpha_candidate_outcome_enrichment.py -q"
-    result: "111 passed in 11.78s."
-  - claim: "The workflow/helper slice touched by the patch passes in isolation (data-sparse failures are sparse-checkout artifacts, not defects)."
+    result: "114 passed in 16.48s."
+  - claim: "The workflow helper slice touched by this PR passes."
     command: "PYTHONPATH=tests:scripts python3 -m pytest tests/test_options_signal_episode.py -k \"daily_options_pit_checkpoint or terminal_integrity or broad_cleanup_removes\" -q"
-    result: "8 passed, 237 deselected in 1.17s."
-  - claim: "CI import-closure and curated-exclusivity gates pass."
-    command: "PYTHONPATH=tests:scripts python3 -m pytest tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared -v"
-    result: "2 passed; curated_exclusive_closure_findings({}) yields zero MISS rows on this PR's manifest; options-alpha-candidate-feed declares 44 paths covering the composer + enrichment transitive closure."
-  - claim: "Contract-delta against origin/main is zero-introduced."
-    command: "python3 scripts/check_contract_delta.py --base origin/main"
-    result: "0 introduced, 0 inherited (base e4fb8df254d2); wall 333.0 s; head census 0 closure misses."
-  - claim: "CI trigger closure is gap-free."
-    command: "python3 scripts/check_ci_trigger_closure.py"
-    result: "2083 suites fully reachable; TRIGGER GAP 0; 95 marked-data suites excluded."
-  - claim: "Exactly one R2 writer exists for the candidate feed."
-    command: "grep -rln \"options_alpha_candidate_feed.json\\|options_alpha/candidate_feed\" --include='*.py' --include='*.yml' --include='*.sh' --include='*.json' --include='*.md' scripts/ engine/ tests/ .github/ research/ agentos/ contracts/"
-    result: "Only scripts/publish_options_alpha_candidate_r2.py hits the fixed keys; all other matches are schema, policy, prereg, or test references. No second writer minted."
-  - claim: "Inactive boundary is structured: missing/uncleared activation receipt exits inactive with zero R2 reads/writes/journal and no clock."
-    command: "sed -n '210,250p' scripts/build_options_alpha_candidate_feed.py"
-    result: "Lines 213-220 return {produced: False, state: inactive, reason: activation_receipt_absent} before any R2 client or journal use; lines 227-232 return activation_preconditions_uncleared; lines 242-245 and 313-317 fail-closed when client/bucket are missing under allow_dry_compose=False."
-  - claim: "Recovery binds pending payload to current activation before replay."
-    command: "sed -n '247,275p' scripts/build_options_alpha_candidate_feed.py"
-    result: "Lines 261-269 raise DailyCandidateError when pending publisher journal activation_receipt_id or activation_receipt_digest_sha256 does not match the current normalized receipt; recover_pending_pair() is then called only after the binding passes."
+    result: "8 passed, 258 deselected in 2.31s."
+  - claim: "Merging origin/claude/mo-ext-fix-8342 at 9999b5c9518e preserved every pre-merge PR path."
+    command: "git diff --stat 1abc243b94295e867d12fd166bbd2a42948e76f1 9837f2df94a8cc23a598edd6cd8a7f2ab8e00863; git diff --stat origin/claude/mo-ext-fix-8342...7744db4435697df48800309546bb10c2bcc49948"
+    result: "Before the merge the PR differed from merge-base 1abc243b9429 by 12 files, 2084 insertions and 23 deletions. After the merge the same 12 files showed the same 2084 insertions and 23 deletions against origin/claude/mo-ext-fix-8342. No file was dropped."
+  - claim: "A missing or uncleared activation receipt stays inactive before R2, journal, or clock use."
+    command: "sed -n '213,245p' scripts/build_options_alpha_candidate_feed.py"
+    result: "Lines 214-220 return inactive activation_receipt_absent. Lines 227-232 return inactive activation_preconditions_uncleared. Lines 242-245 fail closed when client or bucket is missing."
 unverified:
-  - claim: "Parent PR #8350 hosted CI is green."
-    what_would_verify: "Root-owned release review, hosted CI pack read, and same-day squash-merge of #8350. This stacked Draft inherits the parent's CI lane by virtue of base = claude/mo-ext-fix-8342."
-  - claim: "Journal path $HOME/.local/state/mastermind/options-alpha-candidate/publication.lock is single-host bound to the actual publication runner/principal."
-    what_would_verify: "Exact M2 runner/principal/state-path continuity + a natural publication readback against the macstudio-only label; the macstudio label alone is not proof of single-host custody."
-  - claim: "Four candidate prerequisites and six correction prerequisites are cleared."
-    what_would_verify: "Independent reviewer/operator readback of the live AD1 group 5 admin gap, natural RTH Saturday proof, and the four + six prerequisite ledger. All remain unmodified and unmet by this read."
-  - claim: "Daily.yml exact-path promotion to the merged parent and downstream Stack-2 live verification."
-    what_would_verify: "Root-owned retarget to main after #8350 merges, followed by hosted CI + a scoped live verification cycle."
+  - claim: "Parent PR #8350 hosted CI is green and the PR is merged."
+    what_would_verify: "Root-owned review and merge of #8350. This draft stays based on claude/mo-ext-fix-8342 until root retargets it."
+  - claim: "Natural RTH publication of the candidate feed or of the live-flow cutover."
+    what_would_verify: "A later natural RTH readback. The M1 live-flow install below is outside RTH and is not publication proof."
+  - claim: "Candidate activation and the four candidate plus six correction preconditions are cleared."
+    what_would_verify: "An operator receipt. They are not auto-cleared. No R2 pair was published by this repair."
+  - claim: "AD1 org-admin runner group 5 can run the required workflows."
+    what_would_verify: "Removal of the workflow restriction. Canary is the only accepted path today, and AD1_M1_LANE is absent."
+  - claim: "Terminal PR #788 is deployed."
+    what_would_verify: "Remaining required CI and deploy. Source head 38a2a15a7ba90f8ce621d0c5b00742af186129e8 is Ready and source-approved only."
+  - claim: "Prior contract-delta and CI trigger-closure numbers still hold."
+    what_would_verify: "A fresh run only if a later change adds a dependency. This repair adds datetime from the standard library and does not change the CI catalog. The earlier 111-test, zero contract-delta, and zero pack-closure qualifications were not repeated."
 decisions: []
 discoveries: []
 unresolved:
-  - "Parent PR #8350 hosted CI green + same-day squash-merge remain root-owned."
-  - "AD1 group 5 org-admin gap is unresolved; natural RTH Saturday proof is not produced; activation gates (four candidate + six correction) remain unmodified and unmet."
-  - "Actual exclusive proof of publication/runtime is owed — the macstudio label binding is not a single-host custody proof."
-  - "Terminal schema/UI companion repair on #788 is in flight on a separate lane and is not blocked by this Draft."
+  - "Parent PR #8350 (head 9999b5c9518ec0ac6829245b16aa374957de004e) is still open. Root merges it and then retargets #8358 to main. This lane must not retarget, mark Ready, or merge."
+  - "Candidate activation is absent and the builder stays inactive. Four candidate preconditions and six correction preconditions are not cleared. No candidate R2 pair was published."
+  - "AD1 org-admin runner group 5 workflow restriction is still blocked. Canary is the only accepted path. AD1_M1_LANE is absent."
+  - "Live-flow M1 cutover is installed and was clean outside RTH. Natural RTH publication is not proven."
+  - "Terminal PR #788 head 38a2a15a7ba90f8ce621d0c5b00742af186129e8 is Ready and source-approved. Required CI and deploy are still owed."
+  - "The journal path $HOME/.local/state/mastermind/options-alpha-candidate/publication.lock is not yet bound to a proven single publication principal."
 next_actions:
-  - "Root: open PR #8362 as DRAFT, base claude/mo-ext-fix-8342, head codex/options-alpha-candidate-daily-20261003; verify exact head sha 1abc243b94295e867d12fd166bbd2a42948e76f1 + the 11 owned files; do not arm merge-on-green, do not mark Ready, do not run a long CI wait in this lane."
-  - "Root: after #8350 merges, retarget this PR to main and run the hosted CI pack + downstream Stack-2 live verification."
-  - "Future activation: requires exact M2 runner/principal/state-path continuity at $HOME/.local/state/mastermind/options-alpha-candidate/publication.lock and a natural publication readback. No auto-clearance by this Draft."
+  - "Root reviews the exact head of existing draft PR #8358. Do not open a new PR, do not mark Ready, do not arm merge-on-green, and do not wait on CI in this lane."
+  - "Root merges PR #8350, then retargets #8358 to main and runs the hosted CI pack plus the scoped live check."
+  - "Activation still requires a real receipt, M2 runner continuity at the publication lock, and a natural publication readback. This draft does not clear those gates."
 do_not_redo:
-  - "Do not rebuild or fork scripts/publish_options_alpha_candidate_r2.py; it is the only candidate-feed R2 writer."
+  - "Do not close, reopen, migrate, or replace PR #8358 or branch codex/options-alpha-candidate-daily-20261003. Closed #8356 and closed duplicate #8357 are not carriers."
+  - "Do not rebuild or fork scripts/publish_options_alpha_candidate_r2.py. It is the only candidate-feed R2 writer."
   - "Do not add a second composer, daily caller, ledger, score plane, score path, promotion path, collector, or Issue Desk."
+  - "Do not guard target_time. It is a scheduled horizon and may be in the future. Do guard campaign_available_at, computed_at, and matured_at against feed.generated_at."
   - "Do not synthesize ChainHeat as measured NBBO."
-  - "Do not re-hunt Sep-17/Sep-18 RTH evidence; the measured source/Flow consumer is naturally evidenced."
-  - "Do not reopen OA-0 architecture freeze; preserve the Sep-03 bad-campaign-outcome incident and the corrected-but-unmerged correction prereg."
-  - "Do not promote OA-1C-MACRO or OA-1T-MACRO to PROVEN_LIVE based on this Draft; the existing acceptance gates (durable publication/integrity + scoring.enabled=false) remain unchanged."
-  - "Do not re-author the WS record or mint new DEC/DSC for this Draft; canonical episode/campaign owners stay."
+  - "Do not re-hunt Sep-17 or Sep-18 RTH evidence. The measured source and Flow consumer are already evidenced."
+  - "Do not reopen the OA-0 architecture freeze. Preserve the Sep-03 bad-campaign-outcome incident and the corrected-but-unmerged correction prereg."
+  - "Do not promote OA-1C-MACRO or OA-1T-MACRO to PROVEN_LIVE from this draft. Durable publication, integrity, and scoring.enabled=false stay the acceptance gates."
+  - "Do not mint a new WS, DEC, or DSC for this draft. Canonical episode and campaign owners stay."
+  - "Do not claim a natural RTH publication from the outside-RTH live-flow install."
 danger_areas:
-  - "This Draft inherits parent PR #8350's CI state — until #8350 merges, the parent head is not on main, and any read that conflates the local HEAD with origin/main will misreport."
-  - "Stacking onto a local source-quality commit is forbidden; the spec requires base = claude/mo-ext-fix-8342 and a push that creates the remote branch without checking it out locally."
-  - "The build composer calls _validate_activation() before journal recovery; the journal helper is permitted to read pending transaction bytes but never to substitute them or recompose the feed."
-  - "The enrichment reseals feed_id from canonical bytes including the mutable outcome block — a changed outcome view MUST NOT reuse a prior feed_id."
-  - "Sparse worktree artifacts: data/options_signal_episode/checkpoint.json missing causes 17 unrelated test_options_signal_episode.py failures; the dedicated 111-test command and the touched workflow/helper slice are independent of data/ and pass cleanly."
-  - "macstudio label is not proof of single-host journal custody; record actual publication/runtime proof truthfully when produced."
+  - "PR #8358 is stacked on open PR #8350. Until #8350 merges, origin/main does not contain this parent. Do not treat a local HEAD as main."
+  - "The historical source parent 1abc243b94295e867d12fd166bbd2a42948e76f1 is history only. The current parent head is 9999b5c9518ec0ac6829245b16aa374957de004e."
+  - "The builder validates activation before journal recovery. The journal helper may read pending transaction bytes and must not recompose the feed."
+  - "Enrichment reseals feed_id from canonical bytes that include the mutable outcome block. A changed outcome view must not reuse a prior feed_id."
+  - "Enrichment fail-closes when an admitted row's campaign_available_at, computed_at, or matured_at is later than feed.generated_at. A fixture that records October 15 facts must use an observation clock after those facts."
+  - "Sparse checkout: missing data/options_signal_episode/checkpoint.json fails unrelated episode tests. The 114-test command and the 8-test helper slice do not need that data."
+  - "The macstudio label is not proof of single-host journal custody."
 ---
 
-## §0 State — what is true right now
+## State now
 
-The candidate-daily-integration source adoption is complete in this worktree: patch SHA-256
-c91c61c3142c7c6e2365ac33b091fd408e9d8770c605045298b4d641cb230341 (81707 bytes, 11 paths) was
-verified, dry-run clean, applied at the parent-repair-derived HEAD 1abc243b942, and produces 7
-modified + 4 new tracked files matching the patch manifest. The dedicated 111-test command
-passes on PYTHONPATH=tests:scripts, the workflow/helper slice touched by the patch passes in
-isolation (data-sparse failures are sparse-checkout artifacts, not defects), the curated-
-exclusive import closure is gap-free, contract-delta against origin/main is zero-introduced,
-and CI trigger closure is gap-free (TRIGGER GAP 0). Exactly one R2 writer exists, the inactive
-fail-closed boundary is structured to return {state:inactive} before any R2/journal effect, and
-the recovery helper binds pending payload to the current activation receipt before replay. The
-new stacked DRAFT PR #8362 (base claude/mo-ext-fix-8342, head codex/options-alpha-candidate-
-daily-20261003) is ready to be opened by root and is INACTIVE until activation receipt,
-configured client/bucket, and the four candidate + six correction prerequisites are cleared.
+Draft PR #8358 on `codex/options-alpha-candidate-daily-20261003` is the carrier. It is already open. It is not ready for a new PR, Ready, or merge. Closed #8356 and closed duplicate #8357 are not carriers.
 
-## §1 What is LEFT — in order
+Parent PR #8350 is open at `9999b5c9518ec0ac6829245b16aa374957de004e` on `claude/mo-ext-fix-8342`. That head is merged into this branch. The older source parent `1abc243b94295e867d12fd166bbd2a42948e76f1` is history only. The pre-repair head of #8358 was `9837f2df94a8cc23a598edd6cd8a7f2ab8e00863`.
 
-1. Root opens PR #8357 as DRAFT (already prepared in this lane; #8356 on `codex/options-alpha-candidate-daily-20261003` was closed and re-opened on the `claude/mo-ext-fix-options-product-20261003-candidate-daily-integration` ref per the GitHub PR-API-cannot-retarget-source-ref precedent — same head sha, no content change), does NOT arm merge-on-green,
-   does NOT mark Ready, does NOT run a long CI wait in this lane. Verify exact head sha and
-   the 11 owned files before opening.
-2. Root completes normal PR #8350 review + hosted CI gates + same-day squash-merge.
-3. Root retargets this PR to main after #8350 merges, then runs the hosted CI pack and a
-   scoped live verification cycle (Stack-2).
-4. Future activation requires exact M2 runner/principal/state-path continuity at the journal
-   path $HOME/.local/state/mastermind/options-alpha-candidate/publication.lock and a natural
-   publication readback. The macstudio label alone is not single-host custody proof.
+Admitted outcome rows now fail closed when `campaign_available_at`, `computed_at`, or `matured_at` is later than the validated `feed.generated_at`. `target_time` is not guarded. The guard patch is 4754 bytes, SHA-256 `5e47f5d27f69eb0db0824da3e43defece645455f1c0712922c5e0bafab4539b0`. Before the guard, the three negative cases did not raise. After it, the four candidate suites passed 114 tests and the touched workflow helper passed 8 tests.
 
-## §2 What will bite you
+Candidate activation is absent. The builder stays inactive. The four candidate preconditions and six correction preconditions are not cleared. No candidate R2 pair was published. No journal or runtime effect was made by this repair.
 
-The parent PR #8350 has not yet hosted-CI'd green. Until it does, this Draft inherits a parent
-head that is not on main; treat `origin/main` as the only authoritative truth and never
-substitute the local HEAD for it. Stacking onto an unpublished local commit is forbidden by the
-spec — base must be claude/mo-ext-fix-8342 and the remote branch is created via push without
-checkout. The build composer calls `_validate_activation` BEFORE journal recovery; the recovery
-helper reads the durable transaction bytes but never recomposes the feed. Enrichment reseals
-feed_id from canonical bytes including the mutable outcome block, so a changed outcome view
-cannot reuse a prior feed_id. Sparse worktree artifacts: 17 failures in test_options_signal_episode
-are data-checkout misses, not integration defects.
+## Runtime facts recorded for this handoff
 
-## §3 What was decided and found
+These facts are root-verified and are not publication proof.
 
-- No new DEC / DSC was minted by this Draft. Canonical episode/campaign owners are preserved
-  (WS:OPTIONS-ALPHA-INTELLIGENCE-RECOVERY waves OA-1T-MACRO, OA-1C-MACRO, OA-1T-TERMINAL
-  remain unchanged).
-- The single bounded finding is: the inactive-safe CLI composer + recovery + six-horizon
-  enrichment + strict additive schema + 111-test dedicated command + scoped CI closure are
-  ready as source. The Daily caller, the workflow gate, and the terminal integrity gate are
-  wired in this diff. Activation is unchanged, owed to a future M2 runner with principal/state-
-  path continuity and a natural publication readback.
+- FS5 #8313 is merged at `603fcc5065accb61a299696c715121a94f77b960`.
+- OA3 #8318 is merged at `1df2cc9f692a6d7502379c503b62e3cbe8ffbefd`.
+- Episode #8346 is merged at `7fdca240e1cfc9263458d9cd8670d06634806ded`.
+- Live-flow #8322 is merged at `fbddeb4fce82525d51aa43bd87b0704a58b210b0`.
+- The M1 live-flow canonical clone, swap, and reload were installed at 15:26 on `7fdca240`. The reviewed poller and plist were byte-exact. Import and help passed. The raw 28 September WAL is unchanged at SHA-256 `d9a25966a8d50090f8619d878e4133860cc54682b53764126bf7299e1ca00b06`. The reviewed quarantine receipt is SHA-256 `4b503b01eb11e19c22cb9e4bbdab630249312d0ba51d86a7755ee0619c46c819`. A second invocation was idempotent. Outside RTH the service exited 0 and was not running at 15:30.
+- The root receipt is `/private/tmp/options-alpha-liveflow-cutover-20261003/receipt.json` on M1. Rollback is `/Users/chriswong/liveflow-ops-wt.orphaned-20261003T152622Z` plus the external full backup `/Volumes/STORAGE/Offloaded/m1-20261003/options-alpha-liveflow-rollback-bffd9931b2e3`, retained through the next natural RTH. This is not natural RTH publication proof.
+- Terminal #788 head `38a2a15a7ba90f8ce621d0c5b00742af186129e8` is Ready and source-approved: 53 focused tests, 25 pair tests, typecheck, and build passed; browser checks at 390, 820, and 1440 in English and Chinese showed six horizons without overflow; CodeQL passed. Required CI and deploy are still owed.
+- AD1 org-admin runner group 5 is still blocked by the workflow restriction. Canary is the only accepted path. `AD1_M1_LANE` is absent.
 
-## §4 Not in scope — do not adopt
+## What is left
 
-Do not infer option PNL, executable options economics, option ML production authority, ranking,
-gating, sizing, issue-desk action, or trading from this Draft. Do not create a second
-collector, ledger, score plane, score path, promotion path, store, or Issue Desk. Do not
-synthesize ChainHeat as measured NBBO. Do not re-hunt Sep-17/Sep-18 RTH evidence. Do not reopen
-OA-0 architecture freeze. Do not promote OA-1C-MACRO or OA-1T-MACRO to PROVEN_LIVE based on
-this Draft; durable publication/integrity + scoring.enabled=false remain the acceptance gates.
+1. Root reviews the exact head of draft PR #8358. Do not open another PR and do not mark it Ready.
+2. Root finishes PR #8350, retargets #8358 to main, and runs hosted CI plus the scoped live check.
+3. Activation still needs a real receipt, runner continuity at `$HOME/.local/state/mastermind/options-alpha-candidate/publication.lock`, and a natural publication readback.
+
+## What will bite you
+
+Until #8350 merges, this draft's parent is not on main. The builder checks activation before journal recovery and does not recompose from the journal. Enrichment reseals `feed_id` when the outcome block changes, and it refuses recorded outcome clocks later than `feed.generated_at`. A test that uses the 15 October outcome facts must observe them at or after `2026-10-16T15:00:00Z`.
+
+## What was decided
+
+No new DEC or DSC was minted. The daily caller, workflow gate, and terminal integrity gate are in this diff. Activation is unchanged. The availability guard is source-only: it does not create an activation receipt, write a journal, or publish to R2.
+
+## Not in scope
+
+Do not infer option PNL, executable options economics, option ML production authority, ranking, gating, sizing, issue-desk action, or trading from this draft. Do not create a second collector, ledger, score plane, score path, promotion path, store, or Issue Desk. Do not synthesize ChainHeat as measured NBBO. Do not re-hunt September RTH evidence. Do not reopen the OA-0 architecture freeze. Do not promote OA-1C-MACRO or OA-1T-MACRO to PROVEN_LIVE from this draft.

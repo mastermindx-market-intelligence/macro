@@ -8,6 +8,7 @@ identity, option return, publisher, or control plane.
 from __future__ import annotations
 
 import copy
+from datetime import datetime
 from typing import Any
 
 from engine import options_alpha_candidate_feed as candidate_feed
@@ -23,7 +24,22 @@ class CandidateOutcomeEnrichmentError(ValueError):
     pass
 
 
-def _outcome_payload(row: Any) -> dict[str, Any]:
+def _validate_outcome_availability(row: Any, *, observation_at: datetime) -> None:
+    """Refuse a ledger row that claims facts unavailable at this feed clock."""
+    value = row.value
+    # target_time is a scheduled horizon and may naturally be in the future for
+    # a pending row. These three are recorded facts, so none may postdate the
+    # feed observation clock that publishes them.
+    for field in ("campaign_available_at", "computed_at", "matured_at"):
+        stamp = candidate_feed._utc(value[field], f"campaign outcome {field}")
+        if stamp > observation_at:
+            raise CandidateOutcomeEnrichmentError(
+                f"campaign outcome {field} is later than feed.generated_at"
+            )
+
+
+def _outcome_payload(row: Any, *, observation_at: datetime) -> dict[str, Any]:
+    _validate_outcome_availability(row, observation_at=observation_at)
     value = row.value
     status = value["status"]
     if status == "complete" and value["underlying"]["status"] == "complete":
@@ -128,6 +144,7 @@ def enrich_candidate_outcomes(
     candidate_feed._validate_schema(
         feed, candidate_feed.CANDIDATE_FEED_V2_SCHEMA_FILENAME
     )
+    observation_at = candidate_feed._utc(feed["generated_at"], "feed.generated_at")
     for snapshot in (verified_view.campaigns, verified_view.outcomes):
         raw = b"".join(item.raw + b"\n" for item in snapshot.rows)
         if raw != snapshot.raw or candidate_feed._sha256(raw) != snapshot.digest:
@@ -175,7 +192,9 @@ def enrich_candidate_outcomes(
             "join_revision_id": revision_id,
             "horizons": {
                 horizon: (
-                    _outcome_payload(by_key[(revision_id, horizon)])
+                    _outcome_payload(
+                        by_key[(revision_id, horizon)], observation_at=observation_at
+                    )
                     if (revision_id, horizon) in by_key
                     else _absent(
                         horizon,

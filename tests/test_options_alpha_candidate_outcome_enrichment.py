@@ -173,7 +173,10 @@ def _candidate(monkeypatch, tmp_path):
     }
     feed = compose_candidate_feed(
         **candidate_fixture._composer_kwargs(
-            campaigns, micro_map=micro, activation=candidate_fixture.ACTIVATION_RECEIPT
+            campaigns,
+            micro_map=micro,
+            activation=candidate_fixture.ACTIVATION_RECEIPT,
+            observation_clock="2026-10-16T15:00:00Z",
         )
     )
     return feed, campaigns, campaigns.rows[0].value
@@ -287,6 +290,37 @@ def test_tail_changes_only_outcomes_and_real_view_rejects_duplicate_or_malformed
             feed,
             effective_outcomes=malformed_view,
             correction_activation_receipt=receipt,
+        )
+
+
+@pytest.mark.parametrize(
+    "field", ("campaign_available_at", "computed_at", "matured_at")
+)
+def test_future_recorded_outcome_clock_refuses_before_exposure(
+    tmp_path, monkeypatch, field
+):
+    feed, campaigns, campaign = _candidate(monkeypatch, tmp_path)
+    rows = [
+        _row(campaign, "h60", 1),
+        _row(campaign, "eod", 2, complete=False),
+        _row(campaign, "1d", 3, quarantined=True),
+        _row(campaign, "5d", 4),
+        _row(campaign, "10d", 5),
+        _row(campaign, "3d", 6, complete=False, unavailable=True),
+    ]
+    future = rows[0]
+    future.value[field] = "2999-01-01T00:00:00Z"
+    raw = canonical_bytes(future.value)
+    rows[0] = LedgerRow(
+        future.value, future.ordinal, raw, hashlib.sha256(raw).hexdigest()
+    )
+    view, receipt = _view(monkeypatch, campaigns, rows)
+    with pytest.raises(
+        enrichment.CandidateOutcomeEnrichmentError,
+        match=rf"{field} is later than feed.generated_at",
+    ):
+        enrichment.enrich_candidate_outcomes(
+            feed, effective_outcomes=view, correction_activation_receipt=receipt
         )
 
 
