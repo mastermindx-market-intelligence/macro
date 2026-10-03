@@ -7097,3 +7097,97 @@ def test_public_ontology_quota_gate_still_precedes_owner_read(tmp_path, monkeypa
     else:
         assert gw.chat("Explain this step", "test-user", context=context, root=tmp_path)["quota_exhausted"] is True
     owner.assert_not_called()
+
+
+# R25: source matching is a server receipt, not an inference from absent errors.
+def _r25_public_case(tmp_path, monkeypatch, streaming, *, phase="matched", lang="en"):
+    from engine.ontology_explorer import DEFAULT_CHAIN
+    from tests.ontology_explorer_fixtures import build_root
+
+    root = build_root(tmp_path, slug=DEFAULT_CHAIN)
+    ref = _current_ontology_test_ref(root)
+    if phase == "stale":
+        ref["manifest_hash"] = "sha256:" + "f" * 64
+    client = _MockClient([_MockResponse([_MockBlock("text", "Synthetic selected-path answer.")])])
+    monkeypatch.setattr(gw, "_resolve_tier", lambda *a, **k: {"tier": "pro", "status": "active"})
+    monkeypatch.setattr(gw, "_check_and_increment_quota", lambda *a, **k: (True, {"remaining": 10}))
+    monkeypatch.setattr(gw, "_record_token_usage", lambda *a, **k: None)
+    from lib import ai_costs
+    monkeypatch.setattr(ai_costs, "record_usage", lambda *a, **k: None)
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda *a: phase != "denied")
+    monkeypatch.setattr(gw, "_ensure_thread", lambda *a, **k: None)
+    monkeypatch.setattr(gw, "_log_brain_response", lambda **k: None)
+    monkeypatch.setattr(gw._native_facts, "plan_native_facts", lambda *a, **k: None)
+    monkeypatch.setattr(gw, "_instant_route", lambda *a, **k: None)
+
+    def providers(*args, **kwargs):
+        if phase == "race":
+            state_file = root / "data/transmission/chain_state.json"
+            state = json.loads(state_file.read_text())
+            state["chains"][0]["nodes"][0]["receipts"][0]["value"] = 999
+            state_file.write_text(json.dumps(state))
+        if phase == "provider_unavailable":
+            return []
+        return [{"client": client, "model": "deepseek-chat"}]
+
+    provider_call = MagicMock(side_effect=providers)
+    monkeypatch.setattr(gw, "_build_lane_providers", provider_call)
+    context = {"page": "ontology", "panel": "n1", "lang": lang,
+               "ontology_selection": ref,
+               # Client assertions are not a server-issued positive receipt.
+               "ontology_selection_receipt": {"status": "matched", "reference": ref}}
+    if phase == "ambient":
+        context.pop("ontology_selection")
+        context.pop("panel")
+    question = "解释此环节" if lang == "zh" else "Explain this selected step"
+    if streaming:
+        events = [json.loads(x[6:]) for x in gw.chat_stream(
+            question, "test-user", context=context, root=root
+        ) if x.startswith("data: ")]
+        result = events[-1]
+        assert result["type"] == "done"
+    else:
+        result = gw.chat(question, "test-user", context=context, root=root)
+    return result, ref, client, provider_call
+
+
+@pytest.mark.parametrize("streaming", (False, True))
+@pytest.mark.parametrize("lang", ("en", "zh"))
+def test_r25_matching_public_answer_has_exact_server_receipt(tmp_path, monkeypatch, streaming, lang):
+    result, ref, client, _ = _r25_public_case(tmp_path, monkeypatch, streaming, lang=lang)
+    assert client.calls
+    receipt = result.get("ontology_selection_receipt")
+    assert isinstance(receipt, dict), "R25 needs positive server evidence, not merely no refusal"
+    assert receipt["schema"] == "ontology_selection_receipt.v1"
+    assert receipt["status"] == "matched"
+    assert receipt["scope"] == "selected_read_at_turn_start"
+    assert receipt["reference"] == ref
+    assert receipt["step_title"] == ("节点一" if lang == "zh" else "Node one")
+    assert receipt["path_title"]
+    assert set(receipt) == {"schema", "status", "scope", "reference", "step_title", "path_title"}
+    assert "SYN-N1" not in json.dumps(receipt)
+    assert "value" not in json.dumps(receipt)
+    assert result.get("selection_unverified") is not True
+
+
+@pytest.mark.parametrize("streaming", (False, True))
+@pytest.mark.parametrize("phase", ("stale", "race", "denied"))
+def test_r25_every_unverified_path_returns_machine_readable_recovery(tmp_path, monkeypatch, streaming, phase):
+    result, _, client, providers = _r25_public_case(tmp_path, monkeypatch, streaming, phase=phase)
+    assert result.get("selection_unverified") is True
+    assert result.get("ontology_selection_receipt") == {
+        "schema": "ontology_selection_receipt.v1", "status": "unverified"
+    }
+    assert result["citations"] == []
+    assert client.calls == []
+    if phase != "race":
+        providers.assert_not_called()
+
+
+@pytest.mark.parametrize("streaming", (False, True))
+@pytest.mark.parametrize("phase", ("provider_unavailable", "ambient"))
+def test_r25_no_matched_receipt_from_client_claim_or_missing_provider(tmp_path, monkeypatch, streaming, phase):
+    result, _, _, _ = _r25_public_case(tmp_path, monkeypatch, streaming, phase=phase)
+    assert "ontology_selection_receipt" not in result
+    if phase == "provider_unavailable":
+        assert result["degraded"] is True

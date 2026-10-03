@@ -305,3 +305,77 @@ html:not([data-theme="light"]) .ox-hero--answer .ox-answer-summary{
   .ox-answer-title{font-size:var(--fs-h1);max-width:none}
   .ox-hero--answer .ox-answer-summary{padding:var(--sp-5,20px)}
 }
+
+/* R25: existing Brain, selected-reading proof. Dark is a calm inset instrument;
+   light is an elevated research note, not an inverted copy. Tokens stay owned
+   by the host/Brain. This material is deliberately not injected by JavaScript. */
+#mmb-root .mmb-ontology-receipt {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  margin-block: 16px 8px;
+  padding: 16px;
+  border: 1px solid var(--mmb-line);
+  border-radius: var(--r-card);
+  background: var(--mmb-well);
+  color: var(--mmb-text);
+  font: 400 var(--fs-body)/1.55 var(--font-ui);
+  overflow-wrap: anywhere;
+}
+#mmb-root .mmb-ontology-state {
+  color: var(--ink-up, var(--mmb-ok));
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+#mmb-root .mmb-ontology-receipt[data-state="unverified"] {
+  border-color: var(--ink-warn, var(--mmb-warn));
+}
+#mmb-root .mmb-ontology-receipt[data-state="unverified"] .mmb-ontology-state {
+  color: var(--ink-warn, var(--mmb-warn));
+}
+#mmb-root .mmb-ontology-title { font-weight: 700; }
+#mmb-root .mmb-ontology-path,
+#mmb-root .mmb-ontology-date,
+#mmb-root .mmb-ontology-note { color: var(--mmb-muted); }
+#mmb-root .mmb-ontology-return {
+  min-height: 44px;
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid var(--mmb-info);
+  border-radius: var(--r-btn);
+  background: var(--mmb-panel2);
+  color: var(--mmb-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+#mmb-root .mmb-ontology-return:hover { background: var(--mmb-card); }
+#mmb-root .mmb-ontology-return:focus-visible {
+  outline: 2px solid var(--mmb-info);
+  outline-offset: 3px;
+}
+#mmb-root .mmb-ontology-return:disabled { opacity: .55; cursor: default; }
+html[data-theme="light"] #mmb-root .mmb-ontology-receipt {
+  background: var(--mmb-panel);
+  box-shadow: var(--card-shadow);
+}
+html[data-theme="light"] #mmb-root .mmb-ontology-return {
+  background: var(--mmb-panel2);
+}
+
+#mmb-root #mmb-ctx.mmb-ontology-context { display: block; }
+#mmb-root .mmb-ontology-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--mmb-line);
+  border-radius: var(--r-ctl);
+  background: var(--mmb-panel2);
+  font: 400 var(--fs-sm)/1.45 var(--font-ui);
+  overflow-wrap: anywhere;
+}
+#mmb-root .mmb-ontology-preview .mmb-ontology-title { color: var(--mmb-text); }

@@ -86,6 +86,20 @@
         node_id: selectedPathRef.node_id
       };
     };
+    window.MM_BRAIN_CFG.getOntologySelectionDisplay = function () {
+      if (!selectedPathRef) return null;
+      // Labels are preview-only. The closed five-field request getter above
+      // deliberately excludes them, so they never become trusted evidence.
+      function label(pair, fallback) {
+        return {en: String(pair && pair.en || fallback.en).slice(0, 160),
+          zh: String(pair && (pair.zh || pair.en) || fallback.zh).slice(0, 160)};
+      }
+      return {
+        step_title: label(selectedPathRef.step_title, {en: "Selected step", zh: "所选环节"}),
+        path_title: label(selectedPathRef.path_title, {en: "Transmission path", zh: "传导路径"}),
+        asof: selectedPathRef.asof
+      };
+    };
     window.MM_BRAIN_CFG.getAiContext = function () {
       var ambient = selectedPathRef ? {
         symbol: null,
@@ -157,7 +171,9 @@
       asof: source.asof,
       manifest_hash: source.source_manifest_hash,
       node_id: leg && leg.node_id,
-      leg: brainLabel(leg && leg.node_id, "path")
+      leg: brainLabel(leg && leg.node_id, "path"),
+      step_title: leg && leg.title,
+      path_title: snapshot && snapshot.path && snapshot.path.title
     };
     var previousKey = selectedPathRef ? JSON.stringify(selectedPathRef) : "";
     var nextKey = JSON.stringify(next);

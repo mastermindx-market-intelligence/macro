@@ -1,0 +1,176 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-10-03T07:54:23.569125+00:00",
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "version": "1.3.0",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)"
+  },
+  "target": {
+    "kind": "rendered_fixture",
+    "production_proof": "none",
+    "fixture": "fixture.json",
+    "fixture_sha256": "a42a60b2acea0b63cdacc7241d18f1a5036f875211d795ac04fa3e9b27269d6c",
+    "network": "loopback static assets and synthetic ontology/Brain API responses only",
+    "construction_inputs": {
+      "site/ontology.html": "a5064ba4410daad69728ff5c9028f7e47a7c51430acbdea4406ba944a9105499",
+      "site/ontology.js": "73869e8bc62596198c4bfdba397c5e6289b59ac2cc46e527ba3f1ba53f39c19c",
+      "site/ontology.css": "86b34e2270359550c4df530f6a773e28cbc15d9cb2da9886227cb74a3d2dceb4",
+      "site/theme.js": "fc0eea5f4b6bd8cf0d2380154ac144a3dd27d99ad9d4631662324c46df9648f9",
+      "site/theme.css": "d6d5207461084867fa835042037b0393deccb193498e946b2c5eef414d0c4f0e",
+      "site/mm_brain.js": "5bc0f2cee0a3736a6fa41e0a1e97d4ecf50c4606a6e70896e223b99c7b0e3f11",
+      "templates/ontology.js": "73869e8bc62596198c4bfdba397c5e6289b59ac2cc46e527ba3f1ba53f39c19c",
+      "templates/ontology.css": "86b34e2270359550c4df530f6a773e28cbc15d9cb2da9886227cb74a3d2dceb4",
+      "templates/mm_brain.js": "5bc0f2cee0a3736a6fa41e0a1e97d4ecf50c4606a6e70896e223b99c7b0e3f11",
+      "tests/ontology_explorer_fixtures.py": "2f0cae8c7e4f135fae15ca3d9f7a419dec77649461df1dbdfffeea8bd58f5eba"
+    },
+    "adapter_sha256": "35dd5cbbe98e76f738987a54a17011e6788d758a425df22d780da0541653760c",
+    "response_limits": "The real widget is driven by disclosed matched/unverified service fixtures; this is not backend runtime or entitlement proof."
+  },
+  "axes": {
+    "viewports": {
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "locales": [
+      "en"
+    ],
+    "themes": [
+      "dark"
+    ],
+    "access": [
+      "anonymous"
+    ],
+    "force_states": []
+  },
+  "selection": {},
+  "excluded": [],
+  "outcome": "captured",
+  "totals": {
+    "pages": 1,
+    "states_attempted": 1,
+    "states_captured": 1
+  },
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing"
+  },
+  "pages": [
+    {
+      "page_id": "ontology.html?r25=matched",
+      "route": "/ontology.html?r25=matched",
+      "registry_route": "/ontology.html?r25=matched",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "viewport": "mobile",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "captured": true,
+          "file": "images/b80a9628999a8b4f.png",
+          "sha256": "b80a9628999a8b4fd1803d647a7be4ab6cdba769d53329797be05535aa2e8cb0",
+          "bytes": 259248,
+          "width": 390,
+          "height": 3190,
+          "applied_theme": "dark",
+          "applied_locale": "en"
+        }
+      ],
+      "metrics": {
+        "document_height_px": 3190,
+        "section_count": 3,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 5,
+          "h3": 8,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "duplicate_heading_texts": [],
+        "panel_count": 4,
+        "visible_word_count": 467,
+        "long_paragraph_count": 0,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": false,
+        "elements_wider_than_viewport": 0,
+        "console_error_count": 0,
+        "request_count": 25,
+        "payload_bytes_total": 525333,
+        "asof_present": false,
+        "source_present": false,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "mobile",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "mobile": {
+            "document_height_px": 3190,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          }
+        }
+      },
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "dimension": "access",
+          "value": "free",
+          "captured": false,
+          "reason": "requires authenticated session; not automatable without approved fixtures"
+        },
+        {
+          "dimension": "access",
+          "value": "essential",
+          "captured": false,
+          "reason": "requires authenticated session; not automatable without approved fixtures"
+        },
+        {
+          "dimension": "access",
+          "value": "pro",
+          "captured": false,
+          "reason": "requires authenticated session; not automatable without approved fixtures"
+        },
+        {
+          "dimension": "page_state",
+          "value": "loading",
+          "captured": false,
+          "reason": "state not synthesizable against static output"
+        },
+        {
+          "dimension": "page_state",
+          "value": "empty",
+          "captured": false,
+          "reason": "state not synthesizable against static output"
+        },
+        {
+          "dimension": "page_state",
+          "value": "stale",
+          "captured": false,
+          "reason": "state not synthesizable against static output"
+        },
+        {
+          "dimension": "page_state",
+          "value": "error",
+          "captured": false,
+          "reason": "state not synthesizable against static output"
+        }
+      ]
+    }
+  ]
+}

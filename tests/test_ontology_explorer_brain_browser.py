@@ -693,3 +693,202 @@ def test_chinese_first_blocker_name_does_not_split_at_the_heading_edge(browser, 
         assert len(set(rects)) == 1
     finally:
         context.close()
+
+
+def _r25_widget(browser, snapshot, *, width=390, theme="dark", lang="en", state="matched", send=True):
+    """Actual widget + host; only authenticated service responses are synthetic."""
+    context, page = _open(browser, snapshot, width=width, height=900)
+    context.route("**/*", lambda route: route.abort())
+    page.evaluate(r"""config => {
+        document.documentElement.dataset.theme = config.theme;
+        document.documentElement.dataset.lang = config.lang;
+        window.__r25Requests = [];
+        window.__r25State = config.state;
+        window.MDXAuth = {enabled: () => false,
+            user: () => ({id: 'synthetic-user'}),
+            onChange: callback => callback({id: 'synthetic-user'})};
+        window.fetch = (url, opts = {}) => {
+            const path = new URL(url, location.href).pathname;
+            const json = body => Promise.resolve(new Response(JSON.stringify(body),
+                {status: 200, headers: {'Content-Type': 'application/json'}}));
+            if (path === '/api/brain/me') return json({tier: 'pro', quotas: {
+                fast: {lane: 'fast', remaining: 10, limit: 10},
+                pro: {lane: 'pro', remaining: 10, limit: 10}}});
+            if (path === '/api/brain/threads') return json({threads: []});
+            if (path !== '/api/brain/stream') return Promise.reject(new Error('Unexpected fixture request: ' + path));
+            const request = JSON.parse(opts.body);
+            window.__r25Requests.push(request);
+            const ref = request.context.ontology_selection;
+            const mode = window.__r25State;
+            let receipt = {schema: 'ontology_selection_receipt.v1', status: 'matched',
+                scope: 'selected_read_at_turn_start', reference: {...ref},
+                step_title: config.lang === 'zh' ? '节点一' : 'Node one',
+                path_title: config.lang === 'zh' ? '合成线性探针' : 'Synthetic linear probe'};
+            if (mode === 'unverified') receipt = {schema: 'ontology_selection_receipt.v1', status: 'unverified'};
+            if (mode === 'wrong_generation') receipt.reference.manifest_hash = 'sha256:' + 'f'.repeat(64);
+            if (mode === 'malformed') receipt.reference.revision = String(receipt.reference.revision);
+            const done = {type: 'done', citations: ['synthetic-receipt.json'], degraded: mode === 'degraded'};
+            if (mode !== 'absent') done.ontology_selection_receipt = receipt;
+            if (mode === 'unverified') done.selection_unverified = true;
+            const text = mode === 'unverified'
+                ? (config.lang === 'zh' ? '请刷新路径后重新选择环节。' : 'Refresh the path and select the step again.')
+                : 'Synthetic answer for the selected reading.';
+            const events = [{type: 'meta', thread_id: 'synthetic-thread'},
+                {type: 'delta', text},
+                {type: 'suggest', items: ['Synthetic follow-up']}, done];
+            return Promise.resolve(new Response(events.map(e => 'data: ' + JSON.stringify(e) + '\n\n').join(''),
+                {status: 200, headers: {'Content-Type': 'text/event-stream'}}));
+        };
+    }""", {"theme": theme, "lang": lang, "state": state})
+    page.add_script_tag(path=str(ROOT / "templates" / "mm_brain.js"))
+    first = page.locator("#ox-steps .ox-brain-action").first
+    first.scroll_into_view_if_needed()
+    first.click()
+    page.wait_for_selector("#mmb-panel.open #mmb-ta", state="visible")
+    if not send:
+        return context, page
+    page.locator("#mmb-ta").fill("解释此环节" if lang == "zh" else "Explain this selected step")
+    page.locator("#mmb-send").click()
+    page.wait_for_function("window.__r25Requests.length === 1")
+    page.wait_for_function("document.querySelector('#mmb-scroll .mmb-msg.assistant .mmb-txt')?.textContent.length > 10")
+    return context, page
+
+
+@pytest.mark.parametrize("state", ("matched", "unverified"))
+@pytest.mark.parametrize("width", (1440, 390))
+@pytest.mark.parametrize("theme", ("dark", "light"))
+@pytest.mark.parametrize("lang", ("en", "zh"))
+def test_r25_real_widget_matches_or_recovers_without_a_second_conversation(
+    browser, synthetic_snapshot, state, width, theme, lang
+):
+    context, page = _r25_widget(browser, synthetic_snapshot, width=width, theme=theme, lang=lang, state=state)
+    try:
+        receipt = page.locator("#mmb-scroll .mmb-ontology-receipt").last
+        receipt.wait_for(state="visible", timeout=2000)
+        assert receipt.get_attribute("data-state") == state
+        text = receipt.inner_text()
+        assert ("读数已匹配" if lang == "zh" else "READING MATCHED") in text if state == "matched" else (
+            "未核验" if lang == "zh" else "NOT VERIFIED") in text
+        assert "sha256:" not in text and "n1" not in text
+        assert page.locator("#mmb-root").count() == 1
+        assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+        if state == "unverified":
+            assert page.locator("#mmb-scroll .mmb-cites,#mmb-scroll .mmb-sugg").count() == 0
+            button = receipt.locator("button")
+            assert button.bounding_box()["height"] >= 44
+            button.click()
+            assert page.locator("#mmb-panel").get_attribute("class").find("open") < 0
+            assert page.evaluate("document.activeElement === document.querySelector('.ox-brain-action')")
+            assert page.evaluate("window.MM_BRAIN_CFG.getOntologySelection()") is None
+            assert len(page.evaluate("window.__r25Requests")) == 1
+        else:
+            assert "2026-01-02" in text
+            assert ("本次回答开始时" if lang == "zh" else "At this answer’s start") in text
+    finally:
+        context.close()
+
+
+@pytest.mark.parametrize("state", ("absent", "wrong_generation", "malformed", "degraded"))
+def test_r25_never_infers_matched_from_prose_or_an_invalid_receipt(browser, synthetic_snapshot, state):
+    context, page = _r25_widget(browser, synthetic_snapshot, state=state)
+    try:
+        page.wait_for_function("!document.querySelector('#mmb-send').classList.contains('stop')")
+        assert page.locator('.mmb-ontology-receipt[data-state="matched"]').count() == 0
+    finally:
+        context.close()
+
+
+@pytest.mark.parametrize("lang", ("en", "zh"))
+def test_r25_selected_reading_preview_is_human_readable_not_a_verified_answer(browser, synthetic_snapshot, lang):
+    context, page = _r25_widget(browser, synthetic_snapshot, lang=lang, send=False)
+    try:
+        preview = page.locator("#mmb-ctx .mmb-ontology-preview")
+        preview.wait_for(state="visible", timeout=2000)
+        text = preview.inner_text()
+        assert ("节点一" if lang == "zh" else "Node one") in text
+        assert "2026-01-02" in text
+        assert ("仅为所选读数" if lang == "zh" else "Selection only") in text
+        assert "sha256:" not in text
+        assert "READING MATCHED" not in text and "读数已匹配" not in text
+        assert page.evaluate("window.__r25Requests") == []
+        ref = page.evaluate("window.MM_BRAIN_CFG.getOntologySelection()")
+        assert set(ref) == {"chain", "revision", "asof", "manifest_hash", "node_id"}
+        page.locator('#mmb-root [data-act="close"]').click()
+        page.evaluate("window.MMBrain.open()")
+        assert page.locator("#mmb-ctx .mmb-ontology-preview").count() == 0
+    finally:
+        context.close()
+
+
+@pytest.mark.parametrize("state", ("wrong_generation", "malformed"))
+def test_r25_invalid_positive_receipt_fails_closed_without_answer_chips(browser, synthetic_snapshot, state):
+    context, page = _r25_widget(browser, synthetic_snapshot, state=state)
+    try:
+        page.locator('.mmb-ontology-receipt[data-state="unverified"]').wait_for(state="visible", timeout=2000)
+        assert page.locator("#mmb-scroll .mmb-cites,#mmb-scroll .mmb-sugg").count() == 0
+    finally:
+        context.close()
+
+
+def test_r25_old_recovery_button_cannot_close_a_different_selection(browser, synthetic_snapshot):
+    context, page = _r25_widget(browser, synthetic_snapshot, state="unverified")
+    try:
+        button = page.locator('.mmb-ontology-return')
+        button.wait_for(state="visible", timeout=2000)
+        page.evaluate("document.querySelectorAll('.ox-brain-action')[1].click()")
+        assert page.evaluate("window.MM_BRAIN_CFG.getOntologySelection().node_id") == "n2"
+        button.click()
+        assert page.locator('#mmb-panel.open').count() == 1
+        assert button.is_disabled()
+        assert len(page.evaluate("window.__r25Requests")) == 1
+    finally:
+        context.close()
+
+
+def test_r25_recovery_preserves_prior_answer_and_existing_thread(browser, synthetic_snapshot):
+    context, page = _r25_widget(browser, synthetic_snapshot, state="matched")
+    try:
+        page.locator('.mmb-ontology-receipt[data-state="matched"]').wait_for(state="visible")
+        original = page.locator('#mmb-scroll .mmb-msg.assistant').first.locator('.mmb-txt').inner_text()
+        page.wait_for_function("!document.querySelector('#mmb-send').classList.contains('stop')")
+        page.evaluate("window.__r25State = 'unverified'")
+        page.locator('#mmb-ta').fill('Explain this step again')
+        page.locator('#mmb-send').click()
+        page.locator('.mmb-ontology-receipt[data-state="unverified"]').wait_for(state="visible")
+        requests = page.evaluate('window.__r25Requests')
+        assert len(requests) == 2
+        assert requests[1]['thread_id'] == 'synthetic-thread'
+        assert requests[1]['context']['ontology_selection'] == requests[0]['context']['ontology_selection']
+        # Existing widget intentionally keeps suggestions only on the latest
+        # turn. Its prior answer text, evidence and thread must still survive.
+        assert page.locator('#mmb-scroll .mmb-msg.assistant').first.locator('.mmb-txt').inner_text() == original
+        assert page.locator('#mmb-scroll .mmb-msg.assistant').first.locator('.mmb-ontology-receipt[data-state="matched"]').count() == 1
+        assert page.locator('#mmb-scroll .mmb-msg.assistant').first.locator('.mmb-cites').count() == 1
+        assert page.locator('#mmb-scroll .mmb-msg.assistant').last.locator('.mmb-cites,.mmb-sugg').count() == 0
+        page.locator('.mmb-ontology-return').click()
+        assert page.evaluate('window.MM_BRAIN_CFG.getOntologySelection()') is None
+        assert len(page.evaluate('window.__r25Requests')) == 2
+    finally:
+        context.close()
+
+
+def test_r25_untrusted_display_labels_are_literal_text_and_never_request_evidence(browser, synthetic_snapshot):
+    import copy
+    snapshot = copy.deepcopy(synthetic_snapshot)
+    payload = '<img src=x onerror="window.__r25Injected=true">'
+    snapshot['path']['legs'][0]['title'] = {'en': payload, 'zh': payload}
+    context, page = _r25_widget(browser, snapshot, send=False)
+    try:
+        preview = page.locator('#mmb-ctx .mmb-ontology-preview')
+        preview.wait_for(state='visible')
+        assert payload in preview.inner_text()
+        assert preview.locator('img,script').count() == 0
+        assert page.evaluate('window.__r25Injected === true') is False
+        page.locator('#mmb-ta').fill('Explain this selected step')
+        page.locator('#mmb-send').click()
+        page.locator('.mmb-ontology-receipt[data-state="matched"]').wait_for(state='visible')
+        request = page.evaluate('window.__r25Requests[0]')
+        assert payload not in json.dumps(request)
+        assert set(request['context']['ontology_selection']) == {'chain', 'revision', 'asof', 'manifest_hash', 'node_id'}
+    finally:
+        context.close()

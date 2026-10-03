@@ -2564,6 +2564,77 @@
     }
     return true;
   }
+  /* R25 belongs to the existing response and host return callback. A positive
+     indicator is bound to the reference SENT by this turn, never to prose, a
+     later host selection, or the absence of an error. It is not persisted. */
+  function validOntologyRef(ref) {
+    if (!ref || typeof ref !== 'object' || Array.isArray(ref)) return false;
+    var keys = ['chain', 'revision', 'asof', 'manifest_hash', 'node_id'];
+    if (Object.keys(ref).length !== keys.length || !keys.every(function (key) { return Object.prototype.hasOwnProperty.call(ref, key); })) return false;
+    return typeof ref.chain === 'string' && ref.chain.length > 0 && ref.chain.length <= 160 &&
+      Number.isInteger(ref.revision) && ref.revision >= 0 && ref.revision <= 999999999 &&
+      typeof ref.asof === 'string' && /^[0-9TZ:.+ -]{1,40}$/.test(ref.asof) &&
+      typeof ref.manifest_hash === 'string' && /^sha256:[0-9a-f]{64}$/.test(ref.manifest_hash) &&
+      typeof ref.node_id === 'string' && /^[A-Za-z0-9][A-Za-z0-9_-]{0,80}$/.test(ref.node_id);
+  }
+  function sameOntologyRef(a, b) {
+    return validOntologyRef(a) && validOntologyRef(b) &&
+      ['chain', 'revision', 'asof', 'manifest_hash', 'node_id'].every(function (key) { return a[key] === b[key]; });
+  }
+  function renderOntologyReceipt(j, T) {
+    var ctx = T.payload && T.payload.ctx;
+    if (!ctx || ctx.page !== 'ontology' || !Object.prototype.hasOwnProperty.call(ctx, 'ontology_selection')) return false;
+    var receipt = j && j.ontology_selection_receipt;
+    var unverified = !!(j && j.selection_unverified === true) || !!(receipt && receipt.status === 'unverified');
+    var matched = !unverified && j && !j.degraded && receipt &&
+      receipt.schema === 'ontology_selection_receipt.v1' && receipt.status === 'matched' &&
+      receipt.scope === 'selected_read_at_turn_start' &&
+      sameOntologyRef(receipt.reference, ctx.ontology_selection) &&
+      Object.keys(receipt).length === 6 &&
+      typeof receipt.step_title === 'string' && receipt.step_title.trim().length > 0 && receipt.step_title.length <= 160 &&
+      typeof receipt.path_title === 'string' && receipt.path_title.trim().length > 0 && receipt.path_title.length <= 160;
+    /* An explicit but malformed/mismatched receipt is not the older gateway's
+       absence of a receipt. Fail closed rather than showing its answer chips. */
+    if (receipt != null && !matched && j && !j.degraded) unverified = true;
+    if (!unverified && !matched) return false;
+    var card = el('section', 'mmb-ontology-receipt');
+    card.dataset.state = matched ? 'matched' : 'unverified';
+    card.setAttribute('aria-label', L('Selected reading evidence', '所选读数的证据'));
+    var badge = el('div', 'mmb-ontology-state');
+    badge.innerHTML = matched ? LB('READING MATCHED', '读数已匹配') : LB('NOT VERIFIED', '未核验');
+    card.appendChild(badge);
+    if (matched) {
+      var title = el('div', 'mmb-ontology-title'); title.textContent = receipt.step_title; card.appendChild(title);
+      var path = el('div', 'mmb-ontology-path'); path.textContent = receipt.path_title; card.appendChild(path);
+      var date = el('div', 'mmb-ontology-date');
+      date.innerHTML = LB('Evidence dated ', '证据日期：'); date.appendChild(DOC.createTextNode(receipt.reference.asof)); card.appendChild(date);
+      var scope = el('div', 'mmb-ontology-note');
+      scope.innerHTML = LB('At this answer’s start, the selected reading matched its source. This does not freeze later research.', '本次回答开始时，所选读数与来源一致。这并不冻结后续研究。');
+      card.appendChild(scope);
+    } else {
+      /* Neither old numerical chips nor suggestions belong to a refused answer. */
+      T.bub.querySelectorAll('.mmb-cites,.mmb-sugg,.mmb-charts').forEach(function (n) { n.remove(); });
+      var note = el('div', 'mmb-ontology-note');
+      note.innerHTML = LB('No answer receipts. Refresh the path and select the step again.', '无回答证据。请刷新路径后重新选择环节。'); card.appendChild(note);
+      var back = el('button', 'mmb-ontology-return'); back.type = 'button';
+      back.innerHTML = LB('Return to the path', '返回路径');
+      function canReturn() {
+        try { return typeof CFG.onClose === 'function' && typeof CFG.getOntologySelection === 'function' && sameOntologyRef(CFG.getOntologySelection(), ctx.ontology_selection); }
+        catch (e) { return false; }
+      }
+      back.disabled = !canReturn();
+      back.addEventListener('click', function () {
+        if (!canReturn()) { back.disabled = true; return; }
+        close();
+      });
+      card.appendChild(back);
+      var foot = el('div', 'mmb-ontology-note');
+      foot.innerHTML = LB('No automatic retry. Chat history is not a saved thesis.', '不会自动重试。对话历史不等于已保存的投资论点。'); card.appendChild(foot);
+    }
+    var actions = T.bub.querySelector('.mmb-actions');
+    T.bub.insertBefore(card, actions || null);
+    return unverified;
+  }
   function finalizeDone(j, T) {
     if (T.doneSeen) return; T.doneSeen = true;
     clearRun();
@@ -2576,8 +2647,9 @@
     if (j && j.context_receipt) handleContextReceipt(j.context_receipt);
     ensureBub(T); thinkTeardown(T.tl);
     T.stream.finalize(function () {
-      if (j && j.citations && j.citations.length) addCites(T.bub, j.citations);
-      if (T.suggestions && T.suggestions.length) addSuggest(T.bub, T.suggestions);
+      var selectionUnverified = renderOntologyReceipt(j, T);
+      if (!selectionUnverified && j && j.citations && j.citations.length) addCites(T.bub, j.citations);
+      if (!selectionUnverified && T.suggestions && T.suggestions.length) addSuggest(T.bub, T.suggestions);
       bumpTime(T.bub); stickAfter();
     });
     if (j && j.quota) { quotas[j.quota.lane] = j.quota; renderQuota(); }
@@ -3579,8 +3651,34 @@
      authoritative update (state 3) — same chips, same pin control; only the
      `authoritative` flag adds the firmer `.receipt` border and the extra flag
      chips a receipt alone can carry (overrode/stale/unsupported). */
+  function paintOntologyPreview() {
+    if (CFG.page !== 'ontology' || typeof CFG.getOntologySelectionDisplay !== 'function') return false;
+    var display, ref;
+    try { display = CFG.getOntologySelectionDisplay(); ref = CFG.getOntologySelection(); }
+    catch (e) { return false; }
+    if (!display || !validOntologyRef(ref)) return false;
+    ctxEl.className = 'mmb-ctx on mmb-ontology-context';
+    ctxEl.innerHTML = '';
+    var preview = el('div', 'mmb-ontology-preview');
+    function label(pair, cls) {
+      var node = el('div', cls), text = el('span', 'mmb-l');
+      var en = String(pair && pair.en || '').slice(0, 160);
+      var cn = String(pair && (pair.zh || pair.en) || '').slice(0, 160);
+      text.dataset.en = en; text.dataset.zh = cn;
+      text.textContent = L(en, cn); node.appendChild(text); preview.appendChild(node);
+    }
+    label(display.step_title, 'mmb-ontology-title');
+    label(display.path_title, 'mmb-ontology-path');
+    var caption = el('div', 'mmb-ontology-note');
+    caption.innerHTML = LB('Selection only · ', '仅为所选读数 · ');
+    caption.appendChild(DOC.createTextNode(ref.asof)); preview.appendChild(caption);
+    ctxEl.appendChild(preview);
+    if (ctxInspEl.classList.contains('on')) closeCtxInspector();
+    return true;
+  }
   function paintCtxStrip(view) {
     lastCtxView = view;
+    if (paintOntologyPreview()) return;
     if (!view || !view.symbol) { ctxEl.className = 'mmb-ctx'; ctxEl.innerHTML = ''; if (ctxInspEl.classList.contains('on')) closeCtxInspector(); return; }
     ctxEl.className = 'mmb-ctx on' + (view.authoritative ? ' receipt' : '');
     var html = '<button type="button" class="mmb-ctx-chips" data-act="ctx-toggle" aria-haspopup="dialog" aria-label="' +

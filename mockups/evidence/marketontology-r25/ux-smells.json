@@ -1,0 +1,144 @@
+{
+  "schema": "mastermind.ux_smell_report.v1",
+  "generated_at": "2026-10-03T07:55:33.887383+00:00",
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "version": "1.3.0"
+  },
+  "target": {
+    "kind": "rendered_fixture",
+    "production_proof": "none",
+    "fixture": "fixture.json",
+    "fixture_sha256": "a42a60b2acea0b63cdacc7241d18f1a5036f875211d795ac04fa3e9b27269d6c",
+    "network": "loopback static assets and synthetic ontology/Brain API responses only",
+    "construction_inputs": {
+      "site/ontology.html": "a5064ba4410daad69728ff5c9028f7e47a7c51430acbdea4406ba944a9105499",
+      "site/ontology.js": "73869e8bc62596198c4bfdba397c5e6289b59ac2cc46e527ba3f1ba53f39c19c",
+      "site/ontology.css": "86b34e2270359550c4df530f6a773e28cbc15d9cb2da9886227cb74a3d2dceb4",
+      "site/theme.js": "fc0eea5f4b6bd8cf0d2380154ac144a3dd27d99ad9d4631662324c46df9648f9",
+      "site/theme.css": "d6d5207461084867fa835042037b0393deccb193498e946b2c5eef414d0c4f0e",
+      "site/mm_brain.js": "5bc0f2cee0a3736a6fa41e0a1e97d4ecf50c4606a6e70896e223b99c7b0e3f11",
+      "templates/ontology.js": "73869e8bc62596198c4bfdba397c5e6289b59ac2cc46e527ba3f1ba53f39c19c",
+      "templates/ontology.css": "86b34e2270359550c4df530f6a773e28cbc15d9cb2da9886227cb74a3d2dceb4",
+      "templates/mm_brain.js": "5bc0f2cee0a3736a6fa41e0a1e97d4ecf50c4606a6e70896e223b99c7b0e3f11",
+      "tests/ontology_explorer_fixtures.py": "2f0cae8c7e4f135fae15ca3d9f7a419dec77649461df1dbdfffeea8bd58f5eba"
+    },
+    "adapter_sha256": "35dd5cbbe98e76f738987a54a17011e6788d758a425df22d780da0541653760c",
+    "response_limits": "The real widget is driven by disclosed matched/unverified service fixtures; this is not backend runtime or entitlement proof."
+  },
+  "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
+  "metric_notes": {
+    "section_count": "direct <section> children of <body> plus direct element children of <main>; an approximation of 'how many blocks is this page'",
+    "panel_count": "class-name heuristic over the configured selector list; both over- and under-counts are expected",
+    "visible_word_count": "whitespace-split innerText of <body>; Chinese text is not word-segmented, so a zh capture undercounts relative to en",
+    "raw_slug_hits": "visible text matching 3+ segment snake_case; legitimate identifiers (file names, API keys quoted on purpose) match too",
+    "duplicate_heading_texts": "case-folded visible heading text seen more than once; a repeated section label across tabs is a legitimate duplicate",
+    "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
+    "source_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
+    "payload_bytes_total": "sum of response body sizes reported by the driver for the reference state; excludes bodies the driver could not size",
+    "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
+    "screenshot_completion": "captured states / attempted states for this page; states the registry excludes are not attempted and are recorded as gaps"
+  },
+  "pages": [
+    {
+      "page_id": "ontology.html?r25=matched",
+      "route": "/ontology.html?r25=matched",
+      "metrics": {
+        "document_height_px": 2027,
+        "section_count": 3,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 5,
+          "h3": 8,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "duplicate_heading_texts": [],
+        "panel_count": 4,
+        "visible_word_count": 485,
+        "long_paragraph_count": 0,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": false,
+        "elements_wider_than_viewport": 0,
+        "console_error_count": 0,
+        "request_count": 25,
+        "payload_bytes_total": 525333,
+        "asof_present": false,
+        "source_present": false,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 2027,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          },
+          "mobile": {
+            "document_height_px": 3190,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          }
+        }
+      }
+    },
+    {
+      "page_id": "ontology.html?r25=unverified",
+      "route": "/ontology.html?r25=unverified",
+      "metrics": {
+        "document_height_px": 2027,
+        "section_count": 3,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 5,
+          "h3": 8,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "duplicate_heading_texts": [],
+        "panel_count": 4,
+        "visible_word_count": 487,
+        "long_paragraph_count": 0,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": false,
+        "elements_wider_than_viewport": 0,
+        "console_error_count": 0,
+        "request_count": 25,
+        "payload_bytes_total": 885841,
+        "asof_present": false,
+        "source_present": false,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 2027,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          },
+          "mobile": {
+            "document_height_px": 3190,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          }
+        }
+      }
+    }
+  ]
+}
