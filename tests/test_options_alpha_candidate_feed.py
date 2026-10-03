@@ -33,11 +33,12 @@ from engine.options_alpha_candidate_feed import (
 )
 from engine.options_signal_campaign import (
     CAMPAIGNS_PATH,
+    LedgerRow,
     CampaignContractError,
     FALSE_AUTHORITY as CAMPAIGN_FALSE_AUTHORITY,
     LedgerSnapshot,
-    derive_campaign_revisions,
     load_ledger,
+    derive_campaign_revisions,
     run as run_campaign,
 )
 
@@ -570,6 +571,106 @@ def test_compose_pre_activation_boundary_abstains_with_late_observation(
     assert "BEFORE_ACTIVATION_BOUNDARY" in abst["reasons"]
 
 
+def test_compose_missing_activation_receipt_permits_no_candidates(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    episodes_spec = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    micro_map = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in episodes_spec
+    }
+
+    feed = compose_candidate_feed(
+        **_composer_kwargs(snapshot, micro_map=micro_map, activation=None)
+    )
+
+    assert feed["header"]["candidate_count"] == 0
+    assert feed["header"]["abstention_count"] == 1
+    assert feed["activation"]["fence_state"] == "post_policy_freeze_pre_activation"
+    assert "BEFORE_ACTIVATION_BOUNDARY" in feed["abstentions"][0]["reasons"]
+
+
+def test_compose_noncanonical_activation_clock_is_rejected() -> None:
+    receipt_value = copy.deepcopy(ACTIVATION_RECEIPT)
+    receipt_value["policy_freeze_at"] = "2026-08-12T13:30:00+00:00"
+    with pytest.raises(CandidateFeedContractError, match="must be canonical UTC"):
+        compose_candidate_feed(
+            **_composer_kwargs(
+                LedgerSnapshot(
+                    path=Path("/tmp/does-not-exist.jsonl"),
+                    label=CAMPAIGNS_PATH,
+                    rows=(),
+                    raw=b"",
+                    digest=hashlib.sha256(b"").hexdigest(),
+                ),
+                activation=receipt_value,
+            )
+        )
+
+
+def _ledger_snapshot(rows: list[dict], *, count: int | None = None) -> LedgerSnapshot:
+    selected = rows if count is None else rows[:count]
+    lines = [canonical_bytes(row) + b"\n" for row in selected]
+    raw = b"".join(lines)
+    return LedgerSnapshot(
+        path=Path("data/options_signal_campaign/campaigns.jsonl"),
+        label=CAMPAIGNS_PATH,
+        rows=tuple(
+            LedgerRow(
+                row, ordinal, line, hashlib.sha256(line).hexdigest()
+            )
+            for ordinal, (row, line) in enumerate(zip(rows, lines), start=1)
+        ),
+        raw=raw,
+        digest=hashlib.sha256(raw).hexdigest(),
+    )
+
+
+@pytest.mark.parametrize(
+    ("receipt", "message"),
+    [
+        ("pending_receipt", "activation_disposition.state must be eligible"),
+        ("ineligible_receipt", "activation_disposition.state must be eligible"),
+        ("clock_mismatch_receipt", "policy_freeze_at disagrees with caller policy freeze"),
+        ("boundary_before_freeze_receipt", "must not precede policy_freeze_at"),
+    ],
+)
+def test_compose_rejects_invalid_activation_receipts(receipt: str, message: str) -> None:
+    receipt_value = copy.deepcopy(ACTIVATION_RECEIPT)
+    if receipt == "pending_receipt":
+        receipt_value["all_preconditions_cleared"] = False
+        receipt_value["activation_disposition"]["state"] = "pending"
+        message = "all_preconditions_cleared is false"
+    elif receipt == "ineligible_receipt":
+        receipt_value["all_preconditions_cleared"] = False
+        receipt_value["activation_disposition"]["state"] = "ineligible"
+        message = "all_preconditions_cleared is false"
+    elif receipt == "clock_mismatch_receipt":
+        receipt_value["policy_freeze_at"] = "2026-08-12T13:30:01Z"
+    else:
+        receipt_value["activation_boundary_at"] = POLICY_FREEZE_AT
+
+        with pytest.raises(CandidateFeedContractError, match=message):
+            compose_candidate_feed(
+                **_composer_kwargs(
+                    LedgerSnapshot(
+                        path=Path("/tmp/does-not-exist.jsonl"),
+                        label=CAMPAIGNS_PATH,
+                        rows=(),
+                        raw=b"",
+                        digest=hashlib.sha256(b"").hexdigest(),
+                    ),
+                    activation=receipt_value,
+                )
+        )
+
+
 def test_compose_missing_final_member_microstructure_yields_explicit_degraded(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -711,6 +812,12 @@ def test_compose_later_campaign_revision_versioned_update_preserves_identity(
     micro_map_ext = dict(micro_map)
     micro_map_ext[third["source_event_id"]] = _micro_for(third["source_event_id"], available_at=third["available_at"])
 
+    first["source_receipts"]["campaigns"] = {
+        **first["candidates"][0]["frozen_formation"]["source_prefix_receipt"],
+        "records": snapshot_v2.count,
+        "prefix_sha256": snapshot_v2.sha256,
+    }
+    first = _reseal_feed(first)
     later = compose_candidate_feed(
         **_composer_kwargs(
             snapshot_v2,
@@ -828,6 +935,7 @@ def test_compose_previous_feed_duplicate_candidate_id_fails_closed(
 
     tampered = copy.deepcopy(first)
     tampered["candidates"].append(copy.deepcopy(first["candidates"][0]))  # duplicate id
+    tampered = _reseal_feed(tampered)
 
     with pytest.raises(CandidateFeedContractError, match="unique candidate_ids"):
         compose_candidate_feed(
@@ -1139,3 +1247,196 @@ def test_compose_header_digest_seals_canonical_bytes(
     feed_no_digest = copy.deepcopy(feed)
     feed_no_digest["header"]["header_digest_sha256"] = ""
     assert hashlib.sha256(canonical_bytes(feed_no_digest)).hexdigest() == sealed
+
+
+def _reseal_feed(feed: dict) -> dict:
+    result = copy.deepcopy(feed)
+    result["header"]["header_digest_sha256"] = ""
+    blank_bytes = canonical_bytes(result)
+    result["header"]["header_digest_sha256"] = hashlib.sha256(
+        blank_bytes
+    ).hexdigest()
+    return result
+
+
+def test_compose_prior_feed_integrity_binds_header_source_and_formation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    root = tmp_path / "canonical"
+    first_specs = _episodes_for(True, count=2)
+    snapshot_a = _build_campaign_snapshot(
+        root, episodes_specs=first_specs, monkeypatch=monkeypatch
+    )
+    micro_a = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in first_specs
+    }
+    first = compose_candidate_feed(
+        **_composer_kwargs(snapshot_a, micro_map=micro_a, activation=ACTIVATION_RECEIPT)
+    )
+
+    def invoke(prior: dict, snapshot: LedgerSnapshot = snapshot_a) -> dict:
+        return compose_candidate_feed(
+            **_composer_kwargs(
+                snapshot,
+                micro_map=micro_a,
+                activation=ACTIVATION_RECEIPT,
+                prior_feed=prior,
+            )
+        )
+
+    header_tamper = copy.deepcopy(first)
+    header_tamper["header"]["candidate_count"] = 2
+    header_tamper["header"]["header_digest_sha256"] = "0" * 64
+    with pytest.raises(CandidateFeedContractError, match="header seal"):
+        invoke(header_tamper)
+
+    header_reseal = _reseal_feed(copy.deepcopy(first))
+    header_reseal["header"]["candidate_count"] = 2
+    with pytest.raises(CandidateFeedContractError, match="header seal"):
+        invoke(header_reseal)
+
+    micro_tamper = _reseal_feed(copy.deepcopy(first))
+    micro_tamper["candidates"][0]["measured"]["nbbo_valid_print_count"] = 2
+    micro_tamper["header"]["header_digest_sha256"] = "0" * 64
+    with pytest.raises(CandidateFeedContractError, match="header seal"):
+        invoke(micro_tamper)
+
+    valid_receipt = invoke(first)
+    assert valid_receipt["source_receipts"]["prior_feed"]["published_at"] == (
+        first["generated_at"]
+    )
+
+    third = {
+        "source_event_id": "evt-002",
+        "available_at": "2026-08-13T14:01:00Z",
+        "session_date": "2026-08-13",
+    }
+    second_specs = first_specs + [third]
+    snapshot_b = _build_campaign_snapshot(
+        root, episodes_specs=second_specs, monkeypatch=monkeypatch
+    )
+    micro_b = dict(micro_a)
+    micro_b[third["source_event_id"]] = _micro_for(
+        third["source_event_id"], available_at=third["available_at"]
+    )
+    later = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot_b,
+            micro_map=micro_b,
+            activation=ACTIVATION_RECEIPT,
+            prior_feed=first,
+        )
+    )
+    assert later["source_receipts"]["campaigns"] == {
+        "path": snapshot_b.label,
+        "records": snapshot_b.count,
+        "prefix_sha256": snapshot_b.sha256,
+        "source_schema": "options.signal_campaign/v2",
+    }
+    first_candidate = first["candidates"][0]
+    later_candidate = later["candidates"][0]
+    assert later_candidate["frozen_formation"] == first_candidate["frozen_formation"]
+    assert later_candidate["formation_micro"] == first_candidate["formation_micro"]
+    assert later_candidate["source_formed_at"] == first_candidate["source_formed_at"]
+    assert later_candidate["current_revision"]["campaign_revision_id"] == (
+        later_candidate["current_campaign_revision_id"]
+    )
+
+    shrink = _ledger_snapshot(
+        [row.value for row in snapshot_b.rows], count=1
+    )
+    with pytest.raises(CandidateFeedContractError, match="campaign prefix"):
+        compose_candidate_feed(
+            **_composer_kwargs(
+                shrink,
+                micro_map=micro_b,
+                activation=ACTIVATION_RECEIPT,
+                prior_feed=later,
+            )
+        )
+
+    rewritten_rows = [row.value for row in snapshot_b.rows]
+    rewritten_rows[0]["descriptive"]["member_count"] += 1
+    rewritten = _ledger_snapshot(rewritten_rows)
+    with pytest.raises(
+        CandidateFeedContractError, match="campaign prefix receipt is invalid"
+    ):
+        compose_candidate_feed(
+            **_composer_kwargs(
+                rewritten,
+                micro_map=micro_b,
+                activation=ACTIVATION_RECEIPT,
+                prior_feed=later,
+            )
+        )
+
+    tamper_cases = {
+        "campaign_revision_id": (
+            ["candidates", 0, "frozen_formation", "campaign_revision_id"],
+            "ocrev_" + "0" * 24,
+        ),
+        "campaign_id": (
+            ["candidates", 0, "campaign_id"],
+            "ocam_" + "0" * 24,
+        ),
+        "formed_at": (
+            ["candidates", 0, "frozen_formation", "formed_at"],
+            "2026-08-13T14:01:00Z",
+        ),
+        "member_count": (
+            ["candidates", 0, "frozen_formation", "campaign_member_count"],
+            3,
+        ),
+        "final_member": (
+            ["candidates", 0, "frozen_formation", "final_member_event_id"],
+            "evt-002",
+        ),
+        "micro_value": (
+            ["candidates", 0, "formation_micro", "nbbo_valid_print_count"],
+            2,
+        ),
+        "micro_digest": (
+            ["candidates", 0, "formation_micro", "schema_digest_sha256"],
+            "0" * 64,
+        ),
+        "current_version": (
+            ["candidates", 0, "versioned_updates", -1, "revision_digest_sha256"],
+            "0" * 64,
+        ),
+    }
+    for field, (path, value) in tamper_cases.items():
+        tampered = copy.deepcopy(later)
+        target = tampered
+        for key in path[:-1]:
+            target = target[key]
+        target[path[-1]] = value
+        tampered = _reseal_feed(tampered)
+        with pytest.raises(CandidateFeedContractError, match="prior_feed formation"):
+            compose_candidate_feed(
+                **_composer_kwargs(
+                    snapshot_b,
+                    micro_map=micro_b,
+                    activation=ACTIVATION_RECEIPT,
+                    prior_feed=tampered,
+                )
+            )
+
+    source_micro_tamper = dict(micro_b)
+    source_micro_tamper["evt-001"] = copy.deepcopy(micro_b["evt-001"])
+    source_micro_tamper["evt-001"]["nbbo_valid_print_count"] = 2
+    with pytest.raises(
+        CandidateFeedContractError,
+        match="prior_feed formation",
+    ):
+        compose_candidate_feed(
+            **_composer_kwargs(
+                snapshot_b,
+                micro_map=source_micro_tamper,
+                activation=ACTIVATION_RECEIPT,
+                prior_feed=later,
+            )
+        )

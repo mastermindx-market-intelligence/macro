@@ -20,6 +20,7 @@ tactical events, or directional probability claims are produced.
 from __future__ import annotations
 
 import hashlib
+import copy
 import json
 import math
 import re
@@ -32,6 +33,7 @@ from typing import Any, Iterable, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker
 
+import engine.options_signal_campaign as campaign_engine
 from engine.options_signal_campaign import (
     CAMPAIGN_SCHEMA,
     CampaignContractError,
@@ -310,6 +312,8 @@ def _validate_policy(policy: dict[str, Any]) -> None:
 
 def _validate_activation_receipt(
     receipt: dict[str, Any] | None,
+    *,
+    policy_freeze_at: str,
 ) -> dict[str, Any]:
     if receipt is None:
         return {
@@ -324,6 +328,9 @@ def _validate_activation_receipt(
             "activation_boundary_at": None,
         }
     _validate_schema(receipt, ACTIVATION_RECEIPT_SCHEMA_FILENAME)
+    for field in ("policy_freeze_at", "activation_boundary_at"):
+        if receipt.get(field) is not None:
+            _canonical_utc(receipt[field], f"activation_receipt.{field}")
     # Normalise: the schema-validated receipt uses `receipt_id`; downstream
     # code expects namespaced `activation_receipt_id` and a digest. We bind
     # those here so the rest of the composer never reaches into the receipt
@@ -334,6 +341,24 @@ def _validate_activation_receipt(
         # receipt at all for fence classification.
         raise CandidateFeedContractError(
             "activation receipt supplied but all_preconditions_cleared is false"
+        )
+    if receipt["activation_disposition"]["state"] != "eligible":
+        raise CandidateFeedContractError(
+            "activation receipt activation_disposition.state must be eligible"
+        )
+    if receipt["policy_freeze_at"] != policy_freeze_at:
+        raise CandidateFeedContractError(
+            "activation receipt policy_freeze_at disagrees with caller policy freeze"
+        )
+    receipt_freeze = _utc(receipt["policy_freeze_at"], "activation policy freeze")
+    receipt_boundary = (
+        _utc(receipt["activation_boundary_at"], "activation boundary")
+        if receipt["activation_boundary_at"] is not None
+        else None
+    )
+    if receipt_boundary is None or receipt_boundary <= receipt_freeze:
+        raise CandidateFeedContractError(
+            "activation receipt activation_boundary_at must not precede policy_freeze_at"
         )
     normalised = dict(receipt)
     normalised["activation_receipt_id"] = receipt.get("receipt_id")
@@ -438,6 +463,8 @@ def _validate_prior_feed(
     prior: dict[str, Any] | None,
     *,
     policy_digest: str,
+    campaigns: LedgerSnapshot,
+    microstructure_map: dict[str, dict[str, Any]],
 ) -> dict[str, Any] | None:
     if prior is None:
         return None
@@ -448,6 +475,24 @@ def _validate_prior_feed(
         raise CandidateFeedContractError(
             "prior_feed.policy.policy_digest_sha256 disagrees with current policy"
         )
+    expected_digest = prior["header"]["header_digest_sha256"]
+    sealed = copy.deepcopy(prior)
+    sealed["header"]["header_digest_sha256"] = ""
+    actual_digest = _sha256(canonical_bytes(sealed))
+    if actual_digest != expected_digest:
+        raise CandidateFeedContractError(
+            "prior_feed.header seal does not match canonical blank-header bytes"
+        )
+    source_receipt = dict(prior["source_receipts"]["campaigns"])
+    source_receipt.pop("source_schema", None)
+    try:
+        campaign_engine.verify_campaign_receipt(
+            source_receipt, campaigns, campaigns.label
+        )
+    except CampaignContractError as exc:
+        raise CandidateFeedContractError(
+            f"prior_feed campaign prefix receipt is invalid: {exc}"
+        ) from exc
     seen: set[str] = set()
     for candidate in prior.get("candidates", ()):
         if not isinstance(candidate, dict) or "candidate_id" not in candidate:
@@ -458,6 +503,11 @@ def _validate_prior_feed(
                 "prior_feed.candidates must have unique candidate_ids"
             )
         seen.add(cid)
+        _validate_prior_candidate_source(
+            candidate,
+            campaigns=campaigns,
+            microstructure_map=microstructure_map,
+        )
     if prior["policy"]["policy_id"] != "oa_member_persistent_measured_campaign/v1":
         raise CandidateFeedContractError("prior_feed.policy.policy_id is not accepted")
     if prior.get("publication_claim", {}).get("claim") != (
@@ -467,6 +517,207 @@ def _validate_prior_feed(
             "prior_feed.publication_claim.claim must be synthetic-only"
         )
     return prior
+
+
+def _candidate_source_receipt(candidate: dict[str, Any]) -> dict[str, Any]:
+    receipt = candidate["frozen_formation"]["source_prefix_receipt"]
+    source_receipt = dict(receipt)
+    source_receipt.pop("source_schema", None)
+    return source_receipt
+
+
+def _validate_prior_candidate_source(
+    candidate: dict[str, Any],
+    *,
+    campaigns: LedgerSnapshot,
+    microstructure_map: dict[str, dict[str, Any]],
+) -> None:
+    try:
+        formation_ordinal = campaign_engine.verify_campaign_receipt(
+            _candidate_source_receipt(candidate), campaigns, campaigns.label
+        )
+    except CampaignContractError as exc:
+        raise CandidateFeedContractError(
+            f"prior_feed formation campaign prefix is invalid: {exc}"
+        ) from exc
+
+    if formation_ordinal == 0 or formation_ordinal > campaigns.count:
+        raise CandidateFeedContractError("prior_feed formation prefix is empty")
+    formation_row = campaigns.rows[formation_ordinal - 1].value
+    frozen = candidate["frozen_formation"]
+    formation_micro = candidate["formation_micro"]
+
+    expected_identity = _candidate_identity(
+        frozen["policy_id"], candidate["campaign_id"], frozen["campaign_revision_id"]
+    )
+    field_checks = (
+        ("candidate_id", candidate["candidate_id"], expected_identity),
+        (
+            "campaign_id",
+            candidate["campaign_id"],
+            formation_row["campaign_id"],
+        ),
+        (
+            "campaign_revision_id",
+            frozen["campaign_revision_id"],
+            formation_row["campaign_revision_id"],
+        ),
+        (
+            "first_qualifying_campaign_revision_id",
+            candidate["first_qualifying_campaign_revision_id"],
+            frozen["campaign_revision_id"],
+        ),
+        ("formed_at", frozen["formed_at"], formation_row["formed_at"]),
+        (
+            "campaign_member_count",
+            frozen["campaign_member_count"],
+            formation_row["descriptive"]["member_count"],
+        ),
+        (
+            "final_member_event_id",
+            frozen["final_member_event_id"],
+            formation_row["members"][-1]["source_event_id"],
+        ),
+        (
+            "final_event_id",
+            candidate["final_event_id"],
+            formation_row["members"][-1]["source_event_id"],
+        ),
+        (
+            "measured_source_print_count",
+            frozen["measured_source_print_count"],
+            formation_micro["source_print_count"],
+        ),
+        (
+            "measured_nbbo_valid_print_count",
+            frozen["measured_nbbo_valid_print_count"],
+            formation_micro["nbbo_valid_print_count"],
+        ),
+        (
+            "measured_nbbo_premium_coverage",
+            frozen["measured_nbbo_premium_coverage"],
+            formation_micro["nbbo_premium_coverage"],
+        ),
+    )
+    mismatched = [name for name, left, right in field_checks if left != right]
+    if mismatched:
+        raise CandidateFeedContractError(
+            "prior_feed formation fields disagree with physical source: "
+            + ", ".join(mismatched)
+        )
+
+    source_micro = microstructure_map.get(frozen["final_member_event_id"])
+    if source_micro is None:
+        raise CandidateFeedContractError(
+            "prior_feed formation microstructure row is missing from current source"
+        )
+    expected_micro_digest = _sha256(_campaign_canonical_bytes(source_micro))
+    if formation_micro["schema_digest_sha256"] != expected_micro_digest:
+        raise CandidateFeedContractError(
+            "prior_feed formation microstructure digest is invalid"
+        )
+    micro_field_checks = (
+        ("source_print_count", "measured_source_print_count"),
+        (
+            "nbbo_valid_print_count",
+            "measured_nbbo_valid_print_count",
+        ),
+        (
+            "nbbo_premium_coverage",
+            "measured_nbbo_premium_coverage",
+        ),
+        ("source_premium_usd", None),
+        ("nbbo_covered_premium_usd", None),
+        ("schema", None),
+    )
+    mismatched_micro = [
+        field
+        for field, frozen_key in micro_field_checks
+        if formation_micro[field] != source_micro[field]
+        or (
+            frozen_key is not None
+            and frozen[frozen_key] != source_micro[field]
+        )
+    ]
+    if mismatched_micro:
+        raise CandidateFeedContractError(
+            "prior_feed formation microstructure fields disagree with source: "
+            + ", ".join(mismatched_micro)
+        )
+
+    row_digest = _sha256(_campaign_canonical_bytes(formation_row))
+    expected_evidence_digest = _sha256(
+        canonical_bytes(
+            {
+                "campaign": row_digest,
+                "micro": expected_micro_digest,
+                "policy": frozen["policy_digest_sha256"],
+                "campaign_revision_id": frozen["campaign_revision_id"],
+                "campaign_id": candidate["campaign_id"],
+            }
+        )
+    )
+    if frozen["evidence_digest_sha256"] != expected_evidence_digest:
+        raise CandidateFeedContractError(
+            "prior_feed formation evidence digest is invalid"
+        )
+
+    if candidate["versioned_updates"]:
+        last = candidate["versioned_updates"][-1]
+        if (
+            last["campaign_revision_id"]
+            != candidate["current_campaign_revision_id"]
+        ):
+            raise CandidateFeedContractError(
+                "prior_feed versioned updates do not end at current revision"
+            )
+        current_row = _find_campaign_revision(
+            campaigns,
+            candidate["current_campaign_revision_id"],
+            campaign_id=candidate["campaign_id"],
+        )
+        if last["revision_digest_sha256"] != _sha256(
+            _campaign_canonical_bytes(current_row)
+        ):
+            raise CandidateFeedContractError(
+                "prior_feed current revision digest is invalid"
+            )
+
+    known_digests = {
+        entry["campaign_revision_id"]: entry["revision_digest_sha256"]
+        for entry in candidate["versioned_updates"]
+    }
+    for row in campaigns.rows:
+        value = row.value
+        if (
+            value["campaign_id"] != candidate["campaign_id"]
+            or value["campaign_revision_id"] not in known_digests
+        ):
+            continue
+        if _sha256(_campaign_canonical_bytes(value)) != known_digests[
+            value["campaign_revision_id"]
+        ]:
+            raise CandidateFeedContractError(
+                "prior_feed historical version digest is invalid"
+            )
+
+
+def _find_campaign_revision(
+    campaigns: LedgerSnapshot,
+    revision_id: str,
+    *,
+    campaign_id: str,
+) -> dict[str, Any]:
+    for row in campaigns.rows:
+        value = row.value
+        if (
+            value["campaign_id"] == campaign_id
+            and value["campaign_revision_id"] == revision_id
+        ):
+            return value
+    raise CandidateFeedContractError(
+        "prior_feed current revision is absent from physical campaign source"
+    )
 
 
 def _prior_candidate_history(
@@ -521,6 +772,9 @@ def _validated_campaign_views(
                 }
             )
             continue
+
+        # Either degraded (source explicit stale/unavailable with prior
+        # identity) or plain abstention.
         # Reuse the campaign engine's strict validator (delegate, don't
         # duplicate) — schema, identity, formed_at clock, policies,
         # authority.
@@ -584,7 +838,7 @@ def _campaign_reasons(
 
     if formed_at < policy_freeze_at:
         reasons.append("BEFORE_POLICY_FREEZE")
-    if activation_boundary is not None and formed_at < activation_boundary:
+    if activation_boundary is None or formed_at < activation_boundary:
         reasons.append("BEFORE_ACTIVATION_BOUNDARY")
     if campaign.get("evidence_phase") != "prospective_after_rule_freeze":
         reasons.append("CAMPAIGN_NOT_PROSPECTIVE")
@@ -629,6 +883,39 @@ def _campaign_reasons(
     return reasons, (micro if micro is not None else None), final_member
 
 
+def _revision_is_qualifying(
+    campaign: dict[str, Any],
+    micro_map: dict[str, dict[str, Any]],
+    *,
+    policy_freeze_at: datetime,
+    activation_boundary: datetime | None,
+    observation: datetime,
+) -> bool:
+    reasons, _, _ = _campaign_reasons(
+        campaign,
+        micro_map,
+        policy_freeze_at=policy_freeze_at,
+        activation_boundary=activation_boundary,
+        observation=observation,
+        source_health=SourceHealth(),
+    )
+    return not reasons
+
+
+def _prior_formation_ordinal(
+    prior_candidate: dict[str, Any],
+    campaigns: LedgerSnapshot,
+) -> int:
+    try:
+        return campaign_engine.verify_campaign_receipt(
+            _candidate_source_receipt(prior_candidate), campaigns, campaigns.label
+        )
+    except CampaignContractError as exc:
+        raise CandidateFeedContractError(
+            f"prior_feed formation campaign prefix is invalid: {exc}"
+        ) from exc
+
+
 def _build_candidate_payload(
     *,
     campaign: dict[str, Any],
@@ -642,9 +929,11 @@ def _build_candidate_payload(
     published: datetime,
     prior_candidate: dict[str, Any] | None,
     candidate_id: str,
-    source_prefix_receipt: dict[str, Any],
+    campaigns: LedgerSnapshot,
     first_qualifying_revision_id: str,
+    formation_row_ordinal: int,
     all_revisions: tuple[dict[str, Any], ...],
+    micro_map_for_formation_micro: dict[str, Any],
 ) -> dict[str, Any]:
     """Compose a single research_candidate record. ``prior_candidate`` (when
     provided by a validated prior feed) preserves the immutable
@@ -657,27 +946,49 @@ def _build_candidate_payload(
     entry in ``versioned_updates`` so the identity is frozen but the
     revision history is fully traceable."""
 
-    formed_at = _utc(campaign["formed_at"], "campaign.formed_at")
     campaign_revision_id = campaign["campaign_revision_id"]
-    micro_digest = _sha256(_campaign_canonical_bytes(micro))
+    formation_revision = campaigns.rows[formation_row_ordinal - 1].value
+    formed_at = _utc(formation_revision["formed_at"], "campaign.formed_at")
+    formation_micro = micro_map_for_formation_micro[
+        formation_revision["members"][-1]["source_event_id"]
+    ]
+    formation_micro_digest = _sha256(_campaign_canonical_bytes(formation_micro))
     campaign_digest = _sha256(_campaign_canonical_bytes(campaign))
+    micro_digest = _sha256(_campaign_canonical_bytes(micro))
+    source_prefix_receipt = {
+        "path": campaigns.label,
+        "records": formation_row_ordinal,
+        "prefix_sha256": hashlib.sha256(
+            campaigns.prefix_raw(formation_row_ordinal)
+        ).hexdigest(),
+        "source_schema": CAMPAIGN_SCHEMA,
+    }
+    if prior_candidate is not None:
+        source_prefix_receipt = copy.deepcopy(
+            prior_candidate["frozen_formation"]["source_prefix_receipt"]
+        )
     evidence_digest = _sha256(
         canonical_bytes(
             {
-                "campaign": campaign_digest,
-                "micro": micro_digest,
-                "policy": policy_digest,
-                "campaign_revision_id": campaign_revision_id,
-                "first_qualifying_campaign_revision_id": (
-                    first_qualifying_revision_id
+                "campaign": _sha256(
+                    _campaign_canonical_bytes(formation_revision)
                 ),
-                "campaign_id": campaign["campaign_id"],
+                "micro": formation_micro_digest,
+                "policy": policy_digest,
+                "campaign_revision_id": first_qualifying_revision_id,
+                "campaign_id": formation_revision["campaign_id"],
             }
         )
     )
 
     if prior_candidate is not None:
         first_qualifying = prior_candidate["first_qualifying_campaign_revision_id"]
+        frozen_formation = copy.deepcopy(prior_candidate["frozen_formation"])
+        formation_revision = copy.deepcopy(prior_candidate["frozen_formation"])
+        formation_micro = copy.deepcopy(prior_candidate["formation_micro"])
+        formation_micro_digest = formation_micro["schema_digest_sha256"]
+        evidence_digest = frozen_formation["evidence_digest_sha256"]
+        formed_at = _utc(formation_revision["formed_at"], "campaign.formed_at")
         first_observed_at = prior_candidate["first_observed_at"]
         decision_at = prior_candidate["decision_at"]
         candidate_available_at = prior_candidate["available_at"]
@@ -730,8 +1041,8 @@ def _build_candidate_payload(
     }
 
     frozen = {
-        "campaign_revision_id": campaign_revision_id,
-        "formed_at": campaign["formed_at"],
+        "campaign_revision_id": first_qualifying_revision_id,
+        "formed_at": formation_revision["formed_at"],
         "policy_id": policy["policy_id"],
         "policy_version": int(policy["policy_version"]),
         "policy_digest_sha256": policy_digest,
@@ -745,15 +1056,34 @@ def _build_candidate_payload(
         "activation_boundary_cleared": (
             activation_boundary is None or formed_at >= activation_boundary
         ),
-        "campaign_member_count": int(campaign["descriptive"]["member_count"]),
-        "final_member_event_id": campaign["members"][-1]["source_event_id"],
-        "measured_source_print_count": measured["source_print_count"],
-        "measured_nbbo_valid_print_count": measured["nbbo_valid_print_count"],
-        "measured_nbbo_premium_coverage": measured["nbbo_premium_coverage"],
-        "all_evidence_legs_within_decision_cutoff": True,
-        "evidence_digest_sha256": evidence_digest,
-        "source_prefix_receipt": source_prefix_receipt,
+        **(
+            frozen_formation
+            if prior_candidate is not None
+            else {"source_prefix_receipt": source_prefix_receipt}
+        ),
     }
+    if prior_candidate is None:
+        frozen.update(
+            {
+                "campaign_member_count": int(
+                    formation_revision["descriptive"]["member_count"]
+                ),
+                "final_member_event_id": formation_revision["members"][-1][
+                    "source_event_id"
+                ],
+                "measured_source_print_count": int(
+                    formation_micro["source_print_count"]
+                ),
+                "measured_nbbo_valid_print_count": int(
+                    formation_micro["nbbo_valid_print_count"]
+                ),
+                "measured_nbbo_premium_coverage": float(
+                    formation_micro["nbbo_premium_coverage"]
+                ),
+                "all_evidence_legs_within_decision_cutoff": True,
+                "evidence_digest_sha256": evidence_digest,
+            }
+        )
 
     return {
         "candidate_id": candidate_id,
@@ -761,12 +1091,27 @@ def _build_candidate_payload(
         "final_event_id": campaign["members"][-1]["source_event_id"],
         "first_qualifying_campaign_revision_id": first_qualifying,
         "current_campaign_revision_id": campaign_revision_id,
-        "source_formed_at": campaign["formed_at"],
+        "source_formed_at": formation_revision["formed_at"],
         "first_observed_at": first_observed_at,
         "decision_at": decision_at,
         "available_at": candidate_available_at,
         "published_at": candidate_published_at,
         "frozen_formation": frozen,
+        "formation_micro": {
+            "source_print_count": int(formation_micro["source_print_count"]),
+            "nbbo_valid_print_count": int(
+                formation_micro["nbbo_valid_print_count"]
+            ),
+            "nbbo_premium_coverage": float(
+                formation_micro["nbbo_premium_coverage"]
+            ),
+            "source_premium_usd": float(formation_micro["source_premium_usd"]),
+            "nbbo_covered_premium_usd": float(
+                formation_micro["nbbo_covered_premium_usd"]
+            ),
+            "schema": MICROSTRUCTURE_SCHEMA,
+            "schema_digest_sha256": formation_micro_digest,
+        },
         "measured": measured,
         "evidence_digests": {
             "campaign_row_digest_sha256": campaign_digest,
@@ -876,12 +1221,13 @@ def compose_candidate_feed(
     )
     health = SourceHealth.from_dict(source_health)
     micro_map = _validate_microstructure_map(microstructure_map)
-    activation = _validate_activation_receipt(activation_receipt)
-
     if policy_freeze_at is None:
         raise CandidateFeedContractError(
             "policy_freeze_at must be supplied explicitly (no local NYSE inference)"
         )
+    activation = _validate_activation_receipt(
+        activation_receipt, policy_freeze_at=policy_freeze_at
+    )
     freeze_at = _utc(policy_freeze_at, "policy_freeze_at")
 
     activation_boundary: datetime | None = None
@@ -904,7 +1250,12 @@ def compose_candidate_feed(
         fence_state = "post_activation"
 
     policy_digest = _sha256(canonical_bytes(policy))
-    prior = _validate_prior_feed(prior_feed, policy_digest=policy_digest)
+    prior = _validate_prior_feed(
+        prior_feed,
+        policy_digest=policy_digest,
+        campaigns=campaigns,
+        microstructure_map=micro_map,
+    )
     prior_history = _prior_candidate_history(prior)
 
     campaign_views, poisoned_reasons = _validated_campaign_views(campaigns)
@@ -932,34 +1283,66 @@ def compose_candidate_feed(
     # latest revision as "current" and the earliest qualifying revision as
     # "first_qualifying" (frozen at formation).
     campaigns_by_id: dict[str, list[dict[str, Any]]] = {}
+    view_ordinal_by_revision_id: dict[str, int] = {}
     for view in campaign_views:
         cid = view.row["campaign_id"]
         campaigns_by_id.setdefault(cid, []).append(view.row)
+        view_ordinal_by_revision_id[view.row["campaign_revision_id"]] = view.ordinal
     for cid in campaigns_by_id:
         campaigns_by_id[cid].sort(key=lambda row: row["formed_at"])
 
     for cid, revisions in campaigns_by_id.items():
         current = revisions[-1]
-        first_qualifying = revisions[0]
-        first_qualifying_revision_id = first_qualifying["campaign_revision_id"]
-
-        candidate_id = _candidate_identity(
-            policy["policy_id"],
-            cid,
-            first_qualifying_revision_id,
-        )
-        prior_candidate = prior_history.get(candidate_id)
-        if prior_candidate is not None:
-            # First-qualifying MUST match the prior feed's first-qualifying.
-            # A divergence means the consumer replayed under a new formation;
-            # this is a tamper / contract break.
-            prior_first = prior_candidate["first_qualifying_campaign_revision_id"]
-            if prior_first != first_qualifying_revision_id:
-                raise CandidateFeedContractError(
-                    f"prior_feed first_qualifying_campaign_revision_id "
-                    f"{prior_first!r} does not match current formation "
-                    f"{first_qualifying_revision_id!r}"
+        first_qualifying = next(
+            (
+                row
+                for row in revisions
+                if _revision_is_qualifying(
+                    row,
+                    micro_map,
+                    policy_freeze_at=freeze_at,
+                    activation_boundary=activation_boundary,
+                    observation=clocks[0],
                 )
+            ),
+            None,
+        )
+        if first_qualifying is None:
+            first_qualifying_revision_id = None
+        else:
+            first_qualifying_revision_id = first_qualifying["campaign_revision_id"]
+
+        prior_candidate = None
+        if first_qualifying_revision_id is not None:
+            candidate_id = _candidate_identity(
+                policy["policy_id"],
+                cid,
+                first_qualifying_revision_id,
+            )
+            prior_candidate = prior_history.get(candidate_id)
+            if (
+                prior_candidate is not None
+                and prior_candidate["first_qualifying_campaign_revision_id"]
+                != first_qualifying_revision_id
+            ):
+                raise CandidateFeedContractError(
+                    "prior_feed first_qualifying_campaign_revision_id disagrees"
+                )
+        else:
+            candidate_id = None
+            for item in prior.get("candidates", ()) if prior is not None else ():
+                if item.get("campaign_id") == cid:
+                    prior_candidate = item
+                    break
+
+        if prior_candidate is not None:
+            formation_row_ordinal = _prior_formation_ordinal(
+                prior_candidate, campaigns
+            )
+        elif first_qualifying_revision_id is not None:
+            formation_row_ordinal = view_ordinal_by_revision_id[
+                first_qualifying_revision_id
+            ]
 
         reasons, micro, _ = _campaign_reasons(
             current,
@@ -970,7 +1353,7 @@ def compose_candidate_feed(
             source_health=health,
         )
 
-        if not reasons:
+        if not reasons and activation_boundary is not None:
             candidates.append(
                 _build_candidate_payload(
                     campaign=current,
@@ -982,18 +1365,21 @@ def compose_candidate_feed(
                     observation=clocks[0],
                     available=clocks[1],
                     published=clocks[2],
-                    prior_candidate=prior_candidate,
                     candidate_id=candidate_id,
-                    source_prefix_receipt=source_prefix_receipt,
+                    campaigns=campaigns,
                     first_qualifying_revision_id=first_qualifying_revision_id,
+                    formation_row_ordinal=formation_row_ordinal,
                     all_revisions=tuple(revisions),
+                    prior_candidate=prior_candidate,
+                    micro_map_for_formation_micro=micro_map,
                 )
             )
             continue
 
-        # Either degraded (source explicit stale/unavailable with prior
-        # identity) or plain abstention.
-        if "SOURCE_EXPLICITLY_STALE_OR_UNAVAILABLE" in reasons and prior_candidate is not None:
+        if (
+            "SOURCE_EXPLICITLY_STALE_OR_UNAVAILABLE" in reasons
+            and prior_candidate is not None
+        ):
             degraded.append(
                 _build_degraded(
                     current,
@@ -1076,7 +1462,7 @@ def compose_candidate_feed(
             "feed_digest_sha256": _sha256(canonical_bytes(prior)),
             "policy_id": prior["policy"]["policy_id"],
             "policy_digest_sha256": prior["policy"]["policy_digest_sha256"],
-            "published_at": prior["header"]["header_digest_sha256"],
+            "published_at": prior["generated_at"],
             "first_observation_preserved": all(
                 isinstance(item, dict) for item in prior.get("candidates", ())
             ),

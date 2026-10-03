@@ -256,6 +256,7 @@
         "campaign_id",
         "final_event_id",
         "first_qualifying_campaign_revision_id",
+        "formation_micro",
         "current_campaign_revision_id",
         "source_formed_at",
         "first_observed_at",
@@ -263,14 +264,14 @@
         "available_at",
         "published_at",
         "frozen_formation",
+        "current_revision",
         "measured",
         "evidence_digests",
         "missingness",
         "contradictions",
         "state",
         "reasons",
-        "versioned_updates",
-        "current_revision"
+        "versioned_updates"
       ],
       "properties": {
         "candidate_id": {"type": "string", "pattern": "^oacnd_[a-f0-9]{24}$"},
@@ -289,6 +290,7 @@
         "decision_at": {"type": "string", "format": "date-time"},
         "available_at": {"type": "string", "format": "date-time"},
         "published_at": {"type": "string", "format": "date-time"},
+        "formation_micro": {"$ref": "#/$defs/candidate/properties/measured"},
         "frozen_formation": {
           "type": "object",
           "additionalProperties": false,
