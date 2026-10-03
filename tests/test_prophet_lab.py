@@ -3865,3 +3865,58 @@ def test_closed_validator_rejects_episode_generation_drift_and_authority_escalat
     payload["authority"]["can_rank"] = True
     with pytest.raises(IntelligenceVectorContractError, match="authority"):
         validate_intelligence_vector(payload)
+
+
+def test_d5_equal_migration_mint_prefers_latest_semantic_revision_for_corrected_clock_basis() -> None:
+    decision = _d5_workspace()
+    historical = deepcopy(decision)
+    historical["generation_id"] = "2" * 24
+    historical["lifecycle"]["state"] = "corrected"
+    historical["lifecycle"]["observed_at"] = "2026-09-18T20:56:33Z"
+    historical["sources"][0]["source_sha256"] = "e" * 64
+    historical["facts"][0]["value"] = 110_000_000_000
+    historical["deltas"][0]["current"]["value"] = 110_000_000_000
+
+    current = deepcopy(historical)
+    current["generation_id"] = "3" * 24
+    current["generated_at"] = "2026-09-19T12:00:00Z"
+    current["lifecycle"]["observed_at"] = "2026-09-19T04:41:41Z"
+    current["sources"][0]["source_sha256"] = "f" * 64
+    current["facts"][0]["value"] = 111_000_000_000
+    current["deltas"][0]["current"]["value"] = 111_000_000_000
+
+    revisions = _d5_revisions(workspace=decision)
+    revisions.extend([
+        {
+            "generation_id": historical["generation_id"],
+            "source_sha256": "e" * 64,
+            "source_available_at": historical["lifecycle"]["source_available_at"],
+            "observed_at": historical["lifecycle"]["observed_at"],
+            "lifecycle_state": "corrected",
+            "form": "8-K",
+            "generated_at": "2026-09-19T12:00:00Z",
+            "generated_at_basis": "V3_MIGRATION_MINT",
+            "workspace_receipt": _d5_workspace_receipt(historical),
+            "workspace": historical,
+        },
+        {
+            "generation_id": current["generation_id"],
+            "source_sha256": "f" * 64,
+            "source_available_at": current["lifecycle"]["source_available_at"],
+            "observed_at": current["lifecycle"]["observed_at"],
+            "lifecycle_state": "corrected",
+            "form": "8-K",
+            "generated_at": "2026-09-19T12:00:00Z",
+            "generated_at_basis": "ENCLOSING_MANIFEST",
+            "workspace_receipt": _d5_workspace_receipt(current),
+            "workspace": current,
+        },
+    ])
+
+    payload = _build_d5(read_revisions=lambda _event_id: revisions)
+    validate_intelligence_vector(payload)
+    corrected_at = payload["evidence_families"][0]["point_in_time"]["corrected_at"]
+    assert corrected_at["value"] == "2026-09-19T12:00:00Z"
+    assert corrected_at["basis"] == (
+        "event_workspace_revision_receipt.generated_at:ENCLOSING_MANIFEST"
+    )

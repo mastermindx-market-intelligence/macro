@@ -1,0 +1,48 @@
+{
+  "evidence_sha256": {
+    ".k4g-ci-pack.log": "9481308725a55d8f438dfd6c2306d934eeef9ae502be1c719f3a3f0a0ec22634",
+    ".k4g-modified-files.log": "75b18be6b49dd7129a42b37df67fcc3417226c3bf6b0b8d6d522114a6547e9e4",
+    ".k4g-owning-suite.log": "d3295b168ff1742514fb26995292f8eebf43765efd87f74bc2a73fc3b5a165c5",
+    ".k4g-quality.log": "88bbae234975496725bec38c6c411cb4d2f266c71e3778b287adae539741d0e0",
+    ".k4g-reconcile-working.diff": "ed21ebdfd364812d3b0595ca9f07cde72288918c86f9fca3295af9d2b7548f2b",
+    ".k4g-red-parent.log": "cbc3bd475f960f1e3c67aa9afd57b511887d6949cfaa30477be44ddadb202071",
+    ".k4g-red-tests.patch": "12585f62023e093214b245b2e96bc0973639ebfd89db63fc8fe2a518116fc0ea",
+    ".k4g-targeted.log": "ea4ab51ff7aa0f949d3c9dab184000eb5294ee318d825366cfcda34dd3db3f69"
+  },
+  "market_outcomes_read": false,
+  "merge_authorized": false,
+  "operation": "event-workspace-clock-index-k4g-20260918-sol-001",
+  "pr": 7426,
+  "procedure_pin": "93ad71fee0aa56ba3d1bef2f8cb105a6e50d8567",
+  "production_authenticated": false,
+  "production_source_mutated": false,
+  "remaining_gates": [
+    "independent exact-head review",
+    "ordinary source-owner merge/release adjudication",
+    "incumbent R2 v3 publication and marker/index/workspace readback",
+    "issue 6797 real entitled covered and typed-unavailable production proof"
+  ],
+  "schema": "company_intelligence.k4g_migration_operation_clock_repair/v1",
+  "semantic_source_head": "b4f0aeb0c0e176813c8e43f2170ba121075a8894",
+  "source_hashes": {
+    ".github/workflows/company-intelligence.yml": "f198d67e322d24b1ac9b2b8b179ea0b5258b919dad27ac0b6eb80df40e780dd6",
+    "engine/company_intelligence/event_workspace.py": "b9fc6d681b63b2f23632c3519f7f04ce27eadf6bcf7a91b536f6f96afd416648",
+    "scripts/refresh_event_workspaces.py": "5958152e0c0d417ee80701c323a3ad8097f2178d37f34fc4814c5c7967949774",
+    "tests/test_company_intelligence_refresh.py": "6acacd150ae655d6e5132f57d950f2d8ea0313fe9d3e4c87aeaf9324fa9588e3",
+    "tests/test_company_intelligence_workspace_v3.py": "dbfd55240633fe5247a4b706be675fd1fc99eebcf04bb3095608557570bbed63",
+    "tests/test_refresh_event_workspaces.py": "b4326e2b7e53101ee807a8db121768b8952e475ad96e3cc771d0e5e193491b56"
+  },
+  "tdd": {
+    "green": "11 passed targeted on repaired worktree",
+    "red": "8 failed, 3 passed on exact parent cbd7a816 with test-only overlay"
+  },
+  "verification": {
+    "agentos": "1139 records, 0 errors, 88 existing warnings",
+    "ci_owner_contract": "1 passed in 165.99s",
+    "git_diff_check": "PASS",
+    "modified_files": "89 passed, 5 existing warnings",
+    "owning_battery": "596 passed, 15 existing warnings",
+    "python_compile": "PASS",
+    "ruff": "isolated ruff found no new F/E9 findings; three reported findings reproduce on parent source"
+  }
+}

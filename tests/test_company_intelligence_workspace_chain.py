@@ -1534,3 +1534,128 @@ def test_d5_chain_integrity_failure_is_sanitized_unestimable_receipt(failure: st
     assert "WorkspaceChainIntegrityError" in receipt
     assert "/private/" not in receipt
     assert "https://" not in receipt
+
+
+def test_legacy_migration_reader_discovers_historical_event_ids_in_one_walk(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    old_event = EVENT_ID
+    current_event = "evt_cik0000882184_2026q3_results"
+    old_workspace = _raw_workspace(
+        source_available_at="2026-01-30T16:30:00Z",
+        source_sha256="a" * 64,
+        event_id=old_event,
+    )
+    current_workspace = _raw_workspace(
+        source_available_at="2026-07-21T15:54:47Z",
+        source_sha256="b" * 64,
+        event_id=current_event,
+    )
+    gen_old, man_old = _mint(
+        tmp_path,
+        {old_event: old_workspace},
+        generated_at="2026-01-30T16:30:00Z",
+    )
+    gen_current, man_current = _mint(
+        tmp_path,
+        {current_event: current_workspace},
+        generated_at="2026-07-21T15:54:47Z",
+        previous_generation_id=gen_old,
+        previous_manifest_sha256=sha256(canonical_json_bytes(man_old)).hexdigest(),
+    )
+    objects = {
+        gen_old: {
+            "manifest": man_old,
+            "workspaces": {old_event: old_workspace | {"generation_id": gen_old}},
+        },
+        gen_current: {
+            "manifest": man_current,
+            "workspaces": {
+                current_event: current_workspace | {"generation_id": gen_current}
+            },
+        },
+    }
+    calls: list[str] = []
+    monkeypatch.setattr(
+        reader,
+        "_fetch_bytes",
+        _server(objects, marker_generation_id=gen_old, fetch_calls=calls),
+    )
+
+    revisions = reader.read_all_published_event_source_revisions(
+        base_url=BASE,
+        start_generation_id=gen_current,
+    )
+    assert set(revisions) == {old_event, current_event}
+    assert revisions[old_event][0]["generation_id"] == gen_old
+    assert revisions[current_event][0]["generation_id"] == gen_current
+    assert f"{BASE}/event_workspaces/manifest.json" not in calls
+    assert calls.count(
+        f"{BASE}/event_workspaces/generations/{gen_old}/manifest.json"
+    ) == 1
+    assert calls.count(
+        f"{BASE}/event_workspaces/generations/{gen_current}/manifest.json"
+    ) == 1
+
+def test_d5_uses_authenticated_v3_revision_clock_for_legacy_migration() -> None:
+    decision = _raw_workspace(
+        source_available_at="2026-01-30T20:00:00Z",
+        observed_at="2026-01-30T20:02:00Z",
+        source_sha256="a" * 64,
+        fact_value=100,
+    )
+    decision["generation_id"] = "1" * 24
+    decision["generated_at"] = "2026-01-30T20:03:00Z"
+
+    correction = _raw_workspace(
+        source_available_at="2026-01-30T20:00:00Z",
+        observed_at="2026-02-01T20:02:00Z",
+        source_sha256="b" * 64,
+        state="corrected",
+        fact_value=101,
+    )
+    correction["generation_id"] = "2" * 24
+    correction["generated_at"] = "2026-01-30T20:03:00Z"
+
+    revisions = [
+        {
+            "generation_id": "1" * 24,
+            "source_sha256": "a" * 64,
+            "source_available_at": "2026-01-30T20:00:00Z",
+            "observed_at": "2026-01-30T20:02:00Z",
+            "lifecycle_state": "complete",
+            "form": "8-K",
+            "workspace_receipt": {"bytes": 1000, "sha256": "c" * 64},
+            "generated_at": "2026-01-30T20:03:00Z",
+            "generated_at_basis": "WORKSPACE_ENVELOPE",
+            "workspace": decision,
+        },
+        {
+            "generation_id": "2" * 24,
+            "source_sha256": "b" * 64,
+            "source_available_at": "2026-01-30T20:00:00Z",
+            "observed_at": "2026-02-01T20:02:00Z",
+            "lifecycle_state": "corrected",
+            "form": "8-K",
+            "workspace_receipt": {"bytes": 1001, "sha256": "d" * 64},
+            "generated_at": "2026-02-01T20:03:00Z",
+            "generated_at_basis": "V3_MIGRATION_MINT",
+            "workspace": correction,
+        },
+    ]
+
+    payload = _d5_project(read_revisions=lambda _event_id: revisions)
+    family = payload["evidence_families"][0]
+    assert family["correction"]["state_at_decision"] == "NONE"
+    assert family["correction"]["later_revision_state"] == "PROJECTED"
+    assert family["correction"]["current_state"] == "CORRECTED"
+    assert family["correction"]["later_revision_receipts"][0]["generated_at"] == (
+        "2026-02-01T20:03:00Z"
+    )
+    assert family["point_in_time"]["corrected_at"]["value"] == "2026-02-01T20:03:00Z"
+    assert (
+        family["point_in_time"]["corrected_at"]["basis"]
+        == "event_workspace_revision_receipt.generated_at:V3_MIGRATION_MINT"
+    )
+    assert not any(payload["authority"].values())

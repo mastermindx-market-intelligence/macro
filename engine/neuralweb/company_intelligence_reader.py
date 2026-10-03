@@ -38,6 +38,7 @@ _REQUEST_TIMEOUT_SECONDS = 8.0
 _MAX_MANIFEST_BYTES = 8 * 1024 * 1024
 _MAX_CONTEXT_BYTES = 512 * 1024
 _MAX_WORKSPACE_BYTES = 512 * 1024
+_MAX_REVISION_INDEX_BYTES = 8 * 1024 * 1024
 _MAX_HISTORY = 12
 _MAX_CONTEXT_CACHE_ENTRIES = 256
 # Keep this string identical to engine.company_intelligence.event_workspace.NEST.
@@ -52,6 +53,7 @@ _REQUEST_TIMEOUT_SECONDS = 8.0
 _MAX_MANIFEST_BYTES = 8 * 1024 * 1024
 _MAX_CONTEXT_BYTES = 512 * 1024
 _MAX_WORKSPACE_BYTES = 512 * 1024
+_MAX_REVISION_INDEX_BYTES = 8 * 1024 * 1024
 _MAX_HISTORY = 12
 _MAX_CONTEXT_CACHE_ENTRIES = 256
 
@@ -1192,6 +1194,479 @@ def _dedupe_carry_forward_hops(newest_first: list[dict[str, Any]]) -> list[dict[
     return deduped
 
 
+def read_all_published_event_source_revisions(
+    *,
+    base_url: str | None = None,
+    max_hops: int = DEFAULT_MAX_CHAIN_HOPS,
+    start_generation_id: str | None = None,
+) -> dict[str, list[dict[str, Any]]]:
+    """Return every event represented anywhere in the current publication history.
+
+    This is the one-time v1/v2-to-v3 migration path.  It reuses the incumbent
+    predecessor, raw-byte receipt, workspace verification and carry-forward
+    dedupe machinery, but discovers event ids from every verified manifest
+    rather than only from the current whole-nest snapshot.
+    """
+    from engine.company_intelligence import event_workspace as workspace_contracts
+
+    marker_body: bytes | None = None
+    marker: dict[str, Any] | None = None
+    if start_generation_id is None:
+        marker_result = fetch_current_workspace_marker_raw(base_url=base_url)
+        if marker_result is None:
+            return {}
+        marker_body, marker = marker_result
+        try:
+            workspace_contracts.validate_workspace_manifest(marker)
+        except workspace_contracts.WorkspaceError as exc:
+            raise WorkspaceChainIntegrityError(
+                "current event-workspace marker failed contract validation"
+            ) from exc
+        generation_id: str | None = str(marker.get("generation_id") or "") or None
+    else:
+        generation_id = str(start_generation_id or "") or None
+    if generation_id is None:
+        return {}
+
+    try:
+        manifest_body, manifest = _fetch_generation_manifest_raw(
+            generation_id,
+            base_url=base_url,
+        )
+    except WorkspaceChainNotPublished as exc:
+        raise WorkspaceChainIntegrityError(
+            f"chain link names generation {generation_id!r}, which does not exist"
+        ) from exc
+    if str(manifest.get("generation_id") or "") != generation_id:
+        raise WorkspaceChainIntegrityError(
+            f"generation {generation_id} manifest identity does not match its address"
+        )
+    schema = manifest.get("schema")
+    if schema == workspace_contracts.MANIFEST_SCHEMA_V3:
+        if marker_body is not None and marker_body != manifest_body:
+            raise WorkspaceChainIntegrityError(
+                "event workspace v3 marker does not match immutable manifest bytes"
+            )
+        index = _fetch_v3_revision_index(
+            manifest,
+            generation_id=generation_id,
+            base_url=base_url,
+        )
+        return _read_v3_indexed_revisions(
+            set(index["events"]),
+            manifest=manifest,
+            generation_id=generation_id,
+            base_url=base_url,
+            max_hops=max_hops,
+        )
+    if schema not in {
+        workspace_contracts.MANIFEST_SCHEMA_V1,
+        workspace_contracts.MANIFEST_SCHEMA_V2,
+    }:
+        raise WorkspaceChainIntegrityError(
+            f"unsupported event workspace manifest schema: {schema!r}"
+        )
+
+    newest_first: dict[str, list[dict[str, Any]]] = {}
+    hops = 0
+    while generation_id is not None:
+        if hops >= max_hops:
+            raise WorkspaceChainIntegrityError(
+                f"predecessor chain exceeds the {max_hops}-hop bound without reaching a root "
+                "— refusing an unbounded walk"
+            )
+        hops += 1
+        try:
+            workspace_contracts.validate_workspace_manifest(manifest)
+        except workspace_contracts.WorkspaceError as exc:
+            raise WorkspaceChainIntegrityError(
+                f"generation {generation_id} manifest failed contract validation"
+            ) from exc
+        schema = manifest.get("schema")
+        if schema not in {
+            workspace_contracts.MANIFEST_SCHEMA_V1,
+            workspace_contracts.MANIFEST_SCHEMA_V2,
+        }:
+            raise WorkspaceChainIntegrityError(
+                f"unsupported legacy manifest schema during migration: {schema!r}"
+            )
+        files = manifest.get("files")
+        if not isinstance(files, Mapping):
+            raise WorkspaceChainIntegrityError(
+                f"generation {generation_id} manifest carries no usable files map"
+            )
+        event_ids = {
+            relative[len("workspaces/"):-len(".json")]
+            for relative in files
+            if (
+                isinstance(relative, str)
+                and relative.startswith("workspaces/")
+                and relative.endswith(".json")
+            )
+        }
+        for event_id in event_ids:
+            newest_first.setdefault(event_id, [])
+            revision_result = _event_revision_from_generation(
+                manifest,
+                event_id,
+                generation_id=generation_id,
+                base_url=base_url,
+            )
+            if revision_result is None:
+                continue
+            revision, workspace_receipt = revision_result
+            newest_first[event_id].append(_receipt_from_revision(
+                revision,
+                generation_id=generation_id,
+                workspace_receipt=workspace_receipt,
+            ))
+
+        if schema == workspace_contracts.MANIFEST_SCHEMA_V1:
+            break
+        previous_id = manifest.get("previous_generation_id")
+        if previous_id is None:
+            break
+        previous_id = str(previous_id)
+        expected_sha = str(manifest.get("previous_manifest_sha256") or "")
+        try:
+            predecessor_bytes, predecessor_manifest = _fetch_generation_manifest_raw(
+                previous_id,
+                base_url=base_url,
+            )
+        except WorkspaceChainNotPublished as exc:
+            raise WorkspaceChainIntegrityError(
+                f"generation {generation_id} names predecessor {previous_id!r}, which does not exist"
+            ) from exc
+        actual_sha = sha256(predecessor_bytes).hexdigest()
+        if actual_sha != expected_sha:
+            raise WorkspaceChainIntegrityError(
+                f"generation {generation_id}'s previous manifest receipt does not match "
+                f"predecessor {previous_id}"
+            )
+        generation_id = previous_id
+        manifest = predecessor_manifest
+
+    return {
+        event_id: _dedupe_carry_forward_hops(revisions)
+        for event_id, revisions in newest_first.items()
+    }
+
+
+def _fetch_v3_revision_index(
+    manifest: Mapping[str, Any],
+    *,
+    generation_id: str,
+    base_url: str | None,
+) -> dict[str, Any]:
+    """Fetch and authenticate one manifest-v3 semantic revision index."""
+    from engine.company_intelligence import event_workspace as workspace_contracts
+
+    try:
+        workspace_contracts.validate_workspace_manifest(manifest)
+    except workspace_contracts.WorkspaceError as exc:
+        raise WorkspaceChainIntegrityError(
+            f"generation {generation_id} v3 manifest is invalid: {exc}"
+        ) from exc
+    if manifest.get("schema") != workspace_contracts.MANIFEST_SCHEMA_V3:
+        raise WorkspaceChainIntegrityError(
+            f"generation {generation_id} is not a v3 workspace manifest"
+        )
+    if str(manifest.get("generation_id") or "") != generation_id:
+        raise WorkspaceChainIntegrityError(
+            f"generation {generation_id} manifest identity does not match its address"
+        )
+    receipt = manifest["revision_index"]
+    resolved = _public_base_url(base_url, require_public_host=False)
+    url = _workspace_object_url(
+        resolved,
+        f"generations/{generation_id}/{receipt['path']}",
+    )
+    body = _fetch_bytes(
+        url,
+        limit=_MAX_REVISION_INDEX_BYTES,
+        allow_404=True,
+    )
+    if body is None:
+        raise WorkspaceChainIntegrityError(
+            f"generation {generation_id} revision index is not published"
+        )
+    if len(body) != receipt["bytes"] or sha256(body).hexdigest() != receipt["sha256"]:
+        raise WorkspaceChainIntegrityError(
+            f"generation {generation_id} revision index bytes or sha256 do not match manifest receipt"
+        )
+    index = _json_object(body, name=f"generation {generation_id} revision index")
+    try:
+        workspace_contracts.validate_revision_index(index, manifest=manifest)
+    except workspace_contracts.WorkspaceError as exc:
+        raise WorkspaceChainIntegrityError(
+            f"generation {generation_id} revision index is invalid: {exc}"
+        ) from exc
+    return index
+
+
+def fetch_workspace_revision_index(
+    manifest: Mapping[str, Any],
+    *,
+    base_url: str | None = None,
+) -> dict[str, Any]:
+    """Public producer seam for the authenticated manifest-v3 index."""
+    generation_id = str(manifest.get("generation_id") or "")
+    if not generation_id:
+        raise WorkspaceChainIntegrityError("v3 manifest carries no generation id")
+    return _fetch_v3_revision_index(
+        manifest,
+        generation_id=generation_id,
+        base_url=base_url,
+    )
+
+
+def _indexed_workspace_revision(
+    event_id: str,
+    row: Mapping[str, Any],
+    *,
+    enclosing_manifest: Mapping[str, Any],
+    base_url: str | None,
+    workspace_cache: Mapping[
+        tuple[str, str],
+        tuple[Mapping[str, Any], Mapping[str, Any]],
+    ] | None = None,
+) -> dict[str, Any]:
+    """Resolve and verify one v3 index row into the legacy receipt shape."""
+    from engine.company_intelligence import event_workspace as workspace_contracts
+
+    generation_ref = row["workspace_generation_ref"]
+    generated_at_basis = str(row["generated_at_basis"])
+    if generation_ref == "self":
+        generation_id = str(enclosing_manifest["generation_id"])
+        generated_at = str(enclosing_manifest["generated_at"])
+        workspace_receipt = enclosing_manifest["files"][
+            f"workspaces/{event_id}.json"
+        ]
+    else:
+        generation_id = str(generation_ref)
+        generated_at = str(row["generated_at"])
+        workspace_receipt = row["workspace_receipt"]
+
+    cache_key = (generation_id, event_id)
+    cached = workspace_cache.get(cache_key) if workspace_cache is not None else None
+    if cached is not None:
+        workspace = dict(cached[0])
+        cached_receipt = dict(cached[1])
+        if cached_receipt != dict(workspace_receipt):
+            raise WorkspaceChainIntegrityError(
+                f"indexed workspace {event_id} in generation {generation_id} has conflicting receipts"
+            )
+    else:
+        body = _fetch_raw_workspace_bytes(
+            event_id,
+            generation_id,
+            base_url=base_url,
+        )
+        expected_bytes = workspace_receipt["bytes"]
+        expected_sha256 = workspace_receipt["sha256"]
+        if len(body) != expected_bytes or sha256(body).hexdigest() != expected_sha256:
+            raise WorkspaceChainIntegrityError(
+                f"indexed workspace {event_id} in generation {generation_id} does not match its receipt"
+            )
+        workspace = _json_object(
+            body,
+            name=f"indexed {event_id} workspace",
+        )
+        try:
+            workspace_contracts.validate_event_workspace(workspace)
+        except workspace_contracts.WorkspaceError as exc:
+            raise WorkspaceChainIntegrityError(
+                f"indexed workspace {event_id} is invalid: {exc}"
+            ) from exc
+    if workspace.get("event_id") != event_id:
+        raise WorkspaceChainIntegrityError(
+            f"indexed workspace {event_id} carries a different event id"
+        )
+    if workspace.get("generation_id") != generation_id:
+        raise WorkspaceChainIntegrityError(
+            f"indexed workspace {event_id} generation metadata disagrees with the index"
+        )
+    workspace_generated_at = workspace_contracts.iso_timestamp(
+        workspace.get("generated_at")
+    )
+    workspace_observed_at = workspace_contracts.iso_timestamp(
+        (workspace.get("lifecycle") or {}).get("observed_at")
+    )
+    indexed_generated_at = workspace_contracts.iso_timestamp(generated_at)
+    if (
+        workspace_generated_at is None
+        or workspace_observed_at is None
+        or indexed_generated_at is None
+    ):
+        raise WorkspaceChainIntegrityError(
+            f"indexed workspace {event_id} carries an invalid generated/observed clock"
+        )
+    if generated_at_basis in {"WORKSPACE_ENVELOPE", "ENCLOSING_MANIFEST"}:
+        if workspace_generated_at != indexed_generated_at:
+            raise WorkspaceChainIntegrityError(
+                f"indexed workspace {event_id} generated_at metadata disagrees with the index"
+            )
+    elif generated_at_basis == "V3_MIGRATION_MINT":
+        if workspace_generated_at >= workspace_observed_at:
+            raise WorkspaceChainIntegrityError(
+                f"indexed workspace {event_id} migration clock basis is not justified"
+            )
+        if indexed_generated_at < workspace_observed_at:
+            raise WorkspaceChainIntegrityError(
+                f"indexed workspace {event_id} migration clock precedes observed_at"
+            )
+    else:
+        raise WorkspaceChainIntegrityError(
+            f"indexed workspace {event_id} generated_at basis is unsupported"
+        )
+
+    receipt = _receipt_from_revision(
+        workspace,
+        generation_id=generation_id,
+        workspace_receipt=workspace_receipt,
+    )
+    receipt["generated_at"] = generated_at
+    receipt["generated_at_basis"] = generated_at_basis
+    for field in (
+        "source_sha256",
+        "source_available_at",
+        "observed_at",
+        "lifecycle_state",
+        "form",
+    ):
+        if receipt[field] != row[field]:
+            raise WorkspaceChainIntegrityError(
+                f"indexed workspace {event_id} {field} metadata disagrees with the index"
+            )
+    return receipt
+
+
+def _verify_v3_generation_identity(
+    manifest: Mapping[str, Any],
+    revision_index: Mapping[str, Any],
+    *,
+    generation_id: str,
+    base_url: str | None,
+) -> dict[tuple[str, str], tuple[dict[str, Any], dict[str, Any]]]:
+    """Verify the v3 address against its current workspaces and index body."""
+    from engine.company_intelligence import event_workspace as workspace_contracts
+
+    current_workspaces: dict[str, dict[str, Any]] = {}
+    cache: dict[tuple[str, str], tuple[dict[str, Any], dict[str, Any]]] = {}
+    files = manifest.get("files") if isinstance(manifest.get("files"), Mapping) else {}
+    for relative, raw_receipt in sorted(files.items()):
+        event_id = str(relative)[len("workspaces/"):-len(".json")]
+        receipt = dict(raw_receipt)
+        body = _fetch_raw_workspace_bytes(
+            event_id,
+            generation_id,
+            base_url=base_url,
+        )
+        if (
+            len(body) != receipt["bytes"]
+            or sha256(body).hexdigest() != receipt["sha256"]
+        ):
+            raise WorkspaceChainIntegrityError(
+                f"v3 current workspace {event_id} does not match its manifest receipt"
+            )
+        workspace = _json_object(body, name=f"v3 current {event_id} workspace")
+        try:
+            workspace_contracts.validate_event_workspace(workspace)
+        except workspace_contracts.WorkspaceError as exc:
+            raise WorkspaceChainIntegrityError(
+                f"v3 current workspace {event_id} is invalid: {exc}"
+            ) from exc
+        if (
+            workspace.get("event_id") != event_id
+            or workspace.get("generation_id") != generation_id
+            or workspace.get("generated_at") != manifest.get("generated_at")
+        ):
+            raise WorkspaceChainIntegrityError(
+                f"v3 current workspace {event_id} envelope disagrees with its manifest"
+            )
+        current_workspaces[event_id] = workspace
+        cache[(generation_id, event_id)] = (workspace, receipt)
+
+    try:
+        recomputed = workspace_contracts.preview_generation_identity_v3(
+            current_workspaces,
+            revision_index,
+            str(manifest.get("generated_at") or ""),
+            previous_generation_id=manifest.get("previous_generation_id"),
+            aliases=manifest.get("aliases") or {},
+        )
+    except workspace_contracts.WorkspaceError as exc:
+        raise WorkspaceChainIntegrityError(
+            f"generation {generation_id} identity inputs are invalid: {exc}"
+        ) from exc
+    if recomputed != generation_id:
+        raise WorkspaceChainIntegrityError(
+            f"generation identity mismatch: expected {generation_id}, recomputed {recomputed}"
+        )
+    return cache
+
+
+def audit_v3_generation_identity(
+    manifest: Mapping[str, Any],
+    *,
+    base_url: str | None = None,
+) -> None:
+    """Fully audit one v3 generation address outside the interactive read path.
+
+    The serving path verifies the authenticated index plus only the workspace
+    receipts referenced by the requested event.  A full generation-address
+    recomputation necessarily reads every current workspace and therefore
+    belongs to producer/audit qualification, never a latency-sensitive D5 GET.
+    """
+    generation_id = str(manifest.get("generation_id") or "")
+    if not generation_id:
+        raise WorkspaceChainIntegrityError("v3 manifest carries no generation id")
+    index = _fetch_v3_revision_index(
+        manifest,
+        generation_id=generation_id,
+        base_url=base_url,
+    )
+    _verify_v3_generation_identity(
+        manifest,
+        index,
+        generation_id=generation_id,
+        base_url=base_url,
+    )
+
+
+def _read_v3_indexed_revisions(
+    event_ids: set[str],
+    *,
+    manifest: Mapping[str, Any],
+    generation_id: str,
+    base_url: str | None,
+    max_hops: int,
+) -> dict[str, list[dict[str, Any]]]:
+    index = _fetch_v3_revision_index(
+        manifest,
+        generation_id=generation_id,
+        base_url=base_url,
+    )
+    events = index["events"]
+    results: dict[str, list[dict[str, Any]]] = {}
+    for event_id in event_ids:
+        rows = list(events.get(event_id) or [])
+        if len(rows) > max_hops:
+            raise WorkspaceChainIntegrityError(
+                f"revision index for {event_id} exceeds the {max_hops}-row bound"
+            )
+        results[event_id] = [
+            _indexed_workspace_revision(
+                event_id,
+                row,
+                enclosing_manifest=manifest,
+                base_url=base_url,
+            )
+            for row in rows
+        ]
+    return results
+
+
 def read_all_event_source_revisions(
     event_ids: Iterable[str],
     *,
@@ -1224,13 +1699,60 @@ def read_all_event_source_revisions(
     CURRENT published marker.
     """
     ids = {str(event_id) for event_id in event_ids}
+    marker_body: bytes | None = None
+    marker: dict[str, Any] | None = None
     if start_generation_id is not None:
         generation_id: str | None = start_generation_id
-        manifest: dict[str, Any] | None = None
     else:
-        marker = fetch_current_workspace_marker(base_url=base_url)
-        generation_id = str(marker["generation_id"]) if marker else None
-        manifest = None
+        marker_result = fetch_current_workspace_marker_raw(base_url=base_url)
+        if marker_result is None:
+            generation_id = None
+        else:
+            marker_body, marker = marker_result
+            generation_id = str(marker.get("generation_id") or "") or None
+    manifest: dict[str, Any] | None = None
+    if generation_id is not None:
+        try:
+            manifest_body, manifest = _fetch_generation_manifest_raw(
+                generation_id,
+                base_url=base_url,
+            )
+        except WorkspaceChainNotPublished as exc:
+            raise WorkspaceChainIntegrityError(
+                f"chain link names generation {generation_id!r}, which does not exist"
+            ) from exc
+        known_schemas = {
+            "event_workspace_manifest.v1",
+            "event_workspace_manifest.v2",
+            "event_workspace_manifest.v3",
+        }
+        schema = manifest.get("schema")
+        if schema not in known_schemas:
+            raise WorkspaceChainIntegrityError(
+                f"unsupported event workspace manifest schema: {schema!r}"
+            )
+        if marker is not None:
+            marker_schema = marker.get("schema")
+            if marker_schema not in known_schemas:
+                raise WorkspaceChainIntegrityError(
+                    f"unsupported event workspace marker schema: {marker_schema!r}"
+                )
+            if marker_schema != schema:
+                raise WorkspaceChainIntegrityError(
+                    "event workspace marker schema does not match immutable manifest"
+                )
+            if schema == "event_workspace_manifest.v3" and marker_body != manifest_body:
+                raise WorkspaceChainIntegrityError(
+                    "event workspace v3 marker does not match immutable manifest bytes"
+                )
+        if schema == "event_workspace_manifest.v3":
+            return _read_v3_indexed_revisions(
+                ids,
+                manifest=manifest,
+                generation_id=generation_id,
+                base_url=base_url,
+                max_hops=max_hops,
+            )
 
     newest_first: dict[str, list[dict[str, Any]]] = {event_id: [] for event_id in ids}
     hops = 0

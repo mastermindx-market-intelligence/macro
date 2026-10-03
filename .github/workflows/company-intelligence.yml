@@ -18,6 +18,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   # No cancellation: a run which has already uploaded its immutable objects
@@ -79,6 +80,7 @@ jobs:
 
       - name: publish Company Intelligence, then build exact context sidecars
         env:
+          GH_TOKEN: ${{ github.token }}
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
@@ -104,7 +106,34 @@ jobs:
           elif [ "$rc" -ne 0 ]; then
             exit "$rc"
           fi
-          WS_ARGS=(--work-dir "$RUNNER_TEMP/company-intelligence" --out-dir "$OUTPUT_DIR" --terminal-tx-index-url "$TERMINAL_TX_INDEX_URL")
+          # The root Company Intelligence lane above does not depend on the
+          # sibling event-workspace mint clock. Resolve the stable clock only
+          # at this lane boundary so an Actions API failure cannot block root
+          # publication that has already qualified independently.
+          # GITHUB_RUN_ID is stable across reruns while GITHUB_RUN_ATTEMPT is
+          # not. Bind every attempt of this logical operation to the original
+          # workflow-run creation clock so immutable generation bytes reconcile.
+          if ! OPERATION_TIME="$(
+            curl -fsSL \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2026-03-10" \
+              "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" |
+              python -c 'import json,sys; print(json.load(sys.stdin)["created_at"])'
+          )"; then
+            echo "::error title=event-workspaces::failed to resolve stable workflow operation time"
+            exit 1
+          fi
+          if [ -z "$OPERATION_TIME" ]; then
+            echo "::error title=event-workspaces::workflow operation time was empty"
+            exit 1
+          fi
+          WS_ARGS=(
+            --work-dir "$RUNNER_TEMP/company-intelligence"
+            --out-dir "$OUTPUT_DIR"
+            --terminal-tx-index-url "$TERMINAL_TX_INDEX_URL"
+            --operation-time "$OPERATION_TIME"
+          )
           if [ "${DRY_RUN:-false}" = "true" ]; then
             WS_ARGS+=(--dry-run)
           fi

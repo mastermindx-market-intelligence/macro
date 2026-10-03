@@ -320,6 +320,8 @@ def publish_event_workspaces(
 ) -> int:
     """Publish the sibling ``event_workspaces/`` nest; never touch the v1 marker."""
     from engine.company_intelligence.event_workspace import (  # noqa: PLC0415
+        MANIFEST_SCHEMA_V3,
+        validate_revision_index,
         validate_workspace_manifest,
         WorkspaceError,
     )
@@ -341,12 +343,48 @@ def publish_event_workspaces(
     except WorkspaceError as exc:
         log.error("refusing invalid event workspace generation: %s", exc)
         return 1
+    generation_id = str(manifest["generation_id"])
+    nest = Path(out_dir) / "event_workspaces"
+    revision_index_object: tuple[Path, str, str] | None = None
+    if manifest.get("schema") == MANIFEST_SCHEMA_V3:
+        receipt = manifest["revision_index"]
+        index_path = nest / "generations" / generation_id / str(receipt["path"])
+        try:
+            index_body = index_path.read_bytes()
+            if (
+                len(index_body) != receipt["bytes"]
+                or sha256(index_body).hexdigest() != receipt["sha256"]
+            ):
+                raise WorkspaceError("revision index bytes or sha256 do not match manifest receipt")
+            index_payload = json.loads(index_body)
+            validate_revision_index(index_payload, manifest=manifest)
+        except (OSError, json.JSONDecodeError, WorkspaceError) as exc:
+            log.error("refusing invalid event workspace revision index: %s", exc)
+            return 1
+        revision_index_object = (
+            index_path,
+            f"{_WORKSPACE_NEST}/generations/{generation_id}/{receipt['path']}",
+            str(receipt["sha256"]),
+        )
+
+    marker_path = nest / "manifest.json"
+    generation_manifest = nest / "generations" / generation_id / "manifest.json"
+    try:
+        marker_body = marker_path.read_bytes()
+        immutable_manifest_body = generation_manifest.read_bytes()
+    except OSError as exc:
+        log.error("event workspace manifest bytes unavailable: %s", exc)
+        return 1
+    if marker_body != immutable_manifest_body:
+        log.error(
+            "refusing event workspace publish: mutable marker and immutable generation manifest differ"
+        )
+        return 1
+
     remote_manifest, remote_etag = _remote_workspace_manifest_snapshot(client, target_bucket)
     if remote_manifest is not None and canonical_json_bytes(remote_manifest) == canonical_json_bytes(manifest):
         log.info("event workspace generation %s already promoted", manifest.get("generation_id"))
         return 0
-    generation_id = str(manifest["generation_id"])
-    nest = Path(out_dir) / "event_workspaces"
     errors = 0
 
     def upload_workspace(item: tuple[str, Mapping[str, Any]]) -> tuple[str, Exception | None]:
@@ -374,6 +412,21 @@ def publish_event_workspaces(
             if exc is not None:
                 log.error("event workspace payload upload failed: %s (%s)", key, exc)
                 errors += 1
+    if not errors and revision_index_object is not None:
+        index_path, index_key, expected_index_sha = revision_index_object
+        try:
+            _publish_immutable_object(
+                client,
+                target_bucket,
+                index_key,
+                index_path.read_bytes(),
+                expected_index_sha,
+                dry_run=dry_run,
+            )
+        except Exception as exc:  # noqa: BLE001
+            log.error("event workspace revision index upload failed: %s", exc)
+            errors += 1
+
     generation_manifest = nest / "generations" / generation_id / "manifest.json"
     generation_key = f"{_WORKSPACE_NEST}/generations/{generation_id}/manifest.json"
     if not errors:

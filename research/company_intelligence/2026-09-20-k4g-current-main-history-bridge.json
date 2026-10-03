@@ -1,0 +1,59 @@
+{
+  "effects": {
+    "browser_or_account_mutated": false,
+    "deployment": false,
+    "market_outcomes_read": false,
+    "production_mutated": false,
+    "r2_mutated": false,
+    "rank_or_trade_authority_changed": false
+  },
+  "history_bridge": {
+    "changed_path_count": 18,
+    "current_main_pin": "75956e5b00f99b860e9e97dde36f46ef04ecc72b",
+    "fast_forward_from_previous_head": true,
+    "force_push_required": false,
+    "history_rewritten": false,
+    "merge_base_with_main": "75956e5b00f99b860e9e97dde36f46ef04ecc72b",
+    "parents": [
+      "82d679a46c6c6831e495ed232a615bca218a4b27",
+      "75956e5b00f99b860e9e97dde36f46ef04ecc72b"
+    ],
+    "previous_branch_head": "82d679a46c6c6831e495ed232a615bca218a4b27",
+    "semantic_integration_commit": "c3c59bb34571b355fc42f7c9d7ec448b4d3fd49b",
+    "semantic_tree": "4a800413814f4f3391cdbce78da8129d887b96c5",
+    "source_patch_sha256": "c50dc32f765ddc320e43a03660e35c798f8a78a977658b7ed39dfd3a6d3ce7bf"
+  },
+  "nonclaims": [
+    "local tests are not merge, deployment, R2 publication, or production acceptance",
+    "the unrelated shared CI-pack traffic jam is not waived or inferred",
+    "Quality Earnings +1y evaluation and rights gates remain separate"
+  ],
+  "operation": "event-workspace-clock-index-k4g-20260918-sol-001",
+  "pr": 7426,
+  "procedure_pin": "f3d187976e083f9b102fc49696395b5c1521ebb5",
+  "remaining_gates": [
+    "push same PR branch and prove exact remote head",
+    "independent exact-head review",
+    "ordinary source-owner merge/release adjudication",
+    "incumbent R2 v3 publication and marker/index/workspace readback",
+    "issue 6797 entitled covered and typed-unavailable production proof"
+  ],
+  "schema": "company_intelligence.k4g_history_bridge_integration/v1",
+  "skillpack": {
+    "bootstrap_major": 1,
+    "schema": "mastermind.sol_skillpack.v1",
+    "version": "1.0.1"
+  },
+  "verification": {
+    "agentos": "1150 records, 0 errors, 51 warnings",
+    "agentos_log_sha256": "60c46260d2df58efe63f1756b792960ed8f218c3918ee11925043c49dd76cf34",
+    "git_diff_check": "PASS",
+    "owning_battery": "596 passed, 0 failed, 15 warnings",
+    "owning_battery_log_sha256": "ca55145783b832effaf11820c5855f2205066aac8d54e9cbdddb4ecaa84bcf74",
+    "pr_code_gate_log_sha256": "9f52c0e61aeeb2e45ec0e76608d2dcbe1a8ad0092bb1fd95c57ad1ce0a878cf6",
+    "pr_code_gate_owner": "1 passed, 5 warnings",
+    "python_compile": "PASS",
+    "writer_gate_receipt_digest": "99241a9f338165b1f190a81203d44390c7fafe250c560ed790feaa0d2f33ada7",
+    "writer_gate_state": "TECHNICAL_WRITER_GATE_UNAVAILABLE"
+  }
+}

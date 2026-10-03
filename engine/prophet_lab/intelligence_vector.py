@@ -117,9 +117,17 @@ _CLOCK_BASES = {
     "captured_at": frozenset({
         "per_source_system_recorded_at_not_exposed_by_revision_receipt",
     }),
-    "computed_at": frozenset({"event_workspace.generated_at"}),
+    "computed_at": frozenset({
+        "event_workspace.generated_at",
+        "event_workspace_revision_receipt.generated_at:WORKSPACE_ENVELOPE",
+        "event_workspace_revision_receipt.generated_at:V3_MIGRATION_MINT",
+        "event_workspace_revision_receipt.generated_at:ENCLOSING_MANIFEST",
+    }),
     "corrected_at": frozenset({
         "later_event_workspace.generated_at",
+        "event_workspace_revision_receipt.generated_at:WORKSPACE_ENVELOPE",
+        "event_workspace_revision_receipt.generated_at:V3_MIGRATION_MINT",
+        "event_workspace_revision_receipt.generated_at:ENCLOSING_MANIFEST",
         "no_later_visible_source_revision",
     }),
     "decision_at": frozenset({"prophet.candidate_episode.opened_at"}),
@@ -383,6 +391,55 @@ def _validated_workspace_receipt(value: Any) -> dict[str, Any]:
     return {"sha256": receipt["sha256"], "bytes": receipt["bytes"]}
 
 
+
+def _revision_generated_clock(
+    revision: Mapping[str, Any],
+    workspace: Mapping[str, Any],
+) -> tuple[Any, str]:
+    """Resolve the owner computation clock without rewriting legacy workspaces."""
+    receipt_value = revision.get("generated_at")
+    receipt_basis = revision.get("generated_at_basis")
+    workspace_value = workspace.get("generated_at")
+    if receipt_value is None and receipt_basis is None:
+        return workspace_value, "event_workspace.generated_at"
+    if receipt_value is None or receipt_basis is None:
+        raise IntelligenceVectorContractError(
+            "owner revision generated_at and generated_at_basis must travel together"
+        )
+    if receipt_basis not in {
+        "WORKSPACE_ENVELOPE",
+        "V3_MIGRATION_MINT",
+        "ENCLOSING_MANIFEST",
+    }:
+        raise IntelligenceVectorContractError(
+            "owner revision generated_at_basis is invalid"
+        )
+    receipt_clock = _parse_time(receipt_value)
+    workspace_clock = _parse_time(workspace_value)
+    observed_clock = _parse_time(revision.get("observed_at"))
+    if receipt_clock is None or workspace_clock is None or observed_clock is None:
+        raise IntelligenceVectorContractError(
+            "owner revision generated clock is invalid"
+        )
+    if receipt_basis in {"WORKSPACE_ENVELOPE", "ENCLOSING_MANIFEST"}:
+        if receipt_clock != workspace_clock:
+            raise IntelligenceVectorContractError(
+                "owner revision envelope generated_at disagrees with workspace"
+            )
+    else:
+        if workspace_clock >= observed_clock:
+            raise IntelligenceVectorContractError(
+                "owner revision migration clock basis is not justified"
+            )
+        if receipt_clock < observed_clock:
+            raise IntelligenceVectorContractError(
+                "owner revision migration clock precedes observed_at"
+            )
+    return (
+        str(receipt_value),
+        "event_workspace_revision_receipt.generated_at:" + str(receipt_basis),
+    )
+
 def _clock(
     *, state: str, value: str | None, basis: str, source_ref_ids: Sequence[str] = (),
 ) -> dict[str, Any]:
@@ -400,6 +457,8 @@ def _point_in_time(
     episode: Mapping[str, Any], *, clocks: Mapping[str, Any] | None = None,
     decision_admissibility: str = "UNKNOWN", missing_clocks: Sequence[str] = (),
     corrected_at: str | None = None, corrected_ref_ids: Sequence[str] = (),
+    computed_basis: str = "event_workspace.generated_at",
+    corrected_basis: str = "later_event_workspace.generated_at",
 ) -> dict[str, Any]:
     native = clocks or {}
     source_published = native.get("source_available_at")
@@ -434,12 +493,12 @@ def _point_in_time(
         "computed_at": _clock(
             state="ASSERTED" if _parse_time(computed) is not None else "UNKNOWN",
             value=computed if _parse_time(computed) is not None else None,
-            basis="event_workspace.generated_at",
+            basis=computed_basis,
         ),
         "corrected_at": _clock(
             state="ASSERTED" if _parse_time(corrected_at) is not None else "NOT_ASSERTED",
             value=corrected_at if _parse_time(corrected_at) is not None else None,
-            basis="later_event_workspace.generated_at" if corrected_at else "no_later_visible_source_revision",
+            basis=corrected_basis if corrected_at else "no_later_visible_source_revision",
             source_ref_ids=corrected_ref_ids,
         ),
         "decision_at": _clock(
@@ -1195,17 +1254,26 @@ def build_earnings_intelligence_vector(
         workspace = _validate_owner_workspace_binding(
             revision, event_id=event_id, earnings_company_id=earnings_company_id,
         )
+        generated_at, generated_at_basis = _revision_generated_clock(
+            revision, workspace
+        )
         clocks = {
             "source_available_at": revision.get("source_available_at"),
             "observed_at": revision.get("observed_at"),
-            "generated_at": workspace.get("generated_at"),
+            "generated_at": generated_at,
         }
         parsed = {}
         for name, value in clocks.items():
             parsed[name] = _parse_time(value)
             if parsed[name] is None:
                 missing.add(name)
-        normalized.append({"revision": revision, "workspace": workspace, "clocks": clocks, "parsed": parsed})
+        normalized.append({
+            "revision": revision,
+            "workspace": workspace,
+            "clocks": clocks,
+            "parsed": parsed,
+            "generated_at_basis": generated_at_basis,
+        })
 
     if missing:
         family["coverage"] = {"state": "UNKNOWN", "basis": "missing_decision_clock"}
@@ -1375,12 +1443,29 @@ def build_earnings_intelligence_vector(
         item["value_state"] != "ABSENT" for item in family["observations"]
     ) else [])
     later_ref_ids = sorted({ref["source_ref_id"] for ref in later_refs})
-    corrected_at = (
+    corrected_item = (
         max(
             visible_later,
-            key=lambda item: item["parsed"]["generated_at"],
-        )["clocks"]["generated_at"]
+            key=lambda item: (
+                item["parsed"]["generated_at"],
+                item["parsed"]["source_available_at"],
+                item["parsed"]["observed_at"],
+                str(item["revision"].get("generation_id") or ""),
+            ),
+        )
         if visible_later else None
+    )
+    corrected_at = (
+        corrected_item["clocks"]["generated_at"]
+        if corrected_item is not None else None
+    )
+    corrected_basis = (
+        (
+            "later_event_workspace.generated_at"
+            if corrected_item["generated_at_basis"] == "event_workspace.generated_at"
+            else corrected_item["generated_at_basis"]
+        )
+        if corrected_item is not None else "later_event_workspace.generated_at"
     )
     family["owner_lane_dispositions"] = _owner_lane_dispositions(
         workspace,
@@ -1415,6 +1500,8 @@ def build_earnings_intelligence_vector(
     family["point_in_time"] = _point_in_time(
         episode, clocks=chosen["clocks"], decision_admissibility="ADMISSIBLE",
         corrected_at=corrected_at, corrected_ref_ids=later_ref_ids,
+        computed_basis=chosen["generated_at_basis"],
+        corrected_basis=corrected_basis,
     )
     family["freshness"] = {"state": "UNKNOWN", "basis": "owner_has_no_staleness_clock"}
     family["quality"] = {"flags": []}
@@ -2422,7 +2509,8 @@ def validate_intelligence_vector(payload: Mapping[str, Any]) -> None:
         )["generated_at"]
         if (
             corrected_clock["state"] != "ASSERTED"
-            or corrected_clock["basis"] != "later_event_workspace.generated_at"
+            or corrected_clock["basis"] not in _CLOCK_BASES["corrected_at"]
+            or corrected_clock["basis"] == "no_later_visible_source_revision"
             or set(corrected_clock["source_ref_ids"]) != later_ref_ids
             or corrected_value is None
             or corrected_value <= opened_at
