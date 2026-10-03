@@ -6905,17 +6905,34 @@ def sweep_pull(
         )
         return "freshness-deferred"
     if stale:
-        if settled_owner_generation:
+        if merge_queue_probe_error:
             _annotate(
-                "notice",
-                "merge-on-green refresh lease",
-                f"PR #{number}: its leased proof generation settled but main moved "
-                "again. Rotating the high-load lane before this pull request may "
-                "request another generation.",
+                "warning",
+                "merge-on-green queue probe",
+                f"PR #{number}: proof is stale but native queue state is unreadable "
+                f"({merge_queue_probe_error[:220]}). Left armed without branch mutation.",
             )
-            return "lease-rotation-deferred"
-        return reprove(repo, pull, reason, read_token, merge_token, budget)
-    print(f"PR #{number}: proof still current — {reason}.", flush=True)
+            return "merge-queue-unreadable"
+        if merge_queue_id is not None:
+            print(
+                f"PR #{number}: proof is stale ({reason}), but native merge queue "
+                f"{merge_queue_id} will revalidate the exact head against current main; "
+                "preserving the source branch instead of update-branch.",
+                flush=True,
+            )
+        else:
+            if settled_owner_generation:
+                _annotate(
+                    "notice",
+                    "merge-on-green refresh lease",
+                    f"PR #{number}: its leased proof generation settled but main moved "
+                    "again. Rotating the high-load lane before this pull request may "
+                    "request another generation.",
+                )
+                return "lease-rotation-deferred"
+            return reprove(repo, pull, reason, read_token, merge_token, budget)
+    else:
+        print(f"PR #{number}: proof still current — {reason}.", flush=True)
     # NOTE (item N5, round-3 adjudication, 2026-08-21): a stale-`merge-blocked`
     # cleanup used to run HERE, unconditionally. Round-2 (item m3) narrowed it
     # to skip when a cheap, network-free BODY-only pre-check thought the pull
@@ -6962,24 +6979,25 @@ def sweep_pull(
         )
         return "error"
     live_files, live_base_sha = live_state
-    if not freshness.snapshot_tip:
-        _annotate(
-            "warning",
-            "merge-on-green",
-            f"PR #{number}: freshness snapshot has no main tip; not merging.",
-        )
-        return "main-moved"
-    if not freshness.live_sha_is_skip_ci_current(live_base_sha):
-        _annotate(
-            "notice",
-            "merge-on-green",
-            f"PR #{number}: main moved from freshness snapshot "
-            f"{freshness.snapshot_tip[:12] or '?'} to {live_base_sha[:12]} before "
-            "the merge call, and the new commits are not skip-ci/data ticks. "
-            "The exact-head proof is intact, but this sweep has not classified "
-            "the new product base; left armed for a fresh snapshot.",
-        )
-        return "main-moved"
+    if merge_queue_id is None:
+        if not freshness.snapshot_tip:
+            _annotate(
+                "warning",
+                "merge-on-green",
+                f"PR #{number}: freshness snapshot has no main tip; not merging.",
+            )
+            return "main-moved"
+        if not freshness.live_sha_is_skip_ci_current(live_base_sha):
+            _annotate(
+                "notice",
+                "merge-on-green",
+                f"PR #{number}: main moved from freshness snapshot "
+                f"{freshness.snapshot_tip[:12] or '?'} to {live_base_sha[:12]} before "
+                "the merge call, and the new commits are not skip-ci/data ticks. "
+                "The exact-head proof is intact, but this sweep has not classified "
+                "the new product base; left armed for a fresh snapshot.",
+            )
+            return "main-moved"
     if live_files == 0:
         live_pull, authorization = live_authorized_pull(repo, pull, read_token)
         if live_pull is None:
@@ -7047,27 +7065,30 @@ def sweep_pull(
         return authorization
     pull = live_pull
 
-    # Narrow the merge endpoint's missing base-SHA fence to the final network
-    # round trip. GitHub can atomically fence only the head here; a true base CAS
-    # remains the reason native merge queue is the long-term end state.
-    final_main_sha = live_main_sha(repo, read_token)
-    if final_main_sha is None:
-        _annotate(
-            "warning",
-            "merge-on-green",
-            f"PR #{number}: final main-ref fence was unreadable; not merging on "
-            "partial base state.",
-        )
-        return "main-ref-unreadable"
-    if not freshness.live_sha_is_skip_ci_current(final_main_sha):
-        _annotate(
-            "notice",
-            "merge-on-green",
-            f"PR #{number}: main advanced to {final_main_sha[:12]} after final "
-            "authorization with a product commit; ending this snapshot before "
-            "the merge call.",
-        )
-        return "main-moved"
+    # Direct squash needs a final base fence because REST can atomically bind only
+    # the head. Native queue mode deliberately does not: GitHub creates and proves
+    # a merge-group head against the then-current base, which is the CAS this
+    # controller historically lacked.
+    final_main_sha = ""
+    if merge_queue_id is None:
+        final_main_sha = live_main_sha(repo, read_token) or ""
+        if not final_main_sha:
+            _annotate(
+                "warning",
+                "merge-on-green",
+                f"PR #{number}: final main-ref fence was unreadable; not merging on "
+                "partial base state.",
+            )
+            return "main-ref-unreadable"
+        if not freshness.live_sha_is_skip_ci_current(final_main_sha):
+            _annotate(
+                "notice",
+                "merge-on-green",
+                f"PR #{number}: main advanced to {final_main_sha[:12]} after final "
+                "authorization with a product commit; ending this snapshot before "
+                "the merge call.",
+            )
+            return "main-moved"
 
     # RECORDED-HOLD GUARD (2026-08-20, PR #6109 — see the module comment above
     # `recorded_hold`). Every other gate has now concluded clean, so this is the
@@ -7191,6 +7212,57 @@ def sweep_pull(
             f"PR #{number}: merge response was ambiguous ({cause}) and its outcome "
             f"could not be confirmed{detail}. No conflict/update action taken; "
             "ending this snapshot so the next sweep can re-read live state.",
+        )
+        return "merge-unknown"
+
+    if merge_queue_probe_error:
+        _annotate(
+            "warning",
+            "merge-on-green queue probe",
+            f"PR #{number}: native merge-queue state is unreadable "
+            f"({merge_queue_probe_error[:220]}). Direct merge is withheld because "
+            "an unreadable queue requirement is not permission to bypass it.",
+        )
+        return "merge-queue-unreadable"
+
+    if merge_queue_id is not None:
+        pull_request_id = str(pull.get("node_id") or "")
+        if not pull_request_id:
+            _annotate(
+                "warning",
+                "merge-on-green queue",
+                f"PR #{number}: native queue {merge_queue_id} is active but the "
+                "pull request node id is absent; left armed without mutation.",
+            )
+            return "merge-queue-unreadable"
+        state, detail = enqueue_pull_request_to_queue(
+            pull_request_id,
+            head_sha,
+            read_token,
+            merge_token,
+        )
+        if state in {"queued", "already-queued"}:
+            _annotate(
+                "notice",
+                "merge-on-green queue",
+                f"PR #{number}: {state} in native queue {merge_queue_id} "
+                f"(entry {detail}); GitHub now owns integration-head ordering/proof.",
+            )
+            clear_blocked(repo, pull, merge_token)
+            return state
+        if state == "declined":
+            _annotate(
+                "warning",
+                "merge-on-green queue",
+                f"PR #{number}: native queue declined exact head {head_sha[:12]} "
+                f"({detail}); left armed for fresh state.",
+            )
+            return "queue-declined"
+        _annotate(
+            "warning",
+            "merge-on-green queue",
+            f"PR #{number}: enqueue effect is uncertain ({detail}); ending this "
+            "immutable snapshot. The next sweep must reconcile the exact queue entry.",
         )
         return "merge-unknown"
 
