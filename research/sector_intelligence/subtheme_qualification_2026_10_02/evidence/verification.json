@@ -1,0 +1,78 @@
+{
+  "scope": "LOCAL_AUTHOR_VERIFICATION_NOT_INDEPENDENT_REVIEW",
+  "python": "3.13.5",
+  "pytest": "9.0.2",
+  "tests": {
+    "command": "python -m pytest -q tests",
+    "passed": 81,
+    "failed": 0,
+    "synthetic_cli_test": true,
+    "legacy_semantic_discriminator_tests": 4,
+    "author_adversarial_cases_failed_then_repaired": 12
+  },
+  "commands_completed": [
+    "python -m pytest -q tests",
+    "python legacy_seams.py",
+    "python audit_existing.py",
+    "python qualification.py evidence/synthetic_input.json --output evidence/synthetic_replay_result.json"
+  ],
+  "tested_source_blobs": {
+    "qualification.py": {
+      "bytes": 17470,
+      "git_blob_sha1": "356ee560305795a9725fc31f0eb7ce0d0aca1b1c",
+      "sha256": "7de4ce54cbd08df26cc225092ed95891fc37eae28c30d760f6266b96f552bbb2"
+    },
+    "tests/test_qualification.py": {
+      "bytes": 15966,
+      "git_blob_sha1": "f15d355c5ebebb6eb44efb734bd1f392abfb30a1",
+      "sha256": "a469f0a3cb5dd9f317cddbed27db0e1b18607723d7b5a551781df64826780179"
+    },
+    "legacy_seams.py": {
+      "bytes": 2228,
+      "git_blob_sha1": "083c63b2b2c93f22568f718e1e4bf25db71edbfc",
+      "sha256": "3108bf4c8eef5483cbe697b39c89f9fe49996ddb996cf514a3a10c7f7915665c"
+    },
+    "tests/test_legacy_seams.py": {
+      "bytes": 855,
+      "git_blob_sha1": "884804b1dae25b1a61306103a772eb68c2bc8b0f",
+      "sha256": "96b02ce8e0d7559a7819ca01d4c2e991e6d51d2d6fc48f1bd3a895dcf6d558b5"
+    },
+    "audit_existing.py": {
+      "bytes": 1176,
+      "git_blob_sha1": "55eeb8b5197091da955fd3943c07eaf57bdef839",
+      "sha256": "e8d45d7c40f9fe387f12ff22b40352d81c4a677f1bc52da61c699e854a09fcf0"
+    },
+    "MASTER_PLAN.md": {
+      "bytes": 49702,
+      "git_blob_sha1": "be1e1cb40f1c6fc9972f594aa80556334267afe1",
+      "sha256": "db46f4b00b1c32af1c77a72f8483a2546d83ada02334fb5c1d3655e5823b5377"
+    },
+    "ECONOMIC_PILOT.md": {
+      "bytes": 11243,
+      "git_blob_sha1": "1384853cd541ce73930a1dcbd061f7f89bb97e45",
+      "sha256": "ef1c7cb3866bb5ab4320dbf4443ab05a0b63b85da2e9c1e166d96f20e70004aa"
+    },
+    "README.md": {
+      "bytes": 5774,
+      "git_blob_sha1": "a60499ea58afe223825d7adef85baada4057cae5",
+      "sha256": "e28a47b2d1d7d5db4e3ea8dbc724ff2a333e341557eb1f00147331c29e280762"
+    },
+    "evidence/observed_track_record_excerpt.json": {
+      "bytes": 1776,
+      "git_blob_sha1": "8be7ead86c6cfdd00be41afc7ea70bce88c38eb1",
+      "sha256": "b57d0924f3108ec85c38b11fc93f90004f5b12e5353e609b7eb0be8fa3f9f595"
+    }
+  },
+  "source_base": "e4910184b25c27eda95f81a09d3ce4a6f5d8535d",
+  "publication_branch": "sol/subtheme-replay-qualification-20261002",
+  "claims": {
+    "new_raw_market_backtest": false,
+    "independent_review": false,
+    "full_repository_ci": false,
+    "production_changes": false,
+    "deployed_browser_proof": false,
+    "worker_dispatched": false,
+    "watcher_created": false
+  },
+  "proof_boundary": "Synthetic contracts, isolated source-semantic reproductions, existing-producer artifact audit. No investment-performance validation."
+}
