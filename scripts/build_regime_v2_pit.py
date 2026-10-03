@@ -40,9 +40,11 @@ Known honesty bounds (documented, not fixable from this store):
   * The vintage store keeps INITIAL releases only — for GDPNOW that is the first
     nowcast of each quarter; the live intra-quarter updates are genuinely new
     information a real-time reader had but this spine does not.
-  * For diff-window legs (63d / 252d), dates within one window AFTER coverage
-    begins compare a vintage current value against a latest-revised base (seam
-    mixing); flagging is by current-value basis only.
+  * Legacy pit_class remains a current-value source-region label only. Additive
+    macro_window_* columns expose revised/unknown inputs across the actual slow
+    component endpoints and smoothing windows. No score or state is changed.
+  * Initial-release input support is not full-vintage information, market-source
+    availability, fitted-model provenance, or proof of historical forecast issuance.
 
 ADDITIVE: writes ONLY data/regime/regime_v2_pit.parquet and
 data/regime/regime_v2_pit_divergence.json. Never touches regime_history.parquet,
@@ -84,6 +86,129 @@ LEGS: dict[str, dict[str, str]] = {
 }
 
 PIT_CLASSES = ("pit_vintage", "revised_latest", "mixed")
+
+# Descriptive dependencies of the existing slow components, not another scoring
+# implementation. Tests bind these to the actual axes.monthly_sign calls and
+# inputs.build_features rolling mean. All offsets refer to aligned feature rows,
+# NOT months, calendar days or exchange sessions. Scoring itself is unchanged.
+MACRO_WINDOW_SPECS = {
+    "payrolls": {"feature": "payrolls", "lag_rows": 63, "smooth_rows": 1, "min_periods": 1},
+    "indpro": {"feature": "indpro", "lag_rows": 252, "smooth_rows": 1, "min_periods": 1},
+    "wei": {"feature": "wei", "lag_rows": 65, "smooth_rows": 1, "min_periods": 1},
+    "gdpnow": {"feature": "gdpnow", "lag_rows": 63, "smooth_rows": 1, "min_periods": 1},
+    "sticky_cpi": {"feature": "sticky_cpi_3m", "lag_rows": 63, "smooth_rows": 63, "min_periods": 21},
+}
+MACRO_WINDOW_COLUMNS = (
+    "macro_window_basis", "macro_window_revised_legs",
+    "macro_window_unknown_legs", "macro_window_active_count",
+)
+
+
+def macro_window_provenance(
+    features: pd.DataFrame,
+    active: dict[str, pd.Series],
+    coverage_start: dict[str, pd.Timestamp | None],
+) -> tuple[pd.DataFrame, dict]:
+    """Describe the contributing slow-component inputs, never certify a replay.
+
+    Uses the SAME aligned raw features that the numeric classifier consumed.
+    A difference depends on its two endpoints. Sticky CPI additionally depends
+    on the non-null observations of BOTH rolling means, honoring min_periods;
+    missing observations do not become revised inputs or a uniform embargo.
+
+    None coverage means a known latest-revised fallback. An absent coverage key
+    or component activity series is unknown, not proof of inactivity. The legacy
+    pit_class, model inputs, scores and state machine are never modified.
+    """
+    if not isinstance(features, pd.DataFrame):
+        raise ValueError("aligned feature frame required")
+    index = features.index
+    if (not isinstance(index, pd.DatetimeIndex) or index.hasnans
+            or not index.is_unique or not index.is_monotonic_increasing):
+        raise ValueError("unique ordered datetime feature index required")
+    states = pd.DataFrame(index=index)
+    active_count = pd.Series(0, index=index, dtype="int64")
+    for leg, spec in MACRO_WINDOW_SPECS.items():
+        activity = active.get(leg)
+        if not isinstance(activity, pd.Series) or not pd.api.types.is_bool_dtype(activity.dtype):
+            states[leg] = "unknown_inputs"
+            continue
+        activity = activity.reindex(index)
+        is_active = activity.fillna(False).astype(bool)
+        active_count += is_active.astype(int)
+        unknown_activity = activity.isna()
+        raw = features.get(leg, pd.Series(np.nan, index=index))
+        numeric = pd.to_numeric(raw, errors="coerce")
+        finite = pd.Series(np.isfinite(numeric.to_numpy(dtype=float, na_value=np.nan)), index=index)
+        if pd.api.types.is_bool_dtype(raw.dtype):
+            finite[:] = False
+        invalid = raw.notna() & ~finite
+        revised = pd.Series(False, index=index)
+        unknown = invalid.copy()
+        if leg not in coverage_start:
+            unknown |= finite
+        elif coverage_start[leg] is None:
+            revised = finite.copy()
+        else:
+            first = pd.Timestamp(coverage_start[leg])
+            if pd.isna(first) or (first.tzinfo is None) != (index.tz is None):
+                unknown |= finite
+            else:
+                revised = finite & (index < first)
+        window, minimum, lag = spec["smooth_rows"], spec["min_periods"], spec["lag_rows"]
+        counts = finite.astype(int).rolling(window, min_periods=1).sum()
+        usable = counts >= minimum
+        revised_count = revised.astype(int).rolling(window, min_periods=1).sum()
+        unknown_count = unknown.astype(int).rolling(window, min_periods=1).sum()
+        complete = usable & usable.shift(lag, fill_value=False)
+        has_unknown = (unknown_count + unknown_count.shift(lag).fillna(0)) > 0
+        has_revised = (revised_count + revised_count.shift(lag).fillna(0)) > 0
+        row = pd.Series("not_active", index=index)
+        row.loc[is_active] = "unknown_inputs"
+        known = is_active & complete & ~has_unknown
+        row.loc[known & has_revised] = "revised_fallback_inputs"
+        row.loc[known & ~has_revised] = "initial_vintage_inputs"
+        row.loc[unknown_activity] = "unknown_inputs"
+        states[leg] = row
+
+    unknown_any = states.eq("unknown_inputs").any(axis=1)
+    revised_any = states.eq("revised_fallback_inputs").any(axis=1)
+    basis = pd.Series("no_active_macro_components", index=index)
+    basis.loc[active_count > 0] = "initial_vintage_inputs"
+    basis.loc[revised_any] = "revised_fallback_inputs"
+    basis.loc[unknown_any] = "unknown_inputs"
+
+    def names(status: str) -> pd.Series:
+        result = pd.Series("", index=index)
+        for leg in MACRO_WINDOW_SPECS:
+            mask = states[leg].eq(status)
+            result.loc[mask] = result.loc[mask].map(lambda value: value + "," if value else "") + leg
+        return result
+
+    result = pd.DataFrame({
+        "macro_window_basis": basis,
+        "macro_window_revised_legs": names("revised_fallback_inputs"),
+        "macro_window_unknown_legs": names("unknown_inputs"),
+        "macro_window_active_count": active_count,
+    }, index=index)
+    audit = {
+        "schema": "regime_v2_pit.macro_window_basis.v1",
+        "scope": "active_slow_component_inputs_only",
+        "method": "source_region_and_actual_nonnull_transform_support",
+        "offset_basis": "aligned_business_day_feature_rows_not_exchange_sessions",
+        "dependencies": {key: dict(value) for key, value in MACRO_WINDOW_SPECS.items()},
+        "counts": {str(key): int(value) for key, value in basis.value_counts().items()},
+        "by_leg": {leg: {str(key): int(value) for key, value in states[leg].value_counts().items()}
+                   for leg in MACRO_WINDOW_SPECS},
+        "legacy_pit_class_changed": False,
+        "numeric_model_changed": False,
+        "historical_replay_eligible": False,
+        "market_input_availability_verified": False,
+        "fitted_model_and_state_history_verified": False,
+        "actual_historical_issuance_verified": False,
+        "note": "Initial-vintage input support is not complete as-of information, fitted-model provenance or an issued forecast.",
+    }
+    return result, audit
 
 ERAS: dict[str, tuple[str | None, str | None]] = {
     "pre_2008": (None, "2007-12-31"),
@@ -392,6 +517,8 @@ def build_frames(vintages: pd.DataFrame | None = None) -> tuple[pd.DataFrame, di
     out["pit_class"] = pc["pit_class"]
     out["fallback_notes"] = pc["fallback_notes"]
     out["vintage_store_asof"] = vintage_store_asof
+    windows, window_audit = macro_window_provenance(f_pit, active, coverage_start)
+    out = out.join(windows.reindex(out.index))
 
     committed = None
     hist_path = config.data_dir() / "regime" / "regime_history.parquet"
@@ -416,6 +543,7 @@ def build_frames(vintages: pd.DataFrame | None = None) -> tuple[pd.DataFrame, di
         }
         for leg, spec in LEGS.items()
     }
+    div["macro_window_provenance"] = window_audit
     div["columns_dropped_vs_regime_history"] = []  # full 29-column parity
     return out, div
 
@@ -464,6 +592,8 @@ def main(argv: list[str] | None = None) -> int:
           f"{h['pct_dates_quad_divergent']}% of comparable dates "
           f"(worst era {h['worst_era']}: {h['worst_era_pct']}%)")
     print(f"pit_class counts: {div['pit_class_counts']}")
+    print(f"slow-component input-window basis: {div['macro_window_provenance']['counts']}")
+    print("Window support is not historical forecast or full replay certification.")
     return 0
 
 

@@ -11184,7 +11184,11 @@ artifacts:
       at realtime_start); all market-priced legs untouched. Schema = the 29
       regime_history columns + pit_class {pit_vintage, revised_latest, mixed} +
       fallback_notes (legs that read latest-revised pre vintage coverage) +
-      vintage_store_asof. Divergence sidecar: data/regime/regime_v2_pit_divergence.json
+      vintage_store_asof. Additive macro_window_basis, macro_window_revised_legs,
+      macro_window_unknown_legs and macro_window_active_count describe the actual
+      contributing slow-component input windows without changing legacy pit_class.
+      This is not complete replay, model-vintage or issuance certification.
+      Divergence sidecar: data/regime/regime_v2_pit_divergence.json
       (+ research/REGIME_V2_PIT_DIVERGENCE_AUDIT.md). ADDITIVE — never writes
       regime_history.parquet or latest.json; zero consumers this wave. on-demand
       cadence: nightly wiring + W4.4 cell re-keying come with the preregistered

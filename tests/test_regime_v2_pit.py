@@ -33,6 +33,7 @@ from lib import config
 from scripts.build_regime_v2_pit import (
     LEGS,
     PIT_CLASSES,
+    MACRO_WINDOW_COLUMNS,
     classify_pit_rows,
     main,
     merged_leg_series,
@@ -253,7 +254,7 @@ def test_artifact_schema_and_enum(built):
     frame = built["frame"]
     hist = pd.read_parquet(_HIST)
     assert list(frame.columns) == list(hist.columns) + [
-        "pit_class", "fallback_notes", "vintage_store_asof"]
+        "pit_class", "fallback_notes", "vintage_store_asof", *MACRO_WINDOW_COLUMNS]
     assert isinstance(frame.index, pd.DatetimeIndex)
     assert frame.index.is_monotonic_increasing
     assert set(frame["pit_class"].unique()) <= set(PIT_CLASSES)
@@ -338,3 +339,230 @@ def test_divergence_json_shape(built):
     # the vintage-covered eras' worst)
     assert div["columns_dropped_vs_regime_history"] == []
     assert sum(div["pit_class_counts"].values()) == len(built["frame"])
+
+
+# Full-window provenance: a current vintage does not qualify its lagged inputs.
+def _window_fixture(leg="payrolls", *, count=400, coverage_row=100):
+    from scripts import build_regime_v2_pit as builder
+    index = pd.bdate_range("2020-01-01", periods=count)
+    frame = pd.DataFrame({leg: np.arange(count, dtype=float) + 100.0}, index=index)
+    active = {key: pd.Series(False, index=index) for key in builder.LEGS}
+    active[leg] = pd.Series(True, index=index)
+    coverage = {key: None for key in builder.LEGS}
+    coverage[leg] = index[coverage_row]
+    return frame, active, coverage
+
+
+@pytest.mark.parametrize("leg,lag", [("payrolls", 63), ("indpro", 252),
+                                     ("wei", 65), ("gdpnow", 63)])
+def test_window_basis_includes_the_actual_lag_endpoint(leg, lag):
+    from scripts import build_regime_v2_pit as builder
+    frame, active, coverage = _window_fixture(leg)
+    result, audit = builder.macro_window_provenance(frame, active, coverage)
+    row = 100 + lag - 1
+    assert result.iloc[row]["macro_window_basis"] == "revised_fallback_inputs"
+    assert result.iloc[row]["macro_window_revised_legs"] == leg
+    assert result.iloc[row + 1]["macro_window_basis"] == "initial_vintage_inputs"
+    assert audit["historical_replay_eligible"] is False
+    assert audit["scope"] == "active_slow_component_inputs_only"
+
+
+def test_sticky_cpi_window_tracks_both_rolling_means_not_one_embargo():
+    from scripts import build_regime_v2_pit as builder
+    frame, active, coverage = _window_fixture("sticky_cpi")
+    # 63-row mean compared with its 63-row lag: oldest dependency is t-125.
+    result, _ = builder.macro_window_provenance(frame, active, coverage)
+    assert result.iloc[224]["macro_window_basis"] == "revised_fallback_inputs"
+    assert result.iloc[225]["macro_window_basis"] == "initial_vintage_inputs"
+    # Missing observations do not contribute to pandas' rolling mean. At t=183,
+    # the lagged mean already has 21 vintage observations and no revised value.
+    frame.iloc[:100, 0] = np.nan
+    sparse, _ = builder.macro_window_provenance(frame, active, coverage)
+    assert sparse.iloc[182]["macro_window_basis"] == "unknown_inputs"
+    assert sparse.iloc[183]["macro_window_basis"] == "initial_vintage_inputs"
+
+
+def test_no_active_component_never_claims_vintage_qualification():
+    from scripts import build_regime_v2_pit as builder
+    frame, active, coverage = _window_fixture()
+    active = {key: value & False for key, value in active.items()}
+    result, audit = builder.macro_window_provenance(frame, active, coverage)
+    assert set(result.macro_window_basis) == {"no_active_macro_components"}
+    assert (result.macro_window_active_count == 0).all()
+    assert audit["historical_replay_eligible"] is False
+
+
+def test_unknown_dependency_and_missing_component_are_not_inactive():
+    from scripts import build_regime_v2_pit as builder
+    frame, active, coverage = _window_fixture()
+    del active["indpro"]
+    result, _ = builder.macro_window_provenance(frame, active, coverage)
+    assert set(result.macro_window_basis) == {"unknown_inputs"}
+    assert result.macro_window_unknown_legs.str.contains("indpro").all()
+    frame, active, coverage = _window_fixture()
+    del coverage["payrolls"]
+    result, _ = builder.macro_window_provenance(frame, active, coverage)
+    assert result.iloc[-1]["macro_window_basis"] == "unknown_inputs"
+
+
+def test_known_absent_vintage_means_revised_not_unknown():
+    from scripts import build_regime_v2_pit as builder
+    frame, active, coverage = _window_fixture()
+    coverage["payrolls"] = None
+    result, _ = builder.macro_window_provenance(frame, active, coverage)
+    assert set(result.iloc[63:].macro_window_basis) == {"revised_fallback_inputs"}
+    assert result.iloc[62]["macro_window_basis"] == "unknown_inputs"
+
+
+@pytest.mark.parametrize("invalid", [np.nan, np.inf, -np.inf, "bad"])
+def test_active_component_with_invalid_endpoint_is_unknown(invalid):
+    from scripts import build_regime_v2_pit as builder
+    frame, active, coverage = _window_fixture()
+    frame["payrolls"] = frame["payrolls"].astype(object)
+    frame.iloc[300 - 63, 0] = invalid
+    result, _ = builder.macro_window_provenance(frame, active, coverage)
+    assert result.iloc[300]["macro_window_basis"] == "unknown_inputs"
+
+
+def test_window_basis_does_not_use_later_rows_or_change_inputs():
+    from scripts import build_regime_v2_pit as builder
+    frame, active, coverage = _window_fixture("sticky_cpi")
+    original = frame.copy(deep=True)
+    full, _ = builder.macro_window_provenance(frame, active, coverage)
+    prefix, _ = builder.macro_window_provenance(
+        frame.iloc[:250], {k: v.iloc[:250] for k, v in active.items()}, coverage)
+    pd.testing.assert_frame_equal(prefix, full.iloc[:250])
+    pd.testing.assert_frame_equal(frame, original)
+
+
+def test_real_component_can_flip_without_legacy_current_basis_changing():
+    from engine.axes import _component_scores
+    from scripts import build_regime_v2_pit as builder
+    frame, active, coverage = _window_fixture()
+    frame.loc[:, "payrolls"] = 100.0
+    frame.iloc[:100, 0] = 50.0
+    before = _component_scores(frame, "growth")["payrolls_trend"]
+    frame.iloc[:100, 0] = 150.0
+    after = _component_scores(frame, "growth")["payrolls_trend"]
+    index = frame.index[110]
+    legacy = classify_pit_rows(frame.index, active, coverage)
+    result, _ = builder.macro_window_provenance(frame, active, coverage)
+    assert (before.loc[index], after.loc[index]) == (1.0, -1.0)
+    assert legacy.loc[index, "pit_class"] == "pit_vintage"
+    assert result.loc[index, "macro_window_basis"] == "revised_fallback_inputs"
+
+
+def test_dependency_description_matches_actual_scoring_and_smoothing_owners():
+    import ast
+    import inspect
+    from engine import axes, inputs
+    from scripts import build_regime_v2_pit as builder
+    calls = {}
+    for node in ast.walk(ast.parse(inspect.getsource(axes._component_scores))):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "monthly_sign":
+            calls[ast.literal_eval(node.args[0])] = ast.literal_eval(node.args[1])
+    expected = {spec["feature"]: spec["lag_rows"] for spec in builder.MACRO_WINDOW_SPECS.values()}
+    assert expected == calls
+    rolling = []
+    for node in ast.walk(ast.parse(inspect.getsource(inputs.build_features))):
+        if not isinstance(node, ast.Assign):
+            continue
+        if any(isinstance(t, ast.Subscript) and isinstance(t.slice, ast.Constant)
+               and t.slice.value == "sticky_cpi_3m" for t in node.targets):
+            call = node.value.func.value
+            rolling.append((ast.literal_eval(call.args[0]),
+                            {k.arg: ast.literal_eval(k.value) for k in call.keywords}))
+    spec = builder.MACRO_WINDOW_SPECS["sticky_cpi"]
+    assert rolling == [(spec["smooth_rows"], {"min_periods": spec["min_periods"]})]
+
+
+def test_window_suite_is_owned_by_one_existing_code_gate():
+    import yaml
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    jobs = yaml.safe_load((root / ".github/ci/legacy-jobs.yml").read_text())["jobs"]
+    owners = [(name, job.get("gate")) for name, job in jobs.items()
+              if any("tests/test_regime_v2_pit.py" in str(step.get("run", ""))
+                     for step in job.get("steps", []))]
+    assert owners == [("unrun-scoring-engine", "code")]
+    assert "tests/test_regime_v2_pit.py" not in json.loads(
+        (root / "config/unrun_test_baseline.json").read_text())["grandfathered"]
+
+
+@pytest.fixture
+def synthetic_history_sources(tmp_path, monkeypatch):
+    """Only source transport is synthetic; alignment/model/flags/writers are real."""
+    from collectors import fred
+    from engine import inputs
+    from lib import store
+    from scripts import build_regime_v2_pit as builder
+    index = pd.bdate_range("2020-01-01", periods=480)
+    configured = config.load()["yahoo"]["tickers"]
+    tickers = sorted({ticker for group in configured.values() for ticker in group} | {"SPY"})
+    prices = pd.DataFrame({ticker: 100.0 + np.arange(len(index)) * (0.1 + i / 100)
+                           + np.sin(np.arange(len(index)) / (10 + i))
+                           for i, ticker in enumerate(tickers)}, index=index)
+    originals = {spec["sid"]: pd.DataFrame({"value": 80.0 + np.arange(len(index)) * .01}, index=index)
+                 for spec in builder.LEGS.values()}
+    rows = []
+    for spec in builder.LEGS.values():
+        for offset in range(100, len(index), 21):
+            rows.append({"series": spec["sid"], "period": index[offset] - pd.DateOffset(months=1),
+                         "realtime_start": index[offset], "realtime_end": pd.Timestamp("2099-12-31"),
+                         "value": 100.0 + offset * .1})
+    vintages = pd.DataFrame(rows)
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path / "source-data")
+    monkeypatch.setattr(inputs, "yahoo_closes", lambda *args, **kwargs: prices.copy(deep=True))
+    monkeypatch.setattr(store, "read", lambda group, name, *args, **kwargs:
+                        originals[name].copy(deep=True) if group == "fred" and name in originals else None)
+    monkeypatch.setattr(fred, "load_vintages", lambda: vintages.copy(deep=True))
+    return builder, vintages, originals
+
+
+def test_actual_builder_preserves_numeric_history_and_adds_window_evidence(synthetic_history_sources):
+    from engine.inputs import build_features
+    from engine.regime import classify
+    from engine.transition import compute_flags, state_machine_detail
+    builder, vintages, _ = synthetic_history_sources
+    overrides, coverage = {}, {}
+    for leg, spec in builder.LEGS.items():
+        panel = builder.pit_availability_panel(vintages, spec["sid"])
+        coverage[leg] = panel.index.min()
+        overrides[leg] = builder.merged_leg_series(
+            builder.live_reference_series(spec["sid"]), panel, coverage[leg])
+    features = build_features(overrides=overrides)
+    legacy = classify(features)
+    flags = compute_flags(features, legacy)
+    legacy = legacy.join(flags).join(state_machine_detail(flags, legacy))
+    active = {leg: legacy[spec["component"]].notna() for leg, spec in builder.LEGS.items()}
+    old_basis = builder.classify_pit_rows(legacy.index, active, coverage)
+    result, audit = builder.build_frames(vintages)
+    numeric_columns = [column for column in legacy if not column.startswith("c_")]
+    pd.testing.assert_frame_equal(result[numeric_columns], legacy[numeric_columns])
+    pd.testing.assert_frame_equal(result[["pit_class", "fallback_notes"]], old_basis)
+    assert set(builder.MACRO_WINDOW_COLUMNS) <= set(result)
+    # This is the original failure: current-source labels alone are insufficient.
+    seam = result.pit_class.eq("pit_vintage") & result.macro_window_basis.eq("revised_fallback_inputs")
+    assert seam.any()
+    assert result.macro_window_basis.eq("initial_vintage_inputs").any()
+    assert sum(audit["macro_window_provenance"]["counts"].values()) == len(result)
+    assert audit["macro_window_provenance"]["historical_replay_eligible"] is False
+
+
+def test_actual_cli_serializes_and_explains_window_evidence(synthetic_history_sources, tmp_path, capsys):
+    builder, vintages, originals = synthetic_history_sources
+    before = {key: value.copy(deep=True) for key, value in originals.items()}
+    before_vintages = vintages.copy(deep=True)
+    out = tmp_path / "output"
+    assert builder.main(["--out-dir", str(out)]) == 0
+    frame = pd.read_parquet(out / "regime_v2_pit.parquet")
+    audit = json.loads((out / "regime_v2_pit_divergence.json").read_text())
+    assert set(builder.MACRO_WINDOW_COLUMNS) <= set(frame)
+    assert frame.macro_window_basis.value_counts().to_dict() == audit["macro_window_provenance"]["counts"]
+    text = capsys.readouterr().out
+    assert "slow-component input-window basis:" in text
+    assert "not historical forecast" in text
+    assert sorted(p.name for p in out.iterdir()) == ["regime_v2_pit.parquet", "regime_v2_pit_divergence.json"]
+    for key in originals:
+        pd.testing.assert_frame_equal(originals[key], before[key])
+    pd.testing.assert_frame_equal(vintages, before_vintages)

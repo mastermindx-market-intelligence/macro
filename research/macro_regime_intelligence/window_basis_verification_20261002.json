@@ -1,0 +1,174 @@
+{
+  "operation": "regime-window-basis-20261002-astra-001",
+  "source_base": "b4f95f98ef80b8cbb4636afbd723b5091658e1f1",
+  "protected_procedure": "bdf2a972e68a70270c24d4b5d61a4d60edc4f288",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "mission_complete": false,
+  "source_sha256": {
+    "scripts/build_regime_v2_pit.py": "47c8cf21882f2ef492dc382d8af4dde38c6b8d9438dc9956ef1973afee72449e",
+    "tests/test_regime_v2_pit.py": "a7e93087b86bb4d4b22979f09d11e06177928040f511e0ae653d7f0996951290",
+    "config/synapse.yml": "9796321a9c9883b7a88e7bea2af68e98a6e8c0b0d07235ada96548532ff4b0f5",
+    ".github/ci/legacy-jobs.yml": "abef08a5719dc6bf01b8a652ae959b3c1c9f625d604c91347bf66b058442966f",
+    "config/unrun_test_baseline.json": "692376fb2b208871c19853ce12907c2e5d6bfd9986e45d573fffd1dfb4b9b49a"
+  },
+  "tests": {
+    "red": {
+      "failed": 16,
+      "selection": "window_basis or sticky_cpi_window or no_active_component or unknown_dependency or known_absent or invalid_endpoint or real_component_can or dependency_description or window_suite"
+    },
+    "history_seasonality": {
+      "command": "python3 -m pytest tests/test_regime_v2_pit.py tests/test_seasonality_pit_spine.py -q --disable-warnings",
+      "passed": 85,
+      "skipped": 12,
+      "warnings": 239,
+      "scope": "full-store tests retained but skipped; fixture source transport, actual model and CLI"
+    },
+    "actual_builder_and_cli": {
+      "passed": 2,
+      "scope": "subset of campaign, not additional independent tests"
+    },
+    "code_manifest": {
+      "jobs_validated": 168,
+      "jobs_executed": 0
+    }
+  },
+  "mutations": [
+    {
+      "variant": "current_only",
+      "exit": 1,
+      "summary": "5 failed, 29 deselected, 4 warnings in 0.98s",
+      "source_files_modified": false
+    },
+    {
+      "variant": "no_smoothing",
+      "exit": 1,
+      "summary": "1 failed, 33 deselected, 4 warnings in 0.63s",
+      "source_files_modified": false
+    },
+    {
+      "variant": "omit_consumer",
+      "exit": 1,
+      "summary": "2 failed, 32 deselected, 239 warnings in 1.44s",
+      "source_files_modified": false
+    }
+  ],
+  "saved_source_diagnostic": {
+    "source_base": "b4f95f98ef80b8cbb4636afbd723b5091658e1f1",
+    "scope": "five saved economic source series plus SPY close for the feature grid; other source reads explicitly absent, not a full-market replay",
+    "input_sha256": {
+      "data/fred_vintage/vintages.parquet": "e16385131c3a7a79345902eccc3480f790abb1302cb813a71ed7c83c0958923e",
+      "data/yahoo/SPY.parquet": "c31f7425d00df662422787c8a693c1c80a2b9c08bef8583f42900d06a1cbc78e",
+      "data/fred/PAYEMS.parquet": "285b1639f03d000725fda75e474d3bf3bbe393429c3b9fb9374ccec64f9d6060",
+      "data/fred/INDPRO.parquet": "f357430a3ad9afd3d0f6f7c9d31ba863cf6fc1cac2fd61ff9bf7af173a41e25b",
+      "data/fred/WEI.parquet": "020e7240abc38d0fa53e9a866d6be1751ee6215be22b4911d7d20069365830c0",
+      "data/fred/GDPNOW.parquet": "540c7a8326838d1e35521c78646b9332b3c6347838af9ab754631a6dbe85d9c4",
+      "data/fred/STICKCPIM157SFRBATL.parquet": "6c1694880b8e25fd5423a0815f504ae5227c65521fd83c858f9cda3d746942ff"
+    },
+    "input_bytes": 553916,
+    "rows": 8785,
+    "span": [
+      "1993-01-29",
+      "2026-10-01"
+    ],
+    "macro_window_provenance": {
+      "schema": "regime_v2_pit.macro_window_basis.v1",
+      "scope": "active_slow_component_inputs_only",
+      "method": "source_region_and_actual_nonnull_transform_support",
+      "offset_basis": "aligned_business_day_feature_rows_not_exchange_sessions",
+      "dependencies": {
+        "payrolls": {
+          "feature": "payrolls",
+          "lag_rows": 63,
+          "smooth_rows": 1,
+          "min_periods": 1
+        },
+        "indpro": {
+          "feature": "indpro",
+          "lag_rows": 252,
+          "smooth_rows": 1,
+          "min_periods": 1
+        },
+        "wei": {
+          "feature": "wei",
+          "lag_rows": 65,
+          "smooth_rows": 1,
+          "min_periods": 1
+        },
+        "gdpnow": {
+          "feature": "gdpnow",
+          "lag_rows": 63,
+          "smooth_rows": 1,
+          "min_periods": 1
+        },
+        "sticky_cpi": {
+          "feature": "sticky_cpi_3m",
+          "lag_rows": 63,
+          "smooth_rows": 63,
+          "min_periods": 21
+        }
+      },
+      "counts": {
+        "revised_fallback_inputs": 7104,
+        "initial_vintage_inputs": 1618,
+        "no_active_macro_components": 63
+      },
+      "by_leg": {
+        "payrolls": {
+          "initial_vintage_inputs": 7692,
+          "revised_fallback_inputs": 1030,
+          "not_active": 63
+        },
+        "indpro": {
+          "initial_vintage_inputs": 7498,
+          "revised_fallback_inputs": 1035,
+          "not_active": 252
+        },
+        "wei": {
+          "not_active": 3961,
+          "revised_fallback_inputs": 3206,
+          "initial_vintage_inputs": 1618
+        },
+        "gdpnow": {
+          "not_active": 4874,
+          "initial_vintage_inputs": 2582,
+          "revised_fallback_inputs": 1329
+        },
+        "sticky_cpi": {
+          "revised_fallback_inputs": 5554,
+          "initial_vintage_inputs": 3148,
+          "not_active": 83
+        }
+      },
+      "legacy_pit_class_changed": false,
+      "numeric_model_changed": false,
+      "historical_replay_eligible": false,
+      "market_input_availability_verified": false,
+      "fitted_model_and_state_history_verified": false,
+      "actual_historical_issuance_verified": false,
+      "note": "Initial-vintage input support is not complete as-of information, fitted-model provenance or an issued forecast."
+    },
+    "legacy_current_vintage_but_revised_window_rows": 65,
+    "seam_first": "2020-04-21",
+    "seam_last": "2020-07-20",
+    "future_extension_identical": true,
+    "annotation_seconds": 0.0171,
+    "new_provider_requests": 0,
+    "outcome_evaluation": false,
+    "full_market_reconstruction": false
+  },
+  "log_sha256": {
+    "window-red.log": "95ccd8c0252ef8e619b3014c68c5ebc1fcd3c4a00980aadb527e78ef8b6feb3b",
+    "window-integration.log": "1c5404f6694e749b34993294e9a1b3917bf28ce7612bde4cc397abe32055eef5",
+    "window-campaign.log": "7d124f5154ece8a89d7b8c8a91eeae75e23b71c59981f9be4b7eb2685e506737",
+    "window-manifest.log": "ac214566fbffe563046f056078576550981e69730da7a0de329dfa4f20922701"
+  },
+  "held": [
+    "independent review",
+    "current-head CI",
+    "current-base integration",
+    "authorized deployment and full-store readback"
+  ],
+  "no_new_provider_calls": true,
+  "no_production_data_write": true,
+  "no_forecasting_claim": true
+}
