@@ -708,3 +708,269 @@ def test_outlook_paths_keep_the_reader_s_own_reason_for_a_field_it_refuses():
             assert observed["reason"] == "owner_default_on_missing"
             assert cond_in["condition_id"] in [w["condition_id"] for w in card["watch"]]
     assert seen > 0
+
+
+# ---------------------------------------------------------------------------
+# T9 pick_baseline — which earlier read is the new build's baseline
+# ---------------------------------------------------------------------------
+
+
+_HOURS_BACK = 21
+def _session_of(dt):
+    h = dt.hour
+    if h >= _HOURS_BACK:
+        new = dt.replace(hour=h - _HOURS_BACK)
+    else:
+        new = dt.replace(hour=h + 24 - _HOURS_BACK, day=dt.day - 1)
+    return new.date()
+SESSION_OF = _session_OF if False else _session_of
+
+
+def _prev(cutoff="2026-10-03T02:00:00+00:00", baseline=None):
+    out = {
+        "schema_version": "regime_outlook.v1",
+        "analysis_cutoff": cutoff,
+        "evidence": [
+            {
+                "id": "alpha",
+                "values": {"v": 1},
+                "owner_verdict": {"token": 1, "verdict_class": "x"},
+                "status": "available",
+                "source": {"as_of": "2026-10-02T15:00:00-04:00"},
+            },
+            {
+                "id": "beta",
+                "values": {"v": 2},
+                "owner_verdict": None,
+                "status": "stale",
+                "source": {"as_of": "2026-09-30"},
+            },
+        ],
+    }
+    if baseline is not None:
+        out["baseline"] = baseline
+    return out
+
+
+def test_pick_baseline_none_previous_is_no_earlier_projection():
+    out = rcc.pick_baseline(None, us_session=date(2026, 10, 3), session_of=SESSION_OF)
+    assert out == {"status": "absent", "reason": "no_earlier_projection"}
+
+
+@pytest.mark.parametrize(
+    "previous",
+    [
+        [],
+        {"schema_version": "wrong", "analysis_cutoff": "2026-10-03T02:00:00+00:00", "evidence": []},
+        {"schema_version": "regime_outlook.v1", "analysis_cutoff": "2026-10-03T02:00:00+00:00", "evidence": "x"},
+        {"schema_version": "regime_outlook.v1", "analysis_cutoff": "2026-10-03T02:00:00+00:00", "evidence": ["x"]},
+        {"schema_version": "regime_outlook.v1", "analysis_cutoff": "2026-10-03T02:00:00+00:00", "evidence": [{"source": {}}]},
+        {"schema_version": "regime_outlook.v1", "analysis_cutoff": "2026-10-03T02:00:00", "evidence": []},
+        {"schema_version": "regime_outlook.v1", "analysis_cutoff": 12345, "evidence": []},
+    ],
+)
+def test_pick_baseline_unreadable_previous_is_previous_unreadable(previous):
+    out = rcc.pick_baseline(previous, us_session=date(2026, 10, 3), session_of=SESSION_OF)
+    assert out == {"status": "absent", "reason": "previous_unreadable"}
+
+
+def test_pick_baseline_session_of_raising_is_previous_unreadable():
+    def boom(dt):
+        raise RuntimeError("nope")
+
+    out = rcc.pick_baseline(_prev(), us_session=date(2026, 10, 3), session_of=boom)
+    assert out == {"status": "absent", "reason": "previous_unreadable"}
+
+
+def test_pick_baseline_us_session_none_with_valid_stored_baseline_returns_deep_copy():
+    stored = {
+        "analysis_cutoff": "2026-10-02T02:00:00+00:00",
+        "us_session": "2026-10-01",
+        "evidence": {
+            "alpha": {
+                "values": {"v": 1},
+                "owner_verdict": None,
+                "status": "available",
+                "as_of": "2026-10-01",
+            }
+        },
+    }
+    out = rcc.pick_baseline(_prev(baseline=stored), us_session=None, session_of=SESSION_OF)
+    assert out == stored
+    assert out is not stored
+    assert out["evidence"] is not stored["evidence"]
+
+
+def test_pick_baseline_us_session_none_without_stored_baseline_is_us_session_unavailable():
+    out = rcc.pick_baseline(_prev(), us_session=None, session_of=SESSION_OF)
+    assert out == {"status": "absent", "reason": "us_session_unavailable"}
+
+
+def test_pick_baseline_us_session_none_with_list_evidence_is_us_session_unavailable():
+    bad = {
+        "analysis_cutoff": "2026-10-02T02:00:00+00:00",
+        "us_session": "2026-10-01",
+        "evidence": [],
+    }
+    out = rcc.pick_baseline(_prev(baseline=bad), us_session=None, session_of=SESSION_OF)
+    assert out == {"status": "absent", "reason": "us_session_unavailable"}
+
+
+def test_pick_baseline_us_session_none_with_non_string_us_session_is_us_session_unavailable():
+    bad = {
+        "analysis_cutoff": "2026-10-02T02:00:00+00:00",
+        "us_session": 7,
+        "evidence": {"a": {}},
+    }
+    out = rcc.pick_baseline(_prev(baseline=bad), us_session=None, session_of=SESSION_OF)
+    assert out == {"status": "absent", "reason": "us_session_unavailable"}
+
+
+def test_pick_baseline_next_session_builds_new_baseline_from_previous():
+    prev = _prev()
+    out = rcc.pick_baseline(prev, us_session=date(2026, 10, 3), session_of=SESSION_OF)
+    assert out["analysis_cutoff"] == "2026-10-03T02:00:00+00:00"
+    assert out["us_session"] == "2026-10-02"
+    assert set(out["evidence"]) == {"alpha", "beta"}
+    for entry in out["evidence"].values():
+        assert set(entry) == {"values", "owner_verdict", "status", "as_of"}
+    assert out["evidence"]["alpha"]["values"] == {"v": 1}
+    assert out["evidence"]["alpha"]["owner_verdict"] == {"token": 1, "verdict_class": "x"}
+    assert out["evidence"]["alpha"]["status"] == "available"
+    assert out["evidence"]["alpha"]["as_of"] == "2026-10-02T15:00:00-04:00"
+    assert out["evidence"]["beta"]["values"] == {"v": 2}
+    assert out["evidence"]["beta"]["owner_verdict"] is None
+    assert out["evidence"]["beta"]["status"] == "stale"
+    assert out["evidence"]["beta"]["as_of"] == "2026-09-30"
+
+
+def test_pick_baseline_next_session_ignores_stored_older_baseline():
+    stored = {
+        "analysis_cutoff": "2026-09-30T02:00:00+00:00",
+        "us_session": "2026-09-29",
+        "evidence": {
+            "marker": {
+                "values": {},
+                "owner_verdict": None,
+                "status": "stale",
+                "as_of": "2026-09-29",
+            }
+        },
+    }
+    out = rcc.pick_baseline(
+        _prev(baseline=stored), us_session=date(2026, 10, 3), session_of=SESSION_OF
+    )
+    assert out["analysis_cutoff"] == "2026-10-03T02:00:00+00:00"
+    assert "marker" not in out["evidence"]
+    assert set(out["evidence"]) == {"alpha", "beta"}
+
+
+def test_pick_baseline_cutoff_with_trailing_z_parses_to_same_baseline():
+    out = rcc.pick_baseline(
+        _prev(cutoff="2026-10-03T02:00:00Z"),
+        us_session=date(2026, 10, 3),
+        session_of=SESSION_OF,
+    )
+    assert out["analysis_cutoff"] == "2026-10-03T02:00:00Z"
+    assert out["us_session"] == "2026-10-02"
+    assert set(out["evidence"]) == {"alpha", "beta"}
+
+
+def test_pick_baseline_same_session_with_older_stored_baseline_returns_deep_copy():
+    stored = {
+        "analysis_cutoff": "2026-09-30T02:00:00+00:00",
+        "us_session": "2026-10-01",
+        "evidence": {
+            "alpha": {
+                "values": {"v": 99},
+                "owner_verdict": None,
+                "status": "stale",
+                "as_of": "2026-10-01",
+            }
+        },
+    }
+    prev = _prev(baseline=stored)
+    out = rcc.pick_baseline(prev, us_session=date(2026, 10, 2), session_of=SESSION_OF)
+    assert out == stored
+    assert out is not stored
+    assert out["evidence"] is not stored["evidence"]
+
+
+def test_pick_baseline_same_session_with_no_stored_baseline_is_no_earlier_projection():
+    out = rcc.pick_baseline(_prev(), us_session=date(2026, 10, 2), session_of=SESSION_OF)
+    assert out == {"status": "absent", "reason": "no_earlier_projection"}
+
+
+def test_pick_baseline_same_session_with_baseline_same_day_is_no_earlier_projection():
+    stored = {
+        "analysis_cutoff": "2026-09-30T02:00:00+00:00",
+        "us_session": "2026-10-02",
+        "evidence": {
+            "alpha": {
+                "values": {},
+                "owner_verdict": None,
+                "status": "available",
+                "as_of": "2026-10-02",
+            }
+        },
+    }
+    out = rcc.pick_baseline(
+        _prev(baseline=stored), us_session=date(2026, 10, 2), session_of=SESSION_OF
+    )
+    assert out == {"status": "absent", "reason": "no_earlier_projection"}
+
+
+def test_pick_baseline_previous_later_than_us_session_is_no_earlier_projection():
+    out = rcc.pick_baseline(_prev(), us_session=date(2026, 10, 1), session_of=SESSION_OF)
+    assert out == {"status": "absent", "reason": "no_earlier_projection"}
+
+
+def test_pick_baseline_never_mutates_previous():
+    stored = {
+        "analysis_cutoff": "2026-09-30T02:00:00+00:00",
+        "us_session": "2026-10-01",
+        "evidence": {"alpha": {"values": {}, "owner_verdict": None, "status": "stale", "as_of": "2026-10-01"}},
+    }
+    cases = [
+        (None, date(2026, 10, 3)),
+        (_prev(), date(2026, 10, 3)),
+        (_prev(), None),
+        (_prev(baseline=stored), date(2026, 10, 2)),
+        (_prev(), date(2026, 10, 2)),
+        (_prev(), date(2026, 10, 1)),
+    ]
+    for previous, us_session in cases:
+        before = copy.deepcopy(previous)
+        rcc.pick_baseline(previous, us_session=us_session, session_of=SESSION_OF)
+        assert previous == before
+
+
+def test_pick_baseline_returned_baseline_mutation_does_not_change_previous():
+    stored = {
+        "analysis_cutoff": "2026-09-30T02:00:00+00:00",
+        "us_session": "2026-10-01",
+        "evidence": {
+            "alpha": {
+                "values": {"v": 1},
+                "owner_verdict": None,
+                "status": "available",
+                "as_of": "2026-10-01",
+            }
+        },
+    }
+    prev = _prev(baseline=stored)
+    snapshot = copy.deepcopy(prev)
+    out = rcc.pick_baseline(prev, us_session=None, session_of=SESSION_OF)
+    out["evidence"]["alpha"]["values"] = "MUTATED"
+    out["us_session"] = "MUTATED"
+    assert prev == snapshot
+
+
+def test_pick_baseline_returned_new_baseline_mutation_does_not_change_previous():
+    prev = _prev()
+    snapshot = copy.deepcopy(prev)
+    out = rcc.pick_baseline(prev, us_session=date(2026, 10, 3), session_of=SESSION_OF)
+    out["evidence"]["alpha"]["values"] = "MUTATED"
+    out["analysis_cutoff"] = "MUTATED"
+    out["us_session"] = "MUTATED"
+    assert prev == snapshot

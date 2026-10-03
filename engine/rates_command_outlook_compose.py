@@ -11,6 +11,7 @@ It opens no file, no socket, and never takes the wall-clock time.
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import re
@@ -662,3 +663,105 @@ def outlook_paths(
             "watch": watch,
         })
     return cards
+
+
+def pick_baseline(
+    previous: dict | None,
+    *,
+    us_session: date | None,
+    session_of,
+) -> dict:
+    """Pick which earlier regime-outlook read (if any) is this build's baseline.
+
+    Returns either a baseline dict
+    ``{"analysis_cutoff": str, "us_session": str, "evidence": {id: snapshot}}``
+    or an absence dict ``{"status": "absent", "reason": <word>}``.
+
+    First match wins:
+      (a) ``previous`` is None -> absent ``no_earlier_projection``.
+      (b) structural checks fail -> absent ``previous_unreadable``.
+      (c) ``us_session`` is None and ``previous`` carries a usable stored
+          baseline -> a deep copy of it; otherwise absent
+          ``us_session_unavailable``.
+      (d) ``session_of(previous cutoff)`` is strictly earlier than
+          ``us_session`` -> a NEW baseline built from previous's evidence;
+          a stored baseline (if any) is ignored.
+      (e) ``previous`` carries a stored baseline whose ``us_session`` is
+          strictly earlier than ``us_session.isoformat()`` -> a deep copy.
+      (f) otherwise absent ``no_earlier_projection``.
+
+    A snapshot entry has exactly the four keys ``values``, ``owner_verdict``,
+    ``status`` and ``as_of`` (where ``as_of`` comes from
+    ``row["source"]["as_of"]``); missing row keys read as ``None``. The
+    function never looks at git, files or the wall clock, and never
+    mutates ``previous``.
+    """
+    if previous is None:
+        return {"status": "absent", "reason": "no_earlier_projection"}
+
+    if not isinstance(previous, dict):
+        return {"status": "absent", "reason": "previous_unreadable"}
+    if previous.get("schema_version") != "regime_outlook.v1":
+        return {"status": "absent", "reason": "previous_unreadable"}
+    evidence_in = previous.get("evidence")
+    if not isinstance(evidence_in, list):
+        return {"status": "absent", "reason": "previous_unreadable"}
+    for row in evidence_in:
+        if not isinstance(row, dict):
+            return {"status": "absent", "reason": "previous_unreadable"}
+        if "id" not in row:
+            return {"status": "absent", "reason": "previous_unreadable"}
+        if not isinstance(row.get("source"), dict):
+            return {"status": "absent", "reason": "previous_unreadable"}
+
+    cutoff_str = previous.get("analysis_cutoff")
+    if not isinstance(cutoff_str, str):
+        return {"status": "absent", "reason": "previous_unreadable"}
+    try:
+        cutoff_dt = datetime.fromisoformat(cutoff_str.replace("Z", "+00:00"))
+    except (ValueError, TypeError, OverflowError):
+        return {"status": "absent", "reason": "previous_unreadable"}
+    if cutoff_dt.tzinfo is None:
+        return {"status": "absent", "reason": "previous_unreadable"}
+
+    if us_session is None:
+        baseline = previous.get("baseline")
+        if (
+            isinstance(baseline, dict)
+            and isinstance(baseline.get("evidence"), dict)
+            and isinstance(baseline.get("us_session"), str)
+        ):
+            return copy.deepcopy(baseline)
+        return {"status": "absent", "reason": "us_session_unavailable"}
+
+    try:
+        prev_session = session_of(cutoff_dt)
+    except Exception:
+        return {"status": "absent", "reason": "previous_unreadable"}
+
+    if prev_session < us_session:
+        evidence_out: dict[str, dict[str, Any]] = {}
+        for row in evidence_in:
+            source = row.get("source") or {}
+            evidence_out[row.get("id")] = {
+                "values": row.get("values"),
+                "owner_verdict": row.get("owner_verdict"),
+                "status": row.get("status"),
+                "as_of": source.get("as_of"),
+            }
+        return {
+            "analysis_cutoff": cutoff_str,
+            "us_session": prev_session.isoformat(),
+            "evidence": evidence_out,
+        }
+
+    baseline = previous.get("baseline")
+    if (
+        isinstance(baseline, dict)
+        and isinstance(baseline.get("evidence"), dict)
+        and isinstance(baseline.get("us_session"), str)
+        and baseline.get("us_session") < us_session.isoformat()
+    ):
+        return copy.deepcopy(baseline)
+
+    return {"status": "absent", "reason": "no_earlier_projection"}
