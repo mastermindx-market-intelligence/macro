@@ -8892,6 +8892,32 @@ jobs:
       - name: global liquidity state producers — legacy parity and W-LIQ.1 contract
         run: python -m pytest tests/test_global_liquidity.py tests/test_global_liquidity_transmission.py -q
 
+  regime-outlook-mapping:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # Regime outlook verdict mapping (display research). The suite lints the
+    # authored mapping against its own rules, pins its reading table by hash,
+    # and compares every condition with the contract's tables. Code-gated on
+    # purpose: the job that owns the neighbouring rates-command suites is
+    # data-gated and never runs on a pull request. Offline, stdlib only; no
+    # market artifact is read and nothing here ranks, gates or forecasts.
+    paths:
+      - "config/regime_outlook_mapping_v1.json"
+      - "engine/rates_command_outlook.py"
+      - "research/macro_regime_intelligence/STATE_PATH_AND_SCIENCE_CONTRACT_2026-10-03.md"
+      - "tests/test_rates_command_outlook.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install test dependencies
+        run: pip install pytest
+      - name: regime outlook verdict mapping — lint, pinned reading table, contract parity
+        run: python -m pytest tests/test_rates_command_outlook.py -q
+
   ric-w2-surface:
     if: ${{ false }}
     gate: code
