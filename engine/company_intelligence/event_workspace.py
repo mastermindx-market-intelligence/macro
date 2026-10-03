@@ -10,7 +10,7 @@ Prophet.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
 from pathlib import Path
 import re
@@ -143,6 +143,51 @@ def _utc(value: object, *, field_name: str) -> datetime:
 
 def _iso(value: datetime) -> str:
     return value.isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def _ceil_second(value: datetime) -> datetime:
+    """The first whole second at or after *value*.
+
+    A generation clock is published in whole seconds.  Cutting a sub-second observation
+    down would publish a clock earlier than the observation it was derived from.
+    """
+    if value.microsecond == 0:
+        return value
+    return value.replace(microsecond=0) + timedelta(seconds=1)
+
+
+_LIFECYCLE_CLOCKS = ("observed_at", "source_available_at")
+
+
+def _explicit_utc_lifecycle(row: dict[str, Any]) -> dict[str, Any]:
+    """Publish a zone-less lifecycle clock with the UTC designator it was read under.
+
+    ``_utc`` reads a zone-less clock as UTC and the generation clocks are derived from
+    that reading.  Left zone-less, a reader that requires an explicit zone accepts the
+    manifest and loses the clock of the very row the manifest was built from.  A clock
+    that already names its zone is published exactly as given.
+    """
+    lifecycle = row.get("lifecycle")
+    if not isinstance(lifecycle, Mapping):
+        return row
+    changed: dict[str, str] = {}
+    for field in _LIFECYCLE_CLOCKS:
+        value = lifecycle.get(field)
+        if not isinstance(value, str):
+            continue
+        try:
+            parsed = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if parsed.tzinfo is None:
+            changed[field] = (
+                parsed.replace(tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")
+            )
+    if not changed:
+        return row
+    out = dict(row)
+    out["lifecycle"] = {**lifecycle, **changed}
+    return out
 
 
 def _require_mapping(value: object, *, name: str) -> dict[str, Any]:
@@ -487,7 +532,7 @@ def _generation_clocks(cleaned: Mapping[str, Mapping[str, Any]]) -> tuple[str, s
         latest_source = source_dt if latest_source is None else max(latest_source, source_dt)
     if latest_observed is None or latest_source is None:
         raise WorkspaceError("write_workspace_generation requires at least one workspace")
-    return _iso(latest_observed), _iso(latest_source)
+    return _iso(_ceil_second(latest_observed)), _iso(_ceil_second(latest_source))
 
 
 def _generation_identity(
@@ -545,7 +590,10 @@ def preview_generation_identity_v3(
     *,
     previous_generation_id: str | None = None,
 ) -> str:
-    cleaned = {event_id: _strip_private(payload) for event_id, payload in workspaces.items()}
+    cleaned = {
+        event_id: _explicit_utc_lifecycle(_strip_private(payload))
+        for event_id, payload in workspaces.items()
+    }
     generated_at, source_clock = _generation_clocks(cleaned)
     return _generation_identity_v3(
         cleaned,
@@ -631,7 +679,7 @@ def write_workspace_generation(
         )
     stamped: dict[str, dict[str, Any]] = {}
     cleaned = {
-        event_id: _strip_private(payload)
+        event_id: _explicit_utc_lifecycle(_strip_private(payload))
         for event_id, payload in workspaces.items()
     }
     generated, source_clock = _generation_clocks(cleaned)

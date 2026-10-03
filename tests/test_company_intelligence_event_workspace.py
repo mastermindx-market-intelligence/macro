@@ -35,11 +35,11 @@ from engine.company_intelligence.event_workspace import (
     apple_registry,
     flagship_fiscal_period,
     preview_generation_identity,
+    preview_generation_identity_v3,
     validate_generation_clocks,
     validate_workspace_manifest,
     write_workspace_generation,
 )
-from tests.test_company_intelligence_workspace_chain import EVENT_ID, _raw_workspace
 from engine.company_intelligence.event_workspace_build import build_event_workspace
 from engine.company_intelligence.identity import company_id_for_cik
 from engine.company_intelligence.resolution import claim_citations_pending
@@ -949,6 +949,10 @@ def test_public_glance_reported_omits_claim_text(tmp_path) -> None:
     assert glance["reported"][0]["value"] == "$109.4B \u00b7 +16%"
 
 
+# Other suites import this module for its flagship builders, and some of them run where the
+# chain suite's dependencies are not installed.  So the chain suite is imported inside the one
+# helper that needs it, never at the top of this file.
+EVENT_ID = FLAGSHIP_EVENT_ID
 _LEGACY_TWO_ROW_PREVIEW_ID = "7a36eaf9236c860c7ceeb308"
 _SECOND_EVENT_ID = "evt_cik0000882184_2026q3_results"
 
@@ -959,6 +963,10 @@ def _nest_row(
     source_available_at: str,
     observed_at: str | None = None,
 ) -> dict:
+    from tests.test_company_intelligence_workspace_chain import EVENT_ID as chain_event_id
+    from tests.test_company_intelligence_workspace_chain import _raw_workspace
+
+    assert chain_event_id == EVENT_ID
     row = _raw_workspace(source_available_at=source_available_at, event_id=event_id)
     lifecycle = dict(row["lifecycle"])
     lifecycle["observed_at"] = observed_at if observed_at is not None else source_available_at
@@ -1095,7 +1103,15 @@ def test_v3_naive_lifecycle_timestamp_is_read_as_utc(tmp_path: Path, monkeypatch
         )
         assert man_naive["generated_at"] == man_zulu["generated_at"]
         assert man_naive["source_clock"] == man_zulu["source_clock"]
-        assert published_naive["lifecycle"]["observed_at"] == "2026-07-02T00:00:00"
+        # The row is published with the zone it was read under, so a reader that requires an
+        # explicit zone keeps the row's clock; both spellings are one generation, byte for byte.
+        assert published_naive["lifecycle"]["observed_at"] == "2026-07-02T00:00:00Z"
+        assert published_naive["lifecycle"]["source_available_at"] == "2026-07-02T00:00:00Z"
+        assert gen_naive.name == gen_zulu.name
+        assert (gen_naive / "manifest.json").read_bytes() == (gen_zulu / "manifest.json").read_bytes()
+        assert (gen_naive / "workspaces" / f"{EVENT_ID}.json").read_bytes() == (
+            gen_zulu / "workspaces" / f"{EVENT_ID}.json"
+        ).read_bytes()
     finally:
         monkeypatch.delenv("TZ", raising=False)
         time.tzset()
@@ -1230,3 +1246,87 @@ def test_legacy_preview_identity_is_unchanged() -> None:
         preview_generation_identity({EVENT_ID: row}, row["generated_at"], previous_generation_id=None)
         == "99ae5738abb61c4559e0b5ef"
     )
+
+
+def _published(generation: Path) -> tuple[dict, dict]:
+    manifest = json.loads((generation / "manifest.json").read_text(encoding="utf-8"))
+    row = json.loads((generation / "workspaces" / f"{EVENT_ID}.json").read_text(encoding="utf-8"))
+    return manifest, row
+
+
+def test_v3_sub_second_observation_publishes_at_the_next_whole_second(tmp_path: Path) -> None:
+    ws = _nest_row(
+        source_available_at="2026-07-02T00:00:00Z",
+        observed_at="2026-07-02T00:00:00.123Z",
+    )
+    manifest, row = _published(write_workspace_generation(tmp_path / "ci", {EVENT_ID: ws}))
+    assert manifest["generated_at"] == "2026-07-02T00:00:01Z"
+    assert manifest["source_clock"] == "2026-07-02T00:00:00Z"
+    assert row["generated_at"] == "2026-07-02T00:00:01Z"
+    assert row["lifecycle"]["observed_at"] == "2026-07-02T00:00:00.123Z"
+    validate_generation_clocks(manifest, {EVENT_ID: row})
+
+
+def test_v3_sub_second_source_clock_is_never_published_earlier_than_its_row(tmp_path: Path) -> None:
+    ws = _nest_row(
+        source_available_at="2026-07-02T00:00:00.500Z",
+        observed_at="2026-07-02T00:00:00.500Z",
+    )
+    manifest, row = _published(write_workspace_generation(tmp_path / "ci", {EVENT_ID: ws}))
+    assert manifest["source_clock"] == "2026-07-02T00:00:01Z"
+    assert manifest["generated_at"] == "2026-07-02T00:00:01Z"
+    assert row["lifecycle"]["source_available_at"] == "2026-07-02T00:00:00.500Z"
+
+
+def test_v3_whole_second_clocks_are_published_unchanged(tmp_path: Path) -> None:
+    ws = _nest_row(source_available_at="2026-07-02T00:00:00Z", observed_at="2026-07-02T00:00:07Z")
+    manifest, row = _published(write_workspace_generation(tmp_path / "ci", {EVENT_ID: ws}))
+    assert manifest["generated_at"] == "2026-07-02T00:00:07Z"
+    assert manifest["source_clock"] == "2026-07-02T00:00:00Z"
+    assert row["lifecycle"] == ws["lifecycle"]
+
+
+def test_v3_offset_clock_is_published_as_given_and_read_in_utc(tmp_path: Path) -> None:
+    ws = _nest_row(
+        source_available_at="2026-07-02T08:00:00+08:00",
+        observed_at="2026-07-02T08:00:05+08:00",
+    )
+    manifest, row = _published(write_workspace_generation(tmp_path / "ci", {EVENT_ID: ws}))
+    assert manifest["source_clock"] == "2026-07-02T00:00:00Z"
+    assert manifest["generated_at"] == "2026-07-02T00:00:05Z"
+    assert row["lifecycle"]["source_available_at"] == "2026-07-02T08:00:00+08:00"
+    assert row["lifecycle"]["observed_at"] == "2026-07-02T08:00:05+08:00"
+
+
+def test_v3_zone_less_sub_second_clock_keeps_its_precision_and_gains_the_zone(tmp_path: Path) -> None:
+    ws = _nest_row(
+        source_available_at="2026-07-02T00:00:00.250000",
+        observed_at="2026-07-02T00:00:00.250000",
+    )
+    manifest, row = _published(write_workspace_generation(tmp_path / "ci", {EVENT_ID: ws}))
+    assert row["lifecycle"]["observed_at"] == "2026-07-02T00:00:00.250000Z"
+    assert row["lifecycle"]["source_available_at"] == "2026-07-02T00:00:00.250000Z"
+    assert manifest["generated_at"] == "2026-07-02T00:00:01Z"
+
+
+def test_v3_preview_identity_matches_the_written_generation_for_a_zone_less_row(tmp_path: Path) -> None:
+    ws = _nest_row(source_available_at="2026-07-02T00:00:00", observed_at="2026-07-02T00:00:00.4")
+    previewed = preview_generation_identity_v3({EVENT_ID: ws}, previous_generation_id=None)
+    generation = write_workspace_generation(tmp_path / "ci", {EVENT_ID: ws})
+    assert generation.name == previewed
+    assert ws["lifecycle"]["observed_at"] == "2026-07-02T00:00:00.4"  # the caller's row is not edited
+
+
+def test_this_module_imports_without_the_chain_suite() -> None:
+    """Module-level imports only: a nested import inside a helper is the allowed form."""
+    import ast
+
+    tree = ast.parse(Path(__file__).read_text(encoding="utf-8"))
+    top_level = set()
+    for node in tree.body:
+        if isinstance(node, ast.ImportFrom):
+            top_level.add(node.module or "")
+        elif isinstance(node, ast.Import):
+            top_level.update(alias.name for alias in node.names)
+    banned = {"tests.test_company_intelligence_workspace_chain", "engine.us_candidate_episode"}
+    assert not (top_level & banned), sorted(top_level & banned)
