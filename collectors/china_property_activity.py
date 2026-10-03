@@ -7,13 +7,19 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 import hashlib
+import json
+from pathlib import Path
 import re
 from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
 import pandas as pd
 
-from collectors.china_economy_acquisition import USER_AGENT, check_robots
+from collectors.china_economy_acquisition import USER_AGENT, MAX_BYTES, check_robots
+from collectors.china_economy_release_parser import publisher_article_root
+from engine.china_economy_store import binding, frames_from_receipt
+
+PARSER_VERSION = "china-property-activity.v1.1"
 
 INDEX = "https://www.stats.gov.cn/sj/zxfb/"
 TITLE = re.compile(r"(20\d{2})年1[—－–-](\d{1,2})月份全国房地产(?:市场基本情况|开发投资和销售情况)")
@@ -43,20 +49,26 @@ def compact(text: str) -> str:
 
 def origin_url(url: str) -> str:
     parsed = urlparse(url)
-    if parsed.scheme != "https" or parsed.hostname != "www.stats.gov.cn" or not parsed.path.startswith("/sj/") or parsed.username or parsed.password:
+    if parsed.scheme != "https" or parsed.hostname != "www.stats.gov.cn" or not parsed.path.startswith("/sj/") or parsed.username or parsed.password or parsed.port not in (None, 443) or parsed.fragment:
         raise ValueError("NBS property source must remain on approved origin/path")
     return url
 
 
 def release_links(html: str) -> list[tuple[str, tuple[int, int]]]:
     links = {}
+    periods = {}
     for a in BeautifulSoup(html, "html.parser").select("a[href]"):
         m = TITLE.search(compact(a.get("title", "") + a.get_text("", strip=True)))
         if not m:
             continue
         year, month = int(m[1]), int(m[2])
         if 2 <= month <= 12:
-            links[origin_url(urljoin(INDEX, a["href"]))] = (year, month)
+            url = origin_url(urljoin(INDEX, a["href"]))
+            period = (year, month)
+            if period in periods and periods[period] != url:
+                raise ValueError("ambiguous NBS property release period")
+            periods[period] = url
+            links[url] = period
     return sorted(links.items(), key=lambda x:x[1], reverse=True)
 
 
@@ -94,7 +106,13 @@ def parse_release(html: str, url: str, *, observed_at: datetime | None = None) -
     if published > now+pd.Timedelta(minutes=5) or published.tz_localize(None) < reference+pd.offsets.MonthEnd(0):
         raise ValueError("NBS publication/reference chronology invalid")
     values = {}
-    for table in soup.select("table"):
+    article = publisher_article_root(html)
+    tables = [table for table in article.select("table")
+              if "房地产开发投资（亿元）" in compact(table.get_text("", strip=True))
+              and "房屋新开工面积（万平方米）" in compact(table.get_text("", strip=True))]
+    if len(tables) != 1:
+        raise ValueError("NBS national property table missing or ambiguous")
+    for table in tables:
         text = compact(table.get_text("", strip=True))
         if "房地产开发投资（亿元）" not in text or "房屋新开工面积（万平方米）" not in text:
             continue
@@ -126,28 +144,71 @@ def parse_release(html: str, url: str, *, observed_at: datetime | None = None) -
     return pd.DataFrame([values], index=pd.DatetimeIndex([reference], name="date"))
 
 
-def fetch_activity(http_get, *, full_history: bool = False) -> pd.DataFrame:
+def _bound_activity(frame: pd.DataFrame, response_bytes: bytes) -> pd.DataFrame:
+    """Enrich this owner's existing table through the shared receipt producer.
+
+    Row-level legacy provenance remains; only already catalogued housing fields
+    gain the exact per-value receipts required by the economy overview.
+    """
+    if len(frame) != 1:
+        raise ValueError("property receipt requires exactly one release month")
+    catalog = json.loads((Path(__file__).resolve().parents[1] /
+                          "config/china_economy_catalog.json").read_text())["metrics"]
+    catalog = {k: v for k, v in catalog.items()
+               if binding(v["owner_path"])[:2] == ("china_property", "activity")}
+    row = frame.iloc[0]
+    points = []
+    for ident, meta in catalog.items():
+        column = binding(meta["owner_path"])[2]
+        if column in frame:
+            value = row[column]
+            points.append({"metric_id": ident, "period": frame.index[0].strftime("%Y-%m"),
+                           "value": None if pd.isna(value) else float(value)})
+    digest = hashlib.sha256(response_bytes).hexdigest()
+    receipt = {"url": row["source_url"], "published_at": row["publication_time"],
+               "observed_at": row["observed_at"], "response_sha256": digest,
+               "publication_precision": "as_published", "parser_version": PARSER_VERSION}
+    result = frame.copy()
+    result["source_sha256"] = digest
+    result["source_hash_basis"] = "exact_http_response_bytes"
+    result["parser_version"] = PARSER_VERSION
+    if points:
+        wide = frames_from_receipt(points, receipt, catalog)["china_property/activity"]
+        for column in wide:
+            if column not in result:
+                result[column] = wide[column]
+    return result
+
+
+def _html_response(http_get, url: str, headers: dict):
+    """Do not follow a redirect before checking the destination's source policy."""
+    response = http_get(url, timeout=20, retries=1, headers=headers, allow_redirects=False)
+    if response.status_code != 200 or getattr(response, "url", None) != url:
+        raise ValueError("NBS property response status or exact URL not admitted")
+    body = response.content
+    if not isinstance(body, bytes) or not 0 < len(body) <= MAX_BYTES:
+        raise ValueError("NBS property response size not admitted")
+    if "text/html" not in response.headers.get("Content-Type", "").lower():
+        raise ValueError("NBS property response type not admitted")
+    return body.decode("utf-8-sig", errors="strict"), body
+
+
+def fetch_activity(http_get, *, full_history: bool = False,
+                   clock=lambda: datetime.now(timezone.utc)) -> pd.DataFrame:
     """Bounded latest-release ingestion; no silent fallback to an older release."""
     robots_cache = {}
     check_robots(INDEX, http_get, robots_cache)
     headers = {"User-Agent":USER_AGENT, "Referer":INDEX}
-    response = http_get(INDEX, timeout=20, retries=2, headers=headers)
-    response.raise_for_status()
-    if getattr(response, "url", None):
-        origin_url(response.url)
-    response.encoding = "utf-8"
-    links = release_links(response.text)
+    index_html, _ = _html_response(http_get, INDEX, headers)
+    links = release_links(index_html)
     if not links:
         raise ValueError("NBS index has no matching property releases")
     frames = []
     for url, period in links[:6 if full_history else 1]:
         robots = check_robots(url, http_get, robots_cache)
-        response = http_get(url, timeout=20, retries=2, headers=headers)
-        response.raise_for_status()
-        if getattr(response, "url", None):
-            origin_url(response.url)
-        response.encoding = "utf-8"
-        frame = parse_release(response.text, url)
+        html, raw_bytes = _html_response(http_get, url, headers)
+        frame = parse_release(html, url, observed_at=clock())
+        frame = _bound_activity(frame, raw_bytes)
         actual = (frame.index[0].year, frame.index[0].month)
         if actual != period:
             raise ValueError("NBS index and article reference periods disagree")

@@ -117,3 +117,115 @@ def test_latest_incomplete_impulse_keeps_null_not_earlier_value():
     tsf=pd.Series(100.,index=pd.date_range('2023-01-01',periods=36,freq='MS'))
     gdp=pd.Series([10000.]*11+[float('nan')],index=pd.date_range('2023-03-31',periods=12,freq='QE'))
     assert pd.isna(true_credit_impulse(tsf,gdp).iloc[-1])
+
+
+def _activity_getter(body=None, *, prefix_bytes=b''):
+    calls=[]
+    article=body if body is not None else html('<tr><td>新建商品房销售额（亿元）</td><td>100</td><td>-11.0</td></tr>')
+    index='<a href="202609/t20260915_1965310.html">2026年1—8月份全国房地产市场基本情况</a>'
+    def get(url, **kwargs):
+        calls.append((url,kwargs))
+        if url.endswith('/robots.txt'): return HttpResponse('',404,url,'text/plain')
+        assert kwargs['allow_redirects'] is False
+        if url==INDEX:return HttpResponse(index,200,url)
+        assert url==URL
+        r=HttpResponse(article,200,url);r.content=prefix_bytes+r.content
+        return r
+    return get,calls,article
+
+
+def test_property_acquisition_reaches_existing_economy_reader_with_bound_values():
+    from pathlib import Path
+    from engine.china_economy_store import document_from_store
+    from engine.china_economy import build_economy,metric_view,timestamp
+    get,calls,_=_activity_getter()
+    frame=fetch_activity(get,clock=lambda:NOW)
+    catalog=json.loads((Path(__file__).parents[1]/'config/china_economy_catalog.json').read_text())['metrics']
+    catalog={k:v for k,v in catalog.items() if k.startswith('housing_')}
+    doc=document_from_store(lambda g,t:frame if (g,t)==('china_property','activity') else None,
+                            catalog,as_of=NOW,reference_period='2026-08')
+    assert not doc['source_errors']
+    assert len(doc['observations'])==4
+    assert {p['metric_id'] for p in doc['observations']}==set(catalog)
+    values={p['metric_id']:p['value'] for p in doc['observations']}
+    assert values['housing_sales_area']==-12.1 and values['housing_starts']==-24.8
+    assert values['housing_investment']==-19.9 and values['housing_sales_value']==-11.0
+    dialog=build_snapshot(lambda g,t:frame if (g,t)==('china_property','activity') else None,NOW.date())
+    assert find(dialog,'property_sales_area')['value']==values['housing_sales_area']
+    assert len(calls)==3
+
+
+def test_property_receipts_bind_exact_http_bytes_not_reencoded_text():
+    import hashlib
+    get,_,body=_activity_getter(prefix_bytes=b'\xef\xbb\xbf')
+    frame=fetch_activity(get,clock=lambda:NOW);row=frame.iloc[0]
+    expected=hashlib.sha256(b'\xef\xbb\xbf'+body.encode()).hexdigest()
+    assert row.source_sha256==row.sales_area_ytd_yoy__response_sha256==expected
+    assert row.source_hash_basis=='exact_http_response_bytes'
+    assert row.sales_area_ytd_yoy__definition_id=='housing_sales_area.v1'
+
+
+def test_mutated_property_number_cannot_borrow_its_old_receipt():
+    from pathlib import Path
+    from engine.china_economy_store import document_from_store
+    get,_,_=_activity_getter();frame=fetch_activity(get,clock=lambda:NOW)
+    frame.loc[frame.index[0],'sales_area_ytd_yoy']=100.0
+    cat=json.loads((Path(__file__).parents[1]/'config/china_economy_catalog.json').read_text())['metrics']
+    doc=document_from_store(lambda g,t:frame,{'housing_sales_area':cat['housing_sales_area']},
+                            as_of=NOW,reference_period='2026-08')
+    assert not doc['observations']
+    assert any('value_receipt_mismatch' in error for error in doc['source_errors'].values())
+
+
+def test_property_legacy_parser_output_is_not_silently_promoted_to_receipt_verified():
+    from pathlib import Path
+    from engine.china_economy_store import document_from_store
+    frame=parse_release(html(),URL,observed_at=NOW)
+    cat=json.loads((Path(__file__).parents[1]/'config/china_economy_catalog.json').read_text())['metrics']
+    doc=document_from_store(lambda g,t:frame,{'housing_sales_area':cat['housing_sales_area']},
+                            as_of=NOW,reference_period='2026-08')
+    assert not doc['observations'] and doc['source_errors']
+
+
+@pytest.mark.parametrize('status,actual_url,ctype',[
+    (302,URL,'text/html'),(200,URL+'?redirected=1','text/html'),
+    (200,None,'text/html'),(200,URL,'application/json'),
+])
+def test_property_release_response_is_exact_before_receipt_admission(status,actual_url,ctype):
+    get,_,_=_activity_getter()
+    def changed(url,**kwargs):
+        if url==URL:
+            assert kwargs['allow_redirects'] is False
+            return HttpResponse(html(),status,actual_url,ctype)
+        return get(url,**kwargs)
+    with pytest.raises(ValueError,match='response'):
+        fetch_activity(changed,clock=lambda:NOW)
+
+
+def test_property_competing_same_month_index_links_are_refused():
+    text='<a href="202609/one.html">2026年1—8月份全国房地产市场基本情况</a>'
+    assert len(release_links(text+text))==1
+    with pytest.raises(ValueError,match='ambiguous'):
+        release_links(text+text.replace('one.html','two.html'))
+
+
+def test_property_duplicate_article_tables_are_not_selected_arbitrarily():
+    content=html();table=content[content.index('<table>'):]
+    with pytest.raises(ValueError,match='ambiguous'):
+        parse_release(content+table,URL,observed_at=NOW)
+
+
+def test_property_publisher_desktop_and_mobile_copies_must_agree():
+    content=html();meta,table=content.split('<table>',1);table='<table>'+table
+    a='<div class="detail-text-content"><div class="txt-content">'+table+'</div></div>'
+    b='<div class="mobile-content"><div class="mobile-news-content">'+table+'</div></div>'
+    assert len(parse_release(meta+a+b,URL,observed_at=NOW))==1
+    with pytest.raises(ValueError,match='disagree'):
+        parse_release(meta+a+b.replace('-12.1','-12.2'),URL,observed_at=NOW)
+
+
+@pytest.mark.parametrize('url',[
+    'https://www.stats.gov.cn:444/sj/x','https://www.stats.gov.cn/sj/x#fragment',
+])
+def test_property_origin_rejects_nonstandard_port_or_fragment(url):
+    with pytest.raises(ValueError):origin_url(url)
