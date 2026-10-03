@@ -8278,6 +8278,7 @@ jobs:
     #                                    (mocked fetch, zero network). Sits in this
     #                                    code-gated job so the merge gate executes it.
     # Zero network calls; all inputs are synthetic or committed files.
+    # config.yml, data/archive/BAML*.parquet, data/corp_bonds/issuer_themes.json are runtime inputs of tests in this job
     scope: exclusive
     paths:
       - "collectors/base.py"
@@ -8286,6 +8287,9 @@ jobs:
       - "collectors/finra_corp_bonds.py"
       - "collectors/fred.py"
       - "collectors/holdings.py"
+      - "config.yml"
+      - "data/archive/BAML*.parquet"
+      - "data/corp_bonds/issuer_themes.json"
       - "engine/release_target_truth.py"
       - "lib/__init__.py"
       - "lib/config.py"
