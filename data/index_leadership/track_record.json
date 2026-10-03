@@ -1,7 +1,7 @@
 {
   "schema": "index_leadership.track_record.v1",
   "as_of": "2026-10-01",
-  "generated_at": "2026-10-02T12:46:44.948917+00:00",
+  "generated_at": "2026-10-03T06:36:08.645354+00:00",
   "is_context_only": true,
   "n_snapshots": 1052,
   "n_days": 36,
@@ -21,12 +21,12 @@
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0113,
+          "mean_fwd_rel": 0.0114,
           "hit_rate": 0.579
         }
       },
-      "running_ic": -0.0175,
-      "running_ic_t_hac": -0.248,
+      "running_ic": -0.0172,
+      "running_ic_t_hac": -0.244,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -49,8 +49,8 @@
           "hit_rate": 0.474
         }
       },
-      "running_ic": -0.0341,
-      "running_ic_t_hac": -0.519,
+      "running_ic": -0.0348,
+      "running_ic_t_hac": -0.536,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -60,7 +60,7 @@
         "running": {
           "n": 615,
           "mean_fwd_rel": -0.0252,
-          "hit_rate": 0.319
+          "hit_rate": 0.317
         },
         "coiling": {
           "n": 36,
@@ -69,12 +69,12 @@
         },
         "coiling_primed": {
           "n": 37,
-          "mean_fwd_rel": 0.0208,
+          "mean_fwd_rel": 0.021,
           "hit_rate": 0.622
         }
       },
-      "running_ic": -0.0118,
-      "running_ic_t_hac": -0.309,
+      "running_ic": -0.0101,
+      "running_ic_t_hac": -0.264,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
