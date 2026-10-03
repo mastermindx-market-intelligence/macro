@@ -145,3 +145,35 @@ Synthetic tests must prove:
 - attaching the resulting evidence to incomplete coverage still keeps the known blocking
   event visible;
 - no source coverage receipt, score, rank, recommendation, or trade authority is minted.
+
+## 10. Prospective current-reader composition
+
+The existing owner reader `engine.neuralweb.company_intelligence_reader.read_current_event_workspace`
+is the only read seam admitted by R0 for current-marker forward shadowing. R0 does not add a
+network client, ticker index, cache, publication path, or event store.
+
+The reader envelope is interpreted asymmetrically:
+
+- `available == true`: the owner already loaded the current marker/generation, selected the
+  ticker alias, fetched the immutable workspace object, hash-verified it, and returned a
+  `receipt`. R0 may adapt that workspace as **presence evidence** after applying the frozen
+  event/ticker/lifecycle/clock rules above.
+- `available == false`: whether the owner says `Event workspace does not cover this ticker`
+  or reports a fetch/integrity failure, R0 emits no negative event fact. The catalyst result
+  remains `coverage_unknown`.
+
+The caller must supply `read_observed_at`, the actual prospective consumer observation clock.
+The found workspace is not knowable to R0 before that clock. If `read_observed_at` is later
+than the Radar decision clock, the event is retained only as late evidence and cannot rewrite
+the earlier decision.
+
+A successful read must preserve the owner envelope's `context_only` authority and carry the
+owner `workspace_sha256` receipt. The pure composition helper
+`assess_company_intelligence_current_read_for_live_episode` performs no I/O and does not mint
+a `CatalystSourceRead` coverage-clear receipt. Even a verified found event therefore does not
+claim universe-wide catalyst coverage.
+
+**Historical prohibition:** this current-marker reader may not be used to reconstruct a
+historical decision-time absence or to backfill `known_at` from `generated_at`, SEC
+availability, file mtime, or today's marker. Historical outcome work remains blocked on
+lawful owner vintages / observation receipts or prospective forward accrual.
