@@ -44,9 +44,10 @@ The deterministic artifact is
 ## Caveats
 * This profile is synthetic and excludes R2 latency, parquet I/O, the
   LedgerLock, and the V1 schema-validation gates that the production run pays.
-  The 80× reduction here is therefore the floor; the real speedup on the
-  natural failure is bounded below by the I/O share, not by normalize calls
-  alone.
+  The normalization count fell 80x in this synthetic derive-only fixture.
+  This does not establish a production latency speedup: I/O, receipt
+  validation, locking and schema checks can limit the gain. A future natural
+  scheduled run is required to establish end-to-end timing.
 * No live builder rerun; no data/ledger mutation; no time-budget increase;
   no checkpoint/append/lock reordering; no scientific-rule change.
 * The builder-level regression test exercises a receipted parquet snapshot,
