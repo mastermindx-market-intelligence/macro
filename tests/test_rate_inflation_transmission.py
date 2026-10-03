@@ -444,3 +444,81 @@ def test_transmission_page_state_chips_show_a_dash_when_the_owner_has_no_reading
     assert "Tight" in out_fed2
     assert "Heating" in out_dir2
     assert "Anchored" in out_exp2
+
+
+def test_dashboard_inflation_row_never_prints_none_or_a_default_expectations_read():
+    """The dashboard inflation row (templates/dashboard.html.j2) must not print
+    'None' for any null number/anchor, and must not default the longer-run
+    expectations read to a stance when the owner has no anchoring read."""
+    import jinja2
+    from pathlib import Path
+
+    src = Path(__file__).resolve().parents[1] / "templates" / "dashboard.html.j2"
+    lines = src.read_text().splitlines()
+    start = next(i for i, ln in enumerate(lines) if "{% set _inf_vst = _dlgrc_inf.vs_target_pp %}" in ln)
+    end = next(i for i, ln in enumerate(lines) if "data-tip-zh=\"核心PCE" in ln)
+    block = "\n".join(lines[start:end + 1])
+
+    env = jinja2.Environment()
+    out_null = env.from_string(block).render(_dlgrc_inf={
+        "vs_target_pp": 0.8,
+        "anchoring": None,
+        "core_pce_yoy": 2.8,
+        "core_cpi_yoy": None,
+        "core_pce_3m_ann": None,
+        "breakeven_10y": None,
+    })
+    assert "None" not in out_null
+    assert 'data-tip-en="Core PCE 2.8% y/y."' in out_null
+    assert 'data-tip-zh="核心PCE 2.8% 同比。"' in out_null
+    assert "the longer-run expectations read is being updated." in out_null
+    assert "长期预期读数更新中。" in out_null
+    assert "expectations look" not in out_null
+    assert "expectations:" not in out_null
+    assert "预期：" not in out_null
+
+    out_full = env.from_string(block).render(_dlgrc_inf={
+        "vs_target_pp": 0.8,
+        "anchoring": "anchored",
+        "core_pce_yoy": 2.8,
+        "core_cpi_yoy": 3.1,
+        "core_pce_3m_ann": 2.5,
+        "breakeven_10y": 2.3,
+    })
+    assert 'data-tip-en="Core PCE 2.8% y/y · Core CPI 3.1% · 3-month annualized PCE 2.5% · 10y breakeven 2.3% (expectations: anchored)."' in out_full
+    assert 'data-tip-zh="核心PCE 2.8% 同比 · 核心CPI 3.1% · 3月年化PCE 2.5% · 10年盈亏平衡 2.3%（预期：稳定）。">?</span>' in out_full
+    assert "longer-run expectations look steady." in out_full
+    assert "长期预期看起来稳定。" in out_full
+
+
+def test_transmission_page_curve_caption_shows_no_shape_when_the_curve_has_no_reading():
+    """transmission.html.j2 yield-curve caption must say 'read being updated'
+    when curve_2s10s is None, must say 'inverted — short above long' when
+    negative, and 'upward-sloping — normal' when positive — never 'None'."""
+    import types
+    from pathlib import Path
+    import jinja2
+
+    src = Path(__file__).resolve().parents[1] / "templates" / "transmission.html.j2"
+    lines = src.read_text().splitlines()
+    curve = [ln for ln in lines if "chf-l\">{{ t('Yield curve'" in ln]
+    assert len(curve) == 1
+    env = jinja2.Environment()
+    t = lambda en, zh: en  # noqa: E731
+
+    S_none = types.SimpleNamespace(
+        rates=types.SimpleNamespace(curve_2s10s=None),
+    )
+    out_none = env.from_string(curve[0]).render(t=t, S=S_none)
+    assert "read being updated" in out_none
+    assert "upward-sloping" not in out_none
+    assert "inverted" not in out_none
+    assert "None" not in out_none
+
+    S_neg = types.SimpleNamespace(rates=types.SimpleNamespace(curve_2s10s=-0.2))
+    out_neg = env.from_string(curve[0]).render(t=t, S=S_neg)
+    assert "inverted — short above long" in out_neg
+
+    S_pos = types.SimpleNamespace(rates=types.SimpleNamespace(curve_2s10s=0.5))
+    out_pos = env.from_string(curve[0]).render(t=t, S=S_pos)
+    assert "upward-sloping — normal" in out_pos
