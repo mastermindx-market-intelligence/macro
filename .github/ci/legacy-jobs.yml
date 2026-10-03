@@ -11423,7 +11423,7 @@ jobs:
       - name: X ad-campaign asset manifests (desktop + mobile)
         run: python -m pytest tests/test_x_ad_campaign_assets.py tests/test_x_mobile_campaign_assets.py -q
       - name: frontier editorial return contract (pure, no provider or publication effects)
-        run: python -m pytest tests/test_marketing_frontier_editorial.py -q
+        run: python -m pytest tests/test_marketing_frontier_editorial.py tests/test_marketing_frontier_shadow.py tests/test_marketing_copy_v2.py::test_dry_run_imports_and_writes_nothing -q
 
   unrun-grading-board:
     # US board grading — the shipped verdict ledgers and their tenure stamps.

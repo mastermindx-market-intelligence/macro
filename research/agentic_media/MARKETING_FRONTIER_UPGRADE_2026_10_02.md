@@ -375,32 +375,101 @@ prove reach; reach does not prove retained users; CI does not grant deployment.
 
 ## 11. Cumulative continuation record
 
-FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION.
-MISSION_COMPLETE: false.
-Capability delta: an offline, evidence-bound frontier-return contract and regression
-suite now exist; there is not yet a live autonomous marketing upgrade.
+MISSION_COMPLETE: false. Capability: BUILT_NOT_PROVEN. Current user continuation
+retains the marketing upgrade mission. This is the existing PR #8302 / branch
+`claude/marketing-frontier-upgrade-20261002`, not a new runtime job or queue.
+Protected procedure: Mastermind bdf2a972e68a70270c24d4b5d61a4d60edc4f288,
+compatible Skillpack 1.0.1/bootstrap 1; SESSION_RELIABILITY is not enrolled.
+Observed model/mode and hidden limits remain unknown. Direct caller implementation
+is retained for PRINCIPAL_JUDGMENT and LOWER_TOTAL_OVERHEAD; no worker was spawned.
 
-This document becomes a durable checkpoint only when committed and read back at
-an exact GitHub revision. The PR is an implementation/review carrier, not a runtime
-Job, workstream registration, accepted worker handoff or automatic wake.
-No account or publishing flag was changed. No paid/ad envelope was changed. No
-provider call, external post, production deploy or historical replay was performed.
+### Accepted M1, not to repeat
 
-Primary next action: reconcile the existing CI ownership manifest in an authorized
-full checkout, enroll and run the new test suite on the exact implementation head,
-and obtain independent review before adding a real shadow caller. Then prove the
-registered Dot/Grok/API route consumes an artifact and returns it to the incumbent
-job owner. Do not treat a successful wake submission as consumption or completion.
+M1 at 1995b2edcf7a720466be34718f03c74b2ad65475 has independent approval
+(review 5399043486), successful CI 37096321216 and fences 37096321165. Its
+code-gated `unrun-marketing-desk` owner executed the 36-test suite, including
+38 subtests. The former data-gated enrollment was wrong and is superseded.
+An old all-green PR check did NOT prove this suite ran. Preserve actual step proof.
 
-Independent work: release adjudication of #7493 and #7489; a read-only per-account
-X/Buffer entitlement/delivery census; source-processing/public-use rights census;
-and the blinded editorial benchmark can proceed without enabling publishing.
+### M2 source increment: an executable consumer, no runtime activation
 
-Do not redo: #7487 delivery truth; #8057 intelligence source/cache revision work;
-#7489 media/outbox ownership; canonical Executive Wake identities or retries;
-existing account/persona, numerical guards, learning stores or marketing dashboard.
-Do not invent a WS pointer, silently advance completion projections, call the bots
-security isolation, replace missing evidence with memory, or label missing metrics zero.
+The existing `scripts/marketing_copy_dryrun.py` now has an explicit, network-free
+frontier mode. It calls the incumbent `_v2_item_payload` compiler, seals its inner
+`marketing.editorial_brief.v1` and COMPLETE writer payload in the existing outer
+brief, recompiles current owner inputs on return, uses actual `validate_copy_v2`,
+and attaches the trusted inner identity only to a REVIEW_REQUIRED result.
+
+The full payload binding matters: persona register or applicable account-memory
+changes can leave the smaller inner digest unchanged. They must still invalidate
+an older draft. Old model-supplied inner projections are discarded and rebuilt.
+Missing/unsupported compiler, malformed input, stale identity, expiry, unknown
+references and shaped-copy rejection fail closed. No fallback generation runs.
+
+Only explicit input JSON is read; JSON is printed to stdout. No implicit live plan,
+provider call, model credit, outbox, approval, account, publishing or ledger mutation
+is added. Normal diagnostic mode remains unchanged and may spend model credit.
+The existing no-write source guard is refined to permit ONLY explicit binary-read
+opens, preserving all write bans; four write/unknown-mode mutations are rejected.
+This is a disjoint guard hunk in #7493's test file, not a change to its editorial tests.
+`content_studio.py` and media/outbox paths remain untouched under #7489 custody.
+
+Prepare with `python3 scripts/marketing_copy_dryrun.py --frontier-owner-input current.json`.
+Evaluate with the same command plus `--frontier-issued issued.json --frontier-response returned.json`.
+The supplying job/artifact owner captures stdout in its existing artifact system.
+The explicit current-input object has exactly five fields: `context` (the existing
+copywriter context), `binding` (the M1 build_brief identities, original timestamps,
+evidence_refs and media_spec_ids), `persona_card`, `codex_by_account`, and
+`memory_by_account`. This object is invocation input, not a durable authority registry.
+Source rights, consent, trusted provenance and Runtime admission are NOT attested
+by this CLI. Do not feed it private source bodies merely because they are readable.
+
+### Verification and limits
+
+The 31 new caller tests cover actual CLI prepare/evaluate, no implicit live-mode
+fallback, current source/persona/memory drift, strict shaped validation, immutable
+inputs, abstention, unknown fields/references and bounded malformed-file handling.
+The CLI first failed six end-to-end tests before its entrypoint was wired.
+The caller/outer/context subset passed 484 tests plus 55 subtests; four host pytest
+cleanup warnings are not product failures. On the older main compiler this suite
+uses a clearly marked compiler double and separately proves missing-compiler refusal.
+
+Cross-candidate qualification uses #7493 copywriter blob
+6a64d7f770235fb299707e1bf342d53b63a8eeca from cd9beab5ba0dcebd34967ac8f01e2c4d289b9dff.
+All 31 caller tests PASS with that actual compiler and actual shaped guard in an
+offline source snapshot. Removing the full-payload binding and removing the shaped
+guard each produce one intended assertion failure and zero errors; restored source
+passes all 31. Nine copied source/dependency file hashes match before/after. The first
+snapshot had one missing, unrelated provider-test import; the guard probe was then
+isolated to its actual test function instead of importing that unrelated module.
+
+Evidence: existing M2 evidence directory `marketing-frontier-upgrade-20261002`,
+`m2-caller-red.txt`, `m2-caller-green-v2.txt`, `m2-real-compiler-qualified.txt`, and
+`m2-caller-qualified/source-manifest.json`. Cross-candidate proof is not a current-main
+merge, full application checkout, hosted new-head CI, admitted bot run or production
+acceptance. M2 changes require fresh independent review; M1 approval is not M2 approval.
+
+### Remaining mission and exact next actions
+
+1. Qualify this candidate in the actual code-gated planner/hosted step and obtain
+   new-head independent review. Preserve M1 review/evidence for unchanged blobs.
+2. Reconcile/review #7493 through its incumbent source owner. The new caller refuses
+   to fabricate its compiler before that dependency is integrated. Preserve #7489.
+3. Connect the qualified caller through the existing admitted Runtime/artifact owner;
+   require a consumed assignment and bound return. Protected Wake marks only
+   codex-app-server implemented; Grok/ChatGPT activation needs its own owner proof.
+4. Extend existing golden-set/exemplar evaluation, never create a second label store.
+   Existing production batch gb-933c124e9669 has 60 stratified cases and ZERO human
+   labels; SHA256 34d531dfe9e2f8278652fca86cadf7af5d2d74c0d2b664e43dc03d83581b8437.
+   Stratified inclusion weights do not imply unweighted production prevalence.
+5. Rights-cleared inputs, independent semantic/media review and a newly approved
+   X-visible publication remain required before live autonomy. No growth claim yet.
+
+No unresolved source write or active child is known at this checkpoint. No new
+provider/model dispatch, public post, deployment, historical replay, watcher or
+automatic wake was performed. GitHub source/CI remain owners; a request for review
+is not a worker start. Current user continuation does not transfer other source leases.
+Do not redo #7487 delivery truth, #8057 source-cache revision work, #7489 media/outbox,
+or the existing event, account, numerical, learning, publication and retry owners.
 
 ## Primary references checked 2026-10-02
 

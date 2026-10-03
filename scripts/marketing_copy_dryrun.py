@@ -7,8 +7,19 @@ real key, >=5 model-written posts pasted in the PR body next to the template
 posts they replace"). Interface pinned by
 ``research/marketing_dockets/CONTENT_STUDIO_W1_BUILD_CONTRACT.md`` §Dry-run.
 
-WHAT IT DOES
-------------
+FRONTIER SHADOW MODE (explicit opt-in; no model calls)
+---------------------------------------------------
+--frontier-owner-input current.json prepares a draft-only brief from an explicit
+job-owned context, binding and persona/memory inputs. Add --frontier-issued and
+--frontier-response to evaluate a return against RECOMPILED current inputs.
+Only JSON is printed; no output file, live plan, ledger or outbox is written.
+This is a diagnostic consumer, not a Runtime dispatch or publication admission.
+The incumbent editorial compiler must be present; absence is an explicit error,
+never a template or legacy-contract fallback. Source rights remain owner-proven.
+The normal mode described below remains unchanged and can spend model credit.
+
+WHAT THE NORMAL MODE DOES
+------------------------
 Reads the CURRENT nightly plan (``data/marketing/content_plan.json``), rebuilds
 a writer context for each planned item, runs ``write_posts_llm_v2`` on the first
 N of them, and prints the old template post next to the new model post with its
@@ -240,6 +251,123 @@ def _print_result(n: int, item: dict, ctx: dict, post: dict) -> None:
             print(f"    ! {v}")
 
 
+class FrontierShadowError(ValueError):
+    """Fixed diagnostic only; never propagate source or provider exception text."""
+
+
+def prepare_frontier_shadow(owner_input: dict) -> dict:
+    """Seal a rights-cleared, job-owned context without running a provider.
+
+    This diagnostic consumes explicit current inputs, not the live plan. It does
+    not attest rights, account consent or Runtime admission. Those stay with the
+    supplying owner. Reuse the incumbent compiler (#7493); absence stays a hold.
+    """
+    from engine.marketing import copywriter as cw
+    from engine.marketing import frontier_editorial as frontier
+
+    try:
+        inputs = frontier._clone(owner_input)
+        fields = {"context", "binding", "persona_card", "codex_by_account", "memory_by_account"}
+        if type(inputs) is not dict or set(inputs) != fields:
+            raise ValueError("owner_input_shape")
+        context, binding = inputs["context"], inputs["binding"]
+        if type(context) is not dict or not context or type(binding) is not dict:
+            raise ValueError("context_or_binding")
+        binding_fields = set(frontier._IDS) | {
+            "issued_at", "expires_at", "evidence_refs", "media_spec_ids"}
+        if set(binding) != binding_fields:
+            raise ValueError("binding_shape")
+        if type(inputs["persona_card"]) not in (dict, type(None)):
+            raise ValueError("persona_shape")
+        for field in ("codex_by_account", "memory_by_account"):
+            if type(inputs[field]) is not dict:
+                raise ValueError("context_mapping")
+        # Compiler-owned projections are never accepted from an old/model context.
+        context.pop("editorial_brief", None)
+        context.pop("writer_payload", None)
+    except Exception:
+        raise FrontierShadowError("invalid_current_owner_input") from None
+
+    try:
+        payload = cw._v2_item_payload(
+            context, persona_card=inputs["persona_card"],
+            codex_by_account=inputs["codex_by_account"],
+            memory_by_account=inputs["memory_by_account"])
+        inner = payload["editorial_brief"]
+        if (type(inner) is not dict
+                or inner.get("revision") != "marketing.editorial_brief.v1"
+                or type(inner.get("digest")) is not str
+                or len(inner["digest"]) != 64
+                or any(c not in "0123456789abcdef" for c in inner["digest"])
+                or not callable(getattr(cw, "_attach_editorial_contract", None))):
+            raise ValueError("unsupported_compiler_contract")
+        # Bind ALL writer inputs, including persona register and account memory;
+        # binding only the smaller inner projection could miss relevant changes.
+        context["editorial_brief"] = frontier._clone(inner)
+        context["writer_payload"] = frontier._clone(payload)
+    except Exception:
+        raise FrontierShadowError("canonical_editorial_contract_unavailable") from None
+    try:
+        return frontier.build_brief(context=context, **binding)
+    except Exception:
+        raise FrontierShadowError("invalid_current_owner_input") from None
+
+
+def consume_frontier_shadow(issued: dict, response: dict, *, owner_input: dict, now) -> dict:
+    """Recompile CURRENT owner inputs, then use the real shaped copy guard.
+
+    This is an executable diagnostic caller, not a production copy selector.
+    Semantic, batch/history, filing, critic, rights and media reviews remain owed.
+    A reviewable draft is deliberately not shaped like an accepted llm_v2 item.
+    """
+    from engine.marketing import copywriter as cw
+    from engine.marketing import frontier_editorial as frontier
+
+    def shaped_guard(headline, body, context):
+        text = "\n\n".join(part for part in (headline, body) if part)
+        return cw.validate_copy_v2(text, context, headline=headline)
+
+    current = prepare_frontier_shadow(owner_input)
+    result = frontier.evaluate_return(
+        issued, response, current_brief=current, now=now, copy_validator=shaped_guard)
+    if result["status"] == "REVIEW_REQUIRED":
+        result = cw._attach_editorial_contract(result, current["context"]["writer_payload"])
+    return result
+
+
+def _frontier_shadow_main(args) -> int:
+    """Bounded file input and JSON stdout only; no marketing artifact writes."""
+    from datetime import datetime, timezone
+    from engine.marketing import frontier_editorial as frontier
+
+    def read_object(path):
+        try:
+            with Path(path).open("rb") as stream:
+                return frontier.load_json(stream.read(frontier.MAX_BYTES + 1))
+        except Exception:
+            raise FrontierShadowError("invalid_shadow_input_file") from None
+
+    try:
+        owner = read_object(args.frontier_owner_input)
+        if args.frontier_issued:
+            result = consume_frontier_shadow(
+                read_object(args.frontier_issued), read_object(args.frontier_response),
+                owner_input=owner, now=datetime.now(timezone.utc))
+        else:
+            result = prepare_frontier_shadow(owner)
+        encoded = frontier._json_bytes(result).decode("utf-8")
+    except FrontierShadowError as exc:
+        result = {"status": "REJECTED", "publish_authorized": False,
+                  "reasons": [str(exc)], "draft": None}
+        encoded = json.dumps(result, sort_keys=True)
+    except Exception:
+        result = {"status": "REJECTED", "publish_authorized": False,
+                  "reasons": ["shadow_evaluation_unavailable"], "draft": None}
+        encoded = json.dumps(result, sort_keys=True)
+    print(encoded, flush=True)
+    return 2 if result.get("status") == "REJECTED" else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--limit", type=int, default=8,
@@ -251,7 +379,18 @@ def main(argv: list[str] | None = None) -> int:
                     help="restrict to these kinds (repeatable)")
     ap.add_argument("--shape", default=None,
                     help="force every item to one shape (default: rotate)")
+    ap.add_argument("--frontier-owner-input", metavar="JSON",
+                    help="prepare a draft-only frontier brief from explicit current owner inputs; no provider")
+    ap.add_argument("--frontier-issued", metavar="JSON",
+                    help="original job-owned brief to compare with the current owner inputs")
+    ap.add_argument("--frontier-response", metavar="JSON",
+                    help="returned frontier draft; requires owner input and original issued brief")
     args = ap.parse_args(argv)
+    if args.frontier_issued or args.frontier_response:
+        if not (args.frontier_owner_input and args.frontier_issued and args.frontier_response):
+            ap.error("frontier evaluation requires owner input, issued brief and response")
+    if args.frontier_owner_input:
+        return _frontier_shadow_main(args)
 
     if args.shape:
         # A typo used to be assigned to every context, where shape_violations
