@@ -12,6 +12,7 @@ Coverage:
 from __future__ import annotations
 
 import copy
+import json
 from datetime import datetime, timezone, timedelta
 
 import pytest
@@ -900,6 +901,103 @@ class TestCategoryProxy:
         assert cp["known_premium_usd"] == pytest.approx(4_000_000.0)
         assert cp["unknown_premium_usd"] == pytest.approx(0.0)
         assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+
+    def test_valid_numeric_legacy_unchanged_and_json_safe(self):
+        """Frozen valid finite numeric path: legacy numbers byte-stable + JSON-safe."""
+        ev1 = _make_event(premium=2_000_000.0, ask_share=0.91,
+                          category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, ask_share=0.91,
+                          category_proxy_share=0.8, ts=_ts("10:10"))
+        result = aggregate_chain_heat([ev1, ev2], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        c = result[0]
+        assert c["total_premium_mn"] == pytest.approx(4.0)
+        assert c["alert_count"] == 2
+        assert c["ask_share"] == pytest.approx(0.91)
+        assert c["lean"] == "accumulation"
+        cp = c["category_proxy"]
+        assert cp["share"] == pytest.approx(0.80)
+        assert cp["known_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["unknown_premium_usd"] == pytest.approx(0.0)
+        assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["invalid_premium_count"] == 0
+        json.dumps(c, allow_nan=False)
+
+    def test_zero_premium_is_valid_never_invalid(self):
+        """A numeric zero premium is valid mass — it is NOT an invalid amount."""
+        ev1 = _make_event(premium=0.0, category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:10"))
+        ev3 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:20"))
+        result = aggregate_chain_heat([ev1, ev2, ev3], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        cp = result[0]["category_proxy"]
+        assert cp["invalid_premium_count"] == 0
+        assert cp["share"] == pytest.approx(0.80)
+
+    @pytest.mark.parametrize("bad", [
+        None, True, False, "abc", "", "2000000", float("inf"), float("-inf"),
+        float("nan"), -100.0,
+    ])
+    def test_bad_premium_is_invalid_no_mass(self, bad):
+        """None/bool/str/nonfinite/negative premium: no mass, count 1, share None."""
+        ev1 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:10"))
+        ev_bad = {"root": "SPY", "strike": 530.0, "exp": "2026-07-18",
+                  "right": "P", "premium": bad, "ts": _ts("10:20")}
+        result = aggregate_chain_heat([ev1, ev2, ev_bad], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        c = result[0]
+        # invalid premium contributed NO mass: legacy total stays the valid 4M
+        assert c["total_premium_mn"] == pytest.approx(4.0)
+        cp = c["category_proxy"]
+        assert cp["invalid_premium_count"] == 1
+        assert cp["share"] is None
+        assert cp["known_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["unknown_premium_usd"] == pytest.approx(0.0)
+        assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+        json.dumps(c, allow_nan=False)
+
+    def test_missing_premium_key_is_invalid_never_zero(self):
+        """A missing premium key is INVALID — never defaulted to zero-as-valid."""
+        ev1 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:10"))
+        ev_bad = {"root": "SPY", "strike": 530.0, "exp": "2026-07-18",
+                  "right": "P", "ts": _ts("10:20")}  # no 'premium' key
+        result = aggregate_chain_heat([ev1, ev2, ev_bad], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        c = result[0]
+        assert c["total_premium_mn"] == pytest.approx(4.0)
+        cp = c["category_proxy"]
+        assert cp["invalid_premium_count"] == 1
+        assert cp["share"] is None
+        assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+        json.dumps(c, allow_nan=False)
+
+    @pytest.mark.parametrize("bad_ask", [
+        True, False, float("nan"), float("inf"), 1.5, -0.1, "abc", "0.8",
+    ])
+    def test_invalid_ask_share_ignored_no_json_poison(self, bad_ask):
+        """bool/nonfinite/out-of-bounds ask_share is ignored — legacy stays JSON-safe."""
+        ev1 = _make_event(premium=2_000_000.0, ask_share=bad_ask,
+                          category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, ask_share=bad_ask,
+                          category_proxy_share=0.8, ts=_ts("10:10"))
+        result = aggregate_chain_heat([ev1, ev2], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        c = result[0]
+        assert c["ask_share"] is None            # ignored, None fallback retained
+        assert c["lean"] == "contested"
+        assert c["category_proxy"]["share"] == pytest.approx(0.80)
+        json.dumps(c, allow_nan=False)           # must not contain Infinity/NaN
+
+    def test_finite_overflow_refuses_whole_campaign(self):
+        """Two finite 1e308 premiums overflow → no campaign, never share=0.0."""
+        ev1 = _make_event(premium=1e308, ask_share=0.91,
+                          category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=1e308, ask_share=0.91,
+                          category_proxy_share=0.8, ts=_ts("10:10"))
+        result = aggregate_chain_heat([ev1, ev2], min_premium_mn=3.0, min_alerts=2)
+        assert result == []
 
     def test_source_certified_accepted_never_promoted(self):
         """No generated proxy may claim a certified source."""

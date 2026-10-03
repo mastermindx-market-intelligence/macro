@@ -7,6 +7,8 @@ Tests the pure parts of scripts/build_chain_heat.py:
 """
 from __future__ import annotations
 
+import json
+
 import pytest
 
 from scripts.build_chain_heat import (
@@ -443,3 +445,97 @@ def test_publisher_does_not_write_when_source_time_is_invalid(tmp_path, monkeypa
     )
     assert builder.main(["--no-publish"]) == 0
     assert not (tmp_path / "chain_heat_current.json").exists()
+
+
+# ─── strict JSON emit (allow_nan=False) ───────────────────────────────────────
+
+def test_strict_json_serialization_succeeds_for_valid_campaigns():
+    """Valid finite campaigns serialize under allow_nan=False with no tokens."""
+    events = _enrich_events(_make_events(2))
+    raw = aggregate_chain_heat(events, min_premium_mn=3.0, min_alerts=2,
+                               session_date="2026-07-08")
+    env = build_envelope(raw, "2026-07-08", "2026-07-08T20:00:00Z")
+    body = json.dumps(env, ensure_ascii=False, allow_nan=False)
+    assert "Infinity" not in body
+    assert "NaN" not in body
+
+
+def test_publish_r2_rejects_poison_before_write(monkeypatch):
+    """A nonfinite payload is refused before any PUT reaches the destination."""
+    import scripts.build_chain_heat as builder
+
+    class _FakeClient:
+        def __init__(self) -> None:
+            self.put_calls: list[dict] = []
+
+        def put_object(self, **kwargs):
+            self.put_calls.append(kwargs)
+
+    client = _FakeClient()
+    monkeypatch.setattr(builder, "_r2_client", lambda: client)
+    poison = {
+        "schema": "options_flow.chain_heat/v1",
+        "campaigns": [{"ask_share": float("nan")}],
+    }
+    with pytest.raises(ValueError):
+        builder.publish_r2(poison, "bucket")
+    assert client.put_calls == []
+
+
+def test_publisher_does_not_write_when_payload_is_poisoned(tmp_path, monkeypatch):
+    """Strict serialization happens BEFORE the destination write (no file)."""
+    import scripts.build_chain_heat as builder
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        builder,
+        "fetch_feed",
+        lambda: {
+            "schema": "live_flow.feed/v1",
+            "asof": "2026-07-08T20:00:00Z",
+            "session_date": "2026-07-08",
+            "events": [],
+        },
+    )
+    monkeypatch.setattr(
+        builder,
+        "build_envelope",
+        lambda *a, **k: {
+            "schema": "options_flow.chain_heat/v1",
+            "asof": float("inf"),
+            "campaigns": [],
+        },
+    )
+    assert builder.main(["--no-publish"]) == 0
+    assert not (tmp_path / "chain_heat_current.json").exists()
+
+
+def test_publisher_writes_valid_payload(tmp_path, monkeypatch):
+    """The strict path still writes a clean, finite artifact on valid input."""
+    import scripts.build_chain_heat as builder
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        builder,
+        "fetch_feed",
+        lambda: {
+            "schema": "live_flow.feed/v1",
+            "asof": "2026-07-08T20:00:00Z",
+            "session_date": "2026-07-08",
+            "events": [
+                {"id": "a", "ts": "2026-07-08T10:00:00Z", "root": "SMH",
+                 "right": "C", "exp": "2026-09-18", "strike": 530.0,
+                 "premium": 1_500_000.0, "side": "~buy"},
+                {"id": "b", "ts": "2026-07-08T10:10:00Z", "root": "SMH",
+                 "right": "C", "exp": "2026-09-18", "strike": 530.0,
+                 "premium": 1_500_000.0, "side": "~buy"},
+            ],
+        },
+    )
+    assert builder.main(["--no-publish"]) == 0
+    out = tmp_path / "chain_heat_current.json"
+    assert out.exists()
+    text = out.read_text(encoding="utf-8")
+    assert "Infinity" not in text and "NaN" not in text
+    payload = json.loads(text)
+    assert payload["campaigns"]

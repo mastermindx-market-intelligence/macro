@@ -277,9 +277,9 @@ def build_inspect_report(spec, spec_digest: str, reference_digest) -> dict:
                 {
                     "path": entry.get("path"),
                     "declared_sha256": entry.get("sha256"),
-                    "present": False,
+                    "present": None,
                     "fetched": False,
-                    "note": "declared only; this adapter never auto-fetches inputs",
+                    "note": "declared only; presence is not checked and inputs are never auto-fetched",
                 }
             )
 

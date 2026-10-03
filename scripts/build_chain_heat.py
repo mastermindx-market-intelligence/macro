@@ -234,7 +234,10 @@ def build_envelope(
 def publish_r2(payload: dict, bucket: str) -> None:
     """PUT chain_heat_current.json to R2."""
     client = _r2_client()
-    body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    # Strict JSON BEFORE the destination write: a poisoned (nonfinite) payload
+    # must be refused here with no partial/invalid object ever PUT.  We never
+    # emit Infinity/NaN tokens.
+    body = json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf-8")
     client.put_object(
         Bucket=bucket,
         Key=_PUBLISH_KEY,
@@ -307,8 +310,11 @@ def main(argv: list[str] | None = None) -> int:
         # 5. Publish or write local
         if args.no_publish:
             out_path = "chain_heat_current.json"
+            # Serialize strictly BEFORE opening the destination so a poisoned
+            # payload fails soft with no file written (fail-soft contract).
+            body = json.dumps(payload, ensure_ascii=False, allow_nan=False, indent=2)
             with open(out_path, "w", encoding="utf-8") as fh:
-                json.dump(payload, fh, ensure_ascii=False, indent=2)
+                fh.write(body)
             log.info("wrote local: %s (%d campaigns)", out_path, len(campaigns_raw))
         else:
             bucket = os.environ.get("R2_BUCKET", "")

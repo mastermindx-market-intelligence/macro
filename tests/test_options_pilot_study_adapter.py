@@ -123,7 +123,7 @@ class InspectTests(unittest.TestCase):
         report = parse_stdout(run_cli("--spec", str(SPEC), "--mode", "inspect"))
         for entry in report["declared_input_manifest"]:
             self.assertFalse(entry["fetched"])
-            self.assertFalse(entry["present"])
+            self.assertIsNone(entry["present"])
 
     def test_no_boolean_claimed_as_observation(self):
         report = parse_stdout(run_cli("--spec", str(SPEC), "--mode", "inspect"))

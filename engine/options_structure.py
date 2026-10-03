@@ -220,6 +220,44 @@ def _bounded_category_share(value: object) -> float | None:
     return share
 
 
+def _finite_nonneg_amount(value: object) -> float | None:
+    """Return a finite, nonnegative float amount, else ``None``.
+
+    Booleans are rejected (``bool`` is an ``int`` subclass) so ``True`` cannot
+    masquerade as ``1.0`` USD of premium mass.  A missing key, ``None``, a
+    string, any other non-numeric type, a nonfinite value, or a negative value
+    is INVALID and returns ``None`` — it is never coerced to a valid zero.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    if not isinstance(value, (int, float)):
+        return None
+    amount = float(value)
+    if not math.isfinite(amount) or amount < 0.0:
+        return None
+    return amount
+
+
+#: Money accumulators that must stay finite for a group to be publishable.  A
+#: nonfinite value means the group's sums overflowed (e.g. 1e308 + 1e308); the
+#: whole campaign is refused rather than clipped or replaced with a bounded or
+#: zero total.
+_CHAIN_HEAT_FINITE_ACCUMULATORS = (
+    "total_premium",
+    "ask_prem_sum",
+    "total_prem_for_ask",
+    "cat_proxy_num",
+    "cat_proxy_known_prem",
+    "cat_proxy_unknown_prem",
+    "cat_proxy_source_prem",
+)
+
+
+def _accumulators_finite(g: dict) -> bool:
+    """True when every money accumulator in a group is finite."""
+    return all(math.isfinite(g[key]) for key in _CHAIN_HEAT_FINITE_ACCUMULATORS)
+
+
 def aggregate_chain_heat(
     events: list[dict],
     min_premium_mn: float = _CHAIN_HEAT_PREMIUM_MN_DEFAULT,
@@ -291,7 +329,6 @@ def aggregate_chain_heat(
             continue
 
         key = (root, strike, exp, right)
-        prem = float(ev.get("premium", 0))
 
         if key not in groups:
             groups[key] = {
@@ -315,39 +352,59 @@ def aggregate_chain_heat(
             }
 
         g = groups[key]
-        g["total_premium"] += prem
         g["alert_count"]   += 1
 
         ts = str(ev.get("ts", ""))
         if ts:
             g["ts_list"].append(ts)
 
-        # ask_share contribution
-        ask_share_ev = ev.get("ask_share")
+        # Premium gate — only a non-bool, finite, nonnegative numeric amount is
+        # valid mass.  Missing / None / bool / string / other types / nonfinite /
+        # negative are INVALID: they contribute NO mass to the legacy total, the
+        # ask sums, or the proxy sums (never defaulted to zero-as-valid), are
+        # counted, and force the campaign proxy share to None below.
+        prem = _finite_nonneg_amount(ev.get("premium"))
+        if prem is None:
+            g["cat_proxy_invalid_count"] += 1
+            continue
+
+        g["total_premium"] += prem
+
+        # ask_share contribution — legacy path.  Only a bounded, finite [0, 1]
+        # fraction on valid premium mass contributes; bool / nonfinite /
+        # out-of-bounds / non-numeric ask_share is ignored (the existing None
+        # fallback is retained), which keeps the legacy ask_share JSON-safe.
+        ask_share_ev = _bounded_category_share(ev.get("ask_share"))
         if ask_share_ev is not None and prem > 0:
-            try:
-                g["ask_prem_sum"]        += float(ask_share_ev) * prem
-                g["total_prem_for_ask"]  += prem
-            except (TypeError, ValueError):
-                pass
+            g["ask_prem_sum"]        += ask_share_ev * prem
+            g["total_prem_for_ask"]  += prem
 
         # category_proxy contribution — explicitly named and INDEPENDENT of the
         # legacy ask_share path above.  Never uses ask_share as the new proxy and
         # never infers a measured NBBO from categories.  Only nonnegative finite
         # premium is admitted; anything else is counted, not silently accepted.
         cat_share_ev = _bounded_category_share(ev.get("category_proxy_share"))
-        if math.isfinite(prem) and prem >= 0.0:
-            g["cat_proxy_source_prem"] += prem
-            if cat_share_ev is not None:
-                g["cat_proxy_num"]         += cat_share_ev * prem
-                g["cat_proxy_known_prem"]  += prem
-            else:
-                g["cat_proxy_unknown_prem"] += prem
+        g["cat_proxy_source_prem"] += prem
+        if cat_share_ev is not None:
+            g["cat_proxy_num"]         += cat_share_ev * prem
+            g["cat_proxy_known_prem"]  += prem
         else:
-            g["cat_proxy_invalid_count"] += 1
+            g["cat_proxy_unknown_prem"] += prem
 
     campaigns: list[dict] = []
     for key, g in groups.items():
+        # Finite-overflow guard: if any accumulator overflowed to a nonfinite
+        # value, REFUSE the whole campaign and omit it rather than clip, bound,
+        # or invent a total.  Each addend can be finite while the sum is not
+        # (e.g. two 1e308 premiums), so this must be checked after accumulation.
+        if not _accumulators_finite(g):
+            log.warning(
+                "chain_heat: refusing campaign %s — non-finite premium "
+                "accumulator (overflow); omitting rather than fabricating mass",
+                key,
+            )
+            continue
+
         total_prem_mn = g["total_premium"] / 1_000_000.0
         if total_prem_mn < min_premium_mn:
             continue
