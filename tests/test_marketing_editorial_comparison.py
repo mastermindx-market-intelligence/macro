@@ -258,3 +258,82 @@ def test_lowering_minimum_after_labels_invalidates_judgment():
     card = gs.blind_editorial_pairs(cases, seed="s", min_pairs=30)["cards"][0]
     with pytest.raises(ValueError):
         gs.evaluate_editorial_pairs(cases, [judgment(card)], seed="s", min_pairs=1)
+
+
+def _call_editorial_cli(tmp_path, packet, command):
+    path = tmp_path / (command + ".json")
+    path.write_text(json.dumps(packet))
+    stream = io.StringIO()
+    with redirect_stdout(stream):
+        code = cli.main([command, str(path)])
+    return code, json.loads(stream.getvalue())
+
+
+def test_public_comparison_id_does_not_decode_every_model_arm(tmp_path):
+    owner = {"cases": [case(i) for i in range(30)], "seed": "private-fixture-seed"}
+    code, public = _call_editorial_cli(tmp_path, owner, "editorial-blind")
+    assert code == 0 and "seed" not in public and "assignments" not in public
+    # Reproduce the prior leak through public JSON ONLY, not private mappings.
+    rows = [{"comparison_id": c["comparison_id"],
+             "choice": "left" if int(c["comparison_id"][-1], 16) % 2 else "right",
+             "reviewer_ref": "synthetic-review-no-human", "judgment_source": "human"}
+            for c in public["cards"]]
+    code, result = _call_editorial_cli(tmp_path, dict(owner, judgments=rows), "editorial-eval")
+    assert code == 0 and result["state"] == "measured"
+    assert 0 < result["frontier_wins"] < 30, result
+
+
+def test_identical_visual_bytes_at_distinct_refs_cannot_win(tmp_path):
+    owner = {"cases": [case(i) for i in range(30)], "seed": "private-fixture-seed"}
+    for c in owner["cases"]:
+        c["baseline"].update(visual_ref="fixture:image-A", visual_sha256="c"*64)
+        c["frontier"] = dict(c["baseline"], visual_ref="fixture:image-B")
+    code, public = _call_editorial_cli(tmp_path, owner, "editorial-blind")
+    assert code == 0
+    rows = [{"comparison_id": c["comparison_id"], "choice": "left",
+             "reviewer_ref": "synthetic-review-no-human", "judgment_source": "human"}
+            for c in public["cards"]]
+    code, result = _call_editorial_cli(tmp_path, dict(owner, judgments=rows), "editorial-eval")
+    assert code == 2 and result["state"] == "invalid-input", result
+
+
+def test_identical_image_aliases_still_allow_nondirectional_judgment():
+    row = case()
+    row["baseline"].update(visual_ref="fixture:location-A", visual_sha256="c"*64)
+    row["frontier"] = dict(row["baseline"], visual_ref="fixture:location-B")
+    card = gs.blind_editorial_pairs([row], seed="s")["cards"][0]
+    for choice in ("tie", "neither"):
+        report = gs.evaluate_editorial_pairs([row], [judgment(card, choice)], seed="s")
+        assert report["informative_pairs"] == 0
+        assert report["promotion_authorized"] is False
+
+
+def test_genuinely_different_image_digest_can_carry_a_preference():
+    row = case()
+    row["baseline"].update(visual_ref="fixture:A", visual_sha256="c"*64)
+    row["frontier"] = dict(row["baseline"], visual_ref="fixture:B", visual_sha256="d"*64)
+    card = gs.blind_editorial_pairs([row], seed="s")["cards"][0]
+    result = gs.evaluate_editorial_pairs([row], [judgment(card)], seed="s")
+    assert result["informative_pairs"] == 1
+
+
+def test_visual_reference_remains_bound_even_if_displayed_identity_matches():
+    row = case()
+    row["baseline"].update(visual_ref="fixture:A", visual_sha256="c"*64)
+    row["frontier"].update(visual_ref="fixture:B", visual_sha256="d"*64)
+    card = gs.blind_editorial_pairs([row], seed="s")["cards"][0]
+    row["frontier"]["visual_ref"] = "fixture:new-location-same-content"
+    with pytest.raises(ValueError):
+        gs.evaluate_editorial_pairs([row], [judgment(card)], seed="s")
+
+
+def test_legacy_public_bit_orientation_judgments_cannot_be_reinterpreted():
+    rows = [case()]
+    legacy_panel = gs._editorial_digest({"schema": gs.EDITORIAL_COMPARISON_SCHEMA,
+                                        "seed": "s", "minimum_pairs": 30, "cases": rows})
+    legacy_id = "ec-" + gs._editorial_digest({"panel_sha256": legacy_panel, "case_id": rows[0]["case_id"]})
+    current = gs.blind_editorial_pairs(rows, seed="s")["cards"][0]
+    assert current["comparison_id"] != legacy_id
+    old_judgment = dict(judgment(current), comparison_id=legacy_id)
+    with pytest.raises(ValueError):
+        gs.evaluate_editorial_pairs(rows, [old_judgment], seed="s")

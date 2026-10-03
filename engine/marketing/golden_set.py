@@ -781,6 +781,7 @@ def blind_editorial_pairs(cases: list[dict], *, seed: str, min_pairs: int = 30) 
     # Freeze the complete ordered panel and declared threshold before labeling.
     # Dropping cases or changing the minimum creates new comparison identities.
     panel_sha = _editorial_digest({"schema": EDITORIAL_COMPARISON_SCHEMA,
+                                  "orientation_policy": "private_seed_hmac_sha256_v1",
                                   "seed": seed, "minimum_pairs": min_pairs, "cases": cases})
     cards, assignments = [], []
     seen_ids, seen_events = set(), set()
@@ -819,7 +820,16 @@ def blind_editorial_pairs(cases: list[dict], *, seed: str, min_pairs: int = 30) 
                             "visual_ref": visual, "visual_sha256": digest}
         identity = _editorial_digest({"panel_sha256": panel_sha, "case_id": case_id})
         comparison_id = "ec-" + identity
-        left_arm = "frontier" if int(identity[-1], 16) % 2 else "baseline"
+        # Public identity MUST NOT disclose orientation. Use a separate keyed
+        # derivation; the owner retains a private high-entropy seed. This is
+        # experiment randomization, not a credential or authentication service.
+        import hmac
+        orientation = hmac.new(
+            seed.encode("utf-8"),
+            b"golden.editorial.orientation.v1\0" + bytes.fromhex(panel_sha) + case_id.encode("utf-8"),
+            hashlib.sha256,
+        ).digest()
+        left_arm = "frontier" if orientation[-1] % 2 else "baseline"
         right_arm = "baseline" if left_arm == "frontier" else "frontier"
         cards.append({"comparison_id": comparison_id, "case_id": case_id,
                       "split": case["split"], "evidence_ref": evidence_ref,
@@ -864,7 +874,8 @@ def evaluate_editorial_pairs(cases: list[dict], judgments: list[dict], *,
         if row["choice"] not in ("left", "right", "tie", "neither"):
             raise ValueError("invalid_editorial_choice")
         if (row["choice"] in ("left", "right")
-                and cards[identity]["left"] == cards[identity]["right"]):
+                and all(cards[identity]["left"][field] == cards[identity]["right"][field]
+                        for field in ("decision", "text", "visual_sha256"))):
             raise ValueError("identical_outputs_have_no_directional_preference")
         if cards[identity]["split"] != "holdout":
             counts["excluded_development_judgments"] += 1

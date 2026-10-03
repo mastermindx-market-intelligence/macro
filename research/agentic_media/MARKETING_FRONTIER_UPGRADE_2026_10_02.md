@@ -590,6 +590,38 @@ c669d79330b1570655b381850088848e5f76743d6f6619c394d0eb09b20bb9b7; evidence remai
 rivn-20261002-editorial-example and #8302/comment5966342590. The expired reference
 brief may never be silently refreshed or used as current publication approval.
 
+### M3 independent-review repair: actual masking and displayed-content identity
+
+Independent review5399399690 identified two defects in the first comparison
+implementation: public comparison-ID parity disclosed every arm assignment; and
+identical visual bytes at different locations could evade the identical-output
+guard. The prior practical-blinding and identical-output claims are superseded
+by this repair, not defended by the earlier passing tests.
+
+Orientation now uses private-seed HMAC-SHA256 with a separate fixed domain, binding
+panel identity and case identity. No bit from a public identifier chooses the arm.
+The experiment owner must retain a high-entropy private seed; this feature is not
+an authentication, credential-storage or anonymity system. The orientation policy
+is itself included in panel identity, so judgments from the former public-bit
+mapping are rejected rather than silently reinterpreted under a new assignment.
+
+Displayed-output equality now compares decision, exact text and image-content
+digest, not the asset's storage location. The reference remains bound in the panel
+for provenance and stale-judgment detection. Ties/neither remain allowed for equal
+content, and genuinely different image digests can carry directional preferences.
+Caller-supplied hashes still do not verify actual image bytes or source rights.
+
+Both requested public-CLI regressions were adopted, with four additional controls
+for tie/neither, different image bytes, reference drift and legacy-label rejection.
+Original source produced2FAIL/30PASS. Repaired comparator33PASS; complete six-file
+caller/copy/comparator/scorer campaign733PASS/57subtests, four existing host cleanup
+warnings. Three in-memory mutations restore the public bit, location-sensitive
+equality or missing migration binding; each fails its intended regression, then
+restored33PASS with source unchanged. Logs: m3-review-guards-red.txt,
+m3-review-guards-green.txt and m3-review-mutation-proof.txt. No human labels were
+collected and no editorial improvement is claimed. Fresh source review and exact
+head hosted proof remain required; M2's separate empty-option repair is retained.
+
 ### Remaining mission and exact next actions
 
 1. Qualify this candidate in the actual code-gated planner/hosted step and obtain
