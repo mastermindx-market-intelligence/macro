@@ -5470,7 +5470,7 @@ class TestNbboMicrostructureMeasurement:
                 quote_ts="2026-07-02T14:30:02.000",
             ),
         ]
-        block = lf._coalesce_nbbo_microstructure(_df(rows))[MICRO_KEY]
+        micro = lf._coalesce_nbbo_microstructure(_df(rows))[MICRO_KEY]
 
         assert micro["schema"] == MICRO_SCHEMA
         assert micro["source_print_count"] == 3
