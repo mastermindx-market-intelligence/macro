@@ -79,6 +79,9 @@ def cell_summary(
     rows: list[Mapping[str, Any]], reading: str, *, cfg: Mapping[str, Any], with_interval: bool
 ) -> dict[str, Any]:
     floor = cfg["matched_control_min_rows"]
+    identities = [(r["selector"], r["anchor_id"], r["horizon"], r["cost_bps"]) for r in rows]
+    if len(set(identities)) != len(identities):
+        raise ValueError("duplicate_event_cell_row")
     fires_raw = len(rows)
     no_control = sum(1 for r in rows if r["pool_availability"] != "AVAILABLE")
     selected_censored = sum(1 for r in rows if r["selected_return"] is None)
@@ -253,7 +256,7 @@ def summarize(rows: list[Mapping[str, Any]], *, cfg: Mapping[str, Any]) -> dict[
             g["disposition"] = None
         gates[selector] = g
 
-    cost_invariance: dict[str, dict[str, bool]] = {}
+    cost_invariance: dict[str, dict[str, bool | None]] = {}
     for selector in cfg["selectors"]:
         for horizon in cfg["horizons"]:
             inv_key = f"{selector}|{horizon}"
@@ -265,7 +268,7 @@ def summarize(rows: list[Mapping[str, Any]], *, cfg: Mapping[str, Any]) -> dict[
                 ]
                 non_none = [x for x in stats if x is not None]
                 if not non_none:
-                    cost_invariance[inv_key][reading] = True
+                    cost_invariance[inv_key][reading] = None
                 elif len(non_none) != len(stats):
                     cost_invariance[inv_key][reading] = False
                 else:

@@ -24,7 +24,7 @@ def synth_rows(n_dates=140, *, selector="EXHAUSTION_RECLAIM", horizon="60m", cos
             controls_b = controls_a[: len(controls_a) - (ti % 4)]
             row = {
                 "selector": selector, "horizon": horizon, "cost_bps": cost_bps,
-                "symbol": ticker, "date": day.isoformat(),
+                "symbol": ticker, "date": day.isoformat(), "anchor_id": f"{ticker}:{day.isoformat()}",
                 "candidate_bin": 19 + (di + ti) % 5, "decision_bin": 19 + (di + 2 * ti) % 6,
                 "selected_return": selected,
                 "selected_touch": "same_bar_ambiguous" if (di * 5 + ti) % 17 == 0 else "neither",
@@ -227,7 +227,7 @@ def test_zero_statistic_fails_the_sign_bullet():
     for day in early_days + late_days:
         rows.append({
             "selector": "EXHAUSTION_RECLAIM", "horizon": "60m", "cost_bps": 25,
-            "symbol": "AAA", "date": day.isoformat(),
+            "symbol": "AAA", "date": day.isoformat(), "anchor_id": f"AAA:{day.isoformat()}",
             "candidate_bin": 19, "decision_bin": 19,
             "selected_return": 0.0, "selected_touch": "neither",
             "pool_availability": "AVAILABLE", "pool_reason": None, "matched_count": 10,
@@ -277,7 +277,7 @@ def test_interval_lower_bound_of_exactly_zero_fails():
     for day in early_days + late_days:
         rows.append({
             "selector": "EXHAUSTION_RECLAIM", "horizon": "60m", "cost_bps": 25,
-            "symbol": "AAA", "date": day.isoformat(),
+            "symbol": "AAA", "date": day.isoformat(), "anchor_id": f"AAA:{day.isoformat()}",
             "candidate_bin": 19, "decision_bin": 19,
             "selected_return": 0.0, "selected_touch": "neither",
             "pool_availability": "AVAILABLE", "pool_reason": None, "matched_count": 10,

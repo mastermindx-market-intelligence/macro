@@ -149,3 +149,31 @@ Terms used below: TD = TEXT-DETERMINED, one reading. CD = PRE-OUTCOME-CODE-DETER
     control's outcome for a given (anchor, d, horizon, cost) is computed once and reused by every pool that
     contains it — a cache of an identical deterministic computation, never a selection. The run asserts
     `bootstrap_repetitions == 4000` and `seed == 20260917` from the frozen config before any outcome call.
+
+## Amendment 1 (pre-outcome, 2026-10-03)
+
+Adopted BEFORE any outcome of the study was computed, read or inferred, after an independent exact-head Opus
+review of the pool and aggregate code at carrier head 388a29a9a012. It adds refusals and disclosures only: it
+changes no selector, match rule, horizon, cost, statistic or gate threshold, and no ruling 1-30 is edited.
+
+31. **Preflight and refusals before the first outcome.**
+    - Before the first `measure_event_outcome` call the run executes every non-outcome step for every selected
+      event and every matched control — day and frame presence, the control's own-session anchor join and entry
+      clock (rulings 1-2), the beta lookup, and shift-bar validity (ruling 6) — and refuses the whole run on
+      the first defect. A control whose shift bars are invalid is counted, not refused (reading B censors it).
+    - The selected event's beta is its own session's normalization beta, the same source a control uses
+      (ruling 2). An event that carries a different beta is refused (`selected_beta_source_mismatch`).
+    - A census row or selected event WITHOUT the QQQ-sign key is refused (`qqq_sign_key_missing`). A key that
+      is present and null keeps its ruling-8 meaning: `no_control` for a selected event, rejected and counted
+      for a census row.
+    - Two rows with the same (selector, anchor, horizon, cost) are refused (`duplicate_event_cell_row`), as
+      are a duplicate pool, a duplicate selected event, a selected event without a pool and a pool without a
+      selected event.
+    - Overlap (ruling 16) is published per selector and also across all selectors together.
+    - Cost invariance (ruling 7) is reported as true, false, or null when no cost cell of that
+      (selector, horizon, reading) has a statistic; null is never reported as true.
+    - A run that aborts on a refusal or an exception BEFORE persisting or printing any outcome value may be
+      re-run only after the defect is fixed in a reviewed commit, and the final publication discloses every
+      abort: the count, the exception types and the code sha of each attempt. The abort receipt records the
+      exception type and the traceback file:line frames only — no message text and no outcome number. A run
+      that persisted or printed any outcome value is the registered run and is never repeated.

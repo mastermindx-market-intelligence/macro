@@ -1,6 +1,6 @@
 """Frozen v4 matched-control pools and control measurement for the R1-B study.
 
-Implements the pre-outcome analysis rulings 1-8, 15-17 and 29.  Pools are built
+Implements the pre-outcome analysis rulings 1-8, 15-17, 29 and 31.  Pools are built
 from candidate-time facts only and nothing here selects on outcomes.  A control
 is measured from its OWN session (its anchor row and that session's
 normalization); the selected event's fields are never copied onto a control.
@@ -34,7 +34,9 @@ def split_census(rows: Iterable[Mapping[str, Any]]) -> tuple[list[dict[str, Any]
     usable: list[dict[str, Any]] = []
     rejected = 0
     for row in rows:
-        if _sign_ok(row.get("qqq_open_to_decision_sign")):
+        if "qqq_open_to_decision_sign" not in row:
+            raise ValueError("qqq_sign_key_missing")
+        if _sign_ok(row["qqq_open_to_decision_sign"]):
             usable.append(dict(row))
         else:
             rejected += 1
@@ -52,7 +54,9 @@ def build_pool(event: Mapping[str, Any], *, census: list[dict[str, Any]],
         "confirmation_delay_bars": event["confirmation_delay_bars"],
         "market_outcomes_computed": False, "fallback_used": False,
     }
-    sign = event.get("qqq_open_to_decision_sign")
+    if "qqq_open_to_decision_sign" not in event:
+        raise ValueError("qqq_sign_key_missing")
+    sign = event["qqq_open_to_decision_sign"]
     if not _sign_ok(sign):
         return {**base, "availability": "NO_CONTROL", "reason": "qqq_sign_unavailable",
                 "matched_count": 0, "matched_controls": [], "excluded_counts": {}}
@@ -103,10 +107,20 @@ def day_beta(day: Mapping[str, Any]) -> float | None:
     return float(normalization["beta"]) if normalization.get("beta_available") else None
 
 
+def selected_beta(event: Mapping[str, Any], day: Mapping[str, Any]) -> float | None:
+    """The selected event's beta from its OWN session's normalization — the source controls use."""
+    beta = day_beta(day)
+    if "beta" in event and event["beta"] != beta:
+        raise ValueError("selected_beta_source_mismatch")
+    return beta
+
+
 def control_event(control: Mapping[str, Any], *, day: Mapping[str, Any],
                   config_bytes: bytes) -> dict[str, Any]:
     """Measurement event for one matched control, from the control's OWN session."""
     cfg = json.loads(config_bytes)
+    if control["anchor_id"] not in day["anchors"]:
+        raise ValueError("control_anchor_missing")
     anchor = day["anchors"][control["anchor_id"]]
     normalization = day["normalization"]
     candidate_at = pd.Timestamp(control["candidate_at"])
@@ -138,6 +152,71 @@ def shift_bars_valid(control: Mapping[str, Any], *, day: Mapping[str, Any]) -> b
     return state == "ok"
 
 
+def overlap_all(pools: Iterable[Mapping[str, Any]]) -> dict[str, Any]:
+    """Across every selector: selected anchors that sit in any pool, and pool membership counts."""
+    group = list(pools)
+    selected = {pool["anchor_id"] for pool in group}
+    membership = Counter(c["anchor_id"] for pool in group for c in pool["matched_controls"])
+    distribution = Counter(membership.values())
+    return {
+        "pools": len(group),
+        "distinct_selected_anchors": len(selected),
+        "distinct_controls": len(membership),
+        "selected_anchors_also_controls": len(selected & set(membership)),
+        "pools_per_control": {str(k): v for k, v in sorted(distribution.items())},
+    }
+
+
+def preflight(events: Iterable[Mapping[str, Any]], pools: Iterable[Mapping[str, Any]],
+              days: Mapping[tuple[str, str], Mapping[str, Any]], *,
+              config_bytes: bytes) -> dict[str, int]:
+    """Run every non-outcome step for every event and control; raise on the first defect.
+
+    Called before the first outcome is measured, so nothing can fail part-way through the
+    single run.  It reads no outcome: it resolves each session, checks each selected
+    event's beta source, builds each control's measurement event and checks its shift bars.
+    """
+    by_key: dict[tuple[str, str], Mapping[str, Any]] = {}
+    for pool in pools:
+        key = (pool["selector"], pool["anchor_id"])
+        if key in by_key:
+            raise ValueError("duplicate_pool")
+        by_key[key] = pool
+    counts = {"events": 0, "controls": 0, "shift_bar_invalid": 0}
+    seen: set[tuple[str, str]] = set()
+    for event in events:
+        key = (event["selector"], event["anchor_id"])
+        if key in seen:
+            raise ValueError("duplicate_selected_event")
+        seen.add(key)
+        if key not in by_key:
+            raise ValueError("selected_event_without_pool")
+        if (event["symbol"], event["session"]) not in days:
+            raise ValueError("selected_day_missing")
+        own = days[(event["symbol"], event["session"])]
+        if "stock_frame" not in own or "benchmark_frame" not in own:
+            raise ValueError("selected_day_frames_missing")
+        selected_beta(event, own)
+        counts["events"] += 1
+        pool = by_key[key]
+        if pool["availability"] != "AVAILABLE":
+            continue
+        for control in pool["matched_controls"]:
+            if (control["symbol"], control["session"]) not in days:
+                raise ValueError("control_day_missing")
+            cday = days[(control["symbol"], control["session"])]
+            if "stock_frame" not in cday or "benchmark_frame" not in cday:
+                raise ValueError("control_day_frames_missing")
+            control_event(control, day=cday, config_bytes=config_bytes)
+            day_beta(cday)
+            counts["controls"] += 1
+            if not shift_bars_valid(control, day=cday):
+                counts["shift_bar_invalid"] += 1
+    if len(seen) != len(by_key):
+        raise ValueError("pool_without_selected_event")
+    return counts
+
+
 def measure_rows(event: Mapping[str, Any], pool: Mapping[str, Any],
                  days: Mapping[tuple[str, str], Mapping[str, Any]], *,
                  config_bytes: bytes, cache: MutableMapping[tuple, float | None]) -> list[dict[str, Any]]:
@@ -154,8 +233,7 @@ def measure_rows(event: Mapping[str, Any], pool: Mapping[str, Any],
         local = pd.Timestamp(value).tz_convert(start.tzinfo)
         return (local.hour * 60 + local.minute) // width
 
-    beta = event.get("beta")
-    beta = float(beta) if isinstance(beta, (int, float)) and not isinstance(beta, bool) else None
+    beta = selected_beta(event, own)
     controls = pool["matched_controls"] if pool["availability"] == "AVAILABLE" else []
     prepared = []
     for control in controls:
