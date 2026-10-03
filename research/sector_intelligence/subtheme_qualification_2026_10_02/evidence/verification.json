@@ -2,77 +2,89 @@
   "scope": "LOCAL_AUTHOR_VERIFICATION_NOT_INDEPENDENT_REVIEW",
   "python": "3.13.5",
   "pytest": "9.0.2",
-  "tests": {
-    "command": "python -m pytest -q tests",
-    "passed": 81,
-    "failed": 0,
-    "synthetic_cli_test": true,
-    "legacy_semantic_discriminator_tests": 4,
-    "author_adversarial_cases_failed_then_repaired": 12
+  "historical_receipt": {
+    "commit": "14304882d386e9c43ff982b8d99b98cc75ee6210",
+    "path": "research/sector_intelligence/subtheme_qualification_2026_10_02/evidence/verification.json",
+    "git_blob_sha1": "642d5fdeb8580f869191378f123729f5e843e80b",
+    "passed": 81
   },
-  "commands_completed": [
-    "python -m pytest -q tests",
-    "python legacy_seams.py",
-    "python audit_existing.py",
-    "python qualification.py evidence/synthetic_input.json --output evidence/synthetic_replay_result.json"
-  ],
-  "tested_source_blobs": {
-    "qualification.py": {
-      "bytes": 17470,
-      "git_blob_sha1": "356ee560305795a9725fc31f0eb7ce0d0aca1b1c",
-      "sha256": "7de4ce54cbd08df26cc225092ed95891fc37eae28c30d760f6266b96f552bbb2"
+  "continuation": {
+    "source_head_before_receipt": "81f4949660396c490c9363f87d3e1e848314c59c",
+    "scope": "LOCAL_AUTHOR_VERIFICATION_AND_SOURCE_RELOCATION; NOT_RAW_MARKET_BACKTEST",
+    "tests": {
+      "prior_cases": 81,
+      "added_cases": 26,
+      "pre_repair_added_cases_failed": 25,
+      "pre_repair_added_cases_passed": 1,
+      "post_repair_cases_passed": 107,
+      "post_relocation_cases_passed": 107,
+      "legacy_owner_tests_preserved": 10,
+      "legacy_owner_prefix_bytes_unchanged": 9396,
+      "local_full_engine_import_chain_tested": false
     },
-    "tests/test_qualification.py": {
-      "bytes": 15966,
-      "git_blob_sha1": "f15d355c5ebebb6eb44efb734bd1f392abfb30a1",
-      "sha256": "a469f0a3cb5dd9f317cddbed27db0e1b18607723d7b5a551781df64826780179"
+    "commands": [
+      "python -m pytest -q tests",
+      "PYTHONPATH=/mnt/data/subtheme_continuation/repo python -m pytest -q /mnt/data/subtheme_continuation/test_relocated_cases.py"
+    ],
+    "tested_source_blobs": {
+      "research/sector_intelligence/subtheme_qualification_2026_10_02/qualification.py": {
+        "bytes": 20595,
+        "git_blob_sha1": "2bdf35f47a1e1090038a65e2a5e6752a6608a4a4",
+        "sha256": "9436e7ca628fd74c929bbb394734c73213ebc2b817d9fa5d46312a2241f64333"
+      },
+      "tests/test_subsector_track_record.py": {
+        "bytes": 31717,
+        "git_blob_sha1": "ee9a1cec2134313483a60f6989e23e5706005078",
+        "sha256": "aa833f3d6ec1e062723288d1c36e52575738ab8451655a023155a086844be47c"
+      },
+      "research/sector_intelligence/subtheme_qualification_2026_10_02/README.md": {
+        "bytes": 7683,
+        "git_blob_sha1": "34f34a3ffcf19953331a855548f644ca4734c61c",
+        "sha256": "c65e9028bbcc229755155b553c3dc5d8517897d42af478c1b2d6dd5f9ee8e543"
+      }
     },
-    "legacy_seams.py": {
-      "bytes": 2228,
-      "git_blob_sha1": "083c63b2b2c93f22568f718e1e4bf25db71edbfc",
-      "sha256": "3108bf4c8eef5483cbe697b39c89f9fe49996ddb996cf514a3a10c7f7915665c"
+    "logs": {
+      "continuation_red.txt": {
+        "bytes": 19650,
+        "git_blob_sha1": "4b3619543fb15b14c6bf504da42238feb9ef0a8c",
+        "sha256": "824903bd1b0e13cbbc84fbc827a17b98fd9d75ae54910063e89dc5cf14ce6074"
+      },
+      "continuation_green.txt": {
+        "bytes": 180,
+        "git_blob_sha1": "14d3509fae2f0582e6a66783f7addfd84808ce3b",
+        "sha256": "0055d5e14052c31fd1bf2376bef3871d771c6571f713d158c726f1574feefe86"
+      },
+      "relocated_green.txt": {
+        "bytes": 180,
+        "git_blob_sha1": "ae4cb20c908444c591073a832e9e07b25c5c5516",
+        "sha256": "cb201c8f23a5219d3d53aa457d25c2be3f2b6f9ab8f599ca0900f9acbfa5a1b9"
+      }
     },
-    "tests/test_legacy_seams.py": {
-      "bytes": 855,
-      "git_blob_sha1": "884804b1dae25b1a61306103a772eb68c2bc8b0f",
-      "sha256": "96b02ce8e0d7559a7819ca01d4c2e991e6d51d2d6fc48f1bd3a895dcf6d558b5"
+    "ci_repair": {
+      "failed_run": 37083711146,
+      "failed_job": 111089523506,
+      "introduced_violations": 2,
+      "failure": "two new pytest files not named by any workflow run step",
+      "remedy": "all original and added cases physically consolidated into tests/test_subsector_track_record.py; duplicate research test files removed",
+      "workflow_changed": false,
+      "waiver_added": false,
+      "guard_weakened": false,
+      "new_head_ci_proven": false
     },
-    "audit_existing.py": {
-      "bytes": 1176,
-      "git_blob_sha1": "55eeb8b5197091da955fd3943c07eaf57bdef839",
-      "sha256": "e8d45d7c40f9fe387f12ff22b40352d81c4a677f1bc52da61c699e854a09fcf0"
+    "data_inventory": {
+      "source_checkout_sha": "d1d7273330df22014849d438160c0c393f4763a3",
+      "yahoo_directory_entries": 6066,
+      "retained_snapshot_rows": 9944,
+      "retained_last_session": "2026-09-10",
+      "tree_vintages": 2,
+      "qualified_price_coverage": null,
+      "subsequent_data_read": "PLATFORM_BLOCKED_BEFORE_PROCESS_RECEIPT",
+      "effect": "NONE",
+      "retried_or_transferred": false
     },
-    "MASTER_PLAN.md": {
-      "bytes": 49702,
-      "git_blob_sha1": "be1e1cb40f1c6fc9972f594aa80556334267afe1",
-      "sha256": "db46f4b00b1c32af1c77a72f8483a2546d83ada02334fb5c1d3655e5823b5377"
-    },
-    "ECONOMIC_PILOT.md": {
-      "bytes": 11243,
-      "git_blob_sha1": "1384853cd541ce73930a1dcbd061f7f89bb97e45",
-      "sha256": "ef1c7cb3866bb5ab4320dbf4443ab05a0b63b85da2e9c1e166d96f20e70004aa"
-    },
-    "README.md": {
-      "bytes": 5774,
-      "git_blob_sha1": "a60499ea58afe223825d7adef85baada4057cae5",
-      "sha256": "e28a47b2d1d7d5db4e3ea8dbc724ff2a333e341557eb1f00147331c29e280762"
-    },
-    "evidence/observed_track_record_excerpt.json": {
-      "bytes": 1776,
-      "git_blob_sha1": "8be7ead86c6cfdd00be41afc7ea70bce88c38eb1",
-      "sha256": "b57d0924f3108ec85c38b11fc93f90004f5b12e5353e609b7eb0be8fa3f9f595"
-    }
-  },
-  "source_base": "e4910184b25c27eda95f81a09d3ce4a6f5d8535d",
-  "publication_branch": "sol/subtheme-replay-qualification-20261002",
-  "claims": {
     "new_raw_market_backtest": false,
     "independent_review": false,
-    "full_repository_ci": false,
-    "production_changes": false,
-    "deployed_browser_proof": false,
-    "worker_dispatched": false,
-    "watcher_created": false
-  },
-  "proof_boundary": "Synthetic contracts, isolated source-semantic reproductions, existing-producer artifact audit. No investment-performance validation."
+    "live_ranking_or_trade_change": false,
+    "next_action": "Consume exact-head hosted owner-suite/contract-delta result and independent review; resume raw-data qualification only after a permitted recovery of the blocked original read."
+  }
 }
