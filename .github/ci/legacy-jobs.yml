@@ -469,6 +469,11 @@ jobs:
       - "agentos/decisions/DEC-OPTIONS-ALPHA-CANDIDATE-FEED-V2-SOURCE-ONLY.md"
       # the test itself
       - "tests/test_options_alpha_candidate_feed.py"
+      # CAS publisher (pure IO seam; only the two fixed keys; local flock +
+      # fsync + retained-predecessor + CAS on both keys) + its behavioural
+      # test (recovery / new-host / 4 generations / 412 + payload race).
+      - "scripts/publish_options_alpha_candidate_r2.py"
+      - "tests/test_publish_options_alpha_candidate_r2.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -481,8 +486,8 @@ jobs:
         # the receipts contract. exchange-calendars: NYSE-session validation
         # in the campaign engine. requests: the engine's HTTP-side helpers.
         run: pip install pytest jsonschema pandas pyarrow pyyaml exchange-calendars requests
-      - name: options alpha candidate feed v2 (pure receipt-bound composer, frozen formation, late-qualifier boundary, publication receipt snapshot vs transition)
-        run: python -m pytest tests/test_options_alpha_candidate_feed.py -q
+      - name: options alpha candidate feed v2 (pure receipt-bound composer, frozen formation, late-qualifier boundary, publication receipt snapshot vs transition) + CAS publisher behavioural suite
+        run: python -m pytest tests/test_options_alpha_candidate_feed.py tests/test_publish_options_alpha_candidate_r2.py -q
 
   all-exports-resolve:
     if: ${{ false }}

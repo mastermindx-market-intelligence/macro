@@ -897,22 +897,8 @@ def _revision_is_qualifying(
     activation_boundary: datetime | None,
     observation: datetime,
 ) -> bool:
-    """First-qualifying check.
-
-    First-qualifying is a formation-boundary test, not a current-measurement
-    test. Formation requires the final-member microstructure to be available
-    AT or BEFORE the campaign row's own ``formed_at`` — a microstructure
-    record that only arrived AFTER the campaign row was finalised cannot
-    retroactively qualify that revision as the first qualifying. The
-    ``decision_at`` cutoff is the current-measurement cutoff, enforced
-    separately by ``_campaign_reasons``; here we additionally enforce the
-    stricter formation-boundary check so a late qualifier that arrived
-    between this campaign's formed_at and the next revision's formed_at
-    (a "late earlier qualifier") can never make THIS revision the first
-    qualifying — only a later revision whose formed_at follows the late
-    qualifier can.
-    """
-    reasons, micro, _ = _campaign_reasons(
+    """Qualification uses the preregistered decision-clock evidence cutoff."""
+    reasons, _, _ = _campaign_reasons(
         campaign,
         micro_map,
         policy_freeze_at=policy_freeze_at,
@@ -920,15 +906,7 @@ def _revision_is_qualifying(
         observation=observation,
         source_health=SourceHealth(),
     )
-    if reasons:
-        return False
-    if micro is None:
-        return False
-    formed_at = _utc(campaign["formed_at"], "campaign.formed_at")
-    micro_available = _utc(micro["available_at"], "micro.available_at")
-    if micro_available > formed_at:
-        return False
-    return True
+    return not reasons
 
 
 def _prior_formation_ordinal(

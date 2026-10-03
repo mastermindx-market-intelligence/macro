@@ -1840,10 +1840,56 @@ def test_late_earlier_qualifier_and_physical_update_interval(tmp_path: Path, mon
     item=feed["formed_candidates"][0]
     physical_ids = [row.value["campaign_revision_id"] for row in snapshot.rows if row.value["campaign_id"] == item["campaign_id"]]
     update_ids = [x["campaign_revision_id"] for x in item["versioned_updates"]]
-    assert item["frozen_formation"]["campaign_revision_id"] == physical_ids[1]
+    assert item["frozen_formation"]["campaign_revision_id"] == physical_ids[0]
     assert item["current_campaign_revision_id"] == physical_ids[-1]
-    assert update_ids == physical_ids[1:]
+    assert update_ids == physical_ids
     assert item["first_observed_at"] == item["decision_at"] == "2026-08-13T14:30:00Z"
+
+
+def test_late_micro_after_formed_at_before_decision_qualifies_first_revision(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Policy v2 permits evidence through the actual decision clock, rather
+    than inventing an earlier campaign-formed-at cutoff."""
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    specs = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(tmp_path, episodes_specs=specs, monkeypatch=monkeypatch)
+    micro = {item["source_event_id"]: _micro_for(item["source_event_id"], available_at=item["available_at"]) for item in specs}
+    # The campaign finalises at the final source episode (14:00:30); this
+    # measured receipt arrives afterwards but before the composed decision.
+    micro[specs[-1]["source_event_id"]] = _micro_for(
+        specs[-1]["source_event_id"], available_at="2026-08-13T14:01:00Z"
+    )
+    feed = compose_candidate_feed(**_composer_kwargs(
+        snapshot, micro_map=micro, activation=ACTIVATION_RECEIPT,
+        observation_clock="2026-08-13T14:30:00Z",
+    ))
+    candidate = feed["formed_candidates"][0]
+    assert candidate["first_qualifying_campaign_revision_id"] == snapshot.rows[0].value["campaign_revision_id"]
+    assert candidate["first_observed_at"] == "2026-08-13T14:30:00Z"
+
+
+def test_prior_frozen_first_does_not_migrate_when_old_revision_later_qualifies(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A late receipt may qualify an old revision on a later replay, but it
+    cannot rewrite a candidate identity already frozen from revision two."""
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    specs = _episodes_for(True, count=2)
+    third = {"source_event_id": "evt-002", "available_at": "2026-08-13T14:02:00Z", "session_date": "2026-08-13"}
+    _build_campaign_snapshot(tmp_path, episodes_specs=specs, monkeypatch=monkeypatch)
+    snapshot = _build_campaign_snapshot(tmp_path, episodes_specs=specs + [third], monkeypatch=monkeypatch)
+    # On the first composition only revision two has a final-member receipt.
+    initial_micro = {third["source_event_id"]: _micro_for(third["source_event_id"], available_at=third["available_at"])}
+    initial = compose_candidate_feed(**_composer_kwargs(snapshot, micro_map=initial_micro, activation=ACTIVATION_RECEIPT, observation_clock="2026-08-13T14:30:00Z"))
+    frozen = initial["formed_candidates"][0]["first_qualifying_campaign_revision_id"]
+    assert frozen == snapshot.rows[1].value["campaign_revision_id"]
+    # The formerly missing revision-one receipt is now decision-clock lawful.
+    replay_micro = dict(initial_micro)
+    replay_micro[specs[-1]["source_event_id"]] = _micro_for(specs[-1]["source_event_id"], available_at="2026-08-13T14:01:00Z")
+    replay = compose_candidate_feed(**_composer_kwargs(snapshot, micro_map=replay_micro, activation=ACTIVATION_RECEIPT, observation_clock="2026-08-13T14:30:00Z", prior_feed=initial))
+    assert replay["formed_candidates"][0]["candidate_id"] == initial["formed_candidates"][0]["candidate_id"]
+    assert replay["formed_candidates"][0]["first_qualifying_campaign_revision_id"] == frozen
 
 
 # ---------------------------------------------------------------------------
