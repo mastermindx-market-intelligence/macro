@@ -45,5 +45,71 @@
     "errors": 0,
     "warnings": 106,
     "records": 1457
+  },
+  "real_owner_read": {
+    "schema": "research_source_read_receipt.v1",
+    "code_sha": "255aba127c1dfed34f334bcc516623ba1d64ed50",
+    "reader": "engine.neuralweb.company_intelligence_reader.read_current_event_workspace",
+    "source": "existing_owner_publication_only",
+    "radar_episode_created": false,
+    "market_outcome_reads": 0,
+    "coverage_clearance": false,
+    "rows": [
+      {
+        "case": "cold",
+        "started_at": "2026-10-03T07:15:59.943833+00:00",
+        "consumer_observed_at": "2026-10-03T07:16:01.544293+00:00",
+        "available": true,
+        "network_fetches": 3,
+        "event_id": "evt_cik0000320193_2026q3_results",
+        "generation_id": "0e7c62ee74f5b256a21fd9d4",
+        "receipt_sha256": "5085d887a416f214deb829062d398add0e0312f4fb904e45cc1e6ae63e6bc62d",
+        "payload_matches_receipt": true,
+        "adapter": "refused",
+        "reason": "Company Intelligence generated_at precedes lifecycle observed_at"
+      },
+      {
+        "case": "warm",
+        "started_at": "2026-10-03T07:16:01.545752+00:00",
+        "consumer_observed_at": "2026-10-03T07:16:01.549302+00:00",
+        "available": true,
+        "network_fetches": 0,
+        "event_id": "evt_cik0000320193_2026q3_results",
+        "generation_id": "0e7c62ee74f5b256a21fd9d4",
+        "receipt_sha256": "5085d887a416f214deb829062d398add0e0312f4fb904e45cc1e6ae63e6bc62d",
+        "payload_matches_receipt": true,
+        "adapter": "refused",
+        "reason": "Company Intelligence generated_at precedes lifecycle observed_at"
+      }
+    ],
+    "cold_warm_receipt_parity": true,
+    "warm_no_extra_fetch": true
+  },
+  "owner_clock_diagnostic": {
+    "diagnostic_only": true,
+    "code_sha": "255aba127c1dfed34f334bcc516623ba1d64ed50",
+    "read_started_at": "2026-10-03T07:17:07.339725+00:00",
+    "read_completed_at": "2026-10-03T07:17:08.917782+00:00",
+    "available": true,
+    "same_payload_as_original_probe": true,
+    "event_id": "evt_cik0000320193_2026q3_results",
+    "generation_id": "0e7c62ee74f5b256a21fd9d4",
+    "workspace_sha256": "5085d887a416f214deb829062d398add0e0312f4fb904e45cc1e6ae63e6bc62d",
+    "generated_at": "2026-07-31T00:30:28Z",
+    "lifecycle": {
+      "observed_at": "2026-10-03T05:23:48Z",
+      "source_available_at": "2026-07-31T00:30:28Z",
+      "state": "corrected"
+    },
+    "source_guard_changed": false
+  },
+  "owner_clock_disposition": {
+    "state": "SOURCE_CLOCK_CONTRACT_HOLD",
+    "reader_cache_fix": "proven_on_real_owner_payload",
+    "catalyst_presence_admission": "refused_due_to_generation_before_observation",
+    "existing_guard_unchanged": true,
+    "candidate_source_path": "scripts/refresh_event_workspaces.py:1838,1896 passes generated_at=source_clock to write_workspace_generation",
+    "source_path_revision": "255aba127c1dfed34f334bcc516623ba1d64ed50",
+    "next_action": "Reconcile source publication and observed clocks through the Company Intelligence owner; do not relabel the old generation, backdate observations, or remove the catalyst refusal to obtain admission."
   }
 }

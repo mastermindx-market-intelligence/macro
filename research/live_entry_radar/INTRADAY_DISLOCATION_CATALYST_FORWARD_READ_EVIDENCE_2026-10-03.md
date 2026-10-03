@@ -193,3 +193,36 @@ The next end-to-end forward-shadow proof is gated on the incumbent Radar owner p
 lawful live episode through its accepted private transport. Until then, independent work may
 continue on contracts, source-specific presence adapters, and Terminal consumer semantics, but
 not on fabricated live episodes or historical "no news" inference.
+
+
+## 10. Repair-head real cache proof and source-clock refusal (07:16 UTC)
+
+Code: `255aba127c1dfed34f334bcc516623ba1d64ed50`. The bounded existing-owner
+AAPL read was repeated because the warm-cache receipt behavior changed, not to
+repeat the earlier inventory. The cold read made three owner fetches; the warm
+read made zero. Both carried the same verified payload SHA-256:
+`5085d887a416f214deb829062d398add0e0312f4fb904e45cc1e6ae63e6bc62d`.
+Generation: `0e7c62ee74f5b256a21fd9d4`.
+
+The source payload passed owner hash validation but the catalyst adapter REFUSED
+both reads: `Company Intelligence generated_at precedes lifecycle observed_at`.
+An exact-payload diagnostic confirmed `generated_at=2026-07-31T00:30:28Z` and
+`lifecycle.observed_at=2026-10-03T05:23:48Z`. Source availability is also the July
+clock. The consumer observed the cold read at `2026-10-03T07:16:01.544293+00:00`.
+
+This narrows the earlier section 3/7 interpretation: a successful owner read is
+not successful catalyst admission. The cache repair is real-source proven;
+this generation is NOT admitted to the catalyst layer. The published source
+clock order is a concrete additional dependency, separate from source coverage,
+relevance and the missing accepted Radar episode.
+
+At this code revision, `scripts/refresh_event_workspaces.py:1838,1896` passes
+`generated_at=source_clock` to the existing workspace publisher. That is a
+source-owner reconciliation target, not proof of the exact running publisher
+revision. Do not rewrite old generations or weaken the adapter's refusal. The
+owner must reconcile truthful publication/observation clocks before a later
+admitted generation can supply this consumer. No publisher, source clock,
+live detector, configuration, or production artifact was modified by this probe.
+
+Machine receipt: `CATALYST_R0_HARDENING_EVIDENCE_2026-10-03.json`, including exact
+cold/warm read windows, payload identity, clock diagnosis and source-code pin.

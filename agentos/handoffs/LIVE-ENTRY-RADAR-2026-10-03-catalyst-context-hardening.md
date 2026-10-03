@@ -47,6 +47,10 @@ verified:
 - claim: Full incumbent Radar CI step after all repairs
   command: Exact 27-suite pytest command in .github/ci/legacy-jobs.yml, including catalyst suite
   result: 1592 passed, 2 skipped, 4 warnings in 67.87s (0:01:07)
+- claim: Repaired cold/warm receipt on an actual current AAPL owner payload
+  command: Existing read_current_event_workspace twice; no alternate HTTP owner or synthetic Radar episode
+  result: Same verified SHA 5085d887a416f214deb829062d398add0e0312f4fb904e45cc1e6ae63e6bc62d; 3 cold fetches
+    and 0 warm fetches. Catalyst admission correctly refused generation-before-observation.
 unverified:
 - claim: All exact-head hosted CI and independent review accepted
   what_would_verify: 'Fresh GitHub check results and independent review on the published repair head of
@@ -55,10 +59,19 @@ unverified:
   what_would_verify: Accepted owner coverage/relevance policy, real forward receipts and separate registered
     evaluation; synthetic tests do not supply them.
 unresolved:
+- 'SOURCE_CLOCK_CONTRACT_HOLD: actual AAPL generation 0e7c62ee74f5b256a21fd9d4 has generated_at July 31
+  but lifecycle observed_at October 3. Source owner must reconcile; adapter refusal unchanged. Exact receipt
+  is in CATALYST_R0_HARDENING_EVIDENCE_2026-10-03.json.'
 - 'Keep #8305 DRAFT and unarmed; no production activation or merge clearance.'
 - 'R1-B #7274 and R1-A #7270 gates remain separate; no TrialLedger write or market-outcome run.'
 - Executive gateway observed readonly:installed-executive-runtime; no child dispatch or worker start claimed.
+- Independent GitHub review requested from mastermindx-2 on implementation head 255aba127c1dfed34f334bcc516623ba1d64ed50;
+  request is not reviewer start/acceptance. Hosted CI 37105592636 ongoing; inactive merge-queue-pilot
+  context failure was diagnosed, not waived.
 next_actions:
+- Have the existing Company Intelligence owner reconcile the source clock contract using the exact real-payload
+  receipt; preserve old generations, source-observation clocks and the current refusal. Do not claim admitted
+  real catalyst presence from a successful reader response alone.
 - 'Read the exact published #8305 head and its CI; repair only introduced failures, then obtain independent
   review of clock, cache-receipt and source-policy boundaries.'
 - After acceptance, freeze a bounded forward source/relevance policy through incumbent owners; attach
