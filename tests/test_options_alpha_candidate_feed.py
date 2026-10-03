@@ -2340,3 +2340,98 @@ def test_publication_receipt_snapshot_rejects_bad_binding(tmp_path, monkeypatch,
         kwargs["receipt_published_at"] = "2026-08-13T14:00:00Z"
     elif mutation == "header_seal": current["feed"]["header"]["header_digest_sha256"] = "0" * 64
     with pytest.raises(CandidateFeedContractError): validate_publication_receipt_binding(**kwargs)
+
+
+# ---------------------------------------------------------------------------
+# Newly-formed candidate identity MUST mint a fresh first_receipt_id from
+# the CURRENT receipt, not borrow one from a prior receipt for a different
+# campaign. Likewise, first_consumer_published_at MUST be null for a
+# newly-formed candidate — borrowing an external receipt's published_at would
+# forge a publication history the receipt cannot prove.
+# ---------------------------------------------------------------------------
+
+
+def test_publication_receipt_newly_formed_candidate_uses_current_receipt(tmp_path, monkeypatch):
+    """Positive: a brand-new candidate formed in this receipt carries
+    first_receipt_id == this receipt's receipt_id and first_consumer_published_at
+    == None. The receipt must prove publication from this receipt onwards;
+    no carry from a different candidate is allowed."""
+    current = _publication_generations(tmp_path, monkeypatch, 1)[0]
+    cid, entry = next(iter(current["receipt"]["candidates"].items()))
+    assert entry["first_receipt_id"] == current["receipt"]["receipt_id"]
+    assert entry["first_consumer_published_at"] is None
+    # The current receipt MUST NOT reference itself as a prior ancestor.
+    assert current["receipt"].get("prior_receipt") is None
+    # The feed's formed_candidates MUST carry the same identity that the
+    # receipt declares, so a downstream reader cannot pair them up wrong.
+    assert cid == current["feed"]["formed_candidates"][0]["candidate_id"]
+
+
+def test_publication_receipt_cannot_borrow_old_candidate_first_id(tmp_path, monkeypatch):
+    """Negative: a newly-formed candidate in a later generation MUST NOT
+    carry a first_receipt_id that points at a still-earlier (different)
+    candidate's first_receipt_id. The forged carry is detected because the
+    candidate_id is missing from the prior receipt's candidates map (so
+    the carry cannot be linked to any recorded prior)."""
+    from engine.options_alpha_candidate_feed import validate_publication_receipt_transition
+    generations = _publication_generations(tmp_path, monkeypatch, count=2)
+    prior, latest = generations[0], generations[1]
+    cid = next(iter(latest["receipt"]["candidates"]))
+    forged_first_id = "oacfr_" + "9" * 25  # an unrecorded receipt id
+    latest["receipt"]["candidates"][cid]["first_receipt_id"] = forged_first_id
+    with pytest.raises(CandidateFeedContractError):
+        validate_publication_receipt_transition(**_publication_transition_kwargs(latest, prior))
+
+
+def test_publication_receipt_newly_formed_cannot_borrow_old_published_at(tmp_path, monkeypatch):
+    """Negative: a newly-formed candidate MUST NOT carry a
+    first_consumer_published_at borrowed from a prior candidate. The
+    publication clock belongs to the external receipt object's
+    LastModified, not to the producer's local clock."""
+    from engine.options_alpha_candidate_feed import validate_publication_receipt_transition
+    generations = _publication_generations(tmp_path, monkeypatch, count=3)
+    prior, latest = generations[1], generations[2]
+    cid = next(iter(latest["receipt"]["candidates"]))
+    # The cid was carried over from generations[0], so old["first_receipt_id"]
+    # points at generations[0].receipt_id (not at prior.receipt_id), and the
+    # validator's expected for a carried entry is exactly old. Forging a
+    # bogus clock the prior receipt never observed is detected.
+    latest["receipt"]["candidates"][cid]["first_consumer_published_at"] = "2020-01-01T00:00:00Z"
+    with pytest.raises(CandidateFeedContractError):
+        validate_publication_receipt_transition(**_publication_transition_kwargs(latest, prior))
+
+
+def test_publication_receipt_real_clock_ordering_first_consumer_not_before_formed_at(tmp_path, monkeypatch):
+    """Negative: first_consumer_published_at cannot precede
+    composed_at. A receipt that claims publication before its own payload
+    existed forges a clock the receipt cannot prove."""
+    from engine.options_alpha_candidate_feed import validate_publication_receipt_binding
+    current = _publication_generations(tmp_path, monkeypatch, 1)[0]
+    cid = next(iter(current["receipt"]["candidates"]))
+    current["receipt"]["candidates"][cid]["first_consumer_published_at"] = "2020-01-01T00:00:00Z"
+    with pytest.raises(CandidateFeedContractError):
+        validate_publication_receipt_binding(**{key: current[key] for key in ("feed", "payload", "receipt")}, receipt_published_at=current["published_at"])
+
+
+def test_publication_receipt_snapshot_cannot_prove_overwritten_history(tmp_path, monkeypatch):
+    """Documented scope: validate_publication_receipt_binding cannot
+    independently prove an overwritten history. A snapshot binding that
+    passes is necessary but never sufficient evidence that the feed
+    history has not been overwritten between receipts; the transition
+    validator is the one that requires the full prior-feed receipt map."""
+    current = _publication_generations(tmp_path, monkeypatch, 1)[0]
+    cid = next(iter(current["receipt"]["candidates"]))
+    entry = current["receipt"]["candidates"][cid]
+    # Snapshot validator succeeds on the original entry: the snapshot
+    # proves only the static binding of the receipt object to the
+    # payload bytes, NOT that the receipt object was not overwritten
+    # between generations. That is a transition-only guarantee.
+    from engine.options_alpha_candidate_feed import validate_publication_receipt_binding
+    validate_publication_receipt_binding(
+        feed=current["feed"],
+        payload=current["payload"],
+        receipt=current["receipt"],
+        receipt_published_at=current["published_at"],
+    )
+    assert entry["first_receipt_id"] == current["receipt"]["receipt_id"]
+    assert entry["first_consumer_published_at"] is None
