@@ -33,6 +33,21 @@ QUAD_NAMES = {'Q1': 'Goldilocks', 'Q2': 'Reflation',
 # published theme universe is kept; these are explicitly named example cohorts
 # in the compact US briefing, not the output of a new ranking.
 BRIEF_THEME_IDS = ('ai_semiconductors', 'memory_storage', 'data_center_power')
+# Closed classifications of the existing producers, not free-form prompt text.
+MEMBERSHIP_SOURCES = {
+    'regime_one.forward.p_quad (causal filtered HMM)': 'causal_filtered_hmm',
+    'regime_hmm.regime_probs (smoothed fallback)': 'smoothed_hmm_fallback',
+    'uniform': 'uniform_fallback',
+}
+DEGRADATION_REASONS = {
+    'smoothed_hmm_fallback': 'smoothed HMM fallback',
+    'uniform_fallback': 'uniform fallback',
+    'stale_posterior': 'stale posterior',
+    'missing_quantity': 'missing quantity history',
+    'missing_rrp': 'missing RRP buffer',
+    'missing_walcl': 'missing WALCL composition',
+    'owner_reported': 'owner-reported limitation',
+}
 
 
 def _dict(value: Any) -> dict:
@@ -87,6 +102,53 @@ def _has_value(value: Any) -> bool:
     return not isinstance(value, bool) and value is not None and value != ''
 
 
+def _native_degradation(raw: dict, kind: str, issues: list[str]) -> dict:
+    """Retain a typed owner flag and only known producer reason categories.
+
+    Degradation is independent of time: a fresh fallback/incomplete composition
+    remains partial, not stale. Unknown prose never becomes a reason or a date.
+    """
+    flag = raw.get('degraded')
+    metadata = {'owner_degraded': flag if isinstance(flag, bool) else None}
+    if flag is not None and not isinstance(flag, bool):
+        issues.append('invalid_field:degraded')
+    if kind == 'membership':
+        metadata['owner_source'] = MEMBERSHIP_SOURCES.get(
+            raw.get('source') if isinstance(raw.get('source'), str) else '', 'unknown')
+    if flag is not True:
+        return metadata
+    reasons = []
+    if kind == 'membership':
+        reason = raw.get('degrade_reason')
+        # Match whole owner messages, including its optional stale suffix. No
+        # keyword search: unrelated or instruction-bearing prose is not evidence.
+        if isinstance(reason, str) and len(reason) <= 160:
+            for prefix, category in (
+                ('causal p_quad missing; smoothed HMM fallback', 'smoothed_hmm_fallback'),
+                ('no P(Quad) producer available; p widened to uniform', 'uniform_fallback'),
+                ('', None),
+            ):
+                pattern = re.escape(prefix) + (r'(?:; p_quad stale \(([1-9][0-9]*)d old\))?' if prefix
+                    else r'p_quad stale \(([1-9][0-9]*)d old\)')
+                match = re.fullmatch(pattern, reason)
+                if match and (match[1] is None or int(match[1]) > 5):
+                    if category:
+                        reasons.append(category)
+                    if reason != prefix:
+                        reasons.append('stale_posterior')
+                    break
+    else:
+        for value, category in (
+            (raw.get('quantity_roc_bn'), 'missing_quantity'),
+            (raw.get('rrp_buffer_bn'), 'missing_rrp'),
+            (_dict(raw.get('composition')).get('d_walcl'), 'missing_walcl'),
+        ):
+            if value is None:
+                reasons.append(category)
+    issues.extend('owner_degraded:' + reason for reason in (reasons or ['owner_reported']))
+    return metadata
+
+
 def _date_info(value: Any, now: datetime) -> dict:
     out = {'as_of': None, 'precision': None, 'age_calendar_days': None,
            'future_dated': False, 'known_at': None, 'available_at': None}
@@ -127,11 +189,13 @@ def compose_context(sources: dict, *, now: datetime,
     dims: dict[str, dict] = {}
 
     def emit(name, key, pointer, raw, stamp, values, unit, *, issues=None,
-             clock='owner_snapshot_date', stale=False, scope='US', notes=()):
+             clock='owner_snapshot_date', stale=False, scope='US', notes=(),
+             owner_metadata=None, measurement_fields=None):
         issues = list(issues or [])
         source = {'artifact': SOURCE_PATHS[key], 'pointer': pointer,
                   'sha256': _dict(source_metadata.get(key)).get('sha256'),
                   'clock_semantics': clock, **_date_info(stamp, now)}
+        source.update(owner_metadata or {})
         source['expected_us_session'] = expected_session.isoformat() if expected_session else None
         source['session_relation'] = None
         if source['as_of'] and expected_session:
@@ -144,7 +208,9 @@ def compose_context(sources: dict, *, now: datetime,
             if available['future_dated']:
                 source['future_dated'] = True
                 issues.append('availability_after_observation_cutoff')
-        if not raw or not _has_value(values):
+        measured = ({key: values.get(key) for key in measurement_fields}
+                    if measurement_fields is not None else values)
+        if not raw or not _has_value(measured):
             status = 'missing'; values = {}
         elif source['as_of'] is None:
             status = 'unknown_date'; values = {}
@@ -186,6 +252,7 @@ def compose_context(sources: dict, *, now: datetime,
               'Economic sub-read retains its own stale/slow evidence limitation.'))
 
     errors = []
+    membership_owner = _native_degradation(vector, 'membership', errors)
     prob = _dict(vector.get('p'))
     probabilities = {k: _num(prob.get(k), 'probability:' + k, errors, low=0, high=1)
                      for k in QUAD_NAMES}
@@ -201,7 +268,7 @@ def compose_context(sources: dict, *, now: datetime,
         'window_sessions': _count(tm.get('window_sessions'), 'window_sessions', errors) if probabilities else None,
         'forecast_probability': None,
     }, 'current_membership_distribution', issues=errors,
-       stale=vector.get('stale') is True,
+       stale=vector.get('stale') is True, owner_metadata=membership_owner,
        notes=('Current membership is not an issued future forecast.',
               'A later-fit historical reconstruction is not point-in-time evidence.'))
 
@@ -234,17 +301,23 @@ def compose_context(sources: dict, *, now: datetime,
         'horizon_basis': _token(nominal.get('horizon_basis')),
         'path_qualified': qualified,
     }, 'yield_percent_and_basis_point_change', issues=errors, clock='source_observation_date',
+       stale=nominal.get('status') == 'stale',
+       owner_metadata={'owner_status': _choice(nominal.get('status'),
+           ('available', 'stale', 'missing', 'invalid_grid', 'insufficient_history'))},
+       measurement_fields=('level_pct', 'change_5_grid_bp', 'change_22_grid_bp',
+                           'change_63_grid_bp', 'acceleration_bp'),
        notes=('Weekday-grid intervals are not automatically Treasury trading sessions.',
               'Endpoint change/acceleration does not prove a durable yield peak.'))
 
     liq = _dict(regime.get('liquidity_quality'))
     errors = []
+    liquidity_owner = _native_degradation(liq, 'liquidity', errors)
     emit('liquidity', 'regime', '/liquidity_quality', liq, liq.get('asof'), {
         'quality_label': _token(liq.get('label')),
         'quantity_change_bn': _num(liq.get('quantity_roc_bn'), 'quantity_change_bn', errors),
         'rrp_buffer_bn': _num(liq.get('rrp_buffer_bn'), 'rrp_buffer_bn', errors, low=0),
     }, 'owner_quantity_change_usd_billions', issues=errors,
-       stale=liq.get('stale') is True,
+       stale=liq.get('stale') is True, owner_metadata=liquidity_owner,
        notes=('Quantity and composition/stress are separate readings.',))
     credit = _dict(liq.get('stress_overlay'))
     errors = []
@@ -439,6 +512,8 @@ def render_context(ctx: dict, char_budget: int = 1800, *, lang: str = 'en') -> s
             # Missingness is evidence too: keep the fixed dimension and reason
             # through the same paid consumer, including the all-unavailable case.
             reason = reasons.get(status, 'status unknown' if status else 'missing')
+            if status == 'missing' and _dict(d.get('source')).get('owner_status') == 'stale':
+                reason = 'missing measurement (owner stale)'
             unavailable.setdefault(reason, []).append(key.replace('_', ' '))
             return
         stamp = _dict(d.get('source')).get('as_of') or '?'
@@ -448,6 +523,12 @@ def render_context(ctx: dict, char_budget: int = 1800, *, lang: str = 'en') -> s
             suffix = f'; {age} calendar days old'
         if d.get('issues'):
             suffix += '; partial input'
+        if _dict(d.get('source')).get('owner_degraded') is True:
+            qualifications = [DEGRADATION_REASONS[code.removeprefix('owner_degraded:')]
+                for code in d.get('issues', []) if isinstance(code, str)
+                and code.startswith('owner_degraded:')
+                and code.removeprefix('owner_degraded:') in DEGRADATION_REASONS]
+            suffix += '; degraded: ' + ', '.join(qualifications or ['owner-reported limitation'])
         clock = 'observed' if _dict(d.get('source')).get('clock_semantics') == 'source_observation_date' else 'snapshot'
         rows.append((key, f'{label} [{clock} {stamp}{suffix}]: {text}'))
 
