@@ -347,6 +347,120 @@ class TestBuildIntegration:
 
 
 # --------------------------------------------------------------------------- #
+# CIE-04/05/06 — bounded owner-native company evidence
+# --------------------------------------------------------------------------- #
+
+class TestCIECompanyEvidence:
+    def test_cninfo_source_url_accepts_only_owner_path_family(self):
+        assert hub._cninfo_source_url(
+            "finalpage/2026-08-19/1234567890.PDF"
+        ) == "https://static.cninfo.com.cn/finalpage/2026-08-19/1234567890.PDF"
+        assert hub._cninfo_source_url(
+            "/finalpage/2026-08-19/1234567890.PDF"
+        ) == "https://static.cninfo.com.cn/finalpage/2026-08-19/1234567890.PDF"
+
+        # A stored source field is evidence, not authority to make an arbitrary
+        # outbound link. Absolute URLs, traversal and unrelated paths fail closed.
+        assert hub._cninfo_source_url("https://evil.example/x.pdf") is None
+        assert hub._cninfo_source_url("../../etc/passwd") is None
+        assert hub._cninfo_source_url("other/123.pdf") is None
+
+    def test_visit_row_exposes_source_id_link_and_separate_clocks(self):
+        fresh = datetime.now(timezone.utc).isoformat()
+        block = hub._visit_block("000001.SZ", _ctx(
+            by_code={"000001": [{
+                "announcement_id": "A-CIE-1", "sec_code": "000001",
+                "title": "投资者关系活动记录表",
+                "source_published_at": "2026-08-19T09:00:00+08:00",
+                "system_recorded_at": "2026-08-19T10:00:00+00:00",
+                "visitor_raw": "not_yet_available",
+                "visitor_class": "not_yet_available",
+                "ontology_version": "v1",
+                "adjunct_url": "finalpage/2026-08-19/A-CIE-1.PDF",
+            }]},
+            coverage_start="2026-08-01",
+            health={"status": "ok", "last_success_utc": fresh},
+        ))
+        row = block["recent"][0]
+        assert row["announcement_id"] == "A-CIE-1"
+        assert row["source_published_at"] == "2026-08-19T09:00:00+08:00"
+        assert row["system_recorded_at"] == "2026-08-19T10:00:00+00:00"
+        assert row["source_url"].startswith("https://static.cninfo.com.cn/finalpage/")
+        assert row["source_published_at"] != row["system_recorded_at"]
+
+    def test_packet_is_context_only_source_addressable_and_rank_neutral(self):
+        visits = {
+            "state": "ok",
+            "coverage_start": "2026-08-01",
+            "recent": [{
+                "announcement_id": "A-CIE-2",
+                "title": "投资者关系活动记录表",
+                "source_published_at": "2026-08-20T09:00:00+08:00",
+                "system_recorded_at": "2026-08-20T10:00:00+00:00",
+                "source_url": "https://static.cninfo.com.cn/finalpage/2026-08-20/A-CIE-2.PDF",
+                "visitor_class": "not_yet_available",
+            }],
+        }
+        traj = {
+            "ret_20d": -4.0, "rs_20d": -2.0, "rs_60d": 1.0,
+            "off_high_pct": -8.0, "rolling_over": True,
+        }
+        packet = hub._company_evidence_block(
+            visits, traj,
+            "price is rolling over (20d drawdown + RS falling)",
+            "价格正在转弱（20 日回撤 + 相对强度走低）",
+        )
+
+        assert packet["schema"] == "china_intel.company_evidence.v1"
+        assert packet["is_context_only"] is True
+        assert packet["authority"] == {
+            "identity": "existing_hub_ticker",
+            "ranking": "none",
+            "prophet": "none",
+            "trade": "none",
+        }
+        assert packet["evidence"][0]["source_id"] == "A-CIE-2"
+        assert packet["clocks"]["latest_source_published_at"] == \
+            "2026-08-20T09:00:00+08:00"
+        assert packet["clocks"]["latest_system_recorded_at"] == \
+            "2026-08-20T10:00:00+00:00"
+        assert "visitor_identity_not_available" in packet["unknowns"]
+        assert packet["market_context"]["rolling_over"] is True
+        assert packet["contradictions"][0]["basis"] == "existing_hub_risk_context"
+        # No accidental second rank/score authority hidden inside the packet.
+        assert "score" not in packet
+        assert "rank" not in packet
+
+    def test_covered_quiet_is_measured_not_relabelled_unknown(self):
+        packet = hub._company_evidence_block(
+            {"state": "measured_no_event", "coverage_start": "2026-08-01", "recent": []},
+            {"ret_20d": 1.0, "rs_20d": 0.2, "rs_60d": 0.1,
+             "off_high_pct": -2.0, "rolling_over": False},
+            None, None,
+        )
+        assert packet["source_state"] == "measured_no_event"
+        assert "visit_coverage_not_started" not in packet["unknowns"]
+        assert "visit_source_stale" not in packet["unknowns"]
+        assert "visit_source_unavailable" not in packet["unknowns"]
+        assert packet["evidence"] == []
+
+    def test_degraded_absence_stays_unknown(self):
+        for state, expected in [
+            ("no_coverage", "visit_coverage_not_started"),
+            ("stale", "visit_source_stale"),
+            ("source_failure", "visit_source_unavailable"),
+            ("not_yet_available", "visit_observation_incomplete"),
+        ]:
+            packet = hub._company_evidence_block(
+                {"state": state, "coverage_start": None, "recent": []},
+                None, None, None,
+            )
+            assert expected in packet["unknowns"]
+            assert "market_context_unavailable" in packet["unknowns"]
+
+
+
+# --------------------------------------------------------------------------- #
 # P1-R3 (durable scoped key-exclusion recovery) — hub-level hostile items
 # --------------------------------------------------------------------------- #
 
