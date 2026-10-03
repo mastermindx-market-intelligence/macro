@@ -4578,6 +4578,10 @@ CURATED_EXCLUSIVE = {
     # (site/**, data/**) onto them — files that cannot move either verdict.
     "validated-claims-source",
     "validated-claims-contract",
+    # 2026-10-03: the cycle-vintage collector (#7871). Exclusive because the
+    # suite drives the collector through runpy/subprocess and its paths are
+    # the suite's import closure plus the files it reads.
+    "cycle-vintage-collector",
 }
 
 
