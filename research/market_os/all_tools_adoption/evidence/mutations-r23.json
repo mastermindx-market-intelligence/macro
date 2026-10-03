@@ -1,66 +1,67 @@
 {
-  "source_sha256": "89fe95472ae4aa6004aa8fc267faf1f268785baf1ef3669a10f5fa6fc26ef53f",
+  "source_sha256": "49bc32c1bca12098c8a958cf686325fbc7f918304f1ad9f3892cce346b4249be",
   "cases": [
     {
       "name": "redraw_revalidation_removed",
       "detected": true,
       "exit": 1,
       "failures": [
-        "not ok 71 - withdrawn destination stays unavailable after language",
-        "not ok 72 - withdrawn destination stays unavailable after search",
-        "not ok 73 - withdrawn destination stays unavailable after clear",
-        "not ok 74 - withdrawn destination stays unavailable after category",
-        "not ok 75 - withdrawn destination stays unavailable after all",
-        "not ok 76 - withdrawn destination stays unavailable after refresh",
-        "not ok 77 - render directly revalidates href without observer delivery",
-        "not ok 78 - render directly revalidates target without observer delivery",
-        "not ok 79 - render directly revalidates hidden without observer delivery",
-        "not ok 80 - render directly revalidates group-disabled without observer delivery",
-        "not ok 88 - a withdrawn focused destination returns to menu heading during repaint",
-        "not ok 91 - unavailable snapshot is refreshed only on explicit reopen",
-        "not ok 92 - withdrawn state survives source toggle until the menu is reopened",
-        "not ok 93 - unavailable row is removed from sequential keyboard destinations",
-        "not ok 94 - an unrelated valid destination stays navigable during withdrawal",
-        "not ok 97 - locale preserves unavailable count and snapshot ordering"
+        "not ok 49 - topic redraw cannot revive a withdrawn destination",
+        "not ok 81 - withdrawn destination stays unavailable after language",
+        "not ok 82 - withdrawn destination stays unavailable after search",
+        "not ok 83 - withdrawn destination stays unavailable after clear",
+        "not ok 84 - withdrawn destination stays unavailable after category",
+        "not ok 85 - withdrawn destination stays unavailable after all",
+        "not ok 86 - withdrawn destination stays unavailable after refresh",
+        "not ok 87 - render directly revalidates href without observer delivery",
+        "not ok 88 - render directly revalidates target without observer delivery",
+        "not ok 89 - render directly revalidates hidden without observer delivery",
+        "not ok 90 - render directly revalidates group-disabled without observer delivery",
+        "not ok 98 - a withdrawn focused destination returns to menu heading during repaint",
+        "not ok 101 - unavailable snapshot is refreshed only on explicit reopen",
+        "not ok 102 - withdrawn state survives source toggle until the menu is reopened",
+        "not ok 103 - unavailable row is removed from sequential keyboard destinations",
+        "not ok 104 - an unrelated valid destination stays navigable during withdrawal",
+        "not ok 107 - locale preserves unavailable count and snapshot ordering"
       ],
-      "sha256": "a4bffeed6e6eaa805e0cfef0d238d56b8b2abb624488ce4154642a0a0fb66f2d"
+      "sha256": "782df83ed28387df3c3a33ed7fc8d28948767a8b0de0e4e7d3ec96b5f869ae80"
     },
     {
       "name": "auxclick_guard_removed",
       "detected": true,
       "exit": 1,
       "failures": [
-        "not ok 82 - auxclick cannot use a withdrawn link before observer flush"
+        "not ok 92 - auxclick cannot use a withdrawn link before observer flush"
       ],
-      "sha256": "65eb692de733d83b4367c1bc2bf1b35d66d3ec6ebb933be61bca14df76aecfd6"
+      "sha256": "603a87f3c71ffad645a2d8b6607452cecbcdd78a4d2730fbe9ce09f62217c1ae"
     },
     {
       "name": "contextmenu_guard_removed",
       "detected": true,
       "exit": 1,
       "failures": [
-        "not ok 83 - contextmenu cannot use a withdrawn link before observer flush"
+        "not ok 93 - contextmenu cannot use a withdrawn link before observer flush"
       ],
-      "sha256": "1bce69bb4aeb7ab2048464b4cfefb003d595d96fc90cdafa4d664c33ac8b2367"
+      "sha256": "46195eef19ec597e6faa6c2cce36122b654ac3396dcc1a44c2deb7bd2e4ab22b"
     },
     {
       "name": "destination_focus_removed",
       "detected": true,
       "exit": 1,
       "failures": [
-        "not ok 87 - language change keeps keyboard focus on the same destination",
-        "not ok 88 - a withdrawn focused destination returns to menu heading during repaint"
+        "not ok 97 - language change keeps keyboard focus on the same destination",
+        "not ok 98 - a withdrawn focused destination returns to menu heading during repaint"
       ],
-      "sha256": "43986058213de3a6b9fa446b26d33180ec4c23252a037fedeb57cac0dfd7c9e8"
+      "sha256": "ad8aa4635b1fb877edfbfde27824ba1e1d1e1c8f6bf087d911f06975c1ab6116"
     },
     {
       "name": "withdrawal_latch_removed",
       "detected": true,
       "exit": 1,
       "failures": [
-        "not ok 92 - withdrawn state survives source toggle until the menu is reopened"
+        "not ok 102 - withdrawn state survives source toggle until the menu is reopened"
       ],
-      "sha256": "8fa06c856f5e8615e4a2bf504688e75bf70cb7448016caa7f9b5cf31f88de9a8"
+      "sha256": "58913c98c601a76379da3210808671b0d6bef394133562fb878d288f5523243a"
     },
     {
       "name": "duplicate_mount",
@@ -69,7 +70,7 @@
       "failures": [
         "not ok 41 - the renderer does not create more than one active source-driven menu in a document"
       ],
-      "sha256": "ba2bed653a4066bbec200c9bf9986bc4e09bbb0d0c2cd86a26dfc5da861021ad"
+      "sha256": "bc495867bfbf272804d019c5da4f2b2913fd1f84cca0fd118197f76df78ec1f2"
     },
     {
       "name": "context_erased",
@@ -81,7 +82,7 @@
         "not ok 38 - opening prepares the current source group rather than unrelated countries",
         "not ok 39 - research page starts with its own source group while all destinations remain reachable"
       ],
-      "sha256": "a7b3952b53ca5e3b62b78779764b6ade217ba491a016e3c09193419ddf7a796a"
+      "sha256": "7ffd5f49b8caaef1706e5d14844858ba33db4cb6e52c1b6d6904fa7514775540"
     },
     {
       "name": "svg_handler_copied",
@@ -90,7 +91,7 @@
       "failures": [
         "not ok 43 - source blueprint shapes survive but executable SVG nodes do not"
       ],
-      "sha256": "3effb40f318720c32b3923f96cc0b06134c1b12de9681ec20ba0c4acfaca3ee1"
+      "sha256": "cd73218f4aaa8c7a2cd2186a9449524ebed0849b589417dcf2ca4c5550482378"
     },
     {
       "name": "changed_target_ignored",
@@ -98,9 +99,9 @@
       "exit": 1,
       "failures": [
         "not ok 40 - a source link changing its tab behavior is disabled until refreshed",
-        "not ok 78 - render directly revalidates target without observer delivery"
+        "not ok 88 - render directly revalidates target without observer delivery"
       ],
-      "sha256": "f96dd4ba45356b646f621ea588ea527d7c7556d7e0537b3362a9968f4d4902ea"
+      "sha256": "624a40674d840a428662617a7a57400a4ce58941661ed34628907c4da01d7671"
     },
     {
       "name": "server_disabled_ignored",
@@ -108,29 +109,31 @@
       "exit": 1,
       "failures": [
         "not ok 32 - disabled source group cannot leak a child into the menu",
-        "not ok 80 - render directly revalidates group-disabled without observer delivery"
+        "not ok 90 - render directly revalidates group-disabled without observer delivery"
       ],
-      "sha256": "539bbf171caaa574b89f3ab731be736c2095471fff4bed7b818252071b751816"
+      "sha256": "b90f9f2815d8d27a6ace6ff53e02955e4ea9ade50859a7588c9e0d4b6a254a83"
     },
     {
       "name": "unsafe_origin_accepted",
       "detected": true,
       "exit": 1,
       "failures": [
-        "not ok 56 - rejects unsafe href \"https://evil.invalid/tool\"",
-        "not ok 58 - rejects unsafe href \"//evil.invalid\"",
-        "not ok 60 - rejects unsafe href \"https://app.mastermind-x.com.evil.invalid\""
+        "not ok 59 - rejects unsafe href \"https://evil.invalid/tool\"",
+        "not ok 61 - rejects unsafe href \"//evil.invalid\"",
+        "not ok 63 - rejects unsafe href \"https://app.mastermind-x.com.evil.invalid\"",
+        "not ok 79 - topic matching does not reintroduce withdrawn or untrusted destinations"
       ],
-      "sha256": "c5ce136b3dd3ec63de9f5fd9240c46008220113939788b8780b984d7207e8d5f"
+      "sha256": "9da5b1536b274549621f599fd96ca89d48e49e0af6bd7a926622a671d6c356f2"
     },
     {
       "name": "ime_filters_early",
       "detected": true,
       "exit": 1,
       "failures": [
-        "not ok 17 - composing Chinese does not render the unfinished query"
+        "not ok 17 - composing Chinese does not render the unfinished query",
+        "not ok 48 - Chinese topic composition keeps the unfinished query out of results"
       ],
-      "sha256": "dcec1a9e1c893d9317836195d6c0a0df3a589b77f00c8a16baa5149fe74f9089"
+      "sha256": "2a44513d8067c7e13bed880a75d1e3a8422f47d010b3d8ee0524d2b75a9e3395"
     }
   ],
   "detected": 12,

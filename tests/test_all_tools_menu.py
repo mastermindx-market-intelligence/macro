@@ -55,6 +55,15 @@ def test_production_controller_is_owned_by_nav_market() -> None:
         assert forbidden not in block
 
 
+def test_documentary_reference_matches_production_controller() -> None:
+    """A reference-only edit must not silently fork the shared navigation owner."""
+    reference = ADOPTION_TESTS.parent / "src" / "all-tools.js"
+    production = _between(NAV_JS.read_text(), JS_START, JS_END)
+    assert reference.read_text() == production, (
+        "The All tools reference is stale; sync the exact nav_market controller block."
+    )
+
+
 def test_production_controller_passes_source_driven_behavior_suite(tmp_path: Path) -> None:
     node = shutil.which("node")
     if node is None:

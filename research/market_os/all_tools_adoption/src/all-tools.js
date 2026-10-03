@@ -36,7 +36,9 @@
     var query = normalize(options && options.query), group = options && options.group;
     return items.filter(function (item) {
       if (!query) return !group || group === 'all' || item.group === group;
-      var haystack = normalize([item.en, item.zh, item.descriptionEn, item.descriptionZh, item.group, item.groupZh].join(' '));
+      // Bound each public field independently; long bilingual copy must not hide later topics.
+      var haystack = [item.en, item.zh, item.descriptionEn, item.descriptionZh, item.group, item.groupZh,
+        item.section, item.sectionZh].map(normalize).join(' ');
       return query.split(' ').every(function (word) { return haystack.indexOf(word) >= 0; });
     });
   }
@@ -80,7 +82,7 @@
     var group = pair(heading, 'Other tools');
     var badge = anchor.querySelector('.nm-tier');
     var sectionNode = anchor.closest('.nav-mega-section,.nav-market-section,.nav-mega-rail,.nav-market-rail');
-    var section = pair(sectionNode && sectionNode.querySelector('.nav-mega-h,.nav-market-heading,.section-label')); 
+    var section = pair(sectionNode && sectionNode.querySelector('.nav-mega-h,.nav-market-heading,.section-label'));
     return {href: anchor.getAttribute('href'), en: title.en, zh: title.zh,
       descriptionEn: description.en, descriptionZh: description.zh, group: group.en, groupZh: group.zh,
       section: section.en, sectionZh: section.zh,
@@ -285,7 +287,13 @@
   }
   var api={project:project,select:select,startingPoints:startingPoints,sameDestination:sameDestination,collect:collect,mount:mount};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
-  else { global.MMXAllTools=api;var script=global.document.currentScript;var host=script&&script.closest('[data-mmx-all-tools]');
-    if(host){if(global.document.readyState==='loading')global.document.addEventListener('DOMContentLoaded',function(){mount(host);},{once:true});else mount(host);}
+  else {
+    global.MMXAllTools=api;
+    var bootAllTools=function(){
+      var host=global.document&&global.document.querySelector('[data-mmx-all-tools]');
+      if(host)mount(host);
+    };
+    if(global.document&&global.document.readyState==='loading')global.document.addEventListener('DOMContentLoaded',bootAllTools,{once:true});
+    else bootAllTools();
   }
 })(typeof window!=='undefined'?window:globalThis);

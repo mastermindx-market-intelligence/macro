@@ -3186,8 +3186,8 @@ html[data-lang="zh"] .mmx-tools-eyebrow { letter-spacing: .02em; text-transform:
 @media (max-width:600px) {
   .mmx-tools { inset: 8px 0 auto;width: calc(100% - 16px);height: calc(100vh - 16px);height: calc(100dvh - 16px);border-radius: var(--r-card,12px); }
   .mmx-tools-header { padding: 19px 18px 14px;gap: 14px; }.mmx-tools-header h2 { font-size: var(--fs-num-lg); }
-  .mmx-tools-header p { font-size: var(--fs-sm); }.mmx-tools-categories { padding: 0 12px 10px;gap: 3px; }
-  .mmx-tools-categories button { padding: 7px 9px; }.mmx-tools-body { padding: 18px; }.mmx-tools-results { grid-template-columns: minmax(0,1fr);gap: 18px; }
+  .mmx-tools-header p { font-size: var(--fs-sm); }.mmx-tools-categories { flex-wrap: nowrap;overflow-x: auto;overscroll-behavior-x: contain;padding: 0 12px 10px;gap: 3px; }
+  .mmx-tools-categories button { flex: 0 0 auto;padding: 7px 9px; }.mmx-tools-body { padding: 18px; }.mmx-tools-results { grid-template-columns: minmax(0,1fr);gap: 18px; }
   .mmx-tools-link { min-height: 76px; }.mmx-tools-footer { padding-left: 18px;padding-right: 18px;gap: 6px; }.mmx-tools-status { padding: 0 18px 10px; }
 }
 @media (max-height:600px) {
