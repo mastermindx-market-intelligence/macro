@@ -155,3 +155,18 @@ CI and permissible production verification. While those external gates are open,
 advance only independently safe in-scope work. The original end-to-end mission is
 incomplete:forecast/evaluation/history, rates-path comparison, broader regional and
 Portfolio adoption are not replaced by this first customer-context increment.
+
+## Repair 2026-10-03
+
+Composed onto `claude/gri-8257-context-repair-merged-20261003` at base
+`d09721be`: entitled block additive (paid = free + block, byte-identical
+base); closed owner vocabularies; age rule marks rows `stale/last-known`
+past the max with one `As-of dates:` header line; explicit
+`_RENDER_PRIORITY`; credit clock disclosure + NY session date wired;
+`REGIME_DETAIL_BLOCK_BUDGET` = 2000 in market_packet (single source,
+passed to render_context explicitly); dispersion's average_correlation
+labelled `correlation proxy (variance ratio)`. Fixture-only receipt:
+`research/macro_regime_intelligence/repair_20261003.json`. Counts
+recorded in `verification_20261001.json` describe an earlier head and
+are not evidence for this one; live verification of the served block
+is still owed.

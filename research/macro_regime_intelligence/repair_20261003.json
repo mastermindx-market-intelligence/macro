@@ -1,0 +1,65 @@
+{
+  "schema": "regime_context_repair_receipt.v1",
+  "observed_at": "2026-10-03T00:00:00Z",
+  "base_candidate": "d09721be4387d1f64dd02bf248b5e1dbb6106edf",
+  "files": {
+    "engine/neuralweb/regime_context.py": "e4246a29985c7d5409a0a186dadcf1783a6bbf9443943075c22ed2a7c7b8f07f",
+    "engine/neuralweb/market_packet.py": "24a54041ee6b40834616ced140d339da05b54a5c0e65428c4fe9078cf6c1ce87",
+    "tests/test_regime_context.py": "1b84b9da0b297d1e91ea459d42178eccbc148dd15f48f39d28cf5e2d198848d3",
+    "tests/test_regime_native_degradation.py": "92e49e665a26063e61b0e6677adeb808dea9701691682668b29d0d9e85dd51d6",
+    "tests/test_regime_degradation_contract.py": "2031eaa98c13c0d3318b39ed1b5877d5b75be9e6b3fbb91ab0e095d8f961422e",
+    "tests/test_regime_context_entitled_block.py": "f8b51019310266566c6016a13bfc5ea547b187ae76b9cb463684c0b2d9414a74"
+  },
+  "test_summary": "315 passed in 1.80s",
+  "test_command": "python3 -m pytest tests/test_regime_context.py tests/test_regime_native_degradation.py tests/test_regime_degradation_contract.py tests/test_regime_context_entitled_block.py -q",
+  "entitled_block": {
+    "fixture": "tests/test_regime_context_entitled_block.py:_populate_root",
+    "free_user": {
+      "base_sections": [
+        "HEADER",
+        "SHOCK WINDOW",
+        "DRIVERS",
+        "RATES DESK",
+        "VOL",
+        "BREADTH",
+        "LEADERS",
+        "CROSS-ASSET",
+        "DESK READ"
+      ],
+      "digest_length": 3908,
+      "block_present": false
+    },
+    "paid_user": {
+      "base_sections": [
+        "HEADER",
+        "SHOCK WINDOW",
+        "DRIVERS",
+        "RATES DESK",
+        "VOL",
+        "BREADTH",
+        "LEADERS",
+        "CROSS-ASSET",
+        "DESK READ",
+        "REGIME DETAIL"
+      ],
+      "digest_length": 5850,
+      "block_present": true
+    },
+    "base_sections_identical": true
+  },
+  "read_date_matrix": {
+    "fixture": "tests/test_regime_degradation_contract.py:_full_sources via _render_at(read_offset_days)",
+    "T+0": {"rendered_length": 1935, "budget_omitted_axes": 0, "stale_rows": 0},
+    "T+2": {"rendered_length": 1941, "budget_omitted_axes": 0, "stale_rows": 0},
+    "T+5": {"rendered_length": 1941, "budget_omitted_axes": 0, "stale_rows": 0},
+    "T+6": {"rendered_length": 1974, "budget_omitted_axes": 0, "stale_rows": 1}
+  },
+  "budget_invariant": {
+    "DEFAULT_CHAR_BUDGET": 4200,
+    "REGIME_DETAIL_BLOCK_BUDGET": 2000,
+    "cap": "DEFAULT_CHAR_BUDGET + REGIME_DETAIL_BLOCK_BUDGET = 6200",
+    "enforced_by": "tests/test_regime_context_entitled_block.py:test_paid_digest_within_composed_budget"
+  },
+  "generated_by": "cd ~/lanes/repos/macro/.claude/worktrees/gri-8257-z1 && python3 -c \"import sys, tempfile, re, hashlib; sys.path.insert(0,'.'); from pathlib import Path; from engine.neuralweb import market_packet as mp; from engine.neuralweb import regime_context as rc; from tests.test_regime_context_entitled_block import _populate_root, _strip_block, REGIME_DETAIL_MARKER; from tests.test_regime_degradation_contract import _full_sources; from datetime import datetime, timedelta, timezone; import tempfile; NOW0=datetime(2026,10,1,23,0,tzinfo=timezone.utc); with tempfile.TemporaryDirectory() as td: root=Path(td); _populate_root(root); free=mp.digest(root); paid=mp.digest(root, include_regime_detail=True); free_base=_strip_block(free); paid_base=_strip_block(paid); sec_re=re.compile(r'^(?:\\[)?([A-Z][A-Z][A-Z \\\\-]+?)(?=\\\\s\\(|:|\\]|\\\\s*$)'); def names(t): s=[];\\n for line in t.split('\\\\n'): line=line.strip();\\n if line.startswith('[CURRENT DASHBOARD STATE'): s.append('HEADER'); continue;\\n m=sec_re.match(line);\\n if m and m.group(1).strip() not in s: s.append(m.group(1).strip())\\n return s; print('FREE_SECTIONS',names(free_base)); print('PAID_SECTIONS',names(paid_base)); print('FREE_LEN',len(free)); print('PAID_LEN',len(paid)); print('BASE_IDENTICAL',free_base==paid_base);\\n for off in [0,2,5,6]: dt=NOW0+timedelta(days=off); ctx=rc.compose_context(_full_sources(),now=dt); text=rc.render_context(ctx); om=[];\\n if 'omitted from compact brief' in text.lower(): om=[x.strip() for x in text.split('Omitted from compact brief: ',1)[1].split('.',1)[0].split(',')];\\n st=sum(1 for d in ctx['dimensions'].values() if d.get('status')=='stale'); print(f'T+{off} len={len(text)} omitted={len(om)} stale={st}')",
+  "limits": "fixtures only; no production, served or live artifact was read; this receipt is not release proof"
+}
