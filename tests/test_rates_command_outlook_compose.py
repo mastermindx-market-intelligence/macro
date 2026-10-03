@@ -11,7 +11,7 @@ from __future__ import annotations
 import copy
 import json
 import sys
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -715,15 +715,11 @@ def test_outlook_paths_keep_the_reader_s_own_reason_for_a_field_it_refuses():
 # ---------------------------------------------------------------------------
 
 
-_HOURS_BACK = 21
 def _session_of(dt):
-    h = dt.hour
-    if h >= _HOURS_BACK:
-        new = dt.replace(hour=h - _HOURS_BACK)
-    else:
-        new = dt.replace(hour=h + 24 - _HOURS_BACK, day=dt.day - 1)
-    return new.date()
-SESSION_OF = _session_OF if False else _session_of
+    return (dt - timedelta(hours=21)).date()
+
+
+SESSION_OF = _session_of
 
 
 def _prev(cutoff="2026-10-03T02:00:00+00:00", baseline=None):
@@ -974,3 +970,51 @@ def test_pick_baseline_returned_new_baseline_mutation_does_not_change_previous()
     out["analysis_cutoff"] = "MUTATED"
     out["us_session"] = "MUTATED"
     assert prev == snapshot
+
+
+def test_pick_baseline_new_baseline_shares_no_nested_object_with_previous():
+    prev = _prev()
+    snapshot = copy.deepcopy(prev)
+    out = rcc.pick_baseline(prev, us_session=date(2026, 10, 3), session_of=SESSION_OF)
+    out["evidence"]["alpha"]["values"]["v"] = "MUTATED"
+    out["evidence"]["alpha"]["owner_verdict"]["token"] = "MUTATED"
+    assert prev == snapshot
+
+
+def _prev_with_ids(*ids):
+    prev = _prev()
+    row = prev["evidence"][0]
+    prev["evidence"] = [dict(row, id=i) for i in ids]
+    return prev
+
+
+@pytest.mark.parametrize(
+    "previous",
+    [
+        _prev_with_ids(7),
+        _prev_with_ids(None),
+        _prev_with_ids(["alpha"]),
+        _prev_with_ids("alpha", "alpha"),
+    ],
+    ids=["int_id", "none_id", "list_id", "duplicate_id"],
+)
+def test_pick_baseline_row_ids_must_be_distinct_strings(previous):
+    out = rcc.pick_baseline(previous, us_session=date(2026, 10, 3), session_of=SESSION_OF)
+    assert out == {"status": "absent", "reason": "previous_unreadable"}
+
+
+@pytest.mark.parametrize(
+    "returned",
+    [None, "2026-10-02", datetime(2026, 10, 2, tzinfo=timezone.utc)],
+    ids=["none", "string", "datetime"],
+)
+def test_pick_baseline_session_of_must_return_a_plain_date(returned):
+    out = rcc.pick_baseline(_prev(), us_session=date(2026, 10, 3), session_of=lambda dt: returned)
+    assert out == {"status": "absent", "reason": "previous_unreadable"}
+
+
+def test_session_helper_matches_the_documented_cutoffs():
+    cut = datetime(2026, 10, 3, 2, 0, tzinfo=timezone.utc)
+    assert SESSION_OF(cut) == date(2026, 10, 2)
+    assert SESSION_OF(cut + timedelta(hours=24)) == date(2026, 10, 3)
+    assert SESSION_OF(datetime(2026, 10, 1, 2, 0, tzinfo=timezone.utc)) == date(2026, 9, 30)
