@@ -57,6 +57,15 @@ _CASES = {
         "parser": "pce",
         "actual": {"headline_mom": -0.1, "core_mom": 0.1, "unit": "percent"},
     },
+    "GDP": {
+        "date": "2026-07-30",
+        "reference_period": "Q2 2026",
+        "publisher": "U.S. Bureau of Economic Analysis",
+        "source_id": "bea_gdp",
+        "source_url": "https://www.bea.gov/news/2026/gdp-advance-estimate-2nd-quarter-2026",
+        "parser": "gdp",
+        "actual": {"real_gdp_annualized": 3.0, "vintage": "advance", "unit": "percent"},
+    },
     "CLAIMS": {
         "date": "2026-08-06",
         "reference_period": "August 1, 2026",
@@ -144,6 +153,7 @@ def _publication(event_type: str = "CPI") -> dict:
         ("PPI", [("ppi_finaldemand", "2026-06", 0.2)]),
         ("NFP", [("nfp", "2026-07", 57.0)]),
         ("PCE", [("pce_headline", "2026-06", -0.1), ("pce_core", "2026-06", 0.1)]),
+        ("GDP", [("gdp_real_annualized", "2026-Q2", 3.0)]),
         ("CLAIMS", [("claims", "2026-08-06", 199.0)]),
     ],
 )
@@ -179,6 +189,99 @@ def test_agency_source_id_and_parser_contracts_fail_closed(event_type: str) -> N
     bad = _publication(event_type)
     bad["parser"]["version"] = 2
     assert normalize_publication(bad) == []
+
+
+
+def test_gdp_quarter_reference_must_match_parser_and_source_period() -> None:
+    mismatch = _publication("GDP")
+    mismatch["reference_period"] = "Q1 2026"
+    assert normalize_publication(mismatch) == []
+
+    malformed = _publication("GDP")
+    malformed["reference_period"] = "second quarter"
+    malformed["actual"]["reference_period"] = "second quarter"
+    assert normalize_publication(malformed) == []
+
+
+def test_gdp_regular_schedule_fallback_accepts_only_previous_quarter() -> None:
+    regular = _publication("GDP")
+    regular.pop("reference_period")
+    rows = normalize_publication(regular)
+    assert [(row["release"], row["period"], row["actual"]) for row in rows] == [
+        ("gdp_real_annualized", "2026-Q2", 3.0)
+    ]
+    assert rows[0]["unit"] == "percent_annualized"
+    assert rows[0]["published_precision"] == 1
+    assert rows[0]["period_resolution"] == "validated_parser_period_against_regular_release_schedule"
+
+    current_quarter = _publication("GDP")
+    current_quarter["reference_period"] = "Q3 2026"
+    current_quarter["actual"]["reference_period"] = "Q3 2026"
+    assert normalize_publication(current_quarter) == []
+
+
+def test_gdp_receipt_integrity_rejects_period_drift() -> None:
+    row = normalize_publication(_publication("GDP"))[0]
+    assert receipt_integrity_errors(row) == []
+    drifted = {**row, "period": "2026-Q1"}
+    errors = receipt_integrity_errors(drifted)
+    assert "reference_period_target_mismatch" in errors
+    assert "receipt_id_mismatch" in errors
+
+
+def _gdp_publication_for(date_text: str, vintage: str, value: float, sha_char: str) -> dict:
+    row = _publication("GDP")
+    row["date"] = date_text
+    row["event_id"] = f"gdp:{date_text}"
+    row["source_sha256"] = sha_char * 64
+    row["first_seen_at"] = f"{date_text}T12:30:01+00:00"
+    row["observed_at"] = f"{date_text}T12:30:01+00:00"
+    row["source_released_at"] = f"{date_text}T12:30:00+00:00"
+    row["verified_at"] = f"{date_text}T12:31:00+00:00"
+    row["actual"]["vintage"] = vintage
+    row["actual"]["real_gdp_annualized"] = value
+    return row
+
+
+def test_gdp_estimate_vintages_are_distinct_first_results_not_corrections() -> None:
+    advance = normalize_publication(_gdp_publication_for("2026-07-30", "advance", 3.0, "a"))[0]
+    second_pub = _gdp_publication_for("2026-08-27", "second", 3.2, "b")
+    payload = {"schema": "release_publications.v2", "publications": [second_pub]}
+    second = reconcile_receipts(payload, [advance])
+    assert len(second) == 1
+    assert second[0]["row_type"] == "actual"
+    assert second[0]["estimate_vintage"] == "second"
+    assert second[0].get("supersedes_receipt_id") is None
+    assert second[0]["receipt_id"] != advance["receipt_id"]
+
+    changed_second = _gdp_publication_for("2026-08-27", "second", 3.3, "c")
+    correction = reconcile_receipts(
+        {"schema": "release_publications.v2", "publications": [changed_second]},
+        [advance, second[0]],
+    )
+    assert len(correction) == 1
+    assert correction[0]["row_type"] == "correction_candidate"
+    assert correction[0]["estimate_vintage"] == "second"
+    assert correction[0]["supersedes_receipt_id"] == second[0]["receipt_id"]
+    assert correction[0]["automatic_scoring_eligible"] is False
+
+
+@pytest.mark.parametrize("vintage", [None, "", "preliminary", "fourth"])
+def test_gdp_requires_named_bea_estimate_vintage(vintage) -> None:
+    row = _publication("GDP")
+    if vintage is None:
+        row["actual"].pop("vintage")
+    else:
+        row["actual"]["vintage"] = vintage
+    assert normalize_publication(row) == []
+
+
+def test_gdp_initial_vintage_normalizes_to_advance() -> None:
+    row = _publication("GDP")
+    row["actual"]["vintage"] = "initial"
+    receipt = normalize_publication(row)[0]
+    assert receipt["estimate_vintage"] == "advance"
+    assert receipt_integrity_errors(receipt) == []
 
 
 def test_unofficial_domain_or_missing_hash_fails_closed() -> None:

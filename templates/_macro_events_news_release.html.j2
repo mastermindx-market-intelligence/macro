@@ -1,0 +1,283 @@
+{# Read-only display of engine.events_news_release_evidence output. This macro is
+   not a receipt validator: only a server-side call to the canonical adapter may
+   supply this schema. Never accept a client-authored projection as verified data. #}
+{% macro release_evidence(event, bi, snapshot_utc) -%}
+{% autoescape true %}
+{% set raw = event.get('official_evidence') %}
+{% set reference_binding = {'scheduled_reference_period':event.get('scheduled_reference_period'), 'expected_reference_period':event.get('expected_reference_period'), 'forecast_period':event.get('forecast_period'), 'reference_period':event.get('reference_period')} %}
+{% set ev = raw if raw is mapping and raw.get('schema') == 'release_event_evidence.v1' and raw.get('display_only') is sameas true and raw.get('authority') is sameas false and raw.get('event_type') == event.get('type') and raw.get('release_date') == event.get('date') and raw.get('reference_binding') == reference_binding and raw.get('as_of_input') is string and raw.get('as_of_input') == snapshot_utc else none %}
+{% set labels = {
+  'cpi_headline_mom':['Headline CPI','整体 CPI'], 'cpi_core_mom':['Core CPI','核心 CPI'],
+  'ppi_headline_mom':['Producer prices','生产者价格'],
+  'pce_headline_mom':['Headline PCE','整体 PCE'], 'pce_core_mom':['Core PCE','核心 PCE'],
+  'gdp_real_annualized':['Real GDP','实际 GDP'],
+  'nfp_payroll_change':['Payroll change','非农就业变化'], 'claims_initial':['Initial claims','初请失业金人数']
+} %}
+{% set gdp_vintages = {
+  'advance':['Advance estimate','初值'],
+  'second':['Second estimate','第二次估计'],
+  'third':['Third estimate','第三次估计']
+} %}
+{% set reasons = {
+ 'unsupported_event_type':['Result coverage is not connected for this release.','此数据类型尚未接入官方结果。'],
+ 'invalid_as_of':['The evidence cutoff is missing or invalid.','证据截止时间缺失或无效。'],
+ 'published_precision_mismatch':['The value and its published precision disagree.','数值与其公布精度不一致。'],
+ 'verification_time_missing':['The verification time for this result was not supplied.','未提供此结果的核验时间。'],
+ 'invalid_reference_period':['The reference period could not be matched.','无法核对数据所属时期。'],
+ 'reference_period_conflict':['The supplied reference periods disagree.','提供的数据所属时期不一致。'],
+ 'reference_period_mismatch':['The receipt belongs to a different reference period.','该凭据对应其他数据时期。'],
+ 'ambiguous_reference_period':['Several reference periods match; no value was selected.','匹配到多个数据时期，暂不选取数值。'],
+ 'conflicting_first_receipts':['Conflicting first-result evidence needs review.','首次公布值的证据存在冲突，需要核查。'],
+ 'source_unavailable':['Official-result evidence was not supplied.','未提供官方结果证据。'],
+ 'quarantine_policy_unavailable':['Source-integrity checks are unavailable.','来源完整性检查暂不可用。'],
+ 'quarantine_policy_changed':['Source-integrity policy changed during this read.','读取期间来源完整性规则发生变化。'],
+ 'quarantined':['This source receipt is withheld for an integrity issue.','此来源凭据因完整性问题暂不显示。'],
+ 'not_available_as_of':['No qualified result was available by this cutoff.','截至此时间，尚无符合要求的结果。'],
+ 'receipt_integrity_failed':['The result did not pass the source-integrity checks.','该结果未通过来源完整性检查。'],
+ 'no_canonical_first_receipt':['A proposed correction is not an accepted first result.','待核查的更正不能替代首次公布值。'],
+ 'no_matching_receipt':['No exact result receipt is present in this snapshot.','此快照中没有精确匹配的结果凭据。']
+} %}
+{% set ns = namespace(metrics=[],available=0) %}
+{% if ev and ev.get('metrics') is sequence and ev.get('metrics') is not string and ev.get('metrics') is not mapping %}
+  {% for m in ev.metrics %}{% if m is mapping %}{% set ns.metrics = ns.metrics + [m] %}{% if m.get('status') == 'available' and m.get('actual') is number and m.get('actual') is not sameas true and m.get('actual') is not sameas false and m.get('display_value') is string and m.get('metric_id') in labels and m.get('unit') in ['percent','percent_annualized','thousands'] %}{% set ns.available = ns.available + 1 %}{% endif %}{% endif %}{% endfor %}
+{% endif %}
+{% set available = ns.available if ev and not ev.get('reason') and ev.get('status') in ['available','partial'] else 0 %}
+{% if raw is not none %}
+<details class="nd-official-evidence" data-nd-official-count="{{ available }}" data-nd-evidence-asof="{{ ev.get('as_of') or '' if ev else '' }}">
+  <summary><span>{{ bi('Official result','官方结果') }}</span><span class="nd-official-status">{% if available %}{{ available }} {{ bi('available','项可查看') }}{% else %}{{ bi('Unavailable','暂不可用') }}{% endif %}<span aria-hidden="true">＋</span></span></summary>
+  <div class="nd-official-body">
+    {% if not ev %}
+      <p class="nd-official-missing">{{ bi('The evidence does not match this event or snapshot. No result is shown.','证据与此事件或快照不匹配，暂不显示结果。') }}</p>
+    {% elif ev.get('reason') %}
+      {% set why = reasons.get(ev.reason, reasons['source_unavailable']) %}<p class="nd-official-missing">{{ bi(why[0],why[1]) }}</p>
+    {% else %}
+      <p class="nd-official-intro">{{ bi('First-published figures. Compare the same measure and period before drawing conclusions.','以下为首次公布值。作出判断前，请比较相同指标与数据时期。') }}</p>
+      <div class="nd-official-metrics">
+      {% for m in ns.metrics %}
+        {% set label = labels.get(m.get('metric_id'), ['Release measure','数据指标']) %}
+        <section class="nd-official-metric">
+          <h5>{{ bi(label[0],label[1]) }}</h5>
+          {% if ev.get('status') in ['available','partial'] and m.get('status') == 'available' and m.get('actual') is number and m.get('actual') is not sameas true and m.get('actual') is not sameas false and m.get('display_value') is string and m.get('metric_id') in labels and m.get('unit') in ['percent','percent_annualized','thousands'] %}
+            <p class="nd-official-value">{{ m.display_value }}{% if m.unit in ['percent','percent_annualized'] %}<span>%</span>{% endif %}</p>
+            <p class="nd-official-unit">{% if m.unit == 'percent_annualized' %}{{ bi('Annualized quarter-over-quarter rate','年化季度环比') }}{% elif m.unit == 'percent' %}{{ bi('Month over month','环比') }}{% elif m.get('metric_id') == 'nfp_payroll_change' %}{{ bi('Thousands of payroll jobs','千个非农就业岗位') }}{% else %}{{ bi('Thousands of initial claims','千份初请失业金申请') }}{% endif %}</p>
+            {% if m.get('metric_id') == 'gdp_real_annualized' and m.get('estimate_vintage') in gdp_vintages %}{% set gv = gdp_vintages.get(m.estimate_vintage) %}<p class="nd-official-vintage">{{ bi(gv[0],gv[1]) }}</p>{% endif %}
+            <p class="nd-official-period">{{ bi('Reference period','数据时期') }} · {{ m.get('period') if m.get('release') != 'claims' else m.get('official_reference_period') }}</p>
+            {% if m.get('correction_pending') is sameas true %}<p class="nd-official-correction">{{ bi('A proposed correction needs review. The first value is retained.','有待核查的更正，暂保留首次公布值。') }}</p>{% endif %}
+            <details class="nd-official-provenance" data-nd-provenance>
+              <summary>{{ bi('Inspect source & timing','核查来源与时间') }}<span aria-hidden="true">＋</span></summary>
+              <dl>
+                <dt>{{ bi('Publisher','发布机构') }}</dt><dd>{{ m.get('publisher') or bi('Not supplied','未提供') }}</dd>
+                <dt>{{ bi('Source published','来源公布时间') }}</dt><dd>{{ m.get('source_released_at') or bi('Not supplied','未提供') }}</dd>
+                <dt>{{ bi('First observed','首次观察时间') }}</dt><dd>{{ m.get('observed_at') or bi('Not supplied','未提供') }}</dd>
+                <dt>{{ bi('Verified','核验时间') }}</dt><dd>{{ m.get('verified_at') or bi('Not supplied','未提供') }}</dd>
+                <dt>{{ bi('Evidence available','证据可用时间') }}</dt><dd>{{ m.get('available_at') or bi('Not supplied','未提供') }}</dd>
+                <dt>{{ bi('Receipt ID','凭据编号') }}</dt><dd class="nd-proof-id">{{ m.get('receipt_id') or '—' }}</dd>
+                <dt>{{ bi('Source document hash','来源文档指纹') }}</dt><dd class="nd-proof-id">{{ m.get('source_sha256') or '—' }}</dd>
+              </dl>
+              {% set u = m.get('source_url') %}{% if u is string and u.startswith('https://') and '\\' not in u and '\n' not in u and '\r' not in u %}<a class="nd-text-link" href="{{ u }}" target="_blank" rel="noopener noreferrer">{{ bi('Open source document','打开来源文档') }} ↗<span class="nd-sr-only">{{ bi('(opens in a new tab)','（在新标签页打开）') }}</span></a>{% endif %}
+            </details>
+          {% else %}
+            {% set why = reasons.get(m.get('reason'), reasons['receipt_integrity_failed']) %}<p class="nd-official-missing">{{ bi(why[0],why[1]) }}</p>
+          {% endif %}
+        </section>
+      {% endfor %}
+      </div>
+    {% endif %}
+    {% if ev and ev.get('source_partial') is sameas true %}<p class="nd-evidence-cutoff">{{ bi('Some source records were unreadable. Shown figures passed their own checks.','部分来源记录无法读取，已显示数值均通过各自检查。') }}</p>{% endif %}
+    {% if ev and ev.get('as_of') %}<p class="nd-evidence-cutoff">{{ bi('Evidence cutoff','证据截止时间') }} · {{ ev.as_of }}</p>{% endif %}
+  </div>
+</details>
+{% endif %}
+{% endautoescape %}
+{%- endmacro %}
+
+
+{# Benchmark/model context from the existing Release Radar owner. UI wording
+   deliberately says benchmark, never street-survey equivalence. #}
+{% macro release_expectation(event, bi, snapshot_utc) -%}
+{% autoescape true %}
+{% set raw = event.get('expectation_context') %}
+{% set reference_binding = {'scheduled_reference_period':event.get('scheduled_reference_period'), 'expected_reference_period':event.get('expected_reference_period'), 'forecast_period':event.get('forecast_period'), 'reference_period':event.get('reference_period')} %}
+{% set ev = raw if raw is mapping and raw.get('schema') == 'release_event_expectations.v1' and raw.get('display_only') is sameas true and raw.get('authority') is sameas false and raw.get('event_type') == event.get('type') and raw.get('release_date') == event.get('date') and raw.get('reference_binding') == reference_binding and raw.get('street_survey_status') == 'unavailable' and raw.get('as_of_input') is string and raw.get('as_of_input') == snapshot_utc else none %}
+{% set labels = {
+  'cpi_headline_mom':['Headline CPI','整体 CPI'], 'cpi_core_mom':['Core CPI','核心 CPI'],
+  'ppi_headline_mom':['Producer prices','生产者价格'],
+  'pce_headline_mom':['Headline PCE','整体 PCE'], 'pce_core_mom':['Core PCE','核心 PCE'],
+  'gdp_real_annualized':['Real GDP','实际 GDP'],
+  'nfp_payroll_change':['Payroll change','非农就业变化'], 'claims_initial':['Initial claims','初请失业金人数']
+} %}
+{% set reasons = {
+  'model_point_unavailable':['No model point is available for this measure.','此指标暂无模型点位。'],
+  'primary_model_context_invalid':['The declared primary model context did not pass its display contract.','声明的主要模型背景未通过显示契约。'],
+  'benchmark_only':['This release is benchmark-only; no model point is presented.','此数据仅展示基准，不提供模型点位。'],
+  'no_matching_forecast_context':['No exact model context matches this release and period.','没有与此次数据及所属时期精确匹配的模型背景。'],
+  'ambiguous_forecast_context':['More than one model context matches; none was selected.','匹配到多个模型背景，暂不选取。'],
+  'forecast_period_unavailable':['The model reference period is unavailable.','模型数据时期暂不可用。'],
+  'evaluation_ineligible':['The frozen model row is excluded from evaluation, so comparison is withheld.','该冻结模型记录不符合评估条件，因此暂不比较。'],
+  'no_matching_frozen_model_context':['No exact frozen model row matches this official result.','没有与此官方结果精确匹配的冻结模型记录。'],
+  'actual_binding_mismatch':['The frozen model row is bound to a different official value, so comparison is withheld.','冻结模型记录绑定的是不同官方数值，因此暂不比较。'],
+  'frozen_cutoff_invalid':['The model row is not proven frozen before this release, so comparison is withheld.','无法证明该模型记录在此次数据公布前已冻结，因此暂不比较。'],
+  'ambiguous_frozen_model_context':['Conflicting frozen model rows need review before comparison.','冻结模型记录存在冲突，需核查后再比较。'],
+  'model_point_unavailable':['The frozen model point is unavailable.','冻结模型点位不可用。'],
+  'official_result_required_for_historical_comparison':['An official result is required before showing a historical model comparison.','需要官方结果后才能展示历史模型比较。']
+} %}
+{% set bench_labels = {
+  'naive_prior':['Prior print benchmark','前值基准'],
+  'trailing_3m':['3-month average','3个月均值'],
+  'trailing_4w':['4-week average','4周均值'],
+  'ar_model':['AR benchmark','AR 基准'],
+  'cleveland_nowcast':['Cleveland benchmark','克利夫兰联储基准']
+} %}
+{% set stance_labels = {'hawkish':['Hawkish','鹰派'],'neutral':['Neutral','中性'],'dovish':['Dovish','鸽派']} %}
+{% set guidance_labels = {'easing':['Easing','转向宽松'],'on_hold':['On hold','维持不变'],'tightening':['Tightening','转向收紧'],'neutral':['Neutral','中性'],'hawkish':['Hawkish','偏鹰'],'dovish':['Dovish','偏鸽']} %}
+{% set axis_labels = {'inflation':['Inflation','通胀'],'growth':['Growth','增长']} %}
+{% set ns = namespace(metrics=[],experimental=0,historical=0,benchonly=0) %}
+{% if ev and ev.get('metrics') is sequence and ev.get('metrics') is not string and ev.get('metrics') is not mapping %}
+  {% for m in ev.metrics %}
+    {% if m is mapping and m.get('metric_id') in labels %}
+      {% set ns.metrics = ns.metrics + [m] %}
+      {% if m.get('status') == 'experimental_model_context' %}{% set ns.experimental = ns.experimental + 1 %}{% endif %}
+      {% if m.get('status') == 'historical_model_comparison' %}{% set ns.historical = ns.historical + 1 %}{% endif %}
+      {% if m.get('status') in ['benchmark_only','benchmark_context'] %}{% set ns.benchonly = ns.benchonly + 1 %}{% endif %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+{% if raw is not none %}
+<details class="nd-expectation-context" data-nd-expectation>
+  <summary>
+    <span>{{ bi('Expectations & benchmarks','预期与基准') }}</span>
+    <span class="nd-expectation-status">
+      {% if ns.historical %}{{ bi('Model comparison','模型比较') }}
+      {% elif ns.experimental %}{{ bi('Experimental context','实验性背景') }}
+      {% elif ns.benchonly %}{{ bi('Benchmarks only','仅基准') }}
+      {% else %}{{ bi('Unavailable','暂不可用') }}{% endif %}
+      <span aria-hidden="true">＋</span>
+    </span>
+  </summary>
+  <div class="nd-expectation-body">
+    <div class="nd-survey-gap">
+      <div>
+        <span class="nd-eyebrow-mini">{{ bi('Street survey','市场机构调查') }}</span>
+        <strong>{{ bi('Not connected','尚未接入') }}</strong>
+      </div>
+      <p>{{ bi('No licensed, time-stamped street-survey source is wired here. Model and market benchmarks are kept separate.','尚未接入具备授权和时间戳的市场机构调查数据。模型基准与市场基准保持分开。') }}</p>
+    </div>
+    {% if not ev %}
+      <p class="nd-official-missing">{{ bi('The expectation context does not match this event or snapshot. No benchmark is shown.','预期背景与此事件或快照不匹配，暂不显示基准。') }}</p>
+    {% elif ev.get('reason') == 'forecast_stale' %}
+      <p class="nd-official-missing">{{ bi('Release Radar context is stale. Model and benchmark values are withheld until a fresh build is available.','Release Radar 背景数据已过期。在获得新的构建结果前，模型和基准数值暂不展示。') }}</p>
+    {% elif ev.get('reason') %}
+      <p class="nd-official-missing">{{ bi('Expectation context is unavailable for this release.','此次数据暂无可用的预期背景。') }}</p>
+    {% else %}
+      <p class="nd-expectation-intro">{{ bi('Use these as separate reference points, not as a market-survey substitute or trading instruction.','这些仅是彼此独立的参考点，不能替代市场机构调查，也不是交易指令。') }}</p>
+      {% set anatomy = ev.get('release_anatomy') if ev and ev.get('release_anatomy') is mapping else none %}
+      {% set quirks = anatomy.get('quirk_flags') if anatomy and anatomy.get('quirk_flags') is sequence and anatomy.get('quirk_flags') is not string and anatomy.get('quirk_flags') is not mapping else [] %}
+      {% set policy = anatomy.get('policy_backdrop') if anatomy and anatomy.get('policy_backdrop') is mapping else {} %}
+      {% if anatomy and (quirks or policy or anatomy.get('policy_reason')) %}
+      <section class="nd-release-anatomy">
+        <div class="nd-anatomy-heading">
+          <div><span class="nd-eyebrow-mini">{{ bi('RELEASE ANATOMY','数据公布解剖') }}</span><h5>{{ bi('What could complicate this print?','哪些因素可能增加本次数据解读难度？') }}</h5></div>
+          <span class="nd-tag nd-tag-neutral">{{ bi('Context only','仅背景') }}</span>
+        </div>
+        <p class="nd-anatomy-intro">{{ bi('Deterministic calendar and policy context from the matched Release Radar record. These conditions do not predict the direction of the result or market reaction.','以下为与本次 Release Radar 记录精确匹配的日历与政策背景。这些条件并不预测数据结果或市场反应方向。') }}</p>
+        {% if anatomy.get('status') == 'partial' %}<p class="nd-evidence-cutoff">{{ bi('Context coverage is partial','背景覆盖不完整') }} · {{ anatomy.get('matched_release_count') }}/{{ anatomy.get('expected_release_count') }} {{ bi('matched measures','项指标匹配') }}</p>{% endif %}
+        {% if quirks %}
+        <div class="nd-quirk-list">
+          {% for q in quirks if q is mapping %}
+          <article class="nd-quirk-card">
+            <span class="nd-quirk-icon" aria-hidden="true">!</span>
+            <div><strong>{{ bi(q.get('en') or q.get('code'), q.get('zh') or q.get('en') or q.get('code')) }}</strong>
+              {% set cu = q.get('cite_url') %}
+              {% if cu is string and cu.startswith('https://') and '\\' not in cu and '\n' not in cu and '\r' not in cu %}<a class="nd-text-link" href="{{ cu }}" target="_blank" rel="noopener noreferrer">{{ bi('Source note','来源说明') }} ↗<span class="nd-sr-only">{{ bi('(opens in a new tab)','（在新标签页打开）') }}</span></a>
+              {% elif q.get('citation') %}<span class="nd-quirk-citation">{{ q.get('citation') }}</span>{% endif %}
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% if policy %}
+        <div class="nd-policy-context">
+          <div class="nd-policy-label"><span class="nd-eyebrow-mini">{{ bi('POLICY BACKDROP','政策背景') }}</span>{% if anatomy.get('regime_axis') in axis_labels %}{% set al = axis_labels.get(anatomy.regime_axis) %}<span>{{ bi('Primary axis','主要轴线') }} · {{ bi(al[0],al[1]) }}</span>{% endif %}</div>
+          <dl>
+            {% if policy.get('fed_stance') in stance_labels %}{% set sl=stance_labels.get(policy.fed_stance) %}<div><dt>{{ bi('Fed stance','美联储立场') }}</dt><dd>{{ bi(sl[0],sl[1]) }}</dd></div>{% endif %}
+            {% if policy.get('gap_bp') is number %}<div><dt>{{ bi('Market vs dots','市场 vs 点阵') }}</dt><dd>{{ '%+.0f'|format(policy.gap_bp) }} bp</dd></div>{% endif %}
+            {% if policy.get('implied_cuts_12m') is number %}<div><dt>{{ bi('Implied cuts · 12m','隐含降息 · 12个月') }}</dt><dd>{{ '%.1f'|format(policy.implied_cuts_12m) }}</dd></div>{% endif %}
+            {% if policy.get('next_fomc') %}<div><dt>{{ bi('Next FOMC','下次 FOMC') }}</dt><dd>{{ policy.next_fomc }}</dd></div>{% endif %}
+            {% if policy.get('guidance_direction') in guidance_labels %}{% set gl=guidance_labels.get(policy.guidance_direction) %}<div><dt>{{ bi('Guidance','指引方向') }}</dt><dd>{{ bi(gl[0],gl[1]) }}</dd></div>{% endif %}
+          </dl>
+        </div>
+        {% elif anatomy.get('policy_reason') == 'cross_metric_mismatch' %}
+        <p class="nd-official-missing">{{ bi('Policy backdrop is withheld because the matched release measures disagree.','匹配到的指标在政策背景上存在不一致，因此暂不展示该部分。') }}</p>
+        {% endif %}
+      </section>
+      {% endif %}
+      <div class="nd-expectation-metrics">
+      {% for m in ns.metrics %}
+        {% set label = labels.get(m.get('metric_id'), ['Release measure','数据指标']) %}
+        <section class="nd-expectation-metric">
+          <div class="nd-expectation-heading">
+            <h5>{{ bi(label[0],label[1]) }}</h5>
+            {% if m.get('status') == 'experimental_model_context' %}<span class="nd-tag nd-tag-neutral">{{ bi('Experimental','实验性') }}</span>
+            {% elif m.get('status') == 'historical_model_comparison' %}<span class="nd-tag nd-tag-neutral">{{ bi('Frozen comparison','冻结比较') }}</span>
+            {% elif m.get('status') in ['benchmark_only','benchmark_context'] %}<span class="nd-tag nd-tag-neutral">{{ bi('Benchmarks only','仅基准') }}</span>
+            {% elif m.get('status') == 'comparison_withheld' %}<span class="nd-tag nd-tag-neutral">{{ bi('Withheld','暂不展示') }}</span>{% endif %}
+          </div>
+          {% if m.get('status') == 'experimental_model_context' and m.get('display_value') is string %}
+            <div class="nd-model-read">
+              <span>{% if m.get('basis') == 'combined_v1_benchmark_augmented' %}{{ bi('Mastermind blended benchmark','Mastermind 混合基准') }}{% else %}{{ bi('Mastermind model benchmark','Mastermind 模型基准') }}{% endif %}</span>
+              <p class="nd-model-value">{{ m.display_value }}{% if m.get('unit') in ['percent','percent_annualized'] %}<span>%</span>{% elif m.get('unit') == 'thousands' %}<span>k</span>{% endif %}</p>
+            </div>
+            <p class="nd-official-period">{{ bi('Reference period','数据时期') }} · {{ m.get('period') or '—' }}</p>
+            {% if m.get('p10') is number and m.get('p90') is number %}
+              <p class="nd-model-range">{{ bi('Experimental model range','实验性模型区间') }} · {{ '%.2f'|format(m.p10) }}–{{ '%.2f'|format(m.p90) }}{% if m.get('unit') in ['percent','percent_annualized'] %}%{% endif %}</p>
+            {% endif %}
+            {% if m.get('cold_start') is sameas true %}<p class="nd-model-warning">{{ bi('Cold-start blend · no scored basis yet for this combination.','冷启动组合 · 此组合尚无已评分基础。') }}</p>{% endif %}
+          {% elif m.get('status') == 'historical_model_comparison' and m.get('display_value') is string %}
+            <div class="nd-model-read">
+              <span>{{ bi('Frozen model benchmark','冻结模型基准') }}</span>
+              <p class="nd-model-value">{{ m.display_value }}{% if m.get('unit') in ['percent','percent_annualized'] %}<span>%</span>{% elif m.get('unit') == 'thousands' %}<span>k</span>{% endif %}</p>
+            </div>
+            <p class="nd-model-difference">{{ bi('Difference vs model benchmark','相对模型基准的差值') }} · {{ m.get('difference_display') }}{% if m.get('unit') in ['percent','percent_annualized'] %} pp{% endif %}</p>
+            <p class="nd-official-period">{{ bi('Frozen before release','发布前冻结') }} · {{ m.get('frozen_asof_night') or '—' }}</p>
+          {% elif m.get('status') in ['benchmark_only','benchmark_context'] %}
+            <p class="nd-official-missing">{{ bi('No model point is presented for this release. The available reference benchmarks are shown below.','此次数据不展示模型点位，仅显示下方可用参考基准。') }}</p>
+          {% else %}
+            {% set why = reasons.get(m.get('reason'), ['Model comparison is unavailable.','模型比较暂不可用。']) %}
+            <p class="nd-official-missing">{{ bi(why[0],why[1]) }}</p>
+            {% if m.get('excluded_defect_ids') %}<p class="nd-evidence-cutoff">{{ bi('Evaluation exclusions','评估排除项') }} · {{ m.get('excluded_defect_ids')|join(', ') }}</p>{% endif %}
+          {% endif %}
+
+          {% set benches = m.get('benchmarks') if m.get('benchmarks') is mapping else {} %}
+          {% if benches %}
+            <div class="nd-benchmark-grid">
+              {% for key,blabel in bench_labels.items() %}{% if benches.get(key) is number %}
+                <div class="nd-benchmark-cell"><span>{{ bi(blabel[0],blabel[1]) }}</span><strong>{% if m.get('unit') == 'thousands' %}{{ '%.0f'|format(benches.get(key)) }}k{% else %}{{ '%.2f'|format(benches.get(key)) }}{% if m.get('unit') in ['percent','percent_annualized'] %}%{% endif %}{% endif %}</strong></div>
+              {% endif %}{% endfor %}
+              {% set market = benches.get('market_implied') %}
+              {% if market is mapping and market.get('implied_median') is number %}
+                <div class="nd-benchmark-cell"><span>{{ bi('Market-implied median','市场隐含中位数') }}</span><strong>{{ '%.2f'|format(market.implied_median) }}{% if m.get('unit') in ['percent','percent_annualized'] %}%{% endif %}</strong><small>{{ market.get('source') }}{% if market.get('asof') %} · {{ market.asof }}{% endif %}</small></div>
+              {% endif %}
+            </div>
+          {% endif %}
+          {% if m.get('market_implied_status') == 'unit_basis_unqualified' %}<p class="nd-evidence-cutoff">{{ bi('Market-implied payroll context is withheld because this artifact does not declare the same unit basis.','市场隐含的就业数据背景暂不展示，因为此工件未声明与模型一致的单位口径。') }}</p>{% endif %}
+
+          <details class="nd-expectation-method" data-nd-deep>
+            <summary>{{ bi('Method & limits','方法与限制') }}<span aria-hidden="true">＋</span></summary>
+            <dl>
+              <dt>{{ bi('Model epoch','模型版本') }}</dt><dd class="nd-proof-id">{{ m.get('model_epoch') or '—' }}</dd>
+              <dt>{{ bi('Target epoch','目标版本') }}</dt><dd class="nd-proof-id">{{ m.get('target_epoch') or '—' }}</dd>
+              <dt>{{ bi('Cutoff','截点') }}</dt><dd>{{ m.get('cutoff_label') or '—' }}</dd>
+              <dt>{{ bi('Forecast artifact','预测工件时间') }}</dt><dd>{{ ev.get('artifact_asof') or '—' }}</dd>
+              <dt>{{ bi('Accuracy claim','准确性声明') }}</dt><dd>{{ bi('Withheld pending clean aligned forward evidence','等待干净且对齐的前瞻证据，暂不声明') }}</dd>
+            </dl>
+            {% if m.get('basis_warning') %}<p class="nd-model-warning">{{ bi('The displayed model basis and benchmark context use different inputs. Keep them separate when interpreting this release.','当前显示的模型基础与基准背景使用不同输入。解读此次数据时请保持区分。') }}</p>{% endif %}
+          </details>
+        </section>
+      {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</details>
+{% endif %}
+{% endautoescape %}
+{%- endmacro %}

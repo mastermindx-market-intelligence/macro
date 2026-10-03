@@ -17883,6 +17883,17 @@ jobs:
     paths:
       # The eight suites the step runs, plus helper suites they import.
       - "tests/test_dashboard_template_render.py"
+      # Events & News R2: deterministic source/render contracts. The optional
+      # Playwright geometry suite remains outside this exclusive static-closure
+      # job; see its explicit unrun waiver and local Chromium evidence.
+      - "tests/test_macro_events_news_r2.py"
+      - "tests/test_events_news_release_evidence.py"
+      - "tests/test_events_news_release_render.py"
+      - "tests/test_events_news_release_expectations.py"
+      - "tests/test_events_news_release_expectations_render.py"
+      - "tests/events_news_release_fixture.py"
+      - "tests/fixtures/events_news_official_receipts.json"
+      - "tests/fixtures/events_news_actual_defects.json"
       # #7798: source-dated Hottest Desk leadership/recommendation contract.
       - "tests/test_macro_sector_desk.py"
       # #7859: volatility-placement tests used to live only in gate:data
@@ -17899,6 +17910,10 @@ jobs:
       - "tests/test_us_board_priority_ui.py"
       # Templates the renders load by name.
       - "templates/_macro_sector_desk.html.j2"
+      - "templates/_macro_events_news.html.j2"
+      - "templates/_macro_events_news_release.html.j2"
+      - "templates/macro-events-news.css"
+      - "templates/macro-events-news.js"
       - "templates/dashboard.html.j2"
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
@@ -17917,6 +17932,8 @@ jobs:
       - "site/flowleaders/leaders.json"
       - "site/leaderradar/radar.json"
       - "site/macro.html"
+      - "site/macro-events-news.css"
+      - "site/macro-events-news.js"
       - "site/marketdata/subsector_rotation.json"
       - "site/master_brief.json"
       - "site/qledger/track_record.json"
@@ -17983,6 +18000,8 @@ jobs:
       - "scripts/close_pass_publish.py"
       - "scripts/close_pass_reconcile.py"
       - "scripts/notify.py"
+      # GDP parser-to-receipt regression imports the existing official parser.
+      - "scripts/official_release_parsers.py"
       - "scripts/regime_reliability_phase0.py"
       - "scripts/security_state_producer.py"
       - "scripts/snapshot_shadow_book.py"
@@ -18023,6 +18042,11 @@ jobs:
         run: >-
           python -m pytest
           tests/test_dashboard_template_render.py
+          tests/test_macro_events_news_r2.py
+          tests/test_events_news_release_evidence.py
+          tests/test_events_news_release_render.py
+          tests/test_events_news_release_expectations.py
+          tests/test_events_news_release_expectations_render.py
           tests/test_macro_sector_desk.py
           tests/test_macro_risk_dialog.py
           tests/test_risk_envelope_radar_integration.py
