@@ -43,3 +43,8 @@ Do not use a different browser, profile, host or scheme to route around the reco
 Source review PASS5926458015 and input receipt5928315553 are separate from browser/visual acceptance. After genuine browser admission is restored and the accepting operator is recorded, qualify desktop1440×900, mobile390×844 and tablet820×1180, EN/ZH, dark/light; actual open/edit, +50bp, +350bp invalid clearing, correction, fractional slider input, reset, return/reopen and no-JavaScript/unsupported states. Check real focus order/containment/return, Escape, announcements, contrast, overflow, reduced motion and enlarged text.
 
 Use the existing `capture_page_evidence.py` and accepted evidence schema/guard for real receipts. The current entry fixture does not cover all those states. This package intentionally contains **no passing visual-evidence receipt** and cannot close the parent mission.
+
+
+## Lazy-import provenance correction
+
+The pre-import source manifest now pins `scripts/check_template_site_sync.py` as well as the externalizer. The externalizer imports that helper lazily; a post-import audit or byte-identical rendered output alone cannot reject a comment-only change before execution. A changed helper must fail the existing dependency guard before any output directory is created. This correction changes only review-input provenance, not the product, financial calculations or rendered page bytes. Browser and release acceptance remain unproven.

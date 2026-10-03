@@ -99,6 +99,17 @@ class ReviewInputChecks(unittest.TestCase):
             self.assertIs(self.source[key], False, key)
         self.assertIn('NOT_PROVEN', self.source['runtime_dynamic_network_closure'])
 
+    def test_lazy_asset_helper_is_pinned_before_any_render_import(self):
+        helper = 'scripts/check_template_site_sync.py'
+        self.assertEqual(self.source['source_dependency_sha256'].get(helper),
+                         '17a092383c66b18875e86de1116816a53b42cf2c784d6015abeb3b6986527ccd',
+                         'The externalizer imports this helper lazily, after the module audit')
+        script = (HERE / 'rebuild.py').read_text()
+        self.assertLess(script.index("for name, expected in source['source_dependency_sha256'].items():"),
+                        script.index('from lib import pages'))
+        self.assertLess(script.index("raise RuntimeError(f'Wrong source dependency: {name}')"),
+                        script.index('output.mkdir'))
+
     def test_published_and_embedded_instructions_match(self):
         for name in ['SOURCE.json', 'README.md', 'rebuild.py', 'verify_input.py']:
             self.assertEqual(self.members.get(name), (HERE / name).read_bytes(), name)

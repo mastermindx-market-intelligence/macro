@@ -321,6 +321,7 @@
   "source_commit": "d3b11fe9be0e67e56ecff40bf25d5e09e85d3d1e",
   "source_dependency_sha256": {
     "lib/pages.py": "2673025c9729d5665936dbe6cafd461e8dff200feacc3e0081f0f378df2fd28b",
+    "scripts/check_template_site_sync.py": "17a092383c66b18875e86de1116816a53b42cf2c784d6015abeb3b6986527ccd",
     "scripts/externalize_css.py": "fa4fb1e4d7f141694143711f8886bb0add138d76b9dad19e083a2eb3a6f75b3c",
     "templates/_bonds_duration.html.j2": "dba8f0ff6d972db808cecccbd72ae35c1c68484880809a05ce0db6a7ea909a96",
     "templates/_bonds_duration.mjs.j2": "3d44053d71710a53d3af00cc89f69084286a3b21098eaf1e4e20c9adff7433ec",
