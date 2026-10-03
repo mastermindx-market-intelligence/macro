@@ -1367,3 +1367,195 @@ def test_hit_bounds_stage_count_type_is_not_coerced(bad):
     stats={'emerging':{'n':bad,'hit_count':1}}
     cov={'by_stage':{'emerging':{'due_rows':2,'measured_rows':1,'unavailable_due_rows':1}}}
     assert S._stage_hit_bounds(stats,cov)['emerging']['status']=='UNKNOWN'
+
+from engine import subsector_rotation as _sr_missing
+
+def _rotation_known_perf():
+    return {'a':{'1W':9.,'1M':10.,'3M':12.,'6M':14.},
+            'b':{'1W':-1.,'1M':-2.,'3M':-3.,'6M':-4.},
+            'c':{'1W':4.,'1M':1.,'3M':-8.,'6M':-12.}}
+
+def _rotation_tree(keys):
+    return [{'theme':'T','subsectors':[{'key':k,'name':k,'members':[k+'A',k+'B',k+'C']} for k in keys]}]
+
+def test_rotation_missing_empty_rows_never_become_leaders():
+    out=_sr_missing.compute_rotation(_rotation_tree(['a','b']),{'a':{},'b':{}})
+    assert len(out['subsectors'])==2
+    for row in out['subsectors']:
+        assert row['quadrant']=='unavailable' and row['rotation_status']=='UNAVAILABLE'
+        assert row['rs_ratio'] is None and row['rs_mom'] is None
+        assert row['emerging_score'] is None and row['rank'] is None
+    assert all(not rows for rows in out['highlights'].values())
+
+@pytest.mark.parametrize('horizon',['1W','1M','3M','6M'])
+@pytest.mark.parametrize('bad',[None,float('nan'),float('inf'),True,'9'])
+def test_rotation_missing_invalid_required_input_abstains(horizon,bad):
+    perf=_rotation_known_perf();perf['a'][horizon]=bad
+    out=_sr_missing.compute_rotation(_rotation_tree(perf),perf)
+    row=next(r for r in out['subsectors'] if r['key']=='a')
+    assert row['quadrant']=='unavailable' and row['perf'][horizon] is None
+    assert horizon in row['rotation_missing_horizons']
+    assert all('a' not in rows for rows in out['highlights'].values())
+    json.dumps(out,allow_nan=False)
+
+def test_rotation_missing_single_group_has_no_cross_sectional_lead():
+    out=_sr_missing._rotation_metrics({'a':_rotation_known_perf()['a']})['a']
+    assert out['quadrant']=='unavailable' and out['emerging_score'] is None
+    assert out['rotation_reason']=='insufficient_comparable_groups'
+
+def test_rotation_missing_known_ties_are_neutral_not_unavailable():
+    p={k:{h:1. for h in ['1W','1M','3M','6M']} for k in ['a','b']}
+    out=_sr_missing.compute_rotation(_rotation_tree(p),p)
+    assert all(r['quadrant']=='neutral' and r['rotation_status']=='MEASURED' for r in out['subsectors'])
+    assert out['highlights']['leaders']==out['highlights']['laggards']==[]
+
+def test_rotation_missing_absent_expected_group_stays_visible():
+    perf=_rotation_known_perf()
+    out=_sr_missing.compute_rotation(_rotation_tree(list(perf)+['missing']),perf)
+    assert len(out['subsectors'])==4
+    missing=next(r for r in out['subsectors'] if r['key']=='missing')
+    assert missing['quadrant']=='unavailable' and missing['rank'] is None
+
+def test_rotation_missing_partial_outlier_does_not_move_comparable_scores():
+    perf=_rotation_known_perf();a=_sr_missing._rotation_metrics(perf)
+    b=_sr_missing._rotation_metrics({**perf,'partial':{'1W':1000000.}})
+    for k in perf:
+        for field in ['rs_ratio','rs_mom','z_accel','emerging_score','quadrant']:
+            assert a[k][field]==b[k][field]
+
+def test_rotation_missing_zscore_does_not_assign_missing_zero():
+    out=_sr_missing._zscore({'a':1.,'b':1.,'missing':None})
+    assert out=={'a':0.,'b':0.,'missing':None}
+
+def test_rotation_missing_zero_turn_score_outranks_negative(monkeypatch):
+    def attach(rows,*args,**kwargs):
+        for row in rows:row['rank_score_v2']={'a':0.,'b':-1.,'c':None}.get(row.get('key'))
+        return {}
+    monkeypatch.setattr(_sr_missing,'attach_turn',attach)
+    p=_rotation_known_perf();out=_sr_missing.compute_rotation(_rotation_tree(p),p)
+    rows={r['key']:r for r in out['subsectors']}
+    assert rows['a']['rank_v2']==1 and rows['b']['rank_v2']==2
+    assert rows['c']['rank_v2'] is None
+
+def test_rotation_missing_sector_receipts_and_sort_are_preserved():
+    p=_rotation_known_perf();p['missing']={}
+    rows=_sr_missing.build_sectors_array(_sr_missing._rotation_metrics(p))
+    assert rows[-1]['key']=='missing'
+    assert rows[-1]['quadrant']=='unavailable' and rows[-1]['rotation_status']=='UNAVAILABLE'
+    json.dumps(rows,allow_nan=False)
+
+def test_rotation_missing_none_row_is_not_a_pipeline_exception():
+    p=_rotation_known_perf();p['bad']=None
+    out=_sr_missing.compute_rotation(_rotation_tree(p),p)
+    assert next(r for r in out['subsectors'] if r['key']=='bad')['quadrant']=='unavailable'
+    json.dumps(out,allow_nan=False)
+
+@pytest.mark.parametrize('state',['unavailable','neutral'])
+@pytest.mark.parametrize('direction',[1,-1])
+def test_rotation_consumer_table_renders_missingness_without_fake_rank(state,direction):
+    js=r"""
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const src=fs.readFileSync(process.argv[1],'utf8');
+const quad=src.match(/  var QUAD = \{[\s\S]*?\n  \};/)[0];
+const cols=src.match(/  var COLS=\[[\s\S]*?\n  \];/)[0];
+const fn=src.match(/  function drawTable\(el\)\{[\s\S]*?\n  \}/)[0];
+const state=process.argv[2],direction=+process.argv[3];
+const rows=[{key:'unknown',name:'Unknown group',theme:'T',quadrant:state,rotation_status:state==='unavailable'?'UNAVAILABLE':'MEASURED',emerging_score:state==='unavailable'?null:0},
+ {key:'known',name:'Known group',theme:'T',quadrant:'leading',emerging_score:2}];
+const el={innerHTML:'',querySelectorAll:()=>[]};
+const ctx={el,_unit:'subsectors',_sortKey:'emerging_score',_sortDir:direction,items:()=>rows,
+ L:(en,zh)=>en,isZh:()=>false,esc:s=>String(s==null?'':s),sortVal:d=>d.emerging_score,keyOf:d=>d.key,
+ cellVal:(d,c)=>d[c.k],pcCls:()=>'',fmtPc:v=>v==null?'—':String(v),hasDetail:()=>false,TSTATE:{}};
+vm.runInNewContext(quad+'\n'+cols+'\n('+fn+')(el)',ctx);
+assert(el.innerHTML.includes(state==='unavailable'?'Unmeasured':'Neutral'));
+if(state==='unavailable'){
+ assert(el.innerHTML.indexOf('data-k="known"')<el.innerHTML.indexOf('data-k="unknown"'));
+ assert(/data-k="unknown"><td[^>]*>—<\/td>/.test(el.innerHTML));
+}
+assert(!el.innerHTML.includes('undefined')&&!el.innerHTML.includes('NaN'));
+"""
+    r=subprocess.run(['node','-e',js,str(Path(__file__).resolve().parents[1]/'templates/subsector_rotation.js'),state,str(direction)],capture_output=True,text=True)
+    assert r.returncode==0,r.stdout+r.stderr
+
+@pytest.mark.parametrize('state',['unavailable','neutral'])
+def test_rotation_consumer_detail_template_accepts_new_states(state):
+    import ast
+    from jinja2 import Environment,DictLoader
+    root=Path(__file__).resolve().parents[1]
+    source=(root/'scripts/build_subsector_rotation_pages.py').read_text()
+    nodes=[n for n in ast.parse(source).body if
+           isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id in ('QUAD','QUADX','PERF_ROWS') for t in n.targets)
+           or isinstance(n,ast.FunctionDef) and n.name in ('_lede','_fmt_pc')]
+    ns={};exec(compile(ast.Module(body=nodes,type_ignores=[]),'<exact-detail-helpers>','exec'),ns)
+    value=None if state=='unavailable' else 0.
+    sub={'key':'x','name':'Example','name_zh':'示例','theme':'T','theme_zh':'T','n_members':3,
+         'quadrant':state,'rank':None if value is None else 1,'rs_ratio':value,'rs_mom':value,
+         'emerging_score':value,'accel':None,'perf':{},'rotation_status':'UNAVAILABLE' if value is None else 'MEASURED'}
+    lede=ns['_lede'](sub);qd=ns['QUAD'][state];qx=ns['QUADX'][state]
+    template=(root/'templates/subsector_rotation_detail.html.j2').read_text()
+    env=Environment(loader=DictLoader({'detail':template,'_site_nav.html.j2':''}),autoescape=True)
+    env.globals['fmt_pc']=ns['_fmt_pc']
+    html=env.get_template('detail').render(sub=sub,n_total=2,members=[],perf_rows=ns['PERF_ROWS'],
+        q_cls=qd[2],q_en=qd[0],q_zh=qd[1],qx_en=qx[0],qx_zh=qx[1],lede_en=lede[0],lede_zh=lede[1])
+    assert ('Unmeasured' if state=='unavailable' else 'Neutral') in html
+    assert '#None' not in html and 'NaN' not in html
+    if state=='unavailable': assert 'not enough comparable data' in html
+
+def test_rotation_consumer_china_incomplete_group_cannot_break_or_lead():
+    from engine.subsector_rotation_china import compute_china_rotation
+    baskets=[];charts={}
+    for i,k in enumerate(['a','b','missing']):
+        baskets.append({'id':k,'name':k,'n_members':6,'members':[],
+                        'perf':{h:{'ret':(.01 if k=='a' else -.01)} for h in ['1d','5d','20d','60d','mtd','ytd']}})
+        if k!='missing':charts[k]=[(1+(i+1)*.0001)**j for j in range(280)]
+    raw={'baskets':baskets,'chart':{'baskets':charts}}
+    out=compute_china_rotation(raw,raw)
+    assert out['n_subsectors']==3 and out['n_themes']==3
+    row=next(r for r in out['subsectors'] if r['key']=='missing')
+    assert row['quadrant']=='unavailable' and row['rank'] is None
+    assert all('missing' not in values for values in out['highlights'].values())
+    json.dumps(out,allow_nan=False)
+
+
+def test_rotation_consumer_snapshot_does_not_relabel_unmeasured_as_leading(tmp_path):
+    pay=_sr_missing.compute_rotation(_rotation_tree(['a','b']),{'a':{},'b':{}})
+    assert S.snapshot(pay,{'a':['A','B','C'],'b':['D','E','F']},today='2026-09-25',root=tmp_path)==2
+    rows=S._load(tmp_path)
+    assert all(r['quadrant']=='unavailable' and r['score'] is None for r in rows)
+    assert all(r['stage']=='neutral' for r in rows)
+
+from engine import index_leadership as _il_missing
+
+def test_rotation_index_within_tab_discloses_unmeasured_groups():
+    perf=_rotation_known_perf();perf['missing']={}
+    groups={k:{'hz':v,'n_priced':3,'regime_state':'BUILD'} for k,v in perf.items()}
+    out=_il_missing.within_tab_rotation(groups)
+    assert out['metrics']['missing']['quadrant']=='unavailable'
+    assert out['participation']['n']==4 and out['participation']['n_measured']==3
+    assert out['participation']['n_unavailable']==1
+    assert out['participation']['frac_improving'] is None
+    assert all(r['key']!='missing' for r in out['rising']+out['coiling'])
+    json.dumps(out,allow_nan=False)
+
+def test_rotation_index_cross_tab_missing_leg_is_not_zero_evidence():
+    perf=_rotation_known_perf()
+    out=_il_missing.cross_tab_leadership(perf,{'a':.1,'b':.2},{'a':.2,'b':.4,'c':.8})
+    assert out['tabs']['c']['las'] is None
+    assert out['tabs']['c']['leadership_status']=='UNAVAILABLE'
+    assert out['rising_star']!='c'
+    json.dumps(out,allow_nan=False)
+
+def test_rotation_index_single_tab_cannot_declare_itself_winner():
+    out=_il_missing.cross_tab_leadership({'a':_rotation_known_perf()['a']},{'a':.1},{'a':.4})
+    assert out['rising_star'] is None and out['leader_now'] is None
+
+def test_rotation_index_complete_tie_does_not_invent_a_winner():
+    perf={k:{h:1. for h in ['1W','1M','3M','6M']} for k in ['a','b']}
+    out=_il_missing.cross_tab_leadership(perf,{'a':.1,'b':.1},{'a':.4,'b':.4})
+    assert out['rising_star'] is None and out['leader_now'] is None
+
+@pytest.mark.parametrize('weights',[(.4,.6),(.1,.2,.3,.4)])
+def test_rotation_index_preserves_three_weight_contract(weights):
+    with pytest.raises(ValueError):
+        _il_missing.cross_tab_leadership(_rotation_known_perf(),{'a':.1,'b':.2,'c':.3},
+                                        {'a':.3,'b':.4,'c':.2},weights=weights)

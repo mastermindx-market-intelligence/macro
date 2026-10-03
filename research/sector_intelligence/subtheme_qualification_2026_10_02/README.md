@@ -88,3 +88,18 @@ The population is logged parsed due calls, including due calls that cannot be me
 The existing renderer labels measured hit rates and displays the logged-call range with outward-rounded percentages. It validates cohort counts and interval arithmetic and states that the range is not a confidence interval. This is a diagnostic addition; promotion thresholds, ranks, entry rules and trading permissions are unchanged.
 
 Verification: 260 targeted cases with real imports, synthetic IO and Node execution of the actual renderer. The bound property test exhausts all aggregate unmeasured hit totals for due-population sizes 1 through 25. No actual historical market results, browser acceptance or independent review are established by these tests.
+
+
+## Unmeasured rotation states and shared consumers
+
+The legacy rotation engine now requires finite 1W/1M/3M/6M inputs and at least two comparable groups before assigning its two-axis classification. Those are the horizons already used by its formula, not a fitted forecasting threshold. Partial raw performance stays visible. Missing values are not zero deviations, a known tie is neutral, and incomplete groups do not acquire descriptive ranks or leader/laggard highlights. Complete comparable inputs retain the existing formula and weights. The comparison count is descriptive, not evidence of statistical reliability.
+
+The same repair reaches US groups/themes, sector ETF arrays, China group sorts/highlights, index-leadership participation/composites, rotation-table states and shared detail templates. Index participation is withheld rather than silently recomputed over a smaller observed subset. Complete three-leg index scores retain the existing weights. A genuine zero turn score is no longer sorted below a negative score.
+
+This changes candidate descriptive rank/highlight behavior for incomplete or tied inputs; it does not deploy the code, create a validated forecast, alter trading permissions or prove current market leadership. Raw price/source freshness, historical membership and point-in-time eligibility remain separate qualifications.
+
+Author verification: 314 targeted tests passed, including the existing 11-test rotation suite with one legacy missingness assertion strengthened. The new phase contributes 43 cases; the prior hit-bound phase contributed 36. A seeded synthetic comparison across 100 fixtures / 1,738 groups found all seven legacy numeric field families unchanged for complete comparable inputs and unchanged index numeric outputs. Two zero-origin classifications intentionally became neutral. This is formula compatibility, not a historical backtest.
+
+Four source-only three-way compositions use actual common ancestors and pinned heads of #7455 and #7023. A top-level import conflict was avoided by placing this repair's China helper import inside its existing consumer function. No sibling branch or worker workspace was changed, and their full test/deployment acceptance is not inferred from text composition.
+
+`evidence/rotation_missingness.json` binds the source hashes, proof logs, dependency sources, compatibility sample, composition results and remaining gates. Independent review, exact-head CI, permitted real-data evaluation, browser and ordinary-refresh acceptance remain required.

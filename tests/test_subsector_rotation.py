@@ -79,7 +79,10 @@ def test_missing_horizons_are_safe():
     out = sr.compute_rotation(tree, perf)
     assert out["n_subsectors"] == 2
     for s in out["subsectors"]:
-        assert s["quadrant"] in ("leading", "weakening", "improving", "lagging")
+        assert s["quadrant"] == "unavailable"
+        assert s["rs_ratio"] is None and s["rs_mom"] is None
+        assert s["emerging_score"] is None and s["rank"] is None
+    assert all(not values for values in out["highlights"].values())
 
 
 def test_breadth_floor_excludes_thin_subsectors():

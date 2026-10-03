@@ -1,0 +1,199 @@
+{
+  "schema": "subtheme_rotation_missingness_evidence.v1",
+  "source_base": "9db7745f6ea2d1be2775189a3144650b76eddc93",
+  "procedure_pin": "bdf2a972e68a70270c24d4b5d61a4d60edc4f288",
+  "generated_at": "2026-10-03T06:13:55.848449+00:00",
+  "scope": "AUTHOR_REAL_SOURCE_IMPORTS_SYNTHETIC_IO_JINJA_AND_NODE_NOT_MARKET_OR_BROWSER_PROOF",
+  "files": {
+    "engine/subsector_rotation.py": {
+      "bytes": 27805,
+      "git_blob": "e2a8942b787ffdc705c385b3d81f88dba139a56d",
+      "sha256": "49f0d797f67c01d890027622f2a0168c39754f6410814cfc85da951a998118fe"
+    },
+    "engine/subsector_rotation_china.py": {
+      "bytes": 6264,
+      "git_blob": "b5eee127e1adc1b2bf0ee437223da1e6f271bd97",
+      "sha256": "dd1318e6e3c8b2967f98f979a1b29392bff63985430f1cf5f7c596ceccdd0fb7"
+    },
+    "engine/index_leadership.py": {
+      "bytes": 15578,
+      "git_blob": "7017cef5463f92b774dc61d540b21b668a532623",
+      "sha256": "763e36512a6c1b4cd855d77045b01473f8dde0395a2efca6d409049c4e6b88ea"
+    },
+    "scripts/build_subsector_rotation_pages.py": {
+      "bytes": 6271,
+      "git_blob": "ec718cf499f15a72c07dadaef90ebd4e947771d4",
+      "sha256": "89e2530a5a66df20ba8fd1b3eb9315542fb0967ed90c830f41238701662c5855"
+    },
+    "templates/subsector_rotation_detail.html.j2": {
+      "bytes": 9213,
+      "git_blob": "bee1f69842b20b1b82f6ca1649a19ee04a736fd0",
+      "sha256": "327616ea28bda65c66135b2f7cf642e0c233881b08553d5980e63808afc5dafc"
+    },
+    "tests/test_subsector_rotation.py": {
+      "bytes": 8157,
+      "git_blob": "1f780f235df8d52b14318a3b37a69870d0e9fa1f",
+      "sha256": "1026897ea04c278fcf6102b50aa618046f97ba90f653d694c6fe1c82d40ff3ba"
+    },
+    "tests/test_subsector_track_record.py": {
+      "bytes": 75615,
+      "git_blob": "9ae633169c6ff02e88f742835571b9724a22d58a",
+      "sha256": "e0268c6ee2c143e895e47e86dd083b1e37a14748381f09925be71d19860ec640"
+    },
+    "templates/subsector_rotation.js": {
+      "bytes": 99838,
+      "git_blob": "875ce1cb834fb0a298b2594358f0e5508fb32577",
+      "sha256": "d1a1f973d3e2d99bb20d5a840e3383576052b39551a0b4082c16a3db4464d084"
+    },
+    "research/sector_intelligence/subtheme_qualification_2026_10_02/README.md": {
+      "bytes": 14034,
+      "git_blob": "aed22681fd2ad96a48388171733c1324fa1e3a3a",
+      "sha256": "56f0bc5eb65ed4c36cc8d72eb49f243040c9e84b232d5fe97c7d1d7eb410f2c0"
+    }
+  },
+  "tests": {
+    "passed": 314,
+    "new_phase_cases": 43,
+    "earlier_bound_cases": 36,
+    "existing_rotation_suite_cases": 11,
+    "legacy_assertion_strengthened": [
+      "test_missing_horizons_are_safe"
+    ],
+    "previous_owner_prefix_preserved": true,
+    "red_missingness_failed": 29,
+    "red_consumers_failed": 7,
+    "red_consumers_passed": 1,
+    "red_index_failed": 4,
+    "consumer_harness_repair": "added missing keyOf fixture dependency; no production relaxation",
+    "log": {
+      "bytes": 420,
+      "git_blob": "1e0de436b292a2db3a5e8d8a7f4994dbdb90728f",
+      "sha256": "2093c32bbef2149df67396bbc9e9661afd0818aef17d95d7bffbf4360cdb043b"
+    },
+    "no_skips_waivers_or_ci_workflow_changes": true
+  },
+  "finite_compatibility": {
+    "scope": "SEEDED_SYNTHETIC_FORMULA_COMPATIBILITY_NOT_MARKET_BACKTEST",
+    "seed": 8675309,
+    "fixture_sets": 100,
+    "groups": 1738,
+    "unchanged_fields": [
+      "perf",
+      "rs",
+      "rs_ratio",
+      "rs_mom",
+      "accel",
+      "z_accel",
+      "emerging_score"
+    ],
+    "cross_tab_numeric_fields_unchanged": true,
+    "intentional_zero_origin_neutral_changes": 2
+  },
+  "prepublication": {
+    "head": "9db7745f6ea2d1be2775189a3144650b76eddc93",
+    "main": "ff420e6841a2468e4b718340cff240abbef114f1",
+    "paths": {
+      "engine/subsector_rotation.py": {
+        "head_blob": "adb9a8077d94868ad8758a03cbfbbe95f4705169",
+        "main_blob": "adb9a8077d94868ad8758a03cbfbbe95f4705169",
+        "same": true
+      },
+      "engine/subsector_rotation_china.py": {
+        "head_blob": "ed8f9568622e7eb9fd78307f887730b5fb46508b",
+        "main_blob": "ed8f9568622e7eb9fd78307f887730b5fb46508b",
+        "same": true
+      },
+      "engine/index_leadership.py": {
+        "head_blob": "61c76a9510d44d7119f2e0c8d3430d93c156e12c",
+        "main_blob": "61c76a9510d44d7119f2e0c8d3430d93c156e12c",
+        "same": true
+      },
+      "scripts/build_subsector_rotation_pages.py": {
+        "head_blob": "d6db3e77b67c75163e82ad197c8af1c5840e3bc8",
+        "main_blob": "d6db3e77b67c75163e82ad197c8af1c5840e3bc8",
+        "same": true
+      },
+      "templates/subsector_rotation_detail.html.j2": {
+        "head_blob": "f2016a9ffb6f66fdf1b19757665edb15fd7aafcf",
+        "main_blob": "f2016a9ffb6f66fdf1b19757665edb15fd7aafcf",
+        "same": true
+      },
+      "tests/test_subsector_rotation.py": {
+        "head_blob": "82dbc01021b8e0906c154a44ea9bd7323a7199ae",
+        "main_blob": "82dbc01021b8e0906c154a44ea9bd7323a7199ae",
+        "same": true
+      }
+    },
+    "composition": [
+      {
+        "pr": 7455,
+        "peer_head": "ebc7604b624adb8452041d8240f7cda41733f167",
+        "merge_base": "0d5bf78deee6d9d60d74f75be3538a9a46fbe7ee",
+        "path": "engine/subsector_rotation.py",
+        "merge_file_exit": 0,
+        "composed_sha256": "29dc1dc6a0f3e91de71fbbf625921d34a6985055e6d9f695246fdb290f73df38",
+        "syntax": "PASS"
+      },
+      {
+        "pr": 7023,
+        "peer_head": "fb6ac722ccce1e96b87b71c983b3fff8132dc19c",
+        "merge_base": "909b9ffe81314fa0d5763f436a5386024168f86c",
+        "path": "engine/subsector_rotation_china.py",
+        "merge_file_exit": 0,
+        "composed_sha256": "620545df22c7813ad26a498f798427d4fd0170c5856491d4ceea8a339c4cfb7c",
+        "prior_collision": "adjacent top-level import additions; own helper import moved into consumer function",
+        "syntax": "PASS"
+      },
+      {
+        "pr": 7023,
+        "peer_head": "fb6ac722ccce1e96b87b71c983b3fff8132dc19c",
+        "merge_base": "909b9ffe81314fa0d5763f436a5386024168f86c",
+        "path": "templates/subsector_rotation_detail.html.j2",
+        "merge_file_exit": 0,
+        "composed_sha256": "4f366ea444fa73f86007a99b3403fd317c9799e74543841e5f0770a3ddc00912"
+      },
+      {
+        "pr": 7023,
+        "peer_head": "fb6ac722ccce1e96b87b71c983b3fff8132dc19c",
+        "merge_base": "909b9ffe81314fa0d5763f436a5386024168f86c",
+        "path": "tests/test_subsector_rotation.py",
+        "merge_file_exit": 0,
+        "composed_sha256": "79ca84c37ca3a816b938ff999f2b15bb798d50165d0a5ab18f005940fb24ade9",
+        "syntax": "PASS"
+      }
+    ]
+  },
+  "required_horizons": [
+    "1W",
+    "1M",
+    "3M",
+    "6M"
+  ],
+  "data_quality_states": [
+    "MEASURED",
+    "UNAVAILABLE"
+  ],
+  "new_quadrant_states": [
+    "neutral",
+    "unavailable"
+  ],
+  "candidate_descriptive_ranks_and_highlights_changed": true,
+  "complete_case_selection_corrected": false,
+  "deployed": false,
+  "live_rank_changed": false,
+  "trading_or_sizing_permission_changed": false,
+  "browser_proven": false,
+  "independent_review": false,
+  "held_actions": [
+    "original actual M2 data inspection",
+    "original completed public-result inspection",
+    "original administrator-blocked local browser navigation"
+  ],
+  "not_claimed": [
+    "validated forecast",
+    "current market performance",
+    "historical PIT qualification",
+    "sibling branch acceptance",
+    "end-to-end product completion"
+  ]
+}

@@ -70,6 +70,8 @@ def _members(basket: dict, top: int = 8) -> list[dict]:
 
 def compute_china_rotation(ths_json: dict, curated_json: dict, *,
                            generated_utc: str | None = None, asof: str | None = None) -> dict:
+    from engine.subsector_rotation import _rotation_sort
+
     ths_baskets = ths_json.get("baskets") or []
     ths_chart = (ths_json.get("chart") or {}).get("baskets") or {}
     cur_baskets = curated_json.get("baskets") or []
@@ -90,9 +92,9 @@ def compute_china_rotation(ths_json: dict, curated_json: dict, *,
             "members": _members(b),
             **sub_met[k],
         })
-    subsectors.sort(key=lambda s: s["emerging_score"], reverse=True)
+    subsectors.sort(key=_rotation_sort, reverse=True)
     for i, s in enumerate(subsectors):
-        s["rank"] = i + 1
+        s["rank"] = i + 1 if s["emerging_score"] is not None else None
 
     # ---- THEMES: curated thematic baskets ----
     th_perf = {b["id"]: _perf_map(b, cur_chart.get(b["id"])) for b in cur_baskets if b.get("id")}
@@ -111,16 +113,19 @@ def compute_china_rotation(ths_json: dict, curated_json: dict, *,
             "category": b.get("category"), "category_zh": b.get("category_zh"),
             **th_met[k],
         })
-    themes.sort(key=lambda t: t["emerging_score"], reverse=True)
+    themes.sort(key=_rotation_sort, reverse=True)
 
-    # ---- highlights (subsectors only, mirrors the US engine) ----
-    emerging = [s["key"] for s in sorted(subsectors, key=lambda s: s["emerging_score"], reverse=True)
-                if s["n_members"] >= _MIN_BREADTH and s["rs_mom"] > 0
-                and (s["accel"] is None or s["accel"] >= 0)][:12]
-    fading = [s["key"] for s in sorted(subsectors, key=lambda s: s["rs_mom"])
-              if s["n_members"] >= _MIN_BREADTH and s["rs_ratio"] > 0 and s["rs_mom"] < 0][:12]
-    leaders = [s["key"] for s in sorted(subsectors, key=lambda s: s["rs_ratio"], reverse=True)][:12]
-    laggards = [s["key"] for s in sorted(subsectors, key=lambda s: s["rs_ratio"])][:12]
+    # Only measured groups enter descriptive leadership highlights.
+    eligible = [s for s in subsectors if s['rotation_status'] == 'MEASURED']
+    emerging = [s['key'] for s in sorted(eligible, key=_rotation_sort, reverse=True)
+                if s['n_members'] >= _MIN_BREADTH and s['rs_mom'] > 0
+                and s['accel'] is not None and s['accel'] >= 0][:12]
+    fading = [s['key'] for s in sorted(eligible, key=lambda s: s['rs_mom'])
+              if s['n_members'] >= _MIN_BREADTH and s['rs_ratio'] > 0 and s['rs_mom'] < 0][:12]
+    leaders = [s['key'] for s in sorted(eligible, key=lambda s: s['rs_ratio'], reverse=True)
+               if s['rs_ratio'] > 0][:12]
+    laggards = [s['key'] for s in sorted(eligible, key=lambda s: s['rs_ratio'])
+                if s['rs_ratio'] < 0][:12]
 
     return {
         "asof": asof, "generated_utc": generated_utc or "",

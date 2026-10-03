@@ -268,6 +268,8 @@
   function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
 
   var QUAD = {
+    unavailable:{en:'Unmeasured',zh:'未测得',cls:'q-na'},
+    neutral:{en:'Neutral',zh:'中性',cls:'q-neutral'},
     leading:    {en:'Leading',   zh:'领先', cls:'q-lead'},
     weakening:  {en:'Weakening', zh:'走弱', cls:'q-weak'},
     improving:  {en:'Improving', zh:'改善', cls:'q-impr'},
@@ -300,7 +302,7 @@
     el.className='sr-scope sr-strip';
     var m={}; _data.subsectors.forEach(function(s){m[s.key]=s;});
     function dual(en,zh){return '<span class="l-en">'+esc(en)+'</span><span class="l-zh">'+esc(zh||en)+'</span>';}
-    function chip(s){var v=s.perf&&s.perf['1W'];var q=QUAD[s.quadrant];
+    function chip(s){var v=s.perf&&s.perf['1W'];var q=QUAD[s.quadrant]||QUAD.unavailable;
       return '<a class="srx-chip" href="'+PAGE_HREF+'"><span class="srx-q '+q.cls+'"></span>'
         +'<b>'+dual(s.name,s.name_zh)+'</b><span class="srx-th">'+dual(s.theme,s.theme_zh)+'</span>'
         +'<span class="srx-pc '+pcCls(v)+'">'+fmtPc(v)+'</span></a>';}
@@ -490,7 +492,7 @@
   function _rerender(){ if(_rerenderRoot) render(_rerenderRoot); }
 
   /* ---------- rotation map (RRG-style scatter with rotation tails) ---------- */
-  var QCOL={leading:'--up',weakening:'--warn',improving:'--link',lagging:'--down'};
+  var QCOL={neutral:'--muted',unavailable:'--muted',leading:'--up',weakening:'--warn',improving:'--link',lagging:'--down'};
   // plain-language subtitle for each quadrant (the four corners, in layman terms).
   var QUADX={
     leading:  {en:'strong & rising',    zh:'强且上行'},
@@ -693,7 +695,7 @@
       fa=(_data.highlights.fading||[]).map(itemByKey).filter(Boolean).slice(0,MAX);
     }
     function row(d,i){
-      var q=QUAD[d.quadrant], w1=d.perf?d.perf['1W']:null, m1=d.perf?d.perf['1M']:null;
+      var q=QUAD[d.quadrant]||QUAD.unavailable, w1=d.perf?d.perf['1W']:null, m1=d.perf?d.perf['1M']:null;
       var key=d.rs_mom, kt=(key==null?'—':(key>0?'+':(key<0?'−':''))+Math.abs(+key).toFixed(1));
       return '<div class="sr-vs-row" data-k="'+esc(keyOf(d))+'">'
         +'<span class="sr-vs-rk">'+(i+1)+'</span>'
@@ -959,7 +961,7 @@
     var hideTCol = (_unit==='themes'||_unit==='sectors');
     var its=items().slice().sort(function(a,b){
       var va=sortVal(a),vb=sortVal(b);
-      if(va==null)va=-1e9; if(vb==null)vb=-1e9;
+      if(va==null&&vb==null)return 0; if(va==null)return 1; if(vb==null)return -1;
       if(typeof va==='string')return _sortDir*va.localeCompare(vb);
       return _sortDir*(va-vb);
     });
@@ -970,9 +972,9 @@
       return '<th class="'+(c.num?'num':'')+on+'" data-k="'+c.k+'">'+L(c.en,c.zh)+'</th>';
     }).join('');
     var rows=its.map(function(d,ri){
-      var rankTd='<td class="num" style="color:var(--muted);font-variant-numeric:tabular-nums;">'+(ri+1)+'</td>';
+      var rankTd='<td class="num" style="color:var(--muted);font-variant-numeric:tabular-nums;">'+(d.rotation_status==='UNAVAILABLE'||d.quadrant==='unavailable'?'—':ri+1)+'</td>';
       var tds=rankTd+COLS.filter(function(c){return !(hideTCol&&c.k==='theme');}).map(function(c){
-        if(c.k==='quadrant'){var q=QUAD[d.quadrant];return '<td><span class="sr-q '+q.cls+'">'+(isZh()?q.zh:q.en)+'</span></td>';}
+        if(c.k==='quadrant'){var q=QUAD[d.quadrant]||QUAD.unavailable;return '<td><span class="sr-q '+q.cls+'">'+(isZh()?q.zh:q.en)+'</span></td>';}
         if(c.k==='turn_state'){var ts=TSTATE[d.turn_state];
           return '<td>'+(ts?'<span class="sr-ts '+ts.cls+'">'+(isZh()?ts.zh:ts.en)+'</span>':'<span class="sr-ts-na">—</span>')+'</td>';}
         var v=cellVal(d,c);
@@ -1110,7 +1112,7 @@
 
   function showTip(k,cx,cy){
     var d=items().filter(function(x){return keyOf(x)===k;})[0]; if(!d){hideTip();return;}
-    var q=QUAD[d.quadrant];
+    var q=QUAD[d.quadrant]||QUAD.unavailable;
     var el=tipEl();
     // One context line: what it is, then where it ranks. Never two lines.
     var ctx=[];
@@ -1241,6 +1243,7 @@
     +'.sr-vs-row>b{font-size:11px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;} .sr-vs-k{font-weight:800;}'
     +'@media (max-width:640px){.sr-vs-body{grid-template-columns:1fr;gap:0;} .sr-vs-mid{min-width:0;padding:14px 0;} .sr-vs-mid::before{top:50%;bottom:auto;left:0;right:0;transform:translateY(-50%);width:auto;height:1px;} .sr-vs-chd,.sr-vs-row{grid-template-columns:16px 9px minmax(0,1fr) 48px 48px 44px;gap:7px;}}'
     +'.sr-q{font-size:10px;font-weight:800;padding:1px 7px;border-radius:6px;white-space:nowrap;}'
+    +'.sr-q.q-na,.sr-q.q-neutral{color:var(--muted);background:var(--panel2);}'
     +'.sr-q.q-lead{color:var(--ink-up, var(--up));background:color-mix(in srgb,var(--up) 15%,transparent);} .sr-q.q-weak{color:var(--ink-warn, var(--warn));background:color-mix(in srgb,var(--warn) 15%,transparent);} .sr-q.q-impr{color:var(--ink-link, var(--link));background:color-mix(in srgb,var(--link) 15%,transparent);} .sr-q.q-lag{color:var(--ink-down, var(--down));background:color-mix(in srgb,var(--down) 15%,transparent);}'
     +'.sr-table-wrap{margin-top:14px;overflow:auto;max-height:640px;}'
     +'.sr-table{width:100%;border-collapse:collapse;font-size:12px;} .sr-table th{position:sticky;top:0;background:var(--panel);text-align:left;padding:9px 10px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--line);cursor:pointer;white-space:nowrap;z-index:1;user-select:none;} .sr-table th.num{text-align:right;} .sr-table th.on{color:var(--text);} .sr-table th.on::after{content:" ▾";} .sr-table th.on.asc::after{content:" ▴";}'
