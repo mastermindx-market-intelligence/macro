@@ -769,10 +769,13 @@ def _build_pathway(
     agreement = md.get("agreement")
     coherence = _derive_coherence(agreement)
 
-    # R7: when all nodes derive from one source clock the pathway is NOT a
-    # basket of independent confirmations. Distinct-source count is 1 and
-    # the reader must not treat `coherence` as a vote total.
-    distinct_sources = 1 if driver_clock["as_of"] is not None else 0
+    # R7: distinct_sources counts the number of distinct source records
+    # (artifact path + pointer) feeding the pathway's legs. It is a count
+    # of evidence artifacts, NOT a function of the source clock — an
+    # unknown clock is recorded separately as `as_of_reason`. When every
+    # node shares one artifact, distinct_sources == 1 and the reader must
+    # not treat `coherence` as a vote total.
+    distinct_sources = len({n["source_artifact"] for n in nodes})
 
     rec: dict[str, Any] = {
         "family": family,
@@ -857,7 +860,7 @@ def _build_factor_rotation_pathway(fi_state: dict, as_of: str, source_as_of: str
         "stale_legs": [],
         "nodes": nodes,
         "edges": edges,
-        "distinct_sources": 1 if clock["as_of"] is not None else 0,
+        "distinct_sources": len({n["source_artifact"] for n in nodes}),
         "independent_confirmations_disallowed": True,  # zero-edge, by construction
         "clock_basis": CLOCK_BASIS_MARKER,
     }

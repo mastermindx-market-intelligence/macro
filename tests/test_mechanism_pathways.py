@@ -26,6 +26,7 @@ from engine.neuralweb.mechanism_pathways import (
     SCHEMA,
     SCARE_FAMILY_MAP,
     _UNATTRIBUTED_SCARES,
+    _build_pathway,
     _classify_source_clock,
     _derive_coherence,
     _no_pathway,
@@ -1235,6 +1236,80 @@ class TestDependentLegsR7:
         )
         assert primary.get("independent_confirmations_disallowed") is True, (
             "R7 requires explicit insufficient-confirmation marker on single-source pathways"
+        )
+
+    def test_distinct_sources_counts_artifacts_not_clock(self, tmp_path):
+        """C8: distinct_sources counts distinct source-artifact records
+        across the pathway's nodes; it is NOT zeroed by an unknown clock.
+        The clock is recorded separately as `as_of_reason`.
+        """
+        # Build a pathway directly so we can exercise the unknown-clock
+        # path (compile() returns no_pathway for unknown md_asof). The
+        # driver and legs all carry one source_artifact string; the OLD
+        # formula returned 0 here because as_of was None.
+        md = {
+            "asof": "",
+            "verdict": "clear",
+            "primary": "ai_semis",
+            "runner_up": "china_stimulus",
+            "agreement": 0.80,
+            "direction": "AI/semis unwind",
+            "direction_zh": "AI/半导体回调",
+            "dir_sign": "-1",
+            "strength": 1.36,
+            "dominance_ratio": 1.48,
+            "confidence": "high",
+            "evidence_legs": [
+                {"en": "semis RS", "zh": "半导体相对强度", "z": -3.0},
+                {"en": "growth vs value", "zh": "成长对价值", "z": 1.0},
+            ],
+            "scores": [],
+            "headline": "AI/semis unwind",
+        }
+        rec = _build_pathway(
+            "equity-leadership", "ai_semis", md, [], "", "primary",
+            source_as_of="", now=_TEST_NOW,
+        )
+        assert rec["distinct_sources"] == 1, (
+            f"distinct_sources must count source artifacts, not clock; with "
+            f"one source_artifact across nodes the count is 1 regardless of "
+            f"clock; got {rec['distinct_sources']!r}"
+        )
+        # Clock status lives in as_of_reason, not in distinct_sources.
+        assert rec.get("as_of_reason") == "unknown_date", (
+            f"unknown-clock input must surface as_of_reason='unknown_date', "
+            f"got {rec.get('as_of_reason')!r}"
+        )
+
+    def test_distinct_sources_counts_two_artifacts(self, tmp_path):
+        """C8: a pathway whose nodes draw from two different source
+        artifacts (e.g. market_drivers + a transmission chain) must
+        report distinct_sources == 2.
+        """
+        fresh_past = _FRESH_ASOF
+        # Use a rates family so _attach_transmission_edges attaches a
+        # chain sourced from data/transmission/latest.json (different
+        # artifact from the market_drivers nodes).
+        regime = _make_regime(
+            md_primary="real_rate_shock",
+            md_verdict="clear",
+            md_asof=fresh_past,
+        )
+        transmission = _default_transmission(asof=fresh_past)
+        _make_regime_files(tmp_path, regime, transmission=transmission)
+        result = compile(root=tmp_path, now=_TEST_NOW)
+        pathways = result.get("pathways", [])
+        primary = pathways[0]
+        # Driver + market_drivers legs source from
+        # data/regime/latest.json#market_drivers; transmission chain
+        # nodes source from data/transmission/latest.json — two artifacts.
+        artifacts = {n["source_artifact"] for n in primary["nodes"]}
+        assert len(artifacts) == 2, (
+            f"expected 2 distinct source artifacts in nodes, got {artifacts!r}"
+        )
+        assert primary["distinct_sources"] == 2, (
+            f"distinct_sources must equal the count of distinct source "
+            f"artifacts across nodes; got {primary['distinct_sources']!r}"
         )
 
 
