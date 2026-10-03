@@ -175,7 +175,7 @@ def label_group(signal: Mapping[str, Any], horizon: int, sessions: Sequence[Mapp
             if instant(a["known_at"]) < instant(axis[start]["close_at"]) or instant(b["known_at"]) < instant(axis[end]["close_at"]):
                 return None, "FINAL_BAR_KNOWN_BEFORE_CLOSE"
             try:
-                return number(b.get("close"), positive=True) / number(a.get("open"), positive=True) - 1, None
+                return number(number(b.get("close"), positive=True) / number(a.get("open"), positive=True) - 1), None
             except QualificationError as exc:
                 return None, str(exc)
 
@@ -198,8 +198,12 @@ def label_group(signal: Mapping[str, Any], horizon: int, sessions: Sequence[Mapp
         if err:
             base.update(status="UNAVAILABLE", reason="BENCHMARK_" + err)
             return base
-        raw = sum(m["weight"] * returns[m["ticker"]] for m in members)
-        base.update(status="MEASURED", absolute_return=raw, benchmark_return=reference,
+        raw = number(sum(m["weight"] * returns[m["ticker"]] for m in members))
+        outcome_known = max(instant(prices[(ticker, day)]["known_at"])
+                            for ticker in [m["ticker"] for m in members] + [bench]
+                            for day in (start, end))
+        base.update(status="MEASURED", outcome_known_at=outcome_known.isoformat(),
+                    absolute_return=raw, benchmark_return=reference,
                     forward_excess=raw-reference, member_returns=returns,
                     effective_weight_n=1 / sum(m["weight"] ** 2 for m in members))
         return base
@@ -284,8 +288,14 @@ def purged_training_ids(training: Sequence[Mapping[str, Any]], validation: Seque
     if not validation:
         raise QualificationError("EMPTY_VALIDATION")
     boundary = min(instant(v["decision_at"]) for v in validation)
-    return [r["snapshot_id"] for r in training
-            if instant(r["decision_at"]) < boundary and instant(r["exit_at"]) < boundary]
+    selected = []
+    for r in training:
+        if not r.get("outcome_known_at"):
+            raise QualificationError("OUTCOME_KNOWLEDGE_CLOCK_REQUIRED")
+        if (instant(r["decision_at"]) < boundary and instant(r["exit_at"]) < boundary
+                and instant(r["outcome_known_at"]) < boundary):
+            selected.append(r["snapshot_id"])
+    return selected
 
 
 def nonoverlapping_time_windows(rows: Sequence[Mapping[str, Any]]) -> int:
