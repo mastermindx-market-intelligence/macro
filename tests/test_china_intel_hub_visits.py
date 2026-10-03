@@ -364,6 +364,8 @@ class TestCIECompanyEvidence:
         assert hub._cninfo_source_url("https://evil.example/x.pdf") is None
         assert hub._cninfo_source_url("../../etc/passwd") is None
         assert hub._cninfo_source_url("other/123.pdf") is None
+        assert hub._cninfo_source_url('finalpage/x" onmouseover="alert(1).PDF') is None
+        assert hub._cninfo_source_url("finalpage/<script>.PDF") is None
 
     def test_visit_row_exposes_source_id_link_and_separate_clocks(self):
         fresh = datetime.now(timezone.utc).isoformat()
