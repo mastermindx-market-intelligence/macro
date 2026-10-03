@@ -328,15 +328,52 @@ def test_t10_compact_state_sink() -> None:
         ps.compact_state_row("X", FRAMES["A"].iloc[:0], price_basis="adjusted")
     assert excinfo.value.reason == "compact_empty_frame"
 
+    # A frame without closes is a refusal of this module, not a bare KeyError.
+    with pytest.raises(ps.CompactStateError) as excinfo:
+        ps.compact_state_row("X", FRAMES["A"].drop(columns=["close"]), price_basis="adjusted")
+    assert excinfo.value.reason == "compact_schema"
+
 
 def test_t11_no_live_pack_import() -> None:
     source = Path(ps.__file__).read_text(encoding="utf-8")
     tree = ast.parse(source, filename=str(ps.__file__))
+
+    def names_live_pack(dotted: str | None) -> bool:
+        return bool(dotted) and dotted.split(".")[-1] == "live_pack"
+
+    imports = 0
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
+            imports += 1
             for alias in node.names:
-                assert alias.name != "live_pack"
+                assert not names_live_pack(alias.name), alias.name
         elif isinstance(node, ast.ImportFrom):
-            assert node.module != "live_pack"
+            imports += 1
+            assert not names_live_pack(node.module), node.module
             for alias in node.names:
                 assert alias.name != "live_pack"
+    assert imports > 0
+
+
+@pytest.mark.parametrize("line", [
+    "import live_pack",
+    "import engine.entry_radar.live_pack",
+    "import engine.entry_radar.live_pack as lp",
+    "from engine.entry_radar import live_pack",
+    "from engine.entry_radar.live_pack import LivePack",
+    "from . import live_pack",
+    "from .live_pack import LivePack",
+])
+def test_t11b_the_import_check_sees_every_import_form(line: str) -> None:
+    """The check above must reject each way of importing the pack builder."""
+    def names_live_pack(dotted: str | None) -> bool:
+        return bool(dotted) and dotted.split(".")[-1] == "live_pack"
+
+    hit = False
+    for node in ast.walk(ast.parse(line)):
+        if isinstance(node, ast.Import):
+            hit |= any(names_live_pack(alias.name) for alias in node.names)
+        elif isinstance(node, ast.ImportFrom):
+            hit |= names_live_pack(node.module) or any(
+                alias.name == "live_pack" for alias in node.names)
+    assert hit

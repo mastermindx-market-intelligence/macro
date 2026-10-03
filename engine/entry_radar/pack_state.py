@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import uuid
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
@@ -121,6 +122,8 @@ def compact_state_row(ticker: str, frame: pd.DataFrame, *, price_basis: str) -> 
     """Build one name's compact state from its frozen frame."""
     if frame is None or len(frame) == 0:
         raise CompactStateError("compact_empty_frame", f"{ticker}: no confirmed rows")
+    if "close" not in frame.columns:
+        raise CompactStateError("compact_schema", f"{ticker}: frame has no close column")
     closes = confirmed_closes(frame)
     kd_state = ic.stoch_rsi_append_state(closes)
     hist_state = ic.rsi_macd_hist_append_state(closes) if kd_state is not None else None
@@ -199,8 +202,10 @@ def write_compact(path: Path | str, rows: Iterable[CompactName]) -> dict[str, An
     """Write the compact state file and return its manifest entry.
 
     Rows are written in ticker order whatever order they arrive in, so the same
-    rows always produce the same bytes.  The write is atomic: a reader sees the
-    old file or the new one, never a partial one.
+    rows produce the same bytes under one pyarrow version (the file footer names
+    the writer, so the bytes are not promised to match across versions; the
+    manifest's sha256 binds the bytes that were actually written).  The write is
+    atomic: a reader sees the old file or the new one, never a partial one.
     """
     ordered = sorted(rows, key=lambda row: row.ticker)
     seen: set[str] = set()
@@ -210,11 +215,14 @@ def write_compact(path: Path | str, rows: Iterable[CompactName]) -> dict[str, An
         seen.add(row.ticker)
         _check(row)
     target = Path(path)
-    scratch = target.with_name(target.name + ".tmp")
+    # A name of its own, so two writers never share a scratch file.
+    scratch = target.with_name(f"{target.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
     try:
         pq.write_table(_table(ordered), scratch, compression="zstd",
                        use_dictionary=False, write_statistics=False)
         data = scratch.read_bytes()
+        with open(scratch, "rb") as written:
+            os.fsync(written.fileno())
         os.replace(scratch, target)
     finally:
         scratch.unlink(missing_ok=True)

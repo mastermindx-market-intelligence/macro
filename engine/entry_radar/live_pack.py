@@ -946,6 +946,11 @@ class SubstrateSink(Protocol):
     after the last name, and returns the mapping the pack carries as
     ``substrate``.  A sink that writes frames out as they arrive may return a
     mapping that holds none of them in memory; the pack's identity never reads it.
+    Such a pack cannot be proved or saved from its substrate: the proof must be
+    given the tapped threshold cases, and :func:`save_pack` refuses it.
+
+    A sink serves ONE build.  ``add`` or ``finish`` after ``finish`` is refused,
+    because a reused sink would hand a second pack the first pack's frames.
     """
 
     def add(self, row: PackName, frozen: pd.DataFrame, *, next_session: date) -> None: ...
@@ -958,11 +963,17 @@ class InMemorySink:
 
     def __init__(self) -> None:
         self._frames: dict[str, pd.DataFrame] = {}
+        self._finished = False
 
     def add(self, row: PackName, frozen: pd.DataFrame, *, next_session: date) -> None:
+        if self._finished:
+            raise LivePackError("substrate sink reused: add() after finish()")
         self._frames[row.ticker] = frozen
 
     def finish(self) -> Mapping[str, pd.DataFrame]:
+        if self._finished:
+            raise LivePackError("substrate sink reused: finish() called twice")
+        self._finished = True
         return self._frames
 
 
@@ -978,12 +989,19 @@ class ProofTapSink:
     def __init__(self, inner: SubstrateSink) -> None:
         self._inner = inner
         self._cases: list[dict[str, Any]] = []
+        self._finished = False
 
     def add(self, row: PackName, frozen: pd.DataFrame, *, next_session: date) -> None:
-        self._cases.extend(threshold_cases_for(row, frozen, next_session=next_session))
+        if self._finished:
+            raise LivePackError("substrate sink reused: add() after finish()")
+        cases = threshold_cases_for(row, frozen, next_session=next_session)
         self._inner.add(row, frozen, next_session=next_session)
+        self._cases.extend(cases)       # only once the wrapped sink has taken the frame
 
     def finish(self) -> Mapping[str, pd.DataFrame]:
+        if self._finished:
+            raise LivePackError("substrate sink reused: finish() called twice")
+        self._finished = True
         return self._inner.finish()
 
     def threshold_cases(self) -> list[dict[str, Any]]:
@@ -1141,9 +1159,31 @@ def _proof_threshold_cases(pack: LivePack) -> list[dict[str, Any]]:
     for row in pack.names:
         frame = pack.substrate.get(row.ticker)
         if frame is None:
-            continue
+            # A name is admitted only with a frame, so this is a pack whose frames
+            # were streamed out.  Skipping would drop the family and still pass.
+            raise LivePackError(
+                f"{row.ticker}: the pack holds no frozen frame to prove against; "
+                "pass the threshold cases collected while it was built")
         out.extend(threshold_cases_for(row, frame, next_session=pack.next_session))
     return out
+
+
+_THRESHOLD_SIDES = ("below", "above", "at")
+
+
+def _threshold_solutions(row: PackName) -> list[tuple[ThresholdSolution, Any]]:
+    """The solved levels of one name that the threshold family probes."""
+    return [(solution, margin)
+            for solution, margin in ((row.c1_arm_price, _c1_margin),
+                                     (row.c2a_cross_price, _c2a_margin))
+            if not (solution.no_threshold_exists or solution.price is None)]
+
+
+def threshold_case_names(row: PackName) -> list[str]:
+    """The names of one name's threshold proof cases, in order, from its row alone."""
+    return [f"{row.ticker}:{solution.condition}:{side}"
+            for solution, _margin in _threshold_solutions(row)
+            for side in _THRESHOLD_SIDES]
 
 
 def threshold_cases_for(row: PackName, frame: pd.DataFrame, *,
@@ -1154,14 +1194,10 @@ def threshold_cases_for(row: PackName, frame: pd.DataFrame, *,
     oracle = OracleFrame(
         ticker=row.ticker, closes=frame["close"].astype(float).to_numpy(dtype=float),
         index=index, next_session_ts=pd.Timestamp(next_session).normalize())
-    for solution, margin in ((row.c1_arm_price, _c1_margin),
-                             (row.c2a_cross_price, _c2a_margin)):
-        if solution.no_threshold_exists or solution.price is None:
-            continue
+    for solution, margin in _threshold_solutions(row):
         level = float(solution.price)
-        for side, probe in (("below", level * (1.0 - PROOF_EPSILON_REL)),
-                            ("above", level * (1.0 + PROOF_EPSILON_REL)),
-                            ("at", level)):
+        probes = (level * (1.0 - PROOF_EPSILON_REL), level * (1.0 + PROOF_EPSILON_REL), level)
+        for side, probe in zip(_THRESHOLD_SIDES, probes):
             got = margin(oracle, probe)
             observed = None if got is None else bool(got > 0.0)
             expected = solution.holds_at(probe)
@@ -1472,15 +1508,26 @@ def build_inversion_proof(pack: LivePack, *,
 
     ``threshold_cases`` hands in the threshold family already collected while the
     pack was built (:class:`ProofTapSink`); None derives it from
-    ``pack.substrate``.  The two are the same cases in the same order.
+    ``pack.substrate``.  The two are the same cases in the same order.  Either
+    way the family is complete or the proof is refused: a name with no frame, or
+    a supplied list that is not exactly this pack's cases, raises.
 
     It tunes nothing, optimises nothing, reads no forward outcome, ranks nothing
     and never touches a spec hash.
     """
     next_session = _as_date(pack.next_session)
     cases: list[dict[str, Any]] = []
-    cases += (_proof_threshold_cases(pack) if threshold_cases is None
-              else [dict(case) for case in threshold_cases])
+    if threshold_cases is None:
+        cases += _proof_threshold_cases(pack)
+    else:
+        supplied = [dict(case) for case in threshold_cases]
+        expected = [name for row in pack.names for name in threshold_case_names(row)]
+        if ([case.get("case") for case in supplied] != expected
+                or any(case.get("family") != "threshold_boundary" for case in supplied)):
+            raise LivePackError(
+                f"the supplied threshold cases are not this pack's: {len(supplied)} "
+                f"supplied, {len(expected)} expected from its solved levels")
+        cases += supplied
     cases += _proof_micro_path_cases(next_session)
     cases += _proof_rearm_cases()
     cases += _proof_c2f_cases()
@@ -1557,6 +1604,11 @@ def current_pack_identity(state_dir: Path | str) -> dict[str, str] | None:
 
 
 def _substrate_frame(pack: LivePack) -> pd.DataFrame:
+    absent = sorted(row.ticker for row in pack.names if row.ticker not in pack.substrate)
+    if absent:
+        raise LivePackError(
+            f"cannot save a pack whose substrate lacks {len(absent)} admitted name(s) "
+            f"(first: {absent[0]}); a streamed substrate is saved by its own writer")
     rows: list[dict[str, Any]] = []
     for ticker in sorted(pack.substrate):
         frame = pack.substrate[ticker]

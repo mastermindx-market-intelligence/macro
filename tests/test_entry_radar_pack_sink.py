@@ -5,6 +5,7 @@ import types
 from datetime import date
 
 import pandas as pd
+import pytest
 
 from engine.entry_radar import live_pack as lp
 from tests.test_entry_radar_w4_pack import build, store
@@ -74,24 +75,93 @@ def test_T3_recording_sink_sees_admitted_names_in_order():
     assert any(m.get("ticker") == "NOPE" for m in pack.substrate_missing)
 
 
-def test_T4_empty_substrate_mapping_with_proof_tap():
+def test_T4_streamed_pack_is_refused_without_its_tapped_cases(tmp_path):
     tap = lp.ProofTapSink(_EmptyFinishSink())
     pack = build(sink=tap)
     default = build()
     assert pack.pack_hash == default.pack_hash
     assert pack.names == default.names
     assert len(pack.substrate) == 0
-    assert lp.build_inversion_proof(
-        pack, threshold_cases=tap.threshold_cases()) == lp.build_inversion_proof(default)
-    assert lp.build_inversion_proof(pack) != lp.build_inversion_proof(
-        pack, threshold_cases=tap.threshold_cases())
+    tapped = lp.build_inversion_proof(pack, threshold_cases=tap.threshold_cases())
+    assert tapped == lp.build_inversion_proof(default)
+    assert tapped["by_family"]["threshold_boundary"]["total"] > 0
+    # No frames and no tapped cases: the proof must refuse, not pass without the family.
+    with pytest.raises(lp.LivePackError, match="no frozen frame"):
+        lp.build_inversion_proof(pack)
+    # The in-memory saver must refuse a pack whose frames were streamed elsewhere.
+    with pytest.raises(lp.LivePackError, match="cannot save"):
+        lp.save_pack(pack.with_proof(tapped), tmp_path)
+    assert lp.current_pack_identity(tmp_path) is None
+    assert not list(tmp_path.rglob("*.parquet"))
+    assert not list(tmp_path.rglob("manifest*.json"))
 
 
-def test_T5_empty_threshold_cases_omits_threshold_boundary_family():
-    default_proof = lp.build_inversion_proof(build())
-    empty_thresh = lp.build_inversion_proof(build(), threshold_cases=[])
-    assert "threshold_boundary" in default_proof["by_family"]
-    assert "threshold_boundary" not in empty_thresh["by_family"]
+def test_T4b_pack_missing_one_frame_is_refused(tmp_path):
+    default = build()
+    frames = dict(default.substrate)
+    dropped = sorted(frames)[0]
+    del frames[dropped]
+    import dataclasses
+    partial = dataclasses.replace(default, substrate=frames)
+    with pytest.raises(lp.LivePackError, match=dropped):
+        lp.save_pack(partial, tmp_path)
+    assert lp.current_pack_identity(tmp_path) is None
+
+
+def test_T5_supplied_cases_must_be_exactly_this_packs():
+    default = build()
+    default_proof = lp.build_inversion_proof(default)
+    assert default_proof["by_family"]["threshold_boundary"]["total"] > 0
+    tap = lp.ProofTapSink(lp.InMemorySink())
+    pack = build(sink=tap)
+    cases = tap.threshold_cases()
+    assert [c["case"] for c in cases] == [
+        name for row in pack.names for name in lp.threshold_case_names(row)]
+    # An empty list for a pack that has solved levels would drop the family.
+    with pytest.raises(lp.LivePackError, match="not this pack's"):
+        lp.build_inversion_proof(pack, threshold_cases=[])
+    with pytest.raises(lp.LivePackError, match="not this pack's"):
+        lp.build_inversion_proof(pack, threshold_cases=cases[:-1])
+    with pytest.raises(lp.LivePackError, match="not this pack's"):
+        lp.build_inversion_proof(pack, threshold_cases=cases + cases)
+    foreign = [dict(cases[0], case="ZZZZ:" + cases[0]["case"].split(":", 1)[1])] + cases[1:]
+    with pytest.raises(lp.LivePackError, match="not this pack's"):
+        lp.build_inversion_proof(pack, threshold_cases=foreign)
+    wrong_family = [dict(cases[0], family="micro_path")] + cases[1:]
+    with pytest.raises(lp.LivePackError, match="not this pack's"):
+        lp.build_inversion_proof(pack, threshold_cases=wrong_family)
+    assert lp.build_inversion_proof(pack, threshold_cases=cases) == default_proof
+    # A pack that admitted no name has no threshold cases; an empty list is its own.
+    nameless = build(tickers=["NOPE"])
+    assert nameless.names == ()
+    empty = lp.build_inversion_proof(nameless, threshold_cases=[])
+    assert empty == lp.build_inversion_proof(nameless)
+    assert "threshold_boundary" not in empty["by_family"]
+
+
+def test_T5b_sinks_serve_one_build():
+    for make in (lp.InMemorySink, lambda: lp.ProofTapSink(lp.InMemorySink())):
+        sink = make()
+        build(sink=sink)
+        with pytest.raises(lp.LivePackError, match="reused"):
+            build(sink=sink)
+        with pytest.raises(lp.LivePackError, match="reused"):
+            sink.finish()
+
+
+class _RefusingSink:
+    def add(self, row: lp.PackName, frozen: pd.DataFrame, *, next_session: date) -> None:
+        raise RuntimeError("inner sink refused the frame")
+
+    def finish(self) -> dict[str, pd.DataFrame]:
+        return {}
+
+
+def test_T5c_tap_keeps_no_case_for_a_frame_the_inner_sink_refused():
+    tap = lp.ProofTapSink(_RefusingSink())
+    with pytest.raises(RuntimeError, match="inner sink refused"):
+        build(sink=tap)
+    assert tap.threshold_cases() == []
 
 
 def test_T6_with_proof_substrate_identity():
