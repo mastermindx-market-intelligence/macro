@@ -4,6 +4,7 @@ import ast
 import importlib.util
 import json
 import os
+import re
 import stat
 import subprocess
 import sys
@@ -1485,7 +1486,16 @@ def test_runner_admission_hook_js_wires_m1_nightly_2_profile() -> None:
     # profile. The wrapper delegates the binding to the pure helper.
     assert 'basename "$runner_root"' not in m1
     assert '"$guard_root/runner_binding.py" "$runner_root"' in m1
-    assert '"$guard_root/runner_binding.py" --extract-profile "$binding_line"' in m1
+    # The wrapper validates the exact `RUNNER_BINDING=` prefix, strips it
+    # into `binding_payload`, and calls the helper with the rawjson +
+    # key contract the helper's --extract-profile subcommand enforces.
+    # Pinning this here keeps the wrapper from regressing to the previous
+    # broken call that passed the prefixed line without the key (helper
+    # exited 64 — wrapper would never have selected a profile).
+    assert 'case "$binding_line" in' in m1
+    assert 'RUNNER_BINDING=*)' in m1
+    assert 'binding_payload=${binding_line#RUNNER_BINDING=}' in m1
+    assert '"$guard_root/runner_binding.py" --extract-profile "$binding_payload" profile' in m1
     assert "exit 78" in m1
     # the canary default does NOT depend on any case branch against the
     # basename — the only branch is the profile-name case derived from the
@@ -1892,6 +1902,348 @@ def test_runner_binding_extract_profile_refuses_malformed_input(
     captured = capsys.readouterr()
     assert rc == 78
     assert captured.out.startswith("::error title=runner-binding::")
+
+
+# ── AD-1T2 round 2: wrapper must pass rawjson + key, not the prefixed line ──
+# The previous wrapper called the helper with `--extract-profile
+# "$binding_line"` (no key). The helper's main() requires exactly two positional
+# args after `--extract-profile` (rawjson + key) and exits 64 when the key is
+# omitted — so the wrapper never reached the profile-name case branch and
+# the listener never received an admission surface. These tests pin the
+# helper's strict CLI contract and the wrapper's prefix-stripping + key
+# delegation so the regression cannot return.
+
+
+def test_runner_binding_extract_profile_omitted_key_exits_64(
+    monkeypatch: pytest.MonkeyPatch, capsys
+) -> None:
+    """``--extract-profile`` with no key exits 64 (EX_USAGE) — the previous
+    wrapper hit this on every M1 invocation and the wrapper's own
+    ``|| { exit 78; }`` translated the helper's usage error into a
+    confusing 78 with the helper's usage message instead of a structured
+    ``::error title=runner-binding::`` annotation. RED-first on the
+    previous (prefix-broken) head.
+    """
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["runner_binding.py", "--extract-profile", json.dumps({"profile": "m1-nightly-2"})],
+    )
+    rc = BINDING.main()
+    captured = capsys.readouterr()
+    assert rc == 64
+    # helper must print a usage hint, NOT a line-start ::error
+    assert "usage: runner_binding.py --extract-profile" in captured.err
+    assert not captured.out.startswith("::error")
+
+
+def test_runner_binding_extract_profile_prefixed_payload_exits_78(
+    monkeypatch: pytest.MonkeyPatch, capsys
+) -> None:
+    """``--extract-profile`` on a payload that still carries the
+    ``RUNNER_BINDING=`` prefix exits 78 with a line-start ``::error`` —
+    the helper refuses to ``json.loads()`` the prefixed text and the
+    wrapper's prefix-validation + strip step exists precisely so this
+    refusal never reaches the wrapper.
+    """
+    prefixed = 'RUNNER_BINDING={"schema":"runner.binding.v1","profile":"m1-nightly-2"}'
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["runner_binding.py", "--extract-profile", prefixed, "profile"],
+    )
+    rc = BINDING.main()
+    captured = capsys.readouterr()
+    assert rc == 78
+    assert captured.out.startswith("::error title=runner-binding::")
+    assert "could not extract" in captured.out
+
+
+# ── AD-1T2 round 2: wrapper-level harness driving the REAL helper ─────────
+# These tests run the real wrapper script against a temp runner_root +
+# temp guard_root. The temp guard_root stages a copy of the real
+# runner_binding.py with CANONICAL_BINDINGS rewritten to include the temp
+# runner_root path, plus no-op disk/log guards and a fake
+# Runner.Listener that records the env it was launched with. The wrapper
+# delegates profile extraction to the real helper CLI on every invocation,
+# so any drift between the wrapper and the helper's --extract-profile
+# contract fails here, not only in the wrapper's static text.
+
+
+_CANONICAL_BINDINGS_RE = re.compile(
+    r"^CANONICAL_BINDINGS: dict\[tuple\[str, str\], str\] = \{.*?^\}",
+    re.DOTALL | re.MULTILINE,
+)
+
+
+def _stage_helper_with_bindings(
+    guard_root: Path, bindings: dict[tuple[str, str], str]
+) -> Path:
+    """Stage a copy of ``runner_binding.py`` at ``guard_root`` whose
+    ``CANONICAL_BINDINGS`` literal is rewritten to include the test's
+    temp ``(runner_root, agent_name)`` pairs. The helper's
+    ``resolve_profile`` consults ``CANONICAL_BINDINGS`` at import time so
+    the rewrite is necessary for the wrapper's subprocess invocation to
+    see the temp path as a canonical pair.
+    """
+    real = (
+        ROOT / "ops" / "runner-host" / "common" / "runner_binding.py"
+    ).read_text(encoding="utf-8")
+    new_lines = ",\n".join(
+        f"    {k!r}: {v!r}" for k, v in bindings.items()
+    )
+    new_block = f"CANONICAL_BINDINGS: dict[tuple[str, str], str] = {{\n{new_lines}\n}}"
+    patched, count = _CANONICAL_BINDINGS_RE.subn(new_block, real, count=1)
+    assert count == 1, "did not substitute CANONICAL_BINDINGS in helper copy"
+    target = guard_root / "runner_binding.py"
+    target.write_text(patched, encoding="utf-8")
+    target.chmod(0o755)
+    return target
+
+
+def _stage_wrapper_harness(
+    tmp_path: Path,
+    *,
+    agent_name: str,
+    runner_basename: str,
+    bindings: dict[tuple[str, str], str],
+) -> tuple[Path, Path, Path]:
+    """Stage a temp runner_root + guard_root for an end-to-end wrapper
+    invocation. Returns ``(runner_root, guard_root, listener_log)``.
+
+    The real ``runner_binding.py`` is staged at ``guard_root`` with the
+    caller's ``bindings`` so the production (canonical root, configured
+    agentName) check runs against real fs objects; disk and log guards
+    are no-op stubs so the wrapper reaches the binding step on every
+    invocation; the fake ``Runner.Listener`` writes the env it was
+    launched with to ``listener_log`` so the caller can pin
+    ACTIONS_RUNNER_HOOK_JOB_STARTED / MASTERMIND_CI_PROFILE /
+    RUNNER_BINDING without parsing stdout.
+    """
+    runner_root = tmp_path / runner_basename
+    runner_root.mkdir()
+    (runner_root / "_diag").mkdir()
+    with (runner_root / ".runner").open("wb") as handle:
+        plistlib.dump({"agentName": agent_name}, handle)
+
+    bin_dir = runner_root / "bin"
+    bin_dir.mkdir()
+    listener_log = runner_root / "listener_receipt.json"
+    listener = bin_dir / "Runner.Listener"
+    listener.write_text(
+        "#!/usr/bin/env python3\n"
+        "import json, os, sys\n"
+        f"with open({str(listener_log)!r}, 'w') as handle:\n"
+        "    json.dump({'env': dict(os.environ), 'argv': sys.argv}, handle)\n",
+        encoding="utf-8",
+    )
+    listener.chmod(0o755)
+
+    guard_root = tmp_path / "guard"
+    guard_root.mkdir()
+    _stage_helper_with_bindings(guard_root, bindings)
+    for name in (
+        "runner_disk_guard.py",
+        "runner_log_maintenance.py",
+    ):
+        stub = guard_root / name
+        stub.write_text("#!/usr/bin/env python3\n", encoding="utf-8")
+        stub.chmod(0o755)
+    for name in (
+        "runner_admission_m1_canary.js",
+        "runner_admission_m1_nightly_2.js",
+    ):
+        (guard_root / name).write_text("// fake admission hook\n", encoding="utf-8")
+
+    return runner_root, guard_root, listener_log
+
+
+def _run_wrapper(
+    runner_root: Path, guard_root: Path
+) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [
+            "bash",
+            str(ROOT / "ops" / "runner-host" / "m1" / "run_guarded_runner.sh"),
+            str(runner_root),
+            str(guard_root),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+def test_wrapper_invokes_real_helper_for_m1_nightly_2(tmp_path: Path) -> None:
+    """End-to-end happy path: the wrapper invokes the real
+    ``runner_binding.py`` twice (initial resolution + delegated
+    ``--extract-profile``), selects the nightly hook + profile for the
+    m1-nightly-2 binding, and launches ``Runner.Listener`` with the
+    matching env. RED-first on the previous (no-key) head because the
+    delegated extraction exited 64 and the wrapper never reached the
+    listener launch.
+    """
+    runner_root_path = str(tmp_path / "actions-runner-2")
+    runner_root, guard_root, listener_log = _stage_wrapper_harness(
+        tmp_path,
+        agent_name="m1-nightly-2",
+        runner_basename="actions-runner-2",
+        bindings={(runner_root_path, "m1-nightly-2"): "m1-nightly-2"},
+    )
+
+    result = _run_wrapper(runner_root, guard_root)
+
+    assert result.returncode == 0, (
+        f"wrapper should bind m1-nightly-2 to its producer profile and "
+        f"start the listener; got rc={result.returncode} "
+        f"stdout={result.stdout!r} stderr={result.stderr!r}"
+    )
+    assert listener_log.is_file(), "Runner.Listener was never launched"
+    receipt = json.loads(listener_log.read_text(encoding="utf-8"))
+    env = receipt["env"]
+    assert env["MASTERMIND_CI_PROFILE"] == "m1-nightly-2"
+    assert env["ACTIONS_RUNNER_HOOK_JOB_STARTED"] == str(
+        guard_root / "runner_admission_m1_nightly_2.js"
+    )
+    assert env["RUNNER_BINDING"].startswith("RUNNER_BINDING=")
+    payload = json.loads(env["RUNNER_BINDING"].split("=", 1)[1])
+    assert payload["profile"] == "m1-nightly-2"
+    assert payload["agent_name"] == "m1-nightly-2"
+    assert receipt["argv"][-3:] == ["run", "--startuptype", "service"]
+
+
+def test_wrapper_invokes_real_helper_for_m1_canary_default(tmp_path: Path) -> None:
+    """The existing canary default (m1-nightly-1 root → m1-canary profile)
+    is preserved end-to-end: the wrapper still launches the listener with
+    the canary hook + profile when the binding helper returns
+    ``m1-canary``. RED-first on the previous (no-key) head because the
+    delegated extraction would have exited 64 for this root too — the
+    previous wrapper would never have selected any profile.
+    """
+    runner_root_path = str(tmp_path / "actions-runner-1")
+    runner_root, guard_root, listener_log = _stage_wrapper_harness(
+        tmp_path,
+        agent_name="m1-nightly-1",
+        runner_basename="actions-runner-1",
+        bindings={(runner_root_path, "m1-nightly-1"): "m1-canary"},
+    )
+
+    result = _run_wrapper(runner_root, guard_root)
+
+    assert result.returncode == 0, (
+        f"wrapper should preserve the canary default for m1-nightly-1; "
+        f"got rc={result.returncode} "
+        f"stdout={result.stdout!r} stderr={result.stderr!r}"
+    )
+    assert listener_log.is_file(), "Runner.Listener was never launched"
+    receipt = json.loads(listener_log.read_text(encoding="utf-8"))
+    env = receipt["env"]
+    assert env["MASTERMIND_CI_PROFILE"] == "m1-canary"
+    assert env["ACTIONS_RUNNER_HOOK_JOB_STARTED"] == str(
+        guard_root / "runner_admission_m1_canary.js"
+    )
+
+
+def test_wrapper_refuses_when_helper_emits_wrong_prefix(tmp_path: Path) -> None:
+    """If the initial resolver emits something other than the exact
+    ``RUNNER_BINDING=`` prefix, the wrapper exits 78 BEFORE the listener
+    starts and surfaces a structured ``::error title=runner-binding::``
+    annotation. RED-first on the previous (no-prefix-validation) head
+    because the wrapper would have forwarded the malformed line straight
+    to ``--extract-profile`` and trusted whatever the helper returned.
+    """
+    runner_root_path = str(tmp_path / "actions-runner-2")
+    runner_root, guard_root, listener_log = _stage_wrapper_harness(
+        tmp_path,
+        agent_name="m1-nightly-2",
+        runner_basename="actions-runner-2",
+        bindings={(runner_root_path, "m1-nightly-2"): "m1-nightly-2"},
+    )
+    # Replace the staged helper with a fake initial resolver that omits
+    # the RUNNER_BINDING= prefix; the delegated --extract-profile call
+    # still returns m1-nightly-2 so any regression that swallows the
+    # prefix-validation step would land on the nightly branch instead of
+    # the expected 78.
+    (guard_root / "runner_binding.py").write_text(
+        "#!/usr/bin/env python3\n"
+        "import json, sys\n"
+        "if len(sys.argv) >= 2 and sys.argv[1] == '--extract-profile':\n"
+        "    sys.stdout.write(sys.argv[3] and 'm1-nightly-2' or '')\n"
+        "    sys.exit(0)\n"
+        "sys.stdout.write(\n"
+        "    'PROFILE_NOT_BINDING=' + json.dumps(\n"
+        "        {'schema': 'runner.binding.v1', 'profile': 'm1-nightly-2'}\n"
+        "    )\n"
+        ")\n"
+        "sys.stdout.flush()\n",
+        encoding="utf-8",
+    )
+    (guard_root / "runner_binding.py").chmod(0o755)
+
+    result = _run_wrapper(runner_root, guard_root)
+
+    assert result.returncode == 78
+    assert "RUNNER_BINDING= prefix" in result.stderr
+    assert "::error title=runner-binding::" in result.stderr
+    assert not listener_log.exists(), (
+        "wrapper must not launch Runner.Listener when the binding line "
+        "fails prefix validation"
+    )
+
+
+def test_wrapper_refuses_when_extract_profile_fails(tmp_path: Path) -> None:
+    """If the initial resolver emits a well-formed ``RUNNER_BINDING=``
+    line but the delegated ``--extract-profile`` step refuses (helper
+    exits 78 on a malformed receipt), the wrapper exits 78 BEFORE the
+    listener starts. RED-first on the previous (no-key) head because the
+    delegated extraction exited 64 with the helper's usage message — the
+    previous wrapper's ``|| { exit 78; }`` swallowed the 64 and the
+    wrapper would have surfaced a confusing usage message rather than a
+    structured ``::error``.
+    """
+    runner_root_path = str(tmp_path / "actions-runner-2")
+    runner_root, guard_root, listener_log = _stage_wrapper_harness(
+        tmp_path,
+        agent_name="m1-nightly-2",
+        runner_basename="actions-runner-2",
+        bindings={(runner_root_path, "m1-nightly-2"): "m1-nightly-2"},
+    )
+    # Replace the staged helper: initial resolver emits the expected
+    # prefix; delegated --extract-profile refuses (78) with the
+    # production line-start ::error annotation.
+    (guard_root / "runner_binding.py").write_text(
+        "#!/usr/bin/env python3\n"
+        "import json, sys\n"
+        "if len(sys.argv) >= 2 and sys.argv[1] == '--extract-profile':\n"
+        "    sys.stdout.write(\n"
+        "        '::error title=runner-binding::synthetic extraction failure'\n"
+        "        + chr(10)\n"
+        "    )\n"
+        "    sys.stdout.flush()\n"
+        "    sys.exit(78)\n"
+        "sys.stdout.write(\n"
+        "    'RUNNER_BINDING=' + json.dumps(\n"
+        "        {\n"
+        "            'schema': 'runner.binding.v1',\n"
+        "            'runner_root': sys.argv[1],\n"
+        "            'agent_name': 'm1-nightly-2',\n"
+        "            'profile': 'm1-nightly-2',\n"
+        "        }\n"
+        "    )\n"
+        ")\n"
+        "sys.stdout.flush()\n",
+        encoding="utf-8",
+    )
+    (guard_root / "runner_binding.py").chmod(0o755)
+
+    result = _run_wrapper(runner_root, guard_root)
+
+    assert result.returncode == 78
+    assert "could not extract profile from" in result.stderr
+    assert "::error title=runner-binding::" in result.stderr
+    assert not listener_log.exists(), (
+        "wrapper must not launch Runner.Listener when extraction refuses"
+    )
 
 
 def test_runner_service_seals_runtime_and_binds_host_admission() -> None:
