@@ -26,8 +26,8 @@ from engine.neuralweb.mechanism_pathways import (
     SCHEMA,
     SCARE_FAMILY_MAP,
     _UNATTRIBUTED_SCARES,
+    _classify_source_clock,
     _derive_coherence,
-    _is_stale,
     _no_pathway,
     compile,
     contains_banned_words,
@@ -237,55 +237,6 @@ from typing import Any
 # ---------------------------------------------------------------------------
 # Unit tests
 # ---------------------------------------------------------------------------
-
-class TestStalenessHelper:
-    def test_fresh_date_not_stale(self):
-        assert not _is_stale(_FRESH_ASOF)
-
-    def test_stale_date_is_stale(self):
-        assert _is_stale(_STALE_ASOF)
-
-    def test_none_asof_is_stale(self):
-        assert _is_stale(None)
-
-    def test_within_stale_days_not_stale(self):
-        from datetime import timedelta
-        # 3 days ago — within the 5-day calendar window
-        recent = (datetime.now(tz=timezone.utc) - timedelta(days=3)).strftime("%Y-%m-%d")
-        assert not _is_stale(recent)
-
-    # F1: calendar-day staleness tests — business-calendar absorption
-    def test_friday_asof_monday_run_is_fresh(self):
-        """Friday close data seen on Monday nightly run must not be stale.
-
-        Friday is 3 calendar days ago relative to Monday — inside the 5-day
-        window (3 < 5).  With the old raw-hours check, Friday 00:00 UTC was
-        72h old on Monday at midnight → false-positive stale on a 30h SLA.
-        """
-        from datetime import timedelta
-        friday = datetime.now(tz=timezone.utc) - timedelta(days=3)  # Mon - 3d = Fri
-        friday_str = friday.strftime("%Y-%m-%d")
-        assert not _is_stale(friday_str), (
-            f"Friday asof {friday_str} should be fresh on Monday run "
-            "(calendar day age 3 < 5-day threshold)"
-        )
-
-    def test_friday_asof_tuesday_after_holiday_is_fresh(self):
-        """Friday data still fresh on Tuesday-after-Monday-holiday (4 calendar days)."""
-        from datetime import timedelta
-        friday = datetime.now(tz=timezone.utc) - timedelta(days=4)  # Tue - 4d = Fri
-        friday_str = friday.strftime("%Y-%m-%d")
-        assert not _is_stale(friday_str), (
-            f"Friday asof {friday_str} should be fresh on Tuesday-after-holiday "
-            "(calendar day age 4 < 5-day threshold)"
-        )
-
-    def test_seven_day_old_asof_is_stale(self):
-        """Data 7 calendar days old must be stale (7 >= 5)."""
-        from datetime import timedelta
-        old = (datetime.now(tz=timezone.utc) - timedelta(days=7)).strftime("%Y-%m-%d")
-        assert _is_stale(old), f"7-day-old asof {old} must be stale"
-
 
 class TestCoherenceDerivation:
     def test_high_agreement_supported(self):
@@ -1059,27 +1010,6 @@ class TestSourceClockCarrier:
         )
 
 
-class TestStalenessBoundaryRule:
-    """R4: documented boundary rule for date-only vs datetime clocks."""
-
-    def test_is_stale_rejects_future_date_only_asof(self):
-        """Future date-only asof must be rejected as NOT-usable (R3)."""
-        assert _is_stale("2099-01-01") is False, (
-            "RED proof: _is_stale treats 2099 as not-stale; should reject"
-        )
-
-    def test_is_stale_rejects_future_datetime_asof(self):
-        """Future datetime asof must be rejected as NOT-usable."""
-        # 2099-01-01 00:00:00 UTC is in the future
-        assert _is_stale("2099-01-01T00:00:00Z") is False, (
-            "RED proof: _is_stale treats future datetime as not-stale; should reject"
-        )
-
-    def test_past_still_stale(self):
-        """A 7-day-old past date must remain stale."""
-        assert _is_stale("2020-01-01") is True
-
-
 class TestFactorRotationClock:
     """R6: zero-edge pathway with factor rotation driver.
     The producer emits coverage_score=1.0 with edges=[]. The reader must
@@ -1196,3 +1126,89 @@ class TestCompileThreadsNowToSourceClockClassifiers:
                 f"'available', got {node.get('as_of_reason')!r} "
                 f"(red proof: this would be 'future_dated' if C3 is not in)"
             )
+
+
+# ---------------------------------------------------------------------------
+# C4 (slice 2): one parity table for the compiler's _classify_source_clock.
+# Rows mirror the reader's parity table (E4 in tests/test_mechanism_evidence.py).
+# NOW = 2026-10-02T23:00:00Z, the canonical test clock.
+# ---------------------------------------------------------------------------
+
+_C4_NOW = datetime(2026, 10, 2, 23, 0, tzinfo=timezone.utc)
+
+
+@pytest.mark.parametrize('value,expected_status', [
+    (None, 'unknown_date'),
+    ('', 'unknown_date'),
+    ('not-a-date', 'unknown_date'),
+    ([], 'unknown_date'),
+    (20261002, 'unknown_date'),                # int is unparseable per C4
+    (1.5, 'unknown_date'),                      # float is unparseable per C4
+    (True, 'unknown_date'),                     # bool is unparseable per C4
+    ({'foo': 'bar'}, 'unknown_date'),           # dict is unparseable per C4
+    ('2026-10-02T12:00:00', 'unknown_date'),    # naive datetime: refuse to invent TZ
+    ('2026-10-04', 'future_dated'),             # date-only > latest_earth at NOW
+    ('2026-10-02T22:30:00-01:00', 'future_dated'),  # tz-aware later than NOW
+    ('2026-10-02T23:30:00+00:00', 'future_dated'),
+    ('2020-01-01', 'stale'),                    # date-only calendar-age >= 5d
+    ('2026-10-02', 'available'),
+    ('2026-10-03', 'available'),                # one day ahead — still on Earth today
+])
+def test_e4_parity_table_for_compiler_clock_classifier(value, expected_status):
+    """C4: compiler parity table — every row feeds the compiler's clock
+     classifier and asserts the same status the reader expects (E4). NOW =
+     2026-10-02T23:00:00Z. The compiler MUST reject non-string inputs and
+     naive datetimes; otherwise the parity mirrors the reader's table.
+     """
+    out = _classify_source_clock(value, now=_C4_NOW)
+    assert out["as_of_reason"] == expected_status, (
+        f"C4: clock {value!r} (type {type(value).__name__}) expected "
+        f"{expected_status!r}, got {out['as_of_reason']!r}"
+    )
+
+
+def test_classify_source_clock_rejects_non_string_inputs():
+    """C4: any non-string input (int, float, bool, list, dict, datetime
+    object) returns unknown_date — the compiler refuses to interpret
+    values that do not name a clock.
+    """
+    non_strings = [20261002, 1.5, True, [], {}, datetime(2026, 10, 2)]
+    for v in non_strings:
+        out = _classify_source_clock(v, now=_C4_NOW)
+        assert out["as_of"] is None, (
+            f"C4: non-string {v!r} (type {type(v).__name__}) must yield "
+            f"as_of=None, got {out['as_of']!r}"
+        )
+        assert out["as_of_reason"] == "unknown_date", (
+            f"C4: non-string {v!r} (type {type(v).__name__}) must yield "
+            f"reason 'unknown_date', got {out['as_of_reason']!r}"
+        )
+
+
+def test_classify_source_clock_naive_datetime_returns_unknown_date():
+    """C4: a naive datetime string (no offset, e.g. '2026-10-02T12:00:00')
+    returns unknown_date — the source's TZ is unobservable and the
+    compiler must refuse to invent one (R3).
+    """
+    out = _classify_source_clock("2026-10-02T12:00:00", now=_C4_NOW)
+    assert out["as_of"] is None
+    assert out["as_of_reason"] == "unknown_date"
+
+
+def test_classify_source_clock_future_date_only_uses_latest_earth_date():
+    """C4: a date-only source D is 'future_dated' only when D >
+    (now_utc + 14h).date(). '2026-10-03' at NOW=2026-10-02T23:00Z → latest
+    earth date is 2026-10-03 → not future; '2026-10-04' is future.
+    """
+    # Available: 2026-10-03 == latest_earth(2026-10-02T23:00Z)
+    out_available = _classify_source_clock("2026-10-03", now=_C4_NOW)
+    assert out_available["as_of_reason"] == "available", (
+        f"C4: '2026-10-03' at NOW=2026-10-02T23:00Z is on Earth today; "
+        f"got {out_available['as_of_reason']!r}"
+    )
+    # Future: 2026-10-04 > latest_earth(2026-10-02T23:00Z)
+    out_future = _classify_source_clock("2026-10-04", now=_C4_NOW)
+    assert out_future["as_of_reason"] == "future_dated", (
+        f"C4: '2026-10-04' at NOW=2026-10-02T23:00Z is past the date-line; "
+        f"got {out_future['as_of_reason']!r}"
+    )

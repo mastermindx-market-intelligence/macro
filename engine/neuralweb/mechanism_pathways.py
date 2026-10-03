@@ -218,20 +218,6 @@ def _days_since(asof_val: Any) -> int | None:
     return delta.days
 
 
-def _is_stale(asof_val: Any, _sla_hours_ignored: int = 30) -> bool:
-    """Return True if the artifact is older than _STALE_DAYS calendar days.
-
-    The sla_hours parameter is accepted for call-site compatibility but
-    ignored — date-only asofs require calendar-day comparison.  Staleness
-    threshold = _STALE_DAYS (5) = 3 trading-day equivalents, covering long
-    weekends without Monday/post-holiday false-positives (RUL-CC-13).
-    """
-    days = _days_since(asof_val)
-    if days is None:
-        return True
-    return days >= _STALE_DAYS
-
-
 # Latest known date "today" on Earth at a given now_utc: per R4, the latest
 # calendar date that any timezone on Earth can have reached is (now_utc + 14h).date().
 # Kiritimati (UTC+14) is the furthest forward inhabited zone, so adding 14h
@@ -264,13 +250,31 @@ def _classify_source_clock(asof_val: Any, now: datetime | None = None) -> dict:
       - 'stale': valid clock older than _STALE_DAYS calendar days
       - 'available': valid, in window, not future
 
+    Parity table (compiler == reader; one clock classifier for the whole
+    lineage). Inputs that resolve to 'unknown_date':
+      * None / "" / unparseable string
+      * ANY non-string (int, float, bool, list, dict — these are NOT
+        silently stringified; the source must speak the language we expect)
+      * NAIVE datetime string (no offset, e.g. "2026-10-02T12:00:00") — the
+        source's TZ is unobservable; we refuse to invent one (R3).
+    A valid timezone-aware datetime later than `now` is 'future_dated'. A
+    date-only D with D > (now_utc + 14h).date() is 'future_dated'. Calendar
+    age >= _STALE_DAYS is 'stale'; otherwise 'available'.
+
     This function never substitutes today or any other wrapper date for the
     source's own. A missing source clock is `unknown_date`, not today.
     """
     out = {"as_of": None, "as_of_reason": "unknown_date"}
     if asof_val is None:
         return out
-    s = str(asof_val).strip()
+    if not isinstance(asof_val, str):
+        # Non-string inputs (int, float, bool, list, dict, datetime …) are
+        # NOT silently stringified — refuse to interpret them as a clock.
+        # A real datetime object is also out: callers must hand us a string
+        # representation that states its TZ (or omit TZ and accept the
+        # 'unknown_date' refusal).
+        return out
+    s = asof_val.strip()
     if not s:
         return out
     try:
@@ -291,8 +295,9 @@ def _classify_source_clock(asof_val: Any, now: datetime | None = None) -> dict:
         # Datetime path
         dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
         if dt.tzinfo is None:
-            # Per R4: undocumented naive is treated as UTC.
-            dt = dt.replace(tzinfo=timezone.utc)
+            # Naive datetime: TZ is unobservable. Per R3 we refuse to
+            # invent a TZ; this returns 'unknown_date' (NOT assume UTC).
+            return out
         dt_utc = dt.astimezone(timezone.utc)
         ref_now = now or _utcnow()
         if ref_now.tzinfo is None:
