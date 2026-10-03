@@ -88,7 +88,7 @@ import tempfile
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Any, Callable, Mapping, Sequence
+from typing import Any, Callable, Mapping, Protocol, Sequence
 
 import numpy as np
 import pandas as pd
@@ -669,7 +669,9 @@ class LivePack:
             schema=self.schema, as_of=self.as_of, next_session=self.next_session,
             built_at=self.built_at, price_basis=self.price_basis,
             spec_hashes=dict(self.spec_hashes), probe_set=dict(self.probe_set),
-            names=self.names, substrate=dict(self.substrate),
+            names=self.names,
+            substrate=(dict(self.substrate) if isinstance(self.substrate, dict)
+                       else self.substrate),
             substrate_missing=self.substrate_missing, pack_hash=self.pack_hash,
             proof=dict(proof), confirmed_lanes=dict(self.confirmed_lanes))
 
@@ -936,11 +938,64 @@ def _frozen_frame(frame: pd.DataFrame, *, ticker: str, next_session: date,
     return history.confirmed_through(next_session)
 
 
+class SubstrateSink(Protocol):
+    """Where :func:`build_pack` hands each frozen frame, one name at a time.
+
+    ``add`` is called once per admitted name, in probe-set (sorted ticker) order,
+    with the name's finished row and its frozen frame.  ``finish`` is called once,
+    after the last name, and returns the mapping the pack carries as
+    ``substrate``.  A sink that writes frames out as they arrive may return a
+    mapping that holds none of them in memory; the pack's identity never reads it.
+    """
+
+    def add(self, row: PackName, frozen: pd.DataFrame, *, next_session: date) -> None: ...
+
+    def finish(self) -> Mapping[str, pd.DataFrame]: ...
+
+
+class InMemorySink:
+    """The default sink: keep every frozen frame in one dict."""
+
+    def __init__(self) -> None:
+        self._frames: dict[str, pd.DataFrame] = {}
+
+    def add(self, row: PackName, frozen: pd.DataFrame, *, next_session: date) -> None:
+        self._frames[row.ticker] = frozen
+
+    def finish(self) -> Mapping[str, pd.DataFrame]:
+        return self._frames
+
+
+class ProofTapSink:
+    """Wrap another sink and collect each name's threshold proof cases as it passes.
+
+    The proof's threshold family needs every name's frozen frame.  Collecting the
+    cases here, while each frame is already in hand, lets the proof be built
+    without holding all the frames at once.  Cases come out in the order names
+    were added, which is the order :func:`_proof_threshold_cases` produces.
+    """
+
+    def __init__(self, inner: SubstrateSink) -> None:
+        self._inner = inner
+        self._cases: list[dict[str, Any]] = []
+
+    def add(self, row: PackName, frozen: pd.DataFrame, *, next_session: date) -> None:
+        self._cases.extend(threshold_cases_for(row, frozen, next_session=next_session))
+        self._inner.add(row, frozen, next_session=next_session)
+
+    def finish(self) -> Mapping[str, pd.DataFrame]:
+        return self._inner.finish()
+
+    def threshold_cases(self) -> list[dict[str, Any]]:
+        return list(self._cases)
+
+
 def build_pack(*, probe_set: Any, store_reader: Callable[[str], pd.DataFrame | None],
                as_of: date | str, built_at: datetime | str,
                price_basis: str = ch.BASIS_ADJUSTED, market: str = "US",
                vintage: str = "",
-               confirmed_lanes: Mapping[str, Any] | None = None) -> LivePack:
+               confirmed_lanes: Mapping[str, Any] | None = None,
+               sink: SubstrateSink | None = None) -> LivePack:
     """Freeze one session's evaluation substrate for the whole probe set.
 
     ``store_reader`` is INJECTED: production hands in a reader over the daily
@@ -954,6 +1009,10 @@ def build_pack(*, probe_set: Any, store_reader: Callable[[str], pd.DataFrame | N
     path — :func:`confirmed_lanes_snapshot` normalizes whatever is handed in to
     every probe ticker, honestly ``unavailable`` for one this pass never
     covered.
+
+    ``sink`` receives each admitted name's row and frozen frame as it is built
+    and supplies the pack's ``substrate`` mapping; None keeps every frame in
+    memory.  The pack's identity is the same whichever sink is used.
 
     Refuses loudly, before reading a price, when a registered detector hash has
     drifted from its published identity.
@@ -969,7 +1028,7 @@ def build_pack(*, probe_set: Any, store_reader: Callable[[str], pd.DataFrame | N
     built_stamp = built_at if isinstance(built_at, str) else (iso(built_at) or "")
 
     names: list[PackName] = []
-    substrate: dict[str, pd.DataFrame] = {}
+    sink = InMemorySink() if sink is None else sink
     missing: list[dict[str, Any]] = []
 
     for ticker in snapshot["tickers"]:
@@ -996,10 +1055,11 @@ def build_pack(*, probe_set: Any, store_reader: Callable[[str], pd.DataFrame | N
                                       f"{as_of_date.isoformat()}"})
             continue
 
-        substrate[ticker] = frozen
-        names.append(_pack_name(ticker, frozen, next_session=next_session,
-                                market=market))
+        row = _pack_name(ticker, frozen, next_session=next_session, market=market)
+        sink.add(row, frozen, next_session=next_session)
+        names.append(row)
 
+    substrate = sink.finish()
     lane_rows = confirmed_lanes_snapshot(confirmed_lanes, snapshot["tickers"])
 
     pack_hash = compute_pack_hash(
@@ -1082,25 +1142,33 @@ def _proof_threshold_cases(pack: LivePack) -> list[dict[str, Any]]:
         frame = pack.substrate.get(row.ticker)
         if frame is None:
             continue
-        index = pd.DatetimeIndex(frame.index)
-        oracle = OracleFrame(
-            ticker=row.ticker, closes=frame["close"].astype(float).to_numpy(dtype=float),
-            index=index, next_session_ts=pd.Timestamp(pack.next_session).normalize())
-        for solution, margin in ((row.c1_arm_price, _c1_margin),
-                                 (row.c2a_cross_price, _c2a_margin)):
-            if solution.no_threshold_exists or solution.price is None:
-                continue
-            level = float(solution.price)
-            for side, probe in (("below", level * (1.0 - PROOF_EPSILON_REL)),
-                                ("above", level * (1.0 + PROOF_EPSILON_REL)),
-                                ("at", level)):
-                got = margin(oracle, probe)
-                observed = None if got is None else bool(got > 0.0)
-                expected = solution.holds_at(probe)
-                out.append(_case("threshold_boundary",
-                                 f"{row.ticker}:{solution.condition}:{side}",
-                                 boundary=level, direction=side,
-                                 expected=expected, observed=observed))
+        out.extend(threshold_cases_for(row, frame, next_session=pack.next_session))
+    return out
+
+
+def threshold_cases_for(row: PackName, frame: pd.DataFrame, *,
+                        next_session: date | str) -> list[dict[str, Any]]:
+    """One name's threshold proof cases, from its row and its frozen frame."""
+    out: list[dict[str, Any]] = []
+    index = pd.DatetimeIndex(frame.index)
+    oracle = OracleFrame(
+        ticker=row.ticker, closes=frame["close"].astype(float).to_numpy(dtype=float),
+        index=index, next_session_ts=pd.Timestamp(next_session).normalize())
+    for solution, margin in ((row.c1_arm_price, _c1_margin),
+                             (row.c2a_cross_price, _c2a_margin)):
+        if solution.no_threshold_exists or solution.price is None:
+            continue
+        level = float(solution.price)
+        for side, probe in (("below", level * (1.0 - PROOF_EPSILON_REL)),
+                            ("above", level * (1.0 + PROOF_EPSILON_REL)),
+                            ("at", level)):
+            got = margin(oracle, probe)
+            observed = None if got is None else bool(got > 0.0)
+            expected = solution.holds_at(probe)
+            out.append(_case("threshold_boundary",
+                             f"{row.ticker}:{solution.condition}:{side}",
+                             boundary=level, direction=side,
+                             expected=expected, observed=observed))
     return out
 
 
@@ -1391,7 +1459,9 @@ def _proof_basis_cases() -> list[dict[str, Any]]:
     return out
 
 
-def build_inversion_proof(pack: LivePack) -> dict[str, Any]:
+def build_inversion_proof(pack: LivePack, *,
+                          threshold_cases: Sequence[Mapping[str, Any]] | None = None
+                          ) -> dict[str, Any]:
     """The nightly falsification battery.  Bounded, deterministic, outcome-blind.
 
     Every case straddles ONE frozen boundary in BOTH directions and records
@@ -1400,12 +1470,17 @@ def build_inversion_proof(pack: LivePack) -> dict[str, Any]:
     because an evaluator that disagrees with the levels it is about to compare
     against must not run.
 
+    ``threshold_cases`` hands in the threshold family already collected while the
+    pack was built (:class:`ProofTapSink`); None derives it from
+    ``pack.substrate``.  The two are the same cases in the same order.
+
     It tunes nothing, optimises nothing, reads no forward outcome, ranks nothing
     and never touches a spec hash.
     """
     next_session = _as_date(pack.next_session)
     cases: list[dict[str, Any]] = []
-    cases += _proof_threshold_cases(pack)
+    cases += (_proof_threshold_cases(pack) if threshold_cases is None
+              else [dict(case) for case in threshold_cases])
     cases += _proof_micro_path_cases(next_session)
     cases += _proof_rearm_cases()
     cases += _proof_c2f_cases()
