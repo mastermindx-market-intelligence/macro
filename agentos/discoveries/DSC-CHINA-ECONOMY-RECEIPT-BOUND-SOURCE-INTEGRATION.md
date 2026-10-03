@@ -83,3 +83,17 @@ credential value. The current production registration stage returned204/allow an
 paywall stage204/off; uninstalled candidate paths503. This is NOT installed-candidate
 or paid-tier enforcement acceptance. No authenticated Free/Essential comparison,
 independent review, merge, deployment or source-use hold release is inferred.
+
+## R10 property receipt bridge and actual builder serialization
+
+Property source400cc35 and serializer seam0677a48 close a real producer/consumer
+mismatch: acquired activity rows now use the existing per-value receipt producer
+required by the economy reader. Four August housing readings reach both views
+with identical values/dates; no current September votes are fabricated.
+The existing full collector run is preserved, not repeated.523 focused tests and
+an actual builder/Jinja public-detail serialization regression pass; eight new
+property captures supplement the original evidence. See
+`research/CHINA_ECONOMY_R10_PROPERTY_AND_SERIALIZATION.md` and its r10 receipts.
+C2's prior R9 source-only advisory PASS is consumed; it is not full-release review.
+Production installation/entitlement and independent full-candidate review remain
+explicit gates. No source-use hold or runtime permission was changed.

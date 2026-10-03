@@ -1,0 +1,19 @@
+{
+  "proof_class": "synthetic_existing_property_parser_to_real_store_reader",
+  "parsed_rows": 1,
+  "numeric_property_columns": [
+    "investment_ytd_yoy",
+    "starts_ytd_yoy",
+    "sales_area_ytd_yoy",
+    "funds_ytd_yoy",
+    "resale_area_ytd_yoy",
+    "inventory_stock_yoy"
+  ],
+  "admitted_economy_observations": 0,
+  "errors": {
+    "china_property/activity.sales_area_ytd_yoy": "publication_receipt_missing; not replaced with a modeled release time",
+    "china_property/activity.starts_ytd_yoy": "publication_receipt_missing; not replaced with a modeled release time",
+    "china_property/activity.investment_ytd_yoy": "publication_receipt_missing; not replaced with a modeled release time"
+  },
+  "production_writes": 0
+}
