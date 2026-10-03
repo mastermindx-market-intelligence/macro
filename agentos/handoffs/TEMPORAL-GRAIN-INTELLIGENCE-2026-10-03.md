@@ -84,11 +84,14 @@ unverified:
   - claim: A lawful V2 cohort is feasible at adequate independent support.
     what_would_verify: >
       Complete the executable preregistration with exact point-in-time universe, entitlements,
-      rights, recipes, cutoffs, margins, power model and sealed W3 custody before outcomes.
+      rights, recipes, cutoffs, margins, power model and sealed W3 custody before outcomes. For a
+      U.S.-equity cohort, first consume an accepted TOI W2-0 (or another exact canonical owner)
+      source-plane/clock/rights receipt; TOI W2-0 is still todo and ASC cannot self-admit it.
 unresolved:
   - The recovery ruling is not canonical until this records carrier is accepted/merged.
   - #6803 has one identified shared CI-manifest integration collision and remains unmerged.
   - Exact V2 cohort membership, rights/entitlements, cutoffs, loss constants, margins and power inputs are not yet frozen.
+  - TOI W2-0, the broad U.S.-equity Daily/Weekly/4H data/clock/correction/coverage/rights owner, is still todo; a U.S.-equity V2 cohort therefore has no accepted broad-plane ADMIT receipt yet.
   - No V2-M mechanical receipts exist; W1B/W2/W3 remain outcome-sealed.
   - Historical WMT/silver exact reproduction remains UNRESOLVED_DATA.
 next_actions:
