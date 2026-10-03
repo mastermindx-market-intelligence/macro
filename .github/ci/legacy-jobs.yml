@@ -464,6 +464,10 @@ jobs:
       - "research/options_estate/options_alpha_candidate_formation_policy_v2.json"
       - "research/options_estate/options_alpha_candidate_formation_policy_v1.json"
       - "research/options_estate/OPTIONS_SIGNAL_CAMPAIGN_V2_PREREG.md"
+      # The composer imports engine.options_signal_campaign, whose
+      # CORRECTION_POLICY_PATH is this file. Exclusive scope replaces
+      # inference, so the declaration must name it.
+      - "research/options_estate/options_signal_campaign_outcome_correction_prereg_v1.json"
       # AgentOS DECs that bind this surface (architecture + OA-1C source-only)
       - "agentos/decisions/DEC-OPTIONS-ALPHA-CAMPAIGN-CALIBRATION-ARCHITECTURE.md"
       - "agentos/decisions/DEC-OPTIONS-ALPHA-CANDIDATE-FEED-V2-SOURCE-ONLY.md"
@@ -2725,6 +2729,10 @@ jobs:
       - "research/momoedge/completion_benchmark_prereg_v1.json"
       - "research/momoedge/history_replay_wave0_receipt.json"
       - "research/options_estate/sparse_selector_preregistration_receipt_v1.json"
+      # tests/test_options_signal_campaign.py imports the campaign engine,
+      # which names this exact correction-policy file. Exclusive paths
+      # omit it, so an edit to the policy would not select this job.
+      - "research/options_estate/options_signal_campaign_outcome_correction_prereg_v1.json"
       - "scripts/__init__.py"
       - "scripts/audit_options_episode_outcome_coverage.py"
       - "scripts/audit_options_market_memory_context.py"
