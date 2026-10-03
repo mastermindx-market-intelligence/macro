@@ -12,7 +12,7 @@ def asof_manifest(grain='1D'):
     return value
 
 
-class ObservationBasisTests(unittest.TestCase):
+class TestObservationBasis(unittest.TestCase):
     def test_qualified_asof_not_rejected_as_unfinished(self):
         a,b=asof_manifest(),asof_manifest('3D')
         self.assertTrue(audit_comparison(a,b,contrast='grain_memory_matched')['consistent'])
