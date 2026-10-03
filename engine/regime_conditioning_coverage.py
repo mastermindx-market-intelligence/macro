@@ -73,6 +73,23 @@ CANDIDATE_AXES = (
     "risk_radar_state",
 )
 
+# These are declared column meanings from engine.track_record._IDENTITY_COLS,
+# not a classification inferred from state values. The long per-name SMA200
+# history is not US macro-regime history. Custom axes remain unspecified.
+_AXIS_SCOPES = {
+    "regime_at_entry": "security_price_trend",
+    "quad_hard_label": "us_market_context",
+    "vol_regime": "us_market_context",
+    "fused_risk_label": "us_market_context",
+    "rate_pressure": "us_market_context",
+    "risk_radar_state": "us_market_context",
+}
+_SCOPE_LABELS = {
+    "security_price_trend": "per-stock price trend",
+    "us_market_context": "US market context",
+    "unspecified": "unspecified scope",
+}
+
 #: Values that are present-but-meaningless as a regime state.
 _NULL_TOKENS = {"", "none", "nan", "null", "unknown", "na", "n/a"}
 
@@ -90,6 +107,9 @@ def assess_axis(df: pd.DataFrame, axis: str, date_col: str = "date") -> dict:
     n_rows = int(len(df))
     base = {
         "axis": axis, "n_rows_total": n_rows, "n_rows_stamped": 0, "coverage": 0.0,
+        "axis_scope": _AXIS_SCOPES.get(axis, "unspecified"),
+        "axis_scope_basis": ("declared_track_record_column_contract"
+                             if axis in _AXIS_SCOPES else "unrecognized_column"),
         "n_states": 0, "states": {}, "months_total": 0, "min_state_months": 0,
         "verdict": "insufficient_coverage", "estimable": False, "reason": "",
     }
@@ -166,19 +186,28 @@ def assess(df: pd.DataFrame, axes: tuple[str, ...] = CANDIDATE_AXES,
         return {"axes": {}, "estimable_axes": [], "any_estimable": False,
                 "n_rows": int(len(df)) if df is not None else 0,
                 "status": "unavailable",
+                "estimable_axes_by_scope": {scope: [] for scope in _SCOPE_LABELS},
+                "qualification_basis": "coverage_and_state_contrast_only",
+                "historical_availability": "not_assessed",
                 "note": "assessment raised; treat every axis as NOT estimable"}
 
     ok = [a for a, r in per.items() if r["estimable"]]
+    by_scope = {scope: [a for a in ok if per[a]["axis_scope"] == scope]
+                for scope in _SCOPE_LABELS}
     return {
         "axes": per,
         "estimable_axes": ok,
+        "estimable_axes_by_scope": by_scope,
+        "qualification_basis": "coverage_and_state_contrast_only",
+        "historical_availability": "not_assessed",
         "any_estimable": bool(ok),
         "n_rows": int(len(df)),
         "status": "ok",
         "gates": {"min_coverage": MIN_COVERAGE, "min_states": MIN_STATES,
                   "min_months_per_state": MIN_MONTHS_STATE},
-        "note": ("months, not rows, are the independent unit; an axis that is not "
-                 "'estimable' cannot carry a regime-conditional claim"),
+        "note": ("Distinct-month counts limit row pseudoreplication; they do not prove "
+                 "independence. Coverage and contrast apply to each declared axis scope, "
+                 "not to historical availability or predictive value."),
     }
 
 
@@ -195,7 +224,21 @@ def format_report(report: dict) -> str:
         lines.append(f"  [{mark}] {axis:18s} cov={100 * r['coverage']:5.1f}%  "
                      f"states={r['n_states']}  min_state_months={r['min_state_months']:3d}"
                      f"{span}")
+        scope = _SCOPE_LABELS.get(r.get("axis_scope"), "scope unavailable in saved report")
+        lines.append(f"         declared scope: {scope}")
         lines.append(f"         {r['verdict']}: {r['reason']}")
     lines.append("")
     lines.append(f"  estimable axes: {report['estimable_axes'] or 'NONE'}")
+    groups = report.get("estimable_axes_by_scope")
+    if isinstance(groups, dict):
+        for scope, label in _SCOPE_LABELS.items():
+            values = groups.get(scope)
+            # A historical report without a group has unknown scope coverage,
+            # not an affirmative absence inferred from its axis names.
+            value = (values or "NONE") if isinstance(values, list) else "not recorded"
+            lines.append(f"  {label}: {value}")
+    else:
+        lines.append("  scope unavailable in saved report")
+    lines.append("  Coverage/contrast only; historical availability not assessed; "
+                 "predictive value not assessed.")
     return "\n".join(lines)

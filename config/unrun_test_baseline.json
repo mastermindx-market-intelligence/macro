@@ -652,7 +652,6 @@
     "tests/test_rate_inflation_transmission.py",
     "tests/test_real_activity.py",
     "tests/test_reflexes.py",
-    "tests/test_regime_conditioning_coverage.py",
     "tests/test_regime_hmm.py",
     "tests/test_regime_label.py",
     "tests/test_regime_one.py",

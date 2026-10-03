@@ -1,0 +1,677 @@
+{
+  "schema": "regime_research_readiness.measurement.v1",
+  "operation": "regime-research-readiness-20261002-astra-001",
+  "observed_at": "2026-10-03T01:35:27.057290+00:00",
+  "source": {
+    "commit": "564c41074d0028c65a3c1a3621d07c7a8fb0985d",
+    "path": "data/signal_archive/track_record.parquet",
+    "sha256": "52593efe19c6a248a56e956e5223b480fab9bb6a8838a750aace513f0e86be5b",
+    "bytes": 10903975,
+    "columns_read": [
+      "date",
+      "first_seen_asof",
+      "vector_asof",
+      "regime_at_entry",
+      "quad_hard_label",
+      "vol_regime",
+      "fused_risk_label",
+      "rate_pressure",
+      "risk_radar_state"
+    ]
+  },
+  "measurement_only": true,
+  "outcome_columns_read": false,
+  "model_fitted": false,
+  "legacy_statistics_and_verdicts_identical": true,
+  "full_archive": {
+    "axes": {
+      "regime_at_entry": {
+        "axis": "regime_at_entry",
+        "n_rows_total": 60538,
+        "n_rows_stamped": 60535,
+        "coverage": 1.0,
+        "axis_scope": "security_price_trend",
+        "axis_scope_basis": "declared_track_record_column_contract",
+        "n_states": 3,
+        "states": {
+          "bear": {
+            "rows": 14772,
+            "months": 727
+          },
+          "bull": {
+            "rows": 35196,
+            "months": 760
+          },
+          "choppy": {
+            "rows": 10567,
+            "months": 739
+          }
+        },
+        "months_total": 767,
+        "min_state_months": 727,
+        "verdict": "estimable",
+        "estimable": true,
+        "reason": "3 states, thinnest spans 727 months",
+        "span": [
+          "1962-11-29",
+          "2026-09-30"
+        ]
+      },
+      "quad_hard_label": {
+        "axis": "quad_hard_label",
+        "n_rows_total": 60538,
+        "n_rows_stamped": 583,
+        "coverage": 0.0096,
+        "axis_scope": "us_market_context",
+        "axis_scope_basis": "declared_track_record_column_contract",
+        "n_states": 3,
+        "states": {
+          "Q1": {
+            "rows": 231,
+            "months": 1
+          },
+          "Q2": {
+            "rows": 251,
+            "months": 3
+          },
+          "Q3": {
+            "rows": 101,
+            "months": 1
+          }
+        },
+        "months_total": 3,
+        "min_state_months": 1,
+        "verdict": "insufficient_coverage",
+        "estimable": false,
+        "reason": "stamped on 1.0% of rows (floor 20%)",
+        "span": [
+          "2026-07-01",
+          "2026-09-30"
+        ]
+      },
+      "vol_regime": {
+        "axis": "vol_regime",
+        "n_rows_total": 60538,
+        "n_rows_stamped": 583,
+        "coverage": 0.0096,
+        "axis_scope": "us_market_context",
+        "axis_scope_basis": "declared_track_record_column_contract",
+        "n_states": 1,
+        "states": {
+          "normalizing": {
+            "rows": 583,
+            "months": 3
+          }
+        },
+        "months_total": 3,
+        "min_state_months": 3,
+        "verdict": "insufficient_coverage",
+        "estimable": false,
+        "reason": "stamped on 1.0% of rows (floor 20%)",
+        "span": [
+          "2026-07-01",
+          "2026-09-30"
+        ]
+      },
+      "fused_risk_label": {
+        "axis": "fused_risk_label",
+        "n_rows_total": 60538,
+        "n_rows_stamped": 583,
+        "coverage": 0.0096,
+        "axis_scope": "us_market_context",
+        "axis_scope_basis": "declared_track_record_column_contract",
+        "n_states": 4,
+        "states": {
+          "caution": {
+            "rows": 126,
+            "months": 2
+          },
+          "elevated": {
+            "rows": 181,
+            "months": 2
+          },
+          "neutral": {
+            "rows": 207,
+            "months": 3
+          },
+          "risk-on": {
+            "rows": 69,
+            "months": 1
+          }
+        },
+        "months_total": 3,
+        "min_state_months": 1,
+        "verdict": "insufficient_coverage",
+        "estimable": false,
+        "reason": "stamped on 1.0% of rows (floor 20%)",
+        "span": [
+          "2026-07-01",
+          "2026-09-30"
+        ]
+      },
+      "rate_pressure": {
+        "axis": "rate_pressure",
+        "n_rows_total": 60538,
+        "n_rows_stamped": 555,
+        "coverage": 0.0092,
+        "axis_scope": "us_market_context",
+        "axis_scope_basis": "declared_track_record_column_contract",
+        "n_states": 3,
+        "states": {
+          "neutral": {
+            "rows": 21,
+            "months": 1
+          },
+          "panic": {
+            "rows": 33,
+            "months": 1
+          },
+          "pressure": {
+            "rows": 501,
+            "months": 3
+          }
+        },
+        "months_total": 3,
+        "min_state_months": 1,
+        "verdict": "insufficient_coverage",
+        "estimable": false,
+        "reason": "stamped on 0.9% of rows (floor 20%)",
+        "span": [
+          "2026-07-06",
+          "2026-09-30"
+        ]
+      },
+      "risk_radar_state": {
+        "axis": "risk_radar_state",
+        "n_rows_total": 60538,
+        "n_rows_stamped": 583,
+        "coverage": 0.0096,
+        "axis_scope": "us_market_context",
+        "axis_scope_basis": "declared_track_record_column_contract",
+        "n_states": 3,
+        "states": {
+          "calm": {
+            "rows": 142,
+            "months": 2
+          },
+          "caution": {
+            "rows": 273,
+            "months": 3
+          },
+          "watch": {
+            "rows": 168,
+            "months": 3
+          }
+        },
+        "months_total": 3,
+        "min_state_months": 2,
+        "verdict": "insufficient_coverage",
+        "estimable": false,
+        "reason": "stamped on 1.0% of rows (floor 20%)",
+        "span": [
+          "2026-07-01",
+          "2026-09-30"
+        ]
+      }
+    },
+    "estimable_axes": [
+      "regime_at_entry"
+    ],
+    "estimable_axes_by_scope": {
+      "security_price_trend": [
+        "regime_at_entry"
+      ],
+      "us_market_context": [],
+      "unspecified": []
+    },
+    "qualification_basis": "coverage_and_state_contrast_only",
+    "historical_availability": "not_assessed",
+    "any_estimable": true,
+    "n_rows": 60538,
+    "status": "ok",
+    "gates": {
+      "min_coverage": 0.2,
+      "min_states": 2,
+      "min_months_per_state": 12
+    },
+    "note": "Distinct-month counts limit row pseudoreplication; they do not prove independence. Coverage and contrast apply to each declared axis scope, not to historical availability or predictive value."
+  },
+  "within_each_stamping_window": {
+    "regime_at_entry": {
+      "axis": "regime_at_entry",
+      "n_rows_total": 60538,
+      "n_rows_stamped": 60535,
+      "coverage": 1.0,
+      "axis_scope": "security_price_trend",
+      "axis_scope_basis": "declared_track_record_column_contract",
+      "n_states": 3,
+      "states": {
+        "bear": {
+          "rows": 14772,
+          "months": 727
+        },
+        "bull": {
+          "rows": 35196,
+          "months": 760
+        },
+        "choppy": {
+          "rows": 10567,
+          "months": 739
+        }
+      },
+      "months_total": 767,
+      "min_state_months": 727,
+      "verdict": "estimable",
+      "estimable": true,
+      "reason": "3 states, thinnest spans 727 months",
+      "span": [
+        "1962-11-29",
+        "2026-09-30"
+      ],
+      "stamped_unique_dates": 13172,
+      "dates_with_multiple_states": 8336
+    },
+    "quad_hard_label": {
+      "axis": "quad_hard_label",
+      "n_rows_total": 583,
+      "n_rows_stamped": 583,
+      "coverage": 1.0,
+      "axis_scope": "us_market_context",
+      "axis_scope_basis": "declared_track_record_column_contract",
+      "n_states": 3,
+      "states": {
+        "Q1": {
+          "rows": 231,
+          "months": 1
+        },
+        "Q2": {
+          "rows": 251,
+          "months": 3
+        },
+        "Q3": {
+          "rows": 101,
+          "months": 1
+        }
+      },
+      "months_total": 3,
+      "min_state_months": 1,
+      "verdict": "insufficient_contrast",
+      "estimable": false,
+      "reason": "thinnest state 'Q1' spans 1 distinct months (floor 12)",
+      "span": [
+        "2026-07-01",
+        "2026-09-30"
+      ],
+      "stamped_unique_dates": 40,
+      "dates_with_multiple_states": 0
+    },
+    "vol_regime": {
+      "axis": "vol_regime",
+      "n_rows_total": 583,
+      "n_rows_stamped": 583,
+      "coverage": 1.0,
+      "axis_scope": "us_market_context",
+      "axis_scope_basis": "declared_track_record_column_contract",
+      "n_states": 1,
+      "states": {
+        "normalizing": {
+          "rows": 583,
+          "months": 3
+        }
+      },
+      "months_total": 3,
+      "min_state_months": 3,
+      "verdict": "single_state",
+      "estimable": false,
+      "reason": "only one state observed ('normalizing') \u2014 a constant, not a condition; E[outcome | regime] is undefined elsewhere",
+      "span": [
+        "2026-07-01",
+        "2026-09-30"
+      ],
+      "stamped_unique_dates": 40,
+      "dates_with_multiple_states": 0
+    },
+    "fused_risk_label": {
+      "axis": "fused_risk_label",
+      "n_rows_total": 583,
+      "n_rows_stamped": 583,
+      "coverage": 1.0,
+      "axis_scope": "us_market_context",
+      "axis_scope_basis": "declared_track_record_column_contract",
+      "n_states": 4,
+      "states": {
+        "caution": {
+          "rows": 126,
+          "months": 2
+        },
+        "elevated": {
+          "rows": 181,
+          "months": 2
+        },
+        "neutral": {
+          "rows": 207,
+          "months": 3
+        },
+        "risk-on": {
+          "rows": 69,
+          "months": 1
+        }
+      },
+      "months_total": 3,
+      "min_state_months": 1,
+      "verdict": "insufficient_contrast",
+      "estimable": false,
+      "reason": "thinnest state 'risk-on' spans 1 distinct months (floor 12)",
+      "span": [
+        "2026-07-01",
+        "2026-09-30"
+      ],
+      "stamped_unique_dates": 40,
+      "dates_with_multiple_states": 3
+    },
+    "rate_pressure": {
+      "axis": "rate_pressure",
+      "n_rows_total": 555,
+      "n_rows_stamped": 555,
+      "coverage": 1.0,
+      "axis_scope": "us_market_context",
+      "axis_scope_basis": "declared_track_record_column_contract",
+      "n_states": 3,
+      "states": {
+        "neutral": {
+          "rows": 21,
+          "months": 1
+        },
+        "panic": {
+          "rows": 33,
+          "months": 1
+        },
+        "pressure": {
+          "rows": 501,
+          "months": 3
+        }
+      },
+      "months_total": 3,
+      "min_state_months": 1,
+      "verdict": "insufficient_contrast",
+      "estimable": false,
+      "reason": "thinnest state 'neutral' spans 1 distinct months (floor 12)",
+      "span": [
+        "2026-07-06",
+        "2026-09-30"
+      ],
+      "stamped_unique_dates": 37,
+      "dates_with_multiple_states": 0
+    },
+    "risk_radar_state": {
+      "axis": "risk_radar_state",
+      "n_rows_total": 583,
+      "n_rows_stamped": 583,
+      "coverage": 1.0,
+      "axis_scope": "us_market_context",
+      "axis_scope_basis": "declared_track_record_column_contract",
+      "n_states": 3,
+      "states": {
+        "calm": {
+          "rows": 142,
+          "months": 2
+        },
+        "caution": {
+          "rows": 273,
+          "months": 3
+        },
+        "watch": {
+          "rows": 168,
+          "months": 3
+        }
+      },
+      "months_total": 3,
+      "min_state_months": 2,
+      "verdict": "insufficient_contrast",
+      "estimable": false,
+      "reason": "thinnest state 'calm' spans 2 distinct months (floor 12)",
+      "span": [
+        "2026-07-01",
+        "2026-09-30"
+      ],
+      "stamped_unique_dates": 40,
+      "dates_with_multiple_states": 4
+    }
+  },
+  "joint_macro_cells": [
+    {
+      "states": {
+        "quad_hard_label": "Q1",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "caution",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "caution"
+      },
+      "signal_rows": 29,
+      "distinct_dates": 3,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q1",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "caution",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "watch"
+      },
+      "signal_rows": 57,
+      "distinct_dates": 4,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q1",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "elevated",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "caution"
+      },
+      "signal_rows": 31,
+      "distinct_dates": 2,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q1",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "neutral",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "caution"
+      },
+      "signal_rows": 15,
+      "distinct_dates": 2,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q1",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "neutral",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "watch"
+      },
+      "signal_rows": 13,
+      "distinct_dates": 1,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q1",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "risk-on",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "caution"
+      },
+      "signal_rows": 43,
+      "distinct_dates": 7,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q1",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "risk-on",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "watch"
+      },
+      "signal_rows": 15,
+      "distinct_dates": 3,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q2",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "caution",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "caution"
+      },
+      "signal_rows": 38,
+      "distinct_dates": 3,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q2",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "caution",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "watch"
+      },
+      "signal_rows": 2,
+      "distinct_dates": 1,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q2",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "elevated",
+        "rate_pressure": "panic",
+        "risk_radar_state": "caution"
+      },
+      "signal_rows": 33,
+      "distinct_dates": 2,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q2",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "elevated",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "caution"
+      },
+      "signal_rows": 7,
+      "distinct_dates": 1,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q2",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "elevated",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "watch"
+      },
+      "signal_rows": 9,
+      "distinct_dates": 1,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q2",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "neutral",
+        "rate_pressure": "neutral",
+        "risk_radar_state": "watch"
+      },
+      "signal_rows": 21,
+      "distinct_dates": 1,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q2",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "neutral",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "calm"
+      },
+      "signal_rows": 85,
+      "distinct_dates": 4,
+      "distinct_months": 2
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q2",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "neutral",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "caution"
+      },
+      "signal_rows": 27,
+      "distinct_dates": 1,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q2",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "neutral",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "watch"
+      },
+      "signal_rows": 29,
+      "distinct_dates": 1,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q3",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "elevated",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "calm"
+      },
+      "signal_rows": 57,
+      "distinct_dates": 3,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q3",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "elevated",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "caution"
+      },
+      "signal_rows": 22,
+      "distinct_dates": 1,
+      "distinct_months": 1
+    },
+    {
+      "states": {
+        "quad_hard_label": "Q3",
+        "vol_regime": "normalizing",
+        "fused_risk_label": "elevated",
+        "rate_pressure": "pressure",
+        "risk_radar_state": "watch"
+      },
+      "signal_rows": 22,
+      "distinct_dates": 1,
+      "distinct_months": 1
+    }
+  ],
+  "limits": [
+    "Declared column scope is not verification of historical availability.",
+    "Per-stock trend labels are not a date-level macro regime history.",
+    "Signal rows and observed signal dates are not independent regime episodes.",
+    "No threshold change, outcome analysis, old-study rerun or predictive promotion."
+  ]
+}
