@@ -328,11 +328,8 @@ def test_company_workspace_adapter_preserves_exact_owner_version_and_consumer_cl
     assert got.source_available_at == datetime(2026, 10, 2, 14, 0, tzinfo=timezone.utc)
 
 
-@pytest.mark.parametrize(
-    "state",
-    ["started", "completed_partial", "complete", "corrected", "derived_ready", "distributed"],
-)
-def test_company_workspace_adapter_accepts_only_frozen_post_release_states(state):
+@pytest.mark.parametrize("state", ["complete", "corrected"])
+def test_company_workspace_adapter_accepts_only_current_published_results_states(state):
     got = adapt_company_intelligence_earnings_workspace(
         _company_workspace(state=state), ticker="NVDA", owner_observed_at=T0,
     )
@@ -341,9 +338,19 @@ def test_company_workspace_adapter_accepts_only_frozen_post_release_states(state
 
 @pytest.mark.parametrize(
     "state",
-    ["discovered", "scheduled", "rescheduled", "cancelled", "superseded"],
+    [
+        "discovered",
+        "scheduled",
+        "rescheduled",
+        "started",
+        "completed_partial",
+        "derived_ready",
+        "distributed",
+        "cancelled",
+        "superseded",
+    ],
 )
-def test_company_workspace_adapter_refuses_pre_release_or_terminal_noncurrent_states(state):
+def test_company_workspace_adapter_refuses_states_not_minted_by_current_workspace_publisher(state):
     with pytest.raises(CatalystContextError):
         adapt_company_intelligence_earnings_workspace(
             _company_workspace(state=state), ticker="NVDA", owner_observed_at=T0,
