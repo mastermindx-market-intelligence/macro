@@ -302,49 +302,109 @@ def _member_ret(ticker: str, root: Path, start: str, end: str) -> float | None:
     return float(value) if _finite_number(value) else None
 
 
-def _fwd_basket(members: list, root: Path, start: str, horizon_d: int) -> float | None:
-    """Complete frozen equal-weight basket; missing members never disappear."""
+def _fwd_basket(members: list, root: Path, start: str, horizon_d: int,
+                *, diagnostic: dict | None = None) -> float | None:
+    """Complete frozen basket, with an optional first-failing-gate diagnostic."""
+    def finish(status, value=None):
+        if diagnostic is not None:
+            diagnostic['status'] = status
+        return value
     try:
         if not isinstance(members, list) or len(members) < _MIN_PRICED:
-            return None
+            return finish('invalid_population')
         if any(not isinstance(t, str) or not t or t != t.strip().upper() for t in members):
-            return None
+            return finish('invalid_population')
         if len(set(members)) != len(members):
-            return None
+            return finish('invalid_population')
         end = _session_horizon_end(start, horizon_d)
         rets = []
         for ticker in members:
             if not _covers(ticker, root, end):
-                return None
+                return finish('member_unavailable')
             value = _member_ret(ticker, root, start, end)
             if not _finite_number(value) or value < -1:
-                return None
+                return finish('member_unavailable')
             rets.append(value)
         if not _covers(_BENCH, root, end):
-            return None
+            return finish('benchmark_unavailable')
         benchmark = _member_ret(_BENCH, root, start, end)
         if not _finite_number(benchmark) or benchmark < -1:
-            return None
+            return finish('benchmark_unavailable')
         result = math.fsum(r / len(members) for r in rets) - benchmark
-        return float(result) if _finite_number(result) else None
-    except Exception:  # noqa: BLE001
-        return None
+        if not _finite_number(result):
+            return finish('nonfinite_outcome')
+        return finish('measured', float(result))
+    except Exception:  # noqa: BLE001 - preserve the public no-raise contract
+        return finish('pricing_error')
 
-def _matured(rows: list, root: Path, horizon_d: int, today: date) -> list[dict]:
+def _matured(rows: list, root: Path, horizon_d: int, today: date,
+             *, coverage: dict | None = None) -> list[dict]:
+    """Measure complete baskets and account for every parsed input row once.
+
+    Counts are not a correction for missing-not-at-random selection. Reasons name
+    the first failed gate, not every fault a row might contain. Pending rows do
+    not read prices; invalid rows are not invented as due observations.
+    """
+    statuses = ('measured', 'pending', 'invalid_record', 'invalid_population',
+                'benchmark_unavailable', 'member_unavailable', 'nonfinite_outcome',
+                'pricing_error', 'unavailable_unclassified')
+    counts = dict.fromkeys(statuses, 0)
+    stages = {s: dict.fromkeys(statuses, 0)
+              for s in ('emerging', 'fading', 'neutral', 'unknown')}
     out = []
-    for r in rows:
+    for row in rows:
+        stage = row.get('stage') if isinstance(row, dict) else None
+        stage = stage if isinstance(stage, str) and stage in stages else 'unknown'
+        status = 'invalid_record'
         try:
-            end = _session_horizon_end(r["date"], horizon_d)
+            if not isinstance(row, dict):
+                raise ValueError('invalid record')
+            key = row.get('key')
+            if not isinstance(key, str) or not key.strip() or key != key.strip():
+                raise ValueError('invalid group identity')
+            if any(row.get(f) is not None and not isinstance(row.get(f), str)
+                   for f in ('stage', 'stage_v2')):
+                raise ValueError('invalid stage')
+            end = _session_horizon_end(row['date'], horizon_d)
+        except Exception:  # noqa: BLE001 - invalid data has its own denominator
+            end = None
+        if end is not None:
             if today < date.fromisoformat(end):
-                continue
-            if not _covers(_BENCH, root, end):
-                continue
-            fwd = _fwd_basket(r.get("members"), root, r["date"], horizon_d)
-            if not _finite_number(fwd):
-                continue
-            out.append({**r, "fwd": fwd})
-        except Exception:  # noqa: BLE001
-            continue
+                status = 'pending'
+            else:
+                try:
+                    if not _covers(_BENCH, root, end):
+                        status = 'benchmark_unavailable'
+                    else:
+                        diagnostic = {}
+                        fwd = _fwd_basket(row.get('members'), root, row['date'],
+                                          horizon_d, diagnostic=diagnostic)
+                        if _finite_number(fwd):
+                            out.append({**row, 'fwd': fwd})
+                            status = 'measured'
+                        else:
+                            status = diagnostic.get('status', 'unavailable_unclassified')
+                            if status not in statuses or status in ('measured', 'pending', 'invalid_record'):
+                                status = 'unavailable_unclassified'
+                except Exception:  # noqa: BLE001
+                    status = 'pricing_error'
+        counts[status] += 1
+        stages[stage][status] += 1
+    if coverage is not None:
+        def totals(c):
+            n = sum(c.values())
+            due = n - c['pending'] - c['invalid_record']
+            return {'input_rows': n, 'due_rows': due, 'measured_rows': c['measured'],
+                    'unavailable_due_rows': due - c['measured'],
+                    'pending_rows': c['pending'], 'invalid_rows': c['invalid_record'],
+                    'measured_fraction_of_due': c['measured'] / due if due else None,
+                    'status_counts': c}
+        coverage.clear()
+        coverage.update(totals(counts))
+        coverage.update({'population_basis': 'parsed_snapshot_rows',
+                         'reason_policy': 'first_failing_gate',
+                         'selection_bias_corrected': False,
+                         'by_stage': {s: totals(c) for s, c in stages.items()}})
     return out
 
 def _window_span(ic_dates: list, horizon_d: int) -> dict:
@@ -519,9 +579,9 @@ def _head_to_head(out_h: dict) -> dict:
 # --------------------------------------------------------------------------- #
 _NOTES: dict[str, tuple[str, str]] = {
     "accruing": (
-        "Measuring — logging daily calls; no horizon has matured yet. The forward "
-        "edge is unmeasured. Context-only.",
-        "测量中——每日记录研判，尚无周期到期，前瞻性优势暂未测得。仅供参考。"),
+        "No complete-basket outcomes are measured yet; observations may be pending "
+        "or unavailable. The forward edge is unmeasured. Context-only.",
+        "尚无完整组合结果可供测量；记录可能待到期或数据不可用。前瞻优势未经测量，仅供参考。"),
     "measuring": (
         "Accruing forward observations; no horizon clears the Newey-West significance "
         "bar yet. Early numbers are provisional, context-only.",
@@ -628,12 +688,14 @@ def compute(today: date | str | None = None, root: Path | None = None,
         # payload below, exactly as pd.Timestamp() used to.
         today_dt = date.fromisoformat(_session_stamp(today))
         rows = _load(root)
-        n_days = len({r.get("date") for r in rows})
+        n_days = len({r.get("date") for r in rows
+                      if isinstance(r, dict) and isinstance(r.get("date"), str)})
         out_h: dict[str, dict] = {}
         peak_ic, lead_time = None, None
         misses: list[dict] = []
         for h in horizons:
-            mat = _matured(rows, root, h, today_dt)
+            coverage = {}
+            mat = _matured(rows, root, h, today_dt, coverage=coverage)
             ic = _daily_ic(mat, h)
             # HEAD-TO-HEAD: the turn engine's rank graded on the SAME matured rows, same
             # rule, same HAC lag. Only rows carrying score_v2 accrue, so the two columns can
@@ -646,6 +708,7 @@ def compute(today: date | str | None = None, root: Path | None = None,
             t_gate, anticon = _gate_t(ic, h)
             out_h[str(h)] = {
                 "n_matured": len(mat),
+                "coverage": coverage,
                 "score_ic": ic.get("mean_ic"),
                 "score_ic_t_hac": ic.get("t_hac"),
                 # what the promotion gate actually reads, and why it may differ from t_hac
@@ -708,13 +771,14 @@ def compute(today: date | str | None = None, root: Path | None = None,
                            "stays 'measuring' until it clears a Newey-West significance bar AND "
                            "its graded days span at least six non-overlapping windows of that "
                            "length — many readings of one stretch of market are one reading, not "
-                           "many. Members are frozen point-in-time; only priceable members are "
-                           "used. Nothing here sizes a position."),
+                           "many. Every stored member requires exact-session prices or the whole "
+                           "outcome is excluded. Historical availability and price provenance "
+                           "remain unqualified. Exclusions can bias results. Nothing here sizes a position."),
             "disclaimer_zh": ("对轮动研判自身研判的可问责记分卡——升温评分排名与升温/退潮标签，"
                               "以成分股等权、相对 SPY 的实际前瞻收益进行评分。某周期须同时通过 "
                               "Newey-West 显著性检验，且其评分日跨度覆盖至少六段互不重叠的同长度窗口，"
                               "才会脱离「测量中」——同一段行情读十遍仍只是一遍。成分股按时间点冻结，"
-                              "仅使用可定价成分股。此处任何内容都不用于确定仓位。"),
+                              "每个成分均须具备对应交易日价格，否则整个结果不计入。排除可能造成偏差，历史可知时间与价格来源仍待验证。此处任何内容都不用于确定仓位。"),
         }
     except Exception as e:  # noqa: BLE001
         log.warning("subsector track compute failed: %s", e)

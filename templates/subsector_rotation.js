@@ -319,6 +319,28 @@
   function drawTrackRecord(el){
     var tr=_data.track_record;
     if(!tr){el.style.display='none';return;}
+    el.style.display='';
+    function coverageCell(e){
+      var c=e.coverage, n=Number.isSafeInteger(e.n_matured)&&e.n_matured>=0?e.n_matured:null;
+      var fields=['input_rows','due_rows','measured_rows','unavailable_due_rows','pending_rows','invalid_rows'];
+      var ok=c&&fields.every(function(k){return Number.isSafeInteger(c[k])&&c[k]>=0;})
+        &&c.measured_rows===n&&c.measured_rows+c.unavailable_due_rows===c.due_rows
+        &&c.due_rows+c.pending_rows+c.invalid_rows===c.input_rows;
+      if(!ok)return (n==null?'—':n)+' / —';
+      var en=c.unavailable_due_rows+' excluded; '+c.pending_rows+' pending; '+c.invalid_rows+' invalid. Due counts parsed observations whose outcome window has elapsed.';
+      var zh=c.unavailable_due_rows+' 条未计入；'+c.pending_rows+' 条待到期；'+c.invalid_rows+' 条无效。已到期指结果窗口已结束的记录。';
+      var reasons=[['invalid_population','invalid member population','成分组合无效'],
+        ['benchmark_unavailable','benchmark price unavailable','基准价格缺失'],
+        ['member_unavailable','member prices unavailable','成分价格缺失'],
+        ['pricing_error','price-read error','价格读取错误'],
+        ['nonfinite_outcome','invalid computed return','计算收益无效'],
+        ['unavailable_unclassified','other unavailable outcome','其他结果缺失']];
+      reasons.forEach(function(r){var v=(c.status_counts||{})[r[0]];
+        if(Number.isSafeInteger(v)&&v>0){en+=' '+v+' '+r[1]+'.';zh+=' '+v+' '+r[2]+'。';}});
+      return '<span tabindex="0" data-tip-en="'+esc(en)+'" data-tip-zh="'+esc(zh)+'" aria-label="'+esc(L(en,zh))+'">'
+        +n+' / '+c.due_rows+'</span>'
+        +(c.unavailable_due_rows?'<small style="display:block;white-space:normal;color:var(--warn)">'+c.unavailable_due_rows+' '+L('excluded','条未计入')+'</small>':'');
+    }
     function fpct(v){return v==null?'—':(v*100).toFixed(0)+'%';}
     function fic(v){return v==null?'—':(v>0?'+':'')+(+v).toFixed(3);}
     function ft(v){return v==null?'—':(+v).toFixed(1);}
@@ -329,7 +351,7 @@
     var rows=Object.keys(hs).map(function(h){
       var e=hs[h], bs=e.by_stage||{}, em=bs.emerging||{}, fa=bs.fading||{};
       var prov=(tr.proven||{})[h];
-      return '<tr><td>'+h+'d</td><td class="num">'+(e.n_matured||0)+'</td>'
+      return '<tr><td>'+esc(h)+'d</td><td class="num">'+coverageCell(e)+'</td>'
         +'<td class="num">'+fpct(em.hit_rate)+'</td><td class="num">'+fpct(fa.hit_rate)+'</td>'
         +'<td class="num">'+fic(e.score_ic)+'</td><td class="num">'+ft(e.score_ic_t_hac)
         +(prov?' <span class="sr-ok">✓</span>':'')+'</td></tr>';
@@ -344,6 +366,9 @@
         +'<span class="sr-tr-q" style="color:var('+vb[2]+');border-color:var('+vb[2]+')">'+L(vb[0],vb[1])+'</span>'
         +'<span class="sr-tr-meta">'+(tr.n_days||0)+' '+L('days logged','天')+' · '+(tr.n_snapshots||0)+' '+L('calls logged','次记录')+'</span></div>'
       +'<div class="sr-tr-note">'+L(esc(tr.note||''),esc(tr.note_zh||tr.note||''))+'</div>'
+      +'<div class="sr-tr-note">'+(tr.outcome_coverage_policy==='all_frozen_members_required'
+        ?L('Only complete baskets enter the results. Exclusions can bias the measured sample; an absent denominator means coverage was not recorded.', '仅完整组合计入结果。排除记录可能使样本偏差；分母缺失表示未记录覆盖率。')
+        :L('This generation does not establish complete-basket coverage.', '此版数据未证实完整组合覆盖情况。'))+'</div>'
       // D-6: plainify column headers; move jargon behind ? receipt on table caption
       +'<div class="sr-tr-body"><table class="sr-tr-tbl"><caption style="text-align:left;padding:4px 8px;font-size:10px;color:var(--muted);">'
         +'<span class="rcf-help" tabindex="0" role="button" style="cursor:help;"'
@@ -353,7 +378,7 @@
         +' data-tip-rc-en="rank fit = information coefficient · reliability = HAC t-stat"'
         +' data-tip-rc-zh="排序吻合 = 信息系数 · 可靠度 = HAC t 统计量"'
         +'>?</span></caption><thead><tr>'
-        +'<th>'+L('Horizon','周期')+'</th><th class="num">'+L('Matured','已到期')+'</th>'
+        +'<th>'+L('Horizon','周期')+'</th><th class="num">'+L('Measured / due','已评估 / 已到期')+'</th>'
         +'<th class="num">'+L('Emerging hit','升温命中')+'</th><th class="num">'+L('Fading hit','退潮命中')+'</th>'
         +'<th class="num">'+L('Rank fit','排序吻合')+'</th><th class="num">'+L('Reliability','可靠度')+'</th></tr></thead>'
         +'<tbody>'+rows+'</tbody></table></div>'

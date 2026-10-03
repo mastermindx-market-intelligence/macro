@@ -958,7 +958,7 @@ def test_track_integrity_pair_drops_nonfinite_or_nonnumeric_scores(bad):
 def test_track_integrity_compute_retains_shared_population_receipt(tmp_path, monkeypatch):
     rows = _integrity_rows()
     monkeypatch.setattr(S, '_load', lambda root: rows)
-    monkeypatch.setattr(S, '_matured', lambda *args: rows)
+    monkeypatch.setattr(S, '_matured', lambda *args, **kwargs: rows)
     out=S.compute(today='2026-10-02', root=tmp_path, horizons=[5])
     assert out['horizons']['5']['comparison']['n_paired_ic_dates']==6
     assert out['head_to_head']['by_horizon']['5']['n_scored_paired']==60
@@ -1040,3 +1040,164 @@ def test_exact_session_prices_member_reader_requests_zero_staleness(tmp_path,mon
     monkeypatch.setattr(S,'_close_at',close)
     assert S._member_ret('A',tmp_path,'2026-09-25','2026-10-02')==pytest.approx(.20)
     assert calls==[('start',0),('end',0)]
+
+# Coverage is part of the result, not an implicit survivor-only denominator.
+def _coverage_rows():
+    return [
+        {'date':'2026-09-25','key':'ok','stage':'emerging','members':['A','B','C'],'score':1.,'score_v2':2.},
+        {'date':'2026-09-25','key':'missing','stage':'emerging','members':['A','B','X'],'score':2.,'score_v2':1.},
+        {'date':'2026-09-25','key':'thin','stage':'fading','members':['A'],'score':3.},
+        {'date':'2026-09-30','key':'pending','stage':'neutral','members':['A','B','C'],'score':4.},
+        {'date':'bad-date','key':'bad','stage':'fading','members':['A','B','C']},
+        None,
+    ]
+
+
+def _coverage_price_stubs(monkeypatch):
+    monkeypatch.setattr(S,'_covers',lambda t,*args: t!='X')
+    monkeypatch.setattr(S,'_member_ret',lambda t,*args: 0. if t=='SPY' else .1)
+
+
+def test_coverage_partitions_input_without_hiding_missing_baskets(tmp_path,monkeypatch):
+    _coverage_price_stubs(monkeypatch)
+    audit={}
+    measured=S._matured(_coverage_rows(),tmp_path,5,date(2026,10,2),coverage=audit)
+    assert [r['key'] for r in measured]==['ok']
+    assert audit['input_rows']==6 and audit['due_rows']==3
+    assert audit['measured_rows']==1 and audit['unavailable_due_rows']==2
+    assert audit['pending_rows']==1 and audit['invalid_rows']==2
+    assert audit['measured_fraction_of_due']==pytest.approx(1/3)
+    assert sum(audit['status_counts'].values())==6
+    assert audit['status_counts']['member_unavailable']==1
+
+
+def test_coverage_breakdown_exposes_stage_selection(tmp_path,monkeypatch):
+    _coverage_price_stubs(monkeypatch); audit={}
+    S._matured(_coverage_rows(),tmp_path,5,date(2026,10,2),coverage=audit)
+    assert audit['by_stage']['emerging']['due_rows']==2
+    assert audit['by_stage']['emerging']['measured_rows']==1
+    assert audit['by_stage']['fading']['unavailable_due_rows']==1
+    assert audit['by_stage']['neutral']['pending_rows']==1
+
+
+def test_coverage_empty_is_not_one_hundred_percent(tmp_path):
+    audit={}
+    assert S._matured([],tmp_path,5,date(2026,10,2),coverage=audit)==[]
+    assert audit['input_rows']==0 and audit['due_rows']==0
+    assert audit['measured_fraction_of_due'] is None
+
+
+def test_coverage_pending_does_not_attempt_price_reads(tmp_path,monkeypatch):
+    def forbidden(*args,**kwargs): raise AssertionError('premature price IO')
+    monkeypatch.setattr(S,'_covers',forbidden)
+    audit={}; S._matured([_coverage_rows()[3]],tmp_path,5,date(2026,10,2),coverage=audit)
+    assert audit['pending_rows']==1 and audit['due_rows']==0
+
+
+def test_coverage_benchmark_absence_has_own_reason(tmp_path,monkeypatch):
+    monkeypatch.setattr(S,'_covers',lambda *args:False)
+    audit={}; S._matured([_coverage_rows()[0]],tmp_path,5,date(2026,10,2),coverage=audit)
+    assert audit['status_counts']['benchmark_unavailable']==1
+    assert audit['unavailable_due_rows']==1
+
+
+def test_coverage_pricing_exception_is_not_reported_as_missing_data(tmp_path,monkeypatch):
+    monkeypatch.setattr(S,'_covers',lambda *args:True)
+    def broken(*args): raise RuntimeError('price reader error')
+    monkeypatch.setattr(S,'_member_ret',broken)
+    audit={}; S._matured([_coverage_rows()[0]],tmp_path,5,date(2026,10,2),coverage=audit)
+    assert audit['status_counts']['pricing_error']==1
+
+
+def test_coverage_reporting_does_not_change_measured_returns(tmp_path,monkeypatch):
+    _coverage_price_stubs(monkeypatch)
+    rows=[_coverage_rows()[0]]; audit={}
+    a=S._matured(rows,tmp_path,5,date(2026,10,2))
+    b=S._matured(rows,tmp_path,5,date(2026,10,2),coverage=audit)
+    assert a==b and audit['measured_fraction_of_due']==1.0
+
+
+def test_coverage_compute_preserves_denominators_and_strict_json(tmp_path,monkeypatch):
+    _coverage_price_stubs(monkeypatch)
+    monkeypatch.setattr(S,'_load',lambda root:_coverage_rows())
+    out=S.compute(today='2026-10-02',root=tmp_path,horizons=[5])
+    c=out['horizons']['5']['coverage']
+    assert c['due_rows']==3 and c['measured_rows']==out['horizons']['5']['n_matured']==1
+    assert c['population_basis']=='parsed_snapshot_rows'
+    assert c['reason_policy']=='first_failing_gate'
+    assert c['selection_bias_corrected'] is False
+    json.dumps(out,allow_nan=False)
+
+@pytest.mark.parametrize('field,bad',[('key',None),('key',' '),('stage',[]),('stage_v2',{})])
+def test_coverage_malformed_identity_cannot_erase_valid_scorecard(tmp_path,monkeypatch,field,bad):
+    _coverage_price_stubs(monkeypatch)
+    corrupt=dict(_coverage_rows()[0]);corrupt[field]=bad
+    rows=[_coverage_rows()[0],corrupt]
+    monkeypatch.setattr(S,'_load',lambda root:rows)
+    result=S.compute(today='2026-10-02',root=tmp_path,horizons=[5,21])
+    assert 'compute_error' not in result
+    assert result['horizons']['5']['coverage']['invalid_rows']==1
+    assert result['horizons']['5']['n_matured']==1
+
+
+def test_coverage_counts_are_order_invariant_and_stage_conserving(tmp_path,monkeypatch):
+    _coverage_price_stubs(monkeypatch);a={};b={}
+    rows=_coverage_rows(); S._matured(rows,tmp_path,5,date(2026,10,2),coverage=a)
+    S._matured(list(reversed(rows)),tmp_path,5,date(2026,10,2),coverage=b)
+    assert a==b
+    for field in ('input_rows','due_rows','measured_rows','pending_rows','invalid_rows','unavailable_due_rows'):
+        assert sum(s[field] for s in a['by_stage'].values())==a[field]
+
+
+def test_coverage_all_due_but_unpriceable_is_not_no_observations(tmp_path,monkeypatch):
+    monkeypatch.setattr(S,'_covers',lambda *args:False)
+    monkeypatch.setattr(S,'_load',lambda root:[_coverage_rows()[0]])
+    result=S.compute(today='2026-10-02',root=tmp_path,horizons=[5])
+    assert result['horizons']['5']['coverage']['due_rows']==1
+    assert result['horizons']['5']['coverage']['measured_fraction_of_due']==0.0
+    assert result['verdict']=='accruing' and result['any_matured'] is False
+
+
+@pytest.mark.parametrize('language',['en','zh'])
+@pytest.mark.parametrize('case',['partial','empty','legacy','malformed','recovery','injection','excluded','unknown'])
+def test_coverage_renderer_denominators_and_recovery(language,case):
+    import subprocess
+    root=Path(__file__).resolve().parents[1]
+    js=r"""
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const source=fs.readFileSync(process.argv[1],'utf8');
+const fn=source.match(/  function drawTrackRecord\(el\)\{[\s\S]*?\n  \}/)[0];
+const language=process.argv[2],kind=process.argv[3];
+const c={input_rows:6,due_rows:3,measured_rows:1,unavailable_due_rows:2,pending_rows:1,invalid_rows:2};
+if(kind==='empty')Object.keys(c).forEach(k=>c[k]=0);
+if(kind==='excluded')Object.assign(c,{input_rows:1,due_rows:1,measured_rows:0,unavailable_due_rows:1,pending_rows:0,invalid_rows:0});
+if(kind==='malformed')c.measured_rows=9;
+const entry={n_matured:c.measured_rows,by_stage:{},coverage:c};
+if(kind==='legacy'){entry.n_matured=2;delete entry.coverage;}
+if(kind==='unknown'){delete entry.n_matured;delete entry.coverage;}
+const key=kind==='injection'?'<img src=x onerror=alert(1)>':'5';
+const tr={verdict:'accruing',horizons:{[key]:entry},n_days:1,n_snapshots:6};
+if(!['legacy','unknown'].includes(kind))tr.outcome_coverage_policy='all_frozen_members_required';
+const el={style:{},innerHTML:''};
+const ctx={_data:{track_record:tr},el,L:(a,b)=>language==='zh'?b:a,
+ esc:s=>String(s==null?'':s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))};
+function render(){vm.runInNewContext('('+fn+')(el)',ctx);}
+if(kind==='recovery'){ctx._data.track_record=null;render();assert.equal(el.style.display,'none');ctx._data.track_record=tr;}
+render();assert.notEqual(el.style.display,'none');
+if(kind==='partial'||kind==='recovery'){
+ assert(el.innerHTML.includes('1 / 3'));
+ assert(el.innerHTML.includes(language==='zh'?'2 条未计入':'2 excluded'));
+}
+if(kind==='empty')assert(el.innerHTML.includes('0 / 0'));
+if(kind==='excluded')assert(el.innerHTML.includes('0 / 1'));
+if(kind==='legacy')assert(el.innerHTML.includes('2 / \u2014'));
+if(kind==='malformed')assert(el.innerHTML.includes('9 / \u2014'));
+if(kind==='unknown')assert(el.innerHTML.includes('\u2014 / \u2014'));
+if(kind==='legacy'||kind==='unknown')assert(!el.innerHTML.includes('Only complete baskets'));
+if(kind==='injection'){assert(!el.innerHTML.includes('<img'));assert(el.innerHTML.includes('&lt;img'));}
+assert(!el.innerHTML.includes('NaN'));assert(!el.innerHTML.includes('Infinity'));
+process.stdout.write(JSON.stringify({case:kind,language,passed:true}));
+"""
+    result=subprocess.run(['node','-e',js,str(root/'templates/subsector_rotation.js'),language,case],capture_output=True,text=True)
+    assert result.returncode==0,result.stdout+result.stderr
+    assert json.loads(result.stdout)['passed'] is True
