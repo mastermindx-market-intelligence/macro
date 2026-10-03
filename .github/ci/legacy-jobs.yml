@@ -522,10 +522,12 @@ jobs:
       - "engine/options_signal_episode_contract.py"
       - "engine/ledger_lane.py"
       - "engine/session_digest.py"
-      # lib helpers the campaign engine imports at module scope
+      # lib helpers the campaign engine imports at module scope.
+      # The episode builder now imports the shared raw-byte stage parser.
       - "lib/__init__.py"
       - "lib/config.py"
       - "lib/nyse_calendar.py"
+      - "lib/live_flow_event_stage.py"
       # schemas the composer validates against (CAMPAIGN_SCHEMA +
       # CANDIDATE_FEED_V2_SCHEMA_FILENAME + ACTIVATION_RECEIPT_SCHEMA_FILENAME
       # + CANDIDATE_IDENTITY_SCHEMA_FILENAME + MICROSTRUCTURE_SCHEMA_FILENAME
@@ -5964,6 +5966,8 @@ jobs:
       - "lib/__init__.py"
       - "lib/config.py"
       - "lib/nyse_calendar.py"
+      # scripts/build_options_signal_episode.py imports the shared stage parser.
+      - "lib/live_flow_event_stage.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -6303,7 +6307,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml boto3 scikit-learn joblib
+        # jsonschema: collectors/flow_signals.py imports the stage parser, which
+        # imports engine/options_signal_episode.py at module scope.
+        run: pip install pytest pandas numpy pyarrow pyyaml boto3 scikit-learn joblib jsonschema
       - name: flow-signals ledger + grader unit tests
         run: python -m pytest tests/test_flow_signals.py -q
       - name: FS-4 scorer unit tests (Lane B)
@@ -6332,7 +6338,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pytest-mock pandas numpy pyarrow pyyaml requests boto3 scikit-learn joblib
+        # jsonschema: the FS-0 step imports collectors.flow_signals, and that
+        # module reaches engine/options_signal_episode.py at import time.
+        run: pip install pytest pytest-mock pandas numpy pyarrow pyyaml requests boto3 scikit-learn joblib jsonschema
       - name: FS-1 flow cohorts unit tests
         run: python -m pytest tests/test_fs1_flow_cohorts.py -q
       - name: FS-2 atlas builder unit tests
@@ -6342,7 +6350,7 @@ jobs:
       - name: FS-4 trainer unit tests (Lane A)
         run: python -m pytest tests/test_fs4_flow_trainer.py -q
       - name: FS-5 fit-free geometry unit tests
-        run: python -m pytest tests/test_fs5_flow_geometry.py -q
+        run: python -m pytest tests/test_fs5_flow_geometry.py tests/test_fs5_flow_admission.py tests/test_fs5_admission_integrity.py tests/test_fs5_stage_receipts.py -q
 
   broad-etf-flows:
     if: ${{ false }}

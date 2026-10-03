@@ -1280,7 +1280,7 @@ class TestBlockerRegressions:
         assert result["health"] == "no_fit"
         assert result["status"] == "nondeployable"
         assert result["method_geometry"] == "unavailable"
-        assert result["method_geometry_reason"].endswith("partition_membership_mismatch")
+        assert result["method_geometry_reason"].endswith("admission_schema_unknown")
 
     def test_calibration_eval_never_sees_full_holdout(self, tmp_path, monkeypatch):
         """Legacy 80/20 no longer reaches calibration evaluation without four FS-5 populations."""
@@ -1314,7 +1314,7 @@ class TestBlockerRegressions:
             dry_run=False,
         )
         assert result["method_geometry_reason"] == (
-            "method_geometry_unavailable:partition_membership_mismatch"
+            "method_geometry_unavailable:admission_schema_unknown"
         )
 
 
@@ -1400,6 +1400,18 @@ class TestInvalidRequestedFoldCannotFit:
             )
 
         flow_dir, cfg, df = _make_train_bucket_fixture(tmp_path, n=160)
+        # Isolate the fold guard below a valid externally bound source identity;
+        # legacy id-list receipts are deliberately no-fit in the production path.
+        monkeypatch.setattr(
+            trainer,
+            "validate_admission_study_identity",
+            lambda *_a, **_k: {"source": "tape_recon", "detector_version": "test-detector"},
+        )
+        monkeypatch.setattr(
+            trainer,
+            "_load_serving_cohorts",
+            lambda *_a, **_k: pd.read_parquet(flow_dir / "cohort_tape_recon.parquet"),
+        )
         # Use a coverage-complete partition that satisfies the membership check;
         # validate_population_partition is monkeypatched away for isolation.
         all_ids = df["event_id"].astype(str).tolist()
@@ -1411,6 +1423,34 @@ class TestInvalidRequestedFoldCannotFit:
             "final_oos": all_ids[3 * quarter:],
         }
         (flow_dir / "fs5_partition.json").write_text(json.dumps(partition))
+        # Admission now rejects source geometry columns and requires a v1 receipt
+        # before grades. This test isolates the fold gate, so admission returns the
+        # already-covered cohort and grades carry the same native fill/end.
+        grades = pd.read_parquet(flow_dir / "grades.parquet")
+        boundaries = df[["event_id", "fill_date", "outcome_end_session"]].copy()
+        boundaries["event_id"] = boundaries["event_id"].astype(str)
+        grades["event_id"] = grades["event_id"].astype(str)
+        grades = grades.merge(boundaries, on="event_id", how="left")
+        grades = grades.rename(columns={"outcome_end_session": "outcome_end_session_21"})
+        grades.to_parquet(flow_dir / "grades.parquet", index=False)
+        fill_by_id = boundaries.set_index("event_id")["fill_date"].astype(str)
+        end_by_id = boundaries.set_index("event_id")["outcome_end_session"].astype(str)
+
+        def _admit_covered_cohort(receipt, source_rows, **_kwargs):
+            frame = source_rows.drop(columns=["fill_date", "outcome_end_session"]).copy()
+            assigned = {}
+            for name, members in receipt.items():
+                for event_id in members:
+                    assigned[str(event_id)] = name
+            event_ids = frame["event_id"].astype(str)
+            frame["population"] = event_ids.map(assigned)
+            frame["planned_fill_date"] = event_ids.map(fill_by_id).to_numpy()
+            frame["planned_outcome_end_sessions"] = [
+                {"21": end} for end in event_ids.map(end_by_id)
+            ]
+            return frame
+
+        monkeypatch.setattr(trainer, "validate_admission_receipt", _admit_covered_cohort)
         cfg.update(
             k_folds=0,
             n_groups=4,
