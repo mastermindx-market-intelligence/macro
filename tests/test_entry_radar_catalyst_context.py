@@ -10,12 +10,14 @@ from engine.entry_radar.catalyst_context import (
     CatalystSourceRead,
     RADAR_EPISODE_SCHEMA,
     assess_catalyst_context,
+    assess_catalyst_context_for_live_episode,
 )
 
 from engine.entry_radar.catalyst_adapters import (
     adapt_company_intelligence_earnings_workspace,
     adapt_edgar_earnings_item_202,
 )
+from engine.entry_radar.live_ledger import LiveEpisode, compute_episode_id
 
 T0 = datetime(2026, 10, 2, 14, 30, tzinfo=timezone.utc)
 
@@ -408,3 +410,92 @@ def test_known_company_blocking_event_remains_visible_when_coverage_is_incomplet
     assert got.coverage_complete is False
     assert got.context_state == "blocking_event_observed"
     assert got.blocking_evidence_refs == (evidence.evidence_ref,)
+
+
+def _live_episode(**overrides):
+    identity = {
+        "ticker": "NVDA",
+        "detector_id": "C1_1D_LIVE_WASHOUT@1",
+        "variant": None,
+        "first_armed_at": "2026-10-02T14:10:00Z",
+    }
+    for key in ("ticker", "detector_id", "variant", "first_armed_at"):
+        if key in overrides:
+            identity[key] = overrides[key]
+    episode_id = overrides.get("episode_id") or compute_episode_id(**identity)
+    return LiveEpisode(
+        episode_id=episode_id,
+        ticker=identity["ticker"],
+        detector_id=identity["detector_id"],
+        detector_version=1,
+        detector_spec_hash="spec-test",
+        state="CANDIDATE",
+        market_session="2026-10-02",
+        variant=identity["variant"],
+        first_armed_at=identity["first_armed_at"],
+        candidate_at="2026-10-02T14:20:00Z",
+        last_observed_at="2026-10-02T14:30:00Z",
+        bar_availability={},
+        feature_snapshot={},
+        universe_admission={},
+        lobe_nominations=(),
+        price_at_signal=100.0,
+        risk_geometry={},
+        data_quality="ok",
+        freshness={},
+        evidence_refs=("entry-event-owner-id",),
+    )
+
+
+def test_live_episode_binding_uses_owner_id_and_ticker_without_mutation():
+    episode = _live_episode()
+    before = episode.to_dict()
+    got = assess_catalyst_context_for_live_episode(
+        episode=episode,
+        decision_at=T0,
+        required_sources=["issuer_events"],
+        source_reads=[_read()],
+        evidence=[],
+    )
+    assert got.radar_episode_id == episode.episode_id
+    assert got.ticker == "NVDA"
+    assert episode.to_dict() == before
+    assert episode.evidence_refs == ("entry-event-owner-id",)
+    assert "entry-event-owner-id" not in got.to_dict()["blocking_evidence_refs"]
+
+
+def test_live_episode_mapping_roundtrip_binds_same_owner_identity():
+    episode = _live_episode()
+    got = assess_catalyst_context_for_live_episode(
+        episode=episode.to_dict(),
+        decision_at=T0,
+        required_sources=["issuer_events"],
+        source_reads=[_read()],
+        evidence=[],
+    )
+    assert got.radar_episode_id == episode.episode_id
+
+
+def test_tampered_live_episode_id_is_refused_before_context_build():
+    episode = _live_episode().to_dict()
+    episode["episode_id"] = "deadbeefdeadbeef"
+    with pytest.raises(CatalystContextError, match="does not match owner identity tuple"):
+        assess_catalyst_context_for_live_episode(
+            episode=episode,
+            decision_at=T0,
+            required_sources=["issuer_events"],
+            source_reads=[_read()],
+            evidence=[],
+        )
+
+
+def test_live_episode_binding_preserves_evidence_ticker_check():
+    episode = _live_episode()
+    with pytest.raises(CatalystContextError, match="does not match"):
+        assess_catalyst_context_for_live_episode(
+            episode=episode,
+            decision_at=T0,
+            required_sources=["issuer_events"],
+            source_reads=[_read()],
+            evidence=[_event(ticker="AMD")],
+        )
