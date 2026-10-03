@@ -2813,7 +2813,13 @@ def test_options_pit_engine_and_adversarial_suites_are_ci_wired() -> None:
     ):
         assert required in workflow
     assert "python -m pytest tests/test_options_signal_episode.py -q" in manifest
-    assert "python -m pytest tests/test_options_signal_campaign.py -q" in manifest
+    assert (
+        "python -m pytest tests/test_options_signal_campaign.py -q" in manifest
+    )
+    assert (
+        "python -m pytest tests/test_options_signal_campaign_effective_view.py -q"
+        in manifest
+    )
     assert "python -m pytest tests/test_live_flow.py -q" in manifest
 
 

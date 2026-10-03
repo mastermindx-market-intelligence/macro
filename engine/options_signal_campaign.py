@@ -22,7 +22,7 @@ import tempfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
-from functools import lru_cache
+from functools import cached_property, lru_cache
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
@@ -60,6 +60,16 @@ CAMPAIGNS_PATH = "data/options_signal_campaign/campaigns.jsonl"
 OUTCOMES_PATH = "data/options_signal_campaign/outcomes.jsonl"
 CHECKPOINT_PATH = "data/options_signal_campaign/checkpoint.json"
 HORIZONS = ("h60", "eod", "1d", "3d", "5d", "10d")
+CORRECTION_POLICY_PATH = Path(
+    "research/options_estate/options_signal_campaign_outcome_correction_prereg_v1.json"
+)
+CORRECTION_POLICY_SHA256 = (
+    "7e6710c8b1ce65f1307f450e50829280548fcd62bd3521c2acf7a5b4ec6ef2ad"
+)
+CAMPAIGN_CHECKPOINT_V2_SCHEMA = "options.signal_campaign_checkpoint/v2"
+CORRECTION_ACTIVATION_SCHEMA = (
+    "options.signal_campaign_correction_activation/v1"
+)
 
 FALSE_AUTHORITY = {
     "may_originate": False,
@@ -77,9 +87,166 @@ FALSE_AUTHORITY = {
     "may_compute_option_pnl": False,
 }
 
+_CORRECTION_LAW = {
+    "retain_original_raw_rows": True,
+    "delete_or_truncate_original_rows": False,
+    "rewrite_original_rows": False,
+    "restamp_expected_hashes": False,
+    "backfill_original_historical_keys": False,
+    "reinterpret_original_computed_at": False,
+    "mutate_campaign_revisions": False,
+    "create_replacement_ledger": False,
+    "create_replacement_campaign_identity": False,
+    "raw_physical_history_remains_audit_visible": True,
+    "quarantine_exact_semantic_keys_as_occupied": True,
+    "later_valid_rows_must_append_after_incident_generation": True,
+    "later_valid_rows_must_pass_normal_source_receipt_validation": True,
+    "quarantined_keys_may_not_be_reissued_as_if_original_history_were_valid": True,
+    "correction_must_be_owner_native_versioned_and_receipted": True,
+}
+
 
 class CampaignContractError(ValueError):
     """Raised when a source, output, or checkpoint violates the frozen contract."""
+
+
+@dataclass(frozen=True)
+class CorrectionPolicy:
+    path: Path
+    file_sha256: str
+    value: dict[str, Any]
+
+    @classmethod
+    def load_canonical(cls, root_dir: Path | None = None) -> "CorrectionPolicy":
+        path = (
+            root_dir or Path(__file__).resolve().parent.parent
+        ).resolve() / CORRECTION_POLICY_PATH
+        if path.is_symlink() or not path.is_file():
+            raise CampaignContractError("campaign correction policy is unavailable")
+        raw = path.read_bytes()
+        digest = _sha256(raw)
+        if digest != CORRECTION_POLICY_SHA256:
+            raise CampaignContractError("campaign correction policy hash is not canonical")
+        try:
+            value = _strict_loads(raw)
+        except Exception as exc:  # noqa: BLE001
+            raise CampaignContractError("campaign correction policy is malformed") from exc
+        policy = cls(path, digest, value)
+        policy._verify()
+        return policy
+
+    def _exact(self, name: str, expected: object) -> None:
+        if self.value.get(name) != expected:
+            raise CampaignContractError(f"campaign correction policy {name} is invalid")
+
+    def _verify(self) -> None:
+        expected_keys = {
+            "schema",
+            "policy_id",
+            "policy_version",
+            "status",
+            "registered_on",
+            "operation",
+            "parent_operation",
+            "source_pin",
+            "incident",
+            "physical_identity",
+            "lawful_prefix",
+            "incident_generation",
+            "quarantine",
+            "correction_law",
+            "effective_view_after_activation",
+            "implementation_constraints",
+            "implementation_entry_preconditions",
+            "activation_preconditions",
+            "acceptance_postconditions",
+            "phase_dependencies",
+            "phase_effect_limits",
+            "authority",
+            "source_pin_observation",
+            "activation_identity",
+        }
+        if set(self.value) != expected_keys:
+            raise CampaignContractError("campaign correction policy shape is invalid")
+        self._exact("schema", "options.campaign_outcome_correction_prereg/v1")
+        self._exact("policy_id", "sep03_mixed_generation_outcome_quarantine/v1")
+        self._exact("policy_version", 1)
+        self._exact("status", "preregistered_inactive_no_history_mutation")
+        self._exact(
+            "operation", "oa-campaign-outcome-correction-prereg-20260919-sol-001"
+        )
+        self._exact(
+            "parent_operation",
+            "options-alpha-product-integration-20260917-sol-001",
+        )
+        self._exact("source_pin", "4e7761e42435622ad8ba181ba617e2a4bae6f015")
+        self._exact("correction_law", _CORRECTION_LAW)
+        self._exact(
+            "phase_effect_limits",
+            {
+                "policy_grants_execution": False,
+                "controlled_activation_implies_acceptance": False,
+                "fixture_or_manual_run_may_satisfy_normal_nightly_proof": False,
+                "failed_postcondition": (
+                    "NOT_ACCEPTED_preserve_raw_history_return_to_existing_owner_no_automatic_retry"
+                ),
+            },
+        )
+        if self.value["authority"] != {
+            name: False
+            for name in (
+                "may_score",
+                "may_rank",
+                "may_gate",
+                "may_size",
+                "may_issue",
+                "may_trade",
+                "may_train",
+                "may_publish_probability",
+                "may_compute_option_pnl",
+                "may_change_candidate_formation",
+                "may_promote",
+            )
+        }:
+            raise CampaignContractError("campaign correction authority is invalid")
+
+    @property
+    def quarantine(self) -> dict[str, Any]:
+        value = self.value["quarantine"]
+        if (
+            value.get("applies_to") != OUTCOMES_PATH
+            or value.get("start_row") != 24579
+            or value.get("end_row") != 28423
+            or value.get("record_count") != 3845
+            or value.get("computed_at_exact") != "2026-09-03T20:37:25.569588Z"
+        ):
+            raise CampaignContractError(
+                "campaign correction quarantine identity is invalid"
+            )
+        return value
+
+    @property
+    def incident_generation(self) -> dict[str, Any]:
+        value = self.value["incident_generation"]
+        if (
+            value.get("campaigns", {}).get("records") != 8385
+            or value.get("outcomes", {}).get("records") != 28423
+        ):
+            raise CampaignContractError(
+                "campaign correction incident identity is invalid"
+            )
+        return value
+
+    @property
+    def activation_preconditions(self) -> tuple[str, ...]:
+        value = self.value["activation_preconditions"]
+        if not isinstance(value, list) or any(
+            not isinstance(item, str) for item in value
+        ):
+            raise CampaignContractError(
+                "campaign correction preconditions are invalid"
+            )
+        return tuple(value)
 
 
 def _reject_duplicate_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -960,8 +1127,232 @@ def _campaign_outcome_against_sources(
         raise CampaignContractError("campaign outcome differs from its receipt-bound source")
 
 
+
+def _campaign_outcome_key(row: dict[str, Any]) -> tuple[str, str]:
+    revision_id = row.get("campaign_revision_id")
+    horizon = row.get("horizon")
+    if not isinstance(revision_id, str) or not isinstance(horizon, str):
+        raise CampaignContractError("campaign outcome semantic key is malformed")
+    return revision_id, horizon
+
+
+def _verify_receipt_shape(receipt: object) -> dict[str, Any]:
+    """Validate the receipt's structural shape (keys/types/patterns) without
+    enforcing digest consistency or policy-block match. The full canonical
+    check is performed by `_verify_activation_receipt` on the build path
+    and the binding check is performed by `_verify_effective_checkpoint`
+    on the v2 continuation path."""
+    if not isinstance(receipt, dict):
+        raise CampaignContractError(
+            "campaign correction activation receipt is malformed"
+        )
+    if set(receipt) != {
+        "schema",
+        "receipt_id",
+        "activated_at",
+        "receipt_sha256",
+        "policy",
+        "activation_preconditions",
+    }:
+        raise CampaignContractError(
+            "campaign correction activation receipt shape is invalid"
+        )
+    if receipt["schema"] != CORRECTION_ACTIVATION_SCHEMA:
+        raise CampaignContractError("campaign correction activation schema is invalid")
+    if not isinstance(receipt["receipt_id"], str) or not receipt["receipt_id"]:
+        raise CampaignContractError("campaign correction activation identity is invalid")
+    activated_at = receipt["activated_at"]
+    if not isinstance(activated_at, str) or not re.fullmatch(
+        r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?Z", activated_at
+    ):
+        raise CampaignContractError("campaign correction activation time is malformed")
+    receipt_digest = receipt["receipt_sha256"]
+    if (
+        not isinstance(receipt_digest, str)
+        or not re.fullmatch(r"[a-f0-9]{64}", receipt_digest)
+    ):
+        raise CampaignContractError("campaign correction activation digest is malformed")
+    return receipt
+
+
+def _verify_activation_receipt(receipt: object, policy: CorrectionPolicy) -> dict[str, Any]:
+    if not isinstance(receipt, dict):
+        raise CampaignContractError(
+            "campaign correction activation receipt is malformed"
+        )
+    if set(receipt) != {
+        "schema",
+        "receipt_id",
+        "activated_at",
+        "receipt_sha256",
+        "policy",
+        "activation_preconditions",
+    }:
+        raise CampaignContractError(
+            "campaign correction activation receipt shape is invalid"
+        )
+    if receipt["schema"] != CORRECTION_ACTIVATION_SCHEMA:
+        raise CampaignContractError("campaign correction activation schema is invalid")
+    if not isinstance(receipt["receipt_id"], str) or not receipt["receipt_id"]:
+        raise CampaignContractError("campaign correction activation identity is invalid")
+    activated_at = receipt["activated_at"]
+    if not isinstance(activated_at, str) or not re.fullmatch(
+        r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?Z", activated_at
+    ):
+        raise CampaignContractError("campaign correction activation time is malformed")
+    receipt_digest = receipt["receipt_sha256"]
+    if (
+        not isinstance(receipt_digest, str)
+        or not re.fullmatch(r"[a-f0-9]{64}", receipt_digest)
+    ):
+        raise CampaignContractError("campaign correction activation digest is malformed")
+    if receipt["policy"] != {
+        "policy_id": policy.value["policy_id"],
+        "policy_version": policy.value["policy_version"],
+        "path": CORRECTION_POLICY_PATH.as_posix(),
+        "file_sha256": policy.file_sha256,
+    }:
+        raise CampaignContractError(
+            "campaign correction activation policy is ineligible"
+        )
+    observed = receipt["activation_preconditions"]
+    expected = policy.activation_preconditions
+    if not isinstance(observed, dict) or set(observed) != set(expected):
+        raise CampaignContractError(
+            "campaign correction activation coverage is invalid"
+        )
+    if any(value is not True for value in observed.values()):
+        raise CampaignContractError(
+            "campaign correction activation precondition is unmet"
+        )
+    unsigned = dict(receipt)
+    del unsigned["receipt_sha256"]
+    if _sha256(canonical_bytes(unsigned)) != receipt_digest:
+        raise CampaignContractError(
+            "campaign correction activation digest is inconsistent"
+        )
+    return receipt
+
+
+def _verify_policy_prefixes(
+    policy: CorrectionPolicy,
+    campaigns: LedgerSnapshot,
+    outcomes: LedgerSnapshot,
+) -> tuple[int, int]:
+    generation = policy.incident_generation
+    lawful = policy.value["lawful_prefix"]["outcomes"]
+    quarantine = policy.quarantine
+    if quarantine["record_count"] != 3845:
+        raise CampaignContractError(
+            "campaign correction incident identity is not canonical"
+        )
+    campaign_count = generation["campaigns"]["records"]
+    outcome_count = generation["outcomes"]["records"]
+    if campaigns.count < campaign_count or outcomes.count < outcome_count:
+        raise CampaignContractError(
+            "campaign correction source is shorter than incident"
+        )
+    if (
+        _prefix_sha256(campaigns, campaign_count)
+        != generation["campaigns"]["prefix_sha256"]
+    ):
+        raise CampaignContractError("campaign incident prefix changed")
+    if (
+        _prefix_sha256(outcomes, outcome_count)
+        != generation["outcomes"]["prefix_sha256"]
+    ):
+        raise CampaignContractError("outcome incident prefix changed")
+    lawful_count = lawful["records"]
+    if _prefix_sha256(outcomes, lawful_count) != lawful["prefix_sha256"]:
+        raise CampaignContractError("outcome lawful prefix changed")
+    if (
+        quarantine["start_row"] != lawful_count + 1
+        or quarantine["end_row"] != outcome_count
+        or quarantine["record_count"] != outcome_count - lawful_count
+        or quarantine["contiguous_suffix_of_incident_generation"] is not True
+    ):
+        raise CampaignContractError(
+            "campaign correction quarantine interval is invalid"
+        )
+    return lawful_count, outcome_count
+
+
+def build_effective_outcome_view(
+    physical_campaigns: LedgerSnapshot,
+    physical_outcomes: LedgerSnapshot,
+    correction: CorrectionPolicy | None,
+    *,
+    activation_receipt: object = None,
+) -> "EffectiveOutcomeView":
+    if correction is None:
+        raise CampaignContractError("campaign correction policy is missing")
+    canonical = CorrectionPolicy.load_canonical()
+    if correction != canonical:
+        raise CampaignContractError(
+            "campaign correction policy object is not canonical"
+        )
+    _verify_activation_receipt(activation_receipt, correction)
+    lawful_count, incident_count = _verify_policy_prefixes(
+        correction, physical_campaigns, physical_outcomes
+    )
+    quarantined = physical_outcomes.rows[lawful_count:incident_count]
+    admitted = (
+        *physical_outcomes.rows[:lawful_count],
+        *physical_outcomes.rows[incident_count:],
+    )
+    occupied: set[tuple[str, str]] = set()
+    admitted_keys: set[tuple[str, str]] = set()
+    computed_at = correction.quarantine["computed_at_exact"]
+    for item in quarantined:
+        row = item.value
+        if not isinstance(row, dict):
+            raise CampaignContractError("quarantined outcome is not an object")
+        required = {
+            "schema",
+            "campaign_outcome_id",
+            "campaign_revision_id",
+            "horizon",
+            "computed_at",
+            "authority",
+        }
+        if set(row) < required:
+            raise CampaignContractError(
+                "quarantined outcome internal schema is invalid"
+            )
+        if row["schema"] != CAMPAIGN_OUTCOME_SCHEMA:
+            raise CampaignContractError("quarantined outcome schema is invalid")
+        if row["computed_at"] != computed_at:
+            raise CampaignContractError(
+                "quarantined outcome incident identity is invalid"
+            )
+        if row["authority"] != FALSE_AUTHORITY:
+            raise CampaignContractError(
+                "quarantined outcome authority must remain false"
+            )
+        key = _campaign_outcome_key(row)
+        if key in occupied:
+            raise CampaignContractError(
+                "duplicate quarantined campaign outcome key"
+            )
+        occupied.add(key)
+    for item in admitted:
+        key = _campaign_outcome_key(item.value)
+        if key in occupied:
+            raise CampaignContractError(
+                "duplicate campaign outcome key across populations"
+            )
+        occupied.add(key)
+        admitted_keys.add(key)
+    return EffectiveOutcomeView(
+        physical_campaigns,
+        physical_outcomes,
+        correction,
+        admitted,
+        quarantined,
+    )
+
 def _outcome_history(
-    existing: LedgerSnapshot,
+    existing: Iterable[LedgerRow],
     campaign_by_revision: dict[str, dict[str, Any]],
     episodes: LedgerSnapshot,
     h60: LedgerSnapshot,
@@ -975,7 +1366,8 @@ def _outcome_history(
         h60_map, session_map = _source_outcome_maps(episodes, h60, session)
     cache = prefix_cache if prefix_cache is not None else {}
     rows: dict[tuple[str, str], dict[str, Any]] = {}
-    for item in existing.rows:
+    existing_rows = existing.rows if isinstance(existing, LedgerSnapshot) else existing
+    for item in existing_rows:
         row = item.value
         _campaign_outcome_against_sources(
             row,
@@ -996,19 +1388,39 @@ def _outcome_history(
 
 def _derive_campaign_outcomes_from_maps(
     campaigns: LedgerSnapshot,
-    existing_rows: dict[tuple[str, str], dict[str, Any]],
+    existing_rows: dict[tuple[str, str], dict[str, Any]] | Iterable[LedgerRow],
     h60_map: dict[str, LedgerRow],
     session_map: dict[tuple[str, str], LedgerRow],
     h60: LedgerSnapshot,
     session: LedgerSnapshot,
+    *,
+    reserved_keys: Iterable[tuple[str, str]] = (),
 ) -> tuple[list[dict[str, Any]], int]:
+    existing_keys = (
+        frozenset(existing_rows)
+        if isinstance(existing_rows, dict)
+        else frozenset(_campaign_outcome_key(item.value) for item in existing_rows)
+    )
+    reserved = frozenset(reserved_keys)
+    for key in reserved:
+        if (
+            not isinstance(key, tuple)
+            or len(key) != 2
+            or not all(isinstance(part, str) for part in key)
+        ):
+            raise CampaignContractError("reserved campaign outcome key is malformed")
+    if existing_keys & reserved:
+        raise CampaignContractError(
+            "reserved campaign outcome key is already admitted"
+        )
+    occupied_keys = existing_keys | reserved
     fresh: list[dict[str, Any]] = []
     pending = 0
     for campaign_item in campaigns.rows:
         campaign = campaign_item.value
         for horizon in HORIZONS:
             key = (campaign["campaign_revision_id"], horizon)
-            if key in existing_rows:
+            if key in occupied_keys:
                 continue
             source = _outcome_source_for_horizon(
                 horizon,
@@ -1026,6 +1438,46 @@ def _derive_campaign_outcomes_from_maps(
                 )
             )
     return fresh, pending
+
+
+@dataclass(frozen=True)
+class EffectiveOutcomeView:
+    campaigns: LedgerSnapshot
+    outcomes: LedgerSnapshot
+    policy: CorrectionPolicy
+    admitted_rows: tuple[LedgerRow, ...]
+    quarantined_rows: tuple[LedgerRow, ...]
+
+    @cached_property
+    def occupied_keys(self) -> frozenset[tuple[str, str]]:
+        return frozenset(
+            _campaign_outcome_key(item.value)
+            for item in (*self.admitted_rows, *self.quarantined_rows)
+        )
+
+    @cached_property
+    def admitted_keys(self) -> frozenset[tuple[str, str]]:
+        return frozenset(
+            _campaign_outcome_key(item.value) for item in self.admitted_rows
+        )
+
+    @cached_property
+    def quarantined_keys(self) -> frozenset[tuple[str, str]]:
+        # Quarantined rows reserve the (campaign_revision_id, horizon) tuple
+        # even though they are NOT admitted: their raw bytes, hash and
+        # physical ordinal remain in the original LedgerSnapshot. A tail
+        # append must not collide with any of these reserved keys.
+        return frozenset(
+            _campaign_outcome_key(item.value) for item in self.quarantined_rows
+        )
+
+    @property
+    def raw_count(self) -> int:
+        return self.outcomes.count
+
+    @property
+    def effective_count(self) -> int:
+        return len(self.admitted_rows)
 
 
 def derive_campaign_outcomes(
@@ -1068,7 +1520,14 @@ def _load_checkpoint(path: Path) -> dict[str, Any] | None:
         raise CampaignContractError("campaign checkpoint is malformed") from exc
     if not isinstance(value, dict) or canonical_bytes(value) + b"\n" != raw:
         raise CampaignContractError("campaign checkpoint is not canonical JSON")
-    _validate_schema(value, "options.signal_campaign_checkpoint.v1.schema.json")
+    schema_name = value.get("schema") if isinstance(value, dict) else None
+    if schema_name == CAMPAIGN_CHECKPOINT_SCHEMA:
+        schema_file = "options.signal_campaign_checkpoint.v1.schema.json"
+    elif schema_name == CAMPAIGN_CHECKPOINT_V2_SCHEMA:
+        schema_file = "options.signal_campaign_checkpoint.v2.schema.json"
+    else:
+        raise CampaignContractError("campaign checkpoint schema is unsupported")
+    _validate_schema(value, schema_file)
     return value
 
 
@@ -1111,8 +1570,20 @@ def _build_checkpoint(
 
 
 def validate_checkpoint(row: dict[str, Any]) -> None:
-    _validate_schema(row, "options.signal_campaign_checkpoint.v1.schema.json")
-    if row["checkpoint_id"] != _checkpoint_id(row["sources"], row["outputs"]):
+    schema_name = row.get("schema")
+    if schema_name == CAMPAIGN_CHECKPOINT_SCHEMA:
+        _validate_schema(row, "options.signal_campaign_checkpoint.v1.schema.json")
+    elif schema_name == CAMPAIGN_CHECKPOINT_V2_SCHEMA:
+        _validate_schema(row, "options.signal_campaign_checkpoint.v2.schema.json")
+    else:
+        raise CampaignContractError("campaign checkpoint schema is unsupported")
+    if schema_name == CAMPAIGN_CHECKPOINT_V2_SCHEMA:
+        expected = _effective_checkpoint_id(
+            row["sources"], row["outputs"], row["correction"]
+        )
+    else:
+        expected = _checkpoint_id(row["sources"], row["outputs"])
+    if row["checkpoint_id"] != expected:
         raise CampaignContractError("campaign checkpoint identity is inconsistent")
     if row["training_eligible"] is not False or row["authority"] != FALSE_AUTHORITY:
         raise CampaignContractError("campaign checkpoint authority must remain false")
@@ -1125,6 +1596,7 @@ def _verify_checkpoint(
     session: LedgerSnapshot,
     campaigns: LedgerSnapshot,
     outcomes: LedgerSnapshot,
+    activation_receipt: dict[str, Any] | None = None,
 ) -> None:
     if checkpoint is None:
         return
@@ -1136,6 +1608,233 @@ def _verify_checkpoint(
     )
     _verify_receipt(checkpoint["outputs"]["campaigns"], campaigns, CAMPAIGNS_PATH)
     _verify_receipt(checkpoint["outputs"]["outcomes"], outcomes, OUTCOMES_PATH)
+    if checkpoint["schema"] == CAMPAIGN_CHECKPOINT_V2_SCHEMA:
+        _verify_effective_checkpoint(
+            checkpoint, campaigns, outcomes, activation_receipt
+        )
+
+
+def _checkpoint_policy_receipt(policy: CorrectionPolicy) -> dict[str, Any]:
+    return {
+        "policy_id": policy.value["policy_id"],
+        "policy_version": policy.value["policy_version"],
+        "path": CORRECTION_POLICY_PATH.as_posix(),
+        "file_sha256": policy.file_sha256,
+    }
+
+
+def _key_digest(keys: Iterable[tuple[str, str]]) -> str:
+    encoded = b"".join(
+        canonical_bytes({"campaign_revision_id": revision, "horizon": horizon}) + b"\n"
+        for revision, horizon in sorted(keys)
+    )
+    return _sha256(encoded)
+
+
+def _build_effective_checkpoint(
+    episodes: LedgerSnapshot,
+    h60: LedgerSnapshot,
+    session: LedgerSnapshot,
+    view: EffectiveOutcomeView,
+    receipt: dict[str, Any],
+) -> dict[str, Any]:
+    sources = {
+        "episodes": _receipt(episodes),
+        "h60_outcomes": _receipt(h60),
+        "session_outcomes": _receipt(session),
+    }
+    outputs = {
+        "campaigns": _receipt(view.campaigns),
+        "outcomes": _receipt(view.outcomes),
+    }
+    lawful_count = view.policy.value["lawful_prefix"]["outcomes"]["records"]
+    incident_count = view.policy.incident_generation["outcomes"]["records"]
+    quarantine_keys = view.quarantined_keys
+    quarantine_digest = _key_digest(quarantine_keys)
+    global_digest = _key_digest(view.occupied_keys)
+    correction = {
+        "policy": receipt["policy"],
+        "activation_receipt_id": receipt["receipt_id"],
+        "activation_receipt_time": receipt["activated_at"],
+        "activation_receipt_sha256": receipt["receipt_sha256"],
+        "lawful_prefix": {
+            "path": OUTCOMES_PATH,
+            "start_row": 1,
+            "end_row": lawful_count,
+            "count": lawful_count,
+            "prefix_sha256": _prefix_sha256(view.outcomes, lawful_count),
+        },
+        "incident_prefix": {
+            "path": OUTCOMES_PATH,
+            "start_row": 1,
+            "end_row": incident_count,
+            "count": incident_count,
+            "prefix_sha256": _prefix_sha256(view.outcomes, incident_count),
+        },
+        "quarantine": {
+            "path": OUTCOMES_PATH,
+            "start_row": lawful_count + 1,
+            "end_row": incident_count,
+            "count": len(view.quarantined_rows),
+            # Reserved by the quarantine itself — only the keys present in
+            # the quarantined rows. A tail append leaves this fixed while
+            # the global occupied key set grows.
+            "reserved_key_count": len(quarantine_keys),
+            "reserved_key_digest": quarantine_digest,
+        },
+        "reserved_keys": {
+            # Global occupied key set — admitted rows + quarantined rows.
+            "count": len(view.occupied_keys),
+            "digest": global_digest,
+        },
+        "physical_raw_outcomes": view.raw_count,
+        "effective_outcomes": view.effective_count,
+    }
+    checkpoint = {
+        "schema": CAMPAIGN_CHECKPOINT_V2_SCHEMA,
+        "checkpoint_id": _effective_checkpoint_id(sources, outputs, correction),
+        "policy": "checkpoint-last-exact-prefix-with-effective-outcome-view/v1",
+        "sources": sources,
+        "outputs": outputs,
+        "correction": correction,
+        "training_eligible": False,
+        "authority": dict(FALSE_AUTHORITY),
+    }
+    validate_checkpoint(checkpoint)
+    return checkpoint
+
+
+def _effective_checkpoint_id(
+    sources: dict[str, Any],
+    outputs: dict[str, Any],
+    correction: dict[str, Any],
+) -> str:
+    # The v2 identity binds to the canonical correction policy + the
+    # activation receipt binding (id/time/sha256) + the physical/effective
+    # counts and the quarantine/global key digests, in addition to the
+    # source/output receipts. Sources alone never identify an effective
+    # checkpoint; a different valid receipt for the same physical source
+    # yields a different id and any tamper fails verification.
+    bound_correction = {
+        "policy": correction["policy"],
+        "activation_receipt_id": correction["activation_receipt_id"],
+        "activation_receipt_time": correction["activation_receipt_time"],
+        "activation_receipt_sha256": correction["activation_receipt_sha256"],
+        "lawful_prefix": correction["lawful_prefix"],
+        "incident_prefix": correction["incident_prefix"],
+        "quarantine": correction["quarantine"],
+        "reserved_keys": correction["reserved_keys"],
+        "physical_raw_outcomes": correction["physical_raw_outcomes"],
+        "effective_outcomes": correction["effective_outcomes"],
+    }
+    return _stable_id(
+        "ocp",
+        CAMPAIGN_CHECKPOINT_V2_SCHEMA,
+        _sha256(
+            canonical_bytes(
+                {
+                    "sources": sources,
+                    "outputs": outputs,
+                    "correction": bound_correction,
+                }
+            )
+        ),
+    )
+
+
+def _verify_effective_checkpoint(
+    checkpoint: dict[str, Any],
+    campaigns: LedgerSnapshot,
+    outcomes: LedgerSnapshot,
+    activation_receipt: dict[str, Any] | None,
+) -> None:
+    correction = checkpoint["correction"]
+    policy = CorrectionPolicy.load_canonical()
+    # Quarantined rows occupy physical rows lawful_count+1..incident_count.
+    # Their semantic keys are RESERVED by the correction even though the
+    # rows themselves are NOT admitted into the effective view. Build the
+    # two key sets separately: quarantine reserved keys come ONLY from the
+    # quarantined rows, and the global occupied key set is the union.
+    quarantine_rows = outcomes.rows[
+        correction["lawful_prefix"]["count"]: correction["incident_prefix"]["count"]
+    ]
+    quarantine_keys = frozenset(
+        _campaign_outcome_key(item.value) for item in quarantine_rows
+    )
+    # The global occupied key set is the union of admitted rows and
+    # quarantined rows — i.e. the entire physical ledger.
+    view_keys = frozenset(
+        _campaign_outcome_key(item.value) for item in outcomes.rows
+    )
+    lawful = correction["lawful_prefix"]
+    incident = correction["incident_prefix"]
+    quarantine = correction["quarantine"]
+    reserved = correction["reserved_keys"]
+    if (
+        correction["policy"] != _checkpoint_policy_receipt(policy)
+        or lawful["prefix_sha256"]
+        != policy.value["lawful_prefix"]["outcomes"]["prefix_sha256"]
+        or incident["prefix_sha256"]
+        != policy.incident_generation["outcomes"]["prefix_sha256"]
+        or _prefix_sha256(outcomes, lawful["count"]) != lawful["prefix_sha256"]
+        or _prefix_sha256(outcomes, incident["count"]) != incident["prefix_sha256"]
+        or quarantine["reserved_key_count"] != len(quarantine_keys)
+        or quarantine["reserved_key_digest"] != _key_digest(quarantine_keys)
+        or reserved != {
+            "count": len(view_keys),
+            "digest": _key_digest(view_keys),
+        }
+        or correction["physical_raw_outcomes"] != outcomes.count
+        or correction["effective_outcomes"]
+        != max(outcomes.count - quarantine["count"], 0)
+    ):
+        raise CampaignContractError(
+            "campaign effective checkpoint metadata is inconsistent"
+        )
+    # The checkpoint identity is bound to the activation receipt: id, time,
+    # sha256, policy, and all six preconditions must match the canonical
+    # receipt and the recorded binding. Any tamper in the stored metadata or
+    # in the receipt itself fails here.
+    if activation_receipt is None:
+        raise CampaignContractError(
+            "campaign effective checkpoint continuation requires an activation receipt"
+        )
+    if (
+        activation_receipt.get("receipt_id")
+        != correction["activation_receipt_id"]
+        or activation_receipt.get("activated_at")
+        != correction["activation_receipt_time"]
+        or activation_receipt.get("receipt_sha256")
+        != correction["activation_receipt_sha256"]
+        or activation_receipt.get("policy") != correction["policy"]
+    ):
+        raise CampaignContractError(
+            "campaign effective checkpoint activation receipt binding is mismatched"
+        )
+    receipt_preconditions = activation_receipt.get("activation_preconditions")
+    expected_preconditions = policy.activation_preconditions
+    if not isinstance(receipt_preconditions, dict) or any(
+        receipt_preconditions.get(name) is not True
+        for name in expected_preconditions
+    ):
+        raise CampaignContractError(
+            "campaign effective checkpoint activation preconditions are unmet"
+        )
+    unsigned = dict(activation_receipt)
+    unsigned.pop("receipt_sha256", None)
+    if _sha256(canonical_bytes(unsigned)) != activation_receipt["receipt_sha256"]:
+        raise CampaignContractError(
+            "campaign effective checkpoint activation receipt digest is inconsistent"
+        )
+    if (
+        checkpoint["checkpoint_id"]
+        != _effective_checkpoint_id(
+            checkpoint["sources"], checkpoint["outputs"], correction
+        )
+    ):
+        raise CampaignContractError(
+            "campaign effective checkpoint identity is inconsistent"
+        )
 
 
 def _append_snapshot(snapshot: LedgerSnapshot, rows: Iterable[dict[str, Any]]) -> LedgerSnapshot:
@@ -1174,9 +1873,17 @@ class CampaignPlan:
     campaign_rows: tuple[dict[str, Any], ...]
     outcome_rows: tuple[dict[str, Any], ...]
     pending_outcomes: int
+    # The checkpoint that was already on disk before this run — the caller
+    # uses its schema to decide whether a v2 continuation requires an
+    # activation receipt before any ledger write.
+    existing_checkpoint: dict[str, Any] | None
 
 
-def _plan(repo_root: Path) -> CampaignPlan:
+def _plan(
+    repo_root: Path,
+    *,
+    activation_receipt: dict[str, Any] | None = None,
+) -> CampaignPlan:
     episodes = load_ledger(repo_root / EPISODES_PATH, EPISODES_PATH)
     h60 = load_ledger(repo_root / H60_PATH, H60_PATH)
     session = load_ledger(repo_root / SESSION_PATH, SESSION_PATH)
@@ -1194,8 +1901,53 @@ def _plan(repo_root: Path) -> CampaignPlan:
         groups=episode_groups,
         prefix_cache=prefix_cache,
     )
+    # V2 continuation guard: the binding check fires FIRST, before the
+    # canonical receipt validation that runs inside `build_effective_outcome_view`.
+    # A tampered receipt on a v2 continuation must surface as "binding is
+    # mismatched" (or "requires an activation receipt" when missing) rather
+    # than as a canonical-shape failure inside the view builder.
+    if (
+        checkpoint is not None
+        and checkpoint.get("schema") == CAMPAIGN_CHECKPOINT_V2_SCHEMA
+    ):
+        if activation_receipt is None:
+            raise CampaignContractError(
+                "campaign v2 checkpoint continuation requires an activation receipt"
+            )
+        correction_binding = checkpoint["correction"]
+        if (
+            activation_receipt.get("receipt_id")
+            != correction_binding["activation_receipt_id"]
+            or activation_receipt.get("activated_at")
+            != correction_binding["activation_receipt_time"]
+            or activation_receipt.get("receipt_sha256")
+            != correction_binding["activation_receipt_sha256"]
+            or activation_receipt.get("policy") != correction_binding["policy"]
+        ):
+            raise CampaignContractError(
+                "campaign effective checkpoint activation receipt binding is mismatched"
+            )
+    # Active correction path: validate the exact physical prefix / policy /
+    # receipt first and build the EffectiveOutcomeView BEFORE walking any
+    # outcome history. The admitted rows are the only ones that go through
+    # normal outcome-source validation; quarantined rows retain their raw
+    # bytes / sha256 / physical ordinal and reserve the (revision, horizon)
+    # semantic key WITHOUT going through the normal source-receipt path.
+    if activation_receipt is not None:
+        correction_policy = CorrectionPolicy.load_canonical()
+        effective_view = build_effective_outcome_view(
+            campaigns,
+            outcomes,
+            correction_policy,
+            activation_receipt=activation_receipt,
+        )
+        outcome_source = effective_view.admitted_rows
+        reserved_outcome_keys = effective_view.quarantined_keys
+    else:
+        outcome_source = outcomes.rows
+        reserved_outcome_keys: Iterable[tuple[str, str]] = ()
     existing_outcomes = _outcome_history(
-        outcomes,
+        outcome_source,
         campaign_history,
         episodes,
         h60,
@@ -1204,7 +1956,9 @@ def _plan(repo_root: Path) -> CampaignPlan:
         session_map=session_map,
         prefix_cache=prefix_cache,
     )
-    _verify_checkpoint(checkpoint, episodes, h60, session, campaigns, outcomes)
+    _verify_checkpoint(
+        checkpoint, episodes, h60, session, campaigns, outcomes, activation_receipt
+    )
 
     new_campaigns = _derive_campaign_revisions_from_groups(
         episodes, episode_groups, latest
@@ -1217,6 +1971,7 @@ def _plan(repo_root: Path) -> CampaignPlan:
         session_map,
         h60,
         session,
+        reserved_keys=reserved_outcome_keys,
     )
     outcomes_after = _append_snapshot(outcomes, new_outcomes)
     next_checkpoint = _build_checkpoint(
@@ -1234,10 +1989,17 @@ def _plan(repo_root: Path) -> CampaignPlan:
         campaign_rows=tuple(new_campaigns),
         outcome_rows=tuple(new_outcomes),
         pending_outcomes=pending,
+        existing_checkpoint=checkpoint,
     )
 
 
-def _summary(plan: CampaignPlan, *, wrote: bool, write_skipped: str | None = None) -> dict[str, Any]:
+def _summary(
+    plan: CampaignPlan,
+    *,
+    wrote: bool,
+    write_skipped: str | None = None,
+    checkpoint: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     phases = {"retrospective_context": 0, "prospective_after_rule_freeze": 0}
     for item in plan.campaigns_after.rows:
         phases[item.value["evidence_phase"]] += 1
@@ -1251,7 +2013,7 @@ def _summary(plan: CampaignPlan, *, wrote: bool, write_skipped: str | None = Non
         "campaign_outcomes_total": plan.outcomes_after.count,
         "campaign_outcomes_appended": len(plan.outcome_rows) if wrote else 0,
         "campaign_outcomes_pending": plan.pending_outcomes,
-        "checkpoint_id": plan.checkpoint["checkpoint_id"],
+        "checkpoint_id": (checkpoint or plan.checkpoint)["checkpoint_id"],
         "wrote": wrote,
     }
     if write_skipped is not None:
@@ -1264,31 +2026,116 @@ def run(
     root_dir: Path | None = None,
     dry_run: bool = False,
     before_checkpoint: Callable[[], None] | None = None,
+    correction_activation_receipt_path: Path | None = None,
 ) -> dict[str, Any]:
     """Validate and, only on the nightly lane, append outputs checkpoint-last."""
     repo_root = (root_dir or Path(__file__).resolve().parent.parent).resolve()
+    activation_receipt = (
+        _load_activation_receipt(correction_activation_receipt_path)
+        if correction_activation_receipt_path is not None
+        else None
+    )
     if dry_run or not nightly_advance_enabled():
-        plan = _plan(repo_root)
+        plan = _plan(repo_root, activation_receipt=activation_receipt)
+        checkpoint = _effective_checkpoint_for_plan(plan, activation_receipt)
         return _summary(
             plan,
             wrote=False,
             write_skipped=("dry_run" if dry_run else "COLLECT_LANE is not nightly"),
+            checkpoint=checkpoint,
         )
 
     lock_name = _sha256(str(repo_root).encode("utf-8"))[:16]
     lock_path = Path(tempfile.gettempdir()) / f"options-signal-campaign-{lock_name}.lock"
     with lock_path.open("a+b") as lock_handle:
         fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX)
-        plan = _plan(repo_root)
+        plan = _plan(repo_root, activation_receipt=activation_receipt)
+        checkpoint = _effective_checkpoint_for_plan(plan, activation_receipt)
         _atomic_write(repo_root / CAMPAIGNS_PATH, plan.campaigns_after.raw)
         _atomic_write(repo_root / OUTCOMES_PATH, plan.outcomes_after.raw)
         if before_checkpoint is not None:
             before_checkpoint()
         _atomic_write(
             repo_root / CHECKPOINT_PATH,
-            canonical_bytes(plan.checkpoint) + b"\n",
+            canonical_bytes(checkpoint) + b"\n",
         )
-        return _summary(plan, wrote=True)
+        return _summary(plan, wrote=True, checkpoint=checkpoint)
+
+
+def _load_activation_receipt(path: Path) -> dict[str, Any]:
+    resolved = path.resolve()
+    if resolved.is_symlink() or not resolved.is_file():
+        raise CampaignContractError(
+            "campaign correction activation receipt is unavailable"
+        )
+    raw = resolved.read_bytes()
+    try:
+        value = _strict_loads(raw)
+    except Exception as exc:  # noqa: BLE001
+        raise CampaignContractError(
+            "campaign correction activation receipt is malformed"
+        ) from exc
+    if not isinstance(value, dict) or canonical_bytes(value) + b"\n" != raw:
+        raise CampaignContractError(
+            "campaign correction activation receipt is not canonical JSON"
+        )
+    # Validate shape only here. The full canonical check (digest consistency,
+    # policy block match against the correction policy) is deferred to
+    # `_verify_activation_receipt` so the v2 continuation binding check in
+    # `_verify_effective_checkpoint` is the FIRST failure when a tampered
+    # receipt continues an existing v2 checkpoint.
+    _verify_receipt_shape(value)
+    return value
+
+
+def _effective_checkpoint_for_plan(
+    plan: CampaignPlan,
+    activation_receipt: dict[str, Any] | None,
+) -> dict[str, Any]:
+    existing_schema = (
+        plan.existing_checkpoint["schema"]
+        if plan.existing_checkpoint is not None
+        else None
+    )
+    # V2 continuation: once an effective checkpoint has been written to
+    # disk, EVERY continuation requires an eligible exact-bound activation
+    # receipt that matches the recorded binding. Missing or mismatched
+    # receipt fails BEFORE any ledger / checkpoint write here. The default
+    # never-activated v1 path is unchanged: no existing v2 → no receipt
+    # required → v1 checkpoint returned as before.
+    if existing_schema == CAMPAIGN_CHECKPOINT_V2_SCHEMA:
+        if activation_receipt is None:
+            raise CampaignContractError(
+                "campaign v2 checkpoint continuation requires an activation receipt"
+            )
+        recorded = plan.existing_checkpoint["correction"]
+        if (
+            activation_receipt["receipt_id"] != recorded["activation_receipt_id"]
+            or activation_receipt["activated_at"]
+            != recorded["activation_receipt_time"]
+            or activation_receipt["receipt_sha256"]
+            != recorded["activation_receipt_sha256"]
+            or activation_receipt["policy"] != recorded["policy"]
+        ):
+            raise CampaignContractError(
+                "campaign v2 checkpoint activation receipt binding is mismatched"
+            )
+    if activation_receipt is None:
+        return plan.checkpoint
+    policy = CorrectionPolicy.load_canonical()
+    view = build_effective_outcome_view(
+        plan.campaigns_after,
+        plan.outcomes_after,
+        policy,
+        activation_receipt=activation_receipt,
+    )
+    return _build_effective_checkpoint(
+        plan.episodes,
+        plan.h60,
+        plan.session,
+        view,
+        activation_receipt,
+    )
 
 
 __all__ = [
@@ -1304,6 +2151,11 @@ __all__ = [
     "LedgerSnapshot",
     "canonical_bytes",
     "canonical_strike",
+    "CAMPAIGN_CHECKPOINT_V2_SCHEMA",
+    "CORRECTION_ACTIVATION_SCHEMA",
+    "CorrectionPolicy",
+    "EffectiveOutcomeView",
+    "build_effective_outcome_view",
     "derive_campaign_revisions",
     "derive_campaign_outcomes",
     "load_ledger",
