@@ -67,9 +67,10 @@ verified:
       Read .github/ci/legacy-jobs.yml on current main and #6803 head and search for
       session-anchor-era / temporal_scale targets.
     result: >
-      #6803 has session-anchor-era with all test_temporal_scale_* files; current main has neither
-      string in that manifest. Current-main code acceptance therefore still needs an exact
-      compatibility repair/proof.
+      Both current main and #6803 retain session-anchor-era and its three incumbent anchor suites.
+      #6803 additionally appends seven test_temporal_scale_* files that cannot appear on current main
+      before the implementation merges. Current-main code acceptance therefore needs a surgical
+      composition of the current manifest plus those seven targets, not restoration of the old manifest.
 unverified:
   - claim: This recovery branch passes Agent OS validation and repository CI.
     what_would_verify: >
