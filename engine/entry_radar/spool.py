@@ -88,6 +88,7 @@ from engine.entry_radar.contracts import (
     Nomination,
     NominationError,
     ProducerRead,
+    finite_or_none,
     iso,
     parse_ts,
     utcnow,
@@ -397,8 +398,6 @@ def tap_hot_tape_events(events: Iterable[Any], *,
     vintage is a real degradation of PIT quality, and saying so is cheaper than
     inventing a vintage.
     """
-    from engine.entry_radar.producers.base import finite_or_none
-
     stamp = now or utcnow()
     asof = source_asof or stamp
     clamped = asof > stamp

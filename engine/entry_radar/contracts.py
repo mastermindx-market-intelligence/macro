@@ -156,6 +156,26 @@ def utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def finite_or_none(value: Any) -> float | None:
+    """A finite float, or None for anything else.  Never raises.
+
+    It lives here, not in ``producers/base.py``, because the spool imports it and other
+    lanes import the spool: a helper in the producer package would pull that package into
+    every one of those lanes' import closure.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    if getattr(getattr(value, "dtype", None), "kind", None) == "b":
+        return None
+    try:
+        out = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if not math.isfinite(out):
+        return None
+    return out
+
+
 def iso(ts: datetime | None) -> str | None:
     """Serialise a tz-aware datetime as ``...Z`` (the house live-plane form)."""
     if ts is None:
@@ -267,7 +287,11 @@ class Nomination:
                 raise NominationError(
                     f"nomination for {self.ticker} carries a non-finite or non-numeric "
                     f"source_value {self.source_value!r}")
-            if not math.isfinite(float(self.source_value)):
+            try:
+                finite = math.isfinite(float(self.source_value))
+            except OverflowError:
+                finite = False
+            if not finite:
                 raise NominationError(
                     f"nomination for {self.ticker} carries a non-finite or non-numeric "
                     f"source_value {self.source_value!r}")

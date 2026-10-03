@@ -34,7 +34,6 @@ from __future__ import annotations
 
 import json
 import logging
-import math
 from collections.abc import Mapping, Sequence
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -44,6 +43,7 @@ from engine.entry_radar.contracts import (
     Nomination,
     NominationError,
     ProducerRead,
+    finite_or_none,
     parse_ts,
     utcnow,
 )
@@ -64,21 +64,6 @@ _ASOF_KEYS: tuple[str, ...] = (
 #: Candidate keys for a per-row ticker.  Track C confirms ``ticker`` is the
 #: house field; ``sym``/``symbol`` appear in the live and breadth lanes.
 _TICKER_KEYS: tuple[str, ...] = ("ticker", "sym", "symbol")
-
-
-def finite_or_none(value: Any) -> float | None:
-    """A producer-side numeric: finite float or None, never raises."""
-    if value is None:
-        return None
-    if isinstance(value, bool):
-        return None
-    try:
-        out = float(value)
-    except (TypeError, ValueError):
-        return None
-    if not math.isfinite(out):
-        return None
-    return out
 
 
 def first_key(row: Mapping[str, Any], keys: Sequence[str]) -> Any:

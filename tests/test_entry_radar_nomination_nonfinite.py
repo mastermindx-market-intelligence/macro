@@ -253,3 +253,52 @@ def test_spool_accepts_a_pass_that_had_a_nan_row(tmp_path):
     json.loads(blob, parse_constant=_reject_nonstandard_constants)
     payload = json.loads(blob)
     assert payload["n_nominations"] == 1
+
+
+def test_finite_or_none_never_raises_on_a_huge_integer_or_a_numpy_bool():
+    import numpy as np
+
+    assert finite_or_none(10**400) is None
+    assert finite_or_none(np.bool_(True)) is None
+    assert finite_or_none(np.array([True])) is None
+    assert finite_or_none(np.array([1.0, 2.0])) is None
+    assert finite_or_none(np.int64(4)) == 4.0
+
+
+def test_nomination_refuses_an_integer_too_large_for_a_float():
+    with pytest.raises(NominationError, match="source_value"):
+        _nomination(source_value=10**400)
+
+
+def test_nomination_refuses_numpy_bool_source_value():
+    import numpy as np
+
+    with pytest.raises(NominationError, match="source_value"):
+        _nomination(source_value=np.bool_(True))
+
+
+def test_the_helper_has_one_home_in_the_contracts_module():
+    from engine.entry_radar import contracts, spool
+    from engine.entry_radar.producers import base
+
+    assert base.finite_or_none is contracts.finite_or_none
+    assert spool.finite_or_none is contracts.finite_or_none
+
+
+def test_the_spool_imports_nothing_from_the_engine_but_the_contracts_module():
+    """Other lanes import the spool, and their CI scope names contracts.py and spool.py only.
+
+    Any other engine import here — at the top or inside a function — pulls that module into
+    every one of those lanes' import closure, and their scope stops covering it.
+    """
+    import ast
+
+    tree = ast.parse((ROOT / "engine" / "entry_radar" / "spool.py").read_text(encoding="utf-8"))
+    imported = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom):
+            imported.add("." * node.level + (node.module or ""))
+        elif isinstance(node, ast.Import):
+            imported.update(alias.name for alias in node.names)
+    inside = sorted(name for name in imported if name.startswith(("engine", ".")))
+    assert inside == ["engine.entry_radar.contracts"], inside
