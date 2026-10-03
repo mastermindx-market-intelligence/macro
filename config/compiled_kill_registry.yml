@@ -643,6 +643,13 @@ entries:
     section: 2
     section_name: killed_signal_families
 
+  - topic: 'Mastermind trend-persistence path-shape features (trailing drawdown depth, distance from the high, time since the high, path smoothness — the 29 confirmed V2 tests on twelve features) as a calibrated drawdown-risk profile, shadow snapshot or advisory field'
+    key: KILL-TREND-PERSISTENCE-PATH-FEATURE-PROFILE
+    verdict: 'NULL ON MODEL VALUE (pre-registered Wave B2, run once 2026-10-03) — added to a model of trailing returns, beta and detailed volatility, the features lift out-of-sample rank IC against forward maximum drawdown by 0.001–0.002 and add no top-tenth capture (+0.00 / −0.14 points against a pre-set 1.0 bar); the forward-return test was null 0/72 (V1). Closes these constructions only: revive ONLY with new constructions or sector/group persistence under a fresh prereg on formation dates after 2026-06-02 (2022-07-06..2026-06-02 have been scored twice)'
+    source: 'Mastermind `research/TREND_PERSISTENCE_READOUT.md` §11 (Mastermind PR 1155) + `DEC:TREND-PERSISTENCE-STOPS-AT-WAVE-B`'
+    section: 2
+    section_name: killed_signal_families
+
   - topic: 'Ticker-cluster bootstrap CIs without time control'
     key: LAW-TIME-CLUSTERED-CI
     verdict: 'FORBIDDEN estimator — anti-conservative, effective N = months'
