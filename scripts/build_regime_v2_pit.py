@@ -92,11 +92,11 @@ PIT_CLASSES = ("pit_vintage", "revised_latest", "mixed")
 # inputs.build_features rolling mean. All offsets refer to aligned feature rows,
 # NOT months, calendar days or exchange sessions. Scoring itself is unchanged.
 MACRO_WINDOW_SPECS = {
-    "payrolls": {"feature": "payrolls", "lag_rows": 63, "smooth_rows": 1, "min_periods": 1},
-    "indpro": {"feature": "indpro", "lag_rows": 252, "smooth_rows": 1, "min_periods": 1},
-    "wei": {"feature": "wei", "lag_rows": 65, "smooth_rows": 1, "min_periods": 1},
-    "gdpnow": {"feature": "gdpnow", "lag_rows": 63, "smooth_rows": 1, "min_periods": 1},
-    "sticky_cpi": {"feature": "sticky_cpi_3m", "lag_rows": 63, "smooth_rows": 63, "min_periods": 21},
+    "payrolls": {"scored_feature": "payrolls", "lag_rows": 63, "smooth_rows": 1, "min_periods": 1},
+    "indpro": {"scored_feature": "indpro", "lag_rows": 252, "smooth_rows": 1, "min_periods": 1},
+    "wei": {"scored_feature": "wei", "lag_rows": 65, "smooth_rows": 1, "min_periods": 1},
+    "gdpnow": {"scored_feature": "gdpnow", "lag_rows": 63, "smooth_rows": 1, "min_periods": 1},
+    "sticky_cpi": {"scored_feature": "sticky_cpi_3m", "lag_rows": 63, "smooth_rows": 63, "min_periods": 21},
 }
 MACRO_WINDOW_COLUMNS = (
     "macro_window_basis", "macro_window_revised_legs",
@@ -104,10 +104,32 @@ MACRO_WINDOW_COLUMNS = (
 )
 
 
+def _per_value_source_dates(source: pd.Series, index: pd.DatetimeIndex) -> pd.Series:
+    """For each row in `index`, the source's last index date <= row date where
+    the source had a finite observation. NaT when no prior finite observation
+    exists in the source."""
+    if not isinstance(source, pd.Series) or len(source) == 0:
+        return pd.Series(pd.NaT, index=index)
+    finite = source.dropna()
+    if finite.empty:
+        return pd.Series(pd.NaT, index=index)
+    src_idx = pd.DatetimeIndex(finite.index)
+    if src_idx.hasnans or not src_idx.is_monotonic_increasing:
+        src_idx = src_idx.sort_values()
+    positions = src_idx.searchsorted(index, side="right") - 1
+    out = pd.Series(pd.NaT, index=index)
+    valid = (positions >= 0) & (positions < len(src_idx))
+    if valid.any():
+        out.iloc[valid.nonzero()[0]] = src_idx[positions[valid]]
+    return out
+
+
 def macro_window_provenance(
     features: pd.DataFrame,
     active: dict[str, pd.Series],
     coverage_start: dict[str, pd.Timestamp | None],
+    *,
+    sources: dict[str, pd.Series] | None = None,
 ) -> tuple[pd.DataFrame, dict]:
     """Describe the contributing slow-component inputs, never certify a replay.
 
@@ -116,8 +138,20 @@ def macro_window_provenance(
     on the non-null observations of BOTH rolling means, honoring min_periods;
     missing observations do not become revised inputs or a uniform embargo.
 
-    None coverage means a known latest-revised fallback. An absent coverage key
-    or component activity series is unknown, not proof of inactivity. The legacy
+    Per-value provenance: when `sources` provides an un-forward-filled leg
+    series for a leg, `revised` is set from the per-value source date (the
+    last index date at which the source had a finite observation, carried
+    forward the same way the value is) rather than the row's own date. A
+    forward-filled post-coverage row whose supplying observation predates
+    `first` is therefore still `revised_fallback_inputs`, never
+    `initial_vintage_inputs`. A NaN initial-vintage value never upgrades a
+    label. If the function cannot obtain an un-filled source for a leg
+    (neither `sources[leg]` nor the corresponding `features[leg]` column),
+    affected rows resolve to `unknown_inputs`.
+
+    None coverage means a known latest-revised fallback. An unparseable
+    coverage value resolves to unknown. An absent coverage key or component
+    activity series is unknown, not proof of inactivity. The legacy
     pit_class, model inputs, scores and state machine are never modified.
     """
     if not isinstance(features, pd.DataFrame):
@@ -150,11 +184,25 @@ def macro_window_provenance(
         elif coverage_start[leg] is None:
             revised = finite.copy()
         else:
-            first = pd.Timestamp(coverage_start[leg])
-            if pd.isna(first) or (first.tzinfo is None) != (index.tz is None):
+            first = None
+            try:
+                first = pd.Timestamp(coverage_start[leg])
+            except (ValueError, TypeError):
+                first = None
+            if first is None or pd.isna(first) or (first.tzinfo is None) != (index.tz is None):
                 unknown |= finite
             else:
-                revised = finite & (index < first)
+                source = None
+                if sources is not None and leg in sources:
+                    source = sources[leg]
+                else:
+                    source = features.get(leg)
+                if not isinstance(source, pd.Series) or len(source) == 0:
+                    unknown |= finite
+                else:
+                    source_dates = _per_value_source_dates(source, index)
+                    revised = finite & source_dates.notna() & (source_dates < first)
+                    unknown |= finite & source_dates.isna()
         window, minimum, lag = spec["smooth_rows"], spec["min_periods"], spec["lag_rows"]
         counts = finite.astype(int).rolling(window, min_periods=1).sum()
         usable = counts >= minimum
@@ -206,7 +254,8 @@ def macro_window_provenance(
         "market_input_availability_verified": False,
         "fitted_model_and_state_history_verified": False,
         "actual_historical_issuance_verified": False,
-        "note": "Initial-vintage input support is not complete as-of information, fitted-model provenance or an issued forecast.",
+        "state_columns_qualified": False,
+        "note": "Initial-vintage input support is not complete as-of information, fitted-model provenance or an issued forecast. macro_window_* columns qualify the slow-component input windows only; they do not qualify quad, pending_quad, or any other state column because confirmation hysteresis can carry a state entered under revised inputs into rows whose inputs are initial-vintage.",
     }
     return result, audit
 
@@ -471,6 +520,34 @@ def divergence_audit(pit: pd.DataFrame, rev: pd.DataFrame,
 # --------------------------------------------------------------------------- #
 # Build
 # --------------------------------------------------------------------------- #
+def _state_inheritance(quad: pd.Series | None, basis: pd.Series) -> dict:
+    """Count and first/last date of rows whose `macro_window_basis` is
+    `initial_vintage_inputs` while the start of their current contiguous
+    `quad` run has a different basis. Confirmation hysteresis can carry a
+    state entered under revised inputs into rows whose inputs are
+    initial-vintage, so the `macro_window_*` columns must not be used to
+    qualify `quad`, `pending_quad`, or any other state column. The audit
+    always reports this count so consumers can see the surface area of
+    the effect — `state_columns_qualified` is False regardless of size."""
+    empty = {"n_rows": 0, "first_date": None, "last_date": None}
+    if quad is None or len(quad) == 0 or len(basis) == 0:
+        return empty
+    df = pd.DataFrame({"quad": quad, "basis": basis}).dropna(subset=["quad"])
+    if df.empty:
+        return empty
+    grp = (df["quad"] != df["quad"].shift()).cumsum()
+    df = df.assign(_run_start_basis=df.groupby(grp)["basis"].transform("first"))
+    flagged = df[(df["basis"] == "initial_vintage_inputs")
+                 & (df["_run_start_basis"] != "initial_vintage_inputs")]
+    if flagged.empty:
+        return empty
+    return {
+        "n_rows": int(len(flagged)),
+        "first_date": str(pd.Timestamp(flagged.index[0]).date()),
+        "last_date": str(pd.Timestamp(flagged.index[-1]).date()),
+    }
+
+
 def build_frames(vintages: pd.DataFrame | None = None) -> tuple[pd.DataFrame, dict]:
     """Returns (pit_history_frame, divergence_dict). Pure compute — no writes."""
     from collectors.fred import load_vintages
@@ -517,8 +594,9 @@ def build_frames(vintages: pd.DataFrame | None = None) -> tuple[pd.DataFrame, di
     out["pit_class"] = pc["pit_class"]
     out["fallback_notes"] = pc["fallback_notes"]
     out["vintage_store_asof"] = vintage_store_asof
-    windows, window_audit = macro_window_provenance(f_pit, active, coverage_start)
+    windows, window_audit = macro_window_provenance(f_pit, active, coverage_start, sources=overrides)
     out = out.join(windows.reindex(out.index))
+    window_audit["state_inheritance"] = _state_inheritance(out.get("quad"), out["macro_window_basis"])
 
     committed = None
     hist_path = config.data_dir() / "regime" / "regime_history.parquet"

@@ -1,0 +1,66 @@
+{
+  "operation": "regime-window-basis-repair-20261003-001",
+  "lane": "claude/gri-8304-window-basis-repair-20261003",
+  "parent_operation": "regime-window-basis-20261002-astra-001",
+  "parent_receipt": "research/macro_regime_intelligence/window_basis_verification_20261002.json",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "mission_complete": false,
+  "source_sha256": {
+    "scripts/build_regime_v2_pit.py": "8206fdb9aa8a9d52537a5c97a9d10ffdfbd383fb5f62ac8876cc3502d8829ad7",
+    "tests/test_regime_v2_pit.py": "cb0cdaea73f0f2f1935b0367598a7e056ae21ddba6f9ee322bd943b1c632d8c4",
+    "config/synapse.yml": "2d85326ef5545605529afa6aa36a8c339c3d341e1d1cc97bbf9c43b2eb07fbc6"
+  },
+  "source_renames": {
+    "MACRO_WINDOW_SPECS key \"feature\" -> \"scored_feature\"": "renamed everywhere declared or serialized; dependency-description test updated; historical window_basis_verification_20261002.json left untouched"
+  },
+  "synthetic_run": {
+    "transport": "fixture only; real engine alignment, axes, classifier, flags, state machine, builder, CLI",
+    "data_store": "NOT touched (no real or production data store was used)",
+    "n_rows": 480,
+    "first_date": "2020-01-01",
+    "last_date": "2021-11-02",
+    "macro_window_basis_counts": {
+      "revised_fallback_inputs": 262,
+      "initial_vintage_inputs": 155,
+      "no_active_macro_components": 63
+    },
+    "state_inheritance": {
+      "n_rows": 155,
+      "first_date": "2020-11-11",
+      "last_date": "2021-11-02"
+    },
+    "all_qualification_flags": {
+      "legacy_pit_class_changed": false,
+      "numeric_model_changed": false,
+      "historical_replay_eligible": false,
+      "market_input_availability_verified": false,
+      "fitted_model_and_state_history_verified": false,
+      "actual_historical_issuance_verified": false,
+      "state_columns_qualified": false
+    },
+    "dependency_renamed_key_present": true,
+    "dependency_old_key_absent": true
+  },
+  "test_evidence": {
+    "W1_six_flags": "flipping each of the six qualification flags to True in turn surfaces failing tests in the parameterized lag-endpoint test, the actual builder test, and the actual CLI test; 6 red lines captured in the lane run",
+    "W2_per_value_provenance": "row 163 (post-coverage, lag window entirely post-coverage) labels revised_fallback_inputs with the per-value fix; row-date logic returns initial_vintage_inputs at the same row, producing the RED line in test (a); test (b) confirms normal legs unchanged; test (c) confirms unknown when no source is available",
+    "W3_state_scope": "state_columns_qualified=False and state_inheritance {n_rows, first_date, last_date} are asserted on both the builder test and the CLI test",
+    "W4_rename": "spec[\"scored_feature\"] is asserted by the dependency-description test; spec[\"feature\"] is no longer present",
+    "W5_unparseable_coverage": "coverage_start=\"not-a-date\" resolves that leg to unknown_inputs instead of raising",
+    "W6_preservation": "no pre-existing test modified except where it reads the renamed key; pit_class and fallback_notes parity still asserted on the saved source"
+  },
+  "out_of_scope": [
+    "engine/**",
+    ".github/**",
+    "data/**",
+    "site/**",
+    "config/unrun_test_baseline.json"
+  ],
+  "not_claimed": [
+    "no real-store run",
+    "no write under data/",
+    "no gh mutations",
+    "no force-push",
+    "no push to the original PR branch"
+  ]
+}

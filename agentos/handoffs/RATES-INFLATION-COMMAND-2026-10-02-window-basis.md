@@ -103,3 +103,40 @@ returned on those PRs is preserved, with their whole-PR review requests still op
 
 This checkpoint accompanies code and evidence; it does not finish the mission,
 transfer custody, authorize a source replay, or release any production/merge hold.
+
+---
+
+## 2026-10-03 correction paragraph (lane `claude/gri-8304-window-basis-repair-20261003`)
+
+The 2026-10-02 candidate above left two defects the five independent reviews
+flagged at the same time and is repaired in this dated lane only — not in
+the historical 2026-10-02 record.
+
+- **Source-date basis, not row-date.** The `revised` label was decided from
+  the row's own date. That is the wrong axis once `engine.inputs.put()` has
+  forward-filled a pre-coverage value into post-coverage rows: the row date
+  is `>= first`, so the window flipped to `initial_vintage_inputs` even
+  though every actual observation behind it pre-dated coverage. The
+  function now takes a keyword-only `sources=` argument (the `overrides`
+  dict in `build_frames`); the per-value source date is the last index
+  date at which the un-forward-filled leg series had a finite observation,
+  carried forward the same way the value is. A NaN initial-vintage value
+  never upgrades a label. When the function cannot obtain a source for a
+  leg, affected rows resolve to `unknown_inputs` (test (c)).
+- **State is out of scope.** The `macro_window_*` columns say nothing
+  about `quad` or `pending_quad`. Confirmation hysteresis can carry a
+  state entered under revised inputs into rows whose inputs are
+  initial-vintage. The audit now carries `state_columns_qualified: false`
+  plus a measured `state_inheritance` count, and the source registry is
+  updated to spell out the scope. No new state-qualification column, no
+  state-aware scoring change.
+
+The renamed `scored_feature` key, the explicit six `*_verified` /
+`*_changed` flag assertions on both the function audit and the serialized
+sidecar, and the unparseable `coverage_start` → `unknown_inputs` resolution
+are the smaller items in the same repair; see
+`research/macro_regime_intelligence/WINDOW_BASIS_REPAIR_2026-10-02.md` for
+the dated section. The committed
+`window_basis_verification_20261002.json` is a historical receipt and is
+left untouched; the new facts are written to
+`window_basis_repair_20261003.json` from fixture/synthetic runs only.

@@ -11185,9 +11185,20 @@ artifacts:
       regime_history columns + pit_class {pit_vintage, revised_latest, mixed} +
       fallback_notes (legs that read latest-revised pre vintage coverage) +
       vintage_store_asof. Additive macro_window_basis, macro_window_revised_legs,
-      macro_window_unknown_legs and macro_window_active_count describe the actual
-      contributing slow-component input windows without changing legacy pit_class.
-      This is not complete replay, model-vintage or issuance certification.
+      macro_window_unknown_legs and macro_window_active_count qualify the
+      slow-component INPUT windows only — decided per value from the per-value
+      source date (the last index date at which the un-forward-filled leg
+      series had a finite observation, carried forward the same way the value
+      is) — without changing legacy pit_class, numeric model, scores or state.
+      These columns do NOT qualify quad, pending_quad or any other state
+      column: confirmation hysteresis can carry a state entered under revised
+      inputs into rows whose inputs are initial-vintage. The audit
+      serializes `state_columns_qualified: false` and a measured
+      `state_inheritance` object (count + first/last date of rows whose
+      macro_window_basis is initial_vintage_inputs while the start of their
+      current contiguous quad run has a different basis) so consumers can
+      see the surface area of the effect. This is not complete replay,
+      model-vintage or issuance certification.
       Divergence sidecar: data/regime/regime_v2_pit_divergence.json
       (+ research/REGIME_V2_PIT_DIVERGENCE_AUDIT.md). ADDITIVE — never writes
       regime_history.parquet or latest.json; zero consumers this wave. on-demand

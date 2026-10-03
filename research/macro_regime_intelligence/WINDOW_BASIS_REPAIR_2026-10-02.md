@@ -115,3 +115,53 @@ current-base integration are complete. The parent mission remains incomplete.
 Prepublication composition found the two test additions competing at the same
 CI insertion point. This candidate moves only its own step earlier in the same
 existing code job; the frozen #8301 source is untouched. No test or gate is removed.
+
+## 2026-10-03 repair (lane `claude/gri-8304-window-basis-repair-20261003`)
+
+Five independent reviews of the candidate agreed on the same repair surface;
+this section is a dated correction, not a rewrite of the history above.
+
+- **Per-value provenance (W2).** The `revised` label is now decided from the
+  per-value source date — the last index date at which the un-forward-filled
+  leg series had a finite observation, carried forward the same way the value
+  is. A forward-filled post-coverage row whose supplying observation
+  pre-dates `first` is therefore still `revised_fallback_inputs`, never
+  `initial_vintage_inputs`. A NaN initial-vintage value never upgrades a
+  label. The function accepts a new keyword-only `sources=` argument; in
+  `build_frames` it is the `overrides` dict (the merged live + panel
+  series). When neither `sources[leg]` nor `features[leg]` is available,
+  affected rows resolve to `unknown_inputs` (test (c) below). Synthetic
+  test (a) — sparse source, pre-coverage ffill into the first N post-coverage
+  rows — labels the window `revised_fallback_inputs` and was RED before the
+  fix (`row 163 expected revised_fallback_inputs, got initial_vintage_inputs`)
+  and GREEN after. Test (b) confirms a normal leg with finite initial values
+  is unchanged.
+- **State scope (W3).** The audit gains `state_columns_qualified: false` and
+  a measured `state_inheritance` object (count and first/last date of rows
+  whose `macro_window_basis` is `initial_vintage_inputs` while the start of
+  their current contiguous `quad` run has a different basis). The object is
+  computed in `build_frames` after both `quad` and `macro_window_basis` are
+  available, then attached to the audit. The source registry now spells out
+  that the `macro_window_*` columns qualify slow-component INPUT windows
+  only and do NOT qualify `quad`, `pending_quad` or any state column.
+- **Explicit qualification flags (W1).** The function audit and the
+  serialized sidecar both assert every `*_verified` /
+  `legacy_pit_class_changed` / `numeric_model_changed` /
+  `historical_replay_eligible` flag is False. Verified by flipping each flag
+  in turn to True: every flip surfaces a failing test in the same set
+  (the parameterized lag-endpoint test, the actual builder test, and the
+  actual CLI test).
+- **Key rename (W4).** The unread `MACRO_WINDOW_SPECS` key `feature` is
+  renamed to `scored_feature` everywhere it is declared or serialized
+  (dependencies block, dependency-description test). The committed
+  `window_basis_verification_20261002.json` is a historical receipt and is
+  left untouched; the new facts are written to
+  `window_basis_repair_20261003.json` from fixture/synthetic runs only.
+- **Unparseable coverage (W5).** An unparseable `coverage_start` value
+  resolves that leg to `unknown_inputs` instead of raising; covered by a
+  new test passing the string `"not-a-date"`.
+- **Behaviour preservation (W6).** No pre-existing test changes except
+  where it reads the renamed key. The legacy `pit_class`, `fallback_notes`
+  and four-column window basis remain byte-identical on the saved source
+  for the same inputs. The builder was NOT run against any real or
+  production data store and nothing was written under `data/`.
