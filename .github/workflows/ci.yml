@@ -2174,10 +2174,12 @@ on:
       # FS-4 flow-score trainer + nightly scorer + gate v2:
       # lib module, trainer ops script, config, scorer tests, and trainer tests.
       - "lib/flow_score.py"
+      - "lib/flow_score_geometry.py"
       - "config/flow_score.yml"
       - "scripts/ops_train_flow_score.py"
       - "tests/test_fs4_flow_scorer.py"
       - "tests/test_fs4_flow_trainer.py"
+      - "tests/test_fs5_flow_geometry.py"
       # FL-A EOD flow backfill (FC-R4/R11): backfill script, build_options_flow staleness
       # warning, and the test suite that pins idempotence + schema-variant handling.
       - "scripts/backfill_options_flow.py"

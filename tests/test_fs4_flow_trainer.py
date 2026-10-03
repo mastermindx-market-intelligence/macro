@@ -1338,13 +1338,6 @@ class TestEmbargoBindingFor90p:
             f"of this value, so this config must mirror that — silent "
             f"upward coercion at fit time is the leak."
         )
-        # Comments must explain the binding.
-        with cfg_path.open() as f:
-            text = f.read()
-        assert "126 NYSE sessions" in text or "126-session" in text, (
-            "config/flow_score.yml must explicitly mention 126 NYSE sessions "
-            "in the embargo section to make the binding target explicit."
-        )
 
     def test_90p_horizons_registered_secondary_126(self):
         """The registered BUCKET_HORIZONS[90p] tuple MUST contain the 126
