@@ -950,10 +950,8 @@ def test_owner_publisher_reader_to_catalyst(tmp_path, monkeypatch, case):
     workspace = _company_workspace()
     workspace["aliases"] = [] if case == "uncovered" else ["NVDA/2026Q3"]
     product = tmp_path / "company_intelligence"
-    generation = write_workspace_generation(
-        product, {workspace["event_id"]: workspace},
-        generated_at=workspace["generated_at"],
-    )
+    # The writer derives the generation clock from the rows' own observation clocks.
+    generation = write_workspace_generation(product, {workspace["event_id"]: workspace})
     # A distinct origin per fixture also prevents a cached previous case masking corruption.
     base = "https://catalyst-owner-" + tmp_path.name.lower().replace("_", "-") + ".example"
     paths = {base + "/" + p.relative_to(product).as_posix(): p.read_bytes()
