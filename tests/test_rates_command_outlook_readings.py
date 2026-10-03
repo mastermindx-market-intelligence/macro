@@ -342,3 +342,95 @@ def test_unreadable_does_not_change_what_the_owner_published():
 def test_unreadable_refuses_a_field_or_status_it_does_not_know(unreadable):
     with pytest.raises(ValueError):
         rco.read_paths(MAPPING, GOLDEN["base"], unreadable=unreadable)
+
+
+def test_an_unknown_guard_kind_refuses_the_field_with_malformed_and_leaves_the_rest():
+    mapping = copy.deepcopy(MAPPING)
+    target = "T.state.rates.direction"
+    found = False
+    for field in mapping["fields"]:
+        if field["field_id"] == target:
+            field["guard"]["kind"] = "zzz"
+            found = True
+            break
+    assert found
+    out = rco.admit_fields(mapping, GOLDEN["base"])
+    assert out[target] == {"admitted": False, "token": None, "issue": "malformed"}
+    pin = GOLDEN["pin"]["fields"]
+    for fid, verdict in pin.items():
+        if fid == target:
+            continue
+        assert out[fid] == verdict
+
+
+def test_a_non_dict_guard_refuses_the_field_with_malformed_and_does_not_raise():
+    mapping = copy.deepcopy(MAPPING)
+    target = "T.state.rates.direction"
+    found = False
+    for field in mapping["fields"]:
+        if field["field_id"] == target:
+            field["guard"] = "x"
+            found = True
+            break
+    assert found
+    out = rco.admit_fields(mapping, GOLDEN["base"])
+    assert out[target] == {"admitted": False, "token": None, "issue": "malformed"}
+
+
+def test_resolve_rejects_a_selector_whose_value_differs_only_in_python_type():
+    docs_true = [{"key": True, "v": "a"}]
+    docs_one = [{"key": 1, "v": "a"}]
+    docs_float = [{"key": 1.0, "v": "a"}]
+    assert rco.resolve({"c": docs_true}, ["c", {"key": 1}, "v"]) is rco.ABSENT
+    assert rco.resolve({"c": docs_float}, ["c", {"key": 1}, "v"]) is rco.ABSENT
+    assert rco.resolve({"c": docs_one}, ["c", {"key": 1}, "v"]) == "a"
+    assert rco.resolve({"c": [{"v": "a"}]}, ["c", {"key": None}, "v"]) is rco.ABSENT
+
+
+@pytest.mark.parametrize(
+    "artifacts",
+    [None, [], "x", 3],
+)
+def test_wrong_shaped_artifacts_raises_value_error(artifacts):
+    with pytest.raises(ValueError, match="artifacts must be a dict"):
+        rco.admit_fields(MAPPING, artifacts)
+    with pytest.raises(ValueError, match="artifacts must be a dict"):
+        rco.read_paths(MAPPING, artifacts)
+
+
+@pytest.mark.parametrize(
+    "unreadable",
+    [[], "x", 3],
+)
+def test_read_paths_rejects_a_non_dict_unreadable(unreadable):
+    with pytest.raises(ValueError, match="unreadable must be a dict"):
+        rco.read_paths(MAPPING, GOLDEN["base"], unreadable=unreadable)
+
+
+def test_guard_fixed_words_live_in_the_closed_admission_and_clock_sets():
+    import re
+
+    src = Path(rco.__file__).read_text(encoding="utf-8")
+    head = src.split("UNREADABLE_STATUSES = (", 1)[0]
+    fail_issue = set(re.findall(r'"fail_issue":\s*"([^"]+)"', head))
+    ow_published = set(
+        re.findall(r'"otherwise_issue_when_published":\s*"([^"]+)"', head)
+    )
+    ow_missing = set(
+        re.findall(r'"otherwise_issue_when_missing":\s*"([^"]+)"', head)
+    )
+    fail_status = set(re.findall(r'"fail_status":\s*"([^"]+)"', head))
+
+    issues = fail_issue | ow_published | ow_missing
+    assert issues <= set(rco.ADMISSION_ISSUES), issues - set(rco.ADMISSION_ISSUES)
+    assert fail_status <= set(rco.UNREADABLE_STATUSES), (
+        fail_status - set(rco.UNREADABLE_STATUSES)
+    )
+    expected = {
+        "owner_did_not_write",
+        "owner_sign_inconsistent",
+        "contains_sign_only_leg",
+        "owner_default_on_missing",
+        "stale",
+    }
+    assert issues | fail_status == expected

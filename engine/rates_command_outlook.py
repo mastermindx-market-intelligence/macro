@@ -549,7 +549,7 @@ def resolve(doc: Any, path: list[Any]) -> Any:
                 item
                 for item in cur
                 if isinstance(item, dict)
-                and all(item.get(k) == v for k, v in segment.items())
+                and all(k in item and same(item[k], v) for k, v in segment.items())
             ]
             if len(matches) != 1:
                 return ABSENT
@@ -602,6 +602,10 @@ def admit_fields(mapping: dict[str, Any], artifacts: dict[str, Any]) -> dict[str
     artifacts in place.
     """
     fields = mapping["fields"]
+    if not isinstance(artifacts, dict):
+        raise ValueError(
+            "artifacts must be a dict of owner files keyed by artifact letter"
+        )
     out: dict[str, dict[str, Any]] = {}
     for field in fields:
         field_id = field["field_id"]
@@ -628,6 +632,9 @@ def admit_fields(mapping: dict[str, Any], artifacts: dict[str, Any]) -> dict[str
                 continue
 
         guard = field["guard"]
+        if not isinstance(guard, dict) or "kind" not in guard:
+            out[field_id] = {"admitted": False, "token": None, "issue": "malformed"}
+            continue
         kind = guard["kind"]
         issue: str | None = None
 
@@ -695,6 +702,8 @@ def admit_fields(mapping: dict[str, Any], artifacts: dict[str, Any]) -> dict[str
             other = resolve(artifact_doc, guard["other_path"])
             if not finite(other) or not (token * other <= 0):
                 issue = guard["fail_issue"]
+        else:
+            issue = "malformed"
 
         if issue is not None:
             out[field_id] = {"admitted": False, "token": None, "issue": issue}
@@ -751,6 +760,14 @@ def read_paths(
     a reading and never totals them.
     """
     field_ids = {f["field_id"] for f in mapping["fields"]}
+    if not isinstance(artifacts, dict):
+        raise ValueError(
+            "artifacts must be a dict of owner files keyed by artifact letter"
+        )
+    if unreadable is not None and not isinstance(unreadable, dict):
+        raise ValueError(
+            "unreadable must be a dict of field id to clock status"
+        )
     if unreadable:
         for fid, status in unreadable.items():
             if fid not in field_ids:
