@@ -13027,6 +13027,8 @@ jobs:
       # owner definition. This does not compute Availability or widen B1/B3 admission.
       - name: prophet strategy definition owner projection (B4 prerequisite only)
         run: python -m pytest tests/test_prophet_strategy_definition.py -q
+      - name: Early Leadership owner identity and outcome-blind research envelope
+        run: python -m pytest tests/test_prophet_fusion_w3_structural.py -q
       - name: turn-watch desk + group-turn organ (§6.9 R8 — publish path, leg-(d) organ vs fallback, recall contract; §6.9 R6 basket lifecycle)
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
@@ -13610,6 +13612,7 @@ jobs:
       - "engine/china_news.py"
       - "engine/china_news_intel.py"
       - "engine/china_pboc_stance.py"
+      - "engine/prophet_early_leadership_evidence.py"
       - "engine/china_prophet_shadow.py"
       - "engine/china_radar.py"
       - "engine/china_radar_ledger.py"
