@@ -1,3 +1,5 @@
+> **Historical input — execution superseded by audited v3.** The original blueprint below is preserved. Use the [Master Plan v3](../../docs/superpowers/plans/2026-10-03-gmi-theme-subtheme-end-to-end-completion.md), [standard Pro audit](GMI_THEME_SUBTHEME_NORMAL_PRO_AUDIT_2026-10-03.md), [scientific review](GMI_RESEARCH_AND_EVALUATION_AUDIT_V3_2026-10-03.md) and [Astra handoff](ASTRA_CEO_GMI_HANDOFF_2026-10-03.md). Claims and sequencing below are historical proposals, not new acceptance or authority.
+
 # GMI Theme/Subtheme Intelligence — Research-Supported Recovery Blueprint
 
 Date: 2026-10-03. Program: WS:GMI-THEME-GRAPH.
@@ -88,3 +90,4 @@ Acceptance chain:
 producer → canonical identity/PIT → specialist observations → sole synthesis/read model → multiple consumers → natural refresh/correction → browser + machine proof → prospective Evaluation.
 
 The immediate frontier is post-merge acceptance/fold and ThemeState/read-federation reconciliation—not greenfield D2C/D2D or another UI wave.
+
