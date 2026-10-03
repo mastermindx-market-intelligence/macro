@@ -1280,7 +1280,7 @@ class TestBlockerRegressions:
         assert result["health"] == "no_fit"
         assert result["status"] == "nondeployable"
         assert result["method_geometry"] == "unavailable"
-        assert result["method_geometry_reason"].endswith("partition_membership_mismatch")
+        assert result["method_geometry_reason"].endswith("admission_schema_unknown")
 
     def test_calibration_eval_never_sees_full_holdout(self, tmp_path, monkeypatch):
         """Legacy 80/20 no longer reaches calibration evaluation without four FS-5 populations."""
@@ -1314,7 +1314,7 @@ class TestBlockerRegressions:
             dry_run=False,
         )
         assert result["method_geometry_reason"] == (
-            "method_geometry_unavailable:partition_membership_mismatch"
+            "method_geometry_unavailable:admission_schema_unknown"
         )
 
 
@@ -1400,6 +1400,18 @@ class TestInvalidRequestedFoldCannotFit:
             )
 
         flow_dir, cfg, df = _make_train_bucket_fixture(tmp_path, n=160)
+        # Isolate the fold guard below a valid externally bound source identity;
+        # legacy id-list receipts are deliberately no-fit in the production path.
+        monkeypatch.setattr(
+            trainer,
+            "validate_admission_study_identity",
+            lambda *_a, **_k: {"source": "tape_recon", "detector_version": "test-detector"},
+        )
+        monkeypatch.setattr(
+            trainer,
+            "_load_serving_cohorts",
+            lambda *_a, **_k: pd.read_parquet(flow_dir / "cohort_tape_recon.parquet"),
+        )
         # Use a coverage-complete partition that satisfies the membership check;
         # validate_population_partition is monkeypatched away for isolation.
         all_ids = df["event_id"].astype(str).tolist()

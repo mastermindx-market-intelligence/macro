@@ -418,7 +418,7 @@ def test_trainer_admission_failure_never_opens_grades_features_or_models(
         (flow_dir / "fs5_partition.json").write_text("{")
     elif receipt_kind != "absent":
         (flow_dir / "fs5_partition.json").write_text(json.dumps(receipt))
-    monkeypatch.setattr(trainer, "_load_serving_cohorts", lambda *_: source)
+    monkeypatch.setattr(trainer, "_load_serving_cohorts", lambda *_a, **_k: source)
     monkeypatch.setattr(
         trainer.pd,
         "read_parquet",

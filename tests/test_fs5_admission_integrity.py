@@ -191,7 +191,7 @@ def test_every_frozen_member_must_mature_before_geometry_or_features(
     (tmp_path / "fs5_partition.json").write_text(json.dumps(receipt))
     (tmp_path / "grades.parquet").touch()
     observed = []
-    monkeypatch.setattr(trainer, "_load_serving_cohorts", lambda *_: source)
+    monkeypatch.setattr(trainer, "_load_serving_cohorts", lambda *_a, **_k: source)
 
     def read_grades(path):
         observed.append(Path(path).name)
@@ -233,3 +233,77 @@ def test_every_frozen_member_must_mature_before_geometry_or_features(
                 stage_receipt_resolver=lambda key: STAGE_BYTES[key],
             )
     assert observed == ["grades.parquet"]
+
+
+def test_trainer_selects_external_live_source_before_loading_mixed_cohorts(
+    tmp_path, monkeypatch
+):
+    from scripts import ops_train_flow_score as trainer
+
+    rows, receipt, expected = prepared()
+    source = pd.DataFrame(rows)
+    source["dte_bucket"] = "8_30d"
+    source["prior_oi"] = 1000.0
+    source["zerodte"] = False
+    flow_dir = tmp_path / "flow_signals"
+    flow_dir.mkdir()
+    source.to_parquet(flow_dir / "ledger.parquet", index=False)
+    pd.DataFrame(
+        [{"event_id": "tape-only", "source": "tape_recon", "detector_version": "detector-v1"}]
+    ).to_parquet(flow_dir / "cohort_tape_recon.parquet", index=False)
+    (flow_dir / "fs5_partition.json").write_text(json.dumps(receipt))
+    grades = [
+        {"event_id": member["event_id"], "graded_ok": True, "spy_excess_21": 0.1,
+         "fill_date": member["planned_fill_date"],
+         "outcome_end_session_21": member["planned_outcome_end_sessions"]["21"]}
+        for population in receipt["populations"].values()
+        for member in population["members"]
+    ]
+    pd.DataFrame(grades).to_parquet(flow_dir / "grades.parquet", index=False)
+
+    class GeometryReached(RuntimeError):
+        pass
+
+    monkeypatch.setattr(trainer, "build_geometry_plan", lambda *_a, **_k: (_ for _ in ()).throw(GeometryReached()))
+    cfg = {"model_bucket_map": {"8_30d": "8_90"}, "label_columns": {"8_90": "spy_excess_21"}, "fs5_admission_studies": {"8_90": expected}}
+    with pytest.raises(GeometryReached):
+        trainer.train_bucket("8_90", cfg, flow_dir, stage_receipt_resolver=lambda key: STAGE_BYTES[key])
+
+
+def test_selected_live_source_filters_cross_source_rows_before_admission(tmp_path):
+    from scripts import ops_train_flow_score as trainer
+
+    rows, _, _ = prepared()
+    source = pd.DataFrame(rows)
+    source.loc[0, "source"] = "tape_recon"
+    flow_dir = tmp_path / "flow_signals"
+    flow_dir.mkdir()
+    source.to_parquet(flow_dir / "ledger.parquet", index=False)
+    selected = trainer._load_serving_cohorts(
+        flow_dir, "8_90", {}, source="live_feed", detector_version="detector-v1"
+    )
+    assert selected.event_id.tolist() == ["b", "c", "d"]
+    assert selected.source.eq("live_feed").all()
+
+
+@pytest.mark.parametrize("case", ("external_digest_changed", "unknown_source"))
+def test_unbound_or_unknown_source_fails_before_any_cohort_or_grade_read(tmp_path, monkeypatch, case):
+    from lib.flow_score_admission import _digest
+    from scripts import ops_train_flow_score as trainer
+
+    _rows_value, receipt, expected = prepared()
+    if case == "external_digest_changed":
+        expected["spec_digest"] = "0" * 64
+    else:
+        receipt["study"]["source"] = "foreign_source"
+        receipt["study_spec"]["source"] = "foreign_source"
+        receipt["study"]["spec_digest"] = _digest(receipt["study_spec"])
+        expected = _expected(receipt)
+    flow_dir = tmp_path / "flow_signals"
+    flow_dir.mkdir()
+    (flow_dir / "fs5_partition.json").write_text(json.dumps(receipt))
+    monkeypatch.setattr(trainer.pd, "read_parquet", lambda *_a, **_k: (_ for _ in ()).throw(AssertionError("source or grades read")))
+    result = trainer.train_bucket("8_90", {"fs5_admission_studies": {"8_90": expected}}, flow_dir)
+    assert result["health"] == "no_fit"
+    reason = "expected_study_mismatch:spec_digest" if case == "external_digest_changed" else "source_unknown:foreign_source"
+    assert reason in result["method_geometry_reason"]

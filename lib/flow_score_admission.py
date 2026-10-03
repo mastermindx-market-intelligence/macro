@@ -156,32 +156,23 @@ def _member(entry: Mapping[str, Any], bucket: str) -> dict[str, Any]:
     }
 
 
-def validate_admission_receipt(
+def validate_admission_study_identity(
     receipt: Mapping[str, Any],
-    source_rows: pd.DataFrame,
     *,
     bucket: str,
     validation_at: str | datetime | pd.Timestamp,
-    expected_study: Mapping[str, Any] | None = None,
-    stage_receipt_resolver: Callable[[str], bytes] | None = None,
-) -> pd.DataFrame:
-    """Admit a complete cohort against a separately accepted, frozen study.
+    expected_study: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    """Validate the external, outcome-blind study binding before source loading.
 
-    ``expected_study`` comes from the owning trainer configuration, never the
-    receipt. ``validation_at`` is the caller's actual verification clock. Raw
-    R2 reads verify immutable content; they do not replace the collector's
-    original first-observation clock. No study binding means no admission.
+    The returned identity selects exactly one declared source and detector.  It
+    intentionally does not inspect members or any source rows; those checks
+    remain in ``validate_admission_receipt`` after the selected immutable
+    source universe is loaded.
     """
     if not isinstance(receipt, Mapping):
         raise AdmissionError("admission_document_invalid")
-    if (
-        not isinstance(source_rows, pd.DataFrame)
-        or source_rows.columns.duplicated().any()
-        or any(not isinstance(c, str) for c in source_rows.columns)
-    ):
-        raise AdmissionError("admission_source_frame_invalid")
     checked_at = _clock(validation_at, "validation_at")
-    _reject_outcomes(receipt, source_rows)
     if receipt.get("schema") != SCHEMA:
         raise AdmissionError("admission_schema_unknown")
     study, spec, pops = (
@@ -198,23 +189,15 @@ def validate_admission_receipt(
     if _text(study.get("spec_digest")) != _digest(spec):
         raise AdmissionError("admission_spec_digest_mismatch")
     required = (
-        "study_ref",
-        "evaluation_spec_version",
-        "source",
-        "detector_version",
-        "model_bucket",
-        "calendar",
-        "frozen_at",
-        "admitted_at",
+        "study_ref", "evaluation_spec_version", "source", "detector_version",
+        "model_bucket", "calendar", "frozen_at", "admitted_at",
         "availability_cutoff",
     )
     if any(not _text(study.get(f)) for f in required) or not isinstance(
         study.get("horizons"), list
     ):
         raise AdmissionError("admission_study_fields_missing")
-    if _text(study["model_bucket"]) != bucket or tuple(
-        study["horizons"]
-    ) != HORIZONS.get(bucket):
+    if _text(study["model_bucket"]) != bucket or tuple(study["horizons"]) != HORIZONS.get(bucket):
         raise AdmissionError("admission_bucket_horizon_mismatch")
     if (
         study["calendar"] != CALENDAR
@@ -227,12 +210,8 @@ def validate_admission_receipt(
         if _text(expected_study.get(field)) != _text(study.get(field)):
             raise AdmissionError("admission_expected_study_mismatch:" + field)
     for f in (
-        "evaluation_spec_version",
-        "source",
-        "detector_version",
-        "model_bucket",
-        "calendar",
-        "horizons",
+        "evaluation_spec_version", "source", "detector_version", "model_bucket",
+        "calendar", "horizons",
     ):
         if spec.get(f) != study.get(f):
             raise AdmissionError("admission_spec_identity_mismatch:" + f)
@@ -240,6 +219,46 @@ def validate_admission_receipt(
         study.get("availability_cutoff")
     ):
         raise AdmissionError("admission_cutoff_not_bound_to_spec")
+    if not isinstance(pops, Mapping) or set(pops) != set(POPULATIONS):
+        raise AdmissionError("admission_populations_not_bound")
+    frozen_at, admitted_at, cutoff = (
+        _clock(study[x], x) for x in ("frozen_at", "admitted_at", "availability_cutoff")
+    )
+    if not frozen_at < cutoff <= admitted_at <= checked_at:
+        raise AdmissionError("admission_study_clocks_invalid")
+    return dict(study)
+
+
+def validate_admission_receipt(
+    receipt: Mapping[str, Any],
+    source_rows: pd.DataFrame,
+    *,
+    bucket: str,
+    validation_at: str | datetime | pd.Timestamp,
+    expected_study: Mapping[str, Any] | None = None,
+    stage_receipt_resolver: Callable[[str], bytes] | None = None,
+) -> pd.DataFrame:
+    """Admit a complete cohort against a separately accepted, frozen study.
+
+    ``expected_study`` comes from the owning trainer configuration, never the
+    receipt. ``validation_at`` is the caller's actual verification clock. Raw
+    R2 reads verify immutable content; they do not replace the collector's
+    original first-observation clock. No study binding means no admission.
+    """
+    if (
+        not isinstance(source_rows, pd.DataFrame)
+        or source_rows.columns.duplicated().any()
+        or any(not isinstance(c, str) for c in source_rows.columns)
+    ):
+        raise AdmissionError("admission_source_frame_invalid")
+    _reject_outcomes(receipt, source_rows)
+    study = validate_admission_study_identity(
+        receipt,
+        bucket=bucket,
+        validation_at=validation_at,
+        expected_study=expected_study,
+    )
+    spec, pops = receipt["study_spec"], receipt["populations"]
     plan_pops = spec.get("populations")
     if (
         not isinstance(pops, Mapping)
@@ -251,8 +270,6 @@ def validate_admission_receipt(
     frozen_at, admitted_at, cutoff = (
         _clock(study[x], x) for x in ("frozen_at", "admitted_at", "availability_cutoff")
     )
-    if not frozen_at < cutoff <= admitted_at <= checked_at:
-        raise AdmissionError("admission_study_clocks_invalid")
     rows = source_rows.copy()
     missing = [
         f

@@ -101,6 +101,7 @@ from lib.flow_score_geometry import (
 )
 from lib.flow_score_admission import (
     AdmissionError,
+    validate_admission_study_identity,
     validate_admission_receipt,
     verify_raw_stage_receipts,
 )
@@ -294,54 +295,29 @@ def apply_population_filter(
 # Reuse ops_flow_cohorts.py load_cohort for single-source guard.
 
 
-def _load_serving_cohorts(flow_dir: Path, bucket: str, cfg: dict) -> pd.DataFrame:
-    """Load and concatenate serving-distribution cohort frames (tape_recon + live_feed ledger).
-
-    Amendment §3.1: serving cohorts = tape_recon + live_feed.
-    eod_proxy is NEVER included in serving cohorts.
-    Raises ValueError if any frame is mixed-source (load_cohort guard).
-    Returns empty DataFrame if no cohort data available (trainer logs and exits).
-    """
+def _load_serving_cohorts(
+    flow_dir: Path, bucket: str, cfg: dict, *, source: str, detector_version: str
+) -> pd.DataFrame:
+    """Load exactly the externally declared serving source and detector version."""
     from scripts.ops_flow_cohorts import load_cohort
 
-    frames: list[pd.DataFrame] = []
-
-    # tape_recon cohort
-    tape_path = flow_dir / "cohort_tape_recon.parquet"
-    tape_df = load_cohort(tape_path)  # raises on mixed source
-    if not tape_df.empty:
-        frames.append(tape_df)
-        log.info("ops_train: loaded tape_recon cohort: %d rows", len(tape_df))
-
-    # live_feed from ledger (source='live_feed')
-    ledger_path = flow_dir / "ledger.parquet"
-    if ledger_path.exists():
-        ledger_df = pd.read_parquet(ledger_path)
-        if not ledger_df.empty:
-            # Filter to live_feed source only
-            if "source" in ledger_df.columns:
-                live_df = ledger_df[ledger_df["source"] == "live_feed"].copy()
-            else:
-                live_df = ledger_df.copy()
-                live_df["source"] = "live_feed"
-            if not live_df.empty:
-                frames.append(live_df)
-                log.info("ops_train: loaded live_feed cohort: %d rows", len(live_df))
-
-    if not frames:
+    if source == "tape_recon":
+        selected = load_cohort(flow_dir / "cohort_tape_recon.parquet")
+    elif source == "live_feed":
+        ledger_path = flow_dir / "ledger.parquet"
+        selected = pd.read_parquet(ledger_path) if ledger_path.exists() else pd.DataFrame()
+    else:
+        raise AdmissionError("admission_source_unknown:" + source)
+    if selected.empty:
         return pd.DataFrame()
-
-    # Concatenate but check: do NOT pool eod_proxy with serving cohorts.
-    # (load_cohort already guards per-file; this catches any multi-source merge.)
-    combined = pd.concat(frames, ignore_index=True)
-    if "source" in combined.columns:
-        sources = combined["source"].unique().tolist()
-        if "eod_proxy" in sources:
-            raise ValueError(
-                "ops_train: eod_proxy detected in serving-cohort frame — "
-                "cohorts must never be pooled (FS-R4 / amendment §3.1)."
-            )
-    return combined
+    if "source" not in selected or "detector_version" not in selected:
+        raise AdmissionError("admission_source_identity_fields_missing")
+    # Identity is set by the externally accepted study, never by the frame.
+    # Other source/version rows remain outside this selected immutable universe.
+    return selected.loc[
+        selected["source"].astype(str).eq(source)
+        & selected["detector_version"].astype(str).eq(detector_version)
+    ].copy()
 
 
 def _load_eod_proxy(flow_dir: Path) -> pd.DataFrame:
@@ -726,34 +702,6 @@ def _auc_score(y_true: np.ndarray, y_score: np.ndarray) -> float:
         return float("nan")
 
 
-def _legacy_id_partition(partition: object) -> dict[str, set[str]] | None:
-    """Return a pre-v1 four-list id map, or None when the document is not that shape.
-
-    A v1 receipt is never handled here. An id list that does not cover the source
-    cohort keeps the existing membership no-fit and does not open grades.
-    """
-    names = ("train", "calibration_fit", "calibration_eval", "final_oos")
-    if not isinstance(partition, dict) or partition.get("schema") == "flow_signals.fs5_partition/v1":
-        return None
-    if set(partition) != set(names) or any(not isinstance(partition[name], list) for name in names):
-        return None
-    return {name: {str(event_id) for event_id in partition[name]} for name in names}
-
-
-def _legacy_membership_no_fit(partition: dict[str, set[str]], serving_df: pd.DataFrame):
-    """Existing explicit no-fit for a pre-v1 id list. Exact covers are not decided here."""
-    if "event_id" not in serving_df.columns:
-        return make_no_fit_health("method_geometry_unavailable:partition_membership_mismatch")
-    received_ids = set(serving_df["event_id"].astype(str))
-    if any(not members for members in partition.values()):
-        return make_no_fit_health("building_history/method_geometry_unavailable")
-    if set().union(*partition.values()) != received_ids:
-        return make_no_fit_health("method_geometry_unavailable:partition_membership_mismatch")
-    if sum(map(len, partition.values())) != len(received_ids):
-        return make_no_fit_health("method_geometry_unavailable:partition_not_disjoint")
-    return None
-
-
 def train_bucket(
     bucket: str,
     cfg: dict,
@@ -772,19 +720,36 @@ def train_bucket(
     """
     log.info("ops_train: starting bucket=%s, dry_run=%s", bucket, dry_run)
 
-    # ── load serving cohorts (amendment §3.1) ────────────────────────────────
-    serving_df = _load_serving_cohorts(flow_dir, bucket, cfg)
-    if serving_df.empty:
-        log.warning("ops_train[%s]: no serving-cohort data available — skipping", bucket)
-        return None
-
-    # Guard: eod_proxy must NEVER be in serving cohorts
-    _check_no_eod_proxy_in_calibration(serving_df, context="serving cohort (train_bucket)")
-
     partition_path = flow_dir / "fs5_partition.json"
     if not partition_path.exists():
         log.warning("ops_train[%s]: no FS-5 partition receipt — building history/no-fit", bucket)
         return make_no_fit_health("building_history/method_geometry_unavailable")
+
+    # The external frozen binding chooses the complete source universe before
+    # any cohort is loaded or combined.  Disk contents cannot choose a source.
+    try:
+        partition = json.loads(partition_path.read_text())
+        expected_study = cfg.get("fs5_admission_studies", {}).get(bucket)
+        study = validate_admission_study_identity(
+            partition,
+            bucket=bucket,
+            validation_at=pd.Timestamp.now(tz="UTC"),
+            expected_study=expected_study,
+        )
+        serving_df = _load_serving_cohorts(
+            flow_dir,
+            bucket,
+            cfg,
+            source=str(study["source"]),
+            detector_version=str(study["detector_version"]),
+        )
+    except (AdmissionError, ValueError, json.JSONDecodeError) as exc:
+        log.warning("ops_train[%s]: source identity unavailable: %s", bucket, exc)
+        return make_no_fit_health(f"method_geometry_unavailable:{exc}")
+    if serving_df.empty:
+        log.warning("ops_train[%s]: selected serving source is empty", bucket)
+        return make_no_fit_health("building_history/selected_source_unavailable")
+    _check_no_eod_proxy_in_calibration(serving_df, context="serving cohort (train_bucket)")
 
     # ── filter by model_bucket ────────────────────────────────────────────────
     bucket_map = cfg.get("model_bucket_map", {})
@@ -822,16 +787,6 @@ def train_bucket(
     # The receipt is the outcome-blind gate.  Do not even stat/read grades or
     # construct a feature matrix until the complete frozen source cohort passes.
     try:
-        partition = json.loads(partition_path.read_text())
-        legacy_members = _legacy_id_partition(partition)
-        if legacy_members is not None:
-            # Pre-v1 id lists are not source receipts. A mismatch is the existing
-            # no-fit and must not be hidden behind a later outcome-column error.
-            # An exact cover still falls through: only a v1 receipt may be admitted,
-            # and grades stay unread until that admission returns.
-            legacy_no_fit = _legacy_membership_no_fit(legacy_members, serving_df)
-            if legacy_no_fit is not None:
-                return legacy_no_fit
         if stage_receipt_resolver is None:
 
             def stage_receipt_resolver(key: str) -> bytes:
@@ -846,7 +801,6 @@ def train_bucket(
                     "Body"
                 ].read()
 
-        expected_study = cfg.get("fs5_admission_studies", {}).get(bucket)
         admitted = validate_admission_receipt(
             partition,
             serving_df,
