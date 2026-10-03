@@ -32,25 +32,32 @@ issuer is a contract error, not a fuzzy match.
 
 ## 3. Accepted lifecycle states
 
-Only post-release states are admitted as blocking presence evidence:
+R0 admits only the lifecycle states that the **current production
+`build_event_workspace` publisher can actually persist**:
 
-- `started`
-- `completed_partial`
 - `complete`
 - `corrected`
-- `derived_ready`
-- `distributed`
 
-The following are **not** mapped to blocking evidence by this adapter:
+The canonical `company_event.v1` lifecycle is broader, but that does not license this adapter
+to speculate about future workspace publication semantics. The current builder creates an event,
+walks `started -> complete` in memory, and only additionally walks to `corrected` when the
+bound source revision changed (or carries an already-corrected state forward). It then serializes
+that final state into `event_workspace.lifecycle.state`.
+
+Accordingly, the adapter refuses all other event-lifecycle states, including:
 
 - `discovered`
 - `scheduled`
 - `rescheduled`
+- `started`
+- `completed_partial`
+- `derived_ready`
+- `distributed`
 - `cancelled`
 - `superseded`
 
-A non-admitted state is refused. The caller must preserve unknown/coverage-incomplete
-semantics; it may not silently reinterpret the refusal as nonblocking.
+Refusal is not nonblocking evidence. If a future owner publisher begins minting another lifecycle
+state, that source contract must be recensused and this mapping re-frozen before R0 can consume it.
 
 ## 4. Clock law
 
@@ -82,7 +89,7 @@ cannot manufacture a historical as-observed intraday decision.
 
 ## 5. Frozen disposition mapping
 
-For this safety-context experiment only, an admitted post-release
+For this safety-context experiment only, an admitted currently-published
 `earnings_results` workspace maps to:
 
 `owner_disposition = "blocking"`
