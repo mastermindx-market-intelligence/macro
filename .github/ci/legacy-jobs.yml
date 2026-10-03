@@ -41,6 +41,85 @@ jobs:
       - name: daily scope through canonical archive writer and consumer
         run: python -m pytest tests/test_yahoo_universe_backfill.py -q
 
+  live-flow-recovery-guards:
+    if: ${{ false }}
+    gate: code
+    # Carved-out hermetic WAL/cycle recovery guard. This declared scope is the
+    # exact static closure of its three suites plus config.yml, which tiering
+    # reads by a joined path the resolver cannot derive.
+    scope: exclusive
+    paths:
+      - "collectors/__init__.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_deadname_prices.py"
+      - "collectors/edgar_deadnames.py"
+      - "collectors/edgar_delisting.py"
+      - "collectors/edgar_eps.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/thetadata.py"
+      - "config.yml"
+      - "config/market_memory_canary.v1.json"
+      - "engine/__init__.py"
+      - "engine/baskets.py"
+      - "engine/baskets_canada.py"
+      - "engine/baskets_china.py"
+      - "engine/baskets_hk.py"
+      - "engine/baskets_region.py"
+      - "engine/cross_asset.py"
+      - "engine/equity_factors.py"
+      - "engine/flow_signing.py"
+      - "engine/grading.py"
+      - "engine/group_flow.py"
+      - "engine/indicators.py"
+      - "engine/intraday_greeks.py"
+      - "engine/ledger_lane.py"
+      - "engine/live_flow.py"
+      - "engine/name_score_grader.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/brain_analogues.py"
+      - "engine/neuralweb/market_memory.py"
+      - "engine/neuralweb/market_memory_identity.py"
+      - "engine/neuralweb/market_memory_options_episode_capture.py"
+      - "engine/neuralweb/market_memory_pit.py"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/options_universe.py"
+      - "engine/residual_alpha.py"
+      - "engine/session_digest.py"
+      - "engine/spotlight.py"
+      - "engine/sue.py"
+      - "engine/tape_flow.py"
+      - "engine/thetadata_store.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "lib/__init__.py"
+      - "lib/closes_panel.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "ops/launchd/com.mastermind.liveflow.plist"
+      - "scripts/build_flow_archive.py"
+      - "scripts/build_flow_surface.py"
+      - "scripts/live_flow_poller.py"
+      - "tests/test_flow_archive.py"
+      - "tests/test_live_flow_recovery.py"
+      - "tests/test_live_flow_tiering.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: install live-flow recovery suite dependencies
+        # collectors.thetadata imports requests at module scope; pandas/numpy
+        # support the live-flow engine and pyyaml is imported by lib.config.
+        run: pip install pytest pandas numpy pyyaml requests
+      - name: live-flow WAL/cycle-recovery + sibling suites
+        run: python -m pytest tests/test_live_flow_recovery.py tests/test_live_flow_tiering.py tests/test_flow_archive.py -q
+
   inline-js:
     if: ${{ false }}
     gate: data
