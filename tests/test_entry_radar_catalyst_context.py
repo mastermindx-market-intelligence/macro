@@ -1845,19 +1845,22 @@ def test_late_contradiction_requires_the_evidence_owner_read():
 
 def test_late_contradiction_requires_a_usable_owner_read():
     late_known = T0 + timedelta(minutes=5)
+    stale_asof = T0 - timedelta(seconds=DEFAULT_MAX_SOURCE_STALENESS_SECONDS + 1)
+    # The row is available BEFORE the stale read's own clock, so the source-clock
+    # comparison passes and only the read's usability can withhold the flag.
     late_ev = _event(
         known_at=late_known,
         relevant_until=late_known,
         ref="event:late",
         owner="owner_a",
-        source_available_at=T0,
+        source_available_at=stale_asof - timedelta(seconds=60),
     )
     generated = late_known
     stale_read = _read(
         source_id="owner_a",
         observed_at=T0,
         fresh_until=generated,
-        source_asof=T0 - timedelta(seconds=DEFAULT_MAX_SOURCE_STALENESS_SECONDS + 1),
+        source_asof=stale_asof,
     )
     got = _assess(
         decision_at=T0,
@@ -1866,7 +1869,22 @@ def test_late_contradiction_requires_a_usable_owner_read():
         source_reads=[stale_read],
         evidence=[late_ev],
     )
+    assert got.late_evidence_refs == ("event:late",)
     assert got.late_contradiction_refs == ()
+    usable_read = _read(
+        source_id="owner_a",
+        observed_at=T0,
+        fresh_until=generated,
+        source_asof=T0,
+    )
+    control = _assess(
+        decision_at=T0,
+        generated_at=generated,
+        required_sources=["owner_a"],
+        source_reads=[usable_read],
+        evidence=[late_ev],
+    )
+    assert control.late_contradiction_refs == ("event:late",)
 
 
 def test_late_contradiction_includes_equal_source_clock():
