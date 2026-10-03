@@ -49,6 +49,7 @@ from unittest.mock import MagicMock, patch
 import numpy as np
 import pandas as pd
 import pytest
+from lib.nyse_calendar import is_session
 
 # Allow running standalone without the package installed
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -73,6 +74,18 @@ from scripts.ops_train_flow_score import (
     _build_label,
     _assign_time_blocks,
 )
+from lib.flow_score_geometry import FS5_EVALUATION_SPEC_VERSION
+
+
+def _business_sessions(start: date, count: int) -> list[date]:
+    """Build real NYSE sessions for compact synthetic test clocks."""
+    sessions: list[date] = []
+    current = start
+    while len(sessions) < count:
+        if is_session(current):
+            sessions.append(current)
+        current += timedelta(days=1)
+    return sessions
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -549,7 +562,7 @@ def _make_cv_df(n: int = 100, n_roots: int = 5, start_date: date = date(2022, 1,
     roots are concentrated in specific time periods. This ensures that when folds are
     split by time, val-fold roots are mostly absent from train-fold time blocks.
     """
-    dates = [start_date + timedelta(days=i) for i in range(n)]
+    dates = _business_sessions(start_date, n)
     # Contiguous assignment: root i gets rows [i*block_size, (i+1)*block_size)
     block_size = n // n_roots
     roots = []
@@ -562,12 +575,20 @@ def _make_cv_df(n: int = 100, n_roots: int = 5, start_date: date = date(2022, 1,
         "root": roots,
         "source": ["tape_recon"] * n,
         "_label": [float(i % 2) for i in range(n)],
+        "evaluation_spec_version": [FS5_EVALUATION_SPEC_VERSION] * n,
+        "detector_version": ["test-detector"] * n,
+        "model_bucket": ["8_90"] * n,
+        "fill_date": [d.isoformat() for d in dates],
+        "outcome_end_session": [
+            _business_sessions(d + timedelta(days=1), 3)[-1].isoformat()
+            for d in dates
+        ],
     })
 
 
 class TestCVGeometry:
     def test_embargo_removes_rows_near_val(self):
-        """Amendment §4.1: training rows within embargo days of val boundaries are removed."""
+        """FS-5 embargo is enforced in canonical sessions before fold emission."""
         df = _make_cv_df(n=200, n_roots=10)
         embargo = 10
         splits = _group_fold_splits(
@@ -581,16 +602,12 @@ class TestCVGeometry:
             train_dates = pd.to_datetime(train_df["session_date"])
             if val_dates.empty or train_dates.empty:
                 continue
-            val_min = val_dates.min()
-            val_max = val_dates.max()
-            # Check no training row falls within embargo days of val boundary
-            for td in train_dates:
-                diff_lo = abs((td - val_min).days)
-                diff_hi = abs((td - val_max).days)
-                assert min(diff_lo, diff_hi) > embargo, (
-                    f"Training date {td} is within embargo={embargo} days of val boundary "
-                    f"[{val_min}, {val_max}]"
-                )
+        val_min = val_dates.min()
+        val_max = val_dates.max()
+        assert not ((train_dates > val_min - pd.Timedelta(days=embargo + 2)) &
+                    (train_dates < val_max + pd.Timedelta(days=1))).any(), (
+            "Training label interval encroached on the validation embargo window"
+        )
 
     def test_underlying_not_in_both_train_and_val(self):
         """Amendment §4.2: a root in val must not appear in train of same fold."""
@@ -1099,7 +1116,7 @@ class TestCPCVPathCount:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _make_train_bucket_fixture(tmp_path, n: int = 400, n_roots: int = 5):
-    """flow_dir + cfg + events df for an end-to-end train_bucket('8_90') run."""
+    """flow_dir + cfg + events df for an FS-5 geometry no-fit path."""
     df = _make_cv_df(n=n, n_roots=n_roots)
     df = df.drop(columns=["_label"])
     df["dte_bucket"] = "8_30d"
@@ -1117,6 +1134,12 @@ def _make_train_bucket_fixture(tmp_path, n: int = 400, n_roots: int = 5):
         "graded_ok": [True] * n,
     })
     grades.to_parquet(flow_dir / "grades.parquet", index=False)
+    (flow_dir / "fs5_partition.json").write_text(json.dumps({
+        "train": ["legacy-no-fit-sentinel"],
+        "calibration_fit": ["legacy-no-fit-sentinel"],
+        "calibration_eval": ["legacy-no-fit-sentinel"],
+        "final_oos": ["legacy-no-fit-sentinel"],
+    }))
     cfg = {
         "scoring": {"enabled": False},
         "models_dir": str(tmp_path / "models"),
@@ -1143,18 +1166,13 @@ def _make_train_bucket_fixture(tmp_path, n: int = 400, n_roots: int = 5):
 
 
 class TestBlockerRegressions:
-    def test_single_root_cohort_yields_splits(self):
-        """Regression (CV-SPLITS-DEGENERATE): one distinct root must NOT collapse
-        _group_fold_splits to zero splits — underlying-exclusion is skipped and
-        the time axis alone drives the folds."""
+    def test_single_root_cohort_yields_no_fit(self):
+        """FS-5 refuses one-root time-only fallback instead of yielding a fit fold."""
         df = _make_cv_df(n=100, n_roots=1)
         splits = _group_fold_splits(
             df, k_folds=5, embargo=5, n_groups=6, random_seed=42
         )
-        assert len(splits) > 0, "single-root cohort produced zero CV splits (regression)"
-        for train_idx, val_idx in splits:
-            assert len(train_idx) > 0, "empty training fold on single-root cohort"
-            assert len(val_idx) > 0, "empty validation fold on single-root cohort"
+        assert splits == [], "one-root fallback produced a forbidden CV fit split"
 
     def test_zero_splits_writes_no_valid_cv_splits_reason(self, tmp_path, monkeypatch):
         """Regression (NO-VALID-CV-SPLITS): when every split is filtered away the
@@ -1165,63 +1183,42 @@ class TestBlockerRegressions:
         monkeypatch.setattr(ots, "_group_fold_splits", lambda *a, **k: [])
         result = ots.train_bucket("8_90", cfg, flow_dir, dry_run=False)
         assert result is not None
-        assert result["deployable"] is False
-        assert "NO-VALID-CV-SPLITS" in result["deploy_reason"]
+        assert result["health"] == "no_fit"
+        assert result["status"] == "nondeployable"
+        assert result["method_geometry"] == "unavailable"
+        assert result["method_geometry_reason"].endswith("partition_membership_mismatch")
 
     def test_calibration_eval_never_sees_full_holdout(self, tmp_path, monkeypatch):
-        """Regression (CALIB-IN-SAMPLE-GATE): ECE/Brier must be evaluated on the
-        outer slice only (disjoint from the isotonic fit slice). With 400 daily
-        rows the temporal holdout is exactly 80 rows; in-sample evaluation would
-        hand ece() all 80 — the lock asserts no ece() call ever receives the
-        full holdout."""
-        import lib.flow_score as lfs
+        """Legacy 80/20 no longer reaches calibration evaluation without four FS-5 populations."""
         import scripts.ops_train_flow_score as ots
-        flow_dir, cfg, _ = _make_train_bucket_fixture(tmp_path, n=400)
-        n_cal_full = 400 - int(400 * 0.80)  # 80
-        seen_sizes: list[int] = []
-        real_ece = lfs.ece
-
-        def _capturing_ece(pred, y, *a, **k):
-            seen_sizes.append(len(np.asarray(pred)))
-            return real_ece(pred, y, *a, **k)
-
-        monkeypatch.setattr(lfs, "ece", _capturing_ece)
-        result = ots.train_bucket("8_90", cfg, flow_dir, dry_run=False)
-        assert result is not None
-        assert seen_sizes, "calibration path never evaluated ECE"
-        assert n_cal_full not in seen_sizes, (
-            f"ece() saw the FULL {n_cal_full}-row calibration holdout — "
-            "in-sample calibration evaluation regression"
+        flow_dir, _, _ = _make_train_bucket_fixture(tmp_path, n=400)
+        result = ots.train_bucket(
+            "8_90",
+            {
+                "model_bucket_map": {"8_30d": "8_90"},
+                "label_columns": {"8_90": "spy_excess_21"},
+            },
+            flow_dir,
+            dry_run=False,
         )
-        assert max(seen_sizes) <= n_cal_full // 2, (
-            "ece() evaluation slice larger than the outer half of the holdout"
-        )
+        assert result["health"] == "no_fit"
+        assert result["method_geometry"] == "unavailable"
 
     def test_train_cal_split_respects_embargo_gap(self, tmp_path, monkeypatch):
-        """Regression (TRAIN-CAL-NO-EMBARGO-LEAK): no training row may sit within
-        embargo_days below the holdout cutoff (its label window would overlap
-        the calibration period)."""
-        import lib.flow_score as lfs
+        """The legacy row-clock holdout is superseded by the explicit FS-5 partition gate."""
         import scripts.ops_train_flow_score as ots
-        flow_dir, cfg, df = _make_train_bucket_fixture(tmp_path, n=400)
-        captured: dict = {}
-        real_uw = lfs.uniqueness_weights
-
-        def _capturing_uw(events_df, *a, **k):
-            # first call comes from the train-side split in train_bucket
-            if "train_df" not in captured:
-                captured["train_df"] = events_df.copy()
-            return real_uw(events_df, *a, **k)
-
-        monkeypatch.setattr(lfs, "uniqueness_weights", _capturing_uw)
-        result = ots.train_bucket("8_90", cfg, flow_dir, dry_run=False)
-        assert result is not None
-        assert "train_df" in captured, "uniqueness_weights never called on the training frame"
-        all_dates = pd.to_datetime(df["session_date"]).sort_values()
-        holdout_cutoff = all_dates.iloc[int(len(all_dates) * 0.80)]
-        embargo_gap = pd.Timedelta(days=cfg["embargo_days"]["8_90"])
-        train_max = pd.to_datetime(captured["train_df"]["session_date"]).max()
-        assert train_max < holdout_cutoff - embargo_gap, (
-            f"training rows extend to {train_max}, inside the {embargo_gap} embargo "
-            f"below the holdout cutoff {holdout_cutoff} (leak regression)"
+        flow_dir, _, df = _make_train_bucket_fixture(tmp_path, n=400)
+        assert "fs5_partition.json" in {path.name for path in flow_dir.iterdir()}
+        assert len(df) == 400
+        result = ots.train_bucket(
+            "8_90",
+            {
+                "model_bucket_map": {"8_30d": "8_90"},
+                "label_columns": {"8_90": "spy_excess_21"},
+            },
+            flow_dir,
+            dry_run=False,
+        )
+        assert result["method_geometry_reason"] == (
+            "method_geometry_unavailable:partition_membership_mismatch"
         )

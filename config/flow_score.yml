@@ -90,9 +90,7 @@ dte_interaction:
 # ── monotone constraints (mechanism-known only, amendment §4.5 / masterplan FS-4 row) ──
 # Only at-ask/aggression share and vol-over-OI ratio qualify as mechanism-known
 # monotone features. All other features have no registered constraint.
-monotone_constraints:
-  at_ask_share: 1      # higher aggression share → stronger conviction; +1 = non-decreasing
-  vol_gt_oi_ratio: 1   # higher vol/OI → more notable; +1 = non-decreasing
+monotone_constraints: {}   # removed by the 2026-09-19 FS evaluation amendment
 
 # ── decay-monitor window (amendment §8 #4 — shadow calibration-decay sentinel) ──
 decay_monitor:
