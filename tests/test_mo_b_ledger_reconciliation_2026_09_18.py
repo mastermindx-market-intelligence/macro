@@ -657,6 +657,9 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     assert dossier["state_delta"].startswith("PARTIAL->PROVEN_LIVE 2026-10-03 (CEO A D76")
     assert "served_proof_8300.sh (rc=0)" in dossier["state_delta"]
     assert dossier["next_bounded_child"].startswith("NONE for the page")
+    # W10 (D79): the finalize-only guard is recorded on the row; the receipt itself is unchanged.
+    assert "2026-10-03 CEO A D79: evidence tool hardened" in dossier["adjudication_notes"]
+    assert "refuse (rc 2, no write)" in dossier["adjudication_notes"]
     sanctions = r["MO-PAID-008"]
     assert sanctions["capability_state_c2"] == "PROVEN_LIVE"
     assert sanctions["state_delta"].startswith("PRODUCTION_PROOF 2026-10-03 (CEO A D77)")
