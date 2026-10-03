@@ -92,6 +92,22 @@ from engine.neuralweb.synapse import load_registry
 
 log = logging.getLogger(__name__)
 
+
+
+# ---------------------------------------------------------------------------
+# Single wall-clock seam (C1) — every `datetime.now` call below routes here.
+# Tests monkeypatch `engine.neuralweb.mechanism_pathways._utcnow` to keep the
+# suite wall-clock independent; production callers leave it untouched.
+# ---------------------------------------------------------------------------
+def _utcnow() -> datetime:
+    """Return the current UTC time as a timezone-aware datetime.
+
+    Single seam for the compiler's wall-clock dependency. The compiler never
+    carries this value as a node date — it is used only to classify source
+    clocks and to stamp the artifact root's `built` field.
+    """
+    return _utcnow()
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -197,7 +213,7 @@ def _days_since(asof_val: Any) -> int | None:
     asof = _parse_asof(asof_val)
     if asof is None:
         return None
-    now = datetime.now(tz=timezone.utc)
+    now = _utcnow()
     delta = now - asof
     return delta.days
 
@@ -231,7 +247,7 @@ def _latest_earth_date(now: datetime | None = None) -> "date":
     so an asof equal to today_utc.date() is still acceptable.
     """
     from datetime import timedelta
-    now = now or datetime.now(tz=timezone.utc)
+    now = now or _utcnow()
     if now.tzinfo is None:
         now = now.replace(tzinfo=timezone.utc)
     return (now + timedelta(hours=_LATEST_EARTH_DATE_OFFSET_HOURS)).date()
@@ -265,9 +281,9 @@ def _classify_source_clock(asof_val: Any, now: datetime | None = None) -> dict:
             latest = _latest_earth_date(now)
             if day > latest:
                 return {"as_of": s, "as_of_reason": "future_dated"}
-            age_now = (now or datetime.now(tz=timezone.utc))
+            age_now = (now or _utcnow())
             if now is None:
-                age_now = datetime.now(tz=timezone.utc)
+                age_now = _utcnow()
             age_days = (age_now.date() - day).days
             if age_days >= _STALE_DAYS:
                 return {"as_of": s, "as_of_reason": "stale"}
@@ -278,7 +294,7 @@ def _classify_source_clock(asof_val: Any, now: datetime | None = None) -> dict:
             # Per R4: undocumented naive is treated as UTC.
             dt = dt.replace(tzinfo=timezone.utc)
         dt_utc = dt.astimezone(timezone.utc)
-        ref_now = now or datetime.now(tz=timezone.utc)
+        ref_now = now or _utcnow()
         if ref_now.tzinfo is None:
             ref_now = ref_now.replace(tzinfo=timezone.utc)
         if dt_utc > ref_now:
@@ -860,7 +876,7 @@ def compile(root: Path | None = None, *, now: datetime | None = None) -> dict:  
 
     # `as_of` is the BUILD date — it lives ONLY at the artifact root (R1).
     # Per-node dates are NEVER this; they are the source record's own clock.
-    built_dt = now or datetime.now(tz=timezone.utc)
+    built_dt = now or _utcnow()
     if built_dt.tzinfo is None:
         built_dt = built_dt.replace(tzinfo=timezone.utc)
     as_of = built_dt.strftime("%Y-%m-%d")

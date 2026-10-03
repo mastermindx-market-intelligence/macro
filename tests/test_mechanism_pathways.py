@@ -42,16 +42,18 @@ from engine.neuralweb.mechanism_pathways import (
 _TEST_NOW = datetime(2026, 10, 2, 23, 0, tzinfo=timezone.utc)
 
 
-@pytest.fixture
-def fixed_compile_clock(monkeypatch):
-    """Force compile()'s injected now to _TEST_NOW so date classification is
-    wall-clock independent. Tests relying on `_FRESH_ASOF` use this fixture.
+@pytest.fixture(autouse=True)
+def _fixed_compiler_clock(monkeypatch):
+    """Wall-clock-independent compiler clock (C1).
+
+    Replaces the single `_utcnow` seam in mechanism_pathways so the suite
+    never reads the wall clock. The fixture is applied to every test in
+    this module.
     """
-    from engine.neuralweb import mechanism_pathways as mp
-    orig = mp.compile
-    def _compile(root=None, *, now=None):
-        return orig(root, now=_TEST_NOW if now is None else now)
-    monkeypatch.setattr(mp, 'compile', _compile)
+    monkeypatch.setattr(
+        "engine.neuralweb.mechanism_pathways._utcnow",
+        lambda: datetime(2026, 10, 2, 23, 0, tzinfo=timezone.utc),
+    )
     return _TEST_NOW
 
 
