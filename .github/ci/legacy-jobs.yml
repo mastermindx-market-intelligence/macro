@@ -8278,29 +8278,6 @@ jobs:
     #                                    (mocked fetch, zero network). Sits in this
     #                                    code-gated job so the merge gate executes it.
     # Zero network calls; all inputs are synthetic or committed files.
-    # config.yml, data/archive/BAML*.parquet, data/corp_bonds/issuer_themes.json are runtime inputs of tests in this job
-    scope: exclusive
-    paths:
-      - "collectors/base.py"
-      - "collectors/corp_bond_holdings.py"
-      - "collectors/etf_holdings.py"
-      - "collectors/finra_corp_bonds.py"
-      - "collectors/fred.py"
-      - "collectors/holdings.py"
-      - "config.yml"
-      - "data/archive/BAML*.parquet"
-      - "data/corp_bonds/issuer_themes.json"
-      - "engine/release_target_truth.py"
-      - "lib/__init__.py"
-      - "lib/config.py"
-      - "lib/store.py"
-      - "scripts/collect_cycle_vintages.py"
-      - "scripts/collect_release_target_vintages.py"
-      - "tests/test_collect_cycle_vintages.py"
-      - "tests/test_corp_bond_holdings.py"
-      - "tests/test_finra_corp_bonds.py"
-      - "tests/test_fred_baml_archive.py"
-      - "tests/test_fred_series_alias_conflicts.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
