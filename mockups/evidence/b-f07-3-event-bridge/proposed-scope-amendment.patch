@@ -1,0 +1,139 @@
+--- a/.github/ci/legacy-jobs.yml
++++ b/.github/ci/legacy-jobs.yml
+@@ -1161,6 +1161,45 @@
+     # suites read can still start this job.
+     scope: exclusive
+     paths:
++      # Proposed B-F07-3 canonical reader closure 2026-09-19; scope amendment required
++      - "collectors/edgar_8k.py"
++      - "collectors/edgar_dilution.py"
++      - "collectors/sec_capital_structure.py"
++      - "contracts/capital_structure_event.schema.json"
++      - "contracts/capital_structure_ingestion_health.schema.json"
++      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
++      - "contracts/capital_structure_source_manifest.schema.json"
++      - "engine/_text_scrub.py"
++      - "engine/capital_structure/ingestion_health.py"
++      - "engine/capital_structure/sec_discovery_clock.py"
++      - "engine/capital_structure/source_ledger_io.py"
++      - "engine/capital_structure/source_store.py"
++      - "engine/chronicle/__init__.py"
++      - "engine/chronicle/adapters.py"
++      - "engine/chronicle/earnings_calls.py"
++      - "engine/chronicle/schema.py"
++      - "engine/chronicle/spine.py"
++      - "engine/chronicle/state_log.py"
++      - "engine/earnings_narrative/context_packets.py"
++      - "engine/earnings_narrative/private_publication.py"
++      - "engine/earnings_qual.py"
++      - "engine/neuralweb/analyst_doctrine.py"
++      - "engine/neuralweb/ask_brain.py"
++      - "engine/neuralweb/chat_plain_words.py"
++      - "engine/neuralweb/company_intelligence_reader.py"
++      - "engine/neuralweb/cortex.py"
++      - "engine/neuralweb/doctrine.py"
++      - "engine/neuralweb/earnings_context_reader.py"
++      - "engine/neuralweb/metabolism.py"
++      - "engine/neuralweb/query.py"
++      - "engine/neuralweb/reflexes.py"
++      - "engine/prophet_integrity.py"
++      - "engine/research_vault/r2_store.py"
++      - "engine/research_vault/sidecar.py"
++      - "engine/research_vault/slugs.py"
++      - "engine/seasonality/contracts.py"
++      - "scripts/compile_capital_structure_events.py"
++      - "tests/test_capital_structure_event_spine.py"
+       - "engine/theme_graph/identity.py"
+       - "engine/theme_graph/__init__.py"
+       - "engine/earnings_release/receipts.py"
+@@ -2071,6 +2110,8 @@
+     # 846 tracked / 127 concrete. Subject packages stay globbed.
+     scope: exclusive
+     paths:
++      # Proposed B-F07-3 canonical reader closure 2026-09-19; scope amendment required
++      - "scripts/compile_capital_structure_events.py"
+       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
+       # scenario V1 pure module now sits in the shared engine/* import closure.
+       - "engine/valuation_scenario.py"
+@@ -4002,6 +4043,16 @@
+     # narrow those.
+     scope: exclusive
+     paths:
++      # Proposed B-F07-3 canonical reader closure 2026-09-19; scope amendment required
++      - "collectors/edgar_8k.py"
++      - "collectors/edgar_dilution.py"
++      - "collectors/sec_capital_structure.py"
++      - "contracts/capital_structure_document_term_observation.schema.json"
++      - "contracts/capital_structure_ingestion_health.schema.json"
++      - "contracts/capital_structure_projection.schema.json"
++      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
++      - "contracts/capital_structure_source_manifest.schema.json"
++      - "scripts/compile_capital_structure_events.py"
+       - "contracts/evidence_foundation/vocabulary.v1.json"
+       - "contracts/evidence_foundation/reference.v1.schema.json"
+       - "contracts/evidence_foundation/recipe.v1.schema.json"
+@@ -7421,6 +7472,8 @@
+     # genuine import edges.
+     scope: exclusive
+     paths:
++      # Proposed B-F07-3 canonical reader closure 2026-09-19; scope amendment required
++      - "scripts/compile_capital_structure_events.py"
+       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
+       # scenario V1 pure module now sits in the shared engine/* import closure.
+       - "engine/valuation_scenario.py"
+@@ -8033,6 +8086,8 @@
+     # 846 tracked / 74 concrete.
+     scope: exclusive
+     paths:
++      # Proposed B-F07-3 canonical reader closure 2026-09-19; scope amendment required
++      - "scripts/compile_capital_structure_events.py"
+       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
+       # scenario V1 pure module now sits in the shared engine/* import closure.
+       - "engine/valuation_scenario.py"
+@@ -10091,6 +10146,8 @@
+     # the five scripts are closure imports, not tree scans.
+     scope: exclusive
+     paths:
++      # Proposed B-F07-3 canonical reader closure 2026-09-19; scope amendment required
++      - "scripts/compile_capital_structure_events.py"
+       - "tests/test_dod_budget_live.py"
+       - "tests/test_fms_notifications.py"
+       - "tests/test_fms_ui.py"
+@@ -11328,6 +11385,17 @@
+     # the declared-scope coverage audit re-checks them on every load.
+     scope: exclusive
+     paths:
++      # Proposed B-F07-3 canonical reader closure 2026-09-19; scope amendment required
++      - "engine/capital_structure/__init__.py"
++      - "engine/capital_structure/document_terms.py"
++      - "engine/capital_structure/event_spine.py"
++      - "engine/capital_structure/ingestion_health.py"
++      - "engine/capital_structure/projection.py"
++      - "engine/capital_structure/sec_discovery_clock.py"
++      - "engine/capital_structure/source_identity.py"
++      - "engine/capital_structure/source_ledger_io.py"
++      - "engine/capital_structure/source_store.py"
++      - "scripts/compile_capital_structure_events.py"
+       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
+       # scenario V1 pure module now sits in the shared engine/* import closure.
+       - "engine/valuation_scenario.py"
+@@ -13395,6 +13463,8 @@
+     # 846 tracked / 74 concrete. Subject packages stay globbed.
+     scope: exclusive
+     paths:
++      # Proposed B-F07-3 canonical reader closure 2026-09-19; scope amendment required
++      - "scripts/compile_capital_structure_events.py"
+       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
+       # scenario V1 pure module now sits in the shared engine/* import closure.
+       - "engine/valuation_scenario.py"
+--- a/scripts/build_stock_library.py
++++ b/scripts/build_stock_library.py
+@@ -2914,7 +2914,7 @@
+     # (engine.stock_fundamentals._load_statements(), read once here). No new
+     # collector, no network, no licensed data -- ~one extra parquet read plus
+     # ~20 float ops for one ticker, well under the render budget.
+-    _VS_TICKERS = ("AAPL",)
++    _VS_TICKERS = ("AAPL", "NSA")
+     _vs_statements: dict = {}
+     try:
+         _vs_statements = _vs_load_statements()

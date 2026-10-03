@@ -109,10 +109,10 @@ def test_major_a_e4_credit_surface_anchors_pin_actual_content():
     dash_lines = _read(dash).splitlines()
     eng_lines = _read(eng).splitlines()
 
-    # templates/dashboard.html.j2:14029 — the E4_credit_stress dashboard label row.
-    line_14029 = dash_lines[14029 - 1]
-    assert "E4_credit_stress" in line_14029, (
-        f"dashboard.html.j2:14029 no longer holds E4_credit_stress: {line_14029!r}"
+    # templates/dashboard.html.j2:14062 — the E4_credit_stress dashboard label row.
+    line_e4 = dash_lines[14062 - 1]
+    assert "E4_credit_stress" in line_e4, (
+        f"dashboard.html.j2:14062 no longer holds E4_credit_stress: {line_e4!r}"
     )
 
     # templates/dashboard.html.j2:101-102 — the bilingual credit scare-tip blurb

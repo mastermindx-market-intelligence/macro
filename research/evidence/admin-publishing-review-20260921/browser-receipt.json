@@ -1,0 +1,95 @@
+{
+  "scope": "Seeded local plan through actual admin HTTP read adapters; no production data or writes",
+  "checks": [
+    {
+      "name": "Only twelve cards mounted from the complete plan",
+      "pass": true
+    },
+    {
+      "name": "No chart downloads or inline chart documents before intent",
+      "pass": true
+    },
+    {
+      "name": "Explicit chart preview loads from matching plan",
+      "pass": true
+    },
+    {
+      "name": "Type then desk produces their intersection",
+      "pass": true
+    },
+    {
+      "name": "Desk then type preserves the same intersection",
+      "pass": true
+    },
+    {
+      "name": "Search finds a post beyond the initial twelve",
+      "pass": true
+    },
+    {
+      "name": "Empty filter result has explicit recovery",
+      "pass": true
+    },
+    {
+      "name": "Page 1 stays within twelve-card budget",
+      "pass": true
+    },
+    {
+      "name": "Page 2 stays within twelve-card budget",
+      "pass": true
+    },
+    {
+      "name": "Page 3 stays within twelve-card budget",
+      "pass": true
+    },
+    {
+      "name": "Page 4 stays within twelve-card budget",
+      "pass": true
+    },
+    {
+      "name": "Pagination reaches every post exactly once",
+      "pass": true
+    },
+    {
+      "name": "Last-page Next is disabled",
+      "pass": true
+    },
+    {
+      "name": "Mobile review does not overflow",
+      "pass": true
+    },
+    {
+      "name": "Corrected plan never mixes an old card with a new chart",
+      "pass": true
+    },
+    {
+      "name": "Plan refresh recovers the review controls",
+      "pass": true
+    },
+    {
+      "name": "Transient chart fetch recovers without page reload",
+      "pass": true
+    },
+    {
+      "name": "Delayed content read intercepted",
+      "pass": true
+    },
+    {
+      "name": "Late content response does not overwrite the selected page",
+      "pass": true
+    },
+    {
+      "name": "Zero unhandled browser errors",
+      "pass": true
+    },
+    {
+      "name": "No writes or publication requests attempted",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "writes": [],
+  "chart_reads": [
+    "id=chart-001&revision=8ae2cbebceef375ae17997b2f433f9fddaf1f0f235803cdaa05190a7c0845ca2",
+    "id=chart-001&revision=8ae2cbebceef375ae17997b2f433f9fddaf1f0f235803cdaa05190a7c0845ca2"
+  ]
+}

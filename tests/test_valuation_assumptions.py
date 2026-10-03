@@ -149,10 +149,8 @@ def test_controls_blob_is_none_when_v1_is_not_usable():
     revenue = 1.0e11
     tiny_ni = revenue * 0.001  # 0.1% margin, under the 1% floor
     thin = va.controls_blob(_v1_blob(ni=tiny_ni, revenue=revenue))
-    # Seat ruling R5, issued in the seat's round-4 rulings
-    # (ext/rul_m_f07_2_h4.txt) and recorded on this PR at ratification: the
-    # thin artifact shape is the permitted section 2.6 exception, and its key
-    # set is fixed at exactly these nine keys.
+    # Seat ruling R5 (F07-2) fixed the thin artifact's base keys; F07-3 adds
+    # latest_event_bridge on every blob, including the thin shape.
     assert thin is not None
     assert thin.get("too_thin_base") is True
     assert set(thin) == {
@@ -165,6 +163,9 @@ def test_controls_blob_is_none_when_v1_is_not_usable():
         "too_thin_base",
         "inputs",
         "margin_base_floor",
+        "latest_event_bridge",
+        "event_assumption_proposal",
+        "event_assumption_scenario",
     }
     assert "controls" not in thin
     assert "server_default" not in thin
@@ -814,6 +815,9 @@ def test_artifact_schema_shape():
         "controls",
         "presets",
         "server_default",
+        "latest_event_bridge",
+        "event_assumption_proposal",
+        "event_assumption_scenario",
     }
     assert set(blob) == expected_keys
     assert blob["schema"] == "valuation_scenario_controls.v1"

@@ -48,27 +48,11 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.fetch_r2 --dirs attention || echo "::warning::attention restore failed (non-fatal — attention chip absent/stale this render)"
-      # The library build (build_site) needs every S&P 1500 constituent close
-      # matrix present. Weekly does not re-collect them, so restore from the
-      # cache the daily run saved (caches are gitignored, not committed).
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-weekly-${{ github.run_id }}
-          restore-keys: breadth-closes-
-      - name: restore smallcap (S&P 600) close cache
-        uses: actions/cache@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-weekly-${{ github.run_id }}
-          restore-keys: smallcap-closes-
-      - name: restore midcap (S&P 400) close cache
-        uses: actions/cache@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-weekly-${{ github.run_id }}
-          restore-keys: midcap-closes-
+      # The S&P 500/600/400 close panels are Git-tracked committed inputs.
+      # Weekly consumes their checkout bytes and must never overlay them from
+      # Actions cache. Only daily.collect may seed those panels because it
+      # refreshes and commits the canonical files. Russell is separately
+      # gitignored and remains cache-backed for this reader.
       # 2026-07-25: this step was missing — the weekly deep-dive stamped a 1,704-name
       # us_calls universe between 2,966-name nightly stamps (keep-FIRST PIT: permanent).
       # Every lane that restores the S&P trio for the library must restore Russell too.
@@ -206,6 +190,19 @@ jobs:
           run_py "build vector + landing hub" scripts.build_vector
           run_py "AI brief page (build_aibrief)" scripts.build_aibrief
           exit 0
+      - name: recurring briefs producer (F11 — each subscription its brief or an honest miss)
+        # AFTER this job's brief producers (build_aibrief above). Slot =
+        # site/master_brief.json field state_asof. Writes public.brief_deliveries
+        # only (insert on conflict do nothing). Fail-soft: absent creds/tables
+        # -> typed miss, 0 rows, exit 0.
+        # Dormant unless RECURRING_BRIEFS_ENABLE=1. No second cron.
+        env:
+          # Reuse the incumbent repo service-role secret already consumed by
+          # production Supabase jobs. The producer's SUPABASE_URL has a reviewed
+          # project default, so do not inject an absent secret as an empty string.
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          RECURRING_BRIEFS_ENABLE: ${{ secrets.RECURRING_BRIEFS_ENABLE }}
+        run: python -m scripts.build_recurring_briefs --cadence weekly_saturday || echo "::warning::recurring briefs producer failed (non-fatal)"
       - name: rebuild stock-search libraries (resilient — guarantees the analyzers ship)
         # build_china/build_hk/build_canada (and build_intl via a build_vector hook)
         # swallow errors; rebuild the per-stock search JSON (site/chinastockdata,

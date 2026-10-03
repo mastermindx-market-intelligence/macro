@@ -10,9 +10,12 @@ TWO HARD GUARDS so a self-tuning risk engine can't tune itself off a cliff:
   1. CODE CLAMP — every proposed delta is bounded (bands move <= +/-12 and stay ordered; leg
      thr_pct in [0.80,0.97]; prob_cal in [0,0.6] and kept monotonic; alert_from cannot drop below
      'caution'). Opus can only nudge within rails.
-  2. DO-NO-HARM BACKTEST GATE — even a clamped proposal is APPLIED only if it improves the
-     historical alert F1 (full AND 2020+) without breaking the evidence gate (validated legs still
-     lead). engine.risk_radar_backtest.compare_calib decides; Opus never writes the engine directly.
+  2. DO-NO-HARM BACKTEST GATE — every proposal must improve/preserve historical alert F1
+     (full AND 2020+) without breaking the validated-leg evidence gate. If a proposal changes
+     prob_cal, it must ALSO pass paired displayed-probability Brier checks across H5/H10/H21
+     (full + 2020+), keep identical scored populations, improve at least one Brier cell, and
+     preserve the H21 Market-State authority partition. engine.risk_radar_backtest.compare_calib
+     decides; Opus never writes the engine directly.
 
 Accepted changes are written to data/risk_radar/calibration.json (the overlay risk_radar reads)
 and EVERY proposal+verdict is logged to data/risk_radar/review_log.jsonl (full audit trail).
@@ -53,10 +56,14 @@ log = logging.getLogger(__name__)
 # Pre-committed A6 lane-(ii) gate description — recorded in every governance event so the
 # ledger carries the gate that was in force at the time of the proposal/apply/reject.
 _A6_GATE_SPEC = (
-    "do-no-harm F1 predicate: proposed calibration must improve historical alert F1 "
-    "(full+2020+) without breaking the evidence gate (n_graded >= min_graded=30 first); "
-    "hard clamps: bands +/-12 from default and strictly ordered; "
-    "leg thr_pct in [0.80,0.97]; prob_cal in [0,0.6] monotonic; alert_from in {caution,elevated,risk-off}"
+    "do-no-harm predicate: proposed calibration must improve historical alert F1 "
+    "(full+2020+) without breaking the validated-leg evidence gate; if prob_cal changes, "
+    "paired displayed-probability Brier must be non-worse at H5/H10/H21 on full+2020+, "
+    "at least one Brier cell must strictly improve, scored populations must match, and "
+    "the H21 Market-State authority partition must remain identical "
+    "(n_graded >= min_graded=30 first); hard clamps: bands +/-12 from default and strictly "
+    "ordered; leg thr_pct in [0.80,0.97]; prob_cal in [0,0.6] monotonic; "
+    "alert_from in {caution,elevated,risk-off}"
 )
 
 # NOTE: _DEFAULTS["enabled"] is False here.  The real arm is config.yml
@@ -93,7 +100,10 @@ _SYSTEM = (
     "or a confirmation would have suppressed it. For misses, look at what was elevated-but-below-"
     "alert and whether a lower band would have caught it without flooding FPs. Be conservative: "
     "a do-no-harm backtest will REJECT any change that doesn't improve historical F1, so propose "
-    "targeted nudges, not sweeping changes.\n\n"
+    "targeted nudges, not sweeping changes. If you propose prob_cal, it is NOT a free passenger "
+    "on an alert-F1 improvement: the displayed probabilities must also pass paired Brier "
+    "do-no-harm across H5/H10/H21 on full+2020+ and preserve the Market-State authority "
+    "partition.\n\n"
     "Return ONLY a JSON object (no fences):\n"
     '  analysis: string (the systematic error patterns you see),\n'
     '  deltas: { bands: {watch?,caution?,elevated?,risk_off?},\n'
@@ -243,6 +253,9 @@ def _gov_proposal(proposal: dict, proposed_deltas: dict, root=None) -> None:
                 "proposed_deltas_summary": {
                     "n_band_changes": len((proposal.get("deltas") or {}).get("bands") or {}),
                     "n_leg_changes": len((proposal.get("deltas") or {}).get("legs") or {}),
+                    "prob_cal_horizons": sorted(
+                        ((proposal.get("deltas") or {}).get("prob_cal") or {}).keys()
+                    ),
                     "alert_from": (proposal.get("deltas") or {}).get("alert_from"),
                 },
             },
@@ -352,7 +365,13 @@ def run(persist: bool = True, root=None, force: bool = False, call=None,
         out["analysis"] = proposal.get("analysis")
         out["proposed_bands"] = proposed["bands"]
         out["proposed_alert_from"] = proposed["alert_from"]
-        out["backtest"] = {k: verdict.get(k) for k in ("base", "proposed", "improves", "legs_ok")}
+        out["backtest"] = {
+            k: verdict.get(k)
+            for k in (
+                "base", "proposed", "improves", "legs_ok", "comparison_ready",
+                "alert_gate", "probability_gate",
+            )
+        }
         if verdict.get("improves"):
             if persist:
                 _write_calibration(proposed, root=root)

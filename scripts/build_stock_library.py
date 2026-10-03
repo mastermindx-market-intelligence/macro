@@ -25,6 +25,13 @@ try:
 except Exception:  # noqa: BLE001 -- additive panel; an import failure must never break the whole build
     _dm_load = None
 
+try:
+    # Pure derived adapter; an import fault must remain additive to the
+    # stock-library build and degrade at its call site below.
+    from engine.capital_need import assemble_capital_need as _cn_assemble
+except Exception:  # noqa: BLE001 -- additive panel
+    _cn_assemble = None
+
 
 def _resolve_debt_maturity(ticker: str, sector: str, dm_asof) -> dict:
     """Resolve the ``debt_maturity.v1`` block for one ticker (packet
@@ -87,7 +94,9 @@ def _resolve_debt_maturity(ticker: str, sector: str, dm_asof) -> dict:
             }
         if _dm_state == "confirmed_no_filings":
             return _dm_extract(None, cik=_dm_cik, as_of=dm_asof)
-        return _dm_extract(_dm_facts, cik=_dm_cik, as_of=dm_asof)
+        block = _dm_extract(_dm_facts, cik=_dm_cik, as_of=dm_asof)
+        block["fetched_at"] = _dm_facts.get("fetched_at")
+        return block
     except Exception as _dm_exc:  # noqa: BLE001 -- additive; must not break the stockdata build
         # Round-3 review MAJOR-3: this listing IS a candidate SEC filer (it
         # reached the else branch), so a transient fault here (import
@@ -108,6 +117,100 @@ def _resolve_debt_maturity(ticker: str, sector: str, dm_asof) -> dict:
             "buckets": [], "total_reported_usd": None, "total_display": None,
             "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
             "as_of": dm_asof.isoformat(),
+        }
+
+
+def _resolve_cash_runway(ticker: str, sector: str, cr_asof, ladder) -> dict:
+    """Resolve the ``cash_runway.v1`` block for one ticker (packet B-F09-3
+    second slice). Mirrors the taxonomy of ``_resolve_debt_maturity``:
+      * "not_applicable" -- structural non-filer (crypto, ETF/macro).
+      * "unresolved" -- CIK lookup found nothing.
+      * "not_loaded" -- CIK resolved but no cache completed.
+      * "confirmed_no_filings" -- cache confirmed zero SEC filings.
+      * engine.cash_runway.extract_cash_runway's own statuses.
+    """
+    if ticker.endswith("-USD") or sector == "ETF / macro":
+        return {"schema": "cash_runway.v1", "status": "not_applicable"}
+    try:
+        if _dm_load is None:
+            raise RuntimeError("scripts.build_debt_maturity import failed at module load")
+        _cr_cik, _cr_facts, _cr_state = _dm_load(ticker)
+        from engine.cash_runway import extract_cash_runway as _cr_extract  # noqa: PLC0415
+        if _cr_state == "unresolved":
+            return {
+                "schema": "cash_runway.v1", "status": "unresolved", "cik": None,
+                "cash_usd": None, "cash_display": None, "ocf_usd": None,
+                "capex_usd": None, "free_cash_flow_usd": None,
+                "monthly_burn_usd": None, "runway_months": None,
+                "runway_display": None, "near_term_cover_pct": None,
+                "period": None, "as_of": cr_asof.isoformat(),
+            }
+        if _cr_state == "not_loaded":
+            return {
+                "schema": "cash_runway.v1", "status": "not_loaded", "cik": _cr_cik,
+                "cash_usd": None, "cash_display": None, "ocf_usd": None,
+                "capex_usd": None, "free_cash_flow_usd": None,
+                "monthly_burn_usd": None, "runway_months": None,
+                "runway_display": None, "near_term_cover_pct": None,
+                "period": None, "as_of": cr_asof.isoformat(),
+            }
+        if _cr_state == "confirmed_no_filings":
+            return _cr_extract(None, cik=_cr_cik, as_of=cr_asof, ladder=None)
+        block = _cr_extract(_cr_facts, cik=_cr_cik, as_of=cr_asof, ladder=ladder)
+        block["fetched_at"] = _cr_facts.get("fetched_at")
+        return block
+    except Exception as _cr_exc:  # noqa: BLE001 -- additive; must not break the stockdata build
+        print(
+            f"::warning title=stock-library cash-runway producer fault::{ticker} "
+            f"cash-runway lookup raised {type(_cr_exc).__name__}: {_cr_exc} -- "
+            f"degrading to not_loaded, never not_applicable",
+            flush=True,
+        )
+        return {
+            "schema": "cash_runway.v1", "status": "not_loaded", "cik": None,
+            "cash_usd": None, "cash_display": None, "ocf_usd": None,
+            "capex_usd": None, "free_cash_flow_usd": None,
+            "monthly_burn_usd": None, "runway_months": None,
+            "runway_display": None, "near_term_cover_pct": None,
+            "period": None, "as_of": cr_asof.isoformat(),
+        }
+
+
+def _resolve_capital_need(
+    ticker: str,
+    sector: str,
+    cn_asof,
+    debt_maturity: dict,
+    cash_runway: dict,
+) -> dict:
+    """Compose ``capital_need.v1`` from the existing issuer read models.
+
+    Ticker and sector only preserve the existing non-filer taxonomy; they are
+    never promoted into an issuer identity by this adapter.
+    """
+    if ticker.endswith("-USD") or sector == "ETF / macro":
+        return {"schema": "capital_need.v1", "version": 1, "status": "not_applicable"}
+    try:
+        if _cn_assemble is None:
+            raise RuntimeError("engine.capital_need import failed at module load")
+        return _cn_assemble(debt_maturity, cash_runway, as_of=cn_asof)
+    except Exception as _cn_exc:  # noqa: BLE001 -- additive; never break stockdata
+        print(
+            f"::warning title=stock-library capital-need producer fault::{ticker} "
+            f"capital-need composition raised {type(_cn_exc).__name__}: {_cn_exc} -- "
+            "degrading to unknown",
+            flush=True,
+        )
+        return {
+            "schema": "capital_need.v1",
+            "version": 1,
+            "status": "unknown",
+            "coverage": {"state": "unknown", "reasons": ["producer_fault"]},
+            "issuer": {"issuer_id": None, "security_id": None, "cik": None, "scope": "issuer"},
+            "as_of": cn_asof.isoformat(),
+            "reported": {},
+            "derived": {},
+            "authority": {"class": "context_only", "display_only": True},
         }
 
 
@@ -1681,6 +1784,14 @@ def _compute_board_staleness(ohlcv_dir: "Path | None" = None, now: "datetime | N
     from datetime import datetime as _dt, timezone as _tz
     from lib import nyse_calendar as _nyse
 
+    _observed = now or _dt.now(_tz.utc)
+    if _observed.tzinfo is None:
+        _observed = _observed.replace(tzinfo=_tz.utc)
+    else:
+        _observed = _observed.astimezone(_tz.utc)
+    _observed_iso = _observed.isoformat()
+    _expected = None
+
     def _unknown(reason: str, extra: "dict | None" = None) -> dict:
         # FAIL CLOSED.  "We could not date this board" is a delayed board, not a fresh
         # one — the reader gets the plain-word "updating" disclosure instead of a badge
@@ -1688,6 +1799,8 @@ def _compute_board_staleness(ohlcv_dir: "Path | None" = None, now: "datetime | N
         out = {"price_through": None, "age_days": None, "sessions_behind": None,
                "delayed": True, "unknown": True, "basis": "unknown",
                "unknown_reason": reason, "max_through": None,
+               "observed_at_utc": _observed_iso,
+               "expected_session": (_expected.isoformat() if _expected else None),
                "inputs": {"baskets_ohlcv_through": None, "panel": panel_reach or None,
                           "board_asof": (str(board_asof) if board_asof else None)}}
         if extra:
@@ -1695,6 +1808,7 @@ def _compute_board_staleness(ohlcv_dir: "Path | None" = None, now: "datetime | N
         return out
 
     try:
+        _expected = _nyse.expected_last_session(_observed)
         _root = ohlcv_dir or (config.data_dir() / "baskets" / "ohlcv")
         _root = _root if isinstance(_root, Path) else Path(_root)
         _ohlcv_through: "date | None" = None
@@ -1746,9 +1860,6 @@ def _compute_board_staleness(ohlcv_dir: "Path | None" = None, now: "datetime | N
             )
         _basis_date, _basis_tag = min(_known, key=lambda kv: kv[0])
 
-        _now = now or _dt.now(_tz.utc)
-        _expected = _nyse.expected_last_session(_now)
-
         # age_days: calendar days between price_through and expected session
         _age_days = (_expected - _basis_date).days
 
@@ -1777,6 +1888,8 @@ def _compute_board_staleness(ohlcv_dir: "Path | None" = None, now: "datetime | N
             "unknown": False,
             "basis": _basis_tag,
             "max_through": (str(_max_through) if _max_through else None),
+            "observed_at_utc": _observed_iso,
+            "expected_session": _expected.isoformat(),
             "inputs": {
                 "baskets_ohlcv_through": (str(_ohlcv_through) if _ohlcv_through else None),
                 "panel": panel_reach or None,
@@ -1894,6 +2007,61 @@ def _panel_price_reach(uni: "list | None",
         "mixed_vintage": _majority_d != _max_d,
         "off_majority_tickers": _off_majority[:10],
     }
+
+
+def _clip_daily_to_completed_session(values, completed_session: date):
+    """Return a daily Series/DataFrame capped at one completed NYSE session."""
+    if values is None:
+        return None
+    idx = pd.DatetimeIndex(pd.to_datetime(values.index, errors="raise"))
+    if idx.tz is not None:
+        idx = idx.tz_localize(None)
+    mask = idx.normalize() <= pd.Timestamp(completed_session)
+    return values.loc[mask]
+
+
+def _normalise_us_equity_universe(
+    uni: "list | None", now: "datetime | None" = None,
+) -> tuple[list, dict | None, dict]:
+    """Cap every US-equity input at one immutable completed-session clock."""
+    from lib import nyse_calendar as _nyse
+
+    observed = now or datetime.now(timezone.utc)
+    if observed.tzinfo is None:
+        observed = observed.replace(tzinfo=timezone.utc)
+    else:
+        observed = observed.astimezone(timezone.utc)
+    completed = _nyse.expected_last_session(observed)
+    crypto = _crypto_tickers()
+    raw_reach = _panel_price_reach(uni)
+    clipped: list = []
+    provisional: list[str] = []
+    for item in (uni or []):
+        ticker, close, high, *rest = item
+        if str(ticker) in crypto:
+            clipped.append(item)
+            continue
+        last = close.last_valid_index() if close is not None else None
+        if last is not None and pd.Timestamp(last).date() > completed:
+            provisional.append(str(ticker))
+        clipped.append((
+            ticker,
+            _clip_daily_to_completed_session(close, completed),
+            _clip_daily_to_completed_session(high, completed),
+            *rest,
+        ))
+    reach = _panel_price_reach(clipped)
+    raw_through = (raw_reach or {}).get("through_raw")
+    if reach is not None and raw_through:
+        reach["through_raw"] = raw_through
+    clock = {
+        "observed_at_utc": observed.isoformat(),
+        "completed_session": completed.isoformat(),
+        "raw_through": raw_through,
+        "provisional_member_count": len(provisional),
+        "provisional_tickers": sorted(provisional)[:10],
+    }
+    return clipped, reach, clock
 
 
 # Two consecutive builds claiming the SAME as_of are re-renders of the same
@@ -2737,8 +2905,16 @@ def _eb_chip_payload(ticker: str,
         return {}
 
 
-def main() -> int:
+def main(now: datetime | None = None) -> int:
     _main_t0 = time.time()
+    from lib import nyse_calendar as _board_nyse_calendar  # noqa: PLC0415
+
+    _board_observed_at = now or datetime.now(timezone.utc)
+    if _board_observed_at.tzinfo is None:
+        _board_observed_at = _board_observed_at.replace(tzinfo=timezone.utc)
+    else:
+        _board_observed_at = _board_observed_at.astimezone(timezone.utc)
+    _completed_session = _board_nyse_calendar.expected_last_session(_board_observed_at)
     site = config.ROOT / config.load()["storage"]["site_dir"]
     outdir = site / "stockdata"
     outdir.mkdir(parents=True, exist_ok=True)
@@ -2761,9 +2937,14 @@ def main() -> int:
     log.info("net-liquidity regime for library: %s · macro-risk: %s · VIX: %s · vol-regime: %s",
              liq or "unknown", "—" if drag is None else f"{drag:.2f}", vctx or "n/a",
              (vreg or {}).get("regime") or "n/a")
-    # benchmark for per-ticker relative-strength alerts + the feed window/caps
+    # benchmark for per-ticker relative-strength alerts + the feed window/caps.
+    # The entire US score plane shares the one completed-session clock captured above;
+    # a provisional same-day SPY bar must not leak into relative-strength context.
     spy = store.read("yahoo", "SPY")
-    bench = spy["close"] if spy is not None else None
+    bench = (
+        _clip_daily_to_completed_session(spy["close"], _completed_session)
+        if spy is not None and "close" in spy.columns else None
+    )
     # live calm/risk-on regime score (validated price tape) — scales the Conviction EDGE
     # axis's residual-momentum leg up in calm tape, back toward zero in stress.
     calm = current_calm(bench)
@@ -3336,7 +3517,11 @@ def main() -> int:
     disp_map: dict[str, dict] = {}              # price / off-high / sparkline per name
     _liq_map: dict[str, dict] = {}              # P0.3 liquidity/capacity hygiene (display-only, R10)
     to_write: list[tuple[str, dict]] = []
-    uni = universe()
+    _raw_uni = universe()
+    uni, _panel_reach, _session_clock = _normalise_us_equity_universe(
+        _raw_uni, now=_board_observed_at,
+    )
+    _continuous_tickers = _crypto_tickers()
     latest_volumes = latest_volume_map("us")
     # Bare print, NOT a logger call: GitHub only parses a workflow command when
     # "::" STARTS the line, and this module's logging format prefixes every
@@ -3638,7 +3823,12 @@ def main() -> int:
         # Graceful: any failure leaves the thin snapshot in place.
         _ohlcv = None
         try:
-            _ohlcv = store.read("stocks", ticker)
+            _raw_ohlcv = store.read("stocks", ticker)
+            _ohlcv = (
+                _raw_ohlcv
+                if ticker in _continuous_tickers
+                else _clip_daily_to_completed_session(_raw_ohlcv, _completed_session)
+            )
             if _ohlcv is not None and {"high", "low", "volume"} <= set(_ohlcv.columns):
                 rich = stock_technicals.snapshot(_ohlcv["close"], _ohlcv["high"],
                                                  _ohlcv["low"], _ohlcv["volume"], bench=bench)
@@ -3661,8 +3851,13 @@ def main() -> int:
         if _vs_v1 is not None:
             try:
                 from engine import valuation_assumptions as _valuation_assumptions
+                # as_of is the build's own point-in-time ceiling: an event
+                # dated after it has not happened yet as far as this build
+                # knows, and may not propose an assumption change.
                 rec.setdefault("valuation_scenario", {})["controls"] = (
-                    _valuation_assumptions.controls_blob(_vs_v1)
+                    _valuation_assumptions.controls_blob(
+                        _vs_v1, as_of=rec.get("asof")
+                    )
                 )
             except Exception as e:  # noqa: BLE001 — additive, never fatal
                 log.warning("valuation_assumptions failed for %s: %s", ticker, e)
@@ -4096,6 +4291,23 @@ def main() -> int:
         # (module-level, round-3 review MAJOR-2) so they are directly
         # unit-testable against the real production code.
         rec["debt_maturity"] = _resolve_debt_maturity(ticker, sector, _dt.date.today())
+        # ---- cash runway (packet B-F09-3 second slice) ----------------------------
+        # Top-level block in each stockdata JSON: engine.cash_runway.v1.
+        # Identity is CIK-only via the same build_debt_maturity producer.
+        # Taxonomy mirrors _resolve_debt_maturity above.
+        rec["cash_runway"] = _resolve_cash_runway(
+            ticker, sector, _dt.date.today(), rec["debt_maturity"]
+        )
+        # ---- capital need read model (bounded F09 derived adapter) ------------
+        # This composes only the two blocks above.  It does not widen the
+        # Capital Structure projection or open another cache/source path.
+        rec["capital_need"] = _resolve_capital_need(
+            ticker,
+            sector,
+            _dt.date.today(),
+            rec["debt_maturity"],
+            rec["cash_runway"],
+        )
         # ---- confluence block (frozen Terminal contract, 2026-07-06) ---------------
         # Top-level block in each stockdata JSON consumed by the charting-app Terminal.
         # Shape: {tier, weight, sub, ticks, bars_to_cross, provisional, not_topped,
@@ -4753,10 +4965,17 @@ def main() -> int:
     (site / "factordata").mkdir(parents=True, exist_ok=True)
     if sig_verdict:
         try:
-            sig_out = {t: signal_gate.buy_signal(v) for t, v in sig_verdict.items()}
+            sig_out = {
+                t: {**signal_gate.buy_signal(v), "asof": v.get("asof")}
+                for t, v in sig_verdict.items()
+            }
+            validity = signal_gate.validity_block(
+                alpha_asof, _PAIR_EMIT_STAMP["at_utc"],
+                _PAIR_EMIT_STAMP["pair_id"])
             (site / "factordata" / "signal_gate.json").write_text(
                 json.dumps({"as_of": alpha_asof, "verdicts": sig_out,
-                            "emit": _PAIR_EMIT_STAMP},
+                            "emit": _PAIR_EMIT_STAMP,
+                            "validity": validity},
                            separators=(",", ":"), default=str, allow_nan=False))
             log.info("wrote signal_gate.json (%d verdicts, %d buyable)", len(sig_out),
                      sum(1 for v in sig_verdict.values() if signal_gate.is_buyable(v)))
@@ -6143,8 +6362,14 @@ def main() -> int:
         #     unconfirmed from buy to watch.  Demotion-only: adds nothing to the buy side.
         # Both are fail-soft: any exception leaves the artifact unchanged.
         try:
-            _staleness = _compute_board_staleness(panel_reach=_panel_price_reach(uni),
-                                                  board_asof=wide.get("as_of"))
+            _staleness = _compute_board_staleness(
+                panel_reach=_panel_reach,
+                board_asof=wide.get("as_of"),
+                now=_board_observed_at,
+            )
+            _staleness.setdefault("inputs", {})[
+                "completed_session_normalization"
+            ] = _session_clock
             wide["staleness"] = _staleness
             _st_panel = ((_staleness.get("inputs") or {}).get("panel") or {})
             log.info(

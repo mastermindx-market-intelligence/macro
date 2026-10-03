@@ -1,0 +1,543 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-23T07:22:23Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
+    "page": "Fixture-rendered Semiconductors and China Smart Home intelligence-detail pages using the incumbent DETAIL payloads retained by the local preview. Deterministic synthetic OHLC is supplied only so the incumbent chart component renders for responsive layout evidence; those bars are not market evidence and no analytical claim is derived from them."
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 2352,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 3740,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 2352,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 4,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 3,
+        "payload_bytes_total": 706133,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 21,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 351
+      },
+      "page_id": "subsector_semiconductors.html",
+      "registry_route": "/subsector/semiconductors.html",
+      "route": "/subsector/semiconductors.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 403638,
+          "captured": true,
+          "file": "46536742ddf7d3e4.png",
+          "force_state": null,
+          "height": 2352,
+          "locale": "en",
+          "sha256": "46536742ddf7d3e49ef4f592fbed1aafa00650c41dedbd02020faa9a0a78ee03",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 392545,
+          "captured": true,
+          "file": "8abed743f91309c8.png",
+          "force_state": null,
+          "height": 2352,
+          "locale": "en",
+          "sha256": "8abed743f91309c87f0195a4dabdd0c11cd7f30f63468ab1b24e8cbadcc2ce8f",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 382584,
+          "captured": true,
+          "file": "df1b41ead38b4189.png",
+          "force_state": null,
+          "height": 2285,
+          "locale": "zh",
+          "sha256": "df1b41ead38b4189dda5d32fff47a3c3741b615937fdd7d3d9fc7f4501c2720b",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 375015,
+          "captured": true,
+          "file": "454725aedf9f9bef.png",
+          "force_state": null,
+          "height": 2285,
+          "locale": "zh",
+          "sha256": "454725aedf9f9beff83fab81b24547b8fdcd6557c38a601939044a6758326641",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 321917,
+          "captured": true,
+          "file": "d72eb8cabada12e1.png",
+          "force_state": null,
+          "height": 3740,
+          "locale": "en",
+          "sha256": "d72eb8cabada12e1ae236bed7e4a9ea3cfa55b8ea8db8afc6a2360736fad6221",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 317283,
+          "captured": true,
+          "file": "b524ca10dfb1accc.png",
+          "force_state": null,
+          "height": 3740,
+          "locale": "en",
+          "sha256": "b524ca10dfb1acccd6054bcd02d8777c73218971fc2b2f6166ee218efe5142ac",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 320069,
+          "captured": true,
+          "file": "605bf112e5b88c7d.png",
+          "force_state": null,
+          "height": 3617,
+          "locale": "zh",
+          "sha256": "605bf112e5b88c7d59301c0a36ad23b954af0d347264207a6421405ee0c24189",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 315594,
+          "captured": true,
+          "file": "e0b342eb8f8153bc.png",
+          "force_state": null,
+          "height": 3617,
+          "locale": "zh",
+          "sha256": "e0b342eb8f8153bc8757196aaf76ba19f1bf5e465cf6437a4242d7acd7553862",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    },
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 2314,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 3726,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 2314,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 4,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 3,
+        "payload_bytes_total": 635157,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 21,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 423
+      },
+      "page_id": "subsector_china_smart-home.html",
+      "registry_route": "/subsector_china/smart-home.html",
+      "route": "/subsector_china/smart-home.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 452584,
+          "captured": true,
+          "file": "ddd92c7417ee31df.png",
+          "force_state": null,
+          "height": 2314,
+          "locale": "en",
+          "sha256": "ddd92c7417ee31dff417b2d958f022682f72412ba72e82e0804a26316dc9b85a",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 443788,
+          "captured": true,
+          "file": "f071437ace263a1b.png",
+          "force_state": null,
+          "height": 2314,
+          "locale": "en",
+          "sha256": "f071437ace263a1b8734fb733b13aefdd5b9466fb442dd61618cf47196c9824d",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 429949,
+          "captured": true,
+          "file": "bbf87c10a3a0586c.png",
+          "force_state": null,
+          "height": 2249,
+          "locale": "zh",
+          "sha256": "bbf87c10a3a0586c9b895964fc6f9189ae22036b714efbfad0ef7f6012d1c94a",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 424597,
+          "captured": true,
+          "file": "e285ae563589cf5a.png",
+          "force_state": null,
+          "height": 2249,
+          "locale": "zh",
+          "sha256": "e285ae563589cf5a847f86de69bf0514bf78b306291a3eb781eb7d0df2673172",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 374361,
+          "captured": true,
+          "file": "9fcbea3fc4cf6843.png",
+          "force_state": null,
+          "height": 3726,
+          "locale": "en",
+          "sha256": "9fcbea3fc4cf68438fe436f6a095f1bb19da847457c343efef50b5905dc4f722",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 371249,
+          "captured": true,
+          "file": "8dbd1979a83e56ed.png",
+          "force_state": null,
+          "height": 3726,
+          "locale": "en",
+          "sha256": "8dbd1979a83e56edff171ffdf8e2d711f24fbf0aeeb1695a9f5c9a7cb2286d3a",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 366273,
+          "captured": true,
+          "file": "6e217dd1663f4998.png",
+          "force_state": null,
+          "height": 3513,
+          "locale": "zh",
+          "sha256": "6e217dd1663f4998ce18210d86b943db04e66faecdae0af679677a8645648c37",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 363459,
+          "captured": true,
+          "file": "adb5b6fac3953b16.png",
+          "force_state": null,
+          "height": 3513,
+          "locale": "zh",
+          "sha256": "adb5b6fac3953b16e25a2c0ffd85334bd6b29ed507539ea6c5a816f466bc1c6f",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/subsector/semiconductors.html",
+      "/subsector_china/smart-home.html"
+    ],
+    "max_pages": 2,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 330,
+    "repo": null,
+    "selected": 2
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
+    "site_dir": "/private/tmp/unified-subsector-preview"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 2,
+    "states_attempted": 16,
+    "states_captured": 16
+  }
+}

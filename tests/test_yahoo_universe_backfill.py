@@ -840,3 +840,180 @@ def test_cli_exits_zero_so_the_lane_can_never_red_the_night(tree, monkeypatch):
     _write_hub(tree)
     _stub_download(monkeypatch, {"*": None})
     assert bf.main(["--cap", "1", "--batch-size", "1", "--sleep", "0"]) == 0
+
+
+# Daily discovery needs an explicit whole-maintained-scope attempt, while the
+# existing collector, canonical writer, time budget and exclusions keep ownership.
+def _daily_archive_seed(tree, monkeypatch, names=("AAA", "BBB", "CCC", "DDD")):
+    _write_ledger(tree, [])
+    _write_hub(tree)
+    _no_maintained(monkeypatch)
+    raw = _bars(220)
+    for ticker in names:
+        store.upsert("yahoo", ticker, yahoo_mod.extract_store_frame(raw, ticker))
+    return raw
+
+
+def test_refresh_all_selects_every_eligible_archive_name(tree, monkeypatch):
+    names = ("AAA", "BBB", "CCC", "DDD")
+    raw = _daily_archive_seed(tree, monkeypatch, names)
+    monkeypatch.setattr(bf, "refresh_cap_for", lambda n: 1)
+    calls = []
+    _stub_download(monkeypatch, {"*": _yf_response({t: raw for t in names})}, calls)
+    report = bf.run(cap=1, batch_size=2, sleep_s=0, refresh_all=True)
+    assert report["refreshable"] == report["refresh_planned"] == report["refreshed"] == 4
+    assert report["refresh_cap"] == 4 and report["refresh_scope"] == "all_unmaintained"
+    assert sorted(t for batch in calls for t in batch) == list(names)
+
+
+def test_refresh_all_does_not_starve_existing_prices_behind_new_name_backlog(tree, monkeypatch):
+    raw = _daily_archive_seed(tree, monkeypatch, ("OLD",))
+    _write_ledger(tree, [("2026-09-16", "NEW")])
+    calls = []
+    _stub_download(monkeypatch, {"*": _yf_response({"NEW": raw, "OLD": raw})}, calls)
+    report = bf.run(cap=1, batch_size=1, sleep_s=0, refresh_all=True)
+    assert calls == [["NEW"], ["OLD"]]
+    assert report["written"] == 1 and report["refreshed"] == 1
+    assert report["planned"] == report["cap"] == 1
+
+
+def test_refresh_all_keeps_one_existing_budget_for_backfill_and_refresh(tree, monkeypatch):
+    raw = _daily_archive_seed(tree, monkeypatch, ("OLD",))
+    _write_ledger(tree, [("2026-09-16", "NEW")])
+    clock = {"now": 0.0}
+    monkeypatch.setattr(bf.time, "monotonic", lambda: clock["now"])
+    monkeypatch.setattr(bf.time, "sleep", lambda _: None)
+    calls = []
+    def download(symbols, period):
+        calls.append((symbols, period))
+        clock["now"] = 11.0
+        return _yf_response({t: raw for t in symbols})
+    monkeypatch.setattr(bf, "download_batch", download)
+    report = bf.run(cap=1, batch_size=1, sleep_s=0, budget_s=10, refresh_all=True)
+    assert calls == [(["NEW"], "max")]
+    assert report["budget_exhausted"] is True
+    assert report["refresh_planned"] == 1 and report["refreshed"] == 0
+    assert report["attempted"] == 1
+
+
+def test_refresh_all_preserves_other_collector_and_parked_bytes(tree, monkeypatch):
+    raw = _daily_archive_seed(tree, monkeypatch, ("MINE", "THEIRS", "PARKED"))
+    _no_maintained(monkeypatch, keep={"THEIRS"})
+    state = bf.load_state()
+    state["parked"] = {"PARKED": {"reason": "refresh_failed"}}
+    bf.save_state(state)
+    paths = [tree / "data/yahoo" / (t + ".parquet") for t in ("THEIRS", "PARKED")]
+    before = {p: p.read_bytes() for p in paths}
+    calls = []
+    _stub_download(monkeypatch, {"*": _yf_response({"MINE": raw})}, calls)
+    report = bf.run(cap=1, sleep_s=0, refresh_all=True)
+    assert calls == [["MINE"]] and report["refreshed"] == 1
+    assert {p: p.read_bytes() for p in paths} == before
+
+
+def test_refresh_all_dry_run_is_a_plan_not_a_freshness_receipt(tree, monkeypatch):
+    _daily_archive_seed(tree, monkeypatch)
+    monkeypatch.setattr(bf, "refresh_cap_for", lambda _: 1)
+    monkeypatch.setattr(bf, "download_batch", lambda *a: pytest.fail("dry run fetched data"))
+    before = {p: p.read_bytes() for p in (tree / "data").rglob("*") if p.is_file()}
+    report = bf.run(cap=1, refresh_all=True, dry_run=True)
+    after = {p: p.read_bytes() for p in (tree / "data").rglob("*") if p.is_file()}
+    assert before == after
+    assert report["refresh_planned"] == 4 and report["refreshed"] == 0
+    assert report["refresh_scope"] == "all_unmaintained"
+
+
+def test_refresh_all_cannot_override_unresolved_maintained_scope(tree, monkeypatch):
+    _daily_archive_seed(tree, monkeypatch)
+    monkeypatch.setattr(bf, "maintained_stems", lambda: None)
+    monkeypatch.setattr(bf, "download_batch", lambda *a: pytest.fail("unknown scope fetched data"))
+    report = bf.run(cap=1, refresh_all=True)
+    assert report["refresh_planned"] == report["refreshed"] == 0
+
+
+def test_refresh_all_and_explicit_refresh_cap_are_not_silently_mixed(tree):
+    with pytest.raises(ValueError, match="refresh_cap"):
+        bf.run(refresh_all=True, refresh_cap=3, dry_run=True)
+
+
+def test_refresh_all_cli_is_explicit_and_the_default_cadence_is_unchanged(tree, monkeypatch):
+    _daily_archive_seed(tree, monkeypatch)
+    monkeypatch.setattr(bf, "refresh_cap_for", lambda _: 1)
+    report = bf.run(cap=1, dry_run=True)
+    assert report["refresh_planned"] == 1 and "refresh_scope" not in report
+    calls = []
+    original = bf.run
+    def observe(**kwargs):
+        calls.append(kwargs)
+        return original(**kwargs)
+    monkeypatch.setattr(bf, "run", observe)
+    assert bf.main(["--refresh-all", "--batch-size", "160", "--budget-s", "480", "--dry-run"]) == 0
+    assert calls[0]["refresh_all"] is True
+    assert calls[0]["budget_s"] == 480
+
+
+def test_daily_consumer_requests_the_whole_archive_without_a_second_writer_or_budget():
+    import shlex
+    import yaml
+    workflow = yaml.safe_load((Path(__file__).resolve().parents[1] /
+                               ".github/workflows/daily.yml").read_text())
+    owners = [(job, step.get("run", ""))
+              for job, spec in workflow["jobs"].items()
+              for step in spec.get("steps", [])
+              if "python -m scripts.backfill_yahoo_universe" in step.get("run", "")]
+    assert len(owners) == 1 and owners[0][0] == "collect"
+    command = owners[0][1].replace("\\\n", " ")
+    line = next(line for line in command.splitlines()
+                if "python -m scripts.backfill_yahoo_universe" in line)
+    tokens = shlex.split(line)
+    assert "--refresh-all" in tokens
+    assert tokens[tokens.index("--cap") + 1] == "400"
+    assert tokens[tokens.index("--batch-size") + 1] == "160"
+    assert tokens[tokens.index("--budget-s") + 1] == "480"
+    assert "--period" not in tokens, "keep the existing full-history adjustment basis"
+    assert "|| echo" in command, "retain graceful degradation rather than hiding source failure"
+
+
+def test_refresh_all_does_not_report_a_stored_old_frame_as_current(tree, monkeypatch):
+    from lib import nyse_calendar
+    raw = _daily_archive_seed(tree, monkeypatch, ("AAA", "BBB"))
+    completed = raw.index[-1].date()
+    monkeypatch.setattr(nyse_calendar, "expected_last_session", lambda: completed)
+    _stub_download(monkeypatch, {"*": _yf_response({"AAA": raw, "BBB": raw.iloc[:-1]})})
+    report = bf.run(cap=1, sleep_s=0, refresh_all=True)
+    assert report["refreshed"] == 2, "storage success keeps its existing meaning"
+    assert report["refresh_expected_session"] == completed.isoformat()
+    assert report["refresh_current_returned"] == 1
+    assert report["refresh_noncurrent_returned"] == 1
+    assert report["refresh_attempted"] == 2 and report["refresh_unattempted"] == 0
+    # BBB's prior same-date value remains in the historical archive, but cannot
+    # count as a freshly returned observation in this attempt's receipt.
+    assert pd.Timestamp(completed) in store.read("yahoo", "BBB").index
+
+
+def test_refresh_all_budget_discloses_names_not_attempted(tree, monkeypatch):
+    from lib import nyse_calendar
+    raw = _daily_archive_seed(tree, monkeypatch, ("AAA", "BBB"))
+    monkeypatch.setattr(nyse_calendar, "expected_last_session", lambda: raw.index[-1].date())
+    now = {"t": 0}
+    monkeypatch.setattr(bf.time, "monotonic", lambda: now["t"])
+    monkeypatch.setattr(bf.time, "sleep", lambda _: None)
+    def download(symbols, period):
+        now["t"] = 11
+        return _yf_response({ticker: raw for ticker in symbols})
+    monkeypatch.setattr(bf, "download_batch", download)
+    report = bf.run(cap=1, batch_size=1, sleep_s=0, budget_s=10, refresh_all=True)
+    assert report["refresh_planned"] == 2
+    assert report["refresh_attempted"] == report["refresh_current_returned"] == 1
+    assert report["refresh_unattempted"] == 1
+    assert report["budget_exhausted"] is True
+
+
+def test_refresh_all_transport_failure_counts_the_request_not_current_data(tree, monkeypatch):
+    _daily_archive_seed(tree, monkeypatch, ("AAA", "BBB"))
+    _stub_download(monkeypatch, {"*": ConnectionError("provider unavailable")})
+    report = bf.run(cap=1, batch_size=2, sleep_s=0, refresh_all=True)
+    assert report["batch_errors"] == 1
+    assert report["refresh_attempted"] == 2 and report["refresh_unattempted"] == 0
+    assert report["refreshed"] == report["refresh_current_returned"] == 0
+    assert report["attempted"] == 0, "legacy processed-row counter retains its meaning"

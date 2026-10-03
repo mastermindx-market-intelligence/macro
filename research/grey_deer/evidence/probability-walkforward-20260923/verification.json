@@ -1,0 +1,58 @@
+{
+  "authority": {
+    "calibration_overlay_written": false,
+    "gate_changed": false,
+    "live_probability_changed": false,
+    "policy_changed": false,
+    "sizing_changed": false
+  },
+  "checks": {
+    "annual_wins_at_least_10_all": false,
+    "authority_partition_preserved": true,
+    "brier_ci_upper_nonpositive_all": false,
+    "identical_populations": true,
+    "point_brier_improves_all": false,
+    "wace_nonworse_all": false
+  },
+  "deterministic_rerun": true,
+  "method_commit": "5b02b000f8162a4233eb0eca74e70a990cde2d71",
+  "metrics": {
+    "h10": {
+      "ci90": [
+        -0.00120536,
+        0.00212445
+      ],
+      "paired_brier_delta": 0.00047978603379721096,
+      "test_years": 16,
+      "year_wins": 6
+    },
+    "h21": {
+      "ci90": [
+        -0.00026557,
+        0.00484212
+      ],
+      "paired_brier_delta": 0.0021904602385685867,
+      "test_years": 16,
+      "year_wins": 5
+    },
+    "h5": {
+      "ci90": [
+        -0.00061923,
+        0.00102513
+      ],
+      "paired_brier_delta": 0.0002371677435387652,
+      "test_years": 16,
+      "year_wins": 7
+    }
+  },
+  "primary_verdict": "not_promotion_eligible",
+  "protocol_commit": "055b3564d1a31b763638e38563afc245c89dcf2f",
+  "report_sha256": "d39db5a09cf43487675f791f62e06d631855e5d865fa471244f7b5603cde55c4",
+  "result_sha256": "b87080767abb3c15e1dbc9c28be7aa1c1b5cb0b8765f7a65a74880d854ad0e9e",
+  "schema": "risk_radar_probability_walkforward_verification.v1",
+  "source_base": "668237947e016f679782e41e61c91c9133a5ea99",
+  "tests": {
+    "command": "python3 -m pytest tests/test_risk_radar_probability_walkforward.py -q",
+    "passed": 6
+  }
+}

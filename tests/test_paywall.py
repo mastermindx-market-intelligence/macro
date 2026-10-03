@@ -327,3 +327,41 @@ def test_brain_allowance_never_drops_a_pre_rename_paying_row_to_free():
                 == gw._get_allowance("essential", "active", lane))
     free_fast = gw._get_allowance("free", "active", "fast")
     assert gw._get_allowance("insider", "active", "fast") != free_fast
+
+
+def test_leader_observation_source_locks_free_while_switch_off(monkeypatch):
+    """The raw ticker map cannot bypass the server-split Prophet shelf."""
+    monkeypatch.setattr("app.main._mm_supabase_access_token", lambda request: "tok")
+    monkeypatch.setattr(paywall, "_fresh_uid", lambda token: UID)
+    monkeypatch.setattr(
+        paywall,
+        "_store_entitlement",
+        lambda uid: ({"tier": "free", "status": "none", "features": []}, True),
+    )
+    path = "/anticipationdata/us_leader_pullback.json"
+    assert paywall.enforced_early(path) is True
+    assert _check(path, "asset").status_code == 403
+
+
+def test_leader_observation_source_allows_site_full_while_switch_off(monkeypatch):
+    monkeypatch.setattr("app.main._mm_supabase_access_token", lambda request: "tok")
+    monkeypatch.setattr(paywall, "_fresh_uid", lambda token: UID)
+    monkeypatch.setattr(
+        paywall,
+        "_store_entitlement",
+        lambda uid: ({
+            "tier": "essential", "status": "trialing", "features": ["site_full"]
+        }, True),
+    )
+    path = "/anticipationdata/us_leader_pullback.json"
+    assert paywall.enforced_early(path) is True
+    response = _check(path, "asset")
+    assert response.status_code == 204
+    assert response.headers["x-paywall"] == "allow-essential"
+
+
+def test_leader_observation_source_locks_anonymous(monkeypatch):
+    monkeypatch.setattr("app.main._mm_supabase_access_token", lambda request: None)
+    assert _check(
+        "/anticipationdata/us_leader_pullback.json", "asset"
+    ).status_code == 403
