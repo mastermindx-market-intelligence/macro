@@ -1,26 +1,28 @@
-# Astra CEO handoff: Prophet regime, indicator, timeframe and theme intelligence
+# Astra CEO assignment: mission, inherited goals and evidence-corrected takeover
 
-Prepared 2026-10-04. This is a source-backed handoff and execution design, not a claim that the research hypotheses have passed or that the product is complete.
+**Revised 2026-10-04. Parent research/product mission: INCOMPLETE.** This revision corrects the accepted assignment's navigation and missing context. It does not recreate the previously blocked new master-plan upload. Read the [package status](README.md) before treating any document as complete or any operator as assigned.
 
-**Parent mission: INCOMPLETE. Handoff publication does not mean receiver pickup, worker dispatch, strategy promotion or deployment.**
+## 1. The mission
 
-## 1. The assignment
+Take principal responsibility, upon deliberate live assignment, for improving Mastermind's existing Prophet platform through rigorous research into **regime x strategy x indicator family x timeframe x theme/subtheme x opportunity stage**. Deliver the supported behavior through the existing dashboard and Terminal, rather than leaving another disconnected research report.
 
-Take end-to-end CEO responsibility for turning Mastermind's existing Prophet, regime, theme, technical-indicator and evaluation estate into a coherent, empirically justified, multi-strategy product. The user wants materially better candidate selection and entry/hold decisions across different environments, with fewer severe failures while preserving the large-winner tail. This is not a request to change one MACD setting, write another research essay, or replace existing systems with a parallel platform.
+The user's objective is economically useful early discovery: fewer severe failures, better entry and holding decisions, and preserved access to the large winners which make the strategy worthwhile. It is not maximum raw hit rate, maximum signal count, a single universally optimal timeframe, or a promise of loss-free performance.
 
-The originating observation was that daily and 3D momentum confirmations seem less useful in narrow, rapidly rotating markets, particularly during the September 2026 real-yield rise. The proposed mechanism is that a short impulse can finish before slow confirmation arrives. The CEO must test this mechanism, its alternatives and its limits; it must not assume it is true or permanently optimize Prophet for this one episode.
+The motivating observation is that daily and 3D momentum have become difficult to trade in narrow, rapidly rotating conditions. The proposed explanation is that short impulses are ending before slow confirmation arrives. The task is to test that explanation against mechanical artifacts, changed candidate populations, regime main effects, confirmation costs and alternative economic mechanisms. Do not set out to prove it.
 
-Research and implementation may span all three repositories:
+The original ambition is broader than the motivating MACD example. Preserve the technical catalog, historical macro reconstruction, sector/theme participation, intraday and longer-horizon evidence, and multiple strategy sleeves. Do not optimize the entire platform for September 2026 or discard long-horizon cycle capture because tactical rotation currently feels more useful.
 
-| User's local shorthand | GitHub repository | Default branch | Role |
+## 2. Cross-repository scope
+
+| Local shorthand | GitHub owner/repository | Default branch | Purpose in this mission |
 |---|---|---|---|
-| /mastermind | mastermindx-market-intelligence/Mastermind | master | Executive runtime, admission, capacity, fabric and protected procedure |
-| /macro-main | mastermindx-market-intelligence/macro | main | Prophet, market/indicator semantics, theme graph, research, evaluation, Agent OS and dashboard |
-| /charting-app | mastermindx-market-intelligence/mastermind-terminal | master | Terminal chart/indicator implementation, API and product consumption |
+| /mastermind | mastermindx-market-intelligence/Mastermind | master | Existing Executive runtime, fabric, admission, capacity, custody and protected procedure |
+| /macro-main | mastermindx-market-intelligence/macro | main | Prophet, market/technical semantics, theme graph, research, evaluation, Agent OS and dashboard |
+| /charting-app | mastermindx-market-intelligence/mastermind-terminal | master | Chart/indicator implementation, APIs and consumption of the same canonical opportunity facts |
 
-These are semantic aliases, not permission to open an arbitrary checkout. Resolve current remotes and acquire owner-managed workspaces before editing. A stale local checkout is not implementation truth.
+These are aliases, not permission to use an occupied or stale checkout. Resolve remotes and acquire the existing owner's managed workspace. Cross-repository scope permits necessary integration; it is not a mandate to change all three repositories or rebuild fabric infrastructure. Every infrastructure change must unblock a named user or research capability.
 
-## 2. Chairman's latest steering, preserved
+## 3. Chairman's orchestration steering, preserved verbatim
 
 > Act as the CEO orchestrator for this project. Work may and can span multi repo across all three of our repos /mastermind /macro-main /charting-app and their repos on github (which have diff names).
 >
@@ -28,61 +30,105 @@ These are semantic aliases, not permission to open an arbitrary checkout. Resolv
 >
 > You're tasked wiht leading and completing the project end to end. Token efficiency should be maintained through delegation to subagents rather than performing easy to medium tasks yourself. Extremely hard and critical tasks that fail subagent completion can be performed by you or if you assess the task is unsuitable for the frontier level workers below Astra. We have found Sol 6.1 to be near Astra level in frontier already and much more compute efficient. However, we always recommend subagent fabric due to the need to preserve Chatgpt credits.
 
-Operational interpretation: Astra is the requested principal. Delegate separable work through the existing admitted fabric, including multi-level suborchestration when admitted. Do not use ChatGPT-native subagent spawning at any level. Grok, Cursor, GLM 5.3 and Sol 6.1 are permitted requested avenues, not evidence of installed aliases, available credits, credentials or current route eligibility. The claim about Sol 6.1 capability is the Chairman's reported experience, not a benchmark established by this handoff. Prefer the least-scarce qualified worker; retain principal architecture, contested inference, cross-repo integration and final adjudication. Do not force the Chairman to allocate numbered accounts.
+Astra is the requested principal. Eligible Grok, Cursor, GLM 5.3 and Sol 6.1 avenues may be used for bounded suborchestration through the existing fabric. These names do not attest a model alias, entitlement, credit balance, active provider or workspace grant. The relative-capability statement is the Chairman's experience, not a benchmark established by this packet.
 
-Fleet access remains subject to actual resource permission, existing custody, human authentication, budget, source-writer and effect gates. This packet does not authorize evading refusals, moving an unresolved operation, changing account permissions, spending without an admitted budget, or autonomous live capital execution.
+Do not spawn ChatGPT-native subagents at any level. Give admitted children the relevant evidence and bounded deliverable, not the entire conversation. Easy/medium work belongs on the least-scarce capable worker when the route is available; principal scientific judgment, disputed architecture and integration acceptance remain with Astra. Separate business importance from reasoning difficulty. A critical but mechanical validation does not require a frontier model merely because its result matters.
 
-## 3. Read this package in this order
+Multi-level delegation must remain within existing budget, depth, concurrency, provider, source-writer and review constraints. Do not invent an unlimited spend envelope, a new queue or a direct provider-spawn path. Fleet access does not remove human authentication, safety denials, rights or release gates.
 
-1. This document: mission, steering, recovery and launch instruction.
-2. `01_RESEARCH_INTAKE_AND_AUDIT.md`: the complete substantive research handover, all supplied quantitative tables, limitations and corrections. It is deliberately explicit about what was not independently recomputed.
-3. `02_SOURCE_CENSUS_AND_REUSE_MAP.md`: immutable source references, existing owners, prior plans, data surfaces, failed constructions and unresolved source questions.
-4. `03_RESEARCH_AND_PRODUCT_MASTERPLAN.md`: the proposed scientific program, architecture, dependency order and deliverable acceptance.
-5. `04_FABRIC_WORK_PACKAGES.md`: bounded packages for fabric workers/suborchestrators, scopes, falsifiers and return contracts.
-6. `05_ACCEPTANCE_AND_CONTINUATION.md`: end-to-end release standard, first execution sequence, recovery record and no-redo rules.
+## 4. Reading order: only documents that actually exist
 
-Use progressive disclosure for workers. Do not paste all these documents into every child. Give each child its package, relevant immutable sources and required contracts; retrieve detailed evidence on review when needed.
+1. [README](README.md): what is published, what remains missing and the publication boundary.
+2. This assignment: user intent and inherited goals.
+3. [Research intake v2](01_RESEARCH_INTAKE_AND_AUDIT.md): numeric findings, contrary evidence, indicator-family question map, historical-data semantics and unresolved scientific questions. It links the immutable original full dossier.
+4. [Source census v2](02_SOURCE_CENSUS_AND_REUSE_MAP.md): existing owners, exact source references, pre-existing implementation plans, artifact contracts, dependencies and observed runtime limitations.
+5. The **existing owner plans** linked below, selectively by the next dependency.
 
-## 4. Read these corrections before doing anything expensive
+The first assignment mistakenly listed `03_RESEARCH_AND_PRODUCT_MASTERPLAN.md`, `04_FABRIC_WORK_PACKAGES.md` and `05_ACCEPTANCE_AND_CONTINUATION.md` as readable chapters. They are not published. The chapter-03 upload was explicitly blocked and has not been retried, reconstructed under another filename or delegated for republication. The current revision is an independent correction of accepted documents, not completion of that missing new master plan.
 
-**The original research is hypothesis-generating, not a completed new deep-backtest campaign.** Its widget declared the overall report completed while regime segmentation and recommendations steps were still marked pending. The substantive report drew heavily on prior internal studies. No reproducible new cross-indicator, multi-regime result bundle was returned in the visible conversation. Do not advertise one.
+## 5. Inherited goals and acceptance already defined by the owners
 
-**The documented multi-day anchor defect is historical, not proof of an outstanding repair.** Current source includes `engine/session_anchor.py`, `ANCHOR_ERA = abs-session-2026-08-06` and an absolute-session mapping in `engine/confluence_tiers.py`. Audit deployed call paths, residual legacy research and parity before creating any replacement. Bar-boundary invariance is different from EMA warmup invariance.
+This table recovers goals from the linked existing source plans and the Chairman's mission. It is not a newly approved strategy, replacement wave graph or authority change. Verify current implementation and amendments before acting on a historical plan's status.
 
-**Prophet's incumbent is RSI-MACD, not ordinary price MACD.** The current cascade declares RSI length 14, fast/base/signal lengths 14/60/5, plus StochRSI 14/3/3. A generic MACD 12/26/9 replay is a separate control, not Prophet's baseline.
+| Goal | Existing source/owner | What a meaningful result must establish |
+|---|---|---|
+| Establish why Prophet is late or fails | V4 recovery and US Entry Timing; existing episode/board/plan graders | Current definition and denominators identified; outcomes separated by population and version; timing benefit printed alongside false-positive cost, not just a few illustrative winners |
+| Make the clocks and formulas trustworthy | Temporal Grain plus broad TOI W2-0, under their separate boundaries | Exact feed/instrument/session/adjustment/anchor/kernel identity; causal bar and event times; mechanical artifacts separated from economic usefulness; no fake intraday reconstruction |
+| Use the full technical estate coherently | TOI W1 and existing technical catalog/Setup Species | Formula and alias-equivalence census, independent dependency families, roles and lag/repaint disclosure; research priorities rather than a new universal technical score |
+| Establish which conditional claims can be tested | Existing regime/evaluation owners and the frozen experiment in question | Qualified data availability, meaningful state contrast, independent periods and a declared outcome; not thousands of same-date rows masquerading as many regimes |
+| Preserve early discovery without implying buyability | V4 B1/B3/B4 and TOI occurrence law | Candidate episode, maturity, current entry availability and intelligence remain separate; no slow confirmation can reopen an invalid entry; forming/armed is not triggered/confirmed |
+| Connect theme/subtheme and catalyst evidence | GMI, Earnings and D5 owner interfaces | Historical membership and evidence known by the cut, explicit missingness, no current-theme backfill or duplicated state owner; leadership quality not confused with extension |
+| Deliver one user-visible truth | V4 product/publication plus Terminal consumer | Same source-qualified identity, session, technical state and availability on real surfaces, including stale/missing/corrected cases; no browser re-inference of entry permission |
+| Earn stronger influence rather than assume it | Conditional Fusion, Evaluation OS/QLedger and Portfolio/Risk | A versioned challenger clears its own scientific/promotion and real-path requirements; rank, entry permission and sizing are not inferred from a research narrative |
 
-**Phase 22 is more specific than the report's phrase fresh 2D reacceleration.** Its primary comparison is a future `C2_1D_TURN@1` event with versus without the same-cut `C4_MTF_TURN@1.d2.turn`, a confirmed 2D StochRSI K/D cross. It does not authorize a new MACD gate, optimize cross age, or treat its preregistration as live accrual.
+The [V4 master plan][v4plan] supplies the user journey and six-plane separation. The [TOI workstream][toi] supplies the first Compression Release vertical through real product/Terminal consumption and prospective evidence. The [Temporal Grain workstream][temporal] supplies the exact chart/mechanics-to-usefulness research boundary. The [owner map][owners] names the integration seams. The [Phase-22 preregistration][phase22] supplies one specific forward experiment, not the whole programme.
 
-**There is important contrary evidence.** An older broad family-by-regime reliability study returned a scoped null. Its rich regime axes were barely covered; its simple regime interaction was not stable enough. Preserve that result without turning it into a permanent ban on different, properly powered conditional hypotheses.
+**Do not collapse these scopes.** Completing Temporal Grain mechanics is not completing TOI's broad data audit. Completing a TOI species is not rearchitecting all of Prophet. Publishing a V4 API without the real consumer does not complete the user job. A null can close a scientific question while the product programme remains unfinished.
 
-**Use one platform with explicit strategies, not one universal regime score or a replacement ranker.** Existing decisions preserve multiple strategy sleeves, the technical species registry, separate occurrence/maturity/availability semantics and earned conditional authority. The original report's uncalibrated multiplicative quality formula is not a production formula.
+## 6. Research corrections that change the next decisions
 
-## 5. Outcome that actually counts
+The earlier report and first packet are not an already validated strategy recommendation. The audit now makes these distinctions explicit:
 
-A user can inspect a Prophet opportunity and understand its strategy, market/environment context, theme/subtheme participation, technical state, clock/session definition, current entry availability, remaining-opportunity evidence, uncertainty, intended horizon and invalidation. The same facts remain consistent in Terminal and the dashboard. Performance is measured on complete point-in-time populations, including rejected opportunities and failures, under realistic costs and with appropriate independent validation.
+- The absolute-session anchor repair already exists. Audit consumers and deployment before rebuilding it. Identical bar boundaries do not imply identical EMA initialization from arbitrarily short histories.
+- Prophet's incumbent cascade is RSI-MACD 14/14/60/5 plus StochRSI 14/3/3, not standard price MACD 12/26/9.
+- Temporal Grain already separates grain, anchor/session, kernel memory and data/instrument identity. A timeframe-only explanation is premature when several change at once.
+- The 209-episode Phase-21 sample is inspected development evidence, not an untouched test. Its eight date blocks limit macro inference, and realized rates during a hold are not entry-time predictors.
+- The original early-entry replay selected names which Prophet later admitted. Reproduce a real earlier-decision universe before claiming implementable improvement.
+- The broad regime-reliability study returned a scoped null. Granularity alone does not create predictive power or independent observations.
+- The existing 1.5-ATR extension gate failed its primary test. Do not turn 'Remaining Opportunity' into a renamed version of that gate.
+- The sector RS study distinguishes relative leadership from own-price extension. Neither its sector proxy nor its September examples validate a current AI-only stock selection policy.
+- The historical regime atlas labels episodes ex post. It is not an online regime classifier; its weekly price-MACD result is not Prophet RSI-MACD.
+- Phase 22's conditioner is same-cut confirmed 2D **StochRSI**, not a generic MACD freshness threshold. Its start prerequisites and no-peek floors remain intact.
 
-All-weather means useful differentiated behavior, uncertainty and abstention across supported environments. It does not mean one indicator always wins, every regime is fully knowable, every strategy is always active, or losses disappear. Do not promise universal market understanding or guaranteed returns. Establish concrete release gates while retaining the long-term research frontier.
+The detailed evidence, counts, intervals, falsifiers and interpretation limits are in research intake v2. The original report's uncalibrated quality-product formula, fixed preferred clocks and suggested short holds remain proposals, not production definitions.
 
-## 6. First execution, not another orientation loop
+## 7. Existing execution dependencies: recover rather than restart
 
-Re-pin current protected procedure and recover exact relevant Agent OS/source/runtime state. Read the latest owner checkpoints once; inspect only material invalidators. Confirm the current champion and active overlapping work before changing code. Then delegate the owner/data/clock audits in parallel with the permitted implementation-readiness and research-design lanes. Keep the CEO on the hardest scientific and integration decisions.
+The source census now links the **pre-existing** detailed TOI W1/W2-0 commissions, Temporal Grain specification/implementation plan/adversarial amendment, V4 master plan and owner map. Use their actual input/output contracts rather than asking a worker to 'research regimes' without a bounded question.
 
-The first concrete deliverable is a reproducible source-and-clock baseline with a current data/estimability matrix and a corrected evidence register. In the same healthy execution, use it to build the smallest safe producer-to-evaluation-to-product vertical. Do not wait for a complete historical atlas to start independent schema tests, cache parity, retrospective-development harnesses or UI contract preparation.
+For TOI, W1 method passports and W2-0 data/clock admission are separate parallel prerequisites. The current source requires both accepted before W3 Compression Release outcome work. Their required validators and evidence paths already exist as specifications; do not claim the files were built merely because the commission names them.
 
-Preserve the exact frozen Phase-22 population, no-peek rules and start prerequisites. Advance a distinct preregistered retrospective-development lane while prospective evidence accrues; do not weaken the existing floor to accelerate a desired verdict.
+For Temporal Grain, [PR #6790][pr6790] is merged as `db5d20c45db123a2e133d9c1a28387ec9f23a545`; the workstream's `awaiting_ci` entry is stale. Merge proves architecture publication only. Recover acceptance and any subsequent W1A activity, then preserve the W1A no-usefulness-outcome boundary and the separately preregistered W1B decision.
 
-## 7. State and recovery at publication
+For Phase 22, inspect only operational start/accrual/missingness evidence until its own outcome-read gate clears. Another independent admissible research question may proceed; this does not authorize moving the Phase-22 thresholds or relabelling historical rows prospective.
 
-Last independently retrieved source pins:
+For V4 integration, source custody is a real dependency. Current source names the Fable Meta-CEO operation `prophet-us-fable-meta-ceo-20260923-001`, discussion #6805 and carriers #7581/#7180/#7572. These are exact reconciliation leads, not proof of current liveness. The live Chairman request for Astra supplies intended leadership; it does not silently transfer active writes, leases or uncertain effects.
 
-- Mastermind protected procedure: `d1594f3c7ae750db3f14b4eebf0de3460f84267a`.
-- Macro source: `f5c2e829fef0a9891df0527a4bf74f280aaa0813`.
-- Terminal source identity: `863f678658e2211b5a48daa99404686dfaa117f2`.
+The explicit source warning that D5 Earnings evidence needs **source availability and actual observation at/before the decision cut** is important. Reading a current event workspace is not a historical point-in-time read. The same discipline applies to membership revisions and macro vintages.
 
-Earlier source pins and discovered paths are retained in the census as historical navigation, not current liveness. In this handoff-publication task no trading policy, production setting, runtime permission or live data store was changed; no workers were dispatched. The visible preceding continuation attempts were read-side investigations and suffered `Thinking failed`/missing result delivery. They do not supply a successful backtest, source edit, workspace lease or receiver transfer receipt. Reconcile any incumbent operation actually found through its original owner; never invent a clean state from an interrupted stream.
+## 8. First takeover actions and information to return
 
-## 8. Launch instruction for the receiving Astra session
+On live assignment, recover current protected procedure once, then read the latest checkpoint for the next in-scope owner. Confirm relevant source/custody/effect state and actual evidence availability. Do not repeat the entire company census every time unrelated main changes.
 
-Read this package from its published immutable commit. I assign you as Astra CEO for the complete Prophet regime/indicator/timeframe/theme-intelligence mission, with the cross-repo scope and fabric-only delegation steering above. Recover current source and custody, adjudicate the research intake rather than assuming its conclusions, delegate the bounded packages through admitted fabric, and carry research, implementation, independent review and real consumer proof through the existing owners. Continue to the next safe in-scope dependency after each milestone. Preserve unfinished obligations and uncertain effects; do not claim dispatch, execution, promotion, merge or deployment without its own evidence.
+The first orientation result should identify the current deployed Prophet definition, actual open carriers, verified versus stale owner status, usable data classes, and the next already-specified dependency that is safe to execute. The newly recovered source map provides concrete targets for that result; it is not permission to assume a clean field.
 
-This paragraph becomes a live assignment only when deliberately delivered by the Chairman or an authorized existing placement path. A file found in GitHub is not self-executing, and creating this package has not started Astra.
+Do not stop after orientation when an authorized independent dependency is ready. Continue the existing execute -> verify -> persist -> reassess loop. Give each admitted worker its exact scope, source identities, relevant inherited contract, expected artifact, failure behavior and return location. Preserve evidence of delivery, pickup, START and return separately. Do not duplicate a running worker's assignment or treat QUEUED as executing.
+
+At each material return, the CEO should answer: what became verifiably true; which original user outcome it advances; what remains false or unknown; whether a measured null changes the plan; which dependency is now unblocked; and what actual evidence permits the next effect. Store compact results in existing Agent OS and the owning repository, not a new memory system.
+
+## 9. Observed execution limits at this audit
+
+The inspected Executive arm reported read-only mode and `ceo_submit_armed: false`. Its submission contract, even when armed, creates a queued Job and does not itself dispatch. The root view had partial/unjoined provenance. This is not a verdict that the whole fleet or all fabric avenues are unavailable.
+
+Before claiming a worker can be launched, inspect the current approved admission/dispatch surface and its exact capability. A listed model, available worker count or old successful run is not enough. No worker, suborchestrator, watcher or receiver was started by this handoff revision. Do not recreate the refused chapter through a child or alternate publication carrier.
+
+## 10. Recovery and completion truth
+
+The original research remains preserved at immutable commit `b598819bcecc2ef98e5848f473df9b21bd045118`. The v2 audit source pin is Macro `02fb67891222f9710c2a16b1fa6feb917996cab7`; protected procedure was Mastermind `d1594f3c7ae750db3f14b4eebf0de3460f84267a`. Terminal's earlier observed ref is navigation only, not newly verified implementation parity.
+
+Earlier interrupted turns supplied no successful new backtest or product-build receipt. This revision changes documentation only. Source verification, statistical reproduction, model promotion, deployment and user acceptance remain different claims.
+
+The parent mission is complete only to the supported, explicitly accepted product and scientific scope, not because it has many indicators or a finished report. All-weather means differentiated behavior, known limitations and abstention across supported environments; it does not mean omniscience or elimination of losses. Preserve the larger research frontier without using it to excuse failure to finish useful bounded capabilities.
+
+The requested new integrated master-plan chapter remains unpublished after the earlier tool refusal. These independent audit and navigation repairs do not erase that obligation or imply clearance to retry it.
+
+## 11. Deliberate receiver assignment
+
+When the Chairman deliberately supplies this packet to an eligible Astra session, the assignment is: lead the Prophet regime/indicator/timeframe/theme-intelligence mission using the scope and fabric-only steering above; consume the corrected research; recover existing owners and custody; advance their lawful unresolved dependencies; and retain responsibility for scientific judgment, integration and acceptance. Keep published, received, started, completed and accepted distinct. A file merely found in GitHub does not self-assign its reader.
+
+[v4plan]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/research/prophet_v4/PROPHET_US_V4_RECOVERY_AND_INTELLIGENCE_GRAPH_OS_MASTERPLAN_BY_SOL_2026-08-17.md
+[toi]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/agentos/workstreams/WS-TECHNICAL-OPPORTUNITY-INTELLIGENCE.md
+[temporal]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md
+[owners]: https://github.com/mastermindx-market-intelligence/macro/blob/02fb67891222f9710c2a16b1fa6feb917996cab7/research/prophet_v4/CONTRACT_AND_OWNER_MAP.md
+[phase22]: https://github.com/mastermindx-market-intelligence/macro/blob/f5c2e829fef0a9891df0527a4bf74f280aaa0813/research/prophet_v4/US_PROPHET_PHASE22_FAST_CYCLE_REGIME_PROSPECTIVE_PREREG_2026-09-19.md
+[pr6790]: https://github.com/mastermindx-market-intelligence/macro/pull/6790
