@@ -8,7 +8,7 @@ path. These tests hold that reader to three things written before it was:
 * the contract's own worked example at the producer pin (Appendix A.6);
 * a recorded set of owner files at that pin, and what each of some sixty
   changed or broken inputs must read as
-  (``tests/fixtures/regime_outlook/readings_golden_v1.json``, produced by a
+  (``tests/fixtures/regime_outlook/readings_golden_v2.json``, produced by a
   separate evaluator, never by the module under test);
 * the contract's closed word lists.
 
@@ -32,8 +32,8 @@ sys.path.insert(0, str(REPO))
 
 from engine import rates_command_outlook as rco  # noqa: E402
 
-GOLDEN_PATH = REPO / "tests" / "fixtures" / "regime_outlook" / "readings_golden_v1.json"
-GOLDEN_SHA256 = "d30a3ae4f65e6f40774ed6b6609f0423e9013810a3e1f3c3c2c6bd4001e4b395"
+GOLDEN_PATH = REPO / "tests" / "fixtures" / "regime_outlook" / "readings_golden_v2.json"
+GOLDEN_SHA256 = "2fb0dc7a1d0af007082fdfbd1b31ffb062185ed8e59d4b64995438f4a6de8ddf"
 CONTRACT_PATH = (
     REPO / "research" / "macro_regime_intelligence" / "STATE_PATH_AND_SCIENCE_CONTRACT_2026-10-03.md"
 )

@@ -1,6 +1,6 @@
 """Regime outlook verdict mapping — loader, hash, lint and path readings (display research).
 
-The mapping in ``config/regime_outlook_mapping_v1.json`` is the machine form of
+The mapping in ``config/regime_outlook_mapping_v2.json`` is the machine form of
 Appendix A of
 ``research/macro_regime_intelligence/STATE_PATH_AND_SCIENCE_CONTRACT_2026-10-03.md``.
 It says which already-published owner verdict each path condition reads, and
@@ -22,8 +22,8 @@ import math
 from pathlib import Path
 from typing import Any
 
-MAPPING_VERSION = "VERDICT_MAPPING_V1"
-MAPPING_PATH = Path(__file__).resolve().parents[1] / "config" / "regime_outlook_mapping_v1.json"
+MAPPING_VERSION = "VERDICT_MAPPING_V2"
+MAPPING_PATH = Path(__file__).resolve().parents[1] / "config" / "regime_outlook_mapping_v2.json"
 
 READINGS = ("fits", "does_not_fit", "not_discriminating", "unknown")
 FAMILY_READINGS = ("fits", "does_not_fit", "mixed", "not_discriminating", "unknown")
