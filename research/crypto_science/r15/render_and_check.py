@@ -29,7 +29,7 @@ def render():
     market=build_crypto.build_market_state();market['heat']['funding']['value']=9876.5
     expected={};asset_hashes={};missing=[]
     overlay=SITE/'overlay';overlay.mkdir(exist_ok=True)
-    shutil.copy2(HERE/('final/combined_crypto.html.j2' if '--final' in sys.argv else 'combined_crypto.html.j2'),overlay/'crypto.html.j2')
+    shutil.copy2(HERE/('completion/combined_crypto.html.j2' if '--completion' in sys.argv else 'final/combined_crypto.html.j2' if '--final' in sys.argv else 'combined_crypto.html.j2'),overlay/'crypto.html.j2')
     for name,pr in states.items():
         work=SITE/('_work_'+name);work.mkdir(exist_ok=True)
         decision=copy.deepcopy(pr);source=sig.copy(deep=True);mk=copy.deepcopy(market)
@@ -69,9 +69,9 @@ def render():
 
 def main():
     smoke='--smoke' in sys.argv
-    proof_root=HERE/'final' if '--final' in sys.argv else HERE
-    target=proof_root/('smoke.json' if smoke else 'browser_proof.json')
-    if target.exists():raise RuntimeError('Evidence target already exists; reconcile instead of overwriting')
+    proof_root=HERE/'completion' if '--completion' in sys.argv else HERE/'final' if '--final' in sys.argv else HERE
+    result_path=proof_root/('smoke.json' if smoke else 'browser_proof.json')
+    if result_path.exists():raise RuntimeError('Evidence target already exists; reconcile instead of overwriting')
     prior=json.loads((HERE.parent/'r12/pipeline_proof.json').read_text());data=Path(config.data_dir())
     def unchanged():
         for k,h in prior['inputs'].items():assert (sha(data/k) if (data/k).exists() else None)==h,k
@@ -120,6 +120,9 @@ def main():
                             assert chart_seen['pathCount']>0 and chart_seen['width']>100
                             chart_seen['dashOffsets']=figure.locator('.ilx-path').evaluate_all("es=>es.map(e=>parseFloat(getComputedStyle(e).strokeDashoffset))")
                             assert all(abs(v)<0.1 for v in chart_seen['dashOffsets']), 'Chart capture preceded completed path animation'
+                            chart_seen['paintedEnds']=figure.locator('.ilx-path').evaluate_all("es=>es.map(p=>p.isPointInStroke(p.getPointAtLength(p.getTotalLength()-.5)))")
+                            chart_seen['dashArrays']=figure.locator('.ilx-path').evaluate_all("es=>es.map(p=>getComputedStyle(p).strokeDasharray)")
+                            assert all(chart_seen['paintedEnds']) and all(v=='none' for v in chart_seen['dashArrays']), 'Unpainted responsive curve endpoint'
                         original=panel.inner_text()
                         assert ('Recorded model budget' if lang=='en' else '已记录的模型预算') in original
                         assert ('Recorded model budget' if lang=='zh' else '已记录的模型预算') not in original
@@ -176,7 +179,7 @@ def main():
                       'All HTTP outside ephemeral loopback server aborted; no collector invocation or external asset fetch.',
                       'Paper remains unchanged behind exact schema gate; current R3 visual was inspected, not applied.',
                       'Same-session tests/visual review, not participant comprehension or independent review.']}
-    target.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+    result_path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
     print('R15_BROWSER_RESULT',len(cases),'cases',len(failures),'failures')
     if failures:raise SystemExit(1)
 

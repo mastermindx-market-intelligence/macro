@@ -1,0 +1,61 @@
+INFO cycles: loaded fitted bands from /Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/data/regime/cycle_bands_fit.json
+INFO cycles: crypto dc_band override (56, 70) → (22, 45) (fitted)
+INFO cycles: crypto ic_band_w override (24, 40) → (11, 22) (fitted)
+INFO cycles: loaded ladder risk calibration from /Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/data/regime/ladder_risk_calibration.json (validated=False, any_bound=False)
+INFO wrote /Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r15_actual/_work_known/crypto.html (161 KB, 50 universe assets)
+INFO wrote /Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r15_actual/_work_zero/crypto.html (161 KB, 50 universe assets)
+WARNING Crypto H5 budget unavailable (CANONICAL_DECISION_UNAVAILABLE); rendering a non-actionable H5 state
+INFO wrote /Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r15_actual/_work_unavailable/crypto.html (161 KB, 50 universe assets)
+WARNING Crypto H5 budget unavailable (CANONICAL_DECISION_AS_OF_MISMATCH); rendering a non-actionable H5 state
+INFO wrote /Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r15_actual/_work_stale/crypto.html (161 KB, 50 universe assets)
+WARNING Crypto H5 breakdown unavailable (CLASS_SPLIT_INPUT_UNAVAILABLE); preserving the known model budget
+INFO wrote /Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r15_actual/_work_breakdown/crypto.html (161 KB, 50 universe assets)
+INFO wrote /Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r15_actual/_work_history_missing/crypto.html (137 KB, 50 universe assets)
+INFO wrote /Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r15_actual/_work_combined/crypto.html (164 KB, 50 universe assets)
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130908', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.131016', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130945', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.131034', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130985', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.185001', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.18499', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.131051', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130954', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.184884', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.184924', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.131005', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.184928', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130994', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130922', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.184957', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+R15_BROWSER_SCENARIO known 16 cells
+R15_BROWSER_SCENARIO zero 16 cells
+R15_BROWSER_SCENARIO unavailable 16 cells
+R15_BROWSER_SCENARIO stale 16 cells
+R15_BROWSER_SCENARIO breakdown 16 cells
+R15_BROWSER_SCENARIO history_missing 16 cells
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.253374', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130962', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.184884', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130936', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.184935', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130939', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.131036', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130911', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.184939', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130976', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130948', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130956', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130988', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.184946', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130914', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+CLOSE_OBSERVATION {'className': '', 'visibility': 'visible', 'opacity': '0.130922', 'transition': 'opacity 0.26s, visibility 0s linear 0.26s'}
+R15_BROWSER_SCENARIO combined 16 cells
+Traceback (most recent call last):
+  File "/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/research/crypto_science/r15/render_and_check.py", line 183, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/research/crypto_science/r15/render_and_check.py", line 179, in main
+    target.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+    ^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'write_text'

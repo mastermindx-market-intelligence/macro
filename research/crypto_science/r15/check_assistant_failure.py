@@ -6,7 +6,7 @@ HERE=Path(__file__).resolve().parent
 SITE=Path('/Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r15_actual')
 
 def main():
-    proof_root=HERE/'final' if '--final' in sys.argv else HERE
+    proof_root=HERE/'completion' if '--completion' in sys.argv else HERE/'final' if '--final' in sys.argv else HERE
     target=proof_root/'assistant_failure.json'
     if target.exists():raise RuntimeError('Failure-proof target already exists; reconcile first')
     rows=[]

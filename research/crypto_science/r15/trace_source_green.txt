@@ -1,0 +1,22 @@
+........F                                                                [100%]
+=================================== FAILURES ===================================
+___ test_r15_responsive_history_trace_uses_continuous_stroke_and_house_font ____
+tests/test_crypto_wave2.py:828: in test_r15_responsive_history_trace_uses_continuous_stroke_and_house_font
+    assert 'recorded history' in source.lower() and 'market.history' not in source[source.index('<script>'):]
+E   assert ('recorded history' in '{# crypto intelligence cockpit — h1–h8 are governed shelf roots. #}\n{% macro t(en, zh=\'\') -%}\n<span class="l-en">...ehide\',function(){ready();if(observer){observer.disconnect();observer=null;}});\n})();\n</script>\n</body>\n</html>\n' and 'market.history' not in '<script>try...>\n</html>\n'
+E    +  where '{# crypto intelligence cockpit — h1–h8 are governed shelf roots. #}\n{% macro t(en, zh=\'\') -%}\n<span class="l-en">...ehide\',function(){ready();if(observer){observer.disconnect();observer=null;}});\n})();\n</script>\n</body>\n</html>\n' = <built-in method lower of str object at 0xa999e8000>()
+E    +    where <built-in method lower of str object at 0xa999e8000> = '{# Crypto Intelligence Cockpit — H1–H8 are governed shelf roots. #}\n{% macro t(en, zh=\'\') -%}\n<span class="l-en">...ehide\',function(){ready();if(observer){observer.disconnect();observer=null;}});\n})();\n</script>\n</body>\n</html>\n'.lower
+E
+E     'market.history' is contained here:
+E           {% if market.history.dates|length >= 2 and tape %}
+E     ?           ++++++++++++++
+E               <div class="hero-tape desk-tape" data-market-history-state="available">{{ tape|safe }}</div>
+E               {% else %}
+E               <div class="desk-chart-empty" data-market-history-state="unavailable" role="status"><strong>{{ t('Market history unavailable','市场历史暂不可用') }}</strong><p>{{ t('No market path is inferred. Other available observations and the model budget remain separate.','不推断市场路径。其他可用观测与模型预算仍分别展示。') }}</p></div>...
+E
+E     ...Full output truncated (200 lines hidden), use '-vv' to show)
+
+NOTE: sparse worktree — .agents, .codex, .cursor, .grok, .warp, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_crypto_wave2.py::test_r15_responsive_history_trace_uses_continuous_stroke_and_house_font
+1 failed, 8 passed, 53 deselected, 4 warnings in 1.51s

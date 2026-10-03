@@ -818,3 +818,13 @@ def test_r15_assistant_entry_reuses_shared_owner_without_covering_the_desk():
     assert "MM_BRAIN_CFG" not in source and 'src="mm_brain.js"' not in source
     assert 'fetch(' not in source
     assert "observer.disconnect()" in source
+
+
+def test_r15_responsive_history_trace_uses_continuous_stroke_and_house_font():
+    source=(ROOT/'templates'/'crypto.html.j2').read_text(encoding='utf-8')
+    assert '#crypto-overview .desk-tape .ilx-path{stroke-dasharray:none}' in source
+    assert '.desk-brain-entry{font-family:var(--font-ui);' in source
+    # Keep this fix local; no copied chart engine or new price series.
+    import re
+    inline_scripts='\n'.join(re.findall(r'<script>(.*?)</script>',source,flags=re.S))
+    assert 'recorded history' in source.lower() and 'market.history' not in inline_scripts

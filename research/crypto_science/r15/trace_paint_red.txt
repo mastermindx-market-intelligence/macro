@@ -1,0 +1,34 @@
+[
+  {
+    "viewboxLength": 1348.34521484375,
+    "screenLength": 1207.639711961974,
+    "dashArray": "1348.3px",
+    "dashOffset": "0px",
+    "vectorEffect": "non-scaling-stroke",
+    "endStroke": true,
+    "tailPoint": {},
+    "scaleX": 0.6071428571428571,
+    "scaleY": 1,
+    "width": 390
+  },
+  {
+    "viewboxLength": 1348.34521484375,
+    "screenLength": 1559.985506907893,
+    "dashArray": "1348.3px",
+    "dashOffset": "0px",
+    "vectorEffect": "non-scaling-stroke",
+    "endStroke": false,
+    "tailPoint": {},
+    "scaleX": 1.675,
+    "scaleY": 1,
+    "width": 1440
+  }
+]
+Traceback (most recent call last):
+  File "/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/research/crypto_science/r15/check_trace_paint.py", line 33, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/research/crypto_science/r15/check_trace_paint.py", line 31, in main
+    assert all(x['dashArray']=='none' and x['endStroke'] for x in rows),'The desk price line must paint through its endpoint at both widths'
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: The desk price line must paint through its endpoint at both widths
