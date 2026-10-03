@@ -257,8 +257,10 @@ def test_same_source_revisions_are_semantic_noop(tmp_path: Path) -> None:
     assert _refresh(tmp_path, fake, prior_workspace=first_aapl_prior) == 0
     second = _marker(tmp_path)
     assert first["generation_id"] == second["generation_id"]
-    assert first["generated_at"] == ACCEPTANCE
-    assert second["generated_at"] == ACCEPTANCE
+    assert first["source_clock"] == ACCEPTANCE
+    assert second["source_clock"] == ACCEPTANCE
+    assert first["generated_at"] == first_aapl_prior["lifecycle"]["observed_at"]
+    assert second["generated_at"] == first_aapl_prior["lifecycle"]["observed_at"]
     assert [key for key, _ in fake.puts[len(first_puts):]] == []
 
 

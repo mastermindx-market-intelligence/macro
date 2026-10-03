@@ -28,6 +28,7 @@ from engine.company_intelligence.contracts import canonical_json_bytes
 from engine.company_intelligence.event_workspace import (
     MANIFEST_SCHEMA_V1,
     MANIFEST_SCHEMA_V2,
+    MANIFEST_SCHEMA_V3,
     validate_workspace_manifest,
     write_workspace_generation,
 )
@@ -110,8 +111,18 @@ def _mint(
     """Mint one real, contract-valid generation via the real writer; return
     (generation_id, manifest_dict)."""
     out = tmp_path / "company_intelligence"
+    prepared: dict[str, dict] = {}
+    for event_id, payload in workspaces.items():
+        row = dict(payload)
+        lifecycle = dict(row.get("lifecycle") or {})
+        observed = lifecycle.get("observed_at")
+        source_available = lifecycle.get("source_available_at")
+        if observed is None or observed == source_available:
+            lifecycle["observed_at"] = generated_at
+        row["lifecycle"] = lifecycle
+        prepared[event_id] = row
     generation_dir = write_workspace_generation(
-        out, workspaces, generated_at=generated_at,
+        out, prepared,
         previous_generation_id=previous_generation_id,
         previous_manifest_sha256=previous_manifest_sha256,
     )
@@ -177,14 +188,24 @@ def _server(objects: dict[str, dict], *, marker_generation_id: str | None, fetch
 def test_v2_manifest_carries_both_chain_keys_and_v1_stays_valid_without_them(tmp_path: Path) -> None:
     ws = _raw_workspace(source_available_at="2026-07-30T16:30:00Z")
     gen_id, manifest = _mint(tmp_path, {EVENT_ID: ws}, generated_at="2026-07-30T16:30:00Z")
-    assert manifest["schema"] == MANIFEST_SCHEMA_V2
+    assert manifest["schema"] == MANIFEST_SCHEMA_V3
+    assert manifest["source_clock"] == "2026-07-30T16:30:00Z"
     assert manifest["previous_generation_id"] is None
     assert manifest["previous_manifest_sha256"] is None
     validate_workspace_manifest(manifest)  # does not raise
 
+    # A v2 manifest (chain keys, no source_clock) stays independently valid.
+    v2_manifest = {k: v for k, v in manifest.items() if k != "source_clock"}
+    v2_manifest["schema"] = MANIFEST_SCHEMA_V2
+    validate_workspace_manifest(v2_manifest)  # does not raise
+
     # A v1 manifest (no chain keys at all) stays independently valid — the
     # chain root/backward-compatible generation (A2).
-    v1_manifest = {k: v for k, v in manifest.items() if k not in ("previous_generation_id", "previous_manifest_sha256")}
+    v1_manifest = {
+        k: v
+        for k, v in manifest.items()
+        if k not in ("previous_generation_id", "previous_manifest_sha256", "source_clock")
+    }
     v1_manifest["schema"] = MANIFEST_SCHEMA_V1
     validate_workspace_manifest(v1_manifest)  # does not raise
 
@@ -967,14 +988,14 @@ def test_d5_decision_value_stays_at_n_while_n_plus_1_is_observed_correction_line
         "source_sha256": "b" * 64,
         "source_available_at": "2026-02-01T20:00:00Z",
         "observed_at": "2026-02-01T20:02:00Z",
-        "generated_at": "2026-02-01T20:03:00Z",
+        "generated_at": "2026-02-01T20:02:00Z",
         "disposition": "PROJECTED",
         "source_ref_ids": sorted(later_refs),
     }
     source_refs = {item["source_ref_id"]: item for item in family["source_refs"]}
     assert {source_refs[ref]["version_or_generation"] for ref in decision_refs} == {gen1}
     assert {source_refs[ref]["version_or_generation"] for ref in later_refs} == {gen2}
-    assert family["point_in_time"]["corrected_at"]["value"] == "2026-02-01T20:03:00Z"
+    assert family["point_in_time"]["corrected_at"]["value"] == "2026-02-01T20:02:00Z"
 
     # The adapter calls the real reader ONCE. The reader in turn fetches each
     # immutable manifest and workspace exactly once per verified chain hop.
@@ -1098,7 +1119,7 @@ def test_d5_observable_later_revision_without_projectable_fields_is_distinct(
         "source_sha256": "b" * 64,
         "source_available_at": "2026-02-01T20:00:00Z",
         "observed_at": "2026-02-01T20:02:00Z",
-        "generated_at": "2026-02-01T20:03:00Z",
+        "generated_at": "2026-02-01T20:02:00Z",
         "disposition": "OBSERVED_UNPROJECTABLE",
         "source_ref_ids": [],
     }
@@ -1112,7 +1133,7 @@ def test_d5_observable_later_revision_without_projectable_fields_is_distinct(
     } == {"OBSERVED"}
     assert family["point_in_time"]["corrected_at"] == {
         "state": "ASSERTED",
-        "value": "2026-02-01T20:03:00Z",
+        "value": "2026-02-01T20:02:00Z",
         "interval": None,
         "precision": "INSTANT",
         "basis": "later_event_workspace.generated_at",
@@ -1337,7 +1358,7 @@ def test_d5_body_only_decision_to_issuer_release_is_observed_and_endpoint_200(
     assert len(correction["later_revision_receipts"]) == 1
     later_receipt = correction["later_revision_receipts"][0]
     assert later_receipt["generation_id"] == later_generation
-    assert later_receipt["generated_at"] == "2026-02-01T20:03:00Z"
+    assert later_receipt["generated_at"] == "2026-02-01T20:02:00Z"
     assert later_receipt["source_ref_ids"] == correction[
         "later_correction_ref_ids"
     ]

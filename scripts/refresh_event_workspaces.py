@@ -54,9 +54,10 @@ from engine.company_intelligence.event_workspace import (
     FLAGSHIP_EVENT_ID,
     LIVE_NARRATIVE_ALIAS,
     MANIFEST_SCHEMA_V2,
+    MANIFEST_SCHEMA_V3,
     apple_registry,
     flagship_fiscal_period,
-    preview_generation_identity,
+    preview_generation_identity_v3,
     production_registry,
     write_workspace_generation,
 )
@@ -1835,7 +1836,6 @@ def refresh(
             generation_dir = write_workspace_generation(
                 target,
                 dict(workspaces),
-                generated_at=source_clock,
                 previous_generation_id=chain_previous_id,
                 previous_manifest_sha256=chain_previous_sha,
             )
@@ -1880,12 +1880,12 @@ def refresh(
     if (
         chain_previous_id == original_current_generation_id
         and current_marker is not None
-        and current_marker.get("schema") == MANIFEST_SCHEMA_V2
+        and current_marker.get("schema") in (MANIFEST_SCHEMA_V2, MANIFEST_SCHEMA_V3)
     ):
         candidate_previous_id = current_marker.get("previous_generation_id")
         candidate_previous_sha = current_marker.get("previous_manifest_sha256")
-        candidate_id = preview_generation_identity(
-            workspaces, source_clock, previous_generation_id=candidate_previous_id,
+        candidate_id = preview_generation_identity_v3(
+            workspaces, previous_generation_id=candidate_previous_id,
         )
         if candidate_id == original_current_generation_id:
             final_previous_id, final_previous_sha = candidate_previous_id, candidate_previous_sha
@@ -1893,7 +1893,6 @@ def refresh(
     generation_dir = write_workspace_generation(
         target,
         workspaces,
-        generated_at=source_clock,
         previous_generation_id=final_previous_id,
         previous_manifest_sha256=final_previous_sha,
     )
