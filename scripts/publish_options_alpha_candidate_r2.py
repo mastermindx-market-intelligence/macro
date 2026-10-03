@@ -152,6 +152,41 @@ def _load(path: Path) -> dict[str, Any] | None:
     return v
 
 
+def recover_pending_pair(
+    *, client: Any, bucket: str, lock_path: Path, now: Callable[[], str]
+) -> str | None:
+    """Finish the one fsynced transaction before a caller forms a successor.
+
+    The journal payload is the only input.  In particular this helper never
+    recomposes a feed, reads a new predecessor, or substitutes newly encoded
+    bytes for the durable transaction bytes.
+    """
+    journal_path = lock_path.with_suffix(".transaction.json")
+    journal = _load(journal_path)
+    if journal is None:
+        return None
+    encoded = journal.get("payload")
+    if not isinstance(encoded, str):
+        raise PublicationError("pending transaction payload is invalid")
+    try:
+        payload = base64.b64decode(encoded, validate=True)
+        feed = json.loads(payload)
+    except (ValueError, TypeError, json.JSONDecodeError) as exc:
+        raise PublicationError("pending transaction payload is invalid") from exc
+    if not isinstance(feed, dict) or canonical_bytes(feed) != payload:
+        raise PublicationError(
+            "pending transaction payload is not canonical feed bytes"
+        )
+    return publish_pair(
+        client=client,
+        bucket=bucket,
+        feed=feed,
+        payload=payload,
+        lock_path=lock_path,
+        now=now,
+    )
+
+
 def _pack(p: Pair | None) -> dict[str, Any] | None:
     return (
         None

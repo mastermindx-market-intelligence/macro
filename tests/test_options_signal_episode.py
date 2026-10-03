@@ -2883,6 +2883,7 @@ def test_daily_options_pit_checkpoint_is_immediate_success_only_metadata_replay(
     campaign_checkpoint_name = (
         "      - name: OIP campaign v2 — checkpoint the exact three canonical ledgers"
     )
+    candidate_name = "      - name: Options Alpha — compose and publish the verified candidate pair"
     following_name = (
         "      - name: XSR W1 — US fast-sector rotation lens "
         "(build_us_sector_rotation)"
@@ -2891,18 +2892,17 @@ def test_daily_options_pit_checkpoint_is_immediate_success_only_metadata_replay(
     campaign_builder_start = workflow.index(campaign_builder_name)
     checkpoint_start = workflow.index(checkpoint_name)
     campaign_checkpoint_start = workflow.index(campaign_checkpoint_name)
+    candidate_start = workflow.index(candidate_name)
     following_start = workflow.index(following_name)
     builder_block = workflow[builder_start:campaign_builder_start]
     campaign_builder_block = workflow[campaign_builder_start:checkpoint_start]
     checkpoint_block = workflow[checkpoint_start:campaign_checkpoint_start]
-    campaign_checkpoint_block = workflow[campaign_checkpoint_start:following_start]
+    campaign_checkpoint_block = workflow[campaign_checkpoint_start:candidate_start]
+    candidate_block = workflow[candidate_start:following_start]
 
     assert (
-        builder_start
-        < campaign_builder_start
-        < checkpoint_start
-        < campaign_checkpoint_start
-        < following_start
+        builder_start < campaign_builder_start < checkpoint_start < campaign_checkpoint_start
+        < candidate_start < following_start
     )
     assert "id: options_signal_episode" in builder_block
     assert "continue-on-error: true" in builder_block
@@ -2960,6 +2960,20 @@ def test_daily_options_pit_checkpoint_is_immediate_success_only_metadata_replay(
         "run: bash scripts/ci/options_signal_nightly.sh publish-campaign"
         in campaign_checkpoint_block
     )
+    assert "id: options_alpha_candidate_feed" in candidate_block
+    for prior in (
+        "steps.options_signal_episode.outcome == 'success'",
+        "steps.options_signal_campaign.outcome == 'success'",
+        "steps.options_signal_episode_publish.outcome == 'success'",
+        "steps.options_signal_campaign_publish.outcome == 'success'",
+    ):
+        assert prior in candidate_block
+    assert "continue-on-error: true" in candidate_block
+    assert "python -m scripts.build_options_alpha_candidate_feed" in candidate_block
+    assert '--publication-lock "$HOME/.local/state/mastermind/options-alpha-candidate/publication.lock"' in candidate_block
+    for key in ("R2_ENDPOINT", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET"):
+        assert f"{key}: ${{{{ secrets.{key} }}}}" in candidate_block
+    assert "activation_receipt" not in candidate_block
     expected_campaign_paths = {
         "data/options_signal_campaign/campaigns.jsonl",
         "data/options_signal_campaign/outcomes.jsonl",
@@ -3021,6 +3035,8 @@ def test_daily_options_pit_checkpoint_is_immediate_success_only_metadata_replay(
     assert "OIP_EPISODE_PUBLISH_OUTCOME" in final_gate_block
     assert "OIP_CAMPAIGN_BUILD_OUTCOME" in final_gate_block
     assert "OIP_CAMPAIGN_PUBLISH_OUTCOME" in final_gate_block
+    assert "OIP_CANDIDATE_BUILD_OUTCOME" in final_gate_block
+    assert "OIP_CANDIDATE_BUILD_OUTCOME: ${{ steps.options_alpha_candidate_feed.outcome }}" in final_gate_block
     assert "run: bash scripts/ci/options_signal_nightly.sh assert-integrity" in (
         final_gate_block
     )
@@ -3030,6 +3046,7 @@ def test_daily_options_pit_checkpoint_is_immediate_success_only_metadata_replay(
         "OIP_EPISODE_PUBLISH_OUTCOME",
         "OIP_CAMPAIGN_BUILD_OUTCOME",
         "OIP_CAMPAIGN_PUBLISH_OUTCOME",
+        "OIP_CANDIDATE_BUILD_OUTCOME",
     ):
         assert f'${{{outcome}:-}}' in integrity_helper
     assert "OIP PIT integrity passed" in integrity_helper
@@ -3752,9 +3769,10 @@ def test_broad_cleanup_removes_first_publication_campaign_additions(
         "OIP_EPISODE_PUBLISH_OUTCOME",
         "OIP_CAMPAIGN_BUILD_OUTCOME",
         "OIP_CAMPAIGN_PUBLISH_OUTCOME",
+        "OIP_CANDIDATE_BUILD_OUTCOME",
     ],
 )
-def test_terminal_integrity_helper_requires_all_four_successes(
+def test_terminal_integrity_helper_requires_candidate_gated_successes(
     tmp_path: Path, failed_name: str | None
 ) -> None:
     repo = Path(__file__).resolve().parents[1]
@@ -3764,6 +3782,7 @@ def test_terminal_integrity_helper_requires_all_four_successes(
         "OIP_EPISODE_PUBLISH_OUTCOME",
         "OIP_CAMPAIGN_BUILD_OUTCOME",
         "OIP_CAMPAIGN_PUBLISH_OUTCOME",
+        "OIP_CANDIDATE_BUILD_OUTCOME",
     )
     # This formerly suppressed command dispatch entirely.  It is deliberately
     # hostile here: execution must depend only on Bash's sourced-vs-executed
@@ -3775,7 +3794,7 @@ def test_terminal_integrity_helper_requires_all_four_successes(
     }
     env.update({name: "success" for name in names})
     if failed_name is not None:
-        env[failed_name] = "failure"
+        env[failed_name] = "skipped" if failed_name == "OIP_CANDIDATE_BUILD_OUTCOME" else "failure"
     result = subprocess.run(
         ["bash", str(helper), "assert-integrity"],
         cwd=repo,

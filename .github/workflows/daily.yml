@@ -3444,6 +3444,26 @@ jobs:
         # Campaign publication is interruption-safe and exact-path: the helper
         # never advances HEAD before origin/main accepts all three canonical files.
         run: bash scripts/ci/options_signal_nightly.sh publish-campaign
+      - name: Options Alpha — compose and publish the verified candidate pair
+        id: options_alpha_candidate_feed
+        # Existing candidate composer/publisher only; no Git or broad publication path.
+        # A missing activation receipt is a structured inactive success with zero R2 writes.
+        if: >-
+          always() &&
+          steps.options_signal_episode.outcome == 'success' &&
+          steps.options_signal_campaign.outcome == 'success' &&
+          steps.options_signal_episode_publish.outcome == 'success' &&
+          steps.options_signal_campaign_publish.outcome == 'success'
+        timeout-minutes: 5
+        continue-on-error: true
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: >-
+          python -m scripts.build_options_alpha_candidate_feed
+          --publication-lock "$HOME/.local/state/mastermind/options-alpha-candidate/publication.lock"
       - name: XSR W1 — US fast-sector rotation lens (build_us_sector_rotation)
         # XSR W1 (XSR-R2): display-tier fast rotation score for the 11 SPDR sector ETFs and
         # named US thematic baskets. Ported from China #2634. Reads sector_cycles
@@ -4876,6 +4896,7 @@ jobs:
           OIP_EPISODE_PUBLISH_OUTCOME: ${{ steps.options_signal_episode_publish.outcome }}
           OIP_CAMPAIGN_BUILD_OUTCOME: ${{ steps.options_signal_campaign.outcome }}
           OIP_CAMPAIGN_PUBLISH_OUTCOME: ${{ steps.options_signal_campaign_publish.outcome }}
+          OIP_CANDIDATE_BUILD_OUTCOME: ${{ steps.options_alpha_candidate_feed.outcome }}
         # continue-on-error above lets unrelated rendering finish; this terminal gate
         # makes any missing/failed build or exact-path publication fail the engine job.
         run: bash scripts/ci/options_signal_nightly.sh assert-integrity

@@ -8,7 +8,6 @@ import sys
 from pathlib import Path
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).parents[1] / "scripts"))
 import publish_options_alpha_candidate_r2 as publisher
 from publish_options_alpha_candidate_r2 import (
@@ -18,6 +17,7 @@ from publish_options_alpha_candidate_r2 import (
     PublicationError,
     publish_pair,
     read_pair,
+    recover_pending_pair,
 )
 import test_options_alpha_candidate_feed as feed_tests
 
@@ -341,7 +341,9 @@ def test_pre_effect_failure_recovers_exact_journal_then_allows_next_generation(
     assert read_pair(s, "b").payload == b["payload"]
 
 
-def test_new_host_remote_prior_payload_crash_recovers_then_advances(tmp_path, monkeypatch):
+def test_new_host_remote_prior_payload_crash_recovers_then_advances(
+    tmp_path, monkeypatch
+):
     s = FakeS3()
     a, b, c = _feeds(tmp_path, monkeypatch)[:3]
     old_host, new_host = tmp_path / "old-host", tmp_path / "new-host"
@@ -361,11 +363,19 @@ def test_new_host_remote_prior_payload_crash_recovers_then_advances(tmp_path, mo
     sealed_c = read_pair(s, "b")
     assert sealed_c is not None and sealed_c.payload == c["payload"]
     cid = a["feed"]["formed_candidates"][0]["candidate_id"]
-    assert sealed_c.receipt["candidates"][cid]["first_receipt_id"] == sealed_b.receipt["candidates"][cid]["first_receipt_id"]
-    assert sealed_c.receipt["candidates"][cid]["first_consumer_published_at"] == sealed_b.receipt["candidates"][cid]["first_consumer_published_at"]
+    assert (
+        sealed_c.receipt["candidates"][cid]["first_receipt_id"]
+        == sealed_b.receipt["candidates"][cid]["first_receipt_id"]
+    )
+    assert (
+        sealed_c.receipt["candidates"][cid]["first_consumer_published_at"]
+        == sealed_b.receipt["candidates"][cid]["first_consumer_published_at"]
+    )
 
 
-def test_crash_after_sealed_cache_before_journal_unlink_recovers_then_advances(tmp_path, monkeypatch):
+def test_crash_after_sealed_cache_before_journal_unlink_recovers_then_advances(
+    tmp_path, monkeypatch
+):
     s = FakeS3()
     a, b, c = _feeds(tmp_path, monkeypatch)[:3]
     lock = tmp_path / "lock"
@@ -379,7 +389,11 @@ def test_crash_after_sealed_cache_before_journal_unlink_recovers_then_advances(t
     def crash_after_b_cache(path, value):
         nonlocal crash_once
         real_record(path, value)
-        if crash_once and path == cache_path and value.get("sealed", {}).get("payload") == target:
+        if (
+            crash_once
+            and path == cache_path
+            and value.get("sealed", {}).get("payload") == target
+        ):
             crash_once = False
             raise RuntimeError("crash after sealed cache before journal unlink")
 
@@ -399,5 +413,36 @@ def test_crash_after_sealed_cache_before_journal_unlink_recovers_then_advances(t
     sealed_c = read_pair(s, "b")
     assert sealed_c is not None and sealed_c.payload == c["payload"]
     cid = a["feed"]["formed_candidates"][0]["candidate_id"]
-    assert sealed_c.receipt["candidates"][cid]["first_receipt_id"] == sealed_b.receipt["candidates"][cid]["first_receipt_id"]
-    assert sealed_c.receipt["candidates"][cid]["first_consumer_published_at"] == sealed_b.receipt["candidates"][cid]["first_consumer_published_at"]
+    assert (
+        sealed_c.receipt["candidates"][cid]["first_receipt_id"]
+        == sealed_b.receipt["candidates"][cid]["first_receipt_id"]
+    )
+    assert (
+        sealed_c.receipt["candidates"][cid]["first_consumer_published_at"]
+        == sealed_b.receipt["candidates"][cid]["first_consumer_published_at"]
+    )
+
+
+def test_recovery_helper_replays_only_the_fsynced_pending_bytes(tmp_path, monkeypatch):
+    s = FakeS3()
+    row = _feeds(tmp_path, monkeypatch)[0]
+    lock = tmp_path / "lock"
+    s.fail = PAYLOAD_KEY
+    with pytest.raises(PublicationError):
+        publish_pair(
+            client=s,
+            bucket="b",
+            feed=copy.deepcopy(row["feed"]),
+            payload=row["payload"],
+            lock_path=lock,
+            now=_clock(),
+        )
+    assert recover_pending_pair(client=s, bucket="b", lock_path=lock, now=_clock()) in {
+        "published",
+        "noop",
+    }
+    sealed = read_pair(s, "b")
+    assert sealed is not None and sealed.payload == row["payload"]
+    assert (
+        recover_pending_pair(client=s, bucket="b", lock_path=lock, now=_clock()) is None
+    )
