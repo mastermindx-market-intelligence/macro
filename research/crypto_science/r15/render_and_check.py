@@ -29,7 +29,7 @@ def render():
     market=build_crypto.build_market_state();market['heat']['funding']['value']=9876.5
     expected={};asset_hashes={};missing=[]
     overlay=SITE/'overlay';overlay.mkdir(exist_ok=True)
-    shutil.copy2(HERE/'combined_crypto.html.j2',overlay/'crypto.html.j2')
+    shutil.copy2(HERE/('final/combined_crypto.html.j2' if '--final' in sys.argv else 'combined_crypto.html.j2'),overlay/'crypto.html.j2')
     for name,pr in states.items():
         work=SITE/('_work_'+name);work.mkdir(exist_ok=True)
         decision=copy.deepcopy(pr);source=sig.copy(deep=True);mk=copy.deepcopy(market)
@@ -69,12 +69,15 @@ def render():
 
 def main():
     smoke='--smoke' in sys.argv
+    proof_root=HERE/'final' if '--final' in sys.argv else HERE
+    target=proof_root/('smoke.json' if smoke else 'browser_proof.json')
+    if target.exists():raise RuntimeError('Evidence target already exists; reconcile instead of overwriting')
     prior=json.loads((HERE.parent/'r12/pipeline_proof.json').read_text());data=Path(config.data_dir())
     def unchanged():
         for k,h in prior['inputs'].items():assert (sha(data/k) if (data/k).exists() else None)==h,k
         for k,h in prior['gates'].items():assert sha(data/k)==h,k
         for k,h in prior['prior_evidence'].items():assert sha(ROOT/k)==h,k
-    unchanged();expected,assets=render();shots=HERE/('smoke' if smoke else 'reviewed');shots.mkdir(exist_ok=True)
+    unchanged();expected,assets=render();shots=proof_root/('smoke' if smoke else 'reviewed');shots.mkdir(exist_ok=True)
     cases=[];failures=[];resources=[]
     class Handler(http.server.SimpleHTTPRequestHandler):
         def __init__(self,*a,**kw):super().__init__(*a,directory=str(SITE),**kw)
@@ -115,6 +118,8 @@ def main():
                             page.wait_for_timeout(1200)
                             chart_seen=figure.evaluate("e=>({revealed:e.classList.contains('ilx-in'),pathCount:e.querySelectorAll('svg path').length,width:e.getBoundingClientRect().width})")
                             assert chart_seen['pathCount']>0 and chart_seen['width']>100
+                            chart_seen['dashOffsets']=figure.locator('.ilx-path').evaluate_all("es=>es.map(e=>parseFloat(getComputedStyle(e).strokeDashoffset))")
+                            assert all(abs(v)<0.1 for v in chart_seen['dashOffsets']), 'Chart capture preceded completed path animation'
                         original=panel.inner_text()
                         assert ('Recorded model budget' if lang=='en' else '已记录的模型预算') in original
                         assert ('Recorded model budget' if lang=='zh' else '已记录的模型预算') not in original
@@ -171,7 +176,7 @@ def main():
                       'All HTTP outside ephemeral loopback server aborted; no collector invocation or external asset fetch.',
                       'Paper remains unchanged behind exact schema gate; current R3 visual was inspected, not applied.',
                       'Same-session tests/visual review, not participant comprehension or independent review.']}
-    (HERE/('smoke.json' if smoke else 'browser_proof.json')).write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+    target.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
     print('R15_BROWSER_RESULT',len(cases),'cases',len(failures),'failures')
     if failures:raise SystemExit(1)
 

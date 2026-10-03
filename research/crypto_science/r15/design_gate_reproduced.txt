@@ -1,0 +1,4 @@
+::error title=design-system::R0 enforce-added: 1 blocking finding(s) on line(s) added by this diff (25426 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)
+::error title=design-system::templates/crypto.html.j2:68 [font-family-literal] font-family: inherit
+design-system ratchet — mode=enforce-added blocking=1 (estate pre-existing, non-blocking: 25426)
+templates/crypto.html.j2:68: font-family-literal: font-family: inherit
