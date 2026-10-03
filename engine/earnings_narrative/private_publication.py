@@ -47,6 +47,7 @@ MAX_CONTEXT_PACKET_BYTES = 512 * 1024
 MAX_RECORDS = 10_000
 MAX_CONTEXT_PACKETS = 10_000
 IDEMPOTENT_READ_WORKERS = 8
+PUBLISH_WORKERS = 8
 
 _SLUG_RE = re.compile(r"\A[a-z0-9][a-z0-9-]{0,120}\Z")
 _TICKER_RE = re.compile(r"\A[A-Z0-9.\-]{1,16}\Z")
@@ -550,6 +551,48 @@ def _bounded_artifact_read(store: Store, artifact: PrivateArtifact) -> bytes | N
     return _bounded_read(store, artifact.object_key, maximum=artifact.maximum_bytes)
 
 
+def _unique_verified_payloads(
+    verified_payloads: tuple[tuple[PrivateArtifact, bytes], ...],
+) -> tuple[tuple[PrivateArtifact, bytes], ...]:
+    """Deduplicate exact objects while preserving every caller-provided size bound.
+
+    A shared content key must enter the worker pool only once: ``LocalStore`` uses
+    one fixed temporary path per key, so concurrent same-key writes would race.
+    Validate every duplicate before skipping it so deduplication cannot make a
+    malformed, tighter bound pass when the former serial loop failed closed.
+    """
+    unique: list[tuple[PrivateArtifact, bytes]] = []
+    seen: set[str] = set()
+    for artifact, body in verified_payloads:
+        if (
+            isinstance(artifact.maximum_bytes, bool)
+            or not isinstance(artifact.maximum_bytes, int)
+            or not 1 <= len(body) <= artifact.maximum_bytes
+        ):
+            raise EarningsPrivatePublicationError(
+                "prepared private payload exceeds its safe size bound"
+            )
+        if artifact.object_key in seen:
+            continue
+        seen.add(artifact.object_key)
+        unique.append((artifact, body))
+    return tuple(unique)
+
+
+def _put_verified_artifact(
+    store: Store,
+    payload: tuple[PrivateArtifact, bytes],
+) -> None:
+    """Publish one immutable artifact for the bounded worker pool."""
+    artifact, body = payload
+    _put_verified(
+        store,
+        key=artifact.object_key,
+        body=body,
+        maximum=artifact.maximum_bytes,
+    )
+
+
 def _existing_exact_publication(
     store: Store,
     prepared: PreparedPrivatePublication,
@@ -637,6 +680,10 @@ def publish_private_publication(
         raise EarningsPrivatePublicationError("private earnings publication requires a strict store")
     with _PUBLISH_LOCK:
         verified_payloads = _validated_prepared_payloads(prepared)
+        # Validate every caller-provided bound before either the idempotent
+        # fast path or promotion can return.  Reusing this set also keeps
+        # duplicate content keys out of the write pool.
+        unique_payloads = _unique_verified_payloads(verified_payloads)
         ready = _existing_exact_publication(
             store,
             prepared,
@@ -644,13 +691,18 @@ def publish_private_publication(
         )
         if ready is not None:
             return ready
-        for artifact, body in verified_payloads:
-            _put_verified(
-                store,
-                key=artifact.object_key,
-                body=body,
-                maximum=artifact.maximum_bytes,
-            )
+        if unique_payloads:
+            worker_count = min(PUBLISH_WORKERS, len(unique_payloads))
+            with ThreadPoolExecutor(
+                max_workers=worker_count,
+                thread_name_prefix="earnings-private-publish",
+            ) as pool:
+                for _result in pool.map(
+                    _put_verified_artifact,
+                    (store for _payload in unique_payloads),
+                    unique_payloads,
+                ):
+                    pass
         _put_verified(
             store,
             key=prepared.manifest_key,
@@ -843,6 +895,7 @@ __all__ = [
     "MANIFEST_SCHEMA",
     "POINTER_KEY",
     "POINTER_SCHEMA",
+    "PUBLISH_WORKERS",
     "PreparedPrivatePublication",
     "RECORD_SCHEMA",
     "RECORD_STAGE_DIR",

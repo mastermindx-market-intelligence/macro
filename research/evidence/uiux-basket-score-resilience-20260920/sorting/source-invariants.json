@@ -1,0 +1,496 @@
+{
+  "base_head": "49c879f7ce5e47219759f4a0aa767cd0c96a8dc4",
+  "generated_pages": 121,
+  "comparator": "byte-identical",
+  "DETAIL_payloads": [
+    {
+      "path": "site/basket/us_sector_realestate.html",
+      "DETAIL_sha256": "13932379a554b3bce01502ea75a6eb181954900c9d62161ef3c362d53f69a1fc"
+    },
+    {
+      "path": "site/basket/gold_miners.html",
+      "DETAIL_sha256": "61074d9713a2c26b7ae81358b80c37b5ed4cc8766b8406c21d6c736dc05690d2"
+    },
+    {
+      "path": "site/basket/nuclear_power.html",
+      "DETAIL_sha256": "190c68611b4038e556e91bd68408a5d3036002db59f5f9857f3fbf5a40d8cb0c"
+    },
+    {
+      "path": "site/basket/obesity_glp1.html",
+      "DETAIL_sha256": "d13f488b0a70aaee91ab87db99147e19f77acd0dc1538076edfdfc1839340d45"
+    },
+    {
+      "path": "site/basket/us_sector_utilities.html",
+      "DETAIL_sha256": "f10959f773a0d2941253f9834d2f27ecbbf286f9c13568c71fb8bc88aac036f5"
+    },
+    {
+      "path": "site/basket/retail.html",
+      "DETAIL_sha256": "e172631cc79912ff8e35505b4f30b36fa43e2c1c4c6ee439c942ae1af786b294"
+    },
+    {
+      "path": "site/basket/us_sector_materials.html",
+      "DETAIL_sha256": "38cc34f68253877700c7e02b3ca20923bac348dad46c1b97ac91eed408f76f2c"
+    },
+    {
+      "path": "site/basket/housing.html",
+      "DETAIL_sha256": "672061e98074727fcaa65ae50bcbcad5f6bc8f302277d99b8cbf0535281ca679"
+    },
+    {
+      "path": "site/basket/ai_neoclouds.html",
+      "DETAIL_sha256": "5536b2d29c84fa4f732549cb0d40690147f846aa115f5e25aa9fd5fa83f60cf4"
+    },
+    {
+      "path": "site/basket/us_sector_industrials.html",
+      "DETAIL_sha256": "1b2d94e780f58999038baa815ec7ef83250d70c8096afaab79f8afa8a5eb3835"
+    },
+    {
+      "path": "site/basket/big_pharma.html",
+      "DETAIL_sha256": "e08d0eb249b4d298e6c5c7b6b43349b72c1ca1559c8d999919ed8de9bd8c54ed"
+    },
+    {
+      "path": "site/basket/industrial_distribution.html",
+      "DETAIL_sha256": "4497e259b0c56dfd0b184984c2f6bb6e905c267d7dc243d34c2e3a3ef76db121"
+    },
+    {
+      "path": "site/basket/us_sector_comm.html",
+      "DETAIL_sha256": "e982d1a81d3bb526eacc443884e083c1f5fe2504c9af0872b3eaeae9abe4a96a"
+    },
+    {
+      "path": "site/basket/quantum_computing.html",
+      "DETAIL_sha256": "2c865e40e7db6f301a1d9c81418f02259805d54cc693e89752fabb8e34f91031"
+    },
+    {
+      "path": "site/basket/us_sector_tech.html",
+      "DETAIL_sha256": "99ec32ba512376706380ec0ecc6e02f122085983a0beef1327dfd6ad12a0a8c1"
+    },
+    {
+      "path": "site/basket/semicap_equipment.html",
+      "DETAIL_sha256": "d10871fffe341f0b8a13294dbfa81e9e0dbdc7dd53b953c7d1abccf5a3f5a6ea"
+    },
+    {
+      "path": "site/basket/data_center_power.html",
+      "DETAIL_sha256": "c8c1b25a3da6062087596892437fa1c3f1095e7374b05a47c08f19cb353838d3"
+    },
+    {
+      "path": "site/basket/ai_semiconductors.html",
+      "DETAIL_sha256": "1d2de0272899c7331ac84ce27c55dfd4ec6aca1f4e61ebe612a646ab12a8b63d"
+    },
+    {
+      "path": "site/basket/non_ai_software.html",
+      "DETAIL_sha256": "ff4f4aa2cff72b15914bd192017c96e4c4a5fa4d06ea18d1257c3624e833e941"
+    },
+    {
+      "path": "site/basket/non_ai_tech.html",
+      "DETAIL_sha256": "41ef3219679760451fb51805346417362bdd33d345acc86812622b2d2c805b98"
+    },
+    {
+      "path": "site/basket/us_sector_energy.html",
+      "DETAIL_sha256": "89a43ed6fe41ca3d26667a7c35dcfa9d688b28f8d441d533e7960b88849e2da3"
+    },
+    {
+      "path": "site/basket/pgm_miners.html",
+      "DETAIL_sha256": "fe41e9beb155f18d463ac7bcfcbe096cefdc305463c1f951de67edc7d77f6e94"
+    },
+    {
+      "path": "site/basket/memory_storage.html",
+      "DETAIL_sha256": "acb7a7bc29e5d0e0414109e64c595e1413f94da3b9735493011c35b481b2b64e"
+    },
+    {
+      "path": "site/basket/us_sector_staples.html",
+      "DETAIL_sha256": "bd6e14841b23e965313508161318cfb734362a5e74fca4d8805710f06922208a"
+    },
+    {
+      "path": "site/basket/silver_miners.html",
+      "DETAIL_sha256": "679f7c860a9227e06eedb7af80b7a010ac9e073abad0a3fe5a7e649328044b1b"
+    },
+    {
+      "path": "site/basket/cybersecurity.html",
+      "DETAIL_sha256": "fb8dead101702513ee128c89acb0ef7287bfc2beaa2f6a4a4c70f717c58e315d"
+    },
+    {
+      "path": "site/basket/mag7.html",
+      "DETAIL_sha256": "ba067fad119ebe5a09b333a93a03c273ed8532901d813e9791a47d4cb3c83da0"
+    },
+    {
+      "path": "site/basket/crypto_rails.html",
+      "DETAIL_sha256": "9d685a0b5ee5eb80b1c1c80ac3423b0842eb49532f63da2de9c848506356b21b"
+    },
+    {
+      "path": "site/basket/insurance.html",
+      "DETAIL_sha256": "bc480d0611813576ddd6586d7ec74a42c5d2e374eaee719a0f442583feb9f2b9"
+    },
+    {
+      "path": "site/basket/critical_minerals.html",
+      "DETAIL_sha256": "b25e8166fc1e56290c6a75b851a6e3e10c73dd0293403e197ce286a5d9fadc04"
+    },
+    {
+      "path": "site/basket/managed_care.html",
+      "DETAIL_sha256": "060be0eeef82f104cf17cca65dd2a3d18b37bfc7d7a82f7d0fd90eb463735d59"
+    },
+    {
+      "path": "site/basket/regional_banks.html",
+      "DETAIL_sha256": "57678aa2bbea82635d1486021db31d6ae01d1032fa043405943c31a3052146aa"
+    },
+    {
+      "path": "site/basket/us_sector_discretionary.html",
+      "DETAIL_sha256": "d09ba15771a492a7b64fe98c38bb19d4ba117ff0179a86ed69281e8a2f65c02a"
+    },
+    {
+      "path": "site/basket/energy_complex.html",
+      "DETAIL_sha256": "dfd0f8c870c687cf0d682bd0b077d8b7dc5a2841b6174812ba82c0f02fb280f3"
+    },
+    {
+      "path": "site/basket/us_sector_health.html",
+      "DETAIL_sha256": "1874d221cc1e933f0bf012ee03ab557d5900aaad77590d1f89864b892fa4b94e"
+    },
+    {
+      "path": "site/basket/ai_agents.html",
+      "DETAIL_sha256": "9a669f824cea75c462d52ab43646e9f9a9d7372a8489b4c23b5d8af8f64e6144"
+    },
+    {
+      "path": "site/basket/us_sector_financials.html",
+      "DETAIL_sha256": "30c79e06bf42da6cb0c7f29ce5beeddf749e7c712e8652d97a4ce7d2c083f9ca"
+    },
+    {
+      "path": "site/basket/robotics_automation.html",
+      "DETAIL_sha256": "383de863d40ecec43fe725340d701b0a189676d3ad7bbb0560eec9951eb86deb"
+    },
+    {
+      "path": "site/basket/crypto.html",
+      "DETAIL_sha256": "b9dff904d721a86eda1e9b2ab51168e8cebbf5d1ba1887b12f2c71e729922368"
+    },
+    {
+      "path": "site/basket/space_economy.html",
+      "DETAIL_sha256": "9dd4b50dc9ea2a1f55671d74c3b21659b49ecef86206429fb482dd7870d36201"
+    },
+    {
+      "path": "site/basket/ai_software.html",
+      "DETAIL_sha256": "316f62d89057a6e8cdc03b210f7592c453e0c82e138eed98f8e11e67d4656766"
+    },
+    {
+      "path": "site/basket/power_grid.html",
+      "DETAIL_sha256": "b3896a0f0db4c6a50a5f0c9887eb194c096b9da33b0d5281d0d7a00d8a3b8289"
+    },
+    {
+      "path": "site/basket/defensives.html",
+      "DETAIL_sha256": "4b3c73cb1b49970a47cfee026ef760eb8e720a86271586b64db48bec681269e4"
+    },
+    {
+      "path": "site/basket/reshoring.html",
+      "DETAIL_sha256": "f8ee9d98945e5c5ed8c892b6b9f9351ae1a64213828804721ea2266dca9b3d14"
+    },
+    {
+      "path": "site/basket/defense.html",
+      "DETAIL_sha256": "1a6078241bef22af5fe9cede5ab1a16e4f16237e4eb6984ce95b3c83508fab87"
+    },
+    {
+      "path": "site/basket/travel.html",
+      "DETAIL_sha256": "b01c470078526add257385956430ee591172250b96f9c01f7c73d12a7aa0a77e"
+    },
+    {
+      "path": "site/basket/ai_infra.html",
+      "DETAIL_sha256": "2105ffffaa3eb7802b2399628d83bcd01fec0ad7c8fdced1a92e54d1d3e230ba"
+    },
+    {
+      "path": "site/basket/uranium_miners.html",
+      "DETAIL_sha256": "ca84c2c999a58de8fec73fb36053769cb90b7f5683e98ce33e4f0a97c8a7ae96"
+    },
+    {
+      "path": "site/basket/payments_fintech.html",
+      "DETAIL_sha256": "a067f05aff853dba412369a65d64921a0a7b4f74e289318346e2b9478150e35d"
+    },
+    {
+      "path": "site/basket_china/cn_solar.html",
+      "DETAIL_sha256": "7d69a9b5b3f6bc86d25c1762217f820d93fbcf6a7765604167f136c270531446"
+    },
+    {
+      "path": "site/basket_china/cn_gold.html",
+      "DETAIL_sha256": "e8042750219a83982df60745f3fa674f8c19bba6ab369341b5945c4896a758b9"
+    },
+    {
+      "path": "site/basket_china/cn_appliances.html",
+      "DETAIL_sha256": "dff1628b9d76e945c92aca940f832da952aa92c449b2117fe412441142efe48c"
+    },
+    {
+      "path": "site/basket_china/cn_metals.html",
+      "DETAIL_sha256": "208adc342fccd6f2059ffb507fbd902a8f8247168315b01bd7b05d4442bcd0c8"
+    },
+    {
+      "path": "site/basket_china/cn_autos.html",
+      "DETAIL_sha256": "4fb704467bbc2fdd3f83470db34002302aef399a2c7e9188118441a805f202a9"
+    },
+    {
+      "path": "site/basket_china/cn_semis.html",
+      "DETAIL_sha256": "31de03e1d4eaea30fcf4f5afb6ac0402e4a335c2944fbac6a286776591ac24f2"
+    },
+    {
+      "path": "site/basket_china/cn_food_bev.html",
+      "DETAIL_sha256": "1dc3d8ceaa5de45e6a08a747c159b957bc5d281b7d2e7397ff7cd3cd77039af7"
+    },
+    {
+      "path": "site/basket_china/cn_insurers.html",
+      "DETAIL_sha256": "24dbedc383568011b2f7b912840515f8de3165bde51fd09396811f71db5f3844"
+    },
+    {
+      "path": "site/basket_china/cn_defense.html",
+      "DETAIL_sha256": "47ec0ddfd5eac131a37f0961398153790ede68aa8a6008865e465adcf112ba87"
+    },
+    {
+      "path": "site/basket_china/cn_brokers.html",
+      "DETAIL_sha256": "ee005e348ea14899f3adc1a6aaf2177230c59dbaa40ecc23278703d2bc292a27"
+    },
+    {
+      "path": "site/basket_china/cn_robotics.html",
+      "DETAIL_sha256": "a2fe6ff4dd6cafd71300ec2414e9df5d7b3db7af27fb55427adcc12c1a9a92c3"
+    },
+    {
+      "path": "site/basket_china/cn_software.html",
+      "DETAIL_sha256": "c467771e4e2757a5891561da659e1bcfca193d13fbf6da0a8c8d9c11dd3022df"
+    },
+    {
+      "path": "site/basket_china/cn_pharma_cxo.html",
+      "DETAIL_sha256": "d231ec83440d315206297cb51f18fbd5427ecc31c720bc1e798dd1dfeff95935"
+    },
+    {
+      "path": "site/basket_china/cn_coal.html",
+      "DETAIL_sha256": "8bdcacdcaf480e45fc047882f03896851c23e35c016a5e5eb794c82f6473a9df"
+    },
+    {
+      "path": "site/basket_china/cn_soe_value.html",
+      "DETAIL_sha256": "805ff07b53272bee9677221f337258b4116c919308c2c6faab0b0d7fe4df37b1"
+    },
+    {
+      "path": "site/basket_china/cn_battery.html",
+      "DETAIL_sha256": "76d2be0b1ea144d37ef15bac1b0f4de5ab81b0020b118422c6509ea92641475c"
+    },
+    {
+      "path": "site/basket_china/cn_med_devices.html",
+      "DETAIL_sha256": "6ced8071d9293c61248c9b661d790e8fea5f3a73531fb5aafb4f22869ed208bd"
+    },
+    {
+      "path": "site/basket_china/cn_rare_earth.html",
+      "DETAIL_sha256": "010239e88b6f25ff7129e42347285f5a767706b7ffa37a8da115e5561f0b3378"
+    },
+    {
+      "path": "site/basket_china/cn_ai_compute.html",
+      "DETAIL_sha256": "052ef148409239dd7d71eedffb8a8528341c4db7a06e83a5a0fee21f57a0cff4"
+    },
+    {
+      "path": "site/basket_china/cn_consumer_elec.html",
+      "DETAIL_sha256": "a89041ebca3fb27790ed3b000d0f0aa40fbf75d37a00844e73c578a240c05965"
+    },
+    {
+      "path": "site/basket_china/cn_banks.html",
+      "DETAIL_sha256": "3b814de7a0a93b53116725ae494e9f727e22a2677777bf88fba7c9651876333c"
+    },
+    {
+      "path": "site/basket_china/cn_baijiu.html",
+      "DETAIL_sha256": "659cc2d5c5c294a0dc303e3cf1e063412bb4ebc5d218ce4deca06f73a9d0b4ee"
+    },
+    {
+      "path": "site/basket_hk/hk_gaming.html",
+      "DETAIL_sha256": "9411bb198c19a8dceac4632320b8bc01d26a365620789b6cb37360045e880ed2"
+    },
+    {
+      "path": "site/basket_hk/hk_property.html",
+      "DETAIL_sha256": "2c987c0ea8ca1bc56c094c082d2ed7e90d03d71bd5c32f2129db07ba57e42bc2"
+    },
+    {
+      "path": "site/basket_hk/hk_banks.html",
+      "DETAIL_sha256": "bc95edf2a57fc46cea0a339b8e8fcffb0f89aa40813ccfcab228a0be4c35d7b2"
+    },
+    {
+      "path": "site/basket_hk/hk_materials.html",
+      "DETAIL_sha256": "bcabb4148cfa9b1cad309693501f8740f24eb5d9e064799d8efb31c52290845e"
+    },
+    {
+      "path": "site/basket_hk/hk_energy.html",
+      "DETAIL_sha256": "035c4089b115c97eaef2bfcc5fb7fb3f23f0b3ecdd40d6d30f8645c739486269"
+    },
+    {
+      "path": "site/basket_hk/hk_telco_util.html",
+      "DETAIL_sha256": "6f0212277526118ff0d3c6a5aa2192489860c4f5417f0d2eecb982d6dcd2b718"
+    },
+    {
+      "path": "site/basket_hk/hk_industrials.html",
+      "DETAIL_sha256": "5efc2e54c7bc78f761e43f80d6cdee261c60fbac60c699291186438e60fa433f"
+    },
+    {
+      "path": "site/basket_hk/hk_platform_tech.html",
+      "DETAIL_sha256": "073c2761d829d32e5d1d1159d89f315239e3cb4fd8c182c47cfa78e5a15d9bee"
+    },
+    {
+      "path": "site/basket_hk/hk_conglo.html",
+      "DETAIL_sha256": "8ae7493272a24d3be36a956de4fd73df432b9450fa7ebaefadf8139cdd9d6b21"
+    },
+    {
+      "path": "site/basket_hk/hk_biotech.html",
+      "DETAIL_sha256": "c0b51874150996c0703a3db880ba945ae9e074bfa8803f857f26a848e9126193"
+    },
+    {
+      "path": "site/basket_hk/hk_tech_hardware.html",
+      "DETAIL_sha256": "2fd18c899013d8bf4ecc2e18b49002a838b3e566f1ecc7756a9ed5b8f1c0b292"
+    },
+    {
+      "path": "site/basket_hk/hk_dividend.html",
+      "DETAIL_sha256": "374213b1cf949dfea8ce05d85498768af4fadb5a585fc7c430f492ae16dcf18b"
+    },
+    {
+      "path": "site/basket_hk/hk_consumer.html",
+      "DETAIL_sha256": "cb7fa9066984028895e1005e3a2217b9d74168396e00057724106bdaffb33ace"
+    },
+    {
+      "path": "site/basket_hk/hk_miners.html",
+      "DETAIL_sha256": "5f3693c87513b4fcbedfc0d5649395436aa7b88f4dcb21b3e5009bf522f156ee"
+    },
+    {
+      "path": "site/basket_hk/hk_insurers.html",
+      "DETAIL_sha256": "7c7648d655625d071e74a5d4778feefc7f846958ce207e42b30fbe0c37605b48"
+    },
+    {
+      "path": "site/basket_hk/hk_ev.html",
+      "DETAIL_sha256": "65039ac679a88a007e49411836e6af8e4c0180c86ba89170a35cef318d6e009c"
+    },
+    {
+      "path": "site/basket_hk/hk_china_tech.html",
+      "DETAIL_sha256": "d0eec6af7ac4eef2f79b11b695f6d4c4c776838992a955bb11dbf303be9a48f3"
+    },
+    {
+      "path": "site/basket_canada/ca_pipelines.html",
+      "DETAIL_sha256": "318e38fd40ad7dae270307da691cc4b8c2ad3d74f24d8bcda97e63f845c91209"
+    },
+    {
+      "path": "site/basket_canada/ca_asset_mgrs.html",
+      "DETAIL_sha256": "e0c389be869a6e2a242f4a9c476500a8ad16752c9e8e7dd52e97beda42120b90"
+    },
+    {
+      "path": "site/basket_canada/ca_uranium.html",
+      "DETAIL_sha256": "cb7c9a4e7f45dc9c77ca42f07f3b22b098b31f6a72e9175cabeb9fd6ed3c2630"
+    },
+    {
+      "path": "site/basket_canada/ca_telecom.html",
+      "DETAIL_sha256": "7c27f8b57894a963560781d7f86ec67ce0d272ea345b8c315783f15c484d8048"
+    },
+    {
+      "path": "site/basket_canada/ca_silver_royalty.html",
+      "DETAIL_sha256": "7d84ec125873cf335b693e9de0c879282e92e164c94ab5e344dbda08de58fff2"
+    },
+    {
+      "path": "site/basket_canada/ca_reits.html",
+      "DETAIL_sha256": "4c5f93f5e7320d1164d0705ce25f197d0f8d75ff57a9a89edc77bd36f3a40c13"
+    },
+    {
+      "path": "site/basket_canada/ca_tech.html",
+      "DETAIL_sha256": "e164a06946f3d4a9e88f64ab9b38fa1d3b46ee0ac5f8e049179672115549445c"
+    },
+    {
+      "path": "site/basket_canada/ca_consumer.html",
+      "DETAIL_sha256": "b255932d6379e0a64cdf4fa9621701d202309f8b23eae087de7b369353e968b9"
+    },
+    {
+      "path": "site/basket_canada/ca_oil_gas.html",
+      "DETAIL_sha256": "3d0e3ad69c0443f7fe823e5b145e171e6f2cc1b023411e590fde079dc06c7ff7"
+    },
+    {
+      "path": "site/basket_canada/ca_rails_ind.html",
+      "DETAIL_sha256": "f3820de55a7ef634bdc259927c40fdd7a5ab7875c2cc1537a210705e0ff43a3a"
+    },
+    {
+      "path": "site/basket_canada/ca_banks.html",
+      "DETAIL_sha256": "c152495c19ab09e4b058a2165a27c6beadabf2148b119bed4980465b5b5ec72e"
+    },
+    {
+      "path": "site/basket_canada/ca_base_metals.html",
+      "DETAIL_sha256": "3256646bd4efd6756c0354851ef288fc247a1272f8ad64da11e55a8118fdcb7a"
+    },
+    {
+      "path": "site/basket_canada/ca_gold.html",
+      "DETAIL_sha256": "ecc8210899c1e5e1f74092de5b872b7129b73d682458a10b1b13783cf8c81f51"
+    },
+    {
+      "path": "site/basket_canada/ca_materials.html",
+      "DETAIL_sha256": "827e08faa9c17cd48cec2e6c1edc1eb42dea9a7da1774074280232f6d7663f54"
+    },
+    {
+      "path": "site/basket_canada/ca_insurers.html",
+      "DETAIL_sha256": "3bc30b3ee074a961bb32057287bc328ebc78a2fef9aa5c79881964f2ee39a339"
+    },
+    {
+      "path": "site/basket_canada/ca_utilities.html",
+      "DETAIL_sha256": "43802fd4aef5a18a87c1fc6665749392b30cf922a02d74e2f74a907d9f586c4b"
+    },
+    {
+      "path": "site/basket_intl/intl_japan.html",
+      "DETAIL_sha256": "bc1c10c2550937e08b20db1cb4febd22b431a099dd0ac598417ee4358c2a9d84"
+    },
+    {
+      "path": "site/basket_intl/intl_tech_hw.html",
+      "DETAIL_sha256": "b1d3bc2287feab0451c7e7932fa284248c39f0fc85ce092a58fa19175a20709f"
+    },
+    {
+      "path": "site/basket_intl/intl_defense.html",
+      "DETAIL_sha256": "e4558c70cb01807cb15f20e5f6d465a41802550da80b53e71638b1d3533b510e"
+    },
+    {
+      "path": "site/basket_intl/intl_autos.html",
+      "DETAIL_sha256": "5899d5408f430c45122489419fd312d65dac1ac770c491f153bfa6197e63b08d"
+    },
+    {
+      "path": "site/basket_intl/intl_semis.html",
+      "DETAIL_sha256": "43c3c256aab410433df45b262d0b3ada190cbb9585a2ad7116398454f796ff17"
+    },
+    {
+      "path": "site/basket_intl/intl_india.html",
+      "DETAIL_sha256": "19457637a5a47bf3dd9c55dce6c609fce402ad1a33a607c739a2b903d3662be3"
+    },
+    {
+      "path": "site/basket_intl/intl_mining.html",
+      "DETAIL_sha256": "e4ce9324f006a71e16328adac0f0d02436f5d4d1a3cc5655a03035cf0441d1c2"
+    },
+    {
+      "path": "site/basket_intl/intl_korea.html",
+      "DETAIL_sha256": "cbc499a3e8eb1b6c48a542d495670c89ac3bab9fdbf1fe57140f113d11558f98"
+    },
+    {
+      "path": "site/basket_intl/intl_insurers.html",
+      "DETAIL_sha256": "a48ba333927b255e1a98c4fc4b54b496272611e24f358dfc93b95731070e3f98"
+    },
+    {
+      "path": "site/basket_intl/intl_automation.html",
+      "DETAIL_sha256": "7f9f75ae0f8313a83bec45ccf3876c9cbcd6c8a1e9225e97a85acbdcdd99f5d1"
+    },
+    {
+      "path": "site/basket_intl/intl_software.html",
+      "DETAIL_sha256": "d70725c288f1c63b5e7adb502079e3bd8b3bbfa20b940b1b516d6d4119fe855a"
+    },
+    {
+      "path": "site/basket_intl/intl_telecom.html",
+      "DETAIL_sha256": "0c5db7f56a57e242c34a705b3668e6ac07122ace7aafd4c4bbb25e45842bebd7"
+    },
+    {
+      "path": "site/basket_intl/intl_energy.html",
+      "DETAIL_sha256": "86ea0aa89366d25eea2635bc5f32c3725b7aa85d25b8104044789f6ee2021403"
+    },
+    {
+      "path": "site/basket_intl/intl_banks.html",
+      "DETAIL_sha256": "908a09e495d073ec2e44a9d71140eb9ebde30216d56fb5a11fd0958c80966a1b"
+    },
+    {
+      "path": "site/basket_intl/intl_luxury.html",
+      "DETAIL_sha256": "ce11b3337b0e47ff7be0daf0ee4cd7400d97d7c30cc50bf56b436bdd7d2758e7"
+    },
+    {
+      "path": "site/basket_intl/intl_pharma.html",
+      "DETAIL_sha256": "a0e511610db63b11600dfb64da8988e639d4fe6a2d05ac46139beb0422f0dda2"
+    },
+    {
+      "path": "site/basket_intl/intl_uk.html",
+      "DETAIL_sha256": "170e4fbc81dbee625c1f6d7a3a8a47216e648077e258c9d4389b28bb9e2a9621"
+    }
+  ],
+  "template_sha256": "3623ad73efb1c08f7a4960c0273067f4b2bd1915d25234ebfb432272a47767ba",
+  "tests": "160 passed, 5 warnings in 13.70s",
+  "browser_cases": 20,
+  "verifier_sha256": "b842b95b9688761faa74db951989255c94bd0d46a15a173aa5955fd8e50fd20a",
+  "native_capture_states": 48
+}

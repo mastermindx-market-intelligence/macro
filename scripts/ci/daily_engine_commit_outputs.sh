@@ -49,6 +49,18 @@ python3 scripts/check_start_runtime.py --heal-from HEAD
 bash "${GITHUB_WORKSPACE:-.}/scripts/ci/strip_conflict_markers.sh"
 bash scripts/ci/options_signal_nightly.sh exclude-broad
 bash scripts/ci/options_signal_nightly.sh require-clean-broad-start
+# China gold premium final render audit: the builder-band check proves the raw
+# source→VM→page seam; this second pass proves the EXACT post-normalization tree
+# that the broad stage below will commit. It rewrites the same existing
+# data/quality receipt (no second proof plane). A mismatch is made loud but remains
+# lane-local so one Gold panel cannot suppress every nightly page.
+set +e
+python -m scripts.audit_china_gold_premium --strict-render
+cgp_audit_rc=$?
+set -e
+if [ "$cgp_audit_rc" -ne 0 ]; then
+  echo "::error title=China gold premium final render audit::normalized Gold panel disagrees with current source/engine truth; see data/quality/china_gold_premium.json"
+fi
 git add data/ site/ reports/
 # separate + tolerant: `git add site/ templates/` exits 128 when a pathspec
 # matches nothing, and this step runs under `-eo pipefail` — a missing
@@ -101,7 +113,19 @@ git clean -fd -- \
 # untouched.
 git clean -fd -- \
   data/prophet/origination_receipts \
+  data/prophet/origination_sources \
   data/prophet/legacy_shadow
+# The leader-pullback source has its own provenance-checked narrow checkpoint
+# immediately after the publisher and before build_site. Never let this late broad
+# commit bypass a refused same-path/source-contract gate or overwrite a newer source
+# publication during its -X theirs rebase. Rendered pages remain broad-owner output;
+# only the raw source artifact is restored/unstaged here.
+LEADER_SOURCE_PATH="site/anticipationdata/us_leader_pullback.json"
+if ! git checkout HEAD -- "$LEADER_SOURCE_PATH"; then
+  echo "::error title=Leader source safe restore failed::could not restore checkout-time source; aborting broad commit rather than publishing around the narrow checkpoint"
+  exit 1
+fi
+git reset -q -- "$LEADER_SOURCE_PATH"
 # Re-exclude both exact-published namespaces after the broad add.
 bash scripts/ci/options_signal_nightly.sh exclude-broad
 # W0b (2026-07-08 stale-HK incident): US engine job must NOT commit asia-owned

@@ -1,0 +1,49 @@
+{
+  "liquidity_central_banks": {
+    "workspace": {
+      "id": "liquidity_central_banks",
+      "title": {"en": "Central banks", "zh": "央行"},
+      "subtitle": {"en": "", "zh": ""}
+    },
+    "region": {"code": "US", "display_name": "United States", "supported": true},
+    "availability": {"state": "CURRENT"},
+    "headline": {
+      "status": "ABSENT",
+      "null_reason": "NOT_APPLICABLE",
+      "effective_date": "2026-09-04"
+    },
+    "changes": {
+      "comparability": "COMPARABLE",
+      "prior_effective_date": "2026-08-01",
+      "deltas": [
+        {"metric_id": "funding_pressure", "prior_value": 1.0, "current_value": 2.0, "delta": 1.0}
+      ]
+    },
+    "withheld_command_tabs": ["central_banks"],
+    "axes": {"items": []}
+  },
+  "inflation_system": {
+    "workspace": {
+      "id": "inflation_system",
+      "title": {"en": "Inflation", "zh": "通胀"},
+      "subtitle": {"en": "", "zh": ""}
+    },
+    "region": {"code": "US", "display_name": "United States", "supported": true},
+    "availability": {"state": "CURRENT"},
+    "headline": {
+      "status": "PRESENT",
+      "state_id": "A",
+      "effective_date": "2026-09-04",
+      "state_label": {"en": "Cooling", "zh": "降温"}
+    },
+    "changes": {
+      "comparability": "COMPARABLE",
+      "prior_effective_date": "2026-08-01",
+      "deltas": [
+        {"metric_id": "inflation_impulse", "prior_value": 1.0, "current_value": 2.0, "delta": 1.0}
+      ]
+    },
+    "entitlement": "Research",
+    "axes": {"items": []}
+  }
+}

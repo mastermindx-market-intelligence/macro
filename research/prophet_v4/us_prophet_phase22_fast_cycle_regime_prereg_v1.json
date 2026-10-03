@@ -1,0 +1,162 @@
+{
+  "schema": "prophet.fast_cycle_regime_prereg/v1",
+  "operation": "prophet-phase22-fast-cycle-regime-prereg-20260919-sol-001",
+  "status": "FROZEN_WAITING_FOR_PROSPECTIVE_SOURCE",
+  "authority": {
+    "rank": false,
+    "score": false,
+    "gate": false,
+    "size": false,
+    "originate": false,
+    "trade": false
+  },
+  "source_base": "f95b2cc5807fd850c2378b4ad6e938d0e735d2a0",
+  "phase21_development_evidence": {
+    "path": "/Volumes/Mastermind/research/US_Prophet_Phase21_FAST_SLOW_REGIME_SYNTHESIS.md",
+    "sha256": "37b5ac78bd93c6d8ebc9b7effb260eb00c0fb77ef8c3259ecd29c231bd124ed6",
+    "classification": "contaminated_development_evidence_not_validation"
+  },
+  "population": {
+    "owner": "WS:LIVE-ENTRY-RADAR",
+    "detector_id": "C2_1D_TURN@1",
+    "detector_role": "existing_1d_turn_expert",
+    "variant": "C2a_primary",
+    "observation_class": "LIVE_FORWARD",
+    "include_all_future_events": true,
+    "include_false_starts": true,
+    "outcome_based_exclusion": false,
+    "start_boundary": [
+      "LER_C1_PRIVATE_TRANSPORT_ACCEPTED",
+      "LER_C3_REAL_EVENT_TO_FORWARD_PARQUET_TO_QLEDGER_PROVEN",
+      "C4_SAME_CUT_CONTEXT_DURABLY_BOUND_TO_C2_EVENT_WITHOUT_MUTATING_EVENT_ID",
+      "GO_FORWARD_DFII10_KNOWN_AT_SOURCE_QUALIFIED",
+      "TRIAL_LEDGER_REGISTRATION_RECEIPT_PRECEDES_FIRST_TARGET_OUTCOME_READ",
+      "PROSPECTIVE_EPOCH_RECORDED"
+    ]
+  },
+  "fast_cycle": {
+    "context_owner": "C4_MTF_TURN@1",
+    "context_role": "stratification_only",
+    "primary_field": "d2.turn",
+    "primary_arms": [
+      "D2_TURN_NOW",
+      "D2_NOT_TURNING_NOW"
+    ],
+    "missing_state": "UNAVAILABLE",
+    "c4_may_fire": false,
+    "mutate_c2_event_identity": false,
+    "no_cross_age_threshold": true,
+    "secondary_fields": [
+      "d3.turn",
+      "d2.recent_washout",
+      "d3.recent_washout",
+      "recovery_count"
+    ]
+  },
+  "q1": {
+    "question": "Does same-cut confirmed 2D bullish turning improve remaining opportunity inside prospective C2 1D-turn events?",
+    "horizon_sessions": 10,
+    "primary_outcome": "excess_net",
+    "estimand": "mean_within_decision_date(D2_TURN_NOW)-mean_within_decision_date(D2_NOT_TURNING_NOW)",
+    "uncertainty": "decision_week_block_bootstrap",
+    "bootstrap_resamples": 5000,
+    "bootstrap_seed": 20260919
+  },
+  "q2": {
+    "question": "Does the Q1 fast-cycle contrast differ under decision-time hidden fragility versus relief/broadening?",
+    "decision_time_only": true,
+    "hidden_fragility": {
+      "real_yield_10y_prior5_change": ">0",
+      "rsp_minus_spy_prior5": "<0"
+    },
+    "relief_broadening": {
+      "real_yield_10y_prior5_change": "<=0",
+      "rsp_minus_spy_prior5": ">=0"
+    },
+    "mixed_or_missing": "diagnostic_only",
+    "forbid_same_session_close_as_decision_input": true,
+    "real_yield_same_session_requires_historical_availability_receipt": true,
+    "estimand": "Q1_contrast_hidden_fragility - Q1_contrast_relief_broadening",
+    "real_yield_owner": {
+      "owner": "Global Liquidity Transmission / canonical rates owner",
+      "source_id": "DFII10",
+      "required": [
+        "reference_date",
+        "available_date",
+        "go_forward_first_known_at_or_equivalent_owner_receipt"
+      ],
+      "historical_first_known_before_owner_exists": "UNAVAILABLE",
+      "forbid_latest_revised_historical_backfill": true
+    }
+  },
+  "maturity_mechanism": {
+    "owner": "B3",
+    "fields": [
+      "time_to_EARLY_CONFIRMATION",
+      "time_to_CONFIRMED",
+      "failed_to_trigger",
+      "decayed",
+      "never_confirmed"
+    ],
+    "b4_availability_remains_separate": true
+  },
+  "verdict_floors_each_arm": {
+    "min_episodes": 30,
+    "min_distinct_decision_months": 12,
+    "min_effective_n_names": 8
+  },
+  "interim_policy": {
+    "outcome_stats_before_floor": false,
+    "operational_counts_allowed": true,
+    "missingness_counts_allowed": true
+  },
+  "diagnostics": [
+    "H10_absolute_net_return",
+    "H5_excess_and_net_return",
+    "false_start_rate",
+    "severe_loss_incidence_le_minus_10pct",
+    "large_win_incidence_and_payoff_ge_plus_10pct",
+    "mae_mfe_time_to_positive",
+    "C4_d3_turn_and_recent_washout",
+    "B3_slow_confirmation_path"
+  ],
+  "multiplicity": {
+    "trial_family": "prophet_phase22_fast_cycle_regime",
+    "confirmatory_questions": [
+      "Q1_fast_2D_H10",
+      "Q2_hidden_fragility_interaction"
+    ],
+    "fixed_diagnostics_n": 8,
+    "declared_budget_total": 10,
+    "trial_ledger_registered": false,
+    "trial_ledger_registration_blocker": "OPEN_PR_7274_OWNS_data/trial_ledger.jsonl",
+    "no_rescue_after_results": true
+  },
+  "owners": {
+    "expert_events": "WS:LIVE-ENTRY-RADAR",
+    "prospective_transport": "LER-C1/LER-C3",
+    "grading": "Evaluation OS / QLedger / Entry Radar W5",
+    "maturity": "B3 candidate state",
+    "entry_availability": "B4 when built",
+    "rates": "Global Liquidity Transmission / canonical rates owner (go-forward DFII10 clocks only until a lawful historical first-known source exists)",
+    "breadth_prices": "canonical market-data owner"
+  },
+  "non_goals": [
+    "new_detector",
+    "new_event_store",
+    "new_forward_ledger",
+    "new_qledger",
+    "new_scheduler",
+    "new_regime_scorecard",
+    "Prophet_rank_gate_size_trade_change",
+    "modification_of_PR_7418",
+    "modification_of_Tactical_R1_A_or_R1_B"
+  ],
+  "current_gaps": [
+    "C4_context_is_live_payload_context_not_yet_durable_W5_event_context",
+    "LER_C1_external_credential_gate",
+    "LER_C3_prospective_consumer_waiting_on_secure_source",
+    "TrialLedger_path_collision_with_PR_7274",
+    "DFII10_HISTORICAL_FIRST_KNOWN_NOT_RECONSTRUCTABLE_BEFORE_EXISTING_OWNER"
+  ]
+}

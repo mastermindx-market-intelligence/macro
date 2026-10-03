@@ -1,0 +1,56 @@
+# USGS Mineral Commodity Summaries / National Minerals Information Center.
+# Display-only raw layer. Public-domain US Government work. Keyless.
+# verified_live: 2026-09-13 (ScienceBase HTTP 200, no credentials).
+version: 1
+sciencebase:
+  parent_id: "5c8c03e4e4b0938824529f7d"
+  title_regex: '^(U\.S\. Geological Survey )?Mineral Commodity Summaries (\d{4}) Data Release'
+file_regexes:
+  t7: 'MCS(\d{4})_T7_Critical_Minerals_Salient\.csv'
+  fig3: 'MCS(\d{4})_Fig3_Major_Import_Sources\.csv'
+  commodities: 'MCS(\d{4})_Commodities_Data\.csv'
+known_editions:
+  2026:
+    item_id: "696a75d5d4be0228872d3bf8"
+    layout: t7_csv
+    published: "2026-02-06"
+  2025:
+    item_id: "677eaf95d34e760b392c4970"
+    layout: zip_per_commodity
+  2024:
+    item_id: "65a6e45fd34e5af967a46749"
+    layout: zip_per_commodity
+verified_live: "2026-09-13"
+commodities:
+  - key: rare_earths
+    t7_label: "Rare earths (compounds and metals)9"
+    commodities_data_commodity: "Rare Earths"
+    world_section: "World Mine Production and Reserves"
+    world_metric: "Mine production"
+    theme_id: rare_earth_critical_min
+    label_en: "Rare earths"
+    label_zh: "稀土"
+  - key: lithium
+    t7_label: "Lithium"
+    commodities_data_commodity: "Lithium"
+    world_section: "World Mine Production and Reserves"
+    world_metric: "Mine production"
+    theme_id: rare_earth_critical_min
+    label_en: "Lithium"
+    label_zh: "锂"
+  - key: cobalt
+    t7_label: "Cobalt"
+    commodities_data_commodity: "Cobalt"
+    world_section: "World Mine Production and Reserves"
+    world_metric: "Mine production"
+    theme_id: rare_earth_critical_min
+    label_en: "Cobalt"
+    label_zh: "钴"
+  - key: gallium
+    t7_label: "Gallium"
+    commodities_data_commodity: "Gallium"
+    world_section: "World Low-Purity Production and Production Capacity"
+    world_metric: "Primary production"
+    theme_id: rare_earth_critical_min
+    label_en: "Gallium"
+    label_zh: "镓"

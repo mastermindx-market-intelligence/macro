@@ -2924,8 +2924,11 @@ def test_daily_options_pit_checkpoint_is_immediate_success_only_metadata_replay(
         "data/options_signal_episode/outcomes_session.jsonl",
         "data/options_signal_episode/campaigns.jsonl",
     }
-    declared = helper.split("readonly -a OIP_EPISODE_PATHS=(", 1)[1].split(")", 1)[0]
+    declared = helper.split("readonly -a OIP_EPISODE_CORE_PATHS=(", 1)[1].split(")", 1)[0]
     assert {line.strip() for line in declared.splitlines() if line.strip()} == expected_paths
+    assert "oip_collect_episode_paths" in helper
+    assert 'OIP_EPISODE_PATHS=("${OIP_EPISODE_CORE_PATHS[@]}")' in helper
+    assert 'OIP_EPISODE_PATHS+=("$entry")' in helper
     episode_helper = helper.split("publish_episode() {", 1)[1].split(
         "\npublish_campaign() {", 1
     )[0]
@@ -3208,6 +3211,187 @@ def test_five_ledger_episode_helper_keeps_head_and_publishes_exact_scope(
         assert (lane / path).read_text() == '{"version":2}\n'
     assert foreign.read_text() == "keep me unstaged\n"
     assert "data/foreign.json" in git("status", "--porcelain")
+
+
+def test_episode_helper_publishes_bounded_session_outcome_parts_in_exact_scope(
+    tmp_path: Path,
+) -> None:
+    repo = Path(__file__).resolve().parents[1]
+    helper = repo / "scripts/ci/options_signal_nightly.sh"
+    origin = tmp_path / "origin.git"
+    lane = tmp_path / "lane"
+    subprocess.run(
+        ["git", "init", "--bare", "-q", "--initial-branch=main", str(origin)],
+        check=True,
+    )
+    subprocess.run(["git", "init", "-q", "-b", "main", str(lane)], check=True)
+
+    def git(*args: str) -> str:
+        return subprocess.run(
+            ["git", *args], cwd=lane, text=True, capture_output=True, check=True
+        ).stdout.strip()
+
+    git("config", "user.name", "test")
+    git("config", "user.email", "test@example.invalid")
+    git("remote", "add", "origin", str(origin))
+    core = (
+        "data/options_signal_episode/checkpoint.json",
+        "data/options_signal_episode/episodes.jsonl",
+        "data/options_signal_episode/outcomes_h60.jsonl",
+        "data/options_signal_episode/outcomes_session.jsonl",
+        "data/options_signal_episode/campaigns.jsonl",
+    )
+    for path in core:
+        target = lane / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('{"version":1}\n')
+    git("add", *core)
+    git("commit", "-m", "baseline")
+    git("push", "-u", "origin", "main")
+    parent = git("rev-parse", "HEAD")
+
+    for path in core:
+        (lane / path).write_text('{"version":2}\n')
+    part = lane / "data/options_signal_episode/outcomes_session_parts/part-000001.jsonl"
+    part.parent.mkdir(parents=True)
+    part.write_text('{"bounded_part":1}\n')
+
+    result = subprocess.run(
+        ["bash", str(helper), "publish-episode"],
+        cwd=lane,
+        env={
+            **os.environ,
+            "GITHUB_WORKSPACE": str(repo),
+            "GITHUB_RUN_ID": "episode-parts-test",
+            "GITHUB_RUN_ATTEMPT": "1",
+            "RUNNER_TEMP": str(tmp_path),
+        },
+        text=True, capture_output=True, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    remote_tip = subprocess.run(
+        ["git", "--git-dir", str(origin), "rev-parse", "main"],
+        text=True, capture_output=True, check=True,
+    ).stdout.strip()
+    assert remote_tip != parent
+    changed = set(subprocess.run(
+        ["git", "--git-dir", str(origin), "diff-tree", "--no-commit-id", "-r", "--name-only", remote_tip],
+        text=True, capture_output=True, check=True,
+    ).stdout.splitlines())
+    assert changed == {*core, "data/options_signal_episode/outcomes_session_parts/part-000001.jsonl"}
+    assert subprocess.run(
+        ["git", "--git-dir", str(origin), "show",
+         "main:data/options_signal_episode/outcomes_session_parts/part-000001.jsonl"],
+        text=True, capture_output=True, check=True,
+    ).stdout == '{"bounded_part":1}\n'
+    assert git("rev-parse", "HEAD") == parent
+    assert part.read_text() == '{"bounded_part":1}\n'
+
+
+def test_episode_helper_refuses_concurrent_unseen_session_outcome_part(
+    tmp_path: Path,
+) -> None:
+    repo = Path(__file__).resolve().parents[1]
+    helper = repo / "scripts/ci/options_signal_nightly.sh"
+    origin = tmp_path / "origin.git"
+    lane = tmp_path / "lane"
+    racer = tmp_path / "racer"
+    subprocess.run(
+        ["git", "init", "--bare", "-q", "--initial-branch=main", str(origin)],
+        check=True,
+    )
+    subprocess.run(["git", "init", "-q", "-b", "main", str(lane)], check=True)
+
+    def git(*args: str) -> str:
+        return subprocess.run(
+            ["git", *args], cwd=lane, text=True, capture_output=True, check=True
+        ).stdout.strip()
+
+    git("config", "user.name", "test")
+    git("config", "user.email", "test@example.invalid")
+    git("remote", "add", "origin", str(origin))
+    core = (
+        "data/options_signal_episode/checkpoint.json",
+        "data/options_signal_episode/episodes.jsonl",
+        "data/options_signal_episode/outcomes_h60.jsonl",
+        "data/options_signal_episode/outcomes_session.jsonl",
+        "data/options_signal_episode/campaigns.jsonl",
+    )
+    for path in core:
+        target = lane / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('{"version":1}\n')
+    part1_rel = "data/options_signal_episode/outcomes_session_parts/part-000001.jsonl"
+    part1 = lane / part1_rel
+    part1.parent.mkdir(parents=True)
+    part1.write_text('{"bounded_part":1,"generation":1}\n')
+    git("add", *core, part1_rel)
+    git("commit", "-m", "baseline")
+    git("push", "-u", "origin", "main")
+    parent = git("rev-parse", "HEAD")
+
+    subprocess.run(["git", "clone", "-q", str(origin), str(racer)], check=True)
+    subprocess.run(["git", "config", "user.name", "racer"], cwd=racer, check=True)
+    subprocess.run(["git", "config", "user.email", "racer@example.invalid"], cwd=racer, check=True)
+
+    for path in core:
+        (lane / path).write_text('{"version":2}\n')
+    part1.write_text('{"bounded_part":1,"generation":2}\n')
+
+    wrapper = tmp_path / "run-concurrent-part-race.sh"
+    wrapper.write_text(
+        "#!/usr/bin/env bash\n"
+        "set -euo pipefail\n"
+        "oip_after_stage_snapshot() {\n"
+        "  local p=\"$RACER/data/options_signal_episode/outcomes_session_parts/part-000002.jsonl\"\n"
+        "  mkdir -p \"$(dirname \"$p\")\"\n"
+        "  printf '%s\\n' '{\"bounded_part\":2,\"from\":\"concurrent-run\"}' > \"$p\"\n"
+        "  git -C \"$RACER\" add -- data/options_signal_episode/outcomes_session_parts/part-000002.jsonl\n"
+        "  git -C \"$RACER\" commit -qm 'concurrent accepted part'\n"
+        "  git -C \"$RACER\" push -q origin HEAD:main\n"
+        "}\n"
+        "export OIP_NIGHTLY_SOURCE_ONLY=1\n"
+        f'. "{helper}"\n'
+        "publish_episode\n"
+    )
+    wrapper.chmod(0o755)
+    result = subprocess.run(
+        ["bash", str(wrapper)],
+        cwd=lane,
+        env={
+            **os.environ,
+            "GITHUB_WORKSPACE": str(repo),
+            "GITHUB_RUN_ID": "episode-concurrent-part-race",
+            "GITHUB_RUN_ATTEMPT": "1",
+            "RUNNER_TEMP": str(tmp_path),
+            "RACER": str(racer),
+        },
+        text=True, capture_output=True, check=False,
+    )
+    assert result.returncode != 0
+    diagnostics = result.stdout + result.stderr
+    assert "unseen session-outcome part" in diagnostics
+
+    remote_tip = subprocess.run(
+        ["git", "--git-dir", str(origin), "rev-parse", "main"],
+        text=True, capture_output=True, check=True,
+    ).stdout.strip()
+    assert remote_tip != parent
+    for path in core:
+        assert subprocess.run(
+            ["git", "--git-dir", str(origin), "show", f"main:{path}"],
+            text=True, capture_output=True, check=True,
+        ).stdout == '{"version":1}\n'
+    assert subprocess.run(
+        ["git", "--git-dir", str(origin), "show", f"main:{part1_rel}"],
+        text=True, capture_output=True, check=True,
+    ).stdout == '{"bounded_part":1,"generation":1}\n'
+    assert subprocess.run(
+        ["git", "--git-dir", str(origin), "show",
+         "main:data/options_signal_episode/outcomes_session_parts/part-000002.jsonl"],
+        text=True, capture_output=True, check=True,
+    ).stdout == '{"bounded_part":2,"from":"concurrent-run"}\n'
+    assert git("rev-parse", "HEAD") == parent
 
 
 @pytest.mark.parametrize(
@@ -4891,6 +5075,90 @@ def test_all_session_horizons_have_independent_idempotent_semantic_keys(
             append_session_outcomes(path, [drift])
 
 
+def test_session_outcome_writer_refuses_orphan_parts_without_base(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    episode = _episode()
+    bars = _session_bars(episode, "10d")
+    row = derive_session_outcome(
+        episode, "eod", bars,
+        computed_at=datetime(2026, 7, 20, 22, 0, tzinfo=timezone.utc),
+        price_source="fixture/TEST.parquet",
+        bar_seconds=1800,
+        price_delay_minutes=15,
+    )
+    base = tmp_path / "outcomes_session.jsonl"
+    parts = tmp_path / "outcomes_session_parts"
+    parts.mkdir()
+    (parts / "part-000001.jsonl").write_bytes(
+        json.dumps(row, ensure_ascii=False, separators=(",", ":"), sort_keys=True, allow_nan=False).encode("utf-8") + b"\n"
+    )
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    with pytest.raises(ContractError, match="parts exist without the canonical base prefix"):
+        append_session_outcomes(base, [row])
+    assert not base.exists()
+
+
+def test_session_outcome_parts_preserve_one_logical_append_only_stream(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    import engine.options_signal_episode as episode_engine
+
+    episode = _episode()
+    bars = _session_bars(episode, "10d")
+    computed_at = datetime(2026, 7, 20, 22, 0, tzinfo=timezone.utc)
+    rows = [
+        derive_session_outcome(
+            episode,
+            horizon,
+            bars,
+            computed_at=computed_at,
+            price_source="fixture/TEST.parquet",
+            bar_seconds=1800,
+            price_delay_minutes=15,
+        )
+        for horizon in SESSION_HORIZONS
+    ]
+    encoded = [
+        json.dumps(
+            row, ensure_ascii=False, separators=(",", ":"), sort_keys=True,
+            allow_nan=False,
+        ).encode("utf-8") + b"\n"
+        for row in rows
+    ]
+    path = tmp_path / "outcomes_session.jsonl"
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+
+    # Materialize a legacy monolithic prefix first, then make that exact byte
+    # count the rollover boundary. Later rows must extend via bounded parts
+    # without rewriting one byte of the historical prefix.
+    assert append_session_outcomes(path, rows[:3]) == 3
+    prefix = path.read_bytes()
+    monkeypatch.setattr(
+        episode_engine, "SESSION_OUTCOME_PART_MAX_BYTES", max(map(len, encoded)) + 8,
+        raising=False,
+    )
+    assert len(prefix) > episode_engine.SESSION_OUTCOME_PART_MAX_BYTES
+    assert append_session_outcomes(path, rows[3:]) == 2
+    assert path.read_bytes() == prefix
+
+    parts_dir = path.parent / "outcomes_session_parts"
+    parts = sorted(parts_dir.glob("part-*.jsonl"))
+    assert [part.name for part in parts] == ["part-000001.jsonl", "part-000002.jsonl"]
+    assert all(part.stat().st_size <= episode_engine.SESSION_OUTCOME_PART_MAX_BYTES for part in parts)
+    expected = b"".join(encoded)
+    assert episode_engine.session_outcome_logical_bytes(path) == expected
+    assert episode_engine.load_session_outcomes(path) == rows
+    assert append_session_outcomes(path, rows) == 0
+
+    drift = copy.deepcopy(rows[-1])
+    drift["provenance"]["price_source"] = "other/TEST.parquet"
+    validate_session_outcome(drift)
+    with pytest.raises(ContractError, match="conflicting append payload"):
+        append_session_outcomes(path, [drift])
+    assert episode_engine.session_outcome_logical_bytes(path) == expected
+
+
 def test_session_append_failure_keeps_checkpoint_last_and_h60_bytes_stable(
     tmp_path: Path, monkeypatch,
 ) -> None:
@@ -5726,3 +5994,326 @@ def test_episode_v1_ignores_additive_source_microstructure_without_identity_drif
     assert rich_episode == base_episode
     assert "microstructure" not in rich_episode["feature_snapshot"]
     assert "vol_gt_oi_ratio" not in rich_episode["feature_snapshot"]
+
+@pytest.mark.parametrize("dangling_kind", ["base", "parts"])
+def test_session_outcome_shared_reader_rejects_dangling_symlink(
+    tmp_path: Path, dangling_kind: str,
+) -> None:
+    import engine.options_signal_episode as episode_engine
+    from engine.options_signal_episode_contract import (
+        EpisodeSourceContractError,
+        session_outcome_logical_bytes,
+    )
+
+    base = tmp_path / "outcomes_session.jsonl"
+    if dangling_kind == "base":
+        base.symlink_to(tmp_path / "missing-session-ledger.jsonl")
+        expected = "session outcome base is not a regular file"
+    else:
+        base.write_bytes(b"")
+        (tmp_path / "outcomes_session_parts").symlink_to(
+            tmp_path / "missing-session-parts"
+        )
+        expected = "session outcome parts path is not a directory"
+
+    with pytest.raises(EpisodeSourceContractError, match=expected):
+        session_outcome_logical_bytes(base)
+    with pytest.raises(episode_engine.ContractError, match=expected):
+        episode_engine.load_session_outcomes(base)
+
+
+# ---------------------------------------------------------------------------
+# Real-size physical-rollover matrix.
+#
+# The toy-ceiling test above proves the rollover *logic*. It cannot prove the
+# arithmetic at the number that actually broke publication: the committed
+# `outcomes_session.jsonl` is 95.8 MiB, exactly 2.00x the 48 MiB part ceiling,
+# and the generation that grew it past GitHub's 100 MiB blob limit was rejected.
+# These cases drive the real constant against real committed bytes.
+# ---------------------------------------------------------------------------
+
+_REAL_SESSION_LEDGER = (
+    Path(__file__).resolve().parents[1]
+    / "data"
+    / "options_signal_episode"
+    / "outcomes_session.jsonl"
+)
+
+
+def _canonical_session_line(row: dict) -> bytes:
+    return (
+        json.dumps(
+            row, ensure_ascii=False, separators=(",", ":"), sort_keys=True,
+            allow_nan=False,
+        ).encode("utf-8")
+        + b"\n"
+    )
+
+
+def _fixture_session_rows() -> list[dict]:
+    """Five fresh rows whose identities cannot collide with production bytes."""
+    episode = _episode()
+    bars = _session_bars(episode, "10d")
+    return [
+        derive_session_outcome(
+            episode,
+            horizon,
+            bars,
+            computed_at=datetime(2026, 7, 20, 22, 0, tzinfo=timezone.utc),
+            price_source="fixture/TEST.parquet",
+            bar_seconds=1800,
+            price_delay_minutes=15,
+        )
+        for horizon in SESSION_HORIZONS
+    ]
+
+
+def _real_session_lines_within(budget: int) -> list[bytes]:
+    """Committed production rows, truncated at a row boundary under `budget`."""
+    lines: list[bytes] = []
+    total = 0
+    with _REAL_SESSION_LEDGER.open("rb") as handle:
+        for line in handle:
+            if total + len(line) > budget:
+                break
+            lines.append(line)
+            total += len(line)
+    assert lines, "expected committed production session-outcome rows"
+    return lines
+
+
+@pytest.mark.needs_full_checkout("data")
+def test_real_committed_session_base_rolls_over_at_the_true_48_mib_ceiling(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    import engine.options_signal_episode as episode_engine
+
+    ceiling = episode_engine.SESSION_OUTCOME_PART_MAX_BYTES
+    assert ceiling == 48 * 1024 * 1024
+
+    base = tmp_path / "outcomes_session.jsonl"
+    base.write_bytes(_REAL_SESSION_LEDGER.read_bytes())
+    frozen = base.read_bytes()
+    # The exact production shape: the base is already past the part ceiling, so
+    # no further byte may ever be appended to it.
+    assert len(frozen) > ceiling
+
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    before = episode_engine.load_session_outcomes(base)
+    rows = _fixture_session_rows()
+    assert append_session_outcomes(base, rows) == len(rows)
+
+    # The historical prefix is frozen byte-for-byte, so every receipt taken
+    # against it stays valid.
+    assert base.read_bytes() == frozen
+    parts_dir = base.parent / "outcomes_session_parts"
+    parts = sorted(parts_dir.glob("part-*.jsonl"))
+    assert [part.name for part in parts] == ["part-000001.jsonl"]
+    assert parts[0].stat().st_size <= ceiling
+
+    logical = episode_engine.session_outcome_logical_bytes(base)
+    assert logical == frozen + parts[0].read_bytes()
+    assert logical[: len(frozen)] == frozen
+    assert hashlib.sha256(logical[: len(frozen)]).hexdigest() == (
+        hashlib.sha256(frozen).hexdigest()
+    )
+
+    # Global 1-based row ordinals continue across the physical boundary.
+    after = episode_engine.load_session_outcomes(base)
+    assert after[: len(before)] == before
+    assert after[len(before):] == rows
+    assert len(after) == len(before) + len(rows)
+
+    # A rerun across the boundary appends nothing and rewrites nothing.
+    assert append_session_outcomes(base, rows) == 0
+    assert base.read_bytes() == frozen
+    assert episode_engine.session_outcome_logical_bytes(base) == logical
+
+
+@pytest.mark.needs_full_checkout("data")
+def test_real_size_part_ceiling_is_inclusive_and_rolls_only_on_overflow(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    import engine.options_signal_episode as episode_engine
+
+    ceiling = episode_engine.SESSION_OUTCOME_PART_MAX_BYTES
+    assert ceiling == 48 * 1024 * 1024
+    rows = _fixture_session_rows()
+    encoded = [_canonical_session_line(row) for row in rows]
+
+    # A real-byte base sized so that exactly one more row still fits under the
+    # true 48 MiB ceiling. Real committed rows, not toy files.
+    base = tmp_path / "outcomes_session.jsonl"
+    base.write_bytes(b"".join(_real_session_lines_within(ceiling - len(encoded[0]))))
+    parts_dir = base.parent / "outcomes_session_parts"
+    assert base.stat().st_size + len(encoded[0]) <= ceiling
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+
+    # Just under the ceiling: the base absorbs the row and no parts directory is
+    # created at all.
+    assert append_session_outcomes(base, [rows[0]]) == 1
+    assert not parts_dir.exists()
+    filled = base.read_bytes()
+
+    # Exactly at the ceiling: the bound is inclusive, so this still lands in the
+    # base and leaves it exactly full.
+    monkeypatch.setattr(
+        episode_engine,
+        "SESSION_OUTCOME_PART_MAX_BYTES",
+        len(filled) + len(encoded[1]),
+        raising=False,
+    )
+    assert append_session_outcomes(base, [rows[1]]) == 1
+    assert not parts_dir.exists()
+    assert base.stat().st_size == episode_engine.SESSION_OUTCOME_PART_MAX_BYTES
+    at_ceiling = base.read_bytes()
+
+    # One row over: rollover begins and the full base is frozen for good.
+    assert append_session_outcomes(base, [rows[2]]) == 1
+    assert base.read_bytes() == at_ceiling
+    parts = sorted(parts_dir.glob("part-*.jsonl"))
+    assert [part.name for part in parts] == ["part-000001.jsonl"]
+    assert episode_engine.session_outcome_logical_bytes(base) == at_ceiling + encoded[2]
+
+
+def test_interrupted_session_part_write_leaves_a_valid_strict_prefix(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    import engine.options_signal_episode as episode_engine
+
+    rows = _fixture_session_rows()
+    encoded = {id(row): _canonical_session_line(row) for row in rows}
+    # Real session rows differ in size by ~2x, so the ceiling is pinned to the
+    # largest part-bound row and that row is written first. Then part-000001 is
+    # exactly full and the next row can only land in part-000002.
+    ordered = sorted(rows, key=lambda row: len(encoded[id(row)]), reverse=True)
+    part_bound = ordered[:2]
+    base_bound = ordered[2:]
+    ceiling = len(encoded[id(part_bound[0])])
+    assert len(encoded[id(part_bound[1])]) <= ceiling
+
+    base = tmp_path / "outcomes_session.jsonl"
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    assert append_session_outcomes(base, base_bound) == len(base_bound)
+    frozen = base.read_bytes()
+    assert len(frozen) > ceiling
+
+    monkeypatch.setattr(
+        episode_engine, "SESSION_OUTCOME_PART_MAX_BYTES", ceiling, raising=False,
+    )
+
+    real_open = Path.open
+
+    def interrupt_second_part(self, *args, **kwargs):
+        if self.name == "part-000002.jsonl":
+            raise OSError(5, "injected interruption before the second part write")
+        return real_open(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", interrupt_second_part)
+    with pytest.raises(OSError, match="injected interruption"):
+        append_session_outcomes(base, part_bound)
+    monkeypatch.setattr(Path, "open", real_open)
+
+    # The interrupted generation is a VALID strict prefix: the first part is
+    # whole, the second never appeared, and no historical byte moved.
+    parts_dir = base.parent / "outcomes_session_parts"
+    assert [item.name for item in sorted(parts_dir.glob("part-*.jsonl"))] == [
+        "part-000001.jsonl"
+    ]
+    assert base.read_bytes() == frozen
+    partial = episode_engine.session_outcome_logical_bytes(base)
+    assert partial == frozen + encoded[id(part_bound[0])]
+    assert episode_engine.load_session_outcomes(base) == [*base_bound, part_bound[0]]
+
+    # Replay-safe re-entry completes the generation without duplicating a row.
+    assert append_session_outcomes(base, part_bound) == 1
+    complete = frozen + b"".join(encoded[id(row)] for row in part_bound)
+    assert episode_engine.session_outcome_logical_bytes(base) == complete
+    assert episode_engine.load_session_outcomes(base) == [*base_bound, *part_bound]
+    assert append_session_outcomes(base, rows) == 0
+    assert episode_engine.session_outcome_logical_bytes(base) == complete
+
+
+@pytest.mark.parametrize(
+    "topology,expected",
+    [
+        ("gap", "numbering is not contiguous from part-000001"),
+        ("unexpected_name", "unexpected session outcome part path"),
+        ("directory_alias", "session outcome part is not a regular file"),
+        ("part_symlink", "session outcome part is not a regular file"),
+    ],
+)
+def test_session_outcome_reader_rejects_broken_part_topology(
+    tmp_path: Path, topology: str, expected: str,
+) -> None:
+    from engine.options_signal_episode_contract import (
+        EpisodeSourceContractError,
+        session_outcome_logical_bytes,
+    )
+
+    base = tmp_path / "outcomes_session.jsonl"
+    base.write_bytes(b'{"row":1}\n')
+    parts = tmp_path / "outcomes_session_parts"
+    parts.mkdir()
+    (parts / "part-000001.jsonl").write_bytes(b'{"row":2}\n')
+    if topology == "gap":
+        (parts / "part-000003.jsonl").write_bytes(b'{"row":3}\n')
+    elif topology == "unexpected_name":
+        (parts / "part-2.jsonl").write_bytes(b'{"row":3}\n')
+    elif topology == "directory_alias":
+        (parts / "part-000002.jsonl").mkdir()
+    else:
+        (parts / "part-000002.jsonl").symlink_to(parts / "part-000001.jsonl")
+
+    with pytest.raises(EpisodeSourceContractError, match=expected):
+        session_outcome_logical_bytes(base)
+
+
+@pytest.mark.parametrize(
+    ("damage", "expected"),
+    [
+        ("torn_part", r"torn final line"),
+        ("empty_part", r"session outcome part is empty"),
+        ("torn_base", r"torn final line"),
+    ],
+)
+def test_session_outcome_reader_fails_closed_on_a_torn_or_empty_part(
+    tmp_path: Path, damage: str, expected: str,
+) -> None:
+    """A partially written part wedges the reader; it never silently truncates.
+
+    Neither ``lock_fh.write`` nor ``part_fh.write`` is atomic across pages, so a
+    torn trailing line is reachable by a crash mid-write. What decides durability
+    is the consequence, and it is fail-closed at the reader: the logical ledger
+    refuses to answer at all rather than reporting a short row count, so no
+    consumer can mistake a truncated tail for the end of history. An empty part
+    -- the directory entry fsynced before any content landed -- is refused the
+    same way instead of reading as a zero-row generation.
+    """
+    from engine.options_signal_episode_contract import (
+        EpisodeSourceContractError,
+        session_outcome_logical_bytes,
+    )
+
+    base = tmp_path / "outcomes_session.jsonl"
+    base_bytes = b'{"row":1}\n{"row":2}\n'
+    base.write_bytes(base_bytes)
+    parts = tmp_path / "outcomes_session_parts"
+    parts.mkdir()
+    part = parts / "part-000001.jsonl"
+    if damage == "torn_part":
+        part.write_bytes(b'{"row":3}\n{"row":4}')
+    elif damage == "empty_part":
+        part.write_bytes(b"")
+    else:
+        part.write_bytes(b'{"row":3}\n')
+        base.write_bytes(base_bytes.rstrip(b"\n"))
+
+    with pytest.raises(EpisodeSourceContractError, match=expected) as excinfo:
+        session_outcome_logical_bytes(base)
+
+    offender = base if damage == "torn_base" else part
+    assert str(offender) in str(excinfo.value)
+    if damage != "torn_base":
+        # Refusing is read-only: it must not repair, truncate or rewrite history.
+        assert base.read_bytes() == base_bytes

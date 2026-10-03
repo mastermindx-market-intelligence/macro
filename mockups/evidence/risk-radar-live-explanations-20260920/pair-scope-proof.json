@@ -1,0 +1,27 @@
+{
+  "base": "96d3ddf6d500796573c0269da867409026586d94",
+  "global_checker": "one inherited theme.css divergence, not changed by this branch",
+  "owned_asset_pair": "byte-identical",
+  "files": {
+    "templates/theme.css": {
+      "base": "53e5f0d02c6582bf31b5b1fec633a1617ae512074ee0161c76474062ee023530",
+      "current": "53e5f0d02c6582bf31b5b1fec633a1617ae512074ee0161c76474062ee023530",
+      "changed": false
+    },
+    "site/theme.css": {
+      "base": "d41ce2d4027dbd176c1511f497c968651787da80ff0c35d7a972ece1bbc965e0",
+      "current": "d41ce2d4027dbd176c1511f497c968651787da80ff0c35d7a972ece1bbc965e0",
+      "changed": false
+    },
+    "templates/risk_envelope_live.js": {
+      "base": "fb77161f1293e04a4de5dbfb6f37626f886065fe168296f9cd5695765003736b",
+      "current": "47a6eb04c763621586810accfc35777113ccaa982be3a520716f97f989428abd",
+      "changed": true
+    },
+    "site/risk_envelope_live.js": {
+      "base": "fb77161f1293e04a4de5dbfb6f37626f886065fe168296f9cd5695765003736b",
+      "current": "47a6eb04c763621586810accfc35777113ccaa982be3a520716f97f989428abd",
+      "changed": true
+    }
+  }
+}

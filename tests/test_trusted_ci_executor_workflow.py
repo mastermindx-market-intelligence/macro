@@ -25,6 +25,21 @@ MAIN_CONTROL_FILES = {
     "capture_ci_canary_receipt.py",
 }
 CONTROL_REPO_ROOT_ENV = "MASTERMIND_TRUSTED_CI_REPO_ROOT"
+# The names a ci-pack step exports for its OWN plan. The same list, and its
+# history, is tests/test_ci_pack.py::_isolate_pack_runner_planner_env.
+PACK_PLANNER_ENV = frozenset(
+    {
+        "CI_CHANGED_FILES_FILE",
+        "CI_CHANGED_FILES_JSON",
+        "CI_SCOPE_MODE",
+        "CI_DYNAMIC_MATRIX_MODE",
+        "GITHUB_EVENT_NAME",
+        "CI_SEMANTIC_ROLE",
+        "CI_TESTED_TREE_SHA",
+        "CI_SUBJECT_HEAD_SHA",
+        "CI_BASE_SHA",
+    }
+)
 CONTROL_SPARSE_PATHS = {f"scripts/{filename}" for filename in MAIN_CONTROL_FILES}
 CANDIDATE_SPARSE_PATTERNS = (
     "/*",
@@ -78,6 +93,7 @@ def run_trusted_gate(
         "BASE_REF": "main",
         "EVENT_PR_NUMBER": pr_number,
         "DISPATCH_PR_NUMBER": "",
+        "REQUESTED_ROUTE": "hosted",
     }
     environment.update(overrides)
     result = subprocess.run(
@@ -119,6 +135,7 @@ def test_p3bb_executor_stays_call_capable_after_production_route_activation() ->
         "pr_number": "${{ steps.admit.outputs.pr_number }}",
         "mode": "${{ steps.admit.outputs.mode }}",
         "semantic_workflow": "${{ steps.admit.outputs.semantic_workflow }}",
+        "execution_route": "${{ steps.admit.outputs.execution_route }}",
     }
     gate = trusted_gate_step()
     assert gate["id"] == "admit"
@@ -133,6 +150,7 @@ def test_p3bb_executor_stays_call_capable_after_production_route_activation() ->
         "BASE_REF": "${{ github.base_ref }}",
         "EVENT_PR_NUMBER": "${{ github.event.pull_request.number }}",
         "DISPATCH_PR_NUMBER": "${{ inputs.pr_number }}",
+        "REQUESTED_ROUTE": "${{ vars.CI_EXECUTION_ROUTE }}",
     }
 
     production = workflow("ci.yml")
@@ -156,6 +174,7 @@ def test_p3ba_accepts_exact_main_called_same_repo_pr_and_derives_identity(
         "pr_number": "6390",
         "mode": "production",
         "semantic_workflow": "ci",
+        "execution_route": "hosted",
     }
 
 
@@ -184,7 +203,29 @@ def test_p3ba_keeps_the_direct_main_dispatch_canary(tmp_path: Path) -> None:
         "pr_number": "6390",
         "mode": "dispatch",
         "semantic_workflow": "trusted-ci-executor",
+        "execution_route": "pc",
     }
+
+
+def test_p3ba_repository_route_pc_keeps_same_repo_calls_on_pc(tmp_path: Path) -> None:
+    result, outputs = run_trusted_gate(tmp_path, REQUESTED_ROUTE="pc")
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert outputs == {
+        "control_sha": "a" * 40,
+        "pr_number": "6390",
+        "mode": "production",
+        "semantic_workflow": "ci",
+        "execution_route": "pc",
+    }
+
+
+def test_p3ba_unknown_or_empty_repository_route_fails_safe_to_hosted(
+    tmp_path: Path,
+) -> None:
+    for route in ("", "hosted", "unexpected"):
+        result, outputs = run_trusted_gate(tmp_path, REQUESTED_ROUTE=route)
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert outputs["execution_route"] == "hosted"
 
 
 @pytest.mark.parametrize(
@@ -279,8 +320,45 @@ def test_p3ba_planner_uses_main_control_and_routes_one_or_all_exact_pr_packs() -
     assert "--count 1" in selector["run"]
     assert "matrix=$FULL_MATRIX" in selector["run"]
 
+    assert plan["outputs"]["execution_route"] == (
+        "${{ needs.trust-gate.outputs.execution_route }}"
+    )
+
     trusted_pack = document["jobs"]["trusted-pack"]
     assert trusted_pack["strategy"]["max-parallel"] == 3
+    assert trusted_pack["if"] == "needs.plan.outputs.execution_route == 'pc'"
+    assert trusted_pack["runs-on"] == {
+        "group": "macro-home-canary",
+        "labels": "ci-linux",
+    }
+
+    hosted_pack = document["jobs"]["legacy-hosted-pack"]
+    assert hosted_pack["needs"] == "plan"
+    assert hosted_pack["if"] == "needs.plan.outputs.execution_route == 'hosted'"
+    assert hosted_pack["runs-on"] == "ubuntu-latest"
+    assert "max-parallel" not in hosted_pack["strategy"]
+    assert hosted_pack["strategy"]["matrix"] == (
+        "${{ fromJSON(needs.plan.outputs.matrix) }}"
+    )
+    execute = next(
+        step
+        for step in hosted_pack["steps"]
+        if step.get("name")
+        == "execute the frozen logical pack and retain its semantic result"
+    )
+    assert (
+        '"$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py"'
+        in execute["run"]
+    )
+    assert "--base-replay-budget-seconds 900" in execute["run"]
+    assert "semantic_pack_rc=$pack_rc" in execute["run"]
+    assert "exit $pack_rc" not in execute["run"]
+    upload = next(
+        step
+        for step in hosted_pack["steps"]
+        if step.get("name") == "publish the legacy caller semantic fragment"
+    )
+    assert upload["with"]["name"] == "trusted-ci-fragment-${{ matrix.pack }}"
 
 
 def test_p4_hosted_planner_avoids_full_tree_materialization_without_narrowing_semantics() -> None:
@@ -420,8 +498,9 @@ def _declared_code_gate_job_count() -> int:
     count used to be a literal (132, pinned 2026-08-26 on #6351) and rotted
     to a red every time a code-gated job was added to the manifest; nine
     landed between the pin and 2026-09-15 (last: #7164) with nothing on a PR
-    to say so, because this suite's only home is the ``gate: data`` job
-    ``workflow-yaml``. The count is derived here from the manifest so the
+    to say so, because this suite's only home was then the ``gate: data`` job
+    ``workflow-yaml`` (it runs in ``ci-control-plane-contracts``, on the code
+    gate, since 2026-09-25). The count is derived here from the manifest so the
     assertion tracks the tree, and it is derived WITHOUT importing
     ``scripts.run_ci_pack`` on purpose: reusing the module under test's own
     ``load_legacy_jobs(gate="code")`` would make the check tautological. The
@@ -442,7 +521,17 @@ def test_p3ar_control_bundle_imports_without_candidate_control_modules(
     for filename in MAIN_CONTROL_FILES:
         (control_scripts / filename).write_bytes((ROOT / "scripts" / filename).read_bytes())
 
-    environment = dict(os.environ)
+    # The child below plans. Inside a PR ci-pack step the ambient environment
+    # carries that pack's own plan: CI_CHANGED_FILES_FILE plus
+    # GITHUB_EVENT_NAME=pull_request make run_ci_pack.py plan as a PR head, and
+    # with no --changed-from it refuses ("PR semantic plan changed_from must
+    # equal exact base_sha"). That red was PR #8033 ci-pack-0, job 108193042443,
+    # the first time this suite ran on the PR code gate. What the bundle
+    # imports does not depend on which lane runs the test, so the child plans
+    # with the pack's plan identity removed.
+    environment = {
+        key: value for key, value in os.environ.items() if key not in PACK_PLANNER_ENV
+    }
     environment["PYTHONPATH"] = str(control_scripts.parent)
     environment[CONTROL_REPO_ROOT_ENV] = str(ROOT)
     root_probe = subprocess.run(

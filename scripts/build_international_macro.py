@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import logging
 import sys
+from datetime import date
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
@@ -111,7 +112,40 @@ def build_all(latest: dict | None = None) -> list[Path]:
         # RADAR is a render-time display variable, deliberately outside the
         # international_macro_dashboard.v1 payload written above: it is a re-shaping of
         # data/intl/latest.json for one card, not a new term of the data contract.
-        write_page(page, template.render(D=view, RADAR=_radar_display(records[cc])))
+        # europe_news is likewise a render-time display packet over the existing
+        # qbus join surface; absent for every country except EZ. Fail-soft: a
+        # missing parquet or any panel() error must not fail the EZ page.
+        europe_news = None
+        if cc == "EZ":
+            try:
+                from engine import europe_news_intel as eni
+
+                asof_raw = view.get("asof")
+                asof_date: date | None = None
+                if isinstance(asof_raw, date):
+                    asof_date = asof_raw
+                elif asof_raw:
+                    asof_date = date.fromisoformat(str(asof_raw)[:10])
+                europe_news = eni.panel(asof_date)
+            except Exception as exc:  # noqa: BLE001 — additive display layer
+                log.warning(
+                    "europe official-press panel failed for EZ (%s); "
+                    "rendering without it",
+                    exc,
+                )
+                europe_news = None
+        if europe_news and not europe_news.get("items"):
+            europe_news = None
+        europe_news_items = europe_news["items"] if europe_news else None
+        write_page(
+            page,
+            template.render(
+                D=view,
+                RADAR=_radar_display(records[cc]),
+                europe_news=europe_news,
+                europe_news_items=europe_news_items,
+            ),
+        )
         outputs.append(page)
         log.info("wrote %s (%s, score=%s)", page.name, cc, view["decision"]["score"])
 
