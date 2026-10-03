@@ -24,6 +24,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -311,6 +312,7 @@ def _ticker_to_sec_code(ticker: str) -> tuple[str, str] | None:
 
 
 _CNINFO_STATIC_BASE = "https://static.cninfo.com.cn/"
+_CNINFO_RELATIVE_PATH = re.compile(r"^finalpage/[A-Za-z0-9._/-]+$")
 
 
 def _cninfo_source_url(adjunct_url: str | None) -> str | None:
@@ -328,7 +330,7 @@ def _cninfo_source_url(adjunct_url: str | None) -> str | None:
     if any(ord(ch) < 32 for ch in raw):
         return None
     rel = raw.lstrip("/")
-    if not rel.startswith("finalpage/"):
+    if not _CNINFO_RELATIVE_PATH.fullmatch(rel):
         return None
     return _CNINFO_STATIC_BASE + rel
 
