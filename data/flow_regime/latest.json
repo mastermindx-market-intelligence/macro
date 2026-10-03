@@ -15,7 +15,7 @@
       "row_63d": -0.000642,
       "usd_20d": 0.018649,
       "usd_63d": -0.004179,
-      "emfx_63d": -0.006168,
+      "emfx_63d": -0.005586,
       "vix": 15.31
     },
     "hysteresis_pending": false
@@ -60,11 +60,11 @@
     "latam": {
       "direction": "outflow",
       "strength": "clear",
-      "mean_z": -1.6603,
+      "mean_z": -1.626,
       "n_legs": 3,
       "legs": {
         "rel_equity": -0.767,
-        "fx": -2.158,
+        "fx": -2.055,
         "oas": -2.056
       },
       "notes": []
@@ -72,11 +72,11 @@
     "em_asia": {
       "direction": "outflow",
       "strength": "mild",
-      "mean_z": -0.5827,
+      "mean_z": -0.5767,
       "n_legs": 3,
       "legs": {
         "rel_equity": -0.688,
-        "fx": -0.315,
+        "fx": -0.297,
         "oas": -0.745
       },
       "notes": []
@@ -96,11 +96,11 @@
     "em_broad": {
       "direction": "outflow",
       "strength": "mild",
-      "mean_z": -1.159,
+      "mean_z": -1.1343,
       "n_legs": 3,
       "legs": {
         "rel_equity": -0.045,
-        "fx": -1.552,
+        "fx": -1.478,
         "oas": -1.88
       },
       "notes": []
@@ -158,11 +158,11 @@
     {
       "country": "BR",
       "etf": "EWZ",
-      "composite": 0.267,
+      "composite": 0.268,
       "legs": {
-        "fx_dep_z": 1.008,
+        "fx_dep_z": 1.01,
         "equity_under_z": 0.013,
-        "fxvol_z": -0.22
+        "fxvol_z": -0.219
       },
       "flag": null,
       "missing": []
@@ -254,11 +254,11 @@
     {
       "country": "IN",
       "etf": "INDA",
-      "composite": -0.843,
+      "composite": -0.873,
       "legs": {
-        "fx_dep_z": 1.27,
+        "fx_dep_z": 1.197,
         "equity_under_z": -1.557,
-        "fxvol_z": -2.243
+        "fxvol_z": -2.26
       },
       "flag": null,
       "missing": []
@@ -359,7 +359,7 @@
     },
     "fx/BRL": {
       "first": "2003-12-01",
-      "last": "2026-10-02"
+      "last": "2026-10-03"
     },
     "fx/ZAR": {
       "first": "2003-12-01",
@@ -375,7 +375,7 @@
     },
     "fx/CLP": {
       "first": "2003-12-01",
-      "last": "2026-10-02"
+      "last": "2026-10-03"
     },
     "fx/PLN": {
       "first": "2003-12-01",
@@ -387,7 +387,7 @@
     },
     "fx/INR": {
       "first": "2003-12-01",
-      "last": "2026-10-02"
+      "last": "2026-10-03"
     },
     "fx/TWD": {
       "first": "2004-03-24",

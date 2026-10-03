@@ -1,6 +1,6 @@
 {
   "schema": "release_forecast.v2",
-  "asof": "2026-10-03T09:26:40Z",
+  "asof": "2026-10-03T20:19:46Z",
   "display_only": true,
   "authority": {
     "can_score": false,
@@ -623,7 +623,7 @@
             "cpi_median_se_trend": "falling",
             "revision_streak": null,
             "source_years": [],
-            "as_of": "2026-10-02",
+            "as_of": "2026-10-03",
             "display_only": true,
             "authority": false
           },
@@ -644,7 +644,7 @@
         "weight_coverage": 1.0,
         "fresh_proxy_coverage": 1.0,
         "non_vintaged_share": 0.0,
-        "model_maturity": 12
+        "model_maturity": 13
       },
       "cutoff_label": "T-1"
     },
@@ -1504,7 +1504,7 @@
             "cpi_median_se_trend": "falling",
             "revision_streak": null,
             "source_years": [],
-            "as_of": "2026-10-02",
+            "as_of": "2026-10-03",
             "display_only": true,
             "authority": false
           },
@@ -1525,7 +1525,7 @@
         "weight_coverage": 1.0,
         "fresh_proxy_coverage": 1.0,
         "non_vintaged_share": 0.0,
-        "model_maturity": 12
+        "model_maturity": 13
       },
       "cutoff_label": "early"
     },
@@ -1619,7 +1619,7 @@
             "cpi_median_se_trend": "falling",
             "revision_streak": null,
             "source_years": [],
-            "as_of": "2026-10-02",
+            "as_of": "2026-10-03",
             "display_only": true,
             "authority": false
           },
@@ -1640,7 +1640,7 @@
         "weight_coverage": 1.0,
         "fresh_proxy_coverage": 1.0,
         "non_vintaged_share": 0.0,
-        "model_maturity": 12
+        "model_maturity": 13
       },
       "cutoff_label": "early"
     },
@@ -1975,7 +1975,7 @@
             "cpi_median_se_trend": "falling",
             "revision_streak": null,
             "source_years": [],
-            "as_of": "2026-10-02",
+            "as_of": "2026-10-03",
             "display_only": true,
             "authority": false
           },
@@ -1996,7 +1996,7 @@
         "weight_coverage": 1.0,
         "fresh_proxy_coverage": 1.0,
         "non_vintaged_share": 0.0,
-        "model_maturity": 12
+        "model_maturity": 13
       },
       "cutoff_label": "early"
     },
@@ -2090,7 +2090,7 @@
             "cpi_median_se_trend": "falling",
             "revision_streak": null,
             "source_years": [],
-            "as_of": "2026-10-02",
+            "as_of": "2026-10-03",
             "display_only": true,
             "authority": false
           },
@@ -2111,7 +2111,7 @@
         "weight_coverage": 1.0,
         "fresh_proxy_coverage": 1.0,
         "non_vintaged_share": 0.0,
-        "model_maturity": 12
+        "model_maturity": 13
       },
       "cutoff_label": "early"
     },
@@ -2302,7 +2302,7 @@
             "cpi_median_se_trend": "falling",
             "revision_streak": null,
             "source_years": [],
-            "as_of": "2026-10-02",
+            "as_of": "2026-10-03",
             "display_only": true,
             "authority": false
           },
@@ -3109,7 +3109,7 @@
             "cpi_median_se_trend": "falling",
             "revision_streak": null,
             "source_years": [],
-            "as_of": "2026-10-02",
+            "as_of": "2026-10-03",
             "display_only": true,
             "authority": false
           },
@@ -3130,7 +3130,7 @@
         "weight_coverage": 1.0,
         "fresh_proxy_coverage": 1.0,
         "non_vintaged_share": 0.0,
-        "model_maturity": 12
+        "model_maturity": 13
       },
       "cutoff_label": "early"
     },

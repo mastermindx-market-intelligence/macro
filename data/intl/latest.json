@@ -1197,8 +1197,8 @@
         "unemployment": 4.46,
         "unemployment_chg6m": -0.03,
         "m2_yoy": null,
-        "fx": 0.6957,
-        "fx_strength_3m": -0.37,
+        "fx": 0.6929,
+        "fx_strength_3m": -0.78,
         "realvol": 11.0,
         "drawdown": -6.4
       },
@@ -1228,7 +1228,7 @@
         "market": "au",
         "state": "elevated",
         "state_ungated": "elevated",
-        "top_score": 84,
+        "top_score": 86,
         "dominant_scare": "rate_shock",
         "dominant_label_en": "US rate shock",
         "dominant_label_zh": "\u7f8e\u503a\u5229\u7387\u51b2\u51fb",
@@ -1263,12 +1263,12 @@
             "tier": "A",
             "label_en": "AUD depreciation / outflows",
             "label_zh": "\u6fb3\u5143\u8d2c\u503c\uff0f\u8d44\u91d1\u5916\u6d41",
-            "score": 90.5,
+            "score": 92.9,
             "band": "risk-off",
             "firing_legs": [
               {
                 "leg": "aud_depreciation",
-                "pctile": 0.905,
+                "pctile": 0.929,
                 "confirmed": true
               }
             ]
@@ -1294,12 +1294,12 @@
           "measure": ">=5% index pullback within h business days (measured on this market's own history)"
         },
         "trajectory": {
-          "intensity": 84.1,
+          "intensity": 85.9,
           "peak": 87.3,
           "peak_days_ago": 4,
-          "off_peak": 3.2,
-          "velocity": -1.8,
-          "phase": "receding",
+          "off_peak": 1.4,
+          "velocity": 0.0,
+          "phase": "peaking",
           "reached_risk": true,
           "state_now": "elevated",
           "odds_now": 0.154,
@@ -1329,16 +1329,16 @@
             83.1,
             87.3,
             79.4,
-            84.1
+            85.9
           ],
-          "spark_pts": "3.0,18.3 6.9,16.4 10.8,13.7 14.7,19.6 18.7,18.0 22.6,23.0 26.5,22.3 30.4,20.0 34.3,13.5 38.2,14.8 42.1,14.1 46.0,11.4 50.0,8.0 53.9,7.8 57.8,9.6 61.7,6.7 65.6,6.8 69.5,4.0 73.4,3.5 77.3,3.0 81.3,4.5 85.2,3.0 89.1,5.8 93.0,4.1",
+          "spark_pts": "3.0,18.3 6.9,16.4 10.8,13.7 14.7,19.6 18.7,18.0 22.6,23.0 26.5,22.3 30.4,20.0 34.3,13.5 38.2,14.8 42.1,14.1 46.0,11.4 50.0,8.0 53.9,7.8 57.8,9.6 61.7,6.7 65.6,6.8 69.5,4.0 73.4,3.5 77.3,3.0 81.3,4.5 85.2,3.0 89.1,5.8 93.0,3.5",
           "spark_peak": {
             "x": 77.3,
             "y": 3.0
           },
           "spark_last": {
             "x": 93.0,
-            "y": 4.1
+            "y": 3.5
           },
           "spark_w": 96,
           "spark_h": 26,
@@ -2069,16 +2069,16 @@
       "risk_high": false,
       "rows": [
         {
+          "cc": "AU",
+          "flag": "\ud83c\udde6\ud83c\uddfa",
+          "name": "Australia",
+          "value": -0.78
+        },
+        {
           "cc": "GB",
           "flag": "\ud83c\uddec\ud83c\udde7",
           "name": "United Kingdom",
           "value": -0.6
-        },
-        {
-          "cc": "AU",
-          "flag": "\ud83c\udde6\ud83c\uddfa",
-          "name": "Australia",
-          "value": -0.37
         },
         {
           "cc": "EZ",
