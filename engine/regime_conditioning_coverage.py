@@ -41,7 +41,7 @@ GATE THRESHOLDS (frozen; changing them is a v2, not an edit)
 ------------------------------------------------------------
 MIN_COVERAGE      = 0.20  an axis stamped on <20% of the record cannot describe the record
 MIN_STATES        = 2     one observed state is a constant, not a condition
-MIN_MONTHS_STATE  = 12    per-state independent months; mirrors the ">=10 contributing
+MIN_MONTHS_STATE  = 12    distinct months per state; mirrors the ">=10 contributing
                           months" floor pre-registered for H1 in
                           research/factor_intelligence/PREREGISTRATION.md, rounded up to a
                           calendar year so a verdict cannot rest on one season

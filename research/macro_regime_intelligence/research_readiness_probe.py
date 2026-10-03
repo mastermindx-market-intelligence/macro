@@ -11,12 +11,20 @@ Hard guarantee: the script reads ONLY the identity/label columns the receipt
 declares under ``columns_read``. Any attempt to read an outcome/return column
 or a column not on the allow-list raises ``AssertionError`` immediately — this
 is the receipt's "outcome_columns_read: false" check made mechanically
-enforceable, not merely asserted in prose.
+enforceable, not merely asserted in prose. The guard is enforced twice:
+BEFORE any data read (the allow-list itself is scanned against the forbidden
+rule so a future contributor cannot widen it accidentally), and AFTER each
+read (the loaded columns must equal ``columns_read`` exactly). The parquet
+schema is read separately and recorded under ``provenance.regeneration`` so a
+reviewer can see how many columns the archive carries and which forbidden
+ones the script never touched.
 
 Usage::
 
+    git show bf6921873ea40f5868e0428d04fd38f78cc62c11:data/signal_archive/track_record.parquet \
+        > /tmp/track_record_canonical.parquet
     python3 -m research.macro_regime_intelligence.research_readiness_probe \
-        --archive PATH/TO/tr_record.parquet \
+        --archive /tmp/track_record_canonical.parquet \
         --expected-sha256 52593efe19c6a248a56e956e5223b480fab9bb6a8838a750aace513f0e86be5b \
         --merge-base bf6921873ea40f5868e0428d04fd38f78cc62c11 \
         [--emit-json PATH]
@@ -33,11 +41,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import importlib.util
-import io
 import json
 import sys
-import tempfile
-import textwrap
 from pathlib import Path
 from typing import Any
 
@@ -57,7 +62,7 @@ COLUMNS_READ: tuple[str, ...] = (
     "risk_radar_state",
 )
 
-# Outcome/return columns whose absence the receipt asserts. Listed here as a
+# Outcome/return columns the receipt records as not read. Listed here as a
 # set so we can name them in any assertion message; never used as input.
 OUTCOME_COLUMNS: tuple[str, ...] = (
     "fwd_ret_20", "fwd_ret_60", "fwd_ret_180",
@@ -68,6 +73,59 @@ OUTCOME_COLUMNS: tuple[str, ...] = (
     "terminal_state_clean15_126", "terminal_state_clean8_21",
     "post_cushion_breach",
 )
+
+# Module-level forbidden set: the same 20 names the receipt enumerates plus
+# three additional names the archive also carries (``outcome``, ``exit_date``,
+# ``exit_type``) and any column whose name matches a pattern rule. The script
+# cannot read any of these — neither through ``columns_read`` nor through the
+# schema enumeration — and the receipt records them under
+# ``provenance.regeneration.outcome_columns_in_archive_not_read`` so a
+# reviewer can audit the gap from a current checkout.
+OUTCOME_FORBIDDEN_NAMES: frozenset[str] = frozenset(OUTCOME_COLUMNS) | frozenset(
+    {"outcome", "exit_date", "exit_type"}
+)
+
+
+def _is_forbidden(name: str) -> bool:
+    """Return True if ``name`` is an outcome/return column the script may not read.
+
+    A name is forbidden if it is in :data:`OUTCOME_FORBIDDEN_NAMES`, OR if it
+    starts with ``fwd_`` or ``exit_``, OR if it contains ``outcome``,
+    ``trade_ret``, ``mfe``, ``mdd`` or ``terminal_state`` (as a substring).
+    """
+    if name in OUTCOME_FORBIDDEN_NAMES:
+        return True
+    if name.startswith("fwd_") or name.startswith("exit_"):
+        return True
+    return any(needle in name for needle in ("outcome", "trade_ret", "mfe", "mdd", "terminal_state"))
+
+
+def _assert_columns_read_safe() -> None:
+    """Pre-read guard: no name in :data:`COLUMNS_READ` is forbidden.
+
+    Runs BEFORE any data read so a future contributor who adds an outcome
+    column to ``COLUMNS_READ`` hits the assertion immediately rather than
+    silently loading the archive's full schema.
+    """
+    for col in COLUMNS_READ:
+        if _is_forbidden(col):
+            raise AssertionError(
+                f"COLUMNS_READ contains a forbidden outcome column: {col!r}; "
+                "remove it from COLUMNS_READ before any data read"
+            )
+
+
+def _archive_schema_names(path: Path) -> list[str]:
+    """Return the parquet column names without reading any row data.
+
+    Used to record ``archive_column_count`` and
+    ``outcome_columns_in_archive_not_read`` in the receipt's provenance so a
+    reviewer can audit, from a current checkout, how many columns the
+    archive carries and which forbidden ones this script never touched.
+    """
+    import pyarrow.parquet as pq
+    schema = pq.ParquetFile(str(path)).schema
+    return [str(field.name) for field in schema]
 
 RECEIPT_PATH = Path(__file__).with_name("research_readiness_20261002.json")
 DEFAULT_ARCHIVE = Path("data/signal_archive/track_record.parquet")
@@ -85,21 +143,35 @@ def _sha256_of(path: Path) -> str:
 
 
 def _assert_outcome_free(df_columns: list[str]) -> None:
-    leak = set(OUTCOME_COLUMNS) & set(df_columns)
-    if leak:
+    """Post-read guard: the loaded columns must equal ``COLUMNS_READ`` exactly.
+
+    The read is performed with ``columns=list(COLUMNS_READ)`` so the loaded
+    frame should match one-for-one. If anything else appears — including a
+    forbidden outcome column that slipped past the pre-read guard — the
+    read went somewhere the script does not authorise; the assertion names
+    the discrepancy so a future contributor cannot silently widen the allow
+    list.
+    """
+    loaded = list(df_columns)
+    expected = list(COLUMNS_READ)
+    if loaded != expected:
+        leaked_forbidden = [c for c in loaded if _is_forbidden(c)]
+        if leaked_forbidden:
+            raise AssertionError(
+                "loaded columns include a forbidden outcome column: "
+                + ", ".join(repr(c) for c in leaked_forbidden)
+            )
         raise AssertionError(
-            "outcome column(s) present in archive: " + ", ".join(sorted(leak))
+            "loaded columns do not match COLUMNS_READ exactly: "
+            f"loaded={loaded!r} expected={expected!r}"
         )
-    extras = set(df_columns) - set(COLUMNS_READ)
-    if extras:
-        # The probe must not silently widen the column allow-list. If a future
-        # generator wants a new identity column, it must be added to
-        # COLUMNS_READ here, not bypassed.
-        unknown = sorted(extras - set(OUTCOME_COLUMNS))
-        raise AssertionError(
-            "archive carries columns outside the receipt's columns_read allow-list: "
-            + ", ".join(unknown)
-        )
+
+
+_REPRODUCE_STEP = (
+    f"Reproduce the canonical bytes with: "
+    f"`git show {DEFAULT_MERGE_BASE}:data/signal_archive/track_record.parquet "
+    f"> /tmp/track_record_canonical.parquet`"
+)
 
 
 def _load_archive_columns(path: Path, expected_sha: str, expected_bytes: int) -> list[str]:
@@ -109,13 +181,15 @@ def _load_archive_columns(path: Path, expected_sha: str, expected_bytes: int) ->
     if actual_bytes != expected_bytes:
         raise AssertionError(
             f"archive byte length {actual_bytes} != receipt {expected_bytes}; "
-            "refusing to regenerate numbers from a non-canonical input"
+            "refusing to regenerate numbers from a non-canonical input. "
+            + _REPRODUCE_STEP
         )
     actual_sha = _sha256_of(path)
     if actual_sha != expected_sha:
         raise AssertionError(
             f"archive sha256 {actual_sha} != receipt {expected_sha}; "
-            "refusing to regenerate numbers from a non-canonical input"
+            "refusing to regenerate numbers from a non-canonical input. "
+            + _REPRODUCE_STEP
         )
     import pandas as pd  # local import — only loaded when the hash gate passes
     df = pd.read_parquet(path, columns=list(COLUMNS_READ))
@@ -271,7 +345,7 @@ def _prune_to_parity(payload: Any) -> Any:
             if k not in dropped and k != "note"
         }
     if isinstance(payload, list):
-        return [_prune_to_parify(x) for x in payload] if False else [_prune_to_parity(x) for x in payload]
+        return [_prune_to_parity(x) for x in payload]
     return payload
 
 
@@ -300,6 +374,57 @@ def _parity_compare(old: Any, cur: Any, path: str = "$") -> list[str]:
         return diffs
     if old != cur:
         diffs.append(f"{path}: {old!r} != {cur!r}")
+    return diffs
+
+
+def _two_way_diff(receipt_val: Any, regen_val: Any,
+                  skip_keys: tuple[str, ...] = (),
+                  path: str = "$") -> list[str]:
+    """Two-way field-by-field diff: a key present on only one side is a failure.
+
+    Used for the receipt-vs-regeneration check. ``skip_keys`` is a tuple of
+    dict keys (compared at the current level only) whose values are not
+    compared — used to exclude the free-text ``note`` fields whose wording
+    is the engine's, not the receipt's, contract.
+
+    Output lines name the dotted path of the divergence and a short reason
+    so a reviewer can locate the failure on a single read.
+    """
+    diffs: list[str] = []
+    if type(receipt_val) != type(regen_val):
+        diffs.append(
+            f"{path}: type {type(receipt_val).__name__} (receipt) != "
+            f"{type(regen_val).__name__} (regen)"
+        )
+        return diffs
+    if isinstance(receipt_val, dict):
+        for k in sorted(set(receipt_val) | set(regen_val)):
+            if k in skip_keys:
+                continue
+            sub = f"{path}.{k}"
+            if k not in receipt_val:
+                diffs.append(f"{sub}: present only in regen")
+                continue
+            if k not in regen_val:
+                diffs.append(f"{sub}: present only in receipt")
+                continue
+            diffs.extend(_two_way_diff(
+                receipt_val[k], regen_val[k], skip_keys, sub,
+            ))
+        return diffs
+    if isinstance(receipt_val, list):
+        if len(receipt_val) != len(regen_val):
+            diffs.append(
+                f"{path}: list length {len(receipt_val)} (receipt) != "
+                f"{len(regen_val)} (regen)"
+            )
+        for i in range(min(len(receipt_val), len(regen_val))):
+            diffs.extend(_two_way_diff(
+                receipt_val[i], regen_val[i], skip_keys, f"{path}[{i}]",
+            ))
+        return diffs
+    if receipt_val != regen_val:
+        diffs.append(f"{path}: receipt={receipt_val!r} regen={regen_val!r}")
     return diffs
 
 
@@ -352,6 +477,12 @@ def main(argv: list[str] | None = None) -> int:
                    help="committed receipt to regenerate against")
     args = p.parse_args(argv)
 
+    # --- R1b: pre-read guard on COLUMNS_READ itself ----------------------------
+    # Runs before any data read so a future contributor who adds an outcome
+    # column to ``COLUMNS_READ`` hits the assertion immediately rather than
+    # silently widening the allow-list.
+    _assert_columns_read_safe()
+
     repo_root = Path(__file__).resolve().parent.parent.parent
     # Walk up looking for the actual git toplevel in case the script is symlinked.
     import subprocess
@@ -362,8 +493,20 @@ def main(argv: list[str] | None = None) -> int:
     if completed.returncode == 0 and completed.stdout.strip():
         repo_root = Path(completed.stdout.strip())
 
+    # --- R3: hash gate runs first; the error message prints the reproduction
+    #     step so a reviewer hitting a stale or different archive knows
+    #     exactly how to recover the canonical bytes.
     archive_sha = _sha256_of(args.archive)
-    columns = _load_archive_columns(args.archive, args.expected_sha256, EXPECTED_BYTES)
+    _load_archive_columns(args.archive, args.expected_sha256, EXPECTED_BYTES)
+
+    # --- R1c: schema-only read (metadata page, no rows) so the receipt can
+    #     record the archive's full column count and the sorted list of
+    #     forbidden outcome columns it never read.
+    schema_names = _archive_schema_names(args.archive)
+    archive_column_count = len(schema_names)
+    outcome_columns_in_archive_not_read = sorted(
+        n for n in schema_names if _is_forbidden(n)
+    )
 
     # --- regenerate every existing numeric field ---------------------------------
     import pandas as pd
@@ -378,46 +521,42 @@ def main(argv: list[str] | None = None) -> int:
     receipt = json.loads(args.receipt.read_text())
     drift: list[str] = []
 
-    # full-archive fields: compare axis-by-axis
-    for axis in cur_rcc.CANDIDATE_AXES:
-        rec_axis = receipt.get("full_archive", {}).get("axes", {}).get(axis, {})
-        cur_axis = full["axes"].get(axis, {})
-        for k, v in cur_axis.items():
-            if k == "note":
-                continue
-            if rec_axis.get(k) != v:
-                drift.append(
-                    f"full_archive.axes.{axis}.{k}: receipt={rec_axis.get(k)!r} "
-                    f"regen={v!r}"
-                )
-    # joint cells
-    rec_jm = receipt.get("joint_macro_cells", [])
-    if len(rec_jm) != len(jm):
-        drift.append(f"joint_macro_cells length: receipt={len(rec_jm)} regen={len(jm)}")
-    else:
-        for i, (a, b) in enumerate(zip(rec_jm, jm)):
-            for k, v in b.items():
-                if a.get(k) != v:
-                    drift.append(f"joint_macro_cells[{i}].{k}: receipt={a.get(k)!r} regen={v!r}")
-    # within-each-window fields
-    for axis in cur_rcc.CANDIDATE_AXES:
-        rec_axis = receipt.get("within_each_stamping_window", {}).get(axis, {})
-        cur_axis = win.get(axis, {})
-        for k, v in cur_axis.items():
-            if k == "note":
-                continue
-            if rec_axis.get(k) != v:
-                drift.append(
-                    f"within_each_stamping_window.{axis}.{k}: receipt={rec_axis.get(k)!r} "
-                    f"regen={v!r}"
-                )
+    # --- R2: full, two-way regeneration check --------------------------------
+    # The whole ``full_archive`` object (except its free-text ``note``) plus
+    # ``joint_macro_cells`` and ``within_each_stamping_window`` are compared
+    # in BOTH directions: a key present on only one side is a failure named
+    # by its dotted path. The previous one-way check only flagged regen keys
+    # the receipt was missing; a receipt-only key was silent.
+    drift.extend(_two_way_diff(
+        receipt.get("full_archive", {}), full,
+        skip_keys=("note",), path="full_archive",
+    ))
+    drift.extend(_two_way_diff(
+        receipt.get("joint_macro_cells", []), jm,
+        path="joint_macro_cells",
+    ))
+    drift.extend(_two_way_diff(
+        receipt.get("within_each_stamping_window", {}), win,
+        skip_keys=("note",), path="within_each_stamping_window",
+    ))
 
     # --- parity oracle ----------------------------------------------------------
     oracle = _oracle(repo_root, args.archive, args.merge_base)
 
     # --- provenance summary ------------------------------------------------------
     script_sha = _sha256_of(Path(__file__))
-    command = "python3 -m research.macro_regime_intelligence.research_readiness_probe"
+    # R3: command is the two-step reproduction so a reviewer can recover the
+    # canonical bytes from a current checkout, not just trust the receipt's
+    # bare ``python3 -m ...`` invocation that pointed at a path that no
+    # longer matches the size/sha on main.
+    command = (
+        f"git show {args.merge_base}:data/signal_archive/track_record.parquet "
+        f"> /tmp/track_record_canonical.parquet && "
+        f"python3 -m research.macro_regime_intelligence.research_readiness_probe "
+        f"--archive /tmp/track_record_canonical.parquet "
+        f"--expected-sha256 {args.expected_sha256} "
+        f"--merge-base {args.merge_base}"
+    )
 
     summary = _emit_summary(receipt, oracle, drift, archive_sha, script_sha, command)
     print(summary)
@@ -433,7 +572,26 @@ def main(argv: list[str] | None = None) -> int:
 
     # --- optional emit -----------------------------------------------------------
     if args.emit_json is not None:
+        # R2: every regenerable field is rebuilt from the REGENERATED values
+        # (not carried from the committed receipt). Non-regenerable narrative
+        # fields are carried from the receipt and listed by name in
+        # ``provenance.regeneration.carried_fields`` so a reviewer can see,
+        # on a single read, which top-level keys the script does not own.
         out = dict(receipt)
+        regen_top_level = {
+            "full_archive",
+            "joint_macro_cells",
+            "within_each_stamping_window",
+            "legacy_statistics_and_verdicts_identical",
+            "provenance",
+        }
+        out["full_archive"] = full
+        out["joint_macro_cells"] = jm
+        out["within_each_stamping_window"] = win
+        out["legacy_statistics_and_verdicts_identical"] = oracle[
+            "legacy_statistics_and_verdicts_identical"
+        ]
+        carried_fields = sorted(k for k in out if k not in regen_top_level)
         out["provenance"] = {
             "regeneration": {
                 "command": command,
@@ -441,8 +599,18 @@ def main(argv: list[str] | None = None) -> int:
                 "archive_sha256": archive_sha,
                 "archive_bytes": args.archive.stat().st_size,
                 "merge_base": args.merge_base,
+                "archive_source": {
+                    "commit": args.merge_base,
+                    "path": "data/signal_archive/track_record.parquet",
+                    "bytes": EXPECTED_BYTES,
+                    "sha256": args.expected_sha256,
+                },
+                "archive_column_count": archive_column_count,
+                "outcome_columns_in_archive_not_read":
+                    outcome_columns_in_archive_not_read,
                 "regenerate_diff": drift,
                 "regenerated_identical": not drift,
+                "carried_fields": carried_fields,
             },
             "oracle": {
                 "old_assess_sha256": oracle["old_assess_sha256"],
@@ -452,13 +620,6 @@ def main(argv: list[str] | None = None) -> int:
                 ],
             },
         }
-        # The committed receipt has the bare boolean — keep its slot, but record
-        # the oracle hash next to it for reproducibility. The bare boolean is
-        # not removed (it remains a record of the original observed equality),
-        # but the receipt is now self-evidencing.
-        out["legacy_statistics_and_verdicts_identical"] = oracle[
-            "legacy_statistics_and_verdicts_identical"
-        ]
         args.emit_json.write_text(json.dumps(out, indent=2, sort_keys=False) + "\n")
 
     return 0 if not drift and oracle["legacy_statistics_and_verdicts_identical"] else 2

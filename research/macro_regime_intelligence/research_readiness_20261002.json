@@ -676,13 +676,55 @@
   ],
   "provenance": {
     "regeneration": {
-      "command": "python3 -m research.macro_regime_intelligence.research_readiness_probe",
-      "script_sha256": "5cdab8b45e4216e14c2fadb883aedd1fdf00d402369373063a7361870a3dd689",
+      "command": "git show bf6921873ea40f5868e0428d04fd38f78cc62c11:data/signal_archive/track_record.parquet > /tmp/track_record_canonical.parquet && python3 -m research.macro_regime_intelligence.research_readiness_probe --archive /tmp/track_record_canonical.parquet --expected-sha256 52593efe19c6a248a56e956e5223b480fab9bb6a8838a750aace513f0e86be5b --merge-base bf6921873ea40f5868e0428d04fd38f78cc62c11",
+      "script_sha256": "051753df458b5e82374c77f4165efdf9c1c1fd260ff61a70c8da517110d188da",
       "archive_sha256": "52593efe19c6a248a56e956e5223b480fab9bb6a8838a750aace513f0e86be5b",
       "archive_bytes": 10903975,
       "merge_base": "bf6921873ea40f5868e0428d04fd38f78cc62c11",
+      "archive_source": {
+        "commit": "bf6921873ea40f5868e0428d04fd38f78cc62c11",
+        "path": "data/signal_archive/track_record.parquet",
+        "bytes": 10903975,
+        "sha256": "52593efe19c6a248a56e956e5223b480fab9bb6a8838a750aace513f0e86be5b"
+      },
+      "archive_column_count": 51,
+      "outcome_columns_in_archive_not_read": [
+        "exit_date",
+        "exit_price",
+        "exit_type",
+        "fwd_mdd_180",
+        "fwd_mdd_20",
+        "fwd_mdd_60",
+        "fwd_mdd_60_samebar",
+        "fwd_mfe_10",
+        "fwd_mfe_126",
+        "fwd_mfe_21",
+        "fwd_mfe_5",
+        "fwd_mfe_63",
+        "fwd_price_180",
+        "fwd_price_20",
+        "fwd_price_60",
+        "fwd_ret_180",
+        "fwd_ret_20",
+        "fwd_ret_60",
+        "outcome",
+        "post_cushion_breach",
+        "terminal_state_clean15_126",
+        "terminal_state_clean8_21",
+        "trade_ret"
+      ],
       "regenerate_diff": [],
-      "regenerated_identical": true
+      "regenerated_identical": true,
+      "carried_fields": [
+        "limits",
+        "measurement_only",
+        "model_fitted",
+        "observed_at",
+        "operation",
+        "outcome_columns_read",
+        "schema",
+        "source"
+      ]
     },
     "oracle": {
       "old_assess_sha256": "9f9686203dfd0642fe81c8d27b1b6ac167eef9fd777f80c7cbe44ae42a9d8b5b",

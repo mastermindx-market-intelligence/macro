@@ -103,8 +103,9 @@ benchmark. No evaluator or chronology owner is replaced by this change.
 
 ## Scope of the axis-scope claim
 
-The new `axis_scope` field reaches `engine.regime_conditioning_coverage.format_report`
-readers only. The change does not propagate the scope into either of the two
+`axis_scope` is present in the dict `assess()` returns and in `format_report`;
+`scripts/regime_reliability_phase0.py:135-138` rebuilds its axes from five fields
+and drops it. The change does not propagate the scope into either of the two
 existing regime consumers:
 
 - `engine/seasonality/regime.py:110` still lists `regime_at_entry` under
