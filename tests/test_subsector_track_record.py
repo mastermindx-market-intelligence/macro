@@ -697,3 +697,149 @@ def test_replay_qualification_continuation_unknown_evidence_status_refused():
 def test_replay_qualification_continuation_comparison_rejects_mixed_target_basis():
     rows=q.run_packet(packet())['labels'];rows[2]['target_basis']='other_definition'
     with pytest.raises(q.QualificationError):q.paired_comparison(rows,'baseline','challenger')
+
+
+# Fixed public industry-reference checks; no data download or trading authority.
+import numpy as np
+from research.sector_intelligence.subtheme_qualification_2026_10_02 import industry_reference as _ir
+
+
+def _ir_panel(n=320,m=49):
+    rng=np.random.default_rng(42)
+    idx=pd.bdate_range('2008-01-01',periods=n)
+    return pd.DataFrame(rng.normal(.0003,.01,(n,m)),index=idx,columns=[f'i{x:02d}' for x in range(m)]),pd.Series(rng.normal(.0002,.005,n),index=idx)
+
+
+def test_industry_reference_parser_missing_is_missing():
+    text='Average Value Weighted Returns -- Daily\n A B\n20200102 1.0 -99.99\n20200103 -999 2\n\nOther table'
+    r=_ir.parse_table(text,'Average Value Weighted Returns -- Daily',2)
+    assert r.iloc[0,0]==.01 and r.iloc[1,1]==.02
+    assert np.isnan(r.iloc[0,1]) and np.isnan(r.iloc[1,0])
+
+@pytest.mark.parametrize('dates',['20200102\n20200102','20200103\n20200102'])
+def test_industry_reference_parser_refuses_duplicate_or_unsorted(dates):
+    rows='\n'.join(d+' 1 2' for d in dates.splitlines())
+    with pytest.raises(ValueError,match='DATES'):
+        _ir.parse_table('Mkt-RF RF\n'+rows,'Mkt-RF',2)
+
+@pytest.mark.parametrize('h',[0,-1,True,1.0])
+def test_industry_reference_invalid_horizon(h):
+    with pytest.raises(ValueError): _ir.forward_returns(pd.DataFrame([.1]*5),h)
+
+@pytest.mark.parametrize('h',[1,5,10,20])
+def test_industry_reference_forward_exact_sessions(h):
+    r,_=_ir_panel()
+    f=_ir.forward_returns(r,h)
+    for t in [0,1,250]:
+        assert np.allclose(f.iloc[t],(1+r.iloc[t+1:t+h+1]).prod()-1)
+    assert f.iloc[-h:].isna().all().all()
+
+@pytest.mark.parametrize('name',_ir.NAMES)
+def test_industry_reference_future_does_not_change_features(name):
+    r,m=_ir_panel()
+    a=_ir.features(r,m)[name]
+    changed=r.copy(); changed.iloc[300:]=.9
+    changedm=m.copy(); changedm.iloc[300:]=-.1
+    b=_ir.features(changed,changedm)[name]
+    pd.testing.assert_frame_equal(a.iloc[:300],b.iloc[:300])
+
+
+def test_industry_reference_feature_formula_and_missing_positive():
+    r,m=_ir_panel()
+    x=np.log1p(r).sub(np.log1p(m),axis=0)
+    fs=_ir.features(r,m)
+    assert np.allclose(fs['accel5_20'].iloc[280],x.iloc[276:281].mean()-x.iloc[261:276].mean())
+    assert np.allclose(fs['mom252_skip21'].iloc[280],x.iloc[29:260].sum())
+    r.iloc[275,0]=np.nan
+    assert np.isnan(_ir.features(r,m)['persistence20'].iloc[280,0])
+
+
+def test_industry_reference_missing_loser_removes_whole_cross_section():
+    r,m=_ir_panel()
+    y=_ir.forward_returns(r,10)
+    fs=_ir.features(r,m)
+    assert _ir.common_mask(fs,y)[280]
+    r.iloc[285,0]=np.nan
+    assert not _ir.common_mask(fs,_ir.forward_returns(r,10))[280]
+
+
+def test_industry_reference_delayed_book_excludes_immediate_rally():
+    r=np.zeros((5,2)); r[1,0]=1
+    target=np.tile([1,0],(5,1))
+    assert _ir.book(r,np.zeros(5),target,0)['terminal_wealth']==1
+    r[2,0]=.1
+    assert _ir.book(r,np.zeros(5),target,0)['terminal_wealth']==pytest.approx(1.1)
+
+
+def test_industry_reference_self_financing_entry_exit_cost():
+    r=np.zeros((5,1)); rf=np.zeros(5); target=np.ones((5,1))
+    got=_ir.book(r,rf,target,10)
+    assert got['terminal_wealth']==pytest.approx(.999/1.001)
+    assert got['max_drawdown']<0
+
+
+def test_industry_reference_costs_monotone():
+    r,_=_ir_panel(500)
+    t=_ir.top_mask(r.to_numpy())
+    vals=[_ir.book(r.to_numpy(),np.zeros(500),t,c)['terminal_wealth'] for c in (0,5,10,25)]
+    assert all(a>b for a,b in zip(vals,vals[1:]))
+
+
+def test_industry_reference_top_ties_deterministic():
+    x=np.ones((2,49)); mask=_ir.top_mask(x)
+    assert np.allclose(mask[:,:10],.1) and np.all(mask[:,10:]==0)
+    assert np.allclose(mask.sum(axis=1),1)
+
+
+def test_industry_reference_holm_monotone():
+    assert _ir.holm({'a':.01,'b':.04,'c':.2})=={'a':.03,'b':.08,'c':.2}
+
+
+def test_industry_reference_hac_detects_positive_autocorrelation():
+    rng=np.random.default_rng(55)
+    x=np.convolve(rng.normal(size=1500),np.ones(10)/10,mode='valid')
+    assert _ir.hac_summary(x,20)['se']>_ir.hac_summary(x,0)['se']
+
+
+def test_industry_reference_ridge_training_labels_precede_test():
+    r,m=_ir_panel(800)
+    out=_ir.ridge_walkforward(_ir.features(r,m),r,m)
+    assert out['folds']
+    for f in out['folds']:
+        assert f['last_training_outcome']<f['first_test']
+
+
+def test_industry_reference_refuse_misaligned_calendar():
+    r,m=_ir_panel()
+    with pytest.raises(ValueError,match='CALENDAR'): _ir.features(r,m.iloc[:-1])
+
+
+def test_industry_reference_no_authority():
+    assert _ir.CAPS and not any(_ir.CAPS.values())
+
+
+def test_industry_reference_rolling_leader_can_emerge_without_new_returns():
+    # All three groups earn exactly zero tomorrow. Only window expiry changes rank.
+    history=pd.DataFrame({'A':[-.20,.05,.05,.05], 'B':[.01]*4, 'C':[0.0]*4})
+    before=(1+history).prod()-1
+    after=(1+pd.concat([history.iloc[1:],pd.DataFrame([[0.,0.,0.]],columns=history.columns)])).prod()-1
+    assert before.idxmax()=='B' and after.idxmax()=='A'
+    assert before['A']==pytest.approx(-.0739)
+    assert after['A']==pytest.approx(.157625)
+    new_returns=pd.Series(0.,index=history.columns)
+    assert (new_returns-new_returns.mean()).eq(0).all()
+
+
+def test_industry_reference_persistence_maturity_extends_beyond_entry_horizon():
+    # Entry by session 10 plus five following confirmation sessions is not a
+    # ten-session information-availability window. Use the actual label clock.
+    entry_horizon, confirmation_sessions=10,5
+    sessions=pd.bdate_range('2026-09-01',periods=25)
+    decision=sessions[0]
+    nominal_end=sessions[entry_horizon]
+    actual_end=sessions[entry_horizon+confirmation_sessions]
+    validation=sessions[entry_horizon+1]
+    assert decision<nominal_end<validation<actual_end
+    row={'snapshot_id':'example', 'decision_at':decision.isoformat()+'Z',
+         'exit_at':actual_end.isoformat()+'Z', 'outcome_known_at':actual_end.isoformat()+'Z'}
+    assert q.purged_training_ids([row],[{'decision_at':validation.isoformat()+'Z'}])==[]
