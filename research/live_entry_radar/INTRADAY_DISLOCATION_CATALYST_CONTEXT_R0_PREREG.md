@@ -27,13 +27,17 @@ Binding adjacent owners:
 - DRL / price_pressure owns the existing residual-shock descriptor.
 - Terminal remains a product consumer.
 
-The R0 output carries an opaque existing `tactical_episode_ref`; it never mints or rewrites that identity.
+The R0 output carries the existing owner-issued Radar `episode_id` directly as
+`radar_episode_id`, with `radar_episode_schema = "mastermind.live_entry_episode.v1"`.
+Current Radar v1 episode IDs are the owner's 16-lowercase-hex `sha16` address over
+`(ticker, detector_id, variant, first_armed_at)`; R0 refuses wrapper strings or aliases rather
+than minting a second reference convention.
 
 Radar's `mastermind.live_entry_episode.v1.evidence_refs` field remains owned by the incumbent
 Radar entry-event ledger and is populated from the episode's existing `event_ids`. Catalyst
 context does **not** append issuer-event/catalyst references into that field and does not mutate
-the live episode record. The join is an external research projection keyed by the existing
-tactical episode reference; owner-native catalyst refs remain inside the separate R0 context.
+the live episode record. The join is an external research projection keyed by the exact existing
+`radar_episode_id`; owner-native catalyst refs remain inside the separate R0 context.
 
 ## 2. Killed constructions that remain killed
 
@@ -47,6 +51,16 @@ This R0 must not reopen the following Mastermind laws:
 No price, residual-return, VWAP, RVOL, oscillator, or LLM field is accepted by this catalyst contract.
 
 ## 3. R0 objects
+
+### 3.0 Radar episode binding
+
+The attachment carries:
+
+- `radar_episode_schema = "mastermind.live_entry_episode.v1"`
+- `radar_episode_id = <owner-issued 16-hex Live Entry Radar episode_id>`
+
+These fields reference the incumbent Radar lifecycle. They do not alias it into Prophet B1,
+create a new episode family, or recompute identity from ticker/date.
 
 ### 3.1 Source coverage read
 
@@ -156,7 +170,8 @@ The first implementation must prove:
 - wrong-ticker evidence is rejected;
 - exact duplicate evidence is idempotent;
 - conflicting duplicate evidence is rejected;
-- tactical episode reference is passed through exactly, not reminted;
+- the owner-issued Radar `episode_id` is passed through exactly as `radar_episode_id`;
+- wrapper/surrogate Radar episode references are refused;
 - the incumbent live episode record and its `evidence_refs` are not mutated by catalyst attachment;
 - output is deterministic;
 - every authority flag remains false;
