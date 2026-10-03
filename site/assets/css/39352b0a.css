@@ -832,8 +832,8 @@
              letter-spacing: .01em; }
   .tm-state-tag { font-size: 11px; font-weight: 700; text-transform: uppercase;
                   letter-spacing: .05em; padding: 2px 8px; border-radius: 10px; }
-  .tm-state-tag.is-live { color: color-mix(in srgb, var(--up) 85%, var(--text));
-                  background: color-mix(in srgb, var(--up) 16%, var(--panel)); }
+  .tm-state-tag.is-live { color: var(--ink-ok, var(--ok));
+                  background: var(--wash-ok); }
   .tm-state-tag.is-hist { color: var(--muted);
                   background: color-mix(in srgb, var(--muted) 16%, var(--panel)); }
   .tm-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
@@ -2265,8 +2265,8 @@
   body.page-macro .cb-count { font-size: 11px; font-weight: 800; padding: 0 7px; border-radius: 8px;
     background: color-mix(in srgb, var(--act) 18%, var(--tile)); color: var(--ink-act, var(--act));
     font-family: var(--num); font-variant-numeric: tabular-nums; }
-  body.page-macro .cb-live { width: 8px; height: 8px; border-radius: 50%; background: var(--up);
-    box-shadow: 0 0 8px var(--up); flex: none; }
+  body.page-macro .cb-live { width: 8px; height: 8px; border-radius: var(--r-pill, 999px); background: var(--ok);
+    box-shadow: 0 0 8px var(--ok); flex: none; }
   body.page-macro .cb-sub { font-size: 12.5px; font-weight: 700; color: var(--ink-2); margin: 0 0 9px;
     display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
   body.page-macro .cb-sub a { margin-left: auto; }
