@@ -43,7 +43,7 @@ changed:
     what: "options-alpha-candidate-feed scope:exclusive paths widened to 44 declared paths covering the new composer + enrichment closure; dedicated 111-test pytest command expanded with PYTHONPATH=tests:scripts prefix and the two new test files."
   - path: agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-03-candidate-daily-integration.md
     what: "This handoff record (no WS/DEC/DSC mint; canonical episode/campaign owners preserved)."
-prs: [8362]
+prs: [8357]
 verified:
   - claim: "Patch SHA-256 matches and applies cleanly at the parent head."
     command: "sha256sum /private/tmp/options-candidate-daily-enrichment-complete.patch; git apply --check /private/tmp/options-candidate-daily-enrichment-complete.patch; git apply /private/tmp/options-candidate-daily-enrichment-complete.patch"
@@ -127,7 +127,7 @@ configured client/bucket, and the four candidate + six correction prerequisites 
 
 ## §1 What is LEFT — in order
 
-1. Root opens PR #8362 as DRAFT (already prepared in this lane), does NOT arm merge-on-green,
+1. Root opens PR #8357 as DRAFT (already prepared in this lane; #8356 on `codex/options-alpha-candidate-daily-20261003` was closed and re-opened on the `claude/mo-ext-fix-options-product-20261003-candidate-daily-integration` ref per the GitHub PR-API-cannot-retarget-source-ref precedent — same head sha, no content change), does NOT arm merge-on-green,
    does NOT mark Ready, does NOT run a long CI wait in this lane. Verify exact head sha and
    the 11 owned files before opening.
 2. Root completes normal PR #8350 review + hosted CI gates + same-day squash-merge.
