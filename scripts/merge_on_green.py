@@ -7,18 +7,26 @@ an `--admin` merge mid-flight used to cancel the PR's own proof run (#3867) — 
 it turned every session into a CI hostage, holding its turn 20-60 minutes purely
 to watch packs it cannot influence.
 
-Every GitHub-native fix is structurally unavailable on this account:
+That original user-account topology had no safe GitHub-native queue path:
 
-  * A user-account ruleset cannot grant the github-actions app a bypass (422,
-    organization-only), so the lanes cannot be exempted from a rule.
-  * ANY required-status-check rule — ruleset or classic branch protection — would
-    also block the render/nightly lanes' direct `GITHUB_TOKEN` pushes to main,
-    breaking the deploy path to fix the merge path.
-  * `gh pr merge --auto --squash` is not a wait at all: with no branch protection
-    there are no required checks to gate on, so auto-merge merges IMMEDIATELY
-    (verified PR #3889, 2026-07-28 — merged ~1 min after arming, packs pending).
+  * a required-status rule would also block the render/nightly lanes' direct
+    `GITHUB_TOKEN` pushes to main;
+  * the GitHub Actions integration itself is not an eligible repository-ruleset
+    bypass actor (reconfirmed by GitHub HTTP 422 on 2026-10-03);
+  * with no required protection, `gh pr merge --auto --squash` merges immediately
+    rather than waiting for the proof set (verified PR #3889, 2026-07-28).
 
-So the release valve is account-side: a session arms its PR with the
+The repository is now organization-owned and a native merge queue can be staged,
+but activation is still gated on two concrete facts: merge-group CI must publish
+the same binding proof contexts, and the many intentional direct-main publishers
+need an accepted write identity that survives required-status enforcement. This
+module therefore detects queue state at runtime. No queue means the historical
+refresh + SHA-pinned squash behavior below. An active queue means an eligible
+head is enqueued with its exact expected head OID and GitHub owns current-base
+integration proof; an unreadable queue state fails closed instead of falling
+through to an admin-token direct merge.
+
+Until those repository settings are active, the release valve remains account-side: a session arms its PR with the
 `merge-on-green` label and stops; this sweeper wakes when `ci`, `fences`, or the
 source-main `integration-baseline` concludes, with a ten-minute cron retained as
 a recovery net. It performs the merge the session would otherwise have sat there
