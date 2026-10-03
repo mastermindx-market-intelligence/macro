@@ -773,3 +773,197 @@ def pick_baseline(
         return copy.deepcopy(baseline)
 
     return {"status": "absent", "reason": "no_earlier_projection"}
+
+
+# ---------------------------------------------------------------------------
+# E1c2 list_changes / CHANGE_KINDS — appended; no existing symbol is changed
+# ---------------------------------------------------------------------------
+
+
+CHANGE_KINDS: tuple[str, ...] = (
+    "observation_advanced",
+    "value_revised",
+    "owner_verdict_changed",
+    "became_stale",
+    "became_available",
+    "became_unavailable",
+    "clock_only",
+    "mapping_version_changed",
+    "unattributed",
+)
+
+
+def list_changes(baseline: Any, evidence: list) -> list[dict[str, Any]]:
+    """List what changed between an earlier baseline and the current evidence rows.
+
+    ``evidence`` is the current list of evidence rows. Returns ``[]`` when
+    ``baseline`` is not a dict or has no dict under ``evidence``. Otherwise
+    walks the current rows in their given order, then ids found only in the
+    baseline in sorted order, and appends
+    ``{"evidence_id", "change_kind", "from", "to"}`` only where a rule
+    below names a kind. ``from`` and ``to`` are deep copies of the snapshot
+    entry on each side (``None`` when the id is not on that side).
+
+    A snapshot entry has exactly ``values``, ``owner_verdict``, ``status``
+    and ``as_of``; the current-row's snapshot is built from
+    ``row["values"]``, ``row["owner_verdict"]``, ``row["status"]`` and
+    ``row["source"]["as_of"]`` (the row's ``source["clock_semantics"]``
+    drives the same-status branch but is not stored on the snapshot).
+
+    First match wins:
+
+    1. id is on one side only -> ``"mapping_version_changed"``.
+    2. ``b["status"] != c["status"]``: ``c["status"] == "stale"`` ->
+       ``"became_stale"``; ``c["status"] == "available"`` ->
+       ``"became_available"``; ``b["status"]`` in
+       ``("available", "stale", "partial")`` and ``c["status"]`` in
+       ``("missing", "unknown_date", "future_dated")`` ->
+       ``"became_unavailable"``; ``b["status"]`` in
+       ``("available", "stale")`` and ``c["status"] == "partial"`` ->
+       ``"became_unavailable"``; otherwise ``"unattributed"``.
+    3. same status in ``("missing", "unknown_date", "future_dated")``:
+       ``"clock_only"`` when ``as_of`` differs, otherwise no entry.
+    4. same status otherwise. Let ``changed`` = ``values`` or
+       ``owner_verdict`` differ; ``verdict`` = ``owner_verdict`` differs;
+       ``moved`` = ``as_of`` differs; ``later`` = both ``as_of`` are
+       strings and ``c["as_of"] > b["as_of"]``. If nothing differs -> no
+       entry. When the current row's ``source["clock_semantics"]`` is
+       exactly ``"source_observation_date"``: not moved and changed ->
+       ``"value_revised"``; later and verdict ->
+       ``"owner_verdict_changed"``; later and changed ->
+       ``"observation_advanced"``; later and not changed ->
+       ``"clock_only"``; moved but not later, and changed ->
+       ``"unattributed"``; moved but not later, not changed ->
+       ``"clock_only"``. For any other clock semantics: changed ->
+       ``"unattributed"``; moved only -> ``"clock_only"``.
+
+    The function never mutates its arguments and reads no clock, file or
+    network.
+    """
+    if not isinstance(baseline, dict):
+        return []
+    baseline_evidence = baseline.get("evidence")
+    if not isinstance(baseline_evidence, dict):
+        return []
+
+    by_id: dict[str, dict[str, Any]] = {}
+    order: list[str] = []
+    for row in evidence:
+        if not isinstance(row, dict):
+            continue
+        rid = row.get("id")
+        if not isinstance(rid, str) or rid in by_id:
+            continue
+        source = row.get("source") or {}
+        by_id[rid] = {
+            "snap": {
+                "values": copy.deepcopy(row.get("values")),
+                "owner_verdict": copy.deepcopy(row.get("owner_verdict")),
+                "status": row.get("status"),
+                "as_of": source.get("as_of"),
+            },
+            "clock_semantics": source.get("clock_semantics"),
+        }
+        order.append(rid)
+
+    baseline_only = sorted(set(baseline_evidence) - set(by_id))
+    ids_to_walk: list[str] = list(order) + baseline_only
+
+    entries: list[dict[str, Any]] = []
+    for rid in ids_to_walk:
+        b = baseline_evidence.get(rid)
+        cur = by_id.get(rid)
+        c = cur["snap"] if cur is not None else None
+        b_copy = copy.deepcopy(b) if b is not None else None
+        c_copy = copy.deepcopy(c) if c is not None else None
+
+        # Rule 1: id on one side only.
+        if b is None or c is None:
+            entries.append({
+                "evidence_id": rid,
+                "change_kind": "mapping_version_changed",
+                "from": b_copy,
+                "to": c_copy,
+            })
+            continue
+
+        # Rule 2: status differs.
+        if b["status"] != c["status"]:
+            cs = c["status"]
+            bs = b["status"]
+            if cs == "stale":
+                kind = "became_stale"
+            elif cs == "available":
+                kind = "became_available"
+            elif bs in ("available", "stale", "partial") and cs in (
+                "missing", "unknown_date", "future_dated"
+            ):
+                kind = "became_unavailable"
+            elif bs in ("available", "stale") and cs == "partial":
+                kind = "became_unavailable"
+            else:
+                kind = "unattributed"
+            entries.append({
+                "evidence_id": rid,
+                "change_kind": kind,
+                "from": b_copy,
+                "to": c_copy,
+            })
+            continue
+
+        # Rule 3: same non-data status.
+        if b["status"] in ("missing", "unknown_date", "future_dated"):
+            if b["as_of"] != c["as_of"]:
+                entries.append({
+                    "evidence_id": rid,
+                    "change_kind": "clock_only",
+                    "from": b_copy,
+                    "to": c_copy,
+                })
+            continue
+
+        # Rule 4: same data status.
+        changed = b["values"] != c["values"] or b["owner_verdict"] != c["owner_verdict"]
+        verdict = b["owner_verdict"] != c["owner_verdict"]
+        moved = b["as_of"] != c["as_of"]
+        later = (
+            isinstance(b["as_of"], str)
+            and isinstance(c["as_of"], str)
+            and c["as_of"] > b["as_of"]
+        )
+        if not changed and not moved:
+            continue
+
+        clock_semantics = cur["clock_semantics"]
+        if clock_semantics == "source_observation_date":
+            if not moved and changed:
+                kind = "value_revised"
+            elif later and verdict:
+                kind = "owner_verdict_changed"
+            elif later and changed:
+                kind = "observation_advanced"
+            elif later and not changed:
+                kind = "clock_only"
+            elif moved and not later and changed:
+                kind = "unattributed"
+            elif moved and not later and not changed:
+                kind = "clock_only"
+            else:
+                kind = None
+        else:
+            if changed:
+                kind = "unattributed"
+            elif moved:
+                kind = "clock_only"
+            else:
+                kind = None
+
+        if kind is not None:
+            entries.append({
+                "evidence_id": rid,
+                "change_kind": kind,
+                "from": b_copy,
+                "to": c_copy,
+            })
+
+    return entries
