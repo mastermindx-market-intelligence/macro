@@ -933,3 +933,73 @@ def test_mo_paid_006_dom_rows_observe_theme_lang_and_wire_link():
             assert r["more_link_count"] == 1 and r["more_link_href"] == "#europe-news", (r["page_id"], r["more_link_href"])
         else:
             assert r["more_link_count"] == 0, (r["page_id"], r["more_link_count"])
+
+
+# --- R4e: --finalize-only fails closed on a missing/invalid source binding ----------
+
+_ABSENT = object()
+
+
+def _load_mo_paid_006_capture_module():
+    import importlib.util
+
+    repo = Path(__file__).resolve().parents[1]
+    module_path = repo / "mockups" / "evidence" / "mo-paid-006-dossier-page" / "capture.py"
+    spec = importlib.util.spec_from_file_location("mo_paid_006_capture_r4e", module_path)
+    assert spec is not None and spec.loader is not None
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+@pytest.mark.needs_full_checkout("mockups")
+@pytest.mark.parametrize("binding", [
+    _ABSENT,                      # key missing entirely
+    None,                         # explicit null
+    "",                           # empty string
+    "HEAD",                       # symbolic ref — would resolve to whatever HEAD is today
+    "3565430d",                   # abbreviated id
+    "3565430d3cb6",               # 12-char abbreviation (the form the ledgers quote)
+    "3565430D3CB6" + "0" * 28,    # 40 chars but upper-case hex — not a git object id as emitted
+], ids=["absent", "null", "empty", "symbolic-HEAD", "short-8", "short-12", "upper-40"])
+def test_capture_finalize_only_refuses_a_manifest_without_a_source_binding(tmp_path, monkeypatch, binding):
+    """R4e (CEO B 5967022648 / 5967204240, measured on main e72c6b85, capture.py blob
+    23376ed4): the finalize-only pass used to read `source_commit` with an
+    `or HEAD` fallback, so five absent/null/empty binding variants silently
+    re-attributed an existing receipt's pixels to the current HEAD and rewrote its
+    template metadata without a recapture. The pass must now REFUSE (rc 2) before
+    writing a byte, and `--allow-dirty-template` — a template-blob debug aid — must
+    not excuse the missing binding."""
+    mod = _load_mo_paid_006_capture_module()
+    manifest: dict = {"schema": "mastermind.p0_evidence.v2", "pages": [], "excluded": []}
+    if binding is not _ABSENT:
+        manifest["source_commit"] = binding
+    out = tmp_path / "receipt"
+    out.mkdir()
+    path = out / "manifest.json"
+    path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    before = path.read_bytes()
+
+    assert mod.source_binding(manifest) is None
+
+    monkeypatch.setattr(mod, "OUT_DIR", out)
+    monkeypatch.setattr(sys, "argv", ["capture.py", "--finalize-only", "--allow-dirty-template"])
+    assert mod.main() == 2
+    assert path.read_bytes() == before, "a refused finalize-only pass must not mutate the receipt"
+    assert sorted(p.name for p in out.iterdir()) == ["manifest.json"], "a refused pass writes nothing else"
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_capture_source_binding_accepts_only_a_full_lowercase_hex_commit():
+    """The positive side of R4e: an explicit 40-hex binding is preserved verbatim
+    (the finalize-only pass then compares the worktree template against THAT
+    commit's blob, never against HEAD), and the committed receipt itself carries
+    one — so the guard cannot refuse the evidence of record."""
+    mod = _load_mo_paid_006_capture_module()
+    head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=Path(__file__).resolve().parents[1],
+                                   text=True).strip()
+    assert mod.source_binding({"source_commit": head}) == head
+    assert mod.source_binding({"source_commit": "a" * 40}) == "a" * 40
+    committed = json.loads((Path(__file__).resolve().parents[1] /
+                            "mockups/evidence/mo-paid-006-dossier-page/manifest.json").read_text(encoding="utf-8"))
+    assert mod.source_binding(committed) == committed["source_commit"]
