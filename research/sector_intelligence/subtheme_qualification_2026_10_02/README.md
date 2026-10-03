@@ -77,3 +77,14 @@ Required before a real comparison: actual source/known-time receipts; correct me
 ## Delivery boundary
 
 Keep this candidate in review. Integrate accepted functions into the incumbent evaluation path rather than create a second canonical grader. Require exact-head hosted execution of the consolidated owner suite and independent review before accepting source integration. Do not edit the active #7455/#7976/#7664 source paths without reconciling their custody. This research contains no permission to change ranking, sizing, risk gates, candidate population or live deployment.
+
+
+## Logged-call success bounds (October 3 continuation)
+
+The canonical scorecard now reports exact measured hit counts and logical bounds for each directional cohort across all parsed due calls. With H measured hits, M measured calls and N due calls, the range is [H/N, (H+N-M)/N]. It assumes nothing about the missing outcomes; it is not a confidence interval, expected return, probability forecast, or correction for selection bias. Neutral/unknown stages receive no directional hit claim.
+
+The population is logged parsed due calls, including due calls that cannot be measured under the current basket contract; it is not a market-wide opportunity universe or proof of valid historical memberships. No rates are imputed for missing returns. Inconsistent or legacy counts are UNKNOWN, an empty due population has no interval, and a wholly unmeasured nonempty population has range [0, 1]. Exact hit counts come from outcomes, never from rounded displayed rates.
+
+The existing renderer labels measured hit rates and displays the logged-call range with outward-rounded percentages. It validates cohort counts and interval arithmetic and states that the range is not a confidence interval. This is a diagnostic addition; promotion thresholds, ranks, entry rules and trading permissions are unchanged.
+
+Verification: 260 targeted cases with real imports, synthetic IO and Node execution of the actual renderer. The bound property test exhausts all aggregate unmeasured hit totals for due-population sizes 1 through 25. No actual historical market results, browser acceptance or independent review are established by these tests.

@@ -1260,3 +1260,110 @@ def test_snapshot_clock_malformed_historical_record_does_not_block_capture(tmp_p
     assert S.snapshot(_clock_payload(),{'a':['A','B','C']},today='2026-09-25',root=tmp_path)==1
     assert S._load(tmp_path)[0] is None
     assert S._load(tmp_path)[1]['recorded_at_utc']=='2026-10-03T04:00:00+00:00'
+
+# Unknown outcomes are not assumed to match the measured winners.
+def test_hit_bounds_eighty_percent_can_hide_eight_to_ninety_eight():
+    b=S._hit_bounds(8,10,100)
+    assert b['status']=='BOUNDED'
+    assert b['lower']==pytest.approx(.08) and b['upper']==pytest.approx(.98)
+    assert b['unmeasured_calls']==90 and b['is_confidence_interval'] is False
+
+@pytest.mark.parametrize('args',[(11,10,100),(-1,10,100),(1,2,1),(True,2,3),
+                                 (1,'2',3),(1,2,3.0),(0,0,-1),(None,2,3)])
+def test_hit_bounds_invalid_counts_are_unknown(args):
+    b=S._hit_bounds(*args)
+    assert b['status']=='UNKNOWN' and b['lower'] is None and b['upper'] is None
+
+def test_hit_bounds_empty_is_not_perfect():
+    b=S._hit_bounds(0,0,0)
+    assert b['status']=='EMPTY' and b['lower'] is None and b['upper'] is None
+
+def test_hit_bounds_complete_data_collapses_to_observed_rate():
+    b=S._hit_bounds(2,3,3)
+    assert b['status']=='COMPLETE' and b['lower']==b['upper']==2/3
+
+def test_hit_bounds_no_measured_calls_is_full_unknown_range():
+    b=S._hit_bounds(0,0,20)
+    assert b['status']=='BOUNDED' and b['lower']==0 and b['upper']==1
+
+def test_hit_bounds_counts_are_not_reconstructed_from_rounded_rates():
+    s=S._by_stage([{'stage':'emerging','fwd':x} for x in [1.,1.,-1.]])
+    assert s['emerging']['hit_count']==2 and s['emerging']['hit_rate']==.667
+
+def test_hit_bounds_exhaustive_binary_completions_are_inside_bounds():
+    for due in range(1,26):
+        for measured in range(due+1):
+            for hits in range(measured+1):
+                b=S._hit_bounds(hits,measured,due)
+                assert b['upper']-b['lower']==pytest.approx((due-measured)/due)
+                for unknown_hits in range(due-measured+1):
+                    truth=(hits+unknown_hits)/due
+                    assert b['lower']-1e-15<=truth<=b['upper']+1e-15
+
+def test_hit_bounds_compute_exposes_logged_directional_population(tmp_path,monkeypatch):
+    _coverage_price_stubs(monkeypatch)
+    monkeypatch.setattr(S,'_load',lambda root:_coverage_rows())
+    out=S.compute(today='2026-10-02',root=tmp_path,horizons=[5])
+    b=out['horizons']['5']['logged_call_hit_bounds']
+    assert b['emerging']['observed_hits']==1 and b['emerging']['due_calls']==2
+    assert b['emerging']['lower']==.5 and b['emerging']['upper']==1
+    assert b['fading']['lower']==0 and b['fading']['upper']==1
+    assert 'neutral' not in b and 'unknown' not in b
+    assert out['is_context_only'] is True
+    json.dumps(out,allow_nan=False)
+
+def test_hit_bounds_mismatched_coverage_is_unknown():
+    stats={'emerging':{'n':10,'hit_count':8}}
+    coverage={'by_stage':{'emerging':{'due_rows':100,'measured_rows':9,'unavailable_due_rows':91}}}
+    assert S._stage_hit_bounds(stats,coverage)['emerging']['status']=='UNKNOWN'
+
+def test_hit_bounds_missing_legacy_coverage_is_unknown():
+    assert S._stage_hit_bounds({'emerging':{'n':10,'hit_rate':.8}}, {})['emerging']['status']=='UNKNOWN'
+
+@pytest.mark.parametrize('language',['en','zh'])
+@pytest.mark.parametrize('case',['partial','complete','empty','unmeasured','invalid','legacy','mismatch','bad_rate'])
+def test_hit_bounds_renderer_conservative_and_explicit(language,case):
+    import subprocess
+    root=Path(__file__).resolve().parents[1]
+    measured,hits,due=(10,8,100)
+    if case=='complete': due=10
+    if case=='empty': measured,hits,due=0,0,0
+    if case=='unmeasured': measured,hits,due=0,0,10
+    b=S._hit_bounds(hits,measured,due)
+    stats={'n':measured,'hit_count':hits,'hit_rate':hits/measured if measured else None}
+    c={'due_rows':due,'measured_rows':measured,'unavailable_due_rows':due-measured}
+    if case=='invalid': b['lower']=.77
+    if case=='legacy': b=None
+    if case=='mismatch': c['measured_rows']=9
+    if case=='bad_rate': stats['hit_rate']='<img src=x>'
+    if case=='unmeasured': stats={}
+    entry={'n_matured':measured,'by_stage':{'emerging':stats},
+           'coverage':{'by_stage':{'emerging':c}},'logged_call_hit_bounds':{'emerging':b}}
+    js=r"""
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const fn=fs.readFileSync(process.argv[1],'utf8').match(/  function drawTrackRecord\(el\)\{[\s\S]*?\n  \}/)[0];
+const lang=process.argv[2],kind=process.argv[3],entry=JSON.parse(process.argv[4]);
+const el={style:{},innerHTML:''},ctx={el,_data:{track_record:{horizons:{'5':entry},proven:{},recent_misses:[]}},
+ L:(a,b)=>lang==='zh'?b:a,esc:s=>String(s==null?'':s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))};
+vm.runInNewContext('('+fn+')(el)',ctx);
+const html=el.innerHTML;
+assert(!html.includes('NaN')&&!html.includes('Infinity')&&!html.includes('<img'));
+if(kind==='partial'){
+ assert(html.includes('8\u201398%'));
+ assert(html.includes(lang==='zh'?'不是置信区间':'not a confidence interval'));
+}
+if(kind==='complete')assert(html.includes(lang==='zh'?'全部到期记录均已评估':'All due calls measured'));
+if(kind==='empty'){assert(html.includes(lang==='zh'?'无到期记录':'No due calls'));assert(!html.includes('100%'));}
+if(kind==='unmeasured')assert(html.includes('0\u2013100%'));
+if(['invalid','legacy','mismatch','bad_rate'].includes(kind))assert(html.includes(lang==='zh'?'区间未知':'Range unknown'));
+process.stdout.write(JSON.stringify({passed:true,case:kind,language:lang}));
+"""
+    r=subprocess.run(['node','-e',js,str(root/'templates/subsector_rotation.js'),language,case,json.dumps(entry)],capture_output=True,text=True)
+    assert r.returncode==0,r.stdout+r.stderr
+    assert json.loads(r.stdout)['passed'] is True
+
+@pytest.mark.parametrize('bad',[True,1.0,'1'])
+def test_hit_bounds_stage_count_type_is_not_coerced(bad):
+    stats={'emerging':{'n':bad,'hit_count':1}}
+    cov={'by_stage':{'emerging':{'due_rows':2,'measured_rows':1,'unavailable_due_rows':1}}}
+    assert S._stage_hit_bounds(stats,cov)['emerging']['status']=='UNKNOWN'

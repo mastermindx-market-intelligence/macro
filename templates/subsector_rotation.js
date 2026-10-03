@@ -341,6 +341,31 @@
         +n+' / '+c.due_rows+'</span>'
         +(c.unavailable_due_rows?'<small style="display:block;white-space:normal;color:var(--warn)">'+c.unavailable_due_rows+' '+L('excluded','条未计入')+'</small>':'');
     }
+    function hitCell(s,b,c){
+      var rate=typeof s.hit_rate==='number'&&Number.isFinite(s.hit_rate)&&s.hit_rate>=0&&s.hit_rate<=1?s.hit_rate:null;
+      var shown=fpct(rate),unknown='<small style="display:block;white-space:normal;color:var(--muted)">'+L('Range unknown','区间未知')+'</small>';
+      if(!b||!c||b.method!=='unknown_binary_outcomes_extremes'||b.population_basis!=='parsed_due_directional_calls'||b.is_confidence_interval!==false)return shown+unknown;
+      var h=b.observed_hits,m=b.measured_calls,d=b.due_calls,u=b.unmeasured_calls;
+      var valid=[h,m,d,u].every(function(n){return Number.isSafeInteger(n)&&n>=0;})
+        &&h<=m&&m<=d&&u===d-m&&c.due_rows===d&&c.measured_rows===m&&c.unavailable_due_rows===u
+        &&(s.n==null&&m===0||Number.isSafeInteger(s.n)&&s.n===m)
+        &&(s.hit_count==null&&m===0||Number.isSafeInteger(s.hit_count)&&s.hit_count===h);
+      if(!valid||m>0&&(rate==null||Math.abs(rate-h/m)>.0005001))return shown+unknown;
+      if(d===0){
+        if(b.status!=='EMPTY'||b.lower!==null||b.upper!==null)return shown+unknown;
+        return shown+'<small style="display:block">'+L('No due calls','无到期记录')+'</small>';
+      }
+      var lo=h/d,hi=(h+u)/d;
+      if(!Number.isFinite(b.lower)||!Number.isFinite(b.upper)||Math.abs(b.lower-lo)>1e-12||Math.abs(b.upper-hi)>1e-12
+        ||b.status!==(u?'BOUNDED':'COMPLETE'))return shown+unknown;
+      shown=fpct(m?h/m:null);
+      if(!u)return shown+'<small style="display:block;white-space:normal">'+L('All due calls measured','全部到期记录均已评估')+'</small>';
+      var range=(Math.floor(lo*1000)/10)+'–'+(Math.ceil(hi*1000)/10)+'%';
+      var en=h+' known hits among '+m+' measured calls; '+u+' of '+d+' due calls are unmeasured. They could all miss or all hit. This is not a confidence interval or a future-performance estimate.';
+      var zh=m+' 条已评估判断中有 '+h+' 条命中；'+d+' 条到期判断中有 '+u+' 条未评估。这些判断可能全部未命中或全部命中。这不是置信区间，也不是未来表现预测。';
+      return shown+'<small tabindex="0" style="display:block;white-space:normal;color:var(--warn)" data-tip-en="'+esc(en)+'" data-tip-zh="'+esc(zh)+'" aria-label="'+esc(L(en,zh))+'">'
+        +L('Logged-call range: ','已记录判断区间：')+range+'</small>';
+    }
     function fpct(v){return v==null?'—':(v*100).toFixed(0)+'%';}
     function fic(v){return v==null?'—':(v>0?'+':'')+(+v).toFixed(3);}
     function ft(v){return v==null?'—':(+v).toFixed(1);}
@@ -350,9 +375,10 @@
     var hs=tr.horizons||{};
     var rows=Object.keys(hs).map(function(h){
       var e=hs[h], bs=e.by_stage||{}, em=bs.emerging||{}, fa=bs.fading||{};
+      var hb=e.logged_call_hit_bounds||{}, hc=(e.coverage||{}).by_stage||{};
       var prov=(tr.proven||{})[h];
       return '<tr><td>'+esc(h)+'d</td><td class="num">'+coverageCell(e)+'</td>'
-        +'<td class="num">'+fpct(em.hit_rate)+'</td><td class="num">'+fpct(fa.hit_rate)+'</td>'
+        +'<td class="num">'+hitCell(em,hb.emerging,hc.emerging)+'</td><td class="num">'+hitCell(fa,hb.fading,hc.fading)+'</td>'
         +'<td class="num">'+fic(e.score_ic)+'</td><td class="num">'+ft(e.score_ic_t_hac)
         +(prov?' <span class="sr-ok">✓</span>':'')+'</td></tr>';
     }).join('');
@@ -379,7 +405,7 @@
         +' data-tip-rc-zh="排序吻合 = 信息系数 · 可靠度 = HAC t 统计量"'
         +'>?</span></caption><thead><tr>'
         +'<th>'+L('Horizon','周期')+'</th><th class="num">'+L('Measured / due','已评估 / 已到期')+'</th>'
-        +'<th class="num">'+L('Emerging hit','升温命中')+'</th><th class="num">'+L('Fading hit','退潮命中')+'</th>'
+        +'<th class="num">'+L('Measured emerging hit','已评估升温命中')+'</th><th class="num">'+L('Measured fading hit','已评估退潮命中')+'</th>'
         +'<th class="num">'+L('Rank fit','排序吻合')+'</th><th class="num">'+L('Reliability','可靠度')+'</th></tr></thead>'
         +'<tbody>'+rows+'</tbody></table></div>'
       +(misses?'<div class="sr-tr-misses"><span class="sr-tr-mlab">'+L('Recently wrong (logged)','近期误判（已记录）')+'</span>'+misses+'</div>':'')

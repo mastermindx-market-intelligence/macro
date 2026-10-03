@@ -496,6 +496,55 @@ def _daily_ic(rows: list, horizon_d: int, field: str = 'score') -> dict:
     return _summarize_ic(by_date, horizon_d, 0)
 
 
+def _hit_bounds(hits, measured, due) -> dict:
+    """Logical limits over logged due calls, not a statistical confidence interval.
+
+    Unknown binary outcomes may all miss or all hit. Do not impute them, infer
+    returns, or interpret the interval as a probability for a future trade.
+    """
+    result = {'method': 'unknown_binary_outcomes_extremes',
+              'population_basis': 'parsed_due_directional_calls',
+              'status': 'UNKNOWN', 'lower': None, 'upper': None,
+              'observed_hits': None, 'measured_calls': None, 'due_calls': None,
+              'unmeasured_calls': None, 'is_confidence_interval': False,
+              'selection_bias_corrected': False}
+    if any(isinstance(v, bool) or not isinstance(v, int) or v < 0
+           for v in (hits, measured, due)) or not hits <= measured <= due:
+        return result
+    unknown = due - measured
+    result.update(observed_hits=hits, measured_calls=measured,
+                  due_calls=due, unmeasured_calls=unknown)
+    if not due:
+        result['status'] = 'EMPTY'
+        return result
+    result.update(status='BOUNDED' if unknown else 'COMPLETE',
+                  lower=hits / due, upper=(hits + unknown) / due)
+    return result
+
+
+def _stage_hit_bounds(stats: dict, coverage: dict) -> dict:
+    """Bind exact hit counts to the same stage's disclosed due denominator."""
+    result = {}
+    by_stage = coverage.get('by_stage', {}) if isinstance(coverage, dict) else {}
+    for stage in ('emerging', 'fading'):
+        unavailable = _hit_bounds(None, None, None)
+        c = by_stage.get(stage) if isinstance(by_stage, dict) else None
+        s = stats.get(stage, {'n': 0, 'hit_count': 0}) if isinstance(stats, dict) else None
+        if not isinstance(c, dict) or not isinstance(s, dict):
+            result[stage] = unavailable
+            continue
+        measured, due, unknown = (c.get(k) for k in
+                                 ('measured_rows', 'due_rows', 'unavailable_due_rows'))
+        if (any(isinstance(v, bool) or not isinstance(v, int) or v < 0
+                for v in (measured, due, unknown))
+                or isinstance(s.get('n'), bool) or not isinstance(s.get('n'), int)
+                or measured + unknown != due or s.get('n') != measured):
+            result[stage] = unavailable
+            continue
+        result[stage] = _hit_bounds(s.get('hit_count'), measured, due)
+    return result
+
+
 def _by_stage(rows: list, field: str = "stage") -> dict:
     out: dict[str, dict] = {}
     by: dict[str, list] = {}
@@ -506,13 +555,10 @@ def _by_stage(rows: list, field: str = "stage") -> dict:
     for st, fwds in by.items():
         n = len(fwds)
         mean = sum(fwds) / n if n else 0.0
-        if st == "emerging":
-            hit = sum(1 for f in fwds if f > 0) / n if n else None
-        elif st == "fading":
-            hit = sum(1 for f in fwds if f < 0) / n if n else None
-        else:
-            hit = None
-        out[st] = {"n": n, "mean_fwd_rel": round(mean, 4),
+        hits = (sum(1 for f in fwds if f > 0) if st == "emerging" else
+                sum(1 for f in fwds if f < 0) if st == "fading" else None)
+        hit = hits / n if hits is not None and n else None
+        out[st] = {"n": n, "hit_count": hits, "mean_fwd_rel": round(mean, 4),
                    "hit_rate": round(hit, 3) if hit is not None else None}
     return out
 
@@ -712,6 +758,7 @@ def compute(today: date | str | None = None, root: Path | None = None,
             # incumbent/v2 diagnostics above; both fields share valid rows AND IC dates.
             pair = _paired_daily_ic(mat, h)
             t_gate, anticon = _gate_t(ic, h)
+            stage_stats = _by_stage(mat)
             out_h[str(h)] = {
                 "n_matured": len(mat),
                 "coverage": coverage,
@@ -727,7 +774,8 @@ def compute(today: date | str | None = None, root: Path | None = None,
                 "indep_windows": ic.get("indep_windows"),
                 "indep_windows_required": _MIN_INDEP_WINDOWS,
                 "score_ic_detail": ic,
-                "by_stage": _by_stage(mat),
+                "by_stage": stage_stats,
+                "logged_call_hit_bounds": _stage_hit_bounds(stage_stats, coverage),
                 "v2": {
                     "n_matured": len(mat_v2),
                     "score_ic": ic_v2.get("mean_ic"),
