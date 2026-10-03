@@ -219,6 +219,10 @@ def assess_catalyst_context(
     """
     symbol = _require_text("ticker", ticker).upper()
     episode_id = _require_text("radar_episode_id", radar_episode_id)
+    if len(episode_id) != 16 or any(ch not in "0123456789abcdef" for ch in episode_id):
+        raise CatalystContextError(
+            "radar_episode_id must be the owner-issued 16-hex Live Entry Radar episode_id"
+        )
     decision = _require_ts("decision_at", decision_at)
 
     required = tuple(sorted({_require_text("required_source", s) for s in required_sources}))
