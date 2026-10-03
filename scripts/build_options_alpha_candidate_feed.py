@@ -6,17 +6,23 @@ import hashlib
 import json
 import os
 import re
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
-from engine.options_alpha_candidate_feed import (
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
+from engine.options_alpha_candidate_feed import (  # noqa: E402
     _validate_activation_receipt,
     canonical_bytes,
     compose_candidate_feed,
 )
-from engine.options_alpha_candidate_outcome_enrichment import enrich_candidate_outcomes
-from engine.options_signal_campaign import (
+from engine.options_alpha_candidate_outcome_enrichment import (  # noqa: E402
+    enrich_candidate_outcomes,
+)
+from engine.options_signal_campaign import (  # noqa: E402
     CAMPAIGNS_PATH,
     CHECKPOINT_PATH,
     EPISODES_PATH,
@@ -30,8 +36,10 @@ from engine.options_signal_campaign import (
     build_effective_outcome_view,
     load_ledger,
 )
-from scripts.publish_options_alpha_candidate_r2 import _load as _load_publisher_journal
-from scripts.publish_options_alpha_candidate_r2 import (
+from scripts.publish_options_alpha_candidate_r2 import (  # noqa: E402
+    _load as _load_publisher_journal,
+)
+from scripts.publish_options_alpha_candidate_r2 import (  # noqa: E402
     publish_pair,
     read_pair,
     recover_pending_pair,
