@@ -210,6 +210,29 @@ def test_v2_manifest_carries_both_chain_keys_and_v1_stays_valid_without_them(tmp
     validate_workspace_manifest(v1_manifest)  # does not raise
 
 
+def test_neuralweb_reader_walks_a_v3_chain(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    ws1 = _raw_workspace(source_available_at="2026-01-30T16:30:00Z", source_sha256="a" * 64)
+    ws2 = _raw_workspace(source_available_at="2026-01-31T09:00:00Z", source_sha256="b" * 64, form="8-K/A")
+
+    gen1, man1 = _mint(tmp_path, {EVENT_ID: ws1}, generated_at="2026-01-30T16:30:00Z")
+    assert man1["schema"] == MANIFEST_SCHEMA_V3
+    gen1_sha = sha256(canonical_json_bytes(man1)).hexdigest()
+    gen2, man2 = _mint(
+        tmp_path, {EVENT_ID: ws2}, generated_at="2026-01-31T09:00:00Z",
+        previous_generation_id=gen1, previous_manifest_sha256=gen1_sha,
+    )
+    assert man2["schema"] == MANIFEST_SCHEMA_V3
+
+    objects = {
+        gen1: {"manifest": man1, "workspaces": {EVENT_ID: ws1 | {"generation_id": gen1}}},
+        gen2: {"manifest": man2, "workspaces": {EVENT_ID: ws2 | {"generation_id": gen2}}},
+    }
+    monkeypatch.setattr(reader, "_fetch_bytes", _server(objects, marker_generation_id=gen2))
+
+    revisions = reader.read_event_source_revisions(EVENT_ID, base_url=BASE)
+    assert [r["generation_id"] for r in revisions] == [gen1, gen2]
+
+
 def test_second_generation_folds_previous_generation_id_into_identity(tmp_path: Path) -> None:
     """A4: identical content atop a DIFFERENT predecessor must mint a
     DISTINCT generation_id (never collide with the content-only hash)."""

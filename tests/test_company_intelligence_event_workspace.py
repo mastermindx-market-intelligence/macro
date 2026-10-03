@@ -26,10 +26,19 @@ from engine.company_intelligence.event_workspace import (
     LIVE_CIE_ALIAS,
     LIVE_NARRATIVE_ALIAS,
     LIVE_PUBLIC_SLUG,
+    MANIFEST_SCHEMA_V1,
+    MANIFEST_SCHEMA_V2,
+    MANIFEST_SCHEMA_V3,
+    WorkspaceError,
+    _generation_identity_v3,
     apple_registry,
     flagship_fiscal_period,
+    preview_generation_identity,
+    validate_generation_clocks,
+    validate_workspace_manifest,
     write_workspace_generation,
 )
+from tests.test_company_intelligence_workspace_chain import EVENT_ID, _raw_workspace
 from engine.company_intelligence.event_workspace_build import build_event_workspace
 from engine.company_intelligence.identity import company_id_for_cik
 from engine.company_intelligence.resolution import claim_citations_pending
@@ -937,3 +946,188 @@ def test_public_glance_reported_omits_claim_text(tmp_path) -> None:
     dumped = json.dumps(glance)
     assert "claim_text" not in dumped
     assert glance["reported"][0]["value"] == "$109.4B \u00b7 +16%"
+
+
+_LEGACY_TWO_ROW_PREVIEW_ID = "7a36eaf9236c860c7ceeb308"
+_SECOND_EVENT_ID = "evt_cik0000882184_2026q3_results"
+
+
+def _nest_row(
+    *,
+    event_id: str = EVENT_ID,
+    source_available_at: str,
+    observed_at: str | None = None,
+) -> dict:
+    row = _raw_workspace(source_available_at=source_available_at, event_id=event_id)
+    lifecycle = dict(row["lifecycle"])
+    lifecycle["observed_at"] = observed_at if observed_at is not None else source_available_at
+    row["lifecycle"] = lifecycle
+    return row
+
+
+def test_generated_at_is_latest_observed_at_over_the_nest(tmp_path: Path) -> None:
+    ws_early = _nest_row(source_available_at="2026-07-01T00:00:00Z", observed_at="2026-07-01T12:00:00Z")
+    ws_late = _nest_row(
+        event_id=_SECOND_EVENT_ID,
+        source_available_at="2026-07-02T00:00:00Z",
+        observed_at="2026-07-03T18:00:00Z",
+    )
+    out = tmp_path / "company_intelligence"
+    write_workspace_generation(out, {EVENT_ID: ws_early, _SECOND_EVENT_ID: ws_late})
+    manifest = json.loads((out / "event_workspaces" / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["generated_at"] == "2026-07-03T18:00:00Z"
+
+
+def test_manifest_source_clock_is_latest_source_available_at(tmp_path: Path) -> None:
+    ws_a = _nest_row(source_available_at="2026-06-01T00:00:00Z", observed_at="2026-06-02T00:00:00Z")
+    ws_b = _nest_row(
+        event_id=_SECOND_EVENT_ID,
+        source_available_at="2026-07-15T09:00:00Z",
+        observed_at="2026-07-16T09:00:00Z",
+    )
+    out = tmp_path / "company_intelligence"
+    write_workspace_generation(out, {EVENT_ID: ws_a, _SECOND_EVENT_ID: ws_b})
+    manifest = json.loads((out / "event_workspaces" / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["source_clock"] == "2026-07-15T09:00:00Z"
+
+
+def test_apple_clocks_produce_generated_at_on_or_after_every_observed_at(tmp_path: Path) -> None:
+    ws = _nest_row(
+        source_available_at="2026-07-31T00:30:28Z",
+        observed_at="2026-10-03T05:23:48Z",
+    )
+    out = tmp_path / "company_intelligence"
+    generation = write_workspace_generation(out, {EVENT_ID: ws})
+    manifest = json.loads((generation / "manifest.json").read_text(encoding="utf-8"))
+    row = json.loads((generation / "workspaces" / f"{EVENT_ID}.json").read_text(encoding="utf-8"))
+    assert manifest["generated_at"] == "2026-10-03T05:23:48Z"
+    assert manifest["source_clock"] == "2026-07-31T00:30:28Z"
+    assert row["generated_at"] == "2026-10-03T05:23:48Z"
+
+
+def test_writer_rejects_explicit_generated_at(tmp_path: Path) -> None:
+    ws = _nest_row(source_available_at="2026-07-30T16:30:00Z")
+    out = tmp_path / "company_intelligence"
+    with pytest.raises(WorkspaceError, match="can no longer be supplied"):
+        write_workspace_generation(out, {EVENT_ID: ws}, generated_at="2026-07-30T16:30:00Z")
+
+
+def test_writer_never_reads_a_wall_clock(tmp_path: Path, monkeypatch) -> None:
+    import datetime as dt
+    import engine.company_intelligence.event_workspace as ew
+
+    class _GuardedDatetime(dt.datetime):
+        @classmethod
+        def now(cls, *args, **kwargs):
+            raise AssertionError("wall clock read")
+
+        @classmethod
+        def utcnow(cls):
+            raise AssertionError("wall clock read")
+
+    monkeypatch.setattr(ew, "datetime", _GuardedDatetime)
+    ws = _nest_row(source_available_at="2026-07-30T16:30:00Z", observed_at="2026-07-30T17:00:00Z")
+    out = tmp_path / "company_intelligence"
+    write_workspace_generation(out, {EVENT_ID: ws})
+
+
+def test_row_observed_before_source_available_is_refused(tmp_path: Path) -> None:
+    ws = _nest_row(source_available_at="2026-07-30T16:30:00Z", observed_at="2026-07-29T16:30:00Z")
+    out = tmp_path / "company_intelligence"
+    with pytest.raises(WorkspaceError, match="observed_at precedes source_available_at"):
+        write_workspace_generation(out, {EVENT_ID: ws})
+
+
+def test_row_missing_observed_at_is_refused_naming_event_and_field(tmp_path: Path) -> None:
+    ws = _nest_row(source_available_at="2026-07-30T16:30:00Z")
+    ws["lifecycle"] = {"state": "complete", "source_available_at": "2026-07-30T16:30:00Z"}
+    out = tmp_path / "company_intelligence"
+    with pytest.raises(WorkspaceError, match=f"{EVENT_ID}: lifecycle.observed_at"):
+        write_workspace_generation(out, {EVENT_ID: ws})
+
+
+def test_v3_identity_is_reproducible_from_published_bytes(tmp_path: Path) -> None:
+    ws = _nest_row(source_available_at="2026-07-30T16:30:00Z", observed_at="2026-07-30T18:00:00Z")
+    out = tmp_path / "company_intelligence"
+    generation = write_workspace_generation(out, {EVENT_ID: ws})
+    manifest = json.loads((generation / "manifest.json").read_text(encoding="utf-8"))
+    row = json.loads((generation / "workspaces" / f"{EVENT_ID}.json").read_text(encoding="utf-8"))
+    recomputed = _generation_identity_v3(
+        {EVENT_ID: row},
+        manifest["generated_at"],
+        manifest["source_clock"],
+        previous_generation_id=manifest.get("previous_generation_id"),
+    )
+    assert recomputed == manifest["generation_id"]
+
+
+def test_v3_manifest_validates_and_v2_and_v1_manifests_still_validate(tmp_path: Path) -> None:
+    ws = _nest_row(source_available_at="2026-07-30T16:30:00Z", observed_at="2026-07-30T18:00:00Z")
+    out = tmp_path / "company_intelligence"
+    generation = write_workspace_generation(out, {EVENT_ID: ws})
+    manifest = json.loads((generation / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["schema"] == MANIFEST_SCHEMA_V3
+    validate_workspace_manifest(manifest)
+    v2_manifest = {k: v for k, v in manifest.items() if k != "source_clock"}
+    v2_manifest["schema"] = MANIFEST_SCHEMA_V2
+    validate_workspace_manifest(v2_manifest)
+    v1_manifest = {
+        k: v
+        for k, v in manifest.items()
+        if k not in ("previous_generation_id", "previous_manifest_sha256", "source_clock")
+    }
+    v1_manifest["schema"] = MANIFEST_SCHEMA_V1
+    validate_workspace_manifest(v1_manifest)
+
+
+def test_v3_validator_refuses_generated_at_before_any_observed_at(tmp_path: Path) -> None:
+    ws = _nest_row(source_available_at="2026-07-30T16:30:00Z", observed_at="2026-07-30T18:00:00Z")
+    out = tmp_path / "company_intelligence"
+    generation = write_workspace_generation(out, {EVENT_ID: ws})
+    manifest = json.loads((generation / "manifest.json").read_text(encoding="utf-8"))
+    row = json.loads((generation / "workspaces" / f"{EVENT_ID}.json").read_text(encoding="utf-8"))
+    bad_manifest = dict(manifest)
+    bad_manifest["generated_at"] = "2026-07-30T17:00:00Z"
+    bad_row = dict(row)
+    bad_row["generated_at"] = "2026-07-30T17:00:00Z"
+    with pytest.raises(WorkspaceError, match="generated_at must be >= observed_at"):
+        validate_generation_clocks(bad_manifest, {EVENT_ID: bad_row})
+
+
+def test_v3_validator_refuses_source_clock_after_generated_at() -> None:
+    manifest = {
+        "aliases": {},
+        "authority": "context_only",
+        "event_count": 0,
+        "files": {},
+        "generated_at": "2026-07-30T16:00:00Z",
+        "generation_id": "a" * 24,
+        "previous_generation_id": None,
+        "previous_manifest_sha256": None,
+        "schema": MANIFEST_SCHEMA_V3,
+        "source_clock": "2026-07-30T17:00:00Z",
+        "status": "ready",
+        "warnings": [],
+    }
+    with pytest.raises(WorkspaceError, match="source_clock is later than generated_at"):
+        validate_workspace_manifest(manifest)
+
+
+def test_legacy_preview_identity_is_unchanged() -> None:
+    ws_early = _nest_row(
+        event_id=_SECOND_EVENT_ID,
+        source_available_at="2026-07-21T16:30:00Z",
+        observed_at="2026-07-21T16:30:00Z",
+    )
+    ws_late = _nest_row(source_available_at="2026-07-30T16:30:00Z", observed_at="2026-07-30T16:30:00Z")
+    workspaces = {EVENT_ID: ws_late, _SECOND_EVENT_ID: ws_early}
+    generated_at = "2026-07-30T16:30:00Z"
+    assert (
+        preview_generation_identity(workspaces, generated_at, previous_generation_id=None)
+        == _LEGACY_TWO_ROW_PREVIEW_ID
+    )
+    row = workspaces[EVENT_ID]
+    assert (
+        preview_generation_identity({EVENT_ID: row}, row["generated_at"], previous_generation_id=None)
+        == "99ae5738abb61c4559e0b5ef"
+    )
