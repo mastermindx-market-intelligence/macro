@@ -82,7 +82,7 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 262,
+    "opportunity_queue_depth": 275,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
@@ -1690,14 +1690,14 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 262,
-      "scored": 484,
+      "open": 275,
+      "scored": 497,
       "newest": [
         {
           "id": "radar-stage-ACA-2026-10-03",
           "problem_or_desire": "$ACA: stage 2D_extended_run, SATA 10, 52w in stage",
           "expected_value": 0.4,
-          "score": 0.383296,
+          "score": 0.366808,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
@@ -1705,7 +1705,7 @@
           "id": "radar-stage-ACU-2026-10-03",
           "problem_or_desire": "$ACU: stage 2D_extended_run, SATA 9, 26w in stage",
           "expected_value": 0.4,
-          "score": 0.383296,
+          "score": 0.366808,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
@@ -1713,7 +1713,7 @@
           "id": "radar-stage-CDNA-2026-10-03",
           "problem_or_desire": "$CDNA: stage 2D_extended_run, SATA 10, 34w in stage",
           "expected_value": 0.4,
-          "score": 0.383296,
+          "score": 0.366808,
           "half_life_class": "weekly_signal",
           "status": "open"
         }
@@ -1738,30 +1738,30 @@
       ]
     },
     "publications": {
-      "total": 1601,
-      "receipts": 1601,
+      "total": 1612,
+      "receipts": 1612,
       "corrections": 0,
       "newest": [
         {
-          "id": "pub-ob-2026-10-03-4e95719f8d",
+          "id": "pub-ob-2026-10-03-17a96e46e3",
           "channel": "x",
           "account": "flagship",
           "status": "clean",
-          "published_at": "2026-10-03T06:34:15Z"
+          "published_at": "2026-10-03T19:11:58Z"
         },
         {
-          "id": "pub-ob-2026-10-02-431a845fb5",
+          "id": "pub-ob-2026-10-02-d665a4a221",
           "channel": "x",
           "account": "flagship",
           "status": "clean",
-          "published_at": "2026-10-03T06:19:24Z"
+          "published_at": "2026-10-03T18:49:27Z"
         },
         {
-          "id": "pub-ob-2026-10-02-9bb736c177",
+          "id": "pub-ob-2026-10-02-8a177973a6",
           "channel": "x",
           "account": "founder",
           "status": "clean",
-          "published_at": "2026-10-03T06:19:24Z"
+          "published_at": "2026-10-03T18:49:27Z"
         }
       ]
     },
@@ -1985,9 +1985,9 @@
     }
   ],
   "content": {
-    "total_posts": 26,
-    "signal_posts": 9,
-    "charts": 126,
+    "total_posts": 21,
+    "signal_posts": 4,
+    "charts": 190,
     "accounts": 13,
     "state": "present",
     "as_of": "2026-10-03"
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-10-03T10:20:21Z",
-  "inputs_hash": "sha256:577731b9ae864b242ab8ff4e724942e5545c1f29f4529a5edabdd45f484fd790",
+  "produced_at": "2026-10-03T20:59:44Z",
+  "inputs_hash": "sha256:fd63f8224bc4c41f334807e0fb199db00b921a1876e9f68a2626c2553aa507a8",
   "tier": "display"
 }
