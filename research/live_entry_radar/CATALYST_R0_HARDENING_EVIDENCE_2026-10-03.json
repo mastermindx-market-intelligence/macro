@@ -1,0 +1,49 @@
+{
+  "schema": "research_verification_receipt.v1",
+  "pickup_sha": "47adc81845dc4b4f57f2ca6079e6affd19abeb73",
+  "market_outcome_reads": 0,
+  "production_changes": false,
+  "independent_review_complete": false,
+  "final_radar_summary": "1592 passed, 2 skipped, 4 warnings in 67.87s (0:01:07)",
+  "logs": [
+    {
+      "name": "catalyst-r0-red.XrIL5L",
+      "sha256": "a12abc3e2215907de506a056ac2a63c5a063949f0e0b3ffe85e1ed0895770ca8",
+      "summary": "27 failed, 2 passed, 75 deselected, 4 warnings in 2.03s"
+    },
+    {
+      "name": "catalyst-r0-cache-red.ag9G1h",
+      "sha256": "b969c69fe62aea73447ca10a7bc9a4f16490660267702cd3e7d2d4108ea3ef95",
+      "summary": "1 failed, 2 passed, 104 deselected, 4 warnings in 1.18s"
+    },
+    {
+      "name": "catalyst-r0-owners-green.oTib7g",
+      "sha256": "b146c108536e18e5cfbb48272607d8f0aad172bf3042d5af355fea02512330e7",
+      "summary": "163 passed, 4 warnings in 2.36s"
+    },
+    {
+      "name": "catalyst-r0-lane.gDOvE8",
+      "sha256": "a4c584ca0996a14ef8afc3df29106ed9935e7dba83a3a0937ca667af4f91ec09",
+      "summary": "44 passed, 4 warnings in 4.50s"
+    },
+    {
+      "name": "catalyst-r0-final-radar-nf3dv__8.log",
+      "sha256": "53105e0a8ff50df3b95ebcc7211712ff0a895c0ad727330706c50595e56b5faf",
+      "summary": "1592 passed, 2 skipped, 4 warnings in 67.87s (0:01:07)"
+    }
+  ],
+  "source_sha256": {
+    "engine/entry_radar/catalyst_context.py": "09e98d2cbdb235ef3583862401c77a1a02359f7326231bbde6dda2c74918e66e",
+    "engine/entry_radar/catalyst_adapters.py": "bd601a7936c5b770e077c0c78def38541d2a626e1b5700788640c26df90c1f0c",
+    "engine/neuralweb/company_intelligence_reader.py": "d9071c145c1a2a7fd0eef72bfbb57303f364620eb7cfc48b4dffc332d84b10bc",
+    "tests/test_entry_radar_catalyst_context.py": "aacf21c5926ddb411ee6349ecf8cd4860f6338a22f362823235656fe86525947",
+    "tests/test_entry_radar_w4_lane.py": "3a3d383a8d0d3e2e58f330b7115ec649dfa55b5122d579aa88743c3e4c3cb6f3",
+    ".github/ci/legacy-jobs.yml": "6446cedeb3963e065eb407cd1fb48cb364b42b150143a8c18625243377844118",
+    "research/live_entry_radar/contracts/catalyst_context.schema.json": "9c46b1e368679f352e52ba741799149fdea6c4e9078d0b8a79eb80d453dd2884"
+  },
+  "agentos_validation": {
+    "errors": 0,
+    "warnings": 106,
+    "records": 1457
+  }
+}

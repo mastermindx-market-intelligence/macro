@@ -12,11 +12,12 @@ has not supplied a governed disposition, the event remains ``unknown``.
 """
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, Sequence
 
-from engine.entry_radar.contracts import AUTHORITY_BLOCK, SOURCE_STATUSES, iso, parse_ts
+from engine.entry_radar.contracts import AUTHORITY_BLOCK, SOURCE_STATUSES, _TICKER_RE
 
 if TYPE_CHECKING:
     from engine.entry_radar.live_ledger import LiveEpisode
@@ -37,18 +38,80 @@ class CatalystContextError(ValueError):
     """Malformed catalyst context input; callers must fail closed."""
 
 
+# Local boundary/serialization validation, not a replacement for Radar's clock owner.
+_AWARE_INSTANT = re.compile(
+    r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"
+    r"(?:\.[0-9]{1,6})?(?:Z|[+-][0-9]{2}:[0-9]{2})"
+)
+
+
 def _require_ts(name: str, value: Any) -> datetime:
-    got = parse_ts(value)
-    if got is None:
-        raise CatalystContextError(f"{name} must be an ISO timestamp (got {value!r})")
+    if isinstance(value, datetime):
+        got = value
+    elif isinstance(value, str) and _AWARE_INSTANT.fullmatch(value):
+        if value.endswith("-00:00"):
+            raise CatalystContextError(f"{name} has an unknown timezone offset")
+        try:
+            got = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError as exc:
+            raise CatalystContextError(f"{name} must be a valid aware timestamp") from exc
+    else:
+        raise CatalystContextError(f"{name} requires an explicit timezone and time")
+    if got.tzinfo is None or got.utcoffset() is None:
+        raise CatalystContextError(f"{name} requires an explicit timezone")
     return got.astimezone(timezone.utc)
 
 
+def _iso(value: datetime) -> str:
+    """Keep subsecond decision boundaries; never truncate evidence into the past."""
+    return _require_ts("timestamp", value).isoformat().replace("+00:00", "Z")
+
+
 def _require_text(name: str, value: Any) -> str:
-    got = str(value or "").strip()
-    if not got:
-        raise CatalystContextError(f"{name} is required")
-    return got
+    if not isinstance(value, str) or not value.strip():
+        raise CatalystContextError(f"{name} must be a nonempty string")
+    return value.strip()
+
+
+def _episode_id(value: Any) -> str:
+    value = _require_text("radar_episode_id", value)
+    if not re.fullmatch(r"[0-9a-f]{16}", value):
+        raise CatalystContextError(
+            "radar_episode_id must be the owner-issued 16-hex Live Entry Radar episode_id"
+        )
+    return value
+
+
+def _required_sources(values: Sequence[str]) -> tuple[str, ...]:
+    if isinstance(values, (str, bytes)) or not isinstance(values, Sequence):
+        raise CatalystContextError("required_sources must be an explicit sequence")
+    required = tuple(sorted({_require_text("required_source", s) for s in values}))
+    if not required:
+        raise CatalystContextError("required_sources must declare at least one source owner")
+    return required
+
+
+def _coverage(required, reads, decision) -> bool:
+    by_source = {}
+    for row in reads:
+        if not isinstance(row, CatalystSourceRead):
+            raise CatalystContextError("source_reads must contain CatalystSourceRead records")
+        if row.source_id in by_source:
+            raise CatalystContextError(f"duplicate source read for {row.source_id!r}")
+        by_source[row.source_id] = row
+    return all(s in by_source and by_source[s].usable_at(decision) for s in required)
+
+
+def _state(blocking, unknown, coverage_complete, soft) -> str:
+    if blocking:
+        return "blocking_event_observed"
+    if unknown:
+        return "event_classification_unknown"
+    if not coverage_complete:
+        return "coverage_unknown"
+    if soft:
+        return "soft_event_observed"
+    return "no_blocking_event_observed"
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,8 +134,8 @@ class CatalystSourceRead:
         observed_at = _require_ts("observed_at", self.observed_at)
         if source_asof > observed_at:
             raise CatalystContextError(
-                f"{self.source_id}: source_asof {iso(source_asof)} is after observed_at "
-                f"{iso(observed_at)}"
+                f"{self.source_id}: source_asof {_iso(source_asof)} is after observed_at "
+                f"{_iso(observed_at)}"
             )
         object.__setattr__(self, "source_asof", source_asof)
         object.__setattr__(self, "observed_at", observed_at)
@@ -88,8 +151,8 @@ class CatalystSourceRead:
         return {
             "source_id": self.source_id,
             "status": self.status,
-            "source_asof": iso(self.source_asof),
-            "observed_at": iso(self.observed_at),
+            "source_asof": _iso(self.source_asof),
+            "observed_at": _iso(self.observed_at),
             "detail": self.detail,
         }
 
@@ -124,7 +187,7 @@ class CatalystEvidence:
         if source_available_at > known_at:
             raise CatalystContextError(
                 f"{self.owner}:{self.native_id}: source_available_at "
-                f"{iso(source_available_at)} is after known_at {iso(known_at)}"
+                f"{_iso(source_available_at)} is after known_at {_iso(known_at)}"
             )
         object.__setattr__(self, "source_available_at", source_available_at)
         object.__setattr__(self, "known_at", known_at)
@@ -139,8 +202,8 @@ class CatalystEvidence:
             self.native_id,
             self.ticker,
             self.event_kind,
-            iso(self.source_available_at) or "",
-            iso(self.known_at) or "",
+            _iso(self.source_available_at) or "",
+            _iso(self.known_at) or "",
             self.owner_disposition,
             self.evidence_ref,
         )
@@ -165,10 +228,34 @@ class CatalystContext:
     schema: str = SCHEMA
 
     def __post_init__(self) -> None:
-        if self.context_state not in CONTEXT_STATES:
-            raise CatalystContextError(
-                f"context_state {self.context_state!r} not in {sorted(CONTEXT_STATES)}"
-            )
+        if self.schema != SCHEMA:
+            raise CatalystContextError("invalid catalyst context schema")
+        symbol = _require_text("ticker", self.ticker).upper()
+        if not _TICKER_RE.fullmatch(symbol):
+            raise CatalystContextError("invalid ticker shape")
+        object.__setattr__(self, "ticker", symbol)
+        object.__setattr__(self, "radar_episode_id", _episode_id(self.radar_episode_id))
+        object.__setattr__(self, "decision_at", _require_ts("decision_at", self.decision_at))
+        object.__setattr__(self, "required_sources", _required_sources(self.required_sources))
+        object.__setattr__(self, "source_reads", tuple(self.source_reads))
+        complete = _coverage(self.required_sources, self.source_reads, self.decision_at)
+        if type(self.coverage_complete) is not bool or self.coverage_complete != complete:
+            raise CatalystContextError("coverage_complete contradicts source reads")
+        for name in (
+            "blocking_evidence_refs", "soft_evidence_refs", "unknown_evidence_refs",
+            "nonblocking_evidence_refs", "late_evidence_refs",
+        ):
+            values = getattr(self, name)
+            if isinstance(values, (str, bytes)) or not isinstance(values, Sequence):
+                raise CatalystContextError(f"{name} must be a sequence")
+            refs = tuple(sorted(_require_text(name, ref) for ref in values))
+            if len(refs) != len(set(refs)):
+                raise CatalystContextError(f"{name} contains duplicate references")
+            object.__setattr__(self, name, refs)
+        expected = _state(self.blocking_evidence_refs, self.unknown_evidence_refs,
+                          complete, self.soft_evidence_refs)
+        if self.context_state != expected:
+            raise CatalystContextError("context_state contradicts evidence/coverage")
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -176,7 +263,7 @@ class CatalystContext:
             "ticker": self.ticker,
             "radar_episode_schema": RADAR_EPISODE_SCHEMA,
             "radar_episode_id": self.radar_episode_id,
-            "decision_at": iso(self.decision_at),
+            "decision_at": _iso(self.decision_at),
             "context_state": self.context_state,
             "coverage_complete": self.coverage_complete,
             "required_sources": list(self.required_sources),
@@ -221,27 +308,10 @@ def assess_catalyst_context(
     observed in the declared covered sources by decision_at".
     """
     symbol = _require_text("ticker", ticker).upper()
-    episode_id = _require_text("radar_episode_id", radar_episode_id)
-    if len(episode_id) != 16 or any(ch not in "0123456789abcdef" for ch in episode_id):
-        raise CatalystContextError(
-            "radar_episode_id must be the owner-issued 16-hex Live Entry Radar episode_id"
-        )
+    episode_id = _episode_id(radar_episode_id)
     decision = _require_ts("decision_at", decision_at)
-
-    required = tuple(sorted({_require_text("required_source", s) for s in required_sources}))
-    if not required:
-        raise CatalystContextError("required_sources must declare at least one source owner")
-
-    read_by_source: dict[str, CatalystSourceRead] = {}
-    for row in source_reads:
-        if row.source_id in read_by_source:
-            raise CatalystContextError(f"duplicate source read for {row.source_id!r}")
-        read_by_source[row.source_id] = row
-
-    coverage_complete = all(
-        source in read_by_source and read_by_source[source].usable_at(decision)
-        for source in required
-    )
+    required = _required_sources(required_sources)
+    coverage_complete = _coverage(required, source_reads, decision)
 
     deduped = _dedupe_evidence(evidence)
     for row in deduped:
@@ -261,16 +331,7 @@ def assess_catalyst_context(
     for refs in groups.values():
         refs.sort()
 
-    if groups["blocking"]:
-        state = "blocking_event_observed"
-    elif groups["unknown"]:
-        state = "event_classification_unknown"
-    elif not coverage_complete:
-        state = "coverage_unknown"
-    elif groups["soft"]:
-        state = "soft_event_observed"
-    else:
-        state = "no_blocking_event_observed"
+    state = _state(groups["blocking"], groups["unknown"], coverage_complete, groups["soft"])
 
     ordered_reads = tuple(sorted(source_reads, key=lambda r: r.source_id))
     return CatalystContext(
@@ -329,6 +390,23 @@ def assess_catalyst_context_for_live_episode(
             f"Radar episode_id {record.episode_id!r} does not match owner identity "
             f"tuple (expected {expected_id!r})"
         )
+
+    decision = _require_ts("decision_at", decision_at)
+    clocks = {
+        "first_armed_at": _require_ts("first_armed_at", record.first_armed_at),
+        "last_observed_at": _require_ts("last_observed_at", record.last_observed_at),
+    }
+    if record.candidate_at is not None:
+        clocks["candidate_at"] = _require_ts("candidate_at", record.candidate_at)
+    for name, when in clocks.items():
+        if when > decision:
+            raise CatalystContextError(f"Radar {name} is after decision_at")
+    if clocks["first_armed_at"] > clocks["last_observed_at"]:
+        raise CatalystContextError("Radar snapshot precedes its arm clock")
+    if "candidate_at" in clocks and not (
+        clocks["first_armed_at"] <= clocks["candidate_at"] <= clocks["last_observed_at"]
+    ):
+        raise CatalystContextError("Radar candidate clock is outside its snapshot interval")
 
     return assess_catalyst_context(
         ticker=record.ticker,

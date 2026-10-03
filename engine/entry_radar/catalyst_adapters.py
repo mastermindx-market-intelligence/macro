@@ -6,6 +6,9 @@ claim source coverage, or create Radar episodes. Each adapter returns only prese
 from __future__ import annotations
 
 from datetime import datetime
+from hashlib import sha256
+
+from engine.company_intelligence.contracts import canonical_json_bytes
 from typing import Any, Mapping
 
 from engine.company_intelligence.event_workspace import (
@@ -106,7 +109,7 @@ def adapt_company_intelligence_earnings_workspace(
 
     event_id = str(workspace.get("event_id") or "").strip()
     try:
-        _, _, event_type = parse_canonical_event_id(event_id)
+        company_id, fiscal_period, event_type = parse_canonical_event_id(event_id)
     except EventError as exc:
         raise CatalystContextError(str(exc)) from exc
     if event_type != "earnings_results":
@@ -117,6 +120,11 @@ def adapt_company_intelligence_earnings_workspace(
     issuer = workspace.get("issuer")
     if not isinstance(issuer, Mapping):
         raise CatalystContextError("Company Intelligence workspace issuer must be a mapping")
+    if issuer.get("company_id") != company_id:
+        raise CatalystContextError("Company Intelligence event and issuer identity mismatch")
+    period = workspace.get("fiscal_period") or {}
+    if (period.get("year"), period.get("quarter")) != (fiscal_period.year, fiscal_period.quarter):
+        raise CatalystContextError("Company Intelligence event and fiscal period mismatch")
     listings = issuer.get("listings")
     if not isinstance(listings, list):
         raise CatalystContextError("Company Intelligence workspace issuer listings must be a list")
@@ -228,6 +236,11 @@ def assess_company_intelligence_current_read_for_live_episode(
         raise CatalystContextError(
             "available Company Intelligence read carries no valid workspace SHA-256 receipt"
         )
+
+    if read_result.get("event_id") != workspace.get("event_id"):
+        raise CatalystContextError("Company Intelligence read event identity mismatch")
+    if sha256(canonical_json_bytes(workspace)).hexdigest() != workspace_sha:
+        raise CatalystContextError("Company Intelligence workspace SHA-256 receipt mismatch")
 
     evidence = adapt_company_intelligence_earnings_workspace(
         workspace,

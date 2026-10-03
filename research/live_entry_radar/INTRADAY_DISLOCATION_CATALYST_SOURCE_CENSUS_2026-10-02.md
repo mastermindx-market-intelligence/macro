@@ -12,7 +12,7 @@ Therefore the R0 contract is useful now as a fail-closed attachment, but a produ
 
 This census does not commission a new event store. It maps existing owners and identifies the smallest lawful adapter seams.
 
-## 1. Source readiness matrix
+## 1. Historical source readiness matrix (not refreshed runtime inventory)
 
 | Source owner / artifact | Identity | Decision-time clock | Coverage / correction truth | R0 use now | Readiness |
 |---|---|---|---|---|---|
@@ -25,7 +25,7 @@ This census does not commission a new event store. It maps existing owners and i
 | BioCatalyst / clinical event estate | Owner-native event/document ids when present | Owner packets can carry `known_at` / knowledge cutoff | Several views are latest-selected/current context rather than full historical reconstruction | FDA/clinical context only for exact owner events; no blanket universe-clear claim | **PARTIAL** |
 | Attention/news surfaces | Mixed item ids | Mixed/current; Hot Tape is ephemeral and historically unreconstructible | No durable, universe-wide, high-frequency PIT news history in the current estate | Context only; cannot prove absence of news | **INSUFFICIENT FOR HARD SAFETY COVERAGE** |
 | Analyst actions | Revisions/coverage data exists at slower cadence | Mixed daily/current clocks | No complete low-latency analyst-action event tape established by the current census | Not a required R0 hard-clear source yet | **INSUFFICIENT** |
-| Halt/LULD | Shared market-data owner is the intended source | Must be live exchange/vendor event time | Current Data OS census says no halt store exists; Massive Advanced plan identifies real-time `LULD.*` as the intended shared feed | Required safety input once the shared owner publishes it | **NOT BUILT IN CURRENT OWNER ESTATE** |
+| Halt/LULD | Shared market-data owner is the intended source | Must be live exchange/vendor event time | Current Data OS census says no halt store exists; Massive Advanced plan identifies real-time `LULD.*` as the intended shared feed | Required safety input once the shared owner publishes it | **NOT ESTABLISHED BY THIS HISTORICAL CENSUS** |
 
 ## 2. Exact source-law receipts
 
@@ -123,3 +123,24 @@ A broad "news classifier" is intentionally not first. The current estate does no
 `CATALYST_CONTEXT_CONTRACT_BUILT_SOURCE_ADAPTERS_NOT_ADMITTED`
 
 The pure fail-closed contract can be tested now. Real source adapters remain separately gated by owner identity, clocks, coverage and disposition mapping. No market outcome, promotion, or live activation follows from this census.
+
+
+## Evidence-age correction - 2026-10-03
+
+The inventory above largely summarizes earlier August/September documents. It is
+not a fresh October host/provider census. In particular, it does not establish
+current global absence of a halt/LULD store, current EDGAR parquet schema, or
+current universe coverage. Those claims require a dated owner runtime receipt.
+The safe integration conclusion is narrower: this catalyst program has not
+admitted a complete decision-time source set, so it cannot issue market-wide
+catalyst clearance. No healthy subset may be substituted for a missing required
+source merely to obtain a permissive label.
+
+The owner publisher -> verified current reader -> catalyst attachment has now
+been exercised using synthetic records and substituted HTTP bytes, including
+warm-cache reads, absent ticker coverage and corrupted payloads. This is source
+plumbing proof, not real-market coverage or an intraday trading result.
+The latest earnings workspace is not by itself proof of a catalyst relevant to
+the current price episode. A separately accepted event-time/relevance window and
+source-coverage policy are owed before any prospective decision use. R0 attaches
+presence evidence only and does not add a live gate or absence classifier.

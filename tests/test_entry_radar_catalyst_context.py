@@ -3,6 +3,8 @@ from __future__ import annotations
 import copy
 import json
 from datetime import datetime, timedelta, timezone
+from dataclasses import replace
+from hashlib import sha256
 from pathlib import Path
 
 import pytest
@@ -23,10 +25,11 @@ from engine.entry_radar.catalyst_adapters import (
     assess_company_intelligence_current_read_for_live_episode,
 )
 from engine.entry_radar.live_ledger import LiveEpisode, compute_episode_id
+from engine.company_intelligence.contracts import canonical_json_bytes
 
 ROOT = Path(__file__).resolve().parent.parent
 CATALYST_CONTEXT_SCHEMA = json.loads(
-    (ROOT / "contracts" / "entry_radar_catalyst_context.schema.json").read_text()
+    (ROOT / "research" / "live_entry_radar" / "contracts" / "catalyst_context.schema.json").read_text()
 )
 CATALYST_CONTEXT_VALIDATOR = Draft202012Validator(CATALYST_CONTEXT_SCHEMA)
 
@@ -538,7 +541,9 @@ def _current_company_read(
     if available:
         out["workspace"] = workspace or _company_workspace()
         out["event_id"] = out["workspace"]["event_id"]
-        out["receipt"] = receipt or {"workspace_sha256": "a" * 64}
+        out["receipt"] = receipt or {
+            "workspace_sha256": sha256(canonical_json_bytes(out["workspace"])).hexdigest()
+        }
     return out
 
 
@@ -740,3 +745,172 @@ def test_catalyst_context_wire_schema_closes_source_read_shape_and_status():
     errors = _schema_messages(payload)
     assert any("Additional properties are not allowed" in message for message in errors)
     assert any("is not one of" in message for message in errors)
+
+
+# Pre-outcome hardening: decision clocks, immutable bindings and collection.
+@pytest.mark.parametrize("value", [
+    "2026-10-02", "2026-10-02T14:30:00", datetime(2026, 10, 2, 14, 30),
+])
+@pytest.mark.parametrize("boundary", ["decision", "read", "evidence", "edgar"])
+def test_hardening_rejects_ambiguous_clocks(value, boundary):
+    with pytest.raises(CatalystContextError):
+        if boundary == "decision":
+            _assess(decision_at=value)
+        elif boundary == "read":
+            _read(observed_at=value)
+        elif boundary == "evidence":
+            _event(known_at=value)
+        else:
+            adapt_edgar_earnings_item_202(
+                _item202_row(acceptance_datetime=value), owner_observed_at=T0,
+            )
+
+
+def test_hardening_preserves_subsecond_decision_and_source_wire_clocks():
+    instant = T0 + timedelta(microseconds=150001)
+    payload = _assess(decision_at=instant, source_reads=[_read(observed_at=instant)]).to_dict()
+    assert payload["decision_at"] == "2026-10-02T14:30:00.150001Z"
+    assert payload["source_reads"][0]["observed_at"] == payload["decision_at"]
+    assert _schema_messages(payload) == []
+
+
+def test_hardening_subsecond_conflicting_evidence_is_not_deduplicated():
+    a = _event(known_at=T0 + timedelta(microseconds=100), source_available_at=T0)
+    b = _event(known_at=T0 + timedelta(microseconds=200), source_available_at=T0)
+    with pytest.raises(CatalystContextError, match="conflicting"):
+        _assess(evidence=[a, b])
+
+
+def test_hardening_equivalent_offset_clocks_remain_identical():
+    a = _event()
+    b = _event(known_at=T0.astimezone(timezone(timedelta(hours=-4))))
+    assert _assess(evidence=[a, b]).blocking_evidence_refs == ("event:evt-1",)
+
+
+@pytest.mark.parametrize("field", ["first_armed_at", "candidate_at", "last_observed_at"])
+def test_hardening_rejects_episode_snapshot_after_decision(field):
+    episode = _live_episode().to_dict()
+    episode[field] = "2026-10-02T14:30:01Z"
+    episode["episode_id"] = compute_episode_id(**{
+        k: episode[k] for k in ("ticker", "detector_id", "variant", "first_armed_at")
+    })
+    with pytest.raises(CatalystContextError, match="after decision"):
+        assess_catalyst_context_for_live_episode(
+            episode=episode, decision_at=T0, required_sources=["issuer_events"],
+            source_reads=[], evidence=[],
+        )
+
+
+@pytest.mark.parametrize("field", ["first_armed_at", "last_observed_at"])
+def test_hardening_requires_episode_snapshot_clocks(field):
+    episode = _live_episode().to_dict()
+    episode[field] = None
+    episode["episode_id"] = compute_episode_id(**{
+        k: episode[k] for k in ("ticker", "detector_id", "variant", "first_armed_at")
+    })
+    with pytest.raises(CatalystContextError):
+        assess_catalyst_context_for_live_episode(
+            episode=episode, decision_at=T0, required_sources=["issuer_events"],
+            source_reads=[], evidence=[],
+        )
+
+
+@pytest.mark.parametrize("mutation", ["hash", "body", "envelope_event"])
+def test_hardening_binds_company_receipt_to_exact_workspace(mutation):
+    read = _current_company_read()
+    if mutation == "hash":
+        read["receipt"]["workspace_sha256"] = "0" * 64
+    elif mutation == "body":
+        read["workspace"]["issuer"]["display_name"] = "Changed after owner verification"
+    else:
+        read["event_id"] = "evt_cik0001045810_2026q2_results"
+    with pytest.raises(CatalystContextError):
+        assess_company_intelligence_current_read_for_live_episode(
+            episode=_live_episode(), read_result=read,
+            read_observed_at=T0, decision_at=T0,
+        )
+
+
+def test_hardening_binds_company_event_to_native_issuer():
+    workspace = _company_workspace(event_id="evt_cik0000320193_2026q3_results")
+    with pytest.raises(CatalystContextError):
+        adapt_company_intelligence_earnings_workspace(
+            workspace, ticker="NVDA", owner_observed_at=T0,
+        )
+
+
+@pytest.mark.parametrize("changes", [
+    {"coverage_complete": False}, {"context_state": "blocking_event_observed"},
+    {"required_sources": ()}, {"schema": "other"},
+])
+def test_hardening_direct_context_cannot_forge_inconsistent_wire(changes):
+    with pytest.raises(CatalystContextError):
+        replace(_assess(), **changes)
+
+
+def test_hardening_required_sources_is_not_a_bare_string():
+    with pytest.raises(CatalystContextError):
+        _assess(required_sources="issuer_events")
+
+
+@pytest.mark.parametrize("case", ["found", "uncovered", "corrupt_body"])
+def test_owner_publisher_reader_to_catalyst(tmp_path, monkeypatch, case):
+    """Exercise real owner publication and receipt validation, not a forged envelope.
+
+    Only the HTTP byte transport is substituted. No provider, outcome or live
+    ledger is read or written; all owner records here are fabricated fixtures.
+    """
+    from engine.company_intelligence.event_workspace import write_workspace_generation
+    from engine.neuralweb import company_intelligence_reader as reader
+
+    workspace = _company_workspace()
+    workspace["aliases"] = [] if case == "uncovered" else ["NVDA/2026Q3"]
+    product = tmp_path / "company_intelligence"
+    generation = write_workspace_generation(
+        product, {workspace["event_id"]: workspace},
+        generated_at=workspace["generated_at"],
+    )
+    # A distinct origin per fixture also prevents a cached previous case masking corruption.
+    base = "https://catalyst-owner-" + tmp_path.name.lower().replace("_", "-") + ".example"
+    paths = {base + "/" + p.relative_to(product).as_posix(): p.read_bytes()
+             for p in product.rglob("*.json")}
+    body_url = base + "/event_workspaces/generations/" + generation.name + "/workspaces/" + workspace["event_id"] + ".json"
+    if case == "corrupt_body":
+        body = json.loads(paths[body_url])
+        body["issuer"]["display_name"] = "Corrupted body after manifest publication"
+        paths[body_url] = canonical_json_bytes(body)
+    calls = []
+
+    def fetch_bytes(url, *, limit, allow_404=False):
+        calls.append(url)
+        assert url in paths, "Unexpected source: " + url
+        assert len(paths[url]) <= limit
+        return paths[url]
+
+    monkeypatch.setattr(reader, "_public_base_url", lambda: base)
+    monkeypatch.setattr(reader, "_fetch_bytes", fetch_bytes)
+    read = reader.read_current_event_workspace({"ticker": "NVDA"})
+    context = assess_company_intelligence_current_read_for_live_episode(
+        episode=_live_episode(), read_result=read, read_observed_at=T0, decision_at=T0,
+    )
+    assert calls
+    assert context.coverage_complete is False
+    assert all(v is False for v in context.to_dict()["authority"].values())
+    if case == "found":
+        assert read["available"] is True, read.get("note")
+        assert body_url in calls
+        assert context.context_state == "blocking_event_observed"
+        assert generation.name in context.blocking_evidence_refs[0]
+        before_calls = list(calls)
+        warm_read = reader.read_current_event_workspace({"ticker": "NVDA"})
+        warm_context = assess_company_intelligence_current_read_for_live_episode(
+            episode=_live_episode(), read_result=warm_read,
+            read_observed_at=T0, decision_at=T0,
+        )
+        assert calls == before_calls, "Warm validation must not add a network fetch"
+        assert warm_read["receipt"]["workspace_sha256"] == read["receipt"]["workspace_sha256"]
+        assert warm_context.to_dict() == context.to_dict()
+    else:
+        assert read["available"] is False
+        assert context.context_state == "coverage_unknown"
+        assert context.blocking_evidence_refs == ()

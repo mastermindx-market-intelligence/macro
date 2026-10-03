@@ -5,7 +5,7 @@
 **Consumer:** Terminal Tactical Intelligence / Dislocation + Reclaim product work  
 **Authority:** display/research only; no rank, size, gate, signal origination, escalation, order, or portfolio authority  
 **Frozen before:** any historical catalyst-outcome sweep or production wiring  
-**Wire contract:** `contracts/entry_radar_catalyst_context.schema.json`
+**Wire contract:** `research/live_entry_radar/contracts/catalyst_context.schema.json`
 
 ## 0. Commission
 
@@ -119,7 +119,7 @@ If no accepted source-owner mapping exists, disposition is `unknown`. An LLM sum
 
 The cross-repository consumer boundary is the owner schema:
 
-`contracts/entry_radar_catalyst_context.schema.json`
+`research/live_entry_radar/contracts/catalyst_context.schema.json`
 
 It is a closed Draft 2020-12 JSON Schema over the exact `CatalystContext.to_dict()` output.
 The schema fixes:
@@ -237,3 +237,27 @@ through the accepted incumbent private transport. R0 must not fabricate an episo
 Independent work may continue on the closed wire contract and Terminal consumer semantics.
 Any empirical timing/MAE/return claim still runs through Setup Species / Evaluation OS on the
 incumbent TrialLedger after lawful forward episodes exist; R0 creates no second evaluation ledger.
+
+
+## Pre-outcome integrity correction (2026-10-03)
+
+This is implementation hardening before any outcome read, not a new selector or
+trial. Required source sets, source-owned freshness, disposition precedence and
+all-false authority are unchanged. The context remains unmerged research code.
+
+- Intraday clocks require explicit timezone and second precision; date-only or
+  naive values are refused rather than assigned midnight/UTC. Microseconds are
+  retained in comparison, duplicate detection and wire serialization.
+- A current Radar snapshot may not be projected before its arm, candidate or last
+  observation clock. Missing snapshot clocks refuse the composition.
+- Company workspace evidence must match its owner-canonical payload hash and its
+  issuer/event identity. A 64-character hash shape is not payload verification.
+- Direct context construction must satisfy the same state/coverage invariants as
+  the assessor. Required sources are an explicit sequence, not a string.
+- CI collects these regressions in the incumbent Radar test step. No independent
+  workflow, scientific registry, source collector, production activation or trade
+  permission is introduced. This adds no historical coverage or absence proof.
+
+The unmerged schema is stored in the incumbent Radar research namespace; the
+existing ownership fence stays unchanged. Its schema identifier is not a live URL
+or publication claim. No published consumer or frozen detector schema changes.
