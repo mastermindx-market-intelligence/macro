@@ -4292,6 +4292,11 @@ CURATED_EXCLUSIVE = {
     # check_ci_trigger_closure.py (both run in this job) keep that list honest.
     "ci-control-plane-contracts",
     "live-flow-recovery-guards",
+    # 2026-10-03 Temporal Grain W1A current-main qualification. The six
+    # mechanical suites add CLI/subprocess fallback edges; the manifest owns
+    # their measured concrete closure explicitly instead of smearing unrelated
+    # code probes or raising the fleet packing ceilings.
+    "session-anchor-era",
     # 2026-09-23 B-HEAL-CI-PACK-CEILING-2 (main integration-baseline red on
     # this file's own packing-ceiling probe: templates/index.html 132 jobs /
     # 5,810 weight > 5,800; the two code probes over their job ceilings too).
