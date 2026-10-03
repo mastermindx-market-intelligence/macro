@@ -319,7 +319,7 @@ def _attach_transmission_edges(
             continue
         if not chain.get("active", False):
             continue
-        chain_as_of = chain.get("asof", as_of)
+        chain_as_of = chain.get("asof")  # source clock, never the driver date
         title = chain.get("title", {})
         title_en = title.get("en", chain_id) if isinstance(title, dict) else str(title)
 
@@ -352,7 +352,7 @@ def _attach_transmission_edges(
             node_id = f"transmission_{chain_id}_order{order_num}"
             nodes.append(_make_node(
                 node_id=node_id,
-                as_of=as_of,
+                as_of=chain_as_of,
                 domain="transmission",
                 source_artifact="data/transmission/latest.json",
                 entity=entity,
@@ -384,9 +384,11 @@ def _attach_transmission_edges(
                 dst_node=node_id,
                 mechanism_type="transmission_channel",
                 expected_lag=lag_class,
-                expected_sign="",
-                observed_sign=observed_sign,
-                status="measured",
+                # These asset verdicts come from historical association cells,
+                # not a measurement of a receiver move or a causal transmission.
+                expected_sign=observed_sign or "",
+                observed_sign=None,
+                status="context_only" if observed_sign is not None else "theory_prior",
                 evidence_refs=[f"transmission.chains.{chain_id}.order{order_num}"],
             ))
             prev_node_id = node_id
@@ -686,7 +688,13 @@ def compile(root: Path | None = None) -> dict:  # noqa: A001
         # data/transmission/latest.json is not synapse-registered (pre-existing gap);
         # use named constant rather than a silent hardcoded default.
         if not _is_stale(tx_asof, _TRANSMISSION_SLA_HOURS):
-            chains = transmission.get("chains", [])
+            # The upstream chain builder does not repeat its wrapper clock.
+            # Preserve an explicit chain clock (including an unknown one); only
+            # an absent key inherits THIS source's snapshot, never a driver date.
+            raw_chains = transmission.get("chains", [])
+            if isinstance(raw_chains, list):
+                chains = [dict(c, asof=c.get("asof", tx_asof))
+                          for c in raw_chains if isinstance(c, dict)]
     if not chains:
         log.debug("transmission chains unavailable or stale — continuing without")
 

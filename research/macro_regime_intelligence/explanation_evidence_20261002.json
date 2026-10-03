@@ -1,0 +1,112 @@
+{
+  "combined_tests": {
+    "failed": 0,
+    "log_sha256": "916bd26b4fbad018a56134a0fdb897578a1946731b5b6203dc14596025331f4e",
+    "passed": 1186,
+    "scope": "mechanism/new-change/producer/NW-consumers/restart/ask/cortex/gateway/streaming/tool-economics/evidence-coverage",
+    "skipped": 0,
+    "warnings": 9
+  },
+  "forecast_or_causal_performance_established": false,
+  "live_model_used": false,
+  "mutations": {
+    "borrow_driver_clock": {
+      "exit": 1,
+      "killed": true,
+      "summary": "1 failed, 40 deselected, 4 warnings in 0.86s"
+    },
+    "leak_legacy_observed_sign": {
+      "exit": 1,
+      "killed": true,
+      "summary": "1 failed, 40 deselected, 4 warnings in 0.96s"
+    },
+    "restore_measured_transmission": {
+      "exit": 1,
+      "killed": true,
+      "summary": "1 failed, 40 deselected, 4 warnings in 0.97s"
+    },
+    "skip_byte_limit": {
+      "exit": 1,
+      "killed": true,
+      "summary": "1 failed, 40 deselected, 4 warnings in 0.83s"
+    }
+  },
+  "operation": "regime-mechanism-evidence-20261002-astra-001",
+  "production_used": false,
+  "protected_procedure": "bdf2a972e68a70270c24d4b5d61a4d60edc4f288",
+  "red_cases": {
+    "mechanism": 26,
+    "recorded_changes": 21
+  },
+  "saved_input_proofs": {
+    "mechanism": {
+      "actual_ask_dispatch": true,
+      "causal_identification_established": false,
+      "live_provider_used": false,
+      "pathways": 3,
+      "production_used": false,
+      "source_base": "da1f7730b84a7f8758e5b1e81ed0de8e0718a9a0",
+      "source_bytes": 7022,
+      "source_path": "data/neuralweb/mechanism_pathways.json",
+      "source_sha256": "b3ad79e5b5ad182be81831cbcd543de097619f74a72cc254a31c6872403c0a5e",
+      "source_unchanged": true,
+      "summary": {
+        "conflicted_links": 0,
+        "contextual_transmission_links": 0,
+        "reported_observation_links": 3,
+        "stale_links": 0,
+        "theory_links": 0,
+        "unavailable_links": 0
+      }
+    },
+    "recorded_changes": {
+      "actual_ask_dispatch": true,
+      "comparison_note": "Existing ask dispatch applies plain-word projection; compare against that same baseline, not raw JSON labels.",
+      "live_provider_used": false,
+      "other_plain_word_consumer_blocks_unchanged": true,
+      "other_source_blocks_unchanged": true,
+      "production_used": false,
+      "projection_summary": {
+        "coverage_complete": false,
+        "event_time_verified": false,
+        "excluded": {
+          "after_source_snapshot": 0,
+          "duplicate_record": 0,
+          "future_dated": 0,
+          "invalid_record": 0,
+          "outside_window": 0,
+          "unchanged_record": 0
+        },
+        "n_transitions_14d": 20,
+        "omitted_records": 0,
+        "owner_reported_count": 20,
+        "reading_status": "available",
+        "record_date_semantics": "aggregate_snapshot_max_source_date_not_field_event_time"
+      },
+      "source_base": "da1f7730b84a7f8758e5b1e81ed0de8e0718a9a0",
+      "source_bytes": 217947,
+      "source_path": "data/neuralweb/world_state.json",
+      "source_sha256": "a702a58c1a616116db4575805928ff5e99b7184107d90bbeff249f3e2a5978e3",
+      "source_unchanged": true
+    }
+  },
+  "source_base": "da1f7730b84a7f8758e5b1e81ed0de8e0718a9a0",
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "8b783f9853763eadaea9751d54ade015f4c31d02b2ade669e47ddce2463b0785",
+    "app/deploy/update.sh": "e86391e8c74dbda988cb66b1e94d5ecdd8ba58b51fca45c10b4e356716f16a2a",
+    "config/unrun_test_baseline.json": "a58fb3fc45996f518f4016a49d047de3b57ba3e19e4a096330b8899d2c2704ec",
+    "engine/neuralweb/cortex.py": "14942b7c26ef27152aab26f1e2df71d77abe958d5ff3726ccc9837d61e2be7f2",
+    "engine/neuralweb/mechanism_evidence.py": "f763a0ef201f07e53f092e6a7823b96a3c84b049d39ce2f68cb32b620bde7a04",
+    "engine/neuralweb/mechanism_pathways.py": "d1dec7e91688d5c4939cf5340711419366aa246c8f8974a9a0e64c347d4c31d6",
+    "engine/neuralweb/regime_change_evidence.py": "b307ebb6dceef213c4d83e3452be4a2844c6f53bf41f161e41068bc753aaeaa1",
+    "tests/test_mechanism_evidence.py": "d525d19e653fee5248339566d432dd593852780514b0a22319ee2089f2de5d26",
+    "tests/test_mechanism_pathways.py": "6d3b08444d270b795e93d7c91cedb10c5fbd5a593e68d7afa8700ca0612e1c69",
+    "tests/test_regime_change_evidence.py": "6c4a452717e4ec1110bb3587591d9fc138d666f57bfea2070226224aa91c418c"
+  },
+  "test_environment": {
+    "anthropic": "0.125.0",
+    "dependency_install": "workspace-local system-site-packages venv; host packages unchanged",
+    "python": "3.14",
+    "restored_fixture": "site/mm_brain.js from exact unchanged base"
+  }
+}

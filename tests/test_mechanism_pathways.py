@@ -830,10 +830,10 @@ class TestTransmissionSchema:
         making entity always "transmission channel".  Fix reads from "verdict" ∈
         {headwind, tailwind} instead.
         """
-        regime = _make_regime(md_verdict="clear", md_primary="ai_semis")
+        regime = _make_regime(md_verdict="clear", md_primary="real_rate_shock")
         # Use real_rate_shock family so transmission chains attach
         regime["market_drivers"]["scores"] = [
-            {"driver": "ai_semis", "label": "AI/semis", "family": "real_rate_shock",
+            {"driver": "real_rate_shock", "label": "Real rates", "family": "rates",
              "projection": -1.36, "strength": 1.36, "direction": "AI/semis unwind"},
         ]
         transmission = _default_transmission()
@@ -844,6 +844,7 @@ class TestTransmissionSchema:
         # Find any transmission domain node
         all_nodes = [n for pw in pathways for n in pw.get("nodes", [])
                      if n.get("domain") == "transmission"]
+        assert all_nodes, "the real-rate driver must attach transmission nodes"
         if all_nodes:
             # At least one transmission node must have a non-degenerate entity
             # (i.e., it resolved actual asset names from the verdict field)
@@ -854,16 +855,16 @@ class TestTransmissionSchema:
                 f"Nodes: {[n.get('entity') for n in all_nodes]}"
             )
 
-    def test_transmission_observed_sign_non_none(self, tmp_path):
-        """Transmission edges must have a non-None observed_sign when verdict assets present.
+    def test_transmission_prior_sign_not_realized_observation(self, tmp_path):
+        """The actual calibration verdict becomes a prior, not observed causality.
 
-        F2 fix: the old code counted a.get("effect") == "headwind" which always
-        returned 0 (effect is "—" in the real schema), making observed_sign always
-        None.  Fix reads from a.get("verdict") == "headwind"/"tailwind".
+        This supersedes the old F2 observed-sign expectation. Its fixture used
+        an AI primary (which attached no rate chain) and a conditional assertion,
+        so it did not exercise the promised behavior at all.
         """
-        regime = _make_regime(md_verdict="clear", md_primary="ai_semis")
+        regime = _make_regime(md_verdict="clear", md_primary="real_rate_shock")
         regime["market_drivers"]["scores"] = [
-            {"driver": "ai_semis", "label": "AI/semis", "family": "real_rate_shock",
+            {"driver": "real_rate_shock", "label": "Real rates", "family": "rates",
              "projection": -1.36, "strength": 1.36, "direction": "AI/semis unwind"},
         ]
         transmission = _default_transmission()
@@ -872,13 +873,10 @@ class TestTransmissionSchema:
         pathways = result.get("pathways", [])
         all_edges = [e for pw in pathways for e in pw.get("edges", [])
                      if "transmission" in e.get("dst_node", "")]
-        if all_edges:
-            non_none = [e for e in all_edges if e.get("observed_sign") is not None]
-            assert non_none, (
-                f"all transmission edges have observed_sign=None; expected at least one "
-                f"to resolve from verdict-headwind/tailwind counts. "
-                f"Edges: {[(e.get('dst_node'), e.get('observed_sign')) for e in all_edges]}"
-            )
+        assert all_edges, "the real-rate driver must attach transmission links"
+        assert any(e["expected_sign"] in ("positive", "negative") for e in all_edges)
+        assert all(e["observed_sign"] is None for e in all_edges)
+        assert all(e["status"] in ("context_only", "theory_prior") for e in all_edges)
 
     def test_transmission_fixture_uses_real_schema(self):
         """Verify _default_transmission() uses the real schema fields (not CONFIRMED)."""
