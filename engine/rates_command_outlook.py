@@ -60,6 +60,52 @@ GUARD_KINDS = (
     "same_run_owner_copy",
     "sign_consistency",
 )
+# The exact key names each guard kind carries — a guard with a different
+# key set is a different guard (R3 L6).
+GUARD_KEYS: dict[str, frozenset] = {
+    "default_token_needs": frozenset({"kind", "default_token", "needs"}),
+    "owner_missing_token": frozenset({"kind", "missing_token"}),
+    "owner_publishes_null": frozenset({"kind"}),
+    "turn_watch_null": frozenset({
+        "kind", "applies_to", "status_path", "status_required",
+        "qualified_path", "needs", "null_is_middle_when_guarded",
+    }),
+    "credit_stress_leg": frozenset({
+        "kind", "hy_oas_z_path", "nfci_path",
+        "admit_true_when", "admit_false_when",
+        "otherwise_issue_when_published", "otherwise_issue_when_missing",
+    }),
+    "component_not_degraded": frozenset({"kind", "degraded_path"}),
+    "same_run_owner_copy": frozenset({
+        "kind", "applies_to", "copy_artifact", "copy_path",
+        "copy_clock_path", "own_clock_path", "fail_status", "fail_issue",
+    }),
+    "sign_consistency": frozenset({"kind", "other_path", "rule", "fail_issue"}),
+}
+# Values frozen by the contract; any key listed must carry exactly the value
+# recorded here (type-strict, json.dumps round-trip).
+GUARD_FIXED: dict[str, dict[str, Any]] = {
+    "turn_watch_null": {
+        "applies_to": "null_token",
+        "status_required": "available",
+        "null_is_middle_when_guarded": True,
+    },
+    "credit_stress_leg": {
+        "admit_true_when": "hy_oas_z > 1.00 or nfci < 0",
+        "admit_false_when": "hy_oas_z is finite and nfci < 0",
+        "otherwise_issue_when_published": "contains_sign_only_leg",
+        "otherwise_issue_when_missing": "owner_default_on_missing",
+    },
+    "same_run_owner_copy": {
+        "applies_to": "every_token",
+        "fail_status": "stale",
+        "fail_issue": "owner_did_not_write",
+    },
+    "sign_consistency": {
+        "rule": "implied_cuts_12m * implied_bp_12m <= 0",
+        "fail_issue": "owner_sign_inconsistent",
+    },
+}
 
 
 def load_mapping(path: Path | None = None) -> dict[str, Any]:
@@ -198,7 +244,10 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
                 continue
             if condition["evidence_family_id"] != field["evidence_family_id"]:
                 errors.append(f"{condition_id}: family differs from its field's")
-            if condition["not_discriminating"] != field["middle_tokens"]:
+            # R5(c) — order-insensitive: compare the sorted json.dumps texts.
+            if sorted(json.dumps(x, sort_keys=True) for x in condition["not_discriminating"]) != sorted(
+                json.dumps(x, sort_keys=True) for x in field["middle_tokens"]
+            ):
                 errors.append(
                     f"{condition_id}: not_discriminating {condition['not_discriminating']} "
                     f"is not the field's middle {field['middle_tokens']}"
@@ -219,43 +268,76 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
                         if token_id not in field_token_ids:
                             errors.append(f"{condition_id}: {token!r} not an owner token")
 
-                # L1 — no token is in two of the three columns
-                seen_columns: dict[str, int] = {}
+                # L1 — R5(a) order-insensitive: a token repeated inside one
+                # column is "repeated in a column"; a token seen in two distinct
+                # columns is "in two columns". Either error fires once per
+                # token and the token is recorded with the column(s) it visited.
+                seen_columns: dict[str, list[tuple[int, Any]]] = {}
                 for column_index, column in enumerate(_TOKEN_COLUMNS):
                     for token in condition[column]:
                         token_id = json.dumps(token, sort_keys=True)
-                        if token_id in seen_columns:
-                            errors.append(f"{condition_id}: token {token!r} is in two columns")
-                        seen_columns[token_id] = column_index
+                        seen_columns.setdefault(token_id, []).append((column_index, token))
+                for entries in seen_columns.values():
+                    columns = {e[0] for e in entries}
+                    if len(columns) > 1:
+                        token = entries[0][1]
+                        errors.append(f"{condition_id}: token {token!r} is in two columns")
+                    elif len(entries) > 1:
+                        token = entries[0][1]
+                        errors.append(f"{condition_id}: token {token!r} is repeated in a column")
 
-                # L2 — every non-None owner token is in one of the three columns
+                # L2 — every non-None owner token is in one of the three columns,
+                # except the owner's ``missing_token`` for an ``owner_missing_token``
+                # field (R2 — that token is never authored; if it ever appears
+                # in a column it is reported separately).
                 covered: set[str] = set()
                 for column in _TOKEN_COLUMNS:
                     for token in condition[column]:
                         covered.add(json.dumps(token, sort_keys=True))
+                guard_kind = (field.get("guard") or {}).get("kind")
+                missing_token_id: str | None = None
+                missing_token_repr: Any = None
+                if guard_kind == "owner_missing_token":
+                    missing_token = field["guard"]["missing_token"]
+                    missing_token_id = json.dumps(missing_token, sort_keys=True)
+                    missing_token_repr = missing_token
                 for token in field["tokens"]:
                     if token is None:
                         continue
-                    if json.dumps(token, sort_keys=True) not in covered:
+                    tid = json.dumps(token, sort_keys=True)
+                    if tid == missing_token_id:
+                        continue
+                    if tid not in covered:
                         errors.append(f"{condition_id}: owner token {token!r} is in no column")
+                if missing_token_id is not None and missing_token_id in covered:
+                    errors.append(
+                        f"{condition_id}: token {missing_token_repr!r} is the owner's missing token "
+                        f"and is in a column"
+                    )
             else:
                 # L4 — a numeric read row's entries are {op, value} dicts and
                 # together they partition the integers between one le and one ge
                 all_entries: list[dict[str, Any]] = []
                 malformed = False
-                for column in _TOKEN_COLUMNS:
+                le_column = ge_column = None
+                for column_index, column in enumerate(_TOKEN_COLUMNS):
                     for entry in condition[column]:
                         all_entries.append(entry)
-                for entry in all_entries:
-                    if (
-                        not isinstance(entry, dict)
-                        or set(entry.keys()) != {"op", "value"}
-                        or entry["op"] not in ("le", "ge", "eq")
-                        or isinstance(entry["value"], bool)
-                        or not isinstance(entry["value"], int)
-                    ):
-                        malformed = True
-                        break
+                        if malformed:
+                            continue
+                        if (
+                            not isinstance(entry, dict)
+                            or set(entry.keys()) != {"op", "value"}
+                            or entry["op"] not in ("le", "ge", "eq")
+                            or isinstance(entry["value"], bool)
+                            or not isinstance(entry["value"], int)
+                        ):
+                            malformed = True
+                            break
+                        if entry["op"] == "le":
+                            le_column = column_index
+                        elif entry["op"] == "ge":
+                            ge_column = column_index
                 if malformed:
                     errors.append(f"{condition_id}: numeric row has a malformed entry")
                 else:
@@ -266,6 +348,7 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
                         len(le_entries) != 1
                         or len(ge_entries) != 1
                         or le_entries[0]["value"] >= ge_entries[0]["value"]
+                        or le_column == ge_column
                     ):
                         errors.append(f"{condition_id}: numeric row does not partition the integers")
                     else:
@@ -275,8 +358,10 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
 
             by_field.setdefault(condition["field_id"], []).append(condition)
 
-    # Per-field pairwise check: identical-or-mirror, plus the (←) half of L3.
-    # The (→) half lives below on the cross-field grouping by statement_id.
+    # Per-field pairwise check: identical-or-mirror.
+    # The statement_id half of L3 lives in two places — same statement_id =>
+    # same field+row key (the cross-field grouping), and same field+row key =>
+    # same statement_id (R1(a), just before the open-row reuse check).
     for field_id, rows in by_field.items():
         first = rows[0]
         base = _row_key(first)
@@ -288,11 +373,6 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
                 errors.append(
                     f"{condition['condition_id']}: neither identical to nor a mirror of "
                     f"{first['condition_id']} on {field_id}"
-                )
-            if same != (condition["statement_id"] == first["statement_id"]):
-                errors.append(
-                    f"{condition['condition_id']}: statement_id identity disagrees with row identity "
-                    f"vs {first['condition_id']}"
                 )
 
     # L3 — statement_id identity vs row identity, checked across the whole
@@ -318,6 +398,22 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
                         f"vs {earlier['condition_id']}"
                     )
 
+    # R1(a) — converse of the L3 statement-group check: two read rows share
+    # a (field_id, row_key) exactly when they share a statement_id. Read rows
+    # are already in file order inside ``read_rows_in_file_order`` above.
+    by_field_and_key: dict[tuple[str, tuple[str, str, str]], list[dict[str, Any]]] = {}
+    for condition in read_rows_in_file_order:
+        key = (condition["field_id"], _row_key(condition))
+        by_field_and_key.setdefault(key, []).append(condition)
+    for group in by_field_and_key.values():
+        first = group[0]
+        for later in group[1:]:
+            if later["statement_id"] != first["statement_id"]:
+                errors.append(
+                    f"{later['condition_id']}: statement_id identity disagrees with row identity "
+                    f"vs {first['condition_id']}"
+                )
+
     # L3-ii — an open row's statement_id is used by no other row, read or open
     for path in mapping["paths"]:
         for condition in path["conditions"]:
@@ -333,15 +429,26 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
             if len(by_field.get(field_id, [])) > 1:
                 errors.append(f"{field_id}: more than one row reads a turn watch")
 
-    # L6 — guard kinds are closed; default_token_needs and owner_missing_token
-    # carry an owner token and (for default_token_needs) a non-empty needs list
+    # L6 — guards are complete and frozen. First failure per field short-circuits.
     for field_id, field in fields.items():
         guard = field.get("guard")
-        if not guard:
+        if not isinstance(guard, dict):
+            errors.append(f"{field_id}: no guard")
             continue
         kind = guard.get("kind")
         if kind not in GUARD_KINDS:
             errors.append(f"{field_id}: guard kind {kind!r} is not in the closed list")
+            continue
+        if set(guard.keys()) != GUARD_KEYS[kind]:
+            errors.append(f"{field_id}: guard keys do not match its kind")
+            continue
+        fixed_violation = False
+        for key, expected in GUARD_FIXED.get(kind, {}).items():
+            if json.dumps(guard[key], sort_keys=True) != json.dumps(expected, sort_keys=True):
+                errors.append(f"{field_id}: guard {key} is not the frozen value")
+                fixed_violation = True
+                break
+        if fixed_violation:
             continue
         if kind == "default_token_needs":
             owner_token_ids = _strict_token_ids(field["tokens"])
@@ -353,5 +460,19 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
             owner_token_ids = _strict_token_ids(field["tokens"])
             if json.dumps(guard["missing_token"], sort_keys=True) not in owner_token_ids:
                 errors.append(f"{field_id}: guard missing token is not an owner token")
+        elif kind == "turn_watch_null":
+            field_prefix = field["path"][:-1]
+            bad_series = False
+            for key in ("status_path", "qualified_path"):
+                if list(guard[key][: len(field_prefix)]) != field_prefix:
+                    errors.append(f"{field_id}: guard names another series")
+                    bad_series = True
+                    break
+            if bad_series:
+                continue
+            for entry in guard["needs"]:
+                if list(entry[: len(field_prefix)]) != field_prefix:
+                    errors.append(f"{field_id}: guard names another series")
+                    break
 
     return errors

@@ -375,6 +375,204 @@ def test_lint_names_each_broken_rule(mapping: dict, mutate) -> None:
 
 
 # --------------------------------------------------------------------------
+# round-3 repair tests (R1–R5)
+# --------------------------------------------------------------------------
+
+
+def _m_ds3_statement_id_mismatch(m: dict) -> None:
+    # R1 — DS-3 (financial_conditions_tight) shares its (field_id, row_key)
+    # with GD-4 (also financial_conditions_tight) but the prior implementation
+    # only compared DS-3 to the first read row on its field, never to GD-4.
+    _row(m, "DS-3")["statement_id"] = "zzz"
+
+
+def test_l3_catches_same_row_under_a_different_statement_id(mapping: dict) -> None:
+    """R1(a) — two read rows that are the same row must share a statement_id."""
+    broken = copy.deepcopy(mapping)
+    _m_ds3_statement_id_mismatch(broken)
+    errors = rco.lint_mapping(broken)
+    assert any(
+        error.startswith("DS-3: statement_id identity disagrees")
+        for error in errors
+    ), errors
+
+
+def _retarget_breakeven_trend_row(m: dict, source_id: str) -> dict:
+    """Return a deep-copy of an existing categorical row, retargeted to
+    ``T.breakeven_decomp.trend``. Per the R2 fallback the rule allows, we
+    retarget by carrying the source's family, statement_id, and a row_key
+    built from the target field's three non-missing tokens so the row is
+    legal end-to-end: family matches, statement_id is unique on the new
+    field, the new field's row_key is unique, and the three non-missing
+    tokens cover the field except for the owner's missing token ('n/a')."""
+    src = _row(m, source_id)
+    new = copy.deepcopy(src)
+    new["field_id"] = "T.breakeven_decomp.trend"
+    new["evidence_family_id"] = "treasury_curve"
+    new["statement_id"] = "breakeven_trend_test_only"
+    new["fits"] = ["uptrend"]
+    new["does_not_fit"] = ["downtrend"]
+    new["not_discriminating"] = ["choppy"]
+    new["open_reason"] = None
+    return new
+
+
+def test_l2_does_not_demand_owners_missing_token(mapping: dict) -> None:
+    """R2(a) — L2 does not demand the owner's missing token in a column.
+
+    The R2 fallback is taken: rather than author a brand-new legal row from
+    scratch, an existing categorical row is retargeted to
+    ``T.breakeven_decomp.trend`` with the three non-missing tokens covered
+    and 'n/a' deliberately omitted. Lint must not report 'n/a' or
+    "is in no column" for this row.
+    """
+    broken = copy.deepcopy(mapping)
+    for path in broken["paths"]:
+        for idx, condition in enumerate(path["conditions"]):
+            if condition["condition_id"] == "SC-3":
+                path["conditions"][idx] = _retarget_breakeven_trend_row(broken, "SC-3")
+                break
+    errors = rco.lint_mapping(broken)
+    sc3_errors = [e for e in errors if e.startswith("SC-3:")]
+    assert not any("'n/a'" in e for e in sc3_errors), sc3_errors
+    assert not any("is in no column" in e for e in sc3_errors), sc3_errors
+
+
+def test_l2_rejects_owners_missing_token_in_a_column(mapping: dict) -> None:
+    """R2(b) — if the owner's missing token appears in any column, lint fires."""
+    broken = copy.deepcopy(mapping)
+    for path in broken["paths"]:
+        for idx, condition in enumerate(path["conditions"]):
+            if condition["condition_id"] == "SC-3":
+                path["conditions"][idx] = _retarget_breakeven_trend_row(broken, "SC-3")
+                path["conditions"][idx]["fits"] = ["uptrend", "n/a"]
+                break
+    errors = rco.lint_mapping(broken)
+    assert any(
+        "is the owner's missing token and is in a column" in e
+        and e.startswith("SC-3:")
+        for e in errors
+    ), errors
+
+
+def _m_no_guard(m: dict) -> None:
+    _field(m, "T.state.rates.direction").pop("guard", None)
+
+
+def _m_turn_watch_status_required_stale(m: dict) -> None:
+    _field(m, "T.yield_momentum.series.10y.turn_watch")["guard"]["status_required"] = "stale"
+
+
+def _m_credit_stress_admit_true_when_tweaked(m: dict) -> None:
+    _field(m, "R.liquidity_quality.stress_overlay.confirming_stress")["guard"]["admit_true_when"] = (
+        "hy_oas_z >= 1.00 or nfci > 0"
+    )
+
+
+def _m_turn_watch_status_path_on_another_series(m: dict) -> None:
+    # 2y field — status_path pointed at the 2y series, which is the same
+    # series as the field itself. R3 says: status_path must start with
+    # field["path"][:-1], so the 2y → 2y path is fine; redirect to 5y.
+    _field(m, "T.yield_momentum.series.10y.turn_watch")["guard"]["status_path"] = [
+        "yield_momentum", "series", "5y", "status",
+    ]
+
+
+def _m_default_token_deleted(m: dict) -> None:
+    _field(m, "T.state.rates.direction")["guard"].pop("default_token")
+
+
+_L6_MUTANTS = (
+    (_m_no_guard, "T.state.rates.direction: no guard"),
+    (
+        _m_turn_watch_status_required_stale,
+        "T.yield_momentum.series.10y.turn_watch: guard status_required is not the frozen value",
+    ),
+    (
+        _m_credit_stress_admit_true_when_tweaked,
+        "R.liquidity_quality.stress_overlay.confirming_stress: guard admit_true_when is not the frozen value",
+    ),
+    (
+        _m_turn_watch_status_path_on_another_series,
+        "T.yield_momentum.series.10y.turn_watch: guard names another series",
+    ),
+)
+
+
+@pytest.mark.parametrize("mutate, expected", _L6_MUTANTS, ids=lambda v: v.__name__[3:] if callable(v) else v)
+def test_l6_names_each_frozen_violation(mapping: dict, mutate, expected) -> None:
+    """R3 — every guard mutates to a single named error."""
+    broken = copy.deepcopy(mapping)
+    mutate(broken)
+    errors = rco.lint_mapping(broken)
+    assert any(e == expected or e.startswith(expected) for e in errors), errors
+    assert rco.lint_mapping(mapping) == [], "the mutation leaked into the loaded mapping"
+
+
+def test_l6_missing_default_token_is_a_keyset_failure(mapping: dict) -> None:
+    """R3 — a guard missing ``default_token`` is a keyset failure, not a KeyError."""
+    broken = copy.deepcopy(mapping)
+    _m_default_token_deleted(broken)
+    try:
+        errors = rco.lint_mapping(broken)
+    except KeyError as exc:
+        pytest.fail(f"lint_mapping raised KeyError instead of reporting: {exc}")
+    assert any(
+        e == "T.state.rates.direction: guard keys do not match its kind" for e in errors
+    ), errors
+
+
+def _m_l1_repeated_in_a_column(m: dict) -> None:
+    # OD-1's fits = ['cooling']. Put 'cooling' twice in the same column.
+    _row(m, "OD-1")["fits"] = ["cooling", "cooling"]
+
+
+def _m_l4_le_and_ge_in_same_column(m: dict) -> None:
+    # RI-6 reads B.fed_path.implied_cuts_12m: le in does_not_fit (-1) and
+    # ge in fits (1). Move ge to does_not_fit so le and ge share a column.
+    _row(m, "RI-6")["fits"] = [{"op": "ge", "value": 1}, {"op": "eq", "value": 0}]
+    _row(m, "RI-6")["does_not_fit"] = [{"op": "le", "value": -1}]
+
+
+@pytest.mark.parametrize(
+    "mutate, expected",
+    (
+        (
+            _m_l1_repeated_in_a_column,
+            "OD-1: token 'cooling' is repeated in a column",
+        ),
+        (
+            _m_l4_le_and_ge_in_same_column,
+            "RI-6: numeric row does not partition the integers",
+        ),
+    ),
+    ids=lambda v: v.__name__[3:] if callable(v) else v,
+)
+def test_r5_nits_each_fire(mapping: dict, mutate, expected) -> None:
+    """R5 — three small lint sharpenings."""
+    broken = copy.deepcopy(mapping)
+    mutate(broken)
+    errors = rco.lint_mapping(broken)
+    assert any(e.startswith(expected) for e in errors), errors
+    assert rco.lint_mapping(mapping) == [], "the mutation leaked into the loaded mapping"
+
+
+def test_l2_not_discriminating_is_order_insensitive(mapping: dict) -> None:
+    """R5(c) — ``not_discriminating`` and the field's middle tokens compare
+    by their sorted json.dumps texts, so a row that reorders the middle
+    tokens stays clean."""
+    broken = copy.deepcopy(mapping)
+    # OD-1 reads T.state.inflation.direction; middle = ['steady'].
+    # Reorder via copy with reversed list — should still be a clean row.
+    for path in broken["paths"]:
+        for condition in path["conditions"]:
+            if condition["condition_id"] == "OD-1":
+                condition["not_discriminating"] = list(reversed(condition["not_discriminating"]))
+    errors = rco.lint_mapping(broken)
+    assert errors == [], errors
+
+
+# --------------------------------------------------------------------------
 # the file says what the contract's tables say
 # --------------------------------------------------------------------------
 
@@ -460,7 +658,7 @@ def test_every_condition_equals_its_contract_row(mapping: dict) -> None:
 
 
 def test_every_read_row_points_at_the_field_the_contract_names(mapping: dict) -> None:
-    """The contract abbreviates a path; its artifact letter and last segment must still match."""
+    """The contract abbreviates a path; its artifact letter and the path it writes must be the end of the mapping field's path."""
     tables = _contract_tables()
     documented = {row["condition_id"]: row for rows in tables.values() for row in rows}
     for condition in _conditions(mapping):
@@ -468,10 +666,15 @@ def test_every_read_row_points_at_the_field_the_contract_names(mapping: dict) ->
             continue
         cell = documented[condition["condition_id"]]["field_cell"]
         field = _field(mapping, condition["field_id"])
-        assert cell.split(" ", 1)[0] == field["artifact"], (condition["condition_id"], cell)
-        last = field["path"][-1]
-        assert isinstance(last, str)
-        assert _TICKED.findall(cell)[0].split(".")[-1] == last, (condition["condition_id"], cell, field["path"])
+        artifact, candidates = _parse_field_cell(cell)
+        assert artifact == field["artifact"], (condition["condition_id"], cell)
+        field_path = field["path"]
+        assert any(candidate == field_path[-len(candidate):] for candidate in candidates), (
+            condition["condition_id"],
+            cell,
+            field_path,
+            candidates,
+        )
 
 
 # --------------------------------------------------------------------------
@@ -544,15 +747,29 @@ def _parse_field_cell(cell: str) -> tuple[str, list]:
 
 
 def _split_path(text: str) -> list:
-    """Split a dotted path, expanding `name[key=value]` segments."""
+    """Split a dotted path, expanding ``name[key=value]`` and ``name[value]`` segments.
+
+    A ``[value]`` shorthand is treated as ``[key=value]`` with the literal key
+    name ``"key"``; the A.4 tables drop the ``key=`` part of the bracket
+    notation that the A.1 tables spell out, and both must parse to the same
+    dict-segment list.
+    """
     parts: list = []
     for segment in text.split("."):
-        match = re.match(r"^([A-Za-z_][A-Za-z0-9_]*)\[([A-Za-z_][A-Za-z0-9_]*)=([A-Za-z_][A-Za-z0-9_]*)\]$", segment)
-        if match:
-            parts.append(match.group(1))
-            parts.append({match.group(2): match.group(3)})
-        else:
-            parts.append(segment)
+        kv = re.match(
+            r"^([A-Za-z_][A-Za-z0-9_]*)\[([A-Za-z_][A-Za-z0-9_]*)=([A-Za-z_][A-Za-z0-9_]*)\]$",
+            segment,
+        )
+        if kv:
+            parts.append(kv.group(1))
+            parts.append({kv.group(2): kv.group(3)})
+            continue
+        bare = re.match(r"^([A-Za-z_][A-Za-z0-9_]*)\[([A-Za-z_][A-Za-z0-9_]*)\]$", segment)
+        if bare:
+            parts.append(bare.group(1))
+            parts.append({"key": bare.group(2)})
+            continue
+        parts.append(segment)
     return parts
 
 
