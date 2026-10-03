@@ -1180,6 +1180,37 @@ def test_fold_state_attempts_counts_failures(tmp_path):
 # 12. apply_decisions — batch approval application + governed retry
 # ─────────────────────────────────────────────────────────────────────────────
 
+def test_media_repair_projection_prefers_newer_entry_failure():
+    from engine.marketing.outbox import media_repair_observation
+
+    observed = media_repair_observation(
+        [{
+            "kind": "chart_svg",
+            "path": "data/marketing/outbox/media/2026-09-20/chart-001.svg",
+            "chart_id": "chart-001",
+            "media_repair": {
+                "state": "render_failure",
+                "reason": "empty_png_bytes",
+                "repair_process": "content_studio",
+                "repairable": True,
+            },
+        }],
+        chart_id="chart-001",
+        producer_observation={
+            "state": "upload_pending",
+            "reason": "hosted_media_missing",
+            "repair_process": "marketing_media_backfill",
+            "repairable": True,
+        },
+    )
+    assert observed == {
+        "state": "render_failure",
+        "reason": "empty_png_bytes",
+        "repair_process": "content_studio",
+        "repairable": True,
+    }
+
+
 def test_apply_decisions_approves_queued(tmp_path):
     from engine.marketing.outbox import (
         apply_decisions, current_statuses, enqueue, record_decision,
@@ -1198,6 +1229,138 @@ def test_apply_decisions_approves_queued(tmp_path):
     st = current_statuses(tmp_path)
     assert st[a["id"]] == "approved"
     assert st[b["id"]] == "queued"  # hold never transitions
+
+
+def test_media_change_invalidates_approval_digest(tmp_path):
+    from engine.marketing.ledgers import append_jsonl
+    from engine.marketing.outbox import (
+        apply_decisions, current_statuses, enqueue, latest_decisions,
+        make_item, record_decision,
+    )
+    from scripts.marketing_media_backfill import media_key, sidecar_path
+
+    item = make_item(
+        account="flagship", kind="chart", text="$CLH entry is 323.",
+        as_of="2026-09-20", provenance="content_studio", now=_FIXED_NOW,
+        media=[{
+            "kind": "chart_svg",
+            "path": "data/marketing/outbox/media/2026-09-20/chart-001.svg",
+            "chart_id": "chart-001",
+            "ticker": "CLH",
+        }],
+        source={"chart_id": "chart-001"},
+    )
+    assert enqueue(item, root=tmp_path) == "queued"
+    assert record_decision(item["id"], "approve", actor="op", root=tmp_path)
+    first_digest = latest_decisions(tmp_path)[item["id"]]["payload_digest"]
+
+    assert append_jsonl(sidecar_path(tmp_path), {
+        "key": media_key(item["as_of"], "chart-001"),
+        "as_of": item["as_of"],
+        "chart_id": "chart-001",
+        "media_url": "https://pub.example/chart-001-deadbeef.png",
+        "asset_key": "marketing/charts/2026-09-20/chart-001-deadbeef.png",
+        "sha256": "deadbeef",
+    })
+
+    out = apply_decisions(tmp_path)
+    assert out["approved"] == []
+    assert current_statuses(tmp_path)[item["id"]] == "queued"
+
+    assert record_decision(item["id"], "approve", actor="op", root=tmp_path)
+    second_digest = latest_decisions(tmp_path)[item["id"]]["payload_digest"]
+    assert second_digest != first_digest
+    assert apply_decisions(tmp_path)["approved"] == [item["id"]]
+
+
+def test_media_change_after_approval_blocks_dispatch_until_fresh_approval(tmp_path):
+    """A late sidecar repair may not ride an earlier operator approval."""
+    from engine.marketing.ledgers import append_jsonl
+    from engine.marketing.outbox import (
+        apply_decisions, current_statuses, enqueue, make_item,
+        record_decision, transition,
+    )
+    from scripts.marketing_media_backfill import media_key, sidecar_path
+
+    item = make_item(
+        account="flagship", kind="chart", text="$CLH entry is 323.",
+        as_of="2026-09-20", provenance="content_studio", now=_FIXED_NOW,
+        media=[{
+            "kind": "chart_svg",
+            "path": "data/marketing/outbox/media/2026-09-20/chart-001.svg",
+            "chart_id": "chart-001",
+            "ticker": "CLH",
+        }],
+        source={"chart_id": "chart-001"},
+    )
+    assert enqueue(item, root=tmp_path) == "queued"
+    assert record_decision(item["id"], "approve", actor="op", root=tmp_path)
+    assert apply_decisions(tmp_path)["approved"] == [item["id"]]
+    assert current_statuses(tmp_path)[item["id"]] == "approved"
+
+    assert append_jsonl(sidecar_path(tmp_path), {
+        "key": media_key(item["as_of"], "chart-001"),
+        "as_of": item["as_of"],
+        "chart_id": "chart-001",
+        "media_url": "https://pub.example/chart-001-deadbeef.png",
+        "asset_key": "marketing/charts/2026-09-20/chart-001-deadbeef.png",
+        "sha256": "deadbeef",
+    })
+
+    assert not transition(
+        item["id"], "posting", actor="publisher", root=tmp_path,
+        note="in-flight (pre-publish)",
+    )
+    assert current_statuses(tmp_path)[item["id"]] == "approved"
+
+    assert record_decision(item["id"], "approve", actor="op", root=tmp_path)
+    assert transition(
+        item["id"], "posting", actor="publisher", root=tmp_path,
+        note="in-flight (pre-publish)",
+    )
+
+
+def test_media_repair_never_resurrects_posted_item(tmp_path):
+    """Repair may improve bytes/URL, never recreate a terminal send path."""
+    from engine.marketing.ledgers import append_jsonl
+    from engine.marketing.outbox import (
+        apply_decisions, current_statuses, enqueue, make_item,
+        record_decision, transition,
+    )
+    from scripts.marketing_media_backfill import media_key, sidecar_path
+
+    item = make_item(
+        account="flagship", kind="chart", text="$CLH entry is 323.",
+        as_of="2026-09-20", provenance="content_studio", now=_FIXED_NOW,
+        media=[{
+            "kind": "chart_svg",
+            "path": "data/marketing/outbox/media/2026-09-20/chart-001.svg",
+            "chart_id": "chart-001",
+            "ticker": "CLH",
+        }],
+        source={"chart_id": "chart-001"},
+    )
+    assert enqueue(item, root=tmp_path) == "queued"
+    assert record_decision(item["id"], "approve", actor="op", root=tmp_path)
+    assert apply_decisions(tmp_path)["approved"] == [item["id"]]
+    assert transition(item["id"], "posting", actor="publisher", root=tmp_path)
+    assert transition(item["id"], "posted", actor="publisher", root=tmp_path)
+
+    assert append_jsonl(sidecar_path(tmp_path), {
+        "key": media_key(item["as_of"], "chart-001"),
+        "as_of": item["as_of"],
+        "chart_id": "chart-001",
+        "media_url": "https://pub.example/chart-001-deadbeef.png",
+        "asset_key": "marketing/charts/2026-09-20/chart-001-deadbeef.png",
+        "sha256": "deadbeef",
+    })
+    assert record_decision(item["id"], "approve", actor="op", root=tmp_path)
+
+    assert apply_decisions(tmp_path) == {
+        "approved": [], "rearmed": [], "quarantined": [],
+    }
+    assert current_statuses(tmp_path)[item["id"]] == "posted"
+    assert not transition(item["id"], "approved", actor="publisher", root=tmp_path)
 
 
 def test_apply_decisions_idempotent(tmp_path):
