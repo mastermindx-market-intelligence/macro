@@ -70,7 +70,7 @@ def sha256_file(path):
 def snapshot_tree():
     entries = []
     for path in sorted(ROOT.rglob("*")):
-        if "__pycache__" in path.parts:
+        if "__pycache__" in path.relative_to(ROOT).parts:
             continue
         entries.append((str(path.relative_to(ROOT)), path.is_dir()))
     return entries
