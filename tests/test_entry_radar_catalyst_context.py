@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import copy
+import json
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 import pytest
+from jsonschema import Draft202012Validator
 
 from engine.entry_radar.catalyst_context import (
     CatalystContextError,
@@ -19,6 +23,12 @@ from engine.entry_radar.catalyst_adapters import (
     assess_company_intelligence_current_read_for_live_episode,
 )
 from engine.entry_radar.live_ledger import LiveEpisode, compute_episode_id
+
+ROOT = Path(__file__).resolve().parent.parent
+CATALYST_CONTEXT_SCHEMA = json.loads(
+    (ROOT / "contracts" / "entry_radar_catalyst_context.schema.json").read_text()
+)
+CATALYST_CONTEXT_VALIDATOR = Draft202012Validator(CATALYST_CONTEXT_SCHEMA)
 
 T0 = datetime(2026, 10, 2, 14, 30, tzinfo=timezone.utc)
 
@@ -626,3 +636,107 @@ def test_current_company_read_cannot_backdate_before_workspace_generation():
             read_observed_at=too_early,
             decision_at=T0,
         )
+
+
+
+def _schema_messages(payload):
+    return [
+        error.message
+        for error in sorted(
+            CATALYST_CONTEXT_VALIDATOR.iter_errors(payload),
+            key=lambda error: tuple(str(part) for part in error.absolute_path),
+        )
+    ]
+
+
+def test_catalyst_context_wire_schema_accepts_runtime_serialization():
+    payload = _assess().to_dict()
+    assert _schema_messages(payload) == []
+
+
+def test_catalyst_context_wire_schema_is_closed_to_unknown_root_fields():
+    payload = _assess().to_dict()
+    payload["surprise_score"] = 99
+    errors = _schema_messages(payload)
+    assert any("Additional properties are not allowed" in message for message in errors)
+
+
+def test_catalyst_context_wire_schema_hard_false_authority_cannot_be_escalated():
+    payload = copy.deepcopy(_assess().to_dict())
+    payload["authority"]["can_gate"] = True
+    errors = _schema_messages(payload)
+    assert any("False was expected" in message for message in errors)
+
+
+def test_catalyst_context_wire_schema_refuses_surrogate_episode_identity():
+    payload = _assess().to_dict()
+    payload["radar_episode_id"] = "radar:episode:abc123"
+    errors = _schema_messages(payload)
+    assert any("does not match" in message for message in errors)
+
+
+def test_catalyst_context_wire_schema_requires_nonempty_declared_source_set():
+    payload = _assess().to_dict()
+    payload["required_sources"] = []
+    errors = _schema_messages(payload)
+    assert any("should be non-empty" in message or "is too short" in message for message in errors)
+
+
+@pytest.mark.parametrize(
+    ("mutator", "needle"),
+    [
+        (
+            lambda payload: payload.update(
+                {
+                    "context_state": "coverage_unknown",
+                    "coverage_complete": True,
+                }
+            ),
+            "False was expected",
+        ),
+        (
+            lambda payload: payload.update(
+                {
+                    "context_state": "blocking_event_observed",
+                    "blocking_evidence_refs": [],
+                }
+            ),
+            "should be non-empty",
+        ),
+        (
+            lambda payload: payload.update(
+                {
+                    "context_state": "no_blocking_event_observed",
+                    "blocking_evidence_refs": ["event:should-not-exist"],
+                }
+            ),
+            "is expected to be empty",
+        ),
+    ],
+)
+def test_catalyst_context_wire_schema_pins_state_semantics(mutator, needle):
+    payload = _assess().to_dict()
+    mutator(payload)
+    errors = _schema_messages(payload)
+    assert any(
+        needle in message
+        or ("is too short" in message and needle == "should be non-empty")
+        or ("is too long" in message and needle == "is expected to be empty")
+        for message in errors
+    )
+
+
+def test_catalyst_context_wire_schema_pins_house_utc_second_timestamp():
+    payload = _assess().to_dict()
+    payload["decision_at"] = "2026-10-02T14:30:00+00:00"
+    errors = _schema_messages(payload)
+    assert any("does not match" in message for message in errors)
+
+
+def test_catalyst_context_wire_schema_closes_source_read_shape_and_status():
+    payload = _assess().to_dict()
+    payload["source_reads"][0]["extra"] = "not-owned"
+    payload["source_reads"][0]["status"] = "fresh"
+    errors = _schema_messages(payload)
+    assert any("Additional properties are not allowed" in message for message in errors)
+    assert any("is not one of" in message for message in errors)
