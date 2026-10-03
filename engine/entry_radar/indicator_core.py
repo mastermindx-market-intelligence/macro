@@ -231,9 +231,12 @@ def stoch_rsi_kd_appended(
 ) -> tuple[float | None, float | None]:
     """StochRSI (%K, %D) after appending one bar at ``price`` without rescanning history.
 
-    Matches :func:`stoch_rsi_kd` on ``closes + [price]`` within ``1e-9`` (not bit-for-bit):
-    pandas ``rolling().mean()`` uses a running compensated sum that can diverge slightly
-    from a plain float mean over the same window.
+    For a finite ``price``, matches :func:`stoch_rsi_kd` on ``closes + [price]`` to about
+    ``1e-12``, not bit-for-bit (pandas ``rolling().mean()`` uses a running sum).
+    A non-finite ``price`` returns ``(None, None)``; the canonical series carries the last
+    finite value forward — callers must not pass a non-finite price.
+    A caller that makes a strict comparison on K or D must re-answer from the canonical
+    calculator near the decision boundary (see ``live_pack.ORACLE_TIE_BAND``).
     """
     alpha = 1.0 / canon.RSI_LEN
     d = price - state.last_close

@@ -1,7 +1,6 @@
 """Pack solver uses O(1) append oracle; canonical path remains fallback."""
 from __future__ import annotations
 
-import time
 from datetime import date
 
 import numpy as np
@@ -137,20 +136,56 @@ def test_short_history_falls_back_to_canonical(monkeypatch: pytest.MonkeyPatch) 
     assert fast_name == canon_name
 
 
-def test_pack_name_is_much_faster_with_the_fast_oracle(monkeypatch: pytest.MonkeyPatch) -> None:
-    frozen = lp._synthetic_daily(11544, start=100.0, step=0.01, end_session=AS_OF)
+def test_fast_pack_name_makes_one_full_history_pass(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls = {"n": 0}
+    real_kd = ic.stoch_rsi_kd
+
+    def counting_kd(s: pd.Series) -> tuple[pd.Series, pd.Series]:
+        calls["n"] += 1
+        return real_kd(s)
+
+    monkeypatch.setattr(ic, "stoch_rsi_kd", counting_kd)
+    frozen = lp._synthetic_daily(600, start=100.0, step=0.01, end_session=AS_OF)
     kwargs = dict(next_session=NEXT_SESSION, market=MARKET)
-    monkeypatch.setattr(lp, "substrate_fingerprint", lambda _f: "bench")
+    lp._pack_name("CNT", frozen, **kwargs)
+    fast_calls = calls["n"]
+    calls["n"] = 0
     monkeypatch.setattr(ic, "stoch_rsi_append_state", lambda _c: None)
-    t0 = time.perf_counter()
-    lp._pack_name("BIG", frozen, **kwargs)
-    canon_s = time.perf_counter() - t0
+    lp._pack_name("CNT", frozen, **kwargs)
+    canon_calls = calls["n"]
+    assert fast_calls <= 2
+    assert canon_calls >= 40
+
+
+def test_inversion_proof_never_calls_the_fast_oracle(monkeypatch: pytest.MonkeyPatch) -> None:
+    from tests.test_entry_radar_w4_pack import build
+
+    pack = build()
+    def _proof_must_be_canonical(_s: ic.StochRsiAppendState, _p: float) -> tuple[float | None, float | None]:
+        raise AssertionError("proof must be canonical")
+
+    monkeypatch.setattr(ic, "stoch_rsi_kd_appended", _proof_must_be_canonical)
+    proof = lp.build_inversion_proof(pack)
+    assert proof["pass"] is True
+    assert proof["cases_total"] > 0
+
+
+def test_inversion_proof_fails_when_the_fast_oracle_is_wrong(monkeypatch: pytest.MonkeyPatch) -> None:
+    from tests.test_entry_radar_w4_pack import build
+
+    real_appended = ic.stoch_rsi_kd_appended
+
+    def wrong_k(_s: ic.StochRsiAppendState, price: float) -> tuple[float | None, float | None]:
+        k, d = real_appended(_s, price)
+        return (k + 15.0 if k is not None else None, d)
+
+    monkeypatch.setattr(ic, "stoch_rsi_kd_appended", wrong_k)
+    pack = build()
     monkeypatch.undo()
-    monkeypatch.setattr(lp, "substrate_fingerprint", lambda _f: "bench")
-    t1 = time.perf_counter()
-    lp._pack_name("BIG", frozen, **kwargs)
-    fast_s = time.perf_counter() - t1
-    assert fast_s * 5 <= canon_s, f"fast={fast_s:.4f}s canon={canon_s:.4f}s ratio={canon_s/fast_s:.1f}x"
+    proof = lp.build_inversion_proof(pack)
+    assert proof["pass"] is False
+    failures = proof.get("failures") or []
+    assert any(f.get("family") == "threshold_boundary" for f in failures)
 
 
 def test_default_oracle_frame_construction_is_canonical() -> None:

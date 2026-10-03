@@ -90,6 +90,80 @@ def test_state_is_none_or_agrees_on_flat_history() -> None:
             assert abs(ad - rd) <= 1e-9
 
 
+def test_constant_rsi_window_gives_none_pair() -> None:
+    s = ic.StochRsiAppendState(
+        last_close=100.0,
+        up_prev=0.0,
+        dn_prev=1.0,
+        rsi_tail=(0.0,) * 13,
+        rawk_tail=(50.0, 60.0),
+        k_tail=(40.0, 45.0),
+    )
+    assert ic.stoch_rsi_kd_appended(s, 99.0) == (None, None)
+
+
+def test_zero_loss_average_gives_none_pair() -> None:
+    s = ic.StochRsiAppendState(
+        last_close=100.0,
+        up_prev=1.0,
+        dn_prev=0.0,
+        rsi_tail=(50.0,) * 13,
+        rawk_tail=(50.0, 60.0),
+        k_tail=(40.0, 45.0),
+    )
+    assert ic.stoch_rsi_kd_appended(s, 101.0) == (None, None)
+
+
+def test_nan_inside_the_rsi_window_gives_none_pair() -> None:
+    s = ic.StochRsiAppendState(
+        last_close=100.0,
+        up_prev=1.0,
+        dn_prev=1.0,
+        rsi_tail=(50.0,) * 6 + (float("nan"),) + (50.0,) * 6,
+        rawk_tail=(50.0, 60.0),
+        k_tail=(40.0, 45.0),
+    )
+    assert ic.stoch_rsi_kd_appended(s, 101.0) == (None, None)
+
+
+def test_finite_window_gives_a_finite_pair() -> None:
+    s = ic.StochRsiAppendState(
+        last_close=100.0,
+        up_prev=1.0,
+        dn_prev=1.0,
+        rsi_tail=(50.0,) * 13,
+        rawk_tail=(50.0, 60.0),
+        k_tail=(40.0, 45.0),
+    )
+    k, d = ic.stoch_rsi_kd_appended(s, 101.0)
+    assert k is not None and d is not None
+    assert abs(k - (50.0 + 60.0 + 100.0) / 3.0) <= 1e-12
+    assert abs(d - (40.0 + 45.0 + k) / 3.0) <= 1e-12
+
+
+def test_monotone_decline_agrees_with_canonical() -> None:
+    closes = 100.0 - 0.5 * np.arange(80)
+    prices = np.array(
+        [closes[-1] - 0.5, closes[-1], closes[-1] + 0.5, closes[-1] + 5.0],
+        dtype=float,
+    )
+    state = ic.stoch_rsi_append_state(closes)
+    assert state is not None
+    _assert_matches_reference(closes, prices)
+
+
+def test_monotone_rise_agrees_with_canonical() -> None:
+    closes = 100.0 + 0.5 * np.arange(80)
+    if ic.stoch_rsi_append_state(closes) is None:
+        assert ic.stoch_rsi_append_state(closes) is None
+        return
+    prices = np.array(
+        [closes[-1] + 0.5, closes[-1], closes[-1] - 0.5, closes[-1] - 5.0],
+        dtype=float,
+    )
+    _assert_matches_reference(closes, prices)
+
+
 def test_non_finite_price_returns_none_pair() -> None:
     rng = np.random.default_rng(7)
     closes = 100.0 + np.cumsum(rng.normal(0, 1, 400))
