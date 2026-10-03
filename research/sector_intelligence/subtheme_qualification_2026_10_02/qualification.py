@@ -23,6 +23,27 @@ class QualificationError(ValueError):
     """An input cannot support the requested scientific comparison."""
 
 
+def identifier(value: Any) -> str:
+    if not isinstance(value, str) or not value or value != value.strip():
+        raise QualificationError("CANONICAL_IDENTIFIER_REQUIRED")
+    return value
+
+
+def canonical_date(value: Any) -> str:
+    try:
+        if not isinstance(value, str) or date.fromisoformat(value).isoformat() != value:
+            raise ValueError("noncanonical date")
+    except (TypeError, ValueError) as exc:
+        raise QualificationError("INVALID_EFFECTIVE_DATE") from exc
+    return value
+
+
+def content_digest(value: Any) -> str:
+    """Canonical content identity, not merely a set of row labels."""
+    text = json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
 def instant(value: str) -> datetime:
     try:
         d = datetime.fromisoformat(value.replace("Z", "+00:00"))
@@ -73,7 +94,7 @@ def frozen_members(signal: Mapping[str, Any]) -> list[dict[str, Any]]:
         raise QualificationError("EMPTY_MEMBERSHIP")
     tickers, issuers, out = set(), set(), []
     for m in rows:
-        ticker, issuer = m["ticker"], m["issuer_id"]
+        ticker, issuer = identifier(m["ticker"]), identifier(m["issuer_id"])
         if not ticker or not issuer or ticker in tickers or issuer in issuers:
             raise QualificationError("DUPLICATE_OR_EMPTY_SECURITY_ISSUER")
         tickers.add(ticker)
@@ -82,6 +103,11 @@ def frozen_members(signal: Mapping[str, Any]) -> list[dict[str, Any]]:
             raise QualificationError("MEMBERSHIP_KNOWN_AFTER_DECISION")
         if instant(m["weight_known_at"]) > decision:
             raise QualificationError("WEIGHT_KNOWN_AFTER_DECISION")
+        canonical_date(m["valid_from"])
+        if m.get("valid_to") is not None:
+            canonical_date(m["valid_to"])
+            if m["valid_to"] <= m["valid_from"]:
+                raise QualificationError("INVALID_EFFECTIVE_INTERVAL")
         if m["valid_from"] > signal["session"] or (
             m.get("valid_to") is not None and signal["session"] >= m["valid_to"]
         ):
@@ -117,6 +143,9 @@ def evidence_at(records: Sequence[Mapping[str, Any]], cutoff: str) -> dict[str, 
         published = instant(r["published_at"])
         if published > known:
             raise QualificationError("PUBLICATION_AFTER_KNOWLEDGE")
+        identifier(r["claim_id"])
+        if r.get("status", "ACTIVE") not in ("ACTIVE", "RETRACTED"):
+            raise QualificationError("UNKNOWN_EVIDENCE_STATUS")
         key = (r["claim_id"], known)
         if key in seen:
             raise QualificationError("AMBIGUOUS_CLAIM_VERSION")
@@ -127,7 +156,10 @@ def evidence_at(records: Sequence[Mapping[str, Any]], cutoff: str) -> dict[str, 
         if old is None or instant(old["known_at"]) < known:
             claims[r["claim_id"]] = dict(r)
     rows = [claims[k] for k in sorted(claims)]
-    return {"claims": rows, "independent_source_clusters": len({r["source_cluster_id"] for r in rows})}
+    active = [r for r in rows if r.get("status", "ACTIVE") == "ACTIVE"]
+    return {"claims": active,
+            "retracted_claims": [r for r in rows if r.get("status") == "RETRACTED"],
+            "independent_source_clusters": len({r["source_cluster_id"] for r in active})}
 
 
 def label_group(signal: Mapping[str, Any], horizon: int, sessions: Sequence[Mapping[str, Any]],
@@ -136,6 +168,8 @@ def label_group(signal: Mapping[str, Any], horizon: int, sessions: Sequence[Mapp
     base: dict[str, Any] = {"snapshot_id": signal.get("snapshot_id"), "group_id": signal.get("group_id"),
                            "horizon_sessions": horizon, "status": "INELIGIBLE", "authority": CAPS.copy()}
     try:
+        identifier(signal.get("snapshot_id"))
+        identifier(signal.get("group_id"))
         if isinstance(horizon, bool) or not isinstance(horizon, int) or horizon < 1:
             raise QualificationError("INVALID_HORIZON")
         dates, axis = session_axis(sessions)
@@ -149,7 +183,8 @@ def label_group(signal: Mapping[str, Any], horizon: int, sessions: Sequence[Mapp
         members = frozen_members(signal)
         base.update(expected_members=len(members), measured_members=0, covered_weight=0.0,
                     decision_at=signal["decision_at"], signal_session=signal["session"],
-                    scores=dict(signal.get("scores", {})))
+                    scores=dict(signal.get("scores", {})), benchmark=signal.get("benchmark"),
+                    population_digest=content_digest(sorted(members, key=lambda m: m["ticker"])))
         start_index = dates.index(signal["session"]) + 1
         end_index = start_index + horizon - 1
         if end_index >= len(dates):
@@ -168,6 +203,9 @@ def label_group(signal: Mapping[str, Any], horizon: int, sessions: Sequence[Mapp
             a, b = prices.get((ticker, start)), prices.get((ticker, end))
             if a is None or b is None:
                 return None, "EXACT_ENDPOINT_MISSING"
+            if (a.get("ticker") != ticker or b.get("ticker") != ticker
+                    or a.get("session") != start or b.get("session") != end):
+                return None, "PRICE_ROW_IDENTITY_MISMATCH"
             if not a.get("basis_id") or a["basis_id"] != b.get("basis_id"):
                 return None, "PRICE_BASIS_MISMATCH"
             if instant(a["known_at"]) > evaluation or instant(b["known_at"]) > evaluation:
@@ -241,6 +279,10 @@ def rank_ic(a: Sequence[float], b: Sequence[float]) -> float | None:
 
 def paired_comparison(rows: Sequence[Mapping[str, Any]], baseline: str, challenger: str) -> dict[str, Any]:
     """Both scores evaluated on the exact same retained labels. No global winner."""
+    identifier(baseline)
+    identifier(challenger)
+    if baseline == challenger:
+        raise QualificationError("DISTINCT_MODELS_REQUIRED")
     seen, groups, excluded = set(), {}, {}
     for r in rows:
         key = (r["snapshot_id"], r["horizon_sessions"])
@@ -264,13 +306,25 @@ def paired_comparison(rows: Sequence[Mapping[str, Any]], baseline: str, challeng
         groups.setdefault(g, []).append(r)
     per_date = []
     for (h, day), cohort in sorted(groups.items()):
-        ids = sorted(r["snapshot_id"] for r in cohort)
+        if len({r.get("target_basis") for r in cohort}) != 1:
+            raise QualificationError("MIXED_TARGET_BASIS")
+        paired_content = [{"snapshot_id": r["snapshot_id"], "group_id": r["group_id"],
+                           "horizon_sessions": h, "signal_session": day,
+                           "population_digest": r.get("population_digest"),
+                           "target_basis": r.get("target_basis"), "benchmark": r.get("benchmark"),
+                           "entry_at": r.get("entry_at"), "exit_at": r.get("exit_at"),
+                           "outcome_known_at": r.get("outcome_known_at"),
+                           "forward_excess": r["forward_excess"],
+                           "baseline": baseline, "baseline_score": r["scores"][baseline],
+                           "challenger": challenger, "challenger_score": r["scores"][challenger]}
+                          for r in sorted(cohort, key=lambda x: x["snapshot_id"])]
         if len({r["group_id"] for r in cohort}) != len(cohort):
             raise QualificationError("DUPLICATE_GROUP_IN_COMPARISON")
         a = rank_ic([r["scores"][baseline] for r in cohort], [r["forward_excess"] for r in cohort])
         b = rank_ic([r["scores"][challenger] for r in cohort], [r["forward_excess"] for r in cohort])
         per_date.append({"horizon_sessions": h, "session": day, "matched_rows": len(cohort),
-                         "pair_digest": hashlib.sha256(json.dumps(ids).encode()).hexdigest(),
+                         "pair_digest": content_digest(paired_content),
+                         "pair_digest_schema": "matched_label_and_score_content.v2",
                          "baseline_ic": a, "challenger_ic": b,
                          "ic_delta": b-a if a is not None and b is not None else None})
     summary = {}
@@ -337,6 +391,9 @@ def run_packet(packet: Mapping[str, Any]) -> dict[str, Any]:
             "label_status_counts": {k: sum(r["status"] == k for r in labels) for k in sorted({r["status"] for r in labels})},
             "comparison": paired_comparison(labels, packet["baseline"], packet["challenger"]),
             "max_disjoint_time_windows": nonoverlapping_time_windows(measured),
+            "disjoint_time_windows_by_horizon": {
+                str(h): nonoverlapping_time_windows([r for r in measured if r["horizon_sessions"] == h])
+                for h in sorted(set(packet["horizons"]))},
             "independent_episodes": None, "authority": CAPS.copy(),
             "limitations": ["Input attestations require external source-owner verification.",
                             "Frozen adjusted-open/close targets are not a transaction-cost or capacity backtest.",
