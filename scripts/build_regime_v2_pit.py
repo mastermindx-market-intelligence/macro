@@ -239,8 +239,17 @@ def macro_window_provenance(
                         unknown |= finite
                     else:
                         source_dates = _per_value_source_dates(source, index)
-                        revised = finite & source_dates.notna() & (source_dates < first)
-                        unknown |= finite & source_dates.isna()
+                        try:
+                            revised = finite & source_dates.notna() & (source_dates < first)
+                            unknown |= finite & source_dates.isna()
+                        except (TypeError, ValueError):
+                            # Defensive: a comparison that cannot be resolved
+                            # (e.g. tz-aware coverage vs. naive source dates
+                            # surviving _per_value_source_dates, or an
+                            # out-of-order timestamp index). The leg's finite
+                            # rows become unknown_inputs rather than raising.
+                            unknown |= finite
+                            revised = pd.Series(False, index=index)
         window, minimum, lag = spec["smooth_rows"], spec["min_periods"], spec["lag_rows"]
         counts = finite.astype(int).rolling(window, min_periods=1).sum()
         usable = counts >= minimum

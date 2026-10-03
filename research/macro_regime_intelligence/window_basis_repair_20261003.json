@@ -6,8 +6,8 @@
   "capability_state": "BUILT_NOT_PROVEN",
   "mission_complete": false,
   "source_sha256": {
-    "scripts/build_regime_v2_pit.py": "54c36c243608435005dead8d3715b50606f4bae6f478dedb1124076678c26f65",
-    "tests/test_regime_v2_pit.py": "6bd3fc8d916b5f08b267c48523ee0caf147f65d29cdad575f2754aa135bd33ad",
+    "scripts/build_regime_v2_pit.py": "f7d30723e7461b5455557f7f7497ceb35a5fa472a0f8df508baafe9797ca3e58",
+    "tests/test_regime_v2_pit.py": "3a1f1b528fde269c65e541f8289ab14b232f499f2810c3cfb38de8ca0aac6da6",
     "config/synapse.yml": "2d85326ef5545605529afa6aa36a8c339c3d341e1d1cc97bbf9c43b2eb07fbc6"
   },
   "source_renames": {
@@ -47,11 +47,11 @@
     "W3_state_scope": "state_columns_qualified=False and state_inheritance {n_rows: 155, first_date: 2020-11-11, last_date: 2021-11-02} are pinned on both the builder test and the CLI test",
     "W4_rename": "spec[\"scored_feature\"] is asserted by the dependency-description test; spec[\"feature\"] is no longer present",
     "W5_unparseable_coverage": "coverage_start=\"not-a-date\" resolves that leg to unknown_inputs instead of raising; F7 parametrised test (0, 1.5, True) extends this to bool/int/float",
-    "W6_preservation": "parity is asserted on the SYNTHETIC fixture only; the seven real-store tests are skipped outside a full data-store checkout and run in CI",
+    "W6_preservation": "parity is asserted on the SYNTHETIC fixture only; the seven real-store tests are skipped wherever the store is absent. The store is tracked at data/fred_vintage/vintages.parquet (and the regime_history.parquet sidecar at data/regime/regime_history.parquet); a full checkout materialises the bytes and the seven tests run, while sparse session worktrees omit data/ and the tests are skipped on the _HAVE_STORE gate. No CI run was observed in this lane.",
     "F1_default_unknown": "without an un-filled source for a leg the leg resolves to unknown_inputs; the parametrized lag-endpoint test, the sticky-CPI test, the real-component test and test (b) are kept green by passing sources={leg: frame[leg]}; test (c) was rewritten to discriminate (F3 mutant quoted failing)",
     "F2_source_dedup": "duplicate stamps keep the last row before dropna, matching engine/inputs.put; test_source_dedup_keeps_last_value_like_engine_inputs_put fails under a no-dedup mutant (row 163 returns initial_vintage_inputs instead of revised_fallback_inputs)",
-    "F6_tz_aware": "a timezone-aware source index is normalised to naive UTC before comparison; comparison failures return NaT and the leg is unknown_inputs",
-    "test_counts": "36 passed, 7 skipped (the 7 are the real-store tests; 5 new tests added: F2 dedup, F6 tz-aware, F7 parametrised bool/int/float; F4 state_inheritance pinned in the existing builder + CLI tests)",
+    "F6_tz_aware": "a timezone-aware source index is normalised to naive UTC before comparison; comparison failures return NaT and the leg is unknown_inputs. Two tests cover F6: test_tz_aware_source_index_normalises_to_naive_utc (naive feature index, America/New_York source finite on every row, asserts unknown_inputs in set plus revised_fallback_inputs at row 70 and initial_vintage_inputs at row 164 from the payrolls lag_rows=63 arithmetic) and test_all_three_tz_aware_inputs_fall_back_to_unknown_without_raising (feature index, coverage start, and source all tz-aware: per-value comparison falls back to unknown_inputs without raising).",
+    "test_counts": "37 passed, 7 skipped (the 7 are the real-store tests; 6 new tests added across the lane incl. F6 all-tz-aware, T1 control assertions, T2 exact-label assertions; F2 dedup / F6 naive-source / F7 parametrised already present)",
     "size_of_label_change_on_real_history": "NOT measured in this PR"
   },
   "out_of_scope": [

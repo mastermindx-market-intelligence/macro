@@ -408,6 +408,12 @@ def test_unknown_dependency_and_missing_component_are_not_inactive():
     result, _ = builder.macro_window_provenance(frame, active, coverage)
     assert set(result.macro_window_basis) == {"unknown_inputs"}
     assert result.macro_window_unknown_legs.str.contains("indpro").all()
+    # CONTROL: with coverage intact the last row is NOT unknown_inputs for
+   # an unrelated reason — proves the second-half assertion below discriminates.
+    frame_c, active_c, coverage_c = _window_fixture()
+    result_c, _ = builder.macro_window_provenance(
+        frame_c, active_c, coverage_c, sources={"payrolls": frame_c["payrolls"]})
+    assert result_c.iloc[-1]["macro_window_basis"] != "unknown_inputs"
     frame, active, coverage = _window_fixture()
     del coverage["payrolls"]
     result, _ = builder.macro_window_provenance(frame, active, coverage)
@@ -426,10 +432,24 @@ def test_known_absent_vintage_means_revised_not_unknown():
 @pytest.mark.parametrize("invalid", [np.nan, np.inf, -np.inf, "bad"])
 def test_active_component_with_invalid_endpoint_is_unknown(invalid):
     from scripts import build_regime_v2_pit as builder
+    # Build a CLEAN source once from the fixture (before any injection) so
+    # the per-value path's source_date=NaT branch cannot mask whether the
+    # invalid-endpoint check itself forced unknown_inputs at row 300.
+    frame_clean, active_clean, coverage_clean = _window_fixture()
+    clean_source = frame_clean["payrolls"]
+    # CONTROL: with a clean frame the same row 300 is NOT unknown_inputs.
+    result_clean, _ = builder.macro_window_provenance(
+        frame_clean, active_clean, coverage_clean,
+        sources={"payrolls": clean_source})
+    assert result_clean.iloc[300]["macro_window_basis"] != "unknown_inputs"
+    # INJECTED: same fixture, same clean source; only the feature column
+    # has the invalid value at row 300 - 63. With the invalid-endpoint
+    # check enabled, row 300 must be unknown_inputs.
     frame, active, coverage = _window_fixture()
     frame["payrolls"] = frame["payrolls"].astype(object)
     frame.iloc[300 - 63, 0] = invalid
-    result, _ = builder.macro_window_provenance(frame, active, coverage)
+    result, _ = builder.macro_window_provenance(
+        frame, active, coverage, sources={"payrolls": clean_source})
     assert result.iloc[300]["macro_window_basis"] == "unknown_inputs"
 
 
@@ -437,9 +457,17 @@ def test_window_basis_does_not_use_later_rows_or_change_inputs():
     from scripts import build_regime_v2_pit as builder
     frame, active, coverage = _window_fixture("sticky_cpi")
     original = frame.copy(deep=True)
-    full, _ = builder.macro_window_provenance(frame, active, coverage)
+    # CONTROL: the full-frame call hasat least one non-unknown label sothe
+    # prefix equality below is comparing actual labels, not all-unknown.
+    full, _ = builder.macro_window_provenance(
+        frame, active, coverage, sources={"sticky_cpi": frame["sticky_cpi"]})
+    assert set(full["macro_window_basis"]) - {"unknown_inputs"}
+    #Slice the source to the same 250 rows so the prefix call sees onlythe
+    # finite observations that fall in the prefix.
+    prefix_source = frame["sticky_cpi"].iloc[:250]
     prefix, _ = builder.macro_window_provenance(
-        frame.iloc[:250], {k: v.iloc[:250] for k, v in active.items()}, coverage)
+        frame.iloc[:250], {k: v.iloc[:250] for k, v in active.items()},
+        coverage, sources={"sticky_cpi": prefix_source})
     pd.testing.assert_frame_equal(prefix, full.iloc[:250])
     pd.testing.assert_frame_equal(frame, original)
 
@@ -775,21 +803,66 @@ def test_tz_aware_source_index_normalises_to_naive_utc():
     index = pd.bdate_range("2020-01-01", periods=count)
     pre_value = 50.0
     tz_index = index.tz_localize("America/New_York")
-    # Source index is tz-aware; values are pre-coverage forward, NaN after.
-    source = pd.Series(np.nan, index=tz_index, dtype=float)
-    source.iloc[:coverage_row] = pre_value
-    # Feature index is naive; column carries pre-coverage values forward into
-    # the lag window the same way the source does.
+    # America/New_York source with finite observed value on EVERY row (replaces
+    # the pre-coverage-only source from the original F6 test); the per-value
+    # path is exercised past coverage so post-coverage rows get initial_vintage.
+    source = pd.Series(pre_value, index=tz_index, dtype=float)
+    # Feature index is naive; the payrolls column carries pre-coverage values
+    # forward into the lag window the same way the source does.
     features = pd.DataFrame({"payrolls": pre_value}, index=index)
     active = {leg: pd.Series(False, index=index) for leg in builder.LEGS}
     active["payrolls"] = pd.Series(True, index=index)
     coverage = {leg: None for leg in builder.LEGS}
     coverage["payrolls"] = index[coverage_row]
-    # Should not raise, and the row after coverage should be a non-unknown
-    # label (the per-value source date is the pre-coverage stamp).
+    # Should not raise.
     result, _ = builder.macro_window_provenance(
         features, active, coverage, sources={"payrolls": source})
+    # Row 0's source_date is NaT (NY 00:00 2020-01-01 > BC 00:00 2020-01-01
+    # after tz_convert('UTC').tz_localize(None)), so row 0 stays unknown_inputs
+    # and the original F6 "unknown_inputs in set" property is preserved.
     assert "unknown_inputs" in set(result["macro_window_basis"])
+    # Exact labels at two rows derived from payrolls lag_rows=63
+    # (row 70 lag window [7, 70] entirely pre-coverage -> revised_fallback_inputs;
+    #  row 164 lag window [101, 164] entirely post-coverage -> initial_vintage_inputs;
+    #  both >=5 rows from the row 0 / row 100 / row 63 boundaries).
+    assert result.iloc[70]["macro_window_basis"] == "revised_fallback_inputs"
+    assert result.iloc[164]["macro_window_basis"] == "initial_vintage_inputs"
+
+
+def test_all_three_tz_aware_inputs_fall_back_to_unknown_without_raising():
+    """F6/T3: when the feature index, the coverage start, AND the source are
+    ALL tz-aware, the per-value comparison still completes without raising;
+    the leg's finite rows are unknown_inputs. Covers the residual case where
+    the (first.tzinfo is None) != (index.tz is None) parity check passes but
+    the source_dates < first comparison still fails on a tz vs naive boundary.
+    """
+    from scripts import build_regime_v2_pit as builder
+    count = 200
+    coverage_row = 100
+    index = pd.bdate_range("2020-01-01", periods=count).tz_localize("UTC")
+    pre_value = 50.0
+    tz_index = index.tz_localize(None).tz_localize("America/New_York")
+    source = pd.Series(pre_value, index=tz_index, dtype=float)
+    features = pd.DataFrame({"payrolls": pre_value}, index=index)
+    active = {leg: pd.Series(False, index=index) for leg in builder.LEGS}
+    active["payrolls"] = pd.Series(True, index=index)
+    coverage = {leg: None for leg in builder.LEGS}
+    coverage["payrolls"] = index[coverage_row]
+    # Must not raise. The per-value tz compare resolves to unknown_inputs.
+    result, _ = builder.macro_window_provenance(
+        features, active, coverage, sources={"payrolls": source})
+    payroll_basis = states_payroll_basis(result, builder)
+    assert (payroll_basis == "unknown_inputs").all()
+
+
+def states_payroll_basis(result, builder):
+    """Helper: extract the payrolls leg's basis series from the audit's by_leg block."""
+    # The result frame's macro_window_basis collapses across legs, so we
+    # assert the payrolls leg specifically by rebuilding its label path:
+    # if any leg is unknown, the row is unknown_inputs. With only payrolls
+    # active and tz-aware across the board, the per-value path falls back
+    # to unknown_inputs -> the row label is unknown_inputs for every row.
+    return result["macro_window_basis"]
 
 
 @pytest.mark.parametrize("bad_coverage", [0, 1.5, True])

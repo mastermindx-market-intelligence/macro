@@ -154,7 +154,14 @@ The two review-pass rounds also landed F2 (source de-duplication), F6
   cfe9a249 (no-dedup mutant returns `initial_vintage_inputs`).
 - **Source-index timezone handling (F6).** A tz-aware source index is
   normalised to naive UTC before comparison; if any step raises, the leg
-  is UNKNOWN and never escapes as an exception. One test.
+  is UNKNOWN and never escapes as an exception. Two tests cover F6:
+  `test_tz_aware_source_index_normalises_to_naive_utc` (naive feature index
+  vs America/New_York source, asserts `revised_fallback_inputs` at row 70
+  and `initial_vintage_inputs` at row 164 derived from the payrolls spec
+  constants lag_rows=63 / smooth_rows=1 / min_periods=1) and
+  `test_all_three_tz_aware_inputs_fall_back_to_unknown_without_raising`
+  (feature index, coverage start, and source all tz-aware: per-value
+  comparison falls back to `unknown_inputs` without raising).
 - **Non-string/date/Timestamp coverage (F7).** A coverage value that is
   bool, int or float (e.g. 0, 1.5, True) is unparseable and resolves the
   leg to `unknown_inputs`. Parametrised test covers 0, 1.5, True.
@@ -189,8 +196,12 @@ The two review-pass rounds also landed F2 (source de-duplication), F6
   where it reads the renamed key OR passes an explicit `sources=`
   argument built from the same un-filled series the fixture already
   constructs. Parity is asserted on the SYNTHETIC fixture only; the
-  seven real-store tests are skipped outside a full data-store checkout
-  and run in CI. The `pit_class`, `fallback_notes` and every numeric
+  seven real-store tests are skipped wherever the store is absent. The
+  store is tracked at data/fred_vintage/vintages.parquet (and the
+  regime_history.parquet sidecar at data/regime/regime_history.parquet);
+  a full checkout materialises the bytes and the seven tests run, while
+  sparse session worktrees omit data/ and the tests are skipped on the
+  `_HAVE_STORE` gate. No CI run was observed in this lane. The `pit_class`, `fallback_notes` and every numeric
   regime column are unchanged on the same inputs; the W2 window-basis
   labels are intentionally more conservative (the default path is now
   `unknown_inputs` and the per-value path may downgrade a row that
