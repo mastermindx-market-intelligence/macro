@@ -130,3 +130,12 @@ prove matching and nonmatching behavior rather than trusting regex text alone.
 259 restart tests pass. Composition with #8257 is conflict-free; that source
 branch is untouched. Initial1186 tests remain bound to12bb, with unchanged
 mechanism/change/consumer implementation. Current-head CI remains separate.
+
+
+Current-head contract validation found three introduced omissions in the existing
+conviction-profile exclusive test selector. The reader's transitive imports must
+select that consumer's tests when changed. Only the three exact dependency paths
+are added; a new regression pins them. No exemption, suite removal or gate change.
+The first composite QA extraction also omitted admin/ and contracts/, producing
+36 missing-input failures. Restoring exact composite bytes, not weakening those
+guards, is the required correction before claiming a composed execution pass.

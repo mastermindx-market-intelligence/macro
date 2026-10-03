@@ -295,3 +295,13 @@ def test_new_suite_has_one_code_job_and_no_grandfather_exemption():
                   if any(suite in str(step.get('run', '')) for step in job.get('steps', []))]
         assert owners == [('unrun-brain-gateway', 'code')]
         assert suite not in json.loads((root / 'config/unrun_test_baseline.json').read_text())['grandfathered']
+
+
+def test_exclusive_consumer_selector_covers_the_new_read_dependencies():
+    import yaml
+    root = Path(__file__).parents[1]
+    job = yaml.safe_load((root / '.github/ci/legacy-jobs.yml').read_text())['jobs']['conviction-profile']
+    assert job['gate'] == 'code' and job['scope'] == 'exclusive'
+    assert {'engine/neuralweb/mechanism_evidence.py',
+            'engine/neuralweb/mechanism_pathways.py',
+            'engine/neuralweb/regime_change_evidence.py'} <= set(job['paths'])
