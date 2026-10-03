@@ -148,34 +148,60 @@ Publication, installed selection, all-account readiness, real parent-consumed
 execution and reset readback are separate outstanding proofs. No background Web
 execution or autonomous wake is claimed.
 
-## Masked-window expiry and native review continuation
+## Current review, cancellation repair and native-data continuation
 
-The b30a5b94d361932f1e882da78c3d11221465ed5a candidate now has completed-success
-hosted CI 37091184455 and fences 37091184292. Artifact metadata binds its final
-semantic evidence 11263782165 and pack-8 fragment 11262786781 to that head; artifact
-existence alone does not prove individual test execution. A combined host command
-to inspect source status and save that pack's raw log was blocked before dispatch.
-It was not repeated or delegated. Independent pure-source work continued.
+The previous 5d99221facfb79706a9f0db0a4bf2125465300c5 head passed hosted
+CI37096884524 and fences37096884316. Actual hosted job111129008692 executed
+runner/budget177PASS, lanes183PASS and admin55PASS, with no skips in those steps.
+Its final semantic evidence SHA256 is
+71be5a05cf999aead7eec8720da86bf5ec8dc2d63f1a3dd9a56f391a287d2129.
+It binds tested merge1c4d5797b952b8fa21efdd141f425330a09e958b and
+da1f7730b84a7f8758e5b1e81ed0de8e0718a9a0 base. Compatibility with
+f38a77de6ab59c2b13d2400e4baebcfdb4fceb21 produced conflict-free tree
+efaa197fa63c80b9cf3577e5c0ffc66a48dbde92 with no material dependency changes.
+This closes the old missing-hosted-coverage evidence gap, not the new-head gate.
+The earlier denied b30a log command was not retried or delegated.
 
-A source-hash-bound synthetic check proved another ranking defect: identical
-short-window urgency masked the strictly nearer weekly expiry. The new repair
-adds a final dimensionless mean-original-urgency tie-break, after all pre-existing
-economic objectives and before account affinity. Nine new cases cover both window
-roles, both account-name orders, an opposing preferred account, burn/latency
-priority, duplicate-constraint equivalence and original-window cancellation.
-No balance, quota, authorization or runtime field is manufactured.
+Both native GitHub reviews are terminal, not running workers. The b30a operation
+5965488516 completed04:34:10Z and its no-reset finding4171702730 was consumed in
+reply4171903454. The 5d operation5966078732 completed05:58:57Z and returned the
+new reset-cancellation finding4171935399; receipt4171948015 consumes it.
+No-review means no acceptance: prior independent review5389563572 remains
+CHANGES_REQUESTED until its original P1/P2 findings are adjudicated. No automatic
+dismissal, self-approval, installation or new Executive Job occurred.
 
-The permitted native GitHub review route was actually exercised, rather than
-assuming the read-only Executive plugin ruled out every Codex avenue. Request
-5965488516 created operation codex-reset-semantic-review-b30a-20261003. Bot summary
-5965491347 reports Code Review RUNNING on b30a5b9 since 2026-10-03T04:23:27Z.
-This is native GitHub review, not an Executive Job or an M2 worker dispatch.
-It is source-only, one review, with no repair/write/activation or log-retrieval
-scope. Its return must be consumed against that exact old head; it cannot accept
-the subsequent tie-break repair. Do not duplicate it while still running.
+The current same-branch repair retains secondary cancelled-refill cost as a
+negative final tie-break, after all prior utility/scarcity/resource/burn/latency
+objectives. It does not add quota or change maximum resource-value accounting.
+Both original consumption and cancellation clocks remain visible. Tests cover
+both window roles, names/input order/preference, burn/latency precedence,
+identical-constraint equivalence and clocks refilled during reset latency.
+New red proof:6FAIL/3PASS on original5d. Repaired owner suites:223PASS; normal
+Codex runner/lane/admin family:423PASS/39.86s. Campaigns overlap.
+Evidence adds cancel-red.log, cancel-green.log and cancel-normal-conftest.log
+under the existing repair-window-proof directory. Fresh publication, exact-head
+hosted evidence and independent review are required; keep Macro8255 draft.
 
-Current local evidence adds tiebreak-red.log, tiebreak-green.log and
-tiebreak-normal-conftest.log under the same operation proof directory. The next
-source step is publication on the existing branch, new-head hosted proof and
-independent review. Keep the PR draft. All original runtime/auth/reset and held
-7116/consumer-bridge fences remain unchanged. MISSION_COMPLETE remains false.
+An independent producer gap was repaired on Mastermind1158, exact
+a0ab57a21fc6826b29afd44c7060fa174b965adc, canonical operation
+codex-window-evidence-20261003-sol-001. The old exhausted-account projection
+collapsed explicit null, omitted and malformed sibling windows into identical
+output. The additive window_states mapping preserves UNKNOWN, MISSING,
+NOT_APPLICABLE, INVALID_OR_STALE and OBSERVED through the existing real probe
+JSON path. All auth/capacity/reset/claim and other production definitions remain
+unchanged.22newcasesRED; account/reset89PASS; expanded native factory109PASS.
+The native source review5966200350 completed06:07:11Z; result5966216082 reports
+no major issues on a0ab57a. Hosted/protected release and installed adoption are
+still separate gates. Evidence: /Volumes/Mastermind/evidence/codex-window-evidence-20261003-sol-001.
+Native primary/secondary positions are not short/weekly labels: consumer mapping
+must respect observed duration and explicit evidence state, not invent a window.
+
+Existing integration-owner update Mastermind703/5966111274 records the accepted
+one-company/three-Pro slot catalog versus four saved Pro labels. Actual identity,
+enrollment and the fourth label remain unproven. Fabric was readonly/unarmed at
+05:48:08Z. Source1156 native-queue delivery remains separately owned/uninstalled.
+Global7116 publication and denied bridge/CI-manifest actions remain fenced;
+original633 uncertainty is unchanged. Model-cost note Macro8255/5966121331 keeps
+API, Enterprise-Codex exceptions and included native burn separate; no matched
+Sol/Astra depletion trial is claimed. MISSION_COMPLETE:false. No background Web
+execution or autonomous wake is claimed.

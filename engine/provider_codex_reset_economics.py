@@ -251,7 +251,7 @@ def _forecast(a: AccountObservation, now: int, policy: PreviewPolicy) -> _Path:
                                if b - w.reserve < c)))
         nb, nr = refresh(balances, resets, natural)
         if natural <= latest and all(b - w.reserve >= c for b, w, c in zip(nb, windows, quote)):
-            options.append((natural, nb, nr, mask, None, Fraction(0), 0))
+            options.append((natural, nb, nr, mask, None, Fraction(0), 0, Fraction(0)))
         # A reset is considered only immediately before real demand. Observe the
         # forecast at completion so a natural refill during latency is not reset twice.
         for ci, credit in enumerate(credits):
@@ -266,14 +266,20 @@ def _forecast(a: AccountObservation, now: int, policy: PreviewPolicy) -> _Path:
             gain = min(full) - before
             # Cancelled free refills are an opportunity penalty, not another
             # pool. Max, never sum, keeps overlapping windows from multiplying it.
-            lost_refill = max((value * urgency(r) for value, r in zip(full, rr) if r),
-                              default=Fraction(0))
+            refill_values = tuple(value * urgency(r) if r else Fraction(0)
+                                  for value, r in zip(full, rr))
+            lost_refill = max(refill_values, default=Fraction(0))
+            # Keep the secondary cancelled clock visible only after all primary
+            # economic objectives tie. This mean is dimensionless preference,
+            # not an additional quota pool or a second resource-value penalty.
+            cancelled_clock_cost = sum(refill_values, Fraction(0)) / len(windows)
             rescue = gain * urgency(credit.expires_at) - before - lost_refill
             options.append((start, tuple(w.capacity for w in windows),
                             tuple(0 for _ in windows), mask ^ (1 << ci),
-                            credit.reset_id, rescue, int(credit.expires_at > horizon)))
+                            credit.reset_id, rescue, int(credit.expires_at > horizon),
+                            cancelled_clock_cost))
         best = _Path()
-        for start, bs, rs, next_mask, credit_id, rescue, nonexpiring in options:
+        for start, bs, rs, next_mask, credit_id, rescue, nonexpiring, cancelled_clock_cost in options:
             end = start + duration
             still_original = tuple(original and credit_id is None and start < w.reset_at
                                    for original, w in zip(originals, windows))
@@ -284,9 +290,9 @@ def _forecast(a: AccountObservation, now: int, policy: PreviewPolicy) -> _Path:
             saved = max((urgency(w.reset_at) for original, w in zip(still_original, windows)
                          if original), default=Fraction(0))
             # Mean urgency is a dimensionless final tie-break, NOT extra saved
-            # quota. It stays <= 1 per task, is unchanged by an identical
-            # duplicated constraint, and retains a non-maximal window's expiry.
-            # Renewed/cancelled original windows contribute zero, not a new bonus.
+            # quota. The positive reward stays <= 1 per task; a reset's mean
+            # cancelled-refill opportunity is subtracted separately below.
+            # Renewed/cancelled originals earn no new consumption bonus.
             expiry_tiebreak = sum((urgency(w.reset_at) if original else Fraction(0)
                                   for original, w in zip(still_original, windows)),
                                  Fraction(0)) / len(windows)
@@ -298,7 +304,7 @@ def _forecast(a: AccountObservation, now: int, policy: PreviewPolicy) -> _Path:
                               task.utility * (end - task.ready_at) + tail.latency,
                               max(Fraction(c, w.capacity) for c, w in zip(quote, windows))
                               + tail.normalized_burn,
-                              expiry_tiebreak + tail.expiry_tiebreak)
+                              expiry_tiebreak - cancelled_clock_cost + tail.expiry_tiebreak)
             if candidate.score() > best.score():
                 best = candidate
         return best

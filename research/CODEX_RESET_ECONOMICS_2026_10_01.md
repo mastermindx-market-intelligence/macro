@@ -122,9 +122,14 @@ fewer reset entitlements spent; lower measured normalized native burn; lower
 weighted completion delay. Before account focus, depletion fraction and stable
 identity, an otherwise-equal path uses a final mean-original-window-urgency
 comparison (`expiry_tiebreak_forecast`). This is dimensionless preference, not
-additional rescued quota: each task contributes at most one, identical duplicate
-constraints preserve the mean, and cancelled/renewed originals contribute zero.
-It cannot overrule utility, reset scarcity, normalized burn or completion delay.
+additional rescued quota: each task earns at most one positive consumption
+preference, and identical duplicate constraints preserve the mean. Cancelled or
+renewed originals earn no new consumption preference. A reset separately subtracts
+the mean of its demand-capped, urgency-weighted cancelled-refill values. This
+retains the second clock's cancellation cost when the maximum resource penalty
+ties; a clock that already refilled contributes zero. The final preference can be
+negative and is never added to rescued quota. It cannot overrule utility, reset
+scarcity, resource value, normalized burn or completion delay.
 This closes the dominance blind spot where equal short resets at +12000 seconds
 masked weekly resets at +43200 versus +500000 seconds: both maximum resource
 scores were 31/36, but the sooner weekly account now wins the final comparison
@@ -243,6 +248,35 @@ consumption; and recovery without duplicate execution. Existing #703/#8237 owner
 custody, #7116 HOLD and #633 EFFECT_UNKNOWN remain intact. Unit tests and a local
 CLI preview do not satisfy this chain.
 
+## October 3 model-economics clarification
+
+The API rate bands above remain API-specific. The Enterprise token-based rate
+card explicitly exempts Astra in Codex from the long-context multiplier and
+states that Codex does not charge cache writes. This is a surface/agreement
+exception, not a conversion rule for every Personal Pro included allowance.
+Keep model, billing surface/agreement, context band and speed separate. [8]
+Fast consumes included allowance at 2.5 times Standard versus 2 times the paid
+rate; Astra Ultrafast uses 8 times included versus 6 times paid. These are
+consumption ratios, not guaranteed end-to-end task speedups. [9]
+
+The September 29 Sol 6.1 system-card addendum supports task-specific evaluation,
+not blanket equivalence. Its recent-vulnerability evaluation reports 21.5% for
+Sol 6.1, 31.5% for Astra and 3.5% for Sol 5.6; SEC-Bench Pro reports 78.8%,
+85.4% and 79.1%, respectively, with shorter Sol 6.1 solution lengths. Those
+research/API results do not estimate Mastermind acceptance or native burn. [10]
+
+For an already-qualified task class, a Sol attempt followed by an admitted Astra
+recovery is cheaper than Astra-first only when
+`C_sol + C_review + p_escalate * C_astra_recovery < C_astra_first`, subject to the
+same quality and deadline requirements. If the two Astra costs are assumed
+identical, algebra gives `p_escalate < 1 - (C_sol + C_review) / C_astra`.
+This is a decision threshold, not an observed failure-rate target. Correlated
+failures, expanded context and missed deadlines can erase the apparent saving.
+Provider refusals and uncertain effects never authorize escalation or account
+switching. No paired native Sol/Astra trial has run; GitHub review success is
+not a model A/B experiment. The existing protected model catalog correctly
+separates API rates from measured native subscription deltas and was unchanged.
+
 ## Sources
 
 [1] https://help.openai.com/en/articles/20001498-how-banked-codex-resets-work
@@ -252,6 +286,9 @@ CLI preview do not satisfy this chain.
 [5] https://developers.openai.com/api/docs/models/gpt-6.1-sol
 [6] https://learn.chatgpt.com/docs/pricing
 [7] https://openai.com/index/introducing-gpt-6-1-sol/
+[8] https://help.openai.com/en/articles/20001415-chatgpt-rate-card-enterprise-token-based-pricing
+[9] https://learn.chatgpt.com/docs/agent-configuration/speed
+[10] https://deploymentsafety.openai.com/gpt-6-1-sol
 
 Private operational evidence: redacted local store metadata; native CLI schema
 export; connected Executive state at 23:38:08Z; Mastermind #703 comments

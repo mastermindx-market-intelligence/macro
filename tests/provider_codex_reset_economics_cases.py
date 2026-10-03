@@ -422,4 +422,62 @@ def test_expiry_tiebreak_drops_cancelled_or_expired_original_windows():
     row = account(tasks=jobs, short_in=60, week_in=500000)
     assert Fraction(selected(preview(row))["expiry_tiebreak_forecast"]) == Fraction(1439, 2880)
     reset_row = account(week_left=0, resets=(BankedReset("r", NOW + 300),))
-    assert selected(preview(reset_row))["expiry_tiebreak_forecast"] == "0"
+    # Redemption earns no original-window reward, but retains the known
+    # cancellation cost of the still-future short refill.
+    assert Fraction(selected(preview(reset_row))["expiry_tiebreak_forecast"]) == -Fraction(31, 72)
+
+
+@pytest.mark.parametrize("window", ["short", "weekly"])
+@pytest.mark.parametrize("names", [("z-later", "a-sooner"), ("a-later", "z-sooner")])
+def test_reset_cancellation_retains_nonmaximal_window_cost(window, names):
+    later_name, sooner_name = names
+    jobs = (task("one", cost=10, duration=30, due=100),)
+    common = {"short_in": 12000} if window == "weekly" else {"week_in": 60}
+    field = "week_in" if window == "weekly" else "short_in"
+    sooner, later = (43200, 500000) if window == "weekly" else (600, 18000)
+    credits = (BankedReset("r", NOW + 600),)
+    a = account(later_name, short_left=0, week_left=0, tasks=jobs, resets=credits,
+                **common, **{field: later})
+    b = account(sooner_name, short_left=0, week_left=0, tasks=jobs, resets=credits,
+                **common, **{field: sooner})
+    for order in ((a, b), (b, a)):
+        result = preview(*order, preferred_account_id=sooner_name)
+        rows = {r["account_id"]: r for r in result["candidates"]}
+        assert rows[later_name]["resource_value_forecast"] == rows[sooner_name]["resource_value_forecast"]
+        assert result["selected_account_id"] == later_name
+        assert result["proposed_action"] == "PROPOSE_BANKED_RESET_THEN_RUN"
+        assert result["live_admission"] is False
+
+
+@pytest.mark.parametrize("advantage", ["burn", "latency"])
+def test_reset_cancellation_tiebreak_cannot_overrule_burn_or_latency(advantage):
+    efficient_quote = task("one", cost=10, duration=30, due=100)
+    worse_quote = (replace(efficient_quote, short_cost=20, weekly_cost=20)
+                   if advantage == "burn" else replace(efficient_quote, duration_seconds=60))
+    credits = (BankedReset("r", NOW + 600),)
+    efficient = account("efficient", short_left=0, week_left=0, week_in=43200,
+                        tasks=(efficient_quote,), resets=credits)
+    later_refill = account("later-refill", short_left=0, week_left=0, week_in=500000,
+                           tasks=(worse_quote,), resets=credits)
+    assert preview(later_refill, efficient)["selected_account_id"] == "efficient"
+
+
+def test_reset_does_not_penalize_a_clock_already_naturally_refilled():
+    from fractions import Fraction
+    row = account(short_left=0, short_in=15, week_left=0, week_in=500000,
+                  tasks=(task("one", cost=10, duration=30, due=100),),
+                  resets=(BankedReset("r", NOW + 600),))
+    result = selected(preview(row))
+    assert result["banked_resets_spent_forecast"] == 1
+    assert Fraction(result["expiry_tiebreak_forecast"]) == 0
+
+
+def test_reset_clock_preference_is_not_added_to_rescued_quota():
+    from fractions import Fraction
+    row = account(short_left=0, week_left=0, short_in=12000, week_in=43200,
+                  tasks=(task("one", cost=10, duration=30, due=100),),
+                  resets=(BankedReset("r", NOW + 600),))
+    result = selected(preview(row))
+    assert Fraction(result["resource_value_forecast"]) == Fraction(19, 144)
+    assert Fraction(result["expiry_tiebreak_forecast"]) == -Fraction(49, 72)
+    assert result["completed_utility_forecast"] == 1

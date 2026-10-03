@@ -1387,6 +1387,10 @@ from tests.provider_codex_reset_economics_cases import (  # noqa: E402,F401
     test_expiry_tiebreak_cannot_overrule_measured_burn_or_latency,
     test_expiry_tiebreak_preserves_redundant_constraint_equivalence,
     test_expiry_tiebreak_drops_cancelled_or_expired_original_windows,
+    test_reset_cancellation_retains_nonmaximal_window_cost,
+    test_reset_cancellation_tiebreak_cannot_overrule_burn_or_latency,
+    test_reset_does_not_penalize_a_clock_already_naturally_refilled,
+    test_reset_clock_preference_is_not_added_to_rescued_quota,
 )
 
 
