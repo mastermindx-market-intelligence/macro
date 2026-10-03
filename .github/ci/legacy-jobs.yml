@@ -12769,6 +12769,11 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn pillow
+      # MedTech Catalyst R1 is a hermetic research-reference contract. Keep it in
+      # the existing code-gated research owner: it performs no network, data-tree,
+      # provider, model, publication, recommendation or trading effect.
+      - name: MedTech Catalyst R1 — temporal, identity, materiality and commercial contract
+        run: python -m pytest research/medtech/test_medtech_catalyst_reference_r1.py -q
       # F10-X1 implication-card contract and rendered Measurement projection
       # stay in the existing factor/measurement owner lane. Register both new
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
