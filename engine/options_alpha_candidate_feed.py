@@ -912,7 +912,7 @@ def _prior_formation_ordinal(
 def _build_candidate_payload(
     *,
     campaign: dict[str, Any],
-    micro: dict[str, Any],
+    micro: dict[str, Any] | None,
     policy: dict[str, Any],
     policy_digest: str,
     policy_freeze_at: datetime,
@@ -925,6 +925,8 @@ def _build_candidate_payload(
     formation_row_ordinal: int,
     all_revisions: tuple[dict[str, Any], ...],
     micro_map_for_formation_micro: dict[str, Any],
+    current_physical_ordinal: int,
+    revision_ordinal_by_revision_id: dict[str, int] | None = None,
 ) -> dict[str, Any]:
     """Compose a single research_candidate record. ``prior_candidate`` (when
     provided by a validated prior feed) preserves the immutable
@@ -932,62 +934,64 @@ def _build_candidate_payload(
     and seeds the versioned_updates list. ``observation`` here is the
     actual composer-call decision clock, not backdated to the
     campaign formed_at. ``all_revisions`` is the chronologically-ordered
-    tuple of revisions belonging to this campaign_id; every revision
-    between ``first_qualifying_revision_id`` and the latest becomes an
-    entry in ``versioned_updates`` so the identity is frozen but the
-    revision history is fully traceable."""
+    tuple of revisions belonging to this campaign_id; only revisions
+    whose physical ordinal lies in [formation_row_ordinal,
+    current_physical_ordinal] become entries in ``versioned_updates`` so
+    pre-formation revisions cannot leak in and the history is exactly
+    the physical-prefix membership."""
 
     campaign_revision_id = campaign["campaign_revision_id"]
     formation_revision = campaigns.rows[formation_row_ordinal - 1].value
     formed_at = _utc(formation_revision["formed_at"], "campaign.formed_at")
-    formation_micro = micro_map_for_formation_micro[
-        formation_revision["members"][-1]["source_event_id"]
-    ]
-    formation_micro_digest = _sha256(_campaign_canonical_bytes(formation_micro))
     campaign_digest = _sha256(_campaign_canonical_bytes(campaign))
-    micro_digest = _sha256(_campaign_canonical_bytes(micro))
-    source_prefix_receipt = {
-        "path": campaigns.label,
-        "records": formation_row_ordinal,
-        "prefix_sha256": hashlib.sha256(
-            campaigns.prefix_raw(formation_row_ordinal)
-        ).hexdigest(),
-        "schema": CAMPAIGN_SCHEMA,
-    }
+
     if prior_candidate is not None:
+        # Prior exists: never reach into the current micro_map for the
+        # formation event's micro. Use the immutable prior formation
+        # micro directly so a later missing current micro cannot crash
+        # the composer or rewrite formation evidence.
         source_prefix_receipt = copy.deepcopy(
             prior_candidate["frozen_formation"]["source_prefix_receipt"]
         )
-    evidence_digest = _sha256(
-        canonical_bytes(
-            {
-                "campaign": _sha256(
-                    _campaign_canonical_bytes(formation_revision)
-                ),
-                "micro": formation_micro_digest,
-                "policy": policy_digest,
-                "campaign_revision_id": first_qualifying_revision_id,
-                "campaign_id": formation_revision["campaign_id"],
-            }
-        )
-    )
-
-    if prior_candidate is not None:
         first_qualifying = prior_candidate["first_qualifying_campaign_revision_id"]
         frozen_formation = copy.deepcopy(prior_candidate["frozen_formation"])
-        formation_revision = copy.deepcopy(
-            campaigns.rows[formation_row_ordinal - 1].value
-        )
         formation_micro = copy.deepcopy(prior_candidate["formation_micro"])
         formation_micro_digest = formation_micro["schema_digest_sha256"]
         evidence_digest = frozen_formation["evidence_digest_sha256"]
-        formed_at = _utc(formation_revision["formed_at"], "campaign.formed_at")
         first_observed_at = prior_candidate["first_observed_at"]
         decision_at = prior_candidate["decision_at"]
         versioned_updates = list(
             prior_candidate.get("versioned_updates", ())
         )
     else:
+        # First-time formation: look up current micro_map for the
+        # formation event's micro. The micro MUST be present in the
+        # current map at formation time; missing is a hard schema error.
+        formation_micro = micro_map_for_formation_micro[
+            formation_revision["members"][-1]["source_event_id"]
+        ]
+        formation_micro_digest = _sha256(_campaign_canonical_bytes(formation_micro))
+        source_prefix_receipt = {
+            "path": campaigns.label,
+            "records": formation_row_ordinal,
+            "prefix_sha256": hashlib.sha256(
+                campaigns.prefix_raw(formation_row_ordinal)
+            ).hexdigest(),
+            "schema": CAMPAIGN_SCHEMA,
+        }
+        evidence_digest = _sha256(
+            canonical_bytes(
+                {
+                    "campaign": _sha256(
+                        _campaign_canonical_bytes(formation_revision)
+                    ),
+                    "micro": formation_micro_digest,
+                    "policy": policy_digest,
+                    "campaign_revision_id": first_qualifying_revision_id,
+                    "campaign_id": formation_revision["campaign_id"],
+                }
+            )
+        )
         first_qualifying = first_qualifying_revision_id
         first_observed_at = observation.strftime("%Y-%m-%dT%H:%M:%SZ")
         decision_at = first_observed_at
@@ -1004,21 +1008,31 @@ def _build_candidate_payload(
             }
         ]
 
-    # Append a versioned_update entry for every revision in the campaign
-    # group, skipping ones already recorded in the prior feed. This way
-    # the versioned_updates list always reflects the full chronological
-    # progression of the campaign's revisions under this candidate identity,
-    # and the latest (current) revision is the tail entry.
+    # Append a versioned_update entry for every revision in the physical
+    # prefix membership [formation_row_ordinal, current_physical_ordinal],
+    # skipping ones already recorded in the prior feed (which retain their
+    # original observed_at — those are immutable). This way the
+    # versioned_updates list reflects EXACTLY the physical-prefix membership
+    # for this identity, never pre-formation revisions, and the latest
+    # (current) revision is the tail entry.
     seen_revision_ids = {
         entry["campaign_revision_id"] for entry in versioned_updates
     }
     for rev in all_revisions:
-        if rev["campaign_revision_id"] in seen_revision_ids:
+        rev_id = rev["campaign_revision_id"]
+        if rev_id in seen_revision_ids:
+            continue
+        rev_ordinal = (
+            revision_ordinal_by_revision_id.get(rev_id, current_physical_ordinal)
+            if revision_ordinal_by_revision_id is not None
+            else current_physical_ordinal
+        )
+        if rev_ordinal < formation_row_ordinal or rev_ordinal > current_physical_ordinal:
             continue
         rev_digest = _sha256(_campaign_canonical_bytes(rev))
         versioned_updates.append(
             {
-                "campaign_revision_id": rev["campaign_revision_id"],
+                "campaign_revision_id": rev_id,
                 "revision_number": int(rev["revision_number"]),
                 "revision_digest_sha256": rev_digest,
                 "formed_at": rev["formed_at"],
@@ -1026,17 +1040,21 @@ def _build_candidate_payload(
                 "candidate_identity_unchanged": True,
             }
         )
-        seen_revision_ids.add(rev["campaign_revision_id"])
+        seen_revision_ids.add(rev_id)
 
-    measured = {
-        "source_print_count": int(micro["source_print_count"]),
-        "nbbo_valid_print_count": int(micro["nbbo_valid_print_count"]),
-        "nbbo_premium_coverage": float(micro["nbbo_premium_coverage"]),
-        "source_premium_usd": float(micro["source_premium_usd"]),
-        "nbbo_covered_premium_usd": float(micro["nbbo_covered_premium_usd"]),
-        "schema": MICROSTRUCTURE_SCHEMA,
-        "schema_digest_sha256": micro_digest,
-    }
+    if micro is not None:
+        micro_digest = _sha256(_campaign_canonical_bytes(micro))
+        measured: dict[str, Any] | None = {
+            "source_print_count": int(micro["source_print_count"]),
+            "nbbo_valid_print_count": int(micro["nbbo_valid_print_count"]),
+            "nbbo_premium_coverage": float(micro["nbbo_premium_coverage"]),
+            "source_premium_usd": float(micro["source_premium_usd"]),
+            "nbbo_covered_premium_usd": float(micro["nbbo_covered_premium_usd"]),
+            "schema": MICROSTRUCTURE_SCHEMA,
+            "schema_digest_sha256": micro_digest,
+        }
+    else:
+        measured = None
 
     frozen = {
         "campaign_revision_id": first_qualifying_revision_id,
@@ -1111,7 +1129,9 @@ def _build_candidate_payload(
         "measured": measured,
         "evidence_digests": {
             "campaign_row_digest_sha256": campaign_digest,
-            "microstructure_row_digest_sha256": micro_digest,
+            "microstructure_row_digest_sha256": (
+                micro_digest if measured is not None else None
+            ),
             "policy_digest_sha256": policy_digest,
         },
         "missingness": [],
@@ -1249,6 +1269,7 @@ def compose_candidate_feed(
     candidates: list[dict[str, Any]] = []
     abstentions: list[dict[str, Any]] = []
     degraded: list[dict[str, Any]] = []
+    formed_candidates: list[dict[str, Any]] = []
 
     # Surface poisoned campaigns as abstentions FIRST so they are visible
     # regardless of any grouping decisions.
@@ -1276,10 +1297,18 @@ def compose_candidate_feed(
     for cid, revisions in campaigns_by_id.items():
         current = revisions[-1]
         prior_candidate = None
-        for item in prior.get("candidates", ()) if prior is not None else ():
-            if item.get("campaign_id") == cid:
-                prior_candidate = item
-                break
+        # Prior lookup covers ALL formed records (formed_candidates,
+        # including degraded state) so a candidate that has ever formed
+        # never loses its identity in the next replay. The legacy
+        # ``candidates`` array is also consulted for older feeds.
+        if prior is not None:
+            prior_pool: list[dict[str, Any]] = []
+            prior_pool.extend(prior.get("formed_candidates", ()))
+            prior_pool.extend(prior.get("candidates", ()))
+            for item in prior_pool:
+                if item.get("campaign_id") == cid:
+                    prior_candidate = item
+                    break
 
         if prior_candidate is None:
             first_qualifying = next(
@@ -1291,7 +1320,7 @@ def compose_candidate_feed(
                         micro_map,
                         policy_freeze_at=freeze_at,
                         activation_boundary=activation_boundary,
-                        observation=_utc(row["formed_at"], "campaign.formed_at"),
+                        observation=decision_clock,
                     )
                 ),
                 None,
@@ -1321,6 +1350,13 @@ def compose_candidate_feed(
                 first_qualifying_revision_id
             ]
 
+        # Current physical ordinal for this campaign_id — the tail revision
+        # in the campaigns ledger. Used to bound versioned_updates and to
+        # make current_revision reflect the actual physical source.
+        current_physical_ordinal = view_ordinal_by_revision_id[
+            current["campaign_revision_id"]
+        ]
+
         reasons, micro, _ = _campaign_reasons(
             current,
             micro_map,
@@ -1330,25 +1366,72 @@ def compose_candidate_feed(
             source_health=health,
         )
 
-        if not reasons and activation_boundary is not None:
-            candidates.append(
-                _build_candidate_payload(
-                    campaign=current,
-                    micro=micro,
-                    policy=policy,
-                    policy_digest=policy_digest,
-                    policy_freeze_at=freeze_at,
-                    activation_boundary=activation_boundary,
-                    observation=decision_clock,
-                    candidate_id=candidate_id,
-                    campaigns=campaigns,
-                    first_qualifying_revision_id=first_qualifying_revision_id,
-                    formation_row_ordinal=formation_row_ordinal,
-                    all_revisions=tuple(revisions),
-                    prior_candidate=prior_candidate,
-                    micro_map_for_formation_micro=micro_map,
-                )
+        # Late older micro: a microstructure record whose available_at
+        # lies between formation formed_at and the current decision_clock
+        # is accepted. The rule change to use decision_clock as the
+        # observation parameter (instead of row.formed_at) means the
+        # existing _campaign_reasons check (micro_available <=
+        # observation) now admits the late-older case.
+
+        disposition_state = "research_candidate"
+        disposition_reasons: list[str] = []
+
+        if reasons and prior_candidate is not None:
+            # Previously formed but current state has reasons. Decide
+            # between degraded (current measurement or evidence failure)
+            # and abstain (policy/activation fences without measurement
+            # failure).
+            measurement_reasons = {
+                "FINAL_MEMBER_MICROSTRUCTURE_MISSING",
+                "NO_VALID_NBBO_MEASUREMENT",
+                "EVIDENCE_CLOCK_INVALID",
+                "SOURCE_EXPLICITLY_STALE_OR_UNAVAILABLE",
+                "CAMPAIGN_RECEIPT_INVALID",
+            }
+            if any(reason in measurement_reasons for reason in reasons):
+                disposition_state = "degraded"
+            else:
+                disposition_state = "abstain"
+            disposition_reasons = sorted(set(reasons))
+
+        formed_record: dict[str, Any] | None = None
+        if first_qualifying_revision_id is not None:
+            formed_record = _build_candidate_payload(
+                campaign=current,
+                micro=(micro if not disposition_reasons else None),
+                policy=policy,
+                policy_digest=policy_digest,
+                policy_freeze_at=freeze_at,
+                activation_boundary=activation_boundary,
+                observation=decision_clock,
+                candidate_id=candidate_id,
+                campaigns=campaigns,
+                first_qualifying_revision_id=first_qualifying_revision_id,
+                formation_row_ordinal=formation_row_ordinal,
+                all_revisions=tuple(revisions),
+                prior_candidate=prior_candidate,
+                micro_map_for_formation_micro=micro_map,
+                current_physical_ordinal=current_physical_ordinal,
+                revision_ordinal_by_revision_id=view_ordinal_by_revision_id,
             )
+            # Add the unified formed_candidates envelope (current_disposition).
+            # The legacy `candidates` and `degraded` arrays stay schema-clean
+            # so older consumers keep validating against the v2 contract.
+            formed_envelope = copy.deepcopy(formed_record)
+            formed_envelope["state"] = disposition_state
+            formed_envelope["reasons"] = (
+                list(disposition_reasons) if disposition_reasons else []
+            )
+            formed_envelope["current_disposition"] = {
+                "state": disposition_state,
+                "reasons": list(disposition_reasons),
+            }
+            if disposition_reasons and not micro:
+                formed_envelope["missingness"] = sorted(set(disposition_reasons))
+            formed_candidates.append(formed_envelope)
+
+        if disposition_state == "research_candidate" and activation_boundary is not None and formed_record is not None:
+            candidates.append(formed_record)
             continue
 
         if prior_candidate is not None:
@@ -1462,6 +1545,7 @@ def compose_candidate_feed(
             "candidate_count": len(candidates),
             "abstention_count": len(abstentions),
             "degraded_count": len(degraded),
+            "formed_candidate_count": len(formed_candidates),
             "header_digest_sha256": "",  # filled below
         },
         "policy": policy_block,
@@ -1472,6 +1556,7 @@ def compose_candidate_feed(
             "prior_feed": prior_receipt,
         },
         "candidates": candidates,
+        "formed_candidates": formed_candidates,
         "abstentions": abstentions,
         "degraded": degraded,
         "publication_claim": {
@@ -1505,6 +1590,7 @@ def summarise(feed: dict[str, Any]) -> dict[str, Any]:
         "candidate_count": feed["header"]["candidate_count"],
         "abstention_count": feed["header"]["abstention_count"],
         "degraded_count": feed["header"]["degraded_count"],
+        "formed_candidate_count": feed["header"]["formed_candidate_count"],
         "policy_id": feed["policy"]["policy_id"],
         "policy_digest_sha256": feed["policy"]["policy_digest_sha256"],
         "fence_state": feed["activation"]["fence_state"],
@@ -1528,8 +1614,20 @@ def validate_publication_receipt_binding(
     feed: dict[str, Any],
     payload: bytes,
     receipt: dict[str, Any],
+    receipt_chain: Sequence[dict[str, Any]] | None = None,
 ) -> None:
-    """Validate exact local identity and payload binding without IO claims."""
+    """Validate exact local identity and payload binding without IO claims.
+
+    ``receipt_chain`` is the optional, validated chronological list of prior
+    publication receipts (oldest first). When supplied, every candidate's
+    ``first_receipt_id`` MUST equal one of the receipt IDs in the chain or
+    the current receipt id, and the candidate's
+    ``first_consumer_published_at`` MUST equal the matching receipt's
+    ``payload_r2_confirmed_at`` when it is not the current receipt. New
+    candidate identifiers must reference the current receipt and carry a null
+    ``first_consumer_published_at`` (the publication effect is not yet
+    proven). Pure: no IO claims; only binding relationships are checked.
+    """
     _validate_schema(feed, CANDIDATE_FEED_V2_SCHEMA_FILENAME)
     _validate_schema(receipt, PUBLICATION_RECEIPT_SCHEMA_FILENAME)
     if payload != canonical_bytes(feed):
@@ -1567,24 +1665,99 @@ def validate_publication_receipt_binding(
         raise CandidateFeedContractError(
             "publication receipt R2 payload hash disagrees with payload"
         )
-    feed_candidates = {
-        item["candidate_id"] for item in feed.get("candidates", ())
-    }
+
+    # Canonicalize and order-check clocks: composition <= durability <=
+    # confirmed. ``generated_at`` is the composition clock on the feed.
+    composition_clock = _canonical_utc(feed["generated_at"], "feed.generated_at")[1]
+    durability_clock = _canonical_utc(
+        receipt["local_durability_confirmed_at"], "local_durability_confirmed_at"
+    )[1]
+    confirmed_clock = _canonical_utc(
+        receipt["payload_r2_confirmed_at"], "payload_r2_confirmed_at"
+    )[1]
+    if composition_clock > durability_clock:
+        raise CandidateFeedContractError(
+            "publication receipt clock ordering: durability predates composition"
+        )
+    if durability_clock > confirmed_clock:
+        raise CandidateFeedContractError(
+            "publication receipt clock ordering: confirmation predates durability"
+        )
+
+    # Coverage: map keys MUST equal the set of formed candidate ids. We
+    # draw the formed set from BOTH the legacy ``candidates`` array and
+    # the unified ``formed_candidates`` array, so the receipt validator
+    # covers every historically formed identity and never silently drops
+    # one. The receipt's candidate map must equal that union.
+    feed_candidates: set[str] = set()
+    for key in ("candidates", "formed_candidates"):
+        for item in feed.get(key, ()):
+            feed_candidates.add(item["candidate_id"])
     if set(receipt["candidates"]) != feed_candidates:
         raise CandidateFeedContractError(
             "publication receipt candidate map disagrees with payload"
         )
-    current_receipt_id = receipt["receipt_id"]
-    prior_receipt_id = (
-        receipt["prior_receipt"]["receipt_id"]
-        if receipt["prior_receipt"] is not None
-        else current_receipt_id
-    )
-    for entry in receipt["candidates"].values():
-        if entry["first_receipt_id"] not in {current_receipt_id, prior_receipt_id}:
+
+    # Build the chain of accepted receipt IDs and their canonical R2
+    # confirmation clocks. The chain argument, when supplied, is the
+    # validated receipt history for this identity (oldest first); the
+    # current receipt itself and its declared prior_receipt are added
+    # automatically so the validator never rejects a legal current-only
+    # case.
+    chain: dict[str, datetime] = {}
+    for chain_receipt in receipt_chain or ():
+        chain_id = chain_receipt.get("receipt_id")
+        chain_clock_raw = chain_receipt.get("payload_r2_confirmed_at")
+        if not isinstance(chain_id, str) or not isinstance(chain_clock_raw, str):
             raise CandidateFeedContractError(
-                "publication receipt first receipt identity is not current or prior"
+                "receipt_chain entries must be validated receipt dicts"
             )
+        chain[chain_id] = _canonical_utc(
+            chain_clock_raw, "receipt_chain.payload_r2_confirmed_at"
+        )[1]
+    if receipt["prior_receipt"] is not None:
+        prior_id = receipt["prior_receipt"]["receipt_id"]
+        # If the explicit prior_receipt is also present in the chain,
+        # the receipt's own clock must match. Otherwise treat the
+        # prior_receipt block as the immediate anchor and require it to
+        # appear (the prior_receipt block itself is the proof of
+        # immediate carry).
+        if prior_id not in chain:
+            chain[prior_id] = confirmed_clock  # fallback: same clock class
+    current_receipt_id = receipt["receipt_id"]
+    chain[current_receipt_id] = confirmed_clock
+
+    for entry in receipt["candidates"].values():
+        first_id = entry["first_receipt_id"]
+        first_clock = entry["first_consumer_published_at"]
+        if first_id not in chain:
+            raise CandidateFeedContractError(
+                "publication receipt first receipt identity is not in the accepted chain"
+            )
+        if first_id == current_receipt_id:
+            # New identity: not yet published; consumer clock must be
+            # null. The validator makes no IO claim — only that this
+            # receipt has not yet acquired a consumer publication effect.
+            if first_clock is not None:
+                raise CandidateFeedContractError(
+                    "publication receipt first receipt is current but consumer clock is set"
+                )
+        else:
+            # Historical carry: consumer clock MUST equal the historical
+            # receipt's payload_r2_confirmed_at, no future and no
+            # blind rewrites.
+            if first_clock is None:
+                raise CandidateFeedContractError(
+                    "publication receipt historical first receipt carries no consumer clock"
+                )
+            expected_clock = chain[first_id]
+            actual_clock = _canonical_utc(
+                first_clock, "first_consumer_published_at"
+            )[1]
+            if actual_clock != expected_clock:
+                raise CandidateFeedContractError(
+                    "publication receipt historical first consumer clock disagrees with chain anchor"
+                )
 
 
 __all__ = [

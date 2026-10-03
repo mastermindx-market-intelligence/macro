@@ -14,6 +14,7 @@
     "policy",
     "activation",
     "source_receipts",
+    "formed_candidates",
     "candidates",
     "abstentions",
     "degraded",
@@ -43,6 +44,7 @@
         "implementation_carrier",
         "eligibility_state",
         "deterministic_seed",
+        "formed_candidate_count",
         "candidate_count",
         "abstention_count",
         "degraded_count",
@@ -66,6 +68,10 @@
         "deterministic_seed": {
           "type": "string",
           "minLength": 1
+        },
+        "formed_candidate_count": {
+          "type": "integer",
+          "minimum": 0
         },
         "candidate_count": {
           "type": "integer",
@@ -93,6 +99,12 @@
     },
     "source_receipts": {
       "$ref": "#/$defs/sourceReceipts"
+    },
+    "formed_candidates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/formedCandidate"
+      }
     },
     "candidates": {
       "type": "array",
@@ -380,6 +392,145 @@
         }
       }
     },
+    "formedCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "campaign_id",
+        "first_qualifying_campaign_revision_id",
+        "formation_micro",
+        "current_campaign_revision_id",
+        "source_formed_at",
+        "first_observed_at",
+        "decision_at",
+        "frozen_formation",
+        "current_revision",
+        "current_disposition",
+        "measured",
+        "evidence_digests",
+        "missingness",
+        "contradictions",
+        "state",
+        "reasons",
+        "versioned_updates"
+      ],
+      "properties": {
+        "candidate_id": {
+          "type": "string",
+          "pattern": "^oacnd_[a-f0-9]{24}$"
+        },
+        "campaign_id": {
+          "type": "string",
+          "pattern": "^ocam_[a-f0-9]{24}$"
+        },
+        "first_qualifying_campaign_revision_id": {
+          "type": "string",
+          "pattern": "^ocrev_[a-f0-9]{24}$"
+        },
+        "current_campaign_revision_id": {
+          "type": "string",
+          "pattern": "^ocrev_[a-f0-9]{24}$"
+        },
+        "source_formed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "first_observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "decision_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "formation_micro": {
+          "$ref": "#/$defs/candidate/properties/measured"
+        },
+        "frozen_formation": {
+          "$ref": "#/$defs/candidate/properties/frozen_formation"
+        },
+        "current_revision": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/candidate/properties/current_revision"
+            }
+          ]
+        },
+        "current_disposition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["state", "reasons"],
+          "properties": {
+            "state": {
+              "enum": ["research_candidate", "abstain", "degraded"]
+            },
+            "reasons": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "BEFORE_POLICY_FREEZE",
+                  "BEFORE_ACTIVATION_BOUNDARY",
+                  "CAMPAIGN_RECEIPT_INVALID",
+                  "CAMPAIGN_NOT_PROSPECTIVE",
+                  "INSUFFICIENT_CAMPAIGN_MEMBERS",
+                  "FINAL_MEMBER_MICROSTRUCTURE_MISSING",
+                  "NO_VALID_NBBO_MEASUREMENT",
+                  "EVIDENCE_CLOCK_INVALID",
+                  "SOURCE_EXPLICITLY_STALE_OR_UNAVAILABLE",
+                  "UPSTREAM_AUTHORITY_VIOLATION",
+                  "FORMATION_EVIDENCE_MISSING"
+                ]
+              }
+            }
+          }
+        },
+        "measured": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/candidate/properties/measured"
+            }
+          ]
+        },
+        "evidence_digests": {
+          "$ref": "#/$defs/candidate/properties/evidence_digests"
+        },
+        "missingness": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "contradictions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "state": {
+          "enum": ["research_candidate", "abstain", "degraded"]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "versioned_updates": {
+          "$ref": "#/$defs/candidate/properties/versioned_updates"
+        }
+      }
+    },
     "candidate": {
       "type": "object",
       "additionalProperties": false,
@@ -583,8 +734,10 @@
               "pattern": "^[a-f0-9]{64}$"
             },
             "microstructure_row_digest_sha256": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
+              "oneOf": [
+                {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+                {"type": "null"}
+              ]
             },
             "policy_digest_sha256": {
               "type": "string",

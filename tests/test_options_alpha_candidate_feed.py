@@ -1577,6 +1577,11 @@ def test_publication_receipt_continuation_preserves_first_receipt_identity(
     second_receipt["candidates"][retained_id]["first_receipt_id"] = (
         first_receipt["receipt_id"]
     )
+    # Historical carry MUST carry the matching R2 confirmation clock;
+    # the new validator rejects historical null or non-matching clocks.
+    second_receipt["candidates"][retained_id]["first_consumer_published_at"] = (
+        first_receipt["payload_r2_confirmed_at"]
+    )
     validate_publication_receipt_binding(
         feed=second, payload=second_payload, receipt=second_receipt
     )
@@ -1585,6 +1590,9 @@ def test_publication_receipt_continuation_preserves_first_receipt_identity(
     current_only["candidates"][retained_id]["first_receipt_id"] = (
         second_receipt["receipt_id"]
     )
+    # Switching to current receipt must reset the consumer clock to null
+    # (the current receipt's own effect is not yet proven).
+    current_only["candidates"][retained_id]["first_consumer_published_at"] = None
     validate_publication_receipt_binding(
         feed=second, payload=second_payload, receipt=current_only
     )
@@ -1595,7 +1603,7 @@ def test_publication_receipt_continuation_preserves_first_receipt_identity(
     )
     with pytest.raises(
         CandidateFeedContractError,
-        match="publication receipt first receipt identity is not current or prior",
+        match="publication receipt first receipt identity is not in the accepted chain",
     ):
         validate_publication_receipt_binding(
             feed=second, payload=second_payload, receipt=unrelated
@@ -1969,3 +1977,846 @@ def test_compose_prior_feed_integrity_binds_header_source_and_formation(
                     prior_feed=tampered,
                 )
             )
+
+
+# ---------------------------------------------------------------------------
+# F1: formed_candidates collection, one entry per historically formed campaign.
+# F2: decision_clock qualification, late older micro acceptance, prior-always-wins.
+# F3: publication receipt strict-dynamic-map, clock ordering, prior chain.
+# Each test is RED on the pre-fix head (a15ba9ae778 / codex v2 unactivated) by
+# design — exercising the partial-fix boundary the ruling named.
+# ---------------------------------------------------------------------------
+
+
+def test_formed_candidates_one_per_historical_campaign_and_carries_full_formation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """F1: every historically formed campaign keeps exactly one
+    formed_candidates entry that retains frozen_formation, formation_micro,
+    candidate_id, first_observed_at, decision_at, and the full
+    versioned_updates history — even after multiple degraded replays.
+    """
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    episodes_spec = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    micro_map = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in episodes_spec
+    }
+
+    initial = compose_candidate_feed(
+        **_composer_kwargs(snapshot, micro_map=micro_map, activation=ACTIVATION_RECEIPT)
+    )
+    candidate_id = initial["formed_candidates"][0]["candidate_id"]
+    initial_formation = canonical_bytes(initial["formed_candidates"][0]["frozen_formation"])
+
+    # missing micro → degraded
+    missing = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot, micro_map={}, activation=ACTIVATION_RECEIPT, prior_feed=initial
+        )
+    )
+    assert len(missing["formed_candidates"]) == 1
+    assert missing["formed_candidates"][0]["candidate_id"] == candidate_id
+    assert (
+        canonical_bytes(missing["formed_candidates"][0]["frozen_formation"])
+        == initial_formation
+    )
+    assert missing["formed_candidates"][0]["state"] == "degraded"
+    assert missing["formed_candidates"][0]["current_disposition"]["state"] == "degraded"
+    assert missing["formed_candidates"][0]["current_disposition"]["reasons"] == [
+        "FINAL_MEMBER_MICROSTRUCTURE_MISSING"
+    ]
+    assert missing["formed_candidates"][0]["measured"] is None
+
+    # invalid clock → degraded
+    invalid_map = copy.deepcopy(micro_map)
+    invalid_map[episodes_spec[-1]["source_event_id"]] = _micro_for(
+        episodes_spec[-1]["source_event_id"],
+        available_at="2026-08-13T15:00:00Z",
+    )
+    invalid_clock = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot,
+            micro_map=invalid_map,
+            activation=ACTIVATION_RECEIPT,
+            prior_feed=missing,
+        )
+    )
+    assert len(invalid_clock["formed_candidates"]) == 1
+    assert invalid_clock["formed_candidates"][0]["state"] == "degraded"
+    assert (
+        canonical_bytes(invalid_clock["formed_candidates"][0]["frozen_formation"])
+        == initial_formation
+    )
+
+    # explicit stale → degraded
+    stale = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot,
+            micro_map=micro_map,
+            activation=ACTIVATION_RECEIPT,
+            prior_feed=invalid_clock,
+            source_health={"stale": True, "unavailable": False},
+        )
+    )
+    assert stale["formed_candidates"][0]["state"] == "degraded"
+    assert (
+        canonical_bytes(stale["formed_candidates"][0]["frozen_formation"])
+        == initial_formation
+    )
+
+    # recovery → research_candidate; identity and frozen formation unchanged
+    recovered = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot, micro_map=micro_map, activation=ACTIVATION_RECEIPT, prior_feed=stale
+        )
+    )
+    assert recovered["formed_candidates"][0]["state"] == "research_candidate"
+    assert recovered["formed_candidates"][0]["candidate_id"] == candidate_id
+    assert (
+        canonical_bytes(recovered["formed_candidates"][0]["frozen_formation"])
+        == initial_formation
+    )
+
+
+def test_authority_failure_current_revision_retains_original_formation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """F1: a poisoned current campaign revision MUST NOT make the
+    historical identity disappear. The formed_candidates entry keeps the
+    original frozen_formation, candidate_id, and versioned_updates; the
+    current_disposition surfaces the upstream authority violation. If
+    the historical formation evidence is rewritten (ledger prefix
+    mutated), the composer hardrefuses — only the no-replacement
+    variant passes through, surfaced via abstentions.
+    """
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    episodes_spec = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    micro_map = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in episodes_spec
+    }
+    initial = compose_candidate_feed(
+        **_composer_kwargs(snapshot, micro_map=micro_map, activation=ACTIVATION_RECEIPT)
+    )
+    initial_formation = canonical_bytes(initial["formed_candidates"][0]["frozen_formation"])
+
+    # Flip authority in the campaign ledger so the current revision is
+    # poisoned. The ledger is shared with the prior feed, so the
+    # composer must hardrefuse a feed that supplies prior_feed — the
+    # prior's source_prefix_receipt no longer matches the physical
+    # source. That hardrefuse is the correct "missing/rewritten
+    # historical formation evidence without replacement" path.
+    campaigns_path = tmp_path / CAMPAIGNS_PATH
+    rows = [
+        json.loads(line)
+        for line in campaigns_path.read_text().splitlines()
+        if line.strip()
+    ]
+    rows[-1]["authority"] = dict(rows[-1].get("authority", {}), may_score=True)
+    campaigns_path.write_bytes(b"".join(canonical_bytes(row) + b"\n" for row in rows))
+    poisoned_snapshot = load_ledger(campaigns_path, CAMPAIGNS_PATH)
+
+    with pytest.raises(CandidateFeedContractError, match="prior_feed campaign prefix receipt is invalid"):
+        compose_candidate_feed(
+            **_composer_kwargs(
+                poisoned_snapshot,
+                micro_map=micro_map,
+                activation=ACTIVATION_RECEIPT,
+                prior_feed=initial,
+            )
+        )
+
+    # Replay without a prior feed surfaces the poisoned revision as an
+    # abstention with UPSTREAM_AUTHORITY_VIOLATION; no historical
+    # identity is invented or rewritten.
+    poisoned = compose_candidate_feed(
+        **_composer_kwargs(
+            poisoned_snapshot,
+            micro_map=micro_map,
+            activation=ACTIVATION_RECEIPT,
+        )
+    )
+    assert all(
+        "UPSTREAM_AUTHORITY_VIOLATION" in abst["reasons"]
+        for abst in poisoned["abstentions"]
+    )
+
+    # The original formation bytes are preserved byte-identical in the
+    # initial feed; a fresh clean build reproduces the same identity
+    # using an unpoisoned snapshot.
+    assert (
+        canonical_bytes(initial["formed_candidates"][0]["frozen_formation"])
+        == initial_formation
+    )
+    clean_tmp = tmp_path / "clean"
+    clean_tmp.mkdir()
+    clean_snapshot = _build_campaign_snapshot(
+        clean_tmp, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    clean = compose_candidate_feed(
+        **_composer_kwargs(
+            clean_snapshot,
+            micro_map=micro_map,
+            activation=ACTIVATION_RECEIPT,
+        )
+    )
+    assert (
+        clean["formed_candidates"][0]["candidate_id"]
+        == initial["formed_candidates"][0]["candidate_id"]
+    )
+    assert (
+        canonical_bytes(clean["formed_candidates"][0]["frozen_formation"])
+        == initial_formation
+    )
+
+
+def test_late_older_micro_after_formation_before_decision_is_accepted(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """F2: a microstructure record whose available_at lies between
+    formation formed_at and the current decision_clock is accepted as
+    current measurement (the late older case)."""
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    episodes_spec = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    micro_map = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in episodes_spec
+    }
+
+    decision_clock = "2026-08-13T14:30:00Z"
+    late_older_map = copy.deepcopy(micro_map)
+    late_older_map[episodes_spec[-1]["source_event_id"]] = _micro_for(
+        episodes_spec[-1]["source_event_id"],
+        available_at="2026-08-13T13:30:00Z",  # before formation formed_at
+        # ...but still <= decision_clock so it survives the causal check
+    )
+    feed = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot,
+            micro_map=late_older_map,
+            activation=ACTIVATION_RECEIPT,
+            observation_clock=decision_clock,
+        )
+    )
+    assert feed["header"]["candidate_count"] == 1
+    assert feed["formed_candidates"][0]["state"] == "research_candidate"
+
+
+def test_absent_prior_first_qualifying_uses_decision_clock_not_formed_at(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """F2: when prior is None, the first-qualifying-revision scan must
+    pass observation=decision_clock (not row.formed_at). A micro that
+    arrived between formed_at and decision_clock qualifies the
+    formation."""
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    episodes_spec = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    # micro available AFTER formed_at but BEFORE decision_clock → "late
+    # older" case. With the pre-fix observation=row.formed_at this
+    # would have been rejected with EVIDENCE_CLOCK_INVALID.
+    late_older_micro = _micro_for(
+        episodes_spec[-1]["source_event_id"],
+        available_at=episodes_spec[-1]["available_at"],
+    )
+    micro_map = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in episodes_spec
+    }
+    feed = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot,
+            micro_map=micro_map,
+            activation=ACTIVATION_RECEIPT,
+            observation_clock="2026-08-13T14:30:00Z",
+        )
+    )
+    assert feed["header"]["candidate_count"] == 1
+    assert feed["formed_candidates"][0]["first_observed_at"] == "2026-08-13T14:30:00Z"
+    assert feed["formed_candidates"][0]["decision_at"] == "2026-08-13T14:30:00Z"
+    assert feed["formed_candidates"][0]["frozen_formation"]["formed_at"] != (
+        feed["formed_candidates"][0]["first_observed_at"]
+    )
+
+
+def test_valid_prior_with_missing_current_micro_does_not_crash(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """F2: a valid prior supplied with a current micro_map that omits
+    the formation event's micro MUST NOT crash the composer. The prior's
+    formation_micro is used directly."""
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    episodes_spec = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    micro_map = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in episodes_spec
+    }
+    initial = compose_candidate_feed(
+        **_composer_kwargs(snapshot, micro_map=micro_map, activation=ACTIVATION_RECEIPT)
+    )
+    candidate_id = initial["formed_candidates"][0]["candidate_id"]
+    initial_formation = canonical_bytes(initial["formed_candidates"][0]["frozen_formation"])
+    initial_formation_micro = canonical_bytes(
+        initial["formed_candidates"][0]["formation_micro"]
+    )
+
+    # Add a third revision but supply a micro_map missing the formation
+    # event's microstructure entirely.
+    third = {
+        "source_event_id": "evt-002",
+        "available_at": "2026-08-13T14:01:00Z",
+        "session_date": "2026-08-13",
+    }
+    snapshot_b = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec + [third], monkeypatch=monkeypatch
+    )
+    micro_b = {third["source_event_id"]: _micro_for(
+        third["source_event_id"], available_at=third["available_at"]
+    )}
+    later = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot_b,
+            micro_map=micro_b,
+            activation=ACTIVATION_RECEIPT,
+            prior_feed=initial,
+        )
+    )
+    assert later["formed_candidates"][0]["candidate_id"] == candidate_id
+    assert (
+        canonical_bytes(later["formed_candidates"][0]["frozen_formation"])
+        == initial_formation
+    )
+    assert (
+        canonical_bytes(later["formed_candidates"][0]["formation_micro"])
+        == initial_formation_micro
+    )
+
+
+def test_versioned_updates_excludes_preformation_revisions(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """F2: versioned_updates only includes revisions in the physical
+    prefix [formation_row_ordinal, current_physical_ordinal]. No
+    pre-formation revisions leak in."""
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    episodes_spec = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    micro_map = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in episodes_spec
+    }
+    feed = compose_candidate_feed(
+        **_composer_kwargs(snapshot, micro_map=micro_map, activation=ACTIVATION_RECEIPT)
+    )
+    updates = feed["formed_candidates"][0]["versioned_updates"]
+    # No pre-formation revisions: every update's formed_at must be >=
+    # the frozen formation formed_at, because this is a first-time
+    # formation with no pre-formation history.
+    formation_formed_at = feed["formed_candidates"][0]["frozen_formation"]["formed_at"]
+    assert all(u["formed_at"] >= formation_formed_at for u in updates)
+
+
+def test_receipt_strict_map_rejects_extra_fields(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """F3: the receipt's candidates map is a strict dynamic map of
+    {candidate_id: {first_receipt_id, first_consumer_published_at}};
+    any extra key in a candidate entry is rejected by the validator."""
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    episodes_spec = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    micro_map = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in episodes_spec
+    }
+    feed = compose_candidate_feed(
+        **_composer_kwargs(snapshot, micro_map=micro_map, activation=ACTIVATION_RECEIPT)
+    )
+    payload = canonical_bytes(feed)
+    digest = hashlib.sha256(payload).hexdigest()
+    receipt = {
+        "schema": "options.alpha_candidate_feed_publication_receipt/v1",
+        "receipt_id": "oacfr_"
+        + hashlib.sha256(
+            b"options.alpha_candidate_feed_publication_receipt/v1|"
+            + digest.encode("ascii")
+        ).hexdigest()[:25],
+        "feed_id": feed["feed_id"],
+        "feed_schema": "options.alpha_candidate_feed/v2",
+        "payload_sha256": digest,
+        "payload_bytes": len(payload),
+        "campaign_prefix": {
+            key: feed["source_receipts"]["campaigns"][key]
+            for key in ("path", "records", "prefix_sha256")
+        },
+        "prior_receipt": None,
+        "local_durability_confirmed_at": "2026-10-03T00:00:00Z",
+        "payload_r2_confirmed_at": "2026-10-03T00:00:01Z",
+        "r2": {
+            "payload_key": "options_alpha/candidate_feed.json",
+            "payload_sha256": digest,
+            "etag": "synthetic",
+        },
+        "candidates": {
+            item["candidate_id"]: {
+                "first_receipt_id": "",
+                "first_consumer_published_at": None,
+                "extra_field": "nope",
+            }
+            for item in feed["candidates"]
+        },
+    }
+    receipt["candidates"][feed["candidates"][0]["candidate_id"]][
+        "first_receipt_id"
+    ] = receipt["receipt_id"]
+    with pytest.raises(CandidateFeedContractError):
+        validate_publication_receipt_binding(
+            feed=feed, payload=payload, receipt=receipt
+        )
+
+
+def test_receipt_unknown_first_receipt_id_rejected(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """F3: a first_receipt_id that is neither the current receipt id nor
+    any explicitly passed chain receipt id MUST be rejected."""
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    episodes_spec = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    micro_map = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in episodes_spec
+    }
+    feed = compose_candidate_feed(
+        **_composer_kwargs(snapshot, micro_map=micro_map, activation=ACTIVATION_RECEIPT)
+    )
+    payload = canonical_bytes(feed)
+    digest = hashlib.sha256(payload).hexdigest()
+    receipt = {
+        "schema": "options.alpha_candidate_feed_publication_receipt/v1",
+        "receipt_id": "oacfr_"
+        + hashlib.sha256(
+            b"options.alpha_candidate_feed_publication_receipt/v1|"
+            + digest.encode("ascii")
+        ).hexdigest()[:25],
+        "feed_id": feed["feed_id"],
+        "feed_schema": "options.alpha_candidate_feed/v2",
+        "payload_sha256": digest,
+        "payload_bytes": len(payload),
+        "campaign_prefix": {
+            key: feed["source_receipts"]["campaigns"][key]
+            for key in ("path", "records", "prefix_sha256")
+        },
+        "prior_receipt": None,
+        "local_durability_confirmed_at": "2026-10-03T00:00:00Z",
+        "payload_r2_confirmed_at": "2026-10-03T00:00:01Z",
+        "r2": {
+            "payload_key": "options_alpha/candidate_feed.json",
+            "payload_sha256": digest,
+            "etag": "synthetic",
+        },
+        "candidates": {
+            item["candidate_id"]: {
+                "first_receipt_id": "oacfr_" + "9" * 25,
+                "first_consumer_published_at": None,
+            }
+            for item in feed["candidates"]
+        },
+    }
+    with pytest.raises(
+        CandidateFeedContractError,
+        match="publication receipt first receipt identity is not in the accepted chain",
+    ):
+        validate_publication_receipt_binding(
+            feed=feed, payload=payload, receipt=receipt
+        )
+
+
+def test_receipt_three_generation_carry_first_id_and_clock_immutable(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """F3: across three generations, the first receipt id and the
+    first-receipt's consumer-published-at clock are immutable on every
+    downstream receipt."""
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    episodes_spec = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    micro_map = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in episodes_spec
+    }
+    first = compose_candidate_feed(
+        **_composer_kwargs(snapshot, micro_map=micro_map, activation=ACTIVATION_RECEIPT)
+    )
+    first_payload = canonical_bytes(first)
+    first_digest = hashlib.sha256(first_payload).hexdigest()
+    first_receipt_id = (
+        "oacfr_"
+        + hashlib.sha256(
+            b"options.alpha_candidate_feed_publication_receipt/v1|"
+            + first_digest.encode("ascii")
+        ).hexdigest()[:25]
+    )
+    first_r2_clock = "2026-10-03T00:00:01Z"
+
+    def receipt_for(feed, payload, prior):
+        payload_digest = hashlib.sha256(payload).hexdigest()
+        receipt_id = (
+            "oacfr_"
+            + hashlib.sha256(
+                b"options.alpha_candidate_feed_publication_receipt/v1|"
+                + payload_digest.encode("ascii")
+            ).hexdigest()[:25]
+        )
+        return {
+            "schema": "options.alpha_candidate_feed_publication_receipt/v1",
+            "receipt_id": receipt_id,
+            "feed_id": feed["feed_id"],
+            "feed_schema": "options.alpha_candidate_feed/v2",
+            "payload_sha256": payload_digest,
+            "payload_bytes": len(payload),
+            "campaign_prefix": {
+                key: feed["source_receipts"]["campaigns"][key]
+                for key in ("path", "records", "prefix_sha256")
+            },
+            "prior_receipt": prior,
+            "local_durability_confirmed_at": "2026-10-03T00:00:00Z",
+            "payload_r2_confirmed_at": "2026-10-03T00:00:01Z",
+            "r2": {
+                "payload_key": "options_alpha/candidate_feed.json",
+                "payload_sha256": payload_digest,
+                "etag": "synthetic",
+            },
+            "candidates": {
+                item["candidate_id"]: {
+                    "first_receipt_id": receipt_id,
+                    "first_consumer_published_at": None,
+                }
+                for item in feed["candidates"]
+            },
+        }
+
+    first_receipt = receipt_for(first, first_payload, None)
+    validate_publication_receipt_binding(
+        feed=first, payload=first_payload, receipt=first_receipt
+    )
+
+    third = {
+        "source_event_id": "evt-002",
+        "available_at": "2026-08-13T14:01:00Z",
+        "session_date": "2026-08-13",
+    }
+    snapshot_b = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec + [third], monkeypatch=monkeypatch
+    )
+    micro_b = dict(micro_map)
+    micro_b[third["source_event_id"]] = _micro_for(
+        third["source_event_id"], available_at=third["available_at"]
+    )
+    second = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot_b, micro_map=micro_b, activation=ACTIVATION_RECEIPT, prior_feed=first
+        )
+    )
+    second_payload = canonical_bytes(second)
+    second_receipt = receipt_for(
+        second,
+        second_payload,
+        {"receipt_id": first_receipt_id, "payload_sha256": first_digest},
+    )
+    retained_id = second["candidates"][0]["candidate_id"]
+    second_receipt["candidates"][retained_id]["first_receipt_id"] = first_receipt_id
+    second_receipt["candidates"][retained_id]["first_consumer_published_at"] = (
+        first_r2_clock
+    )
+    validate_publication_receipt_binding(
+        feed=second, payload=second_payload, receipt=second_receipt
+    )
+
+    fourth = {
+        "source_event_id": "evt-003",
+        "available_at": "2026-08-13T14:02:00Z",
+        "session_date": "2026-08-13",
+    }
+    snapshot_c = _build_campaign_snapshot(
+        tmp_path,
+        episodes_specs=episodes_spec + [third, fourth],
+        monkeypatch=monkeypatch,
+    )
+    micro_c = dict(micro_b)
+    micro_c[fourth["source_event_id"]] = _micro_for(
+        fourth["source_event_id"], available_at=fourth["available_at"]
+    )
+    third_feed = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot_c,
+            micro_map=micro_c,
+            activation=ACTIVATION_RECEIPT,
+            prior_feed=second,
+        )
+    )
+    third_payload = canonical_bytes(third_feed)
+    third_receipt = receipt_for(
+        third_feed,
+        third_payload,
+        {
+            "receipt_id": second_receipt["receipt_id"],
+            "payload_sha256": second_receipt["payload_sha256"],
+        },
+    )
+    third_receipt["candidates"][retained_id]["first_receipt_id"] = first_receipt_id
+    third_receipt["candidates"][retained_id]["first_consumer_published_at"] = (
+        first_r2_clock
+    )
+    validate_publication_receipt_binding(
+        feed=third_feed,
+        payload=third_payload,
+        receipt=third_receipt,
+        receipt_chain=[first_receipt],
+    )
+    # Tamper: rewriting the historical first_receipt_id MUST fail closed.
+    tampered = copy.deepcopy(third_receipt)
+    tampered["candidates"][retained_id]["first_receipt_id"] = (
+        "oacfr_" + "1" * 25
+    )
+    with pytest.raises(CandidateFeedContractError):
+        validate_publication_receipt_binding(
+            feed=third_feed,
+            payload=third_payload,
+            receipt=tampered,
+            receipt_chain=[first_receipt],
+        )
+    # Tamper: rewriting the historical consumer clock MUST fail closed.
+    clock_tampered = copy.deepcopy(third_receipt)
+    clock_tampered["candidates"][retained_id]["first_consumer_published_at"] = (
+        "2026-10-03T00:00:02Z"
+    )
+    with pytest.raises(CandidateFeedContractError):
+        validate_publication_receipt_binding(
+            feed=third_feed,
+            payload=third_payload,
+            receipt=clock_tampered,
+            receipt_chain=[first_receipt],
+        )
+
+
+def test_receipt_clock_ordering_composition_durability_confirmed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """F3: composition <= durability <= confirmed is enforced and the
+    clocks are canonicalised (Z-suffixed UTC)."""
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    episodes_spec = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    micro_map = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in episodes_spec
+    }
+    feed = compose_candidate_feed(
+        **_composer_kwargs(snapshot, micro_map=micro_map, activation=ACTIVATION_RECEIPT)
+    )
+    payload = canonical_bytes(feed)
+    digest = hashlib.sha256(payload).hexdigest()
+    base = {
+        "schema": "options.alpha_candidate_feed_publication_receipt/v1",
+        "receipt_id": "oacfr_"
+        + hashlib.sha256(
+            b"options.alpha_candidate_feed_publication_receipt/v1|"
+            + digest.encode("ascii")
+        ).hexdigest()[:25],
+        "feed_id": feed["feed_id"],
+        "feed_schema": "options.alpha_candidate_feed/v2",
+        "payload_sha256": digest,
+        "payload_bytes": len(payload),
+        "campaign_prefix": {
+            key: feed["source_receipts"]["campaigns"][key]
+            for key in ("path", "records", "prefix_sha256")
+        },
+        "prior_receipt": None,
+        "r2": {
+            "payload_key": "options_alpha/candidate_feed.json",
+            "payload_sha256": digest,
+            "etag": "synthetic",
+        },
+        "candidates": {
+            item["candidate_id"]: {
+                "first_receipt_id": "",
+                "first_consumer_published_at": None,
+            }
+            for item in feed["candidates"]
+        },
+    }
+    base["candidates"][feed["candidates"][0]["candidate_id"]][
+        "first_receipt_id"
+    ] = base["receipt_id"]
+
+    # Composition > durability — fails closed.
+    bad1 = copy.deepcopy(base)
+    bad1["local_durability_confirmed_at"] = "2026-08-01T00:00:00Z"
+    bad1["payload_r2_confirmed_at"] = "2026-10-03T00:00:01Z"
+    with pytest.raises(CandidateFeedContractError, match="durability predates composition"):
+        validate_publication_receipt_binding(
+            feed=feed, payload=payload, receipt=bad1
+        )
+    # Durability > confirmed — fails closed.
+    bad2 = copy.deepcopy(base)
+    bad2["local_durability_confirmed_at"] = "2026-10-04T00:00:00Z"
+    bad2["payload_r2_confirmed_at"] = "2026-10-03T00:00:01Z"
+    with pytest.raises(CandidateFeedContractError, match="confirmation predates durability"):
+        validate_publication_receipt_binding(
+            feed=feed, payload=payload, receipt=bad2
+        )
+    # Non-canonical Z-less clock fails closed.
+    bad3 = copy.deepcopy(base)
+    bad3["local_durability_confirmed_at"] = "2026-10-03T00:00:00+00:00"
+    bad3["payload_r2_confirmed_at"] = "2026-10-03T00:00:01Z"
+    with pytest.raises(CandidateFeedContractError):
+        validate_publication_receipt_binding(
+            feed=feed, payload=payload, receipt=bad3
+        )
+
+
+def test_receipt_payload_byte_or_hash_mismatch_fails_closed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """F3: exact payload bytes / hash / size / feed_id / campaign_prefix
+    binding; one byte or hash drift fails closed."""
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    episodes_spec = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    micro_map = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in episodes_spec
+    }
+    feed = compose_candidate_feed(
+        **_composer_kwargs(snapshot, micro_map=micro_map, activation=ACTIVATION_RECEIPT)
+    )
+    payload = canonical_bytes(feed)
+    digest = hashlib.sha256(payload).hexdigest()
+    receipt = {
+        "schema": "options.alpha_candidate_feed_publication_receipt/v1",
+        "receipt_id": "oacfr_"
+        + hashlib.sha256(
+            b"options.alpha_candidate_feed_publication_receipt/v1|"
+            + digest.encode("ascii")
+        ).hexdigest()[:25],
+        "feed_id": feed["feed_id"],
+        "feed_schema": "options.alpha_candidate_feed/v2",
+        "payload_sha256": digest,
+        "payload_bytes": len(payload),
+        "campaign_prefix": {
+            key: feed["source_receipts"]["campaigns"][key]
+            for key in ("path", "records", "prefix_sha256")
+        },
+        "prior_receipt": None,
+        "local_durability_confirmed_at": "2026-10-03T00:00:00Z",
+        "payload_r2_confirmed_at": "2026-10-03T00:00:01Z",
+        "r2": {
+            "payload_key": "options_alpha/candidate_feed.json",
+            "payload_sha256": digest,
+            "etag": "synthetic",
+        },
+        "candidates": {
+            item["candidate_id"]: {
+                "first_receipt_id": "",
+                "first_consumer_published_at": None,
+            }
+            for item in feed["candidates"]
+        },
+    }
+    receipt["candidates"][feed["candidates"][0]["candidate_id"]][
+        "first_receipt_id"
+    ] = receipt["receipt_id"]
+
+    # Tampered payload bytes (extra trailing newline)
+    tampered_payload = payload + b"\n"
+    with pytest.raises(CandidateFeedContractError, match="payload bytes do not canonicalize"):
+        validate_publication_receipt_binding(
+            feed=feed, payload=tampered_payload, receipt=receipt
+        )
+    # Hash mismatch
+    tampered_receipt = copy.deepcopy(receipt)
+    tampered_receipt["payload_sha256"] = "0" * 64
+    with pytest.raises(CandidateFeedContractError, match="payload hash disagrees"):
+        validate_publication_receipt_binding(
+            feed=feed, payload=payload, receipt=tampered_receipt
+        )
+    # Size mismatch
+    tampered_receipt = copy.deepcopy(receipt)
+    tampered_receipt["payload_bytes"] = len(payload) + 1
+    with pytest.raises(CandidateFeedContractError, match="payload size disagrees"):
+        validate_publication_receipt_binding(
+            feed=feed, payload=payload, receipt=tampered_receipt
+        )
+    # Feed id mismatch
+    tampered_receipt = copy.deepcopy(receipt)
+    tampered_receipt["feed_id"] = "oacf_" + "0" * 24
+    with pytest.raises(CandidateFeedContractError, match="feed_id disagrees"):
+        validate_publication_receipt_binding(
+            feed=feed, payload=payload, receipt=tampered_receipt
+        )
+    # Campaign prefix hash mismatch
+    tampered_receipt = copy.deepcopy(receipt)
+    tampered_receipt["campaign_prefix"] = copy.deepcopy(receipt["campaign_prefix"])
+    tampered_receipt["campaign_prefix"]["prefix_sha256"] = "0" * 64
+    with pytest.raises(CandidateFeedContractError, match="campaign prefix disagrees"):
+        validate_publication_receipt_binding(
+            feed=feed, payload=payload, receipt=tampered_receipt
+        )
+    # Missing candidate id from map
+    tampered_receipt = copy.deepcopy(receipt)
+    missing_id = feed["candidates"][0]["candidate_id"]
+    del tampered_receipt["candidates"][missing_id]
+    with pytest.raises(CandidateFeedContractError, match="candidate map disagrees"):
+        validate_publication_receipt_binding(
+            feed=feed, payload=payload, receipt=tampered_receipt
+        )

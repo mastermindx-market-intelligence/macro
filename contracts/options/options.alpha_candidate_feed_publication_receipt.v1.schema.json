@@ -65,17 +65,14 @@
     "candidates": {
       "type": "object",
       "propertyNames": {"pattern": "^oacnd_[a-f0-9]{24}$"},
-      "required": [],
-      "properties": {
-        ".*": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["first_receipt_id", "first_consumer_published_at"],
-          "properties": {
-            "first_receipt_id": {"type": "string", "pattern": "^oacfr_[a-f0-9]{25}$"},
-            "first_consumer_published_at": {
-              "oneOf": [{"type": "null"}, {"type": "string", "format": "date-time"}]
-            }
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["first_receipt_id", "first_consumer_published_at"],
+        "properties": {
+          "first_receipt_id": {"type": "string", "pattern": "^oacfr_[a-f0-9]{25}$"},
+          "first_consumer_published_at": {
+            "oneOf": [{"type": "null"}, {"type": "string", "format": "date-time"}]
           }
         }
       }
