@@ -16,6 +16,7 @@ from engine.entry_radar.catalyst_context import (
 from engine.entry_radar.catalyst_adapters import (
     adapt_company_intelligence_earnings_workspace,
     adapt_edgar_earnings_item_202,
+    assess_company_intelligence_current_read_for_live_episode,
 )
 from engine.entry_radar.live_ledger import LiveEpisode, compute_episode_id
 
@@ -498,4 +499,123 @@ def test_live_episode_binding_preserves_evidence_ticker_check():
             required_sources=["issuer_events"],
             source_reads=[_read()],
             evidence=[_event(ticker="AMD")],
+        )
+
+
+def _current_company_read(
+    *,
+    available=True,
+    ticker="NVDA",
+    workspace=None,
+    note="Verified event workspace context only.",
+    receipt=None,
+):
+    out = {
+        "available": available,
+        "ticker": ticker,
+        "is_context_only": True,
+        "display_only": True,
+        "authority": "context_only",
+        "note": note,
+    }
+    if available:
+        out["workspace"] = workspace or _company_workspace()
+        out["event_id"] = out["workspace"]["event_id"]
+        out["receipt"] = receipt or {"workspace_sha256": "a" * 64}
+    return out
+
+
+def test_current_company_read_found_is_blocking_presence_but_not_coverage_clearance():
+    episode = _live_episode()
+    got = assess_company_intelligence_current_read_for_live_episode(
+        episode=episode,
+        read_result=_current_company_read(),
+        read_observed_at=T0,
+        decision_at=T0,
+    )
+    assert got.context_state == "blocking_event_observed"
+    assert got.coverage_complete is False
+    assert len(got.blocking_evidence_refs) == 1
+
+
+@pytest.mark.parametrize(
+    "note",
+    [
+        "Event workspace does not cover this ticker",
+        "temporary CDN fetch failure",
+    ],
+)
+def test_current_company_read_unavailable_never_becomes_no_event(note):
+    got = assess_company_intelligence_current_read_for_live_episode(
+        episode=_live_episode(),
+        read_result=_current_company_read(available=False, note=note),
+        read_observed_at=T0,
+        decision_at=T0,
+    )
+    assert got.context_state == "coverage_unknown"
+    assert got.coverage_complete is False
+    assert got.blocking_evidence_refs == ()
+    assert got.late_evidence_refs == ()
+
+
+def test_current_company_read_found_after_decision_is_late_not_backfilled():
+    late_observed = T0 + timedelta(minutes=2)
+    got = assess_company_intelligence_current_read_for_live_episode(
+        episode=_live_episode(),
+        read_result=_current_company_read(),
+        read_observed_at=late_observed,
+        decision_at=T0,
+    )
+    assert got.context_state == "coverage_unknown"
+    assert got.blocking_evidence_refs == ()
+    assert len(got.late_evidence_refs) == 1
+
+
+def test_current_company_read_ticker_mismatch_is_refused():
+    with pytest.raises(CatalystContextError, match="does not match Radar episode"):
+        assess_company_intelligence_current_read_for_live_episode(
+            episode=_live_episode(),
+            read_result=_current_company_read(ticker="AMD"),
+            read_observed_at=T0,
+            decision_at=T0,
+        )
+
+
+@pytest.mark.parametrize(
+    "read_result",
+    [
+        {"available": True, "is_context_only": True, "authority": "context_only", "ticker": "NVDA"},
+        {"available": "yes", "is_context_only": True, "authority": "context_only"},
+        {"available": False, "is_context_only": True, "authority": "trade"},
+    ],
+)
+def test_current_company_read_malformed_envelope_fails_closed(read_result):
+    with pytest.raises(CatalystContextError):
+        assess_company_intelligence_current_read_for_live_episode(
+            episode=_live_episode(),
+            read_result=read_result,
+            read_observed_at=T0,
+            decision_at=T0,
+        )
+
+
+def test_current_company_read_requires_verified_workspace_receipt():
+    bad = _current_company_read(receipt={"workspace_sha256": "bad"})
+    with pytest.raises(CatalystContextError, match="SHA-256 receipt"):
+        assess_company_intelligence_current_read_for_live_episode(
+            episode=_live_episode(),
+            read_result=bad,
+            read_observed_at=T0,
+            decision_at=T0,
+        )
+
+
+def test_current_company_read_cannot_backdate_before_workspace_generation():
+    too_early = datetime(2026, 10, 2, 14, 9, tzinfo=timezone.utc)
+    with pytest.raises(CatalystContextError, match="workspace generation"):
+        assess_company_intelligence_current_read_for_live_episode(
+            episode=_live_episode(),
+            read_result=_current_company_read(),
+            read_observed_at=too_early,
+            decision_at=T0,
         )
