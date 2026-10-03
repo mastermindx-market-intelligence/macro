@@ -188,7 +188,9 @@ on the mechanism pathway read path:
   artifact unlocks the verified path.
 * **R6 earned aggregates.** Zero-edge pathways derive coverage / coherence
   from their own source clock. Stale / future / unknown pathway or node
-  clocks downgrade `coverage_score` to `None` and `coherence` to `unknown`.
+  clocks do not build a pathway at all (compile returns `no_pathway` /
+  `trigger_stale`); coverage is withheld via an additive
+  `coverage_withheld_reason` field, never via a remeaning of `coverage_basis`.
 * **R7 distinct-source count.** `distinct_sources` and
   `independent_confirmations_disallowed` surface in every pathway so single-
   source and dependent-leg pathways are disclosed.
@@ -196,13 +198,14 @@ on the mechanism pathway read path:
   / `display_only=True` / `not_a_signal=True`; no new escalation.
 * **R9 wall-clock independence.** `compile(root=None, *, now=...)` and
   `project_evidence(payload, *, now=...)` accept an injected observation
-  clock; tests run at fixed `2026-10-02T23:00:00Z` and exercise both
-  advancement (`2030-01-01`) and Kiritimati / GMT+12 timezones.
+  clock; tests inject `now=2026-10-02T23:00:00Z` (no wrapper-date fallback)
+  and exercise both advancement (`2030-01-01`) and Kiritimati / GMT+12 timezones.
 
 ### Evidence
 
-* RED-first regressions added 11 new test cases that failed against the
-  unmodified 9d0d51cc compiler and reader; all 11 now pass.
+* RED-first regressions added 14 new test cases against the unmodified
+  baseline; all now pass. The slice-4 compiler-only repair added 3 of
+  these on top of the 11 already present at the lane head.
 * Pre-existing tests that asserted the OLD contract (no marker required)
   were updated to add the `clock_basis=source_clock_v1` marker so the new
   R5 rule does not silently shadow them.
@@ -223,9 +226,21 @@ on the mechanism pathway read path:
   source returns `no_pathway` (the pathway is quarantined at compile time).
 * G5 (contract delta): only owned files touched —
   `engine/neuralweb/mechanism_pathways.py`,
-  `engine/neuralweb/mechanism_evidence.py`,
   `tests/test_mechanism_pathways.py`,
-  `tests/test_mechanism_evidence.py`,
   `research/macro_regime_intelligence/MECHANISM_EVIDENCE_2026-10-02.md`
-  (this section). No new API surface, no schema break beyond the additive
-  `clock_basis` field.
+  (this section). The sibling lane owns
+  `engine/neuralweb/mechanism_evidence.py` and
+  `tests/test_mechanism_evidence.py`. No new API surface, no schema break
+  beyond the additive `clock_basis` and `coverage_withheld_reason` fields.
+
+## Repair 2026-10-03
+
+Slice 4 of the compiler-side repair closes three small defects on the lane branch
+`claude/gri-8306-evidence-repair-20261003`. The compiler has one clock seam:
+the injected `now` reaches every source-clock classifier, with no wrapper-date
+fallback. Stale / future / unknown source clocks build no pathway. The
+factor-rotation pathway makes no coverage claim and says why in
+`coverage_withheld_reason` (never by re-meaning `coverage_basis`). The
+`distinct_sources` count is the number of distinct source-artifact strings
+across the pathway's nodes, independent of the source clock. Nothing here has
+been verified against the served product; that check is still owed.
