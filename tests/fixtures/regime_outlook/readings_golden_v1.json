@@ -1,0 +1,5192 @@
+{
+ "mapping_version": "VERDICT_MAPPING_V1",
+ "reading_table_sha256": "966a8595e1c719618740d8af8502086d4da64876f6aab18d8ad2302903fa6196",
+ "producer_pin": "5f20adbd6be6b136b2efe41585bd4ef964b5bf2e",
+ "artifact_dates": "2026-10-02",
+ "note": "Owner artifacts at the producer pin, reduced to the leaves the mapping names, with the readings they give. Each case edits a copy of `base`; `changes` lists every value that then differs from `pin`, and nothing else may differ. The expected values come from an evaluator written separately from engine/rates_command_outlook.py; a disagreement is settled by the contract text, not by either program. Not market evidence and not a forecast.",
+ "base": {
+  "T": {
+   "asof": "2026-10-02",
+   "breakeven_decomp": {
+    "direction": "flat",
+    "as_of": "2026-10-02",
+    "trend": "uptrend",
+    "velocity_bp": {
+     "chg_20d_bp": 1.0
+    }
+   },
+   "yield_curve": {
+    "asof": "2026-10-02",
+    "regime": {
+     "term_premium_dir": "rising",
+     "key": "bear_steepener"
+    }
+   },
+   "dollar_channel": {
+    "usd_dir": "flat",
+    "asof": "2026-10-03"
+   },
+   "state": {
+    "inflation": {
+     "direction": "cooling",
+     "core_pce_3m_ann": 2.05,
+     "core_pce_yoy": 3.01,
+     "regime": "above target",
+     "eci_comp_yoy": 3.38,
+     "core_cpi_yoy": 2.76,
+     "headline_cpi_yoy": 3.71,
+     "ppi_core_yoy": 4.62
+    },
+    "expectations": {
+     "anchoring": "anchored",
+     "market_minus_model_bp": -23.0
+    },
+    "rates": {
+     "direction": "rising",
+     "real_10y_chg_63d_bp": 58.0,
+     "regime": "restrictive",
+     "real_10y_pctile": 1.0,
+     "nominal_10y": 5.24,
+     "curve_2s10s": 0.45,
+     "curve_tp_adj": 1.47,
+     "policy_gap": 0.9
+    }
+   },
+   "yield_momentum": {
+    "series": {
+     "2y": {
+      "turn_watch": null,
+      "as_of": "2026-10-01",
+      "status": "available",
+      "path_qualified": true,
+      "velocity_bp": {
+       "22d": 39.0
+      }
+     },
+     "5y": {
+      "turn_watch": "extreme_high_watch",
+      "as_of": "2026-10-01",
+      "status": "available",
+      "path_qualified": true,
+      "velocity_bp": {
+       "22d": 46.0
+      }
+     },
+     "10y": {
+      "turn_watch": "extreme_high_watch",
+      "as_of": "2026-10-01",
+      "status": "available",
+      "path_qualified": true,
+      "velocity_bp": {
+       "22d": 45.0
+      }
+     },
+     "20y": {
+      "turn_watch": "extreme_high_watch",
+      "as_of": "2026-10-01",
+      "status": "available",
+      "path_qualified": true,
+      "velocity_bp": {
+       "22d": 37.0
+      }
+     },
+     "30y": {
+      "turn_watch": "extreme_high_watch",
+      "as_of": "2026-10-01",
+      "status": "available",
+      "path_qualified": true,
+      "velocity_bp": {
+       "22d": 34.0
+      }
+     }
+    }
+   }
+  },
+  "R": {
+   "asof": "2026-10-02",
+   "leadership_crack": {
+    "schema": "leadership_crack.v1",
+    "asof": "2026-10-02",
+    "cohort_role": "tracked_ai_hardware_damage_monitor",
+    "cohort_keys": [
+     "ai_semiconductors",
+     "ai_infra",
+     "memory_storage",
+     "semicap_equipment"
+    ],
+    "high_window_sessions": 63,
+    "state": "INTACT",
+    "z_vel": 0.4601,
+    "med_dd": -0.0935,
+    "carnage_share_ema": 0.2176,
+    "share10": 0.5,
+    "share30": 0.0714,
+    "n_fresh": 42,
+    "n_total": 42,
+    "worst_members": [
+     {
+      "ticker": "ICHR",
+      "dd": -0.3727
+     },
+     {
+      "ticker": "CBRS",
+      "dd": -0.3649
+     },
+     {
+      "ticker": "UCTT",
+      "dd": -0.316
+     },
+     {
+      "ticker": "WDC",
+      "dd": -0.2869
+     },
+     {
+      "ticker": "MKSI",
+      "dd": -0.2423
+     },
+     {
+      "ticker": "CRDO",
+      "dd": -0.2269
+     }
+    ],
+    "index_dd": -0.0081,
+    "dislocation": false,
+    "state_since": "2026-10-02"
+   },
+   "liquidity_quality": {
+    "label": "neutral-hollow",
+    "asof": "2026-10-02",
+    "stress_overlay": {
+     "confirming_stress": true,
+     "hy_oas_z": 2.78,
+     "nfci": -0.548,
+     "hy_oas_pct": 3.24,
+     "nfci_trend": "tightening"
+    }
+   },
+   "conditions": {
+    "labor_nowcast": {
+     "read": "labor firm",
+     "claims_yoy_pct": -11.012235817575089,
+     "indeed_chg_3m_pct": 2.3143111462763377,
+     "withheld_tax_yoy_pct": 5.019254192403899
+    },
+    "financial_conditions": {
+     "state": "loose",
+     "trend": "loosening"
+    },
+    "complacency": {
+     "breadth_div": true,
+     "spy_high_prox": 0.9918639790385078,
+     "breadth_above200_pctile": 0.054563492063492064
+    },
+    "vintages": {
+     "nfci": {
+      "asof": "2026-09-25",
+      "stale": false
+     },
+     "pct_above_200": {
+      "asof": "2026-10-01",
+      "stale": false
+     }
+    }
+   }
+  },
+  "M": {
+   "components": [
+    {
+     "key": "breadth",
+     "tone": "bad",
+     "degraded": false
+    }
+   ],
+   "input_vintages": {
+    "pct_above_200": {
+     "asof": "2026-10-01",
+     "stale": false
+    }
+   }
+  },
+  "D": {
+   "state": "lean_out",
+   "as_of": "2026-10-02",
+   "avg_corr": 0.06
+  },
+  "L": {
+   "state": "INTACT",
+   "asof": "2026-10-02"
+  },
+  "B": {
+   "fed_path": {
+    "implied_cuts_12m": -3,
+    "asof": "2026-10-02",
+    "implied_bp_12m": 83
+   }
+  },
+  "C": {
+   "asof": "2026-10-02",
+   "assets": {
+    "oil": {
+     "trend": "up"
+    }
+   }
+  }
+ },
+ "pin": {
+  "fields": {
+   "T.state.inflation.direction": {
+    "admitted": true,
+    "token": "cooling",
+    "issue": null
+   },
+   "T.state.inflation.regime": {
+    "admitted": true,
+    "token": "above target",
+    "issue": null
+   },
+   "T.state.expectations.anchoring": {
+    "admitted": true,
+    "token": "anchored",
+    "issue": null
+   },
+   "T.state.rates.direction": {
+    "admitted": true,
+    "token": "rising",
+    "issue": null
+   },
+   "T.state.rates.regime": {
+    "admitted": true,
+    "token": "restrictive",
+    "issue": null
+   },
+   "T.breakeven_decomp.direction": {
+    "admitted": true,
+    "token": "flat",
+    "issue": null
+   },
+   "T.breakeven_decomp.trend": {
+    "admitted": true,
+    "token": "uptrend",
+    "issue": null
+   },
+   "T.yield_curve.regime.term_premium_dir": {
+    "admitted": true,
+    "token": "rising",
+    "issue": null
+   },
+   "T.yield_momentum.series.2y.turn_watch": {
+    "admitted": true,
+    "token": null,
+    "issue": null
+   },
+   "T.yield_momentum.series.5y.turn_watch": {
+    "admitted": true,
+    "token": "extreme_high_watch",
+    "issue": null
+   },
+   "T.yield_momentum.series.10y.turn_watch": {
+    "admitted": true,
+    "token": "extreme_high_watch",
+    "issue": null
+   },
+   "T.yield_momentum.series.20y.turn_watch": {
+    "admitted": true,
+    "token": "extreme_high_watch",
+    "issue": null
+   },
+   "T.yield_momentum.series.30y.turn_watch": {
+    "admitted": true,
+    "token": "extreme_high_watch",
+    "issue": null
+   },
+   "R.conditions.labor_nowcast.read": {
+    "admitted": true,
+    "token": "labor firm",
+    "issue": null
+   },
+   "R.conditions.financial_conditions.state": {
+    "admitted": true,
+    "token": "loose",
+    "issue": null
+   },
+   "R.conditions.complacency.breadth_div": {
+    "admitted": true,
+    "token": true,
+    "issue": null
+   },
+   "R.liquidity_quality.label": {
+    "admitted": true,
+    "token": "neutral-hollow",
+    "issue": null
+   },
+   "R.liquidity_quality.stress_overlay.confirming_stress": {
+    "admitted": true,
+    "token": true,
+    "issue": null
+   },
+   "M.components.breadth.tone": {
+    "admitted": true,
+    "token": "bad",
+    "issue": null
+   },
+   "L.state": {
+    "admitted": true,
+    "token": "INTACT",
+    "issue": null
+   },
+   "B.fed_path.implied_cuts_12m": {
+    "admitted": true,
+    "token": -3,
+    "issue": null
+   }
+  },
+  "conditions": {
+   "OD-1": [
+    "fits",
+    null
+   ],
+   "OD-2": [
+    "not_discriminating",
+    null
+   ],
+   "OD-3": [
+    "fits",
+    null
+   ],
+   "OD-4": [
+    "does_not_fit",
+    null
+   ],
+   "OD-5": [
+    "fits",
+    null
+   ],
+   "OD-7": [
+    "does_not_fit",
+    null
+   ],
+   "OD-8": [
+    "unknown",
+    "no_admitted_owner_field"
+   ],
+   "GD-1": [
+    "does_not_fit",
+    null
+   ],
+   "GD-2": [
+    "does_not_fit",
+    null
+   ],
+   "GD-3": [
+    "fits",
+    null
+   ],
+   "GD-4": [
+    "does_not_fit",
+    null
+   ],
+   "GD-5": [
+    "unknown",
+    "no_admitted_owner_field"
+   ],
+   "GD-6": [
+    "unknown",
+    "no_admitted_owner_field"
+   ],
+   "GD-7": [
+    "unknown",
+    "unknown_date"
+   ],
+   "GD-8": [
+    "unknown",
+    "no_owner_verdict"
+   ],
+   "RI-1": [
+    "does_not_fit",
+    null
+   ],
+   "RI-2": [
+    "fits",
+    null
+   ],
+   "RI-3": [
+    "not_discriminating",
+    null
+   ],
+   "RI-4": [
+    "not_discriminating",
+    null
+   ],
+   "RI-5": [
+    "unknown",
+    "no_owner_verdict"
+   ],
+   "RI-6": [
+    "fits",
+    null
+   ],
+   "RI-7": [
+    "unknown",
+    "no_admitted_owner_field"
+   ],
+   "RI-8": [
+    "unknown",
+    "sign_only_verdict"
+   ],
+   "LP-1": [
+    "fits",
+    null
+   ],
+   "LP-2": [
+    "fits",
+    null
+   ],
+   "LP-4": [
+    "unknown",
+    "sign_only_verdict"
+   ],
+   "LP-5": [
+    "unknown",
+    "no_admitted_owner_field"
+   ],
+   "LP-6": [
+    "unknown",
+    "no_admitted_owner_field"
+   ],
+   "LP-7": [
+    "unknown",
+    "no_owner_verdict"
+   ],
+   "TP-1": [
+    "does_not_fit",
+    null
+   ],
+   "TP-4": [
+    "unknown",
+    "no_admitted_owner_field"
+   ],
+   "TP-5": [
+    "unknown",
+    "no_admitted_owner_field"
+   ],
+   "TP-6": [
+    "unknown",
+    "no_admitted_owner_field"
+   ],
+   "SC-1": [
+    "fits",
+    null
+   ],
+   "SC-2": [
+    "does_not_fit",
+    null
+   ],
+   "SC-3": [
+    "fits",
+    null
+   ],
+   "SC-4": [
+    "unknown",
+    "no_admitted_owner_field"
+   ],
+   "SC-5": [
+    "unknown",
+    "no_admitted_owner_field"
+   ],
+   "GB-1": [
+    "does_not_fit",
+    null
+   ],
+   "GB-2": [
+    "unknown",
+    "no_owner_verdict"
+   ],
+   "GB-3": [
+    "unknown",
+    "no_admitted_owner_field"
+   ],
+   "GB-4": [
+    "unknown",
+    "no_admitted_owner_field"
+   ],
+   "LH-1": [
+    "fits",
+    null
+   ],
+   "LH-2": [
+    "unknown",
+    "no_admitted_owner_field"
+   ],
+   "LH-3": [
+    "unknown",
+    "no_admitted_owner_field"
+   ],
+   "DS-1": [
+    "does_not_fit",
+    null
+   ],
+   "DS-2": [
+    "fits",
+    null
+   ],
+   "DS-3": [
+    "does_not_fit",
+    null
+   ],
+   "DS-4": [
+    "unknown",
+    "vocabulary_not_audited"
+   ],
+   "DS-5": [
+    "unknown",
+    "sign_only_verdict"
+   ]
+  },
+  "family_readings": {
+   "orderly_disinflation": {
+    "core_pce": "fits",
+    "treasury_curve": "does_not_fit",
+    "labour": "fits",
+    "credit_and_funding": "mixed",
+    "inflation_breadth": "unknown"
+   },
+   "growth_deterioration": {
+    "treasury_curve": "does_not_fit",
+    "labour": "does_not_fit",
+    "credit_and_funding": "mixed",
+    "real_activity": "unknown",
+    "earnings": "unknown",
+    "dollar": "unknown"
+   },
+   "renewed_inflation_pressure": {
+    "core_pce": "mixed",
+    "treasury_curve": "not_discriminating",
+    "wages_services": "unknown",
+    "policy_pricing": "fits",
+    "inflation_breadth": "unknown",
+    "oil": "unknown"
+   },
+   "long_end_premium_shock": {
+    "treasury_curve": "fits",
+    "issuance_and_demand": "unknown",
+    "policy_pricing": "unknown"
+   },
+   "technical_pause": {
+    "treasury_curve": "does_not_fit",
+    "positioning": "unknown",
+    "macro_confirmation": "unknown",
+    "participation": "unknown"
+   },
+   "continued_selective_concentration": {
+    "participation": "fits",
+    "credit_and_funding": "mixed",
+    "concentration": "unknown",
+    "leader_turnover": "unknown"
+   },
+   "genuine_broadening": {
+    "participation": "does_not_fit",
+    "dispersion": "unknown",
+    "revision_breadth": "unknown"
+   },
+   "internal_leadership_handoff": {
+    "leader_damage": "fits",
+    "leader_turnover": "unknown",
+    "participation": "unknown"
+   },
+   "deterioration_spreading_to_leaders": {
+    "leader_damage": "does_not_fit",
+    "credit_and_funding": "mixed",
+    "correlation": "unknown"
+   }
+  }
+ },
+ "cases": [
+  {
+   "name": "middle_token_without_its_number",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "expectations",
+      "market_minus_model_bp"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.expectations.anchoring": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "RI-3": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "middle_token_with_a_non_finite_number",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "expectations",
+      "market_minus_model_bp"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.expectations.anchoring": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "RI-3": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "default_token_steady_without_core_pce_3m",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "inflation",
+      "direction"
+     ],
+     "op": "set",
+     "value": "steady"
+    },
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "inflation",
+      "core_pce_3m_ann"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.inflation.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-1": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "RI-1": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "unknown",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "renewed_inflation_pressure": {
+      "core_pce": "fits",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "fits",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "steady_with_both_numbers_is_the_middle",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "inflation",
+      "direction"
+     ],
+     "op": "set",
+     "value": "steady"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.inflation.direction": {
+      "admitted": true,
+      "token": "steady",
+      "issue": null
+     }
+    },
+    "conditions": {
+     "OD-1": [
+      "not_discriminating",
+      null
+     ],
+     "RI-1": [
+      "not_discriminating",
+      null
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "not_discriminating",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "renewed_inflation_pressure": {
+      "core_pce": "fits",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "fits",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "side_token_survives_a_missing_number",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "inflation",
+      "core_pce_3m_ann"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {},
+    "conditions": {},
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "token_the_owner_never_publishes",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "inflation",
+      "direction"
+     ],
+     "op": "set",
+     "value": "hot"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.inflation.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "malformed"
+     }
+    },
+    "conditions": {
+     "OD-1": [
+      "unknown",
+      "malformed"
+     ],
+     "RI-1": [
+      "unknown",
+      "malformed"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "unknown",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "renewed_inflation_pressure": {
+      "core_pce": "fits",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "fits",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "artifact_absent",
+   "edits": [
+    {
+     "artifact": "T",
+     "op": "drop_artifact"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.inflation.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.state.inflation.regime": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.state.expectations.anchoring": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.state.rates.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.state.rates.regime": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.breakeven_decomp.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.breakeven_decomp.trend": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.yield_curve.regime.term_premium_dir": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.yield_momentum.series.2y.turn_watch": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.yield_momentum.series.5y.turn_watch": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.yield_momentum.series.10y.turn_watch": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.yield_momentum.series.20y.turn_watch": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.yield_momentum.series.30y.turn_watch": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "OD-1": [
+      "unknown",
+      "missing"
+     ],
+     "OD-2": [
+      "unknown",
+      "missing"
+     ],
+     "OD-7": [
+      "unknown",
+      "missing"
+     ],
+     "GD-1": [
+      "unknown",
+      "missing"
+     ],
+     "RI-1": [
+      "unknown",
+      "missing"
+     ],
+     "RI-2": [
+      "unknown",
+      "missing"
+     ],
+     "RI-3": [
+      "unknown",
+      "missing"
+     ],
+     "RI-4": [
+      "unknown",
+      "missing"
+     ],
+     "LP-1": [
+      "unknown",
+      "missing"
+     ],
+     "LP-2": [
+      "unknown",
+      "missing"
+     ],
+     "TP-1": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "unknown",
+      "treasury_curve": "unknown",
+      "labour": "fits",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "unknown",
+      "labour": "does_not_fit",
+      "credit_and_funding": "mixed",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "renewed_inflation_pressure": {
+      "core_pce": "unknown",
+      "treasury_curve": "unknown",
+      "wages_services": "unknown",
+      "policy_pricing": "fits",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     },
+     "long_end_premium_shock": {
+      "treasury_curve": "unknown",
+      "issuance_and_demand": "unknown",
+      "policy_pricing": "unknown"
+     },
+     "technical_pause": {
+      "treasury_curve": "unknown",
+      "positioning": "unknown",
+      "macro_confirmation": "unknown",
+      "participation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "field_absent",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "rates",
+      "direction"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.rates.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "OD-7": [
+      "unknown",
+      "missing"
+     ],
+     "GD-1": [
+      "unknown",
+      "missing"
+     ],
+     "LP-2": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "not_discriminating",
+      "labour": "fits",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "unknown",
+      "labour": "does_not_fit",
+      "credit_and_funding": "mixed",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "stress_true_resting_on_the_sign_leg",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "confirming_stress"
+     ],
+     "op": "set",
+     "value": true
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "hy_oas_z"
+     ],
+     "op": "set",
+     "value": 0.5
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "nfci"
+     ],
+     "op": "set",
+     "value": 0.2
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.liquidity_quality.stress_overlay.confirming_stress": {
+      "admitted": false,
+      "token": null,
+      "issue": "contains_sign_only_leg"
+     }
+    },
+    "conditions": {
+     "OD-4": [
+      "unknown",
+      "contains_sign_only_leg"
+     ],
+     "GD-3": [
+      "unknown",
+      "contains_sign_only_leg"
+     ],
+     "SC-2": [
+      "unknown",
+      "contains_sign_only_leg"
+     ],
+     "DS-2": [
+      "unknown",
+      "contains_sign_only_leg"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "fits",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "continued_selective_concentration": {
+      "participation": "fits",
+      "credit_and_funding": "fits",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "stress_true_at_exactly_one_is_not_admitted",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "confirming_stress"
+     ],
+     "op": "set",
+     "value": true
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "hy_oas_z"
+     ],
+     "op": "set",
+     "value": 1.0
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "nfci"
+     ],
+     "op": "set",
+     "value": 0.2
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.liquidity_quality.stress_overlay.confirming_stress": {
+      "admitted": false,
+      "token": null,
+      "issue": "contains_sign_only_leg"
+     }
+    },
+    "conditions": {
+     "OD-4": [
+      "unknown",
+      "contains_sign_only_leg"
+     ],
+     "GD-3": [
+      "unknown",
+      "contains_sign_only_leg"
+     ],
+     "SC-2": [
+      "unknown",
+      "contains_sign_only_leg"
+     ],
+     "DS-2": [
+      "unknown",
+      "contains_sign_only_leg"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "fits",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "continued_selective_concentration": {
+      "participation": "fits",
+      "credit_and_funding": "fits",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "stress_true_with_no_numbers",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "confirming_stress"
+     ],
+     "op": "set",
+     "value": true
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "hy_oas_z"
+     ],
+     "op": "delete"
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "nfci"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.liquidity_quality.stress_overlay.confirming_stress": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-4": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "GD-3": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "SC-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "DS-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "fits",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "continued_selective_concentration": {
+      "participation": "fits",
+      "credit_and_funding": "fits",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "stress_true_proved_by_negative_nfci",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "confirming_stress"
+     ],
+     "op": "set",
+     "value": true
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "hy_oas_z"
+     ],
+     "op": "set",
+     "value": 0.2
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "nfci"
+     ],
+     "op": "set",
+     "value": -0.3
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {},
+    "conditions": {},
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "stress_false_measured_and_calm",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "confirming_stress"
+     ],
+     "op": "set",
+     "value": false
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "hy_oas_z"
+     ],
+     "op": "set",
+     "value": 0.3
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "nfci"
+     ],
+     "op": "set",
+     "value": -0.5
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.liquidity_quality.stress_overlay.confirming_stress": {
+      "admitted": true,
+      "token": false,
+      "issue": null
+     }
+    },
+    "conditions": {
+     "OD-4": [
+      "fits",
+      null
+     ],
+     "GD-3": [
+      "does_not_fit",
+      null
+     ],
+     "SC-2": [
+      "fits",
+      null
+     ],
+     "DS-2": [
+      "does_not_fit",
+      null
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "fits",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "continued_selective_concentration": {
+      "participation": "fits",
+      "credit_and_funding": "fits",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "stress_false_with_nfci_above_zero",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "confirming_stress"
+     ],
+     "op": "set",
+     "value": false
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "hy_oas_z"
+     ],
+     "op": "set",
+     "value": 0.3
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "nfci"
+     ],
+     "op": "set",
+     "value": 0.1
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.liquidity_quality.stress_overlay.confirming_stress": {
+      "admitted": false,
+      "token": null,
+      "issue": "contains_sign_only_leg"
+     }
+    },
+    "conditions": {
+     "OD-4": [
+      "unknown",
+      "contains_sign_only_leg"
+     ],
+     "GD-3": [
+      "unknown",
+      "contains_sign_only_leg"
+     ],
+     "SC-2": [
+      "unknown",
+      "contains_sign_only_leg"
+     ],
+     "DS-2": [
+      "unknown",
+      "contains_sign_only_leg"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "fits",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "continued_selective_concentration": {
+      "participation": "fits",
+      "credit_and_funding": "fits",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "stress_false_with_no_numbers",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "confirming_stress"
+     ],
+     "op": "set",
+     "value": false
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "hy_oas_z"
+     ],
+     "op": "delete"
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "nfci"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.liquidity_quality.stress_overlay.confirming_stress": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-4": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "GD-3": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "SC-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "DS-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "fits",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "continued_selective_concentration": {
+      "participation": "fits",
+      "credit_and_funding": "fits",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "stress_flag_not_a_boolean",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "confirming_stress"
+     ],
+     "op": "set",
+     "value": "yes"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.liquidity_quality.stress_overlay.confirming_stress": {
+      "admitted": false,
+      "token": null,
+      "issue": "malformed"
+     }
+    },
+    "conditions": {
+     "OD-4": [
+      "unknown",
+      "malformed"
+     ],
+     "GD-3": [
+      "unknown",
+      "malformed"
+     ],
+     "SC-2": [
+      "unknown",
+      "malformed"
+     ],
+     "DS-2": [
+      "unknown",
+      "malformed"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "fits",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "continued_selective_concentration": {
+      "participation": "fits",
+      "credit_and_funding": "fits",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "financial_conditions_null",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "financial_conditions",
+      "state"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.conditions.financial_conditions.state": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "OD-5": [
+      "unknown",
+      "missing"
+     ],
+     "GD-4": [
+      "unknown",
+      "missing"
+     ],
+     "SC-3": [
+      "unknown",
+      "missing"
+     ],
+     "DS-3": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "does_not_fit",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "does_not_fit",
+      "credit_and_funding": "fits",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "continued_selective_concentration": {
+      "participation": "fits",
+      "credit_and_funding": "does_not_fit",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "does_not_fit",
+      "credit_and_funding": "fits",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "term_premium_direction_null",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "yield_curve",
+      "regime",
+      "term_premium_dir"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.yield_curve.regime.term_premium_dir": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "LP-1": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "turn_watch_null_when_guarded_is_the_middle",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "yield_momentum",
+      "series",
+      "10y",
+      "turn_watch"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.yield_momentum.series.10y.turn_watch": {
+      "admitted": true,
+      "token": null,
+      "issue": null
+     }
+    },
+    "conditions": {
+     "TP-1": [
+      "not_discriminating",
+      null
+     ]
+    },
+    "family_readings": {
+     "technical_pause": {
+      "treasury_curve": "not_discriminating",
+      "positioning": "unknown",
+      "macro_confirmation": "unknown",
+      "participation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "turn_watch_null_on_an_unqualified_series",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "yield_momentum",
+      "series",
+      "10y",
+      "turn_watch"
+     ],
+     "op": "set",
+     "value": null
+    },
+    {
+     "artifact": "T",
+     "path": [
+      "yield_momentum",
+      "series",
+      "10y",
+      "path_qualified"
+     ],
+     "op": "set",
+     "value": false
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.yield_momentum.series.10y.turn_watch": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "TP-1": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "technical_pause": {
+      "treasury_curve": "unknown",
+      "positioning": "unknown",
+      "macro_confirmation": "unknown",
+      "participation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "turn_watch_null_on_an_unavailable_series",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "yield_momentum",
+      "series",
+      "10y",
+      "turn_watch"
+     ],
+     "op": "set",
+     "value": null
+    },
+    {
+     "artifact": "T",
+     "path": [
+      "yield_momentum",
+      "series",
+      "10y",
+      "status"
+     ],
+     "op": "set",
+     "value": "insufficient_history"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.yield_momentum.series.10y.turn_watch": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "TP-1": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "technical_pause": {
+      "treasury_curve": "unknown",
+      "positioning": "unknown",
+      "macro_confirmation": "unknown",
+      "participation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "turn_forming_token",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "yield_momentum",
+      "series",
+      "10y",
+      "turn_watch"
+     ],
+     "op": "set",
+     "value": "rolldown_forming"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.yield_momentum.series.10y.turn_watch": {
+      "admitted": true,
+      "token": "rolldown_forming",
+      "issue": null
+     }
+    },
+    "conditions": {
+     "TP-1": [
+      "fits",
+      null
+     ]
+    },
+    "family_readings": {
+     "technical_pause": {
+      "treasury_curve": "fits",
+      "positioning": "unknown",
+      "macro_confirmation": "unknown",
+      "participation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "breadth_component_degraded",
+   "edits": [
+    {
+     "artifact": "M",
+     "path": [
+      "components",
+      {
+       "key": "breadth"
+      },
+      "degraded"
+     ],
+     "op": "set",
+     "value": true
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "M.components.breadth.tone": {
+      "admitted": false,
+      "token": null,
+      "issue": "partial"
+     }
+    },
+    "conditions": {
+     "GB-1": [
+      "unknown",
+      "partial"
+     ]
+    },
+    "family_readings": {
+     "genuine_broadening": {
+      "participation": "unknown",
+      "dispersion": "unknown",
+      "revision_breadth": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "breadth_component_degraded_flag_absent",
+   "edits": [
+    {
+     "artifact": "M",
+     "path": [
+      "components",
+      {
+       "key": "breadth"
+      },
+      "degraded"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "M.components.breadth.tone": {
+      "admitted": false,
+      "token": null,
+      "issue": "partial"
+     }
+    },
+    "conditions": {
+     "GB-1": [
+      "unknown",
+      "partial"
+     ]
+    },
+    "family_readings": {
+     "genuine_broadening": {
+      "participation": "unknown",
+      "dispersion": "unknown",
+      "revision_breadth": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "leader_state_copy_from_another_run",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "leadership_crack",
+      "asof"
+     ],
+     "op": "set",
+     "value": "2026-09-30"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "L.state": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_did_not_write"
+     }
+    },
+    "conditions": {
+     "LH-1": [
+      "unknown",
+      "owner_did_not_write"
+     ],
+     "DS-1": [
+      "unknown",
+      "owner_did_not_write"
+     ]
+    },
+    "family_readings": {
+     "internal_leadership_handoff": {
+      "leader_damage": "unknown",
+      "leader_turnover": "unknown",
+      "participation": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "unknown",
+      "credit_and_funding": "mixed",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "leader_state_copy_absent",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "leadership_crack"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "L.state": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_did_not_write"
+     }
+    },
+    "conditions": {
+     "LH-1": [
+      "unknown",
+      "owner_did_not_write"
+     ],
+     "DS-1": [
+      "unknown",
+      "owner_did_not_write"
+     ]
+    },
+    "family_readings": {
+     "internal_leadership_handoff": {
+      "leader_damage": "unknown",
+      "leader_turnover": "unknown",
+      "participation": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "unknown",
+      "credit_and_funding": "mixed",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "leader_state_cracking",
+   "edits": [
+    {
+     "artifact": "L",
+     "path": [
+      "state"
+     ],
+     "op": "set",
+     "value": "CRACKING"
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "leadership_crack",
+      "state"
+     ],
+     "op": "set",
+     "value": "CRACKING"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "L.state": {
+      "admitted": true,
+      "token": "CRACKING",
+      "issue": null
+     }
+    },
+    "conditions": {
+     "LH-1": [
+      "does_not_fit",
+      null
+     ],
+     "DS-1": [
+      "fits",
+      null
+     ]
+    },
+    "family_readings": {
+     "internal_leadership_handoff": {
+      "leader_damage": "does_not_fit",
+      "leader_turnover": "unknown",
+      "participation": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "fits",
+      "credit_and_funding": "mixed",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "fed_pricing_zero_is_the_middle",
+   "edits": [
+    {
+     "artifact": "B",
+     "path": [
+      "fed_path",
+      "implied_cuts_12m"
+     ],
+     "op": "set",
+     "value": 0
+    },
+    {
+     "artifact": "B",
+     "path": [
+      "fed_path",
+      "implied_bp_12m"
+     ],
+     "op": "set",
+     "value": 0.0
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "B.fed_path.implied_cuts_12m": {
+      "admitted": true,
+      "token": 0,
+      "issue": null
+     }
+    },
+    "conditions": {
+     "RI-6": [
+      "not_discriminating",
+      null
+     ]
+    },
+    "family_readings": {
+     "renewed_inflation_pressure": {
+      "core_pce": "mixed",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "not_discriminating",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "fed_pricing_cuts_priced",
+   "edits": [
+    {
+     "artifact": "B",
+     "path": [
+      "fed_path",
+      "implied_cuts_12m"
+     ],
+     "op": "set",
+     "value": 2
+    },
+    {
+     "artifact": "B",
+     "path": [
+      "fed_path",
+      "implied_bp_12m"
+     ],
+     "op": "set",
+     "value": -50.0
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "B.fed_path.implied_cuts_12m": {
+      "admitted": true,
+      "token": 2,
+      "issue": null
+     }
+    },
+    "conditions": {
+     "RI-6": [
+      "does_not_fit",
+      null
+     ]
+    },
+    "family_readings": {
+     "renewed_inflation_pressure": {
+      "core_pce": "mixed",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "does_not_fit",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "fed_pricing_bool_is_not_an_integer",
+   "edits": [
+    {
+     "artifact": "B",
+     "path": [
+      "fed_path",
+      "implied_cuts_12m"
+     ],
+     "op": "set",
+     "value": true
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "B.fed_path.implied_cuts_12m": {
+      "admitted": false,
+      "token": null,
+      "issue": "malformed"
+     }
+    },
+    "conditions": {
+     "RI-6": [
+      "unknown",
+      "malformed"
+     ]
+    },
+    "family_readings": {
+     "renewed_inflation_pressure": {
+      "core_pce": "mixed",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "unknown",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "fed_pricing_signs_disagree",
+   "edits": [
+    {
+     "artifact": "B",
+     "path": [
+      "fed_path",
+      "implied_cuts_12m"
+     ],
+     "op": "set",
+     "value": 2
+    },
+    {
+     "artifact": "B",
+     "path": [
+      "fed_path",
+      "implied_bp_12m"
+     ],
+     "op": "set",
+     "value": 50.0
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "B.fed_path.implied_cuts_12m": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_sign_inconsistent"
+     }
+    },
+    "conditions": {
+     "RI-6": [
+      "unknown",
+      "owner_sign_inconsistent"
+     ]
+    },
+    "family_readings": {
+     "renewed_inflation_pressure": {
+      "core_pce": "mixed",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "unknown",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "fed_pricing_companion_missing",
+   "edits": [
+    {
+     "artifact": "B",
+     "path": [
+      "fed_path",
+      "implied_bp_12m"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "B.fed_path.implied_cuts_12m": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_sign_inconsistent"
+     }
+    },
+    "conditions": {
+     "RI-6": [
+      "unknown",
+      "owner_sign_inconsistent"
+     ]
+    },
+    "family_readings": {
+     "renewed_inflation_pressure": {
+      "core_pce": "mixed",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "unknown",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "fed_pricing_not_an_integer",
+   "edits": [
+    {
+     "artifact": "B",
+     "path": [
+      "fed_path",
+      "implied_cuts_12m"
+     ],
+     "op": "set",
+     "value": -2.5
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "B.fed_path.implied_cuts_12m": {
+      "admitted": false,
+      "token": null,
+      "issue": "malformed"
+     }
+    },
+    "conditions": {
+     "RI-6": [
+      "unknown",
+      "malformed"
+     ]
+    },
+    "family_readings": {
+     "renewed_inflation_pressure": {
+      "core_pce": "mixed",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "unknown",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "labour_middle_without_an_input",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "labor_nowcast",
+      "read"
+     ],
+     "op": "set",
+     "value": "labor mixed"
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "labor_nowcast",
+      "claims_yoy_pct"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.conditions.labor_nowcast.read": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-3": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "GD-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "unknown",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "unknown",
+      "credit_and_funding": "mixed",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "breadth_divergence_false_without_inputs",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "complacency",
+      "breadth_div"
+     ],
+     "op": "set",
+     "value": false
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "complacency",
+      "spy_high_prox"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.conditions.complacency.breadth_div": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "SC-1": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "continued_selective_concentration": {
+      "participation": "unknown",
+      "credit_and_funding": "mixed",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "breadth_divergence_false_with_inputs",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "complacency",
+      "breadth_div"
+     ],
+     "op": "set",
+     "value": false
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.conditions.complacency.breadth_div": {
+      "admitted": true,
+      "token": false,
+      "issue": null
+     }
+    },
+    "conditions": {
+     "SC-1": [
+      "does_not_fit",
+      null
+     ]
+    },
+    "family_readings": {
+     "continued_selective_concentration": {
+      "participation": "does_not_fit",
+      "credit_and_funding": "mixed",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "breadth_component_absent",
+   "edits": [
+    {
+     "artifact": "M",
+     "path": [
+      "components",
+      {
+       "key": "breadth"
+      }
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "M.components.breadth.tone": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "GB-1": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "genuine_broadening": {
+      "participation": "unknown",
+      "dispersion": "unknown",
+      "revision_breadth": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "breakeven_trend_owner_says_not_available",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "breakeven_decomp",
+      "trend"
+     ],
+     "op": "set",
+     "value": "n/a"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.breakeven_decomp.trend": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {},
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "liquidity_label_owner_says_unknown",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "label"
+     ],
+     "op": "set",
+     "value": "unknown"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.liquidity_quality.label": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {},
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "breadth_divergence_is_the_number_one",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "complacency",
+      "breadth_div"
+     ],
+     "op": "set",
+     "value": 1
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.conditions.complacency.breadth_div": {
+      "admitted": false,
+      "token": null,
+      "issue": "malformed"
+     }
+    },
+    "conditions": {
+     "SC-1": [
+      "unknown",
+      "malformed"
+     ]
+    },
+    "family_readings": {
+     "continued_selective_concentration": {
+      "participation": "unknown",
+      "credit_and_funding": "mixed",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "leader_state_both_run_dates_absent",
+   "edits": [
+    {
+     "artifact": "L",
+     "path": [
+      "asof"
+     ],
+     "op": "delete"
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "leadership_crack",
+      "asof"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "L.state": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_did_not_write"
+     }
+    },
+    "conditions": {
+     "LH-1": [
+      "unknown",
+      "owner_did_not_write"
+     ],
+     "DS-1": [
+      "unknown",
+      "owner_did_not_write"
+     ]
+    },
+    "family_readings": {
+     "internal_leadership_handoff": {
+      "leader_damage": "unknown",
+      "leader_turnover": "unknown",
+      "participation": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "unknown",
+      "credit_and_funding": "mixed",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "leader_state_file_absent",
+   "edits": [
+    {
+     "artifact": "L",
+     "op": "drop_artifact"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "L.state": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "LH-1": [
+      "unknown",
+      "missing"
+     ],
+     "DS-1": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "internal_leadership_handoff": {
+      "leader_damage": "unknown",
+      "leader_turnover": "unknown",
+      "participation": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "unknown",
+      "credit_and_funding": "mixed",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "regime_file_absent",
+   "edits": [
+    {
+     "artifact": "R",
+     "op": "drop_artifact"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.conditions.labor_nowcast.read": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "R.conditions.financial_conditions.state": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "R.conditions.complacency.breadth_div": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "R.liquidity_quality.label": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "R.liquidity_quality.stress_overlay.confirming_stress": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "L.state": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_did_not_write"
+     }
+    },
+    "conditions": {
+     "OD-3": [
+      "unknown",
+      "missing"
+     ],
+     "OD-4": [
+      "unknown",
+      "missing"
+     ],
+     "OD-5": [
+      "unknown",
+      "missing"
+     ],
+     "GD-2": [
+      "unknown",
+      "missing"
+     ],
+     "GD-3": [
+      "unknown",
+      "missing"
+     ],
+     "GD-4": [
+      "unknown",
+      "missing"
+     ],
+     "SC-1": [
+      "unknown",
+      "missing"
+     ],
+     "SC-2": [
+      "unknown",
+      "missing"
+     ],
+     "SC-3": [
+      "unknown",
+      "missing"
+     ],
+     "LH-1": [
+      "unknown",
+      "owner_did_not_write"
+     ],
+     "DS-1": [
+      "unknown",
+      "owner_did_not_write"
+     ],
+     "DS-2": [
+      "unknown",
+      "missing"
+     ],
+     "DS-3": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "unknown",
+      "credit_and_funding": "unknown",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "unknown",
+      "credit_and_funding": "unknown",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "continued_selective_concentration": {
+      "participation": "unknown",
+      "credit_and_funding": "unknown",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     },
+     "internal_leadership_handoff": {
+      "leader_damage": "unknown",
+      "leader_turnover": "unknown",
+      "participation": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "unknown",
+      "credit_and_funding": "unknown",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "every_file_absent",
+   "edits": [
+    {
+     "artifact": "T",
+     "op": "drop_artifact"
+    },
+    {
+     "artifact": "R",
+     "op": "drop_artifact"
+    },
+    {
+     "artifact": "M",
+     "op": "drop_artifact"
+    },
+    {
+     "artifact": "D",
+     "op": "drop_artifact"
+    },
+    {
+     "artifact": "L",
+     "op": "drop_artifact"
+    },
+    {
+     "artifact": "B",
+     "op": "drop_artifact"
+    },
+    {
+     "artifact": "C",
+     "op": "drop_artifact"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.inflation.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.state.inflation.regime": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.state.expectations.anchoring": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.state.rates.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.state.rates.regime": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.breakeven_decomp.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.breakeven_decomp.trend": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.yield_curve.regime.term_premium_dir": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.yield_momentum.series.2y.turn_watch": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.yield_momentum.series.5y.turn_watch": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.yield_momentum.series.10y.turn_watch": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.yield_momentum.series.20y.turn_watch": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "T.yield_momentum.series.30y.turn_watch": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "R.conditions.labor_nowcast.read": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "R.conditions.financial_conditions.state": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "R.conditions.complacency.breadth_div": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "R.liquidity_quality.label": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "R.liquidity_quality.stress_overlay.confirming_stress": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "M.components.breadth.tone": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "L.state": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     },
+     "B.fed_path.implied_cuts_12m": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "OD-1": [
+      "unknown",
+      "missing"
+     ],
+     "OD-2": [
+      "unknown",
+      "missing"
+     ],
+     "OD-3": [
+      "unknown",
+      "missing"
+     ],
+     "OD-4": [
+      "unknown",
+      "missing"
+     ],
+     "OD-5": [
+      "unknown",
+      "missing"
+     ],
+     "OD-7": [
+      "unknown",
+      "missing"
+     ],
+     "GD-1": [
+      "unknown",
+      "missing"
+     ],
+     "GD-2": [
+      "unknown",
+      "missing"
+     ],
+     "GD-3": [
+      "unknown",
+      "missing"
+     ],
+     "GD-4": [
+      "unknown",
+      "missing"
+     ],
+     "RI-1": [
+      "unknown",
+      "missing"
+     ],
+     "RI-2": [
+      "unknown",
+      "missing"
+     ],
+     "RI-3": [
+      "unknown",
+      "missing"
+     ],
+     "RI-4": [
+      "unknown",
+      "missing"
+     ],
+     "RI-6": [
+      "unknown",
+      "missing"
+     ],
+     "LP-1": [
+      "unknown",
+      "missing"
+     ],
+     "LP-2": [
+      "unknown",
+      "missing"
+     ],
+     "TP-1": [
+      "unknown",
+      "missing"
+     ],
+     "SC-1": [
+      "unknown",
+      "missing"
+     ],
+     "SC-2": [
+      "unknown",
+      "missing"
+     ],
+     "SC-3": [
+      "unknown",
+      "missing"
+     ],
+     "GB-1": [
+      "unknown",
+      "missing"
+     ],
+     "LH-1": [
+      "unknown",
+      "missing"
+     ],
+     "DS-1": [
+      "unknown",
+      "missing"
+     ],
+     "DS-2": [
+      "unknown",
+      "missing"
+     ],
+     "DS-3": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "unknown",
+      "treasury_curve": "unknown",
+      "labour": "unknown",
+      "credit_and_funding": "unknown",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "unknown",
+      "labour": "unknown",
+      "credit_and_funding": "unknown",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "renewed_inflation_pressure": {
+      "core_pce": "unknown",
+      "treasury_curve": "unknown",
+      "wages_services": "unknown",
+      "policy_pricing": "unknown",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     },
+     "long_end_premium_shock": {
+      "treasury_curve": "unknown",
+      "issuance_and_demand": "unknown",
+      "policy_pricing": "unknown"
+     },
+     "technical_pause": {
+      "treasury_curve": "unknown",
+      "positioning": "unknown",
+      "macro_confirmation": "unknown",
+      "participation": "unknown"
+     },
+     "continued_selective_concentration": {
+      "participation": "unknown",
+      "credit_and_funding": "unknown",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     },
+     "genuine_broadening": {
+      "participation": "unknown",
+      "dispersion": "unknown",
+      "revision_breadth": "unknown"
+     },
+     "internal_leadership_handoff": {
+      "leader_damage": "unknown",
+      "leader_turnover": "unknown",
+      "participation": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "unknown",
+      "credit_and_funding": "unknown",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "stress_false_with_negative_nfci_but_no_spread_number",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "confirming_stress"
+     ],
+     "op": "set",
+     "value": false
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "hy_oas_z"
+     ],
+     "op": "delete"
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "nfci"
+     ],
+     "op": "set",
+     "value": -0.5
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.liquidity_quality.stress_overlay.confirming_stress": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-4": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "GD-3": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "SC-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "DS-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "fits",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "continued_selective_concentration": {
+      "participation": "fits",
+      "credit_and_funding": "fits",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "needed_number_is_a_boolean",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "expectations",
+      "market_minus_model_bp"
+     ],
+     "op": "set",
+     "value": true
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.expectations.anchoring": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "RI-3": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "needed_number_is_text",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "expectations",
+      "market_minus_model_bp"
+     ],
+     "op": "set",
+     "value": "12"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.expectations.anchoring": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "RI-3": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "stress_numbers_are_booleans",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "confirming_stress"
+     ],
+     "op": "set",
+     "value": true
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "hy_oas_z"
+     ],
+     "op": "set",
+     "value": true
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "nfci"
+     ],
+     "op": "set",
+     "value": false
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.liquidity_quality.stress_overlay.confirming_stress": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-4": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "GD-3": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "SC-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "DS-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "fits",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "continued_selective_concentration": {
+      "participation": "fits",
+      "credit_and_funding": "fits",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "stress_true_proved_by_the_spread_alone",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "confirming_stress"
+     ],
+     "op": "set",
+     "value": true
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "hy_oas_z"
+     ],
+     "op": "set",
+     "value": 2.78
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "nfci"
+     ],
+     "op": "set",
+     "value": 0.2
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {},
+    "conditions": {},
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "stress_true_with_nfci_exactly_zero",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "confirming_stress"
+     ],
+     "op": "set",
+     "value": true
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "hy_oas_z"
+     ],
+     "op": "set",
+     "value": 0.5
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "nfci"
+     ],
+     "op": "set",
+     "value": 0.0
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.liquidity_quality.stress_overlay.confirming_stress": {
+      "admitted": false,
+      "token": null,
+      "issue": "contains_sign_only_leg"
+     }
+    },
+    "conditions": {
+     "OD-4": [
+      "unknown",
+      "contains_sign_only_leg"
+     ],
+     "GD-3": [
+      "unknown",
+      "contains_sign_only_leg"
+     ],
+     "SC-2": [
+      "unknown",
+      "contains_sign_only_leg"
+     ],
+     "DS-2": [
+      "unknown",
+      "contains_sign_only_leg"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "fits",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "continued_selective_concentration": {
+      "participation": "fits",
+      "credit_and_funding": "fits",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "stress_false_with_nfci_exactly_zero",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "confirming_stress"
+     ],
+     "op": "set",
+     "value": false
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "hy_oas_z"
+     ],
+     "op": "set",
+     "value": 0.3
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "nfci"
+     ],
+     "op": "set",
+     "value": 0.0
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.liquidity_quality.stress_overlay.confirming_stress": {
+      "admitted": false,
+      "token": null,
+      "issue": "contains_sign_only_leg"
+     }
+    },
+    "conditions": {
+     "OD-4": [
+      "unknown",
+      "contains_sign_only_leg"
+     ],
+     "GD-3": [
+      "unknown",
+      "contains_sign_only_leg"
+     ],
+     "SC-2": [
+      "unknown",
+      "contains_sign_only_leg"
+     ],
+     "DS-2": [
+      "unknown",
+      "contains_sign_only_leg"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "fits",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "continued_selective_concentration": {
+      "participation": "fits",
+      "credit_and_funding": "fits",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "leader_state_copy_present_but_null",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "leadership_crack"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "L.state": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_did_not_write"
+     }
+    },
+    "conditions": {
+     "LH-1": [
+      "unknown",
+      "owner_did_not_write"
+     ],
+     "DS-1": [
+      "unknown",
+      "owner_did_not_write"
+     ]
+    },
+    "family_readings": {
+     "internal_leadership_handoff": {
+      "leader_damage": "unknown",
+      "leader_turnover": "unknown",
+      "participation": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "unknown",
+      "credit_and_funding": "mixed",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "breadth_component_degraded_flag_null",
+   "edits": [
+    {
+     "artifact": "M",
+     "path": [
+      "components",
+      {
+       "key": "breadth"
+      },
+      "degraded"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "M.components.breadth.tone": {
+      "admitted": false,
+      "token": null,
+      "issue": "partial"
+     }
+    },
+    "conditions": {
+     "GB-1": [
+      "unknown",
+      "partial"
+     ]
+    },
+    "family_readings": {
+     "genuine_broadening": {
+      "participation": "unknown",
+      "dispersion": "unknown",
+      "revision_breadth": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "turn_watch_token_on_a_stale_unqualified_series",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "yield_momentum",
+      "series",
+      "10y",
+      "turn_watch"
+     ],
+     "op": "set",
+     "value": "extreme_high_watch"
+    },
+    {
+     "artifact": "T",
+     "path": [
+      "yield_momentum",
+      "series",
+      "10y",
+      "status"
+     ],
+     "op": "set",
+     "value": "stale"
+    },
+    {
+     "artifact": "T",
+     "path": [
+      "yield_momentum",
+      "series",
+      "10y",
+      "path_qualified"
+     ],
+     "op": "set",
+     "value": false
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {},
+    "conditions": {},
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "field_marked_unreadable_by_its_clock",
+   "edits": [],
+   "unreadable": {
+    "T.state.inflation.direction": "stale",
+    "L.state": "future_dated"
+   },
+   "changes": {
+    "fields": {},
+    "conditions": {
+     "OD-1": [
+      "unknown",
+      "stale"
+     ],
+     "RI-1": [
+      "unknown",
+      "stale"
+     ],
+     "LH-1": [
+      "unknown",
+      "future_dated"
+     ],
+     "DS-1": [
+      "unknown",
+      "future_dated"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "unknown",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "renewed_inflation_pressure": {
+      "core_pce": "fits",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "fits",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     },
+     "internal_leadership_handoff": {
+      "leader_damage": "unknown",
+      "leader_turnover": "unknown",
+      "participation": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "unknown",
+      "credit_and_funding": "mixed",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "default_T.state.inflation.direction_without_core_pce_3m_ann",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "inflation",
+      "direction"
+     ],
+     "op": "set",
+     "value": "steady"
+    },
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "inflation",
+      "core_pce_3m_ann"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.inflation.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-1": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "RI-1": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "unknown",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "renewed_inflation_pressure": {
+      "core_pce": "fits",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "fits",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "default_T.state.inflation.direction_without_core_pce_yoy",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "inflation",
+      "direction"
+     ],
+     "op": "set",
+     "value": "steady"
+    },
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "inflation",
+      "core_pce_yoy"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.inflation.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-1": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "RI-1": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "unknown",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "renewed_inflation_pressure": {
+      "core_pce": "fits",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "fits",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "default_T.state.inflation.regime_without_core_pce_yoy",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "inflation",
+      "regime"
+     ],
+     "op": "set",
+     "value": "below target"
+    },
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "inflation",
+      "core_pce_yoy"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.inflation.regime": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "RI-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "renewed_inflation_pressure": {
+      "core_pce": "does_not_fit",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "fits",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "default_T.state.expectations.anchoring_without_market_minus_model_bp",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "expectations",
+      "anchoring"
+     ],
+     "op": "set",
+     "value": "anchored"
+    },
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "expectations",
+      "market_minus_model_bp"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.expectations.anchoring": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "RI-3": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "default_T.state.rates.direction_without_real_10y_chg_63d_bp",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "rates",
+      "direction"
+     ],
+     "op": "set",
+     "value": "stable"
+    },
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "rates",
+      "real_10y_chg_63d_bp"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.rates.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-7": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "GD-1": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "LP-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "not_discriminating",
+      "labour": "fits",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "unknown",
+      "labour": "does_not_fit",
+      "credit_and_funding": "mixed",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "default_T.state.rates.regime_without_real_10y_pctile",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "rates",
+      "regime"
+     ],
+     "op": "set",
+     "value": "neutral"
+    },
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "rates",
+      "real_10y_pctile"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.rates.regime": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {},
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "default_T.breakeven_decomp.direction_without_chg_20d_bp",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "breakeven_decomp",
+      "direction"
+     ],
+     "op": "set",
+     "value": "flat"
+    },
+    {
+     "artifact": "T",
+     "path": [
+      "breakeven_decomp",
+      "velocity_bp",
+      "chg_20d_bp"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.breakeven_decomp.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "RI-4": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "default_R.conditions.labor_nowcast.read_without_claims_yoy_pct",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "labor_nowcast",
+      "read"
+     ],
+     "op": "set",
+     "value": "labor mixed"
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "labor_nowcast",
+      "claims_yoy_pct"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.conditions.labor_nowcast.read": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-3": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "GD-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "unknown",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "unknown",
+      "credit_and_funding": "mixed",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "default_R.conditions.labor_nowcast.read_without_indeed_chg_3m_pct",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "labor_nowcast",
+      "read"
+     ],
+     "op": "set",
+     "value": "labor mixed"
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "labor_nowcast",
+      "indeed_chg_3m_pct"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.conditions.labor_nowcast.read": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-3": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "GD-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "unknown",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "unknown",
+      "credit_and_funding": "mixed",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "default_R.conditions.labor_nowcast.read_without_withheld_tax_yoy_pct",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "labor_nowcast",
+      "read"
+     ],
+     "op": "set",
+     "value": "labor mixed"
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "labor_nowcast",
+      "withheld_tax_yoy_pct"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.conditions.labor_nowcast.read": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "OD-3": [
+      "unknown",
+      "owner_default_on_missing"
+     ],
+     "GD-2": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "unknown",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "unknown",
+      "credit_and_funding": "mixed",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "default_R.conditions.complacency.breadth_div_without_spy_high_prox",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "complacency",
+      "breadth_div"
+     ],
+     "op": "set",
+     "value": false
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "complacency",
+      "spy_high_prox"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.conditions.complacency.breadth_div": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "SC-1": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "continued_selective_concentration": {
+      "participation": "unknown",
+      "credit_and_funding": "mixed",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "default_R.conditions.complacency.breadth_div_without_breadth_above200_pctile",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "complacency",
+      "breadth_div"
+     ],
+     "op": "set",
+     "value": false
+    },
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "complacency",
+      "breadth_above200_pctile"
+     ],
+     "op": "delete"
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.conditions.complacency.breadth_div": {
+      "admitted": false,
+      "token": null,
+      "issue": "owner_default_on_missing"
+     }
+    },
+    "conditions": {
+     "SC-1": [
+      "unknown",
+      "owner_default_on_missing"
+     ]
+    },
+    "family_readings": {
+     "continued_selective_concentration": {
+      "participation": "unknown",
+      "credit_and_funding": "mixed",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "null_T.state.inflation.direction",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "inflation",
+      "direction"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.inflation.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "OD-1": [
+      "unknown",
+      "missing"
+     ],
+     "RI-1": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "unknown",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "renewed_inflation_pressure": {
+      "core_pce": "fits",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "fits",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "null_T.state.inflation.regime",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "inflation",
+      "regime"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.inflation.regime": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "RI-2": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "renewed_inflation_pressure": {
+      "core_pce": "does_not_fit",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "fits",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "null_T.state.expectations.anchoring",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "expectations",
+      "anchoring"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.expectations.anchoring": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "OD-2": [
+      "unknown",
+      "missing"
+     ],
+     "RI-3": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "null_T.state.rates.direction",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "rates",
+      "direction"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.rates.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "OD-7": [
+      "unknown",
+      "missing"
+     ],
+     "GD-1": [
+      "unknown",
+      "missing"
+     ],
+     "LP-2": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "not_discriminating",
+      "labour": "fits",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "unknown",
+      "labour": "does_not_fit",
+      "credit_and_funding": "mixed",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "null_T.state.rates.regime",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "state",
+      "rates",
+      "regime"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.state.rates.regime": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {},
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "null_T.breakeven_decomp.direction",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "breakeven_decomp",
+      "direction"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.breakeven_decomp.direction": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "RI-4": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "null_T.breakeven_decomp.trend",
+   "edits": [
+    {
+     "artifact": "T",
+     "path": [
+      "breakeven_decomp",
+      "trend"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "T.breakeven_decomp.trend": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {},
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "null_R.conditions.labor_nowcast.read",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "labor_nowcast",
+      "read"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.conditions.labor_nowcast.read": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "OD-3": [
+      "unknown",
+      "missing"
+     ],
+     "GD-2": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "unknown",
+      "credit_and_funding": "mixed",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "unknown",
+      "credit_and_funding": "mixed",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "null_R.conditions.complacency.breadth_div",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "conditions",
+      "complacency",
+      "breadth_div"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.conditions.complacency.breadth_div": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "SC-1": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "continued_selective_concentration": {
+      "participation": "unknown",
+      "credit_and_funding": "mixed",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "null_R.liquidity_quality.label",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "label"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.liquidity_quality.label": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {},
+    "family_readings": {}
+   }
+  },
+  {
+   "name": "null_R.liquidity_quality.stress_overlay.confirming_stress",
+   "edits": [
+    {
+     "artifact": "R",
+     "path": [
+      "liquidity_quality",
+      "stress_overlay",
+      "confirming_stress"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "R.liquidity_quality.stress_overlay.confirming_stress": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "OD-4": [
+      "unknown",
+      "missing"
+     ],
+     "GD-3": [
+      "unknown",
+      "missing"
+     ],
+     "SC-2": [
+      "unknown",
+      "missing"
+     ],
+     "DS-2": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "orderly_disinflation": {
+      "core_pce": "fits",
+      "treasury_curve": "does_not_fit",
+      "labour": "fits",
+      "credit_and_funding": "fits",
+      "inflation_breadth": "unknown"
+     },
+     "growth_deterioration": {
+      "treasury_curve": "does_not_fit",
+      "labour": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "real_activity": "unknown",
+      "earnings": "unknown",
+      "dollar": "unknown"
+     },
+     "continued_selective_concentration": {
+      "participation": "fits",
+      "credit_and_funding": "fits",
+      "concentration": "unknown",
+      "leader_turnover": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "does_not_fit",
+      "credit_and_funding": "does_not_fit",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "null_M.components.breadth.tone",
+   "edits": [
+    {
+     "artifact": "M",
+     "path": [
+      "components",
+      {
+       "key": "breadth"
+      },
+      "tone"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "M.components.breadth.tone": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "GB-1": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "genuine_broadening": {
+      "participation": "unknown",
+      "dispersion": "unknown",
+      "revision_breadth": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "null_L.state",
+   "edits": [
+    {
+     "artifact": "L",
+     "path": [
+      "state"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "L.state": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "LH-1": [
+      "unknown",
+      "missing"
+     ],
+     "DS-1": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "internal_leadership_handoff": {
+      "leader_damage": "unknown",
+      "leader_turnover": "unknown",
+      "participation": "unknown"
+     },
+     "deterioration_spreading_to_leaders": {
+      "leader_damage": "unknown",
+      "credit_and_funding": "mixed",
+      "correlation": "unknown"
+     }
+    }
+   }
+  },
+  {
+   "name": "null_B.fed_path.implied_cuts_12m",
+   "edits": [
+    {
+     "artifact": "B",
+     "path": [
+      "fed_path",
+      "implied_cuts_12m"
+     ],
+     "op": "set",
+     "value": null
+    }
+   ],
+   "unreadable": {},
+   "changes": {
+    "fields": {
+     "B.fed_path.implied_cuts_12m": {
+      "admitted": false,
+      "token": null,
+      "issue": "missing"
+     }
+    },
+    "conditions": {
+     "RI-6": [
+      "unknown",
+      "missing"
+     ]
+    },
+    "family_readings": {
+     "renewed_inflation_pressure": {
+      "core_pce": "mixed",
+      "treasury_curve": "not_discriminating",
+      "wages_services": "unknown",
+      "policy_pricing": "unknown",
+      "inflation_breadth": "unknown",
+      "oil": "unknown"
+     }
+    }
+   }
+  }
+ ]
+}

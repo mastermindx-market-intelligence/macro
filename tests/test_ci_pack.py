@@ -4291,6 +4291,7 @@ CURATED_EXCLUSIVE = {
     # plus the files they read. The cover-their-own-import-closure test and
     # check_ci_trigger_closure.py (both run in this job) keep that list honest.
     "ci-control-plane-contracts",
+    "live-flow-recovery-guards",
     # 2026-09-23 B-HEAL-CI-PACK-CEILING-2 (main integration-baseline red on
     # this file's own packing-ceiling probe: templates/index.html 132 jobs /
     # 5,810 weight > 5,800; the two code probes over their job ceilings too).
@@ -4578,6 +4579,26 @@ CURATED_EXCLUSIVE = {
     # (site/**, data/**) onto them — files that cannot move either verdict.
     "validated-claims-source",
     "validated-claims-contract",
+    # 2026-10-03 Terminal599 OA-1C canonical-history repair (#8342 follow-up):
+    # the options-alpha candidate feed composer is a code-plane artifact
+    # (engine/options_alpha_candidate_feed.py + every schema it validates
+    # against + the formation policy v2 JSON + the architecture / OA-1C
+    # DECs), not a flow-surface data artefact. The composer was previously
+    # registered on the gate:data flow-surface job; that lane's broader
+    # site/templates/data ownership was reaching the test path through
+    # opaque-fallback inference, and a future edit to a flow-surface file
+    # could select this suite without the right behavioural checks running.
+    # The exclusive declaration pins the exact transitive closure of the
+    # composer (campaign engine + signal episode + ledger lane + session
+    # digest + lib helpers + OPTIONS_SIGNAL_CAMPAIGN_V2_PREREG the test
+    # reaches through dynamic importlib loads); widening is always the
+    # safe direction.
+    "options-alpha-candidate-feed",
+    # 2026-10-03 PR #8350: options-signal-campaign-v2 is the gate:code owner
+    # of tests/test_options_signal_campaign_effective_view.py. scope:
+    # exclusive replaces inference, so the declared job must be pinned here
+    # or the curated-set contract rejects the manifest.
+    "options-signal-campaign-v2",
 }
 
 
@@ -5285,6 +5306,38 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     the drift surfaces after merge, on integration-baseline.yml. That lane
     runs this file on every source push to main and every 4 hours, and
     merge-on-green pauses ordinary merges while it is red.
+
+    PR #8322 round 2 (2026-10-03): ``live-flow-recovery-guards`` (w1,
+    ``gate: code``, 12 declared paths) joins the manifest with ordinary
+    ``paths:`` inference — NOT ``scope: exclusive``, per the META-CEO
+    ruling for this round ("Ordinary paths inference, not scope:exclusive
+    until closure verified"). Its declared subject (engine/live_flow.py,
+    engine/session_digest.py, lib/{__init__,config.py,nyse_calendar.py},
+    scripts/live_flow_poller.py + build_flow_archive.py + build_flow_surface.py,
+    tests/test_flow_archive.py + test_live_flow_recovery.py + test_live_flow_tiering.py,
+    ops/LIVE_FLOW_RUNBOOK.md) touches NONE of the three probes directly,
+    but ordinary inference widens its fallback tier to the directory globs
+    the declared files live under (engine/**, scripts/**, templates/**).
+    Re-measured, full manifest, inference on, before this entry:
+
+        templates/index.html          134 -> 135 jobs, 5,800 weight (AT)
+        scripts/build_free_content.py 132 -> 133 jobs, 5,585 weight
+        engine/prophet/plan_book.py   127 -> 128 jobs, 5,534 weight
+
+    JOB ceilings re-based to measurement + 1 (135 / 133 / 128) per the
+    standing rule. The decision recorded here follows the wave-9 re-frame
+    exactly: the job enters all three on its OWN inferred FALLBACK tier
+    (templates/**, scripts/**, engine/**), so it is a curation candidate
+    — its closure is small (one production source, one new test file,
+    three path helpers; closure-coverage audit: zero misses) and ``scope:
+    exclusive`` would cover it cleanly. The ruling pins that to round 3,
+    not this round; this entry funds the headroom so the PR lands green,
+    and the curation follow-on is named live-flow-recovery-guards-scope
+    (must run before the next entrant). WEIGHT and PACK ceilings stay
+    unmoved (5,800 / 5,600 / 5,600 and 10 packs): weights are 5,800 /
+    5,585 / 5,534, packs are 10 / 10 / 10, and templates/index.html sits
+    AT its 5,800 weight bound — the next weight delta is the same kind
+    of decision this entry makes.
 
     2026-09-27: that drift now reds its own PR. The measurement and the
     verdict moved to scripts/run_ci_pack.py (packing_probe_measurements,

@@ -1,24 +1,24 @@
 {
  "schema": "washout_counterread.v1",
- "as_of": "2026-10-01",
+ "as_of": "2026-10-02",
  "show": false,
- "growth_score": 33.1,
+ "growth_score": 34.9,
  "growth_band": "calm",
  "growth_extreme": false,
  "price_depths": [
   {
    "index": "SPY",
    "metric": "price_63d_drawdown_pctile",
-   "drawdown_pct": -1.54,
-   "depth_pctile": 57.1,
+   "drawdown_pct": -0.81,
+   "depth_pctile": 45.2,
    "extreme": false,
    "n_hist": 2520
   },
   {
    "index": "QQQ",
    "metric": "price_63d_drawdown_pctile",
-   "drawdown_pct": -0.73,
-   "depth_pctile": 33.7,
+   "drawdown_pct": 0.0,
+   "depth_pctile": 17.9,
    "extreme": false,
    "n_hist": 2520
   },
@@ -36,7 +36,7 @@
   {
    "index": "IWM",
    "metric": "ihm_macd_hist_depth_pctile",
-   "depth_pctile": 3.0,
+   "depth_pctile": 4.9,
    "reason": "low_depth",
    "washout_turn": true,
    "extreme": true

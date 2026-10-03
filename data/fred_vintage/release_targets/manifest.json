@@ -1,6 +1,6 @@
 {
-  "collected_at": "2026-10-02T11:04:38+00:00",
-  "completed_at": "2026-10-02T11:05:34+00:00",
+  "collected_at": "2026-10-03T20:18:40+00:00",
+  "completed_at": "2026-10-03T20:19:37+00:00",
   "dry_run": false,
   "integrity_profile": "release_target_artifact_sha256_bytes.v1",
   "publication_status": "complete",
@@ -30,14 +30,14 @@
       "status": "written"
     },
     "PAYEMS": {
-      "artifact_bytes": 180283,
-      "artifact_sha256": "9a72f07b24651e829f13cc683a3f1e58959dea4e22a780bbb90ccf58cc03b638",
+      "artifact_bytes": 410301,
+      "artifact_sha256": "50ba5c11da34e1dd69476d091eb631557fbdc1992b92617ad510f8cf8cb9d886",
       "path": "data/fred_vintage/release_targets/PAYEMS_all_vintages.parquet",
-      "period_max": "2026-08-01",
+      "period_max": "2026-09-01",
       "period_min": "1939-01-01",
-      "periods": 1052,
-      "release_dates": 360,
-      "rows": 314191,
+      "periods": 1053,
+      "release_dates": 361,
+      "rows": 315244,
       "status": "written"
     },
     "PCEPI": {

@@ -41,6 +41,85 @@ jobs:
       - name: daily scope through canonical archive writer and consumer
         run: python -m pytest tests/test_yahoo_universe_backfill.py -q
 
+  live-flow-recovery-guards:
+    if: ${{ false }}
+    gate: code
+    # Carved-out hermetic WAL/cycle recovery guard. This declared scope is the
+    # exact static closure of its three suites plus config.yml, which tiering
+    # reads by a joined path the resolver cannot derive.
+    scope: exclusive
+    paths:
+      - "collectors/__init__.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_deadname_prices.py"
+      - "collectors/edgar_deadnames.py"
+      - "collectors/edgar_delisting.py"
+      - "collectors/edgar_eps.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/thetadata.py"
+      - "config.yml"
+      - "config/market_memory_canary.v1.json"
+      - "engine/__init__.py"
+      - "engine/baskets.py"
+      - "engine/baskets_canada.py"
+      - "engine/baskets_china.py"
+      - "engine/baskets_hk.py"
+      - "engine/baskets_region.py"
+      - "engine/cross_asset.py"
+      - "engine/equity_factors.py"
+      - "engine/flow_signing.py"
+      - "engine/grading.py"
+      - "engine/group_flow.py"
+      - "engine/indicators.py"
+      - "engine/intraday_greeks.py"
+      - "engine/ledger_lane.py"
+      - "engine/live_flow.py"
+      - "engine/name_score_grader.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/brain_analogues.py"
+      - "engine/neuralweb/market_memory.py"
+      - "engine/neuralweb/market_memory_identity.py"
+      - "engine/neuralweb/market_memory_options_episode_capture.py"
+      - "engine/neuralweb/market_memory_pit.py"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/options_universe.py"
+      - "engine/residual_alpha.py"
+      - "engine/session_digest.py"
+      - "engine/spotlight.py"
+      - "engine/sue.py"
+      - "engine/tape_flow.py"
+      - "engine/thetadata_store.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "lib/__init__.py"
+      - "lib/closes_panel.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "ops/launchd/com.mastermind.liveflow.plist"
+      - "scripts/build_flow_archive.py"
+      - "scripts/build_flow_surface.py"
+      - "scripts/live_flow_poller.py"
+      - "tests/test_flow_archive.py"
+      - "tests/test_live_flow_recovery.py"
+      - "tests/test_live_flow_tiering.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: install live-flow recovery suite dependencies
+        # collectors.thetadata imports requests at module scope; pandas/numpy
+        # support the live-flow engine and pyyaml is imported by lib.config.
+        run: pip install pytest pandas numpy pyyaml requests
+      - name: live-flow WAL/cycle-recovery + sibling suites
+        run: python -m pytest tests/test_live_flow_recovery.py tests/test_live_flow_tiering.py tests/test_flow_archive.py -q
+
   inline-js:
     if: ${{ false }}
     gate: data
@@ -399,6 +478,125 @@ jobs:
         run: pip install pytest pyyaml jinja2
       - name: AM Edition producer + lane-B live contract (per-source clocks, six states, no laundering, served-artifact chmod 0o644, freshest-wins under Z/naive ISO stamps)
         run: python -m pytest tests/test_am_edition_producer.py tests/test_am_edition_live.py tests/test_caddy_hub_boundary_am_edition.py -q
+
+  options-alpha-candidate-feed:
+    if: ${{ false }}
+    gate: code
+    # Terminal599 OA-1C candidate feed composer (synthetic-eligible / inactive
+    # until four activation preconditions clear). Pure receipt-bound composer
+    # of canonical campaign revisions + measured trade-vs-NBBO microstructure
+    # receipts + caller-supplied activation receipt. The composer is not a
+    # publisher; it does not read outcomes; it does not backdate; it never
+    # reaches into any other source plane. The frozen patch (#8342) made
+    # every source-side custody boundary a contract: candidate_identity =
+    # sha256(policy_id, campaign_id, first_qualifying_campaign_revision_id),
+    # frozen_formation is sealed against the canonical campaign-row bytes,
+    # first-qualifying uses the frozen decision-clock policy: measured evidence
+    # is eligible only when available_at <= decision_at; an already sealed
+    # candidate retains its immutable first qualifying revision on later replay,
+    # versioned_updates reflects exactly the physical-prefix membership,
+    # the publication receipt splits snapshot binding from
+    # transition validation, the transition requires the exact immediate
+    # prior feed + raw payload + receipt + external receipt LastModified,
+    # and the snapshot validator never independently proves overwritten
+    # history (that is the transition's job).
+    #
+    # `scope: exclusive` REPLACES inference. Every path below is the job's
+    # own transitive closure: the composer, every schema it validates
+    # against (candidate feed v2, identity v1, formation policy v2,
+    # activation receipt v1, publication receipt v1, microstructure v1,
+    # signal campaign v2 — the schema the composer's `CAMPAIGN_SCHEMA`
+    # constant names), the v2 policy JSON, the v1 policy JSON the v2
+    # cites, the architecture DEC and the OA-1C DEC, the test itself, and
+    # the campaign engine and helpers the composer actually imports. A
+    # future import that reaches a tree this declaration does not name
+    # is a regression — test_curated_exclusive_scopes_cover_their_own_
+    # import_closure fails the PR.
+    scope: exclusive
+    paths:
+      # composer + transitive engine closure
+      - "engine/__init__.py"
+      - "engine/options_alpha_candidate_feed.py"
+      - "engine/options_signal_campaign.py"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/ledger_lane.py"
+      - "engine/session_digest.py"
+      # lib helpers the campaign engine imports at module scope
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      # schemas the composer validates against (CAMPAIGN_SCHEMA +
+      # CANDIDATE_FEED_V2_SCHEMA_FILENAME + ACTIVATION_RECEIPT_SCHEMA_FILENAME
+      # + CANDIDATE_IDENTITY_SCHEMA_FILENAME + MICROSTRUCTURE_SCHEMA_FILENAME
+      # + PUBLICATION_RECEIPT_SCHEMA_FILENAME)
+      - "contracts/options/options.alpha_candidate_feed.v2.schema.json"
+      - "contracts/options/options.alpha_candidate_feed_activation_receipt.v1.schema.json"
+      - "contracts/options/options.alpha_candidate_identity.v1.schema.json"
+      - "contracts/options/options.alpha_candidate_formation_policy.v2.schema.json"
+      - "contracts/options/options.alpha_candidate_formation_policy.v1.schema.json"
+      - "contracts/options/options.alpha_candidate_feed_publication_receipt.v1.schema.json"
+      - "contracts/options/options.trade_nbbo_microstructure.v1.schema.json"
+      - "contracts/options/options.signal_campaign.v2.schema.json"
+      - "contracts/options/options.signal_campaign.v1.schema.json"
+      # publication receipt companion contract file
+      - "contracts/options/options.alpha_candidate_feed_publication_receipt_contract.v1.json"
+      # formation policy JSONs (frozen v2 the composer loads; v1 the v2 cites)
+      - "research/options_estate/options_alpha_candidate_formation_policy_v2.json"
+      - "research/options_estate/options_alpha_candidate_formation_policy_v1.json"
+      - "research/options_estate/OPTIONS_SIGNAL_CAMPAIGN_V2_PREREG.md"
+      # The composer imports engine.options_signal_campaign, whose
+      # CORRECTION_POLICY_PATH is this file. Exclusive scope replaces
+      # inference, so the declaration must name it.
+      - "research/options_estate/options_signal_campaign_outcome_correction_prereg_v1.json"
+      # AgentOS DECs that bind this surface (architecture + OA-1C source-only)
+      - "agentos/decisions/DEC-OPTIONS-ALPHA-CAMPAIGN-CALIBRATION-ARCHITECTURE.md"
+      - "agentos/decisions/DEC-OPTIONS-ALPHA-CANDIDATE-FEED-V2-SOURCE-ONLY.md"
+      # the test itself
+      - "tests/test_options_alpha_candidate_feed.py"
+      # CAS publisher (pure IO seam; only the two fixed keys; local flock +
+      # fsync + retained-predecessor + CAS on both keys) + its behavioural
+      # test (recovery / new-host / 4 generations / 412 + payload race).
+      - "scripts/publish_options_alpha_candidate_r2.py"
+      - "tests/test_publish_options_alpha_candidate_r2.py"
+      # daily caller + post-formation outcome enrichment closure
+      - "scripts/__init__.py"
+      - "scripts/build_options_alpha_candidate_feed.py"
+      - "engine/options_alpha_candidate_outcome_enrichment.py"
+      - "tests/test_build_options_alpha_candidate_feed.py"
+      - "tests/test_options_alpha_candidate_outcome_enrichment.py"
+      - "tests/test_options_signal_campaign_effective_view.py"
+      # enrichment validates effective campaign outcomes and correction binding
+      - "contracts/options/options.signal_campaign_outcome.v1.schema.json"
+      - "contracts/options/options.signal_campaign_checkpoint.v1.schema.json"
+      - "contracts/options/options.signal_campaign_checkpoint.v2.schema.json"
+      - "contracts/options/options.signal_episode.v1.schema.json"
+      - "contracts/options/options.signal_episode_outcome.v1.schema.json"
+      - "contracts/options/options.signal_episode_session_outcome.v1.schema.json"
+      - "contracts/options/polygon.intraday_price_receipt.v1.schema.json"
+      - "research/options_estate/options_signal_campaign_outcome_correction_prereg_v1.json"
+      # the daily caller exercises the canonical event-stage parser for its
+      # measured original-decision projection.
+      - "scripts/build_options_signal_episode.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: install test deps
+        # jsonschema: every receipt + feed + microstructure row runs through
+        # Draft202012Validator. pandas/pyarrow: the campaign engine imports
+        # them at module scope. pyyaml: the campaign engine loads yaml for
+        # the receipts contract. exchange-calendars: NYSE-session validation
+        # in the campaign engine. requests: the engine's HTTP-side helpers.
+        run: pip install pytest jsonschema pandas pyarrow pyyaml exchange-calendars requests
+      - name: options alpha candidate feed v2 (pure receipt-bound composer, frozen formation, late-qualifier boundary, publication receipt snapshot vs transition) + CAS publisher behavioural suite
+        run: >-
+          PYTHONPATH=tests:scripts python -m pytest
+          tests/test_options_alpha_candidate_feed.py
+          tests/test_publish_options_alpha_candidate_r2.py
+          tests/test_build_options_alpha_candidate_feed.py
+          tests/test_options_alpha_candidate_outcome_enrichment.py -q
 
   all-exports-resolve:
     if: ${{ false }}
@@ -994,8 +1192,14 @@ jobs:
       # keep-first dedup on a re-spooled event_id, unparseable-pass_ts latch
       # guard). Hermetic: tmp_path spool files + synthetic packs, no data/, no
       # site/, no network. Unnamed suites never run in this manifest.
+      #
+      # Pack fast oracle (2026-10-03) joins the SAME step: tests/test_entry_radar_append_oracle.py
+      # and tests/test_entry_radar_pack_fast_oracle.py pin the append-one-bar StochRSI state
+      # against the canonical calculator and the tie band that keeps every strict K/D
+      # comparison on the canonical sign. Hermetic: synthetic closes only, no data/, no
+      # network, no dependency beyond this job's install line. Unnamed suites never run.
       - name: entry-radar W1+W2+W3+W4+W4.1+W5+W6 — probe universe, entry_event.v1 store, G0 parity, C1-C5 PIT battery, live pack + episode ledger + live evaluator, live-transport correction, W5 prereg gates + forward evidence, RP1 Research Priority
-        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py -q
+        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py -q
 
   session-anchor-era:
     # Absolute session-calendar anchor, both eras. The confluence 2D/3D + fortnight
@@ -2630,6 +2834,10 @@ jobs:
       - "research/momoedge/completion_benchmark_prereg_v1.json"
       - "research/momoedge/history_replay_wave0_receipt.json"
       - "research/options_estate/sparse_selector_preregistration_receipt_v1.json"
+      # tests/test_options_signal_campaign.py imports the campaign engine,
+      # which names this exact correction-policy file. Exclusive paths
+      # omit it, so an edit to the policy would not select this job.
+      - "research/options_estate/options_signal_campaign_outcome_correction_prereg_v1.json"
       - "scripts/__init__.py"
       - "scripts/audit_options_episode_outcome_coverage.py"
       - "scripts/audit_options_market_memory_context.py"
@@ -5197,6 +5405,18 @@ jobs:
       # stdlib + pytest only (reads workflow/dag/builder text; imports no builder).
       - name: render-lane scope contract (flow_desk must stay express-wired)
         run: python -m pytest tests/test_render_flow_desk_scope.py -q
+      # PR #8320 (2026-10-03) — Asia ownership fence. Asia's broad `git add`
+      # stages (collect: `git add data/ site/qledger/`; engine: `git add data/
+      # site/`) can otherwise acquire the Options PIT episode / campaign-v2 files
+      # that the narrow Options publishers OWN. scripts/ci/options_signal_nightly.sh
+      # exclude-broad is bracketed around each broad `git add` so neither the
+      # collect nor the engine commit can smuggle an Options artifact onto the
+      # Asia lane. Belongs HERE (workflow-yaml) because the suite reads
+      # .github/workflows/asia-close.yml as text and asserts the surrounding
+      # structure, identical shape to test_render_intl_scope.py and friends.
+      # stdlib + pytest only (re, pathlib); no data/ or site/ reads.
+      - name: asia-close.yml asia ownership fence (Options PIT/campaign narrow roots must not enter broad staging)
+        run: python -m pytest tests/test_china_heatmap_freshness.py -q
       # Sparse session-worktree profile (policy R8). #5531 landed the suite
       # named by no run: step — the same class the unrun census now gates —
       # so pack-1 went red on every PR the moment it merged. It belongs HERE
@@ -5804,6 +6024,63 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: options-payoff-lab consumer tests
         run: python -m pytest tests/test_options_payoff_lab_consumer.py tests/test_options_skew_source_note.py -q
+  options-signal-campaign-v2:
+    if: ${{ false }}
+    gate: code
+    # PR #8342 carrier. The campaign effective-outcome view + strict v2
+    # continuation suite (C1-C4) is the narrow CODE home of
+    # engine/options_signal_campaign.py and its v2-checkpoint / activation-receipt
+    # contracts. Hermetic: tmp_path synthetic rows + the frozen correction-policy
+    # descriptor; no data/, no site/, no network. The earlier flow-surface
+    # registration (gate: data) was the activation receipt: this job is the
+    # CODE-gated home a PR pack actually runs.
+    #
+    # CURATED SCOPE (PR #8342). The suite's import closure (derived from
+    # tests/test_options_signal_campaign_effective_view.py by
+    # scripts/ci_scope_dependencies.suite_dependency_closure) reaches:
+    #   engine/ledger_lane.py
+    #   engine/options_signal_campaign.py
+    #   engine/options_signal_episode_contract.py
+    #   engine/session_digest.py
+    #   lib/__init__.py
+    #   lib/nyse_calendar.py
+    # The closure-coverage audit (run_ci_pack.curated_exclusive_closure_findings)
+    # will refuse a future import that this list misses; widen, do not narrow.
+    # Below: closure-derived files + the v2 contract/script/test files the PR
+    # introduces, plus the .github/workflows/ci.yml trigger entry that names
+    # them as on: paths for the options signal campaign job (so a change to a
+    # named file selects this job without inference smear).
+    scope: exclusive
+    paths:
+      - "engine/ledger_lane.py"
+      - "engine/options_signal_campaign.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
+      - "engine/__init__.py"
+      - "lib/__init__.py"
+      - "lib/nyse_calendar.py"
+      - "scripts/build_options_signal_campaign.py"
+      - "contracts/options/options.signal_campaign_checkpoint.v2.schema.json"
+      - "contracts/options/options.signal_campaign_correction_activation_receipt.v1.schema.json"
+      - "research/options_estate/options_signal_campaign_outcome_correction_prereg_v1.json"
+      - "tests/test_options_signal_campaign_effective_view.py"
+      - ".github/workflows/ci.yml"
+      - ".github/ci/legacy-jobs.yml"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        # jsonschema: engine/options_signal_campaign.py reads the v1 + v2
+        # campaign / outcome / checkpoint / activation-receipt schemas at module
+        # import; the suite drives _verify_policy_prefixes /
+        # build_effective_outcome_view / _verify_effective_checkpoint over
+        # synthetic rows and the real canonical policy load.
+        run: pip install pytest jsonschema
+      - name: options signal campaign v2 (effective-outcome view, strict v2 continuation C1-C4, checkpoint-last atomic-append idempotency)
+        run: python -m pytest tests/test_options_signal_campaign_effective_view.py -q
   uk-policy-desk:
     if: ${{ false }}
     gate: code
@@ -6058,6 +6335,8 @@ jobs:
         run: python -m pytest tests/test_flow_signals.py -q
       - name: FS-4 trainer unit tests (Lane A)
         run: python -m pytest tests/test_fs4_flow_trainer.py -q
+      - name: FS-5 fit-free geometry unit tests
+        run: python -m pytest tests/test_fs5_flow_geometry.py -q
 
   broad-etf-flows:
     if: ${{ false }}
@@ -8784,6 +9063,34 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: global liquidity state producers — legacy parity and W-LIQ.1 contract
         run: python -m pytest tests/test_global_liquidity.py tests/test_global_liquidity_transmission.py -q
+
+  regime-outlook-mapping:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # Regime outlook verdict mapping (display research). The suite lints the
+    # authored mapping against its own rules, pins its reading table by hash,
+    # and compares every condition with the contract's tables. Code-gated on
+    # purpose: the job that owns the neighbouring rates-command suites is
+    # data-gated and never runs on a pull request. Offline, stdlib only; no
+    # market artifact is read and nothing here ranks, gates or forecasts.
+    paths:
+      - "config/regime_outlook_mapping_v1.json"
+      - "engine/rates_command_outlook.py"
+      - "research/macro_regime_intelligence/STATE_PATH_AND_SCIENCE_CONTRACT_2026-10-03.md"
+      - "tests/fixtures/regime_outlook/readings_golden_v1.json"
+      - "tests/test_rates_command_outlook.py"
+      - "tests/test_rates_command_outlook_readings.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install test dependencies
+        run: pip install pytest
+      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings
+        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py -q
 
   ric-w2-surface:
     if: ${{ false }}
@@ -16742,6 +17049,8 @@ jobs:
       - scripts/capture_options_nbbo_cohort.py
       - tests/test_options_nbbo_cohort.py
       - tests/test_options_nbbo_cohort_deploy.py
+      - tests/test_options_alpha_exact_option_outcome.py
+      - engine/options_alpha_exact_option_outcome.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -16755,7 +17064,8 @@ jobs:
         run: >-
           python -m pytest
           tests/test_options_nbbo_cohort.py
-          tests/test_options_nbbo_cohort_deploy.py -q -rs
+          tests/test_options_nbbo_cohort_deploy.py
+          tests/test_options_alpha_exact_option_outcome.py -q -rs
 
   product-experience-registry:
     if: ${{ false }}

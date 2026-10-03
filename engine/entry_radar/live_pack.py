@@ -261,6 +261,11 @@ def assert_published_spec_hashes() -> dict[str, str]:
 # the oracle — the SAME construction the live path will run
 # ---------------------------------------------------------------------------
 
+# Fast stoch agrees with canonical to ~1e-12; solver margins use strict comparisons.
+# Re-answer canonically when the fast K is within this band of OVERSOLD or of D so
+# the sign matches the canonical oracle at decision boundaries.
+ORACLE_TIE_BAND = 1e-9
+
 @dataclass(frozen=True, slots=True)
 class OracleFrame:
     """One name's frozen substrate, ready to be probed at a candidate price.
@@ -270,20 +275,56 @@ class OracleFrame:
     the session the provisional bar would be APPENDED at.  Keeping the three
     together is what makes ``_oracle_kd`` a line-for-line mirror rather than a
     re-derivation.
+
+    The fast path (``append_state``) answers "K and D if the next close were P"
+    from state frozen at the last confirmed bar.  It agrees with the canonical path
+    to about 1e-12 for a finite price; inside ORACLE_TIE_BAND of a decision
+    boundary the canonical path answers, so every strict comparison the solver makes
+    has the canonical sign.
     """
 
     ticker: str
     closes: np.ndarray
     index: pd.DatetimeIndex
     next_session_ts: pd.Timestamp
+    append_state: ic.StochRsiAppendState | None = None
 
-    def kd(self, price: float) -> tuple[float | None, float | None]:
+    def kd_canonical(self, price: float) -> tuple[float | None, float | None]:
         """``(K, D)`` at the appended provisional close ``price``, or ``(None, None)``."""
         series = pd.Series(
             np.append(self.closes, float(price)),
             index=self.index.append(pd.DatetimeIndex([self.next_session_ts])))
         k_series, d_series = ic.stoch_rsi_kd(series)
         return ic.last_finite(k_series), ic.last_finite(d_series)
+
+    def kd(self, price: float) -> tuple[float | None, float | None]:
+        if self.append_state is None:
+            return self.kd_canonical(price)
+        k, d = ic.stoch_rsi_kd_appended(self.append_state, float(price))
+        if k is not None and (
+            abs(float(k) - float(ic.OVERSOLD)) <= ORACLE_TIE_BAND
+            or (d is not None and abs(float(k) - float(d)) <= ORACLE_TIE_BAND)
+        ):
+            return self.kd_canonical(price)
+        return k, d
+
+
+def oracle_frame(
+    ticker: str,
+    closes: np.ndarray,
+    index: pd.DatetimeIndex,
+    next_session_ts: pd.Timestamp,
+    *,
+    fast: bool = True,
+) -> OracleFrame:
+    append_state = ic.stoch_rsi_append_state(closes) if fast else None
+    return OracleFrame(
+        ticker=ticker,
+        closes=closes,
+        index=index,
+        next_session_ts=next_session_ts,
+        append_state=append_state,
+    )
 
 
 def _c1_margin(frame: OracleFrame, price: float) -> float | None:
@@ -649,13 +690,8 @@ def _jsonable(value: Any) -> Any:
     return value
 
 
-def substrate_fingerprint(frame: pd.DataFrame) -> str:
-    """sha16 over the frozen rows — the pin a later store move cannot survive.
-
-    Rows are ``[iso_session, high, low, close]`` with non-finite values as None,
-    so a NaN high (a blank-OHLC name) fingerprints stably instead of hashing a
-    value that compares unequal to itself.
-    """
+def _fingerprint_rows_slow(frame: pd.DataFrame) -> list[list[Any]]:
+    """The reference row builder: one cell at a time, any dtype."""
     rows: list[list[Any]] = []
     index = pd.DatetimeIndex(frame.index)
     for position in range(len(frame)):
@@ -667,7 +703,48 @@ def substrate_fingerprint(frame: pd.DataFrame) -> str:
                 value = float("nan")
             row.append(None if not np.isfinite(value) else value)
         rows.append(row)
-    return sha16(rows)
+    return rows
+
+
+def _fingerprint_rows_fast(frame: pd.DataFrame) -> list[list[Any]] | None:
+    """The same rows built column-wise, or None when only the reference builder is safe.
+
+    Taken only for plain numpy float/integer columns under an index with no missing
+    timestamp — the shape ``_frozen_frame`` always produces.  Anything else (object,
+    boolean, nullable or duplicated columns, a NaT in the index, an empty frame or
+    a missing column) returns None.
+    """
+    index = pd.DatetimeIndex(frame.index)
+    if index.hasnans:
+        return None
+    if len(frame) == 0 or any(column not in frame.columns for column in _SUBSTRATE_COLUMNS):
+        return None
+    columns: list[list[Any]] = []
+    for column in _SUBSTRATE_COLUMNS:
+        series = frame[column]
+        dtype = getattr(series, "dtype", None)
+        if (not isinstance(series, pd.Series) or not isinstance(dtype, np.dtype)
+                or dtype.kind not in "fiu"):
+            return None
+        values = series.to_numpy(dtype=np.float64)
+        cells = values.astype(object)
+        cells[~np.isfinite(values)] = None
+        columns.append(cells.tolist())
+    days = [day.isoformat() for day in index.date]
+    return [list(row) for row in zip(days, *columns)]
+
+
+def substrate_fingerprint(frame: pd.DataFrame) -> str:
+    """sha16 over the frozen rows — the pin a later store move cannot survive.
+
+    Rows are ``[iso_session, high, low, close]`` with non-finite values as None,
+    so a NaN high (a blank-OHLC name) fingerprints stably instead of hashing a
+    value that compares unequal to itself.  Built column-wise when the frame is
+    plain numeric (about 25x faster on a full history) and cell by cell otherwise;
+    both builders return identical rows.
+    """
+    rows = _fingerprint_rows_fast(frame)
+    return sha16(_fingerprint_rows_slow(frame) if rows is None else rows)
 
 
 def _normalize_confirmed_lane_row(raw: Any) -> dict[str, Any]:
@@ -957,7 +1034,7 @@ def _pack_name(ticker: str, frozen: pd.DataFrame, *, next_session: date,
     confirmed_k = ic.last_finite(k_series)
     confirmed_d = ic.last_finite(d_series)
 
-    oracle = OracleFrame(
+    oracle = oracle_frame(
         ticker=ticker, closes=closes.to_numpy(dtype=float), index=index,
         next_session_ts=pd.Timestamp(next_session).normalize())
 
@@ -1363,6 +1440,45 @@ def pack_root(state_dir: Path | str) -> Path:
 
 def pointer_path(state_dir: Path | str) -> Path:
     return pack_root(state_dir) / _POINTER_NAME
+
+
+def current_pack_identity(state_dir: Path | str) -> dict[str, str] | None:
+    """The current pack's ``as_of`` and ``pack_hash``, from the pointer and manifest ALONE.
+
+    Reads two small JSON files and checks that the substrate file exists; it
+    never opens the substrate parquet.  ``None`` means "no pack a builder may
+    treat as current": a missing, unreadable or non-object pointer or manifest,
+    a pointer whose ``as_of`` is not a plain ISO date or whose ``pack_hash`` is
+    empty, a missing substrate file, or a pointer that disagrees with its
+    manifest on ``as_of`` or ``pack_hash``.
+    """
+    root = pack_root(state_dir)
+    try:
+        pointer = json.loads((root / _POINTER_NAME).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(pointer, dict):
+        return None
+    as_of, pack_hash = pointer.get("as_of"), pointer.get("pack_hash")
+    if not (isinstance(as_of, str) and isinstance(pack_hash, str) and pack_hash):
+        return None
+    try:
+        if date.fromisoformat(as_of).isoformat() != as_of:
+            return None
+    except ValueError:
+        return None
+    session_dir = root / as_of
+    try:
+        manifest = json.loads((session_dir / _MANIFEST_NAME).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(manifest, dict):
+        return None
+    if manifest.get("as_of") != as_of or manifest.get("pack_hash") != pack_hash:
+        return None
+    if not (session_dir / _SUBSTRATE_NAME).is_file():
+        return None
+    return {"as_of": as_of, "pack_hash": pack_hash}
 
 
 def _substrate_frame(pack: LivePack) -> pd.DataFrame:
