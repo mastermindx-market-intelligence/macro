@@ -109,3 +109,11 @@ all three incumbent candidates. The new exact source has259 passing restart
 tests including seven actual-shell parity cases. The original1186-test result
 is retained at12bb; no misleading aggregate count is created. Publication of
 the repair and current-head validation/review remain the next release steps.
+
+
+A final semantic qualification repair closes four newly reproduced cases where
+withheld evidence leaked through expected/prior sign or positive coherence fields.
+134 targeted producer/reader tests passed. The prior203fc7977b00 selector revision
+has local contract-delta0/0 and a1546-pass composite (seven full-store skips);
+those are not relabelled as verification of this newer semantic repair. Exact
+current combined-source and hosted acceptance remain the next proof boundary.

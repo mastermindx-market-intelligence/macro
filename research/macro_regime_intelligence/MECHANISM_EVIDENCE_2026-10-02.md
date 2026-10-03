@@ -139,3 +139,18 @@ are added; a new regression pins them. No exemption, suite removal or gate chang
 The first composite QA extraction also omitted admin/ and contracts/, producing
 36 missing-input failures. Restoring exact composite bytes, not weakening those
 guards, is the required correction before claiming a composed execution pass.
+
+
+## Directional quarantine correction
+
+Before release, four new falsifiers exposed a real remaining leak: a future or
+undated observation lost its observed_sign but retained the copied expected_sign;
+a legacy transmission could retain prior_sign; an undated pathway could keep
+supported coherence. Missing-source links now withhold ALL directional fields,
+and missing/stale evidence cannot retain positive coherence or coverage. This is
+read-time qualification, not a change to the market classifier. Four tests RED
+then the 134-case producer/reader campaign GREEN. Refresh combined-source proof
+on this exact repair rather than relabelling the earlier 1546-case run.
+
+The preceding selector repair's local contract check completed at203fc7977b00:
+zero introduced/zero inherited findings. No threshold or source guard was relaxed.

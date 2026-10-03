@@ -148,7 +148,9 @@ def project_evidence(payload: Any, *, now: datetime) -> dict:
         p.update(_stamp(raw.get('as_of'), now))
         p.update(nodes=[], edges=[], gaps=[], confidence_ceiling='context_only')
         p['coherence'] = raw.get('coherence') if raw.get('coherence') in ('supported', 'partial', 'conflicted') else 'unknown'
+        p['coherence_semantics'] = 'owner_categorical_assessment_not_causal_confidence'
         if p['reading_status'] in _BAD_CLOCKS:
+            p['coherence'], p['coverage_score'] = 'unknown', None
             p['gaps'] = [p['reading_status']]
             out['pathways'].append(p)
             continue
@@ -159,6 +161,7 @@ def project_evidence(payload: Any, *, now: datetime) -> dict:
         p['stale_legs'] = [_text(x, 80) for x in raw.get('stale_legs', [])[:MAX_NODES]] if isinstance(raw.get('stale_legs'), list) else []
         nodes, edges = raw.get('nodes'), raw.get('edges')
         if not isinstance(nodes, list) or not isinstance(edges, list):
+            p['coherence'], p['coverage_score'] = 'unknown', None
             p['gaps'].append('graph_unavailable')
             out['pathways'].append(p)
             continue
@@ -201,6 +204,16 @@ def project_evidence(payload: Any, *, now: datetime) -> dict:
                 elif (not endpoints[1]['source_artifact']
                       or all(endpoints[1][k] is None for k in ('value', 'z_or_percentile'))):
                     e['status'], e['observed_sign'] = 'missing', None
+            if e['status'] == 'missing':
+                # Required-leg expected signs were copied from observations by
+                # the legacy producer. Withholding only observed_sign leaks the
+                # same unavailable evidence via its other field name.
+                e['observed_sign'], e['expected_sign'] = None, None
+                if 'prior_sign' in e:
+                    e['prior_sign'] = None
+                e['evidence_basis'] = 'unavailable_source_evidence'
+            if e['status'] in ('missing', 'stale'):
+                p['coherence'], p['coverage_score'] = 'unknown', None
             category = {'conflicted': 'conflicted_links', 'missing': 'unavailable_links',
                         'stale': 'stale_links', 'theory_prior': 'theory_links'}.get(e['status'])
             if category is None:

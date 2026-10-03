@@ -13,6 +13,20 @@
     "introduced": 3,
     "repair": "Add only the three exact paths and a discriminating selector test; no exemption or gate change"
   },
+  "contract_delta_repair": {
+    "inherited": 0,
+    "introduced": 0,
+    "revision": "203fc7977b0012c6f1bc9f6376202b5711799642",
+    "wall_seconds": 186.6
+  },
+  "directional_quarantine": {
+    "failed": 0,
+    "red": 4,
+    "result": "withhold copied expected/prior signs as well as observed_sign when evidence is missing; unavailable graphs cannot retain positive coherence/coverage",
+    "scope": "new semantic repair; earlier combined source proof must be refreshed",
+    "targeted_producer_reader_tests_passed": 134,
+    "warnings": 4
+  },
   "forecast_or_causal_performance_established": false,
   "initial_combined_campaign_revision": "12bb9532a1e128c58ebb4837951e1053e731b648",
   "initial_source_sha256": {
@@ -125,11 +139,11 @@
     "app/deploy/update.sh": "c656549156e94f332504cb8e16efc040fafa203b53560ce7fe3299d38c779a47",
     "config/unrun_test_baseline.json": "a58fb3fc45996f518f4016a49d047de3b57ba3e19e4a096330b8899d2c2704ec",
     "engine/neuralweb/cortex.py": "14942b7c26ef27152aab26f1e2df71d77abe958d5ff3726ccc9837d61e2be7f2",
-    "engine/neuralweb/mechanism_evidence.py": "f763a0ef201f07e53f092e6a7823b96a3c84b049d39ce2f68cb32b620bde7a04",
+    "engine/neuralweb/mechanism_evidence.py": "e8d7dd643a30d1e0aa9b761f790c70986af641309b6546013ec9a4a6050103b7",
     "engine/neuralweb/mechanism_pathways.py": "d1dec7e91688d5c4939cf5340711419366aa246c8f8974a9a0e64c347d4c31d6",
     "engine/neuralweb/regime_change_evidence.py": "b307ebb6dceef213c4d83e3452be4a2844c6f53bf41f161e41068bc753aaeaa1",
     "tests/test_deploy_update_self_heal.py": "c32713bc62f4dd5506348b59d054faf9d7d809d15794ee2316ba9f2637dd1080",
-    "tests/test_mechanism_evidence.py": "58563f89e46bebccb8e269df1c460d13820de4c1a557face9342e68a4dcdd11b",
+    "tests/test_mechanism_evidence.py": "af04f634188fb4a321bbc33dadbc1439ae9caf26de6c8df2c1751a7ea0dd1e9d",
     "tests/test_mechanism_pathways.py": "6d3b08444d270b795e93d7c91cedb10c5fbd5a593e68d7afa8700ca0612e1c69",
     "tests/test_regime_change_evidence.py": "6c4a452717e4ec1110bb3587591d9fc138d666f57bfea2070226224aa91c418c"
   },

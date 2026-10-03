@@ -305,3 +305,26 @@ def test_exclusive_consumer_selector_covers_the_new_read_dependencies():
     assert {'engine/neuralweb/mechanism_evidence.py',
             'engine/neuralweb/mechanism_pathways.py',
             'engine/neuralweb/regime_change_evidence.py'} <= set(job['paths'])
+
+
+@pytest.mark.parametrize('bad', ['2099-01-01', None])
+def test_quarantined_leg_cannot_leak_its_copied_expected_direction(bad):
+    p = artifact();p['pathways'][0]['nodes'][1]['as_of'] = bad
+    path = project(p)['pathways'][0]
+    edge = path['edges'][0]
+    assert edge['status'] == 'missing'
+    assert edge['expected_sign'] is None and edge['observed_sign'] is None
+    assert path['coherence'] == 'unknown' and path['coverage_score'] is None
+
+
+def test_quarantined_transmission_cannot_leak_the_legacy_association_sign():
+    p = artifact();p['pathways'][0]['nodes'][2]['as_of'] = '2099-01-01'
+    edge = project(p)['pathways'][0]['edges'][1]
+    assert edge['status'] == 'missing'
+    assert edge['prior_sign'] is None and edge['expected_sign'] is None
+
+
+def test_undated_pathway_does_not_keep_a_positive_coherence_claim():
+    p = artifact();p['pathways'][0]['as_of'] = None
+    path = project(p)['pathways'][0]
+    assert path['coherence'] == 'unknown' and path['coverage_score'] is None
