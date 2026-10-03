@@ -136,6 +136,12 @@ _INFL_DIR_ZH: dict[str, str] = {
     "flat": "横盘",
 }
 
+_USD_DIR_ZH: dict[str, str] = {
+    "strengthening": "走强",
+    "weakening": "走弱",
+    "flat": "持平",
+}
+
 _DIFF_ORDER: list[str] = [
     "net_state",
     "curve_regime",
@@ -1440,6 +1446,21 @@ def build_board(root=None) -> dict:
 # compact_state, diff_changes, build_changes
 # ---------------------------------------------------------------------------
 
+def _leg_value(contract: dict, key: str):
+    """Return the `value` field of the leg in expectations_pressure.legs whose
+    `key` matches, when it is a string; otherwise None. Used by compact_state
+    so the fingerprint carries the rendered dollar direction (a scalar), never
+    the policy_row dict the contract owns for other reasons."""
+    legs = _safe_get(contract, "expectations_pressure", "legs")
+    if not isinstance(legs, list):
+        return None
+    for leg in legs:
+        if isinstance(leg, dict) and leg.get("key") == key:
+            val = leg.get("value")
+            return val if isinstance(val, str) else None
+    return None
+
+
 def compact_state(contract: dict) -> dict:
     """Extract a comparable fingerprint from a rates_command artifact."""
     ep = contract.get("expectations_pressure") or {}
@@ -1450,7 +1471,7 @@ def compact_state(contract: dict) -> dict:
         "curve_regime": _safe_get(contract, "board", "risk_row", "curve_regime_key"),
         "anchoring": _safe_get(contract, "board", "inflation_row", "anchoring"),
         "infl_dir": _safe_get(contract, "board", "inflation_row", "direction"),
-        "usd_dir": _safe_get(contract, "board", "policy_row"),  # not in policy_row; get from tx channel
+        "usd_dir": _leg_value(contract, "E3_dollar_tightening"),
         "implied_bp_12m": _safe_get(contract, "board", "rate_path_row", "implied_bp_12m"),
     }
 
@@ -1477,6 +1498,11 @@ def _compact_sentence(key: str, old_val, new_val) -> tuple[str, str]:
         nz = _INFL_DIR_ZH.get(new_val or "", new_val or "—")
         return (f"Inflation direction: {old_val or '—'} → {new_val or '—'}",
                 f"通胀方向：{oz} → {nz}")
+    if key == "usd_dir":
+        oe = old_val or "—"; ne = new_val or "—"
+        oz = _USD_DIR_ZH.get(old_val or "", oe)
+        nz = _USD_DIR_ZH.get(new_val or "", ne)
+        return (f"Dollar direction: {oe} → {ne}", f"美元方向：{oz} → {nz}")
     if key == "implied_bp_12m":
         return (f"12m implied change shifted: {old_val:+.0f}bp → {new_val:+.0f}bp",
                 f"12个月隐含变化：{old_val:+.0f}bp → {new_val:+.0f}bp")
@@ -1491,6 +1517,11 @@ def diff_changes(prev: dict, curr: dict) -> list[dict]:
         old_val = prev.get(key)
         new_val = curr.get(key)
         if old_val is None or new_val is None:
+            continue
+        # Skip non-scalar side: legacy baselines written before this repair
+        # may carry the WHOLE policy_row dict under `usd_dir`; we cannot diff
+        # a dict and emit no useful sentence from it.
+        if isinstance(old_val, (dict, list)) or isinstance(new_val, (dict, list)):
             continue
         if old_val == new_val:
             continue
