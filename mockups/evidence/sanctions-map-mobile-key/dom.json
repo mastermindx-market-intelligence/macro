@@ -1,0 +1,205 @@
+{
+  "axes": {
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "viewport": [
+      390,
+      844
+    ],
+    "device_scale_factor": 1
+  },
+  "cells": {
+    "dark-en": {
+      "applied_theme": "dark",
+      "applied_locale": "en",
+      "viewport_w": 390,
+      "data_news_gbr": "1",
+      "map_data_hi": false,
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true,
+      "gbr_bbox": {
+        "x": 188.4386444091797,
+        "y": 480.5283203125,
+        "w": 8.018402099609375,
+        "h": 7.516082763671875
+      },
+      "gbr_stroke": "color(srgb 0.478431 0.654902 0.878431)",
+      "gbr_stroke_width": "1.25px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.85",
+      "legend_news_i_border_style": "solid",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.85",
+      "key_mark_parity": true,
+      "uk_box_blue_px": 20,
+      "mark_mean_chroma": 16.766439909297052,
+      "rung3_bbox": {
+        "x": 39,
+        "y": 460.92535400390625,
+        "w": 312,
+        "h": 34.753662109375
+      },
+      "rung3_mean_chroma": 9.140589569160998,
+      "ukzoom_file": "cells/dark-en-390-ukzoom.png",
+      "ukzoom_sha256": "8aab0554b3f85b0ec8ce496dbfbf4cc243fdfac6d2310773bb767fc7eec8a95c",
+      "ukzoom_size": [
+        28,
+        27
+      ],
+      "legend_file": "cells/dark-en-390-legend.png",
+      "legend_sha256": "4354fccd202d656d5c8ca8194536b25f842cb03e4c248ff3704e5c4f69153287",
+      "legend_size": [
+        312,
+        58
+      ]
+    },
+    "light-en": {
+      "applied_theme": "light",
+      "applied_locale": "en",
+      "viewport_w": 390,
+      "data_news_gbr": "1",
+      "map_data_hi": false,
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true,
+      "gbr_bbox": {
+        "x": 188.48069763183594,
+        "y": 481.35406494140625,
+        "w": 7.967010498046875,
+        "h": 7.4678955078125
+      },
+      "gbr_stroke": "color(srgb 0.151216 0.344784 0.902588)",
+      "gbr_stroke_width": "1.25px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.85",
+      "legend_news_i_border_style": "solid",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.85",
+      "key_mark_parity": true,
+      "uk_box_blue_px": 22,
+      "mark_mean_chroma": 16.156462585034014,
+      "rung3_bbox": {
+        "x": 40,
+        "y": 461.8767395019531,
+        "w": 310,
+        "h": 34.530914306640625
+      },
+      "rung3_mean_chroma": 0.5328798185941043,
+      "ukzoom_file": "cells/light-en-390-ukzoom.png",
+      "ukzoom_sha256": "b636833ce6ebc65468092ae6ac26c6da2e14e87feb02a4f648814aec48ad14d4",
+      "ukzoom_size": [
+        27,
+        27
+      ],
+      "legend_file": "cells/light-en-390-legend.png",
+      "legend_sha256": "8edf1d8e920ff9c4d0527be38db31db3f6e9bae7c78a16a8d9a10aecf01ac1c5",
+      "legend_size": [
+        312,
+        58
+      ]
+    },
+    "dark-zh": {
+      "applied_theme": "dark",
+      "applied_locale": "zh",
+      "viewport_w": 390,
+      "data_news_gbr": "1",
+      "map_data_hi": false,
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true,
+      "gbr_bbox": {
+        "x": 188.4386444091797,
+        "y": 454.5283203125,
+        "w": 8.018402099609375,
+        "h": 7.516082763671875
+      },
+      "gbr_stroke": "color(srgb 0.478431 0.654902 0.878431)",
+      "gbr_stroke_width": "1.25px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.85",
+      "legend_news_i_border_style": "solid",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.85",
+      "key_mark_parity": true,
+      "uk_box_blue_px": 20,
+      "mark_mean_chroma": 16.766439909297052,
+      "rung3_bbox": {
+        "x": 39,
+        "y": 434.92535400390625,
+        "w": 312,
+        "h": 34.753662109375
+      },
+      "rung3_mean_chroma": 9.140589569160998,
+      "ukzoom_file": "cells/dark-zh-390-ukzoom.png",
+      "ukzoom_sha256": "8aab0554b3f85b0ec8ce496dbfbf4cc243fdfac6d2310773bb767fc7eec8a95c",
+      "ukzoom_size": [
+        28,
+        27
+      ],
+      "legend_file": "cells/dark-zh-390-legend.png",
+      "legend_sha256": "9bf34910f9b57ef02442e45b42d8532dcc3d6c1011ba9d4000d22e1e3987fb69",
+      "legend_size": [
+        312,
+        38
+      ]
+    },
+    "light-zh": {
+      "applied_theme": "light",
+      "applied_locale": "zh",
+      "viewport_w": 390,
+      "data_news_gbr": "1",
+      "map_data_hi": false,
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true,
+      "gbr_bbox": {
+        "x": 188.48069763183594,
+        "y": 455.35406494140625,
+        "w": 7.967010498046875,
+        "h": 7.4678955078125
+      },
+      "gbr_stroke": "color(srgb 0.151216 0.344784 0.902588)",
+      "gbr_stroke_width": "1.25px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.85",
+      "legend_news_i_border_style": "solid",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.85",
+      "key_mark_parity": true,
+      "uk_box_blue_px": 22,
+      "mark_mean_chroma": 16.156462585034014,
+      "rung3_bbox": {
+        "x": 40,
+        "y": 435.8767395019531,
+        "w": 310,
+        "h": 34.530914306640625
+      },
+      "rung3_mean_chroma": 0.5328798185941043,
+      "ukzoom_file": "cells/light-zh-390-ukzoom.png",
+      "ukzoom_sha256": "b636833ce6ebc65468092ae6ac26c6da2e14e87feb02a4f648814aec48ad14d4",
+      "ukzoom_size": [
+        27,
+        27
+      ],
+      "legend_file": "cells/light-zh-390-legend.png",
+      "legend_sha256": "79c2f21796c0847e507fce4505bb3db746c436637191c5584e8c73867aef46f8",
+      "legend_size": [
+        312,
+        38
+      ]
+    }
+  },
+  "source_commit": "da1f7730b84a7f8758e5b1e81ed0de8e0718a9a0",
+  "page_sha256": "240f6321298ce20c48f6b0304ece9980a4f9c28857b3ce6b613f872ee9df6d19",
+  "generated_at": "2026-10-03T04:25:01Z",
+  "capture_tool_module_sha256": "f885069505ca00e80e8b92f3b7df1079a69766a01391cc7fec46c95254c45038",
+  "o28_block": {
+    "width": "1.25",
+    "dark_opacity": ".85",
+    "light_opacity": ".85",
+    "baseline": false
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "axes": {
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en"
+    ],
+    "viewport": [
+      390,
+      844
+    ],
+    "device_scale_factor": 1
+  },
+  "cells": {
+    "dark-en": {
+      "applied_theme": "dark",
+      "applied_locale": "en",
+      "viewport_w": 390,
+      "data_news_gbr": "1",
+      "map_data_hi": false,
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true,
+      "gbr_bbox": {
+        "x": 188.4386444091797,
+        "y": 480.5283203125,
+        "w": 8.018402099609375,
+        "h": 7.516082763671875
+      },
+      "gbr_stroke": "color(srgb 0.478431 0.654902 0.878431)",
+      "gbr_stroke_width": "1.5px",
+      "gbr_stroke_dasharray": "13px, 8px",
+      "gbr_stroke_opacity": "1",
+      "legend_news_i_border_style": "dashed",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "1",
+      "key_mark_parity": false,
+      "uk_box_blue_px": 31,
+      "mark_mean_chroma": 17.614512471655328,
+      "rung3_bbox": {
+        "x": 39,
+        "y": 460.92535400390625,
+        "w": 312,
+        "h": 34.753662109375
+      },
+      "rung3_mean_chroma": 9.140589569160998,
+      "ukzoom_file": "cells/dark-en-390-ukzoom.png",
+      "ukzoom_sha256": "853a27b2d3e2ff428a2bca339f2fa08c98b6d05f1106f2ecbf21b9c598de2c58",
+      "ukzoom_size": [
+        28,
+        27
+      ],
+      "legend_file": "cells/dark-en-390-legend.png",
+      "legend_sha256": "b787d235dd1d427204bbd250963dafcc7e8839ddb4ac72a39278484167b1f498",
+      "legend_size": [
+        312,
+        58
+      ]
+    },
+    "light-en": {
+      "applied_theme": "light",
+      "applied_locale": "en",
+      "viewport_w": 390,
+      "data_news_gbr": "1",
+      "map_data_hi": false,
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true,
+      "gbr_bbox": {
+        "x": 188.48069763183594,
+        "y": 481.35406494140625,
+        "w": 7.967010498046875,
+        "h": 7.4678955078125
+      },
+      "gbr_stroke": "color(srgb 0.151216 0.344784 0.902588)",
+      "gbr_stroke_width": "1.5px",
+      "gbr_stroke_dasharray": "13px, 8px",
+      "gbr_stroke_opacity": "1",
+      "legend_news_i_border_style": "dashed",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "1",
+      "key_mark_parity": false,
+      "uk_box_blue_px": 31,
+      "mark_mean_chroma": 18.034013605442176,
+      "rung3_bbox": {
+        "x": 40,
+        "y": 461.8767395019531,
+        "w": 310,
+        "h": 34.530914306640625
+      },
+      "rung3_mean_chroma": 0.5328798185941043,
+      "ukzoom_file": "cells/light-en-390-ukzoom.png",
+      "ukzoom_sha256": "17f0e7812ae6724f3e1ec500d386d3b56600cf518c9ad2c512dcea3e7bcff9a4",
+      "ukzoom_size": [
+        27,
+        27
+      ],
+      "legend_file": "cells/light-en-390-legend.png",
+      "legend_sha256": "184158238ca812707fd9832a856029881e1ac01249e12e0b9a575423de50b1ba",
+      "legend_size": [
+        312,
+        58
+      ]
+    }
+  },
+  "source_commit": "da1f7730b84a7f8758e5b1e81ed0de8e0718a9a0",
+  "page_sha256": "240f6321298ce20c48f6b0304ece9980a4f9c28857b3ce6b613f872ee9df6d19",
+  "generated_at": "2026-10-03T04:17:54Z",
+  "capture_tool_module_sha256": "75d6e65de40cf80bd06c821c4506f2856751f79cebe644310a1cf087f4776290",
+  "o28_block": {
+    "width": "1",
+    "dark_opacity": ".7",
+    "light_opacity": ".55",
+    "baseline": true
+  }
+}
