@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -1296,8 +1297,13 @@ def _decision_status(current_read: dict, gaps: list[dict]) -> str:
     return "partial" if gaps else "ready"
 
 
-def _direct_usd_xccy_basis(fx_lobe: dict) -> Any:
+def _direct_usd_xccy_basis(fx_lobe: dict, today: str) -> Any:
     """Accept only a typed market-wide USD xccy receipt; CNH basis is not a substitute."""
+    try:
+        today_date = date.fromisoformat(today)
+    except (TypeError, ValueError):
+        return None
+
     candidates = [
         fx_lobe.get("direct_usd_cross_currency_basis"),
         fx_lobe.get("usd_cross_currency_basis"),
@@ -1309,14 +1315,28 @@ def _direct_usd_xccy_basis(fx_lobe: dict) -> Any:
             continue
         bps = value.get("value_bps")
         asof = value.get("asof")
+        source = value.get("source")
         if isinstance(bps, bool) or not isinstance(bps, (int, float)):
             continue
-        if not isinstance(asof, str) or not asof:
+        try:
+            bps = float(bps)
+        except OverflowError:
+            continue
+        if not math.isfinite(bps):
+            continue
+        if not isinstance(source, str) or not source.strip():
+            continue
+        if not isinstance(asof, str):
+            continue
+        try:
+            if date.fromisoformat(asof) > today_date:
+                continue
+        except (TypeError, ValueError):
             continue
         return {
-            "value_bps": float(bps),
+            "value_bps": bps,
             "asof": asof,
-            "source": value.get("source"),
+            "source": source,
         }
     return None
 
@@ -1497,7 +1517,7 @@ def _build_decision_workspaces(
                 else "No selected source date for data/forex/latest.json."
             ),
         })
-    direct_basis = _direct_usd_xccy_basis(fx)
+    direct_basis = _direct_usd_xccy_basis(fx, today)
     if direct_basis is None:
         forex_gaps.append({
             "key": "direct_usd_cross_currency_basis",

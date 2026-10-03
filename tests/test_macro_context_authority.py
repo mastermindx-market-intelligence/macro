@@ -1329,3 +1329,140 @@ def test_r25_pair_projection_deduplicates_identity_without_using_scores():
         {"pair": "USDMXN", "action": "LONG"},
         {"pair": "AUDUSD", "action": "SHORT"},
     ]
+
+
+# R25 direct-basis admission: invented receipts only, never provider/market I/O.
+_R25_BASIS_PATHS = (
+    ("direct_usd_cross_currency_basis",),
+    ("usd_cross_currency_basis",),
+    ("funding", "usd_cross_currency_basis"),
+)
+
+
+def _r25_put_basis(world, path, receipt):
+    target = world["fx_dollar"]
+    for key in path[:-1]:
+        target = target.setdefault(key, {})
+    target[path[-1]] = receipt
+
+
+def _r25_basis_receipt(**overrides):
+    return {"value_bps": -12.5, "asof": "2026-10-02",
+            "source": "invented-basis-fixture", **overrides}
+
+
+@pytest.mark.parametrize("path", _R25_BASIS_PATHS)
+@pytest.mark.parametrize("overrides", [
+    {"value_bps": float("nan")}, {"value_bps": float("inf")},
+    {"value_bps": -float("inf")}, {"value_bps": 10 ** 400},
+    {"value_bps": True}, {"value_bps": "-12.5"}, {"value_bps": None},
+    {"source": None}, {"source": ""}, {"source": " \t\n"},
+    {"source": True}, {"source": {"name": "fixture"}},
+    {"asof": "2026-10-03"}, {"asof": "not-a-date"},
+    {"asof": "2026-02-30"}, {"asof": ""}, {"asof": None},
+    {"asof": 20261002}, {"asof": "2026-10-02T00:00:00Z"},
+])
+def test_r25_basis_rejects_invalid_receipt_without_ready(path, overrides):
+    from scripts.build_macro_context import _build_decision_workspaces
+
+    world = _r25_world_state()
+    _r25_put_basis(world, path, _r25_basis_receipt(**overrides))
+    out = _build_decision_workspaces(
+        _r25_snapshot(), world, _r25_regime_data(), [], "2026-10-02"
+    )["forex"]
+    assert out["status"] == "partial"
+    assert out["funding_evidence"]["direct_usd_cross_currency_basis"] is None
+    gap = next(g for g in out["data_gaps"]
+               if g["key"] == "direct_usd_cross_currency_basis")
+    assert gap["status"] == "unavailable" and gap["substitute_allowed"] is False
+    assert out["funding_evidence"]["proxy_funding_state"] == "calm"
+    json.dumps(out, allow_nan=False)
+
+
+@pytest.mark.parametrize("path", _R25_BASIS_PATHS)
+@pytest.mark.parametrize("missing", ("value_bps", "asof", "source"))
+def test_r25_basis_missing_field_retains_gap(path, missing):
+    from scripts.build_macro_context import _build_decision_workspaces
+
+    world = _r25_world_state()
+    receipt = _r25_basis_receipt()
+    del receipt[missing]
+    _r25_put_basis(world, path, receipt)
+    out = _build_decision_workspaces(
+        _r25_snapshot(), world, _r25_regime_data(), [], "2026-10-02"
+    )["forex"]
+    assert out["status"] == "partial"
+    assert out["funding_evidence"]["direct_usd_cross_currency_basis"] is None
+
+
+@pytest.mark.parametrize("path", _R25_BASIS_PATHS)
+@pytest.mark.parametrize("bps", (-12.5, 0, 0.0, -0.0, 12, 1e100))
+@pytest.mark.parametrize("asof", ("2026-10-02", "2026-09-01", "20261002", "2026-W40-5"))
+def test_r25_basis_preserves_valid_finite_zero_and_source_date(path, bps, asof):
+    from scripts.build_macro_context import _build_decision_workspaces
+
+    world = _r25_world_state()
+    receipt = _r25_basis_receipt(value_bps=bps, asof=asof, source=" fixture-provenance ")
+    _r25_put_basis(world, path, receipt)
+    before = json.dumps(world, sort_keys=True)
+    out = _build_decision_workspaces(
+        _r25_snapshot(), world, _r25_regime_data(), [], "2026-10-02"
+    )["forex"]
+    assert out["status"] == "ready"
+    assert out["funding_evidence"]["direct_usd_cross_currency_basis"] == receipt
+    assert not any(g["key"] == "direct_usd_cross_currency_basis" for g in out["data_gaps"])
+    assert out["probability_policy"] == "withheld" and out["display_only"] is True
+    assert out["claim_scope"] == "projection_only"
+    assert json.dumps(world, sort_keys=True) == before
+    json.dumps(out, allow_nan=False)
+
+
+@pytest.mark.parametrize("invalid", [
+    {"value_bps": float("inf")}, {"source": None}, {"asof": "2026-10-03"},
+])
+def test_r25_basis_invalid_preferred_receipt_does_not_mask_valid_fallback(invalid):
+    from scripts.build_macro_context import _build_decision_workspaces
+
+    world = _r25_world_state()
+    _r25_put_basis(world, _R25_BASIS_PATHS[0], _r25_basis_receipt(**invalid))
+    valid = _r25_basis_receipt(value_bps=0)
+    _r25_put_basis(world, _R25_BASIS_PATHS[1], valid)
+    _r25_put_basis(world, _R25_BASIS_PATHS[2], _r25_basis_receipt(value_bps=99))
+    out = _build_decision_workspaces(
+        _r25_snapshot(), world, _r25_regime_data(), [], "2026-10-02"
+    )["forex"]
+    assert out["status"] == "ready"
+    assert out["funding_evidence"]["direct_usd_cross_currency_basis"] == valid
+
+
+@pytest.mark.parametrize("today", ("not-a-date", "2026-02-30", None))
+def test_r25_basis_invalid_projection_clock_never_admits(today):
+    from scripts.build_macro_context import _build_decision_workspaces
+
+    world = _r25_world_state()
+    _r25_put_basis(world, _R25_BASIS_PATHS[0], _r25_basis_receipt())
+    out = _build_decision_workspaces(
+        _r25_snapshot(), world, _r25_regime_data(), [], today
+    )["forex"]
+    assert out["status"] == "partial"
+    assert out["funding_evidence"]["direct_usd_cross_currency_basis"] is None
+
+
+@pytest.mark.parametrize("stale_key", (
+    "ebp", "recession_risk", "hy_oas", "us10y", "real_10y", "term_premium",
+    "move", "ofr_fsi", "nfci", "anfci", "stlfsi", "sofr_iorb", "repo",
+))
+def test_r25_basis_admission_never_clears_stale_bonds_families(stale_key):
+    from scripts.build_macro_context import _build_decision_workspaces
+
+    world = _r25_world_state()
+    _r25_put_basis(world, _R25_BASIS_PATHS[0], _r25_basis_receipt(value_bps=0))
+    regime = _r25_regime_data()
+    regime["conditions"]["stale_inputs"] = [stale_key]
+    out = _build_decision_workspaces(
+        _r25_snapshot(), world, regime, [], "2026-10-02"
+    )
+    assert out["forex"]["status"] == "ready"
+    assert out["bonds"]["status"] == "partial"
+    assert any(g["key"] == stale_key and g["status"] == "stale_input"
+               for g in out["bonds"]["data_gaps"])
