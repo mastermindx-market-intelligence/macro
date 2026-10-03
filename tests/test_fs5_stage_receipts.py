@@ -264,6 +264,33 @@ def test_decoded_episode_adapter_preserves_valid_event_shape() -> None:
     assert event["anchor_strategy"] == "durable_available_at"
 
 
+def test_decoded_episode_adapter_accepts_legacy_rows_without_decision_clock() -> None:
+    from lib.live_flow_event_stage import events_from_records
+
+    records = [json.loads(line) for line in _stage().splitlines()]
+    records[0]["event"].pop("decision_at")
+    event = events_from_records(records, expected_session_date="2026-07-13")[0]
+    assert event["id"] == "evt1"
+    assert event["available_at"] == "2026-07-13T14:33:00Z"
+    assert "decision_at" not in event
+    assert "source_stage_prefix_sha256" not in event
+
+
+def test_raw_stage_without_decision_clock_remains_rejected() -> None:
+    from engine.options_signal_episode import ContractError
+    from lib.live_flow_event_stage import parse_stage_bytes
+
+    records = [json.loads(line) for line in _stage().splitlines()]
+    records[0]["event"].pop("decision_at")
+    raw = b"".join(_line(row) for row in records)
+    with pytest.raises(ContractError, match="invalid decision_at"):
+        parse_stage_bytes(
+            raw,
+            expected_session_date="2026-07-13",
+            source_stage_key="live_flow/events/2026-07-13.jsonl",
+        )
+
+
 def test_grader_records_only_spy_comparable_native_endpoint() -> None:
     from engine.flow_signals_grade import _grade_event
 

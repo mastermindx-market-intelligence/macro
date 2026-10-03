@@ -87,8 +87,12 @@ def _validate_context_capture(binding: object, *, lineno: int) -> None:
         raise ContractError(f"unknown context capture state at line {lineno}")
 
 
-def parse_stage_bytes(
-    raw: bytes, *, expected_session_date: str, source_stage_key: str
+def _parse_stage_bytes(
+    raw: bytes,
+    *,
+    expected_session_date: str,
+    source_stage_key: str,
+    require_receipt_clocks: bool,
 ) -> list[dict[str, Any]]:
     """Validate complete paired stage records and return each immutable raw receipt.
 
@@ -147,26 +151,48 @@ def parse_stage_bytes(
                 raise ContractError(
                     f"decision receipt contains non-durable fields at line {lineno}"
                 )
-            event_ts, event_dt = _utc_stamp(
-                event.get("ts"), field="event timestamp", lineno=lineno
-            )
-            _observed, observed_dt = _utc_stamp(
-                event.get("observed_at"), field="observed_at", lineno=lineno
-            )
-            decision_at, decision_dt = _utc_stamp(
-                event.get("decision_at"), field="decision_at", lineno=lineno
-            )
-            if not (event_dt <= observed_dt <= decision_dt):
-                raise ContractError(
-                    f"decision causal clocks are out of order at line {lineno}"
+            if require_receipt_clocks:
+                _event_ts, event_dt = _utc_stamp(
+                    event.get("ts"), field="event timestamp", lineno=lineno
                 )
-            if any(
-                value.astimezone(ET).date().isoformat() != expected_session_date
-                for value in (event_dt, observed_dt, decision_dt)
-            ):
-                raise ContractError(
-                    f"event-stage key/session mismatch at line {lineno}"
+                _observed, observed_dt = _utc_stamp(
+                    event.get("observed_at"), field="observed_at", lineno=lineno
                 )
+                decision_at, decision_dt = _utc_stamp(
+                    event.get("decision_at"), field="decision_at", lineno=lineno
+                )
+                if not (event_dt <= observed_dt <= decision_dt):
+                    raise ContractError(
+                        f"decision causal clocks are out of order at line {lineno}"
+                    )
+                if any(
+                    value.astimezone(ET).date().isoformat() != expected_session_date
+                    for value in (event_dt, observed_dt, decision_dt)
+                ):
+                    raise ContractError(
+                        f"event-stage key/session mismatch at line {lineno}"
+                    )
+            else:
+                try:
+                    event_dt = datetime.fromisoformat(
+                        str(event.get("ts") or "").replace("Z", "+00:00")
+                    )
+                except (TypeError, ValueError) as exc:
+                    raise ContractError(
+                        f"invalid event timestamp at line {lineno}"
+                    ) from exc
+                if event_dt.tzinfo is None:
+                    raise ContractError(
+                        f"event timestamp lacks timezone at line {lineno}"
+                    )
+                event_session = event_dt.astimezone(ET).date().isoformat()
+                if event_session != expected_session_date:
+                    raise ContractError(
+                        f"event-stage key/session mismatch at line {lineno}: "
+                        f"key={expected_session_date} event={event_session}"
+                    )
+                decision_at = ""
+                decision_dt = event_dt
             decisions[event_id] = (event, decision_at, decision_dt)
             seen_decisions.add(event_id)
         elif record.get("kind") == "availability":
@@ -182,11 +208,17 @@ def parse_stage_bytes(
                     f"availability receipt precedes its decision at line {lineno}"
                 )
             _validate_context_capture(record.get("context_capture"), lineno=lineno)
-            available_at, available_dt = _utc_stamp(
-                record.get("available_at"), field="available_at", lineno=lineno
-            )
+            if require_receipt_clocks:
+                available_at, available_dt = _utc_stamp(
+                    record.get("available_at"), field="available_at", lineno=lineno
+                )
+            else:
+                available_at = str(record.get("available_at") or "")
+                if not available_at:
+                    raise ContractError(f"invalid availability receipt at line {lineno}")
+                available_dt = None
             event, decision_at, decision_dt = decisions.pop(event_id)
-            if (
+            if require_receipt_clocks and (
                 available_dt < decision_dt
                 or available_dt.astimezone(ET).date().isoformat()
                 != expected_session_date
@@ -223,6 +255,18 @@ def parse_stage_bytes(
     return paired
 
 
+def parse_stage_bytes(
+    raw: bytes, *, expected_session_date: str, source_stage_key: str
+) -> list[dict[str, Any]]:
+    """Validate raw FS-5 receipts and return immutable original-byte provenance."""
+    return _parse_stage_bytes(
+        raw,
+        expected_session_date=expected_session_date,
+        source_stage_key=source_stage_key,
+        require_receipt_clocks=True,
+    )
+
+
 def events_from_records(
     records: list[dict[str, Any]], *, expected_session_date: str
 ) -> list[dict[str, Any]]:
@@ -241,17 +285,18 @@ def events_from_records(
         )
     except (TypeError, ValueError) as exc:
         raise ContractError("dated event stage contains non-finite JSON") from exc
-    parsed = parse_stage_bytes(
+    parsed = _parse_stage_bytes(
         raw,
         expected_session_date=expected_session_date,
         source_stage_key=f"live_flow/events/{expected_session_date}.jsonl",
+        require_receipt_clocks=False,
     )
     # Preserve the episode builder's existing decoded-record semantics: it has
     # historically retained the exact valid availability spelling from the
     # record.  FS-5 consumers use ``parse_stage_bytes`` and receive canonical
     # clocks plus the original-byte digest instead.
     original_available = {
-        row.get("event_id"): row.get("available_at")
+        row.get("event_id"): str(row.get("available_at") or "")
         for row in records
         if isinstance(row, dict) and row.get("kind") == "availability"
     }
