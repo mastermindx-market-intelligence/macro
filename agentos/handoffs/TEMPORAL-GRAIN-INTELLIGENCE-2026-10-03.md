@@ -30,6 +30,11 @@ changed:
       Adopts one workstream with a new outcome-independent cohort rather than proxy substitution,
       indefinite stall or a second Adaptive Signal Clock program. It amends but does not supersede
       the existing ownership/zero-authority decision.
+  - path: agentos/discoveries/DSC-TEMPORAL-GRAIN-NARROW-MASSIVE-MINUTE-PLANE-PARTIAL.md
+    what: >
+      Records that Massive rights plus Radar's bounded minute reader/session-correct 4H path make a
+      narrow V2 mechanical substrate plausible, while explicitly refusing to treat that as a
+      correction-safe PIT U.S.-equity panel or W1B admission.
   - path: agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md
     what: >
       Reconciles W0 to done, legacy W1A to done/UNRESOLVED_DATA, adds held V2-M new-cohort
@@ -71,6 +76,16 @@ verified:
       #6803 additionally appends seven test_temporal_scale_* files that cannot appear on current main
       before the implementation merges. Current-main code acceptance therefore needs a surgical
       composition of the current manifest plus those seven targets, not restoration of the old manifest.
+  - claim: The existing Massive/Radar minute path is candidate V2-M substrate evidence, not a broad PIT-panel admission.
+    command: >
+      Read research/licenses/MASSIVE_ENTITLEMENT_RECORD.md, engine/entry_radar/vendor_minutes.py,
+      research/live_entry_radar/W4_REAL_DATA_SMOKE.md, W5_FORWARD_EVIDENCE_PREREG.md and
+      w5_results/w5_results_panel_A.json.
+    result: >
+      Rights cover historical/non-display/derived research; the bounded per-name reader and real 4H
+      smoke exist; Panel-A replay records 7,546 episodes but 1,292,516 typed minute refusals
+      (1,286,184 minute_window_refused). The accepted broad correction-safe/PIT panel remains unproven,
+      matching DSC:TECHNICAL-4H-RESEARCH-PANEL-NOT-PROVEN.
 unverified:
   - claim: This recovery branch passes Agent OS validation and repository CI.
     what_would_verify: >
