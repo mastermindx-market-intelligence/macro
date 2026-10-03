@@ -2748,6 +2748,7 @@ jobs:
       - "tests/test_options_payoff.py"
       - "tests/test_options_market_memory_local_receipts.py"
       - "tests/test_options_market_memory_local_replica.py"
+      - "tests/test_options_signal_campaign_effective_view.py"
       - "tests/test_options_signal_campaign.py"
       - "tests/test_options_signal_episode.py"
       - "tests/test_options_sparse_selector_prereg.py"
@@ -2824,7 +2825,7 @@ jobs:
           tests/test_options_sparse_selector_runtime.py::test_4096_candidate_benchmark
           -q -rs
       - name: options signal campaign v2 (immutable revisions, causal anchors, exact checkpoint)
-        run: python -m pytest tests/test_options_signal_campaign.py -q
+        run: python -m pytest tests/test_options_signal_campaign.py tests/test_options_signal_campaign_effective_view.py -q
       - name: options alpha candidate feed v2 (source-only formations, immutable prefixes, publication receipt contract)
         run: python -m pytest tests/test_options_alpha_candidate_feed.py -q
       - name: MSC R2.2-A Light U-CHAIN packets + monotonic R2 discovery publication
