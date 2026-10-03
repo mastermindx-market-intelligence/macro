@@ -81,10 +81,11 @@ Market OS B1 and Prophet B1 must stay explicitly namespaced.
 
 ## Current blockers and next action
 
-Original private-marked report/Markdown/PDF publication awaits a repository
-visibility/destination decision; no original attachment is uploaded by this
-candidate. This records packet is a separate startup receipt. `sources.json`
-was referenced by the supplied handoff but not supplied.
+Chairman explicitly approved public Macro publication on October 3, 2026. The
+three supplied originals are archived byte-for-byte under
+`research/opportunity_evidence/oli_recovery_20261003/source_package/`, with a
+SHA-256/Git-blob manifest. Historical PRIVATE markings are preserved. The report
+contains its source register; the separately referenced `sources.json` was not supplied.
 
 Further source-test execution hit an explicit platform safety-status block.
 Preserve the failed-run evidence and do not repeat the refused effect via an
@@ -113,3 +114,7 @@ FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
 NEXT_ACTION_STARTED: false
 BACKGROUND_WORKER_OR_WAKE: none
+
+## Current archive and implementation edge
+
+Protected procedure re-pinned to Mastermind `7cff784b47556464eb6ec20445fcf5e659c5b64d`; current Chairman consent resolves only original-package public publication and directs continued execution. Same operation, branch and PR retained. Next independent unit: implement the internal C0/P0 preview and adversarial cases, using only native source facts or explicitly synthetic fixtures and no production-contract widening. Existing W1/W2/scientific/production acceptance remains pending.

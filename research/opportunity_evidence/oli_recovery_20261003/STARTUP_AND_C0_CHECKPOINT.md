@@ -7,7 +7,7 @@ Portfolio projection: [MAS-262](https://linear.app/mastermindx/issue/MAS-262/oli
 Accountable principal: Chairman-assigned Astra CEO session.
 Disposition: **RECOVERY STARTED / C0 PARTIAL / NO PRODUCTION OR SCIENTIFIC ACCEPTANCE**.
 
-This is a public-source startup receipt, not the original commissioned report. The original attachments have not been archived here: their private marking conflicts with the public visibility of Macro, Terminal and Mastermind, and their publication destination awaits a Chairman decision. Do not silently substitute this shorter checkpoint for those originals. A `sources.json` was named in the supplied handoff but was not among the three supplied attachments; no original source-register JSON is claimed.
+The original publication hold is resolved: on October 3, 2026 Chairman Chris explicitly approved the public Macro repository. All three original attachments are archived byte-for-byte in [source_package](source_package/README.md), with SHA-256 and Git-blob receipts in its manifest. This startup receipt remains separate from the originals. Their historical PRIVATE marking is preserved, not silently removed. The handoff-mentioned `sources.json` was not supplied; the master report contains its human-readable source register.
 
 ## 1. Actual actions and scope
 
@@ -116,3 +116,9 @@ Actual completed capability: recovered portfolio visibility, a canonical executi
 Not completed: original file archive, C0 owner adoption, complete qualification, new product implementation, production proof, data admission, forecast validation, protected scientific outcome work or consumer authority.
 
 `MISSION_COMPLETE: false`. No external worker or background continuation has been started. The same Astra CEO operation remains accountable for the next lawful work; this checkpoint is continuity, not a claim that work will execute after the foreground session ends.
+
+## 9. Current continuation: archive consent resolved
+
+The current Chairman message explicitly approves Macro publication and directs immediate project execution. Protected procedure is re-pinned to `Mastermind@7cff784b47556464eb6ec20445fcf5e659c5b64d` (compatible Skillpack 1.0.1/bootstrap 1). The original-package archive is now part of this same PR. Earlier test failures and exact refused test-context follow-up remain historical, action-scoped evidence; they are not being rerun or described as a blanket ban on independent implementation.
+
+Next active unit is the C0/P0 internal preview: an executable, test-only consumer contract over owner-native facts, keeping phase, entry verdict and private user state separate. Native production schemas and existing source writers remain unchanged until their explicit compatibility/adoption gates pass. No forecast, market-outcome experiment or data admission is implied by archiving or preview implementation.
