@@ -33,6 +33,9 @@ INTEGRATION_BASE_SHA = "5332d876e75837c158c6f42a2862734451bb7158"
 # served == main) and MO-PAID-023 PARTIAL->PROVEN_LIVE (whitehouse-sentinel 37007365383 state=no_new + served policy_watch.html == main);
 # MO-PAID-011 (DEC §6 proof satisfied by #8280, D29) and MO-PAID-017 (#8265 merged 36d83f1330ff, D30) restamped, states unchanged.
 # All four are union rows, so the outside-union digest is unchanged.
+# 2026-10-02 wave 7 (same writer): MO-PAID-017 restamped PRODUCTION_PROOF (D49, served news.html == main),
+# MO-PAID-011 (O26 minors merged #8283 + receipt #8289, D36/D47) and MO-PAID-008 (O21 family landed, D46/D48)
+# restamped — states unchanged, all three are union rows, outside-union digest unchanged.
 OUTSIDE_UNION_SHA256 = "cb9c1bf581b30bbb75e9fa3fd1f7f953d01f313dff98601dddc45e37ba43ef3c"
 CAPABILITY_STATES = {"NOT_BUILT", "SPEC_ONLY", "PARTIAL", "BUILT_NOT_PROVEN", "PROVEN_LIVE"}
 
