@@ -25,8 +25,9 @@ Each fetched document row carries:
   timestamp_quality, layout_rank (People's Daily front-page order; -1 elsewhere).
 
 Storage: date-keyed parquet under data/china_official/ (one file per crawl day,
-keep-FIRST on doc_id so the first print of a document wins and a re-edit never
-overwrites the original body/hash — the Missing-Tape body-hash leg, D8). The
+keep-FIRST on each stable source-locator + content fingerprint, so repeated reads
+are idempotent while an in-place title/body change becomes a later observed version
+without overwriting the first print — the Missing-Tape version/hash leg, D8). The
 adapter ALSO emits qbus rows (lang=zh, TIER1, PUBLISHER_STATED/CRAWL_BOUNDED,
 body_sha256 set) so the same documents fatten the unified item store and the
 Missing-Tape baseline.
@@ -165,6 +166,68 @@ def body_sha256(body: str) -> str:
     return hashlib.sha256(body.encode("utf-8")).hexdigest()
 
 
+def content_sha256(title: str, body: str) -> str:
+    """Version fingerprint for one observed source page. PURE.
+
+    body_sha256 remains the qbus/content compatibility field. This stronger
+    fingerprint includes the title so an in-place title correction is also an
+    observed version when the parsed body is otherwise unchanged.
+    """
+    title = str(title or "")
+    body = str(body or "")
+    if not title and not body:
+        return ""
+    return hashlib.sha256(f"{title}\n{body}".encode("utf-8")).hexdigest()
+
+
+def _source_locator_id(organ: str, url: str) -> str:
+    """Stable source-locator identity independent of mutable title/body text."""
+    basis = f"{str(organ or '').strip()}|{str(url or '').strip()}"
+    return hashlib.sha1(basis.encode("utf-8")).hexdigest()[:16]
+
+
+def _ensure_version_keys(df: pd.DataFrame) -> pd.DataFrame:
+    """Backfill additive locator/version keys for legacy corpus rows."""
+    out = df.copy()
+
+    def _clean(v) -> str:
+        return "" if pd.isna(v) else str(v).strip()
+
+    out["source_locator_id"] = [
+        _clean(cur) or _source_locator_id(_clean(org), _clean(url))
+        for cur, org, url in zip(
+            out.get("source_locator_id", pd.Series([""] * len(out))),
+            out.get("organ", pd.Series([""] * len(out))),
+            out.get("url", pd.Series([""] * len(out))),
+        )
+    ]
+    out["content_sha256"] = [
+        _clean(cur) or content_sha256(_clean(title), _clean(body))
+        for cur, title, body in zip(
+            out.get("content_sha256", pd.Series([""] * len(out))),
+            out.get("title", pd.Series([""] * len(out))),
+            out.get("body", pd.Series([""] * len(out))),
+        )
+    ]
+    return out
+
+
+def _annotate_versions(df: pd.DataFrame) -> pd.DataFrame:
+    """Add read-time revision lineage without mutating historical observations."""
+    if df.empty:
+        return df
+    out = df.sort_values(
+        ["_crawled_at", "source_locator_id", "content_sha256", "doc_id"],
+        kind="stable",
+    ).reset_index(drop=True)
+    grp = out.groupby("source_locator_id", sort=False, dropna=False)
+    out["version_ordinal"] = grp.cumcount() + 1
+    out["is_revision_observed"] = out["version_ordinal"] > 1
+    out["supersedes_content_sha256"] = grp["content_sha256"].shift(1).fillna("")
+    out["supersedes_observed_at"] = grp["_crawled_at"].shift(1).fillna("")
+    return out
+
+
 def _same_site(href: str, domain: str) -> bool:
     """True if href's host ends with the organ domain (drop cross-site chrome). PURE."""
     try:
@@ -282,12 +345,12 @@ def _doc_id(organ: str, url: str, title: str) -> str:
 
 
 # --------------------------------------------------------------------------- #
-# storage — date-keyed parquet, keep-FIRST on doc_id
+# storage — date-keyed parquet, retain distinct observed source versions
 # --------------------------------------------------------------------------- #
 _COLUMNS: tuple[str, ...] = (
-    "doc_id", "organ", "organ_name", "title", "url", "body", "body_sha256",
-    "seendate", "_crawled_at", "lang", "timestamp_quality", "theme",
-    "layout_rank",
+    "doc_id", "source_locator_id", "organ", "organ_name", "title", "url",
+    "body", "body_sha256", "content_sha256", "seendate", "_crawled_at",
+    "lang", "timestamp_quality", "theme", "layout_rank",
 )
 
 
@@ -302,21 +365,31 @@ def _day_path(d: date) -> Path:
 
 
 def write_day(rows: list[dict], d: date) -> Path | None:
-    """Append `rows` to the date-keyed parquet for day `d`, keep-FIRST on doc_id.
-    Returns the path, or None on failure. Never raises."""
+    """Append rows to the date-keyed parquet, idempotent per observed version.\n    Distinct content at the same source locator is retained. Never raises."""
     try:
         if not rows:
             return None
         path = _day_path(d)
-        new_df = pd.DataFrame(rows).reindex(columns=list(_COLUMNS))
+        new_df = _ensure_version_keys(
+            pd.DataFrame(rows).reindex(columns=list(_COLUMNS))
+        )
         if path.exists():
-            existing = pd.read_parquet(path).reindex(columns=list(_COLUMNS))
+            existing = _ensure_version_keys(
+                pd.read_parquet(path).reindex(columns=list(_COLUMNS))
+            )
             merged = pd.concat([existing, new_df], ignore_index=True)
         else:
             merged = new_df
-        merged = merged.drop_duplicates(subset=["doc_id"], keep="first")
+        # Repeat observations of identical content are idempotent. A changed
+        # title/body at the same official URL is retained as a new observed
+        # version rather than silently overwriting or erasing the first print.
+        merged = merged.drop_duplicates(
+            subset=["source_locator_id", "content_sha256"], keep="first"
+        )
         merged = merged.sort_values(
-            ["organ", "layout_rank", "doc_id"]).reset_index(drop=True)
+            ["organ", "layout_rank", "source_locator_id", "_crawled_at"],
+            kind="stable",
+        ).reset_index(drop=True)
         merged.to_parquet(path, index=False)
         return path
     except Exception as e:  # noqa: BLE001
@@ -337,14 +410,18 @@ def read_corpus(days: int | None = None) -> pd.DataFrame | None:
         frames = []
         for f in files:
             try:
-                frames.append(pd.read_parquet(f).reindex(columns=list(_COLUMNS)))
+                frames.append(_ensure_version_keys(
+                    pd.read_parquet(f).reindex(columns=list(_COLUMNS))
+                ))
             except Exception:  # noqa: BLE001
                 continue
         if not frames:
             return None
         out = pd.concat(frames, ignore_index=True)
-        out = out.drop_duplicates(subset=["doc_id"], keep="first")
-        return out.sort_values(["_crawled_at", "doc_id"]).reset_index(drop=True)
+        out = out.drop_duplicates(
+            subset=["source_locator_id", "content_sha256"], keep="first"
+        )
+        return _annotate_versions(out)
     except Exception as e:  # noqa: BLE001
         log.error("china_official.read_corpus failed: %s", e)
         return None
@@ -469,12 +546,14 @@ def _fetch_organ(organ: dict, today: date, cfg: dict,
         tq = "PUBLISHER_STATED" if seendate else "CRAWL_BOUNDED"
         rows.append({
             "doc_id": _doc_id(organ["organ"], url, title),
+            "source_locator_id": _source_locator_id(organ["organ"], url),
             "organ": organ["organ"],
             "organ_name": organ["name"],
             "title": title,
             "url": url,
             "body": body,
             "body_sha256": body_sha256(body),
+            "content_sha256": content_sha256(title, body),
             "seendate": seendate,
             "_crawled_at": crawled_at,
             "lang": "zh",
