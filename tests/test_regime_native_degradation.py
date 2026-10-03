@@ -9,7 +9,7 @@ from __future__ import annotations
 import copy
 import json
 import re
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from types import SimpleNamespace
 
 import numpy as np
@@ -20,6 +20,7 @@ from engine import quad_vector, regime, yield_momentum
 from engine.neuralweb import regime_context as rc
 
 NOW = datetime(2026, 10, 1, 23, 0, tzinfo=timezone.utc)
+NOW_FAR = datetime(2027, 6, 1, 12, 0, tzinfo=timezone.utc)
 DAY = '2026-10-01'
 P = {'Q1': .1, 'Q2': .2, 'Q3': .4, 'Q4': .3}
 MEMBERSHIP_CASES = ('smoothed_fallback', 'uniform_fallback', 'stale_posterior')
@@ -292,3 +293,122 @@ def test_healthy_native_measurement_is_not_erased_or_downgraded(name):
     d = ctx['dimensions'][name]
     assert d['status'] == 'available' and d['values']
     assert ctx['coverage']['populated_dimensions'] == 1
+
+
+# -- K4 ----------------------------------------------------------------------
+# Age-based staleness is disclosed independently of the producer's own flag.
+# A nightly-cadence artifact (default MAX_AGE = 7) is `available` on the day
+# after its stamp, `stale` past day 8, and the row keeps its date + values
+# while being excluded from populated_dimensions and counted in the new
+# additive stale_dimensions field.
+
+def _k4_inputs(iso_stamp):
+    """A fixture where every source stamp sits on the given date so the only
+    thing changing between calls is the `now` offset, isolating the K4 rule."""
+    base = {
+        'regime': {'date': iso_stamp, 'quad': 'Q2', 'growth_score': .1, 'inflation_score': -.1,
+            'transition_state': 'STABLE', 'liquidity_overlay': 'expanding',
+            'regime_one': {'tape': {'quad': 'Q4'},
+                           'macro': {'quad': 'Q1', 'worst_freshness': 'fresh'}},
+            'quad_vector': {'asof': iso_stamp, 'p': {'Q1': .1, 'Q2': .2, 'Q3': .4, 'Q4': .3},
+                'transition_momentum': {'gaining': 'Q4', 'gaining_rate': .03,
+                                        'losing': 'Q3', 'losing_rate': -.04,
+                                        'window_sessions': 5}},
+            'liquidity_quality': {'asof': iso_stamp, 'label': 'neutral',
+                'quantity_roc_bn': 1., 'rrp_buffer_bn': 50.,
+                'stress_overlay': {'hy_oas_pct': 3., 'hy_oas_chg_20d': .1,
+                                   'nfci': -.1, 'nfci_trend': 'loose'}},
+            'theme_revisions': {'asof': iso_stamp, 'n_themes': 0, 'themes': {}}},
+        'transmission': {'asof': iso_stamp,
+            'state': {'rates': {'real_10y': 1.0, 'real_10y_pctile': .5,
+                                'real_10y_chg_22d_bp': 1., 'real_10y_chg_63d_bp': 1.,
+                                'direction': 'stable', 'regime': 'neutral'}},
+            'yield_momentum': {'series': {'10y': {'as_of': iso_stamp,
+                'path_qualified': True, 'status': 'available', 'level': 4.,
+                'velocity_bp': {'5d': 1., '22d': 1., '63d': 1.},
+                'acceleration_bp': 1., 'horizon_basis': 'fixed_weekday_grid_intervals'}}}},
+        'participation': {'as_of': iso_stamp,
+            'cohort_sizes': {'ai_total': 1, 'non_ai': 1, 'universe': 2,
+                              'ai_core': 1, 'ai_infra_power': 0, 'ai_core_tagged': 1,
+                              'ai_infra_power_tagged': 0},
+            'latest': {'ai_pct50': 60., 'nonai_pct50': 30., 'spread_50': 30.,
+                       'ai_pct200': 60., 'nonai_pct200': 40.},
+            'tag_version': 'x', 'young': False},
+        'options': {'as_of': iso_stamp, 'chips': [
+            {'key': 'vix_level', 'value': 15., 'last_date': iso_stamp,
+             'freshness': 'fresh', 'pctile': 50}]},
+        'dispersion': {'as_of': iso_stamp, 'dispersion_pctile': .5, 'avg_corr': 0.},
+        'world_state': {'produced_at': iso_stamp + 'T22:00:00Z',
+            'factor_weather': {'factor_state_as_of': iso_stamp,
+                'style_regime': 'mixed', 'factor_leader': 'quality',
+                'ratio_qqq_spy_20d': .01, 'ratio_iwm_spy_20d': -.01}},
+        'leadership': {'asof': iso_stamp, 'state': 'INTACT',
+            'cohort_role': 'tracked_ai_hardware_damage_monitor',
+            'high_window_sessions': 5, 'n_fresh': 1, 'n_total': 1,
+            'med_dd': 0., 'index_dd': 0., 'state_since': iso_stamp},
+    }
+    return base
+
+
+def test_k4_age_at_limit_stays_available():
+    from datetime import timedelta
+    stamp = '2026-10-01'
+    ctx = rc.compose_context(_k4_inputs(stamp), now=datetime.fromisoformat(stamp + 'T00:00:00+00:00')
+                             + timedelta(days=7))
+    # age_calendar_days == limit (7) is still available; only > limit goes stale.
+    assert ctx['dimensions']['macro']['status'] == 'available'
+    assert ctx['coverage']['stale_dimensions'] == 0
+
+
+def test_k4_age_one_past_limit_goes_stale_with_bounded_issue():
+    from datetime import timedelta
+    stamp = '2026-10-01'
+    ctx = rc.compose_context(_k4_inputs(stamp), now=datetime.fromisoformat(stamp + 'T00:00:00+00:00')
+                             + timedelta(days=8))
+    macro = ctx['dimensions']['macro']
+    assert macro['status'] == 'stale'
+    assert 'age_exceeds_max' in macro['issues']
+    # date preserved, values preserved, excluded from populated_dimensions
+    assert macro['source']['as_of'] == stamp
+    assert macro['values']
+    assert ctx['coverage']['stale_dimensions'] >= 1
+    assert macro['age_stale'] is True
+
+
+def test_k4_far_future_now_makes_every_dimension_unavailable():
+    ctx = rc.compose_context(_k4_inputs('2026-10-01'), now=NOW_FAR)
+    # The spec contract is "no dimension may be available"; for dated rows
+    # that means stale+age_exceeds_max; rows with no producer payload at all
+    # remain missing (no date to age). populated_dimensions is 0 either way.
+    for name, dim in ctx['dimensions'].items():
+        assert dim['status'] in ('stale', 'missing'), (name, dim['status'])
+        if dim['status'] == 'stale':
+            assert 'age_exceeds_max' in dim['issues'], (name, dim['issues'])
+    assert ctx['coverage']['populated_dimensions'] == 0
+    assert ctx['coverage']['stale_dimensions'] >= 1
+
+
+# -- K6 ----------------------------------------------------------------------
+def test_k6_credit_clock_inherits_liquidity_artifact_clock_with_disclosure():
+    inputs = inputs_for('liquidity', 'healthy')
+    ctx = rc.compose_context(inputs, now=NOW)
+    credit = ctx['dimensions']['credit']
+    assert credit['source']['clock_basis'] == 'inherited_from_liquidity_artifact'
+    # the credit row's stamp equals the liquidity row's stamp (K6 keeps the
+    # inherited clock but labels it so it is never read as a credit observation).
+    liq = ctx['dimensions']['liquidity']
+    assert credit['source']['as_of'] == liq['source']['as_of']
+
+
+# -- K7 ----------------------------------------------------------------------
+def test_k7_session_relation_uses_ny_calendar_date_not_utc():
+    """now = 2026-10-01T21:30-04:00 (UTC date is already 2026-10-02) against
+    expected_session = 2026-10-01 must still produce same_completed_session for
+    a stamp whose NY calendar date is 2026-10-01."""
+    from datetime import timedelta
+    spec_now = datetime(2026, 10, 1, 21, 30, tzinfo=timezone(timedelta(hours=-4)))
+    inputs = _k4_inputs('2026-10-01')  # all stamps date-only == NY calendar 2026-10-01
+    ctx = rc.compose_context(inputs, now=spec_now, expected_session=date(2026, 10, 1))
+    for name in ('macro', 'real_rates', 'options_vix', 'style', 'leadership_damage'):
+        assert ctx['dimensions'][name]['source']['session_relation'] == 'same_completed_session', (
+            name, ctx['dimensions'][name]['source']['session_relation'])

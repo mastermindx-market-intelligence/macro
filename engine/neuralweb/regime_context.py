@@ -15,6 +15,7 @@ import re
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 SOURCE_PATHS = {
     'regime': 'data/regime/latest.json',
@@ -25,6 +26,24 @@ SOURCE_PATHS = {
     'world_state': 'data/neuralweb/world_state.json',
     'leadership': 'data/leadership_crack/latest.json',
 }
+# K4: age-based staleness disclosure rule. This is a disclosure rule, NOT a
+# tuned parameter: it tells the consumer when an owner artifact is older than
+# the cadence the site claims to ship at, independent of the producer's own
+# `stale` flag. All artifacts here are nightly-cadence, so 7 days is the
+# default; a larger value only where the producer documents a slower cadence.
+# `engine/neuralweb/market_packet.py` constants QUOTES_STALE_MIN / EVENTS_MAX_AGE_H
+# are intraday wire freshness (minutes/hours) and do not apply to these daily
+# artifacts, so no reuse.
+MAX_AGE_CALENDAR_DAYS: dict[str, int] = {
+    'regime': 7,
+    'transmission': 7,
+    'participation': 7,
+    'options': 7,
+    'dispersion': 7,
+    'world_state': 7,
+    'leadership': 7,
+}
+NY_TZ = ZoneInfo('America/New_York')
 MAX_SOURCE_BYTES = 2 * 1024 * 1024
 SCHEMA = 'market_packet.regime_context.v1'
 QUAD_NAMES = {'Q1': 'Goldilocks', 'Q2': 'Reflation',
@@ -224,7 +243,17 @@ def compose_context(sources: dict, *, now: datetime,
         source['expected_us_session'] = expected_session.isoformat() if expected_session else None
         source['session_relation'] = None
         if source['as_of'] and expected_session:
-            day = date.fromisoformat(source['as_of'][:10])
+            # K7: compare the America/New_York calendar date of the observation,
+            # not the UTC date — a 21:30 ET read on the same session still
+            # belongs to the session that just completed there. Date-only stamps
+            # already represent a NY calendar date and are compared as-is.
+            if source.get('precision') == 'date':
+                day = date.fromisoformat(source['as_of'])
+            else:
+                stamp_dt = datetime.fromisoformat(source['as_of'])
+                if stamp_dt.tzinfo is None:
+                    stamp_dt = stamp_dt.replace(tzinfo=timezone.utc)
+                day = stamp_dt.astimezone(NY_TZ).date()
             source['session_relation'] = ('same_completed_session' if day == expected_session
                 else 'older_than_completed_session' if day < expected_session else 'after_completed_session')
         if isinstance(raw, dict):
@@ -235,23 +264,31 @@ def compose_context(sources: dict, *, now: datetime,
                 issues.append('availability_after_observation_cutoff')
         measured = ({key: values.get(key) for key in measurement_fields}
                     if measurement_fields is not None else values)
+        age_stale = False
         if not raw or not _has_value(measured):
             status = 'missing'; values = {}
         elif source['as_of'] is None:
             status = 'unknown_date'; values = {}
         elif source['future_dated']:
             status = 'future_dated'; values = {}
-        elif stale:
-            status = 'stale'
         else:
-            status = 'partial' if issues else 'available'
+            # K4: age-based staleness disclosure, independent of the producer's
+            # `stale` flag. Marked with its own bounded issue so the row keeps
+            # its date and values visible but is excluded from populated_dimensions.
+            age_days = source.get('age_calendar_days')
+            age_limit = MAX_AGE_CALENDAR_DAYS.get(key, 7)
+            age_stale = isinstance(age_days, int) and age_days > age_limit
+            if age_stale:
+                issues.append('age_exceeds_max')
+            effective_stale = stale or age_stale
+            status = 'stale' if effective_stale else ('partial' if issues else 'available')
         # A source saying "fresh" describes its last build, not this read.
         # Preserve observation age and do not manufacture an intraday freshness
         # certification from date-only/uncertified source clocks.
         dims[name] = {
             'status': status, 'scope': scope, 'source': source, 'unit': unit,
             'values': values, 'issues': issues, 'notes': list(notes),
-            'currentness_certified': False,
+            'currentness_certified': False, 'age_stale': bool(age_stale),
         }
 
     regime = _dict(sources.get('regime'))
@@ -372,7 +409,14 @@ def compose_context(sources: dict, *, now: datetime,
             issues=errors, field='nfci_direction'),
     }, 'oas_percent_change_percentage_points_nfci_index', issues=errors,
        stale=liq.get('stale') is True,
-       notes=('A negative financial-conditions level may coexist with tightening.',))
+       notes=('A negative financial-conditions level may coexist with tightening.',
+              # K6: stress_overlay carries no date field of its own; the stamp
+              # is inherited from the parent liquidity artifact and is NOT the
+              # credit observation date.
+              'Credit clock inherits liquidity_quality.asof; not a credit-only observation date.'))
+    # K6: explicit additive disclosure that the credit row's date is the
+    # liquidity artifact's clock, not an independent credit observation date.
+    dims['credit']['source']['clock_basis'] = 'inherited_from_liquidity_artifact'
 
     part = _dict(sources.get('participation'))
     latest, population = _dict(part.get('latest')), _dict(part.get('cohort_sizes'))
@@ -506,12 +550,15 @@ def compose_context(sources: dict, *, now: datetime,
        scope='owner-designated tracked AI-hardware damage cohort',
        notes=('This fixed damage-monitor cohort is not all current market leaders.',))
 
-    populated = sum(bool(d['values']) and _has_value(d['values']) for d in dims.values())
+    populated = sum(bool(d['values']) and _has_value(d['values']) and not d.get('age_stale')
+                   for d in dims.values())
+    stale_dim_count = sum(1 for d in dims.values() if d.get('age_stale'))
     return {
         'schema': SCHEMA, 'scope': 'US; existing regional packet blocks are separate',
         'observed_at': now.isoformat(), 'expected_us_session': expected_session.isoformat() if expected_session else None, 'dimensions': dims,
         'coverage': {'total_dimensions': len(dims), 'populated_dimensions': populated,
-                     'missing_dimensions': len(dims) - populated},
+                     'missing_dimensions': len(dims) - populated,
+                     'stale_dimensions': stale_dim_count},
         'historical_replay_eligible': False,
         'authority': {k: False for k in ('may_rank', 'may_gate', 'may_size', 'may_trade', 'may_forecast', 'may_escalate')},
         'unmeasured': ['literal_capital_flows', 'valuation_implied_expected_returns',

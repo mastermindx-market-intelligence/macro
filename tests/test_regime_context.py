@@ -433,7 +433,11 @@ def test_duplicate_option_chip_is_not_arbitrarily_selected():
 def test_old_date_is_visible_without_calling_it_current():
     s = sources(); s['transmission']['asof'] = '2025-01-01'
     text = rc.render_context(rc.compose_context(s, now=NOW))
-    assert '2025-01-01;' in text and 'calendar days old' in text
+    # K4: an observation well past its max age surfaces as 'stale' (with the
+    # age_exceeds_max issue) and the rendered disclosure flips to
+    # 'stale/last-known'. The old date is still visible; the row is NOT
+    # presented as current.
+    assert '2025-01-01;' in text and 'stale/last-known' in text
 
 
 def test_guest_packet_never_reads_the_new_paid_sources(tmp_path, monkeypatch):
