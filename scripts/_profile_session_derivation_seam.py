@@ -1,4 +1,4 @@
-"""Synthetic moderate-scale profile/counter artifact for the session-derivation seam.
+"""Synthetic derive-only profile/counter artifact for the session-derivation seam.
 
 This is a one-shot instrumented benchmark — no flaky timing, no licensed data.
 It counts how often :func:`normalize_price_bars` runs across a synthetic
@@ -11,6 +11,9 @@ per prepared ticker). Two passes are recorded:
     ``_PreparedPriceBars`` built once per ticker. The factory's single
     :func:`normalize_price_bars` call is the only normalization.
 
+This is intentionally a derive-only microprofile; it does not read a parquet
+snapshot or exercise builder receipt validation.  Builder-wide one-prepare
+coverage belongs in ``test_builder_prepares_one_receipt_validated_snapshot_for_h60_and_all_sessions``.
 The output is a deterministic, human-readable counter artifact committed to
 the PR body.
 """
@@ -251,6 +254,7 @@ def main() -> int:
     expected_prep = prep["tickers"] * 1  # one normalize per ticker
     artifact = {
         "schema": "options.session_derivation_seam_profile/v1",
+        "scope": "derive_only_microprofile",
         "session_date": SESSION_DATE,
         "bar_seconds": BAR_SECONDS,
         "passes": [raw, prep],

@@ -514,20 +514,20 @@ def _canonical_utc(value: object) -> str:
 
 def _price_snapshot(
     intraday_root: Path, ticker: str,
-) -> tuple[pd.DataFrame | None, dict[str, Any] | None]:
+) -> tuple[pd.DataFrame | None, dict[str, Any] | None, Any | None]:
     """Read one receipt-bound immutable parquet byte snapshot without TOCTOU."""
     source = intraday_root / f"{ticker}.parquet"
     receipt_path = intraday_root / f"{ticker}.parquet.receipt.json"
     source_exists = source.exists()
     receipt_exists = receipt_path.exists()
     if not source_exists and not receipt_exists:
-        return None, None
+        return None, None, None
     # Existing deployments already carry mutable Polygon parquets that predate
     # this causal sidecar.  Until the collector successfully refreshes that
     # ticker, those bytes are not admissible evidence but they are not ledger
     # corruption either: leave its outcome pending and let other tickers accrue.
     if source_exists and not receipt_exists:
-        return None, None
+        return None, None, None
     if receipt_exists and not source_exists:
         raise ContractError(
             f"price snapshot pair is incomplete for {ticker}: "
@@ -583,7 +583,7 @@ def _price_snapshot(
             raise ValueError("receipt first timestamp disagrees with source bytes")
         if receipt["last_time"] != prepared.last_time:
             raise ValueError("receipt last timestamp disagrees with source bytes")
-        return frame, receipt
+        return frame, receipt, prepared
     except Exception as exc:  # noqa: BLE001
         if isinstance(exc, ContractError):
             raise
@@ -774,14 +774,13 @@ def run(
                 summary["write_skipped"] = "COLLECT_LANE is not nightly"
 
     intraday_root = _intraday_root(repo, data_root)
-    price_cache: dict[str, tuple[pd.DataFrame | None, dict[str, Any] | None]] = {}
+    price_cache: dict[str, tuple[pd.DataFrame | None, dict[str, Any] | None, Any | None]] = {}
     price_cache_errors: set[str] = set()
     # Per-run typed prepared price-bars seam. Built only after the snapshot's
     # immutable-bytes/readback/hash/receipt checks pass; reused across the H+60
     # and every session consumer for the same ticker so normalize_price_bars
     # runs at most once per snapshot instead of once per dispersion×horizon.
     # Lifetime is bounded to this ``run`` invocation — never module-global.
-    prepared_price_cache: dict[str, Any] = {}
     from time import perf_counter as _perf_counter
     _h60_phase_started = _perf_counter()
     with _BuildPhase("h60_derivation"):
@@ -809,19 +808,11 @@ def run(
             if attempt.get("reason") == "missing_price_receipt":
                 if ticker not in price_cache:
                     price_cache[ticker] = _price_snapshot(intraday_root, ticker)
-                frame, receipt = price_cache[ticker]
+                frame, receipt, prepared = price_cache[ticker]
                 bar_seconds = receipt.get("bar_seconds") if receipt is not None else None
                 price_delay_minutes = (
                     receipt.get("vendor_delay_minutes") if receipt is not None else None
                 )
-                if (
-                    frame is not None
-                    and receipt is not None
-                    and ticker not in prepared_price_cache
-                ):
-                    prepared_price_cache[ticker] = prepare_price_bars(
-                        frame, ticker=ticker,
-                    )
                 attempt = derive_h60_outcome(
                     episode,
                     frame,
@@ -830,7 +821,7 @@ def run(
                     bar_seconds=bar_seconds,
                     price_delay_minutes=price_delay_minutes,
                     price_receipt=receipt,
-                    prepared_bars=prepared_price_cache.get(ticker),
+                    prepared_bars=prepared,
                 )
             status = attempt.get("status")
             if status == "complete":
@@ -854,7 +845,7 @@ def run(
                     summary["outcomes_terminal_incomplete"],
                     summary["outcomes_pending"],
                     len(price_cache),
-                    len(prepared_price_cache),
+                    sum(item[2] is not None for item in price_cache.values()),
                     max(0.0, _perf_counter() - _h60_phase_started),
                 )
 
@@ -906,19 +897,11 @@ def run(
                             "episode_id": episode_id, "horizon": horizon,
                         }
                     else:
-                        frame, receipt = price_cache[ticker]
+                        frame, receipt, prepared = price_cache[ticker]
                         bar_seconds = receipt.get("bar_seconds") if receipt is not None else None
                         price_delay_minutes = (
                             receipt.get("vendor_delay_minutes") if receipt is not None else None
                         )
-                        if (
-                            frame is not None
-                            and receipt is not None
-                            and ticker not in prepared_price_cache
-                        ):
-                            prepared_price_cache[ticker] = prepare_price_bars(
-                                frame, ticker=ticker,
-                            )
                         attempt = derive_session_outcome(
                             episode,
                             horizon,
@@ -928,7 +911,7 @@ def run(
                             bar_seconds=bar_seconds,
                             price_delay_minutes=price_delay_minutes,
                             price_receipt=receipt,
-                            prepared_bars=prepared_price_cache.get(ticker),
+                            prepared_bars=prepared,
                         )
                 status = attempt.get("status")
                 if status == "complete":
@@ -954,7 +937,7 @@ def run(
                         summary["session_outcomes_terminal_incomplete"],
                         summary["session_outcomes_pending"],
                         len(price_cache),
-                        len(prepared_price_cache),
+                        sum(item[2] is not None for item in price_cache.values()),
                         max(0.0, _perf_counter() - _session_phase_started),
                     )
 

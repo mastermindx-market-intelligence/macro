@@ -6494,7 +6494,7 @@ def test_prepare_price_bars_factory_rejects_unchecked_inputs() -> None:
         prepare_price_bars(empty, ticker="TEST")
 
 
-def test_prepared_wrapper_is_frozen_and_internal_frame_is_read_only() -> None:
+def test_prepared_wrapper_exposes_metadata_but_not_the_cached_dataframe() -> None:
     from engine.options_signal_episode import prepare_price_bars
 
     raw = _price_bars_full_session_window(_episode(), "10d")
@@ -6507,7 +6507,7 @@ def test_prepared_wrapper_is_frozen_and_internal_frame_is_read_only() -> None:
     assert prepared.ticker == "TEST"
     assert isinstance(prepared.first_time, str) and prepared.first_time.endswith("Z")
     assert isinstance(prepared.last_time, str) and prepared.last_time.endswith("Z")
-    assert prepared.frame.values.flags.writeable is False
+    assert not hasattr(prepared, "frame")
 
 
 @pytest.mark.parametrize("horizon", sorted(SESSION_HORIZONS))
@@ -6576,7 +6576,7 @@ def test_prepared_path_normalizes_once_per_ticker_not_per_horizon(monkeypatch) -
     assert counter["calls"] == 0
 
 
-def test_h60_path_reuses_prepared_frame_without_mutation(monkeypatch) -> None:
+def test_h60_path_reuses_private_prepared_frame_without_mutation(monkeypatch) -> None:
     episode = _episode()
     raw = _price_bars_full_session_window(episode, "10d")
     receipt = _fixture_price_receipt(
@@ -6587,7 +6587,7 @@ def test_h60_path_reuses_prepared_frame_without_mutation(monkeypatch) -> None:
     from engine.options_signal_episode import prepare_price_bars
 
     prepared = prepare_price_bars(raw, ticker=episode["ticker"])
-    snapshot_before = pd.util.hash_pandas_object(prepared.frame, index=True).values.tobytes()
+    snapshot_before = pd.util.hash_pandas_object(prepared._frame, index=True).values.tobytes()
     kwargs = {
         "computed_at": (
             datetime.fromisoformat(episode["available_at"].replace("Z", "+00:00"))
@@ -6599,8 +6599,97 @@ def test_h60_path_reuses_prepared_frame_without_mutation(monkeypatch) -> None:
         "price_receipt": receipt,
     }
     derive_h60_outcome(episode, raw, prepared_bars=prepared, **kwargs)
-    snapshot_after = pd.util.hash_pandas_object(prepared.frame, index=True).values.tobytes()
+    snapshot_after = pd.util.hash_pandas_object(prepared._frame, index=True).values.tobytes()
     assert snapshot_before == snapshot_after
+
+
+def test_builder_prepares_one_receipt_validated_snapshot_for_h60_and_all_sessions(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    """The builder's receipt gate and both outcome phases share one prepared frame."""
+    from engine import options_signal_episode as engine_mod
+    from scripts import build_options_signal_episode as builder
+
+    episode = _episode()
+    price_frame = _price_bars_full_session_window(episode, "10d")
+    intraday = tmp_path / "data/intraday"
+    intraday.mkdir(parents=True)
+    target = nyse_calendar.session_n_forward(
+        datetime.fromisoformat(episode["session_date"]).date(), SESSION_HORIZONS["10d"],
+    )
+    assert target is not None
+    source_available_at = session_window_et(target)[1].astimezone(timezone.utc)
+    _write_receipted_price_source(
+        intraday, price_frame, bar_seconds=1800, delay_minutes=0,
+        source_available_at=source_available_at.isoformat().replace("+00:00", "Z"),
+    )
+    receipt = json.loads((intraday / "TEST.parquet.receipt.json").read_text())
+    calls = {"count": 0}
+    original_normalize = engine_mod.normalize_price_bars
+
+    def counting_normalize(frame):
+        calls["count"] += 1
+        return original_normalize(frame)
+
+    monkeypatch.setattr(engine_mod, "normalize_price_bars", counting_normalize)
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    computed_at = datetime(2026, 8, 1, tzinfo=timezone.utc)
+    summary = builder.run(
+        root_dir=tmp_path,
+        stages_by_session={"2026-07-02": _stage_records()},
+        computed_at=computed_at,
+    )
+
+    # Receipt validation, H+60, and all five session horizons share one factory call.
+    assert calls["count"] == 1
+    assert summary["outcomes_complete"] == 1
+    assert summary["session_outcomes_complete"] == len(SESSION_HORIZONS)
+
+    # Compare the persisted prepared-path output with the legacy raw-frame derives.
+    calls["count"] = 0
+    stored_h60 = load_jsonl(tmp_path / "data/options_signal_episode/outcomes_h60.jsonl")
+    stored_session = engine_mod.load_session_outcomes(
+        tmp_path / "data/options_signal_episode/outcomes_session.jsonl"
+    )
+    price_source = "data/intraday/TEST.parquet"
+    expected_h60 = derive_h60_outcome(
+        episode, price_frame, computed_at=computed_at, price_source=price_source,
+        bar_seconds=1800, price_delay_minutes=0, price_receipt=receipt,
+    )
+    expected_session = [
+        derive_session_outcome(
+            episode, horizon, price_frame, computed_at=computed_at,
+            price_source=price_source, bar_seconds=1800, price_delay_minutes=0,
+            price_receipt=receipt,
+        )
+        for horizon in SESSION_HORIZONS
+    ]
+    assert stored_h60 == [expected_h60]
+    assert sorted(stored_session, key=lambda row: row["horizon"]) == sorted(
+        expected_session, key=lambda row: row["horizon"]
+    )
+    assert calls["count"] == 1 + len(SESSION_HORIZONS)
+
+
+def test_prepared_path_rejects_a_snapshot_from_another_ticker() -> None:
+    episode = _episode(ticker="OTHER", root="OTHER")
+    raw = _price_bars_full_session_window(episode, "10d")
+    receipt = _fixture_session_price_receipt(
+        episode, "10d", raw,
+        price_source="data/intraday/OTHER.parquet",
+        bar_seconds=1800, price_delay_minutes=0,
+    )
+    from engine.options_signal_episode import prepare_price_bars
+
+    prepared = prepare_price_bars(raw, ticker="TEST")
+    with pytest.raises(ContractError, match="ticker does not match"):
+        derive_session_outcome(
+            episode, "10d", raw,
+            computed_at=datetime(2026, 8, 1, tzinfo=timezone.utc),
+            price_source=receipt["source_file"], bar_seconds=1800,
+            price_delay_minutes=0, price_receipt=receipt,
+            prepared_bars=prepared,
+        )
 
 
 def test_legacy_raw_caller_path_remains_unaffected(monkeypatch) -> None:

@@ -39,5 +39,6 @@
     }
   ],
   "schema": "options.session_derivation_seam_profile/v1",
+  "scope": "derive_only_microprofile",
   "session_date": "2026-07-02"
 }
