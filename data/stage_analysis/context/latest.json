@@ -2,7 +2,7 @@
   "schema": "stage_context.v1",
   "asof": "2026-10-03",
   "data_session": "2026-10-02",
-  "built": "2026-10-03T06:58:44Z",
+  "built": "2026-10-03T18:01:28Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
@@ -77,6 +77,57 @@
   },
   "top_stage2": [
     {
+      "ticker": "WOR",
+      "company": "Worthington Enterprises",
+      "sector": "Industrials",
+      "stage_source_asof": "2026-10-02",
+      "stage_week_end": "2026-10-02",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 1,
+      "fresh": true,
+      "sga_score": 77,
+      "ma30_slope_pct5w": 1.216,
+      "pct_vs_ma30": 8.9,
+      "mansfield_rs": 0.85,
+      "vol_ratio": 1.87,
+      "event": null,
+      "gate_tier": "T2",
+      "blackout": false,
+      "arc_pos": 0.2625,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.5,
+        "performance": 7.5,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "demand_slowdown",
+          "supply_constraint",
+          "new_product"
+        ],
+        "quarter": "Q1",
+        "summary": "Worthington Enterprises reported Q1 FY2027 consolidated sales growth of 13% to $344 million and adjusted EPS of $0.82, beating the prior year period. Adjusted EBITDA increased 10% to $74 million, driven by strong performance in Trade & Specialty Solutions and joint ventures, t…"
+      },
+      "why": [
+        "Early in its climb — 1 weeks up so far",
+        "Trading above its 30-week line — the trend is with it",
+        "Also shows a strong confirmation from our other checks"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 1 周",
+        "位于 30 周均线之上 — 趋势向好",
+        "其他多项验证同样给出强确认"
+      ],
+      "atr_14w": 4.84,
+      "atr_ext": 1.024,
+      "atr_pct_price": 0.07979,
+      "sata_score": 6,
+      "sata_change_1w": 2,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 75.0
+    },
+    {
       "ticker": "SHOO",
       "company": "Steven Madden, Ltd.",
       "sector": "Consumer Discretionary",
@@ -92,7 +143,7 @@
       "mansfield_rs": 4.81,
       "vol_ratio": 1.07,
       "event": "pullback_resume",
-      "gate_tier": "T2",
+      "gate_tier": "T1",
       "blackout": false,
       "arc_pos": 0.35,
       "earnings": {
@@ -230,6 +281,58 @@
       "sata_change_1w": 1,
       "stage_detailed": "2X_fallback_bullish",
       "industry_percentile": 47.8
+    },
+    {
+      "ticker": "AME",
+      "company": "Ametek",
+      "sector": "Industrials",
+      "stage_source_asof": "2026-10-02",
+      "stage_week_end": "2026-10-02",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 1,
+      "fresh": true,
+      "sga_score": 65,
+      "ma30_slope_pct5w": 0.981,
+      "pct_vs_ma30": 7.9,
+      "mansfield_rs": 4.1,
+      "vol_ratio": 1.14,
+      "event": "pullback_resume",
+      "gate_tier": "T1",
+      "blackout": false,
+      "arc_pos": 0.2625,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.9,
+        "performance": 9.0,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration",
+          "buyback_or_dividend"
+        ],
+        "quarter": "Q2",
+        "summary": "AMETEK reported record Q2 FY2026 results with sales of $2.04 billion, up 15% YoY (organic +10%), and EPS of $2.09, up 17% and above guidance of $1.96-$2.00. Operating margins expanded 60 bps to 26.6%, core margins up 110 bps, and free cash flow rose 37% to $452 million. Orders…"
+      },
+      "why": [
+        "Early in its climb — 1 weeks up so far",
+        "Trading above its 30-week line — the trend is with it",
+        "Also shows a strong confirmation from our other checks"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 1 周",
+        "位于 30 周均线之上 — 趋势向好",
+        "其他多项验证同样给出强确认"
+      ],
+      "atr_14w": 11.8569,
+      "atr_ext": 1.556,
+      "atr_pct_price": 0.04706,
+      "sata_score": 7,
+      "sata_change_1w": 3,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 70.4
     },
     {
       "ticker": "HRMY",
@@ -1285,55 +1388,6 @@
       "industry_percentile": null
     },
     {
-      "ticker": "WOR",
-      "company": "Worthington Enterprises",
-      "sector": "Industrials",
-      "stage_source_asof": "2026-10-02",
-      "stage_week_end": "2026-10-02",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 1,
-      "fresh": true,
-      "sga_score": 52,
-      "ma30_slope_pct5w": 1.216,
-      "pct_vs_ma30": 8.9,
-      "mansfield_rs": 0.85,
-      "vol_ratio": 1.87,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.2625,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5,
-        "performance": 7.5,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "demand_slowdown",
-          "supply_constraint",
-          "new_product"
-        ],
-        "quarter": "Q1",
-        "summary": "Worthington Enterprises reported Q1 FY2027 consolidated sales growth of 13% to $344 million and adjusted EPS of $0.82, beating the prior year period. Adjusted EBITDA increased 10% to $74 million, driven by strong performance in Trade & Specialty Solutions and joint ventures, t…"
-      },
-      "why": [
-        "Early in its climb — 1 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 1 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 4.84,
-      "atr_ext": 1.024,
-      "atr_pct_price": 0.07979,
-      "sata_score": 6,
-      "sata_change_1w": 2,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 75.0
-    },
-    {
       "ticker": "AFRI",
       "company": "Forafric Global PLC",
       "sector": "Consumer Defensive",
@@ -1485,54 +1539,6 @@
       "sata_change_1w": 1,
       "stage_detailed": "2A_strong_breakout",
       "industry_percentile": 78.9
-    },
-    {
-      "ticker": "FIGS",
-      "company": "Figs Inc",
-      "sector": "Consumer Cyclical",
-      "stage_source_asof": "2026-10-02",
-      "stage_week_end": "2026-10-02",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 7,
-      "fresh": true,
-      "sga_score": 51,
-      "ma30_slope_pct5w": 0.941,
-      "pct_vs_ma30": 3.07,
-      "mansfield_rs": 2.57,
-      "vol_ratio": 0.88,
-      "event": null,
-      "gate_tier": "T3",
-      "blackout": false,
-      "arc_pos": 0.3375,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.8,
-        "performance": 9.5,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "margin_expansion",
-          "demand_acceleration"
-        ],
-        "quarter": "Q2",
-        "summary": "FIGS reported Q2 FY26 net revenues of $197 million (up 29% YoY), beating the prior guidance range and marking a third consecutive quarter with growth above 25%. Adjusted EBITDA margin surged to 18.6%, driven by pricing power, lower returns, and tariff refunds, while active cus…"
-      },
-      "why": [
-        "Early in its climb — 7 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 7 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 1.6636,
-      "atr_ext": 0.242,
-      "atr_pct_price": 0.12305,
-      "sata_score": 5,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 87.5
     },
     {
       "ticker": "GRAL",
@@ -1862,68 +1868,6 @@
       "sata_change_1w": 0,
       "stage_detailed": "2X_fallback_bullish",
       "industry_percentile": null
-    },
-    {
-      "ticker": "HURN",
-      "company": "Huron Consulting Group Inc",
-      "sector": "Industrials",
-      "stage_source_asof": "2026-10-02",
-      "stage_week_end": "2026-10-02",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 2,
-      "fresh": true,
-      "sga_score": 50,
-      "ma30_slope_pct5w": 1.873,
-      "pct_vs_ma30": 26.17,
-      "mansfield_rs": 3.65,
-      "vol_ratio": 0.9,
-      "event": "pullback_resume",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.275,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.7222222222222222,
-        "performance": 8.75,
-        "tone_word": "confident",
-        "tags": [
-          "ai",
-          "managed_services",
-          "guidance_raise",
-          "margin_expansion",
-          "healthcare",
-          "digital_transformation",
-          "m&a",
-          "bookings_growth",
-          "professional_services",
-          "it_consulting",
-          "healthcare_consulting",
-          "education_services",
-          "ai_services",
-          "business_process_outsourcing",
-          "management_consulting"
-        ],
-        "quarter": "Q2",
-        "summary": "Significant portion of the health care provider market continues to be financially challenged, which in turn leads to continued growth tailwinds for our business."
-      },
-      "why": [
-        "Early in its climb — 2 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 2 周",
-        "已明显高于 30 周均线 — 可能需要回踩",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 15.0457,
-      "atr_ext": 2.235,
-      "atr_pct_price": 0.09279,
-      "sata_score": 8,
-      "sata_change_1w": 0,
-      "stage_detailed": "2D_extended_run",
-      "industry_percentile": 70.3
     },
     {
       "ticker": "QCOM",
@@ -3078,6 +3022,56 @@
       "sata_change_1w": 1,
       "stage_detailed": "2X_fallback_bullish",
       "industry_percentile": 33.3
+    },
+    {
+      "ticker": "SIBN",
+      "company": "SI-BONE Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-10-02",
+      "stage_week_end": "2026-10-02",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 6,
+      "fresh": true,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 3.434,
+      "pct_vs_ma30": 13.33,
+      "mansfield_rs": 0.82,
+      "vol_ratio": 0.92,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.325,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.7,
+        "performance": 8.0,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "margin_expansion",
+          "demand_acceleration",
+          "new_product",
+          "regulatory_headwind"
+        ],
+        "quarter": "Q2",
+        "summary": "SI-BONE reported Q2 2026 revenue of $56 million, up 15.2% globally and 14.7% in the U.S., with strong procedure volume growth and 178% improvement in adjusted EBITDA to $2.8 million. The company submitted a 510(k) for a third breakthrough device expected to launch as early as …"
+      },
+      "why": [
+        "Early in its climb — 6 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 6 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 1.4036,
+      "atr_ext": 1.515,
+      "atr_pct_price": 0.07763,
+      "sata_score": 7,
+      "sata_change_1w": -1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 62.7
     }
   ],
   "warnings_stage3": [
@@ -3094,22 +3088,10 @@
       "sga_score": 37
     },
     {
-      "ticker": "COCO",
-      "company": "The Vita Coco Company",
-      "weeks_in_stage": 3,
-      "sga_score": 29
-    },
-    {
       "ticker": "RL",
       "company": "Ralph Lauren Corporation",
       "weeks_in_stage": 5,
       "sga_score": 26
-    },
-    {
-      "ticker": "AVO",
-      "company": "Mission Produce Inc",
-      "weeks_in_stage": 6,
-      "sga_score": 25
     },
     {
       "ticker": "BELFA",
@@ -3124,6 +3106,18 @@
       "sga_score": 25
     },
     {
+      "ticker": "ESE",
+      "company": "ESCO Technologies Inc.",
+      "weeks_in_stage": 2,
+      "sga_score": 25
+    },
+    {
+      "ticker": "IMKTA",
+      "company": "Ingles Markets Inc",
+      "weeks_in_stage": 3,
+      "sga_score": 25
+    },
+    {
       "ticker": "LIN",
       "company": "Linde plc",
       "weeks_in_stage": 3,
@@ -3133,6 +3127,18 @@
       "ticker": "MGRC",
       "company": "McGrath Rentcorp",
       "weeks_in_stage": 5,
+      "sga_score": 25
+    },
+    {
+      "ticker": "NGVT",
+      "company": "Ingevity, Corp.",
+      "weeks_in_stage": 4,
+      "sga_score": 25
+    },
+    {
+      "ticker": "PLOW",
+      "company": "Douglas Dynamics Inc",
+      "weeks_in_stage": 3,
       "sga_score": 25
     },
     {
@@ -3187,18 +3193,6 @@
       "ticker": "HRI",
       "company": "Herc Holdings Inc",
       "weeks_in_stage": 11,
-      "sga_score": 15
-    },
-    {
-      "ticker": "MHK",
-      "company": "Mohawk Industries",
-      "weeks_in_stage": 3,
-      "sga_score": 15
-    },
-    {
-      "ticker": "SWX",
-      "company": "Southwest Gas Corp",
-      "weeks_in_stage": 2,
       "sga_score": 15
     }
   ],

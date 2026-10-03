@@ -2411,3 +2411,5 @@
 {"date": "2026-10-02", "ticker": "BETA", "sga_score": 46, "gate_tier": null, "weeks_in_stage": 4, "earnings_present": true, "sentiment": 0.8, "performance": 9.5, "session_source": "stage_source_asof"}
 {"date": "2026-10-02", "ticker": "CBLL", "sga_score": 46, "gate_tier": null, "weeks_in_stage": 5, "earnings_present": true, "sentiment": 0.85, "performance": 9.2, "session_source": "stage_source_asof"}
 {"date": "2026-10-02", "ticker": "IMMR", "sga_score": 46, "gate_tier": null, "weeks_in_stage": 10, "earnings_present": false, "sentiment": null, "performance": null, "session_source": "stage_source_asof"}
+{"date": "2026-10-02", "ticker": "AME", "sga_score": 65, "gate_tier": "T1", "weeks_in_stage": 1, "earnings_present": true, "sentiment": 0.9, "performance": 9.0, "session_source": "stage_source_asof"}
+{"date": "2026-10-02", "ticker": "SIBN", "sga_score": 46, "gate_tier": null, "weeks_in_stage": 6, "earnings_present": true, "sentiment": 0.7, "performance": 8.0, "session_source": "stage_source_asof"}

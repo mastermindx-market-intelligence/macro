@@ -1,7 +1,7 @@
 {
   "schema": "altdata.mastermind.v1",
   "as_of": "2026-10-03",
-  "generated_utc": "2026-10-03T09:14:30.397862+00:00",
+  "generated_utc": "2026-10-03T16:58:37.708570+00:00",
   "contract": "Actionable alt-data axis for the Mastermind bot. Each signal: signal_score 0-100 (composite of weighted convergence + brain conviction + price confirm \u2212 extension), action \u2208 {ACCUMULATE,WATCH,AVOID}, direction \u2208 {long,short,neutral}, source \u2208 {brain,deterministic}. The bot sizes through its OWN risk framework; this is an input, not an order. Brain calls are graded vs SPY (see calibration). An extended name is never ACCUMULATE. trump_linked / affiliations flag actor ties. rolling_over names (off_high\u2264\u221215% AND 20d<0 AND below 50dma) appear in broken_signals only \u2014 crowd attention, NOT entries. entry_tier (T1/T2/T3) = validated confluence buy gate signal.",
   "regime_read": "The strongest measured alignment sits in semiconductors and federal technology spending: MU and AMAT combine institutional or insider signals with patent activity, while BAH and IBM show contracting acceleration [insider_mspr] [congress_cluster] [patent_cluster] [gov_contract_accel]. Sentiment-heavy convergence deserves less weight, and PLTR is already extended; with no scored track record, overall conviction remains modest.",
   "brain_present": true,
@@ -21,7 +21,7 @@
     "note": "No theses scored yet \u2014 the track record begins once the first check-by dates pass. Keep conviction modest until it does."
   },
   "n_signals": 81,
-  "n_broken": 36,
+  "n_broken": 35,
   "signals": [
     {
       "ticker": "MU",
@@ -270,12 +270,13 @@
       "action": "WATCH",
       "direction": "long",
       "source": "brain",
-      "weighted_score": 2.05,
-      "convergence_score": 5,
+      "weighted_score": 2.6,
+      "convergence_score": 6,
       "channels": [
         "affiliation",
         "analyst_upgrade_cluster",
         "gov_contract_accel",
+        "insider_mspr",
         "retail_buzz",
         "stocktwits_bull"
       ],
@@ -317,58 +318,6 @@
           "horizon_d": 45
         }
       },
-      "clamped": null
-    },
-    {
-      "ticker": "AMZN",
-      "signal_score": 59,
-      "conviction": "high",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.6,
-      "convergence_score": 4,
-      "channels": [
-        "affiliation",
-        "hf_model_momentum",
-        "insider_mspr",
-        "special_situation"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -0.8,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": false,
-      "off_high_252": -11.4,
-      "ret_20d": -2.9,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Nancy Pelosi",
-          "rel": "HOLDS_STAKE",
-          "kind": "politician"
-        },
-        {
-          "actor": "Paul Pelosi",
-          "rel": "AFFILIATES_WITH",
-          "kind": "influencer"
-        },
-        {
-          "actor": "Dan Crenshaw",
-          "rel": "AFFILIATES_WITH",
-          "kind": "politician"
-        },
-        {
-          "actor": "Bill Ackman",
-          "rel": "AFFILIATES_WITH",
-          "kind": "fund"
-        }
-      ],
-      "n_affiliated_actors": 4,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
       "clamped": null
     },
     {
@@ -676,6 +625,57 @@
       "clamped": null
     },
     {
+      "ticker": "AMZN",
+      "signal_score": 41,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.05,
+      "convergence_score": 3,
+      "channels": [
+        "affiliation",
+        "hf_model_momentum",
+        "special_situation"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -0.8,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": -11.4,
+      "ret_20d": -2.9,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [
+        {
+          "actor": "Nancy Pelosi",
+          "rel": "HOLDS_STAKE",
+          "kind": "politician"
+        },
+        {
+          "actor": "Paul Pelosi",
+          "rel": "AFFILIATES_WITH",
+          "kind": "influencer"
+        },
+        {
+          "actor": "Dan Crenshaw",
+          "rel": "AFFILIATES_WITH",
+          "kind": "politician"
+        },
+        {
+          "actor": "Bill Ackman",
+          "rel": "AFFILIATES_WITH",
+          "kind": "fund"
+        }
+      ],
+      "n_affiliated_actors": 4,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
       "ticker": "HUBB",
       "signal_score": 37,
       "conviction": "medium",
@@ -728,35 +728,6 @@
       "ret_20d": 5.7,
       "above_50dma": true,
       "entry_tier": "T1",
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "IR",
-      "signal_score": 37,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.2,
-      "convergence_score": 2,
-      "channels": [
-        "insider_mspr",
-        "unusual_options"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -3.9,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": false,
-      "off_high_252": -22.9,
-      "ret_20d": 0.9,
-      "above_50dma": false,
-      "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
       "thesis": null,
@@ -1131,6 +1102,35 @@
       "rolling_over": false,
       "off_high_252": -0.7,
       "ret_20d": 13.7,
+      "above_50dma": true,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "URI",
+      "signal_score": 29,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.95,
+      "convergence_score": 2,
+      "channels": [
+        "13f_add",
+        "insider_mspr"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -3.2,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": -7.2,
+      "ret_20d": 8.8,
       "above_50dma": true,
       "entry_tier": null,
       "affiliations": [],
@@ -1632,6 +1632,50 @@
       "clamped": null
     },
     {
+      "ticker": "IBM",
+      "signal_score": 22,
+      "conviction": "low",
+      "action": "AVOID",
+      "direction": "short",
+      "source": "brain",
+      "weighted_score": 2.15,
+      "convergence_score": 4,
+      "channels": [
+        "github_momentum",
+        "gov_contract_accel",
+        "insider_mspr",
+        "patent_cluster"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -26.7,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -31.9,
+      "ret_20d": -5.1,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": "IBM's sharp government-contract acceleration aligns with the pack's largest patent count and measurable open-source momentum [gov_contract_accel] [patent_cluster] [github_momentum]. Its substantial 60-day underperformance means the signal is not being chased, but the extreme acceleration reading may be distorted by a very small comparison base.",
+      "second_order": [
+        "BAH \u2014 broader federal technology spending can support adjacent government-services contractors.",
+        "Enterprise AI infrastructure theme \u2014 deployment activity can benefit hybrid-cloud, consulting and systems-integration demand."
+      ],
+      "falsifier": {
+        "text": "Government-contract momentum falls back toward its prior pace and open-source activity fails to produce commercial demand.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "IBM",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 60
+        }
+      },
+      "clamped": "lean 'overweight' \u2192 'underweight' (deterministic witness); action 'ACCUMULATE' \u2192 'AVOID' (deterministic ceiling)"
+    },
+    {
       "ticker": "COF",
       "signal_score": 22,
       "conviction": "medium",
@@ -1767,35 +1811,6 @@
       "rolling_over": true,
       "off_high_252": -20.2,
       "ret_20d": -6.5,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "TXT",
-      "signal_score": 18,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 0.75,
-      "convergence_score": 2,
-      "channels": [
-        "insider_mspr",
-        "special_situation"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -17.2,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -23.3,
-      "ret_20d": -2.6,
       "above_50dma": false,
       "entry_tier": null,
       "affiliations": [],
@@ -1957,49 +1972,6 @@
       "clamped": null
     },
     {
-      "ticker": "IBM",
-      "signal_score": 13,
-      "conviction": "low",
-      "action": "AVOID",
-      "direction": "short",
-      "source": "brain",
-      "weighted_score": 1.6,
-      "convergence_score": 3,
-      "channels": [
-        "github_momentum",
-        "gov_contract_accel",
-        "patent_cluster"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -26.7,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -31.9,
-      "ret_20d": -5.1,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": "IBM's sharp government-contract acceleration aligns with the pack's largest patent count and measurable open-source momentum [gov_contract_accel] [patent_cluster] [github_momentum]. Its substantial 60-day underperformance means the signal is not being chased, but the extreme acceleration reading may be distorted by a very small comparison base.",
-      "second_order": [
-        "BAH \u2014 broader federal technology spending can support adjacent government-services contractors.",
-        "Enterprise AI infrastructure theme \u2014 deployment activity can benefit hybrid-cloud, consulting and systems-integration demand."
-      ],
-      "falsifier": {
-        "text": "Government-contract momentum falls back toward its prior pace and open-source activity fails to produce commercial demand.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "IBM",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 60
-        }
-      },
-      "clamped": "lean 'overweight' \u2192 'underweight' (deterministic witness); action 'ACCUMULATE' \u2192 'AVOID' (deterministic ceiling)"
-    },
-    {
       "ticker": "NFLX",
       "signal_score": 13,
       "conviction": "medium",
@@ -2086,6 +2058,35 @@
         }
       ],
       "n_affiliated_actors": 1,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "MMC",
+      "signal_score": 11,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.4,
+      "convergence_score": 2,
+      "channels": [
+        "news_sentiment",
+        "special_situation"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -6.5,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -16.1,
+      "ret_20d": -9.2,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
