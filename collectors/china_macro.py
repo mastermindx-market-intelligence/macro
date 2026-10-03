@@ -179,6 +179,9 @@ class ChinaMacroAdapter(Adapter):
         if self._economy_batch is not None and self._economy_batch.status == "blocked":
             log.warning("china_macro economy evidence held: %d source failures, %d value conflicts",
                         len(self._economy_batch.failures), len(self._economy_batch.conflicts))
+        if self._economy_batch is not None and self._economy_batch.pending:
+            log.info("china_macro economy releases pending publication: %s",
+                     sorted(self._economy_batch.pending))
         return frames
 
     def fetch_result_status(self, frames):

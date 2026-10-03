@@ -1,4 +1,4 @@
-/* Presentation only. No fetching, signal calculation, persistence or trading effects. */
+/* Presentation and same-origin protected-detail reads only; no auth authority, signal calculation, persistence or trading effects. */
 (function () {
   'use strict';
   function csvCell(value) {
@@ -23,14 +23,21 @@
   if (!root || !tag) return;
   var initialPublication;
   try { initialPublication = JSON.parse(tag.textContent); } catch (error) { return; }
+  var disposeDetail = null;
   function activate(publication) {
   var data = publication.economy;
   if (!data || data.schema !== 'mastermind.china_economy_lens.v1' || !data.metrics || !Array.isArray(data.groups)) return false;
+  if (disposeDetail) disposeDetail();
+  var cleanup = [], observer = null;
+  function listen(node, event, handler) {
+    node.addEventListener(event, handler);
+    cleanup.push(function(){node.removeEventListener(event, handler);});
+  }
   var selected = 'industrial_sa';
   var select = document.getElementById('eco-metric-select');
   if (!select || !document.getElementById('eco-export')) return;
   function selectMetric(id, scroll) {
-    if (!Object.prototype.hasOwnProperty.call(data.metrics, id)) return;
+    if (!data || !Object.prototype.hasOwnProperty.call(data.metrics, id)) return;
     var template = document.getElementById('eco-template-' + id);
     var target = document.getElementById('eco-selected-metric');
     if (!template || !target) return;
@@ -43,28 +50,30 @@
     }
   }
   function selectGroup(id, scroll) {
-    if (!data.groups.some(function(g){return g.id===id;})) return;
+    if (!data || !data.groups.some(function(g){return g.id===id;})) return;
     root.querySelectorAll('[data-eco-group-panel]').forEach(function(p){p.hidden=p.dataset.ecoGroupPanel!==id;});
     root.querySelectorAll('.eco-group-tabs [data-eco-group]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.ecoGroup===id));});
     if (scroll) document.getElementById('eco-library').scrollIntoView({block:'start',behavior:'auto'});
   }
-  root.addEventListener('click',function(event){
+  listen(root,'click',function(event){
     var pick=event.target.closest('[data-eco-select]');
     if (pick && root.contains(pick)) {selectMetric(pick.dataset.ecoSelect,true);return;}
     var group=event.target.closest('[data-eco-group]');
     if (group && root.contains(group)) selectGroup(group.dataset.ecoGroup,!group.closest('.eco-group-tabs'));
   });
-  select.addEventListener('change',function(){selectMetric(select.value,false);});
+  listen(select,'change',function(){selectMetric(select.value,false);});
   function save(contents,type,filename){
     var url=URL.createObjectURL(new Blob([contents],{type:type}));
     var a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
     setTimeout(function(){URL.revokeObjectURL(url);},2000);
   }
-  document.getElementById('eco-export').addEventListener('click',function(){
+  listen(document.getElementById('eco-export'),'click',function(){
+    if (!data) return;
     save(seriesCsv(data.metrics[selected], data.input_class),'text/csv;charset=utf-8','china-economy-'+selected+'-'+data.reference_period+'.csv');
   });
   var jsonButton=document.getElementById('eco-export-json');
-  if (jsonButton) jsonButton.addEventListener('click',function(){
+  if (jsonButton) listen(jsonButton,'click',function(){
+    if (!publication || !data) return;
     // Production downloads the complete canonical contract, not the smaller
     // interaction projection. The offline review still exports its full input.
     if (publication.download_href === 'china_macro_evidence.json') {
@@ -84,10 +93,17 @@
   // Follow the existing site-wide language control; do not create a second
   // saved language preference or navigation owner.
   if (typeof MutationObserver!=='undefined') {
-    new MutationObserver(function(){translateControls(document.documentElement.dataset.lang);})
-      .observe(document.documentElement,{attributes:true,attributeFilter:['data-lang']});
+    observer = new MutationObserver(function(){translateControls(document.documentElement.dataset.lang);});
+    observer.observe(document.documentElement,{attributes:true,attributeFilter:['data-lang']});
   }
-  window.EconomyLens={setLanguage:language,selectMetric:selectMetric,selectGroup:selectGroup};
+  var api={setLanguage:language,selectMetric:selectMetric,selectGroup:selectGroup};
+  window.EconomyLens=api;
+  disposeDetail=function(){
+    cleanup.forEach(function(remove){remove();});
+    if(observer) observer.disconnect();
+    if(window.EconomyLens===api) delete window.EconomyLens;
+    data=null; publication=null; disposeDetail=null;
+  };
   language(document.documentElement.dataset.lang || 'en');
   root.dataset.ecoDetailReady='true';
   return true;
@@ -96,52 +112,119 @@
   if (activate(initialPublication)) return;
   var detailHref=initialPublication.detail_href;
   if (detailHref !== 'china_economy_detail.json') return;
+  var slot=document.getElementById('eco-detail-slot');
+  if (!slot) return;
+  var gateHTML=slot.innerHTML;
+  var userId=null, generation=0, inspection=0, attempted=false, activeRequest=null;
 
-  root.addEventListener('click',function(event){
-    if (root.dataset.ecoDetailReady==='true') return;
-    var target=event.target.closest && event.target.closest('[data-eco-select],[data-eco-group]');
-    if (!target || !root.contains(target)) return;
-    event.preventDefault();
+  function setStatus(state){
+    root.dataset.ecoDetailState=state;
     var lock=document.getElementById('eco-detail-lock');
-    if (lock) lock.scrollIntoView({block:'center',behavior:'auto'});
-  });
-
+    if(!lock) return;
+    var words={
+      loading:['Loading the economic evidence…','正在加载经济证据…'],
+      forbidden:['Your account does not currently have access to the full evidence library.','当前账户暂无完整证据库的访问权限。'],
+      unauthenticated:['Your session has expired. Sign in again to check access.','登录状态已过期，请重新登录以查看访问权限。'],
+      unavailable:['Economic evidence is temporarily unavailable. The overview is still available.','经济证据暂不可用，您仍可查看上方总览。']
+    };
+    var message=lock.querySelector('p');
+    if(message && words[state]) message.innerHTML='<span class="lang-en">'+words[state][0]+'</span><span class="lang-zh">'+words[state][1]+'</span>';
+    var actions=lock.querySelector('.eco-deep-lock-actions');
+    if(actions){
+      var signIn=actions.querySelector('a:first-child');
+      if(signIn) signIn.hidden=state==='forbidden' || state==='loading';
+      var retry=actions.querySelector('[data-eco-retry]');
+      if(retry) retry.remove();
+      if(state==='unavailable'){
+        retry=document.createElement('button'); retry.type='button';
+        retry.className='eco-export'; retry.setAttribute('data-eco-retry','');
+        retry.innerHTML='<span class="lang-en">Retry</span><span class="lang-zh">重试</span>';
+        actions.appendChild(retry);
+      }
+    }
+  }
+  function clearDetail(){
+    generation++;
+    if(activeRequest) activeRequest.abort();
+    activeRequest=null; attempted=false;
+    if(disposeDetail) disposeDetail();
+    delete root.dataset.ecoDetailReady;
+    slot.innerHTML=gateHTML; slot.classList.add('eco-deep-lock');
+    root.dataset.ecoDetailState='signed_out';
+  }
   function installDetail(payload){
     if (!payload || payload.schema!=='mastermind.china_economy_detail_payload.v1' ||
         payload.status!=='ok' || typeof payload.html!=='string' || !payload.client ||
-        !payload.client.economy || payload.client.economy.schema!=='mastermind.china_economy_lens.v1') return;
-    var slot=document.getElementById('eco-detail-slot');
-    if (!slot) return;
+        !payload.client.economy || payload.client.economy.schema!=='mastermind.china_economy_lens.v1' ||
+        payload.reference_period!==payload.client.economy.reference_period) return false;
     slot.innerHTML=payload.html;
-    if (activate(payload.client)) slot.classList.remove('eco-deep-lock');
+    if(activate(payload.client)){
+      slot.classList.remove('eco-deep-lock'); setStatus('ready'); return true;
+    }
+    slot.innerHTML=gateHTML; return false;
   }
   function loadDetail(){
-    return fetch(detailHref,{credentials:'same-origin',cache:'no-store',headers:{'Accept':'application/json'}})
-      .then(function(response){return response.ok ? response.json() : null;})
-      .then(installDetail)
-      .catch(function(){return null;});
+    if(!userId || attempted) return;
+    attempted=true;
+    var epoch=generation, owner=userId, acceptedResponse=false;
+    var controller=new AbortController(); activeRequest=controller;
+    function current(){return epoch===generation && owner===userId;}
+    setStatus('loading');
+    return fetch(detailHref,{credentials:'same-origin',cache:'no-store',signal:controller.signal,headers:{'Accept':'application/json'}})
+      .then(function(response){
+        if(!current()) return null;
+        if(!response.ok){
+          setStatus(response.status===401?'unauthenticated':response.status===403?'forbidden':'unavailable');
+          return null;
+        }
+        acceptedResponse=true;
+        return response.json();
+      })
+      .then(function(payload){
+        if(current() && acceptedResponse && !installDetail(payload)) setStatus('unavailable');
+      })
+      .catch(function(error){if(current() && error.name!=='AbortError') setStatus('unavailable');})
+      .then(function(){if(current()) activeRequest=null;});
   }
-  function beginDetailLoad(){
-    var started=false;
-    function inspectSession(){
-      if(started || !window.MDXAuth || typeof window.MDXAuth.client!=='function') return;
-      Promise.resolve(window.MDXAuth.client())
-        .then(function(sb){
-          return sb && sb.auth && typeof sb.auth.getSession==='function' ? sb.auth.getSession() : null;
-        })
-        .then(function(result){
-          var session=result && result.data && result.data.session;
-          if(!session || started) return;
-          started=true;
-          return loadDetail();
-        })
-        .catch(function(){return null;});
+  function inspectSession(forceRetry){
+    if(!window.MDXAuth || typeof window.MDXAuth.client!=='function') return;
+    var ticket=++inspection;
+    Promise.resolve(window.MDXAuth.client())
+      .then(function(sb){return sb && sb.auth && typeof sb.auth.getSession==='function' ? sb.auth.getSession() : null;})
+      .then(function(result){
+        if(ticket!==inspection) return;
+        var session=result && result.data && result.data.session;
+        var nextId=session && session.user && session.user.id;
+        if(typeof nextId!=='string' || !nextId){userId=null;clearDetail();return;}
+        if(nextId!==userId){clearDetail();userId=nextId;}
+        if(forceRetry && !activeRequest) attempted=false;
+        return loadDetail();
+      })
+      .catch(function(){if(ticket===inspection){userId=null;clearDetail();setStatus('unavailable');}});
+  }
+  function authChanged(event){
+    var detail=event && event.detail;
+    // Clear immediately; a late old-account HTTP response must not restore it.
+    if(detail && (detail.event==='SIGNED_OUT' || (detail.event==='INITIAL_SESSION' && !detail.user))){
+      inspection++;userId=null;clearDetail();return;
     }
-    if (window.MDXAuth) inspectSession();
-    // Keep listening after an anonymous INITIAL_SESSION: sign-in can complete
-    // in-place and emit a later SIGNED_IN event. `started` still prevents a
-    // duplicate protected fetch once one authenticated load begins.
-    window.addEventListener('mdx-auth',inspectSession);
+    if(detail && detail.user && userId && detail.user.id!==userId){
+      inspection++;userId=null;clearDetail();
+    }
+    inspectSession(false);
   }
-  beginDetailLoad();
+  root.addEventListener('click',function(event){
+    var target=event.target.closest && event.target.closest('[data-eco-retry]');
+    if(target && root.contains(target)){event.preventDefault();inspectSession(true);return;}
+    if(root.dataset.ecoDetailReady==='true') return;
+    target=event.target.closest && event.target.closest('[data-eco-select],[data-eco-group]');
+    if(!target || !root.contains(target)) return;
+    event.preventDefault();
+    var lock=document.getElementById('eco-detail-lock');
+    if(lock) lock.scrollIntoView({block:'center',behavior:'auto'});
+  });
+  // Subscribe to the existing auth owner, not a second saved session or tier model.
+  window.addEventListener('mdx-auth',authChanged);
+  window.addEventListener('pageshow',function(event){if(event.persisted) inspectSession(false);});
+  if(window.MDXAuth && (!window.MDXAuth.hasSession || window.MDXAuth.hasSession())) inspectSession(false);
 })();

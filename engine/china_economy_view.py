@@ -1,6 +1,7 @@
 """Presentation for the additive economy lens. Reuses the existing SVG adapter."""
 from copy import deepcopy
 import calendar
+from urllib.parse import urlparse
 from engine.china_economy import month_index,month_from_index
 from engine.china_macro_evidence_view import chart_svg
 
@@ -17,6 +18,10 @@ UNIT_WORDS={
  '% YoY CNY':('vs last year · CNY','人民币同比'),'% MoM SA':('monthly · seasonally adjusted','季调环比'),
  'index':('survey · 50 = no change','调查 · 50为无变化'),'% YTD YoY real':('year-to-date real growth','年内累计实际增速'),
 }
+PUBLIC_SOURCE_LABELS={
+ 'www.stats.gov.cn':('National Bureau of Statistics of China · stats.gov.cn','国家统计局 · stats.gov.cn','https://www.stats.gov.cn/'),
+}
+
 UNIT_WORDS.update({
  '%':('%','%'),'% YoY stock':('stock · vs last year','存量同比'),
  'CNY bn / month':('CNY bn / month','十亿元人民币／月'),
@@ -45,6 +50,12 @@ def comparison_periods(period):
  return a[0]+' versus '+b[0],a[1]+'对比'+b[1]
 
 
+def period_label(period):
+ if not period:return '—','—'
+ month_index(period);year,month=period.split('-');m=int(month)
+ return f'{calendar.month_abbr[m]} {year}',f'{year}年{m}月'
+
+
 def prepare_economy_view(economy):
  v=deepcopy(economy)
  v['snapshot_date']=v['as_of'][:10]
@@ -63,12 +74,42 @@ def prepare_economy_view(economy):
   if w:
    for key in ['current_2m','previous_2m','change_in_pace_2m']:w[key+'_display']=f'{w[key]:+,.2f}' if w[key] is not None else '—'
   m['tail_rows']=[{'date':d[:7],'value':'—' if n is None else f'{n:,.2f}'} for d,n in zip(m['chart']['dates'],m['chart']['vals'])]
+ public_ids={'industrial_sa','retail_sa','investment_sa'}
  for d in v['domains']:
   words=STATE_WORDS[d['id']].get(d['state'],(d['state_en'],d['state_zh']))
   d['plain_state_en'],d['plain_state_zh']=words
   d['metric']=v['metrics'][d['headline_metric']]
   d['symbol']={'improving':'↗','fading':'↘','steady':'→','mixed':'↔','unknown':'—'}[d['momentum']]
+  public_ids.add(d['headline_metric'])
+  public_ids.update(x['metric_id'] for x in d.get('drivers',[]))
+ sources={}
+ for ident in sorted(public_ids):
+  source=(v['metrics'].get(ident) or {}).get('source')
+  if not source or not source.get('url'):
+   continue
+  host=urlparse(source['url']).hostname
+  if not host:
+   continue
+  label=PUBLIC_SOURCE_LABELS.get(host,(host,host,'https://'+host+'/'))
+  sources[host]={'host':host,'label_en':label[0],'label_zh':label[1],'url':label[2]}
+ v['public_sources']=[sources[k] for k in sorted(sources)]
  v['pace_cards']=[v['metrics'][k] for k in ['industrial_sa','retail_sa','investment_sa']]
+ pace_periods=sorted({m.get('pace_reference_period') for m in v['pace_cards']
+                      if m.get('pace_reference_period') and m['pace'].get('current_3m') is not None},
+                     key=month_index)
+ v['pace_reference_periods']=pace_periods
+ v['pace_all_current']=all(m.get('status')=='current' for m in v['pace_cards'])
+ v['pace_latest_period']=pace_periods[-1] if pace_periods else None
+ v['pace_latest_en'],v['pace_latest_zh']=period_label(v['pace_latest_period'])
+ v['pace_mixed_periods']=len(pace_periods)>1
+ if len(pace_periods)==1:
+  v['comparison_en'],v['comparison_zh']=comparison_periods(pace_periods[0])
+ elif len(pace_periods)>1:
+  v['comparison_en'],v['comparison_zh']=('Latest available window for each series',
+                                         '各序列采用各自最新可用窗口')
+ else:
+  v['comparison_en'],v['comparison_zh']=('Complete pace history not yet available',
+                                         '完整速度历史尚不可用')
  windows=[m['pace'].get('window_sensitivity') for m in v['pace_cards']]
  v['all_three_shorter_windows_weaker']=(all(w and w.get('direction_2m')=='fading' for w in windows)
     and all(m['pace']['direction']=='improving' for m in v['pace_cards']))

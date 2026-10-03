@@ -419,10 +419,26 @@ def parse_activity_detail(html: str, family: str, expected_period: str) -> tuple
     for node in prose.find_all(['table', 'script', 'style', 'noscript']):
         node.decompose()
     text = compact(prose.get_text(' ', strip=True))
+    paired = []
+    if family == 'pmi':
+        # Exact ordered current-level clause; never use the following monthly
+        # deltas. Conflicting paired and standalone formulations are withheld.
+        paired = re.findall(
+            r'中、小型企业PMI分别为(\d+(?:\.\d+)?)%和(\d+(?:\.\d+)?)%', text)
     for label, ident in _DETAIL_RATE_LABELS.get(family, {}).items():
         if family == 'pmi':
             matches = re.findall(re.escape(label) + r'(\d+(?:\.\d+)?)%', text)
-            value = number(matches[0]) if len(matches) == 1 else None
+            if ident in {'pmi_medium', 'pmi_small'} and paired:
+                position = 0 if ident == 'pmi_medium' else 1
+                # The pair must be unique and both members must be plausible.
+                valid_pair = (len(paired) == 1 and all(
+                    number(raw) is not None and 0 <= number(raw) <= 100
+                    for raw in paired[0]))
+                candidate = number(paired[0][position]) if valid_pair else None
+                value = candidate if (candidate is not None and len(matches) <= 1
+                    and (not matches or number(matches[0]) == candidate)) else None
+            else:
+                value = number(matches[0]) if len(matches) == 1 else None
             if value is not None and not 0 <= value <= 100:
                 value = None
         else:

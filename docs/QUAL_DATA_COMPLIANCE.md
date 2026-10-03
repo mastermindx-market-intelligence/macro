@@ -36,6 +36,7 @@ All qualitative-intelligence data entering the Mastermind Dashboard qualitative 
 | Source | Access | Legal character |
 |---|---|---|
 | gov.cn (State Council readouts) | Public HTML; browser UA required per VPS collector | **Official government publication.** Verbatim policy language, publicly issued. Impersonal aggregate — no personal data. |
+| National Bureau of Statistics of China (NBS) — industrial output, retail, fixed-asset investment, PMI, industrial profits and property activity | Public HTML / official statistical releases | **Official aggregate statistics.** NBS service terms permit downloading and using statistical data lawfully and accurately. Reproduction/citation carries conspicuous NBS/website attribution requirements, copyright exclusions and purpose restrictions; this is not a blanket commercial article-republication license. This candidate extracts numeric observations with definitions/source receipts, not article bodies, source layout or branded graphics. |
 | PBOC (archive ~6,089 records) | Public HTML | Same. |
 | NDRC, CSRC, Politburo readouts | Public HTML | Same. |
 | People's Daily front-page layout | Public HTML; prominence ordering only (no paywall) | Same. |
@@ -141,6 +142,7 @@ This standing rule applies to any new expert-network product, private-data partn
 | Date | Entry | Author |
 |---|---|---|
 | 2026-07-02 | Initial document created per D10 (`research/QUALITATIVE_INTELLIGENCE_UPGRADE_BY_FABLE.md`) and `research/QUALITATIVE_INTELLIGENCE_MASTERPLAN.md` §8. Inventories §1–§4 established. Expert-network exclusions codified (US MNPI; China hard legal line). Mosaic standing rule established. | dashboard-bot / Claude Opus 4.8 |
+| 2026-10-01 | China economy evidence enrollment review: admitted NBS official aggregate statistical releases for bounded numeric extraction with source attribution, robots enforcement and no article-body republication. NBS service terms reviewed at `https://www.stats.gov.cn/wzgl/202302/t20230217_1912857.html`. SAFE automatic/publication enrollment explicitly held because its current legal notice prohibits commercial republication without permission (`https://www.safe.gov.cn/safe/flsm/index.html`). NEA/MOF remain unenrolled pending their separate index/robots/source-admission work. | Sol |
 
 ---
 

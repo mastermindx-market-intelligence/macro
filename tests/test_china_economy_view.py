@@ -111,6 +111,26 @@ def test_comparison_labels_follow_reference_not_demo_date(period,words):
  from engine.china_economy_view import comparison_periods
  assert comparison_periods(period)[0]==words
 
+
+def test_rollover_uses_latest_published_pace_period_and_labels_assessment_month(doc):
+ from jinja2 import Environment,FileSystemLoader,StrictUndefined
+ economy=build_economy(doc,as_of='2026-10-02T10:00:00+08:00',reference_period='2026-09')
+ view=prepare_economy_view(economy)
+ assert view['pace_reference_periods']==['2026-08']
+ assert view['pace_latest_period']=='2026-08'
+ assert view['pace_all_current'] is False
+ assert view['comparison_en']=='Jun–Aug 2026 versus Mar–May 2026'
+ e=Environment(loader=FileSystemLoader(ROOT/'templates'),undefined=StrictUndefined)
+ tpl=e.from_string('{% macro t(a,b) %}{{ a }}{% endmacro %}{% import "_china_economy_lens.html.j2" as eco with context %}{{ eco.lens(E,shell="public") }}')
+ text=tpl.render(E=view)
+ soup=BeautifulSoup(text,'html.parser')
+ top=soup.select_one('.eco-topline').get_text(' ',strip=True)
+ assert 'Assessment month 2026-09' in top
+ assert 'through Aug 2026' in soup.select_one('.eco-key').get_text(' ',strip=True)
+ production=soup.select_one('#eco-domain-production .eco-domain-reading small').get_text(' ',strip=True)
+ assert 'ref 2026-08' in production
+
+
 def test_missing_activity_never_claims_zero_improvement_or_window_sensitivity(doc,tmp_path):
  from engine.china_macro_evidence import build_snapshot
  from datetime import date
@@ -153,6 +173,8 @@ def test_public_shell_contains_state_but_not_deep_metric_library(doc):
  assert soup.select_one('#eco-detail-lock') is not None
  assert soup.select_one('#eco-explorer') is None and soup.select_one('#eco-library') is None
  assert not soup.select('[id^="eco-template-"]')
+ source_link=soup.select_one('.eco-topline a[href="https://www.stats.gov.cn/"]')
+ assert source_link is not None and 'National Bureau of Statistics of China' in source_link.get_text()
 
 def test_protected_deep_fragment_has_library_without_duplicate_outer_shell(doc):
  from jinja2 import Environment,FileSystemLoader,StrictUndefined

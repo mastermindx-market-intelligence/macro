@@ -71,8 +71,8 @@ def _detail_table(rows, family='retail', reverse_periods=False):
     return '<table>'+header+''.join('<tr>'+''.join(f'<td>{c}</td>' for c in row)+'</tr>' for row in rows)+'</table>'
 
 
-def _detail_map(html, family='retail'):
-    points, receipt = parse_activity_detail(html, family, '2026-08')
+def _detail_map(html, family='retail', period='2026-08'):
+    points, receipt = parse_activity_detail(html, family, period)
     return {p['metric_id']: p['value'] for p in points}, receipt
 
 
@@ -143,6 +143,18 @@ def test_detail_pmi_reads_levels_not_previous_month_changes():
     assert receipt['status'] == 'complete' and receipt['history_inferred'] is False
 
 
+def test_detail_pmi_reads_ordered_medium_small_pair_from_current_nbs_wording():
+    text = '<p>大型企业PMI为50.6%，与上月持平；中、小型企业PMI分别为49.7%和48.9%，比上月上升0.3个和1.0个百分点。</p>'
+    points, receipt = parse_activity_detail(
+        _detail_release('pmi', prose=text, period='2026-09'), 'pmi', '2026-09')
+    values = {p['metric_id']: p['value'] for p in points}
+    assert values['pmi_large'] == 50.6
+    assert values['pmi_medium'] == 49.7
+    assert values['pmi_small'] == 48.9
+    assert 'pmi_medium' not in receipt['null_reasons']
+    assert 'pmi_small' not in receipt['null_reasons']
+
+
 @pytest.mark.parametrize('text', ['大型企业PMI为101%。', '大型企业PMI为50.6%。大型企业PMI为50.7%。', '大型企业PMI比上月上升1.1个百分点。'])
 def test_detail_pmi_invalid_or_ambiguous_is_missing(text):
     values, receipt = _detail_map(_detail_release('pmi', prose='<p>'+text+'</p>'), 'pmi')
@@ -174,3 +186,32 @@ def test_detail_investment_requires_a_cumulative_reference_not_monthly_only():
     html = _detail_release('investment', table).replace('2026年1—8月份', '2026年8月份')
     with pytest.raises(ValueError, match='reference'):
         _detail_map(html, 'investment')
+
+
+@pytest.mark.parametrize('extra', [
+    '中型企业PMI为52.0%。',
+    '中、小型企业PMI分别为52.0%和48.9%。',
+    '中、小型企业PMI分别为49.7%和48.9%。',
+])
+def test_ordered_pmi_pair_conflicts_fail_closed(extra):
+    text = '<p>中、小型企业PMI分别为49.7%和48.9%。' + extra + '</p>'
+    values, receipt = _detail_map(
+        _detail_release('pmi', prose=text, period='2026-09'), 'pmi', '2026-09')
+    assert 'pmi_medium' not in values
+    assert 'pmi_medium' in receipt['null_reasons']
+
+
+@pytest.mark.parametrize('pair', ['101%和48.9%', '49.7%和101%'])
+def test_ordered_pmi_pair_out_of_range_withholds_both(pair):
+    values, receipt = _detail_map(_detail_release(
+        'pmi', prose='<p>中、小型企业PMI分别为'+pair+'。</p>',
+        period='2026-09'), 'pmi', '2026-09')
+    assert 'pmi_medium' not in values and 'pmi_small' not in values
+
+
+def test_ordered_pmi_pair_zero_is_not_missing():
+    values, _ = _detail_map(_detail_release(
+        'pmi', prose='<p>中、小型企业PMI分别为0%和48.9%。</p>',
+        period='2026-09'), 'pmi', '2026-09')
+    assert values['pmi_medium'] == 0
+    assert values['pmi_small'] == 48.9

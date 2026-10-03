@@ -221,6 +221,22 @@ def test_shorter_windows_expose_fragile_pace(doc):
   w=s['metrics'][key]['pace']['window_sensitivity']
   assert w['agrees_with_3m'] is False and w['direction_2m']=='fading'
 
+
+def test_latest_published_pace_survives_month_rollover_without_becoming_current_vote(doc):
+ s=build_economy(doc,as_of='2026-10-02T10:00:00+08:00',reference_period='2026-09')
+ industrial=s['metrics']['industrial_sa']
+ assert industrial['status']=='older_period'
+ assert industrial['reference_period']=='2026-08'
+ assert industrial['requested_period']=='2026-09'
+ assert industrial['pace_reference_period']=='2026-08'
+ assert industrial['pace']['current_3m']==pytest.approx(1.415539,abs=1e-6)
+ assert industrial['pace']['direction']=='improving'
+ production=next(d for d in s['domains'] if d['id']=='production')
+ assert production['momentum']=='unknown'
+ assert s['activity_pulse']['covered_3m']==3
+ assert s['breadth']['covered'] < s['breadth']['minimum_coverage']
+
+
 def test_source_urls_are_admitted_not_arbitrary(doc):
  doc['sources']['pmi_aug']['url']='javascript:alert(1)'
  assert build_economy(doc)['metrics']['pmi_mfg']['status']=='quality_hold'
@@ -254,3 +270,14 @@ def test_external_money_kept_separate_from_trade_growth(doc):
  assert d['external_payment_balance']['value']==pytest.approx(423.2)
  assert s['breadth']['covered']==5
  assert s['metrics']['external_receipts']['pace']['direction']=='unknown'
+
+
+
+def test_rollover_machine_pulse_exposes_its_dated_basis(doc):
+    result=build_economy(doc,as_of='2026-10-02T10:00:00+08:00',reference_period='2026-09')
+    pulse=result['activity_pulse']
+    assert pulse['assessment_period']=='2026-09'
+    assert pulse['coverage_basis']=='latest_available_per_series_not_current_month_votes'
+    assert not pulse['all_current_for_assessment']
+    assert set(pulse['reference_periods'].values())=={'2026-08'}
+    assert result['breadth']['covered']==0

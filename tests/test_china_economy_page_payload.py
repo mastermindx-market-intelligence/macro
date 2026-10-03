@@ -1,6 +1,8 @@
 """Production must not inline the entire canonical publication twice."""
 from copy import deepcopy
 import json
+import shutil
+import subprocess
 from pathlib import Path
 from engine.china_economy_view import client_publication
 
@@ -51,7 +53,19 @@ def test_page_uses_projection_and_json_button_uses_exact_canonical_relative_url(
 def test_auth_listener_survives_anonymous_initial_session_for_later_sign_in():
     root=Path(__file__).resolve().parents[1]
     js=(root/'templates/china-economy.js').read_text()
-    assert "window.addEventListener('mdx-auth',inspectSession);" in js
+    assert "window.addEventListener('mdx-auth',authChanged);" in js
     assert "window.addEventListener('mdx-auth',inspectSession,{once:true});" not in js
-    assert "if(started || !window.MDXAuth" in js
-    assert "started=true;" in js
+    assert "generation" in js and "controller.signal" in js
+    assert (root/'site/china-economy.js').read_text()==js
+
+
+def test_real_client_auth_lifecycle_without_credentials_or_network():
+    root=Path(__file__).resolve().parents[1]
+    node=shutil.which('node')
+    assert node, 'Node is required for the China client behavior regression'
+    result=subprocess.run(
+        [node,str(root/'tests/china_economy_auth_harness.cjs'),
+         str(root/'templates/china-economy.js')],
+        cwd=root,text=True,capture_output=True,timeout=20,check=False)
+    assert result.returncode==0,result.stdout+result.stderr
+    assert 'PASS: anonymous, later sign-in' in result.stdout

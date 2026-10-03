@@ -1256,8 +1256,19 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
-      # China builder imports added by the receipt-bound overview.
+      # China builder + acquisition closure for the receipt-bound overview.
+      # Keep this exact rather than widening to collectors/** or templates/**:
+      # an edit to any one of these can change the China economy suites below.
       - "config/china_economy_catalog.json"
+      - "tests/china_economy_auth_harness.cjs"
+      - "templates/china-economy.js"
+      - "site/china-economy.js"
+      - "collectors/china_economy_acquisition.py"
+      - "collectors/china_economy_adapter.py"
+      - "collectors/china_economy_release_parser.py"
+      - "collectors/china_macro.py"
+      - "collectors/china_property.py"
+      - "collectors/china_property_activity.py"
       - "engine/china_connect_leaderboard.py"
       - "engine/china_economy.py"
       - "engine/china_economy_store.py"

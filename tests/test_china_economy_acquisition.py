@@ -6,11 +6,14 @@ import hashlib, json
 import pandas as pd
 import pytest
 import requests
+import yaml
 from collectors.china_economy_acquisition import (
     article_identity, parse_acquisition, checked_url, check_robots, collect_releases, discover_release,
-    CollectionBatch, qualify_against_owner, MAX_BYTES,
+    indexed_releases, CollectionBatch, qualify_against_owner, MAX_BYTES, VERSION,
 )
-from collectors.china_economy_adapter import enrich_existing_frames, configured_targets
+from collectors.china_economy_adapter import (
+    enrich_existing_frames, configured_targets, planned_targets, _next_reported_period,
+)
 from engine.china_economy_store import frames_from_receipt, document_from_store, build_from_store
 
 CAT=json.loads((Path(__file__).parents[1]/'config/china_economy_catalog.json').read_text())['metrics']
@@ -35,7 +38,8 @@ def robots(body='User-agent: *\nAllow: /\n',status=200,url='https://www.stats.go
     return response(body,status,url,'text/plain')
 
 def rec(observed=NOW,sha='a'*64,url=URL):
-    return {'url':url,'published_at':'2026-09-15T10:00:00+08:00','observed_at':observed,'response_sha256':sha}
+    return {'url':url,'published_at':'2026-09-15T10:00:00+08:00','observed_at':observed,
+            'response_sha256':sha,'parser_version':VERSION}
 
 def point(value,metric='industrial_sa',period='2026-08'):
     return {'metric_id':metric,'period':period,'value':value}
@@ -234,10 +238,96 @@ def test_same_value_can_be_enriched_without_changing_it():
     b=CollectionBatch(frames=incoming);out=qualify_against_owner(b,{table:old},lambda g,t:None,CAT)
     assert b.status=='ok' and build({'china_macro/'+table:out[table]})['metrics']['industrial_sa']['value']==.54
 
+
+def test_structural_wide_frame_nan_is_no_claim_not_a_null_revision():
+    old=frames_from_receipt(
+        [point(50.6,'pmi_large','2026-08')],
+        rec(observed='2026-09-30T00:49:54+00:00',
+            url='https://www.stats.gov.cn/sj/zxfb/202608/t20260831_1965154.html'),
+        CAT)['china_macro/pmi_detail']
+    new_receipt=rec(
+        observed='2026-10-01T05:49:27+00:00',
+        url='https://www.stats.gov.cn/sj/zxfb/202609/t20260930_1965449.html')
+    new_receipt['published_at']='2026-09-30T09:30:00+08:00'
+    incoming=frames_from_receipt([
+        point(51.0,'pmi_large','2026-09'),
+        point(48.4,'pmi_jobs','2026-09'),
+    ],new_receipt,CAT)['china_macro/pmi_detail']
+    # Wide-frame alignment creates an August structural NaN for pmi_large only
+    # after combining with another metric/history. Reproduce that exact shape.
+    incoming.loc[pd.Timestamp('2026-08-01'),'pmi_jobs']=48.7
+    b=CollectionBatch(frames={'china_macro/pmi_detail':incoming})
+    out=qualify_against_owner(
+        b,{},lambda g,t:old if (g,t)==('china_macro','pmi_detail') else None,CAT)
+    assert b.status=='ok' and not b.conflicts
+    assert out['pmi_detail'].loc[pd.Timestamp('2026-09-01'),'pmi_large']==51.0
+
 def test_valid_same_source_newer_revision_is_admitted():
     old=wide(.54,rec('2026-09-28T12:00:00+08:00'));new=wide(.55,rec(sha='b'*64));key=next(iter(old));table=key.split('/')[1]
     b=CollectionBatch(frames=new);out=qualify_against_owner(b,{},lambda g,t:old.get(g+'/'+t),CAT)
     assert b.status=='ok' and out[table]['indpro_mom'].iloc[0]==.55
+
+
+def test_later_official_nbs_sa_release_may_revise_prior_vintage_across_url():
+    old_receipt=rec(
+        '2026-08-18T08:00:00+08:00',sha='1'*64,
+        url='https://www.stats.gov.cn/zwfwck/sjfb/202608/t20260817_1965052.html')
+    old_receipt['published_at']='2026-08-17T15:00:00+08:00'
+    new_receipt=rec(
+        '2026-09-16T08:00:00+08:00',sha='2'*64,
+        url='https://www.stats.gov.cn/sj/zxfb/202609/t20260915_1965311.html')
+    new_receipt['published_at']='2026-09-15T10:00:00+08:00'
+    old=frames_from_receipt(
+        [point(.06,'retail_sa','2026-07')],old_receipt,CAT)
+    incoming=frames_from_receipt(
+        [point(.01,'retail_sa','2026-07'),
+         point(-.13,'retail_sa','2026-08')],new_receipt,CAT)
+    key='china_macro/activity_sa'
+    b=CollectionBatch(frames=incoming)
+    out=qualify_against_owner(
+        b,{},lambda g,t:old.get(g+'/'+t),CAT)
+    assert b.status=='ok' and not b.conflicts
+    frame=out['activity_sa']
+    assert frame.loc[pd.Timestamp('2026-07-01'),'retail_mom']==.01
+    assert frame.loc[pd.Timestamp('2026-08-01'),'retail_mom']==-.13
+    assert frame.loc[pd.Timestamp('2026-07-01'),'retail_mom__source_url']==new_receipt['url']
+
+
+def test_cross_url_revision_exception_is_not_available_to_non_sa_metrics():
+    old_receipt=rec(
+        '2026-08-18T08:00:00+08:00',sha='1'*64,
+        url='https://www.stats.gov.cn/zwfwck/sjfb/202608/t20260817_1965052.html')
+    old_receipt['published_at']='2026-08-17T15:00:00+08:00'
+    new_receipt=rec(
+        '2026-09-16T08:00:00+08:00',sha='2'*64,
+        url='https://www.stats.gov.cn/sj/zxfb/202609/t20260915_1965311.html')
+    new_receipt['published_at']='2026-09-15T10:00:00+08:00'
+    old=frames_from_receipt([point(.6,'retail_yoy','2026-07')],old_receipt,CAT)
+    incoming=frames_from_receipt([point(.7,'retail_yoy','2026-07')],new_receipt,CAT)
+    b=CollectionBatch(frames=incoming)
+    out=qualify_against_owner(b,{},lambda g,t:old.get(g+'/'+t),CAT)
+    assert b.status=='blocked' and b.conflicts
+    assert 'retail' not in out
+    assert old['china_macro/retail'].loc[pd.Timestamp('2026-07-01'),'retail_yoy']==.6
+
+
+def test_cross_url_sa_revision_requires_strictly_later_publication():
+    old_receipt=rec(
+        '2026-09-16T08:00:00+08:00',sha='1'*64,
+        url='https://www.stats.gov.cn/zwfwck/sjfb/202608/t20260817_1965052.html')
+    old_receipt['published_at']='2026-09-15T10:00:00+08:00'
+    new_receipt=rec(
+        '2026-09-17T08:00:00+08:00',sha='2'*64,
+        url='https://www.stats.gov.cn/sj/zxfb/202609/t20260915_1965311.html')
+    new_receipt['published_at']='2026-09-15T10:00:00+08:00'
+    old=frames_from_receipt([point(.06,'retail_sa','2026-07')],old_receipt,CAT)
+    incoming=frames_from_receipt([point(.01,'retail_sa','2026-07')],new_receipt,CAT)
+    b=CollectionBatch(frames=incoming)
+    out=qualify_against_owner(b,{},lambda g,t:old.get(g+'/'+t),CAT)
+    assert b.status=='blocked' and b.conflicts
+    assert 'activity_sa' not in out
+    assert old['china_macro/activity_sa'].loc[pd.Timestamp('2026-07-01'),'retail_mom']==.06
+
 
 def test_owner_read_failure_is_path_local():
     frames={**wide(.54),**wide(1709,metric='fx_surrender')};b=CollectionBatch(frames=frames)
@@ -253,6 +343,183 @@ def test_discovery_exact_month_unique_and_relative():
     assert discover_release(h,index,'industry','2026-08')==URL
     with pytest.raises(ValueError):discover_release(h,index,'industry','2026-09')
     with pytest.raises(ValueError):discover_release(h+h.replace('test.html','other.html'),index,'industry','2026-08')
+
+
+def _merge_frame_maps(*maps):
+    out={}
+    for mapping in maps:
+        for key,frame in mapping.items():
+            out[key]=frame.combine_first(out.get(key,pd.DataFrame()))
+    return out
+
+
+def _anchor_store(periods):
+    anchors={
+        'industry':'industrial_sa','retail':'retail_sa','investment':'investment_sa',
+        'pmi':'pmi_mfg','profits':'profits_ytd',
+    }
+    frames=[]
+    for family,period in periods.items():
+        metric=anchors[family]
+        receipt=rec(observed='2026-10-01T06:00:00+08:00',url=URL)
+        if family=='pmi' and period=='2026-09':
+            receipt={**receipt,'published_at':'2026-09-30T09:30:00+08:00'}
+        frames.append(frames_from_receipt([point(1.0,metric,period)],receipt,CAT))
+    return _merge_frame_maps(*frames)
+
+
+def _mixed_nbs_index():
+    return ''.join([
+        '<a href="202609/industry-aug.html">2026年8月份规模以上工业增加值增长5.2%</a>',
+        '<a href="202609/retail-aug.html">2026年1—8月份社会消费品零售总额增长1.1%</a>',
+        '<a href="202609/invest-aug.html">2026年1—8月份全国固定资产投资基本情况</a>',
+        '<a href="202608/pmi-aug.html">2026年8月中国采购经理指数运行情况</a>',
+        '<a href="202609/pmi-sep.html">2026年9月中国采购经理指数运行情况</a>',
+        '<a href="202609/profits-aug.html">2026年1—8月份全国规模以上工业企业利润增长15.7%</a>',
+    ])
+
+
+def _nbs_index_get(html):
+    index='https://www.stats.gov.cn/sj/zxfb/'
+    def get(url,**kwargs):
+        if url.endswith('/robots.txt'):
+            return response(url=url)
+        assert url==index
+        return response(html,url=url)
+    return get
+
+
+def test_production_config_enrolls_only_reviewed_nbs_index_families():
+    cfg=yaml.safe_load((Path(__file__).parents[1]/'config.yml').read_text())['china']['macro']['economy_releases']
+    assert cfg['enabled'] is True
+    assert set(cfg['sources'])=={'industry','retail','investment','pmi','profits'}
+    assert all(v=={'index_url':'https://www.stats.gov.cn/sj/zxfb/'} for v in cfg['sources'].values())
+
+
+def test_indexed_releases_uses_reference_period_not_page_order():
+    index='https://www.stats.gov.cn/sj/zxfb/'
+    releases=indexed_releases(_mixed_nbs_index(),index,'pmi')
+    assert list(releases)==['2026-08','2026-09']
+    assert releases['2026-09'].endswith('/202609/pmi-sep.html')
+
+
+def test_planner_bootstraps_each_family_to_its_latest_indexed_period():
+    cfg={'sources':{
+        'industry':{'index_url':'https://www.stats.gov.cn/sj/zxfb/'},
+        'pmi':{'index_url':'https://www.stats.gov.cn/sj/zxfb/'},
+    }}
+    targets,pending,failures=planned_targets(
+        cfg,_nbs_index_get(_mixed_nbs_index()),lambda g,t:None,CAT,
+        clock=lambda:datetime.fromisoformat('2026-10-01T06:00:00+08:00'))
+    assert failures=={} and pending=={}
+    assert targets['industry']['period']=='2026-08'
+    assert targets['pmi']['period']=='2026-09'
+
+
+def test_planner_advances_pmi_while_other_august_families_are_pending():
+    cfg={'sources':{family:{'index_url':'https://www.stats.gov.cn/sj/zxfb/'}
+                    for family in ['industry','retail','investment','pmi','profits']}}
+    stored=_anchor_store({family:'2026-08' for family in cfg['sources']})
+    targets,pending,failures=planned_targets(
+        cfg,_nbs_index_get(_mixed_nbs_index()),
+        lambda g,t:stored.get(g+'/'+t),CAT,
+        clock=lambda:datetime.fromisoformat('2026-10-01T06:00:00+08:00'))
+    assert failures=={}
+    assert targets=={'pmi':{
+        'url':'https://www.stats.gov.cn/sj/zxfb/202609/pmi-sep.html','period':'2026-09'}}
+    assert set(pending)=={'industry','retail','investment','profits'}
+    assert all(v['reason']=='not_yet_published' and v['expected_period']=='2026-09'
+               for v in pending.values())
+
+
+def test_planner_refuses_to_jump_over_missing_sequential_release():
+    index='<a href="202609/industry-sep.html">2026年9月份规模以上工业增加值</a>'
+    cfg={'sources':{'industry':{'index_url':'https://www.stats.gov.cn/sj/zxfb/'}}}
+    stored=_anchor_store({'industry':'2026-07'})
+    targets,pending,failures=planned_targets(
+        cfg,_nbs_index_get(index),lambda g,t:stored.get(g+'/'+t),CAT,
+        clock=lambda:datetime.fromisoformat('2026-10-20T06:00:00+08:00'))
+    assert targets=={} and pending=={}
+    assert failures['industry']['reason']=='sequential_release_gap'
+
+
+def test_documented_january_omission_is_the_only_automatic_month_skip():
+    for family in ['industry','retail','investment','profits']:
+        assert _next_reported_period(family,'2026-12')=='2027-02'
+    assert _next_reported_period('pmi','2026-12')=='2027-01'
+    assert _next_reported_period('industry','2026-08')=='2026-09'
+
+
+def test_unreviewed_index_family_fails_closed_but_exact_url_remains_available():
+    index_cfg={'sources':{'power':{'index_url':'https://www.nea.gov.cn/xwzx/'}}}
+    targets,pending,failures=planned_targets(
+        index_cfg,lambda *a,**k:None,lambda g,t:None,CAT,
+        clock=lambda:datetime.fromisoformat('2026-10-01T06:00:00+08:00'))
+    assert targets=={} and pending=={}
+    assert failures['power']['reason']=='index_auto_discovery_not_reviewed_for_family'
+
+    exact={'sources':{'power':{
+        'url':'https://www.nea.gov.cn/20260920/bd277235282140f4b43e9e0f5f0af3d9/c.html',
+        'period':'2026-08'}}}
+    targets,pending,failures=planned_targets(
+        exact,lambda *a,**k:None,lambda g,t:None,CAT,
+        clock=lambda:datetime.fromisoformat('2026-10-01T06:00:00+08:00'))
+    assert targets['power']['period']=='2026-08' and not pending and not failures
+
+
+def test_planned_target_carries_its_own_period_into_acquisition():
+    get=lambda url,**kwargs: response(url=url)
+    batch=collect_releases(
+        {'industry':{'url':URL,'period':'2026-08'}},None,get,CAT,
+        lambda:datetime.fromisoformat(NOW))
+    assert batch.status=='ok'
+    assert batch.receipts['industry']['reference_period']=='2026-08'
+
+
+def test_not_yet_published_is_pending_not_blocked():
+    index='<a href="202609/industry-aug.html">2026年8月份规模以上工业增加值</a>'
+    stored=_anchor_store({'industry':'2026-08'})
+    adapter=SimpleNamespace(
+        cfg={'economy_releases':{'enabled':True,'sources':{
+            'industry':{'index_url':'https://www.stats.gov.cn/sj/zxfb/'}}}},
+        http_get=_nbs_index_get(index))
+    old={'legacy':pd.DataFrame({'x':[1.]})}
+    out,batch=enrich_existing_frames(
+        adapter,old,lambda g,t:stored.get(g+'/'+t),catalog=CAT,
+        clock=lambda:datetime.fromisoformat('2026-10-01T06:00:00+08:00'))
+    assert out['legacy'].equals(old['legacy'])
+    assert batch.status=='ok' and not batch.failures
+    assert batch.pending['industry']['expected_period']=='2026-09'
+
+
+def test_old_parser_vintage_reprocesses_latest_release_when_no_new_month_exists():
+    index='<a href="202609/industry-aug.html">2026年8月份规模以上工业增加值</a>'
+    stored=_anchor_store({'industry':'2026-08'})
+    stored['china_macro/activity_sa']['indpro_mom__parser_version']='china-economy-acquisition.v0'
+    cfg={'sources':{'industry':{'index_url':'https://www.stats.gov.cn/sj/zxfb/'}}}
+    targets,pending,failures=planned_targets(
+        cfg,_nbs_index_get(index),lambda g,t:stored.get(g+'/'+t),CAT,
+        clock=lambda:datetime.fromisoformat('2026-10-01T06:00:00+08:00'))
+    assert failures=={} and pending=={}
+    assert targets['industry']['period']=='2026-08'
+    assert targets['industry']['url'].endswith('/202609/industry-aug.html')
+
+
+def test_old_parser_vintage_does_not_delay_newer_official_release():
+    index=''.join([
+        '<a href="202609/industry-aug.html">2026年8月份规模以上工业增加值</a>',
+        '<a href="202610/industry-sep.html">2026年9月份规模以上工业增加值</a>',
+    ])
+    stored=_anchor_store({'industry':'2026-08'})
+    stored['china_macro/activity_sa']['indpro_mom__parser_version']='china-economy-acquisition.v0'
+    cfg={'sources':{'industry':{'index_url':'https://www.stats.gov.cn/sj/zxfb/'}}}
+    targets,pending,failures=planned_targets(
+        cfg,_nbs_index_get(index),lambda g,t:stored.get(g+'/'+t),CAT,
+        clock=lambda:datetime.fromisoformat('2026-10-20T06:00:00+08:00'))
+    assert failures=={} and pending=={}
+    assert targets['industry']['period']=='2026-09'
+    assert targets['industry']['url'].endswith('/202610/industry-sep.html')
+
 
 def test_shared_index_fetched_once():
     index='https://www.stats.gov.cn/sj/zxfb/';calls=[]
@@ -414,3 +681,40 @@ def test_fai_mismatching_official_value_still_triggers_existing_conflict_guard()
     qualified=qualify_against_owner(batch,{'fai':old},lambda g,t:None,CAT)
     assert batch.conflicts and batch.status=='blocked'
     assert qualified['fai'].iloc[0]['fai_ytd_yoy']==-9.9
+
+
+@pytest.mark.parametrize('response_url', [None, '', 'https://www.stats.gov.cn/not-robots.txt',
+                                        'https://other.example/robots.txt'])
+def test_raised_missing_robots_requires_exact_response_url(response_url):
+    def get(url, **kwargs):
+        r=requests.Response();r.status_code=404;r.url=response_url;r._content=b'missing'
+        raise requests.HTTPError('fixture',response=r)
+    with pytest.raises(ValueError, match='robots_acquisition_failed'):
+        check_robots(URL,get,{})
+
+
+def test_planner_does_not_advance_from_wrong_definition_cursor():
+    from engine.china_economy_store import value_receipt_digest
+    stored=_anchor_store({'industry':'2026-08'})
+    frame=stored['china_macro/activity_sa'];column='indpro_mom';d=frame.index[-1]
+    frame.loc[d,column+'__definition_id']='unrelated.definition'
+    receipt={k:frame.loc[d,column+'__'+k] for k in (
+        'source_url','published_at','response_sha256','definition_id','observed_at')}
+    frame.loc[d,column+'__value_sha256']=value_receipt_digest(
+        column,'2026-08',frame.loc[d,column],receipt)
+    cfg={'sources':{'industry':{'index_url':'https://www.stats.gov.cn/sj/zxfb/'}}}
+    targets,pending,failures=planned_targets(
+        cfg,_nbs_index_get(_mixed_nbs_index()),lambda g,t:stored.get(g+'/'+t),CAT,
+        clock=lambda:datetime.fromisoformat('2026-10-02T06:00:00+08:00'))
+    assert not targets and not pending
+    assert failures['industry']['reason']=='store_cursor_unverified'
+
+
+def test_planner_owner_read_error_is_not_an_empty_bootstrap():
+    cfg={'sources':{'industry':{'index_url':'https://www.stats.gov.cn/sj/zxfb/'}}}
+    def bad_read(g,t): raise OSError('fixture unavailable')
+    targets,pending,failures=planned_targets(
+        cfg,_nbs_index_get(_mixed_nbs_index()),bad_read,CAT,
+        clock=lambda:datetime.fromisoformat('2026-10-02T06:00:00+08:00'))
+    assert not targets and not pending
+    assert failures['industry']['reason']=='store_cursor_unverified'

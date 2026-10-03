@@ -234,7 +234,13 @@ def metric_view(meta: dict, observations:list[dict], sources:dict, as_of:datetim
     m['status']='unavailable' if m['value'] is None else 'current' if latest['period']==reference_period else 'older_period'
     if any(p.get('period')==reference_period for p in problems):m['status']='quality_hold';m['value']=None
     m['change_1m']=None
-    pair=_path(eligible,reference_period,2) if meta['frequency']=='monthly' else None
+    # Keep latest-published dynamics visible across a calendar rollover without
+    # pretending the metric is current for the requested assessment month.
+    # A quality-held requested period never falls back to an older pace.
+    pace_period=(latest['period'] if latest and m['status'] in {'current','older_period'}
+                 else reference_period)
+    m['pace_reference_period']=pace_period if latest and m['status'] in {'current','older_period'} else None
+    pair=_path(eligible,pace_period,2) if meta['frequency']=='monthly' and m['pace_reference_period'] else None
     if pair and meta['kind']=='sa_mom' and len({r['vintage_id'] for r in pair})>1:pair=None
     if pair and meta['kind']=='ytd_yoy' and pair[0]['period'][:4]!=pair[-1]['period'][:4]:pair=None
     m['change_unit']='percentage points' if meta['unit'].startswith('%') else 'index points' if meta['kind']=='survey' else meta['unit']
@@ -246,7 +252,9 @@ def metric_view(meta: dict, observations:list[dict], sources:dict, as_of:datetim
     else:
         delta=(m['value']-neutral)*meta.get('polarity',1)
         m['state']='above' if delta>0 else 'below' if delta<0 else 'at_reference'
-    m['pace']=pace(meta,eligible,reference_period) if m['status']=='current' else pace(meta,[],reference_period)
+    m['pace']=(pace(meta,eligible,pace_period)
+               if m['status'] in {'current','older_period'} and m['pace_reference_period']
+               else pace(meta,[],reference_period))
     dates=[];values=[]
     if eligible:
         lookup={r['period']:(r['value'] if meta['kind']!='sa_mom' or r['vintage_id']==eligible[-1]['vintage_id'] else None) for r in eligible}
@@ -352,6 +360,12 @@ def build_economy(document:dict, as_of:str|datetime|None=None, reference_period:
         'sources':deepcopy(sources),
         'known_source_conflicts':deepcopy(document.get('known_source_conflicts',[])),
         'activity_pulse':{
+            'assessment_period':reference_period,
+            'coverage_basis':'latest_available_per_series_not_current_month_votes',
+            'reference_periods':{k:metrics[k].get('pace_reference_period')
+                for k in ['industrial_sa','retail_sa','investment_sa']},
+            'all_current_for_assessment':all(metrics[k]['status']=='current'
+                for k in ['industrial_sa','retail_sa','investment_sa']),
             'metric_ids':['industrial_sa','retail_sa','investment_sa'],
             'improving_3m':sum(metrics[k]['pace']['direction']=='improving' for k in ['industrial_sa','retail_sa','investment_sa']),
             'improving_2m':sum((metrics[k]['pace'].get('window_sensitivity') or {}).get('direction_2m')=='improving' for k in ['industrial_sa','retail_sa','investment_sa']),
@@ -366,7 +380,7 @@ def build_economy(document:dict, as_of:str|datetime|None=None, reference_period:
            'Prices, credit, fiscal and market positioning are context, not duplicated votes in real-economy momentum.',
            'Three-month SA growth measures activity pace. Slopes of YoY/YTD/PMI readings measure changes in reported rates, not GDP velocity.',
            'Short histories, seasonal revision mixtures and missing calendar periods do not produce acceleration.',
-           'Commercial redistribution rights, collector runtime proof and production integration remain unverified.'
+           'Candidate automatic enrollment is NBS-only with source attribution; SAFE stays held for commercial-republication permission, while NEA/MOF remain held for separate source/index/robots admission.'
         ]}
 
 

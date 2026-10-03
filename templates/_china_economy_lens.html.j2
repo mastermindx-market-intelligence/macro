@@ -9,11 +9,12 @@
 {# Additive China lens. Existing global navigation, tokens and four dialogs survive. #}
 {% macro lens(E, title_level=2, shell='full') %}{% autoescape true %}
 {% if shell != 'deep' %}<section class="eco" id="china-economy" aria-labelledby="eco-title">
-  <header class="eco-topline"><span class="eco-eyebrow">{{ t('CHINA / ECONOMIC LENS','中国 / 经济透视') }}</span><span>{{ t('Reference','参考期') }} {{ E.reference_period }} · {{ t('Snapshot','快照') }} {{ E.snapshot_date }}</span></header>
+  <header class="eco-topline"><span class="eco-eyebrow">{{ t('CHINA / ECONOMIC LENS','中国 / 经济透视') }}</span><span>{% if E.public_sources %}{{ t('Source','来源') }}: {% for source in E.public_sources %}<a href="{{ source.url }}" target="_blank" rel="noopener noreferrer">{{ t(source.label_en,source.label_zh) }}</a>{% if not loop.last %}, {% endif %}{% endfor %} · {% endif %}{{ t('Assessment month','评估月') }} {{ E.reference_period }} · {{ t('Snapshot','快照') }} {{ E.snapshot_date }}</span></header>
   <div class="eco-hero">
     <div><div class="eco-kicker">{{ t('STATE · DIRECTION · PACE','状态 · 方向 · 速度') }}</div><{% if title_level == 1 %}h1{% else %}h2{% endif %} id="eco-title">{{ t(E.breadth.headline_en,E.breadth.headline_zh) }}</{% if title_level == 1 %}h1{% else %}h2{% endif %}>
     <p class="eco-lead">{{ t('Separate a rebound from a broad recovery.','区分短期反弹与全面复苏。') }}</p>
-    <div class="eco-key"><strong>{{ (E.activity_pulse.improving_3m|string) ~ '/' ~ (E.activity_pulse.universe|string) if E.activity_pulse.covered_3m else '—' }}</strong><span>{{ t('activity series gained three-month pace','项活动的三月速度改善') if E.activity_pulse.covered_3m else t('Activity-pace history unavailable','活动速度历史暂无数据') }}</span>{% if E.activity_pulse.window_sensitive %}<span class="eco-sensitive">{{ t('Window-sensitive','对窗口敏感') }}</span>{% endif %}</div>
+    <p class="eco-footnote">{{ E.counts.valid_current }}/{{ E.counts.catalog }} {{ t('readings available for the assessment month. Older readings keep their own dates.','项读数对应本评估月；较早读数保留各自参考日期。') }}</p>
+    <div class="eco-key"><strong>{{ (E.activity_pulse.improving_3m|string) ~ '/' ~ (E.activity_pulse.universe|string) if E.activity_pulse.covered_3m else '—' }}</strong><span>{{ t('latest available activity series gained three-month pace','项最新可用活动序列的三月速度改善') if E.activity_pulse.covered_3m else t('Activity-pace history unavailable','活动速度历史暂无数据') }}</span>{% if E.pace_mixed_periods %}<span class="eco-sensitive">{{ t('Different reference months','参考月不同') }}</span>{% elif E.pace_latest_period %}<span class="eco-sensitive">{{ t('through','截至') }} {{ t(E.pace_latest_en,E.pace_latest_zh) }}</span>{% endif %}{% if E.activity_pulse.window_sensitive %}<span class="eco-sensitive">{{ t('Window-sensitive','对窗口敏感') }}</span>{% endif %}</div>
     <p class="eco-window-warning">{{ t('The two-month comparison is weaker for all three.','三项数据的二月比较均偏弱。') if E.all_three_shorter_windows_weaker else t('Compare more than one window before calling a turn.','判断转折前须比较多个窗口。') }}</p></div>
     <aside class="eco-breadth" aria-label="Growth domain breadth" data-aria-en="Growth domain breadth" data-aria-zh="增长领域广度"><div class="eco-eyebrow">{{ t('HOW BROAD IS THE MOVE?','变化有多广泛？') }}</div>
       <div class="eco-breadth-track">{% for d in E.domains %}<a href="#eco-domain-{{ d.id }}" class="eco-tile {{ d.momentum }}"><b>{{ d.symbol }}</b><span>{{ t(d.title_en,d.title_zh) }}</span></a>{% endfor %}</div>
@@ -27,7 +28,7 @@
   {% for m in E.pace_cards %}
     <article class="eco-pace-card"><div class="eco-card-head"><h3>{{ t(m.label_en,m.label_zh) }}</h3><button type="button" data-eco-select="{{ m.id }}" aria-label="Inspect {{ m.label_en }}" data-aria-en="Inspect {{ m.label_en }}" data-aria-zh="查看{{ m.label_zh }}">↗</button></div>
       <div class="eco-pace-value {{ 'falling' if m.pace.current_3m is not none and m.pace.current_3m < 0 else '' }}">{{ m.pace.current_3m_display }}<span>%</span></div>
-      <p>{{ t('three-month change','三月累计变化') }} <span>· {{ t('previous','前值') }} {{ m.pace.previous_3m_display }}%</span></p>
+      <p>{{ t('three-month change','三月累计变化') }}{% if m.reference_period %} <span>· {{ t('through','截至') }} {{ m.reference_period }}</span>{% endif %} <span>· {{ t('previous','前值') }} {{ m.pace.previous_3m_display }}%</span></p>
       <div class="eco-pace-compare"><span>{{ t('Change in pace','速度变化') }}</span><b>{{ m.pace.change_in_pace_display }} {{ t('pp','个百分点') }}</b></div>
       {% if m.pace.window_sensitivity %}<div class="eco-window-mini"><span>{{ t('Two-month check','二月核验') }}</span><span>{{ m.pace.window_sensitivity.current_2m_display }}% <i>{{ t('vs','对比') }}</i> {{ m.pace.window_sensitivity.previous_2m_display }}%</span></div>{% endif %}
     </article>
@@ -36,12 +37,12 @@
 
   <div class="eco-section-title"><h2>{{ t('The whole picture','全景状态') }}</h2><span>{{ t('Level and momentum answer different questions.','水平与动能回答不同问题。') }}</span></div>
   <div class="eco-domains" role="table" aria-label="Six economic domains" data-aria-en="Six economic domains" data-aria-zh="六个经济领域">
-    <div class="eco-domain eco-domain-header" role="row"><span role="columnheader">{{ t('ECONOMIC AREA','经济领域') }}</span><span role="columnheader">{{ t('CURRENT READING','当前读数') }}</span><span role="columnheader">{{ t('STATE','状态') }}</span><span role="columnheader">{{ t('MOMENTUM','动能') }}</span></div>
+    <div class="eco-domain eco-domain-header" role="row"><span role="columnheader">{{ t('ECONOMIC AREA','经济领域') }}</span><span role="columnheader">{{ t('LATEST READING','最新读数') }}</span><span role="columnheader">{{ t('STATE','状态') }}</span><span role="columnheader">{{ t('MOMENTUM','动能') }}</span></div>
     {% for d in E.domains %}<div class="eco-domain" id="eco-domain-{{ d.id }}" role="row">
       <button type="button" role="cell" class="eco-domain-name" data-eco-select="{{ d.headline_metric }}"><i class="eco-domain-dot {{ d.momentum }}"></i><span>{{ t(d.title_en,d.title_zh) }}<small>{{ t(d.metric.label_en,d.metric.label_zh) }}</small></span></button>
-      <div class="eco-domain-reading" role="cell"><b>{{ d.metric.value_text }}</b><small>{{ t(d.metric.unit_en,d.metric.unit_zh) }}</small></div>
+      <div class="eco-domain-reading" role="cell"><b>{{ d.metric.value_text }}</b><small>{{ t(d.metric.unit_en,d.metric.unit_zh) }} · {{ t('ref','参考') }} {{ d.metric.reference_period or '—' }}</small></div>
       <div role="cell" class="eco-state {{ d.state }}">{{ t(d.plain_state_en,d.plain_state_zh) }}</div>
-      <div role="cell"><span class="eco-momentum {{ d.momentum }}">{{ d.symbol }} {{ t(d.momentum_en,d.momentum_zh) }}</span><details><summary>{{ t('Why?','原因') }}</summary><p>{{ t(d.qualifier_en,d.qualifier_zh) }}</p>{% for driver in d.drivers %}<p>{{ t(E.metrics[driver.metric_id].label_en,E.metrics[driver.metric_id].label_zh) }}: {{ t(E.metrics[driver.metric_id].direction_label_en,E.metrics[driver.metric_id].direction_label_zh) }}</p>{% endfor %}</details></div>
+      <div role="cell"><span class="eco-momentum {{ d.momentum }}">{{ d.symbol }} {{ t(d.momentum_en,d.momentum_zh) }}</span><details><summary>{{ t('Why?','原因') }}</summary><p>{{ t(d.qualifier_en,d.qualifier_zh) }}</p>{% for driver in d.drivers %}<p>{{ t(E.metrics[driver.metric_id].label_en,E.metrics[driver.metric_id].label_zh) }}: {{ t(E.metrics[driver.metric_id].direction_label_en,E.metrics[driver.metric_id].direction_label_zh) }} · {{ t('ref','参考') }} {{ E.metrics[driver.metric_id].pace_reference_period or '—' }}</p>{% endfor %}</details></div>
     </div>{% endfor %}
   </div>
   {% endif %}
@@ -51,7 +52,7 @@
     <div id="eco-detail-lock">
       <div class="eco-kicker">{{ t('DEEP EVIDENCE','深度证据') }}</div>
       <h2 id="eco-deep-lock-title">{{ t('Inspect the full economic evidence library','深入查看完整经济证据库') }}</h2>
-      <p>{{ t('Histories, source receipts, calculated diagnostics and the complete metric library load only after the existing site access boundary admits the request.','历史序列、来源凭据、计算诊断与完整指标库仅在既有站点访问边界放行后加载。') }}</p>
+      <p>{{ t('Explore detailed histories, compare the drivers and trace each reading to its source. Sign in to check access to the full library.','查看历史走势、比较经济驱动因素，并追溯每项读数的来源。登录后可查看完整指标库的访问权限。') }}</p>
       <div class="eco-deep-lock-actions"><a href="/?signin=1&ret=/china.html#china-economy">{{ t('Sign in','登录') }}</a><a href="/plans.html">{{ t('View plans','查看方案') }}</a></div>
     </div>
   </section>
@@ -67,7 +68,7 @@
   <section class="eco-map"><div class="eco-section-title"><h2>{{ t('Growth map','增长图谱') }}</h2><span>{{ t('Categorical—not a weighted score','分类图，不是加权评分') }}</span></div>
     <div class="eco-quadrants">
     {% for key,en,zh in [('above_improving','Growing · gaining pace','增长 · 动能增强'),('above_fading','Growing · losing pace','增长 · 动能减弱'),('below_improving','Shrinking · decline easing','下降 · 降幅缓解'),('below_fading','Shrinking · deteriorating','下降 · 继续恶化')] %}
-      <div class="eco-quadrant {{ key }}"><h3>{{ t(en,zh) }}</h3>{% for m in E.phase_groups[key] %}<button type="button" data-eco-select="{{ m.id }}">{{ t(m.label_en,m.label_zh) }}{% if m.kind == 'sa_mom' %} <small>{{ t('3m','三月') }}</small>{% endif %}</button>{% else %}<span class="eco-muted">{{ t('No admitted examples','暂无符合条件的例项') }}</span>{% endfor %}</div>
+      <div class="eco-quadrant {{ key }}"><h3>{{ t(en,zh) }}</h3>{% for m in E.phase_groups[key] %}<button type="button" data-eco-select="{{ m.id }}">{{ t(m.label_en,m.label_zh) }}{% if m.kind == 'sa_mom' %} <small>{{ t('3m','三月') }}</small>{% endif %} <small>{{ m.pace_reference_period or m.reference_period or '—' }}</small></button>{% else %}<span class="eco-muted">{{ t('No admitted examples','暂无符合条件的例项') }}</span>{% endfor %}</div>
     {% endfor %}</div>
     <p class="eco-footnote">{{ t('Survey state uses 50; activity state uses zero growth. Cumulative-rate trends are not monthly activity.','调查以50为基准，活动以零增长为基准。累计增速趋势不等于月度活动。') }}</p>
   </section>

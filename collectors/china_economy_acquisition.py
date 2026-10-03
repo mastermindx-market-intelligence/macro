@@ -22,10 +22,10 @@ import pandas as pd
 
 from collectors import china_economy_release_parser as parsers
 from engine.china_economy import month_index, month_end, number, timestamp
-from engine.china_economy_store import frames_from_receipt, value_receipt_digest
+from engine.china_economy_store import binding, frames_from_receipt, value_receipt_digest
 
 log = logging.getLogger(__name__)
-VERSION = 'china-economy-acquisition.v1.1'
+VERSION = 'china-economy-acquisition.v1.2'
 MAX_BYTES = 4_000_000
 ROBOTS_MAX_BYTES = 512_000
 USER_AGENT = 'Mozilla/5.0 (compatible; MastermindEconomicData/1.0)'
@@ -48,6 +48,28 @@ PATHS = {
     'www.safe.gov.cn': ('/safe/',),
     'www.nea.gov.cn': ('/',),
 }
+# These three NBS series explicitly publish revised seasonally adjusted history
+# inside each new monthly release. A later official release URL is therefore a
+# new vintage of the SAME statistical series, not an unrelated source. Keep this
+# allowlist narrow: ordinary YoY/YTD/survey values may not use it.
+NBS_SA_REVISION_FAMILIES = {
+    'industrial_sa': 'industry',
+    'retail_sa': 'retail',
+    'investment_sa': 'investment',
+}
+
+
+def _nbs_sa_revision_lineage(meta: dict, old_url: str, new_url: str) -> bool:
+    family = NBS_SA_REVISION_FAMILIES.get(meta.get('id'))
+    if not family or not isinstance(old_url, str) or not isinstance(new_url, str):
+        return False
+    try:
+        checked_url(old_url, family)
+        checked_url(new_url, family)
+    except ValueError:
+        return False
+    return (urlparse(old_url).hostname == 'www.stats.gov.cn'
+            and urlparse(new_url).hostname == 'www.stats.gov.cn')
 
 
 def checked_url(url: str, family: str) -> str:
@@ -119,7 +141,7 @@ def check_robots(url: str, http_get: Callable, cache: dict | None = None) -> dic
             # exact same-origin robots response.
             failed = getattr(exc, 'response', None)
             failed_status = getattr(failed, 'status_code', None)
-            failed_url = (getattr(failed, 'url', None) or robots_url) if failed is not None else None
+            failed_url = getattr(failed, 'url', None) if failed is not None else None
             if failed is not None and failed_status in {404, 410} and failed_url == robots_url:
                 body = bytes(getattr(failed, 'content', b'') or b'')
                 cache[host] = {
@@ -263,6 +285,7 @@ class CollectionBatch:
     frames: dict = field(default_factory=dict)
     receipts: dict = field(default_factory=dict)
     failures: dict = field(default_factory=dict)
+    pending: dict = field(default_factory=dict)
     conflicts: list = field(default_factory=list)
     requested: int = 0
 
@@ -284,17 +307,32 @@ def _merge_disjoint(left, right):
     return result
 
 
-def collect_releases(targets: dict, expected_period: str, http_get: Callable, catalog: dict,
+def collect_releases(targets: dict, expected_period: str | None, http_get: Callable, catalog: dict,
                      clock: Callable = lambda: datetime.now(timezone.utc),
                      robots_cache: dict | None = None) -> CollectionBatch:
-    """One bounded acquisition per configured family; retry owner is Adapter."""
-    month_index(expected_period)
+    """One bounded acquisition per configured family; retry owner is Adapter.
+
+    Backward-compatible string targets use expected_period. Planned targets
+    carry their own exact url + period so different source families may advance
+    on different publication clocks in the same run.
+    """
+    if expected_period is not None:
+        month_index(expected_period)
     if not isinstance(targets, dict) or len(targets) > len(FAMILIES):
         raise ValueError('invalid_release_target_set')
     batch = CollectionBatch(requested=len(targets)); unavailable_hosts = set()
     robots_cache = robots_cache if robots_cache is not None else {}
-    for family, url in targets.items():
+    for family, target in targets.items():
+        url = target
+        period = expected_period
         try:
+            if isinstance(target, dict):
+                if set(target) != {'url', 'period'}:
+                    raise ValueError('invalid_planned_release_target')
+                url = target['url']; period = target['period']
+                month_index(period)
+            elif period is None:
+                raise ValueError('release_period_required')
             checked_url(url, family)
             host = urlparse(url).hostname
             if host in unavailable_hosts:
@@ -308,7 +346,7 @@ def collect_releases(targets: dict, expected_period: str, http_get: Callable, ca
             if getattr(response, 'url', url) != url:
                 raise ValueError('unexpected_response_url')
             frames, receipt, _ = parse_acquisition(family, url, response.content, clock().isoformat(),
-                expected_period, catalog, status=response.status_code, content_type=response.headers.get('Content-Type', ''))
+                period, catalog, status=response.status_code, content_type=response.headers.get('Content-Type', ''))
             receipt['robots'] = robots
             batch.frames = _merge_disjoint(batch.frames, frames)
             batch.receipts[family] = receipt
@@ -323,14 +361,22 @@ def collect_releases(targets: dict, expected_period: str, http_get: Callable, ca
 
 
 def qualify_against_owner(batch: CollectionBatch, legacy_frames: dict, read: Callable, catalog: dict) -> dict:
-    """Enrich only agreeing/new cells, or a valid same-source published revision.
+    """Enrich agreeing/new cells or a receipt-qualified published revision.
 
     A differing unreceipted legacy value remains unchanged and unqualified. All
     cells of the affected column are withheld to avoid stitching SA vintages.
-    Raw nulls get a null-value digest; combine_first cannot resurrect them as
-    verified old numbers. It may preserve old values for legacy readers, but
-    the evidence bridge will detect the digest mismatch and refuse them.
+    The three known NBS SA series may advance to a later official monthly release
+    URL because NBS republishes a revised history in each release; every other
+    cross-URL disagreement remains blocked. Raw nulls get a null-value digest;
+    combine_first cannot resurrect them as verified old numbers.
     """
+    owner_meta = {}
+    for meta in catalog.values():
+        group, table, column = binding(meta['owner_path'])
+        key = (group + '/' + table, column)
+        if key in owner_meta:
+            raise ValueError('duplicate_catalog_owner_binding')
+        owner_meta[key] = meta
     result = {k: v.copy() for k, v in legacy_frames.items()}
     for path, incoming in batch.frames.items():
         group, table = path.split('/')
@@ -353,20 +399,41 @@ def qualify_against_owner(batch: CollectionBatch, legacy_frames: dict, read: Cal
                 if col not in existing:
                     continue
                 old, new = number(existing.at[d, col]), number(incoming.at[d, col])
+                # A wide frame has structural NaNs where this release carries no
+                # point for this metric/month. That is not a null revision and
+                # must make no claim against the existing owner. An explicit
+                # source-null DOES carry a value digest and keeps the fail-safe
+                # revision/mismatch path below.
+                new_digest = incoming.at[d, col+'__value_sha256'] if col+'__value_sha256' in incoming else None
+                if new is None and not isinstance(new_digest, str):
+                    continue
                 if old is None or old == new:
                     continue
-                # Only a same-source qualified newer acquisition may revise it.
+                # A normal revision must retain its exact source URL. The narrow
+                # exception is a newer official NBS monthly vintage for one of
+                # the three catalogued SA histories (see NBS_SA_REVISION_FAMILIES).
                 row = existing.loc[d]; newrow = incoming.loc[d]
                 try:
                     prior_digest = row.get(col+'__value_sha256')
                     old_receipt = {name: row.get(col+'__'+name) for name in ('source_url','published_at','response_sha256','definition_id','observed_at')}
-                    valid_prior = prior_digest == value_receipt_digest(col, d.strftime('%Y-%m'), old, old_receipt)
-                    same = row.get(col+'__source_url') == newrow.get(col+'__source_url') and row.get(col+'__definition_id') == newrow.get(col+'__definition_id')
-                    later = timestamp(newrow[col+'__observed_at']) > timestamp(row[col+'__observed_at'])
-                    forward_pub = timestamp(newrow[col+'__published_at']) >= timestamp(row[col+'__published_at'])
+                    valid_prior = prior_digest == value_receipt_digest(
+                        col, d.strftime('%Y-%m'), old, old_receipt)
+                    old_url = row.get(col+'__source_url')
+                    new_url = newrow.get(col+'__source_url')
+                    same_definition = (
+                        row.get(col+'__definition_id') == newrow.get(col+'__definition_id'))
+                    same_url = old_url == new_url
+                    meta = owner_meta.get((path, col), {})
+                    same_lineage = same_url or _nbs_sa_revision_lineage(
+                        meta, old_url, new_url)
+                    later = timestamp(newrow[col+'__observed_at']) > timestamp(
+                        row[col+'__observed_at'])
+                    old_pub = timestamp(row[col+'__published_at'])
+                    new_pub = timestamp(newrow[col+'__published_at'])
+                    forward_pub = new_pub >= old_pub if same_url else new_pub > old_pub
                 except (ValueError, TypeError, KeyError):
-                    valid_prior = same = later = forward_pub = False
-                if not (valid_prior and same and later and forward_pub):
+                    valid_prior = same_definition = same_lineage = later = forward_pub = False
+                if not (valid_prior and same_definition and same_lineage and later and forward_pub):
                     unsafe.append(d.strftime('%Y-%m'))
             if unsafe:
                 batch.conflicts.append({'table': path, 'column': col, 'periods': unsafe, 'reason': 'unqualified_legacy_value_disagreement'})
@@ -380,17 +447,35 @@ def qualify_against_owner(batch: CollectionBatch, legacy_frames: dict, read: Cal
     return result
 
 
-def discover_release(index_html: str, index_url: str, family: str, expected_period: str) -> str:
-    """Select one exact family/period from a publisher index, not latest-by-date."""
-    checked_url(index_url, family); month_index(expected_period)
-    year, month = map(int, expected_period.split('-')); matches = set()
+def indexed_releases(index_html: str, index_url: str, family: str) -> dict[str, str]:
+    """Map publisher-declared reference periods to one exact release URL.
+
+    Period comes from the publisher's anchor title, never page ordering or URL
+    date. Duplicate URLs for one period are harmless; competing URLs are not.
+    """
+    checked_url(index_url, family)
+    releases: dict[str, str] = {}
     for a in BeautifulSoup(index_html, 'html.parser').select('a[href]'):
         title = re.sub(r'\s+', '', a.get('title', '') + a.get_text('', strip=True))
         if FAMILIES[family][1] not in title:
             continue
-        if not re.search(rf'{year}年(?:1[—–－-])?{month}月', title):
+        match = re.search(r'(20\d{2})年(?:1[—–－-])?(\d{1,2})月', title)
+        if not match:
             continue
-        matches.add(checked_url(urljoin(index_url, a['href']), family))
-    if len(matches) != 1:
+        period = f'{int(match[1]):04d}-{int(match[2]):02d}'
+        month_index(period)
+        url = checked_url(urljoin(index_url, a['href']), family)
+        prior = releases.get(period)
+        if prior is not None and prior != url:
+            raise ValueError('release_discovery_duplicate_period')
+        releases[period] = url
+    return releases
+
+
+def discover_release(index_html: str, index_url: str, family: str, expected_period: str) -> str:
+    """Select one exact family/period from a publisher index."""
+    month_index(expected_period)
+    releases = indexed_releases(index_html, index_url, family)
+    if expected_period not in releases:
         raise ValueError('release_discovery_missing_or_ambiguous')
-    return matches.pop()
+    return releases[expected_period]
