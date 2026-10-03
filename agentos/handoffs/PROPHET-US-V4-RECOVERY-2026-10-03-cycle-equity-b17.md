@@ -2,6 +2,7 @@
 workstream: "WS:PROPHET-US-V4-RECOVERY"
 session: sol/prophet-cycle-equity-v1-20261001
 model: sol
+prs: [8308]
 ended_because: ci_handoff
 mission: >
   Implement B17/Q08 funding, dilution and original-equity recovery mechanics on
