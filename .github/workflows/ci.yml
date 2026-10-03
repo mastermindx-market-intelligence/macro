@@ -2449,6 +2449,11 @@ on:
       # but no trigger matched it, so a receipt-only PR never started the run that
       # grades those receipts (the pack suite's startability audit, red since #7971).
       - "mockups/evidence/prophet-p0b-zero-fouc/**"
+      # The committed TP-0 evidence corpus (2026-10-02, #8278 → heal #8285): the
+      # design-governance job declares these two trees as its scope floor, and a
+      # declared scope must be startable here (test_derived_scopes_are_startable…).
+      - "mockups/evidence/**"
+      - "mockups/refs/**"
       - "tests/test_marketing_ad_plane_o.py"
       - "tests/test_marketing_persona_model.py"
       - "tests/test_marketing_reply_arming.py"

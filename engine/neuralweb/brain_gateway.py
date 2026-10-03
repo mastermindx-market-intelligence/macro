@@ -1693,6 +1693,29 @@ def _ontology_selection_notice(lang: str) -> str:
     )
 
 
+def _ontology_selection_requested(context: dict) -> bool:
+    return context.get("page") == "ontology" and (
+        bool(context.get("panel")) or "ontology_selection" in context
+    )
+
+
+def _ontology_preflight_notice(root: Path, context: dict, message: str, user_id: str) -> str:
+    """Refuse an invalid selection before provider setup or alternate fast routes.
+
+    The answer loop rechecks the same owner before using selected evidence, so
+    a source update during provider setup cannot silently replace the page.
+    """
+    if not _ontology_selection_requested(context):
+        return ""
+    lang = _turn_lang(message, context, _account_pref(context, "lang"))
+    try:
+        _ontology_grounding_digest(root, selection_ref=context.get("ontology_selection"),
+                                   require_selection=True, lang=lang, user_id=user_id)
+    except _OntologySelectionUnavailable:
+        return _ontology_selection_notice(lang)
+    return ""
+
+
 def _validate_ontology_selection(ref: Any) -> dict:
     # A transient reference inside the existing Brain context, not a fifth F04
     # object, authorization claim, raw source attachment or persisted snapshot.
@@ -9432,18 +9455,27 @@ def chat(
     _ctx_envelope = _ctx_compiler.compile_envelope(clean_msg, context)
     _ctx_receipt = _ctx_compiler.compile_receipt(_ctx_envelope)
 
+    _selected_ontology = _ontology_selection_requested(context)
+    _selection_notice = _ontology_preflight_notice(root, context, clean_msg, user_id)
+    if _selection_notice:
+        return {"ok": True, "reply": _selection_notice, "citations": [],
+                "lane": lane, "model": "none", "thread_id": None,
+                "quota": quota_info, "usage": {"input_tokens": 0, "output_tokens": 0},
+                "filtered": False, "degraded": False, "is_context_only": True,
+                "selection_unverified": True, "context_receipt": _ctx_receipt}
+
     # 3d. Instant routing decision. W1-B plans registered native facts first; the
     #     existing quote-only W5 route remains the non-US compatibility island. Both
     #     decisions are pure and happen after quota/prescreen but before providers.
     _instant_t0 = time.monotonic()
     _native_plan_t0 = time.monotonic()
     _native_plan_hit = (
-        None if images or mode == "research" or source_attachment is not None
+        None if _selected_ontology or images or mode == "research" or source_attachment is not None
         else _native_facts.plan_native_facts(clean_msg, context, envelope=_ctx_envelope)
     )
     _native_route_decision_ms = _ms_since(_native_plan_t0)
     _instant_route_hit = (
-        None if images or source_attachment is not None or _native_plan_hit is not None
+        None if _selected_ontology or images or source_attachment is not None or _native_plan_hit is not None
         else _instant_route(clean_msg, context)
     )
 
@@ -9914,17 +9946,29 @@ def chat_stream(
     _ctx_receipt = _ctx_compiler.compile_receipt(_ctx_envelope)
     _ctx_receipt_event = "data: " + json.dumps({"type": "context_receipt", **_ctx_receipt}) + "\n\n"
 
+    _selected_ontology = _ontology_selection_requested(context)
+    _selection_notice = _ontology_preflight_notice(root, context, clean_msg, user_id)
+    if _selection_notice:
+        yield "data: " + json.dumps({"type": "meta", "lane": lane, "model": "none",
+                                     "thread_id": None, "quota": quota_info}) + "\n\n"
+        yield _ctx_receipt_event
+        yield "data: " + json.dumps({"type": "delta", "text": _selection_notice}) + "\n\n"
+        yield "data: " + json.dumps({"type": "done", "citations": [], "quota": quota_info,
+              "usage": {"input_tokens": 0, "output_tokens": 0}, "filtered": False,
+              "degraded": False, "is_context_only": True, "selection_unverified": True}) + "\n\n"
+        return
+
     # 2d. Instant routing decision — W1-B native facts first, then the preserved
     #     quote-only compatibility route. Both remain behind quota and prescreen.
     _instant_t0 = time.monotonic()
     _native_plan_t0 = time.monotonic()
     _native_plan_hit = (
-        None if images or mode == "research" or source_attachment is not None
+        None if _selected_ontology or images or mode == "research" or source_attachment is not None
         else _native_facts.plan_native_facts(clean_msg, context, envelope=_ctx_envelope)
     )
     _native_route_decision_ms = _ms_since(_native_plan_t0)
     _instant_route_hit = (
-        None if images or source_attachment is not None or _native_plan_hit is not None
+        None if _selected_ontology or images or source_attachment is not None or _native_plan_hit is not None
         else _instant_route(clean_msg, context)
     )
 

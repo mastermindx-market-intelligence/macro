@@ -1,5 +1,5 @@
 {
-  "as_of_trade_date": "30092026",
+  "as_of_trade_date": "02102026",
   "freshness": "fresh",
   "bellwethers": [
     {
@@ -7,30 +7,30 @@
       "name_en": "HSI",
       "name_zh": "\u6052\u751f\u6307\u6570",
       "is_index": true,
-      "bull_outstanding": 4969190000,
-      "bear_outstanding": 4432270000,
-      "total_outstanding": 9401460000,
-      "bull_bear_ratio": 1.12,
-      "leverage_state": "balanced",
-      "n_cbbc_contracts": 2928,
-      "data_note": "call price coverage 18% \u2014 low SLD coverage; magnets may be incomplete",
+      "bull_outstanding": 7419000000,
+      "bear_outstanding": 3406430000,
+      "total_outstanding": 10825430000,
+      "bull_bear_ratio": 2.18,
+      "leverage_state": "bull_skew",
+      "n_cbbc_contracts": 2626,
+      "data_note": "call price coverage 17% \u2014 low SLD coverage; magnets may be incomplete",
       "magnet_below": false,
       "magnet_above": false,
       "nearest_magnet_pct": null,
       "magnet_clusters": [],
-      "call_level_coverage": 0.1807,
-      "total_outstanding_with_call": 3510240000,
-      "total_outstanding_without_call": 5891220000
+      "call_level_coverage": 0.1714,
+      "total_outstanding_with_call": 3719890000,
+      "total_outstanding_without_call": 7105540000
     },
     {
       "ticker": "^HSTECH",
       "name_en": "HSTECH",
       "name_zh": "\u6052\u751f\u79d1\u6280",
       "is_index": true,
-      "bull_outstanding": 201450000,
-      "bear_outstanding": 17230000,
-      "total_outstanding": 218680000,
-      "bull_bear_ratio": 11.69,
+      "bull_outstanding": 227200000,
+      "bear_outstanding": 14620000,
+      "total_outstanding": 241820000,
+      "bull_bear_ratio": 15.54,
       "leverage_state": "bull_skew_froth",
       "n_cbbc_contracts": 95,
       "data_note": "call price coverage 12% \u2014 low SLD coverage; magnets may be incomplete",
@@ -39,43 +39,33 @@
       "nearest_magnet_pct": null,
       "magnet_clusters": [],
       "call_level_coverage": 0.1158,
-      "total_outstanding_with_call": 23490000,
-      "total_outstanding_without_call": 195190000
+      "total_outstanding_with_call": 23420000,
+      "total_outstanding_without_call": 218400000
     },
     {
       "ticker": "0700.HK",
       "name_en": "Tencent",
       "name_zh": "\u817e\u8baf",
       "is_index": false,
-      "bull_outstanding": 1124128000,
-      "bear_outstanding": 152195000,
-      "total_outstanding": 1276323000,
-      "bull_bear_ratio": 7.39,
+      "bull_outstanding": 1053678000,
+      "bear_outstanding": 143430000,
+      "total_outstanding": 1197108000,
+      "bull_bear_ratio": 7.35,
       "leverage_state": "bull_skew_froth",
-      "n_cbbc_contracts": 310,
-      "data_note": "call price coverage 12% \u2014 low SLD coverage; magnets may be incomplete",
+      "n_cbbc_contracts": 292,
+      "data_note": "call price coverage 7% \u2014 low SLD coverage; magnets may be incomplete",
       "magnet_below": true,
       "magnet_above": false,
-      "nearest_magnet_pct": -9.0,
+      "nearest_magnet_pct": -3.0,
       "magnet_clusters": [
-        {
-          "bucket": -1,
-          "distance_pct": -1.0,
-          "level_approx": 426.69,
-          "side": "bull",
-          "outstanding_sum": 9465000,
-          "n_contracts": 6,
-          "bull_outstanding": 9465000,
-          "bear_outstanding": 0
-        },
         {
           "bucket": -2,
           "distance_pct": -3.0,
           "level_approx": 418.07,
           "side": "bull",
-          "outstanding_sum": 58710000,
-          "n_contracts": 5,
-          "bull_outstanding": 58710000,
+          "outstanding_sum": 40345000,
+          "n_contracts": 4,
+          "bull_outstanding": 40345000,
           "bear_outstanding": 0
         },
         {
@@ -83,19 +73,19 @@
           "distance_pct": 3.0,
           "level_approx": 443.93,
           "side": "bear",
-          "outstanding_sum": 1000000,
+          "outstanding_sum": 2900000,
           "n_contracts": 1,
           "bull_outstanding": 0,
-          "bear_outstanding": 1000000
+          "bear_outstanding": 2900000
         },
         {
           "bucket": -3,
           "distance_pct": -5.0,
           "level_approx": 409.45,
           "side": "bull",
-          "outstanding_sum": 10410000,
-          "n_contracts": 2,
-          "bull_outstanding": 10410000,
+          "outstanding_sum": 8885000,
+          "n_contracts": 1,
+          "bull_outstanding": 8885000,
           "bear_outstanding": 0
         },
         {
@@ -103,29 +93,29 @@
           "distance_pct": 5.0,
           "level_approx": 452.55,
           "side": "bear",
-          "outstanding_sum": 1865000,
+          "outstanding_sum": 2825000,
           "n_contracts": 2,
           "bull_outstanding": 0,
-          "bear_outstanding": 1865000
+          "bear_outstanding": 2825000
         },
         {
           "bucket": 3,
           "distance_pct": 7.0,
           "level_approx": 461.17,
           "side": "bear",
-          "outstanding_sum": 1380000,
+          "outstanding_sum": 1000000,
           "n_contracts": 2,
           "bull_outstanding": 0,
-          "bear_outstanding": 1380000
+          "bear_outstanding": 1000000
         },
         {
           "bucket": -5,
           "distance_pct": -9.0,
           "level_approx": 392.21,
           "side": "bull",
-          "outstanding_sum": 45160000,
-          "n_contracts": 2,
-          "bull_outstanding": 45160000,
+          "outstanding_sum": 1020000,
+          "n_contracts": 1,
+          "bull_outstanding": 1020000,
           "bear_outstanding": 0
         },
         {
@@ -133,15 +123,15 @@
           "distance_pct": 9.0,
           "level_approx": 469.79,
           "side": "bear",
-          "outstanding_sum": 7075000,
+          "outstanding_sum": 3855000,
           "n_contracts": 4,
           "bull_outstanding": 0,
-          "bear_outstanding": 7075000
+          "bear_outstanding": 3855000
         }
       ],
-      "call_level_coverage": 0.1219,
-      "total_outstanding_with_call": 155553000,
-      "total_outstanding_without_call": 1120770000
+      "call_level_coverage": 0.067,
+      "total_outstanding_with_call": 80221000,
+      "total_outstanding_without_call": 1116887000
     },
     {
       "ticker": "9988.HK",
@@ -167,12 +157,12 @@
       "name_en": "JD.com",
       "name_zh": "\u4eac\u4e1c",
       "is_index": false,
-      "bull_outstanding": 319640000,
-      "bear_outstanding": 1132500,
-      "total_outstanding": 320772500,
-      "bull_bear_ratio": 282.24,
+      "bull_outstanding": 321002500,
+      "bear_outstanding": 1185000,
+      "total_outstanding": 322187500,
+      "bull_bear_ratio": 270.89,
       "leverage_state": "bull_skew_froth",
-      "n_cbbc_contracts": 46,
+      "n_cbbc_contracts": 43,
       "data_note": "outstanding qty from daily XLSX; mandatory call price not yet in SLD store",
       "magnet_below": false,
       "magnet_above": false,
@@ -225,12 +215,12 @@
       "name_en": "Baidu",
       "name_zh": "\u767e\u5ea6",
       "is_index": false,
-      "bull_outstanding": 177985000,
-      "bear_outstanding": 19435000,
-      "total_outstanding": 197420000,
-      "bull_bear_ratio": 9.16,
+      "bull_outstanding": 189495000,
+      "bear_outstanding": 18365000,
+      "total_outstanding": 207860000,
+      "bull_bear_ratio": 10.32,
       "leverage_state": "bull_skew_froth",
-      "n_cbbc_contracts": 54,
+      "n_cbbc_contracts": 47,
       "data_note": "call price coverage 33% \u2014 low SLD coverage; magnets may be incomplete",
       "magnet_below": true,
       "magnet_above": false,
@@ -241,9 +231,9 @@
           "distance_pct": -3.0,
           "level_approx": 83.23,
           "side": "bull",
-          "outstanding_sum": 4270000,
-          "n_contracts": 2,
-          "bull_outstanding": 4270000,
+          "outstanding_sum": 4220000,
+          "n_contracts": 1,
+          "bull_outstanding": 4220000,
           "bear_outstanding": 0
         },
         {
@@ -251,9 +241,9 @@
           "distance_pct": -9.0,
           "level_approx": 78.08,
           "side": "bull",
-          "outstanding_sum": 43890000,
+          "outstanding_sum": 46890000,
           "n_contracts": 1,
-          "bull_outstanding": 43890000,
+          "bull_outstanding": 46890000,
           "bear_outstanding": 0
         },
         {
@@ -261,15 +251,15 @@
           "distance_pct": 9.0,
           "level_approx": 93.52,
           "side": "bear",
-          "outstanding_sum": 530000,
+          "outstanding_sum": 320000,
           "n_contracts": 2,
           "bull_outstanding": 0,
-          "bear_outstanding": 530000
+          "bear_outstanding": 320000
         }
       ],
-      "call_level_coverage": 0.326,
-      "total_outstanding_with_call": 64360000,
-      "total_outstanding_without_call": 133060000
+      "call_level_coverage": 0.3269,
+      "total_outstanding_with_call": 67950000,
+      "total_outstanding_without_call": 139910000
     },
     {
       "ticker": "1024.HK",
@@ -295,13 +285,13 @@
       "name_en": "SMIC",
       "name_zh": "\u4e2d\u82af\u56fd\u9645",
       "is_index": false,
-      "bull_outstanding": 393900000,
-      "bear_outstanding": 76495000,
-      "total_outstanding": 470395000,
-      "bull_bear_ratio": 5.15,
+      "bull_outstanding": 379230000,
+      "bear_outstanding": 78340000,
+      "total_outstanding": 457570000,
+      "bull_bear_ratio": 4.84,
       "leverage_state": "bull_skew_froth",
-      "n_cbbc_contracts": 89,
-      "data_note": "call price coverage 22% \u2014 low SLD coverage; magnets may be incomplete",
+      "n_cbbc_contracts": 82,
+      "data_note": "call price coverage 20% \u2014 low SLD coverage; magnets may be incomplete",
       "magnet_below": true,
       "magnet_above": false,
       "nearest_magnet_pct": -9.0,
@@ -311,19 +301,9 @@
           "distance_pct": -3.0,
           "level_approx": 58.83,
           "side": "bull",
-          "outstanding_sum": 30180000,
+          "outstanding_sum": 29350000,
           "n_contracts": 1,
-          "bull_outstanding": 30180000,
-          "bear_outstanding": 0
-        },
-        {
-          "bucket": -3,
-          "distance_pct": -5.0,
-          "level_approx": 57.62,
-          "side": "bull",
-          "outstanding_sum": 2280000,
-          "n_contracts": 1,
-          "bull_outstanding": 2280000,
+          "bull_outstanding": 29350000,
           "bear_outstanding": 0
         },
         {
@@ -331,9 +311,9 @@
           "distance_pct": -7.0,
           "level_approx": 56.4,
           "side": "bull",
-          "outstanding_sum": 5930000,
+          "outstanding_sum": 5805000,
           "n_contracts": 1,
-          "bull_outstanding": 5930000,
+          "bull_outstanding": 5805000,
           "bear_outstanding": 0
         },
         {
@@ -341,28 +321,28 @@
           "distance_pct": -9.0,
           "level_approx": 55.19,
           "side": "bull",
-          "outstanding_sum": 38580000,
-          "n_contracts": 3,
-          "bull_outstanding": 38580000,
+          "outstanding_sum": 26870000,
+          "n_contracts": 2,
+          "bull_outstanding": 26870000,
           "bear_outstanding": 0
         }
       ],
-      "call_level_coverage": 0.2218,
-      "total_outstanding_with_call": 104330000,
-      "total_outstanding_without_call": 366065000
+      "call_level_coverage": 0.1975,
+      "total_outstanding_with_call": 90375000,
+      "total_outstanding_without_call": 367195000
     },
     {
       "ticker": "0388.HK",
       "name_en": "HKEx",
       "name_zh": "\u6e2f\u4ea4\u6240",
       "is_index": false,
-      "bull_outstanding": 269030000,
-      "bear_outstanding": 62360000,
-      "total_outstanding": 331390000,
-      "bull_bear_ratio": 4.31,
+      "bull_outstanding": 283305000,
+      "bear_outstanding": 62380000,
+      "total_outstanding": 345685000,
+      "bull_bear_ratio": 4.54,
       "leverage_state": "bull_skew_froth",
-      "n_cbbc_contracts": 153,
-      "data_note": "call price coverage 12% \u2014 low SLD coverage; magnets may be incomplete",
+      "n_cbbc_contracts": 146,
+      "data_note": "call price coverage 8% \u2014 low SLD coverage; magnets may be incomplete",
       "magnet_below": true,
       "magnet_above": true,
       "nearest_magnet_pct": -5.0,
@@ -372,9 +352,9 @@
           "distance_pct": -3.0,
           "level_approx": 376.17,
           "side": "bull",
-          "outstanding_sum": 21385000,
-          "n_contracts": 3,
-          "bull_outstanding": 21385000,
+          "outstanding_sum": 14545000,
+          "n_contracts": 2,
+          "bull_outstanding": 14545000,
           "bear_outstanding": 0
         },
         {
@@ -382,9 +362,9 @@
           "distance_pct": -5.0,
           "level_approx": 368.41,
           "side": "bull",
-          "outstanding_sum": 5760000,
+          "outstanding_sum": 5365000,
           "n_contracts": 2,
-          "bull_outstanding": 5760000,
+          "bull_outstanding": 5365000,
           "bear_outstanding": 0
         },
         {
@@ -392,19 +372,19 @@
           "distance_pct": 5.0,
           "level_approx": 407.19,
           "side": "bear",
-          "outstanding_sum": 8500000,
+          "outstanding_sum": 5500000,
           "n_contracts": 1,
           "bull_outstanding": 0,
-          "bear_outstanding": 8500000
+          "bear_outstanding": 5500000
         },
         {
           "bucket": -4,
           "distance_pct": -7.0,
           "level_approx": 360.65,
           "side": "bull",
-          "outstanding_sum": 1345000,
+          "outstanding_sum": 1285000,
           "n_contracts": 1,
-          "bull_outstanding": 1345000,
+          "bull_outstanding": 1285000,
           "bear_outstanding": 0
         },
         {
@@ -418,16 +398,16 @@
           "bear_outstanding": 1150000
         }
       ],
-      "call_level_coverage": 0.1151,
-      "total_outstanding_with_call": 38140000,
-      "total_outstanding_without_call": 293250000
+      "call_level_coverage": 0.0806,
+      "total_outstanding_with_call": 27845000,
+      "total_outstanding_without_call": 317840000
     }
   ],
   "banner": null,
-  "cbbc_total_contracts": 35633,
-  "dw_total_contracts": 41963,
-  "sld_call_levels_in_store": 3985,
-  "sld_max_issue_date": "2026-09-30",
+  "cbbc_total_contracts": 28340,
+  "dw_total_contracts": 34378,
+  "sld_call_levels_in_store": 4033,
+  "sld_max_issue_date": "2026-10-02",
   "sld_freshness": "fresh",
   "sld_pdftotext_available": true,
   "sld_banner": null,

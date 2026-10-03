@@ -393,7 +393,7 @@
       
       <button class="fv-vital" data-goto-sec="sources">
         <span class="vk">▣ <span class="l-en">Sources</span><span class="l-zh">数据来源</span></span>
-        <span class="vv"><span class="l-en"><span class="tnum">3</span> of 5 legs current</span><span class="l-zh">5条数据源·<span class="tnum">3</span>条最新</span><span class="arrow">→</span></span>
+        <span class="vv"><span class="l-en"><span class="tnum">1</span> of 5 legs current</span><span class="l-zh">5条数据源·<span class="tnum">1</span>条最新</span><span class="arrow">→</span></span>
         <span class="vs"><span class="l-en">what's current, what's behind</span><span class="l-zh">各源新鲜度一览</span></span>
       </button>
       <button class="fv-vital" data-goto-sec="changed">
@@ -430,19 +430,19 @@
         <span class="s-state"><span class="l-en">current</span><span class="l-zh">最新</span></span>
       </div>
       
-      <div class="fv-src fv-src--current"
-           data-tip-en="Official Stock-Connect southbound aggregate net flow — Eastmoney RPT_MUTUAL_DEAL_HISTORY, whole-channel tape." data-tip-zh="沪深港通南向整体净流入——东方财富 RPT_MUTUAL_DEAL_HISTORY，整条通道口径。" role="button" tabindex="0"
+      <div class="fv-src fv-src--behind"
+           data-tip-en="Official Stock-Connect southbound aggregate net flow — Eastmoney RPT_MUTUAL_DEAL_HISTORY, whole-channel tape. one session behind its own calendar" data-tip-zh="沪深港通南向整体净流入——东方财富 RPT_MUTUAL_DEAL_HISTORY，整条通道口径。 落后自身日历一个交易日" role="button" tabindex="0"
            data-ev="trust_open" data-ev-id="sb_aggregate">
         <span class="s-name"><span class="l-en">Southbound aggregate</span><span class="l-zh">南向整体</span></span>
         <span class="s-meta tnum">2026-09-30 · 1</span>
-        <span class="s-state"><span class="l-en">current</span><span class="l-zh">最新</span></span>
+        <span class="s-state"><span class="l-en">behind — showing 2026-09-30 data</span><span class="l-zh">滞后 · 显示2026-09-30数据</span></span>
       </div>
       
       <div class="fv-src fv-src--expected_lag"
            data-tip-en="Mainland southbound per-name holdings — Eastmoney RPT_MUTUAL_STOCK_HOLDRANKS, expected one HK session behind. expected — this leg normally lags one session by design" data-tip-zh="内地南向个股持仓——东方财富 RPT_MUTUAL_STOCK_HOLDRANKS，预期滞后一个港股交易日。 预期滞后——该数据源按设计正常滞后一个交易日" role="button" tabindex="0"
            data-ev="trust_open" data-ev-id="hk_sb_holdings">
         <span class="s-name"><span class="l-en">HK southbound holdings</span><span class="l-zh">南向持仓</span></span>
-        <span class="s-meta tnum">2026-09-29 · 501 (431 sized)</span>
+        <span class="s-meta tnum">2026-09-30 · 501 (425 sized)</span>
         <span class="s-state"><span class="l-en">expected T−1</span><span class="l-zh">预期T−1</span></span>
       </div>
       
@@ -454,12 +454,12 @@
         <span class="s-state"><span class="l-en">historical only — ended 2024-08-16</span><span class="l-zh">仅历史 · 止于2024-08-16</span></span>
       </div>
       
-      <div class="fv-src fv-src--current"
-           data-tip-en="Dragon-Tiger institutional-seat net flow on recent event-selected names — an anonymous, event-selected sample, never a market-wide census. event-window sample — a quiet stretch is normal" data-tip-zh="近期事件筛选个股的龙虎榜机构专用席位净额——匿名、事件样本，非市场普查。 事件窗口样本——平静期属正常现象" role="button" tabindex="0"
+      <div class="fv-src fv-src--unavailable"
+           data-tip-en="Dragon-Tiger institutional-seat net flow on recent event-selected names — an anonymous, event-selected sample, never a market-wide census. no usable date could be read" data-tip-zh="近期事件筛选个股的龙虎榜机构专用席位净额——匿名、事件样本，非市场普查。 无法读取有效日期" role="button" tabindex="0"
            data-ev="trust_open" data-ev-id="lhb_inst_seats">
         <span class="s-name"><span class="l-en">Dragon-Tiger institutional seats</span><span class="l-zh">龙虎榜机构专用</span></span>
-        <span class="s-meta tnum">2026-09-30 · 104</span>
-        <span class="s-state"><span class="l-en">current</span><span class="l-zh">最新</span></span>
+        <span class="s-meta tnum">— · —</span>
+        <span class="s-state"><span class="l-en">unavailable</span><span class="l-zh">不可用</span></span>
       </div>
       
     </div>
@@ -565,7 +565,7 @@
         
       </ul>
       
-      <details class="fv-disc" data-ev="changed_expand"><summary><span class="l-en">all 18 changes</span><span class="l-zh">全部 18 项变化</span></summary>
+      <details class="fv-disc" data-ev="changed_expand"><summary><span class="l-en">all 20 changes</span><span class="l-zh">全部 20 项变化</span></summary>
         <ul class="fv-chg-list">
           
           
@@ -665,6 +665,28 @@
   <b><span class="l-en">Software & AI Apps</span><span class="l-zh">软件与AI应用</span></b>
   <span class="l-en">: <span class="l-en">rank</span><span class="l-zh">排名</span> 8 → 4</span>
   <span class="l-zh">：<span class="l-en">rank</span><span class="l-zh">排名</span> 8 → 4</span>
+</li>
+
+          
+          
+
+
+<li class="fv-chg-row">
+  <b><span class="l-en">Southbound aggregate</span><span class="l-zh">南向整体</span></b>
+  
+  
+  <span class="l-en">: current → behind</span><span class="l-zh">：最新 → 滞后</span>
+</li>
+
+          
+          
+
+
+<li class="fv-chg-row">
+  <b><span class="l-en">Dragon-Tiger institutional seats</span><span class="l-zh">龙虎榜机构专用</span></b>
+  
+  
+  <span class="l-en">: current → unavailable</span><span class="l-zh">：最新 → 不可用</span>
 </li>
 
           
@@ -1237,7 +1259,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -1519,7 +1541,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -1801,7 +1823,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -2082,7 +2104,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -2364,7 +2386,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -2646,7 +2668,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -2911,7 +2933,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -3193,7 +3215,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -3475,7 +3497,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -3757,7 +3779,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -4039,7 +4061,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -4239,7 +4261,7 @@
                 <span class="fv-cov-badge" data-tip-en="6 of 6 members present and scored (100.0% coverage)" data-tip-zh="6只成分股中6只已纳入并评分（覆盖率100.0%）" role="button" tabindex="0">6/6</span>
                 
                 <span class="fv-conc-chip" data-tip-en="1 member(s) also belong to another curated theme (themes may overlap)" data-tip-zh="1只成分股同时属于其他精选主题（主题可重叠）" role="button" tabindex="0"><span class="l-en">overlap 1</span><span class="l-zh">重叠1</span></span>
-                <span class="attn" data-tip-en="Members with institutional-seat activity on the Dragon-Tiger board" data-tip-zh="有龙虎榜机构席位活动的成分股" style="margin-left:6px">1 <span class="l-en">inst seats</span><span class="l-zh">机构席位</span></span>
+                
               </td>
               
               <td class="tnum"><span class="chg neg" style="opacity:.72">-2.3%</span></td>
@@ -4321,7 +4343,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -4363,9 +4385,9 @@
 
             
             
-<tr class="mrow conf-sell" data-sector="cn_gold">
-  <td class="mname snm"><i class="cdot conf-sell"></i> <a href="https://app.mastermind-x.com/terminal?sym=600547.SS&amp;from=macro" target="_blank" rel="noopener" data-ev="terminal_out" data-ev-id="600547.SS">山东黄金<span class="tk">600547.SS</span></a></td>
-  <td><span class="seat sell" data-tip-en="Dragon-Tiger institutional-seat net flow (institutional-dedicated seats)" data-tip-zh="龙虎榜机构专用席位净额">🏛 -0.2亿 <span class="ss">1/1</span></span></td>
+<tr class="mrow " data-sector="cn_gold">
+  <td class="mname snm"><a href="https://app.mastermind-x.com/terminal?sym=600547.SS&amp;from=macro" target="_blank" rel="noopener" data-ev="terminal_out" data-ev-id="600547.SS">山东黄金<span class="tk">600547.SS</span></a></td>
+  <td></td>
   <td class="tnum"><span class="chg neg" style="opacity:.72">-5.7%</span></td>
   <td>
 
@@ -4569,7 +4591,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -4800,7 +4822,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -5082,7 +5104,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -5364,7 +5386,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -5564,7 +5586,7 @@
                 <span class="fv-cov-badge" data-tip-en="16 of 16 members present and scored (100.0% coverage)" data-tip-zh="16只成分股中16只已纳入并评分（覆盖率100.0%）" role="button" tabindex="0">16/16</span>
                 
                 <span class="fv-conc-chip" data-tip-en="1 member(s) also belong to another curated theme (themes may overlap)" data-tip-zh="1只成分股同时属于其他精选主题（主题可重叠）" role="button" tabindex="0"><span class="l-en">overlap 1</span><span class="l-zh">重叠1</span></span>
-                <span class="attn" data-tip-en="Members with institutional-seat activity on the Dragon-Tiger board" data-tip-zh="有龙虎榜机构席位活动的成分股" style="margin-left:6px">1 <span class="l-en">inst seats</span><span class="l-zh">机构席位</span></span>
+                
               </td>
               
               <td class="tnum"><span class="chg neg" style="opacity:.72">-3.7%</span></td>
@@ -5646,7 +5668,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -5790,9 +5812,9 @@
 <span class="vstate out"><span class="l-en">below norm, worsening</span><span class="l-zh">低于常态·加剧</span></span></td>
   <td class="tnum" colspan="3"><span class="rk na">—</span></td>
 </tr>
-<tr class="mrow conf-diverge" data-sector="cn_battery">
-  <td class="mname snm"><i class="cdot conf-diverge"></i> <a href="https://app.mastermind-x.com/terminal?sym=002074.SZ&amp;from=macro" target="_blank" rel="noopener" data-ev="terminal_out" data-ev-id="002074.SZ">国轩高科<span class="tk">002074.SZ</span></a></td>
-  <td><span class="seat sell" data-tip-en="Dragon-Tiger institutional-seat net flow (institutional-dedicated seats)" data-tip-zh="龙虎榜机构专用席位净额">🏛 -0.1亿 <span class="ss">0/1</span></span></td>
+<tr class="mrow " data-sector="cn_battery">
+  <td class="mname snm"><a href="https://app.mastermind-x.com/terminal?sym=002074.SZ&amp;from=macro" target="_blank" rel="noopener" data-ev="terminal_out" data-ev-id="002074.SZ">国轩高科<span class="tk">002074.SZ</span></a></td>
+  <td></td>
   <td class="tnum"><span class="chg neg" style="opacity:.72">-1.4%</span></td>
   <td>
 
@@ -5928,7 +5950,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -6210,7 +6232,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -6492,7 +6514,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -6773,7 +6795,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -7055,7 +7077,7 @@
         </div>
         
         <div class="fv-published-track">
-          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span>
+          <span class="fv-published-seg" style="left:68.33%;width:8.33%"></span><span class="fv-published-seg" style="left:86.67%;width:10.0%"></span><span class="fv-published-seg" style="left:98.33%;width:1.67%"></span>
         </div>
         
         </div>
@@ -9453,80 +9475,6 @@
     
 
     
-    
-    <details class="fv-disc" id="confluence">
-      <summary>⚖ <span class="l-en">Fast money × institutional seats</span><span class="l-zh">资金 × 机构席位</span> — <span class="tnum">7</span> <span class="l-en">agree</span><span class="l-zh">一致</span> · <span class="tnum">2</span> <span class="l-en">clash</span><span class="l-zh">背离</span></summary>
-      <div class="fv-disc-body">
-        <p class="fv-stance"><span class="l-en">When large-order flow and the Dragon-Tiger institutional seats <b>agree</b>, the positioning read is firmest. When they <b>clash</b>, treat the move with caution — someone is early or wrong.</span><span class="l-zh">当主力大单流向与龙虎榜机构席位<b>一致</b>时，仓位判断最稳；当二者<b>背离</b>时，谨慎对待——总有一方过早或看错。</span></p>
-        <div class="fv-conf">
-          <div class="conf-col agree">
-            <div class="conf-col-h" style="display:flex;align-items:baseline;gap:8px"><span class="ct">✅ <span class="l-en">They agree</span><span class="l-zh">二者一致</span></span><span class="cn">7</span>
-              <div class="cs" style="flex-basis:100%"><span class="l-en">flow and institutional seats point the same way</span><span class="l-zh">资金与机构席位同向</span></div></div>
-            
-            <div class="conf-row">
-              <span class="cr-nm"><i class="cdot conf-buy"></i><a href="https://app.mastermind-x.com/terminal?sym=600325.SS&amp;from=macro" target="_blank" rel="noopener" data-ev="terminal_out" data-ev-id="600325.SS">华发股份<span class="tk">600325.SS</span></a></span>
-              <span class="chg pos">+2.5σ</span>
-              <span class="seat buy">⚖ +0.2亿</span>
-            </div>
-            
-            <div class="conf-row">
-              <span class="cr-nm"><i class="cdot conf-buy"></i><a href="https://app.mastermind-x.com/terminal?sym=301047.SZ&amp;from=macro" target="_blank" rel="noopener" data-ev="terminal_out" data-ev-id="301047.SZ">义翘神州<span class="tk">301047.SZ</span></a></span>
-              <span class="chg pos">+1.7σ</span>
-              <span class="seat buy">⚖ +0.9亿</span>
-            </div>
-            
-            <div class="conf-row">
-              <span class="cr-nm"><i class="cdot conf-sell"></i><a href="https://app.mastermind-x.com/terminal?sym=600547.SS&amp;from=macro" target="_blank" rel="noopener" data-ev="terminal_out" data-ev-id="600547.SS">山东黄金<span class="tk">600547.SS</span></a></span>
-              <span class="chg neg">-1.4σ</span>
-              <span class="seat sell">⚖ -0.2亿</span>
-            </div>
-            
-            <div class="conf-row">
-              <span class="cr-nm"><i class="cdot conf-buy"></i><a href="https://app.mastermind-x.com/terminal?sym=000002.SZ&amp;from=macro" target="_blank" rel="noopener" data-ev="terminal_out" data-ev-id="000002.SZ">万  科Ａ<span class="tk">000002.SZ</span></a></span>
-              <span class="chg pos">+1.4σ</span>
-              <span class="seat buy">⚖ +0.9亿</span>
-            </div>
-            
-            <div class="conf-row">
-              <span class="cr-nm"><i class="cdot conf-buy"></i><a href="https://app.mastermind-x.com/terminal?sym=600657.SS&amp;from=macro" target="_blank" rel="noopener" data-ev="terminal_out" data-ev-id="600657.SS">信达地产<span class="tk">600657.SS</span></a></span>
-              <span class="chg pos">+1.4σ</span>
-              <span class="seat buy">⚖ +0.2亿</span>
-            </div>
-            
-            <div class="conf-row">
-              <span class="cr-nm"><i class="cdot conf-buy"></i><a href="https://app.mastermind-x.com/terminal?sym=002827.SZ&amp;from=macro" target="_blank" rel="noopener" data-ev="terminal_out" data-ev-id="002827.SZ">高争民爆<span class="tk">002827.SZ</span></a></span>
-              <span class="chg pos">+1.1σ</span>
-              <span class="seat buy">⚖ +0.5亿</span>
-            </div>
-            
-            <div class="conf-row">
-              <span class="cr-nm"><i class="cdot conf-buy"></i><a href="https://app.mastermind-x.com/terminal?sym=000513.SZ&amp;from=macro" target="_blank" rel="noopener" data-ev="terminal_out" data-ev-id="000513.SZ">丽珠集团<span class="tk">000513.SZ</span></a></span>
-              <span class="chg pos">+1.1σ</span>
-              <span class="seat buy">⚖ +0.1亿</span>
-            </div>
-            
-          </div>
-          <div class="conf-col diverge">
-            <div class="conf-col-h" style="display:flex;align-items:baseline;gap:8px"><span class="ct">⚠️ <span class="l-en">They clash</span><span class="l-zh">二者背离</span></span><span class="cn">2</span>
-              <div class="cs" style="flex-basis:100%"><span class="l-en">flow one way, institutional seats the other</span><span class="l-zh">资金与机构席位相反</span></div></div>
-            
-            <div class="conf-row">
-              <span class="cr-nm"><i class="cdot conf-diverge"></i><a href="https://app.mastermind-x.com/terminal?sym=605011.SS&amp;from=macro" target="_blank" rel="noopener" data-ev="terminal_out" data-ev-id="605011.SS">杭州热电<span class="tk">605011.SS</span></a></span>
-              <span class="chg pos">+1.6σ</span>
-              <span class="seat sell">⚖ -0.0亿</span>
-            </div>
-            
-            <div class="conf-row">
-              <span class="cr-nm"><i class="cdot conf-diverge"></i><a href="https://app.mastermind-x.com/terminal?sym=002074.SZ&amp;from=macro" target="_blank" rel="noopener" data-ev="terminal_out" data-ev-id="002074.SZ">国轩高科<span class="tk">002074.SZ</span></a></span>
-              <span class="chg pos">+1.3σ</span>
-              <span class="seat sell">⚖ -0.1亿</span>
-            </div>
-            
-          </div>
-        </div>
-      </div>
-    </details>
-    
 
     
     
@@ -9544,7 +9492,7 @@
 
       <div class="panel">
         <div class="panel-h">🇭🇰 <span class="l-en">Mainland southbound per-name</span><span class="l-zh">内地南向个股</span>
-          <span class="asof"><span class="l-en">as of</span><span class="l-zh">截至</span> 2026-09-29 · <span class="l-en">expected T−1</span><span class="l-zh">预期T−1</span></span>
+          <span class="asof"><span class="l-en">as of</span><span class="l-zh">截至</span> 2026-09-30 · <span class="l-en">expected T−1</span><span class="l-zh">预期T−1</span></span>
           </div>
         <div class="tbl-wrap">
           <table class="board" id="hktbl">
@@ -9557,21 +9505,29 @@
             </tr></thead>
             <tbody>
             
-            <tr><td class="snm"><span class="mname-unlinked">百度集团-W<span class="tk">9888.HK</span></span></td>
+            <tr><td class="snm"><span class="mname-unlinked">康希诺生物<span class="tk">6185.HK</span></span></td>
               <td style="text-align:left">
 <span class="vstate in"><span class="l-en">accumulating</span><span class="l-zh">加仓</span></span></td>
               <td>
 <span class="chg na">·</span></td>
-              <td><span class="ownbar"><i style="width:12.0%"></i></span> 3.6</td>
-              <td>HK$8.3B</td></tr>
+              <td><span class="ownbar"><i style="width:100%"></i></span> 45.7</td>
+              <td>HK$2.2B</td></tr>
             
             <tr><td class="snm"><span class="mname-unlinked">中环新能源<span class="tk">1735.HK</span></span></td>
               <td style="text-align:left">
 <span class="vstate in"><span class="l-en">accumulating</span><span class="l-zh">加仓</span></span></td>
               <td>
 <span class="chg na">·</span></td>
-              <td><span class="ownbar"><i style="width:14.0%"></i></span> 4.3</td>
-              <td>HK$2.1B</td></tr>
+              <td><span class="ownbar"><i style="width:15.0%"></i></span> 4.4</td>
+              <td>HK$2.2B</td></tr>
+            
+            <tr><td class="snm"><span class="mname-unlinked">均胜电子<span class="tk">0699.HK</span></span></td>
+              <td style="text-align:left">
+<span class="vstate in"><span class="l-en">accumulating</span><span class="l-zh">加仓</span></span></td>
+              <td>
+<span class="chg na">·</span></td>
+              <td><span class="ownbar"><i style="width:100%"></i></span> 32.9</td>
+              <td>HK$0.6B</td></tr>
             
             <tr><td class="snm"><span class="mname-unlinked">信和置业<span class="tk">0083.HK</span></span></td>
               <td style="text-align:left">
@@ -9581,45 +9537,37 @@
               <td><span class="ownbar"><i style="width:5.0%"></i></span> 1.4</td>
               <td>HK$1.4B</td></tr>
             
-            <tr><td class="snm"><span class="mname-unlinked">国富量子<span class="tk">0290.HK</span></span></td>
-              <td style="text-align:left">
-<span class="vstate in"><span class="l-en">accumulating</span><span class="l-zh">加仓</span></span></td>
-              <td>
-<span class="chg na">·</span></td>
-              <td><span class="ownbar"><i style="width:15.0%"></i></span> 4.5</td>
-              <td>HK$0.7B</td></tr>
-            
             <tr><td class="snm"><span class="mname-unlinked">H&amp;H国际控股<span class="tk">1112.HK</span></span></td>
               <td style="text-align:left">
 <span class="vstate in"><span class="l-en">accumulating</span><span class="l-zh">加仓</span></span></td>
               <td>
 <span class="chg na">·</span></td>
               <td><span class="ownbar"><i style="width:31.0%"></i></span> 9.4</td>
-              <td>HK$1.1B</td></tr>
+              <td>HK$1.2B</td></tr>
             
-            <tr><td class="snm"><span class="mname-unlinked">和铂医药-B<span class="tk">2142.HK</span></span></td>
+            <tr><td class="snm"><span class="mname-unlinked">昭衍新药<span class="tk">6127.HK</span></span></td>
               <td style="text-align:left">
 <span class="vstate in"><span class="l-en">accumulating</span><span class="l-zh">加仓</span></span></td>
               <td>
 <span class="chg na">·</span></td>
-              <td><span class="ownbar"><i style="width:39.0%"></i></span> 11.6</td>
-              <td>HK$1.4B</td></tr>
+              <td><span class="ownbar"><i style="width:100%"></i></span> 48.6</td>
+              <td>HK$1.8B</td></tr>
             
             
-            <tr><td class="snm"><span class="mname-unlinked">山东墨龙<span class="tk">0568.HK</span></span></td>
+            <tr><td class="snm"><span class="mname-unlinked">康耐特光学<span class="tk">2276.HK</span></span></td>
               <td style="text-align:left">
 <span class="vstate out"><span class="l-en">distributing</span><span class="l-zh">减仓</span></span></td>
               <td>
 <span class="chg na">·</span></td>
-              <td><span class="ownbar"><i style="width:100%"></i></span> 51.2</td>
-              <td>HK$0.6B</td></tr>
+              <td><span class="ownbar"><i style="width:26.0%"></i></span> 7.9</td>
+              <td>HK$1.4B</td></tr>
             
             <tr><td class="snm"><span class="mname-unlinked">灵宝黄金<span class="tk">3330.HK</span></span></td>
               <td style="text-align:left">
 <span class="vstate out"><span class="l-en">distributing</span><span class="l-zh">减仓</span></span></td>
               <td>
 <span class="chg na">·</span></td>
-              <td><span class="ownbar"><i style="width:100%"></i></span> 32.4</td>
+              <td><span class="ownbar"><i style="width:100%"></i></span> 31.9</td>
               <td>HK$7.6B</td></tr>
             
             <tr><td class="snm"><span class="mname-unlinked">山东黄金<span class="tk">1787.HK</span></span></td>
@@ -9627,32 +9575,32 @@
 <span class="vstate out"><span class="l-en">distributing</span><span class="l-zh">减仓</span></span></td>
               <td>
 <span class="chg na">·</span></td>
-              <td><span class="ownbar"><i style="width:100%"></i></span> 56.8</td>
-              <td>HK$10.5B</td></tr>
+              <td><span class="ownbar"><i style="width:100%"></i></span> 55.1</td>
+              <td>HK$10.7B</td></tr>
             
             <tr><td class="snm"><span class="mname-unlinked">万国黄金集团<span class="tk">3939.HK</span></span></td>
               <td style="text-align:left">
 <span class="vstate out"><span class="l-en">distributing</span><span class="l-zh">减仓</span></span></td>
               <td>
 <span class="chg na">·</span></td>
-              <td><span class="ownbar"><i style="width:45.0%"></i></span> 13.5</td>
-              <td>HK$7.8B</td></tr>
+              <td><span class="ownbar"><i style="width:44.0%"></i></span> 13.2</td>
+              <td>HK$7.9B</td></tr>
             
-            <tr><td class="snm"><span class="mname-unlinked">中创新航<span class="tk">3931.HK</span></span></td>
+            <tr><td class="snm"><span class="mname-unlinked">汇聚科技<span class="tk">1729.HK</span></span></td>
               <td style="text-align:left">
 <span class="vstate out"><span class="l-en">distributing</span><span class="l-zh">减仓</span></span></td>
               <td>
 <span class="chg na">·</span></td>
-              <td><span class="ownbar"><i style="width:50.0%"></i></span> 15.0</td>
-              <td>HK$2.0B</td></tr>
+              <td><span class="ownbar"><i style="width:41.0%"></i></span> 12.3</td>
+              <td>HK$4.6B</td></tr>
             
-            <tr><td class="snm"><span class="mname-unlinked">中升控股<span class="tk">0881.HK</span></span></td>
+            <tr><td class="snm"><span class="mname-unlinked">山东墨龙<span class="tk">0568.HK</span></span></td>
               <td style="text-align:left">
 <span class="vstate out"><span class="l-en">distributing</span><span class="l-zh">减仓</span></span></td>
               <td>
 <span class="chg na">·</span></td>
-              <td><span class="ownbar"><i style="width:35.0%"></i></span> 10.6</td>
-              <td>HK$0.7B</td></tr>
+              <td><span class="ownbar"><i style="width:100%"></i></span> 56.0</td>
+              <td>HK$0.6B</td></tr>
             
             </tbody>
           </table>
@@ -9730,7 +9678,7 @@
     <b><span class="l-en">Method</span><span class="l-zh">方法</span>:</b>
     <span class="qm" data-tip-en="themes threshold recalibrated Sep 2026 — 0.75σ; names & Southbound unchanged at 0.5σ" data-tip-zh="主题阈值于2026年9月重校准——0.75σ；个股与南向维持0.5σ" role="button" tabindex="0">?</span>
     <span class="l-en">Velocity = slope_z of cumulative net-flow (drift ÷ its own volatility); acceleration = the trailing slope of that velocity. A sector’s velocity is the equal-weight mean of its members’. Breadth = the share of groups drawing net inflow. Confluence is a render-time agree/diverge class joining 主力 velocity to the institutional-seat direction on the same ticker — nothing numeric is manufactured. Causal, point-in-time, descriptive context — not investment advice.</span><span class="l-zh">流速＝累计净流向的 slope_z（漂移÷自身波动）；加速度＝该流速的滚动斜率。板块流速＝成分股等权均值。广度＝净流入板块的占比。共振为渲染期一致/背离类别，将主力流速与同一代码的机构席位方向相连——不制造任何分值。因果、时点对齐、描述性背景，非投资建议。</span>
-    · <span class="l-en">Built</span><span class="l-zh">构建于</span> 2026-09-30 15:38 UTC
+    · <span class="l-en">Built</span><span class="l-zh">构建于</span> 2026-10-02 17:23 UTC
   </div>
 </div>
 <script>

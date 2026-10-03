@@ -18,13 +18,13 @@
   "win_pct": 34.8,
   "expectancy_pct": -1.78,
   "median_pct": -2.54,
-  "avg_win_pct": 5.79,
+  "avg_win_pct": 5.78,
   "avg_loss_pct": -5.81,
   "profit_factor": 0.53,
   "ci_lo_pct": 28.4,
   "ci_hi_pct": 44.2,
   "exp_lo_pct": -2.73,
-  "exp_hi_pct": -0.48,
+  "exp_hi_pct": -0.5,
   "median_hold": 10,
   "capture": -0.6,
   "n_capture": 185,
@@ -59,8 +59,8 @@
    "xr": null,
    "ed": "2026-09-30",
    "eb": "t1_hl2",
-   "er": null,
-   "erw": null
+   "er": 94.99,
+   "erw": "re-derivation on today's bars gives 94.9900 (t1_open) against the published entry 93.4050 (t1_hl2); the published entry is point-in-time and is not restated"
   },
   {
    "t": "002051.SZ",
@@ -81,8 +81,8 @@
    "xr": null,
    "ed": "2026-09-30",
    "eb": "t1_hl2",
-   "er": null,
-   "erw": null
+   "er": 8.8,
+   "erw": "re-derivation on today's bars gives 8.8000 (t1_open) against the published entry 8.7500 (t1_hl2); the published entry is point-in-time and is not restated"
   },
   {
    "t": "300390.SZ",
@@ -103,8 +103,8 @@
    "xr": null,
    "ed": "2026-09-30",
    "eb": "t1_hl2",
-   "er": null,
-   "erw": null
+   "er": 49.1,
+   "erw": "re-derivation on today's bars gives 49.1000 (t1_open) against the published entry 49.0900 (t1_hl2); the published entry is point-in-time and is not restated"
   },
   {
    "t": "300474.SZ",
@@ -125,8 +125,8 @@
    "xr": null,
    "ed": "2026-09-30",
    "eb": "t1_hl2",
-   "er": null,
-   "erw": null
+   "er": 51.83,
+   "erw": "re-derivation on today's bars gives 51.8300 (t1_open) against the published entry 51.2350 (t1_hl2); the published entry is point-in-time and is not restated"
   },
   {
    "t": "300782.SZ",
@@ -147,8 +147,8 @@
    "xr": null,
    "ed": "2026-09-30",
    "eb": "t1_hl2",
-   "er": null,
-   "erw": null
+   "er": 71.03,
+   "erw": "re-derivation on today's bars gives 71.0300 (t1_open) against the published entry 70.3650 (t1_hl2); the published entry is point-in-time and is not restated"
   },
   {
    "t": "301196.SZ",
@@ -169,8 +169,8 @@
    "xr": null,
    "ed": "2026-09-30",
    "eb": "t1_hl2",
-   "er": null,
-   "erw": null
+   "er": 85.2,
+   "erw": "re-derivation on today's bars gives 85.2000 (t1_open) against the published entry 86.7900 (t1_hl2); the published entry is point-in-time and is not restated"
   },
   {
    "t": "603698.SS",
@@ -709,7 +709,7 @@
    "e": 53.87,
    "l": 50.57,
    "p": -6.1,
-   "x": -3.52,
+   "x": -3.76,
    "dy": 10,
    "st": "lag",
    "m": true,
@@ -731,7 +731,7 @@
    "e": 24.13,
    "l": 25.89,
    "p": 7.3,
-   "x": 9.9,
+   "x": 9.66,
    "dy": 10,
    "st": "beat",
    "m": true,
@@ -753,7 +753,7 @@
    "e": 181.0,
    "l": 181.24,
    "p": 0.1,
-   "x": 2.74,
+   "x": 2.5,
    "dy": 10,
    "st": "beat",
    "m": true,
@@ -19857,15 +19857,15 @@
     "n_skipped_no_price": 0,
     "n_board_days": 27,
     "win_pct": 41.1,
-    "expectancy_pct": -0.76,
+    "expectancy_pct": -0.77,
     "median_pct": -1.46,
-    "avg_win_pct": 5.02,
-    "avg_loss_pct": -4.79,
+    "avg_win_pct": 5.0,
+    "avg_loss_pct": -4.8,
     "profit_factor": 0.73,
     "ci_lo_pct": 33.4,
     "ci_hi_pct": 48.4,
     "exp_lo_pct": -1.74,
-    "exp_hi_pct": 0.18,
+    "exp_hi_pct": 0.17,
     "median_hold": 10,
     "capture": -0.67,
     "n_capture": 228,
@@ -19900,8 +19900,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 23.94,
+     "erw": "re-derivation on today's bars gives 23.9400 (t1_open) against the published entry 23.9050 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "002244.SZ",
@@ -19922,8 +19922,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 8.99,
+     "erw": "re-derivation on today's bars gives 8.9900 (t1_open) against the published entry 9.4750 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300188.SZ",
@@ -19944,8 +19944,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 10.78,
+     "erw": "re-derivation on today's bars gives 10.7800 (t1_open) against the published entry 10.5100 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300298.SZ",
@@ -19966,8 +19966,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 16.11,
+     "erw": "re-derivation on today's bars gives 16.1100 (t1_open) against the published entry 16.3000 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300601.SZ",
@@ -19988,8 +19988,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 12.86,
+     "erw": "re-derivation on today's bars gives 12.8600 (t1_open) against the published entry 13.1400 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300768.SZ",
@@ -20010,8 +20010,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 15.1,
+     "erw": "re-derivation on today's bars gives 15.1000 (t1_open) against the published entry 14.9050 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300896.SZ",
@@ -20032,8 +20032,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 91.71,
+     "erw": "re-derivation on today's bars gives 91.7100 (t1_open) against the published entry 93.0000 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "301565.SZ",
@@ -20054,8 +20054,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 19.5,
+     "erw": "re-derivation on today's bars gives 19.5000 (t1_open) against the published entry 19.3850 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "600011.SS",
@@ -22156,7 +22156,7 @@
      "e": 7.2,
      "l": 7.06,
      "p": -2.0,
-     "x": 0.6,
+     "x": 0.35,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -22178,7 +22178,7 @@
      "e": 39.48,
      "l": 37.2,
      "p": -5.8,
-     "x": -3.17,
+     "x": -3.41,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -22200,7 +22200,7 @@
      "e": 24.46,
      "l": 22.5,
      "p": -8.0,
-     "x": -5.39,
+     "x": -5.63,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -22222,7 +22222,7 @@
      "e": 44.79,
      "l": 45.85,
      "p": 2.4,
-     "x": 4.98,
+     "x": 4.73,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -22244,7 +22244,7 @@
      "e": 55.91,
      "l": 56.47,
      "p": 1.0,
-     "x": 3.62,
+     "x": 3.38,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -22266,7 +22266,7 @@
      "e": 66.6,
      "l": 66.95,
      "p": 0.5,
-     "x": 3.13,
+     "x": 2.89,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -22288,7 +22288,7 @@
      "e": 55.84,
      "l": 53.03,
      "p": -5.0,
-     "x": -2.42,
+     "x": -2.67,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -22310,7 +22310,7 @@
      "e": 20.59,
      "l": 19.07,
      "p": -7.4,
-     "x": -4.77,
+     "x": -5.02,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -22332,7 +22332,7 @@
      "e": 18.14,
      "l": 17.79,
      "p": -1.9,
-     "x": 0.68,
+     "x": 0.44,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -22354,7 +22354,7 @@
      "e": 9.75,
      "l": 9.55,
      "p": -2.1,
-     "x": 0.56,
+     "x": 0.31,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -22376,7 +22376,7 @@
      "e": 5.36,
      "l": 5.54,
      "p": 3.4,
-     "x": 5.97,
+     "x": 5.72,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -22398,7 +22398,7 @@
      "e": 3.04,
      "l": 3.01,
      "p": -1.0,
-     "x": 1.62,
+     "x": 1.38,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -22420,7 +22420,7 @@
      "e": 16.25,
      "l": 17.87,
      "p": 10.0,
-     "x": 12.58,
+     "x": 12.33,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -30905,15 +30905,15 @@
     "n_skipped_no_price": 0,
     "n_board_days": 20,
     "win_pct": 45.6,
-    "expectancy_pct": -0.3,
+    "expectancy_pct": -0.31,
     "median_pct": -0.99,
-    "avg_win_pct": 5.17,
-    "avg_loss_pct": -4.88,
-    "profit_factor": 0.89,
+    "avg_win_pct": 5.16,
+    "avg_loss_pct": -4.89,
+    "profit_factor": 0.88,
     "ci_lo_pct": 35.4,
     "ci_hi_pct": 55.4,
-    "exp_lo_pct": -1.43,
-    "exp_hi_pct": 0.69,
+    "exp_lo_pct": -1.44,
+    "exp_hi_pct": 0.67,
     "median_hold": 10,
     "capture": -0.23,
     "n_capture": 200,
@@ -30948,8 +30948,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 8.99,
+     "erw": "re-derivation on today's bars gives 8.9900 (t1_open) against the published entry 9.4750 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300007.SZ",
@@ -30970,8 +30970,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 30.63,
+     "erw": "re-derivation on today's bars gives 30.6300 (t1_open) against the published entry 30.5200 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300298.SZ",
@@ -30992,8 +30992,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 16.11,
+     "erw": "re-derivation on today's bars gives 16.1100 (t1_open) against the published entry 16.3000 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300601.SZ",
@@ -31014,8 +31014,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 12.86,
+     "erw": "re-derivation on today's bars gives 12.8600 (t1_open) against the published entry 13.1400 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300896.SZ",
@@ -31036,8 +31036,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 91.71,
+     "erw": "re-derivation on today's bars gives 91.7100 (t1_open) against the published entry 93.0000 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "600011.SS",
@@ -33402,7 +33402,7 @@
      "e": 7.2,
      "l": 7.06,
      "p": -2.0,
-     "x": 0.6,
+     "x": 0.35,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -33424,7 +33424,7 @@
      "e": 13.01,
      "l": 10.29,
      "p": -20.9,
-     "x": -18.27,
+     "x": -18.51,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -33446,7 +33446,7 @@
      "e": 39.48,
      "l": 37.2,
      "p": -5.8,
-     "x": -3.17,
+     "x": -3.41,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -33468,7 +33468,7 @@
      "e": 55.84,
      "l": 53.03,
      "p": -5.0,
-     "x": -2.42,
+     "x": -2.67,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -33490,7 +33490,7 @@
      "e": 34.27,
      "l": 35.18,
      "p": 2.7,
-     "x": 5.26,
+     "x": 5.02,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -33512,7 +33512,7 @@
      "e": 17.26,
      "l": 18.0,
      "p": 4.3,
-     "x": 6.9,
+     "x": 6.65,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -33534,7 +33534,7 @@
      "e": 18.14,
      "l": 17.79,
      "p": -1.9,
-     "x": 0.68,
+     "x": 0.44,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -33556,7 +33556,7 @@
      "e": 9.75,
      "l": 9.55,
      "p": -2.1,
-     "x": 0.56,
+     "x": 0.31,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -33578,7 +33578,7 @@
      "e": 5.36,
      "l": 5.54,
      "p": 3.4,
-     "x": 5.97,
+     "x": 5.72,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -33600,7 +33600,7 @@
      "e": 3.04,
      "l": 3.01,
      "p": -1.0,
-     "x": 1.62,
+     "x": 1.38,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -33622,7 +33622,7 @@
      "e": 81.77,
      "l": 75.8,
      "p": -7.3,
-     "x": -4.69,
+     "x": -4.94,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -33644,7 +33644,7 @@
      "e": 16.25,
      "l": 17.87,
      "p": 10.0,
-     "x": 12.58,
+     "x": 12.33,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -39278,15 +39278,15 @@
     "n_skipped_no_price": 0,
     "n_board_days": 20,
     "win_pct": 45.6,
-    "expectancy_pct": -0.3,
+    "expectancy_pct": -0.31,
     "median_pct": -0.99,
-    "avg_win_pct": 5.17,
-    "avg_loss_pct": -4.88,
-    "profit_factor": 0.89,
+    "avg_win_pct": 5.16,
+    "avg_loss_pct": -4.89,
+    "profit_factor": 0.88,
     "ci_lo_pct": 35.4,
     "ci_hi_pct": 55.4,
-    "exp_lo_pct": -1.43,
-    "exp_hi_pct": 0.69,
+    "exp_lo_pct": -1.44,
+    "exp_hi_pct": 0.67,
     "median_hold": 10,
     "capture": -0.23,
     "n_capture": 200,
@@ -39321,8 +39321,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 8.99,
+     "erw": "re-derivation on today's bars gives 8.9900 (t1_open) against the published entry 9.4750 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300007.SZ",
@@ -39343,8 +39343,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 30.63,
+     "erw": "re-derivation on today's bars gives 30.6300 (t1_open) against the published entry 30.5200 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300298.SZ",
@@ -39365,8 +39365,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 16.11,
+     "erw": "re-derivation on today's bars gives 16.1100 (t1_open) against the published entry 16.3000 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300601.SZ",
@@ -39387,8 +39387,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 12.86,
+     "erw": "re-derivation on today's bars gives 12.8600 (t1_open) against the published entry 13.1400 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300896.SZ",
@@ -39409,8 +39409,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 91.71,
+     "erw": "re-derivation on today's bars gives 91.7100 (t1_open) against the published entry 93.0000 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "600011.SS",
@@ -41775,7 +41775,7 @@
      "e": 7.2,
      "l": 7.06,
      "p": -2.0,
-     "x": 0.6,
+     "x": 0.35,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -41797,7 +41797,7 @@
      "e": 13.01,
      "l": 10.29,
      "p": -20.9,
-     "x": -18.27,
+     "x": -18.51,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -41819,7 +41819,7 @@
      "e": 39.48,
      "l": 37.2,
      "p": -5.8,
-     "x": -3.17,
+     "x": -3.41,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -41841,7 +41841,7 @@
      "e": 55.84,
      "l": 53.03,
      "p": -5.0,
-     "x": -2.42,
+     "x": -2.67,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -41863,7 +41863,7 @@
      "e": 34.27,
      "l": 35.18,
      "p": 2.7,
-     "x": 5.26,
+     "x": 5.02,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -41885,7 +41885,7 @@
      "e": 17.26,
      "l": 18.0,
      "p": 4.3,
-     "x": 6.9,
+     "x": 6.65,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -41907,7 +41907,7 @@
      "e": 18.14,
      "l": 17.79,
      "p": -1.9,
-     "x": 0.68,
+     "x": 0.44,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -41929,7 +41929,7 @@
      "e": 9.75,
      "l": 9.55,
      "p": -2.1,
-     "x": 0.56,
+     "x": 0.31,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -41951,7 +41951,7 @@
      "e": 5.36,
      "l": 5.54,
      "p": 3.4,
-     "x": 5.97,
+     "x": 5.72,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -41973,7 +41973,7 @@
      "e": 3.04,
      "l": 3.01,
      "p": -1.0,
-     "x": 1.62,
+     "x": 1.38,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -41995,7 +41995,7 @@
      "e": 81.77,
      "l": 75.8,
      "p": -7.3,
-     "x": -4.69,
+     "x": -4.94,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -42017,7 +42017,7 @@
      "e": 16.25,
      "l": 17.87,
      "p": 10.0,
-     "x": 12.58,
+     "x": 12.33,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -47651,15 +47651,15 @@
     "n_skipped_no_price": 0,
     "n_board_days": 9,
     "win_pct": 39.6,
-    "expectancy_pct": 0.01,
+    "expectancy_pct": -0.0,
     "median_pct": -1.57,
-    "avg_win_pct": 6.36,
-    "avg_loss_pct": -4.16,
+    "avg_win_pct": 6.34,
+    "avg_loss_pct": -4.17,
     "profit_factor": 1.0,
     "ci_lo_pct": 30.3,
     "ci_hi_pct": 49.7,
-    "exp_lo_pct": -0.88,
-    "exp_hi_pct": 0.92,
+    "exp_lo_pct": -0.89,
+    "exp_hi_pct": 0.89,
     "median_hold": 10,
     "capture": 0.0,
     "n_capture": 107,
@@ -47694,8 +47694,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 6.61,
+     "erw": "re-derivation on today's bars gives 6.6100 (t1_open) against the published entry 6.6450 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "000503.SZ",
@@ -47716,8 +47716,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 7.46,
+     "erw": "re-derivation on today's bars gives 7.4600 (t1_open) against the published entry 7.6100 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "001872.SZ",
@@ -47738,8 +47738,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 23.94,
+     "erw": "re-derivation on today's bars gives 23.9400 (t1_open) against the published entry 23.9050 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "002755.SZ",
@@ -47760,8 +47760,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 12.31,
+     "erw": "re-derivation on today's bars gives 12.3100 (t1_open) against the published entry 12.9000 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300188.SZ",
@@ -47782,8 +47782,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 10.78,
+     "erw": "re-derivation on today's bars gives 10.7800 (t1_open) against the published entry 10.5100 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300770.SZ",
@@ -47804,8 +47804,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 34.2,
+     "erw": "re-derivation on today's bars gives 34.2000 (t1_open) against the published entry 34.1050 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "301565.SZ",
@@ -47826,8 +47826,8 @@
      "xr": null,
      "ed": "2026-09-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 19.5,
+     "erw": "re-derivation on today's bars gives 19.5000 (t1_open) against the published entry 19.3850 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "600266.SS",
@@ -50808,7 +50808,7 @@
      "e": 4.41,
      "l": 4.25,
      "p": -3.6,
-     "x": -1.02,
+     "x": -1.26,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -50830,7 +50830,7 @@
      "e": 24.46,
      "l": 22.5,
      "p": -8.0,
-     "x": -5.39,
+     "x": -5.63,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -50852,7 +50852,7 @@
      "e": 44.79,
      "l": 45.85,
      "p": 2.4,
-     "x": 4.98,
+     "x": 4.73,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -50874,7 +50874,7 @@
      "e": 66.6,
      "l": 66.95,
      "p": 0.5,
-     "x": 3.13,
+     "x": 2.89,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -50896,7 +50896,7 @@
      "e": 202.99,
      "l": 181.4,
      "p": -10.6,
-     "x": -8.03,
+     "x": -8.27,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -50918,7 +50918,7 @@
      "e": 18.05,
      "l": 19.29,
      "p": 6.9,
-     "x": 9.51,
+     "x": 9.27,
      "dy": 10,
      "st": "beat",
      "m": true,
@@ -50940,7 +50940,7 @@
      "e": 20.59,
      "l": 19.07,
      "p": -7.4,
-     "x": -4.77,
+     "x": -5.02,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -50962,7 +50962,7 @@
      "e": 5.08,
      "l": 4.96,
      "p": -2.4,
-     "x": 0.25,
+     "x": 0.0,
      "dy": 10,
      "st": "beat",
      "m": true,

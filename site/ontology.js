@@ -467,21 +467,15 @@
         + "recorded it as running.",
         "该路径部分环节暂无当前读数，且所有者未将其记录为运行中。");
     }
-    if (snapshot.contradiction) {
-      var frag = document.createDocumentFragment();
-      frag.appendChild(say("The path is not running. The first step that is not met is ",
-        "该路径未在运行。首个未满足的环节是"));
-      frag.appendChild(bi(name));
-      frag.appendChild(say(
-        " — and a later step reading true does not start it.",
-        "——后段环节为真并不能使其启动。"));
-      return frag;
-    }
+    /* Keep the first glance short. The contradiction flag and blocking card
+       retain the causal warning; a later true leg never starts this path. */
     var simple = document.createDocumentFragment();
-    simple.appendChild(say("The path is not running. The first step that is not met is ",
-      "该路径未在运行。首个未满足的环节是"));
-    simple.appendChild(bi(name));
-    simple.appendChild(say(".", "。"));
+    simple.appendChild(say("Not running. First unmet condition: ",
+      "未运行。首个未满足条件："));
+    var subject = el("span", "ox-answer-subject");
+    subject.appendChild(bi(name));
+    subject.appendChild(say(".", "。"));
+    simple.appendChild(subject);
     return simple;
   }
 

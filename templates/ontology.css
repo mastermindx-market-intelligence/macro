@@ -286,15 +286,16 @@ html[data-theme="light"] .ox-card[data-tone="watch"]{box-shadow:var(--popover-sh
 .ox-hero-lead{min-width:0}
 .ox-answer-title{margin:0;font-size:clamp(var(--fs-h1),3.4vw,var(--fs-display));
   line-height:1.15;font-weight:800;letter-spacing:-.035em;max-width:28ch;overflow-wrap:anywhere}
+.ox-answer-subject{display:inline-block;max-width:100%;vertical-align:top}
 .ox-hero--answer .ox-eyebrow{color:var(--ink-link,var(--info));margin-bottom:var(--sp-4,16px)}
-.ox-hero--answer .ox-answer-summary{margin:0;grid-template-columns:minmax(0,1fr);
+.ox-hero--answer .ox-answer-summary{margin:0;grid-template-columns:minmax(108px,.9fr) minmax(0,1.1fr);
   gap:var(--sp-5,20px);padding:var(--sp-6,24px);background:var(--panel-2)}
 .ox-hero--answer .ox-state{grid-column:1/-1;gap:var(--sp-3,12px)}
 .ox-hero--answer .ox-state-word{font-size:var(--fs-label);line-height:1.4;
   letter-spacing:.08em;text-transform:uppercase;font-weight:700}
 .ox-hero--answer .ox-answer-count{font-size:var(--fs-num-xl)!important}
 .ox-hero--answer .ox-answer-label{font-size:var(--fs-label)}
-.ox-hero--answer .ox-answer-flags{gap:var(--sp-2,8px)}
+.ox-hero--answer .ox-answer-flags{grid-column:1/-1;gap:var(--sp-2,8px)}
 html[data-theme="light"] .ox-hero--answer .ox-answer-summary{
   background:var(--panel);box-shadow:var(--popover-shadow)}
 html:not([data-theme="light"]) .ox-hero--answer .ox-answer-summary{

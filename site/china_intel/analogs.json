@@ -1,7 +1,7 @@
 {
   "schema": "china_intel.analogs.v1",
   "is_context_only": true,
-  "generated_utc": "2026-09-30T15:43:32Z",
+  "generated_utc": "2026-10-02T17:28:40Z",
   "as_of": "2026-09-30",
   "coverage": {
     "start": "2006-03-30",
@@ -15,7 +15,7 @@
     "liquidity": "contracting",
     "cycle": "mid",
     "growth_z": -0.2876,
-    "inflation_z": 1.1251
+    "inflation_z": 1.125
   },
   "analogs": [
     {
@@ -225,7 +225,7 @@
         "h120": 0.055069
       },
       "fwd_csi300": {
-        "h20": -0.030891,
+        "h20": -0.03089,
         "h60": 0.049755,
         "h120": 0.07682
       }

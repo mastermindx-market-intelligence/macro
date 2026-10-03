@@ -1,6 +1,6 @@
 {
  "schema": "signal_golden_vectors/v1",
- "as_of": "2026-09-30",
+ "as_of": "2026-10-02",
  "oracle": "engine.canon.confluence_signals",
  "math": {
   "rsiLen": 14,
@@ -1135,7 +1135,7 @@
     "first_bar": "2015-01-02",
     "last_bar": "2024-12-30"
    },
-   "inputs_hash": "sha256:e797796c95f5f33002394b68733437d489aea2dc5e502e6417d7b50160f657ea",
+   "inputs_hash": "sha256:965e851332929581b02895351aaab858536a1d018e516cd85f994ca0728477ba",
    "n_signals": 61,
    "expected_sequence": [
     {

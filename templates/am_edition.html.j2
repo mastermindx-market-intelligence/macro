@@ -64,12 +64,15 @@
   .ctx-row { display:flex; align-items:center; gap:6px; font-size:13px; line-height:1.4; }
   .ctx-label { color:var(--muted); font-size:11px; font-weight:600; text-transform:uppercase;
                letter-spacing:.05em; white-space:nowrap; }
-  .brief-link-panel { display:flex; align-items:center; gap:10px; padding:10px 16px; }
+  .brief-link-panel { display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:10px 16px; }
   .brief-link { display:inline-flex; align-items:center; gap:6px; background:var(--panel);
                 border:1px solid var(--link); border-radius:var(--r-ctl,6px); padding:7px 14px;
                 font-size:13px; font-weight:600; color:var(--ink-link, var(--link));
-                text-decoration:none; }
+                text-decoration:none; white-space:nowrap; }
   .brief-link:hover { opacity:0.8; }
+  .brief-link-label { white-space:nowrap; flex:0 0 auto; }
+  .brief-link-built { white-space:nowrap; font-variant-numeric:tabular-nums; }
+  @media (max-width:600px){ .brief-link-built { flex-basis:100%; } }
   .state-badge { display:inline-block; background:var(--panel); border:1px solid var(--line);
                  border-radius:var(--r-pill,999px); padding:3px 10px; font-size:12px; font-weight:600; }
   .state-open   { border-color:var(--up); color:var(--up); }
@@ -375,10 +378,11 @@
   {% if block.state == 'STALE_WITH_LAST_KNOWN' and (block.state_reason_en or block.state_reason_zh) %}
   <div class="mx-stale-why">{{ t(block.state_reason_en or '', block.state_reason_zh or block.state_reason_en or '') }}</div>
   {% endif %}
+    {% set _rw_zh_whys = block.rows | map(attribute='condition_zh_disclosed_why') | select | unique | list %}{% for _why in _rw_zh_whys %}<div class="mx-rw-zh-note l-zh">{{ _why }}</div>{% endfor %}
     {% for row in block.rows %}
     <div class="mx-rw-row">
       <div class="mx-rw-text">
-        {{ t(row.condition_en or '', row.condition_zh or row.condition_en or '') }}
+        {{ t(row.condition_en or '', (row.condition_en or '') if row.condition_zh_disclosed_why else (row.condition_zh or row.condition_en or '')) }}
       </div>
       <span class="mx-rw-meta">
         {% if row.since %}{{ t('since', '起始') }} {{ row.since[:10] }}{% endif %}
@@ -430,12 +434,12 @@
 {% if block.key == 'prior_close_brief_ref' %}
 {% if block.rows and block.rows[0].link %}
 <div class="panel brief-link-panel">
-  <span class="muted sm">{{ t('Yesterday\'s brief:', '昨日简报：') }}</span>
+  <span class="muted sm brief-link-label">{{ t('Yesterday\'s brief:', '昨日简报：') }}</span>
   <a class="brief-link" href="{{ block.rows[0].link }}">
     {{ t('Read the AI Daily Brief →', '阅读 AI 每日简报 →') }}
   </a>
   {% if block.rows[0].generated_at %}
-  <span class="muted sm">{{ t('built', '构建于') }} {{ block.rows[0].generated_at }}</span>
+  <span class="muted sm brief-link-built">{{ t('built', '构建于') }} {{ block.rows[0].generated_at }}</span>
   {% endif %}
 </div>
 {% endif %}

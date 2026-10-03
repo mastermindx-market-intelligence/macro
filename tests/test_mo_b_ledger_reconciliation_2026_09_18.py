@@ -14,7 +14,29 @@ from pathlib import Path
 CSV_PATH = Path("research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv")
 MANIFEST_PATH = Path("research/market_intelligence_productization/F00C_TERMINAL_WAVE_RECONCILIATION_MANIFEST_2026-09-09.json")
 INTEGRATION_BASE_SHA = "5332d876e75837c158c6f42a2862734451bb7158"
-OUTSIDE_UNION_SHA256 = "a4fdb5812267ae203faa009ea97dd8c9da3e203c3676d8b4abd33fd95b6355ab"
+# Re-pinned 2026-10-02 by the single lawful F00C writer (CEO A seat ruling D7 over
+# F00A_CENSUS_R1 @ main 32d22a9b; CEO B verifies, never writes). The only outside-union
+# row D7 touched is MO-PAID-072 (restamped `state_delta`, state unchanged). Prior digest:
+# a4fdb5812267ae203faa009ea97dd8c9da3e203c3676d8b4abd33fd95b6355ab.
+# 2026-10-02 wave 2 (same writer, D15 as F01 owner): MO-PAID-001 PARTIAL->BUILT_NOT_PROVEN
+# (the two-axis regime read is built but its only include is dead, dashboard.html.j2:15538);
+# MO-PAID-073 and MO-PAID-057 restamped (state unchanged). All three are union rows, so the
+# outside-union digest is unchanged; CEO B's F06-F13 census (#8264) confirmed 78/79 cells.
+# 2026-10-02 wave 3 (same writer, D17 as F03 owner): MO-PAID-073 PARTIAL->PROVEN_LIVE (freshness = designed T+1 cadence);
+# MO-PAID-077/008 carry served receipts (states unchanged); MO-PAID-006 child text corrected. All four are union rows,
+# so the outside-union digest is unchanged.
+# 2026-10-02 wave 5 (same writer, D21 as F01 owner): MO-PAID-001 BUILT_NOT_PROVEN->PROVEN_LIVE (render 36998130756 + served
+# us_stocks.html == main with id=regime-read); MO-PAID-008 RETRACTS the 07:5xZ 'no pin layer' receipt (layer live since #7377, D26),
+# MO-DELTA-009 (#6958 closed), MO-PAID-011 (natural run observed), MO-PAID-023 (#8267 merged) MO-PAID-006 (plane merged #8276) restamped, states
+# unchanged. All are union rows, so the outside-union digest is unchanged.
+# 2026-10-02 wave 6 (same writer, D27/D28 as F02 owner): MO-PAID-008 BUILT_NOT_PROVEN->PROVEN_LIVE (#8278 c88f7b288b36, 16 cells viewed,
+# served == main) and MO-PAID-023 PARTIAL->PROVEN_LIVE (whitehouse-sentinel 37007365383 state=no_new + served policy_watch.html == main);
+# MO-PAID-011 (DEC §6 proof satisfied by #8280, D29) and MO-PAID-017 (#8265 merged 36d83f1330ff, D30) restamped, states unchanged.
+# All four are union rows, so the outside-union digest is unchanged.
+# 2026-10-02 wave 7 (same writer): MO-PAID-017 restamped PRODUCTION_PROOF (D49, served news.html == main),
+# MO-PAID-011 (O26 minors merged #8283 + receipt #8289, D36/D47) and MO-PAID-008 (O21 family landed, D46/D48)
+# restamped — states unchanged, all three are union rows, outside-union digest unchanged.
+OUTSIDE_UNION_SHA256 = "cb9c1bf581b30bbb75e9fa3fd1f7f953d01f313dff98601dddc45e37ba43ef3c"
 CAPABILITY_STATES = {"NOT_BUILT", "SPEC_ONLY", "PARTIAL", "BUILT_NOT_PROVEN", "PROVEN_LIVE"}
 
 UNION_ROWS = set([
@@ -115,8 +137,8 @@ EXPECTED = {
   ],
   "MO-PAID-001": [
     "UPGRADE_EXISTING_OWNER",
-    "PARTIAL"
-  ],
+    "PROVEN_LIVE"
+  ],  # D21 2026-10-02: BUILT_NOT_PROVEN->PROVEN_LIVE (render + served proof)
   "MO-PAID-002": [
     "UPGRADE_EXISTING_OWNER",
     "PARTIAL"
@@ -131,8 +153,8 @@ EXPECTED = {
   ],
   "MO-PAID-005": [
     "UPGRADE_EXISTING_OWNER",
-    "PARTIAL"
-  ],
+    "PROVEN_LIVE"
+  ],  # D7 2026-10-02: PARTIAL->PROVEN_LIVE
   "MO-PAID-025": [
     "NEW_BOUNDED_BUILD",
     "NOT_BUILT"
@@ -155,20 +177,20 @@ EXPECTED = {
   ],
   "MO-PAID-008": [
     "NEW_BOUNDED_BUILD",
-    "PARTIAL"
-  ],
+    "PROVEN_LIVE"
+  ],  # D27 2026-10-02: BUILT_NOT_PROVEN->PROVEN_LIVE (#8278 c88f7b288b36, 16 cells viewed); D7: PARTIAL->BUILT_NOT_PROVEN
   "MO-PAID-023": [
     "UPGRADE_EXISTING_OWNER",
     "PROVEN_LIVE"
-  ],
+  ],  # D28 2026-10-02: PARTIAL->PROVEN_LIVE (sentinel 37007365383 + served no_new); D7: PROVEN_LIVE->PARTIAL
   "MO-PAID-034": [
     "UPGRADE_EXISTING_OWNER",
     "PROVEN_LIVE"
   ],
   "MO-DELTA-033": [
     "NEW_BOUNDED_BUILD",
-    "SPEC_ONLY"
-  ],
+    "PARTIAL"
+  ],  # D7 2026-10-02: SPEC_ONLY->PARTIAL
   "MO-DELTA-034": [
     "NEW_BOUNDED_BUILD",
     "BUILT_NOT_PROVEN"
@@ -203,11 +225,11 @@ EXPECTED = {
   ],
   "MO-PAID-070": [
     "NEW_BOUNDED_BUILD",
-    "SPEC_ONLY"
-  ],
+    "PARTIAL"
+  ],  # D7 2026-10-02: SPEC_ONLY->PARTIAL
   "MO-PAID-073": [
     "EXACT_EQUIVALENT",
-    "PARTIAL"
+    "PROVEN_LIVE"
   ],
   "MO-PAID-074": [
     "UPGRADE_EXISTING_OWNER",
@@ -223,8 +245,8 @@ EXPECTED = {
   ],
   "MO-PAID-077": [
     "NEW_BOUNDED_BUILD",
-    "PARTIAL"
-  ],
+    "BUILT_NOT_PROVEN"
+  ],  # D7 2026-10-02: PARTIAL->BUILT_NOT_PROVEN
   "MO-DELTA-004": [
     "PROJECTION_ONLY",
     "PARTIAL"
@@ -483,6 +505,11 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     r = _rows()
 
     uk = r["MO-PAID-023"]
+    # D7 (2026-10-02): PROVEN_LIVE->PARTIAL — the served policy_watch.html read
+    # model_unavailable (MO-PAID-023_UK_DIAG_R1: placement fault + latent fallback defect).
+    # D28 (2026-10-02): PARTIAL->PROVEN_LIVE after the #8267 cure — sentinel run 37007365383
+    # (state=no_new) and the served page == main with data-uk-state="no_new". Sol's #7351
+    # closure receipt stays pinned below.
     assert uk["capability_state_c2"] == "PROVEN_LIVE"
     assert "no_new" in (uk["state_delta"] + uk["missing_contract_or_proof"])
     assert "#7351" in uk["missing_contract_or_proof"]

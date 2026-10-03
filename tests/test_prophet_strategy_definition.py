@@ -33,6 +33,8 @@ from engine.prophet_strategy_definition import (
     STRATEGY_ID,
     StrategyDefinitionContractError,
     build_early_leadership_sector_rotation_definition,
+    build_strategy_catalog,
+    validate_strategy_catalog,
     validate_strategy_definition,
 )
 
@@ -1378,3 +1380,148 @@ def test_b4_new_policy_owners_require_the_accepted_strategy_identity():
             prev_close=99.0,
             atr=2.0,
         )
+
+
+# ---------------------------------------------------------------------------
+# Full eight-sleeve roadmap catalog.  This is authority-false architecture
+# truth only: it must not turn retained research avenues into live strategies.
+# ---------------------------------------------------------------------------
+
+
+def _catalog_by_id():
+    catalog = build_strategy_catalog()
+    return catalog, {row["strategy_id"]: row for row in catalog["sleeves"]}
+
+
+def test_strategy_catalog_retains_all_eight_architecture_backed_sleeves():
+    catalog, sleeves = _catalog_by_id()
+    assert [row["strategy_id"] for row in catalog["sleeves"]] == [
+        "CYCLE_CAPTURE",
+        "EARLY_LEADERSHIP_SECTOR_ROTATION",
+        "QUALITY_EARNINGS_EXPECTATION_REVISION",
+        "POLICY_EVENT_SWING",
+        "CATALYST_DISLOCATION",
+        "LIQUIDITY_DEBASEMENT_REAL_ASSETS",
+        "RANGE_MEAN_REVERSION",
+        "DEFENSIVE_AVOIDANCE_HEDGE_RESEARCH",
+    ]
+    assert set(catalog["initial_core_sleeves"]) == {
+        "EARLY_LEADERSHIP_SECTOR_ROTATION",
+        "QUALITY_EARNINGS_EXPECTATION_REVISION",
+        "CYCLE_CAPTURE",
+    }
+    assert set(catalog["retained_later_sleeves"]) == set(sleeves) - set(catalog["initial_core_sleeves"])
+
+
+def test_catalog_preserves_only_existing_early_leadership_control_definition():
+    _catalog, sleeves = _catalog_by_id()
+    early = sleeves["EARLY_LEADERSHIP_SECTOR_ROTATION"]
+    accepted = build_early_leadership_sector_rotation_definition()
+    assert early["definition_status"] == "CONTROL_DEFINED_SHADOW_ONLY"
+    assert early["definition_ref"]["strategy_definition_id"] == accepted["strategy_definition_id"]
+    assert early["horizon"]["primary"] == "2_15_SESSIONS"
+    for strategy_id, row in sleeves.items():
+        if strategy_id == "EARLY_LEADERSHIP_SECTOR_ROTATION":
+            continue
+        assert row["definition_ref"] is None
+        assert "CONTROL_DEFINED" not in row["definition_status"]
+
+
+def test_earnings_and_cycle_horizons_are_research_proposals_not_hold_laws():
+    _catalog, sleeves = _catalog_by_id()
+    earnings = sleeves["QUALITY_EARNINGS_EXPECTATION_REVISION"]
+    cycle = sleeves["CYCLE_CAPTURE"]
+    assert earnings["horizon"] == {
+        "status": "RESEARCH_PROPOSAL_NOT_POLICY",
+        "primary": "H42",
+        "supporting": ["H21", "H63"],
+        "narrative": "weeks to months; proposed research checkpoints are not a printed holding duration",
+        "not_a_hold_law": True,
+    }
+    assert cycle["horizon"]["status"] == "RESEARCH_PROPOSAL_NOT_POLICY"
+    assert cycle["horizon"]["primary"] == "H252"
+    assert cycle["horizon"]["supporting"] == ["H126", "H504"]
+    assert cycle["horizon"]["not_a_hold_law"] is True
+
+
+def test_retained_later_sleeves_do_not_copy_the_tactical_horizon():
+    _catalog, sleeves = _catalog_by_id()
+    for strategy_id in (
+        "POLICY_EVENT_SWING",
+        "CATALYST_DISLOCATION",
+        "LIQUIDITY_DEBASEMENT_REAL_ASSETS",
+        "RANGE_MEAN_REVERSION",
+        "DEFENSIVE_AVOIDANCE_HEDGE_RESEARCH",
+    ):
+        horizon = sleeves[strategy_id]["horizon"]
+        assert horizon["status"] == "OWNER_SPEC_REQUIRED"
+        assert horizon["primary"] is None
+        assert horizon["supporting"] == []
+        assert "2_15_SESSIONS" not in json.dumps(horizon)
+
+
+def test_catalog_keeps_regime_out_of_universal_cross_sectional_ranking():
+    catalog, sleeves = _catalog_by_id()
+    law = catalog["cross_sleeve_law"]
+    assert law["universal_score_authorized"] is False
+    assert law["row_constant_macro_may_rank_stocks"] is False
+    assert law["candidate_may_match_multiple_sleeves"] is True
+    assert law["sleeve_disagreements_are_preserved"] is True
+    assert "general-purpose" in sleeves["RANGE_MEAN_REVERSION"]["constraints"][0].lower()
+
+
+def test_cycle_catalog_does_not_launder_killed_washout_or_rotation_confluence():
+    _catalog, sleeves = _catalog_by_id()
+    cycle = sleeves["CYCLE_CAPTURE"]
+    assert "DNR:KILL-WASHOUT-TURN" in cycle["constraints"]
+    assert "DNR:KILL-ROTATION-CYCLE-CONFLUENCE" in cycle["constraints"]
+    assert any("surviv" in fact for fact in cycle["required_evidence"])
+    assert any("dilution" in fact for fact in cycle["required_evidence"])
+
+
+def test_defensive_sleeve_does_not_mint_short_or_hedge_authority():
+    catalog, sleeves = _catalog_by_id()
+    defensive = sleeves["DEFENSIVE_AVOIDANCE_HEDGE_RESEARCH"]
+    assert "DNR:KILL-DIRECTIONAL-SHORTING" in defensive["constraints"]
+    assert defensive["authority"]["can_activate_short"] is False
+    assert defensive["authority"]["can_activate_options"] is False
+    assert catalog["authority"]["can_activate_short"] is False
+
+
+def test_every_sleeve_has_mechanism_evidence_falsifiers_and_zero_authority():
+    catalog, _sleeves = _catalog_by_id()
+    for row in catalog["sleeves"]:
+        assert row["user_job"]
+        assert row["economic_thesis"]
+        assert row["required_evidence"]
+        assert row["primary_falsifiers"]
+        assert row["promotion_requirements"]
+        assert row["entry_owner"]
+        assert row["hold_law"]
+        assert all(value is False for value in row["authority"].values())
+
+
+def test_strategy_catalog_is_stable_content_addressed_and_deep_copy_safe():
+    left = build_strategy_catalog()
+    right = build_strategy_catalog()
+    assert left == right
+    assert left["catalog_id"].startswith("psc:")
+    left["sleeves"][0]["family_name"] = "MUTATED"
+    assert build_strategy_catalog() == right
+
+
+def test_strategy_catalog_rejects_semantic_authority_and_identity_mutation():
+    payload = build_strategy_catalog()
+    payload["sleeves"][2]["horizon"]["primary"] = "2_15_SESSIONS"
+    with pytest.raises(StrategyDefinitionContractError, match="frozen roadmap"):
+        validate_strategy_catalog(payload)
+
+    payload = build_strategy_catalog()
+    payload["authority"]["can_route_strategy"] = True
+    with pytest.raises(StrategyDefinitionContractError):
+        validate_strategy_catalog(payload)
+
+    payload = build_strategy_catalog()
+    payload["catalog_id"] = "psc:" + "0" * 64
+    with pytest.raises(StrategyDefinitionContractError, match="catalog_id mismatch"):
+        validate_strategy_catalog(payload)

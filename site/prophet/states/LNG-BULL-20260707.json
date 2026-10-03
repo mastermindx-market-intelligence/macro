@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LNG-BULL-20260707",
-  "asof": "2026-09-30",
+  "asof": "2026-10-01",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 41.1,
@@ -11,20 +11,20 @@
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 100.0,
-    "progress": 6.1,
-    "pace": 23.3,
-    "retention": 10.3,
-    "overlay": 61.0
+    "progress": 6.8,
+    "pace": 22.0,
+    "retention": 11.9,
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.061,
-    "dist_to_t1_r": 1.439,
-    "dist_to_t2_r": 2.939,
-    "horizon_pct_used": 111.1,
-    "p1": 0.0404,
-    "p2": 0.0202,
+    "dist_to_stop_r": 1.07,
+    "dist_to_t1_r": 1.43,
+    "dist_to_t2_r": 2.93,
+    "horizon_pct_used": 113.3,
+    "p1": 0.0467,
+    "p2": 0.0233,
     "p3": null,
-    "move_r": 0.061,
+    "move_r": 0.07,
     "mfe_r": 0.588,
     "mae_r": 0.0
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 50,
-  "tau": 1.1111
+  "days_elapsed": 51,
+  "tau": 1.1333
 }

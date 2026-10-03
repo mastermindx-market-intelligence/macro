@@ -10,4 +10,5 @@
 {"date": "2026-09-10", "type": "PPI", "vol_tier": "elevated", "fragile": false, "realized_abs": 0.6, "up": false}
 {"date": "2026-09-11", "type": "CPI", "vol_tier": "high", "fragile": false, "realized_abs": 0.85, "up": true}
 {"date": "2026-09-16", "type": "FOMC", "vol_tier": "high", "fragile": false, "realized_abs": 0.44, "up": false}
-{"date": "2026-09-30", "type": "GDP", "vol_tier": "elevated", "fragile": false, "realized_abs": null, "up": null}
+{"date": "2026-09-30", "type": "GDP", "vol_tier": "elevated", "fragile": false, "realized_abs": 0.21, "up": false}
+{"date": "2026-10-02", "type": "NFP", "vol_tier": "high", "fragile": false, "realized_abs": null, "up": null}

@@ -661,3 +661,35 @@ def test_selected_path_forwards_exact_evidence_reference_and_clears(browser, syn
         assert page.evaluate("window.MM_BRAIN_CFG.getOntologySelection()") is None
     finally:
         context.close()
+
+
+@pytest.mark.parametrize("lang", ("en", "zh"))
+def test_first_glance_is_short_without_losing_causal_warning(browser, synthetic_snapshot, lang):
+    context, page = _open(browser, synthetic_snapshot, width=390, height=844)
+    try:
+        page.evaluate("lang => document.documentElement.dataset.lang=lang", lang)
+        title = page.locator("h1.ox-answer-title").inner_text()
+        assert title == ("Not running. First unmet condition: Node one." if lang == "en"
+                         else "未运行。首个未满足条件：节点一。")
+        # The causal caveat remains in the explanation, not deleted to shorten the heading.
+        assert ("its own causes" if lang == "en" else "自身") in page.locator(".ox-answers").inner_text()
+        metrics = page.locator(".ox-answer-metric")
+        count_box, blocker_box = metrics.nth(0).bounding_box(), metrics.nth(1).bounding_box()
+        assert abs(count_box["y"] - blocker_box["y"]) < 2
+        assert count_box["x"] + count_box["width"] <= blocker_box["x"]
+        assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+    finally:
+        context.close()
+
+
+def test_chinese_first_blocker_name_does_not_split_at_the_heading_edge(browser, synthetic_snapshot):
+    context, page = _open(browser, synthetic_snapshot, width=1440, height=900)
+    try:
+        page.evaluate("document.documentElement.dataset.lang='zh'")
+        rects = page.locator('h1.ox-answer-title .l-zh').nth(1).evaluate('''node => {
+            const range=document.createRange();range.selectNodeContents(node);
+            return Array.from(range.getClientRects()).filter(rect=>rect.width>0).map(rect=>rect.top);
+        }''')
+        assert len(set(rects)) == 1
+    finally:
+        context.close()
