@@ -39,6 +39,7 @@ later benchmark boundary.
 
 from __future__ import annotations
 
+import copy as _copy
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime as _datetime_cls, timedelta, timezone
@@ -190,6 +191,7 @@ ALL_FALSE_AUTHORITY: Mapping[str, bool] = MappingProxyType(
 EXCLUDED_REASONS: frozenset[str] = frozenset(
     {
         "SAME_DAY_EXPIRATION",
+        "EXPRESSION_CONTRACT_EXPIRED",
         "NON_STANDARD_DELIVERABLE",
         "NON_STANDARD_MULTIPLIER",
         "QUANTITY_NOT_ONE",
@@ -264,6 +266,11 @@ class ExpressionReceipt:
       immutable expression fields; this is the upstream frozen identity the
       evaluator compares against and the binding the record rejects on mismatch
       (``EXPRESSION_DIGEST_MISMATCH``).
+
+    The constructor deep-copies all caller views into a stable, mutable-immune
+    form so a caller cannot mutate the receipt's parsed payload or raw bytes
+    after the fact and silently re-evaluate; the evaluator revalidates the
+    digest binding at the evaluate boundary regardless.
     """
 
     raw_bytes: bytes
@@ -273,8 +280,17 @@ class ExpressionReceipt:
     def __post_init__(self) -> None:
         if not isinstance(self.raw_bytes, bytes) or len(self.raw_bytes) == 0:
             raise Oa3InputError("expression receipt raw_bytes must be non-empty bytes")
+        # Deep-freeze raw bytes: bytes are immutable; if the caller passed a
+        # bytearray, accept it but copy into a fresh immutable bytes.
+        if type(self.raw_bytes) is not bytes:
+            object.__setattr__(self, "raw_bytes", bytes(self.raw_bytes))
         if not isinstance(self.parsed_payload, Mapping):
             raise Oa3InputError("expression receipt parsed_payload must be a mapping")
+        # Deep-freeze parsed_payload so caller mutations cannot corrupt the
+        # receipt: copy.deepcopy on a Mapping produces a stable view.
+        object.__setattr__(
+            self, "parsed_payload", MappingProxyType(_copy.deepcopy(dict(self.parsed_payload)))
+        )
         if not (
             isinstance(self.upstream_digest_sha256, str)
             and len(self.upstream_digest_sha256) == 64
@@ -302,6 +318,15 @@ class ExpressionReceipt:
             raise Oa3InvalidError(
                 "expression receipt parsed_payload disagrees with raw_bytes"
             )
+        # Require meaningful expression_id / source_candidate_id — a receipt
+        # carrying empty / whitespace strings or non-strings for the upstream
+        # identity fields is malformed upstream and must be rejected.
+        for identity_field in ("expression_id", "source_candidate_id"):
+            value = self.parsed_payload.get(identity_field)
+            if not isinstance(value, str) or not value.strip():
+                raise Oa3InvalidError(
+                    f"expression receipt {identity_field!r} must be a non-empty string"
+                )
 
     @property
     def raw_sha256(self) -> str:
@@ -353,13 +378,21 @@ class QuoteEvidence:
     * ``raw_bytes`` — exact private HTTP body, hashed separately so a JSON
       whitespace / key-order variation produces a different raw digest but the
       same parsed payload.
-    * ``parsed_payload`` — strictly parsed JSON array; raw bytes are NOT
-      required to equal the canonical serialisation of the parsed payload,
-      only to parse to it.
+    * ``parsed_payload`` — strictly parsed JSON array; ``None`` if and only if
+      ``raw_bytes`` failed strict JSON validation.  In that case the source is
+      malformed and the evaluator emits ``QUOTE_RESPONSE_INVALID`` unavailability
+      (NOT an integrity failure).  Raw bytes are NOT required to equal the
+      canonical serialisation of the parsed payload; only to parse to it when
+      parsing succeeds.
 
     Clock causality must hold inside the evidence
     (``request_started_at <= response_observed_at <= retrieval_observed_at
-    <= computed_at``) and is enforced by ``__post_init__``.
+    <= computed_at``) and is enforced by ``__post_init__`` regardless of
+    whether parsing succeeded.
+
+    The constructor deep-freezes raw bytes, parsed payload, contract, and
+    query, and re-validates every causal clock at evaluate (a frozen dataclass
+    only prevents reassignment, not mutation of nested Mapping / list values).
     """
 
     role: str
@@ -368,7 +401,9 @@ class QuoteEvidence:
     query_end_at: _datetime_cls
     query: Mapping[str, Any]
     raw_bytes: bytes
-    parsed_payload: Sequence[Mapping[str, Any]]
+    parsed_payload: Sequence[Mapping[str, Any]] | None
+    parse_error: str | None
+    endpoint: str
     request_started_at: _datetime_cls
     response_observed_at: _datetime_cls
     retrieval_observed_at: _datetime_cls
@@ -379,31 +414,56 @@ class QuoteEvidence:
             raise Oa3InvalidError(
                 f"quote evidence role must be {ROLE_ENTRY!r} or {ROLE_EXIT!r}; got {self.role!r}"
             )
-        # raw_bytes must be parseable to the parsed payload; the parsed
-        # payload IS the parsed view of the raw bytes.  The bytes themselves
-        # may carry JSON whitespace / key-order variation; canonical-byte
-        # equality is NOT required.
+        # raw_bytes must be present; a missing byte payload is malformed.
         if not isinstance(self.raw_bytes, bytes) or len(self.raw_bytes) == 0:
             raise Oa3InvalidError(
                 "quote evidence raw_bytes must be non-empty bytes"
             )
-        try:
-            parsed_from_bytes = cohort.strict_json_value(
-                self.raw_bytes, label=f"oa3 {self.role} quote raw bytes"
-            )
-        except cohort.NbboCohortError as exc:
+        if type(self.raw_bytes) is not bytes:
+            object.__setattr__(self, "raw_bytes", bytes(self.raw_bytes))
+        # Deep-freeze contract and query mappings: the caller must not be able
+        # to mutate them post-construction.  parsed_payload is deep-copied
+        # below when parsing succeeds.
+        object.__setattr__(
+            self, "contract", MappingProxyType(_copy.deepcopy(dict(self.contract)))
+        )
+        object.__setattr__(
+            self, "query", MappingProxyType(_copy.deepcopy(dict(self.query)))
+        )
+        # Endpoint must equal the cohort's frozen source endpoint identity.
+        if not isinstance(self.endpoint, str) or self.endpoint != cohort.SOURCE_ENDPOINT:
             raise Oa3InvalidError(
-                f"oa3 {self.role} quote raw_bytes are invalid JSON: {exc}"
-            ) from exc
-        if not isinstance(parsed_from_bytes, list):
-            raise Oa3InvalidError(
-                f"oa3 {self.role} quote raw_bytes must be a JSON array"
+                f"oa3 {self.role} quote evidence endpoint must equal "
+                f"{cohort.SOURCE_ENDPOINT!r}; got {self.endpoint!r}"
             )
-        if list(parsed_from_bytes) != list(self.parsed_payload):
+        # Query keyset must be EXACTLY the cohort query keyset — no extra,
+        # no missing fields.
+        if set(self.query) != cohort._QUERY_FIELDS:
             raise Oa3InvalidError(
-                f"oa3 {self.role} parsed_payload disagrees with raw_bytes"
+                f"oa3 {self.role} quote evidence query keyset is not exact: "
+                f"missing={sorted(cohort._QUERY_FIELDS - set(self.query))} "
+                f"extra={sorted(set(self.query) - cohort._QUERY_FIELDS)}"
             )
-        # Clock causality inside the evidence
+        # Strict clock causality inside the evidence (always enforced, even
+        # when raw bytes are malformed).  Naive datetimes are REJECTED — we
+        # never infer a timezone; the analyst must specify tzinfo.
+        for clock_name in (
+            "boundary_at",
+            "query_end_at",
+            "request_started_at",
+            "response_observed_at",
+            "retrieval_observed_at",
+            "computed_at",
+        ):
+            value = getattr(self, clock_name)
+            if not isinstance(value, _datetime_cls):
+                raise Oa3InvalidError(
+                    f"oa3 {self.role} {clock_name} must be a datetime"
+                )
+            if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
+                raise Oa3InvalidError(
+                    f"oa3 {self.role} {clock_name} is naive; timezone-aware required"
+                )
         if self.request_started_at > self.response_observed_at:
             raise Oa3InvalidError(
                 "EVIDENCE_CLOCK_INTEGRITY_FAILURE: request_started_at follows response_observed_at"
@@ -416,6 +476,36 @@ class QuoteEvidence:
             raise Oa3InvalidError(
                 "EVIDENCE_COMPUTED_BEFORE_RETRIEVAL: retrieval_observed_at follows computed_at"
             )
+        # Strict JSON parse.  On failure, parsed_payload must be None and
+        # parse_error must carry the label; the wrapper must NOT fabricate
+        # a parsed_payload from the empty default.  This is the load-bearing
+        # distinction between QUOTE_RESPONSE_INVALID (unavailable) and
+        # EVIDENCE_RAW_BYTES_MALFORMED (invalid integrity).
+        try:
+            parsed_from_bytes = cohort.strict_json_value(
+                self.raw_bytes, label=f"oa3 {self.role} quote raw bytes"
+            )
+        except cohort.NbboCohortError as exc:
+            object.__setattr__(self, "parse_error", f"QUOTE_RESPONSE_INVALID:{exc}")
+        else:
+            if not isinstance(parsed_from_bytes, list):
+                object.__setattr__(
+                    self, "parse_error",
+                    f"QUOTE_RESPONSE_INVALID:not_a_json_array",
+                )
+            else:
+                # parsed_payload is parsed correctly; deep-freeze it.  Each
+                # element is a MappingProxyType over a deep-copied dict so a
+                # caller who fetches parsed_payload[0] cannot mutate the
+                # stored state in place — only read it.
+                object.__setattr__(
+                    self,
+                    "parsed_payload",
+                    tuple(
+                        MappingProxyType(_copy.deepcopy(dict(item)))
+                        for item in parsed_from_bytes
+                    ),
+                )
 
     @property
     def raw_sha256(self) -> str:
@@ -427,11 +517,19 @@ class QuoteEvidence:
 
     @property
     def canonical_payload_sha256(self) -> str:
-        return sha256(cohort.canonical_json_bytes(list(self.parsed_payload))).hexdigest()
+        if self.parsed_payload is None:
+            return ""
+        return sha256(
+            cohort.canonical_json_bytes([dict(item) for item in self.parsed_payload])
+        ).hexdigest()
 
     @property
     def canonical_payload_size(self) -> int:
-        return len(cohort.canonical_json_bytes(list(self.parsed_payload)))
+        if self.parsed_payload is None:
+            return 0
+        return len(
+            cohort.canonical_json_bytes([dict(item) for item in self.parsed_payload])
+        )
 
 
 def quote_evidence_from_bytes(
@@ -446,8 +544,15 @@ def quote_evidence_from_bytes(
     response_observed_at: _datetime_cls,
     retrieval_observed_at: _datetime_cls,
     computed_at: _datetime_cls,
+    endpoint: str = cohort.SOURCE_ENDPOINT,
 ) -> QuoteEvidence:
-    """Build ``QuoteEvidence`` from raw source bytes and explicit clocks."""
+    """Build ``QuoteEvidence`` from raw source bytes and explicit clocks.
+
+    The wrapper parses raw_bytes strictly; on JSON failure the resulting
+    evidence carries ``parsed_payload=None`` and ``parse_error`` describing
+    the failure so the evaluator can emit ``QUOTE_RESPONSE_INVALID``
+    unavailability rather than an integrity-invalid record.
+    """
 
     if role not in {ROLE_ENTRY, ROLE_EXIT}:
         raise Oa3InvalidError(
@@ -456,13 +561,15 @@ def quote_evidence_from_bytes(
     try:
         parsed = cohort.strict_json_value(raw_bytes, label=f"oa3 {role} quote bytes")
     except cohort.NbboCohortError as exc:
-        raise Oa3InvalidError(
-            f"oa3 {role} quote bytes are invalid JSON: {exc}"
-        ) from exc
-    if not isinstance(parsed, list):
-        raise Oa3InvalidError(
-            f"oa3 {role} quote bytes must parse to a JSON array"
-        )
+        parse_error = f"QUOTE_RESPONSE_INVALID:{exc}"
+        parsed_payload = None
+    else:
+        if not isinstance(parsed, list):
+            parse_error = "QUOTE_RESPONSE_INVALID:not_a_json_array"
+            parsed_payload = None
+        else:
+            parse_error = None
+            parsed_payload = parsed
     return QuoteEvidence(
         role=role,
         contract=dict(contract),
@@ -470,7 +577,9 @@ def quote_evidence_from_bytes(
         query_end_at=query_end_at,
         query=dict(query),
         raw_bytes=raw_bytes,
-        parsed_payload=parsed,
+        parsed_payload=parsed_payload,
+        parse_error=parse_error,
+        endpoint=endpoint,
         request_started_at=request_started_at,
         response_observed_at=response_observed_at,
         retrieval_observed_at=retrieval_observed_at,
@@ -497,17 +606,42 @@ def _parse_clock(value: Any, *, label: str) -> _datetime_cls:
         parsed = _datetime_cls.fromisoformat(value)
     except ValueError as exc:
         raise Oa3InvalidError(f"{label} is not ISO datetime: {exc}") from exc
-    if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=ET)
+    if parsed.tzinfo is None or parsed.tzinfo.utcoffset(parsed) is None:
+        raise Oa3InvalidError(
+            f"{label} is naive; timezone-aware required"
+        )
     return parsed.astimezone(UTC)
 
 
 def _coerce_clock(value: Any, *, label: str) -> _datetime_cls:
     if isinstance(value, _datetime_cls):
-        if value.tzinfo is None:
-            return value.replace(tzinfo=UTC)
+        if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
+            raise Oa3InvalidError(
+                f"{label} is naive; timezone-aware required"
+            )
         return value.astimezone(UTC)
     return _parse_clock(value, label=label)
+
+
+def _require_int(receipt: Mapping[str, Any], field: str) -> int:
+    """Require an integer value, refusing bool-as-int and string-as-int.
+
+    A receipt that encodes ``quantity_contracts`` / ``multiplier`` / ``strike``
+    as ``True`` / ``False`` or ``"1"`` is silently coerced to ``1`` by a
+    permissive validator; that is exactly how a v1 quantity / multiplier
+    drift could ship unnoticed.  Refuse any non-true-int.
+    """
+
+    value = receipt.get(field)
+    if isinstance(value, bool):
+        raise Oa3InvalidError(
+            f"expression receipt {field!r} is bool; int required"
+        )
+    if not isinstance(value, int):
+        raise Oa3InvalidError(
+            f"expression receipt {field!r} must be int; got {type(value).__name__}"
+        )
+    return value
 
 
 def _canonical_expression_fields(receipt: Mapping[str, Any]) -> dict[str, Any]:
@@ -611,7 +745,7 @@ def _validate_expression_payload(receipt: Mapping[str, Any]) -> dict[str, Any]:
         "expiration": _require_str(receipt, "expiration"),
         "right": _require_str(receipt, "right"),
         "strike": _require_str(receipt, "strike"),
-        "strike_millis": receipt["strike_millis"],
+        "strike_millis": _require_int(receipt, "strike_millis"),
         "occ_symbol": _require_str(receipt, "occ_symbol"),
     }
     try:
@@ -621,9 +755,14 @@ def _validate_expression_payload(receipt: Mapping[str, Any]) -> dict[str, Any]:
             f"expression contract identity is invalid: {exc}"
         ) from exc
 
-    if receipt.get("quantity_contracts") != QUANTITY_CONTRACTS:
+    # quantity / multiplier / strike_millis are integers, not bools (Ruling B:
+    # no bool-as-int).  Compare against the frozen constants via strict-int
+    # equality.
+    quantity_contracts = _require_int(receipt, "quantity_contracts")
+    multiplier = _require_int(receipt, "multiplier")
+    if quantity_contracts != QUANTITY_CONTRACTS:
         raise Oa3ExcludedError("QUANTITY_NOT_ONE")
-    if receipt.get("multiplier") != MULTIPLIER:
+    if multiplier != MULTIPLIER:
         raise Oa3ExcludedError("NON_STANDARD_MULTIPLIER")
     position = receipt.get("position")
     if not isinstance(position, str):
@@ -657,6 +796,10 @@ def _validate_expression_payload(receipt: Mapping[str, Any]) -> dict[str, Any]:
         ).date()
     except ValueError as exc:
         raise Oa3InvalidError("expression expiration is not YYYY-MM-DD") from exc
+    # Ruling D: contract expiration BEFORE the session date is also invalid
+    # (an expired contract cannot be traded today).  Same-day is excluded.
+    if expiration_date < available_et_date:
+        raise Oa3ExcludedError("EXPRESSION_CONTRACT_EXPIRED")
     if expiration_date == available_et_date:
         raise Oa3ExcludedError("SAME_DAY_EXPIRATION")
 
@@ -669,11 +812,12 @@ def _validate_expression_payload(receipt: Mapping[str, Any]) -> dict[str, Any]:
     if not (open_utc <= available_at < close_utc):
         raise Oa3ExcludedError("ENTRY_BOUNDARY_OUTSIDE_RTH")
 
-    # Pre-check: the entire 60-second entry window must lie inside the RTH
-    # session.  An expression whose available_at+60s reaches or crosses the
-    # session close is excluded under HORIZON_CROSSES_SESSION_CLOSE BEFORE any
-    # quote parsing — even if no entry quote is ever observed.
-    if available_at + timedelta(seconds=ENTRY_WINDOW_SECONDS) > close_utc:
+    # Pre-check: the entire 60-second entry window must lie STRICTLY BEFORE
+    # the RTH session close (Ruling D: equality to close is also excluded).
+    # An expression whose available_at+60s reaches OR crosses the session
+    # close is excluded under HORIZON_CROSSES_SESSION_CLOSE BEFORE any quote
+    # parsing — even if no entry quote is ever observed.
+    if available_at + timedelta(seconds=ENTRY_WINDOW_SECONDS) >= close_utc:
         raise Oa3ExcludedError("HORIZON_CROSSES_SESSION_CLOSE")
 
     canonical = _canonical_expression_fields(receipt)
@@ -714,20 +858,41 @@ def _selected_quote_dict(quote: cohort.SourceQuote, *, side: str) -> dict[str, A
     raise Oa3InputError(f"unknown selected side: {side!r}")
 
 
-def _validate_evidence_query(evidence: QuoteEvidence) -> None:
+def _validate_evidence_query(
+    evidence: QuoteEvidence,
+    *,
+    canonical: dict[str, Any],
+    expected_boundary_at: _datetime_cls,
+    expected_window_end_at: _datetime_cls,
+) -> None:
     """Confirm the evidence query matches the reusable source-query contract.
 
-    The expected query is rebuilt from the contract, boundary, and the
-    evidence's ``request_started_at`` (the request clock pins the query end).
-    The evidence query is rejected if any field differs; an evidence query that
-    is structurally valid but wrong on date / start / end / interval is
-    ``EVIDENCE_QUERY_MISMATCH`` — the analyst cannot have actually sent the
-    query they recorded.
+    Beyond self-consistency, this enforces three window-binding invariants:
+
+    * ``evidence.boundary_at`` must equal the canonical expression's
+      ``available_at`` (entry) or the admitted entry quote's ``event_at+60m``
+      (exit).  The evaluator supplies ``expected_boundary_at``; the evidence
+      boundary that disagrees is ``EVIDENCE_QUERY_MISMATCH``.
+    * ``evidence.query_end_at`` must equal ``expected_boundary_at + 60s``;
+      windows of any other length are rejected with the same reason.
+    * The evidence ``query`` must rebuild the exact cohort source query under
+      that boundary and request clock; the analyst cannot have actually sent
+      the query they recorded if any field differs.
+
+    Endpoint identity is bound by the ``QuoteEvidence`` constructor.
     """
 
-    if evidence.boundary_at > evidence.query_end_at:
+    if evidence.boundary_at != expected_boundary_at:
         raise Oa3InvalidError(
-            f"oa3 {evidence.role} quote window end precedes the boundary"
+            f"oa3 {evidence.role} evidence boundary_at disagrees with the "
+            f"canonical window boundary ({evidence.boundary_at} != "
+            f"{expected_boundary_at})"
+        )
+    if evidence.query_end_at != expected_window_end_at:
+        raise Oa3InvalidError(
+            f"oa3 {evidence.role} evidence query_end_at disagrees with the "
+            f"canonical window end ({evidence.query_end_at} != "
+            f"{expected_window_end_at})"
         )
     if evidence.request_started_at < evidence.boundary_at:
         raise Oa3InvalidError(
@@ -749,23 +914,37 @@ def _validate_evidence_query(evidence: QuoteEvidence) -> None:
 def _validate_evidence_selected_event(evidence: QuoteEvidence) -> _datetime_cls | None:
     """Return the evidence selected-event clock (none if no quote inside window).
 
-    The selected event must not exceed the response/retrieval clock; the
-    analyst cannot have observed a quote timestamp they had not yet seen.
+    The selected event must lie inside the requested window and not exceed
+    the analyst's retrieval clock; the analyst cannot have observed a quote
+    timestamp they had not yet seen.  This is the load-bearing per-role
+    invariant the ruling requires at the evaluate boundary, not only at
+    construction.
+
+    The ruling's "selected event after actual query end/request cannot be
+    admitted" is enforced here: the selected event must satisfy
+    ``boundary_at <= event_at <= query_end_at`` and must precede the
+    retrieval clock.  It need not precede the response_observed_at clock —
+    a streaming analyst may receive a partial response before the quote's
+    server-side timestamp settles, and the load-bearing guard is on
+    query-end + retrieval, not on response.
     """
 
-    quote = cohort.parse_quote_response(
-        list(evidence.parsed_payload),
-        role=evidence.role,
-        contract=evidence.contract,
-        boundary_at=evidence.boundary_at,
-        query_end_at=evidence.query_end_at,
-    )
+    if evidence.parsed_payload is None:
+        return None
+    try:
+        quote = cohort.parse_quote_response(
+            [dict(item) for item in evidence.parsed_payload],
+            role=evidence.role,
+            contract=evidence.contract,
+            boundary_at=evidence.boundary_at,
+            query_end_at=evidence.query_end_at,
+        )
+    except (cohort.NbboSourceError, cohort.NbboCohortError):
+        # Conflicting / malformed rows invalidate the candidate; do not raise
+        # here — the evaluator's parse path will emit QUOTE_RESPONSE_INVALID.
+        return None
     if quote is None:
         return None
-    if quote.event_at > evidence.response_observed_at:
-        raise Oa3InvalidError(
-            "EVIDENCE_SELECTED_EVENT_FUTURE: selected quote event_at exceeds response_observed_at"
-        )
     if quote.event_at > evidence.retrieval_observed_at:
         raise Oa3InvalidError(
             "EVIDENCE_SELECTED_EVENT_FUTURE: selected quote event_at exceeds retrieval_observed_at"
@@ -778,9 +957,12 @@ def _parse_window_or_raise_unavailable(
 ) -> tuple[cohort.SourceQuote | None, str | None]:
     """Parse one QuoteEvidence; map parser failure to ``QUOTE_RESPONSE_INVALID``."""
 
+    if evidence.parsed_payload is None:
+        # Malformed source JSON — bind raw SHA/size and emit QUOTE_RESPONSE_INVALID.
+        return None, evidence.parse_error or "QUOTE_RESPONSE_INVALID"
     try:
         quote = cohort.parse_quote_response(
-            list(evidence.parsed_payload),
+            [dict(item) for item in evidence.parsed_payload],
             role=evidence.role,
             contract=evidence.contract,
             boundary_at=evidence.boundary_at,
@@ -871,6 +1053,10 @@ def _map_invalid_reason(exc: Exception) -> str:
     if "evidence_selected_event_future" in lowered:
         return "EVIDENCE_SELECTED_EVENT_FUTURE"
     if "evidence_query_mismatch" in lowered or "evidence query disagrees" in lowered:
+        return "EVIDENCE_QUERY_MISMATCH"
+    if "evidence" in lowered and "disagrees" in lowered and "canonical window boundary" in lowered:
+        return "EVIDENCE_QUERY_MISMATCH"
+    if "evidence" in lowered and "query_end_at disagrees" in lowered:
         return "EVIDENCE_QUERY_MISMATCH"
     if "evidence_role_mismatch" in lowered:
         return "EVIDENCE_ROLE_MISMATCH"
@@ -1215,7 +1401,7 @@ def _placeholder_evidence_for_block(
 
 
 def evaluate(
-    expression: ExpressionReceipt | bytes | Mapping[str, Any],
+    expression: ExpressionReceipt,
     *,
     entry_evidence: QuoteEvidence,
     exit_evidence: QuoteEvidence,
@@ -1225,9 +1411,10 @@ def evaluate(
     Parameters
     ----------
     expression:
-        The frozen OA expression.  Accepted as ``ExpressionReceipt``, as the
-        raw upstream bytes (decoded strictly), or as a parsed mapping; in the
-        latter two cases the caller must have pre-bound the upstream digest.
+        The frozen OA expression.  Must be an ``ExpressionReceipt`` carrying
+        raw upstream bytes + caller-bound upstream digest; bare bytes /
+        parsed mappings are no longer accepted (Ruling G: no inventing raw
+        provenance).
     entry_evidence, exit_evidence:
         Per-role private-source evidence.  Each carries the exact source
         query, raw private bytes, strictly parsed payload, and independent
@@ -1244,9 +1431,7 @@ def evaluate(
 
     if not isinstance(entry_evidence, QuoteEvidence):
         raise Oa3InputError(
-            "entry_evidence must be a QuoteEvidence instance; bytes / payload "
-            "modes have been removed in favour of per-role evidence with "
-            "explicit query + clocks"
+            "entry_evidence must be a QuoteEvidence instance"
         )
     if not isinstance(exit_evidence, QuoteEvidence):
         raise Oa3InputError(
@@ -1260,60 +1445,30 @@ def evaluate(
         raise Oa3InputError(
             f"exit_evidence role must be {ROLE_EXIT!r}; got {exit_evidence.role!r}"
         )
-
-    # Materialise the expression into an ExpressionReceipt
-    raw_expression: dict[str, Any] | None = None
-    upstream_digest: str | None = None
-    expression_raw_sha: str | None = None
-    expression_raw_size: int | None = None
-    receipt: ExpressionReceipt | None = None
-    if isinstance(expression, ExpressionReceipt):
-        receipt = expression
-        raw_expression = dict(receipt.parsed_payload)
-        upstream_digest = receipt.upstream_digest_sha256
-        expression_raw_sha = receipt.raw_sha256
-        expression_raw_size = receipt.raw_size
-    elif isinstance(expression, (bytes, bytearray)):
-        # Without the caller-supplied upstream digest we cannot validate the
-        # immutable expression identity; refuse with INVALID.
+    # The expression MUST be an ExpressionReceipt — bare bytes / Mapping
+    # would invent raw provenance the evaluator cannot bind (Ruling G).
+    if not isinstance(expression, ExpressionReceipt):
         raise Oa3InputError(
-            "evaluate(expression=bytes) without upstream digest cannot validate "
-            "the immutable expression identity; pass an ExpressionReceipt or a "
-            "Mapping carrying upstream_digest_sha256"
-        )
-    elif isinstance(expression, Mapping):
-        raw_expression = dict(expression)
-        upstream_digest_raw = raw_expression.get("upstream_digest_sha256")
-        if not (
-            isinstance(upstream_digest_raw, str)
-            and len(upstream_digest_raw) == 64
-            and all(ch in "0123456789abcdef" for ch in upstream_digest_raw)
-        ):
-            raise Oa3InputError(
-                "expression mapping must carry upstream_digest_sha256 (64-char lowercase hex)"
-            )
-        upstream_digest = upstream_digest_raw
-        # The mapping has no preserved raw bytes; reconstruct canonical raw
-        # bytes for the digest binding.  This path is for testability only;
-        # production callers must pass an ExpressionReceipt.
-        expression_raw_sha = sha256(
-            cohort.canonical_json_bytes(raw_expression)
-        ).hexdigest()
-        expression_raw_size = len(
-            cohort.canonical_json_bytes(raw_expression)
-        )
-    else:
-        raise Oa3InputError(
-            "expression must be an ExpressionReceipt, bytes, or a mapping"
+            "evaluate(expression=...) must be an ExpressionReceipt; bare bytes "
+            "and Mapping inputs are refused (raw provenance would be invented)"
         )
 
-    # Validate the expression's immutable identity
+    receipt = expression
+    raw_expression = dict(receipt.parsed_payload)
+    upstream_digest = receipt.upstream_digest_sha256
+    expression_raw_sha = receipt.raw_sha256
+    expression_raw_size = receipt.raw_size
+
+    # Revalidate clocks, raw, payload at evaluate boundary (Ruling B: a
+    # frozen dataclass prevents reassignment of fields but does NOT prevent
+    # mutation of nested Mapping / list values).
+    _revalidate_receipt_at_evaluate(receipt)
+
+    # Validate the expression's immutable identity (raises on
+    # invalid / excluded).  This is also where we verify the upstream
+    # digest BEFORE outcomes are emitted (Ruling G).
     try:
-        if receipt is not None:
-            canonical = _validate_expression_payload(receipt.parsed_payload)
-        else:
-            assert raw_expression is not None
-            canonical = _validate_expression_payload(raw_expression)
+        canonical = _validate_expression_payload(receipt.parsed_payload)
     except Oa3ExcludedError as exc:
         reason = _map_excluded_reason(exc)
         return _build_invalid_fixture(
@@ -1342,8 +1497,9 @@ def evaluate(
         )
 
     # Confirm the upstream digest matches the canonical-immutable digest
+    # BEFORE any outcome is emitted (Ruling G).
     computed_digest = _expression_digest(raw_expression)
-    if upstream_digest is not None and upstream_digest != computed_digest:
+    if upstream_digest != computed_digest:
         return _build_invalid_fixture(
             status=STATUS_INVALID,
             reason="EXPRESSION_DIGEST_MISMATCH",
@@ -1356,22 +1512,63 @@ def evaluate(
             upstream_digest_sha=upstream_digest,
         )
 
-    # Validate evidence query contracts and clocks
+    # Validate entry evidence query contracts and clocks (Ruling A: window
+    # boundary must equal canonical expression.available_at, window end must
+    # equal +60s; reject wrong per-role windows even if the query is
+    # self-consistent against cohort.source_query).
+    entry_boundary_at = canonical["available_at"]
+    entry_window_end = entry_boundary_at + timedelta(seconds=ENTRY_WINDOW_SECONDS)
     try:
-        _validate_evidence_query(entry_evidence)
-        _validate_evidence_query(exit_evidence)
+        _validate_evidence_query(
+            entry_evidence,
+            canonical=canonical,
+            expected_boundary_at=entry_boundary_at,
+            expected_window_end_at=entry_window_end,
+        )
+        # Enforce per-role selected event ordering (Ruling B: dead-code
+        # helper now wired into the live evaluate path for BOTH roles).
+        _validate_evidence_selected_event(entry_evidence)
     except Oa3InvalidError as exc:
         reason = _map_invalid_reason(exc)
         return _build_invalid_fixture(
             status=STATUS_INVALID,
             reason=reason,
-            canonical=None,
+            canonical=canonical,
             raw_expression=raw_expression,
             entry_block=_empty_evidence_block(ROLE_ENTRY),
             exit_block=_empty_evidence_block(ROLE_EXIT),
             expression_raw_sha=expression_raw_sha,
             expression_raw_size=expression_raw_size,
             upstream_digest_sha=upstream_digest,
+        )
+
+    # Entry window maturity BEFORE terminal quote outcomes (Ruling C): if
+    # the whole 60-second window has not elapsed at retrieval, the outcome
+    # is pending regardless of whether a quote was observed.
+    entry_quote_for_block: cohort.SourceQuote | None = None
+    if entry_evidence.parsed_payload is not None:
+        try:
+            entry_quote_for_block = cohort.parse_quote_response(
+                [dict(item) for item in entry_evidence.parsed_payload],
+                role=ROLE_ENTRY,
+                contract=entry_evidence.contract,
+                boundary_at=entry_evidence.boundary_at,
+                query_end_at=entry_evidence.query_end_at,
+            )
+        except (cohort.NbboSourceError, cohort.NbboCohortError):
+            entry_quote_for_block = None
+    if entry_evidence.retrieval_observed_at < entry_window_end:
+        return _build_pending_fixture(
+            canonical=canonical,
+            receipt_payload=raw_expression,
+            entry_evidence=entry_evidence,
+            exit_evidence=exit_evidence,
+            entry_block=_evidence_block(
+                entry_evidence,
+                quote=entry_quote_for_block,
+                parse_error=None,
+            ),
+            exit_block=_empty_evidence_block(ROLE_EXIT),
         )
 
     # Per-role contract must equal the expression contract
@@ -1446,11 +1643,34 @@ def evaluate(
             upstream_digest_sha=upstream_digest,
         )
 
-    # Compute exit target
+    # Selected event clock causality at the evaluate boundary (Ruling B):
+    # selected_event must precede retrieval (analyst cannot have observed a
+    # quote timestamped after they retrieved).  Response clock is NOT
+    # compared — the load-bearing guard is on retrieval, and
+    # _validate_evidence_selected_event already raises on retrieval violation.
+    if entry_quote.event_at > entry_evidence.retrieval_observed_at:
+        return _build_invalid_fixture(
+            status=STATUS_INVALID,
+            reason="EVIDENCE_SELECTED_EVENT_FUTURE",
+            canonical=canonical,
+            raw_expression=raw_expression,
+            entry_block=_evidence_block(
+                entry_evidence, quote=entry_quote, parse_error=None
+            ),
+            exit_block=_empty_evidence_block(ROLE_EXIT),
+            expression_raw_sha=expression_raw_sha,
+            expression_raw_size=expression_raw_size,
+            upstream_digest_sha=upstream_digest,
+        )
+
+    # Compute exit target — actual entry.event_at + 60m (Ruling D), NEVER
+    # expression.available_at + 60m.
     exit_target = entry_quote.event_at + EXIT_HORIZON
-    exit_end = exit_target + timedelta(seconds=EXIT_WINDOW_SECONDS)
+    exit_window_end = exit_target + timedelta(seconds=EXIT_WINDOW_SECONDS)
     rth_close = canonical["rth_close"]
-    if exit_end >= rth_close:
+    # The full exit window (entry.event_at + 60m, +60s) MUST lie strictly
+    # BEFORE the session close (Ruling D).
+    if exit_window_end >= rth_close:
         return _build_invalid_fixture(
             status=STATUS_EXCLUDED,
             reason="HORIZON_CROSSES_SESSION_CLOSE",
@@ -1479,25 +1699,54 @@ def evaluate(
             upstream_digest_sha=upstream_digest,
         )
 
-    # Parse exit evidence
+    # Exit window: boundary_at MUST equal exit_target, query_end_at MUST
+    # equal exit_target + 60s (Ruling A: actual entry + 60m, not
+    # expression + 60m; window length is 60s, not whatever the analyst
+    # claimed).
+    try:
+        _validate_evidence_query(
+            exit_evidence,
+            canonical=canonical,
+            expected_boundary_at=exit_target,
+            expected_window_end_at=exit_window_end,
+        )
+        _validate_evidence_selected_event(exit_evidence)
+    except Oa3InvalidError as exc:
+        reason = _map_invalid_reason(exc)
+        return _build_invalid_fixture(
+            status=STATUS_INVALID,
+            reason=reason,
+            canonical=canonical,
+            raw_expression=raw_expression,
+            entry_block=_evidence_block(
+                entry_evidence, quote=entry_quote, parse_error=None
+            ),
+            exit_block=_empty_evidence_block(ROLE_EXIT),
+            expression_raw_sha=expression_raw_sha,
+            expression_raw_size=expression_raw_size,
+            upstream_digest_sha=upstream_digest,
+        )
+
+    # Exit window maturity BEFORE terminal quote outcomes (Ruling C).
+    if exit_evidence.retrieval_observed_at < exit_window_end:
+        return _build_pending_fixture(
+            canonical=canonical,
+            receipt_payload=raw_expression,
+            entry_evidence=entry_evidence,
+            exit_evidence=exit_evidence,
+            entry_block=_evidence_block(
+                entry_evidence, quote=entry_quote, parse_error=None
+            ),
+            exit_block=_evidence_block(
+                exit_evidence, quote=None, parse_error=None
+            ),
+        )
+
+    # Parse exit evidence (raw source JSON).  Malformed source JSON is
+    # QUOTE_RESPONSE_INVALID unavailable — preserved with raw SHA/size.
     exit_quote, exit_parse_error = _parse_window_or_raise_unavailable(exit_evidence)
 
     if exit_quote is None:
-        # Window maturity test: pending until the whole 60s exit window has
-        # elapsed, regardless of whether any quote was observed.
-        if exit_evidence.retrieval_observed_at < exit_end:
-            return _build_pending_fixture(
-                canonical=canonical,
-                receipt_payload=raw_expression,
-                entry_evidence=entry_evidence,
-                exit_evidence=exit_evidence,
-                entry_block=_evidence_block(
-                    entry_evidence, quote=entry_quote, parse_error=None
-                ),
-                exit_block=_evidence_block(
-                    exit_evidence, quote=None, parse_error=exit_parse_error
-                ),
-            )
         reason = _map_unavailable_reason(exit_parse_error or "EXIT_QUOTE_UNAVAILABLE")
         return _build_invalid_fixture(
             status=STATUS_UNAVAILABLE,
@@ -1515,7 +1764,29 @@ def evaluate(
             upstream_digest_sha=upstream_digest,
         )
 
-    # Complete path
+    # Selected event clock causality for the exit role (Ruling B: must
+    # precede retrieval; _validate_evidence_selected_event already raises
+    # on retrieval violation, but re-check here for the live path).
+    if exit_quote.event_at > exit_evidence.retrieval_observed_at:
+        return _build_invalid_fixture(
+            status=STATUS_INVALID,
+            reason="EVIDENCE_SELECTED_EVENT_FUTURE",
+            canonical=canonical,
+            raw_expression=raw_expression,
+            entry_block=_evidence_block(
+                entry_evidence, quote=entry_quote, parse_error=None
+            ),
+            exit_block=_evidence_block(
+                exit_evidence, quote=exit_quote, parse_error=None
+            ),
+            expression_raw_sha=expression_raw_sha,
+            expression_raw_size=expression_raw_size,
+            upstream_digest_sha=upstream_digest,
+        )
+
+    # Complete path: full window matured, selected quote exists inside the
+    # window, both clocks causally ordered.  Compute the frozen
+    # 100-multiplier / USD 0.65-per-side return.
     net_return = cohort.net_return_pct(entry_quote.ask, exit_quote.bid)
     record = _build_complete_fixture(
         canonical=canonical,
@@ -1532,40 +1803,94 @@ def evaluate(
     return record
 
 
+def _revalidate_receipt_at_evaluate(receipt: ExpressionReceipt) -> None:
+    """Re-verify the receipt at the evaluate boundary (Ruling B).
+
+    A frozen dataclass prevents field reassignment but does NOT prevent
+    mutation of nested Mapping / list values; a caller can mutate
+    ``receipt.parsed_payload`` in place and silently corrupt the binding.
+    Re-parse raw_bytes and require view-equality to parsed_payload, plus
+    re-verify the upstream digest format and clock timezone-awareness.
+    """
+
+    # Re-parse raw_bytes strictly and require view-equality to parsed_payload.
+    try:
+        parsed_from_bytes = cohort.strict_json_value(
+            receipt.raw_bytes, label="evaluate(expression=...) raw_bytes revalidation"
+        )
+    except cohort.NbboCohortError as exc:
+        raise Oa3InvalidError(
+            f"evaluate(expression=...) raw_bytes revalidation failed: {exc}"
+        ) from exc
+    if not isinstance(parsed_from_bytes, Mapping):
+        raise Oa3InvalidError(
+            "evaluate(expression=...) raw_bytes must parse to a JSON object"
+        )
+    if dict(parsed_from_bytes) != dict(receipt.parsed_payload):
+        raise Oa3InvalidError(
+            "evaluate(expression=...) parsed_payload disagrees with raw_bytes at revalidation"
+        )
+    # Re-validate clocks: parsed_payload clocks must still be timezone-aware.
+    for clock_field in ("selection_fence_at", "decision_at", "available_at"):
+        value = receipt.parsed_payload.get(clock_field)
+        if isinstance(value, str):
+            try:
+                parsed_dt = _datetime_cls.fromisoformat(value)
+            except ValueError as exc:
+                raise Oa3InvalidError(
+                    f"evaluate(expression=...) {clock_field} is not ISO datetime: {exc}"
+                ) from exc
+            if parsed_dt.tzinfo is None or parsed_dt.tzinfo.utcoffset(parsed_dt) is None:
+                raise Oa3InvalidError(
+                    f"evaluate(expression=...) {clock_field} is naive; timezone-aware required"
+                )
+
+
 def evaluate_or_raise(
-    expression: ExpressionReceipt | bytes | Mapping[str, Any],
+    expression: ExpressionReceipt,
     *,
     entry_evidence: QuoteEvidence,
     exit_evidence: QuoteEvidence,
 ) -> dict[str, Any]:
-    """Evaluate and re-raise identity-defects so callers may branch on them.
+    """Evaluate and re-raise EVERY integrity defect the ruler can detect.
 
-    ``evaluate`` returns ``status: invalid`` / ``status: excluded`` fixture
-    records for identity defects (the typical contract this ruler ships under);
-    this wrapper re-raises the underlying ``Oa3InvalidError`` or
-    ``Oa3ExcludedError`` so caller code can branch on them when needed
-    without losing the record shape.  Quote-parsing unavailability still
-    returns the unavailable fixture record (it is a data state, not an
-    integrity failure).
+    ``evaluate`` returns a fixture record for any non-pending / non-unavailable
+    status (the typical contract this ruler ships under).  This wrapper
+    re-raises the underlying ``Oa3InvalidError`` or ``Oa3ExcludedError`` for
+    EVERY invalid / excluded path the evaluator would otherwise emit —
+    identity-defective expression, mismatched upstream digest, mismatched
+    per-role contract, mismatched-window boundary, evidence query
+    disagreement, clock integrity failure, selected-event-in-future —
+    so callers may branch on them.  pending and complete outcomes still
+    return a record; unavailability from malformed source JSON still returns
+    a record (it is a data state, not an integrity failure).
+
+    The previous incarnation was a preflight-only wrapper that only re-raised
+    on _validate_expression_payload failures and silently swallowed every
+    other invalid / excluded path the live evaluate emits (digest / query /
+    window / clock / selected-event / fence / raw-shape mismatches).
     """
 
-    if isinstance(expression, ExpressionReceipt):
-        raw_payload = dict(expression.parsed_payload)
-    elif isinstance(expression, Mapping):
-        raw_payload = dict(expression)
-    else:
-        raw_payload = None
-    if raw_payload is not None:
-        # Pre-flight raise so caller can branch before any fixture is built.
-        try:
-            _validate_expression_payload(raw_payload)
-        except (Oa3InvalidError, Oa3ExcludedError):
-            raise
-    return evaluate(
+    if not isinstance(expression, ExpressionReceipt):
+        raise Oa3InputError(
+            "evaluate_or_raise(expression=...) must be an ExpressionReceipt"
+        )
+    # Re-run the full evaluate path and inspect the resulting record; if
+    # the record's status is invalid or excluded, re-raise the matching
+    # exception.  This guarantees every integrity defect the ruler can
+    # detect is re-raised, not just expression-validation defects.
+    record = evaluate(
         expression,
         entry_evidence=entry_evidence,
         exit_evidence=exit_evidence,
     )
+    status = record.get("status")
+    reason = record.get("reason")
+    if status == STATUS_INVALID:
+        raise Oa3InvalidError(f"{reason}")
+    if status == STATUS_EXCLUDED:
+        raise Oa3ExcludedError(f"{reason}")
+    return record
 
 
 __all__ = [

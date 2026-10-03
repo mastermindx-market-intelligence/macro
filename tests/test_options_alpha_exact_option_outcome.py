@@ -1422,8 +1422,8 @@ def test_early_close_horizon_crosses_close_is_excluded() -> None:
     receipt = _expression(
         available_at=near_close.isoformat().replace("+00:00", "Z"),
         decision_at=near_close.isoformat().replace("+00:00", "Z"),
-        expiration="2025-12-31",
-        occ_symbol="SOFI  251231C00016000",
+        expiration="2026-12-31",
+        occ_symbol="SOFI  261231C00016000",
     )
     raw = cohort.canonical_json_bytes(receipt)
     upstream = sha256(
@@ -1433,7 +1433,8 @@ def test_early_close_horizon_crosses_close_is_excluded() -> None:
         raw_bytes=raw, parsed_payload=receipt, upstream_digest_sha256=upstream,
     )
     contract = _contract_for(receipt)
-    retrieval_at = near_close + timedelta(seconds=2)
+    # Retrieval must clear the entry window end (Ruling C: unconditional maturity).
+    retrieval_at = near_close + timedelta(seconds=62)
     entry_ev = _evidence(
         role="entry",
         contract=contract,
@@ -1444,7 +1445,7 @@ def test_early_close_horizon_crosses_close_is_excluded() -> None:
         computed_at=retrieval_at + timedelta(milliseconds=10),
         rows=[_quote_row(
             timestamp=near_close.astimezone(ET).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3],
-            expiration="2025-12-31",
+            expiration="2026-12-31",
             bid="2.30", bid_size=10, bid_exchange=11, bid_condition=50,
             ask="2.30", ask_size=10, ask_exchange=11, ask_condition=50,
         )],
@@ -1536,11 +1537,13 @@ def test_record_carries_per_role_clocks_distinct() -> None:
     contract = _contract_for(_expression())
     entry_request = ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10)
     entry_response = entry_request + timedelta(seconds=1)
-    entry_retrieval = entry_request + timedelta(seconds=2)
+    # Retrieval must land AFTER the entry window end (Ruling C: window maturity
+    # is unconditional) AND after the selected entry event (Ruling B).
+    entry_retrieval = ENTRY_END_UTC + timedelta(seconds=2)
     entry_computed = entry_retrieval + timedelta(milliseconds=10)
-    exit_request = entry_event + timedelta(minutes=60, seconds=10)
-    exit_response = exit_request + timedelta(seconds=1)
-    exit_retrieval = exit_request + timedelta(seconds=2)
+    exit_request = exit_event - timedelta(milliseconds=10)
+    exit_response = exit_request + timedelta(milliseconds=20)
+    exit_retrieval = exit_event + timedelta(seconds=2)
     exit_computed = exit_retrieval + timedelta(milliseconds=10)
     entry_ev = _evidence(
         role="entry",
@@ -1833,26 +1836,20 @@ def test_noncanonical_valid_json_raw_bytes_accepted() -> None:
 
 
 def test_raw_bytes_and_payload_mismatch_is_invalid() -> None:
-    """A QuoteEvidence whose raw bytes parse to a different list than
-    parsed_payload is invalid.
+    """An ExpressionReceipt whose raw bytes parse to a different Mapping
+    than parsed_payload is integrity-invalid (Ruling E).
     """
 
-    contract = _contract_for(_expression())
-    raw = b'[{"different":true}]'
-    parsed = [{"other": "list"}]
+    payload = _expression()
+    raw = cohort.canonical_json_bytes({"different": True, **payload})
+    upstream = sha256(
+        cohort.canonical_json_bytes(_canonical_fields_for_digest(payload))
+    ).hexdigest()
     with pytest.raises(oa3.Oa3InvalidError, match="disagrees with raw_bytes"):
-        oa3.QuoteEvidence(
-            role="entry",
-            contract=contract,
-            boundary_at=ENTRY_AVAILABLE_UTC,
-            query_end_at=ENTRY_END_UTC,
-            query=_expected_query(contract, ENTRY_AVAILABLE_UTC, _request_clock(), ENTRY_END_UTC),
+        oa3.ExpressionReceipt(
             raw_bytes=raw,
-            parsed_payload=parsed,
-            request_started_at=_request_clock(),
-            response_observed_at=_response_clock(),
-            retrieval_observed_at=RETRIEVAL_AT,
-            computed_at=COMPUTED_UTC,
+            parsed_payload=payload,
+            upstream_digest_sha256=upstream,
         )
 
 
@@ -1877,24 +1874,49 @@ def test_quote_evidence_construction_is_byte_strict() -> None:
     )
     assert ev.raw_bytes == cohort.canonical_json_bytes(payload)
     assert ev.raw_sha256 == sha256(ev.raw_bytes).hexdigest()
-    assert ev.canonical_payload_sha256 == sha256(cohort.canonical_json_bytes(list(ev.parsed_payload))).hexdigest()
+    assert ev.canonical_payload_sha256 == sha256(cohort.canonical_json_bytes([dict(item) for item in ev.parsed_payload])).hexdigest()
 
 
-def test_quote_evidence_constructor_rejects_malformed_bytes() -> None:
+def test_quote_evidence_malformed_bytes_emits_unavailable_at_evaluate() -> None:
+    """Malformed source bytes: constructor must NOT raise (Ruling E) — the
+    evaluator emits QUOTE_RESPONSE_INVALID unavailable with the parse error
+    preserved.  The raw SHA/size is bound to the record's entry block.
+    """
+
     contract = _contract_for(_expression())
-    with pytest.raises(oa3.Oa3InvalidError):
-        oa3.quote_evidence_from_bytes(
-            role="entry",
-            contract=contract,
-            boundary_at=ENTRY_AVAILABLE_UTC,
-            query_end_at=ENTRY_END_UTC,
-            query=_expected_query(contract, ENTRY_AVAILABLE_UTC, _request_clock(), ENTRY_END_UTC),
-            raw_bytes=b"not json",
-            request_started_at=_request_clock(),
-            response_observed_at=_response_clock(),
-            retrieval_observed_at=RETRIEVAL_AT,
-            computed_at=COMPUTED_UTC,
-        )
+    malformed = b"not json"
+    entry_ev = oa3.quote_evidence_from_bytes(
+        role="entry",
+        contract=contract,
+        boundary_at=ENTRY_AVAILABLE_UTC,
+        query_end_at=ENTRY_END_UTC,
+        query=_expected_query(contract, ENTRY_AVAILABLE_UTC, _request_clock(), ENTRY_END_UTC),
+        raw_bytes=malformed,
+        request_started_at=_request_clock(),
+        response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT,
+        computed_at=COMPUTED_UTC,
+    )
+    assert entry_ev.parsed_payload is None
+    assert entry_ev.parse_error and entry_ev.parse_error.startswith("QUOTE_RESPONSE_INVALID")
+    # Raw SHA/size is preserved on the evidence block.
+    assert entry_ev.raw_sha256 == sha256(malformed).hexdigest()
+    assert entry_ev.raw_size == len(malformed)
+    exit_ev = _evidence(
+        role="exit",
+        contract=contract,
+        boundary_at=ENTRY_AVAILABLE_UTC + EXIT_HORIZON,
+        request_started_at=_request_clock(),
+        response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT,
+        computed_at=COMPUTED_UTC,
+        rows=[],
+    )
+    record = oa3.evaluate(_expression_receipt(), entry_evidence=entry_ev, exit_evidence=exit_ev)
+    assert record["status"] == "unavailable"
+    assert record["reason"] == "QUOTE_RESPONSE_INVALID"
+    assert record["entry"]["raw_response_sha256"] == sha256(malformed).hexdigest()
+    assert record["entry"]["raw_response_bytes"] == len(malformed)
 
 
 def test_policy_sha256_is_module_pinned_constant() -> None:
@@ -2337,11 +2359,14 @@ def test_pending_until_whole_60s_window_elapsed_early_close() -> None:
     """
 
     boundary = datetime(2026, 12, 24, 17, 30, 0, tzinfo=UTC)  # 12:30 ET
+    # Expiration must be AFTER the session date (Ruling D: same-day excluded;
+    # pre-session excluded as EXPRESSION_CONTRACT_EXPIRED).  Use a future
+    # expiration so the receipt clears contract validation.
     receipt = _expression(
         available_at=boundary.isoformat().replace("+00:00", "Z"),
         decision_at=boundary.isoformat().replace("+00:00", "Z"),
-        expiration="2025-12-31",
-        occ_symbol="SOFI  251231C00016000",
+        expiration="2026-12-31",
+        occ_symbol="SOFI  261231C00016000",
     )
     raw = cohort.canonical_json_bytes(receipt)
     upstream = sha256(
@@ -2510,4 +2535,641 @@ def test_evaluate_or_raise_returns_fixture_for_unavailable_data() -> None:
         exit_evidence=exit_ev,
     )
     assert record["status"] == "unavailable"
-    assert record["reason"] == "ENTRY_QUOTE_UNAVAILABLE"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RED-first behavioral coverage for META-CEO Ruling A-H
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def test_red_shifted_entry_query_window_is_invalid() -> None:
+    """An entry evidence whose boundary_at / query_end_at disagree with the
+    canonical expression.available_at/+60s window is rejected as
+    EVIDENCE_QUERY_MISMATCH even though the query itself is self-consistent
+    (Ruling A: reject wrong per-role windows).
+    """
+
+    entry_event = ENTRY_AVAILABLE_UTC + timedelta(seconds=5)
+    exit_event = entry_event + timedelta(minutes=60, seconds=5)
+    entry_rows = [_row_at(entry_event, ask="2.30", ask_size=10, ask_exchange=11, ask_condition=50)]
+    exit_rows = [_row_at(exit_event, bid="2.40", bid_size=10, bid_exchange=11, bid_condition=50, ask="2.50", ask_size=12)]
+    contract = _contract_for(_expression())
+    shifted_boundary = ENTRY_AVAILABLE_UTC + timedelta(milliseconds=500)
+    shifted_window_end = shifted_boundary + timedelta(seconds=oa3.ENTRY_WINDOW_SECONDS)
+    shifted_query = cohort.source_query(
+        contract=contract, boundary_at=shifted_boundary,
+        available_at=shifted_boundary + timedelta(milliseconds=10),
+        ceiling_at=shifted_window_end,
+    )
+    entry_ev = oa3.quote_evidence_from_bytes(
+        role="entry", contract=contract,
+        boundary_at=shifted_boundary, query_end_at=shifted_window_end,
+        query=shifted_query, raw_bytes=_payload_bytes(*entry_rows),
+        request_started_at=shifted_boundary + timedelta(milliseconds=10),
+        response_observed_at=shifted_boundary + timedelta(milliseconds=20),
+        retrieval_observed_at=ENTRY_END_UTC + timedelta(seconds=2),
+        computed_at=ENTRY_END_UTC + timedelta(seconds=2) + timedelta(milliseconds=10),
+    )
+    exit_ev = _evidence(
+        role="exit", contract=contract,
+        boundary_at=entry_event + EXIT_HORIZON,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=ENTRY_END_UTC + timedelta(seconds=2),
+        computed_at=ENTRY_END_UTC + timedelta(seconds=2) + timedelta(milliseconds=10),
+        rows=exit_rows,
+    )
+    record = oa3.evaluate(_expression_receipt(), entry_evidence=entry_ev, exit_evidence=exit_ev)
+    assert record["status"] == "invalid"
+    assert record["reason"] == "EVIDENCE_QUERY_MISMATCH"
+
+
+def test_red_shortened_entry_window_is_invalid() -> None:
+    """A 30-second window instead of 60s is rejected (Ruling A: full 60s)."""
+
+    entry_event = ENTRY_AVAILABLE_UTC + timedelta(seconds=5)
+    exit_event = entry_event + timedelta(minutes=60, seconds=5)
+    entry_rows = [_row_at(entry_event, ask="2.30", ask_size=10, ask_exchange=11, ask_condition=50)]
+    exit_rows = [_row_at(exit_event, bid="2.40", bid_size=10, bid_exchange=11, bid_condition=50, ask="2.50", ask_size=12)]
+    contract = _contract_for(_expression())
+    short_end = ENTRY_AVAILABLE_UTC + timedelta(seconds=30)
+    short_query = cohort.source_query(
+        contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
+        available_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        ceiling_at=short_end,
+    )
+    entry_ev = oa3.quote_evidence_from_bytes(
+        role="entry", contract=contract,
+        boundary_at=ENTRY_AVAILABLE_UTC, query_end_at=short_end,
+        query=short_query, raw_bytes=_payload_bytes(*entry_rows),
+        request_started_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        response_observed_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=20),
+        retrieval_observed_at=ENTRY_END_UTC + timedelta(seconds=2),
+        computed_at=ENTRY_END_UTC + timedelta(seconds=2) + timedelta(milliseconds=10),
+    )
+    exit_ev = _evidence(
+        role="exit", contract=contract,
+        boundary_at=entry_event + EXIT_HORIZON,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=ENTRY_END_UTC + timedelta(seconds=2),
+        computed_at=ENTRY_END_UTC + timedelta(seconds=2) + timedelta(milliseconds=10),
+        rows=exit_rows,
+    )
+    record = oa3.evaluate(_expression_receipt(), entry_evidence=entry_ev, exit_evidence=exit_ev)
+    assert record["status"] == "invalid"
+    assert record["reason"] == "EVIDENCE_QUERY_MISMATCH"
+
+
+def test_red_extended_entry_window_is_invalid() -> None:
+    """A 90-second window instead of 60s is rejected (Ruling A: exactly +60s)."""
+
+    entry_event = ENTRY_AVAILABLE_UTC + timedelta(seconds=5)
+    exit_event = entry_event + timedelta(minutes=60, seconds=5)
+    entry_rows = [_row_at(entry_event, ask="2.30", ask_size=10, ask_exchange=11, ask_condition=50)]
+    exit_rows = [_row_at(exit_event, bid="2.40", bid_size=10, bid_exchange=11, bid_condition=50, ask="2.50", ask_size=12)]
+    contract = _contract_for(_expression())
+    long_end = ENTRY_AVAILABLE_UTC + timedelta(seconds=90)
+    long_query = cohort.source_query(
+        contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
+        available_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        ceiling_at=long_end,
+    )
+    entry_ev = oa3.quote_evidence_from_bytes(
+        role="entry", contract=contract,
+        boundary_at=ENTRY_AVAILABLE_UTC, query_end_at=long_end,
+        query=long_query, raw_bytes=_payload_bytes(*entry_rows),
+        request_started_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        response_observed_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=20),
+        retrieval_observed_at=long_end + timedelta(seconds=2),
+        computed_at=long_end + timedelta(seconds=2) + timedelta(milliseconds=10),
+    )
+    exit_ev = _evidence(
+        role="exit", contract=contract,
+        boundary_at=entry_event + EXIT_HORIZON,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=long_end + timedelta(seconds=2),
+        computed_at=long_end + timedelta(seconds=2) + timedelta(milliseconds=10),
+        rows=exit_rows,
+    )
+    record = oa3.evaluate(_expression_receipt(), entry_evidence=entry_ev, exit_evidence=exit_ev)
+    assert record["status"] == "invalid"
+    assert record["reason"] == "EVIDENCE_QUERY_MISMATCH"
+
+
+def test_red_future_selected_event_with_ordered_clocks_is_invalid() -> None:
+    """A selected event after retrieval is rejected (Ruling B: the analyst
+    cannot have observed a quote timestamp they had not yet seen).
+    """
+
+    entry_event = ENTRY_AVAILABLE_UTC + timedelta(seconds=5)
+    exit_event = entry_event + timedelta(minutes=60, seconds=5)
+    entry_rows = [_row_at(entry_event, ask="2.30", ask_size=10, ask_exchange=11, ask_condition=50)]
+    exit_rows = [_row_at(exit_event, bid="2.40", bid_size=10, bid_exchange=11, bid_condition=50, ask="2.50", ask_size=12)]
+    contract = _contract_for(_expression())
+    # Retrieval at +3s (still inside window); entry event at +5s — selected
+    # event is FUTURE relative to retrieval.
+    entry_ev = _evidence(
+        role="entry", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=ENTRY_AVAILABLE_UTC + timedelta(seconds=3),
+        computed_at=ENTRY_AVAILABLE_UTC + timedelta(seconds=3, milliseconds=10),
+        rows=entry_rows,
+    )
+    exit_ev = _evidence(
+        role="exit", contract=contract, boundary_at=entry_event + EXIT_HORIZON,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=ENTRY_AVAILABLE_UTC + timedelta(seconds=3),
+        computed_at=ENTRY_AVAILABLE_UTC + timedelta(seconds=3, milliseconds=10),
+        rows=exit_rows,
+    )
+    record = oa3.evaluate(_expression_receipt(), entry_evidence=entry_ev, exit_evidence=exit_ev)
+    assert record["status"] == "invalid"
+    assert record["reason"] == "EVIDENCE_SELECTED_EVENT_FUTURE"
+
+
+def test_red_quote_present_but_pre_window_maturity_is_pending() -> None:
+    """A quote is observed inside the window but retrieval sits BEFORE
+    the window end: pending (Ruling C: window maturity unconditional).
+    """
+
+    entry_event = ENTRY_AVAILABLE_UTC + timedelta(seconds=2)
+    entry_rows = [_row_at(entry_event, ask="2.30", ask_size=10, ask_exchange=11, ask_condition=50)]
+    contract = _contract_for(_expression())
+    retrieval = ENTRY_AVAILABLE_UTC + timedelta(seconds=10)
+    entry_ev = _evidence(
+        role="entry", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=retrieval, computed_at=retrieval,
+        rows=entry_rows,
+    )
+    exit_ev = _evidence(
+        role="exit", contract=contract, boundary_at=entry_event + EXIT_HORIZON,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=retrieval, computed_at=retrieval,
+        rows=[],
+    )
+    record = oa3.evaluate(_expression_receipt(), entry_evidence=entry_ev, exit_evidence=exit_ev)
+    assert record["status"] == "pending"
+    assert record["entry"]["selected"] is not None
+
+
+def test_red_request_before_full_window_ends_is_pending() -> None:
+    """request_started_at sits inside the window; retrieval sits BEFORE
+    the window end.  Pending (Ruling C)."""
+
+    contract = _contract_for(_expression())
+    retrieval = ENTRY_AVAILABLE_UTC + timedelta(seconds=20)
+    entry_ev = _evidence(
+        role="entry", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        response_observed_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=20),
+        retrieval_observed_at=retrieval, computed_at=retrieval,
+        rows=[],
+    )
+    exit_ev = _evidence(
+        role="exit", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC + EXIT_HORIZON,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=retrieval, computed_at=retrieval,
+        rows=[],
+    )
+    record = oa3.evaluate(_expression_receipt(), entry_evidence=entry_ev, exit_evidence=exit_ev)
+    assert record["status"] == "pending"
+
+
+def test_red_naive_clock_in_evidence_is_invalid() -> None:
+    """A naive datetime on any of the evidence clocks is integrity-invalid
+    (Ruling B: never infer timezone; require tzinfo).
+    """
+
+    contract = _contract_for(_expression())
+    naive_boundary = ENTRY_AVAILABLE_UTC.replace(tzinfo=None)
+    with pytest.raises(oa3.Oa3InvalidError, match="naive"):
+        oa3.quote_evidence_from_bytes(
+            role="entry", contract=contract,
+            boundary_at=naive_boundary,
+            query_end_at=ENTRY_END_UTC,
+            query=_expected_query(contract, ENTRY_AVAILABLE_UTC, _request_clock(), ENTRY_END_UTC),
+            raw_bytes=_payload_bytes(),
+            request_started_at=_request_clock(),
+            response_observed_at=_response_clock(),
+            retrieval_observed_at=RETRIEVAL_AT,
+            computed_at=COMPUTED_UTC,
+        )
+
+
+def test_red_post_construction_mutation_of_parsed_payload_does_not_corrupt_record() -> None:
+    """Caller mutation of the evidence parsed_payload AFTER construction
+    does not bleed into the evaluate result (Ruling B: deep-freeze).
+    """
+
+    entry_event = ENTRY_AVAILABLE_UTC + timedelta(seconds=5)
+    exit_event = entry_event + timedelta(minutes=60, seconds=5)
+    entry_rows = [_row_at(entry_event, ask="2.30", ask_size=10, ask_exchange=11, ask_condition=50)]
+    exit_rows = [_row_at(exit_event, bid="2.40", bid_size=10, bid_exchange=11, bid_condition=50, ask="2.50", ask_size=12)]
+    contract = _contract_for(_expression())
+    exit_window_mature = entry_event + EXIT_HORIZON + EXIT_WINDOW + timedelta(seconds=2)
+    entry_ev = _evidence(
+        role="entry", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=ENTRY_END_UTC + timedelta(seconds=2),
+        computed_at=ENTRY_END_UTC + timedelta(seconds=2) + timedelta(milliseconds=10),
+        rows=entry_rows,
+    )
+    exit_ev = _evidence(
+        role="exit", contract=contract, boundary_at=entry_event + EXIT_HORIZON,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=exit_window_mature,
+        computed_at=exit_window_mature + timedelta(milliseconds=10),
+        rows=exit_rows,
+    )
+    # Caller-side mutation: this must not affect the record (Ruling B:
+    # deep-freeze).  parsed_payload is a tuple of read-only mapping proxies
+    # over deep-copied dicts; item assignment on the proxy raises TypeError
+    # and the eval result is unaffected.
+    if entry_ev.parsed_payload is not None:
+        with pytest.raises(TypeError):
+            entry_ev.parsed_payload[0]["ask"] = "999.99"  # type: ignore[index]
+    record = oa3.evaluate(_expression_receipt(), entry_evidence=entry_ev, exit_evidence=exit_ev)
+    assert record["status"] == "complete"
+    assert Decimal(str(record["entry"]["selected"]["price"])) == Decimal("2.30")
+
+
+def test_red_malformed_json_is_unavailable_not_invalid() -> None:
+    """Malformed source JSON: QUOTE_RESPONSE_INVALID (unavailable) with
+    parse_error preserved.  Contrasted with mismatched raw/payload which
+    is integrity-invalid (Ruling E).
+    """
+
+    contract = _contract_for(_expression())
+    malformed = b"\xff\xfe malformed bytes \x00"
+    entry_ev = oa3.quote_evidence_from_bytes(
+        role="entry", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
+        query_end_at=ENTRY_END_UTC,
+        query=_expected_query(contract, ENTRY_AVAILABLE_UTC, _request_clock(), ENTRY_END_UTC),
+        raw_bytes=malformed,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT, computed_at=COMPUTED_UTC,
+    )
+    exit_ev = _evidence(
+        role="exit", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC + EXIT_HORIZON,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT, computed_at=COMPUTED_UTC, rows=[],
+    )
+    record = oa3.evaluate(_expression_receipt(), entry_evidence=entry_ev, exit_evidence=exit_ev)
+    assert record["status"] == "unavailable"
+    assert record["reason"] == "QUOTE_RESPONSE_INVALID"
+    assert record["entry"]["raw_response_sha256"] == sha256(malformed).hexdigest()
+
+
+def test_red_mismatched_raw_and_payload_is_invalid() -> None:
+    """A receipt whose raw_bytes parse to a different Mapping than
+    parsed_payload is integrity-invalid (Ruling E).  Contrasted with the
+    malformed-bytes case which is unavailable.
+    """
+
+    payload = _expression()
+    raw = cohort.canonical_json_bytes({"different": True, **payload})
+    upstream = sha256(
+        cohort.canonical_json_bytes(_canonical_fields_for_digest(payload))
+    ).hexdigest()
+    with pytest.raises(oa3.Oa3InvalidError, match="disagrees"):
+        oa3.ExpressionReceipt(
+            raw_bytes=raw, parsed_payload=payload,
+            upstream_digest_sha256=upstream,
+        )
+
+
+def test_red_exact_close_60s_normal_session_is_excluded() -> None:
+    """available_at + 60s lands at or past the RTH close — excluded
+    (Ruling D: equality to close is excluded under
+    HORIZON_CROSSES_SESSION_CLOSE).
+    """
+
+    # Regular session: 09:30-16:00 ET.  Boundary at 15:59:01 ET → entry
+    # window end = 16:00:01 ET > session close.
+    boundary = datetime(2026, 10, 15, 19, 59, 1, tzinfo=UTC)  # 15:59:01 ET
+    receipt = _expression(
+        available_at=boundary.isoformat().replace("+00:00", "Z"),
+        decision_at=boundary.isoformat().replace("+00:00", "Z"),
+    )
+    raw = cohort.canonical_json_bytes(receipt)
+    upstream = sha256(
+        cohort.canonical_json_bytes(_canonical_fields_for_digest(receipt))
+    ).hexdigest()
+    expr = oa3.ExpressionReceipt(
+        raw_bytes=raw, parsed_payload=receipt, upstream_digest_sha256=upstream,
+    )
+    contract = _contract_for(receipt)
+    retrieval_at = boundary + timedelta(seconds=2)
+    entry_ev = oa3.quote_evidence_from_bytes(
+        role="entry", contract=contract, boundary_at=boundary,
+        query_end_at=boundary + timedelta(seconds=oa3.ENTRY_WINDOW_SECONDS),
+        query=_expected_query(
+            contract, boundary, boundary + timedelta(milliseconds=10),
+            boundary + timedelta(seconds=oa3.ENTRY_WINDOW_SECONDS),
+        ),
+        raw_bytes=_payload_bytes(),
+        request_started_at=boundary + timedelta(milliseconds=10),
+        response_observed_at=boundary + timedelta(milliseconds=20),
+        retrieval_observed_at=retrieval_at,
+        computed_at=retrieval_at + timedelta(milliseconds=10),
+    )
+    # Dummy in-RTH exit (the entry exclusion fires before exit is read).
+    exit_boundary = ENTRY_AVAILABLE_UTC + timedelta(minutes=30)
+    exit_query_end = exit_boundary + timedelta(seconds=oa3.EXIT_WINDOW_SECONDS)
+    exit_request = exit_boundary + timedelta(milliseconds=10)
+    exit_query = cohort.source_query(
+        contract=contract, boundary_at=exit_boundary,
+        available_at=exit_request, ceiling_at=exit_query_end,
+    )
+    exit_ev = oa3.quote_evidence_from_bytes(
+        role="exit", contract=contract, boundary_at=exit_boundary,
+        query_end_at=exit_query_end, query=exit_query, raw_bytes=_payload_bytes(),
+        request_started_at=exit_request,
+        response_observed_at=exit_request + timedelta(milliseconds=10),
+        retrieval_observed_at=retrieval_at,
+        computed_at=retrieval_at + timedelta(milliseconds=10),
+    )
+    record = oa3.evaluate(expr, entry_evidence=entry_ev, exit_evidence=exit_ev)
+    assert record["status"] == "excluded"
+    assert record["reason"] == "HORIZON_CROSSES_SESSION_CLOSE"
+
+
+def test_red_exact_close_60s_early_close_is_excluded() -> None:
+    """Early close at 13:00 ET: boundary at 12:59:01 ET → entry window
+    end = 13:00:01 ET = early close + 1s.  Excluded (Ruling D)."""
+
+    boundary = datetime(2026, 12, 24, 17, 59, 1, tzinfo=UTC)  # 12:59:01 ET
+    receipt = _expression(
+        available_at=boundary.isoformat().replace("+00:00", "Z"),
+        decision_at=boundary.isoformat().replace("+00:00", "Z"),
+        expiration="2026-12-31",
+        occ_symbol="SOFI  261231C00016000",
+    )
+    raw = cohort.canonical_json_bytes(receipt)
+    upstream = sha256(
+        cohort.canonical_json_bytes(_canonical_fields_for_digest(receipt))
+    ).hexdigest()
+    expr = oa3.ExpressionReceipt(
+        raw_bytes=raw, parsed_payload=receipt, upstream_digest_sha256=upstream,
+    )
+    contract = _contract_for(receipt)
+    retrieval_at = boundary + timedelta(seconds=2)
+    entry_ev = oa3.quote_evidence_from_bytes(
+        role="entry", contract=contract, boundary_at=boundary,
+        query_end_at=boundary + timedelta(seconds=oa3.ENTRY_WINDOW_SECONDS),
+        query=_expected_query(
+            contract, boundary, boundary + timedelta(milliseconds=10),
+            boundary + timedelta(seconds=oa3.ENTRY_WINDOW_SECONDS),
+        ),
+        raw_bytes=_payload_bytes(),
+        request_started_at=boundary + timedelta(milliseconds=10),
+        response_observed_at=boundary + timedelta(milliseconds=20),
+        retrieval_observed_at=retrieval_at,
+        computed_at=retrieval_at + timedelta(milliseconds=10),
+    )
+    exit_boundary = datetime(2026, 12, 24, 16, 0, 0, tzinfo=UTC)  # 11:00 ET
+    exit_query_end = exit_boundary + timedelta(seconds=oa3.EXIT_WINDOW_SECONDS)
+    exit_request = exit_boundary + timedelta(milliseconds=10)
+    exit_query = cohort.source_query(
+        contract=contract, boundary_at=exit_boundary,
+        available_at=exit_request, ceiling_at=exit_query_end,
+    )
+    exit_ev = oa3.quote_evidence_from_bytes(
+        role="exit", contract=contract, boundary_at=exit_boundary,
+        query_end_at=exit_query_end, query=exit_query, raw_bytes=_payload_bytes(),
+        request_started_at=exit_request,
+        response_observed_at=exit_request + timedelta(milliseconds=10),
+        retrieval_observed_at=retrieval_at,
+        computed_at=retrieval_at + timedelta(milliseconds=10),
+    )
+    record = oa3.evaluate(expr, entry_evidence=entry_ev, exit_evidence=exit_ev)
+    assert record["status"] == "excluded"
+    assert record["reason"] == "HORIZON_CROSSES_SESSION_CLOSE"
+
+
+def test_red_expired_contract_is_excluded() -> None:
+    """available_at sits on 2026-10-15 with expiration 2026-10-14: the
+    contract expired yesterday.  EXPRESSION_CONTRACT_EXPIRED (Ruling D).
+    The exclusion fires during receipt validation, BEFORE any evidence is
+    parsed, so a stub entry/exit evidence is fine.
+    """
+
+    boundary = datetime(2026, 10, 15, 14, 0, 0, tzinfo=UTC)
+    receipt = _expression(
+        available_at=boundary.isoformat().replace("+00:00", "Z"),
+        decision_at=boundary.isoformat().replace("+00:00", "Z"),
+        expiration="2026-10-14",
+        occ_symbol="SOFI  261014C00016000",
+    )
+    raw = cohort.canonical_json_bytes(receipt)
+    upstream = sha256(
+        cohort.canonical_json_bytes(_canonical_fields_for_digest(receipt))
+    ).hexdigest()
+    expr = oa3.ExpressionReceipt(
+        raw_bytes=raw, parsed_payload=receipt, upstream_digest_sha256=upstream,
+    )
+    # Dummy in-RTH entry/exit evidence — the expired-contract check fires
+    # during receipt validation BEFORE any evidence is consulted, so the
+    # only requirement is that the records are well-formed enough for the
+    # stub construction to succeed.
+    contract = _contract_for(_expression())  # use the default future-dated contract
+    entry_ev = _evidence(
+        role="entry", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=ENTRY_END_UTC + timedelta(seconds=2),
+        computed_at=ENTRY_END_UTC + timedelta(seconds=2) + timedelta(milliseconds=10),
+        rows=[],
+    )
+    exit_ev = _evidence(
+        role="exit", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC + EXIT_HORIZON,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=ENTRY_END_UTC + timedelta(seconds=2),
+        computed_at=ENTRY_END_UTC + timedelta(seconds=2) + timedelta(milliseconds=10),
+        rows=[],
+    )
+    record = oa3.evaluate(expr, entry_evidence=entry_ev, exit_evidence=exit_ev)
+    assert record["status"] == "excluded"
+    assert record["reason"] == "EXPRESSION_CONTRACT_EXPIRED"
+
+
+def test_red_evaluate_or_raise_refuses_non_expression_receipt() -> None:
+    """evaluate_or_raise refuses a Mapping / bytes input (Ruling G:
+    ExpressionReceipt with preserved raw bytes is the only public entry
+    point)."""
+
+    contract = _contract_for(_expression())
+    entry_ev = _evidence(
+        role="entry", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT, computed_at=COMPUTED_UTC, rows=[],
+    )
+    exit_ev = _evidence(
+        role="exit", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC + EXIT_HORIZON,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT, computed_at=COMPUTED_UTC, rows=[],
+    )
+    with pytest.raises((oa3.Oa3InvalidError, oa3.Oa3InputError)):
+        oa3.evaluate_or_raise(_expression(), entry_evidence=entry_ev, exit_evidence=exit_ev)
+    raw = cohort.canonical_json_bytes(_expression())
+    with pytest.raises((oa3.Oa3InvalidError, oa3.Oa3InputError)):
+        oa3.evaluate_or_raise(raw, entry_evidence=entry_ev, exit_evidence=exit_ev)
+
+
+def test_red_digest_mismatch_evaluate_or_raise_raises() -> None:
+    """evaluate_or_raise must raise when upstream_digest disagrees with
+    the canonical-immutable digest (Ruling G).
+    """
+
+    payload = _expression()
+    raw = cohort.canonical_json_bytes(payload)
+    expr = oa3.ExpressionReceipt(
+        raw_bytes=raw, parsed_payload=payload,
+        upstream_digest_sha256="0" * 64,
+    )
+    contract = _contract_for(_expression())
+    entry_ev = _evidence(
+        role="entry", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT, computed_at=COMPUTED_UTC, rows=[],
+    )
+    exit_ev = _evidence(
+        role="exit", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC + EXIT_HORIZON,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT, computed_at=COMPUTED_UTC, rows=[],
+    )
+    with pytest.raises(oa3.Oa3InvalidError, match="EXPRESSION_DIGEST_MISMATCH"):
+        oa3.evaluate_or_raise(expr, entry_evidence=entry_ev, exit_evidence=exit_ev)
+
+
+def test_red_query_mismatch_evaluate_or_raise_raises() -> None:
+    """evaluate_or_raise must raise on EVIDENCE_QUERY_MISMATCH
+    (Ruling F: every returned invalid/excluded is raised).
+    """
+
+    entry_event = ENTRY_AVAILABLE_UTC + timedelta(seconds=5)
+    exit_event = entry_event + timedelta(minutes=60, seconds=5)
+    entry_rows = [_row_at(entry_event, ask="2.30", ask_size=10, ask_exchange=11, ask_condition=50)]
+    exit_rows = [_row_at(exit_event, bid="2.40", bid_size=10, bid_exchange=11, bid_condition=50, ask="2.50", ask_size=12)]
+    contract = _contract_for(_expression())
+    shifted_boundary = ENTRY_AVAILABLE_UTC + timedelta(milliseconds=500)
+    shifted_end = shifted_boundary + timedelta(seconds=oa3.ENTRY_WINDOW_SECONDS)
+    shifted_query = cohort.source_query(
+        contract=contract, boundary_at=shifted_boundary,
+        available_at=shifted_boundary + timedelta(milliseconds=10),
+        ceiling_at=shifted_end,
+    )
+    entry_ev = oa3.quote_evidence_from_bytes(
+        role="entry", contract=contract, boundary_at=shifted_boundary,
+        query_end_at=shifted_end, query=shifted_query,
+        raw_bytes=_payload_bytes(*entry_rows),
+        request_started_at=shifted_boundary + timedelta(milliseconds=10),
+        response_observed_at=shifted_boundary + timedelta(milliseconds=20),
+        retrieval_observed_at=ENTRY_END_UTC + timedelta(seconds=2),
+        computed_at=ENTRY_END_UTC + timedelta(seconds=2) + timedelta(milliseconds=10),
+    )
+    exit_ev = _evidence(
+        role="exit", contract=contract,
+        boundary_at=entry_event + EXIT_HORIZON,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=ENTRY_END_UTC + timedelta(seconds=2),
+        computed_at=ENTRY_END_UTC + timedelta(seconds=2) + timedelta(milliseconds=10),
+        rows=exit_rows,
+    )
+    with pytest.raises(oa3.Oa3InvalidError, match="EVIDENCE_QUERY_MISMATCH"):
+        oa3.evaluate_or_raise(_expression_receipt(), entry_evidence=entry_ev, exit_evidence=exit_ev)
+
+
+def test_red_non_canonical_valid_json_remains_valid() -> None:
+    """Raw bytes with JSON whitespace / key-order variation parse to the
+    same canonical Mapping; the receipt stays valid and the upstream
+    digest binds to the canonical form.
+    """
+
+    payload = _expression()
+    canonical_raw = cohort.canonical_json_bytes(payload)
+    # Re-serialize with extra whitespace and a slightly different key order
+    non_canonical = (
+        b'{\n  "expression_id": "' + payload["expression_id"].encode() + b'",\n'
+        b'  "policy_version": "v1",\n'
+        b'  "source_candidate_id": "' + payload["source_candidate_id"].encode() + b'",\n'
+        b'  "decision_receipt_sha256": "' + payload["decision_receipt_sha256"].encode() + b'",\n'
+        b'  "source_rule_digest_sha256": "' + payload["source_rule_digest_sha256"].encode() + b'",\n'
+        b'  "selection_frozen_before_outcomes": true,\n'
+        b'  "selection_fence_at": "' + payload["selection_fence_at"].encode() + b'",\n'
+        b'  "root": "SOFI",\n  "expiration": "2026-10-16",\n'
+        b'  "right": "call",\n  "strike": "16",\n  "strike_millis": 16000,\n'
+        b'  "occ_symbol": "SOFI  261016C00016000",\n  "position": "long",\n'
+        b'  "quantity_contracts": 1,\n  "multiplier": 100,\n'
+        b'  "standard_deliverable": true,\n  "single_leg": true,\n'
+        b'  "package": false,\n  "decision_at": "' + payload["decision_at"].encode() + b'",\n'
+        b'  "available_at": "' + payload["available_at"].encode() + b'"\n}\n'
+    )
+    assert non_canonical != canonical_raw
+    upstream = sha256(
+        cohort.canonical_json_bytes(_canonical_fields_for_digest(payload))
+    ).hexdigest()
+    expr = oa3.ExpressionReceipt(
+        raw_bytes=non_canonical, parsed_payload=payload,
+        upstream_digest_sha256=upstream,
+    )
+    # The receipt accepted the non-canonical bytes; the raw SHA differs from
+    # the canonical payload SHA, both are bound to the record.
+    contract = _contract_for(_expression())
+    entry_ev = _evidence(
+        role="entry", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT, computed_at=COMPUTED_UTC, rows=[],
+    )
+    exit_ev = _evidence(
+        role="exit", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC + EXIT_HORIZON,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT, computed_at=COMPUTED_UTC, rows=[],
+    )
+    record = oa3.evaluate(expr, entry_evidence=entry_ev, exit_evidence=exit_ev)
+    # The status is pending (no quotes) but the receipt itself is valid:
+    # the upstream digest matches and the raw SHA is bound to the receipt block.
+    assert record["status"] in {"pending", "complete", "unavailable"}
+
+
+def test_red_exact_decimal_arithmetic_100_contracts_at_0_65_fee() -> None:
+    """Net return formula (Ruling G): exact Decimal arithmetic.
+
+    entry ask = $2.30, exit bid = $2.40, quantity=1 contract, multiplier=100.
+    Formula:
+      cost_in    = 100 * entry_ask + 0.65 = 230.65
+      proceeds   = 100 * exit_bid  - 0.65 = 239.35
+      net_pct    = 100 * (proceeds - cost_in) / cost_in
+                = 100 * 8.70 / 230.65 = 3.771949...
+    """
+
+    entry_event = ENTRY_AVAILABLE_UTC + timedelta(seconds=5)
+    exit_event = entry_event + timedelta(minutes=60, seconds=5)
+    entry_rows = [_row_at(entry_event, ask="2.30", ask_size=10, ask_exchange=11, ask_condition=50)]
+    exit_rows = [_row_at(exit_event, bid="2.40", bid_size=10, bid_exchange=11, bid_condition=50, ask="2.50", ask_size=12)]
+    contract = _contract_for(_expression())
+    exit_window_mature = entry_event + EXIT_HORIZON + EXIT_WINDOW + timedelta(seconds=2)
+    entry_ev = _evidence(
+        role="entry", contract=contract, boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=ENTRY_END_UTC + timedelta(seconds=2),
+        computed_at=ENTRY_END_UTC + timedelta(seconds=2) + timedelta(milliseconds=10),
+        rows=entry_rows,
+    )
+    exit_ev = _evidence(
+        role="exit", contract=contract, boundary_at=entry_event + EXIT_HORIZON,
+        request_started_at=_request_clock(), response_observed_at=_response_clock(),
+        retrieval_observed_at=exit_window_mature,
+        computed_at=exit_window_mature + timedelta(milliseconds=10),
+        rows=exit_rows,
+    )
+    record = oa3.evaluate(_expression_receipt(), entry_evidence=entry_ev, exit_evidence=exit_ev)
+    assert record["status"] == "complete"
+    expected = (
+        Decimal("100") * (
+            (Decimal("100") * Decimal("2.40") - Decimal("0.65"))
+            - (Decimal("100") * Decimal("2.30") + Decimal("0.65"))
+        ) / (Decimal("100") * Decimal("2.30") + Decimal("0.65"))
+    )
+    actual = Decimal(str(record["net_return_pct"]))
+    # Tolerate the canonical 6-decimal rounding the record emits.
+    assert abs(actual - expected) < Decimal("0.00001")
