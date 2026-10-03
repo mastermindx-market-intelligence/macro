@@ -61,9 +61,9 @@ The shared CI manifest is a real current-main collision:
 |---|---|---|---|
 | `.github/ci/legacy-jobs.yml` | `48d21e5828a8ac0209104b032e90d80034d06723` | `59520ca7640d4a7caaca0f5bf005a4cdf3d11dcf` | `98da7db430c263000d73d7334293b94924e1894d` |
 
-The #6803 version carries `session-anchor-era` and explicitly runs all `tests/test_temporal_scale_*` suites. Current main contains neither that job label nor those Temporal Grain test targets in the same manifest.
+The #6803 version and current main both retain the same `session-anchor-era` job and the same three incumbent anchor suites. The load-bearing difference is narrower: #6803 appends the seven `tests/test_temporal_scale_*` suites to that existing pytest command, while current main cannot name those unmerged test files.
 
-**Ruling:** #6803 semantics may be preserved, but #6803 is **not release-qualified against current main**. Before code acceptance, its incumbent carrier needs a narrow current-main CI compatibility repair or another explicit current CI owner that demonstrably executes the complete Temporal Grain suite on the exact integration candidate. Do not rebase/reset/force-push merely to make ancestry look current. Do not merge protected/main movement wholesale into the held carrier as a substitute for compatibility evidence.
+**Ruling:** #6803 semantics may be preserved, but #6803 is **not release-qualified against current main**. Before code acceptance, its incumbent carrier needs a narrow current-main CI compatibility repair: compose the current-main `.github/ci/legacy-jobs.yml` with only the seven Temporal Grain test targets appended to the existing `session-anchor-era` pytest command (or prove an equivalent explicit current CI owner). Do **not** restore the old #6803 manifest wholesale. Do not rebase/reset/force-push merely to make ancestry look current. Do not merge protected/main movement wholesale into the held carrier as a substitute for compatibility evidence.
 
 ## 4. Why the historical dead end must remain honest
 
