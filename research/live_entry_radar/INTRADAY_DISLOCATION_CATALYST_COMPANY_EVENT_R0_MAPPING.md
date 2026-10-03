@@ -184,3 +184,7 @@ claim universe-wide catalyst coverage.
 historical decision-time absence or to backfill `known_at` from `generated_at`, SEC
 availability, file mtime, or today's marker. Historical outcome work remains blocked on
 lawful owner vintages / observation receipts or prospective forward accrual.
+
+## Relevance window (2026-10-03)
+
+A results release drives the context from the moment it is known until the close of the first regular US session that opens at or after the release became available. A release after the close or before the open is relevant through that next session's close. A release during a session is relevant through the following session's close. After that the reference is kept as expired evidence and no longer drives the context state. The window is computed from the Radar reference-session calendar and the release's source-availability clock only.

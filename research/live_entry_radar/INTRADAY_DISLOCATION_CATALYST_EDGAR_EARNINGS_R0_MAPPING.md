@@ -101,3 +101,7 @@ A healthy `CatalystSourceRead` for an EDGAR source requires a separate owner-spe
 ## 8. Validation
 
 Synthetic acceptance tests must cover canonical identity, exact-token matching, amendment semantics, missing identity, missing clock, clock inversion, and absence of any rank/score/trade output.
+
+## Relevance window (2026-10-03)
+
+A results release drives the context from the moment it is known until the close of the first regular US session that opens at or after the release became available. A release after the close or before the open is relevant through that next session's close. A release during a session is relevant through the following session's close. After that the reference is kept as expired evidence and no longer drives the context state. The window is computed from the Radar reference-session calendar and the release's source-availability clock only.

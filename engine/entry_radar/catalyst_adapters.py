@@ -11,6 +11,7 @@ from hashlib import sha256
 from engine.company_intelligence.contracts import canonical_json_bytes
 from typing import Any, Mapping
 
+from engine import session_anchor
 from engine.company_intelligence.event_workspace import (
     WorkspaceError,
     validate_event_workspace,
@@ -24,6 +25,7 @@ from engine.entry_radar.catalyst_context import (
     _require_ts,
     assess_catalyst_context_for_live_episode,
 )
+from engine.entry_radar.live_ledger import session_close_instant, session_open_instant
 
 EDGAR_EARNINGS_OWNER = "collectors.edgar_earnings_8k"
 EDGAR_ITEM_202_EVIDENCE_PREFIX = "sec-edgar-item202:"
@@ -35,6 +37,25 @@ _COMPANY_EVENT_BLOCKING_STATES = frozenset({
     "complete",
     "corrected",
 })
+
+
+def first_full_session_close_after(instant: datetime, *, market: str = "US") -> datetime:
+    """Close of the first reference session whose open is at or after ``instant``."""
+    when = _require_ts("instant", instant)
+    reference = session_anchor.reference_sessions(market)
+    for session in reference:
+        open_dt = _require_ts(
+            "session_open",
+            session_open_instant(session),
+        )
+        if open_dt >= when:
+            return _require_ts(
+                "session_close",
+                session_close_instant(session),
+            )
+    raise CatalystContextError(
+        "no reference session opens at or after the supplied instant"
+    )
 
 
 def _has_exact_item_202(raw: Any) -> bool:
@@ -51,7 +72,8 @@ def adapt_edgar_earnings_item_202(
     """Map one canonical Item-2.02 filing into presence evidence.
 
     owner_observed_at is mandatory. The historical store SEC acceptance timestamp is
-    source availability, not proof of when Mastermind observed the row.
+    source availability, not proof of when Mastermind observed the row. An amended
+    filing (8-K/A) is a separate source-owner filing with its own clocks and relevance.
     """
     if not isinstance(row, Mapping):
         raise CatalystContextError("EDGAR earnings row must be a mapping")
@@ -69,6 +91,7 @@ def adapt_edgar_earnings_item_202(
         raise CatalystContextError(str(exc)) from exc
     acceptance = _require_ts("acceptance_datetime", row.get("acceptance_datetime"))
     observed = _require_ts("owner_observed_at", owner_observed_at)
+    relevant_until = first_full_session_close_after(acceptance)
     event_kind = (
         "earnings_results_item_2_02_amendment"
         if form == "8-K/A"
@@ -81,6 +104,7 @@ def adapt_edgar_earnings_item_202(
         event_kind=event_kind,
         source_available_at=acceptance,
         known_at=observed,
+        relevant_until=relevant_until,
         owner_disposition="blocking",
         evidence_ref=f"{EDGAR_ITEM_202_EVIDENCE_PREFIX}{key.key}",
     )
@@ -169,6 +193,7 @@ def adapt_company_intelligence_earnings_workspace(
             "owner_observed_at precedes Company Intelligence workspace generation"
         )
 
+    relevant_until = first_full_session_close_after(source_available)
     generation_id = str(workspace.get("generation_id") or "").strip()
     native_id = f"{event_id}@{generation_id}"
     return CatalystEvidence(
@@ -178,6 +203,7 @@ def adapt_company_intelligence_earnings_workspace(
         event_kind="earnings_results_company_event",
         source_available_at=source_available,
         known_at=consumer_observed,
+        relevant_until=relevant_until,
         owner_disposition="blocking",
         evidence_ref=f"{COMPANY_EVENT_EVIDENCE_PREFIX}{native_id}",
     )
@@ -189,6 +215,7 @@ def assess_company_intelligence_current_read_for_live_episode(
     read_result: Mapping[str, Any],
     read_observed_at: datetime,
     decision_at: datetime,
+    generated_at: datetime,
 ) -> CatalystContext:
     """Compose one prospective owner read with a validated Radar episode.
 
@@ -211,6 +238,7 @@ def assess_company_intelligence_current_read_for_live_episode(
     base = assess_catalyst_context_for_live_episode(
         episode=episode,
         decision_at=decision_at,
+        generated_at=generated_at,
         required_sources=[COMPANY_EVENT_OWNER],
         source_reads=[],
         evidence=[],
@@ -250,6 +278,7 @@ def assess_company_intelligence_current_read_for_live_episode(
     return assess_catalyst_context_for_live_episode(
         episode=episode,
         decision_at=decision_at,
+        generated_at=generated_at,
         required_sources=[COMPANY_EVENT_OWNER],
         source_reads=[],
         evidence=[evidence],

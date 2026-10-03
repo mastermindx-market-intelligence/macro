@@ -261,3 +261,15 @@ all-false authority are unchanged. The context remains unmerged research code.
 The unmerged schema is stored in the incumbent Radar research namespace; the
 existing ownership fence stays unchanged. Its schema identifier is not a live URL
 or publication claim. No published consumer or frozen detector schema changes.
+
+## Pre-outcome integrity correction 2 (2026-10-03)
+
+An independent review of the R0 contract found four holes. No outcome has been read, no trial is registered here, and no selector changes. This correction closes the holes before any forward read is graded.
+
+- A source read now carries the owner's `fresh_until` clock. A read counts as healthy coverage only while `source_asof <= observed_at <= decision_at <= fresh_until`. The context module never invents or extends that clock. A read without it is a contract error, not an empty source.
+- An event reference now carries the owner's `relevant_until` clock. An event that was known in time but whose relevance ended before the decision clock is recorded as expired and does not drive the context state. Expiry is decided on timestamps declared by the source-owner mapping, never on price, prose or a model.
+- Every context names its own `generated_at` clock. A decision clock later than the generation clock, or evidence known after it, is refused.
+- The wire carries each event's `source_available_at`, `known_at`, `relevant_until` and timing, so a consumer can audit on-time, late and expired evidence. Strings and arrays are bounded, and one evidence reference can name only one event.
+- An amended filing (8-K/A) is a separate source-owner filing with its own clocks. It is not merged into the original.
+
+Missing, stale and expired remain three different facts. None of them is "no event".
