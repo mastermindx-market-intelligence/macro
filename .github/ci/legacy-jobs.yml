@@ -400,6 +400,95 @@ jobs:
       - name: AM Edition producer + lane-B live contract (per-source clocks, six states, no laundering, served-artifact chmod 0o644, freshest-wins under Z/naive ISO stamps)
         run: python -m pytest tests/test_am_edition_producer.py tests/test_am_edition_live.py tests/test_caddy_hub_boundary_am_edition.py -q
 
+  options-alpha-candidate-feed:
+    if: ${{ false }}
+    gate: code
+    # Terminal599 OA-1C candidate feed composer (synthetic-eligible / inactive
+    # until four activation preconditions clear). Pure receipt-bound composer
+    # of canonical campaign revisions + measured trade-vs-NBBO microstructure
+    # receipts + caller-supplied activation receipt. The composer is not a
+    # publisher; it does not read outcomes; it does not backdate; it never
+    # reaches into any other source plane. The frozen patch (#8342) made
+    # every source-side custody boundary a contract: candidate_identity =
+    # sha256(policy_id, campaign_id, first_qualifying_campaign_revision_id),
+    # frozen_formation is sealed against the canonical campaign-row bytes,
+    # first-qualifying is gated by formation formed_at (a late qualifier that
+    # arrived AFTER this revision's formed_at cannot retroactively qualify
+    # this revision — only a later revision whose formed_at follows it can),
+    # versioned_updates reflects exactly the physical-prefix membership,
+    # the publication receipt splits snapshot binding from
+    # transition validation, the transition requires the exact immediate
+    # prior feed + raw payload + receipt + external receipt LastModified,
+    # and the snapshot validator never independently proves overwritten
+    # history (that is the transition's job).
+    #
+    # `scope: exclusive` REPLACES inference. Every path below is the job's
+    # own transitive closure: the composer, every schema it validates
+    # against (candidate feed v2, identity v1, formation policy v2,
+    # activation receipt v1, publication receipt v1, microstructure v1,
+    # signal campaign v2 — the schema the composer's `CAMPAIGN_SCHEMA`
+    # constant names), the v2 policy JSON, the v1 policy JSON the v2
+    # cites, the architecture DEC and the OA-1C DEC, the test itself, and
+    # the campaign engine and helpers the composer actually imports. A
+    # future import that reaches a tree this declaration does not name
+    # is a regression — test_curated_exclusive_scopes_cover_their_own_
+    # import_closure fails the PR.
+    scope: exclusive
+    paths:
+      # composer + transitive engine closure
+      - "engine/options_alpha_candidate_feed.py"
+      - "engine/options_signal_campaign.py"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/ledger_lane.py"
+      - "engine/session_digest.py"
+      # lib helpers the campaign engine imports at module scope
+      - "lib/__init__.py"
+      - "lib/nyse_calendar.py"
+      # schemas the composer validates against (CAMPAIGN_SCHEMA +
+      # CANDIDATE_FEED_V2_SCHEMA_FILENAME + ACTIVATION_RECEIPT_SCHEMA_FILENAME
+      # + CANDIDATE_IDENTITY_SCHEMA_FILENAME + MICROSTRUCTURE_SCHEMA_FILENAME
+      # + PUBLICATION_RECEIPT_SCHEMA_FILENAME)
+      - "contracts/options/options.alpha_candidate_feed.v2.schema.json"
+      - "contracts/options/options.alpha_candidate_feed_activation_receipt.v1.schema.json"
+      - "contracts/options/options.alpha_candidate_identity.v1.schema.json"
+      - "contracts/options/options.alpha_candidate_formation_policy.v2.schema.json"
+      - "contracts/options/options.alpha_candidate_formation_policy.v1.schema.json"
+      - "contracts/options/options.alpha_candidate_feed_publication_receipt.v1.schema.json"
+      - "contracts/options/options.trade_nbbo_microstructure.v1.schema.json"
+      - "contracts/options/options.signal_campaign.v2.schema.json"
+      - "contracts/options/options.signal_campaign.v1.schema.json"
+      # publication receipt companion contract file
+      - "contracts/options/options.alpha_candidate_feed_publication_receipt_contract.v1.json"
+      # formation policy JSONs (frozen v2 the composer loads; v1 the v2 cites)
+      - "research/options_estate/options_alpha_candidate_formation_policy_v2.json"
+      - "research/options_estate/options_alpha_candidate_formation_policy_v1.json"
+      - "research/options_estate/OPTIONS_SIGNAL_CAMPAIGN_V2_PREREG.md"
+      # AgentOS DECs that bind this surface (architecture + OA-1C source-only)
+      - "agentos/decisions/DEC-OPTIONS-ALPHA-CAMPAIGN-CALIBRATION-ARCHITECTURE.md"
+      - "agentos/decisions/DEC-OPTIONS-ALPHA-CANDIDATE-FEED-V2-SOURCE-ONLY.md"
+      # the test itself
+      - "tests/test_options_alpha_candidate_feed.py"
+      # CAS publisher (pure IO seam; only the two fixed keys; local flock +
+      # fsync + retained-predecessor + CAS on both keys) + its behavioural
+      # test (recovery / new-host / 4 generations / 412 + payload race).
+      - "scripts/publish_options_alpha_candidate_r2.py"
+      - "tests/test_publish_options_alpha_candidate_r2.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: install test deps
+        # jsonschema: every receipt + feed + microstructure row runs through
+        # Draft202012Validator. pandas/pyarrow: the campaign engine imports
+        # them at module scope. pyyaml: the campaign engine loads yaml for
+        # the receipts contract. exchange-calendars: NYSE-session validation
+        # in the campaign engine. requests: the engine's HTTP-side helpers.
+        run: pip install pytest jsonschema pandas pyarrow pyyaml exchange-calendars requests
+      - name: options alpha candidate feed v2 (pure receipt-bound composer, frozen formation, late-qualifier boundary, publication receipt snapshot vs transition) + CAS publisher behavioural suite
+        run: python -m pytest tests/test_options_alpha_candidate_feed.py tests/test_publish_options_alpha_candidate_r2.py -q
+
   all-exports-resolve:
     if: ${{ false }}
     gate: code
@@ -994,8 +1083,14 @@ jobs:
       # keep-first dedup on a re-spooled event_id, unparseable-pass_ts latch
       # guard). Hermetic: tmp_path spool files + synthetic packs, no data/, no
       # site/, no network. Unnamed suites never run in this manifest.
+      #
+      # Pack fast oracle (2026-10-03) joins the SAME step: tests/test_entry_radar_append_oracle.py
+      # and tests/test_entry_radar_pack_fast_oracle.py pin the append-one-bar StochRSI state
+      # against the canonical calculator and the tie band that keeps every strict K/D
+      # comparison on the canonical sign. Hermetic: synthetic closes only, no data/, no
+      # network, no dependency beyond this job's install line. Unnamed suites never run.
       - name: entry-radar W1+W2+W3+W4+W4.1+W5+W6 — probe universe, entry_event.v1 store, G0 parity, C1-C5 PIT battery, live pack + episode ledger + live evaluator, live-transport correction, W5 prereg gates + forward evidence, RP1 Research Priority
-        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py -q
+        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py -q
 
   session-anchor-era:
     # Absolute session-calendar anchor, both eras. The confluence 2D/3D + fortnight

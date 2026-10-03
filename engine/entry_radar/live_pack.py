@@ -261,6 +261,11 @@ def assert_published_spec_hashes() -> dict[str, str]:
 # the oracle — the SAME construction the live path will run
 # ---------------------------------------------------------------------------
 
+# Fast stoch agrees with canonical to ~1e-12; solver margins use strict comparisons.
+# Re-answer canonically when the fast K is within this band of OVERSOLD or of D so
+# the sign matches the canonical oracle at decision boundaries.
+ORACLE_TIE_BAND = 1e-9
+
 @dataclass(frozen=True, slots=True)
 class OracleFrame:
     """One name's frozen substrate, ready to be probed at a candidate price.
@@ -270,20 +275,56 @@ class OracleFrame:
     the session the provisional bar would be APPENDED at.  Keeping the three
     together is what makes ``_oracle_kd`` a line-for-line mirror rather than a
     re-derivation.
+
+    The fast path (``append_state``) answers "K and D if the next close were P"
+    from state frozen at the last confirmed bar.  It agrees with the canonical path
+    to about 1e-12 for a finite price; inside ORACLE_TIE_BAND of a decision
+    boundary the canonical path answers, so every strict comparison the solver makes
+    has the canonical sign.
     """
 
     ticker: str
     closes: np.ndarray
     index: pd.DatetimeIndex
     next_session_ts: pd.Timestamp
+    append_state: ic.StochRsiAppendState | None = None
 
-    def kd(self, price: float) -> tuple[float | None, float | None]:
+    def kd_canonical(self, price: float) -> tuple[float | None, float | None]:
         """``(K, D)`` at the appended provisional close ``price``, or ``(None, None)``."""
         series = pd.Series(
             np.append(self.closes, float(price)),
             index=self.index.append(pd.DatetimeIndex([self.next_session_ts])))
         k_series, d_series = ic.stoch_rsi_kd(series)
         return ic.last_finite(k_series), ic.last_finite(d_series)
+
+    def kd(self, price: float) -> tuple[float | None, float | None]:
+        if self.append_state is None:
+            return self.kd_canonical(price)
+        k, d = ic.stoch_rsi_kd_appended(self.append_state, float(price))
+        if k is not None and (
+            abs(float(k) - float(ic.OVERSOLD)) <= ORACLE_TIE_BAND
+            or (d is not None and abs(float(k) - float(d)) <= ORACLE_TIE_BAND)
+        ):
+            return self.kd_canonical(price)
+        return k, d
+
+
+def oracle_frame(
+    ticker: str,
+    closes: np.ndarray,
+    index: pd.DatetimeIndex,
+    next_session_ts: pd.Timestamp,
+    *,
+    fast: bool = True,
+) -> OracleFrame:
+    append_state = ic.stoch_rsi_append_state(closes) if fast else None
+    return OracleFrame(
+        ticker=ticker,
+        closes=closes,
+        index=index,
+        next_session_ts=next_session_ts,
+        append_state=append_state,
+    )
 
 
 def _c1_margin(frame: OracleFrame, price: float) -> float | None:
@@ -957,7 +998,7 @@ def _pack_name(ticker: str, frozen: pd.DataFrame, *, next_session: date,
     confirmed_k = ic.last_finite(k_series)
     confirmed_d = ic.last_finite(d_series)
 
-    oracle = OracleFrame(
+    oracle = oracle_frame(
         ticker=ticker, closes=closes.to_numpy(dtype=float), index=index,
         next_session_ts=pd.Timestamp(next_session).normalize())
 
