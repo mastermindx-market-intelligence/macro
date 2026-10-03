@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.confluence_graph.v1",
   "artifact_id": "confluence-graph",
-  "asof": "2026-08-28",
+  "asof": "2026-10-01",
   "is_context_only": true,
   "display_only": true,
   "hard_law": "HARD LAW: confluence never gates, never ranks, never raises a priority.  All edges are display_only=True.  Cross-engine hard gates require their own pre-registered gauntlet (China falsification precedent).  Edge promotion beyond display requires a registered gauntlet result in config/qual_ladder.yml.",
@@ -11,7 +11,7 @@
       "type": "engine",
       "label": "altdata",
       "meta": {
-        "n_spine_rows": 2292
+        "n_spine_rows": 3400
       }
     },
     {
@@ -19,7 +19,7 @@
       "type": "engine",
       "label": "altdata_conv",
       "meta": {
-        "n_spine_rows": 3
+        "n_spine_rows": 17
       }
     },
     {
@@ -27,7 +27,7 @@
       "type": "engine",
       "label": "basket_turn.v1",
       "meta": {
-        "n_spine_rows": 10
+        "n_spine_rows": 21
       }
     },
     {
@@ -35,7 +35,7 @@
       "type": "engine",
       "label": "ca_board",
       "meta": {
-        "n_spine_rows": 2216
+        "n_spine_rows": 3264
       }
     },
     {
@@ -43,7 +43,7 @@
       "type": "engine",
       "label": "china_news",
       "meta": {
-        "n_spine_rows": 1214
+        "n_spine_rows": 1217
       }
     },
     {
@@ -51,7 +51,7 @@
       "type": "engine",
       "label": "china_special_sits",
       "meta": {
-        "n_spine_rows": 107
+        "n_spine_rows": 127
       }
     },
     {
@@ -59,7 +59,7 @@
       "type": "engine",
       "label": "cn_board",
       "meta": {
-        "n_spine_rows": 968
+        "n_spine_rows": 2168
       }
     },
     {
@@ -67,7 +67,7 @@
       "type": "engine",
       "label": "cn_importance_v0",
       "meta": {
-        "n_spine_rows": 4496
+        "n_spine_rows": 5950
       }
     },
     {
@@ -75,7 +75,7 @@
       "type": "engine",
       "label": "cn_importance_v0_pit",
       "meta": {
-        "n_spine_rows": 4496
+        "n_spine_rows": 5950
       }
     },
     {
@@ -83,7 +83,7 @@
       "type": "engine",
       "label": "demand_chain",
       "meta": {
-        "n_spine_rows": 4
+        "n_spine_rows": 14
       }
     },
     {
@@ -91,7 +91,15 @@
       "type": "engine",
       "label": "desk:ai_desk",
       "meta": {
-        "n_spine_rows": 51
+        "n_spine_rows": 63
+      }
+    },
+    {
+      "id": "engine:desk:narrative_brain",
+      "type": "engine",
+      "label": "desk:narrative_brain",
+      "meta": {
+        "n_spine_rows": 38
       }
     },
     {
@@ -99,7 +107,15 @@
       "type": "engine",
       "label": "desk:policy_intent",
       "meta": {
-        "n_spine_rows": 3
+        "n_spine_rows": 14
+      }
+    },
+    {
+      "id": "engine:desk:radar",
+      "type": "engine",
+      "label": "desk:radar",
+      "meta": {
+        "n_spine_rows": 105
       }
     },
     {
@@ -107,7 +123,7 @@
       "type": "engine",
       "label": "desk:stock_desk",
       "meta": {
-        "n_spine_rows": 161
+        "n_spine_rows": 203
       }
     },
     {
@@ -115,7 +131,7 @@
       "type": "engine",
       "label": "desk:thematic_desk",
       "meta": {
-        "n_spine_rows": 155
+        "n_spine_rows": 275
       }
     },
     {
@@ -123,7 +139,7 @@
       "type": "engine",
       "label": "hk_board",
       "meta": {
-        "n_spine_rows": 2544
+        "n_spine_rows": 3856
       }
     },
     {
@@ -131,7 +147,7 @@
       "type": "engine",
       "label": "intel_hub",
       "meta": {
-        "n_spine_rows": 4454
+        "n_spine_rows": 7065
       }
     },
     {
@@ -139,7 +155,7 @@
       "type": "engine",
       "label": "macro_context",
       "meta": {
-        "n_spine_rows": 448
+        "n_spine_rows": 657
       }
     },
     {
@@ -147,7 +163,7 @@
       "type": "engine",
       "label": "narrative",
       "meta": {
-        "n_spine_rows": 962
+        "n_spine_rows": 1016
       }
     },
     {
@@ -155,7 +171,7 @@
       "type": "engine",
       "label": "options_entry",
       "meta": {
-        "n_spine_rows": 419
+        "n_spine_rows": 427
       }
     },
     {
@@ -163,7 +179,7 @@
       "type": "engine",
       "label": "placebo",
       "meta": {
-        "n_spine_rows": 512
+        "n_spine_rows": 513
       }
     },
     {
@@ -171,7 +187,7 @@
       "type": "engine",
       "label": "policy",
       "meta": {
-        "n_spine_rows": 80
+        "n_spine_rows": 112
       }
     },
     {
@@ -179,7 +195,7 @@
       "type": "engine",
       "label": "radar",
       "meta": {
-        "n_spine_rows": 22146
+        "n_spine_rows": 34382
       }
     },
     {
@@ -187,7 +203,7 @@
       "type": "engine",
       "label": "reflex.commodity_shock",
       "meta": {
-        "n_spine_rows": 9
+        "n_spine_rows": 13
       }
     },
     {
@@ -195,7 +211,7 @@
       "type": "engine",
       "label": "reflex.cortex_attention",
       "meta": {
-        "n_spine_rows": 142
+        "n_spine_rows": 254
       }
     },
     {
@@ -203,7 +219,7 @@
       "type": "engine",
       "label": "reflex.options_flow_attention",
       "meta": {
-        "n_spine_rows": 518
+        "n_spine_rows": 935
       }
     },
     {
@@ -211,7 +227,7 @@
       "type": "engine",
       "label": "reflex.regime_stale_selfheal",
       "meta": {
-        "n_spine_rows": 20
+        "n_spine_rows": 23
       }
     },
     {
@@ -219,7 +235,7 @@
       "type": "engine",
       "label": "stock_desk",
       "meta": {
-        "n_spine_rows": 7
+        "n_spine_rows": 156
       }
     },
     {
@@ -227,7 +243,7 @@
       "type": "engine",
       "label": "stock_personality",
       "meta": {
-        "n_spine_rows": 2940
+        "n_spine_rows": 2941
       }
     },
     {
@@ -243,7 +259,7 @@
       "type": "engine",
       "label": "thematic_desk",
       "meta": {
-        "n_spine_rows": 2
+        "n_spine_rows": 60
       }
     },
     {
@@ -251,7 +267,7 @@
       "type": "engine",
       "label": "track_record",
       "meta": {
-        "n_spine_rows": 299010
+        "n_spine_rows": 302590
       }
     },
     {
@@ -259,7 +275,7 @@
       "type": "engine",
       "label": "us_board",
       "meta": {
-        "n_spine_rows": 6554
+        "n_spine_rows": 13563
       }
     },
     {
@@ -267,7 +283,7 @@
       "type": "engine",
       "label": "us_importance_v0",
       "meta": {
-        "n_spine_rows": 32402
+        "n_spine_rows": 55206
       }
     },
     {
@@ -275,7 +291,7 @@
       "type": "engine",
       "label": "us_importance_v0_pit",
       "meta": {
-        "n_spine_rows": 32402
+        "n_spine_rows": 55206
       }
     },
     {
@@ -283,7 +299,7 @@
       "type": "engine",
       "label": "whitehouse",
       "meta": {
-        "n_spine_rows": 168
+        "n_spine_rows": 269
       }
     },
     {
@@ -2305,23 +2321,1463 @@
       }
     },
     {
+      "id": "thesis:2026-09-03-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-09-03-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-03-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-03-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-03-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-09-03-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-03-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-03-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-03-radar-us_sector_discretionary",
+      "type": "thesis",
+      "label": "2026-09-03-radar-us_sector_discretionary",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-04-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-04-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-04-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-09-04-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-04-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-09-04-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-04-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-04-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-04-radar-power_grid",
+      "type": "thesis",
+      "label": "2026-09-04-radar-power_grid",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-04-radar-us_sector_discretionary",
+      "type": "thesis",
+      "label": "2026-09-04-radar-us_sector_discretionary",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-08-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-09-08-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-08-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-08-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-08-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-09-08-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-08-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-08-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-08-radar-power_grid",
+      "type": "thesis",
+      "label": "2026-09-08-radar-power_grid",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-08-radar-us_sector_discretionary",
+      "type": "thesis",
+      "label": "2026-09-08-radar-us_sector_discretionary",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-09-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-09-09-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-09-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-09-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-09-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-09-09-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-09-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-09-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-09-radar-power_grid",
+      "type": "thesis",
+      "label": "2026-09-09-radar-power_grid",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-09-radar-us_sector_discretionary",
+      "type": "thesis",
+      "label": "2026-09-09-radar-us_sector_discretionary",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-10-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-09-10-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-10-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-10-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-10-radar-power_grid",
+      "type": "thesis",
+      "label": "2026-09-10-radar-power_grid",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-10-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-10-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-10-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-09-10-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-10-radar-us_sector_discretionary",
+      "type": "thesis",
+      "label": "2026-09-10-radar-us_sector_discretionary",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-11-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-09-11-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-11-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-11-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-11-radar-power_grid",
+      "type": "thesis",
+      "label": "2026-09-11-radar-power_grid",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-11-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-11-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-11-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-09-11-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-11-radar-us_sector_discretionary",
+      "type": "thesis",
+      "label": "2026-09-11-radar-us_sector_discretionary",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-11-radar-industrial_distribution",
+      "type": "thesis",
+      "label": "2026-09-11-radar-industrial_distribution",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-14-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-09-14-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-14-radar-memory_storage",
+      "type": "thesis",
+      "label": "2026-09-14-radar-memory_storage",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-14-radar-us_sector_realestate",
+      "type": "thesis",
+      "label": "2026-09-14-radar-us_sector_realestate",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-14-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-14-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-14-radar-industrial_distribution",
+      "type": "thesis",
+      "label": "2026-09-14-radar-industrial_distribution",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-14-radar-defense",
+      "type": "thesis",
+      "label": "2026-09-14-radar-defense",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-14-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-14-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-14-radar-defensives",
+      "type": "thesis",
+      "label": "2026-09-14-radar-defensives",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-14-radar-us_sector_industrials",
+      "type": "thesis",
+      "label": "2026-09-14-radar-us_sector_industrials",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-14-radar-us_sector_financials",
+      "type": "thesis",
+      "label": "2026-09-14-radar-us_sector_financials",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-14-radar-us_sector_discretionary",
+      "type": "thesis",
+      "label": "2026-09-14-radar-us_sector_discretionary",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-14-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-09-14-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-14-radar-us_sector_tech",
+      "type": "thesis",
+      "label": "2026-09-14-radar-us_sector_tech",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-14-radar-robotics_automation",
+      "type": "thesis",
+      "label": "2026-09-14-radar-robotics_automation",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-memory_storage",
+      "type": "thesis",
+      "label": "2026-09-16-radar-memory_storage",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-us_sector_realestate",
+      "type": "thesis",
+      "label": "2026-09-16-radar-us_sector_realestate",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-16-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-16-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-defense",
+      "type": "thesis",
+      "label": "2026-09-16-radar-defense",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-defensives",
+      "type": "thesis",
+      "label": "2026-09-16-radar-defensives",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-us_sector_industrials",
+      "type": "thesis",
+      "label": "2026-09-16-radar-us_sector_industrials",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-us_sector_discretionary",
+      "type": "thesis",
+      "label": "2026-09-16-radar-us_sector_discretionary",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-robotics_automation",
+      "type": "thesis",
+      "label": "2026-09-16-radar-robotics_automation",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-us_sector_financials",
+      "type": "thesis",
+      "label": "2026-09-16-radar-us_sector_financials",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-memory_storage",
+      "type": "thesis",
+      "label": "2026-09-17-radar-memory_storage",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-us_sector_realestate",
+      "type": "thesis",
+      "label": "2026-09-17-radar-us_sector_realestate",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-17-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-17-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-defensives",
+      "type": "thesis",
+      "label": "2026-09-17-radar-defensives",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-defense",
+      "type": "thesis",
+      "label": "2026-09-17-radar-defense",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-us_sector_discretionary",
+      "type": "thesis",
+      "label": "2026-09-17-radar-us_sector_discretionary",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-retail",
+      "type": "thesis",
+      "label": "2026-09-17-radar-retail",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-09-17-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-robotics_automation",
+      "type": "thesis",
+      "label": "2026-09-17-radar-robotics_automation",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-us_sector_financials",
+      "type": "thesis",
+      "label": "2026-09-17-radar-us_sector_financials",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-09-17-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-data_center_power",
+      "type": "thesis",
+      "label": "2026-09-17-radar-data_center_power",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-industrial_distribution",
+      "type": "thesis",
+      "label": "2026-09-17-radar-industrial_distribution",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-09-21-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-memory_storage",
+      "type": "thesis",
+      "label": "2026-09-21-radar-memory_storage",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-us_sector_realestate",
+      "type": "thesis",
+      "label": "2026-09-21-radar-us_sector_realestate",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-industrial_distribution",
+      "type": "thesis",
+      "label": "2026-09-21-radar-industrial_distribution",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-data_center_power",
+      "type": "thesis",
+      "label": "2026-09-21-radar-data_center_power",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-defensives",
+      "type": "thesis",
+      "label": "2026-09-21-radar-defensives",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-21-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-defense",
+      "type": "thesis",
+      "label": "2026-09-21-radar-defense",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-21-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-robotics_automation",
+      "type": "thesis",
+      "label": "2026-09-21-radar-robotics_automation",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-ai_semiconductors",
+      "type": "thesis",
+      "label": "2026-09-21-radar-ai_semiconductors",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-us_sector_realestate",
+      "type": "thesis",
+      "label": "2026-09-23-radar-us_sector_realestate",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-memory_storage",
+      "type": "thesis",
+      "label": "2026-09-23-radar-memory_storage",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-23-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-defensives",
+      "type": "thesis",
+      "label": "2026-09-23-radar-defensives",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-23-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-payments_fintech",
+      "type": "thesis",
+      "label": "2026-09-23-radar-payments_fintech",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-defense",
+      "type": "thesis",
+      "label": "2026-09-23-radar-defense",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-retail",
+      "type": "thesis",
+      "label": "2026-09-23-radar-retail",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-09-23-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-us_sector_financials",
+      "type": "thesis",
+      "label": "2026-09-23-radar-us_sector_financials",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-ai_semiconductors",
+      "type": "thesis",
+      "label": "2026-09-23-radar-ai_semiconductors",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-robotics_automation",
+      "type": "thesis",
+      "label": "2026-09-23-radar-robotics_automation",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-09-24-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-memory_storage",
+      "type": "thesis",
+      "label": "2026-09-24-radar-memory_storage",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-industrial_distribution",
+      "type": "thesis",
+      "label": "2026-09-24-radar-industrial_distribution",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-us_sector_realestate",
+      "type": "thesis",
+      "label": "2026-09-24-radar-us_sector_realestate",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-24-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-defensives",
+      "type": "thesis",
+      "label": "2026-09-24-radar-defensives",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-payments_fintech",
+      "type": "thesis",
+      "label": "2026-09-24-radar-payments_fintech",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-data_center_power",
+      "type": "thesis",
+      "label": "2026-09-24-radar-data_center_power",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-reshoring",
+      "type": "thesis",
+      "label": "2026-09-24-radar-reshoring",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-defense",
+      "type": "thesis",
+      "label": "2026-09-24-radar-defense",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-24-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-ai_semiconductors",
+      "type": "thesis",
+      "label": "2026-09-24-radar-ai_semiconductors",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-us_sector_financials",
+      "type": "thesis",
+      "label": "2026-09-24-radar-us_sector_financials",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-09-24-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-robotics_automation",
+      "type": "thesis",
+      "label": "2026-09-24-radar-robotics_automation",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-retail",
+      "type": "thesis",
+      "label": "2026-09-24-radar-retail",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-25-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-09-25-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-25-radar-us_sector_realestate",
+      "type": "thesis",
+      "label": "2026-09-25-radar-us_sector_realestate",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-25-radar-industrial_distribution",
+      "type": "thesis",
+      "label": "2026-09-25-radar-industrial_distribution",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-25-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-25-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-25-radar-defensives",
+      "type": "thesis",
+      "label": "2026-09-25-radar-defensives",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-25-radar-memory_storage",
+      "type": "thesis",
+      "label": "2026-09-25-radar-memory_storage",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-25-radar-payments_fintech",
+      "type": "thesis",
+      "label": "2026-09-25-radar-payments_fintech",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-25-radar-defense",
+      "type": "thesis",
+      "label": "2026-09-25-radar-defense",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-25-radar-data_center_power",
+      "type": "thesis",
+      "label": "2026-09-25-radar-data_center_power",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-25-radar-reshoring",
+      "type": "thesis",
+      "label": "2026-09-25-radar-reshoring",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-25-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-25-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-25-radar-us_sector_financials",
+      "type": "thesis",
+      "label": "2026-09-25-radar-us_sector_financials",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-25-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-09-25-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-25-radar-retail",
+      "type": "thesis",
+      "label": "2026-09-25-radar-retail",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-25-radar-robotics_automation",
+      "type": "thesis",
+      "label": "2026-09-25-radar-robotics_automation",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-30-radar-us_sector_utilities",
+      "type": "thesis",
+      "label": "2026-09-30-radar-us_sector_utilities",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-30-radar-payments_fintech",
+      "type": "thesis",
+      "label": "2026-09-30-radar-payments_fintech",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-30-radar-us_sector_realestate",
+      "type": "thesis",
+      "label": "2026-09-30-radar-us_sector_realestate",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-30-radar-defense",
+      "type": "thesis",
+      "label": "2026-09-30-radar-defense",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-30-radar-defensives",
+      "type": "thesis",
+      "label": "2026-09-30-radar-defensives",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-30-radar-quantum_computing",
+      "type": "thesis",
+      "label": "2026-09-30-radar-quantum_computing",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-30-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-30-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-30-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-30-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-30-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-09-30-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-30-radar-retail",
+      "type": "thesis",
+      "label": "2026-09-30-radar-retail",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-30-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-09-30-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-30-radar-reshoring",
+      "type": "thesis",
+      "label": "2026-09-30-radar-reshoring",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-01-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-10-01-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-01-radar-us_sector_utilities",
+      "type": "thesis",
+      "label": "2026-10-01-radar-us_sector_utilities",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-01-radar-memory_storage",
+      "type": "thesis",
+      "label": "2026-10-01-radar-memory_storage",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-01-radar-defense",
+      "type": "thesis",
+      "label": "2026-10-01-radar-defense",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-01-radar-quantum_computing",
+      "type": "thesis",
+      "label": "2026-10-01-radar-quantum_computing",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-01-radar-payments_fintech",
+      "type": "thesis",
+      "label": "2026-10-01-radar-payments_fintech",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-01-radar-retail",
+      "type": "thesis",
+      "label": "2026-10-01-radar-retail",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-01-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-10-01-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-01-radar-reshoring",
+      "type": "thesis",
+      "label": "2026-10-01-radar-reshoring",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-01-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-10-01-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-01-radar-insurance",
+      "type": "thesis",
+      "label": "2026-10-01-radar-insurance",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-02-radar-memory_storage",
+      "type": "thesis",
+      "label": "2026-10-02-radar-memory_storage",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-02-radar-payments_fintech",
+      "type": "thesis",
+      "label": "2026-10-02-radar-payments_fintech",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-02-radar-defense",
+      "type": "thesis",
+      "label": "2026-10-02-radar-defense",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-02-radar-quantum_computing",
+      "type": "thesis",
+      "label": "2026-10-02-radar-quantum_computing",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-02-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-10-02-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-02-radar-retail",
+      "type": "thesis",
+      "label": "2026-10-02-radar-retail",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-02-radar-insurance",
+      "type": "thesis",
+      "label": "2026-10-02-radar-insurance",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-02-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-10-02-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-10-02-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-10-02-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
       "id": "macro:fx_dollar",
       "type": "macro",
       "label": "FX / Dollar",
       "meta": {
         "subtype": "fx_dollar",
-        "regime": "US growth premium",
-        "risk": "risk-on",
-        "usd_trend": "down",
-        "asof": "2026-08-31",
+        "regime": "Global reflation",
+        "risk": "risk-off",
+        "usd_trend": "mixed",
+        "asof": "2026-10-03",
         "display_only": true,
         "source_lobe": "fx_dollar",
-        "smile_regime": "rates-driven",
+        "smile_regime": "safety-driven",
         "dollar_day_flag": false,
-        "regime_radar_dominant": "carry_unwind",
+        "regime_radar_dominant": "dollar_wrecking_ball",
         "stance_word": "Get ready",
-        "dominant_scenario": "carry_unwind",
-        "days_in_regime": 11
+        "dominant_scenario": "dollar_wrecking_ball",
+        "days_in_regime": 33
       }
     },
     {
@@ -2332,47 +3788,47 @@
         "subtype": "rates_transmission",
         "state": {
           "rates": {
-            "real_10y": 2.34,
-            "real_10y_pctile": 0.96,
-            "real_10y_chg_63d_bp": 27.0,
-            "nominal_10y": 4.67,
-            "curve_2s10s": 0.39,
-            "curve_tp_adj": 1.26,
-            "policy_gap": 0.57,
+            "real_10y": 2.88,
+            "real_10y_pctile": 1.0,
+            "real_10y_chg_63d_bp": 58.0,
+            "nominal_10y": 5.24,
+            "curve_2s10s": 0.45,
+            "curve_tp_adj": 1.47,
+            "policy_gap": 0.9,
             "regime": "restrictive",
             "direction": "rising",
-            "real_10y_chg_22d_bp": -7.0,
+            "real_10y_chg_22d_bp": 43.0,
             "turn_watch": "extreme_watch",
             "label": {
-              "en": "Real 10y 2.34% (restrictive, rising — at a 5y extreme)",
-              "zh": "实际10年期 2.34%（偏紧，处于5年极值）"
+              "en": "Real 10y 2.88% (restrictive, rising — at a 5y extreme)",
+              "zh": "实际10年期 2.88%（偏紧，处于5年极值）"
             }
           },
           "inflation": {
-            "core_pce_yoy": 3.34,
-            "core_cpi_yoy": 2.79,
-            "headline_cpi_yoy": 3.54,
-            "core_pce_3m_ann": 3.05,
-            "ppi_core_yoy": 4.16,
+            "core_pce_yoy": 3.01,
+            "core_cpi_yoy": 2.76,
+            "headline_cpi_yoy": 3.71,
+            "core_pce_3m_ann": 2.05,
+            "ppi_core_yoy": 4.62,
             "eci_comp_yoy": 3.38,
-            "vs_target_pp": 1.34,
+            "vs_target_pp": 1.01,
             "regime": "above target",
             "direction": "cooling",
             "label": {
-              "en": "Core PCE 3.3% (above target, cooling)",
-              "zh": "核心PCE 3.3%（高于目标）"
+              "en": "Core PCE 3.0% (above target, cooling)",
+              "zh": "核心PCE 3.0%（高于目标）"
             }
           },
           "expectations": {
-            "breakeven_10y": 2.31,
-            "breakeven_5y5y": 2.32,
-            "model_5y": 2.48,
-            "survey_1y": 4.2,
-            "market_minus_model_bp": -16.0,
+            "breakeven_10y": 2.36,
+            "breakeven_5y5y": 2.35,
+            "model_5y": 2.58,
+            "survey_1y": 4.0,
+            "market_minus_model_bp": -23.0,
             "anchoring": "anchored",
             "label": {
-              "en": "5y5y breakeven 2.32% vs model 2.48% (anchored)",
-              "zh": "5年5年盈亏平衡 2.32% vs 模型 2.48%（锚定）"
+              "en": "5y5y breakeven 2.35% vs model 2.58% (anchored)",
+              "zh": "5年5年盈亏平衡 2.35% vs 模型 2.58%（锚定）"
             }
           }
         },
@@ -2380,8 +3836,8 @@
           "en": "Display-only. Scored-leg gate: NO rate/inflation leg passed the forward-drawdown bar with purged-CV robustness (see reports/rate-inflation-transmission-calibration.md).",
           "zh": "仅供展示。可计分腿检验：没有任何利率/通胀腿通过前瞻回撤门槛并满足清洗交叉验证稳健性（详见校准报告）。"
         },
-        "yield_curve_regime": "bull_steepener",
-        "asof": "2026-08-28",
+        "yield_curve_regime": "bear_steepener",
+        "asof": "2026-10-02",
         "display_only": true,
         "source_lobe": "rates_transmission"
       }
@@ -2393,9 +3849,9 @@
       "meta": {
         "subtype": "rates_credit",
         "health_label": "healthy",
-        "cycle_phase": "late",
-        "recession_risk": 4.5524174432167035,
-        "asof": "2026-08-28",
+        "cycle_phase": "recession",
+        "recession_risk": 0.17714285714285716,
+        "asof": "2026-10-02",
         "display_only": true,
         "source_lobe": "rates_credit"
       }
@@ -2406,12 +3862,13 @@
       "label": "Commodity",
       "meta": {
         "subtype": "commodity",
-        "regime": "Stagflation",
+        "regime": "Reflation",
         "favored": [
-          "Gold",
+          "Copper",
+          "Oil · WTI",
           "Silver"
         ],
-        "asof": "2026-08-30",
+        "asof": "2026-10-02",
         "display_only": true,
         "source_lobe": "commodity_context"
       }
@@ -2424,9 +3881,9 @@
         "subtype": "cross_asset_flows",
         "label_zh": "跨资产流",
         "regime": "mixed / no clear trend",
-        "correlation_verdict": "converging",
+        "correlation_verdict": "diversified",
         "state_text": "mixed / no clear trend",
-        "asof": "2026-08-31",
+        "asof": "2026-10-03",
         "display_only": true,
         "source_lobe": "cross_asset_flows"
       }
@@ -2439,9 +3896,9 @@
         "subtype": "global_regime:us",
         "quad": "Q2",
         "quad_name": "Reflation",
-        "cycle_tag": "late",
+        "cycle_tag": "mid",
         "stale": false,
-        "asof": "2026-08-28",
+        "asof": "2026-10-02",
         "display_only": true,
         "source_lobe": "global_regimes"
       }
@@ -2452,11 +3909,11 @@
       "label": "Global Regime: CHINA",
       "meta": {
         "subtype": "global_regime:china",
-        "quad": "Q4",
-        "quad_name": "Growth-scare",
+        "quad": "Q3",
+        "quad_name": "Stagflation",
         "cycle_tag": "mid",
         "stale": false,
-        "asof": "2026-08-27",
+        "asof": "2026-09-30",
         "display_only": true,
         "source_lobe": "global_regimes"
       }
@@ -2469,9 +3926,9 @@
         "subtype": "global_regime:hk",
         "quad": "Q4",
         "quad_name": "Growth-scare",
-        "cycle_tag": "late",
+        "cycle_tag": "mid",
         "stale": false,
-        "asof": "2026-08-28",
+        "asof": "2026-09-30",
         "display_only": true,
         "source_lobe": "global_regimes"
       }
@@ -2482,11 +3939,11 @@
       "label": "Global Regime: CANADA",
       "meta": {
         "subtype": "global_regime:canada",
-        "quad": "Q1",
-        "quad_name": "Goldilocks",
-        "cycle_tag": "late",
+        "quad": "Q2",
+        "quad_name": "Reflation",
+        "cycle_tag": "mid",
         "stale": false,
-        "asof": "2026-08-28",
+        "asof": "2026-10-02",
         "display_only": true,
         "source_lobe": "global_regimes"
       }
@@ -2511,7 +3968,7 @@
         "regime": "long",
         "agreement": "split",
         "cor1m_regime": "dispersion",
-        "asof": "2026-08-28",
+        "asof": "2026-10-02",
         "display_only": true,
         "source_lobe": "world_state.market_structure"
       }
@@ -15199,6 +16656,16 @@
       "note": "structural: data/transmission/latest.json consumed by scripts/build_macro_snapshot.py"
     },
     {
+      "src": "artifact:transmission-latest",
+      "dst": "module:engine/credit_momentum.py",
+      "edge_type": "feeds",
+      "n": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "structural: data/transmission/latest.json consumed by engine/credit_momentum.py"
+    },
+    {
       "src": "module:scripts/build_rates_command.py",
       "dst": "artifact:rates-command-latest",
       "edge_type": "feeds",
@@ -16527,6 +17994,26 @@
       "display_only": true,
       "regime": null,
       "note": "structural: data/neuralweb/theme_trade_flows.json consumed by engine/theme_trade_flows.py"
+    },
+    {
+      "src": "module:engine/critical_minerals_supply.py",
+      "dst": "artifact:neuralweb-critical-minerals-supply",
+      "edge_type": "feeds",
+      "n": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "structural: engine/critical_minerals_supply.py writes data/neuralweb/critical_minerals_supply.json"
+    },
+    {
+      "src": "artifact:neuralweb-critical-minerals-supply",
+      "dst": "module:engine/critical_minerals_supply.py",
+      "edge_type": "feeds",
+      "n": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "structural: data/neuralweb/critical_minerals_supply.json consumed by engine/critical_minerals_supply.py"
     },
     {
       "src": "module:engine/theme_trade_flows.py",
@@ -20859,6 +22346,16 @@
       "note": "structural: data/price_pressure/events.parquet consumed by scripts/build_price_pressure.py"
     },
     {
+      "src": "data/regime/latest.json:regime_vector",
+      "dst": "data/regime/latest.json:risk_radar",
+      "edge_type": "contradicts",
+      "n": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "pair_id=regime_vector-vs-risk_radar kind=label-tension severity=note a=quad=Q2 growth_score=0.133 b=state=caution dominant_scare=rates"
+    },
+    {
       "src": "site/intelligence/by_ticker.json (demand/tape)",
       "dst": "site/intelligence/briefing.json",
       "edge_type": "contradicts",
@@ -20866,51 +22363,72 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "pair_id=briefing-divergences kind=directional-opposition severity=tension a=23 ticker-level demand-vs-supply divergences b=n_divergences=23, top tickers=['IBM', 'GOOG', 'COST', 'NET',"
+      "note": "pair_id=briefing-divergences kind=directional-opposition severity=tension a=35 ticker-level demand-vs-supply divergences b=n_divergences=35, top tickers=['NVMI', 'LRCX', 'OKE', 'LNG',"
+    },
+    {
+      "src": "data/regime/latest.json:cross_asset_confirm (bonds/FX)",
+      "dst": "data/regime/latest.json:regime (equity)",
+      "edge_type": "contradicts",
+      "n": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "pair_id=cross_asset_confirm-diverge kind=directional-opposition severity=tension a=bonds+FX cross-asset leg readings b=cross_asset_confirm verdict=diverge, agree_pct=0"
     },
     {
       "src": "engine:altdata",
       "dst": "engine:intel_hub",
       "edge_type": "confirms",
-      "n": 39,
-      "lift": 0.0078,
+      "n": 55,
+      "lift": -0.00184,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "co-firing lift=0.0078 n=39 (pre-gauntlet estimate; display-only)"
+      "note": "co-firing lift=-0.0018 n=55 (pre-gauntlet estimate; display-only)"
     },
     {
       "src": "engine:altdata",
       "dst": "engine:radar",
       "edge_type": "confirms",
-      "n": 147,
-      "lift": -0.03542,
+      "n": 222,
+      "lift": -0.02259,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "co-firing lift=-0.0354 n=147 (pre-gauntlet estimate; display-only)"
+      "note": "co-firing lift=-0.0226 n=222 (pre-gauntlet estimate; display-only)"
+    },
+    {
+      "src": "engine:altdata",
+      "dst": "engine:stock_desk",
+      "edge_type": "confirms",
+      "n": 1,
+      "lift": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "n=1 < MIN_N=10 — lift=null (insufficient sample; display-only)"
     },
     {
       "src": "engine:altdata",
       "dst": "engine:track_record",
       "edge_type": "confirms",
-      "n": 14,
+      "n": 25,
       "lift": null,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "n=14 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
+      "note": "n=25 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
     },
     {
       "src": "engine:altdata",
       "dst": "engine:us_board",
       "edge_type": "confirms",
-      "n": 37,
-      "lift": -0.01128,
+      "n": 91,
+      "lift": -0.01123,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "co-firing lift=-0.0113 n=37 (pre-gauntlet estimate; display-only)"
+      "note": "co-firing lift=-0.0112 n=91 (pre-gauntlet estimate; display-only)"
     },
     {
       "src": "engine:altdata",
@@ -20927,6 +22445,17 @@
       "src": "engine:demand_chain",
       "dst": "engine:us_board",
       "edge_type": "confirms",
+      "n": 2,
+      "lift": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "n=2 < MIN_N=10 — lift=null (insufficient sample; display-only)"
+    },
+    {
+      "src": "engine:desk:narrative_brain",
+      "dst": "engine:desk:radar",
+      "edge_type": "confirms",
       "n": 1,
       "lift": null,
       "stable": null,
@@ -20935,37 +22464,59 @@
       "note": "n=1 < MIN_N=10 — lift=null (insufficient sample; display-only)"
     },
     {
-      "src": "engine:intel_hub",
+      "src": "engine:desk:stock_desk",
       "dst": "engine:radar",
       "edge_type": "confirms",
-      "n": 1161,
-      "lift": -0.00089,
+      "n": 4,
+      "lift": null,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "co-firing lift=-0.0009 n=1161 (pre-gauntlet estimate; display-only)"
+      "note": "n=4 < MIN_N=10 — lift=null (insufficient sample; display-only)"
+    },
+    {
+      "src": "engine:intel_hub",
+      "dst": "engine:radar",
+      "edge_type": "confirms",
+      "n": 1750,
+      "lift": 0.00284,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "co-firing lift=0.0028 n=1750 (pre-gauntlet estimate; display-only)"
+    },
+    {
+      "src": "engine:intel_hub",
+      "dst": "engine:stock_desk",
+      "edge_type": "confirms",
+      "n": 4,
+      "lift": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "n=4 < MIN_N=10 — lift=null (insufficient sample; display-only)"
     },
     {
       "src": "engine:intel_hub",
       "dst": "engine:track_record",
       "edge_type": "confirms",
-      "n": 11,
+      "n": 27,
       "lift": null,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "n=11 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
+      "note": "n=27 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
     },
     {
       "src": "engine:intel_hub",
       "dst": "engine:us_board",
       "edge_type": "confirms",
-      "n": 63,
-      "lift": -0.02789,
+      "n": 130,
+      "lift": -0.01855,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "co-firing lift=-0.0279 n=63 (pre-gauntlet estimate; display-only)"
+      "note": "co-firing lift=-0.0186 n=130 (pre-gauntlet estimate; display-only)"
     },
     {
       "src": "engine:intel_hub",
@@ -20982,66 +22533,110 @@
       "src": "engine:policy",
       "dst": "engine:radar",
       "edge_type": "confirms",
-      "n": 20,
-      "lift": -0.01968,
+      "n": 23,
+      "lift": -0.02111,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "co-firing lift=-0.0197 n=20 (pre-gauntlet estimate; display-only)"
+      "note": "co-firing lift=-0.0211 n=23 (pre-gauntlet estimate; display-only)"
+    },
+    {
+      "src": "engine:radar",
+      "dst": "engine:stock_desk",
+      "edge_type": "confirms",
+      "n": 2,
+      "lift": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "n=2 < MIN_N=10 — lift=null (insufficient sample; display-only)"
+    },
+    {
+      "src": "engine:radar",
+      "dst": "engine:thematic_desk",
+      "edge_type": "confirms",
+      "n": 4,
+      "lift": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "n=4 < MIN_N=10 — lift=null (insufficient sample; display-only)"
     },
     {
       "src": "engine:radar",
       "dst": "engine:track_record",
       "edge_type": "confirms",
-      "n": 36,
+      "n": 67,
       "lift": null,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "n=36 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
+      "note": "n=67 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
     },
     {
       "src": "engine:radar",
       "dst": "engine:us_board",
       "edge_type": "confirms",
-      "n": 156,
-      "lift": -0.00348,
+      "n": 323,
+      "lift": 0.00446,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "co-firing lift=-0.0035 n=156 (pre-gauntlet estimate; display-only)"
+      "note": "co-firing lift=0.0045 n=323 (pre-gauntlet estimate; display-only)"
     },
     {
       "src": "engine:radar",
       "dst": "engine:whitehouse",
       "edge_type": "confirms",
-      "n": 8,
-      "lift": null,
+      "n": 10,
+      "lift": 0.00056,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "n=8 < MIN_N=10 — lift=null (insufficient sample; display-only)"
+      "note": "co-firing lift=0.0006 n=10 (pre-gauntlet estimate; display-only)"
+    },
+    {
+      "src": "engine:stock_desk",
+      "dst": "engine:us_board",
+      "edge_type": "confirms",
+      "n": 15,
+      "lift": 0.01816,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "co-firing lift=0.0182 n=15 (pre-gauntlet estimate; display-only)"
     },
     {
       "src": "engine:track_record",
       "dst": "engine:us_board",
       "edge_type": "confirms",
-      "n": 61,
+      "n": 116,
       "lift": null,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "n=61 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
+      "note": "n=116 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
+    },
+    {
+      "src": "engine:us_board",
+      "dst": "engine:whitehouse",
+      "edge_type": "confirms",
+      "n": 1,
+      "lift": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "n=1 < MIN_N=10 — lift=null (insufficient sample; display-only)"
     },
     {
       "src": "options.skew_rising",
       "dst": "us_board.buy_lane",
       "edge_type": "contradicts",
-      "n": 5,
+      "n": 4,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "buy-lane names with 5d-rising OTM-put skew (as_of 2026-08-21); e.g. GLXY, HOOD, NXPI, QCOM, TSLA. Display-only de-escalation context; W-E1 prior: bullish skew-decel UNSUPPORTED on sector history."
+      "note": "buy-lane names with 5d-rising OTM-put skew (as_of 2026-09-17); e.g. AVAV, MRCY, PCG, RKLB. Display-only de-escalation context; W-E1 prior: bullish skew-decel UNSUPPORTED on sector history."
     },
     {
       "src": "options.skew_decel",
@@ -21051,17 +22646,17 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "buy-lane names with top-tercile skew now falling (as_of 2026-08-21); e.g. JNJ. Display-only; S-SKEW_DECEL gate building_history, W-E1 sector-history prior is SKEPTICAL."
+      "note": "buy-lane names with top-tercile skew now falling (as_of 2026-09-17); e.g. PG. Display-only; S-SKEW_DECEL gate building_history, W-E1 sector-history prior is SKEPTICAL."
     },
     {
       "src": "options.ivspread_positive_call_doi",
       "dst": "us_board.watch_lane",
       "edge_type": "confirms",
-      "n": 5,
+      "n": 4,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "watch-lane names with CW ivspread>0 and net ΔOI>0 (as_of 2026-08-21); e.g. AMAT, AME, CL, FORM, TJX. Display-only; S-IVSPREAD-F gate building_history; W-E1: CWIV Era3 5d IC survives on sector history."
+      "note": "watch-lane names with CW ivspread>0 and net ΔOI>0 (as_of 2026-09-17); e.g. AME, CL, FIVE, FORM. Display-only; S-IVSPREAD-F gate building_history; W-E1: CWIV Era3 5d IC survives on sector history."
     },
     {
       "src": "options.skew_rising_or_call_wall_pin",
@@ -21081,17 +22676,7 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "rates headwind: asset=XLB net=-0.31 verdict=headwind source_lobe=rates_transmission asof=2026-08-28"
-    },
-    {
-      "src": "macro:rates_transmission",
-      "dst": "sector:xlf",
-      "edge_type": "headwind",
-      "n": null,
-      "stable": null,
-      "display_only": true,
-      "regime": null,
-      "note": "rates headwind: asset=XLF net=-0.262 verdict=headwind source_lobe=rates_transmission asof=2026-08-28"
+      "note": "rates headwind: asset=XLB net=-0.475 verdict=headwind source_lobe=rates_transmission asof=2026-10-02"
     },
     {
       "src": "macro:rates_transmission",
@@ -21101,40 +22686,105 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "rates headwind: asset=XLK net=-0.256 verdict=headwind source_lobe=rates_transmission asof=2026-08-28"
+      "note": "rates headwind: asset=XLK net=-0.372 verdict=headwind source_lobe=rates_transmission asof=2026-10-02"
+    },
+    {
+      "src": "macro:rates_transmission",
+      "dst": "sector:xlf",
+      "edge_type": "headwind",
+      "n": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "rates headwind: asset=XLF net=-0.368 verdict=headwind source_lobe=rates_transmission asof=2026-10-02"
+    },
+    {
+      "src": "macro:fx_dollar",
+      "dst": "regime:Q2",
+      "edge_type": "contradicts",
+      "n": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "cross_asset diverge: fx_dollar contradicts regime:Q2 asof=2026-10-02 source_lobe=contradictions/cross_asset_confirm"
+    },
+    {
+      "src": "macro:rates_credit",
+      "dst": "regime:Q2",
+      "edge_type": "contradicts",
+      "n": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "cross_asset diverge: rates_credit contradicts regime:Q2 asof=2026-10-02 source_lobe=contradictions/cross_asset_confirm"
     }
   ],
   "contradiction_summary": {
-    "n": 1,
+    "n": 3,
     "by_severity": {
-      "tension": 1
+      "note": 1,
+      "tension": 2
     },
     "top_pair_ids": [
-      "briefing-divergences"
+      "regime_vector-vs-risk_radar",
+      "briefing-divergences",
+      "cross_asset_confirm-diverge"
     ]
   },
   "contradiction_records": [
     {
+      "pair_id": "regime_vector-vs-risk_radar",
+      "a": {
+        "artifact": "data/regime/latest.json:regime_vector",
+        "reading": "quad=Q2 growth_score=0.133"
+      },
+      "b": {
+        "artifact": "data/regime/latest.json:risk_radar",
+        "reading": "state=caution dominant_scare=rates"
+      },
+      "kind": "label-tension",
+      "severity": "note",
+      "as_of": "2026-10-02",
+      "note": "Rising growth regime (Q2) while risk_radar elevated with dominant scare=rates.  Non-growth scare alongside positive growth vector is possible in a diverging-risk environment.  Display-only context.",
+      "display_only": true
+    },
+    {
       "pair_id": "briefing-divergences",
       "a": {
         "artifact": "site/intelligence/by_ticker.json (demand/tape)",
-        "reading": "23 ticker-level demand-vs-supply divergences"
+        "reading": "35 ticker-level demand-vs-supply divergences"
       },
       "b": {
         "artifact": "site/intelligence/briefing.json",
-        "reading": "n_divergences=23, top tickers=['IBM', 'GOOG', 'COST', 'NET', 'PANW']"
+        "reading": "n_divergences=35, top tickers=['NVMI', 'LRCX', 'OKE', 'LNG', 'ANET']"
       },
       "kind": "directional-opposition",
       "severity": "tension",
-      "as_of": "2026-08-30",
-      "note": "23 ticker-level demand (news_dir) vs supply (alt+radar) direction disagreements detected by engine/briefing.py.  Top 5: IBM, GOOG, COST, NET, PANW.  These are pre-computed; no recomputation here.  Display-only context (news_dir×supply_dir sign-product < 0 or early_edge/crowded_top labels).",
+      "as_of": "2026-10-03",
+      "note": "35 ticker-level demand (news_dir) vs supply (alt+radar) direction disagreements detected by engine/briefing.py.  Top 5: NVMI, LRCX, OKE, LNG, ANET.  These are pre-computed; no recomputation here.  Display-only context (news_dir×supply_dir sign-product < 0 or early_edge/crowded_top labels).",
+      "display_only": true
+    },
+    {
+      "pair_id": "cross_asset_confirm-diverge",
+      "a": {
+        "artifact": "data/regime/latest.json:cross_asset_confirm (bonds/FX)",
+        "reading": "bonds+FX cross-asset leg readings"
+      },
+      "b": {
+        "artifact": "data/regime/latest.json:regime (equity)",
+        "reading": "cross_asset_confirm verdict=diverge, agree_pct=0"
+      },
+      "kind": "directional-opposition",
+      "severity": "tension",
+      "as_of": "2026-10-02",
+      "note": "cross_asset_confirm signals 'diverge': bonds/FX and equity readings disagree.  Bonds/FX diverge from the equity read — fast-family caution the equity gauges don't yet show (credit, sovereign).  Note: MOVE-vs-VIX, dollar/EM-FX, FX carry are COINCIDENT not leading (engine/cross_asset_confirm.py:15-20).  Display-only macro context.",
       "display_only": true
     }
   ],
   "independence": {
     "effective_independent_lobes": 1.0,
     "n_lobes_measurable": 1,
-    "n_lobes_total": 34,
+    "n_lobes_total": 36,
     "pctile_vs_null": 1.0,
     "same_bet_warning": null,
     "dominant_overlap_cluster": null,
@@ -21149,7 +22799,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/confluence.py",
-  "produced_at": "2026-09-01T06:47:41Z",
-  "inputs_hash": "sha256:a74064702694d705c2077176a5a6c17b4fcd64dd90dd96d87ec12ae056071ca7",
+  "produced_at": "2026-10-03T20:05:45Z",
+  "inputs_hash": "sha256:d1b910efcbeaa924a3d6b4cbe07f1b5fa8581d04f0197c136083d0155db36ef1",
   "tier": "display"
 }

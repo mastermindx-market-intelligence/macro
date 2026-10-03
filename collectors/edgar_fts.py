@@ -35,8 +35,16 @@ from pathlib import Path
 
 import pandas as pd
 
+from collectors import edgar_facts as _edgar_facts
 from collectors.edgar_facts import _get_json
 from lib import config
+
+# Falsy-but-not-None "SEC positively returned 404" sentinel minted by edgar_facts (#6921).
+# Read as a module attribute, never imported by name: while edgar_facts predates #6921
+# the name does not exist and a confirmed 404 is plain None, so the first-request guard
+# below collapses to `is None`; once it lands this binds the real object (identity is
+# pinned by tests/test_edgar_fts_confirmed_absent_first_request.py).
+_CONFIRMED_ABSENT = getattr(_edgar_facts, "_CONFIRMED_ABSENT", None)
 
 log = logging.getLogger("edgar_fts")
 
@@ -174,7 +182,7 @@ def _sweep_phrases(
             data = _get_json(url, retries=1 if first_request else 3)
             # network down / endpoint unreachable on the very first call -> abort the whole
             # sweep (don't grind through dozens of 40s timeouts) and keep any existing cache.
-            if data is None and first_request:
+            if (data is None or data is _CONFIRMED_ABSENT) and first_request:
                 log.warning("edgar_fts: EDGAR unreachable; keeping existing cache (%s)",
                             cache_path.name)
                 return pd.read_parquet(cache_path) if cache_path.exists() else None

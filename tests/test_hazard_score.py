@@ -58,10 +58,12 @@ def _minimal_hf(
 
 def test_score_up_1m_returns_model_in_range():
     """up/1m is a PASS cell — scorer must return source='MODEL' with p in (0, 1)."""
+    from unittest.mock import patch
     from engine.hazard_score import score
 
     hf = _minimal_hf(pos=70.0, osc_slope=5.0, trend_pass=1.0)
-    result = score(hf, "up", family="sector")
+    with patch("engine.hazard_score._enforce_hazard_cdf", side_effect=lambda x: x):
+        result = score(hf, "up", family="sector")
 
     assert result is not None, "score() returned None on valid input"
     assert result["1m"]["source"] == "MODEL", f"up/1m should be MODEL, got {result['1m']['source']}"
@@ -72,10 +74,12 @@ def test_score_up_1m_returns_model_in_range():
 
 def test_score_down_1m_returns_model_in_range():
     """down/1m is a PASS cell."""
+    from unittest.mock import patch
     from engine.hazard_score import score
 
     hf = _minimal_hf(pos=35.0, osc_slope=-3.0, trend_pass=0.0)
-    result = score(hf, "down", family="sector")
+    with patch("engine.hazard_score._enforce_hazard_cdf", side_effect=lambda x: x):
+        result = score(hf, "down", family="sector")
 
     assert result is not None
     assert result["1m"]["source"] == "MODEL"
@@ -84,8 +88,11 @@ def test_score_down_1m_returns_model_in_range():
 
 
 def test_score_result_structure():
-    """Result must carry epoch, revision_optimistic, direction, and all three horizons."""
-    from engine.hazard_score import score, _EPOCH
+    """Result must carry epoch, revision_optimistic, direction, turn_kind, and
+    either a monotone three-horizon CDF or a worded unavailable block."""
+    from engine.hazard_score import (
+        score, _EPOCH, _enforce_hazard_cdf, _hazard_cdf_cells, _hazard_cdf_is_monotone,
+    )
 
     hf = _minimal_hf()
     result = score(hf, "up", family="sector")
@@ -94,12 +101,21 @@ def test_score_result_structure():
     assert result["epoch"] == _EPOCH
     assert "revision_optimistic" in result
     assert "direction" in result
+    assert result["turn_kind"] == "peak"
+    if result.get("unavailable"):
+        assert result.get("unavailable_reason") == "non_monotone_cdf"
+        for h in ("1m", "3m", "6m"):
+            assert h not in result
+        return
     for h in ("1m", "3m", "6m"):
         assert h in result, f"Missing horizon {h}"
         cell = result[h]
         assert "p" in cell and "source" in cell and "cell_verdict" in cell
         assert cell["source"] in ("MODEL", "PRIOR")
         assert 0.0 <= cell["p"] <= 1.0
+    cells = _hazard_cdf_cells(result)
+    assert _hazard_cdf_is_monotone(cells)
+    assert _enforce_hazard_cdf(result) is result or _enforce_hazard_cdf(dict(result))["1m"]["p"] == result["1m"]["p"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -107,11 +123,17 @@ def test_score_result_structure():
 # ─────────────────────────────────────────────────────────────────────────────
 
 def test_up_3m_and_6m_are_prior():
-    """up/3m and up/6m must return source='PRIOR' with cell_verdict='PRIOR'."""
+    """up/3m and up/6m must return source='PRIOR' with cell_verdict='PRIOR'.
+
+    Public score() may wrap a mixed non-monotone set as unavailable; this test
+    inspects the unguarded cells.
+    """
+    from unittest.mock import patch
     from engine.hazard_score import score
 
     hf = _minimal_hf()
-    result = score(hf, "up", family="sector")
+    with patch("engine.hazard_score._enforce_hazard_cdf", side_effect=lambda x: x):
+        result = score(hf, "up", family="sector")
 
     assert result is not None
     for h in ("3m", "6m"):
@@ -124,10 +146,12 @@ def test_up_3m_and_6m_are_prior():
 
 def test_prior_values_match_km_baseline():
     """PRIOR values must match KM baseline km_by_month survival for the family."""
+    from unittest.mock import patch
     from engine.hazard_score import score, _load_km, _km_prior
 
     hf = _minimal_hf()
-    result = score(hf, "up", family="sector")
+    with patch("engine.hazard_score._enforce_hazard_cdf", side_effect=lambda x: x):
+        result = score(hf, "up", family="sector")
     assert result is not None
 
     km = _load_km()
@@ -441,6 +465,9 @@ def test_cn_sector_score_returns_finite_p_in_range():
         assert result is not None, \
             f"score() returned None for cn_sector direction={direction}"
         assert result.get("epoch") == "price_c4414dcb"
+        if result.get("unavailable"):
+            assert result.get("unavailable_reason") == "non_monotone_cdf"
+            continue
         for h in ("1m", "3m", "6m"):
             cell = result[h]
             p = cell["p"]
@@ -458,10 +485,13 @@ def test_cn_sector_km_prior_matches_baseline():
     """cn_sector PRIOR cells must use the cn_sector KM baseline, not the pooled one."""
     from engine.hazard_score import score, _load_km, _km_prior
 
+    from unittest.mock import patch
+
     km = _load_km()
     # up/3m and up/6m are PRIOR cells; must match cn_sector KM baseline
     hf = _cn_sector_hf()
-    result = score(hf, "up", family="cn_sector")
+    with patch("engine.hazard_score._enforce_hazard_cdf", side_effect=lambda x: x):
+        result = score(hf, "up", family="cn_sector")
     assert result is not None
 
     for h_label, h_int in (("3m", 3), ("6m", 6)):
@@ -518,8 +548,9 @@ def test_stamp_hazard_median_half_yrs_not_doubled():
     hz = minimal_rec["now"].get("hazard")
 
     assert hz is not None, "_stamp_hazard produced no hazard for cn_sector (returned None)"
-    p_1m = hz["1m"]["p"]
-    assert 0.0 < p_1m < 1.0, f"1m p={p_1m} out of (0, 1)"
+    if not hz.get("unavailable"):
+        p_1m = hz["1m"]["p"]
+        assert 0.0 < p_1m < 1.0, f"1m p={p_1m} out of (0, 1)"
 
     # Cross-check: compute expected log_age_ratio with CORRECT half-cycle
     # age_since_turn_bars = (3.25 - 3.0) * 252 = 63 bars → age_months ≈ 3.0
@@ -536,3 +567,55 @@ def test_stamp_hazard_median_half_yrs_not_doubled():
     # The unit test above already asserts 0 < p < 1, so a None return is caught.
     assert bucket_correct != bucket_doubled or True, \
         "bucket computation: both paths land in same bucket (test is weaker but still valid)"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 9. CDF monotonicity guard (cycle.html W8 r1 B2)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_enforce_hazard_cdf_keeps_monotone_cells():
+    from engine.hazard_score import _enforce_hazard_cdf
+
+    hz = {
+        "epoch": "price_c4414dcb",
+        "direction": "down",
+        "turn_kind": "trough",
+        "1m": {"p": 0.10, "source": "MODEL", "cell_verdict": "PASS"},
+        "3m": {"p": 0.20, "source": "MODEL", "cell_verdict": "PASS"},
+        "6m": {"p": 0.30, "source": "MODEL", "cell_verdict": "PASS"},
+    }
+    out = _enforce_hazard_cdf(hz)
+    assert out is hz
+    assert out["1m"]["p"] == 0.10 and out["6m"]["p"] == 0.30
+
+
+def test_enforce_hazard_cdf_marks_mixed_inversion_unavailable():
+    from engine.hazard_score import _enforce_hazard_cdf
+
+    hz = {
+        "epoch": "price_c4414dcb",
+        "direction": "up",
+        "turn_kind": "peak",
+        "1m": {"p": 0.5288, "source": "MODEL", "cell_verdict": "PASS"},
+        "3m": {"p": 0.0474, "source": "PRIOR", "cell_verdict": "PRIOR"},
+        "6m": {"p": 0.0894, "source": "PRIOR", "cell_verdict": "PRIOR"},
+    }
+    out = _enforce_hazard_cdf(hz)
+    assert out["unavailable"] is True
+    assert out["unavailable_reason"] == "non_monotone_cdf"
+    assert out["turn_kind"] == "peak"
+    for h in ("1m", "3m", "6m"):
+        assert h not in out
+
+
+def test_public_score_up_sector_is_monotone_or_unavailable():
+    """Live mixed MODEL/PRIOR up-leg must not emit three contradicting cells."""
+    from engine.hazard_score import score, _hazard_cdf_cells, _hazard_cdf_is_monotone
+
+    result = score(_minimal_hf(), "up", family="sector")
+    assert result is not None
+    if result.get("unavailable"):
+        for h in ("1m", "3m", "6m"):
+            assert h not in result
+    else:
+        assert _hazard_cdf_is_monotone(_hazard_cdf_cells(result))

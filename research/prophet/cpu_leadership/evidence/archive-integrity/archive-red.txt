@@ -1,0 +1,114 @@
+FFFFFFFFFFFFFFFFFF                                                       [100%]
+=================================== FAILURES ===================================
+___________ test_archive_scan_only_is_not_curated_candidate_history ____________
+tests/test_us_candidate_lanes.py:1287: in test_archive_scan_only_is_not_curated_candidate_history
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+_______ test_archive_matching_fields_never_proves_exact_build_generation _______
+tests/test_us_candidate_lanes.py:1299: in test_archive_matching_fields_never_proves_exact_build_generation
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+_ test_archive_wrong_date_definition_or_tier_cannot_fill_missing[stamp_date-2026-09-17] _
+tests/test_us_candidate_lanes.py:1314: in test_archive_wrong_date_definition_or_tier_cannot_fill_missing
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+_ test_archive_wrong_date_definition_or_tier_cannot_fill_missing[stamp_date-2026-09-21] _
+tests/test_us_candidate_lanes.py:1314: in test_archive_wrong_date_definition_or_tier_cannot_fill_missing
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+_ test_archive_wrong_date_definition_or_tier_cannot_fill_missing[board_definition-other_definition] _
+tests/test_us_candidate_lanes.py:1314: in test_archive_wrong_date_definition_or_tier_cannot_fill_missing
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+__ test_archive_wrong_date_definition_or_tier_cannot_fill_missing[tier-None] ___
+tests/test_us_candidate_lanes.py:1314: in test_archive_wrong_date_definition_or_tier_cannot_fill_missing
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+_____ test_archive_same_date_changed_receipt_is_not_a_match[pool_rank-27] ______
+tests/test_us_candidate_lanes.py:1327: in test_archive_same_date_changed_receipt_is_not_a_match
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+____ test_archive_same_date_changed_receipt_is_not_a_match[pool_rank-True] _____
+tests/test_us_candidate_lanes.py:1327: in test_archive_same_date_changed_receipt_is_not_a_match
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+_ test_archive_same_date_changed_receipt_is_not_a_match[pool_in_buy_lane-false] _
+tests/test_us_candidate_lanes.py:1327: in test_archive_same_date_changed_receipt_is_not_a_match
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+_ test_archive_same_date_changed_receipt_is_not_a_match[pool_lane_reasons-new_refusal] _
+tests/test_us_candidate_lanes.py:1327: in test_archive_same_date_changed_receipt_is_not_a_match
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+_ test_archive_same_date_changed_receipt_is_not_a_match[pool_definition-other_pool] _
+tests/test_us_candidate_lanes.py:1327: in test_archive_same_date_changed_receipt_is_not_a_match
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+_ test_archive_same_date_changed_receipt_is_not_a_match[pool_headline_reason-None] _
+tests/test_us_candidate_lanes.py:1327: in test_archive_same_date_changed_receipt_is_not_a_match
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+_ test_archive_same_date_changed_receipt_is_not_a_match[pool_in_buy_lane-True] _
+tests/test_us_candidate_lanes.py:1327: in test_archive_same_date_changed_receipt_is_not_a_match
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+____________ test_archive_duplicate_or_extra_pool_rows_are_visible _____________
+tests/test_us_candidate_lanes.py:1338: in test_archive_duplicate_or_extra_pool_rows_are_visible
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+__________ test_archive_no_snapshot_is_unavailable_not_empty_success ___________
+tests/test_us_candidate_lanes.py:1348: in test_archive_no_snapshot_is_unavailable_not_empty_success
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+____________ test_archive_loader_uses_existing_reader_and_one_month ____________
+tests/test_us_candidate_lanes.py:1362: in test_archive_loader_uses_existing_reader_and_one_month
+    receipt = ucl.load_candidate_archive_status(board, root=Path("/no-write"))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'load_candidate_archive_status'
+______ test_archive_loader_failure_does_not_leak_exception_or_break_view _______
+tests/test_us_candidate_lanes.py:1375: in test_archive_loader_failure_does_not_leak_exception_or_break_view
+    receipt = ucl.load_candidate_archive_status(board)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'load_candidate_archive_status'
+__ test_archive_annotation_preserves_order_score_and_protected_name_boundary ___
+tests/test_us_candidate_lanes.py:1386: in test_archive_annotation_preserves_order_score_and_protected_name_boundary
+    receipt = ucl.reconcile_candidate_archive(board, rows[:1])
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.us_candidate_lanes' has no attribute 'reconcile_candidate_archive'
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .github, .grok, .warp, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_us_candidate_lanes.py::test_archive_scan_only_is_not_curated_candidate_history
+FAILED tests/test_us_candidate_lanes.py::test_archive_matching_fields_never_proves_exact_build_generation
+FAILED tests/test_us_candidate_lanes.py::test_archive_wrong_date_definition_or_tier_cannot_fill_missing[stamp_date-2026-09-17]
+FAILED tests/test_us_candidate_lanes.py::test_archive_wrong_date_definition_or_tier_cannot_fill_missing[stamp_date-2026-09-21]
+FAILED tests/test_us_candidate_lanes.py::test_archive_wrong_date_definition_or_tier_cannot_fill_missing[board_definition-other_definition]
+FAILED tests/test_us_candidate_lanes.py::test_archive_wrong_date_definition_or_tier_cannot_fill_missing[tier-None]
+FAILED tests/test_us_candidate_lanes.py::test_archive_same_date_changed_receipt_is_not_a_match[pool_rank-27]
+FAILED tests/test_us_candidate_lanes.py::test_archive_same_date_changed_receipt_is_not_a_match[pool_rank-True]
+FAILED tests/test_us_candidate_lanes.py::test_archive_same_date_changed_receipt_is_not_a_match[pool_in_buy_lane-false]
+FAILED tests/test_us_candidate_lanes.py::test_archive_same_date_changed_receipt_is_not_a_match[pool_lane_reasons-new_refusal]
+FAILED tests/test_us_candidate_lanes.py::test_archive_same_date_changed_receipt_is_not_a_match[pool_definition-other_pool]
+FAILED tests/test_us_candidate_lanes.py::test_archive_same_date_changed_receipt_is_not_a_match[pool_headline_reason-None]
+FAILED tests/test_us_candidate_lanes.py::test_archive_same_date_changed_receipt_is_not_a_match[pool_in_buy_lane-True]
+FAILED tests/test_us_candidate_lanes.py::test_archive_duplicate_or_extra_pool_rows_are_visible
+FAILED tests/test_us_candidate_lanes.py::test_archive_no_snapshot_is_unavailable_not_empty_success
+FAILED tests/test_us_candidate_lanes.py::test_archive_loader_uses_existing_reader_and_one_month
+FAILED tests/test_us_candidate_lanes.py::test_archive_loader_failure_does_not_leak_exception_or_break_view
+FAILED tests/test_us_candidate_lanes.py::test_archive_annotation_preserves_order_score_and_protected_name_boundary
+18 failed, 125 deselected in 1.66s

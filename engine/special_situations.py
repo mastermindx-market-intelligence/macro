@@ -473,14 +473,41 @@ def build_situations() -> pd.DataFrame:
     return df
 
 
+def _premium_snapshot_payload(df) -> dict:
+    """Best-effort featured premium. On any failure return the full ``_refused()``
+    shape so the snapshot JSON never carries a bare machine reason."""
+    try:
+        from engine import special_situations_premium
+        return special_situations_premium.featured_premium(df=df)
+    except Exception as e:  # noqa: BLE001 — premium is best-effort, never blocks the desk
+        log.warning("special_situations premium failed: %s", e)
+        try:
+            from engine.special_situations_premium import _refused
+            return _refused("computation_unavailable")
+        except Exception:  # noqa: BLE001 — import itself failed; still emit plain-word nulls
+            return {
+                "schema": "special_situations.premium.v1",
+                "parser_version": "special-situations-premium/1.0.0",
+                "scored": SCORED,
+                "is_context_only": True,
+                "disclaimer": DISCLAIMER,
+                "status": "refused",
+                "refusal": "computation_unavailable",
+                "null_en": "We could not compute a premium for this deal right now — check back later.",
+                "null_zh": "我们暂时无法计算该交易的溢价，请稍后再试。",
+            }
+
+
 def snapshot() -> dict:
     """Display payload for the desk: classified situations passing the floor,
     grouped by category, plus honest coverage counts. SCORED=False / context-only."""
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     df = build_situations()
     if df.empty:
+        premium = _premium_snapshot_payload(df)
         return {"scored": SCORED, "is_context_only": True, "disclaimer": DISCLAIMER,
-                "built": now, "situations": [], "counts": {}, "coverage": {}}
+                "built": now, "situations": [], "counts": {}, "coverage": {},
+                "premium": premium}
 
     ok = df[df.status == "ok"].copy()
     # desk view: classified AND not below the floor (unknown mc kept, flagged)
@@ -502,9 +529,13 @@ def snapshot() -> dict:
     keep_cols = [c for c in keep_cols if c in desk.columns]
     sits = (desk.sort_values("date_filed", ascending=False)[keep_cols]
             .to_dict("records"))
+    # Major-1 fix: reuse the frame already built above instead of re-running
+    # build_situations() + lifecycle() + _closes_panel() a second time.
+    premium = _premium_snapshot_payload(df)
     return {
         "scored": SCORED, "is_context_only": True, "disclaimer": DISCLAIMER,
         "built": now, "counts": by_cat, "coverage": coverage, "situations": sits,
+        "premium": premium,
     }
 
 
@@ -988,6 +1019,11 @@ def main() -> int:
         xb = " [cross-border]" if s.get("cross_border") else ""
         mc = f"${s['mc_musd']:.0f}M" if s.get("mc_musd") else "mc?"
         print(f"  {s['category']:18} {s.get('ticker') or '—':8} {s['company'][:34]:34} {s['stage']:16} {mc}{xb}")
+    try:
+        from engine import special_situations_premium
+        special_situations_premium.write_receipt()
+    except Exception as e:  # noqa: BLE001 — best-effort, never affects exit code
+        log.warning("special_situations premium receipt write failed: %s", e)
     return 0
 
 

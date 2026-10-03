@@ -327,6 +327,24 @@ def test_region_toggle_seed_rows_appended(env):
     assert br["USA"]["live"] > 0 and br["USA"]["seed"] == 0
 
 
+def test_screener_json_publishes_ec_tone_0_100_and_result_0_10(env):
+    """W7 M3: screener.json emits the published 0–100 / 0–10 vocabulary.
+
+    Seed overview stores desk 0–30 / signed −12..12; the JSON feed must not.
+    """
+    dr, _ = env
+    _write_overview_seed(dr, [_ov_row("BBVA.MC", "EUROPE", 87)])
+    sa.build_context_feed(root=dr, asof="2026-07-17")
+    sc = json.loads((dr / "stage_analysis" / "screener.json").read_text())
+    eu = next(r for r in sc["rows"] if r["ticker"] == "BBVA.MC")
+    # desk sent 20 → ((20-12)/18 + 1) / 2 * 100 = 72.2
+    # signed perf 10 → (10+12)/2.4 = 9.166… → 9.2
+    assert eu["ec_sent"] == 72.2
+    assert eu["ec_perf"] == 9.2
+    assert 0.0 <= eu["ec_sent"] <= 100.0
+    assert 0.0 <= eu["ec_perf"] <= 10.0
+
+
 def test_live_frame_populates_industry_ranks_flows_and_screener(env):
     """The classifier's same-day frame, not an optional stage seed, powers all
     industry surfaces and immediately fills the screener's industry context."""
@@ -1538,10 +1556,11 @@ def test_week_resolution_is_completed_week_equality_not_a_day_count(tmp_path):
 def test_population_partition_exact_counts_and_denominator(tmp_path, monkeypatch):
     """Exact §10 Population example: AAPL current Stage 2, MSFT current
     Stage 4, SILA stale Stage 2 (frozen tape, real production shape — a June
-    observation riding inside an August build). current total=2, stale
-    total=1, current Stage-2 count=1 (not 2), the Stage-2 % denominator=2,
-    SILA absent from top_stage2, SILA still browseable with stale provenance
-    and no current rank; fresh=True/stage_current=False is producible."""
+    observation riding inside an August build), UNK live with no Stage week
+    (unknown), plus a EUROPE seed row. current total=2, stale total=1,
+    unknown live=1, current Stage-2 count=1 (not 2), the Stage-2 %
+    denominator=2. Producer `is True` is the current contract — None does
+    not join current. SILA absent from top_stage2, still browseable."""
     dr = tmp_path / "data"
     ohlcv = dr / "baskets" / "ohlcv"
     ohlcv.mkdir(parents=True)
@@ -1552,11 +1571,13 @@ def test_population_partition_exact_counts_and_denominator(tmp_path, monkeypatch
     frame.index.name = "Date"
     # SPY deliberately does NOT get an OHLCV basket file — it lives only in
     # data/yahoo/ (the real module docstring: "rarely in classified"), so it
-    # is not one of the 3 roster tickers and cannot inflate the population.
-    for tk in ("AAPL", "MSFT", "SILA"):
+    # is not one of the roster tickers and cannot inflate the population.
+    for tk in ("AAPL", "MSFT", "SILA", "UNK"):
         frame.to_parquet(ohlcv / f"{tk}.parquet")
     (dr / "yahoo").mkdir(parents=True)
     frame[["close", "volume"]].to_parquet(dr / "yahoo" / "SPY.parquet")
+    # Second-region seed: display inventory only (stage_current is None).
+    _write_overview_seed(dr, [_ov_row("BBVA.MC", "EUROPE", 87)])
 
     common = dict(vol_ratio=1.0, event=None, n_weeks=100, mansfield_rs_change=0.0)
     stage_map = {
@@ -1574,6 +1595,12 @@ def test_population_partition_exact_counts_and_denominator(tmp_path, monkeypatch
                      ma30_slope_pct5w=1.5, pct_vs_ma30=3.0, mansfield_rs=2.0,
                      arc_pos=0.28, stage_source_asof="2026-06-30",
                      stage_week_end="2026-06-26"),
+        # UNK: live US row whose Stage week cannot be resolved → unknown, not
+        # current. The page must not fold this into the current denominator.
+        "UNK": dict(common, stage=2, weeks_in_stage=5, fresh=True,
+                    ma30_slope_pct5w=1.2, pct_vs_ma30=2.5, mansfield_rs=1.0,
+                    arc_pos=0.32, stage_source_asof="2026-08-19",
+                    stage_week_end=None),
         "SPY": dict(common, stage=2, weeks_in_stage=20, fresh=False,
                     ma30_slope_pct5w=1.0, pct_vs_ma30=2.0, mansfield_rs=0.0,
                     arc_pos=0.4, stage_source_asof="2026-08-19",
@@ -1592,6 +1619,7 @@ def test_population_partition_exact_counts_and_denominator(tmp_path, monkeypatch
     pop = contract["population"]
     assert pop["current"] == 2
     assert pop["stale"] == 1
+    assert pop["unknown"] == 1   # UNK live; the EU seed is screener-only
     assert contract["counts"]["stage2"] == 1   # SILA excluded from the headline
     assert contract["counts"]["total"] == 2    # the % denominator
     assert contract["market"]["pct_stage2"] == round(100.0 * 1 / 2, 1)
@@ -1608,6 +1636,27 @@ def test_population_partition_exact_counts_and_denominator(tmp_path, monkeypatch
     assert sila_row["stage_week_end"] == "2026-06-26"
     assert sila_row["rating"] is None          # no current rank
     assert sila_row["fresh"] is True           # lifecycle fresh + stale observation
+
+    # W7 r2: producer `is True` is the current-authority contract. Unknown
+    # (None) and stale (False) are other buckets; a second-region seed must
+    # not inflate the current count. Hero total == current rows by construction.
+    current_rows = [r for r in screener["rows"] if r.get("stage_current") is True]
+    stale_rows = [r for r in screener["rows"] if r.get("stage_current") is False]
+    unknown_rows = [r for r in screener["rows"] if r.get("stage_current") is None]
+    hero_total = screener["counts"]["total"]
+    assert hero_total == contract["counts"]["total"] == 2
+    assert len(current_rows) == hero_total
+    assert {r["ticker"] for r in current_rows} == {"AAPL", "MSFT"}
+    assert len(stale_rows) == 1 and stale_rows[0]["ticker"] == "SILA"
+    assert {r["ticker"] for r in unknown_rows} >= {"UNK", "BBVA.MC"}
+    unk = next(r for r in unknown_rows if r["ticker"] == "UNK")
+    assert unk["stage_current"] is None
+    seed = next(r for r in unknown_rows if r["ticker"] == "BBVA.MC")
+    assert seed["source"] == "seed" and seed["region"] == "EUROPE"
+    # Region-scoped US current denominator equals the hero — the EU seed
+    # and the unresolved live row are not in it.
+    us_current = [r for r in current_rows if r.get("region") in ("USA", "US")]
+    assert len(us_current) == hero_total
 
 
 def test_screener_row_carries_observation_truth_fields(env):

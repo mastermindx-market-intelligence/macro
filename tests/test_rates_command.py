@@ -11,6 +11,7 @@ import json
 import sys
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -30,6 +31,7 @@ from engine.rates_inflation_command import (  # noqa: E402
     D3_IMPLIED_BP_HIGH,
     _NET_STATE_LABELS,
 )
+from engine.yield_momentum import build_yield_momentum  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -270,6 +272,67 @@ class TestBuildChanges:
         changes, prev = build_changes(old, new, "2026-07-18")
         assert changes["items"] == []
 
+    def test_usd_dir_compact_returns_leg_string(self):
+        # T1 — compact_state reads the published string, not the policy_row dict.
+        c = self._make_contract("2026-07-18")
+        c["expectations_pressure"]["legs"] = [
+            {"key": "E3_dollar_tightening", "value": "strengthening"},
+        ]
+        cs = compact_state(c)
+        assert cs["usd_dir"] == "strengthening"
+        assert not isinstance(cs["usd_dir"], dict)
+
+    def test_usd_dir_compact_missing_leg_returns_none(self):
+        c = self._make_contract("2026-07-18")
+        c["expectations_pressure"]["legs"] = [
+            {"key": "other_leg", "value": "x"},
+        ]
+        assert compact_state(c)["usd_dir"] is None
+
+    def test_usd_dir_compact_none_value_returns_none(self):
+        c = self._make_contract("2026-07-18")
+        c["expectations_pressure"]["legs"] = [
+            {"key": "E3_dollar_tightening", "value": None},
+        ]
+        assert compact_state(c)["usd_dir"] is None
+
+    def test_usd_dir_no_item_when_policy_row_differs(self):
+        # T2 — today's live failure: any policy_row diff used to print as
+        # `usd_dir changed: {...whole dict...}`. Identical legs => no item.
+        old = self._make_contract("2026-07-17")
+        new = self._make_contract("2026-07-18")
+        # Rich policy_row on old; richer on new — these are the "moves" we
+        # must NOT see reflected as a usd_dir change.
+        old["board"]["policy_row"] = {"regime": "qa", "stance_score": 0.3}
+        new["board"]["policy_row"] = {
+            "regime": "qa",
+            "stance_score": 0.7,
+            "extra_field": {"nested": [1, 2, 3]},
+        }
+        # Both share the same dollar direction
+        usd_leg = {"key": "E3_dollar_tightening", "value": "weakening"}
+        old["expectations_pressure"]["legs"] = [usd_leg]
+        new["expectations_pressure"]["legs"] = [usd_leg]
+        changes, _ = build_changes(old, new, "2026-07-18")
+        assert not any(item["key"] == "usd_dir" for item in changes["items"])
+
+    def test_usd_dir_same_day_legacy_baseline_skipped(self):
+        # T4 — stored prev_state predates the repair; baseline `usd_dir` is
+        # still a dict. Same-day rebuild must NOT raise and must NOT emit.
+        old = self._make_contract("2026-07-18", net_state="two_sided")
+        old["prev_state"] = {
+            "as_of": "2026-07-17",
+            "state": {
+                "net_state": "two_sided",
+                "usd_dir": {"state": "QUIET"},  # legacy dict form
+            },
+        }
+        new = self._make_contract("2026-07-18", net_state="repricing_hawkish")
+        usd_leg = {"key": "E3_dollar_tightening", "value": "weakening"}
+        new["expectations_pressure"]["legs"] = [usd_leg]
+        changes, _ = build_changes(old, new, "2026-07-18")
+        assert not any(item["key"] == "usd_dir" for item in changes["items"])
+
 
 # ---------------------------------------------------------------------------
 # 5. diff_changes direction tests
@@ -308,6 +371,24 @@ class TestDiffChanges:
         items = diff_changes(prev, curr)
         for item in items:
             assert "en" in item and "zh" in item
+
+    def test_usd_dir_change_worded(self):
+        # T3 — EN/ZH wording for the dollar direction change.
+        prev = _cs()
+        prev["usd_dir"] = "strengthening"
+        curr = _cs()
+        curr["usd_dir"] = "flat"
+        items = diff_changes(prev, curr)
+        usd_items = [i for i in items if i["key"] == "usd_dir"]
+        assert len(usd_items) == 1
+        assert usd_items[0]["en"] == "Dollar direction: strengthening → flat"
+        assert usd_items[0]["zh"] == "美元方向：走强 → 横盘"
+
+    def test_usd_dir_dict_side_skipped(self):
+        prev = _cs(); prev["usd_dir"] = {"state": "QUIET"}
+        curr = _cs(); curr["usd_dir"] = "weakening"
+        items = diff_changes(prev, curr)
+        assert not any(i["key"] == "usd_dir" for i in items)
 
 
 # ---------------------------------------------------------------------------
@@ -349,6 +430,51 @@ class TestFailOpen:
         result = build_board(root=tmp_path)
         assert isinstance(result, dict)
         assert result["authority"] is False
+
+    def test_rates_command_carries_canonical_yield_momentum_read(self, tmp_path):
+        transmission = tmp_path / "transmission"
+        transmission.mkdir()
+        (transmission / "latest.json").write_text(json.dumps({
+            "asof": "2026-09-01",
+            "yield_momentum": {
+                "schema": "yield_momentum.v1",
+                "display_only": True,
+                "authority": False,
+                "series": {"20y": {"status": "available"}},
+            },
+        }))
+
+        result = build_board(root=tmp_path)
+
+        assert result["yield_momentum"]["series"]["20y"]["status"] == "available"
+        assert result["yield_momentum"]["display_only"] is True
+        assert result["yield_momentum"]["authority"] is False
+
+    def test_rates_command_preserves_stale_null_state_after_rate_freshness_expires(self, tmp_path):
+        index = pd.bdate_range("2026-01-02", periods=100)
+        frame = pd.DataFrame(
+            {"us20y": [3.0 + offset / 100 for offset in range(90)] + [None] * 10},
+            index=index,
+        )
+        yield_read = build_yield_momentum(frame)
+        transmission = tmp_path / "transmission"
+        transmission.mkdir()
+        (transmission / "latest.json").write_text(json.dumps({
+            "asof": yield_read["asof"],
+            "yield_momentum": yield_read,
+        }))
+
+        result = build_board(root=tmp_path)
+
+        twenty = result["yield_momentum"]["series"]["20y"]
+        assert result["yield_momentum"]["asof"] == str(index[-1].date())
+        assert twenty["status"] == "stale"
+        assert twenty["as_of"] == str(index[-11].date())
+        assert twenty["level"] is None
+        assert set(twenty["velocity_bp"].values()) == {None}
+        assert twenty["acceleration_bp"] is None
+        assert twenty["turn_watch"] is None
+        assert twenty["null_reason"]
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,1613 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-10-03T06:53:06Z",
+  "fixture_pages": {
+    "euro_area": {
+      "route": "euro_area.html",
+      "sha256": "806e951e5a4f48bef4be515bcf302feff5ef1271be227002da06fed53e817201",
+      "bytes": 132875
+    },
+    "united_kingdom": {
+      "route": "united_kingdom.html",
+      "sha256": "e00f787ed0af24bafa2c91a03f760c81d07722f623debba52e6d97d06dcda253",
+      "bytes": 131371
+    },
+    "united_kingdom_no_stance": {
+      "route": "united_kingdom--no-stance.html",
+      "sha256": "6a47099c56c28302eecebdcb8dfdc9c72ea4a7a8e8fae4290632c2340e664f52",
+      "bytes": 130877
+    },
+    "japan": {
+      "route": "japan.html",
+      "sha256": "cd2923d038b32aaf02c99914aa7d75a51e3c234bfc7c8a591e30ab6e71dcac36",
+      "bytes": 129741
+    },
+    "euro_area_outage": {
+      "route": "euro_area--outage.html",
+      "sha256": "d3541aace2160bde8ab8491c49e13f69e8e1712ac339a0f294a314eeb6dd1ca8",
+      "bytes": 130227
+    }
+  },
+  "source_commit": "40fe05769d1c9f0c38fc71638b5d18a23d6bf5e7",
+  "scope": {
+    "lanes": [
+      "MO-PAID-006_PAGE_EVIDENCE_R2 (MiniMax lane on mini2 — the R2 receipt)",
+      "CEO A seat-direct R4 / R4b / R4c under L.7 on mini2 (lane dead, no worker on the artifact)"
+    ],
+    "template": "templates/international_macro.html.j2",
+    "data_fixture": "origin/main data/international_macro/{EZ,GB,JP}_latest.json + inlined dossier payloads",
+    "site_fixture_commit": "fc4a9d277d269096f7e637b796fd5583be2c42f0",
+    "template_blob": "2c29b7cf4c44927f75e9dd5c3f1ee8a1134d54c5",
+    "template_blob_at_source_commit": "2c29b7cf4c44927f75e9dd5c3f1ee8a1134d54c5",
+    "template_matches_source_commit": true
+  },
+  "pages": [
+    {
+      "page_id": "euro_area",
+      "route": "/euro_area.html",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 715892,
+          "captured": true,
+          "file": "cells/c99f8dfd5018c1af.png",
+          "force_state": null,
+          "height": 3319,
+          "locale": "en",
+          "sha256": "c99f8dfd5018c1af2f73a7c513593707cdfbfb8ceef39713ad6747873a903f74",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 673980,
+          "captured": true,
+          "file": "cells/e4d8dee53d7080ea.png",
+          "force_state": null,
+          "height": 3319,
+          "locale": "en",
+          "sha256": "e4d8dee53d7080ea33e4a40894b0fa158757521d78e88d1dab98e0f68e4b8551",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 719863,
+          "captured": true,
+          "file": "cells/501928a13a721cff.png",
+          "force_state": null,
+          "height": 3289,
+          "locale": "zh",
+          "sha256": "501928a13a721cffa56faf7c9bec04acfab0b7e7177a0debb6f914825773ab0d",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 686872,
+          "captured": true,
+          "file": "cells/a58a38ccf51de446.png",
+          "force_state": null,
+          "height": 3289,
+          "locale": "zh",
+          "sha256": "a58a38ccf51de44626a52b79294a26a9387d4f9173c97254e954f038ea7cf9eb",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 609509,
+          "captured": true,
+          "file": "cells/1cabf695a41f23fa.png",
+          "force_state": null,
+          "height": 6420,
+          "locale": "en",
+          "sha256": "1cabf695a41f23fa0503f5c2056ba4ed8faa7c1aae63a8e9315e8f508c5a3681",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 593812,
+          "captured": true,
+          "file": "cells/56e3147bc869545a.png",
+          "force_state": null,
+          "height": 6420,
+          "locale": "en",
+          "sha256": "56e3147bc869545ad6fcd69f0d9b90de194bf1cb3fd5345b53fbf927ffdf783d",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 599941,
+          "captured": true,
+          "file": "cells/a37630cfd6c1e733.png",
+          "force_state": null,
+          "height": 6148,
+          "locale": "zh",
+          "sha256": "a37630cfd6c1e7337f50ffdfb60313514573795303b4c5208f7668a428522314",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 587489,
+          "captured": true,
+          "file": "cells/8609b8c84d3c37f8.png",
+          "force_state": null,
+          "height": 6148,
+          "locale": "zh",
+          "sha256": "8609b8c84d3c37f88ab4e7a01d9a07ee7f881751422efa38a9584a77dc1b7fd7",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "imd_dossier_headline_hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 718453,
+          "captured": true,
+          "file": "cells/1bc7a2b393ddaa7a--imd_dossier_headline_hover.png",
+          "force_state": "imd_dossier_headline_hover",
+          "height": 3319,
+          "locale": "en",
+          "sha256": "1bc7a2b393ddaa7a2c2b8ee0ad2e48cf51721c4a474943a9355ef4e261202d47",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "imd_dossier_headline_focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 718316,
+          "captured": true,
+          "file": "cells/61092e100967a830--imd_dossier_headline_focus.png",
+          "force_state": "imd_dossier_headline_focus",
+          "height": 3319,
+          "locale": "en",
+          "sha256": "61092e100967a830e469cbb7b18ae98098e480c6b6bc30b66f503191db72e962",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "imd_dossier_headline_hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 684403,
+          "captured": true,
+          "file": "cells/b3b35494f31eed7b--imd_dossier_headline_hover.png",
+          "force_state": "imd_dossier_headline_hover",
+          "height": 3319,
+          "locale": "en",
+          "sha256": "b3b35494f31eed7be87fe270e294e3761d7085fbb01544157b9097146d44da13",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "imd_dossier_headline_focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 684566,
+          "captured": true,
+          "file": "cells/cd13640ed107ad3d--imd_dossier_headline_focus.png",
+          "force_state": "imd_dossier_headline_focus",
+          "height": 3319,
+          "locale": "en",
+          "sha256": "cd13640ed107ad3dbc7a1e2a7ba0482a8bd32f05006dc8b76304a037c13cc2c3",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3319,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 6420,
+            "elements_wider_than_viewport": 9,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 3319,
+        "duplicate_heading_texts": [
+          "european central bank governing council"
+        ],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 8,
+          "h3": 17,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 27,
+        "payload_bytes_total": 654246,
+        "raw_slug_hit_count": 1,
+        "raw_slug_hits": [
+          "international_macro_dashboard"
+        ],
+        "request_count": 15,
+        "screenshot_completion": 1.0,
+        "section_count": 10,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 786
+      },
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:64970/live_config.js",
+          "text": "Failed to load resource: net::ERR_CONNECTION_RESET"
+        }
+      ],
+      "failed_responses": []
+    },
+    {
+      "page_id": "united_kingdom",
+      "route": "/united_kingdom.html",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 700071,
+          "captured": true,
+          "file": "cells/0aad6e4d727df4e1.png",
+          "force_state": null,
+          "height": 3079,
+          "locale": "en",
+          "sha256": "0aad6e4d727df4e109de7ed24b6064950014444d0d50e2414dd7dc2b15638a83",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 662950,
+          "captured": true,
+          "file": "cells/286cd90faba1bb0e.png",
+          "force_state": null,
+          "height": 3079,
+          "locale": "en",
+          "sha256": "286cd90faba1bb0e3f09138fa367e0ccaeba427ebd16c1e7e7ecc6152d5c097a",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 706271,
+          "captured": true,
+          "file": "cells/d7c886068525d0bf.png",
+          "force_state": null,
+          "height": 3102,
+          "locale": "zh",
+          "sha256": "d7c886068525d0bf4e3de66e650ed4838d1b58d7e29fc986ba9b1c96dfcaca0b",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 673612,
+          "captured": true,
+          "file": "cells/d49e8df214949aed.png",
+          "force_state": null,
+          "height": 3149,
+          "locale": "zh",
+          "sha256": "d49e8df214949aed2c4f691f311a91a974039d738c3548d08365b6bfcfb659d4",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 595578,
+          "captured": true,
+          "file": "cells/a2e9773aa0189a0a.png",
+          "force_state": null,
+          "height": 6400,
+          "locale": "en",
+          "sha256": "a2e9773aa0189a0abcf7142598c2efb32c8c58094120907f2b42a91175461620",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 575672,
+          "captured": true,
+          "file": "cells/b49685638e42fd99.png",
+          "force_state": null,
+          "height": 6400,
+          "locale": "en",
+          "sha256": "b49685638e42fd997e7744dbbc9ff02df1bed870b691e1a2aef59c8fe3704377",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 591865,
+          "captured": true,
+          "file": "cells/ba57f0870bffce59.png",
+          "force_state": null,
+          "height": 6156,
+          "locale": "zh",
+          "sha256": "ba57f0870bffce59f736ad77cfb510cf1124c40f5ca370a1a50e88a71aa1a836",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 578589,
+          "captured": true,
+          "file": "cells/16f301f89c9d28b3.png",
+          "force_state": null,
+          "height": 6156,
+          "locale": "zh",
+          "sha256": "16f301f89c9d28b34ad98380bbae9869cc1711435411c4a4cafa21e2303e7570",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "imd_dossier_headline_hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 686711,
+          "captured": true,
+          "file": "cells/bc0c39beec02e8a9--imd_dossier_headline_hover.png",
+          "force_state": "imd_dossier_headline_hover",
+          "height": 3079,
+          "locale": "en",
+          "sha256": "bc0c39beec02e8a9d48771efdfcc7f0860466500b2be4c5cd108a18d4f750a98",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "imd_dossier_headline_focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 686659,
+          "captured": true,
+          "file": "cells/df83eb20747e23ac--imd_dossier_headline_focus.png",
+          "force_state": "imd_dossier_headline_focus",
+          "height": 3079,
+          "locale": "en",
+          "sha256": "df83eb20747e23ac9135c8f4964e85b1d926794e50f8ef7bda629b2b505ebc6d",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "imd_dossier_headline_hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 651219,
+          "captured": true,
+          "file": "cells/23bf26ce72c4d031--imd_dossier_headline_hover.png",
+          "force_state": "imd_dossier_headline_hover",
+          "height": 3079,
+          "locale": "en",
+          "sha256": "23bf26ce72c4d031fd068af5b9de28d2128c78454fc8a2db50637a28f61ed557",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "imd_dossier_headline_focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 651212,
+          "captured": true,
+          "file": "cells/2b3ead1b35744f73--imd_dossier_headline_focus.png",
+          "force_state": "imd_dossier_headline_focus",
+          "height": 3079,
+          "locale": "en",
+          "sha256": "2b3ead1b35744f734591aa328c096dd3e7235e48ea9bdfbe5b622846b783da81",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3079,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 6400,
+            "elements_wider_than_viewport": 9,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 2,
+        "document_height_px": 3079,
+        "duplicate_heading_texts": [
+          "bank of england monetary policy committee"
+        ],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 7,
+          "h3": 18,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 27,
+        "payload_bytes_total": 591117,
+        "raw_slug_hit_count": 1,
+        "raw_slug_hits": [
+          "international_macro_dashboard"
+        ],
+        "request_count": 15,
+        "screenshot_completion": 1.0,
+        "section_count": 9,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 763
+      },
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:64970/live_config.js",
+          "text": "Failed to load resource: net::ERR_CONNECTION_RESET"
+        },
+        {
+          "source_url": "http://127.0.0.1:64970/live.js",
+          "text": "Failed to load resource: net::ERR_SOCKET_NOT_CONNECTED"
+        },
+        {
+          "source_url": "http://127.0.0.1:64970/theme.js",
+          "text": "Failed to load resource: net::ERR_CONNECTION_RESET"
+        }
+      ],
+      "failed_responses": []
+    },
+    {
+      "page_id": "united_kingdom_no_stance",
+      "route": "/united_kingdom--no-stance.html",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 691707,
+          "captured": true,
+          "file": "cells/5665f8001ac7438d.png",
+          "force_state": null,
+          "height": 3071,
+          "locale": "en",
+          "sha256": "5665f8001ac7438df685b1b3354339a5d1790dab320ee249e87cfc1b064a34af",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 650478,
+          "captured": true,
+          "file": "cells/c72542117c4aa152.png",
+          "force_state": null,
+          "height": 3071,
+          "locale": "en",
+          "sha256": "c72542117c4aa1523dc049bd07b99a96cab8d9f84fc9981895fc6251120429ef",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 696312,
+          "captured": true,
+          "file": "cells/e4266599517017a8.png",
+          "force_state": null,
+          "height": 3094,
+          "locale": "zh",
+          "sha256": "e4266599517017a8c3a6196eb633ca382a28805a335983b98aeda90b96c6e6a2",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 664612,
+          "captured": true,
+          "file": "cells/79d66d2c3aebc0d5.png",
+          "force_state": null,
+          "height": 3094,
+          "locale": "zh",
+          "sha256": "79d66d2c3aebc0d564de95f024ee12e581dd923ab7dc2b77d8e65a4b78f1b47a",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 585898,
+          "captured": true,
+          "file": "cells/00b665f496daf7d9.png",
+          "force_state": null,
+          "height": 6294,
+          "locale": "en",
+          "sha256": "00b665f496daf7d9e6c670fe908867241b25313f33eedeac71ddc99705cf5a92",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 566896,
+          "captured": true,
+          "file": "cells/f6c70fa115e72a3e.png",
+          "force_state": null,
+          "height": 6294,
+          "locale": "en",
+          "sha256": "f6c70fa115e72a3ec826b673dd12c370a70e762c2d8e941d696c2b4ede415177",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 580825,
+          "captured": true,
+          "file": "cells/cf7d63a86d667c0e.png",
+          "force_state": null,
+          "height": 6083,
+          "locale": "zh",
+          "sha256": "cf7d63a86d667c0e5b8b076710454a134923045127f60ba91f6829b4285c5d9b",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 571628,
+          "captured": true,
+          "file": "cells/b66acf20f7887fbc.png",
+          "force_state": null,
+          "height": 6083,
+          "locale": "zh",
+          "sha256": "b66acf20f7887fbca4508b5e41588182e03cc1b68acd99c86a207733475c0fbe",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "imd_dossier_headline_hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 674384,
+          "captured": true,
+          "file": "cells/814d6ae99c480c34--imd_dossier_headline_hover.png",
+          "force_state": "imd_dossier_headline_hover",
+          "height": 3071,
+          "locale": "en",
+          "sha256": "814d6ae99c480c3453618bd8a8bbef9e56a0c1b923f2cacba0d1c82f4946c9f6",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "imd_dossier_headline_focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 674289,
+          "captured": true,
+          "file": "cells/40ae97760502af1c--imd_dossier_headline_focus.png",
+          "force_state": "imd_dossier_headline_focus",
+          "height": 3071,
+          "locale": "en",
+          "sha256": "40ae97760502af1c3ce6d89340f8905fcdc65bb3304dd48231a0466b047f3a6b",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "imd_dossier_headline_hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 639270,
+          "captured": true,
+          "file": "cells/bfa9ee4cb2c22b9b--imd_dossier_headline_hover.png",
+          "force_state": "imd_dossier_headline_hover",
+          "height": 3071,
+          "locale": "en",
+          "sha256": "bfa9ee4cb2c22b9b74843926ca84e9313070ee905600d9f870f3a4028e38605d",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "imd_dossier_headline_focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 646863,
+          "captured": true,
+          "file": "cells/ebe2f4eb8a3a809e--imd_dossier_headline_focus.png",
+          "force_state": "imd_dossier_headline_focus",
+          "height": 3071,
+          "locale": "en",
+          "sha256": "ebe2f4eb8a3a809e9b5a6731aca421a4626274a45e6c132fe90e72cbf1bfa5ed",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3071,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 6294,
+            "elements_wider_than_viewport": 9,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 3071,
+        "duplicate_heading_texts": [
+          "bank of england monetary policy committee"
+        ],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 7,
+          "h3": 18,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 27,
+        "payload_bytes_total": 731962,
+        "raw_slug_hit_count": 1,
+        "raw_slug_hits": [
+          "international_macro_dashboard"
+        ],
+        "request_count": 15,
+        "screenshot_completion": 1.0,
+        "section_count": 9,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 743
+      },
+      "console_errors": [],
+      "failed_responses": []
+    },
+    {
+      "page_id": "japan",
+      "route": "/japan.html",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 681743,
+          "captured": true,
+          "file": "cells/8dfb23e1b67cb30e.png",
+          "force_state": null,
+          "height": 3050,
+          "locale": "en",
+          "sha256": "8dfb23e1b67cb30e76911463072f6b0620638cec0f855917104eb341c25330ea",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 640270,
+          "captured": true,
+          "file": "cells/b1a185c6248dd4cc.png",
+          "force_state": null,
+          "height": 3050,
+          "locale": "en",
+          "sha256": "b1a185c6248dd4cca437081b6d76d62fb01c27531e4e98e1c86ded2ac7f04ad9",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 687496,
+          "captured": true,
+          "file": "cells/807c7c4d4926e64f.png",
+          "force_state": null,
+          "height": 3073,
+          "locale": "zh",
+          "sha256": "807c7c4d4926e64f3e47b3a4e495c7f4a84a743c5253704570c1c2bc8b4e66c4",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 654700,
+          "captured": true,
+          "file": "cells/00fab80bcd052242.png",
+          "force_state": null,
+          "height": 3073,
+          "locale": "zh",
+          "sha256": "00fab80bcd052242726331bd3bad10f4b349b7859c2b859fc7f89b53be06268d",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 572468,
+          "captured": true,
+          "file": "cells/b28fa07589233a8b.png",
+          "force_state": null,
+          "height": 6246,
+          "locale": "en",
+          "sha256": "b28fa07589233a8b541f8c4801c31f8c4383d3fd4a836b96c8c8ff054148413b",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 552890,
+          "captured": true,
+          "file": "cells/8b75419bb243882c.png",
+          "force_state": null,
+          "height": 6246,
+          "locale": "en",
+          "sha256": "8b75419bb243882cf8313871d43c6ad705a366d30bd9423c0985640c7b550ef3",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 565644,
+          "captured": true,
+          "file": "cells/c5ecc401744e5a98.png",
+          "force_state": null,
+          "height": 6006,
+          "locale": "zh",
+          "sha256": "c5ecc401744e5a98912ee48668ce9f512291713e86b6f5b3d417f2fa79359cbb",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 553203,
+          "captured": true,
+          "file": "cells/4a866e0b3a5d93db.png",
+          "force_state": null,
+          "height": 6006,
+          "locale": "zh",
+          "sha256": "4a866e0b3a5d93dbea0b2493f4785fdd5ae6acfe33d9099599e0f22d1e2fa807",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3050,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 6246,
+            "elements_wider_than_viewport": 11,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 3050,
+        "duplicate_heading_texts": [
+          "bank of japan monetary policy meeting"
+        ],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 7,
+          "h3": 18,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 27,
+        "payload_bytes_total": 730826,
+        "raw_slug_hit_count": 1,
+        "raw_slug_hits": [
+          "international_macro_dashboard"
+        ],
+        "request_count": 15,
+        "screenshot_completion": 1.0,
+        "section_count": 9,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 758
+      },
+      "console_errors": [],
+      "failed_responses": []
+    },
+    {
+      "page_id": "euro_area_outage",
+      "route": "/euro_area--outage.html",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 688874,
+          "captured": true,
+          "file": "cells/944e7d8180e5aef1.png",
+          "force_state": null,
+          "height": 3156,
+          "locale": "en",
+          "sha256": "944e7d8180e5aef1f869fd20b547208ce648f2a19f9b7d00b9f6b8bfd7431eec",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 647860,
+          "captured": true,
+          "file": "cells/1f0fc513eca73d87.png",
+          "force_state": null,
+          "height": 3156,
+          "locale": "en",
+          "sha256": "1f0fc513eca73d87d0b7019f109828622d89863da67bd084b465f47a52036f27",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 692635,
+          "captured": true,
+          "file": "cells/a135f90c97709785.png",
+          "force_state": null,
+          "height": 3126,
+          "locale": "zh",
+          "sha256": "a135f90c97709785d52f341cbb5b45b800a08d702f72cf70a73ee96f961f18b2",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 661762,
+          "captured": true,
+          "file": "cells/53faab0e974e3669.png",
+          "force_state": null,
+          "height": 3126,
+          "locale": "zh",
+          "sha256": "53faab0e974e36696d0fde8f2403699d18be112336d22469350d13027b3c51fc",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 584285,
+          "captured": true,
+          "file": "cells/19a45bce32ca5920.png",
+          "force_state": null,
+          "height": 6173,
+          "locale": "en",
+          "sha256": "19a45bce32ca5920e27a3297ffb167d046a6e4ccd06b76243d63182c57ed9fd0",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 567178,
+          "captured": true,
+          "file": "cells/c886e71351d7a862.png",
+          "force_state": null,
+          "height": 6173,
+          "locale": "en",
+          "sha256": "c886e71351d7a862b47b22d611e28e207157be083a11125ff4160836ebc437f9",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 573728,
+          "captured": true,
+          "file": "cells/fc8651766dd1733d.png",
+          "force_state": null,
+          "height": 5879,
+          "locale": "zh",
+          "sha256": "fc8651766dd1733dfba2bb5d9b44781c1fe053f55e9f1b9a1236d257adc47b87",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 562584,
+          "captured": true,
+          "file": "cells/bf0806cab8d71b2d.png",
+          "force_state": null,
+          "height": 5879,
+          "locale": "zh",
+          "sha256": "bf0806cab8d71b2d4268562194938df0b0bb7db3bf76833d4b2ae2fbed13f158",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3156,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 6173,
+            "elements_wider_than_viewport": 9,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 3156,
+        "duplicate_heading_texts": [
+          "european central bank governing council"
+        ],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 8,
+          "h3": 17,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 27,
+        "payload_bytes_total": 731312,
+        "raw_slug_hit_count": 1,
+        "raw_slug_hits": [
+          "international_macro_dashboard"
+        ],
+        "request_count": 15,
+        "screenshot_completion": 1.0,
+        "section_count": 10,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 749
+      },
+      "console_errors": [],
+      "failed_responses": []
+    }
+  ],
+  "excluded": [
+    {
+      "page_id": "japan",
+      "route": "/japan.html",
+      "force_state": "imd_dossier_headline_hover",
+      "theme": "dark",
+      "viewport": "desktop",
+      "locale": "en",
+      "expected_miss": true,
+      "reason": "no .imd-dossier-headline on this route"
+    },
+    {
+      "page_id": "japan",
+      "route": "/japan.html",
+      "force_state": "imd_dossier_headline_hover",
+      "theme": "light",
+      "viewport": "desktop",
+      "locale": "en",
+      "expected_miss": true,
+      "reason": "no .imd-dossier-headline on this route"
+    },
+    {
+      "page_id": "japan",
+      "route": "/japan.html",
+      "force_state": "imd_dossier_headline_focus",
+      "theme": "dark",
+      "viewport": "desktop",
+      "locale": "en",
+      "expected_miss": true,
+      "reason": "no .imd-dossier-headline on this route"
+    },
+    {
+      "page_id": "japan",
+      "route": "/japan.html",
+      "force_state": "imd_dossier_headline_focus",
+      "theme": "light",
+      "viewport": "desktop",
+      "locale": "en",
+      "expected_miss": true,
+      "reason": "no .imd-dossier-headline on this route"
+    },
+    {
+      "page_id": "euro_area_outage",
+      "route": "/euro_area--outage.html",
+      "force_state": "imd_dossier_headline_hover",
+      "theme": "dark",
+      "viewport": "desktop",
+      "locale": "en",
+      "expected_miss": true,
+      "reason": "no .imd-dossier-headline on this route"
+    },
+    {
+      "page_id": "euro_area_outage",
+      "route": "/euro_area--outage.html",
+      "force_state": "imd_dossier_headline_hover",
+      "theme": "light",
+      "viewport": "desktop",
+      "locale": "en",
+      "expected_miss": true,
+      "reason": "no .imd-dossier-headline on this route"
+    },
+    {
+      "page_id": "euro_area_outage",
+      "route": "/euro_area--outage.html",
+      "force_state": "imd_dossier_headline_focus",
+      "theme": "dark",
+      "viewport": "desktop",
+      "locale": "en",
+      "expected_miss": true,
+      "reason": "no .imd-dossier-headline on this route"
+    },
+    {
+      "page_id": "euro_area_outage",
+      "route": "/euro_area--outage.html",
+      "force_state": "imd_dossier_headline_focus",
+      "theme": "light",
+      "viewport": "desktop",
+      "locale": "en",
+      "expected_miss": true,
+      "reason": "no .imd-dossier-headline on this route"
+    }
+  ],
+  "axes": {
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "name": "imd_dossier_headline_hover",
+        "kind": "hover",
+        "selector": "#official-statements .imd-dossier-headline",
+        "spec": "hover(#official-statements .imd-dossier-headline)"
+      },
+      {
+        "name": "imd_dossier_headline_focus",
+        "kind": "focus",
+        "selector": "#official-statements .imd-dossier-headline",
+        "spec": "focus(#official-statements .imd-dossier-headline)"
+      }
+    ]
+  },
+  "totals": {
+    "pages": 5,
+    "states_attempted": 52,
+    "states_captured": 52,
+    "expected_miss_excluded": 8
+  },
+  "tool": {
+    "module_ref": "mockups/evidence/mo-paid-006-dossier-page/capture.py",
+    "version": "4",
+    "module_sha256": "d26164d4d380bfaf43bb7e3856d59b9b6f0e93b736937ec056cfc7b471bd59f5"
+  },
+  "capture_tool_module_sha256": "d26164d4d380bfaf43bb7e3856d59b9b6f0e93b736937ec056cfc7b471bd59f5",
+  "source": "scratch site materialized from origin/main site/ with euro_area, united_kingdom, japan and two synthetic routes re-rendered from THIS branch's templates/international_macro.html.j2 against fixture dossiers; served from 127.0.0.1",
+  "selection": {
+    "method": "fixture-routes",
+    "page_ids": [
+      "euro_area",
+      "united_kingdom",
+      "united_kingdom_no_stance",
+      "japan",
+      "euro_area_outage"
+    ],
+    "note": "5 fixture pages; 3 carry a headline (hover/focus captured desktop/en x dark/light), 2 render the no-coverage / outage states with no headline (force states excluded)"
+  }
+}

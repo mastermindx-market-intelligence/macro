@@ -721,6 +721,104 @@ def test_desk_latest_json_serializable():
     assert serialized
 
 
+# -------------------------------- W4 consumer sweep (engine read heal) --------
+
+def _engine_signed_tx(direction: str) -> dict:
+    """Live engine output: SPY inverse of USD (headwind_for), GC=F same-sign (tailwind_for)."""
+    from engine import forex_transmission as FT
+    from lib import config
+    cfg = config.load()["forex"]["transmission"]
+    idx = _idx(400)
+    rng = np.random.default_rng(7)
+    uret = pd.Series(rng.normal(0, 0.004, 400), index=idx)
+    uret.iloc[-63:] = uret.iloc[-63:] + (0.003 if direction == "strengthening" else -0.003)
+    broad = np.exp(uret.cumsum()) * 100
+    spy = np.exp((-uret).cumsum()) * 100
+    gold = np.exp(uret.cumsum()) * 100
+    out = FT.transmission(broad, {"SPY": spy, "GC=F": gold}, None, None, cfg)
+    assert out and out["usd_dir"] == direction, out
+    return out
+
+
+def test_transmission_latest_does_not_swap_lists_or_persist_read():
+    """W4 consumer: _transmission_latest is a pass-through of the
+    strengthening-signed lists. It must not invert them on usd_dir=weakening,
+    and it must drop read/read_zh (those are engine-only copy)."""
+    from scripts.build_forex import _transmission_latest
+    import inspect
+    from scripts.build_forex import _stance
+
+    soft = _engine_signed_tx("weakening")
+    assert "US equities" in soft["headwind_for"]
+    assert "Gold" in soft["tailwind_for"]
+    compact = _transmission_latest(soft)
+    assert compact["usd_dir"] == "weakening"
+    assert compact["headwind_for"] == soft["headwind_for"]
+    assert compact["tailwind_for"] == soft["tailwind_for"]
+    assert "read" not in compact and "read_zh" not in compact
+    # Builder stance consumes lists, never the engine read copy — so healing
+    # read/read_zh cannot double-invert _stance (PR #7042 owns that function).
+    assert "read" not in inspect.signature(_stance).parameters
+    assert "read_zh" not in inspect.signature(_stance).parameters
+
+
+def test_consumer_chain_does_not_compensate_for_inverted_read(tmp_path):
+    """W4 consumer sweep: compose_dollar_channel, forex_link.asset_corr, and
+    brief_context._block_fx_dollar all consume the strengthening-signed lists
+    (or corr), never swap them when usd_dir is weakening, and never read the
+    engine's `read`/`read_zh` copy. A compensating double-inversion would
+    put Gold in headwind_for after the engine heal."""
+    from scripts.build_forex import _transmission_latest
+    from engine.transmission_context import compose_dollar_channel
+    from engine.neuralweb.brief_context import _block_fx_dollar
+    from lib import forex_link
+
+    soft = _engine_signed_tx("weakening")
+    compact = _transmission_latest(soft)
+    envelope = {
+        "asof": "2026-09-10",
+        "dollar_desk": {"lean": "mixed backdrop", "real_rate_regime": "Neutral real yields"},
+        "transmission": compact,
+        "regime_radar": {"dominant": None, "active": []},
+    }
+    (tmp_path / "forex").mkdir()
+    (tmp_path / "forex" / "latest.json").write_text(json.dumps(envelope))
+
+    dx = compose_dollar_channel(root=tmp_path)
+    assert dx is not None
+    hw_en = [e["en"] for e in dx["headwind_for"]]
+    tw_en = [e["en"] for e in dx["tailwind_for"]]
+    assert "US equities" in hw_en and "Gold" not in hw_en, dx["headwind_for"]
+    assert "Gold" in tw_en and "US equities" not in tw_en, dx["tailwind_for"]
+    assert dx["usd_dir"] == "weakening"
+    gold_zh = next(e["zh"] for e in dx["tailwind_for"] if e["en"] == "Gold")
+    assert gold_zh == "黄金"
+
+    # lib.forex_link: corr sign is the strengthening-dollar effect, not swapped.
+    spy = forex_link.asset_corr("SPY", compact)
+    gold = forex_link.asset_corr("GC=F", compact)
+    assert spy is not None and gold is not None
+    assert spy["usd_dir"] == "weakening"
+    assert spy["corr"] < 0, spy  # still a headwind vs a rising dollar
+    assert gold["corr"] > 0, gold
+
+    ws = {"fx_dollar": {
+        "asof": "2026-09-10",
+        "transmission": {
+            "usd_dir": compact["usd_dir"],
+            "headwind_for": compact["headwind_for"],
+            "tailwind_for": compact["tailwind_for"],
+        },
+        "dollar_desk": {"lean": "mixed backdrop"},
+        "regime_radar": {},
+    }}
+    block = _block_fx_dollar(ws)
+    assert block is not None
+    assert "US equities" in block["headwind_for"]
+    assert "Gold" in block["tailwind_for"]
+    assert "read" not in block and "read_zh" not in block
+
+
 if __name__ == "__main__":
     fns = [
         test_desk_latest_includes_smile_decomp,
@@ -740,6 +838,8 @@ if __name__ == "__main__":
         test_latest_schema_new_keys,
         test_pairs_enrichment_fields,
         test_desk_latest_json_serializable,
+        test_transmission_latest_does_not_swap_lists_or_persist_read,
+        test_consumer_chain_does_not_compensate_for_inverted_read,
         test_state_changes_empty_history_returns_nulls,
         test_state_changes_offlan_no_write,
         test_state_changes_seeds_smile_from_dollar_frame,

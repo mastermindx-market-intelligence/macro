@@ -237,9 +237,19 @@ import lib.config as _libconfig  # noqa: E402
 from engine import thetadata_store as _tds  # noqa: E402
 
 
-def _mk_store(p, tiers=("greeks", "oi")):
+def _mk_store(p, tiers=("greeks", "oi"), roots=("SPX",)):
+    """Build a store in the REAL layout, ``{store}/{tier}/{ROOT}/{YEAR}.parquet``.
+
+    AD-1T2b: this helper used to create bare tier DIRECTORIES only. The resolver
+    now refuses a store whose tiers hold zero roots (a drained store is not a
+    store), so building one real root keeps the resolution-precedence assertions
+    below testing precedence rather than the old hole.
+    """
     for t in tiers:
-        (p / t).mkdir(parents=True, exist_ok=True)
+        for r in roots:
+            d = p / t / r
+            d.mkdir(parents=True, exist_ok=True)
+            (d / "2026.parquet").write_bytes(b"")
     return p
 
 

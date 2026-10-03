@@ -17,7 +17,7 @@ the Terminal UI with a 30s TTL cache.
 | `live_flow/meta.json` | `live_flow.meta/v2` | Source age, poll floor, observed cycle spacing, fetch/build clocks, root coverage |
 | `live_flow/tide_current.json` | `live_flow.tide/v1` | Market tide (NCP/NPP minutes + sectors) |
 | `live_flow/dte_tide_current.json` | `live_flow.dte_tide/v1` | DTE-bucket tide |
-| `live_flow/tickers/{ROOT}.json` | `live_flow.ticker/v1` | Per-root drill (top ~40 roots) |
+| `live_flow/tickers/{ROOT}.json` | `live_flow.ticker/v1` | Per-root drill for every current-cycle root with complete source success, merged engine state, and real accumulated minute/strike data |
 | `live_flow/tide/{DATE}.json` | `live_flow.tide/v1` | Dated archive of tide_current (same bytes) |
 | `live_flow/dte_tide/{DATE}.json` | `live_flow.dte_tide/v1` | Dated archive of dte_tide_current |
 | `live_flow/tide/dates.json` | `live_flow.archive_dates/v1` | Sessions index for the tide archive |
@@ -123,6 +123,15 @@ after the session digest. It is the sole advancer of these committed artifacts:
   session offset from the episode session; the exit is the declared target-session
   close under `nyse_session_window_recurring_schedule/v1` (including modeled
   recurring early closes), not a fabricated bar open;
+  This remains the one canonical logical ledger and the base file is its immutable
+  historical byte prefix. When that base has reached the physical Git blob budget,
+  the same sole writer appends later canonical row bytes to contiguous
+  `data/options_signal_episode/outcomes_session_parts/part-NNNNNN.jsonl` files,
+  each capped at 48 MiB. Readers reconstruct `base + part-000001 + ...` byte-for-byte
+  under the original logical path label, so global row ordinals, prefix SHA-256
+  receipts, semantic `(episode_id,horizon)` identity, and campaign checkpoints do
+  not change. Gaps, unexpected entries, symlinks, torn parts, or an oversized new
+  row fail closed; this is physical rollover, not a second outcome store;
 - `data/options_signal_episode/checkpoint.json` — per-session record count and
   canonical-record append-prefix SHA-256 (not the raw-byte publication digest).
 
@@ -907,6 +916,46 @@ after the same reviewed quarantine procedure.
 Automatic retention already prunes old, proven day states. There is no generic
 manual state-wipe command, and neither bare `--once` nor historical `--date` is a
 valid recovery or smoke test.
+
+### Reviewed prior-session WAL quarantine
+
+The only reviewed prior-session incident eligible for this receipt is the
+Chairman Options Alpha parent599 case recorded here. Every protected value is
+hard-coded into the immutable incident descriptor; the operator CLI accepts
+only the session string and the review reference — operator-supplied digests
+of any other hex string are rejected even if syntactically well-formed:
+
+| Protected fact | Required exact value |
+|---|---|
+| Deployed source SHA | `bffd9931b2e37b5011fe50e0633f62c356879dd8` |
+| Day state SHA-256 | `d9a25966a8d50090f8619d878e4133860cc54682b53764126bf7299e1ca00b06` |
+| Session / schema / count | `2026-09-28` / `5` / `170` |
+| Ordered event-ID SHA-256 | `c52ee12c27b31775e2acef188e434134202e3f745ebb2d55c68a0e12749df218` |
+| Observed clock range | `2026-09-28T13:37:09.179619Z..2026-09-28T13:38:55.752263Z` |
+| Decision clock range | `2026-09-30T23:51:45.034847Z..2026-09-30T23:53:18.537416Z` |
+
+On the protected source host, an operator who has independently reviewed this
+table may create the receipt with
+`--recover-reviewed-prior-session-wal 2026-09-28 <review-reference>`. The
+command validates the candidate receipt fully BEFORE publication, then writes
+`data/live_flow_state/quarantine/prior_session_wal_quarantine_2026-09-28.json`
+atomically, fsyncs the directory, and reads the published file back to confirm
+the on-disk bytes match what was written. The validation enforces the exact raw
+state hash, session, schema, count, ordered IDs, clock bounds, per-event
+classification (event ≤ observed ≤ decision; observed ET date equals the
+review session; decision ET date leaves the review session), canonical stage
+absence, and absence of availability/source-clock facts before returning. It
+never changes the state or event stage, never drains the quarantined IDs, and
+never grants learning, candidate, publication, or training authority. If any
+check fails, no receipt is written and the raw state is byte-untouched.
+
+A receipt already present is preserved: a second CLI invocation re-validates it
+without touching the on-disk bytes. Any inconsistency (existing-invalid receipt,
+missing day_state, present canonical stage, wrong bytes, malformed JSON) fails
+closed. The receipt is not an automatic rule for future prior-session WALs;
+each future case requires its own reviewed, source-identity-bound receipt.
+`--date` is read-only in practice and is rejected before any state, stage,
+output, retention, or publication write.
 
 ## Day-state size guard
 

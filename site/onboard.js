@@ -403,7 +403,7 @@
       { l: ["Advanced indicator modules", "高级指标模块"], v: [0, "some", 1] },
       { l: ["Intraday options flow", "日内期权流"],        v: [0, 1, 1] }
     ] },
-    { g: ["MASTERMIND AI", "MASTERMIND AI"], rows: [
+    { g: ["MASTERMIND AI", "操盘大脑 AI"], rows: [
       { l: ["Flash AI", "Flash AI"], v: [["5 / wk", "5 次/周"], ["300 / mo", "300 次/月"], ["Unlimited", "无限量"]] },
       { l: ["Pro AI", "Pro AI"],     v: [0, ["10 / mo", "10 次/月"], ["150 / mo", "150 次/月"]] },
       { l: ["Drives Terminal charts", "操控 Terminal 图表"], v: [0, 1, 1] }
@@ -422,6 +422,22 @@
   // not (it is light-only), so its html[data-theme] — which the Preferences step
   // writes — must never darken the sheet there.
   function hostThemed() { try { return !!document.querySelector('link[href*="theme.css"]'); } catch (e) { return false; } }
+  // The public landing is intentionally one light art direction. Signed-in auth
+  // still lazy-loads theme.js below, but that shared broker also applies the
+  // dashboard's saved theme + soft-contrast class. Keep those preferences stored
+  // for the product while refusing to let them repaint this fixed-light surface.
+  function lightOnlyHost() {
+    try { return !hostThemed() && !!document.querySelector('link[href*="landing.css"]'); }
+    catch (e) { return false; }
+  }
+  function restoreLightOnlyHostTheme() {
+    if (!lightOnlyHost()) return;
+    var root = document.documentElement;
+    root.classList.remove("soft-contrast");
+    if (root.getAttribute("data-theme") !== "light") root.setAttribute("data-theme", "light");
+  }
+  document.addEventListener("themechange", restoreLightOnlyHostTheme);
+  restoreLightOnlyHostTheme();
   // What the page ACTUALLY looks like, not what it says it is: html[data-theme]
   // is the fast path, but a dark-by-default page carries no attribute until
   // theme.js boots (and the render lane can rename stylesheets out from under a
@@ -503,7 +519,10 @@
     _themeLoad = new Promise(function (resolve) {
       var s = document.createElement("script");
       s.src = "theme.js"; s.defer = true;
-      s.onload = function () { resolve(window.MDXAuth || null); };
+      s.onload = function () {
+        restoreLightOnlyHostTheme();
+        resolve(window.MDXAuth || null);
+      };
       s.onerror = function () { resolve(null); };
       (document.head || document.documentElement).appendChild(s);
     });
@@ -1556,6 +1575,8 @@
         document.documentElement.setAttribute("data-theme", pref);
       }
     } catch (e) {}
+    // The preference belongs to the dashboard; the landing itself stays light.
+    restoreLightOnlyHostTheme();
   }
   function onPrefsContinue() {
     persistPrefs();

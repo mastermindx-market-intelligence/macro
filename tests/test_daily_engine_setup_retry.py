@@ -55,6 +55,65 @@ def _engine_job(**overrides: object) -> dict:
     return row
 
 
+def _checkout_loss_engine(**overrides: object) -> dict:
+    row = {
+        "id": JOB_ID,
+        "name": "engine",
+        "status": "completed",
+        "conclusion": "failure",
+        "labels": ["self-hosted", "macstudio"],
+        "runner_name": "mac-builder-light",
+        "started_at": "2026-09-15T04:38:10Z",
+        "completed_at": "2026-09-15T04:38:55Z",
+        "steps": [
+            {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1,
+            },
+            {
+                "name": "timings — job start mark (W2)",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2,
+            },
+            {
+                "name": "Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "cancelled",
+                "number": 3,
+            },
+            {
+                "name": "Run git pull origin main",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 4,
+            },
+            {
+                "name": "regional + desk builders",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 45,
+            },
+            {
+                "name": "Post Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 304,
+            },
+            {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 305,
+            },
+        ],
+    }
+    row.update(overrides)
+    return row
+
+
 def _success_job(name: str, *, started_at: str, completed_at: str) -> dict:
     return {
         "id": abs(hash(name)) % 10_000 + 1,
@@ -110,7 +169,7 @@ def test_exact_setup_only_engine_cancel_is_eligible() -> None:
         ({"steps": _engine_job()["steps"] + [{"name": "Run actions/checkout@v4"}]}, "progressed"),
         ({"completed_at": "2026-08-09T06:40:00Z"}, "progressed"),
         ({"labels": ["ubuntu-latest"]}, "progressed"),
-        ({"conclusion": "failure"}, "no cancelled"),
+        ({"conclusion": "failure"}, "no bounded pre-code"),
     ],
 )
 def test_non_setup_engine_failures_are_not_retried(mutation: dict, reason: str) -> None:
@@ -205,6 +264,104 @@ def test_known_dependent_failure_does_not_block_setup_race_recovery() -> None:
         },
     ]
     assert _decide(_run(), jobs).eligible is True
+
+
+def test_checkout_runner_loss_before_repo_code_is_eligible() -> None:
+    jobs = [
+        _checkout_loss_engine(),
+        _success_job(
+            "collect",
+            started_at="2026-09-15T00:50:12Z",
+            completed_at="2026-09-15T03:58:42Z",
+        ),
+        {
+            **_success_job(
+                "government_revenue_projection / refresh",
+                started_at="2026-09-15T03:58:44Z",
+                completed_at="2026-09-15T04:02:04Z",
+            ),
+            "conclusion": "failure",
+        },
+        {
+            "id": 777,
+            "name": "collect_tail",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "started_at": "2026-09-15T04:33:18Z",
+            "completed_at": "2026-09-15T07:54:09Z",
+            "steps": [],
+        },
+        _success_job(
+            "factor_panel",
+            started_at="2026-09-15T04:38:59Z",
+            completed_at="2026-09-15T04:47:07Z",
+        ),
+    ]
+    decision = _decide(_run(conclusion="failure"), jobs)
+    assert decision.eligible is True
+    assert decision.job_id == JOB_ID
+    assert "checkout" in decision.reason
+
+
+def test_checkout_loss_rejects_operator_cancelled_run() -> None:
+    jobs = [
+        _checkout_loss_engine(),
+        _success_job(
+            "collect",
+            started_at="2026-09-15T00:50:12Z",
+            completed_at="2026-09-15T03:58:42Z",
+        ),
+        _success_job(
+            "factor_panel",
+            started_at="2026-09-15T04:38:59Z",
+            completed_at="2026-09-15T04:47:07Z",
+        ),
+    ]
+    decision = _decide(_run(conclusion="cancelled"), jobs)
+    assert decision.eligible is False
+    assert "runner-loss failure shape" in decision.reason
+
+
+def test_checkout_loss_rejects_any_repository_step_that_ran_after_checkout() -> None:
+    engine = _checkout_loss_engine()
+    engine["steps"][3] = {
+        "name": "Run git pull origin main",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+    }
+    jobs = [
+        engine,
+        _success_job(
+            "collect",
+            started_at="2026-09-15T00:50:12Z",
+            completed_at="2026-09-15T03:58:42Z",
+        ),
+        _success_job(
+            "factor_panel",
+            started_at="2026-09-15T04:38:59Z",
+            completed_at="2026-09-15T04:47:07Z",
+        ),
+    ]
+    decision = _decide(_run(conclusion="failure"), jobs)
+    assert decision.eligible is False
+    assert "bounded pre-code" in decision.reason
+
+
+def test_checkout_failure_is_not_mistaken_for_runner_loss() -> None:
+    engine = _checkout_loss_engine()
+    engine["steps"][2]["conclusion"] = "failure"
+    jobs = [
+        engine,
+        _success_job(
+            "collect",
+            started_at="2026-09-15T00:50:12Z",
+            completed_at="2026-09-15T03:58:42Z",
+        ),
+    ]
+    decision = _decide(_run(conclusion="failure"), jobs)
+    assert decision.eligible is False
+    assert "bounded pre-code" in decision.reason or "no bounded" in decision.reason
 
 
 def test_workflow_run_envelope_is_bound_to_repository_and_default_branch() -> None:

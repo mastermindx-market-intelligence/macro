@@ -112,6 +112,46 @@ def test_biocatalyst_shell_assets_are_public_but_payload_api_stays_paid():
     assert "enforce_site_full" in api_source
 
 
+def test_ontology_trace_assets_are_public_but_the_snapshot_api_stays_paid():
+    """F04-X1: the shell's CSS/JS are reachable anonymously; every current value is not.
+
+    The page is a public-safe shell whose only endpoint reference is the
+    authenticated snapshot API, so its presentation assets must be anonymously
+    reachable or the shell renders unstyled and inert for logged-out visitors.
+    The asset route is default-deny and compared byte-for-byte against this
+    policy, so an omission here is invisible until someone opens the page.
+    """
+    assets = {"/ontology.css", "/ontology.js"}
+    assert assets <= set(POLICY["public"]["exact"])
+    assert assets.isdisjoint(POLICY["free_registered"]["exact"])
+    assert assets <= _caddy_public_exclusions()
+
+    error_matcher = re.search(
+        r"@reg_asset_err\s*\{\s*not path ([^\n]+)", CADDY, flags=re.S
+    )
+    assert error_matcher, "Caddy matcher @reg_asset_err missing"
+    assert assets <= set(shlex.split(error_matcher.group(1)))
+
+    for matcher in ("public_static", "public_versioned"):
+        block = re.search(rf"@{matcher}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, f"Caddy matcher @{matcher} missing"
+        paths = {
+            token
+            for path_line in re.findall(r"^\s*path\s+([^\n]+)", block.group(1), flags=re.M)
+            for token in shlex.split(path_line)
+        }
+        assert assets <= paths
+
+    # The snapshot itself is never public: no payload path is whitelisted, and
+    # the router resolves the shared authority rather than declaring a second one.
+    public_exact = set(POLICY["public"]["exact"])
+    assert not any(path.startswith("/api/ontology") for path in public_exact)
+    api_source = (ROOT / "app" / "ontology_explorer.py").read_text()
+    assert "from app.main import require_user" in api_source
+    assert "enforce_site_full" in api_source
+    assert "always=True" in api_source
+
+
 def test_retired_movers_route_redirects_to_the_consolidated_hub_section():
     redirect_lines = [
         line.strip()
@@ -666,3 +706,37 @@ def test_no_broad_assets_or_signal_data_prefix_was_opened_for_ihmp():
     assert "/assets/" not in prefixes
     for p in prefixes:
         assert not p.startswith("/live/"), "a live/signal-data prefix must never be public"
+
+
+def test_macro_suite_shell_assets_are_public_but_the_snapshot_payload_is_not():
+    """The three presentation assets, and nothing that carries a reading.
+
+    Production served the suite's HTML at 200 while these three answered 401,
+    so every anonymous reader got an unstyled, themeless skeleton: the pages
+    were public and their presentation was not. These are promoted as one unit
+    for that reason -- and only these. The snapshot JSON under /macrodata/ is
+    the actual product and stays gated; a prefix or wildcard promoted here
+    would take it public with them.
+    """
+    shell_paths = {"/macro_suite.css", "/macro_suite_boot.js", "/macro_suite.js"}
+    assert shell_paths <= set(POLICY["public"]["exact"])
+    assert shell_paths.isdisjoint(POLICY["free_registered"]["exact"])
+    assert shell_paths <= _caddy_public_exclusions()
+
+    # The error path excludes them too, or an anonymous 401 page renders bare.
+    error_matcher = re.search(r"@reg_asset_err\s*\{\s*not path ([^\n]+)", CADDY, flags=re.S)
+    assert error_matcher, "@reg_asset_err matcher missing"
+    assert shell_paths <= set(shlex.split(error_matcher.group(1)))
+
+    # Cacheable as public, both plain and ?v= stamped, exactly like /markets.css.
+    for block in ("@public_static", "@public_versioned"):
+        matcher = re.search(rf"{block}\s*\{{\s*path ([^\n]+)", CADDY, flags=re.S)
+        assert matcher, f"{block} matcher missing"
+        assert shell_paths <= set(shlex.split(matcher.group(1))), block
+
+    # No widening: the reading itself is not public by any route.
+    public_prefixes = set(POLICY["public"]["prefixes"])
+    assert not any(p.startswith("/macrodata") for p in public_prefixes)
+    assert not any(p.startswith("/macrodata") for p in POLICY["public"]["exact"])
+    assert not any(p.startswith("/macro_suite") and p.endswith("*")
+                   for p in _caddy_public_exclusions()), "no wildcard may ride along"

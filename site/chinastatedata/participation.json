@@ -1,37 +1,36 @@
 {
-  "date": "2026-08-26",
+  "date": "2026-09-29",
   "authority": {
     "tier": "context_only"
   },
-  "turnover_z20": -1.6883072688288971,
-  "turnover_z60": -1.7461888879159722,
-  "margin_balance": 26531.74511919,
-  "margin_chg_5d": -0.5409372119231981,
-  "margin_to_mcap": 2.639275,
-  "southbound_net": 452.670000000002,
-  "southbound_z": -0.13424392779732972,
-  "etf_share_chg": null,
+  "turnover_z20": -2.245378950596541,
+  "turnover_z60": -1.9924369894745029,
+  "margin_balance": 26089.90447105,
+  "margin_chg_5d": -1.6516248782357246,
+  "margin_to_mcap": 2.66815,
+  "southbound_net": 14.629999999999,
+  "southbound_z": -0.27899579788706375,
+  "etf_share_chg": 0.0,
   "zt_breadth": null,
   "failed_seal_ratio": null,
-  "qvix": 19.58,
-  "qvix_z": -0.8177125721809732,
-  "broker_rs": 0.012553638412437155,
+  "qvix": 17.2,
+  "qvix_z": -1.0345908498327456,
+  "broker_rs": 0.0700000529213023,
   "regime": "dormant",
   "who_controls": "mixed",
   "risk": "low",
   "evidence": [
-    "turnover_z20=-1.69",
-    "fin_pct_float=2.64%",
-    "broker_rs=0.0126 (positive, sector leading)",
-    "qvix_z=-0.82 (inverted-semantics: high=stress)"
+    "turnover_z20=-2.25",
+    "fin_pct_float=2.67%",
+    "broker_rs=0.0700 (positive, sector leading)",
+    "qvix_z=-1.03 (inverted-semantics: high=stress)"
   ],
   "contradictions": [],
   "data_gaps": [
-    "zt_breadth:null on 2026-08-26",
-    "etf_share_chg:null on 2026-08-26",
+    "zt_breadth:null on 2026-09-29",
     "northbound:DEAD post-2024-08-16 SLF-050",
-    "snapshot_staleness:published row 2026-08-26 is 6d behind tape tail 2026-09-01; tail row missing core legs (turnover_z20, margin_chg_5d) — union-index freshness lag"
+    "snapshot_staleness:published row 2026-09-29 is 1d behind tape tail 2026-09-30; tail row missing core legs (turnover_z20, margin_chg_5d) — union-index freshness lag"
   ],
   "backfill": false,
-  "snapshot_note": "core legs null on 2026-09-01; publishing last fully-populated row (2026-08-26)"
+  "snapshot_note": "core legs null on 2026-09-30; publishing last fully-populated row (2026-09-29)"
 }

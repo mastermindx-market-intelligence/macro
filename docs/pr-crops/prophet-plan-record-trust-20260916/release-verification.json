@@ -1,0 +1,416 @@
+{
+  "base": "4f37209719d2ca5caf9fd3a37aca29fa363f351c",
+  "browser_refresh": {
+    "browser_version": "151.0.7922.34",
+    "byte_identical_repeat": true,
+    "gated_wall_receipt_sha256": "34aba0ca5dd088398ed63069f2216ce67717404d419ba99dad47b44853db59ed",
+    "gated_wall_visual_cases_passed": 8,
+    "navigation_cases_passed": 2,
+    "pager_cases_passed": 1,
+    "real_dom": {
+      "action_badges": 0,
+      "cards": 400,
+      "default_population": 266,
+      "grid_children": 400,
+      "hidden_resolved": 134,
+      "pagination": "Showing 15 of 266",
+      "record_markers": 400,
+      "resolved_records": 134,
+      "unique_ids": 400,
+      "visible_unresolved": 15
+    },
+    "receipt_sha256": "90c36417ed1d4922418f099645d592018eef464ce662b861aeda787b06502e85",
+    "runs": 2,
+    "scope": "exact semantic component/real-input and gated-wall browser proof; not authenticated production proof",
+    "screenshots_changed": false,
+    "visual_cases_passed": 8
+  },
+  "ci_state": {
+    "merge_queue_pilot_context": "NOT_WAIVED; prior failure classified inactive_base_context",
+    "prior_r6_run": 35265758775,
+    "prior_r6_semantic_packs": "12 QUEUED / ci-linux capacity absent",
+    "r8_exact_descendant_ci": "REQUIRED_AFTER_PUBLICATION",
+    "vercel_quota_context": "NOT_WAIVED"
+  },
+  "compared_main": "e2f1a47e585adba7b204de21e70938384dd6051f",
+  "compatibility_repair": {
+    "accepted_migration_commit": "a8def4c24d584afe63f148c0d5ba6d8bf95ee506",
+    "expected_sha256": "ba60c7daa09dffa6f6701a6676fb4526459ce92d78682e0a5a73e3d0f6e341c3",
+    "reason": "China migration #7054 changed the template without updating the exact-byte expectation",
+    "red_process": 1554,
+    "template_bytes_unchanged": true
+  },
+  "contract_delta": {
+    "base": "12b655150582d9be39bfd2779b33338d154c565f",
+    "exit_code": 0,
+    "inherited": 0,
+    "introduced": 0,
+    "process": 19182,
+    "runtime_seconds": 388.37
+  },
+  "contract_delta_r6": {
+    "prior_fa1d_run": 35186287994,
+    "prior_result": "0 introduced / 0 inherited",
+    "prior_result_not_promoted_to_r6": true,
+    "status": "EXACT_DESCENDANT_HOSTED_CI_REQUIRED_AFTER_PUBLICATION"
+  },
+  "contract_delta_r8": {
+    "current_main": "e2f1a47e585adba7b204de21e70938384dd6051f",
+    "current_main_contains_ci_closure_repair": true,
+    "status": "EXACT_DESCENDANT_HOSTED_CI_REQUIRED_AFTER_PUBLICATION"
+  },
+  "current_capability": "BUILT_NOT_PROVEN",
+  "current_main_integration": {
+    "browser": {
+      "browser_version": "151.0.7922.34",
+      "log_sha256": "ad4b09cd72e5db5632c1d31158970109debbdb533f463de11e5fe2018fc92f66",
+      "navigation_cases": [
+        {
+          "case": "filtered_beyond_first_page",
+          "native_fragment": true,
+          "page_errors": [],
+          "query_preserved": true,
+          "target_visible": true,
+          "target_was_sm_hidden": true
+        },
+        {
+          "case": "hydrated_keyboard_target",
+          "delegated_after_grid_replacement": true,
+          "native_fragment": true,
+          "page_errors": [],
+          "query_preserved": true,
+          "target_visible": true
+        }
+      ],
+      "pager_cases": [
+        {
+          "case": "real_input_default_live_population",
+          "default_population": 260,
+          "dom_records_preserved": 400,
+          "initial_visible": 15,
+          "page_errors": [],
+          "resolved_filter_visible": 140,
+          "resolved_history": 140,
+          "show_all_visible": 260
+        }
+      ],
+      "real_dom": {
+        "action_badges": 0,
+        "cards": 400,
+        "default_population": 260,
+        "grid_children": 400,
+        "hidden_resolved": 140,
+        "pagination": "Showing 15 of 260",
+        "record_markers": 400,
+        "resolved_records": 140,
+        "unique_ids": 400,
+        "visible_unresolved": 15
+      },
+      "receipt_sha256": "94ae1b6a46c8b198584c5fcb3e43a8294c9932e533b54e194105fe13d5fa5439",
+      "status": "PASS_COMPONENT_NOT_PRODUCTION",
+      "visual_cases": 8
+    },
+    "capability": "BUILT_NOT_PROVEN",
+    "dashboard_overlap_materiality": {
+      "candidate_hunks": "Prophet plan grid/pager, wall copy, lifecycle navigation and hydration at lines ~16463+",
+      "classification": "HUNK_DISJOINT_WITH_FRESH_INTEGRATED_BROWSER_PROOF",
+      "main_hunks": "risk-dialog rank/delta presentation at lines ~6706 and ~13230",
+      "merge_conflict": false,
+      "overlapping_path": "templates/dashboard.html.j2"
+    },
+    "diff_check_clean": true,
+    "gated_wall_integrated_receipt_sha256": "869d593862d3a4697ed1b239c9ad2138c77c363e714dae286dc8c52ac81e9cb7",
+    "gated_wall_reuse": "FRESH_INTEGRATED_BROWSER_PROOF",
+    "gated_wall_semantic_receipt_sha256": "34aba0ca5dd088398ed63069f2216ce67717404d419ba99dad47b44853db59ed",
+    "integration_commit": "2cd9912f8c5d05a953e98fb8ac0286078d93a902",
+    "merge_base": "4f37209719d2ca5caf9fd3a37aca29fa363f351c",
+    "merge_tree": "788958f45b7da58e5d1beb2b25064fd487082d6a",
+    "path_overlap": [
+      "templates/dashboard.html.j2"
+    ],
+    "production_acceptance": false,
+    "protected_main": "e2f1a47e585adba7b204de21e70938384dd6051f",
+    "schema": "prophet.plan_record.current_main_integration.v5",
+    "semantic_head": "eed58e9ff177dab1c7d2af666fbddc2278ce1087",
+    "tests": {
+      "failed": 0,
+      "log_sha256": "3d96d5e767b0b153c318ac79a7ca1c0d54c1eaf405ea72f6af8aaa0ab3bef37d",
+      "passed": 220
+    }
+  },
+  "final_verification": {
+    "branch_browser_receipt_sha256": "90c36417ed1d4922418f099645d592018eef464ce662b861aeda787b06502e85",
+    "browser_navigation_cases_passed": 2,
+    "browser_pager_cases_passed": 1,
+    "browser_visual_cases_passed": 8,
+    "current_main_browser_receipt_sha256": "94ae1b6a46c8b198584c5fcb3e43a8294c9932e533b54e194105fe13d5fa5439",
+    "current_main_tests_failed": 0,
+    "current_main_tests_passed": 220,
+    "diff_check_clean": true,
+    "integrated_gated_wall_receipt_sha256": "869d593862d3a4697ed1b239c9ad2138c77c363e714dae286dc8c52ac81e9cb7",
+    "integrated_gated_wall_visual_cases_passed": 8,
+    "production_effect": false,
+    "semantic_gated_wall_receipt_sha256": "34aba0ca5dd088398ed63069f2216ce67717404d419ba99dad47b44853db59ed",
+    "semantic_gated_wall_visual_cases_passed": 8,
+    "semantic_head": "eed58e9ff177dab1c7d2af666fbddc2278ce1087",
+    "source_tests_failed": 0,
+    "source_tests_passed": 220
+  },
+  "git_publication": {
+    "automatic_merge_authorized": false,
+    "draft_hold": true,
+    "pr": 7237,
+    "r8_record_head": "PENDING_RECORD_COMMIT_AT_CAPTURE",
+    "r8_semantic_head": "eed58e9ff177dab1c7d2af666fbddc2278ce1087",
+    "remote_before_r8": "283a46e9b4bd6b7a43e85ff573e6ce406758d768",
+    "status": "LOCAL_SEMANTIC_DESCENDANT_UNPUSHED_AT_CAPTURE"
+  },
+  "independent_review": {
+    "formal_github_reviews": 0,
+    "known_placement_blocker": "NO_DISCOVERABLE_EXISTING_CHATGPT_SESSION_BINDING",
+    "next_review": "FRESH EXACT-FINAL-HEAD OPERATION AFTER LAWFUL REVIEWER PLACEMENT",
+    "pickup_ack": false,
+    "prior_operation": "prophet-plan-trust-r6-independent-review-20260917-sol-001",
+    "prior_state": "PRE_START / EFFECT_NONE / target superseded by R8 semantic movement",
+    "prior_target": "283a46e9b4bd6b7a43e85ff573e6ce406758d768",
+    "required": true,
+    "start": false,
+    "watcher_armed": false
+  },
+  "main_composition": {
+    "browser_real_dom": {
+      "action_badges": 0,
+      "cards": 400,
+      "default_population": 260,
+      "grid_children": 400,
+      "hidden_resolved": 140,
+      "pagination": "Showing 15 of 260",
+      "record_markers": 400,
+      "resolved_records": 140,
+      "unique_ids": 400,
+      "visible_unresolved": 15
+    },
+    "browser_receipt_sha256": "94ae1b6a46c8b198584c5fcb3e43a8294c9932e533b54e194105fe13d5fa5439",
+    "classification": "CONFLICT_FREE_CURRENT_MAIN_PROOF_WITH_FRESH_OVERLAP_BROWSER",
+    "dashboard_overlap_materiality": {
+      "candidate_hunks": "Prophet plan grid/pager, wall copy, lifecycle navigation and hydration at lines ~16463+",
+      "classification": "HUNK_DISJOINT_WITH_FRESH_INTEGRATED_BROWSER_PROOF",
+      "main_hunks": "risk-dialog rank/delta presentation at lines ~6706 and ~13230",
+      "merge_conflict": false,
+      "overlapping_path": "templates/dashboard.html.j2"
+    },
+    "evidence_dir": "/Volumes/Mastermind/agent-evidence/prophet-plan-trust-r8-copy-honesty-20260917-sol-001",
+    "gated_wall_receipt_sha256": "869d593862d3a4697ed1b239c9ad2138c77c363e714dae286dc8c52ac81e9cb7",
+    "integration_commit": "2cd9912f8c5d05a953e98fb8ac0286078d93a902",
+    "merge_tree": "788958f45b7da58e5d1beb2b25064fd487082d6a",
+    "path_overlap": [
+      "templates/dashboard.html.j2"
+    ],
+    "production_effect": false,
+    "protected_main": "e2f1a47e585adba7b204de21e70938384dd6051f",
+    "source_head": "eed58e9ff177dab1c7d2af666fbddc2278ce1087",
+    "tests_failed": 0,
+    "tests_passed": 220
+  },
+  "observed_at": "2026-09-17T21:58:10.249905+00:00",
+  "operation": "prophet-plan-trust-20260916-sol-001",
+  "pager_contract_delta": {
+    "prior_r2_contract_delta_preserved_above": true,
+    "status": "NOT_RUN_ON_UNPUBLISHED_PAGER_WORKTREE"
+  },
+  "pager_red_green": {
+    "green_exit_code": 0,
+    "green_failed": 0,
+    "green_log": "/tmp/prophet-plan-record-count-green-20260917.log",
+    "green_passed": 2,
+    "green_process": 4280,
+    "red_exit_code": 1,
+    "red_failed": 1,
+    "red_log": "/tmp/prophet-plan-record-count-red-recovery-20260917.log",
+    "red_passed": 1,
+    "red_process": 98291,
+    "red_reason": "resolved history consumed default pager slots; visible unresolved was 12 instead of 15"
+  },
+  "prior_evidence": {
+    "browser-receipt.json": "323c7360b16028625958983d88afcebd47ae81e2a3f61420f4666e87ca481cd6",
+    "mutation-receipt.json": "57afb24a2a72620d3d9f34b0d72c625cc875e5208c6e05f79b9febcfea925522",
+    "nested-link-before.json": "86d635662d33aa35212af30b02b52e0bf6f05c54d95bfbc8aa33e0bd5ab1aa3d"
+  },
+  "production_acceptance": false,
+  "r6_design_governance_repair": {
+    "design_governance": {
+      "exit_code": 0,
+      "forward_blocking": 0,
+      "log": "/tmp/prophet-plan-r6-design-governance.log",
+      "process": 2704,
+      "runtime_style_guard": "PASS",
+      "unit_tests_passed": 173,
+      "visual_evidence_gate": "PASS"
+    },
+    "design_red": {
+      "blocking": 1,
+      "exit_code": 1,
+      "log": "/tmp/prophet-plan-r6-design-red.log",
+      "process": 91382
+    },
+    "finding": "templates/_prophet_card.html.j2:597 [radius-literal] border-radius: inherit",
+    "full_matrix": {
+      "exit_code": 0,
+      "failed": 0,
+      "log": "/tmp/prophet-plan-r6-full-matrix.log",
+      "passed": 219,
+      "process": 95634
+    },
+    "green": {
+      "design_blocking": 0,
+      "design_log": "/tmp/prophet-plan-r6-design-green.log",
+      "exit_code": 0,
+      "passed": 2,
+      "process": 93951,
+      "test_log": "/tmp/prophet-plan-r6-radius-green.log"
+    },
+    "red": {
+      "exit_code": 1,
+      "failed": 1,
+      "log": "/tmp/prophet-plan-r6-radius-red.log",
+      "process": 89726
+    },
+    "repair": "Preserve position:absolute, inset:0 and z-index:4 while replacing only inherit with var(--r-card,12px).",
+    "root_cause": "The new full-card historical stock-link overlay used an inline inherited radius instead of the house radius token required by the forward-only design ratchet.",
+    "triggering_job": 105090491994,
+    "triggering_pack": 1,
+    "triggering_run": 35186287994
+  },
+  "r8_copy_honesty": {
+    "adversarial_interaction_reuse": {
+      "classification": "MATERIAL_SOURCE_BYTE_REUSE",
+      "current_parent": "283a46e9b4bd6b7a43e85ff573e6ce406758d768",
+      "dashboard_diff_is_copy_only": true,
+      "lifecycle_script_sha256": "092cfb63946a6ef1500056e6246998974a34f33b3b5c7f0f7f226a40ff26331a",
+      "prior_receipt": "/Volumes/Mastermind/agent-evidence/prophet-plan-trust-r7-current-main-2d9cad-20260917-sol-001/adversarial-interaction-receipt.json",
+      "prior_receipt_sha256": "af82b882867236936d237d630340f0452ffc23556af661f3e0ebd7af08ce28cc",
+      "prior_source_head": "283a46e9b4bd6b7a43e85ff573e6ce406758d768",
+      "production_acceptance": false,
+      "reused_results": {
+        "browser_version": "151.0.7922.34",
+        "lifecycle_noop_cases": 8,
+        "lifecycle_positive_cases": 1,
+        "overlay_pointer_keyboard_cases": 4,
+        "status": "PASS_COMPONENT_NOT_PRODUCTION"
+      },
+      "schema": "prophet.plan_record.adversarial_interaction_reuse.v1",
+      "unchanged_overlay_owner_files": {
+        "templates/_prophet_card.html.j2": "d40b422f716b29eaa5698fddd0d36336ed4092e6f222d7ad75ace415237a4e8e",
+        "templates/_us_prophet_plan_cards.html.j2": "4835d85e7a5ac2a7f6a7225d9e9cf377304bc80630a8152dbd20ab8001eb3828",
+        "templates/theme.css": "63df1679c57976ef2130022690fd31bbb23bf41982658b87a6117457fb02bdab",
+        "templates/theme.js": "d4ef9d80813724242b7fa9d56b75d235930e658dbc418fe430331425249d74ee"
+      }
+    },
+    "branch_browser": {
+      "navigation_cases": 2,
+      "pager_cases": 1,
+      "real_dom": {
+        "action_badges": 0,
+        "cards": 400,
+        "default_population": 266,
+        "grid_children": 400,
+        "hidden_resolved": 134,
+        "pagination": "Showing 15 of 266",
+        "record_markers": 400,
+        "resolved_records": 134,
+        "unique_ids": 400,
+        "visible_unresolved": 15
+      },
+      "receipt_sha256": "90c36417ed1d4922418f099645d592018eef464ce662b861aeda787b06502e85",
+      "status": "PASS_COMPONENT_NOT_PRODUCTION",
+      "visual_cases": 8
+    },
+    "evidence_dir": "/Volumes/Mastermind/agent-evidence/prophet-plan-trust-r8-copy-honesty-20260917-sol-001",
+    "finding": "The gated historical Plans wall promised a current ranked board and plan table view even though records use original priority and Plans mode explicitly forces candidate table mode off.",
+    "harness_failures_preserved": [
+      "Initial gated-wall fixture left gate/pgate Undefined; failed before browser proof and was repaired only in evidence harness.",
+      "First integration attempt used a separate clone lacking the unpushed semantic object; stopped before merge tree/worktree/tests and resumed on the canonical source object store.",
+      "First sparse integrated-wall checkout omitted collectors; failed during harness import and resumed in the same immutable worktree after adding required directories."
+    ],
+    "integrated_gated_wall": {
+      "receipt_sha256": "869d593862d3a4697ed1b239c9ad2138c77c363e714dae286dc8c52ac81e9cb7",
+      "status": "PASS_COMPONENT_NOT_PRODUCTION",
+      "visual_cases": 8
+    },
+    "production_effect": false,
+    "repair": "Describe the actual capability as tracked plan rows/full tracked plan book/every lifecycle state in English and Chinese; no ranking, entitlement, table, data, or navigation behavior changed.",
+    "semantic_gated_wall": {
+      "receipt_sha256": "34aba0ca5dd088398ed63069f2216ce67717404d419ba99dad47b44853db59ed",
+      "status": "PASS_COMPONENT_NOT_PRODUCTION",
+      "visual_cases": 8
+    },
+    "semantic_head": "eed58e9ff177dab1c7d2af666fbddc2278ce1087",
+    "source_tests_failed": 0,
+    "source_tests_passed": 220,
+    "tdd": {
+      "first_full_run": {
+        "failed": 1,
+        "log_sha256": "36546b54405e9c4b9024c2b5e32d731613ee21b2bdf148ecc7761c65d640e7e3",
+        "passed": 219,
+        "reason": "one stale sibling phrase assertion; product arithmetic remained correct"
+      },
+      "focused_green_log_sha256": "ee3531a75caf97ae833a4b5b4c33d0455977f008b78dd0c30d15022131f57ef5",
+      "focused_green_passed": 2,
+      "red_exit": 1,
+      "red_log_sha256": "1ad6daabc95cda5d68713391780f011905b7ece89f8ced3b365dd24df5d12ccb",
+      "red_reason": "honest tracked-plan wall copy absent; legacy tonight/ranked/table promise remained"
+    }
+  },
+  "red_green": {
+    "green_failed": 0,
+    "green_passed": 6,
+    "green_process": 96821,
+    "red_failures": 2,
+    "red_process": 95825,
+    "red_reason": "delegated newer-record handler absent on published parent"
+  },
+  "release_gates": {
+    "authenticated_production_browser_required": true,
+    "automatic_merge_authorized": false,
+    "current_main_merge_composition_required": true,
+    "draft_hold": true,
+    "exact_descendant_ci_security_required": true,
+    "independent_review_required": true,
+    "subsequent_ordinary_scheduled_update_required": true
+  },
+  "review_state": {
+    "dialogue_edge": "R6 PRESTART ROOT REQUIRES SUPERSESSION CLOSE AFTER R8 PUBLICATION",
+    "formal_github_reviews": 0,
+    "independent_review": "NOT_STARTED_ON_R8",
+    "next_review": "REQUIRE_NEW EXACT-FINAL-HEAD PICKUP_ACK, DISTINCT START, AND RETURN",
+    "prior_commission_disposition": "PRE_START / EFFECT_NONE / semantic target superseded",
+    "prior_commission_head": "283a46e9b4bd6b7a43e85ff573e6ce406758d768"
+  },
+  "schema": "prophet.plan_record_release_verification.v1",
+  "skillpack_commit": "320f586126b7c82c843ef17612f12d40d20a42e0",
+  "source_sha256": {
+    "agentos/discoveries/DSC-PROPHET-PLAN-WALL-FALSE-CAPABILITY-PROMISE.md": "05d0a969696e29ebd613485928da6ac34ec4c984ef97dbdf9359d931f16446c3",
+    "agentos/handoffs/PROPHET-US-PLAN-RECORD-TRUST-2026-09-16.md": "eed18db442c5642486bcb8c046b11bdd7a4840d9378f5b0ebdad51dfaf79a16a",
+    "docs/pr-crops/prophet-plan-record-trust-20260916/browser-receipt.json": "90c36417ed1d4922418f099645d592018eef464ce662b861aeda787b06502e85",
+    "docs/pr-crops/prophet-plan-record-trust-20260916/synthetic-fixture.html": "8cbf9a5c9e3eef73a6dfd0d03c5f84efa06aeea95002b0d27cd2bef32e6422dd",
+    "docs/pr-crops/prophet-plan-record-trust-20260916/verify.py": "8e88f32cd13930d8032e80d04589fc0da23d702fa7cd246f4bf076f44ec36ab0",
+    "site/theme.js": "3ee041b0f2731bd42c64a0bcff7b0bcb07a3f3607b410bf865db7c6ed089c246",
+    "templates/_prophet_card.html.j2": "d40b422f716b29eaa5698fddd0d36336ed4092e6f222d7ad75ace415237a4e8e",
+    "templates/_us_prophet_plan_cards.html.j2": "4835d85e7a5ac2a7f6a7225d9e9cf377304bc80630a8152dbd20ab8001eb3828",
+    "templates/dashboard.html.j2": "15823ed544dab8a0da18f426a38dc231ed93142c03138f7abf603264d386f883",
+    "templates/theme.js": "d4ef9d80813724242b7fa9d56b75d235930e658dbc418fe430331425249d74ee",
+    "tests/test_p0_prophet_candidate_board.py": "9ef03c65b2fd0d43a87cca726d43ff0e1f68b42055e92788fcc6e2dc119dd169",
+    "tests/test_p_mp1_shell_ladder_error_state.py": "a63604e7d311836b47c8bfda9209685e4345c22f3747deb0b3ee0abbd882cd0f",
+    "tests/test_p_mp1_shell_ladder_filter_css.py": "c1d1e469aa33723373068f9fec293f6146aec46468f59076ab2824829369f898",
+    "tests/test_p_mp1_shell_nonus_byte_parity.py": "bebd70e5afaec943dfe3bd3c2b7ee81309c4d270c720d39f7841e94058da8fe2",
+    "tests/test_p_mp1_shell_repair_round.py": "10b1d373bb2894556934d250ecb1d032e861cdfca4055466f73796b8024c9126",
+    "tests/test_p_mp1_shell_stance_projection.py": "17b788bab641258caf048a1a74661aec0144a728916e6fd4667272a94af527c6"
+  },
+  "tests": {
+    "command": "python3 -m pytest tests/test_p0_prophet_candidate_board.py tests/test_p_mp1_shell_stance_projection.py tests/test_prophet_card_shared.py tests/test_prophet_card_live_change.py tests/test_p_mp1_shell_nonus_byte_parity.py tests/test_p_mp1_shell_repair_round.py tests/test_p_mp1_shell_ladder_error_state.py tests/test_p_mp1_shell_ladder_filter_css.py tests/test_china_archetype_d_s1.py -q -p no:cacheprovider",
+    "exit_code": 0,
+    "failed": 0,
+    "log": "/Volumes/Mastermind/agent-evidence/prophet-plan-trust-r8-copy-honesty-20260917-sol-001/semantic-pytest.log",
+    "passed": 220
+  }
+}

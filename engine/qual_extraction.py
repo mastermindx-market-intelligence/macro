@@ -49,6 +49,7 @@ import hashlib
 import json
 import logging
 import re
+import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -160,6 +161,302 @@ def _norm(s: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", (s or "").lower()).strip()
 
 
+def _is_han_character(char: str) -> bool:
+    codepoint = ord(char)
+    return (
+        0x3400 <= codepoint <= 0x4DBF
+        or 0x4E00 <= codepoint <= 0x9FFF
+        or 0xF900 <= codepoint <= 0xFAFF
+        or 0x20000 <= codepoint <= 0x2FA1F
+    )
+
+
+_CITATION_NUMBER_AT = re.compile(
+    r"[+\-−]?\d+(?:[.,]\d+)*(?:\s*(?:%|bps?|trillion|billion|million|tn|bn|mm|[kmbx]))?(?!\w)",
+    re.IGNORECASE,
+)
+_CITATION_CURRENCY = frozenset("$€£¥")
+_CITATION_SIGNS = frozenset("+-−")
+_CITATION_HARD_BOUNDARIES = frozenset(".,!?;:。！？；，、：—–")
+_CITATION_CONTEXT_BOUNDARIES = frozenset("!?。！？")
+_CITATION_BOUNDARY_TOKEN = "\x1e"
+_CITATION_PERIOD_ABBREVIATIONS = frozenset({
+    "al", "apr", "approx", "assoc", "aug", "ave", "ca", "cf", "chap", "co", "cont",
+    "corp", "dec", "dept", "distrib", "dr", "e.g", "ed", "est", "etc", "feb",
+    "fig", "govt", "i.e", "ibid", "inc", "intl", "jan", "jr", "jul", "jun",
+    "ltd", "mar", "misc", "mr", "mrs", "ms", "no", "nov", "oct", "para", "pp",
+    "prof", "resp", "sep", "sept", "sr", "st", "trans", "transp", "treas", "univ", "vol", "vs",
+})
+_CITATION_CONTEXT_PUNCTUATION = frozenset(".!?。！？")
+_CITATION_CONTEXT_WRAPPERS = frozenset("'\"‘’“”()[]{}《》【】「」『』")
+
+
+def _neighbor_nonspace_is_period(text: str, index: int, step: int) -> bool:
+    cursor = index + step
+    while 0 <= cursor < len(text) and text[cursor].isspace():
+        cursor += step
+    return 0 <= cursor < len(text) and text[cursor] == "."
+
+
+def _context_successor(text: str, index: int) -> tuple[int, bool]:
+    """Return the next meaningful character and whether syntax separated it."""
+    cursor = index + 1
+    separated = False
+    while cursor < len(text) and text[cursor] in _CITATION_CONTEXT_PUNCTUATION:
+        separated = True
+        cursor += 1
+    while cursor < len(text) and text[cursor] in _CITATION_CONTEXT_WRAPPERS:
+        separated = True
+        cursor += 1
+    while cursor < len(text) and text[cursor].isspace():
+        separated = True
+        cursor += 1
+    while cursor < len(text) and text[cursor] in _CITATION_CONTEXT_WRAPPERS:
+        separated = True
+        cursor += 1
+    return cursor, separated
+
+
+def _context_unit_starts_at(text: str, cursor: int) -> bool:
+    """Whether a meaningful successor can begin a new finance context unit."""
+    if cursor < 0 or cursor >= len(text):
+        return False
+    char = text[cursor]
+    if char.isupper() or char.isdigit() or _is_han_character(char):
+        return True
+    if char in _CITATION_CURRENCY:
+        return True
+    if char in _CITATION_SIGNS:
+        next_index = cursor + 1
+        if next_index < len(text) and text[next_index] in _CITATION_CURRENCY:
+            next_index += 1
+        return next_index < len(text) and text[next_index].isdigit()
+    return False
+
+
+def _period_ends_context_unit(text: str, index: int) -> bool:
+    """Conservatively classify a period as a sentence/context boundary.
+
+    Only concrete abbreviation shapes suppress a boundary.  Treating every
+    short or capitalized final word as an abbreviation collapses ordinary
+    sentences ending in names (``China.``), short words (``bad.``), years, and
+    decimal values into the following sentence.
+    """
+    if index < 0 or index >= len(text) or text[index] != ".":
+        return False
+    if _neighbor_nonspace_is_period(text, index, -1) or _neighbor_nonspace_is_period(
+        text, index, 1
+    ):
+        return False
+    if index > 0 and index + 1 < len(text):
+        if text[index - 1].isdigit() and text[index + 1].isdigit():
+            return False
+
+    cursor, separated = _context_successor(text, index)
+    if cursor >= len(text):
+        return True
+    if not separated:
+        return False
+
+    left = index - 1
+    while left >= 0 and (text[left].isalpha() or text[left] == "."):
+        left -= 1
+    token = text[left + 1:index].strip(".")
+    token_folded = token.casefold()
+    segments = [segment for segment in token.split(".") if segment]
+    dotted_abbreviation = (
+        len(segments) >= 2
+        and all(1 <= len(segment) <= 3 and segment.isalpha() for segment in segments)
+    )
+    single_initial = (
+        len(segments) == 1
+        and len(segments[0]) == 1
+        and segments[0].isupper()
+    )
+    if token_folded in _CITATION_PERIOD_ABBREVIATIONS or dotted_abbreviation or single_initial:
+        return False
+
+    if index > 0 and text[index - 1].isdigit():
+        number_left = index - 1
+        while number_left >= 0 and (
+            text[number_left].isdigit() or text[number_left] in ".,"
+        ):
+            number_left -= 1
+        numeric = text[number_left + 1:index].strip(".")
+        digits = "".join(char for char in numeric if char.isdigit())
+        decimal_or_grouped = "." in numeric or "," in numeric
+        prefix = text[number_left] if number_left >= 0 else ""
+        alpha_prefixed = prefix.isalpha()
+        finance_prefixed = prefix in _CITATION_CURRENCY or prefix in _CITATION_SIGNS
+        if not (
+            decimal_or_grouped
+            or len(digits) >= 3
+            or alpha_prefixed
+            or finance_prefixed
+        ):
+            # Preserve short ordinal forms such as ``2. Quartal`` fail-closed.
+            return False
+
+    return _context_unit_starts_at(text, cursor)
+
+
+def _terminal_ends_context_unit(text: str, index: int) -> bool:
+    if index < 0 or index >= len(text) or text[index] not in _CITATION_CONTEXT_BOUNDARIES:
+        return False
+    cursor, separated = _context_successor(text, index)
+    if cursor >= len(text):
+        return True
+    next_char = text[cursor]
+    if not separated and not _is_han_character(next_char):
+        return False
+    return _context_unit_starts_at(text, cursor)
+
+def _citation_tokens(
+    text: str,
+    *,
+    preserve_hard_boundaries: bool = False,
+    preserve_context_boundaries: bool = False,
+) -> list[str]:
+    """Return Unicode-safe citation tokens with Han characters addressable.
+
+    NFKC makes full-width and compatibility typography comparable. Non-Han
+    letters and identifiers remain whole tokens so a quote such as ``rate``
+    cannot ground itself inside ``corporate``. Numeric tokens preserve signs,
+    decimals, percentages, and common magnitude units. Han characters are
+    individual tokens because Chinese source text does not require whitespace.
+    The verifier may also retain a non-user-producible boundary token. Legacy
+    mode preserves every historical punctuation boundary; context mode preserves
+    only sentence-ending punctuation so commas, colons, abbreviations, and source
+    line wrapping cannot create a polarity- or modality-stripping claim boundary.
+    """
+    source_text = unicodedata.normalize("NFKC", str(text or ""))
+    folded_parts: list[str] = []
+    source_indexes: list[int] = []
+    for source_index, source_char in enumerate(source_text):
+        folded = source_char.casefold()
+        folded_parts.append(folded)
+        source_indexes.extend([source_index] * len(folded))
+    normalized = "".join(folded_parts)
+    tokens: list[str] = []
+    current: list[str] = []
+
+    def flush() -> None:
+        if current:
+            tokens.append("".join(current))
+            current.clear()
+
+    index = 0
+    while index < len(normalized):
+        char = normalized[index]
+        if _is_han_character(char):
+            flush()
+            tokens.append(char)
+            index += 1
+            continue
+        if current:
+            if char.isalnum():
+                current.append(char)
+                index += 1
+                continue
+            flush()
+            continue
+        source_index = source_indexes[index]
+        context_boundary = (
+            preserve_context_boundaries
+            and (
+                (char == "." and _period_ends_context_unit(source_text, source_index))
+                or (
+                    char in _CITATION_CONTEXT_BOUNDARIES
+                    and _terminal_ends_context_unit(source_text, source_index)
+                )
+            )
+        )
+        legacy_boundary = preserve_hard_boundaries and char in _CITATION_HARD_BOUNDARIES
+        if context_boundary or legacy_boundary:
+            if tokens and tokens[-1] != _CITATION_BOUNDARY_TOKEN:
+                tokens.append(_CITATION_BOUNDARY_TOKEN)
+            index += 1
+            continue
+        if char in _CITATION_CURRENCY:
+            tokens.append(char)
+            index += 1
+            continue
+        number = None
+        if char.isdigit() or (
+            char in _CITATION_SIGNS
+            and index + 1 < len(normalized)
+            and normalized[index + 1].isdigit()
+            and (index == 0 or not normalized[index - 1].isalnum())
+        ):
+            number = _CITATION_NUMBER_AT.match(normalized, index)
+        if number is not None:
+            token = re.sub(r"\s+", "", number.group(0)).replace("−", "-")
+            tokens.append(token)
+            index = number.end()
+            continue
+        if char.isalnum():
+            current.append(char)
+        index += 1
+    flush()
+    return tokens
+
+
+def citation_normalize(text: str) -> str:
+    """Canonical Unicode-safe citation text used by qualitative extractors."""
+    return " ".join(_citation_tokens(text))
+
+
+def quote_span_verified(
+    body: str,
+    quote_span: str,
+    *,
+    minimum_chars: int = 4,
+    require_complete_clause: bool = False,
+) -> bool:
+    """Whether a purported quote is present at citation-token boundaries.
+
+    This is the shared anti-hallucination primitive for body-bearing qualitative
+    lanes. ``minimum_chars`` is explicit so callers verifying short numeric
+    literals can choose a smaller boundary without reimplementing normalization.
+    Clause mode additionally requires the match to occupy one complete
+    sentence/body context unit. Soft punctuation, abbreviations, and source line
+    wrapping stay inside it so they cannot create a polarity/modality-stripping start.
+    """
+    if type(require_complete_clause) is not bool:
+        raise ValueError("require_complete_clause must be a boolean")
+    if isinstance(minimum_chars, bool) or not isinstance(minimum_chars, int) or minimum_chars < 1:
+        raise ValueError("minimum_chars must be a positive integer")
+    token_options = (
+        {"preserve_context_boundaries": True}
+        if require_complete_clause
+        else {"preserve_hard_boundaries": True}
+    )
+    source_tokens = _citation_tokens(body, **token_options)
+    span_tokens = _citation_tokens(quote_span, **token_options)
+    while span_tokens and span_tokens[0] == _CITATION_BOUNDARY_TOKEN:
+        span_tokens.pop(0)
+    while span_tokens and span_tokens[-1] == _CITATION_BOUNDARY_TOKEN:
+        span_tokens.pop()
+    if require_complete_clause and _CITATION_BOUNDARY_TOKEN in span_tokens:
+        return False
+    span_chars = sum(
+        len(token) for token in span_tokens if token != _CITATION_BOUNDARY_TOKEN
+    )
+    if not span_tokens or span_chars < minimum_chars:
+        return False
+    for start in range(len(source_tokens) - len(span_tokens) + 1):
+        end = start + len(span_tokens)
+        if source_tokens[start:end] != span_tokens:
+            continue
+        if not require_complete_clause:
+            return True
+        starts_at_boundary = start == 0 or source_tokens[start - 1] == _CITATION_BOUNDARY_TOKEN
+        ends_at_boundary = end == len(source_tokens) or source_tokens[end] == _CITATION_BOUNDARY_TOKEN
+        if starts_at_boundary and ends_at_boundary:
+            return True
+    return False
+
+
 # --------------------------------------------------------------------------- #
 # reply-cache (sha-keyed, determinism kit — same body → same extraction)
 # --------------------------------------------------------------------------- #
@@ -266,12 +563,10 @@ def _verify_citations(rec: dict, body: str) -> dict:
     present (after typography normalisation) in the body.  Fields without a
     verified quote collapse to their neutral value and are listed in
     `dropped_fields`.  Mutates and returns `rec`."""
-    src = _norm(body or "")
     verified: set[str] = set()
     kept_ev: list[dict] = []
     for e in rec.get("evidence", []):
-        span = _norm(e.get("quote_span", ""))
-        if span and len(span) >= 4 and span in src:
+        if quote_span_verified(body, e.get("quote_span", "")):
             verified.add(e["field"])
             kept_ev.append(e)
     dropped: list[str] = []

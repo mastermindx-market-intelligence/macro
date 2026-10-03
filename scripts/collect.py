@@ -5,7 +5,8 @@ Usage:
 
 Runs every adapter through the circuit-breaker runner. Never exits nonzero
 because one source broke — the engine consumes whatever is fresh and the
-dashboard surfaces staleness. Exits 1 only if EVERY source failed.
+dashboard surfaces staleness. Exits 1 if EVERY source failed; the Asia shard
+also exits 3 when its required china_search close plane is behind the mainland clock.
 """
 from __future__ import annotations
 
@@ -169,6 +170,7 @@ def all_adapters() -> dict:
         ("eia", "collectors.eia", "EiaAdapter"),                       # petroleum supply (Weekly Petroleum Status)
         ("jodi", "collectors.jodi", "JodiAdapter"),                    # JODI monthly closing oil stocks by country (Strategic Reserves page)
         ("worldbank", "collectors.worldbank", "WorldBankAdapter"),     # World Bank reserve assets -> gold value/share (Strategic Reserves page)
+        ("ofac_sdn", "collectors.ofac_sdn", "OfacSdnAdapter"),          # OFAC SDN public CSV -> data/sanctions_ofac/ (Sanctions Map page; keyless)
         ("ofr_fsi", "collectors.ofr_fsi", "OfrFsiAdapter"),            # OFR Financial Stress Index (functional + regional decomposition)
         ("cleveland_nowcast", "collectors.cleveland_nowcast", "ClevelandNowcastAdapter"),  # Cleveland Fed daily CPI/PCE nowcast (MRI-PR-A; fail-open, keyless)
         ("rate_futures", "collectors.rate_futures", "RateFuturesAdapter"),  # ZQ/SR3 implied Fed-policy path (display-only, research/DATA_SIGNAL_EXPANSION_2026.md #2)
@@ -241,6 +243,7 @@ def all_adapters() -> dict:
         ("china_qvix", "collectors.china_qvix", "ChinaQvixAdapter"),           # 300/50ETF option-implied vol ("China VIX") — fear/euphoria + drawdown
         ("china_credit", "collectors.china_credit", "ChinaCreditAdapter"),     # 社融 TSF (PBoC direct; mofcom mirror froze at 2026-04 — 2026-07 repair)
         ("china_tushare", "collectors.china_tushare", "ChinaTushareAdapter"),  # gated Tushare plane (mktcap/moneyflow/margin/chips) — never CI-invoked before, froze 2026-06-21
+        ("gold_china_basis", "collectors.china_gold_basis", "ChinaGoldBasisAdapter"),  # Gold product source: SGE Au99.99 vs licensed global XAU/CNY; US-nightly lane already carries both credentials
         ("china_property", "collectors.china_property", "ChinaPropertyAdapter"),  # 70-city price breadth + climate + CGB + rebar/iron-ore
         ("china_pboc", "collectors.china_pboc", "ChinaPbocAdapter"),           # PBoC corridor legs: FX reserves+gold / repo fixings FR007 / USD-CNY ref (engine/china_policy_watch.py)
         ("china_yield_spread", "collectors.china_yield_spread", "ChinaYieldSpreadAdapter"),  # CN vs US sovereign curve + slope + CN-US spread — ACCRUING (no engine consumer yet)
@@ -519,6 +522,40 @@ def run_quality_audits(cfg: dict | None = None, audit_fns: list | None = None) -
     log.info("[quality] gate passed — %d audit(s), %d/%d members failed, %d soft flag(s); "
              "0 universes over %.0f%%.", len(docs), total_fail, total_n, total_flags, abort_pct)
     return summary
+
+
+def _required_group_health(
+    group: str,
+    now: datetime | None = None,
+    *,
+    skip_quality: bool = False,
+    only: str = "",
+) -> int:
+    """Binding postcondition for required shard planes; 0 for all other groups.
+
+    ``--skip-quality`` is the existing, explicit maintenance escape hatch. A
+    deliberately partial Asia ``--only`` run that does not include the core
+    producer is also exempt: it cannot be expected to repair that plane.
+    """
+    if group != "asia":
+        return 0
+    selected = {name.strip() for name in str(only or "").split(",") if name.strip()}
+    bypass_reason = (
+        "--skip-quality" if skip_quality else
+        "partial --only run without china_universe"
+        if selected and "china_universe" not in selected else ""
+    )
+    if bypass_reason:
+        print(
+            "::warning title=China core freshness BYPASS::"
+            f"{bypass_reason}; required china_search freshness was not enforced. "
+            "This is an explicit maintenance escape, not production proof.",
+            flush=True,
+        )
+        return 0
+    from scripts.check_tushare_freshness import check_china_search_core  # noqa: PLC0415
+
+    return check_china_search_core(now)
 
 
 def main() -> int:
@@ -1079,6 +1116,25 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("news_vector ingest step failed: %s", e)
 
+    # europe_news_intel daily ingest — EU/UK official-press PIT accrual (keep-FIRST,
+    # additive, context-only). Non-fatal: a dead wire degrades the desk, never the build.
+    try:
+        from datetime import date as _date
+        from engine import europe_news_intel as _eu
+        _eu_result = _eu.ingest(asof=_date.today())      # asof is passed IN at the caller
+        if _eu_result is not None:
+            _eu_cov = _eu_result.get("coverage", {})
+            _eu_bad = {k: v for k, v in _eu_cov.items() if v != "COVERED"}
+            if _eu_bad:
+                log.warning("europe_news_intel degraded coverage: %s (+%d new, %d total)",
+                            _eu_bad, _eu_result.get("n_new", 0), _eu_result.get("n_total", 0))
+            else:
+                log.info("europe_news_intel: +%d events (%d total, %d->qbus)",
+                         _eu_result.get("n_new", 0), _eu_result.get("n_total", 0),
+                         _eu_result.get("n_qbus", 0))
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("europe_news_intel ingest step failed: %s", e)
+
     # qledger adapters — register today's claims from each desk so the nightly
     # grader can grade them at maturity. Idempotent; non-fatal.
     try:
@@ -1306,6 +1362,10 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("source_registry nightly_run step failed: %s", e)
 
+    required_rc = _required_group_health(
+        args.group, skip_quality=args.skip_quality, only=args.only)
+    if required_rc:
+        return required_rc
     return 0 if ok > 0 else 1
 
 

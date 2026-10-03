@@ -736,3 +736,179 @@ def test_one_batch_nudge_is_advisory_not_enforcement():
     line = gw._SEED_PLAN_LINE.lower()
     for banned in ("you must", "never call", "only call", "do not call", "required"):
         assert banned not in line
+
+
+# ---------------------------------------------------------------------------
+# 8. Fast progressive model visibility
+# ---------------------------------------------------------------------------
+
+_SINGLE_NAME_VISIBLE = {
+    "get_market_events", "get_symbol_context", "get_quote", "get_symbol_intel",
+    "read_company_intelligence", "get_fundamentals", "get_earnings", "get_house_view",
+    "query_spine", "read_contradictions",
+}
+_MACRO_VISIBLE = {
+    "read_world_state", "get_curve_detail", "read_mechanism_pathways",
+    "read_inflation_intelligence", "read_contradictions", "get_market_events",
+    "read_liquidity_plumbing",
+}
+_OPTIONS_VISIBLE = {
+    "get_quote", "get_symbol_context", "get_market_events", "read_options_entry_state",
+    "explain_options_context", "query_options_confluence", "list_options_contradictions",
+}
+_PORTFOLIO_VISIBLE = {
+    "get_portfolio_brief", "get_watchlist", "read_world_state", "read_factor_state",
+    "list_factor_contradictions", "get_market_events", "read_contradictions",
+}
+
+
+def _visible_names(call_kwargs: dict) -> set[str]:
+    return {item["name"] for item in call_kwargs.get("tools", [])}
+
+
+def test_fast_single_name_progressive_visibility_filters_sync_loop(quiet_grounding):
+    root = _root()
+    client = _CaptureClient()
+    _drive_loop(root, client, "Why did NVDA move today?")
+    assert _visible_names(client.create_kwargs[0]) == _SINGLE_NAME_VISIBLE
+
+
+def test_fast_portfolio_options_composes_qualified_visibility_in_stream_loop(quiet_grounding):
+    root = _root()
+    client = _CaptureClient()
+    _drive_stream(root, client, "How are options skew and gamma affecting my portfolio exposure?")
+    assert _visible_names(client.stream_kwargs[0]) == (_PORTFOLIO_VISIBLE | _OPTIONS_VISIBLE)
+
+
+def test_fast_self_contained_financial_scenario_sends_no_tool_schema(quiet_grounding):
+    root = _root()
+    client = _CaptureClient()
+    _drive_loop(
+        root,
+        client,
+        "Using only these assumptions: revenue 100, operating margin 20%, EPS 5, value at 20x P/E.",
+    )
+    assert client.create_kwargs[0].get("tools") == []
+
+
+def test_fast_specialist_question_fails_open_to_full_authorized_surface(quiet_grounding):
+    root = _root()
+    client = _CaptureClient()
+    _drive_loop(root, client, "What does the street think of NVDA?")
+    expected = {item["name"] for item in gw._all_brain_tool_schemas(root)}
+    assert _visible_names(client.create_kwargs[0]) == expected
+
+
+
+def test_fast_single_name_macro_composes_qualified_visibility(quiet_grounding):
+    root = _root()
+    client = _CaptureClient()
+    _drive_loop(root, client, "Why did NVDA move after CPI and the rate selloff?")
+    assert _visible_names(client.create_kwargs[0]) == (_SINGLE_NAME_VISIBLE | _MACRO_VISIBLE)
+
+
+def test_terminal_and_pro_turns_keep_full_authorized_surface(quiet_grounding):
+    root = _root()
+    terminal_client = _CaptureClient()
+    gw._run_brain_loop(
+        "Why did NVDA move today?", "fast", [], {"page": "terminal"}, root,
+        root / "terminal", "http://localhost:3100", terminal_client,
+        "deepseek-v4-pro", 1000, 5,
+    )
+    terminal_expected = {
+        item["name"] for item in gw._all_brain_tool_schemas(root, page="terminal")
+    }
+    assert _visible_names(terminal_client.create_kwargs[0]) == terminal_expected
+
+    pro_client = _CaptureClient()
+    gw._run_brain_loop(
+        "Why did NVDA move today?", "pro", [], {}, root,
+        root / "terminal", "http://localhost:3100", pro_client,
+        "deepseek-v4-pro", 1000, 5,
+    )
+    pro_expected = {item["name"] for item in gw._all_brain_tool_schemas(root)}
+    assert _visible_names(pro_client.create_kwargs[0]) == pro_expected
+
+
+_THEME_VISIBLE = {
+    "read_theme_state", "read_theme_thesis", "read_theme_pathways",
+    "read_theme_asymmetry", "read_theme_options_witness", "read_theme_clinical",
+    "read_theme_trade_flows", "get_market_events", "read_world_state",
+}
+
+
+@pytest.mark.parametrize(
+    ("question", "expected"),
+    [
+        ("Why is the yield curve steepening today?", _MACRO_VISIBLE),
+        ("What is the options setup for NVDA?", _OPTIONS_VISIBLE),
+        ("How is my portfolio positioned today?", _PORTFOLIO_VISIBLE),
+        ("Which themes are early right now?", _THEME_VISIBLE),
+    ],
+)
+def test_fast_qualified_single_family_surfaces_are_exact(quiet_grounding, question, expected):
+    root = _root()
+    client = _CaptureClient()
+    _drive_loop(root, client, question)
+    assert _visible_names(client.create_kwargs[0]) == expected
+
+
+def test_fast_visibility_schema_drift_fails_open_instead_of_partial_narrowing():
+    root = _root()
+    full = gw._all_brain_tool_schemas(root)
+    drifted = [schema for schema in full if schema.get("name") != "get_quote"]
+    out = gw._fast_visible_tool_schemas(
+        drifted,
+        "Why did NVDA move today?",
+        "NVDA",
+        lane="fast",
+        mode="chat",
+        page="",
+        internals_allowed=False,
+    )
+    assert out is drifted
+
+
+def test_fast_internals_session_keeps_full_authorized_surface():
+    root = _root()
+    full = gw._all_brain_tool_schemas(root, internals_allowed=True)
+    out = gw._fast_visible_tool_schemas(
+        full,
+        "Why did NVDA move today?",
+        "NVDA",
+        lane="fast",
+        mode="chat",
+        page="",
+        internals_allowed=True,
+    )
+    assert out is full
+
+
+
+def test_fast_specialist_macro_question_fails_open_to_full_authorized_surface(quiet_grounding):
+    root = _root()
+    client = _CaptureClient()
+    _drive_loop(root, client, "Show me historical analogues for NVDA after CPI shocks")
+    expected = {item["name"] for item in gw._all_brain_tool_schemas(root)}
+    assert _visible_names(client.create_kwargs[0]) == expected
+
+
+
+@pytest.mark.parametrize("question", [
+    "What does the street research say about NVDA?",
+    "What do insiders and Congress trades say about NVDA?",
+    "Show me historical analogues for NVDA",
+    "Backtest NVDA and show similar stage peers",
+    "Chart NVDA and draw support",
+    "What is the factor DNA of AAPL?",
+    "What special-situations M&A context exists for NVDA?",
+    "What stage analysis applies to PLTR?",
+])
+def test_fast_hostile_specialist_family_retains_full_authorized_surface(
+    quiet_grounding, question
+):
+    root = _root()
+    client = _CaptureClient()
+    _drive_loop(root, client, question)
+    expected = {item["name"] for item in gw._all_brain_tool_schemas(root)}
+    assert _visible_names(client.create_kwargs[0]) == expected

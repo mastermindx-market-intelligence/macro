@@ -2,379 +2,379 @@
   "schema": "marketing.radar_report/v1",
   "schema_version": 1,
   "produced_by": "engine/marketing/radar_internal.py",
-  "produced_at": "2026-09-01T07:55:18Z",
+  "produced_at": "2026-10-03T20:59:43Z",
   "tier": "display",
-  "as_of": "2026-09-01",
+  "as_of": "2026-10-03",
   "feeds": [
     {
       "name": "prophet",
       "ok": true,
-      "n_assets": 254,
-      "as_of": "2026-08-07"
+      "n_assets": 324,
+      "as_of": "2026-08-13"
     },
     {
       "name": "confluence",
       "ok": true,
-      "n_assets": 6,
-      "as_of": "2026-08-31"
+      "n_assets": 5,
+      "as_of": "2026-10-03"
     },
     {
       "name": "earnings",
       "ok": true,
-      "n_assets": 20,
-      "as_of": "2026-09-01"
+      "n_assets": 12,
+      "as_of": "2026-09-30"
     },
     {
       "name": "movers",
       "ok": true,
       "n_assets": 16,
-      "as_of": "2026-08-31"
+      "as_of": "2026-10-02"
     },
     {
       "name": "stage",
       "ok": true,
       "n_assets": 15,
-      "as_of": "2026-09-01"
+      "as_of": "2026-10-03"
     }
   ],
   "posted_recent": {
-    "n_tickers": 749,
+    "n_tickers": 1719,
     "window_plans": 7
   },
   "surplus": [
     {
-      "ticker": "AAMI",
-      "feed": "stage",
-      "why": "stage 2D_extended_run, SATA 9, 70w in stage",
-      "as_of": "2026-09-01",
-      "staleness_days": 0,
-      "opportunity_id": "radar-stage-AAMI-2026-09-01"
-    },
-    {
-      "ticker": "ABNB",
-      "feed": "stage",
-      "why": "stage 2D_extended_run, SATA 9, 19w in stage",
-      "as_of": "2026-09-01",
-      "staleness_days": 0,
-      "opportunity_id": "radar-stage-ABNB-2026-09-01"
-    },
-    {
       "ticker": "ACA",
       "feed": "stage",
-      "why": "stage 2D_extended_run, SATA 9, 47w in stage",
-      "as_of": "2026-09-01",
+      "why": "stage 2D_extended_run, SATA 10, 52w in stage",
+      "as_of": "2026-10-03",
       "staleness_days": 0,
-      "opportunity_id": "radar-stage-ACA-2026-09-01"
-    },
-    {
-      "ticker": "ACHV",
-      "feed": "stage",
-      "why": "stage 2D_extended_run, SATA 9, 46w in stage",
-      "as_of": "2026-09-01",
-      "staleness_days": 0,
-      "opportunity_id": "radar-stage-ACHV-2026-09-01"
+      "opportunity_id": "radar-stage-ACA-2026-10-03"
     },
     {
       "ticker": "ACU",
       "feed": "stage",
-      "why": "stage 2D_extended_run, SATA 9, 21w in stage",
-      "as_of": "2026-09-01",
+      "why": "stage 2D_extended_run, SATA 9, 26w in stage",
+      "as_of": "2026-10-03",
       "staleness_days": 0,
-      "opportunity_id": "radar-stage-ACU-2026-09-01"
+      "opportunity_id": "radar-stage-ACU-2026-10-03"
     },
     {
-      "ticker": "ADP",
+      "ticker": "CDNA",
       "feed": "stage",
-      "why": "stage 2D_extended_run, SATA 9, 2w in stage",
-      "as_of": "2026-09-01",
+      "why": "stage 2D_extended_run, SATA 10, 34w in stage",
+      "as_of": "2026-10-03",
       "staleness_days": 0,
-      "opportunity_id": "radar-stage-ADP-2026-09-01"
+      "opportunity_id": "radar-stage-CDNA-2026-10-03"
     },
     {
-      "ticker": "AGX",
-      "feed": "earnings",
-      "why": "earnings 2026-09-02 after hours",
-      "as_of": "2026-09-01",
+      "ticker": "CTVA",
+      "feed": "confluence",
+      "why": "confluence combo Weekly RSI stack washed out + weekly RSI-14 washed out + RSI stack curls up firing, test WR 77%",
+      "as_of": "2026-10-03",
       "staleness_days": 0,
-      "opportunity_id": "radar-earnings-AGX-2026-09-01"
+      "opportunity_id": "radar-confluence-CTVA-2026-10-03"
     },
     {
-      "ticker": "AI",
-      "feed": "earnings",
-      "why": "earnings 2026-09-02 after hours",
-      "as_of": "2026-09-01",
+      "ticker": "GM",
+      "feed": "confluence",
+      "why": "confluence combo Weekly short-term uptrend + RSI-14 washed out + POC retest holds firing, test WR 64%",
+      "as_of": "2026-10-03",
       "staleness_days": 0,
-      "opportunity_id": "radar-earnings-AI-2026-09-01"
+      "opportunity_id": "radar-confluence-GM-2026-10-03"
     },
     {
-      "ticker": "AII",
+      "ticker": "GRAL",
       "feed": "stage",
-      "why": "stage 2A_strong_breakout, SATA 9, 3w in stage",
-      "as_of": "2026-09-01",
+      "why": "stage 2A_strong_breakout, SATA 10, 2w in stage",
+      "as_of": "2026-10-03",
       "staleness_days": 0,
-      "opportunity_id": "radar-stage-AII-2026-09-01"
+      "opportunity_id": "radar-stage-GRAL-2026-10-03"
     },
     {
-      "ticker": "AMBA",
-      "feed": "earnings",
-      "why": "earnings 2026-09-03 after hours",
-      "as_of": "2026-09-01",
-      "staleness_days": 0,
-      "opportunity_id": "radar-earnings-AMBA-2026-09-01"
-    },
-    {
-      "ticker": "APGE",
+      "ticker": "IOVA",
       "feed": "stage",
-      "why": "stage 2D_extended_run, SATA 10, 48w in stage",
-      "as_of": "2026-09-01",
+      "why": "stage 2D_extended_run, SATA 10, 41w in stage",
+      "as_of": "2026-10-03",
       "staleness_days": 0,
-      "opportunity_id": "radar-stage-APGE-2026-09-01"
+      "opportunity_id": "radar-stage-IOVA-2026-10-03"
     },
     {
-      "ticker": "ASAN",
-      "feed": "earnings",
-      "why": "earnings 2026-09-03 after hours",
-      "as_of": "2026-09-01",
-      "staleness_days": 0,
-      "opportunity_id": "radar-earnings-ASAN-2026-09-01"
-    },
-    {
-      "ticker": "BF.B",
-      "feed": "earnings",
-      "why": "earnings 2026-09-02 pre-market",
-      "as_of": "2026-09-01",
-      "staleness_days": 0,
-      "opportunity_id": "radar-earnings-BF.B-2026-09-01"
-    },
-    {
-      "ticker": "BRC",
-      "feed": "earnings",
-      "why": "earnings 2026-09-03 pre-market",
-      "as_of": "2026-09-01",
-      "staleness_days": 0,
-      "opportunity_id": "radar-earnings-BRC-2026-09-01"
-    },
-    {
-      "ticker": "CPB",
-      "feed": "earnings",
-      "why": "earnings 2026-09-03 pre-market",
-      "as_of": "2026-09-01",
-      "staleness_days": 0,
-      "opportunity_id": "radar-earnings-CPB-2026-09-01"
-    },
-    {
-      "ticker": "CPRT",
-      "feed": "earnings",
-      "why": "earnings 2026-09-03",
-      "as_of": "2026-09-01",
-      "staleness_days": 0,
-      "opportunity_id": "radar-earnings-CPRT-2026-09-01"
-    },
-    {
-      "ticker": "CRDO",
-      "feed": "earnings",
-      "why": "earnings 2026-09-01 after hours",
-      "as_of": "2026-09-01",
-      "staleness_days": 0,
-      "opportunity_id": "radar-earnings-CRDO-2026-09-01"
-    },
-    {
-      "ticker": "CRNX",
+      "ticker": "ITGR",
       "feed": "stage",
-      "why": "stage 2A_strong_breakout, SATA 10, 7w in stage",
-      "as_of": "2026-09-01",
+      "why": "stage 2D_extended_run, SATA 10, 18w in stage",
+      "as_of": "2026-10-03",
       "staleness_days": 0,
-      "opportunity_id": "radar-stage-CRNX-2026-09-01"
+      "opportunity_id": "radar-stage-ITGR-2026-10-03"
     },
     {
-      "ticker": "AAOX",
-      "feed": "movers",
-      "why": "S&P mover -12.2% 1D ()",
-      "as_of": "2026-08-31",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-AAOX-2026-08-31"
+      "ticker": "KOD",
+      "feed": "stage",
+      "why": "stage 2D_extended_run, SATA 10, 59w in stage",
+      "as_of": "2026-10-03",
+      "staleness_days": 0,
+      "opportunity_id": "radar-stage-KOD-2026-10-03"
     },
     {
-      "ticker": "AAOZ",
-      "feed": "movers",
-      "why": "S&P mover +13.0% 1D ()",
-      "as_of": "2026-08-31",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-AAOZ-2026-08-31"
-    },
-    {
-      "ticker": "ACHC",
-      "feed": "prophet",
-      "why": "active Prophet plan ACHC-BULL-20260630, phase pre_trigger, conviction 10",
-      "as_of": "2026-08-31",
-      "staleness_days": 1,
-      "opportunity_id": "radar-prophet-ACHC-2026-08-31"
-    },
-    {
-      "ticker": "AMZU",
-      "feed": "movers",
-      "why": "S&P mover +7.8% 1D ()",
-      "as_of": "2026-08-31",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-AMZU-2026-08-31"
-    },
-    {
-      "ticker": "AXTX",
-      "feed": "movers",
-      "why": "S&P mover -24.7% 1D ()",
-      "as_of": "2026-08-31",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-AXTX-2026-08-31"
-    },
-    {
-      "ticker": "BRUN",
-      "feed": "movers",
-      "why": "S&P mover -17.3% 1D ()",
-      "as_of": "2026-08-31",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-BRUN-2026-08-31"
-    },
-    {
-      "ticker": "CASY",
+      "ticker": "MS",
       "feed": "confluence",
-      "why": "confluence combo Weekly short-term uptrend + RSI-14 washed out + POC retest holds firing, test WR 65%",
-      "as_of": "2026-08-31",
-      "staleness_days": 1,
-      "opportunity_id": "radar-confluence-CASY-2026-08-31"
+      "why": "confluence combo Weekly short-term uptrend + weekly RSI-14 washed out + lower-band reclaim firing, test WR 68%",
+      "as_of": "2026-10-03",
+      "staleness_days": 0,
+      "opportunity_id": "radar-confluence-MS-2026-10-03"
     },
     {
-      "ticker": "CXT",
-      "feed": "prophet",
-      "why": "active Prophet plan CXT-BULL-20260831, phase triggered_pre_t1, conviction 11",
-      "as_of": "2026-08-31",
-      "staleness_days": 1,
-      "opportunity_id": "radar-prophet-CXT-2026-08-31"
+      "ticker": "PAYO",
+      "feed": "stage",
+      "why": "stage 2D_extended_run, SATA 10, 15w in stage",
+      "as_of": "2026-10-03",
+      "staleness_days": 0,
+      "opportunity_id": "radar-stage-PAYO-2026-10-03"
     },
     {
-      "ticker": "DG",
-      "feed": "prophet",
-      "why": "active Prophet plan DG-BULL-20260601, phase pre_trigger, conviction 45",
-      "as_of": "2026-08-31",
-      "staleness_days": 1,
-      "opportunity_id": "radar-prophet-DG-2026-08-31"
+      "ticker": "RAMP",
+      "feed": "stage",
+      "why": "stage 2D_extended_run, SATA 10, 22w in stage",
+      "as_of": "2026-10-03",
+      "staleness_days": 0,
+      "opportunity_id": "radar-stage-RAMP-2026-10-03"
     },
     {
-      "ticker": "EIX",
+      "ticker": "RCL",
       "feed": "confluence",
-      "why": "confluence combo Weekly short-term uptrend + RSI-14 washed out + POC retest holds firing, test WR 65%",
-      "as_of": "2026-08-31",
-      "staleness_days": 1,
-      "opportunity_id": "radar-confluence-EIX-2026-08-31"
+      "why": "confluence combo Weekly long-term uptrend + weekly reclaims 100-day line + reclaims 35-day line firing, test WR 64%",
+      "as_of": "2026-10-03",
+      "staleness_days": 0,
+      "opportunity_id": "radar-confluence-RCL-2026-10-03"
     },
     {
-      "ticker": "ESTC",
+      "ticker": "ACMR",
+      "feed": "prophet",
+      "why": "active Prophet plan ACMR-BULL-20260930, phase pre_trigger, conviction 59",
+      "as_of": "2026-10-02",
+      "staleness_days": 1,
+      "opportunity_id": "radar-prophet-ACMR-2026-10-02"
+    },
+    {
+      "ticker": "AVNT",
+      "feed": "prophet",
+      "why": "active Prophet plan AVNT-BULL-20260804, phase pre_trigger, conviction 8",
+      "as_of": "2026-10-02",
+      "staleness_days": 1,
+      "opportunity_id": "radar-prophet-AVNT-2026-10-02"
+    },
+    {
+      "ticker": "AXGN",
       "feed": "movers",
-      "why": "S&P mover +19.3% 1D ()",
-      "as_of": "2026-08-31",
+      "why": "S&P mover -6.3% 1D ()",
+      "as_of": "2026-10-02",
       "staleness_days": 1,
-      "opportunity_id": "radar-movers-ESTC-2026-08-31"
+      "opportunity_id": "radar-movers-AXGN-2026-10-02"
     },
     {
-      "ticker": "FLUT",
+      "ticker": "AZTA",
       "feed": "movers",
-      "why": "S&P mover +7.1% 1D ()",
-      "as_of": "2026-08-31",
+      "why": "S&P mover +12.4% 1D ()",
+      "as_of": "2026-10-02",
       "staleness_days": 1,
-      "opportunity_id": "radar-movers-FLUT-2026-08-31"
+      "opportunity_id": "radar-movers-AZTA-2026-10-02"
     },
     {
-      "ticker": "GAP",
+      "ticker": "CENT",
+      "feed": "prophet",
+      "why": "active Prophet plan CENT-BULL-20260812, phase triggered_pre_t1, conviction 8",
+      "as_of": "2026-10-02",
+      "staleness_days": 1,
+      "opportunity_id": "radar-prophet-CENT-2026-10-02"
+    },
+    {
+      "ticker": "CNXC",
       "feed": "movers",
-      "why": "S&P mover +12.9% 1D ()",
-      "as_of": "2026-08-31",
+      "why": "S&P mover -7.8% 1D ()",
+      "as_of": "2026-10-02",
       "staleness_days": 1,
-      "opportunity_id": "radar-movers-GAP-2026-08-31"
+      "opportunity_id": "radar-movers-CNXC-2026-10-02"
     },
     {
-      "ticker": "LITZ",
+      "ticker": "COST",
+      "feed": "prophet",
+      "why": "active Prophet plan COST-BULL-20260930, phase pre_trigger, conviction 8",
+      "as_of": "2026-10-02",
+      "staleness_days": 1,
+      "opportunity_id": "radar-prophet-COST-2026-10-02"
+    },
+    {
+      "ticker": "ESE",
+      "feed": "prophet",
+      "why": "active Prophet plan ESE-BULL-20260930, phase pre_trigger, conviction 11",
+      "as_of": "2026-10-02",
+      "staleness_days": 1,
+      "opportunity_id": "radar-prophet-ESE-2026-10-02"
+    },
+    {
+      "ticker": "FBK",
+      "feed": "prophet",
+      "why": "active Prophet plan FBK-BULL-20261002, phase pre_trigger, conviction 10",
+      "as_of": "2026-10-02",
+      "staleness_days": 1,
+      "opportunity_id": "radar-prophet-FBK-2026-10-02"
+    },
+    {
+      "ticker": "IRDM",
+      "feed": "prophet",
+      "why": "active Prophet plan IRDM-BULL-20260930, phase pre_trigger, conviction 35",
+      "as_of": "2026-10-02",
+      "staleness_days": 1,
+      "opportunity_id": "radar-prophet-IRDM-2026-10-02"
+    },
+    {
+      "ticker": "KRC",
+      "feed": "prophet",
+      "why": "active Prophet plan KRC-BULL-20261002, phase triggered_pre_t1, conviction 7",
+      "as_of": "2026-10-02",
+      "staleness_days": 1,
+      "opportunity_id": "radar-prophet-KRC-2026-10-02"
+    },
+    {
+      "ticker": "LIN",
+      "feed": "prophet",
+      "why": "active Prophet plan LIN-BULL-20260930, phase pre_trigger, conviction 7",
+      "as_of": "2026-10-02",
+      "staleness_days": 1,
+      "opportunity_id": "radar-prophet-LIN-2026-10-02"
+    },
+    {
+      "ticker": "MTRN",
       "feed": "movers",
-      "why": "S&P mover +12.7% 1D ()",
-      "as_of": "2026-08-31",
+      "why": "S&P mover +9.5% 1D ()",
+      "as_of": "2026-10-02",
       "staleness_days": 1,
-      "opportunity_id": "radar-movers-LITZ-2026-08-31"
+      "opportunity_id": "radar-movers-MTRN-2026-10-02"
     },
     {
-      "ticker": "LRCX",
-      "feed": "confluence",
-      "why": "confluence combo Weekly short-term uptrend + RSI-14 washed out + POC retest holds firing, test WR 65%",
-      "as_of": "2026-08-31",
+      "ticker": "NUVB",
+      "feed": "movers",
+      "why": "S&P mover -7.6% 1D ()",
+      "as_of": "2026-10-02",
       "staleness_days": 1,
-      "opportunity_id": "radar-confluence-LRCX-2026-08-31"
+      "opportunity_id": "radar-movers-NUVB-2026-10-02"
     },
     {
-      "ticker": "LUMN",
-      "feed": "prophet",
-      "why": "active Prophet plan LUMN-BULL-20260831, phase triggered_pre_t1, conviction 14",
-      "as_of": "2026-08-31",
+      "ticker": "PENG",
+      "feed": "movers",
+      "why": "S&P mover +11.6% 1D ()",
+      "as_of": "2026-10-02",
       "staleness_days": 1,
-      "opportunity_id": "radar-prophet-LUMN-2026-08-31"
+      "opportunity_id": "radar-movers-PENG-2026-10-02"
     },
     {
-      "ticker": "MIR",
-      "feed": "prophet",
-      "why": "active Prophet plan MIR-BULL-20260831, phase pre_trigger, conviction 13",
-      "as_of": "2026-08-31",
+      "ticker": "RXO",
+      "feed": "movers",
+      "why": "S&P mover +9.5% 1D ()",
+      "as_of": "2026-10-02",
       "staleness_days": 1,
-      "opportunity_id": "radar-prophet-MIR-2026-08-31"
+      "opportunity_id": "radar-movers-RXO-2026-10-02"
     },
     {
-      "ticker": "SRE",
-      "feed": "confluence",
-      "why": "confluence combo Weekly reclaims 100-day line + weekly RSI stack curls up + RSI-21 washed out firing, test WR 66%",
-      "as_of": "2026-08-31",
+      "ticker": "STX",
+      "feed": "movers",
+      "why": "S&P mover -10.2% 1D (Technology)",
+      "as_of": "2026-10-02",
       "staleness_days": 1,
-      "opportunity_id": "radar-confluence-SRE-2026-08-31"
+      "opportunity_id": "radar-movers-STX-2026-10-02"
     },
     {
-      "ticker": "WERN",
-      "feed": "prophet",
-      "why": "active Prophet plan WERN-BULL-20260714, phase triggered_pre_t1, conviction 33",
-      "as_of": "2026-08-31",
+      "ticker": "SYNA",
+      "feed": "movers",
+      "why": "S&P mover +14.1% 1D ()",
+      "as_of": "2026-10-02",
       "staleness_days": 1,
-      "opportunity_id": "radar-prophet-WERN-2026-08-31"
+      "opportunity_id": "radar-movers-SYNA-2026-10-02"
     },
     {
-      "ticker": "XRAY",
-      "feed": "prophet",
-      "why": "active Prophet plan XRAY-BULL-20260831, phase triggered_pre_t1, conviction 10",
-      "as_of": "2026-08-31",
-      "staleness_days": 1,
-      "opportunity_id": "radar-prophet-XRAY-2026-08-31"
+      "ticker": "ACN",
+      "feed": "earnings",
+      "why": "earnings 2026-10-01 pre-market",
+      "as_of": "2026-09-30",
+      "staleness_days": 3,
+      "opportunity_id": "radar-earnings-ACN-2026-09-30"
     },
     {
-      "ticker": "KVYO",
-      "feed": "prophet",
-      "why": "active Prophet plan KVYO-BULL-20260626, phase pre_trigger, conviction 74",
-      "as_of": "2026-08-28",
-      "staleness_days": 4,
-      "opportunity_id": "radar-prophet-KVYO-2026-08-28"
+      "ticker": "CAG",
+      "feed": "earnings",
+      "why": "earnings 2026-09-30 pre-market",
+      "as_of": "2026-09-30",
+      "staleness_days": 3,
+      "opportunity_id": "radar-earnings-CAG-2026-09-30"
     },
     {
-      "ticker": "CHRW",
-      "feed": "prophet",
-      "why": "active Prophet plan CHRW-BULL-20260827, phase triggered_pre_t1, conviction 12",
-      "as_of": "2026-08-27",
-      "staleness_days": 5,
-      "opportunity_id": "radar-prophet-CHRW-2026-08-27"
+      "ticker": "CALM",
+      "feed": "earnings",
+      "why": "earnings 2026-09-30 pre-market",
+      "as_of": "2026-09-30",
+      "staleness_days": 3,
+      "opportunity_id": "radar-earnings-CALM-2026-09-30"
+    },
+    {
+      "ticker": "FDS",
+      "feed": "earnings",
+      "why": "earnings 2026-09-30 pre-market",
+      "as_of": "2026-09-30",
+      "staleness_days": 3,
+      "opportunity_id": "radar-earnings-FDS-2026-09-30"
+    },
+    {
+      "ticker": "HUBG",
+      "feed": "earnings",
+      "why": "earnings 2026-10-01",
+      "as_of": "2026-09-30",
+      "staleness_days": 3,
+      "opportunity_id": "radar-earnings-HUBG-2026-09-30"
+    },
+    {
+      "ticker": "MKC",
+      "feed": "earnings",
+      "why": "earnings 2026-10-01 pre-market",
+      "as_of": "2026-09-30",
+      "staleness_days": 3,
+      "opportunity_id": "radar-earnings-MKC-2026-09-30"
+    },
+    {
+      "ticker": "MU",
+      "feed": "earnings",
+      "why": "earnings 2026-09-30 after hours",
+      "as_of": "2026-09-30",
+      "staleness_days": 3,
+      "opportunity_id": "radar-earnings-MU-2026-09-30"
+    },
+    {
+      "ticker": "NKE",
+      "feed": "earnings",
+      "why": "earnings 2026-10-01 after hours",
+      "as_of": "2026-09-30",
+      "staleness_days": 3,
+      "opportunity_id": "radar-earnings-NKE-2026-09-30"
+    },
+    {
+      "ticker": "PRGS",
+      "feed": "earnings",
+      "why": "earnings 2026-09-30 after hours",
+      "as_of": "2026-09-30",
+      "staleness_days": 3,
+      "opportunity_id": "radar-earnings-PRGS-2026-09-30"
     }
   ],
   "queue": {
-    "added": 29,
-    "expired": 20,
-    "total": 467,
-    "open": 228,
-    "doa_skipped": 9
+    "added": 13,
+    "expired": 0,
+    "total": 567,
+    "open": 275,
+    "doa_skipped": 18
   },
   "tiers_summary": {
-    "as_of": "2026-08-31",
+    "as_of": "2026-10-02",
     "t1": 28,
-    "t2": 607,
-    "t3": 2033
+    "t2": 323,
+    "t3": 2388
   },
   "cadence": {
     "available": true,

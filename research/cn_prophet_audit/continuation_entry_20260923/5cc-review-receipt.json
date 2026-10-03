@@ -1,0 +1,22 @@
+{
+  "operation_key": "cn-action-neutral-review-5ccbf0ca-20260923",
+  "reviewed_head": "5ccbf0ca715bf4511054467680684bba2685e661",
+  "native_session_id": "062ece48-7717-4061-8bab-9c057f43e1d1",
+  "status": "PARTIAL",
+  "finding_classes": {
+    "major": 1,
+    "minor": 3,
+    "nit": 1
+  },
+  "prior_A_B_C_closed": true,
+  "source_review_is_release_approval": false,
+  "independent_test_execution": false,
+  "closure": "SOL_CLOSED_STOP_ACKNOWLEDGED",
+  "active_child": false,
+  "digests": {
+    "native-review-5cc.json": "15246e87ccb9ed0e770c394c7f1fd5e447dd78e01324b8143befa6ed8b26f43c",
+    "native-review-5cc-stop.json": "65a1c13dc375e573620865895d08a458e97ef3a6b0f09d51a8f5f619186ffb45",
+    "5cc-independent-review.md": "8fc55fa0dc09a5839d9108db7f9ab14dbed789a6d81c3f8fe2bff0d6ff46d37c",
+    "5cc-review-closure.md": "f5a7edd24f282de633d38dbafc0963e255fb03b408819eb8f02312166dcf2ad2"
+  }
+}

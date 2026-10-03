@@ -17,6 +17,7 @@ import ast
 import hashlib
 import importlib.util
 import json
+import shutil
 import struct
 import subprocess
 import sys
@@ -608,6 +609,72 @@ def test_a_bare_attribute_target_parses_to_an_empty_valued_attribute():
     assert (state.kind, state.attribute, state.value) == ("attribute", "data-locked", "")
     quoted = cpe.parse_force_state('err:[data-state="error"]')
     assert (quoted.kind, quoted.attribute, quoted.value) == ("attribute", "data-state", "error")
+
+
+def test_hover_and_focus_targets_parse_as_real_interactions():
+    hovered = cpe.parse_force_state("pair_hover:hover(.factor-cell)")
+    focused = cpe.parse_force_state("search_focus:focus(.search-trigger)")
+
+    assert (hovered.kind, hovered.attribute, hovered.value) == ("hover", None, ".factor-cell")
+    assert (focused.kind, focused.attribute, focused.value) == ("focus", None, ".search-trigger")
+    assert hovered.as_payload()["kind"] == "hover"
+    assert focused.as_payload()["kind"] == "focus"
+
+
+class _InteractionLocator:
+    def __init__(self, *, applies: bool = True):
+        self.first = self
+        self.applies = applies
+        self.hovered = False
+        self.focused = False
+
+    def hover(self, *, timeout: int):
+        assert timeout > 0
+        self.hovered = True
+
+    def focus(self, *, timeout: int):
+        assert timeout > 0
+        self.focused = True
+
+    def evaluate(self, script: str):
+        if "matches(':hover')" in script:
+            return self.applies and self.hovered
+        if "document.activeElement" in script:
+            return self.applies and self.focused
+        raise AssertionError(f"unexpected interaction verifier: {script}")
+
+
+class _InteractionPage:
+    def __init__(self, locator: _InteractionLocator):
+        self._locator = locator
+        self.seen_selector = None
+
+    def locator(self, selector: str):
+        self.seen_selector = selector
+        return self._locator
+
+
+@pytest.mark.parametrize(
+    ("spec", "method_flag"),
+    [
+        ("pair_hover:hover(.factor-cell)", "hovered"),
+        ("search_focus:focus(.search-trigger)", "focused"),
+    ],
+)
+def test_real_interaction_force_applies_and_verifies_without_a_browser(spec: str, method_flag: str):
+    force = cpe.parse_force_state(spec)
+    locator = _InteractionLocator()
+    page = _InteractionPage(locator)
+
+    assert cpe._apply_interaction_force(page, force, timeout_ms=250) == force.name
+    assert page.seen_selector == force.value
+    assert getattr(locator, method_flag) is True
+
+
+def test_real_interaction_force_refuses_an_unverified_state():
+    force = cpe.parse_force_state("pair_hover:hover(.factor-cell)")
+    page = _InteractionPage(_InteractionLocator(applies=False))
+    assert cpe._apply_interaction_force(page, force, timeout_ms=250) is None
 
 
 def test_a_malformed_force_state_exits_usage_without_writing_an_artifact(
@@ -1322,3 +1389,74 @@ def test_annotations_start_the_line_as_bare_prints():
 
     assert found >= 3, "the module should still carry its annotation emissions"
     assert "log.warning" not in source and "logger.warning" not in source
+
+
+def test_state_seed_source_is_a_terminated_statement_safe_to_concatenate():
+    """The seed init script is plain text that wrappers concatenate onto.
+
+    Shipped defect (sanctions_map evidence, 2026-09-08): the seed was emitted as an
+    unterminated ``(fn)(state)``; a capture wrapper appended its own IIFE after a
+    newline, and the two parsed as ONE call-of-a-call —
+    ``(intermediate value)(...) is not a function`` — thrown before the page's
+    first script and recorded in the manifest as a page console error with no
+    source URL. The fix is the terminating semicolon, never a try/catch.
+    """
+    seed = cpe.state_seed_source({"theme": "dark", "locale": "en"})
+    assert seed.rstrip().endswith(");"), seed[-40:]
+    wrapper_iifes = "\n(function(){ globalThis.__wrapped = 1; })();"
+    composed = seed + wrapper_iifes
+    # Two statements, not one: the seed's closing ')' is followed by ';' BEFORE the newline.
+    assert ");\n(function" in composed
+    assert ")\n(function" not in composed
+    node = shutil.which("node")
+    if node:  # behavioural proof when a JS engine is on PATH; the string assertions above bind regardless
+        probe = composed + "\nif (globalThis.__wrapped !== 1) throw new Error('wrapper IIFE never ran');"
+        run = subprocess.run([node, "-e", probe], capture_output=True, text=True, timeout=30)
+        assert run.returncode == 0, run.stderr
+
+
+# ---------------------------------------------------------------------------
+# sky-fx transient flourish wait
+# ---------------------------------------------------------------------------
+
+class _FxGoneTracker:
+    """Records how wait_for_function was called."""
+
+    def __init__(self, raise_exc: bool = False):
+        self.calls: list[dict] = []
+        self._raise_exc = raise_exc
+
+    def wait_for_function(self, fn, *, arg=None, timeout=None):
+        self.calls.append({"fn": fn, "arg": arg, "timeout": timeout})
+        if self._raise_exc:
+            raise Exception("simulated timeout")
+
+
+def test_wait_transient_fx_gone_calls_wait_for_function_and_returns_True():
+    """Helper calls page.wait_for_function with querySelector + .sky-fx and returns True."""
+    tracker = _FxGoneTracker()
+    # The helper exists and returns True when wait_for_function succeeds
+    result = cpe._wait_transient_fx_gone(tracker, selector=".sky-fx", timeout_ms=3000)
+    assert result is True
+    assert len(tracker.calls) == 1
+    call = tracker.calls[0]
+    # The expression contains querySelector and the arg is the selector
+    assert "querySelector" in call["fn"]
+    assert call["arg"] == ".sky-fx"
+    assert call["timeout"] == 3000
+
+
+def test_wait_transient_fx_gone_raises_False_on_exception():
+    """Stub whose wait_for_function raises → helper returns False, never raises."""
+    tracker = _FxGoneTracker(raise_exc=True)
+    result = cpe._wait_transient_fx_gone(tracker, selector=".sky-fx", timeout_ms=3000)
+    assert result is False
+
+
+def test_wait_transient_fx_gone_false_no_wait_for_function():
+    """Stub without wait_for_function → False, no raise."""
+    class NoWff:
+        pass
+
+    result = cpe._wait_transient_fx_gone(NoWff(), selector=".sky-fx", timeout_ms=3000)
+    assert result is False

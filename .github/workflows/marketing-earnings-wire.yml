@@ -122,6 +122,7 @@ jobs:
             config
             data/marketing
             data/earnings
+            data/chronicle
             site/live
             site/marketdata
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -189,6 +190,26 @@ jobs:
             python -m scripts.marketing_fastlane_daemon \
               --lane earnings --once --no-spool
           fi
+
+      - name: project Chronicle earnings-call events
+        # This is the CEI -> X/outbox bridge. It DOES NOT send to X: it only
+        # projects the committed, nightly-owned Chronicle ledger through
+        # earnings_call_lane into the same tracked outbox this workflow already
+        # commits. marketing-publish.yml remains the sole send owner, with its
+        # independent approval + MARKETING_PUBLISH_ENABLED gates.
+        env:
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: |
+          set -euo pipefail
+          args=(--root "${GITHUB_WORKSPACE}")
+          if [ "${DRY_RUN:-}" = "true" ]; then
+            args+=(--dry-run)
+          fi
+          python -m scripts.marketing_earnings_call_projection "${args[@]}"
 
       - name: commit queued earnings posts (no-op when nothing changed)
         if: always() && inputs.dry_run != true

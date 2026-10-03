@@ -1,0 +1,40 @@
+{
+  "gex:21": {
+    "gex-chart": "bae2e11b937f2ea38c50a0e30f04e6235f9771d4874d48934e406f3ff5697d5c",
+    "spx-flip-chart": "119731de8183776a025da9d053b0474bfa5916c56601a90bcfb4bc3bf6537a8f"
+  },
+  "gex:63": {
+    "gex-chart": "cd72f72759d1bca99c9506fd0573b5eeb6492f988946cb06105937e80dd20ca7",
+    "spx-flip-chart": "d8d52d3daa3efe3b68c2e4aeeb2e1d62e59e4e5cac90597c4a0d39938d5986b1"
+  },
+  "gex:126": {
+    "gex-chart": "cd72f72759d1bca99c9506fd0573b5eeb6492f988946cb06105937e80dd20ca7",
+    "spx-flip-chart": "d8d52d3daa3efe3b68c2e4aeeb2e1d62e59e4e5cac90597c4a0d39938d5986b1"
+  },
+  "gex:252": {
+    "gex-chart": "cd72f72759d1bca99c9506fd0573b5eeb6492f988946cb06105937e80dd20ca7",
+    "spx-flip-chart": "d8d52d3daa3efe3b68c2e4aeeb2e1d62e59e4e5cac90597c4a0d39938d5986b1"
+  },
+  "gex:9999": {
+    "gex-chart": "cd72f72759d1bca99c9506fd0573b5eeb6492f988946cb06105937e80dd20ca7",
+    "spx-flip-chart": "d8d52d3daa3efe3b68c2e4aeeb2e1d62e59e4e5cac90597c4a0d39938d5986b1"
+  },
+  "sys:63": {
+    "sys-chart": "b4b3ac551b1bd67fbb9f71852234f74561bfad2c694a783d143b7c706a629c59"
+  },
+  "sys:252": {
+    "sys-chart": "b7adad56e8da761bd0c0e678e2c8ab76258d96be616fb9f66775237e7be819c0"
+  },
+  "sys:9999": {
+    "sys-chart": "8c04fa60ba70c63497324a5cb251012763a4b0ae17bf167e39c41173d8488c8a"
+  },
+  "cor:63": {
+    "cor-chart": "7a32b4cf6bee2ad9766f6483755751f321112bec36afb93bd795060034b37b2f"
+  },
+  "cor:252": {
+    "cor-chart": "eb376d514e7d195572df20c61d1cb600d67494cb02000266e00cbfb095f204ee"
+  },
+  "cor:9999": {
+    "cor-chart": "e8fdd06e14ccbc631fb54653b06ae16fb98e302fd81fedabcbf2bb459dcf4702"
+  }
+}

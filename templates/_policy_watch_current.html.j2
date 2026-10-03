@@ -1,0 +1,193 @@
+{# Display-only current-source panel. Parent supplies t/bl macros and `current`. #}
+{% set SOURCES_CHECKED_LABEL = ('Sources checked','来源已获取') %}
+{% set LEGACY_UNVERIFIED_LABEL = ('Saved records — acquisition unverified','已保存记录—获取情况未核实') %}
+{% set STATE_LABELS = {
+  'source_outage': ('Some sources did not answer','部分来源未响应'),
+  'stale': ('Updates delayed','更新延迟'),
+  'invalid_newest': ('Latest update unavailable','最新更新不可用'),
+  'last_good': ('Earlier usable records','更早可用记录'),
+  'no_new': ('No new official items','暂无新官方条目'),
+} %}
+{% set UNKNOWN_STATE_LABEL = ('Official updates unavailable','官方动态暂不可用') %}
+{% set FEED_STATUS_LABELS = {
+  'mixed': ('Some sources did not answer','部分来源未响应'),
+  'failed': ('Some sources did not answer','部分来源未响应'),
+} %}
+{# Every current-source subrecord is expected to be a mapping, but this is a
+   public render boundary: a partial/corrupt object must degrade to an empty
+   state rather than letting Jinja fall back from a missing key such as
+   `items` to Python's `dict.items` method. #}
+{% set current_map = current if current is mapping else {} %}
+{% set raw_cal = current_map.get('calendar') %}
+{% set raw_stmt = current_map.get('statement') %}
+{% set raw_news = current_map.get('headlines') %}
+{% set raw_cmp = current_map.get('comparison') %}
+{% set cal = raw_cal if raw_cal is mapping else none %}
+{% set stmt = raw_stmt if raw_stmt is mapping else none %}
+{% set news = raw_news if raw_news is mapping else none %}
+{% set cmp = raw_cmp if raw_cmp is mapping else none %}
+{% set facts = stmt.get('facts') if stmt and stmt.get('facts') is mapping else none %}
+{% set action = facts.get('action') if facts else none %}
+{% set last_good = news.get('last_good') if news and news.get('last_good') is mapping else none %}
+{% set raw_news_items = news.get('items', []) if news else [] %}
+{% set news_items = raw_news_items if raw_news_items is sequence and raw_news_items is not string and raw_news_items is not mapping else [] %}
+{% set raw_last_good_items = last_good.get('items', []) if last_good else [] %}
+{% set last_good_items = raw_last_good_items if raw_last_good_items is sequence and raw_last_good_items is not string and raw_last_good_items is not mapping else [] %}
+{% set raw_news_state = news.get('state') if news else none %}
+{% set news_state = raw_news_state if raw_news_state is string else '' %}
+{% set raw_feed_status = news.get('feed_status') if news else none %}
+{% set feed_status = raw_feed_status if raw_feed_status is string else none %}
+{% set fetched_at = news.get('fetched_at') if news and news.get('fetched_at') is string else none %}
+{% set fetched_at_display = news.get('fetched_at_display') if news and news.get('fetched_at_display') is string else none %}
+{% set saved_date = news.get('saved_date') if news and news.get('saved_date') is string else none %}
+{% set fed_feed_health = news.get('fed_feed_health') if news and news.get('fed_feed_health') is string else none %}
+{% set raw_stmt_state = stmt.get('state') if stmt else none %}
+{% set stmt_state = raw_stmt_state if raw_stmt_state is string else '' %}
+{% set last_recorded = stmt.get('last_recorded') if stmt and stmt.get('last_recorded') is mapping else none %}
+{% set last_recorded_date = last_recorded.get('decision_date') if last_recorded and last_recorded.get('decision_date') is string else none %}
+{% set last_recorded_url = last_recorded.get('url') if last_recorded and last_recorded.get('url') is string else none %}
+{% set elapsed_decision = stmt.get('elapsed_decision') if stmt and stmt.get('elapsed_decision') is string else none %}
+{% set decision_date = stmt.get('decision_date') if stmt and stmt.get('decision_date') is string else none %}
+{% set statement_source_date = stmt.get('source_date') if stmt and stmt.get('source_date') is string else none %}
+{% set statement_collected_at = stmt.get('collected_at') if stmt and stmt.get('collected_at') is string else none %}
+{% set statement_seed = stmt.get('seed') is sameas true if stmt else false %}
+{% set statement_url = stmt.get('url') if stmt and stmt.get('url') is string else none %}
+{% set vote = facts.get('vote') if facts and facts.get('vote') is mapping else none %}
+{% set raw_cmp_state = cmp.get('state') if cmp else none %}
+{% set cmp_state = raw_cmp_state if raw_cmp_state is string else '' %}
+{% set prior_vote = cmp.get('prior_vote') if cmp and cmp.get('prior_vote') is mapping else none %}
+{% set comparison_prior_date = cmp.get('prior_date') if cmp and cmp.get('prior_date') is string else none %}
+{% set raw_cmp_highlights = cmp.get('highlights', []) if cmp else [] %}
+{% set cmp_highlights = raw_cmp_highlights if raw_cmp_highlights is sequence and raw_cmp_highlights is not string and raw_cmp_highlights is not mapping else [] %}
+{% set last_good_fetched_at = last_good.get('fetched_at') if last_good and last_good.get('fetched_at') is string else none %}
+{% set last_good_fetched_at_display = last_good.get('fetched_at_display') if last_good and last_good.get('fetched_at_display') is string else none %}
+{% set last_good_saved_date = last_good.get('saved_date') if last_good and last_good.get('saved_date') is string else none %}
+{% set ns = namespace(headline_rows=[], news_state=news_state) %}
+{# "Sources checked" is a strong claim — only print it when the acquisition is
+   BOTH a complete, verified Fed feed check AND has a valid fetched_at. A raw
+   aggregate feed_status of "ok" or a legacy state of "ok" with no receipt
+   must never bypass this into the same wording. #}
+{% set ns_checked = fed_feed_health == 'ok' and fetched_at %}
+<div class="pw-current" data-pw-current="1">
+  <div class="pw-glance-grid">
+    <article class="pw-card" id="pw-last-decision">
+      <h3 class="pw-card-title">{{ t('Last recorded decision','最近一次已收录决议') }}</h3>
+      {% if stmt_state == 'awaiting_statement' %}
+      <p class="pw-primary">{{ t('The latest decision is not yet available. An older recorded statement is not treated as current.','最新决议尚不可用。更早收录的声明不作为当前决议。') }}</p>
+      <p class="pw-mini-copy">{{ t('Elapsed decision','已过决议日') }} {{ elapsed_decision or decision_date }}</p>
+      {% if last_recorded %}
+      <p class="pw-mini-copy" data-historical-decision="{{ last_recorded_date }}">
+        <span class="pw-chip">{{ t('Historical decision','历史决议') }}</span>
+        {{ t('Not the current decision —','并非当前决议 —') }} {{ last_recorded_date }}
+        {% if last_recorded_url %} · <a class="gbtn gbtn-sm" href="{{ last_recorded_url }}" target="_blank" rel="noopener">{{ t('Open','打开') }}</a>{% endif %}
+      </p>
+      {% endif %}
+      {% elif stmt_state == 'recorded' %}
+      <p class="pw-primary">
+        {% if action == 'maintain' %}{{ t('The Committee maintained the federal funds target range at','委员会将联邦基金目标区间维持在') }}
+        {% elif action == 'lower' %}{{ t('The Committee lowered the federal funds target range to','委员会将联邦基金目标区间下调至') }}
+        {% elif action == 'raise' %}{{ t('The Committee raised the federal funds target range to','委员会将联邦基金目标区间上调至') }}
+        {% elif action %}{{ t('Recorded decision facts','已收录决议事实') }}
+        {% else %}{{ t('A recorded statement is available; target-range wording could not be parsed from the source text.','已有收录声明；未能从原文解析目标区间表述。') }}
+        {% endif %}
+        {% if facts and facts.get('target_range') %}<strong> {{ facts.get('target_range') }}</strong>{% endif %}{% if action %}.{% endif %}
+      </p>
+      <div class="pw-meta-row">
+        {% if statement_source_date %}<span class="pw-chip" data-statement-date="{{ statement_source_date }}">{{ t('Statement date','声明日期') }} {{ statement_source_date }}</span>{% endif %}
+        {% if vote %}
+        <span class="pw-chip" data-vote-for="{{ vote.get('for') }}" data-vote-against="{{ vote.get('against') }}">
+          {{ t('Vote','表决') }} {{ vote.get('for') }}–{{ vote.get('against') }}
+          {% if cmp_state == 'available' and prior_vote %} ({{ t('prior','上一次') }} {{ prior_vote.get('for') }}–{{ prior_vote.get('against') }}){% endif %}
+        </span>
+        {% endif %}
+      </div>
+      {% elif stmt_state == 'unavailable' %}
+      <p class="pw-primary">{{ t('The latest recorded statement record could not be used.','最新声明记录无法使用。') }}</p>
+      {% else %}
+      <p class="pw-primary">{{ t('No recorded FOMC statement is available.','尚无已收录的FOMC声明。') }}</p>
+      {% endif %}
+    </article>
+    <article class="pw-card blue{% if ns.news_state in ['invalid_newest','missing','source_outage','stale'] %} pw-current-degraded{% endif %}" id="pw-official-updates">
+      <h3 class="pw-card-title">{{ t('Official updates','官方动态') }}</h3>
+      {% if ns.news_state == 'invalid_newest' %}
+      <p class="pw-mini-copy">{{ t('Official updates delayed. An earlier saved copy may be shown; its acquisition status is shown below and it is not a fresh check.','官方动态延迟。可能显示更早的已保存副本；其获取状态见下方，且并非新的获取。') }}</p>
+      {% set ns.headline_rows = last_good_items %}
+      {% elif ns.news_state == 'source_outage' %}
+      <p class="pw-mini-copy">{{ t('Official updates delayed. A relevant Federal Reserve feed did not succeed.','官方动态延迟。相关美联储源未成功获取。') }}</p>
+      {% set ns.headline_rows = news_items %}
+      {% elif ns.news_state == 'stale' %}
+      <p class="pw-mini-copy">{{ t('Official updates delayed. Last successful check is older than one day.','官方动态延迟。最近一次成功获取已超过一天。') }}</p>
+      {% set ns.headline_rows = news_items %}
+      {% elif ns.news_state == 'missing' %}
+      <p class="pw-primary">{{ t('Official updates are not available in this update.','本次更新没有官方动态。') }}</p>
+      {% set ns.headline_rows = [] %}
+      {% elif ns.news_state == 'no_new' %}
+      <p class="pw-primary">{{ t('No new admitted Federal Reserve monetary or speech items since the last check.','自最近获取以来，没有新的可收录美联储货币或讲话条目。') }}</p>
+      {% set ns.headline_rows = [] %}
+      {% elif ns.news_state == 'empty' %}
+      <p class="pw-primary">{{ t('Official updates unavailable.','官方动态暂不可用。') }}</p>
+      {% set ns.headline_rows = [] %}
+      {% else %}
+      {% set ns.headline_rows = news_items %}
+      {% endif %}
+      {% if ns.headline_rows %}
+      <div class="pw-event-list">
+        {% for item in ns.headline_rows[:4] if item is mapping and item.get('title') is string and item.get('url') is string and item.get('published_at') is string %}
+        <div class="pw-event">
+          <span class="pw-date">{{ item.published_at[:10] }}</span>
+          <span class="pw-event-name">
+            <span class="pw-source-original">{{ t('Original source text','原文') }}</span>
+            {{ item.title }}
+          </span>
+          <a class="gbtn gbtn-sm" href="{{ item.url }}" target="_blank" rel="noopener">{{ t('Open','打开') }}</a>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if ns.news_state == 'invalid_newest' and last_good_fetched_at %}
+      <p class="pw-mini-copy" data-fetched-at="{{ last_good_fetched_at }}">{{ t('Earlier usable record','更早可用记录') }} {{ last_good_fetched_at_display or last_good_fetched_at }}</p>
+      {% elif ns.news_state == 'invalid_newest' and last_good_saved_date %}
+      <p class="pw-mini-copy" data-saved-date="{{ last_good_saved_date }}">{{ t('Earlier usable record (acquisition time not recorded)','更早可用记录（未记录获取时间）') }} {{ last_good_saved_date }}</p>
+      {% elif fetched_at %}
+      <p class="pw-mini-copy" data-fetched-at="{{ fetched_at }}">{{ t('Last checked','最近获取') }} {{ fetched_at_display or fetched_at }}</p>
+      {% elif saved_date and ns.news_state != 'missing' %}
+      <p class="pw-mini-copy">{{ t('Saved day (acquisition time not recorded)','保存日期（未记录获取时间）') }} {{ saved_date }}</p>
+      {% endif %}
+    </article>
+  </div>
+
+  <details class="pw-details" id="pw-sources-changes">
+    <summary class="gbtn gbtn-sm">{{ t('Sources & changes','来源与变化') }}</summary>
+    <div class="pw-detail-body">
+      {% if news %}
+      <p class="pw-mini-copy">{{ t('Official headlines method','官方头条方法') }}:
+        {% if fetched_at %}{{ t('Last checked','最近获取') }} <span data-fetched-at="{{ fetched_at }}">{{ fetched_at }}</span>{% elif saved_date %}{{ t('Saved day','保存日期') }} {{ saved_date }}{% else %}{{ t('Unavailable','不可用') }}{% endif %}
+        {% set feed_status_label = (SOURCES_CHECKED_LABEL if ns_checked else LEGACY_UNVERIFIED_LABEL) if feed_status == 'ok' else FEED_STATUS_LABELS.get(feed_status, UNKNOWN_STATE_LABEL) if feed_status else none %}
+        {% if feed_status_label %} · {{ t('Feed status','源状态') }} {{ t(feed_status_label[0], feed_status_label[1]) }}{% endif %}
+        {% set state_label = (SOURCES_CHECKED_LABEL if ns_checked else LEGACY_UNVERIFIED_LABEL) if ns.news_state == 'ok' else STATE_LABELS.get(ns.news_state, UNKNOWN_STATE_LABEL) if ns.news_state else none %}
+        {% if state_label %} · {{ t('State','状态') }} {{ t(state_label[0], state_label[1]) }}{% endif %}.
+      </p>
+      {% endif %}
+      {% if statement_collected_at %}
+      <p class="pw-mini-copy">{{ t('Statement collection time','声明收录时间') }} {{ statement_collected_at }}{% if statement_seed %} ({{ t('historical seed record','历史种子记录') }}){% endif %}.</p>
+      {% endif %}
+      {% if cmp_state == 'available' %}
+      <p>{{ t('Compared with the preceding recorded statement. Phrases are quoted from the source, not a model claim.','与上一份已收录声明比较。短语引自原文，不是模型判断。') }}</p>
+      <p class="pw-mini-copy">{{ t('Prior statement','上一份声明') }} {{ comparison_prior_date or t('Unavailable','不可用') }}</p>
+      {% for row in cmp_highlights if row is mapping %}
+        {% if row.removed_text or row.added_text %}
+      <p>
+        {% if row.removed_text %}<span class="pw-source-original">− {{ row.removed_text }}</span>{% endif %}
+        {% if row.added_text %}<span class="pw-source-original">+ {{ row.added_text }}</span>{% endif %}
+      </p>
+        {% endif %}
+      {% endfor %}
+      {% else %}
+      <p>{{ t('Comparison unavailable — no usable prior statement.','无法比较——没有可用的上一份声明。') }}</p>
+      {% endif %}
+      {% if statement_url %}
+      <p><a class="gbtn gbtn-sm" href="{{ statement_url }}" target="_blank" rel="noopener">{{ t('Open official statement','阅读官方声明') }}</a></p>
+      {% endif %}
+    </div>
+  </details>
+</div>

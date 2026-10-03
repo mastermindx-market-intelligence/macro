@@ -1,16 +1,17 @@
 {
-  "date": "2026-08-31",
+  "date": "2026-10-02",
   "window_band": "OPEN",
-  "ipo_5y": -0.042670128897943416,
-  "spy_5y": 0.12634165123171215,
-  "gap_5y": -0.16901178012965556,
-  "priced_90d": 91,
+  "ipo_5y": -0.033427606231252294,
+  "spy_5y": 0.13637365792562073,
+  "gap_5y": -0.16980126415687302,
+  "priced_90d": 62,
   "spac_pct_90d": 52,
-  "upcoming_n": 2,
+  "upcoming_n": 1,
   "verdict": "trails",
-  "lockups_approaching": 12,
-  "lockups_just_expired": 14,
-  "next_lockup": "MMED",
-  "next_lockup_date": "2026-09-02",
-  "built": "2026-09-01 06:33 UTC"
+  "lockups_approaching": 34,
+  "lockups_just_expired": 5,
+  "next_lockup": "TMCR",
+  "next_lockup_company": "Metals Royalty Co Inc.",
+  "next_lockup_date": "2026-10-05",
+  "built": "2026-10-03 19:45 UTC"
 }

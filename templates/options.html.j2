@@ -174,6 +174,11 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
   background:color-mix(in srgb,var(--oew-st-protect) 10%,var(--tile))}
 .st-aside{color:var(--oew-st-aside);border-color:var(--hair);background:transparent;opacity:.85}
 .st-ignore{color:var(--oew-st-ignore);border:1px solid transparent;background:transparent;opacity:.7}
+/* Data-outage chip — NOT a doctrine stance. Same geometry as .oew-stance so
+   the lede row does not jump; info tint, never the aside posture colour. */
+.oew-aib-lede-chip{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:11.5px;font-weight:700;
+  letter-spacing:.01em;white-space:nowrap;padding:4px 11px;border-radius:var(--r-pill);
+  border:1px solid var(--hair);color:var(--ink-info, var(--info));background:var(--tile)}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    ★ THE SIGNATURE — THE CLOSE LINE ★
@@ -223,6 +228,11 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
 .oew-pbody{padding:var(--s4)}
 .oew-pfoot{padding:10px var(--s4);border-top:1px solid var(--hair);background:var(--tile);
   font-size:11px;color:var(--muted);display:flex;gap:var(--s2);align-items:center;flex-wrap:wrap}
+/* F03-W2-4c · one-sentence footnote about the source break in put-skew
+   history. Inherits --muted from the panel foot; the wrapped paragraph is
+   allowed to grow to two lines on narrow viewports. No new tokens. */
+.oew-pfoot .oew-aib-note{flex-basis:100%;font-size:12px;color:var(--muted);
+  margin:var(--s2) 0 0;line-height:1.45}
 .oew-asof{margin-left:auto;font-size:10px;color:var(--oew-stamp);opacity:.9;letter-spacing:.02em}
 /* the ? help affordance — the Tier-2 home for mechanics (LENS popover) */
 .oew-help{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;
@@ -291,12 +301,130 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
 .oew-aib-detail summary:focus-visible{outline:2px solid var(--oew-accent);outline-offset:2px}
 .oew-aib-detailbody{margin-top:6px;display:flex;flex-direction:column;gap:7px}
 .oew-aib-dline{display:flex;flex-direction:column;gap:2px;font-size:11px}
+/* ── A-F03-W2-5b · PAYOFF LAB fold (dark + light are two art directions, TP-0
+   2026-08-27). Dark = command center (luminance depth: the accent dots are
+   the brightest thing in the fold, no glow). Light = research workspace
+   (ink weight instead of luminance; hairline discipline). Geometry is shared;
+   only the treatment of the wall/spot/flip marks changes — see html[data-
+   theme="light"] override below.  Inline `left:%` values are data-driven
+   geometry (allowed); nothing else inline. */
+.oew-lab-track{position:relative;height:4px;background:var(--hair);
+  border:1px solid var(--tile);margin-top:6px}
+.oew-lab-track i{position:absolute;display:block}
+.oew-lab-wall{top:-3px;width:1px;height:10px;background:var(--ink-2)}
+.oew-lab-flip{top:-3px;width:1px;height:4px;background:var(--muted)}
+.oew-lab-spot{top:-1px;width:6px;height:6px;background:var(--ink-2);margin-left:-3px}
+.oew-lab-be{top:-2px;width:7px;height:7px;background:var(--oew-accent);margin-left:-3.5px;
+  outline:1px solid var(--tile)}
+.oew-lab-legend{display:flex;justify-content:space-between;gap:var(--s2);
+  font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;
+  margin-top:4px}
+html[data-lang="zh"] .oew-lab-legend{letter-spacing:.02em;text-transform:none}
+.oew-lab-verdict{font-size:12px;font-weight:650;margin:0}
+.oew-lab-row{display:grid;grid-template-columns:auto 1fr;gap:6px var(--s2);
+  font-size:11.5px;align-items:baseline;padding:2px 0}
+.oew-lab-row .k{font-weight:650;color:var(--text)}
+.oew-lab-row .v{color:var(--ink-2);line-height:1.35}
+.oew-lab-row .v.oew-lab-null{color:var(--muted);font-style:normal}
+.oew-lab-foot{font-size:10.5px;color:var(--muted);margin:2px 0 0}
+/* ── A-F03-W3-2 · Payoff-fold catalyst chip ───────────────────────────────
+   Same geometry family as `.oew-aib-lede-chip` (the data-outage chip the
+   page already ships): no leading dot, info tint via `var(--ink-info,
+   var(--info))` text color, hairline border in `var(--hair)`, no glow,
+   no shadow, no color-mix blends on the added lines (every added value
+   is a token reference — see design-system gate).  Two real outcomes —
+   `is-before-expiry` (info tint, fed decision lands inside the expiry)
+   and `is-clear` (muted, none scheduled); the light override keeps the
+   fill transparent on both states so the chip never competes with the
+   cards' white material.
+   LIGHT TREATMENT (research workspace): white material, ink-weight
+   hairline, no fill, no shadow — the SAME chip on both themes, only
+   the fill flips from `var(--tile)` to transparent; tokens stay on the
+   page's own `--ink-info` / `--info` / `--muted` / `--hair` family. */
+.oew-lab-cat{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin:0;font-size:11px;font-weight:650;letter-spacing:.01em;white-space:nowrap;padding:3px 9px;border-radius:var(--r-pill);border:1px solid var(--hair);color:var(--ink-2);background:var(--tile)}
+.oew-lab-cat.is-before-expiry{color:var(--ink-info, var(--info));border-color:var(--ink-info, var(--info))}
+.oew-lab-cat.is-clear{color:var(--muted);background:transparent}
+html[data-theme="light"] .oew-lab-cat.is-before-expiry{background:transparent;border-color:var(--ink-info, var(--info))}
+html[data-theme="light"] .oew-lab-cat.is-clear{border-color:var(--hair)}
+@media (max-width:480px){.oew-lab-cat{white-space:normal}}
+/* Light override: ink-weight ticks (2px walls) instead of luminance dots;
+   accent stays the page's light-mode token (set on html[data-theme="light"]
+   .oew above) — no redefinition, no ring, no shadow. */
+html[data-theme="light"] .oew-lab-wall{width:2px}
+html[data-theme="light"] .oew-lab-be{outline:none}
+@media (max-width:640px){
+  .oew-lab-row{grid-template-columns:1fr;gap:2px}
+  .oew-lab-track{width:100%}
+}
 .oew-aib-dline .k{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .oew-aib-dline .v{color:var(--ink-2);line-height:1.4}
 .oew-aib-empty,.oew-aib-degraded{font-size:12.5px;color:var(--ink-2);line-height:1.5}
 .oew-aib-empty-lead{margin:0 0 4px}
 .oew-aib-empty-sub{margin:0;color:var(--muted);font-size:11px}
 .oew-aib-more{margin-left:auto;font-size:10.5px;color:var(--muted)}
+
+/* ── A-F03-W2-2 · BRIEF glance-tier lede ──────────────────────────────────
+   Dark (default, this page's bare selectors) = raised instrument slab —
+   luminance depth via an inner top highlight, no shadow. Light
+   (html[data-theme="light"], the page's own light-mode mechanism — see
+   html[data-theme="light"] .oew above) = white material on the cool canvas —
+   the highlight is deleted (a white-on-white bevel is a smudge) and a
+   hairline + one shallow shadow carry the depth instead. Same structure,
+   same semantics (lede -> evidence -> detail, stance vocabulary, EN/ZH
+   parity); only the material differs. Packet A-F03-W2-2 §6. */
+.oew-aib-lede{padding:var(--s3) var(--s4);border-bottom:1px solid var(--hair);
+  background:var(--tile);border-left:3px solid var(--hair);
+  box-shadow:inset 0 1px 0 color-mix(in srgb,var(--text) 6%,transparent)}
+.oew-aib-lede.is-current{border-left-color:var(--oew-accent)}
+.oew-aib-lede.is-lagging{border-left-color:var(--ink-info, var(--info))}
+.oew-aib-lede.is-stale,
+.oew-aib-lede.is-unknown{border-left-color:var(--ink-warn, var(--warn))}
+
+.oew-aib-lede-head{margin:0 0 6px;font-size:15.5px;line-height:1.35;font-weight:680;
+  letter-spacing:-.005em;color:var(--text)}
+.oew-aib-lede-stance{margin:0 0 7px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.oew-aib-lede-todo{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.oew-aib-lede-said{font-size:12.5px;line-height:1.45;color:var(--ink-2)}
+
+.oew-aib-fresh{margin:0;display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;
+  font-size:11px;color:var(--muted)}
+.oew-aib-fresh-age{padding:2px 8px;border-radius:var(--r-pill);
+  background:var(--tile);border:1px solid var(--hair);font-weight:600}
+.oew-aib-fresh-age.lvl-stale,
+.oew-aib-fresh-age.lvl-unknown{color:var(--ink-warn, var(--warn));
+  background:color-mix(in srgb,var(--warn) 12%,var(--tile));border-color:transparent}
+
+.oew-aib-degraded-lead{margin:0 0 4px;font-weight:620;color:var(--text)}
+.oew-aib-degraded-why{margin:0 0 8px;font-size:12px;color:var(--ink-2);line-height:1.5}
+.oew-aib-degraded-rcp{font-size:11.5px}
+.oew-aib-degraded-rcp>summary{cursor:pointer;color:var(--muted)}
+
+/* LIGHT — white material: delete the inner highlight, add a hairline (top +
+   right; bottom + left are already set above) and one shallow shadow — the
+   page's OWN shallow-shadow token (--card-shadow, already themed light/dark
+   at :theme.css), reused here rather than a new literal so this stays within
+   existing token discipline. The stale/unknown chip re-weights its fill down
+   (12% -> 8%) and gains a defined border, which the dark tile-fill version
+   does not need. */
+html[data-theme="light"] .oew-aib-lede{box-shadow:var(--card-shadow);
+  border-top:1px solid var(--hair);border-right:1px solid var(--hair)}
+html[data-theme="light"] .oew-aib-lede.is-current{border-left-color:var(--oew-accent)}
+html[data-theme="light"] .oew-aib-lede.is-lagging{border-left-color:var(--ink-info, var(--info))}
+html[data-theme="light"] .oew-aib-lede.is-stale,
+html[data-theme="light"] .oew-aib-lede.is-unknown{border-left-color:var(--ink-warn, var(--warn))}
+html[data-theme="light"] .oew-aib-lede-chip{background:transparent;border-color:var(--hair)}
+html[data-theme="light"] .oew-aib-fresh-age{background:transparent}
+html[data-theme="light"] .oew-aib-fresh-age.lvl-stale,
+html[data-theme="light"] .oew-aib-fresh-age.lvl-unknown{
+  background:color-mix(in srgb,var(--warn) 8%,transparent);
+  border-color:color-mix(in srgb,var(--warn) 35%,var(--hair))}
+
+@media (max-width:520px){
+  .oew-aib-lede{padding:var(--s3)}
+  .oew-aib-lede-head{font-size:14.5px}
+  .oew-aib-lede-stance{align-items:flex-start}
+  .oew-aib-fresh{gap:6px 10px}
+}
 
 /* ── AD-1 B5 band 2 · directional watch: a CONTINUATION of the ranked grid, so it
       reuses .oew-tkchip verbatim (incl. its data-goto jump) and adds only the
@@ -1005,7 +1133,11 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
        site/options_intel_brief.json via scripts/build_options_command.py's `aib`
        context (build_aib()/`_aib_card()`).  No ranking, ordering or scoring happens
        in this template. -->
-  <div class="oew-panel oew-aib" id="aib">
+  <div class="oew-panel oew-aib" id="aib"
+       data-aib-state="{{ aib.board_state or 'unavailable' }}"
+       data-aib-asof="{{ aib.freshness.asof_date or '' }}"
+       data-aib-receipt="{{ (aib.receipt_id or '')[:12] }}"
+       data-aib-fresh="{{ aib.freshness.level }}">
     {%- if sess.quality_en == 'Stale' %}
     <div class="oew-nofuse" role="status">
       <span>{{ t('The latest completed session is ' ~ sess.target_session ~ '. The panels below are retained prior-session context; each footer keeps its actual source date and none describes the target close.',
@@ -1029,9 +1161,39 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
       {% if aib.pending_session %}
       <span class="oew-aib-pending mono">{{ t('Newer session', '更新交易日') }} {{ aib.pending_session }} {{ t('awaiting position counts', '等待持仓统计') }}</span>
       {% endif %}
+      {%- if aib.healthy %}
       <span class="oew-aib-elig mono">{{ aib.eligible }}/{{ aib.present }} {{ t('names eligible', '名称符合条件') }}</span>
+      {%- endif %}
     </div>
     {% endif %}
+    {#- ── GLANCE TIER · lede ────────────────────────────────────────────────
+        The answer before the evidence: what today's brief says, what to do
+        about it, and how fresh it is.  Every string is a closed-vocabulary
+        lookup from build_aib() keyed on the payload's own board_state and
+        card count — no scoring, no ranking and no generated prose here. -#}
+    <div class="oew-aib-lede is-{{ aib.freshness.level }}">
+      <h3 class="oew-aib-lede-head">{{ t(aib.lede_head_en, aib.lede_head_zh) }}</h3>
+      <p class="oew-aib-lede-stance">
+        <span class="oew-aib-lede-todo">{{ t('What to do', '该怎么做') }}</span>
+        {%- if aib.lede_stance_slug == 'data' %}
+        <span class="oew-aib-lede-chip">{{ t(aib.lede_stance_word_en, aib.lede_stance_word_zh) }}</span>
+        {%- else %}
+        <span class="oew-stance st-{{ aib.lede_stance_slug }}">{{ t(aib.lede_stance_word_en, aib.lede_stance_word_zh) }}</span>
+        {%- endif %}
+        <span class="oew-aib-lede-said">{{ t(aib.lede_stance_en, aib.lede_stance_zh) }}</span>
+      </p>
+      <p class="oew-aib-fresh">
+        {%- if aib.freshness.asof_en %}
+        <span class="oew-aib-fresh-asof">{{ t('As of', '数据截至') }} {{ t(aib.freshness.asof_en, aib.freshness.asof_zh) }}</span>
+        {%- endif %}
+        <span class="oew-aib-fresh-age lvl-{{ aib.freshness.level }}">{{ t(aib.freshness.age_en, aib.freshness.age_zh) }}</span>
+        {%- if aib.freshness.built_en %}
+        <span class="oew-aib-fresh-built">{{ t(aib.freshness.built_en, aib.freshness.built_zh) }}</span>
+        {%- else %}
+        <span class="oew-aib-fresh-built">{{ t('Update time not recorded', '未记录更新时间') }}</span>
+        {%- endif %}
+      </p>
+    </div>
     <div class="oew-pbody">
       {% if aib.available and aib.healthy %}
 
@@ -1215,12 +1377,22 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
 
       {% else %}
       <div class="oew-aib-degraded">
-        <p>{{ t(aib.degraded_en, aib.degraded_zh) }}</p>
+        <p class="oew-aib-degraded-lead">{{ t(aib.degraded_en or 'This board is unavailable for this close.', aib.degraded_zh or '本次收盘该板块暂不可用。') }}</p>
+        <p class="oew-aib-degraded-why">{{ t(aib.degraded_why_en or 'This is a data gap, not a quiet market.',
+                                              aib.degraded_why_zh or '这是数据缺口，并非市场平静。') }}</p>
+        <details class="oew-aib-degraded-rcp">
+          <summary>{{ t('What we checked', '我们检查了什么') }}</summary>
+          <div class="oew-aib-detailbody">
+            <div class="oew-aib-dline"><span class="k">{{ t('Last settled close', '最近结算收盘') }}</span><span class="v mono">{{ aib.as_of_session or t('not recorded', '未记录') }}</span></div>
+            <div class="oew-aib-dline"><span class="k">{{ t('Positions counted', '持仓统计于') }}</span><span class="v mono">{{ aib.oi_counted_date or t('not recorded', '未记录') }}</span></div>
+            <div class="oew-aib-dline"><span class="k">{{ t('Built', '生成于') }}</span><span class="v">{% if aib.freshness.built_en %}{{ t(aib.freshness.built_en, aib.freshness.built_zh) }}{% else %}{{ t('not recorded', '未记录') }}{% endif %}</span></div>
+            <div class="oew-aib-dline"><span class="k">{{ t('Receipt', '回执') }}</span><span class="v mono">{{ (aib.receipt_id or '')[:12] or t('not recorded', '未记录') }}</span></div>
+          </div>
+        </details>
       </div>
       {% endif %}
     </div>
     <div class="oew-pfoot">
-      <span class="oew-stance st-watch">{{ t("Watch — don't chase", '观察—勿追高') }}</span>
       <span>{{ t('Hypotheses to research, ranked by evidence — none is a trade on its own.', '按证据排序的研究假设——均非独立交易信号。') }}</span>
       {% if aib.overflow > 0 %}<span class="oew-aib-more"
         data-tip-en="Counts every direction above the threshold, including volatility names. The strip above names only the upside and downside ones."
@@ -1228,6 +1400,7 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
       {% if aib.as_of_session %}
       <span class="oew-asof mono" data-tip-en="Receipt {{ aib.receipt_id[:12] }}" data-tip-zh="回执 {{ aib.receipt_id[:12] }}">{{ aib.as_of_session }}</span>
       {% endif %}
+      {% if skew_source_note_en %}<p class="oew-aib-note" data-skew-source-note>{{ t(skew_source_note_en, skew_source_note_zh) }}</p>{% endif %}
     </div>
   </div>
 
@@ -1291,6 +1464,47 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
             {% else %}<span class="oew-stance st-watch">{{ t("Watch — don't chase", '观察—勿追高') }}</span>{% endif %}
             <span class="oew-ic-em mono">{{ ix.em }}</span>
           </div>
+          {%- set lab = payoff_lab.get(ix.sym) if payoff_lab else None -%}
+          {%- if lab -%}
+          <details class="oew-aib-detail oew-lab"{% if payoff_lab_force_open %} open{% endif %}>
+            <summary>{{ t(lab.summary_en, lab.summary_zh) }}</summary>
+            <div class="oew-aib-detailbody oew-lab-body">
+              {%- if lab.bracket -%}
+              <div class="oew-lab-track" role="img"
+                data-tip-en="The two dots are where a straddle bought at this close breaks even at expiry — the move the options market is charging for. The ticks are the dealer-hedging walls measured today. Walls can move before expiry; this compares a to-expiry price with a same-day map. Model estimate from end-of-day mid prices, no fees, not a quote."
+                data-tip-zh="两个圆点标示收盘时买入跨式到期盈亏平衡的价格——即期权市场正在定价的波动幅度。刻度为今日测算的做市商对冲墙位。墙位在到期前可能移动；这里比较的是到期价格与当日墙位。模型估算来自收盘中间价，不含费用，并非实时报价。">
+                <i class="oew-lab-wall" style="left:{{ lab.bracket.floor_pct }}%"></i>
+                <i class="oew-lab-wall" style="left:{{ lab.bracket.ceiling_pct }}%"></i>
+                <i class="oew-lab-flip" style="left:{{ lab.bracket.flip_pct }}%"></i>
+                <i class="oew-lab-spot" style="left:{{ lab.bracket.spot_pct }}%"></i>
+                <i class="oew-lab-be" style="left:{{ lab.bracket.lo_pct }}%"></i>
+                <i class="oew-lab-be" style="left:{{ lab.bracket.hi_pct }}%"></i>
+              </div>
+              <div class="oew-lab-legend mono">
+                <span>{{ t('Floor', '下方墙') }}</span>
+                <span>{{ t('Flip', '翻转位') }}</span>
+                <span>{{ t('Ceiling', '上方墙') }}</span>
+              </div>
+              <p class="oew-lab-verdict">{{ t(lab.bracket.verdict_en, lab.bracket.verdict_zh) }}</p>
+              {%- endif -%}
+              {%- if lab.catalyst -%}<p class="oew-lab-cat is-{{ lab.catalyst.state }}" data-payoff-catalyst-chip data-tip-en="{{ lab.catalyst.tip_en }}" data-tip-zh="{{ lab.catalyst.tip_zh }}">{{ t(lab.catalyst.chip_en, lab.catalyst.chip_zh) }}</p>{%- endif -%}
+              {%- for r in lab.rows -%}
+              <div class="oew-lab-row{% if not r.built %} is-null{% endif %}"
+                data-tip-en="{{ r.what_en }}" data-tip-zh="{{ r.what_zh }}">
+                <span class="k">{{ t(r.name_en, r.name_zh) }}</span>
+                {%- if r.built %}
+                <span class="v mono">{{ t(r.cost_en, r.cost_zh) }}</span>
+                <span class="v mono">{{ t(r.pays_en, r.pays_zh) }}</span>
+                <span class="v mono">{{ t(r.risk_en, r.risk_zh) }}</span>
+                {%- else %}
+                <span class="v oew-lab-null">{{ t(r.null_en, r.null_zh) }}</span>
+                {%- endif %}
+              </div>
+              {%- endfor -%}
+              <p class="oew-lab-foot">{{ t('End-of-day mid prices, ' ~ lab.expiry_en ~ ' expiry · ThetaData', '收盘中间价，' ~ lab.expiry_zh ~ '到期 · ThetaData') }}{% if lab.asof_note_en %} · {{ t(lab.asof_note_en, lab.asof_note_zh) }}{% endif %}</p>
+            </div>
+          </details>
+          {%- endif -%}
         </div>
         {% endfor %}
       </div>

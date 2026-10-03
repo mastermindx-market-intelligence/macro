@@ -158,6 +158,8 @@ and falsifier language is never front-facing.
 """
 from __future__ import annotations
 
+from hashlib import sha256
+import json
 import logging
 from datetime import datetime, time, timedelta, timezone
 from typing import Any
@@ -175,6 +177,7 @@ from engine.prophet_live.interval import (
 log = logging.getLogger(__name__)
 
 SCHEMA = "prophet_live.states/v1"
+BASIS_RELATION_SCHEMA = "prophet_live.basis_relation/v1"
 
 #: The only states a payload may carry. No "fired"/"confirmed"/"refuted" anywhere.
 #: ``unknown`` is the non-verdict (module docstring: UNKNOWN IS NOT DARK) — it renders
@@ -441,6 +444,31 @@ def last_completed_session(now: datetime | None = None) -> str:
 
 def _iso(now: datetime) -> str:
     return _utc(now).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def _basis_receipt(
+    *,
+    subject: str,
+    pack_as_of: str,
+    levels_adjustment: str,
+    gap_pct: float,
+    tol_pct: float,
+) -> str:
+    """Content-address one measured per-name relationship between pack levels and tape."""
+    material: dict[str, Any] = {
+        "schema": BASIS_RELATION_SCHEMA,
+        "subject": str(subject),
+        "state": "RESOLVED",
+        "pack_as_of": str(pack_as_of),
+        "levels_adjustment": str(levels_adjustment),
+        "quote_adjustment": LIVE_QUOTE_ADJUSTMENT,
+        "gap_pct": round(float(gap_pct), 6),
+        "tol_pct": round(abs(float(tol_pct)), 6),
+    }
+    blob = json.dumps(
+        material, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
+    ).encode("utf-8")
+    return "sha256:" + sha256(blob).hexdigest()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -912,9 +940,28 @@ def evaluate(pack: dict[str, Any] | None, quotes: dict[str, Any], prev: dict[str
         q = quotes.get(tkr) or {}
         px = q.get("price")
         age = quote_age_of(q) if (quote_age_of and q) else None
+        gap = gaps.get(tkr)
         st = name_state(entry, price=px, quote_age_min=age,
                         prev=prev_states.get(tkr), now=now, cfg=cfg,
-                        basis_gap_pct=gaps.get(tkr))
+                        basis_gap_pct=gap)
+        # A positive row-local basis receipt is emitted only after the incumbent audit
+        # actually measured this name and the live state did not fail dark.  Missing
+        # prev_close therefore remains absence of evidence, never an inferred pass.
+        ent_adj = entry.get("price_adjustment")
+        levels_adjustment = (
+            ent_adj if isinstance(ent_adj, str) and ent_adj else pack_adjustment
+        )
+        if st.get("state") != "dark" and gap is not None:
+            tol = abs(float(audit["tol_pct"]))
+            if tol > 0.0 and abs(float(gap)) <= tol:
+                st["basis_status"] = "RESOLVED"
+                st["basis_receipt"] = _basis_receipt(
+                    subject=str(tkr),
+                    pack_as_of=pack_as_of,
+                    levels_adjustment=levels_adjustment,
+                    gap_pct=float(gap),
+                    tol_pct=tol,
+                )
         # A name whose levels are NOT on the artifact's stated basis says so on its own
         # row. Only the exceptions carry the key — the rule is written down in
         # `meta.price_adjustment` and in the module docstring, so a reader derives
@@ -922,7 +969,6 @@ def evaluate(pack: dict[str, Any] | None, quotes: dict[str, Any], prev: dict[str
         # `meta.price_adjustment.levels`. Stamping all ~1,700 rows with the same string
         # would add ~45 KB to a payload republished every five minutes to say what the
         # header already says.
-        ent_adj = entry.get("price_adjustment")
         if (st.get("state") != "dark" and isinstance(ent_adj, str) and ent_adj
                 and ent_adj != pack_adjustment):
             st["levels_adjustment"] = ent_adj
@@ -978,6 +1024,7 @@ def evaluate(pack: dict[str, Any] | None, quotes: dict[str, Any], prev: dict[str
             "price_adjustment": {
                 "levels": pack_adjustment,
                 "quote": LIVE_QUOTE_ADJUSTMENT,
+                "relation_schema": BASIS_RELATION_SCHEMA,
                 "tol_pct": audit["tol_pct"],
                 "checked_n": audit["checked_n"],
                 "unchecked_n": audit["unchecked_n"],

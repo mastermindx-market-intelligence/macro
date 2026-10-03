@@ -1,0 +1,21 @@
+ .github/ci/legacy-jobs.yml                         |   29 +
+ engine/valuation_assumptions.py                    |   74 +-
+ engine/valuation_event_bridge.py                   |  318 +
+ mockups/evidence/b-f07-3-event-bridge/EVIDENCE.yml |   36 +
+ .../hosts/valuation-event-bridge-null.html         | 8513 ++++++++++++++++++++
+ .../valuation-event-bridge-restructuring.html      | 8513 ++++++++++++++++++++
+ .../hosts/valuation-event-bridge-tender-offer.html | 8513 ++++++++++++++++++++
+ .../evidence/b-f07-3-event-bridge/manifest.json    |   23 +
+ mockups/evidence/b-f07-3-event-bridge/smells.json  |   12 +
+ mockups/evidence/b-f07-3-event-bridge/smells.md    |   36 +
+ ...n-event-bridge-tender-offer_desktop_dark_en.png |  Bin 0 -> 10259 bytes
+ ...n-event-bridge-tender-offer_desktop_dark_zh.png |  Bin 0 -> 11782 bytes
+ ...-event-bridge-tender-offer_desktop_light_en.png |  Bin 0 -> 10382 bytes
+ ...-event-bridge-tender-offer_desktop_light_zh.png |  Bin 0 -> 12147 bytes
+ ...on-event-bridge-tender-offer_mobile_dark_en.png |  Bin 0 -> 12800 bytes
+ ...on-event-bridge-tender-offer_mobile_dark_zh.png |  Bin 0 -> 13742 bytes
+ ...n-event-bridge-tender-offer_mobile_light_en.png |  Bin 0 -> 12544 bytes
+ ...n-event-bridge-tender-offer_mobile_light_zh.png |  Bin 0 -> 16229 bytes
+ templates/_valuation_assumptions.html.j2           |   35 +-
+ tests/test_valuation_event_bridge.py               |  583 ++
+ 20 files changed, 26682 insertions(+), 3 deletions(-)
