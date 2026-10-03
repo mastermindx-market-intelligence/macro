@@ -187,7 +187,7 @@ body.imd-lock{overflow:hidden}
 /* after the include: a class-pair selector outranks the card's own phone rule, so the
    mobile padding has to be restated at this specificity to survive. */
 @media(max-width:560px){.imd-radar .rrx{padding:16px}}
-/* MO-PAID-006 dossier card. DARK = command center: lifted inner well (--panel2), link-tinted rail at .45, flat status dots. LIGHT (below) = research workspace: white material, hairlines, no rail, underline on hover. */
+/* MO-PAID-006 dossier card. DARK = command center: lifted inner well (--panel2), link-tinted rail at .45, flat status dots. LIGHT (below) = research workspace: white material, hairlines, no rail. Headlines link-coloured at rest, brighten on hover (dark) / underline (light). */
 .imd-dossier{position:relative;margin-top:12px;padding:18px 20px 18px 24px}
 .imd-dossier::before{content:"";position:absolute;inset:14px auto 14px 0;width:3px;border-radius:var(--r-pill,999px);background:var(--link);opacity:.45}
 .imd-dossier-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 10px}
@@ -197,8 +197,8 @@ body.imd-lock{overflow:hidden}
 .imd-dossier-item{display:grid;grid-template-columns:92px minmax(0,1fr);gap:14px;padding:10px 0;border-top:1px solid var(--imd-hair)}
 .imd-dossier-item:first-child{border-top:0}
 .imd-dossier-date{font:700 11.5px var(--imd-num);color:var(--muted);font-variant-numeric:tabular-nums;padding-top:1px}
-.imd-dossier-headline{display:block;color:var(--text);font-size:13px;font-weight:650;line-height:1.4;overflow-wrap:anywhere;text-decoration:none}
-.imd-dossier-headline:hover{color:var(--ink-link)}
+body.imd-page .imd-dossier-headline{display:block;color:var(--ink-link,var(--link));font-size:13px;font-weight:650;line-height:1.4;overflow-wrap:anywhere;text-decoration:none}
+body.imd-page .imd-dossier-headline:hover{color:var(--text)}
 .imd-dossier-headline:focus-visible,.imd-dossier-more:focus-visible{outline:2px solid var(--link);outline-offset:2px}
 .imd-dossier-meta{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:4px;color:var(--muted);font-size:var(--fs-micro)}
 .imd-dossier-pub{font-weight:700;color:var(--text);opacity:.72}
@@ -224,7 +224,7 @@ html[data-theme="light"] .imd-dossier-headline:hover{text-decoration:underline;t
 html[data-theme="light"] .imd-dossier-outage{color:var(--muted)}
 html[data-theme="light"] .imd-dossier-read{border-top-color:var(--line)}
 html[data-theme="light"] .imd-dossier-chip{border-style:solid}
-@media(max-width:430px){.imd-dossier-head{display:block}.imd-dossier-asof{display:block;margin-top:4px}.imd-dossier-item{grid-template-columns:1fr;gap:2px}.imd-dossier-list{padding:0 10px}html[data-theme="light"] .imd-dossier-list{padding:0}}
+@media(max-width:430px){.imd-dossier-head{display:block}.imd-dossier-asof{display:block;margin-top:4px}.imd-dossier-item{grid-template-columns:1fr;gap:2px}.imd-dossier-list{padding:0 10px}html[data-theme="light"] .imd-dossier-list{padding:0}html[data-theme="light"] .imd-dossier{padding-left:16px}}
 @media(max-width:1100px){
   body.imd-page{padding:16px}
   .imd-hero{grid-template-columns:1fr}.imd-transition-list{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -449,7 +449,7 @@ html[data-theme="light"] .imd-dossier-chip{border-style:solid}
           <div class="mx-empty-why">{{ t('We have no source here we are cleared to republish.','我们尚无获准转载的官方来源。') }}</div>
         </div>
         {% endif %}
-        <p class="imd-dossier-lead" data-dossier-leadership><span class="l-en">Leadership statements: {{ DOS.leadership|e }}.</span><span class="l-zh">领导层表态：暂无获准转载的来源。</span></p>
+        <p class="imd-dossier-lead" data-dossier-leadership><span class="l-en">Leadership statements: {{ DOS.leadership|e }}.</span><span class="l-zh">领导层表态：{% if DOS.leadership == 'no rights-cleared source' %}暂无获准转载的来源{% else %}{{ DOS.leadership|e }}{% endif %}。</span></p>
         {% if D.cc == 'GB' %}
         {% set sc = DOS_STANCE.get(DOS.stance.label) if (DOS.stance and DOS.stance.authoritative is sameas false) else none %}
         <div class="imd-dossier-read" data-dossier-stance="{{ (DOS.stance.label if sc else 'none')|e }}">

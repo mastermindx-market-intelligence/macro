@@ -13360,6 +13360,7 @@ jobs:
       - scripts/capture_hk_tier1_shell.py
       - site/assets/js/company-intelligence-dossier.js
       - templates/ticker.html.j2
+      - templates/international_macro.html.j2
       - tests/test_ticker_pages.py
       # MO-PAID-006 schema child (#8276): this job runs the dossier suite (step below), so the
       # exclusive scope must name the suite file itself.

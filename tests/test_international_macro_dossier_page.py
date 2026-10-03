@@ -32,6 +32,7 @@ import json
 import re
 import subprocess
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
 
 import pytest
@@ -295,15 +296,20 @@ def test_leadership_literal_is_printed_from_the_plane() -> None:
     html = _render(view)
     slice_ = _slice(html)
 
+    # Null branch (D18 null sentinel): the EN span prints the literal once,
+    # the ZH span prints 暂无获准转载的来源 exactly once. The equality check
+    # added in D55(5) routes the null string to the canonical ZH phrase.
     expected_phrase = "Leadership statements: " + DOSSIER_LEADERSHIP_NULL + "."
     assert slice_.count(expected_phrase) == 1
-    assert "领导层表态：暂无获准转载的来源" in slice_
+    assert slice_.count("暂无获准转载的来源") == 1
 
-    # Non-vacuity: a non-null leadership prints verbatim, the literal does not.
+    # Non-vacuity: a non-null leadership must appear in BOTH the .l-en and
+    # the .l-zh span (count == 2) and the null phrase must not appear at all.
     view["dossier"]["leadership"] = "SENTINEL-LEAD"
     html2 = _render(view)
     slice2 = _slice(html2)
-    assert "SENTINEL-LEAD" in slice2
+    assert slice2.count("SENTINEL-LEAD") == 2
+    assert slice2.count("暂无获准转载的来源") == 0
     assert "Leadership statements: no rights-cleared source." not in slice2
 
 
@@ -501,8 +507,69 @@ def test_no_title_attributes_in_dossier(fixture_id: str) -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Test 10 — ZH parity: l-en and l-zh span counts balance
+# Test 10 — ZH parity: visible ZH text contains no Latin run of >=3 letters
+# outside the rights-line allow-list (D55(6)).
 # --------------------------------------------------------------------------- #
+
+# D55(6): allow-listed Latin tokens that the rights line carries by design.
+# The rights_basis first segment renders outside `.l-en` / `lang="en"` contexts
+# (the `.imd-dossier-rights` span itself is not bilingual), so legitimate Latin
+# from the rights line is the only Latin that may survive in ZH-visible text.
+_ZH_PARITY_ALLOW_LIST = frozenset({
+    "CC", "BY", "Commission", "Decision", "EU", "Open", "Government",
+    "Licence", "OGL", "v3",
+})
+
+
+class _ZhTextExtractor(HTMLParser):
+    """Collect visible text that is OUTSIDE `.l-en` spans and `lang="en"`
+    elements. The dossier template's bilingual macro `t(en, zh)` wraps every
+    translated string in a pair `<span class="l-en">…</span><span
+    class="l-zh">…</span>`; the headline anchor additionally declares
+    `lang="en"`. The ZH-visible text is what remains once those wrappers are
+    stripped. Implemented as a small state machine (no bs4 dependency).
+    """
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self._en_depth = 0
+        self._chunks: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attr_d = dict(attrs)
+        cls = (attr_d.get("class") or "").split()
+        lang = attr_d.get("lang")
+        if "l-en" in cls or lang == "en":
+            self._en_depth += 1
+
+    def handle_endtag(self, tag: str) -> None:
+        if self._en_depth > 0:
+            self._en_depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if self._en_depth == 0:
+            self._chunks.append(data)
+
+
+def _zh_visible_text(slice_html: str) -> str:
+    parser = _ZhTextExtractor()
+    parser.feed(slice_html)
+    return "".join(parser._chunks)
+
+
+def _assert_zh_only_letters_or_allow_list(slice_html: str) -> None:
+    text = _zh_visible_text(slice_html)
+    # Strip the rights-line allow-list (longest first so "Open" doesn't match
+    # the start of "OpenX"). Word-bounded so "CC" inside "ECCHO" survives.
+    for token in sorted(_ZH_PARITY_ALLOW_LIST, key=len, reverse=True):
+        text = re.sub(r"\b" + re.escape(token) + r"\b", " ", text)
+    leaked = re.findall(r"[A-Za-z]{3,}", text)
+    assert not leaked, (
+        f"Latin run leaked into ZH-visible text: {leaked!r}; "
+        f"text-after-strip={text!r}"
+    )
+
+
 @pytest.mark.parametrize("fixture_id", ["ez_covered", "gb_stance", "jp_no", "outage"])
 def test_zh_parity(fixture_id: str) -> None:
     if fixture_id == "ez_covered":
@@ -515,10 +582,7 @@ def test_zh_parity(fixture_id: str) -> None:
         view = _view("EZ"); view["dossier"] = _source_outage()
     html = _render(view)
     slice_ = _slice(html)
-    en = slice_.count('class="l-en"')
-    zh = slice_.count('class="l-zh"')
-    assert en == zh, (en, zh, slice_[:400])
-    assert not re.search(r'<span class="l-zh">\s*</span>', slice_), slice_[:400]
+    _assert_zh_only_letters_or_allow_list(slice_)
 
 
 # --------------------------------------------------------------------------- #
@@ -565,3 +629,48 @@ def test_europe_news_quote_link_only_with_panel() -> None:
     html3 = _render(view_gb, europe_news=panel, europe_news_items=panel["items"])
     slice3 = _slice(html3)
     assert 'href="#europe-news"' not in slice3
+
+
+# --------------------------------------------------------------------------- #
+# Test 13 — engine path actually renders (D55(4))
+# --------------------------------------------------------------------------- #
+def test_engine_items_render_through_the_real_view(monkeypatch) -> None:
+    """D55(4): the dossier plane must render items the engine actually reads.
+    A real engine path (build_country_view → _build_dossier → _read_dossier_items
+    → europe_news_intel.read_events) is monkeypatched to return a one-row
+    frame; the page slice must show that row verbatim, with HTML-escape in the
+    title, the published date sliced to YYYY-MM-DD, the rights-basis first
+    segment rendered, and the source key in the data attribute.
+    """
+    import pandas as pd
+    from engine import europe_news_intel
+
+    one_row = pd.DataFrame([{
+        "source": "ec_presscorner",
+        "seendate": "2026-10-01T09:30:00+00:00",
+        "title": "SENTINEL-EC-HEADLINE-7731 & co",
+        "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_sentinel",
+        "first_seen_utc": "2026-10-01T09:31:00+00:00",
+        "rights_basis": (
+            "CC BY 4.0 (Commission Decision 2011/833/EU) — "
+            "reuse permitted with attribution"
+        ),
+    }])
+    monkeypatch.setattr(europe_news_intel, "read_events", lambda asof=None: one_row)
+
+    view = build_country_view(_record("EZ"), today=_TODAY)
+    validate_view(view)
+    html = _render(view)
+    slice_ = _slice(html)
+
+    assert 'data-dossier-state="covered"' in slice_
+    assert "SENTINEL-EC-HEADLINE-7731" in slice_
+    assert "&amp; co" in slice_  # HTML-escape path exercised
+    assert '<time class="imd-dossier-date"' in slice_
+    assert "2026-10-01" in slice_
+    # data-rights-basis carries a non-empty value; its first segment (before
+    # ' — ') must appear in the visible rights line.
+    data_rights_basis = slice_.split('data-rights-basis="', 1)[1].split('"', 1)[0]
+    assert data_rights_basis
+    assert data_rights_basis.split(" — ")[0] in slice_
+    assert 'data-source-key="ec_presscorner"' in slice_
