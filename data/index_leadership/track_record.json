@@ -1,80 +1,80 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-09-25",
-  "generated_at": "2026-09-30T05:11:33.891272+00:00",
+  "as_of": "2026-10-01",
+  "generated_at": "2026-10-02T12:46:44.948917+00:00",
   "is_context_only": true,
-  "n_snapshots": 976,
-  "n_days": 33,
+  "n_snapshots": 1052,
+  "n_days": 36,
   "horizons": {
     "5": {
-      "n_matured": 848,
+      "n_matured": 976,
       "by_stage": {
         "running": {
-          "n": 774,
-          "mean_fwd_rel": -0.0061,
-          "hit_rate": 0.424
+          "n": 902,
+          "mean_fwd_rel": -0.0066,
+          "hit_rate": 0.417
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0011,
+          "mean_fwd_rel": -0.0013,
           "hit_rate": 0.472
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0112,
+          "mean_fwd_rel": 0.0113,
           "hit_rate": 0.579
         }
       },
-      "running_ic": -0.0405,
-      "running_ic_t_hac": -0.544,
+      "running_ic": -0.0175,
+      "running_ic_t_hac": -0.248,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 752,
+      "n_matured": 848,
       "by_stage": {
         "running": {
-          "n": 678,
-          "mean_fwd_rel": -0.0111,
-          "hit_rate": 0.378
+          "n": 774,
+          "mean_fwd_rel": -0.0117,
+          "hit_rate": 0.366
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0059,
+          "mean_fwd_rel": -0.0067,
           "hit_rate": 0.417
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0141,
+          "mean_fwd_rel": 0.0142,
           "hit_rate": 0.474
         }
       },
-      "running_ic": -0.0805,
-      "running_ic_t_hac": -1.234,
+      "running_ic": -0.0341,
+      "running_ic_t_hac": -0.519,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 618,
+      "n_matured": 688,
       "by_stage": {
         "running": {
-          "n": 546,
-          "mean_fwd_rel": -0.0215,
-          "hit_rate": 0.339
+          "n": 615,
+          "mean_fwd_rel": -0.0252,
+          "hit_rate": 0.319
         },
         "coiling": {
-          "n": 35,
-          "mean_fwd_rel": -0.0162,
-          "hit_rate": 0.314
+          "n": 36,
+          "mean_fwd_rel": -0.0183,
+          "hit_rate": 0.306
         },
         "coiling_primed": {
           "n": 37,
-          "mean_fwd_rel": 0.0205,
+          "mean_fwd_rel": 0.0208,
           "hit_rate": 0.622
         }
       },
-      "running_ic": -0.0114,
-      "running_ic_t_hac": -0.256,
+      "running_ic": -0.0118,
+      "running_ic_t_hac": -0.309,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -83,12 +83,12 @@
       "by_stage": {
         "running": {
           "n": 26,
-          "mean_fwd_rel": -0.0454,
-          "hit_rate": 0.346
+          "mean_fwd_rel": -0.044,
+          "hit_rate": 0.385
         },
         "coiling": {
           "n": 7,
-          "mean_fwd_rel": -0.0814,
+          "mean_fwd_rel": -0.0785,
           "hit_rate": 0.286
         }
       },
@@ -111,67 +111,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-09-04",
-      "id": "russell:waste-management",
-      "name": "Waste Management",
+      "date": "2026-09-10",
+      "id": "baskets:managed-care",
+      "name": "Managed Care & Insurers",
       "stage": "running",
-      "fwd_rel": -0.1793,
+      "fwd_rel": -0.1197,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-04",
-      "id": "russell:farm-heavy-construction-machinery",
-      "name": "Farm & Heavy Construction Machinery",
+      "date": "2026-09-10",
+      "id": "subsectors:banks-diversified",
+      "name": "Banks - Diversified",
       "stage": "running",
-      "fwd_rel": -0.0926,
+      "fwd_rel": -0.1068,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-04",
-      "id": "russell:building-products-equipment",
-      "name": "Building Products & Equipment",
-      "stage": "coiling_primed",
-      "fwd_rel": -0.0924,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-04",
-      "id": "russell:specialty-retail",
-      "name": "Specialty Retail",
-      "stage": "coiling",
-      "fwd_rel": -0.0898,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-04",
-      "id": "nasdaq:specialty-business-services",
-      "name": "Specialty Business Services",
+      "date": "2026-09-10",
+      "id": "russell:oil-gas-equipment-services",
+      "name": "Oil & Gas Equipment & Services",
       "stage": "running",
-      "fwd_rel": -0.0866,
+      "fwd_rel": -0.1059,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-04",
-      "id": "russell:other-industrial-metals-mining",
-      "name": "Other Industrial Metals & Mining",
-      "stage": "coiling_primed",
-      "fwd_rel": -0.0828,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-04",
-      "id": "russell:other-precious-metals-mining",
-      "name": "Other Precious Metals & Mining",
+      "date": "2026-09-10",
+      "id": "russell:oil-gas-e-p",
+      "name": "Oil & Gas E&P",
       "stage": "running",
-      "fwd_rel": -0.0779,
+      "fwd_rel": -0.1046,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-04",
-      "id": "russell:marine-shipping",
-      "name": "Marine Shipping",
+      "date": "2026-09-10",
+      "id": "russell:insurance-life",
+      "name": "Insurance - Life",
       "stage": "running",
-      "fwd_rel": -0.0741,
+      "fwd_rel": -0.0974,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-10",
+      "id": "subsectors:auto-manufacturers",
+      "name": "Auto Manufacturers",
+      "stage": "running",
+      "fwd_rel": -0.0843,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-10",
+      "id": "russell:reit-healthcare-facilities",
+      "name": "REIT - Healthcare Facilities",
+      "stage": "running",
+      "fwd_rel": -0.0687,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-10",
+      "id": "russell:utilities-regulated-water",
+      "name": "Utilities - Regulated Water",
+      "stage": "running",
+      "fwd_rel": -0.0656,
       "horizon_d": 21
     }
   ],

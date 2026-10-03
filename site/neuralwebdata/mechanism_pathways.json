@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.mechanism_pathways.v1",
-  "as_of": "2026-09-30",
+  "as_of": "2026-10-02",
   "display_only": true,
   "not_a_signal": true,
   "authority": {
@@ -25,30 +25,30 @@
   },
   "pathways": [
     {
-      "family": "rates",
-      "driver": "fed_repricing",
+      "family": "credit",
+      "driver": "credit_stress",
       "pathway_role": "primary",
-      "as_of": "2026-09-30",
-      "direction_en": "hawkish repricing — cuts priced out, front-end up",
-      "direction_zh": "鹰派重定价 — 计入更少降息、前端利率上行",
+      "as_of": "2026-10-02",
+      "direction_en": "credit spreads widening — stress",
+      "direction_zh": "信用利差走阔 — 承压",
       "confidence_ceiling": "context_only",
       "coverage_score": 1.0,
       "coherence": "supported",
       "stale_legs": [],
       "nodes": [
         {
-          "node_id": "driver_fed_repricing",
-          "as_of": "2026-09-30",
+          "node_id": "driver_credit_stress",
+          "as_of": "2026-10-02",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "fed_repricing",
+          "entity": "credit_stress",
           "observation": {
-            "en": "hawkish repricing — cuts priced out, front-end up",
-            "zh": "鹰派重定价 — 计入更少降息、前端利率上行"
+            "en": "credit spreads widening — stress",
+            "zh": "信用利差走阔 — 承压"
           },
           "direction": 1,
-          "value": 1.89,
-          "z_or_percentile": 1.45,
+          "value": 1.36,
+          "z_or_percentile": 1.5,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "trigger",
@@ -57,18 +57,18 @@
           ]
         },
         {
-          "node_id": "leg_fed_repricing_0",
-          "as_of": "2026-09-30",
+          "node_id": "leg_credit_stress_0",
+          "as_of": "2026-10-02",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "fed-funds futures",
+          "entity": "HY spread",
           "observation": {
-            "en": "fed-funds futures (+5.8σ)",
-            "zh": "联邦基金期货 (+5.8σ)"
+            "en": "HY spread (+2.8σ)",
+            "zh": "高收益利差 (+2.8σ)"
           },
           "direction": "positive",
-          "value": 5.8,
-          "z_or_percentile": 5.8,
+          "value": 2.8,
+          "z_or_percentile": 2.8,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "required_leg",
@@ -77,18 +77,18 @@
           ]
         },
         {
-          "node_id": "leg_fed_repricing_1",
-          "as_of": "2026-09-30",
+          "node_id": "leg_credit_stress_1",
+          "as_of": "2026-10-02",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "2y yield",
+          "entity": "IG spread",
           "observation": {
-            "en": "2y yield (+1.5σ)",
-            "zh": "2年期收益率 (+1.5σ)"
+            "en": "IG spread (+1.8σ)",
+            "zh": "投资级利差 (+1.8σ)"
           },
           "direction": "positive",
-          "value": 1.5,
-          "z_or_percentile": 1.5,
+          "value": 1.8,
+          "z_or_percentile": 1.8,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "required_leg",
@@ -97,18 +97,18 @@
           ]
         },
         {
-          "node_id": "leg_fed_repricing_2",
-          "as_of": "2026-09-30",
+          "node_id": "leg_credit_stress_2",
+          "as_of": "2026-10-02",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "10y yield",
+          "entity": "HY vs IG",
           "observation": {
-            "en": "10y yield (+2.4σ)",
-            "zh": "10年期收益率 (+2.4σ)"
+            "en": "HY vs IG (-0.7σ)",
+            "zh": "高收益对投资级 (-0.7σ)"
           },
-          "direction": "positive",
-          "value": 2.4,
-          "z_or_percentile": 2.4,
+          "direction": "negative",
+          "value": -0.7,
+          "z_or_percentile": -0.7,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "required_leg",
@@ -119,8 +119,8 @@
       ],
       "edges": [
         {
-          "src_node": "driver_fed_repricing",
-          "dst_node": "leg_fed_repricing_0",
+          "src_node": "driver_credit_stress",
+          "dst_node": "leg_credit_stress_0",
           "mechanism_type": "evidence_leg",
           "expected_lag": "same_day",
           "expected_sign": "positive",
@@ -131,8 +131,8 @@
           ]
         },
         {
-          "src_node": "driver_fed_repricing",
-          "dst_node": "leg_fed_repricing_1",
+          "src_node": "driver_credit_stress",
+          "dst_node": "leg_credit_stress_1",
           "mechanism_type": "evidence_leg",
           "expected_lag": "same_day",
           "expected_sign": "positive",
@@ -143,12 +143,12 @@
           ]
         },
         {
-          "src_node": "driver_fed_repricing",
-          "dst_node": "leg_fed_repricing_2",
+          "src_node": "driver_credit_stress",
+          "dst_node": "leg_credit_stress_2",
           "mechanism_type": "evidence_leg",
           "expected_lag": "same_day",
-          "expected_sign": "positive",
-          "observed_sign": "positive",
+          "expected_sign": "negative",
+          "observed_sign": "negative",
           "status": "measured",
           "evidence_refs": [
             "market_drivers.evidence_legs[2]"
@@ -157,11 +157,11 @@
       ]
     },
     {
-      "family": "china",
-      "driver": "china_stimulus",
+      "family": "fx",
+      "driver": "usd_shock",
       "pathway_role": "alternate",
-      "as_of": "2026-09-30",
-      "direction_en": "China risk-off — A-shares/HK & copper lead down",
+      "as_of": "2026-10-02",
+      "direction_en": "dollar surging — squeeze, commodities & EM pressured",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
@@ -169,17 +169,17 @@
       "stale_legs": [],
       "nodes": [
         {
-          "node_id": "driver_china_stimulus",
-          "as_of": "2026-09-30",
+          "node_id": "driver_usd_shock",
+          "as_of": "2026-10-02",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "china_stimulus",
+          "entity": "usd_shock",
           "observation": {
-            "en": "China risk-off — A-shares/HK & copper lead down",
+            "en": "dollar surging — squeeze, commodities & EM pressured",
             "zh": ""
           },
           "direction": "",
-          "value": 1.3,
+          "value": 0.91,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
@@ -193,11 +193,11 @@
       "coverage_basis": "scare_trigger"
     },
     {
-      "family": "rates",
-      "driver": "real_rate_shock",
+      "family": "china",
+      "driver": "china_stimulus",
       "pathway_role": "alternate",
-      "as_of": "2026-09-30",
-      "direction_en": "real yields rising — restrictive, gold & duration hit",
+      "as_of": "2026-10-02",
+      "direction_en": "China risk-off — A-shares/HK & copper lead down",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
@@ -205,17 +205,17 @@
       "stale_legs": [],
       "nodes": [
         {
-          "node_id": "driver_real_rate_shock",
-          "as_of": "2026-09-30",
+          "node_id": "driver_china_stimulus",
+          "as_of": "2026-10-02",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "real_rate_shock",
+          "entity": "china_stimulus",
           "observation": {
-            "en": "real yields rising — restrictive, gold & duration hit",
+            "en": "China risk-off — A-shares/HK & copper lead down",
             "zh": ""
           },
           "direction": "",
-          "value": 1.27,
+          "value": 0.74,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",

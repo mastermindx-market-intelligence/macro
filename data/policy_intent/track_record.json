@@ -1,16 +1,16 @@
 {
   "schema": "ai_desk_track_record.v1",
-  "as_of": "2026-09-28",
-  "scored_total": 9,
-  "open": 32,
+  "as_of": "2026-10-02",
+  "scored_total": 11,
+  "open": 33,
   "unscored_soft": 3,
   "expired": 0,
   "overall": {
-    "n": 9,
-    "hits": 5,
+    "n": 11,
+    "hits": 7,
     "misses": 4,
-    "hit_rate": 0.556,
-    "dir_accuracy": 0.333
+    "hit_rate": 0.636,
+    "dir_accuracy": 0.364
   },
   "by_conviction": {
     "high": {
@@ -28,20 +28,20 @@
       "dir_accuracy": null
     },
     "low": {
-      "n": 9,
-      "hits": 5,
+      "n": 11,
+      "hits": 7,
       "misses": 4,
-      "hit_rate": 0.556,
-      "dir_accuracy": 0.333
+      "hit_rate": 0.636,
+      "dir_accuracy": 0.364
     }
   },
   "by_kind": {
     "rel_return": {
-      "n": 9,
-      "hits": 5,
+      "n": 11,
+      "hits": 7,
       "misses": 4,
-      "hit_rate": 0.556,
-      "dir_accuracy": 0.333
+      "hit_rate": 0.636,
+      "dir_accuracy": 0.364
     },
     "level": {
       "n": 0,
@@ -60,15 +60,33 @@
       "dir_accuracy": 0.143
     },
     "Reflation": {
-      "n": 2,
-      "hits": 2,
+      "n": 4,
+      "hits": 4,
       "misses": 0,
       "hit_rate": 1.0,
-      "dir_accuracy": 1.0
+      "dir_accuracy": 0.75
     }
   },
-  "calibration_note": "9 scored, hit-rate 0.556 (directional accuracy 0.333). Sample is tiny \u2014 treat conviction as provisional and lean low.",
+  "calibration_note": "11 scored, hit-rate 0.636 (directional accuracy 0.364).",
   "recent": [
+    {
+      "id": "2026-08-01-022230-4",
+      "subject": "GLD",
+      "lean": "underweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.0163,
+      "check_by": "2026-09-29"
+    },
+    {
+      "id": "2026-08-01-022230-1",
+      "subject": "TLT",
+      "lean": "underweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0719,
+      "check_by": "2026-09-29"
+    },
     {
       "id": "2026-07-02-092100-4",
       "subject": "GLD",
@@ -140,16 +158,7 @@
       "outcome": "miss",
       "realized": -0.1578,
       "check_by": "2026-08-24"
-    },
-    {
-      "id": "2026-07-10-080843-4",
-      "subject": "GLD",
-      "lean": "underweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": 0.1119,
-      "check_by": "2026-08-21"
     }
   ],
-  "calibration_note_zh": "\u5df2\u8bc4\u5206 9 \u6761\uff0c\u547d\u4e2d\u7387 0.556\uff08\u65b9\u5411\u51c6\u786e\u7387 0.333\uff09\u3002\u6837\u672c\u6781\u5c0f \u2014\u2014 \u5c06\u7f6e\u4fe1\u89c6\u4e3a\u6682\u5b9a\u5e76\u4fdd\u6301\u504f\u4f4e\u3002"
+  "calibration_note_zh": "\u5df2\u8bc4\u5206 11 \u6761\uff0c\u547d\u4e2d\u7387 0.636\uff08\u65b9\u5411\u51c6\u786e\u7387 0.364\uff09\u3002"
 }

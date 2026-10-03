@@ -356,3 +356,5 @@
 {"session": "2026-09-25", "symbol": "TSN", "state": "NONE", "prior_state": "TURN_WATCH", "since": null, "depth_pctile": null, "line": null, "hist": null, "data_through": "2026-09-25", "reason": "graduated"}
 {"session": "2026-09-25", "symbol": "WMT", "state": "WASHOUT_TURN", "prior_state": "TURN_WATCH", "since": "2026-09-25", "depth_pctile": 2.5, "line": -10.088, "hist": 0.053, "data_through": "2026-09-25", "reason": null}
 {"session": "2026-09-25", "symbol": "GNRC", "state": "NONE", "prior_state": "TURN_WATCH", "since": null, "depth_pctile": null, "line": null, "hist": null, "data_through": "2026-09-25", "reason": "graduated"}
+{"session": "2026-09-30", "symbol": "AVGO", "state": "TURN_WATCH", "prior_state": "NONE", "since": null, "depth_pctile": 12.7, "line": -5.9, "hist": -0.742, "data_through": "2026-09-30", "reason": null}
+{"session": "2026-09-30", "symbol": "ON", "state": "NONE", "prior_state": "TURN_WATCH", "since": null, "depth_pctile": null, "line": null, "hist": null, "data_through": "2026-09-30", "reason": "graduated"}

@@ -4325,6 +4325,8 @@ CURATED_EXCLUSIVE = {
     # store + the prose registration, nothing else.
     "prophet-us-b4-prereg-registration",
     "earnings-economic-dossier",
+    # 2026-09-30: CDV-1 Task 2 owns truthful private PG acquisition currentness.
+    "earnings-economic-source-selection",
     # 2026-09-24 GMI Mining M1 integration T01' (R-MIN-02/R-MIN-26). `mining-economic-dossier`
     # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
     # curated scope is exactly the Mining files it names.
@@ -5360,6 +5362,29 @@ def test_deliberately_unscoped_gates_stay_always_on(real_manifest_scopes) -> Non
             if job_id not in selected_names[probe]:
                 problems.append(f"{job_id}: no longer selected for {probe}")
     assert not problems, problems
+
+
+def test_evidence_corpus_edits_select_design_governance(real_manifest_scopes) -> None:
+    """An evidence-only PR must run the receipt-corpus gate (2026-10-02, #8278).
+
+    ``test_committed_evidence_corpus_has_zero_findings`` discovers EVERY committed
+    ``EVIDENCE.yml`` under mockups/evidence + mockups/refs at RUNTIME, so the
+    static closure inference never owned those trees: PR #8278 (evidence-only)
+    planned ``1/168 jobs … did not widen`` and merged a malformed receipt that
+    reddened main. The job now declares the two trees as an additive floor
+    (unioned with inference — NOT ``scope: exclusive``). Pin both directions.
+    """
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    job = jobs["design-governance"]
+    assert not job.exclusive, "design-governance must stay non-exclusive (floor, not ceiling)"
+    assert set(job.paths) >= {"mockups/evidence/**", "mockups/refs/**"}, job.paths
+    assert len(job.paths) == 9, job.paths  # 2 corpora globs + the 7 files the steps name (loader coverage audit)
+    scoped_jobs, _ = real_manifest_scopes
+    for probe in ("mockups/evidence/sanctions-map-event-mark/EVIDENCE.yml",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+                  "mockups/refs/onboarding/EVIDENCE.yml",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+                  "mockups/evidence/some-capture/manifest.json"):  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+        sel, reason = PACK.select_jobs(scoped_jobs, [probe])
+        assert "design-governance" in {j.job_id for j in sel}, (probe, reason)
 
 
 def test_inline_js_owns_the_rendered_tree_it_lints() -> None:
