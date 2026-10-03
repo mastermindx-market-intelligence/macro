@@ -22,6 +22,8 @@
     "nonblocking_evidence_refs",
     "late_evidence_refs",
     "expired_evidence_refs",
+    "aftermath_evidence_refs",
+    "late_contradiction_refs",
     "evidence_clocks",
     "authority",
     "research_only"
@@ -52,6 +54,7 @@
         "blocking_event_observed",
         "event_classification_unknown",
         "coverage_unknown",
+        "event_aftermath_observed",
         "soft_event_observed",
         "no_blocking_event_observed"
       ]
@@ -93,6 +96,12 @@
       "$ref": "#/$defs/evidenceRefs"
     },
     "expired_evidence_refs": {
+      "$ref": "#/$defs/evidenceRefs"
+    },
+    "aftermath_evidence_refs": {
+      "$ref": "#/$defs/evidenceRefs"
+    },
+    "late_contradiction_refs": {
       "$ref": "#/$defs/evidenceRefs"
     },
     "evidence_clocks": {
@@ -180,6 +189,34 @@
       "if": {
         "properties": {
           "context_state": {
+            "const": "event_aftermath_observed"
+          }
+        },
+        "required": [
+          "context_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "coverage_complete": {
+            "const": true
+          },
+          "blocking_evidence_refs": {
+            "maxItems": 0
+          },
+          "unknown_evidence_refs": {
+            "maxItems": 0
+          },
+          "aftermath_evidence_refs": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "context_state": {
             "const": "soft_event_observed"
           }
         },
@@ -248,7 +285,8 @@
         "source_asof",
         "observed_at",
         "fresh_until",
-        "detail"
+        "detail",
+        "max_staleness_seconds"
       ],
       "properties": {
         "source_id": {
@@ -275,6 +313,11 @@
         "detail": {
           "type": "string",
           "maxLength": 512
+        },
+        "max_staleness_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 900
         }
       }
     },
@@ -296,6 +339,8 @@
         "source_available_at",
         "known_at",
         "relevant_until",
+        "aftermath_until",
+        "owner_disposition",
         "timing"
       ],
       "properties": {
@@ -313,10 +358,22 @@
         "relevant_until": {
           "$ref": "#/$defs/utcInstant"
         },
+        "aftermath_until": {
+          "$ref": "#/$defs/utcInstant"
+        },
+        "owner_disposition": {
+          "enum": [
+            "blocking",
+            "soft",
+            "nonblocking",
+            "unknown"
+          ]
+        },
         "timing": {
           "enum": [
             "active",
             "late",
+            "aftermath",
             "expired"
           ]
         }

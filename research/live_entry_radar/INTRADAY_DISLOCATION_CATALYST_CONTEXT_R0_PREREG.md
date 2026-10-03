@@ -273,3 +273,12 @@ An independent review of the R0 contract found four holes. No outcome has been r
 - An amended filing (8-K/A) is a separate source-owner filing with its own clocks. It is not merged into the original.
 
 Missing, stale and expired remain three different facts. None of them is "no event".
+
+## Repair 2 — 2026-10-03
+
+This repair tightens the contract without loosening any refusal.
+
+- Source reads now honor a module-owned 900-second staleness ceiling on top of each owner's `fresh_until`. No caller can declare a read fresh forever; data more than fifteen minutes behind the decision clock cannot clear coverage.
+- Blocking earnings evidence stays in an explicit five-session aftermath window after relevance ends. While that aftermath is material and coverage is complete, the context state is `event_aftermath_observed` rather than a clean no-news read.
+- Evidence first known after the decision clock remains audit-only (`late_contradiction_refs` when an owner read should already have seen it). It never rewrites decision-time state or coverage.
+- An EDGAR 8-K/A amendment remains a separate evidence row with its own clocks; it is not merged into the original filing row.

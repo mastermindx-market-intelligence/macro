@@ -22,10 +22,17 @@ from engine.entry_radar.catalyst_context import (
 )
 
 from engine.entry_radar.catalyst_adapters import (
+    AFTERMATH_SESSIONS,
     adapt_company_intelligence_earnings_workspace,
     adapt_edgar_earnings_item_202,
     assess_company_intelligence_current_read_for_live_episode,
     first_full_session_close_after,
+    session_close_n_sessions_after,
+)
+from engine.entry_radar.catalyst_context import (
+    DEFAULT_MAX_SOURCE_STALENESS_SECONDS,
+    SOURCE_MAX_STALENESS_SECONDS,
+    max_source_staleness_seconds,
 )
 from engine.entry_radar.live_ledger import LiveEpisode, compute_episode_id
 from engine.company_intelligence.contracts import canonical_json_bytes
@@ -63,17 +70,22 @@ def _event(
     known_at=T0,
     source_available_at=None,
     relevant_until,
+    aftermath_until=None,
     ticker="NVDA",
     ref="event:evt-1",
+    owner="issuer_event_owner",
 ):
+    if aftermath_until is None:
+        aftermath_until = relevant_until + timedelta(days=30)
     return CatalystEvidence(
-        owner="issuer_event_owner",
+        owner=owner,
         native_id=native_id,
         ticker=ticker,
         event_kind="issuer_event",
         source_available_at=source_available_at or known_at,
         known_at=known_at,
         relevant_until=relevant_until,
+        aftermath_until=aftermath_until,
         owner_disposition=disposition,
         evidence_ref=ref,
     )
@@ -1022,6 +1034,7 @@ def test_stale_ok_read_cannot_clear_coverage():
 
 
 def test_read_fresh_through_decision_clears_coverage():
+    fresh_asof = DECISION_LATE - timedelta(seconds=300)
     got = assess_catalyst_context(
         ticker="NVDA",
         radar_episode_id="0123456789abcdef",
@@ -1030,8 +1043,8 @@ def test_read_fresh_through_decision_clears_coverage():
         required_sources=["issuer_events"],
         source_reads=[
             _read(
-                observed_at=STALE_ASOF,
-                source_asof=STALE_ASOF,
+                observed_at=DECISION_LATE,
+                source_asof=fresh_asof,
                 fresh_until=DECISION_LATE,
                 status="ok",
             )
@@ -1057,6 +1070,7 @@ def test_expired_blocking_event_does_not_drive_state():
         known_at=STALE_ASOF,
         source_available_at=STALE_ASOF,
         relevant_until=STALE_FRESH,
+        aftermath_until=STALE_FRESH + timedelta(days=1),
         ref="event:expired-block",
     )
     got = assess_catalyst_context(
@@ -1098,6 +1112,7 @@ def test_late_event_is_late_not_expired():
     late = _event(
         known_at=DECISION_LATE + timedelta(minutes=1),
         relevant_until=DECISION_LATE + timedelta(days=1),
+        aftermath_until=DECISION_LATE + timedelta(days=30),
         ref="event:late-only",
     )
     got = assess_catalyst_context(
@@ -1170,6 +1185,8 @@ def test_wire_carries_generated_at_and_evidence_clocks():
         assert clocks[ref]["timing"] == "active"
         assert clocks[ref]["known_at"]
         assert clocks[ref]["relevant_until"]
+        assert clocks[ref]["aftermath_until"]
+        assert clocks[ref]["owner_disposition"]
         assert clocks[ref]["source_available_at"]
 
 
@@ -1209,6 +1226,8 @@ def test_forged_context_with_wrong_clock_timing_is_refused():
         source_available_at=T0,
         known_at=T0 + timedelta(hours=1),
         relevant_until=T0 + timedelta(days=1),
+        aftermath_until=T0 + timedelta(days=30),
+        owner_disposition="blocking",
         timing="active",
     )
     with pytest.raises(CatalystContextError):
@@ -1349,3 +1368,540 @@ def test_amendment_stays_a_separate_reference():
     assert len(ctx.evidence_clocks) == 2
     refs = {clock.evidence_ref for clock in ctx.evidence_clocks}
     assert refs == {original.evidence_ref, amended.evidence_ref}
+
+
+EDGAR_OWNER = "collectors.edgar_earnings_8k"
+
+
+def test_generator_evidence_gives_same_result_as_list():
+    row = _event(relevant_until=T0)
+    from_list = _assess(evidence=[row])
+    from_gen = _assess(evidence=(item for item in [row]))
+    assert from_gen.context_state == "blocking_event_observed"
+    assert from_list.to_dict() == from_gen.to_dict()
+
+
+def test_generator_source_reads_gives_same_result_as_list():
+    read = _read(fresh_until=T0)
+    from_list = _assess(source_reads=[read])
+    from_gen = _assess(source_reads=(item for item in [read]))
+    assert from_list.to_dict() == from_gen.to_dict()
+
+
+def test_non_iterable_or_mapping_inputs_raise_context_error():
+    with pytest.raises(CatalystContextError):
+        _assess(evidence=5)
+    with pytest.raises(CatalystContextError):
+        _assess(evidence={})
+    with pytest.raises(CatalystContextError):
+        _assess(source_reads="abc")
+
+
+def test_wrong_element_types_raise_context_error():
+    with pytest.raises(CatalystContextError):
+        _assess(evidence=[{"not": "evidence"}])
+    with pytest.raises(CatalystContextError):
+        _assess(source_reads=[{"not": "read"}])
+
+
+def test_read_nine_months_old_with_far_future_fresh_until_is_coverage_unknown():
+    got = assess_catalyst_context(
+        ticker="NVDA",
+        radar_episode_id="0123456789abcdef",
+        decision_at=datetime(2026, 10, 3, 15, 0, tzinfo=timezone.utc),
+        generated_at=datetime(2026, 10, 3, 15, 0, tzinfo=timezone.utc),
+        required_sources=["issuer_events"],
+        source_reads=[
+            _read(
+                observed_at=datetime(2026, 1, 2, tzinfo=timezone.utc),
+                source_asof=datetime(2026, 1, 2, tzinfo=timezone.utc),
+                fresh_until=datetime(9999, 12, 31, tzinfo=timezone.utc),
+            )
+        ],
+        evidence=[],
+    )
+    assert got.context_state == "coverage_unknown"
+    assert got.coverage_complete is False
+
+
+def test_read_exactly_at_staleness_ceiling_is_usable_and_one_second_past_is_not():
+    decision = datetime(2026, 10, 3, 15, 0, 0, tzinfo=timezone.utc)
+    asof_ok = decision - timedelta(seconds=DEFAULT_MAX_SOURCE_STALENESS_SECONDS)
+    asof_stale = decision - timedelta(seconds=DEFAULT_MAX_SOURCE_STALENESS_SECONDS + 1)
+    ok = _read(observed_at=decision, source_asof=asof_ok, fresh_until=decision)
+    stale = _read(observed_at=decision, source_asof=asof_stale, fresh_until=decision)
+    assert ok.usable_at(decision) is True
+    assert stale.usable_at(decision) is False
+
+
+def test_per_source_override_can_only_tighten_the_ceiling(monkeypatch):
+    from types import MappingProxyType
+
+    from engine.entry_radar import catalyst_context as cc
+
+    monkeypatch.setattr(cc, "SOURCE_MAX_STALENESS_SECONDS", MappingProxyType({"x": 60}))
+    assert max_source_staleness_seconds("x") == 60
+    monkeypatch.setattr(
+        cc, "SOURCE_MAX_STALENESS_SECONDS", MappingProxyType({"y": 99999}),
+    )
+    assert max_source_staleness_seconds("y") == DEFAULT_MAX_SOURCE_STALENESS_SECONDS
+
+
+def test_source_read_wire_carries_max_staleness_seconds():
+    payload = _assess().to_dict()
+    assert payload["source_reads"][0]["max_staleness_seconds"] == 900
+
+
+def test_monday_after_thursday_after_close_release_is_event_aftermath():
+    acceptance = datetime(2026, 7, 30, 20, 30, 28, tzinfo=timezone.utc)
+    observed = acceptance + timedelta(minutes=5)
+    evidence = adapt_edgar_earnings_item_202(
+        _item202_row(acceptance_datetime=acceptance.isoformat().replace("+00:00", "Z")),
+        owner_observed_at=observed,
+    )
+    decision = datetime(2026, 8, 3, 15, 0, 0, tzinfo=timezone.utc)
+    got = assess_catalyst_context(
+        ticker="NVDA",
+        radar_episode_id="0123456789abcdef",
+        decision_at=decision,
+        generated_at=decision,
+        required_sources=[EDGAR_OWNER],
+        source_reads=[
+            CatalystSourceRead(
+                source_id=EDGAR_OWNER,
+                status="ok",
+                source_asof=decision - timedelta(seconds=60),
+                observed_at=decision,
+                fresh_until=decision,
+            )
+        ],
+        evidence=[evidence],
+    )
+    assert got.context_state == "event_aftermath_observed"
+    assert got.coverage_complete is True
+    assert evidence.evidence_ref in got.aftermath_evidence_refs
+    assert got.blocking_evidence_refs == ()
+
+
+def test_aftermath_ends_at_fifth_session_close():
+    acceptance = datetime(2026, 7, 30, 20, 30, 28, tzinfo=timezone.utc)
+    evidence = adapt_edgar_earnings_item_202(
+        _item202_row(acceptance_datetime=acceptance.isoformat().replace("+00:00", "Z")),
+        owner_observed_at=acceptance + timedelta(minutes=5),
+    )
+    read = CatalystSourceRead(
+        source_id=EDGAR_OWNER,
+        status="ok",
+        source_asof=datetime(2026, 8, 7, 20, 0, 0, tzinfo=timezone.utc) - timedelta(seconds=60),
+        observed_at=datetime(2026, 8, 7, 20, 0, 0, tzinfo=timezone.utc),
+        fresh_until=datetime(2026, 8, 7, 20, 0, 1, tzinfo=timezone.utc),
+    )
+    at_end = assess_catalyst_context(
+        ticker="NVDA",
+        radar_episode_id="0123456789abcdef",
+        decision_at=datetime(2026, 8, 7, 20, 0, 0, tzinfo=timezone.utc),
+        generated_at=datetime(2026, 8, 7, 20, 0, 0, tzinfo=timezone.utc),
+        required_sources=[EDGAR_OWNER],
+        source_reads=[read],
+        evidence=[evidence],
+    )
+    assert at_end.context_state == "event_aftermath_observed"
+    after = assess_catalyst_context(
+        ticker="NVDA",
+        radar_episode_id="0123456789abcdef",
+        decision_at=datetime(2026, 8, 7, 20, 0, 1, tzinfo=timezone.utc),
+        generated_at=datetime(2026, 8, 7, 20, 0, 1, tzinfo=timezone.utc),
+        required_sources=[EDGAR_OWNER],
+        source_reads=[read],
+        evidence=[evidence],
+    )
+    assert after.context_state == "no_blocking_event_observed"
+    assert evidence.evidence_ref in after.expired_evidence_refs
+    assert after.coverage_complete is True
+
+
+def test_aftermath_under_incomplete_coverage_is_coverage_unknown_and_keeps_ref():
+    acceptance = datetime(2026, 7, 30, 20, 30, 28, tzinfo=timezone.utc)
+    evidence = adapt_edgar_earnings_item_202(
+        _item202_row(acceptance_datetime=acceptance.isoformat().replace("+00:00", "Z")),
+        owner_observed_at=acceptance + timedelta(minutes=5),
+    )
+    decision = datetime(2026, 8, 3, 15, 0, 0, tzinfo=timezone.utc)
+    got = assess_catalyst_context(
+        ticker="NVDA",
+        radar_episode_id="0123456789abcdef",
+        decision_at=decision,
+        generated_at=decision,
+        required_sources=[EDGAR_OWNER],
+        source_reads=[],
+        evidence=[evidence],
+    )
+    assert got.context_state == "coverage_unknown"
+    assert evidence.evidence_ref in got.aftermath_evidence_refs
+
+
+def test_aftermath_of_soft_or_nonblocking_row_does_not_drive_state():
+    decision = datetime(2026, 8, 3, 15, 0, 0, tzinfo=timezone.utc)
+    relevant = datetime(2026, 7, 31, 20, 0, 0, tzinfo=timezone.utc)
+    aftermath = datetime(2026, 8, 7, 20, 0, 0, tzinfo=timezone.utc)
+    soft = _event(
+        disposition="soft",
+        known_at=datetime(2026, 7, 30, 20, 30, 28, tzinfo=timezone.utc),
+        relevant_until=relevant,
+        aftermath_until=aftermath,
+        ref="event:soft-aftermath",
+    )
+    got = _assess(
+        decision_at=decision,
+        generated_at=decision,
+        evidence=[soft],
+        source_reads=[_read(observed_at=decision, fresh_until=decision)],
+    )
+    assert got.context_state == "no_blocking_event_observed"
+    assert soft.evidence_ref in got.aftermath_evidence_refs
+
+
+def test_aftermath_until_before_relevant_until_refused():
+    with pytest.raises(CatalystContextError):
+        _event(
+            relevant_until=T0,
+            aftermath_until=T0 - timedelta(seconds=1),
+        )
+
+
+def test_session_close_n_sessions_after_worked_examples():
+    acceptance = datetime(2026, 7, 30, 20, 30, 28, tzinfo=timezone.utc)
+    relevant = first_full_session_close_after(acceptance)
+    assert relevant == datetime(2026, 7, 31, 20, 0, tzinfo=timezone.utc)
+    assert session_close_n_sessions_after(relevant, AFTERMATH_SESSIONS) == datetime(
+        2026, 8, 7, 20, 0, tzinfo=timezone.utc,
+    )
+    labor_day_anchor = datetime(2026, 9, 4, 20, 0, tzinfo=timezone.utc)
+    assert session_close_n_sessions_after(labor_day_anchor, 1) == datetime(
+        2026, 9, 8, 20, 0, tzinfo=timezone.utc,
+    )
+    half_day_anchor = datetime(2026, 11, 27, 18, 0, tzinfo=timezone.utc)
+    assert session_close_n_sessions_after(half_day_anchor, 1) == datetime(
+        2026, 11, 30, 21, 0, tzinfo=timezone.utc,
+    )
+    with pytest.raises(CatalystContextError):
+        session_close_n_sessions_after(relevant, 0)
+    with pytest.raises(CatalystContextError):
+        session_close_n_sessions_after(
+            datetime(2026, 7, 31, 19, 59, tzinfo=timezone.utc), 1,
+        )
+
+
+def test_late_row_never_changes_context_state_or_coverage():
+    base = _assess()
+    late_row = _event(
+        known_at=T0 + timedelta(minutes=5),
+        relevant_until=T0 + timedelta(days=1),
+        ref="event:late-state",
+    )
+    with_late = _assess(
+        evidence=[late_row],
+        generated_at=T0 + timedelta(minutes=5),
+    )
+    assert base.context_state == with_late.context_state
+    assert base.coverage_complete == with_late.coverage_complete
+
+
+def test_late_row_available_before_owner_read_asof_is_flagged_contradiction():
+    owner = "issuer_event_owner"
+    available = T0 - timedelta(hours=2)
+    late_row = _event(
+        owner=owner,
+        known_at=T0 + timedelta(minutes=5),
+        source_available_at=available,
+        relevant_until=T0 + timedelta(days=1),
+        ref="event:late-contra",
+    )
+    got = _assess(
+        evidence=[late_row],
+        generated_at=T0 + timedelta(minutes=5),
+        source_reads=[
+            _read(
+                source_id=owner,
+                observed_at=T0,
+                source_asof=T0,
+                fresh_until=T0 + timedelta(minutes=5),
+            )
+        ],
+    )
+    assert late_row.evidence_ref in got.late_contradiction_refs
+
+
+def test_late_row_available_after_owner_read_asof_is_not_flagged():
+    owner = "issuer_event_owner"
+    late_row = _event(
+        owner=owner,
+        known_at=T0 + timedelta(minutes=5),
+        source_available_at=T0 + timedelta(minutes=1),
+        relevant_until=T0 + timedelta(days=1),
+        ref="event:late-no-contra",
+    )
+    got = _assess(
+        evidence=[late_row],
+        generated_at=T0 + timedelta(minutes=5),
+        source_reads=[
+            _read(
+                source_id=owner,
+                observed_at=T0,
+                source_asof=T0,
+                fresh_until=T0 + timedelta(minutes=5),
+            )
+        ],
+    )
+    assert late_row.evidence_ref not in got.late_contradiction_refs
+
+
+def test_late_row_with_no_read_from_its_owner_is_not_flagged():
+    late_row = _event(
+        owner="other_owner",
+        known_at=T0 + timedelta(minutes=5),
+        relevant_until=T0 + timedelta(days=1),
+        ref="event:late-no-owner-read",
+    )
+    got = _assess(
+        evidence=[late_row],
+        generated_at=T0 + timedelta(minutes=5),
+    )
+    assert late_row.evidence_ref not in got.late_contradiction_refs
+
+
+@pytest.mark.parametrize(
+    ("factory", "needle"),
+    [
+        (
+            lambda: CatalystEvidenceClock(
+                evidence_ref="event:x",
+                source_available_at=T0,
+                known_at=T0 - timedelta(seconds=1),
+                relevant_until=T0,
+                aftermath_until=T0 + timedelta(days=1),
+                owner_disposition="blocking",
+                timing="active",
+            ),
+            "known_at is before source_available_at",
+        ),
+        (
+            lambda: CatalystEvidenceClock(
+                evidence_ref="event:x",
+                source_available_at=T0,
+                known_at=T0,
+                relevant_until=T0 - timedelta(seconds=1),
+                aftermath_until=T0 + timedelta(days=1),
+                owner_disposition="blocking",
+                timing="expired",
+            ),
+            "relevant_until is before source_available_at",
+        ),
+        (
+            lambda: CatalystEvidenceClock(
+                evidence_ref="event:x",
+                source_available_at=T0,
+                known_at=T0,
+                relevant_until=T0,
+                aftermath_until=T0 - timedelta(seconds=1),
+                owner_disposition="blocking",
+                timing="aftermath",
+            ),
+            "aftermath_until is before relevant_until",
+        ),
+        (
+            lambda: CatalystEvidenceClock(
+                evidence_ref="event:x",
+                source_available_at=T0,
+                known_at=T0,
+                relevant_until=T0 + timedelta(days=1),
+                aftermath_until=T0 + timedelta(days=2),
+                owner_disposition="blocking",
+                timing="not-a-timing",
+            ),
+            "timing",
+        ),
+    ],
+)
+def test_evidence_clock_ordering_refusals(factory, needle):
+    with pytest.raises(CatalystContextError, match=needle):
+        factory()
+
+
+def test_context_direct_construction_refuses_decision_after_generated():
+    base = _assess()
+    with pytest.raises(CatalystContextError):
+        CatalystContext(
+            ticker=base.ticker,
+            radar_episode_id=base.radar_episode_id,
+            decision_at=base.generated_at + timedelta(seconds=1),
+            generated_at=base.generated_at,
+            context_state=base.context_state,
+            coverage_complete=base.coverage_complete,
+            required_sources=base.required_sources,
+            source_reads=base.source_reads,
+            evidence_clocks=base.evidence_clocks,
+        )
+
+
+def test_context_direct_construction_refuses_clock_known_after_generated():
+    base = _assess(evidence=[_event(relevant_until=T0)])
+    bad_clock = replace(
+        base.evidence_clocks[0],
+        known_at=base.generated_at + timedelta(seconds=1),
+    )
+    with pytest.raises(CatalystContextError):
+        CatalystContext(
+            ticker=base.ticker,
+            radar_episode_id=base.radar_episode_id,
+            decision_at=base.decision_at,
+            generated_at=base.generated_at,
+            context_state=base.context_state,
+            coverage_complete=base.coverage_complete,
+            required_sources=base.required_sources,
+            source_reads=base.source_reads,
+            blocking_evidence_refs=base.blocking_evidence_refs,
+            evidence_clocks=(bad_clock,),
+        )
+
+
+def test_context_direct_construction_refuses_unsorted_clocks():
+    base = _assess(
+        evidence=[
+            _event(relevant_until=T0, ref="event:b"),
+            _event(native_id="2", relevant_until=T0, ref="event:a"),
+        ],
+    )
+    reversed_clocks = tuple(reversed(base.evidence_clocks))
+    with pytest.raises(CatalystContextError):
+        CatalystContext(
+            ticker=base.ticker,
+            radar_episode_id=base.radar_episode_id,
+            decision_at=base.decision_at,
+            generated_at=base.generated_at,
+            context_state=base.context_state,
+            coverage_complete=base.coverage_complete,
+            required_sources=base.required_sources,
+            source_reads=base.source_reads,
+            blocking_evidence_refs=base.blocking_evidence_refs,
+            evidence_clocks=reversed_clocks,
+        )
+
+
+def test_context_direct_construction_refuses_timing_label_contradicting_its_clocks():
+    base = _assess(evidence=[_event(relevant_until=T0, ref="event:timing")])
+    bad_clock = replace(base.evidence_clocks[0], timing="expired")
+    with pytest.raises(CatalystContextError):
+        CatalystContext(
+            ticker=base.ticker,
+            radar_episode_id=base.radar_episode_id,
+            decision_at=base.decision_at,
+            generated_at=base.generated_at,
+            context_state="no_blocking_event_observed",
+            coverage_complete=base.coverage_complete,
+            required_sources=base.required_sources,
+            source_reads=base.source_reads,
+            blocking_evidence_refs=(),
+            expired_evidence_refs=("event:timing",),
+            evidence_clocks=(bad_clock,),
+        )
+
+
+def test_context_direct_construction_refuses_wrong_element_types():
+    base = _assess()
+    with pytest.raises(CatalystContextError):
+        CatalystContext(
+            ticker=base.ticker,
+            radar_episode_id=base.radar_episode_id,
+            decision_at=base.decision_at,
+            generated_at=base.generated_at,
+            context_state=base.context_state,
+            coverage_complete=base.coverage_complete,
+            required_sources=base.required_sources,
+            source_reads=[{"bad": "read"}],
+            evidence_clocks=base.evidence_clocks,
+        )
+    with pytest.raises(CatalystContextError):
+        CatalystContext(
+            ticker=base.ticker,
+            radar_episode_id=base.radar_episode_id,
+            decision_at=base.decision_at,
+            generated_at=base.generated_at,
+            context_state=base.context_state,
+            coverage_complete=base.coverage_complete,
+            required_sources=base.required_sources,
+            source_reads=base.source_reads,
+            evidence_clocks=[{"bad": "clock"}],
+        )
+
+
+def test_schema_refuses_513_char_detail():
+    payload = _assess().to_dict()
+    payload["source_reads"][0]["detail"] = "d" * 513
+    assert _schema_messages(payload)
+
+
+def test_schema_refuses_extra_key_in_evidence_clock():
+    payload = _assess(evidence=[_event(relevant_until=T0)]).to_dict()
+    payload["evidence_clocks"][0]["extra"] = True
+    assert _schema_messages(payload)
+
+
+def test_schema_accepts_aftermath_context_round_trip():
+    acceptance = datetime(2026, 7, 30, 20, 30, 28, tzinfo=timezone.utc)
+    evidence = adapt_edgar_earnings_item_202(
+        _item202_row(acceptance_datetime=acceptance.isoformat().replace("+00:00", "Z")),
+        owner_observed_at=acceptance + timedelta(minutes=5),
+    )
+    decision = datetime(2026, 8, 3, 15, 0, 0, tzinfo=timezone.utc)
+    ctx = assess_catalyst_context(
+        ticker="NVDA",
+        radar_episode_id="0123456789abcdef",
+        decision_at=decision,
+        generated_at=decision,
+        required_sources=[EDGAR_OWNER],
+        source_reads=[
+            CatalystSourceRead(
+                source_id=EDGAR_OWNER,
+                status="ok",
+                source_asof=decision - timedelta(seconds=60),
+                observed_at=decision,
+                fresh_until=decision,
+            )
+        ],
+        evidence=[evidence],
+    )
+    assert _schema_messages(ctx.to_dict()) == []
+
+
+def test_session_close_lookup_matches_linear_reference():
+    from engine.entry_radar import catalyst_adapters as ca
+
+    pairs = ca._reference_session_open_closes("US")
+
+    def linear_close_after(instant: datetime) -> datetime:
+        for open_dt, close_dt in pairs:
+            if open_dt >= instant:
+                return close_dt
+        raise CatalystContextError("past horizon")
+
+    start = datetime(2024, 1, 2, 14, 0, tzinfo=timezone.utc)
+    end = datetime(2027, 1, 2, 14, 0, tzinfo=timezone.utc)
+    span = end - start
+    for i in range(300):
+        instant = start + span * (i / 299)
+        assert first_full_session_close_after(instant) == linear_close_after(instant)
+
+
+def test_session_close_lookup_is_fast():
+    import time
+
+    from engine.entry_radar import catalyst_adapters as ca
+
+    ca._reference_session_open_closes.cache_clear()
+    start = datetime(2024, 1, 2, 14, 0, tzinfo=timezone.utc)
+    t0 = time.perf_counter()
+    for i in range(2000):
+        first_full_session_close_after(start + timedelta(hours=i))
+    elapsed = time.perf_counter() - t0
+    assert elapsed < 2.0

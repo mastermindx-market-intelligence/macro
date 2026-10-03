@@ -105,3 +105,10 @@ Synthetic acceptance tests must cover canonical identity, exact-token matching, 
 ## Relevance window (2026-10-03)
 
 A results release drives the context from the moment it is known until the close of the first regular US session that opens at or after the release became available. A release after the close or before the open is relevant through that next session's close. A release during a session is relevant through the following session's close. After that the reference is kept as expired evidence and no longer drives the context state. The window is computed from the Radar reference-session calendar and the release's source-availability clock only.
+
+## Repair 2 — 2026-10-03
+
+- `aftermath_until` is five reference US session closes after `relevant_until`, so a Thursday after-close filing can still read as aftermath on the following Monday when coverage is complete.
+- The 900-second module read staleness ceiling applies to any EDGAR coverage read paired with this evidence; it is independent of `fresh_until`.
+- Late EDGAR rows are audit flags only and never change decision-time state.
+- Each 8-K/A amendment stays its own row and reference.

@@ -188,3 +188,10 @@ lawful owner vintages / observation receipts or prospective forward accrual.
 ## Relevance window (2026-10-03)
 
 A results release drives the context from the moment it is known until the close of the first regular US session that opens at or after the release became available. A release after the close or before the open is relevant through that next session's close. A release during a session is relevant through the following session's close. After that the reference is kept as expired evidence and no longer drives the context state. The window is computed from the Radar reference-session calendar and the release's source-availability clock only.
+
+## Repair 2 — 2026-10-03
+
+- Company-event earnings evidence carries the same five-session `aftermath_until` extension after `relevant_until`.
+- Coverage reads must satisfy the module 900-second staleness ceiling as well as owner `fresh_until`.
+- Late workspace evidence is recorded for audit and never rewrites decision-time state or coverage.
+- Amendments and distinct workspace generations remain separate evidence rows.

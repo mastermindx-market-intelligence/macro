@@ -5,7 +5,9 @@ claim source coverage, or create Radar episodes. Each adapter returns only prese
 """
 from __future__ import annotations
 
+from bisect import bisect_left
 from datetime import datetime
+from functools import lru_cache
 from hashlib import sha256
 
 from engine.company_intelligence.contracts import canonical_json_bytes
@@ -38,24 +40,59 @@ _COMPANY_EVENT_BLOCKING_STATES = frozenset({
     "corrected",
 })
 
+AFTERMATH_SESSIONS = 5
+
+
+@lru_cache(maxsize=4)
+def _reference_session_open_closes(market: str = "US") -> tuple[tuple[datetime, datetime], ...]:
+    reference = session_anchor.reference_sessions(market)
+    pairs: list[tuple[datetime, datetime]] = []
+    for session in reference:
+        open_dt = _require_ts("session_open", session_open_instant(session))
+        close_dt = _require_ts("session_close", session_close_instant(session))
+        pairs.append((open_dt, close_dt))
+    return tuple(pairs)
+
 
 def first_full_session_close_after(instant: datetime, *, market: str = "US") -> datetime:
     """Close of the first reference session whose open is at or after ``instant``."""
     when = _require_ts("instant", instant)
-    reference = session_anchor.reference_sessions(market)
-    for session in reference:
-        open_dt = _require_ts(
-            "session_open",
-            session_open_instant(session),
+    pairs = _reference_session_open_closes(market)
+    opens = [pair[0] for pair in pairs]
+    idx = bisect_left(opens, when)
+    if idx >= len(pairs):
+        raise CatalystContextError(
+            "no reference session opens at or after the supplied instant"
         )
-        if open_dt >= when:
-            return _require_ts(
-                "session_close",
-                session_close_instant(session),
-            )
-    raise CatalystContextError(
-        "no reference session opens at or after the supplied instant"
-    )
+    return pairs[idx][1]
+
+
+def session_close_n_sessions_after(
+    reaction_close: datetime,
+    n: int,
+    *,
+    market: str = "US",
+) -> datetime:
+    """Regular-session close ``n`` reference sessions after ``reaction_close``."""
+    if n < 1:
+        raise CatalystContextError("n must be >= 1")
+    target_close = _require_ts("reaction_close", reaction_close)
+    pairs = _reference_session_open_closes(market)
+    anchor_idx = None
+    for idx, (_open_dt, close_dt) in enumerate(pairs):
+        if close_dt == target_close:
+            anchor_idx = idx
+            break
+    if anchor_idx is None:
+        raise CatalystContextError(
+            "reaction_close is not exactly a reference-session close instant"
+        )
+    target_idx = anchor_idx + n
+    if target_idx >= len(pairs):
+        raise CatalystContextError(
+            "no reference session exists n sessions after reaction_close"
+        )
+    return pairs[target_idx][1]
 
 
 def _has_exact_item_202(raw: Any) -> bool:
@@ -92,6 +129,9 @@ def adapt_edgar_earnings_item_202(
     acceptance = _require_ts("acceptance_datetime", row.get("acceptance_datetime"))
     observed = _require_ts("owner_observed_at", owner_observed_at)
     relevant_until = first_full_session_close_after(acceptance)
+    aftermath_until = session_close_n_sessions_after(
+        relevant_until, AFTERMATH_SESSIONS,
+    )
     event_kind = (
         "earnings_results_item_2_02_amendment"
         if form == "8-K/A"
@@ -105,6 +145,7 @@ def adapt_edgar_earnings_item_202(
         source_available_at=acceptance,
         known_at=observed,
         relevant_until=relevant_until,
+        aftermath_until=aftermath_until,
         owner_disposition="blocking",
         evidence_ref=f"{EDGAR_ITEM_202_EVIDENCE_PREFIX}{key.key}",
     )
@@ -194,6 +235,9 @@ def adapt_company_intelligence_earnings_workspace(
         )
 
     relevant_until = first_full_session_close_after(source_available)
+    aftermath_until = session_close_n_sessions_after(
+        relevant_until, AFTERMATH_SESSIONS,
+    )
     generation_id = str(workspace.get("generation_id") or "").strip()
     native_id = f"{event_id}@{generation_id}"
     return CatalystEvidence(
@@ -204,6 +248,7 @@ def adapt_company_intelligence_earnings_workspace(
         source_available_at=source_available,
         known_at=consumer_observed,
         relevant_until=relevant_until,
+        aftermath_until=aftermath_until,
         owner_disposition="blocking",
         evidence_ref=f"{COMPANY_EVENT_EVIDENCE_PREFIX}{native_id}",
     )

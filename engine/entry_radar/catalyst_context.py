@@ -9,12 +9,19 @@ clock?
 Missing/stale coverage is never equivalent to "no event". Event materiality is never
 inferred here from price, residual returns, headline prose, or an LLM. If a source owner
 has not supplied a governed disposition, the event remains ``unknown``.
+
+Evidence first known after the decision clock was invisible when the decision was made.
+Rewriting decision-time state with such rows would be hindsight: it would move episodes
+with hidden news out of the "clean" bucket after the fact and flatter that bucket. The
+state therefore stays what a live reader would have seen, and any contradiction is
+recorded separately in ``late_contradiction_refs``.
 """
 from __future__ import annotations
 
 import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, Sequence
 
 from engine.entry_radar.contracts import AUTHORITY_BLOCK, SOURCE_STATUSES, _TICKER_RE
@@ -29,16 +36,25 @@ CONTEXT_STATES = frozenset({
     "blocking_event_observed",
     "event_classification_unknown",
     "coverage_unknown",
+    "event_aftermath_observed",
     "soft_event_observed",
     "no_blocking_event_observed",
 })
+
+DEFAULT_MAX_SOURCE_STALENESS_SECONDS = 900
+SOURCE_MAX_STALENESS_SECONDS: Mapping[str, int] = MappingProxyType({})
+
+
+def max_source_staleness_seconds(source_id: str) -> int:
+    override = SOURCE_MAX_STALENESS_SECONDS.get(source_id, DEFAULT_MAX_SOURCE_STALENESS_SECONDS)
+    return min(DEFAULT_MAX_SOURCE_STALENESS_SECONDS, override)
 
 MAX_ID_CHARS = 256
 MAX_DETAIL_CHARS = 512
 MAX_REQUIRED_SOURCES = 32
 MAX_SOURCE_READS = 32
 MAX_EVIDENCE = 256
-EVIDENCE_TIMINGS = frozenset({"active", "late", "expired"})
+EVIDENCE_TIMINGS = frozenset({"active", "late", "aftermath", "expired"})
 
 
 class CatalystContextError(ValueError):
@@ -128,13 +144,15 @@ def _coverage(required, reads, decision) -> bool:
     return all(s in by_source and by_source[s].usable_at(decision) for s in required)
 
 
-def _state(blocking, unknown, coverage_complete, soft) -> str:
+def _state(blocking, unknown, coverage_complete, aftermath_material, soft) -> str:
     if blocking:
         return "blocking_event_observed"
     if unknown:
         return "event_classification_unknown"
     if not coverage_complete:
         return "coverage_unknown"
+    if aftermath_material:
+        return "event_aftermath_observed"
     if soft:
         return "soft_event_observed"
     return "no_blocking_event_observed"
@@ -143,13 +161,29 @@ def _state(blocking, unknown, coverage_complete, soft) -> str:
 def _evidence_timing(
     known_at: datetime,
     relevant_until: datetime,
+    aftermath_until: datetime,
     decision_at: datetime,
 ) -> str:
     if known_at > decision_at:
         return "late"
-    if relevant_until < decision_at:
-        return "expired"
-    return "active"
+    if decision_at <= relevant_until:
+        return "active"
+    if decision_at <= aftermath_until:
+        return "aftermath"
+    return "expired"
+
+
+def _materialize(name: str, values: Any, item_type: type) -> tuple[Any, ...]:
+    if isinstance(values, (str, bytes)) or isinstance(values, Mapping):
+        raise CatalystContextError(f"{name} must be an iterable of {item_type.__name__} records")
+    try:
+        materialized = tuple(values)
+    except TypeError as exc:
+        raise CatalystContextError(f"{name} must be an iterable of {item_type.__name__} records") from exc
+    for item in materialized:
+        if not isinstance(item, item_type):
+            raise CatalystContextError(f"{name} must contain only {item_type.__name__} records")
+    return materialized
 
 
 @dataclass(frozen=True, slots=True)
@@ -188,10 +222,21 @@ class CatalystSourceRead:
         object.__setattr__(self, "detail", _require_detail(self.detail))
 
     def usable_at(self, decision_at: datetime) -> bool:
+        """Return whether this read vouches for its owner at ``decision_at``.
+
+        ``fresh_until`` is the source owner's own bound and can only shorten the
+        freshness window; the module ceiling from :func:`max_source_staleness_seconds`
+        is the hard limit, so no caller can declare a read fresh forever. A read whose
+        data is more than fifteen minutes behind the decision clock cannot vouch that
+        nothing happened in the gap.
+        """
         decision = _require_ts("decision_at", decision_at)
+        ceiling = max_source_staleness_seconds(self.source_id)
+        age_seconds = (decision - self.source_asof).total_seconds()
         return (
             self.status == "ok"
             and self.source_asof <= self.observed_at <= decision <= self.fresh_until
+            and age_seconds <= ceiling
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -202,6 +247,7 @@ class CatalystSourceRead:
             "observed_at": _iso(self.observed_at),
             "fresh_until": _iso(self.fresh_until),
             "detail": self.detail,
+            "max_staleness_seconds": max_source_staleness_seconds(self.source_id),
         }
 
 
@@ -216,6 +262,7 @@ class CatalystEvidence:
     source_available_at: datetime
     known_at: datetime
     relevant_until: datetime
+    aftermath_until: datetime
     owner_disposition: str
     evidence_ref: str
 
@@ -236,6 +283,12 @@ class CatalystEvidence:
         source_available_at = _require_ts("source_available_at", self.source_available_at)
         known_at = _require_ts("known_at", self.known_at)
         relevant_until = _require_ts("relevant_until", self.relevant_until)
+        aftermath_until = _require_ts("aftermath_until", self.aftermath_until)
+        if aftermath_until < relevant_until:
+            raise CatalystContextError(
+                f"{self.owner}:{self.native_id}: aftermath_until "
+                f"{_iso(aftermath_until)} is before relevant_until {_iso(relevant_until)}"
+            )
         if source_available_at > known_at:
             raise CatalystContextError(
                 f"{self.owner}:{self.native_id}: source_available_at "
@@ -250,6 +303,7 @@ class CatalystEvidence:
         object.__setattr__(self, "source_available_at", source_available_at)
         object.__setattr__(self, "known_at", known_at)
         object.__setattr__(self, "relevant_until", relevant_until)
+        object.__setattr__(self, "aftermath_until", aftermath_until)
 
     @property
     def identity(self) -> tuple[str, str]:
@@ -264,6 +318,7 @@ class CatalystEvidence:
             _iso(self.source_available_at) or "",
             _iso(self.known_at) or "",
             _iso(self.relevant_until) or "",
+            _iso(self.aftermath_until) or "",
             self.owner_disposition,
             self.evidence_ref,
         )
@@ -277,23 +332,43 @@ class CatalystEvidenceClock:
     source_available_at: datetime
     known_at: datetime
     relevant_until: datetime
+    aftermath_until: datetime
+    owner_disposition: str
     timing: str
 
     def __post_init__(self) -> None:
         object.__setattr__(
             self, "evidence_ref", _bounded_id("evidence_ref", self.evidence_ref)
         )
-        object.__setattr__(
-            self, "source_available_at", _require_ts("source_available_at", self.source_available_at)
-        )
-        object.__setattr__(self, "known_at", _require_ts("known_at", self.known_at))
-        object.__setattr__(
-            self, "relevant_until", _require_ts("relevant_until", self.relevant_until)
-        )
+        source_available_at = _require_ts("source_available_at", self.source_available_at)
+        known_at = _require_ts("known_at", self.known_at)
+        relevant_until = _require_ts("relevant_until", self.relevant_until)
+        aftermath_until = _require_ts("aftermath_until", self.aftermath_until)
+        if known_at < source_available_at:
+            raise CatalystContextError(
+                f"{self.evidence_ref}: known_at is before source_available_at"
+            )
+        if relevant_until < source_available_at:
+            raise CatalystContextError(
+                f"{self.evidence_ref}: relevant_until is before source_available_at"
+            )
+        if aftermath_until < relevant_until:
+            raise CatalystContextError(
+                f"{self.evidence_ref}: aftermath_until is before relevant_until"
+            )
+        if self.owner_disposition not in OWNER_DISPOSITIONS:
+            raise CatalystContextError(
+                f"owner_disposition {self.owner_disposition!r} not in "
+                f"{sorted(OWNER_DISPOSITIONS)}"
+            )
         if self.timing not in EVIDENCE_TIMINGS:
             raise CatalystContextError(
                 f"timing {self.timing!r} not in {sorted(EVIDENCE_TIMINGS)}"
             )
+        object.__setattr__(self, "source_available_at", source_available_at)
+        object.__setattr__(self, "known_at", known_at)
+        object.__setattr__(self, "relevant_until", relevant_until)
+        object.__setattr__(self, "aftermath_until", aftermath_until)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -301,6 +376,8 @@ class CatalystEvidenceClock:
             "source_available_at": _iso(self.source_available_at),
             "known_at": _iso(self.known_at),
             "relevant_until": _iso(self.relevant_until),
+            "aftermath_until": _iso(self.aftermath_until),
+            "owner_disposition": self.owner_disposition,
             "timing": self.timing,
         }
 
@@ -323,6 +400,8 @@ class CatalystContext:
     nonblocking_evidence_refs: tuple[str, ...] = ()
     late_evidence_refs: tuple[str, ...] = ()
     expired_evidence_refs: tuple[str, ...] = ()
+    aftermath_evidence_refs: tuple[str, ...] = ()
+    late_contradiction_refs: tuple[str, ...] = ()
     evidence_clocks: tuple[CatalystEvidenceClock, ...] = ()
     schema: str = SCHEMA
 
@@ -345,6 +424,8 @@ class CatalystContext:
             raise CatalystContextError(f"source_reads exceeds {MAX_SOURCE_READS} entries")
         object.__setattr__(self, "source_reads", tuple(self.source_reads))
         for row in self.source_reads:
+            if not isinstance(row, CatalystSourceRead):
+                raise CatalystContextError("source_reads must contain CatalystSourceRead records")
             if row.observed_at > generated:
                 raise CatalystContextError(
                     f"{row.source_id}: observed_at is after generated_at"
@@ -353,8 +434,13 @@ class CatalystContext:
         if type(self.coverage_complete) is not bool or self.coverage_complete != complete:
             raise CatalystContextError("coverage_complete contradicts source reads")
         ref_names = (
-            "blocking_evidence_refs", "soft_evidence_refs", "unknown_evidence_refs",
-            "nonblocking_evidence_refs", "late_evidence_refs", "expired_evidence_refs",
+            "blocking_evidence_refs",
+            "soft_evidence_refs",
+            "unknown_evidence_refs",
+            "nonblocking_evidence_refs",
+            "late_evidence_refs",
+            "expired_evidence_refs",
+            "aftermath_evidence_refs",
         )
         ref_tuples: dict[str, tuple[str, ...]] = {}
         seen_refs: set[str] = set()
@@ -375,7 +461,28 @@ class CatalystContext:
             seen_refs.update(refs)
             object.__setattr__(self, name, refs)
             ref_tuples[name] = refs
-        clocks = tuple(self.evidence_clocks)
+        late_contra_values = self.late_contradiction_refs
+        if isinstance(late_contra_values, (str, bytes)) or not isinstance(
+            late_contra_values, Sequence
+        ):
+            raise CatalystContextError("late_contradiction_refs must be a sequence")
+        if len(late_contra_values) > MAX_EVIDENCE:
+            raise CatalystContextError("late_contradiction_refs exceeds MAX_EVIDENCE entries")
+        late_contra = tuple(sorted(_bounded_id("late_contradiction_refs", ref) for ref in late_contra_values))
+        if len(late_contra) != len(set(late_contra)):
+            raise CatalystContextError("late_contradiction_refs contains duplicate references")
+        if any(ref not in ref_tuples["late_evidence_refs"] for ref in late_contra):
+            raise CatalystContextError(
+                "late_contradiction_refs must be a subset of late_evidence_refs"
+            )
+        object.__setattr__(self, "late_contradiction_refs", late_contra)
+        clocks_raw = tuple(self.evidence_clocks)
+        for clock in clocks_raw:
+            if not isinstance(clock, CatalystEvidenceClock):
+                raise CatalystContextError(
+                    "evidence_clocks must contain CatalystEvidenceClock records"
+                )
+        clocks = clocks_raw
         if len(clocks) > MAX_EVIDENCE:
             raise CatalystContextError(f"evidence_clocks exceeds {MAX_EVIDENCE} entries")
         clock_refs = [c.evidence_ref for c in clocks]
@@ -385,13 +492,17 @@ class CatalystContext:
             raise CatalystContextError("evidence_clocks must cover every evidence reference")
         if clocks != tuple(sorted(clocks, key=lambda c: c.evidence_ref)):
             raise CatalystContextError("evidence_clocks must be sorted by evidence_ref")
+        aftermath_material = False
         for clock in clocks:
             if clock.known_at > generated:
                 raise CatalystContextError(
                     f"{clock.evidence_ref}: known_at is after generated_at"
                 )
             expected_timing = _evidence_timing(
-                clock.known_at, clock.relevant_until, decision
+                clock.known_at,
+                clock.relevant_until,
+                clock.aftermath_until,
+                decision,
             )
             if clock.timing != expected_timing:
                 raise CatalystContextError(
@@ -405,6 +516,13 @@ class CatalystContext:
                 raise CatalystContextError(
                     f"{clock.evidence_ref}: expired timing not in expired_evidence_refs"
                 )
+            if clock.timing == "aftermath":
+                if clock.evidence_ref not in ref_tuples["aftermath_evidence_refs"]:
+                    raise CatalystContextError(
+                        f"{clock.evidence_ref}: aftermath timing not in aftermath_evidence_refs"
+                    )
+                if clock.owner_disposition in ("blocking", "unknown"):
+                    aftermath_material = True
             if clock.timing == "active":
                 active_home = (
                     ref_tuples["blocking_evidence_refs"]
@@ -420,6 +538,7 @@ class CatalystContext:
             ref_tuples["blocking_evidence_refs"],
             ref_tuples["unknown_evidence_refs"],
             complete,
+            aftermath_material,
             ref_tuples["soft_evidence_refs"],
         )
         if self.context_state != expected:
@@ -443,6 +562,8 @@ class CatalystContext:
             "nonblocking_evidence_refs": list(self.nonblocking_evidence_refs),
             "late_evidence_refs": list(self.late_evidence_refs),
             "expired_evidence_refs": list(self.expired_evidence_refs),
+            "aftermath_evidence_refs": list(self.aftermath_evidence_refs),
+            "late_contradiction_refs": list(self.late_contradiction_refs),
             "evidence_clocks": [c.to_dict() for c in self.evidence_clocks],
             "authority": dict(AUTHORITY_BLOCK),
             "research_only": True,
@@ -452,6 +573,8 @@ class CatalystContext:
 def _dedupe_evidence(evidence: Iterable[CatalystEvidence]) -> tuple[CatalystEvidence, ...]:
     by_id: dict[tuple[str, str], CatalystEvidence] = {}
     for row in evidence:
+        if not isinstance(row, CatalystEvidence):
+            raise CatalystContextError("evidence must contain CatalystEvidence records")
         prior = by_id.get(row.identity)
         if prior is None:
             by_id[row.identity] = row
@@ -506,18 +629,20 @@ def assess_catalyst_context(
     episode_id = _episode_id(radar_episode_id)
     decision = _require_ts("decision_at", decision_at)
     generated = _require_ts("generated_at", generated_at)
+    materialized_reads = _materialize("source_reads", source_reads, CatalystSourceRead)
+    materialized_evidence = _materialize("evidence", evidence, CatalystEvidence)
     _validate_generation_clocks(
         generated_at=generated,
         decision_at=decision,
-        source_reads=source_reads,
-        evidence=evidence,
+        source_reads=materialized_reads,
+        evidence=materialized_evidence,
     )
     required = _required_sources(required_sources)
-    if len(source_reads) > MAX_SOURCE_READS:
+    if len(materialized_reads) > MAX_SOURCE_READS:
         raise CatalystContextError(f"source_reads exceeds {MAX_SOURCE_READS} entries")
-    coverage_complete = _coverage(required, source_reads, decision)
+    coverage_complete = _coverage(required, materialized_reads, decision)
 
-    deduped = _dedupe_evidence(evidence)
+    deduped = _dedupe_evidence(materialized_evidence)
     if len(deduped) > MAX_EVIDENCE:
         raise CatalystContextError(f"evidence exceeds {MAX_EVIDENCE} rows after dedupe")
     ref_to_identity: dict[str, tuple[str, str]] = {}
@@ -533,25 +658,44 @@ def assess_catalyst_context(
             )
         ref_to_identity[row.evidence_ref] = row.identity
 
+    reads_by_source = {row.source_id: row for row in materialized_reads}
     groups: dict[str, list[str]] = {
         "blocking": [], "soft": [], "unknown": [], "nonblocking": [],
     }
     late: list[str] = []
     expired: list[str] = []
+    aftermath: list[str] = []
+    late_contradictions: list[str] = []
     clocks: list[CatalystEvidenceClock] = []
+    aftermath_material = False
     for row in deduped:
-        timing = _evidence_timing(row.known_at, row.relevant_until, decision)
+        timing = _evidence_timing(
+            row.known_at, row.relevant_until, row.aftermath_until, decision
+        )
         clocks.append(
             CatalystEvidenceClock(
                 evidence_ref=row.evidence_ref,
                 source_available_at=row.source_available_at,
                 known_at=row.known_at,
                 relevant_until=row.relevant_until,
+                aftermath_until=row.aftermath_until,
+                owner_disposition=row.owner_disposition,
                 timing=timing,
             )
         )
         if timing == "late":
             late.append(row.evidence_ref)
+            owner_read = reads_by_source.get(row.owner)
+            if (
+                owner_read is not None
+                and owner_read.usable_at(decision)
+                and row.source_available_at <= owner_read.source_asof
+            ):
+                late_contradictions.append(row.evidence_ref)
+        elif timing == "aftermath":
+            aftermath.append(row.evidence_ref)
+            if row.owner_disposition in ("blocking", "unknown"):
+                aftermath_material = True
         elif timing == "expired":
             expired.append(row.evidence_ref)
         else:
@@ -560,10 +704,18 @@ def assess_catalyst_context(
         refs.sort()
     late.sort()
     expired.sort()
+    aftermath.sort()
+    late_contradictions.sort()
 
-    state = _state(groups["blocking"], groups["unknown"], coverage_complete, groups["soft"])
+    state = _state(
+        groups["blocking"],
+        groups["unknown"],
+        coverage_complete,
+        aftermath_material,
+        groups["soft"],
+    )
 
-    ordered_reads = tuple(sorted(source_reads, key=lambda r: r.source_id))
+    ordered_reads = tuple(sorted(materialized_reads, key=lambda r: r.source_id))
     ordered_clocks = tuple(sorted(clocks, key=lambda c: c.evidence_ref))
     return CatalystContext(
         ticker=symbol,
@@ -580,6 +732,8 @@ def assess_catalyst_context(
         nonblocking_evidence_refs=tuple(groups["nonblocking"]),
         late_evidence_refs=tuple(late),
         expired_evidence_refs=tuple(expired),
+        aftermath_evidence_refs=tuple(aftermath),
+        late_contradiction_refs=tuple(late_contradictions),
         evidence_clocks=ordered_clocks,
     )
 
