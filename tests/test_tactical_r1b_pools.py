@@ -1,4 +1,5 @@
 """R1-B matched-control pools: synthetic sessions only.  No market data is read."""
+import copy
 import json
 from datetime import date, timedelta, timezone
 from pathlib import Path
@@ -380,3 +381,201 @@ def test_same_control_at_a_different_delay_is_a_different_outcome():
     assert cell(rows1)["control_returns_a"] == pytest.approx(expected, abs=1e-15)
     assert len(cache) == 288
     assert cell(rows1)["control_returns_a"][0] != cell(rows2)["control_returns_a"][0]
+
+
+def test_preflight_counts_a_healthy_run():
+    days, census = build(13)
+    event = selected_event(S[0])
+    pool = pools.build_pool(event, census=census, config_bytes=CONFIG)
+    assert pools.preflight([event], [pool], days, config_bytes=CONFIG) == {
+        "events": 1, "controls": 12, "shift_bar_invalid": 0,
+    }
+    event_none = selected_event(S[0], sign=None)
+    pool_none = pools.build_pool(event_none, census=census, config_bytes=CONFIG)
+    key0 = (SYMBOL, S[0].isoformat())
+    days_only = {key0: days[key0]}
+    assert pools.preflight([event_none], [pool_none], days_only, config_bytes=CONFIG) == {
+        "events": 1, "controls": 0, "shift_bar_invalid": 0,
+    }
+
+
+def test_preflight_counts_a_shift_bar_defect_without_refusing():
+    days, census = build(13)
+    event = selected_event(S[0])
+    pool = pools.build_pool(event, census=census, config_bytes=CONFIG)
+    d2 = dict(days)
+    k3 = (SYMBOL, S[3].isoformat())
+    f = d2[k3]["stock_frame"]
+    d2[k3] = {**d2[k3], "stock_frame": f.drop(f.index[7])}
+    assert pools.preflight([event], [pool], d2, config_bytes=CONFIG) == {
+        "events": 1, "controls": 12, "shift_bar_invalid": 1,
+    }
+
+
+def test_preflight_refuses_each_structural_defect():
+    days, census = build(13)
+    event = selected_event(S[0])
+    pool = pools.build_pool(event, census=census, config_bytes=CONFIG)
+    k3 = (SYMBOL, S[3].isoformat())
+    k0 = (SYMBOL, S[0].isoformat())
+    d3 = dict(days)
+    d3[k3] = {**d3[k3], "anchors": {}}
+    with pytest.raises(ValueError, match="control_anchor_missing"):
+        pools.preflight([event], [pool], d3, config_bytes=CONFIG)
+    d4 = {k: v for k, v in days.items() if k != k3}
+    with pytest.raises(ValueError, match="control_day_missing"):
+        pools.preflight([event], [pool], d4, config_bytes=CONFIG)
+    d5 = {k: v for k, v in days.items() if k != k0}
+    with pytest.raises(ValueError, match="selected_day_missing"):
+        pools.preflight([event], [pool], d5, config_bytes=CONFIG)
+    with pytest.raises(ValueError, match="duplicate_pool"):
+        pools.preflight([event], [pool, pool], days, config_bytes=CONFIG)
+    with pytest.raises(ValueError, match="duplicate_selected_event"):
+        pools.preflight([event, event], [pool], days, config_bytes=CONFIG)
+    with pytest.raises(ValueError, match="selected_event_without_pool"):
+        pools.preflight([event], [], days, config_bytes=CONFIG)
+    with pytest.raises(ValueError, match="pool_without_selected_event"):
+        pools.preflight([], [pool], days, config_bytes=CONFIG)
+    bad = copy.deepcopy(pool)
+    bad["matched_controls"][0]["entry_reference_at"] = bad["matched_controls"][0]["candidate_at"]
+    with pytest.raises(ValueError, match="control_entry_clock_mismatch"):
+        pools.preflight([event], [bad], days, config_bytes=CONFIG)
+    with pytest.raises(ValueError, match="selected_beta_source_mismatch"):
+        pools.preflight([{**event, "beta": 0.5}], [pool], days, config_bytes=CONFIG)
+    d6 = dict(days)
+    d6[k0] = {k: v for k, v in d6[k0].items() if k != "stock_frame"}
+    with pytest.raises(ValueError, match="selected_day_frames_missing"):
+        pools.preflight([event], [pool], d6, config_bytes=CONFIG)
+    d7 = dict(days)
+    d7[k3] = {k: v for k, v in d7[k3].items() if k != "benchmark_frame"}
+    with pytest.raises(ValueError, match="control_day_frames_missing"):
+        pools.preflight([event], [pool], d7, config_bytes=CONFIG)
+
+
+def test_preflight_never_measures_an_outcome(monkeypatch):
+    def boom(*_a, **_k):
+        raise AssertionError("measure_event_outcome must not run during preflight")
+
+    monkeypatch.setattr(te, "measure_event_outcome", boom)
+    days, census = build(13)
+    event = selected_event(S[0])
+    pool = pools.build_pool(event, census=census, config_bytes=CONFIG)
+    assert pools.preflight([event], [pool], days, config_bytes=CONFIG) == {
+        "events": 1, "controls": 12, "shift_bar_invalid": 0,
+    }
+
+
+def test_missing_sign_key_is_refused_and_a_null_sign_is_counted():
+    days, census = build(13)
+    event = selected_event(S[0])
+    with pytest.raises(ValueError, match="qqq_sign_key_missing"):
+        pools.split_census([{"anchor_id": "x"}])
+    no_key = {k: v for k, v in event.items() if k != "qqq_open_to_decision_sign"}
+    with pytest.raises(ValueError, match="qqq_sign_key_missing"):
+        pools.build_pool(no_key, census=census, config_bytes=CONFIG)
+    assert pools.split_census([{"anchor_id": "x", "qqq_open_to_decision_sign": None}]) == ([], 1)
+
+
+def test_selected_beta_comes_from_the_events_own_session():
+    days, census = build(13)
+    event = selected_event(S[0])
+    pool = pools.build_pool(event, census=census, config_bytes=CONFIG)
+    nob = {k: v for k, v in event.items() if k != "beta"}
+    k0 = (SYMBOL, S[0].isoformat())
+    q = days[k0]["benchmark_frame"].copy()
+    for k in range(len(q)):
+        q.iloc[k, 0] = 100 + 0.02 * k
+        q.iloc[k, 3] = 100 + 0.02 * (k + 1)
+        q.iloc[k, 1] = q.iloc[k, 3] + 0.05
+        q.iloc[k, 2] = q.iloc[k, 0] - 0.05
+
+    def run(day_beta, ev):
+        dd = dict(days)
+        dd[k0] = {
+            **days[k0],
+            "benchmark_frame": q,
+            "normalization": {**days[k0]["normalization"], "beta": day_beta},
+        }
+        return cell(pools.measure_rows(ev, pool, dd, config_bytes=CONFIG, cache={}))["selected_return"]
+
+    a = run(1.3, {**event, "beta": 1.3})
+    b = run(1.3, nob)
+    c = run(1.0, nob)
+    assert a == pytest.approx(-0.004415473119511035, abs=1e-12)
+    assert b == pytest.approx(-0.004415473119511035, abs=1e-12)
+    assert c == pytest.approx(-0.003696766790902526, abs=1e-12)
+    assert abs(a - c) > 1e-6
+    dd = dict(days)
+    dd[k0] = {
+        **days[k0],
+        "normalization": {**days[k0]["normalization"], "beta_available": False},
+    }
+    ret = cell(pools.measure_rows({**event, "beta": None}, pool, dd, config_bytes=CONFIG, cache={}))[
+        "selected_return"
+    ]
+    assert ret is None
+
+
+def test_event_without_a_beta_key_gives_identical_rows():
+    days, census = build(13)
+    event = selected_event(S[0])
+    pool = pools.build_pool(event, census=census, config_bytes=CONFIG)
+    nob = {k: v for k, v in event.items() if k != "beta"}
+    r1 = pools.measure_rows(event, pool, days, config_bytes=CONFIG, cache={})
+    r2 = pools.measure_rows(nob, pool, days, config_bytes=CONFIG, cache={})
+    assert r1 == r2
+
+
+def test_shift_window_is_exactly_the_d_bars_from_the_candidate():
+    days, census = build(13)
+    day = S[5]
+    row = {**census_row(day, minutes=60), "confirmation_delay_bars": 2}
+    base = days[(SYMBOL, day.isoformat())]
+    f = base["stock_frame"]
+    assert [str(f.index[k].time()) for k in (11, 12, 13, 14)] == [
+        "10:25:00", "10:30:00", "10:35:00", "10:40:00",
+    ]
+
+    def sv(frame, delay=2):
+        return pools.shift_bars_valid(
+            {**row, "confirmation_delay_bars": delay},
+            day={**base, "stock_frame": frame},
+        )
+
+    assert sv(f) is True
+    assert sv(f.drop(f.index[11])) is True
+    assert sv(f.drop(f.index[12])) is False
+    assert sv(f.drop(f.index[13])) is False
+    assert sv(f.drop(f.index[14])) is True
+    z = f.copy()
+    z.iloc[13, 4] = 0.0
+    assert sv(z) is False
+    assert sv(f.drop(f.index[12]), 0) is True
+
+
+def test_overlap_all_counts_across_selectors():
+    days, census = build(13)
+    e0 = selected_event(S[0], anchor_id=census[0]["anchor_id"])
+    e1 = selected_event(S[1], selector="RECLAIM_ONLY", anchor_id=census[1]["anchor_id"])
+    built = pools.build_pools([e1, e0], census, config_bytes=CONFIG)
+    assert pools.overlap(built) == {
+        "EXHAUSTION_RECLAIM": {
+            "selected_events": 1,
+            "distinct_controls": 12,
+            "selected_anchors_also_controls": 0,
+            "pools_per_control": {"1": 12},
+        },
+        "RECLAIM_ONLY": {
+            "selected_events": 1,
+            "distinct_controls": 12,
+            "selected_anchors_also_controls": 0,
+            "pools_per_control": {"1": 12},
+        },
+    }
+    assert pools.overlap_all(built) == {
+        "pools": 2,
+        "distinct_selected_anchors": 2,
+        "distinct_controls": 13,
+        "selected_anchors_also_controls": 2,
+        "pools_per_control": {"1": 2, "2": 11},
+    }

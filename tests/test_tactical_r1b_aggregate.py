@@ -287,3 +287,55 @@ def test_interval_lower_bound_of_exactly_zero_fails():
     for r in agg.READINGS:
         assert g["readings"][r]["summary"]["interval"] == (0.0, 0.0)
         assert g["readings"][r]["bullet_2_interval"] is False
+
+
+def test_duplicate_event_cell_rows_are_refused():
+    rows = synth_rows()
+    with pytest.raises(ValueError, match="duplicate_event_cell_row"):
+        agg.cell_summary(rows + [rows[0]], "L-A", cfg=CFG, with_interval=False)
+    with pytest.raises(ValueError, match="duplicate_event_cell_row"):
+        agg.summarize(rows + [rows[0]], cfg=CFG)
+
+
+def test_ticker_share_is_gated_on_the_delta_set_too():
+    def mk(t, i, avail=True):
+        d = weekdays(40)[i]
+        r = {
+            "selector": "EXHAUSTION_RECLAIM", "horizon": "60m", "cost_bps": 25,
+            "symbol": t, "date": d.isoformat(), "anchor_id": f"{t}:{d.isoformat()}",
+            "candidate_bin": 19, "decision_bin": 19, "selected_return": 0.01,
+            "selected_touch": "neither", "pool_availability": "AVAILABLE", "pool_reason": None,
+            "matched_count": 10, "control_returns_a": [0.0] * 10, "control_returns_b": [0.0] * 10,
+        }
+        if not avail:
+            r.update(
+                pool_availability="NO_CONTROL", pool_reason="matched_control_floor_not_met",
+                matched_count=4, control_returns_a=[], control_returns_b=[],
+            )
+        return r
+
+    even = [mk("AAA", i) for i in range(7)] + [mk("BBB", i) for i in range(7)] + [mk("CCC", i) for i in range(6)]
+    skew = (
+        [mk("AAA", i) for i in range(7)]
+        + [mk("BBB", i) for i in range(7)]
+        + [mk("CCC", i, avail=(i >= 2)) for i in range(6)]
+    )
+    for rs in (even, skew):
+        g = agg.gate(rs, cfg=CFG)
+        for r in agg.READINGS:
+            s = g["readings"][r]["summary"]
+            assert s["ticker_share_raw_max"] == 0.35
+    for r in agg.READINGS:
+        s = agg.gate(even, cfg=CFG)["readings"][r]["summary"]
+        assert s["ticker_share_delta_max"] == 0.35
+        assert agg.gate(even, cfg=CFG)["readings"][r]["bullet_4_concentration"] is True
+    for r in agg.READINGS:
+        s = agg.gate(skew, cfg=CFG)["readings"][r]["summary"]
+        assert s["ticker_share_delta_max"] == pytest.approx(7 / 18)
+        assert agg.gate(skew, cfg=CFG)["readings"][r]["bullet_4_concentration"] is False
+
+
+def test_cost_invariance_is_null_when_no_cell_has_a_statistic():
+    assert agg.summarize([], cfg=CFG)["cost_invariance"]["EXHAUSTION_RECLAIM|60m"] == {
+        "L-A": None, "L-B": None, "S-A": None, "S-B": None,
+    }
