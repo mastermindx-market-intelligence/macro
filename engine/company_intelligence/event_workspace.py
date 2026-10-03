@@ -634,13 +634,6 @@ def write_workspace_generation(
         event_id: _strip_private(payload)
         for event_id, payload in workspaces.items()
     }
-    for event_id, payload in list(cleaned.items()):
-        row = dict(payload)
-        lifecycle = dict(row.get("lifecycle") or {})
-        lifecycle["observed_at"] = _iso(_lifecycle_clock(row, event_id, "observed_at"))
-        lifecycle["source_available_at"] = _iso(_lifecycle_clock(row, event_id, "source_available_at"))
-        row["lifecycle"] = lifecycle
-        cleaned[event_id] = row
     generated, source_clock = _generation_clocks(cleaned)
     generation_id = _generation_identity_v3(
         cleaned,

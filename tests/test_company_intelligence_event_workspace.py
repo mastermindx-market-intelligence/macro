@@ -1066,8 +1066,23 @@ def test_v3_naive_lifecycle_timestamp_is_read_as_utc(tmp_path: Path) -> None:
     gen_zulu = write_workspace_generation(out_zulu, {EVENT_ID: zulu})
     man_naive = json.loads((gen_naive / "manifest.json").read_text(encoding="utf-8"))
     man_zulu = json.loads((gen_zulu / "manifest.json").read_text(encoding="utf-8"))
+    published_naive = json.loads(
+        (gen_naive / "workspaces" / f"{EVENT_ID}.json").read_text(encoding="utf-8")
+    )
     assert man_naive["generated_at"] == man_zulu["generated_at"]
-    assert man_naive["generation_id"] == man_zulu["generation_id"]
+    assert man_naive["source_clock"] == man_zulu["source_clock"]
+    assert published_naive["lifecycle"]["observed_at"] == "2026-07-02T00:00:00"
+
+
+def test_writer_does_not_rewrite_lifecycle_clocks(tmp_path: Path) -> None:
+    observed = "2026-07-02T08:00:00+08:00"
+    ws = _nest_row(source_available_at="2026-07-01T00:00:00Z", observed_at=observed)
+    out = tmp_path / "company_intelligence"
+    generation = write_workspace_generation(out, {EVENT_ID: ws})
+    published = json.loads((generation / "workspaces" / f"{EVENT_ID}.json").read_text(encoding="utf-8"))
+    manifest = json.loads((generation / "manifest.json").read_text(encoding="utf-8"))
+    assert published["lifecycle"]["observed_at"] == observed
+    assert manifest["generated_at"] == "2026-07-02T00:00:00Z"
 
 
 def test_v3_manifest_with_an_extra_key_is_refused(tmp_path: Path) -> None:

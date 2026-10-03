@@ -1614,6 +1614,29 @@ def test_no_op_gate_accepts_a_v3_marker(tmp_path: Path) -> None:
     assert [key for key, _ in fake.puts[first_puts:]] == []
 
 
+def test_noop_gate_holds_for_non_canonical_clock_strings(tmp_path: Path) -> None:
+    from engine.company_intelligence.event_workspace import preview_generation_identity_v3
+    from tests.test_company_intelligence_workspace_chain import EVENT_ID, _raw_workspace
+
+    row = _raw_workspace(source_available_at="2026-07-01T00:00:00Z", event_id=EVENT_ID)
+    lifecycle = dict(row["lifecycle"])
+    lifecycle["observed_at"] = "2026-07-02T00:00:00+00:00"
+    lifecycle["source_available_at"] = "2026-07-01T00:00:00+00:00"
+    row["lifecycle"] = lifecycle
+    out = tmp_path / "company_intelligence"
+    generation = write_workspace_generation(out, {EVENT_ID: row})
+    manifest = json.loads((generation / "manifest.json").read_text(encoding="utf-8"))
+    published = json.loads(
+        (generation / "workspaces" / f"{EVENT_ID}.json").read_text(encoding="utf-8")
+    )
+    assert published["lifecycle"]["observed_at"] == "2026-07-02T00:00:00+00:00"
+    candidate_id = preview_generation_identity_v3(
+        {EVENT_ID: published},
+        previous_generation_id=manifest.get("previous_generation_id"),
+    )
+    assert candidate_id == manifest["generation_id"]
+
+
 def test_noop_candidate_keeps_the_real_previous_generation_id(tmp_path: Path) -> None:
     from engine.company_intelligence.contracts import canonical_json_bytes
 
