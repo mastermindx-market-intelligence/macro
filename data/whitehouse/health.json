@@ -1,41 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-02T22:58:07.696927+00:00",
+  "as_of": "2026-10-03T01:56:25.100103+00:00",
   "posts_seen": 18,
   "seen_total": 257,
-  "evaluated": 5,
-  "activated": 1,
+  "evaluated": 0,
+  "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-10-02-national-manufacturing-day-2026",
-      "importance": 10,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-10-02-presidential-message-on-national-cybersecurity-awareness-month",
-      "importance": 5,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-10-02-presidential-message-on-national-domestic-violence-awareness-month",
-      "importance": 5,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-10-02-presidential-message-on-national-breast-cancer-awareness-month-a680",
-      "importance": 10,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "tw-2026-09-21-tga-release",
-      "importance": 78,
-      "activated": true,
-      "degraded_reason": "served_by:deepseek"
-    }
-  ]
+  "gate_scores": []
 }
