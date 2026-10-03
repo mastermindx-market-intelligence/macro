@@ -5,194 +5,149 @@ model: sol
 ended_because: blocked
 mission: >
   Deliver granular regime intelligence through existing Macro, Regime One,
-  Neural Web, Transmission, Market OS and evaluation owners. The first source
-  increment makes simultaneous market dimensions available to the actual
-  Mastermind AI chat consumers; this does not complete the parent programme.
+  Neural Web, Transmission, Market OS and evaluation owners. The current child
+  connects simultaneous market dimensions to Mastermind AI chat; it does not
+  complete the parent programme or establish predictive or capital authority.
 state_before: >
-  Parent PR 7088 contained a rates-oriented architecture, not the full production
-  capability. Existing domain outputs included rates, AI participation, dispersion,
-  revisions, credit and liquidity, but the conversational packet discarded much of
-  that context. The present increment was not yet implemented or consumed.
+  PR 8257 records head c6ee5709913a80f430a9278191f96bfb39c946d6 contained the
+  first 15-dimension consumer integration. All twelve code packs and ci-gate
+  subsequently passed. Independent supplemental comment 5945651289 found that
+  missing/future/undated dimensions disappeared from prompts and COR3M was
+  counted but not rendered. No whole-PR independent approval or deployment.
 changed:
   - path: engine/neuralweb/regime_context.py
     what: >
-      Added a pure, bounded, current-only projection of 15 separately dated
-      dimensions over seven fixed existing owner artifacts. No new truth writer,
-      classifier, forecast, rank, gate, size, trade or measured-flow claim.
+      Preserve fixed unavailable-dimension reasons, including all-unavailable
+      evidence; account for COR3M independently; disclose budget omissions.
+      Withheld values and arbitrary source errors remain absent from prompts.
   - path: engine/neuralweb/market_packet.py
     what: >
-      Added opt-in granular detail and source/cache invalidation while preserving
-      the existing packet, priority blocks, budgets and default guest behavior.
-  - path: engine/neuralweb/brain_gateway.py
-    what: >
-      Both real streaming and nonstreaming loops resolve current active/trialing
-      paid site_full entitlement before including detail; no client-supplied
-      identity, tier, page or model mode grants access.
-  - path: engine/neuralweb/analyst/lens_regime.md
-    what: >
-      Requires multidimensional explanations and distinction between measured
-      state, mechanism hypotheses, current membership and future forecasts.
-  - path: .github/ci/legacy-jobs.yml
-    what: >
-      Enrolled the new tests in the existing gateway code job and repaired eight
-      exact source dependencies in four existing jobs; no new gate or exemption.
-  - path: app/deploy/update.sh
-    what: Added the new helper to the existing API restart change detector.
+      Retain an all-unavailable paid detail object for honest rendering instead
+      of dropping it. Existing entitlement, cache and public defaults unchanged.
   - path: tests/test_regime_context.py
     what: >
-      Added type, date, missingness, scope, input immutability, budget, cache and
-      entitlement tests, including both real provider-prompt construction paths.
+      Add all-fifteen-axis coverage, small-budget and degraded prompt tests in
+      both actual chat loops. Replace swallowed-exception guest-read test with
+      external zero-call assertion; prove removal of the guard is detected.
 prs: [8257, 7088]
 discoveries: [DSC:GRANULAR-REGIME-CONTEXT-IS-A-CONSUMPTION-GAP]
 verified:
-  - claim: The implementation and qualification commits are published on their original carrier.
-    command: git push followed by git ls-remote for the exact operation branch
-    result: >
-      Initial implementation 8b70b47aa7ebaf4c808ce52a7a5e2980aeeec62e;
-      qualification head 88f97f32ccee94b78e740f5aa4ab04e214a951e6.
-      Macro PR 8257 is Draft/HOLD-FOR-SOL. No merge or deployment occurred.
-  - claim: Focused source and actual existing gateway test commands pass.
+  - claim: The C2 defects reproduce and the bounded repairs pass focused regression.
     command: >
-      The two exact pytest commands recorded in
-      research/macro_regime_intelligence/verification_20261001.json.
+      python3 -m pytest tests/test_regime_context.py tests/test_market_packet.py
+      tests/test_brain_analyst_doctrine.py tests/test_brain_analyst_wiring.py
+      tests/test_deploy_update_self_heal.py -q
     result: >
-      585 focused tests passed; 937 passed in the existing gateway pytest command,
-      with five inherited deprecation warnings and no skips. Scopes overlap and
-      are not summed. Fixture provider transport proves prompt construction,
-      not newly generated model behavior or production delivery.
-  - claim: Real saved owner inputs reach the existing packet without mutation.
+      New discriminating subset: 15 failures on original code after correcting
+      the fixture's text-block assumption; repaired campaign 615 passed,
+      zero failed/skipped, four host pytest temporary-cleanup warnings.
+      Log: .pytest_cache/regime-c2-focused.log in the original workspace.
+  - claim: The existing gateway test command still passes after the repair.
     command: >
-      Exact git-show source capture at 11af49ee9978c904b6d693432f360e2b40d2cfa6,
-      real packet and gateway projection, and before/after input SHA-256 checks.
+      python3 -m pytest tests/test_brain_gateway.py
+      tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py
+      tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py
+      tests/test_brain_instant_lane.py tests/test_intelligence_workspace_context_compiler.py
+      tests/test_mm_brain_asset.py tests/test_brain_exact_source_context.py
+      tests/test_company_source_span.py -q
     result: >
-      15 of 15 projected dimensions populated; compact detail 1793 characters;
-      full tested packet 3884 characters. Source artifacts include old July
-      committed live-tape files: this is saved-input proof, not fresh VPS proof.
-  - claim: The repaired CI dependency contract passed locally and on the hosted candidate.
+      937 passed, zero failed/skipped, nine warnings including inherited
+      dependency deprecations and host temporary-cleanup warnings. Scopes overlap
+      and are not summed. Provider transport is a fixture, not live inference.
+  - claim: The stronger guest test detects removal of the actual read guard.
     command: >
-      python3 scripts/check_contract_delta.py --base 11af49ee9978c904b6d693432f360e2b40d2cfa6;
-      gh pr view 8257 --json headRefOid,statusCheckRollup.
+      Compile build_packet with only include_regime_detail guard removed in an
+      isolated in-memory namespace; invoke the external zero-call regression.
     result: >
-      Local final recheck: zero introduced, zero inherited, 185.8 seconds.
-      Hosted contract-delta for 88f97f32ccee94b78e740f5aa4ab04e214a951e6
-      succeeded in run 36951199549. Last observed: ten of twelve code packs
-      succeeded; packs 0 and 11 were still in progress. CI authority/main,
-      self-mod-fence, capability-broker, grader-manifest and fence-pack succeeded.
-      The pilot-context failure explicitly reports inactive_base_context for
-      codex/merge-queue-pilot; it is not a passing current-main code suite.
-  - claim: The failed Executive review admission did not reach the modifying submission step.
+      KILLED by AssertionError. No source file, credential or production data
+      changed by the mutation probe.
+  - claim: Original source carrier and source ownership were reconciled before repair.
     command: >
-      Mastermind_Executive_V2.submit_ceo_intent plus read-only inspection of
-      installed c7407c6c77ef82cc6590401e80cc8f1868dc9085
-      integrations/mastermind_executive_app/admission.py:204-224.
+      git status --short --branch; git rev-parse HEAD; git ls-remote;
+      bounded worktree, PR comment and formal-review inspection.
     result: >
-      Operation granular-regime-context-review-exec-20261001-001 first failed
-      objective validation because of newlines; a single same-carrier correction
-      returned grounding_unavailable / trusted grounding is unavailable at
-      2026-10-02T01:46:07Z or later. Source ordering places that exception before
-      frame submission. No intent ID, Job, reviewer assignment or START is claimed.
-  - claim: Normal GitHub independent review was requested without claiming worker execution.
+      Original local/remote records head c6ee5709913a80f430a9278191f96bfb39c946d6;
+      clean before repair. MastermindX1 review requested, no formal review.
+      C2 comment is supplemental source audit, not whole-PR approval or a worker.
+  - claim: Applicable current procedure was loaded at one protected source pin.
     command: >
-      Verify MastermindX1 repository permission; gh pr edit 8257 --add-reviewer
-      MastermindX1; read pulls/8257/requested_reviewers and reviews.
+      Read protected INDEX and same-commit COLD_START, ACTIVE_EXECUTION,
+      WEB_CEO_DELEGATION, RECONCILE_STATE, REVIEW_RETURN and CLOSEOUT.
     result: >
-      MastermindX1 is an authorized non-author collaborator and appears in
-      requested_reviewers. Formal reviews were empty. A request is not pickup,
-      independent approval, runtime admission or an executing reviewer.
+      Mastermind 72676f23d51c72591cb1e88af7c1564bc6637451, Skillpack 1.0.1,
+      bootstrap-major 1. SESSION_RELIABILITY is not enrolled at this pin.
 unverified:
-  - claim: Independent approval and complete current-candidate CI.
+  - claim: Repaired exact-head independent approval and full current integration CI.
     what_would_verify: >
-      An actual non-author exact-source review and all applicable concluded checks;
-      records-only successors must prove source-blob parity and their own validation.
-  - claim: Production deployment and real customer/provider behavior.
+      Publish the repaired semantic head, obtain independent review and conclude
+      its own checks. Prior green belongs to the prior semantic head only.
+  - claim: Production deployment, live model behavior and customer acceptance.
     what_would_verify: >
-      Ordinary reviewed release and permitted production machine/browser checks.
-      The denied production-artifact capture must not be retried or bypassed.
-  - claim: Full granular regime intelligence, timing skill and portfolio adoption.
+      Reviewed authorized release and permitted actual consumer checks. Never
+      repeat or route around the previously safety-blocked production capture.
+  - claim: Predictive skill, historical regime validity and full downstream adoption.
     what_would_verify: >
-      Remaining accepted rates-path, history, explicit-horizon forecast/evaluation,
-      broader regional and portfolio consumer work with its own evidence and gates.
+      Separate explicit-horizon evaluation, issuance/vintage qualification and
+      accepted regional/Portfolio consumers under their existing owners.
 unresolved:
-  - Independent GitHub review is requested but unconsumed; release remains held.
-  - Executive review admission cannot establish trusted grounding; no new submit until its owning gate changes.
-  - Last observed code packs 0 and 11 remain unconcluded; no blind rerun or bypass.
-  - Production-artifact capture was safety-blocked; no capture result or alternative replay is permitted.
-  - Parent 7088 rates-path comparison and broader intelligence/evaluation/consumer obligations remain incomplete.
+  - PR 8257 remains Draft/HOLD-FOR-SOL pending independent review and release proof.
+  - Current main 85932a1b7ce0e597ad73e713f7528101e4ef58d9 has CI/deploy changes; integration proof is still owed.
+  - Executive review intent previously failed before submit with grounding_unavailable; no Job or reviewer was started.
+  - Installed Executive generation changed to b3627c580dd37ac1c167f59ac4b7555a4330edef; read success is not worker admission.
+  - The old manual review-placement child was CLOSED/STOP without a receiver; do not reopen it.
+  - Parent rates-path/history/forecast/regional/Portfolio obligations remain incomplete.
 next_actions:
-  - >
-    Read the real independent review on PR 8257 and the final exact-head checks.
-    Resolve specific findings on this carrier, preserve source identity and do not
-    self-approve through a second account. No further product authorization is needed.
-  - >
-    Release only after applicable independent review, CI and current-source
-    integration. Verify deployment through an independently authorized permitted
-    proof path without recreating the denied artifact capture.
-  - >
-    After the first consumer is accepted, continue the parent rates-path and
-    explicit-horizon evaluation/portfolio dependencies. Do not rename this
-    conversational evidence increment as the completed regime-intelligence system.
+  - Publish the same-carrier C2 repair with its evidence and obtain current-base integrated proof.
+  - Request independent exact-head recheck without self-approval or duplicate active workers.
+  - Continue the highest-value independent parent dependency while release gates remain open.
 do_not_redo:
-  - Do not restart the broad census or create another regime, risk, forecast, graph, ledger or publication owner.
-  - Do not use current-only snapshots or later-fit membership as historical issued forecasts.
-  - Do not equate estimate growth with stock expected returns, or relative price performance with measured capital transfer.
-  - Do not treat DSPX as constituent volatility or subtract it from VIX.
-  - Do not reopen the closed manual review placement or duplicate an active reviewer.
+  - Do not restart broad census or create another regime, forecast, risk, graph, ledger, identity or publication owner.
+  - Do not repeat the original failed Executive submission absent a relevant verified gate change.
   - Do not repeat, split, repackage, delegate or change carrier for the safety-blocked production capture.
-  - Do not modify incumbent 7015, 7024, 7273 or the existing RIC workstream record without their custody checks.
-  - Do not infer model/provider output, merge, deployment or economic usefulness from passing software tests.
+  - Do not count current-only snapshots or later-fit membership as historically issued forecasts.
+  - Do not equate EPS revisions with stock returns, relative prices with measured flows, or DSPX with VIXEQ.
+  - Preserve A V4, B Round2, C HardenedV2, RD1 and later rejected crossover results; no retuning seen history.
+  - Do not modify incumbent 7015, 7024, 7273, 7909 or its RD2 carriers without current source-custody checks.
+  - Tests and publication do not prove live consumer quality, statistical skill, merge or deployment.
 danger_areas:
-  - Uncertified snapshot clocks cannot establish underlying observation time or intraday availability.
-  - Theme overlap, correlated inputs and different horizons must not become independent confirmation votes.
-  - Paid context cannot leak into guest requests or survive entitlement downgrade through the cache.
-  - Manual placement was closed on C0BSBM78V1N/1790904235.348469 with reply 1790905045.423359; zero receiver or execution.
-  - A reader's mode=readonly does not alone prove the separate authenticated V2 submit path is disabled.
+  - Snapshot clocks do not certify observation, availability or historical issuance time.
+  - Correlated evidence, overlapping themes and differing horizons are not independent confirmation votes.
+  - Paid evidence must remain absent from free/guest requests and cached downgrade paths.
+  - Huge unavailable summaries must not overflow the existing packet budget or expose invalid values.
 ---
 
-# Current continuation
+# Cumulative working checkpoint
 
-MISSION_COMPLETE: false. Capability state: BUILT_NOT_PROVEN.
+MISSION_COMPLETE: false. Capability: BUILT_NOT_PROVEN. This is a save inside the
+active continuation, not a claim of finalization or a new lifecycle owner.
 Operation: granular-regime-context-20261001-astra-001.
-Code/test review target: 88f97f32ccee94b78e740f5aa4ab04e214a951e6.
-Source base: 11af49ee9978c904b6d693432f360e2b40d2cfa6.
-Last bounded current-main comparison: 45f20aac7dfca5a31716a02df021caca550c6fab,
-with no owned/dependency-path movement. Not estate-wide collision clearance.
+Original base: 11af49ee9978c904b6d693432f360e2b40d2cfa6.
+Previous semantic head: 88f97f32ccee94b78e740f5aa4ab04e214a951e6.
+Previous records head: c6ee5709913a80f430a9278191f96bfb39c946d6.
+Current repair is identified by the commit containing this checkpoint and its
+source digests in research/macro_regime_intelligence/c2_review_repair_20261002.json.
 
-The standalone research reference from September was not installed as production.
-This increment instead extends the existing Market Packet and actual chat loops.
-It does not change the numerical engines, existing market-risk policy or user book.
-All facts required to recover implementation are in PR 8257 and its source receipts.
-The full rates-oriented programme remains on 7088; its accepted-law and held-source
-boundaries were not overwritten by this bounded implementation.
+Original workspace remains:
+/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/granular-regime-context-20261001-b4fa9445a470c68c
+No custody transfer, raw worker spawn, automatic wake or background reasoning is
+claimed. User-selected Astra 6 Pro remains a user report; served identity and
+hidden budgets are unobserved. model=sol is the record schema's CEO label.
 
-The original manual placement was closed after the Secretary found no eligible
-addressable receiver. The new Executive review request failed before submission.
-The only pending independent review is the ordinary GitHub request to MastermindX1;
-no running worker, reciprocal watcher, Job, background Web turn or automatic wake
-is asserted. Release is held for an actual verdict, not for another user Continue.
+C2 source audit: Macro #8257 comment 5945651289, mastermindx-2. The parent accepts
+the two concrete repair findings, not a whole-PR approval. Existing MastermindX1
+review request remains the ordinary independent-review path. The prior Slack
+placement was closed on C0BSBM78V1N/1790904235.348469 with reply1790905045.423359.
+The separate Executive admission failed before its modifying send; no child exists.
 
-Production metadata showed existing files and deployed main, not the new candidate.
-The later production-input capture was denied, checked for an absent local result,
-and never retried. Keep that action-scoped denial intact during continuation.
+The original saved-input and implementation receipts remain preserved. Their old
+pending-CI/placement statements are superseded by this cumulative checkpoint.
+The repaired consumer now reveals unavailable evidence instead of silently erasing
+it, retains healthy dimensions independently, and renders or explains all fifteen
+axes. The previous 15/15 saved-input count did not itself prove all fifteen reached
+a prompt; the new rendered-or-explained regression covers that missing distinction.
 
-User selected Astra 6 Pro in the live conversation. Served model, hidden budgets
-and platform compaction are unobserved. The schema's model=sol denotes CEO-authored
-organizational records, not an assertion of the underlying served model.
-
-## Recovery identities and supersession
-
-Protected procedure was atomically loaded and subsequently compared at
-Mastermind abcd5edc99e78f59b3dce0ec4ef31b6aeb578704, Skillpack 1.0.1,
-bootstrap major 1. SESSION_RELIABILITY is not enrolled at that pin.
-Own source workspace remains
-`/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/granular-regime-context-20261001-b4fa9445a470c68c`.
-A new session must reconcile this exact branch, local state and source custody;
-this note does not transfer a lease or authorize duplicate work.
-
-This cumulative handoff supersedes only the pending contract-delta and review
-placement status in GRANULAR_CONTEXT_R1_2026-10-01.md and
-verification_20261001.json. Their frozen source/test/input receipts are preserved.
-The source acceptance target remains 88f97f32ccee94b78e740f5aa4ab04e214a951e6;
-a records-only successor must prove unchanged code/test/deploy/CI blobs before
-using those results. Current production, independent review and financial-skill
-claims remain unverified. The separate Executive admission error is a real gate,
-not a claim that all host tools or all GitHub operations are unavailable.
+Production metadata previously succeeded. The subsequent production-artifact
+capture was safety-denied and original-target readback found no capture receipt.
+That denied action stays fenced. No live candidate, live model or financial result
+is inferred from software proof. Continue on this original carrier with the same
+scope and applicable review/release gates.

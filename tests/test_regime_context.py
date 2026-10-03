@@ -204,7 +204,12 @@ def test_empty_context_explicitly_degraded():
     ctx = rc.compose_context({}, now=NOW)
     assert ctx['coverage']['populated_dimensions'] == 0
     assert ctx['coverage']['missing_dimensions'] == len(ctx['dimensions'])
-    assert not rc.render_context(ctx)
+    # The consumer must know why no measurements are available. This replaces
+    # the old blank-output contract that the independent C2 review disproved.
+    text = rc.render_context(ctx)
+    assert 'Unavailable evidence: missing:' in text
+    assert 'real rates' in text and 'participation' in text
+    assert '2.91%' not in text and '57.1%' not in text
 
 
 def test_read_adapter_is_bounded_and_hashes_actual_input(tmp_path):
@@ -368,8 +373,17 @@ def test_old_date_is_visible_without_calling_it_current():
 
 def test_guest_packet_never_reads_the_new_paid_sources(tmp_path, monkeypatch):
     from engine.neuralweb import market_packet as mp
-    monkeypatch.setattr(rc, 'read_context', lambda *a, **k: (_ for _ in ()).throw(AssertionError('paid read')))
+    reads = []
+
+    def read_spy(*args, **kwargs):
+        reads.append((args, kwargs))
+        return rc.compose_context(sources(), now=NOW)
+
+    monkeypatch.setattr(rc, 'read_context', read_spy)
     assert 'regime_detail' not in mp.build_packet(tmp_path, now=NOW)
+    # Assert outside the packet's fail-soft boundary: an exception raised inside
+    # read_context is swallowed by design and cannot prove that no read occurred.
+    assert reads == []
 
 
 def test_public_and_paid_context_cache_partitions_do_not_leak(tmp_path, monkeypatch):
@@ -487,3 +501,171 @@ def test_invalid_membership_distribution_cannot_support_momentum_claim():
     d=rc.compose_context(s, now=NOW)['dimensions']['membership']
     assert not d['values']
     assert 'invalid_membership_distribution' in d['issues']
+
+
+# C2 source-review regressions: loss at the final consumer is still data loss.
+_DIMENSION_TEXT = {
+    'real_rates': 'Real 10Y [',
+    'participation': 'Participation [',
+    'dispersion': 'Realized dispersion [',
+    'options_vix': 'VIX implied index vol [',
+    'options_dspx': 'DSPX implied dispersion [',
+    'options_cor1m': 'COR1M implied correlation [',
+    'options_cor3m': 'COR3M implied correlation [',
+    'earnings_revisions': 'Estimate revisions (',
+    'liquidity': 'Liquidity [',
+    'credit': 'Credit/conditions [',
+    'style': 'Style [',
+    'macro': 'Macro model [',
+    'membership': 'Model membership, not future odds [',
+    'leadership_damage': 'Tracked AI-hardware damage cohort, not all leaders [',
+    'nominal_10y': 'Nominal 10Y [',
+}
+
+
+def _complete_sources():
+    value = sources()
+    value['options']['chips'].append({
+        'key': 'cor3m', 'value': 11.17, 'last_date': '2026-09-29',
+        'freshness': 'fresh', 'pctile': 30,
+    })
+    return value
+
+
+def _change_source_clocks(value, stamp):
+    """Fixture transformation only; production keeps its independent clocks."""
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if key in {'date', 'asof', 'as_of', 'last_date', 'factor_state_as_of'}:
+                value[key] = stamp
+            else:
+                _change_source_clocks(item, stamp)
+    elif isinstance(value, list):
+        for item in value:
+            _change_source_clocks(item, stamp)
+
+
+@pytest.mark.parametrize('budget', [10000, 1800, 800])
+def test_all_fifteen_axes_are_rendered_or_explicitly_accounted_for(budget):
+    context = rc.compose_context(_complete_sources(), now=NOW)
+    assert set(context['dimensions']) == set(_DIMENSION_TEXT)
+    assert context['coverage']['populated_dimensions'] == 15
+    text = rc.render_context(context, char_budget=budget)
+    assert 0 < len(text) <= budget
+    for key, marker in _DIMENSION_TEXT.items():
+        assert marker in text or key.replace('_', ' ') in text, key
+    if budget == 10000:
+        assert 'COR3M implied correlation [observed 2026-09-29' in text
+        assert '11.17' in text
+        assert 'Omitted from compact brief' not in text
+
+
+@pytest.mark.parametrize('condition,reason', [
+    ('missing', 'missing'), ('undated', 'date unknown'),
+    ('future', 'future date'),
+])
+def test_all_unavailable_evidence_is_explained_not_silently_erased(condition, reason):
+    inputs = {} if condition == 'missing' else _complete_sources()
+    if condition != 'missing':
+        _change_source_clocks(inputs, '' if condition == 'undated' else '2099-01-01')
+    context = rc.compose_context(inputs, now=NOW)
+    assert context['coverage']['populated_dimensions'] == 0
+    text = rc.render_context(context)
+    assert 'Unavailable evidence:' in text
+    assert reason in text
+    assert len(text) <= 1800
+    for key in _DIMENSION_TEXT:
+        assert key.replace('_', ' ') in text
+    assert '2.91%' not in text and '57.1%' not in text and '11.17' not in text
+    assert 'not a forecast' in text
+
+
+def test_mixed_degradation_keeps_healthy_measurements_and_reason():
+    inputs = _complete_sources()
+    inputs['participation']['as_of'] = ''
+    inputs['options']['chips'][-1]['last_date'] = '2099-01-01'
+    context = rc.compose_context(inputs, now=NOW)
+    text = rc.render_context(context, char_budget=10000)
+    assert 'Real 10Y [snapshot 2026-09-30' in text and '2.91%' in text
+    assert 'date unknown: participation' in text
+    assert 'future date: options cor3m' in text
+    assert '57.1%' not in text and '11.17' not in text
+
+
+@pytest.mark.parametrize('condition,reason', [
+    ('missing', 'missing'), ('undated', 'date unknown'),
+    ('future', 'future date'), ('mixed', 'date unknown'),
+])
+@pytest.mark.parametrize('streaming', [False, True])
+@pytest.mark.parametrize('paid', [False, True])
+def test_degraded_evidence_reaches_actual_chat_prompt(
+    tmp_path, monkeypatch, condition, reason, streaming, paid,
+):
+    from types import SimpleNamespace
+    from engine.neuralweb import brain_gateway as gw
+
+    inputs = {} if condition == 'missing' else _complete_sources()
+    if condition in {'undated', 'future'}:
+        _change_source_clocks(inputs, '' if condition == 'undated' else '2099-01-01')
+    elif condition == 'mixed':
+        inputs['participation']['as_of'] = ''
+    for key, payload in inputs.items():
+        path = tmp_path / rc.SOURCE_PATHS[key]
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(payload), encoding='utf-8')
+    monkeypatch.setenv('MACRO_LIVE_DIR', str(tmp_path / 'site/live'))
+    monkeypatch.setattr(gw, '_resolve_tier', lambda *a, **k: {
+        'tier': 'essential' if paid else 'free', 'status': 'active',
+        'features': ['site_full'] if paid else [],
+    })
+
+    class Client:
+        def __init__(self):
+            self.messages = self
+            self.calls = []
+
+        def create(self, **kwargs):
+            self.calls.append(copy.deepcopy(kwargs))
+            return SimpleNamespace(
+                content=[SimpleNamespace(type='text', text='Fixture reply.')],
+                stop_reason='end_turn',
+                usage=SimpleNamespace(input_tokens=10, output_tokens=10),
+            )
+
+    client = Client()
+    args = ('What regime are we in?', 'fast', [], {}, tmp_path, tmp_path,
+            'http://127.0.0.1:3100', client, 'deepseek-chat', 500, 1)
+    if streaming:
+        events = list(gw._run_brain_loop_stream(
+            *args, meta_event={'type': 'meta'}, user_id='fixture-user',
+        ))
+        assert any(json.loads(e[6:]).get('type') == 'done'
+                   for e in events if e.startswith('data: '))
+    else:
+        assert gw._run_brain_loop(*args, user_id='fixture-user')[0]
+    assert client.calls
+    prompt = next(m['content'] for m in reversed(client.calls[0]['messages'])
+                  if m['role'] == 'user')
+    prompt = prompt if isinstance(prompt, str) else '\n'.join(
+        block.get('text', '') for block in prompt if isinstance(block, dict)
+    )
+    assert ('REGIME DETAIL' in prompt) is paid
+    assert ('Unavailable evidence:' in prompt) is paid
+    if paid:
+        assert reason in prompt and 'participation' in prompt
+        assert '[USER QUESTION]' in prompt
+        if condition == 'mixed':
+            assert '2.91%' in prompt
+        else:
+            assert '2.91%' not in prompt
+    assert '57.1%' not in prompt
+    assert 'sha256' not in prompt and 'read_gaps' not in prompt
+
+
+@pytest.mark.parametrize('budget', [0, 1, 80, 180, 400, 800, 1800])
+def test_unavailable_summary_never_overflows_tiny_budget(budget):
+    text = rc.render_context(rc.compose_context({}, now=NOW), char_budget=budget)
+    assert len(text) <= budget
+    if text:
+        assert 'Unavailable evidence:' in text
+        assert 'not a forecast' in text

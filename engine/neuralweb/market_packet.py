@@ -1278,8 +1278,10 @@ def build_packet(root: Path, *, now: datetime | None = None,
         try:
             if include_regime_detail is True:
                 detail = _regime_context.read_context(root, now=now)
-                if detail["coverage"]["populated_dimensions"]:
-                    packet["regime_detail"] = detail
+                # An all-unavailable context must reach the renderer as well:
+                # otherwise the paid prompt cannot distinguish absent, undated
+                # and quarantined future evidence from an unrequested section.
+                packet["regime_detail"] = detail
         except Exception as exc:  # noqa: BLE001 - one context failure is lane-local
             gaps.append(f"regime_detail: build failed ({type(exc).__name__})")
 

@@ -425,10 +425,21 @@ def render_context(ctx: dict, char_budget: int = 1800, *, lang: str = 'en') -> s
     dims = _dict(_dict(ctx).get('dimensions'))
     zh = lang == 'zh'
     rows: list[tuple[str, str]] = []
+    unavailable: dict[str, list[str]] = {}
+    reasons = {
+        'missing': 'missing', 'future_dated': 'future date',
+        'unknown_date': 'date unknown',
+    }
 
     def add(key, label, text):
         d = _dict(dims.get(key))
-        if not d.get('values') or d.get('status') in ('missing', 'future_dated', 'unknown_date'):
+        status = d.get('status')
+        if not d.get('values') or status not in ('available', 'partial', 'stale'):
+            # Do not leak withheld values, dates or arbitrary source error text.
+            # Missingness is evidence too: keep the fixed dimension and reason
+            # through the same paid consumer, including the all-unavailable case.
+            reason = reasons.get(status, 'status unknown' if status else 'missing')
+            unavailable.setdefault(reason, []).append(key.replace('_', ' '))
             return
         stamp = _dict(d.get('source')).get('as_of') or '?'
         suffix = '; stale/last-known' if d.get('status') == 'stale' else ''
@@ -455,7 +466,8 @@ def render_context(ctx: dict, char_budget: int = 1800, *, lang: str = 'en') -> s
     add('dispersion', 'Realized dispersion' if not zh else '\u5b9e\u73b0\u79bb\u6563\u5ea6',
         f"percentile {_fmt(x.get('percentile_0_1'), scale=100)}/100; mean correlation {_fmt(x.get('average_correlation'))}")
     for key, label in (('options_vix', 'VIX implied index vol'), ('options_dspx', 'DSPX implied dispersion'),
-                       ('options_cor1m', 'COR1M implied correlation')):
+                       ('options_cor1m', 'COR1M implied correlation'),
+                       ('options_cor3m', 'COR3M implied correlation')):
         add(key, label, _fmt(v(key).get('value')) + '; unlike measures, not a synthetic spread')
     x = v('earnings_revisions')
     themes = _dict(x.get('themes'))
@@ -488,18 +500,24 @@ def render_context(ctx: dict, char_budget: int = 1800, *, lang: str = 'en') -> s
     x = v('nominal_10y')
     add('nominal_10y', 'Nominal 10Y', f"{_fmt(x.get('level_pct'))}%; 5 weekday-grid change "
         f"{_fmt(x.get('change_5_grid_bp'), signed=True)}bp; acceleration {_fmt(x.get('acceleration_bp'), signed=True)}bp")
-    if not rows:
-        return ''
     header = 'REGIME DETAIL [US; source-dated context, not a forecast]:'
     caveat = 'Limits: no measured capital transfer, valuation-implied return or calibrated transition forecast. Different dates/scopes are not independent votes.'
+    unavailable_text = ('Unavailable evidence: ' + '; '.join(
+        reason + ': ' + ', '.join(names) for reason, names in unavailable.items()
+    ) + '.') if unavailable else ''
     budget = max(0, int(char_budget))
     kept = list(rows)
     omitted: list[str] = []
-    while kept:
-        tail = '\nOmitted from compact brief: ' + ', '.join(omitted) + '.' if omitted else ''
-        text = header + '\n' + '\n'.join(t for _, t in kept) + '\n' + caveat + tail
+    while True:
+        tail = 'Omitted from compact brief: ' + ', '.join(omitted) + '.' if omitted else ''
+        text = '\n'.join(part for part in (
+            header, '\n'.join(t for _, t in kept), unavailable_text, caveat, tail,
+        ) if part)
         if len(text) <= budget:
             return text
+        if not kept:
+            # Never clip a reason or silently drop some unavailable dimensions
+            # just to fit. A smaller-than-disclosure budget yields no claim.
+            return ''
         key, _ = kept.pop()
         omitted.insert(0, key.replace('_', ' '))
-    return ''
