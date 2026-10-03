@@ -910,12 +910,14 @@ def test_the_named_pages_never_print_python_none(page: str, built_pages: dict[st
 
 
 def _boundary_view(distance: Any) -> dict[str, Any]:
-    """Neutralise the snapshot copy's contradiction so these tests exercise the boundary rule, not the contradiction precedence."""
+    """Neutralise the snapshot copy's contradiction and freshness so these tests exercise the boundary rule, not the precedence above it."""
     snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
-    # The shipped artifact currently carries a contradiction, which outranks
-    # a boundary watch. Clear it so this helper actually tests the 0.0 case.
+    # A contradiction or a stale required source outranks a boundary watch, and
+    # the nightly artifact can carry either (2026-09-25: STALE_SOURCE). Clear
+    # both so this helper actually tests the 0.0 case.
     availability = snapshot.setdefault("availability", {})
     availability["contradiction"] = {"present": False}
+    availability["state"] = availability["worst_freshness"] = "CURRENT"
     snapshot["headline"]["nearest_boundary"] = {
         "axis": snapshot["axes"]["items"][0]["axis_id"],
         "distance": distance, "null_reason": None}
@@ -976,3 +978,21 @@ def test_no_built_page_ever_emits_a_none_class_or_value(page: str, built_pages: 
     assert "mq-delta-None" not in html
     assert ">None<" not in html
     assert 'class="mq-delta mq-delta-"' not in html, "an empty sign class is the same bug"
+
+
+def test_bond_desk_cycle_phase_tokens_have_reviewed_pairs() -> None:
+    """The bond desk's closed cycle-phase vocabulary renders reviewed EN/ZH (2026-10-02).
+
+    `scripts/build_bonds.py` PHASE emits {recession, early, mid, late}; the
+    national_debt workspace republishes the token as the categorical
+    `bond_desk_cycle_phase`. Without an OWNER_VALUE entry the token deslugs to
+    an ASCII ZH twin and the copy-law gate goes red (main, ci-pack-10).
+    """
+    expected = {
+        "recession": {"en": "Recession", "zh": "衰退"},
+        "early": {"en": "Early-cycle recovery", "zh": "周期早段复苏"},
+        "mid": {"en": "Mid-cycle", "zh": "周期中段"},
+        "late": {"en": "Late-cycle", "zh": "周期晚段"},
+    }
+    for token, pair in expected.items():
+        assert labels.value_pair(token) == pair, token

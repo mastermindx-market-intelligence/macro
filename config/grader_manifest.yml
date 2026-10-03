@@ -57,16 +57,18 @@ files:
 
     '
 - path: config/fable_mode_core.md
-  sha256: 01cbed1af475793ebe1cee3b63d676131652207f172f74f050d26fd94da9ab00
+  sha256: f8fcebc8f3b44eccc54214a7364637a2fc826220d497cedb0b29bf4e74d36913
   role: doctrine
-  notes: 'V2-A vendored Fable-mode doctrine (R-V2-2): six commitments + pre-send
-    gate. Injected into orchestrator system prompt when model is Opus-class. IMMUTABLE
-    — loop PRs may not modify. Runner never reads ~/. 2026-08-06 hash update ratifies
-    the operator-requested Revision 2 of the fable-mode doctrine: commitment 6
-    (testimony is not observation — open the artifact, never trust the relay) and
-    two new gate items (promise check: turns end on states, not intentions;
-    standalone-reader check: the final message stands alone). Synced with
-    .claude/skills/fable-mode/SKILL.md Revision 2; injection semantics unchanged.
+  notes: 'V2-A vendored Fable-mode doctrine (R-V2-2): ten commitments + pre-send gate,
+    near the R-V2-2 byte budget. Injected into orchestrator system prompt when model is Opus-class. IMMUTABLE
+    — loop PRs may not modify. Runner never reads ~/. 2026-09-24 hash update ratifies
+    Revision 3 of the fable-mode doctrine (Fable 5.1, seat edition): four seat
+    commitments (the seat judges / one owner per artifact / the nine-rung delivery
+    ladder / state lives on disk), and gate items 8–12
+    (ladder, ownership, durable state, quiet, session end). Synced with
+    .claude/skills/fable-mode/SKILL.md Revision 3; injection semantics unchanged.
+    2026-09-25 Revision 3.1 candidate updates ownership and quiet gates to require a verified
+    return path rather than infer a wake. No grader or injection logic changed.
 
     '
 - path: config/metabolism_schedule.yml

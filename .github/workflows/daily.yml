@@ -2166,9 +2166,89 @@ jobs:
           MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
         run: |
           python -m scripts.build_sp500_heatmap --refresh-caps-only || echo "::warning title=sp500 heatmap cap refresh::rc!=0 (non-fatal — previous cache/fallbacks remain)"
+      - name: Leader-pullback coverage (§6.9 R4 publisher — MUST precede build_prophet)
+        # Publishes site/anticipationdata/us_leader_pullback.json: the engine.us_leader_pullback
+        # organ's per-name state over the graded universe, evaluated on a run-wide PIT
+        # cross-sectional RS percentile (the organ refuses to reach for one itself, so a
+        # single-name call can never leak a cross-section).
+        #
+        # ORDER IS LOAD-BEARING. engine.us_early_turn resolves the EARLY-TURN starter tier's
+        # LEADER licence from this file at ORIGINATION time. #5007 shipped the organ and #5105
+        # shipped the intake, but nothing published the artifact — so the leader half read {}
+        # on every production run and was structurally incapable of admitting anything, while
+        # the washout half (us_basket_turn) worked. The price-store freshness gate above
+        # settles/heals the only source this publisher reads (data/yahoo), so this runs
+        # BEFORE build_site. That makes the dashboard consume this run's truth instead of
+        # the prior committed artifact. The narrow checkpoint immediately below makes that
+        # truth durable before the long engine/render tail can strand it.
+        #
+        # DISPLAY TIER. Advances NO ledger and writes no data/ path. A degraded input
+        # publishes fewer names with their reasons printed; a RUN-WIDE data failure publishes
+        # nothing and leaves the previous artifact in place, because a board of nulls and a
+        # broken price store look identical from downstream. Measured 2026-08-09: ~39s over
+        # 680 graded names (budget 600s, self-reported and ::warning past it).
+        timeout-minutes: 12
+        continue-on-error: true
+        run: |
+          set +e
+          echo "::group::build_leader_pullback_coverage (EARLY-TURN leader licence)"
+          python -m scripts.build_leader_pullback_coverage > "$RUNNER_TEMP/leader_pullback_coverage.log" 2>&1; rc=$?
+          cat "$RUNNER_TEMP/leader_pullback_coverage.log"
+          echo "::endgroup::"
+          if [ "$rc" -ne 0 ]; then echo "::warning title=build_leader_pullback_coverage::rc=$rc (non-fatal — the intake keeps yesterday's coverage until tomorrow's run)"; fi
+          exit 0
+      - name: checkpoint leader-pullback source to main (durable before engine tail)
+        id: leader_checkpoint
+        # Same publisher, same artifact, same main branch: this is an early durability
+        # checkpoint for the source build above, not a second source/store/control plane.
+        # It validates the incumbent source contract and publishes ONLY the one existing
+        # leader artifact. A stale/failed source or same-path race is refused fail-closed.
+        continue-on-error: true
+        timeout-minutes: 10
+        run: bash scripts/ci/daily_engine_leader_checkpoint.sh
+      - name: restore accepted leader source for downstream consumers
+        id: leader_accepted_source
+        if: always()
+        timeout-minutes: 3
+        continue-on-error: true
+        # The publisher/checkpoint remains non-fatal to the wider nightly, but no
+        # dashboard or Prophet consumer may read runner-local leader bytes that were
+        # refused, raced, or failed to reach canonical main. Rehydrate this one existing
+        # source from current accepted main after the checkpoint attempt. If the
+        # checkpoint landed, these are its exact bytes; if it did not, these are the
+        # prior/newer accepted bytes. Either way downstream derivation is source-bound.
+        run: |
+          set -euo pipefail
+          LEADER_PATH="site/anticipationdata/us_leader_pullback.json"
+          EVENT_REF="${GITHUB_REF:-}"
+          SOURCE_BRANCH="$(git symbolic-ref --short -q HEAD || true)"
+          if [ "$EVENT_REF" != "refs/heads/main" ] \
+            || [ "$SOURCE_BRANCH" != "main" ]; then
+            echo "::warning title=Leader downstream source withheld::off-main event/checkout cannot advance leader-derived outputs"
+            exit 0
+          fi
+          git fetch origin +refs/heads/main:refs/remotes/origin/main
+          ACCEPTED_LEADER_SHA="$(git rev-parse origin/main)"
+          git checkout "$ACCEPTED_LEADER_SHA" -- "$LEADER_PATH"
+          RESTORE_MISMATCH=false
+          if ! git diff --cached --quiet "$ACCEPTED_LEADER_SHA" -- "$LEADER_PATH" \
+            || ! git diff --quiet -- "$LEADER_PATH"; then
+            RESTORE_MISMATCH=true
+          fi
+          # Keep accepted bytes in the worktree for downstream readers, but do not
+          # stage them against this job's older checkout-time HEAD.
+          git reset -q -- "$LEADER_PATH"
+          if [ "$RESTORE_MISMATCH" = "true" ]; then
+            echo "::error title=Leader downstream source mismatch::worktree could not be made byte-equivalent to accepted main; leader-derived outputs withheld"
+            exit 1
+          fi
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+          echo "accepted_sha=$ACCEPTED_LEADER_SHA" >> "$GITHUB_OUTPUT"
+          echo "accepted_blob=$(git rev-parse "$ACCEPTED_LEADER_SHA:$LEADER_PATH")" >> "$GITHUB_OUTPUT"
       - name: timings band — engine-core (W2)
         run: python3 scripts/nightly_timings.py mark --band engine-core || echo "::warning::timings band mark failed (non-fatal)"
       - name: run regime engine + build dashboard + daily brief (resilient)
+        if: steps.leader_accepted_source.outputs.ready == 'true'
         # Self-diagnosing + deploy-resilient: each builder runs isolated; a failure
         # is surfaced as a ::error:: annotation (readable on the run page + via the
         # public check-runs API) AND appended to the run Summary with its traceback,
@@ -2262,34 +2342,6 @@ jobs:
           cat "$RUNNER_TEMP/flip_confirmation.log"
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_flip_confirmation::rc=$rc (non-fatal)"; fi
           exit 0
-      - name: Leader-pullback coverage (§6.9 R4 publisher — MUST precede build_prophet)
-        # Publishes site/anticipationdata/us_leader_pullback.json: the engine.us_leader_pullback
-        # organ's per-name state over the graded universe, evaluated on a run-wide PIT
-        # cross-sectional RS percentile (the organ refuses to reach for one itself, so a
-        # single-name call can never leak a cross-section).
-        #
-        # ORDER IS LOAD-BEARING. engine.us_early_turn resolves the EARLY-TURN starter tier's
-        # LEADER licence from this file at ORIGINATION time. #5007 shipped the organ and #5105
-        # shipped the intake, but nothing published the artifact — so the leader half read {}
-        # on every production run and was structurally incapable of admitting anything, while
-        # the washout half (us_basket_turn) worked. Scheduled after build_site (the price
-        # store is settled) and immediately before the Prophet band.
-        #
-        # DISPLAY TIER. Advances NO ledger and writes no data/ path. A degraded input
-        # publishes fewer names with their reasons printed; a RUN-WIDE data failure publishes
-        # nothing and leaves the previous artifact in place, because a board of nulls and a
-        # broken price store look identical from downstream. Measured 2026-08-09: ~39s over
-        # 680 graded names (budget 600s, self-reported and ::warning past it).
-        timeout-minutes: 12
-        continue-on-error: true
-        run: |
-          set +e
-          echo "::group::build_leader_pullback_coverage (EARLY-TURN leader licence)"
-          python -m scripts.build_leader_pullback_coverage > "$RUNNER_TEMP/leader_pullback_coverage.log" 2>&1; rc=$?
-          cat "$RUNNER_TEMP/leader_pullback_coverage.log"
-          echo "::endgroup::"
-          if [ "$rc" -ne 0 ]; then echo "::warning title=build_leader_pullback_coverage::rc=$rc (non-fatal — the intake keeps yesterday's coverage until tomorrow's run)"; fi
-          exit 0
       - name: Restore EquityDesk earnings history (read-only; BEFORE Prophet originates)
         # The Prophet hold-leash's earnings arm reads EquityDesk's native
         # earnings_call_sent from data/earnings_calls/history.parquet. This shim already
@@ -2318,6 +2370,7 @@ jobs:
         run: python3 scripts/nightly_timings.py mark --band prophet || echo "::warning::timings band mark failed (non-fatal)"
       - name: Prophet nightly (plan refresh + ledger advancement; R2 after checkpoint)
         id: prophet_nightly
+        if: steps.leader_accepted_source.outputs.ready == 'true'
         # AFTER build_site: reads site/factordata/us_standouts.json (just written).
         # Originates new prophet.trade_plan/v1 envelopes, runs the management engine
         # for every active plan, advances the forward outcome ledger (nightly is the
@@ -2348,6 +2401,7 @@ jobs:
         run: bash scripts/ci/daily_engine_prophet_nightly.sh
       - name: prophet-board-acceptance (post-publish alarm, never a gate)
         id: prophet_board_acceptance
+        if: steps.leader_accepted_source.outputs.ready == 'true'
         # Same job, same runner, same bytes as the "Prophet nightly" step just
         # above — placed immediately after it and BEFORE the checkpoint commit
         # below so there is no cross-job pull race and no window where a later
@@ -2684,6 +2738,7 @@ jobs:
           git clean -fd -- \
             site/prophet \
             data/prophet/origination_receipts \
+            data/prophet/origination_sources \
             data/prophet_arena \
             data/prophet_stage_shadow
           RESTORE_MISMATCH=false

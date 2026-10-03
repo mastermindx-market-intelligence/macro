@@ -26,7 +26,9 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import math
 import os
+import random
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -55,6 +57,19 @@ _UNGRADED_BACKLOG_AGE = 7      # business days of slack past maturation before a
 # Keep this consumer dependency-light just like _INTL_MARKETS above. The enrolled
 # writer→reader roundtrip test pins parity with risk_radar_audit.FORWARD_ISSUE_CONTRACT.
 _FORWARD_ISSUE_CONTRACT = "risk_radar_forward_issue.v1"
+
+# Preregistered 2026-09-24 before receipt-bearing prospective outcomes existed.
+# This is a READINESS BAR, never automatic validation or authority.
+_PROSPECTIVE_VALIDATION_PROTOCOL = "risk_radar_prospective_validation_readiness.v1"
+_PROSPECTIVE_VALIDATION_PROTOCOL_COMMIT = "7bc85b604a130e01b57b45db1e6430c292874a41"
+_PROSPECTIVE_MIN_ISSUED = 252
+_PROSPECTIVE_MIN_SPAN_DAYS = 300
+_PROSPECTIVE_MIN_GRADED = 200
+_PROSPECTIVE_MIN_EVENTS = 20
+_PROSPECTIVE_MIN_NON_EVENTS = 50
+_PROSPECTIVE_MIN_EVENT_CLUSTERS = 5
+_PROSPECTIVE_BOOT_DRAWS = 2000
+_PROSPECTIVE_BOOT_SEED = 240924
 
 
 # ---------------------------------------------------------------------------
@@ -598,6 +613,210 @@ def _prospective_issue(row: dict, day) -> tuple[dict | None, str | None]:
     return issue, None
 
 
+
+def _quantile(values: list[float], q: float) -> float:
+    vals = sorted(float(v) for v in values)
+    if not vals:
+        raise ValueError("quantile requires data")
+    if len(vals) == 1:
+        return vals[0]
+    pos = (len(vals) - 1) * float(q)
+    lo, hi = math.floor(pos), math.ceil(pos)
+    if lo == hi:
+        return vals[lo]
+    weight = pos - lo
+    return vals[lo] * (1.0 - weight) + vals[hi] * weight
+
+
+def _moving_block_mean_ci(values: list[float], block: int, seed: int,
+                          draws: int = _PROSPECTIVE_BOOT_DRAWS) -> list[float] | None:
+    """90% circular moving-block CI for an overlapping daily sequence."""
+    vals = [float(v) for v in values]
+    if not vals or any(not math.isfinite(v) for v in vals):
+        return None
+    n = len(vals)
+    block = max(1, min(int(block), n))
+    rng = random.Random(int(seed))
+    means = []
+    blocks_needed = math.ceil(n / block)
+    for _ in range(int(draws)):
+        sample = []
+        for _b in range(blocks_needed):
+            start = rng.randrange(n)
+            sample.extend(vals[(start + j) % n] for j in range(block))
+        sample = sample[:n]
+        means.append(sum(sample) / n)
+    return [
+        round(_quantile(means, 0.05), 8),
+        round(_quantile(means, 0.95), 8),
+    ]
+
+
+def _event_cluster_count(sample: list[tuple], horizon: int) -> int:
+    """Episode-like cluster count for overlapping event-positive issue rows."""
+    positions = [i for i, row in enumerate(sample) if int(row[2]) == 1]
+    if not positions:
+        return 0
+    clusters = 1
+    prev = positions[0]
+    for pos in positions[1:]:
+        if pos - prev > int(horizon):
+            clusters += 1
+        prev = pos
+    return clusters
+
+
+def _empty_prospective_validation_readiness(status: str = "not_started") -> dict:
+    return {
+        "definition": _PROSPECTIVE_VALIDATION_PROTOCOL,
+        "protocol_commit": _PROSPECTIVE_VALIDATION_PROTOCOL_COMMIT,
+        "status": status,
+        "promotion_review_eligible": False,
+        "authority_h21_supportive": False,
+        "full_surface_supportive": False,
+        "current_model_validated": False,
+        "public_validation_ready": False,
+        "cohort": {
+            "issued_n": 0,
+            "span_days": None,
+        },
+        "thresholds": {
+            "min_issued_sessions": _PROSPECTIVE_MIN_ISSUED,
+            "min_span_days": _PROSPECTIVE_MIN_SPAN_DAYS,
+            "min_graded_per_horizon": _PROSPECTIVE_MIN_GRADED,
+            "min_event_rows": _PROSPECTIVE_MIN_EVENTS,
+            "min_non_event_rows": _PROSPECTIVE_MIN_NON_EVENTS,
+            "min_event_clusters": _PROSPECTIVE_MIN_EVENT_CLUSTERS,
+            "bootstrap_draws": _PROSPECTIVE_BOOT_DRAWS,
+            "bootstrap_block": "horizon",
+        },
+        "horizons": {},
+        "note_en": (
+            "Readiness only. Even mature supportive evidence requires a separate "
+            "promotion decision; this field cannot validate the model automatically."
+        ),
+        "note_zh": (
+            "仅表示证据成熟度。即使证据成熟且支持模型，仍需独立晋级决定；"
+            "本字段不会自动把模型标记为已验证。"
+        ),
+    }
+
+
+def _prospective_validation_readiness(
+    cohort: list[tuple],
+    samples_by_horizon: dict[str, list[tuple]],
+    horizons: dict[str, dict],
+) -> dict:
+    """Preregistered non-authoritative readiness bar over the latest exact cohort."""
+    if not cohort:
+        return _empty_prospective_validation_readiness("not_started")
+
+    issued_n = len(cohort)
+    first_day, last_day = cohort[0][0], cohort[-1][0]
+    span_days = int((last_day - first_day).days)
+    common_mature = (
+        issued_n >= _PROSPECTIVE_MIN_ISSUED
+        and span_days >= _PROSPECTIVE_MIN_SPAN_DAYS
+    )
+
+    out = _empty_prospective_validation_readiness("not_mature")
+    out["cohort"] = {
+        "issued_n": issued_n,
+        "span_days": span_days,
+        "from": first_day.isoformat(),
+        "through": last_day.isoformat(),
+    }
+
+    all_mature = True
+    all_supportive = True
+    for hkey, horizon in (("h5", 5), ("h10", 10), ("h21", 21)):
+        sample = list(samples_by_horizon.get(hkey) or [])
+        meta = horizons.get(hkey) or {}
+        n = len(sample)
+        events = sum(int(row[2]) for row in sample)
+        non_events = n - events
+        clusters = _event_cluster_count(sample, horizon)
+        baseline_complete = (
+            int(meta.get("paired_n") or 0) == n
+            and int(meta.get("missing_baseline_n") or 0) == 0
+        )
+        integrity_complete = int(meta.get("excluded_n") or 0) == 0
+
+        mature = bool(
+            common_mature
+            and n >= _PROSPECTIVE_MIN_GRADED
+            and events >= _PROSPECTIVE_MIN_EVENTS
+            and non_events >= _PROSPECTIVE_MIN_NON_EVENTS
+            and clusters >= _PROSPECTIVE_MIN_EVENT_CLUSTERS
+            and baseline_complete
+            and integrity_complete
+        )
+
+        brier_delta = None
+        brier_ci = None
+        calibration_gap = None
+        calibration_ci = None
+        brier_supportive = False
+        calibration_supportive = False
+
+        if n and baseline_complete:
+            paired = [
+                (float(row[1]) - int(row[2])) ** 2
+                - (float(row[3]) - int(row[2])) ** 2
+                for row in sample
+            ]
+            residual = [float(row[1]) - int(row[2]) for row in sample]
+            brier_delta = round(sum(paired) / n, 8)
+            calibration_gap = round(sum(residual) / n, 8)
+            if mature:
+                brier_ci = _moving_block_mean_ci(
+                    paired, horizon, _PROSPECTIVE_BOOT_SEED + horizon
+                )
+                calibration_ci = _moving_block_mean_ci(
+                    residual, horizon, _PROSPECTIVE_BOOT_SEED + 100 + horizon
+                )
+                brier_supportive = bool(
+                    brier_delta < 0 and brier_ci and brier_ci[1] < 0
+                )
+                calibration_supportive = bool(
+                    calibration_ci
+                    and calibration_ci[0] <= 0 <= calibration_ci[1]
+                )
+
+        supportive = bool(mature and brier_supportive and calibration_supportive)
+        all_mature = all_mature and mature
+        all_supportive = all_supportive and supportive
+        out["horizons"][hkey] = {
+            "n": n,
+            "events": events,
+            "non_events": non_events,
+            "event_clusters": clusters,
+            "baseline_complete": baseline_complete,
+            "integrity_complete": integrity_complete,
+            "mature": mature,
+            "paired_brier_delta": brier_delta,
+            "paired_brier_delta_ci90": brier_ci,
+            "calibration_gap": calibration_gap,
+            "calibration_gap_ci90": calibration_ci,
+            "brier_supportive": brier_supportive,
+            "calibration_supportive": calibration_supportive,
+            "supportive": supportive,
+        }
+
+    out["authority_h21_supportive"] = bool(
+        out["horizons"].get("h21", {}).get("supportive")
+    )
+    out["full_surface_supportive"] = bool(all_supportive)
+    if not all_mature:
+        out["status"] = "not_mature"
+    elif all_supportive:
+        out["status"] = "mature_supportive"
+        out["promotion_review_eligible"] = True
+    else:
+        out["status"] = "mature_refuting"
+    return out
+
+
 def _prospective_probability_audit(rows: list, reference) -> dict:
     """Prospective same-model evidence from receipt-bearing forward-log rows.
 
@@ -663,6 +882,7 @@ def _prospective_probability_audit(rows: list, reference) -> dict:
             (k, v) for k, v in issue_excluded.items() if v
         )),
         "horizons": {},
+        "validation_readiness": _empty_prospective_validation_readiness("not_started"),
         "note_en": (
             "Prospective same-model evidence has not started yet. Historical rows "
             "are not backfilled into this cohort."
@@ -713,6 +933,7 @@ def _prospective_probability_audit(rows: list, reference) -> dict:
         return round(sum(values) / len(values), 6) if len(values) >= _MIN_N else None
 
     horizons = {}
+    samples_by_horizon = {}
     for horizon in ("h5", "h10", "h21"):
         excluded = grade_excluded.copy()
         sample = []
@@ -728,6 +949,7 @@ def _prospective_probability_audit(rows: list, reference) -> dict:
             else:
                 sample.append((day, p, int(y), odds.get("base_" + horizon)))
         pairs = [s for s in sample if _probability_number(s[3])]
+        samples_by_horizon[horizon] = sample
         horizons[horizon] = {
             "n": len(sample),
             "excluded_n": sum(excluded.values()),
@@ -749,6 +971,9 @@ def _prospective_probability_audit(rows: list, reference) -> dict:
             ]),
         }
 
+    validation_readiness = _prospective_validation_readiness(
+        cohort, samples_by_horizon, horizons
+    )
     fingerprints = {issue["model_fingerprint"] for _, _, issue in issued_rows}
     return {
         "definition": "us_issued_probability_prospective.v1",
@@ -772,6 +997,7 @@ def _prospective_probability_audit(rows: list, reference) -> dict:
             (k, v) for k, v in issue_excluded.items() if v
         )),
         "horizons": horizons,
+        "validation_readiness": validation_readiness,
         "note_en": (
             "Prospective same-model ledger evidence. Issue timing is verified for "
             "the forward ledger, not public-page publication; validation remains "
