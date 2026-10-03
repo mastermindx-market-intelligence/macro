@@ -4,12 +4,19 @@ This module is the pure evaluator mandated by
 ``DEC:OPTIONS-ALPHA-EXACT-OPTION-OUTCOME-RULER`` /
 ``research/options_estate/OPTIONS_ALPHA_EXACT_OPTION_OUTCOME_PREREG_2026-09-19.md``.
 
-It consumes an already-frozen OA expression receipt plus the exact raw
-private-source bytes (or strictly matching parsed payload) for the entry and
-exit quote windows, plus the request / response / retrieval / computed clocks
-that book-keep the live retrieval.  It emits a single OA-3 fixture record and
-writes no durable object — there is no I/O here, no registry, no second
-outcome ledger, no scheduler.
+It consumes an already-frozen OA expression receipt (raw upstream bytes plus
+parsed payload plus the caller-supplied upstream immutable digest), per-role
+``QuoteEvidence`` records carrying the exact source query, raw private-source
+bytes, strictly parsed payload, and independent request/response/retrieval/
+computed clocks for the entry and exit windows, plus the frozen policy bytes
+that pin the policy identity the evaluator obeys.  It emits a single OA-3
+fixture record and writes no durable object — there is no I/O here, no
+registry, no second outcome ledger, no scheduler.
+
+The module imports *no* on-disk artefacts: the frozen policy mapping is
+hardcoded in this module and verified at import time against the SHA pinned
+in the preregistration; the evaluator refuses to operate against a caller-
+authored policy override.
 
 The module reuses only generic mechanics from ``engine/options_nbbo_cohort.py``:
 
@@ -17,6 +24,7 @@ The module reuses only generic mechanics from ``engine/options_nbbo_cohort.py``:
 * ``parse_quote_response`` — firm OPRA + known exchange + RTH + crossed
   /conflict filtering, first valid quote selection inside the closed window;
 * ``canonical_json_bytes`` — strict canonical JSON for receipt bindings;
+* ``source_query`` / ``validate_source_query`` — exact query contract binding;
 * ``net_return_pct`` — the frozen 100-multiplier / USD 0.65-per-side ruler;
 * the ``SOURCE_ENDPOINT`` / ``SOURCE_INTERVAL`` / ``QUOTE_RULE_ID`` /
   ``FEE_PER_SIDE_USD`` constants.
@@ -33,10 +41,9 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime as _datetime_cls, timedelta, timezone
 from decimal import Decimal
 from hashlib import sha256
-from pathlib import Path
 from types import MappingProxyType
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -48,13 +55,22 @@ from lib import nyse_calendar
 
 SCHEMA = "options.oa3_exact_option_outcome_fixture/v1"
 POLICY_SCHEMA = "options.alpha_exact_option_outcome_policy/v1"
-POLICY_ID = "oa3.long_single_leg_h60_nbbo/v1"
+
+# Frozen policy identity — pinned once in code so the evaluator never reads
+# artefacts and cannot be redirected to a different policy by a caller.
+FROZEN_POLICY_ID = "oa3.long_single_leg_h60_nbbo/v1"
+FROZEN_POLICY_VERSION = "v1"
+FROZEN_POLICY_SHA256 = (
+    "00b9eb94a97233215dff416975e42a8705cb4fc3c9a3524f9168ee66645098bf"
+)
+
 ENTRY_WINDOW_SECONDS = 60
 EXIT_WINDOW_SECONDS = 60
 EXIT_HORIZON = timedelta(minutes=60)
 QUANTITY_CONTRACTS = 1
 MULTIPLIER = 100
 FEE_PER_SIDE_USD_STR = "0.65"
+
 STATUS_PENDING = "pending"
 STATUS_COMPLETE = "complete"
 STATUS_UNAVAILABLE = "unavailable"
@@ -68,25 +84,81 @@ SIDE_BID = "bid"
 ET = ZoneInfo("America/New_York")
 UTC = timezone.utc
 
-# Cached policy payload loaded from disk at module import so a content hash
-# can be carried with every fixture record without re-reading the file each
-# time.  Re-loaded lazily on the rare path that needs a different version.
-_DEFAULT_POLICY_PATH = (
-    Path(__file__).resolve().parents[1]
-    / "research"
-    / "options_estate"
-    / "options_alpha_exact_option_outcome_policy_v1.json"
-)
-_DEFAULT_POLICY_TEXT: str = _DEFAULT_POLICY_PATH.read_text(encoding="utf-8")
-_DEFAULT_POLICY_BYTES: bytes = _DEFAULT_POLICY_TEXT.encode("utf-8")
-_DEFAULT_POLICY_SHA256: str = sha256(_DEFAULT_POLICY_BYTES).hexdigest()
-_DEFAULT_POLICY_DICT: dict[str, Any] = __import__("json").loads(_DEFAULT_POLICY_TEXT)
-DEFAULT_POLICY: Mapping[str, Any] = MappingProxyType(
-    {key: value for key, value in _DEFAULT_POLICY_DICT.items()}
-)
-
-ALL_FALSE_AUTHORITY: Mapping[str, bool] = MappingProxyType(
-    {
+# Canonical frozen policy mapping — hardcoded so the module imports no
+# artefact.  The structural assert below proves the hardcoded bytes equal the
+# pinned FROZEN_POLICY_SHA256; any drift fails closed at import.
+_FROZEN_POLICY_DICT: dict[str, Any] = {
+    "schema": POLICY_SCHEMA,
+    "policy_id": FROZEN_POLICY_ID,
+    "state": "preregistered_inactive",
+    "population": {
+        "exact_expression_receipt_required": True,
+        "selection_before_outcomes": True,
+        "position": "long",
+        "quantity_contracts": 1,
+        "standard_multiplier": 100,
+        "standard_deliverable_only": True,
+        "same_day_expiration_allowed": False,
+        "package_supported": False,
+        "short_option_supported": False,
+    },
+    "entry": {
+        "boundary": "expression.available_at",
+        "selected_side": SIDE_ASK,
+        "quote_event_window_seconds": ENTRY_WINDOW_SECONDS,
+        "minimum_displayed_contracts": 1,
+    },
+    "exit": {
+        "target": "entry_quote.event_at+PT60M",
+        "selected_side": SIDE_BID,
+        "quote_event_window_seconds": EXIT_WINDOW_SECONDS,
+        "minimum_displayed_contracts": 1,
+    },
+    "quote_source": {
+        "endpoint": cohort.SOURCE_ENDPOINT,
+        "interval": cohort.SOURCE_INTERVAL,
+        "quote_rule_reference": cohort.QUOTE_RULE_ID,
+        "exact_contract_required": True,
+        "firm_condition_required": True,
+        "known_exchange_required": True,
+        "raw_response_receipt_required": True,
+        "executable_fill_claim": False,
+    },
+    "cost": {
+        "fee_per_side_usd": FEE_PER_SIDE_USD_STR,
+        "multiplier": MULTIPLIER,
+        "return_formula": (
+            "100*((100*exit_bid-0.65)-(100*entry_ask+0.65))/(100*entry_ask+0.65)"
+        ),
+        "cost_interpretation": (
+            "frozen_research_quote_ruler_not_actual_account_fee_or_fill"
+        ),
+    },
+    "clock": {
+        "same_nyse_rth_session_required": True,
+        "entry_never_precedes_expression_availability": True,
+        "retrieval_after_maturity_allowed": True,
+        "actual_retrieval_available_at_recorded": True,
+        "benchmark_live_capture_lag_rule_inherited": False,
+    },
+    "status_vocabulary": [
+        STATUS_PENDING,
+        STATUS_COMPLETE,
+        STATUS_UNAVAILABLE,
+        STATUS_EXCLUDED,
+        STATUS_INVALID,
+    ],
+    "forbidden_substitutes": [
+        "mid",
+        "last",
+        "eod_mark",
+        "intrinsic",
+        "black_scholes",
+        "neighbor_contract",
+        "underlying_return",
+        "later_best_print",
+    ],
+    "authority": {
         "may_originate_signal": False,
         "may_score": False,
         "may_rank": False,
@@ -98,7 +170,21 @@ ALL_FALSE_AUTHORITY: Mapping[str, bool] = MappingProxyType(
         "may_train_prophet": False,
         "may_feed_neural_web": False,
         "may_claim_fill": False,
-    }
+    },
+}
+_FROZEN_POLICY_BYTES: bytes = cohort.canonical_json_bytes(_FROZEN_POLICY_DICT)
+_FROZEN_POLICY_COMPUTED_SHA: str = sha256(_FROZEN_POLICY_BYTES).hexdigest()
+if _FROZEN_POLICY_COMPUTED_SHA != FROZEN_POLICY_SHA256:
+    raise AssertionError(
+        "OA-3 frozen policy bytes drifted from pinned SHA256 "
+        f"({_FROZEN_POLICY_COMPUTED_SHA} != {FROZEN_POLICY_SHA256}); the "
+        "FROZEN_POLICY_SHA256 constant must be updated only via a new "
+        "preregistration, never by hand-editing source"
+    )
+FROZEN_POLICY: Mapping[str, Any] = MappingProxyType(dict(_FROZEN_POLICY_DICT))
+
+ALL_FALSE_AUTHORITY: Mapping[str, bool] = MappingProxyType(
+    {key: bool(value) for key, value in FROZEN_POLICY["authority"].items()}
 )
 
 EXCLUDED_REASONS: frozenset[str] = frozenset(
@@ -114,6 +200,7 @@ EXCLUDED_REASONS: frozenset[str] = frozenset(
         "ENTRY_BOUNDARY_OUTSIDE_RTH",
         "EXIT_BOUNDARY_OUTSIDE_RTH",
         "EXPRESSION_DATE_NOT_NYSE_SESSION",
+        "EXPRESSION_FENCE_BROKEN",
     }
 )
 
@@ -124,6 +211,7 @@ UNAVAILABLE_REASONS: frozenset[str] = frozenset(
         "SOURCE_UNAVAILABLE",
         "QUOTE_RESPONSE_INVALID",
         "RAW_BYTES_PAYLOAD_MISMATCH",
+        "EVIDENCE_INTEGRITY_FAILURE",
     }
 )
 
@@ -134,8 +222,15 @@ INVALID_REASONS: frozenset[str] = frozenset(
         "EXPRESSION_DIGEST_MISMATCH",
         "EXPRESSION_IMMUTABLE_FIELDS_MISSING",
         "EXPRESSION_SELECTION_FENCE_NOT_FROZEN",
+        "EXPRESSION_FENCE_ORDER_VIOLATED",
         "CAUSAL_CLOCK_MISMATCH",
         "EXPRESSION_NOT_FROZEN_BEFORE_OUTCOME",
+        "EVIDENCE_RAW_BYTES_MALFORMED",
+        "EVIDENCE_QUERY_MISMATCH",
+        "EVIDENCE_ROLE_MISMATCH",
+        "EVIDENCE_CLOCK_INTEGRITY_FAILURE",
+        "EVIDENCE_COMPUTED_BEFORE_RETRIEVAL",
+        "EVIDENCE_SELECTED_EVENT_FUTURE",
     }
 )
 
@@ -152,52 +247,238 @@ class Oa3InvalidError(Oa3InputError):
     """The expression or its receipts violate immutable identity / clock / receipt law."""
 
 
-@dataclass(frozen=True)
-class QuoteReceipt:
-    """Exact private-source bytes paired with the strictly parsed JSON value.
+# ─── Expression receipt ──────────────────────────────────────────────────────
 
-    The wrapper will not perform retrieval itself; it only consumes what the
-    retriever handed over and proves the two views agree to the byte.
+
+@dataclass(frozen=True)
+class ExpressionReceipt:
+    """Frozen upstream expression receipt: exact raw bytes + parsed payload + upstream digest.
+
+    The wrapper holds three views:
+
+    * ``raw_bytes`` — exact upstream bytes, preserved verbatim so the record can
+      carry their SHA-256 and byte count separately from the canonical payload.
+    * ``parsed_payload`` — strictly parsed JSON value of the raw bytes; the
+      two views must agree view-for-view (no caller-claimed payload allowed).
+    * ``upstream_digest_sha256`` — caller-supplied SHA-256 over the canonical
+      immutable expression fields; this is the upstream frozen identity the
+      evaluator compares against and the binding the record rejects on mismatch
+      (``EXPRESSION_DIGEST_MISMATCH``).
     """
 
     raw_bytes: bytes
-    parsed_payload: Sequence[Mapping[str, Any]]
+    parsed_payload: Mapping[str, Any]
+    upstream_digest_sha256: str
 
     def __post_init__(self) -> None:
         if not isinstance(self.raw_bytes, bytes) or len(self.raw_bytes) == 0:
-            raise Oa3InputError("quote receipt raw_bytes must be non-empty bytes")
-        if not isinstance(self.parsed_payload, Sequence) or isinstance(
-            self.parsed_payload, (str, bytes)
+            raise Oa3InputError("expression receipt raw_bytes must be non-empty bytes")
+        if not isinstance(self.parsed_payload, Mapping):
+            raise Oa3InputError("expression receipt parsed_payload must be a mapping")
+        if not (
+            isinstance(self.upstream_digest_sha256, str)
+            and len(self.upstream_digest_sha256) == 64
+            and all(ch in "0123456789abcdef" for ch in self.upstream_digest_sha256)
         ):
-            raise Oa3InputError("quote receipt parsed_payload must be a JSON array")
-        expected = cohort.canonical_json_bytes(list(self.parsed_payload))
-        if expected != self.raw_bytes:
-            raise Oa3InputError("quote receipt raw_bytes do not match payload")
+            raise Oa3InvalidError(
+                "expression receipt upstream_digest_sha256 must be a 64-char lowercase hex digest"
+            )
+        # Re-parse raw_bytes strictly and require view-equality to the payload
+        # the caller passed: a receipt whose raw bytes and parsed payload
+        # disagree is a contract violation, not a JSON whitespace variant.
+        try:
+            parsed_from_bytes = cohort.strict_json_value(
+                self.raw_bytes, label="expression receipt raw_bytes"
+            )
+        except cohort.NbboCohortError as exc:
+            raise Oa3InvalidError(
+                f"expression receipt raw_bytes are not strict JSON: {exc}"
+            ) from exc
+        if not isinstance(parsed_from_bytes, Mapping):
+            raise Oa3InvalidError(
+                "expression receipt raw_bytes must parse to a JSON object"
+            )
+        if dict(parsed_from_bytes) != dict(self.parsed_payload):
+            raise Oa3InvalidError(
+                "expression receipt parsed_payload disagrees with raw_bytes"
+            )
+
+    @property
+    def raw_sha256(self) -> str:
+        """SHA-256 of the exact raw bytes (not the canonical payload)."""
+
+        return sha256(self.raw_bytes).hexdigest()
+
+    @property
+    def raw_size(self) -> int:
+        """Byte count of the exact raw upstream payload."""
+
+        return len(self.raw_bytes)
 
 
-def quote_receipt_from_bytes(raw_bytes: bytes) -> QuoteReceipt:
-    """Construct a receipt by strictly parsing the raw bytes."""
+def expression_receipt_from_bytes(
+    raw_bytes: bytes, upstream_digest_sha256: str
+) -> ExpressionReceipt:
+    """Build an ``ExpressionReceipt`` from raw upstream bytes."""
+
     try:
-        parsed = cohort.strict_json_value(raw_bytes, label="oa3 quote receipt")
+        parsed = cohort.strict_json_value(raw_bytes, label="expression receipt bytes")
     except cohort.NbboCohortError as exc:
-        raise Oa3InputError(f"oa3 quote receipt is invalid JSON: {exc}") from exc
+        raise Oa3InvalidError(
+            f"expression receipt bytes are not strict JSON: {exc}"
+        ) from exc
+    if not isinstance(parsed, Mapping):
+        raise Oa3InvalidError(
+            "expression receipt bytes must parse to a JSON object"
+        )
+    return ExpressionReceipt(
+        raw_bytes=raw_bytes,
+        parsed_payload=parsed,
+        upstream_digest_sha256=upstream_digest_sha256,
+    )
+
+
+# ─── Per-role quote evidence ─────────────────────────────────────────────────
+
+
+@dataclass(frozen=True)
+class QuoteEvidence:
+    """Per-role private-source evidence: query, raw bytes, payload, clocks.
+
+    Each role (``entry`` / ``exit``) carries its own evidence so that the
+    exact query sent to the source, the raw private bytes received, the
+    strictly parsed payload, and the live retrieval clocks are all bound to
+    the role they were observed under.  Two views are preserved:
+
+    * ``raw_bytes`` — exact private HTTP body, hashed separately so a JSON
+      whitespace / key-order variation produces a different raw digest but the
+      same parsed payload.
+    * ``parsed_payload`` — strictly parsed JSON array; raw bytes are NOT
+      required to equal the canonical serialisation of the parsed payload,
+      only to parse to it.
+
+    Clock causality must hold inside the evidence
+    (``request_started_at <= response_observed_at <= retrieval_observed_at
+    <= computed_at``) and is enforced by ``__post_init__``.
+    """
+
+    role: str
+    contract: Mapping[str, Any]
+    boundary_at: _datetime_cls
+    query_end_at: _datetime_cls
+    query: Mapping[str, Any]
+    raw_bytes: bytes
+    parsed_payload: Sequence[Mapping[str, Any]]
+    request_started_at: _datetime_cls
+    response_observed_at: _datetime_cls
+    retrieval_observed_at: _datetime_cls
+    computed_at: _datetime_cls
+
+    def __post_init__(self) -> None:
+        if self.role not in {ROLE_ENTRY, ROLE_EXIT}:
+            raise Oa3InvalidError(
+                f"quote evidence role must be {ROLE_ENTRY!r} or {ROLE_EXIT!r}; got {self.role!r}"
+            )
+        # raw_bytes must be parseable to the parsed payload; the parsed
+        # payload IS the parsed view of the raw bytes.  The bytes themselves
+        # may carry JSON whitespace / key-order variation; canonical-byte
+        # equality is NOT required.
+        if not isinstance(self.raw_bytes, bytes) or len(self.raw_bytes) == 0:
+            raise Oa3InvalidError(
+                "quote evidence raw_bytes must be non-empty bytes"
+            )
+        try:
+            parsed_from_bytes = cohort.strict_json_value(
+                self.raw_bytes, label=f"oa3 {self.role} quote raw bytes"
+            )
+        except cohort.NbboCohortError as exc:
+            raise Oa3InvalidError(
+                f"oa3 {self.role} quote raw_bytes are invalid JSON: {exc}"
+            ) from exc
+        if not isinstance(parsed_from_bytes, list):
+            raise Oa3InvalidError(
+                f"oa3 {self.role} quote raw_bytes must be a JSON array"
+            )
+        if list(parsed_from_bytes) != list(self.parsed_payload):
+            raise Oa3InvalidError(
+                f"oa3 {self.role} parsed_payload disagrees with raw_bytes"
+            )
+        # Clock causality inside the evidence
+        if self.request_started_at > self.response_observed_at:
+            raise Oa3InvalidError(
+                "EVIDENCE_CLOCK_INTEGRITY_FAILURE: request_started_at follows response_observed_at"
+            )
+        if self.response_observed_at > self.retrieval_observed_at:
+            raise Oa3InvalidError(
+                "EVIDENCE_CLOCK_INTEGRITY_FAILURE: response_observed_at follows retrieval_observed_at"
+            )
+        if self.retrieval_observed_at > self.computed_at:
+            raise Oa3InvalidError(
+                "EVIDENCE_COMPUTED_BEFORE_RETRIEVAL: retrieval_observed_at follows computed_at"
+            )
+
+    @property
+    def raw_sha256(self) -> str:
+        return sha256(self.raw_bytes).hexdigest()
+
+    @property
+    def raw_size(self) -> int:
+        return len(self.raw_bytes)
+
+    @property
+    def canonical_payload_sha256(self) -> str:
+        return sha256(cohort.canonical_json_bytes(list(self.parsed_payload))).hexdigest()
+
+    @property
+    def canonical_payload_size(self) -> int:
+        return len(cohort.canonical_json_bytes(list(self.parsed_payload)))
+
+
+def quote_evidence_from_bytes(
+    *,
+    role: str,
+    contract: Mapping[str, Any],
+    boundary_at: _datetime_cls,
+    query_end_at: _datetime_cls,
+    query: Mapping[str, Any],
+    raw_bytes: bytes,
+    request_started_at: _datetime_cls,
+    response_observed_at: _datetime_cls,
+    retrieval_observed_at: _datetime_cls,
+    computed_at: _datetime_cls,
+) -> QuoteEvidence:
+    """Build ``QuoteEvidence`` from raw source bytes and explicit clocks."""
+
+    if role not in {ROLE_ENTRY, ROLE_EXIT}:
+        raise Oa3InvalidError(
+            f"quote evidence role must be {ROLE_ENTRY!r} or {ROLE_EXIT!r}; got {role!r}"
+        )
+    try:
+        parsed = cohort.strict_json_value(raw_bytes, label=f"oa3 {role} quote bytes")
+    except cohort.NbboCohortError as exc:
+        raise Oa3InvalidError(
+            f"oa3 {role} quote bytes are invalid JSON: {exc}"
+        ) from exc
     if not isinstance(parsed, list):
-        raise Oa3InputError("oa3 quote receipt must be a flat JSON array")
-    return QuoteReceipt(raw_bytes=raw_bytes, parsed_payload=parsed)
+        raise Oa3InvalidError(
+            f"oa3 {role} quote bytes must parse to a JSON array"
+        )
+    return QuoteEvidence(
+        role=role,
+        contract=dict(contract),
+        boundary_at=boundary_at,
+        query_end_at=query_end_at,
+        query=dict(query),
+        raw_bytes=raw_bytes,
+        parsed_payload=parsed,
+        request_started_at=request_started_at,
+        response_observed_at=response_observed_at,
+        retrieval_observed_at=retrieval_observed_at,
+        computed_at=computed_at,
+    )
 
 
-def quote_receipt_from_payload(payload: Sequence[Mapping[str, Any]]) -> QuoteReceipt:
-    """Construct a receipt from a payload, canonicalising the bytes ourselves."""
-    raw_bytes = cohort.canonical_json_bytes(list(payload))
-    return QuoteReceipt(raw_bytes=raw_bytes, parsed_payload=payload)
-
-
-def _policy_sha256(policy: Mapping[str, Any]) -> str:
-    """Stable SHA256 of the policy JSON bytes used for receipt provenance."""
-
-    if policy is DEFAULT_POLICY:
-        return _DEFAULT_POLICY_SHA256
-    return sha256(cohort.canonical_json_bytes(dict(policy))).hexdigest()
+# ─── Expression validation helpers ───────────────────────────────────────────
 
 
 def _require_str(receipt: Mapping[str, Any], field: str) -> str:
@@ -209,38 +490,20 @@ def _require_str(receipt: Mapping[str, Any], field: str) -> str:
     return value
 
 
-def _require_int(receipt: Mapping[str, Any], field: str, expected: int) -> int:
-    value = receipt.get(field)
-    if value != expected:
-        raise Oa3InvalidError(
-            f"expression receipt {field!r} must equal {expected}; got {value!r}"
-        )
-    return value
-
-
-def _require_bool(receipt: Mapping[str, Any], field: str, expected: bool) -> bool:
-    value = receipt.get(field)
-    if value is not expected:
-        raise Oa3InvalidError(
-            f"expression receipt {field!r} must be {expected}; got {value!r}"
-        )
-    return value
-
-
-def _parse_clock(value: Any, *, label: str) -> datetime:
+def _parse_clock(value: Any, *, label: str) -> _datetime_cls:
     if not isinstance(value, str) or not value:
-        raise Oa3InputError(f"{label} must be an ISO datetime string")
+        raise Oa3InvalidError(f"{label} must be an ISO datetime string")
     try:
-        parsed = datetime.fromisoformat(value)
+        parsed = _datetime_cls.fromisoformat(value)
     except ValueError as exc:
-        raise Oa3InputError(f"{label} is not ISO datetime: {exc}") from exc
+        raise Oa3InvalidError(f"{label} is not ISO datetime: {exc}") from exc
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=ET)
     return parsed.astimezone(UTC)
 
 
-def _parse_clock_or_datetime(value: Any, *, label: str) -> datetime:
-    if isinstance(value, datetime):
+def _coerce_clock(value: Any, *, label: str) -> _datetime_cls:
+    if isinstance(value, _datetime_cls):
         if value.tzinfo is None:
             return value.replace(tzinfo=UTC)
         return value.astimezone(UTC)
@@ -248,7 +511,7 @@ def _parse_clock_or_datetime(value: Any, *, label: str) -> datetime:
 
 
 def _canonical_expression_fields(receipt: Mapping[str, Any]) -> dict[str, Any]:
-    """Canonical form used for expression-digest hashing."""
+    """Canonical form used for the immutable expression-digest hash."""
 
     return {
         "expression_id": receipt["expression_id"],
@@ -275,49 +538,16 @@ def _canonical_expression_fields(receipt: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
-def _canonical_expression_fields_strs(validated: Mapping[str, Any]) -> dict[str, Any]:
-    """Canonical form whose clock fields are the original ISO strings.
+def _validate_expression_payload(receipt: Mapping[str, Any]) -> dict[str, Any]:
+    """Validate the canonical immutable fields of one OA expression receipt.
 
-    The reusable digest must be replayable from the receipt alone, so the
-    canonical form pins the original strings instead of any later-parsed
-    datetime objects the validator may have materialised.
-    """
-
-    return {
-        "expression_id": validated["expression_id"],
-        "policy_version": validated["policy_version"],
-        "source_candidate_id": validated["source_candidate_id"],
-        "decision_receipt_sha256": validated["decision_receipt_sha256"],
-        "source_rule_digest_sha256": validated["source_rule_digest_sha256"],
-        "selection_frozen_before_outcomes": validated["selection_frozen_before_outcomes"],
-        "selection_fence_at": validated["selection_fence_at"],
-        "root": validated["root"],
-        "expiration": validated["expiration"],
-        "right": validated["right"],
-        "strike": validated["strike"],
-        "strike_millis": validated["strike_millis"],
-        "occ_symbol": validated["occ_symbol"],
-        "position": validated["position"],
-        "quantity_contracts": validated["quantity_contracts"],
-        "multiplier": validated["multiplier"],
-        "standard_deliverable": validated["standard_deliverable"],
-        "single_leg": validated["single_leg"],
-        "package": validated["package"],
-        "decision_at": validated["decision_at_str"],
-        "available_at": validated["available_at_str"],
-    }
-
-
-def _validate_expression(receipt: Mapping[str, Any]) -> dict[str, Any]:
-    """Validate an OA expression receipt's immutable identity and surface errors.
-
-    Returns the validated receipt (canonical form).  Raises
+    Returns the canonical form plus pre-parsed clocks / contract.  Raises
     ``Oa3InvalidError`` for identity / fence / clock-law defects and
     ``Oa3ExcludedError`` for population defects (the v1 domain only).
     """
 
     if not isinstance(receipt, Mapping):
-        raise Oa3InvalidError("expression receipt must be a mapping")
+        raise Oa3InvalidError("expression receipt payload must be a mapping")
     required = {
         "expression_id",
         "policy_version",
@@ -344,29 +574,37 @@ def _validate_expression(receipt: Mapping[str, Any]) -> dict[str, Any]:
     missing = sorted(required - set(receipt))
     if missing:
         raise Oa3InvalidError(
-            "expression receipt is missing immutable fields: "
-            + ", ".join(missing)
+            "expression receipt is missing immutable fields: " + ", ".join(missing)
         )
 
-    if not isinstance(receipt["policy_version"], str) or not receipt["policy_version"]:
+    policy_version = receipt.get("policy_version")
+    if not isinstance(policy_version, str) or not policy_version:
         raise Oa3InvalidError("expression policy_version is missing")
-    if not receipt["policy_version"].startswith("v"):
+    if not policy_version.startswith("v"):
         raise Oa3InvalidError("expression policy_version must be a v-prefixed tag")
+    if policy_version != FROZEN_POLICY_VERSION:
+        raise Oa3InvalidError("EXPRESSION_POLICY_VERSION_MISMATCH")
 
     for digest_field in (
         "decision_receipt_sha256",
         "source_rule_digest_sha256",
     ):
         digest = receipt[digest_field]
-        if not isinstance(digest, str) or len(digest) != 64 or any(
-            ch not in "0123456789abcdef" for ch in digest
+        if not (
+            isinstance(digest, str)
+            and len(digest) == 64
+            and all(ch in "0123456789abcdef" for ch in digest)
         ):
             raise Oa3InvalidError(
                 f"expression {digest_field!r} must be a 64-character lowercase hex digest"
             )
 
-    _require_bool(receipt, "selection_frozen_before_outcomes", True)
-    _parse_clock(receipt["selection_fence_at"], label="expression.selection_fence_at")
+    if receipt.get("selection_frozen_before_outcomes") is not True:
+        raise Oa3InvalidError("EXPRESSION_SELECTION_FENCE_NOT_FROZEN")
+
+    selection_fence_at = _coerce_clock(
+        receipt["selection_fence_at"], label="expression.selection_fence_at"
+    )
 
     contract = {
         "root": _require_str(receipt, "root"),
@@ -387,9 +625,10 @@ def _validate_expression(receipt: Mapping[str, Any]) -> dict[str, Any]:
         raise Oa3ExcludedError("QUANTITY_NOT_ONE")
     if receipt.get("multiplier") != MULTIPLIER:
         raise Oa3ExcludedError("NON_STANDARD_MULTIPLIER")
-    if not isinstance(receipt["position"], str):
+    position = receipt.get("position")
+    if not isinstance(position, str):
         raise Oa3InvalidError("expression.position must be a string")
-    if receipt["position"] != "long":
+    if position != "long":
         raise Oa3ExcludedError("SHORT_OPTION_NOT_SUPPORTED")
     if receipt.get("single_leg") is not True:
         raise Oa3ExcludedError("PACKAGE_NOT_SUPPORTED")
@@ -398,16 +637,22 @@ def _validate_expression(receipt: Mapping[str, Any]) -> dict[str, Any]:
     if receipt.get("standard_deliverable") is not True:
         raise Oa3ExcludedError("NON_STANDARD_DELIVERABLE")
 
-    decision_at = _parse_clock(receipt["decision_at"], label="expression.decision_at")
-    available_at = _parse_clock(receipt["available_at"], label="expression.available_at")
+    decision_at = _coerce_clock(receipt["decision_at"], label="expression.decision_at")
+    available_at = _coerce_clock(
+        receipt["available_at"], label="expression.available_at"
+    )
     if available_at < decision_at:
         raise Oa3InvalidError(
             "expression available_at precedes decision_at (causal clock mismatch)"
         )
+    if selection_fence_at > decision_at:
+        raise Oa3InvalidError(
+            "EXPRESSION_FENCE_ORDER_VIOLATED: selection_fence_at must precede decision_at"
+        )
 
     available_et_date = available_at.astimezone(ET).date()
     try:
-        expiration_date = datetime.strptime(
+        expiration_date = _datetime_cls.strptime(
             receipt["expiration"], "%Y-%m-%d"
         ).date()
     except ValueError as exc:
@@ -424,14 +669,20 @@ def _validate_expression(receipt: Mapping[str, Any]) -> dict[str, Any]:
     if not (open_utc <= available_at < close_utc):
         raise Oa3ExcludedError("ENTRY_BOUNDARY_OUTSIDE_RTH")
 
+    # Pre-check: the entire 60-second entry window must lie inside the RTH
+    # session.  An expression whose available_at+60s reaches or crosses the
+    # session close is excluded under HORIZON_CROSSES_SESSION_CLOSE BEFORE any
+    # quote parsing — even if no entry quote is ever observed.
+    if available_at + timedelta(seconds=ENTRY_WINDOW_SECONDS) > close_utc:
+        raise Oa3ExcludedError("HORIZON_CROSSES_SESSION_CLOSE")
+
     canonical = _canonical_expression_fields(receipt)
     canonical.update(
         {
             "contract": contract,
             "decision_at": decision_at,
             "available_at": available_at,
-            "decision_at_str": receipt["decision_at"],
-            "available_at_str": receipt["available_at"],
+            "selection_fence_at": selection_fence_at,
             "session_date": available_et_date,
             "rth_open": open_utc,
             "rth_close": close_utc,
@@ -440,74 +691,7 @@ def _validate_expression(receipt: Mapping[str, Any]) -> dict[str, Any]:
     return canonical
 
 
-def _validate_clocks(
-    *,
-    request_started_at: datetime,
-    response_observed_at: datetime,
-    retrieval_observed_at: datetime,
-    computed_at: datetime | None,
-    expression_available_at: datetime,
-) -> tuple[datetime, datetime, datetime, datetime]:
-    if request_started_at > response_observed_at:
-        raise Oa3InvalidError(
-            "CAUSAL_CLOCK_MISMATCH: request_started_at follows response_observed_at"
-        )
-    if response_observed_at > retrieval_observed_at:
-        raise Oa3InvalidError(
-            "CAUSAL_CLOCK_MISMATCH: response_observed_at follows retrieval_observed_at"
-        )
-    if request_started_at < expression_available_at:
-        raise Oa3InvalidError(
-            "CAUSAL_CLOCK_MISMATCH: request_started_at precedes expression.available_at"
-        )
-    if computed_at is None:
-        computed_at = retrieval_observed_at
-    return request_started_at, response_observed_at, retrieval_observed_at, computed_at
-
-
-def _quote_receipt(record: Any) -> QuoteReceipt:
-    if isinstance(record, QuoteReceipt):
-        return record
-    if isinstance(record, bytes):
-        return quote_receipt_from_bytes(record)
-    if isinstance(record, Mapping):
-        raise Oa3InputError(
-            "quote record must be bytes, QuoteReceipt, or a parsed JSON array; "
-            "received a Mapping"
-        )
-    if isinstance(record, cohort.FetchedQuoteResponse):
-        if not isinstance(record.payload, list):
-            raise Oa3InputError(
-                "FetchedQuoteResponse payload must be a list for OA-3"
-            )
-        canonical_payload = cohort.canonical_json_bytes(record.payload)
-        if record.raw_body != canonical_payload:
-            raise Oa3InputError(
-                "FetchedQuoteResponse raw_body does not match its canonical payload"
-            )
-        return QuoteReceipt(raw_bytes=record.raw_body, parsed_payload=record.payload)
-    if isinstance(record, Sequence) and not isinstance(record, (str, bytes)):
-        return quote_receipt_from_payload(record)
-    raise Oa3InputError(
-        "quote record must be bytes, QuoteReceipt, a parsed JSON array, or a "
-        "FetchedQuoteResponse"
-    )
-
-
-def _window_query_bounds(boundary: datetime, *, window_seconds: int) -> tuple[datetime, datetime]:
-    end = boundary + timedelta(seconds=window_seconds)
-    return boundary, end
-
-
-def _entry_bounds(expression_available_at: datetime) -> tuple[datetime, datetime]:
-    return _window_query_bounds(
-        expression_available_at, window_seconds=ENTRY_WINDOW_SECONDS
-    )
-
-
-def _exit_bounds(entry_event_at: datetime) -> tuple[datetime, datetime]:
-    target = entry_event_at + EXIT_HORIZON
-    return _window_query_bounds(target, window_seconds=EXIT_WINDOW_SECONDS)
+# ─── Helpers shared by validate and reject paths ──────────────────────────────
 
 
 def _selected_quote_dict(quote: cohort.SourceQuote, *, side: str) -> dict[str, Any]:
@@ -530,448 +714,323 @@ def _selected_quote_dict(quote: cohort.SourceQuote, *, side: str) -> dict[str, A
     raise Oa3InputError(f"unknown selected side: {side!r}")
 
 
-def _raw_receipt_sha(raw_bytes: bytes) -> tuple[str, int]:
-    return sha256(raw_bytes).hexdigest(), len(raw_bytes)
+def _validate_evidence_query(evidence: QuoteEvidence) -> None:
+    """Confirm the evidence query matches the reusable source-query contract.
+
+    The expected query is rebuilt from the contract, boundary, and the
+    evidence's ``request_started_at`` (the request clock pins the query end).
+    The evidence query is rejected if any field differs; an evidence query that
+    is structurally valid but wrong on date / start / end / interval is
+    ``EVIDENCE_QUERY_MISMATCH`` — the analyst cannot have actually sent the
+    query they recorded.
+    """
+
+    if evidence.boundary_at > evidence.query_end_at:
+        raise Oa3InvalidError(
+            f"oa3 {evidence.role} quote window end precedes the boundary"
+        )
+    if evidence.request_started_at < evidence.boundary_at:
+        raise Oa3InvalidError(
+            f"oa3 {evidence.role} request_started_at precedes the contract boundary"
+        )
+    expected = cohort.source_query(
+        contract=evidence.contract,
+        boundary_at=evidence.boundary_at,
+        available_at=evidence.request_started_at,
+        ceiling_at=evidence.query_end_at,
+    )
+    observed = {key: str(evidence.query.get(key, "")) for key in expected}
+    if observed != expected:
+        raise Oa3InvalidError(
+            f"oa3 {evidence.role} evidence query disagrees with the contract-bound source query contract"
+        )
 
 
-def _parse_window(
-    *,
-    side: str,
-    role: str,
-    contract: dict[str, Any],
-    boundary: datetime,
-    end: datetime,
-    receipt: QuoteReceipt,
+def _validate_evidence_selected_event(evidence: QuoteEvidence) -> _datetime_cls | None:
+    """Return the evidence selected-event clock (none if no quote inside window).
+
+    The selected event must not exceed the response/retrieval clock; the
+    analyst cannot have observed a quote timestamp they had not yet seen.
+    """
+
+    quote = cohort.parse_quote_response(
+        list(evidence.parsed_payload),
+        role=evidence.role,
+        contract=evidence.contract,
+        boundary_at=evidence.boundary_at,
+        query_end_at=evidence.query_end_at,
+    )
+    if quote is None:
+        return None
+    if quote.event_at > evidence.response_observed_at:
+        raise Oa3InvalidError(
+            "EVIDENCE_SELECTED_EVENT_FUTURE: selected quote event_at exceeds response_observed_at"
+        )
+    if quote.event_at > evidence.retrieval_observed_at:
+        raise Oa3InvalidError(
+            "EVIDENCE_SELECTED_EVENT_FUTURE: selected quote event_at exceeds retrieval_observed_at"
+        )
+    return quote.event_at
+
+
+def _parse_window_or_raise_unavailable(
+    evidence: QuoteEvidence,
 ) -> tuple[cohort.SourceQuote | None, str | None]:
-    """Run the reusable parser on a window.  Returns (quote, error)."""
+    """Parse one QuoteEvidence; map parser failure to ``QUOTE_RESPONSE_INVALID``."""
 
     try:
         quote = cohort.parse_quote_response(
-            list(receipt.parsed_payload),
-            role=role,
-            contract=contract,
-            boundary_at=boundary,
-            query_end_at=end,
+            list(evidence.parsed_payload),
+            role=evidence.role,
+            contract=evidence.contract,
+            boundary_at=evidence.boundary_at,
+            query_end_at=evidence.query_end_at,
         )
     except cohort.NbboSourceError as exc:
-        return None, f"{str(exc)}"
+        return None, f"QUOTE_RESPONSE_INVALID:{exc}"
     except cohort.NbboCohortError as exc:
         return None, f"QUOTE_RESPONSE_INVALID:{exc}"
     return quote, None
 
 
-def _build_window_block(
+# ─── Evidence / window block builders ─────────────────────────────────────────
+
+
+def _evidence_block(
+    evidence: QuoteEvidence,
     *,
-    side: str,
-    role: str,
-    boundary: datetime,
-    end: datetime,
-    receipt: QuoteReceipt,
-    contract: dict[str, Any],
-) -> tuple[dict[str, Any], cohort.SourceQuote | None]:
-    raw_sha, raw_bytes = _raw_receipt_sha(receipt.raw_bytes)
-    payload_canonical = cohort.canonical_json_bytes(list(receipt.parsed_payload))
-    payload_sha = sha256(payload_canonical).hexdigest()
-    if payload_sha != raw_sha:
-        raise Oa3InvalidError("RAW_BYTES_PAYLOAD_MISMATCH")
-    quote, parse_error = _parse_window(
-        side=side,
-        role=role,
-        contract=contract,
-        boundary=boundary,
-        end=end,
-        receipt=receipt,
-    )
-    selected: dict[str, Any] | None = None
-    if quote is not None:
-        selected = _selected_quote_dict(quote, side=side)
-    block = {
-        "side": side,
-        "role": role,
+    quote: cohort.SourceQuote | None,
+    parse_error: str | None,
+) -> dict[str, Any]:
+    raw_sha = evidence.raw_sha256
+    canonical_sha = evidence.canonical_payload_sha256
+    selected = _selected_quote_dict(quote, side=SIDE_ASK if evidence.role == ROLE_ENTRY else SIDE_BID) if quote is not None else None
+    return {
+        "role": evidence.role,
+        "side": SIDE_ASK if evidence.role == ROLE_ENTRY else SIDE_BID,
         "query_bounds": {
-            "start_at": boundary,
-            "end_at": end,
+            "start_at": evidence.boundary_at,
+            "end_at": evidence.query_end_at,
         },
+        "query": dict(evidence.query),
         "raw_response_sha256": raw_sha,
-        "raw_response_bytes": raw_bytes,
-        "raw_payload_sha256": payload_sha,
-        "raw_payload_bytes": len(payload_canonical),
+        "raw_response_bytes": evidence.raw_size,
+        "raw_payload_sha256": canonical_sha,
+        "raw_payload_bytes": evidence.canonical_payload_size,
         "selected": selected,
         "parse_error": parse_error,
+        "clocks": {
+            "request_started_at": evidence.request_started_at,
+            "response_observed_at": evidence.response_observed_at,
+            "retrieval_observed_at": evidence.retrieval_observed_at,
+            "computed_at": evidence.computed_at,
+        },
     }
-    return block, quote
 
 
-def _empty_block(side: str, role: str) -> dict[str, Any]:
+def _empty_evidence_block(role: str) -> dict[str, Any]:
+    side = SIDE_ASK if role == ROLE_ENTRY else SIDE_BID
     return {
-        "side": side,
         "role": role,
+        "side": side,
         "query_bounds": None,
+        "query": None,
         "raw_response_sha256": None,
         "raw_response_bytes": 0,
         "raw_payload_sha256": None,
         "raw_payload_bytes": 0,
         "selected": None,
         "parse_error": None,
+        "clocks": {
+            "request_started_at": None,
+            "response_observed_at": None,
+            "retrieval_observed_at": None,
+            "computed_at": None,
+        },
     }
 
 
-def _parse_quoted_payload(raw_bytes: bytes) -> bytes:
-    """Hash-trace the raw bytes so callers can trace which view they used."""
-
-    return raw_bytes
+# ─── Fixture record builders ─────────────────────────────────────────────────
 
 
-def evaluate(
-    expression: Mapping[str, Any],
-    *,
-    entry_quote: Any,
-    exit_quote: Any,
-    request_started_at: datetime | str,
-    response_observed_at: datetime | str,
-    retrieval_observed_at: datetime | str,
-    computed_at: datetime | str | None = None,
-    policy: Mapping[str, Any] | None = None,
-) -> dict[str, Any]:
-    """Evaluate one exact OA expression under the OA-3 v1 ruler.
+def _map_invalid_reason(exc: Exception) -> str:
+    """Map an exception to a closed invalid reason from the INVALID vocabulary."""
 
-    Parameters
-    ----------
-    expression:
-        The frozen OA expression receipt.  Required fields are documented in
-        ``OPTIONS_ALPHA_EXACT_OPTION_OUTCOME_PREREG_2026-09-19.md`` §3.
-    entry_quote, exit_quote:
-        The exact private-source bytes for the entry / exit windows, accepted
-        as ``bytes``, ``QuoteReceipt``, ``FetchedQuoteResponse`` (the existing
-        nbbo-cohort wrapper), or a parsed JSON array of source quote rows.
-        When both bytes and a payload are passed the wrapper proves they
-        match exactly.
-    request_started_at, response_observed_at, retrieval_observed_at:
-        Live retrieval clocks — the source request, the response arrival, and
-        the time at which the analyst looks at the source data.  The wrapper
-        enforces the ordering ``request > available_at``, ``request < response``,
-        ``response < retrieval``.
-    computed_at:
-        Optional clock stamped on the fixture record itself; defaults to
-        ``retrieval_observed_at``.
-    policy:
-        Optional OA-3 v1 policy mapping; defaults to the preregistered
-        on-disk policy whose SHA-256 is carried on every fixture record.
+    text = str(exc)
+    for candidate in INVALID_REASONS:
+        if text.startswith(candidate):
+            return candidate
+    # Map known integrity classes that escape the literal prefix path:
+    lowered = text.lower()
+    if "causal clock" in lowered or "request_started_at" in lowered and "follows" in lowered:
+        return "CAUSAL_CLOCK_MISMATCH"
+    if "evidence_clock_integrity_failure" in lowered:
+        return "EVIDENCE_CLOCK_INTEGRITY_FAILURE"
+    if "evidence_computed_before_retrieval" in lowered:
+        return "EVIDENCE_COMPUTED_BEFORE_RETRIEVAL"
+    if "evidence_selected_event_future" in lowered:
+        return "EVIDENCE_SELECTED_EVENT_FUTURE"
+    if "evidence_query_mismatch" in lowered or "evidence query disagrees" in lowered:
+        return "EVIDENCE_QUERY_MISMATCH"
+    if "evidence_role_mismatch" in lowered:
+        return "EVIDENCE_ROLE_MISMATCH"
+    if "expression_identity_malformed" in lowered:
+        return "EXPRESSION_IDENTITY_MALFORMED"
+    if "raw_bytes" in lowered and "invalid json" in lowered:
+        return "EVIDENCE_RAW_BYTES_MALFORMED"
+    if "disagrees with raw_bytes" in lowered:
+        return "EVIDENCE_RAW_BYTES_MALFORMED"
+    # Final catch-all: integrity defect without a closed reason — refuse
+    # arbitrary caller labels.
+    return "EXPRESSION_IDENTITY_MALFORMED"
 
-    Returns
-    -------
-    dict
-        The OA-3 fixture record.  No raw quote rows / payload / PnL claim
-        appears in the output; ``net_return_pct`` is populated only when the
-        status is ``complete`` and the frozen one-contract USD 0.65/side
-        arithmetic is reproducible.
+
+def _map_unavailable_reason(text: str) -> str:
+    for candidate in UNAVAILABLE_REASONS:
+        if text.startswith(candidate):
+            return candidate
+    if "parse_error" in text:
+        return "QUOTE_RESPONSE_INVALID"
+    return "QUOTE_RESPONSE_INVALID"
+
+
+def _map_excluded_reason(exc: Exception) -> str:
+    text = str(exc)
+    for candidate in EXCLUDED_REASONS:
+        if text.startswith(candidate):
+            return candidate
+    # Unknown exclusion label — fall back to a known closed reason rather
+    # than surfacing an arbitrary caller label.
+    return "EXPRESSION_FENCE_BROKEN"
+
+
+def _expression_digest(receipt_payload: Mapping[str, Any]) -> str:
+    """Hash the canonical immutable expression fields only.
+
+    The digest MUST be reproducible from the original receipt payload
+    (string-valued, frozen upstream identity) and MUST NOT depend on any
+    session / contract / datetime fields that ``_validate_expression_payload``
+    augments after the fact.  The augmentations exist to drive the rest of
+    the evaluation; the digest is the upstream-binding identity.
     """
 
-    if not isinstance(expression, Mapping):
-        raise Oa3InputError("expression must be a mapping")
-    if policy is None:
-        policy = DEFAULT_POLICY
-    policy_sha = _policy_sha256(policy)
+    return sha256(
+        cohort.canonical_json_bytes(_canonical_expression_fields(receipt_payload))
+    ).hexdigest()
 
-    try:
-        validated = _validate_expression(expression)
-    except Oa3ExcludedError as exc:
-        return _build_invalid_record(
-            validated={},
-            policy=policy,
-            policy_sha=policy_sha,
-            status=STATUS_EXCLUDED,
-            reason=str(exc),
-            contract=None,
-            decision_at=None,
-            available_at=None,
-            session_date=None,
-            rth_open=None,
-            rth_close=None,
-        )
-    except Oa3InvalidError as exc:
-        return _build_invalid_record(
-            validated={},
-            policy=policy,
-            policy_sha=policy_sha,
-            status=STATUS_INVALID,
-            reason=str(exc),
-            contract=None,
-            decision_at=None,
-            available_at=None,
-            session_date=None,
-            rth_open=None,
-            rth_close=None,
-        )
 
-    contract = validated["contract"]
-    expression_available_at: datetime = validated["available_at"]
-    rth_close: datetime = validated["rth_close"]
-    contract_for_parse = {
-        "root": contract["root"],
-        "expiration": contract["expiration"],
-        "right": contract["right"],
-        "strike": contract["strike"],
-        "strike_millis": contract["strike_millis"],
-        "occ_symbol": contract["occ_symbol"],
+def _frozen_policy_block() -> dict[str, Any]:
+    return {
+        "policy_id": FROZEN_POLICY_ID,
+        "policy_version": FROZEN_POLICY_VERSION,
+        "policy_sha256": FROZEN_POLICY_SHA256,
     }
 
-    try:
-        entry_receipt = _quote_receipt(entry_quote)
-        exit_receipt = _quote_receipt(exit_quote)
-    except Oa3InputError as exc:
-        return _build_invalid_record(
-            validated=validated,
-            policy=policy,
-            policy_sha=policy_sha,
-            status=STATUS_INVALID,
-            reason=f"INVALID:{exc}",
-            contract=contract,
-            decision_at=validated["decision_at"],
-            available_at=validated["available_at"],
-            session_date=validated["session_date"],
-            rth_open=validated["rth_open"],
-            rth_close=validated["rth_close"],
-        )
 
-    request_started_at_dt = _parse_clock_or_datetime(
-        request_started_at, label="request_started_at"
-    )
-    response_observed_at_dt = _parse_clock_or_datetime(
-        response_observed_at, label="response_observed_at"
-    )
-    retrieval_observed_at_dt = _parse_clock_or_datetime(
-        retrieval_observed_at, label="retrieval_observed_at"
-    )
-    computed_at_dt = (
-        _parse_clock_or_datetime(computed_at, label="computed_at")
-        if computed_at is not None
-        else None
-    )
-    try:
-        clocks = _validate_clocks(
-            request_started_at=request_started_at_dt,
-            response_observed_at=response_observed_at_dt,
-            retrieval_observed_at=retrieval_observed_at_dt,
-            computed_at=computed_at_dt,
-            expression_available_at=expression_available_at,
-        )
-    except Oa3InvalidError as exc:
-        return _build_invalid_record(
-            validated=validated,
-            policy=policy,
-            policy_sha=policy_sha,
-            status=STATUS_INVALID,
-            reason=str(exc),
-            contract=contract,
-            decision_at=validated["decision_at"],
-            available_at=validated["available_at"],
-            session_date=validated["session_date"],
-            rth_open=validated["rth_open"],
-            rth_close=validated["rth_close"],
-        )
-    (
-        request_started_at_dt,
-        response_observed_at_dt,
-        retrieval_observed_at_dt,
-        computed_at_dt,
-    ) = clocks
-
-    entry_start, entry_end = _entry_bounds(expression_available_at)
-    entry_block, entry_quote_obj = _build_window_block(
-        side=SIDE_ASK,
-        role=ROLE_ENTRY,
-        contract=contract_for_parse,
-        boundary=entry_start,
-        end=entry_end,
-        receipt=entry_receipt,
-    )
-
-    if entry_quote_obj is None:
-        if retrieval_observed_at_dt < entry_end:
-            return _build_record(
-                validated=validated,
-                policy=policy,
-                policy_sha=policy_sha,
-                status=STATUS_PENDING,
-                reason=None,
-                entry_block=entry_block,
-                exit_block=_empty_block(SIDE_BID, ROLE_EXIT),
-                clocks=clocks,
-            )
-        reason = (
-            "QUOTE_RESPONSE_INVALID"
-            if entry_block["parse_error"] is not None
-            else "ENTRY_QUOTE_UNAVAILABLE"
-        )
-        return _build_record(
-            validated=validated,
-            policy=policy,
-            policy_sha=policy_sha,
-            status=STATUS_UNAVAILABLE,
-            reason=reason,
-            entry_block=entry_block,
-            exit_block=_empty_block(SIDE_BID, ROLE_EXIT),
-            clocks=clocks,
-        )
-
-    exit_start, exit_end = _exit_bounds(entry_quote_obj.event_at)
-    if exit_end >= rth_close:
-        return _build_record(
-            validated=validated,
-            policy=policy,
-            policy_sha=policy_sha,
-            status=STATUS_EXCLUDED,
-            reason="HORIZON_CROSSES_SESSION_CLOSE",
-            entry_block=entry_block,
-            exit_block=_empty_block(SIDE_BID, ROLE_EXIT),
-            clocks=clocks,
-        )
-    if not (validated["rth_open"] <= exit_start < rth_close):
-        return _build_record(
-            validated=validated,
-            policy=policy,
-            policy_sha=policy_sha,
-            status=STATUS_EXCLUDED,
-            reason="EXIT_BOUNDARY_OUTSIDE_RTH",
-            entry_block=entry_block,
-            exit_block=_empty_block(SIDE_BID, ROLE_EXIT),
-            clocks=clocks,
-        )
-
-    exit_block, exit_quote_obj = _build_window_block(
-        side=SIDE_BID,
-        role=ROLE_EXIT,
-        contract=contract_for_parse,
-        boundary=exit_start,
-        end=exit_end,
-        receipt=exit_receipt,
-    )
-
-    if exit_quote_obj is None:
-        if retrieval_observed_at_dt < exit_end:
-            return _build_record(
-                validated=validated,
-                policy=policy,
-                policy_sha=policy_sha,
-                status=STATUS_PENDING,
-                reason=None,
-                entry_block=entry_block,
-                exit_block=exit_block,
-                clocks=clocks,
-            )
-        reason = (
-            "QUOTE_RESPONSE_INVALID"
-            if exit_block["parse_error"] is not None
-            else "EXIT_QUOTE_UNAVAILABLE"
-        )
-        return _build_record(
-            validated=validated,
-            policy=policy,
-            policy_sha=policy_sha,
-            status=STATUS_UNAVAILABLE,
-            reason=reason,
-            entry_block=entry_block,
-            exit_block=exit_block,
-            clocks=clocks,
-        )
-
-    net_return = cohort.net_return_pct(entry_quote_obj.ask, exit_quote_obj.bid)
-    return _build_complete(
-        validated=validated,
-        policy=policy,
-        policy_sha=policy_sha,
-        entry_block=entry_block,
-        exit_block=exit_block,
-        net_return=net_return,
-        clocks=clocks,
-    )
-
-
-def _build_invalid_record(
+def _build_invalid_fixture(
     *,
-    validated: dict[str, Any],
-    policy: Mapping[str, Any],
-    policy_sha: str,
     status: str,
     reason: str,
-    contract: dict[str, Any] | None,
-    decision_at: datetime | None,
-    available_at: datetime | None,
-    session_date: Any,
-    rth_open: datetime | None,
-    rth_close: datetime | None,
+    canonical: dict[str, Any] | None,
+    raw_expression: Mapping[str, Any] | None,
+    entry_block: dict[str, Any],
+    exit_block: dict[str, Any],
+    expression_raw_sha: str | None,
+    expression_raw_size: int | None,
+    upstream_digest_sha: str | None,
 ) -> dict[str, Any]:
-    """Build a fixture record for a record-level defect (invalid / excluded).
-
-    Used when the wrapper rejects an expression at the population or
-    identity gate, before any quote windows are evaluated.  The record
-    carries no entry/exit observations, no clocks, no net return; only the
-    schema/policy/identity stamp plus the recorded reason.
-    """
-
-    expression_id = validated.get("expression_id")
-    source_candidate_id = validated.get("source_candidate_id")
-    decision_receipt_sha = validated.get("decision_receipt_sha256")
-    source_rule_sha = validated.get("source_rule_digest_sha256")
-    selection_fence_at = validated.get("selection_fence_at")
-    policy_version = validated.get("policy_version")
-    if expression_id is None:
-        expression_id = ""
-    if source_candidate_id is None:
-        source_candidate_id = ""
-    if decision_receipt_sha is None:
-        decision_receipt_sha = ""
-    if source_rule_sha is None:
-        source_rule_sha = ""
-    if selection_fence_at is None:
-        selection_fence_at = ""
-    if policy_version is None:
-        policy_version = "v?"
-
-    if isinstance(expression_id, str) and expression_id and all(
-        field in validated
-        for field in (
-            "policy_version",
-            "source_candidate_id",
-            "decision_receipt_sha256",
-            "source_rule_digest_sha256",
-            "selection_frozen_before_outcomes",
-            "selection_fence_at",
-            "root",
-            "expiration",
-            "right",
-            "strike",
-            "strike_millis",
-            "occ_symbol",
-            "position",
-            "quantity_contracts",
-            "multiplier",
-            "standard_deliverable",
-            "single_leg",
-            "package",
-            "decision_at",
-            "available_at",
+    if status == STATUS_INVALID and reason not in INVALID_REASONS:
+        raise Oa3InputError(f"invalid reason {reason!r} is not in vocabulary")
+    if status == STATUS_UNAVAILABLE and reason not in UNAVAILABLE_REASONS:
+        raise Oa3InputError(f"unavailable reason {reason!r} is not in vocabulary")
+    if status == STATUS_EXCLUDED and reason not in EXCLUDED_REASONS:
+        raise Oa3InputError(f"excluded reason {reason!r} is not in vocabulary")
+    if status in (STATUS_PENDING, STATUS_COMPLETE):
+        raise Oa3InputError(
+            f"status {status!r} must not be produced by the integrity reject path"
         )
-    ):
-        expression_digest = sha256(
-            cohort.canonical_json_bytes(_canonical_expression_fields_strs(validated))
-        ).hexdigest()
-    else:
-        expression_digest = ""
+    if status == STATUS_EXCLUDED and (canonical is None or raw_expression is None):
+        # excluded before any quote observation; identity fields must still be
+        # present from the raw receipt
+        ...
+    expression_id = ""
+    source_candidate_id = ""
+    decision_receipt_sha = ""
+    source_rule_sha = ""
+    selection_fence_at = ""
+    policy_version = FROZEN_POLICY_VERSION
+    expression_digest_sha = ""
+    session_date = None
+    rth_open = None
+    rth_close = None
+    decision_at = None
+    available_at = None
+    contract = None
+    position = None
+    quantity_contracts = None
+    multiplier = None
+    if canonical is not None:
+        expression_id = canonical["expression_id"]
+        source_candidate_id = canonical["source_candidate_id"]
+        decision_receipt_sha = canonical["decision_receipt_sha256"]
+        source_rule_sha = canonical["source_rule_digest_sha256"]
+        selection_fence_at = canonical["selection_fence_at"]
+        session_date = canonical["session_date"]
+        rth_open = canonical["rth_open"]
+        rth_close = canonical["rth_close"]
+        decision_at = canonical["decision_at"]
+        available_at = canonical["available_at"]
+        contract = canonical["contract"]
+        position = canonical["position"]
+        quantity_contracts = canonical["quantity_contracts"]
+        multiplier = canonical["multiplier"]
+        expression_digest_sha = _expression_digest(raw_expression)
+    elif raw_expression is not None:
+        expression_id = str(raw_expression.get("expression_id", "")) if isinstance(
+            raw_expression.get("expression_id"), str
+        ) else ""
+        source_candidate_id = (
+            raw_expression["source_candidate_id"]
+            if isinstance(raw_expression.get("source_candidate_id"), str)
+            else ""
+        )
+        decision_receipt_sha = (
+            raw_expression["decision_receipt_sha256"]
+            if isinstance(raw_expression.get("decision_receipt_sha256"), str)
+            else ""
+        )
+        source_rule_sha = (
+            raw_expression["source_rule_digest_sha256"]
+            if isinstance(raw_expression.get("source_rule_digest_sha256"), str)
+            else ""
+        )
+        selection_fence_at = (
+            raw_expression["selection_fence_at"]
+            if isinstance(raw_expression.get("selection_fence_at"), str)
+            else ""
+        )
+        contract = None
+        position = raw_expression.get("position")
+        quantity_contracts = raw_expression.get("quantity_contracts")
+        multiplier = raw_expression.get("multiplier")
 
     record: dict[str, Any] = {
         "schema": SCHEMA,
-        "policy_id": policy["policy_id"],
+        "policy_id": FROZEN_POLICY_ID,
         "policy_version": policy_version,
-        "policy_sha256": policy_sha,
+        "policy_sha256": FROZEN_POLICY_SHA256,
         "expression_id": expression_id,
-        "expression_digest_sha256": expression_digest,
+        "expression_digest_sha256": expression_digest_sha,
+        "expression_upstream_digest_sha256": upstream_digest_sha or "",
+        "expression_raw_response_sha256": expression_raw_sha or "",
+        "expression_raw_response_bytes": expression_raw_size or 0,
         "expression_source_candidate_id": source_candidate_id,
         "expression_decision_receipt_sha256": decision_receipt_sha,
         "expression_source_rule_digest_sha256": source_rule_sha,
         "selection_frozen_before_outcomes": bool(
-            validated.get("selection_frozen_before_outcomes", False)
+            raw_expression.get("selection_frozen_before_outcomes")
+            if raw_expression is not None
+            else False
         ),
         "selection_fence_at": selection_fence_at,
         "contract": contract,
@@ -980,13 +1039,13 @@ def _build_invalid_record(
         "session_date": session_date.isoformat() if session_date is not None else None,
         "session_rth_open": rth_open,
         "session_rth_close": rth_close,
-        "position": validated.get("position"),
-        "quantity_contracts": validated.get("quantity_contracts"),
-        "multiplier": validated.get("multiplier"),
+        "position": position,
+        "quantity_contracts": quantity_contracts,
+        "multiplier": multiplier,
         "status": status,
         "reason": reason,
-        "entry": _empty_block(SIDE_ASK, ROLE_ENTRY),
-        "exit": _empty_block(SIDE_BID, ROLE_EXIT),
+        "entry": entry_block,
+        "exit": exit_block,
         "net_return_pct": None,
         "cost": {
             "multiplier": MULTIPLIER,
@@ -1008,119 +1067,54 @@ def _build_invalid_record(
             "raw_response_receipt_required": True,
             "executable_fill_claim": False,
         },
-        "clocks": {
-            "request_started_at": None,
-            "response_observed_at": None,
-            "retrieval_observed_at": None,
-            "computed_at": None,
-        },
         "authority": {key: value for key, value in ALL_FALSE_AUTHORITY.items()},
     }
     return record
 
 
-def _build_record(
+def _build_complete_fixture(
     *,
-    validated: dict[str, Any],
-    policy: Mapping[str, Any],
-    policy_sha: str,
-    status: str,
-    reason: str | None,
-    entry_block: dict[str, Any],
-    exit_block: dict[str, Any],
-    clocks: tuple[datetime, datetime, datetime, datetime],
-) -> dict[str, Any]:
-    if status == STATUS_EXCLUDED:
-        if reason not in EXCLUDED_REASONS:
-            raise Oa3InputError(f"excluded reason {reason!r} is not in vocabulary")
-    if status == STATUS_UNAVAILABLE:
-        if reason not in UNAVAILABLE_REASONS:
-            raise Oa3InputError(f"unavailable reason {reason!r} is not in vocabulary")
-    if status in (STATUS_PENDING, STATUS_COMPLETE):
-        if reason is not None:
-            raise Oa3InputError(
-                f"status {status} must not carry a reason; got {reason!r}"
-            )
-    return _build_common(
-        validated=validated,
-        policy=policy,
-        policy_sha=policy_sha,
-        status=status,
-        reason=reason,
-        entry_block=entry_block,
-        exit_block=exit_block,
-        clocks=clocks,
-        net_return=None,
-    )
-
-
-def _build_complete(
-    *,
-    validated: dict[str, Any],
-    policy: Mapping[str, Any],
-    policy_sha: str,
-    entry_block: dict[str, Any],
-    exit_block: dict[str, Any],
+    canonical: dict[str, Any],
+    receipt_payload: Mapping[str, Any],
+    entry_evidence: QuoteEvidence,
+    exit_evidence: QuoteEvidence,
+    entry_quote: cohort.SourceQuote,
+    exit_quote: cohort.SourceQuote,
     net_return: Decimal,
-    clocks: tuple[datetime, datetime, datetime, datetime],
 ) -> dict[str, Any]:
-    return _build_common(
-        validated=validated,
-        policy=policy,
-        policy_sha=policy_sha,
-        status=STATUS_COMPLETE,
-        reason=None,
-        entry_block=entry_block,
-        exit_block=exit_block,
-        clocks=clocks,
-        net_return=net_return,
+    expression_digest_sha = _expression_digest(receipt_payload)
+    entry_block = _evidence_block(
+        entry_evidence, quote=entry_quote, parse_error=None
     )
-
-
-def _build_common(
-    *,
-    validated: dict[str, Any],
-    policy: Mapping[str, Any],
-    policy_sha: str,
-    status: str,
-    reason: str | None,
-    entry_block: dict[str, Any],
-    exit_block: dict[str, Any],
-    clocks: tuple[datetime, datetime, datetime, datetime],
-    net_return: Decimal | None,
-) -> dict[str, Any]:
-    (
-        request_started_at,
-        response_observed_at,
-        retrieval_observed_at,
-        computed_at,
-    ) = clocks
-    expression_digest = sha256(
-        cohort.canonical_json_bytes(_canonical_expression_fields_strs(validated))
-    ).hexdigest()
-    record: dict[str, Any] = {
+    exit_block = _evidence_block(
+        exit_evidence, quote=exit_quote, parse_error=None
+    )
+    return {
         "schema": SCHEMA,
-        "policy_id": policy["policy_id"],
-        "policy_version": validated["policy_version"],
-        "policy_sha256": policy_sha,
-        "expression_id": validated["expression_id"],
-        "expression_digest_sha256": expression_digest,
-        "expression_source_candidate_id": validated["source_candidate_id"],
-        "expression_decision_receipt_sha256": validated["decision_receipt_sha256"],
-        "expression_source_rule_digest_sha256": validated["source_rule_digest_sha256"],
+        "policy_id": FROZEN_POLICY_ID,
+        "policy_version": FROZEN_POLICY_VERSION,
+        "policy_sha256": FROZEN_POLICY_SHA256,
+        "expression_id": canonical["expression_id"],
+        "expression_digest_sha256": expression_digest_sha,
+        "expression_upstream_digest_sha256": "",  # filled by evaluate()
+        "expression_raw_response_sha256": "",
+        "expression_raw_response_bytes": 0,
+        "expression_source_candidate_id": canonical["source_candidate_id"],
+        "expression_decision_receipt_sha256": canonical["decision_receipt_sha256"],
+        "expression_source_rule_digest_sha256": canonical["source_rule_digest_sha256"],
         "selection_frozen_before_outcomes": True,
-        "selection_fence_at": validated["selection_fence_at"],
-        "contract": validated["contract"],
-        "expression_decision_at": validated["decision_at"],
-        "expression_available_at": validated["available_at"],
-        "session_date": validated["session_date"].isoformat(),
-        "session_rth_open": validated["rth_open"],
-        "session_rth_close": validated["rth_close"],
-        "position": validated["position"],
-        "quantity_contracts": validated["quantity_contracts"],
-        "multiplier": validated["multiplier"],
-        "status": status,
-        "reason": reason,
+        "selection_fence_at": canonical["selection_fence_at"],
+        "contract": canonical["contract"],
+        "expression_decision_at": canonical["decision_at"],
+        "expression_available_at": canonical["available_at"],
+        "session_date": canonical["session_date"].isoformat(),
+        "session_rth_open": canonical["rth_open"],
+        "session_rth_close": canonical["rth_close"],
+        "position": canonical["position"],
+        "quantity_contracts": canonical["quantity_contracts"],
+        "multiplier": canonical["multiplier"],
+        "status": STATUS_COMPLETE,
+        "reason": None,
         "entry": entry_block,
         "exit": exit_block,
         "net_return_pct": net_return,
@@ -1144,63 +1138,458 @@ def _build_common(
             "raw_response_receipt_required": True,
             "executable_fill_claim": False,
         },
-        "clocks": {
-            "request_started_at": request_started_at,
-            "response_observed_at": response_observed_at,
-            "retrieval_observed_at": retrieval_observed_at,
-            "computed_at": computed_at,
-        },
         "authority": {key: value for key, value in ALL_FALSE_AUTHORITY.items()},
     }
+
+
+def _build_pending_fixture(
+    *,
+    canonical: dict[str, Any],
+    receipt_payload: Mapping[str, Any],
+    entry_evidence: QuoteEvidence | None,
+    exit_evidence: QuoteEvidence | None,
+    entry_block: dict[str, Any],
+    exit_block: dict[str, Any],
+) -> dict[str, Any]:
+    expression_digest_sha = _expression_digest(receipt_payload)
+    record = _build_complete_fixture(
+        canonical=canonical,
+        receipt_payload=receipt_payload,
+        entry_evidence=entry_evidence or _placeholder_evidence_for_block(ROLE_ENTRY, canonical),
+        exit_evidence=exit_evidence or _placeholder_evidence_for_block(ROLE_EXIT, canonical),
+        entry_quote=cohort.SourceQuote(
+            event_at=canonical["available_at"],
+            bid=Decimal(0),
+            ask=Decimal(0),
+            bid_size=0,
+            ask_size=0,
+            bid_exchange=0,
+            ask_exchange=0,
+            bid_condition=0,
+            ask_condition=0,
+        ),
+        exit_quote=cohort.SourceQuote(
+            event_at=canonical["available_at"],
+            bid=Decimal(0),
+            ask=Decimal(0),
+            bid_size=0,
+            ask_size=0,
+            bid_exchange=0,
+            ask_exchange=0,
+            bid_condition=0,
+            ask_condition=0,
+        ),
+        net_return=Decimal(0),
+    )
+    record["status"] = STATUS_PENDING
+    record["reason"] = None
+    record["entry"] = entry_block
+    record["exit"] = exit_block
+    record["net_return_pct"] = None
+    return record
+
+
+def _placeholder_evidence_for_block(
+    role: str, canonical: dict[str, Any]
+) -> QuoteEvidence:
+    """Build a sentinel evidence whose only purpose is to populate the clocks
+    of a pending fixture; the record's entry/exit blocks carry the canonical
+    block shape and the caller's evidence, not this sentinel."""
+
+    return QuoteEvidence(
+        role=role,
+        contract=canonical["contract"],
+        boundary_at=canonical["available_at"],
+        query_end_at=canonical["available_at"],
+        query={"symbol": "", "expiration": "", "strike": "", "right": "", "date": "", "start_time": "", "end_time": "", "interval": "", "format": ""},
+        raw_bytes=b"[]",
+        parsed_payload=[],
+        request_started_at=canonical["available_at"],
+        response_observed_at=canonical["available_at"],
+        retrieval_observed_at=canonical["available_at"],
+        computed_at=canonical["available_at"],
+    )
+
+
+# ─── Evaluate ────────────────────────────────────────────────────────────────
+
+
+def evaluate(
+    expression: ExpressionReceipt | bytes | Mapping[str, Any],
+    *,
+    entry_evidence: QuoteEvidence,
+    exit_evidence: QuoteEvidence,
+) -> dict[str, Any]:
+    """Evaluate one exact OA expression under the OA-3 v1 ruler.
+
+    Parameters
+    ----------
+    expression:
+        The frozen OA expression.  Accepted as ``ExpressionReceipt``, as the
+        raw upstream bytes (decoded strictly), or as a parsed mapping; in the
+        latter two cases the caller must have pre-bound the upstream digest.
+    entry_evidence, exit_evidence:
+        Per-role private-source evidence.  Each carries the exact source
+        query, raw private bytes, strictly parsed payload, and independent
+        request / response / retrieval / computed clocks.
+
+    Returns
+    -------
+    dict
+        The OA-3 fixture record.  No raw quote rows / payload / PnL claim
+        appears in the output; ``net_return_pct`` is populated only when the
+        status is ``complete`` and the frozen one-contract USD 0.65/side
+        arithmetic is reproducible.
+    """
+
+    if not isinstance(entry_evidence, QuoteEvidence):
+        raise Oa3InputError(
+            "entry_evidence must be a QuoteEvidence instance; bytes / payload "
+            "modes have been removed in favour of per-role evidence with "
+            "explicit query + clocks"
+        )
+    if not isinstance(exit_evidence, QuoteEvidence):
+        raise Oa3InputError(
+            "exit_evidence must be a QuoteEvidence instance"
+        )
+    if entry_evidence.role != ROLE_ENTRY:
+        raise Oa3InputError(
+            f"entry_evidence role must be {ROLE_ENTRY!r}; got {entry_evidence.role!r}"
+        )
+    if exit_evidence.role != ROLE_EXIT:
+        raise Oa3InputError(
+            f"exit_evidence role must be {ROLE_EXIT!r}; got {exit_evidence.role!r}"
+        )
+
+    # Materialise the expression into an ExpressionReceipt
+    raw_expression: dict[str, Any] | None = None
+    upstream_digest: str | None = None
+    expression_raw_sha: str | None = None
+    expression_raw_size: int | None = None
+    receipt: ExpressionReceipt | None = None
+    if isinstance(expression, ExpressionReceipt):
+        receipt = expression
+        raw_expression = dict(receipt.parsed_payload)
+        upstream_digest = receipt.upstream_digest_sha256
+        expression_raw_sha = receipt.raw_sha256
+        expression_raw_size = receipt.raw_size
+    elif isinstance(expression, (bytes, bytearray)):
+        # Without the caller-supplied upstream digest we cannot validate the
+        # immutable expression identity; refuse with INVALID.
+        raise Oa3InputError(
+            "evaluate(expression=bytes) without upstream digest cannot validate "
+            "the immutable expression identity; pass an ExpressionReceipt or a "
+            "Mapping carrying upstream_digest_sha256"
+        )
+    elif isinstance(expression, Mapping):
+        raw_expression = dict(expression)
+        upstream_digest_raw = raw_expression.get("upstream_digest_sha256")
+        if not (
+            isinstance(upstream_digest_raw, str)
+            and len(upstream_digest_raw) == 64
+            and all(ch in "0123456789abcdef" for ch in upstream_digest_raw)
+        ):
+            raise Oa3InputError(
+                "expression mapping must carry upstream_digest_sha256 (64-char lowercase hex)"
+            )
+        upstream_digest = upstream_digest_raw
+        # The mapping has no preserved raw bytes; reconstruct canonical raw
+        # bytes for the digest binding.  This path is for testability only;
+        # production callers must pass an ExpressionReceipt.
+        expression_raw_sha = sha256(
+            cohort.canonical_json_bytes(raw_expression)
+        ).hexdigest()
+        expression_raw_size = len(
+            cohort.canonical_json_bytes(raw_expression)
+        )
+    else:
+        raise Oa3InputError(
+            "expression must be an ExpressionReceipt, bytes, or a mapping"
+        )
+
+    # Validate the expression's immutable identity
+    try:
+        if receipt is not None:
+            canonical = _validate_expression_payload(receipt.parsed_payload)
+        else:
+            assert raw_expression is not None
+            canonical = _validate_expression_payload(raw_expression)
+    except Oa3ExcludedError as exc:
+        reason = _map_excluded_reason(exc)
+        return _build_invalid_fixture(
+            status=STATUS_EXCLUDED,
+            reason=reason,
+            canonical=None,
+            raw_expression=raw_expression,
+            entry_block=_empty_evidence_block(ROLE_ENTRY),
+            exit_block=_empty_evidence_block(ROLE_EXIT),
+            expression_raw_sha=expression_raw_sha,
+            expression_raw_size=expression_raw_size,
+            upstream_digest_sha=upstream_digest,
+        )
+    except Oa3InvalidError as exc:
+        reason = _map_invalid_reason(exc)
+        return _build_invalid_fixture(
+            status=STATUS_INVALID,
+            reason=reason,
+            canonical=None,
+            raw_expression=raw_expression,
+            entry_block=_empty_evidence_block(ROLE_ENTRY),
+            exit_block=_empty_evidence_block(ROLE_EXIT),
+            expression_raw_sha=expression_raw_sha,
+            expression_raw_size=expression_raw_size,
+            upstream_digest_sha=upstream_digest,
+        )
+
+    # Confirm the upstream digest matches the canonical-immutable digest
+    computed_digest = _expression_digest(raw_expression)
+    if upstream_digest is not None and upstream_digest != computed_digest:
+        return _build_invalid_fixture(
+            status=STATUS_INVALID,
+            reason="EXPRESSION_DIGEST_MISMATCH",
+            canonical=None,
+            raw_expression=raw_expression,
+            entry_block=_empty_evidence_block(ROLE_ENTRY),
+            exit_block=_empty_evidence_block(ROLE_EXIT),
+            expression_raw_sha=expression_raw_sha,
+            expression_raw_size=expression_raw_size,
+            upstream_digest_sha=upstream_digest,
+        )
+
+    # Validate evidence query contracts and clocks
+    try:
+        _validate_evidence_query(entry_evidence)
+        _validate_evidence_query(exit_evidence)
+    except Oa3InvalidError as exc:
+        reason = _map_invalid_reason(exc)
+        return _build_invalid_fixture(
+            status=STATUS_INVALID,
+            reason=reason,
+            canonical=None,
+            raw_expression=raw_expression,
+            entry_block=_empty_evidence_block(ROLE_ENTRY),
+            exit_block=_empty_evidence_block(ROLE_EXIT),
+            expression_raw_sha=expression_raw_sha,
+            expression_raw_size=expression_raw_size,
+            upstream_digest_sha=upstream_digest,
+        )
+
+    # Per-role contract must equal the expression contract
+    if dict(entry_evidence.contract) != dict(canonical["contract"]):
+        return _build_invalid_fixture(
+            status=STATUS_INVALID,
+            reason="EVIDENCE_QUERY_MISMATCH",
+            canonical=canonical,
+            raw_expression=raw_expression,
+            entry_block=_empty_evidence_block(ROLE_ENTRY),
+            exit_block=_empty_evidence_block(ROLE_EXIT),
+            expression_raw_sha=expression_raw_sha,
+            expression_raw_size=expression_raw_size,
+            upstream_digest_sha=upstream_digest,
+        )
+    if dict(exit_evidence.contract) != dict(canonical["contract"]):
+        return _build_invalid_fixture(
+            status=STATUS_INVALID,
+            reason="EVIDENCE_QUERY_MISMATCH",
+            canonical=canonical,
+            raw_expression=raw_expression,
+            entry_block=_empty_evidence_block(ROLE_ENTRY),
+            exit_block=_empty_evidence_block(ROLE_EXIT),
+            expression_raw_sha=expression_raw_sha,
+            expression_raw_size=expression_raw_size,
+            upstream_digest_sha=upstream_digest,
+        )
+
+    # Fence ordering: selection_fence_at <= decision_at <= available_at <= entry.request_started_at
+    if entry_evidence.request_started_at < canonical["available_at"]:
+        return _build_invalid_fixture(
+            status=STATUS_INVALID,
+            reason="EXPRESSION_FENCE_ORDER_VIOLATED",
+            canonical=canonical,
+            raw_expression=raw_expression,
+            entry_block=_empty_evidence_block(ROLE_ENTRY),
+            exit_block=_empty_evidence_block(ROLE_EXIT),
+            expression_raw_sha=expression_raw_sha,
+            expression_raw_size=expression_raw_size,
+            upstream_digest_sha=upstream_digest,
+        )
+
+    # Parse entry evidence
+    entry_quote, entry_parse_error = _parse_window_or_raise_unavailable(entry_evidence)
+
+    if entry_quote is None:
+        # Window maturity test: if the entry window has NOT yet fully elapsed
+        # (entry.query_end_at > retrieval_observed_at), status is pending.
+        if entry_evidence.retrieval_observed_at < entry_evidence.query_end_at:
+            return _build_pending_fixture(
+                canonical=canonical,
+                receipt_payload=raw_expression,
+                entry_evidence=entry_evidence,
+                exit_evidence=exit_evidence,
+                entry_block=_evidence_block(
+                    entry_evidence, quote=None, parse_error=entry_parse_error
+                ),
+                exit_block=_empty_evidence_block(ROLE_EXIT),
+            )
+        reason = _map_unavailable_reason(entry_parse_error or "ENTRY_QUOTE_UNAVAILABLE")
+        return _build_invalid_fixture(
+            status=STATUS_UNAVAILABLE,
+            reason=reason,
+            canonical=canonical,
+            raw_expression=raw_expression,
+            entry_block=_evidence_block(
+                entry_evidence, quote=None, parse_error=entry_parse_error
+            ),
+            exit_block=_empty_evidence_block(ROLE_EXIT),
+            expression_raw_sha=expression_raw_sha,
+            expression_raw_size=expression_raw_size,
+            upstream_digest_sha=upstream_digest,
+        )
+
+    # Compute exit target
+    exit_target = entry_quote.event_at + EXIT_HORIZON
+    exit_end = exit_target + timedelta(seconds=EXIT_WINDOW_SECONDS)
+    rth_close = canonical["rth_close"]
+    if exit_end >= rth_close:
+        return _build_invalid_fixture(
+            status=STATUS_EXCLUDED,
+            reason="HORIZON_CROSSES_SESSION_CLOSE",
+            canonical=canonical,
+            raw_expression=raw_expression,
+            entry_block=_evidence_block(
+                entry_evidence, quote=entry_quote, parse_error=None
+            ),
+            exit_block=_empty_evidence_block(ROLE_EXIT),
+            expression_raw_sha=expression_raw_sha,
+            expression_raw_size=expression_raw_size,
+            upstream_digest_sha=upstream_digest,
+        )
+    if not (canonical["rth_open"] <= exit_target < rth_close):
+        return _build_invalid_fixture(
+            status=STATUS_EXCLUDED,
+            reason="EXIT_BOUNDARY_OUTSIDE_RTH",
+            canonical=canonical,
+            raw_expression=raw_expression,
+            entry_block=_evidence_block(
+                entry_evidence, quote=entry_quote, parse_error=None
+            ),
+            exit_block=_empty_evidence_block(ROLE_EXIT),
+            expression_raw_sha=expression_raw_sha,
+            expression_raw_size=expression_raw_size,
+            upstream_digest_sha=upstream_digest,
+        )
+
+    # Parse exit evidence
+    exit_quote, exit_parse_error = _parse_window_or_raise_unavailable(exit_evidence)
+
+    if exit_quote is None:
+        # Window maturity test: pending until the whole 60s exit window has
+        # elapsed, regardless of whether any quote was observed.
+        if exit_evidence.retrieval_observed_at < exit_end:
+            return _build_pending_fixture(
+                canonical=canonical,
+                receipt_payload=raw_expression,
+                entry_evidence=entry_evidence,
+                exit_evidence=exit_evidence,
+                entry_block=_evidence_block(
+                    entry_evidence, quote=entry_quote, parse_error=None
+                ),
+                exit_block=_evidence_block(
+                    exit_evidence, quote=None, parse_error=exit_parse_error
+                ),
+            )
+        reason = _map_unavailable_reason(exit_parse_error or "EXIT_QUOTE_UNAVAILABLE")
+        return _build_invalid_fixture(
+            status=STATUS_UNAVAILABLE,
+            reason=reason,
+            canonical=canonical,
+            raw_expression=raw_expression,
+            entry_block=_evidence_block(
+                entry_evidence, quote=entry_quote, parse_error=None
+            ),
+            exit_block=_evidence_block(
+                exit_evidence, quote=None, parse_error=exit_parse_error
+            ),
+            expression_raw_sha=expression_raw_sha,
+            expression_raw_size=expression_raw_size,
+            upstream_digest_sha=upstream_digest,
+        )
+
+    # Complete path
+    net_return = cohort.net_return_pct(entry_quote.ask, exit_quote.bid)
+    record = _build_complete_fixture(
+        canonical=canonical,
+        receipt_payload=raw_expression,
+        entry_evidence=entry_evidence,
+        exit_evidence=exit_evidence,
+        entry_quote=entry_quote,
+        exit_quote=exit_quote,
+        net_return=net_return,
+    )
+    record["expression_upstream_digest_sha256"] = upstream_digest or ""
+    record["expression_raw_response_sha256"] = expression_raw_sha or ""
+    record["expression_raw_response_bytes"] = expression_raw_size or 0
     return record
 
 
 def evaluate_or_raise(
-    expression: Mapping[str, Any],
+    expression: ExpressionReceipt | bytes | Mapping[str, Any],
     *,
-    entry_quote: Any,
-    exit_quote: Any,
-    request_started_at: datetime | str,
-    response_observed_at: datetime | str,
-    retrieval_observed_at: datetime | str,
-    computed_at: datetime | str | None = None,
-    policy: Mapping[str, Any] | None = None,
+    entry_evidence: QuoteEvidence,
+    exit_evidence: QuoteEvidence,
 ) -> dict[str, Any]:
     """Evaluate and re-raise identity-defects so callers may branch on them.
 
-    ``evaluate`` returns a ``status: invalid`` fixture record for identity
-    defects (the typical contract this ruler ships under).  This wrapper
-    re-raises ``Oa3InvalidError`` / ``Oa3ExcludedError`` so caller code can
-    branch on them when needed without losing the record shape.
+    ``evaluate`` returns ``status: invalid`` / ``status: excluded`` fixture
+    records for identity defects (the typical contract this ruler ships under);
+    this wrapper re-raises the underlying ``Oa3InvalidError`` or
+    ``Oa3ExcludedError`` so caller code can branch on them when needed
+    without losing the record shape.  Quote-parsing unavailability still
+    returns the unavailable fixture record (it is a data state, not an
+    integrity failure).
     """
 
+    if isinstance(expression, ExpressionReceipt):
+        raw_payload = dict(expression.parsed_payload)
+    elif isinstance(expression, Mapping):
+        raw_payload = dict(expression)
+    else:
+        raw_payload = None
+    if raw_payload is not None:
+        # Pre-flight raise so caller can branch before any fixture is built.
+        try:
+            _validate_expression_payload(raw_payload)
+        except (Oa3InvalidError, Oa3ExcludedError):
+            raise
     return evaluate(
         expression,
-        entry_quote=entry_quote,
-        exit_quote=exit_quote,
-        request_started_at=request_started_at,
-        response_observed_at=response_observed_at,
-        retrieval_observed_at=retrieval_observed_at,
-        computed_at=computed_at,
-        policy=policy,
+        entry_evidence=entry_evidence,
+        exit_evidence=exit_evidence,
     )
 
 
 __all__ = [
     "ALL_FALSE_AUTHORITY",
-    "DEFAULT_POLICY",
     "ENTRY_WINDOW_SECONDS",
+    "EXCLUDED_REASONS",
     "EXIT_HORIZON",
     "EXIT_WINDOW_SECONDS",
-    "EXCLUDED_REASONS",
+    "ExpressionReceipt",
+    "FROZEN_POLICY",
+    "FROZEN_POLICY_ID",
+    "FROZEN_POLICY_SHA256",
+    "FROZEN_POLICY_VERSION",
     "INVALID_REASONS",
     "Oa3ExcludedError",
     "Oa3InputError",
     "Oa3InvalidError",
-    "POLICY_ID",
     "POLICY_SCHEMA",
-    "QuoteReceipt",
+    "QuoteEvidence",
+    "ROLE_ENTRY",
+    "ROLE_EXIT",
     "SCHEMA",
+    "SIDE_ASK",
+    "SIDE_BID",
     "STATUS_COMPLETE",
     "STATUS_EXCLUDED",
     "STATUS_INVALID",
@@ -1209,6 +1598,6 @@ __all__ = [
     "UNAVAILABLE_REASONS",
     "evaluate",
     "evaluate_or_raise",
-    "quote_receipt_from_bytes",
-    "quote_receipt_from_payload",
+    "expression_receipt_from_bytes",
+    "quote_evidence_from_bytes",
 ]
