@@ -1270,6 +1270,17 @@ def _beat_from(health: Mapping[str, Any], *, now: datetime,
             "state": health.get("state")}
 
 
+def _loaded_quote_count(quotes: Mapping[str, Any] | None,
+                        tickers: Sequence[str]) -> int:
+    """How many probe tickers have an entry in the quote book (presence only)."""
+    if not isinstance(quotes, Mapping):
+        return 0
+    book = quotes.get("quotes")
+    if not isinstance(book, Mapping):
+        return 0
+    return sum(1 for ticker in tickers if ticker in book)
+
+
 def _refusal_payload(*, state: str, reasons: Sequence[str], now: datetime,
                      session: date | None, pack: lp.LivePack | None,
                      tickers: Sequence[str], state_dir: Path | None,
@@ -1289,7 +1300,8 @@ def _refusal_payload(*, state: str, reasons: Sequence[str], now: datetime,
                             evaluated=False),
         "inputs": {
             "quotes": {"asof": (quotes_meta or {}).get("asof"), "age_s": None,
-                       "coverage": f"0/{len(tickers)}", "stale_n": 0},
+                       "coverage": f"{_loaded_quote_count(quotes_meta, tickers)}"
+                                   f"/{len(tickers)}", "stale_n": 0},
             "pack": {"as_of": (pack.as_of if pack else None),
                      "pack_hash": (pack.pack_hash if pack else None),
                      "fresh": False,
