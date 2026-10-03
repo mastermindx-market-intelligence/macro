@@ -677,6 +677,7 @@
     "lib/forex_kinematics_view.py": "2f57d68e9fc93e0a5a944035168d850bfd2c1fe3038ef8172897555b72858f05",
     "lib/pages.py": "2673025c9729d5665936dbe6cafd461e8dff200feacc3e0081f0f378df2fd28b",
     "scripts/build_forex.py": "43c7a906891f2759f3387469bcefe912fac62509bbb184a28009470a201f6901",
+    "scripts/check_template_site_sync.py": "17a092383c66b18875e86de1116816a53b42cf2c784d6015abeb3b6986527ccd",
     "scripts/externalize_css.py": "fa4fb1e4d7f141694143711f8886bb0add138d76b9dad19e083a2eb3a6f75b3c",
     "templates/_forex_movement_evidence.html.j2": "61ea582a46175f0c5e159d123e15440bd3d15c23d3bddd9e36bf386713cb0813",
     "templates/forex.html.j2": "75067cf42dcb76f1ce847167f89584c3b5b1db27c6eb662892d18b2200d0641a",

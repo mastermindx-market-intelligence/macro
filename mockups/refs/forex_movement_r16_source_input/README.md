@@ -54,3 +54,8 @@ The prior administrator browser restriction is unchanged. Do not change browsers
 After those prerequisites are satisfied, the existing visual-evidence workflow must verify all four case states at the intended desktop/tablet/mobile sizes, EN/ZH and dark/light; native disclosure keyboard operation, focus visibility, text/number/date wrapping, enlarged text, reduced motion, contrast and unknown-data treatment. Check that no label turns a calculation date into a source date, a z-score into price direction, or a raw fallback into an adjustment. Use the accepted owning EVIDENCE schema and real captures. Static parsing/tests and hosted source CI cannot substitute for that proof.
 
 This package supports the existing PR #8243 review. It is not a new calculation, publisher, design system, source-clock service or parallel evidence authority. The original Bonds/Forex mission remains incomplete.
+
+
+## Lazy-import provenance correction
+
+The pre-import source manifest now pins `scripts/check_template_site_sync.py` as well as the externalizer. The externalizer imports that helper lazily; a post-import audit or byte-identical rendered output alone cannot reject a comment-only change before execution. A changed helper must fail the existing dependency guard before any output directory is created. This correction changes only review-input provenance, not the product, financial calculations or rendered page bytes. Browser and release acceptance remain unproven.

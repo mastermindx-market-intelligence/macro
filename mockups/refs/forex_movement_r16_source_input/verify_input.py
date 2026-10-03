@@ -89,6 +89,18 @@ class ForexReviewInputChecks(unittest.TestCase):
             self.assertEqual(case['component_css_sha256'], 'b9b73065256ea260677d35b1212d6a37f8453cee4923e4aefeeb5adb93dffd90')
         self.assertGreater(len(self.source['font_assets_not_bundled']), 0)
 
+    def test_lazy_asset_helper_is_pinned_before_any_render_import(self):
+        helper = 'scripts/check_template_site_sync.py'
+        expected = '17a092383c66b18875e86de1116816a53b42cf2c784d6015abeb3b6986527ccd'
+        self.assertEqual(self.spec['source_dependency_sha256'].get(helper), expected,
+                         'A post-execution module audit is not a pre-execution source guard')
+        self.assertEqual(self.source['source_dependency_sha256'].get(helper), expected)
+        script = (HERE / 'prepare.py').read_text()
+        self.assertLess(script.index("for path, expected in spec['source_dependency_sha256'].items():"),
+                        script.index('from scripts import build_forex'))
+        self.assertLess(script.index("raise RuntimeError('Wrong source dependency: ' + path)"),
+                        script.index('output.mkdir'))
+
     def test_embedded_rebuild_material_matches_the_published_input(self):
         for name in ['README.md', 'SOURCE.json', 'SPEC.json', 'prepare.py', 'verify_input.py']:
             self.assertEqual(self.members[name], (HERE / name).read_bytes(), name)
