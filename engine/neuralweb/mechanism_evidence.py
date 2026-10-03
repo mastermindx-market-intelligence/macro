@@ -240,6 +240,7 @@ def project_evidence(payload: Any, *, now: datetime) -> dict:
         nodes, edges = raw.get('nodes'), raw.get('edges')
         if not isinstance(nodes, list) or not isinstance(edges, list):
             p['coherence'], p['coverage_score'] = 'unknown', None
+            p['direction_en'], p['direction_zh'] = None, None
             p['gaps'].append('graph_unavailable')
             out['pathways'].append(p)
             continue

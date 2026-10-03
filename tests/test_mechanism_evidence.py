@@ -1182,3 +1182,77 @@ def test_withheld_reason_does_not_change_clock_qualification(tmp_path, via_ask, 
     assert p.pop('coverage_withheld_reason') == 'zero_edge_no_coverage_claim'
     assert p == expected
 
+
+
+# Structural absence must withhold the whole aggregate, including bilingual prose.
+_UNAVAILABLE_GRAPH_SHAPES = {
+    'absent': None, 'null': None, 'empty_object': {}, 'object': {'invalid': 1},
+    'empty_text': '', 'text': 'invalid', 'integer': 0, 'decimal': 1.5,
+    'false': False, 'true': True,
+}
+
+
+def _read_structural_graph_route(root, via_ask):
+    if via_ask:
+        from engine.neuralweb.ask_brain import _dispatch_read_tool
+        return _dispatch_read_tool('read_mechanism_pathways', {}, root)
+    from engine.neuralweb.cortex import _tool_read_mechanism_pathways
+    return _tool_read_mechanism_pathways(root, {})
+
+
+@pytest.mark.usefixtures('fixed_reader_clock')
+@pytest.mark.parametrize('via_ask', [False, True], ids=['cortex', 'ask'])
+@pytest.mark.parametrize('marked', [False, True], ids=['legacy', 'marked'])
+@pytest.mark.parametrize('field', ['nodes', 'edges', 'both'])
+@pytest.mark.parametrize('shape', _UNAVAILABLE_GRAPH_SHAPES)
+def test_structurally_unavailable_graph_withholds_direction(
+    tmp_path, via_ask, marked, field, shape,
+):
+    payload = artifact()
+    if marked:
+        payload['clock_basis'] = 'source_clock_v1'
+    raw = payload['pathways'][0]
+    raw.update(direction_en='Invented upward direction', direction_zh='虚构上行方向')
+    for key in ('nodes', 'edges') if field == 'both' else (field,):
+        if shape == 'absent':
+            raw.pop(key)
+        else:
+            raw[key] = copy.deepcopy(_UNAVAILABLE_GRAPH_SHAPES[shape])
+    path = write_artifact(tmp_path, payload)
+    before = path.read_bytes()
+    out = _read_structural_graph_route(tmp_path, via_ask)
+    pathway = out['pathways'][0]
+    assert pathway['direction_en'] is None
+    assert pathway['direction_zh'] is None
+    assert pathway['coverage_score'] is None and pathway['coherence'] == 'unknown'
+    assert pathway['gaps'] == ['graph_unavailable']
+    assert pathway['reading_status'] == out['reading_status'] == 'available'
+    assert pathway['nodes'] == pathway['edges'] == []
+    assert not any(out['evidence_summary'].values())
+    assert out['gaps'] == ([] if marked else ['legacy_artifact_unverified_node_clocks'])
+    assert out['observed_at'] == NOW.isoformat()
+    assert path.read_bytes() == before
+
+
+@pytest.mark.usefixtures('fixed_reader_clock')
+@pytest.mark.parametrize('via_ask', [False, True], ids=['cortex', 'ask'])
+@pytest.mark.parametrize('case', ['measured', 'numeric_zero', 'duplicates', 'factor_zero_edges'])
+def test_qualified_graph_preserves_direction_controls(tmp_path, via_ask, case):
+    payload = _factor_rotation_payload() if case == 'factor_zero_edges' else artifact()
+    payload['clock_basis'] = 'source_clock_v1'
+    raw = payload['pathways'][0]
+    raw.update(direction_en='Invented upward direction', direction_zh='虚构上行方向')
+    if case == 'numeric_zero':
+        raw['nodes'][1]['value'] = 0
+    if case == 'duplicates':
+        raw['edges'] *= 4
+    path = write_artifact(tmp_path, payload)
+    before = path.read_bytes()
+    out = _read_structural_graph_route(tmp_path, via_ask)
+    pathway = out['pathways'][0]
+    for key in ('coverage_score', 'coherence', 'direction_en', 'direction_zh'):
+        assert pathway[key] == raw[key]
+    assert pathway['gaps'] == []
+    assert out['evidence_summary']['reported_observation_links'] == (0 if case == 'factor_zero_edges' else 1)
+    assert out['evidence_summary']['duplicate_observation_links'] == (3 if case == 'duplicates' else 0)
+    assert path.read_bytes() == before
