@@ -249,18 +249,21 @@ def test_t8_load_schema_refusals(tmp_path: Path) -> None:
     r["kd_up_prev"] = None
     load_broken(pa.Table.from_pylist([r] + pyrows[1:], schema=ps.COMPACT_SCHEMA))
 
-    r2 = dict(pyrows[0])
-    r2["kd_ok"] = False
-    r2["kd_last_close"] = 1.0
-    load_broken(pa.Table.from_pylist([r2] + pyrows[1:], schema=ps.COMPACT_SCHEMA))
+    # C carries neither state, so each case below breaks exactly one rule.
+    bare = next(r for r in pyrows if r["ticker"] == "C")
+    assert bare["kd_ok"] is False and bare["hist_ok"] is False
+    rest = [r for r in pyrows if r["ticker"] != "C"]
 
-    r3 = dict(pyrows[0])
-    r3["kd_ok"] = False
+    r2 = dict(bare)
+    r2["kd_last_close"] = 1.0
+    load_broken(pa.Table.from_pylist([r2] + rest, schema=ps.COMPACT_SCHEMA))
+
+    r3 = dict(bare)
     r3["hist_ok"] = True
     r3["hist_fast"] = 1.0
     r3["hist_base"] = 1.0
     r3["hist_sig"] = 1.0
-    load_broken(pa.Table.from_pylist([r3] + pyrows[1:], schema=ps.COMPACT_SCHEMA))
+    load_broken(pa.Table.from_pylist([r3] + rest, schema=ps.COMPACT_SCHEMA))
 
     load_broken(pa.Table.from_pylist(pyrows + [pyrows[0]], schema=ps.COMPACT_SCHEMA))
 
