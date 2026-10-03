@@ -107,7 +107,7 @@
      of the state palette (raw --up is fill-grade and misses the contrast floor as
      light-theme text); the var() fallback keeps a cache-stale theme.css rendering
      today's colour rather than an invalid declaration. */
-  body.page-china-stocks .ctt-v.is-live{color:var(--ink-up,var(--up))}
+  body.page-china-stocks .ctt-v.is-live{color:var(--ink-ok,var(--ok))}
   /* A printed absence, at the weight of an absence. */
   body.page-china-stocks .ctt-v.is-zero{color:var(--muted);opacity:.5;font-weight:600}
   body.page-china-stocks .ctt-quiet{font-family:var(--font-mono,monospace);font-size:12.5px;

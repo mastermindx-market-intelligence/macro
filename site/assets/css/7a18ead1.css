@@ -79,7 +79,7 @@
   /* The one coloured glyph on the closed panel, under the same rule the ladder
      follows: only a non-zero `live` count takes --ink-up, because it is the only
      figure here that means "there is something to do today". */
-  #theme-tape .tt-gist .tt-gf.is-live{color:var(--ink-up,var(--up))}
+  #theme-tape .tt-gist .tt-gf.is-live{color:var(--ink-ok,var(--ok))}
   #theme-tape .tt-gist .tt-lead{font-weight:700}
   /* The stance is held whole for the reason the shelf's is: broken across a line
      "— not what to buy" reads as a fragment rather than an instruction. */
@@ -184,7 +184,7 @@
      text-grade form of the state palette (raw --up is fill-grade and misses the
      contrast floor as light-theme text); the var() fallback keeps a cache-stale
      theme.css rendering today's colour rather than an invalid declaration. */
-  #theme-tape .tt-v.is-live{color:var(--ink-up,var(--up))}
+  #theme-tape .tt-v.is-live{color:var(--ink-ok,var(--ok))}
   /* A printed absence, at the weight of an absence. */
   #theme-tape .tt-v.is-zero{color:var(--muted);opacity:.5;font-weight:600}
   #theme-tape .tt-quiet{font-family:var(--font-mono,monospace);font-size:12.5px;font-weight:600;
