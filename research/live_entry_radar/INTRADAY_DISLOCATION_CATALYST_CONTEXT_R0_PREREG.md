@@ -4,7 +4,8 @@
 **Owner:** WS:LIVE-ENTRY-RADAR / entry_radar research plane  
 **Consumer:** Terminal Tactical Intelligence / Dislocation + Reclaim product work  
 **Authority:** display/research only; no rank, size, gate, signal origination, escalation, order, or portfolio authority  
-**Frozen before:** any historical catalyst-outcome sweep or production wiring
+**Frozen before:** any historical catalyst-outcome sweep or production wiring  
+**Wire contract:** `contracts/entry_radar_catalyst_context.schema.json`
 
 ## 0. Commission
 
@@ -114,6 +115,31 @@ R0 has no materiality model. It accepts only a disposition explicitly supplied u
 
 If no accepted source-owner mapping exists, disposition is `unknown`. An LLM summary, headline sentiment, price drop, residual z-score, or event keyword may not invent this field.
 
+### 3.4 Closed serialized wire
+
+The cross-repository consumer boundary is the owner schema:
+
+`contracts/entry_radar_catalyst_context.schema.json`
+
+It is a closed Draft 2020-12 JSON Schema over the exact `CatalystContext.to_dict()` output.
+The schema fixes:
+
+- the R0 schema id and incumbent Radar episode schema;
+- the owner-issued 16-lowercase-hex Radar episode id;
+- the house UTC-second `...Z` clock form;
+- the five context states and state-consistency invariants;
+- non-empty declared required-source set;
+- the existing Radar `ok | stale | unavailable` source-read vocabulary;
+- closed source-read keys;
+- unique evidence-reference arrays;
+- the incumbent all-false Radar authority block;
+- `research_only=true`;
+- no undeclared root fields.
+
+Terminal and any later consumer must validate this owner wire rather than reconstructing the
+shape from prose or widening it locally. Adding a new field or authority bit is an owner-contract
+change, not a consumer convenience edit.
+
 ## 4. Fail-closed context states
 
 The output state is descriptive context, not a gate:
@@ -174,7 +200,11 @@ The first implementation must prove:
 - wrapper/surrogate Radar episode references are refused;
 - the incumbent live episode record and its `evidence_refs` are not mutated by catalyst attachment;
 - output is deterministic;
-- every authority flag remains false;
+- the runtime serialized output validates against the owner JSON Schema;
+- unknown root/source-read fields are rejected by the wire schema;
+- surrogate Radar episode ids, loose clock encodings, empty required-source sets, and
+  contradictory context-state payloads are rejected by the wire schema;
+- every authority flag remains false in both runtime and wire schema;
 - `required_sources` cannot be empty.
 
 ## 8. What R0 does not prove
@@ -194,6 +224,16 @@ No historical outcome sweep is authorized by this preregistration alone.
 
 ## 9. Next evidence gate
 
-After the pure contract is green, the next bounded step is a source-owner adapter census: for each candidate source plane, document exact native identity, clock semantics, coverage state, accepted owner-disposition mapping (if any), and whether the source can support prospective forward shadowing.
+The source-owner census, two earnings-presence adapters, direct owner Radar-episode binding,
+prospective Company Intelligence current-reader composition, and one real current owner-read
+proof now exist. The current blocking evidence is upstream Radar live-source availability:
+canonical `data/entry_radar/ledger_state.json` remains `WAITING_FOR_LIVE_SOURCE`, and the
+private-spool remediation is the separate held owner carrier Macro PR #6625.
 
-Only after that source matrix is accepted may an adapter attach real owner evidence to existing Radar tactical episodes. Any empirical claim then runs through Setup Species / Evaluation OS on the incumbent TrialLedger, not a new Terminal ledger.
+Therefore the next end-to-end gate is a **real owner-issued Live Entry Radar episode** arriving
+through the accepted incumbent private transport. R0 must not fabricate an episode, enable
+`ENTRY_RADAR_LIVE_ENABLE`, or substitute a Prophet/ticker-date episode while that gate is closed.
+
+Independent work may continue on the closed wire contract and Terminal consumer semantics.
+Any empirical timing/MAE/return claim still runs through Setup Species / Evaluation OS on the
+incumbent TrialLedger after lawful forward episodes exist; R0 creates no second evaluation ledger.
