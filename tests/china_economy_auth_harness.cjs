@@ -14,11 +14,12 @@ class Target{
 const SNAPSHOT='a'.repeat(64);
 function harness(snapshot=SNAPSHOT){
   const root=new Target(),slot=new Target(),lock=new Target(),message=new Target(),actions=new Target(),signIn=new Target();
+  const plans=new Target();
   const select=new Target(),exporter=new Target(),explorer=new Target(),library=new Target(),selected=new Target(),template=new Target();
   template.content={cloneNode(){return {};}};
   let deep=false,markup='LOCKED',retry=null,reload=null,reloads=0,session=null;
   Object.defineProperty(slot,'innerHTML',{get:()=>markup,set(v){markup=v;deep=v==='DEEP';}});
-  actions.querySelector=s=>s==='a:first-child'?signIn:s==='[data-eco-retry]'?retry:s==='[data-eco-reload]'?reload:null;
+  actions.querySelector=s=>s==='a:first-child'?signIn:s==='a:nth-child(2)'?plans:s==='[data-eco-retry]'?retry:s==='[data-eco-reload]'?reload:null;
   actions.appendChild=n=>{if(Object.hasOwn(n.attrs,'data-eco-reload')){reload=n;n.remove=()=>{reload=null;};}else{retry=n;n.remove=()=>{retry=null;};}};
   lock.querySelector=s=>s==='p'?message:actions;
   const window=new Target();window.location={reload(){reloads++;}};
@@ -43,7 +44,7 @@ function harness(snapshot=SNAPSHOT){
   function respond(i,status=200,body=payload()){
     requests[i].resolve({ok:status===200,status,json:()=>Promise.resolve(body)});
   }
-  return {root,slot,window,requests,auth,respond,payload,get retry(){return retry;},get reload(){return reload;},get reloads(){return reloads;},get deep(){return deep;}};
+  return {root,slot,window,plans,requests,auth,respond,payload,get retry(){return retry;},get reload(){return reload;},get reloads(){return reloads;},get deep(){return deep;}};
 }
 const tick=async()=>{for(let i=0;i<5;i++)await new Promise(setImmediate);};
 (async()=>{
@@ -85,7 +86,7 @@ const tick=async()=>{for(let i=0;i<5;i++)await new Promise(setImmediate);};
     h.respond(0,200,obsolete);await tick();
     assert.equal(h.deep,false,'A different publication must not hydrate the overview');
     assert.equal(h.root.dataset.ecoDetailState,'outdated');assert.ok(h.reload);
-    assert.equal(h.retry,null);assert.equal(h.window.EconomyLens,undefined);
+    assert.equal(h.retry,null);assert.equal(h.plans.hidden,true);assert.equal(h.window.EconomyLens,undefined);
     h.auth('A','TOKEN_REFRESHED');await tick();assert.equal(h.requests.length,1);
     h.root.emit('click',{target:{closest:s=>s==='[data-eco-reload]'?h.reload:null},preventDefault(){}});
     assert.equal(h.reloads,1);assert.equal(h.requests.length,1);

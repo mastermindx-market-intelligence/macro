@@ -134,6 +134,8 @@
     if(actions){
       var signIn=actions.querySelector('a:first-child');
       if(signIn) signIn.hidden=state==='forbidden' || state==='loading' || state==='outdated';
+      var plansLink=actions.querySelector('a:nth-child(2)');
+      if(plansLink) plansLink.hidden=state==='outdated';
       var retry=actions.querySelector('[data-eco-retry]');
       if(retry) retry.remove();
       var reload=actions.querySelector('[data-eco-reload]');
