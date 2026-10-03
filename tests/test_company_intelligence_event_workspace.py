@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import gzip
 import json
+import time
 from hashlib import sha256
 from pathlib import Path
 
@@ -1047,7 +1048,9 @@ def test_v3_unparseable_clock_refusal_names_event_and_field(tmp_path: Path, fiel
     out = tmp_path / "company_intelligence"
     with pytest.raises(WorkspaceError, match=EVENT_ID) as exc_info:
         write_workspace_generation(out, {EVENT_ID: ws})
-    assert field in str(exc_info.value)
+    msg = str(exc_info.value)
+    assert field in msg
+    assert "garbage" in msg
 
 
 def test_v3_precedence_refusal_names_the_event(tmp_path: Path) -> None:
@@ -1057,21 +1060,45 @@ def test_v3_precedence_refusal_names_the_event(tmp_path: Path) -> None:
         write_workspace_generation(out, {EVENT_ID: ws})
 
 
-def test_v3_naive_lifecycle_timestamp_is_read_as_utc(tmp_path: Path) -> None:
-    naive = _nest_row(source_available_at="2026-07-02T00:00:00", observed_at="2026-07-02T00:00:00")
-    zulu = _nest_row(source_available_at="2026-07-02T00:00:00Z", observed_at="2026-07-02T00:00:00Z")
-    out_naive = tmp_path / "naive"
-    out_zulu = tmp_path / "zulu"
-    gen_naive = write_workspace_generation(out_naive, {EVENT_ID: naive})
-    gen_zulu = write_workspace_generation(out_zulu, {EVENT_ID: zulu})
-    man_naive = json.loads((gen_naive / "manifest.json").read_text(encoding="utf-8"))
-    man_zulu = json.loads((gen_zulu / "manifest.json").read_text(encoding="utf-8"))
-    published_naive = json.loads(
-        (gen_naive / "workspaces" / f"{EVENT_ID}.json").read_text(encoding="utf-8")
-    )
-    assert man_naive["generated_at"] == man_zulu["generated_at"]
-    assert man_naive["source_clock"] == man_zulu["source_clock"]
-    assert published_naive["lifecycle"]["observed_at"] == "2026-07-02T00:00:00"
+@pytest.mark.parametrize(
+    "observed_at",
+    [
+        "0001-01-01T00:00:00+08:00",
+        "9999-12-31T23:00:00-08:00",
+    ],
+)
+def test_v3_out_of_range_clock_refusal_names_event_and_field(
+    tmp_path: Path, observed_at: str
+) -> None:
+    ws = _nest_row(source_available_at="2026-07-30T16:30:00Z", observed_at=observed_at)
+    out = tmp_path / "company_intelligence"
+    with pytest.raises(WorkspaceError, match=EVENT_ID) as exc_info:
+        write_workspace_generation(out, {EVENT_ID: ws})
+    msg = str(exc_info.value)
+    assert "lifecycle.observed_at" in msg
+
+
+def test_v3_naive_lifecycle_timestamp_is_read_as_utc(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("TZ", "Asia/Hong_Kong")
+    time.tzset()
+    try:
+        naive = _nest_row(source_available_at="2026-07-02T00:00:00", observed_at="2026-07-02T00:00:00")
+        zulu = _nest_row(source_available_at="2026-07-02T00:00:00Z", observed_at="2026-07-02T00:00:00Z")
+        out_naive = tmp_path / "naive"
+        out_zulu = tmp_path / "zulu"
+        gen_naive = write_workspace_generation(out_naive, {EVENT_ID: naive})
+        gen_zulu = write_workspace_generation(out_zulu, {EVENT_ID: zulu})
+        man_naive = json.loads((gen_naive / "manifest.json").read_text(encoding="utf-8"))
+        man_zulu = json.loads((gen_zulu / "manifest.json").read_text(encoding="utf-8"))
+        published_naive = json.loads(
+            (gen_naive / "workspaces" / f"{EVENT_ID}.json").read_text(encoding="utf-8")
+        )
+        assert man_naive["generated_at"] == man_zulu["generated_at"]
+        assert man_naive["source_clock"] == man_zulu["source_clock"]
+        assert published_naive["lifecycle"]["observed_at"] == "2026-07-02T00:00:00"
+    finally:
+        monkeypatch.delenv("TZ", raising=False)
+        time.tzset()
 
 
 def test_writer_does_not_rewrite_lifecycle_clocks(tmp_path: Path) -> None:

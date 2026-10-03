@@ -466,13 +466,13 @@ def _lifecycle_clock(
     field: str,
 ) -> datetime:
     lifecycle = row.get("lifecycle")
+    value = lifecycle.get(field) if isinstance(lifecycle, Mapping) else None
     if not isinstance(lifecycle, Mapping):
-        raise WorkspaceError(f"{event_id}: lifecycle.{field} missing or unparseable")
-    value = lifecycle.get(field)
+        raise WorkspaceError(f"{event_id}: lifecycle.{field} missing or unparseable (got {repr(value)[:80]})")
     try:
         return _utc(value, field_name=field)
-    except (WorkspaceError, ValueError, TypeError):
-        raise WorkspaceError(f"{event_id}: lifecycle.{field} missing or unparseable") from None
+    except (WorkspaceError, ValueError, TypeError, OverflowError):
+        raise WorkspaceError(f"{event_id}: lifecycle.{field} missing or unparseable (got {repr(value)[:80]})") from None
 
 
 def _generation_clocks(cleaned: Mapping[str, Mapping[str, Any]]) -> tuple[str, str]:
