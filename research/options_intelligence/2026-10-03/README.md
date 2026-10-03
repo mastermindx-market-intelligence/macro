@@ -1,58 +1,57 @@
-# Mastermind Options Intelligence — Deep Research Program
+# Mastermind Options Intelligence — October 3 research program
 
-**Current stage:** active research and architecture; not production acceptance.  
-**Commission date:** 2026-10-03. **Operation:** `options-intelligence-deep-research-20261003-astra-001`.  
-**Research lead:** current Chairman-assigned Astra Meta-CEO session.  
-**Implementation parent:** [Terminal #599](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599).  
-**Related product owner:** [Terminal #603](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/603).  
-**Architecture baseline:** [C0 masterplan](../../../OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md), merged through Macro #6604.
+**Astra Meta-CEO commission:** `options-intelligence-deep-research-20261003-astra-001`.  
+**Chairman brief:** [SOURCE_BRIEF.txt](SOURCE_BRIEF.txt), extracted from the supplied 25-page PDF.  
+**Research carrier:** [Macro draft PR #8321](https://github.com/mastermindx-market-intelligence/macro/pull/8321).  
+**Status:** substantial first research/specification package; implementation ownership preserved; predictive validation and Fable dispatch remain pending.
 
-## Outcome and boundary
+## Executive direction
 
-Determine which options observations improve directional, volatility, range, tail-risk and candidate-lifecycle decisions beyond price, equity volume, existing Prophet features, catalysts and market/sector regime; specify the measurable system and empirical sequence that can earn those effects.
+Options should become a source-linked evidence and risk layer within Mastermind. The immediate value is better observation, honest mechanics, coherent candidate monitoring and expression research. Directional influence must be earned through incremental tests against the actual incumbent model, which may already contain options information. A larger generic options score would not establish that value.
 
-This is a research continuation of the existing Options organism. It does not replace C0, the four existing Options workstreams, the active #599 implementation principal, or their current workers. The user's 2026-10-03 commission assigns research leadership and requests GitHub persistence followed by a later Fable orchestration handoff. It does not make the research conclusions production truth.
+Start with [MASTER_PLAN.md](MASTER_PLAN.md). It defines the six-family pilot, architecture, priorities and claim boundaries. The first concrete implementation inputs are [OWNER_REPAIR_BRIEFS.md](OWNER_REPAIR_BRIEFS.md), backed by executable counterexamples and current source references.
 
-The uploaded 25-page brief is retained as a text transcription in this directory. Original PDF SHA-256: `a790fb71ea586f632ebb4f0379076fde70296938f796c8cba58bf1eba84d5ac2`. Attachment filename: `Deep Research Prompt_ Mastermind Options Intelligence and Signaling System.pdf`.
+## Read the package
 
-## Evidence boundary
+| Document | Purpose |
+|---|---|
+| [MASTER_PLAN.md](MASTER_PLAN.md) | Executive verdict, six pilot families, four existing owners, build/research/reject decisions |
+| [CURRENT_STATE.md](CURRENT_STATE.md) | Current estate, source cuts, completed versus unverified evidence, source-brief coverage |
+| [options-macro-census.md](options-macro-census.md) | 25-file Macro census: collectors, storage, signing, proxies, Prophet and candidate/outcome boundaries |
+| [options-terminal-census.md](options-terminal-census.md) | 51-path Terminal census, formulas, UI/replay/transport, active owners and deployment limits |
+| [options-literature.md](options-literature.md) | 18 academic/regulator entries with methods, horizons, results and access/version limits |
+| [options-thetadata.md](options-thetadata.md) | Current official capabilities, field/clock/model contract, actual-entitlement gap and acceptance fixtures |
+| [options-competitors.md](options-competitors.md) | Primary-source comparison of required competitors and useful validation/data benchmarks |
+| [options-signal-catalog.md](options-signal-catalog.md) / [JSON](options-signal-catalog.json) | 40 falsifiable candidate definitions and six pilot families |
+| [CONTRACTS.md](CONTRACTS.md) | Identity/time/quality, Greeks/scenarios, strict candidate migration and exact-option outcomes |
+| [options-near-expiry-spec.md](options-near-expiry-spec.md) | Dedicated 0DTE/near-expiry cadence, feature windows, alerts, failure states and acceptance |
+| [ONTOLOGY_AND_PRODUCT.md](ONTOLOGY_AND_PRODUCT.md) | Shared meanings, candidate assessment overlay, Terminal decision questions and gap matrix |
+| [RESEARCH_PROTOCOL.md](RESEARCH_PROTOCOL.md) | Existing-null preservation, B0/B1/B2 baselines, PIT, labels, multiplicity, costs and promotion gates |
+| [options-mechanics-witness.md](options-mechanics-witness.md) | Reproduced strike-profile and gamma-crossing counterexamples |
+| [options-mechanics-witness.py](options-mechanics-witness.py) / [JSON](options-mechanics-witness.json) | Network-free original-source/math reproduction |
+| [options-theta-tte-study.py](options-theta-tte-study.py) / [JSON](options-theta-tte-study.json) | Joint IV/time-floor sensitivity witness |
+| [options-independent-review.md](options-independent-review.md) | Eight draft findings, principal resolutions and independent post-fix check |
+| [ROADMAP_AND_HANDOFF.md](ROADMAP_AND_HANDOFF.md) | Work packets, dependencies, effort/uncertainty/kill criteria and future Fable packet |
+| [EXECUTION_STATE.md](EXECUTION_STATE.md) / [artifact manifest](ARTIFACT_MANIFEST.json) | Durable continuation, verification/effect record and file hashes |
 
-- Protected Mastermind procedure: `6311283389c2e3d32b7d457d1ff3a524f107a32f`, Skillpack schema `mastermind.sol_skillpack.v1`, version 1.0.1, bootstrap major 1 compatible.
-- Initial Macro source census: `6f5e78e94e8808582a650cdfa0fc3357040a179c`.
-- Initial Terminal source census: `a049d46fa2415d3949aae5efc0ee515b6667c7a0`.
-- Research cutoff/retrieval date: 2026-10-03; future dated claims are not treated as current.
-- Observed Executive installed runtime uses a different source generation; it is not the protected procedure pin or proof that a research job ran.
-- GitHub is the publication carrier. No shared checkout, production configuration, active incumbent branch, scoring flag, live publisher or runtime job is changed by this research carrier.
+Each evidence report has a `-sources.json` companion. Public sources were retrieved on October 3, 2026. Current product documentation is distinguished from measured capability; code is distinguished from deployed behavior; synthetic calculations are distinguished from market evidence.
 
-## Recovery findings already verified
+## Material findings
 
-1. C0 #6604 is merged; its old snapshot is not present-tense program status.
-2. [The current OA owner](../../../../agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md) records natural Sep-17/18 measured flow evidence and explicitly forbids repeating the event hunt. Remaining publication and consumer proofs must be evaluated separately.
-3. [The October 2 retrospective receipt](../../../../reports/artifacts/options_theta_retrospective_20261002.md) has 60 evaluable cells and three BH-adjusted rejections at alpha 0.10. None repeats across all three eras. The receipt explicitly retains PIT-unproven and historical-alpha-unvalidated limitations. Do not rerun it merely to show activity.
-4. [The research revival decision](../../../../agentos/decisions/DEC-OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY.md) already reopens falsifiable options-family research. Production promotion remains separate; old negative evidence stays visible.
-5. Active implementation carriers inspected include Macro #8310 (inactive candidate composer), #8313 (FS-5 geometry), #8318 (exact-option outcome evaluator), #7889 (AD-1T2 placement), #8320 (Asia publication ownership), and Terminal #783 (candidate transport, current parent evidence). Terminal #667 is merged at the Terminal source pin. New research must augment those owners.
-6. Current PR metadata outranks stale claims in the workstream record: #7398 and #7405 are now merged. Their accepted methods should be read directly, not reconstructed.
+- The active options estate is substantially built. C0 [#6604](https://github.com/mastermindx-market-intelligence/macro/pull/6604) is merged; Terminal [#599](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599) owns current implementation, with [#603/#723](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/723) integration continuity.
+- Terminal #667 has a deployment/UI-path receipt, but that October 3 receipt used stale September 25 events. Fresh source acceptance remains with the existing producer.
+- The completed October 2 [60-cell study](../../../reports/artifacts/options_theta_retrospective_20261002.md) has three within-run BH rejections and none repeating across all three eras. It is preserved, not rerun. Historical alpha, PIT and executable economics remain unvalidated.
+- Actual buyer-opening research cannot be replicated by calling ask prints “opening customers.” Borrow costs materially qualify IV-spread/skew research; passive quote providers can be customers.
+- Current chain `ask_share` may be a .80/.20/.50 categorical proxy; measured NBBO location is a separate field. The stock-score GEX false gate does not cover the separate Prophet C1 fusion path.
+- Executed mathematical witnesses show a strike-cumulative profile cannot identify finite spot-travel hedge requirements, and nearest-flip logic can mislabel descending crossings. A separate IV/time-floor witness rejects a universal gamma correction.
+- Candidate #8310 is strict and inactive. Any proposed `options_context` needs an explicit schema/version change while preserving its 15 false authority flags.
 
-## Research deliverables being built here
+## Continuity and authority
 
-- Source-grounded current-state capability and dependency matrix.
-- Academic evidence ledger, including conflicting and negative evidence and data-replication gaps.
-- Current ThetaData endpoint/field/clock/Greek/entitlement audit.
-- Professional-product benchmark based on public primary materials.
-- Options ontology and 30–60 precisely defined research candidates, with a small first pilot.
-- Dedicated 0DTE/near-expiry and positioning scenario specifications.
-- Evaluation design with immutable availability, missingness, trial accounting and incremental baselines.
-- Prophet discovery/admission/monitoring/plan-review contracts and Terminal decision surfaces.
-- Sequenced implementation docket, acceptance/kill criteria, and a later Fable readiness bar.
+Reuse [C0 consolidation](../../OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md), [OA workstream](../../../agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md), [research-only revival decision](../../../agentos/decisions/DEC-OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY.md), current data/flow/context owners and existing candidate/outcome stores. Live PR metadata supersedes stale prose about whether a carrier has merged.
 
-## Research rules
+Source pins: Mastermind `6311283389c2e3d32b7d457d1ff3a524f107a32f`; Macro `6f5e78e94e8808582a650cdfa0fc3357040a179c`; Terminal `a049d46fa2415d3949aae5efc0ee515b6667c7a0`. The supplied PDF SHA256 is `a790fb71ea586f632ebb4f0379076fde70296938f796c8cba58bf1eba84d5ac2`; extracted text is a research copy, not a claim of byte identity with the PDF.
 
-Observations, inferences, hypotheses, calibrated forecasts and decision authority remain separate. Unknown opening/closing, participant identity and dealer inventory remain unknown. Later OI is later evidence. No unsigned salience score is relabeled directional probability. No future quotes, backfilled known-at timestamps or reconstructed settlement history can enter an earlier decision. Existing event, episode, campaign, outcome and evaluation identities remain canonical.
+The selected M2 fabric route refused the bounded worker before start and then reported no eligible host. That effect is reconciled; no worker remains running from this commission's M2 attempt. Conversation research agents provided the published contributions. No new collector, runtime, score, policy, trade, deployment or Fable implementation worker was activated by this PR.
 
-A joint options score is a research hypothesis with registered ablation and promotion requirements, not a new control plane. Candidate effects are proposals until the owning lifecycle accepts an evaluated horizon-specific contract. A product can truthfully expose observations before a hypothesis earns prediction authority.
-
-## Continuation checkpoint
-
-`MISSION_COMPLETE: false`. Publication of this initial checkpoint proves only research initiation and custody of this new path. Public literature, vendor and competitor reviews plus a Terminal read-only census are executing in conversation-local research helpers. M2 pool capacity was inspected; no M2 worker is claimed started by this initial checkpoint.
-
-Next: finish the current source/formula census, integrate and challenge the evidence, publish precise contracts and a discriminating research sequence on this same branch. Reconcile this branch/PR before any resumed modification. Do not duplicate active implementation workers. No unattended Web reasoning, watcher, Fable dispatch, production acceptance or validated options alpha is claimed.
+**Next:** reconcile current owner heads; use the five concrete repair/qualification briefs; finish actual source capability/freshness evidence and a frozen six-family study packet; then hand the qualified structural slice to Fable through the incumbent owners. [EXECUTION_STATE.md](EXECUTION_STATE.md) is the starting point for the next turn.
