@@ -31,6 +31,7 @@ from jsonschema import Draft202012Validator, FormatChecker
 from engine.ledger_lane import nightly_advance_enabled
 from engine.options_signal_episode_contract import (
     EpisodeSourceContractError,
+    session_outcome_logical_bytes as _session_outcome_logical_bytes,
     validate_episode_pit,
     validate_h60_outcome_join,
     validate_session_outcome_join,
@@ -194,6 +195,7 @@ class LedgerSnapshot:
     label: str
     rows: tuple[LedgerRow, ...]
     raw: bytes
+    digest: str
 
     @property
     def count(self) -> int:
@@ -201,7 +203,7 @@ class LedgerSnapshot:
 
     @property
     def sha256(self) -> str:
-        return _sha256(self.raw)
+        return self.digest
 
     def prefix_raw(self, count: int) -> bytes:
         if type(count) is not int or count < 0 or count > self.count:
@@ -209,7 +211,14 @@ class LedgerSnapshot:
         return b"".join(item.raw + b"\n" for item in self.rows[:count])
 
     def prefix(self, count: int) -> "LedgerSnapshot":
-        return LedgerSnapshot(self.path, self.label, self.rows[:count], self.prefix_raw(count))
+        raw = self.prefix_raw(count)
+        return LedgerSnapshot(
+            self.path,
+            self.label,
+            self.rows[:count],
+            raw,
+            _sha256(raw),
+        )
 
 
 def _snapshot_from_raw(path: Path, label: str, raw: bytes) -> LedgerSnapshot:
@@ -226,12 +235,21 @@ def _snapshot_from_raw(path: Path, label: str, raw: bytes) -> LedgerSnapshot:
         if not isinstance(value, dict) or canonical_bytes(value) != line:
             raise CampaignContractError(f"noncanonical ledger row: {label}:{ordinal}")
         rows.append(LedgerRow(value, ordinal, line, _sha256(line)))
-    return LedgerSnapshot(path, label, tuple(rows), raw)
+    return LedgerSnapshot(path, label, tuple(rows), raw, _sha256(raw))
 
 
 def load_ledger(path: Path, label: str) -> LedgerSnapshot:
+    if label == SESSION_PATH:
+        # Physical rollover is storage-only. Reconstruct the exact historical
+        # byte stream through the shared frozen source contract — never by
+        # importing the mutable episode-writer implementation.
+        try:
+            raw = _session_outcome_logical_bytes(path)
+        except EpisodeSourceContractError as exc:
+            raise CampaignContractError(str(exc)) from exc
+        return _snapshot_from_raw(path, label, raw)
     if not path.exists():
-        return LedgerSnapshot(path, label, (), b"")
+        return LedgerSnapshot(path, label, (), b"", _sha256(b""))
     if path.is_symlink() or not path.is_file():
         raise CampaignContractError(f"ledger is not a regular file: {label}")
     return _snapshot_from_raw(path, label, path.read_bytes())
@@ -239,27 +257,44 @@ def load_ledger(path: Path, label: str) -> LedgerSnapshot:
 
 def _receipt(snapshot: LedgerSnapshot, count: int | None = None) -> dict[str, Any]:
     records = snapshot.count if count is None else count
-    raw = snapshot.raw if records == snapshot.count else snapshot.prefix_raw(records)
-    return {"path": snapshot.label, "records": records, "prefix_sha256": _sha256(raw)}
+    if records == snapshot.count:
+        digest = snapshot.sha256
+    else:
+        digest = _sha256(snapshot.prefix_raw(records))
+    return {"path": snapshot.label, "records": records, "prefix_sha256": digest}
 
 
-PrefixCache = dict[tuple[int, int], LedgerSnapshot]
+@dataclass
+class _PrefixDigestState:
+    digests: tuple[str, ...]
 
 
-def _prefix_snapshot(
+PrefixCache = dict[int, _PrefixDigestState]
+
+
+def _prefix_sha256(
     snapshot: LedgerSnapshot,
     count: int,
     cache: PrefixCache | None = None,
-) -> LedgerSnapshot:
+) -> str:
+    if type(count) is not int or count < 0 or count > snapshot.count:
+        raise CampaignContractError(f"invalid prefix count for {snapshot.label}")
     if count == snapshot.count:
-        return snapshot
-    key = (id(snapshot), count)
-    if cache is not None and key in cache:
-        return cache[key]
-    prefix = snapshot.prefix(count)
-    if cache is not None:
-        cache[key] = prefix
-    return prefix
+        return snapshot.sha256
+    if cache is None:
+        return _sha256(snapshot.prefix_raw(count))
+
+    state = cache.get(id(snapshot))
+    if state is None:
+        hasher = hashlib.sha256()
+        digests = [hasher.hexdigest()]
+        for item in snapshot.rows:
+            hasher.update(item.raw)
+            hasher.update(b"\n")
+            digests.append(hasher.hexdigest())
+        state = _PrefixDigestState(tuple(digests))
+        cache[id(snapshot)] = state
+    return state.digests[count]
 
 
 def _verify_receipt(
@@ -278,7 +313,7 @@ def _verify_receipt(
     digest = receipt["prefix_sha256"]
     if type(digest) is not str or not re.fullmatch(r"[a-f0-9]{64}", digest):
         raise CampaignContractError("prefix receipt digest is invalid")
-    if _prefix_snapshot(snapshot, count, cache).sha256 != digest:
+    if _prefix_sha256(snapshot, count, cache) != digest:
         raise CampaignContractError(f"ledger prefix changed: {expected_path}")
     return count
 
@@ -385,6 +420,8 @@ def _campaign_payload(
     members: list[LedgerRow],
     source_prefix: LedgerSnapshot,
     prior: dict[str, Any] | None,
+    *,
+    source_receipt: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if not members:
         raise CampaignContractError("campaign revision cannot be empty")
@@ -440,7 +477,11 @@ def _campaign_payload(
             "direction_reliability": "soft",
             "accumulation_distribution": "unavailable",
         },
-        "source_episode_prefix": _receipt(source_prefix),
+        "source_episode_prefix": (
+            dict(source_receipt)
+            if source_receipt is not None
+            else _receipt(source_prefix)
+        ),
         "disposition": "abstain",
         "role": "research_census_only",
         "evidence_phase": evidence_phase,
@@ -526,12 +567,17 @@ def _campaign_against_source(
     count = _verify_receipt(
         row["source_episode_prefix"], episodes, EPISODES_PATH, prefix_cache
     )
-    prefix = _prefix_snapshot(episodes, count, prefix_cache)
     group = _group_from_payload(row["group"])
     members = [item for item in groups.get(group, []) if item.ordinal <= count]
     if not members:
         raise CampaignContractError("campaign group is absent from its source prefix")
-    expected = _campaign_payload(group, members, prefix, None)
+    expected = _campaign_payload(
+        group,
+        members,
+        episodes,
+        None,
+        source_receipt=row["source_episode_prefix"],
+    )
     derived_fields = {
         "schema",
         "campaign_id",
@@ -736,6 +782,8 @@ def _campaign_outcome_payload(
     h60_map: dict[str, LedgerRow],
     session_map: dict[tuple[str, str], LedgerRow],
     source_record_limit: int | None = None,
+    *,
+    source_receipt: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     anchor_member = campaign["members"][-1]
     row = source.value
@@ -817,7 +865,11 @@ def _campaign_outcome_payload(
             "price_vintage": provenance["price_vintage"],
             "source_receipt_schema": provenance["source_receipt_schema"],
         },
-        "source_outcome_prefix": _receipt(source_snapshot),
+        "source_outcome_prefix": (
+            dict(source_receipt)
+            if source_receipt is not None
+            else _receipt(source_snapshot)
+        ),
         "member_outcome_coverage": {
             "expected_member_count": len(campaign["members"]),
             "observed_member_count": len(references),
@@ -879,7 +931,6 @@ def _campaign_outcome_against_sources(
     count = _verify_receipt(
         row["source_outcome_prefix"], snapshot, expected_path, prefix_cache
     )
-    source_prefix = _prefix_snapshot(snapshot, count, prefix_cache)
     anchor = _outcome_source_for_horizon(
         horizon, campaign["members"][-1]["episode_id"], h60_map, session_map
     )
@@ -889,10 +940,11 @@ def _campaign_outcome_against_sources(
         campaign,
         horizon,
         anchor,
-        source_prefix,
+        snapshot,
         h60_map,
         session_map,
         source_record_limit=count,
+        source_receipt=row["source_outcome_prefix"],
     )
     if row != expected:
         raise CampaignContractError("campaign outcome differs from its receipt-bound source")

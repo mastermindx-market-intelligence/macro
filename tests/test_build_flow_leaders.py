@@ -103,6 +103,30 @@ def _make_site_dir(tmp: Path) -> Path:
     return s
 
 
+def _write_stockdata(
+    site_root: Path,
+    ticker: str,
+    *,
+    trailing_pe,
+    mktcap_bn,
+    rs_1m=1.2,
+    high52w_prox=0.93,
+    rel_volume=1.1,
+) -> None:
+    stock_dir = site_root / "stockdata"
+    stock_dir.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "tech": {
+            "rs": {"rs_1m": rs_1m},
+            "high52w_prox": high52w_prox,
+            "rel_volume": rel_volume,
+        },
+        "profile": {"mktcap_bn": mktcap_bn, "sector": "Technology"},
+        "valuation": {"trailing_pe": trailing_pe},
+    }
+    (stock_dir / f"{ticker}.json").write_text(json.dumps(payload), encoding="utf-8")
+
+
 def _make_tpl_dir(repo_root: Path) -> Path:
     return repo_root / "templates"
 
@@ -139,32 +163,122 @@ class TestJsonDefault:
 # ─────────────────────────────────────────────── stockdata numeric cells ──
 
 class TestStockdataNumericCells:
-    def test_metric_cell_uses_point_value(self):
-        assert _finite_float_cell({"v": 28.0, "med": 25.0, "cheap": 40.0}) == 28.0
+    def test_metric_cell_uses_point_value_only(self):
+        assert _finite_float_cell({"v": 44.4, "med": 41.04, "cheap": 46.0}) == 44.4
 
-    def test_plain_scalar_and_nonfinite_are_supported_honestly(self):
-        assert _finite_float_cell(1.25) == 1.25
+    def test_legacy_scalar_zero_and_nonfinite_contract(self):
+        assert _finite_float_cell(44.4) == 44.4
+        assert _finite_float_cell(0) == 0.0
+        assert _finite_float_cell({"v": 0}) == 0.0
+        assert _finite_float_cell(None) is None
         assert _finite_float_cell(float("nan")) is None
-        assert _finite_float_cell({"med": 25.0, "cheap": 40.0}) is None
+        assert _finite_float_cell(float("inf")) is None
+        assert _finite_float_cell(float("-inf")) is None
+        assert _finite_float_cell({"med": 41.04, "cheap": 46.0}) is None
+        assert _finite_float_cell({"v": "not-a-number"}) is None
 
-    def test_stock_context_accepts_canonical_valuation_cell(self):
+    def test_boolean_and_malformed_nested_cells_are_not_numbers(self):
+        for value in (
+            True,
+            False,
+            np.bool_(True),
+            {"v": True},
+            {"v": {"v": 44.4}},
+            {"v": [44.4]},
+        ):
+            assert _finite_float_cell(value) is None
+
+    def test_stock_context_reads_cells_and_preserves_primary_zero(self):
         sd = {
             "tech": {
-                "rs": {"rs_1m": 1.2},
-                "high52w_prox": 0.93,
-                "rel_volume": 1.1,
+                "rs": {"rs_1m": {"v": 1.2, "med": 0.8}},
+                "high52w_prox": {"v": 0.93},
+                "rel_volume": {"v": 1.1},
             },
-            "profile": {"mktcap_bn": 123.4, "sector": "Technology"},
+            "profile": {
+                "mktcap_bn": {"v": 0},
+                "market_cap_bn": 999.0,
+                "sector": "Technology",
+            },
             "valuation": {
-                "trailing_pe": {"v": 28.0, "med": 25.0, "cheap": 40.0}
+                "trailing_pe": {"v": 44.4, "med": 41.04, "cheap": 46.0},
+                "pe_ttm": 7.0,
             },
         }
         ctx = _extract_stock_context(sd, "TEST")
-        assert ctx["trailing_pe"] == 28.0
-        assert ctx["mktcap_bn"] == 123.4
+        assert ctx["trailing_pe"] == 44.4
+        assert ctx["mktcap_bn"] == 0.0
         assert ctx["rs_1m"] == 1.2
         assert ctx["high52w_prox"] == 0.93
         assert ctx["rel_volume"] == 1.1
+
+    def test_builder_keeps_mixed_rows_and_matches_scalar_control(self, tmp_path):
+        tickers = ("CELL", "LEGACY", "ZERO", "MALFORMED")
+        scalar_root = tmp_path / "scalar"
+        cell_root = tmp_path / "cell"
+        scalar_site = _make_site_dir(scalar_root)
+        cell_site = _make_site_dir(cell_root)
+
+        for root in (scalar_root, cell_root):
+            for ticker in tickers:
+                _make_summary_parquet(root, ticker, n_sessions=3)
+
+        scalar_values = {
+            "CELL": (44.4, 123.4, 1.2, 0.93, 1.1),
+            "LEGACY": (17.5, 77.0, 0.4, 0.80, 0.9),
+            "ZERO": (0, 0, 0, 0, 0),
+            "MALFORMED": (None, 55.0, None, None, None),
+        }
+        cell_values = {
+            "CELL": (
+                {"v": 44.4, "med": 41.04, "cheap": 46.0},
+                {"v": 123.4}, {"v": 1.2}, {"v": 0.93}, {"v": 1.1},
+            ),
+            "LEGACY": (17.5, 77.0, 0.4, 0.80, 0.9),
+            "ZERO": ({"v": 0}, {"v": 0}, {"v": 0}, {"v": 0}, {"v": 0}),
+            "MALFORMED": ({"v": {"v": 12.0}}, {"v": 55.0}, {"v": None}, {"v": None}, {"v": None}),
+        }
+
+        for ticker, values in scalar_values.items():
+            _write_stockdata(
+                scalar_site, ticker,
+                trailing_pe=values[0], mktcap_bn=values[1],
+                rs_1m=values[2], high52w_prox=values[3], rel_volume=values[4],
+            )
+        for ticker, values in cell_values.items():
+            _write_stockdata(
+                cell_site, ticker,
+                trailing_pe=values[0], mktcap_bn=values[1],
+                rs_1m=values[2], high52w_prox=values[3], rel_volume=values[4],
+            )
+
+        repo_root = Path(__file__).resolve().parents[1]
+        scalar_result = build(
+            data_root=scalar_root / "data",
+            site_root=scalar_site,
+            tpl_root=_make_tpl_dir(repo_root),
+        )
+        cell_result = build(
+            data_root=cell_root / "data",
+            site_root=cell_site,
+            tpl_root=_make_tpl_dir(repo_root),
+        )
+
+        scalar_rows = scalar_result.get("board_a", [])
+        cell_rows = cell_result.get("board_a", [])
+        assert {row["ticker"] for row in cell_rows} == set(tickers)
+        assert [row["ticker"] for row in cell_rows] == [row["ticker"] for row in scalar_rows]
+        assert cell_result["session_date"] == scalar_result["session_date"] == "2024-06-14"
+        strip_build_clock = lambda rows: [
+            {k: v for k, v in row.items() if k != "as_of"}
+            for row in rows
+        ]
+        assert strip_build_clock(cell_rows) == strip_build_clock(scalar_rows)
+        by_ticker = {row["ticker"]: row for row in cell_rows}
+        assert by_ticker["CELL"]["trailing_pe"] == 44.4
+        assert by_ticker["ZERO"]["trailing_pe"] == 0.0
+        assert by_ticker["ZERO"]["mktcap_bn"] == 0.0
+        assert by_ticker["MALFORMED"]["trailing_pe"] is None
 
 
 # ──────────────────────────────────────────────────── _tape_ex0dte_net ──

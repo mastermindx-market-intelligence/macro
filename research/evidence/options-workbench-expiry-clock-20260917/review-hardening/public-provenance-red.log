@@ -1,0 +1,66 @@
+F.FF                                                                     [100%]
+=================================== FAILURES ===================================
+_____ test_frame_for_stamp_preserves_the_selected_columns_valuation_clock ______
+
+    def test_frame_for_stamp_preserves_the_selected_columns_valuation_clock():
+        full = append_stamp(
+            None, stamp="0931", time_step="09:31", net_by_strike={600.0: 1.0},
+            spot=600.0, asof="2026-07-06T13:31:00Z", cadence_sec=600,
+            session_date="2026-07-06", root="SPY",
+            valuation_at="2026-07-06T13:31:00Z",
+        )
+        full = append_stamp(
+            full, stamp="0941", time_step="09:41", net_by_strike={600.0: 2.0},
+            spot=601.0, asof="2026-07-06T13:41:00Z", cadence_sec=600,
+            session_date="2026-07-06", root="SPY",
+            valuation_at="2026-07-06T13:41:00Z",
+        )
+        early = frame_for_stamp(full, "0931")
+        latest = frame_for_stamp(full, "0941")
+        assert early["valuation_at"] == "2026-07-06T13:31:00Z"
+        assert latest["valuation_at"] == "2026-07-06T13:41:00Z"
+        # Public replay asof must name the selected observation, not the newest full-frame clock.
+>       assert early["asof"] == "2026-07-06T13:31:00Z"
+E       AssertionError: assert '2026-07-06T13:41:00Z' == '2026-07-06T13:31:00Z'
+E
+E         - 2026-07-06T13:31:00Z
+E         ?               ^
+E         + 2026-07-06T13:41:00Z
+E         ?               ^
+
+tests/test_flow_surface.py:376: AssertionError
+_________ test_mixed_unknown_quote_clock_keeps_public_envelope_unknown _________
+
+    def test_mixed_unknown_quote_clock_keeps_public_envelope_unknown():
+        quotes, oi_map = _bs_chain_quotes()
+        for i, quote in enumerate(quotes):
+            quote["trade_at"] = f"2026-07-06T13:30:{i + 10:02d}Z"
+            quote["quote_at"] = f"2026-07-06T13:30:{i:02d}Z"
+        quotes[0]["quote_at"] = None
+
+        greek = greek_columns_for_stamp(quotes, oi_map=oi_map, spot=600.0)
+>       assert greek["quote_at_first"] is None
+E       AssertionError: assert '2026-07-06T13:30:01Z' is None
+
+tests/test_flow_surface.py:1106: AssertionError
+_____ test_malformed_or_naive_quote_clock_keeps_aggregate_envelope_unknown _____
+
+    def test_malformed_or_naive_quote_clock_keeps_aggregate_envelope_unknown():
+        for bad in ("not-a-time", "2026-07-06T13:30:00"):
+            quotes, oi_map = _bs_chain_quotes()
+            for i, quote in enumerate(quotes):
+                quote["trade_at"] = f"2026-07-06T13:30:{i + 10:02d}Z"
+                quote["quote_at"] = f"2026-07-06T13:30:{i:02d}Z"
+            quotes[0]["quote_at"] = bad
+            out = greek_columns_for_stamp(quotes, oi_map=oi_map, spot=600.0)
+>           assert out["quote_at_first"] is None
+E           AssertionError: assert '2026-07-06T13:30:01Z' is None
+
+tests/test_flow_surface.py:1132: AssertionError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, agentos, browser, calibration, content, data, docs, finviz_themes, knowledge, mockups, properties, reports, requirements, site, templates, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_flow_surface.py::test_frame_for_stamp_preserves_the_selected_columns_valuation_clock
+FAILED tests/test_flow_surface.py::test_mixed_unknown_quote_clock_keeps_public_envelope_unknown
+FAILED tests/test_flow_surface.py::test_malformed_or_naive_quote_clock_keeps_aggregate_envelope_unknown
+3 failed, 1 passed in 3.22s

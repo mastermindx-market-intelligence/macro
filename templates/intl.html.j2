@@ -467,12 +467,17 @@
   @keyframes tblGrow { to { transform:scaleX(1); } }
 </style>
 </head>
-<body>
+<body{% if mode != 'stocks' %} class="page-intl"{% endif %}>
 <div class="intl-aurora" aria-hidden="true"><b class="a1"></b><b class="a2"></b><b class="a3"></b></div>
 
 {% include "_site_nav.html.j2" %}
 
 <main class="intl-flow">
+
+{# Chairman-directed cross-market overview; US Macro retains its own dashboard. #}
+{% if mode != 'stocks' %}
+{{ global_regime_html|default('')|safe }}
+{% endif %}
 
 {% if mode == 'stocks' %}
 <div class="panel">
@@ -1224,6 +1229,14 @@
     border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);margin-top:4px;}
   .ird-twocol{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
   @media(max-width:860px){.ird-twocol{grid-template-columns:1fr;}}
+  /* International-only containment belongs to this route, not shared theme.css. */
+  body.page-intl .ird-twocol > *{min-width:0;}
+  @media(max-width:640px){
+    body.page-intl .te-strip{grid-template-columns:minmax(0,1fr);}
+    body.page-intl .seg{flex-wrap:wrap;max-width:100%;}
+    body.page-intl .ird-tx-row{flex-wrap:wrap;}
+    body.page-intl .rf-s{overflow-wrap:anywhere;}
+  }
   /* §15: this row is a fixed-size dial + a text column and it never wrapped, so its
      intrinsic floor (653px) set the whole panel's width and the page was 82% wider
      than the phone reading it. Wrap + min-width:0 is the shrink pair. */

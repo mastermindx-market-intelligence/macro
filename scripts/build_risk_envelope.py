@@ -34,7 +34,7 @@ import logging
 import os
 import sys
 import tempfile
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -50,6 +50,7 @@ from engine.risk_envelope import (  # noqa: E402
     compose_envelope,
     canonical_json,
 )
+from lib.nyse_calendar import sessions_between  # noqa: E402
 
 log = logging.getLogger(__name__)
 
@@ -62,6 +63,7 @@ MARKET = "US"
 _MEASURED_SOURCE = "market-state-latest"
 _LEADERSHIP_SOURCE = "leadership-crack-latest"
 _RADAR_SOURCE = "risk-radar-us"
+_WARNING_STATES = frozenset(("caution", "elevated", "risk-off"))
 
 
 # ── source adapters ────────────────────────────────────────────────────────────
@@ -194,7 +196,8 @@ _RADAR_STAGE = {
 
 def _risk_radar_read(radar: Mapping[str, Any] | None, session: str | None,
                      ms_asof: str | None, *,
-                     stale_override: bool | None = None) -> SourceRead:
+                     stale_override: bool | None = None,
+                     issued_duration: Mapping[str, Any] | None = None) -> SourceRead:
     """US Risk Radar — the cross-asset scare monitor, source-native on Market State.
 
     Optional coverage: the radar corroborates but is not required for the stage to be
@@ -228,6 +231,7 @@ def _risk_radar_read(radar: Mapping[str, Any] | None, session: str | None,
             "is_loud": bool(radar.get("is_loud")),
             "label_en": radar.get("label_en"),
             "label_zh": radar.get("label_zh"),
+            **(dict(issued_duration) if issued_duration else {}),
         },
     )
 
@@ -236,17 +240,115 @@ def build_sources(
     market_state: Mapping[str, Any] | None,
     leadership_crack: Mapping[str, Any] | None,
     session: str | None,
+    *,
+    radar_issued_duration: Mapping[str, Any] | None = None,
 ) -> list[SourceRead]:
     """Adapt the settled artifacts into source-native reads. Pure; no I/O."""
     ms_asof = (market_state or {}).get("asof")
     return [
         _market_state_read(market_state, session),
         _leadership_crack_read(leadership_crack, session),
-        _risk_radar_read((market_state or {}).get("radar"), session, ms_asof),
+        _risk_radar_read(
+            (market_state or {}).get("radar"), session, ms_asof,
+            issued_duration=radar_issued_duration,
+        ),
     ]
 
 
 # ── I/O ────────────────────────────────────────────────────────────────────────
+
+
+def _issued_warning_duration(
+    path: Path,
+    session: str | None,
+    current_state: str | None,
+) -> dict[str, Any] | None:
+    """Issued caution+ streak ending on the settled session, or None.
+
+    Product law is frozen by
+    research/grey_deer/RISK_RADAR_CAUTION_PERSISTENCE_PREREG_2026-09-21.md:
+    caution+ = caution/elevated/risk-off and five consecutive known sessions is
+    presentation context only. This adapter deliberately uses the issued
+    first-writer forward ledger rather than reconstructing historical states.
+
+    Fail closed:
+    - current settled session must have exactly one ledger row;
+    - its state must match the settled Radar state;
+    - duplicate/invalid rows do not earn a duration claim;
+    - a missing expected NYSE session breaks the streak;
+    - calm/watch return an honest zero-duration fact, never "persistent".
+    """
+    if not session or not current_state:
+        return None
+    try:
+        session_day = date.fromisoformat(str(session))
+        if session_day.isoformat() != str(session):
+            return None
+        raw = path.read_text(encoding="utf-8").splitlines()
+    except (OSError, ValueError, TypeError):
+        return None
+
+    rows_by_day: dict[date, Mapping[str, Any]] = {}
+    for line in raw:
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+            if not isinstance(row, dict):
+                return None
+            day_raw = row.get("asof")
+            day = date.fromisoformat(day_raw) if isinstance(day_raw, str) else None
+            if day is None or day.isoformat() != day_raw:
+                return None
+        except (json.JSONDecodeError, ValueError, TypeError):
+            return None
+        # The ledger contract is keep-FIRST / one row per as-of. A duplicate is
+        # ambiguous here even when byte-identical: duration must not silently gain
+        # evidence from a malformed ledger.
+        if day in rows_by_day:
+            return None
+        rows_by_day[day] = row
+
+    current = rows_by_day.get(session_day)
+    if not current:
+        return None
+    state = str(current.get("state") or "").strip().lower()
+    if state != str(current_state).strip().lower():
+        return None
+
+    # Non-warning states carry a zero fact so provenance remains explicit, while
+    # the template displays nothing below the five-session research floor.
+    if state not in _WARNING_STATES:
+        return {
+            "issued_warning_sessions": 0,
+            "issued_warning_since": None,
+            "issued_warning_persistent": False,
+            "issued_warning_floor": 5,
+            "issued_warning_basis": "risk_radar_forward_log_first_writer_sessions",
+        }
+
+    earliest = min(rows_by_day)
+    expected = sessions_between(earliest, session_day)
+    streak = 0
+    since: date | None = None
+    for day in reversed(expected):
+        row = rows_by_day.get(day)
+        if row is None:
+            break
+        row_state = str(row.get("state") or "").strip().lower()
+        if row_state not in _WARNING_STATES:
+            break
+        streak += 1
+        since = day
+
+    return {
+        "issued_warning_sessions": streak,
+        "issued_warning_since": since.isoformat() if since else None,
+        "issued_warning_persistent": bool(streak >= 5),
+        "issued_warning_floor": 5,
+        "issued_warning_basis": "risk_radar_forward_log_first_writer_sessions",
+    }
+
 
 def _read_json(path: Path) -> dict[str, Any] | None:
     try:
@@ -307,8 +409,17 @@ def build(root: Path | None = None, now: datetime | None = None) -> dict[str, An
     # that defines "this settled session" for the US market.  Every other source is
     # then measured AGAINST that session rather than against wall-clock time.
     session = (market_state or {}).get("asof")
+    radar_state = (((market_state or {}).get("radar") or {}).get("state"))
+    radar_issued_duration = _issued_warning_duration(
+        root / "data" / "risk_radar" / "forward_log.jsonl",
+        session,
+        radar_state,
+    )
 
-    sources = build_sources(market_state, leadership, session)
+    sources = build_sources(
+        market_state, leadership, session,
+        radar_issued_duration=radar_issued_duration,
+    )
     return compose_envelope(
         sources=sources,
         market=MARKET,

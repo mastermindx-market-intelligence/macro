@@ -1247,6 +1247,35 @@ def test_host_admission_accepts_only_the_main_dispatch_canary() -> None:
         assert not ADMISSION.decision(mutated)[0]
 
 
+def test_host_admission_accepts_exact_main_four_slot_preflight_only() -> None:
+    allowed = {
+        "MASTERMIND_CI_PROFILE": "pc-ci",
+        "GITHUB_REPOSITORY": "mastermindx-market-intelligence/macro",
+        "GITHUB_EVENT_NAME": "workflow_dispatch",
+        "GITHUB_REF": "refs/heads/main",
+        "GITHUB_WORKFLOW_REF": (
+            "mastermindx-market-intelligence/macro/.github/workflows/"
+            "selfhosted-ci-canary.yml@refs/heads/main"
+        ),
+        "GITHUB_JOB": "four-slot-preflight",
+    }
+    assert ADMISSION.decision(allowed)[0]
+
+    for key, value in (
+        ("MASTERMIND_CI_PROFILE", "pc-render"),
+        ("GITHUB_REPOSITORY", "attacker/fork"),
+        ("GITHUB_EVENT_NAME", "pull_request"),
+        ("GITHUB_REF", "refs/heads/candidate"),
+        (
+            "GITHUB_WORKFLOW_REF",
+            "mastermindx-market-intelligence/macro/.github/workflows/"
+            "selfhosted-ci-canary.yml@refs/heads/candidate",
+        ),
+        ("GITHUB_JOB", "four-slot-preflight-shadow"),
+    ):
+        assert not ADMISSION.decision({**allowed, key: value})[0]
+
+
 def test_host_admission_accepts_only_the_main_dispatch_trusted_executor_pack() -> None:
     allowed = {
         "MASTERMIND_CI_PROFILE": "pc-ci",
@@ -1402,6 +1431,109 @@ def test_runner_service_seals_runtime_and_binds_host_admission() -> None:
     assert '"GITHUB_EVENT_PATH"' in hook
     assert "process.env.PATH" not in hook
     assert "process.env.MASTERMIND_CI_PROFILE" not in hook
+
+
+def test_pc_windows_boot_recovery_preserves_existing_runner_authority() -> None:
+    recovery = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Start-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+    installer = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Install-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+
+    # Windows owns only WSL residency. Microsoft documents that systemd services
+    # do not keep a WSL instance alive, so a one-shot `/bin/true` wake is a false
+    # recovery: it can briefly revive listeners and then strand them again. The
+    # scheduled task must hold one inert foreground keepalive while GitHub/systemd
+    # retain runner registration, labels, routing, and listener restart authority.
+    assert "--exec /bin/sh -c $keepalive" in recovery
+    assert "while :; do sleep 3600; done" in recovery
+    assert "/bin/true" not in recovery
+    assert "exit 0" not in recovery
+    assert "Register-ScheduledTask" in installer
+    assert "New-ScheduledTaskTrigger -AtStartup" in installer
+    assert "New-ScheduledTaskTrigger -AtLogOn" in installer
+    assert "-ExecutionTimeLimit (New-TimeSpan -Seconds 0)" in installer
+    assert "-MultipleInstances IgnoreNew" in installer
+    assert "-LogonType S4U" in installer
+    assert "-RestartCount 999" in installer
+    assert "while ($true)" in recovery
+    assert "$failureCount++" in recovery
+    assert "$MaxRetrySeconds" in recovery
+    assert "failed attempts=" not in recovery
+    assert "[int]$Attempts" not in recovery
+    assert "exit 1" not in recovery
+    for forbidden in ("pc-ci-4", "ci-linux", "config.sh", "Runner.Listener"):
+        assert forbidden not in recovery
+        assert forbidden not in installer
+
+
+def test_pc_windows_boot_recovery_pins_highest_task_run_level() -> None:
+    installer = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Install-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+    assert "-RunLevel Highest" in installer
+
+
+def test_pc_windows_boot_recovery_rejects_unsafe_distribution_names() -> None:
+    installer = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Install-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+    assert "$Distribution -notmatch '^[A-Za-z0-9._ -]+$'" in installer
+    assert ".Replace('\"', '\"\"')" not in installer
+
+
+def test_pc_windows_boot_recovery_seals_privileged_action_path() -> None:
+    installer = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Install-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+    assert "SetAccessRuleProtection($true, $false)" in installer
+    assert "S-1-5-18" in installer
+    assert "S-1-5-32-544" in installer
+    assert "AreAccessRulesProtected" in installer
+    assert "Get-FileHash" in installer
+    assert "[System.IO.FileAttributes]::ReparsePoint" in installer
+
+
+def test_pc_windows_boot_recovery_whatif_is_non_mutating() -> None:
+    installer = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Install-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+    should_process = installer.index("if ($PSCmdlet.ShouldProcess")
+    assert installer.find("New-Item", 0, should_process) == -1
+    assert installer.find("Copy-Item", 0, should_process) == -1
+    assert installer.index("New-Item", should_process) > should_process
+    assert installer.index("Copy-Item", should_process) > should_process
 
 
 def test_resource_refusal_backoff_only_delays_an_unsafe_retry() -> None:

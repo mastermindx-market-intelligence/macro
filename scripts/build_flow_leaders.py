@@ -311,7 +311,7 @@ def _finite_float_cell(value: Any) -> float | None:
     """
     if isinstance(value, dict):
         value = value.get("v")
-    if value is None:
+    if value is None or isinstance(value, (bool, np.bool_)):
         return None
     try:
         f = float(value)

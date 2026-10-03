@@ -1,60 +1,64 @@
 {
   "verdict": {
-    "verdict": "RISK_ON",
-    "score": 64,
-    "raw_score": 64,
+    "verdict": "MIXED",
+    "score": 51,
+    "raw_score": 51,
     "is_display_only": true,
-    "label_en": "Risk-on",
-    "label_zh": "风险偏好",
-    "asof": "2026-09-17"
+    "label_en": "Mixed",
+    "label_zh": "混合",
+    "asof": "2026-10-01"
   },
   "radar": {
-    "state": "calm",
+    "state": "caution",
     "ceiling": null,
-    "amp": 0,
-    "amp_keys": [],
-    "severe_gated": false,
+    "amp": 3,
+    "amp_keys": [
+      "conjunction",
+      "two_plus_scares",
+      "breadth_div"
+    ],
+    "severe_gated": true,
     "recovery": {
       "present": true,
-      "phase": "receding",
-      "receding": true,
+      "phase": "peaking",
+      "receding": false,
       "peaking": false,
-      "suppressed": false,
+      "suppressed": true,
       "deescalation": {
-        "eligible": true,
-        "reason": "radar receding on the dominant scare; h21 drawdown_prob flat",
-        "receding_scare": "growth",
-        "dominant_velocity": -12.0,
-        "drawdown_prob_h21": 0.13,
-        "drawdown_prob_trend": "flat",
+        "eligible": false,
+        "reason": "dominant scare = rates; h21 drawdown_prob RISING",
+        "receding_scare": "bubble",
+        "dominant_velocity": 0.5,
+        "drawdown_prob_h21": 0.19,
+        "drawdown_prob_trend": "rising",
         "deescalated": [
-          {
-            "key": "bubble",
-            "label_en": "Bubble / blow-off unwind",
-            "label_zh": "泡沫/见顶回吐",
-            "from": 73.7,
-            "to": 27.1
-          },
-          {
-            "key": "internals",
-            "label_en": "Breadth internals deterioration",
-            "label_zh": "内部广度恶化",
-            "from": 70.3,
-            "to": 25.8
-          },
           {
             "key": "growth",
             "label_en": "Growth scare / defensive rotation",
             "label_zh": "增长恐慌/防御轮动",
             "from": 75.1,
-            "to": 47.9
+            "to": 33.1
+          },
+          {
+            "key": "bubble",
+            "label_en": "Bubble / blow-off unwind",
+            "label_zh": "泡沫/见顶回吐",
+            "from": 52.5,
+            "to": 31.7
+          },
+          {
+            "key": "global",
+            "label_en": "Global breadth breakdown",
+            "label_zh": "全球广度破位",
+            "from": 86.8,
+            "to": 66.7
           }
         ]
       },
-      "turn_confirmed": true,
-      "strength": 100,
+      "turn_confirmed": false,
+      "strength": 21,
       "market": {
-        "asof": "2026-09-18",
+        "asof": "2026-10-01",
         "chips": [
           {
             "key": "thrust_confluence",
@@ -101,9 +105,9 @@
             "fresh": false,
             "since": null,
             "detail": {
-              "summation_now": -513.2,
-              "recent_min_126": -513.2,
-              "slope_5d": -221.3,
+              "summation_now": -836.4,
+              "recent_min_126": -836.4,
+              "slope_5d": -178.3,
               "note": "Lit (SentimenTrader): ~29 events since 1962 on NYSE. S&P proxy fires more often. Distinct from killed MCO-bounce constructs (RRX-R4)."
             },
             "accruing": true,
@@ -113,12 +117,12 @@
             "key": "washout_thrust20",
             "label_en": "%>20dma washout→thrust",
             "label_zh": "20日线上比例洗出→推进",
-            "fired": false,
-            "fresh": false,
-            "since": null,
+            "fired": true,
+            "fresh": true,
+            "since": "2026-10-01",
             "detail": {
-              "pct_now": 0.217,
-              "min_63d": 0.179,
+              "pct_now": 1.0,
+              "min_63d": 0.18,
               "note": "ONE canonical %>20dma lookback (RRX-R5). ~2 events/yr. Single-condition >90% fires ~8x/yr — context descriptor only."
             },
             "accruing": true,
@@ -149,12 +153,12 @@
             "detail": {
               "is_retest": false,
               "low1": {
-                "date": "2026-03-30",
-                "price": 631.97
+                "date": "2026-04-01",
+                "price": 651.94
               },
               "low2": {
                 "date": "2026-09-16",
-                "price": 754.05
+                "price": 752.18
               },
               "facets": {},
               "strength": 0,
@@ -171,7 +175,7 @@
             "fresh": false,
             "since": null,
             "detail": {
-              "ratio_last": 0.832,
+              "ratio_last": 0.882,
               "episode_found": false,
               "note": "No backwardation episode (>=3 consecutive r>1.0) in last 63d."
             },
@@ -186,10 +190,10 @@
             "fresh": false,
             "since": null,
             "detail": {
-              "p_now": 0.502,
-              "p_max_63": 0.739,
+              "p_now": 0.942,
+              "p_max_63": 0.942,
               "peak_date": null,
-              "p_5ago": 0.587,
+              "p_5ago": 0.633,
               "note": "Best-positioned chip to earn de-escalation authority (RRX-R7) — reuses already-gauntleted series. Failure modes: 2015-16 false peak, COVID simultaneity."
             },
             "accruing": true,
@@ -221,8 +225,8 @@
             "fresh": false,
             "since": null,
             "detail": {
-              "t_now": 0.0056,
-              "series_last_date": "2026-09-13",
+              "t_now": 0.0146,
+              "series_last_date": "2026-09-27",
               "note": "No news-sentiment washout (<= 10th pctile 504d) within last 63d. Designed as a macro forecaster; equity-timing evidence mixed — graded on the rebound ruler like every chip."
             },
             "accruing": true,
@@ -236,8 +240,8 @@
             "fresh": false,
             "since": null,
             "detail": {
-              "pctile_now": 0.532,
-              "pctile_min_8w": 0.526,
+              "pctile_now": 0.295,
+              "pctile_min_8w": 0.295,
               "note": "No speculator washout (<= 10th pctile 156w) in last 8 weekly obs. Weekly lag. Confluence context only (standalone R²≈0.02 as reported)."
             },
             "accruing": true,
@@ -249,31 +253,31 @@
             "label_zh": "快速收复（V型）",
             "fired": true,
             "fresh": false,
-            "since": "2026-07-02",
+            "since": "2026-08-04",
             "detail": {
-              "max_drawdown_63d": -0.0378,
-              "trough_date": "2026-06-26",
-              "trough_close": 728.99,
-              "peak_at_trough": 757.62,
-              "drawdown_pts": 28.63,
-              "reclaim_threshold": 746.17,
+              "max_drawdown_63d": -0.0372,
+              "trough_date": "2026-07-29",
+              "trough_close": 727.65,
+              "peak_at_trough": 755.74,
+              "drawdown_pts": 28.09,
+              "reclaim_threshold": 744.51,
               "reclaim_session": 2,
-              "reclaim_date": "2026-06-30",
+              "reclaim_date": "2026-07-31",
               "three_above_20dma": true,
-              "three_above_date": "2026-07-02",
+              "three_above_date": "2026-08-04",
               "note": "A fast V-recovery — washout-shaped confirmers (thrusts/backwardation/retest) stay quiet in V-shapes by design."
             },
             "accruing": true,
             "channel": "tape"
           }
         ],
-        "market_confirmed_raw": false,
-        "market_confirmed": false,
-        "n_fresh": 0,
+        "market_confirmed_raw": true,
+        "market_confirmed": true,
+        "n_fresh": 1,
         "veto": {
           "active": false,
-          "p_now": 0.196,
-          "detail": "VIX 21d realized-vol pctile=0.20 (vol stabilizing — veto inactive)",
+          "p_now": 0.188,
+          "detail": "VIX 21d realized-vol pctile=0.19 (vol stabilizing — veto inactive)",
           "label_en": "Vol still unstable",
           "label_zh": "波动仍未稳定"
         },
@@ -289,51 +293,51 @@
       "turn_confirmed_full": false,
       "channels": {
         "liquidity": true,
-        "market": false,
+        "market": true,
         "veto": false
       },
-      "odds_now": 0.13,
-      "odds_peak": 0.16,
-      "odds_delta": 0.0,
-      "peak_days_ago": 7,
-      "velocity": -8.1,
-      "off_peak": 23.3,
-      "intensity": 51.8,
-      "peak": 75.1,
+      "odds_now": 0.19,
+      "odds_peak": 0.19,
+      "odds_delta": 0.03,
+      "peak_days_ago": 1,
+      "velocity": 0.5,
+      "off_peak": 1.3,
+      "intensity": 91.0,
+      "peak": 92.3,
       "spark": [
-        69.4,
-        63.9,
-        61.1,
-        62.9,
-        64.6,
-        47.6,
-        41.9,
-        44.6,
-        44.4,
-        52.0,
-        48.0,
-        43.3,
-        55.9,
+        48.8,
+        44.5,
+        56.0,
         59.5,
         56.3,
-        63.9,
+        64.0,
         75.1,
-        65.7,
+        65.8,
         59.9,
         59.7,
         65.9,
         68.5,
         57.4,
-        51.8
+        55.6,
+        54.1,
+        55.3,
+        60.4,
+        75.9,
+        90.5,
+        79.9,
+        87.4,
+        91.7,
+        92.3,
+        91.0
       ],
-      "spark_pts": "3.0,6.4 6.9,9.7 10.8,11.4 14.7,10.3 18.7,9.3 22.6,19.6 26.5,23.0 30.4,21.4 34.3,21.5 38.2,16.9 42.1,19.3 46.0,22.2 50.0,14.6 53.9,12.4 57.8,14.3 61.7,9.7 65.6,3.0 69.5,8.7 73.4,12.2 77.3,12.3 81.3,8.5 85.2,7.0 89.1,13.7 93.0,17.0",
+      "spark_pts": "3.0,21.2 6.9,23.0 10.8,18.2 14.7,16.7 18.7,18.1 22.6,14.8 26.5,10.2 30.4,14.1 34.3,16.6 38.2,16.6 42.1,14.0 46.0,13.0 50.0,17.6 53.9,18.4 57.8,19.0 61.7,18.5 65.6,16.3 69.5,9.9 73.4,3.8 77.3,8.2 81.3,5.1 85.2,3.3 89.1,3.0 93.0,3.5",
       "spark_peak": {
-        "x": 65.6,
+        "x": 89.1,
         "y": 3.0
       },
       "spark_last": {
         "x": 93.0,
-        "y": 17.0
+        "y": 3.5
       },
       "spark_w": 96,
       "spark_h": 26,
@@ -345,8 +349,8 @@
           "fresh": true,
           "label_en": "Fed liquidity expanding",
           "label_zh": "美联储流动性扩张",
-          "detail_en": "Net liquidity (WALCL − RRP − TGA) rising ($-54B/20d) — TGA drawdown / reserves added.",
-          "detail_zh": "净流动性（WALCL − RRP − TGA）上升（-544亿美元/20日）— TGA 回落／准备金注入。",
+          "detail_en": "Net liquidity (WALCL − RRP − TGA) rising (+$12B/20d) — TGA drawdown / reserves added.",
+          "detail_zh": "净流动性（WALCL − RRP − TGA）上升（+122亿美元/20日）— TGA 回落／准备金注入。",
           "salience_en": "When liquidity is expanding like this, buying dips has historically worked ~6pp more often over the next month (a measured odds edge, not a promise).",
           "salience_zh": "历史上，在流动性扩张期间逢低买入的成功率比平均高约6个百分点（次月维度）——这是一个经过回测的概率优势，不是承诺。"
         }
@@ -356,43 +360,50 @@
       "drivers": {
         "faded": [
           {
-            "key": "bubble",
-            "label_en": "Bubble / blow-off unwind",
-            "label_zh": "泡沫/见顶回吐",
-            "peak": 73.7,
-            "now": 27.1
-          },
-          {
-            "key": "internals",
-            "label_en": "Breadth internals deterioration",
-            "label_zh": "内部广度恶化",
-            "peak": 70.3,
-            "now": 25.8
-          },
-          {
             "key": "growth",
             "label_en": "Growth scare / defensive rotation",
             "label_zh": "增长恐慌/防御轮动",
             "peak": 75.1,
-            "now": 47.9
-          }
-        ],
-        "warm": [
+            "now": 33.1
+          },
+          {
+            "key": "bubble",
+            "label_en": "Bubble / blow-off unwind",
+            "label_zh": "泡沫/见顶回吐",
+            "peak": 52.5,
+            "now": 31.7
+          },
           {
             "key": "global",
             "label_en": "Global breadth breakdown",
             "label_zh": "全球广度破位",
-            "peak": 88.1,
-            "now": 81.6
+            "peak": 86.8,
+            "now": 66.7
+          }
+        ],
+        "warm": [
+          {
+            "key": "credit",
+            "label_en": "Credit stress",
+            "label_zh": "信用压力",
+            "peak": 83.3,
+            "now": 83.2
+          },
+          {
+            "key": "rates",
+            "label_en": "Rates / inflation shock",
+            "label_zh": "利率/通胀冲击",
+            "peak": 92.3,
+            "now": 91.0
           }
         ]
       },
-      "headline_en": "Risk receding — liquidity turning supportive",
-      "headline_zh": "风险回落 — 流动性转向支持",
-      "sub_en": "Pullback odds 16% → 13% (peaked 7 days ago).",
-      "sub_zh": "回撤概率 16% → 13%（7 日前见顶）。",
-      "do_en": "The risk-off may be nearing its end. Begin scaling exposure back in tranches — keep stops, let price confirm the low. Don't chase the first bounce.",
-      "do_zh": "避险或已接近尾声。可分批逐步回补敞口 — 保留止损，待价格确认低点，切勿追逐首次反弹。",
+      "headline_en": "Mixed: bubble scare fading — Rates / inflation shock still escalating",
+      "headline_zh": "分化：bubble 风险消退 — 利率/通胀冲击仍在升级",
+      "sub_en": "dominant scare = rates; h21 drawdown_prob RISING",
+      "sub_zh": "主导风险仍在升级，回撤概率上行。",
+      "do_en": "An older scare is fading but the dominant one is still escalating — this is rotation, not recovery. No all-clear: keep the de-risked posture and stops.",
+      "do_zh": "旧风险消退但主导风险仍在升级 — 这是轮动而非复苏。并非解除警报：维持降险仓位与止损。",
       "caveat_en": "Illustrative context, not a buy trigger. It reads the radar's own intensity trajectory (leak-free) plus the display-only central-bank liquidity series; unlike the alert legs it is not forward-tested yet, and risk can re-accelerate. The de-risk → re-risk response is sizing, scaled in deliberately. BoJ enters only via the aggregate global central-bank tide (no isolated BoJ feed).",
       "caveat_zh": "仅为示意性背景，并非买入信号。它读取雷达自身的强度轨迹（无未来函数）以及仅供展示的央行流动性序列；不同于警报腿，此读数尚未经前瞻检验，风险可能再度加速。降险→回补的应对是仓位管理、分批进行。日本央行仅通过全球央行总潮汐体现（无独立日本数据源）。"
     },
@@ -400,8 +411,8 @@
   },
   "risk_radar_raw": {
     "schema": "risk_radar.v2",
-    "asof": "2026-09-17",
-    "state": "calm",
+    "asof": "2026-10-01",
+    "state": "caution",
     "alert": false,
     "can_force": false,
     "authority": {
@@ -411,39 +422,122 @@
       "note_en": "Advisory — sizes risk; does not override the measured tape.",
       "note_zh": "提示性信号——仅调整仓位，不覆盖实测盘面。",
       "state_above_base": false,
-      "confirmed_validated_legs": [],
+      "confirmed_validated_legs": [
+        "credit_oas_roc"
+      ],
       "requires": [
         "elevated_or_risk_off",
         "above_base_rate",
         "confirmed_validated_leg_in_hot_tier_a_scare"
       ]
     },
-    "dominant_scare": "growth",
-    "dominant_label_en": "Growth scare / defensive rotation",
-    "dominant_label_zh": "增长恐慌/防御轮动",
-    "top_score": 47.9,
-    "conjunction": false,
+    "dominant_scare": "rates",
+    "dominant_label_en": "Rates / inflation shock",
+    "dominant_label_zh": "利率/通胀冲击",
+    "top_score": 91.0,
+    "conjunction": true,
     "scares": [
       {
-        "scare": "global",
-        "tier": "B",
-        "label_en": "Global breadth breakdown",
-        "label_zh": "全球广度破位",
-        "score": 81.6,
+        "scare": "rates",
+        "tier": "A",
+        "label_en": "Rates / inflation shock",
+        "label_zh": "利率/通胀冲击",
+        "score": 91.0,
+        "band": "risk-off",
+        "firing_legs": [
+          {
+            "leg": "rates_realrate",
+            "pctile": 0.953,
+            "confirmed": true,
+            "lift_2020": 1.02,
+            "lead_d": 12,
+            "era_robust": false,
+            "accruing": false
+          },
+          {
+            "leg": "rates_move",
+            "pctile": 0.899,
+            "confirmed": false,
+            "lift_2020": 1.52,
+            "lead_d": 15,
+            "era_robust": false,
+            "accruing": false
+          }
+        ],
+        "lead_weighted": 138.3,
+        "n_legs_registered": 2,
+        "n_legs_resolved": 2,
+        "weight_coverage": 1.0,
+        "partial_composition": false,
+        "reading_state": "AVAILABLE",
+        "display_score": 91.0,
+        "display_band": "risk-off"
+      },
+      {
+        "scare": "credit",
+        "tier": "A",
+        "label_en": "Credit stress",
+        "label_zh": "信用压力",
+        "score": 83.2,
         "band": "elevated",
         "firing_legs": [
           {
-            "leg": "jpy_carry",
-            "pctile": 0.946,
+            "leg": "credit_oas_roc",
+            "pctile": 0.941,
+            "confirmed": true,
+            "lift_2020": 1.23,
+            "lead_d": 10,
+            "era_robust": true,
+            "accruing": false
+          }
+        ],
+        "lead_weighted": 102.4,
+        "n_legs_registered": 2,
+        "n_legs_resolved": 2,
+        "weight_coverage": 1.0,
+        "partial_composition": false,
+        "reading_state": "AVAILABLE",
+        "display_score": 83.2,
+        "display_band": "elevated"
+      },
+      {
+        "scare": "internals",
+        "tier": "B",
+        "label_en": "Breadth internals deterioration",
+        "label_zh": "内部广度恶化",
+        "score": 77.5,
+        "band": "caution",
+        "firing_legs": [
+          {
+            "leg": "ai_breadth_divergence",
+            "pctile": 1.0,
             "confirmed": true,
             "lift_2020": null,
             "lead_d": 5,
             "era_robust": false,
             "accruing": true
-          },
+          }
+        ],
+        "lead_weighted": 77.5,
+        "n_legs_registered": 1,
+        "n_legs_resolved": 1,
+        "weight_coverage": 1.0,
+        "partial_composition": false,
+        "reading_state": "AVAILABLE",
+        "display_score": 77.5,
+        "display_band": "caution"
+      },
+      {
+        "scare": "global",
+        "tier": "B",
+        "label_en": "Global breadth breakdown",
+        "label_zh": "全球广度破位",
+        "score": 66.7,
+        "band": "watch",
+        "firing_legs": [
           {
             "leg": "global_breadth",
-            "pctile": 0.76,
+            "pctile": 0.924,
             "confirmed": true,
             "lift_2020": null,
             "lead_d": 21,
@@ -452,161 +546,175 @@
             "validation_ref": "C3 global-breadth barometer — reports/intl-global-breadth-phase0.md (CONFIRMED #938: DSR 0.9326, orthogonality 62% vs SPY/HY/curve, cap 0.20 de-risk-only). Tier-B: display/escalator-only, forward-graded before trusted."
           }
         ],
-        "lead_weighted": 81.6,
+        "lead_weighted": 66.7,
         "n_legs_registered": 2,
         "n_legs_resolved": 2,
         "weight_coverage": 1.0,
-        "partial_composition": false
-      },
-      {
-        "scare": "credit",
-        "tier": "A",
-        "label_en": "Credit stress",
-        "label_zh": "信用压力",
-        "score": 51.8,
-        "band": "calm",
-        "firing_legs": [
-          {
-            "leg": "credit_hyg_tlt",
-            "pctile": 0.593,
-            "confirmed": false,
-            "lift_2020": 0.5,
-            "lead_d": 8,
-            "era_robust": false,
-            "accruing": false
-          }
-        ],
-        "lead_weighted": 25.9,
-        "n_legs_registered": 2,
-        "n_legs_resolved": 2,
-        "weight_coverage": 1.0,
-        "partial_composition": false
-      },
-      {
-        "scare": "rates",
-        "tier": "A",
-        "label_en": "Rates / inflation shock",
-        "label_zh": "利率/通胀冲击",
-        "score": 48.8,
-        "band": "calm",
-        "firing_legs": [
-          {
-            "leg": "rates_realrate",
-            "pctile": 0.99,
-            "confirmed": true,
-            "lift_2020": 1.02,
-            "lead_d": 12,
-            "era_robust": false,
-            "accruing": false
-          }
-        ],
-        "lead_weighted": 49.8,
-        "n_legs_registered": 2,
-        "n_legs_resolved": 2,
-        "weight_coverage": 1.0,
-        "partial_composition": false
+        "partial_composition": false,
+        "reading_state": "AVAILABLE",
+        "display_score": 66.7,
+        "display_band": "watch"
       },
       {
         "scare": "growth",
         "tier": "A",
         "label_en": "Growth scare / defensive rotation",
         "label_zh": "增长恐慌/防御轮动",
-        "score": 47.9,
+        "score": 33.1,
         "band": "calm",
-        "firing_legs": [
-          {
-            "leg": "growth_cyc_def",
-            "pctile": 0.738,
-            "confirmed": false,
-            "lift_2020": 1.63,
-            "lead_d": 12,
-            "era_robust": false,
-            "accruing": false
-          }
-        ],
-        "lead_weighted": 78.1,
+        "firing_legs": [],
+        "lead_weighted": 33.1,
         "n_legs_registered": 2,
         "n_legs_resolved": 2,
         "weight_coverage": 1.0,
-        "partial_composition": false
+        "partial_composition": false,
+        "reading_state": "AVAILABLE",
+        "display_score": 33.1,
+        "display_band": "calm"
       },
       {
         "scare": "bubble",
         "tier": "A",
         "label_en": "Trend extension watch",
         "label_zh": "趋势延伸观察",
-        "score": 27.1,
+        "score": 31.7,
         "band": "calm",
         "firing_legs": [],
-        "lead_weighted": 27.1,
+        "lead_weighted": 31.7,
         "n_legs_registered": 2,
         "n_legs_resolved": 2,
         "weight_coverage": 1.0,
-        "partial_composition": false
-      },
-      {
-        "scare": "internals",
-        "tier": "B",
-        "label_en": "Breadth internals deterioration",
-        "label_zh": "内部广度恶化",
-        "score": 25.8,
-        "band": "calm",
-        "firing_legs": [],
-        "lead_weighted": 25.8,
-        "n_legs_registered": 1,
-        "n_legs_resolved": 1,
-        "weight_coverage": 1.0,
-        "partial_composition": false
+        "partial_composition": false,
+        "reading_state": "AVAILABLE",
+        "display_score": 31.7,
+        "display_band": "calm"
       },
       {
         "scare": "vol",
         "tier": "B",
         "label_en": "Volatility event",
         "label_zh": "波动率事件",
-        "score": 9.0,
+        "score": 12.5,
         "band": "calm",
         "firing_legs": [],
-        "lead_weighted": 9.0,
+        "lead_weighted": 12.5,
         "n_legs_registered": 3,
         "n_legs_resolved": 1,
         "weight_coverage": 0.5,
-        "partial_composition": true
+        "partial_composition": true,
+        "reading_state": "PARTIAL",
+        "display_score": 12.5,
+        "display_band": "calm"
       }
     ],
-    "headline_en": "Risk radar: calm — no scare-type elevated.",
-    "headline_zh": "风险雷达：平静 — 无升级的风险类型。",
+    "headline_en": "CAUTION: Rates / inflation shock (91/100) + Rates / inflation shock × Credit stress. Leading: rates_realrate(95%), rates_move(90%). 21-session pullback odds 19% vs 18% normal (1.1x). Early flag, not a measured edge; avoid chasing without fighting the tape.",
+    "headline_zh": "CAUTION：利率/通胀冲击（91/100）。 21 日回撤概率 19%，常态 18%（1.1 倍）。 属早期提示而非实测优势；避免追高，但不逆势。",
     "drawdown_prob": {
-      "h5": 0.02,
-      "h10": 0.06,
-      "h21": 0.13,
+      "h5": 0.042,
+      "h10": 0.1,
+      "h21": 0.19,
       "base_h5": 0.036,
       "base_h10": 0.086,
       "base_h21": 0.178,
-      "lift_h21": 0.73,
-      "conjunction_n": 0,
+      "lift_h21": 1.07,
+      "conjunction_n": 2,
       "measure": ">=5% SPY pullback (empirical 2006-2026; rises with intensity + conjunction)",
       "state_lift": {
-        "h5": 0.56,
-        "h10": 0.7,
-        "h21": 0.73
+        "h5": 0.83,
+        "h10": 0.93,
+        "h21": 0.9
       },
-      "state_lift_h21": 0.73,
+      "state_lift_h21": 0.9,
       "state_above_base": false,
-      "state_h21_pct": 13.0,
+      "state_h21_pct": 16.0,
       "base_h21_pct": 17.8,
-      "lift_note_en": "This state's own measured 21-day rate is 13.0% vs a 17.8% base rate (lift 0.73x — at or below base, an early flag not an edge).",
-      "lift_note_zh": "该等级自身实测 21 日回撤率 13.0%，长期基准 17.8%（倍数 0.73x——不高于基准，属早期提示而非优势）。"
+      "lift_note_en": "This state's own measured 21-day rate is 16.0% vs a 17.8% base rate (lift 0.9x — at or below base, an early flag not an edge).",
+      "lift_note_zh": "该等级自身实测 21 日回撤率 16.0%，长期基准 17.8%（倍数 0.9x——不高于基准，属早期提示而非优势）。",
+      "calibration_evidence": {
+        "schema": "risk_radar_probability_evidence.v1",
+        "evidence_class": "reconstructed_historical",
+        "precision_grade": false,
+        "window": "y2020",
+        "target": {
+          "depth": 0.05,
+          "horizons": [
+            5,
+            10,
+            21
+          ],
+          "price_path": "native SPY closing observations"
+        },
+        "limitations": [
+          "Overlapping forward windows are not independent episodes.",
+          "Reconstructed historical states are not genuinely issued forecasts.",
+          "Exact-cell evidence supports a risk gradient, not actuarial precision."
+        ],
+        "source": {
+          "path": "research/grey_deer/evidence/displayed-probability-audit-20260922/result.json",
+          "protocol_commit": "f520eda41e0ff5051caf4bc019e198eabd949e49",
+          "schema": "risk_radar_displayed_probability_audit.v1",
+          "sha256": "eb9d4bfd75a18199789a8306ea948aba17e84693ad24e081134feba0751c09ea",
+          "source_base": "912feaa2b13959a6cca4d3f1472188b4a4d702bb"
+        },
+        "horizons": {
+          "h5": {
+            "matched": true,
+            "displayed_probability": 0.042,
+            "n": 270,
+            "events": 13,
+            "observed_rate": 0.04814814814814815,
+            "observed_rate_ci90": [
+              0.019933,
+              0.078014
+            ],
+            "thin": false,
+            "from": "2020-01-02T00:00:00",
+            "through": "2026-09-11T00:00:00",
+            "population_sha256": "ccb420875fa715f368e90a6e01618262c998207d065fca574a2aa123a8ade85e"
+          },
+          "h10": {
+            "matched": true,
+            "displayed_probability": 0.1,
+            "n": 270,
+            "events": 32,
+            "observed_rate": 0.11851851851851852,
+            "observed_rate_ci90": [
+              0.059322,
+              0.184315
+            ],
+            "thin": false,
+            "from": "2020-01-02T00:00:00",
+            "through": "2026-09-03T00:00:00",
+            "population_sha256": "e3acaa6d7d8fe7b0db8ca3c1fde3619689b663a081689ad5b3aa3c3fa29e30af"
+          },
+          "h21": {
+            "matched": true,
+            "displayed_probability": 0.19,
+            "n": 270,
+            "events": 67,
+            "observed_rate": 0.24814814814814815,
+            "observed_rate_ci90": [
+              0.138377,
+              0.359869
+            ],
+            "thin": false,
+            "from": "2020-01-02T00:00:00",
+            "through": "2026-08-19T00:00:00",
+            "population_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec"
+          }
+        }
+      }
     },
     "context_gate": {
       "met": false,
       "spy_below_200dma": false,
       "breadth_weak": true
     },
-    "state_ungated": "calm",
+    "state_ungated": "risk-off",
     "flow_status": {
       "min_history": 252,
-      "putcall_rows": 67,
-      "gex_rows": 68,
+      "putcall_rows": 75,
+      "gex_rows": 76,
       "mature": false,
       "putcall_missing_sessions": [
         "2026-07-02",
@@ -624,7 +732,8 @@
         "2026-08-14",
         "2026-08-20",
         "2026-09-01",
-        "2026-09-02"
+        "2026-09-02",
+        "2026-09-24"
       ],
       "gex_missing_sessions": [
         "2026-07-02",
@@ -641,57 +750,58 @@
         "2026-08-11",
         "2026-08-14",
         "2026-09-01",
-        "2026-09-02"
+        "2026-09-02",
+        "2026-09-24"
       ],
-      "note": "options-flow vol legs (put/call, GEX) accrue forward — deep history is unavailable freely; they activate + self-validate via the Opus loop when mature; 16 put/call and 15 GEX session(s) were never captured and cannot be backfilled (live-snapshot source)"
+      "note": "options-flow vol legs (put/call, GEX) accrue forward — deep history is unavailable freely; they activate + self-validate via the Opus loop when mature; 17 put/call and 16 GEX session(s) were never captured and cannot be backfilled (live-snapshot source)"
     },
-    "gross_factor": 1.0,
+    "gross_factor": 0.873,
     "trajectory": {
-      "intensity": 51.8,
-      "peak": 75.1,
-      "peak_days_ago": 7,
-      "off_peak": 23.3,
-      "velocity": -8.1,
-      "phase": "receding",
+      "intensity": 91.0,
+      "peak": 92.3,
+      "peak_days_ago": 1,
+      "off_peak": 1.3,
+      "velocity": 0.5,
+      "phase": "peaking",
       "reached_risk": true,
-      "state_now": "calm",
-      "odds_now": 0.13,
-      "odds_peak": 0.16,
-      "odds_delta": 0.0,
+      "state_now": "caution",
+      "odds_now": 0.19,
+      "odds_peak": 0.19,
+      "odds_delta": 0.03,
       "spark": [
-        69.4,
-        63.9,
-        61.1,
-        62.9,
-        64.6,
-        47.6,
-        41.9,
-        44.6,
-        44.4,
-        52.0,
-        48.0,
-        43.3,
-        55.9,
+        48.8,
+        44.5,
+        56.0,
         59.5,
         56.3,
-        63.9,
+        64.0,
         75.1,
-        65.7,
+        65.8,
         59.9,
         59.7,
         65.9,
         68.5,
         57.4,
-        51.8
+        55.6,
+        54.1,
+        55.3,
+        60.4,
+        75.9,
+        90.5,
+        79.9,
+        87.4,
+        91.7,
+        92.3,
+        91.0
       ],
-      "spark_pts": "3.0,6.4 6.9,9.7 10.8,11.4 14.7,10.3 18.7,9.3 22.6,19.6 26.5,23.0 30.4,21.4 34.3,21.5 38.2,16.9 42.1,19.3 46.0,22.2 50.0,14.6 53.9,12.4 57.8,14.3 61.7,9.7 65.6,3.0 69.5,8.7 73.4,12.2 77.3,12.3 81.3,8.5 85.2,7.0 89.1,13.7 93.0,17.0",
+      "spark_pts": "3.0,21.2 6.9,23.0 10.8,18.2 14.7,16.7 18.7,18.1 22.6,14.8 26.5,10.2 30.4,14.1 34.3,16.6 38.2,16.6 42.1,14.0 46.0,13.0 50.0,17.6 53.9,18.4 57.8,19.0 61.7,18.5 65.6,16.3 69.5,9.9 73.4,3.8 77.3,8.2 81.3,5.1 85.2,3.3 89.1,3.0 93.0,3.5",
       "spark_peak": {
-        "x": 65.6,
+        "x": 89.1,
         "y": 3.0
       },
       "spark_last": {
         "x": 93.0,
-        "y": 17.0
+        "y": 3.5
       },
       "spark_w": 96,
       "spark_h": 26,
@@ -699,72 +809,79 @@
       "drivers": {
         "faded": [
           {
-            "key": "bubble",
-            "label_en": "Bubble / blow-off unwind",
-            "label_zh": "泡沫/见顶回吐",
-            "peak": 73.7,
-            "now": 27.1
-          },
-          {
-            "key": "internals",
-            "label_en": "Breadth internals deterioration",
-            "label_zh": "内部广度恶化",
-            "peak": 70.3,
-            "now": 25.8
-          },
-          {
             "key": "growth",
             "label_en": "Growth scare / defensive rotation",
             "label_zh": "增长恐慌/防御轮动",
             "peak": 75.1,
-            "now": 47.9
-          }
-        ],
-        "warm": [
+            "now": 33.1
+          },
+          {
+            "key": "bubble",
+            "label_en": "Bubble / blow-off unwind",
+            "label_zh": "泡沫/见顶回吐",
+            "peak": 52.5,
+            "now": 31.7
+          },
           {
             "key": "global",
             "label_en": "Global breadth breakdown",
             "label_zh": "全球广度破位",
-            "peak": 88.1,
-            "now": 81.6
+            "peak": 86.8,
+            "now": 66.7
+          }
+        ],
+        "warm": [
+          {
+            "key": "credit",
+            "label_en": "Credit stress",
+            "label_zh": "信用压力",
+            "peak": 83.3,
+            "now": 83.2
+          },
+          {
+            "key": "rates",
+            "label_en": "Rates / inflation shock",
+            "label_zh": "利率/通胀冲击",
+            "peak": 92.3,
+            "now": 91.0
           }
         ]
       }
     },
     "deescalation": {
-      "eligible": true,
-      "reason": "radar receding on the dominant scare; h21 drawdown_prob flat",
-      "receding_scare": "growth",
-      "dominant_velocity": -12.0,
-      "drawdown_prob_h21": 0.13,
-      "drawdown_prob_trend": "flat",
+      "eligible": false,
+      "reason": "dominant scare = rates; h21 drawdown_prob RISING",
+      "receding_scare": "bubble",
+      "dominant_velocity": 0.5,
+      "drawdown_prob_h21": 0.19,
+      "drawdown_prob_trend": "rising",
       "deescalated": [
-        {
-          "key": "bubble",
-          "label_en": "Bubble / blow-off unwind",
-          "label_zh": "泡沫/见顶回吐",
-          "from": 73.7,
-          "to": 27.1
-        },
-        {
-          "key": "internals",
-          "label_en": "Breadth internals deterioration",
-          "label_zh": "内部广度恶化",
-          "from": 70.3,
-          "to": 25.8
-        },
         {
           "key": "growth",
           "label_en": "Growth scare / defensive rotation",
           "label_zh": "增长恐慌/防御轮动",
           "from": 75.1,
-          "to": 47.9
+          "to": 33.1
+        },
+        {
+          "key": "bubble",
+          "label_en": "Bubble / blow-off unwind",
+          "label_zh": "泡沫/见顶回吐",
+          "from": 52.5,
+          "to": 31.7
+        },
+        {
+          "key": "global",
+          "label_en": "Global breadth breakdown",
+          "label_zh": "全球广度破位",
+          "from": 86.8,
+          "to": 66.7
         }
       ]
     },
     "cycle_context": {
       "schema": "election_cycle.v1",
-      "asof": "2026-09-17",
+      "asof": "2026-10-01",
       "year": 2026,
       "year_in_term": 2,
       "label_en": "Midterm year",
@@ -824,38 +941,38 @@
         "sizing_only": true,
         "reason_en": "Midterm drawdown window — gross trimmed as a sizing prior; the calendar does not change Risk-Radar bands.",
         "reason_zh": "中期回撤窗口——仅按季节性先验小幅降仓；日历不改变风险雷达等级。",
-        "gross_applied": false
+        "gross_applied": true
       }
     },
     "counterread": {
       "schema": "washout_counterread.v1",
-      "as_of": "2026-09-17",
+      "as_of": "2026-10-01",
       "show": false,
-      "growth_score": 47.9,
+      "growth_score": 33.1,
       "growth_band": "calm",
       "growth_extreme": false,
       "price_depths": [
         {
           "index": "SPY",
           "metric": "price_63d_drawdown_pctile",
-          "drawdown_pct": -1.96,
-          "depth_pctile": 61.8,
+          "drawdown_pct": -1.54,
+          "depth_pctile": 57.1,
           "extreme": false,
           "n_hist": 2520
         },
         {
           "index": "QQQ",
           "metric": "price_63d_drawdown_pctile",
-          "drawdown_pct": -3.09,
-          "depth_pctile": 59.9,
+          "drawdown_pct": -0.73,
+          "depth_pctile": 33.7,
           "extreme": false,
           "n_hist": 2520
         },
         {
           "index": "XLK",
           "metric": "price_63d_drawdown_pctile",
-          "drawdown_pct": -2.13,
-          "depth_pctile": 50.5,
+          "drawdown_pct": 0.0,
+          "depth_pctile": 17.9,
           "extreme": false,
           "n_hist": 2520
         }
@@ -865,9 +982,9 @@
         {
           "index": "IWM",
           "metric": "ihm_macd_hist_depth_pctile",
-          "depth_pctile": 5.0,
+          "depth_pctile": 2.7,
           "reason": "low_depth",
-          "washout_turn": false,
+          "washout_turn": true,
           "extreme": true
         }
       ],
@@ -886,26 +1003,26 @@
       },
       "disclaimer": "Display-tier only. All may_* authority flags are False. It sits BESIDE the risk banner as context and never suppresses it. Forward ledger pre-registered as EXPECTED NULL — a capitulation-zone reading is historically TWO-SIDED (it precedes a bounce about as often as a further leg down); it is context, not a forecast, not a buy signal. Price depth = trailing-63-session drawdown percentile vs 10y self-history; momentum depth (if shown) = IHM MACD-histogram depth, a different quantity, labeled separately. The word 'validated' does not appear on these surfaces."
     },
-    "favor_entries": false,
+    "favor_entries": true,
     "cap_leadership": false,
-    "reader_contract": "Normal exposure.",
+    "reader_contract": "Trim chasing; favor good entries over extended leaders; honor stops.",
     "is_context_only": false,
     "loud_early": true,
-    "disclaimer": "Evidence-gated leading-risk radar (research/RISK_ENGINE_V2_FINDINGS.md). At this state the measured 21-day pullback rate is 13.0% against a 17.8% unconditional base rate — a lift of 0.73x, i.e. BELOW base. This tier is an early watch flag, not an edge, and never a forecast. LOUD+EARLY by design — every alert prints its measured lift/lead, a forward-outcome log grades every call, and the Opus review loop retunes from its mistakes. De-risk = sizing, not selection; the validated regime quad is untouched.",
+    "disclaimer": "Evidence-gated leading-risk radar (research/RISK_ENGINE_V2_FINDINGS.md). At this state the measured 21-day pullback rate is 16.0% against a 17.8% unconditional base rate — a lift of 0.9x, i.e. BELOW base. This tier is an early watch flag, not an edge, and never a forecast. LOUD+EARLY by design — every alert prints its measured lift/lead, a forward-outcome log grades every call, and the Opus review loop retunes from its mistakes. De-risk = sizing, not selection; the validated regime quad is untouched.",
     "state_lift": {
-      "h5": 0.56,
-      "h10": 0.7,
-      "h21": 0.73,
-      "h21_pct": 13.0,
+      "h5": 0.83,
+      "h10": 0.93,
+      "h21": 0.9,
+      "h21_pct": 16.0,
       "base_h21_pct": 17.8,
       "above_base": false
     },
     "display_only_legs": [
       {
         "leg": "ai_breadth_divergence",
-        "pctile": 0.0,
-        "firing": false,
-        "confirmed": false,
+        "pctile": 1.0,
+        "firing": true,
+        "confirmed": true,
         "scare": "internals",
         "lift_2020": null,
         "reason_en": "Display-only until gauntlet-promoted — it cannot set a risk tier or move the sub-score.",
@@ -922,9 +1039,9 @@
         "reason_zh": "通过验证前仅作展示——不参与风险等级与分数计算。"
       }
     ],
-    "gate_clamped": false,
+    "gate_clamped": true,
     "forward_log": {
-      "n_graded": 33,
+      "n_graded": 42,
       "alert_precision": null,
       "n_alerts": 0,
       "n_true_pos": 0,
@@ -936,16 +1053,16 @@
           "hit_rate": 0.0
         },
         "watch": {
-          "n": 8,
+          "n": 11,
           "hit_rate": 0.0
         },
         "calm": {
-          "n": 1,
+          "n": 7,
           "hit_rate": 0.0
         }
       },
       "context_gate_counterfactual": {
-        "n_rows_with_ungated": 10,
+        "n_rows_with_ungated": 19,
         "n_clamped_by_gate": 0,
         "n_alerts_ungated": 0,
         "n_true_pos_ungated": 0,
@@ -956,7 +1073,7 @@
       "recent_mistakes": [],
       "asof_range": [
         "2026-06-23",
-        "2026-08-18"
+        "2026-08-31"
       ]
     },
     "recovery_log": {
@@ -965,29 +1082,29 @@
     }
   },
   "regime": {
-    "quad": "Q3",
-    "quad_name": "Stagflation",
-    "label": "Q3",
-    "confidence": 0.141,
-    "growth_score": 0.067,
-    "inflation_score": 0.24,
-    "cycle_tag": "late",
+    "quad": "Q2",
+    "quad_name": "Reflation",
+    "label": "Q2",
+    "confidence": 0.068,
+    "growth_score": 0.133,
+    "inflation_score": -0.08,
+    "cycle_tag": "mid",
     "transition_state": "TRANSITIONING",
     "flip_condition": {
-      "axis": "growth",
+      "axis": "inflation",
       "component": null,
       "label_unsupported": true,
-      "displayed_quad": "Q3",
-      "raw_quad": "Q2",
-      "pending_quad": "Q2",
-      "pending_days": 1,
+      "displayed_quad": "Q2",
+      "raw_quad": "Q1",
+      "pending_quad": "Q1",
+      "pending_days": 3,
       "pending_need": 7,
-      "note": "the label's own axes no longer support it — today's signs read Q2 (growth +0.07 / inflation +0.24) while the confirmed label is Q3; Q2 counting down 1 of 7 confirmation sessions"
+      "note": "the label's own axes no longer support it — today's signs read Q1 (growth +0.13 / inflation -0.08) while the confirmed label is Q2; Q1 counting down 3 of 7 confirmation sessions"
     },
     "flip_margin": 0.0,
     "liquidity_quality": {
       "schema_version": 1,
-      "asof": "2026-09-17",
+      "asof": "2026-10-01",
       "label": "stress-expansion",
       "label_enum": [
         "benign-expansion",
@@ -997,41 +1114,40 @@
         "contracting",
         "unknown"
       ],
-      "quantity_roc_bn": 41.1,
-      "rrp_buffer_bn": 1.4,
+      "quantity_roc_bn": 86.6,
+      "rrp_buffer_bn": 0.9,
       "rrp_exhausted": true,
       "composition": {
-        "d_walcl": -19.3,
-        "d_neg_rrp": -1.2,
-        "d_neg_tga": 61.6,
-        "fed_share": 0.24,
+        "d_walcl": 16.8,
+        "d_neg_rrp": 5.9,
+        "d_neg_tga": 64.0,
+        "fed_share": 0.19,
         "mechanical": true
       },
       "stress_overlay": {
-        "confirming_stress": false,
-        "hy_oas_pct": 2.7,
-        "hy_oas_chg_20d": -0.05,
-        "hy_oas_z": -0.22,
-        "nfci": -0.56,
-        "nfci_trend": "loose"
+        "confirming_stress": true,
+        "hy_oas_pct": 3.12,
+        "hy_oas_chg_20d": 0.47,
+        "hy_oas_z": 2.4,
+        "nfci": -0.548,
+        "nfci_trend": "tightening"
       },
       "walcl_stale_days": 1,
       "degraded": false
     },
     "business_cycle": {
       "available": true,
-      "asof": "2026-09-30",
+      "asof": "2026-10-31",
       "tiers": {
         "leading": {
-          "asof": "2026-09-30",
-          "index": 95.25382977349243,
-          "mom6": 0.751994048026063,
-          "trend": 0.7490611314254784,
+          "asof": "2026-10-31",
+          "index": 95.67111240446361,
+          "mom6": 1.06066964539869,
+          "trend": 0.9020816556672128,
           "diffusion": 100.0,
-          "n_legs": 4,
+          "n_legs": 2,
           "direction": "rising",
           "spark_mom6": [
-            -0.34,
             0.36,
             0.23,
             -0.16,
@@ -1399,13 +1515,13 @@
             0.72,
             0.69,
             1.04,
-            0.51,
-            0.56,
-            1.0,
-            0.75
+            0.52,
+            0.57,
+            1.19,
+            0.92,
+            1.06
           ],
           "spark_trend": [
-            -1.3,
             -0.82,
             -0.52,
             -0.42,
@@ -1775,11 +1891,11 @@
             0.75,
             0.68,
             0.65,
-            0.75,
-            0.75
+            0.8,
+            0.84,
+            0.9
           ],
           "spark_index": [
-            96.41,
             96.18,
             96.3,
             96.06,
@@ -2147,22 +2263,22 @@
             94.5,
             94.61,
             94.88,
-            94.66,
-            95.0,
-            95.28,
-            95.25
+            94.67,
+            95.01,
+            95.47,
+            95.43,
+            95.67
           ]
         },
         "coincident": {
-          "asof": "2026-07-31",
-          "index": 35.43404205766777,
-          "mom6": -0.21603351448561625,
-          "trend": -0.35852868082546946,
-          "diffusion": 66.66666666666667,
+          "asof": "2026-08-31",
+          "index": 36.184841989011055,
+          "mom6": -0.007129906816814469,
+          "trend": -0.0712332065902851,
+          "diffusion": 100.0,
           "n_legs": 3,
           "direction": "falling",
           "spark_mom6": [
-            0.26,
             0.28,
             0.74,
             0.52,
@@ -2466,77 +2582,77 @@
             6.21,
             7.39,
             3.98,
-            2.1,
-            0.92,
-            0.8,
-            0.99,
-            1.13,
+            2.12,
             0.93,
-            1.02,
-            1.22,
-            0.7,
-            0.3,
+            0.81,
+            1.0,
+            1.16,
+            0.96,
+            1.03,
+            1.25,
+            0.74,
+            0.32,
             0.23,
             0.27,
-            -0.29,
+            -0.28,
             -0.02,
-            0.1,
-            -0.31,
-            -0.57,
-            -0.84,
-            -0.24,
-            -0.39,
-            -0.03,
+            0.09,
+            -0.32,
+            -0.58,
+            -0.85,
+            -0.3,
+            -0.45,
+            -0.07,
+            -0.12,
             -0.08,
-            -0.05,
+            -0.02,
+            0.17,
+            0.31,
+            0.07,
+            0.15,
+            0.18,
+            0.53,
+            0.27,
+            0.13,
+            0.15,
+            0.24,
+            0.41,
+            0.42,
+            0.07,
+            -0.08,
+            -0.09,
+            -0.21,
+            -0.19,
+            -0.15,
+            -0.12,
+            0.05,
+            -0.09,
+            0.05,
+            -0.13,
             -0.0,
             0.12,
-            0.24,
-            0.04,
-            0.08,
-            0.1,
-            0.43,
-            0.21,
-            0.07,
-            0.04,
-            0.16,
-            0.35,
-            0.37,
-            0.01,
-            -0.11,
             -0.09,
-            -0.25,
-            -0.24,
-            -0.22,
-            -0.19,
-            -0.0,
-            -0.16,
-            -0.01,
-            -0.19,
-            -0.04,
+            0.29,
+            0.39,
             0.16,
-            -0.12,
-            0.24,
-            0.34,
-            0.06,
-            -0.32,
-            -0.13,
-            -0.01,
-            -0.26,
-            -0.75,
-            -0.51,
-            -0.43,
-            -0.62,
-            -0.6,
-            -0.53,
-            -0.3,
-            -0.34,
+            -0.15,
+            0.03,
+            0.08,
             -0.22,
-            -0.23,
+            -0.66,
+            -0.42,
+            -0.38,
+            -0.46,
+            -0.29,
+            -0.15,
+            0.01,
+            -0.07,
+            0.06,
+            -0.01,
+            null,
             null
           ],
           "spark_trend": [
-            0.19,
             0.22,
             0.37,
             0.41,
@@ -2840,77 +2956,77 @@
             -3.28,
             -0.23,
             0.97,
-            1.29,
-            1.19,
-            1.08,
+            1.3,
+            1.2,
+            1.09,
+            1.06,
+            1.09,
             1.05,
-            1.07,
-            1.03,
-            1.03,
-            1.08,
-            0.97,
-            0.78,
-            0.62,
-            0.52,
-            0.29,
-            0.2,
+            1.04,
+            1.1,
+            1.0,
+            0.81,
+            0.64,
+            0.53,
+            0.3,
+            0.21,
             0.17,
             0.03,
             -0.14,
             -0.34,
-            -0.31,
             -0.33,
-            -0.25,
-            -0.2,
-            -0.16,
-            -0.11,
+            -0.37,
+            -0.28,
+            -0.24,
+            -0.19,
+            -0.14,
             -0.05,
-            0.04,
-            0.04,
             0.05,
             0.06,
-            0.17,
-            0.18,
-            0.15,
-            0.12,
-            0.13,
-            0.19,
+            0.08,
+            0.11,
+            0.23,
             0.24,
-            0.18,
-            0.09,
-            0.04,
-            -0.04,
-            -0.1,
-            -0.13,
-            -0.15,
-            -0.11,
-            -0.12,
+            0.21,
+            0.19,
+            0.21,
+            0.26,
+            0.31,
+            0.24,
+            0.15,
+            0.08,
+            -0.0,
+            -0.05,
+            -0.08,
             -0.09,
-            -0.12,
-            -0.1,
-            -0.02,
             -0.05,
-            0.03,
-            0.12,
-            0.1,
-            -0.02,
-            -0.05,
+            -0.06,
+            -0.03,
+            -0.06,
             -0.04,
+            0.0,
+            -0.02,
+            0.07,
+            0.16,
+            0.16,
+            0.07,
+            0.06,
+            0.07,
+            -0.02,
+            -0.2,
+            -0.26,
+            -0.3,
+            -0.34,
+            -0.33,
+            -0.28,
+            -0.2,
+            -0.16,
             -0.1,
-            -0.29,
-            -0.35,
-            -0.37,
-            -0.44,
-            -0.49,
-            -0.5,
-            -0.44,
-            -0.42,
-            -0.36,
-            -0.32,
+            -0.07,
+            null,
             null
           ],
           "spark_index": [
-            59.71,
             59.41,
             59.38,
             59.51,
@@ -3214,86 +3330,86 @@
             35.36,
             35.44,
             35.49,
-            35.62,
-            35.4,
-            35.62,
-            36.35,
-            36.57,
-            36.42,
-            36.64,
+            35.65,
+            35.41,
+            35.63,
+            36.36,
+            36.6,
+            36.45,
+            36.67,
+            36.66,
+            36.36,
+            36.68,
+            36.83,
+            36.72,
+            36.4,
+            36.63,
+            36.45,
+            36.36,
+            36.25,
+            35.87,
+            36.09,
+            36.18,
+            36.38,
+            36.24,
+            36.17,
+            35.84,
+            36.27,
+            36.49,
+            36.45,
+            36.39,
+            36.34,
+            36.37,
+            36.54,
             36.62,
-            36.32,
-            36.65,
-            36.8,
-            36.69,
-            36.35,
+            36.61,
+            36.63,
+            36.76,
+            36.79,
+            36.61,
+            36.54,
+            36.51,
+            36.42,
+            36.57,
+            36.64,
+            36.5,
             36.59,
             36.42,
-            36.34,
-            36.23,
-            35.85,
-            36.11,
-            36.2,
-            36.39,
-            36.26,
-            36.18,
-            35.85,
-            36.23,
-            36.44,
-            36.42,
-            36.34,
-            36.28,
-            36.28,
-            36.44,
-            36.5,
             36.47,
-            36.5,
-            36.63,
-            36.65,
-            36.45,
-            36.39,
-            36.37,
-            36.24,
-            36.39,
             36.43,
-            36.26,
-            36.39,
-            36.21,
-            36.24,
+            36.64,
+            36.62,
+            36.5,
+            36.71,
+            36.86,
+            36.59,
+            36.48,
+            36.65,
+            36.58,
+            36.49,
             36.2,
-            36.4,
-            36.42,
-            36.27,
-            36.45,
-            36.57,
-            36.25,
-            36.08,
-            36.29,
-            36.26,
+            36.18,
+            36.11,
             36.19,
-            35.82,
-            35.75,
-            35.65,
-            35.67,
-            35.66,
-            35.66,
-            35.52,
-            35.4,
-            35.43,
-            35.43,
+            36.29,
+            36.34,
+            36.21,
+            36.11,
+            36.17,
+            36.18,
+            null,
             null
           ]
         },
         "lagging": {
           "asof": "2026-08-31",
-          "index": 92.91923207392803,
-          "mom6": 0.38692722352149644,
-          "trend": 0.30731290758694846,
+          "index": 92.91910257122744,
+          "mom6": 0.38679772082090835,
+          "trend": 0.3072804351760963,
           "diffusion": 50.0,
           "n_legs": 4,
           "direction": "rising",
           "spark_mom6": [
-            -0.28,
             0.29,
             -0.69,
             -1.02,
@@ -3664,10 +3780,10 @@
             0.86,
             0.8,
             0.39,
+            0.39,
             null
           ],
           "spark_trend": [
-            0.64,
             0.54,
             0.19,
             -0.16,
@@ -4038,10 +4154,10 @@
             0.07,
             0.28,
             0.31,
+            0.33,
             null
           ],
           "spark_index": [
-            89.66,
             89.82,
             89.17,
             88.87,
@@ -4412,17 +4528,18 @@
             93.26,
             93.08,
             92.92,
+            92.92,
             null
           ]
         }
       },
-      "cl_ratio_mom6": -0.5836507564298685,
+      "cl_ratio_mom6": -0.24319183709936,
       "recession_signal": {
         "available": true,
         "state": "off",
         "label": "no recession signal",
         "label_zh": "无衰退信号",
-        "months_active": 40,
+        "months_active": 41,
         "fired_on": null,
         "conditions": {
           "depth": false,
@@ -4629,7 +4746,7 @@
         "reason": "version-matched + fresh",
         "calibration_version": "w2.7-loro-v1",
         "calibration_generated_at": "2026-07-02T12:32:51Z",
-        "calibration_age_days": 78
+        "calibration_age_days": 91
       },
       "lag_passport": {
         "basis": "per_leg_schedule",
@@ -4723,7 +4840,6 @@
         0.0,
         0.0,
         0.0,
-        0.0,
         1.0,
         1.0,
         1.0,
@@ -4953,6 +5069,7 @@
         0.0,
         1.0,
         1.0,
+        0.0,
         0.0,
         0.0,
         0.0,
@@ -5038,220 +5155,222 @@
     "sector_rs": [
       {
         "ticker": "XLE",
-        "rs": 0.0845528526373095,
-        "mom_20d_pct": 2.27,
-        "mom_60d_pct": 13.89,
+        "rs": 0.0820691390782548,
+        "mom_20d_pct": -3.21,
+        "mom_60d_pct": 10.41,
         "above_200d_trend": true,
-        "pctile_252d": 88.9,
+        "pctile_252d": 81.0,
         "rank": 1
       },
       {
-        "ticker": "XLV",
-        "rs": 0.22136113685145342,
-        "mom_20d_pct": -3.1,
-        "mom_60d_pct": 6.71,
+        "ticker": "XLK",
+        "rs": 0.2589170016454143,
+        "mom_20d_pct": 7.76,
+        "mom_60d_pct": 6.25,
         "above_200d_trend": true,
-        "pctile_252d": 58.3,
+        "pctile_252d": 99.2,
         "rank": 2
       },
       {
-        "ticker": "GC=F",
-        "rs": 5.769342166490402,
-        "mom_20d_pct": -2.38,
-        "mom_60d_pct": 2.0,
-        "above_200d_trend": false,
-        "pctile_252d": 21.0,
+        "ticker": "SMH",
+        "rs": 0.8086624241883895,
+        "mom_20d_pct": 12.12,
+        "mom_60d_pct": 1.4,
+        "above_200d_trend": true,
+        "pctile_252d": 92.1,
         "rank": 3
       },
       {
-        "ticker": "USMV",
-        "rs": 0.12960923092339166,
-        "mom_20d_pct": -1.27,
-        "mom_60d_pct": 0.89,
-        "above_200d_trend": false,
-        "pctile_252d": 19.4,
+        "ticker": "QUAL",
+        "rs": 0.2924645679884626,
+        "mom_20d_pct": 1.04,
+        "mom_60d_pct": 0.47,
+        "above_200d_trend": true,
+        "pctile_252d": 58.7,
         "rank": 4
       },
       {
-        "ticker": "XLC",
-        "rs": 0.14732494370695184,
-        "mom_20d_pct": 1.78,
-        "mom_60d_pct": 0.75,
+        "ticker": "GC=F",
+        "rs": 5.500464480429028,
+        "mom_20d_pct": -4.9,
+        "mom_60d_pct": 0.18,
         "above_200d_trend": false,
-        "pctile_252d": 19.0,
+        "pctile_252d": 8.3,
         "rank": 5
       },
       {
-        "ticker": "XLF",
-        "rs": 0.07327563972865365,
-        "mom_20d_pct": -1.96,
-        "mom_60d_pct": -0.23,
-        "above_200d_trend": false,
-        "pctile_252d": 19.8,
+        "ticker": "XLV",
+        "rs": 0.2175421132117919,
+        "mom_20d_pct": -3.63,
+        "mom_60d_pct": 0.05,
+        "above_200d_trend": true,
+        "pctile_252d": 42.9,
         "rank": 6
       },
       {
-        "ticker": "QUAL",
-        "rs": 0.2871098924177302,
-        "mom_20d_pct": -1.37,
-        "mom_60d_pct": -0.91,
-        "above_200d_trend": false,
-        "pctile_252d": 11.9,
+        "ticker": "MTUM",
+        "rs": 0.4200055092140326,
+        "mom_20d_pct": 8.14,
+        "mom_60d_pct": -0.61,
+        "above_200d_trend": true,
+        "pctile_252d": 88.1,
         "rank": 7
       },
       {
-        "ticker": "RSP",
-        "rs": 0.2797141416044483,
-        "mom_20d_pct": -3.13,
-        "mom_60d_pct": -1.77,
+        "ticker": "XLC",
+        "rs": 0.14390241213458715,
+        "mom_20d_pct": -1.98,
+        "mom_60d_pct": -1.93,
         "above_200d_trend": false,
-        "pctile_252d": 22.6,
+        "pctile_252d": 4.4,
         "rank": 8
       },
       {
-        "ticker": "XLK",
-        "rs": 0.2466037287951647,
-        "mom_20d_pct": 3.27,
-        "mom_60d_pct": -1.78,
-        "above_200d_trend": true,
-        "pctile_252d": 91.3,
+        "ticker": "USMV",
+        "rs": 0.128326289831953,
+        "mom_20d_pct": -2.69,
+        "mom_60d_pct": -1.97,
+        "above_200d_trend": false,
+        "pctile_252d": 11.1,
         "rank": 9
       },
       {
-        "ticker": "XLP",
-        "rs": 0.10948072454319274,
-        "mom_20d_pct": -2.71,
-        "mom_60d_pct": -4.07,
+        "ticker": "RSP",
+        "rs": 0.27356379359876626,
+        "mom_20d_pct": -4.12,
+        "mom_60d_pct": -3.78,
         "above_200d_trend": false,
-        "pctile_252d": 3.6,
+        "pctile_252d": 2.8,
         "rank": 10
       },
       {
-        "ticker": "XLB",
-        "rs": 0.06649619814832808,
-        "mom_20d_pct": -2.63,
-        "mom_60d_pct": -4.11,
+        "ticker": "XLF",
+        "rs": 0.0699747375853345,
+        "mom_20d_pct": -7.04,
+        "mom_60d_pct": -5.01,
         "above_200d_trend": false,
-        "pctile_252d": 25.0,
+        "pctile_252d": 7.9,
         "rank": 11
       },
       {
-        "ticker": "XLY",
-        "rs": 0.14606609356899447,
-        "mom_20d_pct": -5.28,
-        "mom_60d_pct": -5.81,
+        "ticker": "XLB",
+        "rs": 0.0635348650322452,
+        "mom_20d_pct": -7.99,
+        "mom_60d_pct": -5.38,
         "above_200d_trend": false,
-        "pctile_252d": 0.4,
+        "pctile_252d": 4.8,
         "rank": 12
       },
       {
         "ticker": "LQD",
-        "rs": 0.13789667850606807,
-        "mom_20d_pct": -0.07,
-        "mom_60d_pct": -5.99,
+        "rs": 0.13354886854996145,
+        "mom_20d_pct": -2.83,
+        "mom_60d_pct": -6.58,
         "above_200d_trend": false,
-        "pctile_252d": 9.1,
+        "pctile_252d": 2.0,
         "rank": 13
       },
       {
-        "ticker": "IWM",
-        "rs": 0.3742853420057789,
-        "mom_20d_pct": -4.35,
-        "mom_60d_pct": -6.78,
+        "ticker": "XLP",
+        "rs": 0.10514535904640746,
+        "mom_20d_pct": -5.55,
+        "mom_60d_pct": -6.75,
         "above_200d_trend": false,
-        "pctile_252d": 37.3,
+        "pctile_252d": 0.4,
         "rank": 14
       },
       {
-        "ticker": "XLRE",
-        "rs": 0.056307369527144796,
-        "mom_20d_pct": -3.75,
-        "mom_60d_pct": -7.47,
+        "ticker": "IWM",
+        "rs": 0.3652141946625175,
+        "mom_20d_pct": -4.94,
+        "mom_60d_pct": -7.23,
         "above_200d_trend": false,
-        "pctile_252d": 0.4,
+        "pctile_252d": 15.1,
         "rank": 15
       },
       {
-        "ticker": "XLI",
-        "rs": 0.22162339354519187,
-        "mom_20d_pct": -6.32,
-        "mom_60d_pct": -8.74,
+        "ticker": "XLY",
+        "rs": 0.14242332877321243,
+        "mom_20d_pct": -5.15,
+        "mom_60d_pct": -7.95,
         "above_200d_trend": false,
-        "pctile_252d": 0.4,
+        "pctile_252d": 0.8,
         "rank": 16
       },
       {
-        "ticker": "MTUM",
-        "rs": 0.40141621415865203,
-        "mom_20d_pct": 1.13,
-        "mom_60d_pct": -10.52,
-        "above_200d_trend": true,
-        "pctile_252d": 75.0,
+        "ticker": "XLI",
+        "rs": 0.2207358755288318,
+        "mom_20d_pct": -2.23,
+        "mom_60d_pct": -8.79,
+        "above_200d_trend": false,
+        "pctile_252d": 2.4,
         "rank": 17
       },
       {
-        "ticker": "XLU",
-        "rs": 0.05466824018015056,
-        "mom_20d_pct": -4.49,
-        "mom_60d_pct": -11.02,
+        "ticker": "XLRE",
+        "rs": 0.05324677132575529,
+        "mom_20d_pct": -6.28,
+        "mom_60d_pct": -9.57,
         "above_200d_trend": false,
-        "pctile_252d": 0.8,
+        "pctile_252d": 0.4,
         "rank": 18
       },
       {
-        "ticker": "SMH",
-        "rs": 0.735129823366205,
-        "mom_20d_pct": 0.79,
-        "mom_60d_pct": -13.31,
-        "above_200d_trend": true,
-        "pctile_252d": 70.6,
+        "ticker": "XLU",
+        "rs": 0.05193785365303392,
+        "mom_20d_pct": -6.41,
+        "mom_60d_pct": -14.24,
+        "above_200d_trend": false,
+        "pctile_252d": 2.4,
         "rank": 19
       }
     ],
     "freshness": {
-      "asof": "2026-09-17",
-      "built_at": "2026-09-18T15:31:47Z",
+      "asof": "2026-10-01",
+      "built_at": "2026-10-02T06:28:46Z",
       "age_days": 1,
       "age_sessions": 1,
       "max_age_sessions": 1,
       "stale": false,
       "note": "contract asof vs build time; the daily build lands post-close (22:40 UTC) so a consumer reading intraday should expect asof = prior session — recompute age against built_at at read time."
     },
-    "asof": "2026-09-17",
+    "asof": "2026-10-01",
     "schema_version": 1
   },
   "vol": {
     "regime": "normalizing",
-    "risk_score": 0.13,
+    "risk_score": -0.082,
     "scored_score": null,
     "scored_active": false,
-    "vix": 15.44,
+    "vix": 16.39,
     "vrp_state": "normal",
     "vvix_state": "normal",
-    "vol_target_scalar": 0.78,
-    "fragility_confluence": 0,
-    "flags": [],
-    "asof": "2026-09-17"
+    "vol_target_scalar": 0.73,
+    "fragility_confluence": 1,
+    "flags": [
+      "move_stress"
+    ],
+    "asof": "2026-10-01"
   },
   "breadth": {
     "n_members": 502,
-    "pct_above_50": 31.6,
-    "pct_above_200": 52.22672064777328,
-    "nh": 14,
-    "nl": 16,
-    "adv": 293,
-    "dec": 206,
-    "ad_line": 5981.0,
-    "breadth_above200_pctile": 0.16071428571428573,
+    "pct_above_50": 20.841683366733466,
+    "pct_above_200": 40.73319755600814,
+    "nh": 7,
+    "nl": 31,
+    "adv": 119,
+    "dec": 383,
+    "ad_line": 5169.0,
+    "breadth_above200_pctile": 0.04662698412698413,
     "breadth_div": true,
-    "date": "2026-09-17"
+    "date": "2026-09-30"
   },
   "rotation": {
-    "asof": "2026-09-17",
+    "asof": "2026-09-30",
     "regime": {
       "n_active_complexes": 0,
-      "breadth": null,
-      "vix_regime": 0.1865,
+      "breadth": 0.1803,
+      "vix_regime": 0.3333,
       "rotation_tag": {
         "tag": "quiet",
         "tag_zh": "平静",
@@ -5274,7 +5393,7 @@
         "n_members_active": 0,
         "personality": null,
         "personality_context": {
-          "personality_as_of": "2026-09-17",
+          "personality_as_of": "2026-10-01",
           "dominant_member_archetypes": [
             [
               "rate_sensitive",
@@ -5286,21 +5405,21 @@
             ],
             [
               "high_beta_momentum",
-              0.1356
+              0.1525
             ]
           ],
           "dominant_chart_labels": [
             [
               "mixed_chart",
-              0.6286
+              0.7391
             ],
             [
               "basing_accumulator",
-              0.1429
+              0.1014
             ],
             [
-              "stair_step_leader",
-              0.0571
+              "defensive_range_stock",
+              0.0435
             ]
           ],
           "tinderbox_share": 0.0735,
@@ -5324,33 +5443,33 @@
         "n_members_active": 0,
         "personality": null,
         "personality_context": {
-          "personality_as_of": "2026-09-17",
+          "personality_as_of": "2026-10-01",
           "dominant_member_archetypes": [
             [
-              "speculative_unprofitable",
-              0.2609
+              "quality_compounder",
+              0.2917
             ],
             [
-              "quality_compounder",
-              0.2609
+              "speculative_unprofitable",
+              0.25
             ],
             [
               "secular_growth",
-              0.1739
+              0.1667
             ]
           ],
           "dominant_chart_labels": [
             [
               "mixed_chart",
-              0.6
+              0.7368
             ],
             [
               "basing_accumulator",
-              0.175
+              0.1579
             ],
             [
               "stair_step_leader",
-              0.1
+              0.0789
             ]
           ],
           "tinderbox_share": 0.0,
@@ -5374,15 +5493,15 @@
         "n_members_active": 0,
         "personality": null,
         "personality_context": {
-          "personality_as_of": "2026-09-17",
+          "personality_as_of": "2026-10-01",
           "dominant_member_archetypes": [
             [
               "mixed",
-              0.4062
+              0.3281
             ],
             [
-              "speculative_unprofitable",
-              0.125
+              "rate_sensitive",
+              0.1406
             ],
             [
               "broken_growth",
@@ -5392,18 +5511,18 @@
           "dominant_chart_labels": [
             [
               "mixed_chart",
-              0.5616
+              0.6901
             ],
             [
-              "basing_accumulator",
-              0.1644
+              "volatile_momentum_vehicle",
+              0.0704
             ],
             [
-              "defensive_range_stock",
-              0.0548
+              "mean_reversion_rubber_band",
+              0.0563
             ]
           ],
-          "tinderbox_share": 0.058,
+          "tinderbox_share": 0.029,
           "event_override_share": 0.0,
           "share_denominators": {
             "archetypes_and_flags": "covered_tickers",
@@ -5424,37 +5543,37 @@
         "n_members_active": 0,
         "personality": null,
         "personality_context": {
-          "personality_as_of": "2026-09-17",
+          "personality_as_of": "2026-10-01",
           "dominant_member_archetypes": [
             [
               "mixed",
-              0.3611
+              0.3429
             ],
             [
               "rate_sensitive",
-              0.3056
+              0.3143
             ],
             [
               "speculative_unprofitable",
-              0.1389
+              0.1143
             ]
           ],
           "dominant_chart_labels": [
             [
               "mixed_chart",
-              0.5833
+              0.6316
             ],
             [
-              "volatile_momentum_vehicle",
-              0.1111
+              "basing_accumulator",
+              0.1579
             ],
             [
-              "stair_step_leader",
-              0.0833
+              "failed_breakout_trap",
+              0.0789
             ]
           ],
-          "tinderbox_share": 0.1111,
-          "event_override_share": 0.0278,
+          "tinderbox_share": 0.0571,
+          "event_override_share": 0.0571,
           "share_denominators": {
             "archetypes_and_flags": "covered_tickers",
             "chart_labels": "label_emissions"
@@ -5474,37 +5593,37 @@
         "n_members_active": 0,
         "personality": null,
         "personality_context": {
-          "personality_as_of": "2026-09-17",
+          "personality_as_of": "2026-10-01",
           "dominant_member_archetypes": [
             [
               "rate_sensitive",
-              0.45
+              0.4667
             ],
             [
               "speculative_unprofitable",
               0.2333
             ],
             [
-              "cyclical",
-              0.15
+              "distressed",
+              0.1333
             ]
           ],
           "dominant_chart_labels": [
             [
               "mixed_chart",
-              0.5556
-            ],
-            [
-              "basing_accumulator",
-              0.1389
+              0.5811
             ],
             [
               "failed_breakout_trap",
-              0.1111
+              0.1081
+            ],
+            [
+              "mean_reversion_rubber_band",
+              0.0946
             ]
           ],
           "tinderbox_share": 0.0725,
-          "event_override_share": 0.0145,
+          "event_override_share": 0.0,
           "share_denominators": {
             "archetypes_and_flags": "covered_tickers",
             "chart_labels": "label_emissions"
@@ -5524,7 +5643,7 @@
         "n_members_active": 0,
         "personality": null,
         "personality_context": {
-          "personality_as_of": "2026-09-17",
+          "personality_as_of": "2026-10-01",
           "dominant_member_archetypes": [
             [
               "financial",
@@ -5542,18 +5661,18 @@
           "dominant_chart_labels": [
             [
               "mixed_chart",
-              0.5773
-            ],
-            [
-              "basing_accumulator",
-              0.1649
+              0.8404
             ],
             [
               "failed_breakout_trap",
-              0.0722
+              0.0638
+            ],
+            [
+              "volatile_momentum_vehicle",
+              0.0213
             ]
           ],
-          "tinderbox_share": 0.1158,
+          "tinderbox_share": 0.1053,
           "event_override_share": 0.0,
           "share_denominators": {
             "archetypes_and_flags": "covered_tickers",
@@ -5574,37 +5693,37 @@
         "n_members_active": 0,
         "personality": null,
         "personality_context": {
-          "personality_as_of": "2026-09-17",
+          "personality_as_of": "2026-10-01",
           "dominant_member_archetypes": [
             [
               "distressed",
-              0.4
+              0.4051
             ],
             [
               "rate_sensitive",
-              0.3
+              0.3165
             ],
             [
               "mixed",
-              0.2
+              0.2025
             ]
           ],
           "dominant_chart_labels": [
             [
               "mixed_chart",
-              0.3913
+              0.5
             ],
             [
               "failed_breakout_trap",
-              0.2065
+              0.2209
             ],
             [
               "defensive_range_stock",
-              0.163
+              0.093
             ]
           ],
-          "tinderbox_share": 0.15,
-          "event_override_share": 0.0125,
+          "tinderbox_share": 0.0886,
+          "event_override_share": 0.0,
           "share_denominators": {
             "archetypes_and_flags": "covered_tickers",
             "chart_labels": "label_emissions"
@@ -5624,37 +5743,37 @@
         "n_members_active": 0,
         "personality": null,
         "personality_context": {
-          "personality_as_of": "2026-09-17",
+          "personality_as_of": "2026-10-01",
           "dominant_member_archetypes": [
             [
               "cyclical",
-              0.4345
+              0.4375
             ],
             [
               "rate_sensitive",
-              0.2345
+              0.2361
             ],
             [
               "mixed",
-              0.1034
+              0.1111
             ]
           ],
           "dominant_chart_labels": [
             [
               "mixed_chart",
-              0.6601
+              0.7086
             ],
             [
               "basing_accumulator",
-              0.098
+              0.0927
             ],
             [
               "failed_breakout_trap",
-              0.0654
+              0.0728
             ]
           ],
-          "tinderbox_share": 0.0608,
-          "event_override_share": 0.0203,
+          "tinderbox_share": 0.0612,
+          "event_override_share": 0.0,
           "share_denominators": {
             "archetypes_and_flags": "covered_tickers",
             "chart_labels": "label_emissions"
@@ -5676,99 +5795,98 @@
     "liquidity_overlay": "expanding"
   },
   "data_health": {
-    "last_run": "2026-09-18T14:09:10.890506+00:00",
+    "last_run": "2026-10-02T03:05:53.021144+00:00",
     "counts": {
-      "ok": 166,
-      "dead": 4,
-      "blocked": 9,
-      "stale": 2,
+      "ok": 171,
+      "dead": 3,
       "failed": 5,
-      "outside_lease": 1,
-      "creds_present": 1,
-      "empty": 1
+      "stale": 2,
+      "blocked": 6,
+      "empty": 2,
+      "creds_present": 1
     },
-    "n_cb_failed": 9,
-    "n_stale_series": 168,
+    "n_cb_failed": 8,
+    "n_stale_series": 175,
     "failed_sources": [
       {
-        "source": "hk_indices",
-        "error": "RuntimeError: hk_indices: all HSTECH sources failed — sina: HTTPSConnectionPool(host='finance.sina.com.cn', port=443): M",
-        "checked_at": "2026-09-18T11:43:11.065809+00:00"
+        "source": "fundamentals",
+        "error": "ValueError: fundamentals/sector_estimates: all-NaN after cleaning",
+        "checked_at": "2026-10-02T03:05:53.021532+00:00"
       },
       {
-        "source": "hk_valuation",
-        "error": "RuntimeError: hk_valuation: no series resolved for any name — 0700.HK/pe: Failed to perform, curl: (28) Resolving timed ",
-        "checked_at": "2026-09-18T11:43:11.065845+00:00"
+        "source": "stock_fundamentals",
+        "error": "ValueError: stock_fundamentals/snapshots: all-NaN after cleaning",
+        "checked_at": "2026-10-02T03:05:53.021542+00:00"
       },
       {
-        "source": "china_filings",
-        "error": "RuntimeError: china_filings: all exchanges failed — sse: HTTPConnectionPool(host='www.cninfo.com.cn', port=80): Max retr",
-        "checked_at": "2026-09-18T11:43:11.065896+00:00"
+        "source": "broad_flows",
+        "error": "RuntimeError: broad_flows: only 0/5 tickers succeeded (errors: ['SPY', 'QQQ', 'IWM', 'RSP', 'DIA'])",
+        "checked_at": "2026-10-02T03:05:53.021467+00:00"
       },
       {
-        "source": "china_irm",
-        "error": "RuntimeError: china_irm: every leg failed at transport level (20/20 names + velocity)",
-        "checked_at": "2026-09-18T11:43:11.065913+00:00"
+        "source": "imf_weo",
+        "error": "RuntimeError: imf_weo: all indicators/countries failed",
+        "checked_at": "2026-10-02T03:05:53.021731+00:00"
       },
       {
-        "source": "china_trade_detail",
-        "error": "RuntimeError: china_trade_detail: monthly index unreachable (HTTPConnectionPool(host='english.customs.gov.cn', port=80):",
-        "checked_at": "2026-09-18T11:43:11.065769+00:00"
+        "source": "ofac_sdn",
+        "error": "RuntimeError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
+        "checked_at": "2026-10-02T03:05:53.021401+00:00"
       }
     ]
   },
   "alerts": {
-    "asof": "2026-09-17",
-    "generated_utc": "2026-09-18 15:40",
+    "asof": "2026-10-01",
+    "generated_utc": "2026-10-02 06:37",
     "total": 60,
     "critical": 2,
-    "major": 1,
-    "minor": 57,
-    "actionable": 3,
-    "backtested": 2
+    "major": 3,
+    "minor": 55,
+    "actionable": 4,
+    "backtested": 3
   },
   "factor_weather": {
     "style_regime": "mixed",
     "style_regime_pending": null,
     "style_regime_hold_days": 10,
-    "factor_leader": "payout",
-    "factor_leader_ic": 0.0247,
-    "etf_pulse_summary": "IWF/IWD_20d=-0.0016; QQQ/SPY_20d=-0.0004; IWM/SPY_20d=-0.0344",
-    "ratio_iwf_iwd_20d": -0.0015560027553610523,
-    "ratio_qqq_spy_20d": -0.00036513732321730163,
-    "ratio_iwm_spy_20d": -0.0343947172711947,
+    "factor_leader": "quality",
+    "factor_leader_ic": 0.0042,
+    "etf_pulse_summary": "IWF/IWD_20d=+0.0621; QQQ/SPY_20d=+0.0429; IWM/SPY_20d=-0.0447",
+    "ratio_iwf_iwd_20d": 0.062136578862503566,
+    "ratio_qqq_spy_20d": 0.042892077843528,
+    "ratio_iwm_spy_20d": -0.04474227671776332,
     "display_only": true,
-    "factor_state_as_of": "2026-09-18",
+    "factor_state_as_of": "2026-10-01",
     "seasonal_climate": {
-      "month": 9,
-      "seasonality_as_of": "2026-07",
+      "month": 10,
+      "seasonality_as_of": "2026-08",
       "verdicts": {
-        "value": "neutral",
-        "profitability": "headwind",
+        "value": "tailwind",
+        "profitability": "tailwind",
         "investment": "neutral",
-        "momentum": "neutral",
+        "momentum": "tailwind",
         "size": "headwind"
       },
-      "headline_en": "September has historically been a rough month for Strong earners (Profitability) — fell in 6 of the last 10 Septembers.",
-      "stance_en": "Seasonally softer month for Strong earners (Profitability) — judge on the merits.",
+      "headline_en": "October has tended to be kind to the market's recent winners — the momentum style rose in 8 of the last 10 Octobers, including the last 5 straight, while the market itself was up in 50% of them.",
+      "stance_en": "A seasonally friendlier month for recent winners — still judge each stock on its merits.",
       "display_only": true
     }
   },
   "options_weather": {
-    "as_of": "2026-08-13",
+    "as_of": "2026-09-29",
     "n_roots": 19,
     "median_iv30": 0.19433936280458183,
-    "median_skew": 0.0149,
-    "median_skew_5d_chg": 0.0191,
-    "share_skew_rising": 0.5789473684210527,
+    "median_skew": 0.0166,
+    "median_skew_5d_chg": -0.0045000000000000005,
+    "share_skew_rising": 0.42105263157894735,
     "median_ivspread_rel": 0.00866,
-    "share_pin_risk": 0.8666666666666667,
-    "opex_days": 0,
+    "share_pin_risk": null,
+    "opex_days": 14,
     "note": "sector-ETF/index options weather (raw aggregates; no composite — RO-2). Gamma-regime evidence is vol-conditioning with era-dependent sign (W-E1); never directional.",
     "display_only": true
   },
   "rates_transmission": {
-    "asof": "2026-09-17",
+    "asof": "2026-10-01",
     "scored_status": {
       "en": "Display-only. Scored-leg gate: NO rate/inflation leg passed the forward-drawdown bar with purged-CV robustness (see reports/rate-inflation-transmission-calibration.md).",
       "zh": "仅供展示。可计分腿检验：没有任何利率/通胀腿通过前瞻回撤门槛并满足清洗交叉验证稳健性（详见校准报告）。"
@@ -5776,124 +5894,124 @@
     "calibrated": true,
     "state": {
       "rates": {
-        "real_10y": 2.68,
+        "real_10y": 2.93,
         "real_10y_pctile": 1.0,
-        "real_10y_chg_63d_bp": 40.0,
-        "nominal_10y": 5.01,
-        "curve_2s10s": 0.27,
-        "curve_tp_adj": 1.23,
-        "policy_gap": 1.11,
+        "real_10y_chg_63d_bp": 69.0,
+        "nominal_10y": 5.29,
+        "curve_2s10s": 0.46,
+        "curve_tp_adj": 1.48,
+        "policy_gap": 1.0,
         "regime": "restrictive",
         "direction": "rising",
-        "real_10y_chg_22d_bp": 27.0,
+        "real_10y_chg_22d_bp": 49.0,
         "turn_watch": "extreme_watch",
         "label": {
-          "en": "Real 10y 2.68% (restrictive, rising — at a 5y extreme)",
-          "zh": "实际10年期 2.68%（偏紧，处于5年极值）"
+          "en": "Real 10y 2.93% (restrictive, rising — at a 5y extreme)",
+          "zh": "实际10年期 2.93%（偏紧，处于5年极值）"
         }
       },
       "inflation": {
-        "core_pce_yoy": 3.34,
+        "core_pce_yoy": 3.01,
         "core_cpi_yoy": 2.76,
         "headline_cpi_yoy": 3.71,
-        "core_pce_3m_ann": 3.05,
+        "core_pce_3m_ann": 2.05,
         "ppi_core_yoy": 4.62,
         "eci_comp_yoy": 3.38,
-        "vs_target_pp": 1.34,
+        "vs_target_pp": 1.01,
         "regime": "above target",
         "direction": "cooling",
         "label": {
-          "en": "Core PCE 3.3% (above target, cooling)",
-          "zh": "核心PCE 3.3%（高于目标）"
+          "en": "Core PCE 3.0% (above target, cooling)",
+          "zh": "核心PCE 3.0%（高于目标）"
         }
       },
       "expectations": {
-        "breakeven_10y": 2.33,
-        "breakeven_5y5y": 2.34,
+        "breakeven_10y": 2.36,
+        "breakeven_5y5y": 2.36,
         "model_5y": 2.58,
-        "survey_1y": 4.2,
-        "market_minus_model_bp": -24.0,
+        "survey_1y": 4.0,
+        "market_minus_model_bp": -22.0,
         "anchoring": "anchored",
         "label": {
-          "en": "5y5y breakeven 2.34% vs model 2.58% (anchored)",
-          "zh": "5年5年盈亏平衡 2.34% vs 模型 2.58%（锚定）"
+          "en": "5y5y breakeven 2.36% vs model 2.58% (anchored)",
+          "zh": "5年5年盈亏平衡 2.36% vs 模型 2.58%（锚定）"
         }
       }
     },
     "headwinds": [
       {
-        "asset": "XLB",
-        "verdict": "headwind",
-        "net": -0.445
-      },
-      {
         "asset": "SPY",
         "verdict": "headwind",
-        "net": -0.429
+        "net": -0.585
+      },
+      {
+        "asset": "XLB",
+        "verdict": "headwind",
+        "net": -0.554
       },
       {
         "asset": "QQQ",
         "verdict": "headwind",
-        "net": -0.395
+        "net": -0.45
       },
       {
         "asset": "XLK",
         "verdict": "headwind",
-        "net": -0.374
+        "net": -0.438
       },
       {
         "asset": "XLF",
         "verdict": "headwind",
-        "net": -0.327
+        "net": -0.409
       },
       {
         "asset": "IWM",
         "verdict": "headwind",
-        "net": -0.282
+        "net": -0.321
       }
     ],
     "tailwinds": [
       {
         "asset": "TLT",
         "verdict": "tailwind",
-        "net": 0.202
+        "net": 0.411
       }
     ],
     "yield_curve": {
       "regime": {
-        "key": "bear_flattener",
+        "key": "bear_steepener",
         "label": {
-          "en": "Bear flattener",
-          "zh": "熊市平坦"
+          "en": "Bear steepener",
+          "zh": "熊市陡峭"
         }
       },
       "recession": {
         "risk": "low",
-        "ntfs": 0.96
+        "ntfs": 1.1
       },
       "shape": {
         "slope_2s10s": {
-          "value": 0.27,
-          "pctile": 0.59,
-          "chg_63d": 0.0
+          "value": 0.46,
+          "pctile": 0.72,
+          "chg_63d": 11.0
         }
       }
     },
     "yield_curve_source": "transmission",
     "changes": [
       {
-        "key": "tailwind_removed",
-        "en": "Gold left the tailwind column"
+        "key": "curve_regime",
+        "en": "Curve regime changed: bear flattener → bear steepener"
       }
     ],
-    "changes_vs": "2026-09-16",
-    "dollar_channel_dir": "weakening",
+    "changes_vs": "2026-09-30",
+    "dollar_channel_dir": "flat",
     "display_only": true
   },
   "fx_dollar": {
-    "asof": "2026-09-18",
+    "asof": "2026-10-02",
     "regime": "Global reflation",
-    "risk": "risk-on",
+    "risk": "risk-off",
     "favored": [
       "AUD",
       "commodity FX",
@@ -5903,16 +6021,16 @@
       "lean": "dollar-supportive backdrop",
       "real_rate_regime": "Restrictive real yields",
       "usd_valuation": "fair",
-      "trend": "down",
+      "trend": "mixed",
       "fed_path_lean": "hawkish_repricing",
       "liquidity_dir": "supportive",
       "smile_decomp": {
-        "regime": "rates-driven",
+        "regime": "safety-driven",
         "safety_bid_today": false
       }
     },
     "transmission": {
-      "usd_dir": "weakening",
+      "usd_dir": "flat",
       "headwind_for": [
         "US equities",
         "EM equities",
@@ -5927,23 +6045,23 @@
       "unstable": []
     },
     "regime_radar": {
-      "dominant": "intervention_risk",
+      "dominant": "dollar_wrecking_ball",
       "active": [
-        "intervention_risk"
+        "dollar_wrecking_ball"
       ],
       "active_scenarios": [
-        "intervention_risk"
+        "dollar_wrecking_ball"
       ],
       "building_scenarios": []
     },
     "dollar_day": {
-      "z": 0.02,
+      "z": 0.01,
       "flag": false,
       "dir": "down"
     },
     "em": {
       "cnh_basis_state": "neutral",
-      "risk_off_composite": -0.046
+      "risk_off_composite": 0.116
     },
     "stance": {
       "word_en": "Get ready",
@@ -5956,14 +6074,14 @@
     },
     "pairs": [
       {
-        "pair": "AUDUSD",
-        "action": "SHORT",
-        "score": -25.1
+        "pair": "USDMXN",
+        "action": "LONG",
+        "score": 31.5
       },
       {
-        "pair": "USDCHF",
-        "action": "LONG",
-        "score": 24.4
+        "pair": "AUDUSD",
+        "action": "SHORT",
+        "score": -23.8
       },
       {
         "pair": "DXY",
@@ -5973,175 +6091,175 @@
     ],
     "scenario_intensity": [
       {
-        "name": "intervention_risk",
-        "value": 24.7
+        "name": "dollar_wrecking_ball",
+        "value": 60.8
       },
       {
         "name": "carry_unwind",
-        "value": 9.7
+        "value": 25.1
       }
     ],
     "deltas": {
       "usd_trend": {
-        "value": "down",
-        "prev": "mixed",
-        "since": "2026-08-25",
-        "days_in_state": 25
+        "value": "mixed",
+        "prev": "down",
+        "since": "2026-09-23",
+        "days_in_state": 10
       },
       "usd_regime": {
         "value": "Global reflation",
         "prev": "US growth premium",
         "since": "2026-09-04",
-        "days_in_state": 15
+        "days_in_state": 29
       },
       "fx_risk": {
-        "value": "risk-on",
-        "prev": "risk-off",
-        "since": "2026-09-18",
-        "days_in_state": 1
+        "value": "risk-off",
+        "prev": "risk-on",
+        "since": "2026-10-01",
+        "days_in_state": 2
       },
       "real_rate_regime": {
         "value": "Restrictive real yields",
         "prev": null,
         "since": "2026-07-05",
-        "days_in_state": 76
+        "days_in_state": 90
       },
       "fx_liquidity_dir": {
         "value": "supportive",
         "prev": "soft",
         "since": "2026-09-17",
-        "days_in_state": 2
+        "days_in_state": 16
       },
       "fx_regime_radar": {
-        "value": "intervention_risk",
-        "prev": null,
-        "since": "2026-09-18",
-        "days_in_state": 1
+        "value": "dollar_wrecking_ball",
+        "prev": "intervention_risk",
+        "since": "2026-10-01",
+        "days_in_state": 2
       },
       "usd_valuation": {
         "value": "fair",
         "prev": "rich",
         "since": "2026-08-26",
-        "days_in_state": 24
+        "days_in_state": 38
       },
       "usd_positioning": {
         "value": "neutral",
         "prev": "crowded_long",
         "since": "2026-08-21",
-        "days_in_state": 29
+        "days_in_state": 43
       },
       "fed_path_lean": {
         "value": "hawkish_repricing",
         "prev": "steady",
         "since": "2026-09-01",
-        "days_in_state": 18
+        "days_in_state": 32
       },
       "fx_eurusd_action": {
         "value": "FLAT",
         "prev": "SHORT",
         "since": "2026-08-08",
-        "days_in_state": 42
+        "days_in_state": 56
       },
       "fx_gbpusd_action": {
         "value": "FLAT",
         "prev": null,
         "since": "2026-07-19",
-        "days_in_state": 62
+        "days_in_state": 76
       },
       "fx_usdjpy_action": {
         "value": "FLAT",
         "prev": "SHORT",
         "since": "2026-09-12",
-        "days_in_state": 7
+        "days_in_state": 21
       },
       "fx_usdchf_action": {
-        "value": "LONG",
-        "prev": "FLAT",
-        "since": "2026-09-16",
-        "days_in_state": 3
+        "value": "FLAT",
+        "prev": "LONG",
+        "since": "2026-10-01",
+        "days_in_state": 2
       },
       "fx_audusd_action": {
         "value": "SHORT",
         "prev": null,
         "since": "2026-07-19",
-        "days_in_state": 62
+        "days_in_state": 76
       },
       "fx_usdcad_action": {
         "value": "FLAT",
         "prev": null,
         "since": "2026-07-19",
-        "days_in_state": 62
+        "days_in_state": 76
       },
       "fx_usdmxn_action": {
-        "value": "FLAT",
-        "prev": "SHORT",
-        "since": "2026-09-16",
-        "days_in_state": 3
+        "value": "LONG",
+        "prev": "FLAT",
+        "since": "2026-10-01",
+        "days_in_state": 2
       },
       "fx_usdbrl_action": {
         "value": "FLAT",
         "prev": "LONG",
         "since": "2026-08-18",
-        "days_in_state": 32
+        "days_in_state": 46
       },
       "fx_usdcnh_action": {
         "value": "FLAT",
         "prev": null,
         "since": "2026-07-19",
-        "days_in_state": 62
+        "days_in_state": 76
       },
       "fx_dxy_action": {
         "value": null,
         "prev": null,
         "since": "2026-07-19",
-        "days_in_state": 62
+        "days_in_state": 76
       }
     },
-    "smile_decomp_regime": "rates-driven",
+    "smile_decomp_regime": "safety-driven",
     "safety_bid_today": false,
-    "triple_red": true,
+    "triple_red": false,
     "state_changes": {
       "smile_regime": {
         "current": "Global reflation",
         "prev": "US growth premium",
         "changed_on": "2026-09-01",
-        "days_in_state": 18
+        "days_in_state": 32
       },
       "lean": {
         "current": "dollar-supportive backdrop",
         "prev": "mixed backdrop",
         "changed_on": "2026-09-16",
-        "days_in_state": 3
+        "days_in_state": 17
       },
       "risk": {
-        "current": "risk-on",
-        "prev": "risk-off",
-        "changed_on": "2026-09-17",
-        "days_in_state": 2
+        "current": "risk-off",
+        "prev": "risk-on",
+        "changed_on": "2026-09-30",
+        "days_in_state": 3
       },
       "fed_path_lean": {
         "current": "hawkish_repricing",
         "prev": "steady",
         "changed_on": "2026-08-31",
-        "days_in_state": 19
+        "days_in_state": 33
       },
       "liquidity_dir": {
         "current": "supportive",
         "prev": "soft",
         "changed_on": "2026-09-16",
-        "days_in_state": 3
+        "days_in_state": 17
       },
       "trend": {
-        "current": "down",
-        "prev": "mixed",
-        "changed_on": "2026-08-22",
-        "days_in_state": 28
+        "current": "mixed",
+        "prev": "down",
+        "changed_on": "2026-09-18",
+        "days_in_state": 15
       },
       "triple_red": {
-        "current": true,
-        "prev": false,
-        "changed_on": "2026-09-06",
-        "days_in_state": 13
+        "current": false,
+        "prev": true,
+        "changed_on": "2026-09-18",
+        "days_in_state": 15
       },
       "cnh_basis_state": {
         "current": "neutral",
@@ -6150,51 +6268,58 @@
         "days_in_state": null
       },
       "regime_radar_dominant": {
-        "current": "intervention_risk",
+        "current": "dollar_wrecking_ball",
         "prev": null,
-        "changed_on": "2026-09-18",
-        "days_in_state": 1
+        "changed_on": "2026-09-30",
+        "days_in_state": 3
       }
     },
     "regime_radar_dominant_scenario": {
-      "key": "intervention_risk",
-      "intensity": 24.7,
+      "key": "dollar_wrecking_ball",
+      "intensity": 60.8,
       "prob_status": "ok",
-      "p_cond": 0.0282,
-      "base_rate": 0.0353
+      "p_cond": 0.1913,
+      "base_rate": 0.1318
     },
     "strength_extremes": {
       "strongest": {
         "ccy": "CNH",
-        "strength": 0.527
+        "strength": 0.541
       },
       "weakest": {
-        "ccy": "CHF",
-        "strength": -0.706
+        "ccy": "MXN",
+        "strength": -0.952
       },
       "horizon": "1m"
     },
     "display_only": true
   },
   "rates_credit": {
-    "as_of": "2026-09-17",
-    "health_score": 89,
+    "as_of": "2026-10-01",
+    "health_score": 78,
     "health_label": "healthy",
-    "cycle_phase": "late",
-    "recession_risk": 0.21714285714285714,
-    "drawdown_risk": 7.158408656066503,
-    "alarms": [],
-    "verdict_en": "Bond health healthy (89/100), late-cycle. Curve positively sloped. Credit tight. Rates-vol calm.",
+    "cycle_phase": "recession",
+    "recession_risk": 0.17714285714285716,
+    "drawdown_risk": 13.628271906111951,
+    "alarms": [
+      {
+        "key": "sovereign",
+        "severity": "medium",
+        "en": "Euro periphery spreads widening from calm — watch for fragmentation.",
+        "zh": "欧元区外围利差自平静水平扩大 — 留意分化风险。"
+      }
+    ],
+    "verdict_en": "Bond health healthy (78/100), recession. Curve positively sloped. Credit normal. Rates-vol normal.",
     "fed_path": {
-      "policy_rate": 3.63,
-      "implied_bp_12m": 102,
-      "implied_cuts_12m": -4
+      "policy_rate": 3.88,
+      "implied_bp_12m": 82,
+      "implied_cuts_12m": -3
     },
     "bond_compass": {
       "duration": {
-        "lean": 0.25,
+        "lean": 0.24,
         "bucket": "lean_long",
-        "conviction": 0.25,
+        "conviction": 0.24,
         "agreement": 0.6,
         "n_legs": 5,
         "legs": [
@@ -6212,7 +6337,7 @@
             "key": "carry",
             "label_en": "Carry & roll (10y−3m)",
             "label_zh": "套息与滚动（10年−3月）",
-            "value": 0.69,
+            "value": 0.76,
             "weight": 0.7,
             "state": "bullish",
             "note_en": "A steep curve pays positive carry + roll-down to hold duration; inverted = negative carry.",
@@ -6242,46 +6367,46 @@
             "key": "macro",
             "label_en": "Macro impulse (reflation)",
             "label_zh": "宏观动能（再通胀）",
-            "value": -0.14,
+            "value": -0.3,
             "weight": 0.5,
-            "state": "neutral",
+            "state": "bearish",
             "note_en": "Rising copper/gold + breakevens = reflation = a duration headwind.",
             "note_zh": "铜/金比与盈亏平衡通胀上行=再通胀=久期逆风。"
           }
         ]
       },
       "curve_trade": {
-        "lean": "neutral",
-        "rationale_en": "No clear steepener or flattener bias.",
-        "rationale_zh": "无明显陡峭或平坦倾向。",
-        "slope_10y3m": 0.82,
-        "ntfs": 0.96
+        "lean": "steepener",
+        "rationale_en": "Reflation plus a positive curve points to long-end pressure.",
+        "rationale_zh": "再通胀叠加正向曲线，指向长端压力。",
+        "slope_10y3m": 1.07,
+        "ntfs": 1.1
       }
     },
     "bond_cross_asset": {
-      "verdict_en": "Real-10y 2.68% (+40bp/3m), curve 0.82pp, HY OAS 2.7%. 4 markets with a bond tailwind, 7 with a headwind right now."
+      "verdict_en": "Real-10y 2.93% (+69bp/3m), curve 1.07pp, HY OAS 3.12%. 4 markets with a bond tailwind, 7 with a headwind right now."
     },
     "drivers_for": {
       "forex": {
         "note_en": "Rate differentials drive FX — the US 2y policy-path and the real-10y are the carry and value anchors; a US-favorable widening vs foreign rates is a USD tailwind.",
-        "real_10y": 2.68,
-        "term_premium": 0.961
+        "real_10y": 2.93,
+        "term_premium": 1.0203
       },
       "commodities": {
         "note_en": "Real-10y is gold's discount rate (inverse); breakevens track oil/energy; curve slope proxies the growth impulse for copper/oil.",
-        "real_10y": 2.68,
-        "breakeven_10y": 2.33
+        "real_10y": 2.93,
+        "breakeven_10y": 2.36
       },
       "bitcoin": {
         "note_en": "BTC is a long-duration, real-rate-sensitive liquidity asset — falling real-10y + easing plumbing is a tailwind; widening credit / rising MOVE is a risk-off gate.",
-        "real_10y": 2.68,
+        "real_10y": 2.93,
         "risk_off_gate": false
       },
       "equities": {
         "note_en": "Discount-rate channel (real-10y, term premium) compresses long-duration multiples; credit (HY OAS) is the canary that leads equity drawdowns; the SPEED of yield moves (MOVE) matters more than the level.",
-        "hy_oas": 2.7,
-        "credit_canary": false,
-        "stock_bond_corr": 0.35012797337212775
+        "hy_oas": 3.12,
+        "credit_canary": true,
+        "stock_bond_corr": 0.533169377263558
       }
     },
     "display_only": true
@@ -6289,58 +6414,59 @@
   "global_regimes": {
     "us": {
       "market": "us",
-      "date": "2026-09-17",
-      "quad": "Q3",
-      "quad_name": "Stagflation",
-      "cycle_tag": "late",
+      "date": "2026-10-01",
+      "quad": "Q2",
+      "quad_name": "Reflation",
+      "cycle_tag": "mid",
       "liquidity_overlay": "expanding",
-      "confidence": 0.141,
+      "confidence": 0.068,
       "pending_quad": null,
       "stale": false
     },
     "china": {
       "market": "china",
-      "date": "2026-09-18",
-      "quad": "Q4",
-      "quad_name": "Growth-scare",
+      "date": "2026-09-30",
+      "quad": "Q3",
+      "quad_name": "Stagflation",
       "cycle_tag": "mid",
       "liquidity_overlay": "contracting",
-      "pending_quad": null,
-      "confidence": 0.633,
+      "pending_quad": "Q2",
+      "confidence": 0.49,
       "stale": false
     },
     "hk": {
       "market": "hk",
-      "date": "2026-09-18",
+      "date": "2026-09-30",
       "quad": "Q4",
       "quad_name": "Growth-scare",
-      "cycle_tag": "early",
+      "cycle_tag": "mid",
       "liquidity_overlay": "contracting",
-      "pending_quad": null,
-      "confidence": 0.335,
+      "pending_quad": "Q3",
+      "confidence": 0.529,
       "stale": false,
       "risk_state": "Neutral",
       "peg_state": "weak-side (outflow)"
     },
     "canada": {
       "market": "canada",
-      "date": "2026-09-17",
+      "date": "2026-10-01",
       "quad": "Q2",
       "quad_name": "Reflation",
-      "cycle_tag": "late",
+      "cycle_tag": "mid",
       "liquidity_overlay": "neutral",
-      "pending_quad": null,
-      "confidence": 0.64,
+      "pending_quad": "Q3",
+      "confidence": 0.316,
       "stale": false
     },
     "dispersion_note": "3 distinct quads across US/China/HK/Canada",
     "display_only": true
   },
   "commodity_context": {
-    "asof": "2026-09-18",
-    "regime": "Stagflation",
+    "asof": "2026-10-02",
+    "regime": "Reflation",
     "favored": [
-      "Gold",
+      "Copper",
+      "Oil · WTI",
       "Silver"
     ],
     "assets": [
@@ -6348,53 +6474,53 @@
         "label": "Gold",
         "trend": "up",
         "action": "SELL",
-        "conviction": -17.1
+        "conviction": -29.7
       },
       {
         "label": "Silver",
         "trend": "up",
-        "action": "HOLD",
-        "conviction": -7.5
+        "action": "SELL",
+        "conviction": -20.6
       },
       {
         "label": "Copper",
         "trend": "up",
         "action": "HOLD",
-        "conviction": 9.7
+        "conviction": -14.3
       },
       {
         "label": "Oil · WTI",
         "trend": "up",
         "action": "SELL",
-        "conviction": -30.3
+        "conviction": -26.9
       }
     ],
     "index": {
-      "mtf_grade": "TREND-FOLLOW",
-      "ladder_state": "TURN SIGNALED",
+      "mtf_grade": "CAUTION",
+      "ladder_state": "COUNTERTREND BOUNCE",
       "shock_state": "normal",
-      "impulse": -0.245,
-      "chg_1m_pct": -0.6,
-      "headline": "Aligned uptrend across timeframes"
+      "impulse": -1.619,
+      "chg_1m_pct": -5.0,
+      "headline": "Unconfirmed turn within a bearish bigger picture"
     },
     "breadth": {
-      "n_members": 16,
-      "n_up_trend": 14,
-      "pct_up_trend": 0.875,
+      "n_members": 12,
+      "n_up_trend": 10,
+      "pct_up_trend": 0.833,
       "bucket": "broad"
     },
     "confluence": {
       "index_state": "Neutral",
       "standouts": [
         {
-          "name": "heating_oil",
-          "label": "Heating Oil",
-          "state": "Extended — late cycle",
-          "score": 0.0
+          "name": "palladium",
+          "label": "Palladium",
+          "state": "Basing — early bottom signs",
+          "score": 42.9
         },
         {
-          "name": "coffee",
-          "label": "Coffee",
+          "name": "cotton",
+          "label": "Cotton",
           "state": "Washing out — high risk",
           "score": 42.1
         }
@@ -6402,131 +6528,131 @@
     },
     "ratios": {
       "copper_gold": {
-        "value": 0.0015,
-        "chg_20d_pct": 6.47,
+        "value": 0.0016,
+        "chg_20d_pct": 2.3,
         "dir": "up"
       },
       "gold_silver": {
-        "value": 65.4551,
-        "chg_20d_pct": -4.36,
-        "dir": "down"
+        "value": 68.3733,
+        "chg_20d_pct": 4.14,
+        "dir": "up"
       }
     },
     "usd_sensitivity": {
-      "gold": -0.69,
-      "oil": 0.17,
-      "copper": -0.57,
-      "usd_dir": "weakening"
+      "gold": -0.58,
+      "oil": 0.19,
+      "copper": -0.39,
+      "usd_dir": "flat"
     },
     "deltas": {
       "commodity_regime": {
-        "value": "Stagflation",
-        "prev": "Goldilocks",
-        "since": "2026-08-25",
-        "days_in_state": 25
+        "value": "Reflation",
+        "prev": "Stagflation",
+        "since": "2026-09-23",
+        "days_in_state": 10
       },
       "commodity_favored": {
-        "value": "Gold, Silver",
-        "prev": "Gold, Copper",
-        "since": "2026-08-25",
-        "days_in_state": 25
+        "value": "Copper, Oil · WTI, Silver",
+        "prev": "Gold, Silver",
+        "since": "2026-09-23",
+        "days_in_state": 10
       },
       "commodity_mtf_grade": {
-        "value": "TREND-FOLLOW",
-        "prev": "BUY-THE-DIP",
-        "since": "2026-09-17",
-        "days_in_state": 2
+        "value": "CAUTION",
+        "prev": "AVOID",
+        "since": "2026-10-02",
+        "days_in_state": 1
       },
       "commodity_ladder": {
-        "value": "TURN SIGNALED",
-        "prev": "TOP WATCH",
-        "since": "2026-09-17",
-        "days_in_state": 2
+        "value": "COUNTERTREND BOUNCE",
+        "prev": "BOTTOM WATCH",
+        "since": "2026-10-02",
+        "days_in_state": 1
       },
       "commodity_shock_state": {
         "value": "normal",
         "prev": "blowoff",
         "since": "2026-09-04",
-        "days_in_state": 15
+        "days_in_state": 29
       },
       "commodity_confluence_state": {
         "value": "Neutral",
         "prev": "Extended — late cycle",
         "since": "2026-09-01",
-        "days_in_state": 18
+        "days_in_state": 32
       },
       "commodity_breadth_bucket": {
         "value": "broad",
         "prev": null,
         "since": "2026-07-19",
-        "days_in_state": 62
+        "days_in_state": 76
       },
       "gold_action": {
         "value": "SELL",
         "prev": "HOLD",
         "since": "2026-09-09",
-        "days_in_state": 10
+        "days_in_state": 24
       },
       "silver_action": {
-        "value": "HOLD",
-        "prev": "SELL",
-        "since": "2026-09-16",
-        "days_in_state": 3
+        "value": "SELL",
+        "prev": "HOLD",
+        "since": "2026-09-23",
+        "days_in_state": 10
       },
       "copper_action": {
         "value": "HOLD",
         "prev": "BUY",
         "since": "2026-09-11",
-        "days_in_state": 8
+        "days_in_state": 22
       },
       "oil_action": {
         "value": "SELL",
         "prev": "HOLD",
         "since": "2026-09-16",
-        "days_in_state": 3
+        "days_in_state": 17
       }
     },
     "display_only": true
   },
   "intelligence": {
-    "as_of": "2026-09-18",
-    "n_universe": 3427,
+    "as_of": "2026-10-02",
+    "n_universe": 3541,
     "n_priority": 25,
-    "n_actionable": 7,
-    "n_divergences": 36,
+    "n_actionable": 4,
+    "n_divergences": 33,
     "macro_context": {
-      "regime": "Stagflation",
-      "posture": "Stagflation is still the confirmed label, but today's axes read growth +0.07 (improving) / inflation +0.24 (rising) — Reflation on the raw sign rule. Posture: CAREFUL — reduce size, tighten stops, let cash build.",
+      "regime": "Reflation",
+      "posture": "Reflation is still the confirmed label, but today's axes read growth +0.13 (improving) / inflation -0.08 (cooling) — Goldilocks on the raw sign rule. Posture: NEUTRAL — no edge either way; core holdings only, no new conviction bets.",
       "fed_stance": "Hawkish"
     },
     "top_actionable": [
       {
+        "ticker": "MU",
+        "priority": 0.63,
+        "lean": 1,
+        "read": "confirmed"
+      },
+      {
+        "ticker": "EXLS",
+        "priority": 0.593,
+        "lean": -1,
+        "read": "fading"
+      },
+      {
+        "ticker": "WDAY",
+        "priority": 0.49,
+        "lean": -1,
+        "read": "fading"
+      },
+      {
         "ticker": "MSFT",
-        "priority": 0.77,
+        "priority": 0.42,
         "lean": 1,
         "read": "accumulation"
       },
       {
-        "ticker": "NVDA",
-        "priority": 0.735,
-        "lean": 1,
-        "read": "accumulation"
-      },
-      {
-        "ticker": "PRGO",
-        "priority": 0.585,
-        "lean": -1,
-        "read": "fading"
-      },
-      {
-        "ticker": "BAH",
-        "priority": 0.516,
-        "lean": -1,
-        "read": "fading"
-      },
-      {
-        "ticker": "CRWD",
-        "priority": 0.481,
+        "ticker": "MSTR",
+        "priority": 0.42,
         "lean": -1,
         "read": "fading"
       }
@@ -6536,162 +6662,162 @@
   "macro_deltas": {
     "transitions": [
       {
-        "asof": "2026-09-16",
-        "domain": "commodity",
-        "field": "oil_action",
-        "from": "HOLD",
-        "to": "SELL"
-      },
-      {
-        "asof": "2026-09-16",
-        "domain": "china",
-        "field": "china_property_regime",
-        "from": "Contraction (easing)",
-        "to": "Contraction"
-      },
-      {
-        "asof": "2026-09-16",
-        "domain": "intl",
-        "field": "intl_jp_quad",
-        "from": "Q3",
-        "to": "Q2"
-      },
-      {
-        "asof": "2026-09-16",
-        "domain": "intl",
-        "field": "intl_tw_quad",
-        "from": "Q3",
-        "to": "Q2"
-      },
-      {
-        "asof": "2026-09-17",
-        "domain": "us",
-        "field": "us_vrp_state",
-        "from": "normal",
-        "to": "rich (vol overpriced — constructive)"
-      },
-      {
-        "asof": "2026-09-17",
+        "asof": "2026-09-26",
         "domain": "market",
         "field": "market_state_verdict",
         "from": "RISK_ON",
         "to": "MIXED"
       },
       {
-        "asof": "2026-09-17",
+        "asof": "2026-09-26",
+        "domain": "bonds",
+        "field": "bond_curve_lean",
+        "from": "steepener",
+        "to": "neutral"
+      },
+      {
+        "asof": "2026-10-01",
+        "domain": "us",
+        "field": "us_transition_state",
+        "from": "NEW_REGIME",
+        "to": "TRANSITIONING"
+      },
+      {
+        "asof": "2026-10-01",
+        "domain": "us",
+        "field": "us_gamma_regime",
+        "from": "long",
+        "to": "short"
+      },
+      {
+        "asof": "2026-10-01",
+        "domain": "us",
+        "field": "us_vrp_state",
+        "from": "normal",
+        "to": "rich (vol overpriced — constructive)"
+      },
+      {
+        "asof": "2026-10-01",
         "domain": "fx",
         "field": "fx_risk",
         "from": "risk-on",
         "to": "risk-off"
       },
       {
-        "asof": "2026-09-17",
+        "asof": "2026-10-01",
         "domain": "fx",
-        "field": "fx_liquidity_dir",
-        "from": "soft",
-        "to": "supportive"
+        "field": "fx_regime_radar",
+        "from": "intervention_risk",
+        "to": "dollar_wrecking_ball"
       },
       {
-        "asof": "2026-09-17",
+        "asof": "2026-10-01",
+        "domain": "fx",
+        "field": "fx_usdchf_action",
+        "from": "LONG",
+        "to": "FLAT"
+      },
+      {
+        "asof": "2026-10-01",
+        "domain": "fx",
+        "field": "fx_usdmxn_action",
+        "from": "FLAT",
+        "to": "LONG"
+      },
+      {
+        "asof": "2026-10-01",
+        "domain": "bonds",
+        "field": "bond_cycle_phase",
+        "from": "late",
+        "to": "recession"
+      },
+      {
+        "asof": "2026-10-01",
+        "domain": "bonds",
+        "field": "bond_curve_lean",
+        "from": "neutral",
+        "to": "steepener"
+      },
+      {
+        "asof": "2026-10-01",
         "domain": "commodity",
         "field": "commodity_mtf_grade",
-        "from": "BUY-THE-DIP",
-        "to": "TREND-FOLLOW"
+        "from": "TREND-FOLLOW",
+        "to": "AVOID"
       },
       {
-        "asof": "2026-09-17",
+        "asof": "2026-10-01",
         "domain": "commodity",
         "field": "commodity_ladder",
-        "from": "TOP WATCH",
-        "to": "TURN SIGNALED"
+        "from": "TURN SIGNALED",
+        "to": "BOTTOM WATCH"
       },
       {
-        "asof": "2026-09-17",
-        "domain": "canada",
-        "field": "canada_overlay_state",
-        "from": "Neutral",
-        "to": "Risk-off"
+        "asof": "2026-10-01",
+        "domain": "china",
+        "field": "china_quad",
+        "from": "Q4",
+        "to": "Q3"
       },
       {
-        "asof": "2026-09-18",
-        "domain": "us",
-        "field": "us_risk_radar",
-        "from": "caution",
-        "to": "calm"
-      },
-      {
-        "asof": "2026-09-18",
+        "asof": "2026-10-02",
         "domain": "us",
         "field": "us_gamma_regime",
         "from": "short",
         "to": "long"
       },
       {
-        "asof": "2026-09-18",
+        "asof": "2026-10-02",
         "domain": "us",
         "field": "us_vrp_state",
         "from": "rich (vol overpriced — constructive)",
         "to": "normal"
       },
       {
-        "asof": "2026-09-18",
-        "domain": "market",
-        "field": "market_state_verdict",
-        "from": "MIXED",
-        "to": "RISK_ON"
+        "asof": "2026-10-02",
+        "domain": "transmission",
+        "field": "yield_curve_regime",
+        "from": "bear_flattener",
+        "to": "bear_steepener"
       },
       {
-        "asof": "2026-09-18",
-        "domain": "fx",
-        "field": "fx_risk",
-        "from": "risk-off",
-        "to": "risk-on"
+        "asof": "2026-10-02",
+        "domain": "commodity",
+        "field": "commodity_mtf_grade",
+        "from": "AVOID",
+        "to": "CAUTION"
       },
       {
-        "asof": "2026-09-18",
-        "domain": "fx",
-        "field": "fx_regime_radar",
-        "from": null,
-        "to": "intervention_risk"
+        "asof": "2026-10-02",
+        "domain": "commodity",
+        "field": "commodity_ladder",
+        "from": "BOTTOM WATCH",
+        "to": "COUNTERTREND BOUNCE"
       },
       {
-        "asof": "2026-09-18",
-        "domain": "china",
-        "field": "china_fe_band",
-        "from": "Neutral",
-        "to": "Greed"
-      },
-      {
-        "asof": "2026-09-18",
+        "asof": "2026-10-02",
         "domain": "canada",
         "field": "canada_overlay_state",
-        "from": "Risk-off",
-        "to": "Neutral"
-      },
-      {
-        "asof": "2026-09-18",
-        "domain": "canada",
-        "field": "canada_cycle_tag",
-        "from": "mid",
-        "to": "late"
+        "from": "Neutral",
+        "to": "Risk-off"
       }
     ],
     "n_transitions_14d": 20,
     "display_only": true
   },
   "cross_asset_flows": {
-    "asof": "2026-09-18",
+    "asof": "2026-10-02",
     "source": "data/crossasset/latest.json",
     "regime": "mixed / no clear trend",
-    "breadth": 0.31,
+    "breadth": 0.15,
     "correlation": {
       "verdict": "diversified",
-      "absorption_pctile": 0.38,
+      "absorption_pctile": 0.37,
       "n_markets": 6
     },
     "dominant_cluster": [
-      "Commodities",
       "US",
+      "Commodities",
       "Crypto",
       "Dollar"
     ],
@@ -6700,11 +6826,11 @@
       {
         "pair": "copper_gold",
         "ratio": 0.002,
-        "trend": "mid"
+        "trend": "elevated"
       },
       {
         "pair": "gold_silver",
-        "ratio": 65.455,
+        "ratio": 68.373,
         "trend": "mid"
       },
       {
@@ -6714,30 +6840,30 @@
       },
       {
         "pair": "stocks_gold",
-        "ratio": 0.173,
+        "ratio": 0.182,
         "trend": "mid"
       }
     ],
     "carry_summary": "rates_term=positive carry; roll_oil=backwardation (positive)",
     "leadlag": {
       "verdict": "weak_lead",
-      "n_links": 4
+      "n_links": 5
     },
     "global_liquidity_dir": "contracting",
     "funding_state": "calm",
     "confirm": {
       "verdict": "diverge",
-      "n_blind_flags": 1
+      "n_blind_flags": 2
     },
     "shadow": {
       "escalated": false,
-      "pressure_pctile": 0.38
+      "pressure_pctile": 0.37
     },
     "stale": false,
     "display_only": true
   },
   "cycle_pattern": {
-    "as_of": "2026-09-18",
+    "as_of": "2026-10-02",
     "model_epoch": "price_c4414dcb",
     "gate_status": {
       "up": {
@@ -6752,7 +6878,7 @@
       }
     },
     "n_entities": 144,
-    "n_with_hazard": 14,
+    "n_with_hazard": 12,
     "families": {
       "bloc": 7,
       "cn_basket": 22,
@@ -6778,7 +6904,7 @@
   },
   "inflation_intelligence": {
     "schema": "inflation_intelligence.v1",
-    "as_of": "2026-09-18",
+    "as_of": "2026-10-02",
     "available": true,
     "released_state": {
       "available": true,
@@ -6788,7 +6914,7 @@
         "series_id": "CPIAUCSL",
         "label": "Headline CPI-U",
         "observation_period": "2026-08",
-        "observation_age_months": 1,
+        "observation_age_months": 2,
         "index_level": 334.131,
         "mom_pct": 0.396018,
         "yoy_pct": 3.353016,
@@ -6803,7 +6929,7 @@
         "series_id": "CPILFESL",
         "label": "Core CPI-U",
         "observation_period": "2026-08",
-        "observation_age_months": 1,
+        "observation_age_months": 2,
         "index_level": 337.765,
         "mom_pct": 0.289796,
         "yoy_pct": 2.446163,
@@ -6819,7 +6945,7 @@
           "series_id": "STICKCPIM157SFRBATL",
           "label": "Sticky-price CPI proxy",
           "observation_period": "2026-08",
-          "observation_age_months": 1,
+          "observation_age_months": 2,
           "monthly_pct": 0.253932,
           "annualized_3m_pct": 2.456696,
           "annualized_6m_pct": 2.885343,
@@ -6832,7 +6958,7 @@
           "series_id": "FLEXCPIM157SFRBATL",
           "label": "Flexible-price CPI proxy",
           "observation_period": "2026-08",
-          "observation_age_months": 1,
+          "observation_age_months": 2,
           "monthly_pct": 0.810515,
           "annualized_3m_pct": -5.818312,
           "annualized_6m_pct": 7.373536,
@@ -6851,38 +6977,38 @@
         "release_type": "cpi_headline",
         "period": "2026-09",
         "release_date": "2026-10-14",
-        "days_to_release": 26,
+        "days_to_release": 12,
         "target": "mom_sa_pct",
-        "forecast_asof": "2026-09-18T18:53:44Z",
+        "forecast_asof": "2026-10-02T11:05:42Z",
         "model_epoch": "champion_legacy_target_v1",
         "target_epoch": "legacy_cross_vintage_initial_levels_v0",
         "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
-        "inputs_hash": "528d57f394b64e493b2fcca3b27a46f7bd43b18b57699805855c1e3ecf03e309",
+        "inputs_hash": "7d534a5ec6b22740322e12caef69d13990f0a38cb866a2ecd3e6ef7f8629d0f1",
         "primary_forecast_basis": "combined_v1_benchmark_augmented",
         "context_metrics_basis": "champion_legacy_target_v1",
         "basis_warning": "Displayed combined_v1 includes the independent Cleveland benchmark; expectation/context enrichments remain champion-basis and are not a street-consensus comparison.",
         "release_radar_projection": {
-          "point": 0.2741,
-          "p10": 0.0519,
-          "p25": 0.1626,
-          "p50": 0.2725,
-          "p75": 0.4018,
-          "p90": 0.509,
-          "confidence": 0.3199
+          "point": 0.3664,
+          "p10": 0.1443,
+          "p25": 0.255,
+          "p50": 0.3648,
+          "p75": 0.4942,
+          "p90": 0.6014,
+          "confidence": 0.3235
         },
         "combined_display_estimate": {
-          "point": 0.386916,
-          "p10": 0.099229,
-          "p25": 0.235508,
-          "p50": 0.386916,
-          "p75": 0.538324,
-          "p90": 0.674603,
+          "point": 0.481713,
+          "p10": 0.196555,
+          "p25": 0.331636,
+          "p50": 0.481713,
+          "p75": 0.63179,
+          "p90": 0.76687,
           "includes_external_benchmark": true,
           "n_scored_basis": 0,
           "model_epoch": "combined_v1_legacy_target_v1",
           "target_epoch": "mixed_legacy_cross_vintage_v0",
           "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
-          "inputs_hash": "1347c46b90b429ca2e86b880d4aa47d641375fc05ae3fce2e2a171f23c5d8eb0",
+          "inputs_hash": "c97b0e80d2d6114f6621160a5272133b36a7bc6472c9b504202b8bf488970bc1",
           "inputs_used": [
             "champion",
             "v3_factor",
@@ -6891,11 +7017,11 @@
             "cleveland"
           ],
           "input_hashes": {
-            "champion": "528d57f394b64e493b2fcca3b27a46f7bd43b18b57699805855c1e3ecf03e309",
-            "cleveland": "f1b9c133e95f96873d52ca8c19985e2dc68c00e33777706aed32c78cf8566008",
-            "cpi_bridge": "c6a0f7e3db3b0001f558fcff26dd2a9afd7fda6e543d3084cbd025db225f865c",
-            "mf_energy": "7795c3727cecab797cd440fcc356db3125622095a482b07c61d2865b8ab1ee6c",
-            "v3_factor": "75828dc0d712dc6b83ddb1a90bea6914da398d6a5dba8996020ed956423ee752"
+            "champion": "7d534a5ec6b22740322e12caef69d13990f0a38cb866a2ecd3e6ef7f8629d0f1",
+            "cleveland": "68e34eb88be1f92d62d474b5cd1884af3825cd19dd68e47e44bfc54eceaaafee",
+            "cpi_bridge": "fbd733b914dfc2b3e42876fc9de97bcc59ef2b870b76241b74238f9bf3cfb9f0",
+            "mf_energy": "2ab247dae758a4a7e742118d9b5c41d52a11d46b80e647e46089bacaf454c85e",
+            "v3_factor": "e7a998887210343a35826460cf514efde27fdbf26b1ee2beb054481958374512"
           },
           "display_only": true,
           "authority": false
@@ -6924,16 +7050,16 @@
             }
           ]
         },
-        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_2026-09_first_2026-09-18_v1.json",
+        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_2026-09_first_2026-10-02_v1.json",
         "forecast_evolution": {
           "basis": "append_only_release_radar_forward_ledger_champion_path",
-          "cutoff_asof": "2026-09-18",
+          "cutoff_asof": "2026-10-02",
           "cutoff_policy": "exclude_unparseable_or_after_resolved_artifact_asof",
           "excluded_after_cutoff": 0,
           "excluded_unparseable_asof": 0,
-          "n_points": 12,
+          "n_points": 18,
           "first_asof": "2026-09-04",
-          "last_asof": "2026-09-18"
+          "last_asof": "2026-10-02"
         }
       },
       "core": {
@@ -6941,47 +7067,47 @@
         "release_type": "cpi_core",
         "period": "2026-09",
         "release_date": "2026-10-14",
-        "days_to_release": 26,
+        "days_to_release": 12,
         "target": "mom_sa_pct",
-        "forecast_asof": "2026-09-18T18:53:44Z",
+        "forecast_asof": "2026-10-02T11:05:42Z",
         "model_epoch": "champion_legacy_target_v1",
         "target_epoch": "legacy_cross_vintage_initial_levels_v0",
         "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
-        "inputs_hash": "64fa1c181410457f708578198ccfa163f3754df407c0b7c3b240babae406ed29",
+        "inputs_hash": "a0b768351993dc07108eca8f779ec791cdf6c04ba730d222ac3932053ff18523",
         "primary_forecast_basis": "combined_v1_benchmark_augmented",
         "context_metrics_basis": "champion_legacy_target_v1",
         "basis_warning": "Displayed combined_v1 includes the independent Cleveland benchmark; expectation/context enrichments remain champion-basis and are not a street-consensus comparison.",
         "release_radar_projection": {
-          "point": 0.2687,
-          "p10": 0.1016,
-          "p25": 0.1883,
-          "p50": 0.2711,
-          "p75": 0.3451,
-          "p90": 0.4184,
+          "point": 0.2679,
+          "p10": 0.1009,
+          "p25": 0.1875,
+          "p50": 0.2703,
+          "p75": 0.3443,
+          "p90": 0.4177,
           "confidence": 0.0662
         },
         "combined_display_estimate": {
-          "point": 0.24466,
-          "p10": 0.07304,
-          "p25": 0.154338,
-          "p50": 0.24466,
-          "p75": 0.334983,
-          "p90": 0.41628,
+          "point": 0.243394,
+          "p10": 0.072009,
+          "p25": 0.153195,
+          "p50": 0.243394,
+          "p75": 0.333593,
+          "p90": 0.414779,
           "includes_external_benchmark": true,
           "n_scored_basis": 0,
           "model_epoch": "combined_v1_legacy_target_v1",
           "target_epoch": "mixed_legacy_cross_vintage_v0",
           "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
-          "inputs_hash": "9cd1c4403308ea1eb9480288e486a918435d5928574d73fda6760037f96c14f4",
+          "inputs_hash": "2f04a977c3e649cf58e681a344b20be285f16a96418e8bb6837eb9d0bd4f00ef",
           "inputs_used": [
             "champion",
             "v3_factor",
             "cleveland"
           ],
           "input_hashes": {
-            "champion": "64fa1c181410457f708578198ccfa163f3754df407c0b7c3b240babae406ed29",
+            "champion": "a0b768351993dc07108eca8f779ec791cdf6c04ba730d222ac3932053ff18523",
             "cleveland": "300e91b7ce2917b8da2dd066f1775b605276c5b1ec2b2a2f150278058c8c7e81",
-            "v3_factor": "ed2d7e3d045b9036c56d6ede92fbc542c5345751df4cf5fd20ae97a0bcd4a35b"
+            "v3_factor": "5f318780e1a2537d019c56a821f8863d875e3b17550bcf92658c47fa5decc834"
           },
           "display_only": true,
           "authority": false
@@ -7003,61 +7129,61 @@
           "range_violation_legs": [],
           "bridge_known_scope_mismatches": []
         },
-        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_CORE_2026-09_first_2026-09-18_v1.json",
+        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_CORE_2026-09_first_2026-10-02_v1.json",
         "forecast_evolution": {
           "basis": "append_only_release_radar_forward_ledger_champion_path",
-          "cutoff_asof": "2026-09-18",
+          "cutoff_asof": "2026-10-02",
           "cutoff_policy": "exclude_unparseable_or_after_resolved_artifact_asof",
           "excluded_after_cutoff": 0,
           "excluded_unparseable_asof": 0,
-          "n_points": 12,
+          "n_points": 18,
           "first_asof": "2026-09-04",
-          "last_asof": "2026-09-18"
+          "last_asof": "2026-10-02"
         }
       }
     },
     "current_month_proxy_pressure": {
       "available": true,
-      "period": "2026-09",
+      "period": "2026-10",
       "definition": "Public-data and model pressure for the in-progress reference month; not an official CPI observation, not a real-time CPI index, and not a substitute for the next BLS release.",
       "pressure_direction": "upward_price_pressure",
       "headline_model_pressure": {
         "available": true,
         "release_type": "cpi_headline",
-        "period": "2026-09",
-        "release_date": "2026-10-14",
-        "days_to_release": 26,
+        "period": "2026-10",
+        "release_date": "2026-11-10",
+        "days_to_release": 39,
         "target": "mom_sa_pct",
-        "forecast_asof": "2026-09-18T18:53:44Z",
+        "forecast_asof": "2026-10-02T11:05:42Z",
         "model_epoch": "champion_legacy_target_v1",
         "target_epoch": "legacy_cross_vintage_initial_levels_v0",
         "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
-        "inputs_hash": "528d57f394b64e493b2fcca3b27a46f7bd43b18b57699805855c1e3ecf03e309",
+        "inputs_hash": "9651a1b05c4e4715e2d2f9b1c3038440b515565f978689fd7a86f8136a73f298",
         "primary_forecast_basis": "combined_v1_benchmark_augmented",
         "context_metrics_basis": "champion_legacy_target_v1",
         "basis_warning": "Displayed combined_v1 includes the independent Cleveland benchmark; expectation/context enrichments remain champion-basis and are not a street-consensus comparison.",
         "release_radar_projection": {
-          "point": 0.2741,
-          "p10": 0.0519,
-          "p25": 0.1626,
-          "p50": 0.2725,
-          "p75": 0.4018,
-          "p90": 0.509,
-          "confidence": 0.3199
+          "point": 0.2747,
+          "p10": 0.0525,
+          "p25": 0.1632,
+          "p50": 0.273,
+          "p75": 0.4024,
+          "p90": 0.5096,
+          "confidence": 0.2876
         },
         "combined_display_estimate": {
-          "point": 0.386916,
-          "p10": 0.099229,
-          "p25": 0.235508,
-          "p50": 0.386916,
-          "p75": 0.538324,
-          "p90": 0.674603,
+          "point": 0.292599,
+          "p10": 0.014811,
+          "p25": 0.146401,
+          "p50": 0.292599,
+          "p75": 0.438798,
+          "p90": 0.570388,
           "includes_external_benchmark": true,
           "n_scored_basis": 0,
           "model_epoch": "combined_v1_legacy_target_v1",
           "target_epoch": "mixed_legacy_cross_vintage_v0",
           "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
-          "inputs_hash": "1347c46b90b429ca2e86b880d4aa47d641375fc05ae3fce2e2a171f23c5d8eb0",
+          "inputs_hash": "d7096f9c21961ca81f40fdeaaec114f3bfcac5470309904dede8cdb2f55d5dc3",
           "inputs_used": [
             "champion",
             "v3_factor",
@@ -7066,26 +7192,28 @@
             "cleveland"
           ],
           "input_hashes": {
-            "champion": "528d57f394b64e493b2fcca3b27a46f7bd43b18b57699805855c1e3ecf03e309",
-            "cleveland": "f1b9c133e95f96873d52ca8c19985e2dc68c00e33777706aed32c78cf8566008",
-            "cpi_bridge": "c6a0f7e3db3b0001f558fcff26dd2a9afd7fda6e543d3084cbd025db225f865c",
-            "mf_energy": "7795c3727cecab797cd440fcc356db3125622095a482b07c61d2865b8ab1ee6c",
-            "v3_factor": "75828dc0d712dc6b83ddb1a90bea6914da398d6a5dba8996020ed956423ee752"
+            "champion": "9651a1b05c4e4715e2d2f9b1c3038440b515565f978689fd7a86f8136a73f298",
+            "cleveland": "e1eca974e4ea362fb681888033b49f672a681f687f1beb43c132e965aa6d27e2",
+            "cpi_bridge": "29b7d70cc39470a0bfd9221f33dfd05104c93656559ddba1a08cadf138bf83fa",
+            "mf_energy": "3a127d3f7b647bdcf2339a930fbd675b65aada03780b765d06a9695e98111944",
+            "v3_factor": "3efc0be581f3bf143894111c54b7719862f6b591b121411670eeb51daffa6f63"
           },
           "display_only": true,
           "authority": false
         },
         "coverage": {
-          "input_completeness": 1.0,
-          "radar_weight_coverage": 1.0,
+          "input_completeness": 0.8889,
+          "radar_weight_coverage": 0.888889,
           "radar_fresh_proxy_coverage": 0.777778,
           "radar_non_vintaged_share": 0.222222,
           "model_maturity_n": 0,
-          "bridge_modelled_weight_coverage": 0.9351,
-          "bridge_prior_driven_share": 0.06486,
+          "bridge_modelled_weight_coverage": 0.9062,
+          "bridge_prior_driven_share": 0.09381,
           "bridge_weight_basis": "bls_dec_2025_starting_relative_importance_fixed_approximation",
           "bridge_weight_basis_warning": "BLS relative importance evolves monthly as component indexes move; this legacy challenger holds December 2025 values fixed",
-          "absent_legs": [],
+          "absent_legs": [
+            "gasoline_mom"
+          ],
           "revision_optimistic_legs": [
             "shelter_nowcast"
           ],
@@ -7099,64 +7227,64 @@
             }
           ]
         },
-        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_2026-09_first_2026-09-18_v1.json",
+        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_2026-10_first_2026-10-02_v1.json",
         "forecast_evolution": {
           "basis": "append_only_release_radar_forward_ledger_champion_path",
-          "cutoff_asof": "2026-09-18",
+          "cutoff_asof": "2026-10-02",
           "cutoff_policy": "exclude_unparseable_or_after_resolved_artifact_asof",
           "excluded_after_cutoff": 0,
           "excluded_unparseable_asof": 0,
-          "n_points": 12,
-          "first_asof": "2026-09-04",
-          "last_asof": "2026-09-18"
+          "n_points": 2,
+          "first_asof": "2026-10-01",
+          "last_asof": "2026-10-02"
         }
       },
       "core_model_pressure": {
         "available": true,
         "release_type": "cpi_core",
-        "period": "2026-09",
-        "release_date": "2026-10-14",
-        "days_to_release": 26,
+        "period": "2026-10",
+        "release_date": "2026-11-10",
+        "days_to_release": 39,
         "target": "mom_sa_pct",
-        "forecast_asof": "2026-09-18T18:53:44Z",
+        "forecast_asof": "2026-10-02T11:05:42Z",
         "model_epoch": "champion_legacy_target_v1",
         "target_epoch": "legacy_cross_vintage_initial_levels_v0",
         "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
-        "inputs_hash": "64fa1c181410457f708578198ccfa163f3754df407c0b7c3b240babae406ed29",
+        "inputs_hash": "6892d37b2b378f4c6177945a4130fa323073b94be4c7da28d2ae79155ecb23ad",
         "primary_forecast_basis": "combined_v1_benchmark_augmented",
         "context_metrics_basis": "champion_legacy_target_v1",
         "basis_warning": "Displayed combined_v1 includes the independent Cleveland benchmark; expectation/context enrichments remain champion-basis and are not a street-consensus comparison.",
         "release_radar_projection": {
-          "point": 0.2687,
-          "p10": 0.1016,
-          "p25": 0.1883,
-          "p50": 0.2711,
-          "p75": 0.3451,
-          "p90": 0.4184,
+          "point": 0.2677,
+          "p10": 0.1006,
+          "p25": 0.1873,
+          "p50": 0.2701,
+          "p75": 0.3441,
+          "p90": 0.4174,
           "confidence": 0.0662
         },
         "combined_display_estimate": {
-          "point": 0.24466,
-          "p10": 0.07304,
-          "p25": 0.154338,
-          "p50": 0.24466,
-          "p75": 0.334983,
-          "p90": 0.41628,
+          "point": 0.24308,
+          "p10": 0.071496,
+          "p25": 0.152776,
+          "p50": 0.24308,
+          "p75": 0.333384,
+          "p90": 0.414664,
           "includes_external_benchmark": true,
           "n_scored_basis": 0,
           "model_epoch": "combined_v1_legacy_target_v1",
           "target_epoch": "mixed_legacy_cross_vintage_v0",
           "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
-          "inputs_hash": "9cd1c4403308ea1eb9480288e486a918435d5928574d73fda6760037f96c14f4",
+          "inputs_hash": "5d798b667232e07af79610fa5950cdd6de209b8b56b876b3a136e6bcae04cdd9",
           "inputs_used": [
             "champion",
             "v3_factor",
             "cleveland"
           ],
           "input_hashes": {
-            "champion": "64fa1c181410457f708578198ccfa163f3754df407c0b7c3b240babae406ed29",
-            "cleveland": "300e91b7ce2917b8da2dd066f1775b605276c5b1ec2b2a2f150278058c8c7e81",
-            "v3_factor": "ed2d7e3d045b9036c56d6ede92fbc542c5345751df4cf5fd20ae97a0bcd4a35b"
+            "champion": "6892d37b2b378f4c6177945a4130fa323073b94be4c7da28d2ae79155ecb23ad",
+            "cleveland": "c5e7396895b6933df5f18e9542b97fe57735ce25e2f79d779e79f84b78d6e538",
+            "v3_factor": "6e323fd8d220afe17aa1c17aaf91c0fc1ae17f2030b86724d8f625599934266b"
           },
           "display_only": true,
           "authority": false
@@ -7178,29 +7306,31 @@
           "range_violation_legs": [],
           "bridge_known_scope_mismatches": []
         },
-        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_CORE_2026-09_first_2026-09-18_v1.json",
+        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_CORE_2026-10_first_2026-10-02_v1.json",
         "forecast_evolution": {
           "basis": "append_only_release_radar_forward_ledger_champion_path",
-          "cutoff_asof": "2026-09-18",
+          "cutoff_asof": "2026-10-02",
           "cutoff_policy": "exclude_unparseable_or_after_resolved_artifact_asof",
           "excluded_after_cutoff": 0,
           "excluded_unparseable_asof": 0,
-          "n_points": 12,
-          "first_asof": "2026-09-04",
-          "last_asof": "2026-09-18"
+          "n_points": 2,
+          "first_asof": "2026-10-01",
+          "last_asof": "2026-10-02"
         }
       },
       "coverage": {
-        "input_completeness": 1.0,
-        "radar_weight_coverage": 1.0,
+        "input_completeness": 0.8889,
+        "radar_weight_coverage": 0.888889,
         "radar_fresh_proxy_coverage": 0.777778,
         "radar_non_vintaged_share": 0.222222,
         "model_maturity_n": 0,
-        "bridge_modelled_weight_coverage": 0.9351,
-        "bridge_prior_driven_share": 0.06486,
+        "bridge_modelled_weight_coverage": 0.9062,
+        "bridge_prior_driven_share": 0.09381,
         "bridge_weight_basis": "bls_dec_2025_starting_relative_importance_fixed_approximation",
         "bridge_weight_basis_warning": "BLS relative importance evolves monthly as component indexes move; this legacy challenger holds December 2025 values fixed",
-        "absent_legs": [],
+        "absent_legs": [
+          "gasoline_mom"
+        ],
         "revision_optimistic_legs": [
           "shelter_nowcast"
         ],
@@ -7221,7 +7351,7 @@
           "series_id": "STICKCPIM157SFRBATL",
           "label": "Sticky-price CPI proxy",
           "observation_period": "2026-08",
-          "observation_age_months": 1,
+          "observation_age_months": 2,
           "monthly_pct": 0.253932,
           "annualized_3m_pct": 2.456696,
           "annualized_6m_pct": 2.885343,
@@ -7234,7 +7364,7 @@
           "series_id": "FLEXCPIM157SFRBATL",
           "label": "Flexible-price CPI proxy",
           "observation_period": "2026-08",
-          "observation_age_months": 1,
+          "observation_age_months": 2,
           "monthly_pct": 0.810515,
           "annualized_3m_pct": -5.818312,
           "annualized_6m_pct": 7.373536,
@@ -7258,7 +7388,7 @@
           "available": true,
           "column": "core_cpi",
           "freshness_status": "current_with_publication_lag",
-          "observation_age_months": 1,
+          "observation_age_months": 2,
           "observation_period": "2026-08",
           "observations": 835,
           "path": "data/fred/CPILFESL.parquet",
@@ -7268,7 +7398,7 @@
           "available": true,
           "column": "flex_cpi",
           "freshness_status": "current_with_publication_lag",
-          "observation_age_months": 1,
+          "observation_age_months": 2,
           "observation_period": "2026-08",
           "observations": 715,
           "path": "data/fred/FLEXCPIM157SFRBATL.parquet",
@@ -7278,7 +7408,7 @@
           "available": true,
           "column": "headline_cpi",
           "freshness_status": "current_with_publication_lag",
-          "observation_age_months": 1,
+          "observation_age_months": 2,
           "observation_period": "2026-08",
           "observations": 955,
           "path": "data/fred/CPIAUCSL.parquet",
@@ -7288,7 +7418,7 @@
           "available": true,
           "column": "sticky_cpi",
           "freshness_status": "current_with_publication_lag",
-          "observation_age_months": 1,
+          "observation_age_months": 2,
           "observation_period": "2026-08",
           "observations": 715,
           "path": "data/fred/STICKCPIM157SFRBATL.parquet",
@@ -7299,12 +7429,12 @@
         "available": true,
         "malformed_rows": 0,
         "path": "data/release_forecast/forward_ledger.jsonl",
-        "rows_read": 1529
+        "rows_read": 1801
       },
       "release_radar_latest": {
-        "asof": "2026-09-18T18:53:44Z",
+        "asof": "2026-10-02T11:05:42Z",
         "available": true,
-        "cpi_entries": 2,
+        "cpi_entries": 4,
         "path": "data/release_forecast/latest.json"
       }
     },
@@ -7323,9 +7453,50 @@
     "authority_note": "DISPLAY/CONTEXT ONLY. released_state is latest-local official CPI index history, next_release_forecast is a Release Radar forecast, and current_month_proxy_pressure is an in-progress model/proxy rather than an official CPI observation. Nothing here may originate, score, rank, gate, size, escalate, or execute a signal or trade."
   },
   "rotation_events": {
-    "as_of": "2026-09-17",
-    "n_active": 0,
-    "events": null,
+    "as_of": "2026-10-01",
+    "n_active": 2,
+    "events": [
+      {
+        "sector": "xlk",
+        "from_leg": {
+          "key": "software",
+          "name_en": "Software (non-AI)"
+        },
+        "to_leg": {
+          "key": "ai_semis",
+          "name_en": "AI semiconductors"
+        },
+        "severity": "notable",
+        "day_n": 4,
+        "started": "2026-09-28",
+        "confirmed_tonight": false,
+        "event_type": "handoff",
+        "to_sector": "xlk",
+        "from_sector": "xlk",
+        "severity_effective": "notable",
+        "health_state": "active"
+      },
+      {
+        "sector": "xlk",
+        "from_leg": {
+          "key": "software",
+          "name_en": "Software (non-AI)"
+        },
+        "to_leg": {
+          "key": "semicap",
+          "name_en": "Semicap equipment"
+        },
+        "severity": "standard",
+        "day_n": 4,
+        "started": "2026-09-28",
+        "confirmed_tonight": false,
+        "event_type": "handoff",
+        "to_sector": "xlk",
+        "from_sector": "xlk",
+        "severity_effective": "standard",
+        "health_state": "active"
+      }
+    ],
     "n_truncated": 0,
     "ruler": {
       "n": 8,
@@ -7338,114 +7509,114 @@
   },
   "stock_personality_summary": {
     "available": true,
-    "as_of": "2026-09-17",
-    "n_tickers": 2941,
+    "as_of": "2026-10-01",
+    "n_tickers": 2939,
     "coverage": {
-      "archetype": 0.712,
-      "dna_class": 0.387,
-      "ownership": 0.422,
-      "micro": 0.18,
-      "chart": 0.777
+      "archetype": 0.727,
+      "dna_class": 0.386,
+      "ownership": 0.423,
+      "micro": 0.182,
+      "chart": 0.527
     },
     "top_archetype_shares": [
       [
         "speculative_unprofitable",
-        0.39
+        0.3814
       ],
       [
         "rate_sensitive",
-        0.1308
+        0.1292
       ],
       [
         "financial",
-        0.1055
+        0.1025
       ]
     ],
     "top_chart_shares": [
       [
         "mixed_chart",
-        0.4362
-      ],
-      [
-        "basing_accumulator",
-        0.2337
+        0.6581
       ],
       [
         "failed_breakout_trap",
-        0.1487
+        0.1718
+      ],
+      [
+        "mean_reversion_rubber_band",
+        0.0788
       ]
     ],
-    "n_tinderbox": 341,
-    "n_event_override": 12,
+    "n_tinderbox": 300,
+    "n_event_override": 13,
     "display_only": true
   },
   "context_risk": {
     "available": true,
-    "as_of": "2026-09-18T08:47Z",
+    "as_of": "2026-10-01T21:43Z",
     "board_top_overweights": [
       {
-        "archetype": "quality_compounder",
-        "ratio": 2.955,
-        "member_share": 0.0789,
-        "universe_share": 0.0267,
-        "member_n": 3
+        "archetype": "high_beta_momentum",
+        "ratio": 4.686,
+        "member_share": 0.0656,
+        "universe_share": 0.014,
+        "member_n": 4
       },
       {
-        "archetype": "broken_growth",
-        "ratio": 2.684,
-        "member_share": 0.0526,
-        "universe_share": 0.0196,
-        "member_n": 2
+        "archetype": "mixed",
+        "ratio": 2.489,
+        "member_share": 0.2131,
+        "universe_share": 0.0856,
+        "member_n": 13
       },
       {
-        "archetype": "secular_growth",
-        "ratio": 2.447,
-        "member_share": 0.0526,
-        "universe_share": 0.0215,
-        "member_n": 2
+        "archetype": "deep_value",
+        "ratio": 2.485,
+        "member_share": 0.0164,
+        "universe_share": 0.0066,
+        "member_n": 1
       }
     ],
-    "weighted_p10_21d": -0.0889,
-    "weighted_median_21d": 0.0099,
+    "weighted_p10_21d": -0.0817,
+    "weighted_median_21d": 0.0122,
     "p10_interpretation": "per-type share-weighted average of marginal worst-decile returns; NOT a portfolio P10 — diversification and cross-type correlation are not modeled.",
-    "n_board": 43,
+    "n_board": 62,
     "regime_context": {
-      "quad": "Q3",
+      "quad": "Q2",
       "liq": "expanding",
-      "as_of": "2026-09-17"
+      "as_of": "2026-09-30"
     },
     "insufficient_note": null,
-    "covered_weight": 0.9211,
-    "covered_weight_note": "Regime statistics cover 92% of board archetype weight (remaining cells had insufficient n).",
+    "covered_weight": 1.0,
+    "covered_weight_note": null,
     "survivorship_watermark": "223-name survivorship-biased deep corpus (display-only)",
     "display_only": true
   },
   "liquidity_plumbing": {
     "available": true,
-    "asof": "2026-09-17",
+    "asof": "2026-10-01",
     "schema": "neuralweb.liquidity_plumbing.v1",
-    "state": "mechanical_liquidity_tailwind",
-    "summary": "Net liquidity is expanding on Treasury/RRP plumbing (e.g. the Treasury spending down its cash account), not Fed asset growth — a real but transient tailwind. Credit and funding stress gauges are not confirming stress. RRP buffer is empty — the next liquidity drain hits bank reserves directly.",
-    "netliq_bn": 5754.564,
-    "netliq_chg_20d_bn": -54.412,
-    "netliq_chg_65d_bn": 21.001,
-    "netliq_pctile_expanding": 0.756722,
+    "state": "stress_liquidity_expansion",
+    "summary": "Net liquidity is technically expanding but credit/funding stress gauges are confirming stress — expansion quality is poor; treat with caution, not as a clean tailwind. RRP buffer is empty — the next liquidity drain hits bank reserves directly.",
+    "netliq_bn": 5758.635,
+    "netliq_chg_20d_bn": -33.68,
+    "netliq_chg_65d_bn": -157.569,
+    "netliq_pctile_expanding": 0.756618,
     "overlay": "expanding",
     "quality_label": "stress-expansion",
-    "fed_share": 0.24,
+    "fed_share": 0.19,
     "mechanical": true,
-    "stress_confirming": false,
-    "rrp_bn": 0.276,
-    "rrp_chg_20d_bn": -0.041,
+    "stress_confirming": true,
+    "rrp_bn": 0.35,
+    "rrp_chg_20d_bn": -0.175,
     "rrp_buffer_state": "exhausted",
-    "fed_assets_bn": 6746.548,
-    "fed_assets_chg_20d_bn": 0.849,
+    "fed_assets_bn": 6743.031,
+    "fed_assets_chg_20d_bn": 5.827,
     "fed_policy_stance": "hawkish",
-    "fed_asof": "2026-09-17",
-    "tga_bn": 991.708,
-    "tga_chg_20d_bn": 29.756,
-    "net_issuance_20d_bn": 137.917,
-    "treasury_asof": "2026-09-16",
+    "fed_asof": "2026-10-01",
+    "tga_bn": 984.046,
+    "tga_chg_20d_bn": 41.253,
+    "net_issuance_20d_bn": -2.035,
+    "treasury_asof": "2026-09-30",
     "tga_impulse_active": false,
     "tga_impulse_direction": null,
     "tga_impulse_magnitude_bn": null,
@@ -7468,25 +7639,25 @@
   "rebalance_pulse": {
     "available": true,
     "display_only": true,
-    "date": "2026-09-17",
+    "date": "2026-10-01",
     "class": "quiet",
-    "market_vol_ratio": 1.059,
-    "up_share": 0.687,
-    "basis": "updown",
+    "market_vol_ratio": 1.077,
+    "up_share": null,
+    "basis": "volume_only",
     "n_megacap_rvol2": 0,
     "megacap_rvol": {
-      "TMUS": 1.74,
-      "AMD": 1.72,
-      "BRK-B": 1.58,
-      "CRM": 1.34,
-      "MRK": 1.28,
-      "BAC": 1.24,
-      "TSLA": 1.18,
-      "JPM": 1.17
+      "BAC": 1.78,
+      "HD": 1.69,
+      "GOOGL": 1.42,
+      "JNJ": 1.4,
+      "NFLX": 1.37,
+      "GOOG": 1.26,
+      "MA": 1.21,
+      "BRK-B": 1.18
     },
     "is_quarter_end": false,
-    "td_to_quarter_end": 9,
-    "in_qtr_end_window": false,
+    "td_to_quarter_end": -1,
+    "in_qtr_end_window": true,
     "is_russell_recon_session": false,
     "in_recon_week": false,
     "is_sp_rebalance_session": false,
@@ -7500,50 +7671,27 @@
     }
   },
   "china_market_state": {
-    "available": true,
-    "as_of": "2026-09-18",
-    "schema": "china_market_state.v1",
-    "phase": {
-      "label": "REPAIR",
-      "confidence": 0.667
-    },
-    "participation": {
-      "regime": "unclear",
-      "who_controls": "mixed",
-      "risk": "normal"
-    },
-    "policy_impulse": "neutral",
-    "microstructure": {
-      "limit_up_count": 12.0,
-      "limit_down_count": 0.0,
-      "sealed_up_close": 10.0,
-      "failed_up_seal_count": 2.0,
-      "lianban_max": 1.0,
-      "chase_veto_count": 6,
-      "fillable_count": 66
-    },
-    "contradictions_count": 0,
-    "top_contradiction": null,
-    "data_gaps_count": 3,
-    "top_data_gap": "participation: zt_breadth:null on 2026-09-17",
+    "available": false,
     "authority": "context_only",
+    "note": "stale: as_of 2026-10-01 exceeds 30.0h SLA",
+    "as_of": "2026-10-01",
     "display_only": true
   },
   "thematic_state": {
     "available": true,
-    "as_of": "2026-09-18",
+    "as_of": "2026-10-01",
     "n_themes": 18,
     "stage_counts": {
       "WATCH": 13,
       "PRECIPICE": 2,
-      "BROADENING": 2,
-      "RE-RATING": 1
+      "BROADENING": 1,
+      "RE-RATING": 2
     },
     "n_falsifiers_fired": 5,
     "falsifiers_fired": [
       {
-        "theme_id": "ai_semiconductors",
-        "falsifier_id": "ai_semi_f2"
+        "theme_id": "semicap_equipment",
+        "falsifier_id": "wfe_f2"
       },
       {
         "theme_id": "nuclear_power",
@@ -7562,11 +7710,16 @@
         "falsifier_id": "ag_f1"
       }
     ],
-    "n_stale_legs": 6,
+    "n_stale_legs": 9,
     "noteworthy": [
       {
-        "theme_id": "ai_semiconductors",
+        "theme_id": "semicap_equipment",
         "reason": "falsifier_fired",
+        "stage": "WATCH"
+      },
+      {
+        "theme_id": "data_center_power",
+        "reason": "tight_bottleneck+stale",
         "stage": "WATCH"
       },
       {
@@ -7581,8 +7734,8 @@
       },
       {
         "theme_id": "glp1_obesity",
-        "reason": "stage=BROADENING",
-        "stage": "BROADENING"
+        "reason": "stage=RE-RATING, tight_bottleneck+stale",
+        "stage": "RE-RATING"
       },
       {
         "theme_id": "space_satellite",
@@ -7612,19 +7765,22 @@
   "qi_note": "pending joint QI border ruling (masterplan W1) — QI produces the aggregate, Neural Web consumes; do not aggregate raw qbus here (border law §9)",
   "live_overlay": {
     "source": "data/regime/latest.json:freshness",
-    "asof": "2026-09-17",
-    "built_at": "2026-09-18T15:31:47Z",
+    "asof": "2026-10-01",
+    "built_at": "2026-10-02T06:28:46Z",
     "age_days": 1,
     "stale": false
   },
   "contradictions": {
-    "n": 2,
+    "n": 4,
     "by_severity": {
+      "note": 2,
       "tension": 2
     },
     "top_pair_ids": [
+      "regime_vector-vs-risk_radar",
       "briefing-divergences",
-      "cross_asset_confirm-diverge"
+      "cross_asset_confirm-diverge",
+      "liquidity_overlay_expanding-vs-quality_stress"
     ],
     "gaps": [],
     "display_only": true,
@@ -7633,23 +7789,23 @@
   "intl_risk": {
     "em_stress_state": "calm",
     "two_tier_state": "quiet",
-    "total_connectedness": 81.0,
+    "total_connectedness": 81.4,
     "top_transmitters": [
       {
-        "ticker": "EWA",
-        "to_others_pct": 130.5
-      },
-      {
-        "ticker": "EWG",
-        "to_others_pct": 126.0
-      },
-      {
         "ticker": "EWC",
-        "to_others_pct": 118.5
+        "to_others_pct": 132.3
+      },
+      {
+        "ticker": "INDA",
+        "to_others_pct": 130.9
+      },
+      {
+        "ticker": "EWA",
+        "to_others_pct": 119.9
       }
     ],
-    "swap_lines_bn": 0.1,
-    "dollar_regime": "rates-driven",
+    "swap_lines_bn": 0.2,
+    "dollar_regime": "safety-driven",
     "display_only": true
   },
   "contagion_regime": {
@@ -7657,64 +7813,64 @@
     "origin_complex": "ai_hardware",
     "intl_markets_in_alert": [
       {
+        "market": "au",
+        "state": "elevated",
+        "asof": "2026-10-02",
+        "mature": true
+      },
+      {
         "market": "cn",
         "state": "risk-off",
-        "asof": "2026-09-18",
+        "asof": "2026-09-30",
+        "mature": true
+      },
+      {
+        "market": "hk",
+        "state": "elevated",
+        "asof": "2026-09-30",
         "mature": true
       },
       {
         "market": "tw",
-        "state": "elevated",
-        "asof": "2026-09-18",
+        "state": "risk-off",
+        "asof": "2026-10-01",
         "mature": true
       }
     ],
     "leadership_state": "BROKEN",
     "leadership_detail": {
-      "z_vel": -0.4265,
-      "med_dd": -0.3035,
+      "z_vel": 0.4472,
+      "med_dd": -0.1102,
       "state_since": "2026-07-07"
     },
-    "n_alert": 2,
-    "d3_alert": 0,
+    "n_alert": 1,
+    "d3_alert": -2,
     "n_mature": 10,
     "immature": [],
     "us_spillover": "quiet",
-    "asof": "2026-09-18",
+    "asof": "2026-10-01",
     "degraded": [],
     "is_context_only": true,
     "display_only": true
   },
   "special_situations": {
-    "asof": "2026-09-18",
+    "asof": "2026-10-02",
     "counts": {
-      "total": 1430,
-      "new_today": 102,
+      "total": 1492,
+      "new_today": 66,
       "grade_a": 0,
-      "grade_b": 2,
-      "with_arb": 17,
-      "cross_border": 535
+      "grade_b": 1,
+      "with_arb": 23,
+      "cross_border": 538
     },
     "setups_display": [
       {
-        "ticker": "DBI",
-        "company": "Designer Brands Inc.",
-        "category": "Activist Campaigns",
-        "stage": "",
+        "ticker": "HYPR",
+        "company": "Hyperfine, Inc.",
+        "category": "Delistings",
+        "stage": "notice",
         "grade": "B",
-        "score": 60.0,
-        "why": [
-          "Buy setup live",
-          "Deeply oversold (weeks)"
-        ]
-      },
-      {
-        "ticker": "GNRC",
-        "company": "GENERAC HOLDINGS INC.",
-        "category": "Other",
-        "stage": "announced",
-        "grade": "B",
-        "score": 56.0,
+        "score": 55.0,
         "why": [
           "Buy setup live",
           "Deeply oversold (weeks)",
@@ -7722,197 +7878,193 @@
         ]
       },
       {
-        "ticker": "DLX",
-        "company": "Deluxe Corporation",
-        "category": "Acquisitions",
-        "stage": "",
-        "grade": "C",
-        "score": 54.0,
-        "why": [
-          "Buy setup live",
-          "Deeply oversold (weeks)"
-        ]
-      },
-      {
-        "ticker": "RKLB",
-        "company": "Rocket Lab Corp",
-        "category": "Acquisitions",
+        "ticker": "EBF",
+        "company": "ENNIS, INC.",
+        "category": "Capital Returns",
         "stage": "announced",
-        "grade": "C",
-        "score": 45.0,
-        "why": [
-          "Buy setup live",
-          "EDGAR filing confirmed"
-        ]
-      },
-      {
-        "ticker": "AVGO",
-        "company": "Broadcom Inc.",
-        "category": "Acquisitions",
-        "stage": "registered",
-        "grade": "C",
-        "score": 45.0,
-        "why": [
-          "Deeply oversold (weeks)",
-          "Sector leading rotation",
-          "Strong history for this event type"
-        ]
-      },
-      {
-        "ticker": "PI",
-        "company": "IMPINJ INC",
-        "category": "Issuer Tenders",
-        "stage": "live",
         "grade": "C",
         "score": 42.0,
         "why": [
-          "Setup approaching entry level",
-          "Sector leading rotation",
-          "Strong history for this event type"
+          "Buy setup live",
+          "EDGAR filing confirmed"
+        ]
+      },
+      {
+        "ticker": "GDEV",
+        "company": "GDEV Inc.",
+        "category": "Issuer Tenders",
+        "stage": "live",
+        "grade": "C",
+        "score": 40.0,
+        "why": [
+          "Deeply oversold (weeks)",
+          "Strong history for this event type",
+          "EDGAR filing confirmed"
+        ]
+      },
+      {
+        "ticker": "SANG",
+        "company": "Sangoma Technologies Corp",
+        "category": "Acquisitions",
+        "stage": "initiated",
+        "grade": "C",
+        "score": 40.0,
+        "why": [
+          "Strong history for this event type",
+          "EDGAR filing confirmed"
+        ]
+      },
+      {
+        "ticker": "UNL",
+        "company": "United States 12 Month Natural Gas Fund, LP",
+        "category": "Going-Private",
+        "stage": "live",
+        "grade": "C",
+        "score": 40.0,
+        "why": [
+          "Deeply oversold (weeks)",
+          "Strong history for this event type",
+          "EDGAR filing confirmed"
+        ]
+      },
+      {
+        "ticker": "FITB-PK",
+        "company": "FIFTH THIRD BANCORP",
+        "category": "Issuer Tenders",
+        "stage": "live",
+        "grade": "C",
+        "score": 40.0,
+        "why": [
+          "Deeply oversold (weeks)",
+          "Strong history for this event type",
+          "EDGAR filing confirmed"
         ]
       }
     ],
     "changes": [
       {
         "kind": "new",
-        "ticker": "CAVA",
-        "category": "Capital Returns",
-        "from": null,
-        "to": "announced"
-      },
-      {
-        "kind": "new",
-        "ticker": "ACVA",
-        "category": "Tender Offers",
-        "from": null,
-        "to": "live"
-      },
-      {
-        "kind": "new",
-        "ticker": "LOOP",
-        "category": "Strategic Reviews",
-        "from": null,
-        "to": "initiated"
-      },
-      {
-        "kind": "new",
-        "ticker": "VITL",
+        "ticker": "MAT",
         "category": "Strategic Reviews",
         "from": null,
         "to": "announced"
       },
       {
         "kind": "new",
-        "ticker": "XRPNW",
+        "ticker": "TLK",
+        "category": "Spin-Offs",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "THRMV",
+        "category": "Spin-Offs",
+        "from": null,
+        "to": "closed"
+      },
+      {
+        "kind": "new",
+        "ticker": "MOD",
+        "category": "Spin-Offs",
+        "from": null,
+        "to": "closed"
+      },
+      {
+        "kind": "new",
+        "ticker": "SAIQ",
         "category": "SPACs",
         "from": null,
         "to": "de-SPAC"
       },
       {
         "kind": "new",
-        "ticker": "BBDO",
-        "category": "Rights Offerings",
+        "ticker": "LPBBU",
+        "category": "SPACs",
         "from": null,
-        "to": "live"
+        "to": "de-SPAC"
       },
       {
         "kind": "new",
-        "ticker": "GFRWF",
-        "category": "Rights Offerings",
+        "ticker": "nan",
+        "category": "SPACs",
         "from": null,
-        "to": "live"
+        "to": "de-SPAC"
       },
       {
         "kind": "new",
-        "ticker": "CHR",
-        "category": "Other",
+        "ticker": "HCACR",
+        "category": "SPACs",
         "from": null,
-        "to": "announced"
+        "to": "de-SPAC"
       }
     ],
     "risk_arb_top": [
       {
-        "ticker": "GBCS",
-        "company": "SELECTIS HEALTH, INC.",
-        "gross_spread_pct": 76.92,
-        "annualized_pct": 3441739796.7,
-        "days_to_close": 12
+        "ticker": "FNWD",
+        "company": "Finward Bancorp",
+        "gross_spread_pct": 13.59,
+        "annualized_pct": 119.9,
+        "days_to_close": 59
       },
       {
-        "ticker": "ACVA",
-        "company": "ACV Auctions Inc.",
-        "gross_spread_pct": 45.43,
-        "annualized_pct": 8857889.0,
-        "days_to_close": 12
+        "ticker": "VREX",
+        "company": "Varex Imaging Corp",
+        "gross_spread_pct": 2.22,
+        "annualized_pct": 31.8,
+        "days_to_close": 29
       },
       {
-        "ticker": "ATKR",
-        "company": "Atkore Inc.",
-        "gross_spread_pct": 23.63,
-        "annualized_pct": 505.5,
-        "days_to_close": 43
+        "ticker": "SANG",
+        "company": "Sangoma Technologies Corp",
+        "gross_spread_pct": 5.98,
+        "annualized_pct": 19.2,
+        "days_to_close": 121
       }
     ],
     "display_only": true
   },
   "theme_rotation": {
-    "as_of": "2026-09-17",
-    "leadership_state": "steady",
+    "as_of": "2026-10-01",
+    "leadership_state": "strain",
     "days_in_state": 1,
-    "stance_en": "Leadership steady — stay with the leaders.",
-    "stance_zh": "领涨格局稳定——持有领涨主题。",
+    "stance_en": "Leadership under strain — watch, don't chase.",
+    "stance_zh": "领涨承压——观望，勿追高。",
     "trailing_leader": {
-      "id": "cybersecurity",
-      "name": "Cybersecurity",
-      "health": "confirmed",
-      "breadth": 1.0,
-      "r10": 0.1521
+      "id": "memory_storage",
+      "name": "Memory, HBM & Storage",
+      "health": "mixed",
+      "breadth": 0.0,
+      "r10": 0.0981
     },
-    "strength": [
-      {
-        "id": "cybersecurity",
-        "name": "Cybersecurity"
-      },
-      {
-        "id": "mag7",
-        "name": "Magnificent Seven"
-      },
-      {
-        "id": "crypto",
-        "name": "Crypto & Digital Assets"
-      },
-      {
-        "id": "ai_software",
-        "name": "AI Software & Platforms"
-      }
-    ],
+    "strength": null,
     "migration": {
       "absorbing": [
         {
           "category": "Software",
-          "avg_breadth": 0.785
+          "avg_breadth": 0.357
         },
         {
           "category": "Crypto & Digital Assets",
-          "avg_breadth": 0.785
+          "avg_breadth": 0.357
         },
         {
-          "category": "AI & Technology",
-          "avg_breadth": 0.702
+          "category": "Artificial Intelligence",
+          "avg_breadth": 0.163
         }
       ],
       "bleeding": [
         {
-          "category": "Financials",
-          "avg_breadth": 0.134
+          "category": "US Sectors (EW)",
+          "avg_breadth": 0.0
+        },
+        {
+          "category": "Healthcare",
+          "avg_breadth": 0.0
         },
         {
           "category": "Consumer Cyclical",
-          "avg_breadth": 0.146
-        },
-        {
-          "category": "Energy & Power",
-          "avg_breadth": 0.181
+          "avg_breadth": 0.0
         }
       ]
     },
@@ -7921,110 +8073,74 @@
     },
     "state_changes": {
       "leadership_state": {
-        "current": "steady",
+        "current": "strain",
         "prev": "strain",
-        "changed_on": "2026-09-17",
-        "days_in_state": 1
+        "changed_on": "2026-09-30",
+        "days_in_state": 2
       },
       "trailing_leader_id": {
-        "current": "cybersecurity",
-        "prev": "cybersecurity",
-        "changed_on": "2026-09-16",
-        "days_in_state": 3
+        "current": "memory_storage",
+        "prev": "memory_storage",
+        "changed_on": "2026-09-22",
+        "days_in_state": 6
       },
       "leader_health": {
-        "current": "confirmed",
+        "current": "mixed",
         "prev": "mixed",
-        "changed_on": "2026-09-17",
-        "days_in_state": 1
-      },
-      "theme_label:us_sector_tech": {
-        "current": "neutral",
-        "prev": "dominant",
-        "changed_on": "2026-09-17",
-        "days_in_state": 1
-      },
-      "theme_label:semicap_equipment": {
-        "current": "deteriorating",
-        "prev": null,
-        "changed_on": "2026-09-17",
-        "days_in_state": 1
-      },
-      "theme_label:managed_care": {
-        "current": "deteriorating",
-        "prev": "neutral",
-        "changed_on": "2026-09-17",
-        "days_in_state": 1
-      },
-      "theme_label:regional_banks": {
-        "current": "deteriorating",
-        "prev": null,
-        "changed_on": "2026-09-17",
-        "days_in_state": 1
-      },
-      "theme_label:data_center_power": {
-        "current": "deteriorating",
-        "prev": null,
-        "changed_on": "2026-09-17",
-        "days_in_state": 1
-      },
-      "theme_label:industrial_distribution": {
-        "current": "deteriorating",
-        "prev": null,
-        "changed_on": "2026-09-17",
-        "days_in_state": 1
+        "changed_on": "2026-09-30",
+        "days_in_state": 2
       }
     },
     "china": {
-      "as_of": "2026-09-16",
-      "leadership_state": "strain",
+      "as_of": "2026-09-30",
+      "leadership_state": "steady",
       "days_in_state": 1,
-      "stance_en": "Leadership under strain — watch, don't chase.",
-      "stance_zh": "领涨承压——观望，勿追高。",
+      "stance_en": "Leadership steady — stay with the leaders.",
+      "stance_zh": "领涨格局稳定——持有领涨主题。",
       "trailing_leader": {
-        "id": "cn_gold",
-        "name": "Gold Miners",
-        "health": "broken",
-        "breadth": 0.833,
-        "r10": -0.0068
+        "id": "cn_banks",
+        "name": "Banks",
+        "health": "confirmed",
+        "breadth": 0.889,
+        "r10": 0.0073
       },
       "strength": [
         {
-          "id": "cn_banks",
-          "name": "Banks"
+          "id": "cn_pharma_cxo",
+          "name": "Innovative Pharma & CXO"
         },
         {
-          "id": "cn_defense",
-          "name": "Defense & Aerospace"
+          "id": "cn_banks",
+          "name": "Banks"
         }
       ],
       "migration": {
         "absorbing": [
           {
-            "category": "Financials & Value",
-            "avg_breadth": 0.483
+            "category": "Healthcare",
+            "avg_breadth": 0.465
           },
           {
-            "category": "Cyclicals & Resources",
-            "avg_breadth": 0.447
+            "category": "Financials & Value",
+            "avg_breadth": 0.382
           },
           {
             "category": "Advanced Manufacturing",
-            "avg_breadth": 0.353
+            "avg_breadth": 0.283
           }
         ],
         "bleeding": [
           {
-            "category": "New Energy & Autos",
-            "avg_breadth": 0.085
-          },
-          {
-            "category": "Consumer & Brands",
-            "avg_breadth": 0.173
+            "category": "Cyclicals & Resources",
+            "avg_breadth": 0.075
           },
           {
             "category": "Technology & AI",
-            "avg_breadth": 0.174
+            "avg_breadth": 0.104
+          },
+          {
+            "category": "New Energy & Autos",
+            "avg_breadth": 0.148
           }
         ]
       },
@@ -8036,33 +8152,33 @@
     "display_only": true
   },
   "market_structure": {
-    "asof": "2026-09-17",
+    "asof": "2026-10-01",
     "gamma": {
       "regime": "long",
-      "net_gex_bn": 8.70632,
-      "net_gex_pctile": 38.5,
-      "dist_to_flip_pct": 0.176388,
-      "days_in_regime": 2
+      "net_gex_bn": 3.252434,
+      "net_gex_pctile": 33.3,
+      "dist_to_flip_pct": 0.056835,
+      "days_in_regime": 1
     },
     "systematic": {
       "vc_state": "adding",
-      "vc_alloc_bn": 266.589299,
-      "vc_flow_5d_bn": 18.848001,
+      "vc_alloc_bn": 273.544473,
+      "vc_flow_5d_bn": 3.644799,
       "cta_state": "cutting",
-      "cta_z": -0.502296,
-      "cta_flow_5d": -0.05714,
+      "cta_z": -0.553984,
+      "cta_flow_5d": -0.105576,
       "agreement": "split"
     },
     "vol": {
-      "rv21": 0.094245,
-      "rv63": 0.112533,
+      "rv21": 0.103104,
+      "rv63": 0.109671,
       "rv_cross_state": "calm",
-      "vix_curve_slope": 2.4281
+      "vix_curve_slope": 2.1741
     },
     "dispersion": {
-      "cor1m": 10.79,
+      "cor1m": 9.6,
       "cor1m_regime": "normal",
-      "cor1m_pctile_2y": 31.7
+      "cor1m_pctile_2y": 25.8
     },
     "state_changes": [
       {
@@ -8078,57 +8194,103 @@
     "display_only": true
   },
   "stage_analysis": {
-    "as_of": "2026-09-18",
+    "as_of": "2026-10-02",
     "counts": {
-      "total": 2695,
-      "stage1": 126,
-      "stage2": 1377,
-      "stage2_fresh": 294,
-      "stage3": 288,
-      "stage4": 904,
-      "too_young": 343,
-      "new_today": 9
+      "total": 2714,
+      "stage1": 116,
+      "stage2": 1343,
+      "stage2_fresh": 296,
+      "stage3": 295,
+      "stage4": 960,
+      "too_young": 369,
+      "new_today": 16
     },
     "market": {
-      "pct_stage2": 51.1,
-      "pct_stage4": 33.5,
-      "weather": "advancing",
+      "pct_stage2": 49.5,
+      "pct_stage4": 35.4,
+      "weather": "mixed",
       "spy_stage": 2,
-      "spy_weeks": 20
+      "spy_weeks": 22
     },
     "top_stage2": [
+      {
+        "ticker": "RUM",
+        "company": "RUM Group Inc",
+        "sector": "Communication Services",
+        "stage": 2,
+        "weeks_in_stage": 6,
+        "fresh": true,
+        "sga_score": 61,
+        "event": null,
+        "gate_tier": null,
+        "blackout": false,
+        "why": [
+          "Early in its climb — 6 weeks up so far",
+          "Already stretched well above its 30-week line — may need a rest"
+        ]
+      },
+      {
+        "ticker": "AII",
+        "company": "American Integrity Insurance Group Inc",
+        "sector": "Financial",
+        "stage": 2,
+        "weeks_in_stage": 7,
+        "fresh": true,
+        "sga_score": 57,
+        "event": null,
+        "gate_tier": null,
+        "blackout": false,
+        "why": [
+          "Early in its climb — 7 weeks up so far",
+          "Already stretched well above its 30-week line — may need a rest"
+        ]
+      },
       {
         "ticker": "PRAA",
         "company": "PRA Group, Inc.",
         "sector": "Financials",
         "stage": 2,
-        "weeks_in_stage": 7,
+        "weeks_in_stage": 8,
         "fresh": true,
-        "sga_score": 79,
-        "event": "pullback_resume",
-        "gate_tier": "T1",
+        "sga_score": 55,
+        "event": null,
+        "gate_tier": null,
         "blackout": false,
         "why": [
-          "Early in its climb — 7 weeks up so far",
-          "Trading above its 30-week line — the trend is with it",
-          "Also shows a strong confirmation from our other checks"
+          "Early in its climb — 8 weeks up so far",
+          "Trading above its 30-week line — the trend is with it"
         ]
       },
       {
-        "ticker": "KODK",
-        "company": "Eastman Kodak Co",
-        "sector": "Industrials",
+        "ticker": "BOX",
+        "company": "Box, Inc.",
+        "sector": "Information Technology",
         "stage": 2,
-        "weeks_in_stage": 6,
+        "weeks_in_stage": 7,
         "fresh": true,
-        "sga_score": 71,
+        "sga_score": 54,
         "event": null,
-        "gate_tier": "T2",
+        "gate_tier": null,
         "blackout": false,
         "why": [
-          "Early in its climb — 6 weeks up so far",
-          "Still near its 30-week line — not clear of it yet",
-          "Also shows a strong confirmation from our other checks"
+          "Early in its climb — 7 weeks up so far",
+          "Trading above its 30-week line — the trend is with it"
+        ]
+      },
+      {
+        "ticker": "BWIN",
+        "company": "Baldwin Insurance Group Inc",
+        "sector": "Financial",
+        "stage": 2,
+        "weeks_in_stage": 10,
+        "fresh": true,
+        "sga_score": 54,
+        "event": null,
+        "gate_tier": null,
+        "blackout": false,
+        "why": [
+          "Early in its climb — 10 weeks up so far",
+          "Already stretched well above its 30-week line — may need a rest"
         ]
       },
       {
@@ -8136,494 +8298,270 @@
         "company": "Schrödinger, Inc.",
         "sector": "Health Care",
         "stage": 2,
-        "weeks_in_stage": 4,
+        "weeks_in_stage": 5,
         "fresh": true,
-        "sga_score": 67,
-        "event": "pullback_resume",
-        "gate_tier": "T1",
-        "blackout": false,
-        "why": [
-          "Early in its climb — 4 weeks up so far",
-          "Already stretched well above its 30-week line — may need a rest",
-          "Also shows a strong confirmation from our other checks"
-        ]
-      },
-      {
-        "ticker": "ABUS",
-        "company": "Arbutus Biopharma Corp",
-        "sector": "Healthcare",
-        "stage": 2,
-        "weeks_in_stage": 4,
-        "fresh": true,
-        "sga_score": 64,
+        "sga_score": 54,
         "event": null,
         "gate_tier": null,
         "blackout": false,
         "why": [
-          "Early in its climb — 4 weeks up so far",
-          "Trading above its 30-week line — the trend is with it"
-        ]
-      },
-      {
-        "ticker": "PLUS",
-        "company": "ePlus, Inc.",
-        "sector": "Information Technology",
-        "stage": 2,
-        "weeks_in_stage": 2,
-        "fresh": true,
-        "sga_score": 61,
-        "event": null,
-        "gate_tier": "T2",
-        "blackout": false,
-        "why": [
-          "Early in its climb — 2 weeks up so far",
-          "Trading above its 30-week line — the trend is with it",
-          "Also shows a strong confirmation from our other checks"
-        ]
-      },
-      {
-        "ticker": "WAT",
-        "company": "Waters Corporation",
-        "sector": "Health Care",
-        "stage": 2,
-        "weeks_in_stage": 4,
-        "fresh": true,
-        "sga_score": 61,
-        "event": "pullback_resume",
-        "gate_tier": "T1",
-        "blackout": false,
-        "why": [
-          "Early in its climb — 4 weeks up so far",
-          "Already stretched well above its 30-week line — may need a rest",
-          "Also shows a strong confirmation from our other checks"
+          "Early in its climb — 5 weeks up so far",
+          "Already stretched well above its 30-week line — may need a rest"
         ]
       }
     ],
     "changes": [
       {
-        "kind": "topping",
-        "ticker": "ABCB",
-        "detail": "Advance is stalling — topping out"
+        "kind": "entered_stage4",
+        "ticker": "AEIS",
+        "detail": "Rolled over into a declining stage"
       },
       {
         "kind": "topping",
-        "ticker": "ACEL",
+        "ticker": "AGX",
         "detail": "Advance is stalling — topping out"
       },
       {
         "kind": "entered_stage4",
-        "ticker": "ACRE",
+        "ticker": "ALLO",
         "detail": "Rolled over into a declining stage"
       },
       {
-        "kind": "breakout",
-        "ticker": "ACVA",
-        "detail": "Broke out of its base on volume"
+        "kind": "entered_stage4",
+        "ticker": "ALXO",
+        "detail": "Rolled over into a declining stage"
       },
       {
         "kind": "entered_stage2",
-        "ticker": "ACVA",
+        "ticker": "AMBA",
         "detail": "Moved into an advancing stage"
       },
       {
         "kind": "topping",
-        "ticker": "AEIS",
+        "ticker": "AME",
         "detail": "Advance is stalling — topping out"
       },
       {
         "kind": "topping",
-        "ticker": "AFL",
+        "ticker": "ANDE",
         "detail": "Advance is stalling — topping out"
       },
       {
-        "kind": "topping",
-        "ticker": "AIN",
-        "detail": "Advance is stalling — topping out"
+        "kind": "entered_stage4",
+        "ticker": "AON",
+        "detail": "Rolled over into a declining stage"
       }
     ],
     "display_only": true,
     "is_context_only": true
   },
   "darkpool_flow": {
-    "as_of": "2026-09-17",
+    "as_of": "2026-10-01",
     "tally": {
-      "heavy_into_weakness": 26,
-      "heavy_into_strength": 20,
-      "heavy_price_flat": 19
+      "heavy_into_weakness": 8,
+      "heavy_into_strength": 8,
+      "heavy_price_flat": 7
     },
     "patterns": {
       "heavy_into_weakness": {
-        "n": 26,
+        "n": 8,
         "names": [
-          "DUK",
+          "HD",
+          "FITB",
+          "LOW",
           "CME",
-          "CFR",
-          "EWBC",
-          "UMBF",
-          "EOG",
-          "DKS",
-          "CFG"
+          "PNC",
+          "NVR",
+          "GOOGL",
+          "TRGP"
         ],
         "watch": "Watching whether the hidden volume keeps up once the price stops falling."
       },
       "heavy_into_strength": {
-        "n": 20,
+        "n": 8,
         "names": [
-          "DVA",
-          "CHD",
-          "CNC",
-          "EXPE",
-          "DINO",
-          "DAL",
-          "DHI",
-          "TXT"
+          "APH",
+          "DELL",
+          "WDC",
+          "COHR",
+          "BJ",
+          "URI",
+          "AMAT",
+          "GEV"
         ],
         "watch": "Watching whether the off-exchange share fades as the move extends."
       },
       "heavy_price_flat": {
-        "n": 19,
+        "n": 7,
         "names": [
-          "EMR",
-          "FAST",
-          "CDE",
-          "DG",
+          "NRG",
+          "LEN",
+          "WTFC",
+          "ETN",
           "DOV",
-          "TOL",
-          "WH",
-          "SSB"
+          "CW",
+          "TDG"
         ],
         "watch": "Watching which way the quote breaks once the size stops printing."
       }
     },
     "standouts": [
       {
-        "ticker": "DVA",
+        "ticker": "APH",
         "pattern": "heavy_into_strength",
-        "participation": 5.945,
-        "participation_norm": 0.3567,
-        "participation_z": 99.82,
-        "streak": 1,
-        "price_change_pct": 6.42,
-        "ats_frac": 0.6075,
-        "short_rate": 0.8575,
-        "short_trend_pp": 5.71
+        "participation": 0.4393,
+        "participation_norm": 0.2164,
+        "participation_z": 7.92,
+        "streak": 9,
+        "price_change_pct": 3.12,
+        "ats_frac": 0.6219,
+        "short_rate": 0.2857,
+        "short_trend_pp": -6.23
       },
       {
-        "ticker": "EMR",
-        "pattern": "heavy_price_flat",
-        "participation": 3.7824,
-        "participation_norm": 0.3802,
-        "participation_z": 74.11,
-        "streak": 2,
-        "price_change_pct": -0.01,
-        "ats_frac": 0.6866,
-        "short_rate": 0.467,
-        "short_trend_pp": -15.29
-      },
-      {
-        "ticker": "CHD",
-        "pattern": "heavy_into_strength",
-        "participation": 3.8437,
-        "participation_norm": 0.3601,
-        "participation_z": 62.11,
-        "streak": 1,
-        "price_change_pct": 1.6,
-        "ats_frac": 0.6551,
-        "short_rate": 0.5988,
-        "short_trend_pp": -7.01
-      },
-      {
-        "ticker": "DUK",
+        "ticker": "HD",
         "pattern": "heavy_into_weakness",
-        "participation": 3.2104,
-        "participation_norm": 0.3406,
-        "participation_z": 52.81,
-        "streak": 1,
-        "price_change_pct": -1.2,
-        "ats_frac": 0.4595,
-        "short_rate": 0.5474,
-        "short_trend_pp": -6.54
+        "participation": 0.5239,
+        "participation_norm": 0.3674,
+        "participation_z": 3.44,
+        "streak": 9,
+        "price_change_pct": -3.33,
+        "ats_frac": 0.28,
+        "short_rate": 0.2799,
+        "short_trend_pp": -10.1
       },
       {
-        "ticker": "FAST",
-        "pattern": "heavy_price_flat",
-        "participation": 2.7596,
-        "participation_norm": 0.2789,
-        "participation_z": 51.45,
-        "streak": 1,
-        "price_change_pct": -0.27,
-        "ats_frac": 0.596,
-        "short_rate": 0.6805,
-        "short_trend_pp": 9.84
-      },
-      {
-        "ticker": "CDE",
-        "pattern": "heavy_price_flat",
-        "participation": 7.7875,
-        "participation_norm": 0.6079,
-        "participation_z": 50.83,
-        "streak": 1,
-        "price_change_pct": -0.81,
-        "ats_frac": 0.1138,
-        "short_rate": 0.5906,
-        "short_trend_pp": 4.81
-      },
-      {
-        "ticker": "DG",
-        "pattern": "heavy_price_flat",
-        "participation": 2.5069,
-        "participation_norm": 0.3857,
-        "participation_z": 47.33,
-        "streak": 2,
-        "price_change_pct": 0.9,
-        "ats_frac": 0.7575,
-        "short_rate": 0.4918,
-        "short_trend_pp": 5.67
-      },
-      {
-        "ticker": "CNC",
+        "ticker": "DELL",
         "pattern": "heavy_into_strength",
-        "participation": 2.3287,
-        "participation_norm": 0.3473,
-        "participation_z": 42.61,
+        "participation": 0.5696,
+        "participation_norm": 0.4492,
+        "participation_z": 3.09,
+        "streak": 9,
+        "price_change_pct": 1.07,
+        "ats_frac": 0.4868,
+        "short_rate": 0.5723,
+        "short_trend_pp": -1.95
+      },
+      {
+        "ticker": "FITB",
+        "pattern": "heavy_into_weakness",
+        "participation": 0.4983,
+        "participation_norm": 0.3297,
+        "participation_z": 3.16,
         "streak": 2,
-        "price_change_pct": 3.32,
-        "ats_frac": 0.6538,
-        "short_rate": 0.346,
-        "short_trend_pp": -2.8
+        "price_change_pct": -1.23,
+        "ats_frac": 0.5233,
+        "short_rate": 0.4677,
+        "short_trend_pp": -9.65
+      },
+      {
+        "ticker": "LOW",
+        "pattern": "heavy_into_weakness",
+        "participation": 0.5275,
+        "participation_norm": 0.3828,
+        "participation_z": 2.86,
+        "streak": 3,
+        "price_change_pct": -3.24,
+        "ats_frac": 0.4458,
+        "short_rate": 0.2583,
+        "short_trend_pp": -5.07
+      },
+      {
+        "ticker": "NRG",
+        "pattern": "heavy_price_flat",
+        "participation": 0.4928,
+        "participation_norm": 0.3756,
+        "participation_z": 2.91,
+        "streak": 1,
+        "price_change_pct": -0.94,
+        "ats_frac": 0.574,
+        "short_rate": 0.3011,
+        "short_trend_pp": 7.92
+      },
+      {
+        "ticker": "CME",
+        "pattern": "heavy_into_weakness",
+        "participation": 0.4964,
+        "participation_norm": 0.3498,
+        "participation_z": 2.62,
+        "streak": 3,
+        "price_change_pct": -1.42,
+        "ats_frac": 0.5082,
+        "short_rate": 0.2254,
+        "short_trend_pp": -11.16
+      },
+      {
+        "ticker": "LEN",
+        "pattern": "heavy_price_flat",
+        "participation": 0.4879,
+        "participation_norm": 0.4003,
+        "participation_z": 2.11,
+        "streak": 4,
+        "price_change_pct": 0.79,
+        "ats_frac": 0.6477,
+        "short_rate": 0.3872,
+        "short_trend_pp": -10.65
       }
     ],
-    "venue_mover": null,
+    "venue_mover": {
+      "name": "OTCN OTC LINK NQB IDQS",
+      "wow_pp": 1.01
+    },
     "changes": [
       {
         "key": "into_weakness",
-        "en": "APH, CFG and 13 more started printing dark into weakness",
-        "zh": "APH、CFG 等15只开始在下跌中出现暗池放量"
+        "en": "CME, FITB and 6 more started printing dark into weakness",
+        "zh": "CME、FITB 等8只开始在下跌中出现暗池放量"
       },
       {
         "key": "into_strength",
-        "en": "CHD, CNC and 13 more started printing dark into strength",
-        "zh": "CHD、CNC 等15只开始在上涨中出现暗池放量"
+        "en": "AMAT, APH and 5 more started printing dark into strength",
+        "zh": "AMAT、APH 等7只开始在上涨中出现暗池放量"
       },
       {
         "key": "into_flat",
-        "en": "CCL, CDE and 10 more started absorbing size without moving",
-        "zh": "CCL、CDE 等12只开始在价格未动时承接大量成交"
+        "en": "CW, DOV and 5 more started absorbing size without moving",
+        "zh": "CW、DOV 等7只开始在价格未动时承接大量成交"
       },
       {
         "key": "left_weakness",
-        "en": "AMZN, GE and 12 more stopped printing dark into weakness",
-        "zh": "AMZN、GE 等14只不再于下跌中出现暗池放量"
+        "en": "DELL, HL and 1 more stopped printing dark into weakness",
+        "zh": "DELL、HL 等3只不再于下跌中出现暗池放量"
       },
       {
         "key": "left_strength",
-        "en": "HPQ, MAR and 3 more stopped printing dark into strength",
-        "zh": "HPQ、MAR 等5只不再于上涨中出现暗池放量"
+        "en": "OKTA stopped printing dark into strength",
+        "zh": "OKTA不再于上涨中出现暗池放量"
       },
       {
         "key": "left_flat",
-        "en": "ADI, CW and 2 more stopped absorbing size quietly",
-        "zh": "ADI、CW 等4只不再于价格未动时承接大量成交"
+        "en": "KEY and TOL stopped absorbing size quietly",
+        "zh": "KEY、TOL不再于价格未动时承接大量成交"
       }
     ],
     "gauge": {
-      "participation_dollar_wtd": 0.4109,
-      "participation_median": 0.407,
-      "n_names": 274,
-      "n_heavy": 65,
-      "offex_dollars_total": 126862776571.53
+      "participation_dollar_wtd": 0.4237,
+      "participation_median": 0.3828,
+      "n_names": 275,
+      "n_heavy": 23,
+      "offex_dollars_total": 149426621598.44
     },
     "display_only": true,
     "is_context_only": true
   },
   "transmission_chains": {
-    "as_of": "2026-09-17",
-    "n_active": 1,
-    "n_dormant": 6,
-    "chains": [
-      {
-        "chain": "oil_inflation_duration_derate",
-        "title_en": "Oil shock → inflation → yields → long-duration de-rate",
-        "state": "arming",
-        "tier": "calibrated_context",
-        "links_confirmed": 0,
-        "n_hops": 3,
-        "base_rates": {
-          "asof": null,
-          "n_floor": 8,
-          "calibrated_hops": 3,
-          "n_hops": 3,
-          "by_hop": {
-            "oil_shock->breakeven_rise": {
-              "from": "oil_shock",
-              "to": "breakeven_rise",
-              "lag_d": [
-                5,
-                60
-              ],
-              "method": {
-                "from": "series:yahoo",
-                "to": "series:fred"
-              },
-              "p_confirm": 0.6901,
-              "n": 71,
-              "per_regime": {
-                "growth_accelerating": {
-                  "p": 0.75,
-                  "n": 28
-                },
-                "growth_steady_or_slowing": {
-                  "p": 0.6512,
-                  "n": 43
-                }
-              },
-              "regime_split": "available",
-              "span": {
-                "first": "2002-03-07",
-                "last": "2026-03-03"
-              },
-              "regime_scheme": "growth_accel"
-            },
-            "breakeven_rise->yield_rise": {
-              "from": "breakeven_rise",
-              "to": "yield_rise",
-              "lag_d": [
-                0,
-                90
-              ],
-              "method": {
-                "from": "series:fred",
-                "to": "proxy: fred/DFII10 real-10y Δ63d>30bp AND rising (Δ63d>0)"
-              },
-              "p_confirm": 0.5319,
-              "n": 141,
-              "per_regime": {
-                "liquidity_contracting": {
-                  "p": 0.6667,
-                  "n": 36
-                },
-                "liquidity_expanding": {
-                  "p": 0.4717,
-                  "n": 53
-                },
-                "liquidity_neutral_or_draining": {
-                  "p": 0.5,
-                  "n": 52
-                }
-              },
-              "regime_split": "available",
-              "span": {
-                "first": "2003-02-04",
-                "last": "2026-04-30"
-              },
-              "regime_scheme": "liquidity_dir"
-            },
-            "yield_rise->duration_derate": {
-              "from": "yield_rise",
-              "to": "duration_derate",
-              "lag_d": [
-                0,
-                120
-              ],
-              "method": {
-                "from": "proxy: fred/DFII10 real-10y Δ63d>30bp AND rising (Δ63d>0)",
-                "to": "series:yahoo"
-              },
-              "p_confirm": 0.9368,
-              "n": 95,
-              "per_regime": {},
-              "regime_split": "unavailable",
-              "span": {
-                "first": "2003-08-06",
-                "last": "2025-06-02"
-              },
-              "regime_split_reason": "no coarse regime scheme matched the condition prose 'no offsetting earnings-acceleration in the long-duration cohort'; pooled only"
-            }
-          },
-          "cohort_event_study": {
-            "available": true,
-            "cohort": "QQQ",
-            "vs": "SPY",
-            "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
-            "horizons": {
-              "21d": {
-                "mean_excess_pct": -0.022,
-                "median_excess_pct": 0.181,
-                "n": 2694
-              },
-              "63d": {
-                "mean_excess_pct": 0.496,
-                "median_excess_pct": 1.248,
-                "n": 2682
-              }
-            }
-          }
-        },
-        "blast": {
-          "long_duration_valuation": {
-            "n": 719,
-            "unevaluable": 2149,
-            "names": [
-              "A",
-              "AA",
-              "AAL",
-              "AAP",
-              "AAPL",
-              "AAT",
-              "ABBV",
-              "ABG"
-            ]
-          },
-          "refinancing_channel": {
-            "n": 386,
-            "unevaluable": 1784,
-            "names": [
-              "ACCO",
-              "ACDC",
-              "ACEL",
-              "ACHC",
-              "ADEA",
-              "ADT",
-              "ADV",
-              "AEE"
-            ]
-          },
-          "capex_borrower": {
-            "n": 5,
-            "unevaluable": 1666,
-            "names": [
-              "ACMR",
-              "AVAV",
-              "KRMN",
-              "MP",
-              "TGTX"
-            ]
-          },
-          "fcf_burner": {
-            "n": 333,
-            "unevaluable": 809,
-            "names": [
-              "AAMI",
-              "AAP",
-              "ABAT",
-              "ABEO",
-              "ABUS",
-              "ABX",
-              "ACHR",
-              "ACMR"
-            ]
-          }
-        }
-      }
-    ],
+    "as_of": "2026-10-01",
+    "n_active": 0,
+    "n_dormant": 7,
+    "chains": [],
     "display_only": true,
     "is_context_only": true
   },
   "mag7_washout": {
-    "as_of": "2026-09-18",
+    "as_of": "2026-10-01",
     "state": "idle",
-    "stoch2w_k": 87.8,
-    "stoch2w_d": 75.8,
+    "stoch2w_k": 93.8,
+    "stoch2w_d": 85.2,
     "members_washed": 1,
     "armed": false,
     "last_trigger": null,
@@ -8645,57 +8583,57 @@
     "is_context_only": true
   },
   "rates_command": {
-    "asof": "2026-09-17",
-    "net_state": "repricing_hawkish",
-    "state_label_en": "Hike expectations rising now",
-    "state_label_zh": "加息预期正在升温",
+    "asof": "2026-10-01",
+    "net_state": "two_sided",
+    "state_label_en": "Two-sided — watch the tape",
+    "state_label_zh": "双向——观察市场走势",
     "hawk_score": 3,
-    "ease_score": 1,
-    "stance_en": "Futures now price about 4 hikes over the next year — hawkish repricing is underway. Front-end futures repricing is the main pressure; easing inputs is the offset to watch.",
-    "stance_zh": "期货目前为未来一年定价约4次加息——加息定价正在进行。 期货利率重新定价是主要压力；宽松因素是需要关注的对冲。",
-    "implied_m12": 4.65,
-    "policy_rate": 3.63,
-    "path_plain_en": "about 4 hikes",
-    "path_plain_zh": "约4次加息",
-    "futures_plain_en": "Market prices ~4 hikes over the next 12m (funds 3.63% → 4.65%)",
-    "futures_plain_zh": "市场为未来12个月定价约加息4次（基金利率 3.63% → 4.65%）",
+    "ease_score": 3,
+    "stance_en": "Outlook is two-sided: futures price about three hikes; hawkish and easing inputs are roughly balanced (3 vs 3). Front-end futures repricing and a deeper equity pullback are pulling against each other.",
+    "stance_zh": "前景双向：期货定价约三次加息；鹰派与宽松因素大体制衡（3对3）。 期货利率重新定价与股市进一步回调相互制衡。",
+    "implied_m12": 4.7,
+    "policy_rate": 3.88,
+    "path_plain_en": "about three hikes",
+    "path_plain_zh": "约三次加息",
+    "futures_plain_en": "Market prices ~3 hikes over the next 12m (funds 3.88% → 4.70%)",
+    "futures_plain_zh": "市场为未来12个月定价约加息3次（基金利率 3.88% → 4.70%）",
     "display_only": true,
     "authority": false
   },
   "gaps": [],
   "sources": {
-    "data/market_state/latest.json": "2026-09-17",
-    "data/regime/latest.json": "2026-09-17",
-    "data/breadth/breadth.parquet": "2026-09-17",
-    "site/basketdata/oracle_state.json": "2026-09-17",
-    "data/run_status.json": "2026-09-18T14:09:10.890506+00:00",
-    "site/factordata/alerts_triage.json": "2026-09-17",
-    "data/neuralweb/liquidity_plumbing.json": "2026-09-17",
-    "data/rebalance_pulse/latest.json": "2026-09-17",
-    "site/chinastatedata/market_state.json": "2026-09-18",
-    "data/neuralweb/theme_state.json": "2026-09-18",
-    "data/transmission/latest.json": "2026-09-17",
-    "data/rates_command/latest.json": "2026-09-17",
-    "data/forex/latest.json": "2026-09-18",
-    "data/bonds/bond_health.json": "2026-09-17",
-    "data/china_regime/latest.json": "2026-09-18",
-    "data/hk_regime/latest.json": "2026-09-18",
-    "data/canada_regime/latest.json": "2026-09-17",
-    "data/commodity/latest.json": "2026-09-18",
-    "site/intelligence/briefing.json": "2026-09-18",
-    "data/crossasset/latest.json": "2026-09-18",
+    "data/market_state/latest.json": "2026-10-01",
+    "data/regime/latest.json": "2026-10-01",
+    "data/breadth/breadth.parquet": "2026-09-30",
+    "site/basketdata/oracle_state.json": "2026-09-30",
+    "data/run_status.json": "2026-10-02T03:05:53.021144+00:00",
+    "site/factordata/alerts_triage.json": "2026-10-01",
+    "data/neuralweb/liquidity_plumbing.json": "2026-10-01",
+    "data/rebalance_pulse/latest.json": "2026-10-01",
+    "site/chinastatedata/market_state.json": null,
+    "data/neuralweb/theme_state.json": "2026-10-01",
+    "data/transmission/latest.json": "2026-10-01",
+    "data/rates_command/latest.json": "2026-10-01",
+    "data/forex/latest.json": "2026-10-02",
+    "data/bonds/bond_health.json": "2026-10-01",
+    "data/china_regime/latest.json": "2026-09-30",
+    "data/hk_regime/latest.json": "2026-09-30",
+    "data/canada_regime/latest.json": "2026-10-01",
+    "data/commodity/latest.json": "2026-10-02",
+    "site/intelligence/briefing.json": "2026-10-02",
+    "data/crossasset/latest.json": "2026-10-02",
     "data/intl_risk/latest.json": null,
-    "site/basketdata/theme_context.json": "2026-09-17",
-    "data/market_structure/latest.json": "2026-09-17",
-    "data/stage_analysis/context/latest.json": "2026-09-18",
-    "data/darkpool/context/latest.json": "2026-09-17",
-    "data/transmission/chain_state.json": "2026-09-17",
-    "data/mag7_washout/latest.json": "2026-09-18",
+    "site/basketdata/theme_context.json": "2026-10-01",
+    "data/market_structure/latest.json": "2026-10-01",
+    "data/stage_analysis/context/latest.json": "2026-10-02",
+    "data/darkpool/context/latest.json": "2026-10-01",
+    "data/transmission/chain_state.json": "2026-10-01",
+    "data/mag7_washout/latest.json": "2026-10-01",
     "data/personality_timing/codex.parquet": "2026-07-25"
   },
   "schema_version": 1,
   "produced_by": "engine/neuralweb/world_state.py",
-  "produced_at": "2026-09-18T18:56:41Z",
-  "inputs_hash": "sha256:7dad4de80822e335c6b72ec47edf5feeef5348fcace89df39f433bc32c13de88",
+  "produced_at": "2026-10-02T11:08:23Z",
+  "inputs_hash": "sha256:62b65ab4f85a9c228ab8ca5a56f1fb03ca581f845d306aa2441eb6188bb0a695",
   "tier": "infrastructure"
 }

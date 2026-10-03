@@ -33,8 +33,10 @@ sys.path.insert(0, str(_ROOT))
 import numpy as np
 import pandas as pd
 
-from engine.risk_radar import leading_signals, subscore_series, _calib, context_gate_series, _is_validated
-from engine.risk_radar_backtest import detect_events
+from engine.risk_radar import leading_signals, subscore_series, _calib, _is_validated
+from engine.risk_radar_backtest import detect_events, state_series, _ORDER
+from engine.risk_radar_audit import _grade_entry
+from engine.indicators import pct_rank_window
 from lib import store
 
 # ---------------------------------------------------------------------------
@@ -45,7 +47,8 @@ REPORTS_DIR = REPO_ROOT / "reports"
 REPORTS_DIR.mkdir(exist_ok=True)
 
 # Named episodes (frozen list per task spec).
-# onset_hint = approximate reference peak date; we verify/override against detect_events()
+# The hint date IS the fixed reference anchor for warning-path research. Never
+# optimize it to the nearest detected peak after looking at the new metrics.
 _NAMED_EPISODES = [
     {"name": "2018Q4 selloff",       "hint": "2018-09-20"},
     {"name": "COVID-2020",           "hint": "2020-02-19"},
@@ -111,6 +114,101 @@ def _nearest_onset(idx: pd.DatetimeIndex, hint: str, onsets: list) -> tuple[pd.T
     return arr[pos], "peak_override"
 
 
+def _fixed_anchor(idx: pd.DatetimeIndex, hint: str) -> pd.Timestamp:
+    """Return the exact frozen episode anchor or fail instead of optimizing it."""
+    anchor = pd.Timestamp(hint)
+    if anchor not in idx:
+        raise ValueError(f"fixed episode anchor {hint} is not in the signal calendar")
+    return anchor
+
+
+def _research_gate_series(idx: pd.DatetimeIndex) -> pd.Series:
+    """Context-gate evidence with unknowns preserved for descriptive research."""
+    out = pd.Series(pd.NA, index=idx, dtype="boolean")
+    spy_df = store.read("yahoo", "SPY")
+    breadth = store.read("breadth", "breadth")
+    if spy_df is None or "close" not in spy_df:
+        return out
+    spy = spy_df["close"].dropna().copy()
+    spy.index = pd.to_datetime(spy.index)
+    spy = spy.sort_index()
+    ma = spy.rolling(200, min_periods=120).mean()
+    below = (spy < ma).where(ma.notna()).reindex(idx)
+    if breadth is None or "pct_above_200" not in breadth.columns:
+        return out
+    b = breadth["pct_above_200"].astype(float).copy()
+    b.index = pd.to_datetime(b.index)
+    bp = pct_rank_window(b.sort_index(), 504).reindex(idx).ffill()
+    weak = (bp <= 0.40).where(bp.notna())
+    known = below.notna() & weak.notna()
+    out.loc[known] = (below.loc[known].astype(bool) & weak.loc[known].astype(bool))
+    return out
+
+
+def _gate_label(value) -> str:
+    if pd.isna(value):
+        return "unknown"
+    return "open" if bool(value) else "closed"
+
+
+def _coverage_snapshot(sigs: pd.DataFrame, subs: pd.DataFrame, date: pd.Timestamp,
+                       tier_a_scares: list[str]) -> dict:
+    sig_row = sigs.loc[date] if date in sigs.index else pd.Series(dtype=float)
+    sub_row = subs.loc[date] if date in subs.index else pd.Series(dtype=float)
+    tier = sub_row.reindex(tier_a_scares) if len(sub_row) else pd.Series(dtype=float)
+    return {
+        "signals_known": int(sig_row.notna().sum()),
+        "signals_total": int(len(sigs.columns)),
+        "subscores_known": int(sub_row.notna().sum()),
+        "subscores_total": int(len(subs.columns)),
+        "tier_a_subscores_known": int(tier.notna().sum()),
+        "tier_a_subscores_total": int(len(tier_a_scares)),
+    }
+
+
+def _warning_persistence(states: pd.Series, known: pd.Series, idx: pd.DatetimeIndex,
+                         t0: pd.Timestamp, start_offset: int) -> dict:
+    start = _offset_date(idx, t0, start_offset)
+    if start is None:
+        return {"start": None, "through": str(t0.date()), "sessions_total": 0,
+                "sessions_known": 0, "warning_sessions": 0, "loud_sessions": 0,
+                "warning_fraction": None, "loud_fraction": None,
+                "consecutive_warning_to_t0": None}
+    dates = idx[(idx >= start) & (idx <= t0)]
+    valid = known.reindex(dates).fillna(False)
+    observed = states.reindex(dates)[valid]
+    caution_i = _ORDER.index("caution")
+    elevated_i = _ORDER.index("elevated")
+    warn = observed.map(lambda s: s in _ORDER and _ORDER.index(s) >= caution_i)
+    loud = observed.map(lambda s: s in _ORDER and _ORDER.index(s) >= elevated_i)
+    run = None
+    if t0 in dates and bool(valid.reindex([t0]).iloc[0]):
+        run = 0
+        for d in reversed(dates.tolist()):
+            if not bool(valid.reindex([d]).iloc[0]):
+                break
+            s = states.loc[d]
+            if s not in _ORDER or _ORDER.index(s) < caution_i:
+                break
+            run += 1
+    n = int(len(observed))
+    return {
+        "start": str(start.date()), "through": str(t0.date()),
+        "sessions_total": int(len(dates)), "sessions_known": n,
+        "warning_sessions": int(warn.sum()), "loud_sessions": int(loud.sum()),
+        "warning_fraction": round(float(warn.mean()), 4) if n else None,
+        "loud_fraction": round(float(loud.mean()), 4) if n else None,
+        "consecutive_warning_to_t0": run,
+    }
+
+
+def _forward_outcomes(anchor: pd.Timestamp, spy: pd.Series, state: str | None) -> dict | None:
+    grade = _grade_entry({"asof": str(anchor.date()), "state": state or "calm"}, spy)
+    if grade is None:
+        return None
+    return {k: grade.get(k) for k in ("base_px", "fwd_dd", "hit", "any_dd5_within_h21")}
+
+
 # ---------------------------------------------------------------------------
 # Main atlas builder
 # ---------------------------------------------------------------------------
@@ -138,10 +236,15 @@ def build_atlas() -> dict:
         subs = pd.DataFrame(index=sigs.index)
 
     try:
-        gate = context_gate_series(idx)
+        gate = _research_gate_series(idx)
     except Exception as e:
-        print(f"  WARNING: context_gate_series failed: {e}; using all-False")
-        gate = pd.Series(False, index=idx)
+        print(f"  WARNING: research gate reconstruction failed: {e}; using unknown")
+        gate = pd.Series(pd.NA, index=idx, dtype="boolean")
+
+    headline_state = state_series(subs, calib, sigs=sigs) if not subs.empty else pd.Series(index=idx, dtype=object)
+    known_state = subs.notna().any(axis=1) if not subs.empty else pd.Series(False, index=idx)
+    tier_a_scares = [s for s, v in calib["scares"].items()
+                     if v["tier"] == "A" and s in subs.columns]
 
     # --- SPY closes for drawdown verification ---
     spy_df = store.read("yahoo", "SPY")
@@ -174,8 +277,9 @@ def build_atlas() -> dict:
     for ep in _NAMED_EPISODES:
         name = ep["name"]
         hint = ep["hint"]
-        onset, onset_src = _nearest_onset(idx, hint, onsets)
-        print(f"\n  Episode: {name}  hint={hint}  onset={onset.date()}  source={onset_src}")
+        onset = _fixed_anchor(idx, hint)
+        onset_src = "fixed_named_anchor"
+        print(f"\n  Episode: {name}  fixed_anchor={onset.date()}")
 
         # SPY peak -> max drawdown over next 63 trading days
         spy_pos = idx.searchsorted(onset, side="left")
@@ -186,6 +290,35 @@ def build_atlas() -> dict:
         # Build offset dates
         offset_dates: dict[str, pd.Timestamp | None] = {
             label: _offset_date(idx, onset, n) for label, n in _OFFSETS.items()
+        }
+
+        warning_offsets = {}
+        for label, date in offset_dates.items():
+            if date is None:
+                warning_offsets[label] = {"date": None, "state": None, "gate": "unknown",
+                                          "coverage": None}
+                continue
+            state = None
+            if date in headline_state.index and bool(known_state.reindex([date]).fillna(False).iloc[0]):
+                candidate = headline_state.loc[date]
+                state = candidate if candidate in _ORDER else None
+            gate_value = gate.loc[date] if date in gate.index else pd.NA
+            warning_offsets[label] = {
+                "date": str(date.date()),
+                "state": state,
+                "gate": _gate_label(gate_value),
+                "coverage": _coverage_snapshot(sigs, subs, date, tier_a_scares),
+            }
+
+        warning_path = {
+            "offsets": warning_offsets,
+            "persistence": {
+                "T-21..T0": _warning_persistence(headline_state, known_state, idx, onset, -21),
+                "T-5..T0": _warning_persistence(headline_state, known_state, idx, onset, -5),
+            },
+            "forward_outcomes": _forward_outcomes(
+                onset, spy, warning_offsets["T0"].get("state")
+            ),
         }
 
         # Per-leg analysis
@@ -296,7 +429,8 @@ def build_atlas() -> dict:
                     mx = None
             else:
                 mx = None
-            gate_val = bool(gate.loc[d]) if d is not None and d in gate.index else None
+            gate_raw = gate.loc[d] if d is not None and d in gate.index else pd.NA
+            gate_val = None if pd.isna(gate_raw) else bool(gate_raw)
             composite_spark.append({
                 "offset": n,
                 "date": str(d.date()) if d else None,
@@ -305,11 +439,14 @@ def build_atlas() -> dict:
             })
 
         # Context gate at T-5 / T0
-        gate_t5 = bool(gate.loc[offset_dates["T-5"]]) if offset_dates["T-5"] is not None and offset_dates["T-5"] in gate.index else None
-        gate_t0 = bool(gate.loc[onset]) if onset in gate.index else None
+        gate_t5_raw = gate.loc[offset_dates["T-5"]] if offset_dates["T-5"] is not None and offset_dates["T-5"] in gate.index else pd.NA
+        gate_t0_raw = gate.loc[onset] if onset in gate.index else pd.NA
+        gate_t5 = None if pd.isna(gate_t5_raw) else bool(gate_t5_raw)
+        gate_t0 = None if pd.isna(gate_t0_raw) else bool(gate_t0_raw)
 
         episode_results.append({
             "name": name,
+            "reference_date": str(onset.date()),
             "onset": str(onset.date()),
             "onset_source": onset_src,
             "hint_date": hint,
@@ -318,6 +455,7 @@ def build_atlas() -> dict:
             "legs": leg_rows,
             "composite_spark": composite_spark,
             "gate": {"T-5": gate_t5, "T0": gate_t0},
+            "warning_path": warning_path,
         })
 
     # --- lead/lag summary across episodes (per leg) ---
@@ -374,6 +512,10 @@ def build_atlas() -> dict:
             "leg_coverage": leg_coverage,
             "bands": bands,
             "detect_events_params": {"depth": 0.08, "fwd": 63, "min_gap": 40},
+            "warning_path_protocol": "research/grey_deer/RISK_RADAR_EPISODE_WARNING_PATH_PREREG_2026-09-21.md",
+            "anchor_policy": "fixed_named_hint_date_no_peak_optimization",
+            "warning_definition": "caution_or_higher",
+            "loud_definition": "elevated_or_risk-off",
             "n_named_episodes": len(_NAMED_EPISODES),
             "n_total_detect_events": len(onsets),
             # FIX 3 note on is_validated_tier field name
@@ -478,6 +620,29 @@ def render_md(atlas: dict) -> str:
     lines.append(f"Signals date range: {atlas['provenance']['sigs_date_range'][0]} to {atlas['provenance']['sigs_date_range'][1]} (n_trading_days={atlas['provenance']['sigs_shape'][0]})")
     lines.append("")
 
+    lines.append("## Headline Warning Persistence at Fixed Reference Dates")
+    lines.append("")
+    lines.append("These are reconstructed historical states under the committed engine and historical inputs, not genuinely issued forecasts. The five dates were frozen before this warning-path calculation; no nearest-peak substitution is allowed.")
+    lines.append("")
+    lines.append("| Episode | T-21 | T-5 | T-1 | T0 | T0 gate | caution+ T-21..T0 | elevated+ T-21..T0 | caution+ run into T0 | H21 max loss |")
+    lines.append("|---------|------|-----|-----|----|---------|--------------------|---------------------|----------------------|--------------|")
+    for ep in atlas["episodes"]:
+        wp = ep["warning_path"]
+        off = wp["offsets"]
+        p = wp["persistence"]["T-21..T0"]
+        fwd = wp.get("forward_outcomes") or {}
+        h21 = (fwd.get("fwd_dd") or {}).get("h21")
+        h21s = f"{h21*100:.1f}%" if h21 is not None else "—"
+        warn = f"{p['warning_sessions']}/{p['sessions_known']}" if p["sessions_known"] else "—"
+        loud = f"{p['loud_sessions']}/{p['sessions_known']}" if p["sessions_known"] else "—"
+        run = p["consecutive_warning_to_t0"]
+        lines.append(
+            f"| {ep['name']} | {off['T-21']['state'] or '—'} | {off['T-5']['state'] or '—'} "
+            f"| {off['T-1']['state'] or '—'} | {off['T0']['state'] or '—'} | {off['T0']['gate']} "
+            f"| {warn} | {loud} | {run if run is not None else '—'} | {h21s} |"
+        )
+    lines.append("")
+
     # --- Coverage table ---
     lines.append("## Coverage: First Non-NaN Date per Leg")
     lines.append("")
@@ -530,14 +695,44 @@ def render_md(atlas: dict) -> str:
     for ep in atlas["episodes"]:
         lines.append(f"### {ep['name']}")
         lines.append("")
-        lines.append(f"- **Onset date:** {ep['onset']} (source: {ep['onset_source']})")
-        if ep["onset_source"] == "peak_override":
-            lines.append(f"  - Note: detect_events(depth=0.08) did not emit an onset near the hint date ({ep['hint_date']}). Using named market peak as T0 override.")
-        lines.append(f"- **Hint date:** {ep['hint_date']}")
+        lines.append(f"- **Fixed reference date:** {ep['onset']} (source: {ep['onset_source']})")
+        lines.append(f"- **Frozen hint date:** {ep['hint_date']}")
         lines.append(f"- **SPY close at T0:** {ep['spy_peak_close']}")
         dd_pct = f"{ep['max_drawdown_63d']*100:.1f}%" if ep['max_drawdown_63d'] is not None else "N/A"
         lines.append(f"- **Max drawdown over next 63 trading days:** {dd_pct}")
         lines.append(f"- **Context gate at T-5:** {ep['gate'].get('T-5')}  /  **T0:** {ep['gate'].get('T0')}")
+        lines.append("")
+
+        wp = ep["warning_path"]
+        lines.append("**Actual gated headline path:**")
+        lines.append("")
+        lines.append("| Offset | Date | Headline state | Context gate | Signal coverage | Tier-A subscore coverage |")
+        lines.append("|--------|------|----------------|--------------|-----------------|--------------------------|")
+        for label in ("T-21", "T-5", "T-1", "T0", "T+5"):
+            row = wp["offsets"][label]
+            cov = row.get("coverage") or {}
+            sig_cov = f"{cov.get('signals_known', 0)}/{cov.get('signals_total', 0)}" if cov else "—"
+            tier_cov = f"{cov.get('tier_a_subscores_known', 0)}/{cov.get('tier_a_subscores_total', 0)}" if cov else "—"
+            lines.append(f"| {label} | {row.get('date') or '—'} | {row.get('state') or '—'} | {row.get('gate') or 'unknown'} | {sig_cov} | {tier_cov} |")
+        lines.append("")
+        for label in ("T-21..T0", "T-5..T0"):
+            p = wp["persistence"][label]
+            wf = f"{p['warning_fraction']*100:.1f}%" if p["warning_fraction"] is not None else "—"
+            lf = f"{p['loud_fraction']*100:.1f}%" if p["loud_fraction"] is not None else "—"
+            lines.append(
+                f"- **{label}:** caution+ {p['warning_sessions']}/{p['sessions_known']} ({wf}); "
+                f"elevated+ {p['loud_sessions']}/{p['sessions_known']} ({lf}); "
+                f"consecutive caution+ sessions ending at T0 = {p['consecutive_warning_to_t0'] if p['consecutive_warning_to_t0'] is not None else '—'}."
+            )
+        fwd = wp.get("forward_outcomes")
+        if fwd:
+            dd = fwd.get("fwd_dd") or {}
+            lines.append(
+                "- **Canonical grader forward max loss:** "
+                + ", ".join(f"{h}={dd[h]*100:.1f}%" if dd.get(h) is not None else f"{h}=—"
+                            for h in ("h5", "h10", "h21"))
+                + "."
+            )
         lines.append("")
 
         # Per-leg table
@@ -649,9 +844,9 @@ def render_md(atlas: dict) -> str:
         lines.append("")
 
     # --- Scorecard cross-check ---
-    lines.append("## Scorecard Cross-Check")
+    lines.append("## Forward-Evidence Boundary")
     lines.append("")
-    lines.append("The `data/risk_radar/scorecard.json` (schema: `risk_radar_scorecard.v1`) currently shows `windows.full.alerts.n = 0` across all markets and windows — no graded alerts in any market/window, so no lift cross-check is possible yet. The atlas's historical leg readings are the primary descriptive record until the forward-outcome log matures.")
+    lines.append("This atlas is reconstructed historical episode research. The issued Risk Radar forward ledger and its scorecard are a separate evidence class and must not be spliced into these selected episodes as if they were historical issued forecasts. Current probability diagnostics remain descriptive-only and do not validate the reconstructed warning path.")
     lines.append("")
 
     # --- Causal spot-check ---
@@ -674,21 +869,17 @@ def render_md(atlas: dict) -> str:
     # --- Coverage limitations ---
     lines.append("## Coverage Limitations")
     lines.append("")
-    lines.append("- **vol_putcall, vol_gex:** These Tier-B flow legs are NOT present in leading_signals() output because they are inert until >=252 rows accumulate (mature cboe store required). They show as NO DATA for all 5 historical episodes.")
-    lines.append("- **ai_breadth_divergence:** Born 2025-05-28. No data for any episode prior to Aug-2024. Inert until 252 rows of breadth_split.parquet accumulate.")
-    lines.append("- **corr_floor_break:** Requires >=252 rows of COR1M. Coverage starts 2006-01-03. No data for episodes before 2008.")
-    lines.append("- **credit_hyg_tlt:** HYG/TLT data begins 2008-05-07. Data is present for all 5 named episodes (including 2018Q4). No data for pre-2008 episodes such as the 2007-2008 crisis.")
-    lines.append("- **rates_move, rates_realrate:** MOVE and DFII10 data begins 2003-2004. Data is present for all 5 named episodes.")
-    lines.append("- **vol_term (VIX9D/VIX3M ratio):** VIX9D data starts 2011-12-30. Data is present for all 5 named episodes (including 2018Q4). No data for pre-2012 episodes.")
-    lines.append("- **SVB March-2023:** The SPY drawdown from the Feb 2023 local peak was less than 8%, so detect_events(depth=0.08) did not emit an onset. The named peak date (hint: 2023-02-02) was used as T0 override. The max drawdown column confirms the actual depth.")
-    lines.append("- **Scorecard cross-check:** windows.full.alerts.n = 0 in scorecard.json across all markets; no realized outcome data available yet.")
+    lines.append("- The coverage table is generated from the current committed signal frame; absent accruing/display-only legs are not synthesized into historical coverage.")
+    lines.append("- A leg with no value in an episode window remains NO DATA; it is never converted into a silent/quiet reading.")
+    lines.append("- 2023-02-02 is a preregistered SVB-era reference anchor, not an optimized detect_events onset. The forward-loss columns disclose the realized path from that exact date.")
+    lines.append("- Selected historical reconstruction, overlapping daily replay windows, and genuinely issued forward forecasts remain separate evidence classes.")
     lines.append("")
 
     # --- Self-checks ---
     lines.append("## Self-Checks")
     lines.append("")
     lines.append("1. **COVID-2020 check:** See the per-episode table above. Multiple legs should show EARLY or JIT for the Feb-2020 episode; if literally everything is LATE/NO DATA, a join/date bug is likely.")
-    lines.append("2. **Onset date verification:** SPY close at T0 and max drawdown over 63d are printed per episode. These confirm the onset date is a genuine local peak with subsequent decline.")
+    lines.append("2. **Fixed-anchor outcome disclosure:** SPY close at T0 and forward drawdowns are printed from the preregistered date. The anchor is not optimized to a detected local peak.")
     lines.append(f"3. **Causal percentile check:** {sc.get('note', sc.get('reason', 'See above'))}")
     lines.append("")
 

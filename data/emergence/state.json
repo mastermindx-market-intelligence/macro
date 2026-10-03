@@ -1,27 +1,32 @@
 {
-  "0191c1be9a6e": {
-    "name_en": "Cross-sector cluster \u00b7 Communication Services + Consumer Discretionary",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Communication Services + Consumer Discretionary",
-    "score": 66.9
+  "2745dd372cad": {
+    "name_en": "Cross-sector cluster \u00b7 Consumer Staples + Consumer Discretionary",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Staples + Consumer Discretionary",
+    "score": 64.7
   },
-  "2b9cfe2dce2c": {
+  "6eed05ff174f": {
     "name_en": "Cross-sector cluster \u00b7 Consumer Discretionary + Health Care",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Discretionary + Health Care",
-    "score": 65.3
+    "score": 66.5
   },
-  "6e6b1732126c": {
+  "7d99d717cd1e": {
     "name_en": "Cross-sector cluster \u00b7 Information Technology + Financials",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Information Technology + Financials",
-    "score": 61.3
+    "score": 75.0
   },
-  "dc25a6ad2505": {
-    "name_en": "Cross-sector cluster \u00b7 Industrials + Materials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Materials",
-    "score": 53.0
+  "b1d5c09e6b31": {
+    "name_en": "Cross-sector cluster \u00b7 Industrials + Information Technology",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Information Technology",
+    "score": 46.4
   },
-  "e6d8393b6120": {
-    "name_en": "Cross-sector cluster \u00b7 Consumer Discretionary + Consumer Staples",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Discretionary + Consumer Staples",
-    "score": 51.7
+  "b872817b28b8": {
+    "name_en": "Cross-sector cluster \u00b7 Communication Services + Consumer Discretionary",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Communication Services + Consumer Discretionary",
+    "score": 68.9
+  },
+  "f624e6f0ff16": {
+    "name_en": "Cross-sector cluster \u00b7 Real Estate + Consumer Discretionary",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Real Estate + Consumer Discretionary",
+    "score": 47.8
   }
 }
