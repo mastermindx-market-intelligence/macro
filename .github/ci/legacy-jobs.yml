@@ -8810,7 +8810,9 @@ jobs:
       - "config/regime_outlook_mapping_v1.json"
       - "engine/rates_command_outlook.py"
       - "research/macro_regime_intelligence/STATE_PATH_AND_SCIENCE_CONTRACT_2026-10-03.md"
+      - "tests/fixtures/regime_outlook/readings_golden_v1.json"
       - "tests/test_rates_command_outlook.py"
+      - "tests/test_rates_command_outlook_readings.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -8820,8 +8822,8 @@ jobs:
           python-version: "3.12"
       - name: install test dependencies
         run: pip install pytest
-      - name: regime outlook verdict mapping — lint, pinned reading table, contract parity
-        run: python -m pytest tests/test_rates_command_outlook.py -q
+      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings
+        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py -q
 
   ric-w2-surface:
     if: ${{ false }}
