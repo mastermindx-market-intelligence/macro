@@ -254,6 +254,8 @@ def _expectations_state(
     options: Mapping[str, Any] | None,
     *,
     cutoff: datetime,
+    issuer_id: str,
+    security_id: str,
 ) -> tuple[dict[str, Any], bool]:
     if options is None:
         return (
@@ -262,6 +264,8 @@ def _expectations_state(
                 "observed": False,
                 "as_of": None,
                 "source_id": None,
+                "issuer_id": None,
+                "security_id": None,
                 "coverage": None,
                 "latency": None,
                 "can_change_native_event_probability": False,
@@ -274,7 +278,15 @@ def _expectations_state(
         raise ValueError("options must be a mapping")
     _require(
         options,
-        ("observation_state", "as_of", "source_id", "coverage", "latency"),
+        (
+            "observation_state",
+            "as_of",
+            "source_id",
+            "issuer_id",
+            "security_id",
+            "coverage",
+            "latency",
+        ),
         owner="options",
     )
     observed_at = _utc(str(options["as_of"]), field="options.as_of")
@@ -285,6 +297,8 @@ def _expectations_state(
                 "observed": False,
                 "as_of": None,
                 "source_id": None,
+                "issuer_id": None,
+                "security_id": None,
                 "coverage": None,
                 "latency": None,
                 "can_change_native_event_probability": False,
@@ -293,11 +307,18 @@ def _expectations_state(
             True,
         )
 
+    options_issuer_id = str(options["issuer_id"])
+    options_security_id = str(options["security_id"])
     coverage = str(options["coverage"])
     latency = str(options["latency"])
     observed = options.get("observation_state") == "observed"
+    identity_qualified = (
+        options_issuer_id == issuer_id
+        and options_security_id == security_id
+    )
     qualified = (
         observed
+        and identity_qualified
         and coverage in OPTIONS_COVERAGE_STATES
         and latency in OPTIONS_LATENCY_STATES
     )
@@ -308,6 +329,8 @@ def _expectations_state(
                 "observed": observed,
                 "as_of": _iso(observed_at),
                 "source_id": options["source_id"],
+                "issuer_id": options_issuer_id,
+                "security_id": options_security_id,
                 "coverage": coverage,
                 "latency": latency,
                 "can_change_native_event_probability": False,
@@ -321,6 +344,8 @@ def _expectations_state(
             "observed": True,
             "as_of": _iso(observed_at),
             "source_id": options["source_id"],
+            "issuer_id": options_issuer_id,
+            "security_id": options_security_id,
             "coverage": coverage,
             "latency": latency,
             "can_change_native_event_probability": False,
@@ -397,7 +422,12 @@ def qualify_case(
     else:
         commercial_state = readiness_state
         commercial_gaps = readiness_gaps
-    expectations, options_future = _expectations_state(options, cutoff=cutoff)
+    expectations, options_future = _expectations_state(
+        options,
+        cutoff=cutoff,
+        issuer_id=str(exposure["issuer_id"]),
+        security_id=str(exposure["security_id"]),
+    )
 
     event_future = event_public_at > cutoff
     rights_future = rights_public_at > cutoff
@@ -586,8 +616,31 @@ def qualify_case(
     }
 
 
-def apply_market_revision(case: Mapping[str, Any], *, reference_price: float, observed_at: str) -> dict[str, Any]:
-    """Add cutoff-qualified market context without rewriting case evidence."""
+def apply_market_revision(
+    case: Mapping[str, Any],
+    *,
+    observation: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Add identified cutoff-qualified market context without rewriting case evidence."""
+    if not isinstance(case, Mapping):
+        raise ValueError("case must be a mapping")
+    if not isinstance(observation, Mapping):
+        raise ValueError("market_observation must be a mapping")
+    _require(
+        observation,
+        ("security_id", "source_id", "reference_price", "observed_at"),
+        owner="market_observation",
+    )
+    exposure_view = case.get("exposure")
+    if not isinstance(exposure_view, Mapping):
+        raise ValueError("case exposure is required")
+    case_security_id = str(exposure_view.get("security_id") or "")
+    if not case_security_id:
+        raise ValueError("case exposure security_id is required")
+    observation_security_id = str(observation["security_id"])
+    if observation_security_id != case_security_id:
+        raise ValueError("market_observation.security_id must match case exposure security_id")
+    reference_price = observation["reference_price"]
     if not isinstance(reference_price, (int, float)) or isinstance(reference_price, bool):
         raise ValueError("reference_price must be finite positive")
     try:
@@ -596,17 +649,17 @@ def apply_market_revision(case: Mapping[str, Any], *, reference_price: float, ob
         raise ValueError("reference_price must be finite positive") from exc
     if not math.isfinite(normalized_price) or normalized_price <= 0:
         raise ValueError("reference_price must be finite positive")
-    if not isinstance(case, Mapping):
-        raise ValueError("case must be a mapping")
     case_cutoff = _utc(str(case.get("as_of") or ""), field="case.as_of")
-    observed = _utc(observed_at, field="observed_at")
+    observed = _utc(str(observation["observed_at"]), field="market_observation.observed_at")
     if observed > case_cutoff:
-        raise ValueError("observed_at must be no later than case.as_of")
+        raise ValueError("market_observation.observed_at must be no later than case.as_of")
     result = deepcopy(dict(case))
     before_event = deepcopy(result.get("event"))
     before_exposure = deepcopy(result.get("exposure"))
     before_commercial = deepcopy(result.get("commercial"))
     result["market_revision"] = {
+        "security_id": observation_security_id,
+        "source_id": observation["source_id"],
         "reference_price": normalized_price,
         "observed_at": _iso(observed),
         "effect": "PRICE_CONTEXT_ONLY",

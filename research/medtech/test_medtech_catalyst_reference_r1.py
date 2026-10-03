@@ -106,13 +106,36 @@ def commercial(
     }
 
 
-def options(*, observation_state="observed", as_of="2021-09-07T11:30:00Z"):
+def options(
+    *,
+    observation_state="observed",
+    as_of="2021-09-07T11:30:00Z",
+    issuer_id="ISS:US-XNAS-TMDX",
+    security_id="SEC:US-XNAS-TMDX",
+):
     return {
         "observation_state": observation_state,
         "as_of": as_of,
         "source_id": "OPTIONS:QUALIFIED-SNAPSHOT",
+        "issuer_id": issuer_id,
+        "security_id": security_id,
         "coverage": "listed-options-complete-for-snapshot",
         "latency": "t_plus_1",
+    }
+
+
+def market_observation(
+    *,
+    reference_price=39.69,
+    observed_at="2021-09-07T12:00:00Z",
+    security_id="SEC:US-XNAS-TMDX",
+    source_id="MARKET:QUALIFIED-SNAPSHOT",
+):
+    return {
+        "security_id": security_id,
+        "source_id": source_id,
+        "reference_price": reference_price,
+        "observed_at": observed_at,
     }
 
 
@@ -263,6 +286,28 @@ def test_qualified_options_retain_coverage_and_latency_for_audit():
     assert result["expectations"]["latency"] == "t_plus_1"
 
 
+@pytest.mark.parametrize(
+    ("field", "replacement"),
+    [
+        ("issuer_id", "ISS:US-XNYS-OTHER"),
+        ("security_id", "SEC:US-XNYS-OTHER"),
+    ],
+)
+def test_options_snapshot_must_bind_to_the_listed_case(field, replacement):
+    payload = options()
+    payload[field] = replacement
+    result = qualify(options=payload)
+    assert result["expectations"]["state"] == "UNQUALIFIED"
+    assert result["expectations"]["use"] == "none"
+    assert result["expectations"][field] == replacement
+
+
+def test_qualified_options_retain_listing_identity_for_audit():
+    result = qualify(options=options())
+    assert result["expectations"]["issuer_id"] == "ISS:US-XNAS-TMDX"
+    assert result["expectations"]["security_id"] == "SEC:US-XNAS-TMDX"
+
+
 def test_empty_supplied_options_are_malformed_not_unavailable():
     with pytest.raises(ValueError, match="options missing required fields"):
         qualify(options={})
@@ -272,7 +317,7 @@ def test_price_only_revision_preserves_event_and_disposition():
     base = qualify()
     before_event = deepcopy(base["event"])
     before_exposure = deepcopy(base["exposure"])
-    revised = apply_market_revision(base, reference_price=39.69, observed_at="2021-09-07T12:00:00Z")
+    revised = apply_market_revision(base, observation=market_observation())
     assert revised["event"] == before_event
     assert revised["exposure"] == before_exposure
     assert revised["disposition"] == base["disposition"]
@@ -284,8 +329,7 @@ def test_market_revision_requires_a_finite_price(reference_price):
     with pytest.raises(ValueError, match="finite positive"):
         apply_market_revision(
             qualify(),
-            reference_price=reference_price,
-            observed_at="2021-09-07T12:00:00Z",
+            observation=market_observation(reference_price=reference_price),
         )
 
 
@@ -293,9 +337,22 @@ def test_market_revision_after_case_cutoff_is_refused():
     with pytest.raises(ValueError, match="no later than case.as_of"):
         apply_market_revision(
             qualify(),
-            reference_price=39.69,
-            observed_at="2025-01-01T20:00:00Z",
+            observation=market_observation(observed_at="2025-01-01T20:00:00Z"),
         )
+
+
+def test_market_revision_must_bind_to_case_security():
+    with pytest.raises(ValueError, match="security_id must match"):
+        apply_market_revision(
+            qualify(),
+            observation=market_observation(security_id="SEC:US-XNYS-OTHER"),
+        )
+
+
+def test_market_revision_retains_security_and_source_for_audit():
+    revised = apply_market_revision(qualify(), observation=market_observation())
+    assert revised["market_revision"]["security_id"] == "SEC:US-XNAS-TMDX"
+    assert revised["market_revision"]["source_id"] == "MARKET:QUALIFIED-SNAPSHOT"
 
 
 def test_timezone_is_required_for_event_knowledge_clock():
@@ -397,6 +454,8 @@ def test_future_commercial_and_options_payloads_are_redacted():
     assert result["expectations"]["state"] == "WITHHELD_TEMPORAL"
     assert result["expectations"]["as_of"] is None
     assert result["expectations"]["source_id"] is None
+    assert result["expectations"]["issuer_id"] is None
+    assert result["expectations"]["security_id"] is None
 
 
 @pytest.mark.parametrize(

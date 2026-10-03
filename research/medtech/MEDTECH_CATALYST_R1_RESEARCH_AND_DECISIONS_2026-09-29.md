@@ -69,13 +69,13 @@ Observed event-expiry alignment, implied-volatility term structure, skew, open/c
 
 **Ruling:** qualified options input is labeled `expectations_reaction_and_timing_only`; the executable reference hard-codes `can_change_native_event_probability=false`. Only `None` means the optional layer is absent. Every supplied mapping—including `{}`—must carry complete timezone-qualified observation and provenance fields, must be no later than the case cutoff, and is redacted when temporally withheld. Estimated observations remain context-unqualified rather than silently used.
 
-For R1, options qualification is deliberately fail-closed: only `coverage=listed-options-complete-for-snapshot` with `latency=t_plus_1` is admitted as qualified context, and both fields remain in the returned expectations receipt for audit. Any other nonempty coverage or latency value is retained but marked `UNQUALIFIED` until a later source-backed contract explicitly admits it.
+For R1, options qualification is deliberately fail-closed: only `coverage=listed-options-complete-for-snapshot` with `latency=t_plus_1` is admitted as qualified context, and both fields remain in the returned expectations receipt for audit. Any other nonempty coverage or latency value is retained but marked `UNQUALIFIED` until a later source-backed contract explicitly admits it. The options snapshot must also bind its evidence-side issuer and security identifiers to the exact listed exposure; mismatched listing identity remains `UNQUALIFIED` and cannot inform reaction/timing.
 
 ### 2.7 Market revisions stay inside the frozen snapshot
 
 A price observation is another point-in-time fact. Attaching a later price to a case while leaving the earlier case cutoff unchanged creates hidden look-ahead, even when the revision does not alter regulatory or commercial fields.
 
-**Ruling:** `apply_market_revision` accepts only a finite positive price and a timezone-qualified observation at or before the case's own `as_of`. NaN, infinities and later observations are refused; producing a later snapshot requires re-qualifying the whole case at that later cutoff rather than partially advancing only price.
+**Ruling:** `apply_market_revision` accepts an identified market-observation receipt containing security id, source id, finite positive reference price and a timezone-qualified observation at or before the case's own `as_of`. The market security must match the case exposure exactly, and the returned revision retains security/source provenance for audit. NaN, infinities, wrong-security observations and later observations are refused; producing a later snapshot requires re-qualifying the whole case at that later cutoff rather than partially advancing only price.
 
 ## 3. Worked historical mechanism — TransMedics OCS Heart
 
