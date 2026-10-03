@@ -1,6 +1,6 @@
 {
   "schema": "prophet.status/v1",
-  "as_of": "2026-10-02T17:33:36+00:00",
+  "as_of": "2026-10-03T09:53:56+00:00",
   "built_by": "engine.neuralweb.prophet_governor",
   "markets": {
     "us": {
@@ -45,19 +45,19 @@
         "process_integrity": null
       },
       "track_history": {
-        "as_of": "2026-10-02",
+        "as_of": "2026-10-03",
         "n_cohorts": null,
         "status": null
       },
       "bottom_ledger": {
-        "as_of": "2026-10-02",
+        "as_of": "2026-10-03",
         "advance_status": "advanced",
         "advance_error": null,
-        "n_newly_graded": 0,
-        "n_accruing": 2840,
-        "n_matured": 117,
-        "pin5": 0.1282,
-        "held_pct": 0.4957,
+        "n_newly_graded": 21,
+        "n_accruing": 2819,
+        "n_matured": 138,
+        "pin5": 0.1304,
+        "held_pct": 0.4855,
         "status": "maturing",
         "reliability": "display-tier bottom-calling learning instrument (policy-free; no ranking/sizing authority) \u2014 measures proximity to the eventual low and floor durability; live cohorts compared against the committed panel baseline as they mature",
         "first_maturity_est": null
@@ -186,21 +186,21 @@
           "artifact": "us-audit-scoreboard",
           "path": "site/factordata/us_audit_scoreboard.json",
           "status": "stale",
-          "age_hours": 1337.6,
+          "age_hours": 1353.9,
           "sla_hours": 48.0
         },
         {
           "artifact": "us-track-history",
           "path": "site/factordata/us_track_history.json",
           "status": "ok",
-          "age_hours": 17.6,
+          "age_hours": 9.9,
           "sla_hours": 48.0
         },
         {
           "artifact": "us-board-outcomes",
           "path": "site/factordata/us_board_outcomes.json",
           "status": "stale",
-          "age_hours": 185.6,
+          "age_hours": 201.9,
           "sla_hours": 48
         }
       ],
@@ -213,13 +213,13 @@
         {
           "artifact": "site-china-standouts",
           "path": "data/metabolism/fitness/standouts_cn.json",
-          "status": "ok",
-          "age_hours": 17.6,
+          "status": "stale",
+          "age_hours": 33.9,
           "sla_hours": 30.0
         }
       ],
       "data_gap_count": 0,
-      "overall_health": "ok"
+      "overall_health": "degraded"
     },
     "hk": {
       "market": "hk",
@@ -228,7 +228,7 @@
           "artifact": "hk-board-ledger",
           "path": "data/board_ledger/hk_board.parquet",
           "status": "ok",
-          "age_hours": 0.0,
+          "age_hours": 15.8,
           "sla_hours": 48
         }
       ],
@@ -242,7 +242,7 @@
           "artifact": "ca-board-ledger",
           "path": "data/board_ledger/ca_board.parquet",
           "status": "ok",
-          "age_hours": 4.1,
+          "age_hours": 0.3,
           "sla_hours": 48
         }
       ],
@@ -256,7 +256,7 @@
           "artifact": "intl-setups",
           "path": "site/factordata/intl_setups.json",
           "status": "ok",
-          "age_hours": 17.6,
+          "age_hours": 33.9,
           "sla_hours": 48
         }
       ],
@@ -273,9 +273,9 @@
       "open_count": 0,
       "closed_count": 100,
       "outcome_mix": {
-        "EXPIRED": 51,
-        "NO_ENTRY": 32,
-        "INVALIDATED": 13,
+        "INVALIDATED": 15,
+        "EXPIRED": 43,
+        "NO_ENTRY": 38,
         "T1_HIT": 4
       }
     },

@@ -169,7 +169,7 @@ EXPECTED = {
   ],
   "MO-PAID-006": [
     "UPGRADE_EXISTING_OWNER",
-    "PARTIAL"
+    "PROVEN_LIVE"
   ],
   "MO-PAID-007": [
     "UPGRADE_EXISTING_OWNER",
@@ -636,6 +636,35 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     assert constructor["capability_state_c2"] == "PARTIAL"
     assert "0023_portfolio_targets.sql" in constructor["real_producer"]
     assert constructor["missing_contract_or_proof"].startswith("ROLE dimension only")
+
+    # W9 stage 1 D73-D74 (O32 natural-run publication proof; Sol 5966828357 scheduler owner).
+    am_edition = r["MO-PAID-011"]
+    assert am_edition["capability_state_c2"] == "PARTIAL"
+    assert am_edition["state_delta"].startswith("UPDATED 2026-10-03 D73")
+    assert "96db8a19f9f5" in am_edition["state_delta"]
+    assert "NOT a weekday premarket producer-build proof" in am_edition["state_delta"]
+    assert "natural-run PUBLICATION proof READ 2026-10-03 08:12:01Z" in am_edition["next_bounded_child"]
+    assert "natural-run live proof owed" not in am_edition["next_bounded_child"]
+    accuracy_sched = r["MO-DELTA-007"]
+    assert accuracy_sched["capability_state_c2"] == "PARTIAL"
+    assert "REUSE the existing `ops/terminal-data` nightly" in accuracy_sched["next_bounded_child"]
+    assert "never a second cron" in accuracy_sched["next_bounded_child"]
+    assert "Build owner = CEO B (F13" in accuracy_sched["next_bounded_child"]
+
+    # W9 stage 2 D76-D77 (served .com proofs after render 37105009906).
+    dossier = r["MO-PAID-006"]
+    assert dossier["capability_state_c2"] == "PROVEN_LIVE"
+    assert dossier["state_delta"].startswith("PARTIAL->PROVEN_LIVE 2026-10-03 (CEO A D76")
+    assert "served_proof_8300.sh (rc=0)" in dossier["state_delta"]
+    assert dossier["next_bounded_child"].startswith("NONE for the page")
+    sanctions = r["MO-PAID-008"]
+    assert sanctions["capability_state_c2"] == "PROVEN_LIVE"
+    assert sanctions["state_delta"].startswith("PRODUCTION_PROOF 2026-10-03 (CEO A D77)")
+    assert "stroke-dasharray:none" in sanctions["state_delta"]
+    catalyst = r["MO-PAID-077"]
+    assert catalyst["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert catalyst["next_bounded_child"].startswith("W3-1b consumer ruling NOT RIPE 2026-10-03")
+    assert "session_date 2026-09-25" in catalyst["next_bounded_child"]
 
     f07 = r["MO-DELTA-017"]
     assert f07["capability_state_c2"] == "NOT_BUILT"

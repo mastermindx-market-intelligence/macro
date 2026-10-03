@@ -995,7 +995,7 @@ jobs:
       # guard). Hermetic: tmp_path spool files + synthetic packs, no data/, no
       # site/, no network. Unnamed suites never run in this manifest.
       - name: entry-radar W1+W2+W3+W4+W4.1+W5+W6 — probe universe, entry_event.v1 store, G0 parity, C1-C5 PIT battery, live pack + episode ledger + live evaluator, live-transport correction, W5 prereg gates + forward evidence, RP1 Research Priority
-        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py -q
+        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py -q
 
   session-anchor-era:
     # Absolute session-calendar anchor, both eras. The confluence 2D/3D + fortnight
@@ -5197,6 +5197,18 @@ jobs:
       # stdlib + pytest only (reads workflow/dag/builder text; imports no builder).
       - name: render-lane scope contract (flow_desk must stay express-wired)
         run: python -m pytest tests/test_render_flow_desk_scope.py -q
+      # PR #8320 (2026-10-03) — Asia ownership fence. Asia's broad `git add`
+      # stages (collect: `git add data/ site/qledger/`; engine: `git add data/
+      # site/`) can otherwise acquire the Options PIT episode / campaign-v2 files
+      # that the narrow Options publishers OWN. scripts/ci/options_signal_nightly.sh
+      # exclude-broad is bracketed around each broad `git add` so neither the
+      # collect nor the engine commit can smuggle an Options artifact onto the
+      # Asia lane. Belongs HERE (workflow-yaml) because the suite reads
+      # .github/workflows/asia-close.yml as text and asserts the surrounding
+      # structure, identical shape to test_render_intl_scope.py and friends.
+      # stdlib + pytest only (re, pathlib); no data/ or site/ reads.
+      - name: asia-close.yml asia ownership fence (Options PIT/campaign narrow roots must not enter broad staging)
+        run: python -m pytest tests/test_china_heatmap_freshness.py -q
       # Sparse session-worktree profile (policy R8). #5531 landed the suite
       # named by no run: step — the same class the unrun census now gates —
       # so pack-1 went red on every PR the moment it merged. It belongs HERE
