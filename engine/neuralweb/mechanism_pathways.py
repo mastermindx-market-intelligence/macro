@@ -106,7 +106,7 @@ def _utcnow() -> datetime:
     carries this value as a node date — it is used only to classify source
     clocks and to stamp the artifact root's `built` field.
     """
-    return _utcnow()
+    return datetime.now(timezone.utc)
 
 # ---------------------------------------------------------------------------
 # Constants

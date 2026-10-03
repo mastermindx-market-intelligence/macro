@@ -187,7 +187,7 @@ def test_compiler_transmission_uses_own_date_and_prior_sign():
     chains = [{'id': 'real_rate', 'active': True, 'asof': '2026-09-30', 'orders': [
         {'order': 1, 'text': {'en': 'Duration sensitivity'},
          'assets': [{'asset': 'TLT', 'verdict': 'headwind', 'ic': -.2}]}]}]
-    _attach_transmission_edges(chains, 'real_rate_shock', nodes, edges, '2026-10-02', 'driver')
+    _attach_transmission_edges(chains, 'real_rate_shock', nodes, edges, '2026-10-02', 'driver', now=NOW)
     assert nodes[0]['as_of'] == '2026-09-30'
     assert edges[0]['status'] == 'context_only'
     assert edges[0]['observed_sign'] is None
@@ -198,7 +198,7 @@ def test_compiler_missing_chain_date_never_borrows_driver_date():
     from engine.neuralweb.mechanism_pathways import _attach_transmission_edges
     nodes, edges = [], []
     chains = [{'id': 'real_rate', 'active': True, 'orders': [{'order': 1, 'assets': []}]}]
-    _attach_transmission_edges(chains, 'real_rate_shock', nodes, edges, '2026-10-02', 'driver')
+    _attach_transmission_edges(chains, 'real_rate_shock', nodes, edges, '2026-10-02', 'driver', now=NOW)
     assert nodes[0]['as_of'] is None
     assert edges[0]['status'] == 'theory_prior' and edges[0]['observed_sign'] is None
 
@@ -248,7 +248,6 @@ def test_compiler_carries_transmission_wrapper_date_not_driver_clock(tmp_path, m
     for chain in tx['chains']:
         chain.pop('asof', None)
     _make_regime_files(tmp_path, regime, tx)
-    monkeypatch.setattr(mp, '_is_stale', lambda *a: False)
     output = mp.compile(root=tmp_path, now=NOW)
     nodes = [n for p in output['pathways'] for n in p['nodes'] if n['domain'] == 'transmission']
     assert nodes and {n['as_of'] for n in nodes} == {'2026-09-30'}

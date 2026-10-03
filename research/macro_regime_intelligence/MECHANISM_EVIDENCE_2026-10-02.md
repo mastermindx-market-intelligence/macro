@@ -244,3 +244,6 @@ factor-rotation pathway makes no coverage claim and says why in
 `distinct_sources` count is the number of distinct source-artifact strings
 across the pathway's nodes, independent of the source clock. Nothing here has
 been verified against the served product; that check is still owed.
+- The clock seam introduced in this repair called itself and would have failed
+  every un-injected build; it now reads the real clock and two tests exercise
+  the un-patched seam.

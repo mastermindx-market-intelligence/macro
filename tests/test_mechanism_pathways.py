@@ -33,6 +33,13 @@ from engine.neuralweb.mechanism_pathways import (
     compile,
     contains_banned_words,
 )
+import engine.neuralweb.mechanism_pathways as _mechanism_pathways_mod
+
+# Captured at module import (before the autouse _fixed_compiler_clock fixture
+# replaces it) so the real-clock seam tests below can exercise the un-patched
+# function object directly. The autouse fixture overrides the module attribute
+# for every other test in this file.
+_REAL_UTCNOW = _mechanism_pathways_mod._utcnow
 
 # ---------------------------------------------------------------------------
 # Fixture builders
@@ -1447,4 +1454,49 @@ def test_classify_source_clock_future_date_only_uses_latest_earth_date():
     assert out_future["as_of_reason"] == "future_dated", (
         f"C4: '2026-10-04' at NOW=2026-10-02T23:00Z is past the date-line; "
         f"got {out_future['as_of_reason']!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Real-clock seam (X2 — see also mutation proof in the commit body).
+# ---------------------------------------------------------------------------
+
+def test_real_clock_seam_returns_aware_utc_now():
+    """X2 Test A: the un-patched _utcnow seam returns an aware UTC datetime.
+
+    `_REAL_UTCNOW` is the module-import-time capture of the original function
+    object; the autouse _fixed_compiler_clock fixture replaces the module
+    attribute for every other test in this file but does not reach the
+    already-bound function reference held here.
+    """
+    got = _REAL_UTCNOW()
+    assert got.tzinfo is not None, "real seam returned a naive datetime"
+    assert got.utcoffset().total_seconds() == 0, (
+        f"real seam returned non-UTC offset {got.utcoffset()!r}"
+    )
+    assert abs((got - datetime.now(timezone.utc)).total_seconds()) < 5, (
+        "real seam returned a value >5s from wall clock"
+    )
+
+
+def test_compile_without_injected_now_uses_the_real_clock(tmp_path, monkeypatch):
+    """X2 Test B: compile() with no `now` reaches the real _utcnow seam.
+
+    The autouse fixture replaces `_utcnow`; this test overrides that patch
+    with the captured real function and calls compile() on an empty root.
+    Before the engine fix the call raised RecursionError because the seam
+    called itself. The compile() entry point writes the build date into
+    `as_of` (engine/neuralweb/mechanism_pathways.py line ~898:
+    `as_of = built_dt.strftime("%Y-%m-%d")`).
+    """
+    monkeypatch.setattr(
+        "engine.neuralweb.mechanism_pathways._utcnow", _REAL_UTCNOW
+    )
+    out = compile(root=tmp_path)
+    assert isinstance(out, dict), f"compile() did not return a dict: {type(out)!r}"
+    assert "as_of" in out, "compile() did not stamp the build-date `as_of` field"
+    expected = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    assert out["as_of"] == expected, (
+        f"compile() built-date {out['as_of']!r} != today's {expected!r} — "
+        "real _utcnow seam was not reached"
     )
