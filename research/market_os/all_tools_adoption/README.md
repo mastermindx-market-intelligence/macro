@@ -1,8 +1,8 @@
 # Shared Shell — source-fed All tools
 
-## Current adoption — R39 topic-search continuation
+## Current adoption — R41 reference parity and recovered verification
 
-The source owner is now the embedded All tools controller in
+The source owner remains the embedded All tools controller in
 `templates/nav_market.js`, paired with `site/nav_market.js`. Presentation remains
 in paired `navigation-refresh.css`; `_site_nav.html.j2` includes the strict
 opt-in host. Only Macro overview, Sector Central and Reports index opt in.
@@ -13,14 +13,40 @@ Each public field is normalized separately so long bilingual copy cannot hide
 later topic fields. URLs, badges, permissions, source ordering and market
 selection are not a search taxonomy and are not changed.
 
-The release key is `20261001-all-tools-topics`; nav/account payload digest is
-`28d0c024`. Before three later DOM scenarios were appended, the full three-module
-integration/release/account run passed 140 tests with four existing warnings.
-The three new DOM scenarios are authored but unexecuted. A subsequent reference
-component synchronization plus four-module validation was refused before dispatch;
-that exact action remains held, and `src/all-tools.js` still has the older search.
-Do not run its old default commands and mistake them for current source proof.
-R38's nine browser scenarios remain unexecuted; no new canvas or browser proof.
+After the Chairman reopened Studio Direct filesystem access, R41 recovered the
+same clean worktree at b68658a649165ec683604d8f3ec449f273e35e13. A new parity
+regression first failed on the stale reference, then passed after synchronizing
+`src/all-tools.js` from the exact production marker block. Both now have SHA256
+`49bc32c1bca12098c8a958cf686325fbc7f918304f1ad9f3892cce346b4249be`.
+This also preserves the production shared-asset boot behavior; the reference is
+not a second source owner and is not separately loaded into production.
+
+Current source checks execute the synchronized reference rather than historical
+bytes: the three Node suites pass **107/107**, mutation testing detects **12/12**
+deliberate breaks, the template contract passes **20/20**, template/site sync
+passes **105 pairs**, and the shared All-tools/nav/account pytest slice passes
+**141/141**. The parity regression remains in `tests/test_all_tools_menu.py` so a
+future reference fork fails immediately. Four recurring pytest cleanup warnings
+for old temporary Chromium framework directories remain non-assertion noise; no
+cleanup or permission change was used to obtain green.
+
+R41 also finally executed the previously blocked real-Chrome R38 matrix. The first
+17-case run passed 16 and reproduced one real 320px/light-ZH/double-typography
+failure on Macro: wrapped category controls squeezed `.mmx-tools-body` to a 155px
+scrollport while a long destination row grew to about 293px, so that row could not
+be fully reachable inside the dialog. The smallest shared-owner repair keeps the
+mobile category rail on one horizontally scrollable line (`flex-wrap: nowrap`,
+nonshrinking buttons) instead of allowing it to consume the vertical reading
+budget. The targeted reproduction then passed, followed by a full **17/17** run
+across all three pilots. The paired CSS digest is now `edfd821b`, and the three
+admitted static pilot pages carry that digest in both preload and stylesheet links.
+The release key `20261001-all-tools-topics`, nav/account digest `28d0c024`, route
+inventory, persistence semantics and pilot ceiling are unchanged.
+
+The 320px double-type case is an application-token layout stress test, not native
+browser 200% zoom, physical-device or assistive-technology certification. Current
+native Paper renders remain design evidence, not runtime acceptance; deployment
+and production proof remain separate gates.
 
 ## Historical R23 component record — retained, not current deployment state
 

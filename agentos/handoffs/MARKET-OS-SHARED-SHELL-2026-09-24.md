@@ -537,3 +537,49 @@ claim the nine scenarios ran, broaden pilot opt-in, mark Ready, merge or deploy.
 R18/R19/PR7129 obligations and independent review remain separate and unwaived.
 This checkpoint is a recoverable incomplete boundary, not user/product
 acceptance. No background work or automatic wake is claimed.
+
+
+## R41 continuation — 2026-10-03
+
+Chairman continuation plus reopened Studio Direct restored the original attended carrier at
+`/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27` without changing PR,
+branch, repository or authority. Protected Mastermind procedure is pinned at
+`bdf2a972e68a70270c24d4b5d61a4d60edc4f288` (`INDEX.md` blob
+`4b0189a75d559d963365097485e8509a49c70e23`, skillpack 1.0.1/bootstrap 1).
+
+The prior interrupted Paper Clear-search effect was reconciled on the original file and not
+replayed. Native R41 now carries global-search selected-result, zero-match, loading and unavailable
+phone states (66–71), dark/light recovery, plus explicit implementation semantics on map `21H2-0`.
+The design distinguishes global intelligence search from All tools directory search and local
+comparison refinement; loading is not zero results, unavailable preserves query/scope, and close
+restores the invoking page. Finished design scopes were released with no EFFECT_UNKNOWN.
+
+Source resumed from clean head `b68658a649165ec683604d8f3ec449f273e35e13`. A test-first parity guard reproduced the stale
+research reference, then `research/market_os/all_tools_adoption/src/all-tools.js` was synchronized
+from the exact production controller marker block. The resulting source/reference SHA256 is
+`49bc32c1bca12098c8a958cf686325fbc7f918304f1ad9f3892cce346b4249be`. Current source commit
+`b50d1bf32c2b3ee74db4a65b451a0dbc284d8a43` contains that repair plus the responsive fix below.
+
+The formerly blocked real-Chrome lane is now executable on the same Studio carrier. The first
+17-case R38 run produced 16 passes and one genuine failure: Macro at 320×844, light Chinese, with
+application typography tokens doubled. Wrapped category controls reduced `.mmx-tools-body` to a
+155px scrollport while a long destination row grew to about 293px. The smallest shared-owner repair
+makes the <=600px category rail horizontally scrollable/nonwrapping and its buttons nonshrinking,
+preserving vertical reading budget. Targeted rerun: 1/1 passed. Full rerun: **17/17 passed** across
+Macro, Sector Central and Reports. Paired navigation CSS and the three pilot cache stamps now bind
+digest `edfd821b`; no route/pilot/catalogue/account/persistence authority changed.
+
+Current source evidence: shared All-tools/nav/account pytest **141 passed**; direct synchronized
+controller suites **107 passed**; mutation checks **12/12 detected**; template contract **20/20**;
+template↔site sync **105 pairs**; `git diff --check` PASS; design-system added-line ratchet PASS with
+0 introduced blockers; UI visual-evidence guard PASS after the repo-required full worktree restore.
+The four recurring pytest cleanup warnings are permission-denied cleanup of old temporary Chromium
+framework directories and are not assertion failures. R41 browser screenshots and receipt are under
+`research/market_os/all_tools_adoption/evidence/r41-browser/`; the doubled-token scenario is not
+native browser 200% zoom, physical-device or assistive-technology acceptance.
+
+R41 does **not** release the PR hold. Remaining work is current-head publication/reconciliation,
+independent review/CI, the existing Research Screener/receipt dependency closure, R18/R19/PR7129,
+and eventual production proof/acceptance. Preserve the existing Draft/HOLD state; do not mark Ready,
+merge, broaden pilots or deploy from this checkpoint. The older statement that the nine R38 browser
+scenarios were unexecuted is historical and superseded by this section only for that browser lane.
