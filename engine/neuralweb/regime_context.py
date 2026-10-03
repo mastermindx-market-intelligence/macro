@@ -47,6 +47,7 @@ DEGRADATION_REASONS = {
     'missing_rrp': 'missing RRP buffer',
     'missing_walcl': 'missing WALCL composition',
     'owner_reported': 'owner-reported limitation',
+    'unrecognized_owner_value': 'unrecognized owner-bound value',
 }
 
 
@@ -61,8 +62,32 @@ def _token(value: Any, *, maximum: int = 72) -> str | None:
     return value[:maximum]
 
 
-def _choice(value: Any, allowed: tuple[str, ...]) -> str | None:
-    return value if isinstance(value, str) and value in allowed else None
+def _choice(value: Any, allowed: tuple[str, ...], *, issues: list[str] | None = None,
+            field: str = '') -> str | None:
+    if isinstance(value, str) and value in allowed:
+        return value
+    if issues is not None and isinstance(value, str):
+        issues.append('unrecognized_owner_value:' + (field or '?'))
+    return None
+
+
+_OWNER_SLUG_RE = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.+%/-]{0,31}')
+
+
+def _slug(value: Any, *, issues: list[str] | None = None,
+          field: str = '') -> str | None:
+    """Strict owner-bound slug; the only chars beyond alnum are . _ + % / -.
+
+    Use when the producer's vocabulary is not enumerated (a sentinel file, a
+    single literal). Same rejection contract as `_choice`: a non-string or
+    non-matching input is dropped and `unrecognized_owner_value:<field>` is
+    appended to the row's issues.
+    """
+    if isinstance(value, str) and _OWNER_SLUG_RE.fullmatch(value):
+        return value
+    if issues is not None and isinstance(value, str):
+        issues.append('unrecognized_owner_value:' + (field or '?'))
+    return None
 
 
 def _quad(value: Any) -> str | None:
@@ -240,10 +265,16 @@ def compose_context(sources: dict, *, now: datetime,
         'confirmed_quad': _quad(regime.get('quad')),
         'tape_quad': _quad(_dict(one.get('tape')).get('quad')),
         'economic_quad': _quad(macro.get('quad')),
-        'economic_freshness': _token(macro.get('worst_freshness')),
+        'economic_freshness': _choice(macro.get('worst_freshness'),
+            # source: engine/regime_one.py:135 (fresh/slow/stale/dead/unknown)
+            ('fresh', 'slow', 'stale', 'dead', 'unknown'),
+            issues=errors, field='economic_freshness'),
         'growth_proxy_score': _num(regime.get('growth_score'), 'growth_proxy_score', errors),
         'inflation_proxy_score': _num(regime.get('inflation_score'), 'inflation_proxy_score', errors),
-        'transition_state': _token(regime.get('transition_state')),
+        'transition_state': _choice(regime.get('transition_state'),
+            # source: engine/alerts.py:42-43, engine/transition.py:133
+            ('STABLE', 'WEAKENING', 'TRANSITIONING', 'NEW_REGIME'),
+            issues=errors, field='transition_state'),
         'quantity_overlay': _choice(regime.get('liquidity_overlay'), ('expanding', 'contracting', 'neutral')),
         'forecast_probability': None,
     }, 'owner_proxy_scores_and_labels', issues=errors, stale=rf.get('stale') is True,
@@ -281,7 +312,10 @@ def compose_context(sources: dict, *, now: datetime,
         'change_63d_bp': _num(rates.get('real_10y_chg_63d_bp'), 'change_63d_bp', errors),
         'percentile_0_1': _num(rates.get('real_10y_pctile'), 'percentile_0_1', errors, low=0, high=1),
         'owner_direction': _choice(rates.get('direction'), ('rising', 'falling', 'flat', 'stable')),
-        'owner_rate_label': _token(rates.get('regime')),
+        'owner_rate_label': _choice(rates.get('regime'),
+            # source: engine/rate_inflation_transmission.py:228-229
+            ('restrictive', 'accommodative', 'neutral'),
+            issues=errors, field='owner_rate_label'),
         'acceleration_bp': None,
     }, 'yield_percent_and_basis_point_change', issues=errors,
        notes=('Snapshot clock only; underlying real-yield observation clock is not supplied.',
@@ -298,7 +332,10 @@ def compose_context(sources: dict, *, now: datetime,
         'change_22_grid_bp': _num(velocity.get('22d'), 'change_22_grid_bp', errors) if qualified else None,
         'change_63_grid_bp': _num(velocity.get('63d'), 'change_63_grid_bp', errors) if qualified else None,
         'acceleration_bp': _num(nominal.get('acceleration_bp'), 'acceleration_bp', errors) if qualified else None,
-        'horizon_basis': _token(nominal.get('horizon_basis')),
+        'horizon_basis': _choice(nominal.get('horizon_basis'),
+            # source: engine/yield_momentum.py:200
+            ('fixed_weekday_grid_intervals',),
+            issues=errors, field='horizon_basis'),
         'path_qualified': qualified,
     }, 'yield_percent_and_basis_point_change', issues=errors, clock='source_observation_date',
        stale=nominal.get('status') == 'stale',
@@ -313,7 +350,11 @@ def compose_context(sources: dict, *, now: datetime,
     errors = []
     liquidity_owner = _native_degradation(liq, 'liquidity', errors)
     emit('liquidity', 'regime', '/liquidity_quality', liq, liq.get('asof'), {
-        'quality_label': _token(liq.get('label')),
+        'quality_label': _choice(liq.get('label'),
+            # source: engine/regime.py:227 (label_enum)
+            ('benign-expansion', 'stress-expansion', 'neutral',
+             'neutral-hollow', 'contracting', 'unknown'),
+            issues=errors, field='quality_label'),
         'quantity_change_bn': _num(liq.get('quantity_roc_bn'), 'quantity_change_bn', errors),
         'rrp_buffer_bn': _num(liq.get('rrp_buffer_bn'), 'rrp_buffer_bn', errors, low=0),
     }, 'owner_quantity_change_usd_billions', issues=errors,
@@ -325,7 +366,10 @@ def compose_context(sources: dict, *, now: datetime,
         'hy_oas_pct': _num(credit.get('hy_oas_pct'), 'hy_oas_pct', errors, low=0),
         'hy_oas_change_20d_pp': _num(credit.get('hy_oas_chg_20d'), 'hy_oas_change_20d_pp', errors),
         'nfci_level': _num(credit.get('nfci'), 'nfci_level', errors),
-        'nfci_direction': _token(credit.get('nfci_trend')),
+        'nfci_direction': _choice(credit.get('nfci_trend'),
+            # source: engine/regime.py:200
+            ('tightening', 'loose'),
+            issues=errors, field='nfci_direction'),
     }, 'oas_percent_change_percentage_points_nfci_index', issues=errors,
        stale=liq.get('stale') is True,
        notes=('A negative financial-conditions level may coexist with tightening.',))
@@ -344,7 +388,10 @@ def compose_context(sources: dict, *, now: datetime,
         'universe_count': _count(population.get('universe'), 'universe_count', errors),
         'ma_eligible_denominators': None,
         'history_young': part.get('young') is True,
-        'membership_version': _token(part.get('tag_version')),
+        'membership_version': _slug(part.get('tag_version'),
+            # producer: engine/breadth_split.py:233-237 reads an unbounded sentinel
+            # file; no closed vocab published; slug is the bounded contract.
+            issues=errors, field='membership_version'),
     }
     emit('participation', 'participation', '/latest', part, part.get('as_of'), pv,
          'participation_percent_and_percentage_point_spread', issues=errors,
@@ -387,8 +434,16 @@ def compose_context(sources: dict, *, now: datetime,
     weather = _dict(_dict(sources.get('world_state')).get('factor_weather'))
     errors = []
     emit('style', 'world_state', '/factor_weather', weather, weather.get('factor_state_as_of'), {
-        'owner_style': _token(weather.get('style_regime')),
-        'owner_factor_leader': _token(weather.get('factor_leader')),
+        'owner_style': _choice(weather.get('style_regime'),
+            # source: scripts/build_factor_panel.py:1441-1465
+            ('growth_momentum', 'quality_defense', 'value_cyclical',
+             'junk_rally', 'mixed'),
+            issues=errors, field='owner_style'),
+        'owner_factor_leader': _choice(weather.get('factor_leader'),
+            # source: engine/factor_series.py:38 (SERIES_FACTORS)
+            ('value', 'profitability', 'quality', 'investment', 'payout',
+             'low_vol', 'low_beta', 'composite'),
+            issues=errors, field='owner_factor_leader'),
         'qqq_spy_change_20d_fraction': _num(weather.get('ratio_qqq_spy_20d'), 'qqq_spy_change_20d_fraction', errors),
         'iwm_spy_change_20d_fraction': _num(weather.get('ratio_iwm_spy_20d'), 'iwm_spy_change_20d_fraction', errors),
     }, 'owner_style_and_relative_price_ratio_change', issues=errors,
@@ -409,7 +464,12 @@ def compose_context(sources: dict, *, now: datetime,
             'n_covered': _count(item.get('n_covered'), tid + ':n_covered', sub),
             'n_members': _count(item.get('n_members'), tid + ':n_members', sub),
             'coverage_fraction': _num(item.get('coverage'), tid + ':coverage_fraction', sub, low=0, high=1),
-            'broadening_state': _token(item.get('broadening_state')),
+            'broadening_state': _choice(item.get('broadening_state'),
+            # source: engine/foresight_cascade.py THESIS_STAGES + RE-RATING / GLUT-RISK / WATCH
+            ('PRECIPICE', 'BROADENING', 'RE-RATING', 'GLUT-RISK', 'WATCH',
+             'PRECIPICE (text)', 'BROADENING (text)',
+             'PRECIPICE (fingerprint)', 'BROADENING (fingerprint)'),
+            issues=sub, field=tid + ':broadening_state'),
             'uses_broadening_proxy': item.get('broadening_proxy') is True,
         }
         errors.extend(sub)
@@ -426,8 +486,15 @@ def compose_context(sources: dict, *, now: datetime,
     leaders = _dict(sources.get('leadership'))
     errors = []
     emit('leadership_damage', 'leadership', '/', leaders, leaders.get('asof'), {
-        'owner_state': _token(leaders.get('state')),
-        'cohort_role': _token(leaders.get('cohort_role')),
+        'owner_state': _choice(leaders.get('state'),
+            # source: engine/leadership_crack.py:237 (state_series)
+            ('INTACT', 'CRACKING', 'BROKEN'),
+            issues=errors, field='owner_state'),
+        'cohort_role': _slug(leaders.get('cohort_role'),
+            # producer: engine/leadership_crack.py:378 emits one literal
+            # 'tracked_ai_no_hardware_damage_monitor'; no closed vocab published;
+            # slug is the bounded contract.
+            issues=errors, field='cohort_role'),
         'window_sessions': _count(leaders.get('high_window_sessions'), 'window_sessions', errors),
         'median_drawdown_fraction': _num(leaders.get('med_dd'), 'median_drawdown_fraction', errors, low=-1, high=0),
         'index_drawdown_fraction': _num(leaders.get('index_dd'), 'index_drawdown_fraction', errors, low=-1, high=0),
