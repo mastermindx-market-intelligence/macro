@@ -34,7 +34,7 @@ def test_source_population_preserved_and_calendar_never_review():
     assert len(d.select('[data-nd-item="context"]'))==2
     assert 'event_risk' not in d.get_text()
 
-@pytest.mark.parametrize('schedule,heading',[(None,'Calendar unavailable'),([], 'No scheduled events in this snapshot')])
+@pytest.mark.parametrize('schedule,heading',[(None,'Calendar unavailable'),([], 'No later scheduled events in this snapshot')])
 def test_calendar_unknown_distinct_from_empty(schedule,heading):
     d=dom(macro_catalysts=schedule)
     assert heading in d.get_text()

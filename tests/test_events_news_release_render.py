@@ -164,7 +164,7 @@ def test_gdp_official_result_uses_annualized_quarter_language(tmp_path):
     assert result
     text=result.get_text(' ',strip=True)
     assert 'Real GDP' in text
-    assert '3.0%' in text
+    assert result.select_one('.nd-official-value').get_text('', strip=True) == '3.0%'
     assert 'Annualized quarter-over-quarter rate' in text
     assert 'Advance estimate' in text
     assert '2026-Q2' in text

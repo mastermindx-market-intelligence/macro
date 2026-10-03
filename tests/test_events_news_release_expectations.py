@@ -280,6 +280,20 @@ def test_release_anatomy_withholds_conflicting_policy_and_unsafe_citation():
     assert "citation" not in anatomy["quirk_flags"][0]
 
 
+@pytest.mark.parametrize("citation", [
+    "javascript:alert(1)", "data:text/html,hi", "file:///private/data",
+    "https://user@www.bls.gov/note", "https://www.bls.gov:444/note",
+    "https://www.bls.gov/note\n", "BLS\x00 reference",
+])
+def test_source_note_never_relabels_unsafe_uri_as_plain_citation(citation):
+    flags = view._clean_quirk_flags([{"quirk_flags": [{
+        "code": "cpi_weight_update", "en": "Weight update", "cite": citation,
+    }]}])
+    assert len(flags) == 1
+    assert "cite_url" not in flags[0]
+    assert "citation" not in flags[0]
+
+
 def test_release_anatomy_keeps_non_url_owner_citation_as_text():
     payload = forecast_payload()
     payload["upcoming"][0]["quirk_flags"] = [{
@@ -577,7 +591,8 @@ def test_composer_keeps_future_expectations_when_official_source_is_unavailable(
     out = view.compose_event_intelligence(
         [event], None, forecast_payload(), as_of=ASOF)
     assert event == before
-    assert out[0]["official_evidence"]["reason"] == "source_unavailable"
+    assert out[0]["official_evidence"]["reason"] == "not_available_as_of"
+    assert out[0]["official_evidence"]["metrics"] == []
     assert out[0]["expectation_context"]["status"] == "available"
 
 

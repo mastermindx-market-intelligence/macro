@@ -44,7 +44,7 @@ def test_future_model_context_is_secondary_and_street_survey_gap_is_explicit():
     assert "Street survey" in text and "Not connected" in text
     assert "Mastermind blended benchmark" in text
     assert text.count("Mastermind model benchmark") == 1
-    assert "0.48%" in text and "0.27%" in text
+    assert [n.get_text("", strip=True) for n in panel.select(".nd-model-value")] == ["0.48%", "0.27%"]
     assert "Cleveland benchmark" in text
     assert "Market-implied median" in text
     assert "consensus" not in text.lower()
@@ -227,7 +227,7 @@ def test_payroll_benchmark_units_are_readable_and_unqualified_market_count_is_hi
     s = soup_for(event)
     panel = s.select_one(".nd-expectation-context")
     text = panel.get_text(" ", strip=True)
-    assert "100k" in text
+    assert panel.select_one(".nd-model-value").get_text("", strip=True) == "100k"
     assert "217k" in text
     assert "122k" in text
     assert "97000" not in text

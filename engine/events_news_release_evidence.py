@@ -11,6 +11,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 import hashlib
 import math
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -474,7 +475,12 @@ def _clean_quirk_flags(rows: Sequence[Mapping[str, Any]]) -> list[dict[str, str]
             url = _safe_https_reference(cite)
             if url is not None:
                 item["cite_url"] = url
-            elif isinstance(cite, str) and cite.strip() and "://" not in cite and len(cite) <= 300:
+            elif (
+                isinstance(cite, str) and cite.strip() and len(cite) <= 300
+                and "://" not in cite and "\\" not in cite
+                and not re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:", cite.strip())
+                and not any(ord(ch) < 32 or ord(ch) == 127 for ch in cite)
+            ):
                 item["citation"] = cite.strip()
             out.append(item)
             seen.add(code)
@@ -653,7 +659,8 @@ def _future_expectation_metric(
         "basis_warning": row.get("basis_warning") if isinstance(row.get("basis_warning"), str) else None,
         "input_completeness": row.get("input_completeness") if _finite_number(row.get("input_completeness")) else None,
     })
-    if result["status"] == "model_point_unavailable" and benchmarks:
+    if (result["status"] == "model_point_unavailable"
+            and result["reason"] == "model_point_unavailable" and benchmarks):
         result["status"] = "benchmark_context"
     return result
 

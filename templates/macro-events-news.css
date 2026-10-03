@@ -48,7 +48,7 @@
 #dlg-news .nd-item-clock{margin-left:auto;font-size:var(--fs-sm)}
 #dlg-news .nd-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border:1px solid var(--line);border-radius:var(--r-pill);font-size:var(--fs-label);font-weight:600;line-height:1.5;color:var(--muted);background:transparent}
 #dlg-news .nd-tag-review{color:var(--link);border-color:var(--info)}
-#dlg-news .nd-tag-calendar{color:color-mix(in srgb,var(--warn) 72%,var(--text));border-color:var(--line)}
+#dlg-news .nd-tag-calendar{color:var(--ink-warn,var(--warn));border-color:var(--line)}
 #dlg-news .nd-tag-news{color:var(--text)}
 #dlg-news .nd-item-title{font-size:var(--fs-md);font-weight:650;letter-spacing:-.01em;line-height:1.5;color:var(--text);margin:0 0 6px;overflow-wrap:anywhere}
 #dlg-news .nd-change{margin:0;font-size:var(--fs-body);line-height:1.65;color:var(--text);overflow-wrap:anywhere}

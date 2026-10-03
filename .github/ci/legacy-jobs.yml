@@ -17660,6 +17660,8 @@ jobs:
       - "scripts/close_pass_publish.py"
       - "scripts/close_pass_reconcile.py"
       - "scripts/notify.py"
+      # GDP parser-to-receipt regression imports the existing official parser.
+      - "scripts/official_release_parsers.py"
       - "scripts/regime_reliability_phase0.py"
       - "scripts/security_state_producer.py"
       - "scripts/snapshot_shadow_book.py"

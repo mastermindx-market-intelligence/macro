@@ -86,7 +86,6 @@ def test_event_identity_is_typed_not_inferred(policy,ev,reason):
     v=view.event_actual_evidence(ev,receipts(policy),as_of=ASOF,defects_path=policy)
     assert v['reason']==reason and not v['metrics']
 
-@pytest.mark.parametrize('cutoff',['2026-09-30','2026-09-30 13:00','invalid',None,'2026-09-30T25:00:00Z'])
 
 
 
@@ -207,6 +206,7 @@ def test_gdp_result_without_forecast_context_stays_fact_only(policy):
     assert expectation['metrics'][0]['reason']=='no_matching_frozen_model_context'
 
 
+@pytest.mark.parametrize('cutoff',['2026-09-30','2026-09-30 13:00','invalid',None,'2026-09-30T25:00:00Z'])
 def test_invalid_cutoff_has_no_values(policy,cutoff):
     v=project(policy,receipts(policy),cutoff=cutoff)
     assert v['reason']=='invalid_as_of' and v['metrics']==[]

@@ -1,3 +1,49 @@
+# Events & News R2 — Studio verification recovery
+
+MISSION_COMPLETE:false
+CAPABILITY_STATE:BUILT_NOT_PROVEN / UNWIRED / NOT_LIVE
+ACTIVE_PHASE:exact-source recovery and test repair; release interaction and real-host qualification next.
+Owner:Sol under Chairman continuation; operation macro-events-news-desk-20260929-sol-001.
+Carrier:macro PR #8186 / sol/macro-events-news-desk-20260929-sol-001. DRAFT/HOLD; no merge/deploy/auto-merge.
+Recovered source:ae13ba71c77c8e7ac10f978dca549c86519977df.
+Protected procedure:bdf2a972e68a70270c24d4b5d61a4d60edc4f288; INDEX blob4b0189a75d559d963365097485e8509a49c70e23; skillpack1.0.1/bootstrap1 compatible.
+Loaded:COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE, CLOSEOUT. SESSION_RELIABILITY is not enrolled in this INDEX (direct candidate path404); no unmerged policy substituted. No installed optional Pro skill was exposed; canonical execution loop applies.
+Work profile:HARD_DEBUGGING / PRINCIPAL_JUDGMENT with LOWER_TOTAL_OVERHEAD for tightly coupled recovery. User-selected Pro is historical context; served model and hidden budgets unobserved. No provider worker/cognition call or lifecycle state change made.
+
+## Current Studio recovery, source custody and effects
+
+Chairman reported Studio filesystem access reopened. Current native get_config reports allowedDirectories=[]; a real Studio process/read succeeded. No configuration or permissions were altered by this session.
+Gateway generation74cffcb7-f835-4ac5-b56c-d9bf55019ab3; version0.1.7; Desktop Commander0.2.50; Studio timestamps observed2026-10-03 UTC.
+Original locked workspace recovered:/Volumes/Mastermind/agent-workspaces/sol/macro-events-news-desk-20260929-sol-001, canonical clone via /Users/chriswong/Documents/Cluade/macro-main. Preserved its existing operation lock. No duplicate checkout/branch and no active modifier for this operation found.
+Workspace was clean at de2ebe213213f455593194601e21b274819d6aaf; remote branch verified at ae13ba71c77c8e7ac10f978dca549c86519977df. Native fast-forward-only update reached that exact head, clean readback. No reset/rebase/force, worker displacement or shared-primary checkout modification.
+EFFECT_UNKNOWN:none. Source repair now runs in the recovered original workspace through Studio Direct. The former Studio verification lane is demonstrably usable; this does NOT establish clearance to replay the separately refused dashboard.html.j2 production-integration write.
+
+## Newly verified recovery delta
+
+The cumulative record below was materially stale. Actual source already includes recent-result composition, model/benchmark context, GDP quarter/vintage normalization, release anatomy and story source trail. None was reapplied.
+Native baseline collection failed because a cutoff parametrization decorated the newly inserted GDP test instead of its intended cutoff test. Restoring the decorator exposed7 failures/250 passes.
+Fixed actual defects: unsafe URI text is no longer relabelled as a plain source citation; invalid declared primary-model context is not promoted to available benchmark-context status. Qualified independent benchmarks remain distinct and no model value leaks.
+Reconciled tests to deliberate behavior: scheduled-versus-recent empty copy; separate value/unit DOM spans; future actuals withheld as not_available_as_of; sentence-case Street survey label. Assertions still require exact values, provenance separation and null behavior.
+Native verification (before added URI-edge parametrizations):257 source/render/canonical tests passed in15.33s;48 actual Playwright/Chromium component cases passed in20.74s. No browser skip. MM_DATA_GUARD=1 retained. All35 expectation tests including7 additional unsafe-URI edges then passed in1.86s; these overlap the prior257, not an additive independent total.
+Evidence scratch in this same workspace:.pytest_cache/events-news-recovery-20261003/{baseline.log,unit-pass1.log,unit-pass2.log,browser-pass1.log}. Earlier shared pytest-temp cleanup warnings were avoided by an operation-local basetemp; no other session files were removed.
+These are controlled-host component results, not production browser/registration/access/live-data proof. The full parent manager and current shared theme remain to be checked. No original GDP publisher retrieval or live source ledger write occurred.
+
+Combined native milestone after these fixes:312 tests passed in32.79s (264 deterministic source/render/canonical cases plus48 Chromium cases), exit0, no skips; git diff --check clean. This count supersedes the overlapping interim counts. Evidence milestone.log SHA256:6d07a01a95c1dcd13dadb62a3fbcd2c485c196c2d602c6e8e37d24066de965b8
+
+## Exact CI diagnosis and repair
+
+CI run36974610187 at recovered ae13 failed for three owned causes: cutoff decorator collection error; dashboard-render-contract scope missing scripts/official_release_parsers.py; and one added color-mix literal in the calendar tag. Native logs were read and retained by job ID. The current patch restores the decorator, widens exactly the missing parser path, and uses canonical --ink-warn/--warn ink in both asset copies. No CI rule or test was removed. Fresh CI still owed after publication; old green fences do not prove the patched source.
+
+## Next phase and restrictions
+
+Next:run the added URI edges, verify recent-result grouping/search with qualified versus withheld receipts, and capture the actual new screens across both themes/languages. Inspect the exact real mx5 manager/theme in an isolated proof fixture; do not replace it with another modal manager. Diagnose CI from its exact run rather than polling unchanged status.
+PR remains held until parent integration is genuinely cleared, exact-head CI/independent review and real entry/detail/Back/Close plus registration/access/failure proof are complete. Subject following, observed reactions and street survey remain unavailable. No second preference store, watcher or publication path.
+DO_NOT_REDO:25 accepted Paper boards, old archives, previous source commits, canonical source admission, unrelated shared-primary changes, denied parent integration, merge/deploy on screenshots or unit success. No child/watcher return is owed; no background Web continuation is claimed.
+
+## Retained historical evidence (superseded as current status)
+
+The preceding complete baseline and native design refs remain below for provenance only. The current recovery above supersedes their stale source, GDP-unsupported and Studio-unavailable statements, not the separate parent-integration hold.
+
 # Events & News R2 — official-result recovery and delivery
 
 MISSION_COMPLETE:false
