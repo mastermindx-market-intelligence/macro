@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "GPCR-BULL-20260604",
-  "asof": "2026-10-01",
+  "asof": "2026-10-02",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.1,
@@ -17,20 +17,20 @@
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.192,
+    "dist_to_stop_r": -0.389,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 122.2,
-    "p1": -0.795,
-    "p2": -0.3975,
+    "horizon_pct_used": 124.4,
+    "p1": -0.9258,
+    "p2": -0.4629,
     "p3": null,
-    "move_r": -1.192,
+    "move_r": -1.389,
     "mfe_r": 0.085,
-    "mae_r": -1.192
+    "mae_r": -1.389
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: overtime \u2192 invalidated",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.5600007629394526,
-  "_mae": -21.86999954223633,
+  "_mae": -25.469999923706055,
   "_max_p1": 0.05670667985966748,
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 55,
-  "tau": 1.2222
+  "days_elapsed": 56,
+  "tau": 1.2444
 }
