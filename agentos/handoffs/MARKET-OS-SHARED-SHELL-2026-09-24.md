@@ -588,8 +588,24 @@ second builder. Current `origin/main` has separately advanced to fresher Researc
 bytes, so eventual current-main reconciliation must preserve that newer source truth rather than
 copying this held branch's older payload forward.
 
-R41 does **not** release the PR hold. Remaining work is current-head publication/reconciliation,
-independent review/CI, the existing receipt dependency closure, R18/R19/PR7129, and eventual
-production proof/acceptance. Preserve the existing Draft/HOLD state; do not mark Ready, merge,
-broaden pilots or deploy from this checkpoint. The older statement that the nine R38 browser
-scenarios were unexecuted is historical and superseded by this section only for that browser lane.
+The remaining stock-dashboard receipt dependency was then reproduced against this same carrier rather
+than waived. Both HK/Canada `test_committed_browser_receipts_are_self_binding_fixture_proof` cases
+failed on stale shared-chrome bindings. A fresh deterministic fixture render produced byte-identical
+HK/Canada HTML but changed only the `_site_nav.html.j2` construction-input hash, so the canonical
+renderer updated `rendered-fixture.json` first. Its self-binding test then passed. The incumbent
+`verify_stock_dashboard_mobile_layout.cjs` rig reminted HK and Canada against that receipt, preserving
+the historical baseline head/tree and all four pinned historical screenshots byte-for-byte. Unlike
+the older #7523 theme repair, this run produced **zero PNG churn**: only the two browser receipts,
+`rendered-fixture.json`, and the manifest extension bindings changed. The manifest was restamped only
+for the current fixture/browser-receipt SHA256s; historical target/baseline fields and screenshot
+hashes were left untouched. Focused dependency proof: **4 passed**. Widened owning verification across
+`test_stock_dashboard_first_frame.py`, its data companion, Research Screener and All Tools: **162
+passed**, with only the same four temporary Chromium cleanup warnings. `git diff --check` passed;
+Agent OS validation remained **0 errors** (71 advisory warnings).
+
+R41 does **not** release the PR hold. Remaining work is publish/consume this receipt closure on the
+same branch, current-main semantic reconciliation, exact-head hosted CI and independent review,
+R18/R19/PR7129, and eventual production proof/acceptance. Preserve the existing Draft/HOLD state; do
+not mark Ready, merge, broaden pilots or deploy from this checkpoint. The older statements that the
+R38 browser scenarios were unexecuted, Research Screener was stale, or receipt dependency closure was
+pending are historical and superseded by this section for those specific lanes only.

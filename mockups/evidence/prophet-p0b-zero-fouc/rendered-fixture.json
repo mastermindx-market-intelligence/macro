@@ -142,7 +142,7 @@
         {
           "path": "templates/_site_nav.html.j2",
           "role": "jinja_template",
-          "sha256": "68c78e9980943255aa526f25b594c0ed85eed9bac31ae4be35d5b2cd81042db1"
+          "sha256": "9454299d2d2a1b3e3b3b46d77e2af1d58686ce9611dd5d545bd5e6d3c6f4b74c"
         },
         {
           "path": "templates/canada.html.j2",
@@ -491,7 +491,7 @@
         {
           "path": "templates/_site_nav.html.j2",
           "role": "jinja_template",
-          "sha256": "68c78e9980943255aa526f25b594c0ed85eed9bac31ae4be35d5b2cd81042db1"
+          "sha256": "9454299d2d2a1b3e3b3b46d77e2af1d58686ce9611dd5d545bd5e6d3c6f4b74c"
         },
         {
           "path": "templates/hk.html.j2",
