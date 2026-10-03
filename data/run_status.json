@@ -1830,8 +1830,8 @@
       "status": "ok",
       "n_leaders": 116,
       "base_json": "site/flowtracker/base.json",
-      "as_of": "2026-10-02T09:00:59.924447+00:00",
-      "checked_at": "2026-10-02T09:00:59.924447+00:00"
+      "as_of": "2026-10-03T07:18:48.412107+00:00",
+      "checked_at": "2026-10-03T07:18:48.412107+00:00"
     },
     "broad_flows": {
       "source": "broad_flows",
@@ -3343,8 +3343,8 @@
       "series": "CNH=F",
       "last_obs": "2026-09-11",
       "cadence_days": 5,
-      "age_days": 18,
-      "detected_at": "2026-09-29T04:32:37.169187+00:00"
+      "age_days": 22,
+      "detected_at": "2026-10-03T05:45:14.296721+00:00"
     },
     {
       "group": "china",
