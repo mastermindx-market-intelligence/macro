@@ -511,43 +511,63 @@ def test_no_title_attributes_in_dossier(fixture_id: str) -> None:
 # outside the rights-line allow-list (D55(6)).
 # --------------------------------------------------------------------------- #
 
-# D55(6): allow-listed Latin tokens that the rights line carries by design.
-# The rights_basis first segment renders outside `.l-en` / `lang="en"` contexts
-# (the `.imd-dossier-rights` span itself is not bilingual), so legitimate Latin
-# from the rights line is the only Latin that may survive in ZH-visible text.
-_ZH_PARITY_ALLOW_LIST = frozenset({
-    "CC", "BY", "Commission", "Decision", "EU", "Open", "Government",
-    "Licence", "OGL", "v3",
-})
+# D55(6) revised (R3): the `.imd-dossier-rights` span carries the rights-basis
+# legal identifier UNTRANSLATED BY DESIGN — its Latin tokens (CC, BY, Commission,
+# Decision, EU, Open, Government, Licence, OGL, v3) are legitimate. R2 put those
+# tokens into `_ZH_PARITY_ALLOW_LIST`, but that allowed a leaked ZH publisher
+# to hide behind a whitelist, and the old extractor's depth-counter only
+# tracked a single number so a nested child inside `.l-en` could leak its
+# following text. R3 fixes the root cause: the rights span is itself treated as
+# a non-ZH context (like `.l-en`), so its text is excluded from the parity check
+# and the allow-list is empty. There are no Latin runs >=3 letters inside any
+# `t(en, zh)` ZH argument between `<article class="imd-card imd-dossier"` and
+# its `</article>` (enumerated by `latin_runs_in_zh` below).
+_ZH_PARITY_ALLOW_LIST = frozenset()
 
 
 class _ZhTextExtractor(HTMLParser):
-    """Collect visible text that is OUTSIDE `.l-en` spans and `lang="en"`
-    elements. The dossier template's bilingual macro `t(en, zh)` wraps every
-    translated string in a pair `<span class="l-en">…</span><span
-    class="l-zh">…</span>`; the headline anchor additionally declares
-    `lang="en"`. The ZH-visible text is what remains once those wrappers are
-    stripped. Implemented as a small state machine (no bs4 dependency).
+    """Collect visible text that is OUTSIDE `.l-en` spans, `lang="en"` elements,
+    AND the `.imd-dossier-rights` span (the legal-rights identifier, which
+    renders untranslated by design — D55(6) / R3).
+
+    The dossier template's bilingual macro `t(en, zh)` wraps every translated
+    string in a pair `<span class="l-en">…</span><span class="l-zh">…</span>`;
+    the headline anchor additionally declares `lang="en"`. The rights-basis
+    span carries class `imd-dossier-rights` and is intentionally non-bilingual
+    so its Latin tokens don't fail parity.
+
+    Implemented as a small state machine (no bs4 dependency): a stack of bools
+    tracks per-element non-ZH context. `handle_endtag` pops one entry per end
+    tag (HTML void tags like `<br>` / `<img>` / `<meta>` emit NO end tag, so we
+    must NOT push for them — otherwise the stack gets unbalanced). `handle_data`
+    appends only when no True is on the stack.
     """
+
+    _VOID_TAGS = frozenset({
+        "br", "img", "hr", "input", "meta", "link", "wbr", "source", "col",
+        "area", "base", "embed", "param", "track",
+    })
 
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
-        self._en_depth = 0
+        self._stack: list[bool] = []
         self._chunks: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag.lower() in self._VOID_TAGS:
+            return
         attr_d = dict(attrs)
         cls = (attr_d.get("class") or "").split()
         lang = attr_d.get("lang")
-        if "l-en" in cls or lang == "en":
-            self._en_depth += 1
+        is_non_zh = ("l-en" in cls) or ("imd-dossier-rights" in cls) or (lang == "en")
+        self._stack.append(is_non_zh)
 
     def handle_endtag(self, tag: str) -> None:
-        if self._en_depth > 0:
-            self._en_depth -= 1
+        if self._stack:
+            self._stack.pop()
 
     def handle_data(self, data: str) -> None:
-        if self._en_depth == 0:
+        if not any(self._stack):
             self._chunks.append(data)
 
 
@@ -583,6 +603,65 @@ def test_zh_parity(fixture_id: str) -> None:
     html = _render(view)
     slice_ = _slice(html)
     _assert_zh_only_letters_or_allow_list(slice_)
+    # R3 restored (D56 N2): R2 deleted these two guards so a missing
+    # translation (an empty <span class="l-zh">) could pass parity. Both
+    # surfaces are parity invariants and the bilingual macro `t(en, zh)` is
+    # paired by construction.
+    assert not re.search(r'<span class="l-zh">\s*</span>', slice_), (
+        "empty <span class='l-zh'> detected — missing ZH translation"
+    )
+    assert slice_.count('class="l-en"') == slice_.count('class="l-zh"'), (
+        "l-en and l-zh span counts differ — bilateral template had an unmatched "
+        "translation"
+    )
+
+
+# --------------------------------------------------------------------------- #
+# Test 10b — positive control: a leaked English publisher in the .l-zh span is
+# CAUGHT by the parity assertion (R3, D56 N2).
+# --------------------------------------------------------------------------- #
+def test_zh_parity_catches_an_english_publisher_in_the_zh_span() -> None:
+    """If an English publisher name (e.g. 'European Commission') ever leaks
+    into a `<span class="l-zh">` slot — because a translator forgot the ZH
+    rendering — the parity test must catch it.
+
+    POSITIVE CONTROL: the unmutated render's ZH-visible text contains the ZH
+    publisher `欧盟委员会` and the leadership phrase `领导层表态`, and does NOT
+    contain `European Commission` (lives in `.l-en`) or `CC BY` (lives in the
+    rights span — also skipped by design).
+
+    MUTATION: replace the first occurrence of `欧盟委员会` with `European
+    Commission` in the rendered slice. The parity assertion must then raise.
+    With `_ZH_PARITY_ALLOW_LIST` empty (R3), `European Commission` is NOT
+    filtered and `re.findall(r"[A-Za-z]{3,}", …)` returns `['European',
+    'Commission']`.
+    """
+    view = _view("EZ")
+    view["dossier"] = _covered_ez()
+    html = _render(view)
+    slice_ = _slice(html)
+
+    # POSITIVE CONTROL
+    txt = _zh_visible_text(slice_)
+    assert "欧盟委员会" in txt, f"expected ZH publisher in ZH-visible text; got {txt!r}"
+    assert "领导层表态" in txt, f"expected leadership phrase in ZH-visible text; got {txt!r}"
+    assert "European Commission" not in txt, (
+        f"EN publisher leaked into ZH-visible text: {txt!r}"
+    )
+    assert "CC BY" not in txt, f"rights-line token leaked: {txt!r}"
+
+    # MUTATION — first occurrence is enough; the published items render the
+    # ZH publisher once per item, and there are two of them, so we replace ALL.
+    mutated = slice_.replace("欧盟委员会", "European Commission")
+    assert "欧盟委员会" not in mutated, "mutation failed"
+    assert "European Commission" in mutated
+
+    with pytest.raises(AssertionError) as exc:
+        _assert_zh_only_letters_or_allow_list(mutated)
+    # surface the leaked tokens the assertion named — they are the proof.
+    assert "European" in str(exc.value) or "Commission" in str(exc.value), (
+        f"expected leaked Latin in assertion message; got {exc.value!r}"
+    )
 
 
 # --------------------------------------------------------------------------- #
@@ -674,3 +753,70 @@ def test_engine_items_render_through_the_real_view(monkeypatch) -> None:
     assert data_rights_basis
     assert data_rights_basis.split(" — ")[0] in slice_
     assert 'data-source-key="ec_presscorner"' in slice_
+
+
+# --------------------------------------------------------------------------- #
+# Test 14 — D56 N1: light headline keeps its link colour on hover; dark
+# headline still brightens (specificity tie → source order is load-bearing).
+# --------------------------------------------------------------------------- #
+def test_headline_hover_keeps_link_colour_in_light_and_brightens_in_dark() -> None:
+    """DARK hover rule: `body.imd-page .imd-dossier-headline:hover{color:var(--text)}`
+    (specificity 0,3,1) brightens the headline to `--text`.
+
+    LIGHT hover rule (R3): `html[data-theme="light"] .imd-dossier-headline:hover
+    {color:var(--ink-link,var(--link));text-decoration:underline;
+    text-underline-offset:2px}` (also 0,3,1) sets BOTH the colour and the
+    underline. The colour must stay at `--ink-link` (with `--link` fallback) so
+    the headline does NOT drop to `--text` (which is near-black in light theme).
+
+    Specificity tie (both 0,3,1) means source order is load-bearing: the LIGHT
+    rule appears LATER in the stylesheet, so when both match (the dark rule has
+    no theme qualifier and always matches), the LIGHT rule's colour wins in
+    light theme. In dark theme, the LIGHT rule does not match and the DARK
+    rule's `color:var(--text)` brightens the headline as designed.
+    """
+    tpl = (ROOT / "templates" / "international_macro.html.j2").read_text()
+    dark = 'body.imd-page .imd-dossier-headline:hover{color:var(--text)}'
+    light = ('html[data-theme="light"] .imd-dossier-headline:hover'
+             '{color:var(--ink-link,var(--link));text-decoration:underline;'
+             'text-underline-offset:2px}')
+
+    assert tpl.count(dark) == 1, (
+        "dark hover rule missing or changed — pin the exact spot before judging"
+    )
+    assert tpl.count(light) == 1, (
+        "light hover rule missing or changed — pin the exact spot before judging"
+    )
+
+    dark_idx = tpl.index(dark)
+    light_idx = tpl.index(light)
+    assert light_idx > dark_idx, (
+        f"light rule at index {light_idx} must appear AFTER dark rule at "
+        f"index {dark_idx} so the 0,3,1 specificity tie resolves to the light "
+        f"colour (D56 N1)."
+    )
+
+
+# --------------------------------------------------------------------------- #
+# Test 15 — R3 extractor: text after a nested child inside `.l-en` must NOT
+# leak into the ZH side. R2's depth counter popped on ANY end tag, so a `<b>`
+# inside `<span class="l-en">` would zero the counter and the trailing
+# `.l-en` text would be re-included — silently fixing nothing.
+# --------------------------------------------------------------------------- #
+def test_zh_extractor_does_not_leak_text_after_a_nested_child_in_an_en_span() -> None:
+    """Pin the stack-based fix: the old `_en_depth` counter popped on every
+    end tag. Feed an `<span class="l-en">` that contains a nested `<b>`; the
+    counter would go 1 → 0 on the `</b>` end tag, then EVERYTHING after
+    `</b>` inside the still-open `<span class="l-en">` would be re-included
+    as ZH-visible text. R3 replaces the counter with a stack of bools and
+    pops one entry per end tag — so the result is correctly empty (only the
+    trailing `<span class="l-zh">阅读</span>` content survives).
+    """
+    sample = (
+        '<span class="l-en">Read <b>more</b> here</span>'
+        '<span class="l-zh">阅读</span>'
+    )
+    assert _zh_visible_text(sample) == "阅读", (
+        "ZH extractor dropped text from the trailing <span class='l-en'> "
+        "when a nested child popped the old depth counter (R3 stack fix)."
+    )
