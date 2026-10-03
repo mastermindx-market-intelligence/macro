@@ -70,18 +70,20 @@
       /Users/chriswong/flow-ops-wt/.env \
       /usr/bin/env \
       MACRO_PUBLISH_GIT_SSH_KEY=/Users/chriswong/.ssh/macro_dashboard_deploy \
-      PYTHONPATH=/Users/chriswong/flow-ops-wt \
+      MACRO_INDEX_GEX_HISTORY_ROOT=/Users/chriswong/indexgex-ops-wt \
+      PYTHONPATH=/Users/chriswong/indexgex-ops-wt \
       /bin/sh \
-      /Users/chriswong/macro-publisher-runtime/ops/launchd/run_index_gex_history.sh
+      /Users/chriswong/indexgex-ops-wt/ops/launchd/run_index_gex_history.sh
 
   MANUAL RUN (push tail only — skips the ~20 min rebuild):
     INDEXGEX_SKIP_ENGINE=1 /Users/chriswong/macro-publisher-runtime/ops/launchd/run_with_env.sh \
       /Users/chriswong/flow-ops-wt/.env \
       /usr/bin/env \
       MACRO_PUBLISH_GIT_SSH_KEY=/Users/chriswong/.ssh/macro_dashboard_deploy \
-      PYTHONPATH=/Users/chriswong/flow-ops-wt \
+      MACRO_INDEX_GEX_HISTORY_ROOT=/Users/chriswong/indexgex-ops-wt \
+      PYTHONPATH=/Users/chriswong/indexgex-ops-wt \
       /bin/sh \
-      /Users/chriswong/macro-publisher-runtime/ops/launchd/run_index_gex_history.sh
+      /Users/chriswong/indexgex-ops-wt/ops/launchd/run_index_gex_history.sh
 
   VERIFY IT LANDED:
     python -c "import pandas as pd; d=pd.read_parquet('data/index_gex_history/SPY.parquet'); print(len(d), d.index.max())"
@@ -102,14 +104,15 @@
     <string>/Users/chriswong/flow-ops-wt/.env</string>
     <string>/usr/bin/env</string>
     <string>MACRO_PUBLISH_GIT_SSH_KEY=/Users/chriswong/.ssh/macro_dashboard_deploy</string>
-    <string>PYTHONPATH=/Users/chriswong/flow-ops-wt</string>
+    <string>MACRO_INDEX_GEX_HISTORY_ROOT=/Users/chriswong/indexgex-ops-wt</string>
+    <string>PYTHONPATH=/Users/chriswong/indexgex-ops-wt</string>
     <string>/bin/sh</string>
-    <string>/Users/chriswong/macro-publisher-runtime/ops/launchd/run_index_gex_history.sh</string>
+    <string>/Users/chriswong/indexgex-ops-wt/ops/launchd/run_index_gex_history.sh</string>
   </array>
 
-  <!-- Working directory must be flow-ops-wt (avoids ~/Documents TCC denial). -->
+  <!-- Code checkout. The .env file and the key path above stay on their existing lanes. -->
   <key>WorkingDirectory</key>
-  <string>/Users/chriswong/flow-ops-wt</string>
+  <string>/Users/chriswong/indexgex-ops-wt</string>
 
   <!-- Weekly: Sunday (Weekday 0) 20:00 local. See CADENCE above. -->
   <key>StartCalendarInterval</key>

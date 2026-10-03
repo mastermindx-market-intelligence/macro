@@ -55,18 +55,42 @@
 #     /bin/sh \
 #     /Users/chriswong/macro-publisher-runtime/ops/launchd/run_index_gex_history.sh
 #
+# The launchd template pins MACRO_INDEX_GEX_HISTORY_ROOT and PYTHONPATH to
+# /Users/chriswong/indexgex-ops-wt and runs the reviewed script from that
+# checkout. An empty or unset root keeps the flow-ops-wt default above, which
+# is an absolute path, never the current directory.
+#
 # LOG TAILING:
 #   tail -f /tmp/index_gex_history.stdout.log /tmp/index_gex_history.stderr.log
 
 set -eu
 
-REPO="/Users/chriswong/flow-ops-wt"
+# Empty or unset keeps the historical lane. ${VAR:-default} treats an empty
+# string as unset, so it cannot become the current directory.
+REPO="${MACRO_INDEX_GEX_HISTORY_ROOT:-/Users/chriswong/flow-ops-wt}"
 RUNTIME="/Users/chriswong/macro-publisher-runtime"
 PUSH_REPO="/Users/chriswong/indexgex-push-repo-private"
 REMOTE_URL="git@github.com:mastermindx-market-intelligence/macro.git"
 MACHINE_GIT="$RUNTIME/scripts/macro_machine_git.py"
 PYTHON="/opt/homebrew/Caskroom/miniconda/base/bin/python"
 ART_DIR="data/index_gex_history"
+
+# Refuse a relative or missing code root before the key check, engine, R2, or publisher.
+case "$REPO" in
+    /*) ;;
+    *)
+        echo "[index_gex_history] ERROR: REPO must be an absolute existing directory, not '$REPO'"
+        exit 1
+        ;;
+esac
+if [ ! -d "$REPO" ]; then
+    echo "[index_gex_history] ERROR: REPO is not an existing directory: $REPO"
+    exit 1
+fi
+if [ ! -f "$REPO/scripts/build_index_gex_history.py" ]; then
+    echo "[index_gex_history] ERROR: REPO is not the index-history code checkout (missing scripts/build_index_gex_history.py): $REPO"
+    exit 1
+fi
 
 : "${MACRO_PUBLISH_GIT_SSH_KEY:?MACRO_PUBLISH_GIT_SSH_KEY is required}"
 [ -f "$MACHINE_GIT" ] || { echo "[index_gex_history] ERROR: machine Git helper missing"; exit 1; }

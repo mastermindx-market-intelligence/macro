@@ -320,6 +320,73 @@ Python.  Secrets (`R2_*`, `THETADATA_STORE`) must be in the `.env` file inside
 the job's working directory.  **Never inline secrets in the plist
 EnvironmentVariables block.**
 
+### Options Alpha B1 reviewed code roots (source map only)
+
+The table above is the installed measurement. This section is the reviewed
+source map for a later install. Nothing in that install has been done here.
+Do not clone a tree, create a symlink, copy an environment file, load a
+launchd job, or publish from this change.
+
+Each code checkout is a full standalone clone beside its fixed path. It is
+not a git worktree and it is not a blobless clone. Before the checkout is
+exposed, the selected commit must be
+`7084e176a8d510f96082d4195ee4117e08002890` or a later protected-main
+descendant, and `engine/gex_engine.py` must still hash to
+`f307223722e9ff10c62865d5c92bb7385970ec1da94c6477d19cd9269d768e5c`. Keep the
+previous tree as the rollback. Do not use `macro_machine_git.py` for this
+acquisition. Do not touch `flow-ops-wt/.git`. Do not copy `.env`, keys, the
+publisher sparse clone, or a broad `data/` tree. The Actions runner is not
+an allowed route while free disk space is under the 200 GiB floor.
+
+| Lane | Code root the job runs | Physical state that stays put | The only symlink |
+|---|---|---|---|
+| Index history | `/Users/chriswong/indexgex-ops-wt` | `/Users/chriswong/flow-ops-wt/data/index_gex_history` | `indexgex-ops-wt/data/index_gex_history` points at that exact directory |
+| Options matrix | `/Users/chriswong/optionsmatrix-ops-wt` | `/Users/chriswong/flow-ops-wt/data/live_flow_out/options_matrix` | `optionsmatrix-ops-wt/data/live_flow_out/options_matrix` points at that exact directory |
+| Options Hub output | `/Users/chriswong/optionshub-ops-wt` | `/Users/chriswong/hub-ops-wt/data/live_flow_out/options_hub` | `optionshub-ops-wt/data/live_flow_out/options_hub` points at that exact directory |
+
+Create one of those symlinks only after `lstat` shows the physical target is
+the directory that already exists. Do not replace that target.
+
+Hub inputs are not a broad data symlink and they are not a copy inside the
+new clone. They stay ordinary files and directories under
+`/Users/chriswong/hub-ops-wt`: `data/polygon_gex`, `data/gex/latest.json`,
+`site/basketdata/fear_greed.json`, `data/tape_flow/daily`, and
+`data/live_flow_out` (the archive root, which also holds the Hub output
+directory above). The job reads those five paths only when
+`OPTIONS_HUB_INPUT_ROOT=/Users/chriswong/hub-ops-wt`. That variable does not
+choose the output directory, the ThetaData store, or the R2 prefix. The Hub
+R2 prefix stays `options_hub/`. The matrix object stays
+`options_structure/matrix/<ROOT>.json`. Index history still syncs R2 and
+then publishes the same five git files.
+
+An unset or empty `MACRO_INDEX_GEX_HISTORY_ROOT` keeps
+`/Users/chriswong/flow-ops-wt`. An unset or empty `MACRO_OPTIONS_MATRIX_ROOT`
+keeps the same default. An unset or empty `OPTIONS_HUB_INPUT_ROOT` keeps
+today's path expressions. An empty value is not the current directory. A
+relative path, a missing path, or a path that is not a directory is refused
+before the job writes, calls the network, or computes. A shell root must be
+an absolute directory that already contains that lane's code.
+
+The index template keeps `.env` at `/Users/chriswong/flow-ops-wt/.env` and
+keeps the key path `/Users/chriswong/.ssh/macro_dashboard_deploy`. The
+publisher helper stays
+`/Users/chriswong/macro-publisher-runtime/scripts/macro_machine_git.py`. The
+template runs the reviewed script from `indexgex-ops-wt`. The copy installed
+under the publisher runtime today is older and calls git directly. Checking
+that the installed helper and the key path still match is a later read-only
+step. This change does not copy that helper or that key.
+
+The matrix template keeps `.env` at `/Users/chriswong/flow-ops-wt/.env` and
+keeps the existing ThetaData store. The Hub template keeps `.env` at
+`/Users/chriswong/Documents/Cluade/Macro Dashboard/.env` and reads inputs
+from `/Users/chriswong/hub-ops-wt`. Labels, calendars, log paths, throttles,
+resource limits, and interpreters are unchanged.
+
+After merge, acceptance is read-only: the commit, the engine hash, a clean
+clone, the three symlinks via `lstat`, imports from each clone, and launchd
+showing only the intended root changes. A later scheduled run, owned by the
+runtime operator, is the only live proof. A hand launch is not acceptance.
+
 > **Read `*.stderr.log`, not `*.stdout.log`.**  The poller logs through Python's
 > `logging`, which writes to **stderr**.  `/tmp/liveflow.stdout.log` sits at
 > 0 bytes for weeks at a time (measured 2026-07-30: 0 bytes since 07-27, while

@@ -792,6 +792,23 @@ def test_m1_publisher_launch_contract_separates_current_launcher_from_pinned_eng
     )
     plist_without_comments = re.sub(r"<!--.*?-->", "", plist_text, flags=re.DOTALL)
     payload = plistlib.loads(plist_without_comments.encode("utf-8"))
+    if plist_name == "com.macro.indexgexhistory.plist":
+        # The env wrapper and the key stay on the publisher runtime. The
+        # reviewed script, working directory, and PYTHONPATH are the index
+        # code checkout. The .env file stays on flow-ops-wt.
+        assert payload["ProgramArguments"] == [
+            "/Users/chriswong/macro-publisher-runtime/ops/launchd/run_with_env.sh",
+            "/Users/chriswong/flow-ops-wt/.env",
+            "/usr/bin/env",
+            "MACRO_PUBLISH_GIT_SSH_KEY=/Users/chriswong/.ssh/macro_dashboard_deploy",
+            "MACRO_INDEX_GEX_HISTORY_ROOT=/Users/chriswong/indexgex-ops-wt",
+            "PYTHONPATH=/Users/chriswong/indexgex-ops-wt",
+            "/bin/sh",
+            "/Users/chriswong/indexgex-ops-wt/ops/launchd/run_index_gex_history.sh",
+        ]
+        assert payload["WorkingDirectory"] == "/Users/chriswong/indexgex-ops-wt"
+        assert "EnvironmentVariables" not in payload
+        return
     assert payload["ProgramArguments"] == [
         "/Users/chriswong/macro-publisher-runtime/ops/launchd/run_with_env.sh",
         "/Users/chriswong/flow-ops-wt/.env",
