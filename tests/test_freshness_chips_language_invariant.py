@@ -84,10 +84,6 @@ LIVE_NOT_FRESHNESS_SELECTORS: dict[str, str] = {
 # a new offender appears (fix the rule — never add it here) AND when an entry stops
 # offending (delete the entry in the same PR that fixed the surface).
 KNOWN_OFFENDERS: dict[str, str] = {
-    "templates/_cn_theme_tape.html.j2::body.page-china-stocks .ctt-v.is-live": "L5 cn tape (new EVIDENCE.yml receipt)",
-    "templates/_theme_tape.html.j2::#theme-tape .tt-gist .tt-gf.is-live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
-    "templates/_theme_tape.html.j2::#theme-tape .tt-v.is-live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
-        "templates/sector_central.html.j2::.ftr-strip-token.live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
 }
 SET_VAR_RE = re.compile(
     r"\{%-?\s*set\s+(\w+)\s*=\s*'var\((--[A-Za-z0-9_-]+)\)'",
