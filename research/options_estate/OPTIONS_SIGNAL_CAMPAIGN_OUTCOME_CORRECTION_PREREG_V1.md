@@ -214,16 +214,46 @@ It is **not authority to replace the raw September 3 rows**.
 
 The production correction must preserve the incident bytes and quarantine their effective authority. A temp restore-from-good-prefix replay is allowed as a verification oracle; it is not the canonical history mutation.
 
-## 10. Activation prerequisites
+## 10. Phase sequencing — implementation entry, controlled activation, acceptance
 
-This prereg is inactive until **all** of the following clear:
+The prereg separates three distinct stages. Each is a gate on its own; earlier stages must clear before later stages begin. **A merge of this policy grants none of these stages automatically.** The stage graph is:
+
+`implementation_entry → implementation_reviewed → controlled_activation → normal_nightly_proof → accepted`
+
+### 10.1 Implementation entry
+
+The implementation child may begin only after **all** of the following clear:
+
+1. the correction preregistration is protected and the current assignment is present;
+2. Macro #7265 durability + campaign-runtime source is protected;
+3. Macro #7265 campaign-engine/tests writer has been released, or the same authorized writer continues under its existing custody;
+4. the current campaign source-collision review is clear.
+
+No new child may displace an active or effect-unknown writer. This review clears none of these conditions.
+
+### 10.2 Controlled activation
+
+The reviewed implementation may be activated only after **all** of the following clear:
 
 1. Macro #7265 durability + campaign-runtime source is protected;
 2. Macro #7263 shared publisher recovery is protected and a real publication loop is proven;
 3. Macro #7193 broad-writer exclusion is protected and a natural Asia publication proves OIP owner roots are not swept;
 4. the existing campaign owner implements and reviews correction-manifest admission/effective-view semantics;
 5. the exact lawful/incident **prefix** identities still match at action time, while lawful append-only extensions after the incident remain allowed;
-6. one normal nightly proves corrected effective history, checkpoint publication and protected-main readback.
+6. the current explicit source-owner activation authorization and the applicable effect gates are recorded.
+
+A merge or this policy grants no automatic activation.
+
+### 10.3 Acceptance
+
+The correction is accepted only after **all** of the following clear:
+
+1. one normal nightly proves corrected effective history, checkpoint publication, and protected-main readback;
+2. raw and effective counts, plus quarantined-key occupancy, are reconciled;
+3. scoring-enabled remains false and all authority flags remain false;
+4. the existing source owner records acceptance, or the system is `NOT_ACCEPTED`.
+
+Failed or missing postcondition = `NOT_ACCEPTED`: preserve raw history, return to the existing owner, no automatic retry. Synthetic or manual runs cannot substitute for the normal nightly. No automatic retry or raw-history rollback is authorized.
 
 The correction implementation **may not start while #7265 remains the active writer on the campaign engine/tests**.
 
@@ -260,7 +290,7 @@ This correction cannot score, rank, gate, size, issue, trade, publish probabilit
 
 ## 13. Acceptance tests owed by the later implementation
 
-Before activation, the implementation must prove at least:
+Before controlled activation (the `implementation_reviewed` gate in §10), the reviewed implementation must prove at least:
 
 - exact lawful prefix validates unchanged;
 - exact incident suffix is quarantined only when every bound incident **prefix** identity matches;
@@ -290,6 +320,8 @@ It would not:
 - make OA-1T PROVEN_LIVE;
 - activate OA-1C;
 - create a Terminal candidate;
-- establish option alpha.
+- establish option alpha;
+- grant execution, scheduling, runtime lifecycle, or release;
+- authorize controlled activation or acceptance.
 
-The implementation child begins only after the source-owner prerequisites above are actually released.
+A merge does **not** satisfy §10.1 (implementation entry) by itself. The implementation child begins only after the implementation-entry preconditions in §10.1 are actually cleared by the existing owner; controlled activation requires §10.2; acceptance requires §10.3.

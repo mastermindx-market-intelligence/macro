@@ -129,14 +129,39 @@
     "old_checkpoint": "preserve_as_incident_evidence_not_current_authority",
     "current_checkpoint": "owner_native_new_checkpoint_or_activation_receipt_must_bind_correction_policy_and_physical_prefix"
   },
+  "implementation_entry_preconditions": [
+    "correction_preregistration_protected_and_current_assignment_present",
+    "macro_7265_durability_and_campaign_runtime_protected",
+    "macro_7265_campaign_engine_tests_writer_released_or_same_authorized_writer_continues",
+    "current_campaign_source_collision_review_clear"
+  ],
   "activation_preconditions": [
     "macro_7265_durability_and_campaign_runtime_protected",
     "macro_7263_shared_publisher_recovery_protected_and_real_publication_loop_proven",
     "macro_7193_broad_writer_exclusion_protected_and_natural_non_sweep_proven",
     "campaign_correction_reader_implementation_reviewed_on_existing_owner",
     "incident_and_lawful_prefix_identities_match_with_append_only_extension_allowed",
-    "normal_nightly_post_correction_effective_view_and_publication_proven"
+    "current_explicit_source_owner_activation_authorization_and_applicable_effect_gates"
   ],
+  "acceptance_postconditions": [
+    "normal_nightly_post_correction_effective_view_and_publication_proven",
+    "raw_and_effective_counts_and_quarantined_key_occupancy_reconciled",
+    "scoring_enabled_false_and_all_false_authority_preserved",
+    "existing_source_owner_records_acceptance_or_not_accepted"
+  ],
+  "phase_dependencies": {
+    "implementation_entry": [],
+    "implementation_reviewed": ["implementation_entry"],
+    "controlled_activation": ["implementation_reviewed"],
+    "normal_nightly_proof": ["controlled_activation"],
+    "accepted": ["normal_nightly_proof"]
+  },
+  "phase_effect_limits": {
+    "policy_grants_execution": false,
+    "controlled_activation_implies_acceptance": false,
+    "fixture_or_manual_run_may_satisfy_normal_nightly_proof": false,
+    "failed_postcondition": "NOT_ACCEPTED_preserve_raw_history_return_to_existing_owner_no_automatic_retry"
+  },
   "implementation_constraints": {
     "source_owner": "existing_options_signal_campaign_owner",
     "implementation_may_start_before_7265_closes": false,
