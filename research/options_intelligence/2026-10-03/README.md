@@ -3,7 +3,7 @@
 **Astra Meta-CEO commission:** `options-intelligence-deep-research-20261003-astra-001`.  
 **Chairman brief:** [SOURCE_BRIEF.txt](SOURCE_BRIEF.txt), extracted from the supplied 25-page PDF.  
 **Research carrier:** [Macro draft PR #8321](https://github.com/mastermindx-market-intelligence/macro/pull/8321).  
-**Status:** substantial first research/specification package; implementation ownership preserved; predictive validation and Fable dispatch remain pending.
+**Status:** second research phase underway. The published GEX/C1 run audit is complete; pilot specifications, reference repairs and source-admission fixtures are being built and reviewed. Implementation ownership is preserved.
 
 ## Executive direction
 
@@ -27,6 +27,8 @@ Start with [MASTER_PLAN.md](MASTER_PLAN.md). It defines the six-family pilot, ar
 | [options-near-expiry-spec.md](options-near-expiry-spec.md) | Dedicated 0DTE/near-expiry cadence, feature windows, alerts, failure states and acceptance |
 | [ONTOLOGY_AND_PRODUCT.md](ONTOLOGY_AND_PRODUCT.md) | Shared meanings, candidate assessment overlay, Terminal decision questions and gap matrix |
 | [RESEARCH_PROTOCOL.md](RESEARCH_PROTOCOL.md) | Existing-null preservation, B0/B1/B2 baselines, PIT, labels, multiplicity, costs and promotion gates |
+| [GEX_PUBLISHED_RUN_AUDIT.md](GEX_PUBLISHED_RUN_AUDIT.md) | Exact 69-name C1 score/rank replay; GEX excluded at 30.43% coverage; whole-F5 influence and same-date revision mismatch |
+| [gex-published-run-audit.py](gex-published-run-audit.py) / [results](gex-published-run-audit.json) | Reproducible fit-free replay with pinned source and published input extracts |
 | [options-mechanics-witness.md](options-mechanics-witness.md) | Reproduced strike-profile and gamma-crossing counterexamples |
 | [options-mechanics-witness.py](options-mechanics-witness.py) / [JSON](options-mechanics-witness.json) | Network-free original-source/math reproduction |
 | [options-theta-tte-study.py](options-theta-tte-study.py) / [JSON](options-theta-tte-study.json) | Joint IV/time-floor sensitivity witness |
@@ -43,6 +45,7 @@ Each evidence report has a `-sources.json` companion. Public sources were retrie
 - The completed October 2 [60-cell study](../../../reports/artifacts/options_theta_retrospective_20261002.md) has three within-run BH rejections and none repeating across all three eras. It is preserved, not rerun. Historical alpha, PIT and executable economics remain unvalidated.
 - Actual buyer-opening research cannot be replicated by calling ask prints “opening customers.” Borrow costs materially qualify IV-spread/skew research; passive quote providers can be customers.
 - Current chain `ask_share` may be a .80/.20/.50 categorical proxy; measured NBBO location is a separate field. The stock-score GEX false gate does not cover the separate Prophet C1 fusion path.
+- The later run-level audit reproduces all 69 published scores/ranks. GEX's 21/69 usable readings fail presence, so removing GEX changes no rank; removing all F5 moves 42. The archived 62-name observation shares the date but is a different revision/population.
 - Executed mathematical witnesses show a strike-cumulative profile cannot identify finite spot-travel hedge requirements, and nearest-flip logic can mislabel descending crossings. A separate IV/time-floor witness rejects a universal gamma correction.
 - Candidate #8310 is strict and inactive. Any proposed `options_context` needs an explicit schema/version change while preserving its 15 false authority flags.
 
@@ -51,6 +54,8 @@ Each evidence report has a `-sources.json` companion. Public sources were retrie
 Reuse [C0 consolidation](../../OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md), [OA workstream](../../../agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md), [research-only revival decision](../../../agentos/decisions/DEC-OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY.md), current data/flow/context owners and existing candidate/outcome stores. Live PR metadata supersedes stale prose about whether a carrier has merged.
 
 Source pins: Mastermind `6311283389c2e3d32b7d457d1ff3a524f107a32f`; Macro `6f5e78e94e8808582a650cdfa0fc3357040a179c`; Terminal `a049d46fa2415d3949aae5efc0ee515b6667c7a0`. The supplied PDF SHA256 is `a790fb71ea586f632ebb4f0379076fde70296938f796c8cba58bf1eba84d5ac2`; extracted text is a research copy, not a claim of byte identity with the PDF.
+
+Continuation procedure pin: protected Mastermind `20adcaf65c2dd1bb734ab06e215feb1a0eb65659`, compatible skillpack v1.0.1. The run audit uses a separate Macro cut `3d9969c15bba0f57b64da7592c0731cc8a0f2eac`; original evidence cuts remain unchanged.
 
 The selected M2 fabric route refused the bounded worker before start and then reported no eligible host. That effect is reconciled; no worker remains running from this commission's M2 attempt. Conversation research agents provided the published contributions. No new collector, runtime, score, policy, trade, deployment or Fable implementation worker was activated by this PR.
 

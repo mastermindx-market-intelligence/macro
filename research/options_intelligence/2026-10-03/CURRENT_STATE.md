@@ -17,6 +17,10 @@ Macro main advanced to `5f20adbd6be6b136b2efe41585bd4ef964b5bf2e`. A bounded exa
 
 ## Existing end-to-end estate
 
+### Continuation finding: one published board replayed
+
+At Macro `3d9969c15bba0f57b64da7592c0731cc8a0f2eac`, the inspected board is labelled October 1 and emitted October 3 at 08:15:30 UTC. The [run audit](GEX_PUBLISHED_RUN_AUDIT.md) reproduces all 69 scores/ranks, member percentiles, family contributions and floor receipts. GEX has 21/69 non-null readings and fails the 50% presence floor: its fixed-pool exclusion changes zero scores/ranks. Removing all F5 moves 42 ranks, maximum 11, through the other admitted members. The archived W3 observation has 62 names and 37.0968% GEX coverage at the same date, with a distinct immutable observation fingerprint; it is not interchangeable with the later board. The broader actual-incumbent lineage and other runs remain unexamined.
+
 | Layer | Existing assets and paths | Strength | Remaining material gap |
 |---|---|---|---|
 | Source | `collectors/thetadata.py`; existing terminal/query routes; current real trade-quote entry points | Trade/quote clocks, sequence, conditions and identity checks retained | Actual account/build/access and feed meanings unverified; EOD/Greek clock/model projections lossy |
@@ -26,7 +30,7 @@ Macro main advanced to `5f20adbd6be6b136b2efe41585bd4ef964b5bf2e`. A bounded exa
 | Chain/structure | `scripts/build_chain_heat.py`, `engine/options_structure.py` | Existing chain concentration and soft-direction output | Categorical ask-share proxy must not be presented as measured aggression |
 | Exposure/surface | `engine/gex_engine.py`, existing GEX/surface/conditional producers; Terminal Exposure/Structure | Macro spot repricing already exists; substantial UI/transport built | Assumed inventories, missing Greek provenance, reproduced flip/profile issues and partial totals |
 | Daily intelligence | `engine/options_intel_brief.py`, `scripts/build_options_intel_brief.py` | Separate coverage/eligibility gates; inferred evidence and research attention scope | DOI/skew direction is a hypothesis; heuristic confidence is not probability; GEX disabled on this specific producer |
-| Prophet/boards | `gex_confirm`, stock library, stock score, US C1 fusion, entry-state consumers | Existing integration and multiple explicit boundaries | Stock-score false gate is not a global gate; actual current influence needs run-level evidence |
+| Prophet/boards | `gex_confirm`, stock library, stock score, US C1 fusion, entry-state consumers | One exact 69-name board now replays; GEX excluded by presence for this run | Stock-score false gate is not a global gate; other runs and upstream selection independence remain unverified |
 | Candidate/review | Existing OA formation policy, inactive #8310, Terminal Alpha/Issue Desk | Strict identity/revision schema and false authority; operator review machinery | Context requires intentional version migration; no new predictive calibration or automatic issue/trade authority |
 | Outcomes/evaluation | Episode/campaign outcomes, exact-option ruler, #8318 fixture evaluator, #8286 historical study | Existing immutable lineage, null/immature states, settled studies | Fresh PIT/OOS, option fills/costs and incrementality remain unproven |
 | Terminal | Seven categories, fourteen panes, existing cache/broadcast/replay and active release carriers | #667 measured investigation deployed per owner receipt; #608 replay/geometry repairs merged | Source was stale; current null/identity/replay semantics and pending owners must be reconciled |
@@ -48,7 +52,7 @@ The independent document review found eight concrete problems in the draft defin
 - Full current manuscripts/final tables were unavailable for several literature entries; the 18-paper ledger explicitly identifies ten relevant full manuscripts, two current abstracts plus older drafts and six abstract/author-summary entries.
 - Actual participant/open-close/complete package labels are not supplied by ordinary public trade/quote/OI observations. A scoped Cboe C1 evaluation source is a proposal, not acquired data.
 - The 40-feature catalogue is a research specification. No new historical model fit, forward OOS result, calibrated probability, option P&L or policy improvement was produced by this commission.
-- The actual current GEX contribution to a specific published board requires the B4 run-level trace. The source path alone does not quantify live influence.
+- B4 is resolved for the exact inspected artifact: GEX was not admitted and changed no C1 scores/ranks. Other runs, upstream options selection, executed-binary/consumer receipts and predictive value remain unverified; see the run audit.
 - M2 fabric's selected route had no eligible host. Its failed launch was reconciled before worker start; the current task used conversation agents and read-only M2 source access instead.
 
 ## Source-brief coverage

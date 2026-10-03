@@ -40,6 +40,8 @@
 
 ## B4. Audit the actual GEX/Prophet contribution
 
+**Continuation disposition:** initial exact-run qualification completed in [GEX_PUBLISHED_RUN_AUDIT.md](GEX_PUBLISHED_RUN_AUDIT.md). All 69 scores/ranks reproduce; 21/69 GEX readings fail presence, and removing the member changes nothing. Removing the entire F5 family moves 42 ranks. Same-date archival and later board populations differ (62 versus 69), so revision identity is mandatory. The below brief remains the method for other runs; do not redo this artifact without a named discrepancy. Upstream selection and historical availability remain separate.
+
 **Problem:** the committed stock-score GEX gate is false, but the separate C1 fusion path conditionally admits `gex_confirm_verdict` in F5_FLOW_POSITIONING. An evaluation using today's Prophet as an “options-free” baseline would misstate its information set. Source presence does not establish influence on a particular published run.
 
 **Source boundary:** `scripts/build_stock_library.py` → `engine/us_board_rank.py` → `engine/us_prophet_fusion.py`, with `engine/gex_confirm.py`; exact lines are in [Macro census §5](options-macro-census.md). AD1's empty GEX map and stock-score gate remain separate paths.

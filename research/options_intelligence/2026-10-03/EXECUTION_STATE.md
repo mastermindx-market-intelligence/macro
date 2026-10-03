@@ -3,7 +3,19 @@
 **Operation:** `options-intelligence-deep-research-20261003-astra-001`  
 **Principal:** Astra Meta-CEO under the Chairman's current instruction.  
 **Carrier:** [Macro draft PR #8321](https://github.com/mastermindx-market-intelligence/macro/pull/8321), branch `claude/options-intelligence-research-20261003`.  
-**State:** `CHECKPOINTED_CONTINUATION` — first research/specification package complete and ready for the next owner-specific phase; full product and predictive/economic validation remain incomplete.
+**State:** active attended research continuation. `MISSION_COMPLETE: false`. The first research package is verified; one actual published-board audit is now complete and independent reference/specification work is in progress.
+
+## Latest cumulative checkpoint — October 3 continuation
+
+The Chairman's current instruction is “continue.” Current protected Mastermind procedure is pinned to **`20adcaf65c2dd1bb734ab06e215feb1a0eb65659`**, INDEX schema `mastermind.sol_skillpack.v1`, skillpack 1.0.1/bootstrap 1 compatible. Bootstrap, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, routing/chat-native laws, COMMISSION_WAVE and REVIEW_RETURN were loaded at that same pin; the package authority-boundaries reference was recovered from the installed Mastermind Sol package. Current assignment authorizes research/source evidence work on this same PR. The initial 31-file head **`4444bb68aa05caa413c362f2bb6d810aa5591265`** was read back unchanged at continuation start.
+
+**New completed capability:** [GEX_PUBLISHED_RUN_AUDIT.md](GEX_PUBLISHED_RUN_AUDIT.md) and its runnable evidence bundle reproduce every score/rank and member/family receipt on one published 69-name board at Macro `3d9969c15bba0f57b64da7592c0731cc8a0f2eac`. GEX's 21 usable readings fail presence; excluding it changes zero ranks. Excluding all F5 moves 42. An independent archived W3 October 1 record has 62 names, proving date-only identity is insufficient. Audit JSON SHA256 `130e2f352889815047bf392cacec4ecfbc5e813e08dc627dcf4a404cc71122a3` reproduced twice. This is fit-free score/rank evidence, not outcome, execution-binary, deployment or consumer-PIT proof.
+
+**Current independent work:** native conversation helpers are producing a current-owner delta/W0 evidence lookup, precise six-pilot specification, isolated B1/B2 mathematical reference implementation, and B3/B5 source-admission reference fixtures. Each owns distinct new research files; none has production source or GitHub publication authority. Root owns integration and this carrier. A native math reviewer supports the numerical child. These helpers are within the attended conversation; no future unattended execution is promised.
+
+**Routing:** bounded C2 research/reference tasks use available native conversation helpers, with principal synthesis/adjudication retained. WHY NOT FABLE: each question has a finite checkable evidence/contract boundary; current production integration custody remains with incumbent owners. No metered provider, model/billing attestation or Executive dispatch is invented. The prior selected M2 worker route refusal is not retried. Two new M2 processes only checked existing pandas/pyarrow availability and decoded one verified GitHub parquet in memory; PIDs 38378/39492 both completed exit 0. No data/provider/production mutation occurred.
+
+**Exact next actions in this active phase:** consume the four bounded returns, adversarially review the new kernels and study choices, resolve ordinary reversible design details, integrate accepted artifacts, and publish another verified checkpoint on this same branch. B4's audited artifact is DO_NOT_REDO absent a discrepancy. Preserve current owners, strict candidate schemas, original-writer dirt, refused routes and the initial study's closed work. Initial source pins below are retained as historical evidence cuts.
 
 ## Mission and authority
 
@@ -46,7 +58,7 @@ No M2 worker or Fable worker was started by this commission. No Executive plugin
 
 1. Actual Theta running build, purchased tier, required capability/condition/correction behavior and permitted application scope.
 2. Current natural-session freshness and source/WAL recovery, owned by the active producer. #667's inspected deployment receipt used September 25 events.
-3. Run-level GEX/C1 admission and actual rank influence on a chosen published board. The source trace demonstrates conditional wiring only.
+3. B4 run-level contribution is now resolved for one artifact; other-run and upstream information-set independence remain unverified. See the latest cumulative checkpoint.
 4. Final pilot universe, actual price sampling/annualization, independent labels, positive P3 forecast mapping, baseline/loss, source manifest, borrow coverage, untouched test dates and useful-effect/power thresholds.
 5. Out-of-time incremental prediction, calibration, decision utility and exact-option economics. The catalogue is a proposed research design.
 6. Current source custody and compatibility for owner repair implementation. Some PRs moved/merged during this turn; use the 09:30 refresh and recheck exact heads before editing.
