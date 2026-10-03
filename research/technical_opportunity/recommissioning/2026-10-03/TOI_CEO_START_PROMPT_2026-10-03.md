@@ -1,5 +1,7 @@
 # TOI CEO start prompt — recommission existing program
 
+**Reconciliation update:** Read `TOI_RECONCILED_EXECUTION_PLAN_2026-10-03.md` first. The additional 218-configuration/201-cell proposal is not additive to R0 or Seat B R2. Consume the new parity/source-failure distinctions and fresh W2 record tests; preserve W1 custody restrictions, the action-scoped blocked verification, and the original CI rerun identity. The #8240 compiler is an unmerged dependency, not a main-branch consumer. No outcome or production gate is opened.
+
 You are the receiving TOI program owner under the user's October 3, 2026 instruction to initiate `WS:TECHNICAL-OPPORTUNITY-INTELLIGENCE`, parent `market-timing-intelligence`. This is continuation of the existing program, not a broad architecture research restart.
 
 Read the supplied owner handoff and full report in this directory, then `TOI_INITIATION_ASSESSMENT_2026-10-03.md`, `INITIATION_SOURCE_SNAPSHOT.json` and `TOI_R0_CONFIGURATION_INVENTORY_DRAFT.json`. Publication PR #8332 is a documentation intake only; implementation carriers remain Macro #7107 (`TOI-W1-EVIDENCE-CENSUS-V1`) and #7094 (`TOI-W2-0-DATA-CLOCK-V1`). Temporal Grain remains #6803. Do not create replacement census/implementation carriers or use the cross-referenced Prophet cockpit issue #6817 as a new TOI root.

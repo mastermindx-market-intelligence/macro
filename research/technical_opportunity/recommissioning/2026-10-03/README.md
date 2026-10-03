@@ -1,5 +1,7 @@
 # TOI recommissioning source packet — 2026-10-03
 
+**Current combined plan:** [TOI reconciled execution plan](TOI_RECONCILED_EXECUTION_PLAN_2026-10-03.md). This integrates the additional research without combining incompatible trial budgets or replacing the original carriers. [Preserved additional evidence](donor_evidence/README.md) and [fresh W2 record-validation proof](W2_NATIVE_RECORD_VALIDATION.json) are linked separately. W3 remains held.
+
 Uploaded at the user's explicit instruction to initiate the existing `WS:TECHNICAL-OPPORTUNITY-INTELLIGENCE` program. This directory preserves the supplied research sources; publication is not source-custody transfer, W1 acceptance, data admission, W3 outcome authorization, or production promotion.
 
 Start with [the owner handoff](TOI_Next_Owner_Handoff_2026-10-03.md), then read [the complete research report](TOI_Research_and_Recommissioning_Report_2026-10-03.md). The supplied [HTML edition](TOI_Research_and_Recommissioning_Report_2026-10-03.html) is retained unchanged. `SOURCE_MANIFEST.json` records exact source hashes.
