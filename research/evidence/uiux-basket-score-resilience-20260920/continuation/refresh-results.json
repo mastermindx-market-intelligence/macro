@@ -1,0 +1,38 @@
+[
+  {
+    "route": "basket/ai_semiconductors.html",
+    "lang": "en",
+    "open": true,
+    "focus_restored": true,
+    "optional_artifact": "local committed crossmarketdata/links.json",
+    "page_errors": [],
+    "passed": true
+  },
+  {
+    "route": "basket/ai_semiconductors.html",
+    "lang": "en",
+    "open": false,
+    "focus_restored": true,
+    "optional_artifact": "local committed crossmarketdata/links.json",
+    "page_errors": [],
+    "passed": true
+  },
+  {
+    "route": "basket_china/cn_solar.html",
+    "lang": "zh",
+    "open": true,
+    "focus_restored": true,
+    "optional_artifact": "local committed crossmarketdata/links.json",
+    "page_errors": [],
+    "passed": true
+  },
+  {
+    "route": "basket_china/cn_solar.html",
+    "lang": "zh",
+    "open": false,
+    "focus_restored": true,
+    "optional_artifact": "local committed crossmarketdata/links.json",
+    "page_errors": [],
+    "passed": true
+  }
+]

@@ -284,6 +284,80 @@ def test_natural_nightly_opens_once_and_publishes_exact_derived_targets(tmp_path
     assert len(logical_json) == 1
 
 
+def test_unregistered_anchor_kind_is_suppressed_fail_closed(tmp_path: Path, monkeypatch):
+    """A new anchor species cannot enter B1 through the sole ordinary anchor source."""
+    _seed_sources(tmp_path)
+    original_turn_watch = writer.turn_watch_observations
+
+    def foreign_kind_turn_watch(path, spine):
+        batch = original_turn_watch(path, spine)
+        observations = tuple(
+            {**observation, "anchor": {**observation["anchor"], "kind": "future_low"}}
+            for observation in batch.observations
+        )
+        return writer.IntakeBatch(observations, batch.suppressions, batch.source_receipts)
+
+    monkeypatch.setattr(writer, "turn_watch_observations", foreign_kind_turn_watch)
+    receipt = _run_nightly(tmp_path, monkeypatch)
+
+    suppressions = _suppression_rows(tmp_path)
+    assert receipt["counts"] == {
+        "input": 1,
+        "mapped": 0,
+        "suppressed": 1,
+        "ledger_suppressions": 1,
+        "old_events": 0,
+        "new_events": 0,
+        "appended_events": 0,
+    }
+    assert [row["reason"] for row in suppressions] == ["ANCHOR_KIND_NOT_REGISTERED"]
+    assert _event_rows(tmp_path) == []
+    projection = json.loads((_generation(tmp_path) / "all_candidates.json").read_text())
+    assert projection["coverage"] == {"active": 0, "episodes": 0, "suppressed_inputs": 1}
+
+
+def test_generation_payload_orders_subsecond_clocks_by_instant_without_rewriting_bytes():
+    """The durable writer must share B1 instant order while preserving accepted timestamp text."""
+    events = [
+        {
+            "known_at": "2026-11-27T20:00:00.100000Z",
+            "source_system": "test_source",
+            "source_event_id": "b-equivalent-instant",
+            "recorded_at": RECORDED_AT,
+            "marker": "fraction-long",
+        },
+        {
+            "known_at": "2026-11-27T20:00:00Z",
+            "source_system": "test_source",
+            "source_event_id": "whole-second",
+            "recorded_at": RECORDED_AT,
+            "marker": "whole",
+        },
+        {
+            "known_at": "2026-11-27T20:00:00.1Z",
+            "source_system": "test_source",
+            "source_event_id": "a-equivalent-instant",
+            "recorded_at": RECORDED_AT,
+            "marker": "fraction-short",
+        },
+    ]
+
+    payloads = writer._generation_payloads({}, {}, events, [], b"")
+    rows = [
+        json.loads(line)
+        for line in payloads["events/2026-11.jsonl"].decode("utf-8").splitlines()
+    ]
+
+    assert [row["marker"] for row in rows] == [
+        "whole", "fraction-short", "fraction-long",
+    ]
+    assert [row["known_at"] for row in rows] == [
+        "2026-11-27T20:00:00Z",
+        "2026-11-27T20:00:00.1Z",
+        "2026-11-27T20:00:00.100000Z",
+    ]
+
+
 def test_identical_nightly_is_content_addressed_and_rewrites_zero_bytes(tmp_path: Path, monkeypatch):
     """Using run time or old-count drift in a receipt would make a no-op rewrite bytes."""
     _seed_sources(tmp_path)

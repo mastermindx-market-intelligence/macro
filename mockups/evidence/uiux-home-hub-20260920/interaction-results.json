@@ -1,0 +1,70 @@
+{
+  "url": "http://127.0.0.1:55816/start.html",
+  "method": "Real browser navigation, theme/language selection, keyboard section switching and visible snapshot checks; no synthetic data or membership state.",
+  "results": [
+    {
+      "cell": "desktop-en-dark",
+      "status": 200,
+      "html_sha256": "5ba5dc6af3a0f15209d40cf9b86f644ce07de92d9508e31bb077d5c8f1bdcede",
+      "horizontal_overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "desktop-en-light",
+      "status": 200,
+      "html_sha256": "5ba5dc6af3a0f15209d40cf9b86f644ce07de92d9508e31bb077d5c8f1bdcede",
+      "horizontal_overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "desktop-zh-dark",
+      "status": 200,
+      "html_sha256": "5ba5dc6af3a0f15209d40cf9b86f644ce07de92d9508e31bb077d5c8f1bdcede",
+      "horizontal_overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "desktop-zh-light",
+      "status": 200,
+      "html_sha256": "5ba5dc6af3a0f15209d40cf9b86f644ce07de92d9508e31bb077d5c8f1bdcede",
+      "horizontal_overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "mobile-en-dark",
+      "status": 200,
+      "html_sha256": "5ba5dc6af3a0f15209d40cf9b86f644ce07de92d9508e31bb077d5c8f1bdcede",
+      "horizontal_overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "mobile-en-light",
+      "status": 200,
+      "html_sha256": "5ba5dc6af3a0f15209d40cf9b86f644ce07de92d9508e31bb077d5c8f1bdcede",
+      "horizontal_overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "mobile-zh-dark",
+      "status": 200,
+      "html_sha256": "5ba5dc6af3a0f15209d40cf9b86f644ce07de92d9508e31bb077d5c8f1bdcede",
+      "horizontal_overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "mobile-zh-light",
+      "status": 200,
+      "html_sha256": "5ba5dc6af3a0f15209d40cf9b86f644ce07de92d9508e31bb077d5c8f1bdcede",
+      "horizontal_overflow": 0,
+      "page_errors": [],
+      "passed": true
+    }
+  ]
+}

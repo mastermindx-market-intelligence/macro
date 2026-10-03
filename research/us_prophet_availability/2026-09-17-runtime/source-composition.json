@@ -1,0 +1,25 @@
+{
+  "base": "12b655150582d9be39bfd2779b33338d154c565f",
+  "sources": {
+    "7180": "99b9bc18ded963ed5e9b9a4864bfff88a8e1d5ba",
+    "7187": "0a076cedd8094e5425e782aca976820e93ed6e8e",
+    "7200": "f6d1b8632aa353c213b1f39cda63a38d30949e79",
+    "7206": "6159410678619d148531ba3e2ecbb1ad7a537d04",
+    "7227": "0e57dc01e494475802c62fc664924236544abb90",
+    "7235": "7b80b838a2154c7895f34952262e89e828ca3b7b",
+    "runtime": "81c28903c7f18132b43d5819d2e3c5e6330d0ec1"
+  },
+  "unpublished_commit": "3f41c92e98eb6d536ae20534c70aedb626996baf",
+  "tree": "d6e4de9ef917dff7d1bebbc1e239a934a66cf4b7",
+  "exact_updated_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "engine/us_leader_pullback.py",
+    "research/us_prophet_availability/2026-09-17-runtime/SOURCE_CONTRACT.md",
+    "tests/test_us_leader_pullback.py"
+  ],
+  "production": false,
+  "manual_conflict_resolution": false,
+  "published_refs_changed": false,
+  "ci_owner_fix": "existing washout-turn-organ remains sole TURN WATCH owner",
+  "test_asset_materialized_from_exact_tree": "site/theme.js"
+}

@@ -263,6 +263,48 @@ def test_p3ba_policy_rejects_new_caller_supplied_inputs(tmp_path: Path) -> None:
     assert "R13" in result.stdout
 
 
+
+def test_p3ba_policy_rejects_legacy_hosted_compat_moved_to_pc(tmp_path: Path) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / "trusted-ci-executor.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    compat = document["jobs"]["legacy-hosted-pack"]
+    compat["runs-on"] = {"group": "macro-home-canary", "labels": "ci-linux"}
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R13" in result.stdout
+    assert "hosted compatibility pack" in result.stdout
+
+
+def test_p3ba_policy_rejects_legacy_hosted_compat_without_route_guard(
+    tmp_path: Path,
+) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / "trusted-ci-executor.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["legacy-hosted-pack"].pop("if")
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R13" in result.stdout
+    assert "hosted compatibility pack" in result.stdout
+
+
+def test_p3ba_policy_rejects_pc_pack_without_explicit_pc_route_guard(
+    tmp_path: Path,
+) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / "trusted-ci-executor.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["trusted-pack"].pop("if")
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R13" in result.stdout
+    assert "explicit PC route" in result.stdout
+
+
 def test_p3ba_policy_rejects_a_second_runner_group_consumer(tmp_path: Path) -> None:
     root, registry, workflows = fixture_tree(tmp_path)
     path = workflows / "trusted-ci-executor.yml"
@@ -885,3 +927,125 @@ def test_r14_requires_the_exact_pending_platform_label_list_without_traceback(
     assert result.returncode == 1
     assert "R14" in result.stdout
     assert "Traceback" not in result.stderr
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# R15 — unattended use of a dead label (2026-09-25 render-lane outage)
+#
+# R12 gated on `schedule:` alone. render.yml and engine-render.yml are push-only,
+# so the gate skipped them by TRIGGER before it ever looked at the label, and the
+# render lanes sat dark for three days while `render-linux` had zero carriers.
+# ─────────────────────────────────────────────────────────────────────────────
+def _orphan_label_registry(document: dict) -> None:
+    document["label_registry"]["dead-label"] = {"status": "orphaned", "carried_by": []}
+
+
+def _rogue(workflows: Path, trigger: str) -> None:
+    (workflows / "rogue.yml").write_text(
+        f"on:\n{trigger}jobs:\n  rogue:\n    runs-on: [self-hosted, dead-label]\n"
+        "    steps:\n      - run: true\n",
+        encoding="utf-8",
+    )
+
+
+@pytest.mark.parametrize(
+    ("trigger", "rule"),
+    [
+        ("  push:\n    branches: [main]\n", "R15"),
+        ("  repository_dispatch:\n", "R15"),
+        ("  schedule:\n    - cron: '0 8 * * *'\n", "R12"),
+    ],
+)
+def test_every_automatic_trigger_onto_an_orphaned_label_is_refused(
+    tmp_path: Path, trigger: str, rule: str
+) -> None:
+    """The whole point of R15: `push` is not a softer trigger than `schedule`.
+    Main takes ~25 pushes a day here against one cron line, so a push-only lane on
+    a dead label wedges harder — every firing behind the hostage is superseded."""
+    root, registry, workflows = fixture_tree(tmp_path)
+    mutate_registry(registry, _orphan_label_registry)
+    _rogue(workflows, trigger)
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert rule in result.stdout, result.stdout
+    assert "dead-label" in result.stdout
+
+
+def test_manual_only_use_of_an_orphaned_label_stays_allowed(tmp_path: Path) -> None:
+    """A dispatch-only lane on a dead label is an operator's own choice made with
+    their eyes open — it fires when someone asks, so it cannot wedge unattended.
+    selfhosted-ci-canary.yml's render-reservation-probe is exactly this shape."""
+    root, registry, workflows = fixture_tree(tmp_path)
+    mutate_registry(registry, _orphan_label_registry)
+    _rogue(workflows, "  workflow_dispatch:\n")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.parametrize("key", ["scheduled_use_waiver", "automatic_use_waiver"])
+def test_either_dated_waiver_key_satisfies_the_gate(tmp_path: Path, key: str) -> None:
+    """`scheduled_use_waiver` is the original R12 key and must keep working —
+    `codex` carries one — while `automatic_use_waiver` is its R15 spelling."""
+    root, registry, workflows = fixture_tree(tmp_path)
+
+    def waive(document: dict) -> None:
+        _orphan_label_registry(document)
+        document["label_registry"]["dead-label"][key] = {
+            "since": "2026-09-25",
+            "reason": "operator-gated restore",
+        }
+
+    mutate_registry(registry, waive)
+    _rogue(workflows, "  push:\n    branches: [main]\n")
+    assert run_guard(root, registry, workflows).returncode == 0
+
+
+def test_an_undated_waiver_does_not_satisfy_the_gate(tmp_path: Path) -> None:
+    """A waiver with no date is a silence, not a record. Both fields or neither."""
+    root, registry, workflows = fixture_tree(tmp_path)
+
+    def waive(document: dict) -> None:
+        _orphan_label_registry(document)
+        document["label_registry"]["dead-label"]["automatic_use_waiver"] = {
+            "reason": "we will get to it"
+        }
+
+    mutate_registry(registry, waive)
+    _rogue(workflows, "  push:\n    branches: [main]\n")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+
+
+def test_render_linux_is_declared_orphaned_with_no_carriers() -> None:
+    """The 2026-09-25 receipt, pinned. `render-linux` had ZERO carriers: pc-render-1
+    was online and idle with its custom labels stripped to the read-only set, and
+    pc-render-2/3/4 had been absent from the live pool since 2026-08-17.
+
+    It was declared `offline` — "registered and returns" — which is what exempted it
+    from R12 while three lanes went dark. A label with no carriers is `orphaned`
+    whatever the reason; `offline` is for a pool that is powered down, not one that
+    no longer exists. Re-declaring it `offline` without restoring a carrier would
+    reopen the exemption, so this test refuses that edit.
+    """
+    entry = yaml.safe_load(REGISTRY.read_text(encoding="utf-8"))["label_registry"]["render-linux"]
+    assert entry["status"] == "orphaned", entry
+    assert entry["carried_by"] == [], entry
+    # Declared dead means the standing record must name the restore owner.
+    assert "operator" in entry["note"].lower(), entry["note"]
+
+
+def test_the_render_reservation_never_silently_claims_a_routable_slot() -> None:
+    """R7 requires the pc-render pool to reserve exactly one slot, and that is an
+    ARCHITECTURAL reservation, not a claim that the slot can route today. While
+    `render-linux` is orphaned the reservation must say so out loud, so the file
+    cannot read as healthy capacity again."""
+    topology = yaml.safe_load(REGISTRY.read_text(encoding="utf-8"))["pool_topology"]["pc-render"]
+    registry = yaml.safe_load(REGISTRY.read_text(encoding="utf-8"))["label_registry"]
+    assert topology["slots"] == 1, topology
+    for label in topology.get("labels") or []:
+        if registry.get(label, {}).get("status") == "orphaned":
+            assert label in (topology.get("missing_labels") or []), (
+                f"pc-render claims label {label!r} that no host carries; declare it "
+                "in missing_labels so the reservation cannot read as live capacity"
+            )

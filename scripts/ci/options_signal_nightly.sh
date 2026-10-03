@@ -27,13 +27,18 @@ REPO_ROOT="${GITHUB_WORKSPACE:-$(git rev-parse --show-toplevel)}"
 # shellcheck source=scripts/ci/push_retry.sh
 . "$REPO_ROOT/scripts/ci/push_retry.sh"
 
-readonly -a OIP_EPISODE_PATHS=(
+readonly -a OIP_EPISODE_CORE_PATHS=(
   data/options_signal_episode/checkpoint.json
   data/options_signal_episode/episodes.jsonl
   data/options_signal_episode/outcomes_h60.jsonl
   data/options_signal_episode/outcomes_session.jsonl
   data/options_signal_episode/campaigns.jsonl
 )
+# Populated immediately before each episode publication from the frozen core plus
+# contiguous physical extensions of the one logical session-outcome ledger.
+OIP_EPISODE_PATHS=()
+readonly OIP_SESSION_PARTS_DIR="data/options_signal_episode/outcomes_session_parts"
+readonly OIP_SESSION_BASE="data/options_signal_episode/outcomes_session.jsonl"
 readonly -a OIP_CAMPAIGN_PATHS=(
   data/options_signal_campaign/campaigns.jsonl
   data/options_signal_campaign/outcomes.jsonl
@@ -43,6 +48,77 @@ readonly -a OIP_NARROW_ROOTS=(
   data/options_signal_episode
   data/options_signal_campaign
 )
+
+
+oip_collect_episode_paths() {
+  local parts_dir="$OIP_SESSION_PARTS_DIR"
+  local entry name expected next=1
+  local -a entries=()
+  OIP_EPISODE_PATHS=("${OIP_EPISODE_CORE_PATHS[@]}")
+  [ -e "$parts_dir" ] || return 0
+  if [ -L "$parts_dir" ] || [ ! -d "$parts_dir" ]; then
+    echo "::error title=options PIT checkpoint parts rejected::$parts_dir is not a regular directory" >&2
+    return 1
+  fi
+  shopt -s nullglob dotglob
+  entries=("$parts_dir"/*)
+  shopt -u nullglob dotglob
+  for entry in "${entries[@]}"; do
+    name=${entry##*/}
+    expected=$(printf 'part-%06d.jsonl' "$next")
+    if [ "$name" != "$expected" ]; then
+      echo "::error title=options PIT checkpoint parts rejected::expected $expected, found $name" >&2
+      return 1
+    fi
+    if [ -L "$entry" ] || [ ! -f "$entry" ]; then
+      echo "::error title=options PIT checkpoint parts rejected::$entry is not a regular file" >&2
+      return 1
+    fi
+    OIP_EPISODE_PATHS+=("$entry")
+    next=$((next + 1))
+  done
+}
+
+oip_require_no_unseen_episode_parts() {
+  local onto="$1"
+  shift
+  local -a exact_paths=("$@")
+  local path remote_path onto_commit tmp seen_episode=false found=false rc=0
+
+  for path in "${exact_paths[@]}"; do
+    if [ "$path" = "$OIP_SESSION_BASE" ]; then
+      seen_episode=true
+      break
+    fi
+  done
+  [ "$seen_episode" = true ] || return 0
+
+  onto_commit=$(git rev-parse "${onto}^{commit}") || return 1
+  tmp=$(mktemp "${RUNNER_TEMP:-${TMPDIR:-/tmp}}/oip-session-parts-onto.XXXXXX") \
+    || return 1
+  if ! git ls-tree -rz --name-only "$onto_commit" -- "$OIP_SESSION_PARTS_DIR" > "$tmp"; then
+    rm -f -- "$tmp"
+    echo "::error title=options PIT session topology unreadable::cannot enumerate $OIP_SESSION_PARTS_DIR on $onto" >&2
+    return 1
+  fi
+
+  while IFS= read -r -d '' remote_path; do
+    found=false
+    for path in "${exact_paths[@]}"; do
+      if [ "$path" = "$remote_path" ]; then
+        found=true
+        break
+      fi
+    done
+    if [ "$found" != true ]; then
+      echo "::error title=options PIT unseen session-outcome part::$remote_path appeared on $onto after this candidate snapshot; refusing to combine writer generations" >&2
+      rc=1
+      break
+    fi
+  done < "$tmp"
+  rm -f -- "$tmp"
+  return "$rc"
+}
 
 oip_require_main_branch() {
   local symbolic=""
@@ -227,6 +303,11 @@ oip_replay_and_push() {
       push_backoff
       continue
     fi
+    if ! oip_require_no_unseen_episode_parts origin/main "${exact_paths[@]}"; then
+      PUSH_FAIL_CLASS="rebase-conflict"
+      echo "::error title=${label} stale source generation::origin/main gained session-outcome bytes outside this exact candidate; rebuild from the accepted prefix instead of replaying mixed generations" >&2
+      return 1
+    fi
     if publish=$(push_exact_paths_replay_commit \
         "$parent" origin/main "$candidate" "$message" "$replay_index" \
         "${exact_paths[@]}"); then
@@ -261,6 +342,7 @@ publish_episode() {
   oip_require_main_branch
 
   oip_require_clean_index "options PIT checkpoint"
+  oip_collect_episode_paths
   oip_require_regular_files "options PIT checkpoint" "${OIP_EPISODE_PATHS[@]}"
   git add -- "${OIP_EPISODE_PATHS[@]}"
   if git diff --cached --quiet; then

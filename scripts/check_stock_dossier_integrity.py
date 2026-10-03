@@ -136,11 +136,47 @@ def _snippet(text: str, start: int, end: int) -> str:
     return (prefix + text[lo:hi] + suffix).replace("\n", " ").strip()
 
 
+def _canonical_issuer_text_spans(page: Path, text: str, ctx: dict) -> list[tuple[int, int]]:
+    """Exact same-hub issuer text is not the JavaScript Infinity number.
+
+    Only multiword canonical identity, within a quoted value or ordinary HTML
+    text, may explain this token. Never exempt a page, ticker, arbitrary prose,
+    bare numeric field, or another sentinel class. The identity check still runs.
+    """
+    import html
+    import json
+
+    universe = ctx.get("universe") or {}
+    name = (universe.get(page.stem) or {}).get("name")
+    if (not isinstance(name, str) or not re.search(r"\bInfinity\b", name)
+            or not any(word != "Infinity" and len(word) > 1
+                       for word in re.findall(r"[A-Za-z]+", name))):
+        return []
+    # The emitted metadata/JSON-LD uses double-quoted strings. Bare JSON values
+    # are intentionally outside this set; normal tag text cannot contain JSON.
+    quoted = [(m.start(), m.end()) for m in re.finditer(r'"(?:[^"\\]|\\.)*"', text)]
+    visible = [(m.start(1), m.end(1)) for m in re.finditer(r">([^<]*)<", text)
+               if not any(char in m.group(1) for char in "{}[]")]
+    safe_text = quoted + visible
+    variants = {name, html.escape(name, quote=True),
+                json.dumps(name, ensure_ascii=True)[1:-1]}
+    spans = []
+    for value in variants:
+        for match in re.finditer(r"(?<![\w$+\-])" + re.escape(value) + r"(?!\w)", text):
+            if any(lo <= match.start() and match.end() <= hi for lo, hi in safe_text):
+                spans.append((match.start(), match.end()))
+    return spans
+
+
 def check_machine_sentinel(page: Path, text: str, ctx: dict) -> list[dict]:
     """Non-finite-number leakage: $nan*, bare NaN, Infinity, inf."""
     violations = []
+    issuer_spans = _canonical_issuer_text_spans(page, text, ctx)
     for pattern, label in _SENTINEL_PATTERNS:
         for match in pattern.finditer(text):
+            if label == "Infinity" and any(lo <= match.start() and match.end() <= hi
+                                          for lo, hi in issuer_spans):
+                continue
             violations.append({
                 "page": page.name,
                 "check": "machine_sentinel",

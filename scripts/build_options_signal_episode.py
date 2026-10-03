@@ -53,6 +53,7 @@ from engine.options_signal_episode import (
     derive_session_outcome,
     episode_from_live_event,
     load_jsonl,
+    load_session_outcomes,
     normalize_price_bars,
     validate_episode,
     validate_outcome,
@@ -586,6 +587,38 @@ def _price_snapshot(
         raise ContractError(f"invalid price snapshot for {ticker}: {exc}") from exc
 
 
+class _BuildPhase:
+    """Flush bounded phase evidence through the existing logger, without owning execution.
+
+    An abrupt process stop leaves the last start visible. A raised exception is
+    re-raised unchanged; no phase receipt grants publication or counts as success.
+    """
+
+    def __init__(self, name: str) -> None:
+        self.name = name
+        self.started = 0.0
+
+    def __enter__(self) -> None:
+        from time import perf_counter
+        self.started = perf_counter()
+        log.info("options_episode_phase phase=%s state=start", self.name)
+
+    def __exit__(self, exception_type, exception, traceback) -> bool:
+        from time import perf_counter
+        elapsed = max(0.0, perf_counter() - self.started)
+        if exception_type is not None:
+            log.error(
+                "options_episode_phase phase=%s state=failed elapsed_seconds=%.3f error_type=%s",
+                self.name, elapsed, exception_type.__name__,
+            )
+        else:
+            log.info(
+                "options_episode_phase phase=%s state=complete elapsed_seconds=%.3f",
+                self.name, elapsed,
+            )
+        return False
+
+
 def run(
     *,
     root_dir: Path | None = None,
@@ -629,177 +662,130 @@ def run(
         "sessions_processed": [],
     }
 
-    if stages_by_session is not None:
-        stages = {str(key): value for key, value in stages_by_session.items()}
-    elif stage_records is not None:
-        if not isinstance(feed, dict) or not feed.get("session_date"):
-            raise ContractError("injected stage_records require feed.session_date")
-        stages = {str(feed["session_date"]): stage_records}
-    else:
-        sessions = discover_event_sessions()
-        stages = {}
-        for session_date in sessions:
-            records = fetch_event_stage(session_date)
-            if records is None:
-                raise ContractError(f"discovered event stage disappeared: {session_date}")
-            stages[session_date] = records
+    with _BuildPhase("stage_load"):
+        if stages_by_session is not None:
+            stages = {str(key): value for key, value in stages_by_session.items()}
+        elif stage_records is not None:
+            if not isinstance(feed, dict) or not feed.get("session_date"):
+                raise ContractError("injected stage_records require feed.session_date")
+            stages = {str(feed["session_date"]): stage_records}
+        else:
+            sessions = discover_event_sessions()
+            stages = {}
+            for session_date in sessions:
+                records = fetch_event_stage(session_date)
+                if records is None:
+                    raise ContractError(f"discovered event stage disappeared: {session_date}")
+                stages[session_date] = records
     summary["sessions_discovered"] = sorted(stages)
     if not stages:
         summary.update(ok=False, reason="no_dated_event_stages_discovered")
         return summary
 
-    candidates: list[dict[str, Any]] = []
-    for session_date in sorted(stages):
-        records = stages[session_date]
-        # Validate every retained prefix before deriving or writing anything.
-        # Checkpoints advance only after all four ledgers finish successfully below.
-        _advance_checkpoint(
-            data_root / CHECKPOINT_REL, session_date, records, dry_run=True,
-        )
-        events = _events_from_stage(records, expected_session_date=session_date)
-        summary["feed_events"] += len(events)
-        for event in events:
-            try:
-                candidates.append(
-                    episode_from_live_event(
-                        event,
-                        source_snapshot_asof=str(event.get("source_snapshot_asof")),
-                        source_artifact=f"live_flow/events/{session_date}.jsonl",
-                    )
-                )
-            except ContractError as exc:
-                summary["episodes_rejected"] += 1
-                reason = str(exc)
-                summary["rejection_reasons"][reason] = summary["rejection_reasons"].get(reason, 0) + 1
-                raise ContractError(
-                    f"dated event stage contains an inadmissible decision {event.get('id')}: {exc}"
-                ) from exc
-        summary["sessions_processed"].append(session_date)
-    summary["episodes_valid"] = len(candidates)
-
-    existing_episodes = load_jsonl(episode_path)
-    by_episode: dict[str, dict[str, Any]] = {}
-    for row in existing_episodes:
-        validate_episode(row)
-        episode_id = row["episode_id"]
-        if episode_id in by_episode:
-            raise ContractError(f"duplicate existing episode row: {episode_id}")
-        by_episode[episode_id] = row
-    for row in candidates:
-        prior = by_episode.get(row["episode_id"])
-        if prior is not None and prior != row:
-            raise ContractError(f"existing episode payload drift: {row['episode_id']}")
-        by_episode.setdefault(row["episode_id"], row)
-
-    existing_outcomes = load_jsonl(outcome_path)
-    resolved_episodes: set[str] = set()
-    outcome_ids: set[str] = set()
-    outcome_keys: set[tuple[str, int]] = set()
-    for row in existing_outcomes:
-        validate_outcome(row)
-        outcome_id = row["outcome_id"]
-        semantic_key = (row["episode_id"], row["horizon_minutes"])
-        if outcome_id in outcome_ids or semantic_key in outcome_keys:
-            raise ContractError(f"duplicate existing outcome row: {outcome_id}")
-        episode = by_episode.get(row["episode_id"])
-        if episode is None:
-            raise ContractError(f"outcome references missing episode: {row['episode_id']}")
-        validate_outcome_against_episode(row, episode)
-        outcome_ids.add(outcome_id)
-        outcome_keys.add(semantic_key)
-        resolved_episodes.add(row["episode_id"])
-
-    existing_session_outcomes = load_jsonl(session_outcome_path)
-    resolved_session_keys: set[tuple[str, str]] = set()
-    session_outcome_ids: set[str] = set()
-    for row in existing_session_outcomes:
-        validate_session_outcome(row)
-        outcome_id = row["outcome_id"]
-        semantic_key = (row["episode_id"], row["horizon"])
-        if outcome_id in session_outcome_ids or semantic_key in resolved_session_keys:
-            raise ContractError(f"duplicate existing session outcome row: {outcome_id}")
-        episode = by_episode.get(row["episode_id"])
-        if episode is None:
-            raise ContractError(
-                f"session outcome references missing episode: {row['episode_id']}"
+    with _BuildPhase("stage_validation"):
+        candidates: list[dict[str, Any]] = []
+        for session_date in sorted(stages):
+            records = stages[session_date]
+            # Validate every retained prefix before deriving or writing anything.
+            # Checkpoints advance only after all four ledgers finish successfully below.
+            _advance_checkpoint(
+                data_root / CHECKPOINT_REL, session_date, records, dry_run=True,
             )
-        validate_session_outcome_against_episode(row, episode)
-        session_outcome_ids.add(outcome_id)
-        resolved_session_keys.add(semantic_key)
+            events = _events_from_stage(records, expected_session_date=session_date)
+            summary["feed_events"] += len(events)
+            for event in events:
+                try:
+                    candidates.append(
+                        episode_from_live_event(
+                            event,
+                            source_snapshot_asof=str(event.get("source_snapshot_asof")),
+                            source_artifact=f"live_flow/events/{session_date}.jsonl",
+                        )
+                    )
+                except ContractError as exc:
+                    summary["episodes_rejected"] += 1
+                    reason = str(exc)
+                    summary["rejection_reasons"][reason] = summary["rejection_reasons"].get(reason, 0) + 1
+                    raise ContractError(
+                        f"dated event stage contains an inadmissible decision {event.get('id')}: {exc}"
+                    ) from exc
+            summary["sessions_processed"].append(session_date)
+        summary["episodes_valid"] = len(candidates)
+
+    with _BuildPhase("history_validation"):
+        existing_episodes = load_jsonl(episode_path)
+        by_episode: dict[str, dict[str, Any]] = {}
+        for row in existing_episodes:
+            validate_episode(row)
+            episode_id = row["episode_id"]
+            if episode_id in by_episode:
+                raise ContractError(f"duplicate existing episode row: {episode_id}")
+            by_episode[episode_id] = row
+        for row in candidates:
+            prior = by_episode.get(row["episode_id"])
+            if prior is not None and prior != row:
+                raise ContractError(f"existing episode payload drift: {row['episode_id']}")
+            by_episode.setdefault(row["episode_id"], row)
+
+        existing_outcomes = load_jsonl(outcome_path)
+        resolved_episodes: set[str] = set()
+        outcome_ids: set[str] = set()
+        outcome_keys: set[tuple[str, int]] = set()
+        for row in existing_outcomes:
+            validate_outcome(row)
+            outcome_id = row["outcome_id"]
+            semantic_key = (row["episode_id"], row["horizon_minutes"])
+            if outcome_id in outcome_ids or semantic_key in outcome_keys:
+                raise ContractError(f"duplicate existing outcome row: {outcome_id}")
+            episode = by_episode.get(row["episode_id"])
+            if episode is None:
+                raise ContractError(f"outcome references missing episode: {row['episode_id']}")
+            validate_outcome_against_episode(row, episode)
+            outcome_ids.add(outcome_id)
+            outcome_keys.add(semantic_key)
+            resolved_episodes.add(row["episode_id"])
+
+        existing_session_outcomes = load_session_outcomes(session_outcome_path)
+        resolved_session_keys: set[tuple[str, str]] = set()
+        session_outcome_ids: set[str] = set()
+        for row in existing_session_outcomes:
+            validate_session_outcome(row)
+            outcome_id = row["outcome_id"]
+            semantic_key = (row["episode_id"], row["horizon"])
+            if outcome_id in session_outcome_ids or semantic_key in resolved_session_keys:
+                raise ContractError(f"duplicate existing session outcome row: {outcome_id}")
+            episode = by_episode.get(row["episode_id"])
+            if episode is None:
+                raise ContractError(
+                    f"session outcome references missing episode: {row['episode_id']}"
+                )
+            validate_session_outcome_against_episode(row, episode)
+            session_outcome_ids.add(outcome_id)
+            resolved_session_keys.add(semantic_key)
 
     if not dry_run:
-        appended = append_episodes(episode_path, candidates)
-        summary["episodes_appended"] = max(0, appended)
-        if appended < 0:
-            summary["write_skipped"] = "COLLECT_LANE is not nightly"
+        with _BuildPhase("episode_append"):
+            appended = append_episodes(episode_path, candidates)
+            summary["episodes_appended"] = max(0, appended)
+            if appended < 0:
+                summary["write_skipped"] = "COLLECT_LANE is not nightly"
 
     intraday_root = _intraday_root(repo, data_root)
     price_cache: dict[str, tuple[pd.DataFrame | None, dict[str, Any] | None]] = {}
     price_cache_errors: set[str] = set()
-    outcomes: list[dict[str, Any]] = []
-    for episode_id, episode in by_episode.items():
-        if episode_id in resolved_episodes:
-            continue
-        ticker = str(episode.get("ticker") or "")
-        price_source = _price_source_label(repo, intraday_root, ticker)
-        # Resolve clocks before touching the mutable price cache. Session-close
-        # terminal facts and unmatured horizons are source-independent; a torn
-        # or legacy sidecar must not change them. Only a matured, potentially
-        # measurable episode is allowed to acquire and validate price evidence.
-        attempt = derive_h60_outcome(
-            episode,
-            None,
-            computed_at=now,
-            price_source=price_source,
-            bar_seconds=None,
-            price_delay_minutes=None,
-            price_receipt=None,
-        )
-        if attempt.get("reason") == "missing_price_receipt":
-            if ticker not in price_cache:
-                price_cache[ticker] = _price_snapshot(intraday_root, ticker)
-            frame, receipt = price_cache[ticker]
-            bar_seconds = receipt.get("bar_seconds") if receipt is not None else None
-            price_delay_minutes = (
-                receipt.get("vendor_delay_minutes") if receipt is not None else None
-            )
+    with _BuildPhase("h60_derivation"):
+        outcomes: list[dict[str, Any]] = []
+        for episode_id, episode in by_episode.items():
+            if episode_id in resolved_episodes:
+                continue
+            ticker = str(episode.get("ticker") or "")
+            price_source = _price_source_label(repo, intraday_root, ticker)
+            # Resolve clocks before touching the mutable price cache. Session-close
+            # terminal facts and unmatured horizons are source-independent; a torn
+            # or legacy sidecar must not change them. Only a matured, potentially
+            # measurable episode is allowed to acquire and validate price evidence.
             attempt = derive_h60_outcome(
                 episode,
-                frame,
-                computed_at=now,
-                price_source=price_source,
-                bar_seconds=bar_seconds,
-                price_delay_minutes=price_delay_minutes,
-                price_receipt=receipt,
-            )
-        status = attempt.get("status")
-        if status == "complete":
-            summary["outcomes_complete"] += 1
-            outcomes.append(attempt)
-        elif status == "incomplete":
-            summary["outcomes_terminal_incomplete"] += 1
-            outcomes.append(attempt)
-        else:
-            summary["outcomes_pending"] += 1
-            reason = str(attempt.get("reason") or "unknown")
-            summary["pending_reasons"][reason] = summary["pending_reasons"].get(reason, 0) + 1
-
-    if not dry_run:
-        appended = append_outcomes(outcome_path, outcomes)
-        summary["outcomes_appended"] = max(0, appended)
-        if appended < 0:
-            summary["write_skipped"] = "COLLECT_LANE is not nightly"
-
-    session_outcomes: list[dict[str, Any]] = []
-    for episode_id, episode in by_episode.items():
-        ticker = str(episode.get("ticker") or "")
-        price_source = _price_source_label(repo, intraday_root, ticker)
-        for horizon in SESSION_HORIZONS:
-            if (episode_id, horizon) in resolved_session_keys:
-                continue
-            attempt = derive_session_outcome(
-                episode,
-                horizon,
                 None,
                 computed_at=now,
                 price_source=price_source,
@@ -808,70 +794,126 @@ def run(
                 price_receipt=None,
             )
             if attempt.get("reason") == "missing_price_receipt":
-                if ticker not in price_cache and ticker not in price_cache_errors:
-                    try:
-                        price_cache[ticker] = _price_snapshot(intraday_root, ticker)
-                    except ContractError:
-                        # One corrupt receipt-bound snapshot applies to every
-                        # unresolved session horizon for this ticker in this run.
-                        # Cache the failure so the mutable pair is read exactly
-                        # once and every horizon reports the same retryable gap.
-                        price_cache_errors.add(ticker)
-                if ticker in price_cache_errors:
-                    # H+60 clock-terminal rows historically do not acquire the
-                    # cache. A newly-mature session horizon must not retroactively
-                    # make that source-independent append fail; leave the new
-                    # horizon retryable and consume no unreceipted bytes.
-                    attempt = {
-                        "status": "pending", "reason": "invalid_price_receipt",
-                        "episode_id": episode_id, "horizon": horizon,
-                    }
-                else:
-                    frame, receipt = price_cache[ticker]
-                    bar_seconds = receipt.get("bar_seconds") if receipt is not None else None
-                    price_delay_minutes = (
-                        receipt.get("vendor_delay_minutes") if receipt is not None else None
-                    )
-                    attempt = derive_session_outcome(
-                        episode,
-                        horizon,
-                        frame,
-                        computed_at=now,
-                        price_source=price_source,
-                        bar_seconds=bar_seconds,
-                        price_delay_minutes=price_delay_minutes,
-                        price_receipt=receipt,
-                    )
+                if ticker not in price_cache:
+                    price_cache[ticker] = _price_snapshot(intraday_root, ticker)
+                frame, receipt = price_cache[ticker]
+                bar_seconds = receipt.get("bar_seconds") if receipt is not None else None
+                price_delay_minutes = (
+                    receipt.get("vendor_delay_minutes") if receipt is not None else None
+                )
+                attempt = derive_h60_outcome(
+                    episode,
+                    frame,
+                    computed_at=now,
+                    price_source=price_source,
+                    bar_seconds=bar_seconds,
+                    price_delay_minutes=price_delay_minutes,
+                    price_receipt=receipt,
+                )
             status = attempt.get("status")
             if status == "complete":
-                summary["session_outcomes_complete"] += 1
-                session_outcomes.append(attempt)
+                summary["outcomes_complete"] += 1
+                outcomes.append(attempt)
             elif status == "incomplete":
-                summary["session_outcomes_terminal_incomplete"] += 1
-                session_outcomes.append(attempt)
+                summary["outcomes_terminal_incomplete"] += 1
+                outcomes.append(attempt)
             else:
-                summary["session_outcomes_pending"] += 1
+                summary["outcomes_pending"] += 1
                 reason = str(attempt.get("reason") or "unknown")
-                summary["session_pending_reasons"][reason] = (
-                    summary["session_pending_reasons"].get(reason, 0) + 1
+                summary["pending_reasons"][reason] = summary["pending_reasons"].get(reason, 0) + 1
+
+    if not dry_run:
+        with _BuildPhase("h60_append"):
+            appended = append_outcomes(outcome_path, outcomes)
+            summary["outcomes_appended"] = max(0, appended)
+            if appended < 0:
+                summary["write_skipped"] = "COLLECT_LANE is not nightly"
+
+    with _BuildPhase("session_derivation"):
+        session_outcomes: list[dict[str, Any]] = []
+        for episode_id, episode in by_episode.items():
+            ticker = str(episode.get("ticker") or "")
+            price_source = _price_source_label(repo, intraday_root, ticker)
+            for horizon in SESSION_HORIZONS:
+                if (episode_id, horizon) in resolved_session_keys:
+                    continue
+                attempt = derive_session_outcome(
+                    episode,
+                    horizon,
+                    None,
+                    computed_at=now,
+                    price_source=price_source,
+                    bar_seconds=None,
+                    price_delay_minutes=None,
+                    price_receipt=None,
                 )
+                if attempt.get("reason") == "missing_price_receipt":
+                    if ticker not in price_cache and ticker not in price_cache_errors:
+                        try:
+                            price_cache[ticker] = _price_snapshot(intraday_root, ticker)
+                        except ContractError:
+                            # One corrupt receipt-bound snapshot applies to every
+                            # unresolved session horizon for this ticker in this run.
+                            # Cache the failure so the mutable pair is read exactly
+                            # once and every horizon reports the same retryable gap.
+                            price_cache_errors.add(ticker)
+                    if ticker in price_cache_errors:
+                        # H+60 clock-terminal rows historically do not acquire the
+                        # cache. A newly-mature session horizon must not retroactively
+                        # make that source-independent append fail; leave the new
+                        # horizon retryable and consume no unreceipted bytes.
+                        attempt = {
+                            "status": "pending", "reason": "invalid_price_receipt",
+                            "episode_id": episode_id, "horizon": horizon,
+                        }
+                    else:
+                        frame, receipt = price_cache[ticker]
+                        bar_seconds = receipt.get("bar_seconds") if receipt is not None else None
+                        price_delay_minutes = (
+                            receipt.get("vendor_delay_minutes") if receipt is not None else None
+                        )
+                        attempt = derive_session_outcome(
+                            episode,
+                            horizon,
+                            frame,
+                            computed_at=now,
+                            price_source=price_source,
+                            bar_seconds=bar_seconds,
+                            price_delay_minutes=price_delay_minutes,
+                            price_receipt=receipt,
+                        )
+                status = attempt.get("status")
+                if status == "complete":
+                    summary["session_outcomes_complete"] += 1
+                    session_outcomes.append(attempt)
+                elif status == "incomplete":
+                    summary["session_outcomes_terminal_incomplete"] += 1
+                    session_outcomes.append(attempt)
+                else:
+                    summary["session_outcomes_pending"] += 1
+                    reason = str(attempt.get("reason") or "unknown")
+                    summary["session_pending_reasons"][reason] = (
+                        summary["session_pending_reasons"].get(reason, 0) + 1
+                    )
 
     if not dry_run:
-        appended = append_session_outcomes(session_outcome_path, session_outcomes)
-        summary["session_outcomes_appended"] = max(0, appended)
-        if appended < 0:
-            summary["write_skipped"] = "COLLECT_LANE is not nightly"
+        with _BuildPhase("session_append"):
+            appended = append_session_outcomes(session_outcome_path, session_outcomes)
+            summary["session_outcomes_appended"] = max(0, appended)
+            if appended < 0:
+                summary["write_skipped"] = "COLLECT_LANE is not nightly"
 
     if not dry_run:
-        # Episode, H+60, and session appends are idempotent. The campaign layer
-        # independently consumes the durable episode prefix after this builder.
-        for session_date in sorted(stages):
-            _advance_checkpoint(
-                data_root / CHECKPOINT_REL,
-                session_date,
-                stages[session_date],
-                dry_run=False,
-            )
+        with _BuildPhase("checkpoint_publish"):
+            # Episode, H+60, and session appends are idempotent. The campaign layer
+            # independently consumes the durable episode prefix after this builder.
+            for session_date in sorted(stages):
+                _advance_checkpoint(
+                    data_root / CHECKPOINT_REL,
+                    session_date,
+                    stages[session_date],
+                    dry_run=False,
+                )
     return summary
 
 

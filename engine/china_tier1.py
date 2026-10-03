@@ -1,13 +1,13 @@
 """China dashboard Tier-1 glance copy — posture lanes, reason faces, clause.
 
 DISPLAY-ONLY helpers consumed by scripts/build_china.py and the china.html.j2
-macro wrap. No I/O. Every function is a pure rewrite of a value the producers
+macro wrap. No I/O. Every function is a bounded projection of values the producers
 already computed (engine.china_playbook dial + engine.market_state labels).
 
-Stance vocabulary (Act · Get ready · Watch — don't chase · Stand aside) is
-the house TLDR law in engine.master_brain._STANCE_LAW; "Stand aside" is also
-a cycles.py / sector_bottom.py face label. A genuinely unknown/unmapped
-state routes to the cautious lane — never a bullish word, never a raw slug.
+The published China dashboard intentionally keeps posture words descriptive
+(Defensive / Cautious / Neutral / Constructive / Aggressive). It does not promote
+those labels into entry, sizing, or trade authority. Unknown/unmapped posture is
+displayed as Unclear rather than guessed into an action lane.
 """
 from __future__ import annotations
 
@@ -15,29 +15,27 @@ import re
 
 from engine.china_playbook import MARGIN_CROWDED_PCTILE
 
-# Keys are engine.china_playbook._POSTURES. Lane words are the
-# engine.master_brain._STANCE_LAW set (Act · Get ready · Watch — don't chase ·
-# Stand aside), plus the Neutral snapshot (spec §1.4 / §3.1a). Genuinely
-# unknown strings → cautious lane.
-CAUTIOUS_LANE: tuple[str, str] = ("Watch — don't chase", "观察，勿追高")
-_LANE_STAND_ASIDE: tuple[str, str] = ("Stand aside", "观望")
-_LANE_GET_READY: tuple[str, str] = ("Get ready", "做好准备")
-_LANE_ACT: tuple[str, str] = ("Act", "行动")
-_LANE_NEUTRAL: tuple[str, str] = (
-    "Neutral — add slowly, don't chase",
-    "中性——慢慢加仓，勿追高",
-)
+# Keys are engine.china_playbook._POSTURES. Values are descriptive faces only;
+# no display mapping may manufacture a stronger action than the producer posture.
+# These are DISPLAY labels for the producer's posture, not a second layer of
+# trade/entry authority. In particular NEUTRAL must stay neutral: the display
+# may not promote a neutral playbook state into "add", "buy", or "get ready".
+UNKNOWN_LANE: tuple[str, str] = ("Unclear", "待确认")
+CAUTIOUS_LANE: tuple[str, str] = ("Cautious", "谨慎")
+_LANE_DEFENSIVE: tuple[str, str] = ("Defensive", "防御")
+_LANE_CONSTRUCTIVE: tuple[str, str] = ("Constructive", "积极")
+_LANE_AGGRESSIVE: tuple[str, str] = ("Aggressive", "进取")
+_LANE_NEUTRAL: tuple[str, str] = ("Neutral", "中性")
 
 POSTURE_LANE: dict[str, tuple[str, str]] = {
-    "DEFENSIVE": _LANE_STAND_ASIDE,          # engine: DEFENSIVE
-    "CAREFUL": CAUTIOUS_LANE,                # engine: CAREFUL
-    "NEUTRAL": _LANE_NEUTRAL,                # engine: NEUTRAL
-    "CONSTRUCTIVE": _LANE_GET_READY,         # engine: CONSTRUCTIVE
-    "AGGRESSIVE": _LANE_ACT,                 # engine: AGGRESSIVE
+    "DEFENSIVE": _LANE_DEFENSIVE,
+    "CAREFUL": CAUTIOUS_LANE,
+    "NEUTRAL": _LANE_NEUTRAL,
+    "CONSTRUCTIVE": _LANE_CONSTRUCTIVE,
+    "AGGRESSIVE": _LANE_AGGRESSIVE,
 }
 _FACE_LANE_BY_EN = {en: (en, zh) for en, zh in POSTURE_LANE.values()}
-_FACE_LANE_BY_EN[CAUTIOUS_LANE[0]] = CAUTIOUS_LANE
-_FACE_LANE_BY_EN[_LANE_STAND_ASIDE[0]] = _LANE_STAND_ASIDE
+_FACE_LANE_BY_EN[UNKNOWN_LANE[0]] = UNKNOWN_LANE
 
 _POSTURE_TONE = {
     "DEFENSIVE": "down",
@@ -50,20 +48,17 @@ _POSTURE_TONE = {
 # Producer constant (engine.china_playbook.MARGIN_CROWDED_PCTILE). Do not restate.
 _MARGIN_TOP_PCT = 100 - MARGIN_CROWDED_PCTILE  # 15
 
-_BULLISH_POSTURES = frozenset({"AGGRESSIVE", "CONSTRUCTIVE"})
-_BEARISH_POSTURES = frozenset({"DEFENSIVE", "CAREFUL"})
-
 # Round-2 word-budget faces. Used ONLY when the matching producer reason fired.
 # Banned G3 tokens stay in the LENS tip, never at rest.
 _FACE_GROWTH = {
-    "sign": "+",
-    "en": "Fear like this has usually been a buying window, not a top — add quality slowly, don't chase.",
-    "zh": "这种恐慌通常是买入窗口，而不是顶部——慢慢吸纳优质资产，不要追高。",
+    "sign": "ℹ",
+    "en": "Growth-scare history is relevant here — context only, not an entry signal.",
+    "zh": "增长恐慌的历史背景与当前相关——仅作背景，不是入场信号。",
     "tip_en": (
-        "About seven in ten past growth-scare episodes on this page's own history "
-        "resolved higher. Windows, not certainties — re-drawn nightly."
+        "This is historical regime context from the page's stored record. "
+        "It does not by itself confirm an entry and this display does not claim a fresh recalibration."
     ),
-    "tip_zh": "本页历史记录中，过往增长恐慌阶段约有七成最终走高。是窗口，不是定论——每晚重新校准。",
+    "tip_zh": "这是本页已存记录中的历史周期背景。它本身不确认入场，本展示也不声称已进行新的重新校准。",
 }
 _FACE_MONEY_MIXED = {
     "sign": "ℹ",
@@ -77,8 +72,8 @@ _FACE_MONEY_MIXED = {
 }
 _FACE_MARGIN_CROWDED = {
     "sign": "−",
-    "en": "Borrowed money in A-shares is crowded — a fall would run further from here. Tighten risk.",
-    "zh": "A股杠杆资金拥挤，一旦下跌会走得更远。收紧风险。",
+    "en": "Borrowed money in A-shares is crowded — leverage can amplify a selloff if positioning unwinds.",
+    "zh": "A股杠杆资金拥挤——若仓位去杠杆，杠杆可能放大下跌。",
     "tip_en": (
         "Borrowed money invested in A-shares, as a share of tradable market value. "
         "Crowded borrowing makes a fall run further. It is currently in the top "
@@ -90,9 +85,9 @@ _FACE_MARGIN_CROWDED = {
     ),
 }
 _FACE_MARGIN_WASHED = {
-    "sign": "+",
-    "en": "Borrowed money in A-shares has washed out — positioning is light.",
-    "zh": "A股杠杆资金已经出清——仓位偏轻。",
+    "sign": "ℹ",
+    "en": "Borrowed money in A-shares has washed out — positioning is lighter.",
+    "zh": "A股杠杆资金已经出清——仓位更轻。",
     "tip_en": _FACE_MARGIN_CROWDED["tip_en"],
     "tip_zh": _FACE_MARGIN_CROWDED["tip_zh"],
 }
@@ -106,16 +101,6 @@ EMPTY_REASON = {
     "tip_zh": "本会话策略尚未给出这条理由。",
     "empty": True,
 }
-EMPTY_CLAUSE: tuple[str, str] = (
-    "This regime clause has not arrived for this session",
-    "本会话尚未收到状态说明",
-)
-
-_MID_SCARE_CLAUSE: tuple[str, str] = (
-    "Mid-scare: the market is falling broadly while policy stays easy — the fear is the setup, not yet the signal.",
-    "恐慌中段：市场普跌，政策仍宽松——恐慌是机会的前置条件，还不是入场信号。",
-)
-
 _BANNED_G3 = (
     "90th percentile",
     "3/3",
@@ -162,14 +147,14 @@ def posture_lane(posture: str | None) -> tuple[str, str]:
     """
     lab = str(posture).strip() if posture else ""
     if not lab:
-        return CAUTIOUS_LANE
+        return UNKNOWN_LANE
     hit = POSTURE_LANE.get(lab)
     if hit:
         return hit
     already = _FACE_LANE_BY_EN.get(lab)
     if already:
         return already
-    return CAUTIOUS_LANE
+    return UNKNOWN_LANE
 
 
 def posture_tone(posture: str | None) -> str:
@@ -438,24 +423,6 @@ def _empty_face(tip_en: str = "", tip_zh: str = "") -> dict:
     return face
 
 
-def _axes_disagree(posture: str, ms: dict) -> bool:
-    color = str((ms or {}).get("color") or "").strip().lower()
-    if posture in _BULLISH_POSTURES and color == "red":
-        return True
-    if posture in _BEARISH_POSTURES and color == "green":
-        return True
-    return False
-
-
-def _reconcile_clause(posture: str) -> tuple[str, str]:
-    lane_en, lane_zh = posture_lane(posture)
-    return (
-        f"The tape and the playbook disagree — stance is {lane_en}. "
-        "Honour both reads; the tape line is context — act on the posture, not the wording.",
-        f"盘面与策略姿态不一致——姿态是{lane_zh}。两边都要看，行情线是背景——按姿态操作，而非按措辞。",
-    )
-
-
 def _unpack_reason(item) -> tuple[str, str, str]:
     sign, r_en, r_zh = "", "", ""
     if isinstance(item, (list, tuple)) and len(item) >= 3:
@@ -518,59 +485,21 @@ def reason_faces(reasons=None, n: int = 3) -> list[dict]:
     return out
 
 
-def _hero_fallback(pb: dict) -> tuple[str, str]:
-    """C2 path: the clause a lane uses when it has no headline of its own."""
-    progress = pb.get("progress") or {}
-    qm = pb.get("quad_meaning") or {}
-    meaning_en = qm.get("en") or ""
-    meaning_zh = qm.get("zh") or ""
-    phase = progress.get("phase")
-    if phase == "mid" and (
-        "Growth-scare" in meaning_en or "增长恐慌" in meaning_zh
-    ):
-        return _MID_SCARE_CLAUSE
-    note_en = (progress.get("phase_note") or "").strip()
-    if note_en:
-        zh = (progress.get("phase_note_zh") or "").strip()
-        return (note_en, zh or EMPTY_CLAUSE[1])
-    if meaning_en:
-        en = _clamp_en(meaning_en, 28)
-        zh = _clamp_zh(meaning_zh, 40) if meaning_zh else ""
-        if en:
-            return (en, zh or EMPTY_CLAUSE[1])
-        return EMPTY_CLAUSE
-    return EMPTY_CLAUSE
-
-
 def hero_clause(pb: dict | None, ms: dict | None = None) -> tuple[str, str]:
-    """Plain clause under the h1. Producer headline, else playbook phase+quad.
+    """Return separately qualified playbook context for the China hero.
 
-    When the tape and the playbook disagree, render the headline AND the
-    reconciliation together so the clause refers to a headline the user can
-    see. Gated per lane: EN reconciliation only with a non-empty head_en;
-    ZH reconciliation only with a non-empty head_zh. A lane without a
-    headline falls through to that lane's mid-scare/empty clause.
+    This helper intentionally does not compose, rewrite, or reconcile the
+    producer-owned market-state headline. The headline is patched live by
+    china_risk_state_live.js. Keeping this context posture-only means a delayed
+    feed update cannot silently turn a historical/regime read into entry authority.
     """
-    ms = ms or {}
     pb = pb or {}
-    posture = ""
     dial = pb.get("dial") or {}
-    if isinstance(dial, dict):
-        posture = str(dial.get("posture") or "").strip()
-    head_en = (ms.get("headline_en") or "").strip()
-    head_zh = (ms.get("headline_zh") or "").strip()
-    disagree = _axes_disagree(posture, ms)
-    rec_en, rec_zh = _reconcile_clause(posture) if disagree else ("", "")
-    fb_en, fb_zh = _hero_fallback(pb)
-    if head_en:
-        en = f"{head_en} {rec_en}" if rec_en else head_en
-    else:
-        en = fb_en
-    if head_zh:
-        zh = f"{head_zh}{rec_zh}" if rec_zh else head_zh
-    else:
-        zh = fb_zh
-    return (en, zh)
+    posture = str(dial.get("posture") or "").strip() if isinstance(dial, dict) else ""
+    if not posture:
+        return ("Playbook posture unavailable.", "策略姿态暂不可用。")
+    lane_en, lane_zh = posture_lane(posture)
+    return (f"Playbook posture: {lane_en}.", f"策略姿态：{lane_zh}。")
 
 
 def plain_gross_band(gross: float | None) -> tuple[str, str]:

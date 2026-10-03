@@ -18,20 +18,20 @@
      tests/test_risk_state_live_copy_sync.py). These exist so an intraday band flip can
      never leave render-time "Risk-on" prose sitting next to a live Mixed gauge. */
   var HEADLINE = {
-    RISK_ON: ["Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.",
-              "风险偏好 — 价格、广度与跨资产信号一致。顺势交易与逢强加仓得到支持。"],
+    RISK_ON: ["Risk-on — the overall backdrop is supportive. Trend-following is supported, but participation and entry quality still matter.",
+              "风险偏好 — 整体环境支持风险资产。顺势交易受支持，但仍需结合市场参与度与入场质量。"],
     MIXED: ["Mixed / transition — the signals disagree. Trade smaller, favour quality, take profits faster; don't position aggressively.",
             "混合 / 转换 — 信号分歧。缩小仓位、偏好质量、更快获利了结；勿激进布局。"],
     RISK_OFF: ["Risk-off — stress is elevated; defend capital first.",
                "避险 — 压力升高；优先防守。"]
   };
   var SUBLINE = {
-    RISK_ON: ["GREEN — Trend-following supported", "偏多 — 顺势而为受支撑"],
+    RISK_ON: ["GREEN — Risk-on backdrop", "偏多 — 风险偏好环境"],
     MIXED: ["YELLOW — Trade with caution", "谨慎操作"],
     RISK_OFF: ["RED — Defend capital first", "优先保住本金"]
   };
   var ACTION = {
-    RISK_ON: ["Follow the trend. Add on strength.", "顺势而为，强势中加仓。"],
+    RISK_ON: ["Stay selective. Add where setups confirm.", "保持精选，仅在入场条件确认时加仓。"],
     MIXED: ["Trade small. Stay selective.", "缩小仓位，精选标的。"],
     RISK_OFF: ["Reduce risk. Protect capital.", "降低风险，保护本金。"]
   };
@@ -275,7 +275,9 @@
         disp.verdict !== d.nightly.verdict) {
       var ntl = d.nightly;
       disp = { verdict: ntl.verdict, label_en: ntl.label_en, label_zh: ntl.label_zh,
-               color: ntl.color, score: disp.score, raw_score: disp.raw_score };
+               color: ntl.color, score: disp.score, raw_score: disp.raw_score,
+               headline_en: ntl.headline_en, headline_zh: ntl.headline_zh,
+               participation_scope: ntl.participation_scope };
     }
     if (bakedLabelEn === null) {
       var b0 = document.querySelector(".mx5-verdict-word .l-en");
@@ -321,11 +323,21 @@
        intraday band flip never leaves stale "Risk-on" prose beside a Mixed gauge.
        Every write is guarded; an unknown verdict leaves the baked page untouched. */
     var col = COLOR[disp.verdict];
-    if (col && HEADLINE[disp.verdict]) {
+    var headlinePair = (disp.headline_en && disp.headline_zh)
+      ? [disp.headline_en, disp.headline_zh]
+      : HEADLINE[disp.verdict];
+    var scope = disp.participation_scope || {};
+    var sublinePair = (scope.subline_en && scope.subline_zh)
+      ? [scope.subline_en, scope.subline_zh]
+      : SUBLINE[disp.verdict];
+    var actionPair = (scope.action_en && scope.action_zh)
+      ? [scope.action_en, scope.action_zh]
+      : ACTION[disp.verdict];
+    if (col && headlinePair) {
       var th = document.querySelector(".mx5-thesis");
-      if (th) setBL(th, HEADLINE[disp.verdict][0], HEADLINE[disp.verdict][1]);
+      if (th) setBL(th, headlinePair[0], headlinePair[1]);
       var sub = document.querySelector(".mx5-sub-line");
-      if (sub) setBL(sub, SUBLINE[disp.verdict][0], SUBLINE[disp.verdict][1]);
+      if (sub && sublinePair) setBL(sub, sublinePair[0], sublinePair[1]);
       var gsvgA = document.querySelector(".mx5-gauge-svg");
       if (gsvgA && disp.score != null)
         gsvgA.setAttribute("aria-label", (disp.label_en || disp.verdict) + " — score " + disp.score);
@@ -356,8 +368,8 @@
       }
       /* What To Do primary row — concise action plus verdict/score context. */
       var wl = document.querySelector("[data-wtd-primary] .mx5-action-label");
-      if (wl && ACTION[disp.verdict])
-        setBL(wl, ACTION[disp.verdict][0], ACTION[disp.verdict][1]);
+      if (wl && actionPair)
+        setBL(wl, actionPair[0], actionPair[1]);
       var ws = document.querySelector("[data-wtd-primary] .mx5-action-sub");
       if (ws && disp.score != null)
         setBL(ws, (disp.label_en || disp.verdict) + " · " + disp.score + "/100",
