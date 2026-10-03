@@ -1309,6 +1309,15 @@ def test_v3_zone_less_sub_second_clock_keeps_its_precision_and_gains_the_zone(tm
     assert manifest["generated_at"] == "2026-07-02T00:00:01Z"
 
 
+def test_v3_zone_less_clock_in_a_loose_spelling_is_published_in_canonical_form(tmp_path: Path) -> None:
+    """Appending a designator to the text as given would publish a clock a strict reader discards."""
+    ws = _nest_row(source_available_at="2026-07-02 00:00:00", observed_at="2026-07-02T00:01")
+    manifest, row = _published(write_workspace_generation(tmp_path / "ci", {EVENT_ID: ws}))
+    assert row["lifecycle"]["source_available_at"] == "2026-07-02T00:00:00Z"
+    assert row["lifecycle"]["observed_at"] == "2026-07-02T00:01:00Z"
+    assert manifest["generated_at"] == "2026-07-02T00:01:00Z"
+
+
 def test_v3_preview_identity_matches_the_written_generation_for_a_zone_less_row(tmp_path: Path) -> None:
     ws = _nest_row(source_available_at="2026-07-02T00:00:00", observed_at="2026-07-02T00:00:00.4")
     previewed = preview_generation_identity_v3({EVENT_ID: ws}, previous_generation_id=None)
