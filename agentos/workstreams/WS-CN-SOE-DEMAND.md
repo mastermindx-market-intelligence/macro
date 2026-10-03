@@ -19,6 +19,7 @@ depends_on:
 artifacts:
   - research/china_alpha/censuses/CN-C/CN-C_GOV_SOE_DEMAND_SOURCE_MAP.md
   - research/china_alpha/censuses/CN-C/CN-C_PROBE_RECEIPTS_2026-08-19.md
+  - research/china_alpha/censuses/CN-C/CN-C_CIE11_C0_C1_GATE_2026-10-03.md
 discoveries:
   - DSC:CN-CSG-HTML-VS-SGCC-ECP-SPA
 landmines:
@@ -37,18 +38,26 @@ waves:
     title: First-party source map + bounded Grid/Power pilot recommendation
     status: done
     next_action: >
-      Adjudicate CSG-GD-货物-90d. Do not start an ECP scraper. Do not ingest
-      third-party bid aggregators.
+      ACCEPTED 2026-10-03 for technical pilot shape only: CSG-GD-货物-90d
+      remains the bounded first rail. This does not clear C1 source use rights.
+      Do not start an ECP scraper or ingest third-party bid aggregators.
   - id: C1
     title: Display-tier CSG Guangdong goods adapter (receipts only)
-    status: todo
+    status: blocked
     depends_on: [C0]
     next_action: >
-      Build only after C0 is accepted. Public HTML notices, CG… keys, typed
-      INTENTION_NOT_PUBLIC / CONTRACT_NOT_PUBLIC. No login, no score.
+      RIGHTS_BLOCKED. Targeted 2026-10-03 verification confirms the public CSG
+      notice rail remains readable, but the portal's 法律声明 / 服务条款 footer still
+      resolves to a non-document placeholder. Existing rights/Data OS owner must
+      adjudicate the exact C1 use classes before any automated collection or
+      retained/customer-facing adapter. If cleared, use public HTML notices,
+      CG… business keys, typed INTENTION_NOT_PUBLIC / CONTRACT_NOT_PUBLIC, no
+      login and no score.
 next_action: >
-  Accept or reject the CSG-GD-货物-90d pilot in CN-C_GOV_SOE_DEMAND_SOURCE_MAP.md.
-  If accepted, C1 is a display-tier adapter only.
+  Consume research/china_alpha/censuses/CN-C/CN-C_CIE11_C0_C1_GATE_2026-10-03.md.
+  C0 is accepted. C1 remains RIGHTS_BLOCKED pending an explicit use-class ruling;
+  do not collect, backfill, switch to ECP/aggregators, log in, or purchase a
+  source as a workaround. Independent China Information-Edge lanes may proceed.
 ---
 
 Research workstream for GROK-CN-C. Runtime authority is NONE. C1 does not start from this record.
