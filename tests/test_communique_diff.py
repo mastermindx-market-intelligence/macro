@@ -97,6 +97,60 @@ def test_appeared_event_carries_evidence_and_meta():
     assert e["event_id"].startswith("cd_")
 
 
+
+# --------------------------------------------------------------------------- #
+# CIE-09 source revisions are evidence, not policy novelty
+# --------------------------------------------------------------------------- #
+def test_same_locator_content_revision_is_separate_from_appeared_dropped():
+    book = _book()
+    url = "https://www.pbc.gov.cn/policy/one.html"
+    prior = [_row("pboc", "稳健", "稳健的货币政策", "2026-07-01T01:00:00", url=url)]
+    today = [_row("pboc", "更正", "实施适度宽松的货币政策", "2026-07-02T01:00:00", url=url)]
+
+    res = cd.compute_events(prior + today, "2026-07-02", book=book)
+    assert res["events"] == []
+    assert res["counts"]["n_appeared"] == 0
+    assert res["counts"]["n_dropped"] == 0
+    assert res["counts"]["n_document_revisions"] == 1
+
+    rev = res["document_revisions"][0]
+    assert rev["classification"] == "SOURCE_CONTENT_CHANGED_UNVERIFIED"
+    assert rev["url"] == url
+    assert rev["observed_at"] == "2026-07-02T01:00:00"
+    assert rev["previous_observed_at"] == "2026-07-01T01:00:00"
+    assert rev["content_sha256"] != rev["supersedes_content_sha256"]
+
+
+def test_source_revision_does_not_hide_independent_new_document_novelty():
+    book = _book()
+    stable_prior = _row(
+        "ndrc", "基线", "稳中求进", "2026-07-01T01:00:00",
+        url="https://www.ndrc.gov.cn/policy/base.html",
+    )
+    revised_prior = _row(
+        "ndrc", "旧版本", "供给侧结构性改革", "2026-07-01T02:00:00",
+        url="https://www.ndrc.gov.cn/policy/revised.html",
+    )
+    revised_today = _row(
+        "ndrc", "更正版本", "适度宽松", "2026-07-02T01:00:00",
+        url="https://www.ndrc.gov.cn/policy/revised.html",
+    )
+    independent_today = _row(
+        "ndrc", "新文件", "发展新质生产力", "2026-07-02T02:00:00",
+        url="https://www.ndrc.gov.cn/policy/new.html",
+    )
+
+    res = cd.compute_events(
+        [stable_prior, revised_prior, revised_today, independent_today],
+        "2026-07-02", book=book,
+    )
+    appeared = {(e["kind"], e["phrase"]) for e in res["events"]}
+    assert ("APPEARED", "新质生产力") in appeared
+    assert res["counts"]["n_document_revisions"] == 1
+    # The same-URL edit itself must not mint either phrase as policy novelty.
+    assert ("APPEARED", "适度宽松") not in appeared
+    assert ("DROPPED", "供给侧结构性改革") not in appeared
+
 # --------------------------------------------------------------------------- #
 # cold start
 # --------------------------------------------------------------------------- #
