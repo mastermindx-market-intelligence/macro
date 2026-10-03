@@ -1,0 +1,292 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/entry_radar_catalyst_context.schema.json",
+  "title": "Mastermind Entry Radar Catalyst Context v1",
+  "description": "Closed research/display-only catalyst context attached to one owner-issued Live Entry Radar episode. Missing or stale source coverage is never negative catalyst evidence. This object cannot rank, size, gate, originate, escalate, execute, mutate the Radar episode, or prove universe-wide no-news coverage.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "ticker",
+    "radar_episode_schema",
+    "radar_episode_id",
+    "decision_at",
+    "context_state",
+    "coverage_complete",
+    "required_sources",
+    "source_reads",
+    "blocking_evidence_refs",
+    "soft_evidence_refs",
+    "unknown_evidence_refs",
+    "nonblocking_evidence_refs",
+    "late_evidence_refs",
+    "authority",
+    "research_only"
+  ],
+  "properties": {
+    "schema": {
+      "const": "mastermind.entry_radar.catalyst_context.v1"
+    },
+    "ticker": {
+      "type": "string",
+      "pattern": "^[A-Z0-9][A-Z0-9.\\-]{0,14}$"
+    },
+    "radar_episode_schema": {
+      "const": "mastermind.live_entry_episode.v1"
+    },
+    "radar_episode_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{16}$"
+    },
+    "decision_at": {
+      "$ref": "#/$defs/utcSecond"
+    },
+    "context_state": {
+      "enum": [
+        "blocking_event_observed",
+        "event_classification_unknown",
+        "coverage_unknown",
+        "soft_event_observed",
+        "no_blocking_event_observed"
+      ]
+    },
+    "coverage_complete": {
+      "type": "boolean"
+    },
+    "required_sources": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "source_reads": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/sourceRead"
+      }
+    },
+    "blocking_evidence_refs": {
+      "$ref": "#/$defs/evidenceRefs"
+    },
+    "soft_evidence_refs": {
+      "$ref": "#/$defs/evidenceRefs"
+    },
+    "unknown_evidence_refs": {
+      "$ref": "#/$defs/evidenceRefs"
+    },
+    "nonblocking_evidence_refs": {
+      "$ref": "#/$defs/evidenceRefs"
+    },
+    "late_evidence_refs": {
+      "$ref": "#/$defs/evidenceRefs"
+    },
+    "authority": {
+      "$ref": "#/$defs/authority"
+    },
+    "research_only": {
+      "const": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "context_state": {
+            "const": "blocking_event_observed"
+          }
+        },
+        "required": [
+          "context_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "blocking_evidence_refs": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "context_state": {
+            "const": "event_classification_unknown"
+          }
+        },
+        "required": [
+          "context_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "blocking_evidence_refs": {
+            "maxItems": 0
+          },
+          "unknown_evidence_refs": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "context_state": {
+            "const": "coverage_unknown"
+          }
+        },
+        "required": [
+          "context_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "coverage_complete": {
+            "const": false
+          },
+          "blocking_evidence_refs": {
+            "maxItems": 0
+          },
+          "unknown_evidence_refs": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "context_state": {
+            "const": "soft_event_observed"
+          }
+        },
+        "required": [
+          "context_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "coverage_complete": {
+            "const": true
+          },
+          "blocking_evidence_refs": {
+            "maxItems": 0
+          },
+          "unknown_evidence_refs": {
+            "maxItems": 0
+          },
+          "soft_evidence_refs": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "context_state": {
+            "const": "no_blocking_event_observed"
+          }
+        },
+        "required": [
+          "context_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "coverage_complete": {
+            "const": true
+          },
+          "blocking_evidence_refs": {
+            "maxItems": 0
+          },
+          "unknown_evidence_refs": {
+            "maxItems": 0
+          },
+          "soft_evidence_refs": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "utcSecond": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+    },
+    "sourceRead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "status",
+        "source_asof",
+        "observed_at",
+        "detail"
+      ],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "stale",
+            "unavailable"
+          ]
+        },
+        "source_asof": {
+          "$ref": "#/$defs/utcSecond"
+        },
+        "observed_at": {
+          "$ref": "#/$defs/utcSecond"
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "can_rank",
+        "can_size",
+        "can_gate",
+        "can_originate_signal",
+        "can_escalate"
+      ],
+      "properties": {
+        "can_rank": {
+          "const": false
+        },
+        "can_size": {
+          "const": false
+        },
+        "can_gate": {
+          "const": false
+        },
+        "can_originate_signal": {
+          "const": false
+        },
+        "can_escalate": {
+          "const": false
+        }
+      }
+    }
+  }
+}
