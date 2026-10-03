@@ -227,7 +227,7 @@ def test_r1b_admission_passes_when_other_rows_surround_and_interleave(tmp_path):
     assert receipt["registered_rows_sha256"] == (
         "8fc5a844886cfa2d69ec25f38fd6948b4a4556e01829bea76338e94570def281"
     )
-    assert receipt["ledger_lines"] == 1823
+    assert receipt["ledger_lines"] == len(_r1b_ledger_lines_bytes()) + 3
 
 
 @pytest.mark.parametrize(
