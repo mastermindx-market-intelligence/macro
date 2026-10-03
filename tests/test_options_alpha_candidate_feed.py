@@ -13,54 +13,63 @@ import hashlib
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
 import pytest
+from jsonschema import Draft202012Validator, FormatChecker
 
 from engine.options_alpha_candidate_feed import (
     ACTIVATION_PRECONDITIONS,
     CANDIDATE_FEED_SCHEMA,
     CANDIDATE_FEED_ACTIVATION_RECEIPT_SCHEMA,
+    POLICY_PATH,
     CandidateFeedContractError,
     COMPOSER_ID,
     FALSE_AUTHORITY,
     MICROSTRUCTURE_SCHEMA,
-    POLICY_PATH,
     POLICY_SCHEMA,
     REASON_CODES,
     canonical_bytes,
     compose_candidate_feed,
+    validate_publication_receipt_binding,
 )
 from engine.options_signal_campaign import (
     CAMPAIGNS_PATH,
     LedgerRow,
-    CampaignContractError,
-    FALSE_AUTHORITY as CAMPAIGN_FALSE_AUTHORITY,
     LedgerSnapshot,
     load_ledger,
-    derive_campaign_revisions,
     run as run_campaign,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
-NY_TZ = ZoneInfo("America/New_York")
+POLICY_SCHEMA_FILENAME = Path(POLICY_PATH).name
+FORMATION_POLICY_SCHEMA_FILENAME = (
+    "options.alpha_candidate_formation_policy.v2.schema.json"
+)
+IDENTITY_SCHEMA_FILENAME = "options.alpha_candidate_identity.v1.schema.json"
+FEED_V2_SCHEMA_FILENAME = "options.alpha_candidate_feed.v2.schema.json"
+PUBLICATION_RECEIPT_SCHEMA_FILENAME = (
+    "options.alpha_candidate_feed_publication_receipt.v1.schema.json"
+)
+PUBLICATION_RECEIPT_CONTRACT_FILENAME = (
+    "options.alpha_candidate_feed_publication_receipt_contract.v1.json"
+)
 
 POLICY_FREEZE_AT = "2026-08-12T13:30:00Z"  # matches RULE_FROZEN_AT
 ACTIVATION_BOUNDARY_AT = "2026-08-13T14:00:00Z"  # 0.5h after NYSE session open
 
 POLICY = {
     "schema": POLICY_SCHEMA,
-    "policy_id": "oa_member_persistent_measured_campaign/v1",
+    "policy_id": "oa_member_persistent_measured_campaign/v2",
     "policy_version": 1,
     "status": "preregistered_inactive_until_activation",
-    "registered_on": "2026-09-18",
+    "registered_on": "2026-10-03",
     "governing_sources": {
-        "macro_commit": "348913be88d6486a68f63e57b2375c4b5fa6879f",
-        "oa_architecture": (
-            "docs/superpowers/specs/2026-08-27-options-alpha-intelligence-recovery-design.md"
-        ),
-        "oa_decision": (
+        "v1_policy": "research/options_estate/options_alpha_candidate_formation_policy_v1.json",
+        "architecture_decision": (
             "agentos/decisions/DEC-OPTIONS-ALPHA-CAMPAIGN-CALIBRATION-ARCHITECTURE.md"
+        ),
+        "v2_decision": (
+            "agentos/decisions/DEC-OPTIONS-ALPHA-CANDIDATE-FEED-V2-SOURCE-ONLY.md"
         ),
         "campaign_contract": (
             "research/options_estate/OPTIONS_SIGNAL_CAMPAIGN_V2_PREREG.md"
@@ -101,9 +110,12 @@ POLICY = {
         "direction_inferred_during_formation": False,
         "first_qualifying_revision_frozen": True,
     },
-    "candidate_identity": (
-        "sha256(candidate_schema,policy_id,campaign_id,first_qualifying_campaign_revision_id)"
-    ),
+    "candidate_identity": {
+        "schema": "options.alpha_candidate_identity/v1",
+        "derivation": (
+            "sha256(candidate_identity_schema,policy_id,campaign_id,first_qualifying_campaign_revision_id)"
+        ),
+    },
     "candidate_states": {
         "candidate": "research_candidate",
         "abstain": "abstain",
@@ -114,12 +126,11 @@ POLICY = {
         "source_formed_at": (
             "first_qualifying_campaign_revision.formed_at"
         ),
-        "first_observed_at": "candidate_first_observed_at",
-        "decision_at": "candidate_first_observed_at",
-        "available_at": "candidate_durable_write_time",
-        "published_at": "consumer_publication_time",
+        "first_observed_at": "actual_composer_decision_clock",
+        "decision_at": "actual_composer_decision_clock",
+        "generated_clock": "composition_clock_not_publication",
         "formation_evidence_cutoff": (
-            "each_formation_leg.available_at<=candidate_first_observed_at"
+            "each_formation_leg.available_at<=decision_at"
         ),
         "source_freshness_rule": (
             "source_owner_clock_and_explicit_health_only_no_wrapper_freshening"
@@ -130,10 +141,10 @@ POLICY = {
     },
     "context_policy": {
         "eod": (
-            "supplemental_only_after_ad1t2_acceptance_never_v1_formation_predicate"
+            "supplemental_only_after_ad1t2_acceptance_never_formation_predicate"
         ),
         "package": (
-            "supplemental_unresolved_allowed_never_v1_formation_predicate"
+            "supplemental_unresolved_allowed_never_formation_predicate"
         ),
         "tactical": (
             "consumer_evidence_only_no_radar_or_entry_origination_authority"
@@ -146,6 +157,23 @@ POLICY = {
         "later_eod": "post_decision_context_only_with_own_clock",
         "corrections": "append_or_version_never_rewrite_initial_formation",
         "outcomes": "join_after_frozen_candidate_never_formation_input",
+        "update_clocks": (
+            "new_updates_use_current_composition_clock_existing_updates_unchanged"
+        ),
+    },
+    "publication_receipt_policy": {
+        "schema": "options.alpha_candidate_feed_publication_receipt/v1",
+        "payload_key": "options_alpha/candidate_feed.json",
+        "receipt_key": "options_alpha/candidate_feed.receipt.json",
+        "matching_rule": (
+            "payload_and_receipt_hash_size_feed_and_prefix_match_or_unavailable"
+        ),
+        "provider_effect_rule": (
+            "pure_validators_never_claim_fsync_upload_or_external_metadata"
+        ),
+        "first_consumer_clock_rule": (
+            "external_receipt_metadata_resolved_by_consumer"
+        ),
     },
     "authority": {
         "may_score": False,
@@ -219,107 +247,66 @@ def _build_campaign_snapshot(
     episodes_path = tmp_path / "data/options_signal_episode/episodes.jsonl"
     episodes_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Reuse BASE_EPISODE from the existing test file when available to stay
-    # schema-correct end-to-end.
-    base_path = ROOT / "data/options_signal_episode/episodes.jsonl"
-    if base_path.exists():
-        # NOTE: we intentionally do NOT pull fields like contract.expiration
-        # from the committed file — those drift by session date. We only
-        # use the real file's schema shape to stay close to the live
-        # contract.
-        with base_path.open() as _f:
-            real_first = json.loads(_f.readline())
-        # Strip out the fields we will override, plus expiration (kept
-        # consistent with the synthetic session date).
-        for key in (
-            "source_event_id",
-            "event_time",
-            "observed_at",
-            "decision_at",
-            "available_at",
-            "published_at",
-            "session_date",
-        ):
-            real_first.pop(key, None)
-        if "contract" in real_first:
-            real_first["contract"].pop("expiration", None)
-            real_first["contract"].pop("strike", None)
-        if "feature_snapshot" in real_first:
-            real_first["feature_snapshot"].pop("dte", None)
-        if "provenance" in real_first:
-            real_first["provenance"].pop("source_artifact", None)
-            real_first["provenance"].pop("source_snapshot_asof", None)
-            real_first["provenance"].pop("feature_cutoff", None)
-            real_first["provenance"].pop("oi_vintage", None)
-        # Drop mutable identity fields we'll re-derive.
-        real_first.pop("episode_id", None)
-        # Restore the synthetic defaults that the real file may have stripped.
-        real_first.setdefault("contract", {}).setdefault("right", "C")
-        real_first.setdefault("contract", {}).setdefault("expiration", "2026-08-21")
-        real_first.setdefault("contract", {}).setdefault("strike", 225.0)
-        base = real_first
-    else:
-        # Synthetic base — same shape, no committed data dependency.
-        base = {
-            "schema": "options.signal_episode/v1",
-            "episode_id": "osep_placeholder",
-            "source": "live_flow.event_stage/v1",
-            "source_event_id": "placeholder",
-            "event_time": "2026-08-13T13:59:30Z",
-            "observed_at": "2026-08-13T14:00:00Z",
-            "decision_at": "2026-08-13T14:00:00Z",
-            "available_at": "2026-08-13T14:00:00Z",
-            "published_at": None,
-            "anchor_strategy": "durable_available_at",
-            "session_date": "2026-08-13",
-            "ticker": "NVDA",
-            "contract": {"right": "C", "expiration": "2026-08-21", "strike": 225.0},
-            "decision": {
-                "disposition": "fire",
-                "reason": "premium-floor",
-                "underlying_direction": "none",
-                "option_action": "none",
-                "authority": {
-                    "may_originate": False,
-                    "may_rank": False,
-                    "may_gate": False,
-                    "may_size": False,
-                    "may_escalate": False,
-                    "may_trade": False,
-                    "may_publish_pick": False,
-                    "may_train_prophet": False,
-                },
+    base = {
+        "schema": "options.signal_episode/v1",
+        "episode_id": "osep_placeholder",
+        "source": "live_flow.event_stage/v1",
+        "source_event_id": "placeholder",
+        "event_time": "2026-08-13T13:59:30Z",
+        "observed_at": "2026-08-13T14:00:00Z",
+        "decision_at": "2026-08-13T14:00:00Z",
+        "available_at": "2026-08-13T14:00:00Z",
+        "published_at": None,
+        "anchor_strategy": "durable_available_at",
+        "session_date": "2026-08-13",
+        "ticker": "NVDA",
+        "contract": {"right": "C", "expiration": "2026-08-21", "strike": 225.0},
+        "decision": {
+            "disposition": "fire",
+            "reason": "premium-floor",
+            "underlying_direction": "none",
+            "option_action": "none",
+            "authority": {
+                "may_originate": False,
+                "may_rank": False,
+                "may_gate": False,
+                "may_size": False,
+                "may_escalate": False,
+                "may_trade": False,
+                "may_publish_pick": False,
+                "may_train_prophet": False,
             },
-            "feature_snapshot": {
-                "premium_usd": 1_000_000.0,
-                "selection_rule": "premium_floor/v1",
-                "selection_floor_usd": 25_000.0,
-                "selection_root_class": "single_name",
-                "contracts": 100,
-                "avg_option_trade_price": 100.0,
-                "flow_side": "~buy",
-                "dte": 5,
-                "moneyness_bucket": "atm",
-                "vol_gt_prior_oi": None,
-                "repeated": False,
-                "swept": False,
-            },
-            "provenance": {
-                "source_schema": "live_flow.event_stage/v1",
-                "source_artifact": "live_flow/events/2026-08-13.jsonl",
-                "source_snapshot_asof": "2026-08-13T14:00:00Z",
-                "feature_cutoff": "2026-08-13T14:00:00Z",
-                "signing_source": "tape",
-                "oi_vintage": "2026-08-12",
-                "oi_vintage_rule": "latest_available_chain_before_session",
-            },
-            "quality": {
-                "availability_exact": True,
-                "trade_direction_reliability": "soft",
-                "option_quote_outcome_eligible": False,
-                "source_baseline": "floor",
-            },
-        }
+        },
+        "feature_snapshot": {
+            "premium_usd": 1_000_000.0,
+            "selection_rule": "premium_floor/v1",
+            "selection_floor_usd": 25_000.0,
+            "selection_root_class": "single_name",
+            "contracts": 100,
+            "avg_option_trade_price": 100.0,
+            "flow_side": "~buy",
+            "dte": 5,
+            "moneyness_bucket": "atm",
+            "vol_gt_prior_oi": None,
+            "repeated": False,
+            "swept": False,
+        },
+        "provenance": {
+            "source_schema": "live_flow.event_stage/v1",
+            "source_artifact": "live_flow/events/2026-08-13.jsonl",
+            "source_snapshot_asof": "2026-08-13T14:00:00Z",
+            "feature_cutoff": "2026-08-13T14:00:00Z",
+            "signing_source": "tape",
+            "oi_vintage": "2026-08-12",
+            "oi_vintage_rule": "latest_available_chain_before_session",
+        },
+        "quality": {
+            "availability_exact": True,
+            "trade_direction_reliability": "soft",
+            "option_quote_outcome_eligible": False,
+            "source_baseline": "floor",
+        },
+    }
 
     episodes: list[dict] = []
     for spec in episodes_specs:
@@ -429,8 +416,6 @@ def _composer_kwargs(
     prior_feed: dict | None = None,
     source_health: dict | None = None,
     observation_clock: str = "2026-08-13T14:30:00Z",
-    available_clock: str = "2026-08-13T14:30:01Z",
-    published_clock: str = "2026-08-13T14:30:02Z",
 ) -> dict:
     return dict(
         campaigns=snapshot,
@@ -438,8 +423,6 @@ def _composer_kwargs(
         policy=POLICY,
         activation_receipt=activation,
         observation_clock=observation_clock,
-        available_clock=available_clock,
-        published_clock=published_clock,
         prior_feed=prior_feed,
         source_health=source_health,
         policy_freeze_at=POLICY_FREEZE_AT,
@@ -534,8 +517,6 @@ def test_compose_pre_policy_freeze_campaign_abstains_even_with_late_observation(
             micro_map=micro_map,
             activation=ACTIVATION_RECEIPT,
             observation_clock="2026-09-01T14:30:00Z",
-            available_clock="2026-09-01T14:30:01Z",
-            published_clock="2026-09-01T14:30:02Z",
         )
     )
     assert feed["header"]["candidate_count"] == 0
@@ -656,18 +637,18 @@ def test_compose_rejects_invalid_activation_receipts(receipt: str, message: str)
     else:
         receipt_value["activation_boundary_at"] = POLICY_FREEZE_AT
 
-        with pytest.raises(CandidateFeedContractError, match=message):
-            compose_candidate_feed(
-                **_composer_kwargs(
-                    LedgerSnapshot(
-                        path=Path("/tmp/does-not-exist.jsonl"),
-                        label=CAMPAIGNS_PATH,
-                        rows=(),
-                        raw=b"",
-                        digest=hashlib.sha256(b"").hexdigest(),
-                    ),
-                    activation=receipt_value,
-                )
+    with pytest.raises(CandidateFeedContractError, match=message):
+        compose_candidate_feed(
+            **_composer_kwargs(
+                LedgerSnapshot(
+                    path=Path("/tmp/does-not-exist.jsonl"),
+                    label=CAMPAIGNS_PATH,
+                    rows=(),
+                    raw=b"",
+                    digest=hashlib.sha256(b"").hexdigest(),
+                ),
+                activation=receipt_value,
+            ),
         )
 
 
@@ -750,6 +731,135 @@ def test_compose_causal_clock_violation_yields_evidence_clock_invalid(
     assert "EVIDENCE_CLOCK_INVALID" in abst["reasons"]
 
 
+def test_compose_retains_candidate_through_missing_invalid_and_recovery(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    episodes_spec = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    micro_map = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in episodes_spec
+    }
+    first = compose_candidate_feed(
+        **_composer_kwargs(snapshot, micro_map=micro_map, activation=ACTIVATION_RECEIPT)
+    )
+    candidate = first["candidates"][0]
+
+    def formation_bytes(value: dict) -> bytes:
+        return canonical_bytes(
+            {
+                "frozen_formation": value["frozen_formation"],
+                "formation_micro": value["formation_micro"],
+                "initial_update": value["versioned_updates"][0],
+                "first_observed_at": value["first_observed_at"],
+                "decision_at": value["decision_at"],
+            }
+        )
+
+    preserved_formation = formation_bytes(candidate)
+    missing = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot, micro_map={}, activation=ACTIVATION_RECEIPT, prior_feed=first
+        )
+    )
+    assert missing["header"]["candidate_count"] == 0
+    assert missing["header"]["degraded_count"] == 1
+    assert missing["degraded"][0]["retained_candidate_id"] == candidate["candidate_id"]
+
+    invalid_clock_map = copy.deepcopy(micro_map)
+    invalid_clock_map[episodes_spec[-1]["source_event_id"]] = _micro_for(
+        episodes_spec[-1]["source_event_id"],
+        available_at="2026-08-13T15:00:00Z",
+    )
+    invalid_clock = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot,
+            micro_map=invalid_clock_map,
+            activation=ACTIVATION_RECEIPT,
+            prior_feed=first,
+        )
+    )
+    assert invalid_clock["header"]["degraded_count"] == 1
+    assert "EVIDENCE_CLOCK_INVALID" in invalid_clock["degraded"][0]["reasons"]
+
+    explicit_health = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot,
+            micro_map=micro_map,
+            activation=ACTIVATION_RECEIPT,
+            prior_feed=first,
+            source_health={"stale": True, "unavailable": False},
+        )
+    )
+    assert explicit_health["header"]["degraded_count"] == 1
+    assert "SOURCE_EXPLICITLY_STALE_OR_UNAVAILABLE" in (
+        explicit_health["degraded"][0]["reasons"]
+    )
+
+    recovered = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot, micro_map=micro_map, activation=ACTIVATION_RECEIPT, prior_feed=first
+        )
+    )
+    recovered_candidate = recovered["candidates"][0]
+    assert recovered_candidate["candidate_id"] == candidate["candidate_id"]
+    assert formation_bytes(recovered_candidate) == preserved_formation
+
+
+def test_compose_missing_final_micro_on_revision_one_defers_to_revision_two(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    first_specs = _episodes_for(True, count=2)
+    snapshot_one = _build_campaign_snapshot(
+        tmp_path, episodes_specs=first_specs, monkeypatch=monkeypatch
+    )
+    final_id = first_specs[-1]["source_event_id"]
+    missing_final = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in first_specs
+        if spec["source_event_id"] != final_id
+    }
+    initial = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot_one, micro_map=missing_final, activation=ACTIVATION_RECEIPT
+        )
+    )
+    assert initial["header"]["candidate_count"] == 0
+    assert "FINAL_MEMBER_MICROSTRUCTURE_MISSING" in initial["abstentions"][0]["reasons"]
+
+    third = {
+        "source_event_id": "evt-002",
+        "available_at": "2026-08-13T14:01:00Z",
+        "session_date": "2026-08-13",
+    }
+    second_specs = first_specs + [third]
+    snapshot_two = _build_campaign_snapshot(
+        tmp_path, episodes_specs=second_specs, monkeypatch=monkeypatch
+    )
+    recovered = dict(missing_final)
+    recovered[third["source_event_id"]] = _micro_for(
+        third["source_event_id"], available_at=third["available_at"]
+    )
+    later = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot_two, micro_map=recovered, activation=ACTIVATION_RECEIPT
+        )
+    )
+    candidate = later["candidates"][0]
+    assert later["header"]["candidate_count"] == 1
+    assert candidate["first_qualifying_campaign_revision_id"] == (
+        candidate["current_campaign_revision_id"]
+    )
+
+
 def test_compose_first_qualifying_revision_is_stable_across_same_input_runs(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -812,12 +922,6 @@ def test_compose_later_campaign_revision_versioned_update_preserves_identity(
     micro_map_ext = dict(micro_map)
     micro_map_ext[third["source_event_id"]] = _micro_for(third["source_event_id"], available_at=third["available_at"])
 
-    first["source_receipts"]["campaigns"] = {
-        **first["candidates"][0]["frozen_formation"]["source_prefix_receipt"],
-        "records": snapshot_v2.count,
-        "prefix_sha256": snapshot_v2.sha256,
-    }
-    first = _reseal_feed(first)
     later = compose_candidate_feed(
         **_composer_kwargs(
             snapshot_v2,
@@ -836,23 +940,114 @@ def test_compose_later_campaign_revision_versioned_update_preserves_identity(
     assert later_candidate["current_campaign_revision_id"] != (
         first_candidate["current_campaign_revision_id"]
     )
-    # First observation/decision/available/published clocks preserved.
+    # First observation and decision clocks preserved.
     assert later_candidate["first_observed_at"] == first_candidate["first_observed_at"]
     assert later_candidate["decision_at"] == first_candidate["decision_at"]
-    assert later_candidate["available_at"] == first_candidate["available_at"]
-    # published_at stays equal to the prior's published_at even when caller
-    # passes a NEW published_clock now — first receipt is immutable.
-    assert later_candidate["published_at"] == first_candidate["published_at"]
     assert len(later_candidate["versioned_updates"]) >= 2
     assert all(item["candidate_identity_unchanged"] is True for item in later_candidate["versioned_updates"])
 
 
-def test_compose_current_publication_clock_never_mutates_first_receipt(
+def test_compose_two_appends_replay_and_new_update_clocks_are_stable(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """When a prior_feed is supplied and the caller passes a NEW
-    published_clock, the candidate's published_at from the first receipt is
-    preserved verbatim. No wrapper freshening."""
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    root = tmp_path / "canonical"
+    first_specs = _episodes_for(True, count=2)
+    snapshot_one = _build_campaign_snapshot(
+        root, episodes_specs=first_specs, monkeypatch=monkeypatch
+    )
+    micro_one = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in first_specs
+    }
+    first = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot_one,
+            micro_map=micro_one,
+            activation=ACTIVATION_RECEIPT,
+            observation_clock="2026-08-13T14:30:00Z",
+        )
+    )
+
+    append_specs = (
+        {
+            "source_event_id": "evt-002",
+            "available_at": "2026-08-13T14:01:00Z",
+            "session_date": "2026-08-13",
+        },
+        {
+            "source_event_id": "evt-003",
+            "available_at": "2026-08-13T14:02:00Z",
+            "session_date": "2026-08-13",
+        },
+    )
+    second_specs = first_specs + [append_specs[0]]
+    snapshot_two = _build_campaign_snapshot(
+        root, episodes_specs=second_specs, monkeypatch=monkeypatch
+    )
+    micro_two = dict(micro_one)
+    micro_two[append_specs[0]["source_event_id"]] = _micro_for(
+        append_specs[0]["source_event_id"],
+        available_at=append_specs[0]["available_at"],
+    )
+    second = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot_two,
+            micro_map=micro_two,
+            activation=ACTIVATION_RECEIPT,
+            prior_feed=first,
+            observation_clock="2026-08-13T15:00:00Z",
+        )
+    )
+
+    third_specs = second_specs + [append_specs[1]]
+    snapshot_three = _build_campaign_snapshot(
+        root, episodes_specs=third_specs, monkeypatch=monkeypatch
+    )
+    micro_three = dict(micro_two)
+    micro_three[append_specs[1]["source_event_id"]] = _micro_for(
+        append_specs[1]["source_event_id"],
+        available_at=append_specs[1]["available_at"],
+    )
+    third = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot_three,
+            micro_map=micro_three,
+            activation=ACTIVATION_RECEIPT,
+            prior_feed=second,
+            observation_clock="2026-08-13T15:30:00Z",
+        )
+    )
+    candidate = third["candidates"][0]
+    updates = candidate["versioned_updates"]
+    assert [entry["observed_at"] for entry in updates] == [
+        "2026-08-13T14:30:00Z",
+        "2026-08-13T15:00:00Z",
+        "2026-08-13T15:30:00Z",
+    ]
+
+    replay = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot_three,
+            micro_map=micro_three,
+            activation=ACTIVATION_RECEIPT,
+            prior_feed=third,
+            observation_clock="2026-08-13T16:00:00Z",
+        )
+    )
+    replay_candidate = replay["candidates"][0]
+    assert replay_candidate["frozen_formation"] == candidate["frozen_formation"]
+    assert replay_candidate["formation_micro"] == candidate["formation_micro"]
+    assert replay_candidate["versioned_updates"] == updates
+
+
+def test_compose_current_decision_clock_never_mutates_first_observation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """When a prior_feed is supplied and the caller passes a NEW decision clock,
+    the candidate's first observation and decision are preserved verbatim."""
 
     monkeypatch.setenv("COLLECT_LANE", "nightly")
     episodes_spec = _episodes_for(True, count=2)
@@ -865,9 +1060,9 @@ def test_compose_current_publication_clock_never_mutates_first_receipt(
     first = compose_candidate_feed(
         **_composer_kwargs(snapshot, micro_map=micro_map, activation=ACTIVATION_RECEIPT)
     )
-    first_pub = first["candidates"][0]["published_at"]
+    first_observation = first["candidates"][0]["first_observed_at"]
 
-    # Append a revision and call again with a wildly later published_clock.
+    # Append a revision and call again with a later decision clock.
     third = {
         "source_event_id": "evt-002",
         "available_at": "2026-08-13T14:01:00Z",
@@ -887,12 +1082,65 @@ def test_compose_current_publication_clock_never_mutates_first_receipt(
             activation=ACTIVATION_RECEIPT,
             prior_feed=first,
             observation_clock="2026-09-15T14:30:00Z",
-            available_clock="2026-09-15T14:30:01Z",
-            published_clock="2026-09-15T14:30:02Z",
         )
     )
-    # First-receipt published_at preserved (NOT mutated to the new call's clock).
-    assert later["candidates"][0]["published_at"] == first_pub
+    candidate = later["candidates"][0]
+    assert candidate["first_observed_at"] == first_observation
+    assert candidate["decision_at"] == first_observation
+
+
+def test_compose_prior_candidate_wins_before_late_older_measurement_rekeys(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    first_specs = _episodes_for(True, count=2)
+    snapshot_a = _build_campaign_snapshot(
+        tmp_path, episodes_specs=first_specs, monkeypatch=monkeypatch
+    )
+    micro_a = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in first_specs
+    }
+    first = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot_a, micro_map=micro_a, activation=ACTIVATION_RECEIPT
+        )
+    )
+
+    third = {
+        "source_event_id": "evt-002",
+        "available_at": "2026-08-13T14:01:00Z",
+        "session_date": "2026-08-13",
+    }
+    snapshot_b = _build_campaign_snapshot(
+        tmp_path,
+        episodes_specs=first_specs + [third],
+        monkeypatch=monkeypatch,
+    )
+    micro_b = dict(micro_a)
+    micro_b[third["source_event_id"]] = _micro_for(
+        third["source_event_id"], available_at=third["available_at"]
+    )
+    late_older = dict(micro_b)
+    late_older[third["source_event_id"]] = _micro_for(
+        third["source_event_id"], available_at="2026-08-13T13:30:00Z"
+    )
+    later = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot_b,
+            micro_map=late_older,
+            activation=ACTIVATION_RECEIPT,
+            prior_feed=first,
+        )
+    )
+    assert later["candidates"][0]["candidate_id"] == (
+        first["candidates"][0]["candidate_id"]
+    )
+    assert later["candidates"][0]["frozen_formation"] == (
+        first["candidates"][0]["frozen_formation"]
+    )
 
 
 def test_compose_previous_feed_tamper_fails_closed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -1111,6 +1359,250 @@ def test_compose_strict_schema_validation_passes(
     assert bytes_a == bytes_b
 
 
+def test_compose_pure_has_no_io_calls() -> None:
+    source = (ROOT / "engine/options_alpha_candidate_feed.py").read_text()
+    assert "import requests" not in source
+    assert "import urllib" not in source
+    assert "import httpx" not in source
+    assert "import socket" not in source
+    assert "import subprocess" not in source
+    assert "import shutil" not in source
+    assert ".write_" not in source
+
+
+def test_new_contracts_and_fixtures_validate_against_strict_schemas() -> None:
+    policy = json.loads((ROOT / POLICY_PATH).read_text())
+    identity = {
+        "schema": "options.alpha_candidate_identity/v1",
+        "policy_id": "oa_member_persistent_measured_campaign/v2",
+        "campaign_id": "ocam_" + "0" * 24,
+        "first_qualifying_campaign_revision_id": "ocrev_" + "0" * 24,
+        "candidate_id": "oacnd_" + "0" * 24,
+    }
+    receipt_contract = json.loads(
+        (ROOT / "contracts/options" / PUBLICATION_RECEIPT_CONTRACT_FILENAME).read_text()
+    )
+
+    validators = {
+        FORMATION_POLICY_SCHEMA_FILENAME: policy,
+        IDENTITY_SCHEMA_FILENAME: identity,
+        PUBLICATION_RECEIPT_SCHEMA_FILENAME: receipt_contract,
+    }
+    for filename, instance in validators.items():
+        Draft202012Validator(
+            json.loads((ROOT / "contracts/options" / filename).read_text()),
+            format_checker=FormatChecker(),
+        ).validate(instance)
+
+    Draft202012Validator.check_schema(
+        json.loads(
+            (ROOT / "contracts/options" / FEED_V2_SCHEMA_FILENAME).read_text()
+        )
+    )
+
+
+def test_publication_receipt_binding_is_exact_and_internal_clocks_are_separate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    episodes_spec = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    micro_map = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in episodes_spec
+    }
+    feed = compose_candidate_feed(
+        **_composer_kwargs(snapshot, micro_map=micro_map, activation=ACTIVATION_RECEIPT)
+    )
+    payload = canonical_bytes(feed)
+    digest = hashlib.sha256(payload).hexdigest()
+    receipt = {
+        "schema": "options.alpha_candidate_feed_publication_receipt/v1",
+        "receipt_id": "oacfr_"
+        + hashlib.sha256(
+            b"options.alpha_candidate_feed_publication_receipt/v1|"
+            + digest.encode("ascii")
+        ).hexdigest()[:25],
+        "feed_id": feed["feed_id"],
+        "feed_schema": "options.alpha_candidate_feed/v2",
+        "payload_sha256": digest,
+        "payload_bytes": len(payload),
+        "campaign_prefix": {
+            key: feed["source_receipts"]["campaigns"][key]
+            for key in ("path", "records", "prefix_sha256")
+        },
+        "prior_receipt": None,
+        "local_durability_confirmed_at": "2026-10-03T00:00:00Z",
+        "payload_r2_confirmed_at": "2026-10-03T00:00:01Z",
+        "r2": {
+            "payload_key": "options_alpha/candidate_feed.json",
+            "payload_sha256": digest,
+            "etag": "synthetic",
+        },
+        "candidates": {
+            item["candidate_id"]: {
+                "first_receipt_id": "",
+                "first_consumer_published_at": None,
+            }
+            for item in feed["candidates"]
+        },
+    }
+    receipt["candidates"][feed["candidates"][0]["candidate_id"]][
+        "first_receipt_id"
+    ] = receipt["receipt_id"]
+
+    assert feed["generated_at"] == feed["candidates"][0]["decision_at"]
+    assert receipt["local_durability_confirmed_at"] != receipt["payload_r2_confirmed_at"]
+    assert "published_at" not in feed["candidates"][0]
+    assert "served_at" not in receipt
+
+    validate_publication_receipt_binding(
+        feed=feed, payload=payload, receipt=receipt
+    )
+    for field, value in (
+        ("receipt_id", "oacfr_" + "0" * 25),
+        ("payload_sha256", "0" * 64),
+        ("payload_bytes", len(payload) + 1),
+    ):
+        tampered = copy.deepcopy(receipt)
+        tampered[field] = value
+        message = (
+            "publication receipt identity is not derived from the payload hash"
+            if field == "receipt_id"
+            else "publication receipt payload hash disagrees with payload"
+            if field == "payload_sha256"
+            else "publication receipt payload size disagrees with payload"
+        )
+        with pytest.raises(CandidateFeedContractError, match=message):
+            validate_publication_receipt_binding(
+                feed=feed, payload=payload, receipt=tampered
+            )
+def test_publication_receipt_continuation_preserves_first_receipt_identity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    episodes_spec = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(
+        tmp_path, episodes_specs=episodes_spec, monkeypatch=monkeypatch
+    )
+    micro_map = {
+        spec["source_event_id"]: _micro_for(
+            spec["source_event_id"], available_at=spec["available_at"]
+        )
+        for spec in episodes_spec
+    }
+    first = compose_candidate_feed(
+        **_composer_kwargs(snapshot, micro_map=micro_map, activation=ACTIVATION_RECEIPT)
+    )
+    first_payload = canonical_bytes(first)
+    first_digest = hashlib.sha256(first_payload).hexdigest()
+
+    def receipt_for(feed: dict, payload: bytes, prior: dict | None) -> dict:
+        payload_digest = hashlib.sha256(payload).hexdigest()
+        receipt_id = (
+            "oacfr_"
+            + hashlib.sha256(
+                b"options.alpha_candidate_feed_publication_receipt/v1|"
+                + payload_digest.encode("ascii")
+            ).hexdigest()[:25]
+        )
+        return {
+            "schema": "options.alpha_candidate_feed_publication_receipt/v1",
+            "receipt_id": receipt_id,
+            "feed_id": feed["feed_id"],
+            "feed_schema": "options.alpha_candidate_feed/v2",
+            "payload_sha256": payload_digest,
+            "payload_bytes": len(payload),
+            "campaign_prefix": {
+                key: feed["source_receipts"]["campaigns"][key]
+                for key in ("path", "records", "prefix_sha256")
+            },
+            "prior_receipt": prior,
+            "local_durability_confirmed_at": "2026-10-03T00:00:00Z",
+            "payload_r2_confirmed_at": "2026-10-03T00:00:01Z",
+            "r2": {
+                "payload_key": "options_alpha/candidate_feed.json",
+                "payload_sha256": payload_digest,
+                "etag": "synthetic",
+            },
+            "candidates": {
+                item["candidate_id"]: {
+                    "first_receipt_id": receipt_id,
+                    "first_consumer_published_at": None,
+                }
+                for item in feed["candidates"]
+            },
+        }
+
+    first_receipt = receipt_for(first, first_payload, None)
+    validate_publication_receipt_binding(
+        feed=first, payload=first_payload, receipt=first_receipt
+    )
+
+    third = {
+        "source_event_id": "evt-002",
+        "available_at": "2026-08-13T14:01:00Z",
+        "session_date": "2026-08-13",
+    }
+    second_specs = episodes_spec + [third]
+    snapshot_two = _build_campaign_snapshot(
+        tmp_path, episodes_specs=second_specs, monkeypatch=monkeypatch
+    )
+    micro_two = dict(micro_map)
+    micro_two[third["source_event_id"]] = _micro_for(
+        third["source_event_id"], available_at=third["available_at"]
+    )
+    second = compose_candidate_feed(
+        **_composer_kwargs(
+            snapshot_two,
+            micro_map=micro_two,
+            activation=ACTIVATION_RECEIPT,
+            prior_feed=first,
+        )
+    )
+    second_payload = canonical_bytes(second)
+    second_receipt = receipt_for(
+        second,
+        second_payload,
+        {
+            "receipt_id": first_receipt["receipt_id"],
+            "payload_sha256": first_digest,
+        },
+    )
+    retained_id = second["candidates"][0]["candidate_id"]
+    second_receipt["candidates"][retained_id]["first_receipt_id"] = (
+        first_receipt["receipt_id"]
+    )
+    validate_publication_receipt_binding(
+        feed=second, payload=second_payload, receipt=second_receipt
+    )
+
+    current_only = copy.deepcopy(second_receipt)
+    current_only["candidates"][retained_id]["first_receipt_id"] = (
+        second_receipt["receipt_id"]
+    )
+    validate_publication_receipt_binding(
+        feed=second, payload=second_payload, receipt=current_only
+    )
+
+    unrelated = copy.deepcopy(second_receipt)
+    unrelated["candidates"][retained_id]["first_receipt_id"] = (
+        "oacfr_" + "0" * 25
+    )
+    with pytest.raises(
+        CandidateFeedContractError,
+        match="publication receipt first receipt identity is not current or prior",
+    ):
+        validate_publication_receipt_binding(
+            feed=second, payload=second_payload, receipt=unrelated
+        )
+
+
+
 def test_compose_rejects_noncanonical_clock_strings() -> None:
     """The composer rejects non-canonical UTC strings; no ambient timezone
     inference is performed."""
@@ -1126,17 +1618,6 @@ def test_compose_rejects_noncanonical_clock_strings() -> None:
             campaigns=snap,
             policy=POLICY,
             observation_clock="2026-08-13T14:30:00",  # missing Z
-            available_clock="2026-08-13T14:30:01Z",
-            published_clock="2026-08-13T14:30:02Z",
-            policy_freeze_at=POLICY_FREEZE_AT,
-        )
-    with pytest.raises(CandidateFeedContractError):
-        compose_candidate_feed(
-            campaigns=snap,
-            policy=POLICY,
-            observation_clock="2026-08-13T14:30:00Z",
-            available_clock="2026-08-13T14:29:59Z",  # available < observation
-            published_clock="2026-08-13T14:30:02Z",
             policy_freeze_at=POLICY_FREEZE_AT,
         )
 
@@ -1154,8 +1635,6 @@ def test_compose_rejects_unspecified_policy_freeze_clock() -> None:
             campaigns=snap,
             policy=POLICY,
             observation_clock="2026-08-13T14:30:00Z",
-            available_clock="2026-08-13T14:30:01Z",
-            published_clock="2026-08-13T14:30:02Z",
             policy_freeze_at=None,
         )
 
@@ -1178,9 +1657,9 @@ def test_compose_summarise_returns_stable_diagnostic(
     summary = summarise(feed)
     assert summary["feed_id"] == feed["feed_id"]
     assert summary["candidate_count"] == 1
-    assert summary["policy_id"] == "oa_member_persistent_measured_campaign/v1"
+    assert summary["policy_id"] == "oa_member_persistent_measured_campaign/v2"
     assert summary["fence_state"] == "post_activation"
-    assert summary["publication_claim"] == "caller_supplied_synthetic_only_no_live_publication"
+    assert summary["publication_claim"] == "source_only_no_publication_effect"
     assert summary["header_digest_sha256"] == feed["header"]["header_digest_sha256"]
 
 
@@ -1199,8 +1678,6 @@ def test_compose_rejects_nonfinite_json_in_inputs() -> None:
             campaigns=snap,
             policy=bad_policy,
             observation_clock="2026-08-13T14:30:00Z",
-            available_clock="2026-08-13T14:30:01Z",
-            published_clock="2026-08-13T14:30:02Z",
             policy_freeze_at=POLICY_FREEZE_AT,
         )
 
@@ -1220,8 +1697,6 @@ def test_compose_rejects_authority_violation_in_policy() -> None:
             campaigns=snap,
             policy=bad_policy,
             observation_clock="2026-08-13T14:30:00Z",
-            available_clock="2026-08-13T14:30:01Z",
-            published_clock="2026-08-13T14:30:02Z",
             policy_freeze_at=POLICY_FREEZE_AT,
         )
 
@@ -1306,7 +1781,7 @@ def test_compose_prior_feed_integrity_binds_header_source_and_formation(
         invoke(micro_tamper)
 
     valid_receipt = invoke(first)
-    assert valid_receipt["source_receipts"]["prior_feed"]["published_at"] == (
+    assert valid_receipt["source_receipts"]["prior_feed"]["composed_at"] == (
         first["generated_at"]
     )
 
@@ -1335,7 +1810,7 @@ def test_compose_prior_feed_integrity_binds_header_source_and_formation(
         "path": snapshot_b.label,
         "records": snapshot_b.count,
         "prefix_sha256": snapshot_b.sha256,
-        "source_schema": "options.signal_campaign/v2",
+        "schema": "options.signal_campaign/v2",
     }
     first_candidate = first["candidates"][0]
     later_candidate = later["candidates"][0]
@@ -1347,7 +1822,7 @@ def test_compose_prior_feed_integrity_binds_header_source_and_formation(
     )
 
     shrink = _ledger_snapshot(
-        [row.value for row in snapshot_b.rows], count=1
+        [copy.deepcopy(row.value) for row in snapshot_b.rows], count=1
     )
     with pytest.raises(CandidateFeedContractError, match="campaign prefix"):
         compose_candidate_feed(
@@ -1359,7 +1834,23 @@ def test_compose_prior_feed_integrity_binds_header_source_and_formation(
             )
         )
 
-    rewritten_rows = [row.value for row in snapshot_b.rows]
+    source_tamper_rows = [copy.deepcopy(row.value) for row in snapshot_b.rows]
+    source_tamper_rows[0]["members"][-1]["source_event_id"] = "evt-tampered"
+    source_tamper = _ledger_snapshot(source_tamper_rows)
+    with pytest.raises(
+        CandidateFeedContractError,
+        match="prior_feed campaign prefix receipt is invalid",
+    ):
+        compose_candidate_feed(
+            **_composer_kwargs(
+                source_tamper,
+                micro_map=copy.deepcopy(micro_b),
+                activation=ACTIVATION_RECEIPT,
+                prior_feed=later,
+            )
+        )
+
+    rewritten_rows = [copy.deepcopy(row.value) for row in snapshot_b.rows]
     rewritten_rows[0]["descriptive"]["member_count"] += 1
     rewritten = _ledger_snapshot(rewritten_rows)
     with pytest.raises(
@@ -1407,6 +1898,14 @@ def test_compose_prior_feed_integrity_binds_header_source_and_formation(
             ["candidates", 0, "versioned_updates", -1, "revision_digest_sha256"],
             "0" * 64,
         ),
+        "policy_freeze": (
+            ["candidates", 0, "frozen_formation", "policy_freeze_at"],
+            "2026-08-12T13:30:01Z",
+        ),
+        "activation_boundary": (
+            ["candidates", 0, "frozen_formation", "activation_boundary_at"],
+            "2026-08-13T14:00:01Z",
+        ),
     }
     for field, (path, value) in tamper_cases.items():
         tampered = copy.deepcopy(later)
@@ -1415,28 +1914,58 @@ def test_compose_prior_feed_integrity_binds_header_source_and_formation(
             target = target[key]
         target[path[-1]] = value
         tampered = _reseal_feed(tampered)
-        with pytest.raises(CandidateFeedContractError, match="prior_feed formation"):
+        expected_message = (
+            "prior_feed frozen policy disagrees with passed policy or receipt"
+            if field in {"policy_freeze", "activation_boundary"}
+            else "prior_feed versioned update metadata disagrees with physical source"
+            if field == "current_version"
+            else "prior_feed formation"
+        )
+        with pytest.raises(CandidateFeedContractError, match=expected_message):
             compose_candidate_feed(
                 **_composer_kwargs(
                     snapshot_b,
-                    micro_map=micro_b,
+                    micro_map=copy.deepcopy(micro_b),
                     activation=ACTIVATION_RECEIPT,
                     prior_feed=tampered,
                 )
             )
 
-    source_micro_tamper = dict(micro_b)
-    source_micro_tamper["evt-001"] = copy.deepcopy(micro_b["evt-001"])
-    source_micro_tamper["evt-001"]["nbbo_valid_print_count"] = 2
-    with pytest.raises(
-        CandidateFeedContractError,
-        match="prior_feed formation",
-    ):
-        compose_candidate_feed(
-            **_composer_kwargs(
-                snapshot_b,
-                micro_map=source_micro_tamper,
-                activation=ACTIVATION_RECEIPT,
-                prior_feed=later,
-            )
+
+    update_tamper_cases = {
+        "missing": lambda updates: updates.pop(),
+        "duplicate": lambda updates: updates.append(copy.deepcopy(updates[-1])),
+        "fake": lambda updates: updates.append(
+            {
+                "campaign_revision_id": "ocrev_" + "9" * 24,
+                "revision_number": 99,
+                "revision_digest_sha256": "9" * 64,
+                "formed_at": "2026-08-13T14:02:00Z",
+                "observed_at": "2026-08-13T14:30:00Z",
+                "candidate_identity_unchanged": True,
+            }
+        ),
+        "reordered": lambda updates: updates.reverse(),
+        "preformation": lambda updates: updates.insert(
+            0,
+            copy.deepcopy(updates[0])
+            | {"campaign_revision_id": "ocrev_" + "8" * 24},
+        ),
+    }
+    for name, mutate in update_tamper_cases.items():
+        clean_micro_b = copy.deepcopy(micro_b)
+        tampered = copy.deepcopy(later)
+        mutate(tampered["candidates"][0]["versioned_updates"])
+        tampered = _reseal_feed(tampered)
+        expected_update_message = (
+            "versioned updates disagree with exact physical source membership"
         )
+        with pytest.raises(CandidateFeedContractError, match=expected_update_message):
+            compose_candidate_feed(
+                **_composer_kwargs(
+                    snapshot_b,
+                    micro_map=clean_micro_b,
+                    activation=ACTIVATION_RECEIPT,
+                    prior_feed=tampered,
+                )
+            )

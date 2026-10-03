@@ -1,21 +1,18 @@
-"""Pure receipt-bound options-alpha research-candidate feed composer (inactive).
+"""Pure source-only options-alpha research-candidate feed composer (inactive).
 
 This module is the implementation carrier for the OA-1C research-candidate
-composer. It is **inactive** until the four named activation preconditions are
-cleared by the upstream owning program. It **DOES NOT** perform runtime
-publication, durable writes, network I/O, clock inference. It must always be
-called with caller-supplied receipts and explicit clocks.
+composer. It is inactive until the four named activation preconditions are
+cleared by the upstream owning program. It performs no runtime publication,
+durable write, network I/O, or clock inference, and always requires an explicit
+decision clock.
 
-The composer derives ``options.alpha_candidate_feed/v1`` from canonical
-``options.signal_campaign/v2`` evidence and validated measured
-``options.trade_nbbo_microstructure/v1`` receipts. It reuses the campaign
-engine's ``LedgerSnapshot``/``load_ledger``/``canonical_bytes``/
-``validate_campaign``/receipt machinery — never duplicating the prefix or
-identity math.
+The composer derives ``options.alpha_candidate_feed/v2`` from canonical campaign
+evidence and measured microstructure receipts. It reuses the campaign engine's
+ledger and receipt machinery instead of duplicating prefix or identity math.
 
-Authority all authority remains ``False``. No scores, ranks, sizes, issues, trades,
-training signals, neural-web feeds, calibration claims, P&L calculations,
-tactical events, or directional probability claims are produced.
+All authority remains false. No scores, ranks, sizes, issues, trades, training
+signals, neural-web feeds, calibration claims, P&L calculations, tactical
+events, or directional probability claims are produced.
 """
 from __future__ import annotations
 
@@ -26,10 +23,9 @@ import math
 import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from decimal import Decimal, InvalidOperation
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Iterable, Sequence
+from typing import Any, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker
 
@@ -42,22 +38,27 @@ from engine.options_signal_campaign import (
     validate_campaign,
 )
 
-CANDIDATE_FEED_SCHEMA = "options.alpha_candidate_feed/v1"
+CANDIDATE_FEED_SCHEMA = "options.alpha_candidate_feed/v2"
+CANDIDATE_IDENTITY_SCHEMA = "options.alpha_candidate_identity/v1"
 CANDIDATE_FEED_ACTIVATION_RECEIPT_SCHEMA = (
     "options.alpha_candidate_feed_activation_receipt/v1"
 )
 MICROSTRUCTURE_SCHEMA = "options.trade_nbbo_microstructure/v1"
-POLICY_SCHEMA = "options.alpha_candidate_formation_policy/v1"
+POLICY_SCHEMA = "options.alpha_candidate_formation_policy/v2"
 EVENT_STAGE_SCHEMA = "live_flow.event_stage/v1"
 
-POLICY_PATH = "research/options_estate/options_alpha_candidate_formation_policy_v1.json"
+POLICY_PATH = "research/options_estate/options_alpha_candidate_formation_policy_v2.json"
 ACTIVATION_RECEIPT_PATH = (
     "research/options_estate/options_alpha_candidate_feed_activation_receipt_v1.json"
 )
 ACTIVATION_RECEIPT_SCHEMA_FILENAME = (
     "options.alpha_candidate_feed_activation_receipt.v1.schema.json"
 )
-CANDIDATE_FEED_SCHEMA_FILENAME = "options.alpha_candidate_feed.v1.schema.json"
+CANDIDATE_FEED_V2_SCHEMA_FILENAME = "options.alpha_candidate_feed.v2.schema.json"
+CANDIDATE_IDENTITY_SCHEMA_FILENAME = "options.alpha_candidate_identity.v1.schema.json"
+PUBLICATION_RECEIPT_SCHEMA_FILENAME = (
+    "options.alpha_candidate_feed_publication_receipt.v1.schema.json"
+)
 MICROSTRUCTURE_SCHEMA_FILENAME = "options.trade_nbbo_microstructure.v1.schema.json"
 
 ACTIVATION_PRECONDITIONS: tuple[str, ...] = (
@@ -100,7 +101,7 @@ FALSE_AUTHORITY: dict[str, bool] = {
 
 COMPOSER_ID = (
     "oacf_composer_"
-    + hashlib.sha256(b"oacf_composer|oa1c|inactive|v1").hexdigest()[:24]
+    + hashlib.sha256(b"oacf_composer|oa1c|inactive|v2").hexdigest()[:24]
 )
 IMPLEMENTATION_CARRIER_DEFAULT = (
     "codex/options-alpha-candidate-feed-20261002 inactive implementation carrier"
@@ -204,7 +205,7 @@ def _schema_validator(filename: str) -> Draft202012Validator:
     path = _REPO_ROOT / "contracts/options" / filename
     try:
         schema = _strict_loads(path.read_bytes())
-    except Exception as exc:  # noqa: BLE001
+    except (OSError, ValueError, TypeError) as exc:
         raise CandidateFeedContractError(f"cannot load schema {path}") from exc
     Draft202012Validator.check_schema(schema)
     return Draft202012Validator(schema, format_checker=FormatChecker())
@@ -227,27 +228,8 @@ def _validate_schema(row: dict[str, Any], filename: str) -> None:
 # ---------------------------------------------------------------------------
 
 
-@dataclass(frozen=True)
-class CallerClocks:
-    """Caller-supplied explicit clocks used by the composer.
-
-    The composer MUST NOT infer any clock from ambient sources.
-    """
-
-    observation: str  # first_observed_at = decision_at
-    available: str
-    published: str
-
-
-def _validate_caller_clocks(clocks: CallerClocks) -> tuple[datetime, datetime, datetime]:
-    obs = _utc(clocks.observation, "caller.observation")
-    av = _utc(clocks.available, "caller.available")
-    pub = _utc(clocks.published, "caller.published")
-    if not (obs <= av <= pub):
-        raise CandidateFeedContractError(
-            "caller clocks must satisfy observation <= available <= published"
-        )
-    return obs, av, pub
+def _validate_decision_clock(value: str) -> datetime:
+    return _utc(value, "decision_clock")
 
 
 @dataclass(frozen=True)
@@ -276,7 +258,7 @@ class SourceHealth:
 
 
 def _validate_policy(policy: dict[str, Any]) -> None:
-    _validate_schema(policy, "options.alpha_candidate_formation_policy.v1.schema.json")
+    _validate_schema(policy, "options.alpha_candidate_formation_policy.v2.schema.json")
     formation = policy["formation"]
     if formation["campaign_phase"] != "prospective_after_rule_freeze":
         raise CandidateFeedContractError(
@@ -307,6 +289,10 @@ def _validate_policy(policy: dict[str, Any]) -> None:
     if formation["direction_inferred_during_formation"]:
         raise CandidateFeedContractError(
             "policy.formation.direction_inferred_during_formation must be false"
+        )
+    if tuple(policy["activation_preconditions"]) != ACTIVATION_PRECONDITIONS:
+        raise CandidateFeedContractError(
+            "policy activation_preconditions must be the exact four prerequisites in order"
         )
 
 
@@ -345,6 +331,10 @@ def _validate_activation_receipt(
     if receipt["activation_disposition"]["state"] != "eligible":
         raise CandidateFeedContractError(
             "activation receipt activation_disposition.state must be eligible"
+        )
+    if tuple(receipt["preconditions"]) != ACTIVATION_PRECONDITIONS:
+        raise CandidateFeedContractError(
+            "activation receipt preconditions must be the exact four prerequisites in order"
         )
     if receipt["policy_freeze_at"] != policy_freeze_at:
         raise CandidateFeedContractError(
@@ -443,7 +433,7 @@ def _candidate_identity(
 ) -> str:
     return _stable_id(
         "oacnd",
-        CANDIDATE_FEED_SCHEMA,
+        CANDIDATE_IDENTITY_SCHEMA,
         policy_id,
         campaign_id,
         first_qualifying_campaign_revision_id,
@@ -463,6 +453,8 @@ def _validate_prior_feed(
     prior: dict[str, Any] | None,
     *,
     policy_digest: str,
+    policy_freeze_at: str,
+    activation_boundary_at: str | None,
     campaigns: LedgerSnapshot,
     microstructure_map: dict[str, dict[str, Any]],
 ) -> dict[str, Any] | None:
@@ -470,11 +462,31 @@ def _validate_prior_feed(
         return None
     if not isinstance(prior, dict):
         raise CandidateFeedContractError("prior_feed must be a dict")
-    _validate_schema(prior, CANDIDATE_FEED_SCHEMA_FILENAME)
+    _validate_schema(prior, CANDIDATE_FEED_V2_SCHEMA_FILENAME)
+    if prior["policy"]["policy_id"] != "oa_member_persistent_measured_campaign/v2":
+        raise CandidateFeedContractError("prior_feed.policy.policy_id is not accepted")
     if prior["policy"]["policy_digest_sha256"] != policy_digest:
         raise CandidateFeedContractError(
             "prior_feed.policy.policy_digest_sha256 disagrees with current policy"
         )
+    frozen_policy_checks = {
+        "policy_id": "oa_member_persistent_measured_campaign/v2",
+        "policy_version": 1,
+        "policy_digest_sha256": policy_digest,
+        "policy_freeze_at": policy_freeze_at,
+        "activation_boundary_at": activation_boundary_at,
+        "policy_freeze_cleared": True,
+        "activation_boundary_cleared": True,
+        "candidate_identity_schema": CANDIDATE_IDENTITY_SCHEMA,
+    }
+    for candidate in prior.get("candidates", ()):
+        frozen = candidate["frozen_formation"]
+        for field, expected in frozen_policy_checks.items():
+            if frozen[field] != expected:
+                raise CandidateFeedContractError(
+                    "prior_feed frozen policy disagrees with passed policy or receipt: "
+                    + field
+                )
     expected_digest = prior["header"]["header_digest_sha256"]
     sealed = copy.deepcopy(prior)
     sealed["header"]["header_digest_sha256"] = ""
@@ -484,9 +496,9 @@ def _validate_prior_feed(
             "prior_feed.header seal does not match canonical blank-header bytes"
         )
     source_receipt = dict(prior["source_receipts"]["campaigns"])
-    source_receipt.pop("source_schema", None)
+    source_receipt.pop("schema", None)
     try:
-        campaign_engine.verify_campaign_receipt(
+        prior_source_ordinal = campaign_engine.verify_campaign_receipt(
             source_receipt, campaigns, campaigns.label
         )
     except CampaignContractError as exc:
@@ -507,23 +519,21 @@ def _validate_prior_feed(
             candidate,
             campaigns=campaigns,
             microstructure_map=microstructure_map,
+            prior_source_ordinal=prior_source_ordinal,
         )
-    if prior["policy"]["policy_id"] != "oa_member_persistent_measured_campaign/v1":
-        raise CandidateFeedContractError("prior_feed.policy.policy_id is not accepted")
     if prior.get("publication_claim", {}).get("claim") != (
-        "caller_supplied_synthetic_only_no_live_publication"
+        "source_only_no_publication_effect"
     ):
         raise CandidateFeedContractError(
-            "prior_feed.publication_claim.claim must be synthetic-only"
+            "prior_feed.publication_claim.claim must be source-only"
         )
     return prior
 
 
 def _candidate_source_receipt(candidate: dict[str, Any]) -> dict[str, Any]:
-    receipt = candidate["frozen_formation"]["source_prefix_receipt"]
-    source_receipt = dict(receipt)
-    source_receipt.pop("source_schema", None)
-    return source_receipt
+    receipt = dict(candidate["frozen_formation"]["source_prefix_receipt"])
+    receipt.pop("schema", None)
+    return receipt
 
 
 def _validate_prior_candidate_source(
@@ -531,6 +541,7 @@ def _validate_prior_candidate_source(
     *,
     campaigns: LedgerSnapshot,
     microstructure_map: dict[str, dict[str, Any]],
+    prior_source_ordinal: int,
 ) -> None:
     try:
         formation_ordinal = campaign_engine.verify_campaign_receipt(
@@ -579,11 +590,6 @@ def _validate_prior_candidate_source(
             formation_row["members"][-1]["source_event_id"],
         ),
         (
-            "final_event_id",
-            candidate["final_event_id"],
-            formation_row["members"][-1]["source_event_id"],
-        ),
-        (
             "measured_source_print_count",
             frozen["measured_source_print_count"],
             formation_micro["source_print_count"],
@@ -607,15 +613,7 @@ def _validate_prior_candidate_source(
         )
 
     source_micro = microstructure_map.get(frozen["final_member_event_id"])
-    if source_micro is None:
-        raise CandidateFeedContractError(
-            "prior_feed formation microstructure row is missing from current source"
-        )
-    expected_micro_digest = _sha256(_campaign_canonical_bytes(source_micro))
-    if formation_micro["schema_digest_sha256"] != expected_micro_digest:
-        raise CandidateFeedContractError(
-            "prior_feed formation microstructure digest is invalid"
-        )
+    expected_micro_digest = formation_micro["schema_digest_sha256"]
     micro_field_checks = (
         ("source_print_count", "measured_source_print_count"),
         (
@@ -633,10 +631,13 @@ def _validate_prior_candidate_source(
     mismatched_micro = [
         field
         for field, frozen_key in micro_field_checks
-        if formation_micro[field] != source_micro[field]
-        or (
-            frozen_key is not None
-            and frozen[frozen_key] != source_micro[field]
+        if source_micro is not None
+        and (
+            formation_micro[field] != source_micro[field]
+            or (
+                frozen_key is not None
+                and frozen[frozen_key] != source_micro[field]
+            )
         )
     ]
     if mismatched_micro:
@@ -662,70 +663,62 @@ def _validate_prior_candidate_source(
             "prior_feed formation evidence digest is invalid"
         )
 
-    if candidate["versioned_updates"]:
-        last = candidate["versioned_updates"][-1]
-        if (
-            last["campaign_revision_id"]
-            != candidate["current_campaign_revision_id"]
-        ):
-            raise CandidateFeedContractError(
-                "prior_feed versioned updates do not end at current revision"
-            )
-        current_row = _find_campaign_revision(
-            campaigns,
-            candidate["current_campaign_revision_id"],
-            campaign_id=candidate["campaign_id"],
+    matching_rows = [
+        row for row in campaigns.rows
+        if row.value["campaign_id"] == candidate["campaign_id"]
+    ]
+    if not matching_rows:
+        raise CandidateFeedContractError(
+            "prior_feed campaign history is absent from physical source"
         )
-        if last["revision_digest_sha256"] != _sha256(
-            _campaign_canonical_bytes(current_row)
-        ):
-            raise CandidateFeedContractError(
-                "prior_feed current revision digest is invalid"
-            )
-
-    known_digests = {
-        entry["campaign_revision_id"]: entry["revision_digest_sha256"]
-        for entry in candidate["versioned_updates"]
-    }
-    for row in campaigns.rows:
-        value = row.value
-        if (
-            value["campaign_id"] != candidate["campaign_id"]
-            or value["campaign_revision_id"] not in known_digests
-        ):
-            continue
-        if _sha256(_campaign_canonical_bytes(value)) != known_digests[
-            value["campaign_revision_id"]
-        ]:
-            raise CandidateFeedContractError(
-                "prior_feed historical version digest is invalid"
-            )
-
-
-def _find_campaign_revision(
-    campaigns: LedgerSnapshot,
-    revision_id: str,
-    *,
-    campaign_id: str,
-) -> dict[str, Any]:
-    for row in campaigns.rows:
-        value = row.value
-        if (
-            value["campaign_id"] == campaign_id
-            and value["campaign_revision_id"] == revision_id
-        ):
-            return value
-    raise CandidateFeedContractError(
-        "prior_feed current revision is absent from physical campaign source"
+    formation_physical_row = next(
+        (
+            row for row in matching_rows
+            if row.value["campaign_revision_id"] == frozen["campaign_revision_id"]
+        ),
+        None,
     )
-
-
-def _prior_candidate_history(
-    prior: dict[str, Any] | None,
-) -> dict[str, dict[str, Any]]:
-    if prior is None:
-        return {}
-    return {item["candidate_id"]: item for item in prior.get("candidates", ())}
+    if (
+        formation_physical_row is None
+        or formation_physical_row.ordinal != formation_ordinal
+    ):
+        raise CandidateFeedContractError(
+            "prior_feed formation revision is not at its physical prefix endpoint"
+        )
+    after_formation = [
+        row
+        for row in matching_rows
+        if formation_ordinal <= row.ordinal <= prior_source_ordinal
+    ]
+    after_formation.sort(key=lambda row: row.value["revision_number"])
+    expected_ids = [row.value["campaign_revision_id"] for row in after_formation]
+    actual_ids = [
+        entry["campaign_revision_id"] for entry in candidate["versioned_updates"]
+    ]
+    if actual_ids != expected_ids:
+        raise CandidateFeedContractError(
+            "prior_feed versioned updates disagree with exact physical source membership"
+        )
+    current_physical_row = after_formation[-1]
+    current_revision_id = candidate["current_campaign_revision_id"]
+    if current_physical_row.value["campaign_revision_id"] != current_revision_id:
+        raise CandidateFeedContractError(
+            "prior_feed current revision disagrees with physical source"
+        )
+    for entry, physical_row in zip(candidate["versioned_updates"], after_formation):
+        value = physical_row.value
+        expected = {
+            "campaign_revision_id": value["campaign_revision_id"],
+            "revision_number": int(value["revision_number"]),
+            "revision_digest_sha256": _sha256(_campaign_canonical_bytes(value)),
+            "formed_at": value["formed_at"],
+        }
+        for field, expected_value in expected.items():
+            if entry[field] != expected_value:
+                raise CandidateFeedContractError(
+                    "prior_feed versioned update metadata disagrees with physical source: "
+                    + field
+                )
 
 
 # ---------------------------------------------------------------------------
@@ -797,7 +790,7 @@ def _campaign_prefix_receipt(campaigns: LedgerSnapshot) -> dict[str, Any]:
         "path": campaigns.label,
         "records": campaigns.count,
         "prefix_sha256": campaigns.sha256,
-        "source_schema": CAMPAIGN_SCHEMA,
+        "schema": CAMPAIGN_SCHEMA,
     }
 
 
@@ -925,8 +918,6 @@ def _build_candidate_payload(
     policy_freeze_at: datetime,
     activation_boundary: datetime | None,
     observation: datetime,
-    available: datetime,
-    published: datetime,
     prior_candidate: dict[str, Any] | None,
     candidate_id: str,
     campaigns: LedgerSnapshot,
@@ -937,9 +928,9 @@ def _build_candidate_payload(
 ) -> dict[str, Any]:
     """Compose a single research_candidate record. ``prior_candidate`` (when
     provided by a validated prior feed) preserves the immutable
-    first_observation/decision/available/published clocks for this identity
-    and seeds the versioned_updates list. ``observation``/``available``/
-    ``published`` here are the composer-call clocks, not backdated to the
+    first_observation/decision clocks for this identity
+    and seeds the versioned_updates list. ``observation`` here is the
+    actual composer-call decision clock, not backdated to the
     campaign formed_at. ``all_revisions`` is the chronologically-ordered
     tuple of revisions belonging to this campaign_id; every revision
     between ``first_qualifying_revision_id`` and the latest becomes an
@@ -961,7 +952,7 @@ def _build_candidate_payload(
         "prefix_sha256": hashlib.sha256(
             campaigns.prefix_raw(formation_row_ordinal)
         ).hexdigest(),
-        "source_schema": CAMPAIGN_SCHEMA,
+        "schema": CAMPAIGN_SCHEMA,
     }
     if prior_candidate is not None:
         source_prefix_receipt = copy.deepcopy(
@@ -984,15 +975,15 @@ def _build_candidate_payload(
     if prior_candidate is not None:
         first_qualifying = prior_candidate["first_qualifying_campaign_revision_id"]
         frozen_formation = copy.deepcopy(prior_candidate["frozen_formation"])
-        formation_revision = copy.deepcopy(prior_candidate["frozen_formation"])
+        formation_revision = copy.deepcopy(
+            campaigns.rows[formation_row_ordinal - 1].value
+        )
         formation_micro = copy.deepcopy(prior_candidate["formation_micro"])
         formation_micro_digest = formation_micro["schema_digest_sha256"]
         evidence_digest = frozen_formation["evidence_digest_sha256"]
         formed_at = _utc(formation_revision["formed_at"], "campaign.formed_at")
         first_observed_at = prior_candidate["first_observed_at"]
         decision_at = prior_candidate["decision_at"]
-        candidate_available_at = prior_candidate["available_at"]
-        candidate_published_at = prior_candidate["published_at"]
         versioned_updates = list(
             prior_candidate.get("versioned_updates", ())
         )
@@ -1000,9 +991,18 @@ def _build_candidate_payload(
         first_qualifying = first_qualifying_revision_id
         first_observed_at = observation.strftime("%Y-%m-%dT%H:%M:%SZ")
         decision_at = first_observed_at
-        candidate_available_at = available.strftime("%Y-%m-%dT%H:%M:%SZ")
-        candidate_published_at = published.strftime("%Y-%m-%dT%H:%M:%SZ")
-        versioned_updates = []
+        versioned_updates = [
+            {
+                "campaign_revision_id": first_qualifying_revision_id,
+                "revision_number": int(formation_revision["revision_number"]),
+                "revision_digest_sha256": _sha256(
+                    _campaign_canonical_bytes(formation_revision)
+                ),
+                "formed_at": formation_revision["formed_at"],
+                "observed_at": decision_at,
+                "candidate_identity_unchanged": True,
+            }
+        ]
 
     # Append a versioned_update entry for every revision in the campaign
     # group, skipping ones already recorded in the prior feed. This way
@@ -1022,9 +1022,7 @@ def _build_candidate_payload(
                 "revision_number": int(rev["revision_number"]),
                 "revision_digest_sha256": rev_digest,
                 "formed_at": rev["formed_at"],
-                "first_observed_at": first_observed_at,
-                "available_at": candidate_available_at,
-                "published_at": candidate_published_at,
+                "observed_at": observation.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "candidate_identity_unchanged": True,
             }
         )
@@ -1043,6 +1041,7 @@ def _build_candidate_payload(
     frozen = {
         "campaign_revision_id": first_qualifying_revision_id,
         "formed_at": formation_revision["formed_at"],
+        "candidate_identity_schema": CANDIDATE_IDENTITY_SCHEMA,
         "policy_id": policy["policy_id"],
         "policy_version": int(policy["policy_version"]),
         "policy_digest_sha256": policy_digest,
@@ -1088,14 +1087,11 @@ def _build_candidate_payload(
     return {
         "candidate_id": candidate_id,
         "campaign_id": campaign["campaign_id"],
-        "final_event_id": campaign["members"][-1]["source_event_id"],
         "first_qualifying_campaign_revision_id": first_qualifying,
         "current_campaign_revision_id": campaign_revision_id,
         "source_formed_at": formation_revision["formed_at"],
         "first_observed_at": first_observed_at,
         "decision_at": decision_at,
-        "available_at": candidate_available_at,
-        "published_at": candidate_published_at,
         "frozen_formation": frozen,
         "formation_micro": {
             "source_print_count": int(formation_micro["source_print_count"]),
@@ -1135,8 +1131,6 @@ def _build_abstention(
     campaign: dict[str, Any],
     *,
     observation: datetime,
-    available: datetime,
-    published: datetime,
     reasons: list[str],
 ) -> dict[str, Any]:
     return {
@@ -1146,8 +1140,6 @@ def _build_abstention(
         "reasons": sorted(set(reasons)),
         "state": "abstain",
         "first_observed_at": observation.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "available_at": available.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "published_at": published.strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
 
 
@@ -1155,8 +1147,6 @@ def _build_degraded(
     campaign: dict[str, Any],
     *,
     observation: datetime,
-    available: datetime,
-    published: datetime,
     prior_candidate: dict[str, Any] | None,
     reasons: list[str],
 ) -> dict[str, Any]:
@@ -1178,8 +1168,6 @@ def _build_degraded(
         "state": "degraded",
         "first_observation_preserved": prior_candidate is not None,
         "decision_preserved": prior_candidate is not None,
-        "available_at": available.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "published_at": published.strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
 
 
@@ -1195,8 +1183,6 @@ def compose_candidate_feed(
     policy: dict[str, Any],
     activation_receipt: dict[str, Any] | None = None,
     observation_clock: str,
-    available_clock: str,
-    published_clock: str,
     prior_feed: dict[str, Any] | None = None,
     source_health: dict[str, Any] | None = None,
     implementation_carrier: str = IMPLEMENTATION_CARRIER_DEFAULT,
@@ -1204,21 +1190,19 @@ def compose_candidate_feed(
     feed_id: str | None = None,
     policy_freeze_at: str | None = None,
 ) -> dict[str, Any]:
-    """Compose an options.alpha_candidate_feed/v1 artifact from caller-supplied
+    """Compose an options.alpha_candidate_feed/v2 artifact from caller-supplied
     inputs.
 
     The composer is **pure**: no network, no filesystem, no ambient clocks, no
     outcome ledger reads. All clocks and receipts must be passed in. The
     returned object validates against the frozen
-    ``options.alpha_candidate_feed/v1`` schema with ``additionalProperties:
+    ``options.alpha_candidate_feed/v2`` schema with ``additionalProperties:
     false`` and finite JSON."""
 
     if not isinstance(campaigns, LedgerSnapshot):
         raise CandidateFeedContractError("campaigns must be a LedgerSnapshot")
     _validate_policy(policy)
-    clocks = _validate_caller_clocks(
-        CallerClocks(observation_clock, available_clock, published_clock)
-    )
+    decision_clock = _validate_decision_clock(observation_clock)
     health = SourceHealth.from_dict(source_health)
     micro_map = _validate_microstructure_map(microstructure_map)
     if policy_freeze_at is None:
@@ -1242,9 +1226,9 @@ def compose_candidate_feed(
 
     # Fence-state classification — caller-supplied clocks do not change the
     # fence; the activation receipt's persisted activation_boundary_at does.
-    if freeze_at > clocks[0]:
+    if freeze_at > decision_clock:
         fence_state = "pre_policy_freeze"
-    elif activation_boundary is None or activation_boundary > clocks[0]:
+    elif activation_boundary is None or activation_boundary > decision_clock:
         fence_state = "post_policy_freeze_pre_activation"
     else:
         fence_state = "post_activation"
@@ -1253,11 +1237,11 @@ def compose_candidate_feed(
     prior = _validate_prior_feed(
         prior_feed,
         policy_digest=policy_digest,
+        policy_freeze_at=policy_freeze_at,
+        activation_boundary_at=activation.get("activation_boundary_at"),
         campaigns=campaigns,
         microstructure_map=micro_map,
     )
-    prior_history = _prior_candidate_history(prior)
-
     campaign_views, poisoned_reasons = _validated_campaign_views(campaigns)
     source_prefix_receipt = _campaign_prefix_receipt(campaigns)
     micro_receipt = _microstructure_receipt(micro_map)
@@ -1272,9 +1256,7 @@ def compose_candidate_feed(
         abstentions.append(
             _build_abstention(
                 poisoned["campaign"],
-                observation=clocks[0],
-                available=clocks[1],
-                published=clocks[2],
+                observation=decision_clock,
                 reasons=poisoned["reasons"],
             )
         )
@@ -1293,47 +1275,42 @@ def compose_candidate_feed(
 
     for cid, revisions in campaigns_by_id.items():
         current = revisions[-1]
-        first_qualifying = next(
-            (
-                row
-                for row in revisions
-                if _revision_is_qualifying(
-                    row,
-                    micro_map,
-                    policy_freeze_at=freeze_at,
-                    activation_boundary=activation_boundary,
-                    observation=clocks[0],
-                )
-            ),
-            None,
-        )
-        if first_qualifying is None:
-            first_qualifying_revision_id = None
-        else:
-            first_qualifying_revision_id = first_qualifying["campaign_revision_id"]
-
         prior_candidate = None
-        if first_qualifying_revision_id is not None:
+        for item in prior.get("candidates", ()) if prior is not None else ():
+            if item.get("campaign_id") == cid:
+                prior_candidate = item
+                break
+
+        if prior_candidate is None:
+            first_qualifying = next(
+                (
+                    row
+                    for row in revisions
+                    if _revision_is_qualifying(
+                        row,
+                        micro_map,
+                        policy_freeze_at=freeze_at,
+                        activation_boundary=activation_boundary,
+                        observation=_utc(row["formed_at"], "campaign.formed_at"),
+                    )
+                ),
+                None,
+            )
+            first_qualifying_revision_id = (
+                first_qualifying["campaign_revision_id"]
+                if first_qualifying is not None
+                else None
+            )
             candidate_id = _candidate_identity(
                 policy["policy_id"],
                 cid,
                 first_qualifying_revision_id,
             )
-            prior_candidate = prior_history.get(candidate_id)
-            if (
-                prior_candidate is not None
-                and prior_candidate["first_qualifying_campaign_revision_id"]
-                != first_qualifying_revision_id
-            ):
-                raise CandidateFeedContractError(
-                    "prior_feed first_qualifying_campaign_revision_id disagrees"
-                )
         else:
-            candidate_id = None
-            for item in prior.get("candidates", ()) if prior is not None else ():
-                if item.get("campaign_id") == cid:
-                    prior_candidate = item
-                    break
+            first_qualifying_revision_id = prior_candidate[
+                "first_qualifying_campaign_revision_id"
+            ]
+            candidate_id = prior_candidate["candidate_id"]
 
         if prior_candidate is not None:
             formation_row_ordinal = _prior_formation_ordinal(
@@ -1349,7 +1326,7 @@ def compose_candidate_feed(
             micro_map,
             policy_freeze_at=freeze_at,
             activation_boundary=activation_boundary,
-            observation=clocks[0],
+            observation=decision_clock,
             source_health=health,
         )
 
@@ -1362,9 +1339,7 @@ def compose_candidate_feed(
                     policy_digest=policy_digest,
                     policy_freeze_at=freeze_at,
                     activation_boundary=activation_boundary,
-                    observation=clocks[0],
-                    available=clocks[1],
-                    published=clocks[2],
+                    observation=decision_clock,
                     candidate_id=candidate_id,
                     campaigns=campaigns,
                     first_qualifying_revision_id=first_qualifying_revision_id,
@@ -1376,16 +1351,11 @@ def compose_candidate_feed(
             )
             continue
 
-        if (
-            "SOURCE_EXPLICITLY_STALE_OR_UNAVAILABLE" in reasons
-            and prior_candidate is not None
-        ):
+        if prior_candidate is not None:
             degraded.append(
                 _build_degraded(
                     current,
-                    observation=clocks[0],
-                    available=clocks[1],
-                    published=clocks[2],
+                    observation=decision_clock,
                     prior_candidate=prior_candidate,
                     reasons=reasons,
                 )
@@ -1394,9 +1364,7 @@ def compose_candidate_feed(
             abstentions.append(
                 _build_abstention(
                     current,
-                    observation=clocks[0],
-                    available=clocks[1],
-                    published=clocks[2],
+                    observation=decision_clock,
                     reasons=reasons,
                 )
             )
@@ -1407,14 +1375,12 @@ def compose_candidate_feed(
                 "policy_digest": policy_digest,
                 "campaigns_prefix": source_prefix_receipt["prefix_sha256"],
                 "micro_digest": micro_receipt["entries_digest_sha256"],
-                "observation": observation_clock,
-                "available": available_clock,
-                "published": published_clock,
+                "decision": observation_clock,
             }
         )
     )
 
-    generated_at = published_clock
+    generated_at = observation_clock
     if feed_id is None:
         feed_id = _feed_id(
             (
@@ -1462,7 +1428,7 @@ def compose_candidate_feed(
             "feed_digest_sha256": _sha256(canonical_bytes(prior)),
             "policy_id": prior["policy"]["policy_id"],
             "policy_digest_sha256": prior["policy"]["policy_digest_sha256"],
-            "published_at": prior["generated_at"],
+            "composed_at": prior["generated_at"],
             "first_observation_preserved": all(
                 isinstance(item, dict) for item in prior.get("candidates", ())
             ),
@@ -1509,12 +1475,10 @@ def compose_candidate_feed(
         "abstentions": abstentions,
         "degraded": degraded,
         "publication_claim": {
-            "claim": "caller_supplied_synthetic_only_no_live_publication",
+            "claim": "source_only_no_publication_effect",
             "claim_reason": (
-                "inactive OA-1C implementation: caller-supplied synthetic receipts; "
-                "no runtime publication, no durable write, no network I/O, no "
-                "ambient clock; composer is inert until owning publisher supplies "
-                "valid activation preconditions and a real activation receipt"
+                "The composition is pure and does not prove local durability, "
+                "upload, consumer publication, or activation."
             ),
         },
         "authority": dict(FALSE_AUTHORITY),
@@ -1524,7 +1488,7 @@ def compose_candidate_feed(
     feed_bytes = canonical_bytes(feed)
     feed["header"]["header_digest_sha256"] = _sha256(feed_bytes)
 
-    _validate_schema(feed, CANDIDATE_FEED_SCHEMA_FILENAME)
+    _validate_schema(feed, CANDIDATE_FEED_V2_SCHEMA_FILENAME)
     return feed
 
 
@@ -1552,12 +1516,82 @@ def summarise(feed: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _expected_publication_receipt_id(payload_digest: str) -> str:
+    return "oacfr_" + hashlib.sha256(
+        b"options.alpha_candidate_feed_publication_receipt/v1|"
+        + payload_digest.encode("ascii")
+    ).hexdigest()[:25]
+
+
+def validate_publication_receipt_binding(
+    *,
+    feed: dict[str, Any],
+    payload: bytes,
+    receipt: dict[str, Any],
+) -> None:
+    """Validate exact local identity and payload binding without IO claims."""
+    _validate_schema(feed, CANDIDATE_FEED_V2_SCHEMA_FILENAME)
+    _validate_schema(receipt, PUBLICATION_RECEIPT_SCHEMA_FILENAME)
+    if payload != canonical_bytes(feed):
+        raise CandidateFeedContractError(
+            "publication receipt payload bytes do not canonicalize to the feed"
+        )
+    payload_digest = _sha256(payload)
+    expected_receipt_id = _expected_publication_receipt_id(payload_digest)
+    if receipt["receipt_id"] != expected_receipt_id:
+        raise CandidateFeedContractError(
+            "publication receipt identity is not derived from the payload hash"
+        )
+    if receipt["feed_id"] != feed["feed_id"]:
+        raise CandidateFeedContractError(
+            "publication receipt feed_id disagrees with payload"
+        )
+    if receipt["payload_sha256"] != payload_digest:
+        raise CandidateFeedContractError(
+            "publication receipt payload hash disagrees with payload"
+        )
+    if receipt["payload_bytes"] != len(payload):
+        raise CandidateFeedContractError(
+            "publication receipt payload size disagrees with payload"
+        )
+    expected_prefix = {
+        "path": feed["source_receipts"]["campaigns"]["path"],
+        "records": feed["source_receipts"]["campaigns"]["records"],
+        "prefix_sha256": feed["source_receipts"]["campaigns"]["prefix_sha256"],
+    }
+    if receipt["campaign_prefix"] != expected_prefix:
+        raise CandidateFeedContractError(
+            "publication receipt campaign prefix disagrees with payload"
+        )
+    if receipt["r2"]["payload_sha256"] != payload_digest:
+        raise CandidateFeedContractError(
+            "publication receipt R2 payload hash disagrees with payload"
+        )
+    feed_candidates = {
+        item["candidate_id"] for item in feed.get("candidates", ())
+    }
+    if set(receipt["candidates"]) != feed_candidates:
+        raise CandidateFeedContractError(
+            "publication receipt candidate map disagrees with payload"
+        )
+    current_receipt_id = receipt["receipt_id"]
+    prior_receipt_id = (
+        receipt["prior_receipt"]["receipt_id"]
+        if receipt["prior_receipt"] is not None
+        else current_receipt_id
+    )
+    for entry in receipt["candidates"].values():
+        if entry["first_receipt_id"] not in {current_receipt_id, prior_receipt_id}:
+            raise CandidateFeedContractError(
+                "publication receipt first receipt identity is not current or prior"
+            )
+
+
 __all__ = [
     "ACTIVATION_PRECONDITIONS",
     "CANDIDATE_FEED_SCHEMA",
     "CANDIDATE_FEED_ACTIVATION_RECEIPT_SCHEMA",
     "CandidateFeedContractError",
-    "CallerClocks",
     "COMPOSER_ID",
     "FALSE_AUTHORITY",
     "MICROSTRUCTURE_SCHEMA",
@@ -1567,5 +1601,6 @@ __all__ = [
     "SourceHealth",
     "canonical_bytes",
     "compose_candidate_feed",
+    "validate_publication_receipt_binding",
     "summarise",
 ]
