@@ -34,7 +34,7 @@ python3 -m unittest -v test_preview_contract
 python3 render_preview.py
 ```
 
-The implementation was tested in the conversation's isolated Linux container. Final result: **49 tests passed**. The initial 42-test run caught one actual bug: geometry with a basis time later than its stated observation was accepted. The boundary was repaired; the discriminator now passes. A further seven tests cover input bounds, future-payload noninspection, immutable output authority and script-data escaping/reproducibility. The generated JavaScript parsed successfully with `node --check`.
+The implementation was tested in the conversation's isolated Linux container. Current result: **55 tests passed**. The initial 42-test run caught one actual bug: geometry with a basis time later than its stated observation was accepted. The boundary was repaired; the discriminator now passes. A further seven tests cover input bounds, future-payload noninspection, immutable output authority and script-data escaping/reproducibility. The generated JavaScript parsed successfully with `node --check`.
 
 These are new preview tests, not a rerun or repaired result for the historical OEV suite. They do not establish native schema/fixture equivalence, scientific replay prefix invariance, independent review or current-base repository integration.
 
@@ -51,3 +51,11 @@ The reference can be inspected as source in `preview.html`. The generator and te
 5. **Real-path acceptance:** reconcile #7963 custody and release debt, then prove the admitted producer → existing gateway/access → machine/UI journey with real source receipts. Authenticated private composition, EN/ZH, no-JavaScript degradation, keyboard/responsive behavior and deployment identity remain acceptance work.
 
 Scientific data admission, preregistration, validation, prospective evidence and consumer promotion are separate later gates. The original report archive is input, not approval to bypass those gates.
+
+## Strategy and causal-reference hardening
+
+The second test-first pass exposed a missing full strategy relation in the synthetic exercise. Strategy-scoped phase, entry, geometry, next-condition and private Plan references now bind the exact strategy owner, ID and version in addition to security/identity epoch/schema/native ID/generation. A security-scoped quote deliberately does not gain fictitious strategy ownership.
+
+Matching generation alone also did not prove that the entry could have read its dependencies. The consumer now withholds a verdict as `DEPENDENCY_NOT_KNOWN_AT_ENTRY` when any bound phase, quote or geometry source became known after the entry's own knowledge clock. This does not mint a replacement verdict. Six added test methods cover these relations; the pre-fix run had seven assertion failures across five methods (including three dependency subcases) and one passing method. The complete repaired suite passes 55/55.
+
+This is author testing, not independent acceptance. The first 49-test receipt remains historical. No native production schema was broadened, no protected market outcome was read, and the previously denied browser navigation was not retried. Hosted test collection and real-source/gateway/browser acceptance remain separate obligations.

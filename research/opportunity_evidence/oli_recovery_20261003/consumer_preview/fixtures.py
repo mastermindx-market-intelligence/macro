@@ -1,13 +1,17 @@
 """Synthetic engineering examples, not market observations or recommendations."""
 from copy import deepcopy
-from preview_contract import EXPECTED_OWNERS, PROFILE
+from preview_contract import EXPECTED_OWNERS, PROFILE, STRATEGY_SCOPED_OWNERS
 
 CUT = "2026-10-02T15:00:00Z"
 
 def reference(name, generation="fixture-generation-1"):
-    return {"owner": EXPECTED_OWNERS.get(name, "portfolio.plan"), "schema": f"fixture.{name}/v1",
-            "native_id": f"fixture:{name}:demo", "generation": generation,
-            "security_id": "fixture:security:demo", "identity_epoch": "fixture-identity-1"}
+    owner = EXPECTED_OWNERS.get(name, "portfolio.plan")
+    result = {"owner": owner, "schema": f"fixture.{name}/v1",
+              "native_id": f"fixture:{name}:demo", "generation": generation,
+              "security_id": "fixture:security:demo", "identity_epoch": "fixture-identity-1"}
+    if owner in STRATEGY_SCOPED_OWNERS:
+        result.update(strategy_owner="prophet.strategy", strategy_id="fixture:strategy:pullback", strategy_version="fixture.v1")
+    return result
 
 def baseline():
     values = {

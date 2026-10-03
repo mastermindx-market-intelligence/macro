@@ -3,18 +3,18 @@
   "files": [
     {
       "path": "README.md",
-      "bytes": 6278,
-      "sha256": "63a9d49836387f7ab592b1083a3f9531cc11b36ac8bcc6fc29f77b09f4a75273"
+      "bytes": 7563,
+      "sha256": "430ec3dc08763bfdd1fd2bb998277df50b46bd3ab286b49bbb992119c0cc3b16"
     },
     {
       "path": "preview_contract.py",
-      "bytes": 11684,
-      "sha256": "501470b27a016407ae700c9bf627712116cc26c107eacf49eb93e6a91022d32a"
+      "bytes": 12505,
+      "sha256": "7cda7cfea3a79b827234a1dd7cfa9ddb251c777cb38587da85075819a61e00b3"
     },
     {
       "path": "fixtures.py",
-      "bytes": 4709,
-      "sha256": "81d86349d0d11288eb565b183f7f2401e55a69805e1b791b0e6e52aad7548c51"
+      "bytes": 4944,
+      "sha256": "febfc663fe5f09acffd70daffae95cd3cc95a880c21552862570f8b40ff832e0"
     },
     {
       "path": "render_preview.py",
@@ -23,8 +23,8 @@
     },
     {
       "path": "test_preview_contract.py",
-      "bytes": 13179,
-      "sha256": "9b83acdccda47b0be433063f54ed1addd421fca3f08a22ecc19139a1fbd87a56"
+      "bytes": 14931,
+      "sha256": "210e774866ccc274f517dcc75878649d0a20c4d9138a86b5fa5ff46d401539c3"
     },
     {
       "path": "preview_template.html",
@@ -33,13 +33,13 @@
     },
     {
       "path": "preview.html",
-      "bytes": 126684,
-      "sha256": "a843a05ff4f1b89f41e8f4e45b14bd2333e874c34d28535912122525f03dc1c1"
+      "bytes": 139908,
+      "sha256": "45382252ce158aab0778190ca1fbba22f11305c06f4c887db6fa632911723a6d"
     },
     {
       "path": "preview_views.json",
-      "bytes": 152096,
-      "sha256": "e4f99bfbb11ed29531d5b832b30a48a2140d695ca306ccef71f303f172f59844"
+      "bytes": 169508,
+      "sha256": "6a71b42e616d1345575fe002f32c0eb4edc206ce20d584affb69a4c735cc5d51"
     },
     {
       "path": "browser_verify.py",
@@ -48,8 +48,8 @@
     },
     {
       "path": "verification_receipt.json",
-      "bytes": 846,
-      "sha256": "3ad043cbb2c416ed8b534dceaf58a830e7e7f59d6e78b07da21988f7e836f347"
+      "bytes": 1455,
+      "sha256": "eb001304e1ba4fff2fe6ed55d03286cca6e73a9a493ddf119acbb2c519cef273"
     }
   ]
 }

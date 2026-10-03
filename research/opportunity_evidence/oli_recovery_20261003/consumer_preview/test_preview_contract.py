@@ -183,4 +183,31 @@ class RendererBoundaryTests(unittest.TestCase):
         self.assertEqual(decoded['attack']['public']['sources']['support']['display_value']['text'],payload)
         self.assertEqual(decoded,views)
 
+class StrategyAndCausalReferenceTests(unittest.TestCase):
+    def test_same_security_phase_from_another_strategy_is_rejected(self):
+        b=baseline();b['strategy']['id']='fixture:strategy:breakout'
+        with self.assertRaisesRegex(PreviewContractError,'STRATEGY_REFERENCE_MISMATCH'):
+            build_view(b)
+    def test_same_strategy_id_with_new_version_is_not_the_same_strategy(self):
+        b=baseline();b['strategy']['version']='fixture.v2'
+        with self.assertRaisesRegex(PreviewContractError,'STRATEGY_REFERENCE_MISMATCH'):
+            build_view(b)
+    def test_strategy_owner_is_part_of_the_relation(self):
+        b=baseline();b['strategy']['owner']='fixture.other_owner'
+        with self.assertRaisesRegex(PreviewContractError,'STRATEGY_REFERENCE_MISMATCH'):
+            build_view(b)
+    def test_private_plan_is_not_joined_by_security_alone(self):
+        p=plan();p['ref']['strategy_id']='fixture:strategy:another'
+        with self.assertRaisesRegex(PreviewContractError,'STRATEGY_REFERENCE_MISMATCH'):
+            build_view(baseline(),audience='private',viewer_id='fixture-viewer',private_plan=p)
+    def test_dependency_known_after_entry_cannot_back_an_earlier_verdict(self):
+        for name in ('phase','quote','geometry'):
+            with self.subTest(source=name):
+                b=baseline();b['sources'][name]['known_at']='2026-10-02T14:59:30Z'
+                v=build_view(b)
+                self.assertEqual(v['sources']['entry']['display_status'],'DEPENDENCY_NOT_KNOWN_AT_ENTRY')
+                self.assertIsNone(v['sources']['entry']['display_value'])
+    def test_security_scoped_quote_does_not_invent_strategy_ownership(self):
+        self.assertNotIn('strategy_id',baseline()['sources']['quote']['ref'])
+
 if __name__=='__main__':unittest.main(verbosity=2)

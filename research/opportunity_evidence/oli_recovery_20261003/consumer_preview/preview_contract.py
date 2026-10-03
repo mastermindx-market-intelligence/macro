@@ -27,6 +27,9 @@ EXPECTED_OWNERS = {
 AUTHORITY = dict.fromkeys(("can_originate_signal", "can_rank", "can_gate", "can_size", "can_execute", "can_mutate_plan"), False)
 ABSENCES = {"UNAVAILABLE", "NOT_COVERED", "RIGHTS_BLOCKED", "TRANSPORT_UNAVAILABLE"}
 BASE_REF_KEYS = {"owner", "schema", "native_id", "generation", "security_id", "identity_epoch"}
+STRATEGY_REF_KEYS = {"strategy_owner", "strategy_id", "strategy_version"}
+STRATEGY_SCOPED_OWNERS = {"prophet.candidate_state", "prophet.entry_availability",
+                          "prophet.strategy_geometry", "portfolio.plan"}
 
 
 class PreviewContractError(ValueError):
@@ -70,27 +73,30 @@ def _price(value: Any) -> str:
     return value
 
 
-def _ref(value: Any, subject: dict, owner: str | None = None) -> dict:
-    _keys(value, BASE_REF_KEYS)
-    for key in BASE_REF_KEYS:
+def _ref(value: Any, subject: dict, owner: str, strategy: dict) -> dict:
+    keys = BASE_REF_KEYS | (STRATEGY_REF_KEYS if owner in STRATEGY_SCOPED_OWNERS else set())
+    _keys(value, keys)
+    for key in keys:
         _text(value[key], key, 240)
     _require(value["schema"].startswith("fixture."), "NATIVE_SCHEMA_NOT_ADMITTED")
     _require(value["native_id"].startswith("fixture:"), "NATIVE_ID_NOT_ADMITTED")
     _require(value["security_id"] == subject["security_id"], "SUBJECT_MISMATCH")
     _require(value["identity_epoch"] == subject["identity_epoch"], "IDENTITY_EPOCH_MISMATCH")
-    if owner:
-        _require(value["owner"] == owner, "OWNER_ROLE_MISMATCH")
+    _require(value["owner"] == owner, "OWNER_ROLE_MISMATCH")
+    if owner in STRATEGY_SCOPED_OWNERS:
+        _require(all(value["strategy_" + key] == strategy[key] for key in ("owner", "id", "version")),
+                 "STRATEGY_REFERENCE_MISMATCH")
     return value
 
 
-def _source(name: str, source: Any, subject: dict, cut: datetime) -> dict:
+def _source(name: str, source: Any, subject: dict, strategy: dict, cut: datetime) -> dict:
     _keys(source, {"ref", "status", "observed_at", "known_at", "valid_until", "value", "correction_of"})
-    ref = _ref(source["ref"], subject, EXPECTED_OWNERS[name])
+    ref = _ref(source["ref"], subject, EXPECTED_OWNERS[name], strategy)
     _text(source["status"], "status", 80)
     _require(source["status"] in ABSENCES | {"AVAILABLE"}, "UNKNOWN_AVAILABILITY")
     prior = source["correction_of"]
     if prior is not None:
-        _ref(prior, subject, EXPECTED_OWNERS[name])
+        _ref(prior, subject, EXPECTED_OWNERS[name], strategy)
         _require(prior["schema"] == ref["schema"] and prior["native_id"] == ref["native_id"]
                  and prior["generation"] != ref["generation"], "INVALID_CORRECTION_LINEAGE")
     clocks = (source["observed_at"], source["known_at"], source["valid_until"])
@@ -109,7 +115,7 @@ def _source(name: str, source: Any, subject: dict, cut: datetime) -> dict:
         status = "AVAILABLE"
     if status == "NOT_YET_KNOWN":
         return {**copy.deepcopy(source), "display_status": status, "display_value": None}
-    _validate_value(name, source["value"], subject, cut)
+    _validate_value(name, source["value"], subject, strategy, cut)
     if name == "geometry":
         _require(_clock(source["value"]["basis_at"], "geometry.basis_at") <= observed,
                  "GEOMETRY_BASIS_AFTER_OBSERVATION")
@@ -117,7 +123,7 @@ def _source(name: str, source: Any, subject: dict, cut: datetime) -> dict:
             "display_value": copy.deepcopy(source["value"]) if status == "AVAILABLE" else None}
 
 
-def _validate_value(name: str, value: Any, subject: dict, cut: datetime) -> None:
+def _validate_value(name: str, value: Any, subject: dict, strategy: dict, cut: datetime) -> None:
     if name == "phase":
         _keys(value, {"native_state", "reason"})
         _text(value["native_state"], "native_state", 80)
@@ -127,7 +133,7 @@ def _validate_value(name: str, value: Any, subject: dict, cut: datetime) -> None
         _text(value["native_verdict"], "native_verdict", 80)
         _text(value["reason"], "reason")
         for dep in ("phase", "quote", "geometry"):
-            _ref(value[dep + "_ref"], subject, EXPECTED_OWNERS[dep])
+            _ref(value[dep + "_ref"], subject, EXPECTED_OWNERS[dep], strategy)
     elif name == "geometry":
         _keys(value, {"trigger", "invalidation", "currency", "price_basis", "basis_at", "opportunity_expires_at"})
         for key in ("trigger", "invalidation"):
@@ -168,7 +174,7 @@ def build_view(bundle: dict, *, audience: str = "public", viewer_id: str | None 
     _require(strategy["id"].startswith("fixture:"), "NATIVE_STRATEGY_NOT_ADMITTED")
     cut = _clock(bundle["decision_at"], "decision_at")
     _keys(bundle["sources"], set(SOURCE_NAMES))
-    source_views = {name: _source(name, bundle["sources"][name], subject, cut) for name in SOURCE_NAMES}
+    source_views = {name: _source(name, bundle["sources"][name], subject, strategy, cut) for name in SOURCE_NAMES}
     entry = source_views["entry"]
     if entry["display_status"] == "AVAILABLE":
         value = entry["display_value"]
@@ -180,6 +186,10 @@ def build_view(bundle: dict, *, audience: str = "public", viewer_id: str | None 
                 break
             if value[dep + "_ref"] != other["ref"]:
                 entry["display_status"] = "GENERATION_MISMATCH"
+                entry["display_value"] = None
+                break
+            if _clock(other["known_at"], dep + ".known_at") > _clock(entry["known_at"], "entry.known_at"):
+                entry["display_status"] = "DEPENDENCY_NOT_KNOWN_AT_ENTRY"
                 entry["display_value"] = None
                 break
         if entry["display_value"] is not None:
@@ -201,7 +211,7 @@ def build_view(bundle: dict, *, audience: str = "public", viewer_id: str | None 
             _keys(private_plan, {"synthetic", "viewer_id", "ref", "native_state", "has_position", "known_at", "valid_until"})
             _require(private_plan["synthetic"] is True, "SYNTHETIC_ONLY")
             _require(private_plan["viewer_id"] == viewer_id, "PRIVATE_ACCOUNT_MISMATCH")
-            _ref(private_plan["ref"], subject, "portfolio.plan")
+            _ref(private_plan["ref"], subject, "portfolio.plan", strategy)
             _text(private_plan["native_state"], "plan.native_state", 80)
             _require(private_plan["has_position"] is None or type(private_plan["has_position"]) is bool, "INVALID_POSITION_FACT")
             known = _clock(private_plan["known_at"], "plan.known_at")

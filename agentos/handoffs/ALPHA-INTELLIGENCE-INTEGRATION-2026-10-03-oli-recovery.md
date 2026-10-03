@@ -61,7 +61,7 @@ unresolved:
   - Native OEV/Market OS version, entry binding, first-forming denominator and prediction-landmark ownership still require adoption.
   - Incumbent W1/W2/source-custody and data gates remain on Macro 7107/7094; preserve 7963 and Terminal issue 784.
 next_actions:
-  - Repair this handoff's seven schema findings without modifying the validator; obtain the new exact-head hosted receipt.
+  - Consume the exact-head CI and requested independent review for the strategy/causal-reference repair.
   - Consume the existing requested review; resolve native-owner adoption and custody before real-source P0 integration.
   - Prove the admitted producer/gateway/access/UI journey before any scientific or production acceptance.
 do_not_redo:
@@ -155,3 +155,13 @@ Exact next action: independent review of this candidate, then existing-owner nat
 Exact-head fences run `37149055904`, job `111278869133`, failed at the Agent OS record contract: five missing frontmatter fields (`unresolved`, `next_actions`, `do_not_redo`, `danger_areas`, `unverified`) and two unsupported values (`model: astra`, `ended_because: checkpoint`). All seven are reproduced by the unchanged `scripts/agentos.py::check_handoff` function at source head `616ec5a353448c64594196b1ae49831a16fd52b8`.
 
 The saved record now supplies the actual unfinished obligations and uses the legacy `sol` Web-CEO record category plus `ci_handoff`. This does not assert that an Astra session switched models: the current Chairman-selected role remains Astra CEO, and provider-served model identity is not independently attested. No enum, validator, workflow, required check or authority gate is changed. The direct record validator returns zero findings for the corrected record; whole-store/new-head hosted evidence remains to be consumed.
+
+## Current verified frontier — strategy/causal reference repair
+
+The new consumer hardening is ready for exact-head review: 55/55 local unit tests and generated JavaScript parse PASS. It binds strategy-scoped phase/entry/geometry/next-condition/private Plan facts to strategy owner/ID/version without inventing strategy ownership for a security-scoped quote. Entry dependencies known after the owner-verdict clock withhold the verdict instead of laundering it through a matching generation. Six new test methods first produced seven assertion failures across five methods and one passing method; all pass after correction. The prior 49-test receipt remains historical, not the current count.
+
+Handoff record repair `ab6b7e3c3e7d695bb16297f6312e7c60ed5b8e99` passed hosted fences run `37149443134`; CI `37149443376` was in progress at observation. These results do not certify this newer source head. The record validator and all required gates remain unchanged.
+
+Review request to `mastermindx-2` remains pending on PR 8333; no reviewer START or acceptance is claimed. Native Market OS coordination was delivered on the incumbent [7963 comment 5972919649](https://github.com/mastermindx-market-intelligence/macro/pull/7963#issuecomment-5972919649); no source custody or native-owner adoption followed merely from delivery. Recovery issue 8328 is assigned to the current account `mastermidx4` as a GitHub projection, not a runtime lease.
+
+Original archive bytes remain unchanged. Browser/source-test refusal boundaries remain frozen; this new fixture-only unit did not rerun them. Full source adoption, native real-path proof and scientific/data gates remain pending. No external worker, scheduled wake, deployment or production effect.
