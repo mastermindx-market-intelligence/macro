@@ -493,11 +493,31 @@ def _fmt(v, *, signed=False, scale=1.) -> str:
     return text.rstrip('0').rstrip('.')
 
 
-def render_context(ctx: dict, char_budget: int = 1800, *, lang: str = 'en') -> str:
-    """Bounded complete rows, with limits/omissions retained rather than clipped."""
+# Priority order for forced-budget omission, MOST-DROPPABLE first.
+# Stale/older/cheaper dimensions lose their row first; rows that survive keep
+# their own date stamp. When the brief fits without dropping anything, this
+# tuple is inert \u2014 `kept` retains its natural add() order and no row is hidden.
+_RENDER_PRIORITY: tuple[str, ...] = (
+    'options_cor3m', 'options_cor1m', 'options_dspx', 'options_vix',
+    'earnings_revisions', 'credit', 'style',
+    'liquidity', 'nominal_10y', 'real_rates', 'dispersion',
+    'participation', 'membership', 'leadership_damage', 'macro',
+)
+
+
+def render_context(ctx: dict, char_budget: int = 2000, *, lang: str = 'en') -> str:
+    """Bounded complete rows, with limits/omissions retained rather than clipped.
+
+    Default raised from 1800 to 2000 (still <= 2200) so the O(distinct-dates)
+    age header never crowds a valid axis out of the brief on a normal morning.
+    Worst measured length at the K2 four-date matrix (T+0/T+2/T+5/T+6) is
+    ~1938 chars; the +62-char headroom is reserved for the corner case where
+    one more distinct as-of date enters the header.
+    """
     dims = _dict(_dict(ctx).get('dimensions'))
     zh = lang == 'zh'
     rows: list[tuple[str, str]] = []
+    date_ages: dict[str, int | None] = {}
     unavailable: dict[str, list[str]] = {}
     reasons = {
         'missing': 'missing', 'future_dated': 'future date',
@@ -516,20 +536,28 @@ def render_context(ctx: dict, char_budget: int = 1800, *, lang: str = 'en') -> s
                 reason = 'missing measurement (owner stale)'
             unavailable.setdefault(reason, []).append(key.replace('_', ' '))
             return
-        stamp = _dict(d.get('source')).get('as_of') or '?'
+        src = _dict(d.get('source'))
+        stamp = src.get('as_of') or '?'
+        # Track distinct as-of dates for the O(distinct-dates) header; record
+        # the youngest age per date so the header can name it once.
+        if stamp != '?':
+            age = src.get('age_calendar_days')
+            prev = date_ages.get(stamp)
+            if prev is None or (isinstance(age, int) and (not isinstance(prev, int) or age < prev)):
+                date_ages[stamp] = age
+        # Per-row suffix no longer carries the calendar-day count \u2014 that cost
+        # grew O(rows) and pushed valid axes out of the 1800-char brief at T+1+.
+        # The header below names each date's age once.
         suffix = '; stale/last-known' if d.get('status') == 'stale' else ''
-        age = _dict(d.get('source')).get('age_calendar_days')
-        if not suffix and isinstance(age, int) and age > 1:
-            suffix = f'; {age} calendar days old'
         if d.get('issues'):
             suffix += '; partial input'
-        if _dict(d.get('source')).get('owner_degraded') is True:
+        if src.get('owner_degraded') is True:
             qualifications = [DEGRADATION_REASONS[code.removeprefix('owner_degraded:')]
                 for code in d.get('issues', []) if isinstance(code, str)
                 and code.startswith('owner_degraded:')
                 and code.removeprefix('owner_degraded:') in DEGRADATION_REASONS]
             suffix += '; degraded: ' + ', '.join(qualifications or ['owner-reported limitation'])
-        clock = 'observed' if _dict(d.get('source')).get('clock_semantics') == 'source_observation_date' else 'snapshot'
+        clock = 'observed' if src.get('clock_semantics') == 'source_observation_date' else 'snapshot'
         rows.append((key, f'{label} [{clock} {stamp}{suffix}]: {text}'))
 
     def v(key):
@@ -544,8 +572,12 @@ def render_context(ctx: dict, char_budget: int = 1800, *, lang: str = 'en') -> s
         f"AI {_fmt(x.get('ai_above_50dma_pct'))}% vs others {_fmt(x.get('other_above_50dma_pct'))}% above 50DMA; "
         f"cohorts {x.get('ai_cohort_count')}/{x.get('other_cohort_count')}; indicator denominators unreported")
     x = v('dispersion')
+    # `average_correlation` is a variance-ratio proxy (dispersion.py), not a
+    # measured mean pairwise correlation. Label it so consumers do not read it
+    # as a calibrated average.
+    corr_label = 'correlation proxy (variance ratio)' if not zh else '\u76f8\u5173\u6027\u4ee3\u7406\uff08\u65b9\u5dee\u6bd4\uff09'
     add('dispersion', 'Realized dispersion' if not zh else '\u5b9e\u73b0\u79bb\u6563\u5ea6',
-        f"percentile {_fmt(x.get('percentile_0_1'), scale=100)}/100; mean correlation {_fmt(x.get('average_correlation'))}")
+        f"percentile {_fmt(x.get('percentile_0_1'), scale=100)}/100; {corr_label} {_fmt(x.get('average_correlation'))}")
     for key, label in (('options_vix', 'VIX implied index vol'), ('options_dspx', 'DSPX implied dispersion'),
                        ('options_cor1m', 'COR1M implied correlation'),
                        ('options_cor3m', 'COR3M implied correlation')):
@@ -582,17 +614,45 @@ def render_context(ctx: dict, char_budget: int = 1800, *, lang: str = 'en') -> s
     add('nominal_10y', 'Nominal 10Y', f"{_fmt(x.get('level_pct'))}%; 5 weekday-grid change "
         f"{_fmt(x.get('change_5_grid_bp'), signed=True)}bp; acceleration {_fmt(x.get('acceleration_bp'), signed=True)}bp")
     header = 'REGIME DETAIL [US; source-dated context, not a forecast]:'
+    # Build the per-date age header once. Cost = O(distinct dates) instead of
+    # O(rows). Sort newest-first so the freshest stamp is the obvious anchor.
+    if date_ages:
+        age_for: dict[str, str]
+        age_for = {}
+        for stamp, age in date_ages.items():
+            if isinstance(age, int):
+                if age == 0:
+                    age_for[stamp] = 'today' if not zh else '\u4eca\u65e5'
+                elif age == 1:
+                    age_for[stamp] = '1 day old' if not zh else '1 \u65e5\u65e7'
+                else:
+                    age_for[stamp] = (f'{age} days old'
+                                       if not zh else f'{age} \u65e5\u65e7')
+            else:
+                age_for[stamp] = 'age unknown' if not zh else '\u5e74\u9f84\u4e0d\u8be6'
+        ordered = sorted(date_ages.keys(), reverse=True)
+        header_label = 'As-of dates' if not zh else '\u6570\u636e\u65e5\u671f'
+        dates_line = f'{header_label}: ' + '; '.join(
+            f'{s} ({age_for[s]})' for s in ordered) + '.'
+    else:
+        dates_line = ''
     caveat = 'Limits: no measured capital transfer, valuation-implied return or calibrated transition forecast. Different dates/scopes are not independent votes.'
     unavailable_text = ('Unavailable evidence: ' + '; '.join(
         reason + ': ' + ', '.join(names) for reason, names in unavailable.items()
     ) + '.') if unavailable else ''
     budget = max(0, int(char_budget))
     kept = list(rows)
+    # Apply the most-droppable-first priority: least-droppable goes to the
+    # front, most-droppable to the back so pop() removes it first when the
+    # budget tightens. Unlisted keys keep their natural insertion order at the
+    # tail (least-droppable).
+    pri = {k: i for i, k in enumerate(_RENDER_PRIORITY)}
+    kept.sort(key=lambda kv: -pri.get(kv[0], -1))
     omitted: list[str] = []
     while True:
         tail = 'Omitted from compact brief: ' + ', '.join(omitted) + '.' if omitted else ''
         text = '\n'.join(part for part in (
-            header, '\n'.join(t for _, t in kept), unavailable_text, caveat, tail,
+            header, dates_line, '\n'.join(t for _, t in kept), unavailable_text, caveat, tail,
         ) if part)
         if len(text) <= budget:
             return text
