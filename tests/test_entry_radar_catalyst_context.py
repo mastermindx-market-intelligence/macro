@@ -1730,7 +1730,7 @@ def test_evidence_clock_ordering_refusals(factory, needle):
 
 def test_context_direct_construction_refuses_decision_after_generated():
     base = _assess()
-    with pytest.raises(CatalystContextError):
+    with pytest.raises(CatalystContextError, match="decision_at is after generated_at"):
         CatalystContext(
             ticker=base.ticker,
             radar_episode_id=base.radar_episode_id,
@@ -1750,7 +1750,7 @@ def test_context_direct_construction_refuses_clock_known_after_generated():
         base.evidence_clocks[0],
         known_at=base.generated_at + timedelta(seconds=1),
     )
-    with pytest.raises(CatalystContextError):
+    with pytest.raises(CatalystContextError, match="known_at is after generated_at"):
         CatalystContext(
             ticker=base.ticker,
             radar_episode_id=base.radar_episode_id,
@@ -1762,6 +1762,287 @@ def test_context_direct_construction_refuses_clock_known_after_generated():
             source_reads=base.source_reads,
             blocking_evidence_refs=base.blocking_evidence_refs,
             evidence_clocks=(bad_clock,),
+        )
+
+
+def test_aftermath_row_with_unknown_disposition_is_material():
+    past_relevant = T0 - timedelta(seconds=1)
+    got = _assess(
+        evidence=[
+            _event(
+                disposition="unknown",
+                known_at=past_relevant,
+                relevant_until=past_relevant,
+            )
+        ],
+    )
+    assert got.context_state == "event_aftermath_observed"
+    assert got.aftermath_evidence_refs == ("event:evt-1",)
+
+
+def test_aftermath_outranks_an_active_soft_event():
+    past_relevant = T0 - timedelta(seconds=1)
+    got = _assess(
+        evidence=[
+            _event(
+                disposition="blocking",
+                known_at=past_relevant,
+                relevant_until=past_relevant,
+                ref="event:aftermath",
+                native_id="aftermath",
+            ),
+            _event(
+                disposition="soft",
+                relevant_until=T0,
+                ref="event:soft",
+                native_id="soft",
+            ),
+        ],
+    )
+    assert got.context_state == "event_aftermath_observed"
+
+
+def test_late_contradiction_requires_the_evidence_owner_read():
+    late_known = T0 + timedelta(minutes=5)
+    late_ev = _event(
+        known_at=late_known,
+        relevant_until=late_known,
+        ref="event:late",
+        owner="owner_a",
+        source_available_at=T0,
+    )
+    generated = late_known
+    read_other = _read(
+        source_id="owner_b",
+        observed_at=T0,
+        fresh_until=generated,
+        source_asof=T0,
+    )
+    got_other = _assess(
+        decision_at=T0,
+        generated_at=generated,
+        required_sources=["owner_b"],
+        source_reads=[read_other],
+        evidence=[late_ev],
+    )
+    assert got_other.late_contradiction_refs == ()
+
+    read_owner = _read(
+        source_id="owner_a",
+        observed_at=T0,
+        fresh_until=generated,
+        source_asof=T0,
+    )
+    got_owner = _assess(
+        decision_at=T0,
+        generated_at=generated,
+        required_sources=["owner_a"],
+        source_reads=[read_owner],
+        evidence=[late_ev],
+    )
+    assert got_owner.late_contradiction_refs == ("event:late",)
+
+
+def test_late_contradiction_requires_a_usable_owner_read():
+    late_known = T0 + timedelta(minutes=5)
+    late_ev = _event(
+        known_at=late_known,
+        relevant_until=late_known,
+        ref="event:late",
+        owner="owner_a",
+        source_available_at=T0,
+    )
+    generated = late_known
+    stale_read = _read(
+        source_id="owner_a",
+        observed_at=T0,
+        fresh_until=generated,
+        source_asof=T0 - timedelta(seconds=DEFAULT_MAX_SOURCE_STALENESS_SECONDS + 1),
+    )
+    got = _assess(
+        decision_at=T0,
+        generated_at=generated,
+        required_sources=["owner_a"],
+        source_reads=[stale_read],
+        evidence=[late_ev],
+    )
+    assert got.late_contradiction_refs == ()
+
+
+def test_late_contradiction_includes_equal_source_clock():
+    late_known = T0 + timedelta(minutes=5)
+    asof = T0
+    late_ev = _event(
+        known_at=late_known,
+        relevant_until=late_known,
+        ref="event:late",
+        owner="owner_a",
+        source_available_at=asof,
+    )
+    generated = late_known
+    read_owner = _read(
+        source_id="owner_a",
+        observed_at=T0,
+        fresh_until=generated,
+        source_asof=asof,
+    )
+    got = _assess(
+        decision_at=T0,
+        generated_at=generated,
+        required_sources=["owner_a"],
+        source_reads=[read_owner],
+        evidence=[late_ev],
+    )
+    assert got.late_contradiction_refs == ("event:late",)
+
+
+def test_context_refuses_late_contradiction_ref_outside_late_refs():
+    base = _assess(evidence=[_event(relevant_until=T0)])
+    with pytest.raises(CatalystContextError, match="subset of late_evidence_refs"):
+        CatalystContext(
+            ticker=base.ticker,
+            radar_episode_id=base.radar_episode_id,
+            decision_at=base.decision_at,
+            generated_at=base.generated_at,
+            context_state=base.context_state,
+            coverage_complete=base.coverage_complete,
+            required_sources=base.required_sources,
+            source_reads=base.source_reads,
+            blocking_evidence_refs=base.blocking_evidence_refs,
+            late_contradiction_refs=("event:evt-1",),
+            evidence_clocks=base.evidence_clocks,
+        )
+
+
+def test_schema_refuses_max_staleness_above_900():
+    payload = _assess().to_dict()
+    payload["source_reads"][0]["max_staleness_seconds"] = 901
+    assert _schema_messages(payload)
+
+
+def test_schema_refuses_aftermath_state_with_incomplete_coverage_or_active_blocking():
+    past_relevant = T0 - timedelta(seconds=1)
+    ctx = _assess(
+        evidence=[
+            _event(
+                disposition="blocking",
+                known_at=past_relevant,
+                relevant_until=past_relevant,
+            )
+        ],
+    )
+    assert ctx.context_state == "event_aftermath_observed"
+    payload = ctx.to_dict()
+
+    incomplete = copy.deepcopy(payload)
+    incomplete["coverage_complete"] = False
+    assert _schema_messages(incomplete)
+
+    with_blocking = copy.deepcopy(payload)
+    with_blocking["blocking_evidence_refs"] = ["event:evt-1"]
+    assert _schema_messages(with_blocking)
+
+    with_unknown = copy.deepcopy(payload)
+    with_unknown["unknown_evidence_refs"] = ["event:evt-1"]
+    assert _schema_messages(with_unknown)
+
+
+@pytest.mark.parametrize(
+    "disposition,filed_as",
+    [
+        ("blocking", "nonblocking"),
+        ("soft", "nonblocking"),
+        ("unknown", "nonblocking"),
+        ("nonblocking", "blocking"),
+    ],
+)
+def test_context_refuses_active_blocking_clock_filed_as_nonblocking(disposition, filed_as):
+    base = _assess(evidence=[_event(disposition=disposition, relevant_until=T0)])
+    ref = base.evidence_clocks[0].evidence_ref
+    group_fields = {
+        "blocking": "blocking_evidence_refs",
+        "soft": "soft_evidence_refs",
+        "unknown": "unknown_evidence_refs",
+        "nonblocking": "nonblocking_evidence_refs",
+    }
+    wrong_group = group_fields[filed_as]
+    kwargs = {
+        "ticker": base.ticker,
+        "radar_episode_id": base.radar_episode_id,
+        "decision_at": base.decision_at,
+        "generated_at": base.generated_at,
+        "context_state": "no_blocking_event_observed",
+        "coverage_complete": base.coverage_complete,
+        "required_sources": base.required_sources,
+        "source_reads": base.source_reads,
+        "evidence_clocks": base.evidence_clocks,
+    }
+    for name in group_fields.values():
+        kwargs[name] = ()
+    kwargs[wrong_group] = (ref,)
+    with pytest.raises(CatalystContextError):
+        CatalystContext(**kwargs)
+
+
+def test_context_refuses_a_ref_listed_in_two_groups():
+    base = _assess(evidence=[_event(relevant_until=T0)])
+    ref = base.blocking_evidence_refs[0]
+    with pytest.raises(CatalystContextError):
+        CatalystContext(
+            ticker=base.ticker,
+            radar_episode_id=base.radar_episode_id,
+            decision_at=base.decision_at,
+            generated_at=base.generated_at,
+            context_state=base.context_state,
+            coverage_complete=base.coverage_complete,
+            required_sources=base.required_sources,
+            source_reads=base.source_reads,
+            blocking_evidence_refs=(ref,),
+            aftermath_evidence_refs=(ref,),
+            evidence_clocks=base.evidence_clocks,
+        )
+
+
+def test_staleness_override_below_one_is_refused(monkeypatch):
+    from engine.entry_radar import catalyst_context as cc
+
+    for bad in (0, -5, True, 1.5):
+        monkeypatch.setattr(cc, "SOURCE_MAX_STALENESS_SECONDS", {"x": bad})
+        with pytest.raises(CatalystContextError):
+            max_source_staleness_seconds("x")
+
+    monkeypatch.setattr(cc, "SOURCE_MAX_STALENESS_SECONDS", {"x": 60})
+    assert max_source_staleness_seconds("x") == 60
+
+    monkeypatch.setattr(cc, "SOURCE_MAX_STALENESS_SECONDS", {"x": 5000})
+    assert max_source_staleness_seconds("x") == 900
+
+
+def test_context_direct_construction_refuses_none_clocks_and_none_reads():
+    base = _assess()
+    with pytest.raises(CatalystContextError):
+        CatalystContext(
+            ticker=base.ticker,
+            radar_episode_id=base.radar_episode_id,
+            decision_at=base.decision_at,
+            generated_at=base.generated_at,
+            context_state=base.context_state,
+            coverage_complete=base.coverage_complete,
+            required_sources=base.required_sources,
+            source_reads=None,
+            evidence_clocks=base.evidence_clocks,
+        )
+    with pytest.raises(CatalystContextError):
+        CatalystContext(
+            ticker=base.ticker,
+            radar_episode_id=base.radar_episode_id,
+            decision_at=base.decision_at,
+            generated_at=base.generated_at,
+            context_state=base.context_state,
+            coverage_complete=base.coverage_complete,
+            required_sources=base.required_sources,
+            source_reads=base.source_reads,
+            evidence_clocks=None,
         )
 
 

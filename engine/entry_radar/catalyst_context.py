@@ -46,8 +46,14 @@ SOURCE_MAX_STALENESS_SECONDS: Mapping[str, int] = MappingProxyType({})
 
 
 def max_source_staleness_seconds(source_id: str) -> int:
-    override = SOURCE_MAX_STALENESS_SECONDS.get(source_id, DEFAULT_MAX_SOURCE_STALENESS_SECONDS)
-    return min(DEFAULT_MAX_SOURCE_STALENESS_SECONDS, override)
+    if source_id in SOURCE_MAX_STALENESS_SECONDS:
+        override = SOURCE_MAX_STALENESS_SECONDS[source_id]
+        if isinstance(override, bool) or not isinstance(override, int) or override < 1:
+            raise CatalystContextError(
+                f"staleness override for {source_id!r} must be an integer >= 1"
+            )
+        return min(DEFAULT_MAX_SOURCE_STALENESS_SECONDS, override)
+    return DEFAULT_MAX_SOURCE_STALENESS_SECONDS
 
 MAX_ID_CHARS = 256
 MAX_DETAIL_CHARS = 512
@@ -55,6 +61,16 @@ MAX_REQUIRED_SOURCES = 32
 MAX_SOURCE_READS = 32
 MAX_EVIDENCE = 256
 EVIDENCE_TIMINGS = frozenset({"active", "late", "aftermath", "expired"})
+
+_EVIDENCE_REF_GROUP_NAMES = (
+    "blocking_evidence_refs",
+    "soft_evidence_refs",
+    "unknown_evidence_refs",
+    "nonblocking_evidence_refs",
+    "late_evidence_refs",
+    "expired_evidence_refs",
+    "aftermath_evidence_refs",
+)
 
 
 class CatalystContextError(ValueError):
@@ -382,6 +398,21 @@ class CatalystEvidenceClock:
         }
 
 
+def _clock_home_ref_group(clock: CatalystEvidenceClock) -> str:
+    if clock.timing == "late":
+        return "late_evidence_refs"
+    if clock.timing == "expired":
+        return "expired_evidence_refs"
+    if clock.timing == "aftermath":
+        return "aftermath_evidence_refs"
+    return {
+        "blocking": "blocking_evidence_refs",
+        "soft": "soft_evidence_refs",
+        "unknown": "unknown_evidence_refs",
+        "nonblocking": "nonblocking_evidence_refs",
+    }[clock.owner_disposition]
+
+
 @dataclass(frozen=True, slots=True)
 class CatalystContext:
     """Point-in-time catalyst context attached to an owner-issued Radar episode id."""
@@ -420,6 +451,18 @@ class CatalystContext:
         if decision > generated:
             raise CatalystContextError("decision_at is after generated_at")
         object.__setattr__(self, "required_sources", _required_sources(self.required_sources))
+        if self.source_reads is None:
+            raise CatalystContextError("source_reads must be a sequence")
+        if isinstance(self.source_reads, (str, bytes)) or not isinstance(
+            self.source_reads, Sequence
+        ):
+            raise CatalystContextError("source_reads must be a sequence")
+        if self.evidence_clocks is None:
+            raise CatalystContextError("evidence_clocks must be a sequence")
+        if isinstance(self.evidence_clocks, (str, bytes)) or not isinstance(
+            self.evidence_clocks, Sequence
+        ):
+            raise CatalystContextError("evidence_clocks must be a sequence")
         if len(self.source_reads) > MAX_SOURCE_READS:
             raise CatalystContextError(f"source_reads exceeds {MAX_SOURCE_READS} entries")
         object.__setattr__(self, "source_reads", tuple(self.source_reads))
@@ -523,16 +566,16 @@ class CatalystContext:
                     )
                 if clock.owner_disposition in ("blocking", "unknown"):
                     aftermath_material = True
-            if clock.timing == "active":
-                active_home = (
-                    ref_tuples["blocking_evidence_refs"]
-                    + ref_tuples["soft_evidence_refs"]
-                    + ref_tuples["unknown_evidence_refs"]
-                    + ref_tuples["nonblocking_evidence_refs"]
+            home_group = _clock_home_ref_group(clock)
+            ref = clock.evidence_ref
+            if ref not in ref_tuples[home_group]:
+                raise CatalystContextError(
+                    f"{ref}: reference group contradicts timing/disposition"
                 )
-                if clock.evidence_ref not in active_home:
+            for group_name in _EVIDENCE_REF_GROUP_NAMES:
+                if group_name != home_group and ref in ref_tuples[group_name]:
                     raise CatalystContextError(
-                        f"{clock.evidence_ref}: active timing not in disposition refs"
+                        f"{ref}: reference group contradicts timing/disposition"
                     )
         expected = _state(
             ref_tuples["blocking_evidence_refs"],

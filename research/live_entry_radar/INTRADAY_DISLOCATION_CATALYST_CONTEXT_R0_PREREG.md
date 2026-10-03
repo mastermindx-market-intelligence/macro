@@ -282,3 +282,10 @@ This repair tightens the contract without loosening any refusal.
 - Blocking earnings evidence stays in an explicit five-session aftermath window after relevance ends. While that aftermath is material and coverage is complete, the context state is `event_aftermath_observed` rather than a clean no-news read.
 - Evidence first known after the decision clock remains audit-only (`late_contradiction_refs` when an owner read should already have seen it). It never rewrites decision-time state or coverage.
 - An EDGAR 8-K/A amendment remains a separate evidence row with its own clocks; it is not merged into the original filing row.
+
+## Repair 3 — 2026-10-03
+
+- Active evidence is now checked against the reference group that matches its owner disposition; the JSON schema cannot express that cross-field rule, so the Python validator is the authority for it.
+- `late_contradiction_refs` is producer-attested audit metadata: a consumer can only check that it is a subset of the late references, because clock rows carry no owner. It never changes the state or the coverage flag.
+- Display consumers must render late references (filed before the decision, learned after it); they are not "no news".
+- Known limitation outside this contract: the session calendar horizon comes from the shared session-anchor helper; aftermath windows beyond its last listed session refuse rather than guess.
