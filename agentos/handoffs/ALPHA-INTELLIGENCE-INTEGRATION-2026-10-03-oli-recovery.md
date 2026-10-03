@@ -1,8 +1,8 @@
 ---
 workstream: "WS:ALPHA-INTELLIGENCE-INTEGRATION"
 session: "oli-existing-owner-recovery-20261003-astra-001"
-model: astra
-ended_because: checkpoint
+model: sol  # Legacy Web-CEO record category; not provider/model attestation.
+ended_because: ci_handoff  # This saved candidate awaits CI/review; mission remains active.
 mission: >
   Recover existing opportunity-lifecycle capability through Alpha K3/K5, TOI,
   Prophet and Market OS owners; coordinate end-to-end implementation without
@@ -56,6 +56,27 @@ verified:
       Terminal 41b8af2da46614cedd2a485214e53003d4f030fc.
       Executive at 2026-10-03T09:53:50Z readonly, installed Mastermind 20adcaf6,
       installed Macro 88804ed7. No Job or dispatch submitted.
+unresolved:
+  - Exact-head hosted checks and independent review remain incomplete; reviewer mastermindx-2 requested on PR 8333.
+  - Native OEV/Market OS version, entry binding, first-forming denominator and prediction-landmark ownership still require adoption.
+  - Incumbent W1/W2/source-custody and data gates remain on Macro 7107/7094; preserve 7963 and Terminal issue 784.
+next_actions:
+  - Repair this handoff's seven schema findings without modifying the validator; obtain the new exact-head hosted receipt.
+  - Consume the existing requested review; resolve native-owner adoption and custody before real-source P0 integration.
+  - Prove the admitted producer/gateway/access/UI journey before any scientific or production acceptance.
+do_not_redo:
+  - Preserve the three original source-package files byte-for-byte and the existing recovery branch/PR.
+  - Do not duplicate 7107/7094/7963 or Terminal issue 784, rerun accepted W1 review, or override pending source effects.
+  - Do not retry refused test/source/browser effects through alternate tools, accounts, hosts or changed policy.
+  - No Top OOT look, new trading or Plan authority, duplicate store/scanner/identity, or Vercel deployment.
+danger_areas:
+  - A synthetic fixture is not a native source receipt, live user context, forecast calibration or production proof.
+  - Entry permission, board admission, phase, management and private Plan/position must remain independent.
+  - Preserve source-clock/generation/correction bindings and public/private noninterference.
+unverified:
+  - No browser matrix case or screenshot completed; Chromium refused file navigation before rendering.
+  - Full native integration, hosted preview test collection, production gateway/authentication and deployed identity are not proven.
+  - Independent reviewer acceptance, native-owner adoption, data admission and scientific validation remain pending.
 ---
 
 # OLI recovery continuity
@@ -101,7 +122,7 @@ permission. Scientific registration/data gates precede outcomes.
 
 ## Authority and completion
 
-No production code, schema, fixture, registry, producer, scanner, model, Plan,
+No native production code, schema, fixture, registry, producer, scanner, model, Plan,
 position, source credential, runtime or release was changed. No protected
 outcomes, Top OOT look, auto-trading, options promotion or Vercel use. All proposed
 OLI authority remains false; native B4 acceptance cannot be minted by this view.
@@ -112,7 +133,7 @@ Rollback only this candidate's added records, never incumbent source or history.
 
 FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
-NEXT_ACTION_STARTED: false
+NEXT_ACTION_STARTED: true  # Archive and independent synthetic preview implemented; native P0 pending.
 BACKGROUND_WORKER_OR_WAKE: none
 
 ## Current archive and implementation edge
@@ -128,3 +149,9 @@ Verification: 49 new unit tests PASS; generated JavaScript parse PASS. Initial T
 Browser file-URL navigation was blocked by administrator policy before rendering: zero browser matrix cases and zero screenshots. No policy weakening or rerouted browser attempt. A separate Studio current-source census was safety-status-blocked before dispatch and was not retried; this does not invalidate the verified archive/preview effects or grant any source-custody transfer.
 
 Exact next action: independent review of this candidate, then existing-owner native version/entry/identity and denominator/landmark adoption before #7963-backed real-source P0 wiring. Keep Draft; native implementation, current-base/Agent OS/hosted proof, private authentication, production browser proof and research admission remain pending. No model-originated confidence, orders, management actions, new OLI store, job, worker or automatic wake.
+
+## CI handoff-contract correction
+
+Exact-head fences run `37149055904`, job `111278869133`, failed at the Agent OS record contract: five missing frontmatter fields (`unresolved`, `next_actions`, `do_not_redo`, `danger_areas`, `unverified`) and two unsupported values (`model: astra`, `ended_because: checkpoint`). All seven are reproduced by the unchanged `scripts/agentos.py::check_handoff` function at source head `616ec5a353448c64594196b1ae49831a16fd52b8`.
+
+The saved record now supplies the actual unfinished obligations and uses the legacy `sol` Web-CEO record category plus `ci_handoff`. This does not assert that an Astra session switched models: the current Chairman-selected role remains Astra CEO, and provider-served model identity is not independently attested. No enum, validator, workflow, required check or authority gate is changed. The direct record validator returns zero findings for the corrected record; whole-store/new-head hosted evidence remains to be consumed.
