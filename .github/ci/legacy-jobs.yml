@@ -6165,6 +6165,8 @@ jobs:
         run: python -m pytest tests/test_flow_signals.py -q
       - name: FS-4 trainer unit tests (Lane A)
         run: python -m pytest tests/test_fs4_flow_trainer.py -q
+      - name: FS-5 fit-free geometry unit tests
+        run: python -m pytest tests/test_fs5_flow_geometry.py -q
 
   broad-etf-flows:
     if: ${{ false }}

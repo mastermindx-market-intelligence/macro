@@ -87,6 +87,18 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from lib.flow_score_geometry import (
+    GeometryError,
+    BUCKET_HORIZONS,
+    registered_bucket_horizons,
+    assign_time_blocks,
+    build_geometry_plan,
+    canonical_intervals,
+    make_no_fit_health,
+    validate_population_partition,
+    validate_split_geometry,
+)
+
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
@@ -123,6 +135,27 @@ def _load_config() -> dict:
     cfg_path = _repo_root() / "config" / "flow_score.yml"
     with cfg_path.open() as f:
         return yaml.safe_load(f)
+
+
+def _available_grade_horizons(grades_df: pd.DataFrame) -> set[str]:
+    return set(grades_df.columns)
+
+
+def _registered_horizons(bucket: str) -> tuple[int, ...]:
+    try:
+        return BUCKET_HORIZONS[bucket]
+    except KeyError as exc:
+        raise GeometryError(f"identity_unknown_model_bucket:{bucket}") from exc
+
+
+def _configured_horizons(cfg: dict) -> dict[str, tuple[int, ...]]:
+    configured = cfg.get("bucket_horizons")
+    if configured is None:
+        return dict(BUCKET_HORIZONS)
+    return {
+        str(bucket): tuple(int(horizon) for horizon in horizons)
+        for bucket, horizons in configured.items()
+    }
 
 
 def _detector_version() -> str:
@@ -454,23 +487,8 @@ def _build_label(df: pd.DataFrame, grades_df: pd.DataFrame, bucket: str, cfg: di
 # ── CV geometry ───────────────────────────────────────────────────────────────
 
 def _assign_time_blocks(df: pd.DataFrame, n_groups: int, date_col: str = "session_date") -> pd.Series:
-    """Assign time_block (0..n_groups-1) by calendar order.
-
-    Amendment §4.2: group folds by calendar time block (in addition to underlying).
-    Each block is a contiguous calendar slice.
-    """
-    if date_col not in df.columns:
-        # fallback: assign by row position
-        return pd.Series(np.arange(len(df)) * n_groups // max(1, len(df)), index=df.index)
-    dates = pd.to_datetime(df[date_col], errors="coerce")
-    n = len(df)
-    # Compute sort order (argsort) to rank by date without calling .rank() on datetimes.
-    # NaT treated as largest value → placed last.
-    sort_order = np.argsort(dates.fillna(dates.max()).values, stable=True)
-    rank = np.empty(n, dtype=int)
-    rank[sort_order] = np.arange(1, n + 1)
-    block = ((rank - 1) * n_groups) // max(1, n)
-    return pd.Series(block, index=df.index, name="time_block")
+    """Assign complete canonical sessions to contiguous blocks or fail closed."""
+    return assign_time_blocks(df, n_groups, date_col)
 
 
 def _group_fold_splits(
@@ -482,86 +500,89 @@ def _group_fold_splits(
     date_col: str = "session_date",
     random_seed: int = 42,
 ) -> list[tuple[np.ndarray, np.ndarray]]:
-    """Produce purged K-fold splits grouped by BOTH underlying AND time_block.
+    """Produce root-disjoint, label-purged, session-embargoed ordered folds."""
+    del random_seed
+    if underlying_col != "root":
+        raise GeometryError("identity_missing:root")
+    if date_col != "session_date":
+        raise GeometryError("identity_missing:session_date")
+    if k_folds < 1 or n_groups < 1:
+        raise GeometryError("fold_geometry_invalid")
 
-    Amendment §4.1 + §4.2:
-      - Folds are grouped on both `underlying` and `time_block`.
-      - A root never appears in both train and validation of the same fold.
-      - A time boundary separates each fold.
-      - Embargo of `embargo` rows enforced at each fold boundary.
+    working = df.reset_index(drop=True).copy()
+    working["time_block"] = _assign_time_blocks(working, n_groups, date_col)
+    unique_sessions = sorted(set(pd.to_datetime(working[date_col]).dt.date))
+    if len(unique_sessions) < k_folds:
+        raise GeometryError(f"insufficient_sessions:{len(unique_sessions)}<{k_folds}")
 
-    Returns list of (train_idx, val_idx) integer index arrays (into df).
-
-    Implementation:
-      We partition unique (underlying, time_block) pairs into k folds by time block
-      (temporal ordering), then build train/val masks enforcing:
-        - val = the held-out fold's rows
-        - train = all rows from other folds MINUS embargo rows (rows within `embargo`
-          calendar days of the val fold's min/max date)
-    """
-    df = df.reset_index(drop=True)
-    time_blocks = _assign_time_blocks(df, n_groups, date_col)
-    df_w = df.copy()
-    df_w["_time_block"] = time_blocks.values
-
-    # Assign each row to one of k_folds based on time_block
-    max_block = int(df_w["_time_block"].max()) if not df_w.empty else 0
-    fold_of_block = np.minimum((df_w["_time_block"].values * k_folds) // max(1, max_block + 1), k_folds - 1)
-    df_w["_fold"] = fold_of_block
-
-    # Get date series for embargo
-    if date_col in df_w.columns:
-        dates = pd.to_datetime(df_w[date_col], errors="coerce")
-    else:
-        dates = pd.Series([pd.NaT] * len(df_w))
-
-    # Detect single/dominant underlying: when one root spans all k_folds, the
-    # underlying-exclusion rule removes all training rows every fold.  Amendment
-    # §4.2 groups on BOTH underlying AND time; with only one underlying the time
-    # split is the meaningful axis.  Fall back to time-block-only folds when
-    # applying underlying-exclusion would produce zero valid splits.
-    n_unique_roots = (
-        int(df_w[underlying_col].nunique())
-        if underlying_col in df_w.columns
-        else 0
+    session_blocks = (
+        working.assign(_session=pd.to_datetime(working[date_col]).dt.date)
+        .groupby("_session", sort=False)["time_block"]
+        .first()
+        .sort_index()
     )
-    # If there is only 1 distinct root, underlying-exclusion would wipe the entire
-    # training set for every fold.  Detect this and skip underlying exclusion.
-    skip_underlying_exclusion = n_unique_roots <= 1
+    ordered_blocks = list(dict.fromkeys(session_blocks.tolist()))
+    if len(ordered_blocks) < k_folds:
+        raise GeometryError(f"insufficient_time_blocks:{len(ordered_blocks)}<{k_folds}")
+    block_fold = [
+        fold_index * len(ordered_blocks) // k_folds
+        for fold_index, block in enumerate(ordered_blocks)
+    ]
+    working["_fold"] = working["time_block"].map(dict(zip(ordered_blocks, block_fold)))
 
+    intervals = canonical_intervals(working)
+    model_buckets = set(working["model_bucket"].astype(str))
+    if len(model_buckets) != 1:
+        raise GeometryError(f"identity_mixed:model_bucket:{sorted(model_buckets)}")
+    horizon_sessions = max(_registered_horizons(next(iter(model_buckets))))
+    embargo_sessions = max(int(embargo), horizon_sessions)
     splits: list[tuple[np.ndarray, np.ndarray]] = []
-    for fold_idx in range(k_folds):
-        val_mask = df_w["_fold"] == fold_idx
-        val_idx = np.where(val_mask)[0]
-        if len(val_idx) == 0:
+    for fold_index in range(k_folds):
+        validation_idx = np.flatnonzero(working["_fold"].eq(fold_index).to_numpy())
+        if len(validation_idx) == 0:
             continue
-
-        # Underlying exclusion: any root present in val is excluded from train.
-        # Skip when there is only one distinct root (single-underlying cohort).
-        if not skip_underlying_exclusion and underlying_col in df_w.columns:
-            val_roots = set(df_w.loc[val_mask, underlying_col].unique())
-            root_in_val = df_w[underlying_col].isin(val_roots)
-        else:
-            root_in_val = pd.Series(False, index=df_w.index)
-
-        # Embargo: exclude rows within `embargo` calendar days of val boundaries
-        val_dates = dates[val_mask].dropna()
-        if len(val_dates) > 0 and not val_dates.empty:
-            val_min = val_dates.min()
-            val_max = val_dates.max()
-            # Compute day difference from val boundaries
-            day_diff_lo = (dates - val_min).dt.days.abs()
-            day_diff_hi = (dates - val_max).dt.days.abs()
-            in_embargo = (day_diff_lo <= embargo) | (day_diff_hi <= embargo)
-        else:
-            in_embargo = pd.Series(False, index=df_w.index)
-
-        train_mask = ~val_mask & ~root_in_val & ~in_embargo
-        train_idx = np.where(train_mask)[0]
-
-        if len(train_idx) == 0 or len(val_idx) == 0:
+        candidate_idx = np.flatnonzero(working["_fold"].ne(fold_index).to_numpy())
+        validation_roots = set(intervals.iloc[validation_idx]["root"])
+        train_idx = candidate_idx[
+            ~intervals.iloc[candidate_idx]["root"]
+            .isin(validation_roots)
+            .to_numpy()
+        ]
+        validation_fill = intervals.iloc[validation_idx]["fill_session"].to_numpy(
+            dtype="datetime64[D]"
+        )
+        validation_end = intervals.iloc[validation_idx]["end_session"].to_numpy(
+            dtype="datetime64[D]"
+        )
+        train_fill = intervals.iloc[train_idx]["fill_session"].to_numpy(
+            dtype="datetime64[D]"
+        )
+        train_end = intervals.iloc[train_idx]["end_session"].to_numpy(
+            dtype="datetime64[D]"
+        )
+        train_overlap = (
+            np.maximum(train_fill[:, None], validation_fill[None, :])
+            <= np.minimum(train_end[:, None], validation_end[None, :])
+        ).any(axis=1)
+        train_idx = train_idx[~train_overlap]
+        validation_union_start = int(
+            intervals.iloc[validation_idx]["fill_position"].min()
+        )
+        train_idx = train_idx[
+            intervals.iloc[train_idx]["end_position"].to_numpy(dtype=int)
+            < validation_union_start - embargo_sessions
+        ]
+        if len(train_idx) == 0:
             continue
-        splits.append((train_idx, val_idx))
+        validate_split_geometry(
+            working,
+            train_idx,
+            validation_idx,
+            embargo_sessions=embargo_sessions,
+            horizon_sessions=horizon_sessions,
+            intervals=intervals,
+        )
+        splits.append((train_idx, validation_idx))
     return splits
 
 
@@ -657,8 +678,6 @@ def train_bucket(
      10. N floor check (§7): deployable=False if below floor
      11. Artifact write (§4 artifact spec)
     """
-    from sklearn.calibration import CalibratedClassifierCV  # noqa: F401 — checked below
-
     log.info("ops_train: starting bucket=%s, dry_run=%s", bucket, dry_run)
 
     # ── load serving cohorts (amendment §3.1) ────────────────────────────────
@@ -670,12 +689,17 @@ def train_bucket(
     # Guard: eod_proxy must NEVER be in serving cohorts
     _check_no_eod_proxy_in_calibration(serving_df, context="serving cohort (train_bucket)")
 
-    # ── load grades (amendment §2.1) ──────────────────────────────────────────
+    # ── load grades and partition receipt (§2.1 + FS-5 amendment §5) ───────────
     grades_path = flow_dir / "grades.parquet"
     if not grades_path.exists():
         log.warning("ops_train[%s]: grades.parquet not found — skipping", bucket)
         return None
     grades_df = pd.read_parquet(grades_path)
+
+    partition_path = flow_dir / "fs5_partition.json"
+    if not partition_path.exists():
+        log.warning("ops_train[%s]: no FS-5 partition receipt — building history/no-fit", bucket)
+        return make_no_fit_health("building_history/method_geometry_unavailable")
 
     # ── filter by model_bucket ────────────────────────────────────────────────
     bucket_map = cfg.get("model_bucket_map", {})
@@ -711,6 +735,75 @@ def train_bucket(
     if labeled.empty:
         log.warning("ops_train[%s]: no labeled rows after grade join — skipping", bucket)
         return None
+
+    # FS-5 geometry gates are pure and run before any feature matrix or estimator
+    # construction. They are guarded because legacy loaders can still return old rows.
+    try:
+        geometry_intervals = canonical_intervals(labeled)
+    except GeometryError as exc:
+        log.warning("ops_train[%s]: invalid FS-5 geometry — building history/no-fit: %s", bucket, exc)
+        return make_no_fit_health(f"method_geometry_unavailable:{exc}")
+    if geometry_intervals.empty:
+        log.warning("ops_train[%s]: no eligible FS-5 geometry — building history/no-fit", bucket)
+        return make_no_fit_health("building_history/method_geometry_unavailable")
+
+    # ── explicit ordered FS-5 population receipt (amendment §5/§6) ─────────────
+    # Legacy 80/20 is not three populations. Only an explicit receipt naming all
+    # ordered, disjoint, label-window-separated populations can reach a fit.
+    partition = json.loads(partition_path.read_text())
+    configured_horizons = _configured_horizons(cfg)
+    if configured_horizons != dict(BUCKET_HORIZONS):
+        raise GeometryError(
+            "bucket_horizon_contract_mismatch:"
+            f"{configured_horizons}!={BUCKET_HORIZONS}"
+        )
+    required_horizons = _registered_horizons(bucket)
+    embargo_days = max(
+        int(cfg.get("embargo_days", {}).get(bucket, 0)),
+        max(required_horizons),
+    )
+    population_names = ("train", "calibration_fit", "calibration_eval", "final_oos")
+    partition_members = {
+        name: set(map(str, partition.get(name, [])))
+        for name in population_names
+    }
+    received_ids = set(labeled["event_id"].astype(str))
+    if any(not members for members in partition_members.values()):
+        return make_no_fit_health("building_history/method_geometry_unavailable")
+    if set().union(*partition_members.values()) != received_ids:
+        return make_no_fit_health("method_geometry_unavailable:partition_membership_mismatch")
+    if sum(map(len, partition_members.values())) != len(received_ids):
+        return make_no_fit_health("method_geometry_unavailable:partition_not_disjoint")
+
+    train_df = labeled[labeled["event_id"].astype(str).isin(partition_members["train"])].copy()
+    cal_fit_df = labeled[
+        labeled["event_id"].astype(str).isin(partition_members["calibration_fit"])
+    ].copy()
+    cal_eval_df = labeled[
+        labeled["event_id"].astype(str).isin(partition_members["calibration_eval"])
+    ].copy()
+    final_oos_df = labeled[
+        labeled["event_id"].astype(str).isin(partition_members["final_oos"])
+    ].copy()
+
+    plans = {
+        name: build_geometry_plan(frame, model_bucket=bucket)
+        for name, frame in (
+            ("train", train_df),
+            ("calibration_fit", cal_fit_df),
+            ("calibration_eval", cal_eval_df),
+            ("final_oos", final_oos_df),
+        )
+    }
+    try:
+        validate_population_partition(
+            plans,
+            requested_bucket=bucket,
+        horizon_columns=_available_grade_horizons(grades_df),
+        )
+    except GeometryError as exc:
+        log.warning("ops_train[%s]: invalid FS-5 partition — building history/no-fit: %s", bucket, exc)
+        return make_no_fit_health(f"method_geometry_unavailable:{exc}")
 
     y_all = labeled["_label"].astype(float).values
     base_rate = float(y_all.mean())
@@ -753,46 +846,7 @@ def train_bucket(
             dry_run=dry_run,
         )
 
-    # ── temporal holdout split (amendment §5) ─────────────────────────────────
-    # Reserve last 20% of rows by date for calibration (NEVER random split).
-    # Amendment §5: "per-bucket isotonic on a TEMPORAL holdout" — no random split.
-    #
-    # EMBARGO gap (TRAIN-CAL-NO-EMBARGO-LEAK fix): insert a gap of >= H_b
-    # (embargo_days) between the last training row and the first calibration row.
-    # Training rows whose label window (H_b days) overlaps the holdout period
-    # would leak realized outcomes into the model that feeds the calibrator.
-    embargo_days = cfg.get("embargo_days", {}).get(bucket, 21)
-
-    if "session_date" in labeled.columns:
-        dates_s = pd.to_datetime(labeled["session_date"], errors="coerce")
-        sorted_dates = dates_s.sort_values()
-        holdout_start_idx = int(len(sorted_dates) * 0.80)
-        holdout_cutoff = (
-            sorted_dates.iloc[holdout_start_idx]
-            if holdout_start_idx < len(sorted_dates)
-            else None
-        )
-        if holdout_cutoff is not None:
-            cal_mask = dates_s >= holdout_cutoff
-            # Training rows: exclude those whose label window overlaps the holdout.
-            # A row at date d overlaps holdout if d + embargo_days >= holdout_cutoff,
-            # i.e. d >= holdout_cutoff - embargo_days.
-            embargo_gap = pd.Timedelta(days=embargo_days)
-            train_cal_mask = dates_s < (holdout_cutoff - embargo_gap)
-        else:
-            # Not enough data — use all for training, none for calibration
-            cal_mask = pd.Series(False, index=labeled.index)
-            train_cal_mask = pd.Series(True, index=labeled.index)
-    else:
-        n_holdout = max(1, len(labeled) // 5)
-        cal_mask = pd.Series(
-            [False] * (len(labeled) - n_holdout) + [True] * n_holdout,
-            index=labeled.index,
-        )
-        train_cal_mask = ~cal_mask
-
-    cal_df = labeled[cal_mask].copy()
-    train_df = labeled[train_cal_mask].copy()
+    cal_df = pd.concat([cal_fit_df, cal_eval_df], ignore_index=True)
 
     # Guard: eod_proxy must never appear in calibration
     _check_no_eod_proxy_in_calibration(cal_df, context="calibration holdout (train_bucket)")
@@ -801,7 +855,7 @@ def train_bucket(
 
     if len(train_df) == 0:
         log.warning("ops_train[%s]: empty training set after holdout split", bucket)
-        return None
+        return make_no_fit_health("method_geometry_unavailable:empty_train_population")
 
     # ── uniqueness weights (amendment §4.4) ───────────────────────────────────
     from lib.flow_score import uniqueness_weights as _uw
@@ -860,15 +914,25 @@ def train_bucket(
     )
 
     # Generate CV splits (amendment §4.1 / §4.2)
-    splits = _group_fold_splits(
-        train_df,
-        k_folds=k_folds,
-        embargo=embargo_days,
-        n_groups=n_groups,
-        underlying_col=_underlying_col_cv,
-        date_col="session_date" if "session_date" in train_df.columns else "session_date",
-        random_seed=random_seed,
-    )
+    try:
+        splits = _group_fold_splits(
+            train_df,
+            k_folds=k_folds,
+            embargo=embargo_days,
+            n_groups=n_groups,
+            underlying_col=_underlying_col_cv,
+            date_col="session_date" if "session_date" in train_df.columns else "session_date",
+            random_seed=random_seed,
+        )
+    except GeometryError as exc:
+        # Invalid CV geometry is terminal: no fit/calibrator/feature build is
+        # ever produced. The fold partition was never emitted, so we never
+        # produced a model and we never touched any estimator or calibrator.
+        log.warning(
+            "ops_train[%s]: invalid fold geometry — building history/no-fit: %s",
+            bucket, exc,
+        )
+        return make_no_fit_health(f"method_geometry_unavailable:{exc}")
 
     X_train_all = _build_features(train_df, feature_cols)
     y_train_all = train_df["_label"].astype(float).values
@@ -885,29 +949,11 @@ def train_bucket(
             "Cannot run amendment §4.1-§4.5 selection machinery."
         )
         log.warning("ops_train[%s]: %s", bucket, deploy_reason)
-        # Fit a fallback model on all training data (no grid search) so the
-        # artifact can still be written, but flag it as not deployable.
-        final_model = _fit_model(
-            X_train_all, y_train_all, sample_weights,
-            hparam_grid[0] if hparam_grid else {}, monotone_cfg, feature_cols, random_seed,
-        )
-        if not dry_run:
-            return _write_artifact(
-                bucket=bucket, cfg=cfg, flow_dir=flow_dir,
-                model=final_model, calibrator=None,
-                deployable=False, deploy_reason=deploy_reason,
-                serving_df=serving_df, labeled=labeled, pop_stats=pop_stats,
-                base_rate=base_rate, calibration_metrics={}, kill_eval={},
-                n_trials=0, feature_cols=feature_cols, dry_run=dry_run,
-            )
+        return make_no_fit_health("method_geometry_unavailable:no_valid_cv_splits")
 
     if dry_run:
         log.info("ops_train[%s]: dry_run — skipping grid search", bucket)
         # Pick first param set for dry-run
-        best_params = hparam_grid[0] if hparam_grid else {}
-        best_auc = float("nan")
-    elif len(splits) == 0:
-        # Should not reach here (handled above for non-dry-run), but be safe
         best_params = hparam_grid[0] if hparam_grid else {}
         best_auc = float("nan")
     else:
@@ -954,13 +1000,14 @@ def train_bucket(
     deployable = False
     deploy_reason = ""
 
-    if cal_df.empty:
+    if cal_fit_df.empty or cal_eval_df.empty:
         deploy_reason = "BELOW-FLOOR: empty calibration holdout"
         log.warning("ops_train[%s]: %s", bucket, deploy_reason)
     else:
-        _check_no_eod_proxy_in_calibration(cal_df, context="calibration (inner)")
-        X_cal = _build_features(cal_df, feature_cols)
-        y_cal = cal_df["_label"].astype(float).values
+        _check_no_eod_proxy_in_calibration(cal_fit_df, context="calibration fit")
+        _check_no_eod_proxy_in_calibration(cal_eval_df, context="calibration evaluation")
+        X_cal = _build_features(cal_fit_df, feature_cols)
+        y_cal = cal_fit_df["_label"].astype(float).values
 
         try:
             p_raw_cal = final_model.predict_proba(X_cal)[:, 1]
@@ -975,63 +1022,53 @@ def train_bucket(
             n_bins = cfg.get("n_bins", 10)
             ece_threshold = cfg.get("ece_threshold", 0.05)
 
-            # CALIB-IN-SAMPLE-GATE fix: split the calibration holdout into an
-            # inner slice (fit isotonic) and an outer slice (evaluate ECE/Brier).
-            # Evaluating on the isotonic calibrator's own fit data drives ECE→0
-            # trivially (in-sample), making the go/no-go gate non-diagnostic.
-            # Use first half to fit, second half to evaluate.
-            n_cal = len(p_raw_cal)
-            n_inner = max(1, n_cal // 2)
-            # inner: used to FIT isotonic; outer: used to EVALUATE metrics
-            p_raw_inner = p_raw_cal[:n_inner]
-            y_inner = y_cal[:n_inner]
-            p_raw_outer = p_raw_cal[n_inner:]
-            y_outer = y_cal[n_inner:]
+            p_raw_eval = final_model.predict_proba(
+                _build_features(cal_eval_df, feature_cols)
+            )[:, 1]
+            y_eval = cal_eval_df["_label"].astype(float).values
 
             ir = IsotonicRegression(out_of_bounds="clip")
-            if len(p_raw_inner) > 0 and len(np.unique(y_inner)) >= 2:
-                ir.fit(p_raw_inner, y_inner)
-            elif len(p_raw_cal) > 0:
-                # Fallback: if inner has no class diversity, fit on all (less ideal
-                # but avoids a crash; still flagged as not-deployable via ECE check)
+            if len(np.unique(y_cal)) >= 2:
                 ir.fit(p_raw_cal, y_cal)
+            else:
+                ir = None
 
-            if len(p_raw_outer) == 0:
+            if ir is None or len(p_raw_eval) == 0:
                 # Calibration holdout too small to split — cannot honestly evaluate
                 deploy_reason = "BELOW-FLOOR: calibration holdout too small to split for honest eval"
                 log.warning("ops_train[%s]: %s", bucket, deploy_reason)
                 ir = None
-                p_raw_cal = None  # trigger else branch below
+                p_raw_eval = pd.Series(dtype=float)
 
-        if p_raw_cal is not None and len(p_raw_cal) > 0 and ir is not None and len(p_raw_outer) > 0:
+        if p_raw_eval is not None and len(p_raw_eval) > 0 and ir is not None:
             # Evaluate on the DISJOINT outer slice — not on the calibrator's fit data
-            p_cal_outer = ir.predict(p_raw_outer)
+            p_cal_outer = ir.predict(p_raw_eval)
 
-            ece_val = _ece(p_cal_outer, y_outer, n_bins=n_bins, equal_mass=True)
-            brier_val = _brier(p_cal_outer, y_outer)
+            ece_val = _ece(p_cal_outer, y_eval, n_bins=n_bins, equal_mass=True)
+            brier_val = _brier(p_cal_outer, y_eval)
             # base_rate_brier uses the outer-slice base rate (matches the evaluation slice)
-            outer_base_rate = float(y_outer.mean()) if len(y_outer) > 0 else base_rate
+            outer_base_rate = float(y_eval.mean()) if len(y_eval) > 0 else base_rate
             base_rate_brier = float(outer_base_rate * (1.0 - outer_base_rate))
-            rel_table = _rel(p_cal_outer, y_outer, n_bins=n_bins, equal_mass=True)
+            rel_table = _rel(p_cal_outer, y_eval, n_bins=n_bins, equal_mass=True)
             monotone = _mono(rel_table)
 
             # Kill-eval: AUC in newest era (amendment §8 #1)
             # Use raw predictions on the outer slice (before isotonic calibration)
             # to measure discriminative skill independently of calibration.
-            era_col = "era" if "era" in cal_df.columns else None
+            era_col = "era" if "era" in cal_eval_df.columns else None
             newest_era_auc = float("nan")
             if era_col:
-                eras = cal_df[era_col].dropna().unique()
+                eras = cal_eval_df[era_col].dropna().unique()
                 if len(eras) > 0:
                     newest_era = sorted(eras)[-1]
-                    newest_mask = cal_df[era_col] == newest_era
+                    newest_mask = cal_eval_df[era_col] == newest_era
                     if newest_mask.sum() >= 2:
-                        y_new = y_cal[newest_mask.values]
-                        p_new = p_raw_cal[newest_mask.values]
+                        y_new = y_eval[newest_mask.values]
+                        p_new = p_raw_eval[newest_mask.values]
                         newest_era_auc = _auc_score(y_new, p_new)
             else:
                 # No era column — use full cal set for AUC (raw predictions)
-                newest_era_auc = _auc_score(y_cal, p_raw_cal)
+                newest_era_auc = _auc_score(y_eval, p_raw_eval)
 
             calibration_metrics = {
                 "ece": float(ece_val),
@@ -1040,9 +1077,8 @@ def train_bucket(
                 "base_rate_brier": float(base_rate_brier),
                 "reliability_table": rel_table,
                 "monotone": bool(monotone),
-                "n_cal": int(len(y_cal)),
-                "n_cal_inner": int(n_inner),
-                "n_cal_outer": int(len(y_outer)),
+                "n_cal_fit": int(len(y_cal)),
+                "n_cal_eval": int(len(y_eval)),
             }
             kill_eval = {
                 "auc_newest_era": float(newest_era_auc),
@@ -1117,8 +1153,6 @@ def _write_artifact(
     Manifest schema: flow_score.model_manifest/v1 (amendment §4 artifact spec).
     NEVER writes the word "validated" (CI-guarded).
     """
-    import joblib
-
     models_dir = _models_dir(cfg)
 
     # Find next version number
@@ -1142,6 +1176,8 @@ def _write_artifact(
             "deployable": deployable,
             "dry_run": True,
         }
+
+    import joblib
 
     artifact_dir.mkdir(parents=True, exist_ok=True)
     model_path = artifact_dir / "model.joblib"
