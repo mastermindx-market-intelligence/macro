@@ -272,6 +272,7 @@ except ImportError:  # run as `python3 scripts/merge_on_green.py` (the workflow 
     )
 
 GITHUB_API = "https://api.github.com"
+GITHUB_GRAPHQL = "https://api.github.com/graphql"
 MERGE_ON_GREEN_LABEL = "merge-on-green"
 MERGE_BLOCKED_LABEL = "merge-blocked"
 MAIN_RED_REPAIR_LABEL = "main-red-repair"
@@ -566,6 +567,162 @@ def _api_message(payload: Any) -> str:
         if message:
             return message
     return ""
+
+
+
+def _graphql_data(
+    query: str,
+    variables: dict[str, Any],
+    token: str,
+) -> dict[str, Any]:
+    """Read one bounded GitHub GraphQL response or fail closed."""
+    status, body = _request(
+        "POST",
+        GITHUB_GRAPHQL,
+        token,
+        {"query": query, "variables": variables},
+    )
+    if status != 200:
+        raise RuntimeError(
+            f"GitHub GraphQL read failed: HTTP {status} {_api_message(body)[:240]}"
+        )
+    if not isinstance(body, dict):
+        raise RuntimeError("GitHub GraphQL read returned no object")
+    errors = body.get("errors")
+    if errors:
+        detail = "; ".join(
+            str(item.get("message") if isinstance(item, dict) else item)
+            for item in (errors if isinstance(errors, list) else [errors])
+        )
+        raise RuntimeError(f"GitHub GraphQL read returned errors: {detail[:240]}")
+    data = body.get("data")
+    if not isinstance(data, dict):
+        raise RuntimeError("GitHub GraphQL read returned no data object")
+    return data
+
+
+def active_merge_queue_id(repo: str, base_ref: str, token: str) -> str | None:
+    """Return the native queue id for base_ref, or None when no queue exists."""
+    if "/" not in repo:
+        raise RuntimeError("repository identity must be owner/name")
+    owner, name = repo.split("/", 1)
+    data = _graphql_data(
+        """
+        query($owner: String!, $name: String!, $branch: String!) {
+          repository(owner: $owner, name: $name) {
+            mergeQueue(branch: $branch) { id }
+          }
+        }
+        """,
+        {"owner": owner, "name": name, "branch": base_ref},
+        token,
+    )
+    repository = data.get("repository")
+    if not isinstance(repository, dict):
+        raise RuntimeError("GitHub GraphQL queue read returned no repository")
+    queue = repository.get("mergeQueue")
+    if queue is None:
+        return None
+    if not isinstance(queue, dict) or not queue.get("id"):
+        raise RuntimeError("GitHub GraphQL queue read returned malformed queue state")
+    return str(queue["id"])
+
+
+def merge_queue_entry_id(pull_request_id: str, token: str) -> str | None:
+    """Read one exact pull request native merge-queue entry."""
+    if not pull_request_id:
+        raise RuntimeError("pull request node id is required for queue reconciliation")
+    data = _graphql_data(
+        """
+        query($id: ID!) {
+          node(id: $id) {
+            ... on PullRequest {
+              mergeQueueEntry { id }
+            }
+          }
+        }
+        """,
+        {"id": pull_request_id},
+        token,
+    )
+    node = data.get("node")
+    if not isinstance(node, dict):
+        raise RuntimeError("GitHub GraphQL queue-entry read returned no pull request")
+    entry = node.get("mergeQueueEntry")
+    if entry is None:
+        return None
+    if not isinstance(entry, dict) or not entry.get("id"):
+        raise RuntimeError("GitHub GraphQL queue-entry read returned malformed state")
+    return str(entry["id"])
+
+
+def enqueue_pull_request_to_queue(
+    pull_request_id: str,
+    head_sha: str,
+    read_token: str,
+    merge_token: str,
+) -> tuple[str, str]:
+    """Enqueue an exact head, reconciling every non-success before any retry."""
+    existing = merge_queue_entry_id(pull_request_id, read_token)
+    if existing is not None:
+        return "already-queued", existing
+
+    query = """
+        mutation($pullRequestId: ID!, $expectedHeadOid: GitObjectID!) {
+          enqueuePullRequest(
+            input: {
+              pullRequestId: $pullRequestId
+              expectedHeadOid: $expectedHeadOid
+            }
+          ) {
+            mergeQueueEntry { id }
+          }
+        }
+    """
+    payload = {
+        "query": query,
+        "variables": {
+            "pullRequestId": pull_request_id,
+            "expectedHeadOid": head_sha,
+        },
+    }
+    status: int | None = None
+    body: Any = None
+    transport_error = ""
+    try:
+        status, body = _request("POST", GITHUB_GRAPHQL, merge_token, payload)
+    except Exception as exc:
+        transport_error = str(exc)[:240]
+
+    if status == 200 and isinstance(body, dict):
+        data = body.get("data")
+        mutation = data.get("enqueuePullRequest") if isinstance(data, dict) else None
+        entry = mutation.get("mergeQueueEntry") if isinstance(mutation, dict) else None
+        if isinstance(entry, dict) and entry.get("id"):
+            return "queued", str(entry["id"])
+
+    try:
+        reconciled = merge_queue_entry_id(pull_request_id, read_token)
+    except Exception as exc:
+        detail = transport_error or (
+            f"HTTP {status}: {_api_message(body)}" if status is not None else "unknown"
+        )
+        return "unknown", f"{detail[:180]}; readback failed: {str(exc)[:180]}"
+    if reconciled is not None:
+        return "queued", reconciled
+
+    if status is not None and 400 <= status < 500:
+        return "declined", f"HTTP {status}: {_api_message(body)[:220]}"
+    if status == 200 and isinstance(body, dict) and body.get("errors"):
+        errors = body.get("errors")
+        detail = "; ".join(
+            str(item.get("message") if isinstance(item, dict) else item)
+            for item in (errors if isinstance(errors, list) else [errors])
+        )
+        return "declined", f"GraphQL: {detail[:220]}"
+    if transport_error:
+        return "unknown", f"transport error: {transport_error}"
+    return "unknown", f"HTTP {status}: {_api_message(body)[:220]}"
 
 
 def rate_limit_refusal(
