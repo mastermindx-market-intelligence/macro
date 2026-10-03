@@ -1365,6 +1365,93 @@ def test_cache_update_disables_automatic_maintenance() -> None:
     assert "config maintenance.auto false" in script
 
 
+def test_host_admission_m1_nightly_2_accepts_dispatch_and_workflow_run_options_intel() -> None:
+    """AD-1T2 — the M1 runner-2 profile admits the options-intel producer on
+    BOTH `workflow_dispatch` and `workflow_run`, plus the pre-existing m1
+    canary tuple. Every other (event, workflow, job, ref, repository)
+    mutation must be refused — that is the whole point of the profile.
+    """
+
+    base = {
+        "MASTERMIND_CI_PROFILE": "m1-nightly-2",
+        "GITHUB_REPOSITORY": "mastermindx-market-intelligence/macro",
+        "GITHUB_REF": "refs/heads/main",
+        "GITHUB_WORKFLOW_REF": (
+            "mastermindx-market-intelligence/macro/.github/workflows/"
+            "options-intel.yml@refs/heads/main"
+        ),
+        "GITHUB_JOB": "options_intel",
+    }
+
+    for event in ("workflow_dispatch", "workflow_run"):
+        allowed = {**base, "GITHUB_EVENT_NAME": event}
+        assert ADMISSION.decision(allowed)[0], (
+            f"m1-nightly-2 must admit options-intel via {event}"
+        )
+
+    canary = {**base, "GITHUB_EVENT_NAME": "workflow_dispatch",
+              "GITHUB_WORKFLOW_REF": (
+                  "mastermindx-market-intelligence/macro/.github/workflows/"
+                  "m1-runner-canary.yml@refs/heads/main"
+              ),
+              "GITHUB_JOB": "m1-service-canary"}
+    assert ADMISSION.decision(canary)[0], "m1-nightly-2 must still admit the M1 canary tuple"
+
+    for key, value in (
+        ("MASTERMIND_CI_PROFILE", "m1-canary"),
+        ("GITHUB_REPOSITORY", "attacker/fork"),
+        ("GITHUB_REF", "refs/pull/7/merge"),
+        ("GITHUB_REF", "refs/heads/candidate"),
+        ("GITHUB_WORKFLOW_REF",
+         "mastermindx-market-intelligence/macro/.github/workflows/options-intel.yml@refs/heads/candidate"),
+        ("GITHUB_WORKFLOW_REF",
+         "mastermindx-market-intelligence/macro/.github/workflows/daily.yml@refs/heads/main"),
+        ("GITHUB_WORKFLOW_REF",
+         "mastermindx-market-intelligence/macro/.github/workflows/rogue.yml@refs/heads/main"),
+        ("GITHUB_JOB", "rogue-producer"),
+        ("GITHUB_JOB", "engine"),
+        ("GITHUB_EVENT_NAME", "pull_request"),
+        ("GITHUB_EVENT_NAME", "schedule"),
+        ("GITHUB_EVENT_NAME", "push"),
+    ):
+        mutated = {**base, "GITHUB_EVENT_NAME": "workflow_dispatch", key: value}
+        assert not ADMISSION.decision(mutated)[0], (
+            f"m1-nightly-2 must refuse {key}={value!r}; would otherwise silently widen "
+            "the store-bearing host's admission surface"
+        )
+
+
+def test_runner_admission_hook_js_wires_m1_nightly_2_profile() -> None:
+    """The shared hook maps the m1-nightly-2 filename to its profile, and the
+    script binding is the only line that selects which profile runs.
+    """
+
+    hook = (
+        ROOT / "ops" / "runner-host" / "common" / "runner_admission_hook.js"
+    ).read_text(encoding="utf-8")
+    assert '"runner_admission_m1_nightly_2.js": "m1-nightly-2"' in hook, (
+        "the m1-nightly-2 filename must map to its own profile in the shared hook"
+    )
+    # the shared hook profile map must NOT carry any inline guard / mutation
+    # surface that would silently widen admission — its sole job is to set
+    # MASTERMIND_CI_PROFILE and pass through to runner_admission.py
+    assert "process.env.MASTERMIND_CI_PROFILE" not in hook
+    assert "process.env.PATH" not in hook
+
+    m1 = (ROOT / "ops" / "runner-host" / "m1" / "run_guarded_runner.sh").read_text(
+        encoding="utf-8"
+    )
+    # the canary default is preserved for every existing runner root
+    assert 'ACTIONS_RUNNER_HOOK_JOB_STARTED="$guard_root/runner_admission_m1_canary.js"' in m1
+    assert "MASTERMIND_CI_PROFILE=m1-canary" in m1
+    # and the m1-nightly-2 root now binds the new profile + hook
+    assert 'runner_admission_m1_nightly_2.js' in m1
+    assert "MASTERMIND_CI_PROFILE=m1-nightly-2" in m1
+    # the binding is keyed off the runner root basename — never the host name —
+    # so a host-name clone cannot widen admission
+    assert 'basename "$runner_root"' in m1
+
+
 def test_runner_service_seals_runtime_and_binds_host_admission() -> None:
     unit = (
         ROOT / "ops" / "runner-host" / "pc" / "actions-runner-ci.service.template"

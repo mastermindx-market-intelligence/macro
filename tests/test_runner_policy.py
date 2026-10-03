@@ -927,3 +927,308 @@ def test_r14_requires_the_exact_pending_platform_label_list_without_traceback(
     assert result.returncode == 1
     assert "R14" in result.stdout
     assert "Traceback" not in result.stderr
+
+
+# ── AD-1T2 producer lane (R15) ──────────────────────────────────────────────────
+# Specialized route clause that MUST NOT piggyback on custom_routes/R5:
+# options-intel fires on workflow_dispatch AND workflow_run, and R5 expects
+# dispatch-only with a hosted trust-gate upstream — incompatible by design.
+# These tests pin the contract exactly.
+
+OPTIONS_INTEL_BASE = (
+    "on:\n"
+    "  workflow_dispatch:\n"
+    "    inputs:\n"
+    "      run_id:\n"
+    "        description: \"daily run id to source inputs from\"\n"
+    "        required: false\n"
+    "  workflow_run:\n"
+    "    workflows: [daily]\n"
+    "    types: [completed]\n"
+    "concurrency:\n"
+    "  group: options-intel\n"
+    "  cancel-in-progress: false\n"
+    "permissions:\n"
+    "  contents: write\n"
+    "jobs:\n"
+    "  options_intel:\n"
+    "    if: >-\n"
+    "      vars.AD1_M1_LANE == 'on' &&\n"
+    "      (github.event_name == 'workflow_dispatch' ||\n"
+    "       github.event.workflow_run.conclusion == 'success')\n"
+    "    runs-on: [self-hosted, m1-theta]\n"
+    "    timeout-minutes: 45\n"
+    "    steps:\n"
+    "      - run: echo ok\n"
+)
+
+
+def _options_intel_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
+    """Build a minimal fixture that includes the AD-1T2 options-intel
+    workflow alongside the standard runtime fleet so R15 + R6 have something
+    concrete to evaluate.
+    """
+
+    root, registry, workflows = fixture_tree(tmp_path)
+    write_synthetic_workflow(workflows, "options-intel.yml", OPTIONS_INTEL_BASE)
+    selected = (
+        "mastermindx-market-intelligence/macro/.github/workflows/"
+        "options-intel.yml@refs/heads/main"
+    )
+
+    def _add_selected(doc: dict) -> None:
+        existing = doc["runtime_runner_group"]["selected_workflows"]
+        if selected not in existing:
+            existing.append(selected)
+
+    mutate_registry(registry, _add_selected)
+    return root, registry, workflows
+
+
+def test_options_intel_route_satisfies_r15(tmp_path: Path) -> None:
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_options_intel_route_rejects_wrong_runs_on_label(tmp_path: Path) -> None:
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["options_intel"]["runs-on"] = ["self-hosted", "macstudio"]
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+    assert "exactly" in result.stdout
+
+
+def test_options_intel_route_rejects_broad_production_label_leak(tmp_path: Path) -> None:
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["options_intel"]["runs-on"] = ["self-hosted", "m1-theta", "theta-m1"]
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+    assert "leaked broad production" in result.stdout
+
+
+def test_options_intel_route_rejects_wrong_trigger_set(tmp_path: Path) -> None:
+    """`schedule:` (no waiver possible here), missing workflow_run, or an
+    extra event ALL fail R15 — the contract is the exact trigger pair.
+    Build the dicts directly: yaml.safe_load maps the bare key `on:` to the
+    boolean `True` under YAML 1.1, so a literal-string parse cannot address
+    the same key the runner-policy parser uses. Each scenario gets its own
+    fixture sub-tree so the file system does not collide between iterations.
+    """
+
+    scenarios = (
+        # adds schedule — would silently subscribe a heavy M1 job to cron
+        {
+            "workflow_dispatch": {},
+            "workflow_run": {"workflows": ["daily"], "types": ["completed"]},
+            "schedule": [{"cron": "5 5 * * *"}],
+        },
+        # drops workflow_run — the same-cycle inputs would never land
+        {"workflow_dispatch": {}},
+        # drops workflow_dispatch — W4 canary/measurement carrier would be lost
+        {"workflow_run": {"workflows": ["daily"], "types": ["completed"]}},
+    )
+    for index, bad_triggers in enumerate(scenarios):
+        case = tmp_path / f"case-{index}"
+        case.mkdir()
+        root, registry, workflows = _options_intel_fixture(case)
+        write_synthetic_workflow(workflows, "options-intel.yml", OPTIONS_INTEL_BASE)
+        path = workflows / "options-intel.yml"
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
+        document["on"] = bad_triggers
+        path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+        result = run_guard(root, registry, workflows)
+        assert result.returncode == 1, f"bad triggers {bad_triggers!r} must fail R15"
+        assert "R15" in result.stdout
+
+
+def test_options_intel_route_rejects_workflow_run_target_other_than_daily(tmp_path: Path) -> None:
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    on_section = document["on"] if "on" in document else document[True]
+    on_section["workflow_run"]["workflows"] = ["rogue"]
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+
+
+def test_options_intel_route_rejects_workflow_run_type_other_than_completed(tmp_path: Path) -> None:
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    on_section = document["on"] if "on" in document else document[True]
+    on_section["workflow_run"]["types"] = ["requested"]
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+
+
+def test_options_intel_route_requires_ad1_m1_lane_inactive_by_default(tmp_path: Path) -> None:
+    """Dropping the `vars.AD1_M1_LANE == 'on'` gate makes the lane LIVE by
+    default — the precise failure class this work exists to end. R15 refuses.
+    """
+
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["options_intel"]["if"] = (
+        "github.event_name == 'workflow_dispatch' || "
+        "github.event.workflow_run.conclusion == 'success'"
+    )
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+    assert "inactive-by-default" in result.stdout
+
+
+def test_options_intel_route_requires_workflow_run_success_conclusion(tmp_path: Path) -> None:
+    """A workflow_run path that does NOT require the daily run's `success`
+    conclusion would let the producer score on a half-broken nightly — R15
+    refuses.
+    """
+
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["options_intel"]["if"] = "vars.AD1_M1_LANE == 'on'"
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+    assert "conclusion" in result.stdout
+
+
+def test_options_intel_route_rejects_missing_options_intel_job(tmp_path: Path) -> None:
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    del document["jobs"]["options_intel"]
+    document["jobs"]["rogue_producer"] = {
+        "runs-on": ["self-hosted", "m1-theta"],
+        "if": "vars.AD1_M1_LANE == 'on'",
+        "steps": [{"run": "echo ok"}],
+    }
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+    assert "options_intel job is missing" in result.stdout
+
+
+def test_options_intel_route_rejects_unregistered_selected_workflow(tmp_path: Path) -> None:
+    """The runner-group `selected_workflows` set MUST list options-intel —
+    otherwise the runner-group would refuse to admit it at the GitHub side,
+    and the producer would never run. The runtime R1 clause names the
+    contract.
+    """
+
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    selected = (
+        "mastermindx-market-intelligence/macro/.github/workflows/"
+        "options-intel.yml@refs/heads/main"
+    )
+
+    def _drop(doc: dict) -> None:
+        existing = doc["runtime_runner_group"]["selected_workflows"]
+        if selected in existing:
+            existing.remove(selected)
+
+    mutate_registry(registry, _drop)
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R1" in result.stdout
+
+
+def test_options_intel_route_registered_in_r6_allowed_set_after_validations(
+    tmp_path: Path,
+) -> None:
+    """Once R15 is satisfied the route joins `allowed_custom` and the
+    m1-theta custom label no longer raises R6 — the R6 allowed-set only
+    opens AFTER the exact validations pass.
+    """
+
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "R6" not in result.stdout
+    assert "unregistered migration-label consumer" not in result.stdout
+
+
+def test_options_intel_route_falls_back_to_r6_when_r15_fails(tmp_path: Path) -> None:
+    """If the exact R15 contract is broken, the route is NOT registered in
+    the allowed-custom set — the m1-theta consumer then raises R6. The two
+    rules gate together; a broken route is reported under BOTH R15 and R6.
+
+    Drop the inactive-by-default AD1_M1_LANE gate so R15 fires on the
+    `if` contract while the m1-theta label is still used in runs-on — that
+    is exactly the case where R6's allowed-set registration is supposed to
+    close up.
+    """
+
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["options_intel"]["if"] = (
+        "github.event_name == 'workflow_dispatch' || "
+        "github.event.workflow_run.conclusion == 'success'"
+    )
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+    assert "R6" in result.stdout
+    assert "unregistered migration-label consumer" in result.stdout
+
+
+def test_options_intel_workflow_disk_guard_and_runner_name_assertion_precede_checkout(
+    tmp_path: Path,
+) -> None:
+    """The runner-name assertion + installed disk guard MUST be the first
+    substantive step — before `actions/checkout@v4` and before `pip install`
+    — so a mis-routed host or unhealthy disk is caught BEFORE a 14k-file
+    checkout + cold pip have run. The pytest source reads the workflow file
+    directly and asserts the structural order of the steps.
+    """
+
+    workflow = yaml.safe_load((ROOT / ".github" / "workflows" / "options-intel.yml").read_text())
+    job = workflow["jobs"]["options_intel"]
+    steps = job["steps"]
+
+    runner_guard_position = None
+    checkout_position = None
+    pip_position = None
+    for index, step in enumerate(steps):
+        if not isinstance(step, dict):
+            continue
+        run = str(step.get("run", ""))
+        if "${RUNNER_NAME:-}" in run and "m1-nightly-2" in run:
+            runner_guard_position = index
+        if step.get("uses") == "actions/checkout@v4":
+            checkout_position = index
+        if "pip install" in run and "requirements.txt" in run:
+            pip_position = index
+
+    assert runner_guard_position is not None, (
+        "options-intel.yml must carry the RUNNER_NAME=m1-nightly-2 + "
+        "runner_disk_guard --mode full assertion step"
+    )
+    assert checkout_position is not None, "options-intel.yml must still checkout"
+    assert pip_position is not None, "options-intel.yml must still pip install requirements"
+    assert runner_guard_position < checkout_position, (
+        "the runner-name + disk-guard step MUST come before actions/checkout"
+    )
+    assert runner_guard_position < pip_position, (
+        "the runner-name + disk-guard step MUST come before pip install"
+    )

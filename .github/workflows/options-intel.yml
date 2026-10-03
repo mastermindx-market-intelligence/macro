@@ -102,6 +102,24 @@ jobs:
       - name: timings — job start mark (W2)
         run: date +%s > "${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"
 
+      - name: runner identity + full disk guard (AD-1T2 — first substantive step)
+        # Host assertion + the full-work floor run BEFORE checkout and pip so
+        # a mis-routed runner (e.g. a `m1-theta`-labelled store-less runner)
+        # or an unhealthy disk is rejected at the gate, not after a 14k-file
+        # checkout + cold pip install have already run. The runner_name is the
+        # ONE physical host identity this lane admits (verified online/idle via
+        # `gh api …/actions/runners` carrying `[self-hosted, m1-theta]`); the
+        # disk guard is the existing installed helper and remains fail-closed
+        # at the 200GiB full-work floor. Listener startup stays lightweight for
+        # diagnostics.
+        run: |
+          test "${RUNNER_NAME:-}" = m1-nightly-2 \
+            || { echo "::error title=ad1-lane::this runner is NOT m1-nightly-2 (got RUNNER_NAME=${RUNNER_NAME:-unset}); refusing to run the store-bearing producer on an unverified host"; exit 78; }
+          "$HOME/runner-guard/bin/runner_disk_guard.py" \
+            --path "$(cd "$RUNNER_WORKSPACE/.." && pwd)" \
+            --mode full \
+            || { echo "::error title=ad1-lane::disk guard refused this lane — the M1 is below the 200GiB full-work floor or at emergency pressure. See RUNNER_DISK_GUARD above."; exit 78; }
+
       - uses: actions/checkout@v4
         with:
           ref: main

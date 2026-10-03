@@ -28,7 +28,23 @@ if [ -f "$runner_root/.env" ]; then
     export "$key=$value"
   done < "$runner_root/.env"
 fi
-export ACTIONS_RUNNER_HOOK_JOB_STARTED="$guard_root/runner_admission_m1_canary.js"
-export MASTERMIND_CI_PROFILE=m1-canary
+# ── AD-1T2 PROFILE BINDING ───────────────────────────────────────────────────
+# Each runner root carries the runner's canonical name (the basename of its
+# directory — e.g. `m1-canary` or `m1-nightly-2`). The admission hook profile
+# is derived from THAT name, never from the host's hostname, so the canary
+# root preserves its existing profile and only the new m1-nightly-2 root
+# receives the AD-1T2 producer-lane profile. This is the binding the ruling
+# pins: profile m1-nightly-2 is allowed ONLY on the runner named m1-nightly-2,
+# preserving every other runner's profile intact.
+case "$(basename "$runner_root")" in
+  m1-nightly-2)
+    export ACTIONS_RUNNER_HOOK_JOB_STARTED="$guard_root/runner_admission_m1_nightly_2.js"
+    export MASTERMIND_CI_PROFILE=m1-nightly-2
+    ;;
+  *)
+    export ACTIONS_RUNNER_HOOK_JOB_STARTED="$guard_root/runner_admission_m1_canary.js"
+    export MASTERMIND_CI_PROFILE=m1-canary
+    ;;
+esac
 cd "$runner_root"
 exec "$runner_root/bin/Runner.Listener" run --startuptype service
