@@ -1,8 +1,8 @@
 {
   "schema": "operator_exposure_summary.v1",
-  "generated_at": "2026-10-03T12:01:06.409041+00:00",
+  "generated_at": "2026-10-03T15:19:35.211652+00:00",
   "window_days": 90,
-  "n_rows_in_window": 402,
+  "n_rows_in_window": 403,
   "by_day": [
     {
       "as_of": "2026-09-30",
@@ -13,7 +13,7 @@
     {
       "as_of": "2026-10-01",
       "counts": {
-        "board_buy": 55,
+        "board_buy": 56,
         "board_watch": 62,
         "alert_wh": 1
       }

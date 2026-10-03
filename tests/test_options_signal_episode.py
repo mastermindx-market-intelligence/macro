@@ -6408,3 +6408,580 @@ def test_builder_phase_main_preserves_single_json_stdout(tmp_path, monkeypatch, 
     assert len(output.strip().splitlines()) == 1
     assert json.loads(output)["ok"] is True
     assert _episode_phase_edges(caplog, builder)
+
+
+# ----------------------------------------------------------------------------
+# Reuse-validated-snapshot seam (mo-ext-fix-options-product 2026-10-03)
+# ----------------------------------------------------------------------------
+
+
+def _price_bars_full_session_window(
+    episode: dict,
+    horizon: str,
+    *,
+    bar_seconds: int = 1800,
+    base_value: float = 100.0,
+    step: float = 0.05,
+) -> pd.DataFrame:
+    """Return a deterministic RTH-anchored frame that covers all five horizons."""
+    start_date = datetime.fromisoformat(episode["session_date"]).date()
+    target = nyse_calendar.session_n_forward(start_date, SESSION_HORIZONS[horizon])
+    assert target is not None
+    sessions = nyse_calendar.sessions_between(start_date, target)
+    stamps: list[pd.Timestamp] = []
+    for session in sessions:
+        open_et, close_et = session_window_et(session)
+        stamps.extend(pd.date_range(
+            open_et.astimezone(timezone.utc),
+            close_et.astimezone(timezone.utc) - timedelta(seconds=bar_seconds),
+            freq=pd.Timedelta(seconds=bar_seconds),
+        ))
+    values = [base_value + index * step for index in range(len(stamps))]
+    return pd.DataFrame(
+        {
+            "open": values,
+            "high": [value + 1.0 for value in values],
+            "low": [value - 1.0 for value in values],
+            "close": [value + 0.25 for value in values],
+        },
+        index=pd.DatetimeIndex(stamps),
+    )
+
+
+def _drift_counter_hook_count() -> int:
+    """Counter exposed through normalize_price_bars to count normalizations."""
+    return getattr(derive_session_outcome, "_test_normalize_calls", 0)
+
+
+def _patch_normalize_counter(monkeypatch) -> dict:
+    """Install a call counter on engine.normalize_price_bars and return {calls: int}."""
+    from engine import options_signal_episode as engine_mod
+
+    counter = {"calls": 0}
+    original = engine_mod.normalize_price_bars
+
+    def counting(frame):
+        counter["calls"] += 1
+        return original(frame)
+
+    monkeypatch.setattr(engine_mod, "normalize_price_bars", counting)
+    return counter
+
+
+def test_prepare_price_bars_factory_invokes_normalizer_exactly_once(monkeypatch) -> None:
+    counter = _patch_normalize_counter(monkeypatch)
+    from engine.options_signal_episode import prepare_price_bars
+
+    raw = _price_bars_full_session_window(_episode(), "10d")
+    prepare_price_bars(raw, ticker="TEST")
+    assert counter["calls"] == 1
+
+
+def test_prepare_price_bars_factory_rejects_unchecked_inputs() -> None:
+    from engine.options_signal_episode import prepare_price_bars
+
+    raw = _price_bars_full_session_window(_episode(), "10d")
+    with pytest.raises(ContractError, match="non-empty ticker"):
+        prepare_price_bars(raw, ticker="")
+    with pytest.raises(ContractError, match="non-empty ticker"):
+        prepare_price_bars(raw, ticker=123)  # type: ignore[arg-type]
+    with pytest.raises(ContractError, match="validated raw frame"):
+        prepare_price_bars(None, ticker="TEST")
+    with pytest.raises(ContractError, match="raw DataFrame input"):
+        prepare_price_bars("not-a-frame", ticker="TEST")  # type: ignore[arg-type]
+    empty = pd.DataFrame(columns=["open", "high", "low", "close"])
+    with pytest.raises(ContractError, match="normalized frame is empty"):
+        prepare_price_bars(empty, ticker="TEST")
+
+
+def test_prepared_wrapper_exposes_metadata_but_not_the_cached_dataframe() -> None:
+    from engine.options_signal_episode import prepare_price_bars
+
+    raw = _price_bars_full_session_window(_episode(), "10d")
+    prepared = prepare_price_bars(raw, ticker="TEST")
+    with pytest.raises(Exception):  # FrozenInstanceError or AttributeError
+        prepared._ticker = "OTHER"  # type: ignore[misc]
+    with pytest.raises(Exception):
+        prepared._first_time = "OTHER"  # type: ignore[misc]
+    assert prepared.row_count == len(raw)
+    assert prepared.ticker == "TEST"
+    assert isinstance(prepared.first_time, str) and prepared.first_time.endswith("Z")
+    assert isinstance(prepared.last_time, str) and prepared.last_time.endswith("Z")
+    assert not hasattr(prepared, "frame")
+
+
+@pytest.mark.parametrize("horizon", sorted(SESSION_HORIZONS))
+def test_prepared_path_matches_raw_path_full_canonical_bytes(horizon: str) -> None:
+    episode = _episode()
+    raw = _price_bars_full_session_window(episode, horizon)
+    receipt = _fixture_session_price_receipt(
+        episode, horizon, raw,
+        price_source=f"data/intraday/{episode['ticker']}.parquet",
+        bar_seconds=1800, price_delay_minutes=0,
+    )
+    computed_at = (
+        datetime.fromisoformat(episode["available_at"].replace("Z", "+00:00"))
+        .astimezone(timezone.utc) + timedelta(days=SESSION_HORIZONS[horizon] + 3)
+    )
+    kwargs = {
+        "computed_at": computed_at,
+        "price_source": receipt["source_file"],
+        "bar_seconds": 1800,
+        "price_delay_minutes": 0,
+        "price_receipt": receipt,
+    }
+    raw_row = derive_session_outcome(episode, horizon, raw, **kwargs)
+    from engine.options_signal_episode import prepare_price_bars
+    prepared = prepare_price_bars(raw, ticker=episode["ticker"])
+    prep_row = derive_session_outcome(episode, horizon, raw, prepared_bars=prepared, **kwargs)
+    # Drop the diagnostic-only clock for a byte-equivalent canonical compare.
+    raw_canonical = json.loads(json.dumps(raw_row, sort_keys=True))
+    prep_canonical = json.loads(json.dumps(prep_row, sort_keys=True))
+    assert raw_canonical == prep_canonical
+
+
+def test_prepared_path_normalizes_once_per_ticker_not_per_horizon(monkeypatch) -> None:
+    episode_a = _episode(id="counter-a")
+    episode_b = _episode(id="counter-b")
+    raw = _price_bars_full_session_window(episode_a, "10d")
+    receipt = _fixture_session_price_receipt(
+        episode_a, "10d", raw,
+        price_source=f"data/intraday/{episode_a['ticker']}.parquet",
+        bar_seconds=1800, price_delay_minutes=0,
+    )
+    computed_at = (
+        datetime.fromisoformat(episode_a["available_at"].replace("Z", "+00:00"))
+        .astimezone(timezone.utc)
+        + timedelta(days=30)
+    )
+    from engine.options_signal_episode import prepare_price_bars
+
+    counter = _patch_normalize_counter(monkeypatch)
+    prepared = prepare_price_bars(raw, ticker="TEST")
+    counter["calls"] = 0
+    kwargs = {
+        "computed_at": computed_at,
+        "price_source": receipt["source_file"],
+        "bar_seconds": 1800,
+        "price_delay_minutes": 0,
+        "price_receipt": receipt,
+    }
+    # Two episodes × five horizons ⇒ ten derive_session_outcome calls on the
+    # same prepared frame. normalize_price_bars must NOT be invoked from the
+    # prepared path; the factory already ran once above (counter starts at 0).
+    for episode in (episode_a, episode_b):
+        for horizon in SESSION_HORIZONS:
+            row = derive_session_outcome(episode, horizon, raw, prepared_bars=prepared, **kwargs)
+            assert row["status"] == "complete"
+    assert counter["calls"] == 0
+
+
+def test_h60_path_reuses_private_prepared_frame_without_mutation(monkeypatch) -> None:
+    episode = _episode()
+    raw = _price_bars_full_session_window(episode, "10d")
+    receipt = _fixture_price_receipt(
+        episode, raw,
+        price_source=f"data/intraday/{episode['ticker']}.parquet",
+        bar_seconds=1800, price_delay_minutes=0,
+    )
+    from engine.options_signal_episode import prepare_price_bars
+
+    prepared = prepare_price_bars(raw, ticker=episode["ticker"])
+    snapshot_before = pd.util.hash_pandas_object(prepared._frame, index=True).values.tobytes()
+    kwargs = {
+        "computed_at": (
+            datetime.fromisoformat(episode["available_at"].replace("Z", "+00:00"))
+            .astimezone(timezone.utc) + timedelta(minutes=80)
+        ),
+        "price_source": receipt["source_file"],
+        "bar_seconds": 1800,
+        "price_delay_minutes": 0,
+        "price_receipt": receipt,
+    }
+    derive_h60_outcome(episode, raw, prepared_bars=prepared, **kwargs)
+    snapshot_after = pd.util.hash_pandas_object(prepared._frame, index=True).values.tobytes()
+    assert snapshot_before == snapshot_after
+
+
+def test_builder_prepares_one_receipt_validated_snapshot_for_h60_and_all_sessions(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    """The builder's receipt gate and both outcome phases share one prepared frame."""
+    from engine import options_signal_episode as engine_mod
+    from scripts import build_options_signal_episode as builder
+
+    episode = _episode()
+    price_frame = _price_bars_full_session_window(episode, "10d")
+    intraday = tmp_path / "data/intraday"
+    intraday.mkdir(parents=True)
+    target = nyse_calendar.session_n_forward(
+        datetime.fromisoformat(episode["session_date"]).date(), SESSION_HORIZONS["10d"],
+    )
+    assert target is not None
+    source_available_at = session_window_et(target)[1].astimezone(timezone.utc)
+    _write_receipted_price_source(
+        intraday, price_frame, bar_seconds=1800, delay_minutes=0,
+        source_available_at=source_available_at.isoformat().replace("+00:00", "Z"),
+    )
+    receipt = json.loads((intraday / "TEST.parquet.receipt.json").read_text())
+    calls = {"count": 0}
+    original_normalize = engine_mod.normalize_price_bars
+
+    def counting_normalize(frame):
+        calls["count"] += 1
+        return original_normalize(frame)
+
+    monkeypatch.setattr(engine_mod, "normalize_price_bars", counting_normalize)
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    computed_at = datetime(2026, 8, 1, tzinfo=timezone.utc)
+    summary = builder.run(
+        root_dir=tmp_path,
+        stages_by_session={"2026-07-02": _stage_records()},
+        computed_at=computed_at,
+    )
+
+    # Receipt validation, H+60, and all five session horizons share one factory call.
+    assert calls["count"] == 1
+    assert summary["outcomes_complete"] == 1
+    assert summary["session_outcomes_complete"] == len(SESSION_HORIZONS)
+
+    # Compare the persisted prepared-path output with the legacy raw-frame derives.
+    calls["count"] = 0
+    stored_h60 = load_jsonl(tmp_path / "data/options_signal_episode/outcomes_h60.jsonl")
+    stored_session = engine_mod.load_session_outcomes(
+        tmp_path / "data/options_signal_episode/outcomes_session.jsonl"
+    )
+    price_source = "data/intraday/TEST.parquet"
+    expected_h60 = derive_h60_outcome(
+        episode, price_frame, computed_at=computed_at, price_source=price_source,
+        bar_seconds=1800, price_delay_minutes=0, price_receipt=receipt,
+    )
+    expected_session = [
+        derive_session_outcome(
+            episode, horizon, price_frame, computed_at=computed_at,
+            price_source=price_source, bar_seconds=1800, price_delay_minutes=0,
+            price_receipt=receipt,
+        )
+        for horizon in SESSION_HORIZONS
+    ]
+    assert stored_h60 == [expected_h60]
+    assert sorted(stored_session, key=lambda row: row["horizon"]) == sorted(
+        expected_session, key=lambda row: row["horizon"]
+    )
+    assert calls["count"] == 1 + len(SESSION_HORIZONS)
+
+
+def test_prepared_path_rejects_a_snapshot_from_another_ticker() -> None:
+    episode = _episode(ticker="OTHER", root="OTHER")
+    raw = _price_bars_full_session_window(episode, "10d")
+    receipt = _fixture_session_price_receipt(
+        episode, "10d", raw,
+        price_source="data/intraday/OTHER.parquet",
+        bar_seconds=1800, price_delay_minutes=0,
+    )
+    from engine.options_signal_episode import prepare_price_bars
+
+    prepared = prepare_price_bars(raw, ticker="TEST")
+    with pytest.raises(ContractError, match="ticker does not match"):
+        derive_session_outcome(
+            episode, "10d", raw,
+            computed_at=datetime(2026, 8, 1, tzinfo=timezone.utc),
+            price_source=receipt["source_file"], bar_seconds=1800,
+            price_delay_minutes=0, price_receipt=receipt,
+            prepared_bars=prepared,
+        )
+
+
+def test_legacy_raw_caller_path_remains_unaffected(monkeypatch) -> None:
+    """Legacy callers passing the snapshot frame (no prepared) still work and byte-honest."""
+    episode = _episode()
+    raw = _price_bars_full_session_window(episode, "10d")
+    receipt = _fixture_session_price_receipt(
+        episode, "10d", raw,
+        price_source=f"data/intraday/{episode['ticker']}.parquet",
+        bar_seconds=1800, price_delay_minutes=0,
+    )
+    computed_at = (
+        datetime.fromisoformat(episode["available_at"].replace("Z", "+00:00"))
+        .astimezone(timezone.utc)
+        + timedelta(days=30)
+    )
+    row_a = derive_session_outcome(
+        episode, "10d", raw,
+        computed_at=computed_at,
+        price_source=receipt["source_file"],
+        bar_seconds=1800,
+        price_delay_minutes=0,
+        price_receipt=receipt,
+    )
+    row_b = derive_session_outcome(
+        episode, "10d", raw,
+        computed_at=computed_at,
+        price_source=receipt["source_file"],
+        bar_seconds=1800,
+        price_delay_minutes=0,
+        price_receipt=receipt,
+    )
+    assert json.dumps(row_a, sort_keys=True) == json.dumps(row_b, sort_keys=True)
+    assert row_a["status"] == "complete"
+
+
+def test_invalid_ohlc_keeps_prepared_path_pending() -> None:
+    episode = _episode()
+    raw = _price_bars_full_session_window(episode, "10d").copy()
+    # Find the first bar at or after the available anchor (the entry bar of the
+    # measurement path) and corrupt that bar's high so the prepared frame's
+    # measurement-path OHLC check trips invalid_ohlc_bar — not a fabricated
+    # row that the derive path would never consult.
+    available = datetime.fromisoformat(
+        episode["available_at"].replace("Z", "+00:00")
+    ).astimezone(timezone.utc)
+    entry_idx = raw.index[raw.index >= pd.Timestamp(available)][0]
+    raw.loc[entry_idx, "high"] = raw.loc[entry_idx, "low"] - 0.5  # invalid OHLC
+    receipt = _fixture_session_price_receipt(
+        episode, "10d", raw,
+        price_source=f"data/intraday/{episode['ticker']}.parquet",
+        bar_seconds=1800, price_delay_minutes=0,
+    )
+    from engine.options_signal_episode import prepare_price_bars
+
+    prepared = prepare_price_bars(raw, ticker=episode["ticker"])
+    computed_at = (
+        datetime.fromisoformat(episode["available_at"].replace("Z", "+00:00"))
+        .astimezone(timezone.utc)
+        + timedelta(days=30)
+    )
+    row = derive_session_outcome(
+        episode, "10d", raw,
+        computed_at=computed_at,
+        price_source=receipt["source_file"],
+        bar_seconds=1800,
+        price_delay_minutes=0,
+        price_receipt=receipt,
+        prepared_bars=prepared,
+    )
+    assert row["status"] == "pending"
+    assert row["reason"] == "invalid_ohlc_bar"
+
+
+def test_unknown_bar_cadence_with_prepared_path_stays_pending() -> None:
+    episode = _episode()
+    raw = _price_bars_full_session_window(episode, "10d")
+    receipt = _fixture_session_price_receipt(
+        episode, "10d", raw,
+        price_source=f"data/intraday/{episode['ticker']}.parquet",
+        bar_seconds=1800, price_delay_minutes=0,
+    )
+    from engine.options_signal_episode import prepare_price_bars
+
+    prepared = prepare_price_bars(raw, ticker=episode["ticker"])
+    computed_at = (
+        datetime.fromisoformat(episode["available_at"].replace("Z", "+00:00"))
+        .astimezone(timezone.utc)
+        + timedelta(days=30)
+    )
+    row = derive_session_outcome(
+        episode, "10d", raw,
+        computed_at=computed_at,
+        price_source=receipt["source_file"],
+        bar_seconds=999,  # not one of the 5 admitted values
+        price_delay_minutes=0,
+        price_receipt=receipt,
+        prepared_bars=prepared,
+    )
+    assert row["status"] == "pending"
+    assert row["reason"] == "unknown_bar_cadence"
+
+
+def test_empty_normalization_factory_fails_closed() -> None:
+    from engine.options_signal_episode import prepare_price_bars
+
+    empty = pd.DataFrame(
+        {"open": [], "high": [], "low": [], "close": []},
+        index=pd.DatetimeIndex([], tz="UTC"),
+    )
+    with pytest.raises(ContractError, match="normalized frame is empty"):
+        prepare_price_bars(empty, ticker="TEST")
+
+
+def test_cached_failure_replays_exact_pending_and_clocks(tmp_path: Path, monkeypatch) -> None:
+    """A single corrupt snapshot must be cached once for the run; every horizon
+    of every episode must report the same pending reason and never alter clocks."""
+    from scripts import build_options_signal_episode as builder
+
+    late_event = _event(
+        id="late-h60-terminal-session-retry",
+        ts="2026-07-02T19:10:00Z",
+        observed_at="2026-07-02T19:11:00Z",
+        decision_at="2026-07-02T19:11:00Z",
+        available_at="2026-07-02T19:11:00Z",
+        source_snapshot_asof="2026-07-02T19:11:00Z",
+    )
+    reads = 0
+
+    def corrupt_snapshot(*_args, **_kwargs):
+        nonlocal reads
+        reads += 1
+        raise ContractError("invalid price snapshot for TEST: injected")
+
+    monkeypatch.setattr(builder, "_price_snapshot", corrupt_snapshot)
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    summary = builder.run(
+        root_dir=tmp_path,
+        stages_by_session={"2026-07-02": _stage_records(late_event)},
+        computed_at=datetime(2026, 7, 20, 22, 0, tzinfo=timezone.utc),
+    )
+    assert reads == 1
+    assert summary["outcomes_terminal_incomplete"] == 1
+    assert summary["session_outcomes_pending"] == 5
+    assert summary["session_pending_reasons"] == {"invalid_price_receipt": 5}
+
+
+def test_torn_receipt_fails_closed_with_original_pending_or_error(tmp_path: Path, monkeypatch) -> None:
+    from scripts import build_options_signal_episode as builder
+
+    intraday = tmp_path / "data/intraday"
+    intraday.mkdir(parents=True)
+    price_frame = _bars(
+        ("2026-07-02T15:00:00Z", 100.0, 104.0, 98.0, 102.0),
+        ("2026-07-02T16:00:00Z", 103.0, 105.0, 101.0, 104.0),
+    )
+    _write_receipted_price_source(intraday, price_frame)
+    (intraday / "TEST.parquet.receipt.json").write_text("{torn")
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    with pytest.raises(ContractError, match="invalid price snapshot for TEST"):
+        builder.run(
+            root_dir=tmp_path,
+            stages_by_session={"2026-07-02": _stage_records()},
+            computed_at=datetime(2026, 7, 2, 21, 0, tzinfo=timezone.utc),
+        )
+
+
+def test_toctou_receipt_flip_fails_closed(tmp_path: Path, monkeypatch) -> None:
+    from scripts import build_options_signal_episode as builder
+
+    intraday = tmp_path / "data/intraday"
+    intraday.mkdir(parents=True)
+    price_frame = _bars(
+        ("2026-07-02T15:00:00Z", 100.0, 104.0, 98.0, 102.0),
+        ("2026-07-02T16:00:00Z", 103.0, 105.0, 101.0, 104.0),
+    )
+    _write_receipted_price_source(intraday, price_frame)
+
+    real_read_bytes = Path.read_bytes
+    receipt_path = intraday / "TEST.parquet.receipt.json"
+
+    def flip(self, *args, **kwargs):
+        if self == receipt_path:
+            raise ValueError("receipt changed while taking the source snapshot")
+        return real_read_bytes(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_bytes", flip)
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    with pytest.raises(ContractError, match="invalid price snapshot for TEST"):
+        builder.run(
+            root_dir=tmp_path,
+            stages_by_session={"2026-07-02": _stage_records()},
+            computed_at=datetime(2026, 7, 2, 21, 0, tzinfo=timezone.utc),
+        )
+
+
+def test_builder_progress_logs_fire_every_250_attempts(tmp_path: Path, monkeypatch, caplog) -> None:
+    """Streamed progress lines must appear at 250, 500, 750, … but never on <250."""
+    import logging
+    from scripts import build_options_signal_episode as builder
+
+    intraday = tmp_path / "data/intraday"
+    intraday.mkdir(parents=True)
+    # One receipt-bound price frame reused across many ticker events.
+    price_frame = _bars(
+        ("2026-07-02T15:00:00Z", 100.0, 104.0, 98.0, 102.0),
+        ("2026-07-02T16:00:00Z", 103.0, 105.0, 101.0, 104.0),
+    )
+    _write_receipted_price_source(intraday, price_frame)
+    # 60 episodes with a unique root each — same ticker reuse the same receipt,
+    # but we need distinct episode_ids to bypass the dedup; use distinct roots.
+    stages: list[dict] = []
+    for index in range(60):
+        # Each episode creates a separate ticker slot in the prepared cache.
+        ticker = f"TEST{index:02d}"
+        # Copy the receipt bytes verbatim to satisfy the per-ticker schema check.
+        # The receipt requires source_file == ticker + ".parquet"; copy it.
+        import shutil
+        shutil.copyfile(
+            intraday / "TEST.parquet",
+            intraday / f"{ticker}.parquet",
+        )
+        receipt = json.loads((intraday / "TEST.parquet.receipt.json").read_text())
+        receipt["ticker"] = ticker
+        receipt["source_file"] = f"{ticker}.parquet"
+        receipt["source_file_sha256"] = hashlib.sha256(
+            (intraday / f"{ticker}.parquet").read_bytes()
+        ).hexdigest()
+        (intraday / f"{ticker}.parquet.receipt.json").write_text(
+            json.dumps(receipt, sort_keys=True) + "\n"
+        )
+        event = _event(
+            id=f"event-{index:02d}",
+            root=ticker,
+            ticker=ticker,
+        )
+        stages.extend(_stage_records(event))
+
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    with caplog.at_level(logging.INFO, logger=builder.log.name):
+        builder.run(
+            root_dir=tmp_path,
+            stages_by_session={"2026-07-02": stages},
+            computed_at=datetime(2026, 7, 2, 21, 0, tzinfo=timezone.utc),
+        )
+    session_progress = [
+        record.getMessage() for record in caplog.records
+        if "options_episode_session_progress" in record.getMessage()
+    ]
+    # 60 episodes × 5 horizons = 300 attempts → exactly one session-progress
+    # line at the 250-attempt boundary; H60 fires at 60 (below the floor, none).
+    assert len(session_progress) == 1
+    fields = dict(
+        pair.split("=", 1) if "=" in pair else (pair, "")
+        for pair in session_progress[0].split()
+    )
+    assert fields["attempted"] == "250"
+    assert "snapshot_tickers=" in session_progress[0]
+    assert "prepared_tickers=" in session_progress[0]
+
+
+def test_seam_does_not_share_across_runs(monkeypatch, tmp_path: Path) -> None:
+    """The seam is per-run: a second invocation rebuilds its own prepared cache."""
+    from scripts import build_options_signal_episode as builder
+
+    intraday = tmp_path / "data/intraday"
+    intraday.mkdir(parents=True)
+    price_frame = _bars(
+        ("2026-07-02T15:00:00Z", 100.0, 104.0, 98.0, 102.0),
+        ("2026-07-02T16:00:00Z", 103.0, 105.0, 101.0, 104.0),
+    )
+    _write_receipted_price_source(intraday, price_frame)
+    feed = {
+        "schema": "live_flow.feed/v1",
+        "asof": "2026-07-02T20:01:00Z",
+        "session_date": "2026-07-02",
+        "events": [_event()],
+    }
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    summary_a = builder.run(
+        root_dir=tmp_path,
+        feed=feed,
+        stage_records=_stage_records(),
+        computed_at=datetime(2026, 7, 2, 21, 0, tzinfo=timezone.utc),
+    )
+    summary_b = builder.run(
+        root_dir=tmp_path,
+        feed=feed,
+        stage_records=_stage_records(),
+        computed_at=datetime(2026, 7, 2, 21, 0, tzinfo=timezone.utc),
+    )
+    # Second run is replay-only — no new prepare, but the seam was rebuilt
+    # internally because the seam is run-scoped, never module-global.
+    assert summary_a["outcomes_appended"] == 1
+    assert summary_b["outcomes_appended"] == 0

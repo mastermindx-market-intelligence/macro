@@ -1,6 +1,6 @@
 {
 "filter":"idx_ndx",
-"as_of":"2026-10-03 03:55 UTC",
+"as_of":"2026-10-03 15:03 UTC",
 "n":101,
 "total_reported":101,
 "unmapped_industries":[],
@@ -27,7 +27,7 @@
 "industry":"Internet Content & Information",
 "sector":"Communication Services",
 "country":"USA",
-"market_cap_b":4185.03
+"market_cap_b":4183.59
 },
 {
 "ticker":"GOOGL",
@@ -35,7 +35,7 @@
 "industry":"Internet Content & Information",
 "sector":"Communication Services",
 "country":"USA",
-"market_cap_b":4182.43
+"market_cap_b":4183.59
 },
 {
 "ticker":"MSFT",
