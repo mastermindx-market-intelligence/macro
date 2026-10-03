@@ -36,7 +36,7 @@ from __future__ import annotations
 import json
 import logging
 import math
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -218,6 +218,27 @@ def snapshot(payload: dict, member_map: dict | None = None,
 # --------------------------------------------------------------------------- #
 # maturation + member-EW forward returns
 # --------------------------------------------------------------------------- #
+def _session_horizon_end(start: date | str, horizon_sessions: int) -> str:
+    """NYSE session exactly horizon_sessions after the observation session.
+
+    The track-record contract describes 5/10/21/63-session outcomes. Calendar-day
+    arithmetic matures Friday observations too early across weekends/holidays and
+    grades a different economic horizon. Legacy non-session stamps are normalized
+    to the last real session before stepping forward.
+    """
+    if isinstance(horizon_sessions, bool) or not isinstance(horizon_sessions, int) or horizon_sessions <= 0:
+        raise ValueError("horizon_sessions must be a positive integer")
+    d = _as_date(start)
+    if d is None:
+        raise ValueError(f"unparseable session: {start!r}")
+    d = nyse_calendar.last_session_on_or_before(d)
+    remaining = horizon_sessions
+    while remaining:
+        d += timedelta(days=1)
+        if nyse_calendar.is_session(d):
+            remaining -= 1
+    return d.isoformat()
+
 def _member_ret(ticker: str, root: Path, start: str, end: str) -> float | None:
     p0, p1 = _level_asof(ticker, root, start), _close_at(ticker, root, end)
     if p0 in (None, 0) or p1 is None:
@@ -226,9 +247,9 @@ def _member_ret(ticker: str, root: Path, start: str, end: str) -> float | None:
 
 
 def _fwd_basket(members: list, root: Path, start: str, horizon_d: int) -> float | None:
-    """Equal-weight mean forward return of the frozen members we can price, minus SPY."""
+    """Equal-weight frozen-member return over exactly horizon_d NYSE sessions, minus SPY."""
     try:
-        end = (pd.Timestamp(start) + pd.Timedelta(days=horizon_d)).strftime("%Y-%m-%d")
+        end = _session_horizon_end(start, horizon_d)
         rets = [r for t in (members or []) if (r := _member_ret(t, root, start, end)) is not None]
         if len(rets) < _MIN_PRICED:
             return None
@@ -239,14 +260,13 @@ def _fwd_basket(members: list, root: Path, start: str, horizon_d: int) -> float 
     except Exception:  # noqa: BLE001
         return None
 
-
 def _matured(rows: list, root: Path, horizon_d: int, today: date) -> list[dict]:
     out = []
     for r in rows:
         try:
-            if (pd.Timestamp(today) - pd.Timestamp(r["date"])).days < horizon_d:
+            end = _session_horizon_end(r["date"], horizon_d)
+            if today < date.fromisoformat(end):
                 continue
-            end = (pd.Timestamp(r["date"]) + pd.Timedelta(days=horizon_d)).strftime("%Y-%m-%d")
             if not _covers(_BENCH, root, end):
                 continue
             fwd = _fwd_basket(r.get("members"), root, r["date"], horizon_d)
@@ -257,23 +277,26 @@ def _matured(rows: list, root: Path, horizon_d: int, today: date) -> list[dict]:
             continue
     return out
 
-
 def _window_span(ic_dates: list, horizon_d: int) -> dict:
-    """Calendar span of the IC-days and how many NON-OVERLAPPING horizon-length windows it
-    covers. This — not the matured row count — is the honest sample size of a time-series
-    statistic built from daily cross-sections of one universe (see _MIN_INDEP_WINDOWS)."""
+    """Exact NYSE-session span of IC dates and non-overlapping horizon windows."""
     if not ic_dates:
         return {"ic_first_date": None, "ic_last_date": None,
-                "ic_span_days": 0, "indep_windows": 0.0}
+                "ic_span_days": 0, "ic_span_sessions": 0, "indep_windows": 0.0}
     first, last = min(ic_dates), max(ic_dates)
     try:
-        span = int((pd.Timestamp(last) - pd.Timestamp(first)).days)
+        first_d, last_d = _as_date(first), _as_date(last)
+        if first_d is None or last_d is None:
+            raise ValueError("unparseable IC date")
+        first_s = nyse_calendar.last_session_on_or_before(first_d)
+        last_s = nyse_calendar.last_session_on_or_before(last_d)
+        span_days = max(0, (last_s - first_s).days)
+        span_sessions = max(0, len(nyse_calendar.sessions_between(first_s, last_s)) - 1)
     except Exception:  # noqa: BLE001
-        span = 0
-    win = max(1.0, float(horizon_d) * _TD_TO_CALENDAR)
+        span_days, span_sessions = 0, 0
+    win = max(1, int(horizon_d))
     return {"ic_first_date": first, "ic_last_date": last,
-            "ic_span_days": span, "indep_windows": round(span / win, 2)}
-
+            "ic_span_days": span_days, "ic_span_sessions": span_sessions,
+            "indep_windows": round(span_sessions / win, 2)}
 
 def _iid_t(ic: dict) -> float | None:
     """Plain iid t of the per-date IC series — mean / (sd / sqrt(n)). The NO-correction
@@ -384,35 +407,36 @@ def _recent_misses(rows: list, horizon_d: int, k: int = 8) -> list[dict]:
 
 
 def _head_to_head(out_h: dict) -> dict:
-    """Incumbent rank vs turn-engine rank, per horizon — a scoreboard, not a verdict.
+    """Paired incumbent-vs-turn scoreboard by horizon; deliberately no global winner.
 
-    Deliberately prints both ICs and the gap and stops there. Declaring a winner needs the
-    same bar any promotion needs (matured n plus a Newey-West t), and until a horizon
-    reaches it the honest word is "measuring" — the turn engine ships because its
-    arithmetic is defensible, not because this table already favours it.
+    Each horizon compares only rows carrying both score fields. The legacy implementation
+    displayed incumbent IC on all incumbent rows beside v2 IC on a smaller subset and then
+    overwrote a global leader while iterating horizons. That was neither paired nor
+    order-invariant. Keep the legacy key for consumers, but leave it null.
     """
     rows = {}
-    lead = None
     for h, e in out_h.items():
         v2 = e.get("v2") or {}
-        a, b = e.get("score_ic"), v2.get("score_ic")
-        rows[h] = {"n": e.get("n_matured"), "n_v2": v2.get("n_matured"),
-                   "ic": a, "ic_v2": b,
-                   "gap": (round(b - a, 4) if (a is not None and b is not None) else None),
-                   "t_hac": e.get("score_ic_t_hac"), "t_hac_v2": v2.get("score_ic_t_hac")}
-        if (v2.get("n_matured") or 0) >= _MIN_PROVEN_N and b is not None and a is not None:
-            lead = "v2" if b > a else "incumbent"
-    return {"by_horizon": rows, "leader": lead,
-            "note": ("Both ranks graded on the same matured rows and the same rule. No "
-                     "horizon has enough matured turn-engine observations to call a "
-                     "winner yet." if lead is None else
-                     f"At the current matured counts the {lead} rank carries the higher "
-                     "information coefficient — still measuring, not promoted."),
-            "note_zh": ("两套排序在相同到期样本、相同规则下评分。目前尚无周期积累足够的转向"
-                        "引擎观测以判定优劣。" if lead is None else
-                        "在当前到期样本量下，" + ("转向引擎" if lead == "v2" else "原排序")
-                        + "的信息系数更高——仍在测量中，未获提升。")}
-
+        pair = e.get("comparison") or {}
+        a, b = pair.get("score_ic"), pair.get("score_ic_v2")
+        rows[h] = {
+            "n": e.get("n_matured"),
+            "n_v2": v2.get("n_matured"),
+            "n_paired": pair.get("n_paired"),
+            "ic": a,
+            "ic_v2": b,
+            "gap": (round(b - a, 4) if (a is not None and b is not None) else None),
+            "t_hac": pair.get("score_ic_t_hac"),
+            "t_hac_v2": pair.get("score_ic_t_hac_v2"),
+        }
+    return {
+        "by_horizon": rows,
+        "leader": None,
+        "note": ("Paired same-row ICs are reported separately by horizon. No global winner "
+                 "is declared from unequal populations or horizon iteration order."),
+        "note_zh": ("各周期仅报告同一批成对样本的信息系数；不再根据不等样本或周期遍历顺序"
+                    "给出全局胜者。"),
+    }
 
 # --------------------------------------------------------------------------- #
 # FRONT-FACING NOTE — one table, one guard
@@ -552,6 +576,12 @@ def compute(today: date | str | None = None, root: Path | None = None,
             # legitimately disagree on n — that is disclosed, not averaged away.
             mat_v2 = [r for r in mat if r.get("score_v2") is not None]
             ic_v2 = _daily_ic(mat_v2, h, field="score_v2")
+            # Head-to-head claims must use an identical population. Keep standalone
+            # incumbent/v2 diagnostics above, but compare only rows carrying BOTH scores.
+            mat_pair = [r for r in mat
+                        if r.get("score") is not None and r.get("score_v2") is not None]
+            ic_pair = _daily_ic(mat_pair, h, field="score")
+            ic_v2_pair = _daily_ic(mat_pair, h, field="score_v2")
             t_gate, anticon = _gate_t(ic, h)
             out_h[str(h)] = {
                 "n_matured": len(mat),
@@ -563,6 +593,7 @@ def compute(today: date | str | None = None, root: Path | None = None,
                 "hac_anticonservative": anticon,
                 # independent-window disclosure — the honest n of a time-series gate
                 "ic_span_days": ic.get("ic_span_days"),
+                "ic_span_sessions": ic.get("ic_span_sessions"),
                 "indep_windows": ic.get("indep_windows"),
                 "indep_windows_required": _MIN_INDEP_WINDOWS,
                 "score_ic_detail": ic,
@@ -572,6 +603,13 @@ def compute(today: date | str | None = None, root: Path | None = None,
                     "score_ic": ic_v2.get("mean_ic"),
                     "score_ic_t_hac": ic_v2.get("t_hac"),
                     "by_stage": _by_stage(mat_v2, field="stage_v2"),
+                },
+                "comparison": {
+                    "n_paired": len(mat_pair),
+                    "score_ic": ic_pair.get("mean_ic"),
+                    "score_ic_v2": ic_v2_pair.get("mean_ic"),
+                    "score_ic_t_hac": ic_pair.get("t_hac"),
+                    "score_ic_t_hac_v2": ic_v2_pair.get("t_hac"),
                 },
             }
             if h == 21:                                  # error ledger from the 21d window
