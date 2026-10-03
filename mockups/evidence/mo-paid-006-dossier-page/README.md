@@ -176,7 +176,14 @@ slice never relies on a hover tooltip to communicate.
   16/16 EZ cells — both EZ fixtures, `euro_area` and
   `euro_area_outage` (href `#europe-news`) — and absent on
   24/24 non-EZ cells — R2–R4b claimed it absent on every
-  EZ cell, which was stale. The link's CSS is the standard `.imd-dossier-more` rule; its
+  EZ cell, which was stale. **Fixture-only state, disclosed (Opus R4c review
+  MINOR):** production never renders this link over an empty table —
+  `scripts/build_international_macro.py:137-138` nulls a `europe_news` packet
+  with no items before the template sees it — so the 16 EZ cells here show
+  the link above an empty `#europe-news` table, a state the served page cannot
+  produce. 16/16 is the correct expectation for THIS fixture, not a production
+  claim; a recapture that wants a producible EZ state must feed the fixture at
+  least one wire item (next-recapture-round item 3 below). The link's CSS is the standard `.imd-dossier-more` rule; its
   presence/absence is pinned by build-lane test 12
   (`tests/test_international_macro_dossier_page.py`).
 
@@ -206,8 +213,13 @@ No credentials. No network beyond the local fixture server.
 - The `united_kingdom` fixture lists its two items newest-first, matching
   the engine's `reverse=True` sort, so the card's "Latest" date equals the
   top row's date (R2 showed Latest 2026-09-24 above a 2026-10-02 row).
-- Every colour probe waits for theme.js's `html.soft-contrast` palette and
-  records `soft_contrast` on the row (R2 rows sampled light cells before
+- Every colour probe waits up to 5 s for theme.js's `html.soft-contrast`
+  palette (`_settle`; the timeout is swallowed BY DESIGN so absence is recorded
+  on the row, never hidden) and records `soft_contrast` on the row. In this run
+  one rest row timed out — `united_kingdom` dark/en/desktop reads
+  `soft_contrast: false` — and its `headline_color_rest`
+  `color(srgb 0.478431 0.654902 0.878431)` equals its zh twin's (which read
+  true), so the timeout had no colour effect on that row (R2 rows sampled light cells before
   the palette applied: `--ink-link` 0.151216/0.344784/0.902588 vs
   0.159686/0.354667/0.917647 — a capture race, not a design difference).
 - `stance_attr` is read from `.imd-dossier-read`, where the template puts it.
@@ -230,6 +242,24 @@ No credentials. No network beyond the local fixture server.
   pins the recorded blob to the committed template, so a template edit without a
   recapture reds CI. The R4c commit changes no template byte, so the pin stays
   true in the committed tree.
+- **Scope of the pin (Opus R4c review MINOR):** `scope.template_blob` pins the
+  top-level `templates/international_macro.html.j2` ONLY. The render loads the
+  worktree `templates/` directory, so the partials that template pulls in are
+  not covered by that blob. Their blobs at this commit (unchanged since the
+  recorded `source_commit` 40fe0576 — `git diff --stat 40fe0576 548cdd13 -- templates`
+  is empty), so the claim is checkable with `git rev-parse <commit>:templates/<name>`:
+  `_risk_radar_card.html.j2` `3431444b855b`, `_seo_head.html.j2` `1a0f1a7cd3a8`,
+  `_risk_radar_card.css.j2` `73d27c46f9bf`, `_site_nav.html.j2` `9848b9366d43`
+  (which includes `_navlinks.html.j2` `aed9fa1bd5be`).
+- **Next recapture round (NOT done here — each is a capture.py edit, and a
+  capture-tool edit requires a re-run, so none belongs in a README-only commit):**
+  (1) extend `_template_provenance` to the include set above and record it in
+  `scope`; (2) refuse a cell at capture time when the observed `data-theme`/`data-lang`
+  differ from the requested cell — today that equality is enforced by
+  `test_mo_paid_006_dom_rows_observe_theme_lang_and_wire_link`, which reds CI on
+  any mismatch (40/40 equal in this run), not by the tool at capture time;
+  (3) feed the EZ fixture at least one wire item so the EZ cells depict a
+  producible state.
 - **Full recapture by one module** (tool version 4, `d26164d4d380`) on the
   same mini2 host, at HEAD 40fe0576 with a clean worktree: 52 attempted / 52 captured / 8 expected-miss excluded; dom rows 40.
 - **ZH leadership probe** reads the `.l-zh` span for zh rows and records the
@@ -247,5 +277,6 @@ No credentials. No network beyond the local fixture server.
   pixels to HEAD); the EZ wire link is measured per cell (`more_link_count`,
   `more_link_href`) instead of asserted absent; README named-path and
   Chinese-DOM claims replaced by the run's counts above.
-- `soft_contrast` reads true on 39/40 rest rows in this run (the palette-settle
-  caveat above applies to the remainder; the interaction rows settle before every read).
+- `soft_contrast` reads true on 39/40 rest rows in this run; the one false row is
+  `united_kingdom` dark/en/desktop (the 5 s wait timed out; its rest colour equals
+  its settled zh twin — see the palette note above). All 12 interaction rows read true.
