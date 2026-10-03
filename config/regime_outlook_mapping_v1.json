@@ -132,7 +132,9 @@
         "cooling",
         "steady"
       ],
-      "middle": "steady",
+      "middle_tokens": [
+        "steady"
+      ],
       "verdict_class": "banded",
       "evidence_family_id": "core_pce",
       "producer": "engine/rate_inflation_transmission.py:251-254,295",
@@ -174,7 +176,9 @@
         "at target",
         "below target"
       ],
-      "middle": "at target",
+      "middle_tokens": [
+        "at target"
+      ],
       "verdict_class": "banded",
       "evidence_family_id": "core_pce",
       "producer": "engine/rate_inflation_transmission.py:252-253",
@@ -211,7 +215,9 @@
         "drifting down",
         "anchored"
       ],
-      "middle": "anchored",
+      "middle_tokens": [
+        "anchored"
+      ],
       "verdict_class": "banded",
       "evidence_family_id": "treasury_curve",
       "producer": "engine/rate_inflation_transmission.py:257-261,305",
@@ -248,7 +254,9 @@
         "falling",
         "stable"
       ],
-      "middle": "stable",
+      "middle_tokens": [
+        "stable"
+      ],
       "verdict_class": "banded",
       "evidence_family_id": "treasury_curve",
       "producer": "engine/rate_inflation_transmission.py:226-230,272",
@@ -285,7 +293,9 @@
         "accommodative",
         "neutral"
       ],
-      "middle": "neutral",
+      "middle_tokens": [
+        "neutral"
+      ],
       "verdict_class": "banded",
       "evidence_family_id": "treasury_curve",
       "producer": "engine/rate_inflation_transmission.py:225-229",
@@ -321,7 +331,9 @@
         "rising",
         "flat"
       ],
-      "middle": "flat",
+      "middle_tokens": [
+        "flat"
+      ],
       "verdict_class": "banded",
       "evidence_family_id": "treasury_curve",
       "producer": "engine/rate_inflation_transmission.py:401,422-423,448,456",
@@ -359,7 +371,7 @@
         "choppy",
         "n/a"
       ],
-      "middle": null,
+      "middle_tokens": [],
       "verdict_class": "composite",
       "evidence_family_id": "treasury_curve",
       "producer": "engine/rate_inflation_transmission.py:410-421",
@@ -391,7 +403,9 @@
         "stable",
         null
       ],
-      "middle": "stable",
+      "middle_tokens": [
+        "stable"
+      ],
       "verdict_class": "banded",
       "evidence_family_id": "treasury_curve",
       "producer": "engine/yield_curve.py:522-523",
@@ -424,7 +438,9 @@
         "extreme_low_watch",
         null
       ],
-      "middle": null,
+      "middle_tokens": [
+        null
+      ],
       "verdict_class": "composite",
       "evidence_family_id": "treasury_curve",
       "producer": "engine/yield_momentum.py:159-182,274-275,297-300",
@@ -480,7 +496,9 @@
         "labor firm",
         "labor mixed"
       ],
-      "middle": "labor mixed",
+      "middle_tokens": [
+        "labor mixed"
+      ],
       "verdict_class": "composite",
       "evidence_family_id": "labour",
       "producer": "engine/conditions.py:738-748",
@@ -528,7 +546,9 @@
         "tight",
         null
       ],
-      "middle": "neutral",
+      "middle_tokens": [
+        "neutral"
+      ],
       "verdict_class": "banded",
       "evidence_family_id": "credit_and_funding",
       "producer": "engine/conditions.py:535-538,622",
@@ -565,7 +585,7 @@
         true,
         false
       ],
-      "middle": null,
+      "middle_tokens": [],
       "verdict_class": "banded",
       "evidence_family_id": "participation",
       "producer": "engine/conditions.py:973-974",
@@ -618,7 +638,7 @@
         "contracting",
         "unknown"
       ],
-      "middle": null,
+      "middle_tokens": [],
       "verdict_class": "composite",
       "evidence_family_id": "credit_and_funding",
       "producer": "engine/regime.py:111-124,127",
@@ -648,7 +668,7 @@
         true,
         false
       ],
-      "middle": null,
+      "middle_tokens": [],
       "verdict_class": "composite",
       "evidence_family_id": "credit_and_funding",
       "producer": "engine/regime.py:183-202",
@@ -695,7 +715,9 @@
         "warn",
         "bad"
       ],
-      "middle": "warn",
+      "middle_tokens": [
+        "warn"
+      ],
       "verdict_class": "composite",
       "evidence_family_id": "participation",
       "producer": "engine/market_state.py:100-105,317-321",
@@ -736,7 +758,7 @@
         "CRACKING",
         "BROKEN"
       ],
-      "middle": null,
+      "middle_tokens": [],
       "verdict_class": "banded",
       "evidence_family_id": "leader_damage",
       "producer": "engine/leadership_crack.py:40-58,237-288,319-323,342",
@@ -776,7 +798,12 @@
       "tokens": {
         "type": "integer"
       },
-      "middle": 0,
+      "middle_tokens": [
+        {
+          "op": "eq",
+          "value": 0
+        }
+      ],
       "verdict_class": "banded",
       "evidence_family_id": "policy_pricing",
       "producer": "engine/fed_path.py:32,131-132,155-158",
