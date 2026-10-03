@@ -1573,6 +1573,17 @@ def canonical_bindings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     }
 
 
+@pytest.fixture
+def portable_plutil(tmp_path: Path) -> Path:
+    """Stage the portable plutil stub for tests that drive the helper
+    directly (not through the wrapper harness). Pair with a
+    ``monkeypatch.setattr(BINDING, "PLUTIL_BIN", str(stub))`` so the
+    module's ``_plutil_agent_name`` consults the stub instead of the
+    system ``/usr/bin/plutil`` (which may be absent on Linux CI).
+    """
+    return _stage_portable_plutil(tmp_path)
+
+
 def _plutil_extract_agent_name(runner_file: str) -> str:
     """Mirror the production ``/usr/bin/plutil -extract agentName raw -o -``
     extractor so the helper is exercised against the real plist bytes written
@@ -1810,17 +1821,27 @@ def test_runner_binding_refuses_missing_runner_root(
 
 
 def test_runner_binding_main_module_emits_run_50_binding_for_canonical(
-    canonical_bindings, monkeypatch: pytest.MonkeyPatch, capsys
+    canonical_bindings,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys,
+    portable_plutil: Path,
 ) -> None:
     """The helper's CLI emits a single ``RUNNER_BINDING=`` JSON line and
     exits 0 for a canonical pair. RED-first: the previous wrapper did not
     produce a receipt; the new helper surfaces the (root, agentName,
     profile) tuple to ``_diag`` for post-incident forensics.
+
+    The helper's production ``_plutil_agent_name`` references
+    ``/usr/bin/plutil`` directly via the module-level ``PLUTIL_BIN``
+    constant; on Linux CI that binary is absent, so the test patches
+    ``PLUTIL_BIN`` to the staged portable stub. The production module
+    keeps ``/usr/bin/plutil`` unchanged.
     """
 
     runner_root = canonical_bindings["runner_2"]
     _write_runner_identity(runner_root, "m1-nightly-2")
 
+    monkeypatch.setattr(BINDING, "PLUTIL_BIN", str(portable_plutil))
     monkeypatch.setattr(sys, "argv", ["runner_binding.py", str(runner_root)])
     rc = BINDING.main()
     assert rc == 0
@@ -1959,6 +1980,122 @@ def test_runner_binding_extract_profile_prefixed_payload_exits_78(
     assert "could not extract" in captured.out
 
 
+# ── AD-1T2 round 3: portable plutil stub so the test suite runs on Linux CI
+# The production helper's ``_plutil_agent_name`` shells out to
+# ``/usr/bin/plutil``; on Linux runners that binary is absent, so the three
+# tests that drive the helper's real CLI through ``main()`` (initial
+# resolution of a canonical binding) cannot exercise the production path.
+# The wrapper-harness tests already stage a portable stub at the helper
+# level via :func:`_stage_helper_with_bindings`; the standalone
+# ``test_runner_binding_main_module_emits_run_50_binding_for_canonical``
+# test is patched through the ``portable_plutil`` fixture. These two tests
+# pin the portability contract directly: the module's ``_plutil_agent_name``
+# path round-trips a canonical binding through the portable stub, and a
+# malformed plist still surfaces as ``RunnerBindingRefused("unreadable ...")``.
+
+
+def test_runner_binding_module_uses_the_portable_plutil_stub(
+    canonical_bindings, monkeypatch: pytest.MonkeyPatch, portable_plutil: Path
+) -> None:
+    """Drive ``resolve_profile`` with the module's REAL
+    ``_plutil_agent_name`` (no injection) and the production-shaped
+    ``(root=actions-runner-2, agentName=m1-nightly-2)`` canonical pair.
+    ``PLUTIL_BIN`` is redirected to the portable stub so this test runs
+    on hosts without ``/usr/bin/plutil`` (Linux CI). RED-first on the
+    previous head: the production ``_plutil_agent_name`` called
+    ``/usr/bin/plutil`` via ``subprocess.run``; on Linux CI it raised
+    ``FileNotFoundError`` and the helper's ``except Exception`` block
+    wrapped it as ``RunnerBindingRefused("unreadable .runner at ...")``,
+    so this assertion failed on every Linux CI run. The portable stub
+    re-implements ONLY the production contract so the real code path is
+    still exercised.
+    """
+    runner_root = canonical_bindings["runner_2"]
+    _write_runner_identity(runner_root, "m1-nightly-2")
+    monkeypatch.setattr(BINDING, "PLUTIL_BIN", str(portable_plutil))
+
+    profile, agent_name = BINDING.resolve_profile(
+        str(runner_root),
+        isfile=os.path.isfile,
+        isdir=os.path.isdir,
+        extract_agent_name=BINDING._plutil_agent_name,
+    )
+    assert profile == "m1-nightly-2"
+    assert agent_name == "m1-nightly-2"
+
+
+def test_portable_plutil_stub_refuses_malformed_metadata(
+    canonical_bindings, monkeypatch: pytest.MonkeyPatch, portable_plutil: Path
+) -> None:
+    """The portable plutil stub surfaces a non-zero exit (and a stderr
+    line) for a malformed plist, so the helper's real
+    ``_plutil_agent_name`` subprocess fails and ``resolve_profile`` wraps
+    it as ``RunnerBindingRefused("unreadable .runner at ...")``. RED-first:
+    a stub that silently returned an empty string would leave the helper
+    with an empty ``agentName``, which the existing empty-string test
+    would refuse — but the failure would carry the wrong cause ("missing
+    agentName") instead of the actionable root cause
+    ("unreadable .runner at ...").
+    """
+    runner_root = canonical_bindings["runner_2"]
+    runner_root.mkdir(exist_ok=True)
+    (runner_root / ".runner").write_text("this is not a plist", encoding="utf-8")
+    monkeypatch.setattr(BINDING, "PLUTIL_BIN", str(portable_plutil))
+
+    with pytest.raises(BINDING.RunnerBindingRefused) as excinfo:
+        BINDING.resolve_profile(
+            str(runner_root),
+            isfile=os.path.isfile,
+            isdir=os.path.isdir,
+            extract_agent_name=BINDING._plutil_agent_name,
+        )
+    assert "unreadable" in str(excinfo.value)
+
+
+def test_runner_binding_module_forces_absence_of_production_plutil(
+    canonical_bindings, monkeypatch: pytest.MonkeyPatch, portable_plutil: Path
+) -> None:
+    """Force ``PLUTIL_BIN`` at a path where the production
+    ``/usr/bin/plutil`` cannot exist (a tmp_path-relative file that is
+    never created) and prove the suite still passes once the stub is in
+    place. This is the explicit "force absence of production plutil
+    path" test the META-CEO round-3 ruling called for: it does NOT rely
+    on the system ``/usr/bin/plutil`` being present, present-but-broken,
+    or absent — only the staged stub is consulted by the helper's real
+    ``_plutil_agent_name`` subprocess call.
+    """
+    runner_root = canonical_bindings["runner_2"]
+    _write_runner_identity(runner_root, "m1-nightly-2")
+
+    # 1. Confirm the absence: PLUTIL_BIN pointed at a path that does not
+    #    exist on the host makes the real _plutil_agent_name fail with
+    #    FileNotFoundError, which the helper wraps as RunnerBindingRefused.
+    missing = portable_plutil.parent / "absent-plutil-forced-missing"
+    assert not missing.exists()
+    monkeypatch.setattr(BINDING, "PLUTIL_BIN", str(missing))
+    with pytest.raises(BINDING.RunnerBindingRefused) as excinfo:
+        BINDING.resolve_profile(
+            str(runner_root),
+            isfile=os.path.isfile,
+            isdir=os.path.isdir,
+            extract_agent_name=BINDING._plutil_agent_name,
+        )
+    assert "unreadable" in str(excinfo.value)
+
+    # 2. Repoint to the portable stub and prove the same canonical pair
+    #    round-trips. The same _plutil_agent_name code path is exercised;
+    #    only the binary it shells out to has changed.
+    monkeypatch.setattr(BINDING, "PLUTIL_BIN", str(portable_plutil))
+    profile, agent_name = BINDING.resolve_profile(
+        str(runner_root),
+        isfile=os.path.isfile,
+        isdir=os.path.isdir,
+        extract_agent_name=BINDING._plutil_agent_name,
+    )
+    assert profile == "m1-nightly-2"
+    assert agent_name == "m1-nightly-2"
+
+
 # ── AD-1T2 round 2: wrapper-level harness driving the REAL helper ─────────
 # These tests run the real wrapper script against a temp runner_root +
 # temp guard_root. The temp guard_root stages a copy of the real
@@ -1975,16 +2112,89 @@ _CANONICAL_BINDINGS_RE = re.compile(
     re.DOTALL | re.MULTILINE,
 )
 
+_PLUTIL_BIN_RE = re.compile(
+    r'^PLUTIL_BIN\s*=\s*"/usr/bin/plutil"\s*$',
+    re.MULTILINE,
+)
+
+#: Test-only portable plutil stub implementing the production M1 wrapper
+#: contract ``/usr/bin/plutil -extract agentName raw -o - <file>`` using
+#: the stdlib ``plistlib`` so the test suite runs unchanged on macOS,
+#: Linux, and Windows CI without a system plutil binary. The production
+#: ``runner_binding.py`` keeps ``/usr/bin/plutil``; the test harness
+#: rewrites ``PLUTIL_BIN`` in the staged helper copy to point at this
+#: stub. See :func:`_stage_portable_plutil` and the ``portable_plutil``
+#: fixture for the staging paths.
+_PORTABLE_PLUTIL_STUB = (
+    "#!/usr/bin/env python3\n"
+    '"""Portable plutil stub — test harness only (production uses /usr/bin/plutil)."""\n'
+    "import plistlib\n"
+    "import sys\n"
+    "\n"
+    "\n"
+    "def main() -> int:\n"
+    "    args = sys.argv[1:]\n"
+    '    expected = ["-extract", "agentName", "raw", "-o", "-"]\n'
+    "    if len(args) < 6 or args[:5] != expected:\n"
+    '        sys.stderr.write(\n'
+    '            "portable plutil stub: unsupported invocation: "\n'
+    "            + repr(args)\n"
+    '            + "\\n"\n'
+    "        )\n"
+    "        return 2\n"
+    "    runner_file = args[5]\n"
+    "    try:\n"
+    '        with open(runner_file, "rb") as handle:\n'
+    "            document = plistlib.load(handle)\n"
+    "    except Exception as exc:\n"
+    '        sys.stderr.write(\n'
+    '            "portable plutil stub: cannot parse "\n'
+    "            + runner_file\n"
+    '            + ": " + str(exc) + "\\n"\n'
+    "        )\n"
+    "        return 1\n"
+    '    value = document.get("agentName")\n'
+    "    if not isinstance(value, str):\n"
+    '        sys.stderr.write(\n'
+    '            "portable plutil stub: agentName is not a string in "\n'
+    "            + runner_file\n"
+    '            + "\\n"\n'
+    "        )\n"
+    "        return 1\n"
+    "    sys.stdout.write(value)\n"
+    "    return 0\n"
+    "\n"
+    "\n"
+    'if __name__ == "__main__":\n'
+    "    raise SystemExit(main())\n"
+)
+
+
+def _stage_portable_plutil(directory: Path) -> Path:
+    """Write the portable plutil stub to ``directory/plutil`` and chmod
+    0755. Returns the absolute path of the staged executable.
+    """
+    stub = directory / "plutil"
+    stub.write_text(_PORTABLE_PLUTIL_STUB, encoding="utf-8")
+    stub.chmod(0o755)
+    return stub
+
 
 def _stage_helper_with_bindings(
-    guard_root: Path, bindings: dict[tuple[str, str], str]
+    guard_root: Path,
+    bindings: dict[tuple[str, str], str],
+    *,
+    plutil_bin: Path,
 ) -> Path:
     """Stage a copy of ``runner_binding.py`` at ``guard_root`` whose
     ``CANONICAL_BINDINGS`` literal is rewritten to include the test's
-    temp ``(runner_root, agent_name)`` pairs. The helper's
+    temp ``(runner_root, agent_name)`` pairs AND whose ``PLUTIL_BIN`` is
+    rewritten to point at the staged portable plutil stub. The helper's
     ``resolve_profile`` consults ``CANONICAL_BINDINGS`` at import time so
     the rewrite is necessary for the wrapper's subprocess invocation to
-    see the temp path as a canonical pair.
+    see the temp path as a canonical pair; the ``PLUTIL_BIN`` rewrite is
+    necessary so the helper does not depend on a system ``/usr/bin/plutil``
+    that may be absent on Linux CI.
     """
     real = (
         ROOT / "ops" / "runner-host" / "common" / "runner_binding.py"
@@ -1995,6 +2205,10 @@ def _stage_helper_with_bindings(
     new_block = f"CANONICAL_BINDINGS: dict[tuple[str, str], str] = {{\n{new_lines}\n}}"
     patched, count = _CANONICAL_BINDINGS_RE.subn(new_block, real, count=1)
     assert count == 1, "did not substitute CANONICAL_BINDINGS in helper copy"
+    patched, count = _PLUTIL_BIN_RE.subn(
+        f"PLUTIL_BIN = {str(plutil_bin)!r}", patched, count=1
+    )
+    assert count == 1, "did not rewrite PLUTIL_BIN in helper copy"
     target = guard_root / "runner_binding.py"
     target.write_text(patched, encoding="utf-8")
     target.chmod(0o755)
@@ -2041,7 +2255,8 @@ def _stage_wrapper_harness(
 
     guard_root = tmp_path / "guard"
     guard_root.mkdir()
-    _stage_helper_with_bindings(guard_root, bindings)
+    plutil_bin = _stage_portable_plutil(guard_root)
+    _stage_helper_with_bindings(guard_root, bindings, plutil_bin=plutil_bin)
     for name in (
         "runner_disk_guard.py",
         "runner_log_maintenance.py",
