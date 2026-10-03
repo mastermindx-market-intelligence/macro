@@ -15,9 +15,11 @@ from engine.company_intelligence.event_workspace import (
 from engine.company_intelligence.events import EventError, parse_canonical_event_id
 from engine.earnings_release.filing_key import FilingIdentityError, filing_key_from_8k_row
 from engine.entry_radar.catalyst_context import (
+    CatalystContext,
     CatalystContextError,
     CatalystEvidence,
     _require_ts,
+    assess_catalyst_context_for_live_episode,
 )
 
 EDGAR_EARNINGS_OWNER = "collectors.edgar_earnings_8k"
@@ -174,4 +176,72 @@ def adapt_company_intelligence_earnings_workspace(
         known_at=consumer_observed,
         owner_disposition="blocking",
         evidence_ref=f"{COMPANY_EVENT_EVIDENCE_PREFIX}{native_id}",
+    )
+
+
+def assess_company_intelligence_current_read_for_live_episode(
+    *,
+    episode: Any,
+    read_result: Mapping[str, Any],
+    read_observed_at: datetime,
+    decision_at: datetime,
+) -> CatalystContext:
+    """Compose one prospective owner read with a validated Radar episode.
+
+    The input envelope must be the shape returned by Company Intelligence
+    ``read_current_event_workspace``. This helper performs no network or filesystem read.
+    It is forward-shadow only: an unavailable/currently-uncovered result remains
+    ``coverage_unknown`` and never becomes evidence that no catalyst existed historically.
+    """
+    if not isinstance(read_result, Mapping):
+        raise CatalystContextError("Company Intelligence current read must be a mapping")
+    if read_result.get("authority") != "context_only" or read_result.get("is_context_only") is not True:
+        raise CatalystContextError(
+            "Company Intelligence current read must preserve context_only authority"
+        )
+    available = read_result.get("available")
+    if type(available) is not bool:
+        raise CatalystContextError("Company Intelligence current read requires boolean available")
+
+    observed = _require_ts("read_observed_at", read_observed_at)
+    base = assess_catalyst_context_for_live_episode(
+        episode=episode,
+        decision_at=decision_at,
+        required_sources=[COMPANY_EVENT_OWNER],
+        source_reads=[],
+        evidence=[],
+    )
+
+    if not available:
+        return base
+
+    read_ticker = str(read_result.get("ticker") or "").strip().upper()
+    if read_ticker != base.ticker:
+        raise CatalystContextError(
+            f"Company Intelligence read ticker {read_ticker!r} does not match Radar episode "
+            f"ticker {base.ticker!r}"
+        )
+    workspace = read_result.get("workspace")
+    if not isinstance(workspace, Mapping):
+        raise CatalystContextError("available Company Intelligence read carries no workspace")
+    receipt = read_result.get("receipt")
+    if not isinstance(receipt, Mapping):
+        raise CatalystContextError("available Company Intelligence read carries no receipt")
+    workspace_sha = str(receipt.get("workspace_sha256") or "")
+    if len(workspace_sha) != 64 or any(ch not in "0123456789abcdef" for ch in workspace_sha):
+        raise CatalystContextError(
+            "available Company Intelligence read carries no valid workspace SHA-256 receipt"
+        )
+
+    evidence = adapt_company_intelligence_earnings_workspace(
+        workspace,
+        ticker=base.ticker,
+        owner_observed_at=observed,
+    )
+    return assess_catalyst_context_for_live_episode(
+        episode=episode,
+        decision_at=decision_at,
+        required_sources=[COMPANY_EVENT_OWNER],
+        source_reads=[],
+        evidence=[evidence],
     )
