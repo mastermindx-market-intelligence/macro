@@ -953,26 +953,90 @@ class TestSourceClockCarrier:
                 f"({fresh_past}), got {node['as_of']!r}"
             )
 
-    def test_compile_does_not_mint_today_for_missing_md_asof(self, tmp_path):
-        """R2: missing md_asof must yield explicit null clock + reason, not today."""
-        regime = _make_regime(md_asof=_FRESH_ASOF, md_primary="ai_semis", md_verdict="clear")
-        regime["market_drivers"].pop("asof", None)
-        regime.pop("asof", None)
-        regime.pop("date", None)
+    def test_compile_does_not_mint_today_for_missing_md_asof(self, tmp_path, md_state):
+        """C2: missing market_drivers.asof must yield no_pathway(trigger_stale)
+        even when the regime wrapper carries `asof` and `date`. The compiler
+        must NEVER substitute the wrapper date for a missing driver clock.
+        Parametrised over three md clock states: key absent, value None, value "".
+        """
+        # Build the regime directly so wrapper dates stay put and we control
+        # the market_drivers.asof state precisely.
+        wrapper_date = "2026-10-01"
+        regime = {
+            "asof": wrapper_date,
+            "date": wrapper_date,
+            "market_drivers": {
+                "verdict": "clear",
+                "primary": "ai_semis",
+                "runner_up": "china_stimulus",
+                "agreement": 0.80,
+                "direction": "AI/semis unwind",
+                "direction_zh": "AI/半导体回调",
+                "dir_sign": "-1",
+                "strength": 1.36,
+                "dominance_ratio": 1.48,
+                "confidence": "high",
+                "evidence_legs": [
+                    {"en": "semis RS", "zh": "半导体相对强度", "z": -3.0},
+                    {"en": "growth vs value", "zh": "成长对价值", "z": 1.0},
+                ],
+                "scores": [
+                    {"driver": "ai_semis", "label": "AI / semis", "label_zh": "AI/半导体",
+                     "family": "equity-leadership", "projection": -1.36, "strength": 1.36,
+                     "direction": "AI/semis unwind"},
+                ],
+                "headline": "AI/semis unwind",
+            },
+            "risk_radar": {
+                "schema": "risk_radar.v2",
+                "asof": wrapper_date,
+                "state": "caution",
+                "dominant_scare": "",
+                "dominant_label_en": "",
+                "dominant_label_zh": "",
+                "top_score": 75.0,
+                "headline_en": "Risk radar: ",
+                "headline_zh": "",
+                "scares": [],
+            },
+            "regime_one": {
+                "schema": "regime_one.v1",
+                "asof": wrapper_date,
+                "tape": {"quad": "Q1"},
+                "macro": {"quad": "Q1"},
+                "degraded": False,
+            },
+        }
+        md = regime["market_drivers"]
+        if md_state == "absent":
+            md.pop("asof", None)
+        elif md_state == "none":
+            md["asof"] = None
+        elif md_state == "empty":
+            md["asof"] = ""
+        else:
+            raise AssertionError(f"unknown md_state {md_state!r}")
         _make_regime_files(tmp_path, regime)
         result = compile(root=tmp_path, now=_TEST_NOW)
         pathways = result.get("pathways", [])
-        # Missing md_asof → trigger_stale guard fires (R2: not fresh, never today)
         assert not pathways, (
-            f"missing md_asof must trigger no_pathway, got {pathways!r}"
+            f"missing md_asof (state={md_state}) must trigger no_pathway even "
+            f"with wrapper dates present, got {pathways!r}"
         )
         np = result.get("no_pathway", {})
-        assert np.get("reason") == "trigger_stale"
+        assert np.get("reason") == "trigger_stale", (
+            f"missing md_asof (state={md_state}) must surface reason "
+            f"'trigger_stale', got {np.get('reason')!r}"
+        )
         tc = np.get("trigger_context", {})
         assert tc.get("as_of_reason") == "unknown_date", (
-            f"missing md_asof must surface reason 'unknown_date', got "
-            f"{tc.get('as_of_reason')!r}"
+            f"missing md_asof (state={md_state}) must surface "
+            f"as_of_reason 'unknown_date', got {tc.get('as_of_reason')!r}"
         )
+
+    test_compile_does_not_mint_today_for_missing_md_asof = pytest.mark.parametrize(
+        "md_state", ["absent", "none", "empty"]
+    )(test_compile_does_not_mint_today_for_missing_md_asof)
 
     def test_compile_rejects_future_md_asof_with_reason_not_stale(self, tmp_path):
         """R3 + R4: a future-dated source must not be admitted as fresh.

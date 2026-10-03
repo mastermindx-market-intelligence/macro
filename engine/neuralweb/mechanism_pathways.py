@@ -898,7 +898,7 @@ def compile(root: Path | None = None, *, now: datetime | None = None) -> dict:  
     if not md:
         return _no_pathway("trigger_stale", as_of, {"reason_detail": "market_drivers block absent"})
 
-    md_asof = md.get("asof") or regime.get("asof") or regime.get("date")
+    md_asof = md.get("asof")
     # market_drivers and risk_radar are sub-blocks of data/regime/latest.json,
     # so their SLA is the registered "regime-latest" artifact SLA.
     regime_sla = _get_sla(reg, "regime-latest")
