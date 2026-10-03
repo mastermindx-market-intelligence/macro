@@ -238,6 +238,31 @@ def test_unqualified_options_are_not_silently_used():
     assert result["expectations"]["use"] == "none"
 
 
+@pytest.mark.parametrize(
+    ("field", "replacement"),
+    [
+        ("coverage", "none"),
+        ("latency", "unknown"),
+    ],
+)
+def test_options_require_admissible_coverage_and_latency_before_qualification(field, replacement):
+    payload = options()
+    payload[field] = replacement
+    result = qualify(options=payload)
+    assert result["expectations"]["state"] == "UNQUALIFIED"
+    assert result["expectations"]["use"] == "none"
+    assert result["expectations"]["coverage"] == payload["coverage"]
+    assert result["expectations"]["latency"] == payload["latency"]
+
+
+def test_qualified_options_retain_coverage_and_latency_for_audit():
+    payload = options()
+    result = qualify(options=payload)
+    assert result["expectations"]["state"] == "QUALIFIED_CONTEXT"
+    assert result["expectations"]["coverage"] == "listed-options-complete-for-snapshot"
+    assert result["expectations"]["latency"] == "t_plus_1"
+
+
 def test_empty_supplied_options_are_malformed_not_unavailable():
     with pytest.raises(ValueError, match="options missing required fields"):
         qualify(options={})

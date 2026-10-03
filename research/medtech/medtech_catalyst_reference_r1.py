@@ -46,6 +46,8 @@ MATERIALITY_STATES = frozenset({"core", "material", "immaterial", "unknown"})
 READINESS_STATES = frozenset({"ready", "partial", "not_ready", "unknown"})
 COVERAGE_STATES = frozenset({"covered", "partially_covered", "not_covered", "unknown", "not_applicable"})
 ADOPTION_STATES = frozenset({"demonstrated", "early", "not_demonstrated", "unknown"})
+OPTIONS_COVERAGE_STATES = frozenset({"listed-options-complete-for-snapshot"})
+OPTIONS_LATENCY_STATES = frozenset({"t_plus_1"})
 RIGHTS_BASIS_BY_STATE = {
     "owned": frozenset({"applicant_owned", "subsidiary_owned"}),
     "licensed": frozenset({"exclusive_license", "nonexclusive_license"}),
@@ -260,6 +262,8 @@ def _expectations_state(
                 "observed": False,
                 "as_of": None,
                 "source_id": None,
+                "coverage": None,
+                "latency": None,
                 "can_change_native_event_probability": False,
                 "use": "none",
             },
@@ -281,20 +285,31 @@ def _expectations_state(
                 "observed": False,
                 "as_of": None,
                 "source_id": None,
+                "coverage": None,
+                "latency": None,
                 "can_change_native_event_probability": False,
                 "use": "none",
             },
             True,
         )
 
+    coverage = str(options["coverage"])
+    latency = str(options["latency"])
     observed = options.get("observation_state") == "observed"
-    if not observed:
+    qualified = (
+        observed
+        and coverage in OPTIONS_COVERAGE_STATES
+        and latency in OPTIONS_LATENCY_STATES
+    )
+    if not qualified:
         return (
             {
                 "state": "UNQUALIFIED",
-                "observed": False,
+                "observed": observed,
                 "as_of": _iso(observed_at),
                 "source_id": options["source_id"],
+                "coverage": coverage,
+                "latency": latency,
                 "can_change_native_event_probability": False,
                 "use": "none",
             },
@@ -306,6 +321,8 @@ def _expectations_state(
             "observed": True,
             "as_of": _iso(observed_at),
             "source_id": options["source_id"],
+            "coverage": coverage,
+            "latency": latency,
             "can_change_native_event_probability": False,
             "use": "expectations_reaction_and_timing_only",
         },

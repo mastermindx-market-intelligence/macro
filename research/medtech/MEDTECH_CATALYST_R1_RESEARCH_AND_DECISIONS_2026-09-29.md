@@ -69,6 +69,8 @@ Observed event-expiry alignment, implied-volatility term structure, skew, open/c
 
 **Ruling:** qualified options input is labeled `expectations_reaction_and_timing_only`; the executable reference hard-codes `can_change_native_event_probability=false`. Only `None` means the optional layer is absent. Every supplied mapping—including `{}`—must carry complete timezone-qualified observation and provenance fields, must be no later than the case cutoff, and is redacted when temporally withheld. Estimated observations remain context-unqualified rather than silently used.
 
+For R1, options qualification is deliberately fail-closed: only `coverage=listed-options-complete-for-snapshot` with `latency=t_plus_1` is admitted as qualified context, and both fields remain in the returned expectations receipt for audit. Any other nonempty coverage or latency value is retained but marked `UNQUALIFIED` until a later source-backed contract explicitly admits it.
+
 ### 2.7 Market revisions stay inside the frozen snapshot
 
 A price observation is another point-in-time fact. Attaching a later price to a case while leaving the earlier case cutoff unchanged creates hidden look-ahead, even when the revision does not alter regulatory or commercial fields.
