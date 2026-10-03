@@ -578,3 +578,87 @@ def clock_range(evidence: list[dict[str, Any]]) -> dict[str, Any]:
         if newest is None or head > newest[:10]:
             newest = as_of
     return {"oldest": oldest, "newest": newest, "by_clock_semantics": by_clock}
+
+
+def _outlook_producer_by_field(mapping: dict[str, Any]) -> dict[str, str]:
+    return {f["field_id"]: f["producer"] for f in mapping["fields"]}
+
+
+def _outlook_evidence_ids(field_id: str | None, evidence_refs: list[str]) -> list[str]:
+    seen: set[str] = set()
+    ordered: list[str] = []
+    if field_id is not None:
+        ordered.append(field_id)
+        seen.add(field_id)
+    for eid in evidence_refs:
+        if eid in seen:
+            continue
+        seen.add(eid)
+        ordered.append(eid)
+    return ordered
+
+
+def outlook_paths(
+    mapping: dict[str, Any],
+    docs: dict[str, Any],
+    evidence: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Build the nine path cards and what each is waiting on.
+
+    One dict per path in mapping order. Each card carries the five keys
+    ``path_id``, ``family``, ``conditions``, ``family_readings`` and ``watch``.
+    ``conditions`` lists every authored condition for the card with the keys
+    ``condition_id``, ``statement_id``, ``evidence_ids``, ``reading`` and
+    ``reason`` (no ``field_id``). ``evidence_ids`` is the condition's field id
+    (when it has one) followed by its ``evidence_refs``, deduped and in
+    authored order. ``family_readings`` is the reader's roll-up, passed
+    through unchanged. ``watch`` lists every condition whose reading is
+    ``unknown`` in authored order; each entry carries ``condition_id``,
+    ``next_scheduled`` (always ``None`` in this slice) and ``owner_ref``
+    (the field's producer, or ``None`` when the condition has no field).
+
+    The function never sorts, ranks, counts or totals paths or readings, and
+    adds no key beyond those named.
+    """
+    admissions = rco.admit_fields(mapping, docs)
+    field_ids = {f["field_id"] for f in mapping["fields"]}
+    evidence_status: dict[str, str] = {
+        r["id"]: r["status"]
+        for r in evidence
+        if r["id"] in field_ids
+    }
+    unreadable: dict[str, str] = {
+        fid: status
+        for fid, status in evidence_status.items()
+        if status != "available" and admissions[fid]["admitted"]
+    }
+    producer_by_field = _outlook_producer_by_field(mapping)
+    read = rco.read_paths(mapping, docs, unreadable=unreadable)
+    cards: list[dict[str, Any]] = []
+    for path_in, path_out in zip(mapping["paths"], read):
+        conditions_in = path_in["conditions"]
+        conditions_out: list[dict[str, Any]] = []
+        watch: list[dict[str, Any]] = []
+        for cond_in, cond_out in zip(conditions_in, path_out["conditions"]):
+            fid = cond_in["field_id"]
+            conditions_out.append({
+                "condition_id": cond_in["condition_id"],
+                "statement_id": cond_in["statement_id"],
+                "evidence_ids": _outlook_evidence_ids(fid, cond_in["evidence_refs"]),
+                "reading": cond_out["reading"],
+                "reason": cond_out["reason"],
+            })
+            if cond_out["reading"] == "unknown":
+                watch.append({
+                    "condition_id": cond_in["condition_id"],
+                    "next_scheduled": None,
+                    "owner_ref": producer_by_field.get(fid) if fid is not None else None,
+                })
+        cards.append({
+            "path_id": path_in["path_id"],
+            "family": path_in["family"],
+            "conditions": conditions_out,
+            "family_readings": path_out["family_readings"],
+            "watch": watch,
+        })
+    return cards

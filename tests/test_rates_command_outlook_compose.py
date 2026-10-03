@@ -455,3 +455,256 @@ def test_module_source_uses_no_clock_or_io_primitives():
     banned = ("datetime.now", "time.time", "open(", "read_text", "read_bytes", "requests", "urllib")
     for needle in banned:
         assert needle not in src, f"found banned primitive {needle!r} in module source"
+
+# ---------------------------------------------------------------------------
+# T8 outlook_paths — the nine path cards and what each is waiting on
+# ---------------------------------------------------------------------------
+
+
+def _pin_cards() -> list[dict]:
+    rows, record = _build_at_pin()
+    docs, _ = rcc.read_inputs(MAPPING, _base_bytes())
+    return rcc.outlook_paths(MAPPING, docs, rows)
+
+
+CARD_KEYS = {"path_id", "family", "conditions", "family_readings", "watch"}
+COND_KEYS = {"condition_id", "statement_id", "evidence_ids", "reading", "reason"}
+WATCH_KEYS = {"condition_id", "next_scheduled", "owner_ref"}
+EVIDENCE_IDS = (
+    [r["field_id"] for r in MAPPING["fields"]]
+    + [r["evidence_id"] for r in MAPPING["evidence_only"]]
+)
+
+
+def _golden_cards() -> list[dict]:
+    """The cards the pin promises, derived from GOLDEN['pin']['conditions'] and
+    GOLDEN['pin']['family_readings']."""
+    cards: list[dict] = []
+    for path in MAPPING["paths"]:
+        conds = []
+        for c in path["conditions"]:
+            golden = GOLDEN["pin"]["conditions"][c["condition_id"]]
+            conds.append({
+                "condition_id": c["condition_id"],
+                "statement_id": c["statement_id"],
+                "evidence_ids": ([c["field_id"]] if c["field_id"] is not None else [])
+                + c["evidence_refs"],
+                "reading": golden[0],
+                "reason": golden[1],
+            })
+        cards.append({
+            "path_id": path["path_id"],
+            "family": path["family"],
+            "conditions": conds,
+            "family_readings": [
+                {"evidence_family_id": fam, "reading": reading}
+                for fam, reading in GOLDEN["pin"]["family_readings"][path["path_id"]].items()
+            ],
+            "watch": [],  # computed below
+        })
+    return cards
+
+
+def test_outlook_paths_at_the_pin_nine_cards_in_mapping_order_with_five_keys():
+    cards = _pin_cards()
+    assert [c["path_id"] for c in cards] == [p["path_id"] for p in MAPPING["paths"]]
+    assert len(cards) == 9
+    for c in cards:
+        assert set(c) == CARD_KEYS
+
+
+def test_outlook_paths_at_the_pin_every_condition_matches_golden_and_key_sets():
+    cards = _pin_cards()
+    golden = _golden_cards()
+    assert [c["path_id"] for c in cards] == [g["path_id"] for g in golden]
+    for card, gold in zip(cards, golden):
+        assert [c["condition_id"] for c in card["conditions"]] == [
+            c["condition_id"] for c in gold["conditions"]
+        ]
+        for observed, expected in zip(card["conditions"], gold["conditions"]):
+            assert set(observed) == COND_KEYS
+            # All 21 field rows are available at the pin, so reading/reason
+            # match the golden literally for every condition.
+            assert (observed["reading"], observed["reason"]) == (
+                expected["reading"],
+                expected["reason"],
+            )
+        assert card["family_readings"] == gold["family_readings"]
+
+
+def test_outlook_paths_stale_m_field_makes_breadth_tone_conditions_unknown_with_owner():
+    base = copy.deepcopy(GOLDEN["base"])
+    base["M"]["input_vintages"]["pct_above_200"]["stale"] = True
+    bytes_in = {l: json.dumps(base[l]).encode() for l in sorted(MAPPING["artifacts"])}
+    docs, record = rcc.read_inputs(MAPPING, bytes_in)
+    rows = rcc.evidence_rows(
+        MAPPING, docs, record, analysis_cutoff=CUTOFF, us_session=US_SESSION
+    )
+    cards = rcc.outlook_paths(MAPPING, docs, rows)
+    producer = next(
+        f["producer"] for f in MAPPING["fields"] if f["field_id"] == "M.components.breadth.tone"
+    )
+    affected = [
+        cond
+        for path in MAPPING["paths"]
+        for cond in path["conditions"]
+        if cond["field_id"] == "M.components.breadth.tone"
+    ]
+    assert affected, "expected at least one condition on M.components.breadth.tone"
+    for cond_in in affected:
+        card = next(c for c in cards if c["path_id"].startswith(cond_in["condition_id"].split("-")[0] + "-") or True)
+        # locate the card whose path contains this condition_id
+        target_card = next(
+            c for c in cards
+            if any(x["condition_id"] == cond_in["condition_id"] for x in c["conditions"])
+        )
+        observed = next(
+            x for x in target_card["conditions"] if x["condition_id"] == cond_in["condition_id"]
+        )
+        assert observed["reading"] == "unknown"
+        assert observed["reason"] == "stale"
+        watch_entry = next(
+            w for w in target_card["watch"] if w["condition_id"] == cond_in["condition_id"]
+        )
+        assert watch_entry["next_scheduled"] is None
+        assert watch_entry["owner_ref"] == producer
+
+
+def test_outlook_paths_future_dated_t_makes_t_state_conditions_unknown_keeps_yield_momentum():
+    base = copy.deepcopy(GOLDEN["base"])
+    base["T"]["asof"] = "2026-10-09"
+    bytes_in = {l: json.dumps(base[l]).encode() for l in sorted(MAPPING["artifacts"])}
+    docs, record = rcc.read_inputs(MAPPING, bytes_in)
+    rows = rcc.evidence_rows(
+        MAPPING, docs, record, analysis_cutoff=CUTOFF, us_session=US_SESSION
+    )
+    cards = rcc.outlook_paths(MAPPING, docs, rows)
+    t_state_fields = [
+        f["field_id"] for f in MAPPING["fields"] if f["field_id"].startswith("T.state.")
+    ]
+    ym_fields = [
+        f["field_id"]
+        for f in MAPPING["fields"]
+        if f["field_id"].startswith("T.yield_momentum.series.")
+    ]
+    assert t_state_fields and ym_fields
+    for path in MAPPING["paths"]:
+        for cond_in in path["conditions"]:
+            fid = cond_in["field_id"]
+            if fid is None:
+                continue
+            target_card = next(
+                c for c in cards
+                if any(x["condition_id"] == cond_in["condition_id"] for x in c["conditions"])
+            )
+            observed = next(
+                x for x in target_card["conditions"] if x["condition_id"] == cond_in["condition_id"]
+            )
+            if fid in t_state_fields:
+                assert observed["reading"] == "unknown"
+                assert observed["reason"] == "future_dated"
+            elif fid in ym_fields:
+                golden = GOLDEN["pin"]["conditions"][cond_in["condition_id"]]
+                assert (observed["reading"], observed["reason"]) == (golden[0], golden[1])
+
+
+def test_outlook_paths_dropped_artifact_l_makes_l_state_conditions_missing():
+    base = copy.deepcopy(GOLDEN["base"])
+    base["L"] = None
+    bytes_in = {l: json.dumps(base[l]).encode() for l in sorted(MAPPING["artifacts"])}
+    docs, record = rcc.read_inputs(MAPPING, bytes_in)
+    rows = rcc.evidence_rows(
+        MAPPING, docs, record, analysis_cutoff=CUTOFF, us_session=US_SESSION
+    )
+    cards = rcc.outlook_paths(MAPPING, docs, rows)
+    for path in MAPPING["paths"]:
+        for cond_in in path["conditions"]:
+            if cond_in["field_id"] != "L.state":
+                continue
+            target_card = next(
+                c for c in cards
+                if any(x["condition_id"] == cond_in["condition_id"] for x in c["conditions"])
+            )
+            observed = next(
+                x for x in target_card["conditions"] if x["condition_id"] == cond_in["condition_id"]
+            )
+            assert observed["reading"] == "unknown"
+            assert observed["reason"] == "missing"
+
+
+def test_outlook_paths_condition_with_no_field_reads_open_reason_with_no_owner():
+    base = copy.deepcopy(GOLDEN["base"])
+    bytes_in = {l: json.dumps(base[l]).encode() for l in sorted(MAPPING["artifacts"])}
+    docs, record = rcc.read_inputs(MAPPING, bytes_in)
+    rows = rcc.evidence_rows(
+        MAPPING, docs, record, analysis_cutoff=CUTOFF, us_session=US_SESSION
+    )
+    cards = rcc.outlook_paths(MAPPING, docs, rows)
+    no_field_conds = [
+        c
+        for path in MAPPING["paths"]
+        for c in path["conditions"]
+        if c["field_id"] is None
+    ]
+    assert no_field_conds
+    for cond_in in no_field_conds:
+        target_card = next(
+            card for card in cards
+            if any(x["condition_id"] == cond_in["condition_id"] for x in card["conditions"])
+        )
+        observed = next(
+            x for x in target_card["conditions"]
+            if x["condition_id"] == cond_in["condition_id"]
+        )
+        assert observed["reading"] == "unknown"
+        assert observed["reason"] == cond_in["open_reason"]
+        assert observed["evidence_ids"] == cond_in["evidence_refs"]
+        watch_entry = next(
+            (w for w in target_card["watch"] if w["condition_id"] == cond_in["condition_id"]),
+            None,
+        )
+        assert watch_entry is not None
+        assert watch_entry["next_scheduled"] is None
+        assert watch_entry["owner_ref"] is None
+
+
+def test_outlook_paths_evidence_ids_are_among_the_thirty_and_watch_lists_unknown_conditions():
+    cards = _pin_cards()
+    set_of_thirty = set(EVIDENCE_IDS)
+    for card in cards:
+        unknown_ids = []
+        for cond in card["conditions"]:
+            assert set(cond["evidence_ids"]).issubset(set_of_thirty), (
+                cond["condition_id"], cond["evidence_ids"]
+            )
+            if cond["reading"] == "unknown":
+                unknown_ids.append(cond["condition_id"])
+        assert [w["condition_id"] for w in card["watch"]] == unknown_ids
+
+
+def test_outlook_paths_keep_the_reader_s_own_reason_for_a_field_it_refuses():
+    # The owner default with its input missing: the reader refuses the field
+    # with its own finer reason, while the evidence row is only "partial".
+    # The card must carry the reader's word, not the row's status.
+    base = copy.deepcopy(GOLDEN["base"])
+    base["T"]["state"]["rates"]["direction"] = "stable"
+    base["T"]["state"]["rates"]["real_10y_chg_63d_bp"] = None
+    bytes_in = {l: json.dumps(base[l]).encode() for l in sorted(MAPPING["artifacts"])}
+    docs, record = rcc.read_inputs(MAPPING, bytes_in)
+    rows = rcc.evidence_rows(
+        MAPPING, docs, record, analysis_cutoff=CUTOFF, us_session=US_SESSION
+    )
+    row = next(r for r in rows if r["id"] == "T.state.rates.direction")
+    assert row["status"] == "partial"
+    assert row["issues"] == ["owner_default_on_missing"]
+    cards = rcc.outlook_paths(MAPPING, docs, rows)
+    seen = 0
+    for path, card in zip(MAPPING["paths"], cards):
+        for cond_in, observed in zip(path["conditions"], card["conditions"]):
+            if cond_in["field_id"] != "T.state.rates.direction":
+                continue
+            seen += 1
+            assert observed["reading"] == "unknown"
+            assert observed["reason"] == "owner_default_on_missing"
+            assert cond_in["condition_id"] in [w["condition_id"] for w in card["watch"]]
+    assert seen > 0
