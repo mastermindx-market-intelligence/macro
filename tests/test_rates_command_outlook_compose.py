@@ -1018,3 +1018,288 @@ def test_session_helper_matches_the_documented_cutoffs():
     assert SESSION_OF(cut) == date(2026, 10, 2)
     assert SESSION_OF(cut + timedelta(hours=24)) == date(2026, 10, 3)
     assert SESSION_OF(datetime(2026, 10, 1, 2, 0, tzinfo=timezone.utc)) == date(2026, 9, 30)
+
+
+# ---------------------------------------------------------------------------
+# T10 list_changes — what changed since the baseline (appended; no existing
+# symbol is touched)
+# ---------------------------------------------------------------------------
+
+
+def _erow(eid, values, verdict, status, as_of, semantics="owner_snapshot_date"):
+    return {
+        "id": eid,
+        "values": values,
+        "owner_verdict": verdict,
+        "status": status,
+        "source": {"clock_semantics": semantics, "as_of": as_of},
+    }
+
+
+def _baseline(rows):
+    return {
+        "analysis_cutoff": "2026-10-03T02:00:00+00:00",
+        "us_session": "2026-10-02",
+        "evidence": {
+            r["id"]: {
+                "values": r["values"],
+                "owner_verdict": r["owner_verdict"],
+                "status": r["status"],
+                "as_of": r["source"]["as_of"],
+            }
+            for r in rows
+        },
+    }
+
+
+# L1 ---------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "baseline",
+    [
+        None,
+        {"status": "absent", "reason": "no_earlier_projection"},
+        {"analysis_cutoff": "2026-10-03T02:00:00+00:00", "us_session": "2026-10-02", "evidence": []},
+        {"analysis_cutoff": "2026-10-03T02:00:00+00:00", "us_session": "2026-10-02", "evidence": "x"},
+    ],
+    ids=["none", "absent", "list_evidence", "non_dict_evidence"],
+)
+def test_list_changes_bad_baselines_return_empty(baseline):
+    rows = [_erow("a", {"v": 1}, None, "available", "2026-10-02")]
+    assert rcc.list_changes(baseline, rows) == []
+
+
+# L2 ---------------------------------------------------------------------
+
+
+def test_list_changes_baseline_built_from_same_rows_returns_empty():
+    rows = [
+        _erow("a", {"v": 1}, None, "available", "2026-10-02"),
+        _erow("b", {"v": 2}, {"token": 1, "verdict_class": "x"}, "stale", "2026-09-30"),
+    ]
+    assert rcc.list_changes(_baseline(rows), rows) == []
+
+
+# L3 ---------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "baseline_status,current_status,kind",
+    [
+        ("available", "stale", "became_stale"),
+        ("partial", "stale", "became_stale"),
+        ("stale", "available", "became_available"),
+        ("missing", "available", "became_available"),
+        ("available", "missing", "became_unavailable"),
+        ("stale", "unknown_date", "became_unavailable"),
+        ("partial", "future_dated", "became_unavailable"),
+        ("available", "partial", "became_unavailable"),
+        ("stale", "partial", "became_unavailable"),
+        ("missing", "partial", "unattributed"),
+        ("missing", "unknown_date", "unattributed"),
+        ("unknown_date", "future_dated", "unattributed"),
+    ],
+)
+def test_list_changes_status_transitions(baseline_status, current_status, kind):
+    baseline_rows = [_erow("a", {"v": 1}, None, baseline_status, "2026-10-02")]
+    current_rows = [_erow("a", {"v": 1}, None, current_status, "2026-10-02")]
+    out = rcc.list_changes(_baseline(baseline_rows), current_rows)
+    assert out == [{
+        "evidence_id": "a",
+        "change_kind": kind,
+        "from": {
+            "values": {"v": 1},
+            "owner_verdict": None,
+            "status": baseline_status,
+            "as_of": "2026-10-02",
+        },
+        "to": {
+            "values": {"v": 1},
+            "owner_verdict": None,
+            "status": current_status,
+            "as_of": "2026-10-02",
+        },
+    }]
+
+
+# L4 ---------------------------------------------------------------------
+
+
+def test_list_changes_same_missing_status_and_different_as_of_is_clock_only():
+    baseline_rows = [_erow("a", {}, None, "missing", "2026-09-30")]
+    current_rows = [_erow("a", {}, None, "missing", "2026-10-02")]
+    out = rcc.list_changes(_baseline(baseline_rows), current_rows)
+    assert out == [{
+        "evidence_id": "a",
+        "change_kind": "clock_only",
+        "from": {"values": {}, "owner_verdict": None, "status": "missing", "as_of": "2026-09-30"},
+        "to": {"values": {}, "owner_verdict": None, "status": "missing", "as_of": "2026-10-02"},
+    }]
+
+
+def test_list_changes_same_missing_status_and_equal_as_of_returns_empty():
+    rows = [_erow("a", {}, None, "missing", "2026-10-02")]
+    assert rcc.list_changes(_baseline(rows), rows) == []
+
+
+# L5 ---------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "b_as_of,c_as_of,b_values,c_values,b_verdict,c_verdict,kind",
+    [
+        ("2026-10-02", "2026-10-02", {"v": 1}, {"v": 2}, None, None, "value_revised"),
+        ("2026-10-02", "2026-10-03", {"v": 1}, {"v": 1}, None, {"token": "yes"}, "owner_verdict_changed"),
+        ("2026-10-02", "2026-10-03", {"v": 1}, {"v": 2}, None, None, "observation_advanced"),
+        ("2026-10-02", "2026-10-03", {"v": 1}, {"v": 1}, None, None, "clock_only"),
+        ("2026-10-03", "2026-10-02", {"v": 1}, {"v": 2}, None, None, "unattributed"),
+        ("2026-10-03", "2026-10-02", {"v": 1}, {"v": 1}, None, None, "clock_only"),
+        (None, "2026-10-02", {"v": 1}, {"v": 2}, None, None, "unattributed"),
+        (None, "2026-10-02", {"v": 1}, {"v": 1}, None, None, "clock_only"),
+    ],
+    ids=[
+        "same_asof_new_values",
+        "later_asof_new_verdict",
+        "later_asof_new_values",
+        "later_asof_only",
+        "earlier_asof_new_values",
+        "earlier_asof_only",
+        "baseline_none_asof_new_values",
+        "baseline_none_asof_only",
+    ],
+)
+def test_list_changes_observation_clock_semantics(
+    b_as_of, c_as_of, b_values, c_values, b_verdict, c_verdict, kind
+):
+    baseline_rows = [_erow("a", b_values, b_verdict, "available", b_as_of, semantics="source_observation_date")]
+    current_rows = [_erow("a", c_values, c_verdict, "available", c_as_of, semantics="source_observation_date")]
+    out = rcc.list_changes(_baseline(baseline_rows), current_rows)
+    assert len(out) == 1
+    assert out[0]["evidence_id"] == "a"
+    assert out[0]["change_kind"] == kind
+
+
+# L6 ---------------------------------------------------------------------
+
+
+def test_list_changes_owner_snapshot_clock_new_values_same_as_of_is_unattributed():
+    baseline_rows = [_erow("a", {"v": 1}, None, "available", "2026-10-02")]
+    current_rows = [_erow("a", {"v": 2}, None, "available", "2026-10-02")]
+    out = rcc.list_changes(_baseline(baseline_rows), current_rows)
+    assert out == [{
+        "evidence_id": "a",
+        "change_kind": "unattributed",
+        "from": {"values": {"v": 1}, "owner_verdict": None, "status": "available", "as_of": "2026-10-02"},
+        "to": {"values": {"v": 2}, "owner_verdict": None, "status": "available", "as_of": "2026-10-02"},
+    }]
+
+
+def test_list_changes_owner_snapshot_clock_new_verdict_later_as_of_is_unattributed():
+    baseline_rows = [_erow("a", {"v": 1}, None, "available", "2026-10-02")]
+    current_rows = [_erow("a", {"v": 1}, {"token": "yes"}, "available", "2026-10-03")]
+    out = rcc.list_changes(_baseline(baseline_rows), current_rows)
+    assert out == [{
+        "evidence_id": "a",
+        "change_kind": "unattributed",
+        "from": {"values": {"v": 1}, "owner_verdict": None, "status": "available", "as_of": "2026-10-02"},
+        "to": {"values": {"v": 1}, "owner_verdict": {"token": "yes"}, "status": "available", "as_of": "2026-10-03"},
+    }]
+
+
+def test_list_changes_owner_snapshot_clock_later_as_of_only_is_clock_only():
+    baseline_rows = [_erow("a", {"v": 1}, None, "available", "2026-10-02")]
+    current_rows = [_erow("a", {"v": 1}, None, "available", "2026-10-03")]
+    out = rcc.list_changes(_baseline(baseline_rows), current_rows)
+    assert out == [{
+        "evidence_id": "a",
+        "change_kind": "clock_only",
+        "from": {"values": {"v": 1}, "owner_verdict": None, "status": "available", "as_of": "2026-10-02"},
+        "to": {"values": {"v": 1}, "owner_verdict": None, "status": "available", "as_of": "2026-10-03"},
+    }]
+
+
+# L7 ---------------------------------------------------------------------
+
+
+def test_list_changes_ids_only_on_one_side_are_mapping_version_changed_in_authored_then_sorted_order():
+    current_rows = [
+        _erow("a", {"v": 1}, None, "available", "2026-10-02"),
+        _erow("b", {"v": 2}, None, "available", "2026-10-02"),
+        _erow("c", {"v": 3}, None, "available", "2026-10-02"),
+    ]
+    baseline_rows = [
+        _erow("b", {"v": 2}, None, "available", "2026-10-02"),
+        _erow("z", {"v": 9}, None, "available", "2026-10-02"),
+        _erow("y", {"v": 8}, None, "available", "2026-10-02"),
+    ]
+    out = rcc.list_changes(_baseline(baseline_rows), current_rows)
+    assert [e["evidence_id"] for e in out] == ["a", "c", "y", "z"]
+    assert all(e["change_kind"] == "mapping_version_changed" for e in out)
+    assert [e["from"] for e in out[:2]] == [None, None]
+    assert [e["to"] for e in out[2:]] == [None, None]
+
+
+# L8 ---------------------------------------------------------------------
+
+
+def test_list_changes_each_entry_has_exactly_the_four_keys():
+    current_rows = [_erow("a", {"v": 1}, None, "available", "2026-10-02")]
+    baseline_rows = [_erow("b", {"v": 2}, None, "available", "2026-10-02")]
+    out = rcc.list_changes(_baseline(baseline_rows), current_rows)
+    for entry in out:
+        assert set(entry) == {"evidence_id", "change_kind", "from", "to"}
+
+
+def test_list_changes_emits_only_kinds_in_change_kinds():
+    baseline_rows = [
+        _erow("a", {"v": 1}, None, "available", "2026-10-02"),
+        _erow("b", {"v": 1}, None, "available", "2026-10-02"),
+        _erow("c", {"v": 1}, None, "available", "2026-10-02"),
+        _erow("d", {"v": 1}, None, "available", "2026-10-02"),
+    ]
+    current_rows = [
+        _erow("a", {"v": 1}, None, "stale", "2026-10-02"),  # became_stale
+        _erow("b", {"v": 1}, None, "missing", "2026-10-02"),  # became_unavailable
+        _erow("c", {"v": 2}, None, "available", "2026-10-03", semantics="source_observation_date"),  # observation_advanced
+        _erow("d", {"v": 1}, None, "available", "2026-10-03"),  # clock_only
+    ]
+    out = rcc.list_changes(_baseline(baseline_rows), current_rows)
+    assert {e["change_kind"] for e in out}.issubset(set(rcc.CHANGE_KINDS))
+
+
+def test_change_kinds_is_the_nine_word_tuple_literally():
+    assert rcc.CHANGE_KINDS == (
+        "observation_advanced",
+        "value_revised",
+        "owner_verdict_changed",
+        "became_stale",
+        "became_available",
+        "became_unavailable",
+        "clock_only",
+        "mapping_version_changed",
+        "unattributed",
+    )
+
+
+def test_list_changes_does_not_mutate_baseline_or_evidence():
+    baseline_rows = [
+        _erow("a", {"v": 1}, None, "available", "2026-10-02"),
+        _erow("b", {"v": 2}, None, "available", "2026-10-03"),
+    ]
+    current_rows = [
+        _erow("a", {"v": 9}, None, "stale", "2026-10-04"),
+        _erow("b", {"v": 2}, None, "available", "2026-10-03"),
+    ]
+    baseline = _baseline(baseline_rows)
+    baseline_snapshot = copy.deepcopy(baseline)
+    current_snapshot = copy.deepcopy(current_rows)
+    out = rcc.list_changes(baseline, current_rows)
+    assert baseline == baseline_snapshot
+    assert current_rows == current_snapshot
+    assert out[0]["from"] is not baseline["evidence"]["a"]
+    assert out[0]["to"] is not current_rows[0]
+    out[0]["from"]["values"]["v"] = "MUTATED"
+    out[0]["to"]["values"]["v"] = "MUTATED"
+    assert baseline["evidence"]["a"]["values"] == {"v": 1}
+    assert current_rows[0]["values"] == {"v": 9}
