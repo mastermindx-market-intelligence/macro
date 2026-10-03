@@ -1345,10 +1345,103 @@ class TestObservedResetRefresh(unittest.TestCase):
     def test_missing_permission_cannot_erase_newer_protocol_denial(self):
         denied = {**self.snapshot(0, age=30), "ordinary_usage_allowed": False}
         note_rate_limits(denied, root=self.root)
-        before = load_state(self.root)
-        note_rate_limits(self.snapshot(0, age=0), root=self.root)
-        self.assertEqual(load_state(self.root), before)
+        incoming = self.snapshot(7, age=0)
+        note_rate_limits(incoming, root=self.root)
+        current = load_state(self.root)["rate_limits"]
+        self.assertEqual(current, {**incoming, "ordinary_usage_allowed": False})
+        self.assertNotIn("ordinary_usage_allowed", incoming)
         self.assertFalse(can_run(root=self.root)[0])
+
+    def test_newer_fieldless_restrictive_meter_keeps_permission_and_blocks(self):
+        for permission in (True, False, None):
+            for key in ("primary", "secondary"):
+                for used in (85, 100, 105):
+                    with self.subTest(permission=permission, key=key, used=used):
+                        root = self.root / f"{permission}-{key}-{used}"
+                        initial = {**self.snapshot(0, age=30), "ordinary_usage_allowed": permission}
+                        note_rate_limits(initial, root=root)
+                        incoming = self.snapshot(used, age=0, reset_days=3)
+                        if key == "secondary":
+                            incoming["secondary"], incoming["primary"] = incoming["primary"], None
+                        before = json.dumps(incoming, sort_keys=True)
+                        note_rate_limits(incoming, root=root)
+                        current = load_state(root)["rate_limits"]
+                        self.assertEqual(current[key]["used_percent"], used)
+                        self.assertEqual(current[key]["resets_at"], incoming[key]["resets_at"])
+                        self.assertIs(current["ordinary_usage_allowed"], permission)
+                        self.assertEqual(current["fetched_at"], incoming["fetched_at"])
+                        self.assertEqual(json.dumps(incoming, sort_keys=True), before)
+                        self.assertFalse(can_run(root=root)[0])
+
+    def test_fieldless_refill_updates_meters_but_cannot_clear_protocol_pause(self):
+        initial = {**self.snapshot(100, age=30), "ordinary_usage_allowed": True}
+        note_result({"ok": False, "error_kind": "usage_limit", "rate_limits": initial}, root=self.root)
+        pause = load_state(self.root)["paused_until"]
+        refill = self.snapshot(0, age=0, reset_days=7)
+        note_rate_limits(refill, root=self.root)
+        current = load_state(self.root)
+        self.assertEqual(current["rate_limits"]["primary"]["used_percent"], 0)
+        self.assertIs(current["rate_limits"]["ordinary_usage_allowed"], True)
+        self.assertEqual(current["paused_until"], pause)
+        self.assertFalse(can_run(root=self.root)[0])
+        with patch("engine.codex_lane.budget._now_utc", return_value=self.now + timedelta(seconds=1)):
+            explicit = {**self.snapshot(1, age=-1, reset_days=7), "ordinary_usage_allowed": True}
+            note_rate_limits(explicit, root=self.root)
+        self.assertIsNone(load_state(self.root)["paused_until"])
+        self.assertEqual(can_run(root=self.root), (True, "ok"))
+
+    def test_fieldless_result_keeps_newer_meter_without_erasing_permission(self):
+        note_rate_limits({**self.snapshot(0, age=30), "ordinary_usage_allowed": True}, root=self.root)
+        note_result({"ok": True, "rate_limits": self.snapshot(100, age=0),
+                     "token_usage": {"total_tokens": 123}}, root=self.root)
+        current = load_state(self.root)
+        self.assertEqual(current["rate_limits"]["primary"]["used_percent"], 100)
+        self.assertIs(current["rate_limits"]["ordinary_usage_allowed"], True)
+        self.assertEqual(current["token_usage_last"], {"total_tokens": 123})
+        self.assertEqual(len(current["sessions"]), 1)
+        self.assertFalse(can_run(root=self.root)[0])
+
+    def test_fieldless_meters_preserve_partial_protocol_denial(self):
+        for permission in (False, None):
+            with self.subTest(permission=permission):
+                root = self.root / str(permission)
+                partial = {"ordinary_usage_allowed": permission,
+                           "fetched_at": self.snapshot(age=30)["fetched_at"]}
+                note_rate_limits(partial, root=root)
+                note_rate_limits(self.snapshot(100, age=0), root=root)
+                current = load_state(root)
+                self.assertIs(current["rate_limits"]["ordinary_usage_allowed"], permission)
+                self.assertEqual(current["rate_limits"]["primary"]["used_percent"], 100)
+                self.assertFalse(current["degraded"])
+                self.assertFalse(can_run(root=root)[0])
+
+    def test_fieldless_older_observation_cannot_restore_lower_usage(self):
+        initial = {**self.snapshot(100, age=0), "ordinary_usage_allowed": True}
+        note_rate_limits(initial, root=self.root)
+        for age in (30, 0):
+            with self.subTest(age=age):
+                before = load_state(self.root)
+                note_rate_limits(self.snapshot(0, age=age), root=self.root)
+                self.assertEqual(load_state(self.root), before)
+                self.assertFalse(can_run(root=self.root)[0])
+
+    def test_existing_loop_stops_on_native_fieldless_exhaustion(self):
+        from scripts import codex_research_loop as loop
+        note_rate_limits({**self.snapshot(0, age=30), "ordinary_usage_allowed": True}, root=self.root)
+        packet = self.fetch_native({"rateLimits": {"primary": {
+            "usedPercent": 100, "windowDurationMins": 10080,
+            "resetsAt": int((self.now + timedelta(days=7)).timestamp())}, "secondary": None}})
+        self.assertIsNotNone(packet)
+        packet["fetched_at"] = _to_iso(self.now)
+        with patch.object(loop, "_fetch_rate_limits", return_value=packet) as fetch, \
+             patch.object(loop, "_run_cases") as run, \
+             patch.dict("os.environ", {"CODEX_DEADLINE_EPOCH": ""}):
+            result = loop.run_loop(root=self.root, lane="cases", iterations=1, dry_run=True)
+        self.assertEqual(result["iterations_run"], 0)
+        self.assertIn("budget:primary:100.0%", result["stop_reason"])
+        fetch.assert_called_once()
+        run.assert_not_called()
+        self.assertEqual(load_state(self.root)["rate_limits"]["primary"]["used_percent"], 100)
 
     def test_native_permission_is_preserved_without_private_identity(self):
         bucket = {"primary": {"usedPercent": 0, "windowDurationMins": 10080,

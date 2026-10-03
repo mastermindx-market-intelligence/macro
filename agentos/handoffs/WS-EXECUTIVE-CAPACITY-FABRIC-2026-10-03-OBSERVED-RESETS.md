@@ -25,11 +25,11 @@ verified:
     result: Original source allowed after refill, then denied at 100 percent and restored the older deadline after the delayed reply.
   - claim: Current targeted owner suite covers the repaired observations and actual loop consumer.
     command: pytest --noconftest tests/test_codex_runner_budget.py with isolated basetemp and no provider calls.
-    result: 107 passed and 37 subtests passed; includes 25 new test methods over the base owner suite.
+    result: 113 passed and 59 subtests passed; includes native-reader and real-loop omission regressions.
   - claim: Production changes preserve the broader Codex family.
     command: pytest tests/test_codex_runner_budget.py tests/test_codex_lanes.py tests/test_admin_codex.py with normal repository conftest.
     result: >
-      Final campaign: 345 passed and 37 subtests passed in 37.33s, with normal
+      Current omission-repair campaign: 351 passed and 59 subtests passed in 37.67s, with normal
       conftest and isolated basetemp. The preliminary 338-pass campaign had four
       inherited temporary-cleanup warnings; its log is preserved.
   - claim: The existing reset planner removes a proposed banked reset after fresh gifted capacity.
@@ -68,9 +68,10 @@ watcher was performed. Parent mission remains incomplete.
 ## Partial-payload repair and current source continuation
 
 Initial source3820d093e4b69f181975d83e2706ef2e3e7f4dac is published on Macro8311.
-Native review request5966663297 received the Codex bot eyes acknowledgement;
-no terminal review or native summary was observed at the latest read. Do not
-start a second reviewer or let an old-head result approve this subsequent repair.
+Native review request5966663297 completed at07:25:11Z on3820d09. Its concrete
+P1 finding4172147212 also applies to subsequent e6c1314e source and is consumed
+in reply4172177478. That review operation is terminal. No old-head result accepts
+the subsequently repaired source; a new exact-head review is still required.
 
 A further direct discriminator found that an explicit ordinaryUsageAllowed signal
 could disappear when quota fields were incomplete. The native consumer now
@@ -87,3 +88,34 @@ Release receipt SHA2565109d2fbb94b146cee899d148fe9189dcaaa437ed552ef602f0c9fee8c
 Mastermind703 return5966720657 preserves installation/account gates. Macro8255
 CI37102216371 is now SUCCESS; original reviewer adjudication5966703370 remains
 requested, not accepted. No pending reset, source or runtime effect was replayed.
+
+
+## Optional-permission omission repair
+
+Current protected procedure pin3959aad974f15760ad7a53ab2d7a7ddfcd864ae2 has no
+governing procedure/delivery drift from the prior29a1 source. On the same8311
+branch, the completed reviewer correctly identified that an omitted optional
+permission field caused an entire newer restrictive reading to be discarded.
+The actual loop could therefore retain0percent/allowed after a100percent reading.
+
+The repair accepts newer valid meter values and provider reset dates while
+retaining the prior permission signal. Known false/null permission is not erased.
+A missing field cannot use a carried true value as new evidence to clear a known
+newer-protocol pause. Explicit later permission plus a complete fresh reading can
+clear the pause normally. Only _apply_rate_limits_to_state and note_rate_limits
+change in production; no runner, account, global allocator, release policy or
+installed state is changed by this increment.
+
+New discriminators on e6 source:24FAIL/3PASS/2passing subtests; updated owner
+113PASS/59subtests; normal-conftest family351PASS/59subtests. Counts overlap.
+Evidence is in restrictive-red.log, restrictive-green.log and restrictive-family.log
+under the existing evidence directory. The existing native normalizer -> loop ->
+budget path now refuses the field-less exhausted packet before any lane callback.
+All evidence is synthetic and no provider call is made.
+
+This continues the same source operation without source custody transfer; direct
+repair is a bounded critical-path fix after a completed independent review. No
+new worker was dispatched through readonly Executive, whose07:38:38Z read still
+shows installedb3627c58/Macro88804ed, zero active Jobs/Attempts and no worker proof.
+Original8255 formal review5389563572, denied7116/bridge/CI-manifest actions and633
+uncertainty remain unchanged. Fresh publication/current-head review/CI are owed.

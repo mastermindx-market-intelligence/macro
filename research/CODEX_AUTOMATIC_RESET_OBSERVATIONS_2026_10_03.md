@@ -66,9 +66,14 @@ When supplied, ordinary_usage_allowed survives normalization even when quota
 measurements are incomplete. Such a partial result contains only permission and
 observation time, not invented N/A windows. The real budget consumer denies
 incomplete quota even when the permission value is true. False/null also block
-ordinary local budget admission; a later field-less response cannot erase this
-newer-protocol constraint. Legacy field-absent behavior remains compatible, not
-proof of permission. No private account identifier is persisted by this addition.
+ordinary local budget admission. A newer complete field-less reading still
+updates the actual meters and reset timestamps, while preserving the previously
+observed permission value. It cannot erase a denial or count carried permission
+as newly observed evidence for clearing a known quota pause. Otherwise ignoring
+the entire reading could retain stale 0-percent usage after the meter reaches
+100 percent. Explicit subsequent permission and a qualifying complete reading
+can restore ordinary pause recovery. Legacy field-absent behavior remains
+compatible, not proof of permission. No private account identifier is persisted.
 
 Tests use private temporary roots, fake native transport and a fake useful lane
 callback through the REAL loop, budget and JSON normalizer. No real provider,

@@ -334,9 +334,6 @@ def _apply_rate_limits_to_state(state: dict, rl: dict) -> bool:
     stamp = rl.get("fetched_at")
     observed = _parse_iso(stamp)
     previous = state.get("rate_limits")
-    if (isinstance(previous, dict) and "ordinary_usage_allowed" in previous
-            and "ordinary_usage_allowed" not in rl):
-        return False
     previous_time = _parse_iso(previous.get("fetched_at")) if isinstance(previous, dict) else None
     if stamp and (observed is None or observed > now):
         return False
@@ -346,6 +343,12 @@ def _apply_rate_limits_to_state(state: dict, rl: dict) -> bool:
     # Keep only the independently validated permission and its observation time.
     rl = (copy.deepcopy(rl) if complete else
           {"ordinary_usage_allowed": rl["ordinary_usage_allowed"], "fetched_at": stamp})
+    if (isinstance(previous, dict) and "ordinary_usage_allowed" in previous
+            and "ordinary_usage_allowed" not in rl):
+        # Omission does not revoke prior permission evidence, but must never
+        # suppress a newer restrictive meter. Carry the known signal forward;
+        # pause recovery separately requires explicit permission in the new read.
+        rl["ordinary_usage_allowed"] = previous["ordinary_usage_allowed"]
     if not stamp:
         rl["fetched_at"] = _to_iso(now)
     state["rate_limits"] = rl
@@ -468,7 +471,8 @@ def note_rate_limits(rl: dict | None, root: str | Path | None = None) -> None:
         fresh = (_complete_rate_limits(rl) and observed is not None
                  and 0 <= (now - observed).total_seconds() <= 600
                  and (last_transition is None or observed >= last_transition)
-                 and ("ordinary_usage_allowed" not in rl or rl["ordinary_usage_allowed"] is True))
+                 and ("ordinary_usage_allowed" not in state["rate_limits"]
+                      or rl.get("ordinary_usage_allowed") is True))
         if paused_dt is not None and paused_dt > now and fresh:
             cfg = load_cfg(resolved_root)
             budget_pct = float(cfg.get("budget_pct", 85))
