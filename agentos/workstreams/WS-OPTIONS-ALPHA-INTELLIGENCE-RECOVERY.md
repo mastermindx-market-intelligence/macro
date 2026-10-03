@@ -136,6 +136,22 @@ waves:
     next_action: >
       CLOSED. Must extend the existing episode/outcome/lifecycle owner with a new reviewed
       contract version; no mid, EOD, intrinsic or underlying-return substitute for missing NBBO.
+      Frozen spec landed via #7405 (`sol/options-alpha-oa3-exact-option-ruler-20260919`,
+      squash `92856b75808`); machine policy
+      `research/options_estate/options_alpha_exact_option_outcome_policy_v1.json`; schema
+      `contracts/options/options.alpha_exact_option_outcome_policy.v1.schema.json`.
+      Implementation of the pure fixture-only OA-3 v1 evaluator is COMMITTED and PUSHED on
+      `codex/options-alpha-exact-ruler-20261003` @ `3ee2051bcdf86c6687468c8bfbc520406402db49`
+      (local: `claude/options-alpha-exact-ruler-20261003` tracking that ref).  DRAFT PR open
+      is refused from the executor by the lane guard; the seat must open the PR via
+      https://github.com/mastermindx-market-intelligence/macro/pull/new/codex/options-alpha-exact-ruler-20261003
+      with the body drafted in `agentos/handoffs/WS-OPTIONS-OA3-EXACT-RULER-2026-10-03.md`.
+      46 focused tests pass; 63 existing options_nbbo_cohort tests still pass (5 policy
+      assertions preserved).  The implementation reuses only generic mechanics
+      (`validate_contract`, `parse_quote_response`, `canonical_json_bytes`, `net_return_pct`,
+      `SOURCE_ENDPOINT`/`INTERVAL`, `QUOTE_RULE_ID`, `FEE_PER_SIDE_USD`, NYSE session helpers)
+      and does NOT inherit the MomoEdge benchmark cohort identity, registries, or 600s
+      live-capture fence.
   - id: OA-4
     title: Preregister and evaluate a separate right-conditioned directional family
     status: todo
