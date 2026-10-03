@@ -150,6 +150,20 @@ def _strict_token_ids(values: list[Any]) -> set[str]:
     return {json.dumps(value, sort_keys=True) for value in values}
 
 
+def _guard_kind(field: dict[str, Any]) -> str | None:
+    """Return the field guard's ``kind`` when the guard is a dict, else None.
+
+    A guard that is a missing key, None, a string, a list or any other non-dict
+    shape is not a guard — lint treats it as no guard at all and reports the
+    L6 ``no guard`` / ``guard keys do not match its kind`` message instead of
+    raising.
+    """
+    guard = field.get("guard")
+    if not isinstance(guard, dict):
+        return None
+    return guard.get("kind")
+
+
 def lint_mapping(mapping: dict[str, Any]) -> list[str]:
     """Every way the mapping breaks its own rules; an empty list means clean.
 
@@ -296,13 +310,14 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
                 for column in _TOKEN_COLUMNS:
                     for token in condition[column]:
                         covered.add(json.dumps(token, sort_keys=True))
-                guard_kind = (field.get("guard") or {}).get("kind")
+                guard_kind = _guard_kind(field)
                 missing_token_id: str | None = None
                 missing_token_repr: Any = None
-                if guard_kind == "owner_missing_token":
-                    missing_token = field["guard"]["missing_token"]
-                    missing_token_id = json.dumps(missing_token, sort_keys=True)
-                    missing_token_repr = missing_token
+                if guard_kind == "owner_missing_token" and isinstance(field["guard"], dict):
+                    if "missing_token" in field["guard"]:
+                        missing_token = field["guard"]["missing_token"]
+                        missing_token_id = json.dumps(missing_token, sort_keys=True)
+                        missing_token_repr = missing_token
                 for token in field["tokens"]:
                     if token is None:
                         continue
@@ -351,6 +366,8 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
                         or len(ge_entries) != 1
                         or le_entries[0]["value"] >= ge_entries[0]["value"]
                         or le_column == ge_column
+                        or le_column == 2
+                        or ge_column == 2
                     ):
                         errors.append(f"{condition_id}: numeric row does not partition the integers")
                     else:
@@ -427,7 +444,7 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
 
     # L5 — a turn_watch_null field is read by at most one row
     for field_id, field in fields.items():
-        if field.get("guard", {}).get("kind") == "turn_watch_null":
+        if _guard_kind(field) == "turn_watch_null":
             if len(by_field.get(field_id, [])) > 1:
                 errors.append(f"{field_id}: more than one row reads a turn watch")
 
@@ -452,6 +469,34 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
                 break
         if fixed_violation:
             continue
+        # R2(a) — every guard path stays inside the field's own owner block.
+        # A guard path whose prefix does not match ``field["path"][:-1]`` is
+        # naming a different series, and a ``needs`` entry that escapes the
+        # block is doing the same. The existing turn-watch check below keeps
+        # its own message for that kind; reporting both for a turn_watch_null
+        # is fine.
+        field_prefix = field["path"][:-1]
+        for key, value in guard.items():
+            if key.endswith("_path") and not key.startswith("copy_") and isinstance(value, list):
+                if list(value[: len(field_prefix)]) != field_prefix:
+                    errors.append(f"{field_id}: guard {key} leaves the field's own block")
+                    break
+        else:
+            needs = guard.get("needs")
+            if isinstance(needs, list):
+                for entry in needs:
+                    if list(entry[: len(field_prefix)]) != field_prefix:
+                        errors.append(f"{field_id}: guard needs leaves the field's own block")
+                        break
+        # R2(b) — a same-run-owner-copy guard must point at a sibling artifact.
+        if kind == "same_run_owner_copy":
+            copy_artifact = guard.get("copy_artifact")
+            if (
+                copy_artifact is None
+                or copy_artifact not in mapping["artifacts"]
+                or copy_artifact == field.get("artifact")
+            ):
+                errors.append(f"{field_id}: guard copy_artifact is not another listed artifact")
         if kind == "default_token_needs":
             owner_token_ids = _strict_token_ids(field["tokens"])
             if json.dumps(guard["default_token"], sort_keys=True) not in owner_token_ids:
