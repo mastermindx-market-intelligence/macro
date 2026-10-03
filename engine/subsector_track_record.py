@@ -170,7 +170,11 @@ def snapshot(payload: dict, member_map: dict | None = None,
         # SESSION, not calendar day (see _session_stamp): a weekend re-read of
         # Friday's EOD board must land on Friday, where (date,key) dedup can see it.
         today_str = _session_stamp(today)
-        existing = {f"{r.get('date')}|{r.get('key')}" for r in _load(root)}
+        existing = {f"{r.get('date')}|{r.get('key')}" for r in _load(root)
+                    if isinstance(r, dict)}
+        # Observer capture time is NOT the session label or source-publication time.
+        # Keep old rows untouched; no historical availability is backfilled.
+        recorded_at_utc = _now_iso()
         emerging = set((payload.get("highlights") or {}).get("emerging") or [])
         fading = set((payload.get("highlights") or {}).get("fading") or [])
         new = []
@@ -181,6 +185,8 @@ def snapshot(payload: dict, member_map: dict | None = None,
             stage, lean = _stage_lean(s, emerging, fading)
             members = [str(t).strip().upper() for t in (member_map.get(k) or []) if str(t).strip()]
             new.append({"date": today_str, "key": k, "name": s.get("name"),
+                        "recorded_at_utc": recorded_at_utc,
+                        "recording_time_basis": "observer_wall_clock",
                         "theme": s.get("theme"), "score": s.get("emerging_score"),
                         "rs_mom": s.get("rs_mom"), "accel": s.get("accel"),
                         "quadrant": s.get("quadrant"), "stage": stage, "lean": lean,

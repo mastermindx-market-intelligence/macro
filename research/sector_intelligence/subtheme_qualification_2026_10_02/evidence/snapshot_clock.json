@@ -1,0 +1,64 @@
+{
+  "schema": "subtheme_snapshot_clock_evidence.v1",
+  "source_base": "b47a48d947d0dcce47fa487c52a34ac05e3c54fe",
+  "procedure_pin": "bdf2a972e68a70270c24d4b5d61a4d60edc4f288",
+  "generated_at": "2026-10-03T04:23:24.959111+00:00",
+  "scope": "AUTHOR_REAL_IMPORT_SYNTHETIC_IO_AND_NODE_TESTS",
+  "files": {
+    "engine/subsector_track_record.py": {
+      "bytes": 41508,
+      "git_blob": "2b3f3f4cc82a4765da3535471dcedf7df5940d42",
+      "sha256": "5cf620fb836abb2916f02b55e188c8ba65e514ac5f047d22efb1eb0a45b387a6"
+    },
+    "tests/test_subsector_track_record.py": {
+      "bytes": 58834,
+      "git_blob": "a20da3331de7ff444f76584371a6934011641968",
+      "sha256": "8ac34d51ef3b1d0f41a803ed91f65093956fa217bf57d18fcb3952c7a91138d1"
+    },
+    "research/sector_intelligence/subtheme_qualification_2026_10_02/README.md": {
+      "bytes": 9870,
+      "git_blob": "1d9d356fb52baa3ef9859cf8887b14945c9274d4",
+      "sha256": "e5fd1a574cca37955972bda2df26c6824de81250ff552aaccbb8b3b5e2543e6c"
+    }
+  },
+  "tests": {
+    "new_cases": 6,
+    "pre_repair_failed": 5,
+    "pre_repair_passed": 1,
+    "final_passed": 224,
+    "log": {
+      "bytes": 340,
+      "git_blob": "9682a36c0b4223c9da88d747427107afe745d513",
+      "sha256": "13d27bf89a44a65e4d467df395e2fa5a1187d29af974f36f84283fc2476d0de4"
+    }
+  },
+  "capture_contract": {
+    "fields": [
+      "recorded_at_utc",
+      "recording_time_basis"
+    ],
+    "basis": "observer_wall_clock",
+    "legacy_backfilled": false,
+    "idempotent_rows_rewritten": false,
+    "source_publication_time_attested": false,
+    "historical_pit_qualified": false,
+    "live_records_accrued": false
+  },
+  "coverage_receipt": {
+    "commit": "b47a48d947d0dcce47fa487c52a34ac05e3c54fe",
+    "path": "research/sector_intelligence/subtheme_qualification_2026_10_02/evidence/coverage_integration.json",
+    "git_blob": "51bf7b6e645da689b5a9a4168bdf0e3ef3fbfc94"
+  },
+  "production": {
+    "deployed": false,
+    "rank_changed": false,
+    "sizing_changed": false,
+    "trading_authority": false
+  },
+  "next": [
+    "exact-head hosted CI",
+    "independent scientific/code review",
+    "qualified historical data",
+    "live browser and ordinary-refresh proof"
+  ]
+}

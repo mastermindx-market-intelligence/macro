@@ -1201,3 +1201,62 @@ process.stdout.write(JSON.stringify({case:kind,language,passed:true}));
     result=subprocess.run(['node','-e',js,str(root/'templates/subsector_rotation.js'),language,case],capture_output=True,text=True)
     assert result.returncode==0,result.stdout+result.stderr
     assert json.loads(result.stdout)['passed'] is True
+
+
+def _clock_payload(keys=('a',)):
+    return _payload([{'key':k,'name':k,'theme':'T','emerging_score':1.} for k in keys],list(keys),[])
+
+
+def test_snapshot_clock_separates_observation_from_session(tmp_path,monkeypatch):
+    monkeypatch.setattr(S,'_now_iso',lambda:'2026-10-03T04:00:00+00:00')
+    assert S.snapshot(_clock_payload(),{'a':['A','B','C']},today='2026-09-25',root=tmp_path)==1
+    row=S._load(tmp_path)[0]
+    assert row['date']=='2026-09-25'
+    assert row['recorded_at_utc']=='2026-10-03T04:00:00+00:00'
+    assert row['recording_time_basis']=='observer_wall_clock'
+
+
+def test_snapshot_clock_caller_cannot_backdate_capture(tmp_path,monkeypatch):
+    monkeypatch.setattr(S,'_now_iso',lambda:'2026-10-03T04:00:00+00:00')
+    payload=_clock_payload();payload['recorded_at_utc']='2020-01-01T00:00Z'
+    payload['subsectors'][0]['recorded_at_utc']='2020-01-01T00:00Z'
+    S.snapshot(payload,{'a':['A','B','C']},today='2026-09-25',root=tmp_path)
+    assert S._load(tmp_path)[0]['recorded_at_utc']=='2026-10-03T04:00:00+00:00'
+
+
+def test_snapshot_clock_idempotent_retry_preserves_original_time(tmp_path,monkeypatch):
+    monkeypatch.setattr(S,'_now_iso',lambda:'2026-09-25T21:00:00+00:00')
+    S.snapshot(_clock_payload(),{'a':['A','B','C']},today='2026-09-25',root=tmp_path)
+    original=S._path(tmp_path).read_bytes()
+    monkeypatch.setattr(S,'_now_iso',lambda:'2026-10-03T04:00:00+00:00')
+    assert S.snapshot(_clock_payload(),{'a':['A','B','C']},today='2026-09-25',root=tmp_path)==0
+    assert S._path(tmp_path).read_bytes()==original
+
+
+def test_snapshot_clock_legacy_rows_are_not_backfilled(tmp_path,monkeypatch):
+    legacy={'date':'2026-09-25','key':'a','members':['A','B','C']}
+    _write_rows(tmp_path,[legacy]);prefix=S._path(tmp_path).read_bytes()
+    monkeypatch.setattr(S,'_now_iso',lambda:'2026-10-03T04:00:00+00:00')
+    assert S.snapshot(_clock_payload(('a','b')),{'b':['A','B','C']},today='2026-09-25',root=tmp_path)==1
+    assert S._path(tmp_path).read_bytes().startswith(prefix)
+    rows=S._load(tmp_path)
+    assert 'recorded_at_utc' not in rows[0]
+    assert rows[1]['recorded_at_utc']=='2026-10-03T04:00:00+00:00'
+
+
+def test_snapshot_clock_single_batch_uses_one_observed_instant(tmp_path,monkeypatch):
+    calls=[]
+    def now():
+        calls.append(1);return '2026-10-03T04:00:00+00:00'
+    monkeypatch.setattr(S,'_now_iso',now)
+    assert S.snapshot(_clock_payload(('a','b')),{'a':['A','B','C'],'b':['A','B','C']},today='2026-09-25',root=tmp_path)==2
+    rows=S._load(tmp_path)
+    assert len(calls)==1 and rows[0]['recorded_at_utc']==rows[1]['recorded_at_utc']
+
+
+def test_snapshot_clock_malformed_historical_record_does_not_block_capture(tmp_path,monkeypatch):
+    _write_rows(tmp_path,[None])
+    monkeypatch.setattr(S,'_now_iso',lambda:'2026-10-03T04:00:00+00:00')
+    assert S.snapshot(_clock_payload(),{'a':['A','B','C']},today='2026-09-25',root=tmp_path)==1
+    assert S._load(tmp_path)[0] is None
+    assert S._load(tmp_path)[1]['recorded_at_utc']=='2026-10-03T04:00:00+00:00'

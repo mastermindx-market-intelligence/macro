@@ -2,16 +2,17 @@
 
 Start with `MASTER_PLAN.md` for the census, observed result audit, architecture, experiments and U0-U6 owner-mapped delivery plan. `ECONOMIC_PILOT.md` adds source-grounded optical/fabrication cases and event-stage tests.
 
-This package does not install, import into or modify a production engine. It is a deterministic offline acceptance asset for the existing Evaluation/Prophet/Group Reads owners. Every action-authority flag is false. Inputs labeled PIT or qualified require external source-owner verification; the parser cannot certify a dishonest attestation.
+The offline qualification adapter remains an acceptance asset, not a second canonical grader. PR #8299 now also repairs the existing production-source evaluator and its existing scorecard renderer; source changes are not deployed merely because they are committed. Every trading/action-authority flag remains false. Inputs labeled PIT or qualified require external source-owner verification; a parser or timestamp cannot certify a dishonest attestation.
 
 ## Run
 
-Python 3.10 or newer is required. The runtime uses the standard library. The existing owner test suite also uses its normal pandas/engine dependencies. Local qualification verification used Python 3.13.5 and pytest 9.0.2.
+The offline qualification CLI uses Python 3.10+ standard-library code. The public industry-reference study also requires NumPy, pandas and SciPy. The existing owner test suite uses its normal engine dependencies and Node for renderer contract checks. Current targeted verification ran with Python 3.14.7 and pytest 9.1.1.
 
 From the repository root, use the existing CI-owned suite:
 
 ```sh
-python -m pytest -q tests/test_subsector_track_record.py
+python -m pytest -q tests/test_subsector_track_record.py tests/test_subsector_significance_guard.py
+node --check templates/subsector_rotation.js
 ```
 
 From this research directory:
@@ -28,11 +29,11 @@ A synthetic end-to-end fixture is defined by `packet()` in repository-root `test
 
 ## Actual verification
 
-Initial candidate: 81 local tests passed. Four preserve isolated semantic reproductions of legacy horizon, available-member averaging and iteration-order behavior. Twelve author adversarial cases initially failed and were repaired before the final pass. No independent reviewer verdict, full-repository CI result, historical raw-market replay or production/browser proof is claimed.
+Historical phase counts remain in their immutable evidence receipts. The original 81-case offline study grew to 107 qualification/seam cases, then to 137 research cases. Those were not the complete application suite. The two originally unregistered research test files were consolidated into the existing CI-owned owner suite; no waiver or new workflow was introduced.
 
-Continuation: 26 additional parameterized cases were added. Before the repair, 25 failed and one passed; afterward, all 107 qualification/seam cases passed. The same 107 cases also passed after relocation into the existing test owner (executed locally as an isolated extraction of that exact block). That extraction does not claim a local run of the full production-engine import chain. The original owner-suite prefix is byte-identical.
+Canonical evaluator integration reached 188 passing targeted tests with real imports and synthetic parquet IO. That source head, ee4124d999a5cc8e10526127352534f18ca557f4, passed hosted CI 37094428913 and its fences. Coverage and renderer integration reached 218 passing targeted tests; six capture-clock cases then reached 224. Five of those six clock cases failed before the clock repair. No independent review or actual-market predictive acceptance is implied.
 
-The original hosted CI failure was precisely two new, unregistered test files, not a numerical-test failure. All assertions are now physically in `tests/test_subsector_track_record.py`, already named by CI; the two duplicate research suites were removed. No workflow, waiver or CI guard was weakened. Exact-head hosted proof remains a separate requirement.
+`evidence/engine_integration.json`, `evidence/coverage_integration.json` and `evidence/snapshot_clock.json` bind the source, test scope and remaining limitations. Newer heads require their own hosted acceptance. Node tests exercise the actual renderer in a VM, not the full browser. The local static-fragment Chromium navigation was blocked by administrator policy; no screenshot/layout proof is claimed.
 
 Current source behavior deliberately separates:
 - exact following-session entry/exit clocks from calendar days;
@@ -51,9 +52,19 @@ Each signal supplies a stable snapshot/group ID, signal session, decision and fe
 
 Prices supply exact ticker/session open and close, when that finalized record became known, and a consistent adjustment-basis identifier. Each price value must agree with its ticker/session map key. Outcomes use frozen starting weights. If any expected member or benchmark endpoint is missing, the target is unavailable; it is not recomputed over a smaller survivor basket.
 
-The target is explicitly NEXT session open through the Hth following session close, inclusive. An end-of-day observation received after the next open is refused rather than backdated. This target differs from the incumbent legacy close-to-close/calendar-day definition and must receive its own evaluation label/version.
+The target is explicitly NEXT session open through the Hth following session close, inclusive. An end-of-day observation received after the next open is refused rather than backdated. This target differs from the canonical information-content evaluator's close-to-close, exact-session definition and must retain its own evaluation label/version. Neither target implies a cost-adjusted executed strategy.
 
 `evaluation_at`, `horizons`, `baseline` and `challenger` complete the packet. Baseline and challenger must have distinct, nonempty identities. Paired comparisons reject mixed target bases. Results preserve latest outcome availability; training purging requires both an elapsed outcome and its knowledge clock before validation begins.
+
+## Coverage and capture-time contract
+
+The canonical evaluator now publishes per-horizon input, due, measured, pending, invalid and unavailable counts, plus first-failing-gate reasons and bounded stage breakdowns. Due excludes pending observations and invalid records; its zero-denominator fraction is null. The basis is parsed snapshot rows, not all raw lines or the market universe. These diagnostics expose selection; they do not correct missing-not-at-random bias.
+
+The existing renderer shows measured / due, visible exclusions and accessible reason details. Legacy or inconsistent counters remain unknown. A data generation without an explicit complete-basket policy is not described as if it had one.
+
+Newly appended canonical snapshot rows also carry `recorded_at_utc` and `recording_time_basis=observer_wall_clock`. This is the observer's capture timestamp, NOT a market-session label, source-publication time, original ingestion time, or fully qualified decision-time attestation. Caller payload timestamps cannot override it. A single batch uses one observed instant. Existing rows remain byte-preserved; idempotent replays do not update the original timestamp and no historical availability is backfilled.
+
+A session dated September 25 but first recorded October 3 must not be treated as a decision known on September 25. The new capture clock is evidence for later qualification, not an automatic conversion to the adapter's `feature_known_at`. Clock accuracy, upstream availability, revisions, membership/weight provenance and execution admissibility remain with existing source/Evaluation owners. Old rows lacking the field remain unknown. This source change has not yet accrued live records because this PR remains undeployed.
 
 ## Required real-data export and unresolved qualification
 
