@@ -30,6 +30,7 @@ depends_on:
 decisions:
   - DEC:CHINA-ALPHA-INTELLIGENCE-ARCHITECTURE-FREEZE
   - DEC:CHINA-IDENTITY-OWNER-ROUTE-D2B2-CN-HK
+  - DEC:CHINA-ALPHA-FABLE-COO-AUTONOMOUS-EXECUTION
 landmines:
   - "Serving firewall: Intelligence serving inputs never contain Prophet
     score/rank/lane/board membership/entry state/signal tier. Those are
@@ -175,10 +176,10 @@ waves:
       (DSC:CHINA-VISITS-UNTYPED-ANNOUNCEMENT-ID-DROP), commissioned by Sol
       2026-08-22, bounded to collectors/china_filings.py +
       collectors/china_visits.py (engine/china_intel_hub.py read, NOT edited)
-    status: in_progress
+    status: done
     depends_on: [p1]
     next_action: >
-      BUILT_NOT_PROVEN (built 2026-08-22, merged with this record):
+      CURRENT DISPOSITION 2026-10-03: CLOSED / SUPERSEDED-IN-PART by P1-R3/R3A; the retained implementation is part of the accepted P1 chain. Historical pre-supersession proof text below is preserved as provenance, not the current frontier.\n      BUILT_NOT_PROVEN (built 2026-08-22, merged with this record):
       collectors/china_filings.py gained key_anomaly()/
       normalize_announcement_id()/partition_by_key_integrity() (pure, owns
       the natural-key predicate) and write_filings() now partitions
@@ -228,10 +229,10 @@ waves:
       remembered until deterministically reconciled, with negative-authority
       suppression scoped to the affected company whenever scope is knowable
       (commissioned by Sol 2026-08-22 after accepting #6229 with no rollback)
-    status: in_progress
+    status: done
     depends_on: [p1r2]
     next_action: >
-      WHY THIS WAVE EXISTS: P1-R2 fixed the silent-drop MECHANISM but left the
+      CURRENT DISPOSITION 2026-10-03: DONE / PROVEN_LIVE by the accepted P1-R3A natural production receipt, asia-close run 32626503385; Sol adjudicated P1 DONE / PROVEN_LIVE on 2026-08-24. Historical proof-owed text below describes the pre-receipt state and is retained as provenance.\n      WHY THIS WAVE EXISTS: P1-R2 fixed the silent-drop MECHANISM but left the
       exclusion's LIFETIME and SCOPE at their inherited defaults (per-run,
       plane-global), which fail in opposite directions depending only on where
       the malformed row sits — and those two places are jointly exhaustive, so
@@ -374,51 +375,43 @@ waves:
     status: todo
     depends_on: [l0, p1b]
 next_action: >
-  COLD-START FRONTIER (rewritten 2026-08-22 on Sol's instruction — the older
-  "P1 DONE / one open question" prose is superseded by the more specific
-  p1r2/p1r3 wave state below and must not be read as the frontier).
-  ACTIVATION CLOSED 2026-08-20 (Sol PR-0D authority adjudication; freeze
-  effective since Sol post-merge acceptance GO, receipt = main
-  49533d59b16076630ccd7d8bf48307f658db61da).
-  DONE / PROVEN_LIVE: pr0b (#6045 squash fdbf543b2333), rights0, pr0d (Sol
-  natural-proof adjudication 2026-08-21; #6116 squash ed28d0d992a1).
-  P1 IS **PARTIAL**, NOT DONE. Its normal path is PROVEN_LIVE — #6050 squash
-  c54d1b55f673 plus P1-R1 #6142 squash 650be4dfe6d5, proved on natural
-  asia-close run 32460910383 (145 candidates -> 145 rows, exact
-  reconciliation, production 交通银行 601328.SS card on desktop + mobile;
-  research/china_alpha_intelligence/receipts/P1_NATURAL_RUN_RECEIPT_2026-08-21.md).
-  Its malformed-evidence lifecycle is BUILT_NOT_PROVEN across three
-  Sol-commissioned repairs of ONE defect family: p1r2 (#6229 squash
-  c11b16500c15, superseded IN PART), p1r3 (#6242 squash 4e9735088638) and the
-  p1r3a crash-consistency amendment inside the p1r3 wave entry (#6269 squash
-  0bcfef045517). The DSC:CHINA-VISITS-UNTYPED-ANNOUNCEMENT-ID-DROP question
-  that the old text handed back to Sol is CLOSED — #6229 repaired that
-  mechanism; what remains open is its successor,
-  DSC:CHINA-VISITS-KEY-EXCLUSION-LATCH-AND-AGING-FORGETFULNESS.
-  P1 CODE IS CLOSED (Sol FINAL CODE ADJUDICATION 2026-08-23: PASS). No further
-  P1 implementation repair is authorized, and the three former residuals are
-  RULED — see DEC:CHINA-COVERAGE-EXCEPTION-LEDGER §"Sol residual rulings,
-  2026-08-23" before proposing any of them: the unreadable accrued-store path
-  is an outage-recovery concern and gets no second persistence site; the
-  china_visits import failure stays fail-closed and the P1-relevance law must
-  NOT be duplicated into china_filings; coverage exceptions get NO
-  TTL/expiry/prune/operator-clear.
-  THE ONE THING A FRESH SESSION MAY DO HERE — and it is a RECEIPT, not code:
-  take the FIRST natural asia-close containing 0bcfef045517 with HEALTHY
-  CNInfo transport and record the acceptance items named in the p1r3 wave
-  entry. Do NOT rerun the lane and do NOT manufacture data to obtain one. As
-  of 2026-08-22 production
-  china_visits health reads upstream_degraded from a real
-  `sse: HTTP 504 from CNInfo` with last_success_utc 2026-08-21T09:29:55Z, so
-  the next close may degrade for that unrelated reason — a 504 run is valid
-  failure-state evidence but is NOT the clean-path acceptance receipt, and the
-  proof simply waits for a healthy night. Never manufacture malformed
-  production input.
-  STANDING GATE: P1B, L0, R1, R2, P2 and all later China Alpha execution stay
-  CLOSED until Sol rules. Later tracks (P3-P6, R3-R4, S-lobes, L3+) charter
-  from the masterplan at their wave boundaries. Completion law on every build
-  wave: merge = BUILT_NOT_PROVEN; a real production receipt recorded here with
-  immutable merge SHAs = done.
+  CURRENT FRONTIER — reconciled 2026-10-03 under the Chairman's CIE-00..CIE-19
+  commissioning. P1/P1-R3A is DONE / PROVEN_LIVE. The controlling acceptance
+  receipt is research/china_alpha_intelligence/receipts/
+  P1_R3A_NATURAL_RUN_RECEIPT_2026-08-23.md: natural scheduled asia-close run
+  32626503385, accepted by Sol under Chairman authority on 2026-08-24. It
+  proves the clean production path after #6269 without manufacturing malformed
+  production data; the hostile rare branch remains fixture/mutation-proven.
+  No further P1 repair or proving rerun is authorized merely to seek evidence.
+
+  DEC:CHINA-ALPHA-FABLE-COO-AUTONOMOUS-EXECUTION supersedes the older blanket
+  prose below that held every later Alpha wave pending another Sol ruling.
+  That supersession does NOT waive each wave's own dependency, rights, custody,
+  scientific, production, review, or release gates and does not transfer a
+  started writer.
+
+  CN Prophet recovery PR #6871 remains OPEN / DRAFT / HOLD-FOR-SOL /
+  SAME-WRITER-STICKY at its current canonical carrier until reconciled by that
+  exact incumbent route. Do not clone, replace, or silently restate original
+  fills, ordering, treatment, or historical prices. CIE-03/L0 comparative
+  outcome inference must not consume disputed #6871 economics as an accepted
+  benchmark; accepted CIE-02 outcome/serving provenance remains its gate.
+
+  Independent owner-native product work is no longer blocked by P1. Advance
+  CIE-04/CIE-05/CIE-06 through existing Data OS/GMI/event/source/Hub publication
+  owners: versioned point-in-time evidence semantics, bounded owner-native
+  readers, then the smallest real company workflow with source-linked filings,
+  visit metadata, market context, changes, contradictions and honest unknowns.
+  Visitor metadata is not visitor identity. Missing reports/source outages are
+  UNKNOWN unless an owner proves a complete observation window. No universal
+  evidence warehouse, second company master, rival event spine, grader,
+  ranker, alert engine or worker-control plane.
+
+  Continue lawful prospective availability/accrual as soon as the owner
+  contracts permit while supporting #6871 recovery separately. Completion law
+  remains merge = BUILT_NOT_PROVEN; real producer/publication/consumer evidence
+  is required for PROVEN_LIVE, and scientific adjudication/EDGE_PROVEN remain
+  separate from engineering completion.
 
 artifacts:
   - research/CHINA_ALPHA_INTELLIGENCE_MASTERPLAN.md
