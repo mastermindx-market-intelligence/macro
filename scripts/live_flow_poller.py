@@ -1854,6 +1854,23 @@ _QUARANTINE_RE = re.compile(
     r"^prior_session_wal_quarantine_(\d{4}-\d{2}-\d{2})\.json$"
 )
 
+# Immutable production incident descriptor. The only reviewed prior-session WAL
+# eligible for quarantine is the Chairman Options Alpha parent599 case. Any
+# operator-supplied digest is rejected even if syntactically well-formed; the
+# descriptor is bound to the exact production bytes and clock bounds below.
+PRIOR_SESSION_WAL_INCIDENT: dict = {
+    "deployed_sha": "bffd9931b2e37b5011fe50e0633f62c356879dd8",
+    "state_sha256": "d9a25966a8d50090f8619d878e4133860cc54682b53764126bf7299e1ca00b06",
+    "session_date": "2026-09-28",
+    "schema_version": 5,
+    "pending_event_count": 170,
+    "ordered_event_id_sha256": "c52ee12c27b31775e2acef188e434134202e3f745ebb2d55c68a0e12749df218",
+    "observed_at_min": "2026-09-28T13:37:09.179619Z",
+    "observed_at_max": "2026-09-28T13:38:55.752263Z",
+    "decision_at_min": "2026-09-30T23:51:45.034847Z",
+    "decision_at_max": "2026-09-30T23:53:18.537416Z",
+}
+
 
 def _prior_session_wal_quarantine_receipt_path(session_date: str) -> Path:
     return _state_dir() / "quarantine" / (
@@ -1870,10 +1887,18 @@ def _exact_incident_incident(
     expectations: object,
     *,
     field: str,
+    expected_incident: dict | None = None,
 ) -> dict:
+    """Bind the receipt's incident block to the immutable production descriptor.
+
+    Without an injected ``expected_incident``, the only acceptable values are
+    the literal production digests and clock bounds — operator-provided
+    digests of any other hex string are rejected, regardless of shape.
+    Tests may inject a synthetic descriptor to exercise the happy path.
+    """
     if not isinstance(expectations, dict):
         raise RuntimeError(f"{field} must be an object")
-    if set(expectations) != {
+    required_fields = {
         "deployed_sha",
         "state_sha256",
         "session_date",
@@ -1884,34 +1909,24 @@ def _exact_incident_incident(
         "observed_at_max",
         "decision_at_min",
         "decision_at_max",
-    }:
-        raise RuntimeError(f"{field} has an invalid field set")
-    if expectations.get("deployed_sha") != "bffd9931b2e37b5011fe50e0633f62c356879dd8":
-        raise RuntimeError(f"{field} has an unexpected deployed source identity")
-    if expectations.get("session_date") != "2026-09-28":
-        raise RuntimeError(f"{field} has an unexpected session")
-    if type(expectations.get("state_sha256")) is not str or not re.fullmatch(
-        r"[a-f0-9]{64}", expectations["state_sha256"]
-    ):
-        raise RuntimeError(f"{field} has an invalid protected state identity")
-    if type(expectations.get("ordered_event_id_sha256")) is not str or not re.fullmatch(
-        r"[a-f0-9]{64}", expectations["ordered_event_id_sha256"]
-    ):
-        raise RuntimeError(f"{field} has an invalid ordered-ID digest")
-    if expectations.get("schema_version") != 5:
-        raise RuntimeError(f"{field} has an unexpected day-state schema")
-    if expectations.get("pending_event_count") != 170:
-        raise RuntimeError(f"{field} has an unexpected pending-event count")
-    expected_clocks = {
-        "observed_at_min": "2026-09-28T13:37:09.179619Z",
-        "observed_at_max": "2026-09-28T13:38:55.752263Z",
-        "decision_at_min": "2026-09-30T23:51:45.034847Z",
-        "decision_at_max": "2026-09-30T23:53:18.537416Z",
     }
-    for clock_field, expected in expected_clocks.items():
+    if set(expectations) != required_fields:
+        raise RuntimeError(f"{field} has an invalid field set")
+    target = (
+        PRIOR_SESSION_WAL_INCIDENT
+        if expected_incident is None
+        else expected_incident
+    )
+    for key, expected in target.items():
+        if expectations.get(key) != expected:
+            raise RuntimeError(f"{field}.{key} does not match the immutable production descriptor")
+    for clock_field in (
+        "observed_at_min",
+        "observed_at_max",
+        "decision_at_min",
+        "decision_at_max",
+    ):
         _canonical_utc_timestamp_required(expectations[clock_field], field=clock_field)
-        if expectations[clock_field] != expected:
-            raise RuntimeError(f"{field}.{clock_field} is unexpected")
     return expectations
 
 
@@ -1936,10 +1951,217 @@ def _read_prior_session_wal_quarantine_receipt(
     return receipt
 
 
+def _pure_validate_prior_session_wal_quarantine(
+    receipt: dict,
+    state_raw: bytes,
+    *,
+    session_date: str,
+    stage_path: Path,
+    expected_incident: dict | None = None,
+) -> dict:
+    """Pure check: receipt + raw day_state + canonical stage absence.
+
+    Does not perform any IO. ``stage_path.exists()`` is observed by the caller
+    and passed in as ``stage_present`` so this function remains pure.
+    Returns the validated incident dict for downstream provenance.
+    """
+    path = stage_path  # only used in error messages
+    required = {
+        "schema",
+        "classification",
+        "review_reference",
+        "incident",
+        "protected_source",
+    }
+    if set(receipt) != required:
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has an invalid shape: {path}"
+        )
+    if receipt.get("schema") != PRIOR_SESSION_WAL_QUARANTINE_SCHEMA:
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has a wrong schema: {path}"
+        )
+    if receipt.get("classification") != PRIOR_SESSION_WAL_CLASSIFICATION:
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has a wrong classification: {path}"
+        )
+    if type(receipt.get("review_reference")) is not str or not receipt["review_reference"].strip():
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has no review reference: {path}"
+        )
+    incident = _exact_incident_incident(
+        receipt.get("incident"),
+        field="quarantine incident",
+        expected_incident=expected_incident,
+    )
+
+    protected_source = receipt.get("protected_source")
+    if not isinstance(protected_source, dict):
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has invalid provenance: {path}"
+        )
+    if set(protected_source) != {"sha256", "bytes"}:
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has invalid provenance: {path}"
+        )
+    if protected_source.get("sha256") != incident["state_sha256"]:
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has mismatched provenance: {path}"
+        )
+
+    observed_hash = hashlib.sha256(state_raw).hexdigest()
+    if observed_hash != incident["state_sha256"]:
+        raise RuntimeError(
+            f"quarantined prior-session day_state changed: {path}"
+        )
+    if (
+        type(protected_source.get("bytes")) is not int
+        or protected_source["bytes"] != len(state_raw)
+    ):
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has a mismatched byte count: {path}"
+        )
+    try:
+        state = _strict_json_loads(state_raw.decode("utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        raise RuntimeError(
+            f"quarantined prior-session day_state is malformed: {path}"
+        ) from exc
+    if not isinstance(state, dict):
+        raise RuntimeError(
+            f"quarantined prior-session day_state is not an object: {path}"
+        )
+    if state.get("schema_version") != incident["schema_version"]:
+        raise RuntimeError(
+            f"quarantined prior-session day_state has a mismatched schema: {path}"
+        )
+    if state.get("session_date") not in (None, session_date):
+        raise RuntimeError(
+            f"quarantined prior-session day_state has a mismatched session: {path}"
+        )
+    pending = state.get("pending_learning_events")
+    if (
+        not isinstance(pending, list)
+        or len(pending) != incident["pending_event_count"]
+    ):
+        raise RuntimeError(
+            f"quarantined prior-session day_state has a mismatched count: {path}"
+        )
+    event_ids: list[str] = []
+    observed: list[datetime] = []
+    decisions: list[datetime] = []
+    events_in_session: list[datetime] = []
+    durable_fields = {
+        "available_at", "published_at", "source_snapshot_asof", "anchor_strategy",
+    }
+    for event in pending:
+        if not isinstance(event, dict):
+            raise RuntimeError(
+                f"quarantined prior-session day_state has an invalid WAL: {path}"
+            )
+        event_id = event.get("id")
+        if (
+            type(event_id) is not str
+            or not event_id
+            or event_id != event_id.strip()
+        ):
+            raise RuntimeError(
+                f"quarantined prior-session day_state has an invalid WAL id: {path}"
+            )
+        if durable_fields.intersection(event):
+            raise RuntimeError(
+                f"quarantined prior-session WAL has availability fields: {path}"
+            )
+        # Per-event classification: event <= observed <= decision;
+        # observed ET date MUST equal the review session;
+        # decision ET date MUST NOT equal the review session.
+        try:
+            event_dt = datetime.fromisoformat(
+                str(event.get("ts") or "").replace("Z", "+00:00")
+            )
+        except (TypeError, ValueError) as exc:
+            raise RuntimeError(
+                f"quarantined prior-session day_state has invalid ts: {path}"
+            ) from exc
+        observed_dt = _canonical_utc_timestamp_required(
+            event.get("observed_at"), field="observed_at",
+        )
+        decision_dt = _canonical_utc_timestamp_required(
+            event.get("decision_at"), field="decision_at",
+        )
+        if event_dt.tzinfo is None or observed_dt.tzinfo is None or decision_dt.tzinfo is None:
+            raise RuntimeError(
+                f"quarantined prior-session day_state has naive clocks: {path}"
+            )
+        if not (event_dt <= observed_dt <= decision_dt):
+            raise RuntimeError(
+                f"quarantined prior-session day_state violates event <= observed <= decision: {path}"
+            )
+        observed_et_date = observed_dt.astimezone(ET).date().isoformat()
+        decision_et_date = decision_dt.astimezone(ET).date().isoformat()
+        if observed_et_date != session_date:
+            raise RuntimeError(
+                f"quarantined prior-session day_state observed clock leaves session: {path}"
+            )
+        if decision_et_date == session_date:
+            raise RuntimeError(
+                f"quarantined prior-session day_state decision clock stays in session: {path}"
+            )
+        event_ids.append(event_id)
+        observed.append(observed_dt)
+        decisions.append(decision_dt)
+        events_in_session.append(event_dt)
+    if len(set(event_ids)) != len(event_ids):
+        raise RuntimeError(
+            f"quarantined prior-session day_state has duplicate WAL IDs: {path}"
+        )
+    ordered_digest = hashlib.sha256(
+        b"".join(f"{event_id}\n".encode("utf-8") for event_id in event_ids)
+    ).hexdigest()
+    if ordered_digest != incident["ordered_event_id_sha256"]:
+        raise RuntimeError(
+            f"quarantined prior-session day_state changed WAL order: {path}"
+        )
+    if min(observed).isoformat().replace("+00:00", "Z") != incident["observed_at_min"]:
+        raise RuntimeError(
+            f"quarantined prior-session day_state changed observed clocks: {path}"
+        )
+    if max(observed).isoformat().replace("+00:00", "Z") != incident["observed_at_max"]:
+        raise RuntimeError(
+            f"quarantined prior-session day_state changed observed clocks: {path}"
+        )
+    if min(decisions).isoformat().replace("+00:00", "Z") != incident["decision_at_min"]:
+        raise RuntimeError(
+            f"quarantined prior-session day_state changed decision clocks: {path}"
+        )
+    if max(decisions).isoformat().replace("+00:00", "Z") != incident["decision_at_max"]:
+        raise RuntimeError(
+            f"quarantined prior-session day_state changed decision clocks: {path}"
+        )
+    if state.get("all_events") != []:
+        raise RuntimeError(
+            f"quarantined prior-session day_state has display events: {path}"
+        )
+    for field in ("root_source_receipts", "root_ticker_receipts"):
+        receipts = state.get(field)
+        if not isinstance(receipts, dict):
+            raise RuntimeError(
+                f"quarantined prior-session day_state has invalid source receipts: {path}"
+            )
+        for root, clock in receipts.items():
+            _canonical_utc_timestamp_required(clock, field=f"{field}.{root}")
+    if state.get("source_asof") is not None:
+        _canonical_utc_timestamp_required(
+            state.get("source_asof"), field="day_state.source_asof",
+        )
+    return incident
+
+
 def _validate_prior_session_wal_quarantine(
     session_date: str,
     *,
     quarantine_dir: Path | None = None,
+    expected_incident: dict | None = None,
 ) -> bool:
     """Validate one reviewed prior-session WAL without making it admissible."""
     if quarantine_dir is None:
@@ -1953,120 +2175,32 @@ def _validate_prior_session_wal_quarantine(
     if receipt is None:
         return False
 
-    required = {
-        "schema",
-        "classification",
-        "review_reference",
-        "incident",
-        "protected_source",
-        "day_state",
-    }
-    if set(receipt) != required:
-        raise RuntimeError(f"prior-session WAL quarantine receipt has an invalid shape: {path}")
-    if receipt.get("schema") != PRIOR_SESSION_WAL_QUARANTINE_SCHEMA:
-        raise RuntimeError(f"prior-session WAL quarantine receipt has a wrong schema: {path}")
-    if receipt.get("classification") != PRIOR_SESSION_WAL_CLASSIFICATION:
-        raise RuntimeError(f"prior-session WAL quarantine receipt has a wrong classification: {path}")
-    if type(receipt.get("review_reference")) is not str or not receipt["review_reference"].strip():
-        raise RuntimeError(f"prior-session WAL quarantine receipt has no review reference: {path}")
-    incident = _exact_incident_incident(receipt.get("incident"), field="quarantine incident")
-
-    protected_source = receipt.get("protected_source")
-    if not isinstance(protected_source, dict):
-        raise RuntimeError(f"prior-session WAL quarantine receipt has invalid provenance: {path}")
-    if set(protected_source) != {"sha256", "bytes"}:
-        raise RuntimeError(f"prior-session WAL quarantine receipt has invalid provenance: {path}")
-    if protected_source.get("sha256") != incident["state_sha256"]:
-        raise RuntimeError(f"prior-session WAL quarantine receipt has mismatched provenance: {path}")
-
     state_path = _state_dir() / f"day_state_{session_date}.json"
     if not state_path.exists():
         raise RuntimeError(f"quarantined prior-session day_state is absent: {state_path}")
-    raw = state_path.read_bytes()
-    if hashlib.sha256(raw).hexdigest() != incident["state_sha256"]:
-        raise RuntimeError(f"quarantined prior-session day_state changed: {state_path}")
-    if type(protected_source.get("bytes")) is not int or protected_source["bytes"] != len(raw):
-        raise RuntimeError(f"prior-session WAL quarantine receipt has a mismatched byte count: {path}")
-    try:
-        state = _strict_json_loads(raw.decode("utf-8"))
-    except Exception as exc:  # noqa: BLE001
-        raise RuntimeError(f"quarantined prior-session day_state is malformed: {state_path}") from exc
-    if not isinstance(state, dict):
-        raise RuntimeError(f"quarantined prior-session day_state is not an object: {state_path}")
-    if state.get("schema_version") != incident["schema_version"]:
-        raise RuntimeError(f"quarantined prior-session day_state has a mismatched schema: {state_path}")
-    if state.get("session_date") not in (None, session_date):
-        raise RuntimeError(f"quarantined prior-session day_state has a mismatched session: {state_path}")
-    pending = state.get("pending_learning_events")
-    if not isinstance(pending, list) or len(pending) != incident["pending_event_count"]:
-        raise RuntimeError(f"quarantined prior-session day_state has a mismatched count: {state_path}")
-    event_ids: list[str] = []
-    observed: list[datetime] = []
-    decisions: list[datetime] = []
-    durable_fields = {
-        "available_at", "published_at", "source_snapshot_asof", "anchor_strategy",
-    }
-    for event in pending:
-        if not isinstance(event, dict):
-            raise RuntimeError(f"quarantined prior-session day_state has an invalid WAL: {state_path}")
-        event_id = event.get("id")
-        if type(event_id) is not str or not event_id or event_id != event_id.strip():
-            raise RuntimeError(f"quarantined prior-session day_state has an invalid WAL id: {state_path}")
-        if durable_fields.intersection(event):
-            raise RuntimeError(f"quarantined prior-session WAL has availability fields: {state_path}")
-        observed.append(
-            _canonical_utc_timestamp_required(event.get("observed_at"), field="observed_at")
-        )
-        decisions.append(
-            _canonical_utc_timestamp_required(event.get("decision_at"), field="decision_at")
-        )
-        event_ids.append(event_id)
-    if len(set(event_ids)) != len(event_ids):
-        raise RuntimeError(f"quarantined prior-session day_state has duplicate WAL IDs: {state_path}")
-    ordered_digest = hashlib.sha256(
-        b"".join(f"{event_id}\n".encode("utf-8") for event_id in event_ids)
-    ).hexdigest()
-    if ordered_digest != incident["ordered_event_id_sha256"]:
-        raise RuntimeError(f"quarantined prior-session day_state changed WAL order: {state_path}")
-    if min(observed).isoformat().replace("+00:00", "Z") != incident["observed_at_min"]:
-        raise RuntimeError(f"quarantined prior-session day_state changed observed clocks: {state_path}")
-    if max(observed).isoformat().replace("+00:00", "Z") != incident["observed_at_max"]:
-        raise RuntimeError(f"quarantined prior-session day_state changed observed clocks: {state_path}")
-    if min(decisions).isoformat().replace("+00:00", "Z") != incident["decision_at_min"]:
-        raise RuntimeError(f"quarantined prior-session day_state changed decision clocks: {state_path}")
-    if max(decisions).isoformat().replace("+00:00", "Z") != incident["decision_at_max"]:
-        raise RuntimeError(f"quarantined prior-session day_state changed decision clocks: {state_path}")
-    if state.get("all_events") != []:
-        raise RuntimeError(f"quarantined prior-session day_state has display events: {state_path}")
-    for field in ("root_source_receipts", "root_ticker_receipts"):
-        receipts = state.get(field)
-        if not isinstance(receipts, dict):
-            raise RuntimeError(f"quarantined prior-session day_state has invalid source receipts: {state_path}")
-        for root, clock in receipts.items():
-            _canonical_utc_timestamp_required(clock, field=f"{field}.{root}")
-    if state.get("source_asof") is not None:
-        _canonical_utc_timestamp_required(
-            state.get("source_asof"), field="day_state.source_asof",
-        )
-
+    state_raw = state_path.read_bytes()
     stage_path = _event_stage_path(session_date)
     try:
-        stage_raw = stage_path.read_bytes() if stage_path.exists() else b""
+        stage_present = stage_path.exists()
     except Exception as exc:  # noqa: BLE001
-        raise RuntimeError(f"cannot inspect canonical event stage for quarantine: {stage_path}") from exc
-    if stage_raw:
-        try:
-            decisions_by_id, _available, _capture = _parse_event_stage_bytes(
-                session_date, stage_raw, path=stage_path, require_complete=False,
-            )
-        except Exception as exc:  # noqa: BLE001
-            raise RuntimeError(
-                f"malformed canonical event stage conflicts with quarantine: {stage_path}"
-            ) from exc
-        if set(decisions_by_id).intersection(event_ids):
-            raise RuntimeError(
-                f"canonical event stage conflicts with quarantined IDs: {stage_path}"
-            )
+        raise RuntimeError(
+            f"cannot inspect canonical event stage for quarantine: {stage_path}"
+        ) from exc
+    if stage_present:
+        # The reviewed prior-session incident is the only one currently
+        # admissible: a present, disjoint, empty, or malformed canonical
+        # stage all refuse. We never clear, replay, or rewrite the stage.
+        raise RuntimeError(
+            f"canonical event stage present; quarantine refuses to share a stage: {stage_path}"
+        )
+
+    _pure_validate_prior_session_wal_quarantine(
+        receipt,
+        state_raw,
+        session_date=session_date,
+        stage_path=stage_path,
+        expected_incident=expected_incident,
+    )
     return True
 
 
@@ -3294,12 +3428,10 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
     )
     parser.add_argument(
         "--recover-reviewed-prior-session-wal",
-        nargs=7,
-        metavar=(
-            "SESSION", "STATE_SHA256", "ORDERED_ID_SHA256", "PENDING_COUNT",
-            "OBSERVED_MIN_MAX", "DECISION_MIN_MAX", "REVIEW_REFERENCE",
-        ),
-        help="Write the explicit reviewed prior-session WAL quarantine receipt",
+        nargs=2,
+        metavar=("SESSION", "REVIEW_REFERENCE"),
+        help="Write the explicit reviewed prior-session WAL quarantine receipt "
+             "(session and reviewer reference only; digests are immutable)",
     )
     parser.add_argument("--date",  metavar="YYYY-MM-DD",
                         help="Legacy diagnostic override; unsafe for smoke/PIT staging")
@@ -3320,37 +3452,89 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
                 "poller: quarantine recovery cannot be combined with --date or --once"
             )
             return 2
-        session, state_sha, ordered_sha, count_text, observed_pair, decision_pair, review = (
-            args.recover_reviewed_prior_session_wal
-        )
+        session, review = args.recover_reviewed_prior_session_wal
+        # Confirm the requested session matches the immutable incident — no
+        # operator-supplied digests, no env/config/test overrides.
+        if session != PRIOR_SESSION_WAL_INCIDENT["session_date"]:
+            log.error(
+                "poller: quarantine session %s is not the immutable incident session",
+                session,
+            )
+            return 2
         try:
+            state_path = _state_dir() / f"day_state_{session}.json"
+            if not state_path.exists():
+                raise RuntimeError(f"quarantined prior-session day_state is absent: {state_path}")
+            state_raw = state_path.read_bytes()
+            stage_path = _event_stage_path(session)
+            if stage_path.exists():
+                raise RuntimeError(
+                    f"canonical event stage present; quarantine refuses to share a stage: {stage_path}"
+                )
             payload = {
                 "schema": PRIOR_SESSION_WAL_QUARANTINE_SCHEMA,
                 "classification": PRIOR_SESSION_WAL_CLASSIFICATION,
                 "review_reference": review,
-                "incident": {
-                    "deployed_sha": "bffd9931b2e37b5011fe50e0633f62c356879dd8",
-                    "state_sha256": state_sha,
-                    "session_date": session,
-                    "schema_version": 5,
-                    "pending_event_count": int(count_text),
-                    "ordered_event_id_sha256": ordered_sha,
-                    "observed_at_min": observed_pair.split(",", 1)[0],
-                    "observed_at_max": observed_pair.split(",", 1)[1],
-                    "decision_at_min": decision_pair.split(",", 1)[0],
-                    "decision_at_max": decision_pair.split(",", 1)[1],
-                },
-                "protected_source": None,
+                "incident": dict(PRIOR_SESSION_WAL_INCIDENT),
             }
-            incident = _exact_incident_incident(payload["incident"], field="CLI incident")
             payload["protected_source"] = {
-                "sha256": incident["state_sha256"],
-                "bytes": (_state_dir() / f"day_state_{session}.json").stat().st_size,
+                "sha256": PRIOR_SESSION_WAL_INCIDENT["state_sha256"],
+                "bytes": len(state_raw),
             }
+            # Validate candidate receipt fully BEFORE publication.
+            _pure_validate_prior_session_wal_quarantine(
+                payload,
+                state_raw,
+                session_date=session,
+                stage_path=stage_path,
+            )
             receipt_path = _prior_session_wal_quarantine_receipt_path(session)
-            _atomic_write_json(receipt_path, payload)
+            if receipt_path.exists():
+                # An existing receipt is preserved (never overwritten) and
+                # re-validated; any inconsistency blocks the operator.
+                existing = _read_prior_session_wal_quarantine_receipt(session)
+                if existing is None:
+                    raise RuntimeError(
+                        f"existing prior-session WAL quarantine receipt is unreadable: {receipt_path}"
+                    )
+                _pure_validate_prior_session_wal_quarantine(
+                    existing,
+                    state_raw,
+                    session_date=session,
+                    stage_path=stage_path,
+                )
+                log.info(
+                    "poller: reviewed prior-session WAL quarantine receipt already present: %s",
+                    receipt_path,
+                )
+                return 0
+            # Atomic fsync + readback: write to temp, fsync, rename, fsync dir,
+            # then read the published file back and confirm the bytes match.
+            _ensure_directory_durable(receipt_path.parent)
+            tmp_path = receipt_path.with_suffix(receipt_path.suffix + ".tmp")
+            try:
+                serialised = (
+                    json.dumps(payload, sort_keys=True, allow_nan=False) + "\n"
+                ).encode("utf-8")
+                with tmp_path.open("wb") as fh:
+                    fh.write(serialised)
+                    fh.flush()
+                    os.fsync(fh.fileno())
+                os.replace(tmp_path, receipt_path)
+                _fsync_directory(receipt_path.parent)
+            finally:
+                if tmp_path.exists():
+                    tmp_path.unlink()
+            readback = receipt_path.read_bytes()
+            if readback != serialised:
+                raise RuntimeError(
+                    f"readback mismatch after atomic write: {receipt_path}"
+                )
             _validate_prior_session_wal_quarantine(session)
-            log.info("poller: reviewed prior-session WAL quarantine receipt validated: %s", receipt_path)
+            log.info(
+                "poller: reviewed prior-session WAL quarantine receipt validated: %s",
+                receipt_path,
+            )
             return 0
         except Exception as exc:  # noqa: BLE001
             log.error("poller: reviewed prior-session WAL quarantine failed: %s", exc)

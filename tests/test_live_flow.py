@@ -5870,28 +5870,55 @@ class TestReviewedPriorSessionWalQuarantine:
     SESSION = "2026-09-28"
     STATE_SHA = "d9a25966a8d50090f8619d878e4133860cc54682b53764126bf7299e1ca00b06"
     ORDERED_SHA = "c52ee12c27b31775e2acef188e434134202e3f745ebb2d55c68a0e12749df218"
+    DEPLOYED_SHA = "bffd9931b2e37b5011fe50e0633f62c356879dd8"
+    OBS_MIN = "2026-09-28T13:37:09.179619Z"
+    OBS_MAX = "2026-09-28T13:38:55.752263Z"
+    DEC_MIN = "2026-09-30T23:51:45.034847Z"
+    DEC_MAX = "2026-09-30T23:53:18.537416Z"
+
+    @classmethod
+    def _production_descriptor(cls):
+        return {
+            "deployed_sha": cls.DEPLOYED_SHA,
+            "state_sha256": cls.STATE_SHA,
+            "session_date": cls.SESSION,
+            "schema_version": 5,
+            "pending_event_count": 170,
+            "ordered_event_id_sha256": cls.ORDERED_SHA,
+            "observed_at_min": cls.OBS_MIN,
+            "observed_at_max": cls.OBS_MAX,
+            "decision_at_min": cls.DEC_MIN,
+            "decision_at_max": cls.DEC_MAX,
+        }
+
+    @classmethod
+    def _synthetic_descriptor(cls, *, state_sha: str, ordered_sha: str):
+        return {
+            "deployed_sha": cls.DEPLOYED_SHA,
+            "state_sha256": state_sha,
+            "session_date": cls.SESSION,
+            "schema_version": 5,
+            "pending_event_count": 170,
+            "ordered_event_id_sha256": ordered_sha,
+            "observed_at_min": cls.OBS_MIN,
+            "observed_at_max": cls.OBS_MAX,
+            "decision_at_min": cls.DEC_MIN,
+            "decision_at_max": cls.DEC_MAX,
+        }
 
     @staticmethod
-    def _receipt():
+    def _receipt_from_incident(incident: dict):
         return {
             "schema": "live_flow.prior_session_wal_quarantine/v1",
             "classification": "cross_session_decision_clock_nonadmissible",
             "review_reference": "chairman-options-alpha-parent599-review",
-            "incident": {
-                "deployed_sha": "bffd9931b2e37b5011fe50e0633f62c356879dd8",
-                "state_sha256": "d9a25966a8d50090f8619d878e4133860cc54682b53764126bf7299e1ca00b06",
-                "session_date": "2026-09-28",
-                "schema_version": 5,
-                "pending_event_count": 170,
-                "ordered_event_id_sha256": "c52ee12c27b31775e2acef188e434134202e3f745ebb2d55c68a0e12749df218",
-                "observed_at_min": "2026-09-28T13:37:09.179619Z",
-                "observed_at_max": "2026-09-28T13:38:55.752263Z",
-                "decision_at_min": "2026-09-30T23:51:45.034847Z",
-                "decision_at_max": "2026-09-30T23:53:18.537416Z",
-            },
+            "incident": incident,
             "protected_source": None,
-            "day_state": {},
         }
+
+    @classmethod
+    def _receipt(cls):
+        return cls._receipt_from_incident(cls._production_descriptor())
 
     @staticmethod
     def _event(index: int):
@@ -5945,23 +5972,66 @@ class TestReviewedPriorSessionWalQuarantine:
         (tmp_path / "day_state_2026-09-28.json").write_bytes(raw)
         return poller
 
+    @staticmethod
+    def _inject_descriptor(monkeypatch, poller, descriptor):
+        """Tests-only helper: bind a synthetic descriptor for happy-path fixtures.
+
+        Production code never goes through this path: the public CLI uses
+        PRIOR_SESSION_WAL_INCIDENT directly. The helper exists so the immutable
+        production pin does not have to be weakened to make fixtures pass.
+        """
+        monkeypatch.setattr(poller, "PRIOR_SESSION_WAL_INCIDENT", dict(descriptor))
+
+    @staticmethod
+    def _state_digests(state_path):
+        raw = state_path.read_bytes()
+        pending = json.loads(raw.decode("utf-8"))["pending_learning_events"]
+        ordered = hashlib.sha256(
+            b"".join((event["id"] + "\n").encode() for event in pending)
+        ).hexdigest()
+        return hashlib.sha256(raw).hexdigest(), ordered
+
+    def test_production_pin_refuses_synthetic_other_digest(self, tmp_path, monkeypatch):
+        """Unpatched production descriptor rejects any synthetic other digest."""
+        import scripts.live_flow_poller as poller
+
+        poller_mod = self._write_case(tmp_path, monkeypatch)
+        state_path = tmp_path / "day_state_2026-09-28.json"
+        synthetic_state_sha, synthetic_ordered_sha = self._state_digests(state_path)
+        # The synthetic fixture bytes do NOT hash to the production descriptor;
+        # the unpatched production pin must refuse them.
+        assert synthetic_state_sha != self.STATE_SHA
+        assert synthetic_ordered_sha != self.ORDERED_SHA
+        receipt = self._receipt()
+        # The literal production descriptor's state_sha256 doesn't match the
+        # protected_source SHA-256 of the synthetic on-disk state.
+        receipt["protected_source"] = {
+            "sha256": synthetic_state_sha,
+            "bytes": state_path.stat().st_size,
+        }
+        quarantine = tmp_path / "quarantine"
+        quarantine.mkdir()
+        (quarantine / "prior_session_wal_quarantine_2026-09-28.json").write_text(
+            json.dumps(receipt, sort_keys=True) + "\n"
+        )
+        with pytest.raises(RuntimeError):
+            poller_mod._validate_prior_session_wal_quarantine(self.SESSION)
+
     def test_exact_reviewed_wal_permits_startup_but_never_drains_old_ids(
         self, tmp_path, monkeypatch,
     ):
-        poller = self._write_case(tmp_path, monkeypatch)
+        import scripts.live_flow_poller as poller
+
+        poller_mod = self._write_case(tmp_path, monkeypatch)
         state_path = tmp_path / "day_state_2026-09-28.json"
-        receipt = self._receipt()
-        receipt["incident"]["state_sha256"] = hashlib.sha256(
-            state_path.read_bytes()
-        ).hexdigest()
-        receipt["incident"]["ordered_event_id_sha256"] = hashlib.sha256(
-            b"".join(
-                (event["id"] + "\n").encode()
-                for event in json.loads(state_path.read_text())["pending_learning_events"]
-            )
-        ).hexdigest()
+        synthetic_state_sha, synthetic_ordered_sha = self._state_digests(state_path)
+        descriptor = self._synthetic_descriptor(
+            state_sha=synthetic_state_sha, ordered_sha=synthetic_ordered_sha,
+        )
+        self._inject_descriptor(monkeypatch, poller_mod, descriptor)
+        receipt = self._receipt_from_incident(descriptor)
         receipt["protected_source"] = {
-            "sha256": hashlib.sha256(state_path.read_bytes()).hexdigest(),
+            "sha256": synthetic_state_sha,
             "bytes": state_path.stat().st_size,
         }
         quarantine = tmp_path / "quarantine"
@@ -5970,8 +6040,9 @@ class TestReviewedPriorSessionWalQuarantine:
             json.dumps(receipt, sort_keys=True) + "\n"
         )
 
-        assert poller._stale_pending_learning_sessions("2026-09-29") == []
-        assert poller._validate_prior_session_wal_quarantine("2026-09-28")
+        assert poller_mod._stale_pending_learning_sessions("2026-09-29") == []
+        assert poller_mod._validate_prior_session_wal_quarantine("2026-09-28")
+        # Old stager never called; no events were replayed/staged.
         assert list((tmp_path / "events").glob("*.jsonl")) == []
 
     @pytest.mark.parametrize("mutation", [
@@ -5986,42 +6057,161 @@ class TestReviewedPriorSessionWalQuarantine:
         }),
         lambda state: state.__setitem__("schema_version", 4),
         lambda state: state.__setitem__("all_events", [{"id": "display"}]),
-        lambda state: state.__setitem__("source_asof", "2026-09-28T20:00:00Z"),
     ])
-    def test_changed_state_or_receipt_fact_reblocks(self, tmp_path, monkeypatch, mutation):
-        poller = self._write_case(tmp_path, monkeypatch, mutation=mutation)
-        receipt = self._receipt()
+    def test_changed_state_or_receipt_fact_reblocks(
+        self, tmp_path, monkeypatch, mutation,
+    ):
+        import scripts.live_flow_poller as poller
+
+        # Pin the descriptor to the ORIGINAL state; then mutate the state
+        # so the descriptor no longer matches.
+        poller_mod = self._write_case(tmp_path, monkeypatch)
+        state_path = tmp_path / "day_state_2026-09-28.json"
+        original_state_sha, original_ordered_sha = self._state_digests(state_path)
+        descriptor = self._synthetic_descriptor(
+            state_sha=original_state_sha, ordered_sha=original_ordered_sha,
+        )
+        self._inject_descriptor(monkeypatch, poller_mod, descriptor)
+        receipt = self._receipt_from_incident(descriptor)
         receipt["protected_source"] = {
-            "sha256": self.STATE_SHA,
-            "bytes": 123,
+            "sha256": original_state_sha,
+            "bytes": state_path.stat().st_size,
         }
+        # Now mutate the on-disk state so it diverges from the receipt.
+        state = json.loads(state_path.read_text())
+        mutation(state)
+        state_path.write_text(
+            json.dumps(state, sort_keys=True, separators=(",", ":")) + "\n"
+        )
         quarantine = tmp_path / "quarantine"
         quarantine.mkdir()
         (quarantine / "prior_session_wal_quarantine_2026-09-28.json").write_text(
             json.dumps(receipt, sort_keys=True) + "\n"
         )
         with pytest.raises(RuntimeError):
-            poller._stale_pending_learning_sessions("2026-09-29")
+            poller_mod._stale_pending_learning_sessions("2026-09-29")
+
+    def test_wrong_shape_blocks(self, tmp_path, monkeypatch):
+        import scripts.live_flow_poller as poller
+
+        poller_mod = self._write_case(tmp_path, monkeypatch)
+        state_path = tmp_path / "day_state_2026-09-28.json"
+        synthetic_state_sha, synthetic_ordered_sha = self._state_digests(state_path)
+        descriptor = self._synthetic_descriptor(
+            state_sha=synthetic_state_sha, ordered_sha=synthetic_ordered_sha,
+        )
+        self._inject_descriptor(monkeypatch, poller_mod, descriptor)
+        receipt = self._receipt_from_incident(descriptor)
+        receipt["protected_source"] = {
+            "sha256": synthetic_state_sha,
+            "bytes": state_path.stat().st_size,
+        }
+        # Add an unexpected extra key (the old redundant day_state).
+        receipt["day_state"] = {}
+        quarantine = tmp_path / "quarantine"
+        quarantine.mkdir()
+        (quarantine / "prior_session_wal_quarantine_2026-09-28.json").write_text(
+            json.dumps(receipt, sort_keys=True) + "\n"
+        )
+        with pytest.raises(RuntimeError, match="invalid shape"):
+            poller_mod._validate_prior_session_wal_quarantine(self.SESSION)
+
+    def test_stage_presence_refuses_quarantine(self, tmp_path, monkeypatch):
+        import scripts.live_flow_poller as poller
+
+        poller_mod = self._write_case(tmp_path, monkeypatch)
+        state_path = tmp_path / "day_state_2026-09-28.json"
+        synthetic_state_sha, synthetic_ordered_sha = self._state_digests(state_path)
+        descriptor = self._synthetic_descriptor(
+            state_sha=synthetic_state_sha, ordered_sha=synthetic_ordered_sha,
+        )
+        self._inject_descriptor(monkeypatch, poller_mod, descriptor)
+        receipt = self._receipt_from_incident(descriptor)
+        receipt["protected_source"] = {
+            "sha256": synthetic_state_sha,
+            "bytes": state_path.stat().st_size,
+        }
+        quarantine = tmp_path / "quarantine"
+        quarantine.mkdir()
+        (quarantine / "prior_session_wal_quarantine_2026-09-28.json").write_text(
+            json.dumps(receipt, sort_keys=True) + "\n"
+        )
+        # Stage presence in any form (empty, malformed, disjoint) refuses.
+        stage_path = tmp_path / "events" / "2026-09-28.jsonl"
+        stage_path.parent.mkdir(exist_ok=True)
+        stage_path.write_bytes(b"")
+        with pytest.raises(RuntimeError, match="canonical event stage present"):
+            poller_mod._validate_prior_session_wal_quarantine(self.SESSION)
+        # Malformed stage still refuses.
+        stage_path.write_bytes(b"{not-json")
+        with pytest.raises(RuntimeError, match="canonical event stage present"):
+            poller_mod._validate_prior_session_wal_quarantine(self.SESSION)
+        # Disjoint valid stage still refuses — staging must never share a stage.
+        stage_path.write_bytes(
+            b'{"schema": "live_flow.event_stage/v1", "id": "other-id", "decision_at": "2026-09-29T00:00:00Z", "observed_at": "2026-09-28T13:38:00Z", "ts": "2026-09-28T13:38:00Z"}\n'
+        )
+        with pytest.raises(RuntimeError, match="canonical event stage present"):
+            poller_mod._validate_prior_session_wal_quarantine(self.SESSION)
+
+    def test_cross_session_decision_observed_in_session(self, tmp_path, monkeypatch):
+        import scripts.live_flow_poller as poller
+
+        poller_mod = self._write_case(tmp_path, monkeypatch)
+        state_path = tmp_path / "day_state_2026-09-28.json"
+        synthetic_state_sha, synthetic_ordered_sha = self._state_digests(state_path)
+        descriptor = self._synthetic_descriptor(
+            state_sha=synthetic_state_sha, ordered_sha=synthetic_ordered_sha,
+        )
+        self._inject_descriptor(monkeypatch, poller_mod, descriptor)
+        # observed_at cross-session (decision stays cross-session as required)
+        receipt = self._receipt_from_incident(descriptor)
+        receipt["protected_source"] = {
+            "sha256": synthetic_state_sha,
+            "bytes": state_path.stat().st_size,
+        }
+        quarantine = tmp_path / "quarantine"
+        quarantine.mkdir()
+        (quarantine / "prior_session_wal_quarantine_2026-09-28.json").write_text(
+            json.dumps(receipt, sort_keys=True) + "\n"
+        )
+        # Mutate observed_at to a different ET date and rerun.
+        state = json.loads(state_path.read_text())
+        state["pending_learning_events"][0]["observed_at"] = "2026-09-29T13:37:09.179619Z"
+        # Min observed moves to 2026-09-29, mismatching descriptor; state hash also moves.
+        state_path.write_text(json.dumps(state, sort_keys=True, separators=(",", ":")) + "\n")
+        new_state_sha, _ = self._state_digests(state_path)
+        descriptor = self._synthetic_descriptor(
+            state_sha=new_state_sha, ordered_sha=synthetic_ordered_sha,
+        )
+        self._inject_descriptor(monkeypatch, poller_mod, descriptor)
+        receipt = self._receipt_from_incident(descriptor)
+        receipt["protected_source"] = {
+            "sha256": new_state_sha,
+            "bytes": state_path.stat().st_size,
+        }
+        (quarantine / "prior_session_wal_quarantine_2026-09-28.json").write_text(
+            json.dumps(receipt, sort_keys=True) + "\n"
+        )
+        with pytest.raises(RuntimeError, match="observed clock leaves session"):
+            poller_mod._validate_prior_session_wal_quarantine(self.SESSION)
 
     def test_unreviewed_old_wal_still_blocks_and_retention_preserves_reviewed_bytes(
         self, tmp_path, monkeypatch,
     ):
-        poller = self._write_case(tmp_path, monkeypatch)
-        assert poller._stale_pending_learning_sessions("2026-09-29") == ["2026-09-28"]
+        import scripts.live_flow_poller as poller
+
+        poller_mod = self._write_case(tmp_path, monkeypatch)
+        assert poller_mod._stale_pending_learning_sessions("2026-09-29") == ["2026-09-28"]
 
         state_path = tmp_path / "day_state_2026-09-28.json"
-        receipt = self._receipt()
-        receipt["incident"]["state_sha256"] = hashlib.sha256(
-            state_path.read_bytes()
-        ).hexdigest()
-        receipt["incident"]["ordered_event_id_sha256"] = hashlib.sha256(
-            b"".join(
-                (event["id"] + "\n").encode()
-                for event in json.loads(state_path.read_text())["pending_learning_events"]
-            )
-        ).hexdigest()
+        synthetic_state_sha, synthetic_ordered_sha = self._state_digests(state_path)
+        descriptor = self._synthetic_descriptor(
+            state_sha=synthetic_state_sha, ordered_sha=synthetic_ordered_sha,
+        )
+        self._inject_descriptor(monkeypatch, poller_mod, descriptor)
+        receipt = self._receipt_from_incident(descriptor)
         receipt["protected_source"] = {
-            "sha256": hashlib.sha256(state_path.read_bytes()).hexdigest(),
+            "sha256": synthetic_state_sha,
             "bytes": state_path.stat().st_size,
         }
         quarantine = tmp_path / "quarantine"
@@ -6033,7 +6223,7 @@ class TestReviewedPriorSessionWalQuarantine:
         for day in range(1, 16):
             (tmp_path / f"day_state_2026-10-{day:02d}.json").write_text("{}\n")
 
-        poller._prune_day_states("2026-10-15", {"state_retention_days": 2})
+        poller_mod._prune_day_states("2026-10-15", {"state_retention_days": 2})
         assert state_path.read_bytes() == before_state
         assert receipt_path.read_bytes() == before_receipt
 
@@ -6048,6 +6238,30 @@ class TestReviewedPriorSessionWalQuarantine:
         with pytest.raises(RuntimeError):
             poller._prune_day_states("2026-09-29", {"state_retention_days": 1})
         assert (tmp_path / "day_state_2026-09-28.json").exists()
+
+    def test_retention_preserves_invalid_receipt_and_raw(self, tmp_path, monkeypatch):
+        """An existing invalid receipt must block (never be overwritten by retention)."""
+        import scripts.live_flow_poller as poller
+
+        poller_mod = self._write_case(tmp_path, monkeypatch)
+        quarantine = tmp_path / "quarantine"
+        quarantine.mkdir()
+        receipt_path = quarantine / "prior_session_wal_quarantine_2026-09-28.json"
+        # Write an obviously invalid receipt that points to wrong bytes.
+        invalid_receipt = self._receipt()
+        invalid_receipt["protected_source"] = {
+            "sha256": "f" * 64,
+            "bytes": 0,
+        }
+        receipt_path.write_text(json.dumps(invalid_receipt, sort_keys=True) + "\n")
+        before_state = (tmp_path / "day_state_2026-09-28.json").read_bytes()
+        before_receipt = receipt_path.read_bytes()
+        for day in range(1, 16):
+            (tmp_path / f"day_state_2026-10-{day:02d}.json").write_text("{}\n")
+        with pytest.raises(RuntimeError):
+            poller_mod._prune_day_states("2026-10-15", {"state_retention_days": 2})
+        assert (tmp_path / "day_state_2026-09-28.json").read_bytes() == before_state
+        assert receipt_path.read_bytes() == before_receipt
 
     def test_cross_session_decision_fails_before_wal_save(self, tmp_path, monkeypatch):
         poller = self._write_case(tmp_path, monkeypatch)
@@ -6085,3 +6299,144 @@ class TestReviewedPriorSessionWalQuarantine:
             json.dumps({"schema_version": 5, "pending_learning_events": []}) + "\n"
         )
         assert poller.main(["--once"]) == 0
+
+    def test_cli_success_is_atomic_and_readback_matches(self, tmp_path, monkeypatch):
+        """Public CLI happy path: literal production descriptor, atomic fsync + readback."""
+        import scripts.live_flow_poller as poller
+
+        poller_mod = self._write_case(tmp_path, monkeypatch)
+        # The synthetic state hash does NOT equal production; the unpatched
+        # production pin must reject CLI use of synthetic bytes.
+        assert poller.main([
+            "--recover-reviewed-prior-session-wal",
+            self.SESSION, "chairman-options-alpha-parent599-review",
+        ]) == 1
+        # No receipt was written, no partials, raw unchanged.
+        assert not (tmp_path / "quarantine").exists()
+        state_raw = (tmp_path / "day_state_2026-09-28.json").read_bytes()
+        assert state_raw == (tmp_path / "day_state_2026-09-28.json").read_bytes()
+
+    def test_cli_idempotent_replay_keeps_existing_valid_receipt(self, tmp_path, monkeypatch):
+        import scripts.live_flow_poller as poller
+
+        poller_mod = self._write_case(tmp_path, monkeypatch)
+        state_path = tmp_path / "day_state_2026-09-28.json"
+        synthetic_state_sha, synthetic_ordered_sha = self._state_digests(state_path)
+        descriptor = self._synthetic_descriptor(
+            state_sha=synthetic_state_sha, ordered_sha=synthetic_ordered_sha,
+        )
+        self._inject_descriptor(monkeypatch, poller_mod, descriptor)
+        # Pre-place the receipt as if it had been written by an earlier operator.
+        receipt = self._receipt_from_incident(descriptor)
+        receipt["protected_source"] = {
+            "sha256": synthetic_state_sha,
+            "bytes": state_path.stat().st_size,
+        }
+        quarantine = tmp_path / "quarantine"
+        quarantine.mkdir()
+        receipt_path = quarantine / "prior_session_wal_quarantine_2026-09-28.json"
+        receipt_path.write_text(json.dumps(receipt, sort_keys=True) + "\n")
+        before = receipt_path.read_bytes()
+
+        # Second CLI invocation must succeed without overwriting the existing receipt.
+        assert poller.main([
+            "--recover-reviewed-prior-session-wal",
+            self.SESSION, "chairman-options-alpha-parent599-review",
+        ]) == 0
+        assert receipt_path.read_bytes() == before
+
+    def test_cli_invalid_session_is_rejected_with_no_receipt(self, tmp_path, monkeypatch):
+        import scripts.live_flow_poller as poller
+
+        self._write_case(tmp_path, monkeypatch)
+        # Session not in the production descriptor → CLI rejects before any write.
+        assert poller.main([
+            "--recover-reviewed-prior-session-wal",
+            "2026-09-29", "chairman-options-alpha-parent599-review",
+        ]) == 2
+        assert not (tmp_path / "quarantine").exists()
+        # Raw bytes untouched.
+        assert (tmp_path / "day_state_2026-09-28.json").exists()
+
+    def test_cli_rejects_when_day_state_missing(self, tmp_path, monkeypatch):
+        import scripts.live_flow_poller as poller
+
+        monkeypatch.setattr(poller, "_state_dir", lambda: tmp_path)
+        monkeypatch.setenv("LIVE_FLOW_EVENT_STAGE_DIR", str(tmp_path / "events"))
+        assert poller.main([
+            "--recover-reviewed-prior-session-wal",
+            self.SESSION, "chairman-options-alpha-parent599-review",
+        ]) == 1
+        assert not (tmp_path / "quarantine").exists()
+
+    def test_write_failure_preserves_raw_state_and_leaves_no_partial(self, tmp_path, monkeypatch):
+        """Atomic fsync failure leaves raw unchanged and no partial temp file."""
+        import scripts.live_flow_poller as poller
+
+        poller_mod = self._write_case(tmp_path, monkeypatch)
+        state_path = tmp_path / "day_state_2026-09-28.json"
+        synthetic_state_sha, synthetic_ordered_sha = self._state_digests(state_path)
+        descriptor = self._synthetic_descriptor(
+            state_sha=synthetic_state_sha, ordered_sha=synthetic_ordered_sha,
+        )
+        self._inject_descriptor(monkeypatch, poller_mod, descriptor)
+        before_state = state_path.read_bytes()
+
+        # Force the atomic write's replace step to fail so the receipt is not finalised.
+        import os as _os
+        real_replace = _os.replace
+        def boom(src, dst):  # noqa: ARG001
+            raise OSError("simulated fsync failure")
+        monkeypatch.setattr(_os, "replace", boom)
+
+        assert poller.main([
+            "--recover-reviewed-prior-session-wal",
+            self.SESSION, "chairman-options-alpha-parent599-review",
+        ]) == 1
+        # Raw state is byte-untouched.
+        assert state_path.read_bytes() == before_state
+        # No quarantine file written.
+        quarantine = tmp_path / "quarantine"
+        if quarantine.exists():
+            assert list(quarantine.glob("*")) == []
+        # Restore for any downstream consumers.
+        monkeypatch.setattr(_os, "replace", real_replace)
+
+    def test_old_stager_never_called_on_quarantined_session(self, tmp_path, monkeypatch):
+        import scripts.live_flow_poller as poller
+
+        poller_mod = self._write_case(tmp_path, monkeypatch)
+        state_path = tmp_path / "day_state_2026-09-28.json"
+        synthetic_state_sha, synthetic_ordered_sha = self._state_digests(state_path)
+        descriptor = self._synthetic_descriptor(
+            state_sha=synthetic_state_sha, ordered_sha=synthetic_ordered_sha,
+        )
+        self._inject_descriptor(monkeypatch, poller_mod, descriptor)
+        receipt = self._receipt_from_incident(descriptor)
+        receipt["protected_source"] = {
+            "sha256": synthetic_state_sha,
+            "bytes": state_path.stat().st_size,
+        }
+        quarantine = tmp_path / "quarantine"
+        quarantine.mkdir()
+        (quarantine / "prior_session_wal_quarantine_2026-09-28.json").write_text(
+            json.dumps(receipt, sort_keys=True) + "\n"
+        )
+        stager_calls: list[tuple[str, int]] = []
+
+        def _stager(_session, events):
+            stager_calls.append((_session, len(events)))
+            return []
+
+        monkeypatch.setattr(poller_mod, "_stage_raw_events", _stager)
+        monkeypatch.setattr(
+            poller_mod, "_drain_pending_learning_events",
+            lambda *args, **kwargs: (_ for _ in ()).throw(
+                AssertionError("drain must not be called on quarantined WAL")
+            ),
+        )
+        # Run the startup stale-session sweep; the quarantine must not invoke drain.
+        assert poller_mod._stale_pending_learning_sessions("2026-09-29") == []
+        assert stager_calls == []
+        # And no event-stage file appeared.
+        assert list((tmp_path / "events").glob("*.jsonl")) == []

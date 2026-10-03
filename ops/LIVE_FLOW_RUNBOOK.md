@@ -920,7 +920,10 @@ valid recovery or smoke test.
 ### Reviewed prior-session WAL quarantine
 
 The only reviewed prior-session incident eligible for this receipt is the
-Chairman Options Alpha parent599 case recorded here:
+Chairman Options Alpha parent599 case recorded here. Every protected value is
+hard-coded into the immutable incident descriptor; the operator CLI accepts
+only the session string and the review reference — operator-supplied digests
+of any other hex string are rejected even if syntactically well-formed:
 
 | Protected fact | Required exact value |
 |---|---|
@@ -932,24 +935,27 @@ Chairman Options Alpha parent599 case recorded here:
 | Decision clock range | `2026-09-30T23:51:45.034847Z..2026-09-30T23:53:18.537416Z` |
 
 On the protected source host, an operator who has independently reviewed this
-table may create the receipt with `--recover-reviewed-prior-session-wal`. The
-seven arguments are the session, both SHA-256 values, count, the observed
-minimum and maximum separated by a comma, the decision minimum and maximum
-separated by a comma, and the operator review reference. The command writes
+table may create the receipt with
+`--recover-reviewed-prior-session-wal 2026-09-28 <review-reference>`. The
+command validates the candidate receipt fully BEFORE publication, then writes
 `data/live_flow_state/quarantine/prior_session_wal_quarantine_2026-09-28.json`
-atomically, fsyncs it, and validates the exact raw state hash, session, schema,
-count, ordered IDs, clock bounds, classification, stage absence, and absence of
-availability/source-clock facts before returning. It never changes the state or
-event stage, never drains the quarantined IDs, and never grants learning,
-candidate, publication, or training authority.
+atomically, fsyncs the directory, and reads the published file back to confirm
+the on-disk bytes match what was written. The validation enforces the exact raw
+state hash, session, schema, count, ordered IDs, clock bounds, per-event
+classification (event ≤ observed ≤ decision; observed ET date equals the
+review session; decision ET date leaves the review session), canonical stage
+absence, and absence of availability/source-clock facts before returning. It
+never changes the state or event stage, never drains the quarantined IDs, and
+never grants learning, candidate, publication, or training authority. If any
+check fails, no receipt is written and the raw state is byte-untouched.
 
-Once validated, normal collection may start a fresh current-session state, but
-retention must keep both the protected raw state and its receipt. A missing,
-malformed, changed, or stage-conflicting receipt fails closed. The receipt is
-not an automatic rule for future prior-session WALs; each future case requires
-its own reviewed, source-identity-bound receipt. `--date` is now read-only in
-practice and is rejected before any state, stage, output, retention, or
-publication write.
+A receipt already present is preserved: a second CLI invocation re-validates it
+without touching the on-disk bytes. Any inconsistency (existing-invalid receipt,
+missing day_state, present canonical stage, wrong bytes, malformed JSON) fails
+closed. The receipt is not an automatic rule for future prior-session WALs;
+each future case requires its own reviewed, source-identity-bound receipt.
+`--date` is read-only in practice and is rejected before any state, stage,
+output, retention, or publication write.
 
 ## Day-state size guard
 
