@@ -43,6 +43,7 @@ that justifies it existed.  That is the "nomination postdate test" row of the
 from __future__ import annotations
 
 import logging
+import math
 import re
 from dataclasses import asdict, dataclass, field, fields
 from datetime import datetime, timezone
@@ -252,6 +253,22 @@ class Nomination:
                 f"nomination for {self.ticker} observed_at {iso(self.observed_at)} predates "
                 f"source_asof {iso(self.source_asof)} — a nomination may not be consumed "
                 f"before the artifact that justifies it existed")
+
+        if self.source_value is not None:
+            if isinstance(self.source_value, bool) or not isinstance(
+                self.source_value, (int, float)
+            ):
+                raise NominationError(
+                    f"nomination for {self.ticker} carries a non-finite or non-numeric "
+                    f"source_value {self.source_value!r}")
+            if not math.isfinite(float(self.source_value)):
+                raise NominationError(
+                    f"nomination for {self.ticker} carries a non-finite or non-numeric "
+                    f"source_value {self.source_value!r}")
+        if isinstance(self.source_rank, float) and not math.isfinite(self.source_rank):
+            raise NominationError(
+                f"nomination for {self.ticker} carries a non-finite source_rank "
+                f"{self.source_rank!r}")
 
     # -- identity ---------------------------------------------------------
     @property

@@ -60,6 +60,7 @@ through Layers A/B/C, on facts Radar measured itself.
 from __future__ import annotations
 
 import logging
+import math
 from collections.abc import Mapping, Sequence
 from datetime import datetime
 from pathlib import Path
@@ -67,6 +68,7 @@ from typing import Any
 
 from engine.entry_radar.contracts import ProducerRead, utcnow
 from engine.entry_radar.producers.base import (
+    finite_or_none,
     AdapterResult,
     artifact_asof,
     build_read,
@@ -131,11 +133,12 @@ def _board_read(path: Path, *, source_id: str, board_label: str,
                     rank = int(rank) if rank is not None else pos
                 except (TypeError, ValueError):
                     rank = pos
-                value = first_key(row, _VALUE_KEYS)
-                try:
-                    value = float(value) if value is not None else None
-                except (TypeError, ValueError):
-                    value = None
+                value = finite_or_none(first_key(row, _VALUE_KEYS))
+                if isinstance(rank, float):
+                    if not math.isfinite(rank):
+                        rank = None
+                    elif rank == int(rank):
+                        rank = int(rank)
                 text = f"On the nightly {board_label} {lane_label} at #{rank}"
                 label = row.get("label") or row.get("state")
                 if label:
