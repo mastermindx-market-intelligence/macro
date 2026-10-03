@@ -6528,6 +6528,8 @@ def sweep_pull(
     reconcile_only: bool = False,
     semantic_evidence: Any | None = None,
     check_runs: list[dict[str, Any]] | None = None,
+    merge_queue_id: str | None = None,
+    merge_queue_probe_error: str | None = None,
 ) -> str:
     """Judge and, when clean, merge one labeled pull request. Returns the verdict.
 
@@ -7944,6 +7946,32 @@ def main() -> int:
         )
         return 0
 
+    merge_queue_id: str | None = None
+    merge_queue_probe_error: str | None = None
+    try:
+        merge_queue_id = active_merge_queue_id(repo, "main", read_token)
+    except Exception as exc:
+        merge_queue_probe_error = str(exc)
+        _annotate(
+            "warning",
+            "merge-on-green queue probe",
+            f"Could not establish native queue state ({str(exc)[:240]}). "
+            "Irreversible direct merges and stale-head refreshes will be withheld.",
+        )
+    else:
+        if merge_queue_id is not None:
+            print(
+                f"Native merge queue active for main: {merge_queue_id}. "
+                "Eligible green heads will be enqueued without source-branch refresh.",
+                flush=True,
+            )
+        else:
+            print(
+                "No native merge queue is active for main; retaining the existing "
+                "refresh + SHA-pinned squash path.",
+                flush=True,
+            )
+
     # GLOBAL workload backpressure, before any branch mutation. The old cap of eight
     # PER SWEEP still launched dozens of CI runs when completed workflows started a
     # new full sweep roughly every minute. Active ci.yml runs are the durable state
@@ -8238,6 +8266,8 @@ def main() -> int:
                 sweep_options["semantic_evidence"] = candidate_semantic
             if candidate_runs is not None:
                 sweep_options["check_runs"] = candidate_runs
+            sweep_options["merge_queue_id"] = merge_queue_id
+            sweep_options["merge_queue_probe_error"] = merge_queue_probe_error
             verdict = sweep_pull(
                 repo, pull, read_token, merge_token, freshness, proof, budget,
                 blocked_names, **sweep_options,
