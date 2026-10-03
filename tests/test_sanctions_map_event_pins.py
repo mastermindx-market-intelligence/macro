@@ -501,10 +501,23 @@ def test_template_no_inline_data_news_one_path_ricker():
 # D6 — mobile footprint
 # --------------------------------------------------------------------------- #
 def test_mobile_footprint_media_rule_present():
-    """The @media (max-width:600px) rule that thickens the stroke in both
-    themes is present in the rendered <style>."""
+    """The @media (max-width:600px) rule that gives the GBR footprint its
+    mobile mark in both themes is present in the rendered <style>. O28 (D54,
+    amended by D58) replaced the dashed `13 8` + 1.5 stroke with a solid 1.25
+    hairline at .85 opacity — one rule for dark and light, the light opacity
+    restated so no later light override can thin it, and the legend key
+    following the mark (1.25px solid border, opacity .85). The dashed rule it
+    replaced must be gone."""
     text = (ROOT / "templates" / "sanctions_map.html.j2").read_text(encoding="utf-8")
-    assert "@media (max-width:600px){.sm-map[data-news-gbr=\"1\"] .wm-c[data-iso3=\"GBR\"],html[data-theme=\"light\"] .sm-map[data-news-gbr=\"1\"] .wm-c[data-iso3=\"GBR\"]{stroke-width:1.5;stroke-dasharray:13 8}}" in text
+    assert (
+        "@media (max-width:600px){.sm-map[data-news-gbr=\"1\"] .wm-c[data-iso3=\"GBR\"],"
+        "html[data-theme=\"light\"] .sm-map[data-news-gbr=\"1\"] .wm-c[data-iso3=\"GBR\"]"
+        "{stroke-width:1.25;stroke-dasharray:none;stroke-opacity:.85}\n"
+        "html[data-theme=\"light\"] .sm-map[data-news-gbr=\"1\"] .wm-c[data-iso3=\"GBR\"]{stroke-opacity:.85}\n"
+        ".sm-legend .sm-legend-news i{border:1.25px solid var(--ink-link);opacity:.85}\n"
+        "html[data-theme=\"light\"] .sm-legend .sm-legend-news i{opacity:.85}}"
+    ) in text
+    assert "stroke-dasharray:13 8" not in text
 
 
 # --------------------------------------------------------------------------- #
