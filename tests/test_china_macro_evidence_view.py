@@ -193,3 +193,12 @@ def test_new_partials_do_not_inherit_unsafe_legacy_translator():
     soup = BeautifulSoup(env.from_string(source).render(m=m), 'html.parser')
     assert not soup.find_all('img') and not soup.find_all('script')
     assert m['label_en'] in soup.get_text() and m['label_zh'] in soup.get_text()
+
+
+
+def test_open_evidence_dialog_hides_only_the_floating_brain_launcher():
+    from pathlib import Path
+    root=Path(__file__).resolve().parents[1]
+    css=(root/'templates/china-macro-evidence.css').read_text()
+    assert 'body.page-china:has(.cnm-dialog.open) #mmb-boot{visibility:hidden}' in css
+    assert (root/'site/china-macro-evidence.css').read_text()==css

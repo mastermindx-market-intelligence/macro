@@ -99,3 +99,6 @@ body.page-china .cnm-summary-rows .k{min-width:0;line-height:1.4}
 body.page-china .cnm-summary-rows small{display:block;font-size:10px;color:var(--muted);margin-top:3px}
 body.page-china .cnm-summary-rows .v{white-space:nowrap;font-variant-numeric:tabular-nums}
 body.page-china .cnm-glance .cnx-foot{line-height:1.6;margin-top:12px}
+
+/* A modal owns the active task; follow the existing portfolio-dialog launcher rule. */
+body.page-china:has(.cnm-dialog.open) #mmb-boot{visibility:hidden}
