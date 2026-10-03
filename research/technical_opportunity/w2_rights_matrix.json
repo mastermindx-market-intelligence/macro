@@ -1,0 +1,18 @@
+{
+  "schema_version": "toi.w2_rights_matrix.v1",
+  "source_ref": "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+  "rights": {
+    "historical_research": "ADMIT",
+    "server_side_computation": "ADMIT",
+    "derived_storage": "ADMIT",
+    "subscriber_display": "ADMIT",
+    "public_display": "ADMIT",
+    "redistribution": "ADMIT",
+    "retention": "ADMIT",
+    "ai_ml": "ADMIT"
+  },
+  "conditions": "Specific dataset-side written vendor conditions supersede the general record when present.",
+  "signal_authority": "NONE",
+  "capability_state": "PROVEN_LIVE",
+  "w3_admission": "ADMIT"
+}

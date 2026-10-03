@@ -1,0 +1,73 @@
+{
+  "schema_version": "toi.w2_clock_matrix.v1",
+  "operation_key": "TOI-W2-0-DATA-CLOCK-V1",
+  "pins": {
+    "skillpack": "9e180aadd0b8930867d304ad62ea27a2f12375cc",
+    "macro": "021b2ae3a4a6a508f3e0fc56d00a85b21adf1be3",
+    "terminal": "a4be9a3f4b51246200cb1b7c4f1d44730066a9a9"
+  },
+  "clocks": [
+    {
+      "plane": "massive_stock_day",
+      "event_time": "session date",
+      "bar_end": "regular exchange close",
+      "source_available_at": "unverified historically",
+      "first_ingested_at": "not reconstructed per row",
+      "corrected_at": "not reconstructed per row",
+      "known_at": "unproven for historical replay",
+      "status": "HOLD"
+    },
+    {
+      "plane": "macro_polygon_intraday_hourly",
+      "event_time": "vendor aggregate timestamp",
+      "bar_end": "provider aggregate end",
+      "source_available_at": "post-write receipt timestamp present for current accruals",
+      "first_ingested_at": "receipt clock after fsync",
+      "corrected_at": "two-day overlap may replace timestamp",
+      "known_at": "partial",
+      "status": "HOLD"
+    },
+    {
+      "plane": "terminal_intraday_history",
+      "event_time": "ET display-epoch seconds",
+      "bar_end": "base-bar end implied by aggregate cadence",
+      "source_available_at": "no historical first-receipt ledger",
+      "first_ingested_at": "not retained per historical bar",
+      "corrected_at": "incremental overlap refresh, no per-version ledger",
+      "known_at": "partial",
+      "status": "HOLD"
+    },
+    {
+      "plane": "radar_vendor_minutes",
+      "event_time": "vendor minute start UTC",
+      "bar_end": "start + 60s",
+      "source_available_at": "read-time",
+      "first_ingested_at": "read-time",
+      "corrected_at": "completed-session refetch on vintage mismatch",
+      "known_at": "bar close plus transport",
+      "status": "ADMIT_AS_CLOCK_ORACLE_ONLY"
+    }
+  ],
+  "registered_constructions": {
+    "4H-CLOCK": {
+      "session": "RTH",
+      "anchor": "09:30 ET",
+      "bucket1": "09:30-13:30",
+      "bucket2": "13:30-actual_close",
+      "early_close": "clip to actual exchange close",
+      "provisional": "final only at effective end"
+    },
+    "195M-RTH": {
+      "session": "RTH",
+      "bucket1": "09:30-12:45",
+      "bucket2": "12:45-actual_close",
+      "early_close": "second bucket clips at actual close",
+      "identity": "independent method/trial identity"
+    },
+    "MONTHLY": {
+      "source": "accepted daily owner only",
+      "known_at": "after completed exchange month and source availability",
+      "role": "later structural context, never W3 trigger"
+    }
+  }
+}
