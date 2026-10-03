@@ -1295,6 +1295,52 @@ def _radar_dlg_vm(vm: dict, latest: dict) -> dict:
     return ctx
 
 
+def _write_economy_publication(vm: dict, _macro_evidence: dict, _economy_view,
+                               env: Environment, site: Path) -> None:
+    """One builder path writes canonical JSON and binds both UI projections.
+
+    Keep this small effect boundary callable with an isolated directory so the
+    actual production serializer, not a copied implementation, is regression
+    tested. It never acquires data, changes access policy, or owns a schedule.
+    """
+    from engine.china_macro_evidence_view import prepare_view as macro_evidence_view
+    vm["economy_publication"] = _macro_evidence
+    from engine.china_economy_view import client_publication
+    # Anonymous HTML carries only the glanceable shell. Deep series/history
+    # stay behind the existing static data boundary and hydrate after access.
+    vm["economy_client_publication"] = client_publication(
+        _macro_evidence, include_metrics=False)
+    vm["macro_evidence"] = macro_evidence_view(_macro_evidence)
+    import json as _macro_json
+    _detail_payload = {
+        "schema": "mastermind.china_economy_detail_payload.v1",
+        "snapshot_id": vm["economy_client_publication"]["snapshot_id"],
+        "status": "unavailable",
+        "reference_period": (_macro_evidence.get("economy") or {}).get("reference_period"),
+        "client": None,
+        "html": "",
+    }
+    if _economy_view is not None:
+        try:
+            _eco_template = env.get_template("_china_economy_lens.html.j2")
+            _detail_payload.update(
+                status="ok",
+                client=client_publication(_macro_evidence),
+                html=str(_eco_template.module.lens(_economy_view, shell="deep")),
+            )
+        except Exception as _detail_exc:  # protected detail must fail closed
+            log.error("China economy detail payload unavailable (%s)",
+                      type(_detail_exc).__name__)
+    (site / "china_economy_detail.json").write_text(
+        _macro_json.dumps(_detail_payload, ensure_ascii=False, allow_nan=False, indent=2),
+        encoding="utf-8",
+    )
+    (site / "china_macro_evidence.json").write_text(
+        _macro_json.dumps(_macro_evidence, ensure_ascii=False, allow_nan=False, indent=2),
+        encoding="utf-8",
+    )
+
+
 def main() -> int:
     try:
         from engine.china_run import run
@@ -2068,7 +2114,6 @@ def main() -> int:
         # One source-attributed contract for the four dialogs and machine export.
         # This display projection never changes any recommendation/entry authority.
         from engine.china_macro_evidence import build_snapshot as build_macro_evidence
-        from engine.china_macro_evidence_view import prepare_view as macro_evidence_view
         _macro_evidence = build_macro_evidence()
         # Existing collector-owned stores only. No review fixtures or build-time HTTP.
         # A schema/configuration failure affects this optional lens, not the page.
@@ -2092,41 +2137,7 @@ def main() -> int:
                 "authority": "display_only",
             }
             log.error("China economy lens unavailable (%s)", type(_economy_exc).__name__)
-        vm["economy_publication"] = _macro_evidence
-        from engine.china_economy_view import client_publication
-        # Anonymous HTML carries only the glanceable shell. Deep series/history
-        # stay behind the existing static data boundary and hydrate after access.
-        vm["economy_client_publication"] = client_publication(
-            _macro_evidence, include_metrics=False)
-        vm["macro_evidence"] = macro_evidence_view(_macro_evidence)
-        import json as _macro_json
-        _detail_payload = {
-            "schema": "mastermind.china_economy_detail_payload.v1",
-            "snapshot_id": vm["economy_client_publication"]["snapshot_id"],
-            "status": "unavailable",
-            "reference_period": (_macro_evidence.get("economy") or {}).get("reference_period"),
-            "client": None,
-            "html": "",
-        }
-        if _economy_view is not None:
-            try:
-                _eco_template = env.get_template("_china_economy_lens.html.j2")
-                _detail_payload.update(
-                    status="ok",
-                    client=client_publication(_macro_evidence),
-                    html=str(_eco_template.module.lens(_economy_view, shell="deep")),
-                )
-            except Exception as _detail_exc:  # protected detail must fail closed
-                log.error("China economy detail payload unavailable (%s)",
-                          type(_detail_exc).__name__)
-        (site / "china_economy_detail.json").write_text(
-            _macro_json.dumps(_detail_payload, ensure_ascii=False, allow_nan=False, indent=2),
-            encoding="utf-8",
-        )
-        (site / "china_macro_evidence.json").write_text(
-            _macro_json.dumps(_macro_evidence, ensure_ascii=False, allow_nan=False, indent=2),
-            encoding="utf-8",
-        )
+        _write_economy_publication(vm, _macro_evidence, _economy_view, env, site)
         tmpl = env.get_template("china.html.j2")
         # DEV-ONLY: dump the fully-built view-model so scripts/render_china_fast.py can
         # re-render china.html / china_stocks.html in ~1s without re-running collectors +

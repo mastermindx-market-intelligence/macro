@@ -126,3 +126,70 @@ def test_snapshot_refresh_copy_uses_existing_locale_classes():
     assert 'Refresh page</span><span class="l-zh">刷新页面' in js
     assert "window.location.reload()" in js
     assert "setInterval" not in js
+
+
+def _real_builder_inputs():
+    from datetime import date
+    from engine.china_macro_evidence import build_snapshot
+    from engine.china_economy import build_economy, extend_snapshot
+    from engine.china_economy_view import prepare_economy_view
+    root=Path(__file__).resolve().parents[1]
+    document=json.loads((root/'tests/fixtures/china_economy_review.json').read_text())
+    economy=build_economy(document)
+    publication=extend_snapshot(build_snapshot(lambda group,name:None,date(2026,9,29)),economy)
+    return root,publication,prepare_economy_view(economy)
+
+
+def test_real_builder_serializes_one_identity_into_public_and_protected_outputs(tmp_path):
+    import re
+    from jinja2 import Environment, FileSystemLoader
+    from bs4 import BeautifulSoup
+    from engine import i18n
+    from engine.china_economy_view import publication_snapshot_id
+    from scripts.build_china import _write_economy_publication
+    root,publication,view=_real_builder_inputs();original=deepcopy(publication)
+    env=Environment(loader=FileSystemLoader(root/'templates'),autoescape=False)
+    env.globals.update(t=i18n.t,td=i18n.td,tr=i18n.tr,t_pctile=i18n.t_pctile)
+    vm={};_write_economy_publication(vm,publication,view,env,tmp_path)
+    canonical=json.loads((tmp_path/'china_macro_evidence.json').read_text())
+    detail=json.loads((tmp_path/'china_economy_detail.json').read_text())
+    source=(root/'templates/china.html.j2').read_text()
+    tag=re.search(r'<script[^>]*id="eco-json"[^>]*>.*?</script>',source,re.S)
+    assert tag is not None
+    rendered=env.from_string(tag.group(0)).render(**vm)
+    public=json.loads(BeautifulSoup(rendered,'html.parser').find(id='eco-json').string)
+    assert publication==original==canonical
+    assert detail['status']=='ok' and public['economy'] is None
+    assert public['snapshot_id']==detail['snapshot_id']==detail['client']['snapshot_id']==publication_snapshot_id(canonical)
+    assert 'industrial_sa' not in json.dumps(public)
+    assert len(detail['client']['economy']['metrics'])==128
+    for ident,metric in detail['client']['economy']['metrics'].items():
+        for key in ('chart','unit','definition_id'):
+            assert metric[key]==canonical['economy']['metrics'][ident][key]
+    soup=BeautifulSoup(detail['html'],'html.parser')
+    assert soup.find(id='eco-library') is not None
+    assert soup.find(id='china-economy') is None
+
+
+def test_real_builder_missing_optional_view_writes_explicit_unavailable_detail(tmp_path):
+    from jinja2 import Environment, DictLoader
+    from scripts.build_china import _write_economy_publication
+    from engine.china_economy_view import publication_snapshot_id
+    _,publication,_=_real_builder_inputs()
+    publication['economy']={'status':'unavailable','schema':'mastermind.china_economy_lens.v1'}
+    vm={};_write_economy_publication(vm,publication,None,Environment(loader=DictLoader({})),tmp_path)
+    detail=json.loads((tmp_path/'china_economy_detail.json').read_text())
+    assert detail['status']=='unavailable' and detail['client'] is None and detail['html']==''
+    assert detail['snapshot_id']==vm['economy_client_publication']['snapshot_id']==publication_snapshot_id(publication)
+    assert json.loads((tmp_path/'china_macro_evidence.json').read_text())==publication
+
+
+def test_real_builder_template_failure_never_marks_protected_detail_ok(tmp_path):
+    from jinja2 import Environment, DictLoader
+    from scripts.build_china import _write_economy_publication
+    _,publication,view=_real_builder_inputs()
+    vm={};_write_economy_publication(vm,publication,view,Environment(loader=DictLoader({})),tmp_path)
+    detail=json.loads((tmp_path/'china_economy_detail.json').read_text())
+    assert detail['status']=='unavailable' and detail['client'] is None and detail['html']==''
+    assert detail['snapshot_id']==vm['economy_client_publication']['snapshot_id']
+    assert json.loads((tmp_path/'china_macro_evidence.json').read_text())==publication
