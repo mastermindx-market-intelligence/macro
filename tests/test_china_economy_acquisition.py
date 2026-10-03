@@ -718,3 +718,103 @@ def test_planner_owner_read_error_is_not_an_empty_bootstrap():
         clock=lambda:datetime.fromisoformat('2026-10-02T06:00:00+08:00'))
     assert not targets and not pending
     assert failures['industry']['reason']=='store_cursor_unverified'
+
+
+@pytest.mark.parametrize('stored_value', [.54, None])
+def test_older_equal_or_null_receipt_cannot_rewind_actual_store(tmp_path,monkeypatch,stored_value):
+    from lib import store
+    monkeypatch.setattr(store.config,'data_dir',lambda:tmp_path)
+    latest=wide(stored_value,rec(NOW,sha='a'*64))
+    stale=wide(.54,rec('2026-09-28T12:00:00+08:00',sha='b'*64))
+    key=next(iter(latest));group,table=key.split('/')
+    before=store.upsert(group,table,latest[key]).copy(deep=True)
+    batch=CollectionBatch(frames=stale)
+    qualified=qualify_against_owner(batch,{},store.read,CAT)
+    for name,frame in qualified.items():store.upsert(group,name,frame)
+    after=store.read(group,table)
+    pd.testing.assert_frame_equal(after,before)
+    assert batch.status=='blocked' and batch.conflicts
+    observed=build_from_store(store.read,CAT,NOW)['metrics']['industrial_sa']
+    assert observed['value']==stored_value
+
+
+def test_stale_receipt_cannot_resurrect_null_withdrawal_after_actual_column_merge(tmp_path,monkeypatch):
+    from lib import store
+    monkeypatch.setattr(store.config,'data_dir',lambda:tmp_path)
+    first=wide(.54,rec('2026-09-27T12:00:00+08:00',sha='1'*64))
+    withdrawn=wide(None,rec(NOW,sha='2'*64))
+    stale=wide(.54,rec('2026-09-28T12:00:00+08:00',sha='3'*64))
+    key=next(iter(first));group,table=key.split('/')
+    store.upsert(group,table,first[key])
+    store.upsert(group,table,withdrawn[key])
+    before=store.read(group,table).copy(deep=True)
+    # The existing column-wise owner keeps .54 but gives it the null digest;
+    # the reader deliberately withholds it. An older receipt must not revive it.
+    assert build_from_store(store.read,CAT,NOW)['metrics']['industrial_sa']['value'] is None
+    batch=CollectionBatch(frames=stale)
+    qualified=qualify_against_owner(batch,{},store.read,CAT)
+    for name,frame in qualified.items():store.upsert(group,name,frame)
+    pd.testing.assert_frame_equal(store.read(group,table),before)
+    assert batch.status=='blocked'
+    assert build_from_store(store.read,CAT,NOW)['metrics']['industrial_sa']['value'] is None
+
+
+@pytest.mark.parametrize('value', [.54, None, 0.0])
+def test_receipt_guard_accepts_exact_replay_including_null_and_zero(value):
+    stored=wide(value);batch=CollectionBatch(frames=wide(value))
+    qualified=qualify_against_owner(batch,{},lambda g,t:stored.get(g+'/'+t),CAT)
+    assert batch.status=='ok' and not batch.conflicts
+    pd.testing.assert_frame_equal(qualified['activity_sa'],stored['china_macro/activity_sa'])
+
+
+@pytest.mark.parametrize('value', [.54, None])
+def test_same_value_forward_receipt_can_advance_without_changing_number(value):
+    stored=wide(value,rec('2026-09-28T12:00:00+08:00',sha='a'*64))
+    incoming=wide(value,rec(NOW,sha='b'*64));batch=CollectionBatch(frames=incoming)
+    qualified=qualify_against_owner(batch,{},lambda g,t:stored.get(g+'/'+t),CAT)
+    assert batch.status=='ok'
+    pd.testing.assert_frame_equal(qualified['activity_sa'],incoming['china_macro/activity_sa'])
+
+
+def test_qualified_null_can_be_restated_by_a_genuinely_newer_receipt():
+    stored=wide(None,rec('2026-09-28T12:00:00+08:00'))
+    incoming=wide(.54,rec(NOW,sha='b'*64));batch=CollectionBatch(frames=incoming)
+    qualified=qualify_against_owner(batch,{},lambda g,t:stored.get(g+'/'+t),CAT)
+    assert batch.status=='ok' and qualified['activity_sa']['indpro_mom'].iloc[0]==.54
+
+
+def test_same_value_does_not_bypass_nonseasonal_source_lineage():
+    stored=wide(4.2,metric='retail_yoy',receipt=rec('2026-09-28T12:00:00+08:00'))
+    incoming=wide(4.2,metric='retail_yoy',receipt=rec(NOW,sha='b'*64,url=URL.replace('test','another')))
+    batch=CollectionBatch(frames=incoming)
+    qualified=qualify_against_owner(batch,{},lambda g,t:stored.get(g+'/'+t),CAT)
+    assert batch.status=='blocked' and 'retail' not in qualified
+
+
+def test_equal_value_incomplete_prior_receipt_is_not_legacy_enrichment():
+    stored=wide(.54);frame=stored['china_macro/activity_sa'].drop(columns=['indpro_mom__value_sha256'])
+    batch=CollectionBatch(frames=wide(.54,rec(NOW,sha='b'*64)))
+    qualified=qualify_against_owner(batch,{},lambda g,t:frame,CAT)
+    assert batch.status=='blocked' and not qualified
+
+
+def test_same_acquisition_time_with_changed_response_is_not_exact_replay():
+    stored=wide(.54);batch=CollectionBatch(frames=wide(.54,rec(NOW,sha='b'*64)))
+    qualified=qualify_against_owner(batch,{},lambda g,t:stored.get(g+'/'+t),CAT)
+    assert batch.status=='blocked' and not qualified
+
+
+def test_equal_value_cannot_replace_newer_publication_even_when_acquired_later():
+    newer=rec('2026-09-28T12:00:00+08:00');newer['published_at']='2026-09-20T10:00:00+08:00'
+    stored=wide(.54,newer);batch=CollectionBatch(frames=wide(.54,rec(NOW,sha='b'*64)))
+    qualified=qualify_against_owner(batch,{},lambda g,t:stored.get(g+'/'+t),CAT)
+    assert batch.status=='blocked' and not qualified
+
+
+def test_stale_equal_value_holds_the_entire_seasonal_column():
+    stored=wide(.54)
+    incoming=frames_from_receipt([point(.12,period='2026-07'),point(.54)],
+                                rec('2026-09-28T12:00:00+08:00',sha='b'*64),CAT)
+    batch=CollectionBatch(frames=incoming)
+    qualified=qualify_against_owner(batch,{},lambda g,t:stored.get(g+'/'+t),CAT)
+    assert batch.status=='blocked' and not qualified

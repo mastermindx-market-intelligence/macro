@@ -407,33 +407,51 @@ def qualify_against_owner(batch: CollectionBatch, legacy_frames: dict, read: Cal
                 new_digest = incoming.at[d, col+'__value_sha256'] if col+'__value_sha256' in incoming else None
                 if new is None and not isinstance(new_digest, str):
                     continue
-                if old is None or old == new:
-                    continue
-                # A normal revision must retain its exact source URL. The narrow
-                # exception is a newer official NBS monthly vintage for one of
-                # the three catalogued SA histories (see NBS_SA_REVISION_FAMILIES).
                 row = existing.loc[d]; newrow = incoming.loc[d]
+                receipt_fields = ('source_url','published_at','response_sha256',
+                                  'definition_id','observed_at')
+                # Equality or a missing number is not receipt freshness. A newer
+                # receipt-qualified withdrawal (null) must fence an older value,
+                # and equal numbers must not roll back source/vintage metadata.
+                has_prior_receipt = any(
+                    isinstance(row.get(col+'__'+name), str)
+                    and bool(row.get(col+'__'+name))
+                    for name in (*receipt_fields, 'value_sha256'))
+                if not has_prior_receipt:
+                    # Preserve the original compatibility path only for truly
+                    # unreceipted legacy values/gaps; not damaged qualified rows.
+                    if old is None or old == new:
+                        continue
+                    unsafe.append(d.strftime('%Y-%m'))
+                    continue
                 try:
                     prior_digest = row.get(col+'__value_sha256')
-                    old_receipt = {name: row.get(col+'__'+name) for name in ('source_url','published_at','response_sha256','definition_id','observed_at')}
+                    old_receipt = {name: row.get(col+'__'+name) for name in receipt_fields}
+                    new_receipt = {name: newrow.get(col+'__'+name) for name in receipt_fields}
                     valid_prior = prior_digest == value_receipt_digest(
                         col, d.strftime('%Y-%m'), old, old_receipt)
-                    old_url = row.get(col+'__source_url')
-                    new_url = newrow.get(col+'__source_url')
-                    same_definition = (
-                        row.get(col+'__definition_id') == newrow.get(col+'__definition_id'))
-                    same_url = old_url == new_url
+                    valid_incoming = new_digest == value_receipt_digest(
+                        col, d.strftime('%Y-%m'), new, new_receipt)
+                    old_url = old_receipt['source_url']; new_url = new_receipt['source_url']
                     meta = owner_meta.get((path, col), {})
-                    same_lineage = same_url or _nbs_sa_revision_lineage(
-                        meta, old_url, new_url)
-                    later = timestamp(newrow[col+'__observed_at']) > timestamp(
-                        row[col+'__observed_at'])
-                    old_pub = timestamp(row[col+'__published_at'])
-                    new_pub = timestamp(newrow[col+'__published_at'])
+                    same_definition = (old_receipt['definition_id']
+                                       == new_receipt['definition_id'] == meta.get('definition_id'))
+                    same_url = old_url == new_url
+                    same_lineage = same_url or _nbs_sa_revision_lineage(meta, old_url, new_url)
+                    old_observed = timestamp(old_receipt['observed_at'])
+                    new_observed = timestamp(new_receipt['observed_at'])
+                    old_pub = timestamp(old_receipt['published_at'])
+                    new_pub = timestamp(new_receipt['published_at'])
+                    chronology = old_pub <= old_observed and new_pub <= new_observed
+                    exact_replay = prior_digest == new_digest and old_receipt == new_receipt
                     forward_pub = new_pub >= old_pub if same_url else new_pub > old_pub
+                    forward_revision = new_observed > old_observed and forward_pub
+                    admitted = (valid_prior and valid_incoming and same_definition
+                                and same_lineage and chronology
+                                and (exact_replay or forward_revision))
                 except (ValueError, TypeError, KeyError):
-                    valid_prior = same_definition = same_lineage = later = forward_pub = False
-                if not (valid_prior and same_definition and same_lineage and later and forward_pub):
+                    admitted = False
+                if not admitted:
                     unsafe.append(d.strftime('%Y-%m'))
             if unsafe:
                 batch.conflicts.append({'table': path, 'column': col, 'periods': unsafe, 'reason': 'unqualified_legacy_value_disagreement'})
