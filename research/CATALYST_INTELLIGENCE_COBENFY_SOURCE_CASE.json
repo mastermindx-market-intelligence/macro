@@ -1,0 +1,199 @@
+{
+  "schema": "catalyst_intelligence.design_research_case.v0",
+  "specimen_id": "cobenfy-original-approval",
+  "mode": "HISTORICAL_REAL_SOURCE_RESEARCH",
+  "product": "COBENFY",
+  "molecule": "xanomeline / trospium chloride",
+  "company_source_label": "Karuna Therapeutics, a Bristol Myers Squibb company",
+  "source_reported_ticker": "BMY",
+  "canonical_security_id": null,
+  "canonical_asset_id": null,
+  "identity_state": "SOURCE_REPORTED_RELATION_NOT_CANONICAL_PIT_JOIN",
+  "approval_event": {
+    "date": "2024-09-26",
+    "indication": "Schizophrenia in adults",
+    "outcome_known": true,
+    "source_id": "fda_snapshot"
+  },
+  "evidence_basis": "Public documents reviewed now; not a point-in-time backtest or a current company recommendation.",
+  "extraction_method": "Manual structured extraction from web-rendered FDA/BMS sources; FDA label tables visually cross-checked.",
+  "production_first_observed_at": null,
+  "raw_source_sha256": null,
+  "catalogue_is_complete": false,
+  "full_dossier_reviewed": false,
+  "sources": [
+    {
+      "id": "fda_label",
+      "title": "FDA original prescribing information",
+      "publisher": "U.S. FDA",
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2024/216158s000lbl.pdf",
+      "document_revision": "September 2024 · reference 5453521",
+      "published_date": null,
+      "publication_precision": "month",
+      "publication_month": "2024-09",
+      "locator": "Table 4, PDF page 22; Table 1, PDF page 8",
+      "scope": "Original approval label, not a current prescribing recommendation.",
+      "first_observed_at": null,
+      "raw_document_sha256": null,
+      "inspected_by": "web text and rendered PDF tables"
+    },
+    {
+      "id": "fda_snapshot",
+      "title": "FDA drug-trials snapshot",
+      "publisher": "U.S. FDA",
+      "url": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshot-cobenfy",
+      "document_revision": "Original-approval snapshot",
+      "published_date": null,
+      "publication_precision": "unknown",
+      "locator": "Approval summary; Tables 3 and 6",
+      "scope": "Summary text contains a safety-population wording discrepancy; the label/table denominators are retained.",
+      "first_observed_at": null,
+      "raw_document_sha256": null,
+      "inspected_by": "web structured text"
+    },
+    {
+      "id": "bms_fy2024",
+      "title": "BMS full-year 2024 results",
+      "publisher": "Bristol Myers Squibb",
+      "url": "https://news.bms.com/news/details/2025/Bristol-Myers-Squibb-Reports-Fourth-Quarter-and-Full-Year-Financial-Results-for-2024/default.aspx",
+      "document_revision": "6 February 2025",
+      "published_date": "2025-02-06",
+      "publication_precision": "day",
+      "locator": "Full-year product revenue table: Cobenfy and Total Revenues; units USD millions",
+      "scope": "Historical reported sales, not a current revenue estimate or independently audited statement read in this specimen.",
+      "first_observed_at": null,
+      "raw_document_sha256": null,
+      "inspected_by": "web structured text"
+    }
+  ],
+  "clinical": {
+    "design": "Two randomized, double-blind, placebo-controlled, five-week studies",
+    "endpoint": "Change from baseline in PANSS total score at week 5",
+    "unit": "PANSS points",
+    "direction": "lower_is_better",
+    "population": "Efficacy analysis",
+    "trials": [
+      {
+        "study": "Study 1",
+        "treatment_n": 117,
+        "control_n": 119,
+        "treatment_change": -21.2,
+        "control_change": -11.6,
+        "difference": -9.6,
+        "ci95": [
+          -13.9,
+          -5.2
+        ],
+        "source_id": "fda_label",
+        "locator": "Table 4, Study 1, PDF page 22"
+      },
+      {
+        "study": "Study 2",
+        "treatment_n": 114,
+        "control_n": 120,
+        "treatment_change": -20.6,
+        "control_change": -12.2,
+        "difference": -8.4,
+        "ci95": [
+          -12.4,
+          -4.3
+        ],
+        "source_id": "fda_label",
+        "locator": "Table 4, Study 2, PDF page 22"
+      }
+    ],
+    "safety": {
+      "population": "Pooled safety population in the two five-week controlled trials",
+      "treatment_n": 251,
+      "control_n": 253,
+      "source_id": "fda_label",
+      "locator": "Table 1, PDF page 8",
+      "selected_events": [
+        {
+          "event": "Nausea",
+          "treated_pct": 19,
+          "control_pct": 4
+        },
+        {
+          "event": "Vomiting",
+          "treated_pct": 15,
+          "control_pct": 1
+        },
+        {
+          "event": "Hypertension",
+          "treated_pct": 11,
+          "control_pct": 2
+        }
+      ],
+      "selection_note": "Three selected adverse reactions, not a complete safety review; rounded percentages do not identify exact event counts."
+    }
+  },
+  "financial": {
+    "period": "FY 2024",
+    "period_end": "2024-12-31",
+    "currency": "USD",
+    "units": "millions",
+    "cobenfy_revenue": 10,
+    "issuer_revenue": 48300,
+    "source_id": "bms_fy2024",
+    "annualized": false,
+    "source_reported_relation": true
+  },
+  "judgments": [
+    {
+      "id": "efficacy",
+      "kind": "ANALYST_INTERPRETATION",
+      "read": "The short-term efficacy result repeated.",
+      "why": "Both placebo-adjusted confidence intervals fall below zero on the same symptom endpoint.",
+      "supports": [
+        "fda_label:Table4:Study1",
+        "fda_label:Table4:Study2"
+      ],
+      "limit": "This does not establish a new-trial success probability or superiority to an active antipsychotic."
+    },
+    {
+      "id": "duration",
+      "kind": "ANALYST_INTERPRETATION",
+      "read": "Five-week benefit is not a lifetime outcome.",
+      "why": "The displayed controlled efficacy comparison is short-term; long-term persistence, tolerability and real-world use need separate analysis.",
+      "supports": [
+        "fda_label:Table4"
+      ],
+      "limit": "Other longer-term data exist outside these two controlled comparisons; this is not a claim that no long-term evidence exists."
+    },
+    {
+      "id": "equity",
+      "kind": "ANALYST_INTERPRETATION",
+      "read": "Approval and early sales do not price the stock.",
+      "why": "The reported launch-period sales need a forward adoption, net-price, margin and whole-company valuation model.",
+      "supports": [
+        "bms_fy2024:FullYear:Cobenfy",
+        "bms_fy2024:FullYear:TotalRevenues"
+      ],
+      "limit": "The small historical revenue share is not a cap on future value or a stock-return prediction."
+    }
+  ],
+  "source_discrepancy": {
+    "state": "IDENTIFIED_IN_SOURCE_TEXT",
+    "affected_claim": "The FDA snapshot narrative describes the 504-person safety population as receiving COBENFY.",
+    "table_supported_resolution": "The original label and both safety tables divide 504 as 251 COBENFY and 253 placebo.",
+    "action": "Use the specific label/table denominators for this specimen and preserve the conflicting prose for producer review. Do not silently rewrite the source.",
+    "source_ids": [
+      "fda_label",
+      "fda_snapshot"
+    ]
+  },
+  "investment": {
+    "stance": null,
+    "catalyst_probability": null,
+    "stock_return_probability": null,
+    "expected_net_return": null,
+    "reference_price": null,
+    "conditional_values": null,
+    "market_implied_probability": null,
+    "model_validated": false,
+    "ranking_eligible": false,
+    "trade_authority": false,
+    "reason": "Historical outcome known; prospective model, price, full company economics and accepted policy not supplied."
+  }
+}

@@ -1,0 +1,24 @@
+{% if not entitled %}
+<p>{{ copy.sign_in }}</p>
+{% else %}
+<section aria-labelledby="relationship-review-title" data-reference-only="true">
+  <h2 id="relationship-review-title">{{ copy.title }}</h2>
+  <p>{{ copy.intro }}</p>
+  {% for record in review.records %}
+  <article data-source-record-id="{{ record.source_record_id }}">
+    <h3>{{ record.display_ticker or '—' }} · {{ record.display_company or copy.name_missing }}</h3>
+    <p><strong>{{ copy.status }}</strong></p>
+    <p>{{ copy.explanation }}</p>
+    <details><summary>{{ copy.source_summary }}</summary>
+      <p>{{ record.source_summary or copy.summary_missing }}</p>
+    </details>
+    <p>{{ record.source_date or copy.date_missing }}</p>
+    {% set href = source_link(record.source_url) %}
+    {% if href %}
+    <a href="{{ href }}" rel="noopener noreferrer">{{ copy.source_link }}</a>
+    {% else %}<p>{{ copy.link_missing }}</p>{% endif %}
+  </article>
+  {% else %}<p>{{ copy.empty }}</p>{% endfor %}
+  {% if review.truncated %}<p>{{ copy.more }}</p>{% endif %}
+</section>
+{% endif %}

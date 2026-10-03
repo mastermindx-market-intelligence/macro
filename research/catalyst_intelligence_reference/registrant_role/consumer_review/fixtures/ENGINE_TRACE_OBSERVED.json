@@ -1,0 +1,29 @@
+{
+  "receipt_kind": "structured_transcription_of_RDC_output_not_remote_raw_byte_copy",
+  "device": "m1studio",
+  "process_id": 91339,
+  "observed_built": "2026-09-27 18:38 UTC",
+  "module_sha256": "22e774a5633ec6b160d42db982119c23dae67e89a0a81557dcbd6a646fb23bb3",
+  "scope": "real_patched_module_fixture_io",
+  "live_data": false,
+  "production_writes": false,
+  "arb_candidate_ids": ["filing-direct"],
+  "rows": [
+    {"category":"Going-Private","cik":10001,"company":"Example Target","confidence":"high","cross_border":false,"current_stage":"live","date_filed":"2026-09-25","deal_terminal":null,"floor_pass":true,"form_type":"8-K","id":"filing-direct","items":"1.01|8.01","llm_category":"Going-Private","llm_confidence":"high","llm_role":"target","mc_musd":200.0,"n_amendments":0.0,"role":"target","source_url":"https://example.invalid/direct","stage":"live","status":"ok","summary":"Synthetic direct case","ticker":"FIX-A"},
+    {"category":null,"cik":10002,"company":"Example related registrant","confidence":"high","cross_border":false,"current_stage":null,"date_filed":"2026-09-25","deal_terminal":null,"floor_pass":true,"form_type":"8-K","id":"filing-related","items":"1.01|8.01","llm_category":"Going-Private","llm_confidence":"high","llm_role":"none","mc_musd":250.0,"n_amendments":null,"role":"none","source_url":"https://example.invalid/filing","stage":null,"status":"defer","summary":"A parent transaction is discussed.","ticker":"FIX-B"}
+  ],
+  "snapshot": {
+    "built":"2026-09-27 18:38 UTC","counts":{"Going-Private":1},
+    "coverage":{"below_floor_dropped":0,"classified":1,"cross_border":0,"deferred_to_text_lane":1,"events_total":2,"floor_musd":100.0,"mc_unknown_kept":0,"skipped":0},
+    "disclaimer":"Context only — an event-tracking display of public filings, not a signal, recommendation, or sizing input.",
+    "is_context_only":true,"scored":false,"premium":{"status":"fixture_auxiliary_not_evaluated"},
+    "situations":[{"category":"Going-Private","company":"Example Target","cross_border":false,"date_filed":"2026-09-25","form_type":"8-K","id":"filing-direct","mc_musd":200.0,"source_url":"https://example.invalid/direct","stage":"live","ticker":"FIX-A"}]
+  },
+  "desk": {
+    "built":"2026-09-27 18:38 UTC","counts":{"Going-Private":1},
+    "coverage":{"cross_border":0,"digest_situations":0,"edgar_confirmed":0,"edgar_only":1,"floor_musd":100.0,"high_confidence":1,"intl":0,"low_confidence":0,"newswire":0,"shown":1,"with_arb":0,"with_prior":0,"with_summary":1},
+    "disclaimer":"Context only — an event-tracking display of public filings, not a signal, recommendation, or sizing input.",
+    "is_context_only":true,"scored":false,
+    "situations":[{"business_desc":null,"category":"Going-Private","company":"Example Target","confidence":"high","country":"US","cross_border":false,"date_filed":"2026-09-25","deal_terms":{},"form_type":"8-K","id":"filing-direct","live":true,"mc_musd":200.0,"n_amendments":0,"role":"target","source_lane":"edgar","source_url":"https://example.invalid/direct","stage":"live","summary":"Synthetic direct case","terminal":null,"ticker":"FIX-A"}]
+  }
+}
