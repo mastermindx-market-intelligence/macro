@@ -7,3 +7,7 @@ Start with [the owner handoff](TOI_Next_Owner_Handoff_2026-10-03.md), then read 
 Existing carriers remain [W1 #7107](https://github.com/mastermindx-market-intelligence/macro/pull/7107), [W2-0 #7094](https://github.com/mastermindx-market-intelligence/macro/pull/7094), and [Temporal Grain #6803](https://github.com/mastermindx-market-intelligence/macro/pull/6803). This documentation intake does not replace any of them.
 
 Sequence: existing-carrier repair and truthful HOLD consumption; S16 identity adjudication; independent source/clock qualification; complete manifest adoption; admitted research; bounded implementation and prospective evaluation. No broad research restart. Outcome access must not be used to occupy workers while predecessor gates remain open.
+
+## Initiation materials
+
+Read [the initiation assessment](TOI_INITIATION_ASSESSMENT_2026-10-03.md) and [CEO start prompt](TOI_CEO_START_PROMPT_2026-10-03.md). The [R0 configuration inventory](TOI_R0_CONFIGURATION_INVENTORY_DRAFT.json) enumerates the 147 proposed slots but is explicitly **not an executable preregistration or a trial ledger**: no slot is selected, registered or admitted by this initiation. [The metadata snapshot](INITIATION_SOURCE_SNAPSHOT.json) records bounded live carrier reads, not source/data/release qualification. Original supplied documents remain unchanged.
