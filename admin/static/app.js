@@ -16102,36 +16102,69 @@ RENDER.codex = async () => {
     </div>
     ${codexSelectorHtml("lanes", "Lanes", lanesSel.allowed || ["both","cases","signals"], lanesSel.effective || "both")}`;
 
-  // --- Usage bars ---
+  // --- Usage bars: native positions are not fixed window durations. ---
   const usage = d.usage;
-  let usageHtml = `<div class="sub muted">No usage data yet — runs will populate this.</div>`;
+  let usageHtml = `<div class="sub muted">No usage data yet - a native reading is required.</div>`;
   if (usage) {
-    const priPct = usage.primary_used_pct;
-    const secPct = usage.secondary_used_pct;
-    const budgetPct = usage.budget_pct || 85;
-    const pausedUntil = usage.paused_until;
-    const degraded = !!usage.degraded;
-
-    const pbar = (label, pct) => {
-      if (pct == null) return `<div class="kv"><span>${esc(label)}</span><b class="muted">—</b></div>`;
-      const fill = Math.min(100, Math.max(0, pct));
-      const cls = fill >= budgetPct ? "s-bad" : fill >= budgetPct * 0.75 ? "s-warn" : "s-ok";
-      return `<div style="margin-bottom:8px">
-        <div class="kv" style="margin-bottom:4px"><span class="sub">${esc(label)}</span><b>${fill.toFixed(1)}%</b></div>
-        <div style="background:var(--bg2,#1e1e2e);border-radius:4px;height:8px;overflow:hidden">
+    const limits = usage.rate_limits && typeof usage.rate_limits === "object" ? usage.rate_limits : {};
+    const budgetPct = Number.isFinite(usage.budget_pct) ? usage.budget_pct : 85;
+    const now = Date.now();
+    const timestamp = value => {
+      const ms = typeof value === "string" ? Date.parse(value) : NaN;
+      return Number.isFinite(ms) ? ms : null;
+    };
+    const utc = ms => new Date(ms).toISOString().replace("T", " ").replace(/\.\d{3}Z$/, " UTC");
+    const label = (position, window) => {
+      const mins = window && Number.isInteger(window.window_mins) && window.window_mins > 0 ? window.window_mins : null;
+      const fallback = `${position === "primary" ? "Primary" : "Secondary"} window (duration not reported)`;
+      if (mins === null) return fallback;
+      const duration = mins % 1440 === 0 ? `${mins / 1440}-day` : mins % 60 === 0 ? `${mins / 60}-hour` : `${mins}-minute`;
+      return `${duration} window (${position})`;
+    };
+    const resetText = window => {
+      const ms = timestamp(window && window.resets_at);
+      if (ms === null) return "Reset time not reported";
+      if (ms <= now) return `Reported reset time has passed; awaiting fresh quota data (${utc(ms)})`;
+      const minutes = Math.ceil((ms - now) / 60000);
+      const days = Math.floor(minutes / 1440), hours = Math.floor((minutes % 1440) / 60), remainder = minutes % 60;
+      const left = days ? `${days}d ${hours}h` : hours ? `${hours}h ${remainder}m` : `${remainder}m`;
+      return `Resets in ${left} (${utc(ms)})`;
+    };
+    const pbar = (position, pct) => {
+      const window = limits[position];
+      const title = label(position, window);
+      const reset = `<div class="sub muted" style="margin-top:4px;overflow-wrap:anywhere">${esc(resetText(window))}</div>`;
+      if (!Number.isFinite(pct) || pct < 0) return `<div style="margin-bottom:12px"><div class="kv"><span>${esc(title)}</span><b class="muted">Usage not reported</b></div>${reset}</div>`;
+      // Clamp only bar geometry. The measured number may legitimately exceed 100.
+      const fill = Math.min(100, pct);
+      const cls = pct >= budgetPct ? "s-bad" : pct >= budgetPct * 0.75 ? "s-warn" : "s-ok";
+      return `<div style="margin-bottom:12px">
+        <div class="kv" style="margin-bottom:4px"><span class="sub">${esc(title)}</span><b>${pct.toFixed(1)}%</b></div>
+        <div style="background:var(--bg2,#1e1e2e);border-radius:4px;height:8px;overflow:hidden" role="img" aria-label="${esc(title)}: ${pct.toFixed(1)} percent used">
           <div style="width:${fill}%;height:100%;background:var(--accent,#7f6bf5);border-radius:4px;padding:0" class="statpill ${cls}"></div>
         </div>
-        ${fill >= budgetPct ? `<div class="sub muted" style="margin-top:2px">At or above ${budgetPct}% budget — lane will pause until window resets.</div>` : ""}
+        ${reset}
+        ${pct >= budgetPct ? `<div class="sub muted" style="margin-top:2px">At or above ${budgetPct}% budget. Fresh quota and admission checks are required before work.</div>` : ""}
       </div>`;
     };
-
+    const hasPermission = Object.prototype.hasOwnProperty.call(limits, "ordinary_usage_allowed");
+    const permission = limits.ordinary_usage_allowed;
+    const permissionText = !hasPermission ? "Provider permission not reported" : permission === true ? "Provider permission observed" : permission === false ? "Provider has not allowed ordinary usage" : "Provider permission is unknown";
+    const permissionClass = permission === false ? "s-bad" : "s-warn";
+    const observed = timestamp(limits.fetched_at);
+    const observedText = observed === null ? "Observation time not reported" : observed > now ? "Observation timestamp is ahead of this device clock" : `Quota observed at ${utc(observed)}`;
+    const paused = timestamp(usage.paused_until);
+    const pauseText = !usage.paused_until ? "" : paused === null ? "Quota pause needs fresh state" : paused > now ? `Quota pause until ${utc(paused)}; a fresh eligible reading is required to resume` : "Stored quota pause has elapsed; awaiting fresh quota data";
     usageHtml = `
-      ${pausedUntil ? `<div class="sub" style="background:var(--bg2,#1e1e2e);padding:8px;border-radius:4px;margin-bottom:10px;border-left:3px solid var(--warn,#f5a623)">Paused until <b>${esc(pausedUntil)}</b> (usage limit hit; auto-mode resumes after reset)</div>` : ""}
-      ${degraded ? `<div class="kv" style="margin-bottom:8px"><span>Mode</span><span class="statpill s-warn">degraded — est. session cap</span></div>` : ""}
-      ${pbar("5h primary window used", priPct)}
-      ${pbar("Weekly secondary window used", secPct)}
+      <div class="kv" style="margin-bottom:8px"><span class="statpill ${permissionClass}">${esc(permissionText)}</span></div>
+      ${pauseText ? `<div class="sub" style="padding:8px;margin-bottom:10px;border-left:3px solid var(--warn,#f5a623);overflow-wrap:anywhere">${esc(pauseText)}</div>` : ""}
+      ${usage.degraded ? `<div class="kv" style="margin-bottom:8px"><span>Observation</span><span class="statpill s-warn">incomplete usage data</span></div>` : ""}
+      ${pbar("primary", usage.primary_used_pct)}
+      ${pbar("secondary", usage.secondary_used_pct)}
       <div class="kv"><span>Budget cutoff</span><b>${budgetPct}%</b></div>
-      ${usage.sessions_in_window != null ? `<div class="kv"><span>Sessions in current 5h window</span><b>${usage.sessions_in_window}</b></div>` : ""}`;
+      <div class="sub muted" style="margin-top:8px;overflow-wrap:anywhere">${esc(observedText)}</div>
+      <div class="sub muted" style="margin-top:4px">Meter readings do not grant execution; existing admission and account checks still apply. Times are a snapshot, not a reset schedule.</div>
+      ${usage.sessions_in_window != null ? `<div class="kv"><span>Sessions in current 5h window</span><b>${esc(String(usage.sessions_in_window))}</b></div>` : ""}`;
   }
 
   // --- Run-now ---
