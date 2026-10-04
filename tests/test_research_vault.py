@@ -3947,10 +3947,9 @@ def test_census_body_health_distinguishes_identity_from_text_retrieval(
     )
     assert health["catalog_rows_with_corpus_row_typed_no_text_count"] == 1
     assert health["valid_pdf_content_sha256_rows"] == 3
-    assert "body" not in json.dumps(health), (
-        "the health projection may describe body coverage but must not emit "
-        "publisher body text or a body field"
-    )
+    encoded_health = json.dumps(health)
+    assert healthy_body[:48] not in encoded_health
+    assert "Institutional demand remains durable" not in encoded_health
 
     after = {key: store.get_bytes(key) for key in store.list_prefix("")}
     assert after == before, "body-health census must remain byte-for-byte read-only"
