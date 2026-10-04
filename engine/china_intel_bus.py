@@ -419,13 +419,10 @@ def _visit_discovery_snapshot(
             continue
         exchange = _visit_text(row.get("exchange"))
         key = f"{exchange}:{code}" if exchange else code
-        day = _visit_day(row.get("source_published_at"))
-        if day is None:
+        source_day = _visit_day(row.get("source_published_at"))
+        if source_day is None:
             continue
-        # Pre-coverage source dates are real source metadata but cannot establish
-        # first-seen/quiet history for this forward-only P1 plane.
-        if coverage_day is not None and day < coverage_day:
-            continue
+        observed_day = _visit_day(row.get("system_recorded_at"))
         bucket = grouped.setdefault(key, {
             "company_key": key,
             "sec_code": code,
@@ -433,7 +430,12 @@ def _visit_discovery_snapshot(
             "exchange": exchange,
             "rows": [],
         })
-        bucket["rows"].append((day, row))
+        # Positive source evidence remains visible even when its publication
+        # predates our forward-only coverage stamp (the first P1 run uses a
+        # bounded lookback). The source day is the event clock; system_recorded_at
+        # is the observation/first-seen clock. They must never substitute for
+        # each other.
+        bucket["rows"].append((source_day, observed_day, row))
 
     # Company-scoped exceptions deserve an explicit UNKNOWN record even when no
     # canonical visit row could be admitted.
@@ -453,12 +455,13 @@ def _visit_discovery_snapshot(
     for key in sorted(grouped):
         bucket = grouped[key]
         rows = sorted(bucket["rows"], key=lambda item: (
-            item[0], _visit_text(item[1].get("announcement_id"))
+            item[0], item[1] or date.min, _visit_text(item[2].get("announcement_id"))
         ))
         code = bucket["sec_code"]
-        recent = [r for d, r in rows if recent_start <= d <= observation_end]
-        prior_all = [r for d, r in rows if d < recent_start]
-        baseline = [r for d, r in rows if baseline_start <= d <= baseline_end]
+        recent = [r for source_day, _observed_day, r in rows
+                  if recent_start <= source_day <= observation_end]
+        baseline = [r for source_day, _observed_day, r in rows
+                    if baseline_start <= source_day <= baseline_end]
         if not recent and code not in open_scoped_codes:
             continue
 
@@ -474,12 +477,21 @@ def _visit_discovery_snapshot(
         else:
             baseline_state = "measured"
 
-        first_seen_state = (
-            "unknown_due_coverage_exception" if company_exception
-            else "first_observed_since_coverage_start" if recent and not prior_all
-            else "previously_observed" if recent
-            else "no_recent_positive_evidence"
-        )
+        observed_days = [observed_day for _source_day, observed_day, _r in rows
+                         if observed_day is not None]
+        first_observed_day = min(observed_days) if observed_days else None
+        if company_exception:
+            first_seen_state = "unknown_due_coverage_exception"
+        elif not recent:
+            first_seen_state = "no_recent_positive_evidence"
+        elif first_observed_day is None:
+            first_seen_state = "observation_clock_unavailable"
+        elif coverage_day is None or first_observed_day < coverage_day:
+            first_seen_state = "previous_observation_not_coverage_qualified"
+        elif recent_start <= first_observed_day <= observation_end:
+            first_seen_state = "first_observed_since_coverage_start"
+        else:
+            first_seen_state = "previously_observed_since_coverage_start"
 
         recent_rate = len(recent) / recent_days if recent else 0.0
         baseline_rate = len(baseline) / baseline_days if baseline_state == "measured" else None
@@ -521,7 +533,10 @@ def _visit_discovery_snapshot(
                 else "unknown"
             ),
             "first_seen_state": first_seen_state,
-            "first_observed_source_day": rows[0][0].isoformat() if rows else None,
+            "earliest_source_published_day": rows[0][0].isoformat() if rows else None,
+            "first_observed_system_day": (
+                first_observed_day.isoformat() if first_observed_day else None
+            ),
             "recent_count": len(recent),
             "recent_window_start": recent_start.isoformat(),
             "recent_window_end": observation_end.isoformat(),
