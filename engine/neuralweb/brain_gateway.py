@@ -746,11 +746,13 @@ _RESEARCH_PACKET_PLAIN: dict[str, tuple[str, str]] = {
 # numerals (space required, so "1.5%" is not a marker), full-width numerals and
 # punctuation, parenthesised letters/numerals, and CJK ordinals ("一、").
 _RESEARCH_MARK = (
-    r"(?:[-•*+–—・·]+(?=\s*[^\s\d-])"
-    r"|\d{1,2}[.)](?=\s)"
+    r"(?:(?:[-•*+–—・·▪▸►◦‣⁃→➤✅☑✔✓]+|#{1,6}|>+)(?:\s*\[[ xX]\])?(?=\s*[^\s\d-])"
+    r"|\d{1,2}[.)](?=\s|[A-Za-z\u4e00-\u9fff])"
     r"|(?:\d{1,2}|[０-９]{1,2})[．）]"
     r"|[０-９]{1,2}[.)]"
     r"|[(（][0-9０-９a-zA-Z]{1,2}[)）]"
+    r"|[a-zA-Z][.)](?=\s)"
+    r"|\[\^?[0-9a-zA-Z]{1,3}\]:?"
     r"|[一二三四五六七八九十]{1,3}[、．])"
 )
 _RESEARCH_SENTENCE_SPLIT = re.compile(
@@ -835,8 +837,17 @@ _RESEARCH_FALSIFIER = re.compile(r"\bfalsifier\b|\brefuted\b|证伪", re.I)
 #   - "请买入 NVDA。"
 #   - "卖出 AAPL。"
 #   - "分化。买入 NVDA。"      (买 right after 。)
+# Markdown emphasis / code wrappers at a token's edge ("**Buy**", "`Buy NVDA`", "_Buy_");
+# an underscore INSIDE an identifier (context_search) is part of the word and stays.
+_RESEARCH_INLINE_WRAP = re.compile(r"(?<![\w])[*_`~]+(?=\S)|(?<=\S)[*_`~]+(?![\w])")
+# r4 (review N10): a sentence-anchored buy/sell is an imperative only when it is not the
+# head of a reportative noun phrase ("buy programs dominated", "sell volumes rose").
+_RESEARCH_TRADE_NOUN_EN = (
+    r"(?!\s+(?:programs?|orders?|volumes?|pressure|interest|sides?|signals?|flows?"
+    r"|imbalances?|ratios?|backs?|activity|demand|appetite|ratings?|lists?)\b)"
+)
 _RESEARCH_TRADE = re.compile(
-    r"(?:^|(?<=[.!?。！？:：]\s)|(?<=[—–]\s))(?:buy|sell)(?![\w-])\s+\S"
+    r"(?:^|(?<=[.!?。！？:：]\s)|(?<=[—–]\s))(?:buy|sell)(?![\w-])" + _RESEARCH_TRADE_NOUN_EN + r"\s+\S"
     r"|\b(?:you\s+should|please)\s+(?:buy|sell)\b"
     r"|\b(?:buy|sell)\s+(?:now|immediately|today)\b"
     r"|\bsize\s+(?:it|the\s+position|your\s+(?:position|size|book))\b"
@@ -848,7 +859,8 @@ _RESEARCH_TRADE = re.compile(
     # Sentence-anchored bare target imperative (set/cut/raise/lower + "a target").
     r"|(?:^|(?<=[.!?。！？]\s))(?:set|cut|raise|lower)\s+(?:\S+\s+){0,3}target\b"
     r"|(?:^|(?<=[.!?。！？:：，,]))\s*(?:请)?(?:买入|卖出)"
-    r"(?!压力|意愿|信号|盘|方|量|价|单|力度|机会|时机|点|区|成本|后|前|的|了)\s*\S",
+    r"(?!压力|意愿|信号|盘|方|量|价|单|力度|机会|时机|点|区|成本|后|前|的|了"
+    r"|订单|资金|潮|规模|量能|力量|需求|热情|情绪|行为|操作|价格|数量|金额|比例|占比|活动|兴趣|动能|动力|踩踏|套现|承接)\s*\S",
     re.I,
 )
 _RESEARCH_TOOL_RE: re.Pattern[str] | None = None
@@ -1193,25 +1205,67 @@ _RESEARCH_HTML_TAG = re.compile(r"</?[a-zA-Z][^<>]{0,24}>")
 _RESEARCH_HTML_BREAK = re.compile(
     r"<br\s*/?>|</?(?:ul|ol|li|p|div|h[1-6]|tr|td|th|table)(?:\s[^<>]{0,24})?>", re.I
 )
+_RESEARCH_FENCE = re.compile(r"^```[\w-]*\s*$")
 _RESEARCH_ASOF_TAIL = re.compile(r"\s*[(（]\s*(?:as\s+of|截至)[^()（）]{0,40}[)）]\s*$", re.I)
+# "<name>, 2 Oct 2026" / "<name> — 2026-10-02" / "<name>（2026年10月2日）": a date is a
+# list item's decoration, never prose.
+_RESEARCH_DATE_TAIL = re.compile(
+    r"\s*(?:[,，(（]|[—–-]+)?\s*(?:as\s+of|截至)?\s*"
+    r"(?:\d{1,2}\s+[A-Za-z]{3,9}\.?\s+\d{4}|[A-Za-z]{3,9}\.?\s+\d{1,2},?\s+\d{4}"
+    r"|\d{4}-\d{2}-\d{2}|\d{4}/\d{1,2}/\d{1,2}|\d{4}年\d{1,2}月\d{1,2}日)\s*[)）]?\s*$",
+    re.I,
+)
+_RESEARCH_ARTICLE = re.compile(r"^(?:(?:the|an?)\s+|[该本此])", re.I)
 _RESEARCH_SOURCE_HEAD = re.compile(
-    r"^(?:what\s+this\s+read\s+used|sources?(?:\s+(?:used|consulted|read))?(?:\s+this\s+turn)?"
-    r"|references?|artifacts?\s+used"
-    r"|本次阅读用到的内容|本次解读使用了?|本轮使用|使用的来源|参考来源|引用来源|来源|参考|引用)"
-    r"(?:\s*[(（][^()（）]{0,60}[)）])?\s*[:：]?\s*(.*)$",
+    r"^(?:what\s+this\s+read\s+used|sources?(?:\s+(?:used|consulted|read|cited))?(?:\s+this\s+turn)?"
+    r"|references?|artifacts?\s+used|data\s+used|inputs?(?:\s+used)?|cited|citations?|based\s+on|per|see(?:\s+also)?"
+    r"|本次阅读用到的内容|本次解读使用了?|本轮使用|使用的来源|参考来源|引用来源|数据来源|资料来源|参考资料|参考文献"
+    r"|来源|参考|引用|依据|出处)"
+    r"(?:\s*[(（][^()（）]{0,60}[)）])?\s*(?P<colon>[:：=])?\s*(?P<rest>.*)$",
     re.I | re.S,
 )
 _RESEARCH_SOURCE_HEAD_MID = re.compile(
-    r"(?<=[.!?。！？])\s*(?:what\s+this\s+read\s+used|sources?\s+used(?:\s+this\s+turn)?"
-    r"|本次阅读用到的内容|本次解读使用了?)\s*[:：]\s*(.*)$",
+    r"(?<=[.!?。！？])\s*(?:what\s+this\s+read\s+used|sources?(?:\s+(?:used|consulted|read))?(?:\s+this\s+turn)?"
+    r"|references?|based\s+on|per|see|本次阅读用到的内容|本次解读使用了?|来源|依据|参考)\s*[:：=]\s*(.*)$",
     re.I | re.S,
 )
 _RESEARCH_SOURCE_SEP = re.compile(r"\s*(?:[,;，；、]|\band\b|和|及|以及)\s*", re.I)
-_RESEARCH_SOURCE_NOTE = re.compile(r"\s*[—–]+\s*.*$|\s+-+\s+.*$")
+_RESEARCH_NOTE_SPLIT = re.compile(r"^(.*?)\s*(?:[—–]+|\s-+\s)\s*(.+)$")
 _RESEARCH_SENTENCE_END = re.compile(r"[.!?。！？]")
+_RESEARCH_CLAUSE_PUNCT = re.compile(r"[:：,，;；!?。！？()（）\"“”]")
+# Words that make a short unpunctuated line a SENTENCE rather than a name. Deliberately
+# excludes note/flag/show/signal/point/read/brief, which are nouns in source names
+# ("Desk Note", "Morning Brief").
+_RESEARCH_PROSE_VERB = re.compile(
+    r"\b(?:is|are|was|were|be|been|has|have|had|will|would|should|can|could|may|might|must"
+    r"|needs?|says?|means?|remains?|seems?|looks?|appears?|suggests?|expects?|continues?"
+    r"|led|rose|fell|climbed|dropped|widened|narrowed|held|turned|moved"
+    r"|watch|keep|stay|avoid|expect|wait|hold|consider|prefer)\b"
+    r"|显示|提到|意味|认为|表明|需要|应该|可能|上升|下降|增加|减少|偏弱|偏强|保持|观望|关注"
+    r"|很|较|仍|已|将|正在|继续|不|没|是|但|而|也|都|并|或|因此|所以|如果|更|越",
+    re.I,
+)
+_RESEARCH_TABLE_ROW = re.compile(r"^\s*\|.*\|\s*$")
+_RESEARCH_TABLE_FRAME_CELL = re.compile(
+    r"^(?:[-:\s]*|sources?|references?|inputs?|citations?|artifacts?|as\s+of|dates?|names?|items?|notes?|status"
+    r"|来源|参考|引用|截至|日期|名称|状态|备注)$", re.I
+)
+_RESEARCH_TABLE_SOURCE_CELL = re.compile(r"^(?:sources?|references?|inputs?|citations?|artifacts?|来源|参考|引用)$", re.I)
+_RESEARCH_TABLE_SEP_CELL = re.compile(r"^[-:\s]*$")
+_RESEARCH_NUMERIC_CELL = re.compile(r"^[\d.,%+\-\s]+$")
 _RESEARCH_SERVER_SOURCE_NAMES = (
     "Live market state packet", "实时市场状态数据包", "Daily briefing", "每日简报",
     "Your theses", "您的论点", "Your thesis versions", "您的论点版本",
+)
+# The only "<name> — note" forms that are list items are the server's own notes; a model
+# line "Desk read — breadth is thin" is a grounded claim and stays (review N8).
+_RESEARCH_SERVER_NOTES = frozenset(
+    {"not available this turn", "本轮无法读取", "not published yet", "尚未发布"}
+    | {row.split(" — ", 1)[1].strip().lower() for row in (
+        _RESEARCH_USER_READ_EMPTY_EN, _RESEARCH_USER_READ_EMPTY_ZH,
+        _RESEARCH_USER_READ_UNAVAILABLE_EN, _RESEARCH_USER_READ_UNAVAILABLE_ZH,
+        _RESEARCH_USER_READ_PARTIAL_EN, _RESEARCH_USER_READ_PARTIAL_ZH,
+    )}
 )
 
 
@@ -1227,23 +1281,59 @@ def _research_source_names(corpus: dict | None) -> set[str]:
 
 def _research_item_core(line: str) -> str:
     """A line reduced to the words a source item would carry: no tag, wrapper, list
-    marker, trailing "(as of …)" or trailing punctuation."""
+    marker, checkbox, trailing "(as of …)" / date, or trailing punctuation."""
     s = _RESEARCH_HTML_TAG.sub("", line or "").strip().strip(_RESEARCH_TRAILER_WRAP).strip()
     s = _RESEARCH_LIST_MARKER.sub("", s, count=1).strip()
     s = s.strip(_RESEARCH_TRAILER_WRAP).strip()
     s = _RESEARCH_ASOF_TAIL.sub("", s).strip()
+    s = _RESEARCH_DATE_TAIL.sub("", s).strip()
     return s.rstrip(".。;；,，").strip().strip(_RESEARCH_TRAILER_WRAP).strip()
 
 
 def _research_is_source_name(core: str, names: set[str]) -> bool:
-    low = (core or "").lower()
+    raw_low = (core or "").strip().lower()
+    low = _RESEARCH_ARTICLE.sub("", raw_low)
     if not low:
         return False
-    if low in names:
+    if raw_low in names or low in names:
         return True
-    head = _RESEARCH_SOURCE_NOTE.sub("", low).strip()   # "<name> — not available this turn"
-    head = _RESEARCH_ASOF_TAIL.sub("", head).strip()      # "<name> (as of …) — note"
-    return bool(head) and head in names
+    m = _RESEARCH_NOTE_SPLIT.match(low)
+    if not m:
+        return False
+    head = _RESEARCH_ARTICLE.sub("", _RESEARCH_ASOF_TAIL.sub("", m.group(1)).strip())
+    note = m.group(2).strip().rstrip("。.").strip()
+    return head in names and note in _RESEARCH_SERVER_NOTES
+
+
+def _research_name_like(core: str, raw: str) -> bool:
+    """Could this unmarked line be an (invented) source name? Short, no clause or
+    sentence punctuation anywhere on the line, no verb: "Invented Desk Note",
+    "彭博终端". "Breadth is thin", "Bottom line: watch", "这意味着领涨面很窄" are prose."""
+    s = (core or "").strip()
+    if not s or len(s) > 48:
+        return False
+    if _RESEARCH_CLAUSE_PUNCT.search(raw) or _RESEARCH_SENTENCE_END.search(raw):
+        return False
+    if _RESEARCH_PROSE_VERB.search(s):
+        return False
+    cjk = sum(1 for ch in s if "一" <= ch <= "鿿")
+    if cjk:
+        return cjk <= 8 and len(s) <= 16
+    return len(s.split()) <= 5
+
+
+def _research_item_like(core: str, raw: str) -> bool:
+    """A MARKER-LED line under a source heading is an item unless it reads as a
+    sentence: ends in sentence punctuation, carries a clause break, or has a verb.
+    "2. Secret /data/x.json" is an item; "- Breadth needs to widen before the move is
+    trustworthy." is prose."""
+    s = (core or "").strip()
+    body = raw.strip()
+    if not s or len(s) > 60:
+        return False
+    if _RESEARCH_SENTENCE_END.search(body[-1:]) or re.search(r"[:：,，;；]", body):
+        return False
+    return not _RESEARCH_PROSE_VERB.search(s)
 
 
 def _research_all_source_names(text: str, names: set[str]) -> bool:
@@ -1253,37 +1343,68 @@ def _research_all_source_names(text: str, names: set[str]) -> bool:
 
 
 def _research_inline_source_list(text: str, names: set[str]) -> bool:
-    """An inline list after a source heading: at least one known name, and every piece
-    reads like an item (short, no sentence punctuation inside it). "What this read used
-    was the daily briefing, which says breadth was thin." has no exact name → prose."""
+    """An inline list after "<heading>:": at least one known name, every piece a known
+    name or name-like. "Sources: the Desk read shows breadth is thin." is prose."""
     raw = [x for x in _RESEARCH_SOURCE_SEP.split(text or "") if x and x.strip()]
     cores = [_research_item_core(x) for x in raw]
     if not cores or not any(_research_is_source_name(x, names) for x in cores):
         return False
-    for piece, core in zip(raw, cores):
-        inner = piece.strip().rstrip(".。;；,，")
-        if len(core) > 60 or _RESEARCH_SENTENCE_END.search(inner):
-            return False
-    return True
+    return all(
+        _research_is_source_name(c, names) or _research_name_like(c, r.strip().rstrip(".。"))
+        for r, c in zip(raw, cores)
+    )
+
+
+def _research_table_row_drops(plain: str, names: set[str], in_block: bool) -> bool:
+    """A markdown table row that belongs to a SOURCE table: any cell a known name; a
+    header row naming sources ("| Source | As of |"); or, inside a block, a separator /
+    frame row or a row of name-like and date cells. A data table ("| Date | Close |")
+    is prose and closes the block."""
+    cells = [_RESEARCH_INLINE_WRAP.sub("", c).strip() for c in plain.strip().strip("|").split("|")]
+    if any(_research_is_source_name(_research_item_core(c), names) for c in cells):
+        return True
+    if any(_RESEARCH_TABLE_SOURCE_CELL.match(c) for c in cells) and all(
+        _RESEARCH_TABLE_FRAME_CELL.match(c) for c in cells
+    ):
+        return True
+    if not in_block:
+        return False
+    if all(_RESEARCH_TABLE_FRAME_CELL.match(c) for c in cells):
+        return True
+    if any(_RESEARCH_NUMERIC_CELL.match(c) and not _RESEARCH_DATE_TAIL.match(c) for c in cells if c):
+        return False                                     # a number is data, never a source (a date is decoration)
+    cores = [_research_item_core(c) for c in cells]
+    if not any(len(x.split()) >= 2 or sum(1 for ch in x if "\u4e00" <= ch <= "\u9fff") >= 3 for x in cores):
+        return False                                     # "| Date | Close |" is a data header
+    return all(
+        not c or _RESEARCH_TABLE_SEP_CELL.match(c) or _RESEARCH_DATE_TAIL.match(c)
+        or _research_name_like(x, c)
+        for c, x in zip(cells, cores)
+    )
 
 
 def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
     """Remove what the MODEL wrote in the server's voice, before anything is judged.
 
-    r2 (review M1/M2) stripped the exact "What this read used" heading and the marker
-    lines under it; r3 (review N2/N3) recognises the list by its CONTENT instead. Dropped,
-    line-wise: any line that is the ceiling or the JWT-absent sentence; any line that is
-    nothing but a known source name (the corpus's artifacts plus the names the server
-    itself prints), under any bullet, wrapper, HTML tag, "(as of …)" tail or "— note";
-    any one-line inline list of such names after a source-style heading; and, under a
-    source-style heading (EN/ZH, several spellings, parenthetical or not), the short
-    unpunctuated item lines that follow until prose resumes. A heading-like opener that
-    continues as prose ("What this read used most: …") is kept, and a prose sentence
-    is never deleted for containing "(as of …)". The citation check then runs on the
-    PROSE only, and the server's list and ceiling are appended afterwards,
-    unconditionally. Prose is never rewritten. Residual by design: a prose sentence
-    that NAMES an artifact is a citation — the closed corpus, not this check, is what
-    bounds what the model can know.
+    Line classifier (r4, review N2/N6/N7/N8/N11). Dropped: the ceiling / JWT-absent
+    sentences; a source HEADING (EN/ZH, many spellings, markdown or bold, with or
+    without a parenthetical) standing alone, or followed by ":"/"="/"：" and an inline
+    list; a line that is nothing but a known source name (the corpus's artifacts plus
+    the names the server itself prints) under any bullet, checkbox, footnote, wrapper,
+    HTML tag, leading article, trailing date, "(as of …)" tail or one of the server's
+    own "— note" forms; a source-table header/separator row or a row naming a source;
+    and, directly under a heading, the marker-led or bare lines that read as NAMES
+    (short, no clause punctuation, no verb) — an invented source. The block ends at the
+    first line that reads as prose: any sentence punctuation, a clause break, a verb, a
+    "Something:" heading, a markdown heading. A code fence wrapping a dropped list goes
+    with it. Prose is never rewritten; a prose sentence is never deleted for its length
+    or for containing "(as of …)". The citation check then runs on the prose only, and
+    the server's list and ceiling are appended afterwards, unconditionally.
+
+    Residual by design: a prose sentence that NAMES an artifact is a citation — the
+    closed corpus, not this check, is what bounds what the model can know; and a short
+    unpunctuated verbless fragment ("- Watch the curve") directly under a source heading
+    is read as an invented source.
     """
     canon = {
         _RESEARCH_CEILING_EN, _RESEARCH_CEILING_ZH,
@@ -1291,48 +1412,91 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
     }
     canon_bare = {c.rstrip("。.") for c in canon}
     names = _research_source_names(corpus)
-    kept: list[str] = []
-    in_block = False
     text = body or ""
     if "<" in text and _RESEARCH_HTML_BREAK.search(text):
-        text = _RESEARCH_HTML_BREAK.sub("\n", text)   # a one-line <ul><li>…</li></ul> is a list
+        text = _RESEARCH_HTML_BREAK.sub("\n", text)     # a one-line <ul><li>…</li></ul> is a list
+    kept: list[str] = []
+    in_block = False
+    fence_at: int | None = None                          # index in `kept` of a fence nothing has followed yet
+    fence_open = False                                   # inside a ``` block
+    fence_popped = False                                 # that block's opening fence was removed
+
+    def _drop() -> None:
+        nonlocal fence_at, fence_popped
+        if fence_at is not None and all(not x.strip() for x in kept[fence_at + 1:]):
+            del kept[fence_at:]                          # the fence opened a list we are dropping
+            fence_popped = True
+        fence_at = None
+
+    def _keep(value: str) -> None:
+        nonlocal in_block, fence_at
+        in_block = False
+        fence_at = None
+        kept.append(value)
+
     for line in text.split("\n"):
         plain = _RESEARCH_HTML_TAG.sub("", line)
-        core = plain.strip().strip(_RESEARCH_TRAILER_WRAP).strip()
+        stripped = plain.strip()
+        if _RESEARCH_FENCE.match(stripped):
+            if not fence_open:                           # opening fence: content, closes any block
+                fence_open = True
+                fence_popped = False
+                _keep(line)
+                fence_at = len(kept) - 1
+            else:                                        # closing fence
+                if fence_popped or in_block:
+                    _drop()                              # its opener went with the list, or the list is all it held
+                else:
+                    _keep(line)
+                fence_open = False
+                fence_popped = False
+                in_block = False
+            continue
+        core = stripped.strip(_RESEARCH_TRAILER_WRAP).strip()
         if not core:
             if not in_block:
                 kept.append(line)
             continue
         if core in canon or core.rstrip("。.") in canon_bare:
             continue
+        if _RESEARCH_TABLE_ROW.match(stripped):
+            if _research_table_row_drops(plain, names, in_block):
+                _drop()
+                in_block = True
+                continue
+            _keep(line)
+            continue
         head = _RESEARCH_SOURCE_HEAD.match(core)
         if head:
-            rest = head.group(1).strip()
-            if not rest or _research_inline_source_list(rest, names):
-                in_block = True                 # heading alone, or heading + inline list
+            rest = (head.group("rest") or "").strip()
+            if not rest or (head.group("colon") and _research_inline_source_list(rest, names)):
+                _drop()
+                in_block = True                          # heading alone, or heading + inline list
                 continue
             # a heading-like opener that continues as prose is the model's own sentence
         mid = _RESEARCH_SOURCE_HEAD_MID.search(core)
         if mid and _research_inline_source_list(mid.group(1), names):
             prefix = core[:mid.start()].rstrip()
+            _drop()
             in_block = True
             if prefix:
                 kept.append(prefix)
             continue
         item = _research_item_core(plain)
         if _research_is_source_name(item, names) or _research_all_source_names(item, names):
-            continue                            # a bare source name is never prose
-        # Under a heading, an unmarked line is an item only if it carries NO sentence
-        # punctuation at all (judged on the line itself, before any trailing-period
-        # strip) — a short sentence is prose and stays (review N3).
-        if in_block and (
-            _RESEARCH_LIST_MARKER.match(plain.strip())
-            or _RESEARCH_ASOF_TAIL.search(plain)
-            or (len(item) <= 60 and not _RESEARCH_SENTENCE_END.search(core))
-        ):
+            _drop()
+            in_block = True                              # a bare source name is never prose
             continue
-        in_block = False
-        kept.append(line)
+        if in_block and not stripped.startswith("#"):
+            raw_body = _RESEARCH_LIST_MARKER.sub("", stripped, count=1).strip()
+            marked = bool(_RESEARCH_LIST_MARKER.match(stripped))
+            if not raw_body:
+                continue                                 # a marker with nothing after it
+            if (marked and _research_item_like(item, raw_body)) or (
+                not marked and _research_name_like(item, raw_body)
+            ):
+                continue                                 # an invented source under the heading
+        _keep(line)
     return "\n".join(kept).strip()
 
 
@@ -1363,6 +1527,9 @@ def _research_sentence_forbidden(sentence: str) -> bool:
     }:
         return False
     s = _RESEARCH_LIST_MARKER.sub("", s, count=1)
+    # r4 (review N9): markdown emphasis / code wrappers are presentation — "**Buy** NVDA"
+    # and "`Buy NVDA`" are judged as "Buy NVDA". The source text is never rewritten.
+    s = _RESEARCH_INLINE_WRAP.sub("", s)
     if _RESEARCH_PERCENT.search(s):
         return True
     if _RESEARCH_STAR.search(s):
@@ -1424,8 +1591,9 @@ def _research_forbidden_filter(text: str) -> tuple[str, bool]:
 
 
 _RESEARCH_BARE_MARKER = re.compile(
-    r"^\s*(?:[-•*+–—・·]+|(?:\d{1,2}|[０-９]{1,2})[.)．）]|[(（][0-9０-９a-zA-Z]{1,2}[)）]"
-    r"|[一二三四五六七八九十]{1,3}[、．])\s*$"
+    r"^\s*(?:[-•*+–—・·▪▸►◦‣⁃→➤✅☑✔✓]+(?:\s*\[[ xX]\])?|#{1,6}|>+"
+    r"|(?:\d{1,2}|[０-９]{1,2})[.)．）]|[(（][0-9０-９a-zA-Z]{1,2}[)）]"
+    r"|[a-zA-Z][.)]|\[\^?[0-9a-zA-Z]{1,3}\]:?|[一二三四五六七八九十]{1,3}[、．])\s*$"
 )
 
 

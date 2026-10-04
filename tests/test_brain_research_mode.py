@@ -1843,3 +1843,196 @@ def test_r3_partial_caller_read_is_printed_not_implied(tmp_path):
     assert "- 您的论点 — 本轮仅部分可读取（有一个来源无法读取）" in out, out
     assert "hdr.pl.sig" not in json.dumps(corpus) + out
     assert gw._format_used_list({"artifacts": [], "jwt_present": True, "user_read": "ok"}).count("partly") == 0
+
+
+# ---------------------------------------------------------------------------
+# 10. r4 repairs — Opus RO review of head 348ff595 (N2 M still open; N6–N8 M; N9–N11 m)
+# ---------------------------------------------------------------------------
+# r3 recognised a model-written source list by format (one heading vocabulary, list
+# markers, "(as of …)" tails) and so (N2) still bought a citation from "Based on: …",
+# footnotes, tables, articles and dates; (N6) never closed the block, deleting every
+# section after a heading; (N7) deleted a long prose line for ending in "(as of …)";
+# (N8) read "<name> — <claim>" as an item; (N9) missed markdown markers before an
+# imperative; (N10) withheld reportative "buy programs" / "买入订单"; (N11) left orphan
+# headings and fences. r4 is a line classifier: items by content, block closed by the
+# first line that reads as prose, server-note-only dash forms, markdown-aware markers.
+
+R4_CORPUS = {"artifacts": [
+    {"plain_en": "Desk read", "plain_zh": "研究台读数"},
+    {"plain_en": "Daily briefing", "plain_zh": "每日简报"},
+    {"plain_en": "Asia close", "plain_zh": "亚洲收盘"},
+]}
+R4_PROSE = "The Fed usually cuts when unemployment rises above 5%; long bonds then rally."
+
+R4_N2_TAILS = {
+    "based-on": "\n\nBased on: Desk read, Daily briefing",
+    "table": "\n\n| Source | As of |\n|---|---|\n| Desk read | 2026-10-02 |",
+    "footnote-def": "\n\n[^1]: Desk read",
+    "article": "\n\n- the Desk read\n- the Daily briefing",
+    "zh-basis": "\n\n依据：研究台读数、每日简报",
+    "date-tail": "\n\n- Desk read, 2 Oct 2026",
+    "per": "\nPer: Desk read",
+    "see": "\nSee: Desk read.",
+    "equals": "\nSource = Desk read",
+    "bracket-number": "\n[1] Desk read",
+    "bare-known-name": "\n\nAsia close",
+    "server-note-impersonated": "\n\nDaily briefing — not published yet",
+    "user-row-impersonated": "\n\nYour theses — none readable this turn",
+    "quoted-heading": "\n\n> Sources: Desk read",
+    "bold-heading-inline": "\n\n**Sources:** Desk read, Daily briefing",
+    "emphasised-names": "\n\nSources: *Desk read*; *Daily briefing*",
+    "zh-numbered-invented": "\n\n资料来源：\n1. 研究台读数\n2. 彭博终端",
+    "table-under-heading": "\n\nSources:\n| Name | Date |\n|---|---|\n| Invented Desk Note | 2026-10-02 |",
+    "fenced-blank-padded": "\n\n```text\n\nSources:\n- Desk read\n\n```",
+}
+
+
+@pytest.mark.parametrize("key", sorted(R4_N2_TAILS), ids=sorted(R4_N2_TAILS))
+def test_r4_source_list_tail_is_stripped_whole_and_never_cites(tmp_path, key):
+    """N2 (M, still open after r3): every one of the reviewer's surviving tails, plus the
+    forms r4 adds (articles, dates, tables, footnotes, "Per:"/"See:"/"=", impersonated
+    server rows, quoted/bold headings, fenced lists) strips to the prose alone, and the
+    grounded reply is the null form with exactly one server-written used list."""
+    assert gw._research_strip_model_trailer(R4_PROSE + R4_N2_TAILS[key], R4_CORPUS) == R4_PROSE
+    corpus = _real_corpus(tmp_path)
+    body, _ = gw._research_postprocess(R4_PROSE + R4_N2_TAILS[key], corpus)
+    assert body.startswith(NULL_EN), body
+    assert "彭博终端" not in body and "Invented" not in body, body
+    assert body.count("\n" + USED_EN + "\n") == 1 and body.count(CEILING_EN) == 1, body
+
+
+@pytest.mark.parametrize("raw, expected", [
+    ("The Desk read says breadth is thin.\n\nSources:\n- Desk read\n\nWhat to watch:\n"
+     "- Breadth needs to widen before the move is trustworthy.\n- The curve needs to stop flattening.",
+     "The Desk read says breadth is thin.\n\nWhat to watch:\n"
+     "- Breadth needs to widen before the move is trustworthy.\n- The curve needs to stop flattening."),
+    ("The Desk read says breadth is thin.\n\nSources: Desk read\nBottom line: watch, don't chase",
+     "The Desk read says breadth is thin.\n\nBottom line: watch, don't chase"),
+    ("研究台读数显示宽度偏弱。\n\n来源：\n- 研究台读数\n\n结论：宽度偏弱，暂不追高",
+     "研究台读数显示宽度偏弱。\n\n结论：宽度偏弱，暂不追高"),
+    ("参考\n研究台读数提到宽度偏弱\n这意味着领涨面很窄", "研究台读数提到宽度偏弱\n这意味着领涨面很窄"),
+    ("## Sources\nDesk read\n\n## Read\nBreadth is thin\nLeaders are narrow\nThe Desk read flags it.",
+     "## Read\nBreadth is thin\nLeaders are narrow\nThe Desk read flags it."),
+    ("Sources:\n- Desk read\n\nEnergy led the tape higher.", "Energy led the tape higher."),
+    ("Sources:\n- Desk read\n\n| Date | Close |\n|---|---|\n| 2026-10-02 | 100 |",
+     "| Date | Close |\n|---|---|\n| 2026-10-02 | 100 |"),
+    ("Sources:\n- Desk read\n\n```\nprint('x')\n```", "```\nprint('x')\n```"),
+], ids=["what-to-watch", "bottom-line", "zh-conclusion", "zh-bare-heading", "md-sections",
+        "prose-after-blank", "data-table-after-list", "code-after-list"])
+def test_r4_source_block_closes_at_the_first_prose_line(raw, expected):
+    """N6 (M): r3's block closed only on a blank line that was followed by nothing it
+    recognised, so a heading with a list deleted every later section. The block now
+    ends at the first line that reads as prose — sentence punctuation, a clause break,
+    a verb, a "Something:" heading, a markdown heading, a data table, a code block."""
+    assert gw._research_strip_model_trailer(raw, R4_CORPUS) == expected
+
+
+@pytest.mark.parametrize("raw, expected", [
+    ("Sources: Desk read\nBreadth narrowed for a third day while leaders kept rising, "
+     "which matters for the print (as of 2 Oct)",
+     "Breadth narrowed for a third day while leaders kept rising, which matters for the print (as of 2 Oct)"),
+    ("Breadth was thin (as of 2026-09-12). Energy led.", "Breadth was thin (as of 2026-09-12). Energy led."),
+    ("Breadth was thin.\n\nWhat this read used\n- Daily briefing (as of 2026-09-12)\nSo, energy led.\nEnd.",
+     "Breadth was thin.\n\nSo, energy led.\nEnd."),
+], ids=["long-prose-asof-tail-in-block", "asof-inside-prose", "prose-after-item"])
+def test_r4_asof_tail_never_deletes_a_prose_line(raw, expected):
+    """N7 (M): r3 dropped ANY in-block line ending in "(as of …)". A tail is only an
+    item's decoration when the rest of the line is a source name."""
+    assert gw._research_strip_model_trailer(raw, R4_CORPUS) == expected
+
+
+@pytest.mark.parametrize("raw, expected", [
+    ("- Desk read — breadth is thin and leaders narrow", "- Desk read — breadth is thin and leaders narrow"),
+    ("Sources:\n- Desk read — breadth is thin and leaders narrow", "- Desk read — breadth is thin and leaders narrow"),
+    ("The Desk read — not published yet, so I used the packet.",
+     "The Desk read — not published yet, so I used the packet."),
+    ("x.\n- Desk read — not available this turn", "x."),
+    ("x.\n- Daily briefing — not published yet", "x."),
+    ("x.\n- Your theses — could not be read this turn", "x."),
+    ("x.\n- 您的论点 — 本轮仅部分可读取（有一个来源无法读取）", "x."),
+], ids=["claim-kept", "claim-under-heading-kept", "note-then-prose-kept",
+        "server-note-packet", "server-note-briefing", "server-note-theses", "server-note-zh"])
+def test_r4_name_dash_claim_is_prose_and_only_server_notes_are_items(raw, expected):
+    """N8 (M): r3 cut everything after a dash before comparing, so "Desk read — breadth
+    is thin" was an item. Only the server's own "— note" forms are items; a dash
+    followed by a claim is a grounded sentence."""
+    assert gw._research_strip_model_trailer(raw, R4_CORPUS) == expected
+
+
+@pytest.mark.parametrize("tail", [
+    "### Buy NVDA", "> Buy NVDA", "**Buy** NVDA", "a) Buy NVDA", "→ Buy NVDA", "1.Buy NVDA",
+    "[1] Buy NVDA", "`Buy NVDA`", "- [ ] Buy NVDA", "A. Buy NVDA", "- [x] Sell TSLA", "_Buy NVDA_",
+], ids=["h3", "blockquote", "bold", "paren-letter", "arrow", "number-no-space", "bracket-number",
+        "code", "checkbox", "letter-dot", "checked-box", "underscore"])
+def test_r4_trade_imperative_behind_markdown_markers_is_withheld_cleanly(tail):
+    """N9 (m): markdown headings, quotes, emphasis, code, checkboxes, footnote numbers,
+    arrows and "1.Buy" hid the imperative from the marker strip, and "A. Buy" left a
+    dangling "A.". Every shape is withheld and the prose before it is untouched."""
+    body, withheld = gw._research_forbidden_filter("Breadth was thin per the Desk read.\n\n" + tail)
+    assert withheld is True, tail
+    assert body == "Breadth was thin per the Desk read.", body
+
+
+@pytest.mark.parametrize("sentence", [
+    "Flows: buy programs dominated per the Desk read.",
+    "Funds were net sellers: sell volumes rose per the Desk read.",
+    "Dealers: buy interest faded into the close.",
+    "研究台读数显示，买入订单增加。",
+    "研究台读数显示，卖出订单减少。",
+    "研究台读数显示，买入资金回流。",
+    "研究台读数显示，卖出潮放缓。",
+    "研究台读数显示，买入规模扩大。",
+    "Call context_search on the repo.",
+    "snake_case sell_side flows rose.",
+], ids=["buy-programs", "sell-volumes", "buy-interest", "zh-buy-orders", "zh-sell-orders",
+        "zh-buy-funds", "zh-sell-wave", "zh-buy-scale", "identifier-still-caught", "identifier-not-a-trade"])
+def test_r4_reportative_buy_sell_noun_phrases_are_judged_right(sentence):
+    """N10 (m): a sentence-anchored buy/sell heading a noun phrase ("buy programs
+    dominated", "买入订单增加") is reportative, not an imperative. The emphasis strip
+    that serves N9 removes wrappers at token edges only — an underscore inside an
+    identifier (context_search) still names the tool and is still withheld."""
+    expected = sentence == "Call context_search on the repo."
+    assert gw._research_sentence_forbidden(sentence) is expected, sentence
+
+
+@pytest.mark.parametrize("sentence", [
+    "Our view: buy NVDA.", "广度分化。买入英伟达。", "广度分化。请卖出特斯拉。",
+    "Breadth was mixed — buy NVDA.", "Buy NVDA now.", "You should sell TSLA.", "*Our view:* buy NVDA.",
+])
+def test_r4_imperatives_are_still_withheld_after_the_noun_guards(sentence):
+    assert gw._research_sentence_forbidden(sentence) is True, sentence
+
+
+@pytest.mark.parametrize("raw, expected", [
+    ("x.\n\nData used:\n- Desk read", "x."),
+    ("x.\n\nInputs:\n- Desk read", "x."),
+    ("x.\n\nCited:\n- Desk read", "x."),
+    ("x.\n\n```\nSources:\n- Desk read\n```", "x."),
+    ("x.\n\n```\nSources:\n- Desk read\nBreadth is thin.\n```\nMore.", "x.\n\nBreadth is thin.\nMore."),
+    ("```python\nprint(1)\n```\nSources:\n- Desk read", "```python\nprint(1)\n```"),
+], ids=["data-used", "inputs", "cited", "fenced-list", "fenced-list-then-prose", "code-block-before-list"])
+def test_r4_orphan_headings_and_fences_go_with_the_list(raw, expected):
+    """N11 (m): r3 left "Data used:" / "Inputs:" / "Cited:" and a bare ``` behind the
+    list it had removed. The heading vocabulary covers them, and a fence that only
+    wrapped a dropped list is dropped with it — a real code block is untouched."""
+    assert gw._research_strip_model_trailer(raw, R4_CORPUS) == expected
+
+
+@pytest.mark.parametrize("raw, expected", [
+    ("What this read used was the daily briefing, which says breadth was thin.",
+     "What this read used was the daily briefing, which says breadth was thin."),
+    ("Sources: the Desk read shows breadth is thin today.", "Sources: the Desk read shows breadth is thin today."),
+    ("Based on the Desk read, breadth is thin.", "Based on the Desk read, breadth is thin."),
+    ("Per the Desk read, breadth is thin.", "Per the Desk read, breadth is thin."),
+    ("Seen from the Desk read, breadth is thin.", "Seen from the Desk read, breadth is thin."),
+    ("Perhaps the Desk read is right.", "Perhaps the Desk read is right."),
+    ("Inputs were mixed: breadth narrowed, leaders rose.", "Inputs were mixed: breadth narrowed, leaders rose."),
+    ("| Date | Close |\n|---|---|\n| 2026-10-02 | 100 |", "| Date | Close |\n|---|---|\n| 2026-10-02 | 100 |"),
+    (" What this read used: Desk read, Daily briefing.\nSummary done.", "Summary done."),
+], ids=["heading-phrase-as-prose", "sources-colon-prose", "based-on-prose", "per-prose", "seen-prefix",
+        "perhaps-prefix", "inputs-prefix", "data-table", "inline-list-then-prose"])
+def test_r4_heading_vocabulary_does_not_eat_prose_that_starts_with_it(raw, expected):
+    """The widened heading vocabulary ("Based on", "Per", "See", "Inputs", "Cited") binds
+    only as a heading — alone on its line, or followed by ":"/"=" and a list of names.
+    A sentence that happens to start with one of those words is prose."""
+    assert gw._research_strip_model_trailer(raw, R4_CORPUS) == expected
