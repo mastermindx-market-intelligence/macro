@@ -307,8 +307,8 @@ next_action: >
   reviewed8370 and publisher-count8374 merges. Existing job schedules and input
   authorities remain; independent installed readback passed and natural cycles are owed.
   Preserve the separate Hub ThetaData external-store EINTR; B1 does not fix it.
-  FS5 source8360 is merged. Methods8377 at e3de558fb9ed24c18b08c0a30d8dbe6598e22278
-  passed299 tests and independent review, with hosted CI/merge pending. Calibration
+  FS5 source8360 is merged. Methods8377 merged4176875142889a3c650f041f067d1cb954fedf7e
+  after299 tests, independent review and all required hosted CI. Calibration
   stays unavailable, no artifact/study/promotion, and no numerical per-bin law is invented.
   Fable merged7306 as98c67b7d2c5b89670b5e915c34dbc17d899e6df7 and owns8201
   current-main clock release at481c059818de0e48895c5f38c29ca99c2bf44891. Independent

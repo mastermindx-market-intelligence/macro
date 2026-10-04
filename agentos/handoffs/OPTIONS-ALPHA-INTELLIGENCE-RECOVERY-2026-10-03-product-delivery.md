@@ -89,12 +89,12 @@ decisions: []
 discoveries: ["DSC:M1-STORAGE-GUARD-HELP-MUTATES-20261003"]
 unresolved:
   - "Prior live acceptance failed on8fc. Terminal703 is now deployed atc298; independent live re-acceptance remains pending."
-  - "FS5 methods8377 are implemented and independently reviewed with299 tests; required CI and protected merge remain pending. Earlier timed-out worker effects and all returned leaves are reconciled."
+  - "FS5 methods8377 merged41768751 after299 tests, independent review and required CI. Empirical eligibility and calibration methodology remain separate unresolved gates."
   - "The Oct3 22:30Z qualifying daily run had not appeared at the bounded observation. Delayed scheduling remains possible;23:30Z is an off-regime skip."
   - "AD1 remains INSTALLED_CANARY_ACCEPTED_PRODUCTION_HOLD; required runner-group selected-workflow admission is not available to the current identities, and M1 free space remains below200GiB."
   - "The interrupted M1 storage-guard apply has unresolved deletion effect; preserve its canonical evidence and old runtime/rollback trees."
 next_actions:
-  - "Consume required CI and protected merge for reviewed FS5 methods8377; no study/calibration/scoring activation is implied."
+  - "Preserve source-accepted FS5 methods8377 and its no-artifact guard; no study/calibration/scoring activation is implied."
   - "Observe B1 existing natural cycles after independent installed-source readback PASS; preserve the separate ThetaData EINTR evidence."
   - "Preserve the installed separate index code/artifact roots and internal publisher checkout; retain the old external symlink rollback without traversing it."
   - "Finish independent EN/ZH desktop/tablet/mobile acceptance on deployed Terminal c298fa1b831509dd3dcb7553aa34c03d69dd0084."
@@ -150,14 +150,17 @@ when its existing ThetaData eod path raised EINTR. That path resolves to the
 writable external APFS /dev/disk7s1 store; metadata readability does not prove
 payload health, and no repair/reroute or corruption inference was made.
 
-FS5 methods are now READY #8377, heade3de558fb9ed24c18b08c0a30d8dbe6598e22278,
-after299 integrated tests and independent exact-source review5403638013. The
-source branch merged current main without rewriting history. Both bounded
-helper/test leaves returned with cleanup proven and zero residuals. Required
-hosted CI and merge remain pending. The completed code executes frozen CPCV,
-uses native weights, preserves actual work receipts and fails calibration
-closed without an FS5 artifact. It creates no empirical study or scoring
-activation; unresolved weighted-bin methodology remains unavailable.
+FS5 methods #8377 merged as4176875142889a3c650f041f067d1cb954fedf7e at01:12:44Z,
+after299 integrated tests, independent exact-source review5403638013, all12 hosted
+CI packs, ci-gate and the active main authority passed on reviewed head
+e3de558fb9ed24c18b08c0a30d8dbe6598e22278. Normal expected-head squash merge used no
+admin override. All nine scoped source/test blobs match the reviewed head;
+the CI manifest only picked up other current-main changes and retains the FS5
+suites. Both bounded helper/test leaves returned with cleanup proven and zero
+residuals. The code executes frozen CPCV, uses native weights, preserves actual
+work receipts and fails calibration closed without an FS5 artifact. It creates
+no empirical study or scoring activation; unresolved weighted-bin methodology
+remains unavailable.
 
 The #7306 source-clock repair at47ef463e36768cac0b6f49c7946f35351a308ba6 received
 formal approval5403639706 after independent verification of the original
@@ -184,7 +187,7 @@ options-alpha-product-integration-20260917-sol-001. Fable owns independent live
 UI acceptance and its existing source carriers. Natural evidence and scientific
 admission are separate from implementation and installation.
 
-- Complete the remaining required CI/protected merge for FS5 #8377.
+- Preserve the merged FS5 source and unresolved data/calibration admission gates.
 - Finish independent live EN/ZH desktop/tablet/mobile acceptance on Terminal703.
 - Observe the already scheduled B1, Chain Heat and live-flow cycles.
 - Reconcile campaign runtime/effective quarantine, candidate preconditions and
@@ -192,6 +195,31 @@ admission are separate from implementation and installation.
 - Retain two normal post-repair engine survivals7265, publisher7263 and
   correction/broad-writer7193 durability, plus AD1 admission/capacity as separate
   unearned gates. No manual run may stand in for natural-run acceptance.
+
+The latest failed qualifying scheduled daily run37085692173 (head564c4107)
+timed out in options_signal_episode session derivation at its10-minute cap.
+Integrity recorded episode failure and skipped episode/campaign publication.
+This is addressed in source by #8346 /7fdca240e1cfc9263458d9cd8670d06634806ded,
+which reuses validated per-ticker snapshots across receipt validation and both
+outcome phases. Its synthetic normalization-count tests are not latency proof.
+The cap remains10 minutes. The paired run37088900201 was an off-regime
+engine-skipped no-op, not natural acceptance. The Oct3 qualifying22:30Z run had
+not appeared at the bounded observation and can still arrive late; Oct4 22:30Z
+is the next nominal EDT slot, not proof the overdue slot is cancelled.
+
+For each of the next two real scheduled cycles, select event=schedule with the
+ET gate run=true, verify the run head contains7fdca240, and inspect engine success
+plus options_signal_episode, options_signal_campaign, options_signal_episode_publish,
+options_signal_campaign_publish, options_alpha_candidate_feed and the existing
+scripts/ci/options_signal_nightly.sh assert-integrity result. Then read the
+source-bound campaign campaigns.jsonl, outcomes.jsonl and checkpoint.json through
+their existing publication owner. The candidate builder is already in daily.yml
+and config/dag.yml; the sole writer is scripts/publish_options_alpha_candidate_r2.py
+to fixed keys options_alpha/candidate_feed.json and
+options_alpha/candidate_feed.receipt.json. Without an eligible activation receipt,
+inactive-success and no R2/journal work are the expected outcome. Do not invent
+a second runtime installation, replay the historical event or dispatch a manual
+run as evidence.
 
 The FS5 source workspace remains owned by
 options_product_20261003_fs5_prefit_methods, branch
