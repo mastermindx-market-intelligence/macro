@@ -237,8 +237,11 @@ def test_each_service_runs_its_own_module_and_nothing_else():
     payload from a substrate nobody froze."""
     assert _unit(EVAL_SERVICE)["Service"]["ExecStart"] == (
         "/opt/macro/.venv/bin/python -m scripts.entry_radar_live")
+    # #8437 (DEC:ENTRY-RADAR-PACK-STREAMS-SUBSTRATE): the VPS build streams the
+    # substrate to the parquet spool; the flag is part of the unit's contract.
     assert _unit(PACK_SERVICE)["Service"]["ExecStart"] == (
-        "/opt/macro/.venv/bin/python -m scripts.entry_radar_live_pack")
+        "/opt/macro/.venv/bin/python -m scripts.entry_radar_live_pack "
+        "--stream-substrate")
 
 
 def test_the_timeouts_are_bounded_inside_their_own_timer_periods():
@@ -432,9 +435,13 @@ def test_the_dispatch_carries_a_dry_run_input_and_both_scripts_honour_it():
     assert inputs["dry_run"]["default"] is False
 
     runs = "\n".join(s.get("run", "") for s in wf["jobs"]["evaluate"]["steps"])
-    for module in ("scripts.entry_radar_live_pack", "scripts.entry_radar_live"):
-        assert f"python -m {module}\n" in runs, module
-        assert f"python -m {module} --dry-run" in runs, module
+    # The pack half carries --stream-substrate on BOTH its lines (#8437); the
+    # evaluator half carries nothing — a flag that appears on one line only is
+    # exactly the half-rehearsal this test exists to refuse.
+    for module, suffix in (("scripts.entry_radar_live_pack", " --stream-substrate"),
+                           ("scripts.entry_radar_live", "")):
+        assert f"python -m {module}{suffix}\n" in runs, module
+        assert f"python -m {module} --dry-run{suffix}\n" in runs, module
     # The pack build must precede the evaluator: the evaluator refuses a cycle whose
     # pack is not the last completed session, so the reverse order is always a
     # stale_pack no-op on a fresh runner checkout.
