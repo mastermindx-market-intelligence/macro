@@ -6353,7 +6353,7 @@ jobs:
       - name: FS-4 trainer unit tests (Lane A)
         run: python -m pytest tests/test_fs4_flow_trainer.py -q
       - name: FS-5 fit-free geometry unit tests
-        run: python -m pytest tests/test_fs5_flow_geometry.py tests/test_fs5_flow_admission.py tests/test_fs5_admission_integrity.py tests/test_fs5_stage_receipts.py -q
+        run: python -m pytest tests/test_fs5_flow_geometry.py tests/test_fs5_flow_admission.py tests/test_fs5_admission_integrity.py tests/test_fs5_stage_receipts.py tests/test_fs5_native_uniqueness.py tests/test_fs5_cpcv_prefit.py tests/test_fs5_weighted_metrics.py tests/test_fs5_method_closure.py -q
 
   broad-etf-flows:
     if: ${{ false }}

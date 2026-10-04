@@ -8,18 +8,37 @@ import math
 import os
 import re
 import tempfile
-from datetime import datetime, time
+from datetime import date, datetime, time
 from pathlib import Path
 from typing import Any, Callable, Mapping
 from zoneinfo import ZoneInfo
 
 import pandas as pd
 from lib.flow_score import map_model_bucket
-from lib.nyse_calendar import session_n_forward
-from lib.flow_score_geometry import BUCKET_HORIZONS, FS5_EVALUATION_SPEC_VERSION
+from lib.nyse_calendar import is_session, session_n_forward, sessions_between
+from lib.flow_score_geometry import (
+    BUCKET_HORIZONS,
+    FS5_EVALUATION_SPEC_VERSION,
+    FS5_STUDY_SPEC_SCHEMA_V2,
+    GeometryError,
+    TrainBlock,
+    assert_source_only_cpcv_feasible,
+    bind_greeks_era,
+    frozen_embargo_sessions,
+    matching_train_block,
+    parse_frozen_train_blocks,
+)
 
 SCHEMA = "flow_signals.fs5_partition/v1"
 SPEC_SCHEMA = "flow_signals.fs5_admission_spec/v1"
+SPEC_SCHEMA_V2 = FS5_STUDY_SPEC_SCHEMA_V2
+INJECTED_GROUP_FIELDS = (
+    "train_block",
+    "time_block",
+    "group",
+    "cpcv_group",
+    "held_group",
+)
 POPULATIONS = ("train", "calibration_fit", "calibration_eval", "final_oos")
 HORIZONS = BUCKET_HORIZONS
 CALENDAR = "NYSE-rule-calendar/v1"
@@ -582,9 +601,33 @@ def _endpoints(decision: pd.Timestamp, bucket: str) -> tuple[str, str, dict[str,
     return open_at, fill.isoformat(), {h: v.isoformat() for h, v in ends.items()}
 
 
+def _stage_session(key: Any) -> date:
+    match = re.search(r"/(\d{4}-\d{2}-\d{2})\.jsonl$", _text(key))
+    if match is None:
+        raise AdmissionError("admission_source_stage_identity_invalid")
+    day = date.fromisoformat(match.group(1))
+    if not is_session(day):
+        raise AdmissionError(f"admission_train_block_unknown_session:{day.isoformat()}")
+    return day
+
+
+def _window_outer_sessions(start: pd.Timestamp, end: pd.Timestamp) -> tuple[date, date]:
+    """NYSE sessions covered by a UTC-bounded population window.
+
+    Receipts stamp windows on UTC calendar dates that match the stage-key
+    session. Weekend and holiday dates inside that span are not sessions.
+    """
+    sessions = sessions_between(start.tz_convert("UTC").date(), end.tz_convert("UTC").date())
+    if not sessions:
+        raise GeometryError("train_block_window_mismatch")
+    return sessions[0], sessions[-1]
+
+
 def _member(entry: Mapping[str, Any], bucket: str) -> dict[str, Any]:
     if not isinstance(entry, Mapping):
         raise AdmissionError("admission_member_invalid")
+    if any(field in entry for field in INJECTED_GROUP_FIELDS):
+        raise AdmissionError("admission_source_group_injected")
     missing = [f for f in SOURCE_FIELDS if not _text(entry.get(f))]
     if missing:
         raise AdmissionError("admission_receipt_field_missing:" + ",".join(missing))
@@ -641,7 +684,7 @@ def validate_admission_study_identity(
     if (
         not isinstance(study, Mapping)
         or not isinstance(spec, Mapping)
-        or spec.get("schema") != SPEC_SCHEMA
+        or spec.get("schema") not in (SPEC_SCHEMA, SPEC_SCHEMA_V2)
     ):
         raise AdmissionError("admission_study_or_spec_missing")
     if _text(study.get("spec_digest")) != _digest(spec):
@@ -690,6 +733,33 @@ def validate_admission_study_identity(
     return dict(study)
 
 
+def _parse_source_only_v2_blocks(spec: Mapping[str, Any], *, bucket: str):
+    """Check literal source geometry before sealing and again on receipt read."""
+    if spec.get("schema") != SPEC_SCHEMA_V2:
+        return None
+    populations = spec.get("populations")
+    train = populations.get("train") if isinstance(populations, Mapping) else None
+    if (not isinstance(train, Mapping)
+            or not isinstance(train.get("window"), Mapping)
+            or not isinstance(train.get("roots"), list) or not train["roots"]):
+        raise AdmissionError("admission_plan_population_missing:train")
+    roots = {_text(root).upper() for root in train["roots"]}
+    if "" in roots:
+        raise AdmissionError("admission_train_block_roots_invalid")
+    start = _clock(train["window"].get("start"), "window_start")
+    end = _clock(train["window"].get("end"), "window_end")
+    try:
+        first, last = _window_outer_sessions(start, end)
+        blocks = parse_frozen_train_blocks(
+            spec.get("train_blocks"), outer_first=first, outer_last=last,
+            train_roots=roots,
+        )
+        assert_source_only_cpcv_feasible(blocks, frozen_embargo_sessions(bucket))
+        return blocks
+    except GeometryError as exc:
+        raise AdmissionError(f"admission_{exc}") from exc
+
+
 def validate_admission_receipt(
     receipt: Mapping[str, Any],
     source_rows: pd.DataFrame,
@@ -732,6 +802,10 @@ def validate_admission_receipt(
         _clock(study[x], x) for x in ("frozen_at", "admitted_at", "availability_cutoff")
     )
     rows = source_rows.copy()
+    if spec.get("schema") == SPEC_SCHEMA_V2 and any(
+        field in rows.columns for field in INJECTED_GROUP_FIELDS
+    ):
+        raise AdmissionError("admission_source_group_injected")
     missing = [
         f
         for f in (*SOURCE_FIELDS, "source", "detector_version", "dte_bucket")
@@ -772,8 +846,9 @@ def validate_admission_receipt(
     frozen: list[dict[str, Any]] = []
     roots: set[str] = set()
     prior_end = None
-    windows: list[tuple[set[str], pd.Timestamp, pd.Timestamp]] = []
+    windows: list[tuple[str, set[str], pd.Timestamp, pd.Timestamp]] = []
     frozen_ids: set[str] = set()
+    v2_blocks: tuple[TrainBlock, ...] | None = None
     for population in POPULATIONS:
         declared, plan_declared = pops[population], plan_pops[population]
         if (
@@ -804,7 +879,9 @@ def validate_admission_receipt(
         if "" in declared_roots or roots.intersection(declared_roots):
             raise AdmissionError("admission_roots_not_globally_disjoint")
         roots.update(declared_roots)
-        windows.append((declared_roots, start, end))
+        windows.append((population, declared_roots, start, end))
+        if spec.get("schema") == SPEC_SCHEMA_V2 and population == "train":
+            v2_blocks = _parse_source_only_v2_blocks(spec, bucket=bucket)
         for entry in declared["members"]:
             plan = _member(entry, bucket)
             eid = plan["event_id"]
@@ -844,8 +921,20 @@ def validate_admission_receipt(
             root = plan["root"].upper()
             if root != actual["root"].upper() or root not in declared_roots:
                 raise AdmissionError("admission_member_root_outside_plan")
-            frozen.append({**plan, "population": population})
+            record = {**plan, "population": population}
+            if v2_blocks is not None:
+                assigned_block = None
+                if population == "train":
+                    assigned_block = matching_train_block(
+                        v2_blocks, _stage_session(plan["source_stage_key"]), root
+                    )
+                    if assigned_block is None:
+                        raise AdmissionError("admission_train_block_mismatch:" + eid)
+                record["train_block"] = assigned_block
+            frozen.append(record)
             frozen_ids.add(eid)
+    if spec.get("schema") == SPEC_SCHEMA_V2 and v2_blocks is None:
+        raise AdmissionError("admission_train_block_ids_invalid")
     if len(roots) < 4:
         raise AdmissionError("admission_insufficient_root_diversity")
     exclusions = receipt.get("exclusions")
@@ -876,11 +965,24 @@ def validate_admission_receipt(
                 raise AdmissionError("admission_source_clocks_invalid:" + event_id)
             if observed > cutoff:
                 continue
-            inside = any(
-                _text(row.root).upper() in population_roots and start <= decision <= end
-                for population_roots, start, end in windows
-            )
-            if not inside:
+            root_name = _text(row.root).upper()
+            inside = False
+            outside_root_block = False
+            for population_name, population_roots, start, end in windows:
+                in_window = root_name in population_roots and start <= decision <= end
+                if population_name == "train" and v2_blocks is not None:
+                    matched = matching_train_block(
+                        v2_blocks, _stage_session(row.source_stage_key), root_name
+                    )
+                    if matched is not None:
+                        inside = True
+                    elif in_window:
+                        outside_root_block = True
+                elif in_window:
+                    inside = True
+            if not inside and outside_root_block:
+                reason = "outside_declared_root_block"
+            elif not inside:
                 reason = "outside_declared_root_or_window"
             elif observed > _clock(
                 _endpoints(decision, bucket)[0], "planned_fill_open"
@@ -914,7 +1016,19 @@ def validate_admission_receipt(
     ):
         raise AdmissionError("admission_source_evaluation_spec_mismatch")
     admitted["session_date"] = sessions
+    try:
+        admitted = bind_greeks_era(admitted)
+    except GeometryError as exc:
+        raise AdmissionError(f"admission_{exc}") from exc
     admitted["evaluation_spec_version"] = study["evaluation_spec_version"]
+    if "train_block" in admitted.columns:
+        admitted["train_block"] = pd.array(
+            [
+                pd.NA if value is None or pd.isna(value) else int(value)
+                for value in admitted["train_block"].tolist()
+            ],
+            dtype="Int64",
+        )
     return admitted
 
 
@@ -1061,7 +1175,11 @@ def build_admission_receipt(
         study_spec.get("populations"), Mapping
     ):
         raise AdmissionError("admission_populations_missing")
-    spec = {**dict(study_spec), "schema": SPEC_SCHEMA}
+    requested = study_spec.get("schema", SPEC_SCHEMA)
+    if requested not in (SPEC_SCHEMA, SPEC_SCHEMA_V2):
+        raise AdmissionError("admission_study_spec_schema_unknown")
+    spec = {**dict(study_spec), "schema": requested}
+    _parse_source_only_v2_blocks(spec, bucket=_text(study.get("model_bucket")))
     return {
         "schema": SCHEMA,
         "study_spec": spec,
