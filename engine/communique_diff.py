@@ -308,7 +308,9 @@ def diff_organ(organ: str, today_rows: list[dict], prior_rows: list[dict],
                suppress_appeared: set[str] | None = None,
                suppress_dropped: set[str] | None = None,
                appeared_evidence_rows: list[dict] | None = None,
-               dropped_evidence_rows: list[dict] | None = None) -> tuple[list[dict], bool]:
+               dropped_evidence_rows: list[dict] | None = None,
+               appeared_forbidden_by_locator: dict[str, set[str]] | None = None,
+               dropped_forbidden_by_locator: dict[str, set[str]] | None = None) -> tuple[list[dict], bool]:
     """Diff one organ's TODAY documents against its PRIOR-window documents.
 
     Returns (events, cold_start). cold_start=True when there is no prior window
@@ -336,26 +338,24 @@ def diff_organ(organ: str, today_rows: list[dict], prior_rows: list[dict],
     # citing a corrected source whose delta was intentionally neutralized.
     appeared_sources = appeared_evidence_rows if appeared_evidence_rows is not None else today_rows
     dropped_sources = dropped_evidence_rows if dropped_evidence_rows is not None else prior_rows
+    appeared_forbidden = appeared_forbidden_by_locator or {}
+    dropped_forbidden = dropped_forbidden_by_locator or {}
+
+    def _eligible(row: dict, ph: str, forbidden: dict[str, set[str]]) -> bool:
+        return (
+            ph in phrases_in_text(_doc_text(row), book)
+            and ph not in forbidden.get(_source_locator(row), set())
+        )
 
     def _appeared_evidence(ph: str) -> dict:
-        # Independent evidence wins when it is what restored novelty eligibility.
         for r in appeared_sources:
-            if ph in phrases_in_text(_doc_text(r), book):
-                return {"url": r.get("url", ""), "title": r.get("title", "")}
-        # A revised source may still truthfully evidence phrases unchanged across
-        # the correction.  Because correction-only deltas were already suppressed,
-        # any surviving phrase here is safe to cite from the effective/latest row.
-        for r in today_rows:
-            if ph in phrases_in_text(_doc_text(r), book):
+            if _eligible(r, ph, appeared_forbidden):
                 return {"url": r.get("url", ""), "title": r.get("title", "")}
         return {"url": "", "title": ""}
 
     def _dropped_evidence(ph: str) -> dict:
         for r in dropped_sources:
-            if ph in phrases_in_text(_doc_text(r), book):
-                return {"url": r.get("url", ""), "title": r.get("title", "")}
-        for r in prior_rows:
-            if ph in phrases_in_text(_doc_text(r), book):
+            if _eligible(r, ph, dropped_forbidden):
                 return {"url": r.get("url", ""), "title": r.get("title", "")}
         return {"url": "", "title": ""}
 
@@ -511,18 +511,38 @@ def compute_events(corpus_rows: list[dict], asof: str,
         effective_today = _effective_observation_rows(today_rows)
         effective_prior = _effective_observation_rows(prior_rows)
 
-        # Suppress a correction delta ONLY when the revised source is the sole
-        # source of that phrase on the corresponding side. If an unrelated
-        # document independently carries the same phrase, that occurrence keeps
-        # ordinary novelty eligibility and becomes the evidence source.
-        nonrevision_today = [
-            r for r in effective_today if _source_locator(r) not in revised_locators
-        ]
-        nonrevision_prior = [
-            r for r in effective_prior if _source_locator(r) not in revised_locators
-        ]
-        suppress_appeared -= _window_phrases(nonrevision_today, book)
-        suppress_dropped -= _window_phrases(nonrevision_prior, book)
+        # Attribute correction deltas per locator. A revised source is still
+        # valid evidence for phrases it retained unchanged; only phrases that
+        # THAT locator added/removed in its correction are neutralized.
+        added_by_locator: dict[str, set[str]] = {}
+        removed_by_locator: dict[str, set[str]] = {}
+        for rev in revisions:
+            locator = str(rev.get("source_locator_id") or "")
+            if not locator:
+                continue
+            added_by_locator.setdefault(locator, set()).update(
+                str(x) for x in (rev.get("added_phrases") or [])
+            )
+            removed_by_locator.setdefault(locator, set()).update(
+                str(x) for x in (rev.get("removed_phrases") or [])
+            )
+
+        def _has_eligible(rows_: list[dict], ph: str,
+                          forbidden_: dict[str, set[str]]) -> bool:
+            return any(
+                ph in phrases_in_text(_doc_text(r), book)
+                and ph not in forbidden_.get(_source_locator(r), set())
+                for r in rows_
+            )
+
+        suppress_appeared = {
+            ph for ph in suppress_appeared
+            if not _has_eligible(effective_today, ph, added_by_locator)
+        }
+        suppress_dropped = {
+            ph for ph in suppress_dropped
+            if not _has_eligible(effective_prior, ph, removed_by_locator)
+        }
 
         evs, cold_start = diff_organ(
             organ,
@@ -532,8 +552,10 @@ def compute_events(corpus_rows: list[dict], asof: str,
             asof_day,
             suppress_appeared=suppress_appeared,
             suppress_dropped=suppress_dropped,
-            appeared_evidence_rows=nonrevision_today,
-            dropped_evidence_rows=nonrevision_prior,
+            appeared_evidence_rows=effective_today,
+            dropped_evidence_rows=effective_prior,
+            appeared_forbidden_by_locator=added_by_locator,
+            dropped_forbidden_by_locator=removed_by_locator,
         )
         events.extend(evs)
         if cold_start:
