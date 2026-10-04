@@ -14,8 +14,10 @@ mission: >-
   and CEO B's F12 correction (D87: MO-PAID-056 / MO-DELTA-038 NOT_BUILT -> BUILT_NOT_PROVEN on
   terminal #549 merged + migration 0018 applied + routes served; outside-union digest re-pinned)
   and its part 2 (D88: MO-PAID-055/084 -> BUILT_NOT_PROVEN on terminal #581, MO-PAID-052 -> PARTIAL
-  on #548/#555; 039/081/082 evidence widened; digest re-pinned again).
-  Wave-12 records checkpoint (2026-10-04 ~09:0xZ), not a session end.
+  on #548/#555; 039/081/082 evidence widened; digest re-pinned again); and part 3 (D89: MO-PAID-032
+  PARTIAL -> BUILT_NOT_PROVEN as a vocabulary alignment on the facts Sol ruled 10-03, plus F11/F08
+  evidence on union rows 046/053/054/047/003/027; digest unchanged).
+  Wave-12 records checkpoint (2026-10-04 ~09:4xZ), not a session end.
 state_before: >-
   Rulings stopped at D84; the W11 wave row read "→ this PR"; the lane matrix had no RECORDS_W11
   row; the #762 fact line carried the wrong cause (credentials, not a hung volume); the ledger's
@@ -25,11 +27,11 @@ state_before: >-
   writer to record this evidence.
 changed:
   - path: "research/MARKET_ONTOLOGY_CEO_A_CONTINUATION_HANDOFF_2026-10-02.md"
-    what: "W11 wave row → DONE (#8369 bd82585f653b), W12 wave row; RECORDS_W11 lane row; rulings D85–D86; #762 fact line corrected + receipts facts; N-W12; §5 hold line; §6 do-not-redo rows"
+    what: "W11 wave row → DONE (#8369 bd82585f653b), W12 wave row; RECORDS_W11 lane row; rulings D85–D89; #762 fact line corrected + receipts facts (#762 PRODUCTION_PROOF, B's docs merged, 085 evidence carried); N-W12; §5 hold line + the #582 v0-scope question (OPEN for Sol); §6 do-not-redo rows"
   - path: "research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv"
-    what: "MO-PAID-055 + MO-PAID-084 NOT_BUILT -> BUILT_NOT_PROVEN and MO-PAID-052 NOT_BUILT -> PARTIAL with cells rewritten; MO-DELTA-039 / MO-PAID-081 / MO-PAID-082 notes widened (D88). MO-PAID-056 + MO-DELTA-038 capability_state_c2 NOT_BUILT -> BUILT_NOT_PROVEN with producer/consumer/missing/next cells rewritten (D87; outside-union rows, digest re-pinned). MO-PAID-059 adjudication_notes (+cadence receipt for the 018/059 pair); MO-DELTA-002 missing_contract_or_proof (cadence residual closed) + adjudication_notes; MO-PAID-054 next_bounded_child (+#7100 in flight) + adjudication_notes; MO-DELTA-021 state_delta + next_bounded_child + adjudication_notes (render-lane reason and #7163/#7215 citations corrected). All four are union rows → OUTSIDE_UNION_SHA256 unchanged; no capability_state_c2 moved."
+    what: "MO-PAID-032 PARTIAL -> BUILT_NOT_PROVEN (D89, union row, same facts) with real_producer/missing/notes widened; notes widened on 046/053 (#744), 054 (#798), 047 (#762), 003 (#586 + 401), 027 (#513/#517 + 401); 085 untouched (rec3 fence). MO-PAID-055 + MO-PAID-084 NOT_BUILT -> BUILT_NOT_PROVEN and MO-PAID-052 NOT_BUILT -> PARTIAL with cells rewritten; MO-DELTA-039 / MO-PAID-081 / MO-PAID-082 notes widened (D88). MO-PAID-056 + MO-DELTA-038 capability_state_c2 NOT_BUILT -> BUILT_NOT_PROVEN with producer/consumer/missing/next cells rewritten (D87; outside-union rows, digest re-pinned). MO-PAID-059 adjudication_notes (+cadence receipt for the 018/059 pair); MO-DELTA-002 missing_contract_or_proof (cadence residual closed) + adjudication_notes; MO-PAID-054 next_bounded_child (+#7100 in flight) + adjudication_notes; MO-DELTA-021 state_delta + next_bounded_child + adjudication_notes (render-lane reason and #7163/#7215 citations corrected). All four are union rows → OUTSIDE_UNION_SHA256 unchanged; no capability_state_c2 moved."
   - path: "tests/test_mo_b_ledger_reconciliation_2026_09_18.py"
-    what: "OUTSIDE_UNION_SHA256 re-pinned for D87 (prior digest kept in the comment); D86 assertions on 059/002/054/021; D87 assertions on 056/038; re-pinned again + D88 assertions on 055/084/052/039"
+    what: "OUTSIDE_UNION_SHA256 re-pinned for D87 (prior digest kept in the comment); D86 assertions on 059/002/054/021; D87 assertions on 056/038; re-pinned again + D88 assertions on 055/084/052/039; EXPECTED pin for MO-PAID-032 -> BUILT_NOT_PROVEN + D89 assertions (032/046/053/047/054/027/003/085)"
   - path: "tests/test_b_rec3_wave_boundary_records.py"
     what: "B-REC-3 wave-boundary fence re-pinned for MO-PAID-084 (byte line + state word BUILT_NOT_PROVEN) per the 2026-09-19 085/088 precedent — the fence went red on the D88 move (ci-pack-2, run 37191244316)"
   - path: "agentos/handoffs/WS-MARKET-OS-2026-10-04-ceo-a-f01-f05-wave12.md"
@@ -59,6 +61,12 @@ verified:
   - claim: "terminal #581/#548/#555/#526/#588/#550/#557 merged as B stated; keyed/sharing routes served auth-gated"
     command: "gh api graphql (mastermind-terminal pullRequest 581 548 555 526 588 550 557); gh api repos/…/mastermind-terminal/issues/comments/5630176531; curl -o /dev/null -w %{http_code} https://app.mastermind-x.com/api/v1/{me,watchlists,openapi.json} /api/account/api-keys /api/grants /api/layouts"
     result: "all seven MERGED with the stated squash prefixes; 0021 DDL receipt 2026-09-11T05:59:53Z; six probes -> 401, /api/v1/me body = EN+ZH 'did not include a valid personal API key'"
+  - claim: "terminal #579/#586/#513/#517/#545/#551/#744/#762 merged as B stated; recurring-briefs producer commits are on main and both workflow steps are secret-gated"
+    command: "gh api graphql (mastermind-terminal pullRequest 579 586 513 517 545 551 744 762 state/mergedAt/mergeCommit); git merge-base --is-ancestor 146d78ee879 origin/main; git merge-base --is-ancestor f95b2cc5807 origin/main; git grep -n -E 'RECURRING_BRIEFS_ENABLE|--cadence' origin/main -- .github/workflows/daily.yml .github/workflows/weekly.yml; curl -o /dev/null -w %{http_code} https://app.mastermind-x.com/api/{portfolio/targets,alerts,alerts/receipts,account/alert-prefs}"
+    result: "all eight MERGED (579 82bee14ba3d7 2026-09-19T03:15:10Z; 762 a7447db07c50 2026-10-04T08:59:47Z); both commits ancestors of origin/main 5ea8b012106c; daily.yml:4237-4244 + weekly.yml:198-205 gated by secrets.RECURRING_BRIEFS_ENABLE; four probes -> 401"
+  - claim: "CEO B's four census-doc PRs touch only B's two census files"
+    command: "gh api graphql (macro pullRequest 8423 8426 8429 8431 files)"
+    result: "CEO_B_CENSUS_F06_F09_ROW_EVIDENCE_2026-10-02.md, CEO_B_CENSUS_F10_F13_ROW_EVIDENCE_2026-10-02.md only; all four MERGED by 09:36:55Z"
   - claim: "stripe_events ledger exists on main"
     command: "git grep -n stripe_events origin/main -- app/billing.py"
     result: "lines 20, 1448, 1456"
@@ -67,12 +75,16 @@ unverified:
   - "The debt-maturity persist commits and the 2,510-file cache count are B's receipt; A verified the scheduled-run table only"
   - "B's host check (no webhook_delivery.mjs build/cron/unit/log on the box) is B's deploy-key receipt; A did not read the host"
   - "DDL 0022 applied 2026-09-13T06:57:09Z and the 0027 failed_readback caveat are B's kit receipts, carried verbatim; A did not read the production catalog"
+  - "#762's deploy identity, health and anonymous 200, and #744's 5/5 phase-A result, are B's receipts; A verified only the merge states"
+  - "DDL 0024 applied 2026-09-19 is B's kit receipt; A did not re-read the Terminal RESERVATIONS.json"
 unresolved:
   - "MO-DELTA-007: first natural exercise of the installed hydration ≈22:10Z 2026-10-04; B reads once ≈22:37Z; PROVEN_LIVE behind #761 (EXACT_HUMAN_GATE)"
   - "FIXBIND-01: C4 START bound 2026-10-04 21:00Z, then A re-adjudicates ownership"
   - "MO-DELTA-021: wiring + served typed-refusal child is CEO B's (F09); no lane launched"
   - "MO-PAID-054: #7100 is DRAFT / HOLD-FOR-SOL; stays PARTIAL until merged and the served journey is proven"
   - "MO-PAID-056/038: PROVEN_LIVE needs the operator's worker-cron install + #582 + one natural delivered row; the B-F12-7 admission question is OPEN for Sol (program file §5)"
+  - "MO-PAID-032: BUILT_NOT_PROVEN; PROVEN_LIVE needs the operator's RECURRING_BRIEFS_ENABLE provisioning (EXACT_HUMAN_GATE) and then one natural non-dormant step read + one natural inbox delivery row — never self-enabled, never dispatched"
+  - "Terminal #582 v0 scope (B's item 7) is OPEN for Sol — recorded in program file §5 with both branches; A takes no position"
   - "MO-PAID-055/084/052: PROVEN_LIVE needs a signed-in human journey each (EXACT_HUMAN_GATE) and, for 084, a production catalog readback settling DDL 0027; the DEFER/fold admission questions for #581/#548/#555 are OPEN for Sol"
 next_actions:
   - "Merge this records PR by hand on concluded checks (--match-head-commit), bare fetch, blob verify; one short #6819 readback naming consumed ids 5974671805 / 5974768521 / 5974949075 / 5975875288 / 5976075322 / 5976159078 / 5976281473 / 5976459852 / 5976638742 / 5977422061 / 5978004918 / 5978053351"
@@ -82,11 +94,14 @@ do_not_redo:
   - "MO-DELTA-007's install receipt is recorded (D85) — never re-record #793/#794/#798"
   - "The 056/038 correction is recorded (D87) — never re-record #549/#582/0018 facts"
   - "Part 2 (055/084/052/039/081/082) is recorded (D88) — never re-record #581/#548/#555/#526/#588/#550/#557 or the 0027 caveat"
+  - "Part 3 (032 state word; 046/053/054/047/003/027 evidence) is recorded (D89) — never re-argue 032 PARTIAL vs BUILT_NOT_PROVEN on the same facts; never re-record #744/#798/#762/#586/#513/#517"
+  - "MO-PAID-085's #545/#551 evidence is deliberately NOT on the row (B-REC-3 fence pins its raw line) — write it only with 085's next state move and re-pin the fence in the same PR"
   - "Never edit a non-union ledger row for note-level evidence when its pair row is in the union — it moves OUTSIDE_UNION_SHA256 for no state change"
 danger_areas:
   - "MO-DELTA-018 is OUTSIDE the pin test's union set while its pair MO-PAID-059 is inside; 002/021/054/059 are union rows"
   - "#6819 is an ISSUE — post via the REST issues comments endpoint, never `gh pr comment`"
   - "#7100 carries a HOLD-FOR-SOL in its body — binding on every merge path regardless of label state"
+  - "tests/test_b_rec3_wave_boundary_records.py pins the RAW CSV LINE of MO-PAID-084/085/088 — any byte change on those rows needs a re-pin in the same PR (084 re-pinned in this wave)"
 prs: ["#8369"]
 decisions: []
 discoveries: []
@@ -109,7 +124,10 @@ not wired). CEO B's F12 correction moved MO-PAID-056 and MO-DELTA-038 from NOT_B
 unmerged, no natural delivery); part 2 moved MO-PAID-055/084 to BUILT_NOT_PROVEN (terminal #581 public
 API v1 + api keys, 401-served) and MO-PAID-052 to PARTIAL (#548 watchlist grants + #555 shared
 workspaces; scenario/analysis/coverage sharing unbuilt). The outside-union digest was re-pinned twice.
-Rulings D85–D88 and the lane matrix are in
+Part 3 aligned MO-PAID-032's state word to BUILT_NOT_PROVEN on the facts Sol ruled on 10-03 (producer
+and both secret-gated workflow steps on main, intake/inbox merged; activation is the operator's act) and
+widened F11/F08 evidence on six union rows; the digest did not move. The #582 v0-scope question is OPEN for Sol.
+Rulings D85–D89 and the lane matrix are in
 `research/MARKET_ONTOLOGY_CEO_A_CONTINUATION_HANDOFF_2026-10-02.md`; read its `## 4 Ledger`
 before any act. `MISSION_COMPLETE: false` — Sol acceptance of the MarketOntology program has
 not been given; the seat continues.

@@ -393,7 +393,7 @@ EXPECTED = {
   ],
   "MO-PAID-032": [
     "NEW_BOUNDED_BUILD",
-    "PARTIAL"
+    "BUILT_NOT_PROVEN"
   ],
   "MO-PAID-046": [
     "NEW_BOUNDED_BUILD",
@@ -595,7 +595,10 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
         assert "credit_window.py" in r[row_id]["real_producer"]
 
     briefs = r["MO-PAID-032"]
-    assert briefs["capability_state_c2"] == "PARTIAL"
+    # W12 D89 (2026-10-04) aligned the state word to BUILT_NOT_PROVEN on the same facts Sol ruled
+    # in W8 (implementation present / activation + natural delivery proof missing); the PARTIAL pin
+    # below was D63's own word, superseded — the gap/activation assertions that follow are unchanged.
+    assert briefs["capability_state_c2"] == "BUILT_NOT_PROVEN"
     assert "subscription intake only" in briefs["real_producer"]
     assert "cadence producer" in briefs["missing_contract_or_proof"]
     # W8 (2026-10-03, D63): the producer exists but is DORMANT in production; the gap is
@@ -647,6 +650,27 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     assert sharing["capability_state_c2"] == "PARTIAL"
     assert "#548" in sharing["state_delta"] and "#555" in sharing["state_delta"]
     assert r["MO-DELTA-039"]["capability_state_c2"] == "NOT_BUILT"
+
+    # W12 D89 (CEO B 5978485628 items 3-6): MO-PAID-032's state word aligned to BUILT_NOT_PROVEN on
+    # unchanged facts (Sol 5966291701/5966652470: 'implementation present / activation + natural
+    # delivery proof missing', state word never named); F11/F08 evidence widened on union rows only,
+    # so OUTSIDE_UNION_SHA256 is unchanged by this ruling.
+    briefs = r["MO-PAID-032"]
+    assert briefs["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert "D89" in briefs["state_delta"] and "PARTIAL -> BUILT_NOT_PROVEN" in briefs["state_delta"]
+    assert "RECURRING_BRIEFS_ENABLE" in briefs["missing_contract_or_proof"]
+    assert "Do NOT build another producer" in briefs["next_bounded_child"]
+    for rid in ("MO-PAID-046", "MO-PAID-053"):
+        assert r[rid]["capability_state_c2"] == "BUILT_NOT_PROVEN", rid
+        assert "#744" in r[rid]["adjudication_notes"], rid
+    assert r["MO-PAID-047"]["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert "#762" in r["MO-PAID-047"]["adjudication_notes"]
+    assert r["MO-PAID-054"]["capability_state_c2"] == "PARTIAL"
+    assert "#798" in r["MO-PAID-054"]["adjudication_notes"]
+    assert "#513" in r["MO-PAID-027"]["adjudication_notes"]
+    assert "#586" in r["MO-DELTA-003"]["adjudication_notes"]
+    for rid in ("MO-DELTA-003", "MO-PAID-027", "MO-PAID-085"):
+        assert r[rid]["capability_state_c2"] == "PARTIAL", rid
 
     # W8b D66-D71 (CEO B 5966674775; Sol 5966690034/5966717632/5966734154/5966757712/5966757713/5966776979/5966790439).
     covenant = r["MO-PAID-062"]
