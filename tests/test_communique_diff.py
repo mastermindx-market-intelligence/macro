@@ -358,6 +358,35 @@ def test_prior_day_revision_uses_only_effective_version_for_novelty():
     assert event["evidence_url"] == independent_today["url"]
 
 
+def test_prior_day_correction_added_phrase_cannot_mint_dropped():
+    book = _book()
+    locator = "loc_pboc_prior_add"
+    prior_old = _row(
+        "pboc", "先前初版", "稳中求进",
+        "2026-07-01T01:00:00",
+        url="https://www.pbc.gov.cn/policy/prior-add.html",
+    )
+    prior_new = _row(
+        "pboc", "先前更正", "稳中求进 适度宽松",
+        "2026-07-01T02:00:00",
+        url="https://www.pbc.gov.cn/policy/prior-add.html",
+    )
+    today = _row(
+        "pboc", "今日文件", "稳中求进",
+        "2026-07-02T01:00:00",
+        url="https://www.pbc.gov.cn/policy/today-no-x.html",
+    )
+    prior_old["source_locator_id"] = locator
+    prior_new["source_locator_id"] = locator
+
+    res = cd.compute_events([prior_old, prior_new, today], "2026-07-02", book=book)
+    kinds = {(e["kind"], e["phrase"]) for e in res["events"]}
+
+    assert ("DROPPED", "适度宽松") not in kinds
+
+
+
+
 def test_same_day_revision_removed_phrase_cannot_mint_appeared():
     book = _book()
     locator = "loc_ndrc_same_day_remove"
