@@ -2,6 +2,7 @@
 workstream: WS:FUTURES-MARKET-TAPE-PLANE
 session: sol/futures-tape-plane-20261005
 model: sol
+ended_because: checkpointed_continuation
 mission: >
   Initiate and carry the ES-first futures tape plane end to end: ownership, storage,
   source qualification, ingest/normalize/derive/audit implementation, and a perpetual
@@ -40,7 +41,8 @@ changed:
       Frozen source roles, storage policy, consumers, wave sequence and acceptance gates.
   - path: agentos/workstreams/WS-FUTURES-MARKET-TAPE-PLANE.md
     what: >
-      Created one canonical workstream under the existing Data OS/market-data ownership.
+      Created the durable workstream under the registered market-timing-intelligence program
+      while preserving Data OS as physical data owner.
   - path: agentos/decisions/DEC-FUTURES-TAPE-OWNERSHIP-AND-SOURCE-ROLES.md
     what: >
       Ruled Data OS as physical owner; LSE as secondary vendor-continuous history; Massive
@@ -48,23 +50,33 @@ changed:
       remains options owner.
 verified:
   - claim: Protected execution procedure was loaded atomically.
+    command: >
+      Read Mastermind protected master at
+      5b244a2bbe4c2a94ec25a887eb4a0d8fafe1ea2f; load INDEX, COLD_START,
+      ACTIVE_EXECUTION and SESSION_RELIABILITY from that exact commit.
     result: >
-      Mastermind protected master 5b244a2bbe4c2a94ec25a887eb4a0d8fafe1ea2f,
-      skillpack 1.0.1, bootstrap major 1 compatible; COLD_START, ACTIVE_EXECUTION and
-      SESSION_RELIABILITY loaded from the same commit.
+      schema mastermind.sol_skillpack.v1, skillpack_version 1.0.1,
+      minimum_bootstrap_major 1; bootstrap major 1 compatible.
   - claim: No existing futures_tape workstream or open same-name implementation carrier was found.
+    command: >
+      Search current Macro GitHub for FUTURES-TAPE, futures_tape and WS:FUTURES plus open
+      pull requests matching futures, dataos and dataset_registry before branch creation.
     result: >
-      Current Macro/GitHub search found no FUTURES-TAPE/futures_tape workstream or open
-      futures/dataos collision before branch creation.
-  - claim: The current physical host has enough capacity for an ES-first pilot but not an
+      No prior FUTURES-TAPE/futures_tape workstream or same-name open carrier was found.
+  - claim: The attended physical host has capacity for an ES-first pilot but not an
       unbounded multi-terabyte quote crawl.
+    command: >
+      Read mounted-volume capacity on the attended Mac host before any data write.
     result: >
-      Attended host census observed /Volumes/Mastermind ~673 GiB free, WD 5TB ~323 GiB,
-      Worktrees ~105 GiB. Code therefore defaults to a 100 GiB free-space reserve.
+      /Volumes/Mastermind had about 673 GiB free, WD 5TB about 323 GiB and Worktrees
+      about 105 GiB. The producer therefore defaults to preserving 100 GiB free.
   - claim: Core manifest/hash behavior is executable.
+    command: >
+      Compile lib/dataos/futures_tape.py in an isolated container smoke and create one
+      receipted sample partition; audit it clean, mutate the bytes, then audit again.
     result: >
-      Isolated stdlib smoke compiled lib/dataos/futures_tape.py and verified a receipt,
-      clean audit and post-write corruption detection.
+      Compilation and clean audit passed; the post-write mutation was detected by
+      byte-count/hash verification.
 unverified:
   - claim: LSE ES.F catalog row, history span and roll/adjustment semantics.
     what_would_verify: >
@@ -79,21 +91,28 @@ unverified:
       checksum manifest, normalized daily partitions and a clean audit.
   - claim: Full branch CI is green.
     what_would_verify: >
-      GitHub PR exact-head checks complete successfully.
+      GitHub PR #8451 exact-head fences and CI complete successfully after the Agent OS
+      record-contract repair.
 unresolved:
   - LSE credential is not available to this repository-only carrier.
   - Massive Futures entitlement is unknown and must not be inferred from Stocks rights.
   - ES.F vendor roll/adjustment semantics remain unproven.
   - No raw tape has been acquired; registry entries intentionally remain PROPOSED.
 next_actions:
-  - Open the implementation PR and consume exact-head CI.
-  - If green, merge the F0 carrier.
+  - Re-run/consume PR #8451 exact-head CI after this Agent OS repair.
+  - If green, mark the PR ready and merge under the normal release gates.
   - Then on the existing secret-bearing ops host run storage, LSE catalog and Massive Futures probes.
-  - On accepted receipts, start one bounded ES.F backfill window and audit it before a full-history run.
+  - On accepted receipts, start one bounded ES.F backfill window and audit it before full-history work.
 do_not_redo:
   - Do not create another Futures OS/Data OS/scheduler/entitlement ledger.
   - Do not call ES.F an exchange contract.
   - Do not download full CME quote history before a named microstructure need.
   - Do not buy storage or a Futures plan before measured capacity/entitlement results.
   - Do not grant raw tape any trading authority.
+danger_areas:
+  - LSE ES.F roll/adjustment semantics are still unknown.
+  - Current Massive Stocks rights do not prove a Futures entitlement.
+  - Raw source bytes are rights-sensitive and must remain private/outside Git.
+  - Session-aware 4H/8H/12H bars must not be inferred from naive wall-clock resampling.
+  - A trade tape does not prove continuous order-book state or OFI.
 ---
