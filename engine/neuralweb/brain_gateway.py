@@ -892,8 +892,11 @@ _RESEARCH_TRADE_NOUN_EN_VERBISH = (
 _RESEARCH_TRADE_NOUN_EN = (
     r"(?!\s+(?:programs?|orders?|volumes?|pressures?|interest|sides?|signals?|flows?"
     r"|imbalances?|ratios?|backs?|activity|demand|appetite|ratings?|lists?)(?![\w-])"
-    r"(?:\s*[.!?,;:—–]|\s*$|\s+" + _RESEARCH_TRADE_NOUN_EN_VERBISH
-    + r"|\s+" + _RESEARCH_TRADE_NOUN_EN_PREP + r"\s+(?:[\w$%.,-]+\s+){1,3}?" + _RESEARCH_TRADE_NOUN_EN_VERBISH + r"))"
+    r"(?:\s*[.!?,;:—–)）]|\s*$|\s+" + _RESEARCH_TRADE_NOUN_EN_VERBISH
+    + r"|\s+" + _RESEARCH_TRADE_NOUN_EN_PREP + r"\s+(?:[\w$%.-]+\s+){1,3}?" + _RESEARCH_TRADE_NOUN_EN_VERBISH + r"))"
+    # r7 (review #3 m1): ")" ends the phrase too ("Ratings (buy side) moved up"), and the window
+    # between the noun and its verb holds no clause break ("Buy orders in size, adding on dips"
+    # is an order).
 )
 # r5 (review N16, ZH): "请买入…" is always an order; a compound noun ("需求", "情绪") names
 # what to buy only when an attributive "的" follows it ("旺盛的板块"). r6 (review N22): no
@@ -905,12 +908,21 @@ _RESEARCH_TRADE_ZH_CLAUSE = (
     r"|风险|程度|水平|位置|区间|条件|前提|基础|来源|主因|背后|逻辑|特征|表现|节奏|幅度|速度|持续性"
     r"|可能性|概率|高低|强弱|多少|大小)"
 )
+# r7 (review #3 M4): "buy or sell" is one order when an object follows — "Buy or sell NVDA on a
+# break of 5800"; it is a pair only at a clause end ("(buy or sell)") or before a noun that
+# names the pair itself ("buy or sell signals").
+_RESEARCH_TRADE_PAIR_TAIL = (
+    r"(?:\s*[).,;:!?）]|\s*$|\s+(?:decisions?|signals?|sides?|pressures?|imbalances?|ratios?|orders?"
+    r"|buttons?|programs?|interest|activity|flows?|volumes?|recommendations?|ratings?|calls?|ideas?"
+    r"|lists?|zones?|levels?|points?|prices?|here|there|anything|nothing)\b)"
+)
 _RESEARCH_TRADE = re.compile(
     # r6 (review N19): a clause join is an anchor too — "; buy the dip", ", buy", "—buy",
     # "(Buy NVDA)" — and "Buy: NVDA" is an order written as a label.
     r"(?:^|(?<=[.!?。！？:：]\s)|(?<=[;,])|(?<=[;,]\s)|(?<=[—–])|(?<=[—–]\s)|(?<=[(（])"
     r"|(?<=\bso\s)|(?<=\band\s)|(?<=\bthen\s)|(?<=\bbut\s))"
-    r"(?:buy|sell)(?![\w-])(?!\s+(?:or|and)\s+(?:buy|sell)\b)" + _RESEARCH_TRADE_NOUN_EN + r"\s+\S"
+    r"(?:buy|sell)(?![\w-])(?!\s+(?:or|and)\s+(?:buy|sell)" + _RESEARCH_TRADE_PAIR_TAIL + r")"
+    + _RESEARCH_TRADE_NOUN_EN + r"\s+\S"
     r"|(?:^|(?<=[.!?。！？;,]\s)|(?<=[(（]))(?:buy|sell)\s*[:：]\s*(?!\d)\S"
     r"|\b(?:you\s+should|please)\s+(?:buy|sell)\b"
     r"|\b(?:buy|sell)\s+(?:now|immediately|today)\b"
@@ -922,8 +934,13 @@ _RESEARCH_TRADE = re.compile(
     r"(?:\S+\s+){0,3}(?:price\s+target|target\s+price)\b"
     # Sentence-anchored bare target imperative (set/cut/raise/lower + "a target").
     r"|(?:^|(?<=[.!?。！？]\s))(?:set|cut|raise|lower)\s+(?:\S+\s+){0,3}target\b"
-    r"|(?:^|(?<=[.!?。！？:：，,；;])|(?<=所以)|(?<=然后)|(?<=因此)|(?<=建议)|(?<=应该)|(?<=可以)"
-    r"|(?<=不妨)|(?<=应当)|(?<=优先)|(?<=宜)|(?<=就)|(?<=先)|(?<=再)|(?<=则))"
+    # r7 (review #3 M2): a one-character opener anchors only when it is not the tail of a
+    # word — "率先买入" (led the buying), "一再卖出", "不再买入", "趁便宜买入" are reports;
+    # "则" needs the clause break before it ("，则卖出", not "内资则卖出"); "然后" and "就"
+    # sequence a narrative ("外资先卖出…，然后买入…") and no longer anchor.
+    r"|(?:^|(?<=[.!?。！？:：，,；;])|(?<=所以)|(?<=因此)|(?<=建议)|(?<=应该)|(?<=可以)"
+    r"|(?<=不妨)|(?<=应当)|(?<=优先)|(?<=首先)|(?<=(?<!便)宜)|(?<=(?<![\u4e00-\u9fff])先)"
+    r"|(?<=(?<![一不])再)|(?<=[，,；;]则))"
     r"\s*(?:请\s*(?:买入|卖出)|(?:买入|卖出)"
     r"(?!盘|方|单|点|区|后|前|的|了|价(?=[为是在约位附:：])|量(?!能)|成本|机会|时机"
     r"|(?:压力|意愿|信号|力度|订单|资金(?!面)|潮|规模|量能|力量|需求|热情|情绪|行为|操作|价格|数量|金额"
@@ -1442,7 +1459,14 @@ def _research_unknown_name_like(core: str) -> bool:
     ("5800 level", "1994 bond rout") and never led by a lowercase determiner or
     preposition ("the 1994 bond rout"; "The Economist" keeps its capital). r6, review N23."""
     s = (core or "").strip()
-    return bool(s) and not _RESEARCH_UNKNOWN_NAME_LEAD.match(s)
+    if not s:
+        return False
+    if not _RESEARCH_UNKNOWN_NAME_LEAD.match(s):
+        return True
+    # r7 (review #3 B1): a determiner or digit lead still names a source when a capital
+    # follows it — "the WSJ", "the Fed statement", "10-K filing", "13F filings";
+    # "the 1994 bond rout" and "5800 level" stay data.
+    return any(ch.isupper() for ch in s[1:])
 
 
 def _research_known_name_list(text: str, names: set[str]) -> bool:
@@ -1459,6 +1483,9 @@ def _research_known_name_list(text: str, names: set[str]) -> bool:
         _research_is_source_name(c, names) or (
             _research_name_like(c, r.strip().rstrip(".。")) and _research_unknown_name_like(c)
             and (c[:1].isupper() or "\u4e00" <= c[:1] <= "\u9fff")
+            # r7 (review #3 M1): "Reuters all flagged it" is a clause, not a name — at most
+            # one lowercase word may follow the capital ("Bloomberg terminal")
+            and sum(1 for w in c.split()[1:] if w[:1].islower()) <= 1
         )
         for r, c in zip(raw, cores)
     )
@@ -1501,13 +1528,19 @@ def _research_inline_source_list(text: str, names: set[str], require_known: bool
     raw, cores = _research_source_pieces(text)
     if not cores or not all(cores):
         return False
-    if require_known and not any(_research_is_source_name(x, names) for x in cores):
+    known = [_research_is_source_name(x, names) for x in cores]
+    if require_known and not any(known):
         return False
+    # r7 (review #3 B1): a known name anchors the list — "Sources: Desk read, 2024 annual
+    # report" is a source list however the invented piece is shaped; without one each
+    # invented piece must read as a name (r6 N23).
+    anchored = any(known)
     return all(
-        _research_is_source_name(c, names) or (
-            _research_name_like(c, r.strip().rstrip(".。")) and _research_unknown_name_like(c)
+        k or (
+            _research_name_like(c, r.strip().rstrip(".。"))
+            and (anchored or _research_unknown_name_like(c))
         )
-        for r, c in zip(raw, cores)
+        for k, r, c in zip(known, raw, cores)
     )
 
 
@@ -1589,6 +1622,19 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
     heading still drops on trust; "Buy interest this week was strong" (noun + time
     phrase) is still withheld, as is a prepositional phrase longer than three words
     before the verb.
+
+    r7 (review #3, B1/B2/M1–M4/m1/m2): an inline list anchored by a known name drops however
+    its invented pieces are shaped, and an invented piece with a determiner or digit lead
+    is a name when a capital follows ("the WSJ", "13F filings"); a marked item after a
+    marked item is markdown's loose list, blank line or not; a comma list that runs on
+    into a clause ("Desk read, Bloomberg and Reuters all flagged it") is prose; ZH
+    one-character openers anchor only outside a word; a clause join does not anchor the
+    second verb of a flow description, and a strategy named as a subject ("buy the dip
+    has worked") is not an order; "buy or sell NVDA" is one order. Residual by design: a
+    bullet after an INLINE source line and a blank ("来源：研究台读数\n\n- 彭博终端") is the
+    next section, as N26 asked; "Desk read, Breadth and Leadership" (a capitalised list
+    with a known name) still drops; "买入资金面偏紧" is still withheld; "Buy volume in
+    names that lagged." still reads as a report.
     """
     canon = {
         _RESEARCH_CEILING_EN, _RESEARCH_CEILING_ZH,
@@ -1597,13 +1643,16 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
     canon_bare = {c.rstrip("。.") for c in canon}
     names = _research_source_names(corpus)
     text = body or ""
+    html_blanks = False
     if "<" in text and _RESEARCH_HTML_BREAK.search(text):   # a one-line <ul><li>…</li></ul> is a list;
         text = _RESEARCH_HTML_BREAK.sub("\n" + _RESEARCH_HTML_MARK, text)   # r6 N25: mark ONLY those blanks
+        html_blanks = True
     kept: list[str] = []
     in_block = False
     block_gap = False                                    # r5 N15: a blank line inside the block
     source_table = False                                 # r5 N12: inside a table whose header named sources
     block_items = 0                                      # r6 N26: lines dropped under the current heading
+    block_marked = False                                 # r7 B2: one of them was a marked list item
     fence_at: int | None = None                          # index in `kept` of a fence nothing has followed yet
     fence_open = False                                   # inside a ``` block
     fence_popped = False                                 # that block's opening fence was removed
@@ -1658,6 +1707,7 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
             if _research_table_row_drops(plain, names, in_block, source_table):
                 _drop()
                 block_items = block_items + 1 if in_block else 1
+                block_marked = block_marked and in_block
                 in_block = True
                 source_table = True
                 continue
@@ -1678,6 +1728,7 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
                 _drop()
                 in_block = True                          # heading alone, or heading + inline list
                 block_items = 1 if rest else 0
+                block_marked = False
                 continue
             # a heading-like opener that continues as prose is the model's own sentence;
             # a bare WEAK word ("See also", "Per") is prose too (r5 N18)
@@ -1687,10 +1738,12 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
             _drop()
             in_block = True
             block_items = 1
+            block_marked = False
             if prefix:
                 kept.append(prefix)
             continue
         item = _research_item_core(plain)
+        marked = bool(_RESEARCH_LIST_MARKER.match(stripped)) and not _RESEARCH_EMPHASIS_LEAD.match(stripped)
         if (
             _research_is_source_name(item, names)
             or _research_all_source_names(item, names)
@@ -1698,30 +1751,39 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
         ):
             _drop()
             block_items = block_items + 1 if in_block else 1   # a bare name is itself an item
+            block_marked = (block_marked or marked) if in_block else marked
             in_block = True                              # a bare source name is never prose
             continue
         if in_block and not stripped.startswith("#"):
-            marked = bool(_RESEARCH_LIST_MARKER.match(stripped)) and not _RESEARCH_EMPHASIS_LEAD.match(stripped)
             raw_body = _RESEARCH_LIST_MARKER.sub("", stripped, count=1).strip() if marked else core
             if not raw_body:
                 continue                                 # a marker with nothing after it
             colon = _RESEARCH_ITEM_COLON.match(raw_body) if marked else None
             colon_known = bool(colon) and _research_is_source_name(_research_item_core(colon.group(1)), names)
-            if gap and block_items and not colon_known:
+            if gap and block_items and not colon_known and not (
+                marked and block_marked and _research_item_like(item, raw_body)
+            ):
                 _keep(line)                              # r5 N15 / r6 N26: the next section, marked or not
-                continue                                 # (a bare heading + blank + list is the heading's list)
+                continue                                 # (a bare heading + blank + list is the heading's list;
+                                                         #  r7 B2: a marked item after a marked item is markdown's
+                                                         #  loose list — "- Desk read\n\n- Reuters" is one list)
             if colon_known and _research_name_like(
                 _research_item_core(colon.group(2)), colon.group(2).strip().rstrip(".。")
             ):
                 block_items += 1
+                block_marked = block_marked or marked
                 continue                                 # r5 N17: "- Desk read: breadth section" is an item
             if (marked and _research_item_like(item, raw_body)) or (
                 not marked and _research_name_like(item, raw_body)
             ):
                 block_items += 1
+                block_marked = block_marked or marked
                 continue                                 # an invented source under the heading
         _keep(line)
-    return "\n".join(kept).strip()
+    out = "\n".join(kept)
+    if html_blanks:                                      # r7 (review #3 m2): a kept HTML-made blank next to a
+        out = re.sub(r"\n{3,}", "\n\n", out)             # real one is one paragraph break, not two
+    return out.strip()
 
 
 def _research_cites_artifact(answer: str, corpus: dict) -> bool:
@@ -1734,6 +1796,33 @@ def _research_cites_artifact(answer: str, corpus: dict) -> bool:
             return True
         if zh and zh in text:
             return True
+    return False
+
+
+# r7 (review #3 M3): a clause join is an anchor for an ORDER, not for a description that
+# runs on from the same verb — "funds buy strength, sell weakness", "retail tends to buy
+# dips, sell rallies"; and a strategy NAMED as the subject of a finite verb is not given —
+# "Historically, buy the dip has worked", "(buy the dip) failed in 2022". "Our stance (buy
+# the dip) is unchanged" stays withheld: a present-tense stance is the house's own call.
+_RESEARCH_TRADE_PARALLEL = re.compile(r"\b(?:buy|sell)(?:s|ing)?\b|\b(?:bought|sold)\b", re.I)
+_RESEARCH_TRADE_JOIN = re.compile(r"(?:[,;]|\b(?:and|or))\s*$", re.I)
+_RESEARCH_TRADE_IDIOM_SUBJECT = re.compile(
+    r"(?:buy|sell)\s+(?:the\s+dips?|and\s+hold|low|high|the\s+rumou?r|the\s+news|in\s+may"
+    r"|strength|weakness|dips|rallies|the\s+close|the\s+open)\b[\W_]*"
+    r"(?:has|have|had|was|were|did|does|do|fails?|failed|works?|worked|beats?|beaten|outperform(?:s|ed)?"
+    r"|underperform(?:s|ed)?|lost|loses|won|wins|paid|pays|became|tends?|tended|stopped|broke)\b",
+    re.I,
+)
+
+
+def _research_trade_order(s: str) -> bool:
+    for m in _RESEARCH_TRADE.finditer(s):
+        before = s[:m.start()]
+        if _RESEARCH_TRADE_JOIN.search(before) and _RESEARCH_TRADE_PARALLEL.search(before):
+            continue                                     # the second verb of a flow description
+        if _RESEARCH_TRADE_IDIOM_SUBJECT.match(s, m.start()):
+            continue                                     # a strategy named, not an instruction
+        return True
     return False
 
 
@@ -1764,7 +1853,7 @@ def _research_sentence_forbidden(sentence: str) -> bool:
         return True
     if _RESEARCH_FALSIFIER.search(s):
         return True
-    if _RESEARCH_TRADE.search(s):
+    if _research_trade_order(s):
         return True
     if _research_tool_re().search(s):
         return True

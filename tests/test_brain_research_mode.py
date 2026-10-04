@@ -2282,7 +2282,7 @@ def test_r6_an_html_break_blank_is_not_a_section_gap():
 @pytest.mark.parametrize("raw, expected", [
     ("G.\n\nSources: Desk read\n\n- Oil shock", "G.\n\n- Oil shock"),
     ("G.\n\nSources: Desk read\n\n- Oil shock\n- Credit spreads widen", "G.\n\n- Oil shock\n- Credit spreads widen"),
-    ("G.\n\nSources:\n- Desk read\n\n- Oil shock", "G.\n\n- Oil shock"),
+    ("G.\n\nSources:\n- Desk read\n\n- Oil shock", "G."),   # r7 B2: a marked item after a marked item is one loose list
     ("G.\n\nSources:\n\n- Bloomberg terminal", "G."),
     ("G.\n\nSources:\n\n- Desk read\n- Bloomberg terminal", "G."),
     ("G.\n\nSources: Desk read\n\n- Desk read: breadth section", "G."),
@@ -2291,7 +2291,9 @@ def test_r6_a_marked_line_after_a_blank_is_the_next_section(raw, expected):
     """N26 (M): r5's N15 rule kept only an UNMARKED line after a blank, so a bulleted
     section following the source line was deleted. A marked line that is not a known
     item is the next section — unless the heading was bare and nothing sat under it yet,
-    in which case the blank is markdown's list separator and the list is the heading's."""
+    in which case the blank is markdown's list separator and the list is the heading's.
+    r7 (review #3 B2) narrows "marked line": a marked item after a MARKED item continues
+    the list (markdown's loose list); the N26 shape is a bullet after an INLINE source line."""
     assert gw._research_strip_model_trailer(raw, R6_CORPUS) == expected
 
 
@@ -2312,3 +2314,122 @@ def test_r6_a_prepositional_phrase_before_the_verb_is_still_a_report(sentence):
 ])
 def test_r6_a_prepositional_phrase_without_a_verb_is_still_an_order(sentence):
     assert gw._research_sentence_forbidden(sentence) is True, sentence
+
+
+# ---------------------------------------------------------------------------
+# §13 r7 — review #3 (B1/B2 blocking regressions, M1–M4, m1, m2); inputs are the
+# reviewer's own, verbatim. RED on r6.1 bytes, GREEN on r7.
+R7_CORPUS = R6_CORPUS
+
+
+@pytest.mark.parametrize("tail", [
+    "Sources: Desk read, the WSJ", "Sources: 10-K filing, Desk read", "Sources: Desk read, 13F filings",
+    "Sources: 2024 annual report, Desk read", "Sources: Desk read, the Fed statement",
+    "Sources: the FT, Bloomberg", "Sources: 13F filings", "References: the WSJ, FactSet",
+], ids=["the-wsj", "10k-first", "13f", "annual-report", "fed-statement", "ft-no-known", "13f-alone", "references"])
+def test_r7_a_digit_or_determiner_led_invented_source_still_strips(tail):
+    """B1 (REGRESSION): r6's name-shape rule (N23) let "the WSJ" / "10-K filing" fail the
+    inline list, so the whole trailer survived and the known name inside it read as a
+    citation for a body that cited nothing."""
+    out = gw._research_strip_model_trailer("Breadth is thin.\n\n" + tail, R7_CORPUS)
+    assert out == "Breadth is thin.", (tail, out)
+    assert gw._research_cites_artifact(out, R7_CORPUS) is False
+
+
+@pytest.mark.parametrize("raw", [
+    "G.\n\nReferences: the 1994 bond rout, the 2022 hiking cycle", "G.\n\nRef: 5800 level",
+    "G.\n\nInputs: oil, wages, rents", "G.\n\nSources: the Desk read shows breadth is thin.",
+], ids=["episodes", "level", "inputs", "prose"])
+def test_r7_data_and_prose_after_a_heading_word_still_stay(raw):
+    assert gw._research_strip_model_trailer(raw, R7_CORPUS) == raw
+
+
+@pytest.mark.parametrize("raw", [
+    "G per the Desk read.\n\nSources:\n\n- Desk read\n\n- Bloomberg terminal",
+    "G per the Desk read.\n\nSources:\n\n1. Desk read\n\n2. Reuters",
+    "G per the Desk read.\n\nReferences:\n\n- Desk read (2 Oct)\n\n- FactSet estimates\n\n- Bloomberg terminal",
+    "G per the Desk read.\n\nSources:\n- Desk read\n\n- Reuters",
+    "G per the Desk read.\n\n来源：\n\n- 研究台读数\n\n- 彭博",
+    "G per the Desk read.\n\nSources:\n- Desk read\n\n- Oil shock",
+], ids=["loose-bullets", "loose-numbered", "loose-three", "tight-then-loose", "zh-loose", "after-list"])
+def test_r7_a_loose_list_under_a_source_heading_is_one_list(raw):
+    """B2 (REGRESSION): the N26 rule read every marked line after a blank as the next
+    section, so a loose markdown list (a blank between items) leaked every item after the
+    first. A marked item after a marked item continues the list; after an INLINE source
+    line a bullet is still the next section (the N26 one-item shape)."""
+    assert gw._research_strip_model_trailer(raw, R7_CORPUS) == "G per the Desk read."
+
+
+@pytest.mark.parametrize("raw", [
+    "G per the Desk read.\n\nSources: Desk read\n\n- Oil shock",
+    "G per the Desk read.\n\nSources:\n- Desk read\n\nRisks\n- Oil shock",
+    "G per the Desk read.\n\nSources:\n\n- Desk read\n\n- Breadth needs to widen before the move is trustworthy.",
+], ids=["inline-then-bullet", "title-after-list", "prose-bullet"])
+def test_r7_the_next_section_after_a_list_still_stays(raw):
+    out = gw._research_strip_model_trailer(raw, R7_CORPUS)
+    assert out.startswith("G per the Desk read.") and out.endswith(raw.split("\n")[-1]), out
+    assert "Sources" not in out and "Desk read\n" not in out
+
+
+@pytest.mark.parametrize("raw", [
+    "X per the Desk read.\n\nThe Desk read, Bloomberg and Reuters all flagged it.",
+    "X per the Desk read.\n\nDesk read, Bloomberg and Reuters all flagged it.",
+    "X per the Desk read.\n\nDesk read, FactSet and Reuters agree on this.",
+    "X per the Desk read.\n\nDesk read, Daily briefing and FOMC minutes agree.",
+], ids=["the-lead", "bare-lead", "agree-on-this", "two-known"])
+def test_r7_prose_that_opens_with_a_known_name_list_is_kept(raw):
+    """M1 (REGRESSION): the N24 bare-list rule counted "Reuters all flagged it" as a name."""
+    assert gw._research_strip_model_trailer(raw, R7_CORPUS) == raw
+
+
+@pytest.mark.parametrize("sentence", [
+    "外资率先买入科技股。", "北向资金率先卖出银行股。", "机构一再卖出地产股。", "外资不再买入地产股。",
+    "外资买入科技股，内资则卖出银行股。", "外资先卖出银行股，然后买入科技股。", "外资趁便宜买入银行股。",
+])
+def test_r7_zh_flow_narration_is_a_report(sentence):
+    """M2 (REGRESSION): r6's one-character openers fired inside words (率先, 一再, 便宜) and
+    on narrative sequencers (则, 然后)."""
+    assert gw._research_sentence_forbidden(sentence) is False, sentence
+
+
+@pytest.mark.parametrize("sentence", [
+    "若跌破5800，则卖出。", "先买入龙头。", "适宜买入半导体。", "首先买入龙头。", "跌到位后再买入半导体。", "所以买入NVDA。",
+])
+def test_r7_zh_clause_openers_still_anchor(sentence):
+    assert gw._research_sentence_forbidden(sentence) is True, sentence
+
+
+@pytest.mark.parametrize("sentence", [
+    "Historically, buy the dip has worked in uptrends.", "Since 2009, buy and hold has beaten market timing.",
+    "Retail tends to buy dips, sell rallies and chase winners.", "Systematic funds buy strength, sell weakness.",
+    "The retail reflex (buy the dip) failed in 2022.", "Funds buy strength and sell weakness in this regime.",
+])
+def test_r7_a_strategy_named_or_a_flow_described_is_not_an_order(sentence):
+    """M3 (REGRESSION): the r6 clause-join anchors (",", "(", "and") read the second verb of a
+    flow description, and a strategy named as a sentence subject, as orders."""
+    assert gw._research_sentence_forbidden(sentence) is False, sentence
+
+
+@pytest.mark.parametrize("sentence", [
+    "Our stance (buy the dip) is unchanged.", "Breadth is thin; buy the dip.", "Buy NVDA and sell TSLA.",
+    "First buy the leaders, then sell the laggards.", "Our view: buy signals are flashing, so buy NVDA.",
+    "Buy or sell NVDA on a break of 5800.", "Buy orders in size, adding on dips.", "Levels held; buy the dip, sell the rip.",
+])
+def test_r7_orders_behind_the_new_exclusions_are_still_withheld(sentence):
+    """M4 (REGRESSION): "Buy or sell NVDA on a break of 5800" is one order; m1: "Buy orders in
+    size, adding on dips" is an order (the clause break ends the prepositional window)."""
+    assert gw._research_sentence_forbidden(sentence) is True, sentence
+
+
+@pytest.mark.parametrize("sentence", [
+    "Ratings (buy side) moved up.", "Buy or sell signals were mixed.", "The desk does not say what to do (buy or sell) here.",
+])
+def test_r7_a_pair_or_a_side_in_parentheses_is_a_report(sentence):
+    assert gw._research_sentence_forbidden(sentence) is False, sentence
+
+
+def test_r7_a_kept_html_blank_is_one_paragraph_break():
+    """m2 (NEW, cosmetic): a kept HTML-made blank next to a real one left a triple newline."""
+    raw = "G.<br>\n\nSources: Desk read\n\nRisks\n- Oil shock"
+    assert gw._research_strip_model_trailer(raw, R7_CORPUS) == "G.\n\nRisks\n- Oil shock"
+
