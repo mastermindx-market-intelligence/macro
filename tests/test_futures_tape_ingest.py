@@ -120,6 +120,18 @@ def test_row_bounds_are_utc_and_ignore_bad_rows() -> None:
     assert hi.startswith("2026-10-02T14:00:00")
 
 
+def test_row_bounds_accept_canonical_timestamp_column() -> None:
+    df = pd.DataFrame({
+        "timestamp_utc": pd.to_datetime(
+            ["2026-10-02T13:30:00Z", "2026-10-02T14:00:00Z"], utc=True
+        ),
+        "price_raw": [1.0, 2.0],
+    })
+    lo, hi = fti._row_bounds(df)
+    assert lo.startswith("2026-10-02T13:30:00")
+    assert hi.startswith("2026-10-02T14:00:00")
+
+
 def test_write_dataframe_export_is_atomic_and_receipted(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setenv("MMX_FUTURES_TAPE_ROOT", str(tmp_path))
     target = raw_export_path(tmp_path, "lse", "ES.F", "2026-10-01", "2026-10-02")
