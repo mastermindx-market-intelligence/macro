@@ -15771,7 +15771,7 @@ jobs:
       # board step, so a red here is not dark behind a failure it has nothing to
       # do with.
       - name: China Special Situations desk — goodwill units, unlock population, inquiry identity, stale-plane authority
-        run: python -m pytest tests/test_china_special_situations_truth_wave1.py -q
+        run: python -m pytest tests/test_china_special_situations_truth_wave1.py tests/test_china_special_situations.py -q
       - name: US board W9-A producer field + cohort math
         run: python -m pytest tests/test_w4_us_board.py -q
       # Alert Command Center — the TIME CONTRACT and the evidence links (Wave 7,
