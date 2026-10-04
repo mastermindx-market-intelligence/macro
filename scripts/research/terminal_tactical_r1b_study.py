@@ -4,6 +4,13 @@
 Admission is fail-closed and precedes every market-input read.  This consumer
 uses existing D0/Radar owners; it opens no network/provider path and has no live
 rank, alert, sizing, event-emission, options or trade authority.
+
+The registered test receipt must be produced at the reviewed commit with::
+
+    pytest -o junit_suite_name=<code_sha> --junitxml=<file> \\
+        tests/test_tactical_research.py tests/test_tactical_research_cli.py \\
+        tests/test_tactical_r1b_pools.py tests/test_tactical_r1b_aggregate.py \\
+        tests/test_tactical_r1b_run.py
 """
 from __future__ import annotations
 
@@ -85,6 +92,8 @@ REQUIRED_TEST_MODULES = (
     "tests.test_tactical_r1b_aggregate",
     "tests.test_tactical_r1b_run",
 )
+TEST_FILES = tuple(m.replace(".", "/") + ".py" for m in REQUIRED_TEST_MODULES)
+_COLLECT_LINE = re.compile(r"^(tests/\S+?\.py)::(.+)$")
 # One of this runner's own refusal codes: lower-case words joined by underscores, then an
 # optional ":SYMBOL".  A bare number or free text never matches.
 _REFUSAL_CODE = re.compile(r"[a-z][a-z0-9]*(_[a-z0-9]+)+(:[A-Z][A-Z0-9.]{0,9})?")
@@ -450,10 +459,41 @@ def _digest(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
-def junit_receipt(junit: Path) -> dict[str, Any]:
+def _collected_test_ids(files: Sequence[str]) -> set[str]:
+    env = {k: v for k, v in os.environ.items() if k != "POLYGON_API_KEY"}
+    proc = subprocess.run(
+        [sys.executable, "-m", "pytest", "-p", "no:cacheprovider", "--collect-only", "-q", *files],
+        cwd=str(ROOT),
+        capture_output=True,
+        env=env,
+    )
+    if proc.returncode != 0:
+        raise ValueError("test_collection_failed")
+    collected: set[str] = set()
+    for line in proc.stdout.decode().splitlines():
+        match = _COLLECT_LINE.match(line.strip())
+        if not match:
+            continue
+        path, rest = match.group(1), match.group(2)
+        base = path[:-3].replace("/", ".")
+        parts = rest.split("::")
+        if len(parts) == 1:
+            classname, name = base, parts[0]
+        else:
+            classname = base + "." + ".".join(parts[:-1])
+            name = parts[-1]
+        collected.add(f"{classname}::{name}")
+    return collected
+
+
+def junit_receipt(junit: Path, code_sha: str) -> dict[str, Any]:
     """The test result for every test in the supplied JUnit file; refuse anything but all-passed."""
     raw = junit.read_bytes()
     root = ElementTree.fromstring(raw)
+    suites = [el for el in root.iter("testsuite") if el.tag == "testsuite"]
+    suite_names = [el.get("name") for el in suites]
+    if not suite_names or any(name != code_sha for name in suite_names):
+        raise ValueError("test_receipt_not_bound_to_head")
     cases: list[tuple[str, str]] = []
     for case in root.iter("testcase"):
         outcome = "passed"
@@ -940,7 +980,17 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
     if any(receipt.get("stage") not in PRE_INPUT_STAGES and receipt.get("code_sha") == code_sha
            for receipt in prior):
         raise ValueError("rerun_without_reviewed_fix")
-    tests = junit_receipt(junit)
+    tests = junit_receipt(junit, code_sha)
+    expected = _collected_test_ids(TEST_FILES)
+    if set(tests["cases"]) != expected:
+        raise ValueError("test_receipt_case_set_mismatch")
+    tests["expected_cases_sha256"] = hashlib.sha256(
+        "\n".join(sorted(expected)).encode("utf-8")
+    ).hexdigest()
+    tests["collected_from"] = list(TEST_FILES)
+    for path in TEST_FILES:
+        if _reviewed_blob_sha256(code_sha, path) != _sha(ROOT / path):
+            raise ValueError(f"code_identity_not_at_reviewed_head:{path}")
 
     stage("admission")
     admitted = verify_admission()

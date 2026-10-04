@@ -23,6 +23,8 @@ from engine.session_digest import session_window_et
 from lib.nyse_calendar import is_session
 from scripts.research import terminal_tactical_r1b_study as s
 
+_REAL_COLLECTED_TEST_IDS = s._collected_test_ids
+
 ROOT = Path(__file__).resolve().parents[1]
 CFG = json.loads((ROOT / "research/species/tti_r1b/config_v4.json").read_text())
 CODE_SHA = "a" * 40
@@ -152,12 +154,13 @@ def _bars(sessions: list[date]) -> dict[str, list[list[float]]]:
     return out
 
 
-def _junit(path: Path, modules=s.REQUIRED_TEST_MODULES, bad: str | None = None) -> Path:
+def _junit(path: Path, modules=s.REQUIRED_TEST_MODULES, bad: str | None = None,
+           suite: str = CODE_SHA) -> Path:
     cases = "".join(f'<testcase classname="{module}" name="test_ok"/>' for module in modules)
     if bad:
         cases += (f'<testcase classname="tests.test_tactical_r1b_run" name="test_bad">'
                   f'<{bad} message="x"/></testcase>')
-    path.write_text(f'<?xml version="1.0"?><testsuites><testsuite name="pytest">{cases}'
+    path.write_text(f'<?xml version="1.0"?><testsuites><testsuite name="{suite}">{cases}'
                     f'</testsuite></testsuites>')
     return path
 
@@ -178,6 +181,8 @@ def _write_manifest(path: Path, inputs: Path, symbols) -> Path:
 def world(tmp_path_factory):
     mp = pytest.MonkeyPatch()
     mp.setattr(s, "_reviewed_blob_sha256", lambda code_sha, name: s._sha(s.ROOT / name))
+    mp.setattr(s, "_collected_test_ids",
+               lambda files: {f"{m}::test_ok" for m in s.REQUIRED_TEST_MODULES})
     root = tmp_path_factory.mktemp("r1b_run")
     terminal = root / "terminal_root"
     (terminal / "ingest").mkdir(parents=True)
@@ -620,12 +625,12 @@ def test_a_config_with_another_bootstrap_identity_is_refused_before_any_input(
 ])
 def test_the_test_receipt_must_be_clean_and_name_every_required_suite(tmp_path, bad, modules, code):
     with pytest.raises(ValueError, match=code):
-        s.junit_receipt(_junit(tmp_path / "junit.xml", modules=modules, bad=bad))
+        s.junit_receipt(_junit(tmp_path / "junit.xml", modules=modules, bad=bad), CODE_SHA)
 
 
 def test_a_clean_receipt_lists_every_case(tmp_path):
     modules = [*s.REQUIRED_TEST_MODULES, "tests.test_tactical_r1b_run.TestClass"]
-    receipt = s.junit_receipt(_junit(tmp_path / "junit.xml", modules=modules))
+    receipt = s.junit_receipt(_junit(tmp_path / "junit.xml", modules=modules), CODE_SHA)
     assert receipt["tests"] == len(modules) == len(receipt["cases"])
     assert receipt["all_passed"] is True
     assert receipt["sha256"] == hashlib.sha256((tmp_path / "junit.xml").read_bytes()).hexdigest()
@@ -856,7 +861,9 @@ def test_t5d_aggregate_abort_blocks_same_code_sha(world, monkeypatch, tmp_path, 
     assert s.main(_argv(world, _out_dir(tmp_path, "run2"))) == 2
     assert "rerun_without_reviewed_fix" in capsys.readouterr().err
     monkeypatch.setattr(s.agg, "summarize", real)
-    assert s.main(_argv(world, _out_dir(tmp_path, "run3"), code_sha="b" * 40)) == 0
+    alt_sha = "b" * 40
+    junit_b = _junit(tmp_path / "junit_b.xml", suite=alt_sha)
+    assert s.main(_argv(world, _out_dir(tmp_path, "run3"), code_sha=alt_sha, junit=junit_b)) == 0
     receipt = json.loads((tmp_path / "attempts/attempt-003.json").read_text())
     assert receipt["stage"] not in s.PRE_INPUT_STAGES or receipt.get("completed")
 
@@ -1142,3 +1149,89 @@ def test_a_changed_ledger_prefix_is_disclosed_not_refused(tmp_path):
     admitted = s.verify_admission(ledger_path=_ledger(tmp_path, lines))
     assert admitted["ledger_prefix_matches_receipt"] is False
     assert admitted["study_cells"] == 60
+
+
+def test_t8a_suite_name_mismatch_refuses_at_arguments(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    junit = _junit(tmp_path / "junit.xml", suite="pytest")
+    assert s.main(_argv(world, _out_dir(tmp_path), junit=junit)) == 2
+    assert "test_receipt_not_bound_to_head" in capsys.readouterr().err
+    receipt = json.loads((tmp_path / "attempts/attempt-001.json").read_text())
+    assert receipt["stage"] == "arguments"
+    assert receipt["finalized"] is True
+
+
+def test_t8b_extra_case_in_receipt_refuses(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    extra = [*s.REQUIRED_TEST_MODULES, "tests.test_tactical_r1b_run.Extra"]
+    junit = _junit(tmp_path / "junit.xml", modules=extra)
+    assert s.main(_argv(world, _out_dir(tmp_path), junit=junit)) == 2
+    assert "test_receipt_case_set_mismatch" in capsys.readouterr().err
+
+
+def test_t8b2_missing_case_in_receipt_refuses(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    forged = {f"{m}::test_ok" for m in s.REQUIRED_TEST_MODULES}
+    forged.add("tests.test_tactical_r1b_run.Missing::test_never_ran")
+    monkeypatch.setattr(s, "_collected_test_ids", lambda files: forged)
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    assert "test_receipt_case_set_mismatch" in capsys.readouterr().err
+
+
+def test_t8c_collected_test_ids_parser(tmp_path, monkeypatch):
+    tiny_root = tmp_path / "proj"
+    test_dir = tiny_root / "tests"
+    test_dir.mkdir(parents=True)
+    (test_dir / "test_tiny.py").write_text(
+        'import pytest\n'
+        'def test_one():\n    pass\n'
+        'def test_two():\n    pass\n'
+        'class TestCls:\n'
+        '    @pytest.mark.parametrize("x", [1, 2])\n'
+        '    def test_param(self, x):\n        pass\n'
+    )
+    monkeypatch.setattr(s, "ROOT", tiny_root)
+    got = _REAL_COLLECTED_TEST_IDS(["tests/test_tiny.py"])
+    assert got == {
+        "tests.test_tiny::test_one",
+        "tests.test_tiny::test_two",
+        "tests.test_tiny.TestCls::test_param[1]",
+        "tests.test_tiny.TestCls::test_param[2]",
+    }
+
+
+def test_t8d_collection_failure_refuses(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+
+    def fail(_files):
+        raise ValueError("test_collection_failed")
+
+    monkeypatch.setattr(s, "_collected_test_ids", fail)
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    assert "test_collection_failed" in capsys.readouterr().err
+
+
+def test_t8e_result_records_expected_cases_sha256(world, monkeypatch, tmp_path):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    out = _out_dir(tmp_path)
+    assert s.main(_argv(world, out)) == 0
+    forged = {f"{m}::test_ok" for m in s.REQUIRED_TEST_MODULES}
+    expected_sha = hashlib.sha256("\n".join(sorted(forged)).encode()).hexdigest()
+    receipt = json.loads((out / "result.json").read_text())["leak_audit"]["test_receipt"]
+    assert receipt["expected_cases_sha256"] == expected_sha
+    assert receipt["collected_from"] == list(s.TEST_FILES)
+
+
+def test_t8f_test_file_not_at_reviewed_head_refuses(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    real = s._reviewed_blob_sha256
+    bad_path = s.TEST_FILES[0]
+
+    def fake(code_sha, name):
+        if name == bad_path:
+            return "0" * 64
+        return real(code_sha, name)
+
+    monkeypatch.setattr(s, "_reviewed_blob_sha256", fake)
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    assert f"code_identity_not_at_reviewed_head:{bad_path}" in capsys.readouterr().err
