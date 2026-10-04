@@ -12,10 +12,12 @@ from engine.prophet_lab.contracts import ALL_FALSE_AUTHORITY
 from engine.prophet_lab.opportunity_context import (
     OpportunityContextContractError,
     compose_opportunity_context,
+    project_terminal_portfolio_relation,
     resolve_display_alias_to_active_episode,
     select_unique_active_episode_id,
     validate_opportunity_context,
     validate_opportunity_identity_binding,
+    validate_terminal_portfolio_relation,
 )
 from engine.prophet_strategy_definition import (
     build_early_leadership_sector_rotation_definition,
@@ -131,7 +133,9 @@ def test_missing_b4_stays_unknown_and_mints_no_permission():
     assert out["fresh_entry"]["entry_open"] is None
     assert out["fresh_entry"]["availability_id"] is None
     assert out["fresh_entry"]["blockers"] == ["B4_NOT_AVAILABLE"]
-    assert out["user_state"]["state"] == "NOT_JOINED"
+    assert out["user_state"]["plan"]["state"] == "NOT_JOINED"
+    assert out["user_state"]["watchlist"]["state"] == "NOT_JOINED"
+    assert out["user_state"]["portfolio"]["state"] == "NOT_JOINED"
     assert out["forecast"]["qualified"] is False
     assert out["forecast"]["heads"] is None
     assert out["authority"] == ALL_FALSE_AUTHORITY
@@ -196,10 +200,21 @@ def test_context_does_not_accept_or_infer_private_plan_or_forecast_state():
         entry_availability=availability(p),
     )
     assert out["user_state"] == {
-        "state": "NOT_JOINED",
-        "plan_ref": None,
-        "position_ref": None,
-        "reason": "PRIVATE_OWNER_NOT_READ",
+        "plan": {
+            "state": "NOT_JOINED",
+            "plan_ref": None,
+            "reason": "PRIVATE_PLAN_OWNER_NOT_READ",
+        },
+        "watchlist": {
+            "state": "NOT_JOINED",
+            "saved": None,
+            "reason": "WATCHLIST_READ_CONTRACT_NOT_ADMITTED",
+        },
+        "portfolio": {
+            "state": "NOT_JOINED",
+            "relation": None,
+            "reason": "PORTFOLIO_OWNER_NOT_READ",
+        },
     }
     assert out["evidence_summary"]["support"] is None
     assert out["evidence_summary"]["contradiction"] is None
@@ -219,8 +234,8 @@ def test_closed_contract_rejects_authority_or_user_state_laundering():
         validate_opportunity_context(bad)
 
     bad = deepcopy(out)
-    bad["user_state"]["state"] = "entered"
-    with pytest.raises(OpportunityContextContractError, match="private user state"):
+    bad["user_state"]["plan"]["state"] = "entered"
+    with pytest.raises(OpportunityContextContractError, match="private Plan state"):
         validate_opportunity_context(bad)
 
 
@@ -400,3 +415,176 @@ def test_display_alias_refuses_non_date_clock():
             display_symbol="AAPL",
             decision_date="2026-09-18",
         )
+
+
+
+def _identity_binding():
+    return resolve_display_alias_to_active_episode(
+        projection(),
+        aliases=_identity_aliases(),
+        identity_source_receipts=_identity_receipts(),
+        display_symbol="AAPL",
+        decision_date=date(2026, 9, 18),
+    )
+
+
+def test_terminal_portfolio_relation_projects_only_current_open_owner_rows():
+    relation = project_terminal_portfolio_relation(
+        _identity_binding(),
+        http_status=200,
+        payload={
+            "positions": [
+                {"id": "p-open", "ticker": "AAPL", "status": "open", "notes": "private"},
+                {"id": "p-closed", "ticker": "AAPL", "status": "closed"},
+                {"id": "p-other", "ticker": "MSFT", "status": "open"},
+            ],
+            "risk": {"ignored": True},
+        },
+    )
+    assert relation["state"] == "OPEN_POSITION"
+    assert relation["join_basis"] == "CURRENT_STORE_ALIAS"
+    assert relation["open_position_count"] == 1
+    assert relation["position_refs"] == [{"position_id": "p-open"}]
+    assert "notes" not in str(relation)
+    assert "risk" not in relation
+    assert relation["authority"] == ALL_FALSE_AUTHORITY
+    validate_terminal_portfolio_relation(relation)
+
+
+def test_terminal_portfolio_relation_preserves_multiple_open_lots():
+    relation = project_terminal_portfolio_relation(
+        _identity_binding(),
+        http_status=200,
+        payload={"positions": [
+            {"id": "p-1", "ticker": "AAPL", "status": "open"},
+            {"id": "p-2", "ticker": "AAPL", "status": "open"},
+        ]},
+    )
+    assert relation["state"] == "OPEN_POSITION"
+    assert relation["open_position_count"] == 2
+    assert relation["position_refs"] == [
+        {"position_id": "p-1"},
+        {"position_id": "p-2"},
+    ]
+
+
+def test_terminal_portfolio_relation_200_empty_is_authoritative_no_open_position():
+    relation = project_terminal_portfolio_relation(
+        _identity_binding(),
+        http_status=200,
+        payload={"positions": [], "risk": None},
+    )
+    assert relation["state"] == "NO_OPEN_POSITION"
+    assert relation["open_position_count"] == 0
+    assert relation["position_refs"] == []
+    assert relation["reason"] is None
+
+
+def test_terminal_portfolio_relation_never_turns_owner_failure_into_zero():
+    unavailable = project_terminal_portfolio_relation(
+        _identity_binding(),
+        http_status=503,
+        payload={"error": "portfolio unavailable"},
+    )
+    assert unavailable["state"] == "UNAVAILABLE_DATA"
+    assert unavailable["open_position_count"] is None
+    assert unavailable["position_refs"] == []
+    assert unavailable["reason"] == "PORTFOLIO_OWNER_HTTP_503"
+
+    auth = project_terminal_portfolio_relation(
+        _identity_binding(),
+        http_status=401,
+        payload={"error": "unauthenticated"},
+    )
+    assert auth["state"] == "AUTHENTICATION_REQUIRED"
+    assert auth["open_position_count"] is None
+    assert auth["reason"] == "PORTFOLIO_AUTHENTICATION_REQUIRED"
+
+
+def test_terminal_portfolio_relation_refuses_malformed_owner_rows():
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="ticker is not normalized",
+    ):
+        project_terminal_portfolio_relation(
+            _identity_binding(),
+            http_status=200,
+            payload={"positions": [{"id": "p-1", "ticker": "aapl", "status": "open"}]},
+        )
+
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="duplicate position id",
+    ):
+        project_terminal_portfolio_relation(
+            _identity_binding(),
+            http_status=200,
+            payload={"positions": [
+                {"id": "p-1", "ticker": "AAPL", "status": "open"},
+                {"id": "p-1", "ticker": "AAPL", "status": "closed"},
+            ]},
+        )
+
+
+def test_context_joins_portfolio_without_laundering_plan_or_watchlist_state():
+    p = projection()
+    binding = resolve_display_alias_to_active_episode(
+        p,
+        aliases=_identity_aliases(),
+        identity_source_receipts=_identity_receipts(),
+        display_symbol="AAPL",
+        decision_date=date(2026, 9, 18),
+    )
+    relation = project_terminal_portfolio_relation(
+        binding,
+        http_status=200,
+        payload={"positions": [{"id": "p-1", "ticker": "AAPL", "status": "open"}]},
+    )
+    out = compose_opportunity_context(
+        p,
+        episode_id=eid(),
+        portfolio_relation=relation,
+    )
+    assert out["user_state"]["portfolio"]["state"] == "JOINED"
+    assert out["user_state"]["portfolio"]["relation"]["state"] == "OPEN_POSITION"
+    assert out["user_state"]["plan"]["state"] == "NOT_JOINED"
+    assert out["user_state"]["watchlist"] == {
+        "state": "NOT_JOINED",
+        "saved": None,
+        "reason": "WATCHLIST_READ_CONTRACT_NOT_ADMITTED",
+    }
+
+
+def test_context_refuses_portfolio_relation_from_another_episode_identity():
+    p = projection()
+    binding = _identity_binding()
+    relation = project_terminal_portfolio_relation(
+        binding,
+        http_status=200,
+        payload={"positions": []},
+    )
+    relation["episode_id"] = eid("other")
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="portfolio relation episode_id does not match",
+    ):
+        compose_opportunity_context(
+            p,
+            episode_id=eid(),
+            portfolio_relation=relation,
+        )
+
+
+def test_user_state_watchlist_negative_cannot_be_invented():
+    out = compose_opportunity_context(projection(), episode_id=eid())
+    bad = deepcopy(out)
+    bad["user_state"]["watchlist"] = {
+        "state": "JOINED",
+        "saved": False,
+        "reason": None,
+    }
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="watchlist state must remain unjoined",
+    ):
+        validate_opportunity_context(bad)

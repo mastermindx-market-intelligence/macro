@@ -27,12 +27,24 @@ SCHEMA = "prophet.lab_opportunity_context/v1"
 B3_SCHEMA = "prophet.candidate_state_projection/v1"
 B4_SCHEMA = "prophet.entry_availability/v1"
 IDENTITY_BINDING_SCHEMA = "prophet.lab_opportunity_identity/v1"
+PORTFOLIO_RELATION_SCHEMA = "prophet.lab_portfolio_relation/v1"
 
 _UNJOINED_USER_STATE = {
-    "state": "NOT_JOINED",
-    "plan_ref": None,
-    "position_ref": None,
-    "reason": "PRIVATE_OWNER_NOT_READ",
+    "plan": {
+        "state": "NOT_JOINED",
+        "plan_ref": None,
+        "reason": "PRIVATE_PLAN_OWNER_NOT_READ",
+    },
+    "watchlist": {
+        "state": "NOT_JOINED",
+        "saved": None,
+        "reason": "WATCHLIST_READ_CONTRACT_NOT_ADMITTED",
+    },
+    "portfolio": {
+        "state": "NOT_JOINED",
+        "relation": None,
+        "reason": "PORTFOLIO_OWNER_NOT_READ",
+    },
 }
 _UNJOINED_EVIDENCE = {
     "status": "NOT_JOINED",
@@ -315,11 +327,159 @@ def validate_opportunity_identity_binding(payload: Mapping[str, object]) -> None
             raise OpportunityContextContractError("opportunity identity receipt is malformed")
 
 
+def project_terminal_portfolio_relation(
+    identity_binding: Mapping[str, object],
+    *,
+    http_status: int,
+    payload: Mapping[str, object] | None = None,
+) -> dict[str, object]:
+    """Project actual-position state from the canonical Terminal portfolio owner.
+
+    The Terminal owner is ticker-keyed today, not Data-OS-security-keyed. The
+    relation is therefore explicitly CURRENT_STORE_ALIAS and may never be used as
+    permanent identity. No notes, size, entry price, risk or other private fields
+    are copied into OLI; only owner row ids are retained for current open matches.
+    """
+    validate_opportunity_identity_binding(identity_binding)
+    if type(http_status) is not int:
+        raise OpportunityContextContractError("portfolio owner http_status must be an integer")
+
+    base = {
+        "schema": PORTFOLIO_RELATION_SCHEMA,
+        "owner": "mastermind-terminal:/api/portfolio",
+        "join_basis": "CURRENT_STORE_ALIAS",
+        "display_symbol": identity_binding.get("display_symbol"),
+        "security_id": identity_binding.get("security_id"),
+        "identity_epoch": identity_binding.get("identity_epoch"),
+        "episode_id": identity_binding.get("episode_id"),
+        "candidate_generation_id": identity_binding.get("candidate_generation_id"),
+        "candidate_state_projection_id": identity_binding.get("candidate_state_projection_id"),
+        "authority": dict(ALL_FALSE_AUTHORITY),
+    }
+
+    if http_status == 401:
+        relation = {
+            **base,
+            "state": "AUTHENTICATION_REQUIRED",
+            "open_position_count": None,
+            "position_refs": [],
+            "reason": "PORTFOLIO_AUTHENTICATION_REQUIRED",
+        }
+        validate_terminal_portfolio_relation(relation)
+        return relation
+
+    if http_status != 200:
+        relation = {
+            **base,
+            "state": "UNAVAILABLE_DATA",
+            "open_position_count": None,
+            "position_refs": [],
+            "reason": f"PORTFOLIO_OWNER_HTTP_{http_status}",
+        }
+        validate_terminal_portfolio_relation(relation)
+        return relation
+
+    if not isinstance(payload, Mapping):
+        raise OpportunityContextContractError("portfolio owner payload must be an object")
+    positions = payload.get("positions")
+    if not isinstance(positions, list):
+        raise OpportunityContextContractError("portfolio owner positions must be a list")
+
+    display_symbol = _text(identity_binding.get("display_symbol"), "display_symbol")
+    seen_ids: set[str] = set()
+    refs: list[dict[str, str]] = []
+    for position in positions:
+        if not isinstance(position, Mapping):
+            raise OpportunityContextContractError("portfolio owner position must be an object")
+        position_id = _text(position.get("id"), "portfolio position id")
+        if position_id in seen_ids:
+            raise OpportunityContextContractError("portfolio owner returned a duplicate position id")
+        seen_ids.add(position_id)
+        ticker = _text(position.get("ticker"), "portfolio position ticker")
+        if ticker != ticker.strip().upper():
+            raise OpportunityContextContractError(
+                "portfolio owner ticker is not normalized current-symbol text"
+            )
+        status = position.get("status")
+        if status not in {"open", "closed"}:
+            raise OpportunityContextContractError("portfolio owner status is outside open/closed")
+        if ticker == display_symbol and status == "open":
+            refs.append({"position_id": position_id})
+
+    relation = {
+        **base,
+        "state": "OPEN_POSITION" if refs else "NO_OPEN_POSITION",
+        "open_position_count": len(refs),
+        "position_refs": refs,
+        "reason": None,
+    }
+    validate_terminal_portfolio_relation(relation)
+    return relation
+
+
+def validate_terminal_portfolio_relation(payload: Mapping[str, object]) -> None:
+    """Validate the minimal private position relation without re-reading the owner."""
+    if not isinstance(payload, Mapping):
+        raise OpportunityContextContractError("portfolio relation must be an object")
+    expected = {
+        "schema", "owner", "join_basis", "display_symbol", "security_id",
+        "identity_epoch", "episode_id", "candidate_generation_id",
+        "candidate_state_projection_id", "state", "open_position_count",
+        "position_refs", "reason", "authority",
+    }
+    if set(payload) != expected:
+        raise OpportunityContextContractError("portfolio relation fields are not closed")
+    if payload.get("schema") != PORTFOLIO_RELATION_SCHEMA:
+        raise OpportunityContextContractError("portfolio relation schema mismatch")
+    if payload.get("owner") != "mastermind-terminal:/api/portfolio":
+        raise OpportunityContextContractError("portfolio relation owner mismatch")
+    if payload.get("join_basis") != "CURRENT_STORE_ALIAS":
+        raise OpportunityContextContractError("portfolio relation join basis mismatch")
+    for field in (
+        "display_symbol", "security_id", "identity_epoch", "episode_id",
+        "candidate_generation_id", "candidate_state_projection_id",
+    ):
+        _text(payload.get(field), f"portfolio relation {field}")
+    if payload.get("authority") != ALL_FALSE_AUTHORITY:
+        raise OpportunityContextContractError("portfolio relation authority must remain all false")
+
+    state = payload.get("state")
+    refs = payload.get("position_refs")
+    count = payload.get("open_position_count")
+    reason = payload.get("reason")
+    if not isinstance(refs, list):
+        raise OpportunityContextContractError("portfolio relation position_refs must be a list")
+    if any(
+        not isinstance(ref, Mapping)
+        or set(ref) != {"position_id"}
+        or not isinstance(ref.get("position_id"), str)
+        or not ref.get("position_id")
+        for ref in refs
+    ):
+        raise OpportunityContextContractError("portfolio relation position ref is malformed")
+    ids = [str(ref["position_id"]) for ref in refs]
+    if len(ids) != len(set(ids)):
+        raise OpportunityContextContractError("portfolio relation position refs are not unique")
+
+    if state == "OPEN_POSITION":
+        if type(count) is not int or count < 1 or count != len(refs) or reason is not None:
+            raise OpportunityContextContractError("open portfolio relation is incoherent")
+    elif state == "NO_OPEN_POSITION":
+        if count != 0 or refs or reason is not None:
+            raise OpportunityContextContractError("empty portfolio relation is incoherent")
+    elif state in {"AUTHENTICATION_REQUIRED", "UNAVAILABLE_DATA"}:
+        if count is not None or refs or not isinstance(reason, str) or not reason:
+            raise OpportunityContextContractError("unavailable portfolio relation is incoherent")
+    else:
+        raise OpportunityContextContractError("portfolio relation state is unknown")
+
+
 def compose_opportunity_context(
     candidate_projection: Mapping[str, object],
     *,
     episode_id: str,
     entry_availability: Mapping[str, object] | None = None,
+    portfolio_relation: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     """Compose one zero-authority, identity-bound Prophet opportunity context.
 
@@ -337,6 +497,27 @@ def compose_opportunity_context(
         if entry_availability is None
         else _bound_entry(candidate_projection, row, entry_availability)
     )
+
+    user_state = deepcopy(_UNJOINED_USER_STATE)
+    if portfolio_relation is not None:
+        validate_terminal_portfolio_relation(portfolio_relation)
+        bindings = {
+            "security_id": row.get("security_id"),
+            "identity_epoch": row.get("identity_epoch"),
+            "episode_id": row.get("episode_id"),
+            "candidate_generation_id": candidate_projection.get("candidate_generation_id"),
+            "candidate_state_projection_id": candidate_projection.get("projection_id"),
+        }
+        for field, expected in bindings.items():
+            if portfolio_relation.get(field) != expected:
+                raise OpportunityContextContractError(
+                    f"portfolio relation {field} does not match the selected B3 identity"
+                )
+        user_state["portfolio"] = {
+            "state": "JOINED",
+            "relation": deepcopy(dict(portfolio_relation)),
+            "reason": None,
+        }
 
     out: dict[str, object] = {
         "schema": SCHEMA,
@@ -358,7 +539,7 @@ def compose_opportunity_context(
             "maturity_state": deepcopy(row.get("maturity_state")),
         },
         "fresh_entry": entry,
-        "user_state": deepcopy(_UNJOINED_USER_STATE),
+        "user_state": user_state,
         "evidence_summary": deepcopy(_UNJOINED_EVIDENCE),
         "forecast": deepcopy(_UNQUALIFIED_FORECAST),
         "authority": dict(ALL_FALSE_AUTHORITY),
@@ -423,8 +604,35 @@ def validate_opportunity_context(payload: Mapping[str, object]) -> None:
     elif entry.get("entry_open") not in (True, False):
         raise OpportunityContextContractError("owner-issued B4 entry_open must be boolean")
 
-    if payload.get("user_state") != _UNJOINED_USER_STATE:
-        raise OpportunityContextContractError("private user state must remain unjoined")
+    user_state = payload.get("user_state")
+    if not isinstance(user_state, Mapping) or set(user_state) != {"plan", "watchlist", "portfolio"}:
+        raise OpportunityContextContractError("private user state fields are not closed")
+    if user_state.get("plan") != _UNJOINED_USER_STATE["plan"]:
+        raise OpportunityContextContractError("private Plan state must remain owner-controlled")
+    if user_state.get("watchlist") != _UNJOINED_USER_STATE["watchlist"]:
+        raise OpportunityContextContractError("watchlist state must remain unjoined")
+    portfolio_state = user_state.get("portfolio")
+    if portfolio_state == _UNJOINED_USER_STATE["portfolio"]:
+        pass
+    elif (
+        isinstance(portfolio_state, Mapping)
+        and set(portfolio_state) == {"state", "relation", "reason"}
+        and portfolio_state.get("state") == "JOINED"
+        and portfolio_state.get("reason") is None
+        and isinstance(portfolio_state.get("relation"), Mapping)
+    ):
+        validate_terminal_portfolio_relation(portfolio_state["relation"])
+        relation = portfolio_state["relation"]
+        for field in (
+            "security_id", "identity_epoch", "episode_id",
+            "candidate_generation_id", "candidate_state_projection_id",
+        ):
+            if relation.get(field) != identity.get(field):
+                raise OpportunityContextContractError(
+                    f"portfolio relation {field} does not match opportunity identity"
+                )
+    else:
+        raise OpportunityContextContractError("private portfolio state is incoherent")
     if payload.get("evidence_summary") != _UNJOINED_EVIDENCE:
         raise OpportunityContextContractError("cross-domain evidence must remain unjoined")
     if payload.get("forecast") != _UNQUALIFIED_FORECAST:
@@ -435,8 +643,10 @@ __all__ = [
     "SCHEMA",
     "OpportunityContextContractError",
     "compose_opportunity_context",
+    "project_terminal_portfolio_relation",
     "resolve_display_alias_to_active_episode",
     "select_unique_active_episode_id",
     "validate_opportunity_context",
     "validate_opportunity_identity_binding",
+    "validate_terminal_portfolio_relation",
 ]
