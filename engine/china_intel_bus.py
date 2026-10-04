@@ -579,6 +579,12 @@ def _visit_discovery_snapshot(
         else:
             baseline_state = "measured"
 
+        observation_clock_incomplete = any(
+            observed_day is None
+            or observed_day > reference_day
+            or (coverage_day is not None and observed_day < coverage_day)
+            for _source_day, observed_day, _r in rows
+        )
         observed_days = [
             observed_day for _source_day, observed_day, _r in rows
             if observed_day is not None
@@ -590,6 +596,8 @@ def _visit_discovery_snapshot(
             first_seen_state = "unknown_due_coverage_exception"
         elif not recent:
             first_seen_state = "no_recent_positive_evidence"
+        elif observation_clock_incomplete:
+            first_seen_state = "observation_clock_unavailable"
         elif first_observed_day is None:
             first_seen_state = "observation_clock_unavailable"
         elif coverage_day is None or first_observed_day < coverage_day:
@@ -641,8 +649,11 @@ def _visit_discovery_snapshot(
             "first_seen_state": first_seen_state,
             "earliest_source_published_day": rows[0][0].isoformat() if rows else None,
             "first_observed_system_day": (
-                first_observed_day.isoformat() if first_observed_day else None
+                first_observed_day.isoformat()
+                if first_observed_day and not observation_clock_incomplete
+                else None
             ),
+            "observation_clock_complete": not observation_clock_incomplete,
             "recent_count": len(recent),
             "recent_window_start": recent_start.isoformat(),
             "recent_window_end": observation_end.isoformat(),
