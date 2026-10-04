@@ -274,6 +274,42 @@ def test_background_ci_poll_loop_returns_continue_work_context():
     assert "Immediately start the next highest-value independent authorized project lane" in context
 
 
+def test_background_ci_watcher_must_not_mutate_or_restart_the_release_lane():
+    """Regression for the live PR #810 watcher observed on 2026-10-04.
+
+    It waited until checks completed, then ran gh pr update-branch, silently
+    changing the head and starting another long CI proof window. A watcher owns
+    observation; source/branch refresh returns to the principal or repair lane.
+    """
+    cmd = (
+        "while true; do "
+        "J=$(gh pr view 810 --json state,mergeStateStatus,statusCheckRollup); "
+        "P=$(echo \"$J\" | jq -r '[.statusCheckRollup[]? | "
+        "select(.status!=\"COMPLETED\")] | length'); "
+        "M=$(echo \"$J\" | jq -r .mergeStateStatus); "
+        "if [ \"$M\" = \"BEHIND\" ] && [ \"$P\" = \"0\" ]; "
+        "then gh pr update-branch 810; fi; sleep 150; done"
+    )
+    d = _run(cmd, run_in_background=True)
+    assert d and d.get("permissionDecision") == "deny"
+    reason = d.get("permissionDecisionReason") or ""
+    assert "OBSERVATION-ONLY" in reason
+    assert "update-branch" in reason
+    assert "Do not silently restart CI" in reason
+
+
+@pytest.mark.parametrize("mutation", [
+    "gh run rerun 302186",
+    "gh pr merge 4242 --squash",
+    "git push origin HEAD",
+])
+def test_native_or_background_watcher_cannot_hide_a_mutation(mutation):
+    cmd = f"gh run watch 302186 --interval 150; {mutation}"
+    d = _run(cmd, codex_native=True)
+    assert d and d.get("permissionDecision") == "deny"
+    assert "OBSERVATION-ONLY" in (d.get("permissionDecisionReason") or "")
+
+
 def test_slow_non_ci_gh_loop_remains_allowed():
     """The occupancy gate is CI-scoped; unrelated GitHub reads keep quota-only behavior."""
     assert not _denied("for i in 1 2 3; do gh api rate_limit; sleep 150; done")

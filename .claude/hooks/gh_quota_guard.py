@@ -170,6 +170,17 @@ RUN_WATCH_ID_RE = re.compile(r"\bgh\s+run\s+watch\s+(?P<id>\d+)\b", re.I)
 PR_WATCH_ID_RE = re.compile(
     r"\bgh\s+pr\s+checks\s+(?P<id>\d+)\b[^|;&\n]*--watch\b", re.I
 )
+#: A CI watcher owns observation only. Any mutation embedded in the same watcher
+#: can silently restart CI (measured on a live watcher that ran gh pr update-branch
+#: immediately after checks concluded), recreating the 30-50 minute traffic jam.
+WATCH_MUTATION_RE = re.compile(
+    r"\bgh\s+pr\s+(?:update-branch|edit|ready|merge|close|reopen|review|comment)\b"
+    r"|\bgh\s+run\s+(?:rerun|cancel)\b"
+    r"|\bgh\s+workflow\s+run\b"
+    r"|\bgh\s+api\b[^;&|\n]*(?:--method|-X)\s+(?:POST|PATCH|PUT|DELETE)\b"
+    r"|\bgit\s+(?:push|commit|merge|rebase|reset|cherry-pick)\b",
+    re.I,
+)
 #: Shared across every worktree of this clone on purpose: the REST pool they are
 #: spending is one bucket, so two sibling sessions polling the same run alternately
 #: is the same waste as one session polling twice as fast.
@@ -689,6 +700,20 @@ def main():
             and COMMAND_DETACHED_RE.search(clean_cmd)
         )
     )
+
+    # A watcher owns observation only. Repair, branch refresh, rerun, merge, comment,
+    # push, and source mutation return to the owning principal/repair lane. Otherwise
+    # a watcher can update the branch after CI, silently retrigger another 30-50 minute
+    # proof cycle, and turn an asynchronous wait into an endless traffic jam.
+    if (watch_match or ci_sleep_poll or loop_ci_poll) and WATCH_MUTATION_RE.search(clean_cmd):
+        deny(
+            "CI WATCHERS ARE OBSERVATION-ONLY: this watcher contains a modifying "
+            "action (for example update-branch/rerun/merge/push). Remove the mutation. "
+            "Let exactly one watcher report the terminal event, then return repair/"
+            "refresh/merge work to the owning principal or canonical repair lane. "
+            "Do not silently restart CI from inside a wait loop."
+        )
+
     if (ci_sleep_poll or loop_ci_poll) and not background and not poll_detached:
         deny(
             "CI WAIT LOOP MUST BE ASYNC: a foreground CI status + sleep/poll command "
