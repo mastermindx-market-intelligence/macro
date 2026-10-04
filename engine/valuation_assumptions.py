@@ -25,11 +25,12 @@ and a future null path can reuse V1 diction without re-typing.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
 import math
+from datetime import datetime
 
-from engine import valuation_event_bridge as _veb
-from engine import valuation_event_proposal as _vep
 from engine.valuation_scenario import MISSING_LABELS, SCENARIOS
 
 log = logging.getLogger(__name__)
@@ -50,6 +51,565 @@ _MARGIN_BASE_FLOOR = 0.01
 # without re-typing. The sandbox panel's too-thin sentence is the B-F07-2
 # verbatim copy, not MISSING_LABELS["margin_too_thin"].
 _V1_MISSING_LABELS = MISSING_LABELS
+
+QUALIFIED_INPUT_SCHEMA = "valuation_scenario_qualified_input.v1"
+FORWARD_EVALUATION_SCHEMA = "valuation_scenario_forward_evaluation.v1"
+REQUIRED_MULTIPLE_SCHEMA = "valuation_scenario_required_multiple.v1"
+_FORWARD_MODEL_FAMILY = "earnings_multiple"
+_FORWARD_MODEL_VERSION = "B-F07-A6.v1"
+_REQUIRED_MULTIPLE_VERSION = "K3E-A7.v1"
+_DISPLAY_POLICY = "python_round_half_even_2dp"
+_SUPPORTED_TICKER = "AAPL"
+_SUPPORTED_CURRENCY = "USD"
+_SUPPORTED_ACCOUNTING_BASIS = "reported_gaap"
+_SUPPORTED_SHARE_IDENTITY = "outstanding"
+_SUPPORTED_CORPORATE_ACTION_BASIS = "split_adjusted_v1"
+_SUPPORTED_VALUATION_OBJECT = "equity_per_share"
+_SUPPORTED_USE = "research_display"
+
+
+def _refusal(code: str, field: str | None = None) -> dict:
+    row = {"code": code}
+    if field is not None:
+        row["field"] = field
+    return row
+
+
+def _canonical_digest(value: object) -> str:
+    payload = json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _parse_aware_timestamp(value: object, field: str, refusals: list[dict]):
+    if not isinstance(value, str) or not value.strip():
+        refusals.append(_refusal("MISSING_RECEIPT_FIELD", field))
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+    except ValueError:
+        refusals.append(_refusal("INVALID_TIMESTAMP", field))
+        return None
+    if parsed.tzinfo is None:
+        refusals.append(_refusal("INVALID_TIMESTAMP", field))
+        return None
+    return parsed
+
+
+def _required_text(container: dict, key: str, prefix: str, refusals: list[dict]):
+    value = container.get(key)
+    if not isinstance(value, str) or not value.strip():
+        refusals.append(_refusal("MISSING_RECEIPT_FIELD", f"{prefix}.{key}"))
+        return None
+    return value.strip()
+
+
+def _strict_number(value: object, field: str, refusals: list[dict]):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        refusals.append(_refusal("INVALID_NUMERIC_INPUT", field))
+        return None
+    number = float(value)
+    if not math.isfinite(number):
+        refusals.append(_refusal("INVALID_NUMERIC_INPUT", field))
+        return None
+    return number
+
+
+def _control_bound(key: str) -> tuple[float, float]:
+    for row in CONTROLS:
+        if row["key"] == key:
+            return float(row["min"]), float(row["max"])
+    raise KeyError(key)
+
+
+def _validate_parameter(
+    key: str,
+    value: object,
+    refusals: list[dict],
+) -> float | None:
+    number = _strict_number(value, f"assumptions.{key}", refusals)
+    if number is None:
+        return None
+    low, high = _control_bound(key)
+    if number < low or number > high:
+        refusals.append(_refusal("PARAMETER_OUT_OF_BOUNDS", f"assumptions.{key}"))
+        return number
+    return number
+
+
+def _qualified_invalid(schema: str, refusals: list[dict], **extra) -> dict:
+    blob = {
+        "schema": schema,
+        "valid": False,
+        "refusals": refusals,
+        "tier": "research_display_only",
+        "authority": "descriptive_context_only",
+        "financial_influence": False,
+    }
+    blob.update(extra)
+    return blob
+
+
+def _validate_qualified_input(receipt: object) -> tuple[dict | None, list[dict]]:
+    refusals: list[dict] = []
+    if not isinstance(receipt, dict):
+        return None, [_refusal("INVALID_RECEIPT", "receipt")]
+    if receipt.get("schema") != QUALIFIED_INPUT_SCHEMA:
+        refusals.append(_refusal("INVALID_RECEIPT_SCHEMA", "schema"))
+
+    ticker = receipt.get("ticker")
+    if ticker != _SUPPORTED_TICKER:
+        refusals.append(_refusal("UNSUPPORTED_TICKER", "ticker"))
+
+    requested_use = _required_text(receipt, "requested_use", "receipt", refusals)
+    if requested_use is not None and requested_use != _SUPPORTED_USE:
+        refusals.append(_refusal("UNSUPPORTED_USE", "receipt.requested_use"))
+
+    financial = receipt.get("financial")
+    price = receipt.get("price")
+    if not isinstance(financial, dict):
+        refusals.append(_refusal("MISSING_RECEIPT_FIELD", "financial"))
+        financial = {}
+    if not isinstance(price, dict):
+        refusals.append(_refusal("MISSING_RECEIPT_FIELD", "price"))
+        price = {}
+
+    fin_receipt = _required_text(financial, "receipt_id", "financial", refusals)
+    px_receipt = _required_text(price, "receipt_id", "price", refusals)
+    issuer_ref = _required_text(financial, "issuer_ref", "financial", refusals)
+    fin_security = _required_text(financial, "security_ref", "financial", refusals)
+    px_security = _required_text(price, "security_ref", "price", refusals)
+    fin_currency = _required_text(financial, "currency", "financial", refusals)
+    px_currency = _required_text(price, "currency", "price", refusals)
+    accounting_basis = _required_text(financial, "accounting_basis", "financial", refusals)
+    fiscal_period = _required_text(financial, "fiscal_period", "financial", refusals)
+    period_end = _required_text(financial, "period_end", "financial", refusals)
+    fin_share_identity = _required_text(financial, "share_identity", "financial", refusals)
+    px_share_identity = _required_text(price, "share_identity", "price", refusals)
+    fin_action_basis = _required_text(financial, "corporate_action_basis", "financial", refusals)
+    px_action_basis = _required_text(price, "corporate_action_basis", "price", refusals)
+    valuation_object = _required_text(price, "valuation_object", "price", refusals)
+    price_session = _required_text(price, "session", "price", refusals)
+
+    if fin_security is not None and px_security is not None and fin_security != px_security:
+        refusals.append(_refusal("IDENTITY_MISMATCH", "price.security_ref"))
+    if fin_currency is not None and px_currency is not None and fin_currency != px_currency:
+        refusals.append(_refusal("CURRENCY_MISMATCH", "price.currency"))
+    elif fin_currency is not None and fin_currency != _SUPPORTED_CURRENCY:
+        refusals.append(_refusal("UNSUPPORTED_CURRENCY", "financial.currency"))
+    if (
+        fin_share_identity is not None
+        and px_share_identity is not None
+        and fin_share_identity != px_share_identity
+    ):
+        refusals.append(_refusal("SHARE_IDENTITY_MISMATCH", "price.share_identity"))
+    elif fin_share_identity is not None and fin_share_identity != _SUPPORTED_SHARE_IDENTITY:
+        refusals.append(_refusal("UNSUPPORTED_SHARE_IDENTITY", "financial.share_identity"))
+    if (
+        fin_action_basis is not None
+        and px_action_basis is not None
+        and fin_action_basis != px_action_basis
+    ):
+        refusals.append(
+            _refusal("CORPORATE_ACTION_BASIS_MISMATCH", "price.corporate_action_basis")
+        )
+    elif fin_action_basis is not None and fin_action_basis != _SUPPORTED_CORPORATE_ACTION_BASIS:
+        refusals.append(
+            _refusal("UNSUPPORTED_CORPORATE_ACTION_BASIS", "financial.corporate_action_basis")
+        )
+    if accounting_basis is not None and accounting_basis != _SUPPORTED_ACCOUNTING_BASIS:
+        refusals.append(_refusal("UNSUPPORTED_ACCOUNTING_BASIS", "financial.accounting_basis"))
+    if valuation_object is not None and valuation_object != _SUPPORTED_VALUATION_OBJECT:
+        refusals.append(_refusal("UNSUPPORTED_VALUATION_OBJECT", "price.valuation_object"))
+
+    for prefix, leg in (("financial", financial), ("price", price)):
+        uses = leg.get("permitted_uses")
+        if (
+            not isinstance(uses, list)
+            or requested_use is None
+            or requested_use not in uses
+        ):
+            refusals.append(_refusal("RIGHTS_BLOCKED", f"{prefix}.permitted_uses"))
+
+    cutoff = _parse_aware_timestamp(
+        receipt.get("decision_cutoff"),
+        "receipt.decision_cutoff",
+        refusals,
+    )
+    fin_available = _parse_aware_timestamp(
+        financial.get("available_at"),
+        "financial.available_at",
+        refusals,
+    )
+    px_observed = _parse_aware_timestamp(
+        price.get("observed_at"),
+        "price.observed_at",
+        refusals,
+    )
+    if cutoff is not None:
+        if fin_available is not None and fin_available > cutoff:
+            refusals.append(_refusal("CUTOFF_VIOLATION", "financial.available_at"))
+        if px_observed is not None and px_observed > cutoff:
+            refusals.append(_refusal("CUTOFF_VIOLATION", "price.observed_at"))
+
+    net_income = _strict_number(financial.get("net_income"), "financial.net_income", refusals)
+    revenue = _strict_number(financial.get("revenue"), "financial.revenue", refusals)
+    shares = _strict_number(financial.get("shares"), "financial.shares", refusals)
+    price_value = _strict_number(price.get("value"), "price.value", refusals)
+    for field, number in (
+        ("financial.net_income", net_income),
+        ("financial.revenue", revenue),
+        ("financial.shares", shares),
+        ("price.value", price_value),
+    ):
+        if number is not None and number <= 0:
+            refusals.append(_refusal("NONPOSITIVE_INPUT", field))
+
+    if refusals:
+        return None, refusals
+
+    state = {
+        "ticker": ticker,
+        "requested_use": requested_use,
+        "decision_cutoff": receipt["decision_cutoff"],
+        "financial_receipt_id": fin_receipt,
+        "price_receipt_id": px_receipt,
+        "issuer_ref": issuer_ref,
+        "security_ref": fin_security,
+        "currency": fin_currency,
+        "accounting_basis": accounting_basis,
+        "fiscal_period": fiscal_period,
+        "period_end": period_end,
+        "share_identity": fin_share_identity,
+        "corporate_action_basis": fin_action_basis,
+        "valuation_object": valuation_object,
+        "price_session": price_session,
+        "net_income": net_income,
+        "revenue": revenue,
+        "shares": shares,
+        "price": price_value,
+        "receipt_digest": _canonical_digest(receipt),
+    }
+    return state, []
+
+
+def _forward_scale(
+    state: dict,
+    sales_growth_pct: float,
+    margin_delta_pp: float,
+) -> tuple[dict | None, list[dict]]:
+    refusals: list[dict] = []
+    ni = state["net_income"]
+    revenue = state["revenue"]
+    shares = state["shares"]
+    net_margin_base = ni / revenue
+    if not math.isfinite(net_margin_base):
+        return None, [_refusal("ZERO_OR_NONFINITE_SCALE", "financial.net_margin_base")]
+    if abs(net_margin_base) < _MARGIN_BASE_FLOOR:
+        return None, [_refusal("MARGIN_BASE_TOO_THIN", "financial.net_margin_base")]
+    adjusted_margin = net_margin_base + (margin_delta_pp / 100.0)
+    if adjusted_margin <= 0:
+        return None, [_refusal("ADJUSTED_MARGIN_NONPOSITIVE", "assumptions.margin_delta_pp")]
+
+    growth_factor = 1.0 + sales_growth_pct / 100.0
+    margin_factor = 1.0 + (margin_delta_pp / 100.0) / net_margin_base
+    first = ni * growth_factor
+    second = first * margin_factor
+    for field, value in (
+        ("net_margin_base", net_margin_base),
+        ("growth_factor", growth_factor),
+        ("margin_factor", margin_factor),
+        ("income_after_growth", first),
+        ("income_after_margin", second),
+    ):
+        if not math.isfinite(value):
+            refusals.append(_refusal("NONFINITE_FORWARD_INTERMEDIATE", field))
+    if refusals:
+        return None, refusals
+    scale = second / shares
+    if not math.isfinite(scale) or scale <= 0:
+        return None, [_refusal("ZERO_OR_NONFINITE_SCALE", "per_share_scale")]
+    return {
+        "net_margin_base": net_margin_base,
+        "growth_factor": growth_factor,
+        "margin_factor": margin_factor,
+        "income_after_growth": first,
+        "income_after_margin": second,
+        "per_share_scale": scale,
+    }, []
+
+
+def _forward_unrounded(
+    state: dict,
+    sales_growth_pct: float,
+    margin_delta_pp: float,
+    earnings_multiple: float,
+) -> tuple[float | None, dict | None, list[dict]]:
+    scale_state, refusals = _forward_scale(state, sales_growth_pct, margin_delta_pp)
+    if refusals:
+        return None, scale_state, refusals
+    third = scale_state["income_after_margin"] * earnings_multiple
+    if not math.isfinite(third):
+        return None, scale_state, [_refusal("NONFINITE_FORWARD_INTERMEDIATE", "equity_value")]
+    raw = third / state["shares"]
+    if not math.isfinite(raw):
+        return None, scale_state, [_refusal("NONFINITE_FORWARD_INTERMEDIATE", "per_share_value")]
+    if raw <= 0:
+        return None, scale_state, [_refusal("NONPOSITIVE_FORWARD_VALUE", "per_share_value")]
+    scale_state = dict(scale_state)
+    scale_state["equity_value"] = third
+    scale_state["per_share_value"] = raw
+    return raw, scale_state, []
+
+
+def _forward_common_fields(state: dict) -> dict:
+    return {
+        "model_family": _FORWARD_MODEL_FAMILY,
+        "model_version": _FORWARD_MODEL_VERSION,
+        "ticker": state["ticker"],
+        "issuer_ref": state["issuer_ref"],
+        "security_ref": state["security_ref"],
+        "valuation_object": state["valuation_object"],
+        "currency": state["currency"],
+        "accounting_basis": state["accounting_basis"],
+        "fiscal_period": state["fiscal_period"],
+        "period_end": state["period_end"],
+        "share_identity": state["share_identity"],
+        "corporate_action_basis": state["corporate_action_basis"],
+        "decision_cutoff": state["decision_cutoff"],
+        "requested_use": state["requested_use"],
+        "input_refs": {
+            "financial_receipt_id": state["financial_receipt_id"],
+            "price_receipt_id": state["price_receipt_id"],
+        },
+        "receipt_digest": state["receipt_digest"],
+        "accounting": {
+            "debt_bridge": "NOT_APPLICABLE",
+            "terminal_growth": "NOT_APPLICABLE",
+            "terminal_value_share": "NOT_APPLICABLE",
+        },
+    }
+
+
+def evaluate_qualified_assumptions(
+    receipt: object,
+    *,
+    sales_growth_pct: object,
+    margin_delta_pp: object,
+    earnings_multiple: object,
+) -> dict:
+    """Pure A6 forward evaluation over one immutable qualified owner receipt.
+
+    This is descriptive research math only. It never loads event readers, current
+    files, prices, clocks, stores or network state. The operation sequence mirrors
+    valuation_scenario.v1 before display rounding.
+    """
+    state, refusals = _validate_qualified_input(receipt)
+    params_refusals: list[dict] = []
+    g = _validate_parameter("sales_growth_pct", sales_growth_pct, params_refusals)
+    d = _validate_parameter("margin_delta_pp", margin_delta_pp, params_refusals)
+    k = _validate_parameter("earnings_multiple", earnings_multiple, params_refusals)
+    refusals.extend(params_refusals)
+    if state is None or refusals:
+        return _qualified_invalid(FORWARD_EVALUATION_SCHEMA, refusals)
+
+    raw, steps, forward_refusals = _forward_unrounded(state, g, d, k)
+    if forward_refusals:
+        return _qualified_invalid(
+            FORWARD_EVALUATION_SCHEMA,
+            forward_refusals,
+            **_forward_common_fields(state),
+        )
+    return {
+        "schema": FORWARD_EVALUATION_SCHEMA,
+        "valid": True,
+        "refusals": [],
+        "tier": "research_display_only",
+        "authority": "descriptive_context_only",
+        "financial_influence": False,
+        **_forward_common_fields(state),
+        "assumptions": {
+            "sales_growth_pct": g,
+            "margin_delta_pp": d,
+            "earnings_multiple": k,
+        },
+        "unrounded_per_share": raw,
+        "display_per_share": round(raw, 2),
+        "display_policy": _DISPLAY_POLICY,
+        "forward_steps": steps,
+    }
+
+
+def required_earnings_multiple(
+    receipt: object,
+    *,
+    sales_growth_pct: object,
+    margin_delta_pp: object,
+    price_tolerance: object,
+) -> dict:
+    """A7 conditional inverse with growth and margin visibly locked.
+
+    Solves only for the earnings multiple. The one-price / three-parameter
+    identification geometry remains explicit; no probability, fair-value claim,
+    compatibility percentage, rank, sizing or trading authority is emitted.
+    """
+    state, refusals = _validate_qualified_input(receipt)
+    params_refusals: list[dict] = []
+    g = _validate_parameter("sales_growth_pct", sales_growth_pct, params_refusals)
+    d = _validate_parameter("margin_delta_pp", margin_delta_pp, params_refusals)
+    tol = _strict_number(price_tolerance, "price_tolerance", params_refusals)
+    if tol is not None and tol < 0:
+        params_refusals.append(_refusal("INVALID_TOLERANCE", "price_tolerance"))
+    refusals.extend(params_refusals)
+    base_extra = {
+        "model_family": _FORWARD_MODEL_FAMILY,
+        "model_version": _REQUIRED_MULTIPLE_VERSION,
+    }
+    if state is None or refusals:
+        return _qualified_invalid(REQUIRED_MULTIPLE_SCHEMA, refusals, **base_extra)
+    inverse_common = _forward_common_fields(state)
+    inverse_common["model_version"] = _REQUIRED_MULTIPLE_VERSION
+    if state["price"] - tol <= 0:
+        return _qualified_invalid(
+            REQUIRED_MULTIPLE_SCHEMA,
+            [_refusal("INVALID_TOLERANCE", "price_tolerance")],
+            **inverse_common,
+        )
+
+    scale_state, scale_refusals = _forward_scale(state, g, d)
+    if scale_refusals:
+        # A7 names a collapsed scale explicitly because it makes the inverse
+        # undefined, even when the forward path would merely have no value.
+        codes = {item["code"] for item in scale_refusals}
+        if "ZERO_OR_NONFINITE_SCALE" not in codes and any(
+            item["code"] == "NONFINITE_FORWARD_INTERMEDIATE" for item in scale_refusals
+        ):
+            scale_refusals.append(_refusal("ZERO_OR_NONFINITE_SCALE", "per_share_scale"))
+        return _qualified_invalid(
+            REQUIRED_MULTIPLE_SCHEMA,
+            scale_refusals,
+            **inverse_common,
+        )
+
+    scale = scale_state["per_share_scale"]
+    if not math.isfinite(scale) or scale <= 0:
+        return _qualified_invalid(
+            REQUIRED_MULTIPLE_SCHEMA,
+            [_refusal("ZERO_OR_NONFINITE_SCALE", "per_share_scale")],
+            **inverse_common,
+        )
+
+    required = state["price"] / scale
+    if not math.isfinite(required) or required <= 0:
+        return _qualified_invalid(
+            REQUIRED_MULTIPLE_SCHEMA,
+            [_refusal("ZERO_OR_NONFINITE_SCALE", "required_multiple")],
+            **inverse_common,
+        )
+    multiple_min, multiple_max = _control_bound("earnings_multiple")
+    exact_in_bounds = multiple_min <= required <= multiple_max
+
+    lower_price = state["price"] - tol
+    upper_price = state["price"] + tol
+    interval_lower = max(multiple_min, lower_price / scale)
+    interval_upper = min(multiple_max, upper_price / scale)
+    interval_nonempty = (
+        math.isfinite(interval_lower)
+        and math.isfinite(interval_upper)
+        and interval_lower <= interval_upper
+    )
+
+    # Forward-substitute through the exact owner operation order. Do not call
+    # the public A6 wrapper here because the exact inverse must remain visible
+    # even when it lands outside declared parameter bounds.
+    forward_raw, _, forward_refusals = _forward_unrounded(state, g, d, required)
+    residual = None if forward_raw is None else forward_raw - state["price"]
+    inverse_refusals: list[dict] = list(forward_refusals)
+    if not exact_in_bounds:
+        inverse_refusals.append(
+            _refusal("REQUIRED_MULTIPLE_OUT_OF_BOUNDS", "required_multiple")
+        )
+    if residual is None or not math.isfinite(residual) or abs(residual) > tol:
+        inverse_refusals.append(
+            _refusal("FORWARD_RESIDUAL_EXCEEDS_TOLERANCE", "forward_check.residual")
+        )
+
+    mu = scale_state["net_margin_base"]
+    u = scale_state["growth_factor"]
+    v = scale_state["margin_factor"]
+    f_value = forward_raw if forward_raw is not None else state["price"]
+    jacobian = [
+        f_value / (100.0 * u),
+        f_value / (100.0 * mu * v),
+        f_value / required,
+    ]
+    nullspace = [
+        [1.0, 0.0, -required / (100.0 * u)],
+        [0.0, 1.0, -required / (100.0 * mu * v)],
+    ]
+    if not all(math.isfinite(x) for x in jacobian + nullspace[0] + nullspace[1]):
+        inverse_refusals.append(_refusal("NONFINITE_JACOBIAN", "identification"))
+
+    return {
+        "schema": REQUIRED_MULTIPLE_SCHEMA,
+        "valid": not inverse_refusals,
+        "refusals": inverse_refusals,
+        "tier": "research_display_only",
+        "authority": "descriptive_context_only",
+        "financial_influence": False,
+        **_forward_common_fields(state),
+        "model_version": _REQUIRED_MULTIPLE_VERSION,
+        "locked_assumptions": {
+            "sales_growth_pct": g,
+            "margin_delta_pp": d,
+        },
+        "price_target": state["price"],
+        "price_tolerance": tol,
+        "required_multiple": required,
+        "multiple_bounds": {"min": multiple_min, "max": multiple_max},
+        "forward_check": {
+            "unrounded_per_share": forward_raw,
+            "residual": residual,
+            "within_tolerance": residual is not None and abs(residual) <= tol,
+        },
+        "feasible_multiple_interval": {
+            "lower": interval_lower,
+            "upper": interval_upper,
+            "nonempty": interval_nonempty,
+            "definition": "declared_price_band_intersection_not_exact_inverse_clamping",
+        },
+        "identification": {
+            "parameter_dimension": 3,
+            "independent_price_observations": 1,
+            "jacobian_rank": 1,
+            "nullspace_dimension": 2,
+            "conditional_root_count": 1,
+            "full_parameter_set_identified": False,
+            "conditioning": {
+                "locked": ["sales_growth_pct", "margin_delta_pp"],
+                "solved": ["earnings_multiple"],
+            },
+            "jacobian": jacobian,
+            "nullspace_basis": nullspace,
+        },
+        "prior": {"status": "NOT_USED"},
+        "compatibility_mass": {
+            "status": "UNAVAILABLE",
+            "value": None,
+            "reason": "INDEPENDENT_JOINT_REFERENCE_NOT_QUALIFIED",
+        },
+    }
+
+
+def _bridge_for_issuer(event_class: object):
+    from engine import valuation_event_bridge as _veb
+
+    return _veb.bridge_for_issuer(event_class)
 
 
 def latest_issuer_spine_event_class(ticker: object) -> str | None:
@@ -92,7 +652,7 @@ def _select_latest_classified_event_class(wanted: str) -> str | None:
         }:
             continue
         event_class = str(event.get("kind") or "").strip()
-        if not event_class or _veb.bridge_for_issuer(event_class) is None:
+        if not event_class or _bridge_for_issuer(event_class) is None:
             continue
         available = event.get("ts") or event.get("date")
         if not available:
@@ -171,6 +731,8 @@ def _attach_event_proposal(blob: dict, as_of: object = None) -> dict:
     exactly as it was.
     """
     try:
+        from engine import valuation_event_proposal as _vep
+
         ticker = blob.get("ticker")
         record, reader_ok = latest_issuer_event_record(ticker)
         if not reader_ok:
@@ -314,7 +876,7 @@ def controls_blob(v1_blob, as_of=None):
                 "net_margin_base": net_margin_base,
             },
             "margin_base_floor": _MARGIN_BASE_FLOOR,
-            "latest_event_bridge": _veb.bridge_for_issuer(latest_event_class),
+            "latest_event_bridge": _bridge_for_issuer(latest_event_class),
         })
 
     scenarios = v1_blob.get("scenarios") or []
@@ -359,7 +921,7 @@ def controls_blob(v1_blob, as_of=None):
 
     # The durable capital-structure spine is read directly; no new collector
     # and no network access are introduced.
-    _latest_event_bridge = _veb.bridge_for_issuer(latest_event_class)
+    _latest_event_bridge = _bridge_for_issuer(latest_event_class)
 
     return _attach_event_proposal(as_of=as_of, blob={
         "schema": "valuation_scenario_controls.v1",
