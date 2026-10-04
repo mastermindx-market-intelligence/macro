@@ -109,7 +109,18 @@ def _migrate_columns(conn: sqlite3.Connection) -> None:
             conn.execute(f"ALTER TABLE papers ADD COLUMN {col} {decl}")
 
 
-# --- meta KV (last_successful_run, etc.) -----------------------------------
+# --- meta KV (last_successful_run, producer health, etc.) ------------------
+PRODUCER_AUTH_STATE_KEY = "producer_auth_state"
+PRODUCER_AUTH_OBSERVED_AT_KEY = "producer_auth_observed_at"
+PRODUCER_AUTH_REQUIRED_AT_KEY = "producer_auth_required_at"
+PRODUCER_AUTH_REASON_KEY = "producer_auth_reason"
+
+AUTHENTICATED = "AUTHENTICATED"
+AUTH_REQUIRED = "AUTH_REQUIRED"
+AUTH_UNKNOWN = "UNKNOWN"
+PRODUCER_AUTH_STATES = frozenset({AUTHENTICATED, AUTH_REQUIRED, AUTH_UNKNOWN})
+
+
 def get_meta(conn: sqlite3.Connection, key: str, default: str | None = None) -> str | None:
     row = conn.execute("SELECT value FROM meta WHERE key=?", (key,)).fetchone()
     return row["value"] if row else default
@@ -122,6 +133,65 @@ def set_meta(conn: sqlite3.Connection, key: str, value: str) -> None:
         (key, value),
     )
     conn.commit()
+
+
+def producer_auth_health(conn: sqlite3.Connection) -> dict[str, str]:
+    """Read the typed producer-auth state from the incumbent meta table.
+
+    Absence means the deployed producer predates this contract, so callers must
+    report UNKNOWN rather than inventing a healthy state from process presence.
+    """
+    return {
+        "state": get_meta(conn, PRODUCER_AUTH_STATE_KEY, AUTH_UNKNOWN) or AUTH_UNKNOWN,
+        "observed_at": get_meta(conn, PRODUCER_AUTH_OBSERVED_AT_KEY, "") or "",
+        "required_at": get_meta(conn, PRODUCER_AUTH_REQUIRED_AT_KEY, "") or "",
+        "reason": get_meta(conn, PRODUCER_AUTH_REASON_KEY, "") or "",
+    }
+
+
+def set_producer_auth_health(
+    conn: sqlite3.Connection,
+    *,
+    state: str,
+    observed_at: str,
+    reason: str = "",
+) -> dict[str, str]:
+    """Persist one producer-auth transition atomically in the existing meta KV.
+
+    AUTH_REQUIRED preserves the first required_at timestamp across repeated
+    observations. Returning to AUTHENTICATED clears required_at/reason.
+    """
+    if state not in PRODUCER_AUTH_STATES:
+        raise ValueError(f"unsupported producer auth state: {state!r}")
+    if not isinstance(observed_at, str) or not observed_at.strip():
+        raise ValueError("observed_at must be a nonempty timestamp string")
+
+    previous = producer_auth_health(conn)
+    required_at = ""
+    clean_reason = ""
+    if state == AUTH_REQUIRED:
+        required_at = (
+            previous["required_at"]
+            if previous["state"] == AUTH_REQUIRED and previous["required_at"]
+            else observed_at
+        )
+        clean_reason = str(reason or "NO_AUTHENTICATED_PROFILE").strip()[:160]
+    elif state == AUTH_UNKNOWN:
+        clean_reason = str(reason or "NO_CONFIGURED_PROFILE").strip()[:160]
+
+    values = (
+        (PRODUCER_AUTH_STATE_KEY, state),
+        (PRODUCER_AUTH_OBSERVED_AT_KEY, observed_at),
+        (PRODUCER_AUTH_REQUIRED_AT_KEY, required_at),
+        (PRODUCER_AUTH_REASON_KEY, clean_reason),
+    )
+    conn.executemany(
+        "INSERT INTO meta(key, value) VALUES(?,?) "
+        "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+        values,
+    )
+    conn.commit()
+    return producer_auth_health(conn)
 
 
 # --- dedup lookups ---------------------------------------------------------
