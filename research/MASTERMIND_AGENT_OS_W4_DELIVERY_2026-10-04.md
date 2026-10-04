@@ -118,3 +118,15 @@ no unknown evidence is promoted to a missing or successful handoff.
 
 The repaired helper/hold-wrapper subset passed **90 tests in 26.76 seconds**; the
 pre-repair discriminating run failed both timeout cases (four existing cases passed).
+
+
+## Historical Phase 2b fixture repair
+
+Hosted CI 37180044700 at 1e3ef61e5803d7c968be049f26860def361a3d09 passed eleven
+packs but correctly refused release when the status suite's historical Phase 2b test
+required the live W4 wave to remain todo (480 other Agent OS cases passed). W4 had
+legitimately advanced to awaiting_ci through actual PR capture. The bounded correction
+freezes that test's temporary pre-W4 workstream state and retains W2B done/PR5649,
+the exact dependency graph and readiness assertions. A byte-equality assertion now
+also proves that generating readiness does not mutate the copied authored record.
+No status engine, live workstream state or enforcement behavior is changed by this repair.
