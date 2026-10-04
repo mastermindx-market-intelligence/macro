@@ -1471,13 +1471,13 @@ def _pill(en: str, zh: str) -> str:
     return f'<span class="l-en">{en}</span><span class="l-zh">{zh}</span>'
 
 
-def test_inflation_read_at_target_with_zero_wedge_reads_at_target():
+def test_inflation_read_at_target_with_zero_wedge_reads_near_target():
     row, html = _inflation_read_via_owner(2.0, 0.0)
     assert row["regime"] == "at target" and row["anchoring"] == "anchored"
-    assert _pill("At target", "接近目标") in html
+    assert _pill("Near target", "接近目标") in html
     assert "Core prices are close to the Fed’s 2% target; longer-run expectations look steady." in html
     assert "核心物价接近美联储2%目标；长期预期看起来稳定。" in html
-    assert "Above target" not in html and "points above" not in html
+    assert "Above target" not in html and "At target" not in html and "points above" not in html
     assert "(expectations: anchored)" in html and "（预期：锚定）" in html
     assert "color:var(--up,#22d97a)" in html
 
@@ -1487,8 +1487,8 @@ def test_inflation_read_above_target_drifting_up_is_the_wrong_way():
     assert row["regime"] == "above target" and row["anchoring"] == "drifting up"
     assert _pill("Above target", "高于目标") in html
     assert "Core prices are still 0.8 points above the Fed’s 2% target; longer-run expectations are drifting up." in html
-    assert "核心物价仍高于美联储2%目标 0.8 个百分点；长期预期上行脱锚。" in html
-    assert "(expectations: drifting up)" in html and "（预期：上行脱锚）" in html
+    assert "核心物价仍高于美联储2%目标 0.8 个百分点；长期预期向上漂移。" in html
+    assert "(expectations: drifting up)" in html and "（预期：向上漂移）" in html
     assert "color:var(--down,#ef4444)" in html
 
 
@@ -1497,8 +1497,8 @@ def test_inflation_read_below_target_drifting_down_is_the_wrong_way():
     assert row["regime"] == "below target" and row["anchoring"] == "drifting down"
     assert _pill("Below target", "低于目标") in html
     assert "Core prices are 0.5 points below the Fed’s 2% target; longer-run expectations are drifting down." in html
-    assert "核心物价低于美联储2%目标 0.5 个百分点；长期预期下行。" in html
-    assert "(expectations: drifting down)" in html and "（预期：下行）" in html
+    assert "核心物价低于美联储2%目标 0.5 个百分点；长期预期向下漂移。" in html
+    assert "(expectations: drifting down)" in html and "（预期：向下漂移）" in html
     assert "color:var(--down,#ef4444)" in html
 
 
@@ -1535,9 +1535,37 @@ def test_inflation_read_unknown_tokens_are_never_rendered_as_words():
     assert "Above target" not in html and "expectations:" not in html
 
 
+def test_inflation_read_mild_miss_with_steady_expectations_is_amber():
+    """Any miss of the target is amber now (the old block went green below a 0.5-point gap)."""
+    row, html = _inflation_read_via_owner(2.4, 0.0)
+    assert row["regime"] == "above target" and row["anchoring"] == "anchored"
+    assert "still 0.4 points above the Fed’s 2% target; longer-run expectations look steady." in html
+    assert "color:var(--warn,#f59e0b)" in html and "color:var(--up,#22d97a)" not in html
+
+
+def test_inflation_read_near_target_with_drifting_expectations_is_amber():
+    row, html = _inflation_read_via_owner(2.0, 0.31)
+    assert row["regime"] == "at target" and row["anchoring"] == "drifting up"
+    assert _pill("Near target", "接近目标") in html
+    assert "Core prices are close to the Fed’s 2% target; longer-run expectations are drifting up." in html
+    assert "color:var(--warn,#f59e0b)" in html
+    assert "color:var(--up,#22d97a)" not in html and "color:var(--down,#ef4444)" not in html
+
+
+def test_inflation_read_old_artifact_without_tokens_reads_being_updated():
+    """An artifact written before the owner published these keys renders quietly, never crashes."""
+    row = {"core_pce_yoy": 2.8, "core_cpi_yoy": None, "core_pce_3m_ann": None, "breakeven_10y": None, "nearest_cpi": None}
+    html = _render_inflation_read(row)
+    assert _pill("Being updated", "更新中") in html
+    assert "Core prices are being re-read against the Fed’s 2% target; the longer-run expectations read is being updated." in html
+    assert "color:var(--info,#60a5fa)" in html
+    assert "None" not in html and "Undefined" not in html and "expectations:" not in html and "预期：" not in html
+
+
 def test_inflation_read_block_carries_no_retired_vocabulary():
+    """Pins only the dead owner values and the retired English phrases; legitimate copy edits stay free."""
     block = _inflation_read_block()
-    for word in ("'drifting'", "unanchored", "a touch loose", "unmoored", "向上漂移", "略松动", "不稳", "_inf_above_"):
+    for word in ("'drifting'", "unanchored", "a touch loose", "unmoored", "略松动", "不稳", "_inf_above_"):
         assert word not in block, word
     for token in ("'above target'", "'at target'", "'below target'", "'anchored'", "'drifting up'", "'drifting down'"):
         assert token in block, token
