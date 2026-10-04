@@ -36,7 +36,11 @@ INTEGRATION_BASE_SHA = "5332d876e75837c158c6f42a2862734451bb7158"
 # 2026-10-02 wave 7 (same writer): MO-PAID-017 restamped PRODUCTION_PROOF (D49, served news.html == main),
 # MO-PAID-011 (O26 minors merged #8283 + receipt #8289, D36/D47) and MO-PAID-008 (O21 family landed, D46/D48)
 # restamped — states unchanged, all three are union rows, outside-union digest unchanged.
-OUTSIDE_UNION_SHA256 = "3b8a93ce1ee08f64b3536df5a95e18861fc14fba4087cb436fd38c559a1df2a8"
+# Re-pinned 2026-10-04 by the same single writer (CEO A ruling D87 over CEO B 5978166980,
+# A-verified on terminal #549 / the 0018 DDL receipt / live routes): the only outside-union rows
+# touched are MO-PAID-056 and MO-DELTA-038 (NOT_BUILT -> BUILT_NOT_PROVEN). Prior digest:
+# 3b8a93ce1ee08f64b3536df5a95e18861fc14fba4087cb436fd38c559a1df2a8.
+OUTSIDE_UNION_SHA256 = "83e3ab7a6270691b87a87f68b6ba3838f8cb8e97dcc0d3855a6b4ff6d1bd7951"
 CAPABILITY_STATES = {"NOT_BUILT", "SPEC_ONLY", "PARTIAL", "BUILT_NOT_PROVEN", "PROVEN_LIVE"}
 
 UNION_ROWS = set([
@@ -614,6 +618,22 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     assert thesis["capability_state_c2"] == "PARTIAL"
     assert "#577 is MERGED" in thesis["state_delta"]
     assert "#577 OPEN" not in thesis["missing_contract_or_proof"]
+    # W12 D86 (CEO B 5978004918 / 5978053351; A re-verified 2026-10-04): cadence receipts + MO-DELTA-021 reason correction.
+    assert "2026-10-04 CEO A D86" in r["MO-PAID-059"]["adjudication_notes"]
+    assert "debt-maturity-drip.yml" in r["MO-PAID-059"]["adjudication_notes"]
+    assert "natural cadence READ (D86)" in screener["missing_contract_or_proof"]
+    assert "has not been read by A" not in screener["missing_contract_or_proof"]
+    assert "#7100" in thesis["next_bounded_child"]
+    headroom = r["MO-DELTA-021"]
+    assert headroom["capability_state_c2"] == "PARTIAL"
+    assert "PAGE BUILDER NOT WIRED" in headroom["state_delta"]
+    assert "both CLOSED unmerged" in headroom["state_delta"]
+    # W12 D87 (CEO B 5978166980): F12 outbound webhooks built in terminal #549, not proven.
+    for rid in ("MO-PAID-056", "MO-DELTA-038"):
+        assert r[rid]["capability_state_c2"] == "BUILT_NOT_PROVEN", rid
+        assert "#549" in r[rid]["real_producer"], rid
+    assert "worker cron" in r["MO-PAID-056"]["missing_contract_or_proof"]
+    assert "#582" in r["MO-PAID-056"]["missing_contract_or_proof"]
 
     # W8b D66-D71 (CEO B 5966674775; Sol 5966690034/5966717632/5966734154/5966757712/5966757713/5966776979/5966790439).
     covenant = r["MO-PAID-062"]
