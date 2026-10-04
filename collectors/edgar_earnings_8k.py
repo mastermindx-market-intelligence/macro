@@ -39,6 +39,10 @@ FILING KEY (Wave 1B, contract freeze Q2): accession is captured because without
 RESUMABILITY: a per-CIK manifest (data/edgar/earnings_8k_dates_manifest.json) tracks
 which CIKs have been fully fetched (key = str(cik), value = ISO timestamp). Run the
 collector again and already-fetched CIKs are skipped. Pass --force to re-fetch all.
+Legacy stores that predate accession/form capture can be inspected with
+--audit-identity plus explicit --cik values or --all-legacy. That audit is strictly
+read-only: it builds the canonical-key candidate in memory and emits a receipt; it
+never writes the parquet, manifest, coverage JSON, or another migration registry.
 
 SENTINEL STAGING DETERMINATION (one-shot backfill):
   This store is produced by a one-shot backfill (this script). It does NOT need to run
@@ -406,9 +410,11 @@ def append_and_dedup(existing: pd.DataFrame, new_rows: list[dict]) -> pd.DataFra
     period of report — never on date proximity.
 
     Legacy rows written before accession capture are keyed the old way and are
-    dropped when a keyed row already covers the same ``(ticker, filing_date)``,
-    so re-running the collector upgrades the store in place rather than
-    doubling it.  Within either key, the earliest non-empty
+    dropped when a keyed row already covers the same ``(cik, filing_date)``.
+    CIK, not ticker, is used for the upgrade seam because ticker labels can
+    change while SEC issuer identity remains stable. Re-running the collector
+    therefore upgrades the store in place rather than doubling it or retaining
+    a pre-rename legacy row. Within either key, the earliest non-empty
     ``acceptance_datetime`` wins.
     """
     if not new_rows:
@@ -435,16 +441,243 @@ def append_and_dedup(existing: pd.DataFrame, new_rows: list[dict]) -> pd.DataFra
     if not legacy.empty:
         legacy = legacy.drop_duplicates(subset=["ticker", "filing_date"], keep="first")
         if not keyed.empty:
-            covered = set(zip(keyed["ticker"], keyed["filing_date"]))
+            covered = set(zip(keyed["cik"], keyed["filing_date"]))
             legacy = legacy[[
-                (t, d) not in covered
-                for t, d in zip(legacy["ticker"], legacy["filing_date"])
+                (cik, d) not in covered
+                for cik, d in zip(legacy["cik"], legacy["filing_date"])
             ]]
     combined = pd.concat([keyed, legacy], ignore_index=True)
     combined = combined.sort_values(
         ["ticker", "filing_date", "accession"]
     ).reset_index(drop=True)
     return combined[STORE_COLUMNS]
+
+
+# ---------------------------------------------------------------------------
+# Canonical filing-identity rehydration
+# ---------------------------------------------------------------------------
+
+def _blank_column_mask(df: pd.DataFrame, column: str) -> pd.Series:
+    """Rows whose named column is absent, null, or blank."""
+    if column not in df.columns:
+        return pd.Series(True, index=df.index, dtype=bool)
+    return df[column].fillna("").astype(str).str.strip().eq("")
+
+
+def canonical_identity_targets(df: pd.DataFrame) -> list[int]:
+    """CIKs whose stored rows still lack accession or form identity.
+
+    report_date is measured separately because SEC can legitimately omit it on
+    a filing; a blank report date blocks event grouping but does not erase the
+    canonical filing key (cik, accession).
+    """
+    if df.empty:
+        return []
+    if "cik" not in df.columns:
+        raise ValueError("EDGAR earnings store has no cik column")
+    needs = _blank_column_mask(df, "accession") | _blank_column_mask(df, "form")
+    ciks = pd.to_numeric(df.loc[needs, "cik"], errors="coerce").dropna()
+    return sorted({int(value) for value in ciks.tolist()})
+
+
+def _representative_ticker_for_cik(df: pd.DataFrame, cik: int) -> str:
+    """Stable ticker label for a CIK fetch; SEC identity remains the CIK."""
+    cik_values = pd.to_numeric(df["cik"], errors="coerce")
+    rows = df.loc[cik_values.eq(int(cik))].copy()
+    if rows.empty:
+        raise ValueError(f"CIK {cik} has no rows in the existing EDGAR store")
+    rows["_filing_sort"] = pd.to_datetime(
+        rows["filing_date"], errors="coerce", utc=True
+    )
+    rows["_ticker_sort"] = rows["ticker"].fillna("").astype(str)
+    rows = rows.sort_values(
+        ["_filing_sort", "_ticker_sort"], na_position="first", kind="stable"
+    )
+    ticker = str(rows.iloc[-1]["ticker"] or "").strip()
+    if not ticker:
+        raise ValueError(f"CIK {cik} has no usable ticker label")
+    return ticker
+
+
+def audit_canonical_filing_identity(
+    existing: pd.DataFrame,
+    target_ciks: list[int],
+    *,
+    fetcher=None,
+) -> tuple[pd.DataFrame, dict]:
+    """Build a canonical-key candidate without writing the store.
+
+    Each targeted CIK is re-fetched from SEC. A CIK is accepted only when every
+    required SEC shard was fetched, at least one Item-2.02 row was returned,
+    every returned row has canonical accession plus form identity, and merging
+    leaves no accession/form-legacy row for that CIK.
+
+    Failures are recorded and the pre-migration rows for that CIK are preserved.
+    The returned candidate is qualification evidence only. A true
+    candidate_ready_for_migration flag does not authorize or perform a write.
+    """
+    current = existing.copy()
+    targets = sorted({int(cik) for cik in target_ciks})
+    fetch_one = fetcher or fetch_earnings_8k_for_cik
+    details: list[dict] = []
+    failures: list[dict] = []
+
+    for cik in targets:
+        before_cik = current.loc[
+            pd.to_numeric(current["cik"], errors="coerce").eq(cik)
+        ].copy()
+        if before_cik.empty:
+            failures.append({"cik": cik, "reason": "cik_not_in_existing_store"})
+            continue
+        try:
+            ticker = _representative_ticker_for_cik(before_cik, cik)
+            rows, n_shards_missing = fetch_one(ticker, cik)
+        except Exception as exc:  # noqa: BLE001
+            failures.append({
+                "cik": cik,
+                "reason": "fetch_failed",
+                "detail": str(exc),
+            })
+            continue
+
+        if n_shards_missing:
+            failures.append({
+                "cik": cik,
+                "ticker": ticker,
+                "reason": "missing_sec_shards",
+                "n_shards_missing": int(n_shards_missing),
+            })
+            continue
+        if not rows:
+            failures.append({
+                "cik": cik,
+                "ticker": ticker,
+                "reason": "no_item_202_rows",
+            })
+            continue
+
+        fresh = pd.DataFrame(rows)
+        for column in STORE_COLUMNS:
+            if column not in fresh.columns:
+                fresh[column] = ""
+        fresh = fresh[STORE_COLUMNS]
+        wrong_cik = pd.to_numeric(fresh["cik"], errors="coerce").ne(cik)
+        if bool(wrong_cik.any()):
+            failures.append({
+                "cik": cik,
+                "ticker": ticker,
+                "reason": "fresh_rows_wrong_cik",
+                "row_count": int(wrong_cik.sum()),
+            })
+            continue
+
+        missing_accession = _blank_column_mask(fresh, "accession")
+        missing_form = _blank_column_mask(fresh, "form")
+        if bool(missing_accession.any() or missing_form.any()):
+            failures.append({
+                "cik": cik,
+                "ticker": ticker,
+                "reason": "fresh_rows_missing_canonical_filing_identity",
+                "missing_accession_rows": int(missing_accession.sum()),
+                "missing_form_rows": int(missing_form.sum()),
+            })
+            continue
+        duplicate_keys = fresh.duplicated(subset=["cik", "accession"], keep=False)
+        if bool(duplicate_keys.any()):
+            failures.append({
+                "cik": cik,
+                "ticker": ticker,
+                "reason": "duplicate_canonical_filing_key",
+                "row_count": int(duplicate_keys.sum()),
+            })
+            continue
+
+        candidate = append_and_dedup(current, fresh.to_dict("records"))
+        after_cik = candidate.loc[
+            pd.to_numeric(candidate["cik"], errors="coerce").eq(cik)
+        ].copy()
+        residual_legacy = (
+            _blank_column_mask(after_cik, "accession")
+            | _blank_column_mask(after_cik, "form")
+        )
+        if bool(residual_legacy.any()):
+            failures.append({
+                "cik": cik,
+                "ticker": ticker,
+                "reason": "residual_legacy_rows_after_merge",
+                "row_count": int(residual_legacy.sum()),
+            })
+            continue
+
+        same_day = fresh.groupby("filing_date", dropna=False).size()
+        same_day = same_day[same_day > 1]
+        details.append({
+            "cik": cik,
+            "ticker": ticker,
+            "before_rows": int(len(before_cik)),
+            "after_rows": int(len(after_cik)),
+            "fresh_rows": int(len(fresh)),
+            "same_day_multi_groups": int(len(same_day)),
+            "same_day_multi_rows": int(same_day.sum()) if len(same_day) else 0,
+            "report_date_missing_rows": int(
+                _blank_column_mask(fresh, "report_date").sum()
+            ),
+        })
+        current = candidate
+
+    target_mask = pd.to_numeric(current["cik"], errors="coerce").isin(targets)
+    target_rows = current.loc[target_mask].copy()
+    residual_target_legacy = (
+        _blank_column_mask(target_rows, "accession")
+        | _blank_column_mask(target_rows, "form")
+    ) if not target_rows.empty else pd.Series(dtype=bool)
+    receipt = {
+        "schema": "edgar_earnings_8k.identity_audit.v1",
+        "targets": targets,
+        "target_count": len(targets),
+        "successful_ciks": len(details),
+        "failed_ciks": len(failures),
+        "details": details,
+        "failures": failures,
+        "candidate_total_rows": int(len(current)),
+        "target_rows": int(len(target_rows)),
+        "same_day_multi_groups": int(sum(
+            item["same_day_multi_groups"] for item in details
+        )),
+        "same_day_multi_rows": int(sum(
+            item["same_day_multi_rows"] for item in details
+        )),
+        "report_date_missing_rows": int(
+            _blank_column_mask(target_rows, "report_date").sum()
+        ) if not target_rows.empty else 0,
+        "residual_target_legacy_rows": int(residual_target_legacy.sum()),
+        "candidate_ready_for_migration": (
+            len(targets) > 0
+            and not failures
+            and int(residual_target_legacy.sum()) == 0
+        ),
+    }
+    return current, receipt
+
+
+def run_identity_audit(
+    *,
+    ciks: list[int],
+    fetcher=None,
+) -> tuple[pd.DataFrame, dict]:
+    """Read the incumbent store and build a canonical-key candidate in memory.
+
+    This audit has no write path. A migration must be a separate admitted
+    effect with its own metadata-coherence and publication proof.
+    """
+    existing = load_existing()
+    candidate, receipt = audit_canonical_filing_identity(
+        existing, ciks, fetcher=fetcher
+    )
+    receipt["store_written"] = False
+    receipt["manifest_written"] = False
+    receipt["coverage_written"] = False
+    return candidate, receipt
 
 
 # ---------------------------------------------------------------------------
@@ -678,7 +911,48 @@ def main(argv: list[str] | None = None) -> None:
                    help="Skip previously-errored CIKs (for nightly refresh).")
     p.add_argument("--max-errors", type=int, default=100,
                    help="Stop after this many per-CIK errors (default 100).")
+    p.add_argument(
+        "--audit-identity",
+        action="store_true",
+        help=(
+            "Read-only SEC audit of legacy CIKs for canonical accession/form "
+            "identity. Never writes the store or manifest."
+        ),
+    )
+    p.add_argument(
+        "--cik",
+        action="append",
+        type=int,
+        default=[],
+        help="CIK to audit; repeat for multiple CIKs.",
+    )
+    p.add_argument(
+        "--all-legacy",
+        action="store_true",
+        help="With --audit-identity, target every legacy CIK in the store.",
+    )
     args = p.parse_args(argv)
+
+    if args.audit_identity:
+        if args.force or args.incremental:
+            p.error("--audit-identity is separate from --force/--incremental")
+        if args.cik and args.all_legacy:
+            p.error("choose explicit --cik values or --all-legacy, not both")
+        existing = load_existing()
+        targets = (
+            canonical_identity_targets(existing)
+            if args.all_legacy
+            else sorted({int(cik) for cik in args.cik})
+        )
+        if not targets:
+            p.error("--audit-identity requires --cik or --all-legacy")
+        _candidate, receipt = run_identity_audit(ciks=targets)
+        print(json.dumps(receipt, indent=2, sort_keys=True))
+        return
+
+    if args.cik or args.all_legacy:
+        p.error("--cik/--all-legacy require --audit-identity")
+
     run_backfill(
         force=args.force,
         incremental=args.incremental,
