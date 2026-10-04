@@ -5,7 +5,7 @@ Parent: Macro #7925.
 Implementation carrier: #8364.
 Architecture carrier: #8325.
 Frozen event-qualified C1 carrier: #7929.
-Source census pin: Macro `786e180f88bf5a47d705ed477969cdd1f7d46823`.
+Initial source census pin: Macro `786e180f88bf5a47d705ed477969cdd1f7d46823`.\nContinuation re-census pin: Macro main `818d1bcea9f878a3872d341b6ee355441fd620cf`.
 
 ## Disposition
 
@@ -86,6 +86,28 @@ Result: **`SOURCE_CONTRACT_CONFLICT` for the PTSE initial REGULAR-session live r
 
 Even after that conflict is repaired, M0D v2 is a prospective source vertical; it does not retroactively create a multi-era dual-basis PIT panel for historical B0.
 
+### 4. Data OS selected-price evidence carrier — useful evidence, still not the B0 target source
+
+The current bounded Data OS price-evidence carrier is **Macro #8183**, branch semantics at exact head `3ad47339cc11b54a61ba677490bcd41fab32cc61` (Draft / HOLD at this census).
+
+Its accepted scope is materially useful to PTSE because it upgrades the **existing** adjusted-first price ladder with opt-in evidence for the actual selected object:
+- ladder source and relative path;
+- selected parquet column;
+- exact basis only where the incumbent source contract can support it;
+- SHA-256 and byte count of the exact encoded object that was decoded;
+- explicit nulls where adjustment vintage, RTH/auction session, venue or historical observed-at semantics remain unproven.
+
+The independent review caught an overclaim in the first candidate: the legacy `closes_cache_UNADJUSTED` source tag was being promoted to canonical `RAW` even though the native cache producer may use `auto_adjust=True`. The same-carrier repair at `3ad47339...` preserves the legacy selected values/rung/source tag but changes canonical basis to **null / unknown** unless a source owner actually attests it. Current semantic blobs recorded by the owner are:
+- `engine/price_ladder.py` blob `12b4d54e071fd2ca288e5ea4837851d6bdf71e34`;
+- `tests/test_price_ladder.py` blob `3410103be724a098dbcdb09d30ced4cf798fbdca`;
+- Data OS vocabulary remains `lib/dataos/price.py` blob `be127fa853a6aafbf0bcb33b58783316ac972faa`.
+
+Exact-head hosted CI/fences for #8183 are green and the cache-basis semantic defect has been independently requalified as closed, but the carrier remains on release HOLD for source-custody / changed-suite CI ownership / formal release state. More importantly for PTSE, **#8183 deliberately does not manufacture `adjustment_asof`, corporate-action factors, RTH/auction session identity, venue or historical first-availability**.
+
+Therefore #8183 improves exact selected-source evidence and is the correct incumbent path to consume later, but it still does **not** supply the rights-cleared historical raw+factor/vintage panel required for confirmatory B0.
+
+Cross-owner corroboration: **Macro #8069 is a Prophet Q06 carrier, not the Data OS owner.** Its U.S. outcome-price source ruling independently records the same gap: Massive daily prices are unadjusted, the local store lacks session/venue/source timestamp, and “Data OS V2 raw-plus-factor derivation and a corporate-action factor table are not built.” That statement is corroborating source evidence only and must not be mistaken for #8069 owning the price implementation.
+
 ## Data OS conclusion
 
 Current Data OS correctly describes adjusted prices as point-in-time quantities. The available V1 vocabulary labels raw/split-adjusted/total-return bases, but current adjusted stores do not carry the historical `adjustment_asof` required to turn today's restated values into a protected historical decision-time panel.
@@ -113,7 +135,7 @@ It has no embedded numerical research defaults and requires an explicit protocol
 
 CONFIRMATORY mode rejects `RETROSPECTIVE_PIT_UNPROVEN`. The runner enforces source-known-at <= decision time, mature labels, outcome-window purge at fit cutoff, chronological/disjoint evaluation, train-only scaling, a past-only mean reference, and the registered P-vector ridge arm. It emits no research-pass, probability or decision authority.
 
-At implementation head `d68a59d81755c296383a06ef92736d61e980292f`, the exact remote PTSE code/test bytes pass **103 methods** total: 87 W2 context/consumer tests plus 16 B0 source/protocol/chronology tests.
+At implementation head `b1c7b88fbd878d6384a465a8607bbacf17f4fb5d`, the exact remote PTSE code/test bytes pass **173 methods** total across the W2 contract/consumer, B0 benchmark contract, passive market/regime adapter, bounded Options adapter, NEW_ENTRY compiler, PULLBACK_BUY compiler, prospective-readiness validator and fail-closed post-entry action coverage. This remains software/conformance evidence, not empirical B0 validation.
 
 ## Exact next source/science gates
 
