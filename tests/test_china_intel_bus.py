@@ -102,6 +102,36 @@ def test_visit_discovery_first_seen_requires_no_preexisting_observation():
     assert snap["global_negative_authority"] is True
 
 
+def test_visit_discovery_missing_earlier_observation_clock_cannot_claim_first_seen():
+    early = _visit_row(
+        "A-missing", "000011", "2026-10-01T09:00:00+08:00",
+        recorded="2026-10-01T02:00:00+00:00",
+    )
+    early["system_recorded_at"] = None
+    later = _visit_row(
+        "A-later", "000011", "2026-10-02T09:00:00+08:00",
+        recorded="2026-10-02T02:00:00+00:00",
+    )
+
+    snap = bus._visit_discovery_snapshot(
+        [early, later],
+        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        coverage_start="2026-09-15",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+    )
+
+    assert snap["n_recent_companies"] == 1
+    assert snap["n_first_observed_recent"] == 0
+    row = snap["examples"][0]
+    assert row["recent_count"] == 2
+    assert row["first_seen_state"] == "observation_clock_unavailable"
+    assert row["first_observed_system_day"] is None
+    assert row["observation_clock_complete"] is False
+
+
+
 def test_visit_discovery_keeps_precoverage_source_event_as_positive_observation():
     # First production run can legitimately derive a filing published during
     # its bounded lookback before the write-once coverage-start date. The event
