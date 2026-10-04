@@ -306,6 +306,21 @@ def _visit_observed_day(value) -> date | None:
     return parsed.date()
 
 
+
+def _visit_coverage_day(value) -> date | None:
+    """Parse the complete date-only coverage stamp; trailing data is invalid."""
+    try:
+        text = str(value or "").strip()
+    except Exception:  # noqa: BLE001
+        return None
+    if not text or text.lower() in {"none", "nan", "nat", "<na>"}:
+        return None
+    try:
+        return date.fromisoformat(text)
+    except (TypeError, ValueError):
+        return None
+
+
 def _visit_text(value) -> str:
     try:
         if value is None:
@@ -353,7 +368,10 @@ def _visit_discovery_snapshot(
     baseline_days = max(int(baseline_days), 1)
     health = health if isinstance(health, dict) else {}
     owner_health_status = _visit_text(health.get("status")) or "no_coverage"
-    coverage_day = _visit_day(coverage_start)
+    coverage_raw = _visit_text(coverage_start)
+    last_success_raw = _visit_text(health.get("last_success_utc"))
+    last_attempt_raw = _visit_text(health.get("last_attempt_utc"))
+    coverage_day = _visit_coverage_day(coverage_start)
     last_success_day = _visit_observed_day(health.get("last_success_utc"))
     last_attempt_day = _visit_observed_day(health.get("last_attempt_utc"))
     # Keep the pure helper deterministic when called directly.  A degraded run
@@ -367,7 +385,7 @@ def _visit_discovery_snapshot(
                 last_success_day,
                 last_attempt_day,
                 *(_visit_day(r.get("source_published_at")) for r in (visits or [])),
-                *(_visit_day(r.get("system_recorded_at")) for r in (visits or [])),
+                *(_visit_observed_day(r.get("system_recorded_at")) for r in (visits or [])),
             )
             if d is not None
         ]
@@ -378,6 +396,12 @@ def _visit_discovery_snapshot(
     # last success cannot authorize measured absence/baselines.  Preserve
     # positive evidence separately; fail closed only the negative authority.
     clock_errors: list[str] = []
+    if coverage_raw and coverage_day is None:
+        clock_errors.append("coverage_start_invalid")
+    if last_success_raw and last_success_day is None:
+        clock_errors.append("last_success_clock_invalid")
+    if last_attempt_raw and last_attempt_day is None:
+        clock_errors.append("last_attempt_clock_invalid")
     if coverage_day is not None and coverage_day > reference_day:
         clock_errors.append("coverage_start_after_reference")
     if last_success_day is not None:
@@ -501,6 +525,9 @@ def _visit_discovery_snapshot(
         "global_negative_authority_blocker": (
             "coverage_exception_ledger_unreadable" if not exception_ledger_readable
             else "unscoped_coverage_exception" if has_unscoped_open
+            else "coverage_start_invalid" if "coverage_start_invalid" in clock_errors
+            else "last_success_clock_invalid" if "last_success_clock_invalid" in clock_errors
+            else "last_attempt_clock_invalid" if "last_attempt_clock_invalid" in clock_errors
             else "owner_clock_order_invalid" if not owner_clock_order_valid
             else "source_stale" if source_status == "stale"
             else "source_health_not_ok" if source_status != "ok"
