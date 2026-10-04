@@ -4284,6 +4284,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "nw-lobe-unfreeze",
     "china-search-universe",
     # 2026-09-25: the CI control plane's own contracts (this suite included), moved
     # off workflow-yaml, which was `gate: data` and never ran on a PR. Exclusive
