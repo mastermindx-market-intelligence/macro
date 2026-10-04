@@ -76,9 +76,11 @@ returns the same dict. Every public fn returns plain data / None and NEVER raise
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
-from datetime import datetime, timezone
+import math
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 from lib import config, store
@@ -114,6 +116,360 @@ _SIGN_EXPECTED = {"valuation": +1, "margin": -1, "news_sentiment": -1,
 # guidance: positive 业绩预告 (预增/扭亏…) → positive forward return (+1, post-earnings drift).
 # All are PRIORS only — the harness measures the realized sign and signal_lab zeros a
 # proven wrong-sign leg regardless.
+
+
+# --------------------------------------------------------------------------- #
+# CIE-18 preregistration admission — PURE guard, no outcome read / no new store
+# --------------------------------------------------------------------------- #
+
+CIE18_PREREG_SCHEMA = "china_cie18_prereg.v1"
+_CIE18_TRACKS = frozenset({"D", "O", "M"})
+_CIE18_PLACEHOLDERS = frozenset({
+    "", "tbd", "todo", "pending", "unknown", "unset", "later", "n/a", "na",
+})
+_CIE18_FORBIDDEN_RESULT_KEYS = frozenset({
+    "results", "holdout_results", "point_estimates", "p_values",
+    "observed_effect", "observed_alpha", "promotion_decision",
+    "final_disposition", "winning_variant",
+})
+
+_CIE18_COMMON_FIELDS = (
+    "schema",
+    "experiment_id",
+    "version",
+    "track",
+    "mechanism",
+    "role",
+    "sign_prior",
+    "horizon",
+    "horizon_unit",
+    "falsifier",
+    "source_owner_refs",
+    "source_use_permissions",
+    "population_manifest",
+    "availability_contract",
+    "outcome_contract",
+    "development_interval",
+    "holdout_interval",
+    "prospective_contract",
+    "primary_metric",
+    "minimum_useful_effect",
+    "downside_bound",
+    "multiplicity",
+    "clustering",
+    "power",
+    "stopping_rule",
+    "trial_family",
+    "declared_trial_budget",
+    "attempted_variants",
+    "negative_controls",
+    "cost_capacity_contract",
+    "source_reliability_contract",
+    "code_sha",
+    "input_hashes",
+    "outcome_access_state",
+)
+
+_CIE18_TRACK_FIELDS = {
+    # Discovery before candidate admission.
+    "D": (
+        "lawful_asof_universe",
+        "equal_budget_control",
+        "lead_time_clock",
+        "future_admission_is_endpoint_only",
+        "resource_budget",
+    ),
+    # Ordering among exactly identical lawful candidates.
+    "O": (
+        "candidate_snapshot_manifest",
+        "actual_serving_policy",
+        "fallback_state",
+        "deterministic_tiebreak",
+        "original_fill_owner",
+        "population_identity_rule",
+    ),
+    # Post-admission evidence/falsifier monitoring.
+    "M": (
+        "thesis_falsifier_version",
+        "alert_policy",
+        "observability_rule",
+        "action_rule",
+        "adjudication_policy",
+        "alert_budget",
+    ),
+}
+
+
+def _cie18_present(value) -> bool:
+    """True only for a substantive frozen prereg value, never a placeholder."""
+    if value is None:
+        return False
+    if isinstance(value, bool):
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() not in _CIE18_PLACEHOLDERS
+    if isinstance(value, (list, tuple, set, dict)):
+        return len(value) > 0
+    return True
+
+
+def _cie18_finite_number(value, *, positive: bool = False, nonnegative: bool = False) -> bool:
+    if isinstance(value, bool):
+        return False
+    try:
+        x = float(value)
+    except (TypeError, ValueError):
+        return False
+    if not math.isfinite(x):
+        return False
+    if positive and x <= 0:
+        return False
+    if nonnegative and x < 0:
+        return False
+    return True
+
+
+def _cie18_sha(value) -> bool:
+    if not isinstance(value, str):
+        return False
+    text = value.strip().lower()
+    return len(text) in (40, 64) and all(ch in "0123456789abcdef" for ch in text)
+
+
+def _cie18_interval(value) -> tuple[date, date] | None:
+    """Parse a closed prereg interval {start,end}; no inferred/open holdout dates."""
+    if not isinstance(value, dict):
+        return None
+    try:
+        start = date.fromisoformat(str(value.get("start") or "")[:10])
+        end = date.fromisoformat(str(value.get("end") or "")[:10])
+    except (TypeError, ValueError):
+        return None
+    return (start, end) if start <= end else None
+
+
+def _cie18_metric_contract(value) -> bool:
+    if not isinstance(value, dict):
+        return False
+    return (
+        _cie18_present(value.get("name"))
+        and _cie18_present(value.get("definition"))
+        and value.get("direction") in {"higher_is_better", "lower_is_better"}
+    )
+
+
+def _cie18_multiplicity_contract(value) -> bool:
+    if not isinstance(value, dict):
+        return False
+    alpha = value.get("confirmation_alpha")
+    method = str(value.get("confirmation_method") or "").strip().lower()
+    family = value.get("confirmation_family")
+    if method not in {"holm_fwer", "bonferroni_fwer", "closed_testing_fwer"}:
+        return False
+    if not _cie18_finite_number(alpha, positive=True) or float(alpha) > 0.05:
+        return False
+    if not _cie18_present(family):
+        return False
+    # Exploratory FDR may coexist, but it may not masquerade as confirmation.
+    if value.get("exploratory_method") is not None:
+        em = str(value.get("exploratory_method") or "").strip().lower()
+        if em not in {"bh_fdr", "by_fdr", "none"}:
+            return False
+    return True
+
+
+def _cie18_stopping_contract(value) -> bool:
+    if not isinstance(value, dict):
+        return False
+    mode = str(value.get("mode") or "").strip().lower()
+    if mode == "fixed_no_interim_inference":
+        return _cie18_present(value.get("final_read_rule"))
+    if mode == "sequential_alpha_spending":
+        return (
+            _cie18_present(value.get("spending_rule"))
+            and _cie18_present(value.get("look_schedule"))
+            and _cie18_finite_number(value.get("total_alpha"), positive=True)
+            and float(value["total_alpha"]) <= 0.05
+        )
+    return False
+
+
+def _cie18_prospective_contract(value) -> bool:
+    """A prospective leg may have an unknown calendar end, but its stop rule is frozen."""
+    if not isinstance(value, dict):
+        return False
+    try:
+        start = date.fromisoformat(str(value.get("start") or "")[:10])
+    except (TypeError, ValueError):
+        return False
+    return bool(start) and _cie18_present(value.get("end_rule"))
+
+
+def cie18_prereg_digest(record: dict) -> str:
+    """Semantic digest of one prereg record; derived fields never participate."""
+    if not isinstance(record, dict):
+        raise ValueError("CIE-18 prereg must be a dict")
+    payload = {
+        k: v for k, v in record.items()
+        if k not in {"prereg_digest", "validation_errors", "admitted_for_outcome_read"}
+    }
+    blob = json.dumps(payload, ensure_ascii=False, sort_keys=True,
+                      separators=(",", ":"), default=str)
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+
+
+def validate_cie18_prereg(record: dict) -> dict:
+    """Fail-closed admission proof for CIE-18 D/O/M empirical work.
+
+    This function is PURE. It reads no data, outcomes, files, clock, network or
+    model and writes no ledger. A passing return means only that the experiment's
+    pre-outcome contract is structurally frozen enough for a canonical runner to
+    bind later; it is not scientific acceptance, power proof, or permission to
+    view a final holdout.
+
+    Numeric useful-effect/downside values are deliberately caller-owned: this
+    guard requires them to exist before the final outcome read but does not invent
+    them from this module.
+    """
+    errors: list[str] = []
+    if not isinstance(record, dict):
+        return {
+            "schema": CIE18_PREREG_SCHEMA,
+            "admitted_for_outcome_read": False,
+            "validation_errors": ["record_not_mapping"],
+            "disposition_if_incomplete": "ACCRUAL_GATED",
+            "prereg_digest": None,
+        }
+
+    for field in _CIE18_COMMON_FIELDS:
+        if not _cie18_present(record.get(field)):
+            errors.append(f"missing_or_placeholder:{field}")
+
+    if record.get("schema") != CIE18_PREREG_SCHEMA:
+        errors.append("schema_mismatch")
+
+    track = str(record.get("track") or "").strip().upper()
+    if track not in _CIE18_TRACKS:
+        errors.append("track_invalid")
+    else:
+        for field in _CIE18_TRACK_FIELDS[track]:
+            if not _cie18_present(record.get(field)):
+                errors.append(f"missing_or_placeholder:{field}")
+
+    # The prereg itself may never carry a viewed result.
+    forbidden = sorted(k for k in _CIE18_FORBIDDEN_RESULT_KEYS if k in record)
+    errors.extend(f"outcome_field_forbidden:{k}" for k in forbidden)
+    if str(record.get("outcome_access_state") or "") != "SEALED_UNSEEN":
+        errors.append("outcome_access_state_must_be_SEALED_UNSEEN")
+
+    if not _cie18_metric_contract(record.get("primary_metric")):
+        errors.append("primary_metric_contract_invalid")
+    if not _cie18_finite_number(record.get("minimum_useful_effect"), positive=True):
+        errors.append("minimum_useful_effect_must_be_positive_finite")
+    if not _cie18_finite_number(record.get("downside_bound"), nonnegative=True):
+        errors.append("downside_bound_must_be_nonnegative_finite")
+
+    if not _cie18_multiplicity_contract(record.get("multiplicity")):
+        errors.append("multiplicity_contract_invalid")
+    if not _cie18_stopping_contract(record.get("stopping_rule")):
+        errors.append("stopping_rule_invalid")
+
+    budget = record.get("declared_trial_budget")
+    if isinstance(budget, bool) or not isinstance(budget, int) or budget < 1:
+        errors.append("declared_trial_budget_must_be_positive_int")
+
+    if _cie18_interval(record.get("development_interval")) is None:
+        errors.append("development_interval_invalid")
+    if _cie18_interval(record.get("holdout_interval")) is None:
+        errors.append("holdout_interval_invalid")
+    else:
+        dev = _cie18_interval(record.get("development_interval"))
+        hold = _cie18_interval(record.get("holdout_interval"))
+        if dev is not None and hold is not None and dev[1] >= hold[0]:
+            errors.append("development_holdout_overlap")
+    if not _cie18_prospective_contract(record.get("prospective_contract")):
+        errors.append("prospective_contract_invalid")
+
+    if not _cie18_sha(record.get("code_sha")):
+        errors.append("code_sha_invalid")
+    hashes = record.get("input_hashes")
+    if not isinstance(hashes, dict) or not hashes:
+        errors.append("input_hashes_invalid")
+    else:
+        for key, value in hashes.items():
+            if not _cie18_present(key) or not _cie18_sha(value):
+                errors.append(f"input_hash_invalid:{key}")
+
+    # Track-specific truth fences.
+    if track == "D":
+        if record.get("future_admission_is_endpoint_only") is not True:
+            errors.append("track_D_future_admission_must_be_endpoint_only")
+        if str(record.get("lead_time_clock") or "") != "EVIDENCE_AVAILABLE_AT":
+            errors.append("track_D_lead_time_clock_must_be_evidence_available")
+    elif track == "O":
+        if str(record.get("population_identity_rule") or "") != "EXACT_SAME_CANDIDATES_AND_TIME":
+            errors.append("track_O_population_identity_rule_invalid")
+        if not isinstance(record.get("fallback_state"), dict):
+            errors.append("track_O_fallback_state_must_be_explicit")
+    elif track == "M":
+        if not isinstance(record.get("action_rule"), dict):
+            errors.append("track_M_action_rule_must_be_explicit")
+        elif record["action_rule"].get("automatic_trade") is not False:
+            errors.append("track_M_automatic_trade_must_be_false_without_separate_authority")
+
+    # Exact variant/negative-control lists are required, even when the chosen set
+    # has one member. A string is not a trial family.
+    for field in ("attempted_variants", "negative_controls"):
+        value = record.get(field)
+        if not isinstance(value, list) or not value:
+            errors.append(f"{field}_must_be_nonempty_list")
+
+    errors = sorted(set(errors))
+    digest = cie18_prereg_digest(record) if not errors else None
+    return {
+        "schema": CIE18_PREREG_SCHEMA,
+        "track": track or None,
+        "experiment_id": record.get("experiment_id"),
+        "version": record.get("version"),
+        "admitted_for_outcome_read": not errors,
+        "validation_errors": errors,
+        "disposition_if_incomplete": None if not errors else "ACCRUAL_GATED",
+        "prereg_digest": digest,
+        "trial_family": record.get("trial_family"),
+        "declared_trial_budget": record.get("declared_trial_budget"),
+    }
+
+
+def register_cie18_trial_budget(record: dict, ledger) -> dict:
+    """Bind a *valid* prereg to the existing TrialLedger before experiment work.
+
+    The ledger is injected deliberately: this helper never creates a second
+    multiple-testing store or silently writes the production ledger. Callers must
+    pass the canonical TrialLedger owner they are already using.
+    """
+    receipt = validate_cie18_prereg(record)
+    if not receipt["admitted_for_outcome_read"]:
+        raise ValueError("CIE-18 prereg is not admitted: " + "; ".join(
+            receipt["validation_errors"]
+        ))
+    if ledger is None or not hasattr(ledger, "log_declared_budget"):
+        raise ValueError("canonical TrialLedger instance is required")
+    family = str(record["trial_family"])
+    budget = int(record["declared_trial_budget"])
+    ledger.log_declared_budget(
+        budget,
+        family=family,
+        reason=f"CIE-18 {record['track']} prereg {record['experiment_id']} "
+               f"v{record['version']} digest={receipt['prereg_digest']}",
+    )
+    observed = int(ledger.declared_budget(family))
+    if observed < budget:
+        raise RuntimeError("trial ledger failed to preserve declared CIE-18 budget")
+    return {
+        **receipt,
+        "trial_budget_registered": True,
+        "trial_budget_observed": observed,
+    }
 
 
 # --------------------------------------------------------------------------- #
