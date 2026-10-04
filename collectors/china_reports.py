@@ -8,9 +8,12 @@ target-price band and the EPS forecasts. Snapshot vs tape — no overlap, and th
 the only one of the two that can ever answer "what CHANGED, when".
 
 Two stores under data/china_reports/:
-  reports.parquet    one row per report (dedup infoCode keep-LAST — a same-day re-pull
-                     corrects; a late-arriving field never duplicates the report). Rows
-                     carry fetched_at ("last observed") AND first_seen ("first observed",
+  reports.parquet    one row per OBSERVED VERSION of a report. load_reports() preserves
+                     the historical one-row-per-infoCode consumer contract by returning
+                     only the current version; load_report_versions() exposes lineage.
+                     Identical re-pulls only advance fetched_at. Changed source fields mint
+                     a later immutable version; ambiguous same-pull conflicts fail closed.
+                     Rows carry fetched_at ("last observed") AND first_seen ("first observed",
                      preserved through every correction).
   aggregates.parquet one row per publish DATE (dedup date keep-LAST), recomputed FROM
                      THE STORE after every append so the numbers always describe what is
@@ -100,8 +103,23 @@ _COLUMNS = (
     "month_count",           # count = 近一月个股研报数
     "market",
     "backfill",              # True only for rows written by the manual --backfill CLI
-    "fetched_at",            # LAST observation of this info_code
-    "first_seen",            # FIRST observation — never overwritten by a correction
+    "fetched_at",            # LAST observation of THIS payload version
+    "first_seen",            # FIRST observation of the report identity — never moves
+    "payload_sha256",        # hash of source/semantic fields, excluding observation clocks
+    "supersedes_payload_sha256",  # previous distinct payload for this info_code, or ""
+    "version_ordinal",       # 1..N within info_code, ordered by actual observation
+    "revision_state",        # first_observed | revised | legacy_snapshot
+    "revision_fields",       # compact JSON list of semantic fields changed from prior version
+    "version_first_observed_at",  # exact system observation for this payload version when known
+    "version_clock_quality",      # exact | legacy_upper_bound
+    "is_current_version",         # exactly one True row per info_code in a valid store
+)
+
+_REPORT_SEMANTIC_FIELDS = (
+    "publish_date", "code", "name", "org", "title",
+    "em_rating", "em_rating_value", "last_em_rating", "last_em_rating_value",
+    "rating_change_raw", "target_price_t", "target_price_l",
+    "eps_this", "eps_next", "forecast_year_base", "month_count", "market",
 )
 
 _AGG_COLUMNS = (
@@ -187,61 +205,319 @@ def _restore_first_seen(merged: pd.DataFrame, existing: pd.DataFrame,
     return out
 
 
-def load_reports() -> pd.DataFrame:
-    """Existing reports.parquet, or an empty frame with the canonical schema.
+def _lineage_text(value) -> str:
+    """NaN-safe stable text for payload identity / lineage fields."""
+    if value is None:
+        return ""
+    try:
+        if pd.isna(value):
+            return ""
+    except (TypeError, ValueError):
+        pass
+    try:
+        return str(value)
+    except Exception:  # noqa: BLE001
+        return ""
 
-    A present-but-unreadable store also reads as empty HERE — a reader must not
-    crash — but write_reports() checks readability separately and aborts, so the
-    empty frame can never be written back over the real one.
+
+def _payload_sha256(row) -> str:
+    """Content identity for one report observation; observation clocks never enter."""
+    payload = {
+        field: _lineage_text(row.get(field))
+        for field in _REPORT_SEMANTIC_FIELDS
+    }
+    raw = json.dumps(
+        payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _revision_fields(before, after) -> list[str]:
+    """Semantic source fields that differ between two observed payloads."""
+    return [
+        field for field in _REPORT_SEMANTIC_FIELDS
+        if _lineage_text(before.get(field)) != _lineage_text(after.get(field))
+    ]
+
+
+def _ensure_lineage(df: pd.DataFrame) -> pd.DataFrame:
+    """Normalize current and legacy report rows onto the additive lineage schema.
+
+    A pre-CIE-08 row proves only that the payload existed by the row's historical
+    first_seen/fetched_at upper bound. It must never be relabeled as an exact
+    version-first-observation clock.
+    """
+    out = df.reindex(columns=list(_COLUMNS)).copy()
+    if out.empty:
+        return out
+    for idx, row in out.iterrows():
+        payload_sha = _lineage_text(row.get("payload_sha256")) or _payload_sha256(row)
+        out.at[idx, "payload_sha256"] = payload_sha
+
+        try:
+            ordinal = int(row.get("version_ordinal"))
+            if ordinal < 1:
+                raise ValueError
+        except (TypeError, ValueError):
+            ordinal = 1
+        out.at[idx, "version_ordinal"] = ordinal
+
+        if not _lineage_text(row.get("revision_state")):
+            out.at[idx, "revision_state"] = "legacy_snapshot"
+        if not _lineage_text(row.get("revision_fields")):
+            out.at[idx, "revision_fields"] = "[]"
+
+        observed = _lineage_text(row.get("version_first_observed_at"))
+        if not observed:
+            observed = (
+                _lineage_text(row.get("first_seen"))
+                or _lineage_text(row.get("fetched_at"))
+            )
+            out.at[idx, "version_first_observed_at"] = observed
+            out.at[idx, "version_clock_quality"] = "legacy_upper_bound"
+        elif not _lineage_text(row.get("version_clock_quality")):
+            out.at[idx, "version_clock_quality"] = "exact"
+
+        current = row.get("is_current_version")
+        if isinstance(current, bool):
+            out.at[idx, "is_current_version"] = current
+        elif _lineage_text(current).lower() in {"true", "1"}:
+            out.at[idx, "is_current_version"] = True
+        elif _lineage_text(current).lower() in {"false", "0"}:
+            out.at[idx, "is_current_version"] = False
+        else:
+            # Pre-lineage physical storage had exactly one row per report.
+            out.at[idx, "is_current_version"] = True
+
+        out.at[idx, "supersedes_payload_sha256"] = _lineage_text(
+            row.get("supersedes_payload_sha256")
+        )
+    return out
+
+
+def _latest_report_view(versions: pd.DataFrame) -> pd.DataFrame:
+    """Return one current row per info_code for all historical consumers."""
+    if versions.empty:
+        return versions.reindex(columns=list(_COLUMNS)).copy()
+    work = _ensure_lineage(versions)
+    work["_ordinal"] = pd.to_numeric(
+        work["version_ordinal"], errors="coerce"
+    ).fillna(0)
+    work = work.sort_values(
+        ["info_code", "_ordinal", "version_first_observed_at"],
+        kind="stable", na_position="last",
+    )
+    current = work[
+        work["is_current_version"].fillna(False).astype(bool)
+    ].copy()
+    expected = work["info_code"].astype(str).nunique()
+    if (
+        current["info_code"].astype(str).duplicated().any()
+        or len(current) != expected
+    ):
+        log.warning(
+            "china_reports: current-version flags malformed; latest reader "
+            "falling back to max version_ordinal per info_code"
+        )
+        current = work.drop_duplicates(subset=["info_code"], keep="last").copy()
+    return current.drop(columns=["_ordinal"], errors="ignore").reset_index(drop=True)
+
+
+def load_report_versions() -> pd.DataFrame:
+    """All observed payload versions from the one canonical reports store."""
+    df = _read_store(_reports_path(), _COLUMNS)
+    return pd.DataFrame(columns=list(_COLUMNS)) if df is None else _ensure_lineage(df)
+
+
+def load_reports() -> pd.DataFrame:
+    """Latest version of each report, preserving the historical reader grain.
+
+    The physical store may carry multiple observed payload versions per info_code.
+    A present-but-unreadable store still degrades to an empty reader view; the writer
+    independently refuses mutation on that state.
     """
     df = _read_store(_reports_path(), _COLUMNS)
-    return pd.DataFrame(columns=list(_COLUMNS)) if df is None else df
+    if df is None:
+        return pd.DataFrame(columns=list(_COLUMNS))
+    return _latest_report_view(df)
 
 
 def write_reports(rows: list[dict], keep_existing: bool = False) -> int:
-    """Append report rows, dedup info_code keep-LAST. Returns net-new. Never raises.
+    """Accrue report payload versions while keeping one latest row per reader key.
 
-    ``keep_existing`` flips the resolution to keep-FIRST for info_codes ALREADY on
-    disk — the manual backfill path. A row recovered months later must never overwrite
-    the one observed live on the night it published, nor flip that row's backfill flag.
-
-    first_seen is carried through the merge, so a correction advances fetched_at
-    without destroying the first-observation time. An existing-but-UNREADABLE
-    reports.parquet ABORTS the append (returns 0, file left in place for manual
-    recovery) rather than being replaced by tonight's window.
+    Identical re-observations advance only the current version's fetched_at.
+    Changed source payloads mint the next version with an exact system-observation
+    clock and a prior-hash link. Two different payloads for one info_code in one
+    write are unordered source evidence and refuse the whole write. Manual backfill
+    never revises an already observed info_code.
     """
     if not rows:
         return 0
     try:
-        existing = _read_store(_reports_path(), _COLUMNS)
-        if existing is None:
-            log.error("china_reports: ABORTING the reports.parquet append — the accrued "
-                      "store is unreadable and is left untouched for manual recovery")
+        raw_existing = _read_store(_reports_path(), _COLUMNS)
+        if raw_existing is None:
+            log.error(
+                "china_reports: ABORTING the reports.parquet append — the accrued "
+                "store is unreadable and is left untouched for manual recovery"
+            )
             return 0
-        new_df = pd.DataFrame(rows).reindex(columns=list(_COLUMNS))
+        existing = _ensure_lineage(raw_existing)
+
+        if not existing.empty:
+            if existing.duplicated(
+                subset=["info_code", "payload_sha256"]
+            ).any():
+                log.error(
+                    "china_reports: ABORTING append — duplicate persisted "
+                    "report-version identity"
+                )
+                return 0
+            current_rows = existing[
+                existing["is_current_version"].fillna(False).astype(bool)
+            ].copy()
+            current_rows["_code_key"] = current_rows["info_code"].astype(str)
+            current_counts = current_rows.groupby("_code_key").size()
+            all_codes = set(existing["info_code"].astype(str))
+            if (
+                set(current_counts.index) != all_codes
+                or (current_counts != 1).any()
+            ):
+                log.error(
+                    "china_reports: ABORTING append — current-version lineage "
+                    "is malformed"
+                )
+                return 0
+
+        new_df = pd.DataFrame(rows).reindex(columns=list(_COLUMNS)).copy()
         new_df["first_seen"] = new_df["first_seen"].fillna(new_df["fetched_at"])
-        if keep_existing and not existing.empty:
-            known = set(existing["info_code"].astype(str))
-            new_df = new_df[~new_df["info_code"].astype(str).isin(known)]
+        new_df["payload_sha256"] = [
+            _payload_sha256(row) for row in new_df.to_dict("records")
+        ]
+        code_keys = new_df["info_code"].fillna("").astype(str).str.strip()
+        if code_keys.eq("").any():
+            log.error(
+                "china_reports: ABORTING append — write_reports received an "
+                "empty info_code"
+            )
+            return 0
+        new_df["_code_key"] = code_keys
+
+        conflict_counts = new_df.groupby("_code_key")[
+            "payload_sha256"
+        ].nunique()
+        if (conflict_counts > 1).any():
+            bad = sorted(
+                str(k) for k in conflict_counts[conflict_counts > 1].index
+            )
+            log.error(
+                "china_reports: ABORTING append — conflicting same-observation "
+                "payloads for info_code(s): %s", ",".join(bad[:20]),
+            )
+            return 0
+        new_df = new_df.drop_duplicates(
+            subset=["_code_key", "payload_sha256"], keep="first"
+        ).drop(columns=["_code_key"]).reset_index(drop=True)
+
+        known_codes = (
+            set(existing["info_code"].astype(str))
+            if not existing.empty else set()
+        )
+        if keep_existing and known_codes:
+            new_df = new_df[
+                ~new_df["info_code"].astype(str).isin(known_codes)
+            ].copy()
             if new_df.empty:
                 return 0
-        if existing.empty:
-            merged = new_df.drop_duplicates(subset=["info_code"], keep="last")
-            net_new = len(merged)
-        else:
-            pre = existing["info_code"].nunique()
-            merged = pd.concat([existing, new_df], ignore_index=True)
-            merged = merged.drop_duplicates(subset=["info_code"], keep="last")
-            merged = _restore_first_seen(merged, existing, ["info_code"])
-            net_new = merged["info_code"].nunique() - pre
-        merged = merged.sort_values(["publish_date", "info_code"],
-                                    na_position="last").reset_index(drop=True)
+
+        pre = len(known_codes)
+        merged = existing.copy()
+        additions: list[dict] = []
+
+        for row in new_df.to_dict("records"):
+            code = _lineage_text(row.get("info_code"))
+            fetched_at = _lineage_text(row.get("fetched_at"))
+            payload_sha = _lineage_text(row.get("payload_sha256"))
+            prior_rows = (
+                merged[merged["info_code"].astype(str) == code]
+                if not merged.empty
+                else pd.DataFrame(columns=list(_COLUMNS))
+            )
+
+            if prior_rows.empty:
+                row["first_seen"] = (
+                    _lineage_text(row.get("first_seen")) or fetched_at
+                )
+                row["supersedes_payload_sha256"] = ""
+                row["version_ordinal"] = 1
+                row["revision_state"] = "first_observed"
+                row["revision_fields"] = "[]"
+                row["version_first_observed_at"] = fetched_at
+                row["version_clock_quality"] = "exact"
+                row["is_current_version"] = True
+                additions.append(row)
+                continue
+
+            current = prior_rows[
+                prior_rows["is_current_version"].fillna(False).astype(bool)
+            ]
+            if len(current) != 1:
+                log.error(
+                    "china_reports: ABORTING append — %s has %d current "
+                    "versions", code, len(current),
+                )
+                return 0
+            current_idx = current.index[0]
+            current_row = current.iloc[0].to_dict()
+            current_sha = _lineage_text(current_row.get("payload_sha256"))
+            first_seen = _lineage_text(current_row.get("first_seen"))
+
+            if payload_sha == current_sha:
+                # fetched_at is deliberately last-observed for THIS payload.
+                merged.at[current_idx, "fetched_at"] = fetched_at
+                continue
+
+            ordinal_series = pd.to_numeric(
+                prior_rows["version_ordinal"], errors="coerce"
+            )
+            next_ordinal = int(ordinal_series.max()) + 1
+            merged.at[current_idx, "is_current_version"] = False
+            row["first_seen"] = (
+                first_seen
+                or _lineage_text(row.get("first_seen"))
+                or fetched_at
+            )
+            row["supersedes_payload_sha256"] = current_sha
+            row["version_ordinal"] = next_ordinal
+            row["revision_state"] = "revised"
+            row["revision_fields"] = json.dumps(
+                _revision_fields(current_row, row),
+                ensure_ascii=False, separators=(",", ":"),
+            )
+            row["version_first_observed_at"] = fetched_at
+            row["version_clock_quality"] = "exact"
+            row["is_current_version"] = True
+            additions.append(row)
+
+        if additions:
+            merged = pd.concat(
+                [
+                    merged,
+                    pd.DataFrame(additions).reindex(columns=list(_COLUMNS)),
+                ],
+                ignore_index=True,
+            )
+        if merged.empty:
+            return 0
+        merged = _ensure_lineage(merged)
+        merged = merged.sort_values(
+            ["publish_date", "info_code", "version_ordinal"],
+            kind="stable", na_position="last",
+        ).reset_index(drop=True)
         _atomic_write(merged, _reports_path())
-        return int(net_new)
+        return int(merged["info_code"].astype(str).nunique() - pre)
     except Exception as e:  # noqa: BLE001
         log.error("china_reports.write_reports failed: %s", e)
         return 0
-
 
 def load_aggregates() -> pd.DataFrame:
     """Existing aggregates.parquet, or an empty canonical frame (see load_reports)."""
@@ -555,13 +831,14 @@ def refresh() -> dict:
         log.warning("china_reports: partial/capped pull — no aggregate row for [%s..%s] "
                     "dates on or before %s (gap logged, not written as fact)",
                     begin, end, boundary)
-    store = _read_store(_reports_path(), _COLUMNS)
-    if store is None:
+    versions = _read_store(_reports_path(), _COLUMNS)
+    if versions is None:
         # Recomputing "from the store" when the store cannot be read would stamp a
         # window of zeros over real daily facts.
         log.error("china_reports: reports.parquet unreadable — aggregates NOT recomputed")
         n_agg = 0
     else:
+        store = _latest_report_view(versions)
         n_agg = write_aggregates(aggregate_rows(
             store, _window_dates(begin, end), fetched_at, clean, boundary))
 
