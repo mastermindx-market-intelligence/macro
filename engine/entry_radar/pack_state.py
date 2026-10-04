@@ -9,8 +9,14 @@ needs, so an evaluator can answer it for a whole market without the histories:
 * the StochRSI append state and the RSI-MACD histogram append state, exactly as
   :mod:`engine.entry_radar.indicator_core` builds them from the confirmed closes;
 * the tail of the confirmed closes (``TAIL_ROWS`` rows, reaching further back
-  until it holds ``TAIL_MIN_FINITE`` finite closes or the history ends), for the
-  canonical recompute a caller must fall back to near a decision boundary.
+  until it holds ``TAIL_MIN_FINITE`` finite closes or the history ends), kept
+  as **display context only** — the last confirmed closes for a glance surface.
+  It is never an input to any indicator value or any decision.  A 252-row tail
+  cannot reproduce the canonical SMA-seeded Wilder-RMA / EMA recursions within
+  the live oracle tie band (measured 1e-7 to 1e-4 off vs 1e-14 for the append
+  states here).  A decision whose |margin| is at or below the tie band must be
+  settled from the pack's frozen substrate frame through the pack reader, never
+  from this file (see :data:`CANONICAL_FALLBACK`).
 
 Both append states of a name are built by ONE function from ONE closes series,
 so they cannot be paired with each other's history.  A name whose StochRSI state
@@ -50,6 +56,12 @@ COMPACT_NAME = "compact.parquet"
 #: The layout identity, stored in the file's own metadata and in the manifest.
 SCHEMA_COMPACT = "mastermind.entry_radar_pack_compact.v1"
 
+#: Contract: ``tail_close`` is display context only, not a canonical recompute input.
+TAIL_CLOSE_PURPOSE = "display_only"
+
+#: Where near-boundary decisions must be settled when this file is not enough.
+CANONICAL_FALLBACK = "pack_substrate_frame"
+
 #: Confirmed closes kept per name: the last ``TAIL_ROWS`` rows, reaching further
 #: back until ``TAIL_MIN_FINITE`` of them are finite or the history ends.
 TAIL_ROWS = 252
@@ -74,7 +86,11 @@ COMPACT_SCHEMA = pa.schema([
     pa.field("hist_base", pa.float64()),
     pa.field("hist_sig", pa.float64()),
     pa.field("tail_close", _FLOATS, nullable=False),
-], metadata={"schema": SCHEMA_COMPACT})
+], metadata={
+    b"schema": SCHEMA_COMPACT.encode(),
+    b"tail_close_purpose": TAIL_CLOSE_PURPOSE.encode(),
+    b"canonical_fallback": CANONICAL_FALLBACK.encode(),
+})
 
 _KD_SCALARS = ("kd_last_close", "kd_up_prev", "kd_dn_prev")
 _KD_TAILS = (("kd_rsi_tail", canon.STOCH_LEN - 1), ("kd_rawk_tail", canon.SMOOTH_K - 1),
@@ -100,6 +116,7 @@ class CompactName:
     price_basis: str
     kd_state: ic.StochRsiAppendState | None
     hist_state: ic.RsiMacdHistAppendState | None
+    #: Display context only (last confirmed closes); never an indicator or decision input.
     tail_close: tuple[float, ...]
 
 
@@ -124,6 +141,10 @@ def compact_state_row(ticker: str, frame: pd.DataFrame, *, price_basis: str) -> 
         raise CompactStateError("compact_empty_frame", f"{ticker}: no confirmed rows")
     if "close" not in frame.columns:
         raise CompactStateError("compact_schema", f"{ticker}: frame has no close column")
+    if not isinstance(frame.index, pd.DatetimeIndex):
+        raise CompactStateError("compact_schema", f"{ticker}: frame index is not DatetimeIndex")
+    if not frame.index.is_monotonic_increasing or not frame.index.is_unique:
+        raise CompactStateError("compact_schema", f"{ticker}: frame index is not strictly increasing")
     closes = confirmed_closes(frame)
     kd_state = ic.stoch_rsi_append_state(closes)
     hist_state = ic.rsi_macd_hist_append_state(closes) if kd_state is not None else None
@@ -279,19 +300,26 @@ def load_compact(path: Path | str, *, expected_sha256: str) -> dict[str, Compact
         data = Path(path).read_bytes()
     except OSError as exc:
         raise CompactStateError("compact_absent", str(exc)) from exc
-    if not isinstance(expected_sha256, str) or \
-            hashlib.sha256(data).hexdigest() != expected_sha256:
+    if hashlib.sha256(data).hexdigest() != expected_sha256:
         raise CompactStateError("compact_hash_mismatch", str(path))
     try:
         table = pq.read_table(pa.BufferReader(data))
     except Exception as exc:  # noqa: BLE001 — any unreadable layout is one refusal
         raise CompactStateError("compact_schema", f"unreadable: {exc}") from exc
+    meta = table.schema.metadata or {}
     if not table.schema.equals(COMPACT_SCHEMA, check_metadata=False) or \
-            (table.schema.metadata or {}).get(b"schema") != SCHEMA_COMPACT.encode():
+            meta.get(b"schema") != SCHEMA_COMPACT.encode():
         raise CompactStateError("compact_schema", "columns differ from the published layout")
+    if meta.get(b"tail_close_purpose") != TAIL_CLOSE_PURPOSE.encode() or \
+            meta.get(b"canonical_fallback") != CANONICAL_FALLBACK.encode():
+        raise CompactStateError("compact_schema", "contract metadata differs")
     out: dict[str, CompactName] = {}
+    prev_ticker: str | None = None
     for cells in table.to_pylist():
         row = _row(cells)
+        if prev_ticker is not None and row.ticker <= prev_ticker:
+            raise CompactStateError("compact_schema", "rows not sorted by ticker")
+        prev_ticker = row.ticker
         if row.ticker in out:
             raise CompactStateError("compact_schema", f"{row.ticker}: listed twice")
         out[row.ticker] = row
