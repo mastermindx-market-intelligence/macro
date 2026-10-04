@@ -1,0 +1,21 @@
+{
+  "url": "https://www.mastermind-x.com/alt_data.html",
+  "http": 200,
+  "news_text": "News surface not built yet \u2014 runs on the next daily build.",
+  "data_responses": [
+    {
+      "url": "https://www.mastermind-x.com/news/by_ticker.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/altdata/mastermind.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/news/financial.json",
+      "status": 401
+    }
+  ],
+  "page_errors": [],
+  "has_button": 0
+}

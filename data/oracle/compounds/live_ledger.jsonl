@@ -1,10 +1,10 @@
-{"compound_id":"A1","node":"XLB","fire_date":"2026-07-01T00:00:00","registered_at":"2026-07-04T23:23:39.149884+00:00","outcome_mature":false,"excess_21d":-0.03653413362569069,"excess_63d":null}
-{"compound_id":"A1","node":"XLE","fire_date":"2026-07-01T00:00:00","registered_at":"2026-07-04T23:23:39.149928+00:00","outcome_mature":false,"excess_21d":0.08735283286934781,"excess_63d":null}
-{"compound_id":"A1","node":"XLF","fire_date":"2026-07-01T00:00:00","registered_at":"2026-07-04T23:23:39.149961+00:00","outcome_mature":false,"excess_21d":0.014336271506266929,"excess_63d":null}
-{"compound_id":"A1","node":"XLP","fire_date":"2026-07-01T00:00:00","registered_at":"2026-07-04T23:23:39.150116+00:00","outcome_mature":false,"excess_21d":-0.018836620726803144,"excess_63d":null}
-{"compound_id":"A1","node":"XLRE","fire_date":"2026-07-01T00:00:00","registered_at":"2026-07-04T23:23:39.150131+00:00","outcome_mature":false,"excess_21d":-0.006116372018188265,"excess_63d":null}
-{"compound_id":"A1","node":"XLU","fire_date":"2026-07-01T00:00:00","registered_at":"2026-07-04T23:23:39.150157+00:00","outcome_mature":false,"excess_21d":-0.047901417986932704,"excess_63d":null}
-{"compound_id":"A1","node":"XLV","fire_date":"2026-07-01T00:00:00","registered_at":"2026-07-04T23:23:39.150174+00:00","outcome_mature":false,"excess_21d":-0.026467925766523015,"excess_63d":null}
+{"compound_id":"A1","node":"XLB","fire_date":"2026-07-01T00:00:00","registered_at":"2026-07-04T23:23:39.149884+00:00","outcome_mature":true,"excess_21d":-0.03653413362569069,"excess_63d":-0.09076294490092263}
+{"compound_id":"A1","node":"XLE","fire_date":"2026-07-01T00:00:00","registered_at":"2026-07-04T23:23:39.149928+00:00","outcome_mature":true,"excess_21d":0.08735283286934781,"excess_63d":0.15679130916663353}
+{"compound_id":"A1","node":"XLF","fire_date":"2026-07-01T00:00:00","registered_at":"2026-07-04T23:23:39.149961+00:00","outcome_mature":true,"excess_21d":0.014336271506266929,"excess_63d":-0.06377323883911945}
+{"compound_id":"A1","node":"XLP","fire_date":"2026-07-01T00:00:00","registered_at":"2026-07-04T23:23:39.150116+00:00","outcome_mature":true,"excess_21d":-0.018836620726803144,"excess_63d":-0.07695382748447233}
+{"compound_id":"A1","node":"XLRE","fire_date":"2026-07-01T00:00:00","registered_at":"2026-07-04T23:23:39.150131+00:00","outcome_mature":true,"excess_21d":-0.006116372018188265,"excess_63d":-0.11020185221318779}
+{"compound_id":"A1","node":"XLU","fire_date":"2026-07-01T00:00:00","registered_at":"2026-07-04T23:23:39.150157+00:00","outcome_mature":true,"excess_21d":-0.047901417986932704,"excess_63d":-0.15483114699201606}
+{"compound_id":"A1","node":"XLV","fire_date":"2026-07-01T00:00:00","registered_at":"2026-07-04T23:23:39.150174+00:00","outcome_mature":true,"excess_21d":-0.026467925766523015,"excess_63d":-0.009431627065818349}
 {"compound_id":"A2","node":"Commodities Energy","fire_date":"2026-07-02T00:00:00","registered_at":"2026-07-04T23:27:06.292709+00:00","outcome_mature":false,"excess_21d":0.005977140208929921,"excess_63d":null}
 {"compound_id":"A2","node":"Commodities Metals","fire_date":"2026-07-02T00:00:00","registered_at":"2026-07-04T23:27:06.292732+00:00","outcome_mature":false,"excess_21d":-0.03870151757160423,"excess_63d":null}
 {"compound_id":"A2","node":"ai_agents","fire_date":"2026-07-02T00:00:00","registered_at":"2026-07-04T23:27:06.292746+00:00","outcome_mature":false,"excess_21d":-0.006654040269412076,"excess_63d":null}

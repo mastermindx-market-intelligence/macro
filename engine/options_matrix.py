@@ -1119,16 +1119,22 @@ def _null_payload(root: str, asof_ts: str, reason: str) -> dict:
 
 
 def _extract_spot(greeks_df: pd.DataFrame, eod_df: pd.DataFrame) -> float | None:
-    """Extract spot price from greeks (underlying_price) or EOD close."""
-    if not greeks_df.empty and "underlying_price" in greeks_df.columns:
-        v = greeks_df["underlying_price"].dropna()
-        if not v.empty:
-            return float(v.iloc[0])
-    if not eod_df.empty and "close" in eod_df.columns:
-        # Use ATM close as proxy — pick highest-OI strike's close
-        v = eod_df["close"].dropna()
-        if not v.empty:
-            return float(v.median())
+    """Read underlying spot from the same-session Greeks tier.
+
+    ThetaData option EOD close is an option premium, never an underlying
+    price. The caller retains its unavailable payload when this field is absent.
+    """
+    if greeks_df.empty or "underlying_price" not in greeks_df.columns:
+        return None
+    for raw in greeks_df["underlying_price"]:
+        if isinstance(raw, (bool, np.bool_)):
+            continue
+        try:
+            spot = float(raw)
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if np.isfinite(spot) and spot > 0:
+            return spot
     return None
 
 

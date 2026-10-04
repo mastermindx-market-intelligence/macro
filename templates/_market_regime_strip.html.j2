@@ -1,0 +1,53 @@
+{# Risk-regime strip for markets.html.
+   Sits between section.cyc-stage and section.mkt-grid.
+   One state word plus the hero stance sentence. No score, no rail, no date.
+   HK/CN caveats are tier-2 only (hover popover + aria-describedby). #}
+{%- set _watch_en = 'Watch — don’t chase' -%}
+{%- set _watch_zh = '观察，勿追' -%}
+{%- set _stand_en = 'Stand aside' -%}
+{%- set _stand_zh = '暂时观望' -%}
+{%- set _ready_en = 'Get ready' -%}
+{%- set _ready_zh = '准备行动' -%}
+{%- set _null_en = 'Read being updated' -%}
+{%- set _null_zh = '判读更新中' -%}
+{%- macro mrs_row(market, name_en, name_zh, view) -%}
+{%- set verdict = view.get('verdict') if view is mapping else none -%}
+{%- set on = verdict == 'RISK_ON' -%}
+{%- set off = verdict == 'RISK_OFF' -%}
+{%- set feed = view is mapping and verdict -%}
+{%- set state_en = 'Risk-on' if on else ('Risk-off' if off else _null_en) -%}
+{%- set state_zh = '风险偏好' if on else ('风险规避' if off else _null_zh) -%}
+{%- set state_mod = 'ok' if on else ('down' if off else 'muted') -%}
+{%- set do_en = _watch_en if on else (_stand_en if off else (_ready_en if feed else _null_en)) -%}
+{%- set do_zh = _watch_zh if on else (_stand_zh if off else (_ready_zh if feed else _null_zh)) -%}
+{%- set do_mod = 'warn' if on else ('muted' if off else ('warn' if feed else 'muted')) -%}
+{%- set cav_en = (view.get('caveat_en') or '') if view is mapping else '' -%}
+{%- set cav_zh = (view.get('caveat_zh') or '') if view is mapping else '' -%}
+{%- set show_cav = market in ('hk', 'cn') and (cav_en or cav_zh) -%}
+<div class="mrs-row" data-market="{{ market }}">
+  <div class="mrs-name"><span class="l-en">{{ name_en }}</span><span class="l-zh">{{ name_zh }}</span></div>
+  <p class="mrs-state mx-stance mx-stance--{{ state_mod }}"><span class="l-en">{{ state_en }}</span><span class="l-zh">{{ state_zh }}</span></p>
+  <p class="mrs-do mx-stance mx-stance--{{ do_mod }}"><span class="l-en">{{ do_en }}</span><span class="l-zh">{{ do_zh }}</span></p>
+  {%- if show_cav %}
+  <div class="mrs-caveat">
+    <button type="button" class="mrs-caveat-btn" aria-describedby="mrs-cav-{{ market }}">
+      <span class="l-en">Why this read is lighter</span><span class="l-zh">为何此判读更轻</span>
+    </button>
+    <div class="mrs-pop" id="mrs-cav-{{ market }}" role="note">
+      <span class="l-en">{{ cav_en }}</span><span class="l-zh">{{ cav_zh }}</span>
+    </div>
+  </div>
+  {%- endif %}
+</div>
+{%- endmacro -%}
+<section class="mrs" id="market-regime-strip" aria-labelledby="mrs-h">
+  <header class="mrs-hd">
+    <h2 class="mrs-title" id="mrs-h"><span class="l-en">Risk regime today</span><span class="l-zh">今日风险状态</span></h2>
+    <p class="mrs-sub"><span class="l-en">Same-day read - not the cycle position above</span><span class="l-zh">当日判读，不是上方的周期位置</span></p>
+  </header>
+  <div class="mrs-rows">
+    {{ mrs_row('us', 'US stocks', '美股', market_state) }}
+    {{ mrs_row('hk', 'Hong Kong', '香港', hk_market_state) }}
+    {{ mrs_row('cn', 'China', '中国', cn_market_state) }}
+  </div>
+</section>

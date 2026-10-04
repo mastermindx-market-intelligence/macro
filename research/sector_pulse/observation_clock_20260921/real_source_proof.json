@@ -1,0 +1,138 @@
+{
+  "schema": "sector_pulse_observation_clock_proof.v1",
+  "source_ref": "2b62f49603e731daf68877516d3f6f748497b160",
+  "source_sha256": {
+    "engine/sector_pulse.py": "c24d00da8aaa8de3ecd211f130e15017942da720740398293727b19eaa11a83f",
+    "site/basketdata/baskets.json": "c928f5449ccac851dab9ddbb00d8170425f2fbb4450fe99cb1e3f3d8a6bf8992",
+    "data/signal_archive/baskets.parquet": "ad3cba6977fb717af5d58100ceba73cd38d13930da09ebaac828c5c7621b3bf8"
+  },
+  "candidate_engine_sha256": "969a94a79d1f2713e8104fa532b73557e0ab0e2c7492b8773f916f374f94cc9e",
+  "theme_as_of": "2026-09-18",
+  "archive_last_as_of": "2026-09-17",
+  "authority_fields_unchanged": true,
+  "n_themes": 49,
+  "history": {
+    "basis": "nyse_sessions",
+    "comparison_as_of": {
+      "1d": "2026-09-17",
+      "5d": "2026-09-11",
+      "20d": "2026-08-20"
+    },
+    "expected_comparison_as_of": {
+      "1d": "2026-09-17",
+      "5d": "2026-09-11",
+      "20d": "2026-08-20"
+    }
+  },
+  "before": [
+    {
+      "id": "mag7",
+      "rank": 2,
+      "score": 70,
+      "reco": "accumulate",
+      "heat": "heating",
+      "rank_delta_1d": 0,
+      "rank_delta_5d": 8,
+      "score_delta_5d": 7
+    },
+    {
+      "id": "cybersecurity",
+      "rank": 4,
+      "score": 69,
+      "reco": "hold",
+      "heat": "heating",
+      "rank_delta_1d": -3,
+      "rank_delta_5d": 14,
+      "score_delta_5d": 17
+    },
+    {
+      "id": "memory_storage",
+      "rank": 5,
+      "score": 68,
+      "reco": "accumulate",
+      "heat": "heating",
+      "rank_delta_1d": 19,
+      "rank_delta_5d": 4,
+      "score_delta_5d": 4
+    },
+    {
+      "id": "ai_semiconductors",
+      "rank": 6,
+      "score": 65,
+      "reco": "accumulate",
+      "heat": "heating",
+      "rank_delta_1d": 10,
+      "rank_delta_5d": 14,
+      "score_delta_5d": 14
+    }
+  ],
+  "after": [
+    {
+      "id": "mag7",
+      "rank": 2,
+      "score": 70,
+      "reco": "accumulate",
+      "heat": "heating",
+      "rank_delta_1d": 0,
+      "rank_delta_5d": 3,
+      "score_delta_5d": 7
+    },
+    {
+      "id": "cybersecurity",
+      "rank": 4,
+      "score": 69,
+      "reco": "hold",
+      "heat": "heating",
+      "rank_delta_1d": -3,
+      "rank_delta_5d": 25,
+      "score_delta_5d": 25
+    },
+    {
+      "id": "memory_storage",
+      "rank": 5,
+      "score": 68,
+      "reco": "accumulate",
+      "heat": "heating",
+      "rank_delta_1d": 12,
+      "rank_delta_5d": 8,
+      "score_delta_5d": 13
+    },
+    {
+      "id": "ai_semiconductors",
+      "rank": 6,
+      "score": 65,
+      "reco": "accumulate",
+      "heat": "heating",
+      "rank_delta_1d": -1,
+      "rank_delta_5d": 14,
+      "score_delta_5d": 14
+    }
+  ],
+  "relative_strength_extension_discriminator": {
+    "synthetic_only": true,
+    "legacy": {
+      "inputs": {
+        "long_sign": 1,
+        "rs_pctile": 0.95
+      },
+      "extended": true,
+      "reco": "hold"
+    },
+    "absolute": {
+      "inputs": {
+        "long_sign": 1,
+        "rs_pctile": 0.95,
+        "ext_abs": 0.5
+      },
+      "extended": false,
+      "reco": "accumulate"
+    },
+    "authority_changed": false
+  },
+  "limitations": [
+    "Committed September 18 observation, not September 21 live evidence.",
+    "No logged-at/PIT replay or forward-return claim.",
+    "Calibration enrichment omitted identically from both projections.",
+    "The extension discriminator is not a measured US price or a promoted strategy."
+  ]
+}

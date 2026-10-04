@@ -22,7 +22,7 @@ entries:
 
   - topic: 'Positioning fusion (positioning keys fused into signal scores)'
     key: KILL-POSITIONING-FUSION
-    verdict: 'ILLEGAL — **Amendment 1 (CEO ruling 2026-08-14, `DEC:PROPHET-ZERO-AUTHORITY-SUPERSEDED-BY-EARNED-CONDITIONAL-AUTHORITY`):** for the Prophet US conditional-fusion arena ONLY (`research/PROPHET_CONDITIONAL_FUSION_MASTERPLAN_BY_FABLE.md`), the permanent form converts to unvalidated-at-birth: positioning keys may be TESTED for earned conditional authority in that arena (research/shadow tier, frozen §8 rules, filed negative verdicts as priors — short-interest FDR-fail, 13F sign — and `pit_status` fences: short interest is forward-accrual-only), reaching live authority only through that masterplan''s §8.6 promotion adjudication. Fusing positioning keys into any OTHER signal or regime score remains ILLEGAL as originally ruled'
+    verdict: 'ILLEGAL — **Amendment 1 (CEO ruling 2026-08-14, `DEC:PROPHET-ZERO-AUTHORITY-SUPERSEDED-BY-EARNED-CONDITIONAL-AUTHORITY`):** for the Prophet US conditional-fusion arena ONLY (`research/PROPHET_CONDITIONAL_FUSION_MASTERPLAN_BY_FABLE.md`), the permanent form converts to unvalidated-at-birth: positioning keys may be TESTED for earned conditional authority in that arena (research/shadow tier, frozen §8 rules, filed negative verdicts as priors — short-interest FDR-fail, 13F sign — and `pit_status` fences: short interest is forward-accrual-only), reaching live authority only through that masterplan''s §8.6 promotion adjudication. Fusing positioning keys into any OTHER signal or regime score remains ILLEGAL as originally ruled **Amendment 2 (Chairman 2026-10-02; DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY):** In addition to the existing Prophet exception, OPTIONS-HISTORICAL-REVIVAL-V1 permits exact preregistered Options positioning interactions/composites in research only. Historical evidence remains a control. Production score/rank/gate/sizing/alert/Issue Desk/Prophet/portfolio/trade and promotion restrictions remain.'
     source: 'Signal Commons rulings (2026-07-05); Amendment 1: CEO ruling 2026-08-14, recorded in the DEC record above'
     section: 1
     section_name: forbidden_by_ruling
@@ -106,7 +106,7 @@ entries:
 
   - topic: 'Fused composite risk/health number in ANY scored path, board ordering, ranker, sizing, NW artifact, or alert escalation — and any user-facing composite that violates the PSI §3.1.2 construction law (hidden inputs, fitted/unversioned weights, LLM legs, no coverage abstention, no forward grading)'
     key: KILL-FUSED-COMPOSITE
-    verdict: 'FORBIDDEN — the authority half of PRD-R2 stands in full. **Amendment 2 (operator override 2026-08-03)**: the user-facing DISPLAY-TIER composite (Portfolio Health Score + sub-scores) on watchlist/portfolio surfaces + digest emails is now ALLOWED under `PORTFOLIO_SUPERINTELLIGENCE_MASTERPLAN_BY_FABLE.md` §3.1.2 (transparent printed legs, v0-equal weights, abstention, day-one grading; dissent on record). (History: PRD-R1 placement struck 2026-07-18 Amendment 1; PRD-R2 display half struck 2026-08-03 Amendment 2) **Amendment 3 (CEO ruling 2026-08-14, `DEC:PROPHET-ZERO-AUTHORITY-SUPERSEDED-BY-EARNED-CONDITIONAL-AUTHORITY`):** the AUTHORITY half is amended for exactly one construction — the Prophet US conditional-fusion challenger of `research/PROPHET_CONDITIONAL_FUSION_MASTERPLAN_BY_FABLE.md` — which may be BUILT and TESTED at research/shadow tier under the §3.1.2-class construction law (printed heads + per-family attributions, versioned frozen parameters, coverage abstention, forward grading from day one) and may take live score/rank authority ONLY via that masterplan''s §8.6 promotion gate (operator/CEO adjudication + synapse amendment). Every other scored path keeps the full prohibition'
+    verdict: 'FORBIDDEN — the authority half of PRD-R2 stands in full. **Amendment 2 (operator override 2026-08-03)**: the user-facing DISPLAY-TIER composite (Portfolio Health Score + sub-scores) on watchlist/portfolio surfaces + digest emails is now ALLOWED under `PORTFOLIO_SUPERINTELLIGENCE_MASTERPLAN_BY_FABLE.md` §3.1.2 (transparent printed legs, v0-equal weights, abstention, day-one grading; dissent on record). (History: PRD-R1 placement struck 2026-07-18 Amendment 1; PRD-R2 display half struck 2026-08-03 Amendment 2) **Amendment 3 (CEO ruling 2026-08-14, `DEC:PROPHET-ZERO-AUTHORITY-SUPERSEDED-BY-EARNED-CONDITIONAL-AUTHORITY`):** the AUTHORITY half is amended for exactly one construction — the Prophet US conditional-fusion challenger of `research/PROPHET_CONDITIONAL_FUSION_MASTERPLAN_BY_FABLE.md` — which may be BUILT and TESTED at research/shadow tier under the §3.1.2-class construction law (printed heads + per-family attributions, versioned frozen parameters, coverage abstention, forward grading from day one) and may take live score/rank authority ONLY via that masterplan''s §8.6 promotion gate (operator/CEO adjudication + synapse amendment). Every other scored path keeps the full prohibition **Amendment 4 (Chairman 2026-10-02; DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY):** OPTIONS-HISTORICAL-REVIVAL-V1 permits explicitly preregistered Options research interactions/composites with versioned printed components and attributions. Retain prior negative evidence. No production score, rank, board ordering, gate, alert, sizing, Issue Desk, Prophet, portfolio, trade or promotion authority is granted; every other scored path remains prohibited.'
     source: 'PRD-R2 + Amendments 1–3, `PORTFOLIO_RISK_DESK_MASTERPLAN_BY_FABLE.md` §13; PSI §3.1, `PORTFOLIO_SUPERINTELLIGENCE_MASTERPLAN_BY_FABLE.md`; UWP-R1..R7; Amendment 3: CEO ruling 2026-08-14 + DEC record'
     section: 1
     section_name: forbidden_by_ruling
@@ -316,22 +316,22 @@ entries:
 
   - topic: 'Signed-charm / charm-intensity narratives'
     key: KILL-CHARM-NARRATIVES
-    verdict: 'KILLED — vol/size confound, trail-RV IC .5–.6'
-    source: 'OPEX vanna/charm adjudication (2026-07-06)'
+    verdict: 'KILLED — vol/size confound, trail-RV IC .5–.6. Research exception: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY; production restrictions retained.'
+    source: 'OPEX vanna/charm adjudication (2026-07-06); Chairman research reopening 2026-10-02: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY and research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md'
     section: 2
     section_name: killed_signal_families
 
   - topic: 'DOI (options delta-OI family)'
     key: KILL-DOI-FAMILY
-    verdict: 'DEAD'
-    source: 'Options→NW entry-intelligence W-E1 gauntlet'
+    verdict: 'DEAD. Research exception: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY; production restrictions retained.'
+    source: 'Options→NW entry-intelligence W-E1 gauntlet; Chairman research reopening 2026-10-02: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY and research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md'
     section: 2
     section_name: killed_signal_families
 
   - topic: 'Skew-deceleration'
     key: KILL-SKEW-DECELERATION
-    verdict: 'UNSUPPORTED'
-    source: 'Options→NW entry-intelligence W-E1 gauntlet'
+    verdict: 'UNSUPPORTED. Research exception: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY; production restrictions retained.'
+    source: 'Options→NW entry-intelligence W-E1 gauntlet; Chairman research reopening 2026-10-02: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY and research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md'
     section: 2
     section_name: killed_signal_families
 
@@ -643,6 +643,13 @@ entries:
     section: 2
     section_name: killed_signal_families
 
+  - topic: 'Mastermind trend-persistence path-shape features (trailing drawdown depth, distance from the high, time since the high, path smoothness — the 29 confirmed V2 tests on twelve features) as a calibrated drawdown-risk profile, shadow snapshot or advisory field'
+    key: KILL-TREND-PERSISTENCE-PATH-FEATURE-PROFILE
+    verdict: 'NULL ON MODEL VALUE (pre-registered Wave B2, run once 2026-10-03) — added to a model of trailing returns, beta and detailed volatility, the features lift out-of-sample rank IC against forward maximum drawdown by 0.001–0.002 and add no top-tenth capture (+0.00 / −0.14 points against a pre-set 1.0 bar); the forward-return test was null 0/72 (V1). Closes these constructions only: revive ONLY with new constructions or sector/group persistence under a fresh prereg on formation dates after 2026-06-02 (2022-07-06..2026-06-02 have been scored twice)'
+    source: 'Mastermind `research/TREND_PERSISTENCE_READOUT.md` §11 (Mastermind PR 1155) + `DEC:TREND-PERSISTENCE-STOPS-AT-WAVE-B`'
+    section: 2
+    section_name: killed_signal_families
+
   - topic: 'Ticker-cluster bootstrap CIs without time control'
     key: LAW-TIME-CLUSTERED-CI
     verdict: 'FORBIDDEN estimator — anti-conservative, effective N = months'
@@ -729,8 +736,8 @@ entries:
 
   - topic: 'Theta tape'
     key: HOLD-THETA-TAPE
-    verdict: 'SUSPENDED'
-    source: 'Final3-lobes program (2026-07-06)'
+    verdict: 'SUSPENDED. Research exception: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY; production restrictions retained.'
+    source: 'Final3-lobes program (2026-07-06); Chairman research reopening 2026-10-02: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY and research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md'
     section: 4
     section_name: held_suspended
 
@@ -843,6 +850,13 @@ entries:
     key: HOLD-FF-ACCRUALS-ABSENT-FROM-MOAT-SENSORS
     verdict: 'HELD — this asymmetry is a DELIBERATE surface boundary, not an unfinished port. A company flagged for accruals on the Filing Forensics workbench shows nothing for it on its stock page, and adding the sensor publishes a signal on production ticker pages that has never appeared there — a new signal on a live surface is an escalation and needs a pre-registered promotion decision, not a completeness patch. The four-vs-five split is the intended state until such a ruling exists'
     source: 'PR #4961; pinned by `tests/test_forensic_detector_crosspin.py` §7 `test_accruals_has_no_moat_sensor_and_that_gap_is_still_open` and by `NON_MOAT_DETECTOR_IDS` in test 1 (2026-08-07)'
+    section: 4
+    section_name: held_suspended
+
+  - topic: 'UD-B1 Unified Macro Dashboard as the primary `macro.html` composition, including re-mounting `_unified_dashboard_hero.html.j2` above the established dashboard or treating its US-derived top score as a global composite'
+    key: HOLD-UD-B1-PRIMARY-MACRO-MIGRATION
+    verdict: '**SUSPENDED / DESIGN-CANDIDATE ONLY — Chairman rulings 2026-09-20 and 2026-09-21.** The first production composition stacked a second global/cross-market regime surface above the existing US macro dashboard, increased prose and vertical space, duplicated the primary decision hierarchy, and originally shipped four of five spine rows as designed-null `BLOCKED_DATA`. Current main later added useful B2 work: W1 improved the established US risk surface, and W2 truthfully bound HK/CN market-state persistence inside the retained candidate. Those accepted capabilities are do-not-redo; they do **not** authorize remounting `#ud-hero` on `macro.html`. Preserve the candidate source/spec/evidence and HK/CN bindings, keep the established `#regime-radar` as the US primary surface, and recompose any compact global successor through `markets.html` with true global/country-cycle evidence. Do not move the block wholesale to `intl.html`, and do not label default US `market_state` as global.'
+    source: '`research/UNIFIED_DASHBOARD_DISPOSITION.md` §§ Primary-route override / Current-main reconciliation — 2026-09-21'
     section: 4
     section_name: held_suspended
 

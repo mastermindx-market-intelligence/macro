@@ -201,27 +201,10 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.fetch_r2 --dirs attention || echo "::warning::attention restore failed (non-fatal — attention chip absent/stale this render)"
-      - name: restore breadth (S&P 500) close cache
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
-        uses: actions/cache/restore@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-closingbell-${{ github.run_id }}
-          restore-keys: breadth-closes-
-      - name: restore smallcap (S&P 600) close cache
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
-        uses: actions/cache/restore@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-closingbell-${{ github.run_id }}
-          restore-keys: smallcap-closes-
-      - name: restore midcap (S&P 400) close cache
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
-        uses: actions/cache/restore@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-closingbell-${{ github.run_id }}
-          restore-keys: midcap-closes-
+      # The US S&P 500/600/400 panels are Git-tracked committed inputs and are
+      # read directly from checkout; this reader must never overlay them from
+      # Actions cache. Only daily.collect may seed those panels. Russell, China
+      # and HK remain separate cache-backed handoffs below.
       - name: restore Russell 2000 breadth close cache
         uses: actions/cache@v4
         with:
@@ -324,6 +307,18 @@ jobs:
 
           exit 0
 
+      - name: restore options_skew ledger from R2 (W2-2 store-host accrual)
+        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
+        # The store host publishes the skew ledger to R2. This step copies it down
+        # before emit. If the copy fails, emit still renders the committed ledger
+        # and reports that ledger's as-of time. The failure is a warning, not a crash.
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m scripts.fetch_r2 --dirs options_skew || echo "::warning title=options-skew-hydrate::options_skew ledger restore from R2 failed - emit renders the committed ledger and reports its ledger_asof"
+
       # ── (f) PARALLEL BAND: cl_markets + cl_gex ───────────────────────────────────────
       # Runs the two market/GEX clusters in parallel (both are independent of each other).
       # brun() + barrier + ordered replay pattern copied verbatim from daily.yml.
@@ -375,7 +370,7 @@ jobs:
             brun darkpool         "dark pool desk (build_darkpool_desk)"                         scripts.build_darkpool_desk
             brun options_flow     "options flow desk (build_options_flow)"                       scripts.build_options_flow
             brun flow_desk        "group flow heatmap & market tide (build_flow_desk)"           scripts.build_flow_desk
-            brun options_skew     "single-name IV skew (build_options_skew)"                     scripts.build_options_skew
+            brun options_skew     "single-name IV skew (build_options_skew)"                     scripts.build_options_skew --emit
             brun options_ivspread "single-name IV spread (build_options_ivspread)"               scripts.build_options_ivspread
             # AFTER skew+ivspread: it joins both ledgers into the neutralised feature panel.
             brun options_dislocation "options information-dislocation panel (build_options_dislocation)" scripts.build_options_dislocation

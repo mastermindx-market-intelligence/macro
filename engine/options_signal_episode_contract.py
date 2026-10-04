@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+import re
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -24,6 +25,8 @@ H60_MEASUREMENT_VERSION = "h60-aligned-bars/v1"
 SESSION_MEASUREMENT_VERSION = "session-close-aligned-bars/v1"
 PRICE_RECEIPT_SCHEMA = "polygon.intraday_price_receipt/v1"
 SESSION_HORIZONS = {"eod": 0, "1d": 1, "3d": 3, "5d": 5, "10d": 10}
+SESSION_OUTCOME_PARTS_DIRNAME = "outcomes_session_parts"
+_SESSION_OUTCOME_PART_RE = re.compile(r"^part-(\d{6})\.jsonl$")
 SOURCE_DISPOSITIONS = {"fire", "watch", "suppressed", "abstain"}
 SOURCE_UNDERLYING_DIRECTIONS = {"long", "short", "none"}
 SOURCE_OPTION_ACTIONS = {"buy", "sell", "none"}
@@ -42,6 +45,72 @@ SOURCE_FALSE_AUTHORITY = {
 
 class EpisodeSourceContractError(ValueError):
     """A source episode or outcome violates the frozen semantic contract."""
+
+
+def session_outcome_part_paths(path: Path) -> list[Path]:
+    """Return contiguous regular extensions of the canonical session ledger."""
+    parts_dir = path.parent / SESSION_OUTCOME_PARTS_DIRNAME
+    if parts_dir.is_symlink():
+        raise EpisodeSourceContractError(
+            f"session outcome parts path is not a directory: {parts_dir}"
+        )
+    if not parts_dir.exists():
+        return []
+    if not parts_dir.is_dir():
+        raise EpisodeSourceContractError(
+            f"session outcome parts path is not a directory: {parts_dir}"
+        )
+    indexed: list[tuple[int, Path]] = []
+    for entry in parts_dir.iterdir():
+        match = _SESSION_OUTCOME_PART_RE.fullmatch(entry.name)
+        if match is None:
+            raise EpisodeSourceContractError(f"unexpected session outcome part path: {entry}")
+        if entry.is_symlink() or not entry.is_file():
+            raise EpisodeSourceContractError(
+                f"session outcome part is not a regular file: {entry}"
+            )
+        indexed.append((int(match.group(1)), entry))
+    indexed.sort()
+    observed = [index for index, _entry in indexed]
+    if observed != list(range(1, len(indexed) + 1)):
+        raise EpisodeSourceContractError(
+            "session outcome part numbering is not contiguous from part-000001"
+        )
+    return [entry for _index, entry in indexed]
+
+
+def session_outcome_logical_bytes(path: Path) -> bytes:
+    """Return frozen base prefix + ordered parts as one byte-identical stream."""
+    parts = session_outcome_part_paths(path)
+    if path.is_symlink():
+        raise EpisodeSourceContractError(
+            f"session outcome base is not a regular file: {path}"
+        )
+    if not path.exists():
+        if parts:
+            raise EpisodeSourceContractError(
+                "session outcome parts exist without the canonical base prefix"
+            )
+        return b""
+    if not path.is_file():
+        raise EpisodeSourceContractError(
+            f"session outcome base is not a regular file: {path}"
+        )
+    try:
+        physical = [path, *parts]
+        chunks = [item.read_bytes() for item in physical]
+    except OSError as exc:
+        raise EpisodeSourceContractError(
+            f"cannot read session outcome logical ledger {path}: {exc}"
+        ) from exc
+    for item, raw in zip(physical, chunks, strict=True):
+        if raw and not raw.endswith(b"\n"):
+            raise EpisodeSourceContractError(
+                f"session outcome physical ledger has torn final line: {item}"
+            )
+        if item != path and not raw:
+            raise EpisodeSourceContractError(f"session outcome part is empty: {item}")
+    return b"".join(chunks)
 
 
 def _stable_id(prefix: str, *parts: object) -> str:

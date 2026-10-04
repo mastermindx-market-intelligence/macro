@@ -36,3 +36,4 @@
 {"sic":"2834","sic_desc":"Pharmaceutical Preparations","asof":"2026-09-14","ts":"2026-09-18T16:59:50.478010+00:00","n_new_filers":18,"velocity":13,"new_filers":["APVO","AXSM","BMRN","BNTC","CORT","HIND","HYPD","IBIO","IMNM","INO","MBIO","MNKD"]}
 {"sic":"3690","sic_desc":"Miscellaneous Electrical Machinery, Equipment & Supplies","asof":"2026-09-16","ts":"2026-09-18T16:59:50.478010+00:00","n_new_filers":4,"velocity":3,"new_filers":["AETN","DFLI","EOSE","FLNC"]}
 {"sic":"4911","sic_desc":"Electric Services","asof":"2026-08-13","ts":"2026-09-18T16:59:50.478010+00:00","n_new_filers":3,"velocity":3,"new_filers":["FRVO","HDRN","OPTT"]}
+{"sic":"3679","sic_desc":"Electronic Components, NEC","asof":"2026-09-23","ts":"2026-09-25T18:40:59.753762+00:00","n_new_filers":3,"velocity":2,"new_filers":["ESP","LGL","VICR"]}

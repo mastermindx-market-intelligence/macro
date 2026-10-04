@@ -95,6 +95,9 @@ class _FakeSMTP:
     def login(self, user, password):
         pass
 
+    def noop(self):
+        return (250, b"ok")
+
     def send_message(self, msg):
         self._rec["messages"].append(msg)
 
@@ -133,8 +136,12 @@ class _Ledger:
             self.inserts.append(row)
             return None
         if method == "PATCH" and path.startswith("email_log"):
-            key = path.split("idem_key=eq.", 1)[1]
+            key = path.split("idem_key=eq.", 1)[1].split("&", 1)[0]
+            if key not in self.keys:
+                return []
             self.patches.append((key, body or {}))
+            if prefer == "return=representation":
+                return [dict(body or {})]
             return None
         return []
 

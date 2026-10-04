@@ -87,8 +87,14 @@ _LANE_A_KEY = ("date", "ticker", "challenger_definition")
 #: Lane B evidence families are REGISTERED, not free-form (contract §1): a
 #: family contributes exactly ``<family>_status`` + ``<family>_value``, and
 #: registering one is a reviewed code change to this tuple (which regenerates
-#: _schema_b()). EMPTY at merge — no family exists yet.
-FAMILY_REGISTRY: tuple[str, ...] = ()
+#: schema_b()). H3/X1 are ACCRUING HK selection-evidence families;
+#: beta-neutral RS is a broader SCREEN family. All remain zero-authority and
+#: additive to the same shared Lane-B schema.
+FAMILY_REGISTRY: tuple[str, ...] = (
+    "h3_ah_discount",
+    "x1_atwin_momentum",
+    "beta_neutral_rs",
+)
 
 _FIXED_SCHEMA_B_HEAD = (
     "session_date", "market",
@@ -811,6 +817,133 @@ def _write_discovery_receipt(
             "sees no update this pass",
             flush=True,
         )
+
+
+_DISCOVERY_READER_FIELDS = (
+    "session_date",
+    "security_ref_raw",
+    "challenger_definition",
+    "candidate_origin",
+    "availability_status",
+    "availability_source",
+)
+
+
+def read_discovery_snapshot(market: str, definition: str) -> dict[str, Any]:
+    """Return one receipt-bound Lane-B observation without exposing storage.
+
+    This is a read-only projection over the existing discovery receipt and
+    Lane-B store.  It never returns a Path/DataFrame and never substitutes a
+    prior session for the receipt's exact epoch.  A valid current receipt with
+    no rows for the requested definition is a healthy observed zero.
+    """
+    import json as _json
+
+    normalized_market = str(market or "").upper()
+    normalized_definition = str(definition or "").strip()
+    unavailable = lambda reason, as_of=None: {
+        "available": False,
+        "reason": reason,
+        "as_of": as_of,
+        "records": [],
+    }
+
+    if normalized_market not in MARKETS:
+        return unavailable("unsupported_market")
+    if not normalized_definition:
+        return unavailable("definition_missing")
+
+    receipt_path = _discovery_receipt_path(normalized_market)
+    if not receipt_path.exists():
+        return unavailable("receipt_missing")
+    try:
+        receipt = _json.loads(receipt_path.read_text())
+    except Exception:  # noqa: BLE001 — read-only public projection fails closed
+        return unavailable("receipt_unreadable")
+    if not isinstance(receipt, dict):
+        return unavailable("receipt_malformed")
+    if str(receipt.get("market") or "").upper() != normalized_market:
+        return unavailable("receipt_market_mismatch")
+
+    receipt_asof = str(receipt.get("as_of") or "").strip()
+    try:
+        _dt.date.fromisoformat(receipt_asof)
+    except ValueError:
+        return unavailable("receipt_asof_missing")
+
+    definitions = receipt.get("definitions")
+    if not isinstance(definitions, list) or not all(
+        isinstance(item, str) and item for item in definitions
+    ):
+        return unavailable("receipt_definitions_malformed", receipt_asof)
+    if normalized_definition not in definitions:
+        return unavailable("definition_not_in_receipt", receipt_asof)
+
+    failures = receipt.get("challenger_failures", [])
+    if not isinstance(failures, list):
+        return unavailable("receipt_failures_malformed", receipt_asof)
+    for failure in failures:
+        if not isinstance(failure, dict):
+            return unavailable("receipt_failures_malformed", receipt_asof)
+        if str(failure.get("definition") or "") == normalized_definition:
+            return unavailable("challenger_failed", receipt_asof)
+
+    registry_state = str(receipt.get("registry_state") or "")
+    if not registry_state.startswith("wrote_n_rows n="):
+        return unavailable("receipt_not_successful", receipt_asof)
+    try:
+        written = int(registry_state.removeprefix("wrote_n_rows n="))
+    except ValueError:
+        return unavailable("receipt_not_successful", receipt_asof)
+    if written < 0:
+        return unavailable("receipt_not_successful", receipt_asof)
+
+    store_path = _lane_b_path(normalized_market)
+    if not store_path.exists():
+        return unavailable("store_missing", receipt_asof)
+    frame = _read_own_store(store_path)
+    if frame is None:
+        return unavailable("store_unreadable", receipt_asof)
+
+    required = set(_DISCOVERY_READER_FIELDS)
+    if not required.issubset(frame.columns):
+        return unavailable("store_missing_columns", receipt_asof)
+
+    requested = frame[
+        frame["challenger_definition"].astype(str) == normalized_definition
+    ].copy()
+    for raw_date in requested["session_date"].dropna().astype(str):
+        try:
+            parsed = _dt.date.fromisoformat(raw_date)
+        except ValueError:
+            return unavailable("store_session_malformed", receipt_asof)
+        if parsed > _dt.date.fromisoformat(receipt_asof):
+            return unavailable("store_newer_than_receipt", receipt_asof)
+
+    exact = requested[
+        requested["session_date"].astype(str) == receipt_asof
+    ]
+    if exact.empty:
+        return {
+            "available": True,
+            "reason": "observed_zero",
+            "as_of": receipt_asof,
+            "records": [],
+        }
+
+    records: list[dict[str, Any]] = []
+    for _, row in exact.iterrows():
+        record: dict[str, Any] = {}
+        for field in _DISCOVERY_READER_FIELDS:
+            value = row.get(field)
+            record[field] = None if pd.isna(value) else copy.deepcopy(value)
+        records.append(record)
+    return {
+        "available": True,
+        "reason": "ok",
+        "as_of": receipt_asof,
+        "records": records,
+    }
 
 
 def write_shadow(calls: list[dict], market: str, asof: str | None = None) -> dict:
