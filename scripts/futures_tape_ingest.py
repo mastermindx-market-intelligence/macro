@@ -180,9 +180,41 @@ def _write_dataframe_export(df, target: Path, *, source: str, source_role: Sourc
     return manifest
 
 
-def _valid_receipted(root: Path, target: Path) -> bool:
+def _manifest_state(target: Path) -> PartitionState | None:
     receipt = manifest_path(target)
-    return target.is_file() and receipt.is_file() and not verify_manifest(root, receipt)
+    if not receipt.is_file():
+        return None
+    try:
+        return PartitionState(PartitionManifest.from_json(
+            receipt.read_text(encoding="utf-8")
+        ).state)
+    except Exception:
+        return None
+
+
+def _valid_receipted(
+    root: Path,
+    target: Path,
+    required_state: PartitionState | None = None,
+) -> bool:
+    receipt = manifest_path(target)
+    if not (target.is_file() and receipt.is_file()) or verify_manifest(root, receipt):
+        return False
+    if required_state is not None and _manifest_state(target) is not required_state:
+        return False
+    return True
+
+
+def _lse_window_state(end: str) -> PartitionState:
+    # Range end is exclusive. A window ending at or before today's 00:00 UTC
+    # can no longer receive ticks; a window extending into the current UTC day
+    # remains provisional and is intentionally refreshed on a later run.
+    try:
+        end_day = date.fromisoformat(str(end)[:10])
+    except ValueError as exc:
+        raise SystemExit("--end must begin with YYYY-MM-DD") from exc
+    today_utc = datetime.now(timezone.utc).date()
+    return PartitionState.FINAL if end_day <= today_utc else PartitionState.PROVISIONAL
 
 
 def _date_chunks(start: str, end: str, chunk_days: int) -> list[tuple[str, str]]:
@@ -210,11 +242,13 @@ def cmd_plan_lse(args: argparse.Namespace) -> int:
     plan = []
     for start, end in windows:
         target = raw_export_path(root, "lse", args.symbol, start, end)
+        required_state = _lse_window_state(end)
         plan.append({
             "start": start,
             "end": end,
             "path": str(target),
-            "complete": _valid_receipted(root, target),
+            "required_state": required_state.value,
+            "complete": _valid_receipted(root, target, required_state),
         })
     print(json.dumps({
         "symbol": args.symbol,
@@ -237,7 +271,8 @@ def cmd_backfill_lse_range(args: argparse.Namespace) -> int:
     skipped = 0
     for start, end in windows:
         target = raw_export_path(root, "lse", args.symbol, start, end)
-        if _valid_receipted(root, target) and not args.force:
+        required_state = _lse_window_state(end)
+        if _valid_receipted(root, target, required_state) and not args.force:
             skipped += 1
             continue
         if launched >= args.max_jobs:
@@ -255,9 +290,8 @@ def cmd_backfill_lse_range(args: argparse.Namespace) -> int:
         launched += 1
     remaining = 0
     for start, end in windows:
-        if not _valid_receipted(
-            root, raw_export_path(root, "lse", args.symbol, start, end)
-        ):
+        target = raw_export_path(root, "lse", args.symbol, start, end)
+        if not _valid_receipted(root, target, _lse_window_state(end)):
             remaining += 1
     print(json.dumps({
         "status": "complete" if remaining == 0 else "partial",
@@ -277,8 +311,13 @@ def cmd_backfill_lse(args: argparse.Namespace) -> int:
     os.environ["MMX_FUTURES_TAPE_ROOT"] = str(root)
     require_capacity(root, args.reserve_gib)
     target = raw_export_path(root, "lse", args.symbol, args.start, args.end)
-    if _valid_receipted(root, target) and not args.force:
-        print(json.dumps({"status": "already_present_valid", "path": str(target)}))
+    desired_state = _lse_window_state(args.end)
+    if _valid_receipted(root, target, desired_state) and not args.force:
+        print(json.dumps({
+            "status": "already_present_valid",
+            "state": desired_state.value,
+            "path": str(target),
+        }))
         return 0
 
     client = _lse_client()
@@ -299,7 +338,7 @@ def cmd_backfill_lse(args: argparse.Namespace) -> int:
         source="lse",
         source_role=SourceRole.VENDOR_CONTINUOUS,
         source_symbol=args.symbol,
-        state=PartitionState.FINAL,
+        state=desired_state,
     )
     print(manifest.to_json(), end="")
     return 0
@@ -342,6 +381,11 @@ def cmd_normalize_lse(args: argparse.Namespace) -> int:
 
     written = 0
     for raw in paths:
+        if not _valid_receipted(root, raw):
+            raise SystemExit(f"raw source partition has no valid receipt: {raw}")
+        raw_state = _manifest_state(raw)
+        if raw_state is None:
+            raise SystemExit(f"raw source partition state is unreadable: {raw}")
         df = pd.read_parquet(raw)
         norm = _normalize_lse_frame(df, args.symbol)
         if norm.empty:
@@ -349,7 +393,7 @@ def cmd_normalize_lse(args: argparse.Namespace) -> int:
         norm["_date"] = norm["timestamp_utc"].dt.strftime("%Y-%m-%d")
         for day, part in norm.groupby("_date", sort=True):
             target = normalized_day_path(root, "lse", args.identity, day)
-            if _valid_receipted(root, target) and not args.force:
+            if _valid_receipted(root, target, raw_state) and not args.force:
                 continue
             frame = part.drop(columns=["_date"]).reset_index(drop=True)
             _write_dataframe_export(
@@ -357,7 +401,7 @@ def cmd_normalize_lse(args: argparse.Namespace) -> int:
                 source="lse",
                 source_role=SourceRole.VENDOR_CONTINUOUS,
                 source_symbol=args.symbol,
-                state=PartitionState.FINAL,
+                state=raw_state,
             )
             written += 1
     print(json.dumps({"status": "ok", "daily_partitions_written": written}))
@@ -374,6 +418,11 @@ def cmd_derive_bars(args: argparse.Namespace) -> int:
         raise SystemExit(f"no normalized ticks found under {src}")
     written = 0
     for path in paths:
+        if not _valid_receipted(root, path):
+            raise SystemExit(f"normalized partition has no valid receipt: {path}")
+        input_state = _manifest_state(path)
+        if input_state is None:
+            raise SystemExit(f"normalized partition state is unreadable: {path}")
         df = pd.read_parquet(path)
         if df.empty:
             continue
@@ -386,14 +435,14 @@ def cmd_derive_bars(args: argparse.Namespace) -> int:
         bars = bars.rename(columns={"_ts": "window_start_utc"})
         day = path.parent.name.split("=", 1)[-1]
         target = derived_bar_path(root, args.instrument, args.freq, day)
-        if _valid_receipted(root, target) and not args.force:
+        if _valid_receipted(root, target, input_state) and not args.force:
             continue
         _write_dataframe_export(
             bars, target,
             source="mmx",
             source_role=SourceRole.MMX_DERIVED_CONTINUOUS,
             source_symbol=args.instrument,
-            state=PartitionState.FINAL,
+            state=input_state,
         )
         written += 1
     print(json.dumps({"status": "ok", "bar_partitions_written": written, "freq": args.freq}))
