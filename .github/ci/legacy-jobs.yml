@@ -9095,10 +9095,16 @@ jobs:
     paths:
       - "config/regime_outlook_mapping_v2.json"
       - "engine/rates_command_outlook.py"
+      # The composer (slice E1c) reads the mapping and the evidence rows and
+      # assembles the projection; its suite is offline and lives with the
+      # mapping/readings suites it extends (contract-delta: a new suite must be
+      # named by the job that owns its subject).
+      - "engine/rates_command_outlook_compose.py"
       - "research/macro_regime_intelligence/STATE_PATH_AND_SCIENCE_CONTRACT_2026-10-03.md"
       - "tests/fixtures/regime_outlook/readings_golden_v2.json"
       - "tests/test_rates_command_outlook.py"
       - "tests/test_rates_command_outlook_readings.py"
+      - "tests/test_rates_command_outlook_compose.py"
       - "config.yml"
       - "config/regime_outlook_rule_pins.json"
       - "engine/__init__.py"
@@ -9120,8 +9126,8 @@ jobs:
           python-version: "3.12"
       - name: install test dependencies
         run: pip install pytest pyyaml
-      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings, producer rule pins
-        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py tests/test_rates_command_outlook_rule_pins.py -q
+      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings, producer rule pins, composer
+        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py tests/test_rates_command_outlook_rule_pins.py tests/test_rates_command_outlook_compose.py -q
 
   ric-w2-surface:
     if: ${{ false }}
@@ -13706,6 +13712,10 @@ jobs:
       # now reads the optional UK stance through engine.uk_policy_brain (lazy, degrade-never-raise),
       # so the dossier plane pulls that module into this job's closure.
       - "engine/uk_policy_brain.py"
+      # E0-G (#8373): tests/test_dashboard_template_render.py renders the Fed dialog's Inflation Read
+      # through the owner (engine.rates_inflation_command._build_inflation_row), so the dashboard
+      # suite pulls that module into this job's closure (contract-delta: widen, never narrow).
+      - "engine/rates_inflation_command.py"
       - scripts/build_ticker_pages.py
       - scripts/capture_debt_maturity_evidence.py
       - scripts/capture_hk_tier1_shell.py
@@ -15266,6 +15276,14 @@ jobs:
         run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_credit_momentum_yield_consumer.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_build_forex_stance.py -q
       - name: A-F01-W4-1 bonds hub byte-preservation guard (T10)
         run: python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q
+      # E1c4 (Granular Regime Intelligence, 2026-10-04): scripts/build_rates_command.py now
+      # publishes the regime-outlook projection as an additive key. Its suite imports the
+      # builder as a module (never runs it) and rides this job because the builder's existing
+      # suite, tests/test_rates_command.py, is governed here. Its own step so a wiring
+      # regression is named rather than masked by the panel step above. Paths widened for
+      # the suite and the builder. The composer itself is governed by regime-outlook-mapping.
+      - name: E1c4 regime-outlook publication beside the rates command board
+        run: python -m pytest tests/test_build_rates_command_outlook.py -q
     # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
     # Install already covers pandas/numpy/pyarrow/jinja2/plotly. Declared
     # paths must cover every pytest file the commands name (pack validator);
@@ -15298,6 +15316,8 @@ jobs:
       - "tests/test_commodities_ignition_copy.py"
       - "tests/test_commodities_w6_truth.py"
       - "tests/test_macro_rates_curves_bonds_guard.py"
+      - "tests/test_build_rates_command_outlook.py"
+      - "scripts/build_rates_command.py"
       - "tests/test_build_forex_stance.py"
       - "scripts/build_bonds.py"
       - "scripts/build_commodities.py"
