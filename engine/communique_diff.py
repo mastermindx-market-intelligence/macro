@@ -527,6 +527,26 @@ def compute_events(corpus_rows: list[dict], asof: str,
                 str(x) for x in (rev.get("removed_phrases") or [])
             )
 
+        # The prior comparison side needs the same attribution.  An effective
+        # prior row may itself be a correction relative to older full-history
+        # state; a phrase added only by that correction cannot later mint an
+        # ordinary DROPPED event when today omits it.
+        prior_added_by_locator: dict[str, set[str]] = {}
+        for prior_row in effective_prior:
+            prior_day = _crawl_day(prior_row)
+            if not prior_day:
+                continue
+            prior_revs, _pa, _pd, _ploc = _document_revision_context(
+                rows, [prior_row], book, prior_day
+            )
+            for rev in prior_revs:
+                locator = str(rev.get("source_locator_id") or "")
+                if not locator:
+                    continue
+                prior_added_by_locator.setdefault(locator, set()).update(
+                    str(x) for x in (rev.get("added_phrases") or [])
+                )
+
         def _has_eligible(rows_: list[dict], ph: str,
                           forbidden_: dict[str, set[str]]) -> bool:
             return any(
@@ -539,9 +559,22 @@ def compute_events(corpus_rows: list[dict], asof: str,
             ph for ph in suppress_appeared
             if not _has_eligible(effective_today, ph, added_by_locator)
         }
+
+        prior_added_phrases = {
+            ph for phrases in prior_added_by_locator.values() for ph in phrases
+        }
+        suppress_dropped |= prior_added_phrases
+        dropped_forbidden_by_locator: dict[str, set[str]] = {
+            locator: set(phrases)
+            for locator, phrases in removed_by_locator.items()
+        }
+        for locator, phrases in prior_added_by_locator.items():
+            dropped_forbidden_by_locator.setdefault(locator, set()).update(phrases)
         suppress_dropped = {
             ph for ph in suppress_dropped
-            if not _has_eligible(effective_prior, ph, removed_by_locator)
+            if not _has_eligible(
+                effective_prior, ph, dropped_forbidden_by_locator
+            )
         }
 
         evs, cold_start = diff_organ(
@@ -555,7 +588,7 @@ def compute_events(corpus_rows: list[dict], asof: str,
             appeared_evidence_rows=effective_today,
             dropped_evidence_rows=effective_prior,
             appeared_forbidden_by_locator=added_by_locator,
-            dropped_forbidden_by_locator=removed_by_locator,
+            dropped_forbidden_by_locator=dropped_forbidden_by_locator,
         )
         events.extend(evs)
         if cold_start:
