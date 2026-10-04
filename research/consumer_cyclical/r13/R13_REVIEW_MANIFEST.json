@@ -1,0 +1,287 @@
+{
+  "schema": "consumer_cyclical.r13_review_manifest.v1",
+  "date": "2026-09-24",
+  "operation": "gmi-consumer-cyclical-research-20260923-sol-001",
+  "carrier": {
+    "repo": "mastermindx-market-intelligence/macro",
+    "pr": 7804,
+    "branch": "sol/consumer-cyclical-research-20260923",
+    "input_head": "83bca96a5ca786de3a55d351149813b5c2d0b1b2",
+    "state": "DRAFT_HOLD"
+  },
+  "procedure": {
+    "repo": "mastermindx-market-intelligence/Mastermind",
+    "protected_ref": "master",
+    "commit": "1a7d400294b0d37c460b963b8865b40a23173b58",
+    "skillpack": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "authority": {
+    "research_only": true,
+    "can_rank": false,
+    "can_gate": false,
+    "can_size": false,
+    "can_originate": false,
+    "can_open_entry": false,
+    "product_acceptance": false,
+    "source_admission": false,
+    "deployment_acceptance": false
+  },
+  "completed_repair": {
+    "commit": "83bca96a5ca786de3a55d351149813b5c2d0b1b2",
+    "covers": ["H1", "H2", "H3", "M1", "M2", "M3", "M4", "M5"],
+    "research_checks_passed": 60,
+    "research_checks_failed": 0,
+    "native_application_tests_claimed": 0,
+    "native_schema_tests_claimed": 0,
+    "browser_proofs_claimed": 0,
+    "production_proofs_claimed": 0
+  },
+  "m6_reviewer_packet": {
+    "status": "REPAIRED",
+    "original_independent_review_target": "8bb5301e6bc5d661c75fc1b720048a21e0f9809f",
+    "original_review_defect": "R6/R7/R10 machine-readable companions were not attached to the frozen reviewer packet.",
+    "companions": [
+      {
+        "path": "research/consumer_cyclical/CONSUMER_CYCLICAL_R6_DESIGN_EVIDENCE_2026-09-23.json",
+        "blob": "cdab90b867e16b36ff08fd6a678d4547308cec95",
+        "mapped_requirements": 32,
+        "role": "R6 design and acceptance mapping"
+      },
+      {
+        "path": "research/consumer_cyclical/CONSUMER_CYCLICAL_R7_REVIEW_AND_DELIVERY_MAP_2026-09-23.json",
+        "blob": "58c26b787da834f92efb82363daecc631e034367",
+        "mapped_requirements": 10,
+        "role": "R7 delivery delta and gate mapping"
+      },
+      {
+        "path": "research/consumer_cyclical/CONSUMER_CYCLICAL_FOUNDATION_INTEGRATION_MAP_R10_2026-09-24.json",
+        "blob": "6b69882a3bf9cc43b686ddfdd41475606258334c",
+        "mapped_requirements": 16,
+        "role": "R10 shared-foundation compatibility cases"
+      }
+    ],
+    "companion_requirement_count": 58,
+    "corrected_requirement_universe": 174,
+    "incorrect_count_to_reject": 206,
+    "all_product_obligations_still_not_executed": true
+  },
+  "m7_source_rights": {
+    "status": "BOUND_TO_CURRENT_SHARED_OWNER",
+    "source_family": "sec_edgar",
+    "shared_owner_pr": 7870,
+    "shared_owner_head": "0c7f637cc63c4d0c29232a0738f971c9eca3626a",
+    "registry_path": "config/theme_sources.yml",
+    "registry_blob": "1073ca1e9841dc95084a57b4577d159e74f9d211",
+    "rights_class": "direct_display_ok",
+    "auth_class": "keyless_public",
+    "licensing": {
+      "internal_ok": true,
+      "display_ok": true,
+      "redistribution_ok": false
+    },
+    "qualified_house_representation": [
+      "factual_inputs",
+      "receipted_short_excerpts",
+      "original_interpretation_with_sec_attribution_and_filing_link"
+    ],
+    "not_claimed_by_sec_edgar_family": [
+      "whole_expressive_documents",
+      "third_party_material_attached_to_a_filing",
+      "issuer_logos_or_branding",
+      "dataset_redistribution"
+    ],
+    "private_paid_house_outputs": "PRIVATE_UNDER_R4_EVEN_WHEN_HOUSE_AUTHORED",
+    "third_party_attachment_rule": "REQUIRES_ITS_OWN_REVIEWED_SOURCE_FAMILY_OR_REFUSES",
+    "entitlement_never_supplies_source_rights": true,
+    "consumer_objection": {
+      "comment": 5809660585,
+      "disposition": "ACCEPTED_AND_CORRECTED_ON_SHARED_CARRIER"
+    }
+  },
+  "m8_native_pins": {
+    "status": "REFRESHED_FOR_REVIEW_AND_HANDOFF_ONLY",
+    "macro_main_at_reconciliation": "e486949f565fd888d462fae405880b8b46161e81",
+    "consumer_pr_head_before_r13": "83bca96a5ca786de3a55d351149813b5c2d0b1b2",
+    "shared_foundation": {
+      "pr": 7870,
+      "head": "0c7f637cc63c4d0c29232a0738f971c9eca3626a",
+      "files": {
+        "config/theme_sources.yml": "1073ca1e9841dc95084a57b4577d159e74f9d211",
+        "engine/company_intelligence/guidance_history.py": "e5f90c43efb25a2b8fd1ae18e274e548ef84a966",
+        "tests/test_theme_research_rights_refresh.py": "bfc04f38066029e46d23c2e61ac4dd1e5aa9acb0",
+        "tests/test_theme_research_private_binding.py": "a9c09169d3618abb2bb7df1c842fab0c7c0d1054",
+        "templates/basket_detail.html.j2": "77e33e33b8d3a8fbc18c5ba35aa183529edd35d5",
+        "templates/_basket_intelligence_mounts.html.j2": "80494fb0dfe370704d4c6bec0e47d498c9d7e487",
+        "templates/_theme_research_mount.html.j2": "245012a2a4fa9294e7ccb8bb39a8cd3102bfcec9",
+        "contracts/market_ontology/semiconductor_theme_research.v1.schema.json": "4f5309a9d955f6b90952c4d0a108aa6c43999101",
+        "app/paywall.py": "7e1c6861ebb7d27924865b2b8d157e6a9356405d",
+        "tests/test_paywall.py": "1d958154eed91ee08f9f7ab65b719e1910e2ccd1"
+      }
+    },
+    "template_owner": {
+      "pr": 7669,
+      "head": "6942b2b62bad2dfc9d3b50eb7042e0a126b708c4",
+      "owned_template_blob": "f6540573c9319b1a1bcd04fbe2508254fe9cc342",
+      "shared_seam_return_comment": 5810675425,
+      "shared_seam_review": "ACCEPT_WITH_NITS"
+    },
+    "theme_graph_store_owner": {
+      "pr": 7462,
+      "head": "31706d7322af55696dc7b2e746ec511b08bd51d7",
+      "status": "FROZEN_FOR_CONSUMER_WRITES"
+    },
+    "company_history_owner": {
+      "issue": 7331,
+      "pr": 7426,
+      "pr_head": "7bc04876747d773861b47519061279ae033a148d",
+      "consumer_consultation": 5807032650,
+      "status": "LULU_HISTORY_INTERFACE_NOT_ACCEPTED_IN_CONSUMED_EVIDENCE"
+    },
+    "stale_historical_native_pin": "8db6896dab2199a4b7fc61a005c225380cac7cd6",
+    "stale_pin_must_not_authorize_write": true,
+    "must_refresh_immediately_before_native_write": true,
+    "refresh_invalidators": [
+      "relevant shared-owner head movement",
+      "accepted T09 transport commit",
+      "accepted T11 private-binding commit",
+      "B-foundation build-out ruling",
+      "source-custody ruling change",
+      "Macro main movement affecting an owned interface"
+    ]
+  },
+  "m9_entitlement_policy": {
+    "status": "BOUND_TO_INCUMBENT_ACCEPTED_CODE_AND_TEST",
+    "architecture_ruling_comment": 5808854275,
+    "architecture_disposition": "ACCEPTED_WITH_QUALIFICATIONS",
+    "implementation_path": "app/paywall.py",
+    "implementation_blob_on_current_main_and_7870": "7e1c6861ebb7d27924865b2b8d157e6a9356405d",
+    "test_path": "tests/test_paywall.py",
+    "test_blob_on_current_main_and_7870": "1d958154eed91ee08f9f7ab65b719e1910e2ccd1",
+    "accepted_test_cases": [
+      "test_missing_or_invalid_auth_never_uses_entitlement_grace",
+      "test_store_outage_graces_only_recent_positive"
+    ],
+    "targeted_local_replay": {
+      "result": "2 passed",
+      "date": "2026-09-24",
+      "files_byte_identical_to_current_main_and_7870": true
+    },
+    "chosen_semantics": {
+      "grace_is_positive_only": true,
+      "configured_grace_is_clamped_seconds": [0, 86400],
+      "deadline_is_from_last_successful_positive_observation": true,
+      "failed_store_refresh_does_not_renew_deadline": true,
+      "invalid_or_missing_auth_gets_grace": false,
+      "fresh_reachable_negative_gets_grace": false,
+      "invalidation_removes_cached_positive": true,
+      "source_rights_withdrawal_can_be_overridden_by_entitlement": false
+    },
+    "not_yet_proven": [
+      "actual deployed PAYWALL_GRACE_SECONDS value",
+      "actual deployed entitlement cache value",
+      "cross-host invalidation timing/path",
+      "live protected theme-research route behavior"
+    ],
+    "production_acceptance": false
+  },
+  "current_shared_owner_bindings": [
+    {
+      "topic": "R4 private publication",
+      "carrier": "macro#7780",
+      "comment": 5808854275,
+      "state": "ARCHITECTURE_ACCEPTED_WITH_QUALIFICATIONS__LIVE_PROOF_OWED"
+    },
+    {
+      "topic": "Consumer shared-foundation disposition",
+      "carrier": "macro#7870",
+      "comment": 5809602368,
+      "state": "CONSUMED__SIGNED_AND_QUALITATIVE_EXTENSIONS_HELD_TO_SAME_OWNER_V1_1"
+    },
+    {
+      "topic": "missing comparison definitions",
+      "carrier": "macro#7870",
+      "state": "LANDED_AS_DEFINITION_UNQUALIFIED_LIMITATION",
+      "blob": "e5f90c43efb25a2b8fd1ae18e274e548ef84a966"
+    },
+    {
+      "topic": "SEC representation classes",
+      "carrier": "macro#7870",
+      "comment": 5809660585,
+      "state": "CONSUMER_OBJECTION_ACCEPTED_AND_LANDED",
+      "blob": "1073ca1e9841dc95084a57b4577d159e74f9d211"
+    },
+    {
+      "topic": "common basket intelligence seam",
+      "carrier": "macro#7669 + macro#7870",
+      "comments": [5808986207, 5810675425],
+      "state": "SOURCE_RULING_ACCEPTED__SEAM_REVIEW_ACCEPT_WITH_NITS"
+    },
+    {
+      "topic": "shared POST transport T09",
+      "carrier": "macro#7870",
+      "state": "NOT_ACCEPTED_YET__FIRST_REVIEW_REJECTED__FIX_LANE_QUEUED_AT_CURRENT_CHECKPOINT"
+    },
+    {
+      "topic": "R4 adapter/private binding T11",
+      "carrier": "macro#7870",
+      "state": "NOT_ACCEPTED_YET__LANE_QUEUED_AT_CURRENT_CHECKPOINT"
+    },
+    {
+      "topic": "closed cross-vertical profile + reported-economic-context build-out",
+      "carrier": "macro#7780",
+      "comment": 5811066300,
+      "state": "RULING_REQUEST_OPEN"
+    },
+    {
+      "topic": "generic economic_change_dossier.v1 proposal",
+      "carrier": "macro#7898",
+      "state": "CLOSED_UNMERGED__DO_NOT_TREAT_AS_SHARED_FOUNDATION_CONTRACT"
+    }
+  ],
+  "consumer_profile_binding": {
+    "design_name": "consumer_cyclical",
+    "design_version": 1,
+    "design_discriminator": "consumer_economic_change.v1",
+    "subject_type": "company",
+    "route_family": [
+      "/api/themes/v1/research/query",
+      "/api/themes/v1/research/evidence"
+    ],
+    "status": "PENDING_SHARED_OWNER_ACCEPTANCE",
+    "must_not_fall_back_to_semiconductor": true,
+    "unsupported_must_refuse": true,
+    "reported_economics_must_not_require_fabricated_management_history": true
+  },
+  "external_gates": {
+    "T09_transport_accepted": false,
+    "T11_private_binding_accepted": false,
+    "B_foundation_buildout_ruled": false,
+    "Consumer_profile_enrolled": false,
+    "Consumer_reported_economic_context_enrolled": false,
+    "LULU_history_interface_accepted": false,
+    "live_private_object_proven": false,
+    "browser_proof": false,
+    "native_Consumer_source_admission": false,
+    "native_Consumer_implementation": false
+  },
+  "sticky_constraints": {
+    "native_staging_action": "BLOCKED_DO_NOT_RETRY_REPHRASE_REHOME_OR_DELEGATE_WORKAROUND",
+    "do_not_redo": [
+      "R1-R11 research",
+      "shared-foundation archaeology",
+      "existing consultations",
+      "completed independent review launch",
+      "blocked native-staging action"
+    ]
+  },
+  "targeted_rereview_questions": [
+    "Do H1-H3 and M1-M5 now have discriminating executable research coverage rather than prose-only promises?",
+    "Does this manifest repair M6 by attaching the exact R6/R7/R10 machine-readable companion blobs and corrected counts?",
+    "Does M7 now bind representation-specific SEC rights without laundering whole documents, third-party attachments, branding, redistribution or private paid outputs?",
+    "Does M8 distinguish current review/handoff pins from write authority and require a fresh pin immediately before any native write?",
+    "Does M9 have an explicit incumbent accepted test for the chosen positive-only entitlement outage grace while correctly withholding deployed/live proof?",
+    "Is any remaining blocker a Consumer package defect versus a named external-owner gate (T09/T11/build-out/LULU history)?",
+    "Is this research package ready for a final Fable integration handoff that preserves those external gates without treating the handoff as implementation acceptance?"
+  ]
+}
