@@ -199,7 +199,7 @@ def _inquiry_thread_keys(title: str, issuer_name: str = "") -> list[str]:
     Returns [] when the title names no inquiry — the caller must then report the
     reply state as 'undetermined' rather than guessing. Pure function.
     """
-    text = str(title or "")
+    text = _safe_str(title)
     spans = _INQ_BOOK_RE.findall(text) or _INQ_BARE_RE.findall(text)
     issuer = _INQ_CO_SUFFIX_RE.sub("", str(issuer_name or ""))
     issuer = issuer.replace("*ST", "").replace("ST", "").strip()
@@ -949,15 +949,15 @@ def _contract_order_block(window_days: int = 90) -> dict:
             key = state["state"]
             counts[key] = counts.get(key, 0) + 1
             projected.append({
-                "announcement_id": str(r.get("announcementId") or ""),
-                "secCode": str(r.get("sec_code") or ""),
-                "secName": str(r.get("sec_name") or ""),
-                "title": str(r.get("title") or ""),
-                "published_at": str(r.get("publish_ts") or ""),
-                "first_collected_at": str(r.get("_collected_at") or ""),
-                "exchange": str(r.get("exchange") or ""),
-                "source_url": str(r.get("adjunct_url") or ""),
-                "announcement_type_raw": str(r.get("announcement_type_raw") or ""),
+                "announcement_id": _safe_str(r.get("announcementId")),
+                "secCode": _safe_str(r.get("sec_code")),
+                "secName": _safe_str(r.get("sec_name")),
+                "title": _safe_str(r.get("title")),
+                "published_at": _safe_str(r.get("publish_ts")),
+                "first_collected_at": _safe_str(r.get("_collected_at")),
+                "exchange": _safe_str(r.get("exchange")),
+                "source_url": _safe_str(r.get("adjunct_url")),
+                "announcement_type_raw": _safe_str(r.get("announcement_type_raw")),
                 **state,
                 # Metadata alone has no safe project/thread identity. Never join
                 # a cancellation/amendment to another filing by issuer/date guess.
