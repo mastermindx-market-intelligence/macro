@@ -217,10 +217,14 @@ Done when:
 
 Use explicit windows. `plan-lse` / `backfill-lse-range` default to one-day raw-tick
 windows and a bounded per-invocation export-job budget. Every successful export writes a
-checksum manifest. Restarting skips only a partition whose receipt re-verifies the bytes;
-a missing/corrupt receipt forces reacquisition. An export returning at least 1,000,000
-rows is treated as capped/incomplete and must be retried at finer granularity. At
-completion, run `audit`.
+checksum manifest including the exact requested start/end boundaries. Restarting skips
+only a partition whose receipt re-verifies the bytes; a missing/corrupt receipt forces
+reacquisition. An export returning at least 1,000,000 rows is treated as capped/incomplete
+and must be retried at finer granularity. Normalization unions all receipted raw chunks
+that contribute to a UTC day before it writes that daily partition; the daily output is
+FINAL only when FINAL source-request intervals cover the whole UTC day without a gap,
+otherwise it remains PROVISIONAL and is rebuilt as more chunks arrive. At completion,
+run `audit`.
 
 Backfill remains held if the catalog span or roll semantics invalidate the source.
 
