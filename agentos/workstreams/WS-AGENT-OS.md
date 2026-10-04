@@ -47,7 +47,7 @@ waves:
     depends_on: [W0]
   - id: W4
     title: "Phase 4 — hook auto-capture at ship-loop boundaries (report-only)"
-    status: todo
+    status: in_progress
     depends_on: [W1, W2, W2B]
   - id: MAS28-W0
     title: "MAS-28 — canonical PR-linkage validator V1 records freeze"
@@ -74,15 +74,18 @@ waves:
       semantic CI 32800454750, then squash-merged as
       35e83b79ac026345a17d5d2d13774bb74e8a994c on 2026-08-25. The earlier #6328
       squash carried the rejected defect shape and is historical evidence, not W1
-      acceptance. Enforcement remains REPORT_ONLY. MAS-28 itself remains
-      BUILT_NOT_PROVEN until the separate calibration stop condition is satisfied.
+      acceptance. Enforcement remains REPORT_ONLY. The separate MAS28-CALIBRATION wave is now
+      accepted with its evidence-backed limited-scope ruling; no enforcement gate is armed.
   - id: MAS28-CALIBRATION
     title: "MAS-28 — frozen representative report-only calibration and bounded wire repair"
-    status: in_progress
+    status: done
+    pr: 8407
     depends_on: [MAS28-W1]
     next_action: >
-      Calibration and independent source review are complete; ship the evidence and
-      minimal repair through exact-head CI and merge. Retain report-only authority.
+      None for this calibration scope. PR 8407 head dbe9b6fcfd068fd40f25aae64f142c87702d48de
+      passed hosted CI 37176956307 and independent review, then merged as
+      8776514432e53280b96fba46ff101257a6827431. Retain report-only authority and the
+      complete-observation limits in DEC:MAS28-CALIBRATION-REMAIN-REPORT-ONLY.
 decisions:
   - DEC:AGENTOS-CXI-R12-OVERRULED
   - DEC:AGENTOS-CLAIMS-ARE-NOT-LIVE-ACTIVITY
@@ -96,6 +99,7 @@ decisions:
   - DEC:MAS28-PR-LINKAGE-VALIDATOR-V1-REPORT-ONLY
   - DEC:MAS28-R028-TARGET-IDENTITY-RECONCILIATION
   - DEC:MAS28-CALIBRATION-REMAIN-REPORT-ONLY
+  - DEC:AGENTOS-W4-CAPTURE-BOUNDARY
 discoveries:
   - DSC:GOVERNANCE-JSONL-NOT-TRACKED
   - DSC:EXECUTIVE-OS-NO-PROGRAM-ROW
@@ -116,13 +120,18 @@ artifacts:
   - research/MASTERMIND_AGENT_HANDOFF_PROTOCOL.md
   - research/MASTERMIND_AGENT_OS_V1_IMPLEMENTATION_PLAN.md
   - research/MASTERMIND_CEO_BRIEF_SPEC.md
+  - research/MASTERMIND_AGENT_OS_V1_CALIBRATION_2026-10-04.md
+  - research/MASTERMIND_AGENT_OS_W4_DELIVERY_2026-10-04.md
 next_action: >
-  Release the completed MAS-28 calibration and bounded report-wire repair after
-  exact-head CI. DEC:MAS28-CALIBRATION-REMAIN-REPORT-ONLY records the actual scoped
-  result and incomplete-observation limits. The current Chairman operation
-  agent-os-v1-closure-20261003-astra-001 separately commissions W4 implementation,
-  high-blast-radius review, cold recovery and truthful V1 closure. W4 remains
-  unaccepted until those gates pass; the canceled MAS-129 carrier is not revived.
+  MAS-28 calibration is accepted via merged PR 8407. Ship the separately reviewed W4
+  candidate through its own current-source PR and exact-head hosted checks, publish
+  the captured wave/PR and handoff, and prove cold recovery before V1 closure. The
+  current Chairman operation agent-os-v1-closure-20261003-astra-001 remains assigned;
+  the canceled MAS-129 carrier is not revived. Agent OS remains the knowledge plane.
+claim:
+  by: claude/ssd-agent-os-v1-closure-20261003-4d1db059fe48c49e
+  at: '2026-10-04T04:27:09Z'
+  expires: '2026-10-04T16:27:09Z'
 ---
 
 ## Context
