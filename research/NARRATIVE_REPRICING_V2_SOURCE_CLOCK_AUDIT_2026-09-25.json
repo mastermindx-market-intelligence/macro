@@ -1,0 +1,235 @@
+{
+  "schema": "research.narrative_repricing_v2_source_clock_audit.v1",
+  "generated_at": "2026-09-25T12:00:00Z",
+  "operation": "geopolitical-relief-event-study-20260924-sol-001",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 8012,
+    "branch": "sol/geopolitical-relief-event-study-20260924",
+    "reconciled_head": "0b8a8fd0a9ccc963d0091eee0203e32025906087"
+  },
+  "procedure": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "protected_master_sha": "87777e2e4705abe2cc4175738e0f3bd68134b66a",
+    "index_blob_sha": "94d1af402598894372858793a5b1931019c5fa77",
+    "active_execution_blob_sha": "9fed10f7cc7a2f4323d039b406f7c0715445e22e",
+    "skillpack_schema": "mastermind.sol_skillpack.v1",
+    "skillpack_version": "1.0.1",
+    "minimum_bootstrap_major": 1
+  },
+  "authority": {
+    "research_only": true,
+    "production_inert": true,
+    "may_fetch_outcomes": false,
+    "may_change_frozen_v2_hypothesis": false,
+    "may_rank": false,
+    "may_alert": false,
+    "may_trade": false
+  },
+  "clock_law": {
+    "rule": "available_at must be the earliest recoverable market-availability clock for the material claim, not a later article, video-asset, clip-upload, or recap timestamp",
+    "reuters_connect_video_rule": "a Reuters Connect licensable-video timestamp is evidence of that asset's availability only; it is not accepted as first market dissemination when earlier text/feed publication exists or remains unresolved",
+    "conflicting_syndication_rule": "when republisher clocks disagree and no original wire tick is pinned, the event is clock_unresolved and excluded from primary return measurement",
+    "repeated_confirmation_rule": "a later confirmation of an already-public deal is not a new independent event unless it adds material new information; otherwise it is context or a separate confirmation stratum",
+    "outcome_rule": "this audit was performed before fetching outcomes for the newly admitted clock-clean candidates below"
+  },
+  "audited_manifest_rows": [
+    {
+      "event_id": "2026-06-15-us-iran-first-phase-mou-china-confirmation",
+      "manifest_available_at": "2026-06-15T09:32:00Z",
+      "audit_status": "exclude_not_first_disclosure",
+      "reason": "Reuters Connect timestamp is a China MOFA video confirmation. Reuters reports the underlying US-Iran framework was already public around 2026-06-14T21:30Z via President Trump's post, shortly after Pakistan's prime minister announced the deal.",
+      "outcome_access_after_audit": "forbidden_primary",
+      "evidence": [
+        {
+          "source": "Reuters via ThePrint",
+          "title": "US, Iran reach deal to end war, signing set for Friday",
+          "observed_fact": "Trump post around 5:30 p.m. ET Sunday / 21:30 GMT; Pakistan announcement shortly before"
+        },
+        {
+          "source": "Reuters Connect",
+          "title": "China welcomes US-Iran deal to end war, reopen Strait of Hormuz",
+          "observed_fact": "video asset timestamp 2026-06-15T09:32:00Z"
+        }
+      ]
+    },
+    {
+      "event_id": "2026-06-16-china-notes-us-iran-mou-hormuz-reopening",
+      "manifest_available_at": "2026-06-16T07:43:00Z",
+      "audit_status": "exclude_repeated_confirmation",
+      "reason": "China's June 16 briefing repeats an agreement already public since June 14/15 and does not define a new independent first-disclosure event.",
+      "outcome_access_after_audit": "forbidden_primary"
+    },
+    {
+      "event_id": "2026-06-22-trump-strait-open-negotiating",
+      "manifest_available_at": "2026-06-22T20:45:00Z",
+      "audit_status": "clock_unresolved",
+      "reason": "Reuters Connect pool video is stamped 20:45Z, while Reuters republishers carrying the same remarks show earlier publication clocks around 20:15-20:33Z. The first market tick is therefore not pinned.",
+      "outcome_access_after_audit": "defer",
+      "evidence": [
+        {
+          "source": "MarketScreener / Reuters",
+          "observed_fact": "published 2026-06-22 16:15 EDT"
+        },
+        {
+          "source": "Investing / Reuters",
+          "observed_fact": "published 2026-06-22 16:33 EDT"
+        },
+        {
+          "source": "Reuters Connect pool video",
+          "observed_fact": "asset timestamp 2026-06-22T20:45:00Z"
+        }
+      ]
+    },
+    {
+      "event_id": "2026-08-03-iran-oman-temporary-hormuz-route",
+      "manifest_available_at": "2026-08-03T19:58:00Z",
+      "audit_status": "exclude_clock_not_first_publication",
+      "reason": "19:58Z is an Anadolu video asset on Reuters Connect. Public Anadolu-derived text carrying the same remarks appeared many hours earlier, so the asset clock cannot be used as first market availability.",
+      "outcome_access_after_audit": "defer_until_exact_source_pin",
+      "evidence": [
+        {
+          "source": "Bernama-Anadolu",
+          "observed_fact": "published 2026-08-03 16:33 MYT, earlier than the Reuters Connect video"
+        },
+        {
+          "source": "Reuters Connect / Anadolu",
+          "observed_fact": "video asset timestamp 2026-08-03T19:58:00Z"
+        }
+      ]
+    },
+    {
+      "event_id": "2026-08-09-iran-oman-deal-final-stages",
+      "manifest_available_at": "2026-08-09T11:44:00Z",
+      "audit_status": "clock_correctable",
+      "corrected_available_at": "2026-08-09T11:43:00Z",
+      "reason": "Reuters republisher timestamp is 07:43 EDT / 11:43Z. The manifest conversion is one minute late.",
+      "outcome_access_after_audit": "eligible_training_after_successor_clock_freeze",
+      "evidence": [
+        {
+          "source": "Investing / Reuters",
+          "observed_fact": "published 2026-08-09 07:43 local EDT"
+        }
+      ]
+    },
+    {
+      "event_id": "2026-08-11-oman-iran-talks-advanced-stage",
+      "manifest_available_at": "2026-08-11T11:18:00Z",
+      "audit_status": "clock_unresolved",
+      "reason": "11:18Z is a Reuters Connect video asset timestamp. A Newsquawk headline exists with an earlier displayed 10:24 clock, but the retrieved page did not expose a timezone-qualified live-feed tick. Do not infer timezone.",
+      "outcome_access_after_audit": "defer"
+    }
+  ],
+  "new_clock_clean_candidates": [
+    {
+      "event_id": "2026-08-04-bessent-may-have-hormuz-deal-tomorrow",
+      "available_at": "2026-08-04T11:43:00Z",
+      "direction": "relief",
+      "family": "us_iran_hormuz_deescalation",
+      "causal_proxy": "USO",
+      "expected_causal_direction": "down",
+      "source_class": "newsquawk_official_quote",
+      "clock_quality": "exact_market_feed_utc",
+      "source_title": "US Treasury Secretary Bessent says we may have Iran deal tomorrow to open Hormuz, via CNBC interview",
+      "outcome_inspection": "uninspected"
+    },
+    {
+      "event_id": "2026-08-05-hormuz-agreement-approaching",
+      "available_at": "2026-08-05T19:54:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "causal_proxy": "USO",
+      "expected_causal_direction": "down",
+      "source_class": "newsquawk_secondary_report",
+      "clock_quality": "exact_live_feed_utc",
+      "source_title": "Agreement to reopen the Strait of Hormuz is approaching; could be announced as early as tonight",
+      "outcome_inspection": "uninspected"
+    },
+    {
+      "event_id": "2026-08-06-iran-oman-broad-framework",
+      "available_at": "2026-08-06T08:28:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "causal_proxy": "USO",
+      "expected_causal_direction": "down",
+      "source_class": "newsquawk_secondary_report",
+      "clock_quality": "exact_live_feed_utc",
+      "source_title": "Iran and Oman have agreed on broad framework for Hormuz reopening talks",
+      "outcome_inspection": "uninspected"
+    },
+    {
+      "event_id": "2026-08-06-oman-iran-reach-strait-agreement",
+      "available_at": "2026-08-06T19:53:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "causal_proxy": "USO",
+      "expected_causal_direction": "down",
+      "source_class": "newsquawk_secondary_report",
+      "clock_quality": "exact_live_feed_utc",
+      "source_title": "Oman and Iran reach agreement over the Strait of Hormuz, citing two Middle-East diplomats",
+      "outcome_inspection": "uninspected"
+    },
+    {
+      "event_id": "2026-08-07-us-official-expects-hormuz-deal-soon",
+      "available_at": "2026-08-07T19:00:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "causal_proxy": "USO",
+      "expected_causal_direction": "down",
+      "source_class": "newsquawk_official_quote",
+      "clock_quality": "exact_live_feed_utc",
+      "source_title": "US official says there is progress between Oman and Iran on the Strait of Hormuz, and we expect a deal soon",
+      "outcome_inspection": "uninspected"
+    },
+    {
+      "event_id": "2026-08-21-oman-iran-navigation-talks",
+      "available_at": "2026-08-21T16:22:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "causal_proxy": "USO",
+      "expected_causal_direction": "down",
+      "source_class": "newsquawk_official_agency",
+      "clock_quality": "exact_live_feed_utc",
+      "source_title": "Omani and Iranian Foreign Ministers discuss conditions for resuming negotiations that support navigation through Hormuz",
+      "outcome_inspection": "uninspected"
+    },
+    {
+      "event_id": "2026-08-25-iran-oman-management-final-stages",
+      "available_at": "2026-08-25T07:41:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "causal_proxy": "USO",
+      "expected_causal_direction": "down",
+      "source_class": "newsquawk_irna_relay",
+      "clock_quality": "exact_live_feed_utc",
+      "source_title": "IRNA reports Oman-Iran management mechanism of the Strait of Hormuz has reached final stages",
+      "outcome_inspection": "uninspected"
+    },
+    {
+      "event_id": "2026-09-16-iran-fm-peaceful-solution",
+      "available_at": "2026-09-16T09:39:00Z",
+      "direction": "relief",
+      "family": "us_iran_diplomatic_reengagement",
+      "causal_proxy": "USO",
+      "expected_causal_direction": "down",
+      "source_class": "newsquawk_official_quote",
+      "clock_quality": "exact_live_feed_utc",
+      "source_title": "Iranian FM says the MoU with America is in effect and Iran wants to return to a peaceful solution",
+      "outcome_inspection": "uninspected"
+    },
+    {
+      "event_id": "2026-09-22-iran-could-open-hormuz-seven-days",
+      "available_at": "2026-09-22T09:14:00Z",
+      "direction": "relief",
+      "family": "us_iran_hormuz_deescalation",
+      "causal_proxy": "USO",
+      "expected_causal_direction": "down",
+      "source_class": "newsquawk_kyodo_relay",
+      "clock_quality": "exact_live_feed_utc",
+      "source_title": "Iran reportedly suggested it could open Hormuz within seven days if the US lifts its blockade",
+      "control_status": "later_reported_denial_candidate",
+      "outcome_inspection": "uninspected"
+    }
+  ],
+  "next_action": "Freeze a successor clock-clean training list from this audit, then compute the already-preregistered first-pass features only for those rows. Do not backfill excluded or clock-unresolved rows with outcome-selected timestamps."
+}

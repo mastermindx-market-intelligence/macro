@@ -1,0 +1,146 @@
+{
+  "schema": "research.cross_session_us_hk_matched_control_manifest.v1",
+  "generated_date": "2026-09-26",
+  "state": "CALENDAR_ONLY_FREEZE / DEVELOPMENT_CONTROL / PRODUCTION_INERT / NO_TRADING_AUTHORITY",
+  "operation": "geopolitical-relief-event-study-20260924-sol-001",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 8012,
+    "branch": "sol/geopolitical-relief-event-study-20260924",
+    "parent_head": "4be14266926fe1a9aa188e337c234564f568a16a",
+    "protected_master_pin": "763ec8f920177fdf48b18df1b8e37b61ab482ef0"
+  },
+  "parent_prereg": "research/CROSS_SESSION_US_TO_HK_MATCHED_CONTROL_PREREG_2026-09-26.md",
+  "source_census_blob": "bb7109a6c1b38f199d93efcd475e6d81bd5fa877",
+  "calendar": {
+    "source": "observed SMH daily Yahoo bars; date index only used for matching",
+    "first": "2026-06-01",
+    "last": "2026-09-25",
+    "rows": 82
+  },
+  "selection": "nearest prior and next observed SMH session excluding every frozen source-census event date; exact event UTC time-of-day reused; <=10-session distance",
+  "controls": [
+    {
+      "event_id": "2026-08-04-bessent-may-have-hormuz-deal-tomorrow",
+      "event_date": "2026-08-04",
+      "clock_utc": "11:43:00Z",
+      "role": "clean_primary",
+      "prior_control_date": "2026-08-03",
+      "prior_session_distance": 1,
+      "next_control_date": "2026-08-10",
+      "next_session_distance": 4
+    },
+    {
+      "event_id": "2026-08-05-hormuz-agreement-approaching",
+      "event_date": "2026-08-05",
+      "clock_utc": "19:54:00Z",
+      "role": "clean_primary",
+      "prior_control_date": "2026-08-03",
+      "prior_session_distance": 2,
+      "next_control_date": "2026-08-10",
+      "next_session_distance": 3
+    },
+    {
+      "event_id": "2026-08-06-oman-iran-reach-strait-agreement",
+      "event_date": "2026-08-06",
+      "clock_utc": "19:53:00Z",
+      "role": "clean_primary",
+      "prior_control_date": "2026-08-03",
+      "prior_session_distance": 3,
+      "next_control_date": "2026-08-10",
+      "next_session_distance": 2
+    },
+    {
+      "event_id": "2026-08-07-us-official-expects-hormuz-deal-soon",
+      "event_date": "2026-08-07",
+      "clock_utc": "19:00:00Z",
+      "role": "clean_primary",
+      "prior_control_date": "2026-08-03",
+      "prior_session_distance": 4,
+      "next_control_date": "2026-08-10",
+      "next_session_distance": 1
+    },
+    {
+      "event_id": "2026-08-21-oman-iran-navigation-talks",
+      "event_date": "2026-08-21",
+      "clock_utc": "16:22:00Z",
+      "role": "clean_primary",
+      "prior_control_date": "2026-08-20",
+      "prior_session_distance": 1,
+      "next_control_date": "2026-08-24",
+      "next_session_distance": 1
+    },
+    {
+      "event_id": "2026-09-22-iran-could-open-hormuz-seven-days",
+      "event_date": "2026-09-22",
+      "clock_utc": "09:14:00Z",
+      "role": "control_or_conflicted",
+      "prior_control_date": "2026-09-21",
+      "prior_session_distance": 1,
+      "next_control_date": "2026-09-25",
+      "next_session_distance": 3
+    },
+    {
+      "event_id": "2026-06-15-us-official-signed-mou-hormuz-open",
+      "event_date": "2026-06-15",
+      "clock_utc": "15:36:00Z",
+      "role": "clean_primary",
+      "prior_control_date": "2026-06-12",
+      "prior_session_distance": 1,
+      "next_control_date": "2026-06-16",
+      "next_session_distance": 1
+    },
+    {
+      "event_id": "2026-06-17-trump-hormuz-open-next-day-or-two",
+      "event_date": "2026-06-17",
+      "clock_utc": "10:47:00Z",
+      "role": "clean_primary",
+      "prior_control_date": "2026-06-16",
+      "prior_session_distance": 1,
+      "next_control_date": "2026-06-18",
+      "next_session_distance": 1
+    },
+    {
+      "event_id": "2026-07-30-mediators-working-no-tangible-results",
+      "event_date": "2026-07-30",
+      "clock_utc": "09:14:00Z",
+      "role": "partial_control",
+      "prior_control_date": "2026-07-29",
+      "prior_session_distance": 1,
+      "next_control_date": "2026-07-31",
+      "next_session_distance": 1
+    },
+    {
+      "event_id": "2026-07-14-centcom-additional-iran-strikes",
+      "event_date": "2026-07-14",
+      "clock_utc": "19:30:00Z",
+      "role": "source_confounded",
+      "prior_control_date": "2026-07-13",
+      "prior_session_distance": 1,
+      "next_control_date": "2026-07-15",
+      "next_session_distance": 1
+    },
+    {
+      "event_id": "2026-08-25-ria-unconfirmed-ceasefire-free-navigation",
+      "event_date": "2026-08-25",
+      "clock_utc": "19:26:00Z",
+      "role": "causal_rejected",
+      "prior_control_date": "2026-08-24",
+      "prior_session_distance": 1,
+      "next_control_date": "2026-08-27",
+      "next_session_distance": 2
+    },
+    {
+      "event_id": "2026-08-31-trump-weighing-limited-iran-strikes",
+      "event_date": "2026-08-31",
+      "clock_utc": "18:05:00Z",
+      "role": "causal_rejected",
+      "prior_control_date": "2026-08-28",
+      "prior_session_distance": 1,
+      "next_control_date": "2026-09-03",
+      "next_session_distance": 3
+    }
+  ],
+  "outcomes_inspected_for_selection": false,
+  "prospective_v2_holdout": "UNTOUCHED"
+}
