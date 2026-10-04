@@ -192,32 +192,38 @@ def world(tmp_path_factory):
                            symbols=symbols)
 
 
-def _patch(mp: pytest.MonkeyPatch, world, manifest: Path | None = None) -> None:
+def _patch(mp: pytest.MonkeyPatch, world, manifest: Path | None = None,
+           attempt_root: Path | None = None) -> None:
     mp.setattr(s, "D0_MANIFEST_SHA256",
                hashlib.sha256((manifest or world.manifest).read_bytes()).hexdigest())
     mp.setattr(s.r1, "_git_head", lambda _root: CFG["terminal_dependency_sha"])
     # The published result may already exist in this checkout; the run must not see it.
     mp.setattr(s, "RESULT_PATH", world.root / "absent/RESULT_V4.json")
     mp.setattr(s, "REPORT_PATH", world.root / "absent/REPORT.md")
+    mp.setattr(s, "ATTEMPT_ROOT", attempt_root or world.root)
 
 
-def _argv(world, out: Path, aborts: Path, *, junit: Path | None = None,
+def _out_dir(attempt_root: Path, name: str = "run1") -> Path:
+    return attempt_root / "output" / name
+
+
+def _argv(world, out: Path, *, junit: Path | None = None,
           code_sha: str = CODE_SHA, manifest: Path | None = None) -> list[str]:
     return ["--input-dir", str(world.inputs), "--manifest", str(manifest or world.manifest),
             "--terminal-root", str(world.terminal), "--output-dir", str(out),
-            "--code-sha", code_sha, "--junit", str(junit or world.junit),
-            "--abort-dir", str(aborts)]
+            "--code-sha", code_sha, "--junit", str(junit or world.junit)]
 
 
 @pytest.fixture(scope="module")
 def run(world):
     """One refused attempt (unclean test receipt), then the one complete run."""
     mp = pytest.MonkeyPatch()
-    out, aborts = world.root / "out", world.root / "aborts"
+    out = _out_dir(world.root, "complete")
+    attempts = world.root / "attempts"
     seen: list[dict[str, bool]] = []
     try:
         _patch(mp, world)
-        refused = s.main(_argv(world, out, aborts,
+        refused = s.main(_argv(world, out,
                                junit=_junit(world.root / "junit_bad.xml", bad="failure")))
         real = s.te.measure_event_outcome
 
@@ -235,11 +241,11 @@ def run(world):
             return real(*args, **kwargs)
 
         mp.setattr(s.te, "measure_event_outcome", spy)
-        rc = s.main(_argv(world, out, aborts))
+        rc = s.main(_argv(world, out))
     finally:
         mp.undo()
     result = json.loads((out / "result.json").read_text()) if (out / "result.json").is_file() else None
-    return SimpleNamespace(refused=refused, rc=rc, out=out, aborts=aborts, result=result,
+    return SimpleNamespace(refused=refused, rc=rc, out=out, attempts=attempts, result=result,
                            first_outcome_call=seen[0] if seen else None)
 
 
@@ -382,12 +388,11 @@ def test_a_censored_outcome_is_counted_and_left_out_of_the_descriptive_means(run
 
 
 def test_an_earlier_refused_attempt_is_disclosed_in_the_result(run):
-    aborts = run.result["aborts"]
-    assert [a["stage"] for a in aborts] == ["arguments"]
-    assert aborts[0]["exception_type"] == "ValueError"
-    assert aborts[0]["before_any_market_input"] is True
-    assert aborts[0]["outcome_values_persisted"] is False
-    assert sorted(p.name for p in run.aborts.iterdir()) == ["abort-001.json"]
+    attempts = run.result["attempts"]
+    assert [a["stage"] for a in attempts] == ["arguments"]
+    assert attempts[0]["exception_type"] == "ValueError"
+    assert attempts[0]["outcome_values_persisted"] is False
+    assert sorted(p.name for p in run.attempts.iterdir()) == ["attempt-001.json", "attempt-002.json"]
 
 
 # --------------------------------------------------------------------------- aborts and refusals
@@ -396,7 +401,7 @@ def test_an_earlier_refused_attempt_is_disclosed_in_the_result(run):
                                        ("accounting_identity_broken", "ValueError")])
 def test_an_abort_after_outcomes_records_type_and_frames_only(world, monkeypatch, tmp_path, capsys,
                                                               how, kind):
-    _patch(monkeypatch, world)
+    _patch(monkeypatch, world, attempt_root=tmp_path)
     real = s.agg.summarize
 
     def boom(rows, *, cfg):
@@ -407,18 +412,17 @@ def test_an_abort_after_outcomes_records_type_and_frames_only(world, monkeypatch
         return summary
 
     monkeypatch.setattr(s.agg, "summarize", boom)
-    out, aborts = tmp_path / "out", tmp_path / "aborts"
-    assert s.main(_argv(world, out, aborts)) == 2
+    out = _out_dir(tmp_path)
+    assert s.main(_argv(world, out)) == 2
     captured = capsys.readouterr()
     # Once outcomes exist, not even one of the runner's own refusal codes is printed.
     assert captured.err.splitlines()[-1] == f"R1-B study aborted during aggregate: {kind}"
     assert "secret" not in captured.err + captured.out and "0.123456" not in captured.err + captured.out
     assert "event_accounting_identity_violated" not in captured.err + captured.out
-    receipt = json.loads((aborts / "abort-001.json").read_text())
+    receipt = json.loads((tmp_path / "attempts/attempt-001.json").read_text())
     assert (receipt["stage"], receipt["exception_type"]) == ("aggregate", kind)
     assert receipt["outcome_stage_started"] is True
     assert receipt["outcome_values_persisted"] is False
-    assert receipt["before_any_market_input"] is False
     assert receipt["code_sha"] == CODE_SHA
     assert "secret" not in json.dumps(receipt)
     assert receipt["frames"] and all(re.fullmatch(r"[\w.]+:\d+", f) for f in receipt["frames"])
@@ -426,15 +430,15 @@ def test_an_abort_after_outcomes_records_type_and_frames_only(world, monkeypatch
     assert not any((out / name).exists() for name in ("result.json", "report.md", "rows.jsonl",
                                                       "outcomes.jsonl"))
     # The used output directory can never be written again.
-    assert s.main(_argv(world, out, aborts)) == 2
+    assert s.main(_argv(world, out)) == 2
     assert "R1-B study refused: output_directory_exists" in capsys.readouterr().err
-    second = json.loads((aborts / "abort-002.json").read_text())
-    assert second["stage"] == "arguments" and second["before_any_market_input"] is True
+    second = json.loads((tmp_path / "attempts/attempt-002.json").read_text())
+    assert second["stage"] == "arguments"
 
 
 def test_a_selected_outcome_that_differs_from_its_direct_measurement_stops_the_run(
         world, monkeypatch, tmp_path, capsys):
-    _patch(monkeypatch, world)
+    _patch(monkeypatch, world, attempt_root=tmp_path)
     real = s.measure_event_grid
 
     def altered(*args, **kwargs):
@@ -443,10 +447,10 @@ def test_a_selected_outcome_that_differs_from_its_direct_measurement_stops_the_r
         return grid
 
     monkeypatch.setattr(s, "measure_event_grid", altered)
-    out, aborts = tmp_path / "out", tmp_path / "aborts"
-    assert s.main(_argv(world, out, aborts)) == 2
+    out = _out_dir(tmp_path)
+    assert s.main(_argv(world, out)) == 2
     assert capsys.readouterr().err.splitlines()[-1] == "R1-B study aborted during outcomes: ValueError"
-    receipt = json.loads((aborts / "abort-001.json").read_text())
+    receipt = json.loads((tmp_path / "attempts/attempt-001.json").read_text())
     assert (receipt["stage"], receipt["outcome_stage_started"]) == ("outcomes", True)
     assert receipt["outcome_values_persisted"] is False
     assert (out / "pre_outcome_receipt.json").is_file() and not (out / "result.json").exists()
@@ -454,7 +458,7 @@ def test_a_selected_outcome_that_differs_from_its_direct_measurement_stops_the_r
 
 def test_a_failure_while_writing_results_makes_that_attempt_the_registered_run(
         world, monkeypatch, tmp_path, capsys):
-    _patch(monkeypatch, world)
+    _patch(monkeypatch, world, attempt_root=tmp_path)
     real = Path.write_bytes
 
     def failing(self, data):
@@ -463,17 +467,17 @@ def test_a_failure_while_writing_results_makes_that_attempt_the_registered_run(
         return real(self, data)
 
     monkeypatch.setattr(Path, "write_bytes", failing)
-    out, aborts = tmp_path / "out", tmp_path / "aborts"
-    assert s.main(_argv(world, out, aborts)) == 2
+    out = _out_dir(tmp_path)
+    assert s.main(_argv(world, out)) == 2
     assert capsys.readouterr().err.splitlines()[-1] == "R1-B study aborted during persist: OSError"
-    receipt = json.loads((aborts / "abort-001.json").read_text())
+    receipt = json.loads((tmp_path / "attempts/attempt-001.json").read_text())
     assert (receipt["stage"], receipt["outcome_values_persisted"]) == ("persist", True)
     assert (out / "result.json").is_file() and not (out / "rows.jsonl").exists()
     monkeypatch.setattr(Path, "write_bytes", real)
-    assert s.main(_argv(world, tmp_path / "out2", aborts)) == 2
+    assert s.main(_argv(world, _out_dir(tmp_path, "run2"))) == 2
     assert capsys.readouterr().err.splitlines()[-1] == (
         "R1-B study refused: registered_run_already_persisted")
-    assert not (tmp_path / "out2").exists()
+    assert not _out_dir(tmp_path, "run2").exists()
 
 
 @pytest.mark.parametrize("error, printed", [
@@ -486,30 +490,31 @@ def test_a_failure_while_writing_results_makes_that_attempt_the_registered_run(
 ])
 def test_after_inputs_are_read_only_a_refusal_code_is_ever_printed(world, monkeypatch, tmp_path,
                                                                    capsys, error, printed):
-    _patch(monkeypatch, world)
+    _patch(monkeypatch, world, attempt_root=tmp_path)
 
     def boom(*_args, **_kwargs):
         raise error
 
     monkeypatch.setattr(s, "load_inputs", boom)
-    assert s.main(_argv(world, tmp_path / "out", tmp_path / "aborts")) == 2
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
     err = capsys.readouterr().err
     assert err.splitlines()[-1] == printed
-    receipt = json.loads((tmp_path / "aborts/abort-001.json").read_text())
+    receipt = json.loads((tmp_path / "attempts/attempt-001.json").read_text())
     assert receipt["stage"] == "inputs" and receipt["outcome_stage_started"] is False
     assert str(error.args[0]) not in json.dumps(receipt)
-    assert not (tmp_path / "out").exists()
+    assert not _out_dir(tmp_path).exists()
 
 
 def test_a_run_that_already_persisted_outcomes_is_never_repeated(world, monkeypatch, tmp_path, capsys):
-    _patch(monkeypatch, world)
-    aborts = tmp_path / "aborts"
-    aborts.mkdir()
-    (aborts / "abort-001.json").write_text(json.dumps(
-        {"stage": "persist", "outcome_values_persisted": True}))
-    assert s.main(_argv(world, tmp_path / "out", aborts)) == 2
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    attempt_dir = tmp_path / "attempts"
+    attempt_dir.mkdir(parents=True)
+    (attempt_dir / "attempt-001.json").write_text(json.dumps(
+        {"stage": "persist", "outcome_values_persisted": True, "attempt": 1,
+         "schema": s.ATTEMPT_SCHEMA, "study_id": s.STUDY_ID, "finalized": True}))
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
     assert "registered_run_already_persisted" in capsys.readouterr().err
-    assert not (tmp_path / "out").exists()
+    assert not _out_dir(tmp_path).exists()
 
 
 @pytest.mark.parametrize("case, code", [
@@ -517,16 +522,16 @@ def test_a_run_that_already_persisted_outcomes_is_never_repeated(world, monkeypa
     ("empty_output_dir", "output_directory_exists"),
     ("result_artifact", "results_artifact_exists"),
     ("report_artifact", "results_artifact_exists"),
-    ("missing_argument", "full_run_requires_input_manifest_terminal_output_code_sha_junit_abort_dir"),
+    ("missing_argument", "full_run_requires_input_manifest_terminal_output_code_sha_junit"),
 ])
 def test_argument_stage_refusals(world, monkeypatch, tmp_path, capsys, case, code):
-    _patch(monkeypatch, world)
-    out = tmp_path / "out"
-    argv = _argv(world, out, tmp_path / "aborts")
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    out = _out_dir(tmp_path)
+    argv = _argv(world, out)
     if case == "code_sha":
-        argv = _argv(world, out, tmp_path / "aborts", code_sha="abc123")
+        argv = _argv(world, out, code_sha="abc123")
     elif case == "empty_output_dir":
-        out.mkdir()
+        out.mkdir(parents=True)
     elif case in ("result_artifact", "report_artifact"):
         published = tmp_path / "published"
         published.write_text("{}")
@@ -540,7 +545,7 @@ def test_argument_stage_refusals(world, monkeypatch, tmp_path, capsys, case, cod
 
 
 def test_a_refusal_before_any_market_input_prints_its_whole_text(world, monkeypatch, tmp_path, capsys):
-    _patch(monkeypatch, world)
+    _patch(monkeypatch, world, attempt_root=tmp_path)
 
     def refuse(**_kwargs):
         raise ValueError("registered_grid_row_count_mismatch:59/60")
@@ -550,19 +555,18 @@ def test_a_refusal_before_any_market_input_prints_its_whole_text(world, monkeypa
 
     monkeypatch.setattr(s, "verify_admission", refuse)
     monkeypatch.setattr(s, "load_inputs", never)
-    assert s.main(_argv(world, tmp_path / "out", tmp_path / "aborts")) == 2
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
     assert capsys.readouterr().err.splitlines()[-1] == (
         "R1-B study refused: registered_grid_row_count_mismatch:59/60")
-    receipt = json.loads((tmp_path / "aborts/abort-001.json").read_text())
-    assert (receipt["stage"], receipt["before_any_market_input"]) == ("admission", True)
-    assert receipt["exception_type"] == "ValueError"
+    receipt = json.loads((tmp_path / "attempts/attempt-001.json").read_text())
+    assert (receipt["stage"], receipt["exception_type"]) == ("admission", "ValueError")
 
 
 @pytest.mark.parametrize("field, value", [("bootstrap_repetitions", 3999), ("seed", 20260918)])
 def test_a_config_with_another_bootstrap_identity_is_refused_before_any_input(
         world, monkeypatch, tmp_path, capsys, field, value):
     """The admission hash already pins the config; this is the runner's own second check."""
-    _patch(monkeypatch, world)
+    _patch(monkeypatch, world, attempt_root=tmp_path)
     admitted = s.verify_admission()
     config = tmp_path / "config_v4.json"
     config.write_text(json.dumps({**json.loads(s.CONFIG_PATH.read_bytes()), field: value}))
@@ -573,11 +577,11 @@ def test_a_config_with_another_bootstrap_identity_is_refused_before_any_input(
     monkeypatch.setattr(s, "verify_admission", lambda: admitted)
     monkeypatch.setattr(s, "CONFIG_PATH", config)
     monkeypatch.setattr(s, "load_inputs", never)
-    assert s.main(_argv(world, tmp_path / "out", tmp_path / "aborts")) == 2
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
     assert capsys.readouterr().err.splitlines()[-1] == (
         "R1-B study refused: frozen_bootstrap_identity_mismatch")
-    receipt = json.loads((tmp_path / "aborts/abort-001.json").read_text())
-    assert (receipt["stage"], receipt["before_any_market_input"]) == ("admission", True)
+    receipt = json.loads((tmp_path / "attempts/attempt-001.json").read_text())
+    assert receipt["stage"] == "admission"
 
 
 @pytest.mark.parametrize("bad, modules, code", [
@@ -759,6 +763,118 @@ def test_the_run_checks_those_flags_before_anything_is_written_or_measured():
     assert pools_stage.index("refuse_pool_flags(built_pools)") < pools_stage.index("output_dir.mkdir(")
     assert later.index("pre_outcome_receipt.json") < later.index('stage("outcomes")')
     assert "measure_" not in construction + pools_stage
+
+
+# --------------------------------------------------------------------------- attempt ledger (T5)
+
+def test_t5a_second_run_refused_after_first_completes(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    out1 = _out_dir(tmp_path, "run1")
+    assert s.main(_argv(world, out1)) == 0
+    out2 = _out_dir(tmp_path, "run2")
+    assert s.main(_argv(world, out2)) == 2
+    assert "registered_run_already_persisted" in capsys.readouterr().err
+    attempt_dir = tmp_path / "attempts"
+    first = json.loads((attempt_dir / "attempt-001.json").read_text())
+    second = json.loads((attempt_dir / "attempt-002.json").read_text())
+    assert first["completed"] is True and first["outcome_values_persisted"] is True
+    assert second["finalized"] is True and second["stage"] == "arguments"
+
+
+def test_t5b_keyboard_interrupt_during_outcomes(world, monkeypatch, tmp_path):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+
+    def interrupt(*_args, **_kwargs):
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(s, "measure_event_grid", interrupt)
+    out = _out_dir(tmp_path)
+    with pytest.raises(KeyboardInterrupt):
+        s.main(_argv(world, out))
+    receipt = json.loads((tmp_path / "attempts/attempt-001.json").read_text())
+    assert receipt["stage"] == "outcomes"
+    assert receipt["outcome_stage_started"] is True
+    assert receipt["outcome_values_persisted"] is False
+    assert receipt["exception_type"] == "KeyboardInterrupt"
+
+
+def test_t5c_keyboard_interrupt_during_persist_refuses_followup(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    real = Path.write_bytes
+
+    def interrupt_on_report(self, data):
+        if self.name == "report.md":
+            raise KeyboardInterrupt
+        return real(self, data)
+
+    monkeypatch.setattr(Path, "write_bytes", interrupt_on_report)
+    out = _out_dir(tmp_path, "run1")
+    with pytest.raises(KeyboardInterrupt):
+        s.main(_argv(world, out))
+    receipt = json.loads((tmp_path / "attempts/attempt-001.json").read_text())
+    assert receipt["outcome_values_persisted"] is True
+    monkeypatch.setattr(Path, "write_bytes", real)
+    assert s.main(_argv(world, _out_dir(tmp_path, "run2"))) == 2
+    assert "registered_run_already_persisted" in capsys.readouterr().err
+
+
+def test_t5d_aggregate_abort_blocks_same_code_sha(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    real = s.agg.summarize
+
+    def boom(rows, *, cfg):
+        raise RuntimeError("aggregate boom")
+
+    monkeypatch.setattr(s.agg, "summarize", boom)
+    out = _out_dir(tmp_path)
+    assert s.main(_argv(world, out)) == 2
+    assert s.main(_argv(world, _out_dir(tmp_path, "run2"))) == 2
+    assert "rerun_without_reviewed_fix" in capsys.readouterr().err
+    monkeypatch.setattr(s.agg, "summarize", real)
+    assert s.main(_argv(world, _out_dir(tmp_path, "run3"), code_sha="b" * 40)) == 0
+    receipt = json.loads((tmp_path / "attempts/attempt-003.json").read_text())
+    assert receipt["stage"] not in s.PRE_INPUT_STAGES or receipt.get("completed")
+
+
+def test_t5e_attempt_numbering_skips_deleted_middle(world, monkeypatch, tmp_path):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    attempt_dir = tmp_path / "attempts"
+    attempt_dir.mkdir(parents=True)
+    (attempt_dir / "attempt-001.json").write_text("{}")
+    (attempt_dir / "attempt-003.json").write_text("{}")
+    assert s.next_attempt_number(attempt_dir) == 4
+
+
+def test_t5f_output_directory_placement_refusals(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    bad = tmp_path / "elsewhere" / "run1"
+    assert s.main(_argv(world, bad)) == 2
+    assert "output_directory_outside_run_root" in capsys.readouterr().err
+    git_root = tmp_path / "git_output"
+    git_root.mkdir()
+    import subprocess
+    subprocess.run(["git", "init"], cwd=git_root, capture_output=True, check=True)
+    monkeypatch.setattr(s, "ATTEMPT_ROOT", git_root)
+    inside = git_root / "output" / "run1"
+    assert s.main(_argv(world, inside)) == 2
+    assert "output_directory_inside_git" in capsys.readouterr().err
+
+
+def test_t5g_abort_dir_argument_is_rejected(world, monkeypatch, tmp_path):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    argv = _argv(world, _out_dir(tmp_path)) + ["--abort-dir", str(tmp_path / "aborts")]
+    with pytest.raises(SystemExit) as exc:
+        s.main(argv)
+    assert exc.value.code == 2
+
+
+def test_t5h_result_lists_prior_attempts_and_listing_hash(run):
+    attempts = run.result["attempts"]
+    assert len(attempts) == 1
+    listing = hashlib.sha256(
+        "\n".join(sorted(p.name for p in run.attempts.iterdir() if p.is_file())).encode("utf-8")
+    ).hexdigest()
+    assert run.result["attempt_listing_sha256"] == listing
 
 
 # --------------------------------------------------------------------------- admission

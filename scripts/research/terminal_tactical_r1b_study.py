@@ -12,10 +12,12 @@ import contextlib
 import hashlib
 import json
 import math
+import os
 import platform
 import re
 import socket
 import statistics
+import subprocess
 import sys
 import traceback
 import xml.etree.ElementTree as ElementTree
@@ -53,7 +55,8 @@ RESULT_PATH = ROOT / "research/species/tti_r1b/RESULT_V4.json"
 REPORT_PATH = ROOT / "research/species/TTI_R1B_V4_REPORT.md"
 D0_MANIFEST_SHA256 = "59c50ed405bd76c083a1d2beb20cf25edd6f4bd892c3e55fd38d21a66bef642b"
 RESULT_SCHEMA = "mastermind.tti.r1b.result.v4"
-ABORT_SCHEMA = "mastermind.tti.r1b.abort.v4"
+ATTEMPT_ROOT = Path.home() / ".mastermind" / "tti_r1b" / STUDY_ID
+ATTEMPT_SCHEMA = "mastermind.tti.r1b.attempt.v4"
 CODE_FILES = (
     "scripts/research/terminal_tactical_r1b_study.py",
     "scripts/research/terminal_tactical_r1b_pools.py",
@@ -654,31 +657,63 @@ def descriptive(outcomes: Sequence[Mapping[str, Any]], cfg: Mapping[str, Any]) -
     return out
 
 
-def _abort_receipts(abort_dir: Path) -> list[dict[str, Any]]:
-    if not abort_dir.is_dir():
+def next_attempt_number(attempt_dir: Path) -> int:
+    highest = 0
+    for path in attempt_dir.glob("attempt-*.json"):
+        stem = path.stem
+        if stem.startswith("attempt-") and stem[8:].isdigit():
+            highest = max(highest, int(stem[8:]))
+    return highest + 1
+
+
+def write_receipt(attempt_dir: Path, receipt: Mapping[str, Any]) -> Path:
+    attempt_dir.mkdir(parents=True, exist_ok=True)
+    attempt = int(receipt["attempt"])
+    final = attempt_dir / f"attempt-{attempt:03d}.json"
+    scratch = attempt_dir / f".attempt-{attempt:03d}.scratch"
+    payload = json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+    scratch.write_text(payload)
+    with scratch.open("rb") as handle:
+        os.fsync(handle.fileno())
+    os.replace(scratch, final)
+    with final.open("rb") as handle:
+        os.fsync(handle.fileno())
+    fd = os.open(attempt_dir, os.O_RDONLY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+    return final
+
+
+def _read_receipt(path: Path) -> dict[str, Any]:
+    return json.loads(path.read_text())
+
+
+def _prior_receipts(attempt_dir: Path, *, current_attempt: int) -> list[dict[str, Any]]:
+    if not attempt_dir.is_dir():
         return []
-    return [json.loads(path.read_text()) for path in sorted(abort_dir.glob("abort-*.json"))]
+    prior: list[dict[str, Any]] = []
+    for path in sorted(attempt_dir.glob("attempt-*.json")):
+        receipt = json.loads(path.read_text())
+        if int(receipt.get("attempt", -1)) == current_attempt:
+            continue
+        prior.append(receipt)
+    return prior
 
 
-def write_abort(abort_dir: Path, *, exc: BaseException, stage: str, code_sha: str | None,
-                persisted: bool) -> Path:
-    """Record an aborted attempt: exception type and file:line frames only, never message text."""
-    abort_dir.mkdir(parents=True, exist_ok=True)
-    attempt = len(list(abort_dir.glob("abort-*.json"))) + 1
-    receipt = {
-        "schema": ABORT_SCHEMA, "study_id": STUDY_ID, "attempt": attempt, "stage": stage,
-        "exception_type": type(exc).__name__,
-        "frames": [f"{Path(frame.filename).name}:{frame.lineno}"
-                   for frame in traceback.extract_tb(exc.__traceback__)],
-        "code_sha": code_sha,
-        "at": datetime.now(UTC).isoformat(timespec="seconds"),
-        "before_any_market_input": stage in PRE_INPUT_STAGES,
-        "outcome_stage_started": stage in OUTCOME_STAGES,
-        "outcome_values_persisted": bool(persisted),
-    }
-    path = abort_dir / f"abort-{attempt:03d}.json"
-    path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
-    return path
+def _attempt_listing_sha256(attempt_dir: Path) -> str:
+    if not attempt_dir.is_dir():
+        names: list[str] = []
+    else:
+        names = sorted(path.name for path in attempt_dir.iterdir() if path.is_file())
+    return hashlib.sha256("\n".join(names).encode("utf-8")).hexdigest()
+
+
+def _merge_receipt(path: Path, **fields: Any) -> None:
+    receipt = _read_receipt(path)
+    receipt.update(fields)
+    write_receipt(path.parent, receipt)
 
 
 def _fmt(value: Any, digits: int = 6) -> str:
@@ -711,7 +746,7 @@ def _markdown(result: Mapping[str, Any]) -> str:
     for key in ("study_id", "code_sha", "prereg_sha256", "config_sha256", "rulings_sha256",
                 "grid_sha256", "registered_rows_sha256", "input_manifest_sha256"):
         lines.append(f"- {key}: `{result['identity'][key]}`")
-    lines += [f"- aborted attempts before this run: {len(result['aborts'])}", "",
+    lines += [f"- prior attempts before this run: {len(result['attempts'])}", "",
               f"## Gate — {primary} at {result['grid']['primary_horizon']} / "
               f"{result['grid']['primary_cost_bps']} bp, all four readings", "",
               "| reading | fires with delta | dates | tickers | statistic | interval low | interval high | "
@@ -778,23 +813,61 @@ def _markdown(result: Mapping[str, Any]) -> str:
 
 
 def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir: Path,
-            code_sha: str, junit: Path, abort_dir: Path, state: dict[str, Any]) -> dict[str, Any]:
-    """The single registered run.  ``state`` reports the stage reached to the abort recorder."""
+            code_sha: str, junit: Path, state: dict[str, Any]) -> dict[str, Any]:
+    """The single registered run.  ``state`` reports the stage reached to the attempt recorder."""
+    attempt_dir = ATTEMPT_ROOT / "attempts"
+    attempt = next_attempt_number(attempt_dir)
+    started_at = datetime.now(UTC).isoformat(timespec="seconds")
+    receipt: dict[str, Any] = {
+        "schema": ATTEMPT_SCHEMA,
+        "study_id": STUDY_ID,
+        "attempt": attempt,
+        "stage": "arguments",
+        "code_sha": code_sha,
+        "started_at": started_at,
+        "finalized": False,
+        "completed": False,
+        "outcome_stage_started": False,
+        "outcome_values_persisted": None,
+        "exception_type": None,
+        "frames": [],
+    }
+    attempt_path = write_receipt(attempt_dir, receipt)
+    state["attempt_path"] = attempt_path
+    state["persisted"] = False
+    state["stage"] = "arguments"
 
     def stage(name: str, note: str = "") -> None:
         state["stage"] = name
+        fields: dict[str, Any] = {"stage": name}
+        if name == "outcomes":
+            fields["outcome_stage_started"] = True
+        _merge_receipt(attempt_path, **fields)
         print(f"[r1b] {name}{(' ' + note) if note else ''}", file=sys.stderr, flush=True)
 
     stage("arguments")
     if not re.fullmatch(r"[0-9a-f]{40}", code_sha or ""):
         raise ValueError("code_sha_invalid")
+    expected_output_root = ATTEMPT_ROOT / "output"
+    if output_dir.parent.resolve() != expected_output_root.resolve():
+        raise ValueError("output_directory_outside_run_root")
+    output_dir.parent.mkdir(parents=True, exist_ok=True)
+    git_probe = subprocess.run(
+        ["git", "-C", str(output_dir.parent), "rev-parse", "--show-toplevel"],
+        capture_output=True,
+    )
+    if git_probe.returncode == 0:
+        raise ValueError("output_directory_inside_git")
     if output_dir.exists():
         raise ValueError("output_directory_exists")
     if RESULT_PATH.exists() or REPORT_PATH.exists():
         raise ValueError("results_artifact_exists")
-    prior_aborts = _abort_receipts(abort_dir)
-    if any(receipt.get("outcome_values_persisted") is not False for receipt in prior_aborts):
+    prior = _prior_receipts(attempt_dir, current_attempt=attempt)
+    if any(receipt.get("outcome_values_persisted") is not False for receipt in prior):
         raise ValueError("registered_run_already_persisted")
+    if any(receipt.get("stage") not in PRE_INPUT_STAGES and receipt.get("code_sha") == code_sha
+           for receipt in prior):
+        raise ValueError("rerun_without_reviewed_fix")
     tests = junit_receipt(junit)
 
     stage("admission")
@@ -951,17 +1024,60 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
             "versions": {"python": platform.python_version(), "numpy": np.__version__,
                          "pandas": pd.__version__},
         },
-        "aborts": prior_aborts,
+        "attempts": prior,
+        "attempt_listing_sha256": _attempt_listing_sha256(attempt_dir),
     }
     files = {"result.json": (json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n").encode("utf-8"),
              "report.md": _markdown(result).encode("utf-8"), **private}
 
     stage("persist")
+    _merge_receipt(attempt_path, stage="persist", outcome_values_persisted=True)
+    state["persisted"] = True
     for name, raw in files.items():
-        state["persisted"] = True
         (output_dir / name).write_bytes(raw)
+    finished_at = datetime.now(UTC).isoformat(timespec="seconds")
+    _merge_receipt(attempt_path, finalized=True, completed=True, finished_at=finished_at)
     return {"status": "completed", "output_dir": str(output_dir),
             "result_sha256": _digest(files["result.json"])}
+
+
+def _finalize_attempt_on_failure(
+    *, attempt_dir: Path, attempt_path: Path | None, state: Mapping[str, Any],
+    exc: BaseException, code_sha: str | None,
+) -> None:
+    frames = [f"{Path(frame.filename).name}:{frame.lineno}"
+              for frame in traceback.extract_tb(exc.__traceback__)]
+    persisted = state.get("persisted", False)
+    stage_name = state.get("stage", "arguments")
+    fields = {
+        "finalized": True,
+        "completed": False,
+        "stage": stage_name,
+        "exception_type": type(exc).__name__,
+        "frames": frames,
+        "outcome_values_persisted": bool(state.get("persisted", False)),
+        "finished_at": datetime.now(UTC).isoformat(timespec="seconds"),
+    }
+    if attempt_path is not None and attempt_path.is_file():
+        _merge_receipt(attempt_path, **fields)
+        return
+    attempt = next_attempt_number(attempt_dir)
+    receipt = {
+        "schema": ATTEMPT_SCHEMA,
+        "study_id": STUDY_ID,
+        "attempt": attempt,
+        "stage": stage_name,
+        "code_sha": code_sha,
+        "started_at": datetime.now(UTC).isoformat(timespec="seconds"),
+        "finalized": True,
+        "completed": False,
+        "outcome_stage_started": stage_name in OUTCOME_STAGES,
+        "outcome_values_persisted": bool(state.get("persisted", False)),
+        "exception_type": type(exc).__name__,
+        "frames": frames,
+        "finished_at": fields["finished_at"],
+    }
+    write_receipt(attempt_dir, receipt)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -973,7 +1089,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--code-sha")
     parser.add_argument("--junit", type=Path)
-    parser.add_argument("--abort-dir", type=Path)
     args = parser.parse_args(argv)
     if args.verify_only:
         try:
@@ -982,31 +1097,36 @@ def main(argv: Sequence[str] | None = None) -> int:
         except Exception as exc:
             print(f"R1-B study refused: {exc}", file=sys.stderr)
             return 2
-    state: dict[str, Any] = {"stage": "arguments", "persisted": False}
+    state: dict[str, Any] = {"stage": "arguments", "persisted": False, "attempt_path": None}
+    attempt_dir = ATTEMPT_ROOT / "attempts"
     try:
         if None in (args.input_dir, args.manifest, args.terminal_root, args.output_dir,
-                    args.code_sha, args.junit, args.abort_dir):
-            raise ValueError("full_run_requires_input_manifest_terminal_output_code_sha_junit_abort_dir")
+                    args.code_sha, args.junit):
+            raise ValueError("full_run_requires_input_manifest_terminal_output_code_sha_junit")
         with no_network():
             done = execute(input_dir=args.input_dir, manifest=args.manifest,
                            terminal_root=args.terminal_root, output_dir=args.output_dir,
-                           code_sha=args.code_sha, junit=args.junit, abort_dir=args.abort_dir,
+                           code_sha=args.code_sha, junit=args.junit,
                            state=state)
         print(json.dumps(done, sort_keys=True))
         return 0
-    except Exception as exc:
+    except BaseException as exc:
+        _finalize_attempt_on_failure(
+            attempt_dir=attempt_dir,
+            attempt_path=state.get("attempt_path"),
+            state=state,
+            exc=exc,
+            code_sha=args.code_sha,
+        )
         reached = state["stage"]
-        if args.abort_dir is not None:
-            write_abort(args.abort_dir, exc=exc, stage=reached, code_sha=args.code_sha,
-                        persisted=state["persisted"])
-        # Message text is printed only where it cannot carry a market value: before any
-        # market input is read, or when it is one of this runner's own refusal codes.
         text = str(exc)
         if reached in PRE_INPUT_STAGES or (reached not in OUTCOME_STAGES
                                            and _REFUSAL_CODE.fullmatch(text)):
             print(f"R1-B study refused: {text}", file=sys.stderr)
         else:
             print(f"R1-B study aborted during {reached}: {type(exc).__name__}", file=sys.stderr)
+        if not isinstance(exc, Exception):
+            raise
         return 2
 
 
