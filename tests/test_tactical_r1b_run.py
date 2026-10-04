@@ -863,7 +863,16 @@ def test_t5d_aggregate_abort_blocks_same_code_sha(world, monkeypatch, tmp_path, 
     monkeypatch.setattr(s.agg, "summarize", real)
     alt_sha = "b" * 40
     junit_b = _junit(tmp_path / "junit_b.xml", suite=alt_sha)
-    assert s.main(_argv(world, _out_dir(tmp_path, "run3"), code_sha=alt_sha, junit=junit_b)) == 0
+    init_path = s.ROOT / "tests/__init__.py"
+    backup = init_path.read_bytes() if init_path.is_file() else b""
+    init_path.write_bytes(backup + b"\n")
+    try:
+        assert s.main(_argv(world, _out_dir(tmp_path, "run3"), code_sha=alt_sha, junit=junit_b)) == 0
+    finally:
+        if backup:
+            init_path.write_bytes(backup)
+        elif init_path.is_file():
+            init_path.unlink()
     receipt = json.loads((tmp_path / "attempts/attempt-003.json").read_text())
     assert receipt["stage"] not in s.PRE_INPUT_STAGES or receipt.get("completed")
 
@@ -1235,3 +1244,141 @@ def test_t8f_test_file_not_at_reviewed_head_refuses(world, monkeypatch, tmp_path
     monkeypatch.setattr(s, "_reviewed_blob_sha256", fake)
     assert s.main(_argv(world, _out_dir(tmp_path))) == 2
     assert f"code_identity_not_at_reviewed_head:{bad_path}" in capsys.readouterr().err
+
+
+# --------------------------------------------------------------------------- repair round 1 (t9)
+
+def test_t9a_attempt_root_ignores_home(world, monkeypatch, tmp_path):
+    import argparse
+    import os
+    import pwd
+
+    fake_home = tmp_path / "fakehome"
+    fake_home.mkdir()
+    monkeypatch.setenv("HOME", str(fake_home))
+    pw_home = Path(pwd.getpwuid(os.getuid()).pw_dir)
+    expected = (pw_home / ".mastermind" / "tti_r1b" / s.STUDY_ID).resolve()
+    args = argparse.Namespace(attempt_root=None)
+    assert s.attempt_root(args) == (expected, "passwd_home")
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    out = _out_dir(tmp_path)
+    assert s.main(_argv(world, out)) == 0
+    result = json.loads((out / "result.json").read_text())
+    assert result["attempt_root"] == str(tmp_path.resolve())
+    assert result["attempt_root_source"] == "override"
+
+
+def test_t9b_digest_rerun(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    attempt_dir = tmp_path / "attempts"
+    attempt_dir.mkdir(parents=True)
+    code_files = s._loaded_root_modules()
+    pinned = s._pinned_test_blobs_on_disk(CODE_SHA)
+    digest = s.code_digest(code_files, pinned)
+    (attempt_dir / "attempt-001.json").write_text(json.dumps({
+        "schema": s.ATTEMPT_SCHEMA, "study_id": s.STUDY_ID, "attempt": 1,
+        "stage": "aggregate", "code_sha": "a" * 40, "code_digest": digest,
+        "outcome_values_persisted": False, "finalized": True,
+    }))
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    assert "rerun_without_reviewed_fix" in capsys.readouterr().err
+    init_path = s.ROOT / "tests/__init__.py"
+    backup = init_path.read_bytes() if init_path.is_file() else b""
+    init_path.write_bytes(backup + b"\n")
+    try:
+        assert s.main(_argv(world, _out_dir(tmp_path, "run2"))) == 0
+    finally:
+        if backup:
+            init_path.write_bytes(backup)
+        elif init_path.is_file():
+            init_path.unlink()
+
+
+def test_t9c_pre_input_abort_does_not_block(world, monkeypatch, tmp_path):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    attempt_dir = tmp_path / "attempts"
+    attempt_dir.mkdir(parents=True)
+    digest = s.code_digest(s._loaded_root_modules(), s._pinned_test_blobs_on_disk(CODE_SHA))
+    (attempt_dir / "attempt-001.json").write_text(json.dumps({
+        "schema": s.ATTEMPT_SCHEMA, "study_id": s.STUDY_ID, "attempt": 1,
+        "stage": "admission", "code_sha": CODE_SHA, "code_digest": digest,
+        "outcome_values_persisted": False, "finalized": True,
+        "exception_type": "ValueError",
+    }))
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 0
+
+
+def test_t9d_env_scrub(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    monkeypatch.setenv(
+        "PYTEST_ADDOPTS",
+        "--deselect tests/test_tactical_r1b_run.py::test_t8a_suite_name_mismatch_refuses_at_arguments",
+    )
+    collected = _REAL_COLLECTED_TEST_IDS(list(s.TEST_FILES))
+    target = "tests.test_tactical_r1b_run::test_t8a_suite_name_mismatch_refuses_at_arguments"
+    assert target in collected
+    monkeypatch.setattr(s, "_collected_test_ids", _REAL_COLLECTED_TEST_IDS)
+    expected = _REAL_COLLECTED_TEST_IDS(list(s.TEST_FILES))
+    subset = sorted(expected)[1:]
+    cases = "".join(
+        f'<testcase classname="{nodeid.split("::", 1)[0]}" name="{nodeid.split("::", 1)[1]}"/>'
+        for nodeid in subset
+    )
+    junit = tmp_path / "short.xml"
+    junit.write_text(
+        f'<?xml version="1.0"?><testsuites><testsuite name="{CODE_SHA}">{cases}</testsuite></testsuites>'
+    )
+    assert s.main(_argv(world, _out_dir(tmp_path), junit=junit)) == 2
+    assert "test_receipt_case_set_mismatch" in capsys.readouterr().err
+
+
+def test_t9e_conftest_pin(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    real = s._reviewed_blob_sha256
+
+    def fake(code_sha, name):
+        if name == "tests/conftest.py":
+            return "0" * 64
+        return real(code_sha, name)
+
+    monkeypatch.setattr(s, "_reviewed_blob_sha256", fake)
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    assert "code_identity_not_at_reviewed_head:tests/conftest.py" in capsys.readouterr().err
+
+
+def test_t9f_collision(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    attempt_dir = tmp_path / "attempts"
+    attempt_dir.mkdir(parents=True)
+    (attempt_dir / "attempt-001.json").write_text("{}")
+    monkeypatch.setattr(s, "next_attempt_number", lambda _d: 1)
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    assert "attempt_number_collision:attempt-001.json" in capsys.readouterr().err
+
+
+def test_t9g_unfinalised(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    attempt_dir = tmp_path / "attempts"
+    attempt_dir.mkdir(parents=True)
+    (attempt_dir / "attempt-001.json").write_text(json.dumps({
+        "schema": s.ATTEMPT_SCHEMA, "study_id": s.STUDY_ID, "attempt": 1,
+        "stage": "outcomes", "code_sha": CODE_SHA,
+        "outcome_values_persisted": None, "finalized": True,
+    }))
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    assert "prior_attempt_unfinalized:attempt-001.json" in capsys.readouterr().err
+    (attempt_dir / "attempt-001.json").write_text(json.dumps({
+        "schema": s.ATTEMPT_SCHEMA, "study_id": s.STUDY_ID, "attempt": 1,
+        "stage": "admission", "code_sha": CODE_SHA,
+        "outcome_values_persisted": None, "finalized": True,
+    }))
+    assert s.main(_argv(world, _out_dir(tmp_path, "run2"))) == 0
+
+
+def test_t9h_schema(world, monkeypatch, tmp_path):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    out = _out_dir(tmp_path)
+    assert s.main(_argv(world, out)) == 0
+    result = json.loads((out / "result.json").read_text())
+    assert result["schema"] == "mastermind.tti.r1b.result.v5"
+    assert "code_digest" in result and "attempt_root" in result

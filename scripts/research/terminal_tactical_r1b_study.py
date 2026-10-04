@@ -5,6 +5,17 @@ Admission is fail-closed and precedes every market-input read.  This consumer
 uses existing D0/Radar owners; it opens no network/provider path and has no live
 rank, alert, sizing, event-emission, options or trade authority.
 
+The attempt ledger lives under a disclosed local path (default: passwd-database
+home, not ``$HOME``).  One registered outcome per study id is enforced against
+that ledger; the operator anchors receipts externally (for example the PR
+carrier).  This runner does not claim stronger off-machine enforcement.
+
+If a run dies after the outcome stage begins, inspect the attempt receipt:
+``outcome_values_persisted`` stays ``null`` and a later run is refused with
+``prior_attempt_unfinalized`` until the holding authority (Sol) authorises a
+fresh study id.  A receipt that never left pre-input admission does not block.
+A receipt with ``outcome_values_persisted: true`` blocks forever by design.
+
 The registered test receipt must be produced at the reviewed commit with::
 
     pytest -o junit_suite_name=<code_sha> --junitxml=<file> \\
@@ -21,6 +32,7 @@ import json
 import math
 import os
 import platform
+import pwd
 import re
 import socket
 import statistics
@@ -66,8 +78,8 @@ TERMINAL_PINNED_FILES = (
 RESULT_PATH = ROOT / "research/species/tti_r1b/RESULT_V4.json"
 REPORT_PATH = ROOT / "research/species/TTI_R1B_V4_REPORT.md"
 D0_MANIFEST_SHA256 = "59c50ed405bd76c083a1d2beb20cf25edd6f4bd892c3e55fd38d21a66bef642b"
-RESULT_SCHEMA = "mastermind.tti.r1b.result.v4"
-ATTEMPT_ROOT = Path.home() / ".mastermind" / "tti_r1b" / STUDY_ID
+RESULT_SCHEMA = "mastermind.tti.r1b.result.v5"
+ATTEMPT_ROOT = Path(pwd.getpwuid(os.getuid()).pw_dir) / ".mastermind" / "tti_r1b" / STUDY_ID
 ATTEMPT_SCHEMA = "mastermind.tti.r1b.attempt.v4"
 CODE_FILES = (
     "scripts/research/terminal_tactical_r1b_study.py",
@@ -93,7 +105,13 @@ REQUIRED_TEST_MODULES = (
     "tests.test_tactical_r1b_run",
 )
 TEST_FILES = tuple(m.replace(".", "/") + ".py" for m in REQUIRED_TEST_MODULES)
+TEST_PINNED_FILES = TEST_FILES + ("tests/conftest.py", "tests/__init__.py")
 _COLLECT_LINE = re.compile(r"^(tests/\S+?\.py)::(.+)$")
+_REFUSAL_STDERR = re.compile(r"^(code_identity_[a-z_]+|terminal_dependency_[a-z_]+)(:|$)")
+_COLLECT_ENV_SKIP = frozenset({
+    "POLYGON_API_KEY", "PYTEST_ADDOPTS", "PYTEST_PLUGINS", "PYTHONPATH",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD",
+})
 # One of this runner's own refusal codes: lower-case words joined by underscores, then an
 # optional ":SYMBOL".  A bare number or free text never matches.
 _REFUSAL_CODE = re.compile(r"[a-z][a-z0-9]*(_[a-z0-9]+)+(:[A-Z][A-Z0-9.]{0,9})?")
@@ -107,6 +125,56 @@ _STATUS_FIELDS = ("touch", "lod_status", "candidate_lod_status", "candidate_lod_
 
 def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _passwd_home_attempt_root() -> Path:
+    return Path(pwd.getpwuid(os.getuid()).pw_dir) / ".mastermind" / "tti_r1b" / STUDY_ID
+
+
+def attempt_root(args: argparse.Namespace | Any) -> tuple[Path, str]:
+    """Resolved attempt ledger root and how it was chosen."""
+    cli = getattr(args, "attempt_root", None)
+    if cli is not None:
+        return Path(cli).resolve(), "cli"
+    root = ATTEMPT_ROOT.resolve()
+    if root != _passwd_home_attempt_root().resolve():
+        return root, "override"
+    return root, "passwd_home"
+
+
+def code_digest(code_files: Mapping[str, str], pinned_test_blobs: Mapping[str, str]) -> str:
+    lines: list[str] = []
+    for path in sorted(set(code_files) | set(pinned_test_blobs)):
+        blob = code_files.get(path) if path in code_files else pinned_test_blobs[path]
+        lines.append(f"{path}\0{blob}\n")
+    return hashlib.sha256("".join(lines).encode("utf-8")).hexdigest()
+
+
+def _pinned_test_blob(name: str, code_sha: str) -> str:
+    path = ROOT / name
+    if path.is_file():
+        return _sha(path)
+    proc = subprocess.run(
+        ["git", "-C", str(ROOT), "show", f"{code_sha}:{name}"],
+        capture_output=True,
+    )
+    if proc.returncode != 0:
+        raise ValueError(f"code_identity_not_at_reviewed_head:{name}")
+    return hashlib.sha256(proc.stdout).hexdigest()
+
+
+def _pinned_test_blobs_on_disk(code_sha: str) -> dict[str, str]:
+    return {name: _pinned_test_blob(name, code_sha) for name in TEST_PINNED_FILES}
+
+
+def _pytest_config_path() -> Path | None:
+    ini = ROOT / "pytest.ini"
+    if ini.is_file():
+        return ini
+    toml = ROOT / "pyproject.toml"
+    if toml.is_file():
+        return toml
+    return None
 
 
 def _terminal_dependency_probe(terminal_root: Path, sha: str) -> dict[str, Any]:
@@ -460,9 +528,15 @@ def _digest(raw: bytes) -> str:
 
 
 def _collected_test_ids(files: Sequence[str]) -> set[str]:
-    env = {k: v for k, v in os.environ.items() if k != "POLYGON_API_KEY"}
+    env = {k: v for k, v in os.environ.items() if k not in _COLLECT_ENV_SKIP}
+    cmd: list[str] = [sys.executable, "-m", "pytest", "-p", "no:cacheprovider", "--collect-only", "-q",
+                      f"--rootdir={ROOT}"]
+    config = _pytest_config_path()
+    if config is not None:
+        cmd.extend(["-c", str(config)])
+    cmd.extend(files)
     proc = subprocess.run(
-        [sys.executable, "-m", "pytest", "-p", "no:cacheprovider", "--collect-only", "-q", *files],
+        cmd,
         cwd=str(ROOT),
         capture_output=True,
         env=env,
@@ -487,7 +561,11 @@ def _collected_test_ids(files: Sequence[str]) -> set[str]:
 
 
 def junit_receipt(junit: Path, code_sha: str) -> dict[str, Any]:
-    """The test result for every test in the supplied JUnit file; refuse anything but all-passed."""
+    """JUnit receipt for every collected case; refuse anything but all-passed.
+
+    The suite ``name`` is an operator-set label (conventionally the reviewed commit);
+    trust comes from scrubbed collection, pinned conftest/init, and case-set equality.
+    """
     raw = junit.read_bytes()
     root = ElementTree.fromstring(raw)
     suites = [el for el in root.iter("testsuite") if el.tag == "testsuite"]
@@ -511,9 +589,9 @@ def junit_receipt(junit: Path, code_sha: str) -> dict[str, Any]:
             "modules": modules, "cases": sorted(name for name, _ in cases)}
 
 
-def load_inputs(input_dir: Path, manifest: Path, terminal_root: Path,
-                cfg: Mapping[str, Any]) -> dict[str, Any]:
-    """Read the pinned D0 capture through the accepted R1-A loader.  Local files only."""
+def _admission_input_pins(manifest: Path, terminal_root: Path,
+                          cfg: Mapping[str, Any]) -> tuple[str, str, dict[str, Any]]:
+    """Manifest and Terminal pins before any licensed bar is read (pre-input admission)."""
     manifest_sha = _sha(manifest)
     if manifest_sha != D0_MANIFEST_SHA256:
         raise ValueError("input_manifest_sha256_mismatch")
@@ -528,6 +606,17 @@ def load_inputs(input_dir: Path, manifest: Path, terminal_root: Path,
     for path in TERMINAL_PINNED_FILES:
         if _sha(terminal_root / path) != probe["blobs"][path]:
             raise ValueError(f"terminal_dependency_blob_mismatch:{path}")
+    return manifest_sha, head, probe
+
+
+def load_inputs(input_dir: Path, manifest: Path, terminal_root: Path,
+                cfg: Mapping[str, Any], *, pins: tuple[str, str, dict[str, Any]] | None = None
+                ) -> dict[str, Any]:
+    """Read the pinned D0 capture through the accepted R1-A loader.  Local files only."""
+    if pins is None:
+        manifest_sha, head, probe = _admission_input_pins(manifest, terminal_root, cfg)
+    else:
+        manifest_sha, head, probe = pins
     d0 = r1._load_terminal_module(terminal_root)
     calendar = d0.CalendarProjection.load(terminal_root / "terminal/lib/usEquitySessionProjection.json")
     rows = r1._manifest_map(manifest)
@@ -778,6 +867,21 @@ def next_attempt_number(attempt_dir: Path) -> int:
     return highest + 1
 
 
+def create_attempt_receipt_exclusive(attempt_dir: Path, receipt: Mapping[str, Any]) -> Path:
+    attempt_dir.mkdir(parents=True, exist_ok=True)
+    attempt = int(receipt["attempt"])
+    final = attempt_dir / f"attempt-{attempt:03d}.json"
+    payload = json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+    try:
+        with open(final, "x", encoding="utf-8") as handle:
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+    except FileExistsError:
+        raise ValueError(f"attempt_number_collision:{final.name}")
+    return final
+
+
 def write_receipt(attempt_dir: Path, receipt: Mapping[str, Any]) -> Path:
     attempt_dir.mkdir(parents=True, exist_ok=True)
     attempt = int(receipt["attempt"])
@@ -925,9 +1029,10 @@ def _markdown(result: Mapping[str, Any]) -> str:
 
 
 def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir: Path,
-            code_sha: str, junit: Path, state: dict[str, Any]) -> dict[str, Any]:
+            code_sha: str, junit: Path, state: dict[str, Any],
+            run_root: Path, run_root_source: str) -> dict[str, Any]:
     """The single registered run.  ``state`` reports the stage reached to the attempt recorder."""
-    attempt_dir = ATTEMPT_ROOT / "attempts"
+    attempt_dir = run_root / "attempts"
     attempt = next_attempt_number(attempt_dir)
     started_at = datetime.now(UTC).isoformat(timespec="seconds")
     receipt: dict[str, Any] = {
@@ -936,6 +1041,7 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
         "attempt": attempt,
         "stage": "arguments",
         "code_sha": code_sha,
+        "attempt_root": str(run_root.resolve()),
         "started_at": started_at,
         "finalized": False,
         "completed": False,
@@ -944,7 +1050,7 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
         "exception_type": None,
         "frames": [],
     }
-    attempt_path = write_receipt(attempt_dir, receipt)
+    attempt_path = create_attempt_receipt_exclusive(attempt_dir, receipt)
     state["attempt_path"] = attempt_path
     state["persisted"] = False
     state["stage"] = "arguments"
@@ -960,7 +1066,7 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
     stage("arguments")
     if not re.fullmatch(r"[0-9a-f]{40}", code_sha or ""):
         raise ValueError("code_sha_invalid")
-    expected_output_root = ATTEMPT_ROOT / "output"
+    expected_output_root = run_root / "output"
     if output_dir.parent.resolve() != expected_output_root.resolve():
         raise ValueError("output_directory_outside_run_root")
     output_dir.parent.mkdir(parents=True, exist_ok=True)
@@ -975,11 +1081,12 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
     if RESULT_PATH.exists() or REPORT_PATH.exists():
         raise ValueError("results_artifact_exists")
     prior = _prior_receipts(attempt_dir, current_attempt=attempt)
-    if any(receipt.get("outcome_values_persisted") is not False for receipt in prior):
+    if any(receipt.get("outcome_values_persisted") is True for receipt in prior):
         raise ValueError("registered_run_already_persisted")
-    if any(receipt.get("stage") not in PRE_INPUT_STAGES and receipt.get("code_sha") == code_sha
-           for receipt in prior):
-        raise ValueError("rerun_without_reviewed_fix")
+    for old in prior:
+        if old.get("outcome_values_persisted") is None and old.get("stage") in OUTCOME_STAGES:
+            num = int(old.get("attempt", 0))
+            raise ValueError(f"prior_attempt_unfinalized:attempt-{num:03d}.json")
     tests = junit_receipt(junit, code_sha)
     expected = _collected_test_ids(TEST_FILES)
     if set(tests["cases"]) != expected:
@@ -988,9 +1095,16 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
         "\n".join(sorted(expected)).encode("utf-8")
     ).hexdigest()
     tests["collected_from"] = list(TEST_FILES)
-    for path in TEST_FILES:
-        if _reviewed_blob_sha256(code_sha, path) != _sha(ROOT / path):
+    pinned_blobs = _pinned_test_blobs_on_disk(code_sha)
+    for path in TEST_PINNED_FILES:
+        if _reviewed_blob_sha256(code_sha, path) != pinned_blobs[path]:
             raise ValueError(f"code_identity_not_at_reviewed_head:{path}")
+    code_files = _loaded_root_modules()
+    digest = code_digest(code_files, pinned_blobs)
+    _merge_receipt(attempt_path, code_digest=digest)
+    if any(receipt.get("stage") not in PRE_INPUT_STAGES
+           and receipt.get("code_digest") == digest for receipt in prior):
+        raise ValueError("rerun_without_reviewed_fix")
 
     stage("admission")
     admitted = verify_admission()
@@ -998,15 +1112,15 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
     cfg = json.loads(config_bytes)
     if int(cfg["bootstrap_repetitions"]) != 4000 or int(cfg["seed"]) != 20260917:
         raise ValueError("frozen_bootstrap_identity_mismatch")
-    code_files = _loaded_root_modules()
     for name in CODE_FILES:
         if name not in code_files:
             raise ValueError(f"code_identity_missing_required:{name}")
-    for name, digest in code_files.items():
-        if _reviewed_blob_sha256(code_sha, name) != digest:
+    for name, blob in code_files.items():
+        if _reviewed_blob_sha256(code_sha, name) != blob:
             raise ValueError(f"code_identity_not_at_reviewed_head:{name}")
     if _sha(RULINGS_PATH) != RULINGS_SHA256:
         raise ValueError("rulings_sha_mismatch")
+    input_pins = _admission_input_pins(manifest, terminal_root, cfg)
     identity = {
         "study_id": STUDY_ID, "code_sha": code_sha,
         "prereg_sha256": admitted["prereg_sha256"], "config_sha256": admitted["config_sha256"],
@@ -1021,7 +1135,7 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
     }
 
     stage("inputs")
-    loaded = load_inputs(input_dir, manifest, terminal_root, cfg)
+    loaded = load_inputs(input_dir, manifest, terminal_root, cfg, pins=input_pins)
     frames, calendar = loaded["frames"], loaded["calendar"]
     sessions = scheduled_sessions(calendar, cfg)
 
@@ -1117,6 +1231,9 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
     private = {"rows.jsonl": _jsonl(rows), "outcomes.jsonl": _jsonl(outcomes)}
     result = {
         "schema": RESULT_SCHEMA, "study_id": STUDY_ID,
+        "attempt_root": str(run_root.resolve()),
+        "attempt_root_source": run_root_source,
+        "code_digest": digest,
         "authority": "retrospective_research_only",
         "may_rank": False, "may_alert": False, "may_size": False, "may_trade": False,
         "research_admission": cfg["research_admission"],
@@ -1241,6 +1358,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--code-sha")
     parser.add_argument("--junit", type=Path)
+    parser.add_argument("--attempt-root", type=Path, default=None, dest="attempt_root")
     args = parser.parse_args(argv)
     if args.verify_only:
         try:
@@ -1250,7 +1368,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"R1-B study refused: {exc}", file=sys.stderr)
             return 2
     state: dict[str, Any] = {"stage": "arguments", "persisted": False, "attempt_path": None}
-    attempt_dir = ATTEMPT_ROOT / "attempts"
+    run_root, run_root_source = attempt_root(args)
+    attempt_dir = run_root / "attempts"
     try:
         if None in (args.input_dir, args.manifest, args.terminal_root, args.output_dir,
                     args.code_sha, args.junit):
@@ -1259,7 +1378,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             done = execute(input_dir=args.input_dir, manifest=args.manifest,
                            terminal_root=args.terminal_root, output_dir=args.output_dir,
                            code_sha=args.code_sha, junit=args.junit,
-                           state=state)
+                           state=state, run_root=run_root, run_root_source=run_root_source)
         print(json.dumps(done, sort_keys=True))
         return 0
     except BaseException as exc:
@@ -1272,8 +1391,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         reached = state["stage"]
         text = str(exc)
-        if (reached in PRE_INPUT_STAGES or text.startswith("code_identity_")
-                or text.startswith("terminal_dependency_")
+        if (reached in PRE_INPUT_STAGES or _REFUSAL_STDERR.match(text)
                 or (reached not in OUTCOME_STAGES and _REFUSAL_CODE.fullmatch(text))):
             print(f"R1-B study refused: {text}", file=sys.stderr)
         else:
