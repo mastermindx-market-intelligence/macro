@@ -153,8 +153,17 @@ def _row_bounds(df) -> tuple[str | None, str | None]:
     return s.min().isoformat(), s.max().isoformat()
 
 
-def _write_dataframe_export(df, target: Path, *, source: str, source_role: SourceRole,
-                            source_symbol: str, state: PartitionState) -> PartitionManifest:
+def _write_dataframe_export(
+    df,
+    target: Path,
+    *,
+    source: str,
+    source_role: SourceRole,
+    source_symbol: str,
+    state: PartitionState,
+    request_start: str | None = None,
+    request_end: str | None = None,
+) -> PartitionManifest:
     target.parent.mkdir(parents=True, exist_ok=True)
     partial = target.with_suffix(target.suffix + ".partial")
     if partial.exists():
@@ -175,20 +184,31 @@ def _write_dataframe_export(df, target: Path, *, source: str, source_role: Sourc
         retrieved_at_utc=utc_now(),
         min_timestamp_utc=lo,
         max_timestamp_utc=hi,
+        request_start=request_start,
+        request_end=request_end,
     )
     write_manifest_atomic(target, manifest)
     return manifest
 
 
-def _manifest_state(target: Path) -> PartitionState | None:
+def _read_manifest(target: Path) -> PartitionManifest | None:
     receipt = manifest_path(target)
     if not receipt.is_file():
         return None
     try:
-        return PartitionState(PartitionManifest.from_json(
-            receipt.read_text(encoding="utf-8")
-        ).state)
+        manifest = PartitionManifest.from_json(receipt.read_text(encoding="utf-8"))
     except Exception:
+        return None
+    return manifest
+
+
+def _manifest_state(target: Path) -> PartitionState | None:
+    manifest = _read_manifest(target)
+    if manifest is None:
+        return None
+    try:
+        return PartitionState(manifest.state)
+    except ValueError:
         return None
 
 
@@ -339,6 +359,8 @@ def cmd_backfill_lse(args: argparse.Namespace) -> int:
         source_role=SourceRole.VENDOR_CONTINUOUS,
         source_symbol=args.symbol,
         state=desired_state,
+        request_start=args.start,
+        request_end=args.end,
     )
     print(manifest.to_json(), end="")
     return 0
@@ -370,6 +392,55 @@ def _normalize_lse_frame(df, source_symbol: str):
     return out
 
 
+def _parse_utc_boundary(value: str | None) -> datetime | None:
+    if value is None:
+        return None
+    raw = str(value).strip()
+    if not raw:
+        return None
+    if len(raw) == 10:
+        raw += "T00:00:00+00:00"
+    elif raw.endswith("Z"):
+        raw = raw[:-1] + "+00:00"
+    try:
+        dt = datetime.fromisoformat(raw)
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+def _day_is_fully_covered(day: str, manifests: list[PartitionManifest]) -> bool:
+    """True only when FINAL raw request windows cover the full UTC day without gaps."""
+    day_start = datetime.fromisoformat(day).replace(tzinfo=timezone.utc)
+    day_end = day_start + timedelta(days=1)
+    spans: list[tuple[datetime, datetime]] = []
+    for manifest in manifests:
+        if manifest.state != PartitionState.FINAL.value:
+            continue
+        start = _parse_utc_boundary(manifest.request_start)
+        end = _parse_utc_boundary(manifest.request_end)
+        if start is None or end is None or end <= start:
+            continue
+        left = max(start, day_start)
+        right = min(end, day_end)
+        if right > left:
+            spans.append((left, right))
+    if not spans:
+        return False
+    spans.sort()
+    cursor = day_start
+    for left, right in spans:
+        if left > cursor:
+            return False
+        if right > cursor:
+            cursor = right
+        if cursor >= day_end:
+            return True
+    return False
+
+
 def cmd_normalize_lse(args: argparse.Namespace) -> int:
     pd = _pandas()
     root = storage_root(args.root)
@@ -379,31 +450,51 @@ def cmd_normalize_lse(args: argparse.Namespace) -> int:
     if not paths:
         raise SystemExit(f"no raw LSE exports found under {source_dir}")
 
-    written = 0
+    by_day: dict[str, list] = {}
+    manifests_by_day: dict[str, list[PartitionManifest]] = {}
     for raw in paths:
         if not _valid_receipted(root, raw):
             raise SystemExit(f"raw source partition has no valid receipt: {raw}")
-        raw_state = _manifest_state(raw)
-        if raw_state is None:
-            raise SystemExit(f"raw source partition state is unreadable: {raw}")
+        manifest = _read_manifest(raw)
+        if manifest is None:
+            raise SystemExit(f"raw source partition manifest is unreadable: {raw}")
         df = pd.read_parquet(raw)
         norm = _normalize_lse_frame(df, args.symbol)
         if norm.empty:
             continue
         norm["_date"] = norm["timestamp_utc"].dt.strftime("%Y-%m-%d")
         for day, part in norm.groupby("_date", sort=True):
-            target = normalized_day_path(root, "lse", args.identity, day)
-            if _valid_receipted(root, target, raw_state) and not args.force:
-                continue
-            frame = part.drop(columns=["_date"]).reset_index(drop=True)
-            _write_dataframe_export(
-                frame, target,
-                source="lse",
-                source_role=SourceRole.VENDOR_CONTINUOUS,
-                source_symbol=args.symbol,
-                state=raw_state,
-            )
-            written += 1
+            by_day.setdefault(day, []).append(part.drop(columns=["_date"]))
+            manifests_by_day.setdefault(day, []).append(manifest)
+
+    written = 0
+    for day in sorted(by_day):
+        frame = pd.concat(by_day[day], ignore_index=True)
+        frame = frame.sort_values("timestamp_utc")
+        frame = frame.drop_duplicates(
+            subset=["timestamp_utc", "price_raw", "volume"], keep="last"
+        ).reset_index(drop=True)
+        desired_state = (
+            PartitionState.FINAL
+            if _day_is_fully_covered(day, manifests_by_day[day])
+            else PartitionState.PROVISIONAL
+        )
+        target = normalized_day_path(root, "lse", args.identity, day)
+        if (
+            desired_state is PartitionState.FINAL
+            and _valid_receipted(root, target, PartitionState.FINAL)
+            and not args.force
+        ):
+            continue
+        _write_dataframe_export(
+            frame,
+            target,
+            source="lse",
+            source_role=SourceRole.VENDOR_CONTINUOUS,
+            source_symbol=args.symbol,
+            state=desired_state,
+        )
+        written += 1
     print(json.dumps({"status": "ok", "daily_partitions_written": written}))
     return 0
 
@@ -435,7 +526,11 @@ def cmd_derive_bars(args: argparse.Namespace) -> int:
         bars = bars.rename(columns={"_ts": "window_start_utc"})
         day = path.parent.name.split("=", 1)[-1]
         target = derived_bar_path(root, args.instrument, args.freq, day)
-        if _valid_receipted(root, target, input_state) and not args.force:
+        if (
+            input_state is PartitionState.FINAL
+            and _valid_receipted(root, target, PartitionState.FINAL)
+            and not args.force
+        ):
             continue
         _write_dataframe_export(
             bars, target,
