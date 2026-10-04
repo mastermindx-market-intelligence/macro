@@ -19,6 +19,7 @@ from research.options_estate.ptse_new_entry_context import (
     PTSENewEntryContextError,
     build_new_entry_context,
 )
+from research.options_estate.ptse_options_observation import OptionsRootBinding
 from research.options_estate.ptse_owner_observation import OwnerArtifactBinding
 
 
@@ -137,6 +138,81 @@ def owner_binding(owner: str, name: str, *, grade="SYNTHETIC") -> OwnerArtifactB
         calculation_version="fixture:" + name + "-v1",
         limitations=("Synthetic fixture; no market or decision authority.",),
     )
+
+
+OPTIONS_IDENTITY_REF = ref("AAPL-options-root-map", "identity-owner")
+OPTIONS_ROOT_BINDING = OptionsRootBinding(
+    root="AAPL",
+    security_id="SEC:US-XNAS-AAPL",
+    identity_ref=OPTIONS_IDENTITY_REF,
+)
+
+
+def options_binding(name: str, *, grade="SYNTHETIC") -> OwnerArtifactBinding:
+    return OwnerArtifactBinding(
+        owner_ref="options-owner",
+        artifact_ref=ref(name, "options-owner"),
+        known_at_earliest="2026-09-18T19:29:50Z",
+        known_at_latest="2026-09-18T19:29:50Z",
+        known_at_precision="EXACT",
+        known_at_evidence_ref=ref(name + "-known", "options-owner"),
+        economic_time="2026-09-18T19:29:45Z",
+        valid_until="2026-09-18T20:30:00Z",
+        evidence_grade=grade,
+        population_ref=OPTIONS_IDENTITY_REF,
+        instrument_id="SEC:US-XNAS-AAPL",
+        session_scope="REGULAR",
+        calculation_version="fixture:" + name + "-v1",
+        limitations=("Synthetic Options fixture; no source or decision authority.",),
+    )
+
+
+def options_vol() -> dict:
+    return {
+        "schema": "options_hub.vol/v1",
+        "asof": SESSION,
+        "root": "AAPL",
+        "iv_rank_252": 72.5,
+        "iv_rank_all": 61.2,
+        "coverage_days_all": 812,
+        "since_all": "2023-07-03",
+        "atm_iv": 34.2,
+        "iv_52w_hi": 55.0,
+        "iv_52w_lo": 18.1,
+        "rv20": 27.4,
+        "vrp": 6.8,
+        "term": [],
+        "smile": [],
+        "history": [],
+        "coverage": {"n_days": 812, "since": "2023-07-03"},
+    }
+
+
+def options_gex() -> dict:
+    return {
+        "schema": "options_hub.gex/v1",
+        "asof": SESSION,
+        "root": "AAPL",
+        "spot_ref": 42.70,
+        "net_gex_bn": 0.15,
+        "gamma_flip": 41.90,
+        "profile": [],
+        "call_wall": 45.0,
+        "put_wall": 40.0,
+        "by_strike": [],
+        "by_strike_full_n": 42,
+        "by_delta": [],
+        "by_delta_full_n": 120,
+        "by_expiry": [],
+        "convention": "dealer-sign per engine/gex_model (long-call/short-put)",
+        "coverage": {
+            "n_contracts": 120,
+            "asof": SESSION,
+            "oi_date": "t-1",
+            "n_days": 1,
+            "since": SESSION,
+        },
+    }
 
 
 def market_state() -> dict:
@@ -458,6 +534,118 @@ class PTSENewEntryContextTest(unittest.TestCase):
                 entry_availability=a,
                 binding=b,
             )
+
+    def test_options_are_optional_and_absence_preserves_prior_artifact(self):
+        p = projection()
+        a = availability(p)
+        b = binding(p, a)
+        left = build(p, a, b)
+        right = build_new_entry_context(
+            candidate_projection=p,
+            entry_availability=a,
+            binding=b,
+            market_state=market_state(),
+            market_state_binding=owner_binding("market-state-owner", "market-state"),
+            regime_vector=regime_vector(),
+            regime_vector_binding=owner_binding("regime-vector-owner", "regime-vector"),
+        )
+        self.assertEqual(left.canonical_bytes, right.canonical_bytes)
+
+    def test_options_current_context_attaches_without_authority_or_drivers(self):
+        p = projection()
+        a = availability(p)
+        artifact = build_new_entry_context(
+            candidate_projection=p,
+            entry_availability=a,
+            binding=binding(p, a),
+            market_state=market_state(),
+            market_state_binding=owner_binding("market-state-owner", "market-state"),
+            regime_vector=regime_vector(),
+            regime_vector_binding=owner_binding("regime-vector-owner", "regime-vector"),
+            options_root_binding=OPTIONS_ROOT_BINDING,
+            options_vol=options_vol(),
+            options_vol_binding=options_binding("vol"),
+            options_gex=options_gex(),
+            options_gex_binding=options_binding("gex"),
+        )
+        payload = artifact.to_dict()
+        ids = {f["feature_id"] for f in payload["observation"]["facts"]}
+        self.assertIn("options.vol.atm_iv", ids)
+        self.assertIn("options.gex.gamma_flip", ids)
+        self.assertEqual(payload["assessment"]["drivers"], [])
+        self.assertFalse(any(payload["assessment"]["authority"].values()))
+
+    def test_options_identity_must_bind_the_b3_security(self):
+        p = projection()
+        a = availability(p)
+        with self.assertRaisesRegex(
+            PTSENewEntryContextError,
+            "OPTIONS_SECURITY_BINDING_MISMATCH",
+        ):
+            build_new_entry_context(
+                candidate_projection=p,
+                entry_availability=a,
+                binding=binding(p, a),
+                market_state=market_state(),
+                market_state_binding=owner_binding("market-state-owner", "market-state"),
+                options_root_binding=replace(
+                    OPTIONS_ROOT_BINDING,
+                    security_id="SEC:US-XNAS-MSFT",
+                ),
+                options_vol=options_vol(),
+                options_vol_binding=replace(
+                    options_binding("vol"),
+                    instrument_id="SEC:US-XNAS-MSFT",
+                ),
+            )
+
+    def test_pit_unproven_options_downgrade_whole_observation_and_need_reconstruction(self):
+        p = projection()
+        a = availability(p)
+        b = binding(p, a)
+        with self.assertRaisesRegex(
+            PTSENewEntryContextError,
+            "RECONSTRUCTION_REQUIRED",
+        ):
+            build_new_entry_context(
+                candidate_projection=p,
+                entry_availability=a,
+                binding=b,
+                market_state=market_state(),
+                market_state_binding=owner_binding(
+                    "market-state-owner",
+                    "market-state",
+                    grade="PIT_QUALIFIED_REPLAY",
+                ),
+                options_root_binding=OPTIONS_ROOT_BINDING,
+                options_vol=options_vol(),
+                options_vol_binding=options_binding(
+                    "vol",
+                    grade="RETROSPECTIVE_PIT_UNPROVEN",
+                ),
+            )
+        rebuilt = replace(b, reconstructed_at="2026-09-18T19:30:09Z")
+        artifact = build_new_entry_context(
+            candidate_projection=p,
+            entry_availability=a,
+            binding=rebuilt,
+            market_state=market_state(),
+            market_state_binding=owner_binding(
+                "market-state-owner",
+                "market-state",
+                grade="PIT_QUALIFIED_REPLAY",
+            ),
+            options_root_binding=OPTIONS_ROOT_BINDING,
+            options_vol=options_vol(),
+            options_vol_binding=options_binding(
+                "vol",
+                grade="RETROSPECTIVE_PIT_UNPROVEN",
+            ),
+        )
+        self.assertEqual(
+            artifact.to_dict()["observation"]["evidence_grade"],
+            "RETROSPECTIVE_PIT_UNPROVEN",
+        )
 
     def test_source_inputs_are_not_mutated(self):
         p = projection()
