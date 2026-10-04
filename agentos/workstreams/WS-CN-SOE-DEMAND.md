@@ -5,7 +5,7 @@ objective: >
   First-party source map for the Government/SOE Demand vertical, Grid/Power first.
   Done for C0 = the census and one bounded pilot recommendation exist; no collector,
   no score, no Prophet family.
-status: active
+status: blocked
 program: china-system
 repos: [macro]
 owner: grok-cn-c
@@ -16,6 +16,8 @@ owns_paths:
   - research/china_alpha/censuses/CN-C/
 depends_on:
   - WS:DEFENSE-PROCUREMENT-V3
+blocked_by:
+  - "rights/Data OS owner: issue an explicit CSG C1 use-class ruling before automated collection, retention, or customer-facing display"
 artifacts:
   - research/china_alpha/censuses/CN-C/CN-C_GOV_SOE_DEMAND_SOURCE_MAP.md
   - research/china_alpha/censuses/CN-C/CN-C_PROBE_RECEIPTS_2026-08-19.md
