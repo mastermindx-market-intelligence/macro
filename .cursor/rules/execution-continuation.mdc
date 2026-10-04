@@ -41,9 +41,12 @@ already delegated. Delegated authority never leaks outside its stated scope.
   second worker: route/reconcile through the canonical owner. A bounded worker may
   return BLOCKED to its parent; only a genuinely external final boundary may terminate
   the seat as `EXACT_HUMAN_GATE`, `PLATFORM_FAILURE`, or `EFFECT_UNKNOWN`.
-- `WAITING EXTERNAL -> durable watcher/owner; do useful parallel principal work; do
-  not burn principal capacity polling`. A Stop-hook block during a wait is satisfied
-  by a one-line hold note, never by a fresh poll.
+- `WAITING EXTERNAL -> one asynchronous watcher/owner; immediately do useful parallel
+  principal work; do not burn principal capacity polling`. Pending CI/release freezes only
+  that PR lane. Never run `gh run watch` synchronously in the principal turn and never
+  re-read unchanged pending state to satisfy a Stop hook. Bind exactly one watcher to the
+  exact PR/head/run; its terminal green/merge, genuine red, conflict, or failure event is
+  what returns the owner to that lane.
 - `2 equivalent no-delta cycles -> change tactic/lane/owner`.
 - `accepted work -> DO_NOT_REDO unless materially invalidated`. The material
   invalidator is new contradicting evidence, a changed contract, or an explicit

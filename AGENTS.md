@@ -604,14 +604,19 @@ never abandoned partway and never handed back to the operator to finish:
 6. deploy or wait for the repository's normal deploy lane, then verify the change
    on the real live URL.
 
-**One session owns all six for ordinary work.** There is no earlier "worker done" state — the rule
-that let a session terminate on an armed pull request was REMOVED by the project
-owner on 2026-08-12 ("ur the owner of this project so u keep it until its
-finished, no need for handoff"). It had turned an unfinished job into a
-reported-complete one: a session declared itself done while its pull request sat
-`merge-blocked` on a red check, and the owner had to reopen the work by hand.
-Stopping at a local commit, at an open pull request, or at an armed-but-unmerged
-one is abandoned work, not delivered work.
+**One session remains accountable for all six for ordinary work.** There is no earlier
+"worker done" state and no responsibility handoff merely because a PR is armed. The
+2026-08-12 rule removed the old false-completion path after a session declared itself
+done while its PR sat `merge-blocked` on a red check. **Accountability is not foreground
+occupation, however.** Once a pending CI/release wait is bound to exactly one verified
+background/native watcher or the existing merge sweeper, that PR lane is asynchronous:
+the owning session immediately advances the next independent authorized project lane.
+It returns to the PR only on a terminal green/merge event, a genuine red that requires
+repair, a conflict, or watcher failure/staleness. Do not run `gh run watch` synchronously,
+do not re-read the same pending status to satisfy a Stop hook, and do not spend principal
+reasoning capacity waiting for GitHub. Stopping at a local commit, or claiming an open
+or armed-but-unmerged PR as delivered, is still abandoned/false completion; the watcher
+changes how the wait is observed, never the delivery rung or ownership.
 
 **The one non-merge terminal state is `PARKED / HOLD-FOR-SOL`.** It exists only when
 `DEC:SOL-HOLD-IS-A-MERGE-BARRIER` is fully satisfied: exact PR head pushed and local
@@ -637,9 +642,12 @@ STOP and program completion are five distinct facts, and none may be inferred fr
 
 `merge-on-green` remains available and is still the recommended way to get the
 merge PERFORMED for ordinary work — arming it means you do not have to run the merge yourself. It
-is not a reason to stop: keep the session alive until the pull request is merged
-and the change is verified live. The only holds are an explicit operator request
-to hold, a genuine non-spurious failing check, or a real deployment blocker.
+is not completion and does not release accountability, but **it also does not justify a foreground
+CI wait**. Arm one asynchronous watcher for the exact PR/head/run, then immediately work another
+independent authorized lane. The watcher brings the owner back only for terminal green/merge,
+genuine red, conflict, or watcher failure/staleness; repeated pending reads are not useful work.
+The only holds are an explicit operator request to hold, a genuine non-spurious failing check, or
+a real deployment blocker.
 For Macro, the `Workers Builds: macro` red X is known-spurious. Template/source
 changes must include their paired `site/` artifact when required, and “merged” is
 not “live” until the VPS/render path and live marker are verified.
@@ -704,8 +712,9 @@ fail, `gh api repos/{owner}/{repo}/rulesets` is the FIRST diagnostic, and any
 deliberate freeze must ship a DEC record plus an expiry plan
 (research/PROPHET_OUTAGE_2026_08_17_POSTMORTEM.md).
 
-**ARM `merge-on-green`, THEN STAY.** After opening an ordinary pull request, run
-`gh pr edit <n> --add-label merge-on-green`.
+**ARM `merge-on-green`, THEN CONTINUE THE PROJECT.** After opening an ordinary pull request, run
+`gh pr edit <n> --add-label merge-on-green`, bind exactly one asynchronous watcher to the exact
+PR/head/run, and immediately advance the next independent authorized lane.
 **Arm LAST — never push into an already-armed pull request (measured #8163, 2026-09-29).**
 The window between the sweeper deciding to merge and the merge completing is invisible from a
 session, so a commit pushed onto an armed PR can land on the far side of it. Measured: the
@@ -760,7 +769,7 @@ to "am I done" is "is it merged". A ratified `HOLD-FOR-SOL` is the explicit exce
 its answer is `PARKED`, never `SHIPPED`, and the forbidden merge is not retried. Merging
 by hand on concluded-green stays fully valid and is often faster than waiting a sweep.
 After any accidental fast merge, the surviving PR proof run is the merge's evidence —
-watch it to conclusion. `--admin` remains only for the spurious Workers X, docs-only
+bind an asynchronous watcher to it and continue other independent work until it reports. `--admin` remains only for the spurious Workers X, docs-only
 pull requests that trigger no pack checks, and genuine wedges — never to outrun CI.
 
 **A RECORDED HOLD IS A MERGE BARRIER (Sol 2026-08-19, #5974/#5953).** A hold stated in a
@@ -825,30 +834,33 @@ the same way under main's ~1/min push cadence, closing the other proof source;
 structural fix = event-conditional cancel-in-progress, in flight 2026-08-09.)
 Preflight before the lever:
 `gh run list --workflow ci.yml --branch main --json databaseId,status,createdAt --jq '[.[]|select(.status!="completed")]'`
-— anything `queued`/`in_progress` → WATCH it (`gh run watch <id> --interval 60`)
-instead of dispatching. Dispatch only over a clear field, or over a run stuck
+— anything `queued`/`in_progress` → bind one asynchronous watcher to it (for Bash,
+`gh run watch <id> --interval 150` with `run_in_background=true`) instead of dispatching
+or foreground-waiting. Dispatch only over a clear field, or over a run stuck
 `queued` >40 min with the pool otherwise moving (orphaned-run escape — your
 dispatch is then the mercy kill, not a murder).
 
 ### Waiting on CI without jamming every other session
 
-Ordinary sessions wait out their own merge; a ratified PARKED hold does not poll at all. This
-is the ONLY thing restraining fleet-wide polling. Treat it as a hard rule, not as advice.
+Ordinary sessions remain accountable for their own merge, but they do not foreground-wait for it;
+a ratified PARKED hold does not poll at all. Exactly one asynchronous watcher observes each pending
+CI/merge lane while the owner advances other independent work. Treat this as a hard rule.
 
 `gh` authenticates as ONE account token, so GitHub REST's 5,000/hr `core` pool is a
 single bucket shared by every parallel session, the babysitter lane, and the hooks.
 Exhausting it 403s all of them for up to an hour — including `ship_loop_guard.py`,
 which spends up to four REST calls per Stop evaluation and **fails closed** when
 rate-limited, so over-polling blocks the very Stop the polling was meant to reach.
-A ci.yml run here takes 30–34 minutes. Pace the wait to THAT, not to impatience:
-one status read per minute is already generous, and a run that has been going four
-minutes cannot be finished.
+A ci.yml run here takes 30–34 minutes. The principal should spend essentially none of that window
+waiting: arm the watcher and advance another lane. Direct status reads are for initial diagnosis or
+watcher recovery, not a manual polling cadence.
 
 `.claude/hooks/gh_quota_guard.py` (PreToolUse on Bash) denies the shapes that
 emptied the pool on 2026-07-26 and 2026-08-09:
 
-- `gh run watch` at its **default `--interval 3`** — nothing on the command line
-  says "3 seconds", which is exactly why it passed review. Use `--interval 60`+.
+- any **foreground** `gh run watch` / `--watch` — even a polite interval still occupies the
+  principal Bash turn for the entire CI window. Launch exactly one with `run_in_background=true`
+  (recommended interval 150s) or explicitly detach it; the default 3s interval remains forbidden.
 - a `gh` call inside a loop sleeping under 90s (two watchers on one endpoint at 45s
   went 4,488 → 0 in under an hour);
 - `--paginate` over check-runs/jobs — ~130 checks per PR, where one page already
@@ -856,14 +868,13 @@ emptied the pool on 2026-07-26 and 2026-08-09:
 - re-dispatching a main proof workflow (`ci.yml` / `fences.yml` /
   `integration-baseline.yml`) over one already in flight on main.
 
-It also **flags** — never denies — one more shape (7): re-reading the same status
-inside 300s, which attaches an `additionalContext` note and lets the call through.
+It also **denies** one more shape (7): re-reading the same PR/run status inside 300s. The first
+read remains legal; different PRs/runs and mutations remain independent. This closes the measured
+Stop-hook loop where a session polled ~25 times despite already having a watcher armed.
 
-The guard governs HOW you watch, never WHETHER you may: reading your own pull
-request's check state is part of owning it through to the merge, and no state
-outside the command line makes that read illegal. That rule is older and stronger
-than shape 7, which is exactly why shape 7 advises instead of denying — escalating
-it to a deny is a RULING for the operator, not a refactor.
+The guard preserves access to CI evidence while enforcing asynchronous observation: the first
+read is legal, exactly one watcher owns the wait, and meaningful terminal events return to the
+owner. Ownership of a PR never requires a foreground wait or repeated unchanged reads.
 
 **A blocked Stop is not a demand for a fresh poll** (operator 2026-08-24, repeated
 2026-08-27). The commonest burn is neither a loop nor a hot interval: it is one
@@ -873,11 +884,13 @@ session that already had a watcher armed at 150s reporting every transition for
 free. The mechanism is not laziness — the Stop hook fires on every turn and
 escalates to "If the same genuine blocker persists after another attempt, finish
 with `SHIP LOOP BLOCKED:`", which reads as pressure to show a fresh attempt. It is
-not. Answer a blocked Stop with a one-line hold note and no tool call; waiting on
-CI is explicitly not a qualifying blocker for the escape ladder, so there is
-nothing to prove by looking again. The tell: three identical bucket counts in a row
-means every further read is waste, and an armed watcher makes polling redundant
-because its notifications ARE the check. What is on you: preflight
+not. If independent authorized project work remains, a blocked Stop means CONTINUE
+that work immediately; do not answer the hook with a poll or a waiting turn. Only after
+useful independent work is genuinely exhausted may the session use the repository's
+existing external-wait/escape boundary. The watcher is already the next CI observation,
+so there is nothing to prove by looking again. The tell: a repeat of the same pending
+status is waste, and an armed watcher makes polling redundant because its notifications
+ARE the check. What is on you: preflight
 `gh api rate_limit --jq '.resources.core.remaining'` before arming any long watch,
 run exactly ONE watcher per endpoint (a second watcher on the same run buys no
 information and doubles the burn), and never read an empty or 403 response as a
@@ -892,7 +905,8 @@ hold notes in a tight billed loop for hours (about one hundred such turns measur
 on 2026-08-28 while a HOLD-FOR-SOL carrier lawfully waited out a queued CI field
 under an armed watcher; the cost is context × turns and the notes carry zero
 information after the first). When a long external wait is owned by an armed
-watcher or cron and the guard keeps blocking, check the escape-ladder threshold
+watcher or cron, first exhaust other useful in-scope work. If the wait is then the only
+remaining lane and the guard keeps blocking, use the existing escape-ladder threshold
 (any code: 10 consecutive / 15 total); once met, end the turn ONCE with the
 literal `SHIP LOOP BLOCKED:` evidence report — literal first characters, naming
 the PR, exact head, check state, and watcher id plus cadence — then stay quiet:

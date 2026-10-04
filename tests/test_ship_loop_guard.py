@@ -3731,6 +3731,10 @@ def test_an_armed_pull_request_with_checks_pending_does_NOT_release_the_session(
     assert "unmerged" in reason
     assert "#4242" in reason, "the block must name the pull request it is waiting on"
     assert "ci-pack-1" in reason, "and what it is waiting on"
+    assert "ASYNC release lane" in reason
+    assert "background/native watcher" in reason
+    assert "immediately advance the next independent" in reason
+    assert "NEVER run `gh run watch` synchronously" in reason
     assert state_path.exists(), "a blocked session keeps its state file"
     # The old release path's machine receipt must not survive anywhere.
     assert "CI_HANDOFF" not in reason
@@ -3741,9 +3745,9 @@ def test_an_armed_pull_request_with_every_check_green_still_blocks(
 ):
     """Not even a clean head is an exit. The merge is the exit.
 
-    A concluded-green armed head is precisely when the sweep is about to merge —
-    which is exactly when leaving costs the least and proves the least. The session
-    waits the one sweep out and verifies the merge.
+    A concluded-green armed head is precisely when the sweep is about to merge.
+    Accountability remains with the session, but the pending merge is asynchronous:
+    another independent lane should run while the watcher/sweeper finishes it.
     """
     repo, state_path, head = _pushed_unmerged_session(tmp_path)
     monkeypatch.setattr(
@@ -3972,7 +3976,9 @@ def test_a_red_main_is_currently_red_on_is_reported_as_inherited_not_as_yours(
     assert "ci.yml run 77" in detail, "the block must cite the proof it read"
     assert "Fix the cause" not in detail, "there is nothing here for this session to fix"
     assert "--ref main" in detail, "and it must name main's lever"
-    assert "instead of re-dispatching over it" in detail, "with the livelock preflight"
+    assert "instead of re-dispatching or foreground-waiting" in detail
+    assert "asynchronous background/native watcher" in detail
+    assert "advance another independent authorized lane" in detail
 
 
 def test_the_inherited_verdict_still_blocks_and_is_not_an_external_blocker(monkeypatch):

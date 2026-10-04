@@ -94,8 +94,16 @@ def _run_row(status: str, minutes_ago: float = 2, run_id: int = 31309720615) -> 
     }
 
 
-def _raw(cmd: str, tool: str = "Bash", cwd=None) -> subprocess.CompletedProcess:
+def _raw(
+    cmd: str,
+    tool: str = "Bash",
+    cwd=None,
+    *,
+    run_in_background: bool | None = None,
+) -> subprocess.CompletedProcess:
     payload: dict = {"tool_name": tool, "tool_input": {"command": cmd}}
+    if run_in_background is not None:
+        payload["tool_input"]["run_in_background"] = run_in_background
     if cwd is not None:
         payload["cwd"] = str(cwd)          # the harness names the invoking checkout
     return subprocess.run(
@@ -106,8 +114,14 @@ def _raw(cmd: str, tool: str = "Bash", cwd=None) -> subprocess.CompletedProcess:
     )
 
 
-def _run(cmd: str, tool: str = "Bash", cwd=None) -> dict | None:
-    proc = _raw(cmd, tool, cwd)
+def _run(
+    cmd: str,
+    tool: str = "Bash",
+    cwd=None,
+    *,
+    run_in_background: bool | None = None,
+) -> dict | None:
+    proc = _raw(cmd, tool, cwd, run_in_background=run_in_background)
     assert proc.returncode == 0, "the guard must never brick the harness"
     out = proc.stdout.decode("utf-8", errors="replace").strip()
     if not out:
@@ -115,8 +129,8 @@ def _run(cmd: str, tool: str = "Bash", cwd=None) -> dict | None:
     return json.loads(out).get("hookSpecificOutput")
 
 
-def _denied(cmd: str, cwd=None) -> bool:
-    d = _run(cmd, cwd=cwd)
+def _denied(cmd: str, cwd=None, *, run_in_background: bool | None = None) -> bool:
+    d = _run(cmd, cwd=cwd, run_in_background=run_in_background)
     return bool(d and d.get("permissionDecision") == "deny")
 
 
@@ -138,11 +152,15 @@ def test_gh_run_watch_default_interval_is_the_trap():
     assert _denied("gh run view 302186 --watch")
 
 
-def test_a_slow_explicit_interval_is_allowed():
-    """The guard throttles; it does not ban the tool."""
-    assert not _denied("gh run watch 302186 --interval 60")
-    assert not _denied("gh run watch 302186 --interval 150")
-    assert not _denied("gh run watch 302186 -i 300")
+def test_a_slow_explicit_interval_still_requires_background_execution():
+    """Throttle and principal occupancy are separate gates."""
+    for cmd in (
+        "gh run watch 302186 --interval 60",
+        "gh run watch 302186 --interval 150",
+        "gh run watch 302186 -i 300",
+    ):
+        assert _denied(cmd)
+        assert not _denied(cmd, run_in_background=True)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -210,13 +228,14 @@ def test_non_bash_tools_are_ignored():
     assert d is None, "the guard only inspects Bash"
 
 
-def test_the_denial_explains_the_shared_pool_and_gives_the_pattern():
-    """A guard that only says no teaches nothing — the next session repeats it."""
+def test_the_denial_explains_shared_cost_and_async_countermeasure():
+    """A guard that only says no teaches nothing — name the non-blocking replacement."""
     d = _run("gh run watch 302186")
     reason = (d or {}).get("permissionDecisionReason", "")
     assert "shared" in reason.lower() or "every session" in reason.lower()
-    assert "rate_limit" in reason, "must show the preflight call"
-    assert "ship_loop_guard" in reason, "must name the self-inflicted bite"
+    assert "run_in_background=true" in reason
+    assert "independent authorized project lane" in reason
+    assert "watcher notification is the next CI event" in reason
 
 
 def test_guard_fails_open_on_garbage_input():
@@ -420,20 +439,42 @@ def test_unparseable_probe_output_fails_open(monkeypatch):
     assert not _denied("gh workflow run ci.yml --ref main")
 
 
-def test_the_denial_teaches_the_livelock_and_gives_the_watch_command(monkeypatch):
-    """A guard that only says no teaches nothing — the next session repeats it."""
+def test_the_denial_teaches_livelock_and_requires_async_watch(monkeypatch):
+    """A guard that only says no teaches nothing; it must name the async continuation."""
     _runs(monkeypatch, _run_row("in_progress", run_id=31309720615))
     d = _run("gh workflow run ci.yml --ref main")
     reason = (d or {}).get("permissionDecisionReason", "")
     assert "cancel" in reason.lower(), "must quote the livelock: a re-dispatch cancels"
-    assert "31309720615" in reason, "must name the run to wait on"
-    assert "gh run watch 31309720615 --interval 60" in reason, "must give the watch cmd"
-    assert "30-34" in reason, "must set the expectation for how long to wait"
+    assert "31309720615" in reason, "must name the run already executing"
+    assert "gh run watch 31309720615 --interval 150" in reason
+    assert "run_in_background=true" in reason
+    assert "continue another independent project lane" in reason
+    assert "30-34" in reason
 
 
-def test_the_watch_command_the_denial_recommends_is_itself_allowed(monkeypatch):
-    """The remedy must survive the guard's own shape-1 rule, or the deny is a dead end."""
-    assert not _denied("gh run watch 31309720615 --interval 60")
+def test_foreground_watch_is_denied_even_at_a_polite_interval():
+    """A 150s poll interval still wastes 30-45 minutes if the principal blocks on it."""
+    d = _run("gh run watch 31309720615 --interval 150")
+    assert d and d.get("permissionDecision") == "deny"
+    assert "CI WATCH MUST BE ASYNC" in d["permissionDecisionReason"]
+
+
+def test_background_watch_is_allowed_at_the_same_interval():
+    """The exact watcher becomes legal when it cannot pin the principal turn."""
+    assert not _denied(
+        "gh run watch 31309720615 --interval 150",
+        run_in_background=True,
+    )
+
+
+def test_background_flag_does_not_excuse_a_hot_three_second_watcher():
+    """Asynchronous is not permission to burn the shared REST pool."""
+    assert _denied("gh run watch 31309720615", run_in_background=True)
+    assert _denied("gh run watch 31309720615 --interval 30", run_in_background=True)
+
+
+def test_explicit_shell_detach_is_also_nonblocking():
+    assert not _denied("gh run watch 31309720615 --interval 150 &")
 
 
 def test_prose_about_the_dispatch_is_not_a_dispatch(monkeypatch):
@@ -443,28 +484,15 @@ def test_prose_about_the_dispatch_is_not_a_dispatch(monkeypatch):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# The RETIRED shape 5: CI observation is legal again (operator, 2026-08-12)
+# CI evidence remains available; CI waiting is asynchronous (Chairman 2026-10-03)
 # ─────────────────────────────────────────────────────────────────────────────
 #
-# This guard once carried a fifth shape: once a worker had armed `merge-on-green`
-# and written a handoff sentinel, ANY command that read CI state was denied, on
-# the theory that the sweeper owned the merge from there.
-#
-# The operator removed that rule. A session owns its pull request through
-# commit -> push -> PR -> CI -> squash-merge -> live verification, so reading check
-# state is part of the job, not a violation of it — and in the field the deny
-# blocked a session from even DIAGNOSING the red its own pull request was stuck on
-# while it sat `merge-blocked`.
-#
-# Shapes 1-4 are untouched and still decide everything below. They govern HOW a
-# session watches CI (one slow watcher, no unthrottled loop, no `--paginate` over
-# check-runs, no re-dispatch over a live proof) — never WHETHER it may.
+# The old shape-5 failure hid CI entirely after handoff. That remains forbidden:
+# initial diagnosis and repair evidence must stay readable. The new rule is narrower:
+# never spend a principal turn blocking on a watch process, and never re-read the
+# same unchanged status inside the cooldown. Ownership is accountability, not idle time.
 
 @pytest.mark.parametrize("cmd", [
-    # Every one of these was a shape-5 deny. Each is now judged by shapes 1-4
-    # alone, and each passes them: a slow watcher, a one-shot read, or a polite loop.
-    "gh run watch 31309720615 --interval 60",
-    "gh pr checks 4242 --watch",
     "gh pr checks 4242",
     "gh run view 31309720615",
     "gh run view 31309720615 --log-failed",
@@ -473,24 +501,30 @@ def test_prose_about_the_dispatch_is_not_a_dispatch(monkeypatch):
     "gh api repos/acme/widgets/actions/runs/1/jobs",
     "until [ x = y ]; do gh pr view 4242 --json state; sleep 300; done",
 ])
-def test_ci_observation_is_never_denied_for_owning_an_open_pull_request(cmd):
-    """No state outside the command line may make a CI read illegal.
-
-    The session that armed the label is the session that still has to land the
-    merge; a guard that hid the check state from it turned an unfinished job into
-    a reported-complete one.
-    """
+def test_initial_ci_observation_remains_legal(cmd):
+    """The first bounded diagnosis is legal; the async/repeat rules govern later waiting."""
     assert not _denied(cmd)
 
 
-def test_the_quota_shapes_still_decide_the_same_commands():
-    """Control for the test above: retiring shape 5 must not have retired shape 1.
+@pytest.mark.parametrize("cmd", [
+    "gh run watch 31309720615 --interval 60",
+    "gh run watch 31309720615 --interval 150",
+    "gh run view 31309720615 --watch --interval 150",
+    "gh pr checks 4242 --watch --interval 150",
+])
+def test_foreground_ci_watch_is_denied_regardless_of_interval(cmd):
+    """Interval controls quota; background execution controls principal occupancy."""
+    assert _denied(cmd)
 
-    Same verb, same subject, same session — only the interval differs, and that is
-    now the ONLY thing that decides.
-    """
-    assert _denied("gh run watch 31309720615"), "the 3s default is still the trap"
-    assert not _denied("gh run watch 31309720615 --interval 60")
+
+@pytest.mark.parametrize("cmd", [
+    "gh run watch 31309720615 --interval 60",
+    "gh run watch 31309720615 --interval 150",
+    "gh run view 31309720615 --watch --interval 150",
+    "gh pr checks 4242 --watch --interval 150",
+])
+def test_background_ci_watch_is_legal_at_a_safe_interval(cmd):
+    assert not _denied(cmd, run_in_background=True)
 
 
 def test_no_gh_command_is_denied_merely_because_a_pull_request_is_armed():
@@ -623,63 +657,39 @@ def test_an_unresolvable_run_fails_open(monkeypatch):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Shape 7 — re-reading the same status faster than it can change (2026-08-27)
+# Shape 7 — re-reading the same status faster than it can change (2026-08-27,
+# binding after Chairman ruling 2026-10-03)
 #
-# The second time an operator had to say it, and the first time a background
-# watcher was ALREADY armed while the session polled anyway. These pin the
-# semantics that make the rule safe to enforce: it delays a repeat, it never
-# blocks a session, and it never touches a mutation.
+# The measured failure was a background watcher ALREADY armed while the session
+# still polled ~25 Stop cycles. The first read stays free; the immediate repeat
+# is now denied so the session must consume the watcher and continue other work.
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-@pytest.fixture()
+@pytest.fixture(autouse=True)
 def _poll_state(tmp_path, monkeypatch):
-    """Isolate the cooldown ledger.
-
-    Via the ENV, not `monkeypatch.setattr`: `_run` executes the hook as a
-    SUBPROCESS, so patching the imported module object would leave the real
-    shared ledger in play and make these tests order-dependent on any other
-    session polling the same PR.
-    """
+    """Isolate the cooldown ledger for subprocess and in-process checks."""
     monkeypatch.setenv("MACRO_GH_POLL_STATE_DIR", str(tmp_path / "cooldown"))
     monkeypatch.setattr(GUARD, "POLL_STATE_DIR", str(tmp_path / "cooldown"))
     return tmp_path
 
 
-def _nudged(cmd: str) -> str:
-    """The additionalContext a repeat read attaches, or "" when silent."""
-    d = _run(cmd)
-    return (d or {}).get("additionalContext") or ""
-
-
 def test_first_read_of_a_status_shape_always_passes(_poll_state):
-    """The guard governs HOW you watch, never WHETHER: the first look is free."""
+    """Initial diagnosis is never the waste; unchanged rereads are."""
     assert not _denied("gh pr checks 6555 --json name,bucket")
 
 
-def test_immediate_reread_of_the_same_shape_is_flagged_but_allowed(_poll_state):
-    """The measured 2026-08-27 burn: one poll per Stop-hook cycle, ~25 in a row,
-    against a 30-45 minute run that cannot have changed.
-
-    Flagged, never denied — the CI-observation invariant below is the older and
-    stronger rule, so this shape informs the session and lets the call through.
-    """
-    assert _nudged("gh pr checks 6555 --json name,bucket") == ""
-    second = _nudged("gh pr checks 6555 --json name,bucket")
-    assert "REDUNDANT POLL" in second
+def test_immediate_reread_of_the_same_shape_is_denied(_poll_state):
+    """The exact measured Stop-loop burn is mechanically closed."""
     assert not _denied("gh pr checks 6555 --json name,bucket")
-
-
-def test_the_nudge_says_it_is_advice_and_names_the_countermeasure(_poll_state):
-    """Advice that reads as a block invites evasion, and advice that only scolds
-    changes nothing. It must say the call went through, and say what to do."""
-    _run("gh pr checks 6555")
-    note = _nudged("gh pr checks 6555")
-    assert "ADVICE, not a block" in note
-    assert "going through" in note
-    assert "watcher" in note
-    # the specific trap that defeated the prose version
-    assert "Stop hook" in note
+    d = _run("gh pr checks 6555 --json name,bucket")
+    assert d and d.get("permissionDecision") == "deny"
+    reason = d.get("permissionDecisionReason", "")
+    assert "REDUNDANT POLL" in reason
+    assert "blocked" in reason
+    assert "watcher" in reason
+    assert "continue another authorized project lane" in reason
+    assert "Stop hook" in reason
 
 
 def test_a_different_run_or_pr_is_a_different_shape(_poll_state):
@@ -689,13 +699,15 @@ def test_a_different_run_or_pr_is_a_different_shape(_poll_state):
     assert not _denied("gh api repos/o/r/actions/runs/33129766342")
 
 
-def test_the_window_self_clears(_poll_state, monkeypatch):
-    """Time-based only: nothing a session does can leave it permanently unable
-    to read its own PR."""
-    assert not _denied("gh pr checks 6555")
-    real = GUARD.time.time
-    monkeypatch.setattr(GUARD.time, "time", lambda: real() + GUARD.POLL_COOLDOWN_S + 1)
-    assert not _denied("gh pr checks 6555")
+def test_the_window_self_clears(_poll_state):
+    """Time-based only: the binding denial expires without a manual reset."""
+    key = "pr-checks:6555"
+    assert GUARD.poll_cooldown_nudge(key, now=1000.0) is None
+    denied = GUARD.poll_cooldown_nudge(key, now=1001.0)
+    assert denied and "REDUNDANT POLL" in denied
+    assert GUARD.poll_cooldown_nudge(
+        key, now=1000.0 + GUARD.POLL_COOLDOWN_S + 1
+    ) is None
 
 
 @pytest.mark.parametrize("cmd", [
@@ -712,9 +724,8 @@ def test_mutations_are_never_polls(_poll_state, cmd):
 
 
 def test_unwritable_state_fails_open(_poll_state, monkeypatch):
-    """Every rule in this guard fails open. A cooldown ledger that cannot be
-    written is not evidence that a poll just happened."""
-    monkeypatch.setattr(GUARD, "POLL_STATE_DIR", "/proc/nonexistent/cannot-create")
+    """Unreadable cooldown state is not proof that a poll just happened."""
+    monkeypatch.setenv("MACRO_GH_POLL_STATE_DIR", "/proc/nonexistent/cannot-create")
     assert not _denied("gh pr checks 6555")
     assert not _denied("gh pr checks 6555")
 
@@ -725,8 +736,8 @@ def test_a_command_denied_by_another_shape_does_not_start_the_cooldown(_poll_sta
     wait for a poll it never got to make."""
     hot = "gh run watch 123"                     # shape 1 denies this
     assert _denied(hot)
-    # a denied command is not a poll, so an unrelated first read stays silent
-    assert _nudged("gh pr checks 6555") == ""
+    # a denied command is not a poll, so an unrelated first read remains legal
+    assert not _denied("gh pr checks 6555")
 
 
 def test_a_heredoc_that_merely_mentions_polling_is_not_a_poll(_poll_state):
@@ -738,5 +749,5 @@ def test_a_heredoc_that_merely_mentions_polling_is_not_a_poll(_poll_state):
         "text = 'one `gh pr checks <n>` per Stop-hook cycle while a 30-45 minute run finishes'\n"
         "PY"
     )
-    assert _nudged(doc) == ""
-    assert _nudged(doc) == ""
+    assert not _denied(doc)
+    assert not _denied(doc)

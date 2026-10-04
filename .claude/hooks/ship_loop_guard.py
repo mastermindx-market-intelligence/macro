@@ -2214,8 +2214,10 @@ def _base_red_block(number: Any, excused: dict[str, str], pending: list[str]) ->
         "is proven again; the lever is `gh workflow run ci.yml --ref main`, and it is "
         "DESTRUCTIVE over a live baseline — preflight `gh run list --workflow ci.yml "
         "--branch main --json databaseId,status --jq '[.[]|select(.status!=\"completed\")]'` "
-        "and WATCH an in-flight run (`gh run watch <id> --interval 60`) instead of "
-        "re-dispatching over it. You still own this pull request until the merge lands."
+        "and bind ONE asynchronous background/native watcher to the in-flight run instead "
+        "of re-dispatching or foreground-waiting. You still own this pull request until "
+        "the merge lands, but ownership is accountability, not a reason to idle the "
+        "principal turn; advance another independent authorized lane while the watcher runs."
     )
 
 
@@ -2408,11 +2410,14 @@ def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[s
     return "unmerged", (
         f"Pull request #{number} is armed with `{MERGE_ON_GREEN_LABEL}` but is NOT merged "
         f"yet — {state}. Arming the label buys a merge you do not have to perform; it does "
-        "not end this session. You own this work through commit -> push -> PR -> CI -> "
-        "squash-merge -> live verification, so stay with it until the merge lands. Watch "
-        "on ONE slow watcher (`gh run watch <id> --interval 60`; a run here takes 30-34 "
-        "minutes) and preflight `gh api rate_limit` — the 5,000/hr REST pool is shared "
-        "with every other session and with this hook, which fails closed when it is spent."
+        "not make the PR complete, but pending CI is an ASYNC release lane, not a foreground "
+        "reasoning phase. Keep accountability for this PR while handing observation to exactly "
+        "one background/native watcher bound to this PR/head/run. NEVER run `gh run watch` "
+        "synchronously in the principal turn and never answer this Stop block with another "
+        "status poll. Once the watcher is armed, immediately advance the next independent "
+        "authorized project lane. Return to this PR only when the watcher reports a terminal "
+        "green/merge transition, a genuine red requiring repair, or watcher failure/staleness. "
+        "The Stop hook firing again is not a request to re-check CI."
     )
 
 
@@ -2901,11 +2906,12 @@ def _check_ci(
                         "itself, never candidate-era evidence). Preflight for an "
                         "in-flight baseline (`gh run list --workflow ci.yml "
                         "--branch main --json databaseId,status --jq "
-                        "'[.[]|select(.status!=\"completed\")]'`) and WATCH it "
-                        "(`gh run watch <id> --interval 60`) rather than "
-                        "re-dispatching over it; dispatch `gh workflow run ci.yml "
-                        "--ref main` only over a clear field. The next Stop "
-                        "re-reads the result."
+                        "'[.[]|select(.status!=\"completed\")]'`) and bind one "
+                        "asynchronous watcher to it (for Bash, `gh run watch <id> "
+                        "--interval 150` with `run_in_background=true`) rather than "
+                        "re-dispatching or foreground-waiting; dispatch `gh workflow run "
+                        "ci.yml --ref main` only over a clear field. The watcher event, "
+                        "not the next Stop cycle, is the next CI observation."
                     )
                 if pending:
                     return False, "CI still running: " + ", ".join(pending[:8])
