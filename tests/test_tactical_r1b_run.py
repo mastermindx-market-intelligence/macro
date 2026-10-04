@@ -932,6 +932,39 @@ def test_t6d_unreadable_commit_refuses(world, monkeypatch, tmp_path, capsys):
     assert "code_identity_commit_unreadable:x" in capsys.readouterr().err
 
 
+def test_t6e_drift_refuses_before_persist(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    honest = s._loaded_root_modules()
+    calls = 0
+
+    def census():
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return honest
+        drifted = dict(honest)
+        drifted["lib/nyse_calendar.py"] = "1" * 64
+        return drifted
+
+    monkeypatch.setattr(s, "_loaded_root_modules", census)
+    out = _out_dir(tmp_path)
+    assert s.main(_argv(world, out)) == 2
+    assert "code_identity_drift:lib/nyse_calendar.py" in capsys.readouterr().err
+    receipt = json.loads((tmp_path / "attempts/attempt-001.json").read_text())
+    assert receipt["outcome_stage_started"] is True
+    assert receipt["outcome_values_persisted"] is False
+    assert not (out / "result.json").is_file()
+
+
+def test_t6f_required_subset_missing_refuses(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    honest = s._loaded_root_modules()
+    trimmed = {k: v for k, v in honest.items() if k != "engine/session_digest.py"}
+    monkeypatch.setattr(s, "_loaded_root_modules", lambda: trimmed)
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    assert "code_identity_missing_required:engine/session_digest.py" in capsys.readouterr().err
+
+
 def test_t5h_result_lists_prior_attempts_and_listing_hash(run):
     attempts = run.result["attempts"]
     assert len(attempts) == 1
