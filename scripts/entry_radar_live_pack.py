@@ -236,14 +236,41 @@ def store_reader(root: Path) -> Callable[[str], pd.DataFrame | None]:
     return reader
 
 
-def substrate_sink(stream: bool, state: Path | None) -> tuple[Any, Callable[[], None]]:
+def reap_spool_orphans(parent: Path, max_age_s: int = 6 * 3600) -> int:
+    """Remove stale ``.spool-*`` dirs under ``parent``; leave fresh ones for live builds."""
+    if not parent.is_dir():
+        return 0
+    now = time.time()
+    removed = 0
+    for entry in parent.iterdir():
+        if not entry.is_dir() or not entry.name.startswith(".spool-"):
+            continue
+        try:
+            if now - entry.stat().st_mtime > max_age_s:
+                shutil.rmtree(entry, ignore_errors=True)
+                removed += 1
+        except OSError:
+            continue
+    return removed
+
+
+def substrate_sink(
+    stream: bool,
+    state: Path | None,
+    *,
+    dry_run: bool = False,
+) -> tuple[Any, Callable[[], None]]:
     if not stream:
         return None, lambda: None
     from engine.entry_radar.pack_spool import ParquetSpoolSink  # noqa: PLC0415
 
-    parent = (state / "pack") if state is not None else None
-    if parent is not None:
-        parent.mkdir(parents=True, exist_ok=True)
+    parent: Path | None
+    if dry_run:
+        parent = None
+    else:
+        parent = (state / "pack") if state is not None else None
+        if parent is not None:
+            parent.mkdir(parents=True, exist_ok=True)
     tmp = Path(tempfile.mkdtemp(prefix=".spool-", dir=parent))
     sink = ParquetSpoolSink(tmp / "substrate.parquet")
     cleanup = lambda: shutil.rmtree(tmp, ignore_errors=True)
@@ -478,7 +505,13 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
         lanes, c5_runs = slice_lanes(snapshot_tickers, as_of=as_of, slice_dir=slice_dir)
         confirmed_lanes = confirmed_lane_pack_rows(lanes, snapshot_tickers)
 
-    sink, cleanup = substrate_sink(args.stream_substrate, state)
+    if state is not None and not args.dry_run:
+        orphans = reap_spool_orphans(state / "pack")
+        if orphans > 0:
+            print(f"entry-radar-pack spool_orphans_removed={orphans}", flush=True)
+
+    sink, cleanup = substrate_sink(
+        args.stream_substrate, state, dry_run=args.dry_run)
     pack = None
     try:
         with _stage("build_pack"):

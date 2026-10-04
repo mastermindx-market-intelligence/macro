@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import importlib.util
+import os
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -76,3 +78,39 @@ def test_SC5_stream_substrate_in_help(capsys):
     assert exc.value.code == 0
     out = capsys.readouterr().out
     assert "--stream-substrate" in out
+
+
+def _state_tree_listing(state: Path) -> list[str]:
+    return sorted(str(p.relative_to(state)) for p in state.rglob("*"))
+
+
+def test_SC6_dry_run_stream_substrate_leaves_state_dir_untouched(tmp_path):
+    state = tmp_path / "state"
+    state.mkdir()
+    before = _state_tree_listing(state)
+    sink, cleanup = _erp.substrate_sink(True, state, dry_run=True)
+    assert isinstance(sink, ParquetSpoolSink)
+    spool_parent = sink.path.parent
+    assert spool_parent.name.startswith(".spool-")
+    assert not (state / "pack").exists()
+    cleanup()
+    assert not spool_parent.exists()
+    assert _state_tree_listing(state) == before
+
+
+def test_SC7_reap_spool_orphans(tmp_path):
+    pack_dir = tmp_path / "pack"
+    pack_dir.mkdir()
+    old_spool = pack_dir / ".spool-old"
+    old_spool.mkdir()
+    new_spool = pack_dir / ".spool-new"
+    new_spool.mkdir()
+    session_dir = pack_dir / "2026-08-13"
+    session_dir.mkdir()
+    aged = time.time() - 7 * 3600
+    os.utime(old_spool, (aged, aged))
+    removed = _erp.reap_spool_orphans(pack_dir)
+    assert removed == 1
+    assert not old_spool.exists()
+    assert new_spool.is_dir()
+    assert session_dir.is_dir()

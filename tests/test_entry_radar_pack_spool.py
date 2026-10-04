@@ -15,6 +15,7 @@ import pytest
 from engine.entry_radar import challengers as ch
 from engine.entry_radar import live_pack as lp
 from engine.entry_radar.pack_spool import (
+    SIDECAR_SCHEMA,
     ParquetSpoolSink,
     SpoolSubstrate,
     iter_spool,
@@ -494,3 +495,37 @@ def test_SB15_memory_save_load_proof_bounded(tmp_path):
     unit = 1024 if rss1 < 10_000_000 else 1
     growth_mb = (rss1 - rss0) / unit / (1024 * 1024)
     assert growth_mb < 50.0
+
+
+def test_R5_malformed_sidecars_raise_live_pack_error(tmp_path):
+    _, path = _spool_pack_at(tmp_path)
+    shutil_mod = __import__("shutil")
+
+    bad_json = tmp_path / "bad_json.parquet"
+    shutil_mod.copyfile(path, bad_json)
+    Path(f"{bad_json}.sidecar.json").write_text("{not-json", encoding="utf-8")
+    with pytest.raises(lp.LivePackError) as excinfo:
+        load_sidecar(bad_json)
+    assert str(excinfo.value).startswith("spool_sidecar_malformed")
+
+    missing_rg = tmp_path / "missing_rg.parquet"
+    shutil_mod.copyfile(path, missing_rg)
+    Path(f"{missing_rg}.sidecar.json").write_text(
+        json.dumps({"schema": SIDECAR_SCHEMA, "fingerprints": {}}, sort_keys=True),
+        encoding="utf-8",
+    )
+    with pytest.raises(lp.LivePackError) as excinfo:
+        load_sidecar(missing_rg)
+    assert str(excinfo.value).startswith("spool_sidecar_malformed")
+
+    out_of_range = tmp_path / "oor.parquet"
+    shutil_mod.copyfile(path, out_of_range)
+    sidecar = load_sidecar(path)
+    sidecar = dict(sidecar)
+    sidecar["row_groups"] = dict(sidecar["row_groups"])
+    sidecar["row_groups"]["ZZZ"] = 999
+    Path(f"{out_of_range}.sidecar.json").write_text(
+        json.dumps(sidecar, sort_keys=True), encoding="utf-8")
+    with pytest.raises(lp.LivePackError) as excinfo:
+        SpoolSubstrate(out_of_range)
+    assert str(excinfo.value).startswith("spool_sidecar_malformed")

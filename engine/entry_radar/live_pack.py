@@ -1054,10 +1054,11 @@ class SubstrateSink(Protocol):
     ``add`` is called once per admitted name, in probe-set (sorted ticker) order,
     with the name's finished row and its frozen frame.  ``finish`` is called once,
     after the last name, and returns the mapping the pack carries as
-    ``substrate``.  A sink that writes frames out as they arrive may return a
+    ``substrate``.      A sink that writes frames out as they arrive may return a
     mapping that holds none of them in memory; the pack's identity never reads it.
-    Such a pack cannot be proved or saved from its substrate: the proof must be
-    given the tapped threshold cases, and :func:`save_pack` refuses it.
+    A streamed pack is saveable and provable: :func:`save_pack` copies the spool
+    bytes and sidecar into the session directory, and the inversion proof reads
+    frames back through the finished :class:`~engine.entry_radar.pack_spool.SpoolSubstrate`.
 
     A sink serves ONE build.  ``add`` or ``finish`` after ``finish`` is refused,
     because a reused sink would hand a second pack the first pack's frames.
@@ -1927,12 +1928,11 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
         if substrate_path.exists():
             flat = pd.read_parquet(substrate_path)
             for ticker, block in flat.groupby("ticker", sort=True):
-                sessions = pd.Series(block["session"])
                 frame = block.set_index(
                     pd.DatetimeIndex(
-                        pd.to_datetime(sessions.astype(str)),
-                        dtype="datetime64[s]",
-                    ))
+                        pd.to_datetime(block["session"].astype(str)),
+                    ).as_unit("ns"),
+                )
                 substrate[str(ticker)] = frame.loc[:, list(_SUBSTRATE_COLUMNS)].astype(float)
         for row in names:
             frame = substrate.get(row.ticker)

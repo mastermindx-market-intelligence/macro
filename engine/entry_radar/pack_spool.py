@@ -81,6 +81,14 @@ class SpoolSubstrate(Mapping[str, pd.DataFrame]):
         self._row_groups: dict[str, int] = dict(sidecar["row_groups"])
         self.fingerprints: dict[str, str] = dict(sidecar["fingerprints"])
         self._parquet: pq.ParquetFile | None = None
+        try:
+            n_groups = pq.ParquetFile(self.path).num_row_groups
+        except Exception as exc:  # noqa: BLE001 — malformed parquet is a sidecar read failure
+            raise LivePackError(f"spool_sidecar_malformed: parquet unreadable: {exc}") from exc
+        for ticker, idx in self._row_groups.items():
+            if idx >= n_groups:
+                raise LivePackError(
+                    f"spool_sidecar_malformed: row_groups[{ticker!r}] out of range")
 
     def _open_parquet(self) -> pq.ParquetFile:
         if self._parquet is None:
@@ -99,7 +107,10 @@ class SpoolSubstrate(Mapping[str, pd.DataFrame]):
     def __getitem__(self, ticker: str) -> pd.DataFrame:
         if ticker not in self._row_groups:
             raise KeyError(ticker)
-        table = self._open_parquet().read_row_group(self._row_groups[ticker])
+        try:
+            table = self._open_parquet().read_row_group(self._row_groups[ticker])
+        except Exception as exc:  # noqa: BLE001
+            raise LivePackError(f"spool_sidecar_malformed: row_group read failed: {exc}") from exc
         return _table_to_frame(table)
 
     def __repr__(self) -> str:
@@ -165,9 +176,21 @@ def load_sidecar(path: Path | str) -> dict[str, Any]:
     sidecar_path = Path(f"{path}.sidecar.json")
     if not sidecar_path.is_file():
         raise LivePackError("spool_sidecar_missing")
-    data = json.loads(sidecar_path.read_text(encoding="utf-8"))
+    try:
+        data = json.loads(sidecar_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise LivePackError(f"spool_sidecar_malformed: invalid json: {exc}") from exc
     if data.get("schema") != SIDECAR_SCHEMA:
         raise LivePackError("spool_sidecar_schema")
+    row_groups = data.get("row_groups")
+    if not isinstance(row_groups, dict):
+        raise LivePackError("spool_sidecar_malformed: row_groups missing or not a dict")
+    for ticker, idx in row_groups.items():
+        if isinstance(idx, bool) or not isinstance(idx, int):
+            raise LivePackError(f"spool_sidecar_malformed: row_groups[{ticker!r}] not an int")
+        if idx < 0:
+            raise LivePackError(f"spool_sidecar_malformed: row_groups[{ticker!r}] negative")
+    data["row_groups"] = row_groups
     return data
 
 
