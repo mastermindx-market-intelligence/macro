@@ -418,6 +418,27 @@ Do not claim this proves live customer corruption occurred. It proves a reproduc
 
 Do not assume mergeability=false means source is bad; read reviews, dependency stacks and current-base collisions.
 
+### Exact path/custody shape at publication
+
+Fresh GitHub review census found **no submitted reviews and no inline review threads on any of the four carriers**. That is a release fact, not proof that prior out-of-band review never occurred.
+
+Changed paths:
+
+- **#7461:** engine/research_intelligence/schema.py; tests/test_research_vault_strict_store.py
+- **#7354:** engine/research_intelligence/__init__.py, extractor.py, store.py, vault_adapter.py, vault_head.py; two research_intelligence scripts; tests/test_research_intelligence_vault_head.py; tests/test_research_vault_strict_store.py
+- **#7522:** .github/ci/legacy-jobs.yml; engine/neuralweb/brain_market_intel.py; tests/test_brain_market_intel.py; tests/test_brain_research_evidence.py
+- **#8090:** engine/research_intelligence/longitudinal.py; tests/test_research_vault.py
+
+Important collision:
+
+- #7461 and #7354 both own tests/test_research_vault_strict_store.py. Coordinate those carriers rather than independently rebasing/merging the shared test path.
+
+Important dependency update:
+
+- #7354's historical body said “do not merge ahead of W2 #7230.” W2 is now recorded as a canonical merged dependency in the current Research Intelligence program, so that particular historical dependency is no longer sufficient by itself to justify continued hold. Fable must still establish current review, source compatibility and release gates; do not infer “ready.”
+
+#7522 and #8090 are path-disjoint from the #7461/#7354 source files at this census, aside from broader shared CI/test ownership. That creates useful parallel investigation lanes once custody is confirmed.
+
 Do not rewrite these branches merely to make them look current if their semantic source remains valid. Use normal current-base reconciliation and the repo's review/release law.
 
 ## 12. Evidence receipt primitive to reuse
