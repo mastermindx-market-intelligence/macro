@@ -152,6 +152,28 @@ def test_history_result_accepts_dataframe_and_list(tmp_path: Path) -> None:
     assert len(got2) == 1
 
 
+def test_resume_skip_requires_a_valid_receipt(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("MMX_FUTURES_TAPE_ROOT", str(tmp_path))
+    target = raw_export_path(tmp_path, "lse", "ES.F", "2026-10-01", "2026-10-02")
+    target.parent.mkdir(parents=True)
+    target.write_bytes(b"good")
+    m = PartitionManifest(
+        source="lse",
+        source_role=SourceRole.VENDOR_CONTINUOUS.value,
+        source_symbol="ES.F",
+        state=PartitionState.FINAL.value,
+        relative_path=target.relative_to(tmp_path).as_posix(),
+        row_count=1,
+        byte_count=target.stat().st_size,
+        sha256=sha256_file(target),
+        retrieved_at_utc="2026-10-05T00:00:00Z",
+    )
+    write_manifest_atomic(target, m)
+    assert fti._valid_receipted(tmp_path, target) is True
+    target.write_bytes(b"corrupt")
+    assert fti._valid_receipted(tmp_path, target) is False
+
+
 def test_audit_missing_root_is_fail_closed(tmp_path: Path) -> None:
     missing = tmp_path / "missing"
     problems = audit_manifests(missing)
