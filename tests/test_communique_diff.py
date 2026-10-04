@@ -106,6 +106,9 @@ def test_same_locator_content_revision_is_separate_from_appeared_dropped():
     url = "https://www.pbc.gov.cn/policy/one.html"
     prior = [_row("pboc", "稳健", "稳健的货币政策", "2026-07-01T01:00:00", url=url)]
     today = [_row("pboc", "更正", "实施适度宽松的货币政策", "2026-07-02T01:00:00", url=url)]
+    locator = "loc_pboc_one"
+    prior[0]["source_locator_id"] = locator
+    today[0]["source_locator_id"] = locator
 
     res = cd.compute_events(prior + today, "2026-07-02", book=book)
     assert res["events"] == []
@@ -135,6 +138,8 @@ def test_source_revision_does_not_hide_independent_new_document_novelty():
         "ndrc", "更正版本", "适度宽松", "2026-07-02T01:00:00",
         url="https://www.ndrc.gov.cn/policy/revised.html",
     )
+    revised_prior["source_locator_id"] = "loc_ndrc_revised"
+    revised_today["source_locator_id"] = "loc_ndrc_revised"
     independent_today = _row(
         "ndrc", "新文件", "发展新质生产力", "2026-07-02T02:00:00",
         url="https://www.ndrc.gov.cn/policy/new.html",
