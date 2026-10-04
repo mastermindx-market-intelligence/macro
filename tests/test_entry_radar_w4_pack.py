@@ -696,15 +696,26 @@ def test_PACK7_no_partial_directory_survives_a_save(tmp_path, pack):
 
 def test_PACK7_retention_keeps_the_newest_three_and_never_the_pointer_target(tmp_path,
                                                                             pack):
-    for offset, session in enumerate(("2026-08-10", "2026-08-11", "2026-08-12",
-                                      "2026-08-13", "2026-08-14")):
+    sessions = ("2026-08-10", "2026-08-11", "2026-08-12",
+                "2026-08-13", "2026-08-14")
+    digests: list[str] = []
+    for session in sessions:
+        pack_hash = lp.compute_pack_hash(
+            schema=pack.schema, as_of=session, next_session=pack.next_session,
+            price_basis=pack.price_basis, spec_hashes=pack.spec_hashes,
+            probe_tickers=list(pack.probe_set.get("tickers") or ()),
+            names=pack.names, confirmed_lanes=pack.confirmed_lanes)
+        digests.append(pack_hash)
         copy = lp.LivePack(
             schema=pack.schema, as_of=session, next_session=pack.next_session,
             built_at=pack.built_at, price_basis=pack.price_basis,
             spec_hashes=pack.spec_hashes, probe_set=pack.probe_set, names=pack.names,
-            substrate=pack.substrate, pack_hash=f"{offset:016x}")
+            substrate=pack.substrate, confirmed_lanes=pack.confirmed_lanes,
+            pack_hash=pack_hash)
         lp.save_pack(copy, tmp_path)
-    kept = sorted(p.name for p in lp.pack_root(tmp_path).iterdir() if p.is_dir())
+    assert len(set(digests)) == len(sessions)
+    dirs = [p for p in lp.pack_root(tmp_path).iterdir() if p.is_dir()]
+    kept = sorted(p.name for p in dirs)
     assert kept == ["2026-08-12", "2026-08-13", "2026-08-14"]
     assert lp.load_pack(tmp_path).as_of == "2026-08-14"
 
