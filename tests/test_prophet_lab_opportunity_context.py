@@ -322,27 +322,11 @@ def _identity_aliases():
     ])
 
 
-def _identity_receipts():
-    return (
-        {
-            "source": "identity",
-            "path": "data/reference/vendor_aliases.parquet",
-            "sha256": "sha256:" + "a" * 64,
-        },
-        {
-            "source": "identity",
-            "path": "data/reference/security_master.parquet",
-            "sha256": "sha256:" + "b" * 64,
-        },
-    )
-
-
 def test_display_alias_resolves_through_data_os_and_reverse_proves_identity():
     p = projection()
     binding = resolve_display_alias_to_active_episode(
         p,
         aliases=_identity_aliases(),
-        identity_source_receipts=_identity_receipts(),
         display_symbol=" aapl ",
         decision_date=date(2026, 9, 18),
     )
@@ -353,7 +337,7 @@ def test_display_alias_resolves_through_data_os_and_reverse_proves_identity():
     assert binding["candidate_generation_id"] == p["candidate_generation_id"]
     assert binding["candidate_state_projection_id"] == p["projection_id"]
     assert binding["authority"] == ALL_FALSE_AUTHORITY
-    assert len(binding["identity_source_receipts"]) == 2
+    assert "identity_source_receipts" not in binding
     validate_opportunity_identity_binding(binding)
 
 
@@ -365,24 +349,29 @@ def test_display_alias_refuses_unmapped_symbol_instead_of_ticker_identity():
         resolve_display_alias_to_active_episode(
             projection(),
             aliases=_identity_aliases(),
-            identity_source_receipts=_identity_receipts(),
-            display_symbol="MSFT",
+                display_symbol="MSFT",
             decision_date=date(2026, 9, 18),
         )
 
 
-def test_display_alias_requires_canonical_identity_receipts():
+def test_identity_binding_refuses_caller_supplied_receipt_claims():
+    binding = resolve_display_alias_to_active_episode(
+        projection(),
+        aliases=_identity_aliases(),
+        display_symbol="AAPL",
+        decision_date=date(2026, 9, 18),
+    )
+    bad = deepcopy(binding)
+    bad["identity_source_receipts"] = [{
+        "source": "identity",
+        "path": "data/reference/vendor_aliases.parquet",
+        "sha256": "sha256:" + "a" * 64,
+    }]
     with pytest.raises(
         OpportunityContextContractError,
-        match="identity source receipts are required",
+        match="fields are not closed",
     ):
-        resolve_display_alias_to_active_episode(
-            projection(),
-            aliases=_identity_aliases(),
-            identity_source_receipts=(),
-            display_symbol="AAPL",
-            decision_date=date(2026, 9, 18),
-        )
+        validate_opportunity_identity_binding(bad)
 
 
 def test_display_alias_refuses_historical_vendor_space_as_current_identity():
@@ -402,8 +391,7 @@ def test_display_alias_refuses_historical_vendor_space_as_current_identity():
         resolve_display_alias_to_active_episode(
             projection(),
             aliases=aliases,
-            identity_source_receipts=_identity_receipts(),
-            display_symbol="AAPL",
+                display_symbol="AAPL",
             decision_date=date(2026, 9, 18),
         )
 
@@ -416,8 +404,7 @@ def test_display_alias_refuses_non_date_clock():
         resolve_display_alias_to_active_episode(
             projection(),
             aliases=_identity_aliases(),
-            identity_source_receipts=_identity_receipts(),
-            display_symbol="AAPL",
+                display_symbol="AAPL",
             decision_date="2026-09-18",
         )
 
@@ -427,7 +414,6 @@ def _identity_binding():
     return resolve_display_alias_to_active_episode(
         projection(),
         aliases=_identity_aliases(),
-        identity_source_receipts=_identity_receipts(),
         display_symbol="AAPL",
         decision_date=date(2026, 9, 18),
     )
@@ -536,7 +522,6 @@ def test_context_joins_portfolio_without_laundering_plan_or_watchlist_state():
     binding = resolve_display_alias_to_active_episode(
         p,
         aliases=_identity_aliases(),
-        identity_source_receipts=_identity_receipts(),
         display_symbol="AAPL",
         decision_date=date(2026, 9, 18),
     )
@@ -595,32 +580,8 @@ def test_user_state_watchlist_negative_cannot_be_invented():
         validate_opportunity_context(bad)
 
 
-def test_identity_binding_validator_rejects_malformed_provenance_and_identity_text():
+def test_identity_binding_validator_rejects_malformed_identity_text():
     binding = _identity_binding()
-
-    bad = deepcopy(binding)
-    bad["identity_source_receipts"][0]["sha256"] = "sha256:x"
-    with pytest.raises(
-        OpportunityContextContractError,
-        match="identity receipt is malformed",
-    ):
-        validate_opportunity_identity_binding(bad)
-
-    bad = deepcopy(binding)
-    bad["identity_source_receipts"][0]["sha256"] = "sha256:" + "G" * 64
-    with pytest.raises(
-        OpportunityContextContractError,
-        match="identity receipt is malformed",
-    ):
-        validate_opportunity_identity_binding(bad)
-
-    bad = deepcopy(binding)
-    bad["identity_source_receipts"][0]["extra"] = "caller-supplied"
-    with pytest.raises(
-        OpportunityContextContractError,
-        match="identity receipt is malformed",
-    ):
-        validate_opportunity_identity_binding(bad)
 
     bad = deepcopy(binding)
     bad["decision_date"] = "2026-9-18"

@@ -217,14 +217,15 @@ def resolve_display_alias_to_active_episode(
     candidate_projection: Mapping[str, object],
     *,
     aliases: VendorAliasTable,
-    identity_source_receipts: Sequence[Mapping[str, object]],
     display_symbol: str,
     decision_date: date,
 ) -> dict[str, object]:
     """Bind a current display alias to one canonical ACTIVE B3 episode.
 
-    The resolver consumes the existing Data OS alias owner and its file receipts.
-    It performs no I/O and never treats the display symbol as identity. The
+    The resolver consumes the existing Data OS alias owner.
+    It performs no I/O and never treats the display symbol as identity. Exact
+    source-file receipts stay with the reader that actually read those files;
+    this pure projection does not accept caller-supplied digests as proof. The
     current Candidate Pool uses the repository current-catalog store alias
     space, so that vendor is fixed here rather than caller-selectable.
     """
@@ -238,24 +239,6 @@ def resolve_display_alias_to_active_episode(
     symbol = _text(display_symbol, "display_symbol").strip().upper()
     if not symbol:
         raise OpportunityContextContractError("display_symbol must be non-empty text")
-
-    if (
-        not isinstance(identity_source_receipts, Sequence)
-        or isinstance(identity_source_receipts, (str, bytes))
-        or not identity_source_receipts
-    ):
-        raise OpportunityContextContractError("identity source receipts are required")
-    receipts: list[dict[str, object]] = []
-    for receipt in identity_source_receipts:
-        if not isinstance(receipt, Mapping):
-            raise OpportunityContextContractError("identity source receipt must be an object")
-        if receipt.get("source") != "identity":
-            raise OpportunityContextContractError("identity source receipt owner mismatch")
-        path = _text(receipt.get("path"), "identity receipt path")
-        digest = _text(receipt.get("sha256"), "identity receipt sha256")
-        if not digest.startswith("sha256:") or len(digest) != 71:
-            raise OpportunityContextContractError("identity receipt sha256 is malformed")
-        receipts.append({"source": "identity", "path": path, "sha256": digest})
 
     security_id = aliases.resolve("store", symbol, decision_date)
     if security_id is None:
@@ -284,7 +267,6 @@ def resolve_display_alias_to_active_episode(
         "episode_id": row.get("episode_id"),
         "candidate_generation_id": candidate_projection.get("candidate_generation_id"),
         "candidate_state_projection_id": candidate_projection.get("projection_id"),
-        "identity_source_receipts": receipts,
         "authority": dict(ALL_FALSE_AUTHORITY),
     }
     validate_opportunity_identity_binding(binding)
@@ -299,7 +281,7 @@ def validate_opportunity_identity_binding(payload: Mapping[str, object]) -> None
         "schema", "alias_vendor", "display_symbol", "decision_date",
         "security_id", "company_id", "identity_epoch", "episode_id",
         "candidate_generation_id", "candidate_state_projection_id",
-        "identity_source_receipts", "authority",
+        "authority",
     }
     if set(payload) != expected:
         raise OpportunityContextContractError("opportunity identity binding fields are not closed")
@@ -345,24 +327,6 @@ def validate_opportunity_identity_binding(payload: Mapping[str, object]) -> None
 
     if payload.get("authority") != ALL_FALSE_AUTHORITY:
         raise OpportunityContextContractError("opportunity identity authority must remain all false")
-    receipts = payload.get("identity_source_receipts")
-    if not isinstance(receipts, list) or not receipts:
-        raise OpportunityContextContractError("opportunity identity receipts are required")
-    for receipt in receipts:
-        if not isinstance(receipt, Mapping) or set(receipt) != {"source", "path", "sha256"}:
-            raise OpportunityContextContractError("opportunity identity receipt is malformed")
-        digest = receipt.get("sha256")
-        if (
-            receipt.get("source") != "identity"
-            or not isinstance(receipt.get("path"), str)
-            or not receipt.get("path")
-            or not isinstance(digest, str)
-            or len(digest) != 71
-            or not digest.startswith("sha256:")
-            or any(ch not in "0123456789abcdef" for ch in digest[7:])
-        ):
-            raise OpportunityContextContractError("opportunity identity receipt is malformed")
-
 
 def project_terminal_portfolio_relation(
     identity_binding: Mapping[str, object],
