@@ -312,18 +312,695 @@
   <header class="cn-hero">
     <p class="cn-eyebrow"><span class="cn-live"></span><span class="cn-brand">📡 <span class="gn"><span class="l-en">China Tape</span><span class="l-zh">中国快讯</span></span></span></p>
     
-      <p class="cn-lead"><span class="l-en">The China macro tape is quiet right now.</span><span class="l-zh">当前中国宏观新闻流较安静。</span></p>
+      
+      
+      
+      
+      <p class="cn-lead">
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone leans cautious. <b>12</b> rated high-impact, led by <b>tech policy</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调偏谨慎。其中 <b>12</b> 条高影响，主导<b>科技政策</b>。</span>
+      </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
+      <div class="cn-glance">
+        
+        
+        <span class="cn-gchip st-cautious"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></b></span>
+        
+        <span class="cn-gchip hot"><span class="dot"></span><b>12</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-markets"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></b></span>
+        <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
+        <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
+      </div>
     
   </header>
 
   
-  <!-- ===================== EMPTY STATE ===================== -->
-  <div class="cn-empty">
-    <h2><span class="l-en">No filtered China headlines on this pull.</span><span class="l-zh">本次抓取暂无筛选中国头条。</span></h2>
-    <p><span class="l-en">This can happen when official pages are quiet, the flash-wire fetch is unavailable, or no macro-relevant item cleared the gate. Policy tone and scheduled catalysts remain live.</span><span class="l-zh">当官方页面安静、快讯抓取不可用，或没有宏观相关条目通过筛选时会出现这种情况。政策基调与排定催化仍保持更新。</span></p>
-  </div>
-  <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+  <!-- ===================== OVERVIEW 3-UP ===================== -->
+  <section class="cn-rail3">
+
+    <!-- policy tone -->
+    <article class="ov-card ov-tone st-cautious" style="--ac:var(--warn)">
+      <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
+      
+      
+      <div class="tg-top">
+        <div class="tg-state"><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></div>
+        <div class="tg-z">-2.0</div>
+      </div>
+      
+      
+      <div class="tg-track"><span class="mid"></span>
+        <span class="tg-fill" style="right:50%;width:40.4%"></span>
+      </div>
+      <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 114<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-10-04</p>
+      
+    </article>
+
+    <!-- what's on the tape -->
+    <article class="ov-card ov-mix">
+      <p class="ov-h"><span class="ic">🌡️</span><span class="l-en">What's on the tape</span><span class="l-zh">快讯结构</span></p>
+      
+        
+        
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:100%"></i></span>
+          <span class="mx-n">12</span>
+        </div>
+        
+        
+        <div class="mx-row th-monetary">
+          <span class="mx-name"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+          <span class="mx-bar"><i style="width:50%"></i></span>
+          <span class="mx-n">6</span>
+        </div>
+        
+        
+        <div class="mx-row th-growth">
+          <span class="mx-name"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+          <span class="mx-bar"><i style="width:25%"></i></span>
+          <span class="mx-n">3</span>
+        </div>
+        
+        
+        <div class="mx-row th-policy">
+          <span class="mx-name"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+          <span class="mx-bar"><i style="width:8%"></i></span>
+          <span class="mx-n">1</span>
+        </div>
+        
+        
+        <div class="mx-row th-fiscal">
+          <span class="mx-name"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+          <span class="mx-bar"><i style="width:8%"></i></span>
+          <span class="mx-n">1</span>
+        </div>
+        
+      
+      
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 16 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 5 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 2 · <span class="l-en">domestic wire</span><span class="l-zh">国内财经快讯</span> 1</p>
+      
+    </article>
+
+    <!-- next catalyst -->
+    <article class="ov-card ov-next">
+      <p class="ov-h"><span class="ic">📅</span><span class="l-en">Next catalyst</span><span class="l-zh">下一催化</span></p>
+      
+      
+      <div class="nx-when">
+        
+          <span class="nx-days" style="color:#d0554f"><span class="l-en">Today</span><span class="l-zh">今日</span></span>
+          
+        
+      </div>
+      <p class="nx-name"><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></p>
+      <p class="nx-date"><span class="l-en">Sep 30</span><span class="l-zh">9月30日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      
+    </article>
+  </section>
+
+  <!-- ===================== THE TAPE + RAIL ===================== -->
+  <section class="cn-main">
+    <div class="cn-feed-col">
+      <div class="cn-toolbar">
+        <div class="cn-search"><span class="mag">⌕</span><input id="q" type="search" autocomplete="off" placeholder="Search headlines, channels or tickers…" data-ph-en="Search headlines, channels or tickers…" data-ph-zh="搜索头条、通道或标的…"></div>
+        <div class="cn-filters" id="filters">
+          <button class="fbtn on" data-theme="all"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+          <button class="fbtn" data-importance="high"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
+          <button class="fbtn" data-theme="monetary"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span><span class="fc" data-fc="monetary"></span></button><button class="fbtn" data-theme="inflation"><span class="l-en">Inflation</span><span class="l-zh">物价</span><span class="fc" data-fc="inflation"></span></button><button class="fbtn" data-theme="growth"><span class="l-en">Growth</span><span class="l-zh">增长</span><span class="fc" data-fc="growth"></span></button><button class="fbtn" data-theme="credit"><span class="l-en">Credit</span><span class="l-zh">信用</span><span class="fc" data-fc="credit"></span></button><button class="fbtn" data-theme="fiscal"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span><span class="fc" data-fc="fiscal"></span></button><button class="fbtn" data-theme="policy"><span class="l-en">Policy</span><span class="l-zh">政策</span><span class="fc" data-fc="policy"></span></button><button class="fbtn" data-theme="politics"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span><span class="fc" data-fc="politics"></span></button><button class="fbtn" data-theme="tech"><span class="l-en">Tech</span><span class="l-zh">科技</span><span class="fc" data-fc="tech"></span></button><button class="fbtn" data-theme="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span><span class="fc" data-fc="markets"></span></button><button class="fbtn" data-theme="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span><span class="fc" data-fc="macro"></span></button>
+        </div>
+        <span class="cn-count" id="count"></span>
+      </div>
+
+      <div class="tp-feed" id="feed">
+        
+        
+        <a class="tp-item th-monetary lead" href="https://www.gelonghui.com/live/2697853" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="下周大事提醒丨美联储决议、地缘巨震与a股节后第一枪！ key events next week: fed decision, geopolitical shockwaves, and a-shares' first shot after the holiday! 下周大事提醒丨美联储决议、地缘巨震与a股节后第一枪！ 下周全球市场将迎来多重重磅事件交织。国内市场方面，a股将于10月8日(周四)结束国庆长假开市。国际宏观与政策端，美联储会议纪要及多位官讲话将透露降息路径，美国9月ism非制造业数据与失业金人数将验证经济韧性；同时，g7联合释放1亿桶战略油储与中东地缘局势动向将加剧能源市场波动。此外，英特尔调价与芝商所首发gpu算力期货凸显芯片算力产业链新动态，而2026年诺贝尔奖(生理学或医学、物理、化学、文学、和平奖)也将于周内陆续揭晓。 <u>10月5日(周一)：</u> 17:30 2026年诺贝尔生理学或医学奖公布 22:00 美国9月ism非制造业指数 g7决 next week, global markets will see a mix of major events. domestically, a-shares will reopen on october 8 (thursday) after the national day holiday. on the international macro and policy front, the fed meeting minutes and speeches by several officials will reveal the rate-cut path, while u.s. september ism non-manufacturing data and jobless claims will test economic resilience; at the same time, the g7's joint release of 100 million barrels of strategic oil reserves and middle east geopolitical developments will heighten volatility in energy markets. in addition, intel's price adjustments and cme's first gpu computing power futures highlight new developments in the chip computing power industry chain, while the 2026 nobel prizes (physiology or medicine, physics, chemistry, literature, peace) will also be announced during the week. <u>october 5 (monday):</u> 17:30 announcement of the 2026 nobel prize in physiology or medicine 22:00 u.s. september ism non-manufacturing index g7 decision 下周全球市场将迎来多重重磅事件交织。国内市场方面，a股将于10月8日(周四)结束国庆长假开市。国际宏观与政策端，美联储会议纪要及多位官讲话将透露降息路径，美国9月ism非制造业数据与失业金人数将验证经济韧性；同时，g7联合释放1亿桶战略油储与中东地缘局势动向将加剧能源市场波动。此外，英特尔调价与芝商所首发gpu算力期货凸显芯片算力产业链新动态，而2026年诺贝尔奖(生理学或医学、物理、化学、文学、和平奖)也将于周内陆续揭晓。 <u>10月5日(周一)：</u> 17:30 2026年诺贝尔生理学或医学奖公布 22:00 美国9月ism非制造业指数 g7决 格隆汇 pboc_liquidity industrial markets tech_policy pboc & liquidity 央行与流动性 industry & manufacturing 工业与制造业 equity market 股票市场 tech policy 科技政策 ">
+          <time class="tp-when" data-t="2026-10-04T11:19:11+00:00" datetime="2026-10-04T11:19:11+00:00">10-04<br>11:19</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-04T11:19:11+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">格隆汇</span>
+              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Key events next week: Fed decision, geopolitical shockwaves, and A-shares' first shot after the holiday!</span><span class="l-zh">下周大事提醒丨美联储决议、地缘巨震与A股节后第一枪！</span></h2>
+            <p class="tp-sum"><span class="l-en">Next week, global markets will see a mix of major events. Domestically, A-shares will reopen on October 8 (Thursday) after the National Day holiday. On the international macro and policy front, the Fed meeting minutes and speeches by several officials will reveal the rate-cut path, while U.S. September ISM non-manufacturing data and jobless claims will test economic resilience; at the same time, the G7's joint release of 100 million barrels of strategic oil reserves and Middle East geopolitical developments will heighten volatility in energy markets. In addition, Intel's price adjustments and CME's first GPU computing power futures highlight new developments in the chip computing power industry chain, while the 2026 Nobel Prizes (Physiology or Medicine, Physics, Chemistry, Literature, Peace) will also be announced during the week. <u>October 5 (Monday):</u> 17:30 Announcement of the 2026 Nobel Prize in Physiology or Medicine 22:00 U.S. September ISM Non-Manufacturing Index G7 decision</span><span class="l-zh">下周全球市场将迎来多重重磅事件交织。国内市场方面，A股将于10月8日(周四)结束国庆长假开市。国际宏观与政策端，美联储会议纪要及多位官讲话将透露降息路径，美国9月ISM非制造业数据与失业金人数将验证经济韧性；同时，G7联合释放1亿桶战略油储与中东地缘局势动向将加剧能源市场波动。此外，英特尔调价与芝商所首发GPU算力期货凸显芯片算力产业链新动态，而2026年诺贝尔奖(生理学或医学、物理、化学、文学、和平奖)也将于周内陆续揭晓。 <u>10月5日(周一)：</u> 17:30 2026年诺贝尔生理学或医学奖公布 22:00 美国9月ISM非制造业指数 G7决</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.scmp.com/economy/china-economy/article/3369550/china-seen-doing-just-enough-targeted-fiscal-support-defend-gdp-growth?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="china seen doing ‘just enough’ with targeted fiscal support to defend gdp growth  中国被视为以定向财政支持做到‘恰到好处’以捍卫gdp增长 china’s finance minister has pledged to roll out incremental and targeted fiscal policies to help achieve leadership’s full-year growth target for the country, following a freshly announced package of supportive measures. however, analysts expect beijing to stop short of a major stimulus, providing only “just enough” support to meet the target.
+lan foan made the pledge in an article published on thursday in the communist party’s leading theoretical journal, qiushi, calling for the broadened...  中国财政部长承诺推出增量、有针对性的财政政策，以帮助实现领导层设定的全年增长目标，此前刚宣布了一系列支持性措施。然而，分析师预计北京不会推出大规模刺激，只会提供“恰好足够”的支持来实现目标。
+蓝佛安作出 scmp - china economy growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-02T09:00:06+00:00" datetime="2026-10-02T09:00:06+00:00">10-02<br>09:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-02T09:00:06+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>84</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China seen doing ‘just enough’ with targeted fiscal support to defend GDP growth</span><span class="l-zh">中国被视为以定向财政支持做到‘恰到好处’以捍卫GDP增长</span></h2>
+            <p class="tp-sum"><span class="l-en">China’s finance minister has pledged to roll out incremental and targeted fiscal policies to help achieve leadership’s full-year growth target for the country, following a freshly announced package of supportive measures. However, analysts expect Beijing to stop short of a major stimulus, providing only “just enough” support to meet the target.
+Lan Foan made the pledge in an article published on Thursday in the Communist Party’s leading theoretical journal, Qiushi, calling for the broadened...</span><span class="l-zh">中国财政部长承诺推出增量、有针对性的财政政策，以帮助实现领导层设定的全年增长目标，此前刚宣布了一系列支持性措施。然而，分析师预计北京不会推出大规模刺激，只会提供“恰好足够”的支持来实现目标。
+蓝佛安作出</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3173953" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="中资券商加快全球化布局，在中东落子 chinese brokerages accelerate global expansion with a move into the middle east 中资券商加快全球化布局，在中东落子 近日，中信建投（国际）金融控股有限公司发布消息称，正式获得迪拜国际金融中心（difc）颁发的牌照，并获迪拜金融服务管理局（dfsa）授权，在difc设立迪拜代表处。 国泰海通的国际化业务布局也于近日取得新进展：子公司国泰君安国际与哈萨克斯坦阿拉木图市政府正式签署合作备忘录，将在跨境融资等领域建立长期合作关系，助力哈萨克斯坦优质主体对接中国香港国际资本市场，拓宽离岸人民币融资渠道。（券商中国） recently, china securities (international) financial holdings limited announced that it has officially obtained a license issued by the dubai international financial center (difc) and has been authorized by the dubai financial services authority (dfsa) to establish a dubai representative office in difc. guotai haitong's international business layout also made new progress recently: its subsidiary guotai junan international signed a memorandum of cooperation with the almaty city government in kazakhstan, and the two sides will establish a long-term cooperative relationship in areas such as cross-border financing, helping high-quality kazakh entities connect with hong kong's international capital market and broadening offshore rmb financing channels. (securities times) 近日，中信建投（国际）金融控股有限公司发布消息称，正式获得迪拜国际金融中心（difc）颁发的牌照，并获迪拜金融服务管理局（dfsa）授权，在difc设立迪拜代表处。 国泰海通的国际化业务布局也于近日取得新进展：子公司国泰君安国际与哈萨克斯坦阿拉木图市政府正式签署合作备忘录，将在跨境融资等领域建立长期合作关系，助力哈萨克斯坦优质主体对接中国香港国际资本市场，拓宽离岸人民币融资渠道。（券商中国） 华尔街见闻 yuan yuan & fx 人民币与汇率 cny cnh 512880.ss">
+          <time class="tp-when" data-t="2026-10-04T11:27:03+00:00" datetime="2026-10-04T11:27:03+00:00">10-04<br>11:27</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-04T11:27:03+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Chinese brokerages accelerate global expansion with a move into the Middle East</span><span class="l-zh">中资券商加快全球化布局，在中东落子</span></h2>
+            <p class="tp-sum"><span class="l-en">Recently, China Securities (International) Financial Holdings Limited announced that it has officially obtained a license issued by the Dubai International Financial Center (DIFC) and has been authorized by the Dubai Financial Services Authority (DFSA) to establish a Dubai representative office in DIFC. Guotai Haitong's international business layout also made new progress recently: its subsidiary Guotai Junan International signed a memorandum of cooperation with the Almaty city government in Kazakhstan, and the two sides will establish a long-term cooperative relationship in areas such as cross-border financing, helping high-quality Kazakh entities connect with Hong Kong's international capital market and broadening offshore RMB financing channels. (Securities Times)</span><span class="l-zh">近日，中信建投（国际）金融控股有限公司发布消息称，正式获得迪拜国际金融中心（DIFC）颁发的牌照，并获迪拜金融服务管理局（DFSA）授权，在DIFC设立迪拜代表处。 国泰海通的国际化业务布局也于近日取得新进展：子公司国泰君安国际与哈萨克斯坦阿拉木图市政府正式签署合作备忘录，将在跨境融资等领域建立长期合作关系，助力哈萨克斯坦优质主体对接中国香港国际资本市场，拓宽离岸人民币融资渠道。（券商中国）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span><span class="cn-tk">CNH</span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.cnstock.com/topicDetail/356068" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="重返扩张区间！9月制造业pmi升至50.1% back to expansion! september manufacturing pmi rises to 50.1% 重返扩张区间！9月制造业pmi升至50.1%    上海证券报 industrial industry & manufacturing 工业与制造业 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Back to expansion! September manufacturing PMI rises to 50.1%</span><span class="l-zh">重返扩张区间！9月制造业PMI升至50.1%</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://www.stcn.com/article/detail/4206092.html" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="中信证券：积极迎接房地产的新周期 citic securities: actively embrace the new cycle of real estate 中信证券：积极迎接房地产的新周期    证券时报 property property 房地产 512880.ss 512200.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CITIC Securities: Actively embrace the new cycle of real estate</span><span class="l-zh">中信证券：积极迎接房地产的新周期</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-tk">512880.SS</span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/topicDetail/797461" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="专题 | “十五五”资本市场高质量发展座谈会 special topic | symposium on high-quality development of the capital market during the 15th five-year plan 专题 | “十五五”资本市场高质量发展座谈会    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Special topic | Symposium on high-quality development of the capital market during the 15th Five-Year Plan</span><span class="l-zh">专题 | “十五五”资本市场高质量发展座谈会</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3173923" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="商务部新闻发言人就二十国集团贸易部长会议及相关情况答记者问 mofcom spokesperson answers reporters' questions on the g20 trade ministers' meeting and related matters 商务部新闻发言人就二十国集团贸易部长会议及相关情况答记者问 问：9月30日至10月1日，g20贸易部长会议在美国威斯康星州密尔沃基举行。据了解，会议就反对粮食武器化议题达成联合声明，未就应对产能过剩、消除强迫劳动、调整最惠国待遇原则议题形成成果文件。请问中方如何评价本次会议？中方发挥了怎样的作用？ 答：本次g20贸易部长会议，成员围绕主席国美方设置的反对粮食武器化、应对产能过剩、消除强迫劳动、调整最惠国待遇原则等议题交换意见，并就粮食议题达成联合声明，其余议题未形成成果文件。 在粮食议题磋商中，包括中方在内的许多新兴市场和发展中成员都提出，粮食进口国和出口国应当共同维护粮食供应链稳定，同时，各方有权出于国内公共政 q: from september 30 to october 1, the g20 trade ministers' meeting was held in milwaukee, wisconsin, usa. it is understood that the meeting reached a joint statement on opposing the weaponization of food, but did not form an outcome document on addressing overcapacity, eliminating forced labor, or adjusting the most-favored-nation principle. how does china evaluate this meeting? what role did china play? a: at this g20 trade ministers' meeting, members exchanged views on topics set by the u.s. presidency, including opposing the weaponization of food, addressing overcapacity, eliminating forced labor, and adjusting the most-favored-nation principle, and reached a joint statement on the food issue, while no outcome document was formed on the other topics. during consultations on the food issue, many emerging market and developing members, including china, proposed that food-importing and food-exporting countries should jointly safeguard the stability of food supply chains, and that all parties have the right, for domestic public policy reasons, to 问：9月30日至10月1日，g20贸易部长会议在美国威斯康星州密尔沃基举行。据了解，会议就反对粮食武器化议题达成联合声明，未就应对产能过剩、消除强迫劳动、调整最惠国待遇原则议题形成成果文件。请问中方如何评价本次会议？中方发挥了怎样的作用？ 答：本次g20贸易部长会议，成员围绕主席国美方设置的反对粮食武器化、应对产能过剩、消除强迫劳动、调整最惠国待遇原则等议题交换意见，并就粮食议题达成联合声明，其余议题未形成成果文件。 在粮食议题磋商中，包括中方在内的许多新兴市场和发展中成员都提出，粮食进口国和出口国应当共同维护粮食供应链稳定，同时，各方有权出于国内公共政 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-10-04T04:04:17+00:00" datetime="2026-10-04T04:04:17+00:00">10-04<br>04:04</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-04T04:04:17+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>66</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">MOFCOM spokesperson answers reporters' questions on the G20 Trade Ministers' Meeting and related matters</span><span class="l-zh">商务部新闻发言人就二十国集团贸易部长会议及相关情况答记者问</span></h2>
+            <p class="tp-sum"><span class="l-en">Q: From September 30 to October 1, the G20 Trade Ministers' Meeting was held in Milwaukee, Wisconsin, USA. It is understood that the meeting reached a joint statement on opposing the weaponization of food, but did not form an outcome document on addressing overcapacity, eliminating forced labor, or adjusting the most-favored-nation principle. How does China evaluate this meeting? What role did China play? A: At this G20 Trade Ministers' Meeting, members exchanged views on topics set by the U.S. presidency, including opposing the weaponization of food, addressing overcapacity, eliminating forced labor, and adjusting the most-favored-nation principle, and reached a joint statement on the food issue, while no outcome document was formed on the other topics. During consultations on the food issue, many emerging market and developing members, including China, proposed that food-importing and food-exporting countries should jointly safeguard the stability of food supply chains, and that all parties have the right, for domestic public policy reasons, to</span><span class="l-zh">问：9月30日至10月1日，G20贸易部长会议在美国威斯康星州密尔沃基举行。据了解，会议就反对粮食武器化议题达成联合声明，未就应对产能过剩、消除强迫劳动、调整最惠国待遇原则议题形成成果文件。请问中方如何评价本次会议？中方发挥了怎样的作用？ 答：本次G20贸易部长会议，成员围绕主席国美方设置的反对粮食武器化、应对产能过剩、消除强迫劳动、调整最惠国待遇原则等议题交换意见，并就粮食议题达成联合声明，其余议题未形成成果文件。 在粮食议题磋商中，包括中方在内的许多新兴市场和发展中成员都提出，粮食进口国和出口国应当共同维护粮食供应链稳定，同时，各方有权出于国内公共政</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.scmp.com/economy/china-economy/article/3369296/chinas-rd-spending-hits-record-28-gdp-beating-oecd-average-first-time?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="china’s r&d spending hits record 2.8% of gdp, beating oecd average for the first time  中国研发支出占gdp比重达到创纪录的2.8%，首次超过oecd平均水平 for the first time, china’s spending on research and development as a share of gross domestic product has surpassed the average for organisation for economic cooperation and development (oecd) members – a trend one analyst expects to continue as beijing seeks to strengthen technological self-reliance amid intensifying global competition.
+r&d expenditure exceeded 3.92 trillion yuan (us$584.8 billion) in 2025, accounting for 2.8 per cent of gdp, science and technology minister yin hejun said at a...  中国的研发支出占国内生产总值的比重首次超过经济合作与发展组织（oecd）成员国的平均水平——一位分析师预计，随着北京在日益激烈的全球竞争中寻求加强技术自立自强，这一趋势还将持续。
+研发支出超过 scmp - china economy yuan tech_policy yuan & fx 人民币与汇率 tech policy 科技政策 cny">
+          <time class="tp-when" data-t="2026-09-30T06:01:56+00:00" datetime="2026-09-30T06:01:56+00:00">09-30<br>06:01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30T06:01:56+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China’s R&D spending hits record 2.8% of GDP, beating OECD average for the first time</span><span class="l-zh">中国研发支出占GDP比重达到创纪录的2.8%，首次超过OECD平均水平</span></h2>
+            <p class="tp-sum"><span class="l-en">For the first time, China’s spending on research and development as a share of gross domestic product has surpassed the average for Organisation for Economic Cooperation and Development (OECD) members – a trend one analyst expects to continue as Beijing seeks to strengthen technological self-reliance amid intensifying global competition.
+R&D expenditure exceeded 3.92 trillion yuan (US$584.8 billion) in 2025, accounting for 2.8 per cent of GDP, Science and Technology Minister Yin Hejun said at a...</span><span class="l-zh">中国的研发支出占国内生产总值的比重首次超过经济合作与发展组织（OECD）成员国的平均水平——一位分析师预计，随着北京在日益激烈的全球竞争中寻求加强技术自立自强，这一趋势还将持续。
+研发支出超过</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.pbc.gov.cn/en/3688110/3688172/2026/2026093015565447786/index.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="pbocâ adjusts and improvesâ several monetary policy tools  中国人民银行调整和完善多项货币政策工具    pboc pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-09-29" datetime="2026-09-29">09-29</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-29"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">PBoC</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOCÂ Adjusts and ImprovesÂ Several Monetary Policy Tools</span><span class="l-zh">中国人民银行调整和完善多项货币政策工具</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103384050.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="一批增量政策密集落地；美联储加息预期骤降｜一周热点回顾 国务院常务会议部署推出系列增量政策，首套房贷贴息全国落地，央行出台一揽子货币政策工具调整方案。 a batch of incremental policies implemented intensively; fed rate hike expectations plummet | weekly hotspot review: the state council executive meeting deployed a series of incremental policies, first-home mortgage interest subsidies rolled out nationwide, and the pboc introduced a package of monetary policy tool adjustment plans. 一批增量政策密集落地；美联储加息预期骤降｜一周热点回顾 国务院常务会议部署推出系列增量政策，首套房贷贴息全国落地，央行出台一揽子货币政策工具调整方案。    第一财经 pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">A batch of incremental policies implemented intensively; Fed rate hike expectations plummet | Weekly hotspot review: The State Council executive meeting deployed a series of incremental policies, first-home mortgage interest subsidies rolled out nationwide, and the PBOC introduced a package of monetary policy tool adjustment plans.</span><span class="l-zh">一批增量政策密集落地；美联储加息预期骤降｜一周热点回顾 国务院常务会议部署推出系列增量政策，首套房贷贴息全国落地，央行出台一揽子货币政策工具调整方案。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103383837.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="全球央行艰难重启加息周期，这次有什么不同|海外市场月报 许多机构实际上在减少美元资产配置的同时，增加对新兴市场资产的配置。 global central banks struggle to restart the rate hike cycle, what is different this time | overseas market monthly report many institutions are actually reducing us dollar asset allocations while increasing allocations to emerging market assets. 全球央行艰难重启加息周期，这次有什么不同|海外市场月报 许多机构实际上在减少美元资产配置的同时，增加对新兴市场资产的配置。    第一财经 pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Global central banks struggle to restart the rate hike cycle, what is different this time | Overseas Market Monthly Report Many institutions are actually reducing US dollar asset allocations while increasing allocations to emerging market assets.</span><span class="l-zh">全球央行艰难重启加息周期，这次有什么不同|海外市场月报 许多机构实际上在减少美元资产配置的同时，增加对新兴市场资产的配置。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.yicai.com/news/103383834.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="程实：全球变局中的中国机遇 | 国庆大咖谈 2026年，ai逐渐从资本市场叙事转化为真实的资本形成。 cheng shi: china's opportunities amid global changes | national day expert talk in 2026, ai will gradually transform from a capital market narrative into real capital formation. 程实：全球变局中的中国机遇 | 国庆大咖谈 2026年，ai逐渐从资本市场叙事转化为真实的资本形成。    第一财经 tech_policy tech policy 科技政策 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Cheng Shi: China's opportunities amid global changes | National Day Expert Talk In 2026, AI will gradually transform from a capital market narrative into real capital formation.</span><span class="l-zh">程实：全球变局中的中国机遇 | 国庆大咖谈 2026年，AI逐渐从资本市场叙事转化为真实的资本形成。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://finance.sina.com.cn/jjxw/2026-10-01/doc-inittekc1202103.shtml" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="亚洲科技股涨疯了：美光业绩提振市场情绪 美联储本月加息概率下调 韩国芯片出口暴增263% asian tech stocks surge: micron earnings boost market sentiment, fed rate hike odds for this month lowered, south korea chip exports jump 263% 亚洲科技股涨疯了：美光业绩提振市场情绪 美联储本月加息概率下调 韩国芯片出口暴增263%    新浪财经股票 fiscal_trade tech_policy fiscal & trade 财政与贸易 tech policy 科技政策 ">
+          <time class="tp-when" data-t="2026-10-01" datetime="2026-10-01">10-01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-01"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Asian tech stocks surge: Micron earnings boost market sentiment, Fed rate hike odds for this month lowered, South Korea chip exports jump 263%</span><span class="l-zh">亚洲科技股涨疯了：美光业绩提振市场情绪 美联储本月加息概率下调 韩国芯片出口暴增263%</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.scmp.com/property/article/3369600/more-hong-kong-homes-sell-loss-despite-signs-prices-have-bottomed-agents?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="more hong kong homes sell at a loss despite signs prices have bottomed: agents  尽管有迹象显示房价已触底，香港更多房屋仍以亏损价格售出：中介 despite signs that hong kong property prices could have bottomed out and begun rebounding in august, market sources said at least 100 secondary residential homes were sold at a loss in september, up from at least 81 the previous month.
+hong kong’s property market dodged an immediate setback from the us federal reserve’s rate increase in september, and agents estimated that home prices could end the year 15 per cent higher than a year earlier. the positive trend, however, did not generally apply...  尽管有迹象显示香港楼价可能已在8月触底并开始反弹，但市场消息人士称，9月至少有100套二手住宅以亏损价格售出，高于上月的至少81套。
+香港楼市避开了美联储9月加息带来的即时冲击，而代理商 scmp - business property property 房地产 512200.ss">
+          <time class="tp-when" data-t="2026-10-04T08:00:10+00:00" datetime="2026-10-04T08:00:10+00:00">10-04<br>08:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-04T08:00:10+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">More Hong Kong homes sell at a loss despite signs prices have bottomed: agents</span><span class="l-zh">尽管有迹象显示房价已触底，香港更多房屋仍以亏损价格售出：中介</span></h2>
+            <p class="tp-sum"><span class="l-en">Despite signs that Hong Kong property prices could have bottomed out and begun rebounding in August, market sources said at least 100 secondary residential homes were sold at a loss in September, up from at least 81 the previous month.
+Hong Kong’s property market dodged an immediate setback from the US Federal Reserve’s rate increase in September, and agents estimated that home prices could end the year 15 per cent higher than a year earlier. The positive trend, however, did not generally apply...</span><span class="l-zh">尽管有迹象显示香港楼价可能已在8月触底并开始反弹，但市场消息人士称，9月至少有100套二手住宅以亏损价格售出，高于上月的至少81套。
+香港楼市避开了美联储9月加息带来的即时冲击，而代理商</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.scmp.com/business/companies/article/3369587/mcdonalds-sells-hong-kong-shop-us153-million-old-money-returns-retail?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="mcdonald’s sells hong kong shop for us$15.3 million as ‘old money’ returns to retail  麦当劳以1530万美元出售香港商铺，随着‘老钱’回流零售业 as “long-dormant old money” steps back into hong kong’s retail property market, mcdonald’s has sold the property housing its first new territories restaurant for hk$120 million (us$15.3 million), extending its year-long sell-down of self-owned shops.
+the property at 10-22 tsuen wan market street, spanning the ground floor to the second floor, was sold to keen charm holdings (hk) limited, with the agreement for sale signed on august 31, according to the land registry.
+company registry listed ngan...  随着“沉寂已久的旧资金”重新进入香港零售物业市场，麦当劳以1.2亿港元（1530万美元）出售了其在新界首家餐厅所在的物业，延续了其长达一年的自持商铺减持行动。
+位于荃湾街市街10-22号的该物业，涵盖地下至二楼，已出售给kee scmp - business property consumer property 房地产 consumer 消费 512200.ss">
+          <time class="tp-when" data-t="2026-10-02T12:00:19+00:00" datetime="2026-10-02T12:00:19+00:00">10-02<br>12:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-02T12:00:19+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">McDonald’s sells Hong Kong shop for US$15.3 million as ‘old money’ returns to retail</span><span class="l-zh">麦当劳以1530万美元出售香港商铺，随着‘老钱’回流零售业</span></h2>
+            <p class="tp-sum"><span class="l-en">As “long-dormant old money” steps back into Hong Kong’s retail property market, McDonald’s has sold the property housing its first New Territories restaurant for HK$120 million (US$15.3 million), extending its year-long sell-down of self-owned shops.
+The property at 10-22 Tsuen Wan Market Street, spanning the ground floor to the second floor, was sold to Keen Charm Holdings (HK) Limited, with the agreement for sale signed on August 31, according to the Land Registry.
+Company Registry listed Ngan...</span><span class="l-zh">随着“沉寂已久的旧资金”重新进入香港零售物业市场，麦当劳以1.2亿港元（1530万美元）出售了其在新界首家餐厅所在的物业，延续了其长达一年的自持商铺减持行动。
+位于荃湾街市街10-22号的该物业，涵盖地下至二楼，已出售给Kee</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.stcn.com/article/detail/4206284.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="国庆假期过半消费市场平稳有序 consumer market steady and orderly as national day holiday passes the halfway mark 国庆假期过半消费市场平稳有序    证券时报 consumer consumer 消费 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Consumer market steady and orderly as National Day holiday passes the halfway mark</span><span class="l-zh">国庆假期过半消费市场平稳有序</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.scmp.com/business/article/3369646/how-malaysia-offers-chinese-investors-singapores-comfort-prices-lower-thailand?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="how malaysia offers chinese investors singapore’s comfort at prices lower than thailand  马来西亚如何以低于泰国的价格为中资投资者提供新加坡式的舒适体验 malaysia is proving to be a middle ground for many hong kong and mainland chinese investors looking to buy property in a country that provides the stability singapore offers, but with competitive price points similar to those found in thailand, according to analysts.
+data from juwai iqi, a property portal with 7 million listings across 111 countries, showed that in the first half of 2026, malaysia was the fourth-highest destination for inquiries received from chinese buyers. that compared with...  分析师表示，对于许多寻求在海外购置房产的香港和中国内地投资者而言，马来西亚正成为一个折中选择——既拥有新加坡所提供的稳定性，价格又具备与泰国相当的竞争力。
+拥有横跨111个国家700万套房源的房地产门户网站juwai iqi的数据显示， scmp - business property property 房地产 512200.ss">
+          <time class="tp-when" data-t="2026-10-04T03:00:09+00:00" datetime="2026-10-04T03:00:09+00:00">10-04<br>03:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-04T03:00:09+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">How Malaysia offers Chinese investors Singapore’s comfort at prices lower than Thailand</span><span class="l-zh">马来西亚如何以低于泰国的价格为中资投资者提供新加坡式的舒适体验</span></h2>
+            <p class="tp-sum"><span class="l-en">Malaysia is proving to be a middle ground for many Hong Kong and mainland Chinese investors looking to buy property in a country that provides the stability Singapore offers, but with competitive price points similar to those found in Thailand, according to analysts.
+Data from Juwai IQI, a property portal with 7 million listings across 111 countries, showed that in the first half of 2026, Malaysia was the fourth-highest destination for inquiries received from Chinese buyers. That compared with...</span><span class="l-zh">分析师表示，对于许多寻求在海外购置房产的香港和中国内地投资者而言，马来西亚正成为一个折中选择——既拥有新加坡所提供的稳定性，价格又具备与泰国相当的竞争力。
+拥有横跨111个国家700万套房源的房地产门户网站Juwai IQI的数据显示，</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3173918" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="中国银行成功协助韩国产业银行发行30亿元点心债 bank of china successfully assisted the korea development bank in issuing 3 billion yuan of dim sum bonds 中国银行成功协助韩国产业银行发行30亿元点心债 中国银行消息显示，近日，中国银行作为联席主承销商及账簿管理人，成功协助韩国产业银行发行3年期30亿元离岸人民币债券（点心债），票面利率1.69%。本次发行创下韩国产业银行最大规模离岸人民币公募债券发行纪录。（新华社） bank of china news shows that recently, as joint lead underwriter and bookrunner, bank of china successfully assisted the korea development bank in issuing 3-year 3 billion yuan offshore rmb bonds (dim sum bonds), with a coupon rate of 1.69%. this issuance set a record for the korea development bank's largest offshore rmb public bond issuance. (xinhua news agency) 中国银行消息显示，近日，中国银行作为联席主承销商及账簿管理人，成功协助韩国产业银行发行3年期30亿元离岸人民币债券（点心债），票面利率1.69%。本次发行创下韩国产业银行最大规模离岸人民币公募债券发行纪录。（新华社） 华尔街见闻 yuan yuan & fx 人民币与汇率 cny cnh 512800.ss">
+          <time class="tp-when" data-t="2026-10-04T03:29:34+00:00" datetime="2026-10-04T03:29:34+00:00">10-04<br>03:29</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-04T03:29:34+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Bank of China successfully assisted the Korea Development Bank in issuing 3 billion yuan of dim sum bonds</span><span class="l-zh">中国银行成功协助韩国产业银行发行30亿元点心债</span></h2>
+            <p class="tp-sum"><span class="l-en">Bank of China news shows that recently, as joint lead underwriter and bookrunner, Bank of China successfully assisted the Korea Development Bank in issuing 3-year 3 billion yuan offshore RMB bonds (dim sum bonds), with a coupon rate of 1.69%. This issuance set a record for the Korea Development Bank's largest offshore RMB public bond issuance. (Xinhua News Agency)</span><span class="l-zh">中国银行消息显示，近日，中国银行作为联席主承销商及账簿管理人，成功协助韩国产业银行发行3年期30亿元离岸人民币债券（点心债），票面利率1.69%。本次发行创下韩国产业银行最大规模离岸人民币公募债券发行纪录。（新华社）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span><span class="cn-tk">CNH</span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/jjxw/2026-10-04/doc-initzzvi7104661.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="都在接deepseek、workbuddy，券商ai最终靠什么拉开差距？ everyone's connecting to deepseek and workbuddy — what will ultimately set brokerages' ai apart? 都在接deepseek、workbuddy，券商ai最终靠什么拉开差距？    新浪财经股票 tech_policy tech policy 科技政策 512880.ss">
+          <time class="tp-when" data-t="2026-10-04" datetime="2026-10-04">10-04</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-04"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Everyone's connecting to DeepSeek and WorkBuddy — what will ultimately set brokerages' AI apart?</span><span class="l-zh">都在接DeepSeek、WorkBuddy，券商AI最终靠什么拉开差距？</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.eastmoney.com/a/202610043888529654.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="港交所行政总裁：国际投资者把目光投向中国市场 港交所要推出人民币计价黄金期货 hkex chief executive: international investors are turning their attention to the chinese market; hkex will launch rmb-denominated gold futures 港交所行政总裁：国际投资者把目光投向中国市场 港交所要推出人民币计价黄金期货 【港交所行政总裁：国际投资者把目光投向中国市场 港交所要推出人民币计价黄金期货】香港特区2026年施政报告提出将深化香港的全球离岸人民币业务和资本市场，港交所行政总裁陈翊庭2日表示，国际投资者已重新把目光投向亚洲地区，特别是中国市场，并有意做多元化资产配置，香港需要构建多元化资产生态圈，而并非只做大做强股票市场。港交所会研究推出人民币计价黄金期货。 [hkex chief executive: international investors are turning their attention to the chinese market; hkex will launch rmb-denominated gold futures] hong kong's 2026 policy address proposed deepening hong kong's global offshore rmb business and capital market. hkex chief executive chan yiting said on the 2nd that international investors have refocused their attention on asia, especially the chinese market, and are interested in diversified asset allocation. hong kong needs to build a diversified asset ecosystem, rather than only expanding and strengthening the stock market. hkex will study launching rmb-denominated gold futures. 【港交所行政总裁：国际投资者把目光投向中国市场 港交所要推出人民币计价黄金期货】香港特区2026年施政报告提出将深化香港的全球离岸人民币业务和资本市场，港交所行政总裁陈翊庭2日表示，国际投资者已重新把目光投向亚洲地区，特别是中国市场，并有意做多元化资产配置，香港需要构建多元化资产生态圈，而并非只做大做强股票市场。港交所会研究推出人民币计价黄金期货。 eastmoney yuan yuan & fx 人民币与汇率 cny cnh">
+          <time class="tp-when" data-t="2026-10-04 10:36:25" datetime="2026-10-04 10:36:25">10-04<br>10:36</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-04 10:36:25"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">Eastmoney</span>
+              <span class="cn-imp imp-medium"><b>51</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">HKEX chief executive: International investors are turning their attention to the Chinese market; HKEX will launch RMB-denominated gold futures</span><span class="l-zh">港交所行政总裁：国际投资者把目光投向中国市场 港交所要推出人民币计价黄金期货</span></h2>
+            <p class="tp-sum"><span class="l-en">[HKEX Chief Executive: International investors are turning their attention to the Chinese market; HKEX will launch RMB-denominated gold futures] Hong Kong's 2026 Policy Address proposed deepening Hong Kong's global offshore RMB business and capital market. HKEX Chief Executive Chan Yiting said on the 2nd that international investors have refocused their attention on Asia, especially the Chinese market, and are interested in diversified asset allocation. Hong Kong needs to build a diversified asset ecosystem, rather than only expanding and strengthening the stock market. HKEX will study launching RMB-denominated gold futures.</span><span class="l-zh">【港交所行政总裁：国际投资者把目光投向中国市场 港交所要推出人民币计价黄金期货】香港特区2026年施政报告提出将深化香港的全球离岸人民币业务和资本市场，港交所行政总裁陈翊庭2日表示，国际投资者已重新把目光投向亚洲地区，特别是中国市场，并有意做多元化资产配置，香港需要构建多元化资产生态圈，而并非只做大做强股票市场。港交所会研究推出人民币计价黄金期货。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span><span class="cn-tk">CNH</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.stats.gov.cn/english/PressRelease/202609/t20260910_1965274.html" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="industrial producer price indexes in august 2026  2026年8月工业生产者价格指数    nbs industrial industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-09-10" datetime="2026-09-10">09-10</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">NBS</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Industrial Producer Price Indexes in August 2026</span><span class="l-zh">2026年8月工业生产者价格指数</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.yicai.com/news/103384104.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="有人想离开，也有人排队等着进：空乘下跪事件背后的职业围城 当服务人员处在消费者、平台规则或者企业考核的夹层里时，他们也应当有正常说“不”的权利。 some want to leave, while others are lining up to get in: the career siege behind the flight attendant kneeling incident. when service workers are caught between consumers, platform rules, or corporate assessments, they should also have the right to say no normally. 有人想离开，也有人排队等着进：空乘下跪事件背后的职业围城 当服务人员处在消费者、平台规则或者企业考核的夹层里时，他们也应当有正常说“不”的权利。    第一财经 consumer consumer 消费 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Some want to leave, while others are lining up to get in: the career siege behind the flight attendant kneeling incident. When service workers are caught between consumers, platform rules, or corporate assessments, they should also have the right to say no normally.</span><span class="l-zh">有人想离开，也有人排队等着进：空乘下跪事件背后的职业围城 当服务人员处在消费者、平台规则或者企业考核的夹层里时，他们也应当有正常说“不”的权利。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/roll/2026-10-04/doc-initzkxi0212411.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="港交所的锣又不够敲？内地etf集中上市，出海为何按下加速键？ not enough gongs at hkex again? mainland etfs list in a cluster — why is going global hitting the accelerator? 港交所的锣又不够敲？内地etf集中上市，出海为何按下加速键？    新浪财经股票 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-04" datetime="2026-10-04">10-04</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-04"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Not enough gongs at HKEX again? Mainland ETFs list in a cluster — why is going global hitting the accelerator?</span><span class="l-zh">港交所的锣又不够敲？内地ETF集中上市，出海为何按下加速键？</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/roll/2026-10-04/doc-iniuahce0287630.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="9月公募调研“十大热门股”出炉，电子行业占据七席 top 10 most-researched stocks by mutual funds in september unveiled, electronics sector takes seven spots 9月公募调研“十大热门股”出炉，电子行业占据七席    新浪财经股票 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-04" datetime="2026-10-04">10-04</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-04"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Top 10 most-researched stocks by mutual funds in September unveiled, electronics sector takes seven spots</span><span class="l-zh">9月公募调研“十大热门股”出炉，电子行业占据七席</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+      </div>
+      <div class="cn-none hidden" id="none"><h3><span class="l-en">No stories match that view.</span><span class="l-zh">没有符合当前视图的新闻。</span></h3><p><span class="l-en">Clear the search or switch back to All.</span><span class="l-zh">清空搜索或切回全部。</span></p></div>
+
+      <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+    </div>
+
+    <aside class="cn-side">
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Scheduled catalysts</span><span class="l-zh">排定催化</span></h2>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">·</span><span class="cu"><span class="l-en">today</span><span class="l-zh">今</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">PMI</span><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">1</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN M</span><span class="l-en">Caixin Manufacturing PMI</span><span class="l-zh">财新制造业 PMI</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">5</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN S</span><span class="l-en">Caixin Services PMI</span><span class="l-zh">财新服务业 PMI</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">7</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">TRADE</span><span class="l-en">Customs trade (exports/imports)</span><span class="l-zh">海关进出口数据</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">7</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">FXRES</span><span class="l-en">FX reserves (SAFE)</span><span class="l-zh">外汇储备（外管局）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">12</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">CREDIT</span><span class="l-en">Money supply, RMB loans & TSF</span><span class="l-zh">货币供应、人民币贷款与社融</span></div>
+        </div>
+        
+      </section>
+
+      
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Exposures on the tape</span><span class="l-zh">相关标的</span></h2>
+        <div class="exp-pills">
+          
+          
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×6</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span><span class="ct">×4</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="ct">×4</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CNH</span><span class="nm"><span class="l-en">offshore yuan</span><span class="l-zh">离岸人民币</span></span><span class="ct">×3</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span></span>
+          
+        </div>
+      </section>
+      
+    </aside>
+  </section>
+
   
 </main>
 
