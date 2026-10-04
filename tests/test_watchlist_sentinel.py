@@ -15,7 +15,7 @@ Covers the task requirements:
   9. format_discord_message: no advice verbs, no "validated" in output
  10. update_cooldown: advances correctly for alerted and non-alerted tickers
  11. _fetch_operator_watchlist: new two-table embedded-select query shape
- 12. _fetch_operator_watchlist: missing operator UUID → skip (returns [])
+ 12. _fetch_operator_watchlist: missing operator UUID → UNAVAILABLE read (not empty)
  13. _fetch_operator_watchlist: empty/malformed symbol rows → None-safe
  14. Non-US tickers (BTC-USD, 600519.SS) in watchlist produce no alert and no crash
 """
@@ -516,10 +516,12 @@ class TestFetchOperatorWatchlist:
         assert "order" not in params
         assert "limit" not in params
 
-        assert sorted(result) == ["AAPL", "NVDA"]
+        assert result.state == result.READ_OK
+        assert sorted(result.tickers) == ["AAPL", "NVDA"]
 
-    def test_missing_operator_uuid_returns_empty(self):
-        """SUPABASE_OPERATOR_USER_ID absent → log one line, return []."""
+    def test_missing_operator_uuid_is_unavailable_not_empty(self):
+        """SUPABASE_OPERATOR_USER_ID absent → we never learned the watchlist. Reporting this as
+        an empty list is what let a missing credential erase durable Sentinel state."""
         _fetch_operator_watchlist = self._import()
         secret_fn, load_fn = self._mock_config(operator_uid=None)
 
@@ -530,10 +532,13 @@ class TestFetchOperatorWatchlist:
 
         # No HTTP request should have been issued
         mock_get.assert_not_called()
-        assert result == []
+        assert result.state == result.READ_UNAVAILABLE
+        assert result.reason == "no_operator_id"
+        assert result.tickers == ()
 
-    def test_empty_symbol_list_returns_empty(self):
-        """Operator has watchlists but no symbols → []."""
+    def test_empty_symbol_list_is_authoritative_empty(self):
+        """Operator has watchlist containers but no symbols → an HONEST empty, which may advance
+        durable state normally."""
         _fetch_operator_watchlist = self._import()
         secret_fn, load_fn = self._mock_config()
 
@@ -548,7 +553,8 @@ class TestFetchOperatorWatchlist:
              patch("scripts.run_watchlist_sentinel.requests.get", return_value=mock_resp):
             result = _fetch_operator_watchlist()
 
-        assert result == []
+        assert result.state == result.READ_OK_ZERO
+        assert result.available is True and result.tickers == ()
 
     def test_malformed_symbol_rows_none_safe(self):
         """None entries and rows missing 'symbol' key do not crash."""
@@ -576,7 +582,7 @@ class TestFetchOperatorWatchlist:
              patch("scripts.run_watchlist_sentinel.requests.get", return_value=mock_resp):
             result = _fetch_operator_watchlist()
 
-        assert result == ["MSFT"]
+        assert list(result.tickers) == ["MSFT"]
 
     def test_symbols_deduped_and_sorted(self):
         """Symbols from multiple list containers are deduped and returned sorted."""
@@ -595,10 +601,11 @@ class TestFetchOperatorWatchlist:
              patch("scripts.run_watchlist_sentinel.requests.get", return_value=mock_resp):
             result = _fetch_operator_watchlist()
 
-        assert result == ["AAPL", "MSFT", "NVDA"]
+        assert list(result.tickers) == ["AAPL", "MSFT", "NVDA"]
 
-    def test_non_200_response_returns_empty(self):
-        """Supabase 400 (e.g. column-does-not-exist) → log one line, return []."""
+    def test_non_200_response_is_unavailable_not_empty(self):
+        """Supabase 400 (e.g. column-does-not-exist) → the read failed. Calling that an empty
+        watchlist is the conflation this contract exists to prevent."""
         _fetch_operator_watchlist = self._import()
         secret_fn, load_fn = self._mock_config()
 
@@ -611,7 +618,8 @@ class TestFetchOperatorWatchlist:
              patch("scripts.run_watchlist_sentinel.requests.get", return_value=mock_resp):
             result = _fetch_operator_watchlist()
 
-        assert result == []
+        assert result.state == result.READ_UNAVAILABLE
+        assert result.reason == "http_400"
 
     def test_symbols_normalized_to_upper(self):
         """Symbols stored in mixed case are upper-cased."""
@@ -629,7 +637,7 @@ class TestFetchOperatorWatchlist:
              patch("scripts.run_watchlist_sentinel.requests.get", return_value=mock_resp):
             result = _fetch_operator_watchlist()
 
-        assert result == ["AAPL", "NVDA"]
+        assert list(result.tickers) == ["AAPL", "NVDA"]
 
 
 # ---------------------------------------------------------------------------
