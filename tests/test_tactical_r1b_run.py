@@ -31,12 +31,6 @@ _STUB_COLLECTED_TEST_IDS = lambda files: {  # noqa: E731
     f"{m}::test_ok" for m in s.REQUIRED_TEST_MODULES
 }
 
-
-@pytest.fixture(autouse=True)
-def _stub_collected_test_ids_for_runner_tests(monkeypatch):
-    """main()'s pytest --collect-only receipt is ~1–20s; production keeps the real call."""
-    monkeypatch.setattr(s, "_collected_test_ids", _STUB_COLLECTED_TEST_IDS)
-
 ROOT = Path(__file__).resolve().parents[1]
 CFG = json.loads((ROOT / "research/species/tti_r1b/config_v4.json").read_text())
 CODE_SHA = "a" * 40
@@ -193,6 +187,7 @@ def _write_manifest(path: Path, inputs: Path, symbols) -> Path:
 def world(tmp_path_factory):
     mp = pytest.MonkeyPatch()
     mp.setattr(s, "_reviewed_blob_sha256", lambda code_sha, name: s._sha(s.ROOT / name))
+    mp.setattr(s, "_collected_test_ids", _STUB_COLLECTED_TEST_IDS)
     root = tmp_path_factory.mktemp("r1b_run")
     terminal = root / "terminal_root"
     (terminal / "ingest").mkdir(parents=True)
