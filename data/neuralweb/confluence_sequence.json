@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.confluence_sequence.v1",
   "artifact_id": "confluence-sequence",
-  "asof": "2026-10-03",
+  "asof": "2026-10-04",
   "tier": "display",
   "is_context_only": true,
   "display_only": true,
@@ -8665,11 +8665,11 @@
     },
     {
       "pair_id": "briefing-divergences",
-      "persistence_streak": 2,
+      "persistence_streak": 3,
       "strength_slope": 0.0,
       "state": "stable",
-      "last_as_of": "2026-10-03",
-      "n_sessions_in_tape": 56
+      "last_as_of": "2026-10-04",
+      "n_sessions_in_tape": 57
     },
     {
       "pair_id": "regime_vector-vs-risk_radar",
@@ -8704,9 +8704,9 @@
       "n_sessions_in_tape": 3
     }
   ],
-  "n_tape_rows": 2208,
+  "n_tape_rows": 2209,
   "gaps": [],
   "produced_by": "engine/neuralweb/confluence_sequence.py",
-  "produced_at": "2026-10-03T20:06:47Z",
+  "produced_at": "2026-10-04T09:28:54Z",
   "authority_check": []
 }
