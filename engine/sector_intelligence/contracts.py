@@ -816,15 +816,15 @@ _MANIFEST_V2_CONTRACT_ID = "authority_manifest.v2"
 # The accepted STSI input owners, not a second source/clock resolver. Extending
 # this profile requires an explicit owner contract; names never infer aliases.
 _V2_INPUT_POLICY = {
-    "site-baskets": ("site/basketdata/baskets.json", "session", "market_observation", True),
-    "site-action-board": ("site/basketdata/action_board.json", "instant", "market_observation", True),
-    "site-sector-central": ("site/sectordata/sector_central.json", "session", "market_observation", True),
-    "site-subsector-confluence": ("site/marketdata/subsector_confluence.json", "session", "market_observation", True),
-    "site-subsector-rotation": ("site/marketdata/subsector_rotation.json", "session", "market_observation", True),
-    "site-theme-state": ("site/neuralwebdata/theme_state.json", "session", "market_observation", True),
-    "theme-crosswalk": ("config/theme_crosswalk.yml", "static", "static_config", True),
-    "sp500-heatmap": ("site/marketdata/sp500_heatmap.json", "session", "market_observation", True),
-    "site-theme-lanes": ("site/basketdata/theme_lanes.json", "session", "optional_context", False),
+    "site-baskets": ("site/basketdata/baskets.json", "session", "market_observation", True),  # ci-trigger-closure: data — exact supplied receipt path identity; not opened by this validator
+    "site-action-board": ("site/basketdata/action_board.json", "instant", "market_observation", True),  # ci-trigger-closure: data — exact supplied receipt path identity; not opened by this validator
+    "site-sector-central": ("site/sectordata/sector_central.json", "session", "market_observation", True),  # ci-trigger-closure: data — exact supplied receipt path identity; not opened by this validator
+    "site-subsector-confluence": ("site/marketdata/subsector_confluence.json", "session", "market_observation", True),  # ci-trigger-closure: data — exact supplied receipt path identity; not opened by this validator
+    "site-subsector-rotation": ("site/marketdata/subsector_rotation.json", "session", "market_observation", True),  # ci-trigger-closure: data — exact supplied receipt path identity; not opened by this validator
+    "site-theme-state": ("site/neuralwebdata/theme_state.json", "session", "market_observation", True),  # ci-trigger-closure: data — exact supplied receipt path identity; not opened by this validator
+    "theme-crosswalk": ("config/theme_crosswalk.yml", "static", "static_config", True),  # ci-trigger-closure: data — exact supplied receipt path identity; not opened by this validator
+    "sp500-heatmap": ("site/marketdata/sp500_heatmap.json", "session", "market_observation", True),  # ci-trigger-closure: data — exact supplied receipt path identity; not opened by this validator
+    "site-theme-lanes": ("site/basketdata/theme_lanes.json", "session", "optional_context", False),  # ci-trigger-closure: data — exact supplied receipt path identity; not opened by this validator
 }
 _V2_CORE_INPUTS = frozenset(("site-baskets", "site-action-board", "site-sector-central"))
 

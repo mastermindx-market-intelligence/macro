@@ -10375,6 +10375,8 @@ jobs:
         run: python scripts/verify_biocatalyst_d0a_references.py --reference-integrity
       - name: STSI Packet I v2 — controlled contract and future-date refusal
         run: python -m pytest tests/test_sector_dossier_contract_v2.py -q
+      - name: STSI Technology composer — controlled owner shape and compatibility
+        run: python -m pytest tests/test_sector_federation.py -q
 
   biocatalyst-deploy-integration:
     if: ${{ false }}
