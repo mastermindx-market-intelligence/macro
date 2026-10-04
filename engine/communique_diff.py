@@ -159,12 +159,26 @@ def _window_phrases(prior_rows: list[dict], book: list[dict]) -> set[str]:
 
 
 def _source_locator(row: dict) -> str:
-    """Stable source locator for revision grouping, backward-compatible with old rows."""
+    """Stable source locator for revision grouping.
+
+    New collector rows carry source_locator_id explicitly. Legacy rows did not,
+    so they must NOT infer same-document identity from a placeholder/reused URL
+    alone. Prefer legacy doc_id when present; otherwise include title in the
+    fallback identity. This preserves old event semantics while only the new
+    explicit locator contract can prove an in-place source revision.
+    """
     v = str(row.get("source_locator_id") or "").strip()
     if v:
         return v
-    basis = f"{str(row.get('organ') or '').strip()}|{str(row.get('url') or '').strip()}"
-    return hashlib.sha1(basis.encode("utf-8")).hexdigest()[:16]
+    doc_id = str(row.get("doc_id") or "").strip()
+    if doc_id:
+        return "legacy_doc:" + doc_id
+    basis = "|".join([
+        str(row.get("organ") or "").strip(),
+        str(row.get("url") or "").strip(),
+        str(row.get("title") or "").strip(),
+    ])
+    return "legacy_fallback:" + hashlib.sha1(basis.encode("utf-8")).hexdigest()[:16]
 
 
 def _content_fingerprint(row: dict) -> str:
