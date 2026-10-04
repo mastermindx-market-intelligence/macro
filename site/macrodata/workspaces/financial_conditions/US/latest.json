@@ -380,14 +380,10 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [
-      "vol_regime:move_pctile:5fd6f40d299dbfef",
-      "vol_regime:vix:d942c7bdbd132619",
-      "vol_regime:vol_regime_risk_score:7a543b31bc96fb69"
-    ],
-    "correction_state": "superseded",
-    "note": "Same reference period as the predecessor print, but one or more owner-native source values changed: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "financial_conditions-US-b4541a031bec25ce"
+    "changed_fingerprints": [],
+    "correction_state": "none",
+    "note": "Same reference period as the predecessor print; no source value changed (no-change republication).",
+    "predecessor_generation_id": "financial_conditions-US-98184d47e1e78aba"
   },
   "drivers": {
     "balance_sheet": [
@@ -508,11 +504,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-03T17:06:57Z",
+    "built_at": "2026-10-04T06:25:52Z",
     "calculation_as_of": "2026-10-02",
-    "code_version": "34a3b19628ca449fe8c10d108c1661a4e34272fa",
-    "content_sha256": "98184d47e1e78abab4e0b847dbc9f38d9dc9479e21ee458305844b1620f1f3d4",
-    "generation_id": "financial_conditions-US-98184d47e1e78aba",
+    "code_version": "0d0c1533368aba1cd5f5d1ca3b14df825f540e91",
+    "content_sha256": "d7bda1605d6103d7f6d232cc0b505d173565cb8fa746c0e15ae2ab3b3ebb9571",
+    "generation_id": "financial_conditions-US-d7bda1605d6103d7",
     "producer": "engine.market_os.macro_workspaces.financial_conditions",
     "rendered_at": null
   },
