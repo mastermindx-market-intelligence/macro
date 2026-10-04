@@ -28,6 +28,12 @@ from lib.dataos.futures_tape import (
 from scripts import futures_tape_ingest as fti
 
 
+def test_current_day_timestamp_window_remains_provisional() -> None:
+    today = pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%d")
+    assert fti._lse_window_state(today) is PartitionState.FINAL
+    assert fti._lse_window_state(today + "T00:01:00Z") is PartitionState.PROVISIONAL
+
+
 def test_date_chunks_are_bounded_and_cover_range() -> None:
     assert fti._date_chunks("2026-01-01", "2026-01-20", 7) == [
         ("2026-01-01", "2026-01-08"),
