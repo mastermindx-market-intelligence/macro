@@ -908,9 +908,12 @@ def _contract_order_block(window_days: int = 90) -> dict:
             status = "missing"
 
         if "category" not in df.columns:
+            # A readable parquet without the category discriminator cannot prove
+            # a clean-empty contract family. Fail closed so missing schema is
+            # never presented as measured absence.
             return {
                 "asof": asof,
-                "status": status,
+                "status": "source_failure",
                 "events": [],
                 "n_total": 0,
                 "n_shown": 0,
