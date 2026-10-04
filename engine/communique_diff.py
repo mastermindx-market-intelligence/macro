@@ -181,6 +181,29 @@ def _source_locator(row: dict) -> str:
     return "legacy_fallback:" + hashlib.sha1(basis.encode("utf-8")).hexdigest()[:16]
 
 
+def _effective_observation_rows(rows: list[dict]) -> list[dict]:
+    """Latest observed row per source identity, preserving independent documents.
+
+    Revision receipts keep the full observation chain separately.  Novelty
+    comparison must use the effective source state: an earlier superseded
+    version at one locator cannot keep a phrase alive or resurrect it later.
+    Legacy rows remain independent because _source_locator() namespaces them by
+    doc_id/title rather than inferring identity from a reused URL.
+    """
+    latest: dict[str, dict] = {}
+    for row in sorted(
+        rows,
+        key=lambda r: (
+            str(r.get("_crawled_at") or ""),
+            _content_fingerprint(r),
+            str(r.get("doc_id") or ""),
+        ),
+    ):
+        latest[_source_locator(row)] = row
+    return list(latest.values())
+
+
+
 def _content_fingerprint(row: dict) -> str:
     """Use the collector fingerprint when present; derive it for legacy rows."""
     v = str(row.get("content_sha256") or "").strip()
@@ -283,7 +306,9 @@ def _event_id(kind: str, organ: str, asof: str, key: str) -> str:
 def diff_organ(organ: str, today_rows: list[dict], prior_rows: list[dict],
                book: list[dict], asof: str, *,
                suppress_appeared: set[str] | None = None,
-               suppress_dropped: set[str] | None = None) -> tuple[list[dict], bool]:
+               suppress_dropped: set[str] | None = None,
+               appeared_evidence_rows: list[dict] | None = None,
+               dropped_evidence_rows: list[dict] | None = None) -> tuple[list[dict], bool]:
     """Diff one organ's TODAY documents against its PRIOR-window documents.
 
     Returns (events, cold_start). cold_start=True when there is no prior window
@@ -307,9 +332,19 @@ def diff_organ(organ: str, today_rows: list[dict], prior_rows: list[dict],
 
     prior_phrases = _window_phrases(prior_rows, book)
 
-    # a representative today-document per phrase for the evidence link
-    def _evidence(ph: str) -> dict:
-        for r in today_rows:
+    # Prefer evidence that independently earned the novelty event rather than
+    # citing a corrected source whose delta was intentionally neutralized.
+    appeared_sources = appeared_evidence_rows if appeared_evidence_rows is not None else today_rows
+    dropped_sources = dropped_evidence_rows if dropped_evidence_rows is not None else prior_rows
+
+    def _appeared_evidence(ph: str) -> dict:
+        for r in appeared_sources:
+            if ph in phrases_in_text(_doc_text(r), book):
+                return {"url": r.get("url", ""), "title": r.get("title", "")}
+        return {"url": "", "title": ""}
+
+    def _dropped_evidence(ph: str) -> dict:
+        for r in dropped_sources:
             if ph in phrases_in_text(_doc_text(r), book):
                 return {"url": r.get("url", ""), "title": r.get("title", "")}
         return {"url": "", "title": ""}
@@ -325,7 +360,7 @@ def diff_organ(organ: str, today_rows: list[dict], prior_rows: list[dict],
     )
 
     for ph in appeared:
-        ev = _evidence(ph)
+        ev = _appeared_evidence(ph)
         m = meta.get(ph, {})
         events.append({
             "event_id": _event_id("APPEARED", organ, asof, ph),
@@ -338,11 +373,7 @@ def diff_organ(organ: str, today_rows: list[dict], prior_rows: list[dict],
     for ph in dropped:
         m = meta.get(ph, {})
         # dropped evidence is the prior document that carried it
-        ev = {"url": "", "title": ""}
-        for r in prior_rows:
-            if ph in phrases_in_text(_doc_text(r), book):
-                ev = {"url": r.get("url", ""), "title": r.get("title", "")}
-                break
+        ev = _dropped_evidence(ph)
         events.append({
             "event_id": _event_id("DROPPED", organ, asof, ph),
             "kind": "DROPPED", "organ": organ, "phrase": ph,
@@ -465,29 +496,34 @@ def compute_events(corpus_rows: list[dict], asof: str,
         )
         document_revisions.extend(revisions)
 
+        # Novelty reads the effective/latest source state, not superseded
+        # versions. Revision receipts above retain the full chain separately.
+        effective_today = _effective_observation_rows(today_rows)
+        effective_prior = _effective_observation_rows(prior_rows)
+
         # Suppress a correction delta ONLY when the revised source is the sole
         # source of that phrase on the corresponding side. If an unrelated
         # document independently carries the same phrase, that occurrence keeps
-        # ordinary novelty eligibility.
+        # ordinary novelty eligibility and becomes the evidence source.
         nonrevision_today = [
-            r for r in today_rows if _source_locator(r) not in revised_locators
+            r for r in effective_today if _source_locator(r) not in revised_locators
         ]
         nonrevision_prior = [
-            r for r in prior_rows if _source_locator(r) not in revised_locators
+            r for r in effective_prior if _source_locator(r) not in revised_locators
         ]
         suppress_appeared -= _window_phrases(nonrevision_today, book)
         suppress_dropped -= _window_phrases(nonrevision_prior, book)
 
-        # appeared / dropped keep full old/new documents in the phrase unions,
-        # suppressing only correction-attributable phrase deltas.
         evs, cold_start = diff_organ(
             organ,
-            today_rows,
-            prior_rows,
+            effective_today,
+            effective_prior,
             book,
             asof_day,
             suppress_appeared=suppress_appeared,
             suppress_dropped=suppress_dropped,
+            appeared_evidence_rows=nonrevision_today,
+            dropped_evidence_rows=nonrevision_prior,
         )
         events.extend(evs)
         if cold_start:
