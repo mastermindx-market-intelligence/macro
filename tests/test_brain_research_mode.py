@@ -2036,3 +2036,115 @@ def test_r4_heading_vocabulary_does_not_eat_prose_that_starts_with_it(raw, expec
     only as a heading — alone on its line, or followed by ":"/"=" and a list of names.
     A sentence that happens to start with one of those words is prose."""
     assert gw._research_strip_model_trailer(raw, R4_CORPUS) == expected
+
+
+# ---------------------------------------------------------------------------
+# §11 — r5: review of r4 (a6f70e06). r4 closed N2/N6–N11 on their inputs but (N12) kept a
+# source line that named only invented sources ("Sources: Bloomberg, Reuters"); (N13)
+# missed heading words ("Data sources", "This read used", "Evidence"), dates without a
+# year or with a comma ("(Oct 2, 2026)") and "&"/"/"/"+" separators; (N14, regression)
+# no longer recognised "【来源】研究台读数"; (N15) deleted a section whose title has no
+# colon ("Risks", "**Key levels**") after a source block; (N16, regression) excused real
+# orders behind the new noun guards ("Buy interest-rate futures", "请买入动能强的股票");
+# (N17) left "- Sources" orphans and let "¹ Desk read", "Sources — Desk read", "(p. 2)",
+# "[1]", "- Desk read: breadth section" cite; (N18) let a bare "See also" line delete the
+# prose after it. Inputs below are the reviewer's, verbatim.
+# ---------------------------------------------------------------------------
+
+R5_CORPUS = {"artifacts": [
+    {"plain_en": "Desk read", "plain_zh": "研究台读数"},
+    {"plain_en": "Daily briefing", "plain_zh": "每日简报"},
+]}
+R5_PROSE = "The Desk read says breadth is thin."
+
+
+@pytest.mark.parametrize("tail", [
+    "\n\nSources: Bloomberg, Reuters", "\n\n来源：彭博、路透社", "\n\nSource: Bloomberg terminal",
+    "\n\nReferences: FactSet", "\n\nSources: Bloomberg.", "\n\n| Source |\n|---|\n| Bloomberg |",
+    "\n\nSource: Desk read.\nSource: Bloomberg.",
+], ids=["two-invented", "zh-invented", "one-invented", "references-invented", "invented-dot",
+        "table-invented", "known-then-invented"])
+def test_r5_a_source_line_naming_only_invented_sources_is_stripped(tail):
+    """N12 (M): under a STRONG heading ("Sources", "来源", "References") the inline list
+    needs no known name — every piece name-like is enough. The block form already went;
+    the inline and table forms now go with it."""
+    assert gw._research_strip_model_trailer(R5_PROSE + tail, R5_CORPUS) == R5_PROSE
+
+
+@pytest.mark.parametrize("tail", [
+    "\n\nData sources: Desk read", "\n\nThis read used: Desk read", "\n\nWhat I used: Desk read",
+    "\n\nSources used in this read: Desk read", "\n\nEvidence: Desk read, Daily briefing",
+    "\n\nGrounding: Desk read", "\n\nSources: Desk read (Oct 2, 2026)", "\n\nSources: Desk read (updated 2 Oct)",
+    "\n\n- Desk read, 2 Oct", "\n\nSources: Desk read & Daily briefing", "\n\nSources: Desk read / Daily briefing",
+    "\n\nSources: Desk read + Daily briefing",
+    "\n\n¹ Desk read", "\n\n<sup>1</sup> Desk read", "\n\nSources — Desk read", "\n\nSources - Desk read",
+    "\n\nSource: Desk read (p. 2)", "\n\nSources: Desk read [1], Daily briefing [2]", "\n\n**Desk read** (2 Oct)",
+    "\n\nSources:\n- Desk read: breadth section",
+], ids=["data-sources", "this-read-used", "what-i-used", "sources-used-in-this-read", "evidence", "grounding",
+        "paren-date-with-comma", "paren-updated", "date-no-year", "ampersand", "slash", "plus",
+        "superscript", "sup-tag", "em-dash-heading", "hyphen-heading", "page-ref", "bracket-refs",
+        "bold-name-date", "item-with-section"])
+def test_r5_more_heading_shapes_dates_and_separators_never_cite(tail):
+    """N13 + N17 (M/m): every one of the reviewer's surviving shapes strips to the prose
+    alone and no longer buys a citation."""
+    out = gw._research_strip_model_trailer("G." + tail, R5_CORPUS)
+    assert out == "G.", out
+    assert gw._research_cites_artifact(out, R5_CORPUS) is False
+
+
+def test_r5_zh_bracket_heading_is_a_source_heading():
+    """N14 (M, r4 regression): r4 bound an inline list only after ":"; "【来源】" binds
+    with its closing bracket."""
+    out = gw._research_strip_model_trailer("研究台读数显示宽度偏弱。\n\n【来源】研究台读数", R5_CORPUS)
+    assert out == "研究台读数显示宽度偏弱。", out
+
+
+@pytest.mark.parametrize("raw, expected", [
+    ("The Desk read says breadth is thin.\n\nSources: Desk read\n\nKey points\n- Breadth thin\n- Leaders narrow",
+     "The Desk read says breadth is thin.\n\nKey points\n- Breadth thin\n- Leaders narrow"),
+    ("Sources: Desk read\n\nRisks\n- Oil shock\n- Credit spreads", "Risks\n- Oil shock\n- Credit spreads"),
+    ("Sources: Desk read\n\nWatchlist\n- NVDA\n- TSLA", "Watchlist\n- NVDA\n- TSLA"),
+    ("The Desk read says breadth is thin.\n\n参考：研究台读数\n\n要点\n- 宽度收窄\n- 龙头集中",
+     "The Desk read says breadth is thin.\n\n要点\n- 宽度收窄\n- 龙头集中"),
+    ("Sources: Desk read\n\n**Key levels**\n- SPX 5800\n- 10y 4.1%", "**Key levels**\n- SPX 5800\n- 10y 4.1%"),
+], ids=["key-points", "risks", "watchlist", "zh-key-points", "bold-title"])
+def test_r5_a_section_title_after_a_blank_line_closes_the_block(raw, expected):
+    """N15 (M): a blank line inside a source block followed by an UNMARKED line that is
+    not a heading, a table row or a known name ends the block — that line is the next
+    section's title and its short bullets are its content, not invented sources."""
+    assert gw._research_strip_model_trailer(raw, R5_CORPUS) == expected
+
+
+@pytest.mark.parametrize("sentence", [
+    "Buy interest-rate futures.", "Sell interest rate swaps.", "Buy demand-sensitive cyclicals.",
+    "买入需求旺盛的板块。", "请买入动能强的股票。", "卖出情绪过热的题材股。",
+    "Our view: buy signals are flashing, so buy NVDA.", "Buy programs now.", "Sell volume into the close.",
+    "请卖出价格偏高的龙头。",
+])
+def test_r5_orders_behind_the_noun_guards_are_still_withheld(sentence):
+    """N16 (M, r4 regression): a noun guard excuses buy/sell only when the noun stands
+    alone and is followed by a clause end or a reporting verb; "请" is always an order;
+    a ZH compound noun whose predicate is attributive ("旺盛的板块") names what to buy."""
+    assert gw._research_sentence_forbidden(sentence) is True, sentence
+
+
+@pytest.mark.parametrize("sentence", [
+    "Buy interest is building in semis.", "Sell pressure mounted into the close.",
+    "Buy programs dominated the tape.", "Sell volume was heavy in banks.", "买入需求旺盛。", "卖出压力明显。",
+    "买入意愿较弱，但卖出压力也不大。", "Sell-side ratings turned cautious.", "Buy signals are flashing on the daily.",
+    "Sell pressure.", "Buy interest remains thin.",
+])
+def test_r5_reportative_noun_phrases_stay_reportative(sentence):
+    assert gw._research_sentence_forbidden(sentence) is False, sentence
+
+
+def test_r5_nested_sources_heading_leaves_no_orphan():
+    """N17 (m): "- Sources" is a heading under a bullet; its nested items go with it."""
+    assert gw._research_strip_model_trailer("G.\n\n- Sources\n  - Desk read\n  - Bloomberg terminal", R5_CORPUS) == "G."
+
+
+def test_r5_a_bare_weak_heading_word_is_prose():
+    """N18 (m): "See also" / "Per" alone on a line is a sentence opener, not a heading;
+    r4 opened a block and deleted the prose line after it."""
+    raw = "Breadth is thin per the Desk read.\nSee also\nthe curve section"
+    assert gw._research_strip_model_trailer(raw, R5_CORPUS) == raw
