@@ -4,6 +4,7 @@ from __future__ import annotations
 import dataclasses
 import json
 import resource
+from pathlib import Path
 from datetime import date
 
 import pandas as pd
@@ -341,3 +342,155 @@ def test_SB8_zero_name_spool_substrate(tmp_path):
     assert sub == {}
     assert list(iter_spool(path)) == []
     assert list(sub) == []
+
+
+def _spool_pack_at(tmp_path, name: str = "pack_spool.parquet"):
+    path = tmp_path / name
+    return build(sink=ParquetSpoolSink(path)), path
+
+
+def test_SB9_save_pack_copies_spool_without_substrate_frame(tmp_path, monkeypatch):
+    spool_pack, src_path = _spool_pack_at(tmp_path)
+    state_dir = tmp_path / "state"
+    monkeypatch.setattr(lp, "_substrate_frame", lambda _pack: (_ for _ in ()).throw(
+        AssertionError("_substrate_frame must not run for SpoolSubstrate")))
+    session_dir = lp.save_pack(spool_pack, state_dir)
+    sub_path = session_dir / "substrate.parquet"
+    sidecar_path = Path(f"{sub_path}.sidecar.json")
+    assert sub_path.is_file()
+    assert sidecar_path.is_file()
+    assert (session_dir / "manifest.json").is_file()
+    pointer = json.loads((state_dir / "pack" / "current.json").read_text(encoding="utf-8"))
+    assert pointer["as_of"] == spool_pack.as_of
+    assert src_path.is_file()
+
+
+def test_SB10_load_pack_lazy_spool_substrate(tmp_path, monkeypatch):
+    spool_pack, _ = _spool_pack_at(tmp_path)
+    state_dir = tmp_path / "state"
+    lp.save_pack(spool_pack, state_dir)
+    monkeypatch.setattr(pd, "read_parquet", lambda *_a, **_k: (_ for _ in ()).throw(
+        AssertionError("read_parquet must not run when sidecar is present")))
+    loaded = lp.load_pack(state_dir)
+    assert isinstance(loaded.substrate, SpoolSubstrate)
+    assert loaded.pack_hash == spool_pack.pack_hash
+    assert loaded.names == spool_pack.names
+    for row in loaded.names:
+        pd.testing.assert_frame_equal(
+            loaded.substrate[row.ticker], spool_pack.substrate[row.ticker])
+
+
+def test_SB11_load_pack_verifies_tampered_spool(tmp_path):
+    from engine.entry_radar.pack_spool import _PARQUET_SCHEMA, _frame_to_table
+
+    spool_pack, _ = _spool_pack_at(tmp_path)
+    state_dir = tmp_path / "state"
+    session_dir = lp.save_pack(spool_pack, state_dir)
+    sub_path = session_dir / "substrate.parquet"
+    victim = spool_pack.names[0].ticker
+    bad_path = tmp_path / "tampered_save.parquet"
+    writer = pq.ParquetWriter(bad_path, _PARQUET_SCHEMA)
+    for ticker, frame in iter_spool(sub_path):
+        if ticker == victim:
+            frame = frame.copy()
+            frame.iloc[0, frame.columns.get_loc("close")] += 1.0
+        writer.write_table(_frame_to_table(ticker, frame))
+    writer.close()
+    shutil_mod = __import__("shutil")
+    shutil_mod.copyfile(bad_path, sub_path)
+    with pytest.raises(lp.LivePackError, match="saved substrate does not match the manifest row"):
+        lp.load_pack(state_dir)
+    sidecar = load_sidecar(sub_path)
+    sidecar = dict(sidecar)
+    sidecar["row_groups"] = dict(sidecar["row_groups"])
+    removed = spool_pack.names[0].ticker
+    del sidecar["row_groups"][removed]
+    sidecar["n_names"] = len(sidecar["row_groups"])
+    Path(f"{sub_path}.sidecar.json").write_text(
+        json.dumps(sidecar, sort_keys=True), encoding="utf-8")
+    with pytest.raises(lp.LivePackError) as excinfo:
+        lp.load_pack(state_dir)
+    msg = str(excinfo.value)
+    assert removed in msg
+    assert "substrate_key_mismatch" in msg or "saved substrate does not match" in msg
+
+
+def test_SB12_legacy_load_without_sidecar(tmp_path):
+    spool_pack, _ = _spool_pack_at(tmp_path)
+    state_dir = tmp_path / "state"
+    session_dir = lp.save_pack(spool_pack, state_dir)
+    Path(f"{session_dir / 'substrate.parquet'}.sidecar.json").unlink()
+    loaded = lp.load_pack(state_dir)
+    assert isinstance(loaded.substrate, dict)
+    for row in spool_pack.names:
+        pd.testing.assert_frame_equal(
+            _normalize_substrate_frame(loaded.substrate[row.ticker]),
+            _normalize_substrate_frame(spool_pack.substrate[row.ticker]),
+        )
+
+
+def test_SB13_proof_round_trip_through_save_load(tmp_path):
+    spool_pack, _ = _spool_pack_at(tmp_path)
+    mem_pack = build(sink=lp.InMemorySink())
+    state_dir = tmp_path / "state"
+    lp.save_pack(spool_pack, state_dir)
+    loaded = lp.load_pack(state_dir)
+    proof = lp.build_inversion_proof(loaded)
+    assert proof["pass"] is True
+    assert proof["cases_total"] == lp.build_inversion_proof(mem_pack)["cases_total"]
+    lp.save_pack(loaded.with_proof(proof), state_dir)
+    reloaded = lp.load_pack(state_dir)
+    assert reloaded.proof == proof
+    assert reloaded.proof_failed is False
+
+
+def test_SB14_save_pack_refuses_tampered_spool(tmp_path):
+    from engine.entry_radar.pack_spool import _PARQUET_SCHEMA, _frame_to_table
+
+    spool_pack, src_path = _spool_pack_at(tmp_path)
+    state_dir = tmp_path / "state"
+    victim = spool_pack.names[0].ticker
+    sidecar = load_sidecar(src_path)
+    sidecar = dict(sidecar)
+    sidecar["row_groups"] = dict(sidecar["row_groups"])
+    del sidecar["row_groups"][victim]
+    sidecar["n_names"] = len(sidecar["row_groups"])
+    Path(f"{src_path}.sidecar.json").write_text(
+        json.dumps(sidecar, sort_keys=True), encoding="utf-8")
+    bad_sub = SpoolSubstrate(src_path)
+    bad_pack = dataclasses.replace(spool_pack, substrate=bad_sub)
+    with pytest.raises(lp.LivePackError, match="substrate_key_mismatch"):
+        lp.save_pack(bad_pack, state_dir)
+    spool_pack, src_path = _spool_pack_at(tmp_path, "clean.parquet")
+    bad_path = tmp_path / "fp_bad.parquet"
+    writer = pq.ParquetWriter(bad_path, _PARQUET_SCHEMA)
+    for ticker, frame in iter_spool(src_path):
+        if ticker == victim:
+            frame = frame.copy()
+            frame.iloc[0, frame.columns.get_loc("close")] += 1.0
+        writer.write_table(_frame_to_table(ticker, frame))
+    writer.close()
+    shutil_mod = __import__("shutil")
+    shutil_mod.copyfile(bad_path, src_path)
+    tampered_pack = dataclasses.replace(spool_pack, substrate=SpoolSubstrate(src_path))
+    with pytest.raises(lp.LivePackError, match="substrate_fingerprint_mismatch"):
+        lp.save_pack(tampered_pack, state_dir)
+
+
+def test_SB15_memory_save_load_proof_bounded(tmp_path):
+    path = tmp_path / "big_pack.parquet"
+    frames = {
+        f"T{i:04d}": frame_from_closes(
+            [100.0 + (i % 17) * 0.001 + j * 0.0001 for j in range(400)])
+        for i in range(300)
+    }
+    state_dir = tmp_path / "state"
+    rss0 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    pack = build(frames=frames, sink=ParquetSpoolSink(path))
+    lp.save_pack(pack, state_dir)
+    loaded = lp.load_pack(state_dir)
+    lp.build_inversion_proof(loaded)
+    rss1 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    unit = 1024 if rss1 < 10_000_000 else 1
+    growth_mb = (rss1 - rss0) / unit / (1024 * 1024)
+    assert growth_mb < 50.0

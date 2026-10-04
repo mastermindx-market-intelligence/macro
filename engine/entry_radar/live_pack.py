@@ -629,7 +629,7 @@ class LivePack:
     spec_hashes: dict[str, str]
     probe_set: dict[str, Any]
     names: tuple[PackName, ...]
-    substrate: dict[str, pd.DataFrame] = field(default_factory=dict)
+    substrate: Mapping[str, pd.DataFrame] = field(default_factory=dict)
     substrate_missing: tuple[dict[str, Any], ...] = ()
     pack_hash: str = ""
     proof: dict[str, Any] | None = None
@@ -1760,6 +1760,10 @@ def current_pack_identity(state_dir: Path | str) -> dict[str, str] | None:
 
 
 def _substrate_frame(pack: LivePack) -> pd.DataFrame:
+    """Flatten in-memory substrate to the legacy whole-file parquet layout.
+
+    Legacy in-memory path — a SpoolSubstrate pack never reaches here (save_pack branches first).
+    """
     _refuse_substrate_key_mismatch(pack)
     _refuse_substrate_fingerprint_mismatch(pack)
     rows: list[dict[str, Any]] = []
@@ -1788,7 +1792,17 @@ def save_pack(pack: LivePack, state_dir: Path | str, *,
     complete — the order that makes a crashed build invisible instead of
     half-visible.
     """
-    substrate_flat = _substrate_frame(pack)
+    from engine.entry_radar.pack_spool import SpoolSubstrate  # pack_spool imports live_pack
+
+    if isinstance(pack.substrate, SpoolSubstrate):
+        _refuse_substrate_key_mismatch(pack)
+        _refuse_substrate_fingerprint_mismatch(pack)
+        spool_path = pack.substrate.path
+        substrate_flat = None
+    else:
+        spool_path = None
+        substrate_flat = _substrate_frame(pack)
+
     root = pack_root(state_dir)
     root.mkdir(parents=True, exist_ok=True)
     final = root / pack.as_of
@@ -1806,7 +1820,14 @@ def save_pack(pack: LivePack, state_dir: Path | str, *,
             json.dumps(manifest, sort_keys=True, separators=(",", ":"),
                        allow_nan=False),
             encoding="utf-8")
-        substrate_flat.to_parquet(staging / _SUBSTRATE_NAME, index=False)
+        if spool_path is not None:
+            shutil.copyfile(spool_path, staging / _SUBSTRATE_NAME)
+            shutil.copyfile(
+                Path(f"{spool_path}.sidecar.json"),
+                staging / f"{_SUBSTRATE_NAME}.sidecar.json",
+            )
+        else:
+            substrate_flat.to_parquet(staging / _SUBSTRATE_NAME, index=False)
         if final.exists():
             shutil.rmtree(final)
         os.replace(staging, final)
@@ -1874,14 +1895,6 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
     except (OSError, ValueError):
         return None
 
-    substrate: dict[str, pd.DataFrame] = {}
-    substrate_path = root / str(session) / _SUBSTRATE_NAME
-    if substrate_path.exists():
-        flat = pd.read_parquet(substrate_path)
-        for ticker, block in flat.groupby("ticker", sort=True):
-            frame = block.set_index(pd.DatetimeIndex(pd.to_datetime(block["session"])))
-            substrate[str(ticker)] = frame.loc[:, list(_SUBSTRATE_COLUMNS)].astype(float)
-
     # A missing/empty `schema` field means this manifest predates the field
     # entirely — that is a v1 pack, never the CURRENT `SCHEMA_LIVE_PACK`
     # (N4): defaulting it to "whatever v2 currently is" would present a pack
@@ -1889,12 +1902,18 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
     raw_confirmed_lanes = manifest.get("confirmed_lanes") or {}
     names = tuple(PackName.from_dict(row) for row in manifest.get("names") or ())
     fingerprint = _substrate_fingerprint_for_manifest(manifest)
-    for row in names:
-        frame = substrate.get(row.ticker)
-        if frame is None or fingerprint(frame) != row.substrate_fingerprint:
-            raise LivePackError(
-                f"{row.ticker}: saved substrate does not match the manifest row")
-    if substrate:
+    substrate_path = root / str(session) / _SUBSTRATE_NAME
+    sidecar_path = Path(f"{substrate_path}.sidecar.json")
+    from engine.entry_radar.pack_spool import SpoolSubstrate  # pack_spool imports live_pack
+
+    substrate: Mapping[str, pd.DataFrame]
+    if sidecar_path.is_file() and substrate_path.is_file():
+        substrate = SpoolSubstrate(substrate_path)
+        for row in names:
+            frame = substrate.get(row.ticker)
+            if frame is None or fingerprint(frame) != row.substrate_fingerprint:
+                raise LivePackError(
+                    f"{row.ticker}: saved substrate does not match the manifest row")
         _refuse_substrate_key_mismatch(LivePack(
             schema=str(manifest.get("schema") or _SCHEMA_LIVE_PACK_V1),
             as_of=str(manifest["as_of"]), next_session=str(manifest["next_session"]),
@@ -1903,6 +1922,32 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
             spec_hashes=dict(manifest.get("spec_hashes") or {}),
             probe_set=dict(manifest.get("probe_set") or {}),
             names=names, substrate=substrate))
+    else:
+        substrate = {}
+        if substrate_path.exists():
+            flat = pd.read_parquet(substrate_path)
+            for ticker, block in flat.groupby("ticker", sort=True):
+                sessions = pd.Series(block["session"])
+                frame = block.set_index(
+                    pd.DatetimeIndex(
+                        pd.to_datetime(sessions.astype(str)),
+                        dtype="datetime64[s]",
+                    ))
+                substrate[str(ticker)] = frame.loc[:, list(_SUBSTRATE_COLUMNS)].astype(float)
+        for row in names:
+            frame = substrate.get(row.ticker)
+            if frame is None or fingerprint(frame) != row.substrate_fingerprint:
+                raise LivePackError(
+                    f"{row.ticker}: saved substrate does not match the manifest row")
+        if substrate:
+            _refuse_substrate_key_mismatch(LivePack(
+                schema=str(manifest.get("schema") or _SCHEMA_LIVE_PACK_V1),
+                as_of=str(manifest["as_of"]), next_session=str(manifest["next_session"]),
+                built_at=str(manifest.get("built_at") or ""),
+                price_basis=str(manifest.get("price_basis") or ch.BASIS_ADJUSTED),
+                spec_hashes=dict(manifest.get("spec_hashes") or {}),
+                probe_set=dict(manifest.get("probe_set") or {}),
+                names=names, substrate=substrate))
     probe_tickers = list((manifest.get("probe_set") or {}).get("tickers") or ())
     lane_rows = confirmed_lanes_snapshot(raw_confirmed_lanes, probe_tickers)
     schema = str(manifest.get("schema") or _SCHEMA_LIVE_PACK_V1)
