@@ -127,7 +127,7 @@ Return to Fable only if two active modifications truly collide or source law cha
 
 ## Why first
 
-No new external read adapter should rely on a factory that may bind the private research namespace to a shared public bucket when dedicated secrets are missing.
+No new external read adapter should rely on a factory whose effective private-plane isolation is configuration-dependent. Current `build_store()` requires an explicit research bucket, but endpoint/key/secret may inherit generic `R2_*` values and no canonical assertion rejects a research bucket that aliases the shared/public bucket.
 
 ## Proposed source owner
 
@@ -137,22 +137,13 @@ No new external read adapter should rely on a factory that may bind the private 
 
 Production/private Research Vault construction must:
 
-1. require the dedicated research endpoint/key/secret/bucket family;
-2. reject partial research configuration;
-3. reject equality/alias with the configured shared/public delivery plane where that can be established;
-4. never fall back silently to generic `R2_*`;
-5. never print credentials;
-6. preserve explicit `LocalStore` / test usage as a deliberate mode;
-7. preserve existing strict compare-and-swap semantics used by RIO/private publication.
+1. require an explicit research bucket;\n2. reject partial research configuration;\n3. reject equality/alias with the configured shared/public delivery bucket where that can be established;\n4. make endpoint/credential inheritance an explicit security-owner decision rather than silent generic `R2_*` fallback;\n5. prove the effective production Research Vault plane is private/distinct under the deployed configuration;\n6. never print credentials;\n7. preserve explicit `LocalStore` / test usage as a deliberate mode;\n8. preserve existing strict compare-and-swap semantics used by RIO/private publication.
 
 ## Tests
 
 At minimum:
 
-- no research vars + generic shared vars -> refuse private store;
-- one research var missing -> refuse;
-- research bucket == shared bucket -> refuse;
-- dedicated complete research plane -> construct;
+- no research bucket + generic shared vars -> refuse private store;\n- partial research configuration -> refuse;\n- research bucket == shared/public bucket -> refuse;\n- generic endpoint/credential inheritance -> either refuse or pass only under an explicitly qualified security policy; never silently imply dedicated isolation;\n- dedicated complete research plane -> construct;
 - local explicit store -> works;
 - exception/public error contains no secret;
 - private RIO/store tests remain green.
@@ -193,11 +184,7 @@ corpus - catalog
 
 repo mirror generation vs canonical catalog
 
-corpus.sqlite bytes
-canonical PDF total bytes
-full extracted-text sample/estimated total
-text-layer distribution
-report char/page distribution
+corpus.sqlite bytes\ncorpus nonempty-body / empty-body counts\nbody character distribution\nvalid PDF content-hash coverage\nsource-char-count vs stored-body-char consistency\npage-separator / page-count coverage\nexcerpt-derivable row count\ncatalog rows with a corpus ID but no usable body\ncanonical PDF total bytes\nfull extracted-text sample/estimated total\ntext-layer distribution\nreport char/page distribution
 ```
 
 Where total full text requires expensive extraction, use a reproducible stratified measurement first; do not pretend sample estimates are exact whole-estate values.
@@ -214,9 +201,7 @@ No receipt deletion, no blind re-ingest, no corpus reset just to make counts equ
 
 # 6. F3 — corpus completeness + excerpt collapse repair
 
-## Trigger
-
-Proceed if current `catalog - corpus` is non-zero or the excerpt collapse is reproduced.
+## Trigger\n\nProceed if current `catalog - corpus` is non-zero, the excerpt collapse is reproduced, or F2 proves that corpus IDs exist but usable body/text health is materially degraded.
 
 ## Implementation
 
@@ -225,17 +210,7 @@ Build the bounded self-quiescing missing-row repair the 2026-08-19 handoff alrea
 Candidate algorithm:
 
 ```text
-missing_ids = catalog_ids - corpus_ids
-
-for id in bounded deterministic batch:
-    load catalog identity
-    strict-read canonical research_vault/<id>.pdf
-    verify nonempty source bytes + PDF hash
-    canonical extract
-    upsert missing corpus row + measured facts
-commit local DB
-publish through incumbent corpus publication owner
-report repaired/failed/remaining
+missing_ids = catalog_ids - corpus_ids\nbroken_body_ids = evidence_backed_body_health_candidates\n\nfor id in bounded deterministic batch over missing_ids + broken_body_ids:\n    load catalog identity\n    strict-read canonical research_vault/<id>.pdf\n    verify nonempty source bytes + PDF hash\n    canonical extract\n    insert missing row OR repair only the proven-broken body/facts\ncommit local DB\nverify pre/post ID + body-health distributions\npublish through incumbent corpus publication owner\nreport repaired/failed/remaining
 ```
 
 A repaired row must leave the candidate set.
@@ -248,8 +223,7 @@ Repair corpus first, then recompute excerpts.
 
 ## Acceptance
 
-- current live census shows the intended searchable population restored or every excluded ID is typed (scan/no text/rights/known exclusion);
-- excerpt snapshot regeneration no longer collapses unexpectedly;
+- current live census shows the intended searchable population restored or every excluded ID is typed (scan/no text/rights/known exclusion);\n- body-health census shows no unexplained body collapse even when ID sets match;\n- excerpt snapshot regeneration no longer collapses unexpectedly;
 - search finds a seeded restored document;
 - no catalog/PDF/receipt regression;
 - hourly runtime remains within an accepted bounded operating shape or backfill is moved to an explicit operator process rather than hiding unbounded work inside the hourly job.
