@@ -10,7 +10,7 @@ objective: >
   receipts without creating a second scheduler, event ledger, evaluator, identity
   system or trading authority.
 status: active
-program: canonical-intelligence-substrate
+program: market-timing-intelligence
 repos: [macro]
 owner: ceo-sol
 class: build
