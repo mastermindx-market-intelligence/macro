@@ -29,8 +29,7 @@ changed:
     what: "F0-F17 dependency DAG, collision-safe work packages, routing/delegation boundaries and concrete acceptance for each phase."
   - path: research/research_vault_ai_fabric_20261004/04_ACCEPTANCE_SECURITY_AND_EVAL.md
     what: "Program DONE_WHEN, denial/privacy tests, retrieval benchmark, tail evidence test, RIO/MCP/ChatGPT/Deep Research real-path gates."
-  - path: research/research_vault_ai_fabric_20261004/05_SOURCE_AND_COLLISION_MAP.md
-    what: "Canonical source anchors, stale PR salvage boundaries, hot path collisions and DO_NOT_REDO."
+  - path: research/research_vault_ai_fabric_20261004/05_SOURCE_AND_COLLISION_MAP.md\n    what: "Canonical source anchors, stale PR salvage boundaries, hot path collisions, planning-carrier precedence and DO_NOT_REDO."\n  - path: research/research_vault_ai_fabric_20261004/06_HARDENING_ADDENDUM_AND_FABLE_START_GATE.md\n    what: "Controlling clarification of current R2 isolation semantics, body-health census, missing-row vs broken-body repair shapes, planning-carrier collision and exact Fable first-wave gate."\n  - path: research/research_vault_ai_fabric_20261004/07_FABLE_ORCHESTRATOR_BRIEF_QA.md\n    what: "Mastermind Craft orchestrator authoring QA receipt; intentionally UNBOUND_AUTHORING and non-authoritative."
 verified:
   - claim: "The current catalog contains 2,778 reports and metadata cannot currently support the desired ticker/desk/tag filters."
     command: "Read current data/research_vault/catalog.json and compute fill counts."
@@ -44,9 +43,7 @@ verified:
   - claim: "This defect class predates the current run and has an exact known corpus mechanism."
     command: "Read research/RESEARCH_VAULT_WAVE4_CONTINUATION_HANDOFF_2026-08-19.md; search current main for _backfill_corpus_rows."
     result: "2026-08-19 production census had catalog/pdf/receipt=1412, corpus=494, catalog-corpus=918; safe bounded missing-row backfill was recommended but is still absent on current main."
-  - claim: "Private Research Vault construction can still fall back to the shared/public R2 plane."
-    command: "Read current engine/research_vault/r2_store.py and DSC-RESEARCH-VAULT-FALLS-BACK-TO-SHARED-PUBLIC-BUCKET."
-    result: "R2_RESEARCH endpoint/key/secret retain fallback to generic shared R2 variables; discovery is verified and no direct structural fix PR was found."
+  - claim: "Private Research Vault isolation is not structurally fail-closed in the current factory."\n    command: "Read current engine/research_vault/r2_store.py and DSC-RESEARCH-VAULT-FALLS-BACK-TO-SHARED-PUBLIC-BUCKET; reconcile historical discovery wording against current code."\n    result: "Current build_store requires an explicit R2_RESEARCH_BUCKET, so the old full-bucket-fallback wording is stale. Endpoint/key/secret may still inherit generic R2 values and no factory assertion rejects R2_RESEARCH_BUCKET == R2_BUCKET. Normal deployment supplies the dedicated research secret family, but the source contract still needs explicit private-plane isolation."
   - claim: "Adjacent source identity uses two different SHA byte domains."
     command: "Read engine/research_vault probe/corpus facts and engine/research_intelligence/extractor.py::_identity."
     result: "Vault content_sha256 binds canonical PDF bytes; RIO v1 document.content_sha256 binds extracted UTF-8 body bytes. Masterplan freezes explicit source_pdf_sha256 vs extracted_text_sha256 compatibility."
@@ -67,14 +64,14 @@ unverified:
     what_would_verify: "Separate runtime/transport pickup and START evidence; this source handoff intentionally does not claim either."
 unresolved:
   - "F1 must structurally remove the Research Vault shared/public R2 fallback before new external private retrieval is admitted."
-  - "F2/F3 must measure and repair current corpus completeness; 351 current excerpt-derived rows is a symptom, not a complete id-set census."
+  - "F2/F3 must measure and repair current corpus completeness; 351 current excerpt-derived rows is a symptom, not a complete id-set census. F2 must also measure body/text health because a corpus row can exist with unusable text."
   - "F4 must restore or truthfully classify upstream source freshness."
   - "F5 must establish explicit PDF-byte vs extracted-text-byte identity before durable segment/citation APIs."
   - "F6 must build provenance-bearing metadata identity because source catalog has zero ticker coverage."
   - "F8/F9/F11/F16 must salvage exact useful deltas from stale PRs rather than merge them wholesale."
   - "F12-F14 must use existing protected MCP/auth owners and real private ChatGPT/Deep Research canaries."
 next_actions:
-  - "Fable/CEO intake: re-pin current protected Mastermind + Macro, reconcile path custody, then execute F1 private R2 fail-closed boundary and F2 live read-only Vault census as the first critical capability increment."
+  - "Fable/CEO intake: re-pin current protected Mastermind + Macro, reconcile path custody, then execute F1 private-plane isolation and F2 live read-only Vault ID-set plus body-health census as the first critical capability increment."
   - "Advance F8 (#7461 structural claim repair) in parallel if source custody is disjoint; do not begin broad RIO backfill before F5 hash/text contract."
   - "Use research/research_vault_ai_fabric_20261004/00_FABLE_CEO_ASSIGNMENT.md as the principal handoff and the remaining packet as its source map."
 do_not_redo:
@@ -88,7 +85,7 @@ do_not_redo:
   - "Do not weaken the source freshness guard merely to make research-ingest green."
   - "Do not open public MCP ingress just to prove the private canary; private tunnel comes first."
 danger_areas:
-  - "Research Vault publication and source-content freshness are different clocks; a fresh catalog republish can contain stale source material."
+  - "Research Vault publication and source-content freshness are different clocks; a fresh catalog republish can contain stale source material."\n  - "A green Research Vault ID-set census can still hide a body/text-health collapse; identity completeness and retrieval completeness are separate acceptance axes."
   - "The excerpt collapse guard is protecting a known-better snapshot; editing/deleting it would hide the corpus defect rather than repair it."
   - "Data OS VendorAliasTable is exact security identity owner; engine/entity_resolver is candidate/context resolution only."
   - "Research Intelligence and Research Vault currently overload content_sha256 across different byte domains."
