@@ -18,6 +18,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import date, datetime, time, timezone
+import hashlib
+import json
 from zoneinfo import ZoneInfo
 from typing import Any, Final
 
@@ -75,6 +77,17 @@ def _ref(ref: Mapping[str, Any]) -> dict[str, str]:
     ):
         _fail("EVIDENCE_REF_INVALID")
     return dict(ref)
+
+
+def _canonical_sha256(value: Mapping[str, Any]) -> str:
+    try:
+        wire = json.dumps(
+            value, sort_keys=True, separators=(",", ":"),
+            ensure_ascii=False, allow_nan=False,
+        ).encode("utf-8")
+    except (TypeError, ValueError, RecursionError) as exc:
+        raise PTSEEventAdapterError("EVENT_CALENDAR_PAYLOAD_INVALID") from exc
+    return hashlib.sha256(wire).hexdigest()
 
 
 def _binding(binding: EventCalendarBinding, *, decision_at: str) -> bool:
@@ -271,6 +284,9 @@ def adapt_event_calendar(
     stale = _binding(binding, decision_at=decision_at)
     if not isinstance(payload, Mapping):
         _fail("EVENT_CALENDAR_OBJECT_REQUIRED")
+    artifact_ref = _ref(binding.artifact_ref)
+    if artifact_ref["sha256"] != _canonical_sha256(payload):
+        _fail("EVENT_CALENDAR_ARTIFACT_REF_MISMATCH")
     if payload.get("schema_version") != 1 or payload.get("is_context_only") is not True:
         _fail("EVENT_CALENDAR_SCHEMA_INVALID")
     if payload.get("asof") != market_session:
