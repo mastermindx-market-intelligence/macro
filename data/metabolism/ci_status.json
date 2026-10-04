@@ -1,6 +1,6 @@
 {
-  "ts": "2026-10-04T15:47:38+00:00",
-  "main_sha": "6a01acd0c4886448136686aafadbb2cc3b9e6dac",
+  "ts": "2026-10-04T20:04:14+00:00",
+  "main_sha": "548bb479e6ff70f9cc493135c7c352b9b175899e",
   "red_required": [
     {
       "name": "tier-gate",
@@ -34,9 +34,9 @@
     }
   ],
   "green": false,
-  "consecutive_failures": 206,
+  "consecutive_failures": 207,
   "sensed_shas": [
-    "6a01acd0c4886448136686aafadbb2cc3b9e6dac",
+    "548bb479e6ff70f9cc493135c7c352b9b175899e",
     "2114b7f6033e0769a39914b9f68b9d7ee0f2d980"
   ],
   "heartbeat_degraded": false
