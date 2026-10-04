@@ -31,6 +31,18 @@ returned one blocking finding, six further ones and five notes; all are accepted
 is rebuilt on the regime artifact's own embedded copy, and the replay rule (R-I) is made
 one-directional.
 
+Revision 3.2 (same day). Slice E0 repaired the first producer the appendix cites: the
+transmission state now publishes no token and no number when its input is missing (PR #8348,
+`698f58a0c74b`). That changed a cited decision function, so under rule R-E the mapping was
+re-read against producer code and takes a new version, `VERDICT_MAPPING_V2`, before any
+projection is built. No path, condition or reading changed. The changes are listed in §18.
+
+Revision 3.3 (2026-10-04). The composer's independent review (PR #8380) found two silences in
+this contract and they are closed here: a plain date stamp is a New York calendar day and is
+judged against the New York date of the cutoff, and a projection built for a later completed
+session is never a baseline. Neither touches the mapping: no path, condition, reading or family
+changed, so `VERDICT_MAPPING_V2` stands. The changes are listed in §19.
+
 ## 0. Acceptance gates — the first vertical is not done unless
 
 1. **Real path.** Change one transmission input in a real artifact shape, run the existing
@@ -104,7 +116,7 @@ named reason — transparent missingness is part of the product.
 | 4 | Market structure | regime → `conditions.complacency.breadth_div`; `data/market_state/latest.json` → `components[breadth]`; `data/dispersion/regime.json` → `state`. Named, not admitted: `site/basketdata/breadth_split.json` (its verdict is published only as text; its producer's position is unresolved). No market-level concentration owner exists | partial |
 | 5 | Leadership and fundamentals | `data/leadership_crack/latest.json` → `state` — a fixed tracked AI-hardware cohort, never "all current market leaders". Evidence only: regime → `theme_revisions` (per theme, sign rules, no market-level verdict). Named for the later join: `site/marketdata/subsector_rotation.json`, `site/marketdata/themes_heatmap.json`, `data/index_leadership/*`; evaluator and shape vocabulary arrive with #8299 / #7976 (§11) | partial |
 | 6 | Valuation and exposures | valuation and factor exposure exist per name only (`engine/valuation.py`, `engine/factor_exposure.py`); no market-level owner field | not covered |
-| 7 | Volatility, correlation, positioning | market_state → `components[vol]`; dispersion → `avg_corr` (a variance-ratio proxy, a number, §10). Named, not admitted: `site/basketdata/vol_weather.json` chips (vocabulary not yet audited from producer code; producer position unresolved). Positioning proxies exist in `engine/systematic_flows.py` without a published market-level verdict | partial |
+| 7 | Volatility, correlation, positioning | market_state → `components[vol]`; dispersion → `avg_corr` (a variance-ratio proxy, a number, §10). Named, not admitted: `site/basketdata/vol_weather.json` chips (vocabulary not yet audited from producer code; producer position unresolved). Positioning proxies exist in `engine/systematic_flows.py` without a published market-level verdict | not_covered |
 | 8 | Flows and reflexive effects | the ETF series in `engine/etf_flows.py` are price-and-volume proxies, not measured flows; no admitted flow owner | not covered |
 | 9 | Cross-asset and regional | transmission → `dollar_channel.usd_dir` (evidence only until slice E0, Appendix A.2); `data/commodity/complex_latest.json` → `dollar_dir` and `data/commodity/latest.json` → `assets.oil.trend` (bare signs, evidence). Not admitted: `data/commodity/shock_state.json` (producer position unresolved) | not covered in version 1 — no admitted field until slice E0; scope is the United States; other regions are `not_covered`, never inferred |
 | 10 | Change and outlook | this projection's `baseline`, `changes` and path objects | covered |
@@ -151,7 +163,7 @@ regime_outlook:
   scope: "US"
   analysis_cutoff: <UTC instant the inputs were snapshotted>
   built_at: <UTC instant written>
-  mapping_version: "VERDICT_MAPPING_V1"   # Appendix A; its sha256 is recorded beside it
+  mapping_version: "VERDICT_MAPPING_V2"   # Appendix A; its sha256 is recorded beside it
   inputs: { <artifact_id>: { path, sha256, read_status } }
   evidence_clock_range: { oldest, newest, by_clock_semantics: { <semantics>: n } }
   families: [ { family_id, coverage: covered|partial|not_covered, reason, evidence_ids: [...] } ]
@@ -187,6 +199,14 @@ Field rules:
   projection has **no single "as of" date**. `evidence_clock_range` is computed only from rows
   whose `clock_semantics` is `source_observation_date`; other rows are counted in
   `by_clock_semantics`, not folded into the range.
+  - **Clock rule for stamps (revision 3.3).** An owner stamp that is a plain date (`YYYY-MM-DD`)
+    names a US-session calendar day in America/New_York. Its `future_dated` flag and its
+    `age_calendar_days` are judged against the **New York date of the cutoff** — the same clock
+    `session_relation` uses — never against the cutoff's UTC date, so a stamp for the next New
+    York day is future-dated even after 00:00Z has turned the UTC date. An offset-aware instant is
+    future-dated when it is after the cutoff instant; its age is the New York day difference. A
+    change in a stamp's precision alone (a date becoming an instant on the same New York day) is
+    never a later observation.
 - `inputs.<id>.sha256` is the hash of the bytes read at the cutoff — provenance for the cited
   inputs only. It is not compared between builds and nothing keys on it (an artifact that embeds
   its build instant changes hash on every build). Change detection works on evidence values,
@@ -333,7 +353,7 @@ visible, and nothing is invented to fill it.
   `dollar_channel.usd_dir` flat versus `complex_latest.dollar_dir` strengthening) are shown as a
   disagreement, not resolved by preference.
 - **The table is itself an authored construction, and says so.** It is a display-tier
-  vocabulary: versioned (`VERDICT_MAPPING_V1`, its sha256 recorded in the projection), one
+  vocabulary: versioned (`VERDICT_MAPPING_V2`, its sha256 recorded in the projection), one
   producer citation and one line of rationale per row, reviewed independently before any code is
   written against it. It has never been tested against outcomes and makes no such claim. Any use
   beyond display — a rank, a gate, a transition claim, a study target — is a new construction
@@ -364,13 +384,16 @@ One workflow: **Now → What changed → Paths → History → Exposures → Wat
 - **What changed.** Differences between this projection and its `baseline`, classified as
   `observation_advanced`, `value_revised` (same reading date, different value — a source
   revision), `owner_verdict_changed`, `became_stale`, `became_available`, `became_unavailable`,
-  `clock_only`, `mapping_version_changed`, or `unattributed` (the value changed but its source
+  `clock_only`, `issues_changed` (an `available` row became `partial` with its values, verdict and stamp
+  unchanged — it acquired an issue), `mapping_version_changed`, or `unattributed` (the value changed but its source
   date is not published). A revision, a late print or a clock-only change is never described as a
   regime transition.
   **Baseline rule.** The baseline is the newest committed projection whose completed US session
   is strictly earlier than this build's. A rebuild within the same session — a second nightly
   attempt, the weekly lane, a recovery run — carries the stored baseline forward unchanged and
-  never promotes the same session's earlier build to "previous". The baseline travels inside the
+  never promotes the same session's earlier build to "previous". A `previous` whose completed
+  session is **later** than this build's is never its baseline and lends nothing it carries: the
+  baseline is then absent with reason `previous_from_later_session` (revision 3.3). The baseline travels inside the
   artifact (`baseline`), following the incumbent board's own same-day rule
   (`engine/rates_inflation_command.py`, the `prev_state` carry), so the comparison never depends
   on git history or on which lane ran last. The first projection ever written has no baseline and
@@ -473,11 +496,15 @@ In the transmission producers (`engine/rate_inflation_transmission.py`, `engine/
    only (Appendix A.2) and is displayed only when all five of its inputs are published. The
    leader-damage monitor writes nothing when too few members are fresh, leaving the previous
    file in place; it is guarded on every token (Appendix A, R-B). Repair: the owner returns no
-   token when its input is missing.
+   token when its input is missing. Repaired for the transmission state by PR #8348 (`698f58a0c74b`):
+   its five verdicts are `null` when their input is missing. The guard stays, because a file
+   written before the repair can still carry the old default word.
 4. **A missing number is published as 0.00.** Several `state` values are written through
    `round(x or 0, 2)`. Guard: those fields are cited as evidence only where the audit confirms a
    real value; an exact 0.00 on a field in the audit's list carries the issue
-   `possible_missing_as_zero` and yields no reading. Repair: the owner publishes `null`.
+   `possible_missing_as_zero` and yields no reading. Repair: the owner publishes `null`. Repaired
+   by PR #8348: the eight numbers are `null` when missing, so from mapping version 2 a
+   published 0.00 is a reading and the issue is no longer raised (§18).
 5. **The verdict's own date and number are not carried.** `dollar_channel.asof` is the newest
    date across currency pairs, not the date of the broad-dollar series behind `usd_dir`, and the
    rate of change behind the token is nulled. The monthly and quarterly blocks carry only the
@@ -593,7 +620,7 @@ author, with this register consulted and cited in the preregistration.
 | SH-9 | The episodes that motivated the programme's question, including the contrasting bond and metals paths around 2018–2019 and 2022. They belong in the acceptance set and are not independent test cases after being used to design a rule | parent architecture (#7088) |
 | SH-10 | The Rates Command forward log — every window already issued and graded by the nightly | Rates & Inflation Command |
 | SH-11 | Regime One's accruing `forward.p_quad` record — outcomes accrue nightly and are visible to anyone reading the artifact | Regime One |
-| SH-12 | The mapping coverage replay dates — 2018-10-31, 2019-08-30, 2022-06-30 and 2022-10-31 — read through `VERDICT_MAPPING_V1` on revised data (Appendix A, R-I). Registered here before the replay is run; the dates already sat inside SH-9 | this contract (slice E1r) |
+| SH-12 | The mapping coverage replay dates — 2018-10-31, 2019-08-30, 2022-06-30 and 2022-10-31 — read through the mapping version in force when the replay runs (`VERDICT_MAPPING_V2` from revision 3.2; no replay was run under version 1) on revised data (Appendix A, R-I). Registered here before the replay is run; the dates already sat inside SH-9 | this contract (slice E1r) |
 
 Every study that inspects an outcome appends a row here in the same pull request as its result.
 
@@ -785,11 +812,51 @@ ones and five notes. Every one is accepted.
 | C-N4 | note | The leader-damage state was shown without how long it had held. | `state_since` is evidence beside the state (A.2, LH-1). |
 | C-N5 | note | OD-2's side is authored. | Rationale says so. |
 
-## Appendix A — `VERDICT_MAPPING_V1`
+## 18. Change log — revision 3.2
+
+Trigger: PR #8348 (`698f58a0c74b`, slice E0) changed `current_state` in
+`engine/rate_inflation_transmission.py`, the decision function behind five A.1 rows. An
+independent read-only pass compared every decision function A.1 cites between the version 1
+pin and `698f58a0c74b`. `current_state` is the only one whose source differs. Its bands and
+middle tokens are unchanged; what changed is what it publishes when an input is missing.
+`breakeven_decomposition` moved 41 lines with identical source. No path, condition, reading or
+family changed. No projection was built and no replay was run under version 1.
+
+| # | Change | Reason |
+|---|---|---|
+| V1 | The mapping is `VERDICT_MAPPING_V2`, pinned at `698f58a0c74beff717cd6b69bb728fd7e21581f2`. | R-E: a cited producer rule changed, so the mapping is re-read and re-versioned, not carried. |
+| V2 | The five transmission `state` rows list `null` as an owner token. The reader refuses `null` on these rows with the issue `missing`. Their default-word guard stays. | The owner now publishes `null` when its input is missing. A file written before the repair can still carry the old default word, and the guard still refuses it. |
+| V3 | `possible_missing_as_zero` applies to no field: the mapping's list is empty. The token stays in the closed issue list. | The eight numbers are `null` when missing. Keeping the issue would mark a genuine 0.00 as possibly missing. |
+| V4 | The slice that wires the projection into the builder merges only when the committed `data/transmission/latest.json` on `origin/main` was last written by a commit that descends from `698f58a0c74b`. | A file written before the repair could still carry a zero default, which version 2 would read as a number. |
+| V5 | Producer line numbers for the five `state` rows and the two breakeven rows are re-cited at the pin. Every other line number stays at the version 1 pin. | `current_state` grew and the functions below it moved. |
+| V6 | R-E names its record, its test and the remedy for a failing pin. A failing pin whose re-read finds no row changed is recorded in the pin file, not re-versioned. | The rule had no operational form. Without one, a failing pin invites a blind hash update, and a re-version for every unrelated edit inside a long producer function would bury the versions that matter. |
+| V7 | §2 row 7 (volatility, correlation, positioning) reads `not_covered`. | The family has evidence but no admitted field, and §2's own rule publishes that as `not_covered`. The cell said `partial`. |
+| V8 | SH-12 names the mapping version in force when the replay runs. | The registration was written against version 1, and no replay had been run. |
+
+Where Appendix A says "version 1" about a scope decision — what is cited, left open or
+retired — the decision is unchanged in version 2.
+
+## 19. Change log — revision 3.3
+
+Trigger: the independent read-only review of the composer (PR #8380, round 2) showed the
+module judging a plain date against the cutoff's UTC date while `session_relation` used New
+York, and a baseline carry-forward that also fired when `previous` came from a later session.
+The contract had not ruled on either. No path, condition, reading or family changed; the
+mapping stays `VERDICT_MAPPING_V2`.
+
+| # | Change | Reason |
+|---|---|---|
+| C1 | §3 clock rule: a plain date stamp is a New York calendar day; `future_dated` and `age_calendar_days` use the New York date of the cutoff; a precision-only stamp change is never "later". | Between 00:00Z and the New York midnight a next-day stamp was read as current, against the information boundary. |
+| C2 | §6: a `previous` from a later completed session yields an absent baseline, reason `previous_from_later_session`; carry-forward is only for a same-session rebuild. | The §6 rule allowed carry-forward only within the same session; the composer had carried from a later one. |
+| C3 | What-changed classification: a row that moves from `available` to `partial` is judged by the data rules (observation-clock rows: `observation_advanced` / `value_revised` / `owner_verdict_changed` / `clock_only`; snapshot-clock rows: `unattributed` / `clock_only`); when its values, verdict and stamp are all unchanged the status move itself is the new kind `issues_changed`. A row that moves from `stale` or from a non-data status to `partial` is `became_available`. The change-kind list is now ten words. | A partial row still carries its values and verdict, so `became_unavailable` was a label the contract never defined for it; and §3 says statuses are detected, so a pure status move may not vanish from "what changed". |
+
+## Appendix A — `VERDICT_MAPPING_V2`
 
 **Status.** Display tier. Authored by the programme lead on 2026-10-03 from producer code and
-committed artifacts at `origin/main` `5f20adbd6be6b136b2efe41585bd4ef964b5bf2e` (the "pin"),
-revised once after independent review (§16). Never tested against outcomes. No point-in-time
+committed artifacts at `origin/main` `5f20adbd6be6b136b2efe41585bd4ef964b5bf2e` (the "version 1 pin"),
+revised once after independent review (§16), and re-read as version 2 at
+`698f58a0c74beff717cd6b69bb728fd7e21581f2` (the "pin") after the producer repair in PR #8348
+(§18). Never tested against outcomes. No point-in-time
 archive of these owner tokens exists for the motivating episodes (2018–2019, 2022), so the
 mapping cannot be replayed on them as evidence. What can be done honestly is narrower and is
 required before the page ships: one hindsight coverage replay (slice E1r, rule R-I) that shows
@@ -801,7 +868,10 @@ Abbreviations: RIT `engine/rate_inflation_transmission.py`; YC `engine/yield_cur
 `engine/yield_momentum.py`; FX `engine/forex_transmission.py`; TC
 `engine/transmission_context.py`; COND `engine/conditions.py`; REG `engine/regime.py`; MS
 `engine/market_state.py`; DISP `engine/dispersion.py`; LC `engine/leadership_crack.py`; FP
-`engine/fed_path.py`. Line numbers are at the pin. Artifacts: T `data/transmission/latest.json`;
+`engine/fed_path.py`. Line numbers and "at the pin" statements were read at the version 1 pin, except
+the five transmission `state` rows and the two breakeven rows of A.1 and the repair citation in
+R-B, which are at the pin. Between the two commits every cited producer file except RIT and TC
+is byte-identical; `config/dag.yml` was not re-read. Artifacts: T `data/transmission/latest.json`;
 R `data/regime/latest.json`; M `data/market_state/latest.json`; D `data/dispersion/regime.json`;
 L `data/leadership_crack/latest.json`; B `data/bonds/bond_health.json`.
 
@@ -819,20 +889,22 @@ With no audited owner field: `inflation_breadth`, `real_activity`, `earnings`, `
 
 ### A.1 Admitted owner verdicts
 
-"Default" is the token the owner returns when its input is missing, and "needs" is what must be
+"Default" is the token the owner returns when its input is missing — for the five transmission
+`state` rows, the word a file written before the repair in PR #8348 carries; since the repair
+those rows are `null` when the input is missing — and "needs" is what must be
 published and finite beside a token before it is admitted (rule R-B). "Clock" is the date the row
 may show; `snapshot` means the artifact's frame date is the only clock, so the row is current
 context only (§4 rule 2).
 
 | Field | Tokens | Middle | Class | Owner rule (producer lines) | Clock | Default → needs | Family |
 |---|---|---|---|---|---|---|---|
-| T `state.inflation.direction` | `re-accelerating`, `cooling`, `steady` | `steady` | banded | core PCE 3-month annualised minus 12-month, dead-band ±0.2 pp (RIT:251-254, 295) | snapshot | `steady` → `core_pce_3m_ann`, `core_pce_yoy` | `core_pce` |
-| T `state.inflation.regime` | `above target`, `at target`, `below target` | `at target` | banded | core PCE 12-month above 2.3 / 1.7–2.3 / otherwise (RIT:252-253) | snapshot | `below target` → `core_pce_yoy` | `core_pce` |
-| T `state.expectations.anchoring` | `drifting up`, `drifting down`, `anchored` | `anchored` | banded | the 5-year-5-year-forward market breakeven minus a 5-year model expectation — two different tenors, and the owner compares them as published — dead-band ±0.3 pp (RIT:257-261, 305) | snapshot | `anchored` → `market_minus_model_bp` | `treasury_curve` |
-| T `state.rates.direction` | `rising`, `falling`, `stable` | `stable` | banded | 10-year real yield change over 63 rows, dead-band ±10 bp (RIT:226-230, 272) | snapshot | `stable` → `real_10y_chg_63d_bp` | `treasury_curve` |
-| T `state.rates.regime` | `restrictive`, `accommodative`, `neutral` | `neutral` | banded | 10-year real yield percentile over 1,260 observations, ≥ 0.70 / ≤ 0.30 (RIT:225-229) | snapshot | `neutral` → `real_10y_pctile` | `treasury_curve` |
-| T `breakeven_decomp.direction` | `falling`, `rising`, `flat` | `flat` | banded | 10-year breakeven change over 20 rows, dead-band ±8 bp (RIT:401, 422-423, 448, 456) | `breakeven_decomp.as_of` | `flat` → `velocity_bp.chg_20d_bp` | `treasury_curve` |
-| T `breakeven_decomp.trend` | `downtrend`, `uptrend`, `choppy`, `n/a` | none (no row reads the field in this version) | composite | RIT:410-421 | `breakeven_decomp.as_of` | `n/a` is the owner's own missing token | `treasury_curve` |
+| T `state.inflation.direction` | `re-accelerating`, `cooling`, `steady`, null | `steady` | banded | core PCE 3-month annualised minus 12-month, dead-band ±0.2 pp (RIT:260-262, 266-268, 338) | snapshot | `steady` → `core_pce_3m_ann`, `core_pce_yoy` | `core_pce` |
+| T `state.inflation.regime` | `above target`, `at target`, `below target`, null | `at target` | banded | core PCE 12-month above 2.3 / 1.7–2.3 / otherwise (RIT:260, 263-265, 338) | snapshot | `below target` → `core_pce_yoy` | `core_pce` |
+| T `state.expectations.anchoring` | `drifting up`, `drifting down`, `anchored`, null | `anchored` | banded | the 5-year-5-year-forward market breakeven minus a 5-year model expectation — two different tenors, and the owner compares them as published — dead-band ±0.3 pp (RIT:271-272, 274-277, 346-347) | snapshot | `anchored` → `market_minus_model_bp` | `treasury_curve` |
+| T `state.rates.direction` | `rising`, `falling`, `stable`, null | `stable` | banded | 10-year real yield change over 63 rows, dead-band ±10 bp (RIT:234-235, 239-241, 320) | snapshot | `stable` → `real_10y_chg_63d_bp` | `treasury_curve` |
+| T `state.rates.regime` | `restrictive`, `accommodative`, `neutral`, null | `neutral` | banded | 10-year real yield percentile over 1,260 observations, ≥ 0.70 / ≤ 0.30 (RIT:233, 236-238, 319) | snapshot | `neutral` → `real_10y_pctile` | `treasury_curve` |
+| T `breakeven_decomp.direction` | `falling`, `rising`, `flat` | `flat` | banded | 10-year breakeven change over 20 rows, dead-band ±8 bp (RIT:442, 463-464, 489, 497) | `breakeven_decomp.as_of` | `flat` → `velocity_bp.chg_20d_bp` | `treasury_curve` |
+| T `breakeven_decomp.trend` | `downtrend`, `uptrend`, `choppy`, `n/a` | none (no row reads the field in this version) | composite | RIT:451-462 | `breakeven_decomp.as_of` | `n/a` is the owner's own missing token | `treasury_curve` |
 | T `yield_curve.regime.term_premium_dir` | `rising`, `falling`, `stable`, null | `stable` | banded | term-premium estimate change over 63 observations, dead-band ±5 bp; null when the change is missing (YC:522-523) | `yield_curve.asof` | none — the owner publishes null | `treasury_curve` |
 | T `yield_momentum.series.<tenor>.turn_watch` (2y, 5y, 10y, 20y, 30y) | `rolldown_forming`, `extreme_high_watch`, `rollup_forming`, `extreme_low_watch`, null | `null`, when guarded (the guard in this row's "Default → needs" column; otherwise `unknown`) | composite | YM:159-182, 274-275, 297-300. Null is also returned when the 22-day change is missing or fewer than 60 values exist (YM:166) | the series' own `as_of` | null → `status: available`, `path_qualified: true` and a finite `velocity_bp.22d`; otherwise `unknown` | `treasury_curve` |
 | R `conditions.labor_nowcast.read` | `labor cooling`, `labor firm`, `labor mixed` | `labor mixed` | composite | two or more of three "cooling" votes, else two or more of three "firm" votes, else `labor mixed` (COND:738-748). Cooling votes: jobless claims year on year ≥ +10%; job postings 3-month change ≤ −5%; withheld tax year on year below 0. Firm votes: claims ≤ 0; postings ≥ 0; withheld tax ≥ +2.0%. Three of the six cuts sit at zero, but every leg has a dead zone between its two votes, so no single zero-crossing moves the read from one side to the other | snapshot (the block has no clock of its own) | `labor mixed` → `claims_yoy_pct`, `indeed_chg_3m_pct`, `withheld_tax_yoy_pct` | `labour` |
@@ -1005,14 +1077,17 @@ no side is authored until a field is admitted, which is a new mapping version.
   "needs" are published and finite beside it; otherwise the reading is `unknown` with the issue
   `owner_default_on_missing`. For most fields this binds only the default token, because a
   missing input can produce no other. One field is bound on every token, because its owner
-  can leave a previous file in place: the leader-damage state (the same-run check in A.1). `possible_missing_as_zero` applies to the eight
-  `state` numbers the owner writes through a zero default at the pin (RIT:268-271, 289-293):
+  can leave a previous file in place: the leader-damage state (the same-run check in A.1). In version 1 `possible_missing_as_zero` applied to the eight
+  `state` numbers the owner wrote through a zero default (RIT:268-271, 289-293 at the version 1 pin):
   `rates.nominal_10y`, `rates.curve_2s10s`, `rates.curve_tp_adj`, `rates.policy_gap`,
   `inflation.core_cpi_yoy`, `inflation.headline_cpi_yoy`, `inflation.ppi_core_yoy` and
-  `inflation.eci_comp_yoy`. None of A.1's "needs" numbers is among them, and the E1 rule-pin
-  test (R-E) fails if that changes. The owner's
-  inflation `regime` compares `(core_pce_yoy or 0) > 2.3` (RIT:252-253), which is why its
-  default token is `below target`. One corruption check: `fed_path.implied_cuts_12m` is read
+  `inflation.eci_comp_yoy`. None of A.1's "needs" numbers is among them. The repair in PR #8348
+  publishes `null` for the eight when the observation is missing (RIT:224-230, 321-324,
+  332-336), so in version 2 the list is empty and a published 0.00 is a reading; the rule-pin
+  test (R-E) fails if the owner's rule changes again. Before the repair the owner's
+  inflation `regime` compared `(core_pce_yoy or 0) > 2.3`, which is why the default word a
+  pre-repair file carries is `below target`; the owner now publishes `null` instead
+  (RIT:263-265). One corruption check: `fed_path.implied_cuts_12m` is read
   only when `implied_cuts_12m × implied_bp_12m ≤ 0`. The owner derives both from one number
   with opposite signs (FP:131-132), so a well-formed artifact always passes; a failure means the
   file is damaged, and reads `unknown`, issue `owner_sign_inconsistent`. The projection never
@@ -1047,7 +1122,15 @@ no side is authored until a field is admitted, which is a new mapping version.
 - **R-E — rule pins.** Slice E1 ships a test that hashes the source of every producer decision
   function cited in A.1 and the configured thresholds they read. A producer rule change fails
   the test; the mapping is then re-reviewed and re-versioned, never silently carried.
-- **R-F — build order.** Positions at the pin (`config/dag.yml`): R and L are written by
+  Operational form (revision 3.2): `config/regime_outlook_rule_pins.json` names the mapping
+  version and the pin, and lists each function (file, name, the sha256 of its source text, the
+  fields it decides) and each configured value. `tests/test_rates_command_outlook_rule_pins.py`
+  recomputes them from the files without importing the producers. When it fails, the rows that
+  cite the changed function are re-read against the new source. If a row's tokens, bands,
+  middle, default or guard assumption changed, the mapping takes a new version. If none did,
+  the pin is updated and the re-read is recorded in the pin file's `reviews` list (date,
+  commit, functions, finding). A pin is never updated without that record.
+- **R-F — build order.** Positions at the version 1 pin (`config/dag.yml`): R and L are written by
   `engine_run` (:624; L from `engine/run.py:987-993`); M by `scripts.build_site`
   (`market_state.persist`, :683; declared at :3917-3936); D by `build_dispersion_regime`
   (:726); B by `scripts.build_bonds` and T by `scripts.build_transmission` (members :874 and

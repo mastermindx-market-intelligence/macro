@@ -1664,7 +1664,7 @@ def test_raw_stage_admits_same_date_post_close_clocks_but_rejects_stale_date(
     wrong_clock["id"] = "next-date-clock"
     wrong_clock["observed_at"] = "2026-07-03T13:30:00Z"
     wrong_clock["decision_at"] = "2026-07-03T13:30:01Z"
-    with pytest.raises(RuntimeError, match="decision clocks leave stage date"):
+    with pytest.raises(RuntimeError, match="learning event next-date-clock leaves session date"):
         poller._stage_raw_events(
             "2026-07-02", [wrong_clock],
             now_fn=lambda: datetime(2026, 7, 3, 13, 30, 2, tzinfo=timezone.utc),
@@ -4211,7 +4211,7 @@ def test_builder_stage_date_mismatch_is_atomic_and_does_not_checkpoint(
     wrong = _event(id="poller-wrong-date")
     for key in ("available_at", "published_at", "source_snapshot_asof", "anchor_strategy"):
         wrong.pop(key, None)
-    with pytest.raises(RuntimeError, match="belongs to 2026-07-02"):
+    with pytest.raises(RuntimeError, match="learning event poller-wrong-date leaves session date"):
         poller._stage_raw_events("2026-07-06", [wrong])
     assert not (tmp_path / "stage/2026-07-06.jsonl").exists()
 

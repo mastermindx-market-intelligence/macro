@@ -596,6 +596,10 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     assert "RECURRING_BRIEFS_ENABLE" in briefs["missing_contract_or_proof"]
     assert "build_recurring_briefs.py" in briefs["real_producer"]
     assert briefs["next_bounded_child"].startswith("ACTIVATION, not BUILD_NEW")
+    # W11 (D83): the 2026-10-03 natural weekly run was read once and was DORMANT; state unchanged.
+    assert "2026-10-03 CEO A D83" in briefs["adjudication_notes"]
+    assert "37141524333" in briefs["adjudication_notes"]
+    assert "DORMANT (RECURRING_BRIEFS_ENABLE unset)" in briefs["adjudication_notes"]
 
     # W8 D61/D62/D64 (Sol 5966652470 rows 1-4): stale NOT_BUILT / "still open" premises removed.
     screener = r["MO-DELTA-002"]
@@ -650,6 +654,10 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     assert "REUSE the existing `ops/terminal-data` nightly" in accuracy_sched["next_bounded_child"]
     assert "never a second cron" in accuracy_sched["next_bounded_child"]
     assert "Build owner = CEO B (F13" in accuracy_sched["next_bounded_child"]
+    # W11 (D84): F13 receipts from CEO B — wiring merged live, hydration fix merged, deploy owned by Terminal #793; still PARTIAL.
+    assert "2026-10-03 CEO A D84" in accuracy_sched["adjudication_notes"]
+    assert "#790" in accuracy_sched["adjudication_notes"]
+    assert "#793" in accuracy_sched["adjudication_notes"]
 
     # W9 stage 2 D76-D77 (served .com proofs after render 37105009906).
     dossier = r["MO-PAID-006"]

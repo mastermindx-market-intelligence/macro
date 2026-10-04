@@ -64,6 +64,10 @@ from engine.options_signal_episode import (
 )
 from engine.session_digest import ET
 from lib import config, nyse_calendar
+from lib.live_flow_event_stage import (
+    events_from_records as _shared_events_from_records,
+    stage_digest as _shared_stage_digest,
+)
 
 log = logging.getLogger("build_options_signal_episode")
 
@@ -230,144 +234,11 @@ def discover_event_sessions() -> list[str]:
 def _events_from_stage(
     records: list[dict[str, Any]], *, expected_session_date: str,
 ) -> list[dict[str, Any]]:
-    if not records:
-        raise ContractError("empty dated event stage")
-    decisions: dict[str, dict[str, Any]] = {}
-    availability: dict[str, str] = {}
-    for lineno, record in enumerate(records, start=1):
-        if record.get("schema") != EVENT_STAGE_SCHEMA:
-            raise ContractError(f"wrong dated event-stage schema at line {lineno}")
-        raw_event_id = record.get("event_id")
-        if (
-            type(raw_event_id) is not str
-            or not raw_event_id
-            or raw_event_id != raw_event_id.strip()
-        ):
-            raise ContractError(f"invalid event id at line {lineno}")
-        event_id = raw_event_id
-        kind = record.get("kind")
-        if kind == "decision":
-            if set(record) != {"schema", "kind", "event_id", "event"}:
-                raise ContractError(f"invalid decision receipt shape at line {lineno}")
-            if event_id in decisions or event_id in availability:
-                raise ContractError(f"duplicate staged decision {event_id}")
-            event = record.get("event")
-            if (
-                not isinstance(event, dict)
-                or type(event.get("id")) is not str
-                or event.get("id") != event_id
-            ):
-                raise ContractError(f"invalid decision receipt at line {lineno}")
-            if {
-                "available_at", "published_at", "source_snapshot_asof", "anchor_strategy",
-            }.intersection(event):
-                raise ContractError(
-                    f"decision receipt contains non-durable fields at line {lineno}"
-                )
-            try:
-                event_dt = datetime.fromisoformat(
-                    str(event.get("ts") or "").replace("Z", "+00:00")
-                )
-            except (TypeError, ValueError) as exc:
-                raise ContractError(f"invalid event timestamp at line {lineno}") from exc
-            if event_dt.tzinfo is None:
-                raise ContractError(f"event timestamp lacks timezone at line {lineno}")
-            event_session = event_dt.astimezone(ET).date().isoformat()
-            if event_session != expected_session_date:
-                raise ContractError(
-                    f"event-stage key/session mismatch at line {lineno}: "
-                    f"key={expected_session_date} event={event_session}"
-                )
-            decisions[event_id] = event
-        elif kind == "availability":
-            if set(record) not in (
-                {"schema", "kind", "event_id", "available_at"},
-                {"schema", "kind", "event_id", "available_at", "context_capture"},
-            ):
-                raise ContractError(f"invalid availability receipt shape at line {lineno}")
-            if event_id not in decisions:
-                raise ContractError(
-                    f"availability receipt precedes its decision at line {lineno}"
-                )
-            if event_id in availability:
-                raise ContractError(f"duplicate staged availability {event_id}")
-            stamp = str(record.get("available_at") or "")
-            if not stamp:
-                raise ContractError(f"invalid availability receipt at line {lineno}")
-            binding = record.get("context_capture")
-            if binding is not None:
-                if not isinstance(binding, dict):
-                    raise ContractError(
-                        f"invalid context capture binding at line {lineno}"
-                    )
-                if binding.get("status") == "prepared":
-                    if (
-                        set(binding) != {"status", "request_id", "request_sha256"}
-                        or not re.fullmatch(
-                            r"mmoptrequest_[a-f0-9]{64}",
-                            str(binding.get("request_id") or ""),
-                        )
-                        or not re.fullmatch(
-                            r"[a-f0-9]{64}",
-                            str(binding.get("request_sha256") or ""),
-                        )
-                    ):
-                        raise ContractError(
-                            f"invalid prepared context capture binding at line {lineno}"
-                        )
-                elif binding.get("status") == "abstained":
-                    if (
-                        set(binding) != {"status", "reason"}
-                        or binding.get("reason") not in {
-                            "capture_not_armed",
-                            "outside_predeclared_canary",
-                            "precommit_not_proven",
-                            "legacy_unbound",
-                        }
-                    ):
-                        raise ContractError(
-                            f"invalid context capture abstention at line {lineno}"
-                        )
-                else:
-                    raise ContractError(
-                        f"unknown context capture state at line {lineno}"
-                    )
-            availability[event_id] = stamp
-        else:
-            raise ContractError(f"unknown event-stage receipt at line {lineno}")
-    missing_availability = set(decisions) - set(availability)
-    if missing_availability:
-        raise ContractError(
-            f"decision receipts lack durable availability: {sorted(missing_availability)}"
-        )
-    out: list[dict[str, Any]] = []
-    for event_id, event in decisions.items():
-        stamp = availability.get(event_id)
-        if stamp is None:
-            continue
-        row = dict(event)
-        row.update({
-            "available_at": stamp,
-            "published_at": None,
-            "source_snapshot_asof": stamp,
-            "anchor_strategy": "durable_available_at",
-        })
-        out.append(row)
-    return out
+    return _shared_events_from_records(records, expected_session_date=expected_session_date)
 
 
 def _stage_digest(records: list[dict[str, Any]], count: int | None = None) -> str:
-    subset = records if count is None else records[:count]
-    try:
-        raw = b"".join(
-            json.dumps(
-                row, sort_keys=True, separators=(",", ":"), allow_nan=False,
-            ).encode() + b"\n"
-            for row in subset
-        )
-    except (TypeError, ValueError) as exc:
-        raise ContractError("dated event stage contains non-finite JSON") from exc
-    return hashlib.sha256(raw).hexdigest()
+    return _shared_stage_digest(records, count=count)
 
 
 def _validate_checkpoint_document(checkpoint: object) -> dict[str, Any]:
