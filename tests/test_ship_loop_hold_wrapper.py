@@ -245,7 +245,7 @@ def test_pending_sol_hold_waits_before_first_unsafe_branch_remediation(monkeypat
     reason = block["reason"].lower()
     assert "hold-for-sol waiting" in reason
     assert "do not rename" in reason
-    assert "wait for the existing check watcher only" in reason
+    assert "ci holds release, not independent authorized work" in reason
     assert "unsafe_branch" not in reason
     assert calls == {"open_pull": 1, "checks": 1}
 
@@ -297,7 +297,7 @@ def test_pending_ordinary_claude_hold_waits_instead_of_demanding_a_forbidden_mer
     reason = block["reason"].lower()
     assert "hold-for-sol waiting" in reason
     assert "trusted-executor-pack-10" in reason
-    assert "wait for the existing check watcher only" in reason
+    assert "ci holds release, not independent authorized work" in reason
     # The exact instructions the old fall-through wrongly produced must be absent.
     assert "squash-merge" not in reason
     assert "render/deploy" not in reason
@@ -884,3 +884,49 @@ def test_cursor_rule_no_longer_orders_the_session_closed_at_parked():
         assert kept in lowered, f"tenth-path edit dropped an existing prohibition: {kept!r}"
     # Law text is never evidence that a watcher exists.
     assert "never establishes that any watcher" in lowered
+
+
+# #917 CI-hold progress regressions, kept in the owning suite.
+@pytest.mark.parametrize("branch,kind", [("claude/task", "ordinary_unmerged"), ("sol/task", "sol_authority")])
+def test_pending_advice_preserves_hold_without_a_foreground_stop(branch, kind):
+    probe = dict(number=12, branch=branch, head="a" * 40, candidate_kind=kind,
+                 status="pending", pending=["ci-pack"], red=[], passed=[])
+    result = WRAPPER._hold_block(probe)
+    assert result["decision"] == "block"
+    reason = result["reason"]
+    assert "CI holds release, not independent authorized work" in reason
+    assert "existing verified check observer" in reason
+    assert "does not establish that a watcher exists" in reason
+    assert "do not re-poll CI" in reason
+    assert "Do not rename the branch" in reason
+    assert "arm merge-on-green, merge, render" in reason
+    assert "terminal PARKED" in reason
+    assert "watcher only" not in reason
+
+
+@pytest.mark.parametrize("status", ["pending", "red"])
+def test_stop_entrypoint_emits_nonterminal_hold_and_never_relays(monkeypatch, capsys, status):
+    payload = {"hook_event_name": "Stop", "cwd": str(ROOT)}
+    probe = dict(number=12, branch="claude/task", head="a" * 40,
+                 candidate_kind="ordinary_unmerged", status=status,
+                 pending=["ci-pack"] if status == "pending" else [],
+                 red=["ci-pack"] if status == "red" else [], passed=[])
+    monkeypatch.setattr(WRAPPER, "_read_payload", lambda: (payload, b"{}"))
+    monkeypatch.setattr(WRAPPER, "_load_guard", lambda _: object())
+    monkeypatch.setattr(WRAPPER, "_hold_probe", lambda *_: probe)
+    monkeypatch.setattr(WRAPPER, "_relay", lambda *_: pytest.fail("held Stop must not relay"))
+    monkeypatch.setattr(WRAPPER.sys, "argv", ["wrapper"])
+    WRAPPER.main()
+    result = json.loads(capsys.readouterr().out)
+    assert set(result) == {"decision", "reason"}
+    assert result["decision"] == "block"
+    assert "CI holds release, not independent authorized work" in result["reason"]
+    assert "WATCH_ARMED" not in result["reason"]
+
+
+@pytest.mark.parametrize("path", ["AGENTS.md", "CLAUDE.md"])
+def test_native_entrypoints_keep_ci_wait_action_scoped(path):
+    source = (ROOT / path).read_text()
+    assert "CI holds release, not independent authorized work" in source
+    assert "already-authorized, path/dependency-disjoint" in source
+    assert "no new Stop-hook exit or release permission" in source
