@@ -540,3 +540,58 @@ Refresh only these decision-changing facts, not the entire company census:
 - current OpenAI developer-mode/tunnel/auth contract before real canary.
 
 Everything else in this packet is a starting map, not a reason to redo accepted archaeology.
+
+
+---
+
+# 20. Planning-carrier collision ruling
+
+The 2026-10-04 census found three overlapping documentation carriers for this same project:
+
+```text
+#8389  docs: Research Vault -> ChatGPT Intelligence Fabric Fable masterplan
+#8430  [PLAN/HANDOFF] Fable: institutional Research Vault -> ChatGPT / Deep Research
+#8438  docs(research): Fable-ready Research Vault AI intelligence fabric masterplan
+```
+
+They are not three independent programs and none proves a Fable START.
+
+**Canonical planning candidate: #8438.**
+
+Reason:
+
+- newest live production evidence;
+- explicit historical corpus-gap evidence;
+- PDF-byte vs extracted-text-byte identity split;
+- F0-F17 dependency DAG;
+- body-health hardening addendum;
+- current OpenAI private-tunnel/read-only canary contract;
+- current protected Mastermind procedure pin;
+- explicit stale-PR salvage map;
+- authoring QA receipt.
+
+Do not merge all three plans.
+
+Before publication/merge of #8438, inspect #8389/#8430 for any unique accepted evidence not yet represented here, then close or explicitly supersede them under normal GitHub custody.
+
+Their existence is a documentation collision, not source-writer custody over Research Vault implementation paths.
+
+---
+
+# 21. Current packet hardening delta
+
+Post-publication review added:
+
+```text
+06_HARDENING_ADDENDUM_AND_FABLE_START_GATE.md
+07_FABLE_ORCHESTRATOR_BRIEF_QA.md
+```
+
+The addendum controls where earlier text is less precise, particularly:
+
+- current private-R2 bucket vs endpoint/credential fallback semantics;
+- ID-set completeness vs body/text retrieval health;
+- missing-row vs existing-row/broken-body repair;
+- #8438 planning-carrier precedence.
+
+The QA file records a successful non-authoritative Mastermind Craft orchestrator compilation and intentionally does not claim runtime binding or execution authority.
