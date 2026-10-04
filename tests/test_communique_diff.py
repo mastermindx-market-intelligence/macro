@@ -392,6 +392,47 @@ def test_same_day_revision_removed_phrase_cannot_mint_appeared():
 
 
 
+def test_revision_neutral_new_phrase_keeps_effective_source_evidence():
+    book = _book()
+    locator = "loc_ndrc_revision_neutral_evidence"
+    prior = _row(
+        "ndrc", "昨日基线", "稳中求进",
+        "2026-07-01T01:00:00",
+        url="https://www.ndrc.gov.cn/policy/yesterday.html",
+    )
+    today_old = _row(
+        "ndrc", "今日初版", "发展新质生产力 稳中求进",
+        "2026-07-02T01:00:00",
+        url="https://www.ndrc.gov.cn/policy/corrected-neutral.html",
+    )
+    today_new = _row(
+        "ndrc", "今日更正", "发展新质生产力 反内卷",
+        "2026-07-02T02:00:00",
+        url="https://www.ndrc.gov.cn/policy/corrected-neutral.html",
+    )
+    today_old["source_locator_id"] = locator
+    today_new["source_locator_id"] = locator
+
+    res = cd.compute_events(
+        [prior, today_old, today_new],
+        "2026-07-02",
+        book=book,
+    )
+    event = next(
+        e for e in res["events"]
+        if e["kind"] == "APPEARED" and e["phrase"] == "新质生产力"
+    )
+    assert res["counts"]["n_document_revisions"] == 1
+    assert event["evidence_url"] == today_new["url"]
+    assert event["evidence_title"] == today_new["title"]
+    # The correction-only added phrase stays neutralized.
+    assert ("APPEARED", "反内卷") not in {
+        (e["kind"], e["phrase"]) for e in res["events"]
+    }
+
+
+
+
 def test_prior_day_revised_lead_blocks_next_day_lead_shift():
     book = _book()
     locator = "loc_pd_prior_revised_lead"
