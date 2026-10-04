@@ -4153,8 +4153,11 @@ def continuation_directive(code: str, repeat: int, claimed: str = "") -> str:
     if code in WAITING_BLOCKERS:
         parts.append(
             "This block is a WAIT owned outside this session. Re-reading it cannot "
-            "change it and does not answer this block; a one-line hold note does. "
-            "Spend the interval on an independent lane, never on the queue."
+            "change it and does not answer this block. Check independent authorized "
+            "lanes now: if any remain, continue one immediately; never spend the turn "
+            "polling or foreground-waiting on the queue. If useful independent work is "
+            "genuinely exhausted and a verified watcher owns the wait, use the existing "
+            "external-wait/escape boundary rather than manufacturing hold-note turns."
         )
     if repeat >= 2:
         parts.append(

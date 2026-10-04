@@ -6,7 +6,7 @@ export const meta = {
     { title: 'Takeover', detail: 'fresh-read the PR, post the Chairman-override takeover comment, rebase onto fresh base' },
     { title: 'Review', detail: 'opus reviewer attacks the rebased diff against fresh base' },
     { title: 'Fix', detail: 'builder repairs blockers/majors on the same branch, then one re-review' },
-    { title: 'Ship', detail: 'strip the hold, Ready, merge-on-green, wait CONCLUDED checks, merge, live proof' },
+    { title: 'Ship', detail: 'strip the hold, Ready, arm merge-on-green, hand pending CI/render to one async owner, continue other PRs, reconcile on event' },
   ],
 }
 
@@ -115,7 +115,7 @@ ${RET}`
 
 const shipPrompt = (n, t) => `ROUTE: build
 MISSION: Release PR #${n} (${REPO}, branch ${t.branch}) to MERGED and LIVE-VERIFIED and report on macro#6819.
-${BUDGET(20, 'Checking checks is a bounded poll loop (see step 3), not a single long watch call.')}
+${BUDGET(20, 'Never spend this stage polling pending CI. One bounded state read is enough; merge-on-green/native watcher owns the wait while the Meta-CEO continues other PRs.')}
 ${AUTH_BLOCK}
 WHY: DONE is merged + live (fleet law); the Chairman wants built work live, not parked.
 SCOPE: title/label/Ready edits, waiting, merging, live verification, the wave comment. OUT OF SCOPE: code changes (a genuinely red check on this head -> return BLOCKED with job name + log excerpt).
@@ -123,11 +123,11 @@ FROZEN SPEC: n/a. OWNED FILES: none. TESTS: none.
 PROCEDURE:
 1. Fresh-read: gh pr view ${n} -R ${REPO} --json state,isDraft,title,headRefOid,labels,mergeable,mergeStateStatus,statusCheckRollup. If already MERGED, skip to step 5.
 2. Release the hold with the sweeper-proof helper (ONE call; it strips the title marker, rewrites every hold line in the body, posts the HOLD-RELEASED comment, marks Ready, swaps merge-blocked for merge-on-green, and re-verifies with scripts/merge_on_green.recorded_hold): H="${LOCAL}/.claude/worktrees/mo-release-${n}/.claude/workflows/release_hold_text.py"; [ -f "$H" ] || { git -C "${LOCAL}" fetch -q origin ${BASE}; (git -C "${LOCAL}" show origin/${BASE}:.claude/workflows/release_hold_text.py || (git -C "${LOCAL}" fetch -q origin claude/marketontology-meta-ceo-charter-20260906 && git -C "${LOCAL}" show origin/claude/marketontology-meta-ceo-charter-20260906:.claude/workflows/release_hold_text.py)) > "$TMPDIR/release_hold_text.py" && H="$TMPDIR/release_hold_text.py"; }; MO_REPO_ROOT="${LOCAL}" python3 "$H" ${n} --repo ${REPO} --ceo ${CEO}. Exit 0 with held_after=null is the only acceptable result; exit 2 means a hold is still recorded — read its JSON and return BLOCKED quoting held_after. Never delete prior body text by hand.
-3. ${QUOTA} A Bash call is capped at 10 minutes, so a single foreground \`gh pr checks --watch\` will be killed before a 30-45 min macro ci.yml run concludes: do NOT use it. Poll in bounded rounds instead, each its own Bash call (sleep >=90s per quota law): \`for i in $(seq 1 3); do gh pr checks ${n} -R ${REPO} --json name,state,conclusion --jq '.[] | [.name,.state,.conclusion] | @tsv'; sleep 170; done\`. Repeat across multiple such calls until every check has CONCLUDED ("Workers Builds: macro" red is known-spurious and ignorable; a pending check is not a pass). If checks are still pending when this stage's budget wall is reached, return PARTIAL naming the armed merge-on-green sweeper as the eventual merge performer and live verification as still owed.
+3. ${QUOTA} Read check state ONCE: \`gh pr checks ${n} -R ${REPO} --json name,state,conclusion --jq '.[] | [.name,.state,.conclusion] | @tsv'\`. If any binding check is PENDING/QUEUED, do not poll, sleep, or launch a foreground watch. The already-armed merge-on-green sweeper is the single durable CI owner for this legacy workflow. Return PARTIAL immediately with merged=false, merge_sha="", checks_summary naming the pending checks + exact head, live_verified=false, live_proof="pending CI; merge-on-green sweeper owns the wait", issue_comment_url="", and a gap saying the next invocation/re-entry starts from fresh PR state. The Meta-CEO must continue the next PR instead of respawning this ship stage. If a genuine non-spurious red is already concluded, return BLOCKED with its job name + bounded log excerpt. If every binding check is concluded green (known-spurious "Workers Builds: macro" excluded), continue to step 4.
 4. Fresh-read again (state, headRefOid, mergeStateStatus). If the sweeper already merged: record the sha. Else on concluded green (spurious Workers X excluded): gh pr merge ${n} -R ${REPO} --squash --delete-branch. On a merge conflict: return BLOCKED naming the paths. Never --admin past a real red; never close/reopen; never rename the branch.
 5. Live verification (${REPO_KEY}): ${REPO_KEY === 'terminal'
-    ? 'merge to master runs /opt/terminal/terminal-build.sh; poll https://app.mastermind-x.com every 120s up to 20 min (curl -sI, then curl -s a route the diff changed) until a marker from the diff is served; record status + marker.'
-    : 'the VPS pulls main every 3 min; paired plain-copy assets are live after that. Template/engine changes need the shared render lane: gh run list -R mastermindx-market-intelligence/macro --workflow render.yml --branch main --limit 3 --json databaseId,status,conclusion,headSha,createdAt; watch the run whose head is at/after the merge sha with gh run watch <id> --interval 120 (never cancel/re-run); then curl -s the live page(s) the PR adds/changes and grep a marker from the diff; curl -sI for status. If the PR adds a page that must be reachable, curl the nav entry page and grep the link.'}
+    ? 'merge to master runs /opt/terminal/terminal-build.sh. Read the live URL once (curl -sI, then curl -s a route the diff changed). If the expected marker is not served yet, do not poll/sleep: return PARTIAL with merged=true, the exact merge sha, live_verified=false, and live_proof="terminal deployment not served yet; resume verification on a later material event/invocation". If served, record status + marker.'
+    : 'the VPS pulls main every 3 min; paired plain-copy assets are live after that. Template/engine changes need the shared render lane: gh run list -R mastermindx-market-intelligence/macro --workflow render.yml --branch main --limit 3 --json databaseId,status,conclusion,headSha,createdAt. Read the covering render run once. If it is pending, do not foreground-watch or poll it: return PARTIAL with merged=true, the exact merge sha, live_verified=false, and live_proof naming the covering render run id/status so a later material event/invocation resumes verification. If it is concluded success, curl -s the live page(s) the PR adds/changes and grep a marker from the diff; curl -sI for status. If the PR adds a page that must be reachable, curl the nav entry page and grep the link.'}
 6. Post ONE comment on issue macro#6819: gh issue comment 6819 -R mastermindx-market-intelligence/macro --body "[Meta-CEO ${CEO}] Wave 0: PR #${n} merged as <sha>; live proof: <url> <status> <marker>; released under the Chairman override (charter research/MARKET_ONTOLOGY_META_CEO_CHARTER_2026_09_06.md)." Record its URL.
 NOT DONE UNLESS: merged is true with the exact sha and live_verified is true with URL + status + marker (records-only PRs: say "no live surface" and set live_verified true with the merge readback as proof), and the #6819 comment exists.
 ${RET}`
@@ -158,11 +158,9 @@ for (const n of PRS) {
   }
   log(`PR #${n}: ship`)
   let ship = await agent(shipPrompt(n, te), { label: `ship:${n}`, phase: 'Ship', schema: SHIP_SCHEMA, agentType: 'builder', effort: 'low' })
-  // A ship agent that runs out of budget while checks are still pending returns PARTIAL; re-spawn (each attempt waits up to ~45 min).
-  for (let k = 2; k <= 5 && ship && ship.status === 'PARTIAL' && !(ship.evidence && ship.evidence.merged && ship.evidence.live_verified); k++) {
-    log(`PR #${n}: ship attempt ${k}`)
-    ship = await agent(`SHIP ATTEMPT ${k}: a previous ship agent already ran (result: ${String(ship.result).slice(0, 400)}; merged=${ship.evidence && ship.evidence.merged}). Do not repeat completed steps; resume from the first incomplete one.\n\n` + shipPrompt(n, te), { label: `ship${k}:${n}`, phase: 'Ship', schema: SHIP_SCHEMA, agentType: 'builder', effort: 'low' })
-  }
+  // Pending CI/render is an asynchronous release lane. Never immediately respawn the
+  // same ship stage: that recreates the 30-45 minute foreground wait this workflow is
+  // meant to avoid. The sweeper/run is the durable owner; continue the next PR.
   out.push({ pr: n, stage: 'ship', takeover: te, review: review.evidence, fix: fix && fix.evidence, ship: ship && ship.evidence, ship_status: ship && ship.status })
 }
 const merged = out.filter(o => o.ship && o.ship.merged).map(o => o.pr)

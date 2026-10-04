@@ -544,10 +544,14 @@ classify it exactly as `EXACT_HUMAN_GATE`, `PLATFORM_FAILURE`, or `EFFECT_UNKNOW
 A bounded worker may return `STATUS: BLOCKED` to its parent; that worker return does
 not terminally classify the parent mission.
 
-`WAITING EXTERNAL -> durable watcher/owner; do useful parallel principal work; do not
-burn principal capacity polling`. Hand the wait to a durable watcher, a cron, or the
-merge sweeper, then work an independent lane. A Stop-hook block during a wait is
-satisfied by a one-line hold note, never by a fresh poll.
+`WAITING EXTERNAL -> one asynchronous watcher/owner; immediately do useful parallel
+principal work; do not burn principal capacity polling`. Pending CI/release freezes only
+that PR lane. Bind exactly one watcher to the exact PR/head/run; never run a native
+blocking watch synchronously in the principal turn, and never re-read unchanged pending
+state to satisfy a Stop hook. The watcher event is the next CI observation. If independent
+authorized work remains, a Stop-hook block means continue that work immediately; only
+after useful independent work is genuinely exhausted does the existing external-wait/
+escape boundary become relevant.
 
 `2 equivalent no-delta cycles -> change tactic/lane/owner`. Two attempts that changed
 nothing observable ban a third identical one. The Stop guard now names the cycle count

@@ -251,8 +251,10 @@ def test_case_2_a_wait_owned_outside_the_session_is_never_answered_by_polling(tm
         reason = _block_reason(tmp_path, capsys, code)
         assert "WAIT owned outside this session" in reason, code
         assert "does not answer this block" in reason, code
-        assert "one-line hold note" in reason, code
-        assert "never on the queue" in reason, code
+        assert "Check independent authorized lanes now" in reason, code
+        assert "continue one immediately" in reason, code
+        assert "polling or foreground-waiting" in reason, code
+        assert "external-wait/escape boundary" in reason, code
 
     # A block the session itself must act on is NOT a wait: telling it to go do
     # something else would be the opposite error.
@@ -260,10 +262,37 @@ def test_case_2_a_wait_owned_outside_the_session_is_never_answered_by_polling(tm
         assert "WAIT owned outside" not in _block_reason(tmp_path, capsys, code), code
 
     _on_every_surface(
-        "WAITING EXTERNAL -> durable watcher/owner; do useful parallel principal work; "
-        "do not burn principal capacity polling",
-        "satisfied by a one-line hold note, never by a fresh poll",
+        "WAITING EXTERNAL -> one asynchronous watcher/owner; immediately do useful "
+        "parallel principal work; do not burn principal capacity polling",
+        "Pending CI/release freezes only that",
+        "continue that work immediately",
+        "external-wait/escape boundary",
     )
+
+
+def test_fable_wait_doctrine_and_fallback_match_async_continuation():
+    """A seat must not relearn foreground waiting from its doctrine or fallback prompt."""
+    sources = (
+        ".claude/skills/fable-mode/SKILL.md",
+        ".claude/skills/fable-mode/references/long-horizon.md",
+        ".claude/skills/fable-mode/references/harness-adapters.md",
+        "config/fable_mode_core.md",
+    )
+    for relative in sources:
+        source = (ROOT / relative).read_text(encoding="utf-8").lower()
+        assert "independent" in source, relative
+        assert "watcher" in source, relative
+        assert "one-line hold note" not in source, relative
+
+    harness = (ROOT / ".claude/skills/fable-mode/references/harness-adapters.md").read_text(
+        encoding="utf-8"
+    )
+    assert "Never run a blocking `gh run watch`" in harness
+    assert "run_in_background=true" in harness
+
+    fallback = (ROOT / "config/fable_mode_core.md").read_text(encoding="utf-8")
+    assert "accountability is not foreground" in fallback
+    assert "sole remaining" in fallback
 
 
 # --------------------------------------------------------------------------------------

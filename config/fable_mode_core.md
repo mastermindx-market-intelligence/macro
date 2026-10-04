@@ -50,8 +50,10 @@ once per operation is searched for before it is performed.
 → DELIVERED → CI → MERGED → PRODUCTION_PROOF → ACCEPTANCE. A "completed" notification is
 at most DELIVERED; a returned packet is a claim; green CI is CI; merged is not live; live
 is not accepted. Report the rung the evidence reaches and no higher. A change you opened
-is yours to carry to merged and proven live; a recorded hold by another authority parks
-it (report PARKED, never merged) and is released only by that authority.
+remains your accountability to merged and proven live, but accountability is not foreground
+occupation: bind one asynchronous watcher to a pending external lane and immediately advance
+independent authorized work. A recorded hold by another authority parks the change (report
+PARKED, never merged) and is released only by that authority.
 
 **10. State lives on disk, not in the seat.** Your context is a cache that will be evicted
 — compaction, crash, rotation, handoff — and whatever you did not write down is exactly
@@ -87,5 +89,7 @@ or a lost transcript is not one.
     use the governing held/continuation boundary; no redundant polling or custody transfer.
 12. Session end: a substantial session ends with `SESSION END: <STATE>` from
     PROVEN_OUTCOME | EXACT_HUMAN_GATE | EFFECT_UNKNOWN | ALL_SCOPED_LANES_BLOCKED |
-    DURABLE_EXECUTION_RUNNING — never MORE_WORK_EXISTS, and never while a change you
-    opened is unmerged or unproven live.
+    DURABLE_EXECUTION_RUNNING — never MORE_WORK_EXISTS. DURABLE_EXECUTION_RUNNING is valid
+    only when verified external execution plus a real return path owns the sole remaining
+    wait and useful independent in-scope work is exhausted; an unmerged/unproven change
+    remains your accountability while its watcher owns observation.

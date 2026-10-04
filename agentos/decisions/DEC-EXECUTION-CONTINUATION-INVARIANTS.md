@@ -158,7 +158,7 @@ paraphrase on one surface and not another is how a fleet ends up with two rules.
 
 - `BLOCKER -> freeze the affected lane -> check independent useful lanes -> continue`
 - `NO WORKER STARTED + lawful principal tools/custody + no conflict/EFFECT_UNKNOWN -> direct bounded execution may continue`
-- `WAITING EXTERNAL -> durable watcher/owner; do useful parallel principal work; do not burn principal capacity polling`
+- `WAITING EXTERNAL -> one asynchronous watcher/owner; immediately do useful parallel principal work; do not burn principal capacity polling`
 - `2 equivalent no-delta cycles -> change tactic/lane/owner`
 - `accepted work -> DO_NOT_REDO unless materially invalidated`
 - `EFFECT_UNKNOWN -> same-carrier reconciliation; never blind retry/failover`
@@ -185,8 +185,11 @@ when a rule is paraphrased:
   Route/reconcile the blocker through the canonical owner. A bounded worker may return
   BLOCKED to its parent; a principal stops only at `EXACT_HUMAN_GATE`,
   `PLATFORM_FAILURE`, `EFFECT_UNKNOWN`, or proven `DURABLE_EXECUTION_RUNNING`.
-- A Stop-hook block during a wait is **satisfied by a one-line hold note, never by a
-  fresh poll**.
+- Pending CI/release freezes only that lane. Bind **exactly one asynchronous watcher**
+  to the exact PR/head/run; the watcher event is the next CI observation. A Stop-hook
+  block while independent authorized work remains means **continue that work immediately**,
+  never foreground-wait or re-read unchanged pending state. Only after useful independent
+  work is genuinely exhausted does the existing external-wait/escape boundary become relevant.
 - The **material invalidator** is new contradicting evidence, a changed contract, or an
   explicit authority reversal; a fresh session, a **lost transcript**, and an **absent
   memory** are none of those. Check the `agentos/` `do_not_redo` entries and

@@ -4,10 +4,10 @@ export const meta = {
   whenToUse: 'One Meta-CEO half runs one wave batch (<=6 packets). args = {ceo:"A"|"B", wave:"A1", packets:[{id, lane, title, repo, kind, ledger_rows, spec_sources, owned_paths, entry_points, acceptance, live_url}]}',
   phases: [
     { title: 'Spec', detail: 'designer (ui) or analyst (engine/data/records) freezes the packet into an implementable spec' },
-    { title: 'Build', detail: 'builder implements in an isolated sparse worktree, tests, pushes, opens the PR, arms merge-on-green' },
+    { title: 'Build', detail: 'builder implements in an isolated sparse worktree, tests, pushes, opens the PR as Draft; review must pass before merge-on-green is armed' },
     { title: 'Review', detail: 'opus reviewer attacks the diff against fresh origin/main' },
     { title: 'Fix', detail: 'builder repairs blockers/majors on the same branch' },
-    { title: 'Ship', detail: 'wait for CONCLUDED checks, squash-merge, live-verify, return proof' },
+    { title: 'Ship', detail: 'arm merge-on-green after review, hand pending CI/render to one async owner, reconcile merge/live proof on a material event' },
   ],
 }
 
@@ -184,8 +184,8 @@ PROCEDURE (fleet law, CLAUDE.md):
 1. You are in an isolated sparse worktree. Run: git fetch origin ${defaultBranchOf(p)} && git checkout -B ${branchOf(p)} origin/${defaultBranchOf(p)}. If the packet touches site/ or templates/ or a paired plain-copy asset in macro, run: python3 scripts/worktree_sparse.py add site (then data if needed).
 2. Implement. For macro template edits that have paired site copies run: python -m scripts.check_template_site_sync --fix. For UI: python3 scripts/check_design_system.py --mode enforce-added, python3 scripts/check_runtime_style_injection.py, python3 scripts/check_ui_visual_evidence.py (read their usage first); produce the evidence crops (dark/light x EN/ZH x 1440/390) with headless Chrome into a scratch dir and reference them in the PR body. Bilingual EN/ZH; no translated text in title= attributes; GitHub annotations start the line.
 3. Run the touched tests: python -m pytest <files> -q (macro) — never the full suite in a sparse tree.
-4. Commit (message ends with "Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"), push -u origin ${branchOf(p)}, then: gh pr create -R ${repoOf(p)} --base ${defaultBranchOf(p)} --title "[MO-${CEO}${WAVE}] ${p.id}: ${p.title}" --body-file <file> (body: what/why, ledger rows, acceptance evidence per gate, crops, tests, live URL, and the line "Generated with Claude Code"), then gh pr edit <n> --add-label merge-on-green.
-5. Preflight gh quota before any watch (gh api rate_limit --jq .resources.core.remaining); never gh run watch under --interval 60; never --paginate check-runs.
+4. Commit (message ends with "Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"), push -u origin ${branchOf(p)}, then: gh pr create -R ${repoOf(p)} --base ${defaultBranchOf(p)} --draft --title "[MO-${CEO}${WAVE}] ${p.id}: ${p.title}" --body-file <file> (body: what/why, ledger rows, acceptance evidence per gate, crops, tests, live URL, and the line "Generated with Claude Code"). Do NOT arm merge-on-green in the build stage; review has not accepted the PR yet.
+5. Do not watch CI in the build stage. CI ownership begins only after the ship stage marks the reviewed PR Ready and arms merge-on-green.
 NOT DONE UNLESS: PR exists as Draft, tests pass locally, the PR body carries the acceptance evidence, and every acceptance line is addressed or listed in GAPS. It must NOT be armed with merge-on-green yet.
 ${RETURN_LINE}`
 
@@ -218,7 +218,7 @@ ${RETURN_LINE}`
 
 const shipPrompt = (p, build) => `ROUTE: build
 MISSION: Take PR #${build.pr_number} (${build.pr_url}) to MERGED and LIVE-VERIFIED, returning proof.
-${BUDGET(20, 'Checking checks is a bounded poll loop (see step 2), not a single long watch call.')}
+${BUDGET(20, 'Never spend this stage polling pending CI. One bounded state read is enough; merge-on-green/native watcher owns the wait while the Meta-CEO advances other packets.')}
 WHY: DONE for a packet is merged + live (fleet law); an open PR is abandoned work.
 SCOPE: waiting on checks, merging, live verification, proof.
 OUT OF SCOPE: code changes (if a check is genuinely red on this head, return BLOCKED with the failing job name and log excerpt so the Meta-CEO can commission a fix).

@@ -46,7 +46,9 @@ already delegated. Delegated authority never leaks outside its stated scope.
   that PR lane. Never run `gh run watch` synchronously in the principal turn and never
   re-read unchanged pending state to satisfy a Stop hook. Bind exactly one watcher to the
   exact PR/head/run; its terminal green/merge, genuine red, conflict, or failure event is
-  what returns the owner to that lane.
+  what returns the owner to that lane. If independent authorized work remains, continue
+  that work immediately; only after useful independent work is genuinely exhausted does
+  the existing external-wait/escape boundary become relevant.
 - `2 equivalent no-delta cycles -> change tactic/lane/owner`.
 - `accepted work -> DO_NOT_REDO unless materially invalidated`. The material
   invalidator is new contradicting evidence, a changed contract, or an explicit
