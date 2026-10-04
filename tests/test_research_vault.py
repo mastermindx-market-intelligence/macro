@@ -3966,6 +3966,54 @@ def test_census_refuses_rather_than_auditing_an_unreadable_catalog(tmp_path,
                         lambda local_dir=None: store)
     assert census.main() == 1
 
+
+def test_readonly_census_workflow_cannot_ingest_publish_or_cancel_ingest():
+    """The operator proof lane must stay observational, not a disguised ingest."""
+    import yaml
+
+    path = _W4_ROOT / ".github" / "workflows" / "research-vault-census.yml"
+    raw = path.read_text(encoding="utf-8")
+    payload = yaml.safe_load(raw)
+
+    assert payload["permissions"] == {"contents": "read"}
+    assert payload["concurrency"] == {
+        "group": "research-vault-readonly-census",
+        "cancel-in-progress": False,
+    }
+    job = payload["jobs"]["census"]
+    assert job["if"] == "github.ref == 'refs/heads/main'"
+
+    before_permissions = raw.split("permissions:", 1)[0]
+    assert "workflow_dispatch:" in before_permissions
+    assert "schedule:" not in before_permissions
+
+    runs = "\n".join(
+        step.get("run", "")
+        for step in job["steps"]
+        if isinstance(step, dict)
+    )
+    assert "python -m scripts.research_vault_census" in runs
+    for forbidden in (
+        "scripts.ingest_research",
+        "git push",
+        "git commit",
+        "put_object",
+        "put_bytes",
+        "delete_object",
+        "publish_r2",
+    ):
+        assert forbidden not in runs
+
+    env = job["env"]
+    assert "R2_RESEARCH_ENDPOINT" in env
+    assert "R2_RESEARCH_ACCESS_KEY_ID" in env
+    assert "R2_RESEARCH_SECRET_ACCESS_KEY" in env
+    assert "R2_RESEARCH_BUCKET" in env
+    assert "R2_BUCKET" in env, "shared bucket name is needed only for F1 anti-alias"
+    assert "R2_ENDPOINT" not in env
+    assert "R2_ACCESS_KEY_ID" not in env
+    assert "R2_SECRET_ACCESS_KEY" not in env
+
 # ===========================================================================
 # Market Cognition: rights-safe Research Intelligence belief context
 # ===========================================================================
