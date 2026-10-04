@@ -15,6 +15,7 @@ Read in this order:
 3. [02_ARCHITECTURE_AND_PRODUCT_MASTERPLAN.md](02_ARCHITECTURE_AND_PRODUCT_MASTERPLAN.md) — target architecture, contracts, wave DAG, product behavior and decision gates.
 4. [03_FABLE_WORK_PACKAGES_AND_WAVE_DAG.md](03_FABLE_WORK_PACKAGES_AND_WAVE_DAG.md) — bounded orchestration packages, dependency order, delegation/review rules and expected returns.
 5. [04_ACCEPTANCE_SECURITY_AND_CONTINUATION.md](04_ACCEPTANCE_SECURITY_AND_CONTINUATION.md) — DONE_WHEN, security/rights acceptance, real-path canaries, failure law and exact continuation frontier.
+6. [05_FABLE_START_PROMPT.md](05_FABLE_START_PROMPT.md) — compact pickup prompt with the latest repeated production-failure evidence and exact first actions.
 
 ## 1. Why a hardened revision was necessary
 
@@ -27,6 +28,8 @@ It was not yet sufficient to initiate a principal-led build. The additional cens
 3. **The metadata plane is much thinner than the sidecar schema suggests.** Current 2,778-report coverage is: summary_points 2,751; pages 2,673; desk 10; tags 10; tickers 0. Ticker/theme/desk filtering is therefore a new enrichment capability, not a switch the MCP can simply expose.
 4. **Full-document search is not current behavior.** The canonical corpus truncates every searchable body to 60,000 characters, while Brain report exposure caps body text at 12,000 characters. The full archive contains long documents: among 2,673 reports with page counts, p95 is 31 pages, p99 is 67, the maximum is 279, 48 reports exceed 50 pages and 12 exceed 100 pages.
 5. **The implementation is split across held existing carriers.** Four open Research Intelligence PRs already own substantial parts of the required path. A new implementation must reconcile them, not silently replace or duplicate them.
+
+A second scheduled run completed during this publication and reproduced both material live failures: the excerpt snapshot again collapsed 1,497 -> 351, and source age increased to 232.9 hours with the same September 24 newest report. The exact follow-up evidence is recorded in 05.
 
 The hardened program therefore starts with Vault truth and custody, not MCP code.
 
