@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-03T09:14:12.938715+00:00",
+  "generated_utc": "2026-10-03T20:07:44.191634+00:00",
   "as_of": "2026-10-03",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -2890,72 +2890,33 @@
       "emoji": "\ud83c\udfe6",
       "label_en": "13F position changes",
       "label_zh": "13F\u6301\u4ed3\u53d8\u5316",
-      "rows": 363871,
+      "rows": 363872,
       "last_seen": "2026-10-02",
       "recent": [
         {
           "Date": "2026-10-02T21:18:15.000",
           "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "FLN",
+          "Ticker": "LGOV",
           "Fund": "CX Institutional",
-          "Change": "2224.8597",
-          "Change_Share": "87.0",
+          "Change": "685.6605",
+          "Change_Share": "35.0",
           "Change_Pct": null,
-          "Held": "87.0",
-          "Held_Normalized": "87.0",
-          "Close": "25.5731",
+          "Held": "35.0",
+          "Held_Normalized": "35.0",
+          "Close": "19.5903",
           "_first_seen": "2026-10-03T02:24:14.403862+00:00"
         },
         {
           "Date": "2026-10-02T21:18:15.000",
           "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "UNIT",
+          "Ticker": "UPBD",
           "Fund": "CX Institutional",
-          "Change": "863.1400000000001",
-          "Change_Share": "103.0",
+          "Change": "4618516.1",
+          "Change_Share": "294173.0",
           "Change_Pct": null,
-          "Held": "103.0",
-          "Held_Normalized": "103.0",
-          "Close": "8.38",
-          "_first_seen": "2026-10-03T02:24:14.403862+00:00"
-        },
-        {
-          "Date": "2026-10-02T21:18:15.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "UDR",
-          "Fund": "CX Institutional",
-          "Change": "-13386.449999999999",
-          "Change_Share": "-399.0",
-          "Change_Pct": "-0.10030165912518854",
-          "Held": "3579.0",
-          "Held_Normalized": "3579.0",
-          "Close": "33.55",
-          "_first_seen": "2026-10-03T02:24:14.403862+00:00"
-        },
-        {
-          "Date": "2026-10-02T21:18:15.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "UEC",
-          "Fund": "CX Institutional",
-          "Change": "7796.249999999999",
-          "Change_Share": "825.0",
-          "Change_Pct": null,
-          "Held": "825.0",
-          "Held_Normalized": "825.0",
-          "Close": "9.45",
-          "_first_seen": "2026-10-03T02:24:14.403862+00:00"
-        },
-        {
-          "Date": "2026-10-02T21:18:15.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "UFPI",
-          "Fund": "CX Institutional",
-          "Change": "-308.88",
-          "Change_Share": "-4.0",
-          "Change_Pct": "-0.00354295837023915",
-          "Held": "1125.0",
-          "Held_Normalized": "1125.0",
-          "Close": "77.22",
+          "Held": "294173.0",
+          "Held_Normalized": "294173.0",
+          "Close": "15.7",
           "_first_seen": "2026-10-03T02:24:14.403862+00:00"
         },
         {
@@ -3065,6 +3026,19 @@
         {
           "Date": "2026-10-02T21:18:15.000",
           "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "UNIT",
+          "Fund": "CX Institutional",
+          "Change": "863.1400000000001",
+          "Change_Share": "103.0",
+          "Change_Pct": null,
+          "Held": "103.0",
+          "Held_Normalized": "103.0",
+          "Close": "8.38",
+          "_first_seen": "2026-10-03T02:24:14.403862+00:00"
+        },
+        {
+          "Date": "2026-10-02T21:18:15.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
           "Ticker": "UNM",
           "Fund": "CX Institutional",
           "Change": "11317.17",
@@ -3073,19 +3047,6 @@
           "Held": "352.0",
           "Held_Normalized": "352.0",
           "Close": "87.73",
-          "_first_seen": "2026-10-03T02:24:14.403862+00:00"
-        },
-        {
-          "Date": "2026-10-02T21:18:15.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "WWD",
-          "Fund": "CX Institutional",
-          "Change": "-16100.909999999998",
-          "Change_Share": "-49.0",
-          "Change_Pct": "-1.0",
-          "Held": "0.0",
-          "Held_Normalized": "0.0",
-          "Close": "328.59",
           "_first_seen": "2026-10-03T02:24:14.403862+00:00"
         },
         {
@@ -3104,19 +3065,6 @@
         {
           "Date": "2026-10-02T21:18:15.000",
           "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "UPBD",
-          "Fund": "CX Institutional",
-          "Change": "4618516.1",
-          "Change_Share": "294173.0",
-          "Change_Pct": null,
-          "Held": "294173.0",
-          "Held_Normalized": "294173.0",
-          "Close": "15.7",
-          "_first_seen": "2026-10-03T02:24:14.403862+00:00"
-        },
-        {
-          "Date": "2026-10-02T21:18:15.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
           "Ticker": "UPS",
           "Fund": "CX Institutional",
           "Change": "7272995.84",
@@ -3125,6 +3073,19 @@
           "Held": "85952.0",
           "Held_Normalized": "85952.0",
           "Close": "93.44",
+          "_first_seen": "2026-10-03T02:24:14.403862+00:00"
+        },
+        {
+          "Date": "2026-10-02T21:18:15.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "WYNN",
+          "Fund": "CX Institutional",
+          "Change": "-104450.45000000001",
+          "Change_Share": "-1315.0",
+          "Change_Pct": "-0.30688448074679114",
+          "Held": "2970.0",
+          "Held_Normalized": "2970.0",
+          "Close": "79.43",
           "_first_seen": "2026-10-03T02:24:14.403862+00:00"
         },
         {
@@ -3216,6 +3177,45 @@
           "Held": "7800.0",
           "Held_Normalized": "7800.0",
           "Close": "115.04",
+          "_first_seen": "2026-10-03T02:24:14.403862+00:00"
+        },
+        {
+          "Date": "2026-10-02T21:18:15.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TPSC",
+          "Fund": "CX Institutional",
+          "Change": "0.0",
+          "Change_Share": "0.0",
+          "Change_Pct": "0.0",
+          "Held": "1239.0",
+          "Held_Normalized": "1239.0",
+          "Close": "44.7048",
+          "_first_seen": "2026-10-03T02:24:14.403862+00:00"
+        },
+        {
+          "Date": "2026-10-02T21:18:15.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TPYP",
+          "Fund": "CX Institutional",
+          "Change": "79.73",
+          "Change_Share": "2.0",
+          "Change_Pct": "0.010582010582010581",
+          "Held": "191.0",
+          "Held_Normalized": "191.0",
+          "Close": "39.865",
+          "_first_seen": "2026-10-03T02:24:14.403862+00:00"
+        },
+        {
+          "Date": "2026-10-02T21:18:15.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TQQQ",
+          "Fund": "CX Institutional",
+          "Change": "0.0",
+          "Change_Share": "0.0",
+          "Change_Pct": "0.0",
+          "Held": "1081.0",
+          "Held_Normalized": "1081.0",
+          "Close": "78.03",
           "_first_seen": "2026-10-03T02:24:14.403862+00:00"
         }
       ]
@@ -4108,34 +4108,48 @@
       "emoji": "\ud83d\udcb8",
       "label_en": "Corporate donors",
       "label_zh": "\u4f01\u4e1a\u6350\u8d60",
-      "rows": 4472,
+      "rows": 4473,
       "last_seen": "2026-09-27",
       "recent": [
         {
-          "BioGuideID": "M001244",
-          "CandidateName": "MOODY, ASHLEY",
-          "CompanyCMTENM": "EMPLOYEES OF NORTHROP GRUMMAN CORPORATION PAC",
+          "BioGuideID": "M001198",
+          "CandidateName": "MARSHALL, ROGER W",
+          "CompanyCMTENM": "DELTA AIR LINES PAC",
           "TransactionDate": "2026-08-24",
-          "TransactionAmount": "5000",
-          "Ticker": "NOC",
-          "CommitteeName": "MOODY FOR FLORIDA",
+          "TransactionAmount": "3500",
+          "Ticker": "DAL",
+          "CommitteeName": "KANSANS FOR MARSHALL",
           "Cycle": "2026",
           "TransactionType": "24K",
-          "CompanyCMTEID": "C00088591",
+          "CompanyCMTEID": "C00104802",
           "Uploaded": "2026-09-27 23:34:30.373833",
-          "_first_seen": "2026-10-03T02:24:16.575947+00:00"
+          "_first_seen": "2026-10-03T13:35:34.488805+00:00"
         },
         {
-          "BioGuideID": "B001295",
-          "CandidateName": "BOST, MICHAEL",
-          "CompanyCMTENM": "DAVITA INC. POLITICAL ACTION COMMITTEE (DAPAC)",
-          "TransactionDate": "2026-08-28",
-          "TransactionAmount": "4000",
-          "Ticker": "DVA",
-          "CommitteeName": "MIKE BOST FOR CONGRESS COMMITTEE",
+          "BioGuideID": "S001159",
+          "CandidateName": "STRICKLAND, MARILYN",
+          "CompanyCMTENM": "WALMART INC. PAC FOR RESPONSIBLE GOVERNMENT",
+          "TransactionDate": "2026-08-27",
+          "TransactionAmount": "5000",
+          "Ticker": "WMT",
+          "CommitteeName": "STRICKLAND FOR WASHINGTON",
           "Cycle": "2026",
           "TransactionType": "24K",
-          "CompanyCMTEID": "C00340943",
+          "CompanyCMTEID": "C00093054",
+          "Uploaded": "2026-09-27 23:34:30.373833",
+          "_first_seen": "2026-09-28T01:58:58.682525+00:00"
+        },
+        {
+          "BioGuideID": "M001240",
+          "CandidateName": "MCDOWELL, ADDISON",
+          "CompanyCMTENM": "WALMART INC. PAC FOR RESPONSIBLE GOVERNMENT",
+          "TransactionDate": "2026-08-27",
+          "TransactionAmount": "1000",
+          "Ticker": "WMT",
+          "CommitteeName": "MCDOWELL FOR CONGRESS",
+          "Cycle": "2026",
+          "TransactionType": "24K",
+          "CompanyCMTEID": "C00093054",
           "Uploaded": "2026-09-27 23:34:30.373833",
           "_first_seen": "2026-09-28T01:58:58.682525+00:00"
         },
@@ -4308,6 +4322,20 @@
           "_first_seen": "2026-09-28T01:58:58.682525+00:00"
         },
         {
+          "BioGuideID": "B001295",
+          "CandidateName": "BOST, MICHAEL",
+          "CompanyCMTENM": "DAVITA INC. POLITICAL ACTION COMMITTEE (DAPAC)",
+          "TransactionDate": "2026-08-28",
+          "TransactionAmount": "4000",
+          "Ticker": "DVA",
+          "CommitteeName": "MIKE BOST FOR CONGRESS COMMITTEE",
+          "Cycle": "2026",
+          "TransactionType": "24K",
+          "CompanyCMTEID": "C00340943",
+          "Uploaded": "2026-09-27 23:34:30.373833",
+          "_first_seen": "2026-09-28T01:58:58.682525+00:00"
+        },
+        {
           "BioGuideID": "B000490",
           "CandidateName": "BISHOP, SANFORD",
           "CompanyCMTENM": "RAYONIER, INC. GOOD GOVERNMENT COMMITTEE",
@@ -4318,20 +4346,6 @@
           "Cycle": "2026",
           "TransactionType": "24K",
           "CompanyCMTEID": "C00451757",
-          "Uploaded": "2026-09-27 23:34:30.373833",
-          "_first_seen": "2026-09-28T01:58:58.682525+00:00"
-        },
-        {
-          "BioGuideID": "K000009",
-          "CandidateName": "KAPTUR, MARCY HON. M.C.",
-          "CompanyCMTENM": "WALMART INC. PAC FOR RESPONSIBLE GOVERNMENT",
-          "TransactionDate": "2026-08-27",
-          "TransactionAmount": "1000",
-          "Ticker": "WMT",
-          "CommitteeName": "KAPTUR FOR CONGRESS",
-          "Cycle": "2026",
-          "TransactionType": "24K",
-          "CompanyCMTEID": "C00093054",
           "Uploaded": "2026-09-27 23:34:30.373833",
           "_first_seen": "2026-09-28T01:58:58.682525+00:00"
         },
@@ -4446,20 +4460,6 @@
           "CompanyCMTEID": "C00625921",
           "Uploaded": "2026-09-27 23:34:30.373833",
           "_first_seen": "2026-09-28T01:58:58.682525+00:00"
-        },
-        {
-          "BioGuideID": "S001212",
-          "CandidateName": "STAUBER, PETER ALLEN",
-          "CompanyCMTENM": "ENBRIDGE (U.S.) INC. POLITICAL ACTION COMMITTEE (ENBRIDGE PAC)",
-          "TransactionDate": "2026-08-28",
-          "TransactionAmount": "2500",
-          "Ticker": "ENB",
-          "CommitteeName": "PETE STAUBER FOR CONGRESS",
-          "Cycle": "2026",
-          "TransactionType": "24K",
-          "CompanyCMTEID": "C00429662",
-          "Uploaded": "2026-09-27 23:34:30.373833",
-          "_first_seen": "2026-09-28T01:58:58.682525+00:00"
         }
       ]
     },
@@ -4467,9 +4467,18 @@
       "emoji": "\ud83d\udcf0",
       "label_en": "Quiver news feed",
       "label_zh": "Quiver\u65b0\u95fb",
-      "rows": 3083,
+      "rows": 3085,
       "last_seen": "2026-10-03",
       "recent": [
+        {
+          "url": "https://www.quiverquant.com/news/Press+Release%3A+Don+Davis+Urges+IRS+to+Extend+Diesel+Tax+Relief+for+North+Carolina+Farmers",
+          "time": "2026-10-03 04:21:01",
+          "headline": "Press Release: Don Davis Urges IRS to Extend Diesel Tax Relief for North Carolina Farmers",
+          "category": "legislation_automated",
+          "summary": "<p>Congressman Don Davis urged the IRS to extend federal dyed-diesel penalty relief for North Carolina farmers facing record fuel costs.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rg\u2026",
+          "image": "https://www.quiverquant.com/images/D000230_congress.png",
+          "_first_seen": "2026-10-03T13:35:35.251291+00:00"
+        },
         {
           "url": "https://www.quiverquant.com/news/Lobbying+Update%3A+%24150%2C000+of+IDACORP+INC+lobbying+was+just+disclosed",
           "time": "2026-10-03 00:09:39",
@@ -4477,6 +4486,15 @@
           "category": "lobbying_automated",
           "summary": "<p>$150,000 of IDACORP INC lobbying was just disclosed, from Q2 of 2025, in a new Lobbying Disclosure Act filing.</p><p>This included lobbying on issues like:</p><p>\"CLean energy standard legislation generally.\"</p><p\u2026",
           "image": "https://www.quiverquant.com/images/ida_rect_new.png",
+          "_first_seen": "2026-10-03T02:24:17.386654+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/Fermi+Inc.+%28%24FRMI%29+CEO+2025+Pay+Revealed",
+          "time": "2026-10-02 22:25:21",
+          "headline": "Fermi Inc. ($FRMI) CEO 2025 Pay Revealed",
+          "category": "insiders_automated",
+          "summary": "<p>We estimate that the CEO of Fermi Inc. ($FRMI), Toby Neugebauer, received a compensation of <strong>$47,980,000</strong> in 2025.<p>These estimates are based on a new DEF14A filing, filed with the SEC on October 02\u2026",
+          "image": "https://www.quiverquant.com/images/frmi_rect_new.png",
           "_first_seen": "2026-10-03T02:24:17.386654+00:00"
         },
         {
@@ -4495,15 +4513,6 @@
           "category": "insiders_automated",
           "summary": "<p>We estimate that the CEO of JACK HENRY & ASSOCIATES INC ($JKHY), Gregory R. Adelson, received a compensation of <strong>$8,413,970</strong> in 2026. This is an increase of 16.6% from an estimated <strong>$7,016,992\u2026",
           "image": "https://www.quiverquant.com/images/jkhy_rect_new.png",
-          "_first_seen": "2026-10-03T02:24:17.386654+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/Fermi+Inc.+%28%24FRMI%29+CEO+2025+Pay+Revealed",
-          "time": "2026-10-02 22:25:21",
-          "headline": "Fermi Inc. ($FRMI) CEO 2025 Pay Revealed",
-          "category": "insiders_automated",
-          "summary": "<p>We estimate that the CEO of Fermi Inc. ($FRMI), Toby Neugebauer, received a compensation of <strong>$47,980,000</strong> in 2025.<p>These estimates are based on a new DEF14A filing, filed with the SEC on October 02\u2026",
-          "image": "https://www.quiverquant.com/images/frmi_rect_new.png",
           "_first_seen": "2026-10-03T02:24:17.386654+00:00"
         },
         {
@@ -4540,15 +4549,6 @@
           "category": "legislation_automated",
           "summary": "<p>Balderson praises federal disaster aid approval for Ohio communities affected by August storms and flooding.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(189,165,241);\">Federal \u2026",
           "image": "https://www.quiverquant.com/images/B001306_congress.png",
-          "_first_seen": "2026-10-03T02:24:17.386654+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/Sterling+Infrastructure+rises+as+investors+lean+into+its+AI+and+data-center+buildout+exposure",
-          "time": "2026-10-02 21:20:04",
-          "headline": "Sterling Infrastructure rises as investors lean into its AI and data-center buildout exposure",
-          "category": "prices_automated",
-          "summary": "<p>Sterling Infrastructure (STRL) is up 6.4% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> The move appears tied to continued bullish sentiment around Ste\u2026",
-          "image": "https://www.quiverquant.com/images/strl_rect_new.png",
           "_first_seen": "2026-10-03T02:24:17.386654+00:00"
         },
         {
@@ -4603,6 +4603,15 @@
           "category": "prices_automated",
           "summary": "<p>D-Wave Quantum Inc. (QBTS) is down 4.0% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> The most visible company-specific development was a new gate-mode\u2026",
           "image": "https://www.quiverquant.com/images/qbts_rect_new.png",
+          "_first_seen": "2026-10-03T02:24:17.386654+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/Sterling+Infrastructure+rises+as+investors+lean+into+its+AI+and+data-center+buildout+exposure",
+          "time": "2026-10-02 21:20:04",
+          "headline": "Sterling Infrastructure rises as investors lean into its AI and data-center buildout exposure",
+          "category": "prices_automated",
+          "summary": "<p>Sterling Infrastructure (STRL) is up 6.4% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> The move appears tied to continued bullish sentiment around Ste\u2026",
+          "image": "https://www.quiverquant.com/images/strl_rect_new.png",
           "_first_seen": "2026-10-03T02:24:17.386654+00:00"
         },
         {
@@ -4684,15 +4693,6 @@
           "category": "press_release_summary",
           "summary": "<p>AtlasClear Holdings approved stock option grants for executives and directors to align interests and retain leadership for long-term growth.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p>AtlasClear Holdin\u2026",
           "image": "https://www.quiverquant.com/images/atch_rect_new.png",
-          "_first_seen": "2026-10-03T02:24:17.386654+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/Catheter+Precision%2C+Inc.+Announces+Board+Approval+of+Name+Change+to+Flyte+Aviation%2C+Inc.%2C+Ticker+Symbol+Change+to+VJET+and+1-for-10+Reverse+Stock+Split",
-          "time": "2026-10-02 20:40:55",
-          "headline": "Catheter Precision, Inc. Announces Board Approval of Name Change to Flyte Aviation, Inc., Ticker Symbol Change to VJET and 1-for-10 Reverse Stock Split",
-          "category": "press_release_summary",
-          "summary": "<p>Catheter Precision, Inc. is rebranding as Flyte Aviation, Inc. and plans a one-for-ten reverse stock split effective October 5, 2026.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p>Catheter Precision, Inc.\u2026",
-          "image": "https://www.quiverquant.com/images/ vtak_rect_new.png",
           "_first_seen": "2026-10-03T02:24:17.386654+00:00"
         }
       ]
@@ -4885,21 +4885,86 @@
       "emoji": "\ud83d\udcd1",
       "label_en": "Bill summaries",
       "label_zh": "\u6cd5\u6848\u6458\u8981",
-      "rows": 1288,
+      "rows": 1294,
       "last_seen": "2026-10-03",
       "recent": [
         {
-          "currentChamber": "Senate",
-          "title": "Eleanor Smith Inclusive Home Design Act of 2026",
+          "currentChamber": "House",
+          "title": "Medicaid RAC Improvement Act of 2026",
           "congress": "119",
-          "number": "5125",
+          "number": "9422",
+          "originChamber": "House",
+          "billType": "HR",
+          "summary": "<p><strong>Medicaid RAC Improvement Act of 2026</strong></p><p>This bill establishes additional requirements for and expands the scope of Medicaid Recovery Audit Contractors (RACs). RACs identify improper Medicaid pay\u2026",
+          "url": "https://api.congress.gov/v3/bill/119/hr/9422?format=json",
+          "lastAction": "Introduced in House",
+          "lastActionDate": "2026-06-24",
+          "_first_seen": "2026-10-03T13:35:40.256420+00:00"
+        },
+        {
+          "currentChamber": "House",
+          "title": "Less Bureaucracy, Better Higher Education Act",
+          "congress": "119",
+          "number": "9611",
+          "originChamber": "House",
+          "billType": "HR",
+          "summary": "<p><strong>Less Bureaucracy, Better Higher Education Act</strong></p><p>This bill transfers specified functions relating to postsecondary education programs from the Department of Education (ED) to the Department of L\u2026",
+          "url": "https://api.congress.gov/v3/bill/119/hr/9611?format=json",
+          "lastAction": "Introduced in House",
+          "lastActionDate": "2026-07-09",
+          "_first_seen": "2026-10-03T13:35:40.256420+00:00"
+        },
+        {
+          "currentChamber": "House",
+          "title": "Recognizing the need to improve physical access to many federally funded facilities for all persons of the United States, particularly persons with disabilities.",
+          "congress": "119",
+          "number": "112",
+          "originChamber": "House",
+          "billType": "HCONRES",
+          "summary": "<p>This concurrent resolution recognizes that people with disabilities experience barriers to access every day and pledges to make universal and inclusive design a guiding principle for all infrastructure bills and pr\u2026",
+          "url": "https://api.congress.gov/v3/bill/119/hconres/112?format=json",
+          "lastAction": "Introduced in House",
+          "lastActionDate": "2026-07-15",
+          "_first_seen": "2026-10-03T13:35:40.256420+00:00"
+        },
+        {
+          "currentChamber": "House",
+          "title": "Condemning all forms of hate.",
+          "congress": "119",
+          "number": "1450",
+          "originChamber": "House",
+          "billType": "HRES",
+          "summary": "<p>This resolution condemns all forms of discrimination and expresses support for policies to prevent and respond to hate crimes, including education and training on prevention and response.</p>",
+          "url": "https://api.congress.gov/v3/bill/119/hres/1450?format=json",
+          "lastAction": "Introduced in House",
+          "lastActionDate": "2026-07-22",
+          "_first_seen": "2026-10-03T13:35:40.256420+00:00"
+        },
+        {
+          "currentChamber": "Senate",
+          "title": "A concurrent resolution setting forth the congressional budget for the United States Government for fiscal year 2027 and setting forth the appropriate budgetary levels for fiscal years 2028 through 2036.",
+          "congress": "119",
+          "number": "40",
           "originChamber": "Senate",
-          "billType": "S",
-          "summary": "<p><strong>Eleanor Smith Inclusive Home Design Act of 2026</strong></p><p>This bill requires certain newly constructed, federally assisted housing, including single-family homes and town houses, to contain at least on\u2026",
-          "url": "https://api.congress.gov/v3/bill/119/s/5125?format=json",
+          "billType": "SCONRES",
+          "summary": "<p>This concurrent resolution establishes the congressional budget for the federal government for FY2027 and sets forth budgetary levels for FY2028-FY2036.</p><p>The resolution recommends levels and amounts for FY2027\u2026",
+          "url": "https://api.congress.gov/v3/bill/119/sconres/40?format=json",
           "lastAction": "Introduced in Senate",
-          "lastActionDate": "2026-07-23",
-          "_first_seen": "2026-10-03T02:24:22.392455+00:00"
+          "lastActionDate": "2026-09-22",
+          "_first_seen": "2026-10-03T13:35:40.256420+00:00"
+        },
+        {
+          "currentChamber": "House",
+          "title": "Medicaid Fraud Prevention Act",
+          "congress": "119",
+          "number": "10636",
+          "originChamber": "House",
+          "billType": "HR",
+          "summary": "<p><strong>Medicaid Fraud Prevention Act</strong></p><p>This bill requires state Medicaid programs to regularly assess their programs for fraud and take corrective actions.&nbsp;</p><p>Specifically, states must comple\u2026",
+          "url": "https://api.congress.gov/v3/bill/119/hr/10636?format=json",
+          "lastAction": "Introduced in House",
+          "lastActionDate": "2026-09-28",
+          "_first_seen": "2026-10-03T13:35:40.256420+00:00"
         },
         {
           "currentChamber": "House",
@@ -4912,19 +4977,6 @@
           "url": "https://api.congress.gov/v3/bill/119/hr/9918?format=json",
           "lastAction": "Introduced in House",
           "lastActionDate": "2026-07-23",
-          "_first_seen": "2026-10-03T02:24:22.392455+00:00"
-        },
-        {
-          "currentChamber": "House",
-          "title": "Advancing International and Foreign Language Education Act",
-          "congress": "119",
-          "number": "9971",
-          "originChamber": "House",
-          "billType": "HR",
-          "summary": "<p><strong>Advancing International and Foreign Language Education Act</strong></p><p>This bill reauthorizes through FY2032 and revises international education programs. These programs provide grants to institutions of\u2026",
-          "url": "https://api.congress.gov/v3/bill/119/hr/9971?format=json",
-          "lastAction": "Introduced in House",
-          "lastActionDate": "2026-07-27",
           "_first_seen": "2026-10-03T02:24:22.392455+00:00"
         },
         {
@@ -4942,15 +4994,41 @@
         },
         {
           "currentChamber": "House",
-          "title": "Open-Source AI Leadership Act",
+          "title": "Advancing International and Foreign Language Education Act",
           "congress": "119",
-          "number": "10152",
+          "number": "9971",
           "originChamber": "House",
           "billType": "HR",
-          "summary": "<p><strong>Open-Source AI Leadership Act</strong></p><p>This bill requires the Department of Commerce to assess and publish information about risks related to use of certain foreign adversary artificial intelligence (\u2026",
-          "url": "https://api.congress.gov/v3/bill/119/hr/10152?format=json",
+          "summary": "<p><strong>Advancing International and Foreign Language Education Act</strong></p><p>This bill reauthorizes through FY2032 and revises international education programs. These programs provide grants to institutions of\u2026",
+          "url": "https://api.congress.gov/v3/bill/119/hr/9971?format=json",
           "lastAction": "Introduced in House",
-          "lastActionDate": "2026-08-27",
+          "lastActionDate": "2026-07-27",
+          "_first_seen": "2026-10-03T02:24:22.392455+00:00"
+        },
+        {
+          "currentChamber": "Senate",
+          "title": "Eleanor Smith Inclusive Home Design Act of 2026",
+          "congress": "119",
+          "number": "5125",
+          "originChamber": "Senate",
+          "billType": "S",
+          "summary": "<p><strong>Eleanor Smith Inclusive Home Design Act of 2026</strong></p><p>This bill requires certain newly constructed, federally assisted housing, including single-family homes and town houses, to contain at least on\u2026",
+          "url": "https://api.congress.gov/v3/bill/119/s/5125?format=json",
+          "lastAction": "Introduced in Senate",
+          "lastActionDate": "2026-07-23",
+          "_first_seen": "2026-10-03T02:24:22.392455+00:00"
+        },
+        {
+          "currentChamber": "House",
+          "title": "Earn to Learn Act",
+          "congress": "119",
+          "number": "10097",
+          "originChamber": "House",
+          "billType": "HR",
+          "summary": "<p><strong>Earn to Learn Act</strong></p><p>This bill directs the Department of Education (ED) to establish a postsecondary education match savings account demonstration grant program, through which ED must award comp\u2026",
+          "url": "https://api.congress.gov/v3/bill/119/hr/10097?format=json",
+          "lastAction": "Introduced in House",
+          "lastActionDate": "2026-08-13",
           "_first_seen": "2026-10-01T08:59:23.971996+00:00"
         },
         {
@@ -4964,19 +5042,6 @@
           "url": "https://api.congress.gov/v3/bill/119/hres/1559?format=json",
           "lastAction": "Introduced in House",
           "lastActionDate": "2026-09-17",
-          "_first_seen": "2026-10-01T08:59:23.971996+00:00"
-        },
-        {
-          "currentChamber": "House",
-          "title": "Emergency Grant Aid for College Students Act",
-          "congress": "119",
-          "number": "10451",
-          "originChamber": "House",
-          "billType": "HR",
-          "summary": "<p><strong>Emergency Grant Aid for College Students Act</strong></p><p>This bill establishes a grant program for emergency student financial aid. It also&nbsp;prohibits the Department of Education (ED) from&nbsp;trans\u2026",
-          "url": "https://api.congress.gov/v3/bill/119/hr/10451?format=json",
-          "lastAction": "Introduced in House",
-          "lastActionDate": "2026-09-16",
           "_first_seen": "2026-10-01T08:59:23.971996+00:00"
         },
         {
@@ -5059,15 +5124,28 @@
         },
         {
           "currentChamber": "House",
-          "title": "Earn to Learn Act",
+          "title": "Open-Source AI Leadership Act",
           "congress": "119",
-          "number": "10097",
+          "number": "10152",
           "originChamber": "House",
           "billType": "HR",
-          "summary": "<p><strong>Earn to Learn Act</strong></p><p>This bill directs the Department of Education (ED) to establish a postsecondary education match savings account demonstration grant program, through which ED must award comp\u2026",
-          "url": "https://api.congress.gov/v3/bill/119/hr/10097?format=json",
+          "summary": "<p><strong>Open-Source AI Leadership Act</strong></p><p>This bill requires the Department of Commerce to assess and publish information about risks related to use of certain foreign adversary artificial intelligence (\u2026",
+          "url": "https://api.congress.gov/v3/bill/119/hr/10152?format=json",
           "lastAction": "Introduced in House",
-          "lastActionDate": "2026-08-13",
+          "lastActionDate": "2026-08-27",
+          "_first_seen": "2026-10-01T08:59:23.971996+00:00"
+        },
+        {
+          "currentChamber": "House",
+          "title": "Emergency Grant Aid for College Students Act",
+          "congress": "119",
+          "number": "10451",
+          "originChamber": "House",
+          "billType": "HR",
+          "summary": "<p><strong>Emergency Grant Aid for College Students Act</strong></p><p>This bill establishes a grant program for emergency student financial aid. It also&nbsp;prohibits the Department of Education (ED) from&nbsp;trans\u2026",
+          "url": "https://api.congress.gov/v3/bill/119/hr/10451?format=json",
+          "lastAction": "Introduced in House",
+          "lastActionDate": "2026-09-16",
           "_first_seen": "2026-10-01T08:59:23.971996+00:00"
         },
         {
@@ -5080,19 +5158,6 @@
           "summary": "<p><strong>Kayleigh\u2019s Law Act of 2026</strong></p><p>This bill establishes a federal statutory framework to require federal courts to issue an order prohibiting contact with a victim (i.e., a no-contact order) in the \u2026",
           "url": "https://api.congress.gov/v3/bill/119/s/5372?format=json",
           "lastAction": "Introduced in Senate",
-          "lastActionDate": "2026-08-07",
-          "_first_seen": "2026-10-01T08:59:23.971996+00:00"
-        },
-        {
-          "currentChamber": "Senate",
-          "title": "Diversity Jurisdiction Inflation Adjustment Act",
-          "congress": "119",
-          "number": "4850",
-          "originChamber": "Senate",
-          "billType": "S",
-          "summary": "<p><strong>Diversity Jurisdiction Inflation Adjustment Act</strong></p><p>This bill raises the minimum amount in controversy for federal diversity jurisdiction.</p><p>Under current law, federal courts have jurisdictio\u2026",
-          "url": "https://api.congress.gov/v3/bill/119/s/4850?format=json",
-          "lastAction": "Passed Senate",
           "lastActionDate": "2026-08-07",
           "_first_seen": "2026-10-01T08:59:23.971996+00:00"
         },
@@ -5147,71 +5212,6 @@
           "lastAction": "Introduced in Senate",
           "lastActionDate": "2026-07-30",
           "_first_seen": "2026-10-01T08:59:23.971996+00:00"
-        },
-        {
-          "currentChamber": "House",
-          "title": "Less Bureaucracy, Better International Foreign Gift Transparency Act",
-          "congress": "119",
-          "number": "9602",
-          "originChamber": "House",
-          "billType": "HR",
-          "summary": "<p><strong>Less Bureaucracy, Better International Foreign Gift Transparency Act</strong></p><p>This bill transfers specified functions relating to disclosure of foreign gifts and contracts from the Department of Educa\u2026",
-          "url": "https://api.congress.gov/v3/bill/119/hr/9602?format=json",
-          "lastAction": "Introduced in House",
-          "lastActionDate": "2026-07-09",
-          "_first_seen": "2026-10-01T08:59:23.971996+00:00"
-        },
-        {
-          "currentChamber": "House",
-          "title": "Less Bureaucracy, Better International Education Oversight Act",
-          "congress": "119",
-          "number": "9603",
-          "originChamber": "House",
-          "billType": "HR",
-          "summary": "<p><strong>Less Bureaucracy, Better International Education Oversight Act</strong></p><p>This bill transfers specified functions relating to international and foreign language studies programs from the Department of E\u2026",
-          "url": "https://api.congress.gov/v3/bill/119/hr/9603?format=json",
-          "lastAction": "Introduced in House",
-          "lastActionDate": "2026-07-09",
-          "_first_seen": "2026-10-01T08:59:23.971996+00:00"
-        },
-        {
-          "currentChamber": null,
-          "title": "Data Infrastructure Energy Measurement and Standards Act",
-          "congress": "119",
-          "number": "9372",
-          "originChamber": "House",
-          "billType": "HR",
-          "summary": "<p><strong>Data Infrastructure Energy Measurement and Standards Act</strong></p><p>This bill requires the National Institute of Standards and Technology (NIST) to carry out a program to inform the development of best \u2026",
-          "url": "https://api.congress.gov/v3/bill/119/hr/9372?format=json",
-          "lastAction": "Introduced in House",
-          "lastActionDate": "2026-06-18",
-          "_first_seen": "2026-10-01T08:59:23.971996+00:00"
-        },
-        {
-          "currentChamber": "House",
-          "title": "Less Bureaucracy, Better Child Care for Student Parents Act",
-          "congress": "119",
-          "number": "9606",
-          "originChamber": "House",
-          "billType": "HR",
-          "summary": "<p><strong>Less Bureaucracy, Better Child Care for Student Parents Act</strong></p><p>This bill transfers specified functions relating to child care access for eligible low-income parents in postsecondary education fr\u2026",
-          "url": "https://api.congress.gov/v3/bill/119/hr/9606?format=json",
-          "lastAction": "Introduced in House",
-          "lastActionDate": "2026-07-09",
-          "_first_seen": "2026-09-26T13:19:13.351439+00:00"
-        },
-        {
-          "currentChamber": "House",
-          "title": "Stopping Foreign Influence in Elections Act of 2026",
-          "congress": "119",
-          "number": "9771",
-          "originChamber": "House",
-          "billType": "HR",
-          "summary": "<p><strong>Stopping Foreign Influence in Elections Act of 2026</strong></p><p>This bill imposes on certain tax-exempt organizations federal income taxes and penalties, including loss of tax-exempt status, for contribu\u2026",
-          "url": "https://api.congress.gov/v3/bill/119/hr/9771?format=json",
-          "lastAction": "Introduced in House",
-          "lastActionDate": "2026-07-18",
-          "_first_seen": "2026-09-25T13:40:15.559006+00:00"
         }
       ]
     },
@@ -5478,182 +5478,182 @@
       "emoji": "\ud83c\udfdb\ufe0f",
       "label_en": "Top shareholders",
       "label_zh": "\u4e3b\u8981\u80a1\u4e1c",
-      "rows": 434593,
+      "rows": 434839,
       "last_seen": "2026-10-03",
       "recent": [
         {
-          "ticker": "CRWD",
-          "owner_name": "Rakuten Investment Management, Inc.",
+          "ticker": "COIN",
+          "owner_name": "&PARTNERS",
           "owner_title": "Institution",
-          "shares": "243560",
+          "shares": "150000",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "MANUFACTURERS LIFE INSURANCE COMPANY, THE",
+          "owner_name": "VAN ECK ASSOCIATES CORP",
           "owner_title": "Institution",
-          "shares": "23002",
+          "shares": "6480",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "JONES FINANCIAL COMPANIES LLLP",
+          "owner_name": "JNBA Financial Advisors",
           "owner_title": "Institution",
-          "shares": "28042",
+          "shares": "750",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "Y-Intercept (Hong Kong) Ltd",
+          "owner_name": "Arax Advisory Partners",
           "owner_title": "Institution",
-          "shares": "26735",
+          "shares": "607",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "TOCQUEVILLE ASSET MANAGEMENT L.P.",
+          "owner_name": "Quent Capital, LLC",
           "owner_title": "Institution",
-          "shares": "25000",
+          "shares": "579",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "Illinois Municipal Retirement Fund",
+          "owner_name": "HUNTINGTON NATIONAL BANK",
           "owner_title": "Institution",
-          "shares": "24255",
+          "shares": "570",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "WELLS FARGO & COMPANY/MN",
+          "owner_name": "US BANCORP \\DE\\",
           "owner_title": "Institution",
-          "shares": "24144",
+          "shares": "534",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "Tyrs Florian",
-          "owner_title": "VP, Global Operations",
-          "shares": "24041",
-          "_collected": "2026-10-03"
-        },
-        {
-          "ticker": "AORT",
-          "owner_name": "MetLife Investment Management, LLC",
+          "owner_name": "Smartleaf Asset Management LLC",
           "owner_title": "Institution",
-          "shares": "23514",
+          "shares": "517",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "Walleye Capital LLC",
+          "owner_name": "State of Wyoming",
           "owner_title": "Institution",
-          "shares": "21825",
+          "shares": "474",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "DARK FOREST CAPITAL MANAGEMENT LP",
+          "owner_name": "BNP Paribas Asset Management Holding S.A.",
           "owner_title": "Institution",
-          "shares": "17896",
+          "shares": "426",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "Penn Capital Management Company, LLC",
+          "owner_name": "FIRST HORIZON CORP",
           "owner_title": "Institution",
-          "shares": "21793",
+          "shares": "401",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "ALLSTATE CORP",
+          "owner_name": "TD Waterhouse Canada Inc.",
           "owner_title": "Institution",
-          "shares": "21506",
+          "shares": "400",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "BALYASNY ASSET MANAGEMENT L.P.",
+          "owner_name": "Parkside Financial Bank & Trust",
           "owner_title": "Institution",
-          "shares": "21499",
+          "shares": "395",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "MIRAE ASSET GLOBAL ETFS HOLDINGS Ltd.",
+          "owner_name": "First Horizon Advisors, Inc.",
           "owner_title": "Institution",
-          "shares": "21061",
+          "shares": "351",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "State of Alaska, Department of Revenue",
+          "owner_name": "Allied Private Wealth LLC",
           "owner_title": "Institution",
-          "shares": "19858",
+          "shares": "334",
           "_collected": "2026-10-03"
         },
         {
-          "ticker": "AORT",
-          "owner_name": "DRW Securities, LLC",
+          "ticker": "AWK",
+          "owner_name": "VANGUARD GROUP INC",
           "owner_title": "Institution",
-          "shares": "19729",
+          "shares": "25903993",
           "_collected": "2026-10-03"
         },
         {
-          "ticker": "AORT",
-          "owner_name": "Louisiana State Employees Retirement System",
+          "ticker": "AWK",
+          "owner_name": "BlackRock, Inc.",
           "owner_title": "Institution",
-          "shares": "18700",
+          "shares": "20612348",
           "_collected": "2026-10-03"
         },
         {
-          "ticker": "AORT",
-          "owner_name": "VANGUARD ASSET MANAGEMENT, Ltd",
+          "ticker": "AWK",
+          "owner_name": "VANGUARD CAPITAL MANAGEMENT LLC",
           "owner_title": "Institution",
-          "shares": "28224",
+          "shares": "12772580",
           "_collected": "2026-10-03"
         },
         {
-          "ticker": "AORT",
-          "owner_name": "Mariner, LLC",
+          "ticker": "AWK",
+          "owner_name": "STATE STREET CORP",
           "owner_title": "Institution",
-          "shares": "28951",
+          "shares": "11901865",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "THRIVENT FINANCIAL FOR LUTHERANS",
+          "owner_name": "HANTZ FINANCIAL SERVICES, INC.",
           "owner_title": "Institution",
-          "shares": "30907",
+          "shares": "762",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "Verition Fund Management LLC",
+          "owner_name": "Spectrum Wealth Advisory Group, LLC",
           "owner_title": "Institution",
-          "shares": "32461",
+          "shares": "840",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "BOOTHBAY FUND MANAGEMENT, LLC",
+          "owner_name": "Nykredit A/S",
           "owner_title": "Institution",
-          "shares": "44972",
+          "shares": "924",
           "_collected": "2026-10-03"
         },
         {
           "ticker": "AORT",
-          "owner_name": "Maney Rochelle L.",
-          "owner_title": "VP, Quality",
-          "shares": "44518",
-          "_collected": "2026-10-03"
-        },
-        {
-          "ticker": "AORT",
-          "owner_name": "PRUDENTIAL FINANCIAL INC",
+          "owner_name": "Quarry LP",
           "owner_title": "Institution",
-          "shares": "44291",
+          "shares": "2350",
+          "_collected": "2026-10-03"
+        },
+        {
+          "ticker": "AORT",
+          "owner_name": "SALEM INVESTMENT COUNSELORS INC",
+          "owner_title": "Institution",
+          "shares": "5600",
+          "_collected": "2026-10-03"
+        },
+        {
+          "ticker": "AORT",
+          "owner_name": "Quantbot Technologies LP",
+          "owner_title": "Institution",
+          "shares": "4570",
           "_collected": "2026-10-03"
         }
       ]
@@ -6426,56 +6426,56 @@
     "hf": [
       {
         "ticker": "AMZN",
-        "downloads_30d": 34331906.0,
-        "wow_pct": 2.3,
+        "downloads_30d": 34226045.0,
+        "wow_pct": 2.0,
         "hot": true
       },
       {
-        "ticker": "META",
-        "downloads_30d": 71989532.0,
-        "wow_pct": -0.0,
+        "ticker": "GOOGL",
+        "downloads_30d": 199614157.0,
+        "wow_pct": -0.3,
         "hot": false
       },
       {
-        "ticker": "GOOGL",
-        "downloads_30d": 199390441.0,
+        "ticker": "META",
+        "downloads_30d": 71715168.0,
         "wow_pct": -0.4,
         "hot": false
       },
       {
         "ticker": "CRM",
-        "downloads_30d": 4428075.0,
-        "wow_pct": -1.6,
-        "hot": false
-      },
-      {
-        "ticker": "NVDA",
-        "downloads_30d": 33112197.0,
-        "wow_pct": -3.6,
+        "downloads_30d": 4380479.0,
+        "wow_pct": -2.7,
         "hot": false
       },
       {
         "ticker": "MSFT",
-        "downloads_30d": 27098033.0,
-        "wow_pct": -3.8,
-        "hot": false
-      },
-      {
-        "ticker": "BABA",
-        "downloads_30d": 184874568.0,
-        "wow_pct": -5.7,
+        "downloads_30d": 27211143.0,
+        "wow_pct": -3.4,
         "hot": false
       },
       {
         "ticker": "IBM",
-        "downloads_30d": 11210096.0,
-        "wow_pct": -5.7,
+        "downloads_30d": 11151868.0,
+        "wow_pct": -6.2,
+        "hot": false
+      },
+      {
+        "ticker": "BABA",
+        "downloads_30d": 182843079.0,
+        "wow_pct": -6.7,
+        "hot": false
+      },
+      {
+        "ticker": "NVDA",
+        "downloads_30d": 31645504.0,
+        "wow_pct": -7.9,
         "hot": false
       },
       {
         "ticker": "AAPL",
-        "downloads_30d": 1972245.0,
-        "wow_pct": -13.6,
+        "downloads_30d": 1928307.0,
+        "wow_pct": -15.5,
         "hot": false
       }
     ],
@@ -6801,11 +6801,11 @@
       },
       {
         "ticker": "SDOT",
-        "category": "Issuer Tenders",
+        "category": "Acquisitions",
         "confidence": "medium",
         "activist": false,
         "filer": null,
-        "detail": "Issuer Tenders"
+        "detail": "Acquisitions"
       },
       {
         "ticker": "SILEF",
@@ -6838,6 +6838,14 @@
         "activist": false,
         "filer": null,
         "detail": "Going-Private"
+      },
+      {
+        "ticker": "VRME",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
       },
       {
         "ticker": "VWAV",
@@ -7008,14 +7016,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "LRHC",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "SBDS",
         "category": "Delistings",
         "confidence": "high",
@@ -7097,6 +7097,14 @@
       },
       {
         "ticker": "RSM",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
+      },
+      {
+        "ticker": "SAFE",
         "category": "Divestitures",
         "confidence": "high",
         "activist": false,
@@ -8640,6 +8648,14 @@
         "detail": "Spin-Offs"
       },
       {
+        "ticker": "CTVA",
+        "category": "Spin-Offs",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Spin-Offs"
+      },
+      {
         "ticker": "FDXF",
         "category": "Spin-Offs",
         "confidence": "high",
@@ -9504,6 +9520,14 @@
         "detail": "Spin-Offs"
       },
       {
+        "ticker": "MOD",
+        "category": "Spin-Offs",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Spin-Offs"
+      },
+      {
         "ticker": "VOLO",
         "category": "Spin-Offs",
         "confidence": "high",
@@ -9888,14 +9912,6 @@
         "detail": "Divestitures"
       },
       {
-        "ticker": "SUI",
-        "category": "Divestitures",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Divestitures"
-      },
-      {
         "ticker": "MAAL",
         "category": "Divestitures",
         "confidence": "high",
@@ -9950,6 +9966,14 @@
         "activist": false,
         "filer": null,
         "detail": "Delistings"
+      },
+      {
+        "ticker": "NFG",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
       },
       {
         "ticker": "ESGH",
@@ -11046,6 +11070,14 @@
         "activist": false,
         "filer": null,
         "detail": "Divestitures"
+      },
+      {
+        "ticker": "OTEX",
+        "category": "Issuer Tenders",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Issuer Tenders"
       },
       {
         "ticker": "MDMA",
@@ -17680,6 +17712,14 @@
         "detail": "Spin-Offs"
       },
       {
+        "ticker": "CNP",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
+      },
+      {
         "ticker": "SOLS",
         "category": "Deal Terminations",
         "confidence": "high",
@@ -18536,6 +18576,14 @@
         "detail": "Delistings"
       },
       {
+        "ticker": "ESOA",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "TRAK",
         "category": "Acquisitions",
         "confidence": "high",
@@ -18728,14 +18776,6 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "BAM",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
         "ticker": "COF-PN",
         "category": "Acquisitions",
         "confidence": "high",
@@ -18785,11 +18825,11 @@
       },
       {
         "ticker": "SOBR",
-        "category": "Deal Terminations",
+        "category": "Delistings",
         "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Deal Terminations"
+        "detail": "Delistings"
       },
       {
         "ticker": "KRSA",
@@ -19177,11 +19217,11 @@
       },
       {
         "ticker": "MGRX",
-        "category": "Deal Terminations",
-        "confidence": "high",
+        "category": "Divestitures",
+        "confidence": "medium",
         "activist": false,
         "filer": null,
-        "detail": "Deal Terminations"
+        "detail": "Divestitures"
       },
       {
         "ticker": "RNXT",
@@ -19752,6 +19792,14 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "SILO",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "VEEAW",
         "category": "Acquisitions",
         "confidence": "medium",
@@ -19945,6 +19993,14 @@
       },
       {
         "ticker": "ESCA",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "THRMV",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -21529,11 +21585,11 @@
       },
       {
         "ticker": "JYNT",
-        "category": "Divestitures",
-        "confidence": "high",
+        "category": "Acquisitions",
+        "confidence": "medium",
         "activist": false,
         "filer": null,
-        "detail": "Divestitures"
+        "detail": "Acquisitions"
       },
       {
         "ticker": "MTEX",
@@ -22152,6 +22208,14 @@
         "detail": "Issuer Tenders"
       },
       {
+        "ticker": "ON",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "OGEN",
         "category": "Delistings",
         "confidence": "high",
@@ -22656,14 +22720,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "RNAZ",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "DREM",
         "category": "Delistings",
         "confidence": "high",
@@ -22833,11 +22889,11 @@
       },
       {
         "ticker": "EDBLW",
-        "category": "Delistings",
-        "confidence": "high",
+        "category": "Acquisitions",
+        "confidence": "medium",
         "activist": false,
         "filer": null,
-        "detail": "Delistings"
+        "detail": "Acquisitions"
       },
       {
         "ticker": "HOST",
@@ -23200,6 +23256,14 @@
         "detail": "Deal Terminations"
       },
       {
+        "ticker": "SYNA",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "AAWH",
         "category": "Acquisitions",
         "confidence": "high",
@@ -23448,6 +23512,14 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "INIS",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
+      },
+      {
         "ticker": "SKFG",
         "category": "Acquisitions",
         "confidence": "medium",
@@ -23505,6 +23577,14 @@
       },
       {
         "ticker": "SXI",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "NIMU",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -24256,6 +24336,14 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "SMTI",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "MYCB",
         "category": "Delistings",
         "confidence": "high",
@@ -24721,6 +24809,14 @@
       },
       {
         "ticker": "STRRP",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "WU",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -26072,6 +26168,14 @@
         "detail": "Divestitures"
       },
       {
+        "ticker": "CRTD",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "CRLBF",
         "category": "Spin-Offs",
         "confidence": "medium",
@@ -26094,6 +26198,30 @@
         "activist": false,
         "filer": null,
         "detail": "Delistings"
+      },
+      {
+        "ticker": "HTO",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "LQDT",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "SGP",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
       },
       {
         "ticker": "INBKZ",
@@ -26142,6 +26270,22 @@
         "activist": false,
         "filer": null,
         "detail": "Spin-Offs"
+      },
+      {
+        "ticker": "IMXI",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "OMTK",
+        "category": "Acquisitions",
+        "confidence": "medium",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
       },
       {
         "ticker": "SLSN",
@@ -26643,7 +26787,17 @@
         "hot": true
       },
       {
+        "ticker": "IBM",
+        "mspr": 100.0,
+        "hot": true
+      },
+      {
         "ticker": "LHX",
+        "mspr": 100.0,
+        "hot": true
+      },
+      {
+        "ticker": "LMT",
         "mspr": 100.0,
         "hot": true
       },
@@ -26654,6 +26808,11 @@
       },
       {
         "ticker": "NEE",
+        "mspr": 100.0,
+        "hot": true
+      },
+      {
+        "ticker": "NOC",
         "mspr": 100.0,
         "hot": true
       },
@@ -26678,8 +26837,8 @@
         "hot": true
       },
       {
-        "ticker": "NOC",
-        "mspr": 99.5,
+        "ticker": "URI",
+        "mspr": 100.0,
         "hot": true
       },
       {
@@ -26694,27 +26853,12 @@
       },
       {
         "ticker": "AAPL",
-        "mspr": 86.1,
+        "mspr": 85.6,
         "hot": true
       },
       {
-        "ticker": "AMZN",
-        "mspr": 78.2,
-        "hot": true
-      },
-      {
-        "ticker": "TXT",
-        "mspr": 60.7,
-        "hot": true
-      },
-      {
-        "ticker": "AVAV",
-        "mspr": 46.4,
-        "hot": true
-      },
-      {
-        "ticker": "IR",
-        "mspr": 40.0,
+        "ticker": "PLTR",
+        "mspr": 84.2,
         "hot": true
       }
     ],
@@ -27263,26 +27407,26 @@
     "github": [
       {
         "ticker": "NET",
-        "stars": 15993,
-        "wow_pct": 0.46,
+        "stars": 16000,
+        "wow_pct": 0.51,
         "hot": true
       },
       {
         "ticker": "IBM",
-        "stars": 7853,
-        "wow_pct": 0.26,
+        "stars": 7854,
+        "wow_pct": 0.27,
         "hot": true
       },
       {
         "ticker": "ESTC",
-        "stars": 78179,
-        "wow_pct": 0.23,
+        "stars": 78184,
+        "wow_pct": 0.24,
         "hot": true
       },
       {
         "ticker": "MSFT",
-        "stars": 193368,
-        "wow_pct": 0.2,
+        "stars": 193382,
+        "wow_pct": 0.21,
         "hot": true
       },
       {
@@ -27293,7 +27437,7 @@
       },
       {
         "ticker": "GOOGL",
-        "stars": 200668,
+        "stars": 200678,
         "wow_pct": 0.16,
         "hot": true
       },
@@ -27310,26 +27454,26 @@
         "hot": false
       },
       {
-        "ticker": "MDB",
-        "stars": 28615,
-        "wow_pct": 0.07,
-        "hot": false
-      },
-      {
         "ticker": "PLTR",
-        "stars": 22114,
-        "wow_pct": 0.07,
+        "stars": 22115,
+        "wow_pct": 0.08,
         "hot": false
       },
       {
         "ticker": "U",
-        "stars": 19716,
+        "stars": 19717,
+        "wow_pct": 0.08,
+        "hot": false
+      },
+      {
+        "ticker": "MDB",
+        "stars": 28614,
         "wow_pct": 0.07,
         "hot": false
       },
       {
         "ticker": "META",
-        "stars": 250863,
+        "stars": 250868,
         "wow_pct": 0.05,
         "hot": false
       },
@@ -29354,6 +29498,26 @@
     ],
     "bills": [
       {
+        "title": "Medicaid Fraud Prevention Act",
+        "sector": "Healthcare",
+        "chamber": "House",
+        "bill": "HR10636",
+        "last_action": "Introduced in House",
+        "last_action_date": "2026-09-28",
+        "url": "https://api.congress.gov/v3/bill/119/hr/10636?format=json",
+        "summary": "Medicaid Fraud Prevention Act   This bill requires state Medicaid programs to regularly assess their programs for fraud and take corrective actions.&nbsp;  Specifically, states must complete a fraud risk assessment on at least an annual basis, implement a corrective action plan to address any identi"
+      },
+      {
+        "title": "A concurrent resolution setting forth the congressional budget for the United States Government for fiscal year 2027 and setting forth the a",
+        "sector": "Healthcare",
+        "chamber": "Senate",
+        "bill": "SCONRES40",
+        "last_action": "Introduced in Senate",
+        "last_action_date": "2026-09-22",
+        "url": "https://api.congress.gov/v3/bill/119/sconres/40?format=json",
+        "summary": "This concurrent resolution establishes the congressional budget for the federal government for FY2027 and sets forth budgetary levels for FY2028-FY2036.  The resolution recommends levels and amounts for FY2027-FY2036 for   federal revenues,  new budget authority,  budget outlays,  deficits,  public "
+      },
+      {
         "title": "Providing for consideration of the bill (H.R. 4393) to secure the border and reform the immigration laws.",
         "sector": "Homeland / Immigration",
         "chamber": "House",
@@ -29454,14 +29618,14 @@
         "summary": "Earned Wage Access Consumer Protection Act   This bill addresses the regulation of earned wage access products. Earned wage access products provide consumers with access to their earned wages before their scheduled pay day.  The bill specifies that earned wage access products are not subject to regu"
       },
       {
-        "title": "Open-Source AI Leadership Act",
-        "sector": "Defense",
+        "title": "Memory Chip Competitiveness Assessment Act of 2026",
+        "sector": "Semiconductors",
         "chamber": "House",
-        "bill": "HR10152",
+        "bill": "HR10170",
         "last_action": "Introduced in House",
         "last_action_date": "2026-08-27",
-        "url": "https://api.congress.gov/v3/bill/119/hr/10152?format=json",
-        "summary": "Open-Source AI Leadership Act   This bill requires the Department of Commerce to assess and publish information about risks related to use of certain foreign adversary artificial intelligence (AI) models. The bill also authorizes Commerce to take specified actions to support adoption of U.S. AI mode"
+        "url": "https://api.congress.gov/v3/bill/119/hr/10170?format=json",
+        "summary": "Memory Chip Competitiveness Assessment Act of 2026   This bill requires the Department of Commerce to study and report on the advanced memory technology marketplace. Under the bill,  advanced memory technology  means semiconductor memory products manufactured using leading-edge process technologies "
       },
       {
         "title": "To authorize the Secretary of the Army to convey to the State of North Carolina a certain parcel of real property located at Fort Bragg, Nor",
@@ -29474,14 +29638,14 @@
         "summary": "This bill authorizes the Department of the Army to transfer, without compensation or other consideration, all right, title, and interest to a specified 20-acre parcel of land on&nbsp;Fort Bragg to the State of North Carolina for the purpose of constructing a state home under the jurisdiction of the "
       },
       {
-        "title": "Memory Chip Competitiveness Assessment Act of 2026",
-        "sector": "Semiconductors",
+        "title": "Open-Source AI Leadership Act",
+        "sector": "Defense",
         "chamber": "House",
-        "bill": "HR10170",
+        "bill": "HR10152",
         "last_action": "Introduced in House",
         "last_action_date": "2026-08-27",
-        "url": "https://api.congress.gov/v3/bill/119/hr/10170?format=json",
-        "summary": "Memory Chip Competitiveness Assessment Act of 2026   This bill requires the Department of Commerce to study and report on the advanced memory technology marketplace. Under the bill,  advanced memory technology  means semiconductor memory products manufactured using leading-edge process technologies "
+        "url": "https://api.congress.gov/v3/bill/119/hr/10152?format=json",
+        "summary": "Open-Source AI Leadership Act   This bill requires the Department of Commerce to assess and publish information about risks related to use of certain foreign adversary artificial intelligence (AI) models. The bill also authorizes Commerce to take specified actions to support adoption of U.S. AI mode"
       },
       {
         "title": "Impeaching Donald John Trump, President of the United States, for high crimes and misdemeanors.",
@@ -29492,16 +29656,6 @@
         "last_action_date": "2026-08-24",
         "url": "https://api.congress.gov/v3/bill/119/hres/1486?format=json",
         "summary": "This resolution impeaches President Donald Trump for high crimes and misdemeanors.  Specifically, the resolution sets forth one article of impeachment concerning abuse of presidential powers by allowing U.S. Immigration and Customs Enforcement (ICE) and U.S. Customs and Border Protection (CBP) to op"
-      },
-      {
-        "title": "Cancer Care Planning and Communications Act",
-        "sector": "Healthcare",
-        "chamber": "House",
-        "bill": "HR10087",
-        "last_action": "Introduced in House",
-        "last_action_date": "2026-08-13",
-        "url": "https://api.congress.gov/v3/bill/119/hr/10087?format=json",
-        "summary": "Cancer Care Planning and Communications Act    This bill&nbsp;provides for&nbsp;Medicare&nbsp;coverage and payment&nbsp;of cancer care planning and coordination services for individuals who are diagnosed with or treated for cancer, including the development of treatment plans, follow-up care, and an"
       }
     ],
     "congress_holdings": {
@@ -30970,13 +31124,6 @@
         "last_surprise_pct": 1.4
       },
       {
-        "ticker": "TXT",
-        "next_date": "2026-10-22",
-        "days_to": 19,
-        "eps_forecast": 1.52,
-        "last_surprise_pct": 6.6
-      },
-      {
         "ticker": "UNP",
         "next_date": "2026-10-22",
         "days_to": 19,
@@ -31125,6 +31272,31 @@
         "why": "analyst_upgrade_cluster: net upgrades +27 revision delta \u00b7 congress_cluster: 4 members net +4 \u00b7 patent_cluster: 305 grants, 54 IPC classes \u00b7 unusual_options: 4.12\u00d7 vol/OI, balanced"
       },
       {
+        "ticker": "IBM",
+        "score": 4,
+        "weighted_score": 2.15,
+        "channel_list": [
+          "github_momentum",
+          "gov_contract_accel",
+          "insider_mspr",
+          "patent_cluster"
+        ],
+        "why": "github_momentum: +0.27% stars \u00b7 gov_contract_accel: $141,052,255, 3217.3x accel \u00b7 insider_mspr: MSPR 100.0 \u00b7 patent_cluster: 798 grants, 63 IPC classes"
+      },
+      {
+        "ticker": "PLTR",
+        "score": 5,
+        "weighted_score": 2.1,
+        "channel_list": [
+          "analyst_upgrade_cluster",
+          "gov_contract_accel",
+          "insider_mspr",
+          "retail_buzz",
+          "stocktwits_bull"
+        ],
+        "why": "analyst_upgrade_cluster: net upgrades +26 revision delta \u00b7 gov_contract_accel: $70,663,790, 2.7x accel \u00b7 insider_mspr: MSPR 84.2 \u00b7 retail_buzz: 91 WSB mentions \u00b7 stocktwits_bull: 100% bull \u00b7 324,401 watching"
+      },
+      {
         "ticker": "AZN",
         "score": 4,
         "weighted_score": 1.9,
@@ -31182,18 +31354,7 @@
           "patent_cluster",
           "trump"
         ],
-        "why": "app_demand: 4.77\u2605 \u00d7 20,249,327 reviews \u00b7 github_momentum: +0.2% stars \u00b7 patent_cluster: 512 grants, 48 IPC classes \u00b7 trump: MICROSOFT CORP"
-      },
-      {
-        "ticker": "IBM",
-        "score": 3,
-        "weighted_score": 1.6,
-        "channel_list": [
-          "github_momentum",
-          "gov_contract_accel",
-          "patent_cluster"
-        ],
-        "why": "github_momentum: +0.26% stars \u00b7 gov_contract_accel: $141,052,255, 3217.3x accel \u00b7 patent_cluster: 798 grants, 63 IPC classes"
+        "why": "app_demand: 4.77\u2605 \u00d7 20,249,327 reviews \u00b7 github_momentum: +0.21% stars \u00b7 patent_cluster: 512 grants, 48 IPC classes \u00b7 trump: MICROSOFT CORP"
       },
       {
         "ticker": "BAH",
@@ -31207,18 +31368,6 @@
         "why": "gov_contract_accel: $111,954,079, 4.8x accel \u00b7 special_situation: Acquisitions \u00b7 trump: BOOZ ALLEN HAMILTON HLDG CLASS A"
       },
       {
-        "ticker": "PLTR",
-        "score": 4,
-        "weighted_score": 1.55,
-        "channel_list": [
-          "analyst_upgrade_cluster",
-          "gov_contract_accel",
-          "retail_buzz",
-          "stocktwits_bull"
-        ],
-        "why": "analyst_upgrade_cluster: net upgrades +26 revision delta \u00b7 gov_contract_accel: $70,663,790, 2.7x accel \u00b7 retail_buzz: 91 WSB mentions \u00b7 stocktwits_bull: 100% bull \u00b7 324,401 watching"
-      },
-      {
         "ticker": "AAPL",
         "score": 3,
         "weighted_score": 1.35,
@@ -31227,7 +31376,7 @@
           "insider_mspr",
           "patent_cluster"
         ],
-        "why": "13f_add: ARROWSTREET CAPITAL, LIMITED PARTNERSHIP +$3,022,607,684 \u00b7 insider_mspr: MSPR 86.1 \u00b7 patent_cluster: 712 grants, 70 IPC classes"
+        "why": "13f_add: ARROWSTREET CAPITAL, LIMITED PARTNERSHIP +$3,022,607,684 \u00b7 insider_mspr: MSPR 85.6 \u00b7 patent_cluster: 712 grants, 70 IPC classes"
       },
       {
         "ticker": "CAT",
@@ -31284,16 +31433,6 @@
         "why": "activist_13d: 13D activist campaign \u00b7 insider_cluster: 127 insiders, $245,257,284 net"
       },
       {
-        "ticker": "IR",
-        "score": 2,
-        "weighted_score": 1.2,
-        "channel_list": [
-          "insider_mspr",
-          "unusual_options"
-        ],
-        "why": "insider_mspr: MSPR 40.0 \u00b7 unusual_options: 4.65\u00d7 vol/OI, call-skew"
-      },
-      {
         "ticker": "AMD",
         "score": 4,
         "weighted_score": 1.15,
@@ -31325,17 +31464,6 @@
           "trump"
         ],
         "why": "13f_add: ONTARIO TEACHERS PENSION PLAN BOARD +$8,658,544,075 \u00b7 special_situation: Acquisitions \u00b7 trump: SPACE EXPLORATION TECHNOLOGIES CORP CL A"
-      },
-      {
-        "ticker": "AMZN",
-        "score": 3,
-        "weighted_score": 1.1,
-        "channel_list": [
-          "hf_model_momentum",
-          "insider_mspr",
-          "special_situation"
-        ],
-        "why": "hf_model_momentum: +2.3% model downloads \u00b7 insider_mspr: MSPR 78.2 \u00b7 special_situation: Acquisitions"
       },
       {
         "ticker": "DELL",
@@ -31388,6 +31516,26 @@
           "trump"
         ],
         "why": "material_8k: 5 material 8-Ks (items 5.02, 7.01, 8.01) \u00b7 trump: PARAMOUNT SKYDANCE CORPORATION"
+      },
+      {
+        "ticker": "CLSK",
+        "score": 2,
+        "weighted_score": 1.05,
+        "channel_list": [
+          "material_8k",
+          "trump"
+        ],
+        "why": "material_8k: 3 material 8-Ks (items 1.01, 2.03, 7.01, 8.01) \u00b7 trump: CLEANSPARK INC"
+      },
+      {
+        "ticker": "RTX",
+        "score": 2,
+        "weighted_score": 1.0,
+        "channel_list": [
+          "analyst_upgrade_cluster",
+          "unusual_options"
+        ],
+        "why": "analyst_upgrade_cluster: net upgrades +23 revision delta \u00b7 unusual_options: 4.28\u00d7 vol/OI, call-skew"
       }
     ]
   }

@@ -4802,3 +4802,7 @@
 {"date":"2026-10-03","ticker":"MMC","departed":true,"left_desk":"2026-10-03","last_rank":null,"last_score":40}
 {"date":"2026-10-03","ticker":"NU","departed":true,"left_desk":"2026-10-03","last_rank":null,"last_score":23}
 {"date":"2026-10-03","ticker":"WDAY","departed":true,"left_desk":"2026-10-03","last_rank":18,"last_score":37}
+{"date":"2026-10-03","ticker":"URI","rank":30,"score":29,"lean":1,"broken":false}
+{"date":"2026-10-03","ticker":"MMC","rank":null,"score":11,"lean":1,"broken":true}
+{"date":"2026-10-03","ticker":"CNP","rank":null,"score":19,"lean":1,"broken":true}
+{"date":"2026-10-03","ticker":"CTVA","rank":null,"score":16,"lean":1,"broken":true}
