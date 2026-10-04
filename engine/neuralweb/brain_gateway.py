@@ -878,11 +878,22 @@ _RESEARCH_TRADE_NOUN_EN_ANYVERB = (
     r"|serious|obvious|focus|status|bonus|minus|census|consensus|species|series)\b)"
     r"[a-z]{3,}(?:ed|es|s)\b"
 )
+# r6.1: "Buy interest in semis is building" — a short prepositional phrase between the
+# lone noun and its verb is still a report; "Buy programs across sectors." has no verb
+# and stays an order.
+_RESEARCH_TRADE_NOUN_EN_PREP = (
+    r"(?:in|for|from|across|among|on|at|into|around|towards?|of|within|under|over|behind"
+    r"|before|after|during|against|near|along|amid|via|through|throughout|toward)"
+)
+_RESEARCH_TRADE_NOUN_EN_VERBISH = (
+    r"(?:" + _RESEARCH_TRADE_NOUN_EN_ADV + r"\s+)?"
+    r"(?:" + _RESEARCH_TRADE_NOUN_EN_VERB + r"|" + _RESEARCH_TRADE_NOUN_EN_ANYVERB + r")\b"
+)
 _RESEARCH_TRADE_NOUN_EN = (
     r"(?!\s+(?:programs?|orders?|volumes?|pressures?|interest|sides?|signals?|flows?"
     r"|imbalances?|ratios?|backs?|activity|demand|appetite|ratings?|lists?)(?![\w-])"
-    r"(?:\s*[.!?,;:—–]|\s*$|\s+(?:" + _RESEARCH_TRADE_NOUN_EN_ADV + r"\s+)?"
-    r"(?:" + _RESEARCH_TRADE_NOUN_EN_VERB + r"|" + _RESEARCH_TRADE_NOUN_EN_ANYVERB + r")\b))"
+    r"(?:\s*[.!?,;:—–]|\s*$|\s+" + _RESEARCH_TRADE_NOUN_EN_VERBISH
+    + r"|\s+" + _RESEARCH_TRADE_NOUN_EN_PREP + r"\s+(?:[\w$%.,-]+\s+){1,3}?" + _RESEARCH_TRADE_NOUN_EN_VERBISH + r"))"
 )
 # r5 (review N16, ZH): "请买入…" is always an order; a compound noun ("需求", "情绪") names
 # what to buy only when an attributive "的" follows it ("旺盛的板块"). r6 (review N22): no
@@ -1576,7 +1587,8 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
     an HTML break made is markup; "buy or sell" is never one order. Residual by design:
     "References: The 1994 Rout" (a capitalised invented name) still drops; a bare STRONG
     heading still drops on trust; "Buy interest this week was strong" (noun + time
-    phrase) and a noun followed by a preposition are still withheld.
+    phrase) is still withheld, as is a prepositional phrase longer than three words
+    before the verb.
     """
     canon = {
         _RESEARCH_CEILING_EN, _RESEARCH_CEILING_ZH,

@@ -2293,3 +2293,22 @@ def test_r6_a_marked_line_after_a_blank_is_the_next_section(raw, expected):
     item is the next section — unless the heading was bare and nothing sat under it yet,
     in which case the blank is markdown's list separator and the list is the heading's."""
     assert gw._research_strip_model_trailer(raw, R6_CORPUS) == expected
+
+
+@pytest.mark.parametrize("sentence", [
+    "Buy interest in semis is building.", "Sell pressure in tech was heavy.",
+    "Supply rose and buy orders from Asia picked up.", "Tech fell but buy interest in semis held up.",
+    "Buy demand for duration faded.", "Sell pressure at the open quickly eased.",
+])
+def test_r6_a_prepositional_phrase_before_the_verb_is_still_a_report(sentence):
+    """r6.1 (the r5 residual the reviewer's N21 probes brushed against): "Buy interest in
+    semis is building" has its verb three words on; the lone noun is still reportative."""
+    assert gw._research_sentence_forbidden(sentence) is False, sentence
+
+
+@pytest.mark.parametrize("sentence", [
+    "Buy programs across sectors.", "Buy orders from Asia.", "Sell volume into the close.",
+    "Buy interest in semis.", "Sell pressure at the open, hard.",
+])
+def test_r6_a_prepositional_phrase_without_a_verb_is_still_an_order(sentence):
+    assert gw._research_sentence_forbidden(sentence) is True, sentence
