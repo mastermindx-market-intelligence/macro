@@ -11878,6 +11878,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_identity.py -q
       - name: theme graph — bitemporal materialization from the membership documents
         run: TZ=UTC python -m pytest tests/test_theme_graph_materialize.py -q
+      - name: theme graph — existing graph/PIT history fail-closed (builder and correction writers)
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py -q
       - name: theme graph — contract guard (incident fixtures + annotation shape)
         run: TZ=UTC python -m pytest tests/test_theme_graph_contracts.py -q
       # V4-D2B3 — node lifecycle correction lineage: the append-only retirement
