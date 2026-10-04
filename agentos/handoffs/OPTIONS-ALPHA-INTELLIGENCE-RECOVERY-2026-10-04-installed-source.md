@@ -58,7 +58,8 @@ verified:
       Draft remains UNRATIFIED / REVISE. Evaluation retains weights installed
       from parent P: sum_E(u)=(1/L)sum_s c_E/c_P. Calendar figures are best-case
       necessary lower bounds.20/200 support and the block-monotonicity rule are
-      not ratified. No trainer/configuration/frozen-law change, simulation, study,
+      not ratified. Fable accepted the wording correction only in5975689449.
+      No trainer/configuration/frozen-law change, simulation, study,
       fit or artifact occurred. Required Opus review is not replaced by native assistance.
 unverified:
   - claim: Natural publications and full Options Alpha scientific/activation acceptance are complete.
