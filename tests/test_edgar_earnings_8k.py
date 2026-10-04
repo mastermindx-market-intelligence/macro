@@ -300,7 +300,7 @@ class TestManifestResumability:
 
         def fake_fetch(ticker, cik):
             fetched_ciks.append(cik)
-            return [], 0  # (rows, n_shards_missing)
+            return [], 0, False
 
         monkeypatch.setattr(e8k, "fetch_earnings_8k_for_cik", fake_fetch)
         monkeypatch.setattr(e8k, "build_cik_map", lambda tickers: self._cik_map())
@@ -333,7 +333,7 @@ class TestManifestResumability:
 
         def fake_fetch(ticker, cik):
             fetched_ciks.append(cik)
-            return [], 0  # (rows, n_shards_missing)
+            return [], 0, False
 
         monkeypatch.setattr(e8k, "fetch_earnings_8k_for_cik", fake_fetch)
         monkeypatch.setattr(e8k, "build_cik_map", lambda tickers: {"AAPL": 320193})
@@ -450,7 +450,7 @@ class TestOlderShardURL:
         monkeypatch.setattr(e8k, "_sec_get_json", fake_get_json)
         monkeypatch.setattr(e8k.time, "sleep", lambda _: None)
 
-        rows, n_shards_missing = e8k.fetch_earnings_8k_for_cik("AAPL", 320193)
+        rows, n_shards_missing, _ = e8k.fetch_earnings_8k_for_cik("AAPL", 320193)
 
         # At least one URL for the shard must have been constructed
         shard_urls = [u for u in fetched_urls if "submissions-001" in u]
@@ -479,7 +479,7 @@ class TestOlderShardURL:
         monkeypatch.setattr(e8k, "_sec_get_json", fake_get_json)
         monkeypatch.setattr(e8k.time, "sleep", lambda _: None)
 
-        rows, n_shards_missing = e8k.fetch_earnings_8k_for_cik("MSFT", 789019)
+        rows, n_shards_missing, _ = e8k.fetch_earnings_8k_for_cik("MSFT", 789019)
         assert n_shards_missing == 1
 
     def test_successful_shard_zero_missing(self, monkeypatch):
@@ -498,7 +498,7 @@ class TestOlderShardURL:
         monkeypatch.setattr(e8k, "_sec_get_json", fake_get_json)
         monkeypatch.setattr(e8k.time, "sleep", lambda _: None)
 
-        rows, n_shards_missing = e8k.fetch_earnings_8k_for_cik("MSFT", 789019)
+        rows, n_shards_missing, _ = e8k.fetch_earnings_8k_for_cik("MSFT", 789019)
         assert n_shards_missing == 0
 
 
@@ -547,3 +547,286 @@ class TestDeterministicDedup:
         assert len(result) == 1
         # The non-empty acceptance is earlier lexicographically → should be kept
         assert result.iloc[0]["acceptance_datetime"] == "2023-01-27T16:00:00.000Z"
+
+
+# ---------------------------------------------------------------------------
+# RCA R2a/R2b/R3/R4/R9 — store-safety (lane A1)
+# ---------------------------------------------------------------------------
+
+class TestStoreSafetyR2R3R4R9:
+    def test_legacy_alias_row_superseded_by_cik_coverage(self):
+        """R2a: legacy GOOGL row dropped when keyed GOOG row shares CIK+date."""
+        existing = pd.DataFrame([{
+            "ticker": "GOOGL",
+            "cik": 1652044,
+            "filing_date": "2026-04-29",
+            "acceptance_datetime": "",
+        }])
+        new_rows = [{
+            "ticker": "GOOG",
+            "cik": 1652044,
+            "accession": "0001652044-26-000050",
+            "form": "8-K",
+            "filing_date": "2026-04-29",
+            "acceptance_datetime": "",
+            "report_date": "",
+            "items": "2.02",
+        }]
+        result = e8k.append_and_dedup(existing, new_rows)
+        assert len(result) == 1
+        assert result.iloc[0]["ticker"] == "GOOG"
+
+    def test_replaced_cik_drops_all_prior_rows(self):
+        """R2b: replaced_ciks drops all prior rows for that CIK from existing."""
+        c_cik = 111111
+        d_cik = 222222
+        existing = pd.DataFrame([
+            {"ticker": "T", "cik": c_cik, "filing_date": "2020-01-01",
+             "acceptance_datetime": ""},
+            {"ticker": "T", "cik": c_cik, "filing_date": "2021-01-01",
+             "acceptance_datetime": ""},
+            {"ticker": "U", "cik": d_cik, "filing_date": "2020-06-01",
+             "acceptance_datetime": ""},
+        ])
+        new_rows = [{
+            "ticker": "T",
+            "cik": c_cik,
+            "accession": "0000111111-20-000001",
+            "form": "8-K",
+            "filing_date": "2020-01-01",
+            "acceptance_datetime": "",
+            "report_date": "",
+            "items": "2.02",
+        }]
+        result = e8k.append_and_dedup(
+            existing, new_rows, replaced_ciks={c_cik}
+        )
+        c_rows = result[result["cik"].astype(int) == c_cik]
+        assert len(c_rows) == 1
+        assert c_rows.iloc[0]["filing_date"] == "2020-01-01"
+        assert c_rows.iloc[0]["accession"] == "0000111111-20-000001"
+        assert len(result[result["cik"].astype(int) == d_cik]) == 1
+
+    def test_missing_values_are_empty_strings(self):
+        """R4: legacy survivors use \"\" not NaN; no-op re-normalises."""
+        existing = pd.DataFrame([
+            {
+                "ticker": "GOOGL",
+                "cik": 1652044,
+                "filing_date": "2026-04-29",
+                "acceptance_datetime": "",
+            },
+            {
+                "ticker": "GOOGL",
+                "cik": 1652044,
+                "filing_date": "2025-01-01",
+                "acceptance_datetime": "",
+            },
+        ])
+        new_rows = [{
+            "ticker": "GOOG",
+            "cik": 1652044,
+            "accession": "0001652044-26-000050",
+            "form": "8-K",
+            "filing_date": "2026-04-29",
+            "acceptance_datetime": "",
+            "report_date": "",
+            "items": "2.02",
+        }]
+        result = e8k.append_and_dedup(existing, new_rows)
+        legacy = result[
+            (result["cik"].astype(int) == 1652044)
+            & (result["filing_date"] == "2025-01-01")
+        ]
+        assert len(legacy) == 1
+        row = legacy.iloc[0]
+        assert row["form"] == ""
+        assert row["report_date"] == ""
+        assert row["accession"] == ""
+        for col in e8k.STORE_COLUMNS:
+            if col == "cik":
+                continue
+            assert not pd.isna(row[col])
+        again = e8k.append_and_dedup(result, [])
+        legacy2 = again[again["filing_date"] == "2025-01-01"].iloc[0]
+        assert legacy2["form"] == ""
+        assert legacy2["accession"] == ""
+
+    def test_force_preserves_unvisited_manifest_entries(self, tmp_path, monkeypatch):
+        """R9: force=True keeps manifest entries for CIKs not in the run map."""
+        monkeypatch.setattr(
+            e8k, "config",
+            type("C", (), {"data_dir": staticmethod(lambda: tmp_path)})(),
+        )
+        orphan_cik = "999999999"
+        orphan_entry = {
+            "ticker": "ORPH",
+            "status": "ok",
+            "n_filings": 2,
+            "ts": "2026-01-01T00:00:00+00:00",
+        }
+        manifest_data = {orphan_cik: orphan_entry}
+        mf_path = tmp_path / "edgar" / "earnings_8k_dates_manifest.json"
+        mf_path.parent.mkdir(parents=True, exist_ok=True)
+        raw_before = e8k.json.dumps(manifest_data, indent=2)
+        mf_path.write_text(raw_before)
+
+        monkeypatch.setattr(e8k, "fetch_earnings_8k_for_cik", lambda t, c: ([], 0, False))
+        monkeypatch.setattr(e8k, "build_cik_map", lambda tickers: {"AAPL": 320193})
+
+        eps_path = tmp_path / "edgar" / "eps_quarterly.parquet"
+        eps_path.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame({"ticker": ["AAPL"]}).to_parquet(eps_path)
+
+        e8k.run_backfill(force=True)
+
+        after = e8k.json.loads(mf_path.read_text())
+        assert orphan_cik in after
+        assert after[orphan_cik] == orphan_entry
+
+    def test_primary_fetch_failure_is_error_and_keeps_rows(self, tmp_path, monkeypatch):
+        """R3: connection failure -> manifest error; store rows for CIK unchanged."""
+        import requests as req
+
+        monkeypatch.setattr(
+            e8k, "config",
+            type("C", (), {"data_dir": staticmethod(lambda: tmp_path)})(),
+        )
+        cik = 320193
+        seed_rows = [{
+            "ticker": "AAPL",
+            "cik": cik,
+            "accession": "",
+            "form": "",
+            "filing_date": "2020-01-01",
+            "acceptance_datetime": "",
+            "report_date": "",
+            "items": "2.02",
+        }]
+        store_path = tmp_path / "edgar" / "earnings_8k_dates.parquet"
+        store_path.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(seed_rows).to_parquet(store_path)
+
+        def boom(*args, **kwargs):
+            raise req.ConnectionError("simulated")
+
+        monkeypatch.setattr(e8k.requests, "get", boom)
+        monkeypatch.setattr(e8k, "build_cik_map", lambda tickers: {"AAPL": cik})
+
+        eps_path = tmp_path / "edgar" / "eps_quarterly.parquet"
+        pd.DataFrame({"ticker": ["AAPL"]}).to_parquet(eps_path)
+
+        e8k.run_backfill(force=True)
+
+        manifest = e8k.load_manifest()
+        assert manifest[str(cik)]["status"] == "error"
+        kept = pd.read_parquet(store_path)
+        assert len(kept[kept["cik"].astype(int) == cik]) == 1
+        assert kept.iloc[0]["filing_date"] == "2020-01-01"
+
+    def test_primary_404_is_no_submissions_not_ok(self, tmp_path, monkeypatch):
+        """R3: primary 404 -> no_submissions; prior rows not replaced."""
+        monkeypatch.setattr(
+            e8k, "config",
+            type("C", (), {"data_dir": staticmethod(lambda: tmp_path)})(),
+        )
+        cik = 555555
+        seed_rows = [{
+            "ticker": "X",
+            "cik": cik,
+            "accession": "",
+            "form": "",
+            "filing_date": "2019-05-05",
+            "acceptance_datetime": "",
+            "report_date": "",
+            "items": "2.02",
+        }]
+        store_path = tmp_path / "edgar" / "earnings_8k_dates.parquet"
+        store_path.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(seed_rows).to_parquet(store_path)
+
+        def fake_get_json(url):
+            return None
+
+        monkeypatch.setattr(e8k, "_sec_get_json", fake_get_json)
+        monkeypatch.setattr(e8k.time, "sleep", lambda _: None)
+        monkeypatch.setattr(e8k, "build_cik_map", lambda tickers: {"X": cik})
+
+        eps_path = tmp_path / "edgar" / "eps_quarterly.parquet"
+        pd.DataFrame({"ticker": ["X"]}).to_parquet(eps_path)
+
+        e8k.run_backfill(force=True)
+
+        manifest = e8k.load_manifest()
+        assert manifest[str(cik)]["status"] == "no_submissions"
+        assert manifest[str(cik)]["n_filings"] == 0
+        kept = pd.read_parquet(store_path)
+        assert len(kept[kept["cik"].astype(int) == cik]) == 1
+
+    def test_shard_fetch_failure_counts_missing_and_blocks_replace(
+        self, tmp_path, monkeypatch
+    ):
+        """R3+R2b: shard SecFetchError keeps prior rows for other dates on CIK."""
+        monkeypatch.setattr(
+            e8k, "config",
+            type("C", (), {"data_dir": staticmethod(lambda: tmp_path)})(),
+        )
+        cik = 789019
+        seed_rows = [
+            {
+                "ticker": "MSFT",
+                "cik": cik,
+                "accession": "",
+                "form": "",
+                "filing_date": "2018-01-01",
+                "acceptance_datetime": "",
+                "report_date": "",
+                "items": "2.02",
+            },
+            {
+                "ticker": "MSFT",
+                "cik": cik,
+                "accession": "",
+                "form": "",
+                "filing_date": "2019-01-01",
+                "acceptance_datetime": "",
+                "report_date": "",
+                "items": "2.02",
+            },
+        ]
+        store_path = tmp_path / "edgar" / "earnings_8k_dates.parquet"
+        store_path.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(seed_rows).to_parquet(store_path)
+
+        def fake_get_json(url):
+            if "submissions-001" in url:
+                raise e8k.SecFetchError(f"sec_fetch_failed:{url}")
+            return {
+                "filings": {
+                    "recent": {
+                        "form": ["8-K"],
+                        "filingDate": ["2020-01-01"],
+                        "items": ["2.02"],
+                        "accessionNumber": ["0000789019-20-000001"],
+                        "reportDate": ["2019-12-31"],
+                    },
+                    "files": [{"name": "CIK0000789019-submissions-001.json"}],
+                }
+            }
+
+        monkeypatch.setattr(e8k, "_sec_get_json", fake_get_json)
+        monkeypatch.setattr(e8k.time, "sleep", lambda _: None)
+        monkeypatch.setattr(e8k, "build_cik_map", lambda tickers: {"MSFT": cik})
+
+        eps_path = tmp_path / "edgar" / "eps_quarterly.parquet"
+        pd.DataFrame({"ticker": ["MSFT"]}).to_parquet(eps_path)
+
+        e8k.run_backfill(force=True)
+
+        manifest = e8k.load_manifest()
+        assert manifest[str(cik)]["n_shards_missing"] >= 1
+        kept = pd.read_parquet(store_path)
+        assert len(kept[kept["cik"].astype(int) == cik]) >= 2
+        dates = set(kept[kept["cik"].astype(int) == cik]["filing_date"].astype(str))
+        assert "2018-01-01" in dates
+        assert "2019-01-01" in dates

@@ -112,6 +112,10 @@ _SEC_UA = "macro-dashboard admin@macro-dashboard.example.com"
 # Item 2.02 token (exact string after comma-split and strip).
 ITEM_202 = "2.02"
 
+
+class SecFetchError(RuntimeError):
+    """SEC JSON fetch failed after retries (non-404)."""
+
 # Coverage gate (masterplan §3 F1)
 COVERAGE_GATE_NAMES = 800     # minimum names with ≥8y of Item-2.02 history
 COVERAGE_GATE_YEARS = 8       # minimum years of history per name
@@ -195,7 +199,7 @@ def _sec_get_json(url: str) -> dict | None:
             if attempt < RETRIES - 1:
                 time.sleep(1.5 * (attempt + 1))
     log.warning("edgar_earnings_8k: GET failed %s: %s", url.split("?")[0], last)
-    return None
+    raise SecFetchError(f"sec_fetch_failed:{url}")
 
 
 # ---------------------------------------------------------------------------
@@ -300,7 +304,7 @@ def _extract_8k_rows(ticker: str, cik: int, rec: dict) -> list[dict]:
     return rows
 
 
-def fetch_earnings_8k_for_cik(ticker: str, cik: int) -> tuple[list[dict], int]:
+def fetch_earnings_8k_for_cik(ticker: str, cik: int) -> tuple[list[dict], int, bool]:
     """Fetch all 8-K Item-2.02 filings for one CIK from the submissions API.
 
     Follows the older-files pagination referenced in the submissions JSON to
@@ -310,14 +314,14 @@ def fetch_earnings_8k_for_cik(ticker: str, cik: int) -> tuple[list[dict], int]:
     "CIK0000320193-submissions-001.json" (no "submissions/" prefix).
     The correct URL is https://data.sec.gov/submissions/{name}.
 
-    Returns a tuple (rows, n_shards_missing) so callers can surface the
-    missing-shard count in run summaries and the coverage JSON.
+    Returns (rows, n_shards_missing, no_submissions) where no_submissions is
+    True when the primary submissions JSON returned HTTP 404.
     """
     url = SUBMISSIONS_URL.format(int(cik))
     data = _sec_get_json(url)
     time.sleep(PACE_S)
     if not data:
-        return [], 0
+        return [], 0, True
 
     filings = data.get("filings") or {}
     recent = filings.get("recent") or {}
@@ -335,7 +339,15 @@ def fetch_earnings_8k_for_cik(ticker: str, cik: int) -> tuple[list[dict], int]:
             continue
         # Build the correct shard URL: always under /submissions/
         older_url = f"https://data.sec.gov/submissions/{fname}"
-        older_data = _sec_get_json(older_url)
+        try:
+            older_data = _sec_get_json(older_url)
+        except SecFetchError:
+            n_shards_missing += 1
+            log.warning(
+                "edgar_earnings_8k: shard fetch FAILED for %s (CIK %s) — url=%s",
+                ticker, cik, older_url,
+            )
+            continue
         time.sleep(PACE_S)
         if older_data is None:
             n_shards_missing += 1
@@ -346,7 +358,7 @@ def fetch_earnings_8k_for_cik(ticker: str, cik: int) -> tuple[list[dict], int]:
             continue
         rows.extend(_extract_8k_rows(ticker, cik, older_data))
 
-    return rows, n_shards_missing
+    return rows, n_shards_missing, False
 
 
 # ---------------------------------------------------------------------------
@@ -393,7 +405,27 @@ def load_existing() -> pd.DataFrame:
     return pd.read_parquet(p)
 
 
-def append_and_dedup(existing: pd.DataFrame, new_rows: list[dict]) -> pd.DataFrame:
+def _normalize_store_df(df: pd.DataFrame) -> pd.DataFrame:
+    """Ensure STORE_COLUMNS present; string cols are \"\" not NaN; cik is int."""
+    if df.empty:
+        return pd.DataFrame(columns=STORE_COLUMNS)
+    out = df.copy()
+    for column in STORE_COLUMNS:
+        if column not in out.columns:
+            out[column] = ""
+    for c in STORE_COLUMNS:
+        if c == "cik":
+            out[c] = out[c].astype(int)
+        else:
+            out[c] = out[c].fillna("").astype(str)
+    return out[STORE_COLUMNS]
+
+
+def append_and_dedup(
+    existing: pd.DataFrame,
+    new_rows: list[dict],
+    replaced_ciks: set[int] | frozenset[int] = frozenset(),
+) -> pd.DataFrame:
     """Append new rows and dedup on the canonical filing key ``(cik, accession)``.
 
     The key changed in Wave 1B and the reason is not cosmetic.  The old key was
@@ -406,19 +438,34 @@ def append_and_dedup(existing: pd.DataFrame, new_rows: list[dict]) -> pd.DataFra
     period of report — never on date proximity.
 
     Legacy rows written before accession capture are keyed the old way and are
-    dropped when a keyed row already covers the same ``(ticker, filing_date)``,
+    dropped when a keyed row already covers the same ``(cik, filing_date)``,
     so re-running the collector upgrades the store in place rather than
     doubling it.  Within either key, the earliest non-empty
     ``acceptance_datetime`` wins.
     """
     if not new_rows:
-        return existing
+        return _normalize_store_df(existing)
+    existing_part = existing.copy() if not existing.empty else pd.DataFrame(columns=STORE_COLUMNS)
     new_df = pd.DataFrame(new_rows)
-    combined = pd.concat([existing, new_df], ignore_index=True)
+    if not existing_part.empty:
+        existing_part["_from_existing"] = True
+    else:
+        existing_part = pd.DataFrame(columns=list(STORE_COLUMNS) + ["_from_existing"])
+    new_df["_from_existing"] = False
+    combined = pd.concat([existing_part, new_df], ignore_index=True)
+    if replaced_ciks:
+        cik_int = combined["cik"].astype(int)
+        drop_mask = combined["_from_existing"] & cik_int.isin(replaced_ciks)
+        combined = combined.loc[~drop_mask].reset_index(drop=True)
+    combined = combined.drop(columns=["_from_existing"])
     for column in STORE_COLUMNS:
         if column not in combined.columns:
             combined[column] = ""
-    combined["accession"] = combined["accession"].fillna("").astype(str)
+    for c in STORE_COLUMNS:
+        if c == "cik":
+            combined[c] = combined[c].astype(int)
+        else:
+            combined[c] = combined[c].fillna("").astype(str)
 
     # Sort so the earliest non-empty acceptance_datetime is first within any
     # key — keep='first' is then deterministic regardless of concat order.
@@ -435,10 +482,12 @@ def append_and_dedup(existing: pd.DataFrame, new_rows: list[dict]) -> pd.DataFra
     if not legacy.empty:
         legacy = legacy.drop_duplicates(subset=["ticker", "filing_date"], keep="first")
         if not keyed.empty:
-            covered = set(zip(keyed["ticker"], keyed["filing_date"]))
+            covered = set(
+                zip(keyed["cik"].astype(int), keyed["filing_date"])
+            )
             legacy = legacy[[
-                (t, d) not in covered
-                for t, d in zip(legacy["ticker"], legacy["filing_date"])
+                (int(c), d) not in covered
+                for c, d in zip(legacy["cik"], legacy["filing_date"])
             ]]
     combined = pd.concat([keyed, legacy], ignore_index=True)
     combined = combined.sort_values(
@@ -542,8 +591,9 @@ def run_backfill(
                     len(unmapped), sorted(unmapped)[:10])
 
     # Load manifest + existing store
-    manifest = load_manifest() if not force else {}
+    manifest = load_manifest()
     existing_df = load_existing()
+    replaced_ciks: set[int] = set()
     log.info("edgar_earnings_8k: manifest has %d done CIKs; store has %d existing rows",
              len(manifest), len(existing_df))
 
@@ -566,7 +616,9 @@ def run_backfill(
             continue
 
         try:
-            rows, n_shards_missing = fetch_earnings_8k_for_cik(ticker, cik)
+            rows, n_shards_missing, no_submissions = fetch_earnings_8k_for_cik(
+                ticker, cik
+            )
         except Exception as e:  # noqa: BLE001
             n_error += 1
             log.warning("edgar_earnings_8k: CIK %s (%s) failed: %s", cik, ticker, e)
@@ -582,12 +634,25 @@ def run_backfill(
                 break
             continue
 
+        if no_submissions:
+            manifest[cik_key] = {
+                "ticker": ticker,
+                "status": "no_submissions",
+                "n_filings": 0,
+                "ts": datetime.now(timezone.utc).isoformat(),
+            }
+            n_fetched += 1
+            continue
+
         n_shards_missing_total += n_shards_missing
         n_rows = len(rows)
         if n_rows == 0:
             log.debug("edgar_earnings_8k: CIK %s (%s) — 0 Item-2.02 8-Ks found", cik, ticker)
         else:
             all_rows.extend(rows)
+
+        if n_shards_missing == 0:
+            replaced_ciks.add(int(cik))
 
         manifest[cik_key] = {
             "ticker": ticker,
@@ -604,10 +669,10 @@ def run_backfill(
                 "edgar_earnings_8k: checkpoint — %d fetched, %d skipped, %d errors, %d shards missing",
                 n_fetched, n_skipped, n_error, n_shards_missing_total,
             )
-            _checkpoint(all_rows, existing_df, manifest)
+            _checkpoint(all_rows, existing_df, manifest, replaced_ciks)
 
     # Final save
-    final_df = _checkpoint(all_rows, existing_df, manifest)
+    final_df = _checkpoint(all_rows, existing_df, manifest, replaced_ciks)
     log.info(
         "edgar_earnings_8k: done — %d fetched, %d skipped, %d errors, %d shards missing; store=%d rows, %d tickers",
         n_fetched, n_skipped, n_error, n_shards_missing_total,
@@ -645,14 +710,15 @@ def _checkpoint(
     all_rows: list[dict],
     existing_df: pd.DataFrame,
     manifest: dict,
+    replaced_ciks: set[int] | frozenset[int],
 ) -> pd.DataFrame:
     """Merge all_rows with existing, dedup, write parquet + manifest."""
     if all_rows:
-        final_df = append_and_dedup(existing_df, all_rows)
-    else:
-        final_df = existing_df.copy() if not existing_df.empty else pd.DataFrame(
-            columns=STORE_COLUMNS
+        final_df = append_and_dedup(
+            existing_df, all_rows, replaced_ciks=replaced_ciks
         )
+    else:
+        final_df = _normalize_store_df(existing_df)
     p = _store_path()
     p.parent.mkdir(parents=True, exist_ok=True)
     final_df.to_parquet(p)
