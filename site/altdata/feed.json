@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-04T06:15:41.789023+00:00",
+  "generated_utc": "2026-10-04T19:08:35.857194+00:00",
   "as_of": "2026-10-04",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -8000,6 +8000,14 @@
         "detail": "Activist Campaigns"
       },
       {
+        "ticker": "UWMC",
+        "category": "Activist Campaigns",
+        "confidence": "high",
+        "activist": true,
+        "filer": null,
+        "detail": "Activist Campaigns"
+      },
+      {
         "ticker": "UMG",
         "category": "Activist Campaigns",
         "confidence": "high",
@@ -11049,11 +11057,11 @@
       },
       {
         "ticker": "MMED",
-        "category": "Acquisitions",
+        "category": "Divestitures",
         "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Acquisitions"
+        "detail": "Divestitures"
       },
       {
         "ticker": "MUXG",
@@ -18960,7 +18968,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "SPKLW",
+        "ticker": "SPKLU",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -19576,7 +19584,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "CBRGF",
+        "ticker": "CBGGF",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -19968,7 +19976,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "EFC-PC",
+        "ticker": "EFC-PD",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -20120,7 +20128,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "T-PC",
+        "ticker": "T-PA",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -20321,6 +20329,14 @@
       },
       {
         "ticker": "MZTI",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "MMEDV",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -21648,6 +21664,14 @@
         "detail": "Delistings"
       },
       {
+        "ticker": "AKOM",
+        "category": "Acquisitions",
+        "confidence": "medium",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "GECCI",
         "category": "Issuer Tenders",
         "confidence": "high",
@@ -22520,7 +22544,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "SCCE",
+        "ticker": "SCCG",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -23736,7 +23760,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "TWOH",
+        "ticker": "QUTX",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -25184,7 +25208,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "AQNB",
+        "ticker": "AGQPF",
         "category": "Divestitures",
         "confidence": "high",
         "activist": false,
@@ -26176,6 +26200,14 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "TZIC",
+        "category": "Spin-Offs",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Spin-Offs"
+      },
+      {
         "ticker": "CRLBF",
         "category": "Spin-Offs",
         "confidence": "medium",
@@ -26472,13 +26504,13 @@
       },
       {
         "ticker": "CRWD",
-        "net_up_30d": 36,
-        "breadth": 0.78,
-        "est_chg_30d": -1.49,
+        "net_up_30d": 38,
+        "breadth": 0.83,
+        "est_chg_30d": 0.68,
         "n_analysts": 46,
-        "bull_ratio": 0.89,
+        "bull_ratio": 0.91,
         "rising": true,
-        "revision_delta": 36,
+        "revision_delta": 38,
         "hot": true
       },
       {
@@ -26518,7 +26550,7 @@
         "ticker": "DDOG",
         "net_up_30d": 33,
         "breadth": 0.77,
-        "est_chg_30d": 0.17,
+        "est_chg_30d": 0.2,
         "n_analysts": 43,
         "bull_ratio": 0.88,
         "rising": true,
@@ -26572,10 +26604,10 @@
       {
         "ticker": "CRM",
         "net_up_30d": 29,
-        "breadth": 0.64,
-        "est_chg_30d": 3.15,
-        "n_analysts": 45,
-        "bull_ratio": 0.82,
+        "breadth": 0.62,
+        "est_chg_30d": 0.67,
+        "n_analysts": 47,
+        "bull_ratio": 0.81,
         "rising": true,
         "revision_delta": 29,
         "hot": true
@@ -26589,17 +26621,6 @@
         "bull_ratio": 0.97,
         "rising": true,
         "revision_delta": 27,
-        "hot": true
-      },
-      {
-        "ticker": "CAT",
-        "net_up_30d": 26,
-        "breadth": 1.0,
-        "est_chg_30d": 0.67,
-        "n_analysts": 26,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 26,
         "hot": true
       },
       {
@@ -26618,6 +26639,17 @@
         "net_up_30d": 26,
         "breadth": 1.0,
         "est_chg_30d": 0.54,
+        "n_analysts": 26,
+        "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 26,
+        "hot": true
+      },
+      {
+        "ticker": "CAT",
+        "net_up_30d": 26,
+        "breadth": 1.0,
+        "est_chg_30d": 0.14,
         "n_analysts": 26,
         "bull_ratio": 1.0,
         "rising": true,
@@ -27772,14 +27804,6 @@
           "sellers": 0
         },
         {
-          "ticker": "SVRE",
-          "buy_usd": 1135938816.0,
-          "sell_usd": 0.0,
-          "net_usd": 1135938816.0,
-          "buyers": 1,
-          "sellers": 0
-        },
-        {
           "ticker": "NMM",
           "buy_usd": 848500446.0,
           "sell_usd": 0.0,
@@ -27841,6 +27865,14 @@
           "sell_usd": 0.0,
           "net_usd": 116087190.0,
           "buyers": 31,
+          "sellers": 0
+        },
+        {
+          "ticker": "SCTH",
+          "buy_usd": 100000000.0,
+          "sell_usd": 0.0,
+          "net_usd": 100000000.0,
+          "buyers": 1,
           "sellers": 0
         }
       ],
@@ -29020,14 +29052,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "QQQ",
-        "mentions": 25,
-        "sentiment": 0.074
-      },
-      {
         "ticker": "MSFT",
         "mentions": 25,
         "sentiment": 0.015
+      },
+      {
+        "ticker": "QQQ",
+        "mentions": 25,
+        "sentiment": 0.074
       },
       {
         "ticker": "OKLO",
@@ -31325,7 +31357,7 @@
           "congress_buy",
           "trump"
         ],
-        "why": "13f_add: Ascentis Wealth Management, LLC +$3,159,945,245 \u00b7 analyst_upgrade_cluster: net upgrades +36 revision delta \u00b7 congress_buy: 2 member(s) net +4 \u00b7 trump: CROWDSTRIKE HLDGS INC CL A"
+        "why": "13f_add: Ascentis Wealth Management, LLC +$3,159,945,245 \u00b7 analyst_upgrade_cluster: net upgrades +38 revision delta \u00b7 congress_buy: 2 member(s) net +4 \u00b7 trump: CROWDSTRIKE HLDGS INC CL A"
       },
       {
         "ticker": "MU",

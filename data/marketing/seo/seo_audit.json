@@ -1,12 +1,12 @@
 {
   "schema": "seo_audit.v1",
-  "as_of": "2026-09-27T18:55:09Z",
+  "as_of": "2026-10-04T18:31:50Z",
   "health_score": 89,
   "census": {
-    "total_pages": 3027,
+    "total_pages": 3035,
     "by_family": {
       "core": {
-        "pages": 175,
+        "pages": 176,
         "with_canonical": 162,
         "with_desc": 161,
         "with_og": 161,
@@ -54,7 +54,7 @@
         "in_sitemap": 0
       },
       "stocks": {
-        "pages": 2738,
+        "pages": 2745,
         "sampled": 25,
         "with_canonical": 25,
         "with_title": 25,
@@ -66,10 +66,10 @@
     }
   },
   "sitemap": {
-    "total_urls": 5541,
+    "total_urls": 5551,
     "core": 2852,
     "products": 5,
-    "stocks": 2684,
+    "stocks": 2694,
     "host_ok": true,
     "bad_host_count": 0,
     "apex_host_count": 0,
@@ -80,7 +80,7 @@
       "unsubscribe.html"
     ],
     "excluded_public_count": 1,
-    "non_public_absent_count": 257,
+    "non_public_absent_count": 258,
     "duplicates": []
   },
   "crawl_infra": {
@@ -88,7 +88,7 @@
     "robots_sitemap_host_ok": true,
     "llms_txt_present": true,
     "brand_facts_present": true,
-    "brand_facts_age_days": 62
+    "brand_facts_age_days": 69
   },
   "issues": [
     {
@@ -194,6 +194,27 @@
       "severity": "medium",
       "class": "missing_og",
       "page": "coming-soon.html",
+      "detail": "Missing OG tags: og_title, og_desc, og_image"
+    },
+    {
+      "id": "missing_description_financial_lineage_html",
+      "severity": "high",
+      "class": "missing_description",
+      "page": "financial_lineage.html",
+      "detail": "No meta description"
+    },
+    {
+      "id": "missing_canonical_financial_lineage_html",
+      "severity": "high",
+      "class": "missing_canonical",
+      "page": "financial_lineage.html",
+      "detail": "No rel=canonical link"
+    },
+    {
+      "id": "missing_og_financial_lineage_html",
+      "severity": "medium",
+      "class": "missing_og",
+      "page": "financial_lineage.html",
       "detail": "Missing OG tags: og_title, og_desc, og_image"
     },
     {
@@ -808,9 +829,9 @@
   ],
   "issue_counts_by_class": {
     "canonical_not_self": 11,
-    "missing_description": 27,
-    "missing_og": 27,
-    "missing_canonical": 26,
+    "missing_description": 28,
+    "missing_og": 28,
+    "missing_canonical": 27,
     "desc_length": 5,
     "title_length": 2,
     "missing_lang": 1,
@@ -820,8 +841,8 @@
   },
   "issue_counts_by_severity": {
     "critical": 0,
-    "high": 49,
-    "medium": 53,
+    "high": 51,
+    "medium": 54,
     "low": 0
   }
 }
