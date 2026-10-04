@@ -1303,3 +1303,232 @@ def test_list_changes_does_not_mutate_baseline_or_evidence():
     out[0]["to"]["values"]["v"] = "MUTATED"
     assert baseline["evidence"]["a"]["values"] == {"v": 1}
     assert current_rows[0]["values"] == {"v": 9}
+
+
+# ---------------------------------------------------------------------------
+# T11 compose_outlook — the assembled projection (appended; no existing
+# symbol is touched)
+# ---------------------------------------------------------------------------
+
+
+def _compose_session_of(dt):
+    return (dt - timedelta(hours=21)).date()
+
+
+COMPOSE_SESSION_OF = _compose_session_of
+COMPOSE_BUILT = CUTOFF + timedelta(minutes=5)
+
+
+def _compose_call(
+    *,
+    previous=None,
+    cutoff=CUTOFF,
+    built=COMPOSE_BUILT,
+    bytes_in=None,
+):
+    return rcc.compose_outlook(
+        MAPPING,
+        _base_bytes() if bytes_in is None else bytes_in,
+        mapping_sha256=rco.mapping_sha256(),
+        analysis_cutoff=cutoff,
+        built_at=built,
+        session_of=COMPOSE_SESSION_OF,
+        previous=previous,
+    )
+
+
+COMPOSE_KEYS = [
+    "schema_version",
+    "scope",
+    "analysis_cutoff",
+    "built_at",
+    "mapping_version",
+    "mapping_sha256",
+    "inputs",
+    "evidence_clock_range",
+    "families",
+    "evidence",
+    "conditional_paths",
+    "baseline",
+    "changes",
+    "historical_comparisons",
+    "forecast_distributions",
+    "conditional_exposures",
+    "authority",
+    "tier",
+    "notes",
+]
+
+
+def test_compose_outlook_first_build_has_expected_key_order_and_empty_baseline_and_no_changes():
+    result = _compose_call()
+    assert list(result) == COMPOSE_KEYS
+    assert result["baseline"] == {"status": "absent", "reason": "no_earlier_projection"}
+    assert result["changes"] == []
+    assert len(result["evidence"]) == 30
+    assert len(result["conditional_paths"]) == 9
+    roundtrip = json.loads(json.dumps(result))
+    assert roundtrip == result
+    assert result["authority"] == {
+        "may_rank": False,
+        "may_gate": False,
+        "may_size": False,
+        "may_trade": False,
+        "may_forecast": False,
+        "may_escalate": False,
+    }
+    assert result["tier"] == "display_research"
+    assert result["notes"] == [rcc.AGE_RULE_NOTE]
+
+
+def test_compose_outlook_next_session_carries_a_new_30_row_baseline():
+    A = _compose_call()
+    B = _compose_call(
+        previous=A,
+        cutoff=CUTOFF + timedelta(hours=24),
+        built=COMPOSE_BUILT + timedelta(hours=24),
+    )
+    assert B["baseline"]["us_session"] == "2026-10-02"
+    assert B["baseline"]["analysis_cutoff"] == A["analysis_cutoff"]
+    assert len(B["baseline"]["evidence"]) == 30
+    assert B["changes"] == []
+
+
+def test_compose_outlook_same_session_rebuild_inside_previous_session_is_no_earlier_projection():
+    A = _compose_call()
+    C = _compose_call(
+        previous=A,
+        cutoff=CUTOFF + timedelta(hours=1),
+        built=COMPOSE_BUILT + timedelta(hours=1),
+    )
+    assert C["baseline"] == {"status": "absent", "reason": "no_earlier_projection"}
+
+
+def test_compose_outlook_same_session_with_carried_baseline_returns_the_carried_baseline():
+    A = _compose_call()
+    B = _compose_call(
+        previous=A,
+        cutoff=CUTOFF + timedelta(hours=24),
+        built=COMPOSE_BUILT + timedelta(hours=24),
+    )
+    B2 = _compose_call(
+        previous=B,
+        cutoff=CUTOFF + timedelta(hours=25),
+        built=COMPOSE_BUILT + timedelta(hours=25),
+    )
+    assert B2["baseline"] == B["baseline"]
+
+
+def test_compose_outlook_three_change_vectors_became_stale_became_unavailable_empty():
+    A = _compose_call()
+    l_rooted_ids = [r["id"] for r in A["evidence"] if r["id"].startswith("L.")]
+
+    # (a) M stale flag True -> became_stale on M.components.breadth.tone
+    bytes_stale = _patch("M", ["input_vintages", "pct_above_200", "stale"], True)
+    B_stale = _compose_call(
+        previous=A,
+        cutoff=CUTOFF + timedelta(hours=24),
+        built=COMPOSE_BUILT + timedelta(hours=24),
+        bytes_in=bytes_stale,
+    )
+    stale_changes = [
+        c
+        for c in B_stale["changes"]
+        if c["evidence_id"] == "M.components.breadth.tone"
+    ]
+    assert len(stale_changes) == 1
+    assert stale_changes[0]["change_kind"] == "became_stale"
+
+    # (b) artifact L dropped (bytes None) -> became_unavailable on every L-rooted row
+    bytes_no_L = _base_bytes()
+    bytes_no_L["L"] = None
+    B_no_L = _compose_call(
+        previous=A,
+        cutoff=CUTOFF + timedelta(hours=24),
+        built=COMPOSE_BUILT + timedelta(hours=24),
+        bytes_in=bytes_no_L,
+    )
+    for lid in l_rooted_ids:
+        matching = [c for c in B_no_L["changes"] if c["evidence_id"] == lid]
+        assert len(matching) == 1
+        assert matching[0]["change_kind"] == "became_unavailable"
+
+    # (c) same bytes as A -> []
+    B_same = _compose_call(
+        previous=A,
+        cutoff=CUTOFF + timedelta(hours=24),
+        built=COMPOSE_BUILT + timedelta(hours=24),
+    )
+    assert B_same["changes"] == []
+
+
+def test_compose_outlook_a_naive_analysis_cutoff_raises_value_error():
+    with pytest.raises(ValueError):
+        _compose_call(cutoff=datetime(2026, 10, 3, 2, 0))
+
+
+def test_compose_outlook_a_naive_built_at_raises_value_error():
+    with pytest.raises(ValueError):
+        _compose_call(built=datetime(2026, 10, 3, 2, 5))
+
+
+def test_compose_outlook_a_session_of_that_raises_with_no_stored_baseline_returns_us_session_unavailable():
+    def boom(dt):
+        raise RuntimeError("nope")
+
+    prev = {
+        "schema_version": "regime_outlook.v1",
+        "analysis_cutoff": CUTOFF.isoformat(),
+        "evidence": [
+            {
+                "id": "alpha",
+                "values": {},
+                "owner_verdict": None,
+                "status": "available",
+                "source": {"as_of": "2026-10-02"},
+            }
+        ],
+    }
+    result = rcc.compose_outlook(
+        MAPPING,
+        _base_bytes(),
+        mapping_sha256=rco.mapping_sha256(),
+        analysis_cutoff=CUTOFF,
+        built_at=COMPOSE_BUILT,
+        session_of=boom,
+        previous=prev,
+    )
+    assert result["baseline"] == {"status": "absent", "reason": "us_session_unavailable"}
+
+
+def test_compose_outlook_a_list_previous_is_previous_unreadable():
+    result = _compose_call(previous=["not", "a", "dict"])
+    assert result["baseline"] == {"status": "absent", "reason": "previous_unreadable"}
+
+
+def test_compose_outlook_does_not_mutate_previous_or_input_bytes():
+    prev = {
+        "schema_version": "regime_outlook.v1",
+        "analysis_cutoff": (CUTOFF - timedelta(hours=24)).isoformat(),
+        "evidence": [
+            {
+                "id": "alpha",
+                "values": {"v": 1},
+                "owner_verdict": None,
+                "status": "available",
+                "source": {"as_of": "2026-10-01"},
+            }
+        ],
+    }
+    bytes_in = _base_bytes()
+    prev_snapshot = copy.deepcopy(prev)
+    bytes_snapshot = copy.deepcopy(bytes_in)
+    _compose_call(previous=prev, bytes_in=bytes_in)
+    assert prev == prev_snapshot
+    assert bytes_in == bytes_snapshot
+
+
+def test_compose_outlook_two_identical_calls_are_equal():
+    A1 = _compose_call()
+    A2 = _compose_call()
+    assert A1 == A2
