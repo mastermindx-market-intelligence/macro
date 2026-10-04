@@ -3823,6 +3823,11 @@ def test_census_reports_every_mismatch_direction_and_never_mutates(tmp_path,
 
     report = json.loads(out.read_text())
     mm = report["mismatches"]
+    health = report["corpus"]["body_health"]
+    assert health["schema"] == "research_vault.corpus_health.v1"
+    assert health["body_nonempty_rows"] == report["corpus"]["rows"]
+    assert health["body_empty_rows"] == 0
+    assert health["corpus_bytes"] > 0
     assert mm["catalog_minus_pdf"] == ["desk-000000"]
     assert mm["receipt_minus_catalog"] == ["desk-000001"]
     assert mm["corpus_minus_catalog"] == ["desk-000001"]
@@ -3837,6 +3842,118 @@ def test_census_reports_every_mismatch_direction_and_never_mutates(tmp_path,
 
     after = {k: store.get_bytes(k) for k in store.list_prefix("")}
     assert after == before, "the census must not mutate a single object"
+
+
+def test_census_body_health_distinguishes_identity_from_text_retrieval(
+        tmp_path, w4_canned_pdftotext, monkeypatch):
+    """Rows may all exist while retrieval is still degraded.
+
+    This fixture keeps all three catalog/corpus identities intact, then changes
+    only the published corpus bytes: one healthy full-text row, one bodyless
+    unavailable row that needs repair, and one bodyless scan that is a typed
+    no-text exclusion. The census must classify those states without returning
+    licensed body text or mutating the store.
+    """
+    import scripts.research_vault_census as census
+
+    store = _w4_store(tmp_path)
+    ids = [f"health-00000{n}" for n in range(3)]
+    for n, doc_id in enumerate(ids):
+        _w4_seed_pdf(
+            store,
+            f"research_inbox/h{n}.pdf",
+            _w4_sidecar(doc_id),
+        )
+    ingest_mod.run(store, tmp_path / "corpus.sqlite")
+
+    corpus_bytes = store.get_bytes(ingest_mod.CORPUS_KEY)
+    assert corpus_bytes
+    scratch = tmp_path / "health-corpus.sqlite"
+    scratch.write_bytes(corpus_bytes)
+    conn = sqlite3.connect(str(scratch))
+    healthy_body = (
+        "Institutional demand remains durable across the measured channel and "
+        "the research desk expects capacity additions to stay disciplined.\n\n"
+        "This second page preserves enough literal source structure for the "
+        "excerpt sampler to derive a bounded opening passage."
+        "\f"
+        "Tail page evidence remains present after the explicit PDF page break."
+    )
+    try:
+        conn.execute(
+            "UPDATE documents SET body=?, text_layer='full', char_count=?, pages=2 "
+            "WHERE doc_id=?",
+            (healthy_body, len(healthy_body), ids[0]),
+        )
+        conn.execute(
+            "UPDATE documents SET body='', text_layer='unavailable', "
+            "char_count=900, pages=4 WHERE doc_id=?",
+            (ids[1],),
+        )
+        conn.execute(
+            "UPDATE documents SET body='', text_layer='none', "
+            "char_count=0, pages=7 WHERE doc_id=?",
+            (ids[2],),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    store.put_bytes(ingest_mod.CORPUS_KEY, scratch.read_bytes(),
+                    "application/vnd.sqlite3")
+
+    before = {key: store.get_bytes(key) for key in store.list_prefix("")}
+    out = tmp_path / "health-census.json"
+    monkeypatch.setattr(
+        sys, "argv",
+        ["census", "--local", str(store.root),
+         "--repo-dir", str(tmp_path / "no_mirror"), "--json", str(out)],
+    )
+    monkeypatch.setattr(
+        "engine.research_vault.r2_store.build_store",
+        lambda local_dir=None: store,
+    )
+    assert census.main() == 0
+
+    report = json.loads(out.read_text())
+    assert report["mismatches"]["catalog_minus_corpus"] == []
+    assert report["mismatches"]["corpus_minus_catalog"] == []
+
+    health = report["corpus"]["body_health"]
+    assert health["body_nonempty_rows"] == 1
+    assert health["body_empty_rows"] == 2
+    assert health["text_layer"] == {
+        "full": 1,
+        "thin": 0,
+        "none": 1,
+        "unavailable": 1,
+        "null_or_unknown": 0,
+    }
+    assert health["measured_source_char_count_present_rows"] == 3
+    assert health["stored_body_chars_eq_source_rows"] == 2
+    assert health["stored_body_chars_lt_source_rows"] == 1
+    assert health["stored_body_chars_gt_source_or_inconsistent_rows"] == 0
+    assert health["page_separator_rows"] == 1
+    assert health["page_count_present_rows"] == 3
+    assert health["excerpt_derivable_rows"] == 1
+    assert health["catalog_rows_with_corpus_row_but_no_usable_body_count"] == 2
+    assert health["catalog_rows_with_corpus_row_but_no_usable_body_ids"] == ids[1:]
+    assert (
+        health["catalog_rows_with_corpus_row_but_no_usable_body_needing_repair_ids"]
+        == [ids[1]]
+    )
+    assert (
+        health["catalog_rows_with_corpus_row_but_no_usable_body_needing_repair_count"]
+        == 1
+    )
+    assert health["catalog_rows_with_corpus_row_typed_no_text_count"] == 1
+    assert health["valid_pdf_content_sha256_rows"] == 3
+    assert "body" not in json.dumps(health), (
+        "the health projection may describe body coverage but must not emit "
+        "publisher body text or a body field"
+    )
+
+    after = {key: store.get_bytes(key) for key in store.list_prefix("")}
+    assert after == before, "body-health census must remain byte-for-byte read-only"
 
 
 def test_census_refuses_rather_than_auditing_an_unreadable_catalog(tmp_path,
