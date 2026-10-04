@@ -644,5 +644,100 @@ class PTSEContractTest(unittest.TestCase):
         self.assertNotEqual(old.assessment_id, new.assessment_id)
 
 
+class PTSEBoundaryRegressionTest(unittest.TestCase):
+    """Synthetic caller-boundary regressions; no source or market admission."""
+
+    EXTREME_TIMESTAMPS = (
+        "0001-01-01T00:00:00+14:00", "9999-12-31T23:59:59-14:00",
+        "0001-01-01T00:00:00+23:59", "9999-12-31T23:59:59-23:59",
+    )
+
+    def setUp(self):
+        self.harness = PTSEContractTest()
+        self.harness.setUp()
+        self.artifact = build_context(*inputs())
+        self.scope = binding(self.artifact)
+
+    def consume_unavailable(self, raw, *, now=NOW, scope=None):
+        result = read_optional_context(
+            self.harness.incumbent, raw, scope or self.scope, now=now,
+            response_request_id="r1", active_request_id="r1")
+        self.assertEqual(result.status, "UNAVAILABLE")
+        self.assertEqual(result.update, "CLEAR_CONTEXT")
+        self.assertIs(result.incumbent, self.harness.incumbent)
+        self.assertEqual(canonical_json(self.harness.incumbent), self.harness.before)
+        return result
+
+    @staticmethod
+    def wide_inputs(count):
+        observation, assessment = inputs()
+        original = observation["facts"][0]
+        observation["facts"] = [copy.deepcopy(original) for _ in range(count)]
+        for index, fact in enumerate(observation["facts"]):
+            fact["feature_id"] = (original["feature_id"] if index == 0
+                                  else f"fixture.price.extra_{index}")
+        return observation, assessment
+
+    def test_extreme_wire_timestamps_degrade_without_throwing(self):
+        paths = (
+            ("observation", "decision_at"), ("observation", "issued_at"),
+            ("observation", "valid_until"),
+            ("observation", "facts", 0, "economic_time"),
+            ("observation", "facts", 0, "valid_until"),
+            ("observation", "facts", 0, "known_at", "earliest"),
+            ("observation", "facts", 0, "known_at", "latest"),
+            ("assessment", "issued_at"), ("assessment", "decision_at"),
+        )
+        for path in paths:
+            for stamp in self.EXTREME_TIMESTAMPS:
+                with self.subTest(path=path, stamp=stamp):
+                    payload = self.artifact.to_dict()
+                    target = payload
+                    for key in path[:-1]:
+                        target = target[key]
+                    target[path[-1]] = stamp
+                    self.consume_unavailable(json.dumps(payload))
+
+    def test_extreme_consumer_clocks_and_bindings_degrade(self):
+        from dataclasses import replace
+        for stamp in self.EXTREME_TIMESTAMPS:
+            with self.subTest(clock=stamp):
+                self.consume_unavailable(self.artifact.canonical_bytes, now=stamp)
+            with self.subTest(binding=stamp):
+                self.consume_unavailable(
+                    self.artifact.canonical_bytes,
+                    scope=replace(self.scope, decision_at=stamp))
+
+    def test_factory_wraps_datetime_overflow_in_contract_error(self):
+        for stamp in self.EXTREME_TIMESTAMPS:
+            with self.subTest(stamp=stamp):
+                observation, assessment = inputs()
+                observation["decision_at"] = stamp
+                with self.assertRaisesRegex(ContractViolation, "TIMESTAMP_INVALID"):
+                    build_context(observation, assessment)
+
+    def test_factory_refuses_canonical_payload_over_reader_limit(self):
+        with self.assertRaisesRegex(ContractViolation, "PAYLOAD_TOO_LARGE"):
+            build_context(*self.wide_inputs(768))
+
+    def test_validator_refuses_canonical_expansion_over_limit(self):
+        from research.options_estate import ptse_contract as contract
+        # Manufacture a malicious wire fixture through pure internal validators,
+        # not the public factory whose output bound is the behavior under test.
+        observation, assessment = self.wide_inputs(742)
+        observation = contract._observation(observation, sealed=False)
+        assessment = contract._assessment(assessment, observation, sealed=False)
+        canonical = canonical_json({
+            "schema_version": contract.SCHEMA,
+            "canonicalization": contract.CANONICALIZATION,
+            "observation": observation, "assessment": assessment,
+        })
+        raw = canonical.replace(b".000000Z", b"Z")
+        self.assertLessEqual(len(raw), contract.MAX_WIRE_BYTES)
+        self.assertGreater(len(canonical), contract.MAX_WIRE_BYTES)
+        with self.assertRaisesRegex(ContractViolation, "PAYLOAD_TOO_LARGE"):
+            validate_context(raw)
+
+
 if __name__ == "__main__":
     unittest.main()
