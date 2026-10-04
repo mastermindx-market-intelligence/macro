@@ -572,6 +572,55 @@ def test_case_7e_fable_checkpoint_and_wait_language_cannot_reintroduce_stops():
         assert _clause(stale) not in fable
 
 
+def test_case_7f_fable_quality_gate_runs_only_on_real_yield():
+    """The output-quality checklist must not become per-tool administrative work."""
+    core = _law_text(".claude/skills/fable-mode/SKILL.md")
+    engineering = _law_text(".claude/skills/fable-mode/references/engineering.md")
+    adapters = _law_text(".claude/skills/fable-mode/references/harness-adapters.md")
+
+    for clause in (
+        "pre-yield gate",
+        "only when actually yielding",
+        "after-every-tool",
+        "Stop-hook re-entry",
+    ):
+        assert _clause(clause) in core
+    assert _clause("do not repeatedly reload it as ceremony") in core
+    assert _clause(
+        "never rewrite unchanged program/ledger state merely because another turn occurred"
+    ) in core
+
+    assert _clause("do not run it after every tool call") in engineering
+    assert _clause("only when actually yielding/finalizing") in adapters
+    assert _clause("internal continuation carries no fake end token") in adapters
+
+
+def test_case_7g_fable_freshness_checks_are_material_not_per_tool():
+    """Freshness and anti-drift checks must protect effects without becoming ceremony."""
+    core = _law_text(".claude/skills/fable-mode/SKILL.md")
+    engineering = _law_text(".claude/skills/fable-mode/references/engineering.md")
+    adapters = _law_text(".claude/skills/fable-mode/references/harness-adapters.md")
+
+    for clause in (
+        "once at the start of a material cycle",
+        "Do not re-read the carrier before ordinary local reads, edits, tests, or each tool call",
+        "carrier-mutating / irreversible outward act",
+    ):
+        assert _clause(clause) in adapters
+
+    for clause in (
+        "do not rewrite an unchanged ledger because another tool call",
+        "at material recovery-risk boundaries",
+        "not after every small phase",
+        "Re-anchor when scope risk changes, not at every small phase",
+        "Completing an ordinary subtask or tool batch is not a reason to reload the full request",
+    ):
+        assert _clause(clause) in engineering
+
+    assert _clause("Do not run the full catalog after every small phase") in core
+    assert _clause("Re-run only when the material risk changes") in core
+
+
 # --------------------------------------------------------------------------------------
 # Case 8 — ACK/QUEUED mistaken for START/RUNNING (and every other rung confusion).
 # --------------------------------------------------------------------------------------
