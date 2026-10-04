@@ -261,6 +261,16 @@ def _terminal_dependency_probe(terminal_root: Path, sha: str) -> dict[str, Any]:
     return {"porcelain": porcelain, "toplevel": toplevel, "blobs": blobs}
 
 
+def _eager_import_lazy_code_identity_modules() -> None:
+    # lazily imported by later stages — census must see them in a fresh process
+    import engine.catalyst_tone  # noqa: F401
+    import engine.gdelt_client  # noqa: F401
+    import engine.master_brain  # noqa: F401
+    import engine.marketing.accounts  # noqa: F401
+    import engine.marketing.chart_render  # noqa: F401
+    import engine.marketing.logo_cache  # noqa: F401
+
+
 def _loaded_root_modules() -> dict[str, str]:
     root = ROOT.resolve()
     collected: dict[str, str] = {}
@@ -1157,6 +1167,7 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
     for path in TEST_PINNED_FILES:
         if _reviewed_blob_sha256(code_sha, path) != pinned_blobs[path]:
             raise ValueError(f"code_identity_not_at_reviewed_head:{path}")
+    _eager_import_lazy_code_identity_modules()
     code_files = _loaded_root_modules()
     digest = code_digest(code_files, pinned_blobs)
     _merge_receipt(attempt_path, code_digest=digest)
