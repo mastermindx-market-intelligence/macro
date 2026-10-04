@@ -533,7 +533,12 @@ def test_background_flag_does_not_excuse_a_hot_three_second_watcher():
 
 
 def test_explicit_shell_detach_is_also_nonblocking():
-    assert not _denied("gh run watch 31309720615 --interval 150 &")
+    d = _run("gh run watch 31309720615 --interval 150 &")
+    assert d and "CI WATCHER ARMED ASYNC" in (d.get("additionalContext") or "")
+    # The detached watcher, not a second direct read, owns the next observation.
+    second = _run("gh run view 31309720615")
+    assert second and second.get("permissionDecision") == "deny"
+    assert "REDUNDANT POLL" in second.get("permissionDecisionReason", "")
 
 
 def test_shell_and_and_is_not_mistaken_for_a_detach_marker():
@@ -769,7 +774,7 @@ def test_a_different_run_or_pr_is_a_different_shape(_poll_state):
 
 
 def test_the_window_self_clears(_poll_state):
-    """Time-based only: the binding denial expires without a manual reset."""
+    """The binding denial expires by time even without a material invalidator."""
     key = "pr-checks:6555"
     assert GUARD.poll_cooldown_nudge(key, now=1000.0) is None
     denied = GUARD.poll_cooldown_nudge(key, now=1001.0)
@@ -777,6 +782,55 @@ def test_the_window_self_clears(_poll_state):
     assert GUARD.poll_cooldown_nudge(
         key, now=1000.0 + GUARD.POLL_COOLDOWN_S + 1
     ) is None
+
+
+def test_pr_mutation_reopens_one_fresh_pr_view_but_not_check_polling(_poll_state):
+    """Metadata changed; PR view is stale, but a label edit did not change CI checks."""
+    assert not _denied("gh pr view 6555 --json state,mergeStateStatus")
+    assert _denied("gh pr view 6555 --json state,mergeStateStatus")
+    assert not _denied("gh pr checks 6555 --json name,bucket")
+    assert _denied("gh pr checks 6555 --json name,bucket")
+    assert not _denied("gh pr edit 6555 --add-label merge-on-green")
+    assert not _denied("gh pr view 6555 --json state,mergeStateStatus")
+    assert _denied("gh pr checks 6555 --json name,bucket")
+
+
+def test_unrelated_git_push_does_not_clear_the_shared_fleet_fence(_poll_state):
+    """A push in one worktree must not reopen polling for every sibling session."""
+    assert not _denied("gh pr checks 6555")
+    assert _denied("gh pr checks 6555")
+    assert not _denied("git push origin feature-branch")
+    assert _denied("gh pr checks 6555")
+
+
+def test_run_mutation_reopens_one_fresh_run_read(_poll_state):
+    assert not _denied("gh run view 33129766342")
+    assert _denied("gh run view 33129766342")
+    assert not _denied("gh run rerun 33129766342")
+    assert not _denied("gh run view 33129766342")
+
+
+def test_async_watcher_is_the_next_run_observation(_poll_state):
+    """Once a run watcher is armed, an immediate direct run-view is redundant."""
+    d = _run(
+        "gh run watch 33129766342 --interval 150",
+        run_in_background=True,
+    )
+    assert d and "CI WATCHER ARMED ASYNC" in (d.get("additionalContext") or "")
+    second = _run("gh run view 33129766342")
+    assert second and second.get("permissionDecision") == "deny"
+    assert "REDUNDANT POLL" in second.get("permissionDecisionReason", "")
+
+
+def test_async_pr_checks_watcher_is_the_next_pr_observation(_poll_state):
+    d = _run(
+        "gh pr checks 6555 --watch --interval 150",
+        run_in_background=True,
+    )
+    assert d and "CI WATCHER ARMED ASYNC" in (d.get("additionalContext") or "")
+    second = _run("gh pr checks 6555 --json name,bucket")
+    assert second and second.get("permissionDecision") == "deny"
+    assert "REDUNDANT POLL" in second.get("permissionDecisionReason", "")
 
 
 @pytest.mark.parametrize("cmd", [

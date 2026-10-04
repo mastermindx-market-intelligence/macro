@@ -155,6 +155,21 @@ POLL_SHAPES = (
 #: A write is never a poll, however often it repeats. `gh api ... --method POST` and
 #: the cancel/rerun paths are mutations that other shapes already govern.
 POLL_WRITE_RE = re.compile(r"(?:--method|-X)\s+(?:POST|PATCH|PUT|DELETE)\b|/cancel\b|/force-cancel\b|/rerun\b", re.I)
+#: Material self-mutations invalidate a prior status observation. Shape 7 is an
+#: anti-babysitting fence, never a claim that state cannot change after we push/edit.
+PR_MUTATION_RE = re.compile(
+    r"\bgh\s+pr\s+(?:edit|ready|merge|close|reopen|review|comment)\b[^|;&]*?(?P<id>\d+)",
+    re.I,
+)
+RUN_MUTATION_RE = re.compile(
+    r"\bgh\s+run\s+(?:rerun|cancel)\b[^|;&]*?(?P<id>\d+)"
+    r"|\bgh\s+api\b[^|;&]*/actions/runs/(?P<api_id>\d+)/(?:rerun|cancel|force-cancel)",
+    re.I,
+)
+RUN_WATCH_ID_RE = re.compile(r"\bgh\s+run\s+watch\s+(?P<id>\d+)\b", re.I)
+PR_WATCH_ID_RE = re.compile(
+    r"\bgh\s+pr\s+checks\s+(?P<id>\d+)\b[^|;&\n]*--watch\b", re.I
+)
 #: Shared across every worktree of this clone on purpose: the REST pool they are
 #: spending is one bucket, so two sibling sessions polling the same run alternately
 #: is the same waste as one session polling twice as fast.
@@ -174,18 +189,61 @@ def poll_shape(cmd: str):
     return None
 
 
+def _poll_state_path(key: str) -> str:
+    digest = hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
+    return os.path.join(POLL_STATE_DIR, f"{digest}.json")
+
+
+def clear_poll_cooldown_for_mutation(cmd: str):
+    """Forget only observations that an explicit GitHub mutation invalidates.
+
+    Shape 7 is shared across worktrees because the REST quota is shared. Do NOT clear
+    the whole fleet ledger on an unrelated git push: that would turn normal fleet
+    activity into a polling bypass. PR metadata mutations reopen one PR-view; run
+    mutations reopen one run read. Check-status observation stays with the watcher.
+    Fail open: this ledger is an efficiency fence, never lifecycle or authority state.
+    """
+    try:
+        keys = set()
+        for match in PR_MUTATION_RE.finditer(cmd):
+            pr = match.group("id")
+            keys.add(f"pr-view:{pr}")
+        for match in RUN_MUTATION_RE.finditer(cmd):
+            run_id = match.group("id") or match.group("api_id")
+            if run_id:
+                keys.update((f"run-view:{run_id}", f"run-api:{run_id}"))
+        for key in keys:
+            try:
+                os.unlink(_poll_state_path(key))
+            except FileNotFoundError:
+                pass
+    except Exception:
+        return
+
+
+def record_poll_observation(key: str, now: float | None = None):
+    """Record `key` as observed without treating an existing record as an error."""
+    now = time.time() if now is None else now
+    try:
+        os.makedirs(POLL_STATE_DIR, exist_ok=True)
+        with open(_poll_state_path(key), "w", encoding="utf-8") as fh:
+            json.dump({"at": now, "key": key}, fh)
+    except Exception:
+        return
+
+
 def poll_cooldown_nudge(key: str, now: float | None = None):
     """Deny reason for a repeat of `key` inside the cooldown, or None.
 
     The first read remains free, a different PR/run remains a different shape, and
-    writes are never polls. The Chairman's 2026-10-03 ruling closes the old advisory
+    writes are never polls. A material self-mutation clears the affected stale-read
+    fence before this check. The Chairman's 2026-10-03 ruling closes the old advisory
     loophole after repeated sessions burned full reasoning turns re-reading unchanged
     CI while a watcher was already armed. State failure still fails open."""
     now = time.time() if now is None else now
     try:
         os.makedirs(POLL_STATE_DIR, exist_ok=True)
-        digest = hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
-        path = os.path.join(POLL_STATE_DIR, f"{digest}.json")
+        path = _poll_state_path(key)
         last = 0.0
         try:
             with open(path, encoding="utf-8") as fh:
@@ -584,7 +642,12 @@ def main():
     if not isinstance(ti, dict):
         allow()
     cmd = str(ti.get("command") or "")
-    if "gh " not in cmd:
+    clean_cmd = strip_heredocs(cmd)
+
+    # Shape 7 is about unchanged external state, not an arbitrary timer. A material
+    # self-mutation makes the previous observation stale and re-opens one bounded read.
+    clear_poll_cooldown_for_mutation(clean_cmd)
+    if "gh " not in clean_cmd:
         allow()
 
     # Native blocking watches and hand-written CI sleep/poll loops are the same
@@ -592,7 +655,6 @@ def main():
     # 30-45 minute wait. The principal must launch exactly one async observer and
     # continue another lane. Tool-level background mode is preferred; a real single
     # shell '&' detach is also nonblocking (but '&&' is not).
-    clean_cmd = strip_heredocs(cmd)
     background = ti.get("run_in_background") is True
     watch_match = WATCH_RE.search(clean_cmd)
     watch_detached = bool(WATCH_DETACHED_RE.search(clean_cmd))
@@ -644,7 +706,7 @@ def main():
     repeat_reason = None
     try:
         # strip_heredocs FIRST: a heredoc body is DATA, not a command.
-        key = poll_shape(strip_heredocs(cmd))
+        key = poll_shape(clean_cmd)
         if key:
             repeat_reason = poll_cooldown_nudge(key)
     except Exception:
@@ -652,7 +714,17 @@ def main():
     if repeat_reason:
         deny(repeat_reason)
 
-    if background and (watch_match or ci_sleep_poll or loop_ci_poll):
+    async_wait = background or watch_detached or poll_detached
+    if async_wait and (watch_match or ci_sleep_poll or loop_ci_poll):
+        # Arming an asynchronous native/detached watcher is itself the observation
+        # transfer. Fence an immediate direct run-view even when no diagnostic read
+        # preceded the watcher, and tell the principal to spend the freed turn on work.
+        run_watch = RUN_WATCH_ID_RE.search(clean_cmd)
+        if run_watch:
+            record_poll_observation(f"run-view:{run_watch.group('id')}")
+        pr_watch = PR_WATCH_ID_RE.search(clean_cmd)
+        if pr_watch:
+            record_poll_observation(f"pr-checks:{pr_watch.group('id')}")
         allow(
             "CI WATCHER ARMED ASYNC: this background task is now the CI observation "
             "owner. Do not tail it, poll it, or spend a reasoning cycle waiting for it. "
