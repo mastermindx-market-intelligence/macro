@@ -8474,6 +8474,40 @@ jobs:
       - "tests/test_dt_contra_state.py"
       - "tests/test_gmi_history_integrity.py"
       - "tests/test_theme_graph_state.py"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v2.schema.json"
+      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
+      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
+      - "engine/ledger_lane.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/envelope.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/neuralweb/thematic_state.py"
+      - "engine/neuralweb/theme_state_adapter.py"
+      - "engine/neuralweb/theme_state_generation.py"
+      - "engine/neuralweb/theme_state_generation_reader.py"
+      - "engine/research_priority_ordering.py"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
+      - "engine/theme_graph/theme_state_production.py"
+      - "lib/pages.py"
+      - "scripts/build_state_of_themes.py"
+      - "scripts/build_thematic_state.py"
+      - "tests/fixtures/theme_state_owner/theme_crosswalk.yml"
+      - "tests/fixtures/theme_state_owner/theme_sources.yml"
+      - "tests/test_theme_phase_history_generation_filter.py"
+      - "tests/test_theme_state_generation.py"
+      - "tests/test_theme_state_generation_reader.py"
+      - "tests/test_theme_state_owner_adapter.py"
+      - "tests/test_theme_state_production.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
     # Regression guard for the two Neural-Web lobes frozen since 2026-07-07:
     #   1. dt_contra_state crash: build_dt_contra_state.py crashed on index.json (list root);
     #      fixed by isinstance(data, dict) guard — 8 tests covering the fix.
@@ -8490,13 +8524,15 @@ jobs:
         # pandas/numpy/pyyaml: both suites import their producers at collection time
         # (build_dt_contra_state → engine.dannytrades_chip → numpy/pandas;
         # build_subsector_membership → engine.basket_index → lib.config → yaml).
-        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema
+        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema jinja2
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
         run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
+      - name: GMI sealed owner, generation integrity, and read-only accepted publications
+        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_production.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py -q
 
   sa-w4-improvement-lanes:
     if: ${{ false }}
