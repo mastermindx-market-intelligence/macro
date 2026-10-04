@@ -264,12 +264,14 @@ only — a human/Opus reviewer owns visual taste.
   `.grok/hooks/sparse-worktree.json`, plus the always-trusted
   `~/.grok/hooks/` copy so an AionUi `grok-temp-*` workspace still runs it).
   Codex/Cursor call `python3 scripts/worktree_sparse.py auto` after their
-  harness has created a linked worktree. **Codex CI-wait parity is mechanical too:
-  `.codex/hooks.json` runs the same `.claude/hooks/gh_quota_guard.py` on
-  `PreToolUse` for `Bash`, including unified `exec_command` calls.** A Codex
-  principal therefore cannot start a foreground native CI watch or an immediate
-  repeat poll merely because Claude's PreToolUse surface is absent. Project hooks
-  still require trust of the exact checked-in definition. Grok's hook does the same when the
+  harness has created a linked worktree. **Trusted Codex projects get repository
+  CI-wait parity too:** `.codex/hooks.json` runs the same
+  `.claude/hooks/gh_quota_guard.py` on `PreToolUse` for `Bash`, including unified
+  `exec_command` calls. Codex project hooks are a defense-in-depth layer and, by
+  Codex design, are skipped when that worktree's project layer is untrusted. The local
+  fleet therefore also carries the machine-wide user hook for the universal foreground-
+  watch/sleep-loop gate; do not claim this checked-in hook protects an untrusted external
+  worktree until project trust is actually proven. Grok's hook does the same when the
   session already sits in one, and otherwise mints a sparse tree under
   `.grok/worktrees/<name>/` with `git worktree add --no-checkout` (Claude's
   pre-checkout shape) so an AionUi session never materializes the heavy trees.

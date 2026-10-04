@@ -33,12 +33,14 @@ HOOK = ROOT / ".claude" / "hooks" / "gh_quota_guard.py"
 CODEX_HOOKS = ROOT / ".codex" / "hooks.json"
 
 
-def test_codex_bash_pretooluse_is_bound_to_the_same_quota_guard():
-    """Codex principals must get the same mechanical CI-wait gate as Claude.
+def test_trusted_codex_project_bash_pretooluse_is_bound_to_the_same_quota_guard():
+    """Trusted Codex project layers carry the same repository CI-wait guard.
 
     The 2026-10-03 incident included a Codex principal spending 1,282 seconds in
-    one foreground `gh run watch`. Prose in AGENTS.md cannot prevent that shape;
-    the project-local Codex PreToolUse hook must invoke this exact guard.
+    one foreground `gh run watch`. Prose cannot prevent that shape. This pins the
+    checked-in defense-in-depth hook; Codex intentionally skips project-local hooks
+    when the worktree/project layer is untrusted, so machine-wide coverage is a
+    separate user-hook responsibility rather than something this test can claim.
     """
     config = json.loads(CODEX_HOOKS.read_text(encoding="utf-8"))
     groups = config["hooks"]["PreToolUse"]
