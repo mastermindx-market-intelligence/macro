@@ -1,4 +1,4 @@
-"""The regime-outlook COMPOSER (slice E1c, contract rev 3.2 §3, §6, Appendix A).
+"""The regime-outlook COMPOSER (slice E1c, contract rev 3.3 §3, §6, Appendix A).
 
 From the seven owners' bytes it builds the input record, the 30 evidence
 rows with their clocks, the ten state-family rows, the nine path cards,
@@ -813,6 +813,7 @@ CHANGE_KINDS: tuple[str, ...] = (
     "became_stale",
     "became_available",
     "became_unavailable",
+    "issues_changed",
     "clock_only",
     "mapping_version_changed",
     "unattributed",
@@ -877,16 +878,23 @@ def list_changes(baseline: Any, evidence: list) -> list[dict[str, Any]]:
        ``"became_available"``; ``b["status"]`` in
        ``("available", "stale", "partial")`` and ``c["status"]`` in
        ``("missing", "unknown_date", "future_dated")`` ->
-       ``"became_unavailable"``; ``b["status"]`` in
-       ``("available", "stale")`` and ``c["status"] == "partial"`` ->
-       ``"became_unavailable"``; otherwise ``"unattributed"``.
+       ``"became_unavailable"``; ``c["status"] == "partial"`` and
+       ``b["status"]`` in ``("missing", "unknown_date", "future_dated",
+       "stale")`` -> ``"became_available"`` (a partial row is readable;
+       the stale flag or the absence cleared); ``b["status"] ==
+       "available"`` and ``c["status"] == "partial"`` -> no kind here, the
+       row falls through to rule 4 (contract §19 C3); otherwise
+       ``"unattributed"``.
     3. same status in ``("missing", "unknown_date", "future_dated")``:
        ``"clock_only"`` when ``as_of`` differs, otherwise no entry.
     4. same status otherwise. Let ``changed`` = ``values`` or
        ``owner_verdict`` differ; ``verdict`` = ``owner_verdict`` differs;
-       ``moved`` = ``as_of`` differs; ``later`` = both ``as_of`` are
-       strings and ``c["as_of"] > b["as_of"]``. If nothing differs -> no
-       entry. When the current row's ``source["clock_semantics"]`` is
+       ``moved`` = ``as_of`` differs; ``later`` = ``_stamp_later`` (a
+       later New York day, or the same day and a later instant; a
+       precision-only change is never later). If values, verdict and
+       stamp all agree: ``"issues_changed"`` when the statuses differ
+       (``available`` -> ``partial`` with nothing else moved), otherwise
+       no entry. When the current row's ``source["clock_semantics"]`` is
        exactly ``"source_observation_date"``: not moved and changed ->
        ``"value_revised"``; later and verdict ->
        ``"owner_verdict_changed"``; later and changed ->
@@ -960,10 +968,12 @@ def list_changes(baseline: Any, evidence: list) -> list[dict[str, Any]]:
                 kind = "became_unavailable"
             elif bs in ("missing", "unknown_date", "future_dated") and cs == "partial":
                 kind = "became_available"
-            elif bs in ("available", "stale") and cs == "partial":
+            elif bs == "stale" and cs == "partial":
+                kind = "became_available"  # the stale flag cleared; the row is readable
+            elif bs == "available" and cs == "partial":
                 # A partial row still carries values and an owner verdict, so
-                # the move is judged by the data rules below, never labelled
-                # "became_unavailable".
+                # the move is judged by the data rules below (contract §19 C3);
+                # a pure status move is reported there as "issues_changed".
                 kind = None
             else:
                 kind = "unattributed"
@@ -993,6 +1003,15 @@ def list_changes(baseline: Any, evidence: list) -> list[dict[str, Any]]:
         moved = b["as_of"] != c["as_of"]
         later = _stamp_later(c["as_of"], b["as_of"])
         if not changed and not moved:
+            if b["status"] != c["status"]:
+                # available -> partial with values, verdict and stamp unchanged:
+                # the row acquired an issue (contract §3: statuses are detected).
+                entries.append({
+                    "evidence_id": rid,
+                    "change_kind": "issues_changed",
+                    "from": b_copy,
+                    "to": c_copy,
+                })
             continue
 
         clock_semantics = cur["clock_semantics"]

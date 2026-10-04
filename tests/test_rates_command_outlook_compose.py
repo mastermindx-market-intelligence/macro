@@ -1201,18 +1201,29 @@ def test_list_changes_status_transitions(baseline_status, current_status, kind):
 
 @pytest.mark.parametrize("baseline_status", ["available", "stale"])
 def test_list_changes_available_to_partial_is_judged_by_the_data_rules(baseline_status):
-    # Review r2 S5: a partial row still carries values, so the move is not
-    # "became_unavailable". Same values, same date -> nothing to report.
+    # Review r2 S5 / r3 S2: a partial row still carries values, so the move is
+    # never "became_unavailable". With values, verdict and stamp unchanged the
+    # status move itself is reported: stale -> partial is became_available (the
+    # stale flag cleared), available -> partial is issues_changed (§3: statuses).
     b = [_erow("a", {"v": 1}, None, baseline_status, "2026-10-02", semantics="source_observation_date")]
     c = [_erow("a", {"v": 1}, None, "partial", "2026-10-02", semantics="source_observation_date")]
-    assert rcc.list_changes(_baseline(b), c) == []
-    # A later observation with a new value is observation_advanced.
+    status_only = {"available": "issues_changed", "stale": "became_available"}[baseline_status]
+    assert [e["change_kind"] for e in rcc.list_changes(_baseline(b), c)] == [status_only]
+    # Snapshot-clock rows: the same status-only move reports the same kind.
+    b_snap = [_erow("a", {"v": 1}, None, baseline_status, "2026-10-02")]
+    c_snap = [_erow("a", {"v": 1}, None, "partial", "2026-10-02")]
+    assert [e["change_kind"] for e in rcc.list_changes(_baseline(b_snap), c_snap)] == [status_only]
+    # With data moving too: from available the data rules decide (a later
+    # observation with a new value is observation_advanced; same date, new value
+    # is a revision); from stale the cleared flag still leads, exactly as a
+    # stale -> available move does (rule 2 precedes rule 4).
+    advanced = {"available": "observation_advanced", "stale": "became_available"}[baseline_status]
+    revised = {"available": "value_revised", "stale": "became_available"}[baseline_status]
     c2 = [_erow("a", {"v": 2}, None, "partial", "2026-10-03", semantics="source_observation_date")]
     out = rcc.list_changes(_baseline(b), c2)
-    assert [e["change_kind"] for e in out] == ["observation_advanced"]
-    # Same date, new value is a revision.
+    assert [e["change_kind"] for e in out] == [advanced]
     c3 = [_erow("a", {"v": 2}, None, "partial", "2026-10-02", semantics="source_observation_date")]
-    assert [e["change_kind"] for e in rcc.list_changes(_baseline(b), c3)] == ["value_revised"]
+    assert [e["change_kind"] for e in rcc.list_changes(_baseline(b), c3)] == [revised]
     assert "became_unavailable" not in {e["change_kind"] for e in out}
 
 
@@ -1374,7 +1385,7 @@ def test_list_changes_emits_only_kinds_in_change_kinds():
     assert {e["change_kind"] for e in out}.issubset(set(rcc.CHANGE_KINDS))
 
 
-def test_change_kinds_is_the_nine_word_tuple_literally():
+def test_change_kinds_is_the_ten_word_tuple_literally():
     assert rcc.CHANGE_KINDS == (
         "observation_advanced",
         "value_revised",
@@ -1382,6 +1393,7 @@ def test_change_kinds_is_the_nine_word_tuple_literally():
         "became_stale",
         "became_available",
         "became_unavailable",
+        "issues_changed",
         "clock_only",
         "mapping_version_changed",
         "unattributed",

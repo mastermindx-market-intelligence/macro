@@ -384,7 +384,8 @@ One workflow: **Now → What changed → Paths → History → Exposures → Wat
 - **What changed.** Differences between this projection and its `baseline`, classified as
   `observation_advanced`, `value_revised` (same reading date, different value — a source
   revision), `owner_verdict_changed`, `became_stale`, `became_available`, `became_unavailable`,
-  `clock_only`, `mapping_version_changed`, or `unattributed` (the value changed but its source
+  `clock_only`, `issues_changed` (an `available` row became `partial` with its values, verdict and stamp
+  unchanged — it acquired an issue), `mapping_version_changed`, or `unattributed` (the value changed but its source
   date is not published). A revision, a late print or a clock-only change is never described as a
   regime transition.
   **Baseline rule.** The baseline is the newest committed projection whose completed US session
@@ -847,7 +848,7 @@ mapping stays `VERDICT_MAPPING_V2`.
 |---|---|---|
 | C1 | §3 clock rule: a plain date stamp is a New York calendar day; `future_dated` and `age_calendar_days` use the New York date of the cutoff; a precision-only stamp change is never "later". | Between 00:00Z and the New York midnight a next-day stamp was read as current, against the information boundary. |
 | C2 | §6: a `previous` from a later completed session yields an absent baseline, reason `previous_from_later_session`; carry-forward is only for a same-session rebuild. | The §6 rule allowed carry-forward only within the same session; the composer had carried from a later one. |
-| C3 | What-changed classification: a row that moves from `available`/`stale` to `partial` is judged by the data rules (`observation_advanced` / `value_revised` / `owner_verdict_changed` / `clock_only`), and a row that moves from a non-data status to `partial` is `became_available`. | A partial row still carries its values and verdict; `became_unavailable` was a label the contract never defined for it. |
+| C3 | What-changed classification: a row that moves from `available` to `partial` is judged by the data rules (observation-clock rows: `observation_advanced` / `value_revised` / `owner_verdict_changed` / `clock_only`; snapshot-clock rows: `unattributed` / `clock_only`); when its values, verdict and stamp are all unchanged the status move itself is the new kind `issues_changed`. A row that moves from `stale` or from a non-data status to `partial` is `became_available`. The change-kind list is now ten words. | A partial row still carries its values and verdict, so `became_unavailable` was a label the contract never defined for it; and §3 says statuses are detected, so a pure status move may not vanish from "what changed". |
 
 ## Appendix A — `VERDICT_MAPPING_V2`
 
