@@ -529,17 +529,18 @@ def test_index_gex_history_in_data_dirs_not_default():
 
 
 def test_index_gex_history_uses_a_store_sized_min_files_floor():
-    """The 100-file default would refuse this store forever — it is exactly 4 root
-    parquets plus a manifest. The floor is 5, i.e. ALL FOUR ROOTS AND the manifest: a
-    floor of 4 would have passed a three-roots-plus-manifest tree, which is exactly the
-    partial rebuild this guard exists to refuse."""
+    """The 100-file default would refuse this store forever. _uploadable drops
+    _manifest.json before the floor, so the count is uploadable parquets: the four
+    roots SPY, QQQ, IWM, and DIA. The floor is 4. Three uploadable parquets is the
+    partial rebuild this guard refuses. Five counted the manifest that is already
+    excluded."""
     from scripts.publish_r2 import _DATA_DIR_MIN_FILES, _DATA_DIR_MIN_FILES_OVERRIDE
-    assert _DATA_DIR_MIN_FILES_OVERRIDE["index_gex_history"] == 5
+    assert _DATA_DIR_MIN_FILES_OVERRIDE["index_gex_history"] == 4
     assert _DATA_DIR_MIN_FILES_OVERRIDE["index_gex_history"] < _DATA_DIR_MIN_FILES
-    # a real store (4 roots + manifest) syncs
-    assert _data_dir_syncable("index_gex_history", 5, total_bytes=846_000)[0]
-    # three roots + manifest is a PARTIAL rebuild and must not
-    ok, why = _data_dir_syncable("index_gex_history", 4, total_bytes=846_000)
+    # four uploadable root parquets (manifest already excluded) sync
+    assert _data_dir_syncable("index_gex_history", 4, total_bytes=846_000)[0]
+    # three uploadable parquets is a PARTIAL rebuild and must not
+    ok, why = _data_dir_syncable("index_gex_history", 3, total_bytes=846_000)
     assert not ok and "partial checkout" in why
     ok, why = _data_dir_syncable("index_gex_history", 2, total_bytes=846_000)
     assert not ok and "partial checkout" in why
@@ -553,11 +554,11 @@ def test_index_gex_history_has_the_deep_history_fences():
                                     _append_only_guarded)
     assert "index_gex_history" in _APPEND_ONLY_DIRS
     assert _DATA_DIR_MIN_BYTES["index_gex_history"] == 600_000
-    # a one-root rebuild (~210 KB + manifest) is under the floor even with 5 files
-    ok, why = _data_dir_syncable("index_gex_history", 5, total_bytes=220_000)
+    # under the byte floor even when all four uploadable parquets are present
+    ok, why = _data_dir_syncable("index_gex_history", 4, total_bytes=220_000)
     assert not ok and "shallow rebuild" in why
-    # the real store clears it
-    assert _data_dir_syncable("index_gex_history", 5, total_bytes=846_000)[0]
+    # the real four-parquet store clears it; the manifest is not in this total
+    assert _data_dir_syncable("index_gex_history", 4, total_bytes=846_000)[0]
     # per-file: a shorter local parquet must never clobber the R2 object
     assert _append_only_guarded("index_gex_history", 60_000, 210_000)
     assert not _append_only_guarded("index_gex_history", 212_000, 210_000)
@@ -589,6 +590,18 @@ def _index_history_files(directory: Path, n_files: int, each: int) -> None:
     (directory / "_manifest.json").write_text("{}", encoding="utf-8")
 
 
+def _write_index_root_parquets(directory: Path, names: tuple[str, ...], each: int) -> None:
+    """Exact root parquets plus the collector manifest. The manifest is on disk
+    and excluded from the uploadable set before the file and byte floors."""
+    directory.mkdir(parents=True, exist_ok=True)
+    for name in names:
+        (directory / f"{name}.parquet").write_bytes(b"x" * each)
+    (directory / "_manifest.json").write_text("{}", encoding="utf-8")
+
+
+_INDEX_HISTORY_ROOTS = ("SPY", "QQQ", "IWM", "DIA")
+
+
 def _patch_publish_roots(monkeypatch, tmp_path: Path):
     import lib.config as config
     import scripts.publish_r2 as pr2
@@ -601,6 +614,64 @@ def _patch_publish_roots(monkeypatch, tmp_path: Path):
     )
     monkeypatch.setenv("R2_BUCKET", "test-bucket")
     return pr2
+
+
+def _publish_index_roots(tmp_path, monkeypatch, names: tuple[str, ...], each: int):
+    pr2 = _patch_publish_roots(monkeypatch, tmp_path)
+    store = tmp_path / "data" / "index_gex_history"
+    _write_index_root_parquets(store, names, each)
+    s3 = _FakeS3()
+    monkeypatch.setattr(pr2, "_client", lambda *a, **k: s3)
+    monkeypatch.delenv("INDEX_GEX_HISTORY_STORE", raising=False)
+    return pr2, s3
+
+
+def test_index_gex_history_four_root_parquets_upload_and_do_not_skip(tmp_path, monkeypatch, caplog):
+    """SPY, QQQ, IWM, DIA plus _manifest.json, each parquet large enough that the
+    four uploadable files clear 600 KB. The manifest stays out of the delta pass.
+    All four keys upload and none are content-hash skipped."""
+    pr2, s3 = _publish_index_roots(tmp_path, monkeypatch, _INDEX_HISTORY_ROOTS, 200_000)
+    with caplog.at_level("INFO", logger="publish_r2"):
+        assert pr2.publish(["index_gex_history"]) == 0
+    assert sorted(s3.uploaded) == [
+        "index_gex_history/DIA.parquet",
+        "index_gex_history/IWM.parquet",
+        "index_gex_history/QQQ.parquet",
+        "index_gex_history/SPY.parquet",
+    ]
+    assert not any(key.endswith("_manifest.json") for key in s3.uploaded)
+    assert "dir skipped" not in caplog.text
+    assert "4 uploaded, 0 unchanged, 0 failed" in caplog.text
+    doc = json.loads(s3.put_bodies[0])
+    assert doc["count"] == 4
+    assert doc["files"] == ["DIA.parquet", "IWM.parquet", "QQQ.parquet", "SPY.parquet"]
+
+
+def test_index_gex_history_three_roots_plus_manifest_skips_with_zero_uploads(
+        tmp_path, monkeypatch, capsys):
+    """Exactly three root parquets plus the manifest is under the uploadable floor.
+    The directory is skipped and nothing is uploaded, including the manifest."""
+    pr2, s3 = _publish_index_roots(
+        tmp_path, monkeypatch, ("SPY", "QQQ", "IWM"), 200_000)
+    assert pr2.publish(["index_gex_history"]) == 0
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+    err = capsys.readouterr().out
+    assert "dir skipped" in err
+    assert "partial checkout" in err
+
+
+def test_index_gex_history_four_roots_under_byte_floor_still_refuses(
+        tmp_path, monkeypatch, capsys):
+    """The file floor is not a substitute for the 600 KB floor. Four roots plus
+    the manifest still refuse when the uploadable bytes are short."""
+    pr2, s3 = _publish_index_roots(tmp_path, monkeypatch, _INDEX_HISTORY_ROOTS, 100_000)
+    assert pr2.publish(["index_gex_history"]) == 0
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+    err = capsys.readouterr().out
+    assert "dir skipped" in err
+    assert "shallow rebuild" in err
 
 
 def test_index_gex_history_store_override_is_selected_dir_only(tmp_path, monkeypatch):

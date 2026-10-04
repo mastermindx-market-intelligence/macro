@@ -355,7 +355,7 @@ class TestReliabilityTable:
         """n_eff equals sum of weights in each bin."""
         pred = np.array([0.1, 0.2, 0.8, 0.9])
         y    = np.array([0.0, 0.0, 1.0, 1.0])
-        w    = np.array([1.0, 2.0, 3.0, 4.0])
+        w    = np.array([0.1, 0.2, 0.3, 0.4])
         table = reliability_table(pred, y, weights=w, n_bins=2)
         total_n_eff = sum(row["n_eff"] for row in table)
         assert total_n_eff == pytest.approx(float(w.sum()), abs=1e-6)
@@ -1363,12 +1363,10 @@ class TestInvalidRequestedFoldCannotFit:
     ):
         """Any invalid requested fold geometry is terminal, not a skipped fold.
 
-        The trainer must convert an invalid `_group_fold_splits` GeometryError
-        into an explicit no-fit health receipt BEFORE any estimator or
-        calibrator is fitted. We monkeypatch validate_population_partition to
-        a no-op so the dense synthetic fixture — whose label windows naturally
-        span the dense session grid — cannot trip the partition gate ahead of
-        the fold gate. That isolates the gate under test.
+        `_group_fold_splits` still rejects k_folds=0 itself. The production
+        path no longer reaches that helper: after maturity and the existing
+        geometry law, a receipt without the frozen v2 CPCV blocks is an
+        explicit no-fit before features or a model.
         """
         import scripts.ops_train_flow_score as trainer
         from lib.flow_score_geometry import validate_population_partition as _vp
@@ -1460,6 +1458,8 @@ class TestInvalidRequestedFoldCannotFit:
         )
         result = trainer.train_bucket("8_90", cfg, flow_dir, dry_run=False)
         assert result["health"] == "no_fit"
-        assert "fold_geometry_invalid" in result["method_geometry_reason"]
+        # Production selection no longer reaches _group_fold_splits. A receipt
+        # without the frozen v2 CPCV blocks is a no-fit before a model.
+        assert "frozen_cpcv_geometry_missing" in result["method_geometry_reason"]
         assert estimator_calls == []
         assert calibrator_calls == []
