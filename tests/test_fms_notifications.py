@@ -932,6 +932,136 @@ class _HtmlResponse:
 # ---------------------------------------------------------------------------
 
 
+class TestFederalRegisterTransportRecovery:
+    @staticmethod
+    def _api_row(*, pdf_url: str = "https://www.govinfo.gov/content/pkg/FR-2026-04-22/pdf/2026-07278.pdf"):
+        return {
+            "document_number": "2026-07278",
+            "raw_text_url": "https://www.federalregister.gov/documents/full_text/text/2026/04/22/2026-07278.txt",
+            "pdf_url": pdf_url,
+            "publication_date": "2026-04-22",
+            "title": "Arms Sales Notification",
+            "citation": "91 FR 17629",
+        }
+
+    def test_unseen_fr_redirect_uses_shape_validated_api_govinfo_html(self, tmp_path: Path) -> None:
+        content = _read_bytes("fr/2026-07278.txt")
+        calls = []
+
+        class _Session:
+            def get(self, url, **kwargs):
+                calls.append(url)
+                if "documents.json" in url:
+                    return _JsonResponse({"results": [TestFederalRegisterTransportRecovery._api_row()]})
+                if url.endswith("2026-07278.txt"):
+                    response = _TextResponse(b"", status_code=302)
+                    response.headers["Location"] = "https://unblock.federalregister.gov/challenge"
+                    return response
+                if url == "https://www.govinfo.gov/content/pkg/FR-2026-04-22/html/2026-07278.htm":
+                    return _HtmlResponse(content)
+                raise AssertionError(f"unexpected fetch: {url}")
+
+        rc = live.run_fms_acquisition(
+            root=tmp_path,
+            store=None,
+            session=_Session(),
+            observed_at=RECEIPT_AT,
+            staged_dir=(FIXTURES / "dsca").resolve(),
+            publication_from="2026-01-01",
+            publication_through="2026-08-25",
+        )
+        assert rc == 0
+        assert "https://www.govinfo.gov/content/pkg/FR-2026-04-22/html/2026-07278.htm" in calls
+        rows = [
+            json.loads(line)
+            for line in (tmp_path / "data/government_revenue/fms_observations.jsonl").read_text().splitlines()
+            if line.strip()
+        ]
+        fr_rows = [row for row in rows if row["source_surface"] == "federal_register"]
+        assert len(fr_rows) == 1
+        assert fr_rows[0]["source_url"] == "https://www.govinfo.gov/content/pkg/FR-2026-04-22/html/2026-07278.htm"
+        assert fr_rows[0]["transport"] == "cli"
+
+    def test_non_redirect_raw_failure_does_not_fallback(self, tmp_path: Path) -> None:
+        content = _read_bytes("fr/2026-07278.txt")
+        calls = []
+
+        class _Session:
+            def get(self, url, **kwargs):
+                calls.append(url)
+                if "documents.json" in url:
+                    return _JsonResponse({"results": [TestFederalRegisterTransportRecovery._api_row()]})
+                if url.endswith("2026-07278.txt"):
+                    return _TextResponse(b"not found", status_code=404)
+                if "govinfo.gov" in url:
+                    return _HtmlResponse(content)
+                raise AssertionError(f"unexpected fetch: {url}")
+
+        rc = live.run_fms_acquisition(
+            root=tmp_path,
+            store=None,
+            session=_Session(),
+            observed_at=RECEIPT_AT,
+            staged_dir=(FIXTURES / "dsca").resolve(),
+            publication_from="2026-01-01",
+            publication_through="2026-08-25",
+        )
+        assert rc == 1
+        assert not any("govinfo.gov" in url for url in calls)
+
+
+    @pytest.mark.parametrize(
+        "pdf_url",
+        [
+            "https://evil.example/content/pkg/FR-2026-04-22/pdf/2026-07278.pdf",
+            "https://www.govinfo.gov/content/pkg/FR-2026-04-22/pdf/2026-99999.pdf",
+            "https://www.govinfo.gov/content/pkg/FR-2026-04-21/pdf/2026-07278.pdf",
+            "https://www.govinfo.gov/content/pkg/not-fr/pdf/2026-07278.pdf",
+        ],
+    )
+    def test_govinfo_fallback_requires_api_bound_official_shape(self, pdf_url: str) -> None:
+        with pytest.raises(live.FmsFetchRefused):
+            live.fr_govinfo_html_url(TestFederalRegisterTransportRecovery._api_row(pdf_url=pdf_url))
+
+    def test_retained_fr_document_satisfies_current_sweep_without_refetch_or_restamp(self, tmp_path: Path) -> None:
+        original = _fr_observation(
+            "2026-07278",
+            "https://www.federalregister.gov/documents/full_text/text/2026/04/22/2026-07278.txt",
+        )
+        data_dir = tmp_path / "data" / "government_revenue"
+        data_dir.mkdir(parents=True)
+        (data_dir / "fms_observations.jsonl").write_text(
+            json.dumps(original, sort_keys=True, separators=(",", ":")) + "\n",
+            encoding="utf-8",
+        )
+
+        class _Session:
+            def get(self, url, **kwargs):
+                if "documents.json" in url:
+                    return _JsonResponse({"results": [TestFederalRegisterTransportRecovery._api_row()]})
+                raise AssertionError(f"retained FR document must not be refetched: {url}")
+
+        rc = live.run_fms_acquisition(
+            root=tmp_path,
+            store=None,
+            session=_Session(),
+            observed_at="2026-10-04T06:10:00Z",
+            staged_dir=(FIXTURES / "dsca").resolve(),
+            publication_from="2026-01-01",
+            publication_through="2026-10-04",
+        )
+        assert rc == 0
+        rows = [
+            json.loads(line)
+            for line in (data_dir / "fms_observations.jsonl").read_text().splitlines()
+            if line.strip()
+        ]
+        fr_rows = [row for row in rows if row["source_surface"] == "federal_register"]
+        assert fr_rows == [original]
+        graph = json.loads((data_dir / "fms_case_graph.json").read_text())
+        assert graph["coverage"]["reconciliation"]["denominator_transmittals"] == 1
+
+
 class TestParseSurveyInvariants:
     def test_state_value_grammar_classes(self) -> None:
         # Amended spec §5 grammar, five receipted sentence classes; four of
