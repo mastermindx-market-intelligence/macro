@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BSY-BULL-20260701",
-  "asof": "2026-10-03",
+  "asof": "2026-10-04",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 44.5,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.137,
     "dist_to_t1_r": 1.363,
     "dist_to_t2_r": 2.863,
-    "horizon_pct_used": 186.7,
+    "horizon_pct_used": 188.9,
     "p1": 0.0911,
     "p2": 0.0455,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-08",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 84,
-  "tau": 1.8667
+  "days_elapsed": 85,
+  "tau": 1.8889
 }
