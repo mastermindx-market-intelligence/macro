@@ -103,50 +103,44 @@
       "zh": null
     },
     "coverage_ratio": 1.0,
-    "degraded": [
-      "tga",
-      "net_issuance",
-      "withheld_taxes"
-    ],
-    "reasons": [
-      "worst_required_source_freshness=LATE_WITHIN_TOLERANCE"
-    ],
+    "degraded": [],
+    "reasons": [],
     "required": [
       {
         "component_id": "tga",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "Treasury General Account (TGA) balance",
           "zh": "财政部一般账户（TGA）余额"
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-24",
-        "status": "PARTIAL"
+        "source_asof": "2026-10-01",
+        "status": "PRESENT"
       },
       {
         "component_id": "net_issuance",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "Net Treasury issuance",
           "zh": "美国国债净发行"
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-24",
-        "status": "PARTIAL"
+        "source_asof": "2026-10-01",
+        "status": "PRESENT"
       },
       {
         "component_id": "withheld_taxes",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "Withheld income & employment-tax deposits",
           "zh": "预扣所得税与雇佣税存款"
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-24",
-        "status": "PARTIAL"
+        "source_asof": "2026-10-01",
+        "status": "PRESENT"
       },
       {
         "component_id": "auction_demand",
@@ -157,7 +151,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-24",
+        "source_asof": "2026-10-01",
         "status": "PRESENT"
       },
       {
@@ -186,19 +180,19 @@
       },
       {
         "component_id": "bond_desk_state",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "Bond-desk health/cycle-phase state",
           "zh": "债券台面健康/周期阶段状态"
         },
         "null_reason": null,
         "required": false,
-        "source_asof": "2026-09-25",
-        "status": "PARTIAL"
+        "source_asof": "2026-10-02",
+        "status": "PRESENT"
       }
     ],
-    "state": "LATE_WITHIN_TOLERANCE",
-    "worst_freshness": "LATE_WITHIN_TOLERANCE"
+    "state": "CURRENT",
+    "worst_freshness": "CURRENT"
   },
   "axes": {
     "items": []
@@ -207,25 +201,25 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": 924627.0,
-        "delta": -32782.0,
+        "current_value": 893699.0,
+        "delta": -42901.0,
         "metric_id": "tga_level",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 957409.0
+        "prior_value": 936600.0
       },
       {
-        "current_value": 774097.0,
-        "delta": -2357.0,
+        "current_value": 760604.0,
+        "delta": 69269.0,
         "metric_id": "net_issuance_sum_13w",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 776454.0
+        "prior_value": 691335.0
       },
       {
-        "current_value": 2.6375,
+        "current_value": 2.795,
         "delta": 0.02,
         "metric_id": "auction_bid_to_cover_recent_avg",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 2.6175
+        "prior_value": 2.775
       },
       {
         "current_value": 13.8,
@@ -235,16 +229,16 @@
         "prior_value": 13.8
       },
       {
-        "current_value": 84.0,
-        "delta": -1.0,
+        "current_value": 78.0,
+        "delta": -3.0,
         "metric_id": "bond_desk_health_score_level",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 85.0
+        "prior_value": 81.0
       }
     ],
     "null_reason": null,
-    "prior_effective_date": "2026-09-23",
-    "prior_generation_id": "national_debt_liabilities-US-cf9e1ccbea646555",
+    "prior_effective_date": "2026-09-30",
+    "prior_generation_id": "national_debt_liabilities-US-b319169470c3db5b",
     "prior_method_version": "national_debt_liabilities.compose.v1",
     "status": "PRESENT"
   },
@@ -252,14 +246,14 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "national_debt_liabilities-US-3dfc6a34fc4a750e"
+    "predecessor_generation_id": "national_debt_liabilities-US-18966041a1cc946f"
   },
   "drivers": {
     "balance_sheet": [
       {
         "coverage_state": "PRESENT",
         "driver_id": "tga_impulse_13w",
-        "impact_magnitude": 53158.0,
+        "impact_magnitude": 123112.0,
         "impact_sign": 1,
         "label": {
           "en": "TGA impulse (13w)",
@@ -268,12 +262,12 @@
         "note": "positive = TGA building (reserve drain); negative = TGA draining (reserve injection) -- TGA's own placement here is a near-literal fit (it IS Treasury's own account balance)",
         "owner_field": "treasury_dts.tga.tga_mn",
         "unit": "usd_mn",
-        "value": 53158.0
+        "value": 123112.0
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "net_issuance_sum_13w",
-        "impact_magnitude": 774097.0,
+        "impact_magnitude": 760604.0,
         "impact_sign": 1,
         "label": {
           "en": "Net issuance (13w sum)",
@@ -282,12 +276,12 @@
         "note": "positive = net issuer over the trailing 13 weeks; bucket reuse, see driver_bucket_naming_note",
         "owner_field": "treasury_dts.net_issuance.net_issuance_mn",
         "unit": "usd_mn",
-        "value": 774097.0
+        "value": 760604.0
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "net_issuance_pace_delta_4w_vs_13w_avg_daily",
-        "impact_magnitude": 6882.5962,
+        "impact_magnitude": 8019.0714,
         "impact_sign": -1,
         "label": {
           "en": "Issuance pace delta (4w vs 13w)",
@@ -296,12 +290,12 @@
         "note": "positive = issuance pace accelerating; bucket reuse, see driver_bucket_naming_note",
         "owner_field": "treasury_dts.net_issuance.net_issuance_mn",
         "unit": "usd_mn_per_day",
-        "value": -6882.5962
+        "value": -8019.0714
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "auction_demand_spread_recent_vs_baseline",
-        "impact_magnitude": 0.165337,
+        "impact_magnitude": 0.009898,
         "impact_sign": -1,
         "label": {
           "en": "Auction demand spread",
@@ -310,12 +304,12 @@
         "note": "positive = recent demand stronger than the trailing-year baseline; bucket reuse, see driver_bucket_naming_note",
         "owner_field": "treasury_auctions.bid_to_cover",
         "unit": "bid_to_cover_ratio_pts",
-        "value": -0.165337
+        "value": -0.009898
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "withheld_taxes_yoy_4w",
-        "impact_magnitude": 4.5779,
+        "impact_magnitude": 1.2495,
         "impact_sign": 1,
         "label": {
           "en": "Withheld-tax revenue YoY (4w)",
@@ -324,14 +318,14 @@
         "note": "positive = real-economy wage/employment revenue strengthening YoY; bucket reuse, see driver_bucket_naming_note",
         "owner_field": "treasury_dts.withheld_taxes.withheld_tax_mn",
         "unit": "percent",
-        "value": 4.5779
+        "value": 1.2495
       }
     ],
     "rate_side": [
       {
         "coverage_state": "PRESENT",
         "driver_id": "auction_latest_high_yield",
-        "impact_magnitude": 5.085,
+        "impact_magnitude": 3.956,
         "impact_sign": 1,
         "label": {
           "en": "Latest auction high yield",
@@ -340,7 +334,7 @@
         "note": "bucket reuse: published under drivers.rate_side because the contract's driver bucket pair is fixed as rate_side/balance_sheet -- see the driver_bucket_naming_note implication",
         "owner_field": "treasury_auctions.high_yield",
         "unit": "percent",
-        "value": 5.085
+        "value": 3.956
       },
       {
         "coverage_state": "PRESENT",
@@ -373,16 +367,16 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-30T03:57:40Z",
-    "calculation_as_of": "2026-09-24",
-    "code_version": "89eb98edc05e795d74f939396e868b2023fe7938",
-    "content_sha256": "6b94c9d62ad25da264e672366f714bf215b3900944a7ba21b997d4eca0bfd965",
-    "generation_id": "national_debt_liabilities-US-6b94c9d62ad25da2",
+    "built_at": "2026-10-03T17:06:57Z",
+    "calculation_as_of": "2026-10-01",
+    "code_version": "34a3b19628ca449fe8c10d108c1661a4e34272fa",
+    "content_sha256": "c7517e9b7d197d66295b1547a2b4d0db76dcb7cb9bbd7e7c5395c3561cb812f1",
+    "generation_id": "national_debt_liabilities-US-c7517e9b7d197d66",
     "producer": "engine.market_os.macro_workspaces.national_debt",
     "rendered_at": null
   },
   "headline": {
-    "effective_date": "2026-09-24",
+    "effective_date": "2026-10-01",
     "hysteresis": {
       "applied": false,
       "band": 0.0,
@@ -406,7 +400,7 @@
       "y_axis_id": null
     },
     "prior_state": {
-      "effective_date": "2026-09-23",
+      "effective_date": "2026-09-30",
       "method_version": "national_debt_liabilities.compose.v1",
       "state_id": null
     },
@@ -442,7 +436,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -465,15 +459,15 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
         "horizon": "current",
         "implication_id": "tga_impulse_read",
         "text": {
-          "en": "The TGA is building (a net reserve drain) over the trailing 13 weeks (+53158 $mn).",
-          "zh": "过去13周TGA余额上升（净抽走准备金）（变化+53158百万美元）。"
+          "en": "The TGA is building (a net reserve drain) over the trailing 13 weeks (+123112 $mn).",
+          "zh": "过去13周TGA余额上升（净抽走准备金）（变化+123112百万美元）。"
         },
         "trace_ref": "data/treasury/tga.parquet"
       },
@@ -488,15 +482,15 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
         "horizon": "current",
         "implication_id": "issuance_pressure_read",
         "text": {
-          "en": "net issuance over the trailing 13 weeks reads +774,097 $mn, with the trailing-4-week daily pace running -6883 $mn/day against the trailing-13-week pace.",
-          "zh": "近13周净发行合计为+774,097百万美元，近4周日均节奏较近13周日均节奏变化-6883百万美元/日。"
+          "en": "net issuance over the trailing 13 weeks reads +760,604 $mn, with the trailing-4-week daily pace running -8019 $mn/day against the trailing-13-week pace.",
+          "zh": "近13周净发行合计为+760,604百万美元，近4周日均节奏较近13周日均节奏变化-8019百万美元/日。"
         },
         "trace_ref": "data/treasury/net_issuance.parquet"
       },
@@ -511,15 +505,15 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
         "horizon": "current",
         "implication_id": "revenue_nowcast_read",
         "text": {
-          "en": "Withheld income & employment-tax receipts (a real-economy wage/employment nowcast) read +4.6% year-over-year on a trailing 4-week sum.",
-          "zh": "预扣所得税与雇佣税收入（实体经济工资/就业的高频读数）近4周合计同比读数为+4.6%。"
+          "en": "Withheld income & employment-tax receipts (a real-economy wage/employment nowcast) read +1.2% year-over-year on a trailing 4-week sum.",
+          "zh": "预扣所得税与雇佣税收入（实体经济工资/就业的高频读数）近4周合计同比读数为+1.2%。"
         },
         "trace_ref": "data/treasury/withheld_taxes.parquet"
       },
@@ -534,15 +528,15 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
         "horizon": "current",
         "implication_id": "auction_demand_read",
         "text": {
-          "en": "the recent bid-to-cover average reads 2.64, -0.165 versus the trailing-year baseline.",
-          "zh": "近期投标倍数均值为2.64，较近一年基准变化-0.165。"
+          "en": "the recent bid-to-cover average reads 2.79, -0.010 versus the trailing-year baseline.",
+          "zh": "近期投标倍数均值为2.79，较近一年基准变化-0.010。"
         },
         "trace_ref": "data/treasury_auctions/auctions.parquet"
       },
@@ -557,7 +551,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -580,15 +574,15 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
         "horizon": "current",
         "implication_id": "bond_desk_passthrough_read",
         "text": {
-          "en": "Bond-desk coverage state: health healthy (84/100), cycle phase late -- a coverage read, not a forecast this composer originates.",
-          "zh": "债券台面覆盖状态：健康度healthy（84/100），周期阶段late——此为覆盖读数，并非本组合器自行给出的预测。"
+          "en": "Bond-desk coverage state: health healthy (78/100), cycle phase recession -- a coverage read, not a forecast this composer originates.",
+          "zh": "债券台面覆盖状态：健康度healthy（78/100），周期阶段recession——此为覆盖读数，并非本组合器自行给出的预测。"
         },
         "trace_ref": "data/bonds/latest.json"
       },
@@ -602,7 +596,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -624,7 +618,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -646,7 +640,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -669,7 +663,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -691,7 +685,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -723,21 +717,21 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_dts.tga.tga_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_cash_parked_at_the_fed_mechanically_tighter_bank_reserves",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "tga_level",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury/tga.parquet",
         "reference_id": "mastermind.market_reference/v1#tga_level",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -752,28 +746,28 @@
           "value": null
         },
         "unit": "usd_mn",
-        "value": 924627.0,
+        "value": 893699.0,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_4w_level_change",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_dts.tga.tga_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "positive_is_tga_building_reserve_draining_negative_is_draining_reserve_injecting",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "tga_impulse_4w",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury/tga.parquet",
         "reference_id": "mastermind.market_reference/v1#tga_impulse_4w",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -788,28 +782,28 @@
           "value": null
         },
         "unit": "usd_mn",
-        "value": -26177.0,
+        "value": -10229.0,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_13w_level_change",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_dts.tga.tga_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "positive_is_tga_building_reserve_draining_negative_is_draining_reserve_injecting",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "tga_impulse_13w",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury/tga.parquet",
         "reference_id": "mastermind.market_reference/v1#tga_impulse_13w",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -824,28 +818,28 @@
           "value": null
         },
         "unit": "usd_mn",
-        "value": 53158.0,
+        "value": 123112.0,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_4w_sum",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_dts.net_issuance.net_issuance_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_supply_pressure",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "net_issuance_sum_4w",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury/net_issuance.parquet",
         "reference_id": "mastermind.market_reference/v1#net_issuance_sum_4w",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -860,28 +854,28 @@
           "value": null
         },
         "unit": "usd_mn",
-        "value": 45471.0,
+        "value": 9498.0,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_13w_sum",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_dts.net_issuance.net_issuance_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_supply_pressure",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "net_issuance_sum_13w",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury/net_issuance.parquet",
         "reference_id": "mastermind.market_reference/v1#net_issuance_sum_13w",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -896,28 +890,28 @@
           "value": null
         },
         "unit": "usd_mn",
-        "value": 774097.0,
+        "value": 760604.0,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_4w_avg_daily_minus_trailing_13w_avg_daily",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_dts.net_issuance.net_issuance_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "positive_is_accelerating_issuance_pace",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "net_issuance_pace_delta_4w_vs_13w_avg_daily",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury/net_issuance.parquet",
         "reference_id": "mastermind.market_reference/v1#net_issuance_pace_delta_4w_vs_13w_avg_daily",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -932,28 +926,28 @@
           "value": null
         },
         "unit": "usd_mn_per_day",
-        "value": -6882.5962,
+        "value": -8019.0714,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_dts.withheld_taxes.withheld_tax_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_daily_withheld_receipts",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "withheld_taxes_level",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury/withheld_taxes.parquet",
         "reference_id": "mastermind.market_reference/v1#withheld_taxes_level",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -968,28 +962,28 @@
           "value": null
         },
         "unit": "usd_mn",
-        "value": 3227.0,
+        "value": 23604.0,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_4w_sum",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_dts.withheld_taxes.withheld_tax_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_trailing_revenue",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "withheld_taxes_sum_4w",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury/withheld_taxes.parquet",
         "reference_id": "mastermind.market_reference/v1#withheld_taxes_sum_4w",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1004,28 +998,28 @@
           "value": null
         },
         "unit": "usd_mn",
-        "value": 261176.0,
+        "value": 258014.0,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "yoy_pct_change_of_trailing_4w_sum",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_dts.withheld_taxes.withheld_tax_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_stronger_income_and_employment_growth",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "withheld_taxes_yoy_4w",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury/withheld_taxes.parquet",
         "reference_id": "mastermind.market_reference/v1#withheld_taxes_yoy_4w",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1040,14 +1034,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 4.5779,
+        "value": 1.2495,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_up_to_8_auctions_with_btc",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_auctions.bid_to_cover",
@@ -1058,10 +1052,10 @@
         "metric_id": "auction_bid_to_cover_recent_avg",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury_auctions/auctions.parquet",
         "reference_id": "mastermind.market_reference/v1#auction_bid_to_cover_recent_avg",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1076,14 +1070,14 @@
           "value": null
         },
         "unit": "bid_to_cover_ratio",
-        "value": 2.6375,
+        "value": 2.795,
         "value_type": "ratio"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_365d_auctions_with_btc",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_auctions.bid_to_cover",
@@ -1094,10 +1088,10 @@
         "metric_id": "auction_bid_to_cover_baseline_avg",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury_auctions/auctions.parquet",
         "reference_id": "mastermind.market_reference/v1#auction_bid_to_cover_baseline_avg",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1112,14 +1106,14 @@
           "value": null
         },
         "unit": "bid_to_cover_ratio",
-        "value": 2.802837,
+        "value": 2.804898,
         "value_type": "ratio"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "recent_avg_minus_baseline_avg",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_auctions.bid_to_cover",
@@ -1130,10 +1124,10 @@
         "metric_id": "auction_demand_spread_recent_vs_baseline",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury_auctions/auctions.parquet",
         "reference_id": "mastermind.market_reference/v1#auction_demand_spread_recent_vs_baseline",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1148,7 +1142,7 @@
           "value": null
         },
         "unit": "bid_to_cover_ratio_pts",
-        "value": -0.165337,
+        "value": -0.009898,
         "value_type": "number"
       },
       {
@@ -1220,14 +1214,14 @@
           "value": null
         },
         "unit": "auctions",
-        "value": 289,
+        "value": 294,
         "value_type": "count"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "single_auction_level",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_auctions.bid_to_cover",
@@ -1238,10 +1232,10 @@
         "metric_id": "auction_latest_bid_to_cover",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury_auctions/auctions.parquet",
         "reference_id": "mastermind.market_reference/v1#auction_latest_bid_to_cover",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1256,14 +1250,14 @@
           "value": null
         },
         "unit": "bid_to_cover_ratio",
-        "value": 2.42,
+        "value": 2.83,
         "value_type": "ratio"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "single_auction_level",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_auctions.high_yield",
@@ -1274,10 +1268,10 @@
         "metric_id": "auction_latest_high_yield",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury_auctions/auctions.parquet",
         "reference_id": "mastermind.market_reference/v1#auction_latest_high_yield",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1292,14 +1286,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 5.085,
+        "value": 3.956,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "single_auction_level",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_auctions.security_type",
@@ -1310,10 +1304,10 @@
         "metric_id": "auction_latest_security_type",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury_auctions/auctions.parquet",
         "reference_id": "mastermind.market_reference/v1#auction_latest_security_type",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1328,14 +1322,14 @@
           "value": null
         },
         "unit": null,
-        "value": "Note",
+        "value": "Bill",
         "value_type": "categorical"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "single_auction_level",
-        "calculation_as_of": "2026-09-24",
+        "calculation_as_of": "2026-10-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "treasury_auctions.tenor_years",
@@ -1346,10 +1340,10 @@
         "metric_id": "auction_latest_tenor_years",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-24",
+        "observed_at": "2026-10-01",
         "owner_ref": "data/treasury_auctions/auctions.parquet",
         "reference_id": "mastermind.market_reference/v1#auction_latest_tenor_years",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1364,7 +1358,7 @@
           "value": null
         },
         "unit": "years",
-        "value": 7.0,
+        "value": 0.0769,
         "value_type": "number"
       },
       {
@@ -1443,21 +1437,21 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-09-25",
+        "calculation_as_of": "2026-10-02",
         "collected_at": null,
         "coverage": null,
         "definition_id": "bonds_desk.health_score",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_healthy",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "bond_desk_health_score_level",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-25",
+        "observed_at": "2026-10-02",
         "owner_ref": "data/bonds/latest.json",
         "reference_id": "mastermind.market_reference/v1#bond_desk_health_score_level",
-        "reference_period": "2026-09-25",
+        "reference_period": "2026-10-02",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1472,28 +1466,28 @@
           "value": null
         },
         "unit": "score_0_100",
-        "value": 84.0,
+        "value": 78.0,
         "value_type": "score_0_100"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-09-25",
+        "calculation_as_of": "2026-10-02",
         "collected_at": null,
         "coverage": null,
         "definition_id": "bonds_desk.health_label",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "bond_desk_health_label",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-25",
+        "observed_at": "2026-10-02",
         "owner_ref": "data/bonds/latest.json",
         "reference_id": "mastermind.market_reference/v1#bond_desk_health_label",
-        "reference_period": "2026-09-25",
+        "reference_period": "2026-10-02",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1515,21 +1509,21 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-09-25",
+        "calculation_as_of": "2026-10-02",
         "collected_at": null,
         "coverage": null,
         "definition_id": "bonds_desk.cycle_phase",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "bond_desk_cycle_phase",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-25",
+        "observed_at": "2026-10-02",
         "owner_ref": "data/bonds/latest.json",
         "reference_id": "mastermind.market_reference/v1#bond_desk_cycle_phase",
-        "reference_period": "2026-09-25",
+        "reference_period": "2026-10-02",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1544,7 +1538,7 @@
           "value": null
         },
         "unit": null,
-        "value": "late",
+        "value": "recession",
         "value_type": "categorical"
       },
       {
@@ -1947,10 +1941,10 @@
   },
   "prior_publication": {
     "generation": {
-      "generation_id": "national_debt_liabilities-US-cf9e1ccbea646555"
+      "generation_id": "national_debt_liabilities-US-b319169470c3db5b"
     },
     "headline": {
-      "effective_date": "2026-09-23",
+      "effective_date": "2026-09-30",
       "hysteresis": {
         "applied": false,
         "band": 0.0,
@@ -1974,7 +1968,7 @@
         "y_axis_id": null
       },
       "prior_state": {
-        "effective_date": "2026-09-22",
+        "effective_date": "2026-09-24",
         "method_version": "national_debt_liabilities.compose.v1",
         "state_id": null
       },
@@ -2002,7 +1996,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-09-22",
+          "calculation_as_of": "2026-09-29",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_dts.tga.tga_mn",
@@ -2013,10 +2007,10 @@
           "metric_id": "tga_level",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-22",
+          "observed_at": "2026-09-29",
           "owner_ref": "data/treasury/tga.parquet",
           "reference_id": "mastermind.market_reference/v1#tga_level",
-          "reference_period": "2026-09-22",
+          "reference_period": "2026-09-29",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2031,14 +2025,14 @@
             "value": null
           },
           "unit": "usd_mn",
-          "value": 957409.0,
+          "value": 936600.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "trailing_4w_level_change",
-          "calculation_as_of": "2026-09-22",
+          "calculation_as_of": "2026-09-29",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_dts.tga.tga_mn",
@@ -2049,10 +2043,10 @@
           "metric_id": "tga_impulse_4w",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-09-22",
+          "observed_at": "2026-09-29",
           "owner_ref": "data/treasury/tga.parquet",
           "reference_id": "mastermind.market_reference/v1#tga_impulse_4w",
-          "reference_period": "2026-09-22",
+          "reference_period": "2026-09-29",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2067,14 +2061,14 @@
             "value": null
           },
           "unit": "usd_mn",
-          "value": -36728.0,
+          "value": -6193.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "trailing_13w_level_change",
-          "calculation_as_of": "2026-09-22",
+          "calculation_as_of": "2026-09-29",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_dts.tga.tga_mn",
@@ -2085,10 +2079,10 @@
           "metric_id": "tga_impulse_13w",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-09-22",
+          "observed_at": "2026-09-29",
           "owner_ref": "data/treasury/tga.parquet",
           "reference_id": "mastermind.market_reference/v1#tga_impulse_13w",
-          "reference_period": "2026-09-22",
+          "reference_period": "2026-09-29",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2103,14 +2097,14 @@
             "value": null
           },
           "unit": "usd_mn",
-          "value": 31533.0,
+          "value": 17455.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "trailing_4w_sum",
-          "calculation_as_of": "2026-09-22",
+          "calculation_as_of": "2026-09-29",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_dts.net_issuance.net_issuance_mn",
@@ -2121,10 +2115,10 @@
           "metric_id": "net_issuance_sum_4w",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-09-22",
+          "observed_at": "2026-09-29",
           "owner_ref": "data/treasury/net_issuance.parquet",
           "reference_id": "mastermind.market_reference/v1#net_issuance_sum_4w",
-          "reference_period": "2026-09-22",
+          "reference_period": "2026-09-29",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2139,14 +2133,14 @@
             "value": null
           },
           "unit": "usd_mn",
-          "value": 64682.0,
+          "value": -59753.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "trailing_13w_sum",
-          "calculation_as_of": "2026-09-22",
+          "calculation_as_of": "2026-09-29",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_dts.net_issuance.net_issuance_mn",
@@ -2157,10 +2151,10 @@
           "metric_id": "net_issuance_sum_13w",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-09-22",
+          "observed_at": "2026-09-29",
           "owner_ref": "data/treasury/net_issuance.parquet",
           "reference_id": "mastermind.market_reference/v1#net_issuance_sum_13w",
-          "reference_period": "2026-09-22",
+          "reference_period": "2026-09-29",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2175,14 +2169,14 @@
             "value": null
           },
           "unit": "usd_mn",
-          "value": 776454.0,
+          "value": 691335.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "trailing_4w_avg_daily_minus_trailing_13w_avg_daily",
-          "calculation_as_of": "2026-09-22",
+          "calculation_as_of": "2026-09-29",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_dts.net_issuance.net_issuance_mn",
@@ -2193,10 +2187,10 @@
           "metric_id": "net_issuance_pace_delta_4w_vs_13w_avg_daily",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-22",
+          "observed_at": "2026-09-29",
           "owner_ref": "data/treasury/net_issuance.parquet",
           "reference_id": "mastermind.market_reference/v1#net_issuance_pace_delta_4w_vs_13w_avg_daily",
-          "reference_period": "2026-09-22",
+          "reference_period": "2026-09-29",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2211,14 +2205,14 @@
             "value": null
           },
           "unit": "usd_mn_per_day",
-          "value": -6222.3901,
+          "value": -9731.1236,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-09-22",
+          "calculation_as_of": "2026-09-29",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_dts.withheld_taxes.withheld_tax_mn",
@@ -2229,10 +2223,10 @@
           "metric_id": "withheld_taxes_level",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-22",
+          "observed_at": "2026-09-29",
           "owner_ref": "data/treasury/withheld_taxes.parquet",
           "reference_id": "mastermind.market_reference/v1#withheld_taxes_level",
-          "reference_period": "2026-09-22",
+          "reference_period": "2026-09-29",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2247,14 +2241,14 @@
             "value": null
           },
           "unit": "usd_mn",
-          "value": 3089.0,
+          "value": 4016.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "trailing_4w_sum",
-          "calculation_as_of": "2026-09-22",
+          "calculation_as_of": "2026-09-29",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_dts.withheld_taxes.withheld_tax_mn",
@@ -2265,10 +2259,10 @@
           "metric_id": "withheld_taxes_sum_4w",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-09-22",
+          "observed_at": "2026-09-29",
           "owner_ref": "data/treasury/withheld_taxes.parquet",
           "reference_id": "mastermind.market_reference/v1#withheld_taxes_sum_4w",
-          "reference_period": "2026-09-22",
+          "reference_period": "2026-09-29",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2283,14 +2277,14 @@
             "value": null
           },
           "unit": "usd_mn",
-          "value": 262864.0,
+          "value": 240238.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "yoy_pct_change_of_trailing_4w_sum",
-          "calculation_as_of": "2026-09-22",
+          "calculation_as_of": "2026-09-29",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_dts.withheld_taxes.withheld_tax_mn",
@@ -2301,10 +2295,10 @@
           "metric_id": "withheld_taxes_yoy_4w",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-22",
+          "observed_at": "2026-09-29",
           "owner_ref": "data/treasury/withheld_taxes.parquet",
           "reference_id": "mastermind.market_reference/v1#withheld_taxes_yoy_4w",
-          "reference_period": "2026-09-22",
+          "reference_period": "2026-09-29",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2319,14 +2313,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 5.2858,
+          "value": -12.1343,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "trailing_up_to_8_auctions_with_btc",
-          "calculation_as_of": "2026-09-23",
+          "calculation_as_of": "2026-09-30",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_auctions.bid_to_cover",
@@ -2337,10 +2331,10 @@
           "metric_id": "auction_bid_to_cover_recent_avg",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-09-23",
+          "observed_at": "2026-09-30",
           "owner_ref": "data/treasury_auctions/auctions.parquet",
           "reference_id": "mastermind.market_reference/v1#auction_bid_to_cover_recent_avg",
-          "reference_period": "2026-09-23",
+          "reference_period": "2026-09-30",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2355,14 +2349,14 @@
             "value": null
           },
           "unit": "bid_to_cover_ratio",
-          "value": 2.6175,
+          "value": 2.775,
           "value_type": "ratio"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "trailing_365d_auctions_with_btc",
-          "calculation_as_of": "2026-09-23",
+          "calculation_as_of": "2026-09-30",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_auctions.bid_to_cover",
@@ -2373,10 +2367,10 @@
           "metric_id": "auction_bid_to_cover_baseline_avg",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-09-23",
+          "observed_at": "2026-09-30",
           "owner_ref": "data/treasury_auctions/auctions.parquet",
           "reference_id": "mastermind.market_reference/v1#auction_bid_to_cover_baseline_avg",
-          "reference_period": "2026-09-23",
+          "reference_period": "2026-09-30",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2391,14 +2385,14 @@
             "value": null
           },
           "unit": "bid_to_cover_ratio",
-          "value": 2.804583,
+          "value": 2.805171,
           "value_type": "ratio"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "recent_avg_minus_baseline_avg",
-          "calculation_as_of": "2026-09-23",
+          "calculation_as_of": "2026-09-30",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_auctions.bid_to_cover",
@@ -2409,10 +2403,10 @@
           "metric_id": "auction_demand_spread_recent_vs_baseline",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-09-23",
+          "observed_at": "2026-09-30",
           "owner_ref": "data/treasury_auctions/auctions.parquet",
           "reference_id": "mastermind.market_reference/v1#auction_demand_spread_recent_vs_baseline",
-          "reference_period": "2026-09-23",
+          "reference_period": "2026-09-30",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2427,7 +2421,7 @@
             "value": null
           },
           "unit": "bid_to_cover_ratio_pts",
-          "value": -0.187083,
+          "value": -0.030171,
           "value_type": "number"
         },
         {
@@ -2499,14 +2493,14 @@
             "value": null
           },
           "unit": "auctions",
-          "value": 288,
+          "value": 292,
           "value_type": "count"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "single_auction_level",
-          "calculation_as_of": "2026-09-23",
+          "calculation_as_of": "2026-09-30",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_auctions.bid_to_cover",
@@ -2517,10 +2511,10 @@
           "metric_id": "auction_latest_bid_to_cover",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-23",
+          "observed_at": "2026-09-30",
           "owner_ref": "data/treasury_auctions/auctions.parquet",
           "reference_id": "mastermind.market_reference/v1#auction_latest_bid_to_cover",
-          "reference_period": "2026-09-23",
+          "reference_period": "2026-09-30",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2535,14 +2529,14 @@
             "value": null
           },
           "unit": "bid_to_cover_ratio",
-          "value": 2.63,
+          "value": 2.89,
           "value_type": "ratio"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "single_auction_level",
-          "calculation_as_of": "2026-09-23",
+          "calculation_as_of": "2026-09-30",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_auctions.high_yield",
@@ -2552,11 +2546,11 @@
           "market_session": null,
           "metric_id": "auction_latest_high_yield",
           "model_version": "national_debt_liabilities.compose.v1",
-          "null_reason": "SOURCE_FAILED",
-          "observed_at": "2026-09-23",
+          "null_reason": null,
+          "observed_at": "2026-09-30",
           "owner_ref": "data/treasury_auctions/auctions.parquet",
           "reference_id": "mastermind.market_reference/v1#auction_latest_high_yield",
-          "reference_period": "2026-09-23",
+          "reference_period": "2026-09-30",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2564,21 +2558,21 @@
           "source_refs": [
             "TREASURY_AUCTIONS:high_yield"
           ],
-          "status": "ABSENT",
+          "status": "PRESENT",
           "transformation": "Pass-through of the single most recent auction's own high (stop-out) yield.",
           "uncertainty": {
             "kind": null,
             "value": null
           },
           "unit": "percent",
-          "value": null,
+          "value": 4.23,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "single_auction_level",
-          "calculation_as_of": "2026-09-23",
+          "calculation_as_of": "2026-09-30",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_auctions.security_type",
@@ -2589,10 +2583,10 @@
           "metric_id": "auction_latest_security_type",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-23",
+          "observed_at": "2026-09-30",
           "owner_ref": "data/treasury_auctions/auctions.parquet",
           "reference_id": "mastermind.market_reference/v1#auction_latest_security_type",
-          "reference_period": "2026-09-23",
+          "reference_period": "2026-09-30",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2607,14 +2601,14 @@
             "value": null
           },
           "unit": null,
-          "value": "Note",
+          "value": "Bill",
           "value_type": "categorical"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "single_auction_level",
-          "calculation_as_of": "2026-09-23",
+          "calculation_as_of": "2026-09-30",
           "collected_at": null,
           "coverage": null,
           "definition_id": "treasury_auctions.tenor_years",
@@ -2625,10 +2619,10 @@
           "metric_id": "auction_latest_tenor_years",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-23",
+          "observed_at": "2026-09-30",
           "owner_ref": "data/treasury_auctions/auctions.parquet",
           "reference_id": "mastermind.market_reference/v1#auction_latest_tenor_years",
-          "reference_period": "2026-09-23",
+          "reference_period": "2026-09-30",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2643,7 +2637,7 @@
             "value": null
           },
           "unit": "years",
-          "value": 1.8333,
+          "value": 0.3269,
           "value_type": "number"
         },
         {
@@ -2722,7 +2716,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-09-23",
+          "calculation_as_of": "2026-09-29",
           "collected_at": null,
           "coverage": null,
           "definition_id": "bonds_desk.health_score",
@@ -2733,10 +2727,10 @@
           "metric_id": "bond_desk_health_score_level",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-23",
+          "observed_at": "2026-09-29",
           "owner_ref": "data/bonds/latest.json",
           "reference_id": "mastermind.market_reference/v1#bond_desk_health_score_level",
-          "reference_period": "2026-09-23",
+          "reference_period": "2026-09-29",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2751,14 +2745,14 @@
             "value": null
           },
           "unit": "score_0_100",
-          "value": 85.0,
+          "value": 81.0,
           "value_type": "score_0_100"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-09-23",
+          "calculation_as_of": "2026-09-29",
           "collected_at": null,
           "coverage": null,
           "definition_id": "bonds_desk.health_label",
@@ -2769,10 +2763,10 @@
           "metric_id": "bond_desk_health_label",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-23",
+          "observed_at": "2026-09-29",
           "owner_ref": "data/bonds/latest.json",
           "reference_id": "mastermind.market_reference/v1#bond_desk_health_label",
-          "reference_period": "2026-09-23",
+          "reference_period": "2026-09-29",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2794,7 +2788,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-09-23",
+          "calculation_as_of": "2026-09-29",
           "collected_at": null,
           "coverage": null,
           "definition_id": "bonds_desk.cycle_phase",
@@ -2805,10 +2799,10 @@
           "metric_id": "bond_desk_cycle_phase",
           "model_version": "national_debt_liabilities.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-23",
+          "observed_at": "2026-09-29",
           "owner_ref": "data/bonds/latest.json",
           "reference_id": "mastermind.market_reference/v1#bond_desk_cycle_phase",
-          "reference_period": "2026-09-23",
+          "reference_period": "2026-09-29",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -3316,14 +3310,14 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "Treasury General Account daily balance (Daily Treasury Statement)",
           "zh": "财政部一般账户每日余额（每日财政报表）"
         },
         "owner_ref": "collectors.treasury[tga]",
         "provider": "US Treasury FiscalData",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -3337,14 +3331,14 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "Net Treasury issuance (Daily Treasury Statement)",
           "zh": "美国国债净发行（每日财政报表）"
         },
         "owner_ref": "collectors.treasury[net_issuance]",
         "provider": "US Treasury FiscalData",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -3358,14 +3352,14 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "Withheld income & employment-tax deposits (Daily Treasury Statement)",
           "zh": "预扣所得税与雇佣税存款（每日财政报表）"
         },
         "owner_ref": "collectors.treasury[withheld_taxes]",
         "provider": "US Treasury FiscalData",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -3386,7 +3380,7 @@
         },
         "owner_ref": "collectors.treasury_auctions",
         "provider": "TreasuryDirect TA_WS",
-        "reference_period": "2026-09-24",
+        "reference_period": "2026-10-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -3442,14 +3436,14 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "Bond-desk health/cycle-phase state",
           "zh": "债券台面健康/周期阶段状态"
         },
         "owner_ref": "scripts.build_bonds",
         "provider": "Mastermind Bond Desk",
-        "reference_period": "2026-09-25",
+        "reference_period": "2026-10-02",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",

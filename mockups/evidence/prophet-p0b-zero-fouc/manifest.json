@@ -534,7 +534,7 @@
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
         "primary_cases": 48,
         "screenshots": 8,
-        "sha256": "48f776c6e1d68ecb5cb2ea5d4393256f557e6bd58809f80ef69514a4adec8f93"
+        "sha256": "93c1f44f24cd09d95141b11a0db88a71fcad73607166af73287c9f8a48ea1aa3"
       },
       "hk": {
         "degraded_control_cases": 16,
@@ -542,7 +542,7 @@
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
         "primary_cases": 48,
         "screenshots": 8,
-        "sha256": "e0255697cd7b88404d4058423fe15d62b4b82585820a69e7bdf3b17219f337d1"
+        "sha256": "21c186a56b19ca7dece9a4cb7c8d847a62c719cecadadb4bc48ff3db454ab41d"
       }
     },
     "claims": {
@@ -553,9 +553,9 @@
     },
     "fixture_receipt": {
       "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-      "sha256": "e41d36f998b827cc6a7533b6a712f80528b0e43de62c1a7646e9d2f28a8154a3"
+      "sha256": "747b63f0dfb9b98757cefb49d5d0efd7e9d6c43de2bf2222c279a54b94d69762"
     },
-    "generated_at": "2026-09-27T08:45:53.858150Z",
+    "generated_at": "2026-10-02T07:45:00Z",
     "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
     "pass": true,
     "schema": "mastermind.prophet_p0b_owner_empty_repair_extension.v1",
@@ -746,6 +746,230 @@
       },
       "prior_manifest_sha256": "8592b01790ad9cfb52e06d8a10b3b23c7bcfccfc08e694a2ec7eab45663123e8",
       "source_head": "cd58ccb4f88bb8fde8b6dc823a1a1a4771a19583"
+    },
+    {
+      "extension": {
+        "browser_receipts": {
+          "ca": {
+            "degraded_control_cases": 16,
+            "pass": true,
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "primary_cases": 48,
+            "screenshots": 8,
+            "sha256": "48f776c6e1d68ecb5cb2ea5d4393256f557e6bd58809f80ef69514a4adec8f93"
+          },
+          "hk": {
+            "degraded_control_cases": 16,
+            "pass": true,
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "primary_cases": 48,
+            "screenshots": 8,
+            "sha256": "e0255697cd7b88404d4058423fe15d62b4b82585820a69e7bdf3b17219f337d1"
+          }
+        },
+        "claims": {
+          "browser_fixture": "reproducible",
+          "canonical_build": "unavailable",
+          "production": "none",
+          "source_contract": "browser_fixture"
+        },
+        "fixture_receipt": {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+          "sha256": "e41d36f998b827cc6a7533b6a712f80528b0e43de62c1a7646e9d2f28a8154a3"
+        },
+        "generated_at": "2026-09-27T08:45:53.858150Z",
+        "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
+        "pass": true,
+        "schema": "mastermind.prophet_p0b_owner_empty_repair_extension.v1",
+        "screenshots": [
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png",
+            "sha256": "c6f83251cc2a3221a398e4d8a3e10253896b73cfa0848c896489dae3fcc68abc"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png",
+            "sha256": "fbc0304e437b1f6e54656a362a7297d4c92f1be6cc8ab85d2c822d4fbf1c16ba"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png",
+            "sha256": "ae62a1f79570aff355c1115d304f43a818d85f42764cfbb65190cab16c179d7f"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png",
+            "sha256": "eb3159ccdfb84e858a4824614b3b787ae60dcb397410d2edffd9d748f997b282"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png",
+            "sha256": "b262fad71a2b33067e210393bee98fdc4842d05ce5f1aad86ccf76641d86722d"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png",
+            "sha256": "d6c70d7c7d2388adc682db6b43a6d2a78bfa4534d2276de0667bd76f66b4f51c"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png",
+            "sha256": "136fd5df3fb66114c10d2f97a9cc4fda88fadbe7a629196b383d75eb3f4a9360"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png",
+            "sha256": "a75c92b9672d00525f6dbe81819fcc8aa267b8a6423766e3fd2d75bb96ed96c6"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png",
+            "sha256": "1222e1b8547642fc92588e16c505537fa2283d308869f242d8352d951efd3fe1"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png",
+            "sha256": "4d9e6e32785c53dac873b5f9d3503ce7d72ac3d15281566617ceacf9d5f74d78"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png",
+            "sha256": "f76afb32ca254ef1e63b92a3c5b58df73a5ca43ff3960f9a332de8355b1b1ecb"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png",
+            "sha256": "7da4ae947d84d33f2436a1552f50a973a785603567e16742efcd6d0dbfd3cc5e"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png",
+            "sha256": "a24354464e429498b28a5ca22371c9f988a2c08baa408db9376a8e11080dd00b"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png",
+            "sha256": "d3e052d64ce5c3a2a7536974dfcf4596e463e7d8c392b325f067714146d79d5f"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png",
+            "sha256": "311a22b4bf879f91573555a049eed38e3e41c2851026c97b0967a2b35ce101f8"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png",
+            "sha256": "d3a438987d3fab13a98a2dce1cee8c79553dc85bc7615fddad97551a9633ac87"
+          }
+        ],
+        "totals": {
+          "degraded_control_cases": 32,
+          "markets": 2,
+          "owner_cases_per_market": 3,
+          "primary_cases": 96,
+          "screenshots": 16,
+          "total_cases": 128
+        }
+      },
+      "prior_manifest_sha256": "4f78a361f5ce0bb6b3202d485e8bf2886d334fa38d1ce3cb5044f949d362f936",
+      "source_head": "44c52ce67480831beea42a0d596497fc7ec5ae63"
+    },
+    {
+      "extension": {
+        "browser_receipts": {
+          "ca": {
+            "degraded_control_cases": 16,
+            "pass": true,
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "primary_cases": 48,
+            "screenshots": 8,
+            "sha256": "ebbe84802bc97bd43d2f0c93757cc60c7df499cb036d1414ac280dd694f16ac9"
+          },
+          "hk": {
+            "degraded_control_cases": 16,
+            "pass": true,
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "primary_cases": 48,
+            "screenshots": 8,
+            "sha256": "f5712d66671955e5b8d7bf76c5a61cdd72234153b04755568fab27646da4d6ef"
+          }
+        },
+        "claims": {
+          "browser_fixture": "reproducible",
+          "canonical_build": "unavailable",
+          "production": "none",
+          "source_contract": "browser_fixture"
+        },
+        "fixture_receipt": {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+          "sha256": "747b63f0dfb9b98757cefb49d5d0efd7e9d6c43de2bf2222c279a54b94d69762"
+        },
+        "generated_at": "2026-10-02T07:45:00Z",
+        "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
+        "pass": true,
+        "schema": "mastermind.prophet_p0b_owner_empty_repair_extension.v1",
+        "screenshots": [
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png",
+            "sha256": "5b10fd5ccd525b1315b3188658b4c0af8d814d48f6bd0fe5904b03507ac05410"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png",
+            "sha256": "889b7d5b52d3943398ef9f0564ca76d7e03008421d8b8f5befcc43c2560b32a5"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png",
+            "sha256": "d4a3afabba982f39805ed3b710b8cdf68121c7433ef53d2cf9e87449a6c54918"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png",
+            "sha256": "6dae30765ec064b1773ef4c5621d304debb0d06b3895aa417424267232873900"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png",
+            "sha256": "a20e9a9ca2e2fc11252d0e6a9fa46be89793b2a707221330f8af4f888a96c939"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png",
+            "sha256": "88ade3033e4062cc62b835e236d921006a152b294ffae4e24bdfef9a31404766"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png",
+            "sha256": "2d4379535c384b83ce282ecd88fb0208fe02ec4e859cdb9e89884eb3e6b01d5a"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png",
+            "sha256": "3a8c0df0651e4c6a16d96b5d3ce34c9714eecbc60a1bda5551ce73d5cb538cb5"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png",
+            "sha256": "fff64f1b5b0971d503711eccf0797faa3676c0036a5185de2d3c45613e97c13b"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png",
+            "sha256": "c2013b3f8b960eb30467bd5aa96a12ebbb6136bc943bd54b99c7d0ebcfbea715"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png",
+            "sha256": "736751b2ce069879b6bf9567d960d5ca811b804655f3c127a6811ece86f5f036"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png",
+            "sha256": "748b4e6c3f26d44ea1a56668921864d8fb611bf72ada18c9f8f94c9e202dd357"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png",
+            "sha256": "35d31ec5356ef00aeeb01e582139fe10a90c86d25e1fb5490b8147da06aef713"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png",
+            "sha256": "46a284d251978403abb559d72891c5783592957f652a139b9f0453c6bc47aa9f"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png",
+            "sha256": "fbe97d2a20c5c9540e6e3f18bfb54fbee3bc319cc6f64b3c05672ee26d22a950"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png",
+            "sha256": "4900738b613943fff6b695146301febfc3e82216be82e876249f625da34f74d1"
+          }
+        ],
+        "totals": {
+          "degraded_control_cases": 32,
+          "markets": 2,
+          "owner_cases_per_market": 3,
+          "primary_cases": 96,
+          "screenshots": 16,
+          "total_cases": 128
+        }
+      },
+      "prior_manifest_sha256": "57ac5b1c3bb6641e14d5192fb845f77ec321ce0df31880658adbf49da759f987",
+      "source_head": "cd6b16e52577f1ff36b71a6e1c37721a5320b68e"
     }
   ],
   "schema": "mastermind.p0_evidence.v2",

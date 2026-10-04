@@ -88,7 +88,7 @@ import tempfile
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Any, Callable, Mapping, Sequence
+from typing import Any, Callable, Mapping, Protocol, Sequence
 
 import numpy as np
 import pandas as pd
@@ -261,6 +261,11 @@ def assert_published_spec_hashes() -> dict[str, str]:
 # the oracle — the SAME construction the live path will run
 # ---------------------------------------------------------------------------
 
+# Fast stoch agrees with canonical to ~1e-12; solver margins use strict comparisons.
+# Re-answer canonically when the fast K is within this band of OVERSOLD or of D so
+# the sign matches the canonical oracle at decision boundaries.
+ORACLE_TIE_BAND = 1e-9
+
 @dataclass(frozen=True, slots=True)
 class OracleFrame:
     """One name's frozen substrate, ready to be probed at a candidate price.
@@ -270,20 +275,56 @@ class OracleFrame:
     the session the provisional bar would be APPENDED at.  Keeping the three
     together is what makes ``_oracle_kd`` a line-for-line mirror rather than a
     re-derivation.
+
+    The fast path (``append_state``) answers "K and D if the next close were P"
+    from state frozen at the last confirmed bar.  It agrees with the canonical path
+    to about 1e-12 for a finite price; inside ORACLE_TIE_BAND of a decision
+    boundary the canonical path answers, so every strict comparison the solver makes
+    has the canonical sign.
     """
 
     ticker: str
     closes: np.ndarray
     index: pd.DatetimeIndex
     next_session_ts: pd.Timestamp
+    append_state: ic.StochRsiAppendState | None = None
 
-    def kd(self, price: float) -> tuple[float | None, float | None]:
+    def kd_canonical(self, price: float) -> tuple[float | None, float | None]:
         """``(K, D)`` at the appended provisional close ``price``, or ``(None, None)``."""
         series = pd.Series(
             np.append(self.closes, float(price)),
             index=self.index.append(pd.DatetimeIndex([self.next_session_ts])))
         k_series, d_series = ic.stoch_rsi_kd(series)
         return ic.last_finite(k_series), ic.last_finite(d_series)
+
+    def kd(self, price: float) -> tuple[float | None, float | None]:
+        if self.append_state is None:
+            return self.kd_canonical(price)
+        k, d = ic.stoch_rsi_kd_appended(self.append_state, float(price))
+        if k is not None and (
+            abs(float(k) - float(ic.OVERSOLD)) <= ORACLE_TIE_BAND
+            or (d is not None and abs(float(k) - float(d)) <= ORACLE_TIE_BAND)
+        ):
+            return self.kd_canonical(price)
+        return k, d
+
+
+def oracle_frame(
+    ticker: str,
+    closes: np.ndarray,
+    index: pd.DatetimeIndex,
+    next_session_ts: pd.Timestamp,
+    *,
+    fast: bool = True,
+) -> OracleFrame:
+    append_state = ic.stoch_rsi_append_state(closes) if fast else None
+    return OracleFrame(
+        ticker=ticker,
+        closes=closes,
+        index=index,
+        next_session_ts=next_session_ts,
+        append_state=append_state,
+    )
 
 
 def _c1_margin(frame: OracleFrame, price: float) -> float | None:
@@ -628,7 +669,9 @@ class LivePack:
             schema=self.schema, as_of=self.as_of, next_session=self.next_session,
             built_at=self.built_at, price_basis=self.price_basis,
             spec_hashes=dict(self.spec_hashes), probe_set=dict(self.probe_set),
-            names=self.names, substrate=dict(self.substrate),
+            names=self.names,
+            substrate=(dict(self.substrate) if isinstance(self.substrate, dict)
+                       else self.substrate),
             substrate_missing=self.substrate_missing, pack_hash=self.pack_hash,
             proof=dict(proof), confirmed_lanes=dict(self.confirmed_lanes))
 
@@ -649,13 +692,8 @@ def _jsonable(value: Any) -> Any:
     return value
 
 
-def substrate_fingerprint(frame: pd.DataFrame) -> str:
-    """sha16 over the frozen rows — the pin a later store move cannot survive.
-
-    Rows are ``[iso_session, high, low, close]`` with non-finite values as None,
-    so a NaN high (a blank-OHLC name) fingerprints stably instead of hashing a
-    value that compares unequal to itself.
-    """
+def _fingerprint_rows_slow(frame: pd.DataFrame) -> list[list[Any]]:
+    """The reference row builder: one cell at a time, any dtype."""
     rows: list[list[Any]] = []
     index = pd.DatetimeIndex(frame.index)
     for position in range(len(frame)):
@@ -667,7 +705,48 @@ def substrate_fingerprint(frame: pd.DataFrame) -> str:
                 value = float("nan")
             row.append(None if not np.isfinite(value) else value)
         rows.append(row)
-    return sha16(rows)
+    return rows
+
+
+def _fingerprint_rows_fast(frame: pd.DataFrame) -> list[list[Any]] | None:
+    """The same rows built column-wise, or None when only the reference builder is safe.
+
+    Taken only for plain numpy float/integer columns under an index with no missing
+    timestamp — the shape ``_frozen_frame`` always produces.  Anything else (object,
+    boolean, nullable or duplicated columns, a NaT in the index, an empty frame or
+    a missing column) returns None.
+    """
+    index = pd.DatetimeIndex(frame.index)
+    if index.hasnans:
+        return None
+    if len(frame) == 0 or any(column not in frame.columns for column in _SUBSTRATE_COLUMNS):
+        return None
+    columns: list[list[Any]] = []
+    for column in _SUBSTRATE_COLUMNS:
+        series = frame[column]
+        dtype = getattr(series, "dtype", None)
+        if (not isinstance(series, pd.Series) or not isinstance(dtype, np.dtype)
+                or dtype.kind not in "fiu"):
+            return None
+        values = series.to_numpy(dtype=np.float64)
+        cells = values.astype(object)
+        cells[~np.isfinite(values)] = None
+        columns.append(cells.tolist())
+    days = [day.isoformat() for day in index.date]
+    return [list(row) for row in zip(days, *columns)]
+
+
+def substrate_fingerprint(frame: pd.DataFrame) -> str:
+    """sha16 over the frozen rows — the pin a later store move cannot survive.
+
+    Rows are ``[iso_session, high, low, close]`` with non-finite values as None,
+    so a NaN high (a blank-OHLC name) fingerprints stably instead of hashing a
+    value that compares unequal to itself.  Built column-wise when the frame is
+    plain numeric (about 25x faster on a full history) and cell by cell otherwise;
+    both builders return identical rows.
+    """
+    rows = _fingerprint_rows_fast(frame)
+    return sha16(_fingerprint_rows_slow(frame) if rows is None else rows)
 
 
 def _normalize_confirmed_lane_row(raw: Any) -> dict[str, Any]:
@@ -859,11 +938,82 @@ def _frozen_frame(frame: pd.DataFrame, *, ticker: str, next_session: date,
     return history.confirmed_through(next_session)
 
 
+class SubstrateSink(Protocol):
+    """Where :func:`build_pack` hands each frozen frame, one name at a time.
+
+    ``add`` is called once per admitted name, in probe-set (sorted ticker) order,
+    with the name's finished row and its frozen frame.  ``finish`` is called once,
+    after the last name, and returns the mapping the pack carries as
+    ``substrate``.  A sink that writes frames out as they arrive may return a
+    mapping that holds none of them in memory; the pack's identity never reads it.
+    Such a pack cannot be proved or saved from its substrate: the proof must be
+    given the tapped threshold cases, and :func:`save_pack` refuses it.
+
+    A sink serves ONE build.  ``add`` or ``finish`` after ``finish`` is refused,
+    because a reused sink would hand a second pack the first pack's frames.
+    """
+
+    def add(self, row: PackName, frozen: pd.DataFrame, *, next_session: date) -> None: ...
+
+    def finish(self) -> Mapping[str, pd.DataFrame]: ...
+
+
+class InMemorySink:
+    """The default sink: keep every frozen frame in one dict."""
+
+    def __init__(self) -> None:
+        self._frames: dict[str, pd.DataFrame] = {}
+        self._finished = False
+
+    def add(self, row: PackName, frozen: pd.DataFrame, *, next_session: date) -> None:
+        if self._finished:
+            raise LivePackError("substrate sink reused: add() after finish()")
+        self._frames[row.ticker] = frozen
+
+    def finish(self) -> Mapping[str, pd.DataFrame]:
+        if self._finished:
+            raise LivePackError("substrate sink reused: finish() called twice")
+        self._finished = True
+        return self._frames
+
+
+class ProofTapSink:
+    """Wrap another sink and collect each name's threshold proof cases as it passes.
+
+    The proof's threshold family needs every name's frozen frame.  Collecting the
+    cases here, while each frame is already in hand, lets the proof be built
+    without holding all the frames at once.  Cases come out in the order names
+    were added, which is the order :func:`_proof_threshold_cases` produces.
+    """
+
+    def __init__(self, inner: SubstrateSink) -> None:
+        self._inner = inner
+        self._cases: list[dict[str, Any]] = []
+        self._finished = False
+
+    def add(self, row: PackName, frozen: pd.DataFrame, *, next_session: date) -> None:
+        if self._finished:
+            raise LivePackError("substrate sink reused: add() after finish()")
+        cases = threshold_cases_for(row, frozen, next_session=next_session)
+        self._inner.add(row, frozen, next_session=next_session)
+        self._cases.extend(cases)       # only once the wrapped sink has taken the frame
+
+    def finish(self) -> Mapping[str, pd.DataFrame]:
+        if self._finished:
+            raise LivePackError("substrate sink reused: finish() called twice")
+        self._finished = True
+        return self._inner.finish()
+
+    def threshold_cases(self) -> list[dict[str, Any]]:
+        return list(self._cases)
+
+
 def build_pack(*, probe_set: Any, store_reader: Callable[[str], pd.DataFrame | None],
                as_of: date | str, built_at: datetime | str,
                price_basis: str = ch.BASIS_ADJUSTED, market: str = "US",
                vintage: str = "",
-               confirmed_lanes: Mapping[str, Any] | None = None) -> LivePack:
+               confirmed_lanes: Mapping[str, Any] | None = None,
+               sink: SubstrateSink | None = None) -> LivePack:
     """Freeze one session's evaluation substrate for the whole probe set.
 
     ``store_reader`` is INJECTED: production hands in a reader over the daily
@@ -877,6 +1027,10 @@ def build_pack(*, probe_set: Any, store_reader: Callable[[str], pd.DataFrame | N
     path — :func:`confirmed_lanes_snapshot` normalizes whatever is handed in to
     every probe ticker, honestly ``unavailable`` for one this pass never
     covered.
+
+    ``sink`` receives each admitted name's row and frozen frame as it is built
+    and supplies the pack's ``substrate`` mapping; None keeps every frame in
+    memory.  The pack's identity is the same whichever sink is used.
 
     Refuses loudly, before reading a price, when a registered detector hash has
     drifted from its published identity.
@@ -892,7 +1046,7 @@ def build_pack(*, probe_set: Any, store_reader: Callable[[str], pd.DataFrame | N
     built_stamp = built_at if isinstance(built_at, str) else (iso(built_at) or "")
 
     names: list[PackName] = []
-    substrate: dict[str, pd.DataFrame] = {}
+    sink = InMemorySink() if sink is None else sink
     missing: list[dict[str, Any]] = []
 
     for ticker in snapshot["tickers"]:
@@ -919,10 +1073,11 @@ def build_pack(*, probe_set: Any, store_reader: Callable[[str], pd.DataFrame | N
                                       f"{as_of_date.isoformat()}"})
             continue
 
-        substrate[ticker] = frozen
-        names.append(_pack_name(ticker, frozen, next_session=next_session,
-                                market=market))
+        row = _pack_name(ticker, frozen, next_session=next_session, market=market)
+        sink.add(row, frozen, next_session=next_session)
+        names.append(row)
 
+    substrate = sink.finish()
     lane_rows = confirmed_lanes_snapshot(confirmed_lanes, snapshot["tickers"])
 
     pack_hash = compute_pack_hash(
@@ -957,7 +1112,7 @@ def _pack_name(ticker: str, frozen: pd.DataFrame, *, next_session: date,
     confirmed_k = ic.last_finite(k_series)
     confirmed_d = ic.last_finite(d_series)
 
-    oracle = OracleFrame(
+    oracle = oracle_frame(
         ticker=ticker, closes=closes.to_numpy(dtype=float), index=index,
         next_session_ts=pd.Timestamp(next_session).normalize())
 
@@ -992,6 +1147,30 @@ def _case(family: str, name: str, *, boundary: Any, direction: str, expected: An
             "observed": _jsonable(observed), "pass": bool(expected == observed)}
 
 
+def _refuse_substrate_key_mismatch(pack: LivePack) -> None:
+    admitted = {r.ticker for r in pack.names}
+    keys = set(pack.substrate)
+    if keys != admitted:
+        missing = sorted(admitted - keys)
+        extra = sorted(keys - admitted)
+        parts: list[str] = []
+        if missing:
+            parts.append(
+                f"cannot save a pack whose substrate lacks {len(missing)} admitted name(s) "
+                f"(first: {missing[0]}); a streamed substrate is saved by its own writer")
+        if extra:
+            parts.append(f"{extra[0]}: not admitted")
+        raise LivePackError("; ".join(parts))
+
+
+def _refuse_substrate_fingerprint_mismatch(pack: LivePack) -> None:
+    for row in pack.names:
+        frame = pack.substrate[row.ticker]
+        if substrate_fingerprint(frame) != row.substrate_fingerprint:
+            raise LivePackError(
+                f"{row.ticker}: substrate frame does not match the admitted row's fingerprint")
+
+
 def _proof_threshold_cases(pack: LivePack) -> list[dict[str, Any]]:
     """(a) Every solved level, probed from BOTH sides against the oracle itself.
 
@@ -1000,30 +1179,58 @@ def _proof_threshold_cases(pack: LivePack) -> list[dict[str, Any]]:
     is a receipt written from the variable it checks, and cannot fail when the
     level is the thing that is wrong.
     """
+    _refuse_substrate_key_mismatch(pack)
+    _refuse_substrate_fingerprint_mismatch(pack)
     out: list[dict[str, Any]] = []
     for row in pack.names:
         frame = pack.substrate.get(row.ticker)
         if frame is None:
-            continue
-        index = pd.DatetimeIndex(frame.index)
-        oracle = OracleFrame(
-            ticker=row.ticker, closes=frame["close"].astype(float).to_numpy(dtype=float),
-            index=index, next_session_ts=pd.Timestamp(pack.next_session).normalize())
-        for solution, margin in ((row.c1_arm_price, _c1_margin),
-                                 (row.c2a_cross_price, _c2a_margin)):
-            if solution.no_threshold_exists or solution.price is None:
-                continue
-            level = float(solution.price)
-            for side, probe in (("below", level * (1.0 - PROOF_EPSILON_REL)),
-                                ("above", level * (1.0 + PROOF_EPSILON_REL)),
-                                ("at", level)):
-                got = margin(oracle, probe)
-                observed = None if got is None else bool(got > 0.0)
-                expected = solution.holds_at(probe)
-                out.append(_case("threshold_boundary",
-                                 f"{row.ticker}:{solution.condition}:{side}",
-                                 boundary=level, direction=side,
-                                 expected=expected, observed=observed))
+            # A name is admitted only with a frame, so this is a pack whose frames
+            # were streamed out.  Skipping would drop the family and still pass.
+            raise LivePackError(
+                f"{row.ticker}: the pack holds no frozen frame to prove against; "
+                "pass the threshold cases collected while it was built")
+        out.extend(threshold_cases_for(row, frame, next_session=pack.next_session))
+    return out
+
+
+_THRESHOLD_SIDES = ("below", "above", "at")
+
+
+def _threshold_solutions(row: PackName) -> list[tuple[ThresholdSolution, Any]]:
+    """The solved levels of one name that the threshold family probes."""
+    return [(solution, margin)
+            for solution, margin in ((row.c1_arm_price, _c1_margin),
+                                     (row.c2a_cross_price, _c2a_margin))
+            if not (solution.no_threshold_exists or solution.price is None)]
+
+
+def threshold_case_names(row: PackName) -> list[str]:
+    """The names of one name's threshold proof cases, in order, from its row alone."""
+    return [f"{row.ticker}:{solution.condition}:{side}"
+            for solution, _margin in _threshold_solutions(row)
+            for side in _THRESHOLD_SIDES]
+
+
+def threshold_cases_for(row: PackName, frame: pd.DataFrame, *,
+                        next_session: date | str) -> list[dict[str, Any]]:
+    """One name's threshold proof cases, from its row and its frozen frame."""
+    out: list[dict[str, Any]] = []
+    index = pd.DatetimeIndex(frame.index)
+    oracle = OracleFrame(
+        ticker=row.ticker, closes=frame["close"].astype(float).to_numpy(dtype=float),
+        index=index, next_session_ts=pd.Timestamp(next_session).normalize())
+    for solution, margin in _threshold_solutions(row):
+        level = float(solution.price)
+        probes = (level * (1.0 - PROOF_EPSILON_REL), level * (1.0 + PROOF_EPSILON_REL), level)
+        for side, probe in zip(_THRESHOLD_SIDES, probes):
+            got = margin(oracle, probe)
+            observed = None if got is None else bool(got > 0.0)
+            expected = solution.holds_at(probe)
+            out.append(_case("threshold_boundary",
+                             f"{row.ticker}:{solution.condition}:{side}",
+                             boundary=level, direction=side,
+                             expected=expected, observed=observed))
     return out
 
 
@@ -1314,7 +1521,9 @@ def _proof_basis_cases() -> list[dict[str, Any]]:
     return out
 
 
-def build_inversion_proof(pack: LivePack) -> dict[str, Any]:
+def build_inversion_proof(pack: LivePack, *,
+                          threshold_cases: Sequence[Mapping[str, Any]] | None = None
+                          ) -> dict[str, Any]:
     """The nightly falsification battery.  Bounded, deterministic, outcome-blind.
 
     Every case straddles ONE frozen boundary in BOTH directions and records
@@ -1323,12 +1532,28 @@ def build_inversion_proof(pack: LivePack) -> dict[str, Any]:
     because an evaluator that disagrees with the levels it is about to compare
     against must not run.
 
+    ``threshold_cases`` hands in the threshold family already collected while the
+    pack was built (:class:`ProofTapSink`); None derives it from
+    ``pack.substrate``.  The two are the same cases in the same order.  Either
+    way the family is complete or the proof is refused: a name with no frame, or
+    a supplied list that is not exactly this pack's cases, raises.
+
     It tunes nothing, optimises nothing, reads no forward outcome, ranks nothing
     and never touches a spec hash.
     """
     next_session = _as_date(pack.next_session)
     cases: list[dict[str, Any]] = []
-    cases += _proof_threshold_cases(pack)
+    if threshold_cases is None:
+        cases += _proof_threshold_cases(pack)
+    else:
+        supplied = [dict(case) for case in threshold_cases]
+        expected = [name for row in pack.names for name in threshold_case_names(row)]
+        if ([case.get("case") for case in supplied] != expected
+                or any(case.get("family") != "threshold_boundary" for case in supplied)):
+            raise LivePackError(
+                f"the supplied threshold cases are not this pack's: {len(supplied)} "
+                f"supplied, {len(expected)} expected from its solved levels")
+        cases += supplied
     cases += _proof_micro_path_cases(next_session)
     cases += _proof_rearm_cases()
     cases += _proof_c2f_cases()
@@ -1365,7 +1590,48 @@ def pointer_path(state_dir: Path | str) -> Path:
     return pack_root(state_dir) / _POINTER_NAME
 
 
+def current_pack_identity(state_dir: Path | str) -> dict[str, str] | None:
+    """The current pack's ``as_of`` and ``pack_hash``, from the pointer and manifest ALONE.
+
+    Reads two small JSON files and checks that the substrate file exists; it
+    never opens the substrate parquet.  ``None`` means "no pack a builder may
+    treat as current": a missing, unreadable or non-object pointer or manifest,
+    a pointer whose ``as_of`` is not a plain ISO date or whose ``pack_hash`` is
+    empty, a missing substrate file, or a pointer that disagrees with its
+    manifest on ``as_of`` or ``pack_hash``.
+    """
+    root = pack_root(state_dir)
+    try:
+        pointer = json.loads((root / _POINTER_NAME).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(pointer, dict):
+        return None
+    as_of, pack_hash = pointer.get("as_of"), pointer.get("pack_hash")
+    if not (isinstance(as_of, str) and isinstance(pack_hash, str) and pack_hash):
+        return None
+    try:
+        if date.fromisoformat(as_of).isoformat() != as_of:
+            return None
+    except ValueError:
+        return None
+    session_dir = root / as_of
+    try:
+        manifest = json.loads((session_dir / _MANIFEST_NAME).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(manifest, dict):
+        return None
+    if manifest.get("as_of") != as_of or manifest.get("pack_hash") != pack_hash:
+        return None
+    if not (session_dir / _SUBSTRATE_NAME).is_file():
+        return None
+    return {"as_of": as_of, "pack_hash": pack_hash}
+
+
 def _substrate_frame(pack: LivePack) -> pd.DataFrame:
+    _refuse_substrate_key_mismatch(pack)
+    _refuse_substrate_fingerprint_mismatch(pack)
     rows: list[dict[str, Any]] = []
     for ticker in sorted(pack.substrate):
         frame = pack.substrate[ticker]
@@ -1391,6 +1657,7 @@ def save_pack(pack: LivePack, state_dir: Path | str, *,
     complete — the order that makes a crashed build invisible instead of
     half-visible.
     """
+    substrate_flat = _substrate_frame(pack)
     root = pack_root(state_dir)
     root.mkdir(parents=True, exist_ok=True)
     final = root / pack.as_of
@@ -1401,7 +1668,7 @@ def save_pack(pack: LivePack, state_dir: Path | str, *,
             json.dumps(pack.manifest(), sort_keys=True, separators=(",", ":"),
                        allow_nan=False),
             encoding="utf-8")
-        _substrate_frame(pack).to_parquet(staging / _SUBSTRATE_NAME, index=False)
+        substrate_flat.to_parquet(staging / _SUBSTRATE_NAME, index=False)
         if final.exists():
             shutil.rmtree(final)
         os.replace(staging, final)
@@ -1482,6 +1749,12 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
     # (N4): defaulting it to "whatever v2 currently is" would present a pack
     # that never carried `confirmed_lanes` as though it did.
     raw_confirmed_lanes = manifest.get("confirmed_lanes") or {}
+    names = tuple(PackName.from_dict(row) for row in manifest.get("names") or ())
+    for row in names:
+        frame = substrate.get(row.ticker)
+        if frame is None or substrate_fingerprint(frame) != row.substrate_fingerprint:
+            raise LivePackError(
+                f"{row.ticker}: saved substrate does not match the manifest row")
     return LivePack(
         schema=str(manifest.get("schema") or _SCHEMA_LIVE_PACK_V1),
         as_of=str(manifest["as_of"]), next_session=str(manifest["next_session"]),
@@ -1489,7 +1762,7 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
         price_basis=str(manifest.get("price_basis") or ch.BASIS_ADJUSTED),
         spec_hashes=dict(manifest.get("spec_hashes") or {}),
         probe_set=dict(manifest.get("probe_set") or {}),
-        names=tuple(PackName.from_dict(row) for row in manifest.get("names") or ()),
+        names=names,
         substrate=substrate,
         substrate_missing=tuple(dict(row) for row in
                                 manifest.get("substrate_missing") or ()),

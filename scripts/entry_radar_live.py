@@ -338,6 +338,7 @@ def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
         os.environ["ENTRY_RADAR_SPOOL_DIR"] = str(spool_dir)
 
     pack: Any = None
+    quotes: Any = None
     try:
         pack = LP.load_pack(state) if state is not None else None
         ledger = LL.LiveEpisodeLedger.load(state)
@@ -357,7 +358,7 @@ def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
         # operator actually reads, and the nonzero exit makes it legible to the
         # unit.  Nothing is spooled and nothing is committed on this path.
         payload, health = LE.failure_payload(now=stamp, pack=pack, state_dir=state,
-                                             error=exc)
+                                             quotes=quotes, error=exc)
         print(f"::error title=entry-radar-live::pass FAILED ({type(exc).__name__}: "
               f"{exc}) — publishing the failed receipt; zero transitions, zero spool",
               flush=True)

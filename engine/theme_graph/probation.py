@@ -22,6 +22,7 @@ import hashlib
 import json
 import logging
 from datetime import datetime, timezone
+from functools import lru_cache
 from pathlib import Path
 
 log = logging.getLogger(__name__)
@@ -41,13 +42,26 @@ STATUSES: frozenset[str] = frozenset({"proposed", "ratified", "rejected"})
 
 ROW_FIELDS: tuple[str, ...] = (
     "proposal_id", "kind", "subject", "evidence", "evidence_refs", "proposed_by",
-    "created", "status", "ratified_by", "note",
+    "created", "status", "ratified_by", "adjudicated_at", "note", "adjudication_note",
 )
 
 
 def utc_now_stamp() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace(
         "+00:00", "Z")
+
+
+def _parse_stamp(value: object, field: str) -> datetime:
+    """Compare decision clocks in UTC, including legacy unzoned/date-only rows."""
+    text = str(value or "").strip()
+    normalized = text[:-1] + "+00:00" if text.endswith("Z") else text
+    try:
+        stamp = datetime.fromisoformat(normalized)
+    except ValueError as exc:
+        raise ValueError(f"{field} must be an ISO-8601 timestamp") from exc
+    if stamp.tzinfo is None:
+        stamp = stamp.replace(tzinfo=timezone.utc)
+    return stamp.astimezone(timezone.utc)
 
 
 def proposal_id(kind: str, subject: dict) -> str:
@@ -78,32 +92,115 @@ def make_proposal(*, kind: str, subject: dict, evidence: dict | None = None,
         # Written as PROPOSED, always. A proposer cannot mint a ratified row.
         "status": "proposed",
         "ratified_by": None,
+        "adjudicated_at": None,
         "note": note,
+        "adjudication_note": None,
     }
 
 
 def validate(row: dict) -> list[str]:
     """Structural problems with one row, empty when it is well-formed."""
     out: list[str] = []
-    for f in ("proposal_id", "kind", "proposed_by", "created", "status"):
-        if not str(row.get(f) or "").strip():
-            out.append(f"missing {f}")
+    for field in ("proposal_id", "kind", "proposed_by", "created", "status"):
+        if not str(row.get(field) or "").strip():
+            out.append(f"missing {field}")
     if row.get("kind") and row["kind"] not in PROPOSAL_KINDS:
         out.append(f"kind {row['kind']!r} outside {sorted(PROPOSAL_KINDS)}")
     if row.get("proposed_by") and row["proposed_by"] not in PROPOSED_BY:
-        out.append(f"proposed_by {row['proposed_by']!r} outside {sorted(PROPOSED_BY)}")
-    if row.get("status") and row["status"] not in STATUSES:
-        out.append(f"status {row['status']!r} outside {sorted(STATUSES)}")
-    if row.get("status") == "ratified" and not str(row.get("ratified_by") or "").strip():
+        out.append(
+            f"proposed_by {row['proposed_by']!r} outside {sorted(PROPOSED_BY)}"
+        )
+    status = str(row.get("status") or "")
+    if status and status not in STATUSES:
+        out.append(f"status {status!r} outside {sorted(STATUSES)}")
+    ratified_by = str(row.get("ratified_by") or "").strip()
+    adjudicated_at = str(row.get("adjudicated_at") or "").strip()
+    if status == "ratified" and not ratified_by:
         out.append("status=ratified with no ratified_by — ratification names its author")
-    if row.get("status") != "ratified" and str(row.get("ratified_by") or "").strip():
+    if status != "ratified" and ratified_by:
         out.append("ratified_by set on a row that is not ratified")
+    if status in {"ratified", "rejected"} and not adjudicated_at:
+        out.append(f"status={status} with no adjudicated_at — decisions name their clock")
+    if status == "proposed" and adjudicated_at:
+        out.append("adjudicated_at set on a row that is still proposed")
+
+    decision_note = row.get("adjudication_note")
+    if decision_note is not None and not isinstance(decision_note, str):
+        out.append("adjudication_note must be text or null")
+    if status == "proposed" and decision_note is not None:
+        out.append("adjudication_note set on a row that is still proposed")
+
+    created_clock = None
+    if str(row.get("created") or "").strip():
+        try:
+            created_clock = _parse_stamp(row.get("created"), "created")
+        except ValueError as exc:
+            out.append(str(exc))
+    adjudicated_clock = None
+    if adjudicated_at:
+        try:
+            adjudicated_clock = _parse_stamp(adjudicated_at, "adjudicated_at")
+        except ValueError as exc:
+            out.append(str(exc))
+    if (
+        created_clock is not None
+        and adjudicated_clock is not None
+        and adjudicated_clock < created_clock
+    ):
+        out.append("adjudicated_at predates created")
     return out
 
 
-def read_proposals(path: Path) -> list[dict]:
-    """Every row on disk, oldest first. Unparseable lines are reported, never fatal."""
-    if not path.exists():
+@lru_cache(maxsize=1)
+def _contract_validator():
+    """Use the existing proposal schema; this is not a second curation contract."""
+    import jsonschema
+    path = Path(__file__).resolve().parents[2] / "contracts/theme_graph/probation_proposal.v1.schema.json"
+    return jsonschema.Draft202012Validator(json.loads(path.read_text(encoding="utf-8")))
+
+
+def require_valid_rows(rows: list[dict]) -> None:
+    """Fail closed before selection, so damaged objects cannot look like absence.
+
+    Syntax-only strict reading and the legacy forgiving default remain unchanged.
+    This guard is for complete research-consumer snapshots, not queue mutation.
+    """
+    import jsonschema
+    seen: set[str] = set()
+    for position, row in enumerate(rows, start=1):
+        try:
+            _contract_validator().validate(row)
+            json.dumps(row, allow_nan=False)
+        except (jsonschema.ValidationError, TypeError, ValueError) as exc:
+            raise ValueError(f"invalid probation proposal at row {position}") from exc
+        errors = validate(row)
+        if errors:
+            raise ValueError(f"invalid probation proposal at row {position}: {errors}")
+        if row["proposal_id"] != proposal_id(row["kind"], row["subject"]):
+            raise ValueError(f"probation proposal identity payload mismatch at row {position}")
+        if row["proposal_id"] in seen:
+            raise ValueError(f"duplicate probation proposal identity at row {position}")
+        seen.add(row["proposal_id"])
+
+
+def _unique_proposal_object(pairs):
+    """Reject ambiguous keys at every object depth in strict JSONL reads."""
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def read_proposals(path: Path, *, strict: bool = False) -> list[dict]:
+    """Read rows oldest first, retaining the legacy forgiving default.
+
+    Strict consumers distinguish a missing file from an empty queue and refuse
+    malformed, duplicate-key or non-object rows rather than silently dropping them.
+    Proposal contract validation remains with the existing owner/consumer.
+    """
+    if not strict and not path.exists():
         return []
     out: list[dict] = []
     for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
@@ -111,20 +208,25 @@ def read_proposals(path: Path) -> list[dict]:
         if not line:
             continue
         try:
-            row = json.loads(line)
-        except Exception:  # noqa: BLE001
+            row = json.loads(line, object_pairs_hook=_unique_proposal_object if strict else None)
+        except Exception as exc:  # noqa: BLE001 — preserve the legacy forgiving reader
+            if strict:
+                raise ValueError(f"{path.name} line {lineno}: {exc}") from exc
             log.warning("theme_graph.probation: %s line %d unparseable — skipped",
                         path.name, lineno)
             continue
         if isinstance(row, dict):
             out.append(row)
+        elif strict:
+            raise ValueError(f"{path.name} line {lineno}: proposal row must be a JSON object")
     return out
 
 
 def ratified(rows: list[dict]) -> list[dict]:
     """The rows a build may act on. Everything else is a suggestion, not a fact."""
     return [r for r in rows if str(r.get("status")) == "ratified"
-            and str(r.get("ratified_by") or "").strip()]
+            and str(r.get("ratified_by") or "").strip()
+            and str(r.get("adjudicated_at") or "").strip()]
 
 
 def append_proposals(rows: list[dict], path: Path) -> tuple[int, int]:
