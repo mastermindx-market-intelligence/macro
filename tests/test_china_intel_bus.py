@@ -187,6 +187,28 @@ def test_visit_discovery_unscoped_exception_blocks_global_negative_authority():
     assert snap["examples"][0]["baseline_state"] == "blocked_unscoped_coverage_exception"
 
 
+def test_visit_discovery_stale_ok_health_loses_negative_and_baseline_authority():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row("S1", "000099", "2026-09-20T09:00:00+08:00")],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-09-20T01:00:00+00:00",
+            "last_attempt_utc": "2026-09-20T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+        stale_after_days=4,
+    )
+    assert snap["owner_health_status"] == "ok"
+    assert snap["source_status"] == "stale"
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == "source_stale"
+    assert snap["examples"][0]["baseline_state"] == "unavailable_source_stale"
+
+
 def test_visit_discovery_degraded_source_keeps_positive_evidence_but_no_quiet_baseline():
     snap = bus._visit_discovery_snapshot(
         [_visit_row("E1", "000004", "2026-10-02T09:00:00+08:00")],
