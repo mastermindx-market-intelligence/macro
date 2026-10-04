@@ -57,18 +57,23 @@ files:
 
     '
 - path: config/fable_mode_core.md
-  sha256: f8fcebc8f3b44eccc54214a7364637a2fc826220d497cedb0b29bf4e74d36913
+  sha256: 84d7b8a2494265e04911e575c8a1bd0fa194ef5620a17582fc1b0e5f165b2126
   role: doctrine
   notes: 'V2-A vendored Fable-mode doctrine (R-V2-2): ten commitments + pre-send gate,
-    near the R-V2-2 byte budget. Injected into orchestrator system prompt when model is Opus-class. IMMUTABLE
-    — loop PRs may not modify. Runner never reads ~/. 2026-09-24 hash update ratifies
-    Revision 3 of the fable-mode doctrine (Fable 5.1, seat edition): four seat
-    commitments (the seat judges / one owner per artifact / the nine-rung delivery
-    ladder / state lives on disk), and gate items 8–12
-    (ladder, ownership, durable state, quiet, session end). Synced with
-    .claude/skills/fable-mode/SKILL.md Revision 3; injection semantics unchanged.
-    2026-09-25 Revision 3.1 candidate updates ownership and quiet gates to require a verified
-    return path rather than infer a wake. No grader or injection logic changed.
+    near the R-V2-2 byte budget. Injected into orchestrator system prompt when model
+    is Opus-class. IMMUTABLE — loop PRs may not modify. Runner never reads ~/. 2026-09-24
+    hash update ratifies Revision 3 of the fable-mode doctrine (Fable 5.1, seat edition):
+    four seat commitments (the seat judges / one owner per artifact / the nine-rung
+    delivery ladder / state lives on disk), and gate items 8–12 (ladder, ownership,
+    durable state, quiet, session end). Synced with .claude/skills/fable-mode/SKILL.md
+    Revision 3; injection semantics unchanged. 2026-09-25 Revision 3.1 candidate updates
+    ownership and quiet gates to require a verified return path rather than infer
+    a wake. No grader or injection logic changed. 2026-10-03 Revision 3.2 ratifies
+    asynchronous external waits: accountability remains with the seat, exactly one
+    watcher owns observation, independent authorized work advances immediately, and
+    DURABLE_EXECUTION_RUNNING is reserved for the sole remaining verified wait. The
+    fitness delta is orchestration latency/capacity only; authority, routing, ladder
+    rungs, acceptance, and injection code are unchanged.
 
     '
 - path: config/metabolism_schedule.yml
