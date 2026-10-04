@@ -358,18 +358,58 @@ def test_status_setting_eci_comp_yoy_to_nan_via_dict_is_missing():
 
 
 def test_date_info_handles_date_strings_and_offset_instants():
+    # CUTOFF is 2026-10-03T02:00Z = 2026-10-02 22:00 New York, so ages count
+    # from the New York date 2026-10-02 (contract clock rule, review r2 B1).
     assert rcc.date_info("2026-09-25", CUTOFF) == {
         "as_of": "2026-09-25",
         "precision": "date",
-        "age_calendar_days": 8,
+        "age_calendar_days": 7,
         "future_dated": False,
     }
     assert rcc.date_info("2026-10-02T15:00:00-04:00", CUTOFF) == {
         "as_of": "2026-10-02T19:00:00+00:00",
         "precision": "datetime",
-        "age_calendar_days": 1,
+        "age_calendar_days": 0,
         "future_dated": False,
     }
+
+
+def test_date_info_date_only_stamps_are_new_york_calendar_days():
+    # 02:00Z has already turned the UTC date to 10-03; New York is still 10-02.
+    nxt = rcc.date_info("2026-10-03", CUTOFF)
+    assert nxt["future_dated"] is True
+    assert nxt["age_calendar_days"] == -1
+    same = rcc.date_info("2026-10-02", CUTOFF)
+    assert same["future_dated"] is False
+    assert same["age_calendar_days"] == 0
+    # An instant one hour before the cutoff is 21:00 New York on 10-02: not future, age 0.
+    inst = rcc.date_info("2026-10-03T01:00:00+00:00", CUTOFF)
+    assert inst["future_dated"] is False
+    assert inst["age_calendar_days"] == 0
+    # Negative control: at a mid-day cutoff the UTC and New York dates agree.
+    noon = datetime(2026, 10, 2, 16, 0, tzinfo=timezone.utc)
+    assert rcc.date_info("2026-10-03", noon)["future_dated"] is True
+    assert rcc.date_info("2026-10-02", noon)["future_dated"] is False
+    assert rcc.date_info("2026-09-25", noon)["age_calendar_days"] == 7
+
+
+def test_status_next_new_york_day_stamp_at_a_late_evening_cutoff_is_future_dated():
+    # Review r2 blocker 1: T.asof = 10-03 with the cutoff at 10-03T02:00Z (10-02 22:00 ET)
+    # and the completed session 10-02 is after the information boundary.
+    bytes_in = _patch("T", ["asof"], "2026-10-03")
+    docs, record = rcc.read_inputs(MAPPING, bytes_in)
+    rows = rcc.evidence_rows(
+        MAPPING, docs, record, analysis_cutoff=CUTOFF, us_session=US_SESSION
+    )
+    state_rows = [r for r in rows if r["id"].startswith("T.state.")]
+    assert state_rows
+    assert all(r["status"] == "future_dated" for r in state_rows)
+    assert all(r["source"]["session_relation"] == "after_completed_session" for r in state_rows)
+    assert all(r["values"] == {} for r in state_rows)
+    cards = rcc.outlook_paths(MAPPING, docs, rows)
+    od = next(c for c in cards if c["path_id"] == "orderly_disinflation")
+    od1 = next(c for c in od["conditions"] if c["condition_id"] == "OD-1")
+    assert od1["reading"] == "unknown"
 
 
 def test_date_info_an_offset_instant_equal_to_cutoff_is_not_future_dated():
@@ -931,9 +971,28 @@ def test_pick_baseline_same_session_with_baseline_same_day_is_no_earlier_project
     assert out == {"status": "absent", "reason": "no_earlier_projection"}
 
 
-def test_pick_baseline_previous_later_than_us_session_is_no_earlier_projection():
+def test_pick_baseline_previous_later_than_us_session_is_previous_from_later_session():
     out = rcc.pick_baseline(_prev(), us_session=date(2026, 10, 1), session_of=SESSION_OF)
-    assert out == {"status": "absent", "reason": "no_earlier_projection"}
+    assert out == {"status": "absent", "reason": "previous_from_later_session"}
+
+
+def test_pick_baseline_previous_from_a_later_session_never_lends_its_stored_baseline():
+    # Review r2 blocker 2: previous was built for session 10-06 and carries a
+    # 09-29 baseline; this build's session is 10-02. Neither is this build's baseline.
+    stored = {
+        "analysis_cutoff": "2026-09-30T02:00:00+00:00",
+        "us_session": "2026-09-29",
+        "evidence": {
+            "alpha": {"values": {"v": 7}, "owner_verdict": None, "status": "available", "as_of": "2026-09-29"}
+        },
+    }
+    prev = _prev(cutoff="2026-10-07T02:00:00+00:00", baseline=stored)
+    assert SESSION_OF(datetime.fromisoformat(prev["analysis_cutoff"])) == date(2026, 10, 6)
+    out = rcc.pick_baseline(prev, us_session=date(2026, 10, 2), session_of=SESSION_OF)
+    assert out == {"status": "absent", "reason": "previous_from_later_session"}
+    # Positive control: the same stored baseline IS carried on a same-session rebuild.
+    same = _prev(cutoff="2026-10-03T02:00:00+00:00", baseline=stored)
+    assert rcc.pick_baseline(same, us_session=date(2026, 10, 2), session_of=SESSION_OF) == stored
 
 
 def test_pick_baseline_never_mutates_previous():
@@ -1109,9 +1168,8 @@ def test_list_changes_baseline_built_from_same_rows_returns_empty():
         ("available", "missing", "became_unavailable"),
         ("stale", "unknown_date", "became_unavailable"),
         ("partial", "future_dated", "became_unavailable"),
-        ("available", "partial", "became_unavailable"),
-        ("stale", "partial", "became_unavailable"),
-        ("missing", "partial", "unattributed"),
+        ("missing", "partial", "became_available"),
+        ("unknown_date", "partial", "became_available"),
         ("missing", "unknown_date", "unattributed"),
         ("unknown_date", "future_dated", "unattributed"),
     ],
@@ -1139,6 +1197,39 @@ def test_list_changes_status_transitions(baseline_status, current_status, kind):
 
 
 # L4 ---------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("baseline_status", ["available", "stale"])
+def test_list_changes_available_to_partial_is_judged_by_the_data_rules(baseline_status):
+    # Review r2 S5: a partial row still carries values, so the move is not
+    # "became_unavailable". Same values, same date -> nothing to report.
+    b = [_erow("a", {"v": 1}, None, baseline_status, "2026-10-02", semantics="source_observation_date")]
+    c = [_erow("a", {"v": 1}, None, "partial", "2026-10-02", semantics="source_observation_date")]
+    assert rcc.list_changes(_baseline(b), c) == []
+    # A later observation with a new value is observation_advanced.
+    c2 = [_erow("a", {"v": 2}, None, "partial", "2026-10-03", semantics="source_observation_date")]
+    out = rcc.list_changes(_baseline(b), c2)
+    assert [e["change_kind"] for e in out] == ["observation_advanced"]
+    # Same date, new value is a revision.
+    c3 = [_erow("a", {"v": 2}, None, "partial", "2026-10-02", semantics="source_observation_date")]
+    assert [e["change_kind"] for e in rcc.list_changes(_baseline(b), c3)] == ["value_revised"]
+    assert "became_unavailable" not in {e["change_kind"] for e in out}
+
+
+def test_list_changes_precision_only_stamp_change_is_not_later():
+    # Review r2 N1: "2026-10-02" -> "2026-10-02T15:00:00+00:00" (11:00 New York, same
+    # day) is a precision change, not a later observation.
+    b = [_erow("a", {"v": 1}, None, "available", "2026-10-02", semantics="source_observation_date")]
+    c_same = [_erow("a", {"v": 1}, None, "available", "2026-10-02T15:00:00+00:00", semantics="source_observation_date")]
+    assert [e["change_kind"] for e in rcc.list_changes(_baseline(b), c_same)] == ["clock_only"]
+    c_new = [_erow("a", {"v": 2}, None, "available", "2026-10-02T15:00:00+00:00", semantics="source_observation_date")]
+    assert [e["change_kind"] for e in rcc.list_changes(_baseline(b), c_new)] == ["unattributed"]
+    # A genuinely later instant on a later New York day advances.
+    c_later = [_erow("a", {"v": 2}, None, "available", "2026-10-03T15:00:00+00:00", semantics="source_observation_date")]
+    assert [e["change_kind"] for e in rcc.list_changes(_baseline(b), c_later)] == ["observation_advanced"]
+    assert rcc._stamp_later("2026-10-03T01:00:00+00:00", "2026-10-02") is False  # 21:00 NY on 10-02
+    assert rcc._stamp_later("2026-10-03T05:00:00+00:00", "2026-10-02") is True   # 01:00 NY on 10-03
+    assert rcc._stamp_later("garbage", "2026-10-02") is False
 
 
 def test_list_changes_same_missing_status_and_different_as_of_is_clock_only():
@@ -1485,6 +1576,22 @@ def test_compose_outlook_a_naive_analysis_cutoff_raises_value_error():
 def test_compose_outlook_a_naive_built_at_raises_value_error():
     with pytest.raises(ValueError):
         _compose_call(built=datetime(2026, 10, 3, 2, 5))
+
+
+def test_compose_outlook_a_session_of_returning_a_non_date_reads_as_session_unavailable():
+    # Review r2 S1: a str or a datetime from session_of must not raise inside the composer.
+    for bad in ("2026-10-02", CUTOFF, 20261002, None):
+        out = rcc.compose_outlook(
+            MAPPING,
+            _base_bytes(),
+            mapping_sha256="0" * 64,
+            analysis_cutoff=CUTOFF,
+            built_at=CUTOFF,
+            session_of=lambda dt, _b=bad: _b,
+            previous=None,
+        )
+        assert out["baseline"] == {"status": "absent", "reason": "no_earlier_projection"}
+        assert all(r["source"]["session_relation"] is None for r in out["evidence"])
 
 
 def test_compose_outlook_a_session_of_that_raises_with_no_stored_baseline_returns_us_session_unavailable():

@@ -1,9 +1,17 @@
-"""Outlooks evidence rows + state families — display research slice E1c1.
+"""The regime-outlook COMPOSER (slice E1c, contract rev 3.2 §3, §6, Appendix A).
 
-First slice of the regime-outlook COMPOSER: builds the input record from
-the owners' bytes, 30 evidence rows with their clocks, and 10 state-family
-rows. Does not read path conditions, baselines or changes; the builder
-script is not touched.
+From the seven owners' bytes it builds the input record, the 30 evidence
+rows with their clocks, the ten state-family rows, the nine path cards,
+the baseline rule and the list of changes, and assembles them into the
+``regime_outlook.v1`` projection (``compose_outlook``). The builder script
+only calls it.
+
+Clock rule: a plain date stamp (``YYYY-MM-DD``) names a US-session
+calendar day in America/New_York. Its age and its future flag are judged
+against the New York date of the analysis cutoff — the same clock
+``session_relation`` uses — so a stamp for the next New York day is
+``future_dated`` even when the cutoff's UTC date has already turned. An
+offset-aware instant is compared as an instant.
 
 This module is pure: every byte is an argument, every clock is supplied.
 It opens no file, no socket, and never takes the wall-clock time.
@@ -20,6 +28,8 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 from engine import rates_command_outlook as rco
+
+_NY = ZoneInfo("America/New_York")
 
 AGE_RULE_NOTE = "age is not checked yet: only the producer's own stale flag is applied"
 
@@ -114,6 +124,12 @@ def date_info(value: Any, cutoff: datetime) -> dict[str, Any]:
     naive datetimes return the start dict unchanged. A plain date string
     yields precision ``"date"``; an offset-aware datetime string yields
     ``"datetime"`` in UTC.
+
+    Calendar arithmetic runs on the New York date of ``cutoff``: a plain
+    date names a US-session day, so it is future-dated when it is after
+    the cutoff's New York date, and its age is counted in New York days.
+    An instant is future-dated when it is after the cutoff instant; its
+    age is the New York day difference.
     """
     out: dict[str, Any] = {
         "as_of": None,
@@ -124,7 +140,7 @@ def date_info(value: Any, cutoff: datetime) -> dict[str, Any]:
     if cutoff.tzinfo is None:
         raise ValueError("cutoff must be timezone-aware")
     cutoff_utc = cutoff.astimezone(timezone.utc)
-    cutoff_d = cutoff_utc.date()
+    cutoff_d = cutoff.astimezone(_NY).date()
     if not isinstance(value, str):
         return out
     if _DATE_RE.match(value):
@@ -148,7 +164,7 @@ def date_info(value: Any, cutoff: datetime) -> dict[str, Any]:
     return {
         "as_of": dt_utc.isoformat(),
         "precision": "datetime",
-        "age_calendar_days": (cutoff_d - dt_utc.date()).days,
+        "age_calendar_days": (cutoff_d - dt.astimezone(_NY).date()).days,
         "future_dated": dt_utc > cutoff_utc,
     }
 
@@ -204,7 +220,7 @@ def _row_day(source: dict[str, Any], us_session: date | None) -> date | None:
     dt = datetime.fromisoformat(source["as_of"])
     if dt.tzinfo is None:
         return None
-    return dt.astimezone(ZoneInfo("America/New_York")).date()
+    return dt.astimezone(_NY).date()
 
 
 def _session_relation(row_day: date | None, us_session: date | None) -> str | None:
@@ -686,9 +702,15 @@ def pick_baseline(
       (d) ``session_of(previous cutoff)`` is strictly earlier than
           ``us_session`` -> a NEW baseline built from previous's evidence;
           a stored baseline (if any) is ignored.
-      (e) ``previous`` carries a stored baseline whose ``us_session`` is
-          strictly earlier than ``us_session.isoformat()`` -> a deep copy.
-      (f) otherwise absent ``no_earlier_projection``.
+      (e) ``session_of(previous cutoff)`` is strictly LATER than
+          ``us_session`` -> absent ``previous_from_later_session``: a
+          projection built after this build's session is never its
+          baseline, and nothing it carries is either.
+      (f) same session (a rebuild) and ``previous`` carries a stored
+          baseline whose ``us_session`` is strictly earlier than
+          ``us_session.isoformat()`` -> a deep copy (the carry-forward the
+          contract's §6 baseline rule allows for a same-session rebuild).
+      (g) otherwise absent ``no_earlier_projection``.
 
     A snapshot entry has exactly the four keys ``values``, ``owner_verdict``,
     ``status`` and ``as_of`` (where ``as_of`` comes from
@@ -763,6 +785,10 @@ def pick_baseline(
             "evidence": evidence_out,
         }
 
+    if prev_session > us_session:
+        return {"status": "absent", "reason": "previous_from_later_session"}
+
+    # prev_session == us_session: a rebuild inside the same completed session.
     baseline = previous.get("baseline")
     if (
         isinstance(baseline, dict)
@@ -791,6 +817,39 @@ CHANGE_KINDS: tuple[str, ...] = (
     "mapping_version_changed",
     "unattributed",
 )
+
+
+def _stamp_key(stamp: Any) -> tuple[date, datetime | None] | None:
+    """New York day plus (for an instant) the UTC instant; None if unreadable."""
+    if not isinstance(stamp, str):
+        return None
+    if _DATE_RE.match(stamp):
+        try:
+            return (date.fromisoformat(stamp), None)
+        except ValueError:
+            return None
+    try:
+        dt = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+    except (ValueError, TypeError, OverflowError):
+        return None
+    if dt.tzinfo is None:
+        return None
+    return (dt.astimezone(_NY).date(), dt.astimezone(timezone.utc))
+
+
+def _stamp_later(current: Any, baseline: Any) -> bool:
+    """True when ``current`` names a later New York day than ``baseline``, or the
+    same day and a later instant. A precision-only change (date to instant
+    on the same day) is never "later"."""
+    c = _stamp_key(current)
+    b = _stamp_key(baseline)
+    if c is None or b is None:
+        return False
+    if c[0] != b[0]:
+        return c[0] > b[0]
+    if c[1] is not None and b[1] is not None:
+        return c[1] > b[1]
+    return False
 
 
 def list_changes(baseline: Any, evidence: list) -> list[dict[str, Any]]:
@@ -899,17 +958,23 @@ def list_changes(baseline: Any, evidence: list) -> list[dict[str, Any]]:
                 "missing", "unknown_date", "future_dated"
             ):
                 kind = "became_unavailable"
+            elif bs in ("missing", "unknown_date", "future_dated") and cs == "partial":
+                kind = "became_available"
             elif bs in ("available", "stale") and cs == "partial":
-                kind = "became_unavailable"
+                # A partial row still carries values and an owner verdict, so
+                # the move is judged by the data rules below, never labelled
+                # "became_unavailable".
+                kind = None
             else:
                 kind = "unattributed"
-            entries.append({
-                "evidence_id": rid,
-                "change_kind": kind,
-                "from": b_copy,
-                "to": c_copy,
-            })
-            continue
+            if kind is not None:
+                entries.append({
+                    "evidence_id": rid,
+                    "change_kind": kind,
+                    "from": b_copy,
+                    "to": c_copy,
+                })
+                continue
 
         # Rule 3: same non-data status.
         if b["status"] in ("missing", "unknown_date", "future_dated"):
@@ -926,11 +991,7 @@ def list_changes(baseline: Any, evidence: list) -> list[dict[str, Any]]:
         changed = b["values"] != c["values"] or b["owner_verdict"] != c["owner_verdict"]
         verdict = b["owner_verdict"] != c["owner_verdict"]
         moved = b["as_of"] != c["as_of"]
-        later = (
-            isinstance(b["as_of"], str)
-            and isinstance(c["as_of"], str)
-            and c["as_of"] > b["as_of"]
-        )
+        later = _stamp_later(c["as_of"], b["as_of"])
         if not changed and not moved:
             continue
 
@@ -1014,6 +1075,8 @@ def compose_outlook(
         us_session = session_of(analysis_cutoff)
     except Exception:
         us_session = None
+    if not isinstance(us_session, date) or isinstance(us_session, datetime):
+        us_session = None  # anything but a plain date reads as "session unavailable"
 
     previous_safe = copy.deepcopy(previous) if previous is not None else None
 

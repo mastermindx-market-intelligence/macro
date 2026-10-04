@@ -37,6 +37,12 @@ transmission state now publishes no token and no number when its input is missin
 re-read against producer code and takes a new version, `VERDICT_MAPPING_V2`, before any
 projection is built. No path, condition or reading changed. The changes are listed in §18.
 
+Revision 3.3 (2026-10-04). The composer's independent review (PR #8380) found two silences in
+this contract and they are closed here: a plain date stamp is a New York calendar day and is
+judged against the New York date of the cutoff, and a projection built for a later completed
+session is never a baseline. Neither touches the mapping: no path, condition, reading or family
+changed, so `VERDICT_MAPPING_V2` stands. The changes are listed in §19.
+
 ## 0. Acceptance gates — the first vertical is not done unless
 
 1. **Real path.** Change one transmission input in a real artifact shape, run the existing
@@ -193,6 +199,14 @@ Field rules:
   projection has **no single "as of" date**. `evidence_clock_range` is computed only from rows
   whose `clock_semantics` is `source_observation_date`; other rows are counted in
   `by_clock_semantics`, not folded into the range.
+  - **Clock rule for stamps (revision 3.3).** An owner stamp that is a plain date (`YYYY-MM-DD`)
+    names a US-session calendar day in America/New_York. Its `future_dated` flag and its
+    `age_calendar_days` are judged against the **New York date of the cutoff** — the same clock
+    `session_relation` uses — never against the cutoff's UTC date, so a stamp for the next New
+    York day is future-dated even after 00:00Z has turned the UTC date. An offset-aware instant is
+    future-dated when it is after the cutoff instant; its age is the New York day difference. A
+    change in a stamp's precision alone (a date becoming an instant on the same New York day) is
+    never a later observation.
 - `inputs.<id>.sha256` is the hash of the bytes read at the cutoff — provenance for the cited
   inputs only. It is not compared between builds and nothing keys on it (an artifact that embeds
   its build instant changes hash on every build). Change detection works on evidence values,
@@ -376,7 +390,9 @@ One workflow: **Now → What changed → Paths → History → Exposures → Wat
   **Baseline rule.** The baseline is the newest committed projection whose completed US session
   is strictly earlier than this build's. A rebuild within the same session — a second nightly
   attempt, the weekly lane, a recovery run — carries the stored baseline forward unchanged and
-  never promotes the same session's earlier build to "previous". The baseline travels inside the
+  never promotes the same session's earlier build to "previous". A `previous` whose completed
+  session is **later** than this build's is never its baseline and lends nothing it carries: the
+  baseline is then absent with reason `previous_from_later_session` (revision 3.3). The baseline travels inside the
   artifact (`baseline`), following the incumbent board's own same-day rule
   (`engine/rates_inflation_command.py`, the `prev_state` carry), so the comparison never depends
   on git history or on which lane ran last. The first projection ever written has no baseline and
@@ -818,6 +834,20 @@ family changed. No projection was built and no replay was run under version 1.
 
 Where Appendix A says "version 1" about a scope decision — what is cited, left open or
 retired — the decision is unchanged in version 2.
+
+## 19. Change log — revision 3.3
+
+Trigger: the independent read-only review of the composer (PR #8380, round 2) showed the
+module judging a plain date against the cutoff's UTC date while `session_relation` used New
+York, and a baseline carry-forward that also fired when `previous` came from a later session.
+The contract had not ruled on either. No path, condition, reading or family changed; the
+mapping stays `VERDICT_MAPPING_V2`.
+
+| # | Change | Reason |
+|---|---|---|
+| C1 | §3 clock rule: a plain date stamp is a New York calendar day; `future_dated` and `age_calendar_days` use the New York date of the cutoff; a precision-only stamp change is never "later". | Between 00:00Z and the New York midnight a next-day stamp was read as current, against the information boundary. |
+| C2 | §6: a `previous` from a later completed session yields an absent baseline, reason `previous_from_later_session`; carry-forward is only for a same-session rebuild. | The §6 rule allowed carry-forward only within the same session; the composer had carried from a later one. |
+| C3 | What-changed classification: a row that moves from `available`/`stale` to `partial` is judged by the data rules (`observation_advanced` / `value_revised` / `owner_verdict_changed` / `clock_only`), and a row that moves from a non-data status to `partial` is `became_available`. | A partial row still carries its values and verdict; `became_unavailable` was a label the contract never defined for it. |
 
 ## Appendix A — `VERDICT_MAPPING_V2`
 
