@@ -24,6 +24,7 @@ WS = Path("workstreams") / f"WS-{KEY}.md"
 OLD = Path("handoffs") / f"{KEY}-2026-09-08.md"
 NEW = Path("handoffs") / f"{KEY}-2026-09-19.md"
 DEC = Path("decisions/DEC-AGENT-EVAL-FABLE-COO-DELEGATION.md")
+C2_DEC = Path("decisions/DEC-AGENT-EVAL-C2-CHAIRMAN-RULING.md")
 
 
 def record(path: Path) -> dict:
@@ -50,11 +51,11 @@ def test_dated_handoff_does_not_repeat_superseded_release() -> None:
     assert "Mastermind #841 is merged/do-not-redo at 96c9ab97aa64bce65fe0da140c9d6c5bbf2c778e" in do_not_redo
     assert "OHF typed request failures are repaired and protected." in verified
     assert "96c9ab97aa64bce65fe0da140c9d6c5bbf2c778e" in verified
-    assert "eb00ed9745f055d3413f483b985fe4f9d8a1f11d" in verified
+    assert "738454fa1716bae74d0e78216c4bce937b2913cf" in verified
     assert "not protected until review/CI/release complete" not in text
 
 
-def test_historical_handoff_names_both_live_source_gates_without_permission() -> None:
+def test_current_handoff_preserves_settled_sources_and_no_effect_ceiling() -> None:
     assert (STORE / NEW).is_file(), "The latest recoverable handoff is still September 1"
     handoff = record(STORE / NEW)
     actions = " ".join(handoff["next_actions"])
@@ -75,7 +76,7 @@ def case_store(tmp_path: Path) -> Path:
     """Only the two dated handoffs: newer production work is not pinned by this case."""
     assert (STORE / NEW).is_file(), "Missing corrected continuation record"
     root = tmp_path / "agentos"
-    for relative in (WS, OLD, NEW, DEC):
+    for relative in (WS, OLD, NEW, DEC, C2_DEC):
         target = root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(STORE / relative, target)
@@ -114,7 +115,10 @@ def test_real_compiler_recovers_new_handoff_and_excludes_old(tmp_path, mentioned
     bundle = compile_case(root, mentioned=mentioned, budget=budget)
     items = section(bundle, "handoff")["items"]
     assert len(items) == 1 and items[0]["path"].endswith(str(NEW))
-    assert "C2 is execution-held" in items[0]["excerpt"]
+    assert "C2 is decided" in items[0]["excerpt"]
+    assert "db4ef921c1e9a1abd790197d2719ba5316fbf99e" in items[0]["excerpt"]
+    assert "3e66e43258f34db240d5bff76f54148c7af84ee4" in items[0]["excerpt"]
+    assert "real provider-free H1/H2 episode" in items[0]["excerpt"]
     assert "Mastermind #398" in items[0]["excerpt"]
     assert "d79d2ec3537d8eb060055731a7c3cebee0c543eb" in items[0]["excerpt"]
     assert "91cb16860ee9e140d28052e5981b7c8f94aac4ecd42e788d3c7a75e3415e5cf8" in items[0]["excerpt"]
@@ -177,20 +181,18 @@ def test_later_workstream_completion_is_not_blocked_by_historical_case(tmp_path)
     assert "not for permission" in section(bundle, "workstream")["title"]
 
 
-@pytest.mark.parametrize("runner_status, expected", [("in_progress", "blocked"), ("done", "ready"), ("dropped", "blocked")])
-def test_e1_readiness_requires_the_runner_even_when_bridge_source_is_done(
-    tmp_path: Path, runner_status: str, expected: str,
+@pytest.mark.parametrize("c2_status, expected", [("in_progress", "blocked"), ("done", "ready"), ("dropped", "blocked")])
+def test_c3_readiness_requires_completed_c2_adjudication(
+    tmp_path: Path, c2_status: str, expected: str,
 ) -> None:
-    """Completed bridge SOURCE cannot satisfy the still-held live runner dependency."""
+    """C3 becomes executable only after C2; readiness never makes C3 terminal."""
     root = case_store(tmp_path)
     current = record(root / WS)
     current["status"] = "active"
     for wave in current["waves"]:
-        if wave["id"] in {"B2", "B4", "C1"}:
-            wave["status"] = "done"
-        elif wave["id"] == "B3":
-            wave["status"] = runner_status
-        elif wave["id"] == "C2":
+        if wave["id"] == "C2":
+            wave["status"] = c2_status
+        elif wave["id"] == "C3":
             wave["status"] = "todo"
     rewrite_record(root / WS, current)
     before = digests(root)
@@ -199,18 +201,19 @@ def test_e1_readiness_requires_the_runner_even_when_bridge_source_is_done(
                MACRO_TERMINAL_REPO=str(root / "absent-terminal"))
     result = subprocess.run(
         [sys.executable, str(REPO / "scripts/agentos.py"), "brief", "--root",
-         str(root), "--json", "--no-remember", "--now", "2026-09-08T23:59:00Z"],
+         str(root), "--json", "--no-remember", "--now", "2026-09-20T23:59:00Z"],
         cwd=REPO, env=env, text=True, capture_output=True, timeout=45,
     )
     assert result.returncode == 0, result.stdout + result.stderr
     readiness = json.loads(result.stdout)["readiness"]
-    e1 = next(row for row in readiness["records"]
-              if row["workstream"] == KEY and row["wave"] == "C2")
-    assert e1["state"] == expected
+    c3 = next(row for row in readiness["records"]
+              if row["workstream"] == KEY and row["wave"] == "C3")
+    assert c3["state"] == expected
+    assert c3["state"] != "done"
     if expected == "blocked":
-        assert f"WS:{KEY}#B3" in e1["unmet_dependencies"]
+        assert f"WS:{KEY}#C2" in c3["unmet_dependencies"]
     else:
-        assert e1["unmet_dependencies"] == []
+        assert c3["unmet_dependencies"] == []
     assert digests(root) == before
 
 
