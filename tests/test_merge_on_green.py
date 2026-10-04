@@ -4923,7 +4923,7 @@ def _main_harness(
     monkeypatch.setattr(MOG, "ensure_main_baseline", lambda *_a: "stubbed")
     seen: list[int] = []
 
-    def fake_sweep(_repo, pull, *_rest):
+    def fake_sweep(_repo, pull, *_rest, **_kwargs):
         seen.append(pull["number"])
         return verdict
 
@@ -8019,7 +8019,7 @@ def test_the_sweep_orders_the_baseline_AFTER_it_learns_what_it_could_not_answer(
     seen: dict[str, object] = {}
 
     def fake_sweep(_repo, pull, _read, _write, _fresh, _proof=None, _budget=None,
-                   blocked=None):
+                   blocked=None, **_kwargs):
         if blocked is not None:
             blocked.add("ci-pack-2")
         return "blocked"
