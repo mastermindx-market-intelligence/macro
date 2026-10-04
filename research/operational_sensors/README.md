@@ -31,3 +31,5 @@ Keep observations, economic exposure, features, forecasts and expectations inspe
 This package completes the research commission and makes the later implementation proposal reviewable. It contains no production code, raw proprietary dataset, procurement, deployment, trading change or source-authority grant. Section L is a proposed follow-on commission and has not been executed.
 
 Mastermind and Terminal were pinned to their protected master revisions. Macro's census pin is 79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f; the publication recheck found direct child 59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc changing only Trend Persistence coordination records. Relevant sensor code, contracts and artifacts were unchanged. The manifest preserves both observations.
+
+Publication carrier: [PR #8420](https://github.com/mastermindx-market-intelligence/macro/pull/8420). Its creation observed the next Macro main commit, 617c5818b0493e1843c652be881f72cbebfac123, changing only a China Alpha workstream record. This additional delta also leaves the sensor evidence unchanged. The PR contains only this six-file documentation package.

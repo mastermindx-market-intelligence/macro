@@ -38,6 +38,8 @@ Mastermind and Terminal heads were unchanged on the final recheck. Macro main ad
 
 Sensor code, contracts and data artifacts cited by the census are unchanged. The main report records the new Trend Persistence coordination state, including the separate Wave C-2 candidate and existing freeze/one-run constraints. Unrelated source movement did not trigger a redundant full census.
 
+At PR creation, Macro main had advanced once more to [617c5818b0493e1843c652be881f72cbebfac123](https://github.com/mastermindx-market-intelligence/macro/commit/617c5818b0493e1843c652be881f72cbebfac123). Its sole changed file is agentos/workstreams/WS-CHINA-ALPHA-INTELLIGENCE.md. This additional records-only delta does not invalidate the operational-sensor census. PR #8420 was observed open, non-draft, mergeable, with exactly six added documentation files; merge/check acceptance is not claimed.
+
 ## 3. Material hardening decisions
 
 | Area | Correction / strengthened decision |
@@ -81,7 +83,7 @@ The initial checkpoint commit 394c77eeabe60b78b3043687ec27625b5142f075 incorrect
 
 The package contains all required sections A–L, a current-estate companion, source diligence, this audit, a navigation README and an evidence manifest. Document checks verify section coverage, citation/reference integrity, relative file links, original-input checksum and the absence of session-only citation tokens. The manifest records exact output checksums without a self-referential manifest hash.
 
-GitHub publication is through the same records-only branch used for the checkpoint. The completed publication is an atomic documentation commit followed by a reviewable pull request; exact commit/PR and remote byte verification are reported in the delivery response. No source/default-branch mutation, merge, deployment or implementation acceptance is implied by this report.
+GitHub publication is through the same records-only branch used for the checkpoint. The completed publication was committed atomically and opened as [PR #8420](https://github.com/mastermindx-market-intelligence/macro/pull/8420); a documentation-only follow-up records the additional source-delta observation. Exact final commit and remote byte verification are reported in the delivery response. No source/default-branch mutation, merge, deployment or implementation acceptance is implied by this report.
 
 Material unknowns remain explicit: actual commercial license/price, sample and historical-vintage entitlements, real correction delivery, complete historical target/consensus series, source-to-consumer runtime proof and empirical incremental value. These are future evidence requirements, not unfinished documentary research claims disguised as results.
 

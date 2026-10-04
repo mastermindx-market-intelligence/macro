@@ -68,7 +68,9 @@ A numerical KPI result is required only after a defensible target and calibratio
 | mastermindx-market-intelligence/mastermind-terminal | master — **1c708450187755160e1a5889b69598a2fcb1f0d1** | Branch protected=true. Existing Macro bridge and company-intelligence consumer were inspected. |
 | Research Vault | Macro engine/research_vault, app/research.py, and research/RESEARCH_VAULT_MASTERPLAN.md at the Macro pin | Repository inventory and code resolve the estate here. The separate executive-dr-vault repository is not a substitute identity for this product. |
 
-**Publication recheck:** Macro main advanced to **59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc**, a direct child of the census pin. Its only changed files are the Trend Persistence workstream and October 4 handoff. The inspected sensor code, contracts and committed artifacts are unchanged; the older immutable links remain valid evidence for those findings. Mastermind and Terminal heads were unchanged. The new coordination record notes Mastermind PR #1230's Wave C-2 instrument and the existing freeze/one-run constraints; later research must reconcile that incumbent experiment rather than duplicate it. [R34]
+**Pre-publication recheck:** Macro main advanced to **59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc**, a direct child of the census pin. Its only changed files are the Trend Persistence workstream and October 4 handoff. The inspected sensor code, contracts and committed artifacts are unchanged; the older immutable links remain valid evidence for those findings. Mastermind and Terminal heads were unchanged. The new coordination record notes Mastermind PR #1230's Wave C-2 instrument and the existing freeze/one-run constraints; later research must reconcile that incumbent experiment rather than duplicate it. [R34]
+
+**PR-creation recheck:** Macro main was then 617c5818b0493e1843c652be881f72cbebfac123, the next direct child, changing only agentos/workstreams/WS-CHINA-ALPHA-INTELLIGENCE.md. This additional records-only delta also leaves the inspected operational-sensor evidence unchanged. The research evidence remains pinned; this publication observation is recorded separately. [R35]
 
 The original commission header's d1594f3c7ae750db3f14b4eebf0de3460f84267a was treated as historical context. This census uses current retrieved pins, not that SHA or the attachment's superseded pins. Branch status is an observation at census time; the report does not assert the runtime deployment SHA equals any branch head.
 
@@ -671,6 +673,7 @@ All Mastermind links below are pinned to 521720b09be2921e996d9396b522b1c4ca62041
 [R32]: https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/data/run_status.json
 [R33]: https://github.com/mastermindx-market-intelligence/macro/actions/runs/37172153941
 [R34]: https://github.com/mastermindx-market-intelligence/macro/commit/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc
+[R35]: https://github.com/mastermindx-market-intelligence/macro/commit/617c5818b0493e1843c652be881f72cbebfac123
 
 ## Primary public sources
 

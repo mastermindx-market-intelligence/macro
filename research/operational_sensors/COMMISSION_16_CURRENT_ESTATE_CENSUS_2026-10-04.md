@@ -15,7 +15,7 @@ This census covers Macro and mastermind-terminal only. It is an evidence compani
 | `mastermindx-market-intelligence/macro` | `79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f` | `main`; the branch response showed `protected=false`. It must not be described as protected. |
 | `mastermindx-market-intelligence/mastermind-terminal` | `1c708450187755160e1a5889b69598a2fcb1f0d1` | Protected `master`, as observed in the source pin. |
 
-Publication recheck by the integrating owner: Macro main advanced to [59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc](https://github.com/mastermindx-market-intelligence/macro/commit/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc), a direct child changing only two Trend Persistence coordination documents. Sensor code/contracts/artifacts cited here are unchanged. Terminal's head was unchanged.
+Publication recheck by the integrating owner: Macro main advanced to [59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc](https://github.com/mastermindx-market-intelligence/macro/commit/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc), a direct child changing only two Trend Persistence coordination documents. Sensor code/contracts/artifacts cited here are unchanged. Terminal's head was unchanged. At PR creation, the next Macro child [617c5818b0493e1843c652be881f72cbebfac123](https://github.com/mastermindx-market-intelligence/macro/commit/617c5818b0493e1843c652be881f72cbebfac123) changed only the China Alpha workstream record; the same operational-sensor findings remain unchanged.
 
 Every main-branch source link below uses these immutable revisions. Open PRs are separate candidate surfaces, observed during the census; their bodies are author claims and must not be promoted into facts about merged production behavior.
 

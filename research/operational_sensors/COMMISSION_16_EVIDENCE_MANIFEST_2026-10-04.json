@@ -8,7 +8,12 @@
     "branch": "claude/commission-16-operational-sensors-hardening-20261004",
     "checkpoint_commit": "394c77eeabe60b78b3043687ec27625b5142f075",
     "scope": "documentation only; no merge or implementation authority granted",
-    "final_commit_receipt": "The containing Git commit is the final immutable publication identity; delivery response supplies exact commit and PR."
+    "final_commit_receipt": "The containing Git commit is the final immutable publication identity; delivery response supplies exact commit and PR.",
+    "pull_request_number": 8420,
+    "pull_request_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8420",
+    "initial_complete_commit": "4574a120af5f43a708948dc73e4774b7948a7a37",
+    "pr_creation_base_sha": "617c5818b0493e1843c652be881f72cbebfac123",
+    "scope_diff_verified_files": 6
   },
   "input": {
     "name": "deep-research-report (13)(1).md",
@@ -34,7 +39,11 @@
         "agentos/handoffs/TREND-PERSISTENCE-2026-10-04.md",
         "agentos/workstreams/WS-TREND-PERSISTENCE.md"
       ],
-      "sensor_code_contracts_data_unchanged": true
+      "sensor_code_contracts_data_unchanged": true,
+      "pr_creation_recheck_sha": "617c5818b0493e1843c652be881f72cbebfac123",
+      "additional_delta_changed_paths": [
+        "agentos/workstreams/WS-CHINA-ALPHA-INTELLIGENCE.md"
+      ]
     },
     {
       "repository": "mastermindx-market-intelligence/mastermind-terminal",
@@ -70,21 +79,21 @@
   "artifacts": [
     {
       "path": "research/operational_sensors/COMMISSION_16_CURRENT_ESTATE_CENSUS_2026-10-04.md",
-      "bytes": 33022,
-      "sha256": "0617930521355f6c1d80c04299aeec79e895fa37876305e4c99876081dd7eb20",
-      "git_blob_sha": "0dd86a57fdc344b4a3efc56165dc163314c121fc"
+      "bytes": 33311,
+      "sha256": "55c57d046f2278f4c149880e1aef47ffcc48a18ddc6b5ff4b3f08b7160dfc4ee",
+      "git_blob_sha": "849b1d2d9fb1b087891a5ad4da7814b12508832f"
     },
     {
       "path": "research/operational_sensors/COMMISSION_16_HARDENING_AUDIT_2026-10-04.md",
-      "bytes": 9741,
-      "sha256": "cc1ff2fa7289e1319270b5d61aaa7e2bcab4abaf7373bc88747e3a8ab105a719",
-      "git_blob_sha": "13c32b93bd23babcec8d6fb28ec3eed119d2a0c5"
+      "bytes": 10370,
+      "sha256": "a48e8b7936194860b9e90bd053266739537814d4e75392340842f6fa2c8a67f0",
+      "git_blob_sha": "789aef5a6df79f14608c99ae49e86560c58e3567"
     },
     {
       "path": "research/operational_sensors/COMMISSION_16_OPERATIONAL_ALTERNATIVE_DATA_MASTERPLAN_2026-10-04.md",
-      "bytes": 105170,
-      "sha256": "ff566d1ec517f36c7603d6507be7affabadd35e3870182cc23794ee02d08258b",
-      "git_blob_sha": "055d96d9f8fbf3ccd6b036c6b0a01d2c72b0b18c"
+      "bytes": 105660,
+      "sha256": "20eeb2d312cf3e94592327f75d9208c0294087efa871d2f9d013117aa1f1ed7d",
+      "git_blob_sha": "e1811315d3fc2ae1b165a6ddd83f92bd7f2ea17b"
     },
     {
       "path": "research/operational_sensors/COMMISSION_16_SOURCE_DILIGENCE_2026-10-04.md",
@@ -94,9 +103,9 @@
     },
     {
       "path": "research/operational_sensors/README.md",
-      "bytes": 3531,
-      "sha256": "d9aff2d70805ccf685adc45ebc662eda4c8d8bec0111fefef891c2994cfa9a70",
-      "git_blob_sha": "923e8f8391458e9f95a498595829589451376339"
+      "bytes": 3895,
+      "sha256": "5034dd9b064e91f98314171ca9e173043f3c4cb043808f4a84b374c131aa6a97",
+      "git_blob_sha": "d20da601ca54fb41320b30350a950032eb2fd127"
     }
   ],
   "primary_and_repository_references": [
@@ -301,6 +310,12 @@
     {
       "id": "R34",
       "url": "https://github.com/mastermindx-market-intelligence/macro/commit/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc",
+      "kind": "repository_commit",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R35",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/commit/617c5818b0493e1843c652be881f72cbebfac123",
       "kind": "repository_commit",
       "access_date": "2026-10-04"
     },
