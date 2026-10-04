@@ -29,6 +29,13 @@ CODE_SHA = "a" * 40
 WARMUP, FIRING = 66, 24
 CUT = 12          # bars missing from the end of the last session that has bars
 PRE_OUTCOME_FILES = ("coverage.json", "events.jsonl", "census.jsonl", "pools.jsonl")
+EXTRA_INIT_MODULES = (
+    "engine/__init__.py",
+    "engine/entry_radar/__init__.py",
+    "engine/entry_radar/contracts.py",
+    "lib/__init__.py",
+    "scripts/__init__.py",
+)
 
 # A stand-in for the Terminal qualification module at the pinned dependency commit:
 # the same three names, the same call shapes, no licensed code.
@@ -169,6 +176,8 @@ def _write_manifest(path: Path, inputs: Path, symbols) -> Path:
 
 @pytest.fixture(scope="module")
 def world(tmp_path_factory):
+    mp = pytest.MonkeyPatch()
+    mp.setattr(s, "_reviewed_blob_sha256", lambda code_sha, name: s._sha(s.ROOT / name))
     root = tmp_path_factory.mktemp("r1b_run")
     terminal = root / "terminal_root"
     (terminal / "ingest").mkdir(parents=True)
@@ -187,9 +196,12 @@ def world(tmp_path_factory):
         (inputs / f"{symbol}.5m.json").write_text(json.dumps(
             {"t": symbol, "tf": "5m", "src": "polygon", "bars": bars.get(symbol, [])}))
     manifest = _write_manifest(root / "manifest.json", inputs, symbols)
-    return SimpleNamespace(root=root, terminal=terminal, inputs=inputs, manifest=manifest,
-                           junit=_junit(root / "junit.xml"), sessions=sessions,
-                           symbols=symbols)
+    try:
+        yield SimpleNamespace(root=root, terminal=terminal, inputs=inputs, manifest=manifest,
+                              junit=_junit(root / "junit.xml"), sessions=sessions,
+                              symbols=symbols)
+    finally:
+        mp.undo()
 
 
 def _patch(mp: pytest.MonkeyPatch, world, manifest: Path | None = None,
@@ -272,7 +284,11 @@ def test_the_run_completes_and_reports_all_sixty_registered_cells(run):
     assert identity["rulings_sha256"] == hashlib.sha256(s.RULINGS_PATH.read_bytes()).hexdigest()
     assert identity["grid_sha256"] == s.GRID_SHA256
     assert identity["registered_rows_sha256"] == s.R1B_ROWS_SHA256
-    assert set(identity["code_files"]) == set(s.CODE_FILES)
+    assert set(identity["code_files"]) >= set(s.CODE_FILES)
+    for extra in EXTRA_INIT_MODULES:
+        assert extra in identity["code_files"]
+    assert identity["code_files_required"] == list(s.CODE_FILES)
+    assert identity["code_files_late"] == []
     for name, digest in identity["code_files"].items():
         assert digest == hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
     assert "NO_PROMOTION" in (run.out / "report.md").read_text()
@@ -866,6 +882,54 @@ def test_t5g_abort_dir_argument_is_rejected(world, monkeypatch, tmp_path):
     with pytest.raises(SystemExit) as exc:
         s.main(argv)
     assert exc.value.code == 2
+
+
+def test_t6a_loaded_modules_are_hashed_in_identity(world, monkeypatch, tmp_path):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    out = _out_dir(tmp_path)
+    assert s.main(_argv(world, out)) == 0
+    identity = json.loads((out / "result.json").read_text())["identity"]
+    assert set(identity["code_files"]) >= set(s.CODE_FILES)
+    assert set(identity["code_files"]) == set(s._loaded_root_modules())
+    for name in EXTRA_INIT_MODULES:
+        assert name in identity["code_files"]
+    assert identity["code_files_required"] == list(s.CODE_FILES)
+    assert identity["code_files_late"] == []
+
+
+def test_t6b_loaded_root_modules_excludes_tests_tree():
+    keys = set(s._loaded_root_modules())
+    assert not any(name.startswith("tests/") for name in keys)
+    assert not any(name.endswith("conftest.py") for name in keys)
+
+
+def test_t6c_reviewed_head_mismatch_refuses_before_inputs(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    real = s._reviewed_blob_sha256
+
+    def fake(code_sha, name):
+        if name == "lib/nyse_calendar.py":
+            return "0" * 64
+        return real(code_sha, name)
+
+    monkeypatch.setattr(s, "_reviewed_blob_sha256", fake)
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    err = capsys.readouterr().err
+    assert "code_identity_not_at_reviewed_head:lib/nyse_calendar.py" in err
+    receipt = json.loads((tmp_path / "attempts/attempt-001.json").read_text())
+    assert receipt["stage"] == "admission"
+    assert receipt["outcome_values_persisted"] is False
+
+
+def test_t6d_unreadable_commit_refuses(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+
+    def unreadable(_code_sha, _name):
+        raise ValueError("code_identity_commit_unreadable:x")
+
+    monkeypatch.setattr(s, "_reviewed_blob_sha256", unreadable)
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    assert "code_identity_commit_unreadable:x" in capsys.readouterr().err
 
 
 def test_t5h_result_lists_prior_attempts_and_listing_hash(run):

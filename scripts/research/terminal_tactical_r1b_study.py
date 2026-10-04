@@ -95,6 +95,35 @@ def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _loaded_root_modules() -> dict[str, str]:
+    root = ROOT.resolve()
+    collected: dict[str, str] = {}
+    for module in list(sys.modules.values()):
+        file = getattr(module, "__file__", None)
+        if file is None:
+            continue
+        path = Path(file).resolve()
+        if not path.is_relative_to(root):
+            continue
+        name = path.relative_to(root).as_posix()
+        if name.startswith("tests/") or name.endswith("conftest.py"):
+            continue
+        if "/site-packages/" in str(path) or "/.venv/" in str(path):
+            continue
+        collected[name] = _sha(ROOT / name)
+    return dict(sorted(collected.items()))
+
+
+def _reviewed_blob_sha256(code_sha: str, name: str) -> str:
+    proc = subprocess.run(
+        ["git", "-C", str(ROOT), "show", f"{code_sha}:{name}"],
+        capture_output=True,
+    )
+    if proc.returncode != 0:
+        raise ValueError(f"code_identity_commit_unreadable:{name}")
+    return hashlib.sha256(proc.stdout).hexdigest()
+
+
 def _grid_cells(cfg: Mapping[str, Any]) -> list[dict[str, Any]]:
     return [
         {"study_id": cfg["study_id"], "selector": selector,
@@ -876,6 +905,13 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
     cfg = json.loads(config_bytes)
     if int(cfg["bootstrap_repetitions"]) != 4000 or int(cfg["seed"]) != 20260917:
         raise ValueError("frozen_bootstrap_identity_mismatch")
+    code_files = _loaded_root_modules()
+    for name in CODE_FILES:
+        if name not in code_files:
+            raise ValueError(f"code_identity_missing_required:{name}")
+    for name, digest in code_files.items():
+        if _reviewed_blob_sha256(code_sha, name) != digest:
+            raise ValueError(f"code_identity_not_at_reviewed_head:{name}")
     identity = {
         "study_id": STUDY_ID, "code_sha": code_sha,
         "prereg_sha256": admitted["prereg_sha256"], "config_sha256": admitted["config_sha256"],
@@ -885,7 +921,8 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
         "ledger_sha256": admitted["ledger_sha256"], "ledger_lines": admitted["ledger_lines"],
         "ledger_prefix_matches_receipt": admitted["ledger_prefix_matches_receipt"],
         "input_manifest_sha256": D0_MANIFEST_SHA256,
-        "code_files": {name: _sha(ROOT / name) for name in CODE_FILES},
+        "code_files": code_files,
+        "code_files_required": list(CODE_FILES),
     }
 
     stage("inputs")
@@ -1007,6 +1044,8 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
             "pre_outcome_hashes": pre_hashes,
             "private_file_hashes": {name: _digest(raw) for name, raw in private.items()},
             "code_sha": code_sha, "code_files": identity["code_files"],
+            "code_files_required": identity["code_files_required"],
+            "code_files_late": identity.get("code_files_late", []),
             "test_receipt": tests,
             "census_rows_checked": len(census), "census_future_family_labels_used": False,
             "pools_checked": len(built_pools), "pools_market_outcomes_computed": False,
@@ -1029,6 +1068,24 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
     }
     files = {"result.json": (json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n").encode("utf-8"),
              "report.md": _markdown(result).encode("utf-8"), **private}
+
+    final = _loaded_root_modules()
+    for name, digest in identity["code_files"].items():
+        if final.get(name) != digest:
+            raise ValueError(f"code_identity_drift:{name}")
+    late = sorted(set(final) - set(identity["code_files"]))
+    for name in late:
+        if _reviewed_blob_sha256(code_sha, name) != final[name]:
+            raise ValueError(f"code_identity_not_at_reviewed_head:{name}")
+    identity["code_files"] = final
+    identity["code_files_late"] = late
+    result["identity"] = identity
+    result["leak_audit"]["code_files"] = identity["code_files"]
+    result["leak_audit"]["code_files_required"] = identity["code_files_required"]
+    result["leak_audit"]["code_files_late"] = identity["code_files_late"]
+    files["result.json"] = (
+        json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
+    ).encode("utf-8")
 
     stage("persist")
     _merge_receipt(attempt_path, stage="persist", outcome_values_persisted=True)
@@ -1120,8 +1177,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         reached = state["stage"]
         text = str(exc)
-        if reached in PRE_INPUT_STAGES or (reached not in OUTCOME_STAGES
-                                           and _REFUSAL_CODE.fullmatch(text)):
+        if (reached in PRE_INPUT_STAGES or text.startswith("code_identity_")
+                or (reached not in OUTCOME_STAGES and _REFUSAL_CODE.fullmatch(text))):
             print(f"R1-B study refused: {text}", file=sys.stderr)
         else:
             print(f"R1-B study aborted during {reached}: {type(exc).__name__}", file=sys.stderr)
