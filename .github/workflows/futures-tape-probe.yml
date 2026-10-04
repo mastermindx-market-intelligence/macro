@@ -1,6 +1,13 @@
 name: futures-tape-probe
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/futures-tape-probe.yml"
+      - "scripts/futures_tape_ingest.py"
+      - "scripts/probe_massive_futures.py"
+      - "lib/dataos/futures_tape.py"
   workflow_dispatch:
     inputs:
       root:
