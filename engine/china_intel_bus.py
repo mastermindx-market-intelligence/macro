@@ -439,11 +439,14 @@ def _visit_discovery_snapshot(
         and last_attempt_instant < last_success_instant
     ):
         clock_errors.append("last_attempt_before_last_success")
+    # This preliminary status only depends on health's own chronology. Row
+    # observation chronology is incorporated below before any authority is emitted.
+    health_clock_order_valid = not clock_errors
     source_status = owner_health_status
     if (
         owner_health_status == "ok"
         and last_success_day is not None
-        and owner_clock_order_valid
+        and health_clock_order_valid
         and (reference_day - last_success_day).days > max(int(stale_after_days), 0)
     ):
         source_status = "stale"
