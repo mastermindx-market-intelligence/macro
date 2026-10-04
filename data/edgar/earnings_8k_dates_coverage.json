@@ -1,13 +1,43 @@
 {
   "gate_pass": true,
   "gate_verdict": "PASS",
-  "gate_reason": "1966 names with \u22658y \u2014 meets threshold of 800",
-  "names_total": 2769,
-  "names_ge8y": 1966,
+  "gate_reason": "1959 names with \u22658y \u2014 meets threshold of 800",
+  "names_total": 2760,
+  "names_ge8y": 1959,
+  "names_legacy": 5,
+  "names_legacy_list": [
+    "BLD",
+    "JHG",
+    "PRA",
+    "SEM",
+    "STEL"
+  ],
   "gate_names_threshold": 800,
   "gate_years_threshold": 8,
   "overall_span": "2004-08-23 .. 2026-10-02",
-  "total_rows": 173652,
+  "total_rows": 173495,
   "as_of": "2026-10-04",
-  "n_shards_missing": 0
+  "n_shards_missing": 0,
+  "n_unresolved": 15,
+  "unresolved_tickers": [
+    "APGE",
+    "ATAI",
+    "CCRN",
+    "CPRX",
+    "CRNX",
+    "EQR",
+    "FBRX",
+    "KORE",
+    "LPRO",
+    "MDV",
+    "NFBK",
+    "SKYT",
+    "TALK",
+    "TMHC",
+    "WBS"
+  ],
+  "n_alias": 0,
+  "aliases": {},
+  "n_explicit_extra": 0,
+  "explicit_extra": []
 }

@@ -1271,7 +1271,8 @@
     "status": "ok",
     "n_filings": 89,
     "n_shards_missing": 0,
-    "ts": "2026-10-04T01:47:38.938418+00:00"
+    "cik_source": "sec",
+    "ts": "2026-10-04T03:20:53.134972+00:00"
   },
   "910073": {
     "ticker": "FLG",
@@ -2237,7 +2238,8 @@
     "status": "ok",
     "n_filings": 74,
     "n_shards_missing": 0,
-    "ts": "2026-10-04T01:52:19.935215+00:00"
+    "cik_source": "sec",
+    "ts": "2026-10-04T03:20:53.134972+00:00"
   },
   "768899": {
     "ticker": "TBI",
@@ -4120,7 +4122,8 @@
     "status": "ok",
     "n_filings": 8,
     "n_shards_missing": 0,
-    "ts": "2026-10-04T01:58:33.858066+00:00"
+    "cik_source": "sec",
+    "ts": "2026-10-04T03:20:53.134972+00:00"
   },
   "790359": {
     "ticker": "NBTB",
@@ -10525,7 +10528,8 @@
     "status": "ok",
     "n_filings": 55,
     "n_shards_missing": 0,
-    "ts": "2026-10-04T02:17:15.246383+00:00"
+    "cik_source": "sec",
+    "ts": "2026-10-04T03:20:53.134972+00:00"
   },
   "1024305": {
     "ticker": "COTY",
@@ -11666,7 +11670,8 @@
     "status": "ok",
     "n_filings": 45,
     "n_shards_missing": 0,
-    "ts": "2026-10-04T02:19:49.540084+00:00"
+    "cik_source": "sec",
+    "ts": "2026-10-04T03:20:53.134972+00:00"
   },
   "1495932": {
     "ticker": "AGNT",
@@ -13598,7 +13603,8 @@
     "status": "ok",
     "n_filings": 31,
     "n_shards_missing": 0,
-    "ts": "2026-10-04T02:23:30.309114+00:00"
+    "cik_source": "sec",
+    "ts": "2026-10-04T03:20:53.134972+00:00"
   },
   "1743725": {
     "ticker": "GDYN",
@@ -19493,5 +19499,213 @@
     "n_filings": 1,
     "n_shards_missing": 0,
     "ts": "2026-10-04T02:32:49.815133+00:00"
+  },
+  "ticker:APGE": {
+    "ticker": "APGE",
+    "status": "skipped_no_cik",
+    "ts": "2026-10-04T18:42:17.761795+00:00"
+  },
+  "ticker:ATAI": {
+    "ticker": "ATAI",
+    "status": "skipped_no_cik",
+    "ts": "2026-10-04T18:42:17.761795+00:00"
+  },
+  "ticker:CCRN": {
+    "ticker": "CCRN",
+    "status": "skipped_no_cik",
+    "ts": "2026-10-04T18:42:17.761795+00:00"
+  },
+  "ticker:CPRX": {
+    "ticker": "CPRX",
+    "status": "skipped_no_cik",
+    "ts": "2026-10-04T18:42:17.761795+00:00"
+  },
+  "ticker:CRNX": {
+    "ticker": "CRNX",
+    "status": "skipped_no_cik",
+    "ts": "2026-10-04T18:42:17.761795+00:00"
+  },
+  "ticker:FBRX": {
+    "ticker": "FBRX",
+    "status": "skipped_no_cik",
+    "ts": "2026-10-04T18:42:17.761795+00:00"
+  },
+  "ticker:KORE": {
+    "ticker": "KORE",
+    "status": "skipped_no_cik",
+    "ts": "2026-10-04T18:42:17.761795+00:00"
+  },
+  "ticker:LPRO": {
+    "ticker": "LPRO",
+    "status": "skipped_no_cik",
+    "ts": "2026-10-04T18:42:17.761795+00:00"
+  },
+  "ticker:MDV": {
+    "ticker": "MDV",
+    "status": "skipped_no_cik",
+    "ts": "2026-10-04T18:42:17.761795+00:00"
+  },
+  "ticker:NFBK": {
+    "ticker": "NFBK",
+    "status": "skipped_no_cik",
+    "ts": "2026-10-04T18:42:17.761795+00:00"
+  },
+  "ticker:SKYT": {
+    "ticker": "SKYT",
+    "status": "skipped_no_cik",
+    "ts": "2026-10-04T18:42:17.761795+00:00"
+  },
+  "ticker:TALK": {
+    "ticker": "TALK",
+    "status": "skipped_no_cik",
+    "ts": "2026-10-04T18:42:17.761795+00:00"
+  },
+  "ticker:TMHC": {
+    "ticker": "TMHC",
+    "status": "skipped_no_cik",
+    "ts": "2026-10-04T18:42:17.761795+00:00"
+  },
+  "ticker:WBS": {
+    "ticker": "WBS",
+    "status": "skipped_no_cik",
+    "ts": "2026-10-04T18:42:17.761795+00:00"
+  },
+  "ticker:EQR": {
+    "ticker": "EQR",
+    "status": "skipped_no_cik",
+    "ts": "2026-10-04T18:42:17.761795+00:00"
+  },
+  "915912": {
+    "ticker": "AVB",
+    "status": "ok",
+    "n_filings": 91,
+    "n_shards_missing": 0,
+    "cik_source": "store",
+    "ts": "2026-10-04T03:20:53.134972+00:00"
+  },
+  "1606498": {
+    "ticker": "AVNS",
+    "status": "ok",
+    "n_filings": 47,
+    "n_shards_missing": 0,
+    "cik_source": "store",
+    "ts": "2026-10-04T03:20:53.134972+00:00"
+  },
+  "712515": {
+    "ticker": "EA",
+    "status": "ok",
+    "n_filings": 93,
+    "n_shards_missing": 0,
+    "cik_source": "store",
+    "ts": "2026-10-04T03:20:53.134972+00:00"
+  },
+  "892553": {
+    "ticker": "GTLS",
+    "status": "ok",
+    "n_filings": 81,
+    "n_shards_missing": 0,
+    "cik_source": "store",
+    "ts": "2026-10-04T03:20:53.134972+00:00"
+  },
+  "866829": {
+    "ticker": "HLX",
+    "status": "ok",
+    "n_filings": 88,
+    "n_shards_missing": 0,
+    "cik_source": "store",
+    "ts": "2026-10-04T03:20:53.134972+00:00"
+  },
+  "58492": {
+    "ticker": "LEG",
+    "status": "ok",
+    "n_filings": 96,
+    "n_shards_missing": 0,
+    "cik_source": "store",
+    "ts": "2026-10-04T03:20:53.134972+00:00"
+  },
+  "1618563": {
+    "ticker": "NSA",
+    "status": "ok",
+    "n_filings": 46,
+    "n_shards_missing": 0,
+    "cik_source": "store",
+    "ts": "2026-10-04T03:20:53.134972+00:00"
+  },
+  "1465740": {
+    "ticker": "TWO",
+    "status": "ok",
+    "n_filings": 78,
+    "n_shards_missing": 0,
+    "cik_source": "store",
+    "ts": "2026-10-04T03:20:53.134972+00:00"
+  },
+  "1175535": {
+    "ticker": "WSR",
+    "status": "ok",
+    "n_filings": 75,
+    "n_shards_missing": 0,
+    "cik_source": "store",
+    "ts": "2026-10-04T03:20:53.134972+00:00"
+  },
+  "886158": {
+    "ticker": "BBBY",
+    "status": "ok",
+    "n_filings": 79,
+    "n_shards_missing": 0,
+    "cik_source": "dead_name",
+    "ts": "2026-10-04T03:21:14.281430+00:00"
+  },
+  "1581091": {
+    "ticker": "RMAX",
+    "status": "ok",
+    "n_filings": 55,
+    "n_shards_missing": 0,
+    "cik_source": "dead_name",
+    "ts": "2026-10-04T03:21:14.281430+00:00"
+  },
+  "1633931": {
+    "ticker": "BLD",
+    "status": "ok",
+    "n_filings": 46,
+    "n_shards_missing": 0,
+    "cik_source": "store",
+    "ts": "2026-10-04T18:42:10.815415+00:00",
+    "explicit": true
+  },
+  "1274173": {
+    "ticker": "JHG",
+    "status": "ok",
+    "n_filings": 37,
+    "n_shards_missing": 0,
+    "cik_source": "store",
+    "ts": "2026-10-04T18:42:10.815415+00:00",
+    "explicit": true
+  },
+  "1127703": {
+    "ticker": "PRA",
+    "status": "ok",
+    "n_filings": 89,
+    "n_shards_missing": 0,
+    "cik_source": "store",
+    "ts": "2026-10-04T18:42:10.815415+00:00",
+    "explicit": true
+  },
+  "1320414": {
+    "ticker": "SEM",
+    "status": "ok",
+    "n_filings": 83,
+    "n_shards_missing": 0,
+    "cik_source": "store",
+    "ts": "2026-10-04T18:42:10.815415+00:00",
+    "explicit": true
+  },
+  "1473844": {
+    "ticker": "STEL",
+    "status": "ok",
+    "n_filings": 36,
+    "n_shards_missing": 0,
+    "cik_source": "store",
+    "ts": "2026-10-04T18:42:10.815415+00:00",
+    "explicit": true
   }
 }
