@@ -38,6 +38,7 @@ sys.path.insert(0, str(_ROOT))
 
 from lib import config  # noqa: E402
 from lib.numeric import finite  # noqa: E402
+from lib.news_guidance_view import guidance_view  # noqa: E402
 from lib.pages import (rendered_basket_pages, rendered_ticker_pages,  # noqa: E402
                        write_page)
 from lib.seo import SITE_BASE as _SITE_BASE  # noqa: E402
@@ -5936,6 +5937,7 @@ def build_page_context(
         "security_state": build_security_state(blob),
         "valuation_assumptions": valuation_assumptions,
         "news": news_section,
+        "news_guidance": guidance_view((news_rec or {}).get("guidance_context")),
         "placeholders": {
             "analyst_targets": True,
             "transcripts": True,

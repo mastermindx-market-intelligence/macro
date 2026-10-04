@@ -719,6 +719,8 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
 /* news / themes / peers */
 .nrow{padding:9px 0;border-bottom:1px solid var(--hair);font-size:12.5px;line-height:1.45;}
 .nrow:last-child{border-bottom:0;}
+.news-guidance{overflow-wrap:anywhere;}
+.news-guidance summary{cursor:pointer;}
 .nrow a{font-weight:550;}
 .nrow a:hover{color:var(--ink-link, var(--link));}
 .nrow .nm{display:block;font-size:11px;color:var(--muted);margin-top:2px;}
@@ -895,7 +897,7 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
     {% if debt_maturity and debt_maturity.status not in ('not_applicable', 'unresolved') %}<a href="#debt-maturity">{{ t('Debt', '债务') }}</a>{% endif %}
     {% if options %}<a href="#options">{{ t('Options', '期权') }}</a>{% endif %}
     {% if ownership %}<a href="#ownership">{{ t('Holders', '持仓') }}</a>{% endif %}
-    {% if news %}<a href="#news">{{ t('News', '新闻') }}</a>{% endif %}
+    {% if news or news_guidance %}<a href="#news">{{ t('News', '新闻') }}</a>{% endif %}
   </nav>
   <a class="gbtn gbtn-sm" href="{{ terminal_url }}" rel="noopener noreferrer" target="_blank">{{ t('Terminal', '终端') }} ↗</a>
 </div>
@@ -1637,10 +1639,34 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
   </section>
   {% endif %}
 
-  {% if news %}
+  {% if news or news_guidance %}
   <section class="mod rv" id="news">
     <div class="mod-hd"><h2>{{ t('Recent news', '最新动态') }}</h2></div>
-    {% for h in news %}
+    {% if news_guidance %}
+    <details class="nrow news-guidance" data-news-guidance>
+      <summary>{{ t('Guidance changes', '指引变化') }}
+        {% if news_guidance.rows %}<span class="nm">{{ t(news_guidance.rows[0].status_en, news_guidance.rows[0].status_zh) }} · {{ t(news_guidance.rows[0].change_en, news_guidance.rows[0].change_zh) }}</span>
+        {% else %}<span class="nm">{{ t(news_guidance.note_en, news_guidance.note_zh) }}</span>{% endif %}
+      </summary>
+      {% if news_guidance.note_en %}<p>{{ t(news_guidance.note_en, news_guidance.note_zh) }}</p>{% endif %}
+      {% for g in news_guidance.rows %}
+      <div class="nrow">
+        <strong>{{ t(g.label_en, g.label_zh) }} · {{ t(g.horizon_en, g.horizon_zh) }}</strong>
+        <span class="nm">{{ t(g.status_en, g.status_zh) }}</span>
+        <div>{{ t('Prior', '先前') }}: {{ t(g.prior_en, g.prior_zh) }}</div>
+        <div>{{ t('Current', '本次') }}: {{ t(g.current_en, g.current_zh) }}</div>
+        <div class="num">{{ t(g.change_en, g.change_zh) }}</div>
+        {% if g.relative_en %}<span class="nm">{{ t(g.relative_en, g.relative_zh) }}</span>{% endif %}
+        <span class="nm">{{ t(g.prior_source_en, g.prior_source_zh) }}</span>
+        <span class="nm">{{ t(g.current_source_en, g.current_source_zh) }}</span>
+      </div>
+      {% endfor %}
+      {% if news_guidance.unavailable_count %}<p>{{ t('Comparisons unavailable', '不可用的对比') }}: {{ news_guidance.unavailable_count }}</p>{% endif %}
+      {% if news_guidance.omitted_count %}<p>{{ t('Additional comparisons not shown', '未展示的其他对比') }}: {{ news_guidance.omitted_count }}</p>{% endif %}
+      <p class="nm">{{ t('Review the dated disclosures; this is not a buy or sell signal.', '请查阅注明日期的披露；这不是买卖信号。') }}{% if news_guidance.as_of %} {{ t('Compared', '对比时间') }}: {{ news_guidance.as_of }}{% endif %}</p>
+    </details>
+    {% endif %}
+    {% for h in (news or []) %}
     <div class="nrow">
       <a href="{{ h.url }}" rel="noopener noreferrer" target="_blank">{{ h.title }}</a>
       <span class="nm">{% if h.source %}{{ h.source }}{% endif %}{% if h.published %} · {{ h.published }}{% endif %}</span>
