@@ -1281,6 +1281,114 @@ def _loaded_quote_count(quotes: Mapping[str, Any] | None,
     return sum(1 for ticker in tickers if isinstance(book.get(ticker), Mapping))
 
 
+_CATALYST_COVERAGE_PHRASES: dict[str, str] = {
+    "blocking_event_observed": "earnings filing in window",
+    "event_classification_unknown": "filing seen, kind unknown",
+    "event_aftermath_observed": "earnings aftermath",
+    "soft_event_observed": "soft event in window",
+    "no_blocking_event_observed": "no earnings filing in window",
+}
+
+
+def _episode_catalyst_payload(ctx: Any) -> dict[str, Any]:
+    refs = (
+        set(ctx.blocking_evidence_refs)
+        | set(ctx.soft_evidence_refs)
+        | set(ctx.unknown_evidence_refs)
+        | set(ctx.aftermath_evidence_refs)
+    )
+    clocks = [c for c in ctx.evidence_clocks if c.evidence_ref in refs]
+    fresh_until = min(r.fresh_until for r in ctx.source_reads)
+    relevant_until = (
+        max(c.relevant_until for c in clocks) if clocks else fresh_until
+    )
+    return {
+        "radar_episode_schema": ll.SCHEMA_LIVE_EPISODE,
+        "radar_episode_id": ctx.radar_episode_id,
+        "fresh_until": _iso(fresh_until),
+        "relevant_until": _iso(relevant_until),
+        "coverage": _CATALYST_COVERAGE_PHRASES[ctx.context_state],
+        "context_state": ctx.context_state,
+        "catalyst_schema": ctx.schema,
+    }
+
+
+def _attach_catalyst(
+    episode_rows: list[dict[str, Any]] | None,
+    *,
+    now: datetime,
+    health: dict[str, Any] | None,
+) -> None:
+    rc: dict[str, Any] = {
+        "attached_count": 0,
+        "rows_considered": len(episode_rows or []),
+        "source_status": None,
+        "source_asof": None,
+        "source_usable": False,
+        "refusals": {},
+        "reader_error": None,
+        "episode_errors": 0,
+        "states": {},
+        "error": None,
+    }
+    if isinstance(health, dict):
+        health["catalyst"] = rc
+    rows = episode_rows
+    if not rows:
+        return
+    from engine.entry_radar import catalyst_context as cc  # noqa: PLC0415
+    from engine.entry_radar import catalyst_edgar_store as ces  # noqa: PLC0415
+
+    tickers = sorted({str(r.get("ticker") or "") for r in rows} - {""})
+    try:
+        read = ces.read_edgar_item_202_for_tickers(
+            tickers=tickers, decision_at=now, generated_at=now,
+        )
+    except Exception as exc:
+        rc["error"] = repr(exc)[:300]
+        return
+    rc["reader_error"] = read.error
+    rc["refusals"] = dict(read.refusals)
+    rc["source_asof"] = _iso(read.source_asof) if read.source_asof else None
+    reads = list(read.reads_by_ticker.values())
+    if not reads:
+        rc["source_status"] = None
+    elif all(r.status == "ok" for r in reads):
+        rc["source_status"] = "ok"
+    elif all(r.status == "unavailable" for r in reads):
+        rc["source_status"] = "unavailable"
+    else:
+        rc["source_status"] = "mixed"
+    rc["source_usable"] = any(r.usable_at(now) for r in reads)
+    try:
+        for row in rows:
+            ticker = str(row.get("ticker") or "")
+            src = read.reads_by_ticker.get(ticker)
+            if src is None:
+                rc["episode_errors"] += 1
+                continue
+            try:
+                ctx = cc.assess_catalyst_context_for_live_episode(
+                    episode=row,
+                    decision_at=now,
+                    generated_at=now,
+                    required_sources=(ces.EDGAR_STORE_SOURCE_ID,),
+                    source_reads=(src,),
+                    evidence=read.evidence_by_ticker.get(ticker, ()),
+                )
+            except cc.CatalystContextError:
+                rc["episode_errors"] += 1
+                continue
+            rc["states"][ctx.context_state] = (
+                rc["states"].get(ctx.context_state, 0) + 1
+            )
+            if ctx.context_state in _CATALYST_COVERAGE_PHRASES:
+                row["catalyst"] = _episode_catalyst_payload(ctx)
+                rc["attached_count"] += 1
+    except Exception as exc:
+        rc["error"] = repr(exc)[:300]
+
+
 def _episode_rows(ledger: ll.LiveEpisodeLedger | None, session: date | None,
                   ) -> list[dict[str, Any]] | None:
     """Episode owner-schema rows for the live payload (product spec §3.3)."""
@@ -1343,6 +1451,7 @@ def _refusal_payload(*, state: str, reasons: Sequence[str], now: datetime,
     if episode_rows is not None:
         health["episodes_count"] = len(episode_rows)
         health["episodes_schema"] = ll.SCHEMA_LIVE_EPISODE
+        _attach_catalyst(episode_rows, now=now, health=health)
     payload = {
         "schema": SCHEMA_LIVE_PAYLOAD,
         "asof": _iso(now),
@@ -2446,6 +2555,11 @@ def _payload(*, now: datetime, session: date, pack: lp.LivePack,
     if isinstance(health, dict):
         health["episodes_count"] = len(episode_rows)
         health["episodes_schema"] = ll.SCHEMA_LIVE_EPISODE
+    _attach_catalyst(
+        episode_rows,
+        now=now,
+        health=health if isinstance(health, dict) else None,
+    )
     return {
         "schema": SCHEMA_LIVE_PAYLOAD,
         "asof": _iso(now),

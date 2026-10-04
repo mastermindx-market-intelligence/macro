@@ -557,6 +557,32 @@ def test_EP6_episodes_json_carries_no_strength_tokens(census):
     _assert_episodes_carry_no_strength(census["live"].payload["episodes"])
 
 
+def test_EP_catalyst_receipt_on_real_producer_paths(census):
+    from engine.entry_radar.live_eval import _CATALYST_COVERAGE_PHRASES
+
+    allowed_coverage = set(_CATALYST_COVERAGE_PHRASES.values())
+    for key in ("live", "stale_pack"):
+        payload = census[key].payload
+        health = payload["health"]
+        assert "catalyst" in health
+        assert isinstance(health["catalyst"]["attached_count"], int)
+        for episode in payload.get("episodes") or []:
+            cat = episode.get("catalyst")
+            if cat is None:
+                continue
+            assert set(cat.keys()) == frozenset({
+                "radar_episode_schema",
+                "radar_episode_id",
+                "fresh_until",
+                "relevant_until",
+                "coverage",
+                "context_state",
+                "catalyst_schema",
+            })
+            assert cat["coverage"] in allowed_coverage
+        _assert_episodes_carry_no_strength(payload["episodes"])
+
+
 def test_LIV1_failed_has_EXACTLY_ONE_producer_and_run_pass_is_not_it(census):
     """``failed`` is unreachable from any input to ``run_pass``, and produced by
     exactly one function outside it.
