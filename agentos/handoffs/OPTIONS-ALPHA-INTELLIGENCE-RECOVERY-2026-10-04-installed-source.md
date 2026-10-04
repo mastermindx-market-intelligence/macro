@@ -61,6 +61,15 @@ verified:
       not ratified. Fable accepted the wording correction only in5975689449.
       No trainer/configuration/frozen-law change, simulation, study,
       fit or artifact occurred. Required Opus review is not replaced by native assistance.
+  - claim: A later unrelated production release preserved the Options UI source.
+    command: "M2-to-VPS Git HEAD/deployment marker and service readback; public Options GET; GitHub compare c298...fb6."
+    result: >
+      At the02:39Z observation, canonical HEAD and deployment marker were
+      fb6f5cc39e592e7f9967835a85617b4fef427b09, the service was active, and the
+      public Options page returned200 with that release identifier. The one
+      intervening commit595 changed six intraday ingestion/nightly/test files;
+      Options UI, API and package/config sources were unchanged. The18-case
+      acceptance remains the historical c298 receipt, not a new18-case fb6 run.
 unverified:
   - claim: Natural publications and full Options Alpha scientific/activation acceptance are complete.
     what_would_verify: "The separately specified scheduled-run, producer/cache, quote-lifecycle, AD1, candidate and scientific receipts; source/install/UI success does not supply them."
@@ -143,7 +152,10 @@ remain independent. Candidate8358 is expected to return structured inactive
 success with no R2/journal writes until its four prerequisites and activation
 receipt exist.
 
-Terminal703 is live and display-accepted. Draft723 remains a different gate:
+Terminal703 was deployed and display-accepted atc298. A subsequent production
+read observedfb6f5cc39e592e7f9967835a85617b4fef427b09 with unchanged Options UI/API
+source and a healthy service/public page. These are dated receipts, not a claim
+that production can never advance. Draft723 remains a different gate:
 compare a real supported-root matrix generation and the existing producer/API/cache
 response for root, source session, revision, cell count, units and missing masks.
 The source session comes from _build_meta.asof_date, not build-asof. Existing

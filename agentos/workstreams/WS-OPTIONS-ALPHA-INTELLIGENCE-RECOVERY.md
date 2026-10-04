@@ -301,8 +301,10 @@ artifacts:
 next_action: >
   Latest installed-source checkpoint:
   agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-04-installed-source.md.
-  Terminal703 is deployed atc298fa1b831509dd3dcb7553aa34c03d69dd0084 and Fable's
-  independent18-case EN/ZH responsive acceptance passed. Draft723 remains with
+  Terminal703 was deployed atc298fa1b831509dd3dcb7553aa34c03d69dd0084 and passed
+  Fable's18-case EN/ZH responsive acceptance. Later production readback observed
+  fb6f5cc39e592e7f9967835a85617b4fef427b09 with unchanged Options UI/API source,
+  active service and public HTTP200. These are dated receipts. Draft723 remains with
   Fable for current-base integration and actual supported-root producer/API/cache proof.
   Macro8201 merged565f2d70 and matrix spot repair8383 merged2c912268.
   Existing M1 liveflow and matrix roots accepted exact2c9122681ab44f1a2f928b4dbec90c68f91e99ae
