@@ -70,7 +70,7 @@ eight.
 ## Real and sample content
 
 - **Real:** every reading in "Now" and on the nine cards is the 2 October 2026 read of the frozen
-  table (`config/regime_outlook_mapping_v1.json`, contract Appendix A).
+  table (`config/regime_outlook_mapping_v2.json` — version 1 when the mockup was read; version 2 keeps every reading, contract Appendix A).
 - **Sample:** the "What changed" chips, the release dates under Watch, and the previous read's date.
 
 ## Cut on purpose
