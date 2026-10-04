@@ -140,8 +140,9 @@ waves:
       approved head bfe2c663480055814a12184c4858b07ba98b1918 was squash-merged
       as d87d00a46e6a4cdffba667079615e2a4b437aea8 at 23:08:08Z after all 12 CI
       packs and the gate. That is source acceptance only. The methods worker
-      hit its turn limit. All eight dirty source files are archived, and a
-      bounded recovery on the same workspace is active. There is no actual
+      hit its turn limit; the recovery worker later timed out with zero-residual
+      cleanup proven. Both source archives are preserved. Root now integrates
+      trainer/admission directly with bounded helper/test leaves. There is no actual
       study, no fit, and no promotion. The native NYSE 15 tests are a helper
       only. They are not a complete CPCV. Do not add a numerical per-bin
       threshold. Methods calibration stays explicitly unavailable until a
@@ -302,9 +303,10 @@ next_action: >
   candidate history is honestly unavailable. Fable's live acceptance failed
   mobile title geometry and the first-load candidate sentence. The active
   Terminal repair is #703. It is under CI and it is not deployed. #667 is
-  already merged and included. It is not a pending release. Fable accepted the
-  #7306 scan-all clock repair and then the #8201 exact-head review. Both stay
-  sequenced after #703, and custody is reconciled before any modifier. On
+  already merged and included. It is not a pending release. Fable owns #7306
+  updated-base head47ef463e36768cac0b6f49c7946f35351a308ba6 pending checks,
+  and #8201 current-main raw-clock compatibility integration/review. Neither is
+  claimed merged here. Custody is reconciled before each modifier. On
   Macro, the measured wave stays in progress and is not proven live. The
   2026-09-17 and 2026-09-18 evidence stays accepted. Source-clock repair
   #7279 remains merged as fc4efb9fd9ec97cc3e65f9ff9ee157626be5683f, and shared
@@ -321,19 +323,23 @@ next_action: >
   (f78c8accb895275182a48b8d1c05d2be8e38453e) stays inactive until the four
   preregistered preconditions are cleared and an activation receipt exists.
   FS5 #8360 is merged source only, as
-  d87d00a46e6a4cdffba667079615e2a4b437aea8. Methods recovery is active on the
-  preserved workspace. There is no study, no fit, no promotion, and no
+  d87d00a46e6a4cdffba667079615e2a4b437aea8. After the second worker timeout and
+  zero-residual cleanup, root integrates methods on the preserved workspace
+  with bounded helper/test leaves. There is no study, no fit, no promotion, and no
   numerical per-bin threshold. Exact-option #8318 is merged as
   1df2cc9f692a6d7502379c503b62e3cbe8ffbefd. It is a pure fixture evaluator, and
-  the executable NBBO lifecycle is unproven. B1 source work on draft #8370,
-  including the completed artifact-root amendment and 71 publisher tests, and
-  the installed Chain Heat receipt, are recorded in
+  the executable NBBO lifecycle is unproven. B1 #8370 source merged as
+  15af4b7fc1d5216542a4e0970e34f40233975c3d after review and required CI.
+  Runtime is HELD for the exact four-parquet-plus-manifest publisher floor
+  defect from carrier599 comment5974835583; the narrow source-fix fabric is active.
+  The M1 clone is PREPARED_UNBOUND, and the installed Chain Heat receipt is in
   agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-03-product-delivery.md.
   That handoff does not reprioritize this program. The M1 storage-guard
   deletion effect remains unknown and is separate from these installations and
   from the raw-event retention observation. The next source step is to finish
   the methods repair on that preserved workspace and obtain an independent
-  exact-head review and protected CI, while the B1 branch waits for hosted CI.
+  exact-head review and protected CI, while the B1 publisher-count fix receives
+  its own tests, independent review and protected CI before runtime binding.
   Do not deploy #703 until the sole root executor consumes its qualified merge.
 ---
 

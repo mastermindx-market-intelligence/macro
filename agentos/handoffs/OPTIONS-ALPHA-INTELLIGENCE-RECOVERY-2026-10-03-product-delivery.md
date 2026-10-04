@@ -71,25 +71,25 @@ verified:
       no fresh-market, candidate, calibration or predictive evidence.
 unverified:
   - claim: B1 corrected gamma source is installed in all persistent consumers.
-    what_would_verify: "Reviewed source-root/input-root changes, protected merge, exact runtime acquisition and existing-job binding receipts for index history, matrix and hub; source work remains active."
+    what_would_verify: "Reviewed source-root/input-root changes, protected merge, exact runtime acquisition and existing-job binding receipts for index history, matrix and hub. B1 source merged15af4b7fc1d5216542a4e0970e34f40233975c3d; runtime remains held for the exact four-parquet publisher floor repair."
   - claim: FS5 pre-fit methods are complete or an empirical study is eligible.
-    what_would_verify: "Terminal source-worker return and independent review of true15-path CPCV, variants and native-session support; then separately frozen eligible prospective data. No actual study or fit is authorized by this checkpoint."
+    what_would_verify: "Root source integration, bounded test-leaf return and independent review of true15-path CPCV, variants and native-session support; then separately frozen eligible prospective data. No actual study or fit is authorized by this checkpoint."
   - claim: Natural runtime, candidate activation or statistical promotion is accepted.
     what_would_verify: "The existing natural publisher, durability, campaign, correction, AD1, activation and science receipts; source merges and screenshots do not supply them."
 decisions: []
 discoveries: ["DSC:M1-STORAGE-GUARD-HELP-MUTATES-20261003"]
 unresolved:
   - "Independent live UI acceptance failed mobile title geometry and first-load candidate copy on release8fc; Fable is repairing the existing Terminal703 carrier."
-  - "FS5 methods worker reached its turn limit with cleanup proven; all eight dirty source paths are archived and a same-workspace bounded recovery is active."
+  - "Both earlier FS5 workers terminated with cleanup proven and zero residuals. Root integrates trainer/admission in the same archived custody workspace; bounded helper/test leaves support it."
   - "The Oct3 22:30Z qualifying daily run had not appeared at the bounded observation. Delayed scheduling remains possible;23:30Z is an off-regime skip."
   - "AD1 remains INSTALLED_CANARY_ACCEPTED_PRODUCTION_HOLD; required runner-group selected-workflow admission is not available to the current identities, and M1 free space remains below200GiB."
   - "The interrupted M1 storage-guard apply has unresolved deletion effect; preserve its canonical evidence and old runtime/rollback trees."
 next_actions:
   - "Complete the methods repairs, integrate the merged parent onto main without rewriting history, and obtain independent exact-head review and protected CI."
-  - "Complete and independently review the current FS5 methods fabric branch and the B1 runtime-root branch; preserve each active workspace and owned-process receipt."
+  - "Complete independent review and CI for the root-integrated FS5 methods branch and the B1 publisher-count follow-up; preserve each custody workspace and owned-process receipt."
   - "For index history, use separate clean code and physical artifact roots; its five tracked outputs cannot be replaced by a symlink in a clean clone. Reconcile the existing publisher checkout separately."
   - "Consume the qualified Terminal703 merge, deploy its exact merged SHA through the sole root executor, and repeat independent EN/ZH desktop/tablet/mobile acceptance."
-  - "Fable continues existing7306 scan-all source-clock repair and8201 exact-head clock-retention review after703, reconciling actual custody before any modifier; preserve existing Terminal723 integration custody."
+  - "Fable owns703 pending desktop CI,7306 updated-base head47ef463e36768cac0b6f49c7946f35351a308ba6 pending checks, and8201 current-main raw-clock compatibility integration/review. No merged release is inferred; preserve Terminal723 custody."
   - "Observe the required natural runs and resolve the exact AD1 admission/capacity dependency without replay, new collectors or lowered evidence floors."
 do_not_redo:
   - "Reuse the existing collector, event/campaign/outcome owners, sole candidate feed/receipt publisher, journal, score controls and Issue Desk."
@@ -124,20 +124,34 @@ UI acceptance. Source work uses the existing M2 fabric, not a new scheduler:
   `d8718f63aa155e48b5215f86506a16d581172a78977d2c480fcc64fe8f301890`.
   Hard review blocks closure on weighted calibration, incomplete-gauntlet
   deployability, canonical era identity, frozen configuration and actual fit
-  receipts, purge indexing and pre-freeze feasibility. Same-workspace recovery
-  is active through the existing fabric. Weighted bin/tie rules and a numerical
+  receipts, purge indexing and pre-freeze feasibility. The second worker timed out
+  at23:59:33Z; owned-process cleanup again proved zero residuals. The second archive,
+  /private/tmp/fs5-prefit-recovery-20261004-0004, has SHA256
+  98fb67ce0786fa8b959927a0e216e65453bd39c8bcba60057684f0b413409565.
+  Root directly integrates trainer/admission in that same workspace. A bounded
+  helper leaf returned and a test-only fabric leaf remains active. Independent
+  review corrections were applied;165 focused synthetic cases passed, with the
+  full integrated trainer suite and exact committed review still owed. Weighted bin/tie rules and a numerical
   per-bin floor are not invented: unresolved calibration stays explicitly
   unavailable and non-deployable. All tests are synthetic; no real study or fit.
 - `options_product_20261003_b1_runtime_roots`, branch
   `codex/options-alpha-b1-runtime-roots-20261003`, preserves the three existing
-  jobs and their physical inputs. Draft PR8370 returned at head
+  jobs and their physical inputs. PR8370 returned at head
   `418f43ce700093d976c37da6b9e952d33e489a38` after a bounded same-workspace
   amendment. Worker returned0 at23:53:03Z with cleanup proven and zero residuals.
   Immutable code review passed; the initially stale PR body was rewritten.
   Focused selection204 passed,3 existing boto3 skips; root separately ran the
   publisher suite with M1's exact boto3 1.43.56 in an isolated dependency target:
-  71 passed, no skips. Both prior missing-fixture failures now pass. Hosted CI
-  and merge remain owed. Hub reads stay under `hub-ops-wt`; index history
+  71 passed, no skips. Both prior missing-fixture failures now pass. All12 CI
+  packs, ci-gate and the active main authority passed; approved source merged
+  as15af4b7fc1d5216542a4e0970e34f40233975c3d. Runtime remains HELD:
+  carrier599 comment5974835583 exposed the exact four-parquet-plus-manifest
+  boundary. The publisher excludes the manifest before checking a five-file
+  floor. M1 has stale SPX/SPXW extra parquets that mask this defect. A narrow
+  same-workspace source-fix fabric leaf changes only the index uploadable count
+  to four and adds four/three-file tests, preserving byte and append-only guards.
+  No job binding, production floor change or stale-file cleanup occurred.
+  Hub reads stay under `hub-ops-wt`; index history
   needs an explicit artifact root because its five outputs are tracked. Its
   publisher's last observed cycle rebuilt and uploaded to R2 but failed the Git
   layout check; no current index process was observed.
@@ -151,11 +165,14 @@ standalone identity, five tracked artifacts and clean diff passed. It is
 no publisher or Git push ran. Receipt:
 `/private/tmp/options-alpha-index-publisher-prepare-20261003/receipt.json` on M1.
 
-One unbound full-blob shallow runtime acquisition is being prepared on M1 at
+One full-blob shallow runtime acquisition completed PREPARED_UNBOUND on M1 at
 `/Users/chriswong/options-runtime-b1-prepared-20261003`, through the existing
-LIVE_FLOW acquisition route and existing M1-local key. No final job is bound.
-Current tracked code/data snapshot is9.05GiB; free disk before preparation is
-184.49GiB. Independent review permits later same-volume APFS clonefile copies
+LIVE_FLOW acquisition route and existing M1-local key. The receipt finished at
+00:07:24Z with clean standalone HEAD9ee1d9e702de1add7c5e6bd804aaf3f835053db7,
+exact f307 engine and free disk183121199104 bytes. No final job is bound; no
+runtime data or .env was copied. The canonical M1 receipt is
+/private/tmp/b1-runtime-acquisition-20261003/receipt.json.
+Independent review permits later same-volume APFS clonefile copies
 for the other two standalone roots, with separate git directories, no alternates
 or hardlinks, exact commit/clean status and measured disk use. This is one Git
 acquisition plus independent filesystem copies, not a shared Git object store.
