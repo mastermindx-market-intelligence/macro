@@ -24,13 +24,16 @@ block-trade anomalies). Degrades cleanly when artifact absent. Schema bumped to 
 
 v6 (additive over v5): command block reading site/china_intel/command.json (W4 command
 apparatus — per-ticker fusion, edge-remaining ranking, discovery lanes). Compact top-10
-rows + counts + asof. Degrades cleanly when artifact absent. Schema bumped to v6.
+rows + counts + asof. Degrades cleanly when artifact absent. Schema bumped to v6. CIE-07
+adds an additive visit_discovery block under the same backward-compatible v6 schema: it
+reads the existing P1 visit owner locally, never changes command/rank authority, and keeps
+insufficient coverage / source degradation / visitor identity explicit.
 """
 from __future__ import annotations
 
 import json
 import logging
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from lib import config
@@ -258,6 +261,350 @@ def _discovery_block() -> dict | None:
                 "sources": d.get("sources"), "top": cands[:12]}
     except Exception as e:  # noqa: BLE001
         log.debug("china_intel_bus: discovery block failed (%s)", e)
+        return None
+
+
+
+# --------------------------------------------------------------------------- #
+# CIE-07: coverage-adjusted institutional-visit metadata discovery
+# --------------------------------------------------------------------------- #
+
+_VISIT_DISCOVERY_SCHEMA = "china_visits.discovery_metadata.v1"
+_VISIT_DISCOVERY_RECENT_DAYS = 30
+_VISIT_DISCOVERY_BASELINE_DAYS = 90
+_VISIT_UNKNOWN_CLASSES = frozenset({"", "not_yet_available", "unresolved", "none", "nan", "<na>"})
+
+
+def _visit_day(value) -> date | None:
+    """Parse an owner clock to a calendar day without inventing precision."""
+    try:
+        text = str(value or "").strip()
+    except Exception:  # noqa: BLE001
+        return None
+    if not text or text.lower() in {"none", "nan", "nat", "<na>"}:
+        return None
+    try:
+        return date.fromisoformat(text[:10])
+    except (TypeError, ValueError):
+        return None
+
+
+def _visit_text(value) -> str:
+    try:
+        if value is None:
+            return ""
+        text = str(value).strip()
+        return "" if text.lower() in {"none", "nan", "nat", "<na>"} else text
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+def _visit_frame_records(frame) -> list[dict] | None:
+    """Bounded adapter for tests/lists and the owner DataFrames; None means unreadable."""
+    if frame is None:
+        return None
+    if isinstance(frame, list):
+        return [dict(r) for r in frame if isinstance(r, dict)]
+    try:
+        return [dict(r) for r in frame.to_dict(orient="records")]
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _visit_discovery_snapshot(
+    visits: list[dict],
+    *,
+    health: dict,
+    coverage_start: str | None,
+    open_scoped_codes: set[str],
+    has_unscoped_open: bool,
+    kind_labeler,
+    recent_days: int = _VISIT_DISCOVERY_RECENT_DAYS,
+    baseline_days: int = _VISIT_DISCOVERY_BASELINE_DAYS,
+) -> dict:
+    """Descriptive visit-frequency state from the existing P1 tape.
+
+    It never claims a visit is bullish/bearish, never identifies an actor from
+    metadata, and never treats unobserved history as quiet.  The default 30d
+    recent / preceding 90d baseline is descriptive bookkeeping only; predictive
+    interpretation remains gated by CIE-03/CIE-18.
+    """
+    recent_days = max(int(recent_days), 1)
+    baseline_days = max(int(baseline_days), 1)
+    health = health if isinstance(health, dict) else {}
+    source_status = _visit_text(health.get("status")) or "no_coverage"
+    coverage_day = _visit_day(coverage_start)
+    last_success_day = _visit_day(health.get("last_success_utc"))
+
+    # Defensive natural-key dedup. The owner already enforces keep-FIRST on
+    # announcement_id; this prevents a malformed fixture/consumer from turning
+    # one filing into apparent recurrence.
+    deduped: list[dict] = []
+    seen_ids: set[str] = set()
+    for row in visits or []:
+        aid = _visit_text(row.get("announcement_id"))
+        if aid:
+            if aid in seen_ids:
+                continue
+            seen_ids.add(aid)
+        deduped.append(row)
+
+    observed_days = [
+        d for d in (_visit_day(r.get("source_published_at")) for r in deduped)
+        if d is not None
+    ]
+    if source_status == "ok" and last_success_day is not None:
+        observation_end = last_success_day
+    elif observed_days:
+        # Positive evidence remains observable even when the latest source run
+        # degraded. It does NOT restore negative/baseline authority.
+        observation_end = max(observed_days)
+    else:
+        observation_end = last_success_day or coverage_day
+
+    authority = {
+        "is_context_only": True,
+        "may_rank": False,
+        "may_trade": False,
+        "may_feed_prophet": False,
+        "may_infer_visitor_identity": False,
+        "may_claim_predictive_edge": False,
+    }
+    base = {
+        "schema": _VISIT_DISCOVERY_SCHEMA,
+        "is_context_only": True,
+        "authority": authority,
+        "source_status": source_status,
+        "coverage_start": coverage_day.isoformat() if coverage_day else None,
+        "observation_end": observation_end.isoformat() if observation_end else None,
+        "recent_window_days": recent_days,
+        "baseline_window_days": baseline_days,
+        "scientific_state": "descriptive_only_not_alpha_evidence",
+        "actor_recurrence_state": "not_evaluated_without_body_stage_receipt",
+        "candidate_accounting": health.get("candidate_accounting"),
+        "global_negative_authority": (
+            source_status == "ok"
+            and coverage_day is not None
+            and last_success_day is not None
+            and not has_unscoped_open
+        ),
+        "global_negative_authority_blocker": (
+            "unscoped_coverage_exception" if has_unscoped_open
+            else "source_health_not_ok" if source_status != "ok"
+            else "coverage_start_unavailable" if coverage_day is None
+            else "last_success_clock_unavailable" if last_success_day is None
+            else None
+        ),
+        "n_rows_observed": len(deduped),
+        "n_recent_companies": 0,
+        "n_first_observed_recent": 0,
+        "n_measured_baselines": 0,
+        "n_company_exceptions": len(open_scoped_codes),
+        "examples": [],
+        "examples_order": "company_key_lexicographic_not_ranked",
+        "examples_truncated": False,
+    }
+    if observation_end is None:
+        return base
+
+    recent_start = observation_end - timedelta(days=recent_days - 1)
+    baseline_end = recent_start - timedelta(days=1)
+    baseline_start = baseline_end - timedelta(days=baseline_days - 1)
+
+    grouped: dict[str, dict] = {}
+    for row in deduped:
+        code = _visit_text(row.get("sec_code"))
+        if not code:
+            continue
+        exchange = _visit_text(row.get("exchange"))
+        key = f"{exchange}:{code}" if exchange else code
+        day = _visit_day(row.get("source_published_at"))
+        if day is None:
+            continue
+        # Pre-coverage source dates are real source metadata but cannot establish
+        # first-seen/quiet history for this forward-only P1 plane.
+        if coverage_day is not None and day < coverage_day:
+            continue
+        bucket = grouped.setdefault(key, {
+            "company_key": key,
+            "sec_code": code,
+            "sec_name": _visit_text(row.get("sec_name")),
+            "exchange": exchange,
+            "rows": [],
+        })
+        bucket["rows"].append((day, row))
+
+    # Company-scoped exceptions deserve an explicit UNKNOWN record even when no
+    # canonical visit row could be admitted.
+    for code in open_scoped_codes:
+        if not code:
+            continue
+        if not any(v.get("sec_code") == code for v in grouped.values()):
+            grouped[code] = {
+                "company_key": code,
+                "sec_code": code,
+                "sec_name": "",
+                "exchange": "",
+                "rows": [],
+            }
+
+    examples: list[dict] = []
+    for key in sorted(grouped):
+        bucket = grouped[key]
+        rows = sorted(bucket["rows"], key=lambda item: (
+            item[0], _visit_text(item[1].get("announcement_id"))
+        ))
+        code = bucket["sec_code"]
+        recent = [r for d, r in rows if recent_start <= d <= observation_end]
+        prior_all = [r for d, r in rows if d < recent_start]
+        baseline = [r for d, r in rows if baseline_start <= d <= baseline_end]
+        if not recent and code not in open_scoped_codes:
+            continue
+
+        company_exception = code in open_scoped_codes
+        if has_unscoped_open:
+            baseline_state = "blocked_unscoped_coverage_exception"
+        elif company_exception:
+            baseline_state = "blocked_company_coverage_exception"
+        elif source_status != "ok":
+            baseline_state = "unavailable_source_health"
+        elif coverage_day is None or coverage_day > baseline_start:
+            baseline_state = "insufficient_observed_history"
+        else:
+            baseline_state = "measured"
+
+        first_seen_state = (
+            "unknown_due_coverage_exception" if company_exception
+            else "first_observed_since_coverage_start" if recent and not prior_all
+            else "previously_observed" if recent
+            else "no_recent_positive_evidence"
+        )
+
+        recent_rate = len(recent) / recent_days if recent else 0.0
+        baseline_rate = len(baseline) / baseline_days if baseline_state == "measured" else None
+        ratio = None
+        comparison = None
+        higher = None
+        if baseline_state == "measured" and recent:
+            if len(baseline) == 0:
+                comparison = "recent_activity_after_measured_zero_baseline"
+                higher = True
+            else:
+                ratio = recent_rate / baseline_rate if baseline_rate else None
+                higher = recent_rate > baseline_rate
+                comparison = (
+                    "recent_rate_higher" if higher
+                    else "recent_rate_lower" if recent_rate < baseline_rate
+                    else "recent_rate_equal"
+                )
+
+        kind_counts: dict[str, int] = {}
+        classes: set[str] = set()
+        for row in recent:
+            try:
+                kind_en, _kind_zh = kind_labeler(_visit_text(row.get("title")))
+            except Exception:  # noqa: BLE001
+                kind_en = "investor visit"
+            kind_counts[kind_en] = kind_counts.get(kind_en, 0) + 1
+            classes.add(_visit_text(row.get("visitor_class")).lower())
+
+        resolved_actor_present = any(c not in _VISIT_UNKNOWN_CLASSES for c in classes)
+        examples.append({
+            "company_key": key,
+            "sec_code": code,
+            "sec_name": bucket["sec_name"],
+            "exchange": bucket["exchange"],
+            "coverage_state": (
+                "unknown_company_exception" if company_exception
+                else "positive_metadata_observed" if recent
+                else "unknown"
+            ),
+            "first_seen_state": first_seen_state,
+            "first_observed_source_day": rows[0][0].isoformat() if rows else None,
+            "recent_count": len(recent),
+            "recent_window_start": recent_start.isoformat(),
+            "recent_window_end": observation_end.isoformat(),
+            "baseline_state": baseline_state,
+            "baseline_count": len(baseline) if baseline_state == "measured" else None,
+            "baseline_window_start": baseline_start.isoformat(),
+            "baseline_window_end": baseline_end.isoformat(),
+            "recent_rate_per_day": recent_rate if recent else 0.0,
+            "baseline_rate_per_day": baseline_rate,
+            "recent_vs_baseline_rate_ratio": ratio,
+            "recent_activity_higher_than_baseline": higher,
+            "rate_comparison": comparison,
+            "activity_type_counts": kind_counts,
+            "visitor_identity_state": (
+                "actor_enriched_rows_present"
+                if resolved_actor_present
+                else "metadata_only_not_yet_available"
+            ),
+            "actor_recurrence_state": "not_evaluated_without_body_stage_receipt",
+            "may_rank": False,
+            "may_trade": False,
+        })
+
+    base["n_recent_companies"] = sum(1 for r in examples if r["recent_count"] > 0)
+    base["n_first_observed_recent"] = sum(
+        1 for r in examples if r["first_seen_state"] == "first_observed_since_coverage_start"
+    )
+    base["n_measured_baselines"] = sum(
+        1 for r in examples if r["baseline_state"] == "measured"
+    )
+    # The briefing stays bounded. These are deterministic examples, not a ranking.
+    base["examples"] = examples[:24]
+    base["examples_truncated"] = len(examples) > 24
+    return base
+
+
+def _visit_discovery_block() -> dict | None:
+    """CIE-07 metadata-only discovery from the existing P1 visit owner."""
+    try:
+        from collectors import china_visits as cv
+
+        visits = _visit_frame_records(cv.read_visits_strict())
+        exceptions = _visit_frame_records(cv.read_coverage_exceptions_strict())
+        if visits is None or exceptions is None:
+            return {
+                "schema": _VISIT_DISCOVERY_SCHEMA,
+                "is_context_only": True,
+                "authority": {
+                    "is_context_only": True, "may_rank": False, "may_trade": False,
+                    "may_feed_prophet": False, "may_infer_visitor_identity": False,
+                    "may_claim_predictive_edge": False,
+                },
+                "source_status": "source_failure",
+                "coverage_start": None,
+                "observation_end": None,
+                "global_negative_authority": False,
+                "global_negative_authority_blocker": "owner_store_unreadable",
+                "examples": [],
+                "scientific_state": "descriptive_only_not_alpha_evidence",
+                "actor_recurrence_state": "not_evaluated_without_body_stage_receipt",
+            }
+
+        open_rows = [r for r in exceptions if _visit_text(r.get("status")) == "open"]
+        open_scoped_codes: set[str] = set()
+        has_unscoped = False
+        for row in open_rows:
+            code = row.get("sec_code")
+            if cv.is_unscoped_sec_code(code):
+                has_unscoped = True
+            else:
+                norm = _visit_text(code)
+                if norm:
+                    open_scoped_codes.add(norm)
+
+        return _visit_discovery_snapshot(
+            visits,
+            health=cv.read_health(),
+            coverage_start=cv.read_coverage_start(),
+            open_scoped_codes=open_scoped_codes,
+            has_unscoped_open=has_unscoped,
+            kind_labeler=cv.visit_kind_label,
+        )
+    except Exception as e:  # noqa: BLE001
+        log.debug("china_intel_bus: visit discovery block failed (%s)", e)
         return None
 
 
@@ -633,7 +980,7 @@ def _analogs_block() -> dict | None:
 def _staleness(b: dict) -> tuple[dict, int]:
     sa, worst = {}, 0
     for k in ("news", "policy", "altdata", "radar", "analysis",
-              "policy_phrase", "narrative_divergence", "special_situations", "command"):
+              "policy_phrase", "narrative_divergence", "special_situations", "visit_discovery", "command"):
         d = (b.get(k) or {}).get("asof") if isinstance(b.get(k), dict) else None
         sa[k] = d
         if d:
@@ -654,7 +1001,7 @@ def briefing(asof: date | str | None = None) -> dict:
         "news": None, "policy": None, "altdata": None, "radar": None, "analysis": None,
         "regime": None, "discovery": None,
         "policy_phrase": None, "narrative_divergence": None,
-        "special_situations": None, "command": None,
+        "special_situations": None, "visit_discovery": None, "command": None,
         "analogs": None,   # v6: separate from command; NOT in surfaces_present until non-None
         "disclaimer": DISCLAIMER, "disclaimer_zh": DISCLAIMER_ZH,
     }
@@ -665,6 +1012,7 @@ def briefing(asof: date | str | None = None) -> dict:
                     ("policy_phrase", _policy_phrase_block),
                     ("narrative_divergence", _narrative_divergence_block),
                     ("special_situations", _special_situations_block),
+                    ("visit_discovery", _visit_discovery_block),
                     ("command", _command_block),
                     ("analogs", _analogs_block)):
         try:
@@ -684,7 +1032,7 @@ def briefing(asof: date | str | None = None) -> dict:
     # analogs NOT in surfaces_present until the artifact ships (degrade-safe)
     b["surfaces_present"] = [k for k in ("news", "policy", "altdata", "radar", "analysis",
                                         "policy_phrase", "narrative_divergence",
-                                        "special_situations", "command") if b.get(k)]
+                                        "special_situations", "visit_discovery", "command") if b.get(k)]
     b["surface_asof"], b["max_staleness_days"] = _staleness(b)
     b["digest"] = _digest_text(b)
     return b
