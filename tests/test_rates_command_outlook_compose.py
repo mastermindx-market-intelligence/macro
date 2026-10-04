@@ -22,7 +22,7 @@ sys.path.insert(0, str(REPO))
 from engine import rates_command_outlook as rco  # noqa: E402
 from engine import rates_command_outlook_compose as rcc  # noqa: E402
 
-GOLDEN_PATH = REPO / "tests" / "fixtures" / "regime_outlook" / "readings_golden_v1.json"
+GOLDEN_PATH = REPO / "tests" / "fixtures" / "regime_outlook" / "readings_golden_v2.json"
 GOLDEN = json.loads(GOLDEN_PATH.read_text(encoding="utf-8"))
 MAPPING = rco.load_mapping()
 
@@ -313,16 +313,31 @@ def test_status_deleting_m_stale_flag_makes_breadth_tone_partial_with_malformed(
 
 
 def test_status_setting_eci_comp_yoy_to_zero_records_possible_missing_as_zero():
+    # Mapping v2 declares no zero-prone paths (contract 3.2 §18 V3: the eight
+    # numbers publish None when missing since #8348), so the rule is exercised
+    # on a copy that re-declares the path, and the real table is pinned to
+    # NOT flag a genuine zero.
+    mapping = copy.deepcopy(MAPPING)
+    mapping["possible_missing_as_zero"] = {
+        "artifact": "T", "paths": [["state", "inflation", "eci_comp_yoy"]],
+    }
+    assert MAPPING["possible_missing_as_zero"]["paths"] == []
     for value in (0, 0.0):
         bytes_in = _patch(
             "T", ["state", "inflation", "eci_comp_yoy"], value
         )
+        docs, record = rcc.read_inputs(mapping, bytes_in)
+        rows = rcc.evidence_rows(
+            mapping, docs, record, analysis_cutoff=CUTOFF, us_session=US_SESSION
+        )
+        row = next(r for r in rows if r["id"] == "T.state.inflation.eci_comp_yoy")
+        assert "possible_missing_as_zero" in row["issues"]
         docs, record = rcc.read_inputs(MAPPING, bytes_in)
         rows = rcc.evidence_rows(
             MAPPING, docs, record, analysis_cutoff=CUTOFF, us_session=US_SESSION
         )
         row = next(r for r in rows if r["id"] == "T.state.inflation.eci_comp_yoy")
-        assert "possible_missing_as_zero" in row["issues"]
+        assert "possible_missing_as_zero" not in row["issues"]
 
 
 def test_status_setting_eci_comp_yoy_to_nan_via_dict_is_missing():
