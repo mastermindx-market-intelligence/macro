@@ -1,0 +1,18 @@
+{
+  "path": "/workspace/scratch/5989f2bb1f95/outputs/TOI_Catalog_Crosswalk_2026-10-03.csv",
+  "rows": 195,
+  "unique_ids": 195,
+  "explicit_true_challengers": 23,
+  "challenger_not_declared_m2": 6,
+  "direct_w1_signal_and_path_associations": 104,
+  "not_mapped": 91,
+  "formula_review": {
+    "NOT_REVIEWED_THIS_RUN": 146,
+    "FOCUSED_SOURCE_SEMANTICS_ONLY_NOT_PARITY": 49
+  },
+  "source_pin": "5fc7af4a1aa2510966a7b566f97e5b894f2632f8",
+  "w1_pin": "15e4dfb0c9ddc788127d0954fd7d92414eefdcbf",
+  "detectors_executed": false,
+  "outcomes_read": false,
+  "qualification": "Source registration inventory; W1 direct reference is not formula equivalence. Aggregate committed publication count does not prove per-ID served presence."
+}

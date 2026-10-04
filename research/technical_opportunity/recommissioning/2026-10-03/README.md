@@ -1,8 +1,10 @@
 # TOI recommissioning source packet — 2026-10-03
 
+**October 4 source preservation:** all [22 original UTF-8 donor files](donor_evidence/INTAKE_README.md) are now present, including the exact configuration/hypothesis tables and four source audits. The PDF alone remains in the supplied ZIP. [Publication validation](DONOR_TEXT_SOURCE_PUBLICATION_2026-10-04.json) distinguishes byte integrity from scientific admission.
+
 **October 3 continuation:** the [complete additional Markdown masterplan](donor_evidence/TOI_Recovery_Masterplan_2026-10-03.md) is now preserved byte-for-byte; [publication receipt](DONOR_FULL_PAPER_PUBLICATION.json). The [existing-consumer empty-source repair proposal](consumer_qualification/README.md) has discriminating synthetic proof and 32 source-only tests passing, with one real-artifact check explicitly untested. It is a proposal, not an applied source patch or deployment.
 
-**Current combined plan:** [TOI reconciled execution plan](TOI_RECONCILED_EXECUTION_PLAN_2026-10-03.md). This integrates the additional research without combining incompatible trial budgets or replacing the original carriers. [Preserved additional evidence](donor_evidence/README.md) and [fresh W2 record-validation proof](W2_NATIVE_RECORD_VALIDATION.json) are linked separately. W3 remains held.
+**Current combined plan:** [TOI reconciled execution plan](TOI_RECONCILED_EXECUTION_PLAN_2026-10-03.md). This integrates the additional research without combining incompatible trial budgets or replacing the original carriers. [Preserved additional evidence](donor_evidence/INTAKE_README.md) and [fresh W2 record-validation proof](W2_NATIVE_RECORD_VALIDATION.json) are linked separately. W3 remains held.
 
 Uploaded at the user's explicit instruction to initiate the existing `WS:TECHNICAL-OPPORTUNITY-INTELLIGENCE` program. This directory preserves the supplied research sources; publication is not source-custody transfer, W1 acceptance, data admission, W3 outcome authorization, or production promotion.
 
