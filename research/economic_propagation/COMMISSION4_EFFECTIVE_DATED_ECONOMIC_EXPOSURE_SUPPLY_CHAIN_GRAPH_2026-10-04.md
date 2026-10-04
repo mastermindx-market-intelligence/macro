@@ -999,7 +999,7 @@ Measure:
 - magnitude extraction error;
 - false-edge rate.
 
-Any automatic admission path should preregister a high precision floor. A candidate first gate is **≥95% role+direction precision**, subject to stricter adjudication after observing error costs.
+Any automatic admission path should preregister a high precision floor. A candidate first gate is **≥95% role+direction precision**, but it is valid only with a preregistered minimum adjudicated sample, relation/source stratification, frozen holdout, adjudicator-disagreement policy and uncertainty criterion such as a lower confidence bound. Error costs may justify a stricter threshold; the threshold may not be weakened after seeing results.
 
 Below-gate observations can remain candidate/review evidence.
 
@@ -1131,6 +1131,20 @@ Use:
 
 No promotion from one attractive backtest.
 
+## H9. Counter-thesis and build falsifiers
+
+The favored architecture is wrong or not worth scaling if any of the following survives a fair PIT evaluation:
+- Graph-1 adds no incremental fundamental/expectation information beyond Graph-2, Graph-3, sector/industry and BEA input-output priors;
+- modern linked-firm return predictability disappears after transaction costs, multiple-testing control and Mastermind's existing information set;
+- vendor relationships cannot be reconstructed with lawful known-at/correction semantics;
+- high-precision extraction cannot clear the preregistered uncertainty-adjusted gate without manual review;
+- product/facility/private-company identity ambiguity dominates the intended use cases;
+- rights restrictions prevent durable internal receipts or required downstream research use;
+- K3-D/F04/Neural Web consumers do not improve decision quality, calibration or falsification when Graph-1 is added.
+
+If these falsifiers hold, retain only the small evidence plane where it remains useful and kill deep-tier expansion. Edge count is never a reason to scale.
+
+
 ---
 
 # I. Risks and failure modes
@@ -1219,17 +1233,22 @@ Models should propose and explain; contracts and evidence owners should admit tr
 
 # J. Build priority
 
+
 ## P0
 
 - Resolve Graph-1 ownership/admission under current source law.
-- Preserve the existing prohibition on standalone GMI W4.
-- Freeze observation, exposure, temporal, correction and rights contracts.
-- Build adjudicated gold-set validation and PIT replay before scale.
+- Preserve the prohibition on standalone GMI W4.
+- Freeze the Data OS temporal crosswalk; Graph-1 creates no second PIT ontology.
+- Freeze the Theme Graph relation-vocabulary compatibility map before minting overlapping relation names.
+- Freeze owner/mint/correction law for non-security entity classes required by the pilot.
+- Freeze observation, exposure, absence, correction and rights contracts.
+- Build an adjudicated gold set with uncertainty-adjusted admission gates and PIT replay before scale.
 - Start with high-precision U.S. issuer-disclosed relationships from existing filing owners.
-- Reuse exact Stock Identity/Data OS references.
+- Reuse exact Data OS identities and source-owner receipts.
 - Ship coverage/freshness/unknown/correction observability with the first source.
-- Give K3-D/F04 read-only shadow access to real Graph-1 facts when interface law permits.
+- Give K3-D/F04 read-only shadow access only when interface law permits.
 - Maintain zero trading/portfolio authority.
+
 
 ## P1
 
@@ -1268,26 +1287,22 @@ Models should propose and explain; contracts and evidence owners should admit tr
 
 # K. Proposed implementation phases
 
+
 ## Phase 0 — ownership and admission
 
 Before persistent Graph-1 implementation:
 
-1. Refresh current Mastermind/Macro/Terminal heads.
-2. Re-read current owner/decision registries.
-3. Reconcile:
-   - GMI W4 prohibition;
-   - K3-D state;
-   - F04 ownership;
-   - Stock Identity/Data OS;
-   - filing/fundamental owners;
-   - GovRev;
-   - Research Vault;
-   - Evidence Foundation.
-4. Publish one explicit ownership/adoption decision.
+1. Refresh current Mastermind/Macro/Terminal heads and re-read current owner/decision registries.
+2. Reconcile GMI W4 prohibition, K3-D state, F04 ownership, Data OS identity/temporal law, filing/fundamental owners, GovRev, Research Vault and Evidence Foundation.
+3. Freeze the Data OS temporal crosswalk for every proposed clock-like field.
+4. Freeze the compatibility map for overlapping Theme Graph economic relation terms.
+5. Freeze owner/mint/correction rules for product/component/facility/end-market/standard/capacity/policy identities used by the pilot.
+6. Publish one explicit ownership/adoption decision.
 
-Exit: one canonical answer to who may emit, normalize, project and consume Graph-1.
+Exit: one canonical answer to who may emit, normalize, project and consume Graph-1, plus one canonical temporal and identity compatibility contract.
 
-If ownership remains ambiguous, stop the modifying lane rather than creating another graph.
+If ownership, PIT law or identity authority remains ambiguous, stop the modifying lane rather than creating another graph.
+
 
 ## Phase 1 — contracts + gold set
 
@@ -1467,6 +1482,14 @@ Produce one adoption map stating:
 - GovRev boundary;
 - Research Vault boundary.
 
+The adoption map must also state:
+- which Data OS TemporalProfile governs each admitted source class;
+- how each proposed clock maps to Data OS;
+- how SUPPLIES_TO/BOTTLENECKED_BY and other overlapping names relate to current Theme Graph enums;
+- which owner mints and corrects every non-security entity class used by the pilot;
+- how PRESENT/ENDED/REJECTED/UNKNOWN/COVERAGE_ABSENT/RIGHTS_BLOCKED states are represented.
+
+
 If a new persistent surface would violate current GMI-W4/K3-D/F04 owner decisions, stop that modifying lane and return the exact collision. Do not rename the same duplicate and continue.
 
 ### Bounded implementation scope after ownership clearance
@@ -1498,24 +1521,21 @@ Limit automatic/admitted scope to strongly evidenced roles such as:
 
 Do not broaden ontology merely to maximize edge count.
 
-### Required temporal fields
 
-Every admitted observation must carry or explicitly type as unavailable:
+### Required temporal compatibility
 
-- event_time;
-- as_of;
-- observed_at;
-- available_at / known_at;
-- ingested_at;
-- effective_from;
-- effective_to;
-- discovered_at;
-- belief_time;
-- source_revision;
-- processing_generation;
-- correction_generation.
+Every admitted observation must carry the canonical Data OS clocks required by its TemporalProfile and may carry Graph-1 relationship-validity/provenance metadata only through the frozen crosswalk.
 
-Historical replay must enforce both knowledge time and effective time.
+At minimum, the implementation must prove:
+- lawful known_at under the owning profile;
+- effective relationship interval;
+- source revision/correction lineage;
+- ingestion/provenance timing;
+- processing generation;
+- no persisted as_of field used merely to echo a query cutoff.
+
+Historical replay must enforce both knowledge time and effective time. A field named available_at, observed_at, discovered_at or belief_time may not silently replace Data OS known-at law.
+
 
 ### Required provenance
 
@@ -1573,13 +1593,22 @@ At minimum reject:
 - LLM candidate with no source span;
 - expired relationship remaining active indefinitely.
 
+
 ### Gold-set requirement
 
 Before automatic admission, evaluate a stratified adjudicated corpus.
 
-Preregister the role+direction precision threshold before reading final results.
+Preregister:
+- relation/source strata and minimum sample per promoted stratum;
+- frozen holdout construction;
+- role+direction precision threshold;
+- uncertainty rule, such as a lower confidence bound;
+- adjudicator-disagreement resolution;
+- identity-ambiguity treatment;
+- separate error accounting for direction reversal, false edge, stale edge and missing edge.
 
-A candidate first automatic-tier requirement is **≥95% precision**; the implementation owner may recommend a stricter threshold based on observed error costs, but may not quietly lower the threshold to pass.
+A candidate first automatic-tier point threshold remains **≥95% role+direction precision**, but promotion requires the preregistered uncertainty criterion as well. The implementation owner may recommend a stricter threshold based on error costs and may not lower the gate after seeing final results.
+
 
 ### PIT replay proof
 
@@ -1680,6 +1709,10 @@ Do **not** continue from P0 into commercial procurement, deep-tier mapping, Port
 - Carvalho, Vasco et al. “Supply Chain Disruptions: Evidence from the Great East Japan Earthquake.” QJE. https://doi.org/10.1093/qje/qjaa044
 - Acemoglu, Daron et al. “The Network Origins of Aggregate Fluctuations.” Econometrica. https://doi.org/10.3982/ECTA9623
 - Hoberg, Gerard, and Gordon Phillips. “Product Market Synergies and Competition in Mergers and Acquisitions: A Text-Based Analysis.” NBER/product-market-network research family. https://www.nber.org/papers/w15991
+- Chen, Zilin, Hui Ding, and Fuwei Jiang. “Sticky Expectations and Cross-Firm Return Predictability.” Journal of Business Finance & Accounting 52(5), 2025. https://doi.org/10.1111/jbfa.12876
+- Culot, Giovanna, Matteo Podrecca, Guido Nassimbeni, Guido Orzes, and Marco Sartor. “Using supply chain databases in academic research: A methodological critique.” Journal of Supply Chain Management 59(1), 2023. https://doi.org/10.1111/jscm.12294
+
+
 - SEC EDGAR APIs: https://www.sec.gov/search-filings/edgar-application-programming-interfaces
 - SEC EDGAR access/data guidance: https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data
 - BEA Input-Output Accounts: https://www.bea.gov/data/industries/input-output-accounts-data
