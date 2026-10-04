@@ -1,7 +1,9 @@
 """R1B: Brain report questions return source-bound Research Vault evidence."""
 from __future__ import annotations
 
+import hashlib
 import json
+from types import SimpleNamespace
 from datetime import datetime, timezone
 from urllib.parse import parse_qs, urlparse
 
@@ -94,6 +96,39 @@ def _report(root, query: str) -> dict:
         root, query, mode="report", report_id=REPORT_ID,
         user_ctx=PRO, now=NOW,
     )
+
+
+def _stub_research_intelligence(monkeypatch, body: str, *, calls: list | None = None):
+    from engine import research_intelligence as rio_mod
+    from engine.research_vault import r2_store
+
+    store = object()
+    source_sha = hashlib.sha256(body.encode("utf-8")).hexdigest()
+    monkeypatch.setattr(r2_store, "build_store", lambda: store)
+
+    def _load(active_store, document_id):
+        if calls is not None:
+            calls.append((active_store, document_id))
+        assert active_store is store
+        return SimpleNamespace(
+            source_content_sha256=source_sha,
+            rio={"stub": "validated-by-W2-loader"},
+        )
+
+    def _summary(_rio):
+        return [{
+            "schema": "mastermind.research_summary_point.v1",
+            "source_document_id": REPORT_ID,
+            "source_content_sha256": source_sha,
+            "epistemic_layer": "model_synthesis",
+            "text": "SYNTHESIS MUST NOT ANSWER AN EVIDENCE QUESTION",
+            "text_visibility": "derived_summary",
+            "support_claim_indices": [0],
+            "authority": "descriptive_research_only",
+        }]
+
+    monkeypatch.setattr(rio_mod, "load_latest_research_intelligence", _load)
+    monkeypatch.setattr(rio_mod, "summary_points", _summary)
 
 
 def test_meaningful_question_returns_exact_passage_binding_and_open_link(
@@ -1142,3 +1177,48 @@ def test_limit_error_sanitizes_string_quota_metadata(tmp_path, monkeypatch):
     assert result["remaining"] == 0
     assert result["limit"] is None
     assert _recursive_string_total(result) <= bmi.REPORT_BODY_MAX_CHARS
+
+
+def test_exhausted_evidence_view_never_probes_research_intelligence(
+        tmp_path, monkeypatch):
+    _seed(tmp_path)
+    corpus_calls, _legacy = _stub_documents(monkeypatch, "AAPL demand is accelerating.")
+    from engine.research_vault import r2_store, view_ratelimit
+    from engine import research_intelligence as rio_mod
+
+    store_calls = []
+    load_calls = []
+    monkeypatch.setattr(r2_store, "build_store",
+                        lambda: store_calls.append("build") or object())
+    monkeypatch.setattr(rio_mod, "load_latest_research_intelligence",
+                        lambda store, doc_id: load_calls.append(doc_id))
+    monkeypatch.setattr(view_ratelimit, "peek",
+                        lambda user_id, root=None, now=None: {"remaining": 0, "limit": 12})
+
+    result = _report(tmp_path, "AAPL demand")
+
+    assert result["error"] == "view_limit_reached"
+    assert "research_intelligence" not in result
+    assert corpus_calls == []
+    assert store_calls == []
+    assert load_calls == []
+
+
+def test_no_match_exposes_only_rio_state_never_synthesis_text(
+        tmp_path, monkeypatch):
+    _seed(tmp_path)
+    body = "This report only discusses oil supply."
+    _stub_documents(monkeypatch, body)
+    _stub_quota(monkeypatch)
+    _stub_research_intelligence(monkeypatch, body)
+
+    result = _report(tmp_path, "semiconductor inventories")
+
+    assert result["evidence"]["status"] == "no_matching_passage"
+    assert result["report"]["body_text"] == ""
+    assert result["research_intelligence"] == {
+        "state": "available",
+        "authority": "descriptive_research_only",
+        "summary_points": [],
+    }
+    assert "SYNTHESIS MUST NOT ANSWER" not in json.dumps(result)
