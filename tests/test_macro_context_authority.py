@@ -1466,3 +1466,53 @@ def test_r25_basis_admission_never_clears_stale_bonds_families(stale_key):
     assert out["bonds"]["status"] == "partial"
     assert any(g["key"] == stale_key and g["status"] == "stale_input"
                for g in out["bonds"]["data_gaps"])
+
+
+def test_r25_bonds_incomplete_core_read_is_partial_not_ready():
+    from scripts.build_macro_context import _build_decision_workspaces
+
+    snap = _r25_snapshot()
+    snap["labels"]["bonds"] = {}
+    snap["labels"]["transmission"] = {}
+    snap["gaps"] = []
+    world = _r25_world_state()
+    world["rates_credit"] = {"health_label": "healthy"}
+    regime = _r25_regime_data()
+    regime["conditions"]["stale_inputs"] = []
+
+    out = _build_decision_workspaces(
+        snap, world, regime, [], "2026-10-02"
+    )["bonds"]
+
+    assert out["current_read"]["health"] == "healthy"
+    assert any(value is None for value in out["current_read"].values())
+    assert out["data_gaps"] == []
+    assert out["status"] == "partial"
+
+
+def test_r25_forex_incomplete_core_read_is_partial_not_ready():
+    from scripts.build_macro_context import _build_decision_workspaces
+
+    snap = _r25_snapshot()
+    snap["labels"]["fx"] = {}
+    snap["gaps"] = []
+    world = _r25_world_state()
+    world["fx_dollar"] = {
+        "dollar_desk": {"trend": "up"},
+        "direct_usd_cross_currency_basis": {
+            "value_bps": 0,
+            "asof": "2026-10-02",
+            "source": "invented-basis-fixture",
+        },
+    }
+    regime = _r25_regime_data()
+    regime["conditions"]["stale_inputs"] = []
+
+    out = _build_decision_workspaces(
+        snap, world, regime, [], "2026-10-02"
+    )["forex"]
+
+    assert out["current_read"]["usd_trend"] == "up"
+    assert any(value is None for value in out["current_read"].values())
+    assert out["data_gaps"] == []
+    assert out["status"] == "partial"

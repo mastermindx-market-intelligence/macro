@@ -1291,10 +1291,12 @@ def _decision_changes(transitions: list[dict], domains: set[str], limit: int = 8
 
 
 def _decision_status(current_read: dict, gaps: list[dict]) -> str:
-    values = [v for v in current_read.values() if v is not None]
-    if not values:
+    values = list(current_read.values())
+    if not any(value is not None for value in values):
         return "unavailable"
-    return "partial" if gaps else "ready"
+    if any(value is None for value in values) or gaps:
+        return "partial"
+    return "ready"
 
 
 def _direct_usd_xccy_basis(fx_lobe: dict, today: str) -> Any:
