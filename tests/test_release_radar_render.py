@@ -154,19 +154,22 @@ def test_release_radar_no_validated_word_in_template():
         )
 
 
+
 def test_release_radar_fetch_targets_correct_path():
-    """JS fetch call targets macrodata/release_forecast.json."""
+    """Lazy runtime fetches macrodata/release_forecast.json, not the cold HTML."""
     html = _render("macro")
-    assert "macrodata/release_forecast.json" in html
+    runtime = (ROOT / "templates" / "release_radar.js").read_text(encoding="utf-8")
+    assert "macrodata/release_forecast.json" not in html
+    assert "macrodata/release_forecast.json" in runtime
+
 
 
 def test_release_radar_fetch_uses_no_cache():
-    """Fetch uses {cache: 'no-cache'} per house pattern (sector_central.html.j2:670)."""
-    html = _render("macro")
-    # Our section specifically
-    idx = html.find("release_forecast.json")
+    """On-demand runtime preserves the house no-cache release-data fetch."""
+    runtime = (ROOT / "templates" / "release_radar.js").read_text(encoding="utf-8")
+    idx = runtime.find("release_forecast.json")
     assert idx >= 0
-    nearby = html[max(0, idx-60):idx+80]
+    nearby = runtime[max(0, idx-60):idx+100]
     assert "no-cache" in nearby
 
 
@@ -230,21 +233,47 @@ def test_release_radar_absent_in_stocks_mode():
     assert 'id="release-radar"' not in html
 
 
+
+def test_release_radar_runtime_is_lazy_and_retired_clients_are_absent():
+    """Cold macro render must not pay for RR data/logic or retired chart clients."""
+    html = _render("macro")
+    assert "window.mmLoadReleaseRadar" in html
+    assert "release_radar.js?v=" in html
+    assert "macrodata/release_forecast.json" not in html
+    assert "var RR_EL = document.getElementById('rr-content')" not in html
+    for retired in ("chart_i18n.js", "timemachine.js", "charts.js"):
+        assert f'src="{retired}"' not in html
+
+
+def test_release_radar_runtime_remains_jinja_free():
+    """External runtime must stay static/cacheable and never require template rendering."""
+    runtime = (ROOT / "templates" / "release_radar.js").read_text(encoding="utf-8")
+    assert "{{" not in runtime
+    assert "{%" not in runtime
+    assert len(runtime) > 90000
+
+
 # ---------------------------------------------------------------------------
 # Tests — template source structure
 # ---------------------------------------------------------------------------
 
+
 def test_release_radar_fetch_path_in_template():
-    """Template source contains the fetch path literal."""
+    """Dashboard ships only a lazy loader; the heavy fetch lives in the external runtime."""
     src = (ROOT / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
-    assert "macrodata/release_forecast.json" in src
+    runtime = (ROOT / "templates" / "release_radar.js").read_text(encoding="utf-8")
+    assert "mmLoadReleaseRadar" in src
+    assert "release_radar.js?v=" in src
+    assert "macrodata/release_forecast.json" not in src
+    assert "macrodata/release_forecast.json" in runtime
+
 
 
 def test_r40_combined_basis_honesty_copy_reaches_render_and_generated_macro():
-    """The bilingual combined-basis disclosure ships in both source render and site artifact."""
-    rendered = _render("macro")
-    generated = (ROOT / "site" / "macro.html").read_text(encoding="utf-8")
-    for surface in (rendered, generated):
+    """The bilingual combined-basis disclosure ships in source and published RR runtime."""
+    source_runtime = (ROOT / "templates" / "release_radar.js").read_text(encoding="utf-8")
+    generated_runtime = (ROOT / "site" / "release_radar.js").read_text(encoding="utf-8")
+    for surface in (source_runtime, generated_runtime):
         assert "Model + benchmark blend" in surface
         assert "模型与基准混合" in surface
         assert "includes Cleveland benchmark" in surface
@@ -253,27 +282,18 @@ def test_r40_combined_basis_honesty_copy_reaches_render_and_generated_macro():
         assert "Blend of '+esc(combNStr)+' models" not in surface
 
 
-# ---------------------------------------------------------------------------
-# Tests — v2 field rendering (fixture-based; fixture is deleted after tests run)
-# These tests parse JS source in the template to assert that the v2 helpers
-# are present and correctly gated (fail-open when fields are null/absent).
-# ---------------------------------------------------------------------------
-
-_FIXTURE_PATH = ROOT / "site" / "macrodata" / "release_forecast_fixture_v2.json"
-
 
 def _rr_section_src() -> str:
-    """Return the Release Radar <script> block from the template source."""
+    """Return Release Radar markup plus its on-demand runtime source."""
     src = (ROOT / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
-    # extract between RELEASE RADAR comment and week-ahead comment
     idx_start = src.find("RELEASE RADAR")
     idx_end = src.find("Week ahead", idx_start) if idx_start >= 0 else -1
     if idx_start < 0:
         pytest.skip("RELEASE RADAR block not found in template source")
-    return src[idx_start:idx_end] if idx_end > idx_start else src[idx_start:idx_start + 60000]
+    markup = src[idx_start:idx_end] if idx_end > idx_start else src[idx_start:idx_start + 60000]
+    runtime = (ROOT / "templates" / "release_radar.js").read_text(encoding="utf-8")
+    return markup + "\n" + runtime
 
-
-# ---- Template source structure: v2 helpers are defined ----
 
 def test_v2_components_bar_function_defined():
     """componentsBar() helper is defined in the Release Radar script block."""
