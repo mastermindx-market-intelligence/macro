@@ -1201,7 +1201,7 @@ jobs:
       # comparison on the canonical sign. Hermetic: synthetic closes only, no data/, no
       # network, no dependency beyond this job's install line. Unnamed suites never run.
       - name: entry-radar W1+W2+W3+W4+W4.1+W5+W6 — probe universe, entry_event.v1 store, G0 parity, C1-C5 PIT battery, live pack + episode ledger + live evaluator, live-transport correction, W5 prereg gates + forward evidence, RP1 Research Priority
-        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py -q
+        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py tests/test_entry_radar_pack_sink.py tests/test_entry_radar_pack_state.py -q
 
   session-anchor-era:
     # Absolute session-calendar anchor, both eras. The confluence 2D/3D + fortnight
@@ -2621,6 +2621,7 @@ jobs:
       - "engine/options_market_memory_local_replica.py"
       - "engine/options_market_memory_receipt_store.py"
       - "engine/options_matrix.py"
+      - "engine/options_scenario_surface.py"
       - "engine/options_payoff.py"
       - "engine/options_signal_campaign.py"
       - "engine/options_signal_episode.py"
@@ -2855,6 +2856,7 @@ jobs:
       - "scripts/build_options_issue_desk.py"
       - "scripts/build_options_prophet.py"
       - "scripts/build_options_screener.py"
+      - "scripts/build_options_scenario_surface.py"
       - "scripts/build_options_signal_campaign.py"
       - "scripts/build_options_signal_episode.py"
       - "scripts/build_options_sparse_selector_prereg.py"
@@ -2960,6 +2962,7 @@ jobs:
       - "tests/test_options_issue_desk_api.py"
       - "tests/test_options_episode_outcome_coverage.py"
       - "tests/test_options_matrix.py"
+      - "tests/test_options_scenario_surface.py"
       - "tests/test_options_payoff.py"
       - "tests/test_options_market_memory_local_receipts.py"
       - "tests/test_options_market_memory_local_replica.py"
@@ -3056,8 +3059,8 @@ jobs:
         run: python -m pytest tests/test_thetadata_store.py -q
       - name: AD-1T1 ThetaData T1 daily incremental maintainer (legacy characterization, --daily hostile suite, launchd scheduler)
         run: python -m pytest tests/test_topup_thetadata_legacy.py tests/test_topup_thetadata_daily.py tests/test_topup_thetadata_scheduler.py -q
-      - name: intraday greek engine tests (IV solve round-trip, greek parity vs engine/greeks, dealer-sign parity vs engine/gex_engine, coverage honesty)
-        run: python -m pytest tests/test_intraday_greeks.py -q
+      - name: intraday greek + conditional scenario surface tests (IV solve, Greek parity, source clocks, price×time contours)
+        run: python -m pytest tests/test_intraday_greeks.py tests/test_options_scenario_surface.py -q
       - name: structure payoff / scenario / greeks-drift engine (shared BS core reuse, bounded vs UNBOUNDED, typed nulls, zero entry authority)
         run: python -m pytest tests/test_options_payoff.py -q
       # OEU M-XP(b)+(c): the two payloads the Terminal / Options workspace fetch. Both are
@@ -6350,7 +6353,7 @@ jobs:
       - name: FS-4 trainer unit tests (Lane A)
         run: python -m pytest tests/test_fs4_flow_trainer.py -q
       - name: FS-5 fit-free geometry unit tests
-        run: python -m pytest tests/test_fs5_flow_geometry.py tests/test_fs5_flow_admission.py tests/test_fs5_admission_integrity.py tests/test_fs5_stage_receipts.py -q
+        run: python -m pytest tests/test_fs5_flow_geometry.py tests/test_fs5_flow_admission.py tests/test_fs5_admission_integrity.py tests/test_fs5_stage_receipts.py tests/test_fs5_native_uniqueness.py tests/test_fs5_cpcv_prefit.py tests/test_fs5_weighted_metrics.py tests/test_fs5_method_closure.py -q
 
   broad-etf-flows:
     if: ${{ false }}
@@ -9085,15 +9088,29 @@ jobs:
     # authored mapping against its own rules, pins its reading table by hash,
     # and compares every condition with the contract's tables. Code-gated on
     # purpose: the job that owns the neighbouring rates-command suites is
-    # data-gated and never runs on a pull request. Offline, stdlib only; no
-    # market artifact is read and nothing here ranks, gates or forecasts.
+    # data-gated and never runs on a pull request. Offline, stdlib plus pyyaml;
+    # no market artifact is read and nothing here ranks, gates or forecasts.
+    # The rule-pin suite hashes the source of every producer decision the table
+    # cites, so a producer or config edit runs this job and fails until re-read.
     paths:
-      - "config/regime_outlook_mapping_v1.json"
+      - "config/regime_outlook_mapping_v2.json"
       - "engine/rates_command_outlook.py"
       - "research/macro_regime_intelligence/STATE_PATH_AND_SCIENCE_CONTRACT_2026-10-03.md"
-      - "tests/fixtures/regime_outlook/readings_golden_v1.json"
+      - "tests/fixtures/regime_outlook/readings_golden_v2.json"
       - "tests/test_rates_command_outlook.py"
       - "tests/test_rates_command_outlook_readings.py"
+      - "config.yml"
+      - "config/regime_outlook_rule_pins.json"
+      - "engine/__init__.py"
+      - "engine/conditions.py"
+      - "engine/fed_path.py"
+      - "engine/leadership_crack.py"
+      - "engine/market_state.py"
+      - "engine/rate_inflation_transmission.py"
+      - "engine/regime.py"
+      - "engine/yield_curve.py"
+      - "engine/yield_momentum.py"
+      - "tests/test_rates_command_outlook_rule_pins.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -9102,9 +9119,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install test dependencies
-        run: pip install pytest
-      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings
-        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py -q
+        run: pip install pytest pyyaml
+      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings, producer rule pins
+        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py tests/test_rates_command_outlook_rule_pins.py -q
 
   ric-w2-surface:
     if: ${{ false }}
@@ -13689,6 +13706,10 @@ jobs:
       # now reads the optional UK stance through engine.uk_policy_brain (lazy, degrade-never-raise),
       # so the dossier plane pulls that module into this job's closure.
       - "engine/uk_policy_brain.py"
+      # E0-G (#8373): tests/test_dashboard_template_render.py renders the Fed dialog's Inflation Read
+      # through the owner (engine.rates_inflation_command._build_inflation_row), so the dashboard
+      # suite pulls that module into this job's closure (contract-delta: widen, never narrow).
+      - "engine/rates_inflation_command.py"
       - scripts/build_ticker_pages.py
       - scripts/capture_debt_maturity_evidence.py
       - scripts/capture_hk_tier1_shell.py
@@ -15489,8 +15510,14 @@ jobs:
       # follow-up (the gex model layer, the gex engine math, and the polygon accrual
       # collector) are now wired by the GEX modeling-core step directly above, which
       # landed on main before this branch rebased. Nothing in the family is dark.
+      # B1 runtime roots (2026-10-03): the fourth file is shell, plist, and runbook
+      # coverage plus the Options Hub input-root seam. Importing the hub builder
+      # stays on pandas, numpy, and pyarrow; scipy is not required. The index
+      # artifact-root override is in scripts/publish_r2.py. This step does not
+      # import it. tests/test_publish_r2.py already names that module on the
+      # existing publish jobs, so this command and this install line stay put.
       - name: OIP E3 positioning persistence — oi_delta clusters, wall persistence, index-GEX rebuild routing
-        run: python -m pytest tests/test_positioning_persistence.py tests/test_gex_state.py tests/test_index_gex_history.py -q
+        run: python -m pytest tests/test_positioning_persistence.py tests/test_gex_state.py tests/test_index_gex_history.py tests/test_b1_options_runtime_roots.py -q
       # Unrun backfill 2026-08-03: the GEX board's per-ticker state merge and
       # the gex.js IV-rank band color law join the family this lane already
       # owns; the OIP E1 session digest and the flow desk builder are the same

@@ -44,22 +44,24 @@ LABELS (amendment §2.1):
   - Label = 1 if spy_excess > 0 on the primary horizon, else 0.
 
 CV (amendment §4):
-  - Purged K-fold K=5 (FS-R7).
-  - Embargo >= per-bucket horizon days.
-  - Group folds by BOTH underlying AND calendar time_block.
-  - Selection: 5-fold purged group CV, max mean-OOF-AUC over hparam_grid.
-    NOTE (CPCV-DECLARED-NOT-RUN): full combinatorial CPCV path enumeration and
-    deflated-Sharpe correction per §4.3/§4.5 are NOT implemented in this wave.
-    C(n_groups, k_test) = n_cpcv_paths is used only for N_trials accounting.
-    Deferred to FS-5.
-  - Uniqueness sample-weights (lib/flow_score.py uniqueness_weights).
+  - FS-5 selection executes the frozen 15 CPCV paths, C(6, 2), on v2 blocks.
+  - Embargo H is max(BUCKET_HORIZONS[bucket]): 5, 21, or 126. Both sides of
+    each held block. A v1 spec has no frozen CPCV geometry and does not fit.
+  - Root exclusion, native-interval purge, and the embargo run before features.
+  - Uniqueness for accepted FS-5 populations is uniqueness_weights_nyse_intervals.
+    The legacy calendar helper remains for unrelated callers only.
+  - Deflated statistics and the empirical gauntlet are not claimed here.
 
 CALIBRATION (amendment §5):
   - Per-bucket isotonic on a TEMPORAL holdout from serving cohorts only.
   - ECE < 0.05 (10 equal-mass bins).
   - Brier < base-rate Brier.
-  - Reliability monotone => deployable:true, else deployable:false + reason.
-  - n floors (amendment §7): below floor → deployable:false, reason=ERA-SPARSE/BELOW-FLOOR.
+  - Reliability monotone is necessary but not sufficient. scoring.enabled false,
+    or an incomplete gauntlet, keeps deployable false. This trainer does not
+    claim the gauntlet.
+  - n floors stay 30 per population and 20 per era. Below either floor is a
+    no-fit before features. effective_n is the native weight sum, never the
+    raw row count.
 
 ARTIFACT (data/flow_signals/models/flow_score_{bucket}_v{N}/):
   - model.joblib, calibrator.joblib, manifest.json
@@ -78,6 +80,7 @@ import argparse
 import hashlib
 import json
 import logging
+import math
 import os
 import subprocess
 import sys
@@ -88,20 +91,27 @@ from typing import Any, Callable
 import numpy as np
 import pandas as pd
 
+from lib.nyse_calendar import sessions_between
 from lib.flow_score_geometry import (
     GeometryError,
     BUCKET_HORIZONS,
+    CpcvPath,
     registered_bucket_horizons,
     assign_time_blocks,
     build_geometry_plan,
+    bind_greeks_era,
     canonical_intervals,
+    frozen_embargo_sessions,
     make_no_fit_health,
+    parse_frozen_train_blocks,
+    preflight_cpcv_paths,
     validate_population_partition,
     validate_split_geometry,
 )
 from lib.flow_score_admission import (
     AdmissionError,
     INDEX_ROOTS as _INDEX_ROOTS,
+    SPEC_SCHEMA_V2,
     apply_population_filter,
     canonical_index_root,
     derived_model_bucket,
@@ -418,7 +428,9 @@ def _join_grade_boundaries(
     joined = df.merge(grade_subset, on="event_id", how="left", suffixes=("", "_grade"))
     excess = pd.to_numeric(joined[label_col], errors="coerce")
     joined["_label"] = (excess > 0).astype(float)
-    graded_ok = joined["graded_ok"].map(lambda value: type(value) is bool and value)
+    graded_ok = joined["graded_ok"].map(
+        lambda value: (type(value) is bool or type(value) is np.bool_) and bool(value)
+    )
     all_horizons_mature = pd.Series(True, index=joined.index)
     for column in excess_cols:
         all_horizons_mature &= np.isfinite(
@@ -626,6 +638,203 @@ def _auc_score(y_true: np.ndarray, y_score: np.ndarray) -> float:
         return float("nan")
 
 
+def _strict_auc(y_true: np.ndarray, y_score: np.ndarray, sample_weights=None) -> float:
+    """Two-class native-weighted AUC; invalid rows are never filtered."""
+    from lib.flow_score import weighted_binary_metrics
+    if sample_weights is None:
+        sample_weights = np.ones(len(y_true), dtype=float)
+    try:
+        return weighted_binary_metrics(y_score, y_true, sample_weights)["auc"]
+    except ValueError as exc:
+        reason = "one_class_path" if len(np.unique(y_true)) < 2 else "cpcv_nonfinite_prediction"
+        raise GeometryError(reason) from exc
+
+
+def _validate_frozen_fit_config(cfg: dict) -> None:
+    """A changed registration is a no-fit, never a smaller or different search."""
+    expected = {
+        "n_groups": 6, "k_test": 2, "random_seed": 42,
+        "n_bins": 10, "ece_threshold": 0.05,
+        "bucket_horizons": {"0_7": [5], "8_90": [21], "90p": [63, 126]},
+        "embargo_days": {"0_7": 5, "8_90": 21, "90p": 126, "90p_secondary": 126},
+        "n_floors": {"bucket": 30, "era_cell": 20},
+        "monotone_constraints": {},
+        "dte_interaction": {"0_7": False, "8_90": True, "90p": False},
+        "hyperparameter_grid": {
+            "learning_rate": [0.02, 0.05, 0.1, 0.2], "max_iter": [200, 400],
+            "max_leaf_nodes": [15, 31, 63], "min_samples_leaf": 20,
+            "max_bins": 255, "early_stopping": False, "class_weight": "balanced",
+        },
+    }
+    for key, value in expected.items():
+        # JSON comparison distinguishes booleans from numeric lookalikes.
+        if json.dumps(cfg.get(key), sort_keys=True) != json.dumps(value, sort_keys=True):
+            raise GeometryError(f"frozen_config_drift:{key}")
+
+
+def _cpcv_variants(cfg: dict, bucket: str) -> list[tuple[str, list[str]]]:
+    """Frozen feature variants. 8_90 executes OFF and ON; other buckets execute one."""
+    base = [
+        column
+        for column in list(cfg.get("feature_columns") or [])
+        if column != "dte_X_premium_z"
+    ]
+    if cfg.get("dte_interaction", {}).get(bucket, False):
+        return [("off", list(base)), ("on", list(base) + ["dte_X_premium_z"])]
+    return [("off", list(base))]
+
+
+def _align_native_weights(frame: pd.DataFrame, weights: pd.Series) -> np.ndarray:
+    """Align native weights to rows. Missing or non-finite weights are a no-fit."""
+    event_ids = frame["event_id"].astype(str)
+    aligned = weights.reindex(event_ids.to_numpy())
+    values = pd.to_numeric(aligned, errors="coerce").to_numpy(dtype=float)
+    if (
+        len(values) != len(frame)
+        or not np.isfinite(values).all()
+        or (values <= 0).any()
+        or (values > 1).any()
+    ):
+        raise GeometryError("uniqueness_weight_nonfinite")
+    return values
+
+
+def _population_support(
+    frame: pd.DataFrame, weights: np.ndarray, era_floor: int,
+) -> dict[str, Any]:
+    """Native support and the explicit booked registry; no pooled era substitute."""
+    from lib.flow_score import strict_weighted_binary_inputs
+    frame = bind_greeks_era(frame)
+    _, _, weights = strict_weighted_binary_inputs(
+        np.zeros(len(frame)), np.zeros(len(frame)), weights,
+    )
+    sessions = pd.to_datetime(frame["session_date"], errors="raise").dt.date
+    roots = frame["root"].astype(str).str.strip().str.upper()
+    fills = pd.to_datetime(frame["fill_date"], errors="raise").dt.date
+    record = {
+        "raw_rows": int(len(frame)),
+        "distinct_sessions": int(sessions.nunique()),
+        "distinct_root_sessions": int(pd.Series(list(zip(fills, roots))).nunique()),
+        "effective_n": math.fsum(weights), "eras": [],
+    }
+    for era in ("2017-19", "2020-22", "2023+"):
+        mask = frame["era"].eq(era).to_numpy()
+        n = math.fsum(weights[mask])
+        present = bool(mask.any())
+        record["eras"].append({
+            "era": era, "booked": era != "2017-19",
+            "coverage": ("partial_2022_only" if era == "2020-22" else
+                         "unbooked_reservable" if era == "2017-19" else "registered"),
+            "status": ("present" if present else
+                       "building_history_unfilled" if era != "2017-19" else "unbooked"),
+            "raw_rows": int(mask.sum()),
+            "distinct_sessions": int(sessions[mask].nunique()),
+            "distinct_root_sessions": int(pd.Series(list(zip(fills[mask], roots[mask]))).nunique()),
+            "effective_n": n,
+            "era_sparse": present and n < era_floor,
+        })
+    return record
+
+
+def _run_cpcv_selection(
+    train_df: pd.DataFrame,
+    paths: tuple[CpcvPath, ...] | list[CpcvPath],
+    variants: list[tuple[str, list[str]]],
+    grid: list[dict],
+    sample_weights: np.ndarray,
+    monotone_cfg: dict[str, int] | None,
+    random_seed: int,
+    receipt: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Fit every frozen setting on every path. Any failure aborts the search.
+
+    Tie break is the frozen order: variant OFF before ON, then grid order.
+    An equal AUC does not replace the earlier setting. No path is skipped.
+    """
+    if receipt is None:
+        receipt = {}
+    receipt.update({
+        "attempted_fits": 0, "executed_fits": 0, "evaluated_fits": 0,
+        "executed_paths": 0, "executed_variants": 0, "held_sets": [],
+        "planned_fits": len(grid) * len(variants) * len(paths),
+        "planned_paths": len(paths), "planned_variants": len(variants),
+        "grid_cardinality": len(grid),
+    })
+    if len(paths) != 15:
+        raise GeometryError("cpcv_path_set_invalid")
+    if not grid or not variants:
+        raise GeometryError("cpcv_grid_empty")
+    event_ids = train_df["event_id"].astype(str).tolist()
+    position = {event_id: index for index, event_id in enumerate(event_ids)}
+    if len(position) != len(event_ids):
+        raise GeometryError("identity_duplicate_event_id")
+    labels = train_df["_label"].to_numpy(dtype=float)
+    from lib.flow_score import strict_weighted_binary_inputs
+    _, labels, sample_weights = strict_weighted_binary_inputs(
+        np.zeros(len(labels)), labels, sample_weights,
+    )
+    best: dict[str, Any] | None = None
+    executed_variants: set[str] = set()
+    executed_paths: set[tuple[int, ...]] = set()
+    for variant_name, columns in variants:
+        features = _build_features(train_df, columns)
+        if list(features.columns) != list(columns):
+            raise GeometryError("cpcv_feature_order_mismatch")
+        for params in grid:
+            path_aucs: list[float] = []
+            for path in paths:
+                try:
+                    train_index = np.asarray([position[event_id] for event_id in path.train_ids], dtype=int)
+                    validation_index = np.asarray(
+                        [position[event_id] for event_id in path.validation_ids], dtype=int
+                    )
+                except KeyError as exc:
+                    raise GeometryError("cpcv_path_id_missing") from exc
+                receipt["attempted_fits"] += 1
+                model = _fit_model(
+                    features.iloc[train_index],
+                    labels[train_index],
+                    sample_weights[train_index],
+                    params,
+                    monotone_cfg,
+                    columns,
+                    random_seed,
+                )
+                receipt["executed_fits"] += 1
+                executed_paths.add(tuple(path.held))
+                executed_variants.add(variant_name)
+                receipt["executed_paths"] = len(executed_paths)
+                receipt["executed_variants"] = len(executed_variants)
+                receipt["held_sets"] = [list(held) for held in sorted(executed_paths)]
+                probabilities = np.asarray(model.predict_proba(features.iloc[validation_index]))
+                if probabilities.ndim != 2 or probabilities.shape[1] < 2:
+                    raise GeometryError("cpcv_nonfinite_prediction")
+                positive = np.asarray(probabilities[:, 1], dtype=float)
+                path_aucs.append(_strict_auc(labels[validation_index], positive, sample_weights[validation_index]))
+                receipt["evaluated_fits"] += 1
+            executed_variants.add(variant_name)
+            mean_auc = math.fsum(path_aucs) / len(path_aucs)
+            if not math.isfinite(mean_auc):
+                raise GeometryError("cpcv_nonfinite_auc")
+            if best is None or mean_auc > best["mean_auc"]:
+                best = {
+                    "variant": variant_name,
+                    "params": dict(params),
+                    "feature_columns": list(columns),
+                    "mean_auc": mean_auc,
+                }
+    if best is None:
+        raise GeometryError("cpcv_selection_empty")
+    receipt.update({
+        "selected_variant": best["variant"],
+        "selected_params": best["params"],
+        "selected_feature_columns": best["feature_columns"],
+        "selected_mean_auc": best["mean_auc"],
+    })
+    return receipt
+
+
+
 def train_bucket(
     bucket: str,
     cfg: dict,
@@ -635,7 +844,8 @@ def train_bucket(
 ) -> dict | None:
     """Train and calibrate a flow-score model for one bucket.
 
-    Returns manifest dict on success, None on failure.
+    Returns an explicit health/selection receipt. The unresolved weighted-bin
+    method cannot write a model artifact or claim calibration readiness.
 
     Source-only admission and original stage verification precede grades.
     Every frozen member must mature at its predeclared native fill/end sessions.
@@ -737,12 +947,19 @@ def train_bucket(
         pop_stats["oi_readmitted_n"], pop_stats["total_output"],
     )
 
-    configured_horizons = _configured_horizons(cfg)
-    if configured_horizons != dict(BUCKET_HORIZONS):
-        raise GeometryError(
-            "bucket_horizon_contract_mismatch:"
-            f"{configured_horizons}!={BUCKET_HORIZONS}"
-        )
+    # Source admission must pass first; configuration drift cannot reach grade,
+    # feature, estimator or calibration I/O for a v2 study.
+    if partition.get("study_spec", {}).get("schema") == SPEC_SCHEMA_V2:
+        try:
+            _validate_frozen_fit_config(cfg)
+        except (GeometryError, ValueError, TypeError) as exc:
+            return make_no_fit_health(f"method_geometry_unavailable:{exc}")
+    try:
+        configured_horizons = _configured_horizons(cfg)
+        if configured_horizons != dict(BUCKET_HORIZONS):
+            raise GeometryError("bucket_horizon_contract_mismatch")
+    except (GeometryError, ValueError, TypeError, AttributeError) as exc:
+        return make_no_fit_health(f"method_geometry_unavailable:{exc}")
     required_horizons = _registered_horizons(bucket)
     embargo_days = max(
         int(cfg.get("embargo_days", {}).get(bucket, 0)),
@@ -788,328 +1005,221 @@ def train_bucket(
         )
         return make_no_fit_health(f"method_geometry_unavailable:{exc}")
 
-    y_all = labeled["_label"].astype(float).values
-    base_rate = float(y_all.mean())
-    log.info("ops_train[%s]: labeled rows=%d, base_rate=%.4f", bucket, len(labeled), base_rate)
-
-    # ── build features (amendment §3.4) ──────────────────────────────────────
-    feature_cols = _feature_columns(cfg, bucket)
-    # Serving cohort and population filter are settled by here; nothing has been
-    # turned into a model feature yet. Halt before that if the live cohort has no
-    # measured truth to learn from.
-    _assert_live_feed_measured_features(labeled, feature_cols)
-    X_all = _build_features(labeled, feature_cols)
-
-    # ── n floor check — raw count (amendment §7) ──────────────────────────────
-    n_floors = cfg.get("n_floors", {})
-    bucket_floor = int(n_floors.get("bucket", 30))
-    if len(labeled) < bucket_floor:
-        log.warning(
-            "ops_train[%s]: below n_floor (n=%d < floor=%d) — deployable=False / ERA-SPARSE",
-            bucket, len(labeled), bucket_floor,
-        )
-        # We still write the artifact but with deployable=False
-        deploy_reason = f"BELOW-FLOOR: n={len(labeled)} < bucket_floor={bucket_floor}"
-        return _write_artifact(
-            bucket=bucket,
-            cfg=cfg,
-            flow_dir=flow_dir,
-            model=None,
-            calibrator=None,
-            deployable=False,
-            deploy_reason=deploy_reason,
-            serving_df=serving_df,
-            labeled=labeled,
-            pop_stats=pop_stats,
-            base_rate=base_rate,
-            calibration_metrics={},
-            kill_eval={},
-            n_trials=0,
-            feature_cols=feature_cols,
-            dry_run=dry_run,
+    # v1 receipts stay admissible through maturity and the existing geometry
+    # law, then fail closed. Exact frozen CPCV blocks are required before
+    # features, calibrators, selection, or a final model.
+    study_spec = partition.get("study_spec") if isinstance(partition, dict) else None
+    if (
+        not isinstance(study_spec, dict)
+        or study_spec.get("schema") != SPEC_SCHEMA_V2
+    ):
+        return make_no_fit_health(
+            "method_geometry_unavailable:frozen_cpcv_geometry_missing"
         )
 
-    cal_df = pd.concat([cal_fit_df, cal_eval_df], ignore_index=True)
-
-    # Guard: eod_proxy must never appear in calibration
-    _check_no_eod_proxy_in_calibration(cal_df, context="calibration holdout (train_bucket)")
-
-    log.info("ops_train[%s]: train_n=%d, cal_n=%d", bucket, len(train_df), len(cal_df))
-
-    if len(train_df) == 0:
-        log.warning("ops_train[%s]: empty training set after holdout split", bucket)
-        return make_no_fit_health("method_geometry_unavailable:empty_train_population")
-
-    # ── uniqueness weights (amendment §4.4) ───────────────────────────────────
-    from lib.flow_score import uniqueness_weights as _uw
-
-    # embargo_days already set during holdout split above
-    w_series = _uw(train_df, horizon_days=embargo_days)
-    # Align weights to train_df event_ids
-    if "event_id" in train_df.columns:
-        sample_weights = w_series.reindex(train_df["event_id"].values).fillna(1.0).values
-    else:
-        sample_weights = np.ones(len(train_df))
-    sample_weights = np.where(np.isfinite(sample_weights) & (sample_weights > 0), sample_weights, 1.0)
-
-    # ── effective n (from uniqueness weights) ─────────────────────────────────
-    effective_n = float(sample_weights.sum())
-    log.info("ops_train[%s]: effective_n=%.1f (raw_n=%d)", bucket, effective_n, len(train_df))
-
-    # Check effective n floor
-    if effective_n < bucket_floor:
-        deploy_reason = f"BELOW-FLOOR: effective_n={effective_n:.1f} < bucket_floor={bucket_floor}"
-        log.warning("ops_train[%s]: %s", bucket, deploy_reason)
-        return _write_artifact(
-            bucket=bucket, cfg=cfg, flow_dir=flow_dir,
-            model=None, calibrator=None,
-            deployable=False, deploy_reason=deploy_reason,
-            serving_df=serving_df, labeled=labeled, pop_stats=pop_stats,
-            base_rate=base_rate, calibration_metrics={}, kill_eval={},
-            n_trials=0, feature_cols=feature_cols, dry_run=dry_run,
-        )
-
-    # ── CV: hyperparameter grid (amendment §4.3 / §4.5) ──────────────────────
-    hparam_grid = _expand_grid(cfg.get("hyperparameter_grid", {}))
-    dte_interaction = cfg.get("dte_interaction", {})
-    # For 8_90: DTE-interaction on/off adds ×2 to N_trials
-    n_interaction_variants = 2 if dte_interaction.get(bucket, False) else 1
-    k_folds = cfg.get("k_folds", 5)
-    n_groups = cfg.get("n_groups", 6)
-    k_test = cfg.get("k_test", 2)
-    n_cpcv_paths = _cpcv_path_count(n_groups, k_test)
-    # Registered N_trials per amendment §4.5
-    n_trials = len(hparam_grid) * n_interaction_variants * n_cpcv_paths
-    log.info(
-        "ops_train[%s]: N_trials=%d (grid=%d, interaction_variants=%d, cpcv_paths=%d)",
-        bucket, n_trials, len(hparam_grid), n_interaction_variants, n_cpcv_paths,
-    )
-
-    # Monotone constraints (mechanism-known only, amendment §4.5)
-    monotone_cfg = cfg.get("monotone_constraints", {})
-    random_seed = cfg.get("random_seed", 42)
-
-    # Count distinct roots in training set (used for split fallback diagnostic)
-    _underlying_col_cv = "root" if "root" in train_df.columns else "underlying"
-    _n_unique_roots_train = (
-        int(train_df[_underlying_col_cv].nunique())
-        if _underlying_col_cv in train_df.columns
-        else 0
-    )
-
-    # Generate CV splits (amendment §4.1 / §4.2)
+    bucket_floor, era_floor = 30, 20
+    population_support: dict[str, Any] = {}
+    sample_weights: np.ndarray
+    paths: tuple[CpcvPath, ...]
     try:
-        splits = _group_fold_splits(
-            train_df,
-            k_folds=k_folds,
-            embargo=embargo_days,
-            n_groups=n_groups,
-            underlying_col=_underlying_col_cv,
-            date_col="session_date" if "session_date" in train_df.columns else "session_date",
-            random_seed=random_seed,
-        )
-    except GeometryError as exc:
-        # Invalid CV geometry is terminal: no fit/calibrator/feature build is
-        # ever produced. The fold partition was never emitted, so we never
-        # produced a model and we never touched any estimator or calibrator.
-        log.warning(
-            "ops_train[%s]: invalid fold geometry — building history/no-fit: %s",
-            bucket, exc,
-        )
-        return make_no_fit_health(f"method_geometry_unavailable:{exc}")
+        from lib.flow_score import uniqueness_weights_nyse_intervals
 
-    X_train_all = _build_features(train_df, feature_cols)
-    y_train_all = train_df["_label"].astype(float).values
-
-    if len(splits) == 0 and not dry_run:
-        # No valid CV splits after all purge/embargo/underlying filters.
-        # Amendment §4.1-§4.5 requires CV for model selection; without splits
-        # the selection machinery is dead.  Mark as not deployable instead of
-        # silently falling through to hparam_grid[0].
-        deploy_reason = (
-            f"NO-VALID-CV-SPLITS: _group_fold_splits returned 0 splits "
-            f"(n_roots={_n_unique_roots_train}, "
-            f"k_folds={k_folds}, embargo={embargo_days}). "
-            "Cannot run amendment §4.1-§4.5 selection machinery."
+        embargo_h = frozen_embargo_sessions(bucket)
+        train_window = study_spec["populations"]["train"]["window"]
+        window_start = pd.Timestamp(train_window["start"])
+        window_end = pd.Timestamp(train_window["end"])
+        if window_start.tzinfo is None or window_end.tzinfo is None:
+            raise GeometryError("train_block_window_mismatch")
+        outer = [
+            session
+            for session in sessions_between(
+                window_start.tz_convert("UTC").date(),
+                window_end.tz_convert("UTC").date(),
+            )
+        ]
+        if not outer:
+            raise GeometryError("train_block_window_mismatch")
+        blocks = parse_frozen_train_blocks(
+            study_spec.get("train_blocks"),
+            outer_first=outer[0],
+            outer_last=outer[-1],
+            train_roots={
+                str(root).strip().upper()
+                for root in study_spec["populations"]["train"]["roots"]
+            },
         )
-        log.warning("ops_train[%s]: %s", bucket, deploy_reason)
-        return make_no_fit_health("method_geometry_unavailable:no_valid_cv_splits")
+        paths = preflight_cpcv_paths(
+            train_df, blocks, embargo_h, label_column="_label"
+        )
+        weight_frames = {
+            "train": train_df,
+            "calibration_fit": cal_fit_df,
+            "calibration_eval": cal_eval_df,
+            "final_oos": final_oos_df,
+        }
+        aligned: dict[str, np.ndarray] = {}
+        for name, frame in weight_frames.items():
+            aligned[name] = _align_native_weights(
+                frame, uniqueness_weights_nyse_intervals(frame)
+            )
+            population_support[name] = _population_support(
+                frame, aligned[name], era_floor
+            )
+            effective = population_support[name]["effective_n"]
+            if effective < bucket_floor:
+                raise GeometryError(
+                    "BELOW-FLOOR:"
+                    f"{name}:effective_n={effective:.6f}<bucket_floor={bucket_floor}"
+                )
+            for era in population_support[name]["eras"]:
+                if era["era_sparse"]:
+                    raise GeometryError(
+                        "ERA-SPARSE:"
+                        f"{name}:{era['era']}:effective_n={era['effective_n']:.6f}"
+                        f"<era_floor={era_floor}"
+                    )
+        sample_weights = aligned["train"]
+    except (GeometryError, ValueError) as exc:
+        health = make_no_fit_health(f"method_geometry_unavailable:{exc}")
+        health["population_support"] = population_support
+        return health
 
+    variants = _cpcv_variants(cfg, bucket)
+    hparam_grid = _expand_grid(cfg.get("hyperparameter_grid", {}))
+    planned_fits = len(hparam_grid) * len(variants) * 15
     if dry_run:
-        log.info("ops_train[%s]: dry_run — skipping grid search", bucket)
-        # Pick first param set for dry-run
-        best_params = hparam_grid[0] if hparam_grid else {}
-        best_auc = float("nan")
-    else:
-        # CV grid search: pick best params by mean OOF AUC
-        best_auc = -1.0
-        best_params = hparam_grid[0]
-        for params in hparam_grid:
-            fold_aucs = []
-            for train_idx, val_idx in splits:
-                X_tr = X_train_all.iloc[train_idx]
-                y_tr = y_train_all[train_idx]
-                w_tr = sample_weights[train_idx]
-                X_va = X_train_all.iloc[val_idx]
-                y_va = y_train_all[val_idx]
-                if len(np.unique(y_va)) < 2:
-                    continue
-                try:
-                    m = _fit_model(X_tr, y_tr, w_tr, params, monotone_cfg, feature_cols, random_seed)
-                    p = m.predict_proba(X_va)[:, 1]
-                    fold_aucs.append(_auc_score(y_va, p))
-                except Exception as e:
-                    log.debug("ops_train[%s]: fold fit failed: %s", bucket, e)
-            if fold_aucs:
-                mean_auc = float(np.nanmean(fold_aucs))
-                if mean_auc > best_auc:
-                    best_auc = mean_auc
-                    best_params = params
+        log.info(
+            "ops_train[%s]: dry_run — executed_fits=0 planned_fits=%d",
+            bucket,
+            planned_fits,
+        )
+        return {
+            "bucket": bucket,
+            "dry_run": True,
+            "health": "dry_run",
+            "status": "not_executed",
+            "deployable": False,
+            "building_history": True,
+            "gauntlet_complete": False,
+            "executed_fits": 0,
+            "planned_fits": planned_fits,
+            "planned_paths": 15,
+            "planned_variants": len(variants),
+            "population_support": population_support,
+        }
 
-    log.info("ops_train[%s]: best_params=%s, cv_auc=%.4f", bucket, best_params, best_auc)
+    monotone_cfg = cfg.get("monotone_constraints", {})
+    random_seed = int(cfg.get("random_seed", 42))
+    selection: dict[str, Any] = {"executed_fits": 0, "attempted_fits": 0}
+    try:
+        _assert_live_feed_measured_features(
+            labeled, [column for _, columns in variants for column in columns]
+        )
+        selection = _run_cpcv_selection(
+            train_df,
+            paths,
+            variants,
+            hparam_grid,
+            sample_weights,
+            monotone_cfg,
+            random_seed,
+            receipt=selection,
+        )
+    except Exception as exc:
+        health = make_no_fit_health(f"method_geometry_unavailable:cpcv_selection_failed:{exc}")
+        health["population_support"] = population_support
+        health["selection_receipt"] = selection
+        health["executed_fits"] = selection["executed_fits"]
+        return health
+
+    feature_cols = list(selection["selected_feature_columns"])
+    best_params = dict(selection["selected_params"])
+    best_auc = float(selection["selected_mean_auc"])
+    n_trials = int(selection["executed_fits"])
+    log.info(
+        "ops_train[%s]: selected variant=%s params=%s mean_auc=%.6f executed_fits=%d",
+        bucket,
+        selection["selected_variant"],
+        best_params,
+        best_auc,
+        n_trials,
+    )
 
     # ── final model fit on full training set ─────────────────────────────────
-    if dry_run:
-        log.info("ops_train[%s]: dry_run — skipping final model fit and artifact write", bucket)
-        return {"bucket": bucket, "dry_run": True, "n_trials": n_trials}
+    selection["final_fit_attempted"] = True
+    selection["final_fit_complete"] = False
+    try:
+        X_train_all = _build_features(train_df, feature_cols)
+        y_train_all = train_df["_label"].astype(float).values
+        final_model = _fit_model(
+            X_train_all, y_train_all, sample_weights,
+            best_params, monotone_cfg, feature_cols, random_seed,
+        )
+        selection["final_fit_complete"] = True
+    except Exception as exc:
+        health = make_no_fit_health(f"method_geometry_unavailable:final_fit_failed:{exc}")
+        health["population_support"] = population_support
+        health["selection_receipt"] = selection
+        health["executed_fits"] = selection["executed_fits"]
+        return health
 
-    final_model = _fit_model(
-        X_train_all, y_train_all, sample_weights,
-        best_params, monotone_cfg, feature_cols, random_seed,
+    # The weighted-bin/tie convention has no registered closure. Report
+    # diagnostics with the actual native weights, but produce no model artifact.
+    try:
+        diagnostics = _weighted_calibration_diagnostics(
+            final_model, cal_fit_df, cal_eval_df, feature_cols,
+            aligned["calibration_fit"], aligned["calibration_eval"],
+        )
+        reason = "CALIBRATION_INSUFFICIENT:weighted_bin_method_unavailable"
+    except Exception as exc:
+        diagnostics = {}
+        reason = f"CALIBRATION_INSUFFICIENT:calibration_failed:{exc}"
+    health = make_no_fit_health(reason)
+    health.update({
+        "health": "calibration_insufficient", "calibration_ready": False,
+        "gauntlet_complete": False, "calibration": diagnostics,
+        "population_support": population_support, "selection_receipt": selection,
+        "executed_fits": selection["executed_fits"],
+        "planned_fits": selection["planned_fits"],
+        "executed_paths": selection["executed_paths"],
+        "executed_variants": selection["executed_variants"],
+    })
+    return health
+
+
+def _weighted_calibration_diagnostics(model, fit_frame, eval_frame, columns, fit_weights, eval_weights):
+    """Diagnostic-only isotonic and metrics; no unresolved ECE gate is asserted."""
+    from sklearn.isotonic import IsotonicRegression
+    from lib.flow_score import strict_weighted_binary_inputs, weighted_binary_metrics
+    _check_no_eod_proxy_in_calibration(fit_frame, context="calibration fit")
+    _check_no_eod_proxy_in_calibration(eval_frame, context="calibration evaluation")
+    fit_frame, eval_frame = bind_greeks_era(fit_frame), bind_greeks_era(eval_frame)
+    fit_pred, fit_y, fit_weights = strict_weighted_binary_inputs(
+        model.predict_proba(_build_features(fit_frame, columns))[:, 1],
+        fit_frame["_label"].to_numpy(), fit_weights,
     )
-
-    # ── calibration on temporal holdout (amendment §5) ────────────────────────
-    calibration_metrics: dict = {}
-    kill_eval: dict = {}
-    deployable = False
-    deploy_reason = ""
-
-    if cal_fit_df.empty or cal_eval_df.empty:
-        deploy_reason = "BELOW-FLOOR: empty calibration holdout"
-        log.warning("ops_train[%s]: %s", bucket, deploy_reason)
-    else:
-        _check_no_eod_proxy_in_calibration(cal_fit_df, context="calibration fit")
-        _check_no_eod_proxy_in_calibration(cal_eval_df, context="calibration evaluation")
-        X_cal = _build_features(cal_fit_df, feature_cols)
-        y_cal = cal_fit_df["_label"].astype(float).values
-
-        try:
-            p_raw_cal = final_model.predict_proba(X_cal)[:, 1]
-        except Exception as e:
-            deploy_reason = f"calibration predict_proba failed: {e}"
-            p_raw_cal = None
-
-        if p_raw_cal is not None and len(p_raw_cal) > 0:
-            from sklearn.isotonic import IsotonicRegression
-            from lib.flow_score import ece as _ece, brier as _brier, reliability_table as _rel, is_reliability_monotone as _mono
-
-            n_bins = cfg.get("n_bins", 10)
-            ece_threshold = cfg.get("ece_threshold", 0.05)
-
-            p_raw_eval = final_model.predict_proba(
-                _build_features(cal_eval_df, feature_cols)
-            )[:, 1]
-            y_eval = cal_eval_df["_label"].astype(float).values
-
-            ir = IsotonicRegression(out_of_bounds="clip")
-            if len(np.unique(y_cal)) >= 2:
-                ir.fit(p_raw_cal, y_cal)
-            else:
-                ir = None
-
-            if ir is None or len(p_raw_eval) == 0:
-                # Calibration holdout too small to split — cannot honestly evaluate
-                deploy_reason = "BELOW-FLOOR: calibration holdout too small to split for honest eval"
-                log.warning("ops_train[%s]: %s", bucket, deploy_reason)
-                ir = None
-                p_raw_eval = pd.Series(dtype=float)
-
-        if p_raw_eval is not None and len(p_raw_eval) > 0 and ir is not None:
-            # Evaluate on the DISJOINT outer slice — not on the calibrator's fit data
-            p_cal_outer = ir.predict(p_raw_eval)
-
-            ece_val = _ece(p_cal_outer, y_eval, n_bins=n_bins, equal_mass=True)
-            brier_val = _brier(p_cal_outer, y_eval)
-            # base_rate_brier uses the outer-slice base rate (matches the evaluation slice)
-            outer_base_rate = float(y_eval.mean()) if len(y_eval) > 0 else base_rate
-            base_rate_brier = float(outer_base_rate * (1.0 - outer_base_rate))
-            rel_table = _rel(p_cal_outer, y_eval, n_bins=n_bins, equal_mass=True)
-            monotone = _mono(rel_table)
-
-            # Kill-eval: AUC in newest era (amendment §8 #1)
-            # Use raw predictions on the outer slice (before isotonic calibration)
-            # to measure discriminative skill independently of calibration.
-            era_col = "era" if "era" in cal_eval_df.columns else None
-            newest_era_auc = float("nan")
-            if era_col:
-                eras = cal_eval_df[era_col].dropna().unique()
-                if len(eras) > 0:
-                    newest_era = sorted(eras)[-1]
-                    newest_mask = cal_eval_df[era_col] == newest_era
-                    if newest_mask.sum() >= 2:
-                        y_new = y_eval[newest_mask.values]
-                        p_new = p_raw_eval[newest_mask.values]
-                        newest_era_auc = _auc_score(y_new, p_new)
-            else:
-                # No era column — use full cal set for AUC (raw predictions)
-                newest_era_auc = _auc_score(y_eval, p_raw_eval)
-
-            calibration_metrics = {
-                "ece": float(ece_val),
-                "brier": float(brier_val),
-                "base_rate": float(outer_base_rate),
-                "base_rate_brier": float(base_rate_brier),
-                "reliability_table": rel_table,
-                "monotone": bool(monotone),
-                "n_cal_fit": int(len(y_cal)),
-                "n_cal_eval": int(len(y_eval)),
-            }
-            kill_eval = {
-                "auc_newest_era": float(newest_era_auc),
-                "ece_pass": bool(ece_val < ece_threshold),
-                "monotone_pass": bool(monotone),
-            }
-
-            # Deployable criteria (amendment §5):
-            # ECE < threshold AND Brier < base_rate_brier AND monotone
-            reasons: list[str] = []
-            if not (ece_val < ece_threshold):
-                reasons.append(f"ECE={ece_val:.4f} >= threshold={ece_threshold}")
-            if not (brier_val < base_rate_brier):
-                reasons.append(
-                    f"Brier={brier_val:.4f} >= base_rate_brier={base_rate_brier:.4f}"
-                )
-            if not monotone:
-                reasons.append("reliability curve non-monotone")
-
-            if reasons:
-                deploy_reason = "; ".join(reasons)
-                deployable = False
-            else:
-                deployable = True
-                calibrator = ir
-
-        else:
-            deploy_reason = "calibration skipped (no predictions)"
-            ir = None
-
-    if not deployable:
-        ir = None  # Do not ship calibrator when not deployable
-
-    # ── artifact write ────────────────────────────────────────────────────────
-    return _write_artifact(
-        bucket=bucket, cfg=cfg, flow_dir=flow_dir,
-        model=final_model, calibrator=ir,
-        deployable=deployable, deploy_reason=deploy_reason,
-        serving_df=serving_df, labeled=labeled, pop_stats=pop_stats,
-        base_rate=base_rate,
-        calibration_metrics=calibration_metrics,
-        kill_eval=kill_eval,
-        n_trials=n_trials,
-        feature_cols=feature_cols,
-        best_params=best_params,
-        dry_run=dry_run,
+    eval_pred, eval_y, eval_weights = strict_weighted_binary_inputs(
+        model.predict_proba(_build_features(eval_frame, columns))[:, 1],
+        eval_frame["_label"].to_numpy(), eval_weights,
     )
+    if len(np.unique(fit_y)) != 2 or len(np.unique(eval_y)) != 2:
+        raise GeometryError("one_class_calibration_population")
+    calibrator = IsotonicRegression(out_of_bounds="clip")
+    calibrator.fit(fit_pred, fit_y, sample_weight=fit_weights)
+    calibrated = calibrator.predict(eval_pred)
+    metrics = weighted_binary_metrics(calibrated, eval_y, eval_weights)
+    newest = eval_frame["era"].eq("2023+").to_numpy()
+    newest_auc = None
+    if newest.any() and len(np.unique(eval_y[newest])) == 2:
+        newest_auc = _strict_auc(eval_y[newest], eval_pred[newest], eval_weights[newest])
+    return {
+        **metrics, "ece": None, "ece_status": "weighted_bin_method_unavailable",
+        "calibration_ready": False, "auc_newest_era": newest_auc,
+        "auc_newest_era_status": "available" if newest_auc is not None else "unavailable",
+        "n_cal_fit": len(fit_y), "n_cal_eval": len(eval_y),
+        "effective_n_cal_fit": math.fsum(fit_weights),
+        "effective_n_cal_eval": math.fsum(eval_weights),
+    }
 
 
 def _write_artifact(
@@ -1131,12 +1241,28 @@ def _write_artifact(
     feature_cols: list[str],
     best_params: dict | None = None,
     dry_run: bool = False,
+    population_support: dict | None = None,
+    selection_receipt: dict | None = None,
 ) -> dict:
     """Write model artifact directory: model.joblib, calibrator.joblib, manifest.json.
 
     Manifest schema: flow_score.model_manifest/v1 (amendment §4 artifact spec).
     NEVER writes the word "validated" (CI-guarded).
     """
+    # Legacy research callers retain their non-serving artifact format. An
+    # FS5 selection receipt must never enter it while calibration is unresolved,
+    # even if a future caller accidentally restores the old trainer call.
+    if selection_receipt is not None:
+        health = make_no_fit_health("CALIBRATION_INSUFFICIENT:weighted_bin_method_unavailable")
+        health.update({
+            "calibration_ready": False, "gauntlet_complete": False,
+            "selection_receipt": dict(selection_receipt),
+            "executed_fits": int(selection_receipt.get("executed_fits", 0)),
+        })
+        return health
+    deployable = False
+    calibrator = None
+    deploy_reason = "; ".join(filter(None, (deploy_reason, "gauntlet_incomplete")))
     models_dir = _models_dir(cfg)
 
     # Find next version number
@@ -1192,11 +1318,13 @@ def _write_artifact(
         for src, grp in serving_df.groupby("source"):
             source_summary[str(src)] = {
                 "rows": int(len(grp)),
-                "effective_n": float(len(grp)),  # raw here; effective computed in training
+                "raw_rows": int(len(grp)),
                 "eras": int(grp["era"].nunique()) if "era" in grp.columns else None,
             }
 
-    # CV params for manifest
+    # CV params for manifest. The selected column list, not the config flag,
+    # decides whether the interaction term is on. The scorer reads both and
+    # they have to agree.
     k_folds = cfg.get("k_folds", 5)
     n_groups = cfg.get("n_groups", 6)
     k_test = cfg.get("k_test", 2)
@@ -1204,6 +1332,11 @@ def _write_artifact(
     dte_interaction = cfg.get("dte_interaction", {})
     n_interaction_variants = 2 if dte_interaction.get(bucket, False) else 1
     n_cpcv_paths = _cpcv_path_count(n_groups, k_test)
+    declared_total = len(hparam_grid) * n_interaction_variants * n_cpcv_paths
+    executed_fits = 0
+    planned_fits = declared_total
+    reported_total = n_trials
+    selected_interaction = "dte_X_premium_z" in feature_cols
 
     manifest: dict = {
         "schema": "flow_score.model_manifest/v1",
@@ -1215,7 +1348,9 @@ def _write_artifact(
         "cohort_summary": {
             "source": source_summary,
             "total_labeled_rows": int(len(labeled)),
+            "raw_rows": int(len(labeled)),
             "base_rate": float(base_rate),
+            "population_support": population_support or {},
         },
         "population": pop_stats,
         "cv_params": {
@@ -1224,23 +1359,33 @@ def _write_artifact(
             "n_groups": n_groups,
             "k_test": k_test,
             "n_cpcv_paths": n_cpcv_paths,
-            "feature_columns": feature_cols,
+            "feature_columns": list(feature_cols),
             "best_params": best_params or {},
-            "dte_interaction_enabled": bool(dte_interaction.get(bucket, False)),
+            "dte_interaction_enabled": selected_interaction,
         },
+        "selection_receipt": dict(selection_receipt or {}),
+        "executed_paths": int((selection_receipt or {}).get("executed_paths", 0)),
+        "executed_variants": int((selection_receipt or {}).get("executed_variants", 0)),
+        "executed_fits": executed_fits,
+        "planned_fits": planned_fits,
+        "planned_paths": n_cpcv_paths,
+        "planned_variants": n_interaction_variants,
+        "gauntlet_complete": False,
         "n_trials": {
             "grid_cardinality": len(hparam_grid),
             "interaction_variants": n_interaction_variants,
             "cpcv_paths": n_cpcv_paths,
-            "total": n_trials,
+            "total": reported_total,
+            "executed_fits": executed_fits,
+            "planned_fits": planned_fits,
+            "planned_paths": n_cpcv_paths,
+            "planned_variants": n_interaction_variants,
             "note": (
-                "N_trials = grid × interaction_variants × CPCV_paths per amendment §4.5. "
-                "Expanding the grid requires amending N_trials in the amendment doc. "
-                "DEVIATION (CPCV-DECLARED-NOT-RUN): model selection is 5-fold purged group CV "
-                "picking max mean-OOF-AUC over hparam_grid — NOT full combinatorial CPCV "
-                "enumeration. n_cpcv_paths counts C(n_groups, k_test) paths for N_trials "
-                "accounting purposes but combinatorial path enumeration and deflated-Sharpe "
-                "correction are not yet implemented. Selection bias correction deferred to FS-5."
+                "total is the declared search size: grid × interaction variants × "
+                "C(n_groups, k_test). executed_fits is the completed selection receipt "
+                "and is 0 when this manifest was written without one. planned_fits "
+                "repeats the declared size. A count is not a gauntlet result and is "
+                "not a deflated statistic."
             ),
         },
         "calibration": calibration_metrics,

@@ -1,12 +1,12 @@
 """The regime outlook verdict mapping is consistent, pinned and equal to its contract.
 
-``config/regime_outlook_mapping_v1.json`` is an authored display-research
+``config/regime_outlook_mapping_v2.json`` is an authored display-research
 vocabulary (never tested against outcomes; no rank, gate or forecast). These
 tests keep three promises about it:
 
 * it obeys its own rules (``lint_mapping``), and each rule is shown to bite;
 * its reading table is pinned by hash, so a silent edit cannot keep the name
-  ``VERDICT_MAPPING_V1``;
+  ``VERDICT_MAPPING_V2``;
 * it says exactly what the contract's condition tables say.
 """
 
@@ -30,7 +30,7 @@ CONTRACT = REPO / "research" / "macro_regime_intelligence" / "STATE_PATH_AND_SCI
 # A change to artifacts, fields, paths, families or retired ids is a new
 # mapping version: add `regime_outlook_mapping_v2.json` beside this one,
 # never re-pin this hash.
-READING_TABLE_SHA256 = "966a8595e1c719618740d8af8502086d4da64876f6aab18d8ad2302903fa6196"
+READING_TABLE_SHA256 = "588f55df2e48edb3cc1c22459c51d218d039f311fe3e6ddea424d1687887181e"
 
 PATH_IDS = (
     "orderly_disinflation",
@@ -68,7 +68,7 @@ def _field(mapping: dict, field_id: str) -> dict:
 
 
 def test_mapping_names_its_version_tier_and_contract(mapping: dict) -> None:
-    assert mapping["mapping_version"] == rco.MAPPING_VERSION == "VERDICT_MAPPING_V1"
+    assert mapping["mapping_version"] == rco.MAPPING_VERSION == "VERDICT_MAPPING_V2"
     assert mapping["tier"] == "display_research"
     assert (REPO / mapping["contract"]) == CONTRACT
     assert CONTRACT.is_file()
@@ -107,8 +107,8 @@ def test_file_hash_is_the_hash_of_the_bytes_on_disk() -> None:
 
 def test_load_refuses_a_file_naming_another_version(tmp_path: Path) -> None:
     other = tmp_path / "mapping.json"
-    other.write_text('{"mapping_version": "VERDICT_MAPPING_V2"}', encoding="utf-8")
-    with pytest.raises(ValueError, match="VERDICT_MAPPING_V2"):
+    other.write_text('{"mapping_version": "VERDICT_MAPPING_V1"}', encoding="utf-8")
+    with pytest.raises(ValueError, match="VERDICT_MAPPING_V1"):
         rco.load_mapping(other)
 
 
@@ -1072,3 +1072,86 @@ def test_contract_field_table_equals_the_mapping(mapping: dict) -> None:
     assert len(rows) == 21
     expected = [{k: f[k] for k in ("artifact", "path", "tokens", "middle_tokens", "verdict_class", "evidence_family_id")} for f in mapping["fields"]]
     assert rows == expected
+
+
+# --------------------------------------------------------------------------
+# R3 — a null token needs a guard that reads null
+# --------------------------------------------------------------------------
+
+
+def _with_null_appended_to_tokens(m: dict, field_id: str) -> dict:
+    out = copy.deepcopy(m)
+    for f in out["fields"]:
+        if f["field_id"] == field_id:
+            assert None not in f["tokens"], field_id
+            f["tokens"] = list(f["tokens"]) + [None]
+            break
+    return out
+
+
+def test_lint_flags_a_null_token_under_a_non_null_reading_guard(mapping: dict) -> None:
+    null_field = "T.breakeven_decomp.trend"  # guard kind owner_missing_token
+    assert rco._guard_kind(_field(mapping, null_field)) == "owner_missing_token"
+    edited = _with_null_appended_to_tokens(mapping, null_field)
+    expected = f"{null_field}: null is listed as a token but guard kind owner_missing_token does not read null"
+    assert rco.lint_mapping(edited) == [expected]
+
+
+def test_lint_remains_clean_for_the_real_mapping(mapping: dict) -> None:
+    assert rco.lint_mapping(mapping) == []
+
+
+# --------------------------------------------------------------------------
+# R4 — guard path values must be lists; guard ``needs`` must be a list of lists
+# --------------------------------------------------------------------------
+
+
+def _with_string_path(m: dict) -> dict:
+    out = copy.deepcopy(m)
+    for f in out["fields"]:
+        if rco._guard_kind(f) == "credit_stress_leg":
+            f["guard"]["hy_oas_z_path"] = "hy_oas_z"
+            return out
+    raise AssertionError("no credit_stress_leg field in mapping")
+
+
+def _with_string_needs_entry(m: dict) -> dict:
+    out = copy.deepcopy(m)
+    for f in out["fields"]:
+        if rco._guard_kind(f) == "default_token_needs":
+            needs = f["guard"]["needs"]
+            assert needs, f
+            f["guard"]["needs"] = ["not_a_list_entry"] + list(needs)
+            return out
+    raise AssertionError("no default_token_needs field in mapping")
+
+
+def test_lint_flags_a_string_guard_path_without_routing(mapping: dict) -> None:
+    edited = _with_string_path(mapping)
+    field_id = next(
+        f["field_id"] for f in edited["fields"]
+        if isinstance(f.get("guard"), dict) and f["guard"].get("hy_oas_z_path") == "hy_oas_z"
+    )
+    expected = f"{field_id}: guard hy_oas_z_path is not a path list"
+    assert rco.lint_mapping(edited) == [expected]
+
+
+@pytest.mark.parametrize("key", ["copy_path", "copy_clock_path", "own_clock_path"])
+def test_lint_flags_a_copied_path_that_is_not_a_path_list(mapping: dict, key: str) -> None:
+    edited = copy.deepcopy(mapping)
+    field = next(f for f in edited["fields"] if f["guard"]["kind"] == "same_run_owner_copy")
+    field["guard"][key] = "asof"
+    assert rco.lint_mapping(edited) == [f"{field['field_id']}: guard {key} is not a path list"]
+
+
+def test_lint_flags_a_needs_entry_that_is_not_a_path_list(mapping: dict) -> None:
+    edited = _with_string_needs_entry(mapping)
+    field_id = next(
+        f["field_id"] for f in edited["fields"]
+        if isinstance(f.get("guard"), dict)
+        and isinstance(f["guard"].get("needs"), list)
+        and f["guard"]["needs"]
+        and not isinstance(f["guard"]["needs"][0], list)
+    )
+    expected = f"{field_id}: guard needs is not a path list"
+    assert rco.lint_mapping(edited) == [expected]
