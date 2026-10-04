@@ -162,7 +162,7 @@ Hold this as a live diagnostic, not documentation. At every phase boundary and b
 - **The contested artifact.** Signature: two lanes' diffs touch one file; two sessions hold one branch; the merge is a coin flip. Fix: O.1 / O.16 — freeze, one owner.
 - **Gate multiplication.** Signature: N lanes go silent at once; the machine shows N×2 suite runs; the seat diagnoses "stuck" and restarts. Fix: O.7.
 - **Blind retry / failover.** Signature: a timed-out or ambiguous act is re-sent, or sent again through another surface, before its effect was checked. Fix: L.3.
-- **Poll-on-block.** Signature: every harness nudge is answered with a fresh status read; three identical readings in a row. Fix: L.8 — one hold note, then quiet.
+- **Poll-on-block.** Signature: every harness nudge is answered with a fresh status read; three identical readings in a row. Fix: L.8 — the watcher owns the next observation; immediately advance another useful lane. Only when no useful in-scope work remains may the existing external-wait boundary yield once.
 - **DELIVERED-as-done.** Signature: "shipped" or "done" in a report whose evidence stops at a returned packet, an open PR, or a green check. Fix: commitment 9 / O.14 / gate item 8.
 - **Permission you already hold.** Signature: a seat with a delegated program posts a request for authorization it was granted, and waits. Fix: L.11.
 - **The stale relay.** Signature: a seat executes its spawn prompt as written while the carrier already holds a STOP, a sibling's ACK, or a re-scoped ruling. Fix: S.1 / L.10.
