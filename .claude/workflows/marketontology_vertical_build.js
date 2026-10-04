@@ -260,8 +260,9 @@ const results = await pipeline(
     })
     // Continuation: a builder cut by the 30-call cap returns PARTIAL with remaining_steps; resume on the same branch (max 3 times).
     for (let k = 1; k <= 3 && (!build || !build.evidence || !build.evidence.pr_number || (build.status === 'PARTIAL' && build.evidence.remaining_steps && build.evidence.remaining_steps.length)); k++) {
-      log(`${p.id}: build continuation ${k} (${build.evidence.remaining_steps.length} steps left)`)
       const hadEvidence = build && build.evidence
+      const remainingCount = hadEvidence && Array.isArray(build.evidence.remaining_steps) ? build.evidence.remaining_steps.length : 'unknown'
+      log(`${p.id}: build continuation ${k} (${remainingCount} steps left)`)
       const salvage = hadEvidence
         ? `a previous builder already pushed WIP to branch ${branchOf(pp)} (head ${build.evidence.head_sha}, PR ${build.evidence.pr_url || 'not yet opened'})`
         : `the previous builder returned no result (likely cut off at the 30-call cap with NO StructuredOutput). Before doing anything else, probe for salvage: git ls-remote --heads origin ${branchOf(pp)} (does the branch exist on origin?) and gh pr list -R ${repoOf(pp)} --head ${branchOf(pp)} --json number,url,state (was a PR already opened?). If the branch exists, check it out and continue from its actual state; if it does not, start the packet from scratch`
