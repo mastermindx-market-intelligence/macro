@@ -94,15 +94,24 @@ JOB_GATE = (
     "(github.event_name == 'workflow_dispatch' || vars.VPS_LIVE_PRIMARY != 'true') }}"
 )
 
-#: The ONE cap set both units carry.  Two units of the same program that drift
-#: apart on limits are two different failure envelopes to reason about.
-SHARED_CAPS = {
+#: Scheduling tier both units still share — two units of one program must lose the
+#: same scheduling contests.
+SHARED_TIER = {
     "Nice": "10",
     "CPUWeight": "20",
+    "IOWeight": "20",
+}
+#: Evaluator envelope — inherited from the prophet lane's measured envelope.
+EVAL_CAPS = {
     "CPUQuota": "60%",
     "MemoryHigh": "256M",
     "MemoryMax": "512M",
-    "IOWeight": "20",
+}
+#: Pack builder envelope — 2026-10-04 VPS dry run (3,076 names, 1291.5 s wall, 1.26 G peak).
+PACK_CAPS = {
+    "CPUQuota": "100%",
+    "MemoryHigh": "1400M",
+    "MemoryMax": "1600M",
 }
 
 
@@ -177,30 +186,44 @@ def _changed_trigger() -> re.Pattern[str]:
     return re.compile(m.group(1))
 
 
+def _mib(value: str) -> int:
+    """Parse a systemd memory limit suffix as mebibytes (M or G, G = 1024 M)."""
+    if value.endswith("M"):
+        return int(value[:-1])
+    if value.endswith("G"):
+        return int(value[:-1]) * 1024
+    raise ValueError(f"unsupported memory suffix: {value!r}")
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Host units — the two services
 # ─────────────────────────────────────────────────────────────────────────────
 
 def test_both_services_are_capped_oneshots_on_the_lowest_priority_tier():
-    """Caps are INHERITED from the prophet lane's measured envelope (the units say
-    so in their own headers) and are no looser than the smallest sibling.  The tier
-    matters: this program CONSUMES what the quote lanes publish, so it must always
-    lose a scheduling contest with them."""
-    for path in (EVAL_SERVICE, PACK_SERVICE):
+    """The evaluator's caps are inherited from the prophet lane; the pack's are
+    measured on the production VPS.  Both stay no looser than the smallest sibling
+    on scheduling tier.  This program CONSUMES what the quote lanes publish, so it
+    must always lose a scheduling contest with them."""
+    bars = _unit(DEPLOY / "macro-live-bars.service")["Service"]
+    for path, caps in ((EVAL_SERVICE, EVAL_CAPS), (PACK_SERVICE, PACK_CAPS)):
         svc = _unit(path)["Service"]
         assert svc["Type"] == "oneshot", path.name
         assert svc["WorkingDirectory"] == "/opt/macro", path.name
         assert svc["EnvironmentFile"] == "-/etc/macro-live.env", path.name
         assert svc["NoNewPrivileges"] == "true", path.name
         assert svc["PrivateTmp"] == "true", path.name
-        for key, value in SHARED_CAPS.items():
+        for key, value in SHARED_TIER.items():
             assert svc[key] == value, f"{path.name}: {key}={svc[key]!r}"
-        # Never looser than the lane whose measurement they inherit.
-        bars = _unit(DEPLOY / "macro-live-bars.service")["Service"]
+        for key, value in caps.items():
+            assert svc[key] == value, f"{path.name}: {key}={svc[key]!r}"
         assert int(svc["Nice"]) >= int(bars["Nice"]), path.name
         assert int(svc["CPUWeight"]) <= int(bars["CPUWeight"]), path.name
         assert int(svc["IOWeight"]) <= int(bars["IOWeight"]), path.name
-        assert int(svc["CPUQuota"].rstrip("%")) <= 90, path.name   # <= snapshot/bars
+        if path == EVAL_SERVICE:
+            assert int(svc["CPUQuota"].rstrip("%")) <= 90, path.name   # <= snapshot/bars
+        else:
+            # Measured single-threaded build; above 100% buys nothing, below misses timeout.
+            assert svc["CPUQuota"] == "100%", path.name
 
         unit = _unit(path)["Unit"]
         assert unit["After"] == "network-online.target", path.name
@@ -228,6 +251,20 @@ def test_the_timeouts_are_bounded_inside_their_own_timer_periods():
     """
     assert int(_unit(EVAL_SERVICE)["Service"]["TimeoutStartSec"]) == 120 <= 300
     assert int(_unit(PACK_SERVICE)["Service"]["TimeoutStartSec"]) == 1800 <= 3600 // 2
+
+
+def test_pack_unit_envelope_covers_the_measured_build():
+    """2026-10-04 VPS dry run: 1,291.5 s wall, cgroup MemoryPeak 1,258,815,488 B,
+    single-threaded — the unit must not throttle or time out on that build."""
+    svc = _unit(PACK_SERVICE)["Service"]
+    mem_high = _mib(svc["MemoryHigh"])
+    mem_max = _mib(svc["MemoryMax"])
+    assert mem_high >= 1259
+    assert mem_max >= mem_high + 128
+    assert svc["CPUQuota"] == "100%"
+    timeout = int(svc["TimeoutStartSec"])
+    assert timeout >= int(1291.5 * 1.25)
+    assert timeout <= 3600 // 2
 
 
 def test_no_unit_directive_runs_a_git_command_or_writes_a_data_path():
