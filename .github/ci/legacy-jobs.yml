@@ -4541,6 +4541,21 @@ jobs:
         run: python -m pytest tests/test_edgar_universe_widening.py -q
       - name: edgar FTS first-request abort guard fires on _CONFIRMED_ABSENT too (no network)
         run: python -m pytest tests/test_edgar_fts_confirmed_absent_first_request.py -q
+      # Trend Persistence Wave C-0 (PR #8403): the S&P 1500 point-in-time sector
+      # substrate for the 1,083 index leavers. It belongs in THIS job and not a new one
+      # because its subject is this job's subject one layer down: a collectors/ module
+      # whose ONLY leaver-labelling channel is the EDGAR CIK bridge
+      # (collectors.edgar_delisting._get_submissions; trusted methods edgar_fts/seed),
+      # and whose artifact is registered in config/synapse.yml (sp1500-pit-sectors),
+      # which the registry-integrity step above already checks. The suite pins what
+      # the readout got wrong — leavers must never be labelled by ticker string
+      # (recycled tickers ECHO/FI/MMC were the readout's "3 of 1,083"), every row
+      # carries era_correct=False, and the text-first SIC order — and it is fully
+      # offline (autouse no-network fixture, tmp_path data_dir). Deps are satisfied by
+      # the install line above (pandas + pyarrow for the parquet write, pyyaml via
+      # lib.config). 24 tests, 1.8 s measured locally.
+      - name: S&P 1500 point-in-time sector substrate — CIK-only leaver labels, SIC map, cache (no network)
+        run: python -m pytest tests/test_sp1500_pit_sectors.py -q
       - name: symbol-directory archival collector tests (LHB-W2c / LHB-R8)
         run: >-
           python -m pytest

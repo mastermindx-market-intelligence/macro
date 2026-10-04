@@ -27,6 +27,8 @@ changed:
     what: This collector's own SIC cache (raw SEC sic/sicDescription/name per CIK, blanks included) so re-runs make no network calls. Only writer is this module; data/edgar/cik_sic.json is never written.
   - path: tests/test_sp1500_pit_sectors.py
     what: 24 offline tests; every test redirects data_dir to tmp_path and stubs the SEC fetch.
+  - path: .github/ci/legacy-jobs.yml
+    what: Wires tests/test_sp1500_pit_sectors.py into the synapse-read-gate job (the job that owns the EDGAR collector suites and the registry-integrity check). Added after the PR's first ci.yml run went red on contract-delta and ci-control-plane-contracts, both for the same cause, a new suite named by no run step.
   - path: config/synapse.yml
     what: Registry entry sp1500-pit-sectors (display tier, horizon_role context, owner_program engine-fix, no scored surfaces).
   - path: agentos/workstreams/WS-TREND-PERSISTENCE.md
@@ -61,6 +63,7 @@ do_not_redo:
   - Do not add this collector to dag.yml or a workflow; it is on-demand, display-tier substrate.
   - Everything in the 2026-10-03 handoff's do_not_redo still binds (no V2/B2 re-run, no prereg edits, no profile from the 29 tests).
 danger_areas:
+  - .github/ci/legacy-jobs.yml is a CI-authority path, so this PR's ci.yml run is the full legacy suite and the merged head carries authority_changed=true; a red on that merged head clears only through a green ci.yml run on a main descendant, never through candidate-era evidence.
   - A write into data/ from a SPARSE worktree truncates committed artifacts; this tree opted into data/ (scripts/worktree_sparse.py add data) before the live run.
   - data/edgar/cik_sic.json is owned by collectors/edgar_emergence.py; the collector reads it and a test pins that its bytes never change.
   - The text-first SIC order is deliberate (scripts/build_sector_map.py convention); range-first mislabels about 12 percent of SICs (UEIC 3651 Household Audio = Consumer Discretionary by text, IT by range).
