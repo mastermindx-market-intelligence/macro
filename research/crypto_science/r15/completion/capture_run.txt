@@ -1,0 +1,4 @@
+outcome: captured
+pages: 1  states: 32/32 captured
+manifest: /Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/mockups/evidence/crypto-desk-r15-completion/manifest.json
+smells: /Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/mockups/evidence/crypto-desk-r15-completion/smells.json

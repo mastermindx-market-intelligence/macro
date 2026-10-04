@@ -1,0 +1,41 @@
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+________ test_r13_consumes_current_scoped_flow_without_creating_signal _________
+tests/test_vector_r2_frontdoor.py:105: in test_r13_consumes_current_scoped_flow_without_creating_signal
+    from scripts.build_vector import _derivatives_flow_view
+E   ImportError: cannot import name '_derivatives_flow_view' from 'scripts.build_vector' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/scripts/build_vector.py)
+__________ test_r13_stale_or_future_observations_cannot_look_current ___________
+tests/test_vector_r2_frontdoor.py:116: in test_r13_stale_or_future_observations_cannot_look_current
+    from scripts.build_vector import _derivatives_flow_view
+E   ImportError: cannot import name '_derivatives_flow_view' from 'scripts.build_vector' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/scripts/build_vector.py)
+_________ test_r13_zero_activity_and_valid_extreme_shares_are_distinct _________
+tests/test_vector_r2_frontdoor.py:125: in test_r13_zero_activity_and_valid_extreme_shares_are_distinct
+    from scripts.build_vector import _derivatives_flow_view
+E   ImportError: cannot import name '_derivatives_flow_view' from 'scripts.build_vector' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/scripts/build_vector.py)
+__________ test_r13_window_coverage_is_local_not_whole_history_label ___________
+tests/test_vector_r2_frontdoor.py:136: in test_r13_window_coverage_is_local_not_whole_history_label
+    from scripts.build_vector import _derivatives_flow_view
+E   ImportError: cannot import name '_derivatives_flow_view' from 'scripts.build_vector' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/scripts/build_vector.py)
+_____ test_r13_unavailable_malformed_scope_and_numeric_inputs_fail_closed ______
+tests/test_vector_r2_frontdoor.py:145: in test_r13_unavailable_malformed_scope_and_numeric_inputs_fail_closed
+    from scripts.build_vector import _derivatives_flow_view
+E   ImportError: cannot import name '_derivatives_flow_view' from 'scripts.build_vector' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/scripts/build_vector.py)
+_____________ test_r13_projection_is_pure_and_timezone_equivalent ______________
+tests/test_vector_r2_frontdoor.py:158: in test_r13_projection_is_pure_and_timezone_equivalent
+    from scripts.build_vector import _derivatives_flow_view
+E   ImportError: cannot import name '_derivatives_flow_view' from 'scripts.build_vector' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/scripts/build_vector.py)
+______ test_r13_template_withholds_unqualified_funding_and_old_daily_flow ______
+tests/test_vector_r2_frontdoor.py:167: in test_r13_template_withholds_unqualified_funding_and_old_daily_flow
+    assert 'data-flow-context' in desk and 'data-flow-evidence' in desk
+E   assert ('data-flow-context' in '>\n        <summary><span class="fold-title">{{ t(\'Derivatives Desk\',\'衍生品台\') }}</span><span class="fold-hint">{{ ...f.\',\'持仓数据描述压力，不直接判断方向，也不会单独改变结论。\') }}</div>\n        </div>\n      </details>\n\n      <details class="study-fold" ')
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_vector_r2_frontdoor.py::test_r13_consumes_current_scoped_flow_without_creating_signal
+FAILED tests/test_vector_r2_frontdoor.py::test_r13_stale_or_future_observations_cannot_look_current
+FAILED tests/test_vector_r2_frontdoor.py::test_r13_zero_activity_and_valid_extreme_shares_are_distinct
+FAILED tests/test_vector_r2_frontdoor.py::test_r13_window_coverage_is_local_not_whole_history_label
+FAILED tests/test_vector_r2_frontdoor.py::test_r13_unavailable_malformed_scope_and_numeric_inputs_fail_closed
+FAILED tests/test_vector_r2_frontdoor.py::test_r13_projection_is_pure_and_timezone_equivalent
+FAILED tests/test_vector_r2_frontdoor.py::test_r13_template_withholds_unqualified_funding_and_old_daily_flow
+7 failed, 7 deselected, 43 warnings in 2.98s

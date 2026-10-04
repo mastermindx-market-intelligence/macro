@@ -1,0 +1,15 @@
+{
+  "classification": "POST_FREEZE_IMPLEMENTATION_CORRECTION_NOT_PARAMETER_RETUNING",
+  "initial_source": "03f5b5c02d12745ee8098102fc9e03d398b3fd1a",
+  "corrected_source": "f83e37e95d788f449ef3aa05d7f4e3b3e452671b",
+  "initial_result_sha256": "dfc97ef3899f0de7cc36c53e0bb520e633b2fea4326f36ba64cb0711d4539444",
+  "corrected_result_sha256": "b93f7b0408f59f2e688ccf043ce2c1600d9b02321b080e8af80e6ef6443ed636",
+  "event_summaries_equal": true,
+  "policy_summaries_equal": true,
+  "csv_byte_equality": {
+    "downside_events.csv": true,
+    "recovery_events.csv": true,
+    "policy_events.csv": true
+  },
+  "correction": "Maturity at terminal open does not require later terminal-bar high/low/close; allocation target sidecar retained for independent arithmetic."
+}

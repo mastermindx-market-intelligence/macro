@@ -1,0 +1,309 @@
+{
+  "classification": "TEMPORAL_DIAGNOSTIC_NOT_STRATEGY_VALIDATION",
+  "preregistration_commit": "47d4eacf6abd98055a085a779e9df75fee567d18",
+  "execution_head": "47d4eacf6abd98055a085a779e9df75fee567d18",
+  "script_sha256": "3e95c865a36b27cc06967ee1fa1229602579ff67bc08f203d8beb11b96a80380",
+  "source_sha256": {
+    "config.yml": "78186dd7b079a0d49706bf76a5614327c0c00da51bc6644b11de30d37d86b75c",
+    "engine/btc_signals.py": "1744dbc01fc930b1f6f586b628abe2f621dc0f9a27c5191682eb278c16a83d65",
+    "engine/btc_inputs.py": "67680c313f83c628b41edcc9d4725b207e6005fdac3dfc10eef5295b019c3870",
+    "engine/btc_overrides.py": "e690f24dfdf9395d0973b1139c85975185be05bf464421ed0864dec0e5da1f52",
+    "engine/btc_decision.py": "681fec1063bd087acbdcc74f6d91a0528de0ae3ea53776c16bf33cdfb9501c9c",
+    "engine/btc_impulse_radar.py": "6e3e65c9617a5b754e1dfa7bc6a1b42f25c05637e88dff135e63750f81b17094",
+    "engine/btc_intraday_cvd.py": "36921a561b7750b37b7aabe8b8901d5f101d09a0c705248270a9d44b673130b4"
+  },
+  "input_sha256": {
+    "vector/signals.parquet": "263bc3d48a7045da135d55989d74dd60e58212f43de9728515cea9ae1bd0302d",
+    "coinbase/btc_daily.parquet": "1137160d826fca5ce8adeac55ea2ae75de7923aee59b92069f14484d72658edb",
+    "yahoo/BTC-USD.parquet": "f6484fe9e0bc4db1222545545fa18b66b1d0c38bd1f66ffe46754fc33d6c8f7f",
+    "coinbase/btc_hourly.parquet": "55bdfca657d16fc572cf14544a99fceef698daac998c0f96c7a0becd88d502cb",
+    "okx/taker_volume_hourly.parquet": "90ad3d707191c43ca5478c84e4f245d536cb1c2962d72046b15ca6d71b9eb923",
+    "bgeo/sopr.parquet": "791c665757c8ac054cf508c147e1eeed968b5ed36f43dcdfd2d47d2665f6391a",
+    "bgeo/funding_rate.parquet": "5e2c73d82da16f41befcb78feaafc39d694457748c3dc82b50e3e48626a8aa75",
+    "bgeo/open_interest_futures.parquet": "6e34528eb83b82729abd58cfa4e4f44660bdf5eec6f870da6b904c76574ead7c",
+    "deribit/dvol.parquet": "c13bf6d52cbf55dffde46375907e5e0438f1d1661912187c3979dbe2b8c1fb81",
+    "deribit/options_structure.parquet": "ad292a268a330c551d25d7aff8943b8436b995e3b91f9ac7fd8dcf653bbb6320",
+    "farside/etf_flows.parquet": "41c5f62cd32423f824e25991444d7a476f4cf1a38057a44242f71ceb7081a05c"
+  },
+  "input_and_source_unchanged": true,
+  "period": [
+    "2025-09-26",
+    "2026-09-26"
+  ],
+  "prefix_audit": {
+    "bottom_delta": {
+      "tested": 366,
+      "finite": 366,
+      "changed": 3,
+      "max_abs_difference": 0.0930232558139535
+    },
+    "completed_3d_delta": {
+      "tested": 366,
+      "finite": 366,
+      "changed": 0,
+      "max_abs_difference": 0.0
+    },
+    "price_only_momentum_delta": {
+      "tested": 366,
+      "finite": 366,
+      "changed": 0,
+      "max_abs_difference": 0.0
+    },
+    "price_only_risk_delta": {
+      "tested": 366,
+      "finite": 366,
+      "changed": 0,
+      "max_abs_difference": 0.0
+    }
+  },
+  "allocation_sensitivity": [
+    {
+      "variant": "alloc_conservative",
+      "changed_dates": 1,
+      "max_abs_allocation_pp": 5.3156146179402
+    },
+    {
+      "variant": "alloc_moderate",
+      "changed_dates": 1,
+      "max_abs_allocation_pp": 5.3156146179402
+    },
+    {
+      "variant": "alloc_aggressive",
+      "changed_dates": 1,
+      "max_abs_allocation_pp": 5.3156146179402
+    },
+    {
+      "variant": "alloc_optimal",
+      "changed_dates": 1,
+      "max_abs_allocation_pp": 5.3156146179402
+    }
+  ],
+  "allocation_limit": "Raw-allocation sensitivity only; fixed stored momentum/risk/valuation; no PnL or live-decision assertion.",
+  "counterfactual_limit": "One research-only completed-date 3D grouping; no production patch or profitability selection.",
+  "synthetic_label_demo": {
+    "2026-01-01": 20.0,
+    "2026-01-04": 50.0
+  },
+  "coverage": [
+    {
+      "source": "vector/signals",
+      "available": true,
+      "rows": 4393,
+      "columns": 197,
+      "first": "2014-09-17 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "max_timestamp_gap_hours": 24.0,
+      "publication_clock": "NOT_ESTABLISHED_BY_THIS_STORED_FRAME"
+    },
+    {
+      "source": "coinbase/btc_daily",
+      "available": true,
+      "rows": 4087,
+      "columns": 5,
+      "first": "2015-07-20 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "max_timestamp_gap_hours": 24.0,
+      "publication_clock": "NOT_ESTABLISHED_BY_THIS_STORED_FRAME"
+    },
+    {
+      "source": "yahoo/BTC-USD",
+      "available": true,
+      "rows": 4393,
+      "columns": 3,
+      "first": "2014-09-17 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "max_timestamp_gap_hours": 24.0,
+      "publication_clock": "NOT_ESTABLISHED_BY_THIS_STORED_FRAME"
+    },
+    {
+      "source": "coinbase/btc_hourly",
+      "available": true,
+      "rows": 94063,
+      "columns": 5,
+      "first": "2016-01-01 00:00:00",
+      "last": "2026-09-26 13:00:00",
+      "max_timestamp_gap_hours": 16.0,
+      "publication_clock": "NOT_ESTABLISHED_BY_THIS_STORED_FRAME"
+    },
+    {
+      "source": "okx/taker_volume_hourly",
+      "available": true,
+      "rows": 2957,
+      "columns": 2,
+      "first": "2026-05-26 00:00:00",
+      "last": "2026-09-26 13:00:00",
+      "max_timestamp_gap_hours": 10.0,
+      "publication_clock": "NOT_ESTABLISHED_BY_THIS_STORED_FRAME"
+    },
+    {
+      "source": "bgeo/sopr",
+      "available": true,
+      "rows": 5559,
+      "columns": 1,
+      "first": "2011-07-02 00:00:00",
+      "last": "2026-09-19 00:00:00",
+      "max_timestamp_gap_hours": 24.0,
+      "publication_clock": "NOT_ESTABLISHED_BY_THIS_STORED_FRAME"
+    },
+    {
+      "source": "bgeo/funding_rate",
+      "available": true,
+      "rows": 1168,
+      "columns": 3,
+      "first": "2023-07-09 00:00:00",
+      "last": "2026-09-18 00:00:00",
+      "max_timestamp_gap_hours": 24.0,
+      "publication_clock": "NOT_ESTABLISHED_BY_THIS_STORED_FRAME"
+    },
+    {
+      "source": "bgeo/open_interest_futures",
+      "available": true,
+      "rows": 1547,
+      "columns": 15,
+      "first": "2022-06-13 00:00:00",
+      "last": "2026-09-24 00:00:00",
+      "max_timestamp_gap_hours": 120.0,
+      "publication_clock": "NOT_ESTABLISHED_BY_THIS_STORED_FRAME"
+    },
+    {
+      "source": "deribit/dvol",
+      "available": true,
+      "rows": 2013,
+      "columns": 4,
+      "first": "2021-03-24 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "max_timestamp_gap_hours": 24.0,
+      "publication_clock": "NOT_ESTABLISHED_BY_THIS_STORED_FRAME"
+    },
+    {
+      "source": "deribit/options_structure",
+      "available": true,
+      "rows": 89,
+      "columns": 25,
+      "first": "2026-06-13 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "max_timestamp_gap_hours": 96.0,
+      "publication_clock": "NOT_ESTABLISHED_BY_THIS_STORED_FRAME"
+    },
+    {
+      "source": "farside/etf_flows",
+      "available": true,
+      "rows": 695,
+      "columns": 13,
+      "first": "2024-01-11 00:00:00",
+      "last": "2026-09-25 00:00:00",
+      "max_timestamp_gap_hours": 96.0,
+      "publication_clock": "NOT_ESTABLISHED_BY_THIS_STORED_FRAME"
+    }
+  ],
+  "signal_fields": [
+    {
+      "field": "momentum",
+      "present": true,
+      "nonnull": 4393,
+      "first": "2014-09-17 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "trailing_90_nonnull": 90
+    },
+    {
+      "field": "risk_index",
+      "present": true,
+      "nonnull": 4383,
+      "first": "2014-09-27 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "trailing_90_nonnull": 90
+    },
+    {
+      "field": "bottom_pressure",
+      "present": true,
+      "nonnull": 4393,
+      "first": "2014-09-17 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "trailing_90_nonnull": 90
+    },
+    {
+      "field": "mvrv_z",
+      "present": true,
+      "nonnull": 4029,
+      "first": "2015-09-16 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "trailing_90_nonnull": 90
+    },
+    {
+      "field": "sopr_z90",
+      "present": false
+    },
+    {
+      "field": "funding_rate",
+      "present": true,
+      "nonnull": 83,
+      "first": "2026-07-01 00:00:00",
+      "last": "2026-09-21 00:00:00",
+      "trailing_90_nonnull": 83
+    },
+    {
+      "field": "oi_total_usd",
+      "present": true,
+      "nonnull": 1567,
+      "first": "2022-06-13 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "trailing_90_nonnull": 90
+    },
+    {
+      "field": "dvol",
+      "present": true,
+      "nonnull": 2013,
+      "first": "2021-03-24 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "trailing_90_nonnull": 90
+    },
+    {
+      "field": "skew_25d",
+      "present": true,
+      "nonnull": 106,
+      "first": "2026-06-13 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "trailing_90_nonnull": 90
+    },
+    {
+      "field": "gex_per_1pct_usd",
+      "present": true,
+      "nonnull": 106,
+      "first": "2026-06-13 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "trailing_90_nonnull": 90
+    },
+    {
+      "field": "etf_flow_usd_mn",
+      "present": true,
+      "nonnull": 664,
+      "first": "2024-01-11 00:00:00",
+      "last": "2026-09-24 00:00:00",
+      "trailing_90_nonnull": 62
+    },
+    {
+      "field": "macro_score",
+      "present": true,
+      "nonnull": 4330,
+      "first": "2014-11-19 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "trailing_90_nonnull": 90
+    },
+    {
+      "field": "coinbase_premium",
+      "present": true,
+      "nonnull": 3181,
+      "first": "2018-01-11 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "trailing_90_nonnull": 90
+    },
+    {
+      "field": "taker_buy_share",
+      "present": true,
+      "nonnull": 284,
+      "first": "2025-12-17 00:00:00",
+      "last": "2026-09-26 00:00:00",
+      "trailing_90_nonnull": 90
+    }
+  ]
+}

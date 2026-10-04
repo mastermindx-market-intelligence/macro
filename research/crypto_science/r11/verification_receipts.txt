@@ -1,0 +1,3 @@
+R11_RECEIPTS_VERIFIED: 57 input identities,18 gates,137 prior artifacts,8 candidate source files; original R10 results/reference lineage retained.
+R11_COMPATIBILITY_VERIFIED: before/after type hardening same synthetic semantics; no real response-observation files created; 368-test receipt present.
+Independent external review and live production proof remain outstanding.

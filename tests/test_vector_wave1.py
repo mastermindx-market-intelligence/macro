@@ -57,3 +57,78 @@ def test_wave1_arms_payload_budget_and_desktop_nav_containment():
     assert "nth-last-child(3)" in source
     assert 're.sub(r">\\s+<", "> <", html)' in builder
     assert 'len(html.encode("utf-8"))' in builder
+
+
+def test_r2_decision_fragment_does_not_require_overview_context():
+    """The canonical decision can render without quotes, charts or market master data."""
+    from jinja2 import Environment
+
+    source = TEMPLATE.read_text(encoding="utf-8")
+    macros = source[:source.index("<!DOCTYPE html>")]
+    start = source.index("{% set decision_ok")
+    end = source.index('<section class="shelf" data-shelf="S3">', start)
+    fragment = Environment(autoescape=True).from_string(macros + source[start:end])
+    available = {
+        "schema": "btc.decision/v1",
+        "status": "ok",
+        "integrity": {"ok": True},
+        "final": {
+            "action_code": "HOLD_EXPOSURE",
+            "action_en": "Hold Bitcoin",
+            "action_zh": "持有比特币",
+            "exposure_pct": 75,
+            "change_pp": 0,
+        },
+        "advisory": {"levels": {}},
+    }
+    unavailable = {
+        "schema": "btc.decision/v1",
+        "status": "unavailable",
+        "integrity": {"ok": False},
+        "final": None,
+        "advisory": {"levels": {}},
+    }
+    for decision in (available, unavailable):
+        rendered = fragment.render(
+            decision=decision, risk_index=19, risk_label="Low Risk", risk_on=True,
+        )
+        assert "hero-position" not in rendered
+        assert "vec-risk-chart" not in rendered
+        assert rendered.count("data-verdict") == 1
+        if decision["status"] == "ok":
+            assert 'data-decision-exposure="75"' in rendered
+        else:
+            assert "DECISION TEMPORARILY UNAVAILABLE" in rendered
+            assert "data-decision-exposure=" not in rendered
+
+
+def test_r2_performance_stays_in_strategy_not_the_current_decision():
+    source = TEMPLATE.read_text(encoding="utf-8")
+    overview_start = source.index('id="overview"')
+    decision_start = source.index('data-shelf="S2"')
+    overview = source[overview_start:decision_start]
+    assert 'id="vec-risk-chart"' in overview
+    assert 'id="vrc-score"' not in overview
+    assert source.count('id="vrc-score"') == 1
+    assert source.index('id="vrc-score"') > source.index('id="strategy-track-record"')
+    assert "Full-history simulation, not live performance." in source
+
+
+def test_r2_nav_accessible_name_is_text_not_bilingual_markup():
+    source = TEMPLATE.read_text(encoding="utf-8")
+    assert 'aria-label="Bitcoin research sections / 比特币研究分区"' in source
+    assert 'aria-label="{{ t(' not in source
+
+
+def test_r2_missing_market_read_is_not_mixed_evidence():
+    from jinja2 import Environment
+
+    source = TEMPLATE.read_text(encoding="utf-8")
+    macros = source[:source.index("<!DOCTYPE html>")]
+    start = source.index('<h1 class="stance">')
+    end = source.index("</h1>", start) + len("</h1>")
+    rendered = Environment(autoescape=True).from_string(macros + source[start:end]).render(
+        master={"ok": False}, hero_tone="neutral",
+    )
+    assert "Market read unavailable." in rendered
+    assert "Mixed backdrop." not in rendered

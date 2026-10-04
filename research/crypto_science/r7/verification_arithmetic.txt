@@ -1,0 +1,5 @@
+Independent cash/coin accounts 7038
+Training memberships, offsets and mappings checked 70
+All probability/action/frequency rows checked 1012 37611
+R7_VERIFIED: 7038 cash/coin paths; 70 training snapshots; 1012 prediction rows; 37611 policy rows; 504 utility summaries; all score bins, decompositions and paired intervals.
+R7_HASHES: 55 input identities; 18 gates; 87 prior evidence unchanged. Same-session numerical verification, not independent review.

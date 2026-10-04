@@ -1,0 +1,50 @@
+{
+  "source_commit": "31a60448e058f09b5cea4795cb4bdcfc3f7cfcba",
+  "source_sha256": {
+    "engine/crypto_universe.py": "b25fcbefd7d776d236467ee7dd798908eb84d42bedf1cc8fc729361a177e4fa3",
+    "scripts/build_crypto.py": "760dc577202b1d20c64779f6cd68dab5d1087576f6aa88f7db8553e398c60bfa",
+    "templates/crypto.html.j2": "7e9d1aeb506b04f2c8e532d4af9d4a48eccfb124733928a16728c8f788678ed1"
+  },
+  "semantic_cells": 64,
+  "semantic_passed": 64,
+  "canonical_captures": 32,
+  "input_files_unchanged": 67,
+  "snapshot_as_of": "2026-09-26",
+  "current_rows": 50,
+  "older_exclusions": 17,
+  "viewports": [
+    320,
+    390,
+    768,
+    1440
+  ],
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "locales": [
+    "en",
+    "zh"
+  ],
+  "font_files_used_locally": 9,
+  "font_response_failures": 0,
+  "failed_responses": [
+    [
+      "favicon.svg",
+      404
+    ],
+    [
+      "live/overlay.json",
+      404
+    ],
+    [
+      "live/quotes.json",
+      404
+    ],
+    [
+      "nav_market.js?v=20260913-account-actions",
+      404
+    ]
+  ],
+  "status": "controlled_generated_and_three_way_combined_not_deployed"
+}

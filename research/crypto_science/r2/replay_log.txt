@@ -1,0 +1,227 @@
+Paired compute_all complete 4393 197
+Prefix checks 500/4393
+Prefix checks 1000/4393
+Prefix checks 1500/4393
+Prefix checks 2000/4393
+Prefix checks 2500/4393
+Prefix checks 3000/4393
+Prefix checks 3500/4393
+Prefix checks 4000/4393
+{
+  "frame_rows": 4393,
+  "frame_columns": 197,
+  "changed_columns": [
+    {
+      "column": "alloc_conservative",
+      "different_rows": 84,
+      "availability_changed": 0,
+      "max_abs": 0.10631229235880407
+    },
+    {
+      "column": "alloc_moderate",
+      "different_rows": 83,
+      "availability_changed": 0,
+      "max_abs": 0.10631229235880407
+    },
+    {
+      "column": "alloc_aggressive",
+      "different_rows": 83,
+      "availability_changed": 0,
+      "max_abs": 0.10631229235880413
+    },
+    {
+      "column": "alloc_optimal",
+      "different_rows": 83,
+      "availability_changed": 0,
+      "max_abs": 0.10631229235880413
+    },
+    {
+      "column": "alloc_conservative_raw",
+      "different_rows": 84,
+      "availability_changed": 0,
+      "max_abs": 0.10631229235880407
+    },
+    {
+      "column": "alloc_moderate_raw",
+      "different_rows": 83,
+      "availability_changed": 0,
+      "max_abs": 0.10631229235880407
+    },
+    {
+      "column": "alloc_aggressive_raw",
+      "different_rows": 83,
+      "availability_changed": 0,
+      "max_abs": 0.10631229235880413
+    },
+    {
+      "column": "alloc_optimal_raw",
+      "different_rows": 83,
+      "availability_changed": 0,
+      "max_abs": 0.10631229235880413
+    },
+    {
+      "column": "bottom_pressure",
+      "different_rows": 169,
+      "availability_changed": 0,
+      "max_abs": 0.18604651162790709
+    }
+  ],
+  "prefix_summary": {
+    "tested": 4393,
+    "warmup_under_200_rows": 199,
+    "old_changed": 54,
+    "new_changed": 0,
+    "old_max_abs": 0.18604651162790709,
+    "new_max_abs": 0.0
+  },
+  "latest": {
+    "date": "2026-09-26",
+    "old_bottom_pressure": 0.0,
+    "new_bottom_pressure": 0.0,
+    "old_final_exposure_pct": 100.0,
+    "new_final_exposure_pct": 100.0
+  },
+  "stored_baseline_parity": [
+    {
+      "column": "close",
+      "common_rows": 4393,
+      "different_rows": 0,
+      "availability_changed": 0,
+      "max_abs": 0.0
+    },
+    {
+      "column": "momentum",
+      "common_rows": 4393,
+      "different_rows": 0,
+      "availability_changed": 0,
+      "max_abs": 0.0
+    },
+    {
+      "column": "risk_index",
+      "common_rows": 4393,
+      "different_rows": 0,
+      "availability_changed": 0,
+      "max_abs": 0.0
+    },
+    {
+      "column": "bottom_pressure",
+      "common_rows": 4393,
+      "different_rows": 0,
+      "availability_changed": 0,
+      "max_abs": 0.0
+    },
+    {
+      "column": "alloc_optimal",
+      "common_rows": 4393,
+      "different_rows": 0,
+      "availability_changed": 0,
+      "max_abs": 0.0
+    },
+    {
+      "column": "alloc_optimal_raw",
+      "common_rows": 4393,
+      "different_rows": 0,
+      "availability_changed": 0,
+      "max_abs": 0.0
+    }
+  ],
+  "old_impulse_verdict": {
+    "ok": true,
+    "asof": "2026-09-26",
+    "all_pass": false,
+    "holdout_start": "2024-01-01",
+    "label": "fwd(3d) +-5%",
+    "legs": {
+      "d2": {
+        "status": "demoted",
+        "pass": false,
+        "dir": "down",
+        "label": "Vol-of-vol jolt (DVOL range)",
+        "floor": 1.5,
+        "min_holdout_n": 30,
+        "lift_full": 1.07,
+        "lift_holdout": 1.856,
+        "perm_p": 0.4353,
+        "n_fires_full": 122,
+        "n_fires_holdout": 61
+      },
+      "d3": {
+        "status": "demoted",
+        "pass": false,
+        "dir": "down",
+        "label": "SOPR profit-take spike",
+        "floor": 1.3,
+        "min_holdout_n": 30,
+        "lift_full": 1.062,
+        "lift_holdout": 1.217,
+        "perm_p": 0.4138,
+        "n_fires_full": 158,
+        "n_fires_holdout": 31
+      },
+      "u1": {
+        "status": "insufficient_n",
+        "pass": false,
+        "dir": "up",
+        "label": "SOPR capitulation (wash-out)",
+        "floor": 1.3,
+        "min_holdout_n": 30,
+        "lift_full": 1.708,
+        "lift_holdout": 1.648,
+        "perm_p": 0.002,
+        "n_fires_full": 141,
+        "n_fires_holdout": 14
+      }
+    },
+    "note": "Pre-registered act-tier legs re-validated leak-free on strictly-forward labels (t, t+3]. A leg is DEMOTED (act points zeroed by the radar) if its 2024+ holdout lift falls below its floor or its permutation p>0.05, and marked INSUFFICIENT_N (also zeroed) if it has <30 holdout fires."
+  },
+  "new_impulse_verdict": {
+    "ok": true,
+    "asof": "2026-09-26",
+    "all_pass": false,
+    "holdout_start": "2024-01-01",
+    "label": "fwd(3d) +-5%",
+    "legs": {
+      "d2": {
+        "status": "demoted",
+        "pass": false,
+        "dir": "down",
+        "label": "Vol-of-vol jolt (DVOL range)",
+        "floor": 1.5,
+        "min_holdout_n": 30,
+        "lift_full": 1.069,
+        "lift_holdout": 1.85,
+        "perm_p": 0.4478,
+        "n_fires_full": 122,
+        "n_fires_holdout": 61
+      },
+      "d3": {
+        "status": "demoted",
+        "pass": false,
+        "dir": "down",
+        "label": "SOPR profit-take spike",
+        "floor": 1.3,
+        "min_holdout_n": 30,
+        "lift_full": 1.061,
+        "lift_holdout": 1.214,
+        "perm_p": 0.4153,
+        "n_fires_full": 158,
+        "n_fires_holdout": 31
+      },
+      "u1": {
+        "status": "insufficient_n",
+        "pass": false,
+        "dir": "up",
+        "label": "SOPR capitulation (wash-out)",
+        "floor": 1.3,
+        "min_holdout_n": 30,
+        "lift_full": 1.707,
+        "lift_holdout": 1.643,
+        "perm_p": 0.0015,
+        "n_fires_full": 141,
+        "n_fires_holdout": 14
+      }
+    },
+    "note": "Pre-registered act-tier legs re-validated leak-free on strictly-forward labels (t, t+3]. A leg is DEMOTED (act points zeroed by the radar) if its 2024+ holdout lift falls below its floor or its permutation p>0.05, and marked INSUFFICIENT_N (also zeroed) if it has <30 holdout fires."
+  },
+  "inputs_gates_source_unchanged": true
+}

@@ -1,0 +1,3 @@
+R12_RECEIPTS_VERIFIED: 57 input identities,18gates,137prior artifacts unchanged; runtime source matches pipeline; appended tests covered by431passing tests.
+R12_COMPATIBILITY: all original pipeline scenario results identical; saved sandbox price-patch hash now matches actual repository; Parquet measurements/limitations preserved.
+No live collection, production acceptance, independent reviewer, capacity limit or new trading model is implied.

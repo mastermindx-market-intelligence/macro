@@ -1,0 +1,23 @@
+Corrected incumbent recomputed; new price-only features use Coinbase only.
+Downside selected episodes: d0=588, d1=483
+{
+  "coverage": {
+    "hourly_rows": 94063,
+    "hourly_first": "2016-01-01 00:00:00",
+    "hourly_last": "2026-09-26 13:00:00",
+    "daily_rows": 4087,
+    "hourly_known_counts": {
+      "d0": 92457,
+      "d1": 92457
+    },
+    "washout_parents": 59,
+    "d0_episodes": 588,
+    "d1_episodes": 483,
+    "d0_d1_same_anchor_overlap": 419
+  },
+  "event_rows": 2378,
+  "policy_rows": 6738,
+  "summary_rows": 104,
+  "hashes_unchanged": true
+}
+FROZEN_R4_STUDY_COMPLETE

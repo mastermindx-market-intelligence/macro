@@ -1,0 +1,18 @@
+CHECK /opt/homebrew/opt/python@3.14/bin/python3.14 -m pytest tests/test_btc_intraday_cvd.py tests/test_okx_retail.py tests/test_store_guard.py tests/test_btc_decision.py tests/test_vector_catalyst.py tests/test_vector_forward_risk.py tests/test_vector_kelly.py tests/test_vector_timeline_gated.py tests/test_hub_alerts_explanation.py tests/test_hub_market_card_labels.py tests/test_hub_glance_copy.py tests/test_vector_wave1.py tests/test_vector_r2_data_boundary.py tests/test_vector_r2_frontdoor.py tests/test_btc_signals.py tests/test_btc_impulse_falsifier.py tests/test_btc_impulse_radar.py tests/test_btc_impulse_alerts.py tests/test_crypto_cockpit_contract.py tests/test_crypto_collectors.py tests/test_crypto_data_models.py tests/test_crypto_house_style.py tests/test_crypto_wave2.py tests/test_crypto_wave3.py -q --tb=short --disable-warnings
+........................................................................ [ 20%]
+........................................................................ [ 40%]
+........................................................................ [ 60%]
+.............F.......................................................... [ 80%]
+....................................................................     [100%]
+=================================== FAILURES ===================================
+______ test_r10_legacy_row_count_diagnostic_does_not_label_gaps_complete _______
+tests/test_btc_impulse_falsifier.py:1052: in test_r10_legacy_row_count_diagnostic_does_not_label_gaps_complete
+    assert r['incumbent_gap_detected'] is False and r['strict_window_status']=='incomplete'
+E   assert (True is False)
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_btc_impulse_falsifier.py::test_r10_legacy_row_count_diagnostic_does_not_label_gaps_complete
+1 failed, 355 passed, 49 warnings in 15.36s
+
+EXIT 1

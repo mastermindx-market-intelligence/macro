@@ -1,0 +1,1 @@
+ASSISTANT_FAILURE_PROOF 4 cases passed; existing market/budget navigation stays usable.

@@ -1,0 +1,59 @@
+F.FFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+______________ test_labels_are_strictly_forward_provable_by_hand _______________
+tests/test_btc_impulse_falsifier.py:62: in test_labels_are_strictly_forward_provable_by_hand
+    assert pd.isna(down.iloc[i]) and pd.isna(up.iloc[i]), (
+E   AssertionError: row 5 must be unknown, not a negative outcome
+E   assert (False)
+E    +  where False = <function isna at 0x10e6e31c0>(np.False_)
+E    +    where <function isna at 0x10e6e31c0> = pd.isna
+__________ test_labels_keep_tail_unknown_and_denominator_mature_only ___________
+tests/test_btc_impulse_falsifier.py:296: in test_labels_keep_tail_unknown_and_denominator_mature_only
+    assert str(down.dtype) == "boolean" and str(up.dtype) == "boolean"
+E   AssertionError: assert ('bool' == 'boolean'
+E
+E     - boolean
+E     + bool)
+_________ test_labels_preserve_invalid_reference_and_future_as_unknown _________
+tests/test_btc_impulse_falsifier.py:311: in test_labels_preserve_invalid_reference_and_future_as_unknown
+    assert down.iloc[1:5].isna().all() and up.iloc[1:5].isna().all()
+E   assert (np.False_)
+E    +  where np.False_ = all()
+E    +    where all = 2026-01-02    False\n2026-01-03    False\n2026-01-04    False\n2026-01-05    False\nFreq: D, dtype: bool.all
+E    +      where 2026-01-02    False\n2026-01-03    False\n2026-01-04    False\n2026-01-05    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2026-01-02    False\n2026-01-03    False\n2026-01-04    False\n2026-01-05    False\nFreq: D, dtype: bool.isna
+____ test_labels_do_not_treat_three_observations_as_three_days_across_gaps _____
+tests/test_btc_impulse_falsifier.py:319: in test_labels_do_not_treat_three_observations_as_three_days_across_gaps
+    assert down.iloc[:2].isna().all() and up.iloc[:2].isna().all()
+E   assert (np.False_)
+E    +  where np.False_ = all()
+E    +    where all = 2026-01-01    False\n2026-01-02    False\ndtype: bool.all
+E    +      where 2026-01-01    False\n2026-01-02    False\ndtype: bool = isna()
+E    +        where isna = 2026-01-01    False\n2026-01-02    False\ndtype: bool.isna
+___________ test_labels_reject_duplicate_reversed_or_intraday_dates ____________
+tests/test_btc_impulse_falsifier.py:335: in test_labels_reject_duplicate_reversed_or_intraday_dates
+    raise AssertionError("Malformed daily dates must not become scored outcomes")
+E   AssertionError: Malformed daily dates must not become scored outcomes
+______ test_lift_and_permutation_have_no_evidence_when_no_outcome_matured ______
+tests/test_btc_impulse_falsifier.py:341: in test_lift_and_permutation_have_no_evidence_when_no_outcome_matured
+    assert down.isna().all() and up.isna().all()
+E   assert (np.False_)
+E    +  where np.False_ = all()
+E    +    where all = 2026-01-01    False\n2026-01-02    False\nFreq: D, dtype: bool.all
+E    +      where 2026-01-01    False\n2026-01-02    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2026-01-01    False\n2026-01-02    False\nFreq: D, dtype: bool.isna
+_______________ test_validate_does_not_count_immature_tail_fires _______________
+tests/test_btc_impulse_falsifier.py:360: in test_validate_does_not_count_immature_tail_fires
+    assert result["legs"]["d2"]["n_fires_full"] == 0
+E   assert 3 == 0
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_btc_impulse_falsifier.py::test_labels_are_strictly_forward_provable_by_hand
+FAILED tests/test_btc_impulse_falsifier.py::test_labels_keep_tail_unknown_and_denominator_mature_only
+FAILED tests/test_btc_impulse_falsifier.py::test_labels_preserve_invalid_reference_and_future_as_unknown
+FAILED tests/test_btc_impulse_falsifier.py::test_labels_do_not_treat_three_observations_as_three_days_across_gaps
+FAILED tests/test_btc_impulse_falsifier.py::test_labels_reject_duplicate_reversed_or_intraday_dates
+FAILED tests/test_btc_impulse_falsifier.py::test_lift_and_permutation_have_no_evidence_when_no_outcome_matured
+FAILED tests/test_btc_impulse_falsifier.py::test_validate_does_not_count_immature_tail_fires
+7 failed, 1 passed, 9 deselected, 19 warnings in 4.67s

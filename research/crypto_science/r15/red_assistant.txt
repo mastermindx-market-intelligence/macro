@@ -1,0 +1,11 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____ test_r15_assistant_entry_reuses_shared_owner_without_covering_the_desk ____
+tests/test_crypto_wave2.py:813: in test_r15_assistant_entry_reuses_shared_owner_without_covering_the_desk
+    assert 'data-crypto-brain' in source
+E   assert 'data-crypto-brain' in '{# Crypto Intelligence Cockpit — H1–H8 are governed shelf roots. #}\n{% macro t(en, zh=\'\') -%}\n<span class="l-en">...mindX Inc</div>\n</main>\n<script defer src="illus.js"></script>\n<script src="theme.js"></script>\n</body>\n</html>\n'
+
+NOTE: sparse worktree — .agents, .codex, .cursor, .grok, .warp, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_crypto_wave2.py::test_r15_assistant_entry_reuses_shared_owner_without_covering_the_desk
+1 failed in 4.27s

@@ -1,0 +1,5633 @@
+{
+  "classification": "FROZEN_RETROSPECTIVE_PRICE_SEQUENCE_EXPERIMENT_NOT_LIVE_POLICY",
+  "plan_commit": "c458e016b094bbf28f6e4d89f5e622a56e92e697",
+  "baseline": "017d3866eace58c4587bd7d2dc07a9320450bd77",
+  "candidate_head": "f83e37e95d788f449ef3aa05d7f4e3b3e452671b",
+  "sources": {
+    "engine/btc_inputs.py": "841f30dd60b330500fc30ff9b11f659df9d1e0dd4f76b3f93145065832cf81c8",
+    "engine/btc_signals.py": "e03a68523574b17b068ff2ef6e58e2514cd217f8be758f669e2bbdcfba08d5c9",
+    "engine/btc_overrides.py": "e690f24dfdf9395d0973b1139c85975185be05bf464421ed0864dec0e5da1f52",
+    "engine/btc_decision.py": "681fec1063bd087acbdcc74f6d91a0528de0ae3ea53776c16bf33cdfb9501c9c",
+    "config.yml": "78186dd7b079a0d49706bf76a5614327c0c00da51bc6644b11de30d37d86b75c",
+    "lib/store.py": "77051ae1e522e415e2b8c3be51f51187f2571d53a049472a52ca54e9ee1a3c4b",
+    "research/crypto_science/r4_sequence_study.py": "047df3d2cf57f977dd6c8c75adc53c62fb51fef1d21d1082f335eb3df9a89ad4",
+    "research/CRYPTO_SCIENCE_R4_SEQUENCE_PREREG_2026-09-28.md": "028d51829037bb08a9d995c9a30d1846ab05dc7ba81c121f39a5ece59e33b7a9"
+  },
+  "input_hashes": {
+    "coinbase/btc_daily.parquet": "1137160d826fca5ce8adeac55ea2ae75de7923aee59b92069f14484d72658edb",
+    "yahoo/BTC-USD.parquet": "f6484fe9e0bc4db1222545545fa18b66b1d0c38bd1f66ffe46754fc33d6c8f7f",
+    "coinbase/btc_hourly.parquet": "55bdfca657d16fc572cf14544a99fceef698daac998c0f96c7a0becd88d502cb",
+    "coinmetrics/mcap_usd.parquet": "7227ed1b979636068b87adccb2f9a7068877a67cf38f644ec8fa207be0dd1f99",
+    "coinmetrics/mvrv.parquet": "0bc9b8ce38063197edb2eb04c8260e9774cc3f10dd690f2373433b55f3269cd7",
+    "defillama/stablecoins.parquet": "aaa906201649d827b0214266e6702c02fa10cc791e89f270fa4464dbcf40731e",
+    "coinmetrics/active_addresses.parquet": "fe2ba8e0c88552736899259ea5a0e27e709c31e9bb5e9c13e4810fca5cf20334",
+    "coinmetrics/hashrate.parquet": "91629804aec1c09f3a5764c942196a0c775d7211bf58cdb971bc3fbb79b7ad2f",
+    "coinmetrics/issuance_usd.parquet": "c4c86b05999f903482c71229e1d122a1e5c11617e6cdcbfc01303d7670eefd68",
+    "mempool/difficulty.parquet": "c692830fe6bd30020e503d8c84e22acba818d6b9e4029464747d91e233397b15",
+    "coinmetrics/supply.parquet": "05c3c1cf0f46e0598614781f750db7661b2c499150fd4a77270c7e8fc5fa1138",
+    "bgeo/sopr.parquet": "791c665757c8ac054cf508c147e1eeed968b5ed36f43dcdfd2d47d2665f6391a",
+    "bgeo/sth_sopr.parquet": "0c033a75e9cf2af0ab790a64ef4f858a16501f876495b8f59721d3daea033ad7",
+    "bgeo/lth_sopr.parquet": "6779f9e1a23feaa3dc68ca4d1c64a5e927726f2c12eed10ca3a277d13b9eaf84",
+    "bgeo/sth_realized_price.parquet": "983001de635ec3d0f73371f7def1db6f9cf4ff790238138951c3f018ba525204",
+    "bgeo/realized_price.parquet": "af587b7eb31a46ee6b89f398f68729bfb0922533c2ec71fc77af690eed27d9b7",
+    "bgeo/supply_in_profit.parquet": "8db14667a76ca7a5a1bd6c5e1edd0d7f8168f492dd70a868dd3fa83f4b9225fe",
+    "bgeo/miner_sell_pressure.parquet": "9d731e96c56dc8275a61345cc1287fd3466c2da834aef6f591c71f9ff831a598",
+    "bgeo/coinbase_premium.parquet": "32d4db31e7f39821ddcab25b88eaa7d716b1a3f9c8c6c43b5f22dfbf84793b5d",
+    "bgeo/funding_rate.parquet": "5e2c73d82da16f41befcb78feaafc39d694457748c3dc82b50e3e48626a8aa75",
+    "bgeo/open_interest_futures.parquet": "6e34528eb83b82729abd58cfa4e4f44660bdf5eec6f870da6b904c76574ead7c",
+    "okx/ls_account_ratio.parquet": "d6702adb692cf40e9a05eadaad3291e42e8441a154891c941197caa529ac4e56",
+    "okx/taker_volume.parquet": "b1c3de9ebca8c44f290e87bdce8a226b6aa955a807e651f08c829cb46054532f",
+    "okx/spot_usdt_daily.parquet": "98fc259d348f1b95f218fb28d8b98a7d113a3e3ce89f18d0c60b0a5fd104315f",
+    "bgeo/etf_flow_btc.parquet": "ebb7fc4db664c0276df6c396508094c6f198fa629444e469a836e3ff6cac02e9",
+    "farside/etf_flows.parquet": "41c5f62cd32423f824e25991444d7a476f4cf1a38057a44242f71ceb7081a05c",
+    "bgeo/btc_dominance.parquet": "f9723b613a80cba62c61a5959b152c87968fc614bfda5b82b7ce5d2f475b5063",
+    "defillama/stablecoin_peg.parquet": "5fd0ba8f559c5bff626e1f5fff675a6e6c7016b5017a71fab5faec063fb5e8fb",
+    "sentiment_crypto/fear_greed.parquet": "843888f95f683d4c7be1da56f23c4e7b3dc307cb188150ffd8e401dace975e4b",
+    "wikipedia/btc_pageviews.parquet": "23a115d812450054b167459a4ab13f381da45f136b0c0eb9c73ddddc7ca26ff2",
+    "checkonchain/reserve_risk.parquet": "3cfde27317b36dfffaec7616ee94e27d73c3c3e318d0ec328537f042a7b357ae",
+    "checkonchain/vdd_multiple.parquet": "c72421c6cf7fd43ea1de572684a6406552a30e4447d589d24b9a2c207bc21f21",
+    "deribit/dvol.parquet": "c13bf6d52cbf55dffde46375907e5e0438f1d1661912187c3979dbe2b8c1fb81",
+    "deribit/options_structure.parquet": "ad292a268a330c551d25d7aff8943b8436b995e3b91f9ac7fd8dcf653bbb6320",
+    "yahoo/ETH-USD.parquet": "a771d2e19ba229de0fc64a92a15c57524d01c9b815509d6c82367613cc4b8d59",
+    "yahoo/SOL-USD.parquet": "7b298f220f8ee6501c1ecbaa3f0969fe51188d0957d3d43ad8fbaac97048dfd0",
+    "fred/WALCL.parquet": "ad5aa8d15583cbc67a723e5bb29e4c1bc5aec8307ebed97da4fa365503f61725",
+    "fred/RRPONTSYD.parquet": "b0f856b83f8fea19fd633c722d57fc90601ffa1eea319c860ab5b50b5cc0499a",
+    "treasury/tga.parquet": "87c3e748ad8c643f9e109e0e8dfaf386d08a31b1ec8d1c9fb498fc095944bb4e",
+    "fred/DFII10.parquet": "89e2aa4412af4f6983c25c5e4e47a350381219992f3955fbe2900701edda3490",
+    "fred/BAMLH0A0HYM2.parquet": "b8eed9d71d152a2d6a6af72bf8dca75a05d78a1f892434708ad928b260f9ba49",
+    "fred/VIXCLS.parquet": "8dccc9c3c5103952d4ff834344faf7224c4d446a9158be83f2b6a77f51ee97a4",
+    "yahoo/DX-Y.NYB.parquet": "ea5abc66663819735af717b94794a383089708d2b4f2442fbbf843d1350cc5ba",
+    "fred/DGS2.parquet": "2bb0f164d3ab3d13d9d1b231c36df65f63f365e1886b20f8771da24bdeba0e7f",
+    "fred/DGS10.parquet": "f94fad259c6bf19ce5e23a42089beaa35eaf3f4acb4a87f37f729557b3498b0c",
+    "fred/T10Y2Y.parquet": "3a11af44ab595e4cef4c8ca2efc8e2bc8c3df0dea4a2ca2eaabd49dca2a413ef",
+    "fred/DFF.parquet": "113765886ca28538aff66ae944abc7c7e722da9a099fda1a23eec9fe7da9fe57",
+    "cot/cot_bitcoin.parquet": "405051310db76ce1aa0937d55366d7dcf234cebefb45504077c844b8e3c9deea",
+    "yahoo/SPY.parquet": "afa6f2582a4797ac7230ffdb0a4ff6056e519a1c72ea4eb0c414824a42baac76",
+    "yahoo/QQQ.parquet": "b7ea2d1496494206fad940f07f44cac4ab4b5dad89c0efb126e5fd40fb2e7a8b",
+    "yahoo/GC_F.parquet": "ab526ae6ca730c44e85c36c4763aea522cb3a430a798226630da168bd9f5c661",
+    "yahoo/BTC_F.parquet": "20d4387cf75873106dca68dc174237ad716b011420bfd7dfc3700bd4219ea1f8",
+    "fred/M2SL.parquet": "8502ddd9d6daeb084c52ef5ddf6d51ca560a1fc24746c8a5263f69f38755ecf7",
+    "china_macro/money_supply.parquet": "72e3481ce5884c2eaf689eb83cb1764fce567eb24979c2ca590972458de1c511"
+  },
+  "gate_hashes": {
+    "vector/regime_latest.json": "b5b4634c2cc03e2b3e488f3dfda56d081d23fcded494b269a98af121f8ebb745",
+    "vector/regime_calibration.json": "861c8fb3eba72337bb970e42cb9008bb477630d22428aa3c93d38f153a31b063",
+    "vector/regime_falsifiers.json": "ff2d6d738670682781277298b33d0b7f0c08cc467a720037523d4670bda376ce",
+    "vector/override_ledger.jsonl": "069efd6f21abccfcabaed36b8a1dadbbd241aed5c4db7471764bf044c4898a5e",
+    "vector/calibration.json": "841d5568e62ebb86bdd5bf64ded6636f760ab443518be2ed76be5344c7712a8b",
+    "vector/impulse_ledger.jsonl": "a20c9dcb572fb4ef343e753ce51e8c30861cf84336f13b3f81f50ca14fc78c80",
+    "vector/gate_attribution.json": "b6caa0acca3f9ffb4bf45c4f6eb3b40168d1aa80d73ef40ad779bb20c1b14d64",
+    "vector/meta_label.json": "116cfbfcef7500c3917135fcea635bf77dddc7c43ee5bd3f22e1b5b428fd236b",
+    "vector/alerts.jsonl": "120857b142d5a68d2f0040f4cfbefa11b15fab4768272b2b97bc8b1a1b8e1235",
+    "vector/trial_log.json": "dba929630e91fc021446fc61ed0b3c38eb3515d747029d818e3f9d132f490ddd",
+    "vector/regime_scored.jsonl": "29b5ed7e720c9cc52eaa24add69fb95af07169d7477ca8bb4b41687401df79af",
+    "vector/flash_state.json": "cbda4aa0f17168993773cd864c9ecc27f0118399363c56172cdd22413ea6d777",
+    "vector/regime_ledger.jsonl": "3f689e5d27e85e0c01a5561d06a42b8c881df76452ff99ddec59fc6eb8818f1e",
+    "vector/timing_overlay_validation.json": "4953b368bb357f62c503cb95da81f368f4baf3494763995034d21623a8b3d9c2",
+    "vector/impulse_legs_gate.json": "3f90368be3d9547d3476ec91b49799f09d82c3815e1b2e4e1c7f7625728a9937",
+    "vector/override_scored.json": "566c61ddfabc508b9fa239151bbc269d2bb6728f205a21a19923935fae995796",
+    "vector/override_shadow.json": "230086a6e4914a746389b0ceebbc522c7a2c8f25227d589d8f18d0549fbdf02b",
+    "vector/reentry_status.json": "39166cb590c169475799e7ce30c71413a79925acb80f6a3dceaab7b9586f2c65"
+  },
+  "prior_evidence_hashes": {
+    "research/crypto_science/r2/paired_replay.json": "d220c97cee4c2d4386d597c128ea3d8bfa8d18ef205b62461e837c41bb2f6494",
+    "research/crypto_science/r2/green_combined.txt": "dfc1bae7cbb8744e63ba8914de1b991d957244e3732552da9aa6d974cf507710",
+    "research/crypto_science/r2/red_bottom.txt": "5f7f2032165d175d6ade1925d8bf379821b554fb39fb8985755f55ebc983956a",
+    "research/crypto_science/r2/green_bottom.txt": "9322bad05128a1670ea67661f59e04b9c84d693ceba305dd4a68fe5998515718",
+    "research/crypto_science/r2/input_contract_findings.json": "0c2f400fc92855e7845c7e28b24ea8aad9f06b722b01f8a345573d2685559ef7",
+    "research/crypto_science/r2/verify_evidence.py": "ddacc96ebfbdc48f1753d9be124f56c4c6733c5d190385eac7377006d5b6fd9f",
+    "research/crypto_science/r2/verification.txt": "acbcc5c61ac765534c3cd69018be22e56333e2cda3cbaf75e4eb44c114a5195a",
+    "research/crypto_science/r2/replay_log.txt": "ca7fa4e0105337450bd4a78ab20a00cb745df0e24ab47ee4799f741cf05ca121",
+    "research/crypto_science/r2/README.md": "07aad255c6fac707c0710cbf409230d8c6edb3df6b6b7737ae6fb3cb494f47ea",
+    "research/crypto_science/r2/red_enrollment.txt": "ada58ce25ade7f93e1dffa44b31d6d44d1026f07a909d00bf70c5afd38d84640",
+    "research/crypto_science/r2/MANIFEST.json": "2281de9744760b9719e5afd17b13c9300048c8dc56e2016775d73932aaed28e3",
+    "research/crypto_science/r2/red_labels.txt": "d14f15a8f96183552754a90db7d8ab44e204b2d851df6da03651624ee143904e",
+    "research/crypto_science/r2/green_labels.txt": "f855ae6e066434779b00fb35251db131384619abe9d07e4ebaf30cdd166054eb",
+    "research/crypto_science/r2/prefix_all_dates.csv": "161380170f6a15c00fda79de98d69e72489ea7859fef59d85a5a341828951fc3",
+    "research/crypto_science/r2/input_contract_probe.py": "a5f73e43eace67d84c8b825b162626e8459a1619e87cadddae55bf8efd092d43",
+    "research/crypto_science/r2/test_log_normalization.json": "1ec116433e265aa65ae9aca37482c019d9e2635dff68392e477709bab45500ef",
+    "research/crypto_science/r3/green_combined.txt": "d9d6709ec270589ccac7a582e17b4ac161eacbd7b368c2a0f4078fe70f2fc26d",
+    "research/crypto_science/r3/verify_evidence.py": "2e0310a106201635280ab58a6a893d73275a1128eba4635541b25cfa58ae150b",
+    "research/crypto_science/r3/red_funding.txt": "df90aac5430aafc134ece1b92c61f47e409879ce901546782ca7458069f75f4a",
+    "research/crypto_science/r3/cohort_results.json": "b2f1f9e447f485ee40cc75115008f73f31c4609cc992d94e2e956fc550cb8658",
+    "research/crypto_science/r3/verification.txt": "92eee28fd4489926dc00a68b5ca453294bfdd1881d369ec627227f085971362b",
+    "research/crypto_science/r3/red_observations.txt": "660d4dbd156db31747b55dda7c1c6c0bd92d6a0bf2011f42efd8db53db38aea9",
+    "research/crypto_science/r3/public_contract_receipt.json": "cfc6ec90d261e78ed6cb8fa0b10da75633ed81c8021a4066b7de61c9985fd905",
+    "research/crypto_science/r3/red_study.txt": "7543772ca5f6fcb94bbb7713b82c71771c21e8f6915c51f5d95a5f0b273e35a2",
+    "research/crypto_science/r3/README.md": "cf17416213192f5ad23971b5e6b71d1c1bce9d2ad268acb84c35d94262551905",
+    "research/crypto_science/r3/green_core.txt": "23f766fbe8c5110dcd9caf6dffeabdd1cc37c9e2abdc766982832ddc3743f7ab",
+    "research/crypto_science/r3/green_study.txt": "8fc486cb07a13b923aa9e34a145d067fdff087d073cc9370ed1146a02464f172",
+    "research/crypto_science/r3/MANIFEST.json": "b0a1e947947f431bf76a68a4e2e293d0ad9036d518f9db9d62fbde2560913757",
+    "research/crypto_science/r3/episode_outcomes.csv": "21211771eef91ed6fb0a6cb3021c3c8067c3f65874f386dc7692fcd2afa356e1",
+    "research/crypto_science/r3/study_log.txt": "bdcf1f6aa9a1dbf2789709760e394125f1571ace61aa0d570557991aabcda9d7",
+    "research/crypto_science/r3/source_observed_conditions.csv": "618d9beab40c429d42e909cdae532a4bd35b2e0dda1eacbb471ca9de203f7b5d"
+  },
+  "hashes_unchanged": true,
+  "coverage": {
+    "hourly_rows": 94063,
+    "hourly_first": "2016-01-01 00:00:00",
+    "hourly_last": "2026-09-26 13:00:00",
+    "daily_rows": 4087,
+    "hourly_known_counts": {
+      "d0": 92457,
+      "d1": 92457
+    },
+    "washout_parents": 59,
+    "d0_episodes": 588,
+    "d1_episodes": 483,
+    "d0_d1_same_anchor_overlap": 419
+  },
+  "event_summaries": [
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d0",
+      "lag_hours": 1,
+      "parents": 588,
+      "categories": {
+        "neither": 323,
+        "upper_first": 165,
+        "lower_first": 97,
+        "censored": 2,
+        "ambiguous": 1
+      },
+      "mature_entries": 586,
+      "successes": 97,
+      "hit_fraction": 0.16552901023890784,
+      "hit_block95": [
+        0.13105862688045564,
+        0.2050817465932511
+      ],
+      "median_prior24h_return": -0.031253048991235266,
+      "median_worst_excursion": -0.0205173440718584,
+      "median_terminal_return": 0.0023396007485114723
+    },
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d0",
+      "lag_hours": 6,
+      "parents": 588,
+      "categories": {
+        "neither": 336,
+        "upper_first": 146,
+        "lower_first": 104,
+        "censored": 1,
+        "ambiguous": 1
+      },
+      "mature_entries": 587,
+      "successes": 104,
+      "hit_fraction": 0.17717206132879046,
+      "hit_block95": [
+        0.14113269470565754,
+        0.219763329438101
+      ],
+      "median_prior24h_return": -0.031253048991235266,
+      "median_worst_excursion": -0.02102338129496406,
+      "median_terminal_return": 0.0029604013265023266
+    },
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d1",
+      "lag_hours": 1,
+      "parents": 483,
+      "categories": {
+        "neither": 264,
+        "upper_first": 128,
+        "lower_first": 89,
+        "censored": 1,
+        "ambiguous": 1
+      },
+      "mature_entries": 482,
+      "successes": 89,
+      "hit_fraction": 0.18464730290456433,
+      "hit_block95": [
+        0.14774634043598836,
+        0.22496752994333744
+      ],
+      "median_prior24h_return": -0.032995676577737165,
+      "median_worst_excursion": -0.023095336725819926,
+      "median_terminal_return": 0.0016501999446681959
+    },
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d1",
+      "lag_hours": 6,
+      "parents": 483,
+      "categories": {
+        "neither": 268,
+        "upper_first": 119,
+        "lower_first": 95,
+        "ambiguous": 1
+      },
+      "mature_entries": 483,
+      "successes": 95,
+      "hit_fraction": 0.19668737060041408,
+      "hit_block95": [
+        0.15524509930859465,
+        0.238611876285784
+      ],
+      "median_prior24h_return": -0.032995676577737165,
+      "median_worst_excursion": -0.022051651820931495,
+      "median_terminal_return": 0.0028575076166053037
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d0",
+      "lag_hours": 1,
+      "parents": 207,
+      "categories": {
+        "neither": 90,
+        "upper_first": 69,
+        "lower_first": 45,
+        "censored": 3
+      },
+      "mature_entries": 204,
+      "successes": 45,
+      "hit_fraction": 0.22058823529411764,
+      "hit_block95": [
+        0.15,
+        0.2947995405365348
+      ],
+      "median_prior24h_return": -0.038029622301709365,
+      "median_worst_excursion": -0.024238225901576815,
+      "median_terminal_return": 0.0022418353744549924
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d0",
+      "lag_hours": 6,
+      "parents": 207,
+      "categories": {
+        "neither": 99,
+        "upper_first": 57,
+        "lower_first": 49,
+        "censored": 2
+      },
+      "mature_entries": 205,
+      "successes": 49,
+      "hit_fraction": 0.23902439024390243,
+      "hit_block95": [
+        0.16525958889595255,
+        0.31929869371670433
+      ],
+      "median_prior24h_return": -0.038029622301709365,
+      "median_worst_excursion": -0.02310854417518282,
+      "median_terminal_return": 0.005049734804195571
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d1",
+      "lag_hours": 1,
+      "parents": 171,
+      "categories": {
+        "neither": 72,
+        "upper_first": 57,
+        "lower_first": 40,
+        "censored": 2
+      },
+      "mature_entries": 169,
+      "successes": 40,
+      "hit_fraction": 0.23668639053254437,
+      "hit_block95": [
+        0.1677009335366534,
+        0.3057324840764331
+      ],
+      "median_prior24h_return": -0.03828885400313975,
+      "median_worst_excursion": -0.027295494318007374,
+      "median_terminal_return": 0.0009008054260279952
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d1",
+      "lag_hours": 6,
+      "parents": 171,
+      "categories": {
+        "neither": 77,
+        "upper_first": 47,
+        "lower_first": 46,
+        "censored": 1
+      },
+      "mature_entries": 170,
+      "successes": 46,
+      "hit_fraction": 0.27058823529411763,
+      "hit_block95": [
+        0.18896745518660008,
+        0.3481130198915009
+      ],
+      "median_prior24h_return": -0.03828885400313975,
+      "median_worst_excursion": -0.02674276613661558,
+      "median_terminal_return": 0.004939411377761327
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d0",
+      "lag_hours": 1,
+      "parents": 216,
+      "categories": {
+        "neither": 117,
+        "upper_first": 61,
+        "lower_first": 37,
+        "ambiguous": 1
+      },
+      "mature_entries": 216,
+      "successes": 37,
+      "hit_fraction": 0.1712962962962963,
+      "hit_block95": [
+        0.1201621736409156,
+        0.2227626190585745
+      ],
+      "median_prior24h_return": -0.03175955584432766,
+      "median_worst_excursion": -0.022151085055314768,
+      "median_terminal_return": 0.0038388276823684286
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d0",
+      "lag_hours": 6,
+      "parents": 216,
+      "categories": {
+        "neither": 127,
+        "upper_first": 52,
+        "lower_first": 36,
+        "ambiguous": 1
+      },
+      "mature_entries": 216,
+      "successes": 36,
+      "hit_fraction": 0.16666666666666666,
+      "hit_block95": [
+        0.11791759156492786,
+        0.21739769820971866
+      ],
+      "median_prior24h_return": -0.03175955584432766,
+      "median_worst_excursion": -0.021346931492436327,
+      "median_terminal_return": 0.0027164156758004987
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d1",
+      "lag_hours": 1,
+      "parents": 180,
+      "categories": {
+        "neither": 98,
+        "upper_first": 47,
+        "lower_first": 34,
+        "ambiguous": 1
+      },
+      "mature_entries": 180,
+      "successes": 34,
+      "hit_fraction": 0.18888888888888888,
+      "hit_block95": [
+        0.1320458362145609,
+        0.25142857142857145
+      ],
+      "median_prior24h_return": -0.035062015970919014,
+      "median_worst_excursion": -0.023087627665424937,
+      "median_terminal_return": 0.002078093877129872
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d1",
+      "lag_hours": 6,
+      "parents": 180,
+      "categories": {
+        "neither": 106,
+        "upper_first": 39,
+        "lower_first": 34,
+        "ambiguous": 1
+      },
+      "mature_entries": 180,
+      "successes": 34,
+      "hit_fraction": 0.18888888888888888,
+      "hit_block95": [
+        0.13204063036020583,
+        0.25003415300546444
+      ],
+      "median_prior24h_return": -0.035062015970919014,
+      "median_worst_excursion": -0.022050587616532946,
+      "median_terminal_return": 0.0011229338951245227
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d0",
+      "lag_hours": 1,
+      "parents": 165,
+      "categories": {
+        "neither": 115,
+        "upper_first": 35,
+        "lower_first": 15
+      },
+      "mature_entries": 165,
+      "successes": 15,
+      "hit_fraction": 0.09090909090909091,
+      "hit_block95": [
+        0.04847754654983571,
+        0.13717340521114105
+      ],
+      "median_prior24h_return": -0.02456221558061089,
+      "median_worst_excursion": -0.01706696645064587,
+      "median_terminal_return": 0.0003020019543902297
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d0",
+      "lag_hours": 6,
+      "parents": 165,
+      "categories": {
+        "neither": 109,
+        "upper_first": 37,
+        "lower_first": 19
+      },
+      "mature_entries": 165,
+      "successes": 19,
+      "hit_fraction": 0.11515151515151516,
+      "hit_block95": [
+        0.05959284593935169,
+        0.16582469775474956
+      ],
+      "median_prior24h_return": -0.02456221558061089,
+      "median_worst_excursion": -0.01568039123059073,
+      "median_terminal_return": -0.0003304642611773323
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d1",
+      "lag_hours": 1,
+      "parents": 132,
+      "categories": {
+        "neither": 93,
+        "upper_first": 24,
+        "lower_first": 15
+      },
+      "mature_entries": 132,
+      "successes": 15,
+      "hit_fraction": 0.11363636363636363,
+      "hit_block95": [
+        0.07086439969340115,
+        0.16153846153846155
+      ],
+      "median_prior24h_return": -0.025984306278794167,
+      "median_worst_excursion": -0.017772825272786896,
+      "median_terminal_return": 0.001887293817929181
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d1",
+      "lag_hours": 6,
+      "parents": 132,
+      "categories": {
+        "neither": 84,
+        "upper_first": 33,
+        "lower_first": 15
+      },
+      "mature_entries": 132,
+      "successes": 15,
+      "hit_fraction": 0.11363636363636363,
+      "hit_block95": [
+        0.06665289256198347,
+        0.15714285714285714
+      ],
+      "median_prior24h_return": -0.025984306278794167,
+      "median_worst_excursion": -0.015405741271116713,
+      "median_terminal_return": 0.001827782307343595
+    },
+    {
+      "family": "recovery",
+      "period": "full",
+      "rule": "u0",
+      "lag_hours": 1,
+      "parents": 59,
+      "categories": {
+        "lower_first": 38,
+        "upper_first": 17,
+        "censored": 3,
+        "neither": 1
+      },
+      "mature_entries": 56,
+      "successes": 17,
+      "hit_fraction": 0.30357142857142855,
+      "hit_block95": [
+        0.18864976415094342,
+        0.4259335154826958
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.0650809850032752,
+      "median_terminal_return": 0.0022008778955164843
+    },
+    {
+      "family": "recovery",
+      "period": "full",
+      "rule": "u0",
+      "lag_hours": 6,
+      "parents": 59,
+      "categories": {
+        "lower_first": 40,
+        "upper_first": 15,
+        "censored": 3,
+        "neither": 1
+      },
+      "mature_entries": 56,
+      "successes": 15,
+      "hit_fraction": 0.26785714285714285,
+      "hit_block95": [
+        0.13112972202423379,
+        0.38461538461538464
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.060244219756506734,
+      "median_terminal_return": 0.007658924351368945
+    },
+    {
+      "family": "recovery",
+      "period": "full",
+      "rule": "u1",
+      "lag_hours": 1,
+      "parents": 59,
+      "categories": {
+        "no_entry": 29,
+        "lower_first": 23,
+        "upper_first": 6,
+        "censored": 1
+      },
+      "mature_entries": 29,
+      "successes": 6,
+      "hit_fraction": 0.20689655172413793,
+      "hit_block95": [
+        0.08333333333333333,
+        0.36371212121212115
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.08351030577310115,
+      "median_terminal_return": -0.037077650256555406
+    },
+    {
+      "family": "recovery",
+      "period": "full",
+      "rule": "u1",
+      "lag_hours": 6,
+      "parents": 59,
+      "categories": {
+        "no_entry": 29,
+        "lower_first": 21,
+        "upper_first": 7,
+        "neither": 1,
+        "censored": 1
+      },
+      "mature_entries": 29,
+      "successes": 7,
+      "hit_fraction": 0.2413793103448276,
+      "hit_block95": [
+        0.10808397683397684,
+        0.4074074074074074
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.070131467077301,
+      "median_terminal_return": -0.022681006410426474
+    },
+    {
+      "family": "recovery",
+      "period": "2016_2019",
+      "rule": "u0",
+      "lag_hours": 1,
+      "parents": 27,
+      "categories": {
+        "lower_first": 19,
+        "upper_first": 6,
+        "censored": 2
+      },
+      "mature_entries": 25,
+      "successes": 6,
+      "hit_fraction": 0.24,
+      "hit_block95": [
+        0.06661290322580646,
+        0.43478260869565216
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.09613712996954571,
+      "median_terminal_return": -0.007695799914705037
+    },
+    {
+      "family": "recovery",
+      "period": "2016_2019",
+      "rule": "u0",
+      "lag_hours": 6,
+      "parents": 27,
+      "categories": {
+        "lower_first": 17,
+        "upper_first": 8,
+        "censored": 2
+      },
+      "mature_entries": 25,
+      "successes": 8,
+      "hit_fraction": 0.32,
+      "hit_block95": [
+        0.09523809523809523,
+        0.5161568409343715
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.09178520831205284,
+      "median_terminal_return": 0.016775166031601785
+    },
+    {
+      "family": "recovery",
+      "period": "2016_2019",
+      "rule": "u1",
+      "lag_hours": 1,
+      "parents": 27,
+      "categories": {
+        "lower_first": 12,
+        "no_entry": 11,
+        "upper_first": 3,
+        "censored": 1
+      },
+      "mature_entries": 15,
+      "successes": 3,
+      "hit_fraction": 0.2,
+      "hit_block95": [
+        0.0,
+        0.43767361111111097
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.10433049186105425,
+      "median_terminal_return": -0.05169992731117423
+    },
+    {
+      "family": "recovery",
+      "period": "2016_2019",
+      "rule": "u1",
+      "lag_hours": 6,
+      "parents": 27,
+      "categories": {
+        "lower_first": 12,
+        "no_entry": 11,
+        "upper_first": 2,
+        "neither": 1,
+        "censored": 1
+      },
+      "mature_entries": 15,
+      "successes": 2,
+      "hit_fraction": 0.13333333333333333,
+      "hit_block95": [
+        0.0,
+        0.36363636363636365
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.09337098954389833,
+      "median_terminal_return": -0.05007687626869062
+    },
+    {
+      "family": "recovery",
+      "period": "2020_2023",
+      "rule": "u0",
+      "lag_hours": 1,
+      "parents": 24,
+      "categories": {
+        "lower_first": 13,
+        "upper_first": 9,
+        "censored": 1,
+        "neither": 1
+      },
+      "mature_entries": 23,
+      "successes": 9,
+      "hit_fraction": 0.391304347826087,
+      "hit_block95": [
+        0.20829741379310346,
+        0.6111111111111112
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.03886148482577556,
+      "median_terminal_return": 0.021508220141097434
+    },
+    {
+      "family": "recovery",
+      "period": "2020_2023",
+      "rule": "u0",
+      "lag_hours": 6,
+      "parents": 24,
+      "categories": {
+        "lower_first": 16,
+        "upper_first": 6,
+        "censored": 1,
+        "neither": 1
+      },
+      "mature_entries": 23,
+      "successes": 6,
+      "hit_fraction": 0.2608695652173913,
+      "hit_block95": [
+        0.09512987012987013,
+        0.480037037037037
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.0529306803016899,
+      "median_terminal_return": 0.006721112106001348
+    },
+    {
+      "family": "recovery",
+      "period": "2020_2023",
+      "rule": "u1",
+      "lag_hours": 1,
+      "parents": 24,
+      "categories": {
+        "no_entry": 14,
+        "lower_first": 8,
+        "upper_first": 2
+      },
+      "mature_entries": 10,
+      "successes": 2,
+      "hit_fraction": 0.2,
+      "hit_block95": [
+        0.0,
+        0.4444444444444444
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.060493355878359245,
+      "median_terminal_return": -0.021608808083458664
+    },
+    {
+      "family": "recovery",
+      "period": "2020_2023",
+      "rule": "u1",
+      "lag_hours": 6,
+      "parents": 24,
+      "categories": {
+        "no_entry": 14,
+        "lower_first": 6,
+        "upper_first": 4
+      },
+      "mature_entries": 10,
+      "successes": 4,
+      "hit_fraction": 0.4,
+      "hit_block95": [
+        0.125,
+        0.6666666666666666
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.05511078697053967,
+      "median_terminal_return": 0.004696362883459315
+    },
+    {
+      "family": "recovery",
+      "period": "reused_2024plus",
+      "rule": "u0",
+      "lag_hours": 1,
+      "parents": 8,
+      "categories": {
+        "lower_first": 6,
+        "upper_first": 2
+      },
+      "mature_entries": 8,
+      "successes": 2,
+      "hit_fraction": 0.25,
+      "hit_block95": [
+        0.0,
+        0.6
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.06577834338025473,
+      "median_terminal_return": -0.00887835497263545
+    },
+    {
+      "family": "recovery",
+      "period": "reused_2024plus",
+      "rule": "u0",
+      "lag_hours": 6,
+      "parents": 8,
+      "categories": {
+        "lower_first": 7,
+        "upper_first": 1
+      },
+      "mature_entries": 8,
+      "successes": 1,
+      "hit_fraction": 0.125,
+      "hit_block95": [
+        0.0,
+        0.3333333333333333
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.07532927171258941,
+      "median_terminal_return": -0.020748842591752137
+    },
+    {
+      "family": "recovery",
+      "period": "reused_2024plus",
+      "rule": "u1",
+      "lag_hours": 1,
+      "parents": 8,
+      "categories": {
+        "no_entry": 4,
+        "lower_first": 3,
+        "upper_first": 1
+      },
+      "mature_entries": 4,
+      "successes": 1,
+      "hit_fraction": 0.25,
+      "hit_block95": [
+        0.0,
+        0.8399999999999864
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.06452834042218014,
+      "median_terminal_return": -0.015123542799977352
+    },
+    {
+      "family": "recovery",
+      "period": "reused_2024plus",
+      "rule": "u1",
+      "lag_hours": 6,
+      "parents": 8,
+      "categories": {
+        "no_entry": 4,
+        "lower_first": 3,
+        "upper_first": 1
+      },
+      "mature_entries": 4,
+      "successes": 1,
+      "hit_fraction": 0.25,
+      "hit_block95": [
+        0.0,
+        0.8399999999999864
+      ],
+      "median_prior24h_return": null,
+      "median_worst_excursion": -0.0560446918900519,
+      "median_terminal_return": -0.009447594585116015
+    }
+  ],
+  "policy_summaries": [
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d0",
+      "lag_hours": 1,
+      "cost_bps": 0,
+      "n_parents": 586,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 586,
+          "mean": -0.0006832141069158846,
+          "median": 0.0,
+          "block95": [
+            -0.0020824661829685785,
+            0.0005698135367212929
+          ]
+        },
+        "candidate_return": {
+          "n": 586,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 586,
+          "mean": 0.0006832141069158846,
+          "median": 0.0,
+          "block95": [
+            -0.000569813536721293,
+            0.0020824661829685785
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 586,
+          "mean": 0.0007263490522417394,
+          "median": 0.0,
+          "block95": [
+            -0.0005700953327733308,
+            0.002126320823704925
+          ]
+        }
+      },
+      "positive_entry_exposure": 466,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0005239196947761606,
+        "2017": -0.0006057248732288169,
+        "2018": -0.0006927848894150527,
+        "2019": -0.0005457700091705985,
+        "2020": -0.0008586051275500211,
+        "2021": -0.000377432819439262,
+        "2022": -0.0008769345723637061,
+        "2023": -0.001023179365652948,
+        "2024": -0.0005974336974376943,
+        "2025": -0.0006573757532474441,
+        "2026": -0.0007513512410971287
+      },
+      "per_year_counts": {
+        "2016": 39,
+        "2017": 43,
+        "2018": 65,
+        "2019": 58,
+        "2020": 38,
+        "2021": 60,
+        "2022": 76,
+        "2023": 42,
+        "2024": 57,
+        "2025": 61,
+        "2026": 47
+      }
+    },
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d0",
+      "lag_hours": 1,
+      "cost_bps": 10,
+      "n_parents": 586,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 586,
+          "mean": -0.0014811716984763058,
+          "median": 0.0,
+          "block95": [
+            -0.0029304205227119375,
+            -0.00020092754360406752
+          ]
+        },
+        "candidate_return": {
+          "n": 586,
+          "mean": -0.0008565176925684988,
+          "median": -0.0006746848578620956,
+          "block95": [
+            -0.0010123272580113284,
+            -0.0007255811567139783
+          ]
+        },
+        "incumbent_return": {
+          "n": 586,
+          "mean": 0.000624654005907807,
+          "median": 0.0,
+          "block95": [
+            -0.0006342869203848441,
+            0.002022300548404803
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 586,
+          "mean": 0.0007230270181567799,
+          "median": 0.0,
+          "block95": [
+            -0.0005726867783403192,
+            0.0021222509194180846
+          ]
+        }
+      },
+      "positive_entry_exposure": 466,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0013026574783340107,
+        "2017": -0.00137399072018613,
+        "2018": -0.001541031941155988,
+        "2019": -0.001369375631277353,
+        "2020": -0.0016358757088029193,
+        "2021": -0.0011577804821459802,
+        "2022": -0.0017330193755377213,
+        "2023": -0.001800231059880623,
+        "2024": -0.0013491450968488744,
+        "2025": -0.0014422028223106643,
+        "2026": -0.0015874867135926372
+      },
+      "per_year_counts": {
+        "2016": 39,
+        "2017": 43,
+        "2018": 65,
+        "2019": 58,
+        "2020": 38,
+        "2021": 60,
+        "2022": 76,
+        "2023": 42,
+        "2024": 57,
+        "2025": 61,
+        "2026": 47
+      }
+    },
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d0",
+      "lag_hours": 1,
+      "cost_bps": 25,
+      "n_parents": 586,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 586,
+          "mean": -0.002676916632123505,
+          "median": -8.246257487354303e-05,
+          "block95": [
+            -0.004090960418440377,
+            -0.001321778052341407
+          ]
+        },
+        "candidate_return": {
+          "n": 586,
+          "mean": -0.002140102142074738,
+          "median": -0.001686300213762315,
+          "block95": [
+            -0.0025292915231421628,
+            -0.001813008649791064
+          ]
+        },
+        "incumbent_return": {
+          "n": 586,
+          "mean": 0.0005368144900487672,
+          "median": 0.0,
+          "block95": [
+            -0.0007272675281623914,
+            0.0019307503300929874
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 586,
+          "mean": 0.0007180439670293429,
+          "median": 0.0,
+          "block95": [
+            -0.0005765739466907983,
+            0.0021161460629878282
+          ]
+        }
+      },
+      "positive_entry_exposure": 466,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.002469614890492833,
+        "2017": -0.002525240340394734,
+        "2018": -0.002812117127122364,
+        "2019": -0.0026035292900101078,
+        "2020": -0.002800633197276643,
+        "2021": -0.0023271516734220603,
+        "2022": -0.003015829283951616,
+        "2023": -0.0029646623701404407,
+        "2024": -0.00247561256759568,
+        "2025": -0.0026182849688694385,
+        "2026": -0.0028404330844894873
+      },
+      "per_year_counts": {
+        "2016": 39,
+        "2017": 43,
+        "2018": 65,
+        "2019": 58,
+        "2020": 38,
+        "2021": 60,
+        "2022": 76,
+        "2023": 42,
+        "2024": 57,
+        "2025": 61,
+        "2026": 47
+      }
+    },
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d0",
+      "lag_hours": 6,
+      "cost_bps": 0,
+      "n_parents": 587,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 587,
+          "mean": -0.0004874195122305892,
+          "median": 0.0,
+          "block95": [
+            -0.0018079151172074924,
+            0.0007979215591025758
+          ]
+        },
+        "candidate_return": {
+          "n": 587,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 587,
+          "mean": 0.0004874195122305892,
+          "median": 0.0,
+          "block95": [
+            -0.0007979215591025762,
+            0.0018079151172074924
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 587,
+          "mean": 0.00041590539801178883,
+          "median": 0.0,
+          "block95": [
+            -0.0009079582889088936,
+            0.0017204543835657297
+          ]
+        }
+      },
+      "positive_entry_exposure": 467,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.000378239290983867,
+        "2017": -0.00014543158822511118,
+        "2018": -0.000541376091065839,
+        "2019": -0.00035285584376758673,
+        "2020": -0.0005087430152145885,
+        "2021": -0.00017143717425140866,
+        "2022": -0.000766333328841923,
+        "2023": -0.0007760871020579477,
+        "2024": -0.0005201012116985269,
+        "2025": -0.0005570519303073952,
+        "2026": -0.0006536710202023531
+      },
+      "per_year_counts": {
+        "2016": 39,
+        "2017": 43,
+        "2018": 65,
+        "2019": 59,
+        "2020": 38,
+        "2021": 60,
+        "2022": 76,
+        "2023": 42,
+        "2024": 57,
+        "2025": 61,
+        "2026": 47
+      }
+    },
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d0",
+      "lag_hours": 6,
+      "cost_bps": 10,
+      "n_parents": 587,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 587,
+          "mean": -0.0012874984689204,
+          "median": -0.00017323922260481517,
+          "block95": [
+            -0.002635385985228984,
+            -1.7399511302922766e-06
+          ]
+        },
+        "candidate_return": {
+          "n": 587,
+          "mean": -0.0008584398766354966,
+          "median": -0.000675302339681827,
+          "block95": [
+            -0.0010126536219386506,
+            -0.000728659529253939
+          ]
+        },
+        "incumbent_return": {
+          "n": 587,
+          "mean": 0.00042905859228490353,
+          "median": 0.0,
+          "block95": [
+            -0.0008568287991716488,
+            0.0017474612273538639
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 587,
+          "mean": 0.0004130728243051668,
+          "median": 0.0,
+          "block95": [
+            -0.0009104857268950819,
+            0.0017175607745572947
+          ]
+        }
+      },
+      "positive_entry_exposure": 467,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0011592640759816556,
+        "2017": -0.0009161360625987168,
+        "2018": -0.001392002926301869,
+        "2019": -0.0011765355511383422,
+        "2020": -0.0012882590550090582,
+        "2021": -0.000954126886615219,
+        "2022": -0.0016246271931764458,
+        "2023": -0.00155547740143228,
+        "2024": -0.001274206211289493,
+        "2025": -0.001344288014024791,
+        "2026": -0.001492039676000108
+      },
+      "per_year_counts": {
+        "2016": 39,
+        "2017": 43,
+        "2018": 65,
+        "2019": 59,
+        "2020": 38,
+        "2021": 60,
+        "2022": 76,
+        "2023": 42,
+        "2024": 57,
+        "2025": 61,
+        "2026": 47
+      }
+    },
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d0",
+      "lag_hours": 6,
+      "cost_bps": 25,
+      "n_parents": 587,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 587,
+          "mean": -0.002486421180528334,
+          "median": -0.0005585433757010483,
+          "block95": [
+            -0.003963536907908789,
+            -0.0010732241755470973
+          ]
+        },
+        "candidate_return": {
+          "n": 587,
+          "mean": -0.002144903335195344,
+          "median": -0.0016878323140403495,
+          "block95": [
+            -0.0025301379894580303,
+            -0.0018206937242744592
+          ]
+        },
+        "incumbent_return": {
+          "n": 587,
+          "mean": 0.0003415178453329907,
+          "median": 0.0,
+          "block95": [
+            -0.0009451890427901049,
+            0.0016592414239824137
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 587,
+          "mean": 0.00040882396374522875,
+          "median": 0.0,
+          "block95": [
+            -0.0009142768838743625,
+            0.0017132203610446307
+          ]
+        }
+      },
+      "positive_entry_exposure": 467,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0023296474005696944,
+        "2017": -0.0020710388926051034,
+        "2018": -0.0026666531535936987,
+        "2019": -0.0024108003450343295,
+        "2020": -0.0024563801146792233,
+        "2021": -0.0021270062985500877,
+        "2022": -0.002910746036439693,
+        "2023": -0.002723411933495136,
+        "2024": -0.0024042591721468035,
+        "2025": -0.0025239788504589013,
+        "2026": -0.0027483312981637174
+      },
+      "per_year_counts": {
+        "2016": 39,
+        "2017": 43,
+        "2018": 65,
+        "2019": 59,
+        "2020": 38,
+        "2021": 60,
+        "2022": 76,
+        "2023": 42,
+        "2024": 57,
+        "2025": 61,
+        "2026": 47
+      }
+    },
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d1",
+      "lag_hours": 1,
+      "cost_bps": 0,
+      "n_parents": 482,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 482,
+          "mean": -5.3750546009806465e-05,
+          "median": 0.0,
+          "block95": [
+            -0.0020314846235871846,
+            0.0014959132393254405
+          ]
+        },
+        "candidate_return": {
+          "n": 482,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 482,
+          "mean": 5.3750546009806465e-05,
+          "median": 0.0,
+          "block95": [
+            -0.001495913239325441,
+            0.0020314846235871837
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 482,
+          "mean": 0.00016807181284191059,
+          "median": 0.0,
+          "block95": [
+            -0.001425236705410764,
+            0.0021604716919687234
+          ]
+        }
+      },
+      "positive_entry_exposure": 386,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": 0.0001549999570194625,
+        "2017": 5.3532264343012494e-05,
+        "2018": 3.597545849413549e-05,
+        "2019": 0.00010652604482645071,
+        "2020": -0.0004471514122976643,
+        "2021": -5.648139460830679e-05,
+        "2022": -0.00017538636338765051,
+        "2023": -0.0003450019881776308,
+        "2024": -0.000120655061269115,
+        "2025": 0.00019019478655747627,
+        "2026": 1.842326772648754e-05
+      },
+      "per_year_counts": {
+        "2016": 30,
+        "2017": 34,
+        "2018": 53,
+        "2019": 53,
+        "2020": 34,
+        "2021": 48,
+        "2022": 61,
+        "2023": 37,
+        "2024": 46,
+        "2025": 49,
+        "2026": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d1",
+      "lag_hours": 1,
+      "cost_bps": 10,
+      "n_parents": 482,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 482,
+          "mean": -0.0008441936999150061,
+          "median": 0.0,
+          "block95": [
+            -0.002777672982810439,
+            0.0007086870691824069
+          ]
+        },
+        "candidate_return": {
+          "n": 482,
+          "mean": -0.0008506924115048738,
+          "median": -0.0006627512457401119,
+          "block95": [
+            -0.0009991020502688717,
+            -0.0007200087846021096
+          ]
+        },
+        "incumbent_return": {
+          "n": 482,
+          "mean": -6.498711589867722e-06,
+          "median": 0.0,
+          "block95": [
+            -0.001552241424882775,
+            0.0019669581429777776
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 482,
+          "mean": 0.00016469194756724907,
+          "median": 0.0,
+          "block95": [
+            -0.0014281913280337595,
+            0.002156483164011082
+          ]
+        }
+      },
+      "positive_entry_exposure": 386,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0006058342693568439,
+        "2017": -0.0007036189222052909,
+        "2018": -0.0008062397766986638,
+        "2019": -0.0007106946131138211,
+        "2020": -0.0012132301070895068,
+        "2021": -0.0008418279411698749,
+        "2022": -0.0010216848450338234,
+        "2023": -0.001114520158677936,
+        "2024": -0.0008720595800920449,
+        "2025": -0.0005874537315097083,
+        "2026": -0.0008081657662582659
+      },
+      "per_year_counts": {
+        "2016": 30,
+        "2017": 34,
+        "2018": 53,
+        "2019": 53,
+        "2020": 34,
+        "2021": 48,
+        "2022": 61,
+        "2023": 37,
+        "2024": 46,
+        "2025": 49,
+        "2026": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d1",
+      "lag_hours": 1,
+      "cost_bps": 25,
+      "n_parents": 482,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 482,
+          "mean": -0.002028685717840982,
+          "median": -0.00011388416090063469,
+          "block95": [
+            -0.003997104677435882,
+            -0.0005386030299775801
+          ]
+        },
+        "candidate_return": {
+          "n": 482,
+          "mean": -0.002125557633986957,
+          "median": -0.001656468148355128,
+          "block95": [
+            -0.002496335297007443,
+            -0.001799045541739652
+          ]
+        },
+        "incumbent_return": {
+          "n": 482,
+          "mean": -9.687191614597488e-05,
+          "median": 0.0,
+          "block95": [
+            -0.0016453572661590198,
+            0.0018701692444385667
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 482,
+          "mean": 0.00015962214965525558,
+          "median": 0.0,
+          "block95": [
+            -0.001432623261968254,
+            0.002150500372074609
+          ]
+        }
+      },
+      "positive_entry_exposure": 386,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0017459736745230555,
+        "2017": -0.001838225581747399,
+        "2018": -0.00206829233115529,
+        "2019": -0.0019352875302638996,
+        "2020": -0.00236122801327407,
+        "2021": -0.002018689490976753,
+        "2022": -0.0022898379485968854,
+        "2023": -0.002267671209433181,
+        "2024": -0.0019980704438892836,
+        "2025": -0.0017527861148686657,
+        "2026": -0.0020468141192715437
+      },
+      "per_year_counts": {
+        "2016": 30,
+        "2017": 34,
+        "2018": 53,
+        "2019": 53,
+        "2020": 34,
+        "2021": 48,
+        "2022": 61,
+        "2023": 37,
+        "2024": 46,
+        "2025": 49,
+        "2026": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d1",
+      "lag_hours": 6,
+      "cost_bps": 0,
+      "n_parents": 483,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 483,
+          "mean": -0.00019253914116994803,
+          "median": 0.0,
+          "block95": [
+            -0.0017448321993625605,
+            0.0012864478567189616
+          ]
+        },
+        "candidate_return": {
+          "n": 483,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 483,
+          "mean": 0.00019253914116994803,
+          "median": 0.0,
+          "block95": [
+            -0.001286447856718962,
+            0.0017448321993625603
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 483,
+          "mean": 0.00011948948463360458,
+          "median": 0.0,
+          "block95": [
+            -0.0014100512479193722,
+            0.0016277750497347052
+          ]
+        }
+      },
+      "positive_entry_exposure": 387,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -2.987713152964659e-05,
+        "2017": 0.0002596289794142133,
+        "2018": -0.0002787080137241421,
+        "2019": -4.179957102018034e-05,
+        "2020": -0.0003137068797845216,
+        "2021": -0.00018133690763683696,
+        "2022": -0.0004958761342582735,
+        "2023": -0.0004404953491558287,
+        "2024": -0.00034936577186547103,
+        "2025": -9.600608553603855e-05,
+        "2026": -0.00016912685987050566
+      },
+      "per_year_counts": {
+        "2016": 30,
+        "2017": 34,
+        "2018": 53,
+        "2019": 54,
+        "2020": 34,
+        "2021": 48,
+        "2022": 61,
+        "2023": 37,
+        "2024": 46,
+        "2025": 49,
+        "2026": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d1",
+      "lag_hours": 6,
+      "cost_bps": 10,
+      "n_parents": 483,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 483,
+          "mean": -0.000985377628882858,
+          "median": -0.00029659684427574273,
+          "block95": [
+            -0.0025572187284639723,
+            0.0004574473642035771
+          ]
+        },
+        "candidate_return": {
+          "n": 483,
+          "mean": -0.0008530405426195557,
+          "median": -0.0006634851420302956,
+          "block95": [
+            -0.001000677001874418,
+            -0.000720292109414912
+          ]
+        },
+        "incumbent_return": {
+          "n": 483,
+          "mean": 0.0001323370862633022,
+          "median": 0.0,
+          "block95": [
+            -0.001352328078772723,
+            0.0016781621751383103
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 483,
+          "mean": 0.00011655355214453659,
+          "median": 0.0,
+          "block95": [
+            -0.001413305810638306,
+            0.00162524895075151
+          ]
+        }
+      },
+      "positive_entry_exposure": 387,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0007933601935023304,
+        "2017": -0.0005003437416613494,
+        "2018": -0.0011236486767446628,
+        "2019": -0.0008589312957797275,
+        "2020": -0.0010823192208840036,
+        "2021": -0.0009692770423184697,
+        "2022": -0.0013446757693686363,
+        "2023": -0.0012126868207512382,
+        "2024": -0.0011034169228739327,
+        "2025": -0.0008763767233080983,
+        "2026": -0.0009982689449020235
+      },
+      "per_year_counts": {
+        "2016": 30,
+        "2017": 34,
+        "2018": 53,
+        "2019": 54,
+        "2020": 34,
+        "2021": 48,
+        "2022": 61,
+        "2023": 37,
+        "2024": 46,
+        "2025": 49,
+        "2026": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "full",
+      "rule": "d1",
+      "lag_hours": 6,
+      "cost_bps": 25,
+      "n_parents": 483,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 483,
+          "mean": -0.002173457415856304,
+          "median": -0.0006757636678879075,
+          "block95": [
+            -0.0038178691473949758,
+            -0.0006865532085187299
+          ]
+        },
+        "candidate_return": {
+          "n": 483,
+          "mean": -0.002131422737237233,
+          "median": -0.0016583012845760026,
+          "block95": [
+            -0.0025002298146347174,
+            -0.0017997972867249646
+          ]
+        },
+        "incumbent_return": {
+          "n": 483,
+          "mean": 4.203467861907096e-05,
+          "median": 0.0,
+          "block95": [
+            -0.0014511477701024268,
+            0.0015835423191572881
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 483,
+          "mean": 0.00011214965341093529,
+          "median": 0.0,
+          "block95": [
+            -0.0014181876547167166,
+            0.001621459802276722
+          ]
+        }
+      },
+      "positive_entry_exposure": 387,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0019374672067494633,
+        "2017": -0.0016391769191036313,
+        "2018": -0.002389783685371269,
+        "2019": -0.002083390809789782,
+        "2020": -0.0022341118887122162,
+        "2021": -0.002150023114642773,
+        "2022": -0.0026165749257299918,
+        "2023": -0.0023698420432454793,
+        "2024": -0.0022333917743111377,
+        "2025": -0.0020457863742698286,
+        "2026": -0.0022407413463844048
+      },
+      "per_year_counts": {
+        "2016": 30,
+        "2017": 34,
+        "2018": 53,
+        "2019": 54,
+        "2020": 34,
+        "2021": 48,
+        "2022": 61,
+        "2023": 37,
+        "2024": 46,
+        "2025": 49,
+        "2026": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d0",
+      "lag_hours": 1,
+      "cost_bps": 0,
+      "n_parents": 204,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 204,
+          "mean": -0.0016512436038122926,
+          "median": 0.0,
+          "block95": [
+            -0.0044578265908408405,
+            0.0007343393047746456
+          ]
+        },
+        "candidate_return": {
+          "n": 204,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 204,
+          "mean": 0.0016512436038122926,
+          "median": 0.0,
+          "block95": [
+            -0.0007343393047746461,
+            0.0044578265908408405
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 204,
+          "mean": 0.0018531649685908005,
+          "median": 0.0,
+          "block95": [
+            -0.0006186587059145705,
+            0.00491519565129418
+          ]
+        }
+      },
+      "positive_entry_exposure": 162,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.001351965464045813,
+        "2017": -0.0016484399670077445,
+        "2018": -0.00213979248856289,
+        "2019": -0.0015282775058984717
+      },
+      "per_year_counts": {
+        "2016": 39,
+        "2017": 43,
+        "2018": 65,
+        "2019": 57
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d0",
+      "lag_hours": 1,
+      "cost_bps": 10,
+      "n_parents": 204,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 204,
+          "mean": -0.0023888621806959606,
+          "median": 0.0,
+          "block95": [
+            -0.005217972352710856,
+            -8.688029408311167e-05
+          ]
+        },
+        "candidate_return": {
+          "n": 204,
+          "mean": -0.0008019155984081928,
+          "median": -0.0007033389706596616,
+          "block95": [
+            -0.0010376642365896346,
+            -0.0006333614513934581
+          ]
+        },
+        "incumbent_return": {
+          "n": 204,
+          "mean": 0.0015869465822877678,
+          "median": 0.0,
+          "block95": [
+            -0.0007839515201985959,
+            0.004388148669247937
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 204,
+          "mean": 0.0018485248363793716,
+          "median": 0.0,
+          "block95": [
+            -0.0006226258208867823,
+            0.0049090901420720465
+          ]
+        }
+      },
+      "positive_entry_exposure": 162,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0020116055163852406,
+        "2017": -0.002269802674633102,
+        "2018": -0.003037690006454177,
+        "2019": -0.002329194577342199
+      },
+      "per_year_counts": {
+        "2016": 39,
+        "2017": 43,
+        "2018": 65,
+        "2019": 57
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d0",
+      "lag_hours": 1,
+      "cost_bps": 25,
+      "n_parents": 204,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 204,
+          "mean": -0.0034942708206249376,
+          "median": -1.4107261927909232e-05,
+          "block95": [
+            -0.006488827174677541,
+            -0.0012387128958655216
+          ]
+        },
+        "candidate_return": {
+          "n": 204,
+          "mean": -0.0020037688329593473,
+          "median": -0.00175790843316731,
+          "block95": [
+            -0.0025927071558580943,
+            -0.0015827105739173294
+          ]
+        },
+        "incumbent_return": {
+          "n": 204,
+          "mean": 0.0014905019876655901,
+          "median": 0.0,
+          "block95": [
+            -0.00088100683487167,
+            0.00428377039434267
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 204,
+          "mean": 0.0018415646380622287,
+          "median": 0.0,
+          "block95": [
+            -0.0006285764933451157,
+            0.004899931878238843
+          ]
+        }
+      },
+      "positive_entry_exposure": 162,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0030002269459557143,
+        "2017": -0.003201016185201577,
+        "2018": -0.0043832454979414745,
+        "2019": -0.003529398408901021
+      },
+      "per_year_counts": {
+        "2016": 39,
+        "2017": 43,
+        "2018": 65,
+        "2019": 57
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d0",
+      "lag_hours": 6,
+      "cost_bps": 0,
+      "n_parents": 205,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 205,
+          "mean": -0.001898365337649513,
+          "median": -0.00026288981630551156,
+          "block95": [
+            -0.004665275899609343,
+            0.0007239128013837158
+          ]
+        },
+        "candidate_return": {
+          "n": 205,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 205,
+          "mean": 0.001898365337649513,
+          "median": 0.00026288981630551156,
+          "block95": [
+            -0.000723912801383716,
+            0.004665275899609343
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 205,
+          "mean": 0.0016619608828171448,
+          "median": 0.0,
+          "block95": [
+            -0.0009538334833612584,
+            0.004517076163561908
+          ]
+        }
+      },
+      "positive_entry_exposure": 163,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0018694263373370686,
+        "2017": -0.0011244717563781159,
+        "2018": -0.002754628286251159,
+        "2019": -0.0019684185445447626
+      },
+      "per_year_counts": {
+        "2016": 39,
+        "2017": 43,
+        "2018": 65,
+        "2019": 58
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d0",
+      "lag_hours": 6,
+      "cost_bps": 10,
+      "n_parents": 205,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 205,
+          "mean": -0.002641733535623561,
+          "median": -0.000799905835745407,
+          "block95": [
+            -0.005495658299169796,
+            -6.809108752530654e-05
+          ]
+        },
+        "candidate_return": {
+          "n": 205,
+          "mean": -0.0008076859600739883,
+          "median": -0.000704800323218957,
+          "block95": [
+            -0.001043303140348627,
+            -0.0006351796816920158
+          ]
+        },
+        "incumbent_return": {
+          "n": 205,
+          "mean": 0.0018340475755495727,
+          "median": 0.00026288981630551156,
+          "block95": [
+            -0.0007854654461684558,
+            0.004574518879844751
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 205,
+          "mean": 0.0016580794305560318,
+          "median": 0.0,
+          "block95": [
+            -0.0009568860206860943,
+            0.004513887464179834
+          ]
+        }
+      },
+      "positive_entry_exposure": 163,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0025365691999066405,
+        "2017": -0.001754146861729982,
+        "2018": -0.0036601378648295053,
+        "2019": -0.002768738398282992
+      },
+      "per_year_counts": {
+        "2016": 39,
+        "2017": 43,
+        "2018": 65,
+        "2019": 58
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d0",
+      "lag_hours": 6,
+      "cost_bps": 25,
+      "n_parents": 205,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 205,
+          "mean": -0.003755753514327433,
+          "median": -0.0015172292905185625,
+          "block95": [
+            -0.006695211911461984,
+            -0.001214366260215492
+          ]
+        },
+        "candidate_return": {
+          "n": 205,
+          "mean": -0.0020181816801345233,
+          "median": -0.001761556836264666,
+          "block95": [
+            -0.0026067592529789726,
+            -0.0015872653839562063
+          ]
+        },
+        "incumbent_return": {
+          "n": 205,
+          "mean": 0.0017375718341929099,
+          "median": 0.0002138879789941317,
+          "block95": [
+            -0.0008770342334149351,
+            0.00445469301012538
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 205,
+          "mean": 0.0016522572521643541,
+          "median": 0.0,
+          "block95": [
+            -0.0009614648266733654,
+            0.004509104415106714
+          ]
+        }
+      },
+      "positive_entry_exposure": 163,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0035364277890312283,
+        "2017": -0.0026978110805195546,
+        "2018": -0.005017094168877872,
+        "2019": -0.003968046392143656
+      },
+      "per_year_counts": {
+        "2016": 39,
+        "2017": 43,
+        "2018": 65,
+        "2019": 58
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d1",
+      "lag_hours": 1,
+      "cost_bps": 0,
+      "n_parents": 169,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 169,
+          "mean": -0.001531400193076361,
+          "median": 0.0,
+          "block95": [
+            -0.0057028178647196195,
+            0.0018409513272045423
+          ]
+        },
+        "candidate_return": {
+          "n": 169,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 169,
+          "mean": 0.001531400193076361,
+          "median": 0.0,
+          "block95": [
+            -0.0018409513272045425,
+            0.0057028178647196195
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 169,
+          "mean": 0.0018713661619048356,
+          "median": 0.0,
+          "block95": [
+            -0.0015570515146205637,
+            0.006385958461045865
+          ]
+        }
+      },
+      "positive_entry_exposure": 136,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0011715027977005845,
+        "2017": -0.001547529000203768,
+        "2018": -0.0018747017048206392,
+        "2019": -0.0015999931301079566
+      },
+      "per_year_counts": {
+        "2016": 30,
+        "2017": 34,
+        "2018": 53,
+        "2019": 52
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d1",
+      "lag_hours": 1,
+      "cost_bps": 10,
+      "n_parents": 169,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 169,
+          "mean": -0.0022945694278657513,
+          "median": -1.742710811059034e-05,
+          "block95": [
+            -0.006551446053427848,
+            0.0010236733824704654
+          ]
+        },
+        "candidate_return": {
+          "n": 169,
+          "mean": -0.0008305583357659124,
+          "median": -0.000704800323218957,
+          "block95": [
+            -0.0010851659079713202,
+            -0.0006380493852158411
+          ]
+        },
+        "incumbent_return": {
+          "n": 169,
+          "mean": 0.0014640110920998387,
+          "median": 0.0,
+          "block95": [
+            -0.0018974464601449388,
+            0.005618829467112988
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 169,
+          "mean": 0.001866965810409351,
+          "median": 0.0,
+          "block95": [
+            -0.0015603991450191311,
+            0.006381828300628772
+          ]
+        }
+      },
+      "positive_entry_exposure": 136,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0018325033071911686,
+        "2017": -0.00219334923776481,
+        "2018": -0.0028168770185690154,
+        "2019": -0.0024424688801376773
+      },
+      "per_year_counts": {
+        "2016": 30,
+        "2017": 34,
+        "2018": 53,
+        "2019": 52
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d1",
+      "lag_hours": 1,
+      "cost_bps": 25,
+      "n_parents": 169,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 169,
+          "mean": -0.0034382552777593206,
+          "median": -0.00016744463590367964,
+          "block95": [
+            -0.00774272205884124,
+            -0.0001751293702594023
+          ]
+        },
+        "candidate_return": {
+          "n": 169,
+          "mean": -0.0020753268275662995,
+          "median": -0.001761556836264666,
+          "block95": [
+            -0.002711256055070091,
+            -0.001594363626450342
+          ]
+        },
+        "incumbent_return": {
+          "n": 169,
+          "mean": 0.0013629284501930211,
+          "median": 0.0,
+          "block95": [
+            -0.0019821885244552646,
+            0.005492387416972305
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 169,
+          "mean": 0.001860365283166115,
+          "median": 0.0,
+          "block95": [
+            -0.0015654205906170053,
+            0.006375633060003135
+          ]
+        }
+      },
+      "positive_entry_exposure": 136,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.002823156308103547,
+        "2017": -0.0031612124930726414,
+        "2018": -0.004228758931099925,
+        "2019": -0.0037049314224374768
+      },
+      "per_year_counts": {
+        "2016": 30,
+        "2017": 34,
+        "2018": 53,
+        "2019": 52
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d1",
+      "lag_hours": 6,
+      "cost_bps": 0,
+      "n_parents": 170,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 170,
+          "mean": -0.001983813117913841,
+          "median": -0.0007634843514897627,
+          "block95": [
+            -0.00557374455672694,
+            0.0013923782114913196
+          ]
+        },
+        "candidate_return": {
+          "n": 170,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 170,
+          "mean": 0.001983813117913841,
+          "median": 0.0007634843514897627,
+          "block95": [
+            -0.0013923782114913213,
+            0.005573744556726937
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 170,
+          "mean": 0.0016323471784896668,
+          "median": 0.0,
+          "block95": [
+            -0.0018820284279755565,
+            0.005146620128627135
+          ]
+        }
+      },
+      "positive_entry_exposure": 137,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0018413297531657,
+        "2017": -0.0009388118610535759,
+        "2018": -0.0031119339381337537,
+        "2019": -0.0022408875284438074
+      },
+      "per_year_counts": {
+        "2016": 30,
+        "2017": 34,
+        "2018": 53,
+        "2019": 53
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d1",
+      "lag_hours": 6,
+      "cost_bps": 10,
+      "n_parents": 170,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 170,
+          "mean": -0.0027532506732321884,
+          "median": -0.0012527582464500475,
+          "block95": [
+            -0.006467369511835804,
+            0.0005645786974601586
+          ]
+        },
+        "candidate_return": {
+          "n": 170,
+          "mean": -0.0008373482263784439,
+          "median": -0.000707460878394961,
+          "block95": [
+            -0.001102655676433116,
+            -0.0006423415029645911
+          ]
+        },
+        "incumbent_return": {
+          "n": 170,
+          "mean": 0.0019159024468537443,
+          "median": 0.0006575421354645394,
+          "block95": [
+            -0.0014513015790769287,
+            0.0054979821139509956
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 170,
+          "mean": 0.0016284597135662574,
+          "median": 0.0,
+          "block95": [
+            -0.0018853005888917816,
+            0.0051429232555726375
+          ]
+        }
+      },
+      "positive_entry_exposure": 137,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.002510767052540052,
+        "2017": -0.0015938938213602755,
+        "2018": -0.004062257698284244,
+        "2019": -0.0030820234665688436
+      },
+      "per_year_counts": {
+        "2016": 30,
+        "2017": 34,
+        "2018": 53,
+        "2019": 53
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2016_2019",
+      "rule": "d1",
+      "lag_hours": 6,
+      "cost_bps": 25,
+      "n_parents": 170,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 170,
+          "mean": -0.0039063235528816465,
+          "median": -0.0020424274678108034,
+          "block95": [
+            -0.007722970612144337,
+            -0.0007062604407023893
+          ]
+        },
+        "candidate_return": {
+          "n": 170,
+          "mean": -0.002092286096250441,
+          "median": -0.0017681951031415233,
+          "block95": [
+            -0.0027550469567276174,
+            -0.0016051045307086968
+          ]
+        },
+        "incumbent_return": {
+          "n": 170,
+          "mean": 0.0018140374566312052,
+          "median": 0.0005466137122701609,
+          "block95": [
+            -0.001539685804653646,
+            0.005383725724359601
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 170,
+          "mean": 0.0016226285161811342,
+          "median": 0.0,
+          "block95": [
+            -0.0018902088302661367,
+            0.005139575275043721
+          ]
+        }
+      },
+      "positive_entry_exposure": 137,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0035140551199199415,
+        "2017": -0.0025756287412412905,
+        "2018": -0.005486342366161801,
+        "2019": -0.0043424763207786455
+      },
+      "per_year_counts": {
+        "2016": 30,
+        "2017": 34,
+        "2018": 53,
+        "2019": 53
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d0",
+      "lag_hours": 1,
+      "cost_bps": 0,
+      "n_parents": 216,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 216,
+          "mean": 0.00033072969042742436,
+          "median": -2.7569165659380168e-05,
+          "block95": [
+            -0.0015718117247879014,
+            0.00247561844376436
+          ]
+        },
+        "candidate_return": {
+          "n": 216,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 216,
+          "mean": -0.00033072969042742436,
+          "median": 2.7569165659380168e-05,
+          "block95": [
+            -0.00247561844376436,
+            0.0015718117247879003
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 216,
+          "mean": -0.00039295852849264814,
+          "median": 0.0,
+          "block95": [
+            -0.002445749817468846,
+            0.0014544426115545397
+          ]
+        }
+      },
+      "positive_entry_exposure": 175,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2020": 7.221740941687981e-06,
+        "2021": 0.0017517398510255144,
+        "2022": 0.00017546034199672806,
+        "2023": -0.0004874051444262738
+      },
+      "per_year_counts": {
+        "2020": 38,
+        "2021": 60,
+        "2022": 76,
+        "2023": 42
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d0",
+      "lag_hours": 1,
+      "cost_bps": 10,
+      "n_parents": 216,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 216,
+          "mean": -0.00047800213470545566,
+          "median": -0.0002870549544941037,
+          "block95": [
+            -0.0024773696910988787,
+            0.0016665362871271982
+          ]
+        },
+        "candidate_return": {
+          "n": 216,
+          "mean": -0.0008660927148066834,
+          "median": -0.0006099809701247128,
+          "block95": [
+            -0.0010846879494086613,
+            -0.0006697905570494825
+          ]
+        },
+        "incumbent_return": {
+          "n": 216,
+          "mean": -0.00038809058010122775,
+          "median": 3.3321913537331938e-06,
+          "block95": [
+            -0.002538478114471655,
+            0.0015268079116436855
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 216,
+          "mean": -0.00039619067798716173,
+          "median": 0.0,
+          "block95": [
+            -0.0024484526409807154,
+            0.0014522558202400783
+          ]
+        }
+      },
+      "positive_entry_exposure": 175,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2020": -0.0007401221023217026,
+        "2021": 0.000998241157704815,
+        "2022": -0.0008508694808107223,
+        "2023": -0.0012333766802547254
+      },
+      "per_year_counts": {
+        "2020": 38,
+        "2021": 60,
+        "2022": 76,
+        "2023": 42
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d0",
+      "lag_hours": 1,
+      "cost_bps": 25,
+      "n_parents": 216,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 216,
+          "mean": -0.0016898821722137424,
+          "median": -0.0007231401313168573,
+          "block95": [
+            -0.003733303261518705,
+            0.0005113530919481217
+          ]
+        },
+        "candidate_return": {
+          "n": 216,
+          "mean": -0.0021640134719039836,
+          "median": -0.0015246148587605424,
+          "block95": [
+            -0.002710047595697987,
+            -0.001673586021497901
+          ]
+        },
+        "incumbent_return": {
+          "n": 216,
+          "mean": -0.0004741312996902413,
+          "median": 0.0,
+          "block95": [
+            -0.00262838633978626,
+            0.0014592178179047514
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 216,
+          "mean": -0.00040103890222893267,
+          "median": 0.0,
+          "block95": [
+            -0.0024541412087287343,
+            0.0014489756332683832
+          ]
+        }
+      },
+      "positive_entry_exposure": 175,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2020": -0.0018600471622550248,
+        "2021": -0.00013091783970383387,
+        "2022": -0.0023886738399222754,
+        "2023": -0.0023512513340815744
+      },
+      "per_year_counts": {
+        "2020": 38,
+        "2021": 60,
+        "2022": 76,
+        "2023": 42
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d0",
+      "lag_hours": 6,
+      "cost_bps": 0,
+      "n_parents": 216,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 216,
+          "mean": 0.000184028208915195,
+          "median": 0.0,
+          "block95": [
+            -0.0019219667434633274,
+            0.002418109300795227
+          ]
+        },
+        "candidate_return": {
+          "n": 216,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 216,
+          "mean": -0.000184028208915195,
+          "median": 0.0,
+          "block95": [
+            -0.002418109300795227,
+            0.0019219667434633267
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 216,
+          "mean": -0.0003005041988344723,
+          "median": 0.0,
+          "block95": [
+            -0.002495985309915616,
+            0.0018570314106447115
+          ]
+        }
+      },
+      "positive_entry_exposure": 175,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2020": 0.0002616035474844321,
+        "2021": 0.001509730487016318,
+        "2022": -0.00046950703023703345,
+        "2023": -0.0005580581828536982
+      },
+      "per_year_counts": {
+        "2020": 38,
+        "2021": 60,
+        "2022": 76,
+        "2023": 42
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d0",
+      "lag_hours": 6,
+      "cost_bps": 10,
+      "n_parents": 216,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 216,
+          "mean": -0.0006252205328016201,
+          "median": -1.8100394768405526e-05,
+          "block95": [
+            -0.0028135499407753724,
+            0.0016786833301837536
+          ]
+        },
+        "candidate_return": {
+          "n": 216,
+          "mean": -0.0008660927148066834,
+          "median": -0.0006099809701247128,
+          "block95": [
+            -0.0010846879494086613,
+            -0.0006697905570494825
+          ]
+        },
+        "incumbent_return": {
+          "n": 216,
+          "mean": -0.00024087218200506328,
+          "median": 0.0,
+          "block95": [
+            -0.002475503136794625,
+            0.0018674776416614468
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 216,
+          "mean": -0.00030318695382504574,
+          "median": 0.0,
+          "block95": [
+            -0.0024989688031889605,
+            0.0018537853928659522
+          ]
+        }
+      },
+      "positive_entry_exposure": 175,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2020": -0.00048618120802723587,
+        "2021": 0.0007556993392622088,
+        "2022": -0.0014962180681574201,
+        "2023": -0.0013047196414337217
+      },
+      "per_year_counts": {
+        "2020": 38,
+        "2021": 60,
+        "2022": 76,
+        "2023": 42
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d0",
+      "lag_hours": 6,
+      "cost_bps": 25,
+      "n_parents": 216,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 216,
+          "mean": -0.0018378759315287355,
+          "median": -0.00029301678922039054,
+          "block95": [
+            -0.004192521520829531,
+            0.0005740778618222061
+          ]
+        },
+        "candidate_return": {
+          "n": 216,
+          "mean": -0.0021640134719039836,
+          "median": -0.0015246148587605424,
+          "block95": [
+            -0.002710047595697987,
+            -0.001673586021497901
+          ]
+        },
+        "incumbent_return": {
+          "n": 216,
+          "mean": -0.0003261375403752482,
+          "median": 0.0,
+          "block95": [
+            -0.002553196293800175,
+            0.0017881704196697412
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 216,
+          "mean": -0.000307211086310902,
+          "median": 0.0,
+          "block95": [
+            -0.0025034440430989776,
+            0.0018497814730570336
+          ]
+        }
+      },
+      "positive_entry_exposure": 175,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2020": -0.00160676770336499,
+        "2021": -0.00037425825369212057,
+        "2022": -0.0030345942347196975,
+        "2023": -0.002423629149396114
+      },
+      "per_year_counts": {
+        "2020": 38,
+        "2021": 60,
+        "2022": 76,
+        "2023": 42
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d1",
+      "lag_hours": 1,
+      "cost_bps": 0,
+      "n_parents": 180,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 180,
+          "mean": 0.001936495827709436,
+          "median": 0.0,
+          "block95": [
+            -0.0002241230945696377,
+            0.004173181439703374
+          ]
+        },
+        "candidate_return": {
+          "n": 180,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 180,
+          "mean": -0.001936495827709436,
+          "median": 0.0,
+          "block95": [
+            -0.004173181439703374,
+            0.000224123094569637
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 180,
+          "mean": -0.0019316307832586397,
+          "median": 0.0,
+          "block95": [
+            -0.004099798617003675,
+            5.311314524795711e-05
+          ]
+        }
+      },
+      "positive_entry_exposure": 144,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2020": 0.0011928299962676136,
+        "2021": 0.002651243082609243,
+        "2022": 0.002526381119144742,
+        "2023": 0.0015451127791984579
+      },
+      "per_year_counts": {
+        "2020": 34,
+        "2021": 48,
+        "2022": 61,
+        "2023": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d1",
+      "lag_hours": 1,
+      "cost_bps": 10,
+      "n_parents": 180,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 180,
+          "mean": 0.0011520319521034117,
+          "median": 0.0,
+          "block95": [
+            -0.0010756891607654972,
+            0.0034368506918808195
+          ]
+        },
+        "candidate_return": {
+          "n": 180,
+          "mean": -0.0008414692685453942,
+          "median": -0.0005982394443937444,
+          "block95": [
+            -0.0010658107389968424,
+            -0.0006519433062230312
+          ]
+        },
+        "incumbent_return": {
+          "n": 180,
+          "mean": -0.001993501220648806,
+          "median": 0.0,
+          "block95": [
+            -0.004234628134576269,
+            0.00016602562348750334
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 180,
+          "mean": -0.0019352399754235404,
+          "median": 0.0,
+          "block95": [
+            -0.004102910739198942,
+            4.9122552726799905e-05
+          ]
+        }
+      },
+      "positive_entry_exposure": 144,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2020": 0.00048452073124347945,
+        "2021": 0.0018857105171963741,
+        "2022": 0.0015473764283899785,
+        "2023": 0.0008273121966850738
+      },
+      "per_year_counts": {
+        "2020": 34,
+        "2021": 48,
+        "2022": 61,
+        "2023": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d1",
+      "lag_hours": 1,
+      "cost_bps": 25,
+      "n_parents": 180,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 180,
+          "mean": -2.3495613387027512e-05,
+          "median": -6.469920094176462e-06,
+          "block95": [
+            -0.002311048829342712,
+            0.0023428172506875637
+          ]
+        },
+        "candidate_return": {
+          "n": 180,
+          "mean": -0.002102504262915369,
+          "median": -0.0014952676513194096,
+          "block95": [
+            -0.002662964423263083,
+            -0.0016291072027301318
+          ]
+        },
+        "incumbent_return": {
+          "n": 180,
+          "mean": -0.0020790086495283415,
+          "median": 0.0,
+          "block95": [
+            -0.004328678670924311,
+            8.875939948641654e-05
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 180,
+          "mean": -0.001940653763670888,
+          "median": 0.0,
+          "block95": [
+            -0.0041075789224918335,
+            4.313666394505436e-05
+          ]
+        }
+      },
+      "positive_entry_exposure": 144,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2020": -0.000576937290117089,
+        "2021": 0.0007385308068619516,
+        "2022": 8.0466632188233e-05,
+        "2023": -0.0002483663119445959
+      },
+      "per_year_counts": {
+        "2020": 34,
+        "2021": 48,
+        "2022": 61,
+        "2023": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d1",
+      "lag_hours": 6,
+      "cost_bps": 0,
+      "n_parents": 180,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 180,
+          "mean": 0.0014081720971412539,
+          "median": 0.0,
+          "block95": [
+            -0.00027979259361020104,
+            0.003200465227293685
+          ]
+        },
+        "candidate_return": {
+          "n": 180,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 180,
+          "mean": -0.0014081720971412539,
+          "median": 0.0,
+          "block95": [
+            -0.0032004652272936856,
+            0.00027979259361020093
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 180,
+          "mean": -0.0014458063557881843,
+          "median": 0.0,
+          "block95": [
+            -0.0032532678773522323,
+            0.0003057766373757022
+          ]
+        }
+      },
+      "positive_entry_exposure": 144,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2020": 0.001408308175666167,
+        "2021": 0.002027165362488534,
+        "2022": 0.001153005495911926,
+        "2023": 0.0010489962024266503
+      },
+      "per_year_counts": {
+        "2020": 34,
+        "2021": 48,
+        "2022": 61,
+        "2023": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d1",
+      "lag_hours": 6,
+      "cost_bps": 10,
+      "n_parents": 180,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 180,
+          "mean": 0.0006231042295132611,
+          "median": 0.0,
+          "block95": [
+            -0.0012210755499196557,
+            0.002476315376583353
+          ]
+        },
+        "candidate_return": {
+          "n": 180,
+          "mean": -0.0008414692685453942,
+          "median": -0.0005982394443937444,
+          "block95": [
+            -0.0010658107389968424,
+            -0.0006519433062230312
+          ]
+        },
+        "incumbent_return": {
+          "n": 180,
+          "mean": -0.0014645734980586553,
+          "median": 0.0,
+          "block95": [
+            -0.0032574631053390903,
+            0.00022144625591070577
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 180,
+          "mean": -0.0014486863459751216,
+          "median": 0.0,
+          "block95": [
+            -0.003255877853210378,
+            0.0003038976167072488
+          ]
+        }
+      },
+      "positive_entry_exposure": 144,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2020": 0.0006995536019581497,
+        "2021": 0.0012610654746535838,
+        "2022": 0.00017347043184237748,
+        "2023": 0.0003303345035507354
+      },
+      "per_year_counts": {
+        "2020": 34,
+        "2021": 48,
+        "2022": 61,
+        "2023": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "2020_2023",
+      "rule": "d1",
+      "lag_hours": 6,
+      "cost_bps": 25,
+      "n_parents": 180,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 180,
+          "mean": -0.0005533292477080429,
+          "median": -9.724622622042656e-05,
+          "block95": [
+            -0.0025757634291827354,
+            0.0014433749576564304
+          ]
+        },
+        "candidate_return": {
+          "n": 180,
+          "mean": -0.002102504262915369,
+          "median": -0.0014952676513194096,
+          "block95": [
+            -0.002662964423263083,
+            -0.0016291072027301318
+          ]
+        },
+        "incumbent_return": {
+          "n": 180,
+          "mean": -0.0015491750152073264,
+          "median": 0.0,
+          "block95": [
+            -0.0033469315715013944,
+            0.00013194878837544344
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 180,
+          "mean": -0.001453006331255521,
+          "median": 0.0,
+          "block95": [
+            -0.003259792816997598,
+            0.00030107908570459733
+          ]
+        }
+      },
+      "positive_entry_exposure": 144,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2020": -0.0003625724024701228,
+        "2021": 0.00011303494243591474,
+        "2022": -0.00129423488560428,
+        "2023": -0.0007466355525617949
+      },
+      "per_year_counts": {
+        "2020": 34,
+        "2021": 48,
+        "2022": 61,
+        "2023": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d0",
+      "lag_hours": 1,
+      "cost_bps": 0,
+      "n_parents": 165,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 165,
+          "mean": -0.000817862937014087,
+          "median": 0.0,
+          "block95": [
+            -0.0024199607792632963,
+            0.0009513650866537192
+          ]
+        },
+        "candidate_return": {
+          "n": 165,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 165,
+          "mean": 0.000817862937014087,
+          "median": 0.0,
+          "block95": [
+            -0.0009513650866537192,
+            0.002419960779263296
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 165,
+          "mean": 0.0008028723222760486,
+          "median": 0.0,
+          "block95": [
+            -0.0009063845593346207,
+            0.0023818823747142315
+          ]
+        }
+      },
+      "positive_entry_exposure": 129,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2024": -0.00046876244351070565,
+        "2025": -0.000766405657783886,
+        "2026": -0.0011827308212370201
+      },
+      "per_year_counts": {
+        "2024": 57,
+        "2025": 61,
+        "2026": 47
+      }
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d0",
+      "lag_hours": 1,
+      "cost_bps": 10,
+      "n_parents": 165,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 165,
+          "mean": -0.001681153147568247,
+          "median": 0.0,
+          "block95": [
+            -0.003476317802032792,
+            0.00030063703785792814
+          ]
+        },
+        "candidate_return": {
+          "n": 165,
+          "mean": -0.0009166821780098503,
+          "median": -0.0006782326691954221,
+          "block95": [
+            -0.0012120144049386824,
+            -0.0006270440677263215
+          ]
+        },
+        "incumbent_return": {
+          "n": 165,
+          "mean": 0.0007644709695583968,
+          "median": 0.0,
+          "block95": [
+            -0.0010190912572733213,
+            0.0023721219438075074
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 165,
+          "mean": 0.0008010421361436858,
+          "median": 0.0,
+          "block95": [
+            -0.0009078027997475936,
+            0.0023804786665640332
+          ]
+        }
+      },
+      "positive_entry_exposure": 129,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2024": -0.0011400130580990753,
+        "2025": -0.00160173207456485,
+        "2026": -0.0022464321412548898
+      },
+      "per_year_counts": {
+        "2024": 57,
+        "2025": 61,
+        "2026": 47
+      }
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d0",
+      "lag_hours": 1,
+      "cost_bps": 25,
+      "n_parents": 165,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 165,
+          "mean": -0.0029747112110225355,
+          "median": 0.0,
+          "block95": [
+            -0.005082183191000896,
+            -0.0006972641721282576
+          ]
+        },
+        "candidate_return": {
+          "n": 165,
+          "mean": -0.0022903278993989637,
+          "median": -0.0016951533793225781,
+          "block95": [
+            -0.0030281603120442973,
+            -0.001566789687083604
+          ]
+        },
+        "incumbent_return": {
+          "n": 165,
+          "mean": 0.0006843833116235716,
+          "median": 0.0,
+          "block95": [
+            -0.0011089968845219335,
+            0.002300364018969947
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 165,
+          "mean": 0.0007982968569451499,
+          "median": 0.0,
+          "block95": [
+            -0.000910284051900113,
+            0.0023784203254488974
+          ]
+        }
+      },
+      "positive_entry_exposure": 129,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2024": -0.002145863441226474,
+        "2025": -0.0028534020389499957,
+        "2026": -0.0038402342028320165
+      },
+      "per_year_counts": {
+        "2024": 57,
+        "2025": 61,
+        "2026": 47
+      }
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d0",
+      "lag_hours": 6,
+      "cost_bps": 0,
+      "n_parents": 165,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 165,
+          "mean": 0.0003836336206855283,
+          "median": 0.0,
+          "block95": [
+            -0.0016292802364899993,
+            0.0019461593064752842
+          ]
+        },
+        "candidate_return": {
+          "n": 165,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 165,
+          "mean": -0.0003836336206855283,
+          "median": 0.0,
+          "block95": [
+            -0.0019461593064752846,
+            0.001629280236489999
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 165,
+          "mean": -0.000191858214523325,
+          "median": 0.0,
+          "block95": [
+            -0.001801608391309844,
+            0.0017670817860696243
+          ]
+        }
+      },
+      "positive_entry_exposure": 129,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2024": 0.0006829736934467479,
+        "2025": 0.0005423604399113288,
+        "2026": -3.0233473023751092e-05
+      },
+      "per_year_counts": {
+        "2024": 57,
+        "2025": 61,
+        "2026": 47
+      }
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d0",
+      "lag_hours": 6,
+      "cost_bps": 10,
+      "n_parents": 165,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 165,
+          "mean": -0.00047974903859572695,
+          "median": 0.0,
+          "block95": [
+            -0.0026425668355719517,
+            0.0012779904293121693
+          ]
+        },
+        "candidate_return": {
+          "n": 165,
+          "mean": -0.0009166821780098503,
+          "median": -0.0006782326691954221,
+          "block95": [
+            -0.0012120144049386824,
+            -0.0006270440677263215
+          ]
+        },
+        "incumbent_return": {
+          "n": 165,
+          "mean": -0.0004369331394141233,
+          "median": 0.0,
+          "block95": [
+            -0.0020057362863004293,
+            0.0015852053967449777
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 165,
+          "mean": -0.0001936009295190528,
+          "median": 0.0,
+          "block95": [
+            -0.0018033808669276243,
+            0.0017659078087218173
+          ]
+        }
+      },
+      "positive_entry_exposure": 129,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2024": 1.1793684301376535e-05,
+        "2025": -0.0002931969758563475,
+        "2026": -0.0010940543656955798
+      },
+      "per_year_counts": {
+        "2024": 57,
+        "2025": 61,
+        "2026": 47
+      }
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d0",
+      "lag_hours": 6,
+      "cost_bps": 25,
+      "n_parents": 165,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 165,
+          "mean": -0.0017734458261987978,
+          "median": -3.6816507930192977e-05,
+          "block95": [
+            -0.004257298626589684,
+            0.00025888898954256923
+          ]
+        },
+        "candidate_return": {
+          "n": 165,
+          "mean": -0.0022903278993989637,
+          "median": -0.0016951533793225781,
+          "block95": [
+            -0.0030281603120442973,
+            -0.001566789687083604
+          ]
+        },
+        "incumbent_return": {
+          "n": 165,
+          "mean": -0.0005168820732001662,
+          "median": 0.0,
+          "block95": [
+            -0.0021049952187768253,
+            0.0015155200922408558
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 165,
+          "mean": -0.00019621500201265764,
+          "median": 0.0,
+          "block95": [
+            -0.0018060535261624354,
+            0.0017641468427000945
+          ]
+        }
+      },
+      "positive_entry_exposure": 129,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2024": -0.0009939508295414361,
+        "2025": -0.0015452134970581856,
+        "2026": -0.002688035842043024
+      },
+      "per_year_counts": {
+        "2024": 57,
+        "2025": 61,
+        "2026": 47
+      }
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d1",
+      "lag_hours": 1,
+      "cost_bps": 0,
+      "n_parents": 132,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 132,
+          "mean": -0.0008762907540493955,
+          "median": 0.0,
+          "block95": [
+            -0.0026103789533448904,
+            0.0008173121726238721
+          ]
+        },
+        "candidate_return": {
+          "n": 132,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 132,
+          "mean": 0.0008762907540493955,
+          "median": 0.0,
+          "block95": [
+            -0.0008173121726238728,
+            0.00261037895334489
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 132,
+          "mean": 0.0008518429804124153,
+          "median": 0.0,
+          "block95": [
+            -0.0008259985543856728,
+            0.0026601027164848434
+          ]
+        }
+      },
+      "positive_entry_exposure": 106,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2024": -0.0016554444543154375,
+        "2025": -8.925631058320782e-05,
+        "2026": -0.0008585711812579634
+      },
+      "per_year_counts": {
+        "2024": 46,
+        "2025": 49,
+        "2026": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d1",
+      "lag_hours": 1,
+      "cost_bps": 10,
+      "n_parents": 132,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 132,
+          "mean": -0.001715794556275266,
+          "median": 0.0,
+          "block95": [
+            -0.0035959457453078004,
+            7.706287144955201e-05
+          ]
+        },
+        "candidate_return": {
+          "n": 132,
+          "mean": -0.0008954917822934774,
+          "median": -0.0006330587163801971,
+          "block95": [
+            -0.001198142357255585,
+            -0.0006070267539218788
+          ]
+        },
+        "incumbent_return": {
+          "n": 132,
+          "mean": 0.0008203027739817886,
+          "median": 0.0,
+          "block95": [
+            -0.0008828987091614109,
+            0.002557909259709508
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 132,
+          "mean": 0.0008500567601853866,
+          "median": 0.0,
+          "block95": [
+            -0.0008272931792947749,
+            0.002657865798203227
+          ]
+        }
+      },
+      "positive_entry_exposure": 106,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2024": -0.0023232731975515557,
+        "2025": -0.0008909757085904327,
+        "2026": -0.0018864977268866373
+      },
+      "per_year_counts": {
+        "2024": 46,
+        "2025": 49,
+        "2026": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d1",
+      "lag_hours": 1,
+      "cost_bps": 25,
+      "n_parents": 132,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 132,
+          "mean": -0.0029737285124876,
+          "median": -0.0002514210332063005,
+          "block95": [
+            -0.005137067152931709,
+            -0.0010484416744855523
+          ]
+        },
+        "candidate_return": {
+          "n": 132,
+          "mean": -0.002237407412107895,
+          "median": -0.001582271895037235,
+          "block95": [
+            -0.0029934384994375765,
+            -0.0015167700859424244
+          ]
+        },
+        "incumbent_return": {
+          "n": 132,
+          "mean": 0.0007363211003797047,
+          "median": 0.0,
+          "block95": [
+            -0.0009939267728993576,
+            0.0025051781934454964
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 132,
+          "mean": 0.0008473774298448451,
+          "median": 0.0,
+          "block95": [
+            -0.0008292351166584212,
+            0.0026541760664146982
+          ]
+        }
+      },
+      "positive_entry_exposure": 106,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2024": -0.0033240041998225285,
+        "2025": -0.002092313679363158,
+        "2026": -0.0034267150602615456
+      },
+      "per_year_counts": {
+        "2024": 46,
+        "2025": 49,
+        "2026": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d1",
+      "lag_hours": 6,
+      "cost_bps": 0,
+      "n_parents": 132,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 132,
+          "mean": -6.984206534210304e-05,
+          "median": 0.0,
+          "block95": [
+            -0.002394918999315195,
+            0.0018284931739051226
+          ]
+        },
+        "candidate_return": {
+          "n": 132,
+          "mean": 0.0,
+          "median": 0.0,
+          "block95": [
+            0.0,
+            0.0
+          ]
+        },
+        "incumbent_return": {
+          "n": 132,
+          "mean": 6.984206534210304e-05,
+          "median": 0.0,
+          "block95": [
+            -0.001828493173905123,
+            0.0023949189993151946
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 132,
+          "mean": 0.00030651170285349094,
+          "median": 0.0,
+          "block95": [
+            -0.0016606272993685705,
+            0.002666448202124184
+          ]
+        }
+      },
+      "positive_entry_exposure": 106,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2024": -0.0008011115086660876,
+        "2025": 0.0005073567643046574,
+        "2026": 8.785971639665027e-05
+      },
+      "per_year_counts": {
+        "2024": 46,
+        "2025": 49,
+        "2026": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d1",
+      "lag_hours": 6,
+      "cost_bps": 10,
+      "n_parents": 132,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 132,
+          "mean": -0.0009094207697979955,
+          "median": -0.0003209045625917062,
+          "block95": [
+            -0.0033144937016343105,
+            0.0009495575127953698
+          ]
+        },
+        "candidate_return": {
+          "n": 132,
+          "mean": -0.0008954917822934774,
+          "median": -0.0006330587163801971,
+          "block95": [
+            -0.001198142357255585,
+            -0.0006070267539218788
+          ]
+        },
+        "incumbent_return": {
+          "n": 132,
+          "mean": 1.3928987504518146e-05,
+          "median": 0.0,
+          "block95": [
+            -0.001894540737224862,
+            0.0023555669852930623
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 132,
+          "mean": 0.0003047027019323432,
+          "median": 0.0,
+          "block95": [
+            -0.0016624259937540618,
+            0.0026650865174615273
+          ]
+        }
+      },
+      "positive_entry_exposure": 106,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2024": -0.0014685970018467867,
+        "2025": -0.0002946222262485501,
+        "2026": -0.0009403589083075527
+      },
+      "per_year_counts": {
+        "2024": 46,
+        "2025": 49,
+        "2026": 37
+      }
+    },
+    {
+      "family": "downside",
+      "period": "reused_2024plus",
+      "rule": "d1",
+      "lag_hours": 6,
+      "cost_bps": 25,
+      "n_parents": 132,
+      "stats": {
+        "candidate_minus_incumbent": {
+          "n": 132,
+          "mean": -0.002167467146070207,
+          "median": -0.0005981672131105675,
+          "block95": [
+            -0.00477129807306747,
+            -0.00034560717100917503
+          ]
+        },
+        "candidate_return": {
+          "n": 132,
+          "mean": -0.002237407412107895,
+          "median": -0.001582271895037235,
+          "block95": [
+            -0.0029934384994375765,
+            -0.0015167700859424244
+          ]
+        },
+        "incumbent_return": {
+          "n": 132,
+          "mean": -6.994026603768832e-05,
+          "median": 0.0,
+          "block95": [
+            -0.0019934664732307473,
+            0.002296539226170245
+          ]
+        },
+        "fixed_initial_return": {
+          "n": 132,
+          "mean": 0.0003019892005506266,
+          "median": 0.0,
+          "block95": [
+            -0.001665116020768505,
+            0.0026630439904675547
+          ]
+        }
+      },
+      "positive_entry_exposure": 106,
+      "confirmed": null,
+      "omit_one_year_primary_mean": {
+        "2024": -0.0024688132185655765,
+        "2025": -0.0014963496127202178,
+        "2026": -0.002481014441159126
+      },
+      "per_year_counts": {
+        "2024": 46,
+        "2025": 49,
+        "2026": 37
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "full",
+      "rule": "u1",
+      "lag_hours": 1,
+      "cost_bps": 0,
+      "n_parents": 54,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 54,
+          "mean": -0.019635699112540976,
+          "median": -0.018389100391918767,
+          "block95": [
+            -0.03843746110666546,
+            -0.0002659936451962953
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 54,
+          "mean": -0.03147941211457956,
+          "median": -0.0002255170714043908,
+          "block95": [
+            -0.043720327199435395,
+            -0.01841868128586274
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 54,
+          "mean": -0.027688165492301003,
+          "median": -0.010370660552386113,
+          "block95": [
+            -0.04762318556132235,
+            -0.008790920888618565
+          ]
+        },
+        "candidate_return": {
+          "n": 54,
+          "mean": -0.02357221498095201,
+          "median": 0.0,
+          "block95": [
+            -0.051748172133163156,
+            0.0036704041639511
+          ]
+        },
+        "immediate_return": {
+          "n": 54,
+          "mean": -0.003936515868411035,
+          "median": -0.012896472089854283,
+          "block95": [
+            -0.03373480653190931,
+            0.029029929210394583
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 29,
+      "omit_one_year_primary_mean": {
+        "2016": -0.01862872136920308,
+        "2017": -0.009248322097497841,
+        "2018": -0.02220597851947696,
+        "2019": -0.019208992327284017,
+        "2020": -0.016889520745953287,
+        "2021": -0.024843015774667424,
+        "2022": -0.026278545196508355,
+        "2023": -0.019168244205398734,
+        "2024": -0.019329681366425922,
+        "2025": -0.018275385073027284,
+        "2026": -0.022499514836233993
+      },
+      "per_year_counts": {
+        "2016": 3,
+        "2017": 8,
+        "2018": 8,
+        "2019": 5,
+        "2020": 3,
+        "2021": 10,
+        "2022": 8,
+        "2023": 2,
+        "2024": 4,
+        "2025": 1,
+        "2026": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "full",
+      "rule": "u1",
+      "lag_hours": 1,
+      "cost_bps": 10,
+      "n_parents": 54,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 54,
+          "mean": -0.018670984387052107,
+          "median": -0.016948149782437083,
+          "block95": [
+            -0.03768236030686448,
+            0.0007550239768420791
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 54,
+          "mean": -0.03175285331738572,
+          "median": -0.0005123816499845724,
+          "block95": [
+            -0.04402035065204508,
+            -0.018680077501540368
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 54,
+          "mean": -0.027178209751256614,
+          "median": -0.009370692504260703,
+          "block95": [
+            -0.047469104361066244,
+            -0.008062122345342732
+          ]
+        },
+        "candidate_return": {
+          "n": 54,
+          "mean": -0.024598631160242145,
+          "median": 0.0,
+          "block95": [
+            -0.052852900673576245,
+            0.0024185862533407116
+          ]
+        },
+        "immediate_return": {
+          "n": 54,
+          "mean": -0.005927646773190037,
+          "median": -0.014869692042147054,
+          "block95": [
+            -0.03566637065365172,
+            0.02697289838190284
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 29,
+      "omit_one_year_primary_mean": {
+        "2016": -0.017689972751264525,
+        "2017": -0.008230334701624945,
+        "2018": -0.02116208876841653,
+        "2019": -0.0182730833475403,
+        "2020": -0.01591505271162932,
+        "2021": -0.023884718222497523,
+        "2022": -0.025400340471617065,
+        "2023": -0.018207311500616823,
+        "2024": -0.018371501333374545,
+        "2025": -0.017295928049964507,
+        "2026": -0.021531922921461
+      },
+      "per_year_counts": {
+        "2016": 3,
+        "2017": 8,
+        "2018": 8,
+        "2019": 5,
+        "2020": 3,
+        "2021": 10,
+        "2022": 8,
+        "2023": 2,
+        "2024": 4,
+        "2025": 1,
+        "2026": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "full",
+      "rule": "u1",
+      "lag_hours": 1,
+      "cost_bps": 25,
+      "n_parents": 54,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 54,
+          "mean": -0.01722572204380162,
+          "median": -0.015396918399341541,
+          "block95": [
+            -0.0367789468286778,
+            0.0023079868630908433
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 54,
+          "mean": -0.03216209786370926,
+          "median": -0.0009417540667699953,
+          "block95": [
+            -0.044469352530393205,
+            -0.019074750131328592
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 54,
+          "mean": -0.026415900933248297,
+          "median": -0.007872188395955049,
+          "block95": [
+            -0.046674321092050775,
+            -0.006979739514995356
+          ]
+        },
+        "candidate_return": {
+          "n": 54,
+          "mean": -0.02613632993609448,
+          "median": 0.0,
+          "block95": [
+            -0.05454701707099813,
+            0.0005801982462451992
+          ]
+        },
+        "immediate_return": {
+          "n": 54,
+          "mean": -0.008910607892292862,
+          "median": -0.017825820332355524,
+          "block95": [
+            -0.03856009334179009,
+            0.02389121100140044
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 29,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0162836108585325,
+        "2017": -0.00670526328902365,
+        "2018": -0.019598212414245354,
+        "2019": -0.01687097558511521,
+        "2020": -0.014455178701728391,
+        "2021": -0.02244906960100647,
+        "2022": -0.024084680841868274,
+        "2023": -0.01676771509359054,
+        "2024": -0.01693602877010265,
+        "2025": -0.015828579915988863,
+        "2026": -0.02008235019171297
+      },
+      "per_year_counts": {
+        "2016": 3,
+        "2017": 8,
+        "2018": 8,
+        "2019": 5,
+        "2020": 3,
+        "2021": 10,
+        "2022": 8,
+        "2023": 2,
+        "2024": 4,
+        "2025": 1,
+        "2026": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "full",
+      "rule": "u1",
+      "lag_hours": 6,
+      "cost_bps": 0,
+      "n_parents": 54,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 54,
+          "mean": -0.020312576258649715,
+          "median": -0.023422284487677525,
+          "block95": [
+            -0.04503233111852555,
+            0.004580063624757115
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 54,
+          "mean": -0.0336430769102601,
+          "median": 0.0,
+          "block95": [
+            -0.05196764295983502,
+            -0.0155709985621276
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 54,
+          "mean": -0.030228374838705555,
+          "median": -0.005655448230939553,
+          "block95": [
+            -0.05736050105949411,
+            -0.006604055093576479
+          ]
+        },
+        "candidate_return": {
+          "n": 54,
+          "mean": -0.026100953402937613,
+          "median": 0.0,
+          "block95": [
+            -0.05921722797164214,
+            0.004287349535939537
+          ]
+        },
+        "immediate_return": {
+          "n": 54,
+          "mean": -0.005788377144287889,
+          "median": -0.008652179106520663,
+          "block95": [
+            -0.03762886394935183,
+            0.031112321810690298
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 29,
+      "omit_one_year_primary_mean": {
+        "2016": -0.01978248615082924,
+        "2017": -0.00689110599638156,
+        "2018": -0.021540610074696553,
+        "2019": -0.016878689927156167,
+        "2020": -0.018350088261811896,
+        "2021": -0.030204886978264858,
+        "2022": -0.028351600033936462,
+        "2023": -0.01994448738309361,
+        "2024": -0.019576760850840595,
+        "2025": -0.019223712869527513,
+        "2026": -0.023483045034102326
+      },
+      "per_year_counts": {
+        "2016": 3,
+        "2017": 8,
+        "2018": 8,
+        "2019": 5,
+        "2020": 3,
+        "2021": 10,
+        "2022": 8,
+        "2023": 2,
+        "2024": 4,
+        "2025": 1,
+        "2026": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "full",
+      "rule": "u1",
+      "lag_hours": 6,
+      "cost_bps": 10,
+      "n_parents": 54,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 54,
+          "mean": -0.019346508455745898,
+          "median": -0.022375963340986404,
+          "block95": [
+            -0.044178969813651,
+            0.005594527454561041
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 54,
+          "mean": -0.03391207773691248,
+          "median": 0.0,
+          "block95": [
+            -0.05223815525369035,
+            -0.015777166209071672
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 54,
+          "mean": -0.029713925647332943,
+          "median": -0.004843578598444198,
+          "block95": [
+            -0.0569670744289099,
+            -0.00601294122459323
+          ]
+        },
+        "candidate_return": {
+          "n": 54,
+          "mean": -0.02712231463412215,
+          "median": 0.0,
+          "block95": [
+            -0.060329756053621536,
+            0.003247677709001571
+          ]
+        },
+        "immediate_return": {
+          "n": 54,
+          "mean": -0.007775806178376256,
+          "median": -0.010633883400486321,
+          "block95": [
+            -0.03955264385031673,
+            0.02905112827939077
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 29,
+      "omit_one_year_primary_mean": {
+        "2016": -0.018841431157092345,
+        "2017": -0.0058778306754950285,
+        "2018": -0.020498050395157317,
+        "2019": -0.01594743922191035,
+        "2020": -0.01737270055302372,
+        "2021": -0.029235871045559095,
+        "2022": -0.027469251272425266,
+        "2023": -0.018982002968199622,
+        "2024": -0.018618086905899923,
+        "2025": -0.018242360139199672,
+        "2026": -0.02251348704246397
+      },
+      "per_year_counts": {
+        "2016": 3,
+        "2017": 8,
+        "2018": 8,
+        "2019": 5,
+        "2020": 3,
+        "2021": 10,
+        "2022": 8,
+        "2023": 2,
+        "2024": 4,
+        "2025": 1,
+        "2026": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "full",
+      "rule": "u1",
+      "lag_hours": 6,
+      "cost_bps": 25,
+      "n_parents": 54,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 54,
+          "mean": -0.017899219034661868,
+          "median": -0.020944497025977615,
+          "block95": [
+            -0.0429005287092118,
+            0.007135237897652766
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 54,
+          "mean": -0.034314670265218845,
+          "median": 0.0,
+          "block95": [
+            -0.052642951298619574,
+            -0.01620184514422681
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 54,
+          "mean": -0.028944895109144837,
+          "median": -0.0020774149021346444,
+          "block95": [
+            -0.05637895892466287,
+            -0.005129555581458814
+          ]
+        },
+        "candidate_return": {
+          "n": 54,
+          "mean": -0.028652440470585305,
+          "median": 0.0,
+          "block95": [
+            -0.06199646114291982,
+            0.002061523410407316
+          ]
+        },
+        "immediate_return": {
+          "n": 54,
+          "mean": -0.010753221435923435,
+          "median": -0.013602722287108016,
+          "block95": [
+            -0.04243470481000451,
+            0.025963204653648497
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 29,
+      "omit_one_year_primary_mean": {
+        "2016": -0.017431614027280325,
+        "2017": -0.004359818535812248,
+        "2018": -0.018936166653136036,
+        "2019": -0.014552310132597888,
+        "2020": -0.015908452508554452,
+        "2021": -0.02778416496028093,
+        "2022": -0.026147383361701724,
+        "2023": -0.017540081906916676,
+        "2024": -0.01718187440134177,
+        "2025": -0.0167721720005552,
+        "2026": -0.021060968885655673
+      },
+      "per_year_counts": {
+        "2016": 3,
+        "2017": 8,
+        "2018": 8,
+        "2019": 5,
+        "2020": 3,
+        "2021": 10,
+        "2022": 8,
+        "2023": 2,
+        "2024": 4,
+        "2025": 1,
+        "2026": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "2016_2019",
+      "rule": "u1",
+      "lag_hours": 1,
+      "cost_bps": 0,
+      "n_parents": 24,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 24,
+          "mean": -0.037629490252572353,
+          "median": -0.05129223134639038,
+          "block95": [
+            -0.07210107378746787,
+            0.0012345874880261905
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 24,
+          "mean": -0.03821048875043739,
+          "median": -0.0265283394919279,
+          "block95": [
+            -0.05677526469884032,
+            -0.01586751236939301
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 24,
+          "mean": -0.024555124279446477,
+          "median": -0.014838758589299728,
+          "block95": [
+            -0.05362834833805733,
+            0.00966102991629286
+          ]
+        },
+        "candidate_return": {
+          "n": 24,
+          "mean": -0.01836192580530988,
+          "median": 0.0,
+          "block95": [
+            -0.060963945281050515,
+            0.03169375635447316
+          ]
+        },
+        "immediate_return": {
+          "n": 24,
+          "mean": 0.019267564447262474,
+          "median": -0.01599546761961418,
+          "block95": [
+            -0.0314398269102973,
+            0.08123992751270784
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 15,
+      "omit_one_year_primary_mean": {
+        "2016": -0.03775451446732766,
+        "2017": -0.016762676904339024,
+        "2018": -0.054015939117528985,
+        "2019": -0.0412642441063916
+      },
+      "per_year_counts": {
+        "2016": 3,
+        "2017": 8,
+        "2018": 8,
+        "2019": 5
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "2016_2019",
+      "rule": "u1",
+      "lag_hours": 1,
+      "cost_bps": 10,
+      "n_parents": 24,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 24,
+          "mean": -0.03680464390155758,
+          "median": -0.05019019817592629,
+          "block95": [
+            -0.07133065905108311,
+            0.0021844939993918957
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 24,
+          "mean": -0.03850578668774448,
+          "median": -0.026909875739645428,
+          "block95": [
+            -0.05719431262261139,
+            -0.016031778873053553
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 24,
+          "mean": -0.02415868170079961,
+          "median": -0.014257026418095342,
+          "block95": [
+            -0.053644381785464886,
+            0.010355310923946719
+          ]
+        },
+        "candidate_return": {
+          "n": 24,
+          "mean": -0.019574595315625207,
+          "median": 0.0,
+          "block95": [
+            -0.06220156159393417,
+            0.03053093192075066
+          ]
+        },
+        "immediate_return": {
+          "n": 24,
+          "mean": 0.01723004858593237,
+          "median": -0.01796249267984168,
+          "block95": [
+            -0.03337597869630368,
+            0.07907852889761005
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 15,
+      "omit_one_year_primary_mean": {
+        "2016": -0.03701270985957422,
+        "2017": -0.015854605813207218,
+        "2018": -0.05303339875523304,
+        "2019": -0.04055049372452856
+      },
+      "per_year_counts": {
+        "2016": 3,
+        "2017": 8,
+        "2018": 8,
+        "2019": 5
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "2016_2019",
+      "rule": "u1",
+      "lag_hours": 1,
+      "cost_bps": 25,
+      "n_parents": 24,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 24,
+          "mean": -0.03556892173562388,
+          "median": -0.04983601075592731,
+          "block95": [
+            -0.07025101406510077,
+            0.0036075718007491657
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 24,
+          "mean": -0.03894771629480905,
+          "median": -0.02748082070348906,
+          "block95": [
+            -0.05782147590018014,
+            -0.016187132318694678
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 24,
+          "mean": -0.023566667223482284,
+          "median": -0.013386715541157279,
+          "block95": [
+            -0.05343317551413138,
+            0.01138886067594436
+          ]
+        },
+        "candidate_return": {
+          "n": 24,
+          "mean": -0.02139132468831957,
+          "median": 0.0,
+          "block95": [
+            -0.06404620620137945,
+            0.02927245450071452
+          ]
+        },
+        "immediate_return": {
+          "n": 24,
+          "mean": 0.014177597047304305,
+          "median": -0.020909340253188025,
+          "block95": [
+            -0.0362765742746635,
+            0.07584048562469153
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 15,
+      "omit_one_year_primary_mean": {
+        "2016": -0.035901394527373474,
+        "2017": -0.014494202661548342,
+        "2018": -0.051561431396560733,
+        "2019": -0.039481207103175306
+      },
+      "per_year_counts": {
+        "2016": 3,
+        "2017": 8,
+        "2018": 8,
+        "2019": 5
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "2016_2019",
+      "rule": "u1",
+      "lag_hours": 6,
+      "cost_bps": 0,
+      "n_parents": 24,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 24,
+          "mean": -0.05182062218649184,
+          "median": -0.046530182573915224,
+          "block95": [
+            -0.09192008666353464,
+            -0.004850266071949376
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 24,
+          "mean": -0.048909043676170195,
+          "median": -0.026366638895602312,
+          "block95": [
+            -0.07768300017579845,
+            -0.014378792222178395
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 24,
+          "mean": -0.03634171633872194,
+          "median": -0.018333039391093875,
+          "block95": [
+            -0.07924144694607682,
+            0.008417867932131166
+          ]
+        },
+        "candidate_return": {
+          "n": 24,
+          "mean": -0.02614444611846499,
+          "median": 0.0,
+          "block95": [
+            -0.07827802930268568,
+            0.032476978777532965
+          ]
+        },
+        "immediate_return": {
+          "n": 24,
+          "mean": 0.025676176068026857,
+          "median": 0.0013308651775179037,
+          "block95": [
+            -0.028337689452915867,
+            0.09408002781920191
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 15,
+      "omit_one_year_primary_mean": {
+        "2016": -0.05503440991433382,
+        "2017": -0.028987918146391935,
+        "2018": -0.07110524237154753,
+        "2019": -0.05125640110207217
+      },
+      "per_year_counts": {
+        "2016": 3,
+        "2017": 8,
+        "2018": 8,
+        "2019": 5
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "2016_2019",
+      "rule": "u1",
+      "lag_hours": 6,
+      "cost_bps": 10,
+      "n_parents": 24,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 24,
+          "mean": -0.05096740776274119,
+          "median": -0.04643716873895176,
+          "block95": [
+            -0.0913165470369014,
+            -0.0035457947607808816
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 24,
+          "mean": -0.049183755365680426,
+          "median": -0.02668730468880326,
+          "block95": [
+            -0.0780178126100723,
+            -0.014572303814450053
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 24,
+          "mean": -0.03592434524589355,
+          "median": -0.016678860256726158,
+          "block95": [
+            -0.07898309454393224,
+            0.009185314631617439
+          ]
+        },
+        "candidate_return": {
+          "n": 24,
+          "mean": -0.027341558370674358,
+          "median": 0.0,
+          "block95": [
+            -0.07981524129062807,
+            0.031161272521307234
+          ]
+        },
+        "immediate_return": {
+          "n": 24,
+          "mean": 0.023625849392066824,
+          "median": -0.0006707952219707769,
+          "block95": [
+            -0.030280042411699255,
+            0.09189296184359068
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 15,
+      "omit_one_year_primary_mean": {
+        "2016": -0.05425806279558188,
+        "2017": -0.028055408798017593,
+        "2018": -0.07008854049204666,
+        "2019": -0.05052267639837459
+      },
+      "per_year_counts": {
+        "2016": 3,
+        "2017": 8,
+        "2018": 8,
+        "2019": 5
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "2016_2019",
+      "rule": "u1",
+      "lag_hours": 6,
+      "cost_bps": 25,
+      "n_parents": 24,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 24,
+          "mean": -0.049689186704447864,
+          "median": -0.04629782247468783,
+          "block95": [
+            -0.09041219940467647,
+            -0.0015835607489293685
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 24,
+          "mean": -0.049594842717012914,
+          "median": -0.027167125191039088,
+          "block95": [
+            -0.07844433881603263,
+            -0.014925096988278028
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 24,
+          "mean": -0.03530099845160769,
+          "median": -0.01420252053574489,
+          "block95": [
+            -0.07857664607188175,
+            0.010108698790461758
+          ]
+        },
+        "candidate_return": {
+          "n": 24,
+          "mean": -0.029134981040660823,
+          "median": 0.0,
+          "block95": [
+            -0.08186763982873908,
+            0.029295626301928144
+          ]
+        },
+        "immediate_return": {
+          "n": 24,
+          "mean": 0.02055420566378704,
+          "median": -0.003669530830462231,
+          "block95": [
+            -0.03318992811621031,
+            0.08861646568027993
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 15,
+      "omit_one_year_primary_mean": {
+        "2016": -0.0530949984964907,
+        "2017": -0.02665839410514821,
+        "2018": -0.0685653949424541,
+        "2019": -0.049423465764858135
+      },
+      "per_year_counts": {
+        "2016": 3,
+        "2017": 8,
+        "2018": 8,
+        "2019": 5
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "2020_2023",
+      "rule": "u1",
+      "lag_hours": 1,
+      "cost_bps": 0,
+      "n_parents": 23,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 23,
+          "mean": -0.0035343903678151244,
+          "median": -0.01001699180824378,
+          "block95": [
+            -0.02771882869712025,
+            0.014386691290401757
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 23,
+          "mean": -0.02742495795372024,
+          "median": 0.0,
+          "block95": [
+            -0.04798055600143462,
+            -0.010253136583350642
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 23,
+          "mean": -0.03340692999444986,
+          "median": -0.008631835791682363,
+          "block95": [
+            -0.06782642186650652,
+            -0.01262180134042583
+          ]
+        },
+        "candidate_return": {
+          "n": 23,
+          "mean": -0.029924379304838475,
+          "median": 0.0,
+          "block95": [
+            -0.07789144296531961,
+            -0.00045014831639064983
+          ]
+        },
+        "immediate_return": {
+          "n": 23,
+          "mean": -0.02638998893702335,
+          "median": -0.011845919870727362,
+          "block95": [
+            -0.07601832031741623,
+            0.015748603806933086
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 10,
+      "omit_one_year_primary_mean": {
+        "2020": 0.005883560778692359,
+        "2021": -0.008773532343684763,
+        "2022": -0.015318420361461301,
+        "2023": -0.0008434250030128263
+      },
+      "per_year_counts": {
+        "2020": 3,
+        "2021": 10,
+        "2022": 8,
+        "2023": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "2020_2023",
+      "rule": "u1",
+      "lag_hours": 1,
+      "cost_bps": 10,
+      "n_parents": 23,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 23,
+          "mean": -0.002397455556252549,
+          "median": -0.007997967841619102,
+          "block95": [
+            -0.02663395272439859,
+            0.01566106158765466
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 23,
+          "mean": -0.027654052161344443,
+          "median": 0.0,
+          "block95": [
+            -0.04817188275562648,
+            -0.010510338854684574
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 23,
+          "mean": -0.03273248309314213,
+          "median": -0.0077045581425134735,
+          "block95": [
+            -0.06775897397495127,
+            -0.011798401905867825
+          ]
+        },
+        "candidate_return": {
+          "n": 23,
+          "mean": -0.030733690905390663,
+          "median": 0.0,
+          "block95": [
+            -0.0787352379708316,
+            -0.001219835944244745
+          ]
+        },
+        "immediate_return": {
+          "n": 23,
+          "mean": -0.028336235349138116,
+          "median": -0.013821239876905755,
+          "block95": [
+            -0.07786535969510135,
+            0.013718122347923078
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 10,
+      "omit_one_year_primary_mean": {
+        "2020": 0.007071199540695494,
+        "2021": -0.007525840206375845,
+        "2022": -0.014354932172492004,
+        "2023": 0.00030054671785382343
+      },
+      "per_year_counts": {
+        "2020": 3,
+        "2021": 10,
+        "2022": 8,
+        "2023": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "2020_2023",
+      "rule": "u1",
+      "lag_hours": 1,
+      "cost_bps": 25,
+      "n_parents": 23,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 23,
+          "mean": -0.0006941861580899494,
+          "median": -0.007942154566336512,
+          "block95": [
+            -0.025004833486558284,
+            0.01749937871379602
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 23,
+          "mean": -0.027996942065540934,
+          "median": 0.0,
+          "block95": [
+            -0.04845820261237786,
+            -0.010861428104598737
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 23,
+          "mean": -0.031723604325589426,
+          "median": -0.00631502045590393,
+          "block95": [
+            -0.06725235281835172,
+            -0.010625003072130105
+          ]
+        },
+        "candidate_return": {
+          "n": 23,
+          "mean": -0.031946140087858746,
+          "median": 0.0,
+          "block95": [
+            -0.08029806538162097,
+            -0.00231288782523025
+          ]
+        },
+        "immediate_return": {
+          "n": 23,
+          "mean": -0.031251953929768796,
+          "median": -0.01678051430837335,
+          "block95": [
+            -0.08063245383033077,
+            0.010676209216672393
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 10,
+      "omit_one_year_primary_mean": {
+        "2020": 0.008850429747053534,
+        "2021": -0.005656642593466612,
+        "2022": -0.012911507333114783,
+        "2023": 0.002014358279167167
+      },
+      "per_year_counts": {
+        "2020": 3,
+        "2021": 10,
+        "2022": 8,
+        "2023": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "2020_2023",
+      "rule": "u1",
+      "lag_hours": 6,
+      "cost_bps": 0,
+      "n_parents": 23,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 23,
+          "mean": 0.00950608704389848,
+          "median": 0.002599252531333973,
+          "block95": [
+            -0.013844272751285306,
+            0.026621996124503486
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 23,
+          "mean": -0.021778184599160415,
+          "median": 0.0,
+          "block95": [
+            -0.0448705003823826,
+            -0.004882945518991502
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 23,
+          "mean": -0.02720350271432975,
+          "median": -0.0052999982541261925,
+          "block95": [
+            -0.06423798305357391,
+            -0.0062912010670787485
+          ]
+        },
+        "candidate_return": {
+          "n": 23,
+          "mean": -0.02797080385753614,
+          "median": 0.0,
+          "block95": [
+            -0.0785482964877774,
+            0.00241253468112797
+          ]
+        },
+        "immediate_return": {
+          "n": 23,
+          "mean": -0.03747689090143462,
+          "median": -0.014563488631118893,
+          "block95": [
+            -0.08571404391550136,
+            -0.0008214799542519326
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 10,
+      "omit_one_year_primary_mean": {
+        "2020": 0.018983230931217177,
+        "2021": -0.001038146697454142,
+        "2022": 0.0007563678943781923,
+        "2023": 0.01325741790742298
+      },
+      "per_year_counts": {
+        "2020": 3,
+        "2021": 10,
+        "2022": 8,
+        "2023": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "2020_2023",
+      "rule": "u1",
+      "lag_hours": 6,
+      "cost_bps": 10,
+      "n_parents": 23,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 23,
+          "mean": 0.010616953941114775,
+          "median": 0.004593056625523562,
+          "block95": [
+            -0.012715123419924854,
+            0.02770438786126173
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 23,
+          "mean": -0.022017475004624948,
+          "median": 0.0,
+          "block95": [
+            -0.045047976508464004,
+            -0.005105143752638812
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 23,
+          "mean": -0.026543162797381878,
+          "median": -0.0021171252089815518,
+          "block95": [
+            -0.06372706998083612,
+            -0.005277032276783101
+          ]
+        },
+        "candidate_return": {
+          "n": 23,
+          "mean": -0.028784020655407402,
+          "median": 0.0,
+          "block95": [
+            -0.07939355483198704,
+            0.0016630126987440374
+          ]
+        },
+        "immediate_return": {
+          "n": 23,
+          "mean": -0.03940097459652218,
+          "median": -0.01653337621734441,
+          "block95": [
+            -0.0875417015417139,
+            -0.002818837815822903
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 10,
+      "omit_one_year_primary_mean": {
+        "2020": 0.020144683452585417,
+        "2021": 0.00019408240394751358,
+        "2022": 0.001687722581623722,
+        "2023": 0.014373202043311314
+      },
+      "per_year_counts": {
+        "2020": 3,
+        "2021": 10,
+        "2022": 8,
+        "2023": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "2020_2023",
+      "rule": "u1",
+      "lag_hours": 6,
+      "cost_bps": 25,
+      "n_parents": 23,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 23,
+          "mean": 0.012281170369548755,
+          "median": 0.007580022514004248,
+          "block95": [
+            -0.011621127397186522,
+            0.029488613373034274
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 23,
+          "mean": -0.022375642128162603,
+          "median": 0.0,
+          "block95": [
+            -0.045313542481983396,
+            -0.005535766091477926
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 23,
+          "mean": -0.025555402281696272,
+          "median": -0.0008023315039240586,
+          "block95": [
+            -0.06296294566806371,
+            -0.004067469279503824
+          ]
+        },
+        "candidate_return": {
+          "n": 23,
+          "mean": -0.030002320307946445,
+          "median": 0.0,
+          "block95": [
+            -0.08065985669608035,
+            0.0005076659236873473
+          ]
+        },
+        "immediate_return": {
+          "n": 23,
+          "mean": -0.042283490677495206,
+          "median": -0.01948451220976566,
+          "block95": [
+            -0.09027975940869805,
+            -0.005811127688730009
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 10,
+      "omit_one_year_primary_mean": {
+        "2020": 0.02188468342175425,
+        "2021": 0.0020401144706924026,
+        "2022": 0.003083007448872192,
+        "2023": 0.016044785105318805
+      },
+      "per_year_counts": {
+        "2020": 3,
+        "2021": 10,
+        "2022": 8,
+        "2023": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "reused_2024plus",
+      "rule": "u1",
+      "lag_hours": 1,
+      "cost_bps": 0,
+      "n_parents": 7,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 7,
+          "mean": -0.010847001079389771,
+          "median": -0.005625006577617997,
+          "block95": [
+            -0.05278896126460168,
+            0.04701691606441497
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 7,
+          "mean": -0.021723213034461897,
+          "median": -0.0004510341428087816,
+          "block95": [
+            -0.0519529578555305,
+            -0.00202908339295618
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 7,
+          "mean": -0.019639794857884568,
+          "median": -0.004796216207730186,
+          "block95": [
+            -0.06559907500142695,
+            0.01047301280688715
+          ]
+        },
+        "candidate_return": {
+          "n": 7,
+          "mean": -0.02056466651895523,
+          "median": 0.0,
+          "block95": [
+            -0.057307099493354746,
+            0.0012513576218725064
+          ]
+        },
+        "immediate_return": {
+          "n": 7,
+          "mean": -0.009717665439565457,
+          "median": -0.0027634891874712686,
+          "block95": [
+            -0.05733094552980896,
+            0.019994013063508044
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 4,
+      "omit_one_year_primary_mean": {
+        "2024": 0.005971558733396091,
+        "2025": 0.0026338892751730514,
+        "2026": -0.037115205392536675
+      },
+      "per_year_counts": {
+        "2024": 4,
+        "2025": 1,
+        "2026": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "reused_2024plus",
+      "rule": "u1",
+      "lag_hours": 1,
+      "cost_bps": 10,
+      "n_parents": 7,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 7,
+          "mean": -0.009968603638517624,
+          "median": -0.005613762189472293,
+          "block95": [
+            -0.052425529434604046,
+            0.04782294963734695
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 7,
+          "mean": -0.022067428417434126,
+          "median": -0.0010247632999691447,
+          "block95": [
+            -0.052484210200719375,
+            -0.002202485468656375
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 7,
+          "mean": -0.019281122086628195,
+          "median": -0.002516572524785321,
+          "block95": [
+            -0.065684364082061,
+            0.010720297989293248
+          ]
+        },
+        "candidate_return": {
+          "n": 7,
+          "mean": -0.021665843464869376,
+          "median": 0.0,
+          "block95": [
+            -0.058906863583609956,
+            0.0002493561579863986
+          ]
+        },
+        "immediate_return": {
+          "n": 7,
+          "mean": -0.01169723982635175,
+          "median": -0.004756964972586153,
+          "block95": [
+            -0.05921534096969525,
+            0.017955045031394706
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 4,
+      "omit_one_year_primary_mean": {
+        "2024": 0.006625954920821038,
+        "2025": 0.0036281241305119263,
+        "2026": -0.036241412096956284
+      },
+      "per_year_counts": {
+        "2024": 4,
+        "2025": 1,
+        "2026": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "reused_2024plus",
+      "rule": "u1",
+      "lag_hours": 1,
+      "cost_bps": 25,
+      "n_parents": 7,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 7,
+          "mean": -0.008652655296320802,
+          "median": -0.005596916701025245,
+          "block95": [
+            -0.051453676865492515,
+            0.04982551601589591
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 7,
+          "mean": -0.02258263229392015,
+          "median": -0.0018835081335399906,
+          "block95": [
+            -0.05327929792679725,
+            -0.0024620541977698257
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 7,
+          "mean": -0.01874510536332514,
+          "median": 0.0006233285861920734,
+          "block95": [
+            -0.06636789332499081,
+            0.010298908254554595
+          ]
+        },
+        "candidate_return": {
+          "n": 7,
+          "mean": -0.023315543144097308,
+          "median": 0.0,
+          "block95": [
+            -0.06129653970935015,
+            -1.3749483307614414e-05
+          ]
+        },
+        "immediate_return": {
+          "n": 7,
+          "mean": -0.014662887847776505,
+          "median": -0.0077434390133429565,
+          "block95": [
+            -0.06203839912056991,
+            0.014900417960772941
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 4,
+      "omit_one_year_primary_mean": {
+        "2024": 0.007606321595303093,
+        "2025": 0.0051176112906053395,
+        "2026": -0.03493236133560651
+      },
+      "per_year_counts": {
+        "2024": 4,
+        "2025": 1,
+        "2026": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "reused_2024plus",
+      "rule": "u1",
+      "lag_hours": 6,
+      "cost_bps": 0,
+      "n_parents": 7,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 7,
+          "mean": -0.01026059821442084,
+          "median": 0.00779967197510556,
+          "block95": [
+            -0.04717851387560312,
+            0.04693103462426172
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 7,
+          "mean": -0.020287265592181587,
+          "median": 0.0,
+          "block95": [
+            -0.04927365229463267,
+            0.004679635307838048
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 7,
+          "mean": -0.01920721239016992,
+          "median": 0.003734093760287882,
+          "block95": [
+            -0.06370682448839897,
+            0.022909805412295092
+          ]
+        },
+        "candidate_return": {
+          "n": 7,
+          "mean": -0.019808041170305737,
+          "median": 0.0,
+          "block95": [
+            -0.057630933044209645,
+            0.0032269217826631502
+          ]
+        },
+        "immediate_return": {
+          "n": 7,
+          "mean": -0.009547442955884897,
+          "median": -0.00779967197510556,
+          "block95": [
+            -0.0588992136930448,
+            0.02552445691792915
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 4,
+      "omit_one_year_primary_mean": {
+        "2024": 0.015405629308036498,
+        "2025": 0.0010330247301968039,
+        "2026": -0.03921268226143641
+      },
+      "per_year_counts": {
+        "2024": 4,
+        "2025": 1,
+        "2026": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "reused_2024plus",
+      "rule": "u1",
+      "lag_hours": 6,
+      "cost_bps": 10,
+      "n_parents": 7,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 7,
+          "mean": -0.009383372992875663,
+          "median": 0.009783080430828539,
+          "block95": [
+            -0.04610344465136572,
+            0.04837361012175792
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 7,
+          "mean": -0.020634306272938607,
+          "median": 0.0,
+          "block95": [
+            -0.049570860897976014,
+            0.004527521667128498
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 7,
+          "mean": -0.018839279244964362,
+          "median": 0.005992041932495251,
+          "block95": [
+            -0.06372851937980177,
+            0.02265600128490291
+          ]
+        },
+        "candidate_return": {
+          "n": 7,
+          "mean": -0.0209107306102916,
+          "median": 0.0,
+          "block95": [
+            -0.05911836334884222,
+            0.0022262424719366645
+          ]
+        },
+        "immediate_return": {
+          "n": 7,
+          "mean": -0.011527357617415936,
+          "median": -0.009783080430828539,
+          "block95": [
+            -0.06078047416487257,
+            0.023474433528550467
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 4,
+      "omit_one_year_primary_mean": {
+        "2024": 0.016041166788384076,
+        "2025": 0.002030459713761016,
+        "2026": -0.03833469610959552
+      },
+      "per_year_counts": {
+        "2024": 4,
+        "2025": 1,
+        "2026": 2
+      }
+    },
+    {
+      "family": "recovery",
+      "period": "reused_2024plus",
+      "rule": "u1",
+      "lag_hours": 6,
+      "cost_bps": 25,
+      "n_parents": 7,
+      "stats": {
+        "candidate_minus_immediate": {
+          "n": 7,
+          "mean": -0.008069180780659055,
+          "median": 0.010020459554021421,
+          "block95": [
+            -0.045592068559313935,
+            0.05118419035272781
+          ]
+        },
+        "candidate_minus_matched_ex_post": {
+          "n": 7,
+          "mean": -0.021153742880824025,
+          "median": 0.0,
+          "block95": [
+            -0.05002656513108795,
+            0.004021196885720598
+          ]
+        },
+        "candidate_minus_incumbent": {
+          "n": 7,
+          "mean": -0.01828944579660322,
+          "median": 0.009371089542219213,
+          "block95": [
+            -0.06368084855487376,
+            0.02218211992976981
+          ]
+        },
+        "candidate_return": {
+          "n": 7,
+          "mean": -0.022562696193282612,
+          "median": 0.0,
+          "block95": [
+            -0.06193099554625175,
+            0.0007228564962866385
+          ]
+        },
+        "immediate_return": {
+          "n": 7,
+          "mean": -0.014493515412623559,
+          "median": -0.012754472363181724,
+          "block95": [
+            -0.06359883574466361,
+            0.02040324416119507
+          ]
+        }
+      },
+      "positive_entry_exposure": null,
+      "confirmed": 4,
+      "omit_one_year_primary_mean": {
+        "2024": 0.01699328078001298,
+        "2025": 0.0035247410629503095,
+        "2026": -0.03701936392939351
+      },
+      "per_year_counts": {
+        "2024": 4,
+        "2025": 1,
+        "2026": 2
+      }
+    }
+  ],
+  "warnings": [
+    "DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`"
+  ],
+  "limitations": [
+    "Source-observed stored vintages, not historical publication attestation.",
+    "Costs and 1/6h delays are assumptions, not observed fills.",
+    "Paired event accounts are not independent trades or a compound strategy.",
+    "Duration-matched reference is ex-post, not tradable at washout.",
+    "No historical funding splice, real-flow feature, model fitting or live gate write."
+  ]
+}

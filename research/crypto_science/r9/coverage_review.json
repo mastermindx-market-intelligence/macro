@@ -1,0 +1,2060 @@
+{
+  "classification": "POST_RUN_DESCRIPTIVE_COVERAGE_AUDIT_NO_RESELECTION",
+  "rows": [
+    {
+      "event_id": "1|2018-01-08 09:00:00",
+      "break_issue": "2018-01-08 10:00:00",
+      "lag_hours": 1,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2018-01-16 01:00:00",
+      "break_issue": "2018-01-16 02:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2018-01-22 13:00:00",
+      "break_issue": "2018-01-22 14:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2018-01-30 13:00:00",
+      "break_issue": "2018-01-30 14:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 4,
+      "prebreak_clocks": 4,
+      "known_feature_clocks": 4,
+      "qualified_clocks": 4,
+      "past_context_statuses": {
+        "prebreak": 4
+      }
+    },
+    {
+      "event_id": "1|2018-02-05 14:00:00",
+      "break_issue": "2018-02-05 15:00:00",
+      "lag_hours": 1,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 4,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "history_unknown": 3,
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "1|2018-02-22 10:00:00",
+      "break_issue": "2018-02-22 11:00:00",
+      "lag_hours": 1,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2018-03-08 17:00:00",
+      "break_issue": "2018-03-08 18:00:00",
+      "lag_hours": 1,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 2
+      }
+    },
+    {
+      "event_id": "1|2018-03-14 16:00:00",
+      "break_issue": "2018-03-14 17:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "1|2018-03-29 04:00:00",
+      "break_issue": "2018-03-29 05:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "1|2018-05-22 12:00:00",
+      "break_issue": "2018-05-22 13:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2018-06-09 23:00:00",
+      "break_issue": "2018-06-10 00:00:00",
+      "lag_hours": 1,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "1|2018-06-12 19:00:00",
+      "break_issue": "2018-06-12 20:00:00",
+      "lag_hours": 1,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "1|2018-06-22 07:00:00",
+      "break_issue": "2018-06-22 08:00:00",
+      "lag_hours": 1,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2018-08-04 12:00:00",
+      "break_issue": "2018-08-04 13:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "1|2018-08-08 00:00:00",
+      "break_issue": "2018-08-08 01:00:00",
+      "lag_hours": 1,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 1
+      }
+    },
+    {
+      "event_id": "1|2018-09-05 09:00:00",
+      "break_issue": "2018-09-05 10:00:00",
+      "lag_hours": 1,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "1|2018-10-10 05:00:00",
+      "break_issue": "2018-10-10 06:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2018-11-14 10:00:00",
+      "break_issue": "2018-11-14 11:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2018-11-19 08:00:00",
+      "break_issue": "2018-11-19 09:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2019-01-10 06:00:00",
+      "break_issue": "2019-01-10 07:00:00",
+      "lag_hours": 1,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "1|2019-05-17 02:00:00",
+      "break_issue": "2019-05-17 03:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2019-06-03 23:00:00",
+      "break_issue": "2019-06-04 00:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2019-07-16 17:00:00",
+      "break_issue": "2019-07-16 18:00:00",
+      "lag_hours": 1,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "1|2019-08-14 16:00:00",
+      "break_issue": "2019-08-14 17:00:00",
+      "lag_hours": 1,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 2
+      }
+    },
+    {
+      "event_id": "1|2019-09-24 14:00:00",
+      "break_issue": "2019-09-24 15:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 4,
+      "prebreak_clocks": 4,
+      "known_feature_clocks": 4,
+      "qualified_clocks": 4,
+      "past_context_statuses": {
+        "prebreak": 4
+      }
+    },
+    {
+      "event_id": "1|2019-11-21 08:00:00",
+      "break_issue": "2019-11-21 09:00:00",
+      "lag_hours": 1,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2020-03-08 12:00:00",
+      "break_issue": "2020-03-08 13:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2020-03-12 06:00:00",
+      "break_issue": "2020-03-12 07:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2020-03-16 07:00:00",
+      "break_issue": "2020-03-16 08:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 4,
+      "prebreak_clocks": 4,
+      "known_feature_clocks": 4,
+      "qualified_clocks": 4,
+      "past_context_statuses": {
+        "prebreak": 4
+      }
+    },
+    {
+      "event_id": "1|2020-05-10 00:00:00",
+      "break_issue": "2020-05-10 01:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "1|2020-05-20 15:00:00",
+      "break_issue": "2020-05-20 16:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2020-09-02 11:00:00",
+      "break_issue": "2020-09-02 12:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2020-09-03 12:00:00",
+      "break_issue": "2020-09-03 13:00:00",
+      "lag_hours": 1,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 2
+      }
+    },
+    {
+      "event_id": "1|2020-11-26 03:00:00",
+      "break_issue": "2020-11-26 04:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2020-12-08 09:00:00",
+      "break_issue": "2020-12-08 10:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2021-01-21 08:00:00",
+      "break_issue": "2021-01-21 09:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2021-01-27 11:00:00",
+      "break_issue": "2021-01-27 12:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2021-02-22 13:00:00",
+      "break_issue": "2021-02-22 14:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "1|2021-04-17 17:00:00",
+      "break_issue": "2021-04-17 18:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "recent_break": 1,
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "1|2021-05-04 00:00:00",
+      "break_issue": "2021-05-04 01:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2021-05-16 18:00:00",
+      "break_issue": "2021-05-16 19:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "1|2021-05-19 01:00:00",
+      "break_issue": "2021-05-19 02:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2021-06-07 20:00:00",
+      "break_issue": "2021-06-07 21:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2021-06-17 17:00:00",
+      "break_issue": "2021-06-17 18:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2021-09-20 02:00:00",
+      "break_issue": "2021-09-20 03:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2021-11-16 00:00:00",
+      "break_issue": "2021-11-16 01:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "1|2021-12-03 16:00:00",
+      "break_issue": "2021-12-03 17:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2022-01-20 23:00:00",
+      "break_issue": "2022-01-21 00:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2,
+        "recent_break": 1
+      }
+    },
+    {
+      "event_id": "1|2022-03-04 00:00:00",
+      "break_issue": "2022-03-04 01:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2022-04-06 00:00:00",
+      "break_issue": "2022-04-06 01:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2022-04-11 09:00:00",
+      "break_issue": "2022-04-11 10:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "1|2022-05-09 02:00:00",
+      "break_issue": "2022-05-09 03:00:00",
+      "lag_hours": 1,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 2
+      }
+    },
+    {
+      "event_id": "1|2022-05-11 12:00:00",
+      "break_issue": "2022-05-11 13:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2,
+        "recent_break": 1
+      }
+    },
+    {
+      "event_id": "1|2022-06-12 02:00:00",
+      "break_issue": "2022-06-12 03:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2022-06-13 07:00:00",
+      "break_issue": "2022-06-13 08:00:00",
+      "lag_hours": 1,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 3
+      }
+    },
+    {
+      "event_id": "1|2022-06-18 06:00:00",
+      "break_issue": "2022-06-18 07:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "1|2022-08-19 00:00:00",
+      "break_issue": "2022-08-19 01:00:00",
+      "lag_hours": 1,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 3
+      }
+    },
+    {
+      "event_id": "1|2022-11-07 22:00:00",
+      "break_issue": "2022-11-07 23:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2022-11-09 15:00:00",
+      "break_issue": "2022-11-09 16:00:00",
+      "lag_hours": 1,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 3
+      }
+    },
+    {
+      "event_id": "1|2023-03-08 22:00:00",
+      "break_issue": "2023-03-08 23:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2023-06-05 03:00:00",
+      "break_issue": "2023-06-05 04:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "1|2023-08-16 23:00:00",
+      "break_issue": "2023-08-17 00:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2023-12-11 02:00:00",
+      "break_issue": "2023-12-11 03:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "1|2024-01-12 16:00:00",
+      "break_issue": "2024-01-12 17:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "1|2024-03-19 08:00:00",
+      "break_issue": "2024-03-19 09:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "1|2024-04-01 14:00:00",
+      "break_issue": "2024-04-01 15:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2024-04-30 09:00:00",
+      "break_issue": "2024-04-30 10:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2024-06-23 23:00:00",
+      "break_issue": "2024-06-24 00:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "1|2024-07-03 08:00:00",
+      "break_issue": "2024-07-03 09:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2024-08-04 14:00:00",
+      "break_issue": "2024-08-04 15:00:00",
+      "lag_hours": 1,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 3
+      }
+    },
+    {
+      "event_id": "1|2024-08-26 23:00:00",
+      "break_issue": "2024-08-27 00:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2024-12-18 20:00:00",
+      "break_issue": "2024-12-18 21:00:00",
+      "lag_hours": 1,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "1|2025-02-24 14:00:00",
+      "break_issue": "2025-02-24 15:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "1|2025-04-06 17:00:00",
+      "break_issue": "2025-04-06 18:00:00",
+      "lag_hours": 1,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "1|2025-11-04 05:00:00",
+      "break_issue": "2025-11-04 06:00:00",
+      "lag_hours": 1,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 1
+      }
+    },
+    {
+      "event_id": "1|2025-11-13 16:00:00",
+      "break_issue": "2025-11-13 17:00:00",
+      "lag_hours": 1,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 1
+      }
+    },
+    {
+      "event_id": "1|2025-11-20 16:00:00",
+      "break_issue": "2025-11-20 17:00:00",
+      "lag_hours": 1,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "1|2026-02-05 02:00:00",
+      "break_issue": "2026-02-05 03:00:00",
+      "lag_hours": 1,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 2
+      }
+    },
+    {
+      "event_id": "6|2018-01-16 01:00:00",
+      "break_issue": "2018-01-16 02:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "6|2018-01-22 13:00:00",
+      "break_issue": "2018-01-22 14:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "6|2018-01-30 13:00:00",
+      "break_issue": "2018-01-30 14:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2018-02-05 14:00:00",
+      "break_issue": "2018-02-05 15:00:00",
+      "lag_hours": 6,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "history_unknown": 3
+      }
+    },
+    {
+      "event_id": "6|2018-03-06 10:00:00",
+      "break_issue": "2018-03-06 11:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2018-03-07 16:00:00",
+      "break_issue": "2018-03-07 17:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2018-03-08 17:00:00",
+      "break_issue": "2018-03-08 18:00:00",
+      "lag_hours": 6,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 2
+      }
+    },
+    {
+      "event_id": "6|2018-03-14 16:00:00",
+      "break_issue": "2018-03-14 17:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2018-03-18 02:00:00",
+      "break_issue": "2018-03-18 03:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2018-03-29 04:00:00",
+      "break_issue": "2018-03-29 05:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "6|2018-05-22 12:00:00",
+      "break_issue": "2018-05-22 13:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2018-06-09 23:00:00",
+      "break_issue": "2018-06-10 00:00:00",
+      "lag_hours": 6,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "6|2018-06-12 19:00:00",
+      "break_issue": "2018-06-12 20:00:00",
+      "lag_hours": 6,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "6|2018-07-30 17:00:00",
+      "break_issue": "2018-07-30 18:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2018-08-08 00:00:00",
+      "break_issue": "2018-08-08 01:00:00",
+      "lag_hours": 6,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 2
+      }
+    },
+    {
+      "event_id": "6|2018-09-05 09:00:00",
+      "break_issue": "2018-09-05 10:00:00",
+      "lag_hours": 6,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "6|2018-10-10 05:00:00",
+      "break_issue": "2018-10-10 06:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2018-11-14 10:00:00",
+      "break_issue": "2018-11-14 11:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2018-11-19 08:00:00",
+      "break_issue": "2018-11-19 09:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2018-12-06 23:00:00",
+      "break_issue": "2018-12-07 00:00:00",
+      "lag_hours": 6,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 1
+      }
+    },
+    {
+      "event_id": "6|2019-01-10 06:00:00",
+      "break_issue": "2019-01-10 07:00:00",
+      "lag_hours": 6,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "6|2019-05-17 02:00:00",
+      "break_issue": "2019-05-17 03:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2019-06-03 23:00:00",
+      "break_issue": "2019-06-04 00:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2019-07-01 14:00:00",
+      "break_issue": "2019-07-01 15:00:00",
+      "lag_hours": 6,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2019-07-13 20:00:00",
+      "break_issue": "2019-07-13 21:00:00",
+      "lag_hours": 6,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2019-08-13 14:00:00",
+      "break_issue": "2019-08-13 15:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2019-08-14 16:00:00",
+      "break_issue": "2019-08-14 17:00:00",
+      "lag_hours": 6,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 2
+      }
+    },
+    {
+      "event_id": "6|2019-11-21 08:00:00",
+      "break_issue": "2019-11-21 09:00:00",
+      "lag_hours": 6,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "6|2020-02-25 14:00:00",
+      "break_issue": "2020-02-25 15:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2020-03-08 12:00:00",
+      "break_issue": "2020-03-08 13:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2020-03-12 06:00:00",
+      "break_issue": "2020-03-12 07:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "6|2020-05-20 15:00:00",
+      "break_issue": "2020-05-20 16:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2020-09-02 11:00:00",
+      "break_issue": "2020-09-02 12:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2020-09-03 12:00:00",
+      "break_issue": "2020-09-03 13:00:00",
+      "lag_hours": 6,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 3
+      }
+    },
+    {
+      "event_id": "6|2020-11-26 03:00:00",
+      "break_issue": "2020-11-26 04:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2020-12-08 09:00:00",
+      "break_issue": "2020-12-08 10:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2021-01-11 06:00:00",
+      "break_issue": "2021-01-11 07:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "6|2021-02-22 13:00:00",
+      "break_issue": "2021-02-22 14:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2021-04-17 17:00:00",
+      "break_issue": "2021-04-17 18:00:00",
+      "lag_hours": 6,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 2
+      }
+    },
+    {
+      "event_id": "6|2021-05-04 00:00:00",
+      "break_issue": "2021-05-04 01:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2021-05-12 22:00:00",
+      "break_issue": "2021-05-12 23:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "6|2021-05-16 18:00:00",
+      "break_issue": "2021-05-16 19:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "6|2021-05-19 01:00:00",
+      "break_issue": "2021-05-19 02:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 3,
+      "known_feature_clocks": 3,
+      "qualified_clocks": 3,
+      "past_context_statuses": {
+        "prebreak": 3
+      }
+    },
+    {
+      "event_id": "6|2021-05-28 08:00:00",
+      "break_issue": "2021-05-28 09:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2021-06-07 20:00:00",
+      "break_issue": "2021-06-07 21:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "6|2021-06-17 17:00:00",
+      "break_issue": "2021-06-17 18:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2021-06-21 21:00:00",
+      "break_issue": "2021-06-21 22:00:00",
+      "lag_hours": 6,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 2
+      }
+    },
+    {
+      "event_id": "6|2021-06-25 22:00:00",
+      "break_issue": "2021-06-25 23:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2021-09-07 14:00:00",
+      "break_issue": "2021-09-07 15:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "6|2021-09-20 02:00:00",
+      "break_issue": "2021-09-20 03:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2021-12-03 16:00:00",
+      "break_issue": "2021-12-03 17:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2022-01-20 23:00:00",
+      "break_issue": "2022-01-21 00:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2022-02-21 11:00:00",
+      "break_issue": "2022-02-21 12:00:00",
+      "lag_hours": 6,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 1
+      }
+    },
+    {
+      "event_id": "6|2022-03-04 00:00:00",
+      "break_issue": "2022-03-04 01:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "6|2022-04-06 00:00:00",
+      "break_issue": "2022-04-06 01:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "6|2022-05-09 02:00:00",
+      "break_issue": "2022-05-09 03:00:00",
+      "lag_hours": 6,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 2
+      }
+    },
+    {
+      "event_id": "6|2022-05-11 12:00:00",
+      "break_issue": "2022-05-11 13:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 3,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2,
+        "recent_break": 1
+      }
+    },
+    {
+      "event_id": "6|2022-06-12 02:00:00",
+      "break_issue": "2022-06-12 03:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2022-06-13 07:00:00",
+      "break_issue": "2022-06-13 08:00:00",
+      "lag_hours": 6,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 2
+      }
+    },
+    {
+      "event_id": "6|2022-06-18 06:00:00",
+      "break_issue": "2022-06-18 07:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2022-08-19 00:00:00",
+      "break_issue": "2022-08-19 01:00:00",
+      "lag_hours": 6,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 1
+      }
+    },
+    {
+      "event_id": "6|2023-03-08 22:00:00",
+      "break_issue": "2023-03-08 23:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2023-06-05 03:00:00",
+      "break_issue": "2023-06-05 04:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "6|2023-08-16 23:00:00",
+      "break_issue": "2023-08-17 00:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2024-04-01 14:00:00",
+      "break_issue": "2024-04-01 15:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 2,
+      "known_feature_clocks": 2,
+      "qualified_clocks": 2,
+      "past_context_statuses": {
+        "prebreak": 2
+      }
+    },
+    {
+      "event_id": "6|2024-04-30 09:00:00",
+      "break_issue": "2024-04-30 10:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2024-06-23 23:00:00",
+      "break_issue": "2024-06-24 00:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2024-07-03 08:00:00",
+      "break_issue": "2024-07-03 09:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2024-08-04 14:00:00",
+      "break_issue": "2024-08-04 15:00:00",
+      "lag_hours": 6,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 2
+      }
+    },
+    {
+      "event_id": "6|2024-08-26 23:00:00",
+      "break_issue": "2024-08-27 00:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2025-02-01 20:00:00",
+      "break_issue": "2025-02-01 21:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2025-02-24 14:00:00",
+      "break_issue": "2025-02-24 15:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "6|2025-03-09 12:00:00",
+      "break_issue": "2025-03-09 13:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2025-04-06 17:00:00",
+      "break_issue": "2025-04-06 18:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "6|2025-10-09 16:00:00",
+      "break_issue": "2025-10-09 17:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2025-11-04 05:00:00",
+      "break_issue": "2025-11-04 06:00:00",
+      "lag_hours": 6,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 1
+      }
+    },
+    {
+      "event_id": "6|2025-11-13 16:00:00",
+      "break_issue": "2025-11-13 17:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2025-11-16 21:00:00",
+      "break_issue": "2025-11-16 22:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2025-11-20 16:00:00",
+      "break_issue": "2025-11-20 17:00:00",
+      "lag_hours": 6,
+      "reason": "price_or_target_history_unavailable",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "6|2026-02-03 18:00:00",
+      "break_issue": "2026-02-03 19:00:00",
+      "lag_hours": 6,
+      "reason": "supported",
+      "temporally_possible_clocks": 1,
+      "prebreak_clocks": 1,
+      "known_feature_clocks": 1,
+      "qualified_clocks": 1,
+      "past_context_statuses": {
+        "prebreak": 1
+      }
+    },
+    {
+      "event_id": "6|2026-02-05 02:00:00",
+      "break_issue": "2026-02-05 03:00:00",
+      "lag_hours": 6,
+      "reason": "no_past_qualified_prebreak_context",
+      "temporally_possible_clocks": 2,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {
+        "recent_break": 2
+      }
+    },
+    {
+      "event_id": "6|2026-06-01 12:00:00",
+      "break_issue": "2026-06-01 13:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    },
+    {
+      "event_id": "6|2026-06-02 22:00:00",
+      "break_issue": "2026-06-02 23:00:00",
+      "lag_hours": 6,
+      "reason": "no_issued_clock_meets_lead_and_expiry",
+      "temporally_possible_clocks": 0,
+      "prebreak_clocks": 0,
+      "known_feature_clocks": 0,
+      "qualified_clocks": 0,
+      "past_context_statuses": {}
+    }
+  ],
+  "counts": [
+    {
+      "period": "all_issued",
+      "lag_hours": 1,
+      "events": 78,
+      "reasons": {
+        "supported": 37,
+        "no_issued_clock_meets_lead_and_expiry": 18,
+        "no_past_qualified_prebreak_context": 12,
+        "price_or_target_history_unavailable": 11
+      }
+    },
+    {
+      "period": "reused_2024plus",
+      "lag_hours": 1,
+      "events": 15,
+      "reasons": {
+        "supported": 5,
+        "no_issued_clock_meets_lead_and_expiry": 5,
+        "no_past_qualified_prebreak_context": 4,
+        "price_or_target_history_unavailable": 1
+      }
+    },
+    {
+      "period": "all_issued",
+      "lag_hours": 6,
+      "events": 83,
+      "reasons": {
+        "supported": 33,
+        "no_issued_clock_meets_lead_and_expiry": 27,
+        "no_past_qualified_prebreak_context": 15,
+        "price_or_target_history_unavailable": 8
+      }
+    },
+    {
+      "period": "reused_2024plus",
+      "lag_hours": 6,
+      "events": 19,
+      "reasons": {
+        "no_issued_clock_meets_lead_and_expiry": 11,
+        "supported": 4,
+        "no_past_qualified_prebreak_context": 3,
+        "price_or_target_history_unavailable": 1
+      }
+    }
+  ],
+  "note": "Hierarchical diagnostic of the already frozen support predicate; labels/forecast/threshold/episode selection and original results unchanged. No new model test."
+}

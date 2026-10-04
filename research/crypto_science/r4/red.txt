@@ -1,0 +1,36 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_______ test_r4_hourly_features_use_completed_past_only_and_reject_gaps ________
+tests/test_btc_impulse_falsifier.py:404: in test_r4_hourly_features_use_completed_past_only_and_reject_gaps
+    from research.crypto_science.r4_sequence_study import hourly_conditions
+E   ModuleNotFoundError: No module named 'research.crypto_science.r4_sequence_study'
+________ test_r4_onsets_do_not_invent_start_after_missing_observations _________
+tests/test_btc_impulse_falsifier.py:426: in test_r4_onsets_do_not_invent_start_after_missing_observations
+    from research.crypto_science.r4_sequence_study import onsets, execution_time
+E   ModuleNotFoundError: No module named 'research.crypto_science.r4_sequence_study'
+_____ test_r4_barriers_distinguish_unknown_order_opening_gap_and_censoring _____
+tests/test_btc_impulse_falsifier.py:435: in test_r4_barriers_distinguish_unknown_order_opening_gap_and_censoring
+    from research.crypto_science.r4_sequence_study import barrier_label
+E   ModuleNotFoundError: No module named 'research.crypto_science.r4_sequence_study'
+________ test_r4_reclaim_is_first_observable_date_not_future_best_entry ________
+tests/test_btc_impulse_falsifier.py:450: in test_r4_reclaim_is_first_observable_date_not_future_best_entry
+    from research.crypto_science.r4_sequence_study import first_reclaim
+E   ModuleNotFoundError: No module named 'research.crypto_science.r4_sequence_study'
+______ test_r4_account_holds_drifting_weights_and_charges_actual_changes _______
+tests/test_btc_impulse_falsifier.py:464: in test_r4_account_holds_drifting_weights_and_charges_actual_changes
+    from research.crypto_science.r4_sequence_study import account_path
+E   ModuleNotFoundError: No module named 'research.crypto_science.r4_sequence_study'
+____ test_r4_incumbent_target_appears_after_daily_close_and_explicit_delay _____
+tests/test_btc_impulse_falsifier.py:481: in test_r4_incumbent_target_appears_after_daily_close_and_explicit_delay
+    from research.crypto_science.r4_sequence_study import incumbent_targets
+E   ModuleNotFoundError: No module named 'research.crypto_science.r4_sequence_study'
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_btc_impulse_falsifier.py::test_r4_hourly_features_use_completed_past_only_and_reject_gaps
+FAILED tests/test_btc_impulse_falsifier.py::test_r4_onsets_do_not_invent_start_after_missing_observations
+FAILED tests/test_btc_impulse_falsifier.py::test_r4_barriers_distinguish_unknown_order_opening_gap_and_censoring
+FAILED tests/test_btc_impulse_falsifier.py::test_r4_reclaim_is_first_observable_date_not_future_best_entry
+FAILED tests/test_btc_impulse_falsifier.py::test_r4_account_holds_drifting_weights_and_charges_actual_changes
+FAILED tests/test_btc_impulse_falsifier.py::test_r4_incumbent_target_appears_after_daily_close_and_explicit_delay
+6 failed, 20 deselected, 19 warnings in 3.78s

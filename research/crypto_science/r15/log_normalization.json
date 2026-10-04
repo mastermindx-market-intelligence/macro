@@ -1,0 +1,7 @@
+{
+  "reason": "git diff trailing whitespace on two pytest E-lines; failed assertion retained unchanged",
+  "before": "effca34157037ee4cfb99cd6935281b4ffb3264f45ada416c9e633bc3cd5929a",
+  "after": "279e81a1841adbe862bc9a8fd09e7407bb2012e99991f7e6b624dee8372c5dd7",
+  "archive": "research/crypto_science/r15/trace_source_after_css_failure_original.txt.gz",
+  "browser_started_by_failed_commit_command": false
+}

@@ -1,0 +1,43 @@
+{
+  "classification": "CONTROLLED_ASSET_FAILURE_NOT_PROVIDER_OUTAGE",
+  "html_sha256": "550ad9963eae3bdbb08b0f0191b997968fa04137cb9d8415b1907f29514e3f2f",
+  "cases": [
+    {
+      "width": 390,
+      "language": "en",
+      "status": "The assistant is not ready. Market research remains available.",
+      "button_reenabled": true,
+      "budget_preserved": true,
+      "allocation_link_works": true,
+      "blocked_script_requests": 1
+    },
+    {
+      "width": 390,
+      "language": "zh",
+      "status": "助手暂未就绪；您仍可查看市场研究。",
+      "button_reenabled": true,
+      "budget_preserved": true,
+      "allocation_link_works": true,
+      "blocked_script_requests": 1
+    },
+    {
+      "width": 1440,
+      "language": "en",
+      "status": "The assistant is not ready. Market research remains available.",
+      "button_reenabled": true,
+      "budget_preserved": true,
+      "allocation_link_works": true,
+      "blocked_script_requests": 1
+    },
+    {
+      "width": 1440,
+      "language": "zh",
+      "status": "助手暂未就绪；您仍可查看市场研究。",
+      "button_reenabled": true,
+      "budget_preserved": true,
+      "allocation_link_works": true,
+      "blocked_script_requests": 1
+    }
+  ],
+  "limits": "Existing shared owner script intentionally blocked; no chat message, backend request or live customer session."
+}

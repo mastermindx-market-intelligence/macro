@@ -1,0 +1,99 @@
+{
+  "classification": "TEXT_INTEGRATION_DIAGNOSTIC_NOT_MERGE_OR_RUNTIME_PROOF",
+  "baseline": "b74875a6171a4d52cb48decf70d608f106a9fa8e",
+  "own_manifest_sha256": "ddb67c3c40acbee55ef2d9c63a4579c94e26cd324c7fe6446c87c8dde6ffeca9",
+  "cases": [
+    {
+      "case": "baseline+8234",
+      "steps": [
+        {
+          "pr": 8234,
+          "head": "3760f54361c2ff16dfcfc8c2a7022da34bdc8303",
+          "merge_base": "7150f29a765387f1c14fbae086314af6e0d6bddc",
+          "exit": 0,
+          "output_sha256": "9ce421fbb5972a41af42e2b76691efdc49f3a3d145a5c4f7f235581d871339a5",
+          "conflict_count": 0,
+          "conflicts": []
+        }
+      ]
+    },
+    {
+      "case": "own+8234",
+      "steps": [
+        {
+          "pr": 8234,
+          "head": "3760f54361c2ff16dfcfc8c2a7022da34bdc8303",
+          "merge_base": "7150f29a765387f1c14fbae086314af6e0d6bddc",
+          "exit": 0,
+          "output_sha256": "28778c7c2b0871db558628041b478a6c49d9f15926eb00773b5343f764354355",
+          "conflict_count": 0,
+          "conflicts": []
+        }
+      ]
+    },
+    {
+      "case": "baseline+8232+8234",
+      "steps": [
+        {
+          "pr": 8232,
+          "head": "38e4e71bc02c0230a1b732629736cfb30157dc98",
+          "merge_base": "7150f29a765387f1c14fbae086314af6e0d6bddc",
+          "exit": 0,
+          "output_sha256": "9aef18846e859ac72575616dbd74c36c550100eb9b553413ea122f91213dd3b0",
+          "conflict_count": 0,
+          "conflicts": []
+        },
+        {
+          "pr": 8234,
+          "head": "3760f54361c2ff16dfcfc8c2a7022da34bdc8303",
+          "merge_base": "7150f29a765387f1c14fbae086314af6e0d6bddc",
+          "exit": 4,
+          "output_sha256": "841fa4e762e81aca4c42e1e7cbe147c08f1d43531504f9d769a428ddcae1e766",
+          "conflict_count": 4,
+          "conflicts": [
+            "<<<<<<< OWN_OR_COMBINED\n=======\n  earnings-economic-source-selection:\n    # CDV-1 Task 2: preserve private PG acquisition currentness and revision clocks.\n    # The suite exercises the existing SEC discovery seam with synthetic fixtures only.\n    if: ${{ false }}\n    gate: code\n    scope: exclusive\n    paths:\n      - \"tests/test_pg_economic_source_selection.py\"\n      - \"scripts/refresh_event_workspaces.py\"\n      - \"engine/company_intelligence/pg_profile.py\"\n      - \"engine/company_intelligence/pg_envelope.py\"\n      - \"engine/company_intelligence/economic_observations.py\"\n      - \"engine/company_intelligence/issuer_profiles.py\"\n      - \"engine/company_intelligence/__init__.py\"\n      - \"engine/company_intelligence/health.py\"\n      - \"engine/company_intelligence/views.py\"\n      - \"engine/company_intelligence/contracts.py\"\n      - \"engine/company_intelligence/documents.py\"\n      - \"engine/company_intelligence/event_id_adapter.py\"\n      - \"engine/company_intelligence/event_workspace.py\"\n      - \"engine/company_intelligence/event_workspace_build.py\"\n      - \"engine/company_intelligence/events.py\"\n      - \"engine/company_intelligence/identity.py\"\n      - \"engine/company_intelligence/qa_exchange.py\"\n      - \"engine/company_intelligence/qa_reconstruction.py\"\n      - \"engine/earnings_narrative/contracts.py\"\n      - \"engine/earnings_narrative/digest.py\"\n      - \"engine/earnings_narrative/promotion.py\"\n      - \"engine/earnings_narrative/public_wire.py\"\n      - \"engine/earnings_narrative/story.py\"\n      - \"engine/earnings_narrative/story_packets.py\"\n      - \"engine/earnings_release/binding.py\"\n      - \"engine/earnings_release/figures.py\"\n      - \"engine/earnings_release/filing_key.py\"\n      - \"engine/earnings_release/receipts.py\"\n      - \"engine/earnings_transcript_intake.py\"\n      - \"engine/fundamental_forensics/disclosure_diff.py\"\n      - \"engine/fundamental_forensics/models.py\"\n      - \"engine/neuralweb/__init__.py\"\n      - \"engine/neuralweb/company_intelligence_reader.py\"\n      - \"engine/press/earnings_adapter.py\"\n      - \"scripts/publish_company_intelligence_r2.py\"\n      - \"config/earnings_story_promotion.yml\"\n      - \"config/fundamental_forensics_disclosure_diff.v1.json\"\n      - \"tests/earnings_economic_fixtures.py\"\n    timeout-minutes: 10\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with:\n          python-version: \"3.12\"\n      - name: install deps for the earnings source-selection suite\n        # requests: scripts.refresh_event_workspaces imports\n        # engine.neuralweb.company_intelligence_reader at module scope, and that\n        # module imports requests at module scope.\n        run: pip install pytest pyyaml requests\n      - name: PG private acquisition source selection\n        run: python -m pytest tests/test_pg_economic_source_selection.py -q\n\n>>>>>>> PR8234",
+            "<<<<<<< OWN_OR_COMBINED\n=======\n      - \"scripts/publish_company_intelligence_r2.py\"\n>>>>>>> PR8234",
+            "<<<<<<< OWN_OR_COMBINED\n      - \"engine/earnings_narrative/economic_interpretation.py\"\n      - \"engine/earnings_narrative/__init__.py\"\n      - \"tests/earnings_economic_interpretation_fixtures.py\"\n      - \"tests/test_earnings_economic_interpretation.py\"\n=======\n>>>>>>> PR8234",
+            "<<<<<<< OWN_OR_COMBINED\n        run: python -m pytest tests/test_pg_economic_observations.py tests/test_pg_economic_observations_probes.py tests/test_pg_economic_observations_probes_r2.py tests/test_pg_economic_observations_probes_r3.py tests/test_pg_economic_observations_probes_r4.py tests/test_pg_economic_observations_probes_r5.py tests/test_pg_economic_observations_probes_r6.py tests/test_pg_economic_observations_probes_r7.py tests/test_pg_economic_observations_probes_r8.py tests/test_pg_economic_observations_probes_r9.py tests/test_pg_economic_observations_probes_r10.py tests/test_pg_economic_observations_probes_r11.py tests/test_pg_economic_observations_probes_r12.py tests/test_pg_economic_observations_probes_r13.py tests/test_pg_economic_observations_probes_r14.py tests/test_pg_economic_observations_probes_r15.py tests/test_pg_envelope_f1.py tests/test_pg_envelope_f1_probes_r1.py tests/test_pg_envelope_f1_probes_r2.py tests/test_pg_envelope_f1_probes_r3.py tests/test_pg_envelope_f1_probes_r4.py tests/test_pg_envelope_f1_probes_r5.py tests/test_pg_envelope_f1_probes_r6.py tests/test_pg_envelope_f1_probes_r7.py tests/test_pg_envelope_f1_probes_r8.py tests/test_pg_envelope_f1_probes_r9.py tests/test_pg_envelope_f1_probes_r10.py tests/test_earnings_economic_interpretation.py -q\n=======\n        run: python -m pytest tests/test_pg_economic_observations.py tests/test_pg_economic_observations_probes.py tests/test_pg_economic_observations_probes_r2.py tests/test_pg_economic_observations_probes_r3.py tests/test_pg_economic_observations_probes_r4.py tests/test_pg_economic_observations_probes_r5.py tests/test_pg_economic_observations_probes_r6.py tests/test_pg_economic_observations_probes_r7.py tests/test_pg_economic_observations_probes_r8.py tests/test_pg_economic_observations_probes_r9.py tests/test_pg_economic_observations_probes_r10.py tests/test_pg_economic_observations_probes_r11.py tests/test_pg_economic_observations_probes_r12.py tests/test_pg_economic_observations_probes_r13.py tests/test_pg_economic_observations_probes_r14.py tests/test_pg_economic_observations_probes_r15.py tests/test_pg_envelope_f1.py tests/test_pg_envelope_f1_probes_r1.py tests/test_pg_envelope_f1_probes_r2.py tests/test_pg_envelope_f1_probes_r3.py tests/test_pg_envelope_f1_probes_r4.py tests/test_pg_envelope_f1_probes_r5.py tests/test_pg_envelope_f1_probes_r6.py tests/test_pg_envelope_f1_probes_r7.py tests/test_pg_envelope_f1_probes_r8.py tests/test_pg_envelope_f1_probes_r9.py tests/test_pg_envelope_f1_probes_r10.py -q\n>>>>>>> PR8234"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "own+8232+8234",
+      "steps": [
+        {
+          "pr": 8232,
+          "head": "38e4e71bc02c0230a1b732629736cfb30157dc98",
+          "merge_base": "7150f29a765387f1c14fbae086314af6e0d6bddc",
+          "exit": 0,
+          "output_sha256": "2644b5ac28b2cd5a9999586c545b321eb9a44bf93d7f8e746ffa7c37dd6d1fb2",
+          "conflict_count": 0,
+          "conflicts": []
+        },
+        {
+          "pr": 8234,
+          "head": "3760f54361c2ff16dfcfc8c2a7022da34bdc8303",
+          "merge_base": "7150f29a765387f1c14fbae086314af6e0d6bddc",
+          "exit": 4,
+          "output_sha256": "b335fe0b6489513f39ff5c9f43adc8ac1d9b4f8934112a07458f234781bc7a9c",
+          "conflict_count": 4,
+          "conflicts": [
+            "<<<<<<< OWN_OR_COMBINED\n=======\n  earnings-economic-source-selection:\n    # CDV-1 Task 2: preserve private PG acquisition currentness and revision clocks.\n    # The suite exercises the existing SEC discovery seam with synthetic fixtures only.\n    if: ${{ false }}\n    gate: code\n    scope: exclusive\n    paths:\n      - \"tests/test_pg_economic_source_selection.py\"\n      - \"scripts/refresh_event_workspaces.py\"\n      - \"engine/company_intelligence/pg_profile.py\"\n      - \"engine/company_intelligence/pg_envelope.py\"\n      - \"engine/company_intelligence/economic_observations.py\"\n      - \"engine/company_intelligence/issuer_profiles.py\"\n      - \"engine/company_intelligence/__init__.py\"\n      - \"engine/company_intelligence/health.py\"\n      - \"engine/company_intelligence/views.py\"\n      - \"engine/company_intelligence/contracts.py\"\n      - \"engine/company_intelligence/documents.py\"\n      - \"engine/company_intelligence/event_id_adapter.py\"\n      - \"engine/company_intelligence/event_workspace.py\"\n      - \"engine/company_intelligence/event_workspace_build.py\"\n      - \"engine/company_intelligence/events.py\"\n      - \"engine/company_intelligence/identity.py\"\n      - \"engine/company_intelligence/qa_exchange.py\"\n      - \"engine/company_intelligence/qa_reconstruction.py\"\n      - \"engine/earnings_narrative/contracts.py\"\n      - \"engine/earnings_narrative/digest.py\"\n      - \"engine/earnings_narrative/promotion.py\"\n      - \"engine/earnings_narrative/public_wire.py\"\n      - \"engine/earnings_narrative/story.py\"\n      - \"engine/earnings_narrative/story_packets.py\"\n      - \"engine/earnings_release/binding.py\"\n      - \"engine/earnings_release/figures.py\"\n      - \"engine/earnings_release/filing_key.py\"\n      - \"engine/earnings_release/receipts.py\"\n      - \"engine/earnings_transcript_intake.py\"\n      - \"engine/fundamental_forensics/disclosure_diff.py\"\n      - \"engine/fundamental_forensics/models.py\"\n      - \"engine/neuralweb/__init__.py\"\n      - \"engine/neuralweb/company_intelligence_reader.py\"\n      - \"engine/press/earnings_adapter.py\"\n      - \"scripts/publish_company_intelligence_r2.py\"\n      - \"config/earnings_story_promotion.yml\"\n      - \"config/fundamental_forensics_disclosure_diff.v1.json\"\n      - \"tests/earnings_economic_fixtures.py\"\n    timeout-minutes: 10\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with:\n          python-version: \"3.12\"\n      - name: install deps for the earnings source-selection suite\n        # requests: scripts.refresh_event_workspaces imports\n        # engine.neuralweb.company_intelligence_reader at module scope, and that\n        # module imports requests at module scope.\n        run: pip install pytest pyyaml requests\n      - name: PG private acquisition source selection\n        run: python -m pytest tests/test_pg_economic_source_selection.py -q\n\n>>>>>>> PR8234",
+            "<<<<<<< OWN_OR_COMBINED\n=======\n      - \"scripts/publish_company_intelligence_r2.py\"\n>>>>>>> PR8234",
+            "<<<<<<< OWN_OR_COMBINED\n      - \"engine/earnings_narrative/economic_interpretation.py\"\n      - \"engine/earnings_narrative/__init__.py\"\n      - \"tests/earnings_economic_interpretation_fixtures.py\"\n      - \"tests/test_earnings_economic_interpretation.py\"\n=======\n>>>>>>> PR8234",
+            "<<<<<<< OWN_OR_COMBINED\n        run: python -m pytest tests/test_pg_economic_observations.py tests/test_pg_economic_observations_probes.py tests/test_pg_economic_observations_probes_r2.py tests/test_pg_economic_observations_probes_r3.py tests/test_pg_economic_observations_probes_r4.py tests/test_pg_economic_observations_probes_r5.py tests/test_pg_economic_observations_probes_r6.py tests/test_pg_economic_observations_probes_r7.py tests/test_pg_economic_observations_probes_r8.py tests/test_pg_economic_observations_probes_r9.py tests/test_pg_economic_observations_probes_r10.py tests/test_pg_economic_observations_probes_r11.py tests/test_pg_economic_observations_probes_r12.py tests/test_pg_economic_observations_probes_r13.py tests/test_pg_economic_observations_probes_r14.py tests/test_pg_economic_observations_probes_r15.py tests/test_pg_envelope_f1.py tests/test_pg_envelope_f1_probes_r1.py tests/test_pg_envelope_f1_probes_r2.py tests/test_pg_envelope_f1_probes_r3.py tests/test_pg_envelope_f1_probes_r4.py tests/test_pg_envelope_f1_probes_r5.py tests/test_pg_envelope_f1_probes_r6.py tests/test_pg_envelope_f1_probes_r7.py tests/test_pg_envelope_f1_probes_r8.py tests/test_pg_envelope_f1_probes_r9.py tests/test_pg_envelope_f1_probes_r10.py tests/test_earnings_economic_interpretation.py -q\n=======\n        run: python -m pytest tests/test_pg_economic_observations.py tests/test_pg_economic_observations_probes.py tests/test_pg_economic_observations_probes_r2.py tests/test_pg_economic_observations_probes_r3.py tests/test_pg_economic_observations_probes_r4.py tests/test_pg_economic_observations_probes_r5.py tests/test_pg_economic_observations_probes_r6.py tests/test_pg_economic_observations_probes_r7.py tests/test_pg_economic_observations_probes_r8.py tests/test_pg_economic_observations_probes_r9.py tests/test_pg_economic_observations_probes_r10.py tests/test_pg_economic_observations_probes_r11.py tests/test_pg_economic_observations_probes_r12.py tests/test_pg_economic_observations_probes_r13.py tests/test_pg_economic_observations_probes_r14.py tests/test_pg_economic_observations_probes_r15.py tests/test_pg_envelope_f1.py tests/test_pg_envelope_f1_probes_r1.py tests/test_pg_envelope_f1_probes_r2.py tests/test_pg_envelope_f1_probes_r3.py tests/test_pg_envelope_f1_probes_r4.py tests/test_pg_envelope_f1_probes_r5.py tests/test_pg_envelope_f1_probes_r6.py tests/test_pg_envelope_f1_probes_r7.py tests/test_pg_envelope_f1_probes_r8.py tests/test_pg_envelope_f1_probes_r9.py tests/test_pg_envelope_f1_probes_r10.py -q\n>>>>>>> PR8234"
+          ]
+        }
+      ]
+    }
+  ],
+  "workspace_manifest_unchanged": true,
+  "sibling_branches_unchanged": true,
+  "interpretation": {
+    "own_two_line_change_adds_conflict_hunks": false,
+    "combined_text_probe_conflicts_identical_without_own_fix": true,
+    "each_sibling_individually_accepts_own_fix": true,
+    "limit": "File-level source-projection diagnostics, not an actual branch merge, prospective runtime guarantee, or authority to resolve earnings sibling changes."
+  }
+}

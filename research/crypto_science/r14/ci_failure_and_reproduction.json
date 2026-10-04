@@ -1,0 +1,29 @@
+{
+  "recovered_head": "b74875a6171a4d52cb48decf70d608f106a9fa8e",
+  "ci_run": 36665385710,
+  "ci_conclusion": "failure",
+  "fences_run": 36665385542,
+  "fences_conclusion": "success",
+  "failed_jobs": [
+    109728838390,
+    109729414968
+  ],
+  "tested_merge": "986d29c41083de8953a0452ae372c2071181d3ef",
+  "tested_base": "ab4687d24f40098bc2211cc5524b8c5cb2147344",
+  "root_cause": {
+    "conviction-profile": [
+      "engine/btc_intraday_cvd.py"
+    ],
+    "unrun-picks-boards": [
+      "engine/btc_intraday_cvd.py"
+    ]
+  },
+  "introduced": 2,
+  "inherited": 0,
+  "all_other_pack_results": "success",
+  "local_regression": "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+  "red_result": "1 failed, 43 warnings",
+  "green_result": "1 passed, 43 warnings",
+  "patch_sha256": "46ca7c4478d0389c3a44d921ab607cbc3ff03edb5950fa0fb15b4356477aa87f",
+  "limits": "Observed historical CI failure and local fix; this is not a new exact-head hosted CI result, approval or live release."
+}

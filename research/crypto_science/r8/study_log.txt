@@ -1,0 +1,14 @@
+R8 anatomy complete; same parent identities and old account values match
+R8 fits complete 0 1 0
+R8 fits complete 0 1 10
+R8 fits complete 0 1 25
+R8 fits complete 0 6 0
+R8 fits complete 0 6 10
+R8 fits complete 0 6 25
+R8 fits complete 6 1 0
+R8 fits complete 6 1 10
+R8 fits complete 6 1 25
+R8 fits complete 6 6 0
+R8 fits complete 6 6 10
+R8 fits complete 6 6 25
+R8_COMPLETE {"parents": 588, "accounts": 7056, "fits": 420, "prediction_rows": 6072, "policy_rows": 30204}

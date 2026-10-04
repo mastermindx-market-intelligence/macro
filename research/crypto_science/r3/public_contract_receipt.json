@@ -1,0 +1,45 @@
+{
+  "classification": "PUBLIC_DOCUMENT_REVIEW_NOT_PROVIDER_DATA_QUALIFICATION",
+  "observed_date": "2026-09-28",
+  "documents": [
+    {
+      "url": "https://bitcoin-data.com/",
+      "role": "Official landing page with API documentation link"
+    },
+    {
+      "url": "https://api.bitcoin-data.com/scalar.html",
+      "role": "Official documentation shell",
+      "observed_spec_reference": "/v3/api-docs",
+      "http_status": 200
+    },
+    {
+      "url": "https://api.bitcoin-data.com/v3/api-docs",
+      "role": "Static OpenAPI document; not a market-data endpoint",
+      "http_status": 200,
+      "sha256_of_observed_response": "5b79637596b021d69f06849f9ff9fbfa71d6d4e179f38805f7b66a87e0b7396c",
+      "info_version": "0.1",
+      "inspected_path": "/v1/funding-rate",
+      "operation_id": "getFundingRate",
+      "success_response_schema": {"type": "object"},
+      "finding": "No field-level unit, venue, settlement interval or historical revision contract established by this response schema."
+    },
+    {
+      "url": "https://charts.bgeometrics.com/funding_rate.html",
+      "role": "Provider explanatory page",
+      "finding": "General funding-interval explanation is not proof of the period for either stored historical field."
+    }
+  ],
+  "not_performed": [
+    "No /v1 market-data endpoint request",
+    "No API key, account or paid subscription created or read",
+    "No collector invocation",
+    "No old/new funding-history concatenation or rescaling"
+  ],
+  "qualification": "NOT_ESTABLISHED",
+  "remaining_requirements": [
+    "Old and current field definition and units",
+    "Venue and contract coverage",
+    "Settlement interval and daily aggregation",
+    "Revision and publication timing"
+  ]
+}

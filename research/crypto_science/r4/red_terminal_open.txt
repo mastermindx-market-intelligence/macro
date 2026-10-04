@@ -1,0 +1,14 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______ test_r4_terminal_open_does_not_require_future_terminal_bar_extrema ______
+tests/test_btc_impulse_falsifier.py:513: in test_r4_terminal_open_does_not_require_future_terminal_bar_extrema
+    assert got['category']=='neither' and got['terminal_return']==0
+E   AssertionError: assert ('censored' == 'neither'
+E
+E     - neither
+E     + censored)
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_btc_impulse_falsifier.py::test_r4_terminal_open_does_not_require_future_terminal_bar_extrema
+1 failed, 28 deselected, 19 warnings in 3.00s

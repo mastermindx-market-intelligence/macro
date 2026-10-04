@@ -1,0 +1,4 @@
+.......                                                                  [100%]
+7 passed, 34 deselected, 21 warnings in 3.52s
+
+EXIT 0
