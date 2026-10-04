@@ -15490,8 +15490,14 @@ jobs:
       # follow-up (the gex model layer, the gex engine math, and the polygon accrual
       # collector) are now wired by the GEX modeling-core step directly above, which
       # landed on main before this branch rebased. Nothing in the family is dark.
+      # B1 runtime roots (2026-10-03): the fourth file is shell, plist, and runbook
+      # coverage plus the Options Hub input-root seam. Importing the hub builder
+      # stays on pandas, numpy, and pyarrow; scipy is not required. The index
+      # artifact-root override is in scripts/publish_r2.py. This step does not
+      # import it. tests/test_publish_r2.py already names that module on the
+      # existing publish jobs, so this command and this install line stay put.
       - name: OIP E3 positioning persistence — oi_delta clusters, wall persistence, index-GEX rebuild routing
-        run: python -m pytest tests/test_positioning_persistence.py tests/test_gex_state.py tests/test_index_gex_history.py -q
+        run: python -m pytest tests/test_positioning_persistence.py tests/test_gex_state.py tests/test_index_gex_history.py tests/test_b1_options_runtime_roots.py -q
       # Unrun backfill 2026-08-03: the GEX board's per-ticker state merge and
       # the gex.js IV-rank band color law join the family this lane already
       # owns; the OIP E1 session digest and the flow desk builder are the same
