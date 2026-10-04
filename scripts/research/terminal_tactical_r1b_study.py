@@ -127,6 +127,58 @@ def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _git_env() -> dict[str, str]:
+    return {**os.environ, "GIT_NO_LAZY_FETCH": "1"}
+
+
+def _git_cmd(repo: Path, *args: str) -> list[str]:
+    return ["git", "--no-replace-objects", "-C", str(repo), *args]
+
+
+def _object_local(repo: Path, sha: str) -> bool:
+    """Return whether ``sha`` is present locally without promisor lazy-fetch."""
+    proc = subprocess.run(
+        _git_cmd(repo, "rev-list", "--missing=print", "--objects", "--no-walk", sha),
+        capture_output=True,
+        env=_git_env(),
+    )
+    if proc.returncode != 0:
+        return False
+    tokens = proc.stdout.decode().split()
+    if not tokens:
+        return False
+    if tokens[0].startswith("?"):
+        return False
+    return True
+
+
+def _blob_oid_at_tree(repo: Path, tree_sha: str, path: str) -> str:
+    """Resolve a path's blob oid at ``tree_sha`` using only local tree objects."""
+    proc = subprocess.run(
+        _git_cmd(repo, "ls-tree", tree_sha, "--", path),
+        capture_output=True,
+        env=_git_env(),
+    )
+    if proc.returncode != 0 or not proc.stdout.strip():
+        raise ValueError(f"code_identity_commit_unreadable:{path}")
+    fields = proc.stdout.decode().strip().split()
+    if len(fields) < 3 or fields[1] != "blob":
+        raise ValueError(f"code_identity_commit_unreadable:{path}")
+    return fields[2]
+
+
+def _git_show_blob(repo: Path, blob_oid: str) -> bytes:
+    """Read blob bytes for a locally-present object oid."""
+    proc = subprocess.run(
+        _git_cmd(repo, "cat-file", "blob", blob_oid),
+        capture_output=True,
+        env=_git_env(),
+    )
+    if proc.returncode != 0:
+        raise ValueError(f"code_identity_commit_unreadable:{blob_oid[:12]}")
+    return proc.stdout
+
+
 def _passwd_home_attempt_root() -> Path:
     return Path(pwd.getpwuid(os.getuid()).pw_dir) / ".mastermind" / "tti_r1b" / STUDY_ID
 
@@ -151,16 +203,16 @@ def code_digest(code_files: Mapping[str, str], pinned_test_blobs: Mapping[str, s
 
 
 def _pinned_test_blob(name: str, code_sha: str) -> str:
+    """Hash a pinned test path at ``code_sha``, refusing unknown or remote-only blobs."""
     path = ROOT / name
     if path.is_file():
         return _sha(path)
-    proc = subprocess.run(
-        ["git", "-C", str(ROOT), "show", f"{code_sha}:{name}"],
-        capture_output=True,
-    )
-    if proc.returncode != 0:
-        raise ValueError(f"code_identity_not_at_reviewed_head:{name}")
-    return hashlib.sha256(proc.stdout).hexdigest()
+    if not _object_local(ROOT, code_sha):
+        raise ValueError(f"code_identity_object_unknown:{code_sha[:12]}")
+    blob_oid = _blob_oid_at_tree(ROOT, code_sha, name)
+    if not _object_local(ROOT, blob_oid):
+        raise ValueError(f"code_identity_blob_not_local:{code_sha[:12]}:{name}")
+    return hashlib.sha256(_git_show_blob(ROOT, blob_oid)).hexdigest()
 
 
 def _pinned_test_blobs_on_disk(code_sha: str) -> dict[str, str]:
@@ -178,29 +230,34 @@ def _pytest_config_path() -> Path | None:
 
 
 def _terminal_dependency_probe(terminal_root: Path, sha: str) -> dict[str, Any]:
+    """Probe Terminal worktree cleanliness and pinned blobs at a local commit."""
     status = subprocess.run(
-        ["git", "-C", str(terminal_root), "status", "--porcelain"],
+        _git_cmd(terminal_root, "status", "--porcelain"),
         capture_output=True,
+        env=_git_env(),
     )
     if status.returncode != 0:
         raise ValueError("terminal_dependency_probe_failed:status")
     porcelain = status.stdout.decode()
     toplevel_proc = subprocess.run(
-        ["git", "-C", str(terminal_root), "rev-parse", "--show-toplevel"],
+        _git_cmd(terminal_root, "rev-parse", "--show-toplevel"),
         capture_output=True,
+        env=_git_env(),
     )
     if toplevel_proc.returncode != 0:
         raise ValueError("terminal_dependency_probe_failed:toplevel")
     toplevel = toplevel_proc.stdout.decode().strip()
+    if not _object_local(terminal_root, sha):
+        raise ValueError("terminal_dependency_probe_failed:commit")
     blobs: dict[str, str] = {}
     for path in TERMINAL_PINNED_FILES:
-        shown = subprocess.run(
-            ["git", "-C", str(terminal_root), "show", f"{sha}:{path}"],
-            capture_output=True,
-        )
-        if shown.returncode != 0:
+        try:
+            blob_oid = _blob_oid_at_tree(terminal_root, sha, path)
+        except ValueError:
+            raise ValueError(f"terminal_dependency_probe_failed:{path}") from None
+        if not _object_local(terminal_root, blob_oid):
             raise ValueError(f"terminal_dependency_probe_failed:{path}")
-        blobs[path] = hashlib.sha256(shown.stdout).hexdigest()
+        blobs[path] = hashlib.sha256(_git_show_blob(terminal_root, blob_oid)).hexdigest()
     return {"porcelain": porcelain, "toplevel": toplevel, "blobs": blobs}
 
 
@@ -224,13 +281,13 @@ def _loaded_root_modules() -> dict[str, str]:
 
 
 def _reviewed_blob_sha256(code_sha: str, name: str) -> str:
-    proc = subprocess.run(
-        ["git", "-C", str(ROOT), "show", f"{code_sha}:{name}"],
-        capture_output=True,
-    )
-    if proc.returncode != 0:
-        raise ValueError(f"code_identity_commit_unreadable:{name}")
-    return hashlib.sha256(proc.stdout).hexdigest()
+    """Return the sha256 of ``name`` as recorded at local commit ``code_sha``."""
+    if not _object_local(ROOT, code_sha):
+        raise ValueError(f"code_identity_object_unknown:{code_sha[:12]}")
+    blob_oid = _blob_oid_at_tree(ROOT, code_sha, name)
+    if not _object_local(ROOT, blob_oid):
+        raise ValueError(f"code_identity_blob_not_local:{code_sha[:12]}:{name}")
+    return hashlib.sha256(_git_show_blob(ROOT, blob_oid)).hexdigest()
 
 
 def _grid_cells(cfg: Mapping[str, Any]) -> list[dict[str, Any]]:
@@ -1071,8 +1128,9 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
         raise ValueError("output_directory_outside_run_root")
     output_dir.parent.mkdir(parents=True, exist_ok=True)
     git_probe = subprocess.run(
-        ["git", "-C", str(output_dir.parent), "rev-parse", "--show-toplevel"],
+        _git_cmd(output_dir.parent, "rev-parse", "--show-toplevel"),
         capture_output=True,
+        env=_git_env(),
     )
     if git_probe.returncode == 0:
         raise ValueError("output_directory_inside_git")

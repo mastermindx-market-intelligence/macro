@@ -13,6 +13,7 @@ import math
 import re
 import socket
 import statistics
+import subprocess
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from types import SimpleNamespace
@@ -231,6 +232,41 @@ def _patch(mp: pytest.MonkeyPatch, world, manifest: Path | None = None,
 
 def _out_dir(attempt_root: Path, name: str = "run1") -> Path:
     return attempt_root / "output" / name
+
+
+def _disk_reviewed_blob(_code_sha: str, name: str) -> str:
+    return s._sha(s.ROOT / name)
+
+
+def _init_pin_repo(tmp_path: Path) -> tuple[Path, str]:
+    repo = tmp_path / "pin_repo"
+    repo.mkdir()
+    subprocess.run(
+        ["git", "-c", "user.name=t", "-c", "user.email=t@t", "init", "-q"],
+        cwd=repo,
+        check=True,
+    )
+    target = repo / "lib/nyse_calendar.py"
+    target.parent.mkdir(parents=True)
+    target.write_text("pin\n")
+    subprocess.run(
+        ["git", "-c", "user.name=t", "-c", "user.email=t@t", "add", "lib/nyse_calendar.py"],
+        cwd=repo,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "pin"],
+        cwd=repo,
+        check=True,
+    )
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    return repo, head
 
 
 def _argv(world, out: Path, *, junit: Path | None = None,
@@ -863,16 +899,23 @@ def test_t5d_aggregate_abort_blocks_same_code_sha(world, monkeypatch, tmp_path, 
     monkeypatch.setattr(s.agg, "summarize", real)
     alt_sha = "b" * 40
     junit_b = _junit(tmp_path / "junit_b.xml", suite=alt_sha)
-    init_path = s.ROOT / "tests/__init__.py"
-    backup = init_path.read_bytes() if init_path.is_file() else b""
-    init_path.write_bytes(backup + b"\n")
-    try:
-        assert s.main(_argv(world, _out_dir(tmp_path, "run3"), code_sha=alt_sha, junit=junit_b)) == 0
-    finally:
-        if backup:
-            init_path.write_bytes(backup)
-        elif init_path.is_file():
-            init_path.unlink()
+    init_bytes = (s.ROOT / "tests/__init__.py").read_bytes() + b"\n"
+    init_digest = hashlib.sha256(init_bytes).hexdigest()
+    real_pinned = s._pinned_test_blobs_on_disk
+
+    def alt_pinned(code_sha: str) -> dict[str, str]:
+        blobs = dict(real_pinned(code_sha))
+        blobs["tests/__init__.py"] = init_digest
+        return blobs
+
+    def alt_reviewed(code_sha: str, name: str) -> str:
+        if name == "tests/__init__.py":
+            return init_digest
+        return _disk_reviewed_blob(code_sha, name)
+
+    monkeypatch.setattr(s, "_pinned_test_blobs_on_disk", alt_pinned)
+    monkeypatch.setattr(s, "_reviewed_blob_sha256", alt_reviewed)
+    assert s.main(_argv(world, _out_dir(tmp_path, "run3"), code_sha=alt_sha, junit=junit_b)) == 0
     receipt = json.loads((tmp_path / "attempts/attempt-003.json").read_text())
     assert receipt["stage"] not in s.PRE_INPUT_STAGES or receipt.get("completed")
 
@@ -893,7 +936,6 @@ def test_t5f_output_directory_placement_refusals(world, monkeypatch, tmp_path, c
     assert "output_directory_outside_run_root" in capsys.readouterr().err
     git_root = tmp_path / "git_output"
     git_root.mkdir()
-    import subprocess
     subprocess.run(["git", "init"], cwd=git_root, capture_output=True, check=True)
     monkeypatch.setattr(s, "ATTEMPT_ROOT", git_root)
     inside = git_root / "output" / "run1"
@@ -928,14 +970,36 @@ def test_t6b_loaded_root_modules_excludes_tests_tree():
     assert not any(name.endswith("conftest.py") for name in keys)
 
 
+def test_t6g_reviewed_blob_sha256_local_commit(tmp_path, monkeypatch):
+    repo, head = _init_pin_repo(tmp_path)
+    monkeypatch.setattr(s, "ROOT", repo)
+    digest = s._reviewed_blob_sha256(head, "lib/nyse_calendar.py")
+    assert digest == hashlib.sha256(b"pin\n").hexdigest()
+
+
+def test_t6h_reviewed_blob_unknown_commit_refuses(tmp_path, monkeypatch):
+    repo, head = _init_pin_repo(tmp_path)
+    monkeypatch.setattr(s, "ROOT", repo)
+    missing = "f" * 40
+    with pytest.raises(ValueError, match=f"code_identity_object_unknown:{missing[:12]}"):
+        s._reviewed_blob_sha256(missing, "lib/nyse_calendar.py")
+
+
+def test_t6i_reviewed_blob_not_local_refuses(tmp_path, monkeypatch):
+    repo, head = _init_pin_repo(tmp_path)
+    monkeypatch.setattr(s, "ROOT", repo)
+    monkeypatch.setattr(s, "_object_local", lambda _repo, sha: sha == head)
+    with pytest.raises(ValueError, match=f"code_identity_blob_not_local:{head[:12]}:"):
+        s._reviewed_blob_sha256(head, "lib/nyse_calendar.py")
+
+
 def test_t6c_reviewed_head_mismatch_refuses_before_inputs(world, monkeypatch, tmp_path, capsys):
     _patch(monkeypatch, world, attempt_root=tmp_path)
-    real = s._reviewed_blob_sha256
 
     def fake(code_sha, name):
         if name == "lib/nyse_calendar.py":
             return "0" * 64
-        return real(code_sha, name)
+        return _disk_reviewed_blob(code_sha, name)
 
     monkeypatch.setattr(s, "_reviewed_blob_sha256", fake)
     assert s.main(_argv(world, _out_dir(tmp_path))) == 2
@@ -1010,7 +1074,7 @@ def test_t7a_terminal_dependency_dirty_refuses(world, monkeypatch, tmp_path, cap
     assert s.main(_argv(world, _out_dir(tmp_path))) == 2
     assert "terminal_dependency_dirty" in capsys.readouterr().err
     receipt = json.loads((tmp_path / "attempts/attempt-001.json").read_text())
-    assert receipt["stage"] == "inputs"
+    assert receipt["stage"] == "admission"
     assert receipt["outcome_values_persisted"] is False
 
 
@@ -1233,13 +1297,12 @@ def test_t8e_result_records_expected_cases_sha256(world, monkeypatch, tmp_path):
 
 def test_t8f_test_file_not_at_reviewed_head_refuses(world, monkeypatch, tmp_path, capsys):
     _patch(monkeypatch, world, attempt_root=tmp_path)
-    real = s._reviewed_blob_sha256
     bad_path = s.TEST_FILES[0]
 
     def fake(code_sha, name):
         if name == bad_path:
             return "0" * 64
-        return real(code_sha, name)
+        return _disk_reviewed_blob(code_sha, name)
 
     monkeypatch.setattr(s, "_reviewed_blob_sha256", fake)
     assert s.main(_argv(world, _out_dir(tmp_path))) == 2
@@ -1282,16 +1345,23 @@ def test_t9b_digest_rerun(world, monkeypatch, tmp_path, capsys):
     }))
     assert s.main(_argv(world, _out_dir(tmp_path))) == 2
     assert "rerun_without_reviewed_fix" in capsys.readouterr().err
-    init_path = s.ROOT / "tests/__init__.py"
-    backup = init_path.read_bytes() if init_path.is_file() else b""
-    init_path.write_bytes(backup + b"\n")
-    try:
-        assert s.main(_argv(world, _out_dir(tmp_path, "run2"))) == 0
-    finally:
-        if backup:
-            init_path.write_bytes(backup)
-        elif init_path.is_file():
-            init_path.unlink()
+    init_bytes = (s.ROOT / "tests/__init__.py").read_bytes() + b"\n"
+    init_digest = hashlib.sha256(init_bytes).hexdigest()
+    real_pinned = s._pinned_test_blobs_on_disk
+
+    def alt_pinned(code_sha: str) -> dict[str, str]:
+        blobs = dict(real_pinned(code_sha))
+        blobs["tests/__init__.py"] = init_digest
+        return blobs
+
+    def alt_reviewed(code_sha: str, name: str) -> str:
+        if name == "tests/__init__.py":
+            return init_digest
+        return _disk_reviewed_blob(code_sha, name)
+
+    monkeypatch.setattr(s, "_pinned_test_blobs_on_disk", alt_pinned)
+    monkeypatch.setattr(s, "_reviewed_blob_sha256", alt_reviewed)
+    assert s.main(_argv(world, _out_dir(tmp_path, "run2"))) == 0
 
 
 def test_t9c_pre_input_abort_does_not_block(world, monkeypatch, tmp_path):
@@ -1334,12 +1404,11 @@ def test_t9d_env_scrub(world, monkeypatch, tmp_path, capsys):
 
 def test_t9e_conftest_pin(world, monkeypatch, tmp_path, capsys):
     _patch(monkeypatch, world, attempt_root=tmp_path)
-    real = s._reviewed_blob_sha256
 
     def fake(code_sha, name):
         if name == "tests/conftest.py":
             return "0" * 64
-        return real(code_sha, name)
+        return _disk_reviewed_blob(code_sha, name)
 
     monkeypatch.setattr(s, "_reviewed_blob_sha256", fake)
     assert s.main(_argv(world, _out_dir(tmp_path))) == 2
