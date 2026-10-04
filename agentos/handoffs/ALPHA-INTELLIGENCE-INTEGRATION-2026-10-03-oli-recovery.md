@@ -165,3 +165,47 @@ Handoff record repair `ab6b7e3c3e7d695bb16297f6312e7c60ed5b8e99` passed hosted f
 Review request to `mastermindx-2` remains pending on PR 8333; no reviewer START or acceptance is claimed. Native Market OS coordination was delivered on the incumbent [7963 comment 5972919649](https://github.com/mastermindx-market-intelligence/macro/pull/7963#issuecomment-5972919649); no source custody or native-owner adoption followed merely from delivery. Recovery issue 8328 is assigned to the current account `mastermidx4` as a GitHub projection, not a runtime lease.
 
 Original archive bytes remain unchanged. Browser/source-test refusal boundaries remain frozen; this new fixture-only unit did not rerun them. Full source adoption, native real-path proof and scientific/data gates remain pending. No external worker, scheduled wake, deployment or production effect.
+
+
+## 2026-10-04 continuation — native P0 and S0 frontier
+
+Protected procedure for the latest substantial continuation is
+`Mastermind@17b9fa1363db6071d338be3373a4fdb11fc0076d`,
+Skillpack 1.0.1/bootstrap1. The source carrier remains PR #8333 on the same branch.
+
+Native P0 is no longer synthetic-only. Exact source milestones:
+- `afdfacaac42892dae7ced75063ec7d3f5d0fbf6d`: exact B1/B3/B4 zero-authority
+  opportunity context, unique ACTIVE B3 resolver, current-base integration and CI-suite
+  registration repair. Hosted fences and full CI both succeeded.
+- `aecc11450c5bffb094a8f5b42708f16e341baa40`: Data OS current-display-alias binding,
+  reverse proof and identity receipts; no ticker lifecycle fallback.
+- `cd616223409de1107ad5e5a3ad73a4f30045c069`: private user state split into Plan,
+  watchlist and actual Portfolio axes; Terminal `/api/portfolio` may supply only the
+  minimal current-alias position relation, while watchlist remains explicit UNKNOWN
+  because its present owner read can collapse source errors into an empty list.
+
+Real read-only identity proof on current source established
+`NOVT -> SEC:US-XNAS-NOVT -> NOVT` and exactly one ACTIVE B1 episode. NOVT is not
+in the current 154-row Candidate Pool, so it is an identity-chain witness rather
+than the final P0 browser subject. A broader pool/B1 intersection probe was
+safety-blocked before execution and was not rerouted.
+
+The first product host remains the existing #7237 Candidate Pool context panel.
+Do not add a second drawer. Current route ownership is still held by the Prophet-Lab
+estate (#7264/#8189); OLI does not take `app/prophet_lab.py`. The existing B4 live
+quote path is also blocked upstream: current owner evidence on #7734 shows the
+persisted private quote transform drops the real-vs-synthetic source-clock bit and
+the new NBBO/session-open fields. Do not weaken #7581 or create another quote store.
+The merged B4 structural-risk policy #7726 remains CONTROL_ONLY/SHADOW_ONLY and
+cannot be promoted into live entry permission merely because its code is merged.
+
+This commit additionally freezes
+`research/opportunity_evidence/oli_recovery_20261003/S0_FIRST_FORMING_PREREG_CANDIDATE.md`.
+It is records-only, DRAFT_NOT_REGISTERED, outcomes unread, and creates no
+species/trial/QLedger claim. The formation predicate, decision-time source, identity
+join, nominated later B1 relation, non-outcomes and owner gates are now explicit
+before any protected outcome access.
+
+Independent review of #8333 remains requested from `mastermindx-2`; no duplicate
+review lane is created. Product P0 and records/science preparation may continue while
+science promotion and route/release gates remain held. MISSION_COMPLETE stays false.
