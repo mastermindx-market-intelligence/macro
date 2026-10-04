@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import math
 
+import numpy as np
 import pandas as pd
 
 from engine.price_pressure import ENGINE_VERSION
@@ -97,7 +98,7 @@ def _base(ticker: object, start_session: object, end_session: object) -> dict:
 
 
 def _finite_positive(value: object) -> float | None:
-    if isinstance(value, bool):
+    if isinstance(value, (bool, np.bool_)):
         return None
     try:
         number = float(value)
@@ -109,7 +110,7 @@ def _finite_positive(value: object) -> float | None:
 
 
 def _finite(value: object) -> float | None:
-    if isinstance(value, bool):
+    if isinstance(value, (bool, np.bool_)):
         return None
     try:
         number = float(value)
@@ -211,8 +212,17 @@ def export_market_response(
                 out["residual_response"]["reasons"].append("RESIDUAL_ENDPOINT_UNAVAILABLE")
             else:
                 delta = end_cum - start_cum
-                simple_equivalent = math.expm1(delta)
-                if math.isfinite(delta) and math.isfinite(simple_equivalent):
+                simple_equivalent = None
+                if math.isfinite(delta):
+                    try:
+                        simple_equivalent = math.expm1(delta)
+                    except OverflowError:
+                        simple_equivalent = None
+                if (
+                    math.isfinite(delta)
+                    and simple_equivalent is not None
+                    and math.isfinite(simple_equivalent)
+                ):
                     out["residual_response"].update(
                         {
                             "state": "AVAILABLE_UNQUALIFIED",
@@ -222,7 +232,7 @@ def export_market_response(
                     )
                 else:
                     out["residual_response"]["reasons"].append(
-                        "RESIDUAL_ENDPOINT_UNAVAILABLE"
+                        "RESIDUAL_NUMERIC_OVERFLOW"
                     )
 
     raw_available = out["raw_response"]["state"] == "AVAILABLE_UNQUALIFIED"

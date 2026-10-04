@@ -1667,3 +1667,53 @@ def test_k3e_mkt1_gapped_owner_rows_never_claim_calendar_session_distance():
     assert out["window"]["owner_observation_steps"] == 1
     assert out["window"]["session_steps"] is None
     assert "calendar_session_receipt" in out["qualification"]["missing"]
+
+
+def test_k3e_mkt1_numpy_boolean_endpoints_are_not_numeric_prices():
+    import numpy as np
+    import pandas as pd
+
+    from engine.price_pressure.response_export import export_market_response
+
+    idx = pd.to_datetime(["2026-09-29", "2026-10-01"])
+    state = {
+        "f": {"close": pd.DataFrame({"AAPL": [np.bool_(True), np.bool_(True)]}, index=idx)},
+        "cum": pd.DataFrame({"AAPL": [0.0, 0.01]}, index=idx),
+    }
+    out = export_market_response(
+        state,
+        ticker="AAPL",
+        start_session="2026-09-29",
+        end_session="2026-10-01",
+    )
+
+    assert out["raw_response"]["state"] == "UNAVAILABLE"
+    assert out["raw_response"]["simple_return"] is None
+    assert "RAW_ENDPOINT_UNAVAILABLE" in out["raw_response"]["reasons"]
+    assert out["qualification"]["k3e_admissible"] is False
+
+
+def test_k3e_mkt1_extreme_residual_delta_degrades_instead_of_raising():
+    import pandas as pd
+
+    from engine.price_pressure.response_export import export_market_response
+
+    idx = pd.to_datetime(["2026-09-29", "2026-10-01"])
+    state = {
+        "f": {"close": pd.DataFrame({"AAPL": [100.0, 110.0]}, index=idx)},
+        "cum": pd.DataFrame({"AAPL": [0.0, 1000.0]}, index=idx),
+    }
+    out = export_market_response(
+        state,
+        ticker="AAPL",
+        start_session="2026-09-29",
+        end_session="2026-10-01",
+    )
+
+    assert out["status"] == "RAW_ONLY"
+    assert out["raw_response"]["state"] == "AVAILABLE_UNQUALIFIED"
+    assert out["residual_response"]["state"] == "UNAVAILABLE"
+    assert out["residual_response"]["log_residual"] is None
+    assert out["residual_response"]["simple_equivalent"] is None
+    assert "RESIDUAL_NUMERIC_OVERFLOW" in out["residual_response"]["reasons"]
+    assert out["qualification"]["k3e_admissible"] is False
