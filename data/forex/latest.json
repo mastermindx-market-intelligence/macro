@@ -193,7 +193,7 @@
       "weights_note": "DXY basket weights: EUR 57.6%, JPY 13.6%, GBP 11.9% (ICE benchmark). Re-weighted to available 2y series: EUR 69.3%, JPY 16.4%, GBP 14.3%. CAD/SEK/CHF excluded (no 2y in store). Actual weights after re-norm: {'eur2y': 0.693, 'jpy2y': 0.164, 'gbp2y': 0.143}.",
       "gaps": [],
       "display_only": true,
-      "built": "2026-10-03T18:01:38.787329+00:00"
+      "built": "2026-10-04T08:26:49.852904+00:00"
     }
   },
   "transmission": {
@@ -719,13 +719,6 @@
         "severity": "info"
       },
       {
-        "type": "structure",
-        "asset": "AUDUSD",
-        "headline_en": "AUD/USD: Chart shape broke down",
-        "headline_zh": "AUD/USD\uff1a\u5f62\u6001\u8f6c\u5f31",
-        "severity": "medium"
-      },
-      {
         "type": "triple_red",
         "asset": "dollar",
         "headline_en": "Triple-red cleared: safe-haven function may be restoring",
@@ -733,11 +726,11 @@
         "severity": "info"
       },
       {
-        "type": "residual_shock",
-        "asset": "USDJPY",
-        "headline_en": "USD/JPY: Unusual move the dollar and rates don't explain (up)",
-        "headline_zh": "USD/JPY\uff1a\u51fa\u73b0\u7f8e\u5143\u4e0e\u5229\u7387\u65e0\u6cd5\u89e3\u91ca\u7684\u5f02\u5e38\u4e0a\u884c",
-        "severity": "high"
+        "type": "structure",
+        "asset": "AUDUSD",
+        "headline_en": "AUD/USD: Chart shape broke down",
+        "headline_zh": "AUD/USD\uff1a\u5f62\u6001\u8f6c\u5f31",
+        "severity": "medium"
       }
     ]
   }

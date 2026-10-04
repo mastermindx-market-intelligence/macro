@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_state.v1",
-  "as_of": "2026-10-03",
-  "generated_at": "2026-10-03T20:25:03Z",
+  "as_of": "2026-10-04",
+  "generated_at": "2026-10-04T09:47:26Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -547,7 +547,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 32.8,
+        "score": 45.0,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -701,7 +701,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 38.2,
+        "score": 45.0,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -857,10 +857,10 @@
       },
       "divergence_board": {
         "quadrant": "hidden-opportunity",
-        "divergence": -0.6765,
+        "divergence": -0.5588,
         "narrative_pct": 0.2647,
-        "money_pct": 0.9412,
-        "asof": "2026-09-26",
+        "money_pct": 0.8235,
+        "asof": "2026-10-04",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [
@@ -877,7 +877,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 45.0,
+        "score": 36.1,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1178,7 +1178,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 44.5,
+        "score": 43.4,
         "entry_ready": false,
         "bottleneck_band": "LOOSE",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1235,7 +1235,7 @@
       "foresight": {
         "stage": "PRECIPICE (fingerprint)",
         "tier": "P",
-        "score": 50.1,
+        "score": 60.0,
         "entry_ready": false,
         "bottleneck_band": "TIGHTENING (fingerprint)",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1301,7 +1301,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 35.6,
+        "score": 45.0,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1332,10 +1332,10 @@
       },
       "divergence_board": {
         "quadrant": "hidden-opportunity",
-        "divergence": -0.7353,
-        "narrative_pct": 0.2059,
-        "money_pct": 0.9412,
-        "asof": "2026-09-25",
+        "divergence": -0.6176,
+        "narrative_pct": 0.2647,
+        "money_pct": 0.8824,
+        "asof": "2026-10-04",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [],
@@ -1390,10 +1390,9 @@
     "divergence_log[cybersecurity]: stale (as_of=2026-08-27)",
     "divergence_log[ai_semiconductors]: stale (as_of=2026-09-22)",
     "divergence_log[defense_aerospace]: stale (as_of=2026-09-28)",
-    "divergence_log[glp1_obesity]: stale (as_of=2026-09-26)",
     "divergence_log[semicap_equipment]: stale (as_of=2026-09-26)",
     "divergence_log[fintech_payments]: stale (as_of=2026-08-28)",
-    "divergence_log[diagnostics_lifesci]: stale (as_of=2026-09-25)",
+    "divergence_log[copper_steel_electrify]: stale (as_of=2026-09-29)",
     "divergence_log[space_satellite]: stale (as_of=2026-08-08)",
     "divergence_log[data_center_power]: stale (as_of=2026-09-26)"
   ],
@@ -1409,7 +1408,7 @@
   },
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-10-03T20:25:04Z",
-  "inputs_hash": "sha256:cfc155a2b6b79da004d8b24ce9d087fae6491f76b16244396b64d8981237525c",
+  "produced_at": "2026-10-04T09:47:26Z",
+  "inputs_hash": "sha256:4c6bebd7db2076760158b73258d8b5e4b33784b3cbd5e0bcc80b4c05e29f8a71",
   "tier": "display"
 }

@@ -213,7 +213,7 @@
           "key": "roll_oil",
           "label_en": "Oil roll yield",
           "label_zh": "oil \u5c55\u671f\u6536\u76ca",
-          "value": 0.5,
+          "value": 0.2,
           "unit": "%/yr",
           "state": "backwardation (positive)"
         }
