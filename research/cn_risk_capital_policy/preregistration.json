@@ -1,0 +1,36 @@
+{
+  "schema": "cn_risk_capital_policy_prereg.v1",
+  "operation_key": "cn-risk-p4-capital-policy-20260923-solpro-001",
+  "source_base": "49ceebf8d1a14c044684abdbeeb5779875cf20fc",
+  "skillpack_sha": "4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2",
+  "state_order": ["calm", "watch", "caution", "elevated", "risk-off"],
+  "current_mapping": {"calm": 1.0, "watch": 0.97, "caution": 0.9, "elevated": 0.78, "risk-off": 0.62},
+  "policy_order": ["current_ladder", "constant_100", "constant_075", "matched_constant", "binary_loud_075", "current_riskoff_075", "vol_target_15"],
+  "fixed_policies": {
+    "current_ladder": {"calm": 1.0, "watch": 0.97, "caution": 0.9, "elevated": 0.78, "risk-off": 0.62},
+    "constant_100": {"all": 1.0},
+    "constant_075": {"all": 0.75},
+    "binary_loud_075": {"calm": 1.0, "watch": 1.0, "caution": 1.0, "elevated": 0.75, "risk-off": 0.75},
+    "current_riskoff_075": {"calm": 1.0, "watch": 0.97, "caution": 0.9, "elevated": 0.78, "risk-off": 0.75},
+    "vol_target_15": {"lookback": 20, "annual_target": 0.15, "floor": 0.5, "cap": 1.0}
+  },
+  "benchmarks": {"primary": ["china", "000001.SS"], "investable_proxy": ["china", "510300.SS"]},
+  "scenarios": [{"lag": 1, "cost_bps": 10}, {"lag": 2, "cost_bps": 10}, {"lag": 1, "cost_bps": 25}, {"lag": 2, "cost_bps": 25}],
+  "crises": {
+    "bear_2004_05": ["2004-04-06", "2005-07-11"], "gfc_2007_08": ["2007-10-16", "2008-11-04"],
+    "tightening_2009_10": ["2009-08-04", "2010-07-05"], "slowdown_2011_12": ["2011-04-18", "2012-12-03"],
+    "bubble_2015_16": ["2015-06-12", "2016-01-28"], "trade_deleveraging_2018": ["2018-01-24", "2019-01-03"],
+    "covid_2020": ["2020-01-13", "2020-03-23"], "property_2021_22": ["2021-09-13", "2022-04-26"],
+    "confidence_2023_24": ["2023-05-08", "2024-02-05"]
+  },
+  "eras": {"pre_2016": [null, "2015-12-31"], "post_2016": ["2016-01-01", null]},
+  "episodes": {"loud_states": ["elevated", "risk-off"], "max_non_loud_gap": 10, "min_loud_observations": 3, "post_window_sessions": 21, "downside_threshold": -0.05},
+  "bootstrap": {"method": "circular_moving_block", "draws": 2000, "block_sessions": 21, "seed": 20260923, "ci": 0.9},
+  "promotion": {
+    "exact_min_episodes": 40, "exact_min_riskoff_episodes": 12, "exact_min_elevated_only_episodes": 12,
+    "simple_min_episodes": 20, "simple_min_riskoff_episodes": 8, "mdd_relative_improvement": 0.1, "cvar_relative_improvement": 0.05,
+    "max_cagr_penalty_pp": 1.5, "exact_vs_075_mdd_pp": 1.5, "exact_vs_075_max_cagr_penalty_pp": 0.5,
+    "simple_positive_episode_fraction": 0.55, "exact_max_crisis_concentration": 0.5, "simple_max_crisis_concentration": 0.6
+  },
+  "authority": {"live_policy_changed": false, "live_consumer": false, "merge_allowed": false, "historical_results_label": "reconstructed"}
+}
