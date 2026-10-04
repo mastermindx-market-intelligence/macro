@@ -4565,6 +4565,21 @@ jobs:
         run: python -m pytest tests/test_edgar_universe_widening.py -q
       - name: edgar FTS first-request abort guard fires on _CONFIRMED_ABSENT too (no network)
         run: python -m pytest tests/test_edgar_fts_confirmed_absent_first_request.py -q
+      # Trend Persistence Wave C-0 (PR #8403): the S&P 1500 point-in-time sector
+      # substrate for the 1,083 index leavers. It belongs in THIS job and not a new one
+      # because its subject is this job's subject one layer down: a collectors/ module
+      # whose ONLY leaver-labelling channel is the EDGAR CIK bridge
+      # (collectors.edgar_delisting._get_submissions; trusted methods edgar_fts/seed),
+      # and whose artifact is registered in config/synapse.yml (sp1500-pit-sectors),
+      # which the registry-integrity step above already checks. The suite pins what
+      # the readout got wrong — leavers must never be labelled by ticker string
+      # (recycled tickers ECHO/FI/MMC were the readout's "3 of 1,083"), every row
+      # carries era_correct=False, and the text-first SIC order — and it is fully
+      # offline (autouse no-network fixture, tmp_path data_dir). Deps are satisfied by
+      # the install line above (pandas + pyarrow for the parquet write, pyyaml via
+      # lib.config). 24 tests, 1.8 s measured locally.
+      - name: S&P 1500 point-in-time sector substrate — CIK-only leaver labels, SIC map, cache (no network)
+        run: python -m pytest tests/test_sp1500_pit_sectors.py -q
       - name: symbol-directory archival collector tests (LHB-W2c / LHB-R8)
         run: >-
           python -m pytest
@@ -8421,6 +8436,7 @@ jobs:
       - "config/theme_crosswalk.yml"
       - "config/theme_graph_identity_breaks.yml"
       - "config/theme_sources.yml"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
       - "engine/__init__.py"
       - "engine/basket_index.py"
       - "engine/basket_membership_pit.py"
@@ -8438,6 +8454,7 @@ jobs:
       - "engine/theme_graph/materialize.py"
       - "engine/theme_graph/rights.py"
       - "engine/theme_graph/store.py"
+      - "engine/theme_graph/theme_state.py"
       - "lib/__init__.py"
       - "lib/config.py"
       - "lib/dataos/identity.py"
@@ -8452,6 +8469,7 @@ jobs:
       - "tests/test_build_subsector_membership.py"
       - "tests/test_dt_contra_state.py"
       - "tests/test_gmi_history_integrity.py"
+      - "tests/test_theme_graph_state.py"
     # Regression guard for the two Neural-Web lobes frozen since 2026-07-07:
     #   1. dt_contra_state crash: build_dt_contra_state.py crashed on index.json (list root);
     #      fixed by isinstance(data, dict) guard — 8 tests covering the fix.
@@ -8473,6 +8491,8 @@ jobs:
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
         run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py -q
+      - name: GMI local and canonical state contract and cutoff reader
+        run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
 
   sa-w4-improvement-lanes:
     if: ${{ false }}
