@@ -13704,6 +13704,10 @@ jobs:
       # now reads the optional UK stance through engine.uk_policy_brain (lazy, degrade-never-raise),
       # so the dossier plane pulls that module into this job's closure.
       - "engine/uk_policy_brain.py"
+      # E0-G (#8373): tests/test_dashboard_template_render.py renders the Fed dialog's Inflation Read
+      # through the owner (engine.rates_inflation_command._build_inflation_row), so the dashboard
+      # suite pulls that module into this job's closure (contract-delta: widen, never narrow).
+      - "engine/rates_inflation_command.py"
       - scripts/build_ticker_pages.py
       - scripts/capture_debt_maturity_evidence.py
       - scripts/capture_hk_tier1_shell.py
