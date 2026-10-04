@@ -300,6 +300,48 @@ def test_fable_wait_doctrine_and_fallback_match_async_continuation():
 # --------------------------------------------------------------------------------------
 
 
+def test_legacy_orchestrator_workflows_cannot_busy_wait_on_ci_or_deploy():
+    """Executable workflow prompts must not reintroduce the wait loops fleet law removed."""
+    workflow_paths = (
+        ".claude/workflows/marketontology_release_held_pr.js",
+        ".claude/workflows/marketontology_vertical_build.js",
+    )
+    banned = (
+        "Repeat across multiple such calls",
+        "sleep 170",
+        "for (let k = 2; k <= 5 && ship",
+        "SHIP ATTEMPT",
+        "gh run watch <id>",
+        "poll https://",
+    )
+    for relative in workflow_paths:
+        source = (ROOT / relative).read_text(encoding="utf-8")
+        for phrase in banned:
+            assert phrase not in source, f"{relative} reintroduced foreground wait: {phrase}"
+        assert "Read check state ONCE" in source, relative
+        assert "do not poll" in source.lower(), relative
+        assert "continue" in source.lower(), relative
+        assert "merge-on-green" in source, relative
+
+
+def test_vertical_build_does_not_arm_merge_before_independent_review():
+    """The builder may create a Draft, but the reviewed ship stage owns merge arming."""
+    source = (
+        ROOT / ".claude/workflows/marketontology_vertical_build.js"
+    ).read_text(encoding="utf-8")
+    build_start = source.index("const buildPrompt")
+    review_start = source.index("const reviewPrompt")
+    ship_start = source.index("const shipPrompt")
+    pipeline_start = source.index("// Pipeline:")
+    build_prompt = source[build_start:review_start]
+    ship_prompt = source[ship_start:pipeline_start]
+    assert "--draft" in build_prompt
+    assert "--add-label merge-on-green" not in build_prompt
+    assert "Do NOT arm merge-on-green in the build stage" in build_prompt
+    assert "--add-label merge-on-green" in ship_prompt
+    assert "review verdict PASS" in ship_prompt
+
+
 def test_case_3_chairman_delegation_outranks_the_default_role_inside_its_scope():
     """LAW (two-sided).
 
