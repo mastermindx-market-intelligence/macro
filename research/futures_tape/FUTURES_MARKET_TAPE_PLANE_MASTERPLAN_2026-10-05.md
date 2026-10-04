@@ -53,7 +53,10 @@ Initial classification: **secondary_deep_history / vendor_continuous / research-
 The official LSE SDK documents futures in the catalog, raw tick `history()` exports,
 Parquet bulk jobs with resume support, and live websocket ticks. Current public terms
 permit internal research, trading and model training, including commercial use, while
-forbidding redistribution/resale/competing feeds.
+forbidding redistribution/resale/competing feeds. The public free databank currently
+advertises 10 downloads/hour with an export ceiling of 1,000,000 rows. F1 therefore
+defaults raw-tick planning to one calendar day per export and fails closed on any
+at/over-cap result instead of accepting a valid-looking truncated Parquet file.
 
 **Critical F0 unknown:** exact `ES.F` history span and roll/adjustment semantics.
 
@@ -212,8 +215,12 @@ Done when:
 
 ### F1 — bounded LSE ES backfill
 
-Use explicit windows. Every successful export writes a checksum manifest. Restarting
-must skip a valid already-receipted partition. At completion, run `audit`.
+Use explicit windows. `plan-lse` / `backfill-lse-range` default to one-day raw-tick
+windows and a bounded per-invocation export-job budget. Every successful export writes a
+checksum manifest. Restarting skips only a partition whose receipt re-verifies the bytes;
+a missing/corrupt receipt forces reacquisition. An export returning at least 1,000,000
+rows is treated as capped/incomplete and must be retried at finer granularity. At
+completion, run `audit`.
 
 Backfill remains held if the catalog span or roll semantics invalidate the source.
 
