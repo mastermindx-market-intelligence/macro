@@ -967,3 +967,107 @@ def list_changes(baseline: Any, evidence: list) -> list[dict[str, Any]]:
             })
 
     return entries
+
+
+# ---------------------------------------------------------------------------
+# E1c1 compose_outlook — the assembled projection (appended; no existing
+# symbol is touched)
+# ---------------------------------------------------------------------------
+
+
+def compose_outlook(
+    mapping: dict[str, Any],
+    input_bytes: dict[str, bytes | None],
+    *,
+    mapping_sha256: str,
+    analysis_cutoff: datetime,
+    built_at: datetime,
+    session_of,
+    previous: dict | None = None,
+) -> dict[str, Any]:
+    """Assemble the regime-outlook projection dict from owner bytes.
+
+    ``mapping_sha256`` is the producer-supplied digest of the mapping bytes
+    and is stored verbatim. ``analysis_cutoff`` and ``built_at`` must be
+    timezone-aware datetimes (a naive value raises ``ValueError``).
+    ``session_of`` resolves ``analysis_cutoff`` to a US-session date; an
+    exception is caught and the US session is treated as unavailable.
+    ``previous`` is deep-copied before being read so it is never mutated,
+    and the returned dict never shares a nested object with ``previous``
+    or ``input_bytes``.
+
+    The function calls the existing helpers exactly as ``_build_at_pin``
+    does (``read_inputs`` then ``evidence_rows``) and uses ``pick_baseline``
+    for the baseline and ``list_changes`` for the change list. An absent
+    baseline (``{"status": "absent", ...}``) yields ``[]`` for changes.
+
+    The return survives ``json.loads(json.dumps(...))`` unchanged; the only
+    clock artefacts are UTC ISO strings, and the authority dict holds only
+    booleans. The function reads no wall clock, no file and no network.
+    """
+    if analysis_cutoff.tzinfo is None:
+        raise ValueError("analysis_cutoff must be timezone-aware")
+    if built_at.tzinfo is None:
+        raise ValueError("built_at must be timezone-aware")
+
+    try:
+        us_session = session_of(analysis_cutoff)
+    except Exception:
+        us_session = None
+
+    previous_safe = copy.deepcopy(previous) if previous is not None else None
+
+    docs, record = read_inputs(mapping, input_bytes)
+    evidence = evidence_rows(
+        mapping,
+        docs,
+        record,
+        analysis_cutoff=analysis_cutoff,
+        us_session=us_session,
+    )
+    families = state_families(mapping, evidence)
+    evidence_clock_range = clock_range(evidence)
+    conditional_paths = outlook_paths(mapping, docs, evidence)
+    baseline = pick_baseline(
+        previous_safe, us_session=us_session, session_of=session_of
+    )
+    changes = list_changes(baseline, evidence)
+
+    return {
+        "schema_version": "regime_outlook.v1",
+        "scope": "US",
+        "analysis_cutoff": analysis_cutoff.astimezone(timezone.utc).isoformat(),
+        "built_at": built_at.astimezone(timezone.utc).isoformat(),
+        "mapping_version": mapping["mapping_version"],
+        "mapping_sha256": mapping_sha256,
+        "inputs": record,
+        "evidence_clock_range": evidence_clock_range,
+        "families": families,
+        "evidence": evidence,
+        "conditional_paths": conditional_paths,
+        "baseline": baseline,
+        "changes": changes,
+        "historical_comparisons": {
+            "status": "absent",
+            "reason": "history_not_qualified",
+            "qualification": {},
+        },
+        "forecast_distributions": {
+            "status": "absent",
+            "reason": "no_admitted_owner",
+        },
+        "conditional_exposures": {
+            "status": "absent",
+            "reason": "no_admitted_owner",
+        },
+        "authority": {
+            "may_rank": False,
+            "may_gate": False,
+            "may_size": False,
+            "may_trade": False,
+            "may_forecast": False,
+            "may_escalate": False,
+        },
+        "tier": "display_research",
+        "notes": [AGE_RULE_NOTE],
+    }
