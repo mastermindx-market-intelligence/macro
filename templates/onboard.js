@@ -547,12 +547,18 @@
     return (window.MM_API || "").replace(/\/+$/, "");
   }
   function syncFoundingOffer() {
-    return fetch(apiBase() + "/api/billing/offers/" + encodeURIComponent(FOUNDING_PRO.key), {
+    // index.html starts this same-origin read before deferred onboard.js executes. Reuse
+    // that in-flight/result promise on the canonical landing instead of asking twice.
+    // Off-site previews keep their existing apiBase() request because the inline landing
+    // request is relative to the preview host and may intentionally be unavailable there.
+    var shared = apiBase() === "" ? window.__mmFoundingOfferRequest : null;
+    var request = shared || fetch(apiBase() + "/api/billing/offers/" + encodeURIComponent(FOUNDING_PRO.key), {
       cache: "no-store", credentials: "include"
     }).then(function (r) {
       if (!r.ok) return null;
       return r.json().catch(function () { return null; });
-    }).then(function (o) {
+    });
+    return request.then(function (o) {
       if (!o) return null;
       FOUNDING_PRO.active = !!o.active;
       FOUNDING_PRO.claimed = typeof o.claimed === "number" ? o.claimed : null;
