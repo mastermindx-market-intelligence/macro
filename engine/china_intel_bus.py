@@ -377,6 +377,7 @@ def _visit_discovery_snapshot(
         "source_status": source_status,
         "coverage_start": coverage_day.isoformat() if coverage_day else None,
         "observation_end": observation_end.isoformat() if observation_end else None,
+        "asof": observation_end.isoformat() if observation_end else None,
         "recent_window_days": recent_days,
         "baseline_window_days": baseline_days,
         "scientific_state": "descriptive_only_not_alpha_evidence",
@@ -576,6 +577,7 @@ def _visit_discovery_block() -> dict | None:
                 "source_status": "source_failure",
                 "coverage_start": None,
                 "observation_end": None,
+                "asof": None,
                 "global_negative_authority": False,
                 "global_negative_authority_blocker": "owner_store_unreadable",
                 "examples": [],
@@ -595,10 +597,20 @@ def _visit_discovery_block() -> dict | None:
                 if norm:
                     open_scoped_codes.add(norm)
 
+        health = cv.read_health()
+        coverage_start = cv.read_coverage_start()
+        if (
+            not visits
+            and not open_rows
+            and _visit_text(health.get("status")) == "no_coverage"
+            and not coverage_start
+        ):
+            return None
+
         return _visit_discovery_snapshot(
             visits,
-            health=cv.read_health(),
-            coverage_start=cv.read_coverage_start(),
+            health=health,
+            coverage_start=coverage_start,
             open_scoped_codes=open_scoped_codes,
             has_unscoped_open=has_unscoped,
             kind_labeler=cv.visit_kind_label,
