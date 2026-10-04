@@ -47,6 +47,7 @@ from lib.dataos.futures_tape import (  # noqa: E402
 )
 
 DEFAULT_RESERVE_GIB = 100.0
+LSE_EXPORT_ROW_CAP = 1_000_000
 LSE_KEY_ENV = "LSE_API_KEY"
 
 
@@ -285,6 +286,14 @@ def cmd_backfill_lse(args: argparse.Namespace) -> int:
     kwargs = {"start": args.start, "end": args.end}
     result = client.history(args.symbol, **kwargs)
     df = _coerce_history_result(result, target.parent)
+    # The public LSE free-plan databank documents a 1,000,000-row export cap.
+    # A capped export can look like a valid Parquet file while silently omitting
+    # the tail of a dense window, so never finalize an at/over-cap result.
+    if len(df) >= LSE_EXPORT_ROW_CAP:
+        raise SystemExit(
+            f"LSE export returned {len(df):,} rows for {args.start}..{args.end}; "
+            "treat as capped/incomplete and retry this window at finer granularity"
+        )
     manifest = _write_dataframe_export(
         df, target,
         source="lse",
@@ -416,14 +425,14 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--symbol", default="ES.F")
     p.add_argument("--start", required=True)
     p.add_argument("--end", required=True)
-    p.add_argument("--chunk-days", type=int, default=7)
+    p.add_argument("--chunk-days", type=int, default=1)
     p.set_defaults(func=cmd_plan_lse)
 
     p = sub.add_parser("backfill-lse-range")
     p.add_argument("--symbol", default="ES.F")
     p.add_argument("--start", required=True)
     p.add_argument("--end", required=True)
-    p.add_argument("--chunk-days", type=int, default=7)
+    p.add_argument("--chunk-days", type=int, default=1)
     p.add_argument("--max-jobs", type=int, default=1,
                    help="maximum new LSE export jobs this invocation")
     p.add_argument("--reserve-gib", type=float, default=DEFAULT_RESERVE_GIB)
