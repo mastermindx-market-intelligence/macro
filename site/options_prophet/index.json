@@ -1,16 +1,16 @@
 {
   "schema": "options.prophet_shadow/v1",
   "as_of": "2026-10-02",
-  "built_at": "2026-10-03T17:40:57.102704Z",
+  "built_at": "2026-10-04T08:07:35.830404Z",
   "decision_at": null,
-  "available_at": "2026-10-03T17:40:57.102704Z",
+  "available_at": "2026-10-04T08:07:35.830404Z",
   "pit_provenance": {
     "clock": "UTC",
     "decision_at_required_for_issued_portfolio": true,
     "decision_at_status": "not_available_in_current_pick_lab_contract",
     "available_at_status": "exact_projection_publication_time",
     "source_available_at": {
-      "flow_leaders": "2026-10-03T17:39:52.222009Z",
+      "flow_leaders": "2026-10-04T08:06:32.681136Z",
       "pick_lab": "2026-10-03T17:40:56.771652Z"
     },
     "promotion_ready": false,
@@ -512,7 +512,7 @@
     "options_entry_gate": {
       "path": "data/options_entry/gate.json",
       "schema": "options_entry.gate.v3",
-      "as_of": "2026-10-03 09:10 UTC",
+      "as_of": "2026-10-03 20:04 UTC",
       "available": true,
       "error": null
     },

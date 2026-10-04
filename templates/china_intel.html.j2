@@ -730,6 +730,13 @@
             {{ r.visitor_raw }}
           {%- endif %}
         </div>
+        {%- if r.source_url %}
+        <div class="disc-reason">
+          <a href="{{ r.source_url }}" target="_blank" rel="noopener noreferrer" style="color:var(--ink-link, var(--link));text-decoration:none">
+            {{ t('Source filing ↗','原始公告 ↗') }}
+          </a>
+        </div>
+        {%- endif %}
         {%- endfor %}
         {#- P1-R3: positive evidence first, then — only when this company (or
             the whole plane) also carries an open coverage exception — a
@@ -762,6 +769,26 @@
         <div class="disc-reason">{{ t('Visit-record disclosures do not apply to this listing.','调研披露规则不适用于该股票。') }}</div>
       {%- else %}
         <div class="disc-reason">{{ t('Visit records: status', '调研记录：状态') }} {{ _v.state }}</div>
+      {%- endif %}
+
+      {#- CIE-04/05/06 bounded owner-native context: plain facts only.
+          No directional hue, score/rank vocabulary or raw internal unknown slugs. #}
+      {%- set _ce = d.get('company_evidence') or {} %}
+      {%- set _mc = _ce.get('market_context') or {} %}
+      {%- if _mc.get('ret_20d') is not none or _mc.get('rs_20d') is not none or _mc.get('off_high_pct') is not none %}
+      <div class="disc-reason">
+        {{ t('Market context','市场背景') }}
+        {%- if _mc.get('ret_20d') is not none %} · 20d {{ "%+.1f"|format(_mc.get('ret_20d')) }}%{%- endif %}
+        {%- if _mc.get('rs_20d') is not none %} · RS20 {{ "%+.1f"|format(_mc.get('rs_20d')) }}%{%- endif %}
+        {%- if _mc.get('off_high_pct') is not none %} · {{ t('off high','距高点') }} {{ "%+.1f"|format(_mc.get('off_high_pct')) }}%{%- endif %}
+      </div>
+      {%- endif %}
+      {%- if _ce.get('contradictions') %}
+      {%- set _cx = _ce.get('contradictions')[0] %}
+      <div class="disc-reason">
+        <strong>{{ t('What could be wrong','可能存在的问题') }}</strong> ·
+        {{ t(_cx.get('detail_en') or '', _cx.get('detail_zh') or _cx.get('detail_en') or '') }}
+      </div>
       {%- endif %}
     </div>
     {%- endfor %}
