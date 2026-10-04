@@ -832,15 +832,23 @@ def _substrate_fingerprint_v1(frame: pd.DataFrame) -> str:
     return sha16(_fingerprint_rows_slow_v1(frame) if rows is None else rows)
 
 
-def _substrate_fingerprint_for_manifest(manifest: Mapping[str, Any]) -> Callable[[pd.DataFrame], str]:
+def _substrate_fingerprint_generation(manifest: Mapping[str, Any]) -> int:
     declared = manifest.get("substrate_fingerprint_version")
     if declared is None:
-        return _substrate_fingerprint_v1
+        return 1
+    if type(declared) is not int:
+        raise LivePackError(f"substrate_fingerprint_version_unsupported:{declared!r}")
+    if declared == 1:
+        return 1
     if declared == SUBSTRATE_FINGERPRINT_VERSION:
-        return substrate_fingerprint
-    raise LivePackError(
-        "fingerprint_version_mismatch: manifest substrate_fingerprint_version "
-        f"is not {SUBSTRATE_FINGERPRINT_VERSION}")
+        return 2
+    raise LivePackError(f"substrate_fingerprint_version_unsupported:{declared!r}")
+
+
+def _substrate_fingerprint_for_manifest(manifest: Mapping[str, Any]) -> Callable[[pd.DataFrame], str]:
+    if _substrate_fingerprint_generation(manifest) == 1:
+        return _substrate_fingerprint_v1
+    return substrate_fingerprint
 
 
 def _manifest_schema_for_hash(manifest: Mapping[str, Any]) -> str:
@@ -1813,6 +1821,9 @@ def save_pack(pack: LivePack, state_dir: Path | str, *,
         price_basis=pack.price_basis, spec_hashes=pack.spec_hashes,
         probe_tickers=list(pack.probe_set.get("tickers") or ()),
         names=pack.names, confirmed_lanes=pack.confirmed_lanes)
+    stored_hash = str(pack.pack_hash or "")
+    if stored_hash and stored_hash != pack_hash:
+        raise LivePackError(f"pack_hash_mismatch_on_save:{stored_hash}:{pack_hash}")
     manifest = pack.manifest()
     manifest["pack_hash"] = pack_hash
     staging = Path(tempfile.mkdtemp(prefix=f".{pack.as_of}.", dir=root))
@@ -1952,8 +1963,11 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
     lane_rows = confirmed_lanes_snapshot(raw_confirmed_lanes, probe_tickers)
     schema = str(manifest.get("schema") or _SCHEMA_LIVE_PACK_V1)
     stored_hash = str(manifest.get("pack_hash") or "")
-    if stored_hash and _confirmed_lanes_on_disk_are_normalized(
-            raw_confirmed_lanes, probe_tickers):
+    if _substrate_fingerprint_generation(manifest) == SUBSTRATE_FINGERPRINT_VERSION:
+        if not stored_hash:
+            raise LivePackError("pack_hash_missing")
+        if not _confirmed_lanes_on_disk_are_normalized(raw_confirmed_lanes, probe_tickers):
+            raise LivePackError("confirmed_lanes_not_normalized")
         recomputed = compute_pack_hash(
             schema=_manifest_schema_for_hash(manifest),
             as_of=str(manifest["as_of"]),

@@ -1,6 +1,8 @@
 """Entry Radar pack builder substrate sink — streaming hand-off and proof tap."""
 from __future__ import annotations
 
+import dataclasses
+import json
 import types
 from datetime import date, datetime, timezone
 
@@ -362,17 +364,24 @@ def test_FU2_nonfinite_fingerprints_and_index_shift_refused():
         lp._refuse_substrate_index_not_normalized(shifted, ticker="X")
 
 
-def test_FU2b_old_fingerprint_version_manifest_refused(tmp_path):
-    import json
+def test_FU2b_explicit_fingerprint_version_one_uses_v1_oracle():
+    manifest = {"substrate_fingerprint_version": 1}
+    assert lp._substrate_fingerprint_generation(manifest) == 1
+    frame = next(iter(build().substrate.values()))
+    assert lp._substrate_fingerprint_for_manifest(manifest)(frame) == (
+        lp._substrate_fingerprint_v1(frame))
 
+
+@pytest.mark.parametrize("bad_version", [True, 2.0, "2", 3])
+def test_FU2b_unsupported_fingerprint_versions_refused(tmp_path, bad_version):
     pack = build()
     lp.save_pack(pack, tmp_path)
     manifest_path = lp.pack_root(tmp_path) / pack.as_of / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    manifest["substrate_fingerprint_version"] = 1
+    manifest["substrate_fingerprint_version"] = bad_version
     manifest_path.write_text(json.dumps(manifest, sort_keys=True, separators=(",", ":")),
                              encoding="utf-8")
-    with pytest.raises(lp.LivePackError, match="fingerprint_version_mismatch"):
+    with pytest.raises(lp.LivePackError, match="substrate_fingerprint_version_unsupported"):
         lp.load_pack(tmp_path)
 
 
@@ -397,11 +406,65 @@ def test_FU4_pack_hash_mismatch_when_manifest_tampered(tmp_path):
     pack = build()
     lp.save_pack(pack, tmp_path)
     manifest_path = lp.pack_root(tmp_path) / pack.as_of / "manifest.json"
-    text = manifest_path.read_text(encoding="utf-8")
-    manifest_path.write_text(text.replace(pack.pack_hash, "0" * len(pack.pack_hash)),
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["names"][0]["as_of_close"] = 0.0
+    manifest_path.write_text(json.dumps(manifest, sort_keys=True, separators=(",", ":")),
                              encoding="utf-8")
     with pytest.raises(lp.LivePackError, match="pack_hash_mismatch"):
         lp.load_pack(tmp_path)
+
+
+def test_FU4b_v2_non_normalized_lanes_or_tamper_refused(tmp_path):
+    pack = build()
+    lp.save_pack(pack, tmp_path)
+    manifest_path = lp.pack_root(tmp_path) / pack.as_of / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["names"][0]["as_of_close"] = 0.0
+    manifest["confirmed_lanes"]["ZZZ"] = {}
+    manifest_path.write_text(json.dumps(manifest, sort_keys=True, separators=(",", ":")),
+                             encoding="utf-8")
+    with pytest.raises(lp.LivePackError,
+                       match="confirmed_lanes_not_normalized|pack_hash_mismatch"):
+        lp.load_pack(tmp_path)
+
+
+def test_FU4c_v2_pack_hash_missing_refused(tmp_path):
+    pack = build()
+    lp.save_pack(pack, tmp_path)
+    manifest_path = lp.pack_root(tmp_path) / pack.as_of / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    del manifest["pack_hash"]
+    manifest_path.write_text(json.dumps(manifest, sort_keys=True, separators=(",", ":")),
+                             encoding="utf-8")
+    with pytest.raises(lp.LivePackError, match="pack_hash_missing"):
+        lp.load_pack(tmp_path)
+
+
+def test_FU4d_v1_legacy_manifest_loads_with_non_normalized_lanes(tmp_path):
+    """Pre-v2 production pack: no substrate_fingerprint_version, no pack_hash check."""
+    pack = build()
+    lp.save_pack(pack, tmp_path)
+    manifest_path = lp.pack_root(tmp_path) / pack.as_of / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    del manifest["substrate_fingerprint_version"]
+    manifest["schema"] = "entry_radar.live_pack/v1"
+    for row in manifest["names"]:
+        frame = pack.substrate[row["ticker"]]
+        row["substrate_fingerprint"] = lp._substrate_fingerprint_v1(frame)
+    ticker = next(iter(manifest["confirmed_lanes"]))
+    manifest["confirmed_lanes"][ticker]["g0"]["availability"] = "maybe"
+    manifest_path.write_text(json.dumps(manifest, sort_keys=True, separators=(",", ":")),
+                             encoding="utf-8")
+    reloaded = lp.load_pack(tmp_path)
+    assert reloaded is not None
+    assert reloaded.confirmed_lanes[ticker]["g0"]["availability"] == "unavailable"
+
+
+def test_FU4e_save_pack_refuses_stale_pack_hash(tmp_path):
+    pack = build()
+    stale = dataclasses.replace(pack, pack_hash="0" * 16)
+    with pytest.raises(lp.LivePackError, match="pack_hash_mismatch_on_save"):
+        lp.save_pack(stale, tmp_path)
 
 
 def test_FU5_load_compact_duplicate_ticker_listed_twice(tmp_path):

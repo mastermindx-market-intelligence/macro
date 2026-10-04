@@ -116,7 +116,19 @@ PINNED = {
 PINNED_V1 = {
     "plain": "44483a571b3adaeb",
     "nonfinite": "a39b805ea1cf62f2",
+    "empty": "4f53cda18c2baa0c",
+    "int": "c4270da38bbc1ac8",
+    "float32": "a253be7407ce1ffc",
     "tz": "44483a571b3adaeb",
+    "extra_col": "44483a571b3adaeb",
+    "object": "e54dfeff6e3d8bbd",
+    "nat": "4fdddab3296c2ac2",
+    "Int64": "c4270da38bbc1ac8",
+    "bool": "0c02b53397d1b5d5",
+    "neg_zero": "769250833a213528",
+    "tz_shift": "abbee96a52d6de99",
+    "empty_no_columns": "4f53cda18c2baa0c",
+    "empty_missing_close": "4f53cda18c2baa0c",
 }
 
 
@@ -149,7 +161,7 @@ def test_every_fixture_equals_the_v2_oracle(name):
 
 @pytest.mark.parametrize("name", sorted(PINNED_V1))
 def test_v1_legacy_digests_remain_pinned(name):
-    make = {"plain": _base, "nonfinite": _nonfinite, "tz": _tz}[name]
+    make = FAST.get(name) or SLOW[name]
     assert lp._substrate_fingerprint_v1(make()) == PINNED_V1[name]
 
 
