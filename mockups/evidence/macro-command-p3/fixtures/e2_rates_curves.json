@@ -1,0 +1,11 @@
+{
+  "empty_id": "e2",
+  "section": "rates",
+  "workspace_id": "rates_curves",
+  "region": "US",
+  "source": "site/macrodata/workspaces/rates_curves/US/latest.json",
+  "path_through": "scripts/build_macro_suite_pages.render — live snapshot",
+  "trigger": "Live #rates workspace context.state is SOURCE_FAILED / STALE_SOURCE. The production builder emits E2 from that typed state (no sidecar key). Captured from the same production build as the page matrix.",
+  "selector": "#rates [data-mc-empty='e2']",
+  "expected_title_en": "Today's number didn't arrive"
+}

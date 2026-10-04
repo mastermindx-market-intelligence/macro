@@ -1,12 +1,12 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CELH-BULL-20260525",
-  "asof": "2026-09-12",
+  "asof": "2026-10-03",
   "phase": "invalidated",
   "detection_phase": "invalidated",
-  "management_confidence": 11.8,
+  "management_confidence": 11.6,
   "raw_confidence": 8.0,
-  "delta_vs_base": -48.2,
+  "delta_vs_base": -48.4,
   "recommended_action": "invalidated",
   "human_state": "Invalidated",
   "components": {
@@ -14,17 +14,17 @@
     "progress": 32.8,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 61.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.178,
+    "dist_to_stop_r": -0.123,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 95.6,
-    "p1": -0.7854,
-    "p2": -0.3927,
+    "horizon_pct_used": 142.2,
+    "p1": -0.7489,
+    "p2": -0.3744,
     "p3": null,
-    "move_r": -1.178,
+    "move_r": -1.123,
     "mfe_r": 2.799,
     "mae_r": -1.178
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": "2026-08-20",
   "_first_t2_ts": null,
-  "days_elapsed": 43,
-  "tau": 0.9556
+  "days_elapsed": 64,
+  "tau": 1.4222
 }

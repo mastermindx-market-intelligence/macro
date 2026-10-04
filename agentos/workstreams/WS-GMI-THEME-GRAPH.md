@@ -97,6 +97,20 @@ waves:
       TXI/incorporation/dislocation stay with native owners; downstream Transmission Gap,
       second-order/opportunity and explanation product composition stays with canonical
       MarketOntology F04 operation marketontology-f04-ontology-transmission-20260826-fable-001.
+  - id: ENE-1
+    title: "Energy — Nuclear Value Capture first vertical (gmi-energy-fable-ceo-e2e-20260923-chairman-001)"
+    status: in_progress
+    pr: 7881
+    next_action: >
+      RE-SCOPED 2026-09-24 by Chairman ruling R-ENE-09 (relayed from Astra CEO): Semiconductors (#7870)
+      builds the base and Energy integrates into it. The T9 nuclear non-regression guard is MERGED
+      (#7881 -> 1a90944e) with production proof. 2026-09-25 wave 2, following the Robotics precedent
+      (#7908): Energy builds its own nuclear theme-research vertical module on an Energy-owned snapshot
+      of #7870's head (claude/energy-stack-base-b-6cd958e9 = 6cd958e9), importing B's shared types
+      directly. It merges only after #7870 lands; one VerticalRegistration + mount for nuclear_power,
+      served/browser/privacy proof and real admission then follow on an Energy carrier. Working
+      checkpoint (section 9):
+      agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md.
 landmines:
   - >-
     The old next_action waiting for the 2026-08-15 scrape is superseded permanently.

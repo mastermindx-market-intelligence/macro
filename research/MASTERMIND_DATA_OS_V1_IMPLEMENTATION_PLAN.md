@@ -1501,6 +1501,20 @@ allowlist that deliberately excludes identity and geometry fields.
    than degrading silently — a real fix — but the starvation is unresolved, so the EC leg of every
    live pick is unmeasurable in production.
 
+   > **UPDATE 2026-09-18 (macro #7294).** The starvation half is repaired and this item is no
+   > longer a blocker to plan around. The same native EquityDesk table already reached CI and
+   > deploy as `data/earnings_calls/history.parquet` through the existing earnings R2 plane —
+   > `engine/earnings_qual.py` had been consuming it at tier `r2_history` since SGA W4;
+   > `prophet_stage_inputs` was simply resolving a different address for the same evidence, and
+   > the nightly's only hydration step ran ~840 lines BELOW the Prophet step in the same job.
+   > Both are fixed, and `scripts/import_equitydesk_full.py` now stages the frame at the transport
+   > address so the existing publisher can ship it. The cited line range `:21-26` no longer says
+   > what is quoted above. What remains is an operator act, not an architecture gap: no host has
+   > run `python -m scripts.publish_earnings_r2` yet, so until it does the hydration is a clean
+   > no-op and every plan keeps disclosing `ec_source_state=unavailable` with its reason. See
+   > `DSC:TWO-CONSUMERS-OF-ONE-DATASET-DISAGREED-ABOUT-ITS-ADDRESS`. The PSQ promotion clock
+   > stays frozen per `DNR:HOLD-PSQ-TILT-CLOCK` — restoring falsifiability is not unfreezing.
+
 **Exactly what would have to change** (this is DOS-6.2, plus two dependencies):
 
 - **(a)** The nightly origination path writes an origination receipt per run, carrying the git sha,

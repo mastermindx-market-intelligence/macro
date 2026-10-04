@@ -15,7 +15,7 @@ status: active
 program: prophet-us
 p0: US_PROPHET_ENTRY_TIMING
 repos: [macro]
-owner: fable
+owner: sol
 class: build
 blast_radius: user_facing
 ambiguity: scoped
@@ -38,6 +38,9 @@ owns_paths:
   - tests/test_us_candidate_episode_intake.py
   - tests/test_us_candidate_episode_reconciler.py
   - tests/test_us_candidate_episode_wiring.py
+  - engine/prophet_b2_disposition.py
+  - tests/test_prophet_b2_disposition.py
+  - research/prophet_v4/B2_0_DISPOSITION_AND_MUTATION_PACKET_2026-09-04.md
 depends_on:
   - WS:PROPHET-US-AVAILABILITY
   - WS:LIVE-ENTRY-RADAR
@@ -48,11 +51,27 @@ depends_on:
   - WS:PROPHET-US-ENTRY-TIMING
   - WS:EVAL-OS-MEASUREMENT-LAW
 decisions:
+  - DEC:PROPHET-ROTATION-PARTICIPATION-META-CEO-MANDATE
   - DEC:PROPHET-V4-THEIA-SOURCE-RIGHTS
   - DEC:PROPHET-LAB-B5A-RECUT
   - DEC:PROPHET-B1-CANONICAL-EPISODE-BINDINGS
   - DEC:PROPHET-D5-PRESERVES-CONTEXT-VECTOR-AND-SEPARATES-EVIDENCE-AUTHORITY
+  - DEC:PROPHET-US-FABLE-META-CEO-DELEGATION
+  - DEC:PROPHET-US-D01-CONFLUENCE-VALIDITY-CONTRACT
+  - DEC:PROPHET-US-D02-EPISODE-ADMISSION-GATED
+  - DEC:PROPHET-US-D05-ENTRY-WATCH-PERSISTENCE
+  - DEC:PROPHET-US-D11-RELEASE-PATH-INCUMBENT-CONTROLS
+  - DEC:PROPHET-US-C-01-EARNINGS-SEQUENCING
 landmines:
+  - "R6 (2026-09-23): program judgment, D01-D12, B00-B28 and Q01-Q24 are delegated
+    to the Fable Meta-CEO seat (DEC:PROPHET-US-FABLE-META-CEO-DELEGATION; operation
+    prophet-us-fable-meta-ceo-20260923-001, #6805 comment 5793406610, PICKUP_ACK
+    5793983971). No Astra/Sol return is a prerequisite; existing technical owners,
+    independent review, source custody, rights, budget and release gates are unchanged.
+    Labor runs on the external fabric only; Fable/Opus children are permitted solely as
+    sub-orchestrators or adversarial auditors (Chairman live instruction, same day).
+    Incumbent carriers #7581/#7180/#7572 stay on their original writers until a
+    same-carrier custody statement is read."
   - "THE OUTAGE was LIVE at 0A (2026-08-17) and still unresolved at the 0B pin
     (2026-08-18T00Z: source_asof=2026-08-13, 206 plans). That historical fact is
     preserved. A1 is now RESOLVED by adoption of A1R #6320 plus the ordinary scheduled
@@ -149,6 +168,9 @@ artifacts:
   - research/prophet_v4/V4_A1_AVAILABILITY_RECOVERY_HANDOFF.md
   - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-25-a1-acceptance.md
   - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-25-b1-built.md
+  - research/prophet_v4/r6_fable_meta_ceo_handoff/FABLE_META_CEO_EXECUTION_HANDOFF.md
+  - research/prophet_v4/r6_fable_meta_ceo_handoff/effective/PROPHET_US_MASTER_PLAN_R6.md
+  - research/prophet_v4/r6_fable_meta_ceo_handoff/FIRST_WAVE_RUNBOOK.md
 waves:
   - id: 0a
     title: "V4-0A — estate archaeology + architecture freeze. Merged #5832
@@ -209,7 +231,11 @@ waves:
   - id: b2
     depends_on: [b1]
     title: "V4-B2 — entry-event correction hardening (B-15..B-19)"
-    status: todo
+    status: in_progress
+    next_action: >
+      B2-0 records packet frozen: the B-15..B-19 disposition matrix + correction/
+      supersession/PIT-replay/mutation law — see
+      research/prophet_v4/B2_0_DISPOSITION_AND_MUTATION_PACKET_2026-09-04.md.
   - id: b3
     depends_on: [b1]
     title: "V4-B3 — orthogonal lifecycle contract (4 independent state fields)"
@@ -649,15 +675,19 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
-  D5's bounded Earnings implementation is independently hostile-review accepted and locally
-  exact-head verified after fresh-main reconciliation at merge head
-  bb34c575f58879f4944ca353e17ca6a6fa4512ca, but it is not yet hosted-CI accepted, merged
-  to main, deployed, or live-proven. Continue Task 4 from
-  agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-30-d5-pre-delivery.md: push the exact
-  records-only child, open one PR, wait for concluded hosted CI, squash-merge, verify
-  main/deploy, and collect authenticated covered plus typed-unresolved endpoint receipts.
-  Radar forward lineage remains
-  PROPOSED/STAGED_NOT_ARMED; A2/A3/A4, B2/B3/B4, D6, and every later wave remain separate.
+  R6 Fable Meta-CEO program (operation prophet-us-fable-meta-ceo-20260923-001, parent
+  #6805, PICKUP_ACK 5793983971): wave 2 closed 2026-09-23 (handoff
+  PROPHET-US-V4-RECOVERY-2026-09-23-r6-wave2-close.md; decisions
+  DEC:PROPHET-US-D03-SOURCE-READINESS-SCOPE, DEC:PROPHET-US-B16-CYCLE-INTERNAL-DIAGNOSTIC-ERA,
+  DEC:PROPHET-US-B04-EVIDENCE-DOSSIER-CONTRACT, DEC:PROPHET-US-D10-SOURCE-CUSTODY-ADMISSION).
+  Wave 3: merge DS-PR-0a (#7849) on concluded green and live-verify theme.css; adjudicate the
+  B20-1 component spec (#7851) after its repair lane and an Opus read-only audit; consume the
+  pre-registered Cycle (a) diagnostic run and B04-A from the m1 window (internal-only evidence,
+  never a pilot); rule R6-D07-01 on the D07 evidence-class register draft, then B04-B/C and
+  DS-PR-0c on 7849's merge sha. B01 stays with the #7180 writer; B03 merged by the #7572 writer
+  (177146dd) awaits production proof. The 2026-09-18 rotation mandate and the masterplan §21
+  wave graph remain in force beneath this program; never replay an old next action without
+  reconciling the R6 records.
 ---
 
 ## Context

@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/uiux-altdata-news-20260921/research/evidence/uiux-altdata-news-20260921/verify_news.py", line 66, in <module>
+    assert p.locator('#sid-news-open').evaluate('e=>document.activeElement===e')
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

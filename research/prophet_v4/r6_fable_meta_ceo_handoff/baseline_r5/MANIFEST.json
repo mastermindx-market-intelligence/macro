@@ -1,0 +1,137 @@
+{
+  "document_kind": "PORTABLE_RESEARCH_PACKET_MANIFEST",
+  "excludes_self_and_derived_verification_report": true,
+  "files": [
+    {
+      "bytes": 64193,
+      "path": "ACCEPTANCE_CATALOG.json",
+      "sha256": "6f343caf58c8d17357178050c43438bd7832aa99c72be08e2330ec7cab087238"
+    },
+    {
+      "bytes": 2619,
+      "path": "ACTIVATION_GATES.json",
+      "sha256": "833d52e4b0f71b7bd90c08269a0d63a3c1c00655af5966a7d21bb0aaf49392ce"
+    },
+    {
+      "bytes": 38578,
+      "path": "BUILD_PROGRAM.json",
+      "sha256": "d8ba9343ff6a666c1c65ba645dda3177ed77df2ce256c285b3e4aa0a916e29e9"
+    },
+    {
+      "bytes": 36681,
+      "path": "BUILD_PROGRAM.md",
+      "sha256": "28772dfb8d5af4bc737c3a852392ad96c4ae34d9663d9394aaa903b734f2fd21"
+    },
+    {
+      "bytes": 10390,
+      "path": "CARRIER_MAP.json",
+      "sha256": "c0cec1a90dfefe294f06f2ad53a2aa650ffee73cdeb56b2700530f4818454653"
+    },
+    {
+      "bytes": 11279,
+      "path": "DECISION_REGISTER.json",
+      "sha256": "634dc7fae40d9bf6ecce43bbdd2f8b4941bc3cce3b75eb85323bb4a65141b5ba"
+    },
+    {
+      "bytes": 712,
+      "path": "INPUT_MANIFEST.json",
+      "sha256": "810041d554bf925a9259b057a731d0d1d6517467817ad015ab820a4f4d26f2f9"
+    },
+    {
+      "bytes": 98647,
+      "path": "PROPHET_US_MASTER_PLAN_R5.md",
+      "sha256": "42bba9e0eeccb1ded19bde3e963046cbdaf43c4ee176f0bf0a92865db6c47d44"
+    },
+    {
+      "bytes": 1276,
+      "path": "PROPOSAL_STATUS.json",
+      "sha256": "239c8cb2d97f13c0cddf1688de9c30356fb70ec5513471d78db2b65af18b3aac"
+    },
+    {
+      "bytes": 15370,
+      "path": "REQUIREMENT_CROSSWALK.json",
+      "sha256": "8e8c9ab61f09b306b821b4a458c5bbf43829c05edaf2b18adf4d1e8128eab1c5"
+    },
+    {
+      "bytes": 33756,
+      "path": "RESEARCH_DOCKET.json",
+      "sha256": "e5d227f3401d367734af48aa2915f05c17c68b5e0a700753491e193c5312fff0"
+    },
+    {
+      "bytes": 28258,
+      "path": "RESEARCH_DOCKET.md",
+      "sha256": "1929e9a86e7737ca996908abfcc949ff387b9ed6d613abd6b17573ab84c0f397"
+    },
+    {
+      "bytes": 4629,
+      "path": "SOURCE_REGISTER.json",
+      "sha256": "a15673a2c50df9c6aa1566575d4c9fc4d5a4696c5e9c33dbe3a80665793f04a3"
+    },
+    {
+      "bytes": 5269,
+      "path": "START_HERE.md",
+      "sha256": "4a324df9c6a68b8eafead31bdc4ca7eff2a24d549f64a73f7e7527ea360d025e"
+    },
+    {
+      "bytes": 4935,
+      "path": "appendices/INDEPENDENT_REVIEW_BRIEF.md",
+      "sha256": "d98e418016b03460b89df302187f7d72079310d278c8c701890165af67b39f71"
+    },
+    {
+      "bytes": 55913,
+      "path": "build_catalogs.py",
+      "sha256": "06a9556e55f706d92a9a8a1ffb8054c181cdbb87c34d79e8371671755cdde99f"
+    },
+    {
+      "bytes": 34583,
+      "path": "build_crosswalk.py",
+      "sha256": "cb04e4a8be8ff131a613764ede18135dad67d942e775bb1ecaf4b30ce3a17628"
+    },
+    {
+      "bytes": 46303,
+      "path": "inputs/PROPHET_US_EARLY_LEADERSHIP_R3.md",
+      "sha256": "4ad7b39e8b4916029755f863d3b56ba0dc30d75ff46d95b031ceb24cb8946ff5"
+    },
+    {
+      "bytes": 47888,
+      "path": "inputs/PROPHET_US_EARNINGS_CYCLE_R4.md",
+      "sha256": "e9464a12b8faba1e61b2d8ed6cb3d508f7c99efd41a6e3b4ee715a849fd593d2"
+    },
+    {
+      "bytes": 50565,
+      "path": "inputs/PROPHET_US_MEASUREMENT_R2.md",
+      "sha256": "32bf1ddba37aa269469d7fb641dcf862ff4ea0aad3a567acdffa857cb26de19e"
+    },
+    {
+      "bytes": 45836,
+      "path": "inputs/PROPHET_US_RESEARCH_R1.md",
+      "sha256": "96d0ab34f5db94537fe60b493af166b0c50ca8eac2b89641703d9bb290166465"
+    },
+    {
+      "bytes": 13729,
+      "path": "inputs/R3_ACCEPTANCE_CASES.json",
+      "sha256": "2e195b13256188a5a969db01d51dfb2a623943469779f328925901fb2ff3df27"
+    },
+    {
+      "bytes": 9558,
+      "path": "inputs/R3_SOURCE_MAP.json",
+      "sha256": "d1e78d41096efdd606009c5ea1635aedf1ac35b00ac898d9a0a982cb55e87326"
+    },
+    {
+      "bytes": 11400,
+      "path": "inputs/R4_ACCEPTANCE_CASES.json",
+      "sha256": "816d3d4b914fed52dd19a1ae5fd61cf0443eb4de979096084c3f227e4b4adedf"
+    },
+    {
+      "bytes": 1814,
+      "path": "inputs/R4_SOURCE_MAP.json",
+      "sha256": "8835fb18ac08890a991d5ffaadbeabcfc80273d9bcea7f321516fa69f7757bc1"
+    },
+    {
+      "bytes": 9866,
+      "path": "verify_packet.py",
+      "sha256": "164c02412b9aac777ed5fc9465c0d7789f866827d95af20450c78c282385321c"
+    }
+  ],
+  "source_commit_claim": false
+}

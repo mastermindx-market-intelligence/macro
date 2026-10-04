@@ -1,0 +1,11 @@
+{
+  "proof_class": "exact_full_archive_history_date_preservation",
+  "before_source_commit": "bd93ee84583e6c6bea2b342bbf38cba0b9eb23e9",
+  "files_checked": 6167,
+  "lost_historical_dates_or_files": [],
+  "invalid_indices": [],
+  "seconds": 29.76,
+  "production": false,
+  "provider_calls": 0,
+  "claim_boundary": "Historical date preservation, not independent verification of every vendor corporate-action adjustment."
+}

@@ -1,60 +1,60 @@
 {
   "schema": "thematic_desk.v1",
-  "as_of": "2026-09-12",
-  "scored_total": 202,
-  "open": 97,
-  "unscored_soft": 49,
+  "as_of": "2026-10-03",
+  "scored_total": 280,
+  "open": 145,
+  "unscored_soft": 72,
   "overall": {
-    "n": 202,
-    "hits": 129,
-    "misses": 73,
-    "hit_rate": 0.639,
-    "dir_accuracy": 0.426
+    "n": 280,
+    "hits": 186,
+    "misses": 94,
+    "hit_rate": 0.664,
+    "dir_accuracy": 0.446
   },
   "by_market": {
     "us": {
-      "n": 55,
-      "hits": 37,
-      "misses": 18,
-      "hit_rate": 0.673,
-      "dir_accuracy": 0.491
+      "n": 84,
+      "hits": 57,
+      "misses": 27,
+      "hit_rate": 0.679,
+      "dir_accuracy": 0.488
     },
     "china": {
-      "n": 68,
-      "hits": 38,
-      "misses": 30,
-      "hit_rate": 0.559,
-      "dir_accuracy": 0.368
+      "n": 77,
+      "hits": 43,
+      "misses": 34,
+      "hit_rate": 0.558,
+      "dir_accuracy": 0.377
     },
     "hk": {
-      "n": 13,
-      "hits": 13,
-      "misses": 0,
-      "hit_rate": 1.0,
-      "dir_accuracy": 0.923
+      "n": 24,
+      "hits": 23,
+      "misses": 1,
+      "hit_rate": 0.958,
+      "dir_accuracy": 0.917
     },
     "canada": {
-      "n": 66,
-      "hits": 41,
-      "misses": 25,
-      "hit_rate": 0.621,
-      "dir_accuracy": 0.333
+      "n": 95,
+      "hits": 63,
+      "misses": 32,
+      "hit_rate": 0.663,
+      "dir_accuracy": 0.347
     }
   },
   "by_conviction": {
     "low": {
-      "n": 201,
-      "hits": 129,
-      "misses": 72,
-      "hit_rate": 0.642,
-      "dir_accuracy": 0.428
+      "n": 276,
+      "hits": 183,
+      "misses": 93,
+      "hit_rate": 0.663,
+      "dir_accuracy": 0.442
     },
     "medium": {
-      "n": 1,
-      "hits": 0,
+      "n": 4,
+      "hits": 3,
       "misses": 1,
-      "hit_rate": 0.0,
-      "dir_accuracy": 0.0
+      "hit_rate": 0.75,
+      "dir_accuracy": 0.75
     },
     "high": {
       "n": 0,
@@ -64,127 +64,127 @@
       "dir_accuracy": null
     }
   },
-  "calibration_note": "202 scored, hit-rate 0.639 (directional accuracy 0.426). Chance alone would land a hit-rate near 0.8512 (directional accuracy near 0.5096) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "280 scored, hit-rate 0.664 (directional accuracy 0.446). Chance alone would land a hit-rate near 0.8359 (directional accuracy near 0.5067) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
     {
-      "id": "us-2026-07-31-2",
+      "id": "hk-2026-09-04-20260904114404-1",
+      "market": "hk",
+      "subject": "China Tech & Internet",
+      "lean": "underweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0271,
+      "check_by": "2026-10-02"
+    },
+    {
+      "id": "us-2026-09-04-20260905021119-1",
+      "market": "us",
+      "subject": "Memory, HBM & Storage",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.1167,
+      "check_by": "2026-10-02"
+    },
+    {
+      "id": "us-2026-09-04-20260905021119-3",
       "market": "us",
       "subject": "Energy (Equal-Weight)",
       "lean": "overweight",
       "conviction": "low",
       "outcome": "hit",
-      "realized": 0.0708,
-      "check_by": "2026-09-11"
+      "realized": -0.02,
+      "check_by": "2026-10-02"
     },
     {
-      "id": "china-2026-07-31-2",
-      "market": "china",
-      "subject": "Battery & Lithium",
-      "lean": "underweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0656,
-      "check_by": "2026-09-11"
-    },
-    {
-      "id": "china-2026-08-14-20260818065149-1",
-      "market": "china",
-      "subject": "Industrial Metals",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0409,
-      "check_by": "2026-09-11"
-    },
-    {
-      "id": "hk-2026-08-14-20260818065616-2",
+      "id": "hk-2026-09-04-20260905021317-2",
       "market": "hk",
       "subject": "China Tech & Internet",
       "lean": "avoid",
       "conviction": "low",
       "outcome": "hit",
-      "realized": -0.0695,
-      "check_by": "2026-09-11"
+      "realized": -0.0278,
+      "check_by": "2026-10-02"
     },
     {
-      "id": "china-2026-08-14-20260818102153-1",
-      "market": "china",
-      "subject": "AI Compute & Optics",
+      "id": "canada-2026-09-04-20260905021412-1",
+      "market": "canada",
+      "subject": "Gold Miners",
       "lean": "overweight",
       "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0388,
-      "check_by": "2026-09-11"
+      "outcome": "miss",
+      "realized": -0.0615,
+      "check_by": "2026-10-02"
     },
     {
-      "id": "hk-2026-08-14-20260818102534-1",
+      "id": "canada-2026-09-04-20260905021412-2",
+      "market": "canada",
+      "subject": "Silver & Royalties",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.0615,
+      "check_by": "2026-10-02"
+    },
+    {
+      "id": "canada-2026-09-04-20260905021412-3",
+      "market": "canada",
+      "subject": "Oil & Gas Producers",
+      "lean": "avoid",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.038,
+      "check_by": "2026-10-02"
+    },
+    {
+      "id": "hk-2026-09-04-20260905133326-1",
+      "market": "hk",
+      "subject": "China Tech & Internet",
+      "lean": "underweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0278,
+      "check_by": "2026-10-02"
+    },
+    {
+      "id": "canada-2026-09-04-20260905133410-1",
+      "market": "canada",
+      "subject": "Gold Miners",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.061,
+      "check_by": "2026-10-02"
+    },
+    {
+      "id": "us-2026-09-04-20260906061509-1",
+      "market": "us",
+      "subject": "Gold Miners",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.1149,
+      "check_by": "2026-10-02"
+    },
+    {
+      "id": "hk-2026-09-04-20260906061631-1",
       "market": "hk",
       "subject": "China Platform Megacaps",
       "lean": "underweight",
-      "conviction": "low",
+      "conviction": "medium",
       "outcome": "hit",
-      "realized": -0.0695,
-      "check_by": "2026-09-11"
+      "realized": -0.0278,
+      "check_by": "2026-10-02"
     },
     {
-      "id": "canada-2026-07-30-2",
+      "id": "canada-2026-09-04-20260906061711-1",
       "market": "canada",
-      "subject": "Telecom",
+      "subject": "Technology",
       "lean": "underweight",
       "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0392,
-      "check_by": "2026-09-10"
-    },
-    {
-      "id": "china-2026-08-13-20260813125211-1",
-      "market": "china",
-      "subject": "AI Compute & Optics",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0355,
-      "check_by": "2026-09-10"
-    },
-    {
-      "id": "us-2026-08-13-20260814043608-1",
-      "market": "us",
-      "subject": "Memory, HBM & Storage",
-      "lean": "avoid",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0232,
-      "check_by": "2026-09-10"
-    },
-    {
-      "id": "hk-2026-08-13-20260814044552-1",
-      "market": "hk",
-      "subject": "China Tech & Internet",
-      "lean": "underweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0791,
-      "check_by": "2026-09-10"
-    },
-    {
-      "id": "canada-2026-08-13-20260814044854-1",
-      "market": "canada",
-      "subject": "Telecom",
-      "lean": "underweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0344,
-      "check_by": "2026-09-10"
-    },
-    {
-      "id": "canada-2026-07-29-1",
-      "market": "canada",
-      "subject": "Big Banks",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0343,
-      "check_by": "2026-09-09"
+      "outcome": "miss",
+      "realized": 0.1201,
+      "check_by": "2026-10-02"
     }
   ]
 }

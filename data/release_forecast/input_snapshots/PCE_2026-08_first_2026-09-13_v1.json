@@ -1,0 +1,25 @@
+{
+  "prediction_id": "PCE:2026-08:first:2026-09-13:v1",
+  "asof": "2026-09-13",
+  "features": {
+    "pce_hl_mom_lag1": 0.20320871894787818,
+    "pce_hl_mom_lag2": -0.10264052247827005,
+    "pce_hl_mom_lag3": 0.47745641777818815,
+    "sticky_mom_lag1": 0.253931514,
+    "median_mom_lag1": 0.17367381427169093,
+    "flex_mom_lag1": 0.810515262,
+    "ppifis_mom_lag1": 0.5416349967744649,
+    "gasoline_mom": 3.1979146798906566
+  },
+  "legs": {
+    "flex_mom_lag1": "present",
+    "gasoline_mom": "unrevised",
+    "median_mom_lag1": "present",
+    "pce_hl_mom_lag1": "present",
+    "pce_hl_mom_lag2": "present",
+    "pce_hl_mom_lag3": "present",
+    "ppifis_mom_lag1": "present",
+    "sticky_mom_lag1": "present"
+  },
+  "inputs_hash": "369675ab8a92ab2ea37227e57cbbd10cbec7706beb8aeca47979b3d0b71d895e"
+}

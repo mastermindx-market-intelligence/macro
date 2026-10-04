@@ -1,0 +1,41 @@
+LANE B1 — Stock-panel phase and matched-memory event panel
+LANE id: B1   RESULTS_DIR = research/prophet_v4/astra_regime_indicator_handoff_20261004/results/B1/
+Gating question (ANSWER FIRST): after matching elapsed memory, is there a 3D grain effect — i.e. does Δ(3D.p − 1D.M3) on cost-adjusted SPY-excess H10 have the same sign with a bootstrap CI excluding zero in BOTH eras and in ≥ 2 of 3 phases? Give the pooled Δ with CI and the phase/era sign pattern.
+
+MISSION. Build the event panel that separates timeframe GRAIN from indicator MEMORY and PHASE for the served RSI-MACD bullish cross, on the stock universe, with pre-declared contrasts and month-cluster bootstrap inference. This panel is the input to lane C2. Nothing here is a strategy; nothing is promoted.
+
+INPUTS (read-only). Universe: every data/baskets/ohlcv/*.parquet (columns open, high, low, close, volume, indexed by date; ~2,812 names, 2014→2026). Exclude names with fewer than 800 rows and record the exclusion count. Clock and benchmark: data/yahoo/SPY.parquet column `close`. Indicator code: engine/canon.py (ema, rma, rsi, rsi_macd, RSI_LEN=14, FAST_LEN=14, BASE_LEN=60, SIG_LEN=5); clock: engine/session_anchor.py (session_positions(index, market="US")); bars: engine/bar_derive.py (derive_2d_ohlcv, derive_3d_ohlcv) — read all three first. All daily series are reindexed onto the SPY session calendar (inner join on dates present in both; a name's missing session is NaN and that name's indicator restarts its warm-up — simpler: drop names with any gap > 5 sessions and record how many).
+
+CASCADE WITH MEMORY FACTOR k. Implement cascade(close, k) that reproduces engine.canon.rsi_macd EXACTLY when k = 1 and transforms every smoother's alpha by alpha_k = 1 − (1 − alpha)^k when k ≠ 1: Wilder RMA alpha = 1/14 (SMA-seeded over the first 14 values — read canon.rma to match its seeding exactly); EMA alphas 2/(14+1), 2/(60+1), 2/(5+1), seeded with the first value (pandas ewm(alpha=..., adjust=False)). A pytest must assert max|cascade(close,1) − canon.rsi_macd(close)| < 1e-9 for both outputs on SPY after the first 400 sessions. (If canon's min_periods masks early values, compare only where both are non-NaN.)
+
+n-DAY BARS WITH PHASE p. pos = session_positions(spy_index, market="US") (an integer per session). For grain n ∈ {2,3} and phase p ∈ {0..n−1}: bucket = (pos + p) // n; a bar is a complete bucket (exactly n sessions); bar close = close of the last session; bar date = that session's date; drop incomplete buckets. A pytest must assert that for p = 0 the (date, close) pairs equal engine.bar_derive.derive_3d_ohlcv(daily_df, market="US") (n=3) and derive_2d_ohlcv (n=2) for SPY (use data/baskets/ohlcv/SPY.parquet if present, else the first basket name alphabetically, and say which).
+
+VARIANTS (compute for every name):
+  1D      = cascade(close_1D, k=1)
+  2D.p0, 2D.p1 = cascade(close_2D(p), k=1)
+  3D.p0, 3D.p1, 3D.p2 = cascade(close_3D(p), k=1)
+  1D.M2   = cascade(close_1D, k=2)      (1D grain, 2-session elapsed memory)
+  1D.M3   = cascade(close_1D, k=3)      (1D grain, 3-session elapsed memory)
+  3D.K1   = cascade(close_3D(p=0), k=1/3)   (3D grain, 1-session memory)
+EVENT = bullish cross: macd[i−1] ≤ signal[i−1] and macd[i] > signal[i], both bars non-NaN, and the bar's last session index ≥ 400 (warm-up exclusion in SESSIONS, for every grain). The signal session s = the bar's last session. ENTRY session e = s + 1 (next session); entry price = close[e]. Events whose e + 21 exceeds the data are dropped (record the count).
+
+OUTCOMES per event (log returns): excess_H = (ln C[e+H] − ln C[e]) − (ln SPY[e+H] − ln SPY[e]) for H ∈ {5, 10, 21}; net versions subtract 0.002 once (excess_H_net = excess_H − 0.002). MFE21 = max over h=1..21 of (ln C[e+h] − ln C[e]); MAE21 = min over the same; sessions_to_mfe = argmax h. Store entry_month = YYYY-MM of date[e]; era = "2014-2019" if date[e] ≤ 2019-12-31 else "2020-2026".
+
+CONFIRMATION PAIRS. For each 1D event (name, s): for each of 2D.p0, 2D.p1, 3D.p0, 3D.p1, 3D.p2, find the FIRST event of that variant on the same name with signal session s' in [s, s+10]; record delay_sessions = s' − s, confirmation_cost_pct = C[s'+1]/C[s+1] − 1, mfe21_consumed_frac = (ln C[s'+1] − ln C[s+1]) / MFE21_1D if MFE21_1D > 0 else NaN; no_confirmation = True if none found. Write RESULTS_DIR/confirmation_pairs.parquet with one row per (1D event, variant).
+
+PANEL. Write RESULTS_DIR/events_panel.parquet (zstd) with one row per (variant, name, s): variant, name, signal_date, entry_date, entry_month, era, excess_h5, excess_h10, excess_h21, excess_h10_net, excess_h21_net, mfe21, mae21, sessions_to_mfe. If the file would exceed 250 MB, store floats as float32.
+
+STATISTICS (write to result.json and RESULT.md tables):
+(a) Per variant, overall and per era: n_events, n_months, n_names, mean excess_h10_net, mean excess_h21_net, hit_rate_h10 (share > 0), median mfe21, median mae21; 95% CI for each mean by ENTRY-MONTH CLUSTER BOOTSTRAP: resample the set of distinct entry_months with replacement (1,000 draws, numpy default_rng(20261004)), take all events of the drawn months, compute the mean; CI = 2.5/97.5 percentiles.
+(b) Phase dispersion for 2D and 3D: range across phases of mean excess_h10_net; pairwise Jaccard of the (name, signal_date) event sets; pooled-across-phases mean with its bootstrap CI; phase_fragile = (range > pooled CI width).
+(c) Contrasts, each as a difference of means with the SAME month-cluster bootstrap (draw months once, compute both means on the drawn months, difference): Δ(3D.p − 1D) for each p; Δ(3D.p − 1D.M3) for each p; Δ(1D.M3 − 1D); Δ(1D.M2 − 1D); Δ(2D.p − 1D.M2) for each p; Δ(3D.K1 − 3D.p0). Each overall and per era, for H10 net and H21 net.
+(d) Confirmation summary per variant: share no_confirmation, median delay_sessions, mean confirmation_cost_pct, mean mfe21_consumed_frac, each with n.
+VERDICT (pre-declared, compute mechanically): grain_effect_3d = "REAL" iff Δ(3D.p − 1D.M3) on H10 net has the same sign and a CI excluding zero in BOTH eras for ≥ 2 of the 3 phases; "NOT SUPPORTED" iff for every phase at least one era's CI includes zero and every cell has n_months ≥ 24 and n_events ≥ 300; "INSUFFICIENT" otherwise. Same rule for grain_effect_2d using Δ(2D.p − 1D.M2), requiring BOTH phases. memory_effect_3 = same rule on Δ(1D.M3 − 1D) (one phase, both eras).
+
+OUT OF SCOPE. No regime conditioning (C2 does it), no parameter search, no other indicators, no ranking, no position sizing. Do not change the constants 14/14/60/5 or the 10-session confirmation window or the 400-session warm-up.
+
+NOT DONE UNLESS: (1) cascade(·,1) ≡ canon.rsi_macd test passes; (2) phase-0 bars ≡ bar_derive test passes; (3) a pytest proves no look-ahead: shift a name's closes after the entry date by a random perturbation and assert every event's signal_date/entry_date and entry price are unchanged; (4) a pytest asserts the bootstrap is month-clustered (two events in the same month are always drawn together); (5) every table carries n_events, n_months, n_names; (6) events_panel.parquet and confirmation_pairs.parquet written with the named columns; (7) result.json follows the schema; (8) hashes.txt.
+
+result.json schema: {"lane":"B1","status":...,"repo_head":...,"data_class":{"vintage":"final","universe":"survivor-selected baskets"},"n_names_in":N,"n_names_excluded_short":N,"n_names_excluded_gaps":N,"n_names_used":N,"variants":{variant:{"overall":{"n_events":N,"n_months":N,"n_names":N,"mean_h10_net":x,"ci_h10":[lo,hi],"mean_h21_net":x,"ci_h21":[lo,hi],"hit_rate_h10":x,"median_mfe21":x,"median_mae21":x},"by_era":{era:{same keys}}}},"phase_dispersion":{"2D":{"range_h10":x,"jaccard":{"p0-p1":x},"pooled_mean_h10":x,"pooled_ci":[lo,hi],"fragile":bool},"3D":{...}},"contrasts":{name:{"overall":{"delta_h10":x,"ci_h10":[lo,hi],"delta_h21":x,"ci_h21":[lo,hi]},"by_era":{...}}},"confirmation":{variant:{"n":N,"no_confirmation_share":x,"median_delay":x,"mean_cost_pct":x,"mean_mfe_consumed":x}},"verdict":{"grain_effect_3d":"REAL|NOT SUPPORTED|INSUFFICIENT","grain_effect_2d":...,"memory_effect_3":...,"rule":"<the rule text>"},"files":{"events_panel":"...","confirmation_pairs":"...","events_panel_sha256":...,"confirmation_pairs_sha256":...},"tests":"<pytest summary>","gaps":[...],"deviations":[...]}
+
+RETURN: the B1_RETURN packet described in the law.

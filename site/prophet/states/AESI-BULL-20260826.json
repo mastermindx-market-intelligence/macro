@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AESI-BULL-20260826",
-  "asof": "2026-09-12",
+  "asof": "2026-10-03",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 63.7,
-  "raw_confidence": 63.3,
-  "delta_vs_base": 3.7,
+  "management_confidence": 32.2,
+  "raw_confidence": 30.8,
+  "delta_vs_base": -27.8,
   "recommended_action": "hold",
-  "human_state": "Needs Follow-Through",
+  "human_state": "Stalling",
   "components": {
-    "validity": 100.0,
-    "progress": 23.8,
-    "pace": 63.2,
+    "validity": 61.0,
+    "progress": 0.0,
+    "pace": 0.5,
     "retention": 50.0,
-    "overlay": 67.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.371,
-    "dist_to_t1_r": 1.129,
-    "dist_to_t2_r": 2.629,
-    "horizon_pct_used": 35.6,
-    "p1": 0.2471,
-    "p2": 0.1235,
+    "dist_to_stop_r": 0.693,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 82.2,
+    "p1": -0.2045,
+    "p2": -0.1022,
     "p3": null,
-    "move_r": 0.371,
+    "move_r": -0.307,
     "mfe_r": 0.505,
-    "mae_r": -0.048
+    "mae_r": -0.473
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.5799999237060547,
-  "_mae": -0.14999961853027344,
+  "_mae": -1.4799995422363281,
   "_max_p1": 0.33652820526220545,
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 16,
-  "tau": 0.3556
+  "days_elapsed": 37,
+  "tau": 0.8222
 }

@@ -342,6 +342,104 @@ def align_latest_common_observation(
     return aligned, bench, meta
 
 
+def resolve_thematic_close_panel(
+    primary: pd.DataFrame,
+    supplemental: pd.DataFrame | None,
+    tickers,
+) -> tuple[pd.DataFrame, dict]:
+    """Resolve thematic member closes on the already-frozen primary calendar.
+
+    Source selection is whole-column: the source with the later actual observation
+    wins, with ``baskets_extras`` winning exact ties.  The losing source may donate
+    older history only when :func:`_stitch_ok` proves both columns are the same
+    measured series on a sufficient overlap.  Supplemental rows outside the primary
+    calendar are discarded before selection, so this helper can widen population but
+    can never advance the desk clock.
+    """
+    p = _normalise_frame_index(primary)
+    if supplemental is None or supplemental.empty:
+        s = pd.DataFrame(index=p.index)
+    else:
+        s = _normalise_frame_index(supplemental).reindex(p.index)
+
+    names = list(dict.fromkeys(str(t) for t in tickers if t))
+    cols: dict[str, pd.Series] = {}
+    price_source: dict[str, str] = {}
+    reason: dict[str, str] = {}
+    source_last: dict[str, dict[str, str | None]] = {}
+    stitched: dict[str, dict] = {}
+    unresolved: list[str] = []
+    counts = {"primary_breadth": 0, "baskets_extras": 0}
+
+    for ticker in names:
+        ps = p[ticker] if ticker in p.columns else None
+        ss = s[ticker] if ticker in s.columns else None
+        p_ok = ps is not None and bool(ps.notna().any())
+        s_ok = ss is not None and bool(ss.notna().any())
+        p_last = ps.last_valid_index() if p_ok else None
+        s_last = ss.last_valid_index() if s_ok else None
+        source_last[ticker] = {
+            "primary_breadth": _date_text(p_last),
+            "baskets_extras": _date_text(s_last),
+        }
+
+        if not p_ok and not s_ok:
+            unresolved.append(ticker)
+            continue
+        if s_ok and not p_ok:
+            winner, winner_source, why, donor, donor_source = (
+                ss.copy(), "baskets_extras", "supplemental_only", None, None)
+        elif p_ok and not s_ok:
+            winner, winner_source, why, donor, donor_source = (
+                ps.copy(), "primary_breadth", "primary_only", None, None)
+        elif s_last > p_last:
+            winner, winner_source, why, donor, donor_source = (
+                ss.copy(), "baskets_extras", "supplemental_fresher", ps, "primary_breadth")
+        elif p_last > s_last:
+            winner, winner_source, why, donor, donor_source = (
+                ps.copy(), "primary_breadth", "primary_fresher", ss, "baskets_extras")
+        else:
+            winner, winner_source, why, donor, donor_source = (
+                ss.copy(), "baskets_extras", "tie_supplemental", ps, "primary_breadth")
+
+        if donor is not None and donor.notna().sum() > winner.notna().sum():
+            ok, n_overlap, rel = _stitch_ok(donor, winner)
+            if ok:
+                winner = winner.combine_first(donor)
+                stitched[ticker] = {
+                    "donor_source": donor_source,
+                    "n_overlap": int(n_overlap),
+                    "max_rel_diff": float(rel),
+                }
+
+        cols[ticker] = winner.reindex(p.index)
+        price_source[ticker] = winner_source
+        reason[ticker] = why
+        counts[winner_source] += 1
+
+    out = pd.DataFrame(cols, index=p.index)
+    receipt = {
+        "effective_as_of": _date_text(p.index.max()) if len(p.index) else None,
+        "calendar_basis": "primary_panel_only_supplement_cannot_advance",
+        "requested_n": len(names),
+        "resolved_n": len(cols),
+        "unresolved_n": len(unresolved),
+        "unresolved_tickers": unresolved,
+        "chosen_counts": counts,
+        "price_source": price_source,
+        "selection_reason": reason,
+        "source_last_observation": source_last,
+        "stitched": stitched,
+        "source_basis": {
+            "primary_breadth": "closes_cache_UNADJUSTED",
+            "baskets_extras": "tradj",
+        },
+        "adjustment_vintage": "unrecorded",
+        "authority": "measurement_only",
+    }
+    return out, receipt
+
+
 def population_observation(
     panel: pd.DataFrame,
     members: list[dict],

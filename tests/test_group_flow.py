@@ -736,3 +736,443 @@ def test_theme_scoring_refuses_three_of_six_before_any_aggregate_effect(monkeypa
     assert len(fingerprint_calls) == 2
     assert len(label_calls) == 1
     assert len(reco_calls) == 1
+
+
+def test_group_flow_exposes_separate_thematic_resolution_without_repricing_primary(monkeypatch):
+    idx = pd.bdate_range("2025-01-02", periods=180)
+    extra_idx = idx.append(pd.DatetimeIndex([idx[-1] + pd.offsets.BDay(1)]))
+    x = np.arange(len(idx))
+    base = pd.DataFrame({t: 100 * (1.001 ** x) for t in "ABCDEF"}, index=idx)
+    extras = pd.DataFrame({
+        **{t: 50 * (1.002 ** np.arange(len(extra_idx))) for t in "GHI"},
+        "A": 900 * (1.01 ** np.arange(len(extra_idx))),
+    }, index=extra_idx)
+    spy = pd.DataFrame({"close": 400 * (1.0008 ** np.arange(len(extra_idx)))}, index=extra_idx)
+    members = {"theme": _basket("Theme", "ABCDEFGHI")}
+    monkeypatch.setattr(gf, "_membership", lambda: {"baskets": members})
+    monkeypatch.setattr(gf, "_closes", lambda: base)
+    monkeypatch.setattr(gf, "_basket_extras", lambda: extras)
+    monkeypatch.setattr(gf.store, "read", lambda g, n: spy if (g, n) == ("yahoo", "SPY") else None)
+
+    setup = gf._setup("us")
+
+    assert setup["closes"].loc[idx[-1], "A"] == base.loc[idx[-1], "A"]
+    assert setup["theme_closes"].loc[idx[-1], "A"] == extras.loc[idx[-1], "A"]
+    assert setup["theme_closes"].index.equals(idx)
+    assert setup["theme_closes"].iloc[-1].notna().sum() == 9
+
+
+def test_group_flow_thematic_resolution_keeps_fresher_primary(monkeypatch):
+    idx = pd.bdate_range("2025-01-02", periods=180)
+    x = np.arange(len(idx))
+    base = pd.DataFrame({t: 100 * (1.001 ** x) for t in "ABC"}, index=idx)
+    extras = pd.DataFrame({"A": 900 * (1.01 ** np.arange(160))}, index=idx[:160])
+    spy = pd.DataFrame({"close": 400 * (1.0008 ** x)}, index=idx)
+    members = {"theme": _basket("Theme", "ABC")}
+    monkeypatch.setattr(gf, "_membership", lambda: {"baskets": members})
+    monkeypatch.setattr(gf, "_closes", lambda: base)
+    monkeypatch.setattr(gf, "_basket_extras", lambda: extras)
+    monkeypatch.setattr(gf.store, "read", lambda g, n: spy if (g, n) == ("yahoo", "SPY") else None)
+
+    setup = gf._setup("us")
+
+    pd.testing.assert_series_equal(setup["theme_closes"]["A"], base["A"], check_names=False)
+    assert setup["theme_price_resolution"]["price_source"]["A"] == "primary_breadth"
+    assert setup["theme_price_resolution"]["selection_reason"]["A"] == "primary_fresher"
+
+
+def test_group_flow_basket_branch_uses_thematic_matrix(monkeypatch):
+    idx = pd.bdate_range("2025-01-02", periods=180)
+    x = np.arange(len(idx))
+    legacy = pd.DataFrame({"A": 100 * (1.001 ** x), "B": 100 * (1.002 ** x)}, index=idx)
+    thematic = legacy.assign(C=100 * (1.003 ** x))
+    members = {"theme": _basket("Theme", "ABC")}
+    bench = pd.Series(1.0005 ** x, index=idx)
+    monkeypatch.setattr(gf, "_setup", lambda region="us": {
+        "mem": {"baskets": members}, "closes": legacy, "rets": legacy.pct_change(fill_method=None),
+        "theme_closes": thematic, "theme_rets": thematic.pct_change(fill_method=None),
+        "theme_price_resolution": {"authority": "measurement_only"},
+        "idx": idx, "bench": bench, "region": region, "observation": {"effective_as_of": str(idx[-1].date())},
+    })
+    monkeypatch.setattr(gf, "_pit_sector_frames", lambda *args, **kwargs: {})
+    monkeypatch.setattr(gf, "_load_meta", lambda: {"verdict": "display_only", "basket_confidence_cap": 0.55})
+    monkeypatch.setattr(gf, "_vix_regime", lambda cfg: {"vix": None, "pctile": None, "elevated": False})
+    monkeypatch.setattr(gf, "_cluster_map", lambda *args, **kwargs: None)
+    monkeypatch.setattr(gf, "prep_group", lambda *args, **kwargs: {"rs": pd.Series([0.0, 0.1])})
+    monkeypatch.setattr(gf, "fingerprint_at", lambda *args, **kwargs: {
+        "flow_score": 0.7, "stage": "emerging", "breadth": 0.8,
+        "cohesion": 0.5, "cohesion_chg": 0.1,
+    })
+    monkeypatch.setattr(gf, "_leadership", lambda *args, **kwargs: {
+        "top": [], "hhi": 0.2, "n": 3, "breadth": "broad",
+    })
+
+    out = gf.compute_group_flows({"min_history_d": 1})
+
+    assert out is not None
+    assert [row["id"] for row in out["baskets"]] == ["theme"]
+    assert out["baskets"][0]["n_members"] == 3
+    assert out["price_resolution"] == {"authority": "measurement_only"}
+
+
+def test_baskets_uses_whole_supplemental_series_without_primary_backfill(monkeypatch):
+    idx = pd.bdate_range("2025-01-02", periods=180)
+    x = np.arange(len(idx))
+    primary = pd.DataFrame({
+        "A": 100 * (1.001 ** x), "B": 100 * (1.0005 ** x), "C": 100 * (0.9998 ** x),
+    }, index=idx)
+    supplemental = pd.DataFrame({"A": 400 * (1.002 ** np.arange(60))}, index=idx[-60:])
+    spy = pd.DataFrame({"close": 400 * (1.0008 ** x)}, index=idx)
+    members = {"theme": _basket("Theme", "ABC")}
+    monkeypatch.setattr(bk, "_membership", lambda: {"baskets": members})
+    monkeypatch.setattr(bk, "_closes", lambda: primary)
+    monkeypatch.setattr(bk, "_basket_extras", lambda: supplemental)
+    monkeypatch.setattr(bk, "_names_sectors", lambda: {t: (t, "Test") for t in "ABC"})
+    monkeypatch.setattr(bk.store, "read", lambda g, n: spy if (g, n) == ("yahoo", "SPY") else None)
+    captured = []
+    real_level = bk._ew_level
+    monkeypatch.setattr(bk, "_ew_level", lambda rets, members, idx: captured.append(rets.copy()) or real_level(rets, members, idx))
+
+    out = bk.compute_baskets()
+
+    assert out is not None
+    assert captured[0]["A"].iloc[:-59].isna().all()
+    assert out["price_resolution"]["price_source"]["A"] == "baskets_extras"
+    assert out["price_resolution"]["selection_reason"]["A"] == "tie_supplemental"
+
+
+def test_theme_scoring_uses_thematic_matrix_and_projects_resolution(monkeypatch):
+    _theme_compute_fixture(monkeypatch)
+    idx = pd.bdate_range("2025-01-02", periods=260)
+    x = np.arange(len(idx))
+    thematic = pd.DataFrame({
+        "A": 100 * (1.001 ** x), "B": 100 * (1.0007 ** x), "C": 100 * (1.0003 ** x),
+    }, index=idx)
+    legacy = thematic.copy()
+    legacy.loc[idx[-1], ["B", "C"]] = np.nan
+    bench = pd.Series(1.0005 ** x, index=idx)
+    members = {"theme": _basket("Theme", "ABC")}
+    resolution = {"authority": "measurement_only", "resolved_n": 3}
+    monkeypatch.setattr(ts.group_flow, "_setup", lambda region="us": {
+        "mem": {"baskets": members}, "closes": legacy, "rets": legacy.pct_change(fill_method=None),
+        "theme_closes": thematic, "theme_rets": thematic.pct_change(fill_method=None),
+        "theme_price_resolution": resolution,
+        "idx": idx, "bench": bench, "region": region,
+        "observation": {"effective_as_of": idx[-1].strftime("%Y-%m-%d")},
+    })
+    monkeypatch.setattr(ts, "_label", lambda *args, **kwargs: "neutral")
+    monkeypatch.setattr(ts, "_reco", lambda *args, **kwargs: "hold")
+
+    out = ts.compute_theme_intel("us")
+
+    assert out is not None
+    assert [row["id"] for row in out["themes"]] == ["theme"]
+    assert out["themes"][0]["observation"]["observed_n"] == 3
+    assert out["price_resolution"] == resolution
+
+
+def test_group_flow_refuses_basket_below_population_floor_before_fingerprint(monkeypatch, capsys):
+    idx = pd.bdate_range("2025-01-02", periods=180)
+    x = np.arange(len(idx))
+    tickers = "ABCDEFGHI"
+    thematic = pd.DataFrame({
+        t: 100 * ((1.0004 + 0.00005 * k) ** x)
+        for k, t in enumerate(tickers)
+    }, index=idx)
+    thematic.loc[idx[-1], list("DEF")] = np.nan
+    members = {
+        "insufficient": _basket("Insufficient", "ABCDEF"),
+        "complete": _basket("Complete", "GHI"),
+    }
+    legacy = thematic[["A", "B", "C", "G", "H", "I"]].copy()
+    bench = pd.Series(1.0003 ** x, index=idx)
+    monkeypatch.setattr(gf, "_setup", lambda region="us": {
+        "mem": {"baskets": members}, "closes": legacy,
+        "rets": legacy.pct_change(fill_method=None),
+        "theme_closes": thematic, "theme_rets": thematic.pct_change(fill_method=None),
+        "theme_price_resolution": {"authority": "measurement_only"},
+        "idx": idx, "bench": bench, "region": region,
+        "observation": {"effective_as_of": idx[-1].strftime("%Y-%m-%d")},
+    })
+    monkeypatch.setattr(gf, "_pit_sector_frames", lambda *args, **kwargs: {})
+    monkeypatch.setattr(gf, "_load_meta", lambda: {
+        "verdict": "display_only", "basket_confidence_cap": 0.55,
+    })
+    monkeypatch.setattr(gf, "_vix_regime", lambda cfg: {
+        "vix": None, "pctile": None, "elevated": False,
+    })
+    monkeypatch.setattr(gf, "_cluster_map", lambda *args, **kwargs: None)
+    prep_calls = []
+    monkeypatch.setattr(gf, "prep_group", lambda *args, **kwargs:
+                        prep_calls.append(args) or {"rs": pd.Series([0.0, 0.1])})
+    monkeypatch.setattr(gf, "fingerprint_at", lambda *args, **kwargs: {
+        "flow_score": 0.7, "stage": "emerging", "breadth": 0.8,
+        "cohesion": 0.5, "cohesion_chg": 0.1,
+    })
+    monkeypatch.setattr(gf, "_leadership", lambda *args, **kwargs: {
+        "top": [], "hhi": 0.2, "n": 3, "breadth": "broad",
+    })
+
+    out = gf.compute_group_flows({"min_history_d": 1})
+
+    assert out is not None
+    assert [row["id"] for row in out["baskets"]] == ["complete"]
+    assert len(prep_calls) == 1
+    assert out["observation_refusals"][0]["basket_id"] == "insufficient"
+    refusal = out["observation_refusals"][0]["observation"]
+    assert refusal["observed_n"] == 3
+    assert refusal["configured_n"] == 6
+    assert refusal["coverage"] == 0.5
+    assert refusal["aggregate_eligible"] is False
+    assert "::warning title=group-flow-observation-coverage::" in capsys.readouterr().out
+
+
+
+# ---- Prophet Leadership evidence: leave-issuer-out peer context, research-only ----
+
+def _issuer_map():
+    return {
+        "FOCAL": "issuer:focal",
+        "FOCAL.B": "issuer:focal",
+        "A": "issuer:a",
+        "B": "issuer:b",
+        "C": "issuer:c",
+        "D": "issuer:d",
+        "E": "issuer:e",
+    }
+
+
+def test_independent_peer_observation_excludes_focal_issuer_and_keeps_missing_in_denominator():
+    values = {
+        "FOCAL": 0.09,
+        "FOCAL.B": 0.08,
+        "A": 0.03,
+        "B": -0.02,
+        "C": None,
+        "D": 0.01,
+    }
+    out = gf.independent_peer_observation(
+        values, focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert out["peer_denominator"] == 4
+    assert out["excluded_same_issuer"] == ["FOCAL", "FOCAL.B"]
+    assert out["observed_independent_peers"] == 3
+    assert out["missing_market_observation"] == ["C"]
+    assert out["n_positive"] == 2 and out["n_negative"] == 1
+    assert out["positive_breadth_lower"] == pytest.approx(.5)
+    assert out["positive_breadth_upper"] == pytest.approx(.75)
+    assert out["focal_minus_peer_median"] == pytest.approx(.08)
+    assert out["independence_status"] == "AVAILABLE"
+    assert out["rank_authority"] is False
+    assert out["entry_authority"] is False
+
+
+def test_independent_peer_observation_unknown_identity_cannot_create_confirmation():
+    issuers = _issuer_map()
+    issuers.pop("C")
+    values = {"FOCAL": .05, "A": .02, "B": .01, "C": 1.0}
+    out = gf.independent_peer_observation(
+        values, focal_ticker="FOCAL", issuer_by_ticker=issuers)
+    assert out["peer_denominator"] == 3
+    assert out["unknown_peer_identity"] == ["C"]
+    assert out["observed_independent_peers"] == 2
+    assert out["n_positive"] == 2
+    assert out["positive_breadth_lower"] == pytest.approx(2 / 3)
+    assert out["positive_breadth_upper"] == 1.0
+    assert out["independence_status"] == "UNAVAILABLE"
+    assert out["focal_minus_peer_median"] is None
+
+
+def test_independent_peer_observation_missing_focal_identity_fails_closed():
+    issuers = _issuer_map()
+    issuers.pop("FOCAL")
+    values = {"FOCAL": .05, "A": .02, "B": -.01}
+    out = gf.independent_peer_observation(
+        values, focal_ticker="FOCAL", issuer_by_ticker=issuers)
+    assert out["peer_denominator"] == 2
+    assert out["independence_status"] == "UNAVAILABLE"
+    assert set(out["unknown_peer_identity"]) == {"A", "B"}
+    assert out["observed_independent_peers"] == 0
+    assert out["positive_breadth_lower"] == 0
+    assert out["positive_breadth_upper"] == 1
+
+
+def test_independent_peer_continuity_distinguishes_same_marginals_different_members():
+    issuers = _issuer_map()
+    stable = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": True, "C": False, "D": False},
+        {"FOCAL": True, "A": True, "B": True, "C": False, "D": False},
+        focal_ticker="FOCAL", issuer_by_ticker=issuers)
+    churn = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": True, "C": False, "D": False},
+        {"FOCAL": True, "A": False, "B": False, "C": True, "D": True},
+        focal_ticker="FOCAL", issuer_by_ticker=issuers)
+
+    for out in (stable, churn):
+        assert out["prior_positive_breadth_lower"] == .5
+        assert out["current_positive_breadth_lower"] == .5
+        assert out["peer_denominator"] == 4
+    assert stable["retained"] == ["A", "B"]
+    assert stable["retained_full_roster_lower"] == .5
+    assert churn["retained"] == []
+    assert churn["entered"] == ["C", "D"]
+    assert churn["exited"] == ["A", "B"]
+    assert churn["retained_full_roster_lower"] == 0
+
+
+def test_independent_peer_continuity_missing_states_widen_bounds_not_denominator():
+    out = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": None, "C": False, "D": False},
+        {"FOCAL": True, "A": None, "B": True, "C": False, "D": None},
+        focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert out["peer_denominator"] == 4
+    assert out["prior_positive_breadth_lower"] == .25
+    assert out["prior_positive_breadth_upper"] == .5
+    assert out["current_positive_breadth_lower"] == .25
+    assert out["current_positive_breadth_upper"] == .75
+    assert out["retained_full_roster_lower"] == 0
+    assert out["retained_full_roster_upper"] == .5
+    assert set(out["unknown_transition"]) == {"A", "B", "D"}
+
+
+def test_independent_peer_continuity_excludes_all_focal_listings():
+    out = gf.independent_peer_continuity(
+        {"FOCAL": True, "FOCAL.B": True, "A": True, "B": False},
+        {"FOCAL": True, "FOCAL.B": True, "A": True, "B": True},
+        focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert out["peer_denominator"] == 2
+    assert out["excluded_same_issuer"] == ["FOCAL", "FOCAL.B"]
+    assert out["entered"] == ["B"]
+    assert out["retained"] == ["A"]
+
+
+def test_independent_peer_continuity_refuses_roster_drift():
+    with pytest.raises(ValueError, match="roster_changed"):
+        gf.independent_peer_continuity(
+            {"FOCAL": True, "A": True, "B": False},
+            {"FOCAL": True, "A": True, "C": False},
+            focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+
+
+@pytest.mark.parametrize("bad", [1, 1.5, "true", [], {}])
+def test_independent_peer_continuity_refuses_non_boolean_state(bad):
+    with pytest.raises(ValueError, match="bool_or_none"):
+        gf.independent_peer_continuity(
+            {"FOCAL": True, "A": bad, "B": False},
+            {"FOCAL": True, "A": True, "B": False},
+            focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+
+
+def test_peer_evidence_does_not_mutate_inputs_or_claim_fund_flow():
+    values = {"FOCAL": .1, "A": .03, "B": -.02, "C": None}
+    issuers = _issuer_map()
+    values_before = dict(values)
+    issuers_before = dict(issuers)
+    out = gf.independent_peer_observation(
+        values, focal_ticker="FOCAL", issuer_by_ticker=issuers)
+    assert values == values_before
+    assert issuers == issuers_before
+    assert "not fund-flow" in out["interpretation"]
+    assert all(out[key] is False for key in (
+        "rank_authority", "entry_authority", "policy_authority",
+        "sizing_authority", "trade_authority"))
+
+
+def test_peer_continuity_has_no_threshold_or_directional_authority():
+    out = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": False},
+        {"FOCAL": True, "A": True, "B": False},
+        focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert "forecast" in out["interpretation"]
+    assert not any("threshold" in key for key in out)
+    assert all(out[key] is False for key in (
+        "rank_authority", "entry_authority", "policy_authority",
+        "sizing_authority", "trade_authority"))
+
+# ---- Independent peer continuity: exact prior-leader retention semantics ----
+
+def _retention_case(current_b):
+    return gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": True},
+        {"FOCAL": True, "A": True, "B": current_b},
+        focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+
+
+def test_peer_retention_complete_data_is_exact():
+    exited = _retention_case(False)
+    retained = _retention_case(True)
+    assert exited["known_prior_leader_retention"] == pytest.approx(0.5)
+    assert retained["known_prior_leader_retention"] == pytest.approx(1.0)
+    assert exited["retention_measurement_state"] == "EXACT"
+    assert retained["retention_measurement_state"] == "EXACT"
+
+
+def test_peer_retention_withholds_when_known_prior_leader_current_state_is_missing():
+    missing = _retention_case(None)
+    assert missing["prior_positive_count"] == 2
+    assert missing["known_prior_leader_retention"] is None
+    assert missing["retention_measurement_state"] == "UNAVAILABLE_PRIOR_LEADER_TRANSITION"
+    assert missing["retained_full_roster_lower"] == pytest.approx(0.5)
+    assert missing["retained_full_roster_upper"] == pytest.approx(1.0)
+
+
+def test_peer_retention_missing_prior_nonleader_does_not_suppress_exact_prior_leader_rate():
+    out = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": False, "C": False},
+        {"FOCAL": True, "A": True, "B": False, "C": None},
+        focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert out["known_prior_leader_retention"] == pytest.approx(1.0)
+    assert out["retention_measurement_state"] == "EXACT"
+    assert "C" in out["unknown_transition"]
+
+
+def test_peer_retention_unknown_prior_state_does_not_change_known_prior_leader_estimand():
+    out = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": None, "C": False},
+        {"FOCAL": True, "A": True, "B": True, "C": False},
+        focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert out["known_prior_leader_retention"] == pytest.approx(1.0)
+    assert out["retention_measurement_state"] == "EXACT"
+
+
+def test_peer_retention_withholds_when_peer_identity_is_unresolved():
+    issuers = _issuer_map()
+    issuers.pop("B")
+    out = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": True},
+        {"FOCAL": True, "A": True, "B": True},
+        focal_ticker="FOCAL", issuer_by_ticker=issuers)
+    assert out["independence_status"] == "UNAVAILABLE"
+    assert out["known_prior_leader_retention"] is None
+    assert out["retention_measurement_state"] == "UNAVAILABLE_IDENTITY"
+
+
+def test_peer_retention_pair_discriminator_missing_cannot_improve_exact_scalar():
+    observed_exit = _retention_case(False)
+    missing = _retention_case(None)
+    assert observed_exit["known_prior_leader_retention"] == pytest.approx(0.5)
+    assert missing["known_prior_leader_retention"] is None
+    assert missing["retained_full_roster_lower"] == observed_exit["retained_full_roster_lower"]
+    assert missing["retained_full_roster_upper"] > observed_exit["retained_full_roster_upper"]
+
+
+def test_peer_retention_no_known_prior_leaders_is_typed_not_zero():
+    out = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": False, "B": False},
+        {"FOCAL": True, "A": True, "B": False},
+        focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert out["known_prior_leader_retention"] is None
+    assert out["retention_measurement_state"] == "NO_KNOWN_PRIOR_LEADERS"
+
+
+def test_peer_continuity_repair_does_not_mutate_state_or_identity_inputs():
+    prior = {"FOCAL": True, "A": True, "B": True, "C": False}
+    current = {"FOCAL": True, "A": True, "B": None, "C": None}
+    issuers = _issuer_map()
+    prior_before = dict(prior)
+    current_before = dict(current)
+    issuers_before = dict(issuers)
+    gf.independent_peer_continuity(
+        prior, current, focal_ticker="FOCAL", issuer_by_ticker=issuers)
+    assert prior == prior_before
+    assert current == current_before
+    assert issuers == issuers_before

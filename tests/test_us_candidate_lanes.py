@@ -921,6 +921,7 @@ POOL_ALLOWLIST = frozenset({
     "engine/us_candidate_lanes.py",
     "engine/us_context_vector.py",
     "scripts/build_stock_library.py",
+    "scripts/build_site.py",  # display-only, protected consumer; no scoring or admission
 })
 
 #: Modules that DECIDE things.  If any of them ever learns the pool exists, the fence is
@@ -1141,3 +1142,630 @@ class TestNoAuthorityLeak:
 
         for row in board["buy"]:
             assert pb.refusal_codes(row) == pb._refusal_codes(row)
+
+
+# Chairman CPU audit: the existing full pool must reach a truthful browser view.
+def _visibility_board():
+    return {
+        "as_of": "2026-09-18", "buy": [{"ticker": "AAA"}],
+        "candidate_pool": {"pool_definition": "us_candidate_pool_v1", "as_of": "2026-09-18",
+            "eligible": 2, "rows": [
+                {"ticker": "AAA", "name": "First company", "sector": "Technology",
+                 "pool_rank": 1, "in_buy_lane": True, "lane": "forming",
+                 "headline_reason": "conviction_low", "lane_reasons": ["conviction_low"],
+                 "prophet": {"score": 42.0}, "prophet_score_basis": "buy_lane_pool"},
+                {"ticker": "AMD", "name": "Advanced Micro Devices", "sector": "Information Technology",
+                 "pool_rank": 26, "in_buy_lane": False, "lane": "more_actionable",
+                 "tier_cascade": "T1", "headline_reason": "sector_cap_overflow",
+                 "lane_reasons": ["sector_cap_overflow"], "prophet": None,
+                 "prophet_score_basis": None}]}}
+
+
+def test_visibility_preserves_amd_without_manufacturing_score_or_entry():
+    from copy import deepcopy
+    from engine.us_candidate_lanes import project_candidate_visibility
+    board = _visibility_board()
+    before = deepcopy(board)
+    view = project_candidate_visibility(board)
+    assert view["status"] == "ready"
+    assert view["counts"] == {"eligible": 2, "in_buy_lane": 1, "off_buy_lane": 1,
+                              "scored": 1, "unscored": 1}
+    assert [r["ticker"] for r in view["rows"]] == ["AAA", "AMD"]
+    amd = view["rows"][1]
+    assert amd["prophet"] is None
+    assert amd["in_buy_lane"] is False
+    assert amd["headline_reason"] == "sector_cap_overflow"
+    assert amd["admission_class"] is None
+    assert board == before
+    amd["lane_reasons"].append("changed copy")
+    assert board == before
+
+
+def test_visibility_stale_pool_never_looks_current():
+    from engine.us_candidate_lanes import project_candidate_visibility
+    board = _visibility_board()
+    board["candidate_pool"]["as_of"] = "2026-09-17"
+    result = project_candidate_visibility(board)
+    assert result["status"] == "unavailable"
+    assert result["reason"] == "pool_board_session_mismatch"
+    assert result["rows"] == []
+    assert result["counts"]["eligible"] is None
+
+
+def test_visibility_unknown_is_not_empty_or_zero():
+    from engine.us_candidate_lanes import project_candidate_visibility
+    for board in (None, {}, {"as_of": "2026-09-18"}):
+        result = project_candidate_visibility(board)
+        assert result["status"] == "unavailable"
+        assert result["counts"]["eligible"] is None
+    board = {"as_of": "2026-09-18", "candidate_pool": {
+        "as_of": "2026-09-18", "pool_definition": "us_candidate_pool_v1", "eligible": 0, "rows": []}}
+    assert project_candidate_visibility(board)["status"] == "empty"
+
+
+def test_visibility_refuses_incomplete_duplicate_and_malformed_pool():
+    from copy import deepcopy
+    from engine.us_candidate_lanes import project_candidate_visibility
+    for mutation in ("count", "duplicate", "malformed", "missing_identity", "definition"):
+        board = deepcopy(_visibility_board())
+        pool = board["candidate_pool"]
+        if mutation == "count": pool["eligible"] = 3
+        elif mutation == "duplicate": pool["rows"][1]["ticker"] = "AAA"
+        elif mutation == "malformed": pool["rows"][1] = "not a row"
+        elif mutation == "definition": pool["pool_definition"] = "unknown_v2"
+        else: pool["rows"][1]["ticker"] = ""
+        result = project_candidate_visibility(board)
+        assert result["status"] == "unavailable", mutation
+        assert result["rows"] == [], mutation
+
+
+def test_visibility_cannot_publish_untrusted_fields_or_reinterpret_inclusion():
+    from engine.us_candidate_lanes import project_candidate_visibility
+    board = _visibility_board()
+    board["candidate_pool"]["rows"][1].update(secret="never publish", in_buy_lane="false")
+    result = project_candidate_visibility(board)
+    assert result["status"] == "unavailable"
+    board["candidate_pool"]["rows"][1]["in_buy_lane"] = False
+    result = project_candidate_visibility(board)
+    assert "secret" not in result["rows"][1]
+    assert result["rows"][1]["prophet_score_basis"] is None
+
+
+def test_visibility_generation_changes_with_source_rows_not_unrelated_board_fields():
+    from copy import deepcopy
+    from engine.us_candidate_lanes import project_candidate_visibility
+    board = _visibility_board()
+    first = project_candidate_visibility(board)
+    board["unrelated_render_note"] = "new text"
+    assert project_candidate_visibility(board)["source_digest"] == first["source_digest"]
+    board["candidate_pool"]["rows"][1]["headline_reason"] = "event_blackout"
+    assert project_candidate_visibility(board)["source_digest"] != first["source_digest"]
+    assert project_candidate_visibility(deepcopy(board)) == project_candidate_visibility(board)
+
+
+def test_visibility_preserves_real_zero_without_promoting_off_cohort_score():
+    from engine.us_candidate_lanes import project_candidate_visibility
+    board = _visibility_board()
+    board["candidate_pool"]["rows"][0]["prophet"]["score"] = 0.0
+    off = board["candidate_pool"]["rows"][1]
+    off["prophet"] = {"score": 100.0}
+    off["prophet_score_basis"] = "buy_lane_pool"
+    result = project_candidate_visibility(board)
+    assert result["rows"][0]["prophet"] == {"score": 0.0}
+    assert result["rows"][1]["prophet"] is None
+    assert result["rows"][1]["prophet_score_basis"] is None
+
+
+def test_visibility_rejects_non_json_metadata_without_throwing():
+    from engine.us_candidate_lanes import project_candidate_visibility
+    for key, value in (("pool_rank", float("nan")), ("lane_reasons", "sector_cap_overflow"),
+                       ("name", {"unexpected": "nested"}), ("ticker", 123)):
+        board = _visibility_board()
+        board["candidate_pool"]["rows"][1][key] = value
+        result = project_candidate_visibility(board)
+        assert result["status"] == "unavailable"
+        assert result["rows"] == []
+
+
+# Current-screen/archive reconciliation: source evidence only, never admission.
+def _archive_fixture():
+    from copy import deepcopy
+    board = deepcopy(_visibility_board())
+    board["board_definition"] = "us_prophet_v3"
+    board["candidate_pool"]["board_definition"] = "us_prophet_v3"
+    pool = board["candidate_pool"]
+    rows = [{"ticker": ticker, "stamp_date": board["as_of"], "tier": "curated",
+             "board_definition": board["board_definition"], **columns}
+            for ticker, columns in ucl.store_columns(pool).items()]
+    return board, rows
+
+
+def test_archive_scan_only_is_not_curated_candidate_history():
+    board, rows = _archive_fixture()
+    for row in rows:
+        row["tier"] = "scan"
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+    assert receipt["status"] == "incomplete"
+    assert receipt["counts"]["matched"] == 0
+    assert receipt["counts"]["missing"] == 2
+    assert receipt["by_ticker"]["AMD"] == "missing"
+    assert receipt["exact_generation_verified"] is False
+
+
+def test_archive_matching_fields_never_proves_exact_build_generation():
+    from copy import deepcopy
+    board, rows = _archive_fixture()
+    before = deepcopy((board, rows))
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+    assert receipt["status"] == "matched_fields"
+    assert receipt["counts"]["matched"] == 2
+    assert receipt["exact_generation_verified"] is False
+    assert (board, rows) == before
+
+
+@pytest.mark.parametrize("field,value", [
+    ("stamp_date", "2026-09-17"), ("stamp_date", "2026-09-21"),
+    ("board_definition", "other_definition"), ("tier", None),
+])
+def test_archive_wrong_date_definition_or_tier_cannot_fill_missing(field, value):
+    board, rows = _archive_fixture()
+    for row in rows:
+        row[field] = value
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+    assert receipt["counts"]["matched"] == 0
+    assert receipt["status"] != "matched_fields"
+
+
+@pytest.mark.parametrize("field,value", [
+    ("pool_rank", 27), ("pool_rank", True), ("pool_in_buy_lane", "false"),
+    ("pool_lane_reasons", "new_refusal"), ("pool_definition", "other_pool"),
+    ("pool_headline_reason", None), ("pool_in_buy_lane", True),
+])
+def test_archive_same_date_changed_receipt_is_not_a_match(field, value):
+    board, rows = _archive_fixture()
+    rows[-1][field] = value
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+    assert receipt["by_ticker"]["AMD"] == "mismatch"
+    assert receipt["counts"]["mismatched"] == 1
+    assert receipt["status"] == "mismatch"
+
+
+def test_archive_duplicate_or_extra_pool_rows_are_visible():
+    from copy import deepcopy
+    board, rows = _archive_fixture()
+    rows.append(deepcopy(rows[-1]))
+    rows.append({**rows[0], "ticker": "UNEXPECTED"})
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+    assert receipt["counts"]["duplicate_tickers"] == 1
+    assert receipt["counts"]["extra_pool_rows"] == 1
+    assert receipt["by_ticker"]["AMD"] == "mismatch"
+    assert receipt["status"] == "mismatch"
+
+
+def test_archive_no_snapshot_is_unavailable_not_empty_success():
+    board, _ = _archive_fixture()
+    for rows in [None, []]:
+        receipt = ucl.reconcile_candidate_archive(board, rows)
+        assert receipt["status"] == "unavailable"
+        assert receipt["counts"]["matched"] is None
+
+
+def test_archive_loader_uses_existing_reader_and_one_month(monkeypatch):
+    import pandas as pd
+    from engine import us_context_vector as ucv
+    board, rows = _archive_fixture()
+    calls = []
+    def read(root, *, months, columns):
+        calls.append((root, months, columns))
+        return pd.DataFrame(rows)
+    monkeypatch.setattr(ucv, "load_candidates", read)
+    receipt = ucl.load_candidate_archive_status(board, root=Path("/no-write"))
+    assert receipt["status"] == "matched_fields"
+    assert calls[0][0] == Path("/no-write")
+    assert calls[0][1] == ["2026-09"]
+    assert set(calls[0][2]) == set(ucl.CANDIDATE_ARCHIVE_COLUMNS)
+
+
+def test_archive_loader_failure_does_not_leak_exception_or_break_view(monkeypatch):
+    from engine import us_context_vector as ucv
+    board, _ = _archive_fixture()
+    def fail(*args, **kwargs):
+        raise RuntimeError("PRIVATE_PATH_SECRET")
+    monkeypatch.setattr(ucv, "load_candidates", fail)
+    receipt = ucl.load_candidate_archive_status(board)
+    assert receipt["status"] == "unavailable"
+    assert "PRIVATE_PATH_SECRET" not in str(receipt)
+    view = ucl.project_candidate_visibility(board, archive=receipt)
+    assert len(view["rows"]) == 2
+    assert view["archive"]["status"] == "unavailable"
+
+
+def test_archive_annotation_preserves_order_score_and_protected_name_boundary():
+    board, rows = _archive_fixture()
+    bare = ucl.project_candidate_visibility(board)
+    receipt = ucl.reconcile_candidate_archive(board, rows[:1])
+    view = ucl.project_candidate_visibility(board, archive=receipt)
+    assert [r["ticker"] for r in view["rows"]] == [r["ticker"] for r in bare["rows"]]
+    assert view["rows"][-1]["prophet"] is None
+    assert view["rows"][-1]["archive_state"] == "missing"
+    assert "AMD" not in str(view["archive"])
+    assert "by_ticker" not in view["archive"]
+    assert view["source_digest"] != bare["source_digest"]
+
+
+# Chairman CPU/memory acceptance cases: a price-prefix replay is NOT a live entry.
+def _entry_battery_prices():
+    return pd.Series([100.0, 102.0, 105.0, 110.0],
+                     index=pd.to_datetime(['2026-09-15', '2026-09-16',
+                                           '2026-09-17', '2026-09-18']))
+
+
+def test_entry_battery_calls_existing_owners_on_prefixes_only():
+    from research.prophet.cpu_leadership.entry_battery import evaluate_prefixes
+    prices = _entry_battery_prices()
+    before = prices.copy(deep=True)
+    calls = []
+    def assess(ticker, prefix):
+        calls.append((ticker, list(prefix.index)))
+        return {'eligible': len(prefix) >= 3, 'reason': 'owner reason', 'ticks': 1}
+    def rearm(verdict, prefix):
+        return {'fires': False, 'weekly_bull': False}
+    result = evaluate_prefixes('AMD', prices, start='2026-09-16',
+                              as_of='2026-09-17', gate=assess, rearm=rearm)
+    assert [r['session'] for r in result['rows']] == ['2026-09-16', '2026-09-17']
+    assert [len(index) for _, index in calls] == [2, 3]
+    assert all(index[-1] <= pd.Timestamp('2026-09-17') for _, index in calls)
+    assert result['first_eligible_in_window'] == '2026-09-17'
+    assert result['live_decision_replay_verified'] is False
+    assert result['entry_fill_verified'] is False
+    assert result['rows'][-1]['gate']['reason'] == 'owner reason'
+    pd.testing.assert_series_equal(prices, before)
+
+
+def test_entry_battery_future_prices_cannot_change_past_decisions():
+    from research.prophet.cpu_leadership.entry_battery import evaluate_prefixes
+    a = _entry_battery_prices()
+    b = a.copy(); b.iloc[-1] = 99999
+    gate = lambda ticker, prefix: {'eligible': bool(prefix.iloc[-1] > 103), 'reason': 'measured'}
+    rearm = lambda verdict, prefix: {'fires': False}
+    options = dict(start='2026-09-15', as_of='2026-09-17', gate=gate, rearm=rearm)
+    assert evaluate_prefixes('AMD', a, **options) == evaluate_prefixes('AMD', b, **options)
+
+
+@pytest.mark.parametrize('bad', [True, float('inf'), -1.0, 0.0])
+def test_entry_battery_invalid_prices_refuse_instead_of_becoming_signals(bad):
+    from research.prophet.cpu_leadership.entry_battery import evaluate_prefixes
+    prices = _entry_battery_prices().astype(object); prices.iloc[1] = bad
+    def forbidden(*args):
+        raise AssertionError('invalid data reached an entry evaluator')
+    result = evaluate_prefixes('AMD', prices, start='2026-09-15',
+                              as_of='2026-09-17', gate=forbidden, rearm=forbidden)
+    assert result['status'] == 'unavailable'
+    assert result['rows'] == []
+
+
+def test_entry_battery_duplicate_or_non_daily_session_refuses():
+    from research.prophet.cpu_leadership.entry_battery import evaluate_prefixes
+    prices = _entry_battery_prices()
+    prices.index = pd.to_datetime(['2026-09-15', '2026-09-15', '2026-09-17', '2026-09-18'])
+    assert evaluate_prefixes('AMD', prices, start='2026-09-15', as_of='2026-09-18')['status'] == 'unavailable'
+    prices = _entry_battery_prices(); prices.index += pd.Timedelta(hours=5)
+    assert evaluate_prefixes('AMD', prices, start='2026-09-15', as_of='2026-09-18')['status'] == 'unavailable'
+
+
+def test_entry_battery_error_remains_unknown_not_false_eligibility():
+    from research.prophet.cpu_leadership.entry_battery import evaluate_prefixes
+    def fail(*args):
+        raise RuntimeError('/private/secret-must-not-leak')
+    result = evaluate_prefixes('AMD', _entry_battery_prices(), start='2026-09-15',
+                              as_of='2026-09-17', gate=fail, rearm=fail)
+    assert result['status'] == 'degraded'
+    assert all(r['gate']['eligible'] is None for r in result['rows'])
+    assert '/private/' not in json.dumps(result)
+
+
+def test_entry_battery_recorded_sightings_are_not_manufactured_entries():
+    from research.prophet.cpu_leadership.entry_battery import recorded_sightings
+    rows = [{'ticker': 'MU', 'date': '2026-09-10', 'door': 'T', 'features': {'theme': 'Semiconductors'}},
+            {'ticker': 'MU', 'date': '2026-09-21', 'door': 'T', 'features': {}},
+            {'ticker': 'AMD', 'date': '2026-09-10', 'door': 'R', 'features': {}}]
+    before = copy.deepcopy(rows)
+    result = recorded_sightings(rows, 'MU', as_of='2026-09-18')
+    assert len(result) == 1 and result[0]['date'] == '2026-09-10'
+    assert result[0]['live_entry_authority'] is False
+    assert result[0]['historical_availability_verified'] is False
+    assert rows == before
+
+
+def test_entry_battery_does_not_replace_missing_close_with_adjacent_session():
+    from research.prophet.cpu_leadership.entry_battery import evaluate_prefixes
+    prices = _entry_battery_prices().iloc[:2]
+    result = evaluate_prefixes('AMD', prices, start='2026-09-15', as_of='2026-09-18')
+    assert result['status'] == 'unavailable'
+    assert result['reason'] == 'requested_session_close_missing'
+
+
+def test_entry_battery_default_gate_explicitly_excludes_mutable_context(monkeypatch):
+    from research.prophet.cpu_leadership.entry_battery import evaluate_prefixes
+    from engine import signal_gate, prophet_doors
+    calls = []
+    def gate(ticker, close, **kwargs):
+        calls.append(kwargs)
+        return {'eligible': False, 'reason': 'flat: sell'}
+    monkeypatch.setattr(signal_gate, 'gate', gate)
+    monkeypatch.setattr(prophet_doors, 'door_r_legs', lambda verdict, close: {'fires': False})
+    result = evaluate_prefixes('AMD', _entry_battery_prices(), start='2026-09-17', as_of='2026-09-18')
+    assert calls == [{'washout_waiver': False}, {'washout_waiver': False}]
+    assert result['contextual_waiver_replayed'] is False
+
+
+# Sighting-to-episode conversion: research receipts are not trade attribution.
+def _conversion_case():
+    from engine.us_candidate_episode import canonical_json
+    from hashlib import sha256
+    flag = {'schema': 'prophet_doors/v1', 'date': '2026-09-10',
+            'door': 'T', 'ticker': 'MU', 'features': {'theme': 'Semiconductors'}}
+    record = {'source_system': 'doors', 'source_schema': 'prophet_doors/v1',
+              'source_event_id': 'doors:2026-09-10:T:MU',
+              'source_receipt': 'sha256:' + sha256(canonical_json(flag).encode()).hexdigest(),
+              'event_type': 'OBSERVED', 'episode_id': 'observed-episode',
+              'known_at': '2026-09-10T20:00:00Z', 'recorded_at': '2026-09-11T05:00:00Z'}
+    return flag, record
+
+
+def _trace_case(flags, events=(), suppressions=(), **overrides):
+    from research.prophet.cpu_leadership.conversion_trace import trace_sightings
+    kwargs = dict(events=events, suppressions=suppressions,
+                  generation_recorded_at='2026-09-18T09:08:31Z',
+                  as_of='2026-09-21T11:00:00Z')
+    kwargs.update(overrides)
+    return trace_sightings(flags, **kwargs)
+
+
+def test_conversion_exact_source_receipt_is_retained_not_a_trade():
+    flag, record = _conversion_case()
+    result = _trace_case([flag], [record])
+    assert result['rows'][0]['status'] == 'event_recorded'
+    assert result['rows'][0]['episode_id'] == 'observed-episode'
+    assert result['trade_conversion_proven'] is False
+
+
+def test_conversion_explicit_suppression_is_not_silent_absence():
+    flag, record = _conversion_case()
+    record['reason'] = 'MISSING_STRUCTURAL_ANCHOR'
+    result = _trace_case([flag], suppressions=[record])
+    assert result['rows'][0]['status'] == 'suppression_recorded'
+    assert result['rows'][0]['reason'] == 'MISSING_STRUCTURAL_ANCHOR'
+
+
+def test_conversion_absence_keeps_generation_scope():
+    flag, _ = _conversion_case()
+    assert _trace_case([flag])['rows'][0]['status'] == 'no_record_in_selected_generation'
+
+
+def test_conversion_future_sighting_is_excluded():
+    flag, _ = _conversion_case()
+    flag['date'] = '2026-09-22'
+    assert _trace_case([flag])['rows'] == []
+
+
+def test_conversion_old_generation_is_not_a_detected_drop():
+    flag, _ = _conversion_case()
+    assert _trace_case([flag], generation_recorded_at='2026-09-09T09:00:00Z')['rows'][0]['status'] == 'generation_predates_sighting'
+
+
+def test_conversion_same_day_before_close_is_not_known_publication():
+    flag, _ = _conversion_case()
+    result = _trace_case([flag], generation_recorded_at='2026-09-10T09:00:00Z')
+    assert result['rows'][0]['status'] == 'no_record_in_selected_generation'
+    assert result['rows'][0]['first_publication_verified'] is False
+
+
+def test_conversion_changed_payload_never_inherits_an_old_receipt():
+    flag, record = _conversion_case()
+    flag['features']['theme'] = 'Changed'
+    assert _trace_case([flag], [record])['rows'][0]['status'] == 'source_receipt_mismatch'
+
+
+def test_conversion_future_record_is_not_historical_knowledge():
+    flag, record = _conversion_case()
+    record['recorded_at'] = '2026-09-22T01:00:00Z'
+    assert _trace_case([flag], [record])['rows'][0]['status'] == 'record_after_cutoff'
+
+
+def test_conversion_rejects_future_generation_and_duplicate_ownership():
+    flag, record = _conversion_case()
+    with pytest.raises(ValueError):
+        _trace_case([flag], generation_recorded_at='2026-09-22T01:00:00Z')
+    with pytest.raises(ValueError):
+        _trace_case([flag], [record], [record])
+
+
+def test_conversion_preserves_inputs_and_rejects_bad_sighting_schema():
+    flag, record = _conversion_case()
+    before = copy.deepcopy((flag, record))
+    _trace_case([flag], [record])
+    assert (flag, record) == before
+    flag['schema'] = 'unknown'
+    with pytest.raises(ValueError):
+        _trace_case([flag])
+
+
+def test_conversion_plan_presence_is_not_causal_attribution():
+    from research.prophet.cpu_leadership.conversion_trace import published_plan_presence
+    book = {'schema': 'prophet.index/v1', 'source_asof': '2026-09-18', 'plan_count': 8,
+            'plans': [{'id': 'unrelated-MU-plan', 'asset': 'MU'}]}
+    result = published_plan_presence(book, ['MU', 'ARM'])
+    assert result['by_ticker'] == {'MU': ['unrelated-MU-plan'], 'ARM': []}
+    assert result['total'] == 1 and result['declared_plan_count'] == 8
+    assert result['historical_trade_absence_proven'] is False
+    assert 'no causal' in result['relation']
+    with pytest.raises(ValueError):
+        published_plan_presence({}, ['MU'])
+
+
+def test_conversion_other_source_same_event_name_is_not_a_match():
+    flag, record = _conversion_case()
+    record['source_system'] = 'candidate'
+    assert _trace_case([flag], [record])['rows'][0]['status'] == 'no_record_in_selected_generation'
+
+
+def test_conversion_duplicate_flags_and_naive_cutoff_fail_closed():
+    flag, _ = _conversion_case()
+    with pytest.raises(ValueError):
+        _trace_case([flag, flag])
+    with pytest.raises(ValueError):
+        _trace_case([flag], as_of='2026-09-21T11:00:00')
+
+
+def test_rs_threshold_study_matches_live_clean_entry_at_point75():
+    import numpy as np
+    import pandas as pd
+    from research.prophet.cpu_leadership.entry_rs_threshold_study import (
+        assert_incumbent_parity,
+    )
+
+    idx = pd.bdate_range("2025-01-02", periods=220)
+    values = np.linspace(80.0, 120.0, len(idx))
+    values[-6:] = [121.0, 120.7, 120.3, 119.8, 119.2, 118.8]
+    lvl = pd.Series(values, index=idx)
+    cases = [
+        ({"accel_z": 0.6, "rs_pctile": 0.74}, {"pct50": 0.7, "nh": 4, "nl": 1}, 58.0),
+        ({"accel_z": 0.6, "rs_pctile": 0.75}, {"pct50": 0.7, "nh": 4, "nl": 1}, 58.0),
+        ({"accel_z": -0.7, "rs_pctile": 0.4}, {"pct50": 0.7, "nh": 4, "nl": 1}, 58.0),
+        ({"accel_z": 0.6, "rs_pctile": 0.4}, {"pct50": 0.3, "nh": 1, "nl": 4}, 58.0),
+        ({"accel_z": 0.6, "rs_pctile": None}, {"pct50": 0.7, "nh": 4, "nl": 1}, None),
+    ]
+    for fp, breadth, rsi in cases:
+        assert_incumbent_parity(lvl, fp, breadth, rsi)
+
+
+def test_rs_threshold_study_uses_exact_frozen_bands():
+    import pandas as pd
+    from research.prophet.cpu_leadership.entry_rs_threshold_study import _cohort_states
+
+    otherwise = pd.Series([True] * 6)
+    rs = pd.Series([0.7499, 0.75, 0.8499, 0.85, 1.0, float("nan")])
+    states = _cohort_states(otherwise, rs)
+    assert states["allowed_lt075"].tolist() == [True, False, False, False, False, False]
+    assert states["incremental_075_085"].tolist() == [False, True, True, False, False, False]
+    assert states["blocked_both_ge085"].tolist() == [False, False, False, True, True, False]
+
+
+def test_rs_threshold_study_counts_contiguous_runs_once():
+    import pandas as pd
+    from research.prophet.cpu_leadership.entry_rs_threshold_study import episode_onsets
+
+    state = pd.Series([False, True, True, True, False, True, True, False, True])
+    assert episode_onsets(state).tolist() == [
+        False, True, False, False, False, True, False, False, True,
+    ]
+
+
+def test_rs_threshold_release_requires_other_evidence_to_stay_clean():
+    import numpy as np
+    from research.prophet.cpu_leadership.entry_rs_threshold_study import (
+        first_threshold_release,
+    )
+
+    rs = np.array([0.81, 0.80, 0.74, 0.73], dtype=float)
+    clean = np.array([True, True, True, True], dtype=bool)
+    assert first_threshold_release(clean, rs, 0, 0.75) == 2
+
+    deteriorated = np.array([True, True, False, False], dtype=bool)
+    assert first_threshold_release(deteriorated, rs, 0, 0.75) is None
+
+
+def test_rs_threshold_inference_pairs_months_not_episode_rows():
+    from research.prophet.cpu_leadership.entry_rs_threshold_inference import (
+        paired_monthly_difference,
+    )
+
+    episodes = [
+        {"date": "2020-01-03", "cohort": "incremental_075_085", "rel_21d": 0.10},
+        {"date": "2020-01-10", "cohort": "incremental_075_085", "rel_21d": 0.20},
+        {"date": "2020-01-07", "cohort": "allowed_lt075", "rel_21d": 0.05},
+        {"date": "2020-02-03", "cohort": "incremental_075_085", "rel_21d": -0.02},
+        {"date": "2020-02-05", "cohort": "allowed_lt075", "rel_21d": 0.01},
+        {"date": "2020-03-03", "cohort": "incremental_075_085", "rel_21d": 0.90},
+    ]
+    diff = paired_monthly_difference(
+        episodes, "rel_21d", "incremental_075_085", "allowed_lt075",
+    )
+    assert len(diff) == 2
+    assert diff.index.strftime("%Y-%m").tolist() == ["2020-01", "2020-02"]
+    assert diff.iloc[0] == pytest.approx(0.10)
+    assert diff.iloc[1] == pytest.approx(-0.03)
+
+
+def test_rs_threshold_inference_bootstrap_is_deterministic():
+    import pandas as pd
+    from research.prophet.cpu_leadership.entry_rs_threshold_inference import (
+        moving_block_mean_ci,
+    )
+
+    values = pd.Series(
+        [((i % 7) - 3) / 100 for i in range(36)],
+        index=pd.date_range("2020-01-01", periods=36, freq="MS"),
+    )
+    a = moving_block_mean_ci(values)
+    b = moving_block_mean_ci(values)
+    assert a == b
+    assert a["n"] == 36
+    assert a["block"] == 3
+    assert a["draws"] == 5000
+    assert a["seed"] == 20260921
+    assert len(a["mean_ci95"]) == 2
+
+
+def test_rs_threshold_inference_refuses_wrong_schema_or_authority(tmp_path):
+    import json
+    from research.prophet.cpu_leadership.entry_rs_threshold_inference import (
+        load_frozen_study,
+    )
+
+    p = tmp_path / "study.json"
+    p.write_text(json.dumps({"schema": "wrong", "episodes": []}))
+    with pytest.raises(ValueError):
+        load_frozen_study(p)
+
+    p.write_text(json.dumps({
+        "schema": "prophet.cpu_leadership.rs_threshold_study.v1",
+        "authority": {
+            "can_rank": True, "can_gate": False, "can_size": False, "can_trade": False,
+        },
+        "episodes": [],
+    }))
+    with pytest.raises(ValueError):
+        load_frozen_study(p)
+
+
+def test_direct_extension_challenger_matches_incumbent_atr_geometry():
+    import numpy as np
+    import pandas as pd
+    from research.prophet.cpu_leadership.entry_direct_extension_challenger import (
+        assert_live_extension_parity,
+    )
+
+    idx = pd.bdate_range("2024-01-02", periods=140)
+    base = np.linspace(80.0, 110.0, len(idx))
+    wiggle = np.sin(np.arange(len(idx)) / 5.0) * 1.7
+    lvl = pd.Series(base + wiggle, index=idx)
+    assert_live_extension_parity(lvl)
+
+
+def test_direct_extension_challenger_uses_frozen_rs_and_atr_boundaries():
+    import pandas as pd
+    from research.prophet.cpu_leadership.entry_direct_extension_challenger import (
+        _cohort_states,
+    )
+
+    otherwise = pd.Series([True] * 6)
+    rs = pd.Series([0.74, 0.80, 0.80, 0.8499, 0.85, 0.80])
+    ext = pd.Series([1.49, 1.49, 1.50, 1.50, 1.00, float("nan")])
+    states = _cohort_states(otherwise, rs, ext)
+
+    assert states["rs085_atr_normal"].tolist() == [True, True, False, False, False, False]
+    assert states["rs085_atr_extended"].tolist() == [False, False, True, True, False, False]
+    assert states["middle_075_085_atr_normal"].tolist() == [False, True, False, False, False, False]
+    assert states["middle_075_085_atr_extended"].tolist() == [False, False, True, True, False, False]

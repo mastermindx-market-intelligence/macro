@@ -162,7 +162,8 @@ def _update_block() -> str:
     assert "# LIVE ENTRY RADAR lanes" in UPDATE_SH, "no entry-radar block in update.sh"
     block = UPDATE_SH.split("# LIVE ENTRY RADAR lanes")[1]
     ends = [block.index(marker) for marker in
-            ("# CUSTOMER-TABLE BACKUP", "# PRESS-FEEDS is a long-running daemon")
+            ("# MORNING ORIENTATION PREMARKET EDITION",
+             "# CUSTOMER-TABLE BACKUP", "# PRESS-FEEDS is a long-running daemon")
             if marker in block]
     assert ends, "no sibling block follows the entry-radar block in update.sh"
     return block[:min(ends)]
@@ -948,3 +949,20 @@ def test_an_eventless_pass_spools_nothing_at_all(hermetic_spool):
     assert spool_hot_tape([], source_asof=NOW, now=NOW, spool=spool) is None
     assert spool.written_keys == []
     assert list(hermetic_spool.iterdir()) == []
+
+
+# The September premarket sibling must not contaminate Radar's disarm proof.
+def test_update_block_excludes_morning_orientation_sibling():
+    block = _update_block()
+    assert "# MORNING ORIENTATION PREMARKET EDITION" not in block
+    assert "AM_EDITION_LIVE_DISABLE" not in block
+    assert "macro-live-entry-radar.timer" in block
+    assert "staged, not armed" in block
+
+
+def test_disarm_guard_still_catches_second_trigger_inside_radar(monkeypatch):
+    marker = "# LIVE ENTRY RADAR lanes"
+    mutated = UPDATE_SH.replace(marker, marker + "\n# planted grep -qE trigger", 1)
+    monkeypatch.setitem(globals(), "UPDATE_SH", mutated)
+    with pytest.raises(AssertionError, match="second CHANGED gate"):
+        test_the_disarm_is_symmetric_and_sits_outside_the_changed_trigger()

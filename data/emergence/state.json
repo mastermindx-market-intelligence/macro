@@ -1,32 +1,27 @@
 {
-  "0191c1be9a6e": {
-    "name_en": "Cross-sector cluster \u00b7 Communication Services + Consumer Discretionary",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Communication Services + Consumer Discretionary",
-    "score": 67.4
+  "15b66783b663": {
+    "name_en": "Emerging Consumer Discretionary cluster",
+    "name_zh": "\u65b0\u5174 Consumer Discretionary \u96c6\u7fa4",
+    "score": 40.2
   },
-  "2b9cfe2dce2c": {
+  "2745dd372cad": {
+    "name_en": "Cross-sector cluster \u00b7 Consumer Staples + Consumer Discretionary",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Staples + Consumer Discretionary",
+    "score": 65.9
+  },
+  "6eed05ff174f": {
     "name_en": "Cross-sector cluster \u00b7 Consumer Discretionary + Health Care",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Discretionary + Health Care",
-    "score": 65.7
+    "score": 66.4
   },
-  "411354ec82f6": {
-    "name_en": "Cross-sector cluster \u00b7 Financials + Real Estate",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Financials + Real Estate",
-    "score": 50.9
+  "b1d5c09e6b31": {
+    "name_en": "Cross-sector cluster \u00b7 Industrials + Information Technology",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Information Technology",
+    "score": 46.7
   },
-  "6e6b1732126c": {
-    "name_en": "Cross-sector cluster \u00b7 Information Technology + Financials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Information Technology + Financials",
-    "score": 63.1
-  },
-  "dc25a6ad2505": {
-    "name_en": "Cross-sector cluster \u00b7 Industrials + Materials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Materials",
-    "score": 50.6
-  },
-  "fb572fa8c0aa": {
-    "name_en": "Cross-sector cluster \u00b7 Health Care + Information Technology",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Health Care + Information Technology",
-    "score": 59.5
+  "b872817b28b8": {
+    "name_en": "Cross-sector cluster \u00b7 Communication Services + Consumer Discretionary",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Communication Services + Consumer Discretionary",
+    "score": 68.3
   }
 }

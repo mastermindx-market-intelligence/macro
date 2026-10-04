@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/market_structure.html.j2
+manifest: mockups/evidence/market-structure-w10-r3/manifest.json
