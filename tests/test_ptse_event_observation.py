@@ -28,11 +28,17 @@ def ref(name: str, owner: str = "event-calendar-owner") -> dict:
     }
 
 
-def binding(*, grade="SYNTHETIC", latest="2026-10-02T19:58:00Z",
+def canonical_sha(payload: dict) -> str:
+    import json
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False).encode()).hexdigest()
+
+
+def binding(p=None, *, grade="SYNTHETIC", latest="2026-10-02T19:58:00Z",
             valid_until="2026-10-03T00:00:00Z") -> EventCalendarBinding:
+    p = payload() if p is None else p
     return EventCalendarBinding(
         owner_ref="event-calendar-owner",
-        artifact_ref=ref("event-calendar"),
+        artifact_ref={**ref("event-calendar"), "sha256": canonical_sha(p)},
         known_at_earliest=latest,
         known_at_latest=latest,
         known_at_precision="EXACT",
@@ -122,7 +128,7 @@ class PTSEEventObservationTest(unittest.TestCase):
         p = payload()
         p["us_macro"] = []
         facts = adapt_event_calendar(
-            p, binding(), market_session="2026-10-02", decision_at=DECISION
+            p, binding(p), market_session="2026-10-02", decision_at=DECISION
         )
         for fact in facts:
             self.assertEqual(fact["status"], "UNAVAILABLE")
@@ -144,7 +150,7 @@ class PTSEEventObservationTest(unittest.TestCase):
             PTSEEventAdapterError, "EVENT_CALENDAR_SCHEMA_INVALID"
         ):
             adapt_event_calendar(
-                p, binding(), market_session="2026-10-02", decision_at=DECISION
+                p, binding(p), market_session="2026-10-02", decision_at=DECISION
             )
         with self.assertRaisesRegex(
             PTSEEventAdapterError, "EVENT_CALENDAR_SESSION_MISMATCH"
@@ -161,7 +167,7 @@ class PTSEEventObservationTest(unittest.TestCase):
             PTSEEventAdapterError, "EVENT_AUTHORITY_INVALID"
         ):
             adapt_event_calendar(
-                p, binding(), market_session="2026-10-02", decision_at=DECISION
+                p, binding(p), market_session="2026-10-02", decision_at=DECISION
             )
 
     def test_event_outside_declared_owner_window_is_refused(self):
@@ -171,7 +177,7 @@ class PTSEEventObservationTest(unittest.TestCase):
             PTSEEventAdapterError, "EVENT_OUTSIDE_OWNER_WINDOW"
         ):
             adapt_event_calendar(
-                p, binding(), market_session="2026-10-02", decision_at=DECISION
+                p, binding(p), market_session="2026-10-02", decision_at=DECISION
             )
 
     def test_same_timestamp_conflicting_sources_fail_closed(self):
@@ -183,7 +189,7 @@ class PTSEEventObservationTest(unittest.TestCase):
             PTSEEventAdapterError, "EVENT_SOURCE_CONFLICT"
         ):
             adapt_event_calendar(
-                p, binding(), market_session="2026-10-02", decision_at=DECISION
+                p, binding(p), market_session="2026-10-02", decision_at=DECISION
             )
 
     def test_facts_validate_inside_existing_ptse_contract(self):
@@ -210,6 +216,26 @@ class PTSEEventObservationTest(unittest.TestCase):
         self.assertEqual(ready.status, "READY_FOR_EXISTING_PUBLICATION_OWNER")
         self.assertFalse(ready.publication_authority)
         self.assertFalse(ready.decision_authority)
+
+    def test_payload_receipt_is_content_bound_and_key_order_canonical(self):
+        p = payload()
+        facts = adapt_event_calendar(p, binding(p), market_session="2026-10-02", decision_at=DECISION)
+        self.assertTrue(facts)
+        reordered = dict(reversed(list(p.items())))
+        facts2 = adapt_event_calendar(reordered, binding(p), market_session="2026-10-02", decision_at=DECISION)
+        self.assertEqual(facts, facts2)
+
+        mutated = copy.deepcopy(p)
+        mutated["us_macro"][1]["date"] = "2026-10-15"
+        with self.assertRaisesRegex(PTSEEventAdapterError, "EVENT_CALENDAR_ARTIFACT_REF_MISMATCH"):
+            adapt_event_calendar(mutated, binding(p), market_session="2026-10-02", decision_at=DECISION)
+
+    def test_source_mutation_with_old_receipt_is_refused(self):
+        p = payload()
+        mutated = copy.deepcopy(p)
+        mutated["us_macro"][1]["source"] = "static"
+        with self.assertRaisesRegex(PTSEEventAdapterError, "EVENT_CALENDAR_ARTIFACT_REF_MISMATCH"):
+            adapt_event_calendar(mutated, binding(p), market_session="2026-10-02", decision_at=DECISION)
 
 
 if __name__ == "__main__":
