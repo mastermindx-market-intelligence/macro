@@ -3842,7 +3842,7 @@ def test_the_unmerged_red_code_is_not_an_external_blocker():
     assert "ci_failed" in GUARD.EXTERNAL_BLOCKERS, "the merged path keeps its mercy exit"
 
 
-def _block_run(state_path, code, *, attempts):
+def _block_run(state_path, code, *, attempts, final_message=None):
     """Drive `_block` `attempts` times with a valid report; return per-attempt blocks."""
     state = {
         "root": "/x",
@@ -3856,9 +3856,8 @@ def _block_run(state_path, code, *, attempts):
     payload = {
         "hook_event_name": "Stop",
         "stop_hook_active": True,
-        "last_assistant_message": (
-            "SHIP LOOP BLOCKED: ci-pack-2 is red on my armed PR #9999; evidence: run 123."
-        ),
+        "last_assistant_message": final_message
+        or "SHIP LOOP BLOCKED: ci-pack-2 is red on my armed PR #9999; evidence: run 123.",
     }
     blocked = []
     for _ in range(attempts):
@@ -3899,18 +3898,38 @@ def test_the_merged_path_keeps_its_two_stop_external_exit(tmp_path):
     assert blocked[1] is False, "the external ladder still releases at two"
 
 
-def test_a_verified_async_unmerged_wait_uses_the_short_external_boundary(tmp_path):
-    """Healthy armed CI/sweeper waits must not burn ten Stop turns.
+def test_async_unmerged_does_not_yield_just_because_ci_is_external(tmp_path):
+    """A watcher owns observation, not the whole CEO turn.
 
-    This is a turn boundary only: the delivery rung remains CI and ownership survives.
+    The common bad shape was five minutes of implementation followed by a 30-45 minute
+    CI phase that the principal treated as its reason to stop. Even a verified external
+    wait must keep blocking unless the session explicitly says durable execution is the
+    sole remaining work.
     """
     assert GUARD.ASYNC_UNMERGED in GUARD.EXTERNAL_BLOCKERS
     assert GUARD.ASYNC_UNMERGED in GUARD.WAITING_BLOCKERS
     state_path = tmp_path / "state.json"
     blocked = _block_run(state_path, GUARD.ASYNC_UNMERGED, attempts=3)
-    assert blocked[0] is True, "never a first-attempt bailout"
-    assert blocked[1] is False, "verified external wait releases at two"
+    assert blocked == [True, True, True]
     assert GUARD._PROVEN_STAGE_BY_BLOCKER[GUARD.ASYNC_UNMERGED] == "CI"
+
+
+def test_async_unmerged_can_yield_after_explicit_durable_execution_classification(tmp_path):
+    """The short wait boundary survives when CI is truly the sole remaining lane."""
+    state_path = tmp_path / "state.json"
+    message = (
+        "SHIP LOOP BLOCKED: exact head is healthy and one verified watcher owns the "
+        "remaining CI/sweeper wait; every other useful in-scope lane is exhausted.\n"
+        "SESSION END: DURABLE_EXECUTION_RUNNING"
+    )
+    blocked = _block_run(
+        state_path,
+        GUARD.ASYNC_UNMERGED,
+        attempts=3,
+        final_message=message,
+    )
+    assert blocked[0] is True, "never a first-attempt bailout"
+    assert blocked[1] is False, "explicit durable-execution wait may yield at the short boundary"
 
 
 def test_the_unmerged_red_still_reaches_the_any_code_loop_breaker(tmp_path):

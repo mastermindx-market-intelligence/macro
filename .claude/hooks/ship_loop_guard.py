@@ -4345,7 +4345,22 @@ def _block(
     # stays impossible — on a first Stop total_blocks is 1 and no arm can fire.
     reentrant = bool(payload.get("stop_hook_active")) or total_blocks >= 2
     reported = reentrant and final.startswith("SHIP LOOP BLOCKED:")
-    external_escape = code in EXTERNAL_BLOCKERS and (count >= 2 or external_blocks >= 3)
+    declared_end = declared_session_end_state(final)
+    # A healthy unmerged CI/sweeper wait is external OBSERVATION, not permission to
+    # end a principal that still has other useful project work. The short external
+    # boundary therefore requires the session to explicitly classify the truthful
+    # terminal condition ACTIVE_EXECUTION permits for this shape: real durable
+    # execution owns the sole remaining wait and local continuation would add no
+    # useful work. The hook does not infer lanes; it only requires the auditable
+    # self-declaration instead of silently turning "CI pending" into "turn done".
+    async_unmerged_terminal = (
+        code != ASYNC_UNMERGED or declared_end == "DURABLE_EXECUTION_RUNNING"
+    )
+    external_escape = (
+        code in EXTERNAL_BLOCKERS
+        and async_unmerged_terminal
+        and (count >= 2 or external_blocks >= 3)
+    )
     any_code_escape = count >= 10 or total_blocks >= 15
     if reported and (external_escape or any_code_escape):
         if exit_key:
@@ -4376,6 +4391,14 @@ def _block(
             " If the same genuine blocker persists after another attempt, "
             "finish with `SHIP LOOP BLOCKED:` and the specific evidence."
         )
+        if code == ASYNC_UNMERGED:
+            body += (
+                " For this healthy async CI/sweeper wait, the short yield boundary "
+                "is valid only after every useful independent in-scope lane is "
+                "exhausted and the verified external owner/return path is the sole "
+                "remaining wait; declare `SESSION END: DURABLE_EXECUTION_RUNNING` "
+                "in that evidence report. Otherwise continue the project."
+            )
     _emit({"decision": "block", "reason": body})
 
 
