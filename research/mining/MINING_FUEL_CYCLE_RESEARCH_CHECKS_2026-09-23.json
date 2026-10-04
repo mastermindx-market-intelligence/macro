@@ -1,0 +1,444 @@
+{
+  "operation": "gmi-mining-principal-research-20260923-sol-001",
+  "classification": "LOCAL_RESEARCH_ARITHMETIC_DOCUMENT_AND_PEDAGOGICAL_COMPARISONS_ONLY",
+  "run_utc": "2026-09-24T00:56:25.200996+00:00",
+  "research_cutoff": "2026-09-23",
+  "command": "python check_fuel_cycle_research.py",
+  "document": "MINING_URANIUM_FUEL_CYCLE_ECONOMICS_2026-09-23.md",
+  "document_words": 6529,
+  "document_bytes": 49273,
+  "document_sha256": "d02e136254b67f230004337f6b5e1a341ddd36768efef75b1392c107f6ffd248",
+  "document_git_blob_sha1": "164f5f58b5f0ea47eaac5afad760385c89ff694a",
+  "script_git_blob_sha1": "afcf557cbc0db0c481e07c976c2f8e76e31ba3fa",
+  "total": 55,
+  "passed": 55,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "ten_distinct_dossiers",
+      "passed": true,
+      "evidence": [
+        "UF-C01",
+        "UF-C02",
+        "UF-C03",
+        "UF-C04",
+        "UF-C05",
+        "UF-C06",
+        "UF-C07",
+        "UF-C08",
+        "UF-C09",
+        "UF-C10"
+      ],
+      "source": "DOCUMENT"
+    },
+    {
+      "check": "nineteen_source_records",
+      "passed": true,
+      "evidence": [
+        "F01",
+        "F02",
+        "F03",
+        "F04",
+        "F05",
+        "F06",
+        "F07",
+        "F08",
+        "F09",
+        "F10",
+        "F11",
+        "F12",
+        "F13",
+        "F14",
+        "F15",
+        "F16",
+        "F17",
+        "F18",
+        "F19"
+      ],
+      "source": "DOCUMENT"
+    },
+    {
+      "check": "twenty_four_proposed_requirements",
+      "passed": true,
+      "evidence": [
+        "UF-01",
+        "UF-02",
+        "UF-03",
+        "UF-04",
+        "UF-05",
+        "UF-06",
+        "UF-07",
+        "UF-08",
+        "UF-09",
+        "UF-10",
+        "UF-11",
+        "UF-12",
+        "UF-13",
+        "UF-14",
+        "UF-15",
+        "UF-16",
+        "UF-17",
+        "UF-18",
+        "UF-19",
+        "UF-20",
+        "UF-21",
+        "UF-22",
+        "UF-23",
+        "UF-24"
+      ],
+      "source": "DOCUMENT"
+    },
+    {
+      "check": "source_references_resolve",
+      "passed": true,
+      "evidence": [
+        "F01",
+        "F02",
+        "F03",
+        "F04",
+        "F05",
+        "F06",
+        "F07",
+        "F08",
+        "F09",
+        "F10",
+        "F11",
+        "F12",
+        "F13",
+        "F14",
+        "F15",
+        "F16",
+        "F17",
+        "F18",
+        "F19"
+      ],
+      "source": "DOCUMENT"
+    },
+    {
+      "check": "unique_source_urls",
+      "passed": true,
+      "evidence": 19,
+      "source": "DOCUMENT"
+    },
+    {
+      "check": "corrected_F09_actual_publishing_path",
+      "passed": true,
+      "evidence": "Exact link followed from issuer news index",
+      "source": "F09"
+    },
+    {
+      "check": "research_only_and_incomplete",
+      "passed": true,
+      "evidence": "HOLD",
+      "source": "DOCUMENT"
+    },
+    {
+      "check": "exact_source_pin",
+      "passed": true,
+      "evidence": "Mastermind exact pin",
+      "source": "DOCUMENT"
+    },
+    {
+      "check": "existing_carrier",
+      "passed": true,
+      "evidence": "Same research operation",
+      "source": "DOCUMENT"
+    },
+    {
+      "check": "eight_proposed_analytical_views",
+      "passed": true,
+      "evidence": 8,
+      "source": "DOCUMENT"
+    },
+    {
+      "check": "four_discriminating_scenarios",
+      "passed": true,
+      "evidence": "A through D",
+      "source": "DOCUMENT"
+    },
+    {
+      "check": "no_placeholder_markers",
+      "passed": true,
+      "evidence": "No placeholder markers",
+      "source": "DOCUMENT"
+    },
+    {
+      "check": "EIA_price_covered_quantities_sum",
+      "passed": true,
+      "evidence": "thousand lb equivalent with price",
+      "source": "F02"
+    },
+    {
+      "check": "EIA_weighted_price",
+      "passed": true,
+      "evidence": "58.46016135917356783061555537",
+      "source": "F02"
+    },
+    {
+      "check": "EIA_longterm_share",
+      "passed": true,
+      "evidence": "87.19798514471100486638777427",
+      "source": "F02"
+    },
+    {
+      "check": "EIA_contracted_range_difference",
+      "passed": true,
+      "evidence": "thousand lb; not additional demand",
+      "source": "F03"
+    },
+    {
+      "check": "EIA_old_matched_horizon",
+      "passed": true,
+      "evidence": "182287",
+      "source": "F04"
+    },
+    {
+      "check": "EIA_new_matched_horizon",
+      "passed": true,
+      "evidence": "149849",
+      "source": "F04"
+    },
+    {
+      "check": "EIA_endpoint_extension_growth",
+      "passed": true,
+      "evidence": "1.122082828929868466052515900",
+      "source": "F04"
+    },
+    {
+      "check": "EIA_matched_horizon_change",
+      "passed": true,
+      "evidence": "-17.79501555239814139241964594",
+      "source": "F04"
+    },
+    {
+      "check": "compatible_comparison_accepted",
+      "passed": true,
+      "evidence": "Matched observation scope, different publication vintages",
+      "source": "F04 / PEDAGOGICAL_HELPER"
+    },
+    {
+      "check": "unmatched_delivery_horizon_rejected",
+      "passed": true,
+      "evidence": "Incompatible illustrative measure scope",
+      "source": "ORIGINAL_PEDAGOGICAL_EXAMPLE"
+    },
+    {
+      "check": "mass_vs_service_unit_rejected",
+      "passed": true,
+      "evidence": "Incompatible illustrative measure scope",
+      "source": "ORIGINAL_PEDAGOGICAL_EXAMPLE"
+    },
+    {
+      "check": "suppressed_or_zero_baseline_not_growth",
+      "passed": true,
+      "evidence": "Positive baseline required for this illustrative growth ratio",
+      "source": "ORIGINAL_PEDAGOGICAL_EXAMPLE"
+    },
+    {
+      "check": "Cameco_opposing_signs_preserved",
+      "passed": true,
+      "evidence": "CAD million for +USD5/lb issuer scenario",
+      "source": "F05"
+    },
+    {
+      "check": "Cameco_shocks_not_mirrored",
+      "passed": true,
+      "evidence": "Downward scenario not inverse of upward",
+      "source": "F05"
+    },
+    {
+      "check": "Cameco_2026_finite_response",
+      "passed": true,
+      "evidence": "Rounded conditional scenario cells, not stock beta",
+      "source": "F05"
+    },
+    {
+      "check": "Cameco_2030_finite_response",
+      "passed": true,
+      "evidence": "Rounded conditional scenario cells, not precise derivative",
+      "source": "F05"
+    },
+    {
+      "check": "KAP_revenue_change",
+      "passed": true,
+      "evidence": "8.735213968586736386399199000",
+      "source": "F07"
+    },
+    {
+      "check": "KAP_attributable_ebitda_change",
+      "passed": true,
+      "evidence": "-12.42295177376259887304568662",
+      "source": "F07"
+    },
+    {
+      "check": "KAP_operating_cash_change",
+      "passed": true,
+      "evidence": "-55.03781410100024396194193706",
+      "source": "F07"
+    },
+    {
+      "check": "attributable_vs_consolidated_rejected",
+      "passed": true,
+      "evidence": "Incompatible illustrative measure scope",
+      "source": "ORIGINAL_PEDAGOGICAL_EXAMPLE"
+    },
+    {
+      "check": "Centrus_backlog_segments_sum",
+      "passed": true,
+      "evidence": "USD billion",
+      "source": "F08"
+    },
+    {
+      "check": "Centrus_contingent_share",
+      "passed": true,
+      "evidence": "Not an investment-success probability",
+      "source": "F08"
+    },
+    {
+      "check": "Centrus_definitive_contingent_subset",
+      "passed": true,
+      "evidence": "Do not add nested subset again",
+      "source": "F08"
+    },
+    {
+      "check": "Centrus_upfront_gross",
+      "passed": true,
+      "evidence": "USD gross, prior to costs",
+      "source": "F12"
+    },
+    {
+      "check": "Centrus_prefunded_residual",
+      "passed": true,
+      "evidence": "USD; separate from upfront consideration",
+      "source": "F12"
+    },
+    {
+      "check": "Centrus_share_scenario_denominator",
+      "passed": true,
+      "evidence": "As-exercised scenario, not current legal/GAAP shares",
+      "source": "F12–F13"
+    },
+    {
+      "check": "Centrus_common_warrant_cash_not_assured",
+      "passed": true,
+      "evidence": "No full-cash exercise assumption",
+      "source": "F13 / DOCUMENT"
+    },
+    {
+      "check": "new_customer_event_after_quarter",
+      "passed": true,
+      "evidence": "Cannot backdate customer event into June snapshot",
+      "source": "F11"
+    },
+    {
+      "check": "Urenco_orderbook_change",
+      "passed": true,
+      "evidence": "28.16901408450704225352112680",
+      "source": "F14"
+    },
+    {
+      "check": "Urenco_revenue_change",
+      "passed": true,
+      "evidence": "-22.27842003853564547206165703",
+      "source": "F14"
+    },
+    {
+      "check": "Urenco_capital_accrual_bridge",
+      "passed": true,
+      "evidence": "EUR million",
+      "source": "F14"
+    },
+    {
+      "check": "Urenco_cash_less_cash_investment",
+      "passed": true,
+      "evidence": "Explicit calculation, not normalized FCF",
+      "source": "F14"
+    },
+    {
+      "check": "Orano_reported_adjusted_directions",
+      "passed": true,
+      "evidence": "Different defined measures; not source error",
+      "source": "F15"
+    },
+    {
+      "check": "Denison_inventory_sale_proceeds",
+      "passed": true,
+      "evidence": "CAD",
+      "source": "F16"
+    },
+    {
+      "check": "Denison_historical_acquisition_cost",
+      "passed": true,
+      "evidence": "CAD historical cost, not IFRS carrying value",
+      "source": "F16"
+    },
+    {
+      "check": "Denison_historical_price_difference",
+      "passed": true,
+      "evidence": "Not current-quarter IFRS gain",
+      "source": "F16"
+    },
+    {
+      "check": "Denison_inventory_categories_not_identical",
+      "passed": true,
+      "evidence": "Total check does not erase category/commitment distinctions",
+      "source": "F16 / DOCUMENT"
+    },
+    {
+      "check": "Yellow_Cake_held_plus_pending",
+      "passed": true,
+      "evidence": "Scenario after delivery, not June held quantity",
+      "source": "F17"
+    },
+    {
+      "check": "hypothetical_discount_offset",
+      "passed": true,
+      "evidence": "Illustrative NAV+10%; discount10% to20%, not actual return",
+      "source": "ORIGINAL_PEDAGOGICAL_EXAMPLE"
+    },
+    {
+      "check": "hypothetical_buyback_accretion",
+      "passed": true,
+      "evidence": "Assumes 100 assets/10 shares; one share bought for8, excludes costs",
+      "source": "ORIGINAL_PEDAGOGICAL_EXAMPLE"
+    },
+    {
+      "check": "Paladin_incompatible_margin_demonstrated",
+      "passed": true,
+      "evidence": "USD million; not a profit estimate",
+      "source": "F18–F19"
+    },
+    {
+      "check": "Paladin_annual_summary_residual_preserved",
+      "passed": true,
+      "evidence": "USD million, unclosed summary bridge",
+      "source": "F19 / DOCUMENT"
+    },
+    {
+      "check": "native_history_not_claimed",
+      "passed": true,
+      "evidence": "Current retrieval is not contemporaneous native receipt",
+      "source": "DOCUMENT"
+    }
+  ],
+  "prepublication_notes": [
+    "F09 initially drafted from an incorrect URL slug; corrected by following the live issuer index before publication.",
+    "All arithmetic uses stated source inputs or explicitly invented pedagogical examples; no issuer figure was changed to force agreement.",
+    "EIA matched-window calculation uses published cumulative endpoints; independent rounding remains a limitation.",
+    "Paladin annual-summary difference remains unresolved; no full annual-PDF/accounting review is claimed."
+  ],
+  "not_claimed": [
+    "application tests",
+    "CI",
+    "independent research review",
+    "issuer-accounting reconciliation",
+    "contract settlement",
+    "native historical retention",
+    "source-rights approval",
+    "canonical Agent OS validation",
+    "investment validation",
+    "browser proof",
+    "Fable dispatch",
+    "product implementation"
+  ]
+}
