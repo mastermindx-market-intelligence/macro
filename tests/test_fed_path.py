@@ -123,49 +123,63 @@ def _dots():
 
 def test_compute_full_path_and_gap():
     zq = {"m1": 4.30, "m3": 4.12, "m6": 3.92, "m12": 3.55}
-    out = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
-                     target_low=4.25, target_high=4.50, dot_series=_dots(),
-                     zq_path_row=zq, sofr_path_row=None, zq_front_implied=4.31,
-                     ntfs=-0.42, curve_tp_adj=-0.15, rate_exp_proxy=-0.55, cfg=_CFG)
+    out = fp.compute(
+        asof=pd.Timestamp("2026-06-12"), policy_rate=4.33, policy_asof="2026-06-12",
+        target_low=4.25, target_high=4.50,
+        target_low_asof="2026-06-12", target_high_asof="2026-06-12",
+        dot_series=_dots(), zq_path_row=zq, zq_path_asof="2026-06-12",
+        sofr_path_row=None, sofr_path_asof=None,
+        zq_front_implied=4.31, front_asof="2026-06-12",
+        ntfs=-0.42, curve_tp_adj=-0.15, rate_exp_proxy=-0.55, cfg=_CFG,
+    )
     assert out["target_mid"] == 4.38
     assert out["implied"]["m12"] == 3.55
-    # (4.33 − 3.55) / 0.25 ≈ 3 cuts
     assert out["implied_cuts_12m"] == 3
     assert out["implied_bp_12m"] == -78
-    # gap at end-2026 (June→Dec = 6m) compares the 6m-implied to the 2026 dot
-    assert out["gap"]["horizon_label"] == "end-2026"
-    assert out["gap"]["horizon_months"] == 6
-    assert out["gap"]["market"] == 3.92
-    assert out["gap"]["fed_dot"] == 3.875
-    assert out["gap"]["gap_bp"] == 4
-    assert out["gap"]["lean_en"] == "market ≈ the Fed"
+    assert out["implied_cut_equivalents_12m"] == 3.12
+    # Dot remains descriptive, but the old basis/period join is intentionally withheld.
+    assert out["gap"] is None
+    assert "target_basis_unqualified" in out["gap_unavailable_reasons"]
     assert out["implied_source_en"] == "ZQ fed-funds futures"
-    # display-only contract — no scored leg should ever appear
     assert "score" not in out and "mrs" not in out
 
 
-def test_compute_prefers_zq_then_sofr():
+def test_compute_keeps_sofr_separate_from_fed_funds():
     sofr = {"m1": 4.25, "m12": 3.40}
-    out = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
-                     target_low=4.25, target_high=4.50, dot_series=None,
-                     zq_path_row=None, sofr_path_row=sofr, zq_front_implied=4.31,
-                     ntfs=None, curve_tp_adj=None, rate_exp_proxy=None, cfg=_CFG)
-    assert out["implied_source_en"] == "SR3 SOFR futures"
-    assert out["implied"]["m12"] == 3.40
+    out = fp.compute(
+        asof=pd.Timestamp("2026-06-12"), policy_rate=4.33, policy_asof="2026-06-12",
+        target_low=4.25, target_high=4.50,
+        target_low_asof="2026-06-12", target_high_asof="2026-06-12",
+        dot_series=None, zq_path_row=None, zq_path_asof=None,
+        sofr_path_row=sofr, sofr_path_asof="2026-06-12",
+        zq_front_implied=4.31, front_asof="2026-06-12",
+        ntfs=None, curve_tp_adj=None, rate_exp_proxy=None, cfg=_CFG,
+    )
+    assert out["implied_source_en"] is None
+    assert out["implied"].get("m12") is None
+    assert out["sofr_path"]["m12"] == 3.40
+    assert out["path_evidence"]["sofr"]["underlying"] == "SOFR"
+    assert out["implied_bp_12m"] is None
 
 
 def test_compute_degraded_no_strip_no_dots():
-    out = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
-                     target_low=4.25, target_high=4.50, dot_series=None,
-                     zq_path_row=None, sofr_path_row=None, zq_front_implied=4.31,
-                     ntfs=-0.2, curve_tp_adj=None, rate_exp_proxy=-0.5, cfg=_CFG)
-    assert out["implied_source_en"] == "ZQ front (30d) only"
-    assert out["implied"].get("m1") == 4.31
-    # no far horizon → no fabricated cut count, no gap
+    out = fp.compute(
+        asof=pd.Timestamp("2026-06-12"), policy_rate=4.33, policy_asof="2026-06-12",
+        target_low=4.25, target_high=4.50,
+        target_low_asof="2026-06-12", target_high_asof="2026-06-12",
+        dot_series=None, zq_path_row=None, zq_path_asof=None,
+        sofr_path_row=None, sofr_path_asof=None,
+        zq_front_implied=4.31, front_asof="2026-06-12",
+        ntfs=-0.2, curve_tp_adj=None, rate_exp_proxy=-0.5, cfg=_CFG,
+    )
+    assert out["implied_source_en"] is None
+    assert out["implied"].get("m1") is None
+    assert out["front_quote_context"]["implied_average_rate"] == 4.31
+    assert out["front_quote_context"]["contract_identity_qualified"] is False
     assert out["implied_cuts_12m"] is None
     assert out["gap"] is None
     assert out["dots"] == []
-    assert out["headline_en"].startswith("Policy set at")
+    assert out["headline_en"].startswith("Policy reference")
 
 
 def test_compute_far_dot_shows_dots_but_no_gap():
@@ -185,3 +199,129 @@ def test_compute_all_empty_returns_none():
                       target_low=None, target_high=None, dot_series=None,
                       zq_path_row=None, sofr_path_row=None, zq_front_implied=None,
                       ntfs=None, curve_tp_adj=None, rate_exp_proxy=None, cfg=_CFG) is None
+
+
+# --------------------------------------------------------------------------- #
+# rates-aware opportunity: dated policy-path consumer contract
+# --------------------------------------------------------------------------- #
+def _qualified_policy_payload(**overrides):
+    kwargs = dict(
+        asof=pd.Timestamp("2026-09-18"),
+        policy_rate=4.33, policy_asof="2026-09-18",
+        target_low=4.25, target_high=4.50,
+        target_low_asof="2026-09-18", target_high_asof="2026-09-18",
+        dot_series=None,
+        zq_path_row={"m1": 4.30, "m3": 4.27, "m6": 4.24, "m12": 4.21},
+        zq_path_asof="2026-09-18",
+        sofr_path_row=None, sofr_path_asof=None,
+        zq_front_implied=None, front_asof=None,
+        ntfs=None, curve_tp_adj=None, rate_exp_proxy=None,
+        path_status={"zq": "same_date_context", "sofr": "missing"},
+        cfg=_CFG,
+    )
+    kwargs.update(overrides)
+    return fp.compute(**kwargs)
+
+
+def test_date_basis_preserves_fractional_pricing_and_source_date():
+    out = _qualified_policy_payload()
+    assert out["calculation_version"] == "fed_path.date_basis.v2"
+    assert out["path_evidence"]["zq"]["source_asof"] == "2026-09-18"
+    assert out["implied_bp_12m"] == -12.0
+    assert out["implied_cut_equivalents_12m"] == 0.48
+    assert "0.48" in out["headline_en"]
+    assert "meeting count" in out["headline_en"]
+
+
+def test_sofr_only_does_not_become_fed_funds_path():
+    out = _qualified_policy_payload(
+        zq_path_row=None, zq_path_asof=None,
+        sofr_path_row={"m1": 4.31, "m3": 4.29, "m6": 4.26, "m12": 4.20},
+        sofr_path_asof="2026-09-18",
+        path_status={"zq": "missing", "sofr": "same_date_context"},
+    )
+    assert out["implied_bp_12m"] is None
+    assert out["implied_source_en"] is None
+    assert out["sofr_path"]["m12"] == 4.20
+    assert out["path_evidence"]["sofr"]["underlying"] == "SOFR"
+
+
+def test_mixed_target_bound_dates_do_not_form_midpoint():
+    out = _qualified_policy_payload(
+        policy_rate=None, policy_asof=None,
+        target_low_asof="2026-09-17", target_high_asof="2026-09-18",
+    )
+    assert out["target_mid"] is None
+    assert out["target_range_evidence"]["status"] == "mixed_dates"
+
+
+def test_validated_pricing_view_rejects_forged_qualified_scalar():
+    out = _qualified_policy_payload()
+    forged = dict(out)
+    forged["implied_bp_12m"] = -50.0
+    forged["headline_en"] = "forged bullish headline"
+    checked = fp.validated_pricing_view(forged)
+    assert checked["consumer_validation"]["status"] == "unavailable"
+    assert checked["implied_bp_12m"] is None
+    assert "forged" not in checked["headline_en"].lower()
+
+
+def test_ric_row_uses_continuous_equivalents_not_rounded_count():
+    from engine import rates_inflation_command as ric
+    row = ric._build_rate_path_row(_qualified_policy_payload())
+    assert row["implied_cuts_12m"] == 0
+    assert row["implied_cut_equivalents_12m"] == 0.48
+    assert "0.48" in row["path_plain"]["en"]
+    assert "roughly on hold" not in row["path_plain"]["en"].lower()
+
+
+def test_fed_stance_uses_qualified_continuous_equivalents():
+    from engine import fed_stance
+    snap = fed_stance.snapshot({
+        "fed_path": _qualified_policy_payload(),
+        "catalyst_tone": {"guidance_direction": "unknown"},
+    })
+    assert snap["implied_cuts_12m"] == 0.48
+    assert snap["pricing_comparison_status"] == "same_date_frame_reference"
+    assert any("0.48" in x for x in snap["drivers_en"])
+    assert all("roughly no change" not in x for x in snap["drivers_en"])
+
+
+def test_fed_stance_conflicting_pricing_and_guidance_is_mixed():
+    from engine import fed_stance
+    path = _qualified_policy_payload(
+        zq_path_row={"m1": 4.40, "m3": 4.50, "m6": 4.65, "m12": 4.83},
+    )
+    snap = fed_stance.snapshot({
+        "fed_path": path,
+        "catalyst_tone": {"guidance_direction": "easing"},
+    })
+    assert snap["implied_cuts_12m"] == -2.0
+    assert snap["stance"] == "neutral"
+    assert snap["stance_conflict"] is True
+    assert snap["stance_detail"] == "mixed"
+    assert snap["label_en"] == "Mixed / two-sided"
+
+
+def test_fed_stance_invalid_versioned_object_cannot_restore_positive_pricing():
+    from engine import fed_stance
+    path = _qualified_policy_payload()
+    path["implied_cut_equivalents_12m"] = 4.0
+    path["implied_cuts_12m"] = 4
+    snap = fed_stance.snapshot({
+        "fed_path": path,
+        "catalyst_tone": {"guidance_direction": "unknown"},
+    })
+    assert snap["implied_cuts_12m"] is None
+    assert snap["pricing_comparison_status"] == "inconsistent_source_object"
+    assert snap["stance"] == "unknown"
+
+
+def test_fed_stance_legacy_contract_keeps_legacy_behavior():
+    from engine import fed_stance
+    snap = fed_stance.snapshot({
+        "fed_path": {"implied_cuts_12m": 2},
+        "catalyst_tone": {"guidance_direction": "unknown"},
+    })
+    assert snap["implied_cuts_12m"] == 2.0
+    assert snap["stance"] == "dovish"
