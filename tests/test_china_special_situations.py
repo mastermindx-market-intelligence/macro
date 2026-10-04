@@ -173,6 +173,7 @@ def test_contract_title_state_precedence_is_title_only():
     assert css._contract_title_state(
         "关于签订重大合同的公告"
     )["state"] == "contract_announcement"
+    assert css._contract_title_state(pd.NA)["state"] == "contract_metadata_unclassified"
 
 
 def test_contract_order_block_preserves_source_clocks_and_unknown_economics(
