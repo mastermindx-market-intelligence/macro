@@ -22,8 +22,11 @@ worse than a missed warning.
      Exactly one watcher must run asynchronously (tool `run_in_background=true`
      or an explicitly detached shell); its notification is the next CI event.
      The old default-3s variant also exhausted the shared REST pool.
-  2. A `gh` call in a poll loop sleeping under 90s. Two watchers on one endpoint
-     at 45s took 4,488 -> 0 in under an hour.
+  2. A foreground CI-status sleep/poll loop at ANY cadence, plus any `gh` poll
+     loop sleeping under 90s. A 150s loop is gentle on quota but still pins the
+     principal turn for 30-45 minutes; two watchers on one endpoint at 45s took
+     4,488 -> 0 in under an hour. Async/background loops remain eligible at the
+     quota floor because they do not occupy principal reasoning capacity.
   3. `--paginate` against check-runs/jobs. ~130 checks is several pages per poll,
      and one page already answers "is it still running".
   4. Re-dispatching a main PROOF workflow (ci.yml / fences.yml /
@@ -72,8 +75,10 @@ worse than a missed warning.
      laziness: the Stop hook fires on EVERY turn and escalates to "If the same
      genuine blocker persists after another attempt, finish with SHIP LOOP
      BLOCKED", which reads as a demand to demonstrate a fresh attempt. It is
-     not - a blocked Stop is satisfied by a one-line hold note. A memory note
-     (`never-poll-ci-with-short-cycle-checks`) said all of this after the first
+     not. While independent authorized work remains, a blocked Stop means
+     continue that work immediately; only when the watched wait is the sole
+     remaining lane does the existing external-wait boundary become relevant.
+     A memory note (`never-poll-ci-with-short-cycle-checks`) said all of this after the first
      operator order on 2026-08-24 and did not bind, which is the same reason
      shapes 1 and 6 exist as code.
      The 2026-10-03 Chairman ruling closes the advisory loophole: a REPEAT of
@@ -253,6 +258,14 @@ WATCH_RE = re.compile(
     + r"gh\s+(?:run\s+(?:watch\b|view\b[^|;&\n]*--watch\b)"
       r"|pr\s+checks\b[^|;&\n]*--watch\b)"
 )
+# Shell detach detection must bind to the thing being watched. A random later
+# background command must not launder a foreground watch, and the second '&' in
+# '&&' is never a detach marker.
+WATCH_DETACHED_RE = re.compile(
+    WATCH_RE.pattern + r"[^;\n]*?(?<!&)&(?!&)\s*(?:;|\n|$)"
+)
+LOOP_DETACHED_RE = re.compile(r"\bdone\s*(?<!&)&(?!&)\s*(?:;|\n|$)", re.I)
+COMMAND_DETACHED_RE = re.compile(r"(?<!&)&(?!&)\s*$")
 
 #: Shape 6. `gh run cancel <id>` plus both REST spellings the fleet has actually
 #: used — the force-cancel receipt from 2026-08-12 is the second form.
@@ -263,6 +276,16 @@ CANCEL_API_RE = re.compile(r"/actions/runs/(?P<id>\d{6,})/(?:force-)?cancel\b")
 INTERVAL_RE = re.compile(r"(?:--interval|(?<!\w)-i)[=\s]+(\d+)")
 # any gh subcommand that hits the API (gh auth/help/version are free)
 GH_API_RE = re.compile(CMD_POS + r"gh\s+(?:api|run|pr|workflow|search|repo|issue|release)\b")
+# CI/release status reads whose repeated sleep/poll form must never occupy the
+# principal turn. Keep this narrower than GH_API_RE so a slow loop over some
+# unrelated GitHub data is governed only by the shared-quota floor.
+CI_READ_RE = re.compile(
+    CMD_POS
+    + r"gh\s+(?:pr\s+(?:view|checks|status)\b"
+      r"|run\s+(?:view|list|watch)\b"
+      r"|api\b[^;&|\n]*(?:actions/runs|check-runs))",
+    re.I,
+)
 SLEEP_RE = re.compile(r"\bsleep\s+(\d+)")
 # A shell loop BODY, i.e. the span between `do` and `done`. Co-presence of a
 # loop keyword and a gh call is NOT enough: the second production false positive
@@ -564,24 +587,47 @@ def main():
     if "gh " not in cmd:
         allow()
 
-    # A synchronous `gh run watch` occupies the principal Bash turn for the whole
-    # 30-45 minute CI window. The same session can receive a background-task/native
-    # watcher completion event, so foreground watching is pure orchestration stall.
-    # Tool-level background mode is preferred; an explicit shell '&' is also async.
+    # Native blocking watches and hand-written CI sleep/poll loops are the same
+    # orchestration failure: they occupy the principal Bash turn for an external
+    # 30-45 minute wait. The principal must launch exactly one async observer and
+    # continue another lane. Tool-level background mode is preferred; a real single
+    # shell '&' detach is also nonblocking (but '&&' is not).
     clean_cmd = strip_heredocs(cmd)
+    background = ti.get("run_in_background") is True
     watch_match = WATCH_RE.search(clean_cmd)
-    if watch_match and ti.get("run_in_background") is not True:
-        watch_tail = clean_cmd[watch_match.start():]
-        if not re.search(r"&\s*(?:$|[;\n])", watch_tail):
-            deny(
-                "CI WATCH MUST BE ASYNC: a foreground `gh run watch` / `--watch` "
-                "would pin this orchestrator until CI concludes and burn the GitHub "
-                "quota shared with every session. Re-run it with the "
-                "Bash tool's run_in_background=true (or an explicitly detached shell "
-                "watcher), bind it to this PR/run, then immediately continue the next "
-                "independent authorized project lane. The watcher notification is the "
-                "next CI event; do not foreground-wait for it."
-            )
+    watch_detached = bool(WATCH_DETACHED_RE.search(clean_cmd))
+    if watch_match and not background and not watch_detached:
+        deny(
+            "CI WATCH MUST BE ASYNC: a foreground `gh run watch` / `--watch` "
+            "would pin this orchestrator until CI concludes and burn the GitHub "
+            "quota shared with every session. Re-run it with the "
+            "Bash tool's run_in_background=true (or an explicitly detached shell "
+            "watcher), bind it to this PR/run, then immediately continue the next "
+            "independent authorized project lane. The watcher notification is the "
+            "next CI event; do not foreground-wait for it."
+        )
+
+    ci_sleep_poll = CI_READ_RE.search(clean_cmd) and SLEEP_RE.search(clean_cmd)
+    loop_ci_poll = any(
+        CI_READ_RE.search(body) and SLEEP_RE.search(body)
+        for body in loop_bodies(clean_cmd)
+    )
+    poll_detached = bool(
+        (loop_ci_poll and LOOP_DETACHED_RE.search(clean_cmd))
+        or (
+            ci_sleep_poll
+            and not loop_ci_poll
+            and COMMAND_DETACHED_RE.search(clean_cmd)
+        )
+    )
+    if (ci_sleep_poll or loop_ci_poll) and not background and not poll_detached:
+        deny(
+            "CI WAIT LOOP MUST BE ASYNC: a foreground CI status + sleep/poll command "
+            "would occupy this orchestrator for external wait time even at a safe "
+            "GitHub cadence. Perform one bounded state read, then bind exactly one "
+            "background/native watcher (or use the existing merge sweeper) and "
+            "immediately continue another independent authorized project lane."
+        )
     # The harness names the invoking checkout. `check` does not consult it today,
     # but passing it through keeps this seam stable for a checkout-scoped rule.
     cwd = payload.get("cwd")
@@ -605,6 +651,15 @@ def main():
         repeat_reason = None     # state failure is not proof of a recent poll
     if repeat_reason:
         deny(repeat_reason)
+
+    if background and (watch_match or ci_sleep_poll or loop_ci_poll):
+        allow(
+            "CI WATCHER ARMED ASYNC: this background task is now the CI observation "
+            "owner. Do not tail it, poll it, or spend a reasoning cycle waiting for it. "
+            "Immediately start the next highest-value independent authorized project "
+            "lane. Return to this PR only on watcher completion/event, genuine red, "
+            "merge/conflict transition, or watcher failure/staleness."
+        )
     allow()
 
 

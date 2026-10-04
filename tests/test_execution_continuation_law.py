@@ -300,28 +300,43 @@ def test_fable_wait_doctrine_and_fallback_match_async_continuation():
 # --------------------------------------------------------------------------------------
 
 
-def test_legacy_orchestrator_workflows_cannot_busy_wait_on_ci_or_deploy():
-    """Executable workflow prompts must not reintroduce the wait loops fleet law removed."""
-    workflow_paths = (
-        ".claude/workflows/marketontology_release_held_pr.js",
-        ".claude/workflows/marketontology_vertical_build.js",
+def test_orchestrator_workflows_cannot_busy_wait_on_ci_or_deploy():
+    """Any executable workflow prompt must preserve async CI/deploy continuation."""
+    workflow_paths = tuple(
+        sorted((ROOT / ".claude" / "workflows").glob("*.js"))
     )
+    assert workflow_paths, "workflow regression gate found no JavaScript workflows"
+
     banned = (
         "Repeat across multiple such calls",
         "sleep 170",
         "for (let k = 2; k <= 5 && ship",
         "SHIP ATTEMPT",
-        "gh run watch <id>",
+        "gh run watch",
+        "gh pr checks --watch",
         "poll https://",
     )
-    for relative in workflow_paths:
-        source = (ROOT / relative).read_text(encoding="utf-8")
+    foreground_ci_loop = re.compile(
+        r"(?im)(?:for|while|until)[^\n]{0,900}\bdo\b[^\n]{0,900}"
+        r"\bgh\s+(?:pr\s+checks|api[^\n]*(?:actions/runs|check-runs))"
+        r"[^\n]{0,900}\bsleep\s+\d+"
+    )
+    for path in workflow_paths:
+        relative = str(path.relative_to(ROOT))
+        source = path.read_text(encoding="utf-8")
         for phrase in banned:
             assert phrase not in source, f"{relative} reintroduced foreground wait: {phrase}"
-        assert "Read check state ONCE" in source, relative
-        assert "do not poll" in source.lower(), relative
-        assert "continue" in source.lower(), relative
-        assert "merge-on-green" in source, relative
+        assert not foreground_ci_loop.search(source), (
+            f"{relative} reintroduced a foreground CI sleep/poll loop"
+        )
+        if path.name in {
+            "marketontology_release_held_pr.js",
+            "marketontology_vertical_build.js",
+        }:
+            assert "Read check state ONCE" in source, relative
+            assert "do not poll" in source.lower(), relative
+            assert "continue" in source.lower(), relative
+            assert "merge-on-green" in source, relative
 
 
 def test_vertical_build_does_not_arm_merge_before_independent_review():

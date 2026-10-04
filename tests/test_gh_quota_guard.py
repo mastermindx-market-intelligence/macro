@@ -30,6 +30,29 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 HOOK = ROOT / ".claude" / "hooks" / "gh_quota_guard.py"
+CODEX_HOOKS = ROOT / ".codex" / "hooks.json"
+
+
+def test_codex_bash_pretooluse_is_bound_to_the_same_quota_guard():
+    """Codex principals must get the same mechanical CI-wait gate as Claude.
+
+    The 2026-10-03 incident included a Codex principal spending 1,282 seconds in
+    one foreground `gh run watch`. Prose in AGENTS.md cannot prevent that shape;
+    the project-local Codex PreToolUse hook must invoke this exact guard.
+    """
+    config = json.loads(CODEX_HOOKS.read_text(encoding="utf-8"))
+    groups = config["hooks"]["PreToolUse"]
+    bash_groups = [group for group in groups if group.get("matcher") == "^Bash$"]
+    assert len(bash_groups) == 1
+    handlers = bash_groups[0]["hooks"]
+    matching = [
+        handler for handler in handlers
+        if ".claude/hooks/gh_quota_guard.py" in str(handler.get("command") or "")
+    ]
+    assert len(matching) == 1
+    assert matching[0]["type"] == "command"
+    assert int(matching[0]["timeout"]) <= 30
+
 
 # In-process handle on the same file, for the ONE thing a subprocess cannot pin:
 # that a command outside the guard's business spawns no probe at all. Everything
@@ -175,9 +198,29 @@ def test_gh_poll_loops_under_the_floor_are_denied(sleep_s):
 
 
 @pytest.mark.parametrize("sleep_s", [90, 150, 300])
-def test_gh_poll_loops_at_or_above_the_floor_are_allowed(sleep_s):
-    assert not _denied(
-        f"until [ x = y ]; do gh api repos/o/r/actions/runs/1; sleep {sleep_s}; done")
+def test_foreground_ci_poll_loops_are_denied_even_at_safe_quota_cadence(sleep_s):
+    """A polite cadence still occupies the principal turn for the external wait."""
+    cmd = f"until [ x = y ]; do gh api repos/o/r/actions/runs/1; sleep {sleep_s}; done"
+    d = _run(cmd)
+    assert d and d.get("permissionDecision") == "deny"
+    assert "CI WAIT LOOP MUST BE ASYNC" in d["permissionDecisionReason"]
+    assert not _denied(cmd, run_in_background=True)
+
+
+def test_background_ci_poll_loop_returns_continue_work_context():
+    d = _run(
+        "for i in 1 2 3; do gh pr checks 4242; sleep 150; done",
+        run_in_background=True,
+    )
+    assert d and d.get("permissionDecision") != "deny"
+    context = d.get("additionalContext") or ""
+    assert "CI WATCHER ARMED ASYNC" in context
+    assert "Immediately start the next highest-value independent authorized project lane" in context
+
+
+def test_slow_non_ci_gh_loop_remains_allowed():
+    """The occupancy gate is CI-scoped; unrelated GitHub reads keep quota-only behavior."""
+    assert not _denied("for i in 1 2 3; do gh api rate_limit; sleep 150; done")
 
 
 def test_a_loop_with_no_sleep_at_all_is_denied():
@@ -459,6 +502,20 @@ def test_foreground_watch_is_denied_even_at_a_polite_interval():
     assert "CI WATCH MUST BE ASYNC" in d["permissionDecisionReason"]
 
 
+def test_exact_codex_incident_watch_is_denied():
+    """The 2026-10-03 Codex principal spent 1,282s blocked on this exact shape."""
+    cmd = (
+        "gh run watch 37180044700 --repo mastermindx-market-intelligence/macro "
+        "--interval 60 --exit-status"
+    )
+    d = _run(cmd)
+    assert d and d.get("permissionDecision") == "deny"
+    reason = d.get("permissionDecisionReason", "")
+    assert "CI WATCH MUST BE ASYNC" in reason
+    assert "run_in_background=true" in reason
+    assert "continue the next independent authorized project lane" in reason
+
+
 def test_background_watch_is_allowed_at_the_same_interval():
     """The exact watcher becomes legal when it cannot pin the principal turn."""
     assert not _denied(
@@ -475,6 +532,17 @@ def test_background_flag_does_not_excuse_a_hot_three_second_watcher():
 
 def test_explicit_shell_detach_is_also_nonblocking():
     assert not _denied("gh run watch 31309720615 --interval 150 &")
+
+
+def test_shell_and_and_is_not_mistaken_for_a_detach_marker():
+    d = _run("gh run watch 31309720615 --interval 150 && echo finished")
+    assert d and d.get("permissionDecision") == "deny"
+    assert "CI WATCH MUST BE ASYNC" in d["permissionDecisionReason"]
+
+
+def test_explicitly_detached_slow_ci_poll_loop_is_nonblocking():
+    cmd = "for i in 1 2 3; do gh pr checks 4242; sleep 150; done &"
+    assert not _denied(cmd)
 
 
 def test_prose_about_the_dispatch_is_not_a_dispatch(monkeypatch):
@@ -499,10 +567,9 @@ def test_prose_about_the_dispatch_is_not_a_dispatch(monkeypatch):
     'gh api "repos/acme/widgets/commits/$SHA/check-runs?per_page=100"',
     "gh api repos/acme/widgets/actions/runs/31309720615 --jq '.status'",
     "gh api repos/acme/widgets/actions/runs/1/jobs",
-    "until [ x = y ]; do gh pr view 4242 --json state; sleep 300; done",
 ])
 def test_initial_ci_observation_remains_legal(cmd):
-    """The first bounded diagnosis is legal; the async/repeat rules govern later waiting."""
+    """One bounded diagnosis is legal; sleep/poll loops are watcher work, not diagnosis."""
     assert not _denied(cmd)
 
 
