@@ -346,14 +346,14 @@ def test_a_v1_pack_with_no_confirmed_lanes_field_reads_unavailable_not_a_crash()
     assert row["g0"]["reason"] == "slice_store_unconfigured"
 
 
-def test_load_pack_normalizes_a_hand_repaired_manifest_row(tmp_path):
+def test_load_pack_normalizes_a_hand_repaired_manifest_row_v1_pack(tmp_path):
     """S1: the PRODUCTION read path (`load_pack`), not just `build_pack`, must
-    route `confirmed_lanes` through the normalizer.  A torn or hand-repaired
-    manifest on disk — e.g. an operator edit, a partial restore, a manual
-    correction — with an unrecognised `availability` value must not reach the
-    live reader verbatim; the module's own firewall claim (the null law
-    applied AT THE PACK BOUNDARY) is only true if every entry point
-    normalizes, not just the write path."""
+    route `confirmed_lanes` through the normalizer on legacy v1 manifests.  A
+    torn or hand-repaired manifest on disk — e.g. an operator edit, a partial
+    restore, a manual correction — with an unrecognised `availability` value
+    must not reach the live reader verbatim; the module's own firewall claim
+    (the null law applied AT THE PACK BOUNDARY) is only true if every entry
+    point normalizes, not just the write path."""
     pack = _minimal_pack({"AAPL": {"g0": {"availability": "available",
                                           "grey_events": 1},
                                    "c5": {"availability": "available",
@@ -362,18 +362,38 @@ def test_load_pack_normalizes_a_hand_repaired_manifest_row(tmp_path):
 
     manifest_path = lp.pack_root(tmp_path) / pack.as_of / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    # hand-corrupt exactly one lane's availability to an unrecognised value
+    manifest.pop("substrate_fingerprint_version", None)
     manifest["confirmed_lanes"]["AAPL"]["g0"]["availability"] = "maybe"
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
     reloaded = lp.load_pack(tmp_path)
     assert reloaded.confirmed_lanes["AAPL"]["g0"] == {
         "availability": "unavailable", "reason": "slice_store_unconfigured"}
-    # the sound sibling lane is untouched (per-lane granularity, unchanged)
     assert reloaded.confirmed_lanes["AAPL"]["c5"]["availability"] == "available"
-    # the RTH reader sees the normalized row, never the torn one
     row = le._nightly_lanes(reloaded, "AAPL")
     assert row["g0"]["availability"] == "unavailable"
+
+
+def test_load_pack_normalizes_a_hand_repaired_manifest_row_v2_pack_is_refused(
+        tmp_path):
+    """A v2 substrate fingerprint generation hashes ``confirmed_lanes`` in their
+    normalised form.  A hand-torn ``availability`` row is tampering, never
+    repair — the pack must be regenerated, not patched at load time."""
+    pack = _minimal_pack({"AAPL": {"g0": {"availability": "available",
+                                          "grey_events": 1},
+                                   "c5": {"availability": "available",
+                                          "candidates": 1}}})
+    lp.save_pack(pack, tmp_path)
+
+    manifest_path = lp.pack_root(tmp_path) / pack.as_of / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest.get("substrate_fingerprint_version") == lp.SUBSTRATE_FINGERPRINT_VERSION
+    manifest["confirmed_lanes"]["AAPL"]["g0"]["availability"] = "maybe"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(lp.LivePackError) as excinfo:
+        lp.load_pack(tmp_path)
+    assert str(excinfo.value).startswith("confirmed_lanes_not_normalized")
 
 
 def test_load_pack_legacy_substrate_index_is_datetime64_ns(tmp_path):
