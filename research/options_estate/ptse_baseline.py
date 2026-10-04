@@ -65,11 +65,20 @@ class B0Protocol:
     ridge_alpha: float
     min_train_rows: int
     mode: Literal["SYNTHETIC", "EXPLORATORY", "CONFIRMATORY"]
+    market: Literal["US"]
+    cadence: Literal["DAILY"]
+    session_scope: Literal["REGULAR"]
+    instrument_id: str
+    forecast_horizon_sessions: int
     owner_ratification_ref: str
     source_manifest_sha256: str
+    outcome_manifest_sha256: str
     calendar_sha256: str
     feature_version: str
     evaluation_partition_ref: str
+    prior_history_exposure_ref: str
+    trial_family_ref: str
+    embargo_policy_ref: str
 
 
 @dataclass(frozen=True)
@@ -80,6 +89,8 @@ class FoldSpec:
     test_start_session: str
     test_end_session: str
     evaluation_at: str
+    cohort_sha256: str
+    expected_test_rows: int
 
 
 @dataclass(frozen=True)
@@ -105,7 +116,9 @@ class FoldResult:
     fold_id: str
     train_rows: int
     purged_unmatured_or_overlapping_train_rows: int
+    expected_test_rows: int
     test_rows: int
+    unevaluable_test_rows: int
     source_grades: tuple[str, ...]
     mean_reference_mse: float
     mean_reference_mae: float
@@ -223,11 +236,23 @@ def validate_protocol(protocol: B0Protocol) -> str:
         _fail("MIN_TRAIN_ROWS_REQUIRED")
     if protocol.mode not in MODES:
         _fail("MODE_NOT_REGISTERED")
+    if (
+        protocol.market,
+        protocol.cadence,
+        protocol.session_scope,
+        protocol.forecast_horizon_sessions,
+    ) != ("US", "DAILY", "REGULAR", 5):
+        _fail("SCOPE_NOT_REGISTERED")
+    _ref(protocol.instrument_id)
     _ref(protocol.owner_ratification_ref)
     _hash(protocol.source_manifest_sha256)
+    _hash(protocol.outcome_manifest_sha256)
     _hash(protocol.calendar_sha256)
     _ref(protocol.feature_version)
     _ref(protocol.evaluation_partition_ref)
+    _ref(protocol.prior_history_exposure_ref)
+    _ref(protocol.trial_family_ref)
+    _ref(protocol.embargo_policy_ref)
     return sha256(_canonical(protocol)).hexdigest()
 
 
@@ -243,6 +268,9 @@ def validate_fold(fold: FoldSpec) -> None:
         _fail("FOLD_ORDER_INVALID")
     if eval_at < fit_at:
         _fail("EVALUATION_BEFORE_FIT")
+    _hash(fold.cohort_sha256)
+    if type(fold.expected_test_rows) is not int or fold.expected_test_rows < 1:
+        _fail("EXPECTED_TEST_ROWS_REQUIRED")
 
 
 def _row(row: B0Row, mode: str) -> B0Row:
@@ -254,6 +282,8 @@ def _row(row: B0Row, mode: str) -> B0Row:
     label_matured = _time(row.label_matured_at)
     if available > decision:
         _fail("SOURCE_NOT_AVAILABLE_AT_DECISION")
+    if decision.date() != session:
+        _fail("DECISION_SESSION_MISMATCH")
     if label_end <= session:
         _fail("LABEL_HORIZON_INVALID")
     if label_matured.date() < label_end:
@@ -376,6 +406,7 @@ def run_b0(
 
     results: list[FoldResult] = []
     used_origins: set[str] = set()
+    used_source_grades: set[str] = set()
 
     for fold in folds:
         cutoff = _date(fold.fit_cutoff_session)
@@ -397,13 +428,17 @@ def run_b0(
         ]
         purged = len(historical_train) - len(train)
 
-        test = [
+        test_window = [
             r for r in material
-            if (
-                test_start <= _date(r.market_session) <= test_end
-                and _time(r.label_matured_at) <= eval_at
-            )
+            if test_start <= _date(r.market_session) <= test_end
         ]
+        if len(test_window) > fold.expected_test_rows:
+            _fail("COHORT_COUNT_MISMATCH")
+        test = [
+            r for r in test_window
+            if _time(r.label_matured_at) <= eval_at
+        ]
+        unevaluable_test_rows = fold.expected_test_rows - len(test)
 
         if len(train) < protocol.min_train_rows:
             _fail("TRAIN_SUPPORT_INSUFFICIENT")
@@ -414,6 +449,7 @@ def run_b0(
         if used_origins & {r.origin_id for r in test}:
             _fail("TEST_FOLD_OVERLAP")
         used_origins |= {r.origin_id for r in test}
+        used_source_grades.update(r.source_grade for r in train + test)
 
         y_train = _target(train)
         y_test = _target(test)
@@ -429,6 +465,9 @@ def run_b0(
         prediction_material = [
             {
                 "origin_id": row.origin_id,
+                "source_artifact_sha256": row.source_artifact_sha256,
+                "outcome_artifact_sha256": row.outcome_artifact_sha256,
+                "actual_y5": float(row.y5),
                 "mean_reference": float(mean_prediction[i]),
                 "p_vector_ridge": float(p_prediction[i]),
             }
@@ -443,7 +482,9 @@ def run_b0(
                 fold_id=fold.fold_id,
                 train_rows=len(train),
                 purged_unmatured_or_overlapping_train_rows=purged,
+                expected_test_rows=fold.expected_test_rows,
                 test_rows=len(test),
+                unevaluable_test_rows=unevaluable_test_rows,
                 source_grades=tuple(
                     sorted({r.source_grade for r in train + test})
                 ),
@@ -477,9 +518,7 @@ def run_b0(
         "attempted_arms": ("mean_reference", "p_vector_ridge"),
         "fold_results": tuple(results),
         "evaluable_rows": len(used_origins),
-        "source_grades": tuple(
-            sorted({r.source_grade for r in material})
-        ),
+        "source_grades": tuple(sorted(used_source_grades)),
         "authority": authority,
     }
     result_digest = sha256(_canonical(result_core)).hexdigest()
