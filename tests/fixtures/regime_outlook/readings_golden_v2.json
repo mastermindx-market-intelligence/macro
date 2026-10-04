@@ -1,7 +1,7 @@
 {
- "mapping_version": "VERDICT_MAPPING_V1",
- "reading_table_sha256": "966a8595e1c719618740d8af8502086d4da64876f6aab18d8ad2302903fa6196",
- "producer_pin": "5f20adbd6be6b136b2efe41585bd4ef964b5bf2e",
+ "mapping_version": "VERDICT_MAPPING_V2",
+ "reading_table_sha256": "588f55df2e48edb3cc1c22459c51d218d039f311fe3e6ddea424d1687887181e",
+ "producer_pin": "698f58a0c74beff717cd6b69bb728fd7e21581f2",
  "artifact_dates": "2026-10-02",
  "note": "Owner artifacts at the producer pin, reduced to the leaves the mapping names, with the readings they give. Each case edits a copy of `base`; `changes` lists every value that then differs from `pin`, and nothing else may differ. The expected values come from an evaluator written separately from engine/rates_command_outlook.py; a disagreement is settled by the contract text, not by either program. Not market evidence and not a forecast.",
  "base": {

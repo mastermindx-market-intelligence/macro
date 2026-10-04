@@ -1,6 +1,6 @@
 """Regime outlook verdict mapping — loader, hash, lint and path readings (display research).
 
-The mapping in ``config/regime_outlook_mapping_v1.json`` is the machine form of
+The mapping in ``config/regime_outlook_mapping_v2.json`` is the machine form of
 Appendix A of
 ``research/macro_regime_intelligence/STATE_PATH_AND_SCIENCE_CONTRACT_2026-10-03.md``.
 It says which already-published owner verdict each path condition reads, and
@@ -22,8 +22,8 @@ import math
 from pathlib import Path
 from typing import Any
 
-MAPPING_VERSION = "VERDICT_MAPPING_V1"
-MAPPING_PATH = Path(__file__).resolve().parents[1] / "config" / "regime_outlook_mapping_v1.json"
+MAPPING_VERSION = "VERDICT_MAPPING_V2"
+MAPPING_PATH = Path(__file__).resolve().parents[1] / "config" / "regime_outlook_mapping_v2.json"
 
 READINGS = ("fits", "does_not_fit", "not_discriminating", "unknown")
 FAMILY_READINGS = ("fits", "does_not_fit", "mixed", "not_discriminating", "unknown")
@@ -62,6 +62,14 @@ GUARD_KINDS = (
     "same_run_owner_copy",
     "sign_consistency",
 )
+# Guard kinds that READ a JSON null token (R3). A field that lists ``None``
+# among its owner tokens must carry one of these kinds; any other kind is
+# lint-flagged because it cannot distinguish a null from a missing token.
+NULL_READING_GUARD_KINDS = frozenset({
+    "default_token_needs",
+    "owner_publishes_null",
+    "turn_watch_null",
+})
 # The exact key names each guard kind carries — a guard with a different
 # key set is a different guard (R3 L6).
 GUARD_KEYS: dict[str, frozenset] = {
@@ -229,6 +237,13 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
             errors.append(f"{field_id}: clock semantics {field['clock']['semantics']!r} is not in the closed list")
         if field["artifact"] not in mapping["artifacts"]:
             errors.append(f"{field_id}: artifact {field['artifact']!r} is not declared")
+        # R3 — a null token needs a guard kind that reads null.
+        if isinstance(field.get("tokens"), list) and None in field["tokens"]:
+            kind = _guard_kind(field)
+            if kind not in NULL_READING_GUARD_KINDS:
+                errors.append(
+                    f"{field_id}: null is listed as a token but guard kind {kind} does not read null"
+                )
 
     retired = set(mapping["retired_condition_ids"])
     seen: set[str] = set()
@@ -461,6 +476,26 @@ def lint_mapping(mapping: dict[str, Any]) -> list[str]:
         if set(guard.keys()) != GUARD_KEYS[kind]:
             errors.append(f"{field_id}: guard keys do not match its kind")
             continue
+        # R4 — guard values that look like paths or a ``needs`` list must be
+        # shaped as a list of lists. A malformed guard reports and stops here
+        # so the prefix and frozen-value checks below never see a non-list
+        # value or a needs entry that is not a path.
+        r4_bad = False
+        for key, value in guard.items():
+            if key.endswith("_path"):
+                if not isinstance(value, list):
+                    errors.append(f"{field_id}: guard {key} is not a path list")
+                    r4_bad = True
+                    break
+        if not r4_bad and "needs" in GUARD_KEYS[kind]:
+            needs_val = guard.get("needs")
+            if not isinstance(needs_val, list) or any(
+                not isinstance(entry, list) for entry in needs_val
+            ):
+                errors.append(f"{field_id}: guard needs is not a path list")
+                r4_bad = True
+        if r4_bad:
+            continue
         fixed_violation = False
         for key, expected in GUARD_FIXED.get(kind, {}).items():
             if json.dumps(guard[key], sort_keys=True) != json.dumps(expected, sort_keys=True):
@@ -676,15 +711,23 @@ def admit_fields(mapping: dict[str, Any], artifacts: dict[str, Any]) -> dict[str
                 out[field_id] = {"admitted": False, "token": None, "issue": "malformed"}
                 continue
 
-        guard = field["guard"]
-        if not isinstance(guard, dict) or "kind" not in guard:
+        guard = field.get("guard")
+        if not isinstance(guard, dict):
             out[field_id] = {"admitted": False, "token": None, "issue": "malformed"}
             continue
-        kind = guard["kind"]
+        kind = guard.get("kind")
+        if not isinstance(kind, str) or kind not in GUARD_KEYS:
+            out[field_id] = {"admitted": False, "token": None, "issue": "malformed"}
+            continue
+        if set(guard.keys()) != GUARD_KEYS[kind]:
+            out[field_id] = {"admitted": False, "token": None, "issue": "malformed"}
+            continue
         issue: str | None = None
 
         if kind == "default_token_needs":
-            if same(token, guard["default_token"]):
+            if token is None:
+                issue = "missing"
+            elif same(token, guard["default_token"]):
                 ok = True
                 for need_path in guard["needs"]:
                     if not finite(resolve(artifact_doc, need_path)):

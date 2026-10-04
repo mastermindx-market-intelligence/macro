@@ -1,0 +1,548 @@
+{
+  "schema": "regime_outlook_rule_pins.v1",
+  "mapping_version": "VERDICT_MAPPING_V2",
+  "pin_commit": "698f58a0c74beff717cd6b69bb728fd7e21581f2",
+  "how_hashed": "sha256 of the UTF-8 source text of the named top-level function or assignment, from its first line to its last line as located by ast (lineno..end_lineno), lines joined by a newline; decorators and comments above the node are not included",
+  "functions": [
+    {
+      "file": "engine/rate_inflation_transmission.py",
+      "name": "current_state",
+      "sha256": "d1e828229e29e0e6f45c9791d68e5b207277d4def8ca46b859b3d6dab15c27e5",
+      "decides": [
+        "T.state.inflation.direction",
+        "T.state.inflation.regime",
+        "T.state.expectations.anchoring",
+        "T.state.rates.direction",
+        "T.state.rates.regime"
+      ]
+    },
+    {
+      "file": "engine/rate_inflation_transmission.py",
+      "name": "_last",
+      "sha256": "077a67193de8809b22768c891a563c7af75183a0c35e8ffdef7c6a50d934b3f0",
+      "decides": [
+        "T.state.inflation.direction",
+        "T.state.inflation.regime",
+        "T.state.expectations.anchoring",
+        "T.state.rates.direction",
+        "T.state.rates.regime",
+        "T.breakeven_decomp.direction",
+        "T.breakeven_decomp.trend"
+      ]
+    },
+    {
+      "file": "engine/rate_inflation_transmission.py",
+      "name": "_pctile",
+      "sha256": "356037c9c898b60cf26a03900f661e1c8120233ce720ba4c34474c27029ee644",
+      "decides": [
+        "T.state.inflation.direction",
+        "T.state.inflation.regime",
+        "T.state.expectations.anchoring",
+        "T.state.rates.direction",
+        "T.state.rates.regime"
+      ]
+    },
+    {
+      "file": "engine/rate_inflation_transmission.py",
+      "name": "breakeven_decomposition",
+      "sha256": "510821e737ae282a85d70f57b91af9e8ec8d260526be1b3eb34484a849a2399f",
+      "decides": [
+        "T.breakeven_decomp.direction",
+        "T.breakeven_decomp.trend"
+      ]
+    },
+    {
+      "file": "engine/rate_inflation_transmission.py",
+      "name": "_chg_bp",
+      "sha256": "2c40dde57a5d5f12229399a3444a29b87c8a311e88d58906e400ec320f9d8dc4",
+      "decides": [
+        "T.breakeven_decomp.direction"
+      ]
+    },
+    {
+      "file": "engine/yield_curve.py",
+      "name": "regime",
+      "sha256": "a8fa681cc92aca862d1069d17b67e62c1bd82fcab997d6969c24894e9c2dc687",
+      "decides": [
+        "T.yield_curve.regime.term_premium_dir"
+      ]
+    },
+    {
+      "file": "engine/yield_curve.py",
+      "name": "_chg",
+      "sha256": "b582e670b10d837d6305c2f7905aa3540e17a1168c637168ad775057d79a65b8",
+      "decides": [
+        "T.yield_curve.regime.term_premium_dir"
+      ]
+    },
+    {
+      "file": "engine/yield_momentum.py",
+      "name": "_turn_watch",
+      "sha256": "6b99d03bbe9d997ee05b504ee8834abbab229eb482b9f18acaa435ee1a8adc07",
+      "decides": [
+        "T.yield_momentum.series.2y.turn_watch",
+        "T.yield_momentum.series.5y.turn_watch",
+        "T.yield_momentum.series.10y.turn_watch",
+        "T.yield_momentum.series.20y.turn_watch",
+        "T.yield_momentum.series.30y.turn_watch"
+      ]
+    },
+    {
+      "file": "engine/yield_momentum.py",
+      "name": "_series_read",
+      "sha256": "ec39477201da8cff17e2912acaa66fa27da54548c3b96ecc017c09cd049177dc",
+      "decides": [
+        "T.yield_momentum.series.2y.turn_watch",
+        "T.yield_momentum.series.5y.turn_watch",
+        "T.yield_momentum.series.10y.turn_watch",
+        "T.yield_momentum.series.20y.turn_watch",
+        "T.yield_momentum.series.30y.turn_watch"
+      ]
+    },
+    {
+      "file": "engine/yield_momentum.py",
+      "name": "_bp_change",
+      "sha256": "c6673babe37ae11453b7013837fa6d1436c21faff882f34030d5ed284682b038",
+      "decides": [
+        "T.yield_momentum.series.2y.turn_watch",
+        "T.yield_momentum.series.5y.turn_watch",
+        "T.yield_momentum.series.10y.turn_watch",
+        "T.yield_momentum.series.20y.turn_watch",
+        "T.yield_momentum.series.30y.turn_watch"
+      ]
+    },
+    {
+      "file": "engine/conditions.py",
+      "name": "conditions_snapshot",
+      "sha256": "f19330ea6d59ba1a0a2de6844dea2996d3ed05dd418e8cd2bfbafabb351aebb5",
+      "decides": [
+        "R.conditions.labor_nowcast.read",
+        "R.conditions.financial_conditions.state",
+        "R.conditions.complacency.breadth_div"
+      ]
+    },
+    {
+      "file": "engine/conditions.py",
+      "name": "_band",
+      "sha256": "41f29afd2e6101e1b408ca86e8a09d52288f0223202f8a9f5b3ebb1885835f08",
+      "decides": [
+        "R.conditions.financial_conditions.state"
+      ]
+    },
+    {
+      "file": "engine/regime.py",
+      "name": "liquidity_quality",
+      "sha256": "452a376b4e5fd8daaa1dcd91e7c5cc870a2d5f21b7145774582e7dd6c877716d",
+      "decides": [
+        "R.liquidity_quality.label",
+        "R.liquidity_quality.stress_overlay.confirming_stress"
+      ]
+    },
+    {
+      "file": "engine/regime.py",
+      "name": "liquidity_overlay",
+      "sha256": "972b9b2f1371c372996c72bd7f2f7db814e87204e58da78c09f116cd43b76bc9",
+      "decides": [
+        "R.liquidity_quality.label"
+      ]
+    },
+    {
+      "file": "engine/regime.py",
+      "name": "_debounce",
+      "sha256": "fbfd6f2fd3c36c3d9a7f2bc54369a996073e63dd6c8a50ec7e44c5a9ea59b1d2",
+      "decides": [
+        "R.liquidity_quality.label"
+      ]
+    },
+    {
+      "file": "engine/market_state.py",
+      "name": "_comp_breadth",
+      "sha256": "8c9ed858b2faf967a5633c8c9a7a462aebee3ad0b1014653d1a5e24fa322fd62",
+      "decides": [
+        "M.components.breadth.tone"
+      ]
+    },
+    {
+      "file": "engine/market_state.py",
+      "name": "_component",
+      "sha256": "11b043fbdba6aea0cbeaf5ca9462bd1c9f2aaa99bade9e7f26553d7835603e43",
+      "decides": [
+        "M.components.breadth.tone"
+      ]
+    },
+    {
+      "file": "engine/market_state.py",
+      "name": "_tone_from_score",
+      "sha256": "2a95d6c5bc86a17751b8a581418e3921813dc3d9a4fc1e275d6801c68a84a1ef",
+      "decides": [
+        "M.components.breadth.tone"
+      ]
+    },
+    {
+      "file": "engine/market_state.py",
+      "name": "_clamp",
+      "sha256": "57c1ed626e0d5ccab7ff3a198c4c223308c8c4e8dfd840d95f4aed92398a7e3e",
+      "decides": [
+        "M.components.breadth.tone"
+      ]
+    },
+    {
+      "file": "engine/leadership_crack.py",
+      "name": "_state_machine",
+      "sha256": "48f1f5beca7a2651bd8b5df9d6e12fc493ac07ca783cdcce675b4349e18000b2",
+      "decides": [
+        "L.state"
+      ]
+    },
+    {
+      "file": "engine/leadership_crack.py",
+      "name": "_build",
+      "sha256": "a05456d99b2ad99ac9cacef169cf0d780e81243f8ee2980d2104ea88cda81a63",
+      "decides": [
+        "L.state"
+      ]
+    },
+    {
+      "file": "engine/fed_path.py",
+      "name": "compute",
+      "sha256": "3da50aee3a748f704d66098428b7ed5b3044899aa59452bafcc0aa11f5e91909",
+      "decides": [
+        "B.fed_path.implied_cuts_12m"
+      ]
+    }
+  ],
+  "constants": [
+    {
+      "file": "engine/yield_curve.py",
+      "name": "MOM_WINDOW",
+      "sha256": "bc1414e810c9ab051aee5664ac0696e8d56ddb6ce018dcc3038fe3b434a75bdc",
+      "decides": [
+        "T.yield_curve.regime.term_premium_dir"
+      ]
+    },
+    {
+      "file": "engine/yield_momentum.py",
+      "name": "HORIZONS",
+      "sha256": "277acc54b83f6c60ef73d79774b9e399763787d2279815f19fc5990def56ae8f",
+      "decides": [
+        "T.yield_momentum.series.2y.turn_watch",
+        "T.yield_momentum.series.5y.turn_watch",
+        "T.yield_momentum.series.10y.turn_watch",
+        "T.yield_momentum.series.20y.turn_watch",
+        "T.yield_momentum.series.30y.turn_watch"
+      ]
+    },
+    {
+      "file": "engine/yield_momentum.py",
+      "name": "TURN_LOOKBACK",
+      "sha256": "88fb0f5e19c893cdce45e629aa0aba30a753651305f152e38888ae3c37c20155",
+      "decides": [
+        "T.yield_momentum.series.2y.turn_watch",
+        "T.yield_momentum.series.5y.turn_watch",
+        "T.yield_momentum.series.10y.turn_watch",
+        "T.yield_momentum.series.20y.turn_watch",
+        "T.yield_momentum.series.30y.turn_watch"
+      ]
+    },
+    {
+      "file": "engine/yield_momentum.py",
+      "name": "TRAILING_PUBLICATION_LAG_ROWS",
+      "sha256": "ac5933b75c16962822f5d9caaa6a91a3a563971638c084c9494e177c0b45022e",
+      "decides": [
+        "T.yield_momentum.series.2y.turn_watch",
+        "T.yield_momentum.series.5y.turn_watch",
+        "T.yield_momentum.series.10y.turn_watch",
+        "T.yield_momentum.series.20y.turn_watch",
+        "T.yield_momentum.series.30y.turn_watch"
+      ]
+    },
+    {
+      "file": "engine/leadership_crack.py",
+      "name": "COHORT_KEYS",
+      "sha256": "09da20a7f6e1c47a67973f2bbb011f14975b98f7e8d31813d58385cc321ad162",
+      "decides": [
+        "L.state"
+      ]
+    },
+    {
+      "file": "engine/leadership_crack.py",
+      "name": "_FRESHNESS_LAG_SESSIONS",
+      "sha256": "d603ecc09547879cb5bb29f162be3b7989461a3ac96a239127c48d4dd6e6cf83",
+      "decides": [
+        "L.state"
+      ]
+    },
+    {
+      "file": "engine/leadership_crack.py",
+      "name": "_CRACK_Z_VEL",
+      "sha256": "8957a3b0b7675816d257603b2d0853959141390033b8de1b9a654375b4b36051",
+      "decides": [
+        "L.state"
+      ]
+    },
+    {
+      "file": "engine/leadership_crack.py",
+      "name": "_CRACK_MED_DD",
+      "sha256": "81fdc3516c3eb334a0db9c234c1a931a9a8f5843c9bffee72e3c1935731422b8",
+      "decides": [
+        "L.state"
+      ]
+    },
+    {
+      "file": "engine/leadership_crack.py",
+      "name": "_CRACK_CARNAGE",
+      "sha256": "ff9a46a40b63a159992982b6d54381c8a5c7c2db918614bd68f4c370fcb595c8",
+      "decides": [
+        "L.state"
+      ]
+    },
+    {
+      "file": "engine/leadership_crack.py",
+      "name": "_BROKEN_MED_DD",
+      "sha256": "81f98304812700fb8aa0da4abd75b3daa868204bd87d6f1f3ed7454d1ac85f9b",
+      "decides": [
+        "L.state"
+      ]
+    },
+    {
+      "file": "engine/leadership_crack.py",
+      "name": "_BROKEN_CARNAGE",
+      "sha256": "ca32095318ca4a7ac3a216affdb3dc38deeafcba6e58404cccd5e89f18167c88",
+      "decides": [
+        "L.state"
+      ]
+    },
+    {
+      "file": "engine/leadership_crack.py",
+      "name": "_BROKEN_HEAL_MED_DD",
+      "sha256": "f86d8b74fa659ee76b10bb36a14d402e1728a3fdd428a7b9a8a17be63156564a",
+      "decides": [
+        "L.state"
+      ]
+    },
+    {
+      "file": "engine/leadership_crack.py",
+      "name": "_BROKEN_HEAL_SESSIONS",
+      "sha256": "ac773960c216a17355c079a36e2f4733946c178133364c544f8f0648ad4ed4cb",
+      "decides": [
+        "L.state"
+      ]
+    },
+    {
+      "file": "engine/leadership_crack.py",
+      "name": "_FFILL_DAYS",
+      "sha256": "6bdbe26733552530ebe355bc0fa1a015d626a047cd72d6686cf7728d81c6e742",
+      "decides": [
+        "L.state"
+      ]
+    },
+    {
+      "file": "engine/fed_path.py",
+      "name": "_QUARTER",
+      "sha256": "f1ae14dee418f4eeb65b571aa9e4ccda22c02b1e6cf240a5bee400e13c4e8022",
+      "decides": [
+        "B.fed_path.implied_cuts_12m"
+      ]
+    }
+  ],
+  "config_values": [
+    {
+      "file": "config.yml",
+      "key": [
+        "engine",
+        "liquidity",
+        "lag_bd"
+      ],
+      "present": false,
+      "value": null,
+      "decides": [
+        "R.liquidity_quality.label",
+        "R.liquidity_quality.stress_overlay.confirming_stress"
+      ]
+    },
+    {
+      "file": "config.yml",
+      "key": [
+        "engine",
+        "liquidity",
+        "roc_window_d"
+      ],
+      "present": true,
+      "value": 20,
+      "decides": [
+        "R.liquidity_quality.label",
+        "R.liquidity_quality.stress_overlay.confirming_stress"
+      ]
+    },
+    {
+      "file": "config.yml",
+      "key": [
+        "engine",
+        "liquidity",
+        "expanding_threshold_bn"
+      ],
+      "present": true,
+      "value": 25,
+      "decides": [
+        "R.liquidity_quality.label"
+      ]
+    },
+    {
+      "file": "config.yml",
+      "key": [
+        "engine",
+        "liquidity",
+        "contracting_threshold_bn"
+      ],
+      "present": true,
+      "value": -25,
+      "decides": [
+        "R.liquidity_quality.label"
+      ]
+    },
+    {
+      "file": "config.yml",
+      "key": [
+        "engine",
+        "liquidity",
+        "persist_days"
+      ],
+      "present": false,
+      "value": null,
+      "decides": [
+        "R.liquidity_quality.label"
+      ]
+    },
+    {
+      "file": "config.yml",
+      "key": [
+        "engine",
+        "liquidity",
+        "rrp_floor_bn"
+      ],
+      "present": true,
+      "value": 100,
+      "decides": [
+        "R.liquidity_quality.label",
+        "R.liquidity_quality.stress_overlay.confirming_stress"
+      ]
+    },
+    {
+      "file": "config.yml",
+      "key": [
+        "engine",
+        "liquidity",
+        "benign_fed_share_min"
+      ],
+      "present": true,
+      "value": 0.5,
+      "decides": [
+        "R.liquidity_quality.label",
+        "R.liquidity_quality.stress_overlay.confirming_stress"
+      ]
+    },
+    {
+      "file": "config.yml",
+      "key": [
+        "engine",
+        "liquidity",
+        "stress_oas_z"
+      ],
+      "present": true,
+      "value": 1.0,
+      "decides": [
+        "R.liquidity_quality.label",
+        "R.liquidity_quality.stress_overlay.confirming_stress"
+      ]
+    },
+    {
+      "file": "config.yml",
+      "key": [
+        "engine",
+        "conditions",
+        "labor",
+        "claims_yoy_warn_pct"
+      ],
+      "present": true,
+      "value": 10.0,
+      "decides": [
+        "R.conditions.labor_nowcast.read"
+      ]
+    },
+    {
+      "file": "config.yml",
+      "key": [
+        "engine",
+        "conditions",
+        "labor",
+        "indeed_chg_warn_pct"
+      ],
+      "present": true,
+      "value": -5.0,
+      "decides": [
+        "R.conditions.labor_nowcast.read"
+      ]
+    },
+    {
+      "file": "config.yml",
+      "key": [
+        "engine",
+        "conditions",
+        "complacency",
+        "breadth_pctile_lookback_d"
+      ],
+      "present": true,
+      "value": 504,
+      "decides": [
+        "R.conditions.complacency.breadth_div",
+        "M.components.breadth.tone"
+      ]
+    },
+    {
+      "file": "config.yml",
+      "key": [
+        "engine",
+        "conditions",
+        "complacency",
+        "breadth_high_prox"
+      ],
+      "present": true,
+      "value": 0.97,
+      "decides": [
+        "R.conditions.complacency.breadth_div"
+      ]
+    },
+    {
+      "file": "config.yml",
+      "key": [
+        "engine",
+        "conditions",
+        "complacency",
+        "breadth_weak_pctile"
+      ],
+      "present": true,
+      "value": 0.4,
+      "decides": [
+        "R.conditions.complacency.breadth_div"
+      ]
+    },
+    {
+      "file": "config.yml",
+      "key": [
+        "rate_futures",
+        "horizons_m"
+      ],
+      "present": true,
+      "value": [
+        1,
+        3,
+        6,
+        12
+      ],
+      "decides": [
+        "B.fed_path.implied_cuts_12m"
+      ]
+    }
+  ],
+  "reviews": []
+}
