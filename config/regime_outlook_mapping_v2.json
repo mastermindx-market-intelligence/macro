@@ -1,9 +1,9 @@
 {
-  "mapping_version": "VERDICT_MAPPING_V1",
+  "mapping_version": "VERDICT_MAPPING_V2",
   "tier": "display_research",
   "contract": "research/macro_regime_intelligence/STATE_PATH_AND_SCIENCE_CONTRACT_2026-10-03.md",
-  "contract_revision": "3.1",
-  "producer_pin": "5f20adbd6be6b136b2efe41585bd4ef964b5bf2e",
+  "contract_revision": "3.2",
+  "producer_pin": "698f58a0c74beff717cd6b69bb728fd7e21581f2",
   "note": "Machine form of Appendix A: A.0, A.1, A.4, and the A.2 fields an A.4 row or A.1 note names. An authored display-tier vocabulary: never tested against outcomes, never a rank, gate or forecast. A change to `artifacts`, `fields`, `paths`, `families` or `retired_condition_ids` is a new mapping version.",
   "artifacts": {
     "T": "data/transmission/latest.json",
@@ -130,14 +130,15 @@
       "tokens": [
         "re-accelerating",
         "cooling",
-        "steady"
+        "steady",
+        null
       ],
       "middle_tokens": [
         "steady"
       ],
       "verdict_class": "banded",
       "evidence_family_id": "core_pce",
-      "producer": "engine/rate_inflation_transmission.py:251-254,295",
+      "producer": "engine/rate_inflation_transmission.py:260-262,266-268,338",
       "clock": {
         "artifact": "T",
         "path": [
@@ -174,14 +175,15 @@
       "tokens": [
         "above target",
         "at target",
-        "below target"
+        "below target",
+        null
       ],
       "middle_tokens": [
         "at target"
       ],
       "verdict_class": "banded",
       "evidence_family_id": "core_pce",
-      "producer": "engine/rate_inflation_transmission.py:252-253",
+      "producer": "engine/rate_inflation_transmission.py:260,263-265,338",
       "clock": {
         "artifact": "T",
         "path": [
@@ -213,14 +215,15 @@
       "tokens": [
         "drifting up",
         "drifting down",
-        "anchored"
+        "anchored",
+        null
       ],
       "middle_tokens": [
         "anchored"
       ],
       "verdict_class": "banded",
       "evidence_family_id": "treasury_curve",
-      "producer": "engine/rate_inflation_transmission.py:257-261,305",
+      "producer": "engine/rate_inflation_transmission.py:271-272,274-277,346-347",
       "clock": {
         "artifact": "T",
         "path": [
@@ -252,14 +255,15 @@
       "tokens": [
         "rising",
         "falling",
-        "stable"
+        "stable",
+        null
       ],
       "middle_tokens": [
         "stable"
       ],
       "verdict_class": "banded",
       "evidence_family_id": "treasury_curve",
-      "producer": "engine/rate_inflation_transmission.py:226-230,272",
+      "producer": "engine/rate_inflation_transmission.py:234-235,239-241,320",
       "clock": {
         "artifact": "T",
         "path": [
@@ -291,14 +295,15 @@
       "tokens": [
         "restrictive",
         "accommodative",
-        "neutral"
+        "neutral",
+        null
       ],
       "middle_tokens": [
         "neutral"
       ],
       "verdict_class": "banded",
       "evidence_family_id": "treasury_curve",
-      "producer": "engine/rate_inflation_transmission.py:225-229",
+      "producer": "engine/rate_inflation_transmission.py:233,236-238,319",
       "clock": {
         "artifact": "T",
         "path": [
@@ -336,7 +341,7 @@
       ],
       "verdict_class": "banded",
       "evidence_family_id": "treasury_curve",
-      "producer": "engine/rate_inflation_transmission.py:401,422-423,448,456",
+      "producer": "engine/rate_inflation_transmission.py:442,463-464,489,497",
       "clock": {
         "artifact": "T",
         "path": [
@@ -374,7 +379,7 @@
       "middle_tokens": [],
       "verdict_class": "composite",
       "evidence_family_id": "treasury_curve",
-      "producer": "engine/rate_inflation_transmission.py:410-421",
+      "producer": "engine/rate_inflation_transmission.py:451-462",
       "clock": {
         "artifact": "T",
         "path": [
@@ -2158,47 +2163,6 @@
   ],
   "possible_missing_as_zero": {
     "artifact": "T",
-    "paths": [
-      [
-        "state",
-        "rates",
-        "nominal_10y"
-      ],
-      [
-        "state",
-        "rates",
-        "curve_2s10s"
-      ],
-      [
-        "state",
-        "rates",
-        "curve_tp_adj"
-      ],
-      [
-        "state",
-        "rates",
-        "policy_gap"
-      ],
-      [
-        "state",
-        "inflation",
-        "core_cpi_yoy"
-      ],
-      [
-        "state",
-        "inflation",
-        "headline_cpi_yoy"
-      ],
-      [
-        "state",
-        "inflation",
-        "ppi_core_yoy"
-      ],
-      [
-        "state",
-        "inflation",
-        "eci_comp_yoy"
-      ]
-    ]
+    "paths": []
   }
 }
