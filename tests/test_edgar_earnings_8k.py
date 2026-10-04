@@ -830,3 +830,232 @@ class TestStoreSafetyR2R3R4R9:
         dates = set(kept[kept["cik"].astype(int) == cik]["filing_date"].astype(str))
         assert "2018-01-01" in dates
         assert "2019-01-01" in dates
+
+
+# ---------------------------------------------------------------------------
+# RCA R1 / R8 / R10 — resolver, aliases, subset CLI (lane A2)
+# ---------------------------------------------------------------------------
+
+import logging  # noqa: E402
+import re  # noqa: E402
+
+
+def _patch_data_dir(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        e8k, "config",
+        type("C", (), {"data_dir": staticmethod(lambda: tmp_path)})(),
+    )
+
+
+def _write_eps(tmp_path, tickers):
+    eps_path = tmp_path / "edgar" / "eps_quarterly.parquet"
+    eps_path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame({"ticker": tickers}).to_parquet(eps_path)
+
+
+def _parse_done_buckets(log_text: str) -> tuple[int, ...]:
+    m = re.search(
+        r"done — (\d+) fetched, (\d+) skipped, (\d+) errors, "
+        r"(\d+) unresolved \(no CIK\), (\d+) aliases of (\d+) universe",
+        log_text,
+    )
+    assert m, f"done line not found in log: {log_text[-500:]}"
+    return tuple(int(m.group(i)) for i in range(1, 7))
+
+
+class TestResolverR1R8R10:
+    def test_unresolved_universe_ticker_surfaces(self, tmp_path, monkeypatch, caplog, capsys):
+        _patch_data_dir(monkeypatch, tmp_path)
+        _write_eps(tmp_path, ["AAPL", "ZZZZ"])
+        monkeypatch.setattr(e8k, "build_cik_map", lambda tickers: {"AAPL": 320193})
+        monkeypatch.setattr(e8k, "fetch_earnings_8k_for_cik", lambda t, c: ([], 0, False))
+        monkeypatch.setattr(e8k, "_load_dead_name_cik", lambda: {})
+
+        with caplog.at_level(logging.INFO, logger=e8k.log.name):
+            e8k.run_backfill(force=True)
+
+        manifest = e8k.load_manifest()
+        assert manifest["ticker:ZZZZ"]["status"] == "skipped_no_cik"
+        cov = e8k.json.loads((tmp_path / "edgar" / "earnings_8k_dates_coverage.json").read_text())
+        assert cov["n_unresolved"] == 1
+        assert cov["unresolved_tickers"] == ["ZZZZ"]
+        fetched, skipped, errors, unresolved, aliases, universe = _parse_done_buckets(caplog.text)
+        assert fetched + skipped + errors + unresolved + aliases == universe
+        assert universe == 2
+        warning_lines = [ln for ln in capsys.readouterr().out.splitlines()
+                         if ln.startswith("::warning title=edgar-8k-unresolved::")]
+        assert len(warning_lines) == 1
+
+    def test_fallback_resolution_from_store(self, tmp_path, monkeypatch):
+        _patch_data_dir(monkeypatch, tmp_path)
+        _write_eps(tmp_path, ["AVB"])
+        store_path = tmp_path / "edgar" / "earnings_8k_dates.parquet"
+        store_path.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame([{
+            "ticker": "AVB",
+            "cik": 915912,
+            "accession": "",
+            "form": "",
+            "filing_date": "2020-01-01",
+            "acceptance_datetime": "",
+            "report_date": "",
+            "items": "2.02",
+        }]).to_parquet(store_path)
+
+        fetched = []
+
+        def fake_fetch(ticker, cik):
+            fetched.append((ticker, cik))
+            return [], 0, False
+
+        monkeypatch.setattr(e8k, "build_cik_map", lambda tickers: {})
+        monkeypatch.setattr(e8k, "fetch_earnings_8k_for_cik", fake_fetch)
+        monkeypatch.setattr(e8k, "_load_dead_name_cik", lambda: {})
+
+        e8k.run_backfill(force=True)
+        assert fetched == [("AVB", 915912)]
+        manifest = e8k.load_manifest()
+        assert manifest["915912"]["cik_source"] == "store"
+
+    def test_alias_resolved_ticker_not_fetched_or_emitted(self, tmp_path, monkeypatch):
+        _patch_data_dir(monkeypatch, tmp_path)
+        _write_eps(tmp_path, ["EQR", "VMRK"])
+        store_path = tmp_path / "edgar" / "earnings_8k_dates.parquet"
+        store_path.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame([{
+            "ticker": "EQR",
+            "cik": 906107,
+            "accession": "",
+            "form": "",
+            "filing_date": "2019-01-01",
+            "acceptance_datetime": "",
+            "report_date": "",
+            "items": "2.02",
+        }]).to_parquet(store_path)
+
+        fetch_calls = []
+
+        def fake_fetch(ticker, cik):
+            fetch_calls.append((ticker, cik))
+            return [{
+                "ticker": ticker,
+                "cik": cik,
+                "accession": "0000906107-20-000001",
+                "form": "8-K",
+                "filing_date": "2020-01-01",
+                "acceptance_datetime": "",
+                "report_date": "",
+                "items": "2.02",
+            }], 0, False
+
+        monkeypatch.setattr(
+            e8k, "build_cik_map",
+            lambda tickers: {"VMRK": 906107} if "VMRK" in tickers else {},
+        )
+        monkeypatch.setattr(e8k, "fetch_earnings_8k_for_cik", fake_fetch)
+        monkeypatch.setattr(e8k, "_load_dead_name_cik", lambda: {})
+
+        e8k.run_backfill(force=True)
+        assert len(fetch_calls) == 1
+        assert fetch_calls[0][0] == "VMRK"
+        manifest = e8k.load_manifest()
+        assert manifest["ticker:EQR"]["alias_of"] == "VMRK"
+        out = pd.read_parquet(store_path)
+        assert "EQR" not in set(out["ticker"].astype(str))
+
+        fetch_calls.clear()
+        e8k.run_backfill(force=True)
+        assert len(fetch_calls) == 1
+        assert fetch_calls[0][0] == "VMRK"
+
+    def test_tickers_flag_refetches_only_named(self, tmp_path, monkeypatch):
+        _patch_data_dir(monkeypatch, tmp_path)
+        _write_eps(tmp_path, ["AAPL", "MSFT"])
+        mf_path = tmp_path / "edgar" / "earnings_8k_dates_manifest.json"
+        mf_path.parent.mkdir(parents=True, exist_ok=True)
+        msft_entry = {
+            "ticker": "MSFT",
+            "status": "ok",
+            "n_filings": 1,
+            "ts": "2026-01-01T00:00:00+00:00",
+        }
+        manifest_data = {
+            "320193": {"ticker": "AAPL", "status": "ok", "n_filings": 1,
+                       "ts": "2026-01-01T00:00:00+00:00"},
+            "789019": msft_entry,
+        }
+        raw_msft = e8k.json.dumps(msft_entry)
+        mf_path.write_text(e8k.json.dumps(manifest_data, indent=2))
+
+        fetched_ciks = []
+
+        def fake_fetch(ticker, cik):
+            fetched_ciks.append(cik)
+            return [], 0, False
+
+        monkeypatch.setattr(
+            e8k, "build_cik_map",
+            lambda tickers: {"AAPL": 320193, "MSFT": 789019},
+        )
+        monkeypatch.setattr(e8k, "fetch_earnings_8k_for_cik", fake_fetch)
+        monkeypatch.setattr(e8k, "_load_dead_name_cik", lambda: {})
+
+        e8k.main(["--tickers", "aapl", "--force"])
+
+        assert fetched_ciks == [320193]
+        after = e8k.json.loads(mf_path.read_text())
+        assert e8k.json.dumps(after["789019"], sort_keys=True) == e8k.json.dumps(
+            msft_entry, sort_keys=True
+        )
+
+    def test_dead_name_fallback(self, tmp_path, monkeypatch):
+        _patch_data_dir(monkeypatch, tmp_path)
+        _write_eps(tmp_path, ["BBBY"])
+        fetched = []
+
+        def fake_fetch(ticker, cik):
+            fetched.append((ticker, cik))
+            return [], 0, False
+
+        monkeypatch.setattr(e8k, "build_cik_map", lambda tickers: {})
+        monkeypatch.setattr(e8k, "fetch_earnings_8k_for_cik", fake_fetch)
+        monkeypatch.setattr(
+            e8k, "_load_dead_name_cik",
+            lambda: {"BBBY": {"cik": 886158}},
+        )
+
+        e8k.run_backfill(force=True)
+        assert fetched == [("BBBY", 886158)]
+        assert e8k.load_manifest()["886158"]["cik_source"] == "dead_name"
+
+    def test_bucket_sum_equals_universe(self, tmp_path, monkeypatch, caplog):
+        """Five universe tickers: 2 fetched, 1 skipped-ok, 1 alias, 1 unresolved."""
+        _patch_data_dir(monkeypatch, tmp_path)
+        tickers = ["AA", "BB", "CC", "DD", "EE"]
+        _write_eps(tmp_path, tickers)
+        mf_path = tmp_path / "edgar" / "earnings_8k_dates_manifest.json"
+        mf_path.parent.mkdir(parents=True, exist_ok=True)
+        mf_path.write_text(e8k.json.dumps({
+            "111": {"ticker": "AA", "status": "ok", "n_filings": 0, "ts": "2026-01-01T00:00:00+00:00"},
+        }))
+
+        def fake_map(requested):
+            return {"BB": 222, "CC": 333, "DD": 333}
+
+        monkeypatch.setattr(e8k, "build_cik_map", fake_map)
+        monkeypatch.setattr(
+            e8k, "fetch_earnings_8k_for_cik", lambda t, c: ([], 0, False)
+        )
+        monkeypatch.setattr(e8k, "_load_dead_name_cik", lambda: {})
+
+        with caplog.at_level(logging.INFO, logger=e8k.log.name):
+            e8k.run_backfill(force=False)
+
+        fetched, skipped, errors, unresolved, aliases, universe = _parse_done_buckets(caplog.text)
+        assert universe == 5
+        assert fetched + skipped + errors + unresolved + aliases == 5
+        assert skipped == 1
+        assert unresolved == 1
+        assert aliases == 1
+        assert fetched == 2
+        assert errors == 0
