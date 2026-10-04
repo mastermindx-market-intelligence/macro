@@ -125,10 +125,15 @@ def _raw(
     cwd=None,
     *,
     run_in_background: bool | None = None,
+    codex_native: bool = False,
 ) -> subprocess.CompletedProcess:
     payload: dict = {"tool_name": tool, "tool_input": {"command": cmd}}
     if run_in_background is not None:
         payload["tool_input"]["run_in_background"] = run_in_background
+    if codex_native:
+        payload["turn_id"] = "codex-turn-canary"
+        payload["transcript_path"] = None
+        payload["model"] = "gpt-6.1-sol"
     if cwd is not None:
         payload["cwd"] = str(cwd)          # the harness names the invoking checkout
     return subprocess.run(
@@ -145,8 +150,15 @@ def _run(
     cwd=None,
     *,
     run_in_background: bool | None = None,
+    codex_native: bool = False,
 ) -> dict | None:
-    proc = _raw(cmd, tool, cwd, run_in_background=run_in_background)
+    proc = _raw(
+        cmd,
+        tool,
+        cwd,
+        run_in_background=run_in_background,
+        codex_native=codex_native,
+    )
     assert proc.returncode == 0, "the guard must never brick the harness"
     out = proc.stdout.decode("utf-8", errors="replace").strip()
     if not out:
@@ -154,8 +166,19 @@ def _run(
     return json.loads(out).get("hookSpecificOutput")
 
 
-def _denied(cmd: str, cwd=None, *, run_in_background: bool | None = None) -> bool:
-    d = _run(cmd, cwd=cwd, run_in_background=run_in_background)
+def _denied(
+    cmd: str,
+    cwd=None,
+    *,
+    run_in_background: bool | None = None,
+    codex_native: bool = False,
+) -> bool:
+    d = _run(
+        cmd,
+        cwd=cwd,
+        run_in_background=run_in_background,
+        codex_native=codex_native,
+    )
     return bool(d and d.get("permissionDecision") == "deny")
 
 
@@ -178,7 +201,7 @@ def test_gh_run_watch_default_interval_is_the_trap():
 
 
 def test_a_slow_explicit_interval_still_requires_background_execution():
-    """Throttle and principal occupancy are separate gates."""
+    """Claude's Bash surface must opt into tool-level background execution."""
     for cmd in (
         "gh run watch 302186 --interval 60",
         "gh run watch 302186 --interval 150",
@@ -186,6 +209,37 @@ def test_a_slow_explicit_interval_still_requires_background_execution():
     ):
         assert _denied(cmd)
         assert not _denied(cmd, run_in_background=True)
+
+
+def test_codex_native_watch_uses_background_terminal_handoff_without_claude_flag():
+    """Codex unified Bash has no run_in_background field.
+
+    The real provider payload instead carries turn_id + transcript_path=None, and
+    long native commands are returned as background-terminal/session handles while
+    the principal can keep reasoning. A safe native watch must therefore be legal
+    on Codex or the anti-wait guard would remove the very continuation mechanism.
+    """
+    d = _run(
+        "gh run watch 302186 --interval 150 --exit-status",
+        codex_native=True,
+    )
+    assert d and d.get("permissionDecision") != "deny"
+    assert "Codex native background-terminal handoff" in d.get("additionalContext", "")
+    assert "Do not tail its process/session handle" in d.get("additionalContext", "")
+
+
+def test_codex_native_watch_still_obeys_quota_interval():
+    assert _denied("gh run watch 302186 --interval 30", codex_native=True)
+    assert _denied("gh run view 302186 --watch", codex_native=True)
+
+
+def test_codex_native_does_not_legalize_handwritten_sleep_poll_loop():
+    d = _run(
+        "while true; do gh run view 302186 --json status; sleep 150; done",
+        codex_native=True,
+    )
+    assert d and d.get("permissionDecision") == "deny"
+    assert "CI WAIT LOOP MUST BE ASYNC" in d.get("permissionDecisionReason", "")
 
 
 # ─────────────────────────────────────────────────────────────────────────────

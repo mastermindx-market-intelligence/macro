@@ -656,9 +656,16 @@ def main():
     # continue another lane. Tool-level background mode is preferred; a real single
     # shell '&' detach is also nonblocking (but '&&' is not).
     background = ti.get("run_in_background") is True
+    # Codex unified Bash does not expose Claude's run_in_background field. Long
+    # shell calls are handed back as native background-terminal/session handles while
+    # the model can continue; Codex PreToolUse carries a turn_id and no Claude
+    # transcript_path. Treat ONLY a native watch as async on that surface. Hand-written
+    # sleep/poll loops remain denied because they waste quota even if the terminal
+    # itself backgrounds.
+    codex_native = bool(payload.get("turn_id")) and payload.get("transcript_path") is None
     watch_match = WATCH_RE.search(clean_cmd)
     watch_detached = bool(WATCH_DETACHED_RE.search(clean_cmd))
-    if watch_match and not background and not watch_detached:
+    if watch_match and not background and not watch_detached and not codex_native:
         deny(
             "CI WATCH MUST BE ASYNC: a foreground `gh run watch` / `--watch` "
             "would pin this orchestrator until CI concludes and burn the GitHub "
@@ -714,7 +721,12 @@ def main():
     if repeat_reason:
         deny(repeat_reason)
 
-    async_wait = background or watch_detached or poll_detached
+    async_wait = (
+        background
+        or watch_detached
+        or poll_detached
+        or (codex_native and bool(watch_match))
+    )
     if async_wait and (watch_match or ci_sleep_poll or loop_ci_poll):
         # Arming an asynchronous native/detached watcher is itself the observation
         # transfer. Fence an immediate direct run-view even when no diagnostic read
@@ -725,12 +737,18 @@ def main():
         pr_watch = PR_WATCH_ID_RE.search(clean_cmd)
         if pr_watch:
             record_poll_observation(f"pr-checks:{pr_watch.group('id')}")
+        surface = (
+            "Codex native background-terminal handoff"
+            if codex_native and not background and not watch_detached
+            else "background/detached task"
+        )
         allow(
-            "CI WATCHER ARMED ASYNC: this background task is now the CI observation "
-            "owner. Do not tail it, poll it, or spend a reasoning cycle waiting for it. "
-            "Immediately start the next highest-value independent authorized project "
-            "lane. Return to this PR only on watcher completion/event, genuine red, "
-            "merge/conflict transition, or watcher failure/staleness."
+            f"CI WATCHER ARMED ASYNC via {surface}: this task is now the CI observation "
+            "owner. Do not tail its process/session handle, poll GitHub, or spend a "
+            "reasoning cycle waiting for it. Immediately start the next highest-value "
+            "independent authorized project lane. Return to this PR only on watcher "
+            "completion/event, genuine red, merge/conflict transition, or watcher "
+            "failure/staleness."
         )
     allow()
 
