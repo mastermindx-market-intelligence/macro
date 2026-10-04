@@ -63,6 +63,8 @@ from engine.biocatalyst.prospective import (
     build_public_event as build_prospective_public_event,
     validate_public_model as validate_prospective_public_model,
 )  # noqa: E402
+from engine.biocatalyst.what_matters_next import validate_wmn_inputs  # noqa: E402
+from engine.company_intelligence.contracts import ContractError  # noqa: E402
 from engine.biocatalyst.history import (
     build_history_exact_diff,
     build_history_read_model,
@@ -111,6 +113,10 @@ _SERVICE_ACTIVATION_GATE_PATH = Path(
 _SERVICE_ACTIVATION_HEARTBEAT_PATH = Path(
     "/var/lib/macro-biocatalyst/activation/heartbeat.json"
 )
+_SERVICE_WMN_INPUTS_PATH = Path(
+    "/var/lib/macro-biocatalyst/owner-inputs/what_matters_next_inputs.json"
+)
+_WMN_INPUT_MAX_BYTES = 2 * 1024 * 1024
 _SOURCE_REGISTRY_PATH = Path(__file__).resolve().parents[1] / "config" / "biocatalyst_sources.yml"
 _ACTIVATION_ID_RE = re.compile(r"^r2_activation_[a-f0-9]{24}$")
 _R2_ACCOUNT_ID_RE = re.compile(r"^[a-f0-9]{32}$")
@@ -123,6 +129,9 @@ _SAFE_ERROR_CODES = frozenset(
         "BIOCATALYST_ENABLED_INVALID",
         "BIOCATALYST_HISTORY_ENABLED_INVALID",
         "BIOCATALYST_HISTORY_SOURCE_NOT_APPROVED",
+        "BIOCATALYST_WMN_ENABLED_INVALID",
+        "BIOCATALYST_WMN_OWNER_INPUT_INVALID",
+        "BIOCATALYST_WMN_OWNER_INPUT_UNAVAILABLE",
         "BIOCATALYST_R2_BUCKET_INVALID",
         "BIOCATALYST_R2_CLIENT_UNAVAILABLE",
         "BIOCATALYST_R2_CONFIG_MISSING",
@@ -252,6 +261,7 @@ _TRANSIENT_AVAILABILITY_CODES = frozenset(
         "BIOCATALYST_R2_CONDITIONAL_CREATE_FAILED",
         "BIOCATALYST_R2_READBACK_FAILED",
         "BIOCATALYST_R2_READ_FAILED",
+        "BIOCATALYST_WMN_OWNER_INPUT_UNAVAILABLE",
         "HTTP_REQUEST_FAILED",
         "POINTER_WRITE_FAILED",
         "UNEXPECTED_HTTP_STATUS",
@@ -360,6 +370,7 @@ class WorkerConfig:
     user_agent: str
     r2: DedicatedR2Config
     history_enabled: bool = False
+    wmn_enabled: bool = False
     prospective_enabled: bool = False
     r2_retention_confirmed: bool = False
     activation_id: str | None = None
@@ -383,6 +394,8 @@ class WorkerConfig:
             raise WorkerConfigError("BIOCATALYST_USER_AGENT_INVALID")
         if not isinstance(self.history_enabled, bool):
             raise WorkerConfigError("BIOCATALYST_HISTORY_ENABLED_INVALID")
+        if not isinstance(self.wmn_enabled, bool):
+            raise WorkerConfigError("BIOCATALYST_WMN_ENABLED_INVALID")
         if not isinstance(self.prospective_enabled, bool):
             raise WorkerConfigError("BIOCATALYST_PROSPECTIVE_ENABLED_INVALID")
         if not isinstance(self.r2_retention_confirmed, bool):
@@ -546,6 +559,15 @@ def _parse_history_enabled(raw: str | None) -> bool:
     raise WorkerConfigError("BIOCATALYST_HISTORY_ENABLED_INVALID")
 
 
+def _parse_wmn_enabled(raw: str | None) -> bool:
+    value = (raw or "").strip()
+    if value in {"", "0"}:
+        return False
+    if value == "1":
+        return True
+    raise WorkerConfigError("BIOCATALYST_WMN_ENABLED_INVALID")
+
+
 def _parse_prospective_enabled(raw: str | None) -> bool:
     value = (raw or "").strip()
     if value in {"", "0"}:
@@ -645,6 +667,7 @@ def load_environment(environ: Mapping[str, str] | None = None) -> EnvironmentPla
     requested_enabled = enabled == "1"
     try:
         history_enabled = _parse_history_enabled(values.get("BIOCATALYST_HISTORY_ENABLED"))
+        wmn_enabled = _parse_wmn_enabled(values.get("BIOCATALYST_WMN_ENABLED"))
         prospective_enabled = _parse_prospective_enabled(
             values.get("BIOCATALYST_PROSPECTIVE_ENABLED")
         )
@@ -709,6 +732,7 @@ def load_environment(environ: Mapping[str, str] | None = None) -> EnvironmentPla
             user_agent=values.get("BIOCATALYST_USER_AGENT", "").strip(),
             r2=DedicatedR2Config.from_environment(values),
             history_enabled=history_enabled,
+            wmn_enabled=wmn_enabled,
             prospective_enabled=prospective_enabled,
             r2_retention_confirmed=r2_retention_confirmed,
             activation_id=activation_id,
@@ -2815,6 +2839,39 @@ def run_once(
             return WorkerResult(EXIT_FAILED, "failed", error_code=code)
 
 
+def _load_service_wmn_inputs(path: Path | None = None) -> dict[str, Any]:
+    """Read and validate one immutable owner-approved WMN input cut.
+
+    The worker never constructs Company Intelligence or Data OS facts here. It
+    only consumes the already-composed public-safe owner projection from the
+    fixed service handoff path. Missing input is availability, while malformed
+    or mutable-looking input is an integrity failure.
+    """
+
+    candidate = _SERVICE_WMN_INPUTS_PATH if path is None else Path(path)
+    if candidate.is_symlink():
+        raise WorkerConfigError("BIOCATALYST_WMN_OWNER_INPUT_INVALID")
+    try:
+        metadata = candidate.lstat()
+    except FileNotFoundError as exc:
+        raise WorkerConfigError("BIOCATALYST_WMN_OWNER_INPUT_UNAVAILABLE") from exc
+    except OSError as exc:
+        raise WorkerConfigError("BIOCATALYST_WMN_OWNER_INPUT_INVALID") from exc
+    if (
+        not stat.S_ISREG(metadata.st_mode)
+        or metadata.st_nlink != 1
+        or metadata.st_size <= 1
+        or metadata.st_size > _WMN_INPUT_MAX_BYTES
+    ):
+        raise WorkerConfigError("BIOCATALYST_WMN_OWNER_INPUT_INVALID")
+    try:
+        payload = _strict_json_object(candidate)
+        normalized = validate_wmn_inputs(payload)
+    except (OSError, UnicodeError, ValueError, ContractError) as exc:
+        raise WorkerConfigError("BIOCATALYST_WMN_OWNER_INPUT_INVALID") from exc
+    return normalized
+
+
 def run_from_environment(
     environ: Mapping[str, str] | None = None,
     *,
@@ -2829,6 +2886,27 @@ def run_from_environment(
     plan = load_environment(environ)
     if plan.state == "enabled":
         assert plan.config is not None
+        wmn_inputs: Mapping[str, Any] | None = None
+        if plan.config.wmn_enabled:
+            try:
+                wmn_inputs = _load_service_wmn_inputs()
+            except WorkerConfigError as exc:
+                try:
+                    _prepare_runtime_layout(plan.config)
+                    publisher = PublicGenerationPublisher(plan.config.public_root)
+                except Exception:
+                    return WorkerResult(EXIT_FAILED, "failed", error_code=exc.code)
+                prior = _actual_committed_or(publisher, None)
+                _try_write_health(
+                    publisher,
+                    state=_failure_state(exc.code),
+                    enabled=True,
+                    configured_nct_count=len(plan.config.nct_ids),
+                    error_code=exc.code,
+                    prior=prior,
+                    now=now_fn(),
+                )
+                return WorkerResult(EXIT_FAILED, "failed", error_code=exc.code)
         return run_once(
             plan.config,
             collector_factory=collector_factory,
@@ -2836,6 +2914,7 @@ def run_from_environment(
             store_factory=store_factory,
             now_fn=now_fn,
             activation_verifier=activation_verifier,
+            wmn_inputs=wmn_inputs,
         )
 
     if plan.public_root is not None:

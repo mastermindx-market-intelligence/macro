@@ -184,3 +184,116 @@ def test_worker_without_owner_cut_remains_old_generation_shape(tmp_path) -> None
     assert projection.what_matters_next_inputs is None
     generation = cfg.public_root / "generations" / committed.generation_id
     assert not (generation / "what_matters_next_inputs.json").exists()
+
+
+def _environment_for_wmn(tmp_path):
+    state_root = tmp_path / "macro-biocatalyst" / "state"
+    public_root = tmp_path / "macro-biocatalyst" / "public"
+    return state_root, public_root, {
+        "BIOCATALYST_ENABLED": "1",
+        "BIOCATALYST_STATE_ROOT": str(state_root),
+        "BIOCATALYST_PUBLIC_ROOT": str(public_root),
+        "BIOCATALYST_CANARY_NCTS": "NCT00000001",
+        "BIOCATALYST_USER_AGENT": "MastermindX test contact@example.com",
+        "BIOCATALYST_R2_ENDPOINT": "https://r2.example.test",
+        "BIOCATALYST_R2_BUCKET": "biocatalyst-private",
+        "BIOCATALYST_R2_ACCESS_KEY_ID": "test-access",
+        "BIOCATALYST_R2_SECRET_ACCESS_KEY": "test-secret",
+        "BIOCATALYST_WMN_ENABLED": "1",
+    }
+
+
+def test_environment_worker_acquires_and_publishes_configured_owner_cut(tmp_path, monkeypatch):
+    state_root, public_root, environ = _environment_for_wmn(tmp_path)
+    owner_path = tmp_path / "owner-inputs" / "what_matters_next_inputs.json"
+    owner_path.parent.mkdir(parents=True)
+    owner_path.write_text(json.dumps(_wmn_inputs()), encoding="utf-8")
+    monkeypatch.setattr(worker, "_SERVICE_STATE_ROOT", state_root)
+    monkeypatch.setattr(worker, "_SERVICE_PUBLIC_ROOT", public_root)
+    monkeypatch.setattr(worker, "_SERVICE_WMN_INPUTS_PATH", owner_path)
+
+    result = worker.run_from_environment(
+        environ,
+        collector_factory=FakeCollectorFactory(),
+        store_factory=lambda _: MemoryStore(),
+        now_fn=lambda: NOW,
+        activation_verifier=lambda _config, _now: None,
+    )
+
+    assert result.exit_code == worker.EXIT_SUCCESS
+    publisher = PublicGenerationPublisher(public_root)
+    committed = publisher.read_committed()
+    assert committed is not None
+    assert committed.schema_version == "1.8.0"
+    projection = publisher.read_trial_projection()
+    assert projection is not None
+    assert projection.what_matters_next_inputs == validate_wmn_inputs(_wmn_inputs())
+
+
+def test_environment_worker_missing_required_owner_cut_preserves_prior_pointer(tmp_path, monkeypatch):
+    state_root, public_root, environ = _environment_for_wmn(tmp_path)
+    owner_path = tmp_path / "owner-inputs" / "what_matters_next_inputs.json"
+    monkeypatch.setattr(worker, "_SERVICE_STATE_ROOT", state_root)
+    monkeypatch.setattr(worker, "_SERVICE_PUBLIC_ROOT", public_root)
+    monkeypatch.setattr(worker, "_SERVICE_WMN_INPUTS_PATH", owner_path)
+
+    legacy = worker.run_from_environment(
+        {k: v for k, v in environ.items() if k != "BIOCATALYST_WMN_ENABLED"},
+        collector_factory=FakeCollectorFactory(),
+        store_factory=lambda _: MemoryStore(),
+        now_fn=lambda: NOW,
+        activation_verifier=lambda _config, _now: None,
+    )
+    assert legacy.exit_code == worker.EXIT_SUCCESS
+    before = (public_root / "current.json").read_bytes()
+
+    calls = {"collector": 0}
+    failed = worker.run_from_environment(
+        environ,
+        collector_factory=lambda **_: calls.__setitem__("collector", calls["collector"] + 1),
+        store_factory=lambda _: MemoryStore(),
+        now_fn=lambda: NOW,
+        activation_verifier=lambda _config, _now: None,
+    )
+
+    assert failed.exit_code == worker.EXIT_FAILED
+    assert failed.status == "failed"
+    assert failed.error_code == "BIOCATALYST_WMN_OWNER_INPUT_UNAVAILABLE"
+    assert calls["collector"] == 0
+    assert (public_root / "current.json").read_bytes() == before
+    health = json.loads((public_root / "health.json").read_text(encoding="utf-8"))
+    assert health["state"] == "partial"
+    assert health["last_error_code"] == "BIOCATALYST_WMN_OWNER_INPUT_UNAVAILABLE"
+
+
+def test_environment_worker_rejects_malformed_owner_cut_before_collection(tmp_path, monkeypatch):
+    state_root, public_root, environ = _environment_for_wmn(tmp_path)
+    owner_path = tmp_path / "owner-inputs" / "what_matters_next_inputs.json"
+    owner_path.parent.mkdir(parents=True)
+    owner_path.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(worker, "_SERVICE_STATE_ROOT", state_root)
+    monkeypatch.setattr(worker, "_SERVICE_PUBLIC_ROOT", public_root)
+    monkeypatch.setattr(worker, "_SERVICE_WMN_INPUTS_PATH", owner_path)
+
+    calls = {"collector": 0}
+    result = worker.run_from_environment(
+        environ,
+        collector_factory=lambda **_: calls.__setitem__("collector", calls["collector"] + 1),
+        store_factory=lambda _: MemoryStore(),
+        now_fn=lambda: NOW,
+        activation_verifier=lambda _config, _now: None,
+    )
+
+    assert result.exit_code == worker.EXIT_FAILED
+    assert result.error_code == "BIOCATALYST_WMN_OWNER_INPUT_INVALID"
+    assert calls["collector"] == 0
+    assert not (public_root / "current.json").exists()
+
+
+def test_environment_rejects_nonbinary_wmn_enable_flag(tmp_path, monkeypatch):
+    state_root, public_root, environ = _environment_for_wmn(tmp_path)
+    monkeypatch.setattr(worker, "_SERVICE_STATE_ROOT", state_root)
+    monkeypatch.setattr(worker, "_SERVICE_PUBLIC_ROOT", public_root)
+    plan = worker.load_environment({**environ, "BIOCATALYST_WMN_ENABLED": "true"})
+    assert plan.state == "invalid"
+    assert plan.error_code == "BIOCATALYST_WMN_ENABLED_INVALID"
