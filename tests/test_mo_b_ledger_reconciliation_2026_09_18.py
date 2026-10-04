@@ -40,7 +40,11 @@ INTEGRATION_BASE_SHA = "5332d876e75837c158c6f42a2862734451bb7158"
 # A-verified on terminal #549 / the 0018 DDL receipt / live routes): the only outside-union rows
 # touched are MO-PAID-056 and MO-DELTA-038 (NOT_BUILT -> BUILT_NOT_PROVEN). Prior digest:
 # 3b8a93ce1ee08f64b3536df5a95e18861fc14fba4087cb436fd38c559a1df2a8.
-OUTSIDE_UNION_SHA256 = "83e3ab7a6270691b87a87f68b6ba3838f8cb8e97dcc0d3855a6b4ff6d1bd7951"
+# Re-pinned again 2026-10-04 (same writer, ruling D88 over CEO B 5978248217, A-verified on terminal
+# #581/#548/#555/#526/#588/#550/#557 + live 401 probes): outside-union rows MO-PAID-055 and
+# MO-PAID-084 NOT_BUILT -> BUILT_NOT_PROVEN, MO-PAID-052 NOT_BUILT -> PARTIAL, MO-DELTA-039 and
+# MO-PAID-081 notes only. Prior digest: 83e3ab7a6270691b87a87f68b6ba3838f8cb8e97dcc0d3855a6b4ff6d1bd7951.
+OUTSIDE_UNION_SHA256 = "a5f263439ac32778504c887db876ad5391961eb86ec41de533e81628424ba3ea"
 CAPABILITY_STATES = {"NOT_BUILT", "SPEC_ONLY", "PARTIAL", "BUILT_NOT_PROVEN", "PROVEN_LIVE"}
 
 UNION_ROWS = set([
@@ -634,6 +638,15 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
         assert "#549" in r[rid]["real_producer"], rid
     assert "worker cron" in r["MO-PAID-056"]["missing_contract_or_proof"]
     assert "#582" in r["MO-PAID-056"]["missing_contract_or_proof"]
+    # W12 D88 (CEO B 5978248217): public API v1 + api keys (terminal #581) built, not proven; sharing half-built.
+    for rid in ("MO-PAID-055", "MO-PAID-084"):
+        assert r[rid]["capability_state_c2"] == "BUILT_NOT_PROVEN", rid
+        assert "#581" in r[rid]["state_delta"], rid
+    assert "failed_readback" in r["MO-PAID-084"]["real_producer"]
+    sharing = r["MO-PAID-052"]
+    assert sharing["capability_state_c2"] == "PARTIAL"
+    assert "#548" in sharing["state_delta"] and "#555" in sharing["state_delta"]
+    assert r["MO-DELTA-039"]["capability_state_c2"] == "NOT_BUILT"
 
     # W8b D66-D71 (CEO B 5966674775; Sol 5966690034/5966717632/5966734154/5966757712/5966757713/5966776979/5966790439).
     covenant = r["MO-PAID-062"]

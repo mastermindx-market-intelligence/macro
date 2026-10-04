@@ -12,7 +12,9 @@ mission: >-
   MO-DELTA-002 cadence residual closed, MO-PAID-054 in-flight #7100 citation, MO-DELTA-021
   reason/citations corrected), each claim re-verified by A on origin/main and the live site;
   and CEO B's F12 correction (D87: MO-PAID-056 / MO-DELTA-038 NOT_BUILT -> BUILT_NOT_PROVEN on
-  terminal #549 merged + migration 0018 applied + routes served; outside-union digest re-pinned).
+  terminal #549 merged + migration 0018 applied + routes served; outside-union digest re-pinned)
+  and its part 2 (D88: MO-PAID-055/084 -> BUILT_NOT_PROVEN on terminal #581, MO-PAID-052 -> PARTIAL
+  on #548/#555; 039/081/082 evidence widened; digest re-pinned again).
   Wave-12 records checkpoint (2026-10-04 ~09:0xZ), not a session end.
 state_before: >-
   Rulings stopped at D84; the W11 wave row read "→ this PR"; the lane matrix had no RECORDS_W11
@@ -25,9 +27,9 @@ changed:
   - path: "research/MARKET_ONTOLOGY_CEO_A_CONTINUATION_HANDOFF_2026-10-02.md"
     what: "W11 wave row → DONE (#8369 bd82585f653b), W12 wave row; RECORDS_W11 lane row; rulings D85–D86; #762 fact line corrected + receipts facts; N-W12; §5 hold line; §6 do-not-redo rows"
   - path: "research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv"
-    what: "MO-PAID-056 + MO-DELTA-038 capability_state_c2 NOT_BUILT -> BUILT_NOT_PROVEN with producer/consumer/missing/next cells rewritten (D87; outside-union rows, digest re-pinned). MO-PAID-059 adjudication_notes (+cadence receipt for the 018/059 pair); MO-DELTA-002 missing_contract_or_proof (cadence residual closed) + adjudication_notes; MO-PAID-054 next_bounded_child (+#7100 in flight) + adjudication_notes; MO-DELTA-021 state_delta + next_bounded_child + adjudication_notes (render-lane reason and #7163/#7215 citations corrected). All four are union rows → OUTSIDE_UNION_SHA256 unchanged; no capability_state_c2 moved."
+    what: "MO-PAID-055 + MO-PAID-084 NOT_BUILT -> BUILT_NOT_PROVEN and MO-PAID-052 NOT_BUILT -> PARTIAL with cells rewritten; MO-DELTA-039 / MO-PAID-081 / MO-PAID-082 notes widened (D88). MO-PAID-056 + MO-DELTA-038 capability_state_c2 NOT_BUILT -> BUILT_NOT_PROVEN with producer/consumer/missing/next cells rewritten (D87; outside-union rows, digest re-pinned). MO-PAID-059 adjudication_notes (+cadence receipt for the 018/059 pair); MO-DELTA-002 missing_contract_or_proof (cadence residual closed) + adjudication_notes; MO-PAID-054 next_bounded_child (+#7100 in flight) + adjudication_notes; MO-DELTA-021 state_delta + next_bounded_child + adjudication_notes (render-lane reason and #7163/#7215 citations corrected). All four are union rows → OUTSIDE_UNION_SHA256 unchanged; no capability_state_c2 moved."
   - path: "tests/test_mo_b_ledger_reconciliation_2026_09_18.py"
-    what: "OUTSIDE_UNION_SHA256 re-pinned for D87 (prior digest kept in the comment); D86 assertions on 059/002/054/021; D87 assertions on 056/038"
+    what: "OUTSIDE_UNION_SHA256 re-pinned for D87 (prior digest kept in the comment); D86 assertions on 059/002/054/021; D87 assertions on 056/038; re-pinned again + D88 assertions on 055/084/052/039"
   - path: "agentos/handoffs/WS-MARKET-OS-2026-10-04-ceo-a-f01-f05-wave12.md"
     what: "this handoff"
 verified:
@@ -52,6 +54,9 @@ verified:
   - claim: "terminal #549 merged, #582 open draft, migration 0018 applied, routes served"
     command: "gh api graphql (mastermind-terminal pullRequest 549/582); gh api repos/…/mastermind-terminal/issues/comments/5625353856; curl -o /dev/null -w %{http_code} https://app.mastermind-x.com/api/webhooks{,/<uuid>}"
     result: "549 MERGED 2026-09-10T19:06:57Z cd1269feb616; 582 OPEN draft a1445ea65c07 updated 2026-09-19; DDL receipt applied 20:58:44Z, both tables present; 401 / 405"
+  - claim: "terminal #581/#548/#555/#526/#588/#550/#557 merged as B stated; keyed/sharing routes served auth-gated"
+    command: "gh api graphql (mastermind-terminal pullRequest 581 548 555 526 588 550 557); gh api repos/…/mastermind-terminal/issues/comments/5630176531; curl -o /dev/null -w %{http_code} https://app.mastermind-x.com/api/v1/{me,watchlists,openapi.json} /api/account/api-keys /api/grants /api/layouts"
+    result: "all seven MERGED with the stated squash prefixes; 0021 DDL receipt 2026-09-11T05:59:53Z; six probes -> 401, /api/v1/me body = EN+ZH 'did not include a valid personal API key'"
   - claim: "stripe_events ledger exists on main"
     command: "git grep -n stripe_events origin/main -- app/billing.py"
     result: "lines 20, 1448, 1456"
@@ -59,12 +64,14 @@ unverified:
   - "Terminal-side facts (#793/#794/#798 merges, deploy identity, installed bundle bytes, worker log lines) are CEO B's receipts, byte-verified by B against origin/master; A did not re-read the Terminal repository or the VPS"
   - "The debt-maturity persist commits and the 2,510-file cache count are B's receipt; A verified the scheduled-run table only"
   - "B's host check (no webhook_delivery.mjs build/cron/unit/log on the box) is B's deploy-key receipt; A did not read the host"
+  - "DDL 0022 applied 2026-09-13T06:57:09Z and the 0027 failed_readback caveat are B's kit receipts, carried verbatim; A did not read the production catalog"
 unresolved:
   - "MO-DELTA-007: first natural exercise of the installed hydration ≈22:10Z 2026-10-04; B reads once ≈22:37Z; PROVEN_LIVE behind #761 (EXACT_HUMAN_GATE)"
   - "FIXBIND-01: C4 START bound 2026-10-04 21:00Z, then A re-adjudicates ownership"
   - "MO-DELTA-021: wiring + served typed-refusal child is CEO B's (F09); no lane launched"
   - "MO-PAID-054: #7100 is DRAFT / HOLD-FOR-SOL; stays PARTIAL until merged and the served journey is proven"
   - "MO-PAID-056/038: PROVEN_LIVE needs the operator's worker-cron install + #582 + one natural delivered row; the B-F12-7 admission question is OPEN for Sol (program file §5)"
+  - "MO-PAID-055/084/052: PROVEN_LIVE needs a signed-in human journey each (EXACT_HUMAN_GATE) and, for 084, a production catalog readback settling DDL 0027; the DEFER/fold admission questions for #581/#548/#555 are OPEN for Sol"
 next_actions:
   - "Merge this records PR by hand on concluded checks (--match-head-commit), bare fetch, blob verify; one short #6819 readback naming consumed ids 5974671805 / 5974768521 / 5974949075 / 5975875288 / 5976075322 / 5976159078 / 5976281473 / 5976459852 / 5976638742 / 5977422061 / 5978004918 / 5978053351"
   - "21:05Z one-shot: FIXBIND-01 bound; 23:07Z one-shot: W13 with B's natural-exercise receipt"
@@ -72,6 +79,7 @@ do_not_redo:
   - "B's row-evidence batches 5978004918 / 5978053351 are recorded (D86) — never re-record; MO-DELTA-018's cadence evidence lives on pair row 059 by design"
   - "MO-DELTA-007's install receipt is recorded (D85) — never re-record #793/#794/#798"
   - "The 056/038 correction is recorded (D87) — never re-record #549/#582/0018 facts"
+  - "Part 2 (055/084/052/039/081/082) is recorded (D88) — never re-record #581/#548/#555/#526/#588/#550/#557 or the 0027 caveat"
   - "Never edit a non-union ledger row for note-level evidence when its pair row is in the union — it moves OUTSIDE_UNION_SHA256 for no state change"
 danger_areas:
   - "MO-DELTA-018 is OUTSIDE the pin test's union set while its pair MO-PAID-059 is inside; 002/021/054/059 are union rows"
@@ -96,7 +104,10 @@ is closed, 054 cites the in-flight #7100 binding lane, and 021's render-lane rea
 two unrelated CLOSED citations are replaced by the honest cause (view-model built, page builder
 not wired). CEO B's F12 correction moved MO-PAID-056 and MO-DELTA-038 from NOT_BUILT to BUILT_NOT_PROVEN
 (terminal #549 merged, migration 0018 applied, routes served; worker cron never installed, #582
-unmerged, no natural delivery) and the outside-union digest was re-pinned. Rulings D85–D87 and the lane matrix are in
+unmerged, no natural delivery); part 2 moved MO-PAID-055/084 to BUILT_NOT_PROVEN (terminal #581 public
+API v1 + api keys, 401-served) and MO-PAID-052 to PARTIAL (#548 watchlist grants + #555 shared
+workspaces; scenario/analysis/coverage sharing unbuilt). The outside-union digest was re-pinned twice.
+Rulings D85–D88 and the lane matrix are in
 `research/MARKET_ONTOLOGY_CEO_A_CONTINUATION_HANDOFF_2026-10-02.md`; read its `## 4 Ledger`
 before any act. `MISSION_COMPLETE: false` — Sol acceptance of the MarketOntology program has
 not been given; the seat continues.
