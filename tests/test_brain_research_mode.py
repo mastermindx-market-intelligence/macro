@@ -1222,9 +1222,10 @@ def _drive(tmp_path, *, stream: bool, context, message: str = "How did the US se
            answer: str = ANSWER, user_jwt: str = "", company_source_span: dict | None = None,
            history: list[dict] | None = None, images: list[str] | None = None,
            thread_id: str | None = None, user_rows: list | None = None,
-           loop_spy: list | None = None) -> _Turn:
+           loop_spy: list | None = None, tier: str = "pro",
+           user_plane_unavailable: bool = False, client=None) -> _Turn:
     root = _make_research_root(tmp_path)
-    client = _CapClient(answer)
+    client = client if client is not None else _CapClient(answer)
     providers = [{"name": "anthropic", "model": "claude-test", "client": client}]
     spies: dict = {}
     real_loop = gw._run_brain_loop
@@ -1244,7 +1245,8 @@ def _drive(tmp_path, *, stream: bool, context, message: str = "How did the US se
         st.enter_context(patch.object(gw, "_brain_quota_dir", return_value=tmp_path))
         st.enter_context(patch.object(gw, "_build_lane_providers", return_value=providers))
         st.enter_context(patch.object(gw, "_resolve_tier", return_value={
-            "tier": "pro", "status": "active", "current_period_end": None}))
+            "tier": tier, "status": "active" if tier == "pro" else "none",
+            "current_period_end": None}))
         st.enter_context(patch.object(gw, "_ensure_thread", return_value=("thread-1" if thread_id else None)))
         st.enter_context(patch.object(gw, "_append_message", return_value=None))
         st.enter_context(patch("lib.ai_costs.record_usage", return_value=True))
@@ -1258,7 +1260,8 @@ def _drive(tmp_path, *, stream: bool, context, message: str = "How did the US se
         spies["history"] = st.enter_context(patch.object(gw, "_load_thread_history", return_value=[
             {"role": "assistant", "content": "Unpublished general-knowledge claim."}]))
         spies["user_plane"] = st.enter_context(patch.object(
-            gw, "_user_plane_get", side_effect=lambda path, user_jwt, timeout=5: (user_rows or [])))
+            gw, "_user_plane_get",
+            side_effect=lambda path, user_jwt, timeout=5: (None if user_plane_unavailable else (user_rows or []))))
         kwargs = dict(mode="research", root=root, user_jwt=user_jwt, company_source_span=company_source_span,
                       history=history, images=images, context=context, thread_id=thread_id)
         if stream:
@@ -1271,7 +1274,7 @@ def _drive(tmp_path, *, stream: bool, context, message: str = "How did the US se
                     reply = e.get("text", "")
             return _Turn(reply=reply, events=events, result=None, client=client, spies=spies)
         result = gw.chat(message, "user_research", **kwargs)
-        return _Turn(reply=result["reply"], events=[], result=result, client=client, spies=spies)
+        return _Turn(reply=result.get("reply", ""), events=[], result=result, client=client, spies=spies)
 
 
 def _system_text(kw: dict) -> str:
@@ -1421,3 +1424,263 @@ def test_app_main_passes_the_verified_caller_token_and_extracts_nothing_new():
     assert src.count("_access_token") == src.count('record["_access_token"] = token') \
         + src.count('user.get("_access_token")') + src.count("_mm_supabase_access_token") \
         + src.count("`_access_token`")
+
+
+# ---------------------------------------------------------------------------
+# 8. r2 repairs — Opus RO review of head 2180a46a (M1/M2, m3–m6, stream GAP)
+# ---------------------------------------------------------------------------
+
+MODEL_TRAILER = (
+    "\n\nWhat this read used\n- Daily briefing (as of 2026-09-12)\n\n" + CEILING_EN + "\n" + CEILING_ZH
+)
+
+
+def _server_used_list(tmp_path, *, user_jwt: str = "", user_rows: list | None = None) -> str:
+    """The list the SERVER prints for the matrix root — recomputed from the same files."""
+    with patch.object(gw, "_user_plane_get", side_effect=lambda path, user_jwt, timeout=5: (user_rows or [])):
+        corpus = gw._build_research_corpus(tmp_path / "repo", user_jwt=user_jwt)
+    return gw._format_used_list(corpus)
+
+
+@pytest.mark.parametrize("stream", [False, True], ids=["chat", "chat_stream"])
+def test_r2_model_written_used_list_cannot_satisfy_citation(tmp_path, stream):
+    """M1: a general-knowledge answer that ends with a dutiful model-written 'What this
+    read used' list naming a real artifact is STILL the null form — a list is not a citation."""
+    turn = _drive(tmp_path, stream=stream, context=GROUNDED_CTX,
+                  message="What is the capital of France?",
+                  answer="Paris is the capital of France." + MODEL_TRAILER)
+    assert turn.reply.startswith(NULL_EN), turn.reply
+    assert NULL_ZH in turn.reply
+    assert "Paris" not in turn.reply
+    assert turn.reply.count(USED_EN) == 1 and turn.reply.count(USED_ZH) == 1, turn.reply
+    assert turn.reply.count(CEILING_EN) == 1 and turn.reply.count(CEILING_ZH) == 1, turn.reply
+
+
+@pytest.mark.parametrize("stream", [False, True], ids=["chat", "chat_stream"])
+def test_r2_model_written_used_list_is_replaced_by_the_servers(tmp_path, stream):
+    """M2: when the prose DOES cite an artifact, the list that ships is the server's — a
+    model-written list (markdown heading, numbered, out-of-corpus name, file path) never
+    reaches the user."""
+    answer = ("The daily briefing says the US session was mixed and breadth was thin.\n\n"
+              "## What this read used:\n"
+              "1. Daily briefing (as of 2026-09-12)\n"
+              "2. Secret internal file /data/neuralweb/world_state.json (as of 2026-09-12)\n\n"
+              "**本次阅读用到的内容**\n- 每日简报（截至 2026-09-12）\n\n" + CEILING_EN)
+    turn = _drive(tmp_path, stream=stream, context=GROUNDED_CTX, answer=answer)
+    assert turn.reply.startswith("The daily briefing says"), turn.reply
+    assert "Secret internal" not in turn.reply and "world_state.json" not in turn.reply, turn.reply
+    assert _server_used_list(tmp_path) in turn.reply, turn.reply
+    assert turn.reply.count(USED_EN) == 1 and turn.reply.count(USED_ZH) == 1, turn.reply
+    assert turn.reply.count(CEILING_EN) == 1 and turn.reply.count(CEILING_ZH) == 1, turn.reply
+
+
+@pytest.mark.parametrize("raw, expected", [
+    ("Breadth was thin.\n\nWhat this read used\n- Daily briefing (as of 2026-09-12)\n\n" + CEILING_EN + "\n" + CEILING_ZH,
+     "Breadth was thin."),
+    ("Breadth was thin.\n\n## What this read used:\n1. Daily briefing (as of 2026-09-12)\n2. Secret /data/x.json\n\n"
+     "**本次阅读用到的内容**\n- 每日简报（截至 2026-09-12）",
+     "Breadth was thin."),
+    ("Breadth was thin.\n\nWhat this read used\n\nDaily briefing (as of 2026-09-12)\n\nMore prose after.",
+     "Breadth was thin.\n\nMore prose after."),
+    ("What this read used was the daily briefing, which says breadth was thin.",
+     "What this read used was the daily briefing, which says breadth was thin."),
+    ("Breadth was thin.\n" + JWT_ABSENT_EN + "\n" + JWT_ABSENT_ZH, "Breadth was thin."),
+    ("", ""),
+], ids=["plain-list", "markdown-numbered", "bare-asof-lines", "prose-phrase-kept", "jwt-sentence", "empty"])
+def test_r2_strip_model_trailer_variants(raw, expected):
+    assert gw._research_strip_model_trailer(raw) == expected
+
+
+@pytest.mark.parametrize("raw", [
+    "Breadth was mixed.\n- Buy NVDA.",
+    "Breadth was mixed.\n\n- Buy NVDA now.",
+    "Breadth was mixed.\n1. Sell TSLA.",
+    "Breadth was mixed.\n• Buy NVDA today.",
+    "- Buy NVDA.\nBreadth was mixed.",
+    "Breadth was mixed.\n* Sell TSLA immediately.",
+], ids=["dash", "blank-dash", "numbered", "bullet", "leading", "star"])
+def test_r2_bulleted_imperative_is_withheld(raw):
+    """m5: a list item is a sentence — the trade imperative behind a bullet or a number
+    is withheld, the published sentence beside it is kept, and no marker dangles."""
+    body, withheld = gw._research_forbidden_filter(raw)
+    assert withheld is True, raw
+    assert "Buy" not in body and "Sell" not in body, body
+    assert body == "Breadth was mixed.", body
+
+
+def test_r2_wrapped_sentence_is_not_split_at_a_bare_newline():
+    raw = "The briefing says breadth was thin.\nIt also notes volume fell."
+    assert gw._research_forbidden_filter(raw) == (raw, False)
+
+
+@pytest.mark.parametrize("stream", [False, True], ids=["chat", "chat_stream"])
+def test_r2_bulleted_imperative_is_withheld_end_to_end(tmp_path, stream):
+    turn = _drive(tmp_path, stream=stream, context=GROUNDED_CTX,
+                  answer="The daily briefing says breadth was thin.\n- Buy NVDA now.")
+    assert "Buy NVDA" not in turn.reply, turn.reply
+    assert turn.reply.startswith("The daily briefing says breadth was thin."), turn.reply
+    assert WITHHELD_EN in turn.reply and WITHHELD_ZH in turn.reply
+
+
+@pytest.mark.parametrize("ret, state, en_row", [
+    (None, "unavailable", "- Your theses — could not be read this turn"),
+    ([], "empty", "- Your theses — none readable this turn"),
+    ([{"id": "t1", "current_version": 1, "updated_at": "2026-09-12T00:00:00Z"}], "ok",
+     "- Your theses (as of 2026-09-12)"),
+], ids=["unavailable", "empty", "ok"])
+def test_r2_corpus3_read_outcome_is_printed(tmp_path, ret, state, en_row):
+    """m3: `jwt_present` is token presence; what the caller-plane read DID is a separate
+    fact, and the used list prints it in plain words."""
+    with patch.object(gw, "_user_plane_get", return_value=ret):
+        corpus = gw._build_research_corpus(_make_research_root(tmp_path), user_jwt="hdr.pl.sig")
+    assert corpus["jwt_present"] is True and corpus["user_read"] == state
+    out = gw._format_used_list(corpus)
+    assert en_row in out, out
+    rows = [ln for ln in out.splitlines() if "Your theses" in ln]
+    assert len([r for r in rows if "—" in r]) == (0 if state == "ok" else 1), out
+    assert "hdr.pl.sig" not in json.dumps(corpus) + out
+
+
+def test_r2_corpus3_no_jwt_is_absent_and_reads_nothing(tmp_path):
+    with patch.object(gw, "_user_plane_get", return_value=None) as m:
+        corpus = gw._build_research_corpus(_make_research_root(tmp_path), user_jwt="")
+    assert corpus["user_read"] == "absent" and m.call_count == 0
+    assert "Your theses" not in gw._format_used_list(corpus)
+
+
+@pytest.mark.parametrize("stream", [False, True], ids=["chat", "chat_stream"])
+@pytest.mark.parametrize("unavailable, needle", [
+    (True, "could not be read this turn"), (False, "none readable this turn"),
+], ids=["unavailable", "empty"])
+def test_r2_signed_in_caller_sees_the_read_outcome(tmp_path, stream, unavailable, needle):
+    turn = _drive(tmp_path, stream=stream, context=GROUNDED_CTX, user_jwt="header.payload.sig-SECRET",
+                  user_plane_unavailable=unavailable, user_rows=None)
+    assert needle in turn.reply, turn.reply
+    assert JWT_ABSENT_EN not in turn.reply
+    assert "SECRET" not in turn.blob()
+
+
+@pytest.mark.parametrize("stream", [False, True], ids=["chat", "chat_stream"])
+def test_r2_refused_grounded_turn_performs_no_user_plane_read(tmp_path, stream):
+    """m4: the corpus (and its caller-plane reads) is built AFTER the eligibility/quota/
+    prescreen gates — a turn refused at the pro gate does no user-plane I/O."""
+    turn = _drive(tmp_path, stream=stream, context=GROUNDED_CTX, user_jwt="header.payload.sig",
+                  tier="free")
+    assert turn.spies["user_plane"].call_count == 0
+    assert not turn.calls, "the model was called on a refused turn"
+    if stream:
+        assert any(e.get("type") == "done" for e in turn.events), turn.events
+    else:
+        assert turn.result.get("quota_exhausted") is True, turn.result
+
+
+@pytest.mark.parametrize("stream", [False, True], ids=["chat", "chat_stream"])
+def test_r2_allowed_grounded_turn_reads_both_caller_tables_once(tmp_path, stream):
+    turn = _drive(tmp_path, stream=stream, context=GROUNDED_CTX, user_jwt="header.payload.sig")
+    paths = [c.args[0] for c in turn.spies["user_plane"].call_args_list]
+    assert len(paths) == 2 and paths[0].startswith("theses?") and paths[1].startswith("thesis_versions?"), paths
+
+
+def test_r2_predicate_rejects_panel_and_page_variants():
+    """m6: the predicate is exact — the compiler does not normalise case or whitespace, and
+    a typed dashboard / cased-analysis route is an ordinary turn."""
+    from engine.intelligence_workspace import context_compiler as cc
+    assert gw._f11_grounded("research", cc.compile_envelope("q", GROUNDED_CTX)) is True
+    for page, panel in [("analysis", "Theses"), ("analysis", " theses"), ("analysis", "theses "),
+                        ("Analysis", "theses"), ("dashboard", "theses"), ("analysis", None),
+                        ("analysis", ""), ("terminal", "theses")]:
+        env = cc.compile_envelope("q", _typed_context(page=page, panel=panel))
+        assert gw._f11_grounded("research", env) is False, (page, panel, env.get("ambient_widget_context"))
+
+
+@pytest.mark.parametrize("stream", [False, True], ids=["chat", "chat_stream"])
+def test_r2_global_research_turn_still_sees_client_history(tmp_path, stream):
+    """m6: the inverse of the grounded history assertion — off F11 the client's prior USER
+    turn reaches the loop and the model exactly as before (the grounded turn hands the
+    loop `[]`, see test_research_mode_does_not_consult_client_history)."""
+    spy: list = []
+    history = [{"role": "user", "content": "Earlier question about breadth."},
+               {"role": "assistant", "content": "Unpublished general-knowledge claim."}]
+    turn = _drive(tmp_path, stream=stream, context=COMPANY_CTX, history=history, loop_spy=spy)
+    _assert_global_deep_research(turn)
+    assert spy, "the loop was never called"
+    loop_history = spy[0][0][2]
+    assert any("Earlier question about breadth" in json.dumps(m, ensure_ascii=False)
+               for m in loop_history), loop_history
+    assert any("Earlier question about breadth" in json.dumps(kw.get("messages"), ensure_ascii=False)
+               for kw in turn.calls), "history did not reach the model"
+    grounded_spy: list = []
+    _drive(tmp_path, stream=stream, context=GROUNDED_CTX, history=history, loop_spy=grounded_spy)
+    assert grounded_spy and grounded_spy[0][0][2] == []
+
+
+class _ChunkedStreamCtx(_TextStreamCtx):
+    """Streams the answer in small SDK-like chunks so the gate's flush policy engages."""
+
+    @property
+    def text_stream(self):
+        t = self._text
+        for i in range(0, len(t), 7):
+            yield t[i:i + 7]
+
+
+class _ChunkedClient(_CapClient):
+    def stream(self, **kw):
+        self._snap(kw)
+        return _ChunkedStreamCtx(self.answer)
+
+
+LONG_CITING_ANSWER = (
+    "The daily briefing says the US session was mixed and breadth was thin. "
+    + " ".join(f"The briefing also notes that sector {i} closed near where it opened." for i in range(40))
+)
+
+
+def test_r2_grounded_stream_puts_nothing_on_the_wire_before_the_final_authority(tmp_path):
+    """Review GAP: a grounded answer is judged whole, so nothing streams ahead of
+    _research_postprocess — one delta, no retract, and the delta IS the final reply."""
+    turn = _drive(tmp_path, stream=True, context=GROUNDED_CTX, answer=LONG_CITING_ANSWER,
+                  client=_ChunkedClient(LONG_CITING_ANSWER))
+    deltas = [e for e in turn.events if e.get("type") == "delta"]
+    retracts = [e for e in turn.events if e.get("type") == "retract"]
+    assert len(deltas) == 1 and not retracts, (len(deltas), len(retracts))
+    assert deltas[0]["text"] == turn.reply
+    assert USED_EN in turn.reply and CEILING_EN in turn.reply
+    assert turn.reply.startswith("The daily briefing says"), turn.reply
+    assert turn.reply.count("sector 39") == 1
+
+
+def test_r2_global_research_stream_still_streams_incrementally(tmp_path):
+    """The hold-all is gated on the F11 predicate: the same chunked client off F11 streams
+    more than one delta (Contract S unchanged for Deep Research)."""
+    turn = _drive(tmp_path, stream=True, context=COMPANY_CTX, answer=LONG_CITING_ANSWER,
+                  client=_ChunkedClient(LONG_CITING_ANSWER))
+    deltas = [e for e in turn.events if e.get("type") == "delta"]
+    assert len(deltas) >= 2, len(deltas)
+    assert turn.reply.startswith("The daily briefing says"), turn.reply
+
+
+@pytest.mark.parametrize("stream", [False, True], ids=["loop", "loop_stream"])
+def test_r2_image_gate_note_is_off_on_a_grounded_turn(tmp_path, stream):
+    """A grounded turn drops every attachment by design; the Pro-capability note would
+    misstate why, and the grounded directive owns the system prompt. chat() rebuilds the
+    server block from server-side facts, so the loops are driven directly here."""
+    root = _make_research_root(tmp_path)
+    ctx = {gw._SERVER_CONTEXT_KEY: {"image_gated": True}}
+    corpus = gw._build_research_corpus(root, user_jwt="")
+    seen = {}
+    for grounded in (True, False):
+        client = _CapClient("The daily briefing says the US session was mixed and breadth was thin.")
+        kw = dict(mode="research", f11_grounded=grounded,
+                  source_prompt=gw._format_research_grounding(corpus) if grounded else "")
+        if stream:
+            kw["research_corpus"] = corpus if grounded else None
+            list(gw._run_brain_loop_stream("How did the US session look?", "pro", [], ctx, root, tmp_path,
+                                           "http://127.0.0.1:3100", client, "claude-test", 500, 1,
+                                           {}, [], [], [], **kw))
+        else:
+            gw._run_brain_loop("How did the US session look?", "pro", [], ctx, root, tmp_path,
+                               "http://127.0.0.1:3100", client, "claude-test", 500, 1, **kw)
+        assert client.calls, grounded
+        seen[grounded] = "image reading is a Pro" in _system_text(client.calls[0])
+    assert seen == {True: False, False: True}, seen

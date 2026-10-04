@@ -744,7 +744,18 @@ _RESEARCH_PACKET_PLAIN: dict[str, tuple[str, str]] = {
 _RESEARCH_SENTENCE_SPLIT = re.compile(
     r"(?<=[。！？])\s*"
     r"|(?<=[.!?])\s+(?=[A-Z])"
+    # r2 (review m5): a paragraph break, or a line break that starts a list item, is a
+    # sentence boundary too. Without it "Breadth was mixed.\n- Buy NVDA." was ONE
+    # piece, the trade regex's sentence anchor never saw "Buy" at a sentence start,
+    # and the bulleted imperative shipped unfiltered.
+    r"|\n\s*\n\s*"
+    r"|\n\s*(?=(?:[-•*–—]|\d{1,2}[.)])\s)"
 )
+# A leading list marker ("- ", "• ", "1. ", "2) ") is presentation, not a word: it is
+# removed from the PIECE before the forbidden-output regexes run, so a sentence-anchored
+# imperative is judged on its first word. The original text is never rewritten — the
+# filter still slices the source — this only decides whether the piece is kept.
+_RESEARCH_LIST_MARKER = re.compile(r"^\s*(?:[-•*–—]+|\d{1,2}[.)])\s+")
 # Spec (4): a percentage / 0-1 / star / high|medium|low conviction rendered as a
 # judgement — not a published fact such as "breadth was 40%". Match the
 # adjectival form 'confident' as well as the noun 'confidence', so
@@ -916,7 +927,7 @@ _RESEARCH_MONITOR_STATE_PLAIN = {
 }
 
 
-def _research_user_artifacts(user_jwt: str) -> list[dict]:
+def _research_user_artifacts(user_jwt: str, outcome: dict | None = None) -> list[dict]:
     """Corpus 3: the caller's own thesis objects, owner-only RLS through THEIR JWT.
 
     Column names follow the Terminal schema as MEASURED on mastermind-terminal master
@@ -930,18 +941,27 @@ def _research_user_artifacts(user_jwt: str) -> list[dict]:
     ``_user_plane_get`` maps to an empty read, which would silently blank the corpus).
     Never ``subject_ref``, never the ``content`` JSON itself — only a plain-string
     title-like value out of it, else a plain "version N" label. Never a row id.
+
+    r2 (review m3): ``outcome`` — when given — receives ``{"state": ...}`` naming what
+    the caller-plane read actually did: ``"ok"`` (≥1 artifact), ``"empty"`` (both reads
+    answered, nothing readable — no rows, or the F11 tables are not landed), or
+    ``"unavailable"`` (a read returned ``None``: env missing, network/5xx). The used
+    list prints that outcome as a plain row, so a signed-in caller is never told
+    their theses were read when they were not.
     """
     out: list[dict] = []
-    theses = _user_plane_get(
+    theses_raw = _user_plane_get(
         "theses?select=id,current_version,lifecycle_state,updated_at"
         "&order=updated_at.desc&limit=20",
         user_jwt,
-    ) or []
-    versions = _user_plane_get(
+    )
+    versions_raw = _user_plane_get(
         "thesis_versions?select=id,thesis_id,version,content,system_recorded_at"
         "&order=system_recorded_at.desc&limit=20",
         user_jwt,
-    ) or []
+    )
+    theses = theses_raw or []
+    versions = versions_raw or []
 
     def _plain_title(row: dict) -> str:
         content = row.get("content")
@@ -990,6 +1010,13 @@ def _research_user_artifacts(user_jwt: str) -> list[dict]:
             "Your thesis versions", "您的论点版本", asof,
             body="; ".join(bits) or "signed in; none listed yet",
         ))
+    if outcome is not None:
+        if out:
+            outcome["state"] = "ok"
+        elif theses_raw is None or versions_raw is None:
+            outcome["state"] = "unavailable"
+        else:
+            outcome["state"] = "empty"
     return out
 
 
@@ -1067,9 +1094,12 @@ def _build_research_corpus(root: Path, user_jwt: str = "") -> dict:
     """Closed-list grounding corpora 1–3. Never raises. Never logs the JWT."""
     artifacts = _research_packet_artifacts(root)
     jwt_present = bool((user_jwt or "").strip())
+    user_read = "absent"
     if jwt_present:
-        artifacts.extend(_research_user_artifacts(user_jwt))
-    return {"artifacts": artifacts, "jwt_present": jwt_present}
+        outcome: dict = {}
+        artifacts.extend(_research_user_artifacts(user_jwt, outcome=outcome))
+        user_read = str(outcome.get("state") or "unavailable")
+    return {"artifacts": artifacts, "jwt_present": jwt_present, "user_read": user_read}
 
 
 def _format_research_grounding(corpus: dict) -> str:
@@ -1115,7 +1145,68 @@ def _format_used_list(corpus: dict) -> str:
             zh_fallback = asof or "日期不明"
             lines.append(f"- {art['plain_en']} (as of {en_fallback})")
             lines.append(f"- {art['plain_zh']}（截至 {zh_fallback}）")
+    # r2 (review m3): the caller-plane read outcome is printed, never implied. A JWT that
+    # was present but whose read came back empty or unavailable is NOT "your theses were
+    # read" — say which, in plain words. "absent" is covered by the JWT-absent sentence.
+    user_read = str(corpus.get("user_read") or "")
+    if user_read == "empty":
+        lines.append(_RESEARCH_USER_READ_EMPTY_EN)
+        lines.append(_RESEARCH_USER_READ_EMPTY_ZH)
+    elif user_read == "unavailable":
+        lines.append(_RESEARCH_USER_READ_UNAVAILABLE_EN)
+        lines.append(_RESEARCH_USER_READ_UNAVAILABLE_ZH)
     return "\n".join(lines)
+
+
+_RESEARCH_USER_READ_EMPTY_EN = "- Your theses — none readable this turn"
+_RESEARCH_USER_READ_EMPTY_ZH = "- 您的论点 — 本轮没有可读取的内容"
+_RESEARCH_USER_READ_UNAVAILABLE_EN = "- Your theses — could not be read this turn"
+_RESEARCH_USER_READ_UNAVAILABLE_ZH = "- 您的论点 — 本轮无法读取"
+
+# r2 (review M1/M2): characters a model wraps a heading or a canonical sentence in —
+# markdown emphasis/heading marks, quotes, CJK brackets, a trailing colon.
+_RESEARCH_TRAILER_WRAP = "*#>_`\"'“”「」【】 \t:："
+_RESEARCH_TRAILER_ASOF = re.compile(r"\((?:as of|截至)\b|（截至")
+
+
+def _research_strip_model_trailer(body: str) -> str:
+    """Remove what the MODEL wrote in the server's voice, before anything is judged.
+
+    r2 (review M1/M2). The grounded directive tells the model to end with a "What this
+    read used" list and the ceiling sentence — so a general-knowledge answer could carry
+    a model-written list naming a real artifact, satisfy ``_research_cites_artifact``
+    through that list alone, and then have its OWN list served verbatim (out-of-corpus
+    names included) because the server appended its list only when the heading was
+    absent. This strips, line-wise: a used-list heading (EN/ZH, markdown-wrapped or
+    not) together with the list items under it (bullets, numbered items, blank lines,
+    bare ``<name> (as of …)`` lines), and any line that is the ceiling or the JWT-absent
+    sentence. The citation check then runs on the PROSE only, and the server's list and
+    ceiling are appended afterwards, unconditionally. Prose is never rewritten.
+    """
+    canon = {
+        _RESEARCH_CEILING_EN, _RESEARCH_CEILING_ZH,
+        _RESEARCH_JWT_ABSENT_EN, _RESEARCH_JWT_ABSENT_ZH,
+    }
+    canon_bare = {c.rstrip("。.") for c in canon}
+    heads = (_RESEARCH_USED_EN, _RESEARCH_USED_ZH)
+    kept: list[str] = []
+    in_list = False
+    for line in (body or "").split("\n"):
+        core = line.strip().strip(_RESEARCH_TRAILER_WRAP).strip()
+        if not core:
+            if not in_list:
+                kept.append(line)
+            continue
+        if any(core.startswith(h) and len(core) - len(h) <= 24 for h in heads):
+            in_list = True
+            continue
+        if core in canon or core.rstrip("。.") in canon_bare:
+            continue
+        if in_list and (_RESEARCH_LIST_MARKER.match(line) or _RESEARCH_TRAILER_ASOF.search(line)):
+            continue
+        in_list = False
+        kept.append(line)
+    return "\n".join(kept).strip()
 
 
 def _research_cites_artifact(answer: str, corpus: dict) -> bool:
@@ -1144,6 +1235,7 @@ def _research_sentence_forbidden(sentence: str) -> bool:
         _RESEARCH_USED_EN, _RESEARCH_USED_ZH,
     }:
         return False
+    s = _RESEARCH_LIST_MARKER.sub("", s, count=1)
     if _RESEARCH_PERCENT.search(s):
         return True
     if _RESEARCH_STAR.search(s):
@@ -1194,14 +1286,27 @@ def _research_forbidden_filter(text: str) -> tuple[str, bool]:
             continue
         if _research_sentence_forbidden(stripped):
             withheld = True
+            # r2 (review m5): a numbered item splits as "1. " + "Sell TSLA." (the EN
+            # sentence split fires after the marker's period). When the item is dropped,
+            # a kept piece that is ONLY its marker goes with it — never a dangling "1.".
+            if kept and _RESEARCH_BARE_MARKER.match(kept[-1]):
+                kept.pop()
             continue
         kept.append(piece)
     return "".join(kept).strip(), withheld
 
 
+_RESEARCH_BARE_MARKER = re.compile(r"^\s*(?:[-•*–—]+|\d{1,2}[.)])\s*$")
+
+
 def _research_postprocess(answer: str, corpus: dict) -> tuple[str, bool]:
-    """Enforce citation-or-null, forbidden-output filter, ceiling, used-list, JWT null."""
-    body = (answer or "").strip()
+    """Enforce citation-or-null, forbidden-output filter, ceiling, used-list, JWT null.
+
+    r2 (review M1/M2): the model's own trailer — a "What this read used" list, the
+    ceiling, the JWT sentence — is stripped FIRST, so citation-or-null is judged on the
+    prose, and the used list that ships is always the server's.
+    """
+    body = _research_strip_model_trailer((answer or "").strip())
     cited = _research_cites_artifact(body, corpus)
     already_null = body.startswith(_RESEARCH_NULL_EN)
     withheld = False
@@ -1224,8 +1329,9 @@ def _research_postprocess(answer: str, corpus: dict) -> tuple[str, bool]:
             # space to the user.
             if withheld and not body.strip():
                 body = f"{_RESEARCH_FILTER_EMPTY_EN}\n{_RESEARCH_FILTER_EMPTY_ZH}"
-    if _RESEARCH_USED_EN not in body:
-        body = body.rstrip() + "\n\n" + _format_used_list(corpus)
+    # The used list is the SERVER's, always — never conditional on a heading the model
+    # may have written (r2, review M2).
+    body = body.rstrip() + "\n\n" + _format_used_list(corpus)
     if _RESEARCH_CEILING_EN not in body or _RESEARCH_CEILING_ZH not in body:
         # m3: gate on EN AND ZH so a model-emitted verbatim ZH ceiling is
         # not duplicated by re-appending the canonical block.
@@ -7337,7 +7443,10 @@ def _run_brain_loop(
             system_prompt = system_prompt + _seed_tool_plan(message)
     # W3: a Free/Trial attachment was dropped upstream — say so instead of answering a
     # picture the model never received.
-    if _image_was_gated(context):
+    if _image_was_gated(context) and not f11_grounded:
+        # r2: a grounded turn drops EVERY attachment by design (spec item 5), so the
+        # "image reading is a Pro capability" note would misstate why — and the grounded
+        # directive owns the whole system prompt for this turn.
         system_prompt = system_prompt + _IMAGE_GATE_NOTE
     # The turn's ONE language, named explicitly and LAST (see _language_directive).
     # W3: account language is the middle fallback — see _turn_lang.
@@ -7768,6 +7877,8 @@ _LEAK_HOLDBACK_CHARS = 256
 # out to be a tool round after all wipes what it showed with an empty `retract`.
 # Overridable as `streaming.commit_chars` (see _stream_commit_chars).
 _STREAM_COMMIT_CHARS = 200
+# r2: an F11-grounded stream holds back the whole answer (see _run_brain_loop_stream).
+_GROUNDED_STREAM_HOLD_ALL = 1 << 30
 
 # The suggestions marker _split_suggestions() recognises: a line that is EXACTLY this
 # after stripping. Streaming must never put a fragment of it on the wire.
@@ -8278,7 +8389,10 @@ def _run_brain_loop_stream(
             system_prompt = system_prompt + _seed_tool_plan(message)
     # W3: a Free/Trial attachment was dropped upstream — say so instead of answering a
     # picture the model never received.
-    if _image_was_gated(context):
+    if _image_was_gated(context) and not f11_grounded:
+        # r2: a grounded turn drops EVERY attachment by design (spec item 5), so the
+        # "image reading is a Pro capability" note would misstate why — and the grounded
+        # directive owns the whole system prompt for this turn.
         system_prompt = system_prompt + _IMAGE_GATE_NOTE
     # The turn's ONE language, named explicitly and LAST (see _language_directive).
     # W3: account language is the middle fallback — see _turn_lang.
@@ -8394,6 +8508,15 @@ def _run_brain_loop_stream(
     # same policy, so there is exactly one config read and one set of knobs.
     _flush_chars, _flush_s, _hold = _stream_flush_cfg(root)
     _commit_chars = _stream_commit_chars(root)
+    if f11_grounded:
+        # r2 (review GAP): a grounded answer is judged WHOLE by _research_postprocess —
+        # citation-or-null may replace all of it, and the forbidden filter may drop the
+        # sentence being typed. Streaming it first would put uncited or forbidden text
+        # on the wire and take it back with a retract seconds later. So the leak
+        # holdback is widened to "everything": the gate releases nothing, `_emitted`
+        # stays empty, and the reconciliation below ships ONE delta carrying the
+        # post-processed answer — the pre-Contract-S shape, for this turn only.
+        _hold = _GROUNDED_STREAM_HOLD_ALL
     # `_emitted` is what the CLIENT currently holds — the single source of truth for the
     # reconciliation at the bottom. The server-side buffer restarts on every failover and
     # every round; this does not, which is how a dead candidate's half-written draft (and
@@ -10083,7 +10206,9 @@ def chat(
         # is read through the CALLER's JWT (owner RLS, anon key) — never the service role,
         # and the token itself never enters prompts, logs, receipts or the response.
         tool_budget = 1
-        research_corpus = _build_research_corpus(root, user_jwt=user_jwt)
+        # r2 (review m4): the corpus — and its caller-plane reads — is built at step 6,
+        # after the pro-eligibility, quota, prescreen and selection gates, so a refused
+        # turn performs no user-plane I/O.
 
     # Exact source grounding is a request-scoped authorization + deterministic
     # resolution gate.  It deliberately precedes quota/provider work and keeps
@@ -10391,6 +10516,7 @@ def chat(
     if _grounded:
         # Spec item 8: the closed corpus is the ONLY source prompt; the loop boolean turns
         # off tools, digests and addenda for this turn (see _run_brain_loop).
+        research_corpus = _build_research_corpus(root, user_jwt=user_jwt)
         loop_source_kwargs = {
             "source_prompt": _format_research_grounding(research_corpus or {}),
             "f11_grounded": True,
@@ -10627,7 +10753,7 @@ def chat_stream(
         # is read through the CALLER's JWT (owner RLS, anon key) — never the service role,
         # and the token itself never enters prompts, logs, receipts or the response.
         tool_budget = 1
-        research_corpus = _build_research_corpus(root, user_jwt=user_jwt)
+        # r2 (review m4): built at the loop call below, after the gates — see chat().
 
     # Spec item 4: the exact-source resolver is NEVER called on an F11-grounded turn.
     source_attachment = None
@@ -10931,6 +11057,7 @@ def chat_stream(
         # Spec item 8: the closed corpus is the ONLY source prompt; the loop boolean turns
         # off tools, digests and addenda, and the corpus drives the final-authority
         # post-processing inside the stream loop (see _run_brain_loop_stream).
+        research_corpus = _build_research_corpus(root, user_jwt=user_jwt)
         stream_source_kwargs = {
             "source_prompt": _format_research_grounding(research_corpus or {}),
             "f11_grounded": True,
