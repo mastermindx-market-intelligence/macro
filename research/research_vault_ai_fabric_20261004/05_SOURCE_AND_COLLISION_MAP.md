@@ -572,9 +572,19 @@ Reason:
 
 Do not merge all three plans.
 
-Before publication/merge of #8438, inspect #8389/#8430 for any unique accepted evidence not yet represented here, then close or explicitly supersede them under normal GitHub custody.
+The unique-evidence check was completed during hardening. Four already-merged Research Intelligence / Brain foundations from #8430 were preserved in §22; its stale `#7997` identifier was deliberately not propagated because it does not resolve.
 
-Their existence is a documentation collision, not source-writer custody over Research Vault implementation paths.
+The planning carriers are now:
+
+```text
+#8389 CLOSED unmerged — superseded by #8438
+#8430 CLOSED unmerged — superseded by #8438
+#8438 OPEN draft — canonical planning candidate
+```
+
+Both closures carry explicit comments that this is planning-carrier deduplication only. They do not affect implementation custody and do not prove Fable pickup/START.
+
+Their former existence is a documentation collision, not source-writer custody over Research Vault implementation paths.
 
 ---
 
