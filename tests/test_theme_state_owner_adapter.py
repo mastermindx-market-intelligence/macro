@@ -5,6 +5,7 @@ import copy
 import dataclasses
 import datetime as dt
 import json
+import hashlib
 from pathlib import Path
 
 import pandas as pd
@@ -17,7 +18,18 @@ from engine.theme_graph import identity, identity_resolution, ontology, rights, 
 from engine import basket_membership_pit as pit
 from lib import config
 
-SOURCE_ROOT = Path(__file__).resolve().parents[1]
+CONTROLLED_CONFIG_ROOT = Path(__file__).parent / "fixtures/theme_state_owner"
+CONTROLLED_CONFIG_HASHES = {
+    "theme_crosswalk.yml": "76256cd177ea8664b24fdeb915ca7c9e4f24a07bc23d22f40ba0f2a42ba8b48a",
+    "theme_sources.yml": "8bb48fb9117043f6ee45ab156a773aedda6bfaed688fc38a9c1ada7d881cd97e",
+}
+
+
+def controlled_config_bytes(name):
+    """Frozen test inputs; missing/corrupt files never fall back to live sources."""
+    raw = (CONTROLLED_CONFIG_ROOT / name).read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == CONTROLLED_CONFIG_HASHES[name]
+    return raw
 EFFECTIVE = "2026-10-03"
 KNOWN = "2026-10-03T12:00:00Z"
 EMITTED = "2026-10-04T12:00:00Z"
@@ -60,12 +72,10 @@ def world(tmp_path, monkeypatch):
     monkeypatch.setattr(adapter, "dt", types.SimpleNamespace(**namespace))
     root = tmp_path / "controlled-repo"
     root.mkdir()
-    crosswalk = yaml.safe_load((SOURCE_ROOT / "config/theme_crosswalk.yml").read_text())
+    crosswalk = yaml.safe_load(controlled_config_bytes("theme_crosswalk.yml"))
     (root / "config").mkdir()
     (root / "config/theme_crosswalk.yml").write_text(yaml.safe_dump(crosswalk, allow_unicode=True, sort_keys=False))
-    registry_rel = rights.registry_path().relative_to(SOURCE_ROOT)
-    (root / registry_rel).parent.mkdir(parents=True, exist_ok=True)
-    (root / registry_rel).write_bytes(rights.registry_path().read_bytes())
+    (root / "config/theme_sources.yml").write_bytes(controlled_config_bytes("theme_sources.yml"))
     write(root / legacy._NARRATIVE_PATH, narrative())
     write(root / legacy._FORESIGHT_PATH, {"asof": EFFECTIVE, "themes": [
         {"theme": c.get("foresight_id", c["id"]), "stage": "watch", "tier": "A", "score": 0,
@@ -735,7 +745,7 @@ def test_unreadable_current_rights_class_cannot_qualify_even_internal(world, cla
 # S1 exercises the new production interface through a fully synthetic owner
 # estate. Original world/assertions remain unchanged; retained-byte redirection
 # for those controls is explicitly an evidence-only harness.
-from test_theme_state_production import production_world
+from tests.test_theme_state_production import production_world
 
 
 def test_production_bundle_is_immutable_after_specialist_sources_change(production_world):
@@ -821,3 +831,20 @@ def test_controlled_capture_clock_changes_only_fixture_local_namespace(world):
 def test_capture_clock_namespace_is_restored_after_fixture_teardown():
     assert adapter.dt is dt
     assert dt.datetime.__module__ == "datetime"
+
+
+
+def test_owner_fixture_uses_exact_committed_controlled_inputs(world):
+    assert (world[0] / "config/theme_sources.yml").read_bytes() == controlled_config_bytes("theme_sources.yml")
+    assert yaml.safe_load((world[0] / "config/theme_crosswalk.yml").read_text()) == yaml.safe_load(controlled_config_bytes("theme_crosswalk.yml"))
+
+
+@pytest.mark.parametrize("name", sorted(CONTROLLED_CONFIG_HASHES))
+def test_controlled_configuration_has_no_live_fallback_or_unchecked_bytes(tmp_path, monkeypatch, name):
+    # Change only this test module's fixture location, not a production owner or cache.
+    monkeypatch.setitem(globals(), "CONTROLLED_CONFIG_ROOT", tmp_path)
+    with pytest.raises(FileNotFoundError):
+        controlled_config_bytes(name)
+    (tmp_path / name).write_bytes(b"unqualified replacement")
+    with pytest.raises(AssertionError):
+        controlled_config_bytes(name)
