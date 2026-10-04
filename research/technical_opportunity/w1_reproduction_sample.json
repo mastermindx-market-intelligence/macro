@@ -1,0 +1,49 @@
+{
+  "schema_version": "toi.w1_reproduction_sample.v1",
+  "as_of": "2026-09-13",
+  "selection_law": {
+    "population": "all current w1_method_passports.jsonl method_id values",
+    "seed_prefix": "TOI-W1-REPRO-V1:",
+    "hash": "sha256(seed_prefix + method_id)",
+    "order": "ascending hexadecimal digest",
+    "take": 20,
+    "outcome_data_used": false
+  },
+  "review_status": "AWAITING_INDEPENDENT_REVIEWER",
+  "required_reproduction": [
+    "resolve every source_ref to a current W1 source receipt",
+    "reproduce the passport's formula/declarative steps from the cited primary/official/public evidence without copied proprietary code",
+    "for exact local claims, confirm every cited path exists and each named signal_id is present in that path set",
+    "confirm actionable lag/repaint behavior is consistent with the local implementation or source rule",
+    "confirm owner_disposition does not cross Setup Species, Live Entry Radar, Terminal display, or W3 authority boundaries",
+    "confirm DNR/RUL references do not resurrect killed constructions"
+  ],
+  "sample": [
+    {"method_id":"toi.cmf","selection_hash_prefix":"0eec1b450fa1"},
+    {"method_id":"toi.fractal_swing_structure","selection_hash_prefix":"1d9c6f81bfa7"},
+    {"method_id":"toi.inside_bar","selection_hash_prefix":"1e83ba1b4c80"},
+    {"method_id":"toi.connors_rsi","selection_hash_prefix":"2675eb130864"},
+    {"method_id":"toi.donchian_fakeout","selection_hash_prefix":"29d8221035c6"},
+    {"method_id":"toi.short_reversal","selection_hash_prefix":"2e536d00ea5b"},
+    {"method_id":"toi.donchian_breakout","selection_hash_prefix":"325b8a361bcc"},
+    {"method_id":"toi.support_resistance","selection_hash_prefix":"34d9dfcb1c00"},
+    {"method_id":"toi.supertrend","selection_hash_prefix":"459a8368f554"},
+    {"method_id":"toi.benchmark_rs","selection_hash_prefix":"538ccb7eac20"},
+    {"method_id":"toi.round_levels","selection_hash_prefix":"5c533a5d44ab"},
+    {"method_id":"toi.natr_percentile","selection_hash_prefix":"5c78d6b7e656"},
+    {"method_id":"toi.fibonacci_retracement","selection_hash_prefix":"60c5e8427690"},
+    {"method_id":"toi.adx_dmi","selection_hash_prefix":"65aedcb36f35"},
+    {"method_id":"toi.ma_trend","selection_hash_prefix":"71bdada3751a"},
+    {"method_id":"toi.rvol","selection_hash_prefix":"77412b2d46eb"},
+    {"method_id":"toi.ulcer","selection_hash_prefix":"782e022ad0be"},
+    {"method_id":"toi.choppiness","selection_hash_prefix":"7ae8d917b15e"},
+    {"method_id":"toi.nr7","selection_hash_prefix":"7ccc88ac9f4e"},
+    {"method_id":"toi.ordered_path_elliott","selection_hash_prefix":"8ac758ab4877"}
+  ],
+  "authority": {
+    "independent_review_complete": false,
+    "w1_acceptance": false,
+    "w3_authority": false,
+    "trade_authority": false
+  }
+}
