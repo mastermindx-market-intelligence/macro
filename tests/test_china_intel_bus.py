@@ -132,6 +132,51 @@ def test_visit_discovery_missing_earlier_observation_clock_cannot_claim_first_se
 
 
 
+def test_visit_discovery_malformed_full_observation_clock_cannot_claim_first_seen():
+    row = _visit_row(
+        "A-malformed", "000012", "2026-10-02T09:00:00+08:00",
+        recorded="2026-10-02T99:99:99+99:99",
+    )
+    snap = bus._visit_discovery_snapshot(
+        [row],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-09-15",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+    )
+    assert snap["n_recent_companies"] == 1
+    assert snap["n_first_observed_recent"] == 0
+    out = snap["examples"][0]
+    assert out["first_seen_state"] == "observation_clock_unavailable"
+    assert out["first_observed_system_day"] is None
+    assert out["observation_clock_complete"] is False
+
+
+def test_visit_discovery_malformed_health_clock_cannot_authorize_absence():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row("A-health", "000013", "2026-10-02T09:00:00+08:00")],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03garbage",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == \
+        "last_success_clock_unavailable"
+
+
+
+
 def test_visit_discovery_keeps_precoverage_source_event_as_positive_observation():
     # First production run can legitimately derive a filing published during
     # its bounded lookback before the write-once coverage-start date. The event
