@@ -9172,3 +9172,10 @@
 {"id":"ob-2026-10-02-01e02d14c8","from":"queued","to":"quarantined","at":"2026-10-04T06:18:39Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
 {"id":"ob-2026-10-02-136ada58be","from":"queued","to":"quarantined","at":"2026-10-04T06:18:39Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
 {"id":"ob-2026-10-02-f29df06120","from":"queued","to":"quarantined","at":"2026-10-04T10:28:55Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-02-0c04bc6f0c","from":"approved","to":"quarantined","at":"2026-10-04T12:33:18Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-02-ed5a046165","from":"approved","to":"quarantined","at":"2026-10-04T12:33:18Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-02-ba74538ab8","from":"approved","to":"quarantined","at":"2026-10-04T12:33:18Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-02-cd7c7e2752","from":"queued","to":"quarantined","at":"2026-10-04T12:33:18Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-02-6fb7667752","from":"queued","to":"quarantined","at":"2026-10-04T12:33:18Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-04-d1b532865f","from":"queued","to":"quarantined","at":"2026-10-04T12:33:18Z","actor":"press_wire_reap","note":"expired_session: Friday tape cannot post on Sunday; 2026-10-04 is not a trading day","receipt":null}
+{"id":"ob-2026-10-04-9d8b36f793","from":"queued","to":"quarantined","at":"2026-10-04T12:33:18Z","actor":"press_wire_reap","note":"expired_session: Friday tape cannot post on Sunday; 2026-10-04 is not a trading day","receipt":null}
