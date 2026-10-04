@@ -66,7 +66,7 @@ verified:
     result: ACCEPT ×4 as delivered (C1 r4, E r1, F1 r4, and B1 after the seat's round-5 record repair); C2 r2 and D0 r3 DELIVERED on host2 (08:44Z / 09:14Z; result.json sha256 be4e04d4… / b16f444a… observed by seat watchers) but NOT REVIEWED and NOT SHIPPED here — the host volume became unreadable at 08:24Z before either record was copied; both ship with their reviews in a follow-up PR
   - claim: agentos records validate.
     command: python3 scripts/agentos.py validate
-    result: exit  at commit time (python3 scripts/agentos.py validate)
+    result: exit 0 at commit time (python3 scripts/agentos.py validate — 0 errors, 80 pre-existing warnings)
 unverified:
   - claim: D0 round 3's mini2 artifacts (rs_20261004T051657Z_81412, lease b6face03ca9a) reproduce the host2 record.
     what_would_verify: a mini2 ssh session pulling results/D0/ from that run and a leaf diff against the host2 record (cross-host check only; host2 is the record).
