@@ -1114,3 +1114,55 @@ def test_ths_basket_canonical_edge_delays_to_latest_required_receipt(tree):
              if edge["src"] == src and edge["dst"] == "theme:solar"]
     assert len(edges) == 1, "the canonical one-hop mapping must become usable once knowable"
     assert edges[0]["valid_from"] == edges[0]["evidence_time"] == late_cmap_asof
+
+
+# R1: validate every prior destination before the first graph publication write.
+@pytest.mark.parametrize("name,columns", [
+    ("nodes", store.NODE_COLUMNS), ("edges", store.EDGE_COLUMNS),
+    ("evidence", store.EVIDENCE_COLUMNS), ("capability", store.CAPABILITY_COLUMNS),
+    ("identity_resolution", store.IDENTITY_RESOLUTION_COLUMNS),
+    ("node_lifecycle", store.NODE_LIFECYCLE_COLUMNS),
+])
+@pytest.mark.parametrize("damage", ["unreadable", "missing_columns"])
+def test_d2c_r1_all_destination_preflight_preserves_all_bytes(tree, monkeypatch, name, columns, damage):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    # Start with a complete legitimate generation, then damage exactly one destination.
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    path = store.store_dir() / f"{name}.parquet"
+    if damage == "unreadable":
+        path.write_bytes(b"retained corrupt destination")
+    else:
+        pd.DataFrame({"unrelated": [1]}).to_parquet(path, index=False)
+    before = _file_hashes(root)
+    writes = []
+    monkeypatch.setattr(store, "_atomic_write_parquet", lambda *args: writes.append(args))
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert writes == []
+    assert _file_hashes(root) == before
+
+
+@pytest.mark.parametrize("contents", ["not JSON", "[]", "{}"])
+def test_d2c_r1_invalid_existing_metadata_refuses_before_writes(tree, monkeypatch, contents):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    store.meta_path().write_text(contents)
+    before = _file_hashes(root)
+    writes = []
+    monkeypatch.setattr(store, "_atomic_write_parquet", lambda *args: writes.append(args))
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert writes == []
+    assert _file_hashes(root) == before
+
+
+
+def test_d2c_r1_metadata_claiming_missing_history_refuses_before_writes(tree, monkeypatch):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    assert json.loads(store.meta_path().read_text())["counts"]["nodes"] > 0
+    store.nodes_path().unlink()
+    before = _file_hashes(root)
+    writes = []
+    monkeypatch.setattr(store, "_atomic_write_parquet", lambda *args: writes.append(args))
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert writes == []
+    assert _file_hashes(root) == before
