@@ -3993,6 +3993,16 @@ def test_readonly_census_workflow_cannot_ingest_publish_or_cancel_ingest():
         if isinstance(step, dict)
     )
     assert "python -m scripts.research_vault_census" in runs
+    assert "missing required private R2 configuration name(s)" in runs
+    assert "research bucket aliases shared/public bucket" in runs
+    for required_name in (
+        "R2_BUCKET",
+        "R2_RESEARCH_ENDPOINT",
+        "R2_RESEARCH_ACCESS_KEY_ID",
+        "R2_RESEARCH_SECRET_ACCESS_KEY",
+        "R2_RESEARCH_BUCKET",
+    ):
+        assert required_name in runs
     for forbidden in (
         "scripts.ingest_research",
         "git push",
