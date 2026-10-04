@@ -253,6 +253,11 @@ def _ensure_answer_metadata(df: pd.DataFrame) -> pd.DataFrame:
     ):
         if col not in out.columns:
             out[col] = ""
+        else:
+            # Legacy reindex creates all-NA float columns. Normalize them to
+            # string/object before assigning hashes/states so pandas 2/3 never
+            # has to coerce a text lineage value into float64.
+            out[col] = out[col].map(_clean_clock).astype("object")
 
     for idx, row in out.iterrows():
         answer_hash = _clean_clock(row.get("answer_sha256")) or _answer_digest(row.get("answer"))
