@@ -140,9 +140,11 @@ returned.
 
 ### `.github/workflows/futures-tape-probe.yml`
 
-Manual, read-only self-hosted probe lane. It records external-volume capacity, attempts
-the Massive Futures entitlement probe with the already-governed Massive/Polygon secret
-binding, and attempts the LSE catalog probe only when an `LSE_API_KEY` has been
+Read-only self-hosted probe lane. It runs once automatically when this futures-tape
+implementation lands on protected main (path-filtered push trigger) and remains manually
+dispatchable for later source requalification. It records external-volume capacity,
+attempts the Massive Futures entitlement probe with the already-governed Massive/Polygon
+secret binding, and attempts the LSE catalog probe only when an `LSE_API_KEY` has been
 configured out of band. It has `contents: read`, writes no market data, creates no
 secret/account, and is diagnostic only rather than a new scheduler.
 
