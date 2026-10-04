@@ -156,6 +156,141 @@ def test_source_revision_does_not_hide_independent_new_document_novelty():
     assert ("APPEARED", "适度宽松") not in appeared
     assert ("DROPPED", "供给侧结构性改革") not in appeared
 
+
+def test_revision_uses_full_locator_history_beyond_novelty_window():
+    book = _book()
+    locator = "loc_pboc_long_gap"
+    # The predecessor is 60+ days old, outside the 30d novelty window.
+    old = _row(
+        "pboc", "旧版本", "供给侧结构性改革",
+        "2026-04-01T01:00:00",
+        url="https://www.pbc.gov.cn/policy/long-gap.html",
+    )
+    old["source_locator_id"] = locator
+    stable_prior = _row(
+        "pboc", "近期基线", "稳中求进",
+        "2026-05-20T01:00:00",
+        url="https://www.pbc.gov.cn/policy/baseline.html",
+    )
+    revised = _row(
+        "pboc", "更正版本", "实施适度宽松的货币政策",
+        "2026-06-01T01:00:00",
+        url="https://www.pbc.gov.cn/policy/long-gap.html",
+    )
+    revised["source_locator_id"] = locator
+    stable_today = _row(
+        "pboc", "今日基线", "稳中求进",
+        "2026-06-01T02:00:00",
+        url="https://www.pbc.gov.cn/policy/today.html",
+    )
+
+    res = cd.compute_events(
+        [old, stable_prior, revised, stable_today],
+        "2026-06-01",
+        book=book,
+        window_days=30,
+    )
+    kinds = {(e["kind"], e["phrase"]) for e in res["events"]}
+    assert res["counts"]["n_document_revisions"] == 1
+    assert ("APPEARED", "适度宽松") not in kinds
+    assert ("DROPPED", "供给侧结构性改革") not in kinds
+    rev = res["document_revisions"][0]
+    assert rev["previous_observed_at"] == "2026-04-01T01:00:00"
+    assert rev["added_phrases"] == ["适度宽松"]
+    assert rev["removed_phrases"] == ["供给侧结构性改革"]
+
+
+def test_revision_neutral_phrases_stay_in_both_novelty_unions():
+    book = _book()
+    locator = "loc_ndrc_neutral"
+    old = _row(
+        "ndrc", "旧版本", "发展新质生产力 稳中求进",
+        "2026-07-01T01:00:00",
+        url="https://www.ndrc.gov.cn/policy/neutral.html",
+    )
+    old["source_locator_id"] = locator
+    revised = _row(
+        "ndrc", "更正版本", "发展新质生产力 稳中求进 反内卷",
+        "2026-07-02T01:00:00",
+        url="https://www.ndrc.gov.cn/policy/neutral.html",
+    )
+    revised["source_locator_id"] = locator
+    # Independent document repeats a phrase that already existed in the prior
+    # version. Removing the corrected locator wholesale would falsely mint APPEARED.
+    independent_today = _row(
+        "ndrc", "独立新文", "发展新质生产力",
+        "2026-07-02T02:00:00",
+        url="https://www.ndrc.gov.cn/policy/independent.html",
+    )
+
+    res = cd.compute_events(
+        [old, revised, independent_today],
+        "2026-07-02",
+        book=book,
+        window_days=30,
+    )
+    kinds = {(e["kind"], e["phrase"]) for e in res["events"]}
+    assert res["counts"]["n_document_revisions"] == 1
+    assert ("APPEARED", "新质生产力") not in kinds
+    assert ("DROPPED", "稳中求进") not in kinds
+    # The correction-only phrase delta is evidence, not ordinary novelty.
+    assert ("APPEARED", "反内卷") not in kinds
+    rev = res["document_revisions"][0]
+    assert "新质生产力" in rev["unchanged_phrases"]
+    assert "稳中求进" in rev["unchanged_phrases"]
+    assert "反内卷" in rev["added_phrases"]
+
+
+def test_revised_layout_lead_cannot_mint_lead_shift():
+    book = _book()
+    locator = "loc_pd_lead"
+    prior = _row(
+        "peoples_daily", "新质生产力", "",
+        "2026-07-01T01:00:00",
+        url="https://paper.people.com.cn/lead.html",
+        rank=0,
+    )
+    prior["source_locator_id"] = locator
+    today = _row(
+        "peoples_daily", "房住不炒", "",
+        "2026-07-02T01:00:00",
+        url="https://paper.people.com.cn/lead.html",
+        rank=0,
+    )
+    today["source_locator_id"] = locator
+
+    res = cd.compute_events([prior, today], "2026-07-02", book=book)
+    assert res["counts"]["n_document_revisions"] == 1
+    assert res["counts"]["n_lead_shift"] == 0
+
+
+def test_revision_neutralization_does_not_hide_unrelated_new_phrase():
+    book = _book()
+    locator = "loc_pboc_revision_plus_independent"
+    prior = _row(
+        "pboc", "旧版本", "稳中求进",
+        "2026-07-01T01:00:00",
+        url="https://www.pbc.gov.cn/policy/revised-2.html",
+    )
+    prior["source_locator_id"] = locator
+    revised = _row(
+        "pboc", "更正版本", "稳中求进 适度宽松",
+        "2026-07-02T01:00:00",
+        url="https://www.pbc.gov.cn/policy/revised-2.html",
+    )
+    revised["source_locator_id"] = locator
+    independent = _row(
+        "pboc", "独立新文", "超常规逆周期调节",
+        "2026-07-02T02:00:00",
+        url="https://www.pbc.gov.cn/policy/independent-2.html",
+    )
+
+    res = cd.compute_events([prior, revised, independent], "2026-07-02", book=book)
+    kinds = {(e["kind"], e["phrase"]) for e in res["events"]}
+    assert ("APPEARED", "适度宽松") not in kinds
+    assert ("APPEARED", "超常规逆周期调节") in kinds
+
+
 # --------------------------------------------------------------------------- #
 # cold start
 # --------------------------------------------------------------------------- #
