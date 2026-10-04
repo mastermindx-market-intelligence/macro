@@ -135,7 +135,7 @@ def _coerce_history_result(result: Any, scratch: Path):
 
 def _timestamp_column(df) -> str | None:
     lower = {str(c).lower(): str(c) for c in df.columns}
-    for candidate in ("timestamp", "ts", "datetime", "time"):
+    for candidate in ("timestamp_utc", "window_start_utc", "timestamp", "ts", "datetime", "time"):
         if candidate in lower:
             return lower[candidate]
     return None
