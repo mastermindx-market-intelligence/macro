@@ -317,8 +317,79 @@ def test_independent_same_day_occurrence_survives_correction_delta_suppression()
 
     assert res["counts"]["n_document_revisions"] == 1
     # The correction also adds this phrase, but an unrelated source occurrence
-    # independently earns ordinary novelty eligibility.
+    # independently earns ordinary novelty eligibility AND owns the evidence link.
     assert ("APPEARED", "适度宽松") in kinds
+    event = next(e for e in res["events"]
+                 if e["kind"] == "APPEARED" and e["phrase"] == "适度宽松")
+    assert event["evidence_url"] == independent["url"]
+    assert event["evidence_title"] == independent["title"]
+
+
+def test_prior_day_revision_uses_only_effective_version_for_novelty():
+    book = _book()
+    locator = "loc_pboc_prior_effective"
+    prior_old = _row(
+        "pboc", "先前版本", "适度宽松",
+        "2026-07-01T01:00:00",
+        url="https://www.pbc.gov.cn/policy/prior-effective.html",
+    )
+    prior_new = _row(
+        "pboc", "当日更正", "稳中求进",
+        "2026-07-01T02:00:00",
+        url="https://www.pbc.gov.cn/policy/prior-effective.html",
+    )
+    independent_today = _row(
+        "pboc", "今日独立文件", "实施适度宽松的货币政策",
+        "2026-07-02T01:00:00",
+        url="https://www.pbc.gov.cn/policy/today-independent.html",
+    )
+    prior_old["source_locator_id"] = locator
+    prior_new["source_locator_id"] = locator
+
+    res = cd.compute_events(
+        [prior_old, prior_new, independent_today],
+        "2026-07-02",
+        book=book,
+    )
+    kinds = {(e["kind"], e["phrase"]) for e in res["events"]}
+    assert ("APPEARED", "适度宽松") in kinds
+    event = next(e for e in res["events"]
+                 if e["kind"] == "APPEARED" and e["phrase"] == "适度宽松")
+    assert event["evidence_url"] == independent_today["url"]
+
+
+def test_same_day_revision_removed_phrase_cannot_mint_appeared():
+    book = _book()
+    locator = "loc_ndrc_same_day_remove"
+    stable_prior = _row(
+        "ndrc", "昨日基线", "稳中求进",
+        "2026-07-01T01:00:00",
+        url="https://www.ndrc.gov.cn/policy/stable.html",
+    )
+    today_old = _row(
+        "ndrc", "今日初版", "稳中求进 反内卷",
+        "2026-07-02T01:00:00",
+        url="https://www.ndrc.gov.cn/policy/corrected.html",
+    )
+    today_new = _row(
+        "ndrc", "今日更正", "稳中求进",
+        "2026-07-02T02:00:00",
+        url="https://www.ndrc.gov.cn/policy/corrected.html",
+    )
+    today_old["source_locator_id"] = locator
+    today_new["source_locator_id"] = locator
+
+    res = cd.compute_events(
+        [stable_prior, today_old, today_new],
+        "2026-07-02",
+        book=book,
+    )
+    kinds = {(e["kind"], e["phrase"]) for e in res["events"]}
+    assert res["counts"]["n_document_revisions"] == 1
+    assert ("APPEARED", "反内卷") not in kinds
+    assert ("DROPPED", "反内卷") not in kinds
+
+
 
 
 def test_prior_day_revised_lead_blocks_next_day_lead_shift():
