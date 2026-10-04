@@ -537,6 +537,26 @@ def test_case_7c_turns_do_not_restart_administrative_bootstrap():
         assert _clause(clause) in fable
 
 
+def test_case_7d_ceo_continuation_is_front_loaded_for_bounded_project_docs():
+    """Critical CEO continuation must survive clients that bound a long AGENTS file.
+
+    This is a source-layout invariant, not a claim about any permanent platform byte
+    limit. Keep the compact mirror near the top and leave the detailed law canonical.
+    """
+    raw = (ROOT / "AGENTS.md").read_text(encoding="utf-8")[:24000]
+    early = " ".join(_MARKUP.sub("", raw).split()).lower()
+    for clause in (
+        "CEO/orchestrator fast path",
+        "CEO cycle is event/phase-scoped",
+        "Administrative motion is not capability progress",
+        "Pending CI/release freezes that lane, not the mission",
+        "A checkpoint is a save, not a stop",
+        "A watcher owns observation, never the outcome",
+        "This fast path removes repeated ceremony",
+    ):
+        assert _clause(clause) in early, f"critical front-loaded clause drifted late: {clause}"
+
+
 # --------------------------------------------------------------------------------------
 # Case 8 — ACK/QUEUED mistaken for START/RUNNING (and every other rung confusion).
 # --------------------------------------------------------------------------------------

@@ -33,6 +33,32 @@ This repository is operated by multiple Claude accounts and Codex sessions. Repo
    latest handoff before starting. See § "Agent OS knowledge plane" below and
    `agentos/README.md`.
 
+## CEO/orchestrator fast path — front-loaded continuation mirror
+
+This is a **compact mirror**, not a second authority layer. The full execution-continuation
+law later in this file, `CLAUDE.md`, and the cited Agent OS decision remain canonical. It is
+kept near the top because agent clients may bound or truncate long project instruction files;
+critical continuation behavior must survive that transport detail.
+
+- **A tool call, progress nudge, or Stop-hook re-entry is not a new execution cycle.** A
+  CEO cycle is event/phase-scoped. Resume the exact verified frontier; do not restart
+  bootstrap, repo/lane census, planning, watcher reconciliation, ownership/permission
+  preflight, or full-ledger reconstruction unless a material invalidator changed.
+- **Administrative motion is not capability progress.** Status reads, comments, handoffs,
+  plans, watcher maintenance, PR metadata and checkpoints count only when they close a real
+  gate or resolve a blocker. Two equivalent no-delta cycles ban a third; change tactic/lane.
+- **Pending CI/release freezes that lane, not the mission.** Bind one asynchronous watcher or
+  use the existing merge sweeper, then immediately execute another independent authorized
+  lane. Never foreground-watch CI or replace the watcher with repeated status/sleep turns.
+- **A checkpoint is a save, not a stop.** When a phase, test suite, PR, review, or checkpoint
+  completes, verify/save the delta, reassess the parent DONE_WHEN, and start the next safe
+  bounded critical-path phase in the same healthy turn when one is ready.
+- **Ownership survives the wait.** The originating operation still owns genuine red-CI repair,
+  merge/live proof and final acceptance. A watcher owns observation, never the outcome.
+- **Preserve real gates.** Fresh checks already required before push, merge, release, authority
+  effects, or other irreversible acts still bind. This fast path removes repeated ceremony,
+  never safety, custody, review, permission, or effect-reconciliation controls.
+
 ## Navigation source-of-truth
 
 There are exactly two global navigation families:
