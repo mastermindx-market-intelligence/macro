@@ -583,6 +583,39 @@ def test_EP_catalyst_receipt_on_real_producer_paths(census):
         _assert_episodes_carry_no_strength(payload["episodes"])
 
 
+def test_EP_catalyst_live_read_is_opt_in_on_real_producer_paths(
+    pack, tmp_path_factory, monkeypatch,
+):
+    monkeypatch.delenv("ENTRY_RADAR_CATALYST_LIVE", raising=False)
+    monkeypatch.setattr(
+        "engine.entry_radar.catalyst_edgar_live.read_edgar_item_202_live",
+        lambda **_k: (_ for _ in ()).throw(AssertionError("network")),
+    )
+    scenarios = {
+        "live": (pack, tmp_path_factory.mktemp("ep_cat_live")),
+        "stale_pack": (
+            pack,
+            tmp_path_factory.mktemp("ep_cat_stale"),
+            datetime(2026, 8, 18, 14, 2, tzinfo=timezone.utc),
+            quote_book(
+                pack, ts=datetime(2026, 8, 18, 14, 0, tzinfo=timezone.utc),
+            ),
+        ),
+    }
+    for key, args in scenarios.items():
+        if key == "live":
+            result = arming_pass(args[0], args[1])
+        else:
+            result = arming_pass(args[0], args[1], now=args[2], quotes=args[3])
+        health = result.payload["health"]
+        assert "catalyst" in health
+        cat_rc = health["catalyst"]
+        assert cat_rc["live_enabled"] is False
+        assert cat_rc["live"] is None
+        if cat_rc["rows_considered"]:
+            assert isinstance(cat_rc["decision_at"], str)
+
+
 def test_LIV1_failed_has_EXACTLY_ONE_producer_and_run_pass_is_not_it(census):
     """``failed`` is unreachable from any input to ``run_pass``, and produced by
     exactly one function outside it.

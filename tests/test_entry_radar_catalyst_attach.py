@@ -899,3 +899,392 @@ def test_W2B1_refusals_dedup_clock_no_network(tmp_path, monkeypatch):
     )
     assert got_t14.reads_by_ticker["ABC"].status == "ok"
     assert calls_t14 == [1]
+
+
+# --- wave 2b-2: attach merge, opt-in, decision clock ---
+
+from engine.entry_radar.live_eval import _catalyst_live_enabled
+
+ENV_ON = {"ENTRY_RADAR_CATALYST_LIVE": "1"}
+
+
+def _live_reader_from_stub(**kwargs):
+    result = read_edgar_item_202_live(**kwargs)
+
+    def _reader(**_k):
+        return result
+
+    return _reader
+
+
+def test_W2B2_disabled_by_default(monkeypatch):
+    import engine.entry_radar.catalyst_edgar_store as ces
+
+    ev_a = _blocking_edgar_evidence(ticker="A")
+    read_a = _edgar_source_read(usable=True)
+    read_b = _edgar_source_read(usable=False)
+    fake = _fake_edgar_read(
+        reads_by_ticker={"A": read_a, "B": read_b},
+        evidence_by_ticker={"A": (ev_a,)},
+    )
+    monkeypatch.setattr(ces, "read_edgar_item_202_for_tickers", lambda **_k: fake)
+    rows = [
+        _live_episode(ticker="A").to_dict(),
+        _live_episode(ticker="B").to_dict(),
+    ]
+    before = copy.deepcopy(rows)
+    health: dict = {}
+    _attach_catalyst(
+        rows,
+        now=NOW,
+        health=health,
+        environ={},
+        live_reader=lambda **_k: (_ for _ in ()).throw(
+            AssertionError("live must not run")
+        ),
+    )
+    assert "catalyst" in rows[0]
+    assert "catalyst" not in rows[1]
+    assert health["catalyst"]["attached_count"] == 1
+    assert health["catalyst"]["live_enabled"] is False
+    assert health["catalyst"]["live"] is None
+    assert health["catalyst"]["source_modes"] == {"live": 0, "store": 2, "none": 0}
+    assert health["catalyst"]["decision_at"] == _iso(NOW)
+    after = copy.deepcopy(rows)
+    after[0].pop("catalyst", None)
+    assert before == after
+
+    assert _catalyst_live_enabled({}) is False
+    assert _catalyst_live_enabled({"ENTRY_RADAR_CATALYST_LIVE": "0"}) is False
+    assert _catalyst_live_enabled({"ENTRY_RADAR_CATALYST_LIVE": " 1 "}) is True
+
+
+def test_W2B2_enabled_live_ok_no_filing(tmp_path):
+    store, manifest = _paths(tmp_path)
+    ts = NOW_W2B1 - timedelta(hours=12)
+    _write_store(store, [_item202_row(ticker="ABC")])
+    _write_manifest(
+        manifest,
+        {
+            "1234567": {
+                "ticker": "ABC",
+                "status": "ok",
+                "n_filings": 1,
+                "n_shards_missing": 0,
+                "ts": ts.isoformat().replace("+00:00", "Z"),
+            },
+        },
+    )
+    subs = _submissions([])
+    fetch, _calls = _fetch_stub({1: subs})
+    live_reader = _live_reader_from_stub(
+        tickers=["ABC"],
+        now=NOW_W2B1,
+        cik_by_ticker={"ABC": 1},
+        fetch=fetch,
+        clock=lambda: OBSERVED,
+        pace_seconds=0,
+    )
+
+    def store_reader(**kw):
+        return read_edgar_item_202_for_tickers(
+            store_path=store,
+            manifest_path=manifest,
+            **kw,
+        )
+
+    row = _live_episode(ticker="ABC").to_dict()
+    health: dict = {}
+    _attach_catalyst(
+        [row],
+        now=NOW_W2B1,
+        health=health,
+        environ=ENV_ON,
+        live_reader=live_reader,
+        store_reader=store_reader,
+    )
+    assert row["catalyst"]["context_state"] == "no_blocking_event_observed"
+    assert row["catalyst"]["coverage"] == "no earnings filing in window"
+    assert row["catalyst"]["fresh_until"] == _iso(
+        OBSERVED + timedelta(seconds=DEFAULT_MAX_SOURCE_STALENESS_SECONDS)
+    )
+    assert row["catalyst"]["relevant_until"] == row["catalyst"]["fresh_until"]
+    rc = health["catalyst"]
+    assert rc["live_enabled"] is True
+    assert rc["live"]["fetched_ok"] == 1
+    assert rc["live"]["last_observed_at"] == _iso(OBSERVED)
+    assert rc["source_modes"] == {"live": 1, "store": 0, "none": 0}
+    assert rc["decision_at"] == _iso(OBSERVED)
+    assert rc["source_usable"] is True
+    assert rc["source_status"] == "ok"
+    assert rc["source_asof"] == _iso(OBSERVED)
+
+
+def test_W2B2_enabled_live_blocking_filing(tmp_path):
+    store, manifest = _paths(tmp_path)
+    ts = NOW_W2B1 - timedelta(hours=12)
+    _write_store(store, [_item202_row(ticker="ABC")])
+    _write_manifest(
+        manifest,
+        {
+            "1234567": {
+                "ticker": "ABC",
+                "status": "ok",
+                "n_filings": 1,
+                "n_shards_missing": 0,
+                "ts": ts.isoformat().replace("+00:00", "Z"),
+            },
+        },
+    )
+    acc = (NOW_W2B1 - timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    subs = _submissions(
+        [
+            {
+                "form": "8-K",
+                "filingDate": "2026-10-05",
+                "acceptanceDateTime": acc,
+                "accessionNumber": "0000000001-26-000001",
+                "reportDate": "2026-09-30",
+                "items": "2.02,9.01",
+            },
+        ]
+    )
+    fetch, _calls = _fetch_stub({1: subs})
+    live_reader = _live_reader_from_stub(
+        tickers=["ABC"],
+        now=NOW_W2B1,
+        cik_by_ticker={"ABC": 1},
+        fetch=fetch,
+        clock=lambda: OBSERVED,
+        pace_seconds=0,
+    )
+
+    def store_reader(**kw):
+        return read_edgar_item_202_for_tickers(
+            store_path=store,
+            manifest_path=manifest,
+            **kw,
+        )
+
+    row = _live_episode(ticker="ABC").to_dict()
+    health: dict = {}
+    _attach_catalyst(
+        [row],
+        now=NOW_W2B1,
+        health=health,
+        environ=ENV_ON,
+        live_reader=live_reader,
+        store_reader=store_reader,
+    )
+    assert row["catalyst"]["context_state"] == "blocking_event_observed"
+    assert row["catalyst"]["coverage"] == "earnings filing in window"
+    assert row["catalyst"]["relevant_until"] >= row["catalyst"]["fresh_until"]
+    assert health["catalyst"]["states"] == {"blocking_event_observed": 1}
+
+
+def test_W2B2_mixed_live_and_store_sources(tmp_path):
+    store, manifest = _paths(tmp_path)
+    ts = NOW_W2B1 - timedelta(hours=12)
+    _write_store(
+        store,
+        [
+            _item202_row(ticker="ZA", cik=1),
+            _item202_row(ticker="ZB", cik=2),
+        ],
+    )
+    _write_manifest(
+        manifest,
+        {
+            "1": {
+                "ticker": "ZA",
+                "status": "ok",
+                "n_filings": 1,
+                "n_shards_missing": 0,
+                "ts": ts.isoformat().replace("+00:00", "Z"),
+            },
+        },
+    )
+    subs = _submissions([])
+    fetch, _calls = _fetch_stub({1: subs, 2: subs})
+    live_result = read_edgar_item_202_live(
+        tickers=["ZA", "ZB"],
+        now=NOW_W2B1,
+        cik_by_ticker={"ZA": 1, "ZB": 2},
+        fetch=fetch,
+        clock=lambda: OBSERVED,
+        pace_seconds=0,
+        max_tickers=1,
+    )
+
+    def live_reader(**_k):
+        return live_result
+
+    def store_reader(**kw):
+        return read_edgar_item_202_for_tickers(
+            store_path=store,
+            manifest_path=manifest,
+            **kw,
+        )
+
+    rows = [
+        _live_episode(ticker="ZA").to_dict(),
+        _live_episode(ticker="ZB").to_dict(),
+    ]
+    health: dict = {}
+    _attach_catalyst(
+        rows,
+        now=NOW_W2B1,
+        health=health,
+        environ=ENV_ON,
+        live_reader=live_reader,
+        store_reader=store_reader,
+    )
+    assert rows[0]["catalyst"]["context_state"] == "no_blocking_event_observed"
+    assert "catalyst" not in rows[1]
+    rc = health["catalyst"]
+    assert rc["source_modes"] == {"live": 1, "store": 1, "none": 0}
+    assert rc["source_status"] == "mixed"
+    assert rc["states"] == {
+        "no_blocking_event_observed": 1,
+        "coverage_unknown": 1,
+    }
+    assert rc["decision_at"] == _iso(OBSERVED)
+
+
+def test_W2B2_live_reader_exception_falls_back_to_store(tmp_path):
+    store, manifest = _paths(tmp_path)
+    ts = NOW - timedelta(minutes=10)
+    ev_row = _item202_row(
+        ticker="GOOD",
+        cik=1,
+        acceptance_datetime=(NOW - timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    )
+    _write_store(store, [ev_row])
+    _write_manifest(
+        manifest,
+        {
+            "1": {
+                "ticker": "GOOD",
+                "status": "ok",
+                "n_filings": 1,
+                "n_shards_missing": 0,
+                "ts": ts.isoformat().replace("+00:00", "Z"),
+            },
+        },
+    )
+
+    def store_reader(**kw):
+        got = read_edgar_item_202_for_tickers(
+            store_path=store,
+            manifest_path=manifest,
+            **kw,
+        )
+        reads = {
+            k: v for k, v in got.reads_by_ticker.items() if k != "MISSING"
+        }
+        return EdgarStoreRead(
+            reads_by_ticker=reads,
+            evidence_by_ticker={
+                k: v
+                for k, v in got.evidence_by_ticker.items()
+                if k != "MISSING"
+            },
+            refusals=got.refusals,
+            rows_scanned=got.rows_scanned,
+            error=got.error,
+            source_asof=got.source_asof,
+        )
+
+    rows = [
+        _live_episode(ticker="GOOD").to_dict(),
+        _live_episode(ticker="MISSING").to_dict(),
+    ]
+    health: dict = {}
+    _attach_catalyst(
+        rows,
+        now=NOW,
+        health=health,
+        environ=ENV_ON,
+        live_reader=lambda **_k: (_ for _ in ()).throw(RuntimeError("boom")),
+        store_reader=store_reader,
+    )
+    rc = health["catalyst"]
+    assert rc["live"]["error"].startswith("RuntimeError")
+    assert rc["live"]["attempted"] == 0
+    assert rc["source_modes"] == {"live": 0, "store": 1, "none": 1}
+    assert rc["episode_errors"] == 1
+    assert rc["decision_at"] == _iso(NOW)
+    assert "catalyst" in rows[0]
+
+
+def test_W2B2_decision_clock_invariant(tmp_path):
+    store, manifest = _paths(tmp_path)
+    late = NOW_W2B1 + timedelta(minutes=5)
+    ts = NOW_W2B1 - timedelta(hours=12)
+    _write_store(store, [_item202_row(ticker="ABC")])
+    _write_manifest(
+        manifest,
+        {
+            "1234567": {
+                "ticker": "ABC",
+                "status": "ok",
+                "n_filings": 1,
+                "n_shards_missing": 0,
+                "ts": ts.isoformat().replace("+00:00", "Z"),
+            },
+        },
+    )
+    subs = _submissions([])
+    fetch, _calls = _fetch_stub({1: subs})
+    live_reader = _live_reader_from_stub(
+        tickers=["ABC"],
+        now=NOW_W2B1,
+        cik_by_ticker={"ABC": 1},
+        fetch=fetch,
+        clock=lambda: late,
+        pace_seconds=0,
+    )
+
+    def store_reader(**kw):
+        return read_edgar_item_202_for_tickers(
+            store_path=store,
+            manifest_path=manifest,
+            **kw,
+        )
+
+    row = _live_episode(ticker="ABC").to_dict()
+    health: dict = {}
+    _attach_catalyst(
+        [row],
+        now=NOW_W2B1,
+        health=health,
+        environ=ENV_ON,
+        live_reader=live_reader,
+        store_reader=store_reader,
+    )
+    rc = health["catalyst"]
+    assert rc["decision_at"] > _iso(NOW_W2B1)
+    assert rc["decision_at"] == _iso(late)
+    assert row["catalyst"]["fresh_until"] >= rc["decision_at"]
+
+    fetch_fail, _ = _fetch_stub({1: RuntimeError("x")})
+    live_unavail = read_edgar_item_202_live(
+        tickers=["ABC"],
+        now=NOW_W2B1,
+        cik_by_ticker={"ABC": 1},
+        fetch=fetch_fail,
+        clock=lambda: OBSERVED,
+        pace_seconds=0,
+    )
+    assert live_unavail.last_observed_at is None
+    health2: dict = {}
+    row2 = _live_episode(ticker="ABC").to_dict()
+    _attach_catalyst(
+        [row2],
+        now=NOW_W2B1,
+        health=health2,
+        environ=ENV_ON,
+        live_reader=lambda **_k: live_unavail,
+        store_reader=store_reader,
+    )
+    assert health2["catalyst"]["decision_at"] == _iso(NOW_W2B1)
