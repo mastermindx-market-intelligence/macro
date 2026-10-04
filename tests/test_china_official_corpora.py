@@ -288,6 +288,48 @@ def test_write_day_retains_changed_content_at_same_source_locator(tmp_path, monk
     assert corpus.iloc[1]["supersedes_observed_at"] == "2026-07-02T01:00:00"
 
 
+def test_legacy_rows_with_reused_url_remain_separate_documents(tmp_path, monkeypatch):
+    monkeypatch.setattr(coc, "_store_dir", lambda: tmp_path)
+    d = date(2026, 7, 2)
+    url = "https://www.pbc.gov.cn/policy/navigation.html"
+    a = _corpus_row("legacy-a", "旧文甲", "稳中求进", "2026-07-02T01:00:00", url=url)
+    b = _corpus_row("legacy-b", "旧文乙", "稳中求进", "2026-07-02T02:00:00", url=url)
+
+    coc.write_day([a, b], d)
+    corpus = coc.read_corpus()
+
+    assert len(corpus) == 2
+    assert set(corpus["doc_id"]) == {"legacy-a", "legacy-b"}
+    assert set(corpus["source_locator_id"]) == {""}
+    assert list(corpus["version_ordinal"]) == [1, 1]
+    assert list(corpus["is_revision_observed"]) == [False, False]
+
+
+def test_content_reversion_is_retained_as_a_new_observation(tmp_path, monkeypatch):
+    monkeypatch.setattr(coc, "_store_dir", lambda: tmp_path)
+    url = "https://www.pbc.gov.cn/policy/reversion.html"
+    locator = coc._source_locator_id("pboc", url)
+
+    a1 = _corpus_row("a1", "版本A", "稳中求进", "2026-07-01T01:00:00", url=url)
+    b = _corpus_row("b1", "版本B", "适度宽松", "2026-07-02T01:00:00", url=url)
+    a2 = _corpus_row("a2", "版本A", "稳中求进", "2026-07-03T01:00:00", url=url)
+    for row in (a1, b, a2):
+        row["source_locator_id"] = locator
+
+    coc.write_day([a1], date(2026, 7, 1))
+    coc.write_day([b], date(2026, 7, 2))
+    coc.write_day([a2], date(2026, 7, 3))
+    corpus = coc.read_corpus()
+
+    assert len(corpus) == 3
+    assert list(corpus["version_ordinal"]) == [1, 2, 3]
+    assert corpus.iloc[0]["content_sha256"] == corpus.iloc[2]["content_sha256"]
+    assert corpus.iloc[1]["content_sha256"] != corpus.iloc[2]["content_sha256"]
+    assert corpus.iloc[2]["supersedes_content_sha256"] == corpus.iloc[1]["content_sha256"]
+    assert corpus.iloc[2]["supersedes_observed_at"] == "2026-07-02T01:00:00"
+
+
+
 def test_read_corpus_none_when_empty(tmp_path, monkeypatch):
     monkeypatch.setattr(coc, "_store_dir", lambda: tmp_path)
     assert coc.read_corpus() is None
