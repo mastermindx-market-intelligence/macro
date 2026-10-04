@@ -374,9 +374,17 @@ def validate_cie18_prereg(record: dict) -> dict:
     if not _cie18_stopping_contract(record.get("stopping_rule")):
         errors.append("stopping_rule_invalid")
 
+    horizon = record.get("horizon")
+    if isinstance(horizon, bool) or not isinstance(horizon, int) or horizon < 1:
+        errors.append("horizon_must_be_positive_int")
+
     budget = record.get("declared_trial_budget")
     if isinstance(budget, bool) or not isinstance(budget, int) or budget < 1:
         errors.append("declared_trial_budget_must_be_positive_int")
+    variants = record.get("attempted_variants")
+    if isinstance(budget, int) and not isinstance(budget, bool) \
+            and isinstance(variants, list) and budget < len(variants):
+        errors.append("declared_trial_budget_below_registered_variants")
 
     if _cie18_interval(record.get("development_interval")) is None:
         errors.append("development_interval_invalid")
@@ -387,8 +395,29 @@ def validate_cie18_prereg(record: dict) -> dict:
         hold = _cie18_interval(record.get("holdout_interval"))
         if dev is not None and hold is not None and dev[1] >= hold[0]:
             errors.append("development_holdout_overlap")
-    if not _cie18_prospective_contract(record.get("prospective_contract")):
+    prospective = record.get("prospective_contract")
+    if not _cie18_prospective_contract(prospective):
         errors.append("prospective_contract_invalid")
+    else:
+        hold = _cie18_interval(record.get("holdout_interval"))
+        try:
+            prospective_start = date.fromisoformat(str(prospective.get("start") or "")[:10])
+        except (TypeError, ValueError):
+            prospective_start = None
+        if hold is not None and prospective_start is not None and hold[1] >= prospective_start:
+            errors.append("holdout_prospective_overlap")
+
+    power = record.get("power")
+    if not isinstance(power, dict) \
+            or str(power.get("basis") or "") != "development_only" \
+            or not _cie18_finite_number(power.get("minimum_independent_n"), positive=True):
+        errors.append("power_contract_must_be_development_only")
+
+    clustering = record.get("clustering")
+    if not isinstance(clustering, dict) \
+            or not _cie18_present(clustering.get("unit")) \
+            or clustering.get("effective_n_reported") is not True:
+        errors.append("clustering_contract_invalid")
 
     if not _cie18_sha(record.get("code_sha")):
         errors.append("code_sha_invalid")
@@ -452,7 +481,9 @@ def register_cie18_trial_budget(record: dict, ledger) -> dict:
         raise ValueError("CIE-18 prereg is not admitted: " + "; ".join(
             receipt["validation_errors"]
         ))
-    if ledger is None or not hasattr(ledger, "log_declared_budget"):
+    if ledger is None or not all(
+        hasattr(ledger, name) for name in ("log_declared_budget", "declared_budget")
+    ):
         raise ValueError("canonical TrialLedger instance is required")
     family = str(record["trial_family"])
     budget = int(record["declared_trial_budget"])
