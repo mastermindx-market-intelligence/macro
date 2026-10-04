@@ -1862,6 +1862,56 @@ def test_fms_publisher_handoff_requires_committed_production_ref(tmp_path, targe
     assert git("rev-parse", f"refs/heads/{target}", cwd=origin) == git("rev-parse", "HEAD", cwd=checkout)
 
 
+def _run_fms_publish_verifier(root: Path):
+    import os
+    import subprocess
+    workflow = _cadence_workflow()
+    step = next(
+        item for item in workflow["jobs"]["verify_publish"]["steps"]
+        if item.get("id") == "verify_projection"
+    )
+    return subprocess.run(
+        ["bash", "-e", "-o", "pipefail", "-c", step["run"]],
+        cwd=root,
+        env=dict(os.environ),
+        capture_output=True,
+        text=True,
+    )
+
+
+def test_fms_publisher_handoff_verifies_released_source_matches_served_twin():
+    workflow = _cadence_workflow()
+    verify = workflow["jobs"]["verify_publish"]
+    assert verify["needs"] == ["acquire", "publish"]
+    assert verify["if"] == "needs.acquire.outputs.publish_default == 'true'"
+    assert verify["runs-on"] == ["self-hosted", "macstudio-light"]
+    assert verify["timeout-minutes"] == "5"
+    checkout = next(step for step in verify["steps"] if step.get("uses", "").startswith("actions/checkout@"))
+    assert checkout["with"]["ref"] == "$" + "{{ github.event.repository.default_branch }}"
+    verifier = next(step for step in verify["steps"] if step.get("id") == "verify_projection")
+    assert "data/government_revenue/fms_case_graph.json" in verifier["run"]
+    assert "site/government-revenue-data/fms-cases.json" in verifier["run"]
+    assert "cmp" in verifier["run"]
+
+
+def test_fms_publisher_handoff_verifier_fails_stale_site_and_accepts_exact_twin(tmp_path):
+    source = tmp_path / "data/government_revenue/fms_case_graph.json"
+    site = tmp_path / "site/government-revenue-data/fms-cases.json"
+    source.parent.mkdir(parents=True)
+    site.parent.mkdir(parents=True)
+    source.write_text('{"graph_id":"new","cases":[1]}')
+    site.write_text('{"graph_id":"old","cases":[]}')
+
+    stale = _run_fms_publish_verifier(tmp_path)
+    assert stale.returncode != 0
+    assert "served FMS projection does not match released source graph" in stale.stdout
+
+    site.write_bytes(source.read_bytes())
+    converged = _run_fms_publish_verifier(tmp_path)
+    assert converged.returncode == 0, converged.stderr
+    assert "FMS source/site convergence verified" in converged.stdout
+
+
 def test_fms_publisher_handoff_does_not_publish_after_failed_push(tmp_path):
     checkout, origin, git = _cadence_git_root(tmp_path)
     hook = origin / "hooks/pre-receive"

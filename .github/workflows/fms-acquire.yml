@@ -141,3 +141,45 @@ jobs:
     uses: ./.github/workflows/government-revenue-live.yml
     with:
       projection_only: true
+
+  # The reusable publisher historically returned success after exhausting its
+  # push retries. Treat acquisition and served publication as separate facts.
+  verify_publish:
+    needs: [acquire, publish]
+    if: needs.acquire.outputs.publish_default == 'true'
+    runs-on: [self-hosted, macstudio-light]
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: checkout released default branch after publisher
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: verify FMS source and served projection converged
+        id: verify_projection
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_graph="data/government_revenue/fms_case_graph.json"
+          served_graph="site/government-revenue-data/fms-cases.json"
+          if [ ! -f "$source_graph" ] || [ ! -f "$served_graph" ]; then
+            echo "::error title=fms-publish::source or served FMS graph is missing after publisher returned"
+            exit 1
+          fi
+          if ! cmp --silent "$source_graph" "$served_graph"; then
+            echo "::error title=fms-publish::publisher returned success but served FMS projection does not match released source graph"
+            exit 1
+          fi
+          python - <<'PYVERIFY'
+          import json
+          from pathlib import Path
+          source = json.loads(Path("data/government_revenue/fms_case_graph.json").read_text(encoding="utf-8"))
+          graph_id = source.get("graph_id")
+          cases = source.get("cases")
+          if not isinstance(graph_id, str) or not graph_id or not isinstance(cases, list):
+              raise SystemExit("released FMS graph is malformed")
+          print(f"FMS source/site convergence verified: graph_id={graph_id} cases={len(cases)}")
+          PYVERIFY
