@@ -509,28 +509,29 @@ source evidence → owner-native fact → normalized Graph-1 observation → eff
 
 A graph-serving layer is an implementation optimization, not the source of truth.
 
+
 ## E2. Identity model
 
-Reuse existing canonical identities.
+Reuse existing canonical identities. Data OS is the canonical issuer/security/listing/instrument identity spine; ticker strings and vendor IDs are never canonical identity.
 
-At minimum distinguish:
+At minimum distinguish company/issuer, legal entity, security/listing/instrument, business segment, product, component, facility, end market, commodity, technology standard, capacity resource and policy/program.
 
-- Company
-- Legal entity
-- Security
-- Business segment
-- Product
-- Component
-- Facility
-- End market
-- Commodity
-- Technology standard
-- Capacity resource
-- Policy/program
+Company != legal entity != security != facility != product. A shipment between subsidiaries does not automatically establish the same economic relation or magnitude between two listed parents.
 
-Company ≠ legal entity ≠ security ≠ facility ≠ product.
+### Identity-ownership gate
 
-A shipment between subsidiaries does not automatically establish the same economic relation or magnitude between two listed parents.
+| Entity class | Current treatment | P0 requirement |
+|---|---|---|
+| issuer/security/listing/instrument | Data OS identity spine | Reuse exact IDs and resolution receipts |
+| legal entity/subsidiary | Existing legal/corporate owner where present | Freeze parent attribution and correction law |
+| product/component | No universal owner assumed | Name owner/mint/correction rule or keep source-local |
+| facility | No universal owner assumed | Name owner/mint/correction rule or keep source-local |
+| end market/standard/capacity resource | Domain-specific | Freeze owner/version before persistence |
+| commodity | Reuse existing canonical commodity IDs where present | Freeze crosswalk/version |
+| policy/program | GovRev or native program owner where applicable | Reuse owner identity; do not mint a competing plane |
+
+Unresolved identity is an abstention, not a ticker guess. Vendor IDs remain source references.
+
 
 ## E3. Relationship taxonomy
 
@@ -561,6 +562,21 @@ Do not persist mechanical inverse edges when they can be derived.
 COMMON_CUSTOMER and COMMON_SUPPLIER should generally be derived paths, not independent source claims.
 
 Never use generic RELATED as propagation evidence.
+
+### Compatibility with existing Theme Graph relationship terms
+
+Current Theme Graph edges.v1 already reserves SUPPLIES, ENABLES, BOTTLENECK_OF, BENEFITS_FROM and CATALYST_OF. Commission 4's role-specific vocabulary is a candidate semantic layer, not permission to create synonyms.
+
+| Commission 4 term | Existing Theme Graph term | Required ruling |
+|---|---|---|
+| SUPPLIES_TO | SUPPLIES | same, narrower, or intentionally distinct semantics |
+| BOTTLENECKED_BY | BOTTLENECK_OF | explicit direction/inversion mapping; never infer |
+| BENEFITS_FROM_POLICY | BENEFITS_FROM | subtype versus separate relation |
+| dependency/enabling relation | ENABLES | determine whether ENABLES is too broad for Graph-1 admission |
+| event/company catalyst relation | CATALYST_OF | keep event causality distinct from commercial truth |
+
+If an existing term is broader than the required economic role, prefer a typed qualifier/subtype or separately governed Graph-1 contract over silently changing the existing enum.
+
 
 ## E4. Minimum logical contracts
 
@@ -600,6 +616,13 @@ Suggested claim-basis classes:
 - model_proposed.
 
 Only admitted evidence classes should create usable Graph-1 facts.
+
+### Absence and coverage semantics
+
+economic_relation_state/v1 must distinguish PRESENT, ENDED, REJECTED_CANDIDATE, IDENTITY_UNRESOLVED, RIGHTS_BLOCKED, COVERAGE_ABSENT and UNKNOWN.
+
+Missing is never false. Consumers may not convert COVERAGE_ABSENT, IDENTITY_UNRESOLVED or UNKNOWN into a negative economic relationship.
+
 
 ### economic_exposure_measure/v1
 
@@ -688,58 +711,37 @@ Carry:
 - unavailable dimensions;
 - zero automatic trading authority.
 
+
 ## E5. Temporal semantics
 
-Every time-sensitive observation should distinguish:
+### Data OS temporal compatibility is binding
 
-### event_time
-When the underlying event/transaction/shipment occurred or the economic reporting period applies.
+Graph-1 must not establish an independent PIT law. Current Data OS defines event_at, effective_at, published_at, ingested_at, computed_at and served_at, with profile-specific known_at semantics and fail-closed PIT reads.
 
-### as_of
-The research/query cutoff being reconstructed.
+| Commission 4 concept | Canonical treatment |
+|---|---|
+| event_time | Map to Data OS event_at for EVENT sources; otherwise domain period metadata |
+| as_of | Query cutoff, not a stored observation clock merely to echo a read |
+| available_at / known_at | Derive under the owning Data OS TemporalProfile |
+| ingested_at | Reuse Data OS ingested_at |
+| effective_from / effective_to | Relationship-validity interval; define composition with effective_at |
+| observed_at | Source/provenance metadata unless separately promoted |
+| discovered_at | Extraction/provenance metadata, not automatically a PIT clock |
+| belief_time | Graph belief/revision metadata; crosswalk to Theme Graph semantics |
+| source_revision | Reuse/compose with the native owner's revision law |
+| processing_generation | Processing metadata, not a knowledge clock |
+| correction_generation | Append-only correction lineage, not a knowledge clock |
 
-### observed_at
-When Mastermind's collector first actually observed the source bytes.
+Any new clock-like field requires an explicit Data OS compatibility decision before historical admission.
 
-### available_at / known_at
-Earliest conservative time Mastermind could legally and technically use the observation.
+### Economic time versus knowledge time
 
-### ingested_at
-When the source entered its canonical owner.
+A 10-K filed on 2026-02-20 may disclose that Customer X represented 18% of 2025 revenue. The economic relationship may be effective during 2025, while known_at cannot precede lawful publication/availability. A 2025 backtest may not use the relationship merely because the filing describes 2025.
 
-### effective_from / effective_to
-When the relationship was economically believed valid.
+The same rule applies to commercial vendor historical reconstructions. Historical coverage is not historical knowability.
 
-### discovered_at
-When Mastermind first extracted or recognized the relationship.
+Current ThemeState uses effective_at and known_at for shadow owner-receipt composition. Compatible clocks do not make ThemeState the Graph-1 truth owner.
 
-### belief_time
-When the corresponding Mastermind belief state became valid.
-
-### source_revision
-Native filing/amendment/version.
-
-### processing_generation
-Parser/model/formula generation.
-
-### correction_generation
-Append-only correction lineage.
-
-Example:
-
-A 10-K filed on 2026-02-20 may disclose that Customer X represented 18% of 2025 revenue.
-
-It may support:
-
-- effective_from = 2025-01-01
-
-but absent earlier evidence:
-
-- known_at >= 2026-02-20
-
-A 2025 backtest may not use that relationship simply because the filing describes 2025.
-
-The same rule applies to commercial vendor historical reconstructions.
 
 ## E6. Corrections must be append-only
 
