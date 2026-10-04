@@ -82,3 +82,17 @@ non-hook commands. Native hooks retain the three-second Git default and five-sec
 helper boundary. Missing or timed-out evidence still produces an advisory no-op; no
 fallback observation or identity is invented. A PR description with unheaded prose was
 also correctly refused by the canonical parser and repaired as author input.
+
+
+## Cold recovery authoring correction
+
+An independent fresh reader recovered the current state from committed records at
+`13ef310358d80f0c8cc9e586174c523baed8a613`, including the captured PR8407/calibration wave,
+Git-derived update time, and the exact unfinished W4 acceptance path. The machine compiler
+then exposed an authoring mismatch: the new handoff filename ended in `-v1-closure`, while
+`HANDOFF_DATE_RE` in `scripts/agentos.py` recognizes a trailing `-YYYY-MM-DD`. It consequently
+selected a historical August handoff and listed the new one as older. Renaming this wave's
+own record to canonical `agentos/handoffs/AGENT-OS-2026-10-04.md` corrects the author input.
+No compiler, incumbent compile test, historical handoff or ranking policy is changed.
+The before artifact is `/tmp/agentos-w4-cold-context.json`; the corrected compiler read is
+required before accepting the machine recovery path.
