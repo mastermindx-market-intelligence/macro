@@ -105,6 +105,10 @@ from engine.session_digest import session_window_et
 SCHEMA_LIVE_PACK = "entry_radar.live_pack/v2"
 SCHEMA_INVERSION_PROOF = "entry_radar.inversion_proof/v1"
 
+#: Bumped when :func:`substrate_fingerprint` encoding changes; manifests carrying
+#: any other value (including absent) are refused at load.
+SUBSTRATE_FINGERPRINT_VERSION = 2
+
 #: The RETIRED v1 label, kept ONLY so :func:`load_pack` can tell a genuinely
 #: pre-W4.1 manifest (no ``schema`` key at all) apart from a v2 one instead of
 #: defaulting a missing field to the CURRENT schema — which would mislabel a
@@ -657,6 +661,7 @@ class LivePack:
             "proof": _jsonable(self.proof) if self.proof is not None else None,
             "proof_failed": self.proof_failed,
             "confirmed_lanes": _jsonable(self.confirmed_lanes),
+            "substrate_fingerprint_version": SUBSTRATE_FINGERPRINT_VERSION,
         }
 
     def with_proof(self, proof: Mapping[str, Any]) -> LivePack:
@@ -692,18 +697,52 @@ def _jsonable(value: Any) -> Any:
     return value
 
 
+def _fingerprint_index_token(ts: pd.Timestamp) -> str:
+    """UTC ISO timestamp with time — midnight-normalised session bars only."""
+    if ts.tz is not None:
+        ts = ts.tz_convert("UTC")
+    else:
+        ts = ts.tz_localize("UTC")
+    return ts.isoformat()
+
+
+def _fingerprint_float_token(value: float) -> Any:
+    if np.isnan(value):
+        return "nan"
+    if np.isposinf(value):
+        return "+inf"
+    if np.isneginf(value):
+        return "-inf"
+    return float(value)
+
+
+def _refuse_substrate_index_not_normalized(frame: pd.DataFrame, *, ticker: str = "") -> None:
+    index = pd.DatetimeIndex(frame.index)
+    who = f"{ticker}: " if ticker else ""
+    for ts in index:
+        if ts is pd.NaT:
+            raise LivePackError(f"{who}substrate_index_not_normalized: NaT in index")
+        if ts.tz is not None and str(ts.tz) != "UTC":
+            raise LivePackError(
+                f"{who}substrate_index_not_normalized: timezone is not UTC")
+        if (ts.hour or ts.minute or ts.second or ts.microsecond
+                or getattr(ts, "nanosecond", 0)):
+            raise LivePackError(
+                f"{who}substrate_index_not_normalized: time-of-day is not midnight")
+
+
 def _fingerprint_rows_slow(frame: pd.DataFrame) -> list[list[Any]]:
     """The reference row builder: one cell at a time, any dtype."""
     rows: list[list[Any]] = []
     index = pd.DatetimeIndex(frame.index)
     for position in range(len(frame)):
-        row: list[Any] = [index[position].date().isoformat()]
+        row: list[Any] = [_fingerprint_index_token(index[position])]
         for column in _SUBSTRATE_COLUMNS:
             try:
                 value = float(frame[column].iloc[position])
             except (TypeError, ValueError):
                 value = float("nan")
-            row.append(None if not np.isfinite(value) else value)
+            row.append(_fingerprint_float_token(value))
         rows.append(row)
     return rows
 
@@ -729,19 +768,19 @@ def _fingerprint_rows_fast(frame: pd.DataFrame) -> list[list[Any]] | None:
                 or dtype.kind not in "fiu"):
             return None
         values = series.to_numpy(dtype=np.float64)
-        cells = values.astype(object)
-        cells[~np.isfinite(values)] = None
+        cells = np.empty(len(values), dtype=object)
+        for i, value in enumerate(values):
+            cells[i] = _fingerprint_float_token(float(value))
         columns.append(cells.tolist())
-    days = [day.isoformat() for day in index.date]
-    return [list(row) for row in zip(days, *columns)]
+    stamps = [_fingerprint_index_token(ts) for ts in index]
+    return [list(row) for row in zip(stamps, *columns)]
 
 
 def substrate_fingerprint(frame: pd.DataFrame) -> str:
     """sha16 over the frozen rows — the pin a later store move cannot survive.
 
-    Rows are ``[iso_session, high, low, close]`` with non-finite values as None,
-    so a NaN high (a blank-OHLC name) fingerprints stably instead of hashing a
-    value that compares unequal to itself.  Built column-wise when the frame is
+    Rows are ``[utc_iso_session, high, low, close]`` with non-finite values as
+    distinct tokens (``nan``, ``+inf``, ``-inf``).  Built column-wise when the frame is
     plain numeric (about 25x faster on a full history) and cell by cell otherwise;
     both builders return identical rows.
     """
@@ -935,7 +974,9 @@ def _frozen_frame(frame: pd.DataFrame, *, ticker: str, next_session: date,
         raise LivePackError(f"{ticker}: store frame is missing column(s) {missing}")
     kept = frame.loc[:, list(_SUBSTRATE_COLUMNS)].astype(float)
     history = ch.DailyHistory(frame=kept, price_basis=price_basis, vintage=vintage)
-    return history.confirmed_through(next_session)
+    frozen = history.confirmed_through(next_session)
+    _refuse_substrate_index_not_normalized(frozen, ticker=ticker)
+    return frozen
 
 
 class SubstrateSink(Protocol):
@@ -968,6 +1009,7 @@ class InMemorySink:
     def add(self, row: PackName, frozen: pd.DataFrame, *, next_session: date) -> None:
         if self._finished:
             raise LivePackError("substrate sink reused: add() after finish()")
+        _refuse_substrate_index_not_normalized(frozen, ticker=row.ticker)
         self._frames[row.ticker] = frozen
 
     def finish(self) -> Mapping[str, pd.DataFrame]:
@@ -1160,7 +1202,7 @@ def _refuse_substrate_key_mismatch(pack: LivePack) -> None:
                 f"(first: {missing[0]}); a streamed substrate is saved by its own writer")
         if extra:
             parts.append(f"{extra[0]}: not admitted")
-        raise LivePackError("; ".join(parts))
+        raise LivePackError("substrate_key_mismatch: " + "; ".join(parts))
 
 
 def _refuse_substrate_fingerprint_mismatch(pack: LivePack) -> None:
@@ -1168,7 +1210,8 @@ def _refuse_substrate_fingerprint_mismatch(pack: LivePack) -> None:
         frame = pack.substrate[row.ticker]
         if substrate_fingerprint(frame) != row.substrate_fingerprint:
             raise LivePackError(
-                f"{row.ticker}: substrate frame does not match the admitted row's fingerprint")
+                f"{row.ticker}: substrate_fingerprint_mismatch: frame does not match "
+                "the admitted row's fingerprint")
 
 
 def _proof_threshold_cases(pack: LivePack) -> list[dict[str, Any]]:
@@ -1227,10 +1270,12 @@ def threshold_cases_for(row: PackName, frame: pd.DataFrame, *,
             got = margin(oracle, probe)
             observed = None if got is None else bool(got > 0.0)
             expected = solution.holds_at(probe)
-            out.append(_case("threshold_boundary",
-                             f"{row.ticker}:{solution.condition}:{side}",
-                             boundary=level, direction=side,
-                             expected=expected, observed=observed))
+            case = _case("threshold_boundary",
+                         f"{row.ticker}:{solution.condition}:{side}",
+                         boundary=level, direction=side,
+                         expected=expected, observed=observed)
+            case["substrate_fingerprint"] = substrate_fingerprint(frame)
+            out.append(case)
     return out
 
 
@@ -1542,6 +1587,9 @@ def build_inversion_proof(pack: LivePack, *,
     and never touches a spec hash.
     """
     next_session = _as_date(pack.next_session)
+    if pack.names and all(pack.substrate.get(row.ticker) is not None for row in pack.names):
+        _refuse_substrate_key_mismatch(pack)
+        _refuse_substrate_fingerprint_mismatch(pack)
     cases: list[dict[str, Any]] = []
     if threshold_cases is None:
         cases += _proof_threshold_cases(pack)
@@ -1553,6 +1601,17 @@ def build_inversion_proof(pack: LivePack, *,
             raise LivePackError(
                 f"the supplied threshold cases are not this pack's: {len(supplied)} "
                 f"supplied, {len(expected)} expected from its solved levels")
+        by_ticker = pack.by_ticker()
+        for case in supplied:
+            name = str(case.get("case") or "")
+            ticker = name.split(":", 1)[0] if name else ""
+            row = by_ticker.get(ticker)
+            if row is None:
+                continue
+            got = case.get("substrate_fingerprint")
+            if got != row.substrate_fingerprint:
+                raise LivePackError(f"{ticker}: case_fingerprint_mismatch")
+            case["pass"] = bool(case.get("expected") == case.get("observed"))
         cases += supplied
     cases += _proof_micro_path_cases(next_session)
     cases += _proof_rearm_cases()
@@ -1635,6 +1694,7 @@ def _substrate_frame(pack: LivePack) -> pd.DataFrame:
     rows: list[dict[str, Any]] = []
     for ticker in sorted(pack.substrate):
         frame = pack.substrate[ticker]
+        _refuse_substrate_index_not_normalized(frame, ticker=ticker)
         index = pd.DatetimeIndex(frame.index)
         for position in range(len(frame)):
             row = {"ticker": ticker,
@@ -1750,11 +1810,37 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
     # that never carried `confirmed_lanes` as though it did.
     raw_confirmed_lanes = manifest.get("confirmed_lanes") or {}
     names = tuple(PackName.from_dict(row) for row in manifest.get("names") or ())
+    if manifest.get("substrate_fingerprint_version") != SUBSTRATE_FINGERPRINT_VERSION:
+        raise LivePackError(
+            "fingerprint_version_mismatch: manifest substrate_fingerprint_version "
+            f"is not {SUBSTRATE_FINGERPRINT_VERSION}")
     for row in names:
         frame = substrate.get(row.ticker)
         if frame is None or substrate_fingerprint(frame) != row.substrate_fingerprint:
             raise LivePackError(
                 f"{row.ticker}: saved substrate does not match the manifest row")
+    if substrate:
+        _refuse_substrate_key_mismatch(LivePack(
+            schema=str(manifest.get("schema") or _SCHEMA_LIVE_PACK_V1),
+            as_of=str(manifest["as_of"]), next_session=str(manifest["next_session"]),
+            built_at=str(manifest.get("built_at") or ""),
+            price_basis=str(manifest.get("price_basis") or ch.BASIS_ADJUSTED),
+            spec_hashes=dict(manifest.get("spec_hashes") or {}),
+            probe_set=dict(manifest.get("probe_set") or {}),
+            names=names, substrate=substrate))
+    lane_rows = confirmed_lanes_snapshot(
+        raw_confirmed_lanes, list(raw_confirmed_lanes))
+    schema = str(manifest.get("schema") or _SCHEMA_LIVE_PACK_V1)
+    pack_hash = str(manifest.get("pack_hash") or "")
+    recomputed = compute_pack_hash(
+        schema=schema, as_of=str(manifest["as_of"]),
+        next_session=str(manifest["next_session"]),
+        price_basis=str(manifest.get("price_basis") or ch.BASIS_ADJUSTED),
+        spec_hashes=dict(manifest.get("spec_hashes") or {}),
+        probe_tickers=list((manifest.get("probe_set") or {}).get("tickers") or ()),
+        names=names, confirmed_lanes=lane_rows)
+    if recomputed != pack_hash:
+        raise LivePackError("pack_hash_mismatch")
     return LivePack(
         schema=str(manifest.get("schema") or _SCHEMA_LIVE_PACK_V1),
         as_of=str(manifest["as_of"]), next_session=str(manifest["next_session"]),
@@ -1772,8 +1858,7 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
         # this is the production read path, and the module's own firewall
         # claim (confirmed_lanes_snapshot's docstring) is only true if EVERY
         # entry point normalizes, not just the write path.
-        confirmed_lanes=confirmed_lanes_snapshot(
-            raw_confirmed_lanes, list(raw_confirmed_lanes)),
+        confirmed_lanes=lane_rows,
         proof=manifest.get("proof"))
 
 

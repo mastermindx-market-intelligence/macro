@@ -198,10 +198,10 @@ def test_T4a_swapped_substrate_keys_refuse_save_and_proof(tmp_path):
         return out
 
     pack, _tap = _build_with_post_sink(swap)
-    with pytest.raises(lp.LivePackError, match="fingerprint"):
+    with pytest.raises(lp.LivePackError, match="substrate_fingerprint_mismatch"):
         lp.save_pack(pack, tmp_path)
     assert not lp.pack_root(tmp_path).exists()
-    with pytest.raises(lp.LivePackError):
+    with pytest.raises(lp.LivePackError, match="substrate_fingerprint_mismatch"):
         lp.build_inversion_proof(pack)
 
 
@@ -214,10 +214,10 @@ def test_T4b_replaced_substrate_frame_refuse_save_and_proof(tmp_path):
         return out
 
     pack, _tap = _build_with_post_sink(tamper)
-    with pytest.raises(lp.LivePackError, match="fingerprint"):
+    with pytest.raises(lp.LivePackError, match="substrate_fingerprint_mismatch"):
         lp.save_pack(pack, tmp_path)
     assert not lp.pack_root(tmp_path).exists()
-    with pytest.raises(lp.LivePackError):
+    with pytest.raises(lp.LivePackError, match="substrate_fingerprint_mismatch"):
         lp.build_inversion_proof(pack)
 
 
@@ -226,10 +226,10 @@ def test_T4c_extra_substrate_key_refuse_save_and_proof(tmp_path):
         return {**frames, "ZZZ": frames["FLAT"]}
 
     pack, _tap = _build_with_post_sink(extra)
-    with pytest.raises(lp.LivePackError, match="ZZZ.*not admitted"):
+    with pytest.raises(lp.LivePackError, match="substrate_key_mismatch"):
         lp.save_pack(pack, tmp_path)
     assert not lp.pack_root(tmp_path).exists()
-    with pytest.raises(lp.LivePackError):
+    with pytest.raises(lp.LivePackError, match="substrate_key_mismatch"):
         lp.build_inversion_proof(pack)
 
 
@@ -322,3 +322,98 @@ def test_T8_proof_tap_threshold_cases_returns_fresh_list():
     second = tap.threshold_cases()
     assert second == tap.threshold_cases()
     assert not any(c.get("mutated") for c in second)
+
+
+def test_FU1_load_pack_refuses_extra_ticker_in_parquet(tmp_path):
+    pack = build()
+    proof = lp.build_inversion_proof(pack)
+    lp.save_pack(pack.with_proof(proof), tmp_path)
+    parquet_path = lp.pack_root(tmp_path) / pack.as_of / "substrate.parquet"
+    flat = pd.read_parquet(parquet_path)
+    extra = flat.loc[flat["ticker"] == "FLAT"].head(1).copy()
+    extra["ticker"] = "ZZZ"
+    flat = pd.concat([flat, extra], ignore_index=True)
+    flat.to_parquet(parquet_path, index=False)
+    with pytest.raises(lp.LivePackError, match="substrate_key_mismatch"):
+        lp.load_pack(tmp_path)
+
+
+def test_FU2_nonfinite_fingerprints_and_index_shift_refused():
+    idx = pd.date_range("2026-01-05", periods=3, freq="B", tz="UTC")
+    base = pd.DataFrame({"high": [1.0, 2.0, 3.0], "low": [0.5, 1.5, 2.5],
+                         "close": [0.8, 1.8, 2.8]}, index=idx)
+    nan_frame = base.copy()
+    nan_frame.iloc[0, 0] = float("nan")
+    pos_frame = base.copy()
+    pos_frame.iloc[0, 0] = float("inf")
+    neg_frame = base.copy()
+    neg_frame.iloc[0, 0] = float("-inf")
+    fps = {lp.substrate_fingerprint(f) for f in (nan_frame, pos_frame, neg_frame)}
+    assert len(fps) == 3
+    shifted = base.copy()
+    shifted.index = pd.date_range("2026-01-05 23:00", periods=3, freq="D", tz="UTC")
+    with pytest.raises(lp.LivePackError, match="substrate_index_not_normalized"):
+        lp._refuse_substrate_index_not_normalized(shifted, ticker="X")
+
+
+def test_FU2b_old_fingerprint_version_manifest_refused(tmp_path):
+    import json
+
+    pack = build()
+    lp.save_pack(pack, tmp_path)
+    manifest_path = lp.pack_root(tmp_path) / pack.as_of / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["substrate_fingerprint_version"] = 1
+    manifest_path.write_text(json.dumps(manifest, sort_keys=True, separators=(",", ":")),
+                             encoding="utf-8")
+    with pytest.raises(lp.LivePackError, match="fingerprint_version_mismatch"):
+        lp.load_pack(tmp_path)
+
+
+def test_FU3_swapped_case_fingerprints_refused_and_pass_recomputed():
+    tap = lp.ProofTapSink(lp.InMemorySink())
+    pack = build(sink=tap)
+    cases = tap.threshold_cases()
+    tampered = [dict(c) for c in cases]
+    stale_i = next(i for i, c in enumerate(tampered) if c["case"].startswith("STALE:"))
+    wash_i = next(i for i, c in enumerate(tampered) if c["case"].startswith("WASH:"))
+    tampered[stale_i]["substrate_fingerprint"], tampered[wash_i]["substrate_fingerprint"] = (
+        tampered[wash_i]["substrate_fingerprint"], tampered[stale_i]["substrate_fingerprint"])
+    with pytest.raises(lp.LivePackError, match="case_fingerprint_mismatch"):
+        lp.build_inversion_proof(pack, threshold_cases=tampered)
+    lied = [dict(c) for c in cases]
+    lied[0]["pass"] = True
+    lp.build_inversion_proof(pack, threshold_cases=lied)
+    assert lied[0]["pass"] is (lied[0]["expected"] == lied[0]["observed"])
+
+
+def test_FU4_pack_hash_mismatch_when_manifest_tampered(tmp_path):
+    pack = build()
+    lp.save_pack(pack, tmp_path)
+    manifest_path = lp.pack_root(tmp_path) / pack.as_of / "manifest.json"
+    text = manifest_path.read_text(encoding="utf-8")
+    manifest_path.write_text(text.replace(pack.pack_hash, "0" * len(pack.pack_hash)),
+                             encoding="utf-8")
+    with pytest.raises(lp.LivePackError, match="pack_hash_mismatch"):
+        lp.load_pack(tmp_path)
+
+
+def test_FU5_load_compact_duplicate_ticker_listed_twice(tmp_path):
+    import hashlib
+
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    from engine.entry_radar import pack_state as ps
+
+    row_a = ps.compact_state_row("A", frame_from_closes([1.0, 2.0, 3.0]), price_basis="adjusted")
+    row_b = ps.compact_state_row("B", frame_from_closes([2.0, 3.0, 4.0]), price_basis="adjusted")
+    ps.write_compact(tmp_path / "c.parquet", [row_a, row_b])
+    table = pq.read_table(tmp_path / "c.parquet")
+    rows = table.to_pylist()
+    rows.insert(1, dict(rows[0]))
+    dup_path = tmp_path / "dup.parquet"
+    pq.write_table(pa.Table.from_pylist(rows, schema=table.schema), dup_path)
+    digest = hashlib.sha256(dup_path.read_bytes()).hexdigest()
+    with pytest.raises(ps.CompactStateError, match="listed twice"):
+        ps.load_compact(dup_path, expected_sha256=digest)
