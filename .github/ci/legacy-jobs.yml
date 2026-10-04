@@ -1201,7 +1201,7 @@ jobs:
       # comparison on the canonical sign. Hermetic: synthetic closes only, no data/, no
       # network, no dependency beyond this job's install line. Unnamed suites never run.
       - name: entry-radar W1+W2+W3+W4+W4.1+W5+W6 — probe universe, entry_event.v1 store, G0 parity, C1-C5 PIT battery, live pack + episode ledger + live evaluator, live-transport correction, W5 prereg gates + forward evidence, RP1 Research Priority
-        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py tests/test_entry_radar_pack_sink.py tests/test_entry_radar_pack_state.py -q
+        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py tests/test_entry_radar_pack_sink.py tests/test_entry_radar_pack_state.py -q tests/test_entry_radar_live_pack_script.py tests/test_entry_radar_pack_spool.py
 
   session-anchor-era:
     # Absolute session-calendar anchor, both eras. The confluence 2D/3D + fortnight
@@ -4541,6 +4541,21 @@ jobs:
         run: python -m pytest tests/test_edgar_universe_widening.py -q
       - name: edgar FTS first-request abort guard fires on _CONFIRMED_ABSENT too (no network)
         run: python -m pytest tests/test_edgar_fts_confirmed_absent_first_request.py -q
+      # Trend Persistence Wave C-0 (PR #8403): the S&P 1500 point-in-time sector
+      # substrate for the 1,083 index leavers. It belongs in THIS job and not a new one
+      # because its subject is this job's subject one layer down: a collectors/ module
+      # whose ONLY leaver-labelling channel is the EDGAR CIK bridge
+      # (collectors.edgar_delisting._get_submissions; trusted methods edgar_fts/seed),
+      # and whose artifact is registered in config/synapse.yml (sp1500-pit-sectors),
+      # which the registry-integrity step above already checks. The suite pins what
+      # the readout got wrong — leavers must never be labelled by ticker string
+      # (recycled tickers ECHO/FI/MMC were the readout's "3 of 1,083"), every row
+      # carries era_correct=False, and the text-first SIC order — and it is fully
+      # offline (autouse no-network fixture, tmp_path data_dir). Deps are satisfied by
+      # the install line above (pandas + pyarrow for the parquet write, pyyaml via
+      # lib.config). 24 tests, 1.8 s measured locally.
+      - name: S&P 1500 point-in-time sector substrate — CIK-only leaver labels, SIC map, cache (no network)
+        run: python -m pytest tests/test_sp1500_pit_sectors.py -q
       - name: symbol-directory archival collector tests (LHB-W2c / LHB-R8)
         run: >-
           python -m pytest
@@ -8388,6 +8403,49 @@ jobs:
   nw-lobe-unfreeze:
     if: ${{ false }}
     gate: code
+    scope: exclusive
+    # Curated named closure: integrity fixtures scan only pytest tmp_path;
+    # opaque artifact traversal must not claim unrelated template ownership.
+    paths:
+      - "collectors/__init__.py"
+      - "collectors/china_ths_concepts.py"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_graph_identity_breaks.yml"
+      - "config/theme_sources.yml"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
+      - "engine/__init__.py"
+      - "engine/basket_index.py"
+      - "engine/basket_membership_pit.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/dannytrades.py"
+      - "engine/dannytrades_chip.py"
+      - "engine/indicators.py"
+      - "engine/technicals.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/theme_graph/theme_state.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/dataos/identity.py"
+      - "lib/store.py"
+      - "research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/__init__.py"
+      - "scripts/build_dt_contra_state.py"
+      - "scripts/build_subsector_membership.py"
+      - "scripts/build_theme_graph.py"
+      - "scripts/correct_gmi_identity_lineage.py"
+      - "scripts/seed_china_ths_baskets.py"
+      - "tests/test_build_subsector_membership.py"
+      - "tests/test_dt_contra_state.py"
+      - "tests/test_gmi_history_integrity.py"
+      - "tests/test_theme_graph_state.py"
     # Regression guard for the two Neural-Web lobes frozen since 2026-07-07:
     #   1. dt_contra_state crash: build_dt_contra_state.py crashed on index.json (list root);
     #      fixed by isinstance(data, dict) guard — 8 tests covering the fix.
@@ -8405,10 +8463,12 @@ jobs:
         # (build_dt_contra_state → engine.dannytrades_chip → numpy/pandas;
         # build_subsector_membership → engine.basket_index → lib.config → yaml).
         run: pip install pytest pandas numpy pyyaml pyarrow jsonschema
-      - name: GMI local and canonical state contract and cutoff reader
-        run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
+      - name: GMI history integrity and refusal before publication
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py -q
+      - name: GMI local and canonical state contract and cutoff reader
+        run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
 
   sa-w4-improvement-lanes:
     if: ${{ false }}
@@ -9097,10 +9157,16 @@ jobs:
     paths:
       - "config/regime_outlook_mapping_v2.json"
       - "engine/rates_command_outlook.py"
+      # The composer (slice E1c) reads the mapping and the evidence rows and
+      # assembles the projection; its suite is offline and lives with the
+      # mapping/readings suites it extends (contract-delta: a new suite must be
+      # named by the job that owns its subject).
+      - "engine/rates_command_outlook_compose.py"
       - "research/macro_regime_intelligence/STATE_PATH_AND_SCIENCE_CONTRACT_2026-10-03.md"
       - "tests/fixtures/regime_outlook/readings_golden_v2.json"
       - "tests/test_rates_command_outlook.py"
       - "tests/test_rates_command_outlook_readings.py"
+      - "tests/test_rates_command_outlook_compose.py"
       - "config.yml"
       - "config/regime_outlook_rule_pins.json"
       - "engine/__init__.py"
@@ -9122,8 +9188,8 @@ jobs:
           python-version: "3.12"
       - name: install test dependencies
         run: pip install pytest pyyaml
-      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings, producer rule pins
-        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py tests/test_rates_command_outlook_rule_pins.py -q
+      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings, producer rule pins, composer
+        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py tests/test_rates_command_outlook_rule_pins.py tests/test_rates_command_outlook_compose.py -q
 
   ric-w2-surface:
     if: ${{ false }}
@@ -15270,6 +15336,14 @@ jobs:
         run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_credit_momentum_yield_consumer.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_build_forex_stance.py -q
       - name: A-F01-W4-1 bonds hub byte-preservation guard (T10)
         run: python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q
+      # E1c4 (Granular Regime Intelligence, 2026-10-04): scripts/build_rates_command.py now
+      # publishes the regime-outlook projection as an additive key. Its suite imports the
+      # builder as a module (never runs it) and rides this job because the builder's existing
+      # suite, tests/test_rates_command.py, is governed here. Its own step so a wiring
+      # regression is named rather than masked by the panel step above. Paths widened for
+      # the suite and the builder. The composer itself is governed by regime-outlook-mapping.
+      - name: E1c4 regime-outlook publication beside the rates command board
+        run: python -m pytest tests/test_build_rates_command_outlook.py -q
     # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
     # Install already covers pandas/numpy/pyarrow/jinja2/plotly. Declared
     # paths must cover every pytest file the commands name (pack validator);
@@ -15302,6 +15376,8 @@ jobs:
       - "tests/test_commodities_ignition_copy.py"
       - "tests/test_commodities_w6_truth.py"
       - "tests/test_macro_rates_curves_bonds_guard.py"
+      - "tests/test_build_rates_command_outlook.py"
+      - "scripts/build_rates_command.py"
       - "tests/test_build_forex_stance.py"
       - "scripts/build_bonds.py"
       - "scripts/build_commodities.py"
