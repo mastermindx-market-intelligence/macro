@@ -172,7 +172,50 @@ def test_visit_discovery_malformed_health_clock_cannot_authorize_absence():
     )
     assert snap["global_negative_authority"] is False
     assert snap["global_negative_authority_blocker"] == \
-        "last_success_clock_unavailable"
+        "last_success_clock_invalid"
+
+
+
+
+def test_visit_discovery_malformed_coverage_stamp_cannot_authorize_absence():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row("A-coverage", "000014", "2026-10-02T09:00:00+08:00")],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01garbage",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+    assert snap["coverage_start"] is None
+    assert snap["owner_clock_state"] == "invalid"
+    assert "coverage_start_invalid" in snap["owner_clock_errors"]
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == "coverage_start_invalid"
+
+
+def test_visit_discovery_malformed_last_attempt_is_not_treated_as_absent():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row("A-attempt", "000015", "2026-10-02T09:00:00+08:00")],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03garbage",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+    assert snap["owner_clock_state"] == "invalid"
+    assert "last_attempt_clock_invalid" in snap["owner_clock_errors"]
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == \
+        "last_attempt_clock_invalid"
 
 
 
