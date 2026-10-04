@@ -22,6 +22,13 @@ def digest(label: str) -> str:
     return hashlib.sha256(label.encode()).hexdigest()
 
 
+def cohort_digest(origin_ids: tuple[str, ...]) -> str:
+    import hashlib
+    import json
+    raw = json.dumps(list(origin_ids), separators=(",", ":")).encode()
+    return hashlib.sha256(raw).hexdigest()
+
+
 def protocol(mode="SYNTHETIC"):
     return B0Protocol(
         experiment_id="PTSE-B0-H5-v1",
@@ -89,15 +96,18 @@ ROWS = [
 ]
 
 
+FOLD_ORIGINS = ("fixture:2026-01-20", "fixture:2026-01-21")
 FOLD = FoldSpec(
     fold_id="fixture-fold-1",
     fit_cutoff_session="2026-01-15",
     fit_cutoff_at="2026-01-15T23:00:00Z",
+    embargo_end_session="2026-01-16",
     test_start_session="2026-01-20",
     test_end_session="2026-01-21",
     evaluation_at="2026-01-29T23:00:00Z",
-    cohort_sha256=digest("fixture-fold-1-cohort"),
+    cohort_sha256=cohort_digest(FOLD_ORIGINS),
     expected_test_rows=2,
+    expected_test_origin_ids=FOLD_ORIGINS,
 )
 
 
@@ -233,25 +243,46 @@ class PTSEB0Test(unittest.TestCase):
         self.assertEqual(result.fold_results[0].test_rows, 1)
         self.assertEqual(result.fold_results[0].unevaluable_test_rows, 1)
 
-    def test_missing_test_origin_is_visible_coverage_loss(self):
-        rows = ROWS[:-1]
-        result = run_b0(protocol(), [FOLD], rows)
-        fold = result.fold_results[0]
-        self.assertEqual(fold.expected_test_rows, 2)
-        self.assertEqual(fold.test_rows, 1)
-        self.assertEqual(fold.unevaluable_test_rows, 1)
+    def test_missing_or_replaced_test_origin_breaks_frozen_cohort(self):
+        with self.assertRaisesRegex(B0ContractError, "COHORT_IDENTITY_MISMATCH"):
+            run_b0(protocol(), [FOLD], ROWS[:-1])
 
-    def test_more_rows_than_frozen_cohort_is_rejected(self):
-        extra = row(
+        replacement = row(
             "2026-01-22",
             "2026-01-29",
             "2026-01-29T21:00:00Z",
             0.05,
             shift=0.5,
         )
-        widened = replace(FOLD, test_end_session="2026-01-22")
-        with self.assertRaisesRegex(B0ContractError, "COHORT_COUNT_MISMATCH"):
-            run_b0(protocol(), [widened], ROWS + [extra])
+        widened = replace(
+            FOLD,
+            test_end_session="2026-01-22",
+        )
+        with self.assertRaisesRegex(B0ContractError, "COHORT_IDENTITY_MISMATCH"):
+            run_b0(protocol(), [widened], ROWS[:-1] + [replacement])
+
+    def test_cohort_manifest_hash_and_order_are_enforced(self):
+        with self.assertRaisesRegex(B0ContractError, "COHORT_DIGEST_MISMATCH"):
+            run_b0(protocol(), [replace(FOLD, cohort_sha256=digest("wrong"))], ROWS)
+        with self.assertRaisesRegex(B0ContractError, "COHORT_IDENTITY_REQUIRED"):
+            run_b0(
+                protocol(),
+                [
+                    replace(
+                        FOLD,
+                        expected_test_origin_ids=tuple(reversed(FOLD_ORIGINS)),
+                    )
+                ],
+                ROWS,
+            )
+
+    def test_explicit_embargo_end_must_precede_test_window(self):
+        with self.assertRaisesRegex(B0ContractError, "FOLD_ORDER_INVALID"):
+            run_b0(
+                protocol(),
+                [replace(FOLD, embargo_end_session="2026-01-20")],
+                ROWS,
+            )
 
     def test_no_mature_test_rows_is_non_evaluable(self):
         rows = [
@@ -319,15 +350,18 @@ class PTSEB0Test(unittest.TestCase):
         with self.assertRaisesRegex(B0ContractError, "FOLD_ORDER_INVALID"):
             run_b0(protocol(), [bad_fold], ROWS)
 
+        second_origins = ("fixture:2026-01-21",)
         second = replace(
             FOLD,
             fold_id="fixture-fold-2",
             fit_cutoff_session="2026-01-19",
             fit_cutoff_at="2026-01-19T23:00:00Z",
+            embargo_end_session="2026-01-20",
             test_start_session="2026-01-21",
             test_end_session="2026-01-21",
-            cohort_sha256=digest("fixture-fold-2-cohort"),
+            cohort_sha256=cohort_digest(second_origins),
             expected_test_rows=1,
+            expected_test_origin_ids=second_origins,
         )
         with self.assertRaisesRegex(B0ContractError, "TEST_FOLD_OVERLAP"):
             run_b0(protocol(), [FOLD, second], ROWS)
@@ -354,6 +388,12 @@ class PTSEB0Test(unittest.TestCase):
         )
         right = run_b0(protocol(), [FOLD], changed)
         self.assertNotEqual(left.result_digest, right.result_digest)
+
+    def test_fold_result_binds_frozen_fold_definition(self):
+        result = run_b0(protocol(), [FOLD], ROWS)
+        fold = result.fold_results[0]
+        self.assertEqual(fold.cohort_sha256, FOLD.cohort_sha256)
+        self.assertEqual(len(fold.fold_spec_digest), 64)
 
 
 if __name__ == "__main__":
