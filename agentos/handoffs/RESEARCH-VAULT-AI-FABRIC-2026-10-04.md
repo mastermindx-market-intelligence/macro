@@ -76,6 +76,8 @@ next_actions:
   - "Use research/research_vault_ai_fabric_20261004/00_FABLE_CEO_ASSIGNMENT.md as the principal handoff and the remaining packet as its source map."
 do_not_redo:
   - "Do not create a new workstream/program for this packet; parent is existing qualitative-intelligence."
+  - "Do not rebuild already-merged Research Intelligence foundations: #7101 RIO v1 (merge 0859610d), #7230 W2 persistence (20454129), #7079 source-bound Brain evidence (0d352926), #8027 rights-safe belief projection (563362ae)."
+  - "Do not reopen #8389 or #8430 as competing masterplans; both were unique-evidence checked and closed unmerged as superseded by canonical planning candidate #8438."
   - "Do not build a second Vault/search/identity/RIO/auth/lifecycle owner."
   - "Do not delete receipts or blindly re-ingest the historical Vault to repair corpus rows."
   - "Do not merge #7354/#7461/#7522/#8090 wholesale."
