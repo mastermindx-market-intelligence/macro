@@ -319,6 +319,7 @@ def _visit_discovery_snapshot(
     coverage_start: str | None,
     open_scoped_codes: set[str],
     has_unscoped_open: bool,
+    exception_ledger_readable: bool = True,
     kind_labeler,
     recent_days: int = _VISIT_DISCOVERY_RECENT_DAYS,
     baseline_days: int = _VISIT_DISCOVERY_BASELINE_DAYS,
@@ -342,10 +343,37 @@ def _visit_discovery_snapshot(
     # Keep the pure helper deterministic when called directly: production's
     # owner reader passes the real current date explicitly below.
     reference_day = reference_day or last_attempt_day or last_success_day or coverage_day or date.today()
+
+    # Owner chronology is authority-bearing.  A persisted clock in the future,
+    # before the write-once coverage stamp, or an attempt preceding the recorded
+    # last success cannot authorize measured absence/baselines.  Preserve
+    # positive evidence separately; fail closed only the negative authority.
+    clock_errors: list[str] = []
+    if coverage_day is not None and coverage_day > reference_day:
+        clock_errors.append("coverage_start_after_reference")
+    if last_success_day is not None:
+        if last_success_day > reference_day:
+            clock_errors.append("last_success_after_reference")
+        if coverage_day is not None and last_success_day < coverage_day:
+            clock_errors.append("last_success_before_coverage_start")
+    if last_attempt_day is not None:
+        if last_attempt_day > reference_day:
+            clock_errors.append("last_attempt_after_reference")
+        if coverage_day is not None and last_attempt_day < coverage_day:
+            clock_errors.append("last_attempt_before_coverage_start")
+    if (
+        last_success_day is not None
+        and last_attempt_day is not None
+        and last_attempt_day < last_success_day
+    ):
+        clock_errors.append("last_attempt_before_last_success")
+    owner_clock_order_valid = not clock_errors
+
     source_status = owner_health_status
     if (
         owner_health_status == "ok"
         and last_success_day is not None
+        and owner_clock_order_valid
         and (reference_day - last_success_day).days > max(int(stale_after_days), 0)
     ):
         source_status = "stale"
@@ -365,27 +393,46 @@ def _visit_discovery_snapshot(
 
     source_event_days = [
         d for d in (_visit_day(r.get("source_published_at")) for r in deduped)
-        if d is not None
+        if d is not None and d <= reference_day
     ]
     system_observed_days = [
         d for d in (_visit_day(r.get("system_recorded_at")) for r in deduped)
         if d is not None
+        and d <= reference_day
+        and (coverage_day is None or d >= coverage_day)
     ]
-    if last_success_day is not None and owner_health_status == "ok":
+    valid_attempt_day = (
+        last_attempt_day
+        if last_attempt_day is not None
+        and last_attempt_day <= reference_day
+        and (coverage_day is None or last_attempt_day >= coverage_day)
+        and (
+            last_success_day is None
+            or last_attempt_day >= last_success_day
+        )
+        else None
+    )
+    if (
+        last_success_day is not None
+        and owner_health_status == "ok"
+        and owner_clock_order_valid
+    ):
         observation_end = last_success_day
-    elif last_attempt_day is not None:
+    elif valid_attempt_day is not None:
         # A degraded/failed attempt is the honest present-tense reference clock.
         # It grants no negative authority, but prevents a quiet event tape from
         # moving the 30d window backward to the date of its last positive filing.
-        observation_end = last_attempt_day
+        observation_end = valid_attempt_day
     elif system_observed_days:
         observation_end = max(system_observed_days)
     elif source_event_days:
-        # Legacy positive evidence with no system clock: source date is a last
-        # resort for display-window anchoring only, never first-seen authority.
+        # Legacy positive evidence with no valid system clock: source date is a
+        # last resort for display-window anchoring only, never first-seen authority.
         observation_end = max(source_event_days)
+    elif coverage_day is not None and coverage_day <= reference_day:
+        observation_end = coverage_day
     else:
-        observation_end = last_success_day or coverage_day
+        observation_end = None
 
     authority = {
         "is_context_only": True,
@@ -402,6 +449,10 @@ def _visit_discovery_snapshot(
         "source_status": source_status,
         "owner_health_status": owner_health_status,
         "stale_after_days": max(int(stale_after_days), 0),
+        "exception_ledger_readable": bool(exception_ledger_readable),
+        "owner_clock_state": "valid" if owner_clock_order_valid else "invalid",
+        "owner_clock_errors": sorted(set(clock_errors)),
+        "reference_day": reference_day.isoformat(),
         "coverage_start": coverage_day.isoformat() if coverage_day else None,
         "observation_end": observation_end.isoformat() if observation_end else None,
         "asof": observation_end.isoformat() if observation_end else None,
@@ -414,10 +465,14 @@ def _visit_discovery_snapshot(
             source_status == "ok"
             and coverage_day is not None
             and last_success_day is not None
+            and owner_clock_order_valid
+            and exception_ledger_readable
             and not has_unscoped_open
         ),
         "global_negative_authority_blocker": (
-            "unscoped_coverage_exception" if has_unscoped_open
+            "coverage_exception_ledger_unreadable" if not exception_ledger_readable
+            else "unscoped_coverage_exception" if has_unscoped_open
+            else "owner_clock_order_invalid" if not owner_clock_order_valid
             else "source_stale" if source_status == "stale"
             else "source_health_not_ok" if source_status != "ok"
             else "coverage_start_unavailable" if coverage_day is None
@@ -494,10 +549,14 @@ def _visit_discovery_snapshot(
             continue
 
         company_exception = code in open_scoped_codes
-        if has_unscoped_open:
+        if not exception_ledger_readable:
+            baseline_state = "blocked_exception_ledger_unreadable"
+        elif has_unscoped_open:
             baseline_state = "blocked_unscoped_coverage_exception"
         elif company_exception:
             baseline_state = "blocked_company_coverage_exception"
+        elif not owner_clock_order_valid:
+            baseline_state = "blocked_owner_clock_order_invalid"
         elif source_status == "stale":
             baseline_state = "unavailable_source_stale"
         elif source_status != "ok":
@@ -507,8 +566,12 @@ def _visit_discovery_snapshot(
         else:
             baseline_state = "measured"
 
-        observed_days = [observed_day for _source_day, observed_day, _r in rows
-                         if observed_day is not None]
+        observed_days = [
+            observed_day for _source_day, observed_day, _r in rows
+            if observed_day is not None
+            and observed_day <= reference_day
+            and (coverage_day is None or observed_day >= coverage_day)
+        ]
         first_observed_day = min(observed_days) if observed_days else None
         if company_exception:
             first_seen_state = "unknown_due_coverage_exception"
@@ -610,7 +673,7 @@ def _visit_discovery_block() -> dict | None:
 
         visits = _visit_frame_records(cv.read_visits_strict())
         exceptions = _visit_frame_records(cv.read_coverage_exceptions_strict())
-        if visits is None or exceptions is None:
+        if visits is None:
             return {
                 "schema": _VISIT_DISCOVERY_SCHEMA,
                 "is_context_only": True,
@@ -623,14 +686,19 @@ def _visit_discovery_block() -> dict | None:
                 "coverage_start": None,
                 "observation_end": None,
                 "asof": None,
+                "exception_ledger_readable": exceptions is not None,
                 "global_negative_authority": False,
-                "global_negative_authority_blocker": "owner_store_unreadable",
+                "global_negative_authority_blocker": "visit_store_unreadable",
                 "examples": [],
                 "scientific_state": "descriptive_only_not_alpha_evidence",
                 "actor_recurrence_state": "not_evaluated_without_body_stage_receipt",
             }
 
-        open_rows = [r for r in exceptions if _visit_text(r.get("status")) == "open"]
+        exception_ledger_readable = exceptions is not None
+        exception_rows = exceptions or []
+        open_rows = [
+            r for r in exception_rows if _visit_text(r.get("status")) == "open"
+        ]
         open_scoped_codes: set[str] = set()
         has_unscoped = False
         for row in open_rows:
@@ -647,6 +715,7 @@ def _visit_discovery_block() -> dict | None:
         if (
             not visits
             and not open_rows
+            and exception_ledger_readable
             and _visit_text(health.get("status")) == "no_coverage"
             and not coverage_start
         ):
@@ -658,6 +727,7 @@ def _visit_discovery_block() -> dict | None:
             coverage_start=coverage_start,
             open_scoped_codes=open_scoped_codes,
             has_unscoped_open=has_unscoped,
+            exception_ledger_readable=exception_ledger_readable,
             kind_labeler=cv.visit_kind_label,
             reference_day=date.today(),
             stale_after_days=getattr(
