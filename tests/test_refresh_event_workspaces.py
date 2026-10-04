@@ -17,8 +17,11 @@ from engine.company_intelligence.event_workspace import (
     LIVE_CIE_ALIAS,
     LIVE_NARRATIVE_ALIAS,
     LIVE_PUBLIC_SLUG,
+    MANIFEST_SCHEMA_V2,
+    MANIFEST_SCHEMA_V3,
     apple_registry,
     flagship_fiscal_period,
+    validate_generation_clocks,
     write_workspace_generation,
 )
 from engine.company_intelligence.event_workspace_build import build_event_workspace
@@ -257,8 +260,10 @@ def test_same_source_revisions_are_semantic_noop(tmp_path: Path) -> None:
     assert _refresh(tmp_path, fake, prior_workspace=first_aapl_prior) == 0
     second = _marker(tmp_path)
     assert first["generation_id"] == second["generation_id"]
-    assert first["generated_at"] == ACCEPTANCE
-    assert second["generated_at"] == ACCEPTANCE
+    assert first["source_clock"] == ACCEPTANCE
+    assert second["source_clock"] == ACCEPTANCE
+    assert first["generated_at"] == first_aapl_prior["lifecycle"]["observed_at"]
+    assert second["generated_at"] == first_aapl_prior["lifecycle"]["observed_at"]
     assert [key for key, _ in fake.puts[len(first_puts):]] == []
 
 
@@ -1538,3 +1543,198 @@ def test_semantic_noop_is_deterministic_by_injected_clock_not_same_second_luck()
     def _content(payload: dict) -> dict:
         return {k: v for k, v in payload.items() if k not in ("generation_id", "generated_at")}
     assert _content(first) == _content(second)
+
+
+def test_unchanged_source_refresh_mints_no_new_generation_under_v3(tmp_path: Path) -> None:
+    fake = _FakeR2()
+    assert _refresh(tmp_path, fake) == 0
+    first = _marker(tmp_path)
+    assert first["schema"] == MANIFEST_SCHEMA_V3
+    first_puts = list(fake.puts)
+    prior = json.loads(
+        (tmp_path / "event_workspaces" / "generations" / first["generation_id"] / "workspaces" / f"{FLAGSHIP_EVENT_ID}.json").read_text(encoding="utf-8")
+    )
+    assert _refresh(tmp_path, fake, prior_workspace=prior) == 0
+    second = _marker(tmp_path)
+    assert second["schema"] == MANIFEST_SCHEMA_V3
+    assert first["generation_id"] == second["generation_id"]
+    assert [key for key, _ in fake.puts[len(first_puts):]] == []
+
+
+def test_first_refresh_over_a_v2_marker_mints_exactly_one_v3_generation(tmp_path: Path) -> None:
+    from engine.company_intelligence.contracts import canonical_json_bytes
+
+    fake = _FakeR2()
+    parsed_marker = {
+        "schema": MANIFEST_SCHEMA_V2,
+        "generation_id": "f" * 24,
+        "generated_at": "2026-07-01T00:00:00Z",
+        "authority": "context_only",
+        "status": "ready",
+        "event_count": 0,
+        "files": {},
+        "warnings": [],
+        "aliases": {},
+        "previous_generation_id": None,
+        "previous_manifest_sha256": None,
+    }
+    raw_bytes = canonical_json_bytes(parsed_marker)
+    assert _refresh(tmp_path, fake, current_marker_loader=lambda: (raw_bytes, parsed_marker)) == 0
+    marker = _marker(tmp_path)
+    assert marker["schema"] == MANIFEST_SCHEMA_V3
+    assert len(list((tmp_path / "event_workspaces" / "generations").iterdir())) == 1
+
+
+def test_no_op_gate_accepts_a_v3_marker(tmp_path: Path) -> None:
+    from engine.company_intelligence.contracts import canonical_json_bytes
+    from engine.company_intelligence.event_workspace import preview_generation_identity_v3
+
+    fake = _FakeR2()
+    assert _refresh(tmp_path, fake) == 0
+    first = _marker(tmp_path)
+    assert first["schema"] == MANIFEST_SCHEMA_V3
+    prior = json.loads(
+        (tmp_path / "event_workspaces" / "generations" / first["generation_id"] / "workspaces" / f"{FLAGSHIP_EVENT_ID}.json").read_text(encoding="utf-8")
+    )
+    raw_bytes = canonical_json_bytes(first)
+    candidate_id = preview_generation_identity_v3(
+        {FLAGSHIP_EVENT_ID: prior},
+        previous_generation_id=first.get("previous_generation_id"),
+    )
+    assert candidate_id == first["generation_id"]
+    first_puts = len(fake.puts)
+    assert _refresh(
+        tmp_path,
+        fake,
+        prior_workspace=prior,
+        current_marker_loader=lambda: (raw_bytes, first),
+    ) == 0
+    second = _marker(tmp_path)
+    assert second["generation_id"] == first["generation_id"]
+    assert [key for key, _ in fake.puts[first_puts:]] == []
+
+
+def test_noop_gate_holds_for_non_canonical_clock_strings(tmp_path: Path) -> None:
+    from engine.company_intelligence.event_workspace import preview_generation_identity_v3
+    from tests.test_company_intelligence_workspace_chain import EVENT_ID, _raw_workspace
+
+    row = _raw_workspace(source_available_at="2026-07-01T00:00:00Z", event_id=EVENT_ID)
+    lifecycle = dict(row["lifecycle"])
+    lifecycle["observed_at"] = "2026-07-02T00:00:00+00:00"
+    lifecycle["source_available_at"] = "2026-07-01T00:00:00+00:00"
+    row["lifecycle"] = lifecycle
+    out = tmp_path / "company_intelligence"
+    generation = write_workspace_generation(out, {EVENT_ID: row})
+    manifest = json.loads((generation / "manifest.json").read_text(encoding="utf-8"))
+    published = json.loads(
+        (generation / "workspaces" / f"{EVENT_ID}.json").read_text(encoding="utf-8")
+    )
+    assert published["lifecycle"]["observed_at"] == "2026-07-02T00:00:00+00:00"
+    candidate_id = preview_generation_identity_v3(
+        {EVENT_ID: published},
+        previous_generation_id=manifest.get("previous_generation_id"),
+    )
+    assert candidate_id == manifest["generation_id"]
+
+
+def test_noop_candidate_keeps_the_real_previous_generation_id(tmp_path: Path) -> None:
+    from engine.company_intelligence.contracts import canonical_json_bytes
+
+    fake = _FakeR2()
+    assert _refresh(tmp_path, fake) == 0
+    g0 = _marker(tmp_path)
+    prior_g0 = json.loads(
+        (
+            tmp_path
+            / "event_workspaces"
+            / "generations"
+            / g0["generation_id"]
+            / "workspaces"
+            / f"{FLAGSHIP_EVENT_ID}.json"
+        ).read_text(encoding="utf-8")
+    )
+    mutated = EXHIBIT.read_text(encoding="utf-8") + "\n<!-- chain step -->\n"
+    raw_g0 = canonical_json_bytes(g0)
+    assert _refresh(
+        tmp_path,
+        fake,
+        http_get=_http_get_factory(mutated),
+        prior_workspace=prior_g0,
+        current_marker_loader=lambda: (raw_g0, g0),
+    ) == 0
+    g1 = _marker(tmp_path)
+    assert g1["generation_id"] != g0["generation_id"]
+    assert g1["previous_generation_id"] == g0["generation_id"]
+    g0_sha = sha256(
+        (tmp_path / "event_workspaces" / "generations" / g0["generation_id"] / "manifest.json").read_bytes()
+    ).hexdigest()
+    assert g1["previous_manifest_sha256"] == g0_sha
+    g1_sha = sha256(
+        (tmp_path / "event_workspaces" / "generations" / g1["generation_id"] / "manifest.json").read_bytes()
+    ).hexdigest()
+    prior_g1 = json.loads(
+        (
+            tmp_path
+            / "event_workspaces"
+            / "generations"
+            / g1["generation_id"]
+            / "workspaces"
+            / f"{FLAGSHIP_EVENT_ID}.json"
+        ).read_text(encoding="utf-8")
+    )
+    raw_g1 = canonical_json_bytes(g1)
+    first_puts = len(fake.puts)
+    assert _refresh(
+        tmp_path,
+        fake,
+        http_get=_http_get_factory(mutated),
+        prior_workspace=prior_g1,
+        current_marker_loader=lambda: (raw_g1, g1),
+    ) == 0
+    g1_again = _marker(tmp_path)
+    assert g1_again["generation_id"] == g1["generation_id"]
+    assert [key for key, _ in fake.puts[first_puts:]] == []
+
+    mutated_again = mutated + "\n<!-- second chain step -->\n"
+    assert _refresh(
+        tmp_path,
+        fake,
+        http_get=_http_get_factory(mutated_again),
+        prior_workspace=prior_g1,
+        current_marker_loader=lambda: (raw_g1, g1),
+    ) == 0
+    g2 = _marker(tmp_path)
+    assert g2["generation_id"] != g1["generation_id"]
+    assert g2["previous_generation_id"] == g1["generation_id"]
+    assert g2["previous_manifest_sha256"] == g1_sha
+
+
+def test_chained_generations_never_carry_a_clock_earlier_than_a_row_observation(tmp_path: Path) -> None:
+    fake = _FakeR2()
+    dhi_event_id = "evt_cik0000882184_2026q3_results"
+    original = _stub_dhi_revision(
+        source_available_at="2026-07-21T16:30:00Z",
+        source_sha256="a" * 64,
+        accession="0000882184-26-000092",
+    )
+    amendment = _stub_dhi_revision(
+        source_available_at="2026-07-22T12:00:00Z",
+        source_sha256="b" * 64,
+        state="corrected",
+        accession="0000882184-26-000093",
+    )
+
+    def stub_discovery(ticker: str, **_kwargs) -> list[tuple[str, dict]]:
+        if ticker == "DHI":
+            return [(dhi_event_id, original), (dhi_event_id, amendment)]
+        return []
+
+    assert _refresh(tmp_path, fake, homebuilder_discovery=stub_discovery) == 0
+    generations = sorted((tmp_path / "event_workspaces" / "generations").iterdir())
+    for generation_dir in generations:
+        manifest = json.loads((generation_dir / "manifest.json").read_text(encoding="utf-8"))
+        rows = {
+            path.stem: json.loads(path.read_text(encoding="utf-8"))
+            for path in (generation_dir / "workspaces").glob("*.json")
+        }
+        validate_generation_clocks(manifest, rows)

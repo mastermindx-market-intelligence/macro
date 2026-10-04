@@ -58,10 +58,13 @@ USAGE
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import logging
 import os
+import resource
 import sys
+import time
 from datetime import date, timezone
 from pathlib import Path
 from typing import Any, Callable
@@ -109,6 +112,77 @@ _VPS_STATE_DIR = Path("/var/lib/macro-live/state/entry_radar")
 _STATE_DIR_ENV = "ENTRY_RADAR_STATE_DIR"
 _SLICE_DIR_ENV = "ENTRY_RADAR_SLICE_DIR"
 _SLICE_UNCONFIGURED = "slice_store_unconfigured"
+
+
+def _rss_mb() -> float | None:
+    try:
+        with open("/proc/self/statm", encoding="ascii") as fh:
+            parts = fh.read().split()
+        if len(parts) >= 2:
+            pages = int(parts[1])
+            page_size = os.sysconf("SC_PAGE_SIZE")
+            return pages * page_size / (1024 * 1024)
+    except Exception:  # noqa: BLE001
+        pass
+    try:
+        ru = resource.getrusage(resource.RUSAGE_SELF)
+        if sys.platform == "darwin":
+            return ru.ru_maxrss / (1024 * 1024)
+        return ru.ru_maxrss / 1024
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _rss_fmt() -> str:
+    v = _rss_mb()
+    return f"{v:.1f}" if v is not None else "na"
+
+
+def _rss_label() -> str:
+    try:
+        with open("/proc/self/statm", encoding="ascii") as fh:
+            parts = fh.read().split()
+        if len(parts) >= 2:
+            return "rss_mb"
+    except Exception:  # noqa: BLE001
+        pass
+    return "peak_rss_mb"
+
+
+@contextlib.contextmanager
+def _stage(name: str):
+    rss = _rss_fmt()
+    label = _rss_label()
+    print(f"entry-radar-pack stage={name} status=begin {label}={rss}", flush=True)
+    t0 = time.monotonic()
+    try:
+        yield
+    except BaseException:
+        elapsed = time.monotonic() - t0
+        rss = _rss_fmt()
+        print(
+            f"entry-radar-pack stage={name} status=failed "
+            f"elapsed_s={elapsed:.3f} {_rss_label()}={rss}",
+            flush=True,
+        )
+        raise
+    else:
+        elapsed = time.monotonic() - t0
+        rss = _rss_fmt()
+        print(
+            f"entry-radar-pack stage={name} status=done "
+            f"elapsed_s={elapsed:.3f} {_rss_label()}={rss}",
+            flush=True,
+        )
+
+
+def _print_slice_progress(done: int, total: int, t0: float) -> None:
+    elapsed = time.monotonic() - t0
+    print(
+        f"entry-radar-pack stage=slice_lanes progress={done}/{total} "
+        f"elapsed_s={elapsed:.3f} {_rss_label()}={_rss_fmt()}",
+        flush=True,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -187,29 +261,35 @@ def slice_lanes(tickers: list[str], *, as_of: date, slice_dir: Path | None,
     per_name: dict[str, Any] = {}
     g0_dots = 0
     c5_candidates = 0
-    for ticker in tickers:
-        path = slice_dir / f"{ticker}.slice.json"
-        if not path.is_file():
-            per_name[ticker] = {"available": False, "reason": "slice_absent"}
-            continue
+    total = len(tickers)
+    t_slice = time.monotonic()
+    for idx, ticker in enumerate(tickers, 1):
         try:
-            slice_ = load_slice(path)
-            store = EntryEventStore()
-            ingest_slice(slice_, store, as_of_reference_date=as_of)
-            report = g0_events(slice_, store)
-            run = run_c5(store)
-        except (IndicatorSliceError, ValueError) as exc:
-            per_name[ticker] = {"available": False, "reason": "slice_refused",
-                                "detail": str(exc)[:400]}
-            continue
-        g0_dots += len(report.grey_event_ids)
-        c5_candidates += len(run.candidates)
-        per_name[ticker] = {"available": True,
-                            "g0_grey_events": len(report.grey_event_ids),
-                            "g0_watch_events": len(report.watch_event_ids),
-                            "c5_candidates": len(run.candidates),
-                            "c5_episodes": len(run.episodes)}
-        runs.append((ticker, run))
+            path = slice_dir / f"{ticker}.slice.json"
+            if not path.is_file():
+                per_name[ticker] = {"available": False, "reason": "slice_absent"}
+                continue
+            try:
+                slice_ = load_slice(path)
+                store = EntryEventStore()
+                ingest_slice(slice_, store, as_of_reference_date=as_of)
+                report = g0_events(slice_, store)
+                run = run_c5(store)
+            except (IndicatorSliceError, ValueError) as exc:
+                per_name[ticker] = {"available": False, "reason": "slice_refused",
+                                    "detail": str(exc)[:400]}
+                continue
+            g0_dots += len(report.grey_event_ids)
+            c5_candidates += len(run.candidates)
+            per_name[ticker] = {"available": True,
+                                "g0_grey_events": len(report.grey_event_ids),
+                                "g0_watch_events": len(report.watch_event_ids),
+                                "c5_candidates": len(run.candidates),
+                                "c5_episodes": len(run.episodes)}
+            runs.append((ticker, run))
+        finally:
+            if idx % 250 == 0 or idx == total:
+                _print_slice_progress(idx, total, t_slice)
 
     available = [t for t, row in per_name.items() if row.get("available")]
     # "we looked and every slice was unreadable" and "there was nothing to look
@@ -294,6 +374,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
                     help="assert the nightly lane gate before any durable write")
     ap.add_argument("--verbose", action="store_true")
     args = ap.parse_args(argv)
+    t_main = time.monotonic()
 
     logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING,
                         format="%(levelname)s %(name)s: %(message)s")
@@ -331,10 +412,10 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
 
     # --- idempotency: the pack for this session may already be current -------
     if state is not None and not args.force:
-        existing = lp.load_pack(state)
-        if existing is not None and existing.as_of == as_of.isoformat():
+        current = lp.current_pack_identity(state)
+        if current is not None and current["as_of"] == as_of.isoformat():
             print(f"entry-radar-pack already current for {as_of.isoformat()} "
-                  f"(pack_hash {existing.pack_hash}) — nothing to do", flush=True)
+                  f"(pack_hash {current['pack_hash']}) — nothing to do", flush=True)
             return 0
 
     # --- 1. the probe set, through the W1 machinery --------------------------
@@ -345,19 +426,23 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
         local_dir=Path(args.spool_dir) if args.spool_dir else None,
         prefix=spool_prefix)
     bus = NominationBus(spool=nomination_spool)
-    inputs = collect(root, cfg, bus=bus, now=now)
 
     out_dir = live_dir(root, args.live_dir)
     try:
         previous = json.loads((out_dir / ARTIFACT_NAME).read_text(encoding="utf-8"))
     except (OSError, ValueError):
         previous = None
-    probe_set = assemble_probe_set(
-        layer_a=inputs["layer_a"], bus=bus, cfg=cfg,
-        memberships=inputs["memberships"], liquidity=inputs["liquidity"],
-        watchlist=inputs["watchlist"], hot_features=inputs["hot_features"],
-        hot_read=inputs["hot_read"], history_age=inputs["history_age"],
-        previous=previous, market_session=market_session(now), now=now)
+
+    with _stage("collect"):
+        inputs = collect(root, cfg, bus=bus, now=now)
+
+    with _stage("probe_set"):
+        probe_set = assemble_probe_set(
+            layer_a=inputs["layer_a"], bus=bus, cfg=cfg,
+            memberships=inputs["memberships"], liquidity=inputs["liquidity"],
+            watchlist=inputs["watchlist"], hot_features=inputs["hot_features"],
+            hot_read=inputs["hot_read"], history_age=inputs["history_age"],
+            previous=previous, market_session=market_session(now), now=now)
     for line in probe_set.summary_lines():
         print(line, flush=True)
 
@@ -370,13 +455,15 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
     snapshot_tickers = list(lp.probe_set_snapshot(probe_set).get("tickers") or [])
     slice_dir_raw = os.environ.get(_SLICE_DIR_ENV, "").strip()
     slice_dir = Path(slice_dir_raw) if slice_dir_raw else None
-    lanes, c5_runs = slice_lanes(snapshot_tickers, as_of=as_of, slice_dir=slice_dir)
-    confirmed_lanes = confirmed_lane_pack_rows(lanes, snapshot_tickers)
+    with _stage("slice_lanes"):
+        lanes, c5_runs = slice_lanes(snapshot_tickers, as_of=as_of, slice_dir=slice_dir)
+        confirmed_lanes = confirmed_lane_pack_rows(lanes, snapshot_tickers)
 
-    pack = lp.build_pack(probe_set=probe_set, store_reader=store_reader(root),
-                         as_of=as_of, built_at=iso(now) or "",
-                         vintage=f"store@{as_of.isoformat()}",
-                         confirmed_lanes=confirmed_lanes)
+    with _stage("build_pack"):
+        pack = lp.build_pack(probe_set=probe_set, store_reader=store_reader(root),
+                             as_of=as_of, built_at=iso(now) or "",
+                             vintage=f"store@{as_of.isoformat()}",
+                             confirmed_lanes=confirmed_lanes)
     newest = max((row.last_confirmed for row in pack.names
                   if row.last_confirmed), default=None)
     print(f"entry-radar-pack as_of={pack.as_of} next_session={pack.next_session} "
@@ -389,11 +476,18 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
               f"(--allow-stale-store overrides).  The RTH stale-pack gate is the real "
               f"protection; this refusal keeps the artifact honest at build time",
               flush=True)
+        elapsed = time.monotonic() - t_main
+        print(
+            f"entry-radar-pack stage=total status=refused "
+            f"elapsed_s={elapsed:.3f} {_rss_label()}={_rss_fmt()}",
+            flush=True,
+        )
         return 5
 
     # --- 3. the inversion proof ---------------------------------------------
-    proof = lp.build_inversion_proof(pack)
-    pack = pack.with_proof(proof)
+    with _stage("proof"):
+        proof = lp.build_inversion_proof(pack)
+        pack = pack.with_proof(proof)
     print(f"entry-radar-pack inversion proof: {proof['cases_total']} case(s), "
           f"pass={proof['pass']} by_family={proof['by_family']}", flush=True)
     if not proof["pass"]:
@@ -410,22 +504,23 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
     # carry `confirmed_lanes`; this step applies the C5 detector RUNS (episodes/
     # events) those slices produced to the ledger — a different consumption of
     # the same `slice_lanes()` call, not a second read of the slice store.
-    ledger = ll.LiveEpisodeLedger.load(state) if state is not None \
-        else ll.LiveEpisodeLedger(None)
-    confirmed_k = {row.ticker: row.confirmed_k for row in pack.names}
+    with _stage("ledger"):
+        ledger = ll.LiveEpisodeLedger.load(state) if state is not None \
+            else ll.LiveEpisodeLedger(None)
+        confirmed_k = {row.ticker: row.confirmed_k for row in pack.names}
 
-    deltas = [ll.apply_session_clocks(ledger, as_of_session=pack.as_of,
-                                      confirmed_k_by_name=confirmed_k)]
-    for ticker, run in c5_runs:
-        deltas.append(ledger.apply_run(
-            ticker=ticker, as_of_session=pack.as_of, runs=[run],
-            pass_id=ll.PACK_PASS_ID,
-            context={"bar_availability": {"grain": "confirmed_daily_3d",
-                                          "lane": "terminal_slice"},
-                     "data_quality": "ok",
-                     "freshness": {"pack_as_of": pack.as_of,
-                                   "source": "terminal_indicator_slice"}}))
-    delta = ll.merge_deltas(deltas, as_of_session=pack.as_of, pass_id=ll.PACK_PASS_ID)
+        deltas = [ll.apply_session_clocks(ledger, as_of_session=pack.as_of,
+                                          confirmed_k_by_name=confirmed_k)]
+        for ticker, run in c5_runs:
+            deltas.append(ledger.apply_run(
+                ticker=ticker, as_of_session=pack.as_of, runs=[run],
+                pass_id=ll.PACK_PASS_ID,
+                context={"bar_availability": {"grain": "confirmed_daily_3d",
+                                              "lane": "terminal_slice"},
+                         "data_quality": "ok",
+                         "freshness": {"pack_as_of": pack.as_of,
+                                       "source": "terminal_indicator_slice"}}))
+        delta = ll.merge_deltas(deltas, as_of_session=pack.as_of, pass_id=ll.PACK_PASS_ID)
     print(f"entry-radar-pack delta: {len(delta.transitions)} transition(s), "
           f"{len(delta.events)} event(s), {len(delta.episodes)} episode(s), "
           f"{len(delta.superseded)} superseded terminal trace(s); "
@@ -434,51 +529,65 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
     if args.dry_run:
         print("dry-run — nothing written (no pack, no ledger, no spool object)",
               flush=True)
+        elapsed = time.monotonic() - t_main
+        print(
+            f"entry-radar-pack stage=total status=done "
+            f"elapsed_s={elapsed:.3f} {_rss_label()}={_rss_fmt()}",
+            flush=True,
+        )
         return 0
 
     # --- 5. save the pack ----------------------------------------------------
     assert state is not None  # guarded above for the non-dry-run path
-    pack_path = lp.save_pack(pack, state)
+    with _stage("save"):
+        pack_path = lp.save_pack(pack, state)
     print(f"entry-radar-pack saved {pack_path}", flush=True)
 
     # --- 6. SPOOL, then commit ----------------------------------------------
-    event_spool = ll.EventSpool(
-        local_dir=Path(args.spool_dir) if args.spool_dir else None)
-    stamp_utc = now.astimezone(timezone.utc)
-    health = {
-        "pack": {"as_of": pack.as_of, "pack_hash": pack.pack_hash,
-                 "proof_failed": pack.proof_failed},
-        "probe_set": {"count": int(pack.probe_set.get("count") or 0)},
-        "substrate": {"names": len(pack.names),
-                      "missing": len(pack.substrate_missing)},
-        "lanes": {"g0": lanes["g0"], "c5": lanes["c5"]},
-    }
-    receipt, committed = ll.spool_then_commit(
-        ledger, delta, spool=event_spool, pass_ts=iso(now) or "",
-        session=stamp_utc.date().isoformat(), stamp=stamp_utc.strftime("%H%M%S"),
-        pack_as_of=pack.as_of, pack_hash=pack.pack_hash, health=health)
-    if not committed:
-        print("::warning title=entry-radar-pack::event spool FAILED — this pass's "
-              f"{len(delta.transitions)} transition(s) are WITHHELD from the ledger and "
-              "the payload; the next pass re-derives and retries (every address is "
-              "deterministic, so the retry is exactly-once-effective)", flush=True)
-        return 4
+    with _stage("spool"):
+        event_spool = ll.EventSpool(
+            local_dir=Path(args.spool_dir) if args.spool_dir else None)
+        stamp_utc = now.astimezone(timezone.utc)
+        health = {
+            "pack": {"as_of": pack.as_of, "pack_hash": pack.pack_hash,
+                     "proof_failed": pack.proof_failed},
+            "probe_set": {"count": int(pack.probe_set.get("count") or 0)},
+            "substrate": {"names": len(pack.names),
+                          "missing": len(pack.substrate_missing)},
+            "lanes": {"g0": lanes["g0"], "c5": lanes["c5"]},
+        }
+        receipt, committed = ll.spool_then_commit(
+            ledger, delta, spool=event_spool, pass_ts=iso(now) or "",
+            session=stamp_utc.date().isoformat(), stamp=stamp_utc.strftime("%H%M%S"),
+            pack_as_of=pack.as_of, pack_hash=pack.pack_hash, health=health)
+        if not committed:
+            print("::warning title=entry-radar-pack::event spool FAILED — this pass's "
+                  f"{len(delta.transitions)} transition(s) are WITHHELD from the ledger and "
+                  "the payload; the next pass re-derives and retries (every address is "
+                  "deterministic, so the retry is exactly-once-effective)", flush=True)
+            return 4
 
-    ledger.compact(as_of_session=pack.as_of)
-    ledger.save()
-    if receipt:
-        print(f"entry-radar-pack spooled {receipt}", flush=True)
+        ledger.compact(as_of_session=pack.as_of)
+        ledger.save()
+        if receipt:
+            print(f"entry-radar-pack spooled {receipt}", flush=True)
 
-    # --- 7. publish the probe set (this lane's production home) --------------
-    payload = probe_set.to_dict()
-    payload["lane"] = {"nightly": bool(args.nightly),
-                       "durable_writes": list(DURABLE_WRITES),
-                       "pack": {"as_of": pack.as_of, "pack_hash": pack.pack_hash}}
-    served = write_artifact(out_dir / ARTIFACT_NAME, payload)
-    if not served and pack_path is None:
-        print("::warning title=entry-radar-pack::pass produced NO output — neither the "
-              "pack nor the probe-set artifact was written", flush=True)
-        return 3
+        # --- 7. publish the probe set (this lane's production home) --------------
+        payload = probe_set.to_dict()
+        payload["lane"] = {"nightly": bool(args.nightly),
+                           "durable_writes": list(DURABLE_WRITES),
+                           "pack": {"as_of": pack.as_of, "pack_hash": pack.pack_hash}}
+        served = write_artifact(out_dir / ARTIFACT_NAME, payload)
+        if not served and pack_path is None:
+            print("::warning title=entry-radar-pack::pass produced NO output — neither the "
+                  "pack nor the probe-set artifact was written", flush=True)
+            return 3
+    elapsed = time.monotonic() - t_main
+    print(
+        f"entry-radar-pack stage=total status=done "
+        f"elapsed_s={elapsed:.3f} {_rss_label()}={_rss_fmt()}",
+        flush=True,
+    )
     return 0
 
 

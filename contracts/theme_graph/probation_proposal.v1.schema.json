@@ -39,6 +39,51 @@
       "type": ["string", "null"],
       "description": "The operator or delegated curation session that ratified. Required when status=ratified, forbidden otherwise — a ratification without an author is not a ratification."
     },
+    "adjudicated_at": {
+      "type": ["string", "null"],
+      "description": "Decision-time belief clock. Required for ratified/rejected rows and null/absent while proposed; never backdated to proposal creation."
+    },
+    "adjudication_note": {"type": ["string", "null"], "description": "Decision-time note, hidden before adjudicated_at. The existing note is immutable proposal-origin content."},
     "note": {"type": ["string", "null"]}
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"status": {"const": "ratified"}},
+        "required": ["status"]
+      },
+      "then": {
+        "required": ["ratified_by", "adjudicated_at"],
+        "properties": {
+          "ratified_by": {"type": "string", "minLength": 1},
+          "adjudicated_at": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "rejected"}},
+        "required": ["status"]
+      },
+      "then": {
+        "required": ["adjudicated_at"],
+        "properties": {
+          "ratified_by": {"type": "null"},
+          "adjudicated_at": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "proposed"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "ratified_by": {"type": "null"},
+          "adjudicated_at": {"type": "null"}
+        }
+      }
+    }
+  ]
 }
