@@ -1,8 +1,8 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-10-04",
-  "generated_utc": "2026-10-04T08:14:55.439572+00:00",
-  "n_tickers": 2816,
+  "generated_utc": "2026-10-04T10:13:13.166494+00:00",
+  "n_tickers": 2820,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
   "note": "Per-ticker weighted alt-data rollup. convergence_score = distinct independent channels (count); weighted_score ranks by channel quality. Donors / position-size recorded as context, never a voting channel.",
@@ -825,18 +825,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "SVRE": {
-      "ticker": "SVRE",
-      "channels": [
-        "insider_buy"
-      ],
-      "weighted_score": 0.6,
-      "insider_net_usd": 1135938816.0,
-      "insider_buyers": 1,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "NMM": {
       "ticker": "NMM",
       "channels": [
@@ -932,6 +920,18 @@
       "weighted_score": 1.0,
       "insider_net_usd": 116087190.0,
       "insider_buyers": 31,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "SCTH": {
+      "ticker": "SCTH",
+      "channels": [
+        "insider_buy"
+      ],
+      "weighted_score": 0.6,
+      "insider_net_usd": 100000000.0,
+      "insider_buyers": 1,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -6142,16 +6142,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "FREVS": {
-      "ticker": "FREVS",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "MMTC": {
       "ticker": "MMTC",
       "channels": [
@@ -8055,7 +8045,7 @@
     "AIFA": {
       "ticker": "AIFA",
       "channels": [
-        "activist_13d"
+        "special_situation"
       ],
       "weighted_score": 0.2,
       "convergence_score": 1,
@@ -9514,16 +9504,6 @@
     },
     "HGTXU": {
       "ticker": "HGTXU",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "ITGR": {
-      "ticker": "ITGR",
       "channels": [
         "special_situation"
       ],
@@ -11995,16 +11975,6 @@
     },
     "MASI": {
       "ticker": "MASI",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "PEBO": {
-      "ticker": "PEBO",
       "channels": [
         "special_situation"
       ],
@@ -15705,16 +15675,6 @@
     },
     "YHOO": {
       "ticker": "YHOO",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "HRL": {
-      "ticker": "HRL",
       "channels": [
         "special_situation"
       ],
@@ -19664,16 +19624,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "BCO": {
-      "ticker": "BCO",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "LIEN": {
       "ticker": "LIEN",
       "channels": [
@@ -21344,16 +21294,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "GRND": {
-      "ticker": "GRND",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "MNESP": {
       "ticker": "MNESP",
       "channels": [
@@ -22756,16 +22696,6 @@
     },
     "SAIHW": {
       "ticker": "SAIHW",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "INGN": {
-      "ticker": "INGN",
       "channels": [
         "special_situation"
       ],
@@ -25426,16 +25356,6 @@
     },
     "ULH": {
       "ticker": "ULH",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "VYLR": {
-      "ticker": "VYLR",
       "channels": [
         "special_situation"
       ],
