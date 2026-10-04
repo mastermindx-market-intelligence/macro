@@ -1,12 +1,12 @@
 {
   "schema": "intel_hub.track_record.v1",
   "as_of": "2026-10-03",
-  "generated_at": "2026-10-03T09:20:47.264277+00:00",
+  "generated_at": "2026-10-03T20:14:32.544407+00:00",
   "is_context_only": true,
-  "n_snapshots": 250514,
+  "n_snapshots": 250569,
   "horizons": {
     "5": {
-      "n_matured": 168818,
+      "n_matured": 168908,
       "opportunity_ic_pooled": 0.001,
       "opportunity_ic_daily": {
         "mean_ic": -0.0129,
@@ -34,7 +34,7 @@
           "hit_rate": 0.452
         },
         "building": {
-          "n": 126064,
+          "n": 126124,
           "mean_fwd_rel": 0.0474,
           "hit_rate": null
         },
@@ -59,8 +59,8 @@
           "hit_rate": 0.546
         },
         "faltering": {
-          "n": 20962,
-          "mean_fwd_rel": 0.0882,
+          "n": 20992,
+          "mean_fwd_rel": 0.0892,
           "hit_rate": null
         }
       },
@@ -94,8 +94,8 @@
           "opportunity_ic": 0.0274
         },
         "Q2": {
-          "n": 58136,
-          "mean_fwd_rel": 0.0263,
+          "n": 58226,
+          "mean_fwd_rel": 0.0268,
           "hit_rate": 0.479,
           "opportunity_ic": -0.0327
         },
@@ -108,8 +108,8 @@
       },
       "coverage": {
         "n_eligible": 242108,
-        "n_matured": 168818,
-        "coverage_pct": 69.73,
+        "n_matured": 168908,
+        "coverage_pct": 69.77,
         "below_floor": false
       }
     },
@@ -222,7 +222,7 @@
       }
     },
     "21": {
-      "n_matured": 143860,
+      "n_matured": 143948,
       "opportunity_ic_pooled": -0.0112,
       "opportunity_ic_daily": {
         "mean_ic": 0.0014,
@@ -250,8 +250,8 @@
           "hit_rate": 0.365
         },
         "building": {
-          "n": 113048,
-          "mean_fwd_rel": 0.0254,
+          "n": 113120,
+          "mean_fwd_rel": 0.0256,
           "hit_rate": null
         },
         "consensus": {
@@ -275,8 +275,8 @@
           "hit_rate": 0.561
         },
         "faltering": {
-          "n": 11948,
-          "mean_fwd_rel": 0.265,
+          "n": 11964,
+          "mean_fwd_rel": 0.2647,
           "hit_rate": null
         }
       },
@@ -316,29 +316,29 @@
           "opportunity_ic": 0.0351
         },
         "Q3": {
-          "n": 7092,
-          "mean_fwd_rel": 0.0013,
+          "n": 7180,
+          "mean_fwd_rel": 0.0041,
           "hit_rate": 0.531,
           "opportunity_ic": 0.0783
         }
       },
       "coverage": {
         "n_eligible": 219062,
-        "n_matured": 143860,
-        "coverage_pct": 65.67,
+        "n_matured": 143948,
+        "coverage_pct": 65.71,
         "below_floor": false
       }
     },
     "63": {
-      "n_matured": 86612,
+      "n_matured": 86710,
       "opportunity_ic_pooled": -0.0369,
       "opportunity_ic_daily": {
         "mean_ic": -0.0599,
         "ic_vol": 0.0786,
         "ic_ir": -0.762,
-        "ic_ir_ann": -8.558,
-        "t_hac": -2.439,
-        "p_hac": 0.0147,
+        "ic_ir_ann": -8.555,
+        "t_hac": -2.438,
+        "p_hac": 0.0148,
         "hit": 0.182,
         "n": 33,
         "hac_lags": 32,
@@ -358,12 +358,12 @@
           "hit_rate": 0.375
         },
         "building": {
-          "n": 73995,
+          "n": 74092,
           "mean_fwd_rel": 0.0121,
           "hit_rate": null
         },
         "consensus": {
-          "n": 3122,
+          "n": 3123,
           "mean_fwd_rel": -0.0287,
           "hit_rate": null
         },
@@ -418,16 +418,16 @@
           "opportunity_ic": -0.0299
         },
         "Q2": {
-          "n": 4126,
-          "mean_fwd_rel": 0.0151,
-          "hit_rate": 0.464,
-          "opportunity_ic": 0.0098
+          "n": 4224,
+          "mean_fwd_rel": 0.0147,
+          "hit_rate": 0.463,
+          "opportunity_ic": 0.01
         }
       },
       "coverage": {
         "n_eligible": 155673,
-        "n_matured": 86612,
-        "coverage_pct": 55.64,
+        "n_matured": 86710,
+        "coverage_pct": 55.7,
         "below_floor": false
       }
     }
@@ -468,8 +468,8 @@
   "coverage_pct": {
     "5": {
       "n_eligible": 242108,
-      "n_matured": 168818,
-      "coverage_pct": 69.73,
+      "n_matured": 168908,
+      "coverage_pct": 69.77,
       "below_floor": false
     },
     "10": {
@@ -480,14 +480,14 @@
     },
     "21": {
       "n_eligible": 219062,
-      "n_matured": 143860,
-      "coverage_pct": 65.67,
+      "n_matured": 143948,
+      "coverage_pct": 65.71,
       "below_floor": false
     },
     "63": {
       "n_eligible": 155673,
-      "n_matured": 86612,
-      "coverage_pct": 55.64,
+      "n_matured": 86710,
+      "coverage_pct": 55.7,
       "below_floor": false
     }
   },

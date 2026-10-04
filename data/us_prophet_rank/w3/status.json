@@ -56,32 +56,32 @@
   "first_lawful_comparison_read": "PENDING until 20 matured H=10 sessions",
   "honest_n_floor": 20,
   "last_run": {
-    "board_as_of": "2026-10-01",
+    "board_as_of": "2026-10-02",
     "coverage": {
-      "identical": 8,
+      "identical": 0,
       "matured": 0,
       "revisions_refused": 0,
-      "stamps": 0,
-      "written": 0
+      "stamps": 1,
+      "written": 8
     },
     "dry_run": false,
     "failures": [],
     "family": {
-      "identical": 8,
+      "identical": 0,
       "matured": 0,
       "revisions_refused": 0,
-      "stamps": 0,
-      "written": 0
+      "stamps": 1,
+      "written": 8
     },
     "n_coverage_rows": 8,
     "n_family_rows": 8,
-    "n_paired_rows": 1481,
+    "n_paired_rows": 1555,
     "paired": {
-      "identical": 1438,
-      "matured": 0,
+      "identical": 1400,
+      "matured": 38,
       "revisions_refused": 0,
-      "stamps": 0,
-      "written": 0
+      "stamps": 2,
+      "written": 112
     },
     "reconstruction_refused": [
       "2026-07-31",
@@ -97,25 +97,25 @@
       "2026-09-28",
       "2026-09-29"
     ],
-    "require_stamp": "2026-10-01",
+    "require_stamp": "2026-10-02",
     "same_stamp_revisions_refused": [],
     "sessions_written": {
       "identical": 25,
       "matured": 0,
       "refused": 0,
-      "written": 0
+      "written": 1
     }
   },
   "latest_session": {
     "liveness": "unmatured",
     "reason": "paired observation accrued; H=10 outcome pending (not zero)",
-    "stamp_date": "2026-10-01"
+    "stamp_date": "2026-10-02"
   },
   "matured_h10_sessions": 1,
   "missing_sessions": [],
   "n_degraded_or_unpaired": 12,
   "n_missing": 0,
-  "paired_sessions_accrued": 25,
+  "paired_sessions_accrued": 26,
   "same_stamp_revisions_refused": [
     {
       "changed_fields": [
@@ -6356,14 +6356,320 @@
         "tier_cascade"
       ],
       "stamp_date": "2026-09-25"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 45,
+          "field": "rows_contributing",
+          "incoming": 48
+        },
+        {
+          "existing": 0.3555555556,
+          "field": "modal_value",
+          "incoming": 0.375
+        },
+        {
+          "existing": 0.5555555556,
+          "field": "modal_share",
+          "incoming": 0.6041666667
+        },
+        {
+          "existing": 0.2540535571,
+          "field": "dispersion",
+          "incoming": 0.2487217757
+        },
+        {
+          "existing": 3.0322580645,
+          "field": "mean_abs_rank_delta",
+          "incoming": 3.652173913
+        },
+        {
+          "existing": 11,
+          "field": "max_abs_rank_delta",
+          "incoming": 18
+        },
+        {
+          "existing": 43,
+          "field": "rows_moved",
+          "incoming": 47
+        },
+        {
+          "existing": 6,
+          "field": "top30_churn",
+          "incoming": 10
+        }
+      ],
+      "existing_fingerprint": "e0982c7abb4c8878c5e10dde8d939490ed2ad9917ef982eb8d00a25a2aeead01",
+      "grain": "family",
+      "incoming_fingerprint": "9a51f00843dca893c09d57768ecc35a6eb30ee331670a9f7775e1784d65a02ba",
+      "key": [
+        "2026-10-01",
+        "F1_TECHNICAL_CONFLUENCE"
+      ],
+      "stamp_date": "2026-10-01"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 62,
+          "field": "rows_contributing",
+          "incoming": 69
+        },
+        {
+          "existing": 52,
+          "field": "distinct_values",
+          "incoming": 59
+        },
+        {
+          "existing": 0.4758064516,
+          "field": "modal_value",
+          "incoming": 0.5289855072
+        },
+        {
+          "existing": 0.064516129,
+          "field": "modal_share",
+          "incoming": 0.0434782609
+        },
+        {
+          "existing": 0.2321343269,
+          "field": "dispersion",
+          "incoming": 0.2343122381
+        },
+        {
+          "existing": 3.1290322581,
+          "field": "mean_abs_rank_delta",
+          "incoming": 4.7536231884
+        },
+        {
+          "existing": 13,
+          "field": "max_abs_rank_delta",
+          "incoming": 19
+        },
+        {
+          "existing": 42,
+          "field": "rows_moved",
+          "incoming": 59
+        },
+        {
+          "existing": 4,
+          "field": "top30_churn",
+          "incoming": 10
+        }
+      ],
+      "existing_fingerprint": "69e950a2cf2150950290c5394fb8fb80ee342cc9844743f78dd52142f3f0e8d8",
+      "grain": "family",
+      "incoming_fingerprint": "08ded85940c4c5c50314d69f60bbc79aeae5c52bafcf06ac978644d68b5c7e1f",
+      "key": [
+        "2026-10-01",
+        "F2_MOMENTUM_EXTENSION"
+      ],
+      "stamp_date": "2026-10-01"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 62,
+          "field": "rows_contributing",
+          "incoming": 69
+        },
+        {
+          "existing": 0.4193548387,
+          "field": "modal_value",
+          "incoming": 0.4130434783
+        },
+        {
+          "existing": 0.8225806452,
+          "field": "modal_share",
+          "incoming": 0.8115942029
+        },
+        {
+          "existing": 0.1910116013,
+          "field": "dispersion",
+          "incoming": 0.1955179357
+        },
+        {
+          "existing": 2.3870967742,
+          "field": "mean_abs_rank_delta",
+          "incoming": 3.1014492754
+        },
+        {
+          "existing": 37,
+          "field": "rows_moved",
+          "incoming": 49
+        },
+        {
+          "existing": 4,
+          "field": "top30_churn",
+          "incoming": 6
+        }
+      ],
+      "existing_fingerprint": "b6ccc29a90626465210d331ef1dbe43d06daa12b0ed7c6321979c3202a283c74",
+      "grain": "family",
+      "incoming_fingerprint": "3ce730dc55b49ba1b0ff4ddf6ca547abcca11d7755ae426aaca4c239eb58ec17",
+      "key": [
+        "2026-10-01",
+        "F4_CATALYST_EVENT"
+      ],
+      "stamp_date": "2026-10-01"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 62,
+          "field": "rows_contributing",
+          "incoming": 69
+        },
+        {
+          "existing": 3,
+          "field": "distinct_values",
+          "incoming": 2
+        },
+        {
+          "existing": 0.4556451613,
+          "field": "modal_value",
+          "incoming": 0.4565217391
+        },
+        {
+          "existing": 0.7903225806,
+          "field": "modal_share",
+          "incoming": 0.7971014493
+        },
+        {
+          "existing": 0.1017695925,
+          "field": "dispersion",
+          "incoming": 0.100539398
+        },
+        {
+          "existing": 1.8064516129,
+          "field": "mean_abs_rank_delta",
+          "incoming": 1.5362318841
+        },
+        {
+          "existing": 36,
+          "field": "rows_moved",
+          "incoming": 42
+        },
+        {
+          "existing": 2,
+          "field": "top30_churn",
+          "incoming": 4
+        }
+      ],
+      "existing_fingerprint": "4f26dae36e268cf5b98d1d019c6ff5744fb0759cb8bbb48e7661d4ed1a95b723",
+      "grain": "family",
+      "incoming_fingerprint": "b27fcc38232c162c6ca261258e4d8468262c7e784576aae101f443047a151796",
+      "key": [
+        "2026-10-01",
+        "F5_FLOW_POSITIONING"
+      ],
+      "stamp_date": "2026-10-01"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 62,
+          "field": "rows_contributing",
+          "incoming": 69
+        },
+        {
+          "existing": 0.4435483871,
+          "field": "modal_value",
+          "incoming": 0.4710144928
+        },
+        {
+          "existing": 0.8709677419,
+          "field": "modal_share",
+          "incoming": 0.9275362319
+        },
+        {
+          "existing": 0.1676178201,
+          "field": "dispersion",
+          "incoming": 0.1296271291
+        },
+        {
+          "existing": 1.4193548387,
+          "field": "mean_abs_rank_delta",
+          "incoming": 1.652173913
+        },
+        {
+          "existing": 13,
+          "field": "max_abs_rank_delta",
+          "incoming": 19
+        },
+        {
+          "existing": 30,
+          "field": "rows_moved",
+          "incoming": 35
+        }
+      ],
+      "existing_fingerprint": "29cd02567bda73b1c57be9900c31a4a518c09975f290fdd4939edccaab876fd0",
+      "grain": "family",
+      "incoming_fingerprint": "c071b96f6d3928d7dda7e5f22e123e7ec165fe8706ce8fda693ff7a4ec13bf4e",
+      "key": [
+        "2026-10-01",
+        "F8_ATTENTION_CROWDING"
+      ],
+      "stamp_date": "2026-10-01"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 59,
+          "field": "distinct_values",
+          "incoming": 63
+        }
+      ],
+      "existing_fingerprint": "4fc247d433849cbda46643ab86c6375101cfc83de95b83ae77b51b83cc92c6e8",
+      "grain": "coverage",
+      "incoming_fingerprint": "fc1dc8658e2c39d9c0c509e2af0a2c2a0d4ddf88c09f61502018fbd30827bda9",
+      "key": [
+        "2026-10-01",
+        "alpha"
+      ],
+      "stamp_date": "2026-10-01"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 0.370968,
+          "field": "coverage",
+          "incoming": 0.304348
+        }
+      ],
+      "existing_fingerprint": "464f3385896b04532acd1402956303ab1d01b4807f90b226f21df6f290d82b0a",
+      "grain": "coverage",
+      "incoming_fingerprint": "508a506c985fcf6646b3ae5f3e057465dc275fc5115f5513cc64347d5c4d0ecb",
+      "key": [
+        "2026-10-01",
+        "gex_confirm_verdict"
+      ],
+      "stamp_date": "2026-10-01"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 0.725806,
+          "field": "coverage",
+          "incoming": 0.695652
+        }
+      ],
+      "existing_fingerprint": "3afdabcf121bd72e80bea4fb39355334232c05a5b8a3d75811bc39cdc5ea4fde",
+      "grain": "coverage",
+      "incoming_fingerprint": "187d7d2e0ee13aec13d889f3a50e2fef881d01c1efe660e88dfe8a8132d96532",
+      "key": [
+        "2026-10-01",
+        "tier_cascade"
+      ],
+      "stamp_date": "2026-10-01"
     }
   ],
   "schema": "us.prophet_w3_status/v1",
   "structural": {
-    "n_coverage_rows": 200,
-    "n_family_rows": 200,
+    "n_coverage_rows": 208,
+    "n_family_rows": 208,
     "outcome_blind": true,
     "schema": "prophet_fusion.w3_structural.v1"
   },
-  "unmatured_sessions": 24
+  "unmatured_sessions": 25
 }

@@ -49,6 +49,7 @@ import hashlib
 import http.server
 import json
 import os
+import re
 import shutil
 import socketserver
 import subprocess
@@ -203,6 +204,25 @@ def _git_origin_main_blob(relpath: str) -> bytes:
 
 
 _TEMPLATE_REL = "templates/international_macro.html.j2"
+
+_SOURCE_BINDING_RE = re.compile(r"[0-9a-f]{40}")
+
+
+def source_binding(manifest: dict[str, Any]) -> str | None:
+    """The receipt's recorded `source_commit` when — and only when — it is a full
+    40-hex commit id; None for absent / null / empty / short / symbolic values.
+
+    R4e (CEO B 5967022648 + 5967204240): `--finalize-only` re-shapes an EXISTING
+    receipt, so the identity its pixels carry must already be in the manifest.
+    Substituting the current HEAD for a missing binding would re-attribute old
+    pixels to new bytes — exactly the lie R4c refuses for a dirty template — so a
+    manifest without a usable binding is refused before any byte is written, and
+    `--allow-dirty-template` (a template-blob debug aid) never excuses it.
+    """
+    value = manifest.get("source_commit")
+    if isinstance(value, str) and _SOURCE_BINDING_RE.fullmatch(value):
+        return value
+    return None
 _LANES = [
     "MO-PAID-006_PAGE_EVIDENCE_R2 (MiniMax lane on mini2 — the R2 receipt)",
     "CEO A seat-direct R4 / R4b / R4c under L.7 on mini2 (lane dead, no worker on the artifact)",
@@ -749,7 +769,12 @@ def main() -> int:
         # R4c: --finalize-only PRESERVES the original capture identity — it never re-attributes
         # earlier pixels to the current HEAD (Sol C2 5966143369 §3); the worktree template must
         # still be the blob the recorded source_commit carries, else recapture.
-        template_commit = current.get("source_commit") or _git("rev-parse", "HEAD", cwd=_REPO).decode().strip()
+        template_commit = source_binding(current)
+        if template_commit is None:
+            print(f"  ✗ --finalize-only refused: {path} carries no 40-hex `source_commit` binding "
+                  f"({current.get('source_commit')!r}) — a finalize-only pass never substitutes the current "
+                  "HEAD for a missing or invalid source; recapture instead (R4e)", flush=True)
+            return 2
         tpl_at_source = _git("rev-parse", f"{template_commit}:{_TEMPLATE_REL}", cwd=_REPO).decode().strip()
         if tpl_at_source != tpl_wt and not args.allow_dirty_template:
             print(f"  ✗ --finalize-only refused: worktree template blob {tpl_wt[:12]} differs from "

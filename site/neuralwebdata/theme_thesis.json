@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
   "as_of": "2026-10-03",
-  "generated_at": "2026-10-03T09:32:39Z",
+  "generated_at": "2026-10-03T20:25:04Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -30,8 +30,8 @@
       "schema": "neuralweb.theme_thesis.v1",
       "as_of": "2026-10-03",
       "thesis_id": "ai_semiconductors.v1",
-      "content_hash": "sha256:65dee43096350265030cfa9193d82e49fa7738bbe5795fdd800ba0ffd45c9757",
-      "prev_content_hash": "sha256:ecd90c434f38c0c4d2d6bcf3c3e3b35d39c4c3fe7bdb335446ea4e2917d0ad77",
+      "content_hash": "sha256:12b0cc3640d809d6efa040a24a85c137adbb07323c4278b3c3900e2723f9454d",
+      "prev_content_hash": "sha256:65dee43096350265030cfa9193d82e49fa7738bbe5795fdd800ba0ffd45c9757",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -135,7 +135,7 @@
           "rule_en": "If crowding on the ai_semiconductors or ai_infra basket exceeds 0.7 (z-score), the risk-adjusted opportunity is diminished — variant perception has become consensus.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'basket_intel[*].crowding' gt 0.7 → value=0.603"
+          "detail": "threshold check: 'basket_intel[*].crowding' gt 0.7 → value=0.67"
         },
         {
           "id": "ai_semi_f4",
@@ -157,8 +157,8 @@
       "schema": "neuralweb.theme_thesis.v1",
       "as_of": "2026-10-03",
       "thesis_id": "memory_storage.v1",
-      "content_hash": "sha256:9b839152c812fe754a19d95c8d582792d416cf7a11414918cbe2670276fbb48a",
-      "prev_content_hash": "sha256:ab28b2e60371e7dccefd334de53bb07a9a9faf5e26ced08ae066972a23027dc5",
+      "content_hash": "sha256:57e246321842f172769ee0848516491e08479cb690d671cecc60511fa6f9fb0c",
+      "prev_content_hash": "sha256:9b839152c812fe754a19d95c8d582792d416cf7a11414918cbe2670276fbb48a",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -237,7 +237,7 @@
           "rule_en": "If tightness for memory_storage falls below 0.0, bottleneck has eased — supply caught up with demand in the near-term window.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'tightness' lt 0.0 → value=0.1"
+          "detail": "threshold check: 'tightness' lt 0.0 → value=0.01"
         },
         {
           "id": "mem_f3",
@@ -510,8 +510,8 @@
       "schema": "neuralweb.theme_thesis.v1",
       "as_of": "2026-10-03",
       "thesis_id": "robotics_automation.v1",
-      "content_hash": "sha256:e29a15bef27a8a7fd5ccb03cc96bb3fc5851c53b2e9e59fac2905b45e17d5214",
-      "prev_content_hash": "sha256:8a3d208682bedfb85b569601343808b8d2e2237706a863e22814fefd8d3c40a7",
+      "content_hash": "sha256:9de4a6ebb002c254c559dd0799c419ecd5c6b1b35dec4a86ffa313c27c5b3e5c",
+      "prev_content_hash": "sha256:e29a15bef27a8a7fd5ccb03cc96bb3fc5851c53b2e9e59fac2905b45e17d5214",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -577,7 +577,7 @@
           "rule_en": "If reshoring basket score falls below 30 or moves to 'avoid' label, the industrial-capex driver underpinning automation demand is weakening.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=70.0"
+          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=71.0"
         },
         {
           "id": "robo_f3",
@@ -1578,7 +1578,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-10-03T09:32:39Z",
-  "inputs_hash": "sha256:d5c8a682a90d7cb986c28e507292b40ea1319843a91ec6f87259baf260bcf189",
+  "produced_at": "2026-10-03T20:25:04Z",
+  "inputs_hash": "sha256:311b454954751cf34517a5f23da04b0e6eacf5edead97fcf2188662d2328d032",
   "tier": "display"
 }

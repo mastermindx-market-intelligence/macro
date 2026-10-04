@@ -1,5 +1,7 @@
 from copy import deepcopy
 from dataclasses import dataclass
+from hashlib import sha256
+import json
 
 import pytest
 
@@ -9,6 +11,7 @@ from engine.prophet_lab.contracts import ALL_FALSE_AUTHORITY
 from engine.prophet_lab.opportunity_context import (
     OpportunityContextContractError,
     compose_opportunity_context,
+    select_unique_active_episode_id,
     validate_opportunity_context,
 )
 from engine.prophet_strategy_definition import (
@@ -226,3 +229,57 @@ def test_missing_b4_cannot_be_relabelled_as_false_entry_permission():
         match="unknown rather than a false verdict",
     ):
         validate_opportunity_context(bad)
+
+
+def _rehash_projection(payload):
+    material = {key: value for key, value in payload.items() if key != "projection_id"}
+    encoded = json.dumps(
+        material, sort_keys=True, separators=(",", ":"),
+        ensure_ascii=False, allow_nan=False,
+    ).encode("utf-8")
+    payload["projection_id"] = "pcs:" + sha256(encoded).hexdigest()
+
+
+def test_security_resolution_returns_the_one_active_canonical_episode():
+    p = projection()
+    assert select_unique_active_episode_id(
+        p, security_id="SEC:US-XNAS-AAPL"
+    ) == eid()
+
+
+def test_security_resolution_refuses_zero_active_episode_instead_of_ticker_fallback():
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="no ACTIVE B3 episode",
+    ):
+        select_unique_active_episode_id(
+            projection(), security_id="SEC:US-XNAS-MSFT"
+        )
+
+
+def test_security_resolution_refuses_multiple_active_episodes():
+    p = projection()
+    second = deepcopy(p["rows"][0])
+    second["episode_id"] = eid("2")
+    p["rows"].append(second)
+    p["rows"].sort(key=lambda row: row["episode_id"])
+    p["row_count"] = 2
+    _rehash_projection(p)
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="multiple ACTIVE B3 episodes",
+    ):
+        select_unique_active_episode_id(
+            p, security_id="SEC:US-XNAS-AAPL"
+        )
+
+
+def test_security_resolution_ignores_closed_rows_but_never_infers_from_them():
+    p = projection(state="EXPIRED")
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="no ACTIVE B3 episode",
+    ):
+        select_unique_active_episode_id(
+            p, security_id="SEC:US-XNAS-AAPL"
+        )

@@ -19,7 +19,7 @@
       "retracted_by_authority": 0
     },
     "prophet_ledger": {
-      "count": 289,
+      "count": 291,
       "dropped_from_source": 0,
       "gap": null,
       "retracted_by_authority": 0
@@ -46,16 +46,16 @@
   "as_of": "2026-10-03",
   "coverage": {
     "end": "2026-10-02",
-    "note": "16671 events across 812 distinct date(s)",
+    "note": "16673 events across 812 distinct date(s)",
     "start": "2013-04-02"
   },
-  "elapsed_s": 3.097,
+  "elapsed_s": 3.02,
   "gap_notes": [
     "earnings: coverage: 2158/2315 tickers carried reported surprises; 543 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
     "macro_release: 30/30 release event(s) joined to a scored actual print",
     "risk_band: 1 event(s) retained after their source row left the current snapshot (union-merge, never deleted)"
   ],
-  "inputs_hash": "sha256:73dcc7a22e617ece557b75d72f72acf38f94ef6b1429ae3aed9bf41f3e799bbb",
+  "inputs_hash": "sha256:9de41d37c75ec6025226f6eba4e1d09621c10835db4a4e00f10a707cdc277165",
   "ledgers": {
     "earnings_calls": {
       "path": "data/chronicle/earnings_call_events.jsonl",
@@ -66,8 +66,8 @@
     "events": {
       "path": "data/chronicle/events.jsonl",
       "present": true,
-      "rows": 16671,
-      "sha256": "sha256:d63cc6bdec811aa51ce4a42c8de4b7b77081761f422f24e86ffffcccdfd7a7d0"
+      "rows": 16673,
+      "sha256": "sha256:62a29dc9ebd77a9d45c17596f3b9fc62687a0ed9a0b02716199016361cbfa686"
     },
     "state_log": {
       "path": "data/chronicle/state_log.jsonl",
@@ -76,7 +76,7 @@
       "sha256": "sha256:776b94aa4ecb03193d7049a8b5366025beb8a0af471a4bc875fc79f44b33ec68"
     }
   },
-  "produced_at": "2026-10-03T09:33:08Z",
+  "produced_at": "2026-10-03T20:25:32Z",
   "produced_by": "scripts/build_chronicle.py",
   "schema": "chronicle.manifest/v1",
   "schema_version": 1,
@@ -95,7 +95,7 @@
     },
     "data/prophet/ledger.jsonl": {
       "present": true,
-      "sha256": "sha256:91e46e36cc980c9d4398e127c1bc1b0f73b589f9a0a58536f732174ccede5136"
+      "sha256": "sha256:802330347d6e728d46d5ef920ef361ffdbdd893e80e8112cb47e48aca424a0a5"
     },
     "data/prophet/ledger_corrections.jsonl": {
       "present": true,
@@ -111,7 +111,7 @@
     },
     "data/research_vault/catalog.json": {
       "present": true,
-      "sha256": "sha256:2b34671580d65d10b3099d7bacd41beb92425e0f56143974a64fdabe29ce3cf7"
+      "sha256": "sha256:576ea6638ac246fa62dba32856001e9c30bc2c012f1a1bb9362b6d808b13e9a7"
     },
     "data/risk_radar/forward_log.jsonl": {
       "present": true,

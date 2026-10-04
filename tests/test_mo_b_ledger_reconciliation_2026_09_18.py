@@ -169,7 +169,7 @@ EXPECTED = {
   ],
   "MO-PAID-006": [
     "UPGRADE_EXISTING_OWNER",
-    "PARTIAL"
+    "PROVEN_LIVE"
   ],
   "MO-PAID-007": [
     "UPGRADE_EXISTING_OWNER",
@@ -596,6 +596,10 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     assert "RECURRING_BRIEFS_ENABLE" in briefs["missing_contract_or_proof"]
     assert "build_recurring_briefs.py" in briefs["real_producer"]
     assert briefs["next_bounded_child"].startswith("ACTIVATION, not BUILD_NEW")
+    # W11 (D83): the 2026-10-03 natural weekly run was read once and was DORMANT; state unchanged.
+    assert "2026-10-03 CEO A D83" in briefs["adjudication_notes"]
+    assert "37141524333" in briefs["adjudication_notes"]
+    assert "DORMANT (RECURRING_BRIEFS_ENABLE unset)" in briefs["adjudication_notes"]
 
     # W8 D61/D62/D64 (Sol 5966652470 rows 1-4): stale NOT_BUILT / "still open" premises removed.
     screener = r["MO-DELTA-002"]
@@ -636,6 +640,42 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     assert constructor["capability_state_c2"] == "PARTIAL"
     assert "0023_portfolio_targets.sql" in constructor["real_producer"]
     assert constructor["missing_contract_or_proof"].startswith("ROLE dimension only")
+
+    # W9 stage 1 D73-D74 (O32 natural-run publication proof; Sol 5966828357 scheduler owner).
+    am_edition = r["MO-PAID-011"]
+    assert am_edition["capability_state_c2"] == "PARTIAL"
+    assert am_edition["state_delta"].startswith("UPDATED 2026-10-03 D73")
+    assert "96db8a19f9f5" in am_edition["state_delta"]
+    assert "NOT a weekday premarket producer-build proof" in am_edition["state_delta"]
+    assert "natural-run PUBLICATION proof READ 2026-10-03 08:12:01Z" in am_edition["next_bounded_child"]
+    assert "natural-run live proof owed" not in am_edition["next_bounded_child"]
+    accuracy_sched = r["MO-DELTA-007"]
+    assert accuracy_sched["capability_state_c2"] == "PARTIAL"
+    assert "REUSE the existing `ops/terminal-data` nightly" in accuracy_sched["next_bounded_child"]
+    assert "never a second cron" in accuracy_sched["next_bounded_child"]
+    assert "Build owner = CEO B (F13" in accuracy_sched["next_bounded_child"]
+    # W11 (D84): F13 receipts from CEO B — wiring merged live, hydration fix merged, deploy owned by Terminal #793; still PARTIAL.
+    assert "2026-10-03 CEO A D84" in accuracy_sched["adjudication_notes"]
+    assert "#790" in accuracy_sched["adjudication_notes"]
+    assert "#793" in accuracy_sched["adjudication_notes"]
+
+    # W9 stage 2 D76-D77 (served .com proofs after render 37105009906).
+    dossier = r["MO-PAID-006"]
+    assert dossier["capability_state_c2"] == "PROVEN_LIVE"
+    assert dossier["state_delta"].startswith("PARTIAL->PROVEN_LIVE 2026-10-03 (CEO A D76")
+    assert "served_proof_8300.sh (rc=0)" in dossier["state_delta"]
+    assert dossier["next_bounded_child"].startswith("NONE for the page")
+    # W10 (D79): the finalize-only guard is recorded on the row; the receipt itself is unchanged.
+    assert "2026-10-03 CEO A D79: evidence tool hardened" in dossier["adjudication_notes"]
+    assert "refuse (rc 2, no write)" in dossier["adjudication_notes"]
+    sanctions = r["MO-PAID-008"]
+    assert sanctions["capability_state_c2"] == "PROVEN_LIVE"
+    assert sanctions["state_delta"].startswith("PRODUCTION_PROOF 2026-10-03 (CEO A D77)")
+    assert "stroke-dasharray:none" in sanctions["state_delta"]
+    catalyst = r["MO-PAID-077"]
+    assert catalyst["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert catalyst["next_bounded_child"].startswith("W3-1b consumer ruling NOT RIPE 2026-10-03")
+    assert "session_date 2026-09-25" in catalyst["next_bounded_child"]
 
     f07 = r["MO-DELTA-017"]
     assert f07["capability_state_c2"] == "NOT_BUILT"

@@ -156,6 +156,44 @@ def _bound_entry(
     }
 
 
+def select_unique_active_episode_id(
+    candidate_projection: Mapping[str, object],
+    *,
+    security_id: str,
+) -> str:
+    """Resolve one canonical security to exactly one ACTIVE B3 episode.
+
+    This is a server-side identity helper for consumers that begin with a display
+    alias. It does not resolve aliases itself and never falls back to ticker equality.
+    Zero or multiple ACTIVE rows are explicit ambiguity/unavailability, not a guess.
+    """
+    validate_candidate_state_projection(candidate_projection)
+    security_id = _text(security_id, "security_id")
+    if not security_id.startswith("SEC:"):
+        raise OpportunityContextContractError("security_id must be canonical SEC: identity")
+    rows = candidate_projection.get("rows")
+    if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
+        raise OpportunityContextContractError("candidate projection rows must be a list")
+
+    matches: list[Mapping[str, object]] = []
+    for row in rows:
+        if not isinstance(row, Mapping) or row.get("security_id") != security_id:
+            continue
+        lifecycle = row.get("episode_lifecycle")
+        if isinstance(lifecycle, Mapping) and lifecycle.get("state") == "ACTIVE":
+            matches.append(row)
+
+    if not matches:
+        raise OpportunityContextContractError(
+            "canonical security has no ACTIVE B3 episode in this projection"
+        )
+    if len(matches) != 1:
+        raise OpportunityContextContractError(
+            "canonical security has multiple ACTIVE B3 episodes in this projection"
+        )
+    return _text(matches[0].get("episode_id"), "episode_id")
+
+
 def compose_opportunity_context(
     candidate_projection: Mapping[str, object],
     *,
@@ -276,5 +314,6 @@ __all__ = [
     "SCHEMA",
     "OpportunityContextContractError",
     "compose_opportunity_context",
+    "select_unique_active_episode_id",
     "validate_opportunity_context",
 ]

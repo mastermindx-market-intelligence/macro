@@ -11711,3 +11711,12 @@
 {"date":"2026-10-03","ticker":"ROST","departed":true,"left_desk":"2026-10-03","last_rank":25,"last_score":45.4}
 {"date":"2026-10-03","ticker":"SARO","departed":true,"left_desk":"2026-10-03","last_rank":142,"last_score":16.1}
 {"date":"2026-10-03","ticker":"SBUX","departed":true,"left_desk":"2026-10-03","last_rank":135,"last_score":16.5}
+{"date":"2026-10-03","ticker":"AME","rank":19,"score":50.9,"lean":1,"gate_tier":"T1","covered":true,"unconfirmed":false}
+{"date":"2026-10-03","ticker":"DOV","rank":71,"score":30.4,"lean":1,"gate_tier":"T1","covered":true,"unconfirmed":false}
+{"date":"2026-10-03","ticker":"ITW","rank":76,"score":28.8,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-10-03","ticker":"ST","rank":79,"score":28.5,"lean":1,"gate_tier":"T1","covered":true,"unconfirmed":false}
+{"date":"2026-10-03","ticker":"BCPC","rank":88,"score":25.8,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-10-03","ticker":"ALKS","rank":132,"score":19.3,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-10-03","ticker":"SKWD","rank":135,"score":19.1,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-10-03","ticker":"IRT","rank":143,"score":18.0,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-10-03","ticker":"EVR","rank":146,"score":17.9,"lean":1,"covered":true,"unconfirmed":false}

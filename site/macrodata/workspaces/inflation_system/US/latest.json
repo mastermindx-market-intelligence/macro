@@ -391,16 +391,16 @@
       }
     ],
     "null_reason": null,
-    "prior_effective_date": "2026-10-01",
-    "prior_generation_id": "inflation_system-US-267d72d17e279cbc",
+    "prior_effective_date": "2026-10-02",
+    "prior_generation_id": "inflation_system-US-23953120c47a7fe1",
     "prior_method_version": "inflation_system.compose.v1",
     "status": "PRESENT"
   },
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
-    "note": "Same reference period as the predecessor print; no source value changed (no-change republication).",
-    "predecessor_generation_id": "inflation_system-US-b6d674cd617ea9e9"
+    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
+    "predecessor_generation_id": "inflation_system-US-23953120c47a7fe1"
   },
   "drivers": {
     "balance_sheet": [
@@ -521,16 +521,16 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-03T05:59:13Z",
-    "calculation_as_of": "2026-10-02",
-    "code_version": "f38a77de6ab59c2b13d2400e4baebcfdb4fceb21",
-    "content_sha256": "23953120c47a7fe1b1e0da843bed5272659ff41071d1a55b00b3a6b544129ac4",
-    "generation_id": "inflation_system-US-23953120c47a7fe1",
+    "built_at": "2026-10-03T17:06:57Z",
+    "calculation_as_of": "2026-10-03",
+    "code_version": "34a3b19628ca449fe8c10d108c1661a4e34272fa",
+    "content_sha256": "830c96bb513dfedac3f10d08ea49296e311a628c6d1a85698c550f5526258964",
+    "generation_id": "inflation_system-US-830c96bb513dfeda",
     "producer": "engine.market_os.macro_workspaces.inflation",
     "rendered_at": null
   },
   "headline": {
-    "effective_date": "2026-10-02",
+    "effective_date": "2026-10-03",
     "hysteresis": {
       "applied": true,
       "band": 5.0,
@@ -554,7 +554,7 @@
       "y_axis_id": "persistence_breadth"
     },
     "prior_state": {
-      "effective_date": "2026-10-01",
+      "effective_date": "2026-10-02",
       "method_version": "inflation_system.compose.v1",
       "state_id": "A"
     },
@@ -644,7 +644,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "composite_prior_only",
-        "calculation_as_of": "2026-10-02",
+        "calculation_as_of": "2026-10-03",
         "collected_at": null,
         "coverage": null,
         "definition_id": "axes.inflation_impulse",
@@ -655,10 +655,10 @@
         "metric_id": "inflation_impulse",
         "model_version": "inflation_system.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-02",
+        "observed_at": "2026-10-03",
         "owner_ref": "engine.market_os.macro_workspaces.inflation",
         "reference_id": "mastermind.market_reference/v1#inflation_impulse",
-        "reference_period": "2026-10-02",
+        "reference_period": "2026-10-03",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -680,7 +680,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "composite_prior_only",
-        "calculation_as_of": "2026-10-02",
+        "calculation_as_of": "2026-10-03",
         "collected_at": null,
         "coverage": null,
         "definition_id": "axes.persistence_breadth",
@@ -691,10 +691,10 @@
         "metric_id": "persistence_breadth",
         "model_version": "inflation_system.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-02",
+        "observed_at": "2026-10-03",
         "owner_ref": "engine.market_os.macro_workspaces.inflation",
         "reference_id": "mastermind.market_reference/v1#persistence_breadth",
-        "reference_period": "2026-10-02",
+        "reference_period": "2026-10-03",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -968,7 +968,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "release_radar_champion_projection",
-        "calculation_as_of": "2026-10-02T11:05:42Z",
+        "calculation_as_of": "2026-10-03T09:26:40Z",
         "collected_at": null,
         "coverage": null,
         "definition_id": "next_release_forecast.core.release_radar_projection.point",
@@ -1004,7 +1004,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "bls_calendar",
-        "calculation_as_of": "2026-10-02",
+        "calculation_as_of": "2026-10-03",
         "collected_at": null,
         "coverage": null,
         "definition_id": "next_release_forecast.core.release_date",
@@ -1040,7 +1040,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "model_nowcast",
-        "calculation_as_of": "2026-10-02",
+        "calculation_as_of": "2026-10-03",
         "collected_at": null,
         "coverage": null,
         "definition_id": "current_month_proxy_pressure.pressure_direction",
@@ -1076,10 +1076,10 @@
   },
   "prior_publication": {
     "generation": {
-      "generation_id": "inflation_system-US-267d72d17e279cbc"
+      "generation_id": "inflation_system-US-23953120c47a7fe1"
     },
     "headline": {
-      "effective_date": "2026-10-01",
+      "effective_date": "2026-10-02",
       "hysteresis": {
         "applied": true,
         "band": 5.0,
@@ -1095,7 +1095,7 @@
       },
       "null_reason": null,
       "one_month_vector": {
-        "dx": -0.04,
+        "dx": 0.0,
         "dy": 0.0,
         "null_reason": null,
         "status": "PRESENT",
@@ -1103,7 +1103,7 @@
         "y_axis_id": "persistence_breadth"
       },
       "prior_state": {
-        "effective_date": "2026-09-27",
+        "effective_date": "2026-10-01",
         "method_version": "inflation_system.compose.v1",
         "state_id": "A"
       },
@@ -1123,7 +1123,7 @@
         "en": "Inflation regime",
         "zh": "通胀体制"
       },
-      "transition_distance": 0.04
+      "transition_distance": 0.0
     },
     "metrics": {
       "items": [
@@ -1131,7 +1131,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "composite_prior_only",
-          "calculation_as_of": "2026-10-01",
+          "calculation_as_of": "2026-10-02",
           "collected_at": null,
           "coverage": null,
           "definition_id": "axes.inflation_impulse",
@@ -1142,10 +1142,10 @@
           "metric_id": "inflation_impulse",
           "model_version": "inflation_system.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-10-01",
+          "observed_at": "2026-10-02",
           "owner_ref": "engine.market_os.macro_workspaces.inflation",
           "reference_id": "mastermind.market_reference/v1#inflation_impulse",
-          "reference_period": "2026-10-01",
+          "reference_period": "2026-10-02",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1167,7 +1167,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "composite_prior_only",
-          "calculation_as_of": "2026-10-01",
+          "calculation_as_of": "2026-10-02",
           "collected_at": null,
           "coverage": null,
           "definition_id": "axes.persistence_breadth",
@@ -1178,10 +1178,10 @@
           "metric_id": "persistence_breadth",
           "model_version": "inflation_system.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-10-01",
+          "observed_at": "2026-10-02",
           "owner_ref": "engine.market_os.macro_workspaces.inflation",
           "reference_id": "mastermind.market_reference/v1#persistence_breadth",
-          "reference_period": "2026-10-01",
+          "reference_period": "2026-10-02",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1455,7 +1455,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "release_radar_champion_projection",
-          "calculation_as_of": "2026-10-01T20:21:25Z",
+          "calculation_as_of": "2026-10-02T11:05:42Z",
           "collected_at": null,
           "coverage": null,
           "definition_id": "next_release_forecast.core.release_radar_projection.point",
@@ -1491,7 +1491,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "bls_calendar",
-          "calculation_as_of": "2026-10-01",
+          "calculation_as_of": "2026-10-02",
           "collected_at": null,
           "coverage": null,
           "definition_id": "next_release_forecast.core.release_date",
@@ -1527,7 +1527,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "model_nowcast",
-          "calculation_as_of": "2026-10-01",
+          "calculation_as_of": "2026-10-02",
           "collected_at": null,
           "coverage": null,
           "definition_id": "current_month_proxy_pressure.pressure_direction",

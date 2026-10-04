@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
   "as_of": "2026-10-03",
-  "generated_utc": "2026-10-03T09:33:27Z",
+  "generated_utc": "2026-10-03T20:25:56Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 320,
@@ -465,7 +465,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 5930,
+        "n_open": 6006,
         "n_past_check_by": 4511
       },
       "allowed_actions": [
@@ -2382,7 +2382,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 13602,
+        "n_open": 13928,
         "n_past_check_by": 3860
       },
       "allowed_actions": [
@@ -2639,7 +2639,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 55,
+        "n_open": 56,
         "n_past_check_by": 4
       },
       "allowed_actions": [
@@ -2671,7 +2671,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 140,
+        "n_open": 144,
         "n_past_check_by": 12
       },
       "allowed_actions": [
@@ -4319,7 +4319,6 @@
         "stale_chips": [
           "reliability",
           "contradictions",
-          "bottom_sensors",
           "government_revenue"
         ]
       },
@@ -4403,8 +4402,8 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 115939,
-        "n_with_falsifier": 1105,
+        "n_claims": 116346,
+        "n_with_falsifier": 1112,
         "falsifier_coverage": "1.0%",
         "blocking_reason": "falsifier coverage 1.0%; not a promotion-grade substrate"
       },
@@ -10057,12 +10056,12 @@
       "owner_program": null,
       "clock_type": "fdr_batch_due",
       "due_at": null,
-      "as_of": "2026-08-17",
+      "as_of": "2026-09-17",
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_trials": 240,
-        "last_ts": "2026-08-17T09:00:09.619677+00:00"
+        "n_trials": 324,
+        "last_ts": "2026-09-17T22:52:36.763240+00:00"
       },
       "allowed_actions": [
         "inspect",

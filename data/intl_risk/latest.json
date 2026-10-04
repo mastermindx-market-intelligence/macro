@@ -1,6 +1,6 @@
 {
-  "built": "2026-10-03T08:50:24.845772+00:00",
-  "timing_sec": 1.56,
+  "built": "2026-10-03T19:44:23.845870+00:00",
+  "timing_sec": 1.77,
   "em_stress": {
     "state": "calm",
     "thermometer": 53.8,
@@ -34,9 +34,9 @@
       },
       "em_fx_basket": {
         "value": -2.41,
-        "rvol_20d": 3.93,
+        "rvol_20d": 3.92,
         "dd_pctile": 54.6,
-        "rvol_pctile": 7.3,
+        "rvol_pctile": 7.2,
         "pctile": 30.9,
         "vel_5d_z": null,
         "vel_20d_z": -1.565,
@@ -105,7 +105,7 @@
     },
     "gaps": [],
     "as_of": "2026-10-03",
-    "built": "2026-10-03T08:50:23.348280+00:00",
+    "built": "2026-10-03T19:44:22.150830+00:00",
     "k_of_n_params": {
       "stressed_threshold": 3,
       "strained_threshold": 2,
@@ -722,7 +722,7 @@
     },
     "berg_pattillo_receipt": "Historical early-warning-system caveat (Berg-Pattillo): best-in-class EWS models missed approximately 68% of currency/debt crises out-of-sample; approximately 60% of their 'danger' signals proved false alarms. This table is a fragility MAP — it identifies who is vulnerable, not when a crisis will occur.",
     "note": "BIS credit-to-GDP gap: only US and CN currently in store; other countries accrue as the BIS adapter extends.",
-    "built": "2026-10-03T08:50:23.422858+00:00"
+    "built": "2026-10-03T19:44:22.236920+00:00"
   },
   "spillover": {
     "total_connectedness": 80.8,
@@ -1005,8 +1005,8 @@
       "SPY: OHLC absent — using close-return vol proxy"
     ],
     "as_of": "2026-10-02",
-    "built": "2026-10-03T08:50:23.538211+00:00",
-    "timing_sec": 0.11,
+    "built": "2026-10-03T19:44:22.376637+00:00",
+    "timing_sec": 0.14,
     "params": {
       "window": 150,
       "var_lag": 2,
@@ -1037,7 +1037,7 @@
     "tightening": false,
     "gaps": [],
     "as_of": "2026-10-02",
-    "built": "2026-10-03T08:50:24.360190+00:00"
+    "built": "2026-10-03T19:44:23.283595+00:00"
   },
   "two_tier": {
     "state": "quiet",
@@ -1105,7 +1105,7 @@
     "safety_bid": true,
     "gaps": [],
     "state_logic": "quiet: tier1 calm | contained: tier1>=strained, 0 tier2 hot | watching: 1 tier2 hot | transmitting: >=2 tier2 hot with tier1>=strained",
-    "built": "2026-10-03T08:50:24.391450+00:00"
+    "built": "2026-10-03T19:44:23.322436+00:00"
   },
   "cb_desk": {
     "cbs": [
@@ -1338,7 +1338,7 @@
       "RBA: balance-sheet series not available (honest null)"
     ],
     "as_of": "2026-10-02",
-    "built": "2026-10-03T08:50:24.799933+00:00",
+    "built": "2026-10-03T19:44:23.792697+00:00",
     "bs_note": "Balance-sheet impulse available for: FED (WALCL), ECB (ECBASSETSW), BoJ (JPNASSETS). BoE: FRED provides annual-only balance-sheet data — honest null. PBoC: no clean keyless balance-sheet series available — honest null. SNB/BoC/RBA: no balance-sheet series configured — honest null.",
     "irdr7_note": "IRD-R7: This desk is DESCRIPTIVE. It reports realized policy rates, observed changes, and published meeting dates. No policy-intent projection, no forward guidance scoring, no consensus-surprise computation (no free consensus source)."
   },
@@ -1365,7 +1365,7 @@
     "weights_note": "DXY basket weights: EUR 57.6%, JPY 13.6%, GBP 11.9% (ICE benchmark). Re-weighted to available 2y series: EUR 69.3%, JPY 16.4%, GBP 14.3%. CAD/SEK/CHF excluded (no 2y in store). Actual weights after re-norm: {'eur2y': 0.693, 'jpy2y': 0.164, 'gbp2y': 0.143}.",
     "gaps": [],
     "display_only": true,
-    "built": "2026-10-03T06:58:54.682370+00:00"
+    "built": "2026-10-03T18:01:38.787329+00:00"
   },
   "inversion_board": {
     "n_inverted": 0,
@@ -1409,7 +1409,7 @@
       }
     ],
     "synchronized": false,
-    "built": "2026-10-03T08:50:24.837973+00:00"
+    "built": "2026-10-03T19:44:23.837134+00:00"
   },
   "swap_lines_bn": 0.2,
   "top_transmitters_display": [
@@ -1441,11 +1441,11 @@
     "as_of": "2026-10-03",
     "pressure": {
       "us": {
-        "pct": 0.6806,
+        "pct": 0.6984,
         "level": "low"
       },
       "cn": {
-        "pct": 0.6329,
+        "pct": 0.6746,
         "level": "low"
       },
       "hk": {
@@ -1453,35 +1453,35 @@
         "level": "low"
       },
       "ca": {
-        "pct": 0.6925,
+        "pct": 0.7083,
         "level": "low"
       },
       "kr": {
-        "pct": 0.5913,
+        "pct": 0.6409,
         "level": "low"
       },
       "jp": {
-        "pct": 0.6786,
+        "pct": 0.6865,
         "level": "low"
       },
       "tw": {
-        "pct": 0.5952,
+        "pct": 0.6032,
         "level": "low"
       },
       "in": {
-        "pct": 0.6607,
+        "pct": 0.6786,
         "level": "low"
       },
       "au": {
-        "pct": 0.6667,
+        "pct": 0.6806,
         "level": "low"
       },
       "gb": {
-        "pct": 0.6984,
+        "pct": 0.7163,
         "level": "low"
       },
       "ez": {
-        "pct": 0.6984,
+        "pct": 0.7143,
         "level": "low"
       }
     },

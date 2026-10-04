@@ -2,14 +2,14 @@
 
 # Agent OS state
 
-Generated: 2026-10-03T05:42:56Z  |  76 workstreams (55 active · 1 awaiting_ci · 2 awaiting_review · 6 blocked · 8 done · 4 parked)
+Generated: 2026-10-03T15:56:51Z  |  76 workstreams (55 active · 1 awaiting_ci · 2 awaiting_review · 6 blocked · 8 done · 4 parked)
 
 | Input | Value |
 |---|---|
-| active_builds | data/governance/active_builds.json@2026-10-03T05:42:56.000046+00:00 |
+| active_builds | data/governance/active_builds.json@2026-10-03T15:56:51.568344+00:00 |
 | active_builds age | 0.0h |
 | worktrees | 1 |
-| records | 76 WS · 388 DEC · 436 DSC · 556 handoffs |
+| records | 76 WS · 391 DEC · 443 DSC · 567 handoffs |
 
 ## Degraded inputs
 
@@ -22,7 +22,7 @@ Generated: 2026-10-03T05:42:56Z  |  76 workstreams (55 active · 1 awaiting_ci �
 | Key | Status | Owner | Program | Waves | PRs | Next action |
 |---|---|---|---|---|---|---|
 | [`WS:ACCOUNT-IDENTITY-HARDENING`](../agentos/workstreams/WS-ACCOUNT-IDENTITY-HARDENING.md) | blocked | terminal-platform | shared-auth-entitlements | awaiting_ci:2 done:2 in_progress:1 | #441(unknown) #443(unknown) #444(unknown) #445(unknown) #446(unknown) #6170(unknown) #6175(unknown) | Decide the CI gate fix (parallel viewport jobs vs build-once + next start), coordinating the required-check contexts with branch protection and merge-on-green.yml. |
-| [`WS:ADVANCED-DATA-OPTIONS`](../agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md) | active | coo-fable | options-intelligence | done:7 in_progress:1 todo:1 | #5830(unknown) #5838(unknown) #5849(unknown) #5860(unknown) #5872(unknown) #5974(unknown) #6080(unknown) #6267(unknown) #7889(unknown) #8203(merged) | AD-1T1 is PROVEN_LIVE and must not be reopened or rerun merely to show activity. The exact next product dependency is AD-1T2: restore the store-bearing M1 to the theta-m1 product workflow and production-prove AD-1 end to end, including the consumer/availability path needed by downstream Options Alpha PIT composition. AD-2 remains CLOSED until AD-1 production acceptance. Broken R2 sync is not an AD-1T2 prerequisite unless new evidence proves it necessary. |
+| [`WS:ADVANCED-DATA-OPTIONS`](../agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md) | active | coo-fable | options-intelligence | done:7 in_progress:1 todo:1 | #5830(unknown) #5838(unknown) #5849(unknown) #5860(unknown) #5872(unknown) #5974(unknown) #6080(unknown) #6267(unknown) #7889(merged) #8203(merged) | AD-1T1 is PROVEN_LIVE and must not be reopened or rerun merely to show activity. The exact next product dependency is AD-1T2: restore the store-bearing M1 to the theta-m1 product workflow and production-prove AD-1 end to end, including the consumer/availability path needed by downstream Options Alpha PIT composition. AD-2 remains CLOSED until AD-1 production acceptance. Broken R2 sync is not an AD-1T2 prerequisite unless new evidence proves it necessary. |
 | [`WS:AGENT-EVAL-FABRIC`](../agentos/workstreams/WS-AGENT-EVAL-FABRIC.md) | active | coo-fable | project-active-build-control | done:7 in_progress:1 todo:3 | #6760(unknown) | Await the incumbent Fable C2 ruling without adopting draft #687/#692 or changing historical E1. For D1 keep #398 frozen, consume Executive incident #386 through readiness/ARM, refresh Macro grounding, then submit/reconcile exactly one READ/A0 compose-only directive. |
 | [`WS:AGENT-OS`](../agentos/workstreams/WS-AGENT-OS.md) | active | chairman | project-active-build-control | done:9 todo:1 | #5472(unknown) #5556(unknown) #5472(unknown) #5649(unknown) #5561(unknown) #6317(unknown) #6135(unknown) #6383(unknown) | MAS-28 W1 implementation is merged and accepted as report-only / BUILT_NOT_PROVEN. The next MAS-28 operation is calibration only: run the representative frozen corpus required by MAS-28, record false positives, false negatives and incomplete observations, and return a recommendation to remain report-only, amend rules, or propose a separate bounded enforcement review. Do not arm a hard gate from W1. The pre-existing Agent OS Phase 4 W4 remains a separate high-blast-radius report-only hook wave and is still todo; this records correction does not commission it. |
 | [`WS:ALPHA-INTELLIGENCE-INTEGRATION`](../agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md) | active | fable | mastermind-semantic-system-map | done:4 in_progress:2 todo:4 | — | Next dependency is to commission K3-D Economic Propagation and K2-C Institutional adapter pilot as two separate bounded waves after a fresh path/authority collision census. They may proceed in parallel only if those surfaces remain genuinely disjoint. K3-D must inherit the c0 D0 rulings, including the four named DNR kills, Data OS exact-identity authority, typed abstention for unresolved identities, no fourth graph/store, and no new grader/ranker. K2-C must adopt K2-B/K1 contracts and prove owner-reader, source/rights, PIT/lineage and correction behavior without creating an institutional aggregation truth store. Do not start K5 OpportunityCase / Prophet integration until BOTH K2 and K3 are complete. K3-E merge itself authorizes no consumer wiring, Market OS UI, rank, gate, size, trade or deployment. |
@@ -109,7 +109,7 @@ Generated: 2026-10-03T05:42:56Z  |  76 workstreams (55 active · 1 awaiting_ci �
 - WS:ACCOUNT-IDENTITY-HARDENING — record_disagrees_with_execution: wave E-5 cites PR #446, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
 - WS:ACCOUNT-IDENTITY-HARDENING — record_disagrees_with_execution: wave E-5 cites PR #6170, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
 - WS:ACCOUNT-IDENTITY-HARDENING — record_disagrees_with_execution: wave E-5 cites PR #6175, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
-- WS:ADVANCED-DATA-OPTIONS — record_disagrees_with_execution: wave AD-1T2 cites PR #7889, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
+- WS:ADVANCED-DATA-OPTIONS — record_disagrees_with_execution: wave AD-1T2 is 'in_progress' but PR #7889 is merged
 - WS:ADVANCED-DATA-OPTIONS — record_disagrees_with_execution: wave AD-1T2 is 'in_progress' but PR #8203 is merged
 - WS:CAPITAL-STRUCTURE-INTELLIGENCE-V2 — record_disagrees_with_execution: wave W2C cites PR #6415, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
 - WS:CAPITAL-STRUCTURE-INTELLIGENCE-V2 — record_disagrees_with_execution: wave W2D cites PR #6424, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)

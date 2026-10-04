@@ -14652,22 +14652,43 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {# ── d. Inflation Read → glance row: state word + one plain line + ? receipt ── #}
       {# Guard: only render when core inflation values are present (fail-open path leaves them None). #}
       {% if _dlgrc_inf and _dlgrc_inf.core_pce_yoy is not none %}
-      {% set _inf_vst = _dlgrc_inf.vs_target_pp %}
-      {# Anchoring drives the state word + colour; the numbers are demoted to the ? tip. #}
-      {% set _inf_anchor = _dlgrc_inf.anchoring %}
-      {% set _inf_state_en = {'anchored':'Above target','drifting':'Drifting up','unanchored':'Unanchored'}.get(_inf_anchor, 'Above target') %}
-      {% set _inf_state_zh = {'anchored':'高于目标','drifting':'向上漂移','unanchored':'脱锚'}.get(_inf_anchor, '高于目标') %}
-      {% set _inf_col = 'var(--down,#ef4444)' if _inf_anchor == 'unanchored' else ('var(--warn,#f59e0b)' if (_inf_vst is not none and _inf_vst > 0.5) else 'var(--up,#22d97a)') %}
-      {# Plain "how far above target" phrase #}
-      {% set _inf_above_en = ((('%.1f'|format(_inf_vst)) ~ ' points above the Fed’s 2% target') if (_inf_vst is not none) else 'above the Fed’s 2% target') %}
-      {% set _inf_above_zh = ((('高于美联储2%目标 ' ~ ('%.1f'|format(_inf_vst)) ~ ' 个百分点')) if (_inf_vst is not none) else '高于美联储2%目标') %}
+      {% set _inf_vst = _dlgrc_inf.vs_target_pp if (_dlgrc_inf.vs_target_pp is defined and _dlgrc_inf.vs_target_pp is not none) else none %}
+      {# E0-G: the owner's inflation LEVEL token (engine/rate_inflation_transmission.current_state → state.inflation.regime)
+         drives the state word + colour; the owner's EXPECTATIONS token (state.expectations.anchoring) drives the second
+         clause. Both are carried verbatim and both are null-safe: an unknown or missing token reads "being updated",
+         never a default word. The numbers stay demoted to the ? tip. #}
+      {% set _inf_regime = _dlgrc_inf.regime if _dlgrc_inf.regime in ('above target', 'at target', 'below target') else none %}
+      {% set _inf_anchor = _dlgrc_inf.anchoring if _dlgrc_inf.anchoring in ('anchored', 'drifting up', 'drifting down') else none %}
+      {% set _inf_state_en = {'above target':'Above target','at target':'Near target','below target':'Below target'}.get(_inf_regime, 'Being updated') %}
+      {% set _inf_state_zh = {'above target':'高于目标','at target':'接近目标','below target':'低于目标'}.get(_inf_regime, '更新中') %}
+      {# Red only when expectations move the wrong way for the level; green when near target with steady expectations;
+         quiet blue while the level is being re-read; amber for every other state (a miss, or drifting expectations near target). #}
+      {% set _inf_wrong_way = (_inf_regime == 'above target' and _inf_anchor == 'drifting up') or (_inf_regime == 'below target' and _inf_anchor == 'drifting down') %}
+      {% set _inf_col = 'var(--down,#ef4444)' if _inf_wrong_way else ('var(--up,#22d97a)' if (_inf_regime == 'at target' and _inf_anchor == 'anchored') else ('var(--info,#60a5fa)' if _inf_regime is none else 'var(--warn,#f59e0b)')) %}
+      {# Plain level phrase: how far from the Fed's 2% target, in the direction the owner states #}
+      {% set _inf_gap = ('%.1f'|format(_inf_vst|abs)) if (_inf_vst is not none) else none %}
+      {% if _inf_regime == 'above target' %}
+      {% set _inf_level_en = ('still ' ~ _inf_gap ~ ' points above the Fed’s 2% target') if _inf_gap else 'still above the Fed’s 2% target' %}
+      {% set _inf_level_zh = ('仍高于美联储2%目标 ' ~ _inf_gap ~ ' 个百分点') if _inf_gap else '仍高于美联储2%目标' %}
+      {% elif _inf_regime == 'below target' %}
+      {% set _inf_level_en = (_inf_gap ~ ' points below the Fed’s 2% target') if _inf_gap else 'below the Fed’s 2% target' %}
+      {% set _inf_level_zh = ('低于美联储2%目标 ' ~ _inf_gap ~ ' 个百分点') if _inf_gap else '低于美联储2%目标' %}
+      {% elif _inf_regime == 'at target' %}
+      {% set _inf_level_en = 'close to the Fed’s 2% target' %}
+      {% set _inf_level_zh = '接近美联储2%目标' %}
+      {% else %}
+      {% set _inf_level_en = 'being re-read against the Fed’s 2% target' %}
+      {% set _inf_level_zh = '相对美联储2%目标的读数更新中' %}
+      {% endif %}
+      {% set _inf_exp_en = {'anchored':'longer-run expectations look steady','drifting up':'longer-run expectations are drifting up','drifting down':'longer-run expectations are drifting down'}.get(_inf_anchor, 'the longer-run expectations read is being updated') %}
+      {% set _inf_exp_zh = {'anchored':'长期预期看起来稳定','drifting up':'长期预期向上漂移','drifting down':'长期预期向下漂移'}.get(_inf_anchor, '长期预期读数更新中') %}
       <div class="mx5-dlg-eyebrow"><span class="l-en">Inflation Read</span><span class="l-zh">通胀读数</span></div>
       <div class="fbm-row">
         <span class="fbm-row-state" style="color:{{ _inf_col }}"><span class="fbm-row-dot" style="background:{{ _inf_col }}"></span><span class="l-en">{{ _inf_state_en }}</span><span class="l-zh">{{ _inf_state_zh }}</span></span>
-        <span class="fbm-row-line"><span class="l-en">Core prices are still {{ _inf_above_en }}; longer-run expectations look {{ {'anchored':'steady','drifting':'a touch loose','unanchored':'unmoored'}.get(_inf_anchor,'steady') }}.</span><span class="l-zh">核心物价仍{{ _inf_above_zh }}；长期预期看起来{{ {'anchored':'稳定','drifting':'略松动','unanchored':'不稳'}.get(_inf_anchor,'稳定') }}。</span></span>
+        <span class="fbm-row-line"><span class="l-en">Core prices are {{ _inf_level_en }}; {{ _inf_exp_en }}.</span><span class="l-zh">核心物价{{ _inf_level_zh }}；{{ _inf_exp_zh }}。</span></span>
         <span class="fbm-tip"
-          data-tip-en="Core PCE {{ _dlgrc_inf.core_pce_yoy }}% y/y · Core CPI {{ _dlgrc_inf.core_cpi_yoy }}% · 3-month annualized PCE {{ _dlgrc_inf.core_pce_3m_ann }}% · 10y breakeven {{ _dlgrc_inf.breakeven_10y }}% (expectations: {{ _inf_anchor }})."
-          data-tip-zh="核心PCE {{ _dlgrc_inf.core_pce_yoy }}% 同比 · 核心CPI {{ _dlgrc_inf.core_cpi_yoy }}% · 3月年化PCE {{ _dlgrc_inf.core_pce_3m_ann }}% · 10年盈亏平衡 {{ _dlgrc_inf.breakeven_10y }}%（预期：{{ {'anchored':'稳定','drifting':'漂移','unanchored':'脱锚'}.get(_inf_anchor,_inf_anchor) }}）。">?</span>
+          data-tip-en="Core PCE {{ _dlgrc_inf.core_pce_yoy }}% y/y{% if _dlgrc_inf.core_cpi_yoy is not none %} · Core CPI {{ _dlgrc_inf.core_cpi_yoy }}%{% endif %}{% if _dlgrc_inf.core_pce_3m_ann is not none %} · 3-month annualized PCE {{ _dlgrc_inf.core_pce_3m_ann }}%{% endif %}{% if _dlgrc_inf.breakeven_10y is not none %} · 10y breakeven {{ _dlgrc_inf.breakeven_10y }}%{% endif %}{% if _inf_anchor is not none %} (expectations: {{ _inf_anchor }}){% endif %}."
+          data-tip-zh="核心PCE {{ _dlgrc_inf.core_pce_yoy }}% 同比{% if _dlgrc_inf.core_cpi_yoy is not none %} · 核心CPI {{ _dlgrc_inf.core_cpi_yoy }}%{% endif %}{% if _dlgrc_inf.core_pce_3m_ann is not none %} · 3月年化PCE {{ _dlgrc_inf.core_pce_3m_ann }}%{% endif %}{% if _dlgrc_inf.breakeven_10y is not none %} · 10年盈亏平衡 {{ _dlgrc_inf.breakeven_10y }}%{% endif %}{% if _inf_anchor is not none %}（预期：{{ {'anchored':'锚定','drifting up':'向上漂移','drifting down':'向下漂移'}.get(_inf_anchor,_inf_anchor) }}）{% endif %}。">?</span>
       </div>
       {% if _dlgrc_inf.nearest_cpi is defined and _dlgrc_inf.nearest_cpi %}
       {% set _ncpi = _dlgrc_inf.nearest_cpi %}
