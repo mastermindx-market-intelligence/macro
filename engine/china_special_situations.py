@@ -839,7 +839,7 @@ def _contract_title_state(title: Any) -> dict:
     This function never infers that an award became a binding contract, that a
     contract became revenue, or that an amendment belongs to another filing.
     """
-    text = str(title or "")
+    text = _safe_str(title)
     if _CONTRACT_CANCEL_RE.search(text):
         return {
             "state": "cancelled_or_terminated",
