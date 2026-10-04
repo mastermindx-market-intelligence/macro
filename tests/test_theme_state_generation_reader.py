@@ -30,8 +30,18 @@ def call(root, **kw):
     args.update(kw)
     answer=reader.read_generation(root, **args)
     assert files(root)==before, "read/refusal changed owner bytes"
-    reader.validate_read_receipt(answer)
+    witness = None
+    if answer["state"] is not None:
+        witness = publication_plan(root, answer)
+    reader.validate_read_receipt(answer, publication_plan=witness)
+    assert files(root)==before, "detached validation changed owner bytes"
     return answer
+
+
+def publication_plan(root, receipt):
+    """Only read the actual immutable plan; never reconstruct one from a receipt."""
+    generation_id = receipt["publication"]["generation_id"]
+    return g.parse(g.read(root, g.GENERATIONS + "/" + generation_id + "/plan.json"))
 
 @pytest.fixture
 def accepted(prepared):
@@ -231,7 +241,8 @@ def test_read_contract_closed_flags_and_relational_digest(accepted):
         lambda x:x["history"].update(length=True),
         lambda x:x["compatibility"].update(raw_sha256="0"*64)]:
         changed=copy.deepcopy(out);mutate(changed)
-        with pytest.raises(ValueError):reader.validate_read_receipt(changed)
+        with pytest.raises(ValueError):
+            reader.validate_read_receipt(changed, publication_plan=publication_plan(root, out))
 
 def test_reader_schema_owner_defs_exact():
     from engine.theme_graph import theme_state_production as p
@@ -368,7 +379,8 @@ def test_publication_identity_fields_cannot_be_relabelled(accepted):
         {"activation_kind":"ROLLBACK"},{"reference_sha256":"0"*64},
         {"plan_sha256":"0"*64}]:
         changed=copy.deepcopy(out);changed["publication"].update(update)
-        with pytest.raises(ValueError):reader.validate_read_receipt(changed)
+        with pytest.raises(ValueError):
+            reader.validate_read_receipt(changed, publication_plan=publication_plan(root, out))
 
 @pytest.mark.parametrize("field",["effective_at","known_at","purpose","use_at","node_id"])
 def test_nonstring_request_refused_without_effects(accepted,field):
@@ -414,3 +426,82 @@ def test_symlink_immutable_state_refused_without_alias_fallback(accepted):
     p.unlink();p.symlink_to(root/g.PRIMARY)
     out=call(root)
     assert out["status"]=="INVALID" and out["reason_codes"]==["FAMILY_SYMLINK"]
+
+
+@pytest.mark.parametrize("kind", ["INITIAL", "CORRECTION", "ROLLBACK"])
+def test_available_detached_receipt_requires_actual_publication_witness(accepted, kind):
+    root, first = accepted
+    known = KNOWN
+    if kind != "INITIAL":
+        second = next_plan(root)
+        g.publish_generation(root, second, controlled_verifier=AcceptedFixture())
+        known = "2026-10-04T12:01:00Z"
+    if kind == "ROLLBACK":
+        g.rollback_generation(root, first["generation_id"],
+            activation_at="2026-10-04T12:03:00Z", controlled_verifier=AcceptedFixture())
+        known = KNOWN
+    out = call(root, known_at=known)
+    assert out["publication"]["activation_kind"] == kind
+    witness = publication_plan(root, out)
+    before = files(root)
+    with pytest.raises(ValueError, match="publication plan witness required"):
+        reader.validate_read_receipt(out)
+    assert reader.validate_read_receipt(out, publication_plan=witness) == out
+    assert files(root) == before
+
+
+@pytest.mark.parametrize("section,field", [
+    ("rollback_selection", "plan_sha256"),
+    ("rollback_selection", "history_sha256"),
+    ("rollback_selection", "history_length"),
+    ("prior_reference", "plan_sha256"),
+    ("prior_reference", "history_sha256"),
+    ("prior_reference", "history_length"),
+])
+def test_actual_witness_rejects_detached_lineage_metadata_changes(accepted, section, field):
+    root, first = accepted
+    second = next_plan(root)
+    g.publish_generation(root, second, controlled_verifier=AcceptedFixture())
+    g.rollback_generation(root, first["generation_id"],
+        activation_at="2026-10-04T12:03:00Z", controlled_verifier=AcceptedFixture())
+    out = call(root)
+    witness = publication_plan(root, out)
+    changed = copy.deepcopy(out)
+    target = changed["publication"][section]
+    target[field] = target[field] + 1 if field == "history_length" else "f" * 64
+    before = files(root)
+    with pytest.raises(ValueError, match="witness mismatch"):
+        reader.validate_read_receipt(changed, publication_plan=witness)
+    assert files(root) == before
+
+
+def test_initial_relabelling_cannot_remove_rollback_lineage_obligation(accepted):
+    root, first = accepted
+    second = next_plan(root)
+    g.publish_generation(root, second, controlled_verifier=AcceptedFixture())
+    g.rollback_generation(root, first["generation_id"],
+        activation_at="2026-10-04T12:03:00Z", controlled_verifier=AcceptedFixture())
+    out = call(root)
+    changed = copy.deepcopy(out)
+    changed["publication"].update(activation_kind="INITIAL", prior_reference=None,
+                                   rollback_selection=None)
+    with pytest.raises(ValueError, match="witness required"):
+        reader.validate_read_receipt(changed)
+    with pytest.raises(ValueError, match="witness mismatch"):
+        reader.validate_read_receipt(changed, publication_plan=publication_plan(root, out))
+
+
+def test_foreign_or_modified_owner_plan_is_not_a_receipt_witness(accepted):
+    root, first = accepted
+    out = call(root)
+    changed = copy.deepcopy(first)
+    changed["activation_at"] = "2026-10-04T12:02:00Z"
+    with pytest.raises(ValueError):
+        reader.validate_read_receipt(out, publication_plan=changed)
+    second = next_plan(root)
+    g.publish_generation(root, second, controlled_verifier=AcceptedFixture())
+    corrected = call(root, known_at="2026-10-04T12:01:00Z")
+    with pytest.raises(ValueError, match="witness mismatch"):
+        reader.validate_read_receipt(corrected, publication_plan=first)
+    with pytest.raises(ValueError):
+        reader.validate_read_receipt(corrected, publication_plan=True)

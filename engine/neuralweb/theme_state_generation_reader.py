@@ -263,14 +263,21 @@ def read_generation(root, *, effective_at, known_at, purpose, use_at,
             source_clocks=clocks,
             subject_read=None if node_id is None else production.read_subject(state,
                 node_id=node_id, effective_at=effective_at, known_at=known_at, purpose=purpose))
-        return validate_read_receipt(answer)
+        return validate_read_receipt(answer, publication_plan=plan)
     except g.GenerationUnavailable as error:
         return _refusal(_base(effective_at, known_at, purpose, use_at), "INVALID", error.reason)
     except (ValueError, TypeError, KeyError, AttributeError, OSError) as error:
         return _refusal(_base(effective_at, known_at, purpose, use_at), "INVALID", "READ_CONTRACT_INVALID")
 
-def validate_read_receipt(receipt):
-    """Closed relational validation; a valid dictionary is never a rights grant."""
+def validate_read_receipt(receipt, *, publication_plan=None):
+    """Validate a receipt against its existing owner's publication-plan witness.
+
+    Refusals carry no lineage and remain self-contained. Available payloads need
+    the exact owner plan: hashes of a detached dictionary cannot authenticate its
+    predecessor or rollback claims. This checks consistency, not current rights
+    or acceptance; callers must still use read_generation for an owner read.
+    The plan is not embedded in the wire receipt and no new state store is read.
+    """
     production._finite_json(receipt)
     schema = json.loads(SCHEMA_PATH.read_text())
     errors = list(jsonschema.Draft202012Validator(schema).iter_errors(receipt))
@@ -316,6 +323,21 @@ def validate_read_receipt(receipt):
             or ref["history_sha256"] != receipt["history"]["sha256"]
             or ref["history_length"] != receipt["history"]["length"]):
         raise ValueError("read accepted reference mismatch")
+    if publication_plan is None:
+        raise ValueError("publication plan witness required for available receipt")
+    # Reuse the sealed producer contract, rather than inventing a lineage owner.
+    g.validate_generation(publication_plan)
+    expected_previous_raw = g.unb64(publication_plan["prior_reference_b64"])
+    expected_previous = (None if expected_previous_raw is None
+                         else g.parse(expected_previous_raw))
+    if (g.sha(g.canonical(publication_plan)) != ref["plan_sha256"]
+            or g.parse(g._reference(publication_plan)) != ref
+            or publication["prior_reference"] != expected_previous
+            or publication["rollback_selection"] != publication_plan["rollback_selection"]
+            or identity["raw_sha256"] != publication_plan["digests"]["state_raw"]
+            or compat["raw_sha256"] != publication_plan["digests"]["compatibility_raw"]
+            or receipt["query"] != publication_plan["query"]):
+        raise ValueError("read publication plan witness mismatch")
     previous = publication["prior_reference"]
     if previous is not None:
         g._validate_reference_shape(previous)
