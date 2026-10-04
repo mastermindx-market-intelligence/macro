@@ -2,7 +2,7 @@
 
 This repository is operated by multiple Claude accounts and Codex sessions. Repository files are the durable, shared source of instructions; promises or “memory” recorded only inside one chat do not carry to another session.
 
-## Required context at the start of every task
+## Required context at the start of each new assignment — once, not per phase or turn
 
 1. Read `CLAUDE.md` in full and follow it as the authoritative project guide.
 2. Search the Claude project memory index at
