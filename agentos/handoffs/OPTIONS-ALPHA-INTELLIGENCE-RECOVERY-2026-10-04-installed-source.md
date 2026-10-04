@@ -102,11 +102,14 @@ review lane. This knowledge record grants no lease, dispatch or runtime authorit
 The M1 receipt files are:
 
 - /private/tmp/options-source-update-liveflow-2c9122681ab4-20261004/receipt.json
-  (settled r1 rollback; retained).
+  (settled r1 rollback; retained), SHA256
+  155e11a253445857b3587f02a4fa01db8b24daf2e8363570f503e4b63dd7737e.
 - /private/tmp/options-source-update-liveflow-2c9122681ab4-20261004-r2/receipt.json
-  (accepted liveflow installation).
+  (accepted liveflow installation), SHA256
+  8a99b14963dd791f485d543063cc9c670891bebc9d84f5fbf1adb6c3a3c7ae30.
 - /private/tmp/options-source-update-matrix-2c9122681ab4-20261004/receipt.json
-  (accepted matrix installation).
+  (accepted matrix installation), SHA256
+  58fdcf2ceb2265332c8998c97f290d140ac7a59d34d85384d201da5afda50e2f.
 
 The reviewed helper is on M2 and M1 at
 /private/tmp/options-alpha-clean-source-update-20261004.py, SHA256
