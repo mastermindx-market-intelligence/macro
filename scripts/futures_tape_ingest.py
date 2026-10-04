@@ -226,15 +226,21 @@ def _valid_receipted(
 
 
 def _lse_window_state(end: str) -> PartitionState:
-    # Range end is exclusive. A window ending at or before today's 00:00 UTC
-    # can no longer receive ticks; a window extending into the current UTC day
-    # remains provisional and is intentionally refreshed on a later run.
+    # Range end is exclusive. Date-only end=YYYY-MM-DD names midnight at the
+    # start of that UTC date, so end==today means the preceding day is closed.
+    # Timestamped windows that end *inside* the current UTC day remain
+    # provisional even if their wall-clock endpoint has passed: the historical
+    # provider may still correct that current-day tape. Older timestamped
+    # windows are final.
+    raw = str(end).strip()
     try:
-        end_day = date.fromisoformat(str(end)[:10])
+        end_day = date.fromisoformat(raw[:10])
     except ValueError as exc:
         raise SystemExit("--end must begin with YYYY-MM-DD") from exc
     today_utc = datetime.now(timezone.utc).date()
-    return PartitionState.FINAL if end_day <= today_utc else PartitionState.PROVISIONAL
+    if len(raw) == 10:
+        return PartitionState.FINAL if end_day <= today_utc else PartitionState.PROVISIONAL
+    return PartitionState.FINAL if end_day < today_utc else PartitionState.PROVISIONAL
 
 
 def _date_chunks(start: str, end: str, chunk_days: int) -> list[tuple[str, str]]:
