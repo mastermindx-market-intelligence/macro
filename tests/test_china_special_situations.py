@@ -274,6 +274,34 @@ def test_contract_context_never_becomes_special_rank_flag(tmp_path, monkeypatch)
     assert "600519" not in (snap.get("by_ticker") or {})
 
 
+def test_contract_order_missing_category_fails_closed(tmp_path, monkeypatch):
+    data_dir = tmp_path / "data"
+    monkeypatch.setattr("lib.config.data_dir", lambda: data_dir)
+    now = pd.Timestamp.now(tz="UTC")
+    day = now.strftime("%Y-%m-%d")
+    p = data_dir / "china_filings" / "filings.parquet"
+    _make_parquet(p, [{
+        "announcementId": "MC1",
+        "sec_code": "600001",
+        "sec_name": "测试公司",
+        "title": "关于签订重大合同的公告",
+        "publish_ts": f"{day}T09:00:00+08:00",
+        "exchange": "sse",
+        "announcement_type_raw": "contract",
+        "adjunct_url": "finalpage/2026-10-03/MC1.PDF",
+        "_collected_at": now.isoformat(),
+        # category deliberately absent: source is readable but semantically
+        # unusable for this family and must not look like a clean empty window.
+    }])
+
+    from engine import china_special_situations as css
+    block = css._contract_order_block()
+    assert block["status"] == "source_failure"
+    assert block["events"] == []
+    assert block["n_total"] == 0
+    assert block["coverage_note"] == "category field unavailable"
+
+
 def test_contract_order_unreadable_store_fails_closed(tmp_path, monkeypatch):
     data_dir = tmp_path / "data"
     monkeypatch.setattr("lib.config.data_dir", lambda: data_dir)
