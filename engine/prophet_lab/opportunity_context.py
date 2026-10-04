@@ -14,13 +14,14 @@ authorized consumer.
 from __future__ import annotations
 
 from copy import deepcopy
-from datetime import date
+from datetime import date, datetime
 from typing import Mapping, Sequence
 
 from engine.prophet_candidate_state import validate_candidate_state_projection
 from engine.prophet_entry_availability import validate_entry_availability
 from engine.prophet_lab.contracts import ALL_FALSE_AUTHORITY
 from lib.dataos.identity import VendorAliasTable
+from lib.opportunity_evidence import validate_vector
 
 
 SCHEMA = "prophet.lab_opportunity_context/v1"
@@ -28,6 +29,7 @@ B3_SCHEMA = "prophet.candidate_state_projection/v1"
 B4_SCHEMA = "prophet.entry_availability/v1"
 IDENTITY_BINDING_SCHEMA = "prophet.lab_opportunity_identity/v1"
 PORTFOLIO_RELATION_SCHEMA = "prophet.lab_portfolio_relation/v1"
+OEV_SCHEMA = "opportunity_evidence.vector.v1"
 
 _UNJOINED_USER_STATE = {
     "plan": {
@@ -48,8 +50,10 @@ _UNJOINED_USER_STATE = {
 }
 _UNJOINED_EVIDENCE = {
     "status": "NOT_JOINED",
+    "source": None,
     "support": None,
     "contradiction": None,
+    "unresolved": None,
     "next_observable": None,
     "reason": "OPPORTUNITY_EVIDENCE_NOT_JOINED",
 }
@@ -507,12 +511,252 @@ def validate_terminal_portfolio_relation(payload: Mapping[str, object]) -> None:
         raise OpportunityContextContractError("portfolio relation state is unknown")
 
 
+def _decision_clock_session(asof: Mapping[str, object]) -> str:
+    """Return the calendar session represented by one validated OEV decision clock."""
+    value = _text(asof.get("value"), "opportunity evidence asof.value")
+    grain = asof.get("grain")
+    if grain == "date":
+        try:
+            parsed = date.fromisoformat(value)
+        except ValueError as exc:
+            raise OpportunityContextContractError(
+                "opportunity evidence date decision clock is invalid"
+            ) from exc
+        return parsed.isoformat()
+    if grain == "datetime":
+        try:
+            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError as exc:
+            raise OpportunityContextContractError(
+                "opportunity evidence datetime decision clock is invalid"
+            ) from exc
+        return parsed.date().isoformat()
+    raise OpportunityContextContractError("opportunity evidence decision-clock grain is invalid")
+
+
+def project_opportunity_evidence_summary(
+    candidate_projection: Mapping[str, object],
+    *,
+    episode_id: str,
+    evidence_vector: Mapping[str, object],
+) -> dict[str, object]:
+    """Project already-admitted OEV evidence into one operator-display summary.
+
+    This is a deterministic read of accepted K3-E/OEV output. It does not compose
+    evidence, choose a cause, reinterpret admission as entry, or consume OEV's
+    legacy entry_availability leg. Fresh-entry authority remains B4.
+    """
+    if not isinstance(evidence_vector, Mapping):
+        raise OpportunityContextContractError("opportunity evidence vector must be an object")
+    row = _candidate_row(candidate_projection, _text(episode_id, "episode_id"))
+
+    findings = validate_vector(dict(evidence_vector))
+    if findings:
+        codes = sorted({
+            str(getattr(finding, "code", "K3E_INVALID"))
+            for finding in findings
+        })
+        raise OpportunityContextContractError(
+            "opportunity evidence vector failed validation: " + ",".join(codes)
+        )
+
+    if evidence_vector.get("schema") != OEV_SCHEMA:
+        raise OpportunityContextContractError("opportunity evidence schema mismatch")
+    consumers = evidence_vector.get("permitted_consumers")
+    if not isinstance(consumers, list) or "operator_display" not in consumers:
+        raise OpportunityContextContractError(
+            "opportunity evidence vector is not admitted for operator_display"
+        )
+
+    subject = evidence_vector.get("subject")
+    if not isinstance(subject, Mapping):
+        raise OpportunityContextContractError("opportunity evidence subject is unavailable")
+    if subject.get("subject_type") != "dataos_security_id":
+        raise OpportunityContextContractError(
+            "opportunity evidence must use canonical dataos_security_id for this join"
+        )
+    if subject.get("value") != row.get("security_id"):
+        raise OpportunityContextContractError(
+            "opportunity evidence subject does not match the selected B3 security"
+        )
+    if subject.get("identity_state") == "unproven":
+        raise OpportunityContextContractError(
+            "opportunity evidence identity is unproven for operator display"
+        )
+
+    market_session = _text(
+        candidate_projection.get("market_session"),
+        "candidate projection market_session",
+    )
+    asof = evidence_vector.get("asof")
+    if not isinstance(asof, Mapping) or _decision_clock_session(asof) != market_session:
+        raise OpportunityContextContractError(
+            "opportunity evidence decision clock does not match the B3 market session"
+        )
+
+    projection = evidence_vector.get("projection")
+    slots = evidence_vector.get("slots")
+    if not isinstance(projection, Mapping) or not isinstance(slots, list):
+        raise OpportunityContextContractError("opportunity evidence projection is unavailable")
+    slots_by_construct = {
+        slot.get("construct"): slot
+        for slot in slots
+        if isinstance(slot, Mapping) and isinstance(slot.get("construct"), str)
+    }
+
+    def _slots_for(leg_name: str) -> list[dict[str, object]]:
+        leg = projection.get(leg_name)
+        if not isinstance(leg, Mapping):
+            raise OpportunityContextContractError(
+                f"opportunity evidence {leg_name} leg is unavailable"
+            )
+        refs = leg.get("slot_refs")
+        if not isinstance(refs, list):
+            raise OpportunityContextContractError(
+                f"opportunity evidence {leg_name} refs are unavailable"
+            )
+        out: list[dict[str, object]] = []
+        for ref in refs:
+            slot = slots_by_construct.get(ref)
+            if not isinstance(slot, Mapping):
+                raise OpportunityContextContractError(
+                    f"opportunity evidence {leg_name} references an unknown slot"
+                )
+            out.append(deepcopy(dict(slot)))
+        return out
+
+    gates_leg = projection.get("failed_or_unavailable_gates")
+    if not isinstance(gates_leg, Mapping) or not isinstance(gates_leg.get("gates"), list):
+        raise OpportunityContextContractError(
+            "opportunity evidence failed/unavailable gates are unavailable"
+        )
+    gates = gates_leg["gates"]
+    failed = [deepcopy(dict(g)) for g in gates if isinstance(g, Mapping) and g.get("state") == "failed"]
+    unavailable = [
+        deepcopy(dict(g))
+        for g in gates
+        if isinstance(g, Mapping) and g.get("state") in {"unavailable", "not_evaluated"}
+    ]
+
+    summary = {
+        "status": "JOINED",
+        "source": {
+            "schema": evidence_vector.get("schema"),
+            "content_sha256": evidence_vector.get("content_sha256"),
+            "security_id": row.get("security_id"),
+            "market_session": market_session,
+            "asof": deepcopy(dict(asof)),
+            "generated_at": evidence_vector.get("generated_at"),
+            "compilation_state": evidence_vector.get("compilation_state"),
+            "dominant_degradation": evidence_vector.get("dominant_degradation"),
+        },
+        "support": {
+            "observed_slots": _slots_for("observed"),
+            "inferred_slots": _slots_for("inferred"),
+            "market_reflection": deepcopy(projection.get("market_reflection")),
+        },
+        "contradiction": {
+            "failed_owner_gates": failed,
+        },
+        "unresolved": {
+            "strongest_unresolved_fact": deepcopy(
+                projection.get("strongest_unresolved_fact")
+            ),
+            "unavailable_owner_gates": unavailable,
+        },
+        "next_observable": deepcopy(projection.get("next_observable")),
+        "reason": None,
+    }
+    validate_opportunity_evidence_summary(summary, identity_security_id=row.get("security_id"),
+                                         market_session=market_session)
+    return summary
+
+
+def validate_opportunity_evidence_summary(
+    payload: Mapping[str, object],
+    *,
+    identity_security_id: object,
+    market_session: object,
+) -> None:
+    """Validate the closed display summary without reinterpreting OEV semantics."""
+    if not isinstance(payload, Mapping):
+        raise OpportunityContextContractError("opportunity evidence summary must be an object")
+    expected = {
+        "status", "source", "support", "contradiction", "unresolved",
+        "next_observable", "reason",
+    }
+    if set(payload) != expected or payload.get("status") != "JOINED" or payload.get("reason") is not None:
+        raise OpportunityContextContractError("joined opportunity evidence summary is incoherent")
+
+    source = payload.get("source")
+    if not isinstance(source, Mapping) or set(source) != {
+        "schema", "content_sha256", "security_id", "market_session", "asof",
+        "generated_at", "compilation_state", "dominant_degradation",
+    }:
+        raise OpportunityContextContractError("opportunity evidence source block is not closed")
+    if source.get("schema") != OEV_SCHEMA:
+        raise OpportunityContextContractError("opportunity evidence source schema mismatch")
+    digest = source.get("content_sha256")
+    if (
+        not isinstance(digest, str)
+        or len(digest) != 64
+        or any(ch not in "0123456789abcdef" for ch in digest)
+    ):
+        raise OpportunityContextContractError("opportunity evidence content digest is malformed")
+    if source.get("security_id") != identity_security_id:
+        raise OpportunityContextContractError(
+            "opportunity evidence source security does not match opportunity identity"
+        )
+    if source.get("market_session") != market_session:
+        raise OpportunityContextContractError(
+            "opportunity evidence source session does not match opportunity decision clock"
+        )
+    if not isinstance(source.get("asof"), Mapping):
+        raise OpportunityContextContractError("opportunity evidence source asof is unavailable")
+    if _decision_clock_session(source["asof"]) != market_session:
+        raise OpportunityContextContractError(
+            "opportunity evidence source asof does not match opportunity decision clock"
+        )
+    _text(source.get("generated_at"), "opportunity evidence generated_at")
+    _text(source.get("compilation_state"), "opportunity evidence compilation_state")
+    _text(source.get("dominant_degradation"), "opportunity evidence dominant_degradation")
+
+    support = payload.get("support")
+    if not isinstance(support, Mapping) or set(support) != {
+        "observed_slots", "inferred_slots", "market_reflection",
+    }:
+        raise OpportunityContextContractError("opportunity evidence support block is not closed")
+    if not isinstance(support.get("observed_slots"), list) or not isinstance(support.get("inferred_slots"), list):
+        raise OpportunityContextContractError("opportunity evidence support slot lists are unavailable")
+    if not isinstance(support.get("market_reflection"), Mapping):
+        raise OpportunityContextContractError("opportunity evidence market reflection is unavailable")
+
+    contradiction = payload.get("contradiction")
+    if not isinstance(contradiction, Mapping) or set(contradiction) != {"failed_owner_gates"}:
+        raise OpportunityContextContractError("opportunity evidence contradiction block is not closed")
+    if not isinstance(contradiction.get("failed_owner_gates"), list):
+        raise OpportunityContextContractError("opportunity evidence failed-owner gates are unavailable")
+
+    unresolved = payload.get("unresolved")
+    if not isinstance(unresolved, Mapping) or set(unresolved) != {
+        "strongest_unresolved_fact", "unavailable_owner_gates",
+    }:
+        raise OpportunityContextContractError("opportunity evidence unresolved block is not closed")
+    if not isinstance(unresolved.get("strongest_unresolved_fact"), Mapping):
+        raise OpportunityContextContractError("opportunity evidence strongest unresolved fact is unavailable")
+    if not isinstance(unresolved.get("unavailable_owner_gates"), list):
+        raise OpportunityContextContractError("opportunity evidence unavailable gates are unavailable")
+    if not isinstance(payload.get("next_observable"), Mapping):
+        raise OpportunityContextContractError("opportunity evidence next observable is unavailable")
+
+
 def compose_opportunity_context(
     candidate_projection: Mapping[str, object],
     *,
     episode_id: str,
     entry_availability: Mapping[str, object] | None = None,
     portfolio_relation: Mapping[str, object] | None = None,
+    opportunity_evidence: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     """Compose one zero-authority, identity-bound Prophet opportunity context.
 
@@ -552,6 +796,16 @@ def compose_opportunity_context(
             "reason": None,
         }
 
+    evidence_summary = (
+        deepcopy(_UNJOINED_EVIDENCE)
+        if opportunity_evidence is None
+        else project_opportunity_evidence_summary(
+            candidate_projection,
+            episode_id=episode_id,
+            evidence_vector=opportunity_evidence,
+        )
+    )
+
     out: dict[str, object] = {
         "schema": SCHEMA,
         "identity": {
@@ -573,7 +827,7 @@ def compose_opportunity_context(
         },
         "fresh_entry": entry,
         "user_state": user_state,
-        "evidence_summary": deepcopy(_UNJOINED_EVIDENCE),
+        "evidence_summary": evidence_summary,
         "forecast": deepcopy(_UNQUALIFIED_FORECAST),
         "authority": dict(ALL_FALSE_AUTHORITY),
     }
@@ -666,8 +920,17 @@ def validate_opportunity_context(payload: Mapping[str, object]) -> None:
                 )
     else:
         raise OpportunityContextContractError("private portfolio state is incoherent")
-    if payload.get("evidence_summary") != _UNJOINED_EVIDENCE:
-        raise OpportunityContextContractError("cross-domain evidence must remain unjoined")
+    evidence_summary = payload.get("evidence_summary")
+    if evidence_summary == _UNJOINED_EVIDENCE:
+        pass
+    elif isinstance(evidence_summary, Mapping):
+        validate_opportunity_evidence_summary(
+            evidence_summary,
+            identity_security_id=identity.get("security_id"),
+            market_session=clock.get("market_session"),
+        )
+    else:
+        raise OpportunityContextContractError("cross-domain evidence state is incoherent")
     if payload.get("forecast") != _UNQUALIFIED_FORECAST:
         raise OpportunityContextContractError("unqualified forecast must remain null")
 
@@ -676,10 +939,12 @@ __all__ = [
     "SCHEMA",
     "OpportunityContextContractError",
     "compose_opportunity_context",
+    "project_opportunity_evidence_summary",
     "project_terminal_portfolio_relation",
     "resolve_display_alias_to_active_episode",
     "select_unique_active_episode_id",
     "validate_opportunity_context",
+    "validate_opportunity_evidence_summary",
     "validate_opportunity_identity_binding",
     "validate_terminal_portfolio_relation",
 ]

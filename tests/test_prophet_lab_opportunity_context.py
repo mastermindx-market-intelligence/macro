@@ -12,13 +12,16 @@ from engine.prophet_lab.contracts import ALL_FALSE_AUTHORITY
 from engine.prophet_lab.opportunity_context import (
     OpportunityContextContractError,
     compose_opportunity_context,
+    project_opportunity_evidence_summary,
     project_terminal_portfolio_relation,
     resolve_display_alias_to_active_episode,
     select_unique_active_episode_id,
     validate_opportunity_context,
+    validate_opportunity_evidence_summary,
     validate_opportunity_identity_binding,
     validate_terminal_portfolio_relation,
 )
+from lib.opportunity_evidence import compose_vector
 from engine.prophet_strategy_definition import (
     build_early_leadership_sector_rotation_definition,
 )
@@ -216,8 +219,10 @@ def test_context_does_not_accept_or_infer_private_plan_or_forecast_state():
             "reason": "PORTFOLIO_OWNER_NOT_READ",
         },
     }
+    assert out["evidence_summary"]["source"] is None
     assert out["evidence_summary"]["support"] is None
     assert out["evidence_summary"]["contradiction"] is None
+    assert out["evidence_summary"]["unresolved"] is None
     assert out["evidence_summary"]["next_observable"] is None
     assert out["forecast"] == {
         "qualified": False,
@@ -640,3 +645,181 @@ def test_identity_binding_validator_rejects_malformed_provenance_and_identity_te
         match="candidate_state_projection_id is not canonical",
     ):
         validate_opportunity_identity_binding(bad)
+
+
+def _opportunity_evidence_vector(
+    *,
+    security_id="SEC:US-XNAS-AAPL",
+    market_session="2026-09-18",
+    permitted_consumers=None,
+):
+    subject = {
+        "subject_type": "dataos_security_id",
+        "value": security_id,
+        "identity_state": "single_owner_native",
+        "identity_bridge": None,
+    }
+    asof = {
+        "value": market_session,
+        "grain": "date",
+        "t0_source": "prophet_stamp_date",
+        "t0_mode": "live",
+        "t0_evidence_ref": {
+            "owner_store": "data/us_prophet_rank/candidates/",
+            "native_identity": {
+                "security_id": security_id,
+                "stamp_date": market_session,
+            },
+            "native_digest": {"state": "unknown", "sha256": None},
+            "recorded_clock": {
+                "value": market_session,
+                "grain": "date",
+                "clock_class": "belief_or_build",
+                "native_field": "stamp_date",
+                "state": "known",
+            },
+        },
+    }
+    slots = [{
+        "construct": "turnover_liquidity",
+        "state": "observed",
+        "value_or_null": {"mdv20_usd": 42_000_000.0},
+        "coverage_flag": {"state": "full", "note": None},
+        "asof": {"value": market_session, "grain": "date"},
+        "known_at": {"value": market_session, "grain": "date"},
+    }]
+    return compose_vector(
+        subject,
+        asof,
+        slots,
+        permitted_consumers=permitted_consumers or ["operator_display"],
+        next_observable={
+            "state": "named",
+            "observable": "next owner filing update",
+            "expected_clock_class": "knowable",
+            "expected_by": None,
+        },
+        failed_or_unavailable_gates=[
+            {
+                "gate": "risk_ceiling",
+                "owner": "engine.risk_owner",
+                "state": "failed",
+                "reason": "risk too high",
+            },
+            {
+                "gate": "liquidity_fillability",
+                "owner": "engine.liquidity_owner",
+                "state": "unavailable",
+                "reason": "source missing",
+            },
+        ],
+    )
+
+
+def test_oev_summary_projects_owner_evidence_without_touching_b4():
+    p = projection()
+    vector = _opportunity_evidence_vector()
+    out = compose_opportunity_context(
+        p,
+        episode_id=eid(),
+        opportunity_evidence=vector,
+    )
+    summary = out["evidence_summary"]
+    assert summary["status"] == "JOINED"
+    assert summary["source"]["content_sha256"] == vector["content_sha256"]
+    assert summary["source"]["security_id"] == "SEC:US-XNAS-AAPL"
+    assert summary["source"]["market_session"] == "2026-09-18"
+    assert [slot["construct"] for slot in summary["support"]["observed_slots"]] == [
+        "turnover_liquidity"
+    ]
+    assert summary["support"]["inferred_slots"] == []
+    assert summary["contradiction"]["failed_owner_gates"] == [{
+        "gate": "risk_ceiling",
+        "owner": "engine.risk_owner",
+        "state": "failed",
+        "reason": "risk too high",
+    }]
+    assert summary["unresolved"]["unavailable_owner_gates"] == [{
+        "gate": "liquidity_fillability",
+        "owner": "engine.liquidity_owner",
+        "state": "unavailable",
+        "reason": "source missing",
+    }]
+    assert summary["next_observable"]["observable"] == "next owner filing update"
+    assert out["fresh_entry"]["state"] == "UNAVAILABLE_DATA"
+    assert out["fresh_entry"]["entry_open"] is None
+    validate_opportunity_evidence_summary(
+        summary,
+        identity_security_id=out["identity"]["security_id"],
+        market_session=out["decision_clock"]["market_session"],
+    )
+
+
+def test_oev_summary_refuses_wrong_security_and_wrong_market_session():
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="subject does not match",
+    ):
+        compose_opportunity_context(
+            projection(),
+            episode_id=eid(),
+            opportunity_evidence=_opportunity_evidence_vector(
+                security_id="SEC:US-XNAS-MSFT",
+            ),
+        )
+
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="decision clock does not match",
+    ):
+        compose_opportunity_context(
+            projection(),
+            episode_id=eid(),
+            opportunity_evidence=_opportunity_evidence_vector(
+                market_session="2026-09-17",
+            ),
+        )
+
+
+def test_oev_summary_requires_operator_display_admission():
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="not admitted for operator_display",
+    ):
+        compose_opportunity_context(
+            projection(),
+            episode_id=eid(),
+            opportunity_evidence=_opportunity_evidence_vector(
+                permitted_consumers=["research_session"],
+            ),
+        )
+
+
+def test_oev_summary_refuses_invalid_vector_before_copying_owner_facts():
+    vector = _opportunity_evidence_vector()
+    vector["content_sha256"] = "0" * 64
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="failed validation",
+    ):
+        compose_opportunity_context(
+            projection(),
+            episode_id=eid(),
+            opportunity_evidence=vector,
+        )
+
+
+def test_context_validator_rejects_evidence_identity_laundering():
+    p = projection()
+    out = compose_opportunity_context(
+        p,
+        episode_id=eid(),
+        opportunity_evidence=_opportunity_evidence_vector(),
+    )
+    bad = deepcopy(out)
+    bad["evidence_summary"]["source"]["security_id"] = "SEC:US-XNAS-MSFT"
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="source security does not match",
+    ):
+        validate_opportunity_context(bad)
