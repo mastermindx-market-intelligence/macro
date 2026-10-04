@@ -433,6 +433,56 @@ def test_revision_neutral_new_phrase_keeps_effective_source_evidence():
 
 
 
+def test_revised_neutral_independent_source_preserves_novelty_and_provenance():
+    book = _book()
+
+    correction_locator = "loc_pboc_correction_adds_x"
+    correction_prior = _row(
+        "pboc", "修正源旧版", "稳中求进",
+        "2026-07-01T01:00:00",
+        url="https://www.pbc.gov.cn/policy/correction-source.html",
+    )
+    correction_today = _row(
+        "pboc", "修正源新版", "稳中求进 适度宽松",
+        "2026-07-02T01:00:00",
+        url="https://www.pbc.gov.cn/policy/correction-source.html",
+    )
+    correction_prior["source_locator_id"] = correction_locator
+    correction_today["source_locator_id"] = correction_locator
+
+    independent_locator = "loc_pboc_independent_revised"
+    independent_old = _row(
+        "pboc", "独立源初版", "实施适度宽松的货币政策 反内卷",
+        "2026-07-02T01:30:00",
+        url="https://www.pbc.gov.cn/policy/independent-revised.html",
+    )
+    independent_new = _row(
+        "pboc", "独立源更正", "实施适度宽松的货币政策",
+        "2026-07-02T02:30:00",
+        url="https://www.pbc.gov.cn/policy/independent-revised.html",
+    )
+    independent_old["source_locator_id"] = independent_locator
+    independent_new["source_locator_id"] = independent_locator
+
+    res = cd.compute_events(
+        [correction_prior, correction_today, independent_old, independent_new],
+        "2026-07-02",
+        book=book,
+    )
+    kinds = {(e["kind"], e["phrase"]) for e in res["events"]}
+
+    # X is correction-added on one source but revision-neutral on another.
+    # The independent revised source must keep novelty alive and own provenance.
+    assert ("APPEARED", "适度宽松") in kinds
+    event = next(e for e in res["events"]
+                 if e["kind"] == "APPEARED" and e["phrase"] == "适度宽松")
+    assert event["evidence_url"] == independent_new["url"]
+    assert event["evidence_title"] == independent_new["title"]
+    # The independent source's own correction-only removal remains neutralized.
+    assert ("DROPPED", "反内卷") not in kinds
+
+
+
 def test_prior_day_revised_lead_blocks_next_day_lead_shift():
     book = _book()
     locator = "loc_pd_prior_revised_lead"
