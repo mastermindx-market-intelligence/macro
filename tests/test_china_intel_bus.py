@@ -64,7 +64,8 @@ def test_digest_text_empty_when_nothing_present():
 # ── CIE-07: coverage-adjusted institutional-visit metadata discovery ──────────
 
 def _visit_row(aid, code, published, *, name="测试公司", exchange="SZ",
-               visitor_class="not_yet_available", title="机构调研活动记录表"):
+               visitor_class="not_yet_available", title="机构调研活动记录表",
+               recorded=None):
     return {
         "announcement_id": aid,
         "sec_code": code,
@@ -72,7 +73,7 @@ def _visit_row(aid, code, published, *, name="测试公司", exchange="SZ",
         "exchange": exchange,
         "title": title,
         "source_published_at": published,
-        "system_recorded_at": published,
+        "system_recorded_at": recorded or published,
         "visitor_class": visitor_class,
     }
 
@@ -99,6 +100,32 @@ def test_visit_discovery_first_seen_requires_no_preexisting_observation():
     assert row["baseline_state"] == "insufficient_observed_history"
     assert row["recent_vs_baseline_rate_ratio"] is None
     assert snap["global_negative_authority"] is True
+
+
+def test_visit_discovery_keeps_precoverage_source_event_as_positive_observation():
+    # First production run can legitimately derive a filing published during
+    # its bounded lookback before the write-once coverage-start date. The event
+    # stays real positive evidence; only negative/baseline authority is gated.
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row(
+            "A0", "000010", "2026-09-14T09:00:00+08:00",
+            recorded="2026-09-15T02:00:00+00:00",
+        )],
+        health={"status": "ok", "last_success_utc": "2026-09-15T02:00:00+00:00"},
+        coverage_start="2026-09-15",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        recent_days=30,
+        baseline_days=90,
+    )
+    assert snap["n_rows_observed"] == 1
+    assert snap["n_recent_companies"] == 1
+    row = snap["examples"][0]
+    assert row["earliest_source_published_day"] == "2026-09-14"
+    assert row["first_observed_system_day"] == "2026-09-15"
+    assert row["first_seen_state"] == "first_observed_since_coverage_start"
+    assert row["baseline_state"] == "insufficient_observed_history"
 
 
 def test_visit_discovery_measures_only_fully_observed_baseline():
