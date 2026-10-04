@@ -1,5 +1,6 @@
 from copy import deepcopy
 from dataclasses import dataclass
+from datetime import date
 from hashlib import sha256
 import json
 
@@ -11,12 +12,15 @@ from engine.prophet_lab.contracts import ALL_FALSE_AUTHORITY
 from engine.prophet_lab.opportunity_context import (
     OpportunityContextContractError,
     compose_opportunity_context,
+    resolve_display_alias_to_active_episode,
     select_unique_active_episode_id,
     validate_opportunity_context,
+    validate_opportunity_identity_binding,
 )
 from engine.prophet_strategy_definition import (
     build_early_leadership_sector_rotation_definition,
 )
+from lib.dataos.identity import VendorAliasTable
 
 
 GEN = "peg:" + "a" * 64
@@ -282,4 +286,117 @@ def test_security_resolution_ignores_closed_rows_but_never_infers_from_them():
     ):
         select_unique_active_episode_id(
             p, security_id="SEC:US-XNAS-AAPL"
+        )
+
+
+
+def _identity_aliases():
+    return VendorAliasTable.from_records([
+        {
+            "vendor": "store",
+            "vendor_symbol": "AAPL",
+            "security_id": "SEC:US-XNAS-AAPL",
+            "valid_from": None,
+            "valid_to": None,
+        },
+    ])
+
+
+def _identity_receipts():
+    return (
+        {
+            "source": "identity",
+            "path": "data/reference/vendor_aliases.parquet",
+            "sha256": "sha256:" + "a" * 64,
+        },
+        {
+            "source": "identity",
+            "path": "data/reference/security_master.parquet",
+            "sha256": "sha256:" + "b" * 64,
+        },
+    )
+
+
+def test_display_alias_resolves_through_data_os_and_reverse_proves_identity():
+    p = projection()
+    binding = resolve_display_alias_to_active_episode(
+        p,
+        aliases=_identity_aliases(),
+        identity_source_receipts=_identity_receipts(),
+        display_symbol=" aapl ",
+        decision_date=date(2026, 9, 18),
+    )
+    assert binding["display_symbol"] == "AAPL"
+    assert binding["security_id"] == "SEC:US-XNAS-AAPL"
+    assert binding["episode_id"] == eid()
+    assert binding["identity_epoch"] == "epoch_0"
+    assert binding["candidate_generation_id"] == p["candidate_generation_id"]
+    assert binding["candidate_state_projection_id"] == p["projection_id"]
+    assert binding["authority"] == ALL_FALSE_AUTHORITY
+    assert len(binding["identity_source_receipts"]) == 2
+    validate_opportunity_identity_binding(binding)
+
+
+def test_display_alias_refuses_unmapped_symbol_instead_of_ticker_identity():
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="unmapped in the Data OS store alias space",
+    ):
+        resolve_display_alias_to_active_episode(
+            projection(),
+            aliases=_identity_aliases(),
+            identity_source_receipts=_identity_receipts(),
+            display_symbol="MSFT",
+            decision_date=date(2026, 9, 18),
+        )
+
+
+def test_display_alias_requires_canonical_identity_receipts():
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="identity source receipts are required",
+    ):
+        resolve_display_alias_to_active_episode(
+            projection(),
+            aliases=_identity_aliases(),
+            identity_source_receipts=(),
+            display_symbol="AAPL",
+            decision_date=date(2026, 9, 18),
+        )
+
+
+def test_display_alias_refuses_historical_vendor_space_as_current_identity():
+    aliases = VendorAliasTable.from_records([
+        {
+            "vendor": "yahoo_historical",
+            "vendor_symbol": "AAPL",
+            "security_id": "SEC:US-XNAS-AAPL",
+            "valid_from": None,
+            "valid_to": None,
+        },
+    ])
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="unmapped in the Data OS store alias space",
+    ):
+        resolve_display_alias_to_active_episode(
+            projection(),
+            aliases=aliases,
+            identity_source_receipts=_identity_receipts(),
+            display_symbol="AAPL",
+            decision_date=date(2026, 9, 18),
+        )
+
+
+def test_display_alias_refuses_non_date_clock():
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="decision_date must be a calendar date",
+    ):
+        resolve_display_alias_to_active_episode(
+            projection(),
+            aliases=_identity_aliases(),
+            identity_source_receipts=_identity_receipts(),
+            display_symbol="AAPL",
+            decision_date="2026-09-18",
         )

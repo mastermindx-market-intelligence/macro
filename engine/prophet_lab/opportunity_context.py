@@ -14,16 +14,19 @@ authorized consumer.
 from __future__ import annotations
 
 from copy import deepcopy
+from datetime import date
 from typing import Mapping, Sequence
 
 from engine.prophet_candidate_state import validate_candidate_state_projection
 from engine.prophet_entry_availability import validate_entry_availability
 from engine.prophet_lab.contracts import ALL_FALSE_AUTHORITY
+from lib.dataos.identity import VendorAliasTable
 
 
 SCHEMA = "prophet.lab_opportunity_context/v1"
 B3_SCHEMA = "prophet.candidate_state_projection/v1"
 B4_SCHEMA = "prophet.entry_availability/v1"
+IDENTITY_BINDING_SCHEMA = "prophet.lab_opportunity_identity/v1"
 
 _UNJOINED_USER_STATE = {
     "state": "NOT_JOINED",
@@ -194,6 +197,124 @@ def select_unique_active_episode_id(
     return _text(matches[0].get("episode_id"), "episode_id")
 
 
+def resolve_display_alias_to_active_episode(
+    candidate_projection: Mapping[str, object],
+    *,
+    aliases: VendorAliasTable,
+    identity_source_receipts: Sequence[Mapping[str, object]],
+    display_symbol: str,
+    decision_date: date,
+) -> dict[str, object]:
+    """Bind a current display alias to one canonical ACTIVE B3 episode.
+
+    The resolver consumes the existing Data OS alias owner and its file receipts.
+    It performs no I/O and never treats the display symbol as identity. The
+    current Candidate Pool uses the repository current-catalog store alias
+    space, so that vendor is fixed here rather than caller-selectable.
+    """
+    validate_candidate_state_projection(candidate_projection)
+    if not isinstance(aliases, VendorAliasTable):
+        raise OpportunityContextContractError(
+            "aliases must be the canonical Data OS VendorAliasTable"
+        )
+    if type(decision_date) is not date:
+        raise OpportunityContextContractError("decision_date must be a calendar date")
+    symbol = _text(display_symbol, "display_symbol").strip().upper()
+    if not symbol:
+        raise OpportunityContextContractError("display_symbol must be non-empty text")
+
+    if (
+        not isinstance(identity_source_receipts, Sequence)
+        or isinstance(identity_source_receipts, (str, bytes))
+        or not identity_source_receipts
+    ):
+        raise OpportunityContextContractError("identity source receipts are required")
+    receipts: list[dict[str, object]] = []
+    for receipt in identity_source_receipts:
+        if not isinstance(receipt, Mapping):
+            raise OpportunityContextContractError("identity source receipt must be an object")
+        if receipt.get("source") != "identity":
+            raise OpportunityContextContractError("identity source receipt owner mismatch")
+        path = _text(receipt.get("path"), "identity receipt path")
+        digest = _text(receipt.get("sha256"), "identity receipt sha256")
+        if not digest.startswith("sha256:") or len(digest) != 71:
+            raise OpportunityContextContractError("identity receipt sha256 is malformed")
+        receipts.append({"source": "identity", "path": path, "sha256": digest})
+
+    security_id = aliases.resolve("store", symbol, decision_date)
+    if security_id is None:
+        raise OpportunityContextContractError(
+            "display symbol is unmapped in the Data OS store alias space"
+        )
+    reverse_symbol = aliases.vendor_symbol_for("store", security_id, decision_date)
+    if reverse_symbol != symbol:
+        raise OpportunityContextContractError(
+            "Data OS reverse alias proof does not match the display symbol"
+        )
+
+    episode_id = select_unique_active_episode_id(
+        candidate_projection,
+        security_id=security_id,
+    )
+    row = _candidate_row(candidate_projection, episode_id)
+    binding = {
+        "schema": IDENTITY_BINDING_SCHEMA,
+        "alias_vendor": "store",
+        "display_symbol": symbol,
+        "decision_date": decision_date.isoformat(),
+        "security_id": row.get("security_id"),
+        "company_id": row.get("company_id"),
+        "identity_epoch": row.get("identity_epoch"),
+        "episode_id": row.get("episode_id"),
+        "candidate_generation_id": candidate_projection.get("candidate_generation_id"),
+        "candidate_state_projection_id": candidate_projection.get("projection_id"),
+        "identity_source_receipts": receipts,
+        "authority": dict(ALL_FALSE_AUTHORITY),
+    }
+    validate_opportunity_identity_binding(binding)
+    return binding
+
+
+def validate_opportunity_identity_binding(payload: Mapping[str, object]) -> None:
+    """Validate the alias-to-canonical identity proof without recomputing it."""
+    if not isinstance(payload, Mapping):
+        raise OpportunityContextContractError("opportunity identity binding must be an object")
+    expected = {
+        "schema", "alias_vendor", "display_symbol", "decision_date",
+        "security_id", "company_id", "identity_epoch", "episode_id",
+        "candidate_generation_id", "candidate_state_projection_id",
+        "identity_source_receipts", "authority",
+    }
+    if set(payload) != expected:
+        raise OpportunityContextContractError("opportunity identity binding fields are not closed")
+    if payload.get("schema") != IDENTITY_BINDING_SCHEMA:
+        raise OpportunityContextContractError("opportunity identity binding schema mismatch")
+    if payload.get("alias_vendor") != "store":
+        raise OpportunityContextContractError("opportunity identity binding vendor mismatch")
+    for field in (
+        "display_symbol", "decision_date", "security_id", "company_id",
+        "identity_epoch", "episode_id", "candidate_generation_id",
+        "candidate_state_projection_id",
+    ):
+        _text(payload.get(field), field)
+    if not str(payload.get("security_id")).startswith("SEC:"):
+        raise OpportunityContextContractError("opportunity identity security_id is not canonical")
+    if payload.get("authority") != ALL_FALSE_AUTHORITY:
+        raise OpportunityContextContractError("opportunity identity authority must remain all false")
+    receipts = payload.get("identity_source_receipts")
+    if not isinstance(receipts, list) or not receipts:
+        raise OpportunityContextContractError("opportunity identity receipts are required")
+    for receipt in receipts:
+        if (
+            not isinstance(receipt, Mapping)
+            or receipt.get("source") != "identity"
+            or not isinstance(receipt.get("path"), str)
+            or not isinstance(receipt.get("sha256"), str)
+            or not str(receipt.get("sha256")).startswith("sha256:")
+        ):
+            raise OpportunityContextContractError("opportunity identity receipt is malformed")
+
+
 def compose_opportunity_context(
     candidate_projection: Mapping[str, object],
     *,
@@ -314,6 +435,8 @@ __all__ = [
     "SCHEMA",
     "OpportunityContextContractError",
     "compose_opportunity_context",
+    "resolve_display_alias_to_active_episode",
     "select_unique_active_episode_id",
     "validate_opportunity_context",
+    "validate_opportunity_identity_binding",
 ]
