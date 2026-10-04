@@ -1,0 +1,535 @@
+{
+  "schema": "mastermind.tti.r1b.run_receipt.v1",
+  "study_id": "tti-r1b-exhaustion-reclaim-v4",
+  "code_sha": "13caccc4cd7c949dae75ed5f1ab85b7627c5311e",
+  "code_digest": "167e129277346ccea4a9e71a8dcc2e4ec97b1bbe50c9011e9adb1d778ef0f12d",
+  "result_schema": "mastermind.tti.r1b.result.v5",
+  "disposition": "NO_PROMOTION",
+  "authority": "retrospective_research_only",
+  "research_admission": "corrected_archive_exploratory_only",
+  "may": {
+    "may_alert": false,
+    "may_rank": false,
+    "may_size": false,
+    "may_trade": false
+  },
+  "window": {
+    "early_partition_end": "2026-07-10",
+    "end": "2026-09-11",
+    "late_partition_start": "2026-07-13",
+    "start": "2025-06-16"
+  },
+  "counts": {
+    "census_null_sign_rejected": 0,
+    "census_rows": 1160,
+    "census_usable": 1160,
+    "events": {
+      "BASE_FRESH_LOW": 616,
+      "CONTINUATION_RISK": 52,
+      "EXHAUSTION_FORMING": 352,
+      "EXHAUSTION_RECLAIM": 319,
+      "RECLAIM_ONLY": 577
+    },
+    "events_total": 1916,
+    "excluded_counts": {
+      "clock_bin": 170564,
+      "displacement_bucket": 23370,
+      "market_sign": 5275,
+      "partition": 66328,
+      "same_date": 3908,
+      "ticker": 1943600
+    },
+    "matched_controls_total": 5016,
+    "pools": {
+      "BASE_FRESH_LOW": {
+        "AVAILABLE": 153,
+        "NO_CONTROL:matched_control_floor_not_met": 463
+      },
+      "CONTINUATION_RISK": {
+        "AVAILABLE": 11,
+        "NO_CONTROL:matched_control_floor_not_met": 41
+      },
+      "EXHAUSTION_FORMING": {
+        "AVAILABLE": 58,
+        "NO_CONTROL:matched_control_floor_not_met": 294
+      },
+      "EXHAUSTION_RECLAIM": {
+        "AVAILABLE": 54,
+        "NO_CONTROL:matched_control_floor_not_met": 265
+      },
+      "RECLAIM_ONLY": {
+        "AVAILABLE": 114,
+        "NO_CONTROL:matched_control_floor_not_met": 463
+      }
+    },
+    "preflight": {
+      "controls": 5016,
+      "events": 1916,
+      "shift_bar_invalid": 0
+    },
+    "scheduled_sessions": 312,
+    "symbol_sessions": 2496
+  },
+  "host": "mastermind-pc (ssh alias ubuntu1); venv ~/lanes/venvs/macro-idr, Python 3.12.3",
+  "worktree": "~/lanes/wt/idr-r1b at 13caccc4, clean: the #7274 carrier head after the S5 fast-forward push",
+  "launcher": "seat-run bash launcher ~/lanes/d0/receipts/run_study.sh with MM_DATA_GUARD=1; no --attempt-root flag passed",
+  "command": [
+    "scripts/research/terminal_tactical_r1b_study.py",
+    "--input-dir",
+    "~/lanes/d0/terminal-tactical-d0-20260917-sol-002/inputs",
+    "--manifest",
+    "~/lanes/d0/terminal-tactical-d0-20260917-sol-002/pilot-static-inventory.json",
+    "--terminal-root",
+    "~/lanes/wt/terminal_c0f36cb",
+    "--output-dir",
+    "<attempt_root>/output/run_13caccc4",
+    "--code-sha",
+    "13caccc4cd7c949dae75ed5f1ab85b7627c5311e",
+    "--junit",
+    "~/lanes/d0/receipts/junit_13caccc4.xml"
+  ],
+  "attempt_root": {
+    "path": "/home/longr/.mastermind/tti_r1b/tti-r1b-exhaustion-reclaim-v4",
+    "source": "passwd_home",
+    "disclosure": "resolved by the study from the passwd home; the seat passed no --attempt-root"
+  },
+  "run_log": {
+    "started": [
+      "started=2026-10-04T20:37:39Z head=13caccc4cd7c949dae75ed5f1ab85b7627c5311e host=mastermind-pc"
+    ],
+    "finished": [
+      "finished=2026-10-04T20:41:20Z rc=0"
+    ]
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "attempt_root": "/home/longr/.mastermind/tti_r1b/tti-r1b-exhaustion-reclaim-v4",
+      "code_sha": "13caccc4cd7c949dae75ed5f1ab85b7627c5311e",
+      "completed": false,
+      "exception_type": "ValueError",
+      "finalized": true,
+      "finished_at": "2026-10-04T20:34:20+00:00",
+      "frames": [
+        "terminal_tactical_r1b_study.py:1447",
+        "terminal_tactical_r1b_study.py:1138"
+      ],
+      "outcome_stage_started": false,
+      "outcome_values_persisted": false,
+      "schema": "mastermind.tti.r1b.attempt.v4",
+      "stage": "arguments",
+      "started_at": "2026-10-04T20:34:20+00:00",
+      "study_id": "tti-r1b-exhaustion-reclaim-v4"
+    },
+    {
+      "attempt": 2,
+      "attempt_root": "/home/longr/.mastermind/tti_r1b/tti-r1b-exhaustion-reclaim-v4",
+      "code_digest": "167e129277346ccea4a9e71a8dcc2e4ec97b1bbe50c9011e9adb1d778ef0f12d",
+      "code_sha": "13caccc4cd7c949dae75ed5f1ab85b7627c5311e",
+      "completed": true,
+      "exception_type": null,
+      "finalized": true,
+      "finished_at": "2026-10-04T20:41:20+00:00",
+      "frames": [],
+      "outcome_stage_started": true,
+      "outcome_values_persisted": true,
+      "schema": "mastermind.tti.r1b.attempt.v4",
+      "stage": "persist",
+      "started_at": "2026-10-04T20:37:39+00:00",
+      "study_id": "tti-r1b-exhaustion-reclaim-v4"
+    }
+  ],
+  "pre_outcome_receipt": {
+    "code_sha": "13caccc4cd7c949dae75ed5f1ab85b7627c5311e",
+    "counts": {
+      "census_null_sign_rejected": 0,
+      "census_rows": 1160,
+      "census_usable": 1160,
+      "events": {
+        "BASE_FRESH_LOW": 616,
+        "CONTINUATION_RISK": 52,
+        "EXHAUSTION_FORMING": 352,
+        "EXHAUSTION_RECLAIM": 319,
+        "RECLAIM_ONLY": 577
+      },
+      "events_total": 1916,
+      "excluded_counts": {
+        "clock_bin": 170564,
+        "displacement_bucket": 23370,
+        "market_sign": 5275,
+        "partition": 66328,
+        "same_date": 3908,
+        "ticker": 1943600
+      },
+      "matched_controls_total": 5016,
+      "pools": {
+        "BASE_FRESH_LOW": {
+          "AVAILABLE": 153,
+          "NO_CONTROL:matched_control_floor_not_met": 463
+        },
+        "CONTINUATION_RISK": {
+          "AVAILABLE": 11,
+          "NO_CONTROL:matched_control_floor_not_met": 41
+        },
+        "EXHAUSTION_FORMING": {
+          "AVAILABLE": 58,
+          "NO_CONTROL:matched_control_floor_not_met": 294
+        },
+        "EXHAUSTION_RECLAIM": {
+          "AVAILABLE": 54,
+          "NO_CONTROL:matched_control_floor_not_met": 265
+        },
+        "RECLAIM_ONLY": {
+          "AVAILABLE": 114,
+          "NO_CONTROL:matched_control_floor_not_met": 463
+        }
+      },
+      "preflight": {
+        "controls": 5016,
+        "events": 1916,
+        "shift_bar_invalid": 0
+      },
+      "scheduled_sessions": 312,
+      "symbol_sessions": 2496
+    },
+    "hashes": {
+      "census.jsonl": "3065c60e0030f2ebd907f4650434cbff92400218a9dee0de0cccd4c71316af5b",
+      "coverage.json": "105dac0195dfe99476b0eaf72d961263edca5e85009a77456c08fd984997b15c",
+      "events.jsonl": "790079a8be88065b228ea73c9e0cc7a399e6d74c3c75b9c12c1f44f9b5c41813",
+      "pools.jsonl": "b6186f033fd713af176ad8df81e395e6e6daff394a2396002c00c8f38e50acd8",
+      "pools_digest": "7409247acf0f426eaf90be1a171935e38608b18c4053bb8d259f5eb4a8284b70"
+    },
+    "market_outcomes_computed": false,
+    "schema": "mastermind.tti.r1b.pre_outcome.v4",
+    "study_id": "tti-r1b-exhaustion-reclaim-v4"
+  },
+  "outputs": {
+    "census.jsonl": {
+      "bytes": 325179,
+      "sha256": "3065c60e0030f2ebd907f4650434cbff92400218a9dee0de0cccd4c71316af5b"
+    },
+    "coverage.json": {
+      "bytes": 14042,
+      "sha256": "105dac0195dfe99476b0eaf72d961263edca5e85009a77456c08fd984997b15c"
+    },
+    "events.jsonl": {
+      "bytes": 1505555,
+      "sha256": "790079a8be88065b228ea73c9e0cc7a399e6d74c3c75b9c12c1f44f9b5c41813"
+    },
+    "outcomes.jsonl": {
+      "bytes": 28221385,
+      "sha256": "1d46d743e48c07c614c97fdf43cbdc80622bffa972b4cbd2f123a006f78373eb"
+    },
+    "pools.jsonl": {
+      "bytes": 2846301,
+      "sha256": "b6186f033fd713af176ad8df81e395e6e6daff394a2396002c00c8f38e50acd8"
+    },
+    "pre_outcome_receipt.json": {
+      "bytes": 1530,
+      "sha256": "1d19effc4b78ecdcfeeb9605dbe2e33670df3c3981c11d75ea529865367435b5"
+    },
+    "report.md": {
+      "bytes": 10901,
+      "sha256": "8838a6152f3d6c8c46b9019223cab9554c33de1440446a3dc8543c1ee0419e2d"
+    },
+    "result.json": {
+      "bytes": 613027,
+      "sha256": "44ac9a3870e76e1c61d7b6bc9bd3b01a2ff89aaee9604cec820f3b6b3cdc3e50"
+    },
+    "rows.jsonl": {
+      "bytes": 13762654,
+      "sha256": "bc1311c9a1807b63f196a383455ae6fef1a5bb346aa5f1f464a1ad6e187b1477"
+    }
+  },
+  "junit": {
+    "path": "~/lanes/d0/receipts/junit_13caccc4.xml",
+    "sha256": "cc0bc31c641d610d2f55066fa59bb4131f6d910f1d7072eec4d7f0d3f36d9b74",
+    "suite_name": "13caccc4cd7c949dae75ed5f1ab85b7627c5311e",
+    "tests": "215",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "289.110"
+  },
+  "published": {
+    "research/species/tti_r1b/RESULT_V4.json": "44ac9a3870e76e1c61d7b6bc9bd3b01a2ff89aaee9604cec820f3b6b3cdc3e50",
+    "research/species/TTI_R1B_V4_REPORT.md": "8838a6152f3d6c8c46b9019223cab9554c33de1440446a3dc8543c1ee0419e2d"
+  },
+  "kept_outside_git": [
+    "census.jsonl",
+    "events.jsonl",
+    "outcomes.jsonl",
+    "pools.jsonl",
+    "rows.jsonl"
+  ],
+  "gate_exhaustion_reclaim": {
+    "disposition": "NO_PROMOTION",
+    "gate_role": "prospective_candidate_gate",
+    "mechanical_pass_all_readings": false,
+    "readings": {
+      "L-A": {
+        "bullet_1_counts": false,
+        "bullet_2_interval": false,
+        "bullet_3_partition_sign": false,
+        "bullet_4_concentration": true,
+        "bullet_5_admission_artifact": "REQUIRES_ADJUDICATION",
+        "mechanical_pass": false,
+        "summary": {
+          "ambiguous_touch": 0,
+          "candidate_bin_share_max": 0.322884012539185,
+          "control_evidence_unavailable": 0,
+          "dates_delta": 40,
+          "decision_bin_share_max": 0.3542319749216301,
+          "early_statistic": -0.00022581692831745182,
+          "fires_delta": 52,
+          "fires_raw": 319,
+          "interval": [
+            -0.0022060381037848314,
+            0.0019211281291971964
+          ],
+          "late_statistic": null,
+          "no_control": 265,
+          "no_control_and_censored": 22,
+          "no_control_fraction": 0.8307210031347962,
+          "no_control_reasons": {
+            "matched_control_floor_not_met": 265
+          },
+          "reading": "L-A",
+          "selected_censored": 24,
+          "statistic": -0.00022581692831745182,
+          "ticker_fires_delta": {
+            "AAPL": 5,
+            "AMD": 12,
+            "AVGO": 8,
+            "JPM": 5,
+            "MU": 6,
+            "NVDA": 7,
+            "QCOM": 5,
+            "XOM": 4
+          },
+          "ticker_fires_raw": {
+            "AAPL": 38,
+            "AMD": 46,
+            "AVGO": 40,
+            "JPM": 39,
+            "MU": 45,
+            "NVDA": 41,
+            "QCOM": 30,
+            "XOM": 40
+          },
+          "ticker_share_delta_max": 0.23076923076923078,
+          "ticker_share_raw_max": 0.14420062695924765,
+          "ticker_sign": {
+            "AAPL": 1,
+            "AMD": 1,
+            "AVGO": 1,
+            "JPM": -1,
+            "MU": -1,
+            "NVDA": 1,
+            "QCOM": -1,
+            "XOM": -1
+          },
+          "tickers_delta": 8
+        }
+      },
+      "L-B": {
+        "bullet_1_counts": false,
+        "bullet_2_interval": false,
+        "bullet_3_partition_sign": false,
+        "bullet_4_concentration": true,
+        "bullet_5_admission_artifact": "REQUIRES_ADJUDICATION",
+        "mechanical_pass": false,
+        "summary": {
+          "ambiguous_touch": 0,
+          "candidate_bin_share_max": 0.322884012539185,
+          "control_evidence_unavailable": 0,
+          "dates_delta": 40,
+          "decision_bin_share_max": 0.3542319749216301,
+          "early_statistic": -0.00022581692831745182,
+          "fires_delta": 52,
+          "fires_raw": 319,
+          "interval": [
+            -0.0022060381037848314,
+            0.0019211281291971964
+          ],
+          "late_statistic": null,
+          "no_control": 265,
+          "no_control_and_censored": 22,
+          "no_control_fraction": 0.8307210031347962,
+          "no_control_reasons": {
+            "matched_control_floor_not_met": 265
+          },
+          "reading": "L-B",
+          "selected_censored": 24,
+          "statistic": -0.00022581692831745182,
+          "ticker_fires_delta": {
+            "AAPL": 5,
+            "AMD": 12,
+            "AVGO": 8,
+            "JPM": 5,
+            "MU": 6,
+            "NVDA": 7,
+            "QCOM": 5,
+            "XOM": 4
+          },
+          "ticker_fires_raw": {
+            "AAPL": 38,
+            "AMD": 46,
+            "AVGO": 40,
+            "JPM": 39,
+            "MU": 45,
+            "NVDA": 41,
+            "QCOM": 30,
+            "XOM": 40
+          },
+          "ticker_share_delta_max": 0.23076923076923078,
+          "ticker_share_raw_max": 0.14420062695924765,
+          "ticker_sign": {
+            "AAPL": 1,
+            "AMD": 1,
+            "AVGO": 1,
+            "JPM": -1,
+            "MU": -1,
+            "NVDA": 1,
+            "QCOM": -1,
+            "XOM": -1
+          },
+          "tickers_delta": 8
+        }
+      },
+      "S-A": {
+        "bullet_1_counts": false,
+        "bullet_2_interval": false,
+        "bullet_3_partition_sign": false,
+        "bullet_4_concentration": true,
+        "bullet_5_admission_artifact": "REQUIRES_ADJUDICATION",
+        "mechanical_pass": false,
+        "summary": {
+          "ambiguous_touch": 0,
+          "candidate_bin_share_max": 0.322884012539185,
+          "control_evidence_unavailable": 0,
+          "dates_delta": 40,
+          "decision_bin_share_max": 0.3542319749216301,
+          "early_statistic": -0.00022581692831745182,
+          "fires_delta": 52,
+          "fires_raw": 319,
+          "interval": [
+            -0.0022060381037848314,
+            0.0019211281291971964
+          ],
+          "late_statistic": null,
+          "no_control": 265,
+          "no_control_and_censored": 22,
+          "no_control_fraction": 0.8307210031347962,
+          "no_control_reasons": {
+            "matched_control_floor_not_met": 265
+          },
+          "reading": "S-A",
+          "selected_censored": 24,
+          "statistic": -0.00022581692831745182,
+          "ticker_fires_delta": {
+            "AAPL": 5,
+            "AMD": 12,
+            "AVGO": 8,
+            "JPM": 5,
+            "MU": 6,
+            "NVDA": 7,
+            "QCOM": 5,
+            "XOM": 4
+          },
+          "ticker_fires_raw": {
+            "AAPL": 38,
+            "AMD": 46,
+            "AVGO": 40,
+            "JPM": 39,
+            "MU": 45,
+            "NVDA": 41,
+            "QCOM": 30,
+            "XOM": 40
+          },
+          "ticker_share_delta_max": 0.23076923076923078,
+          "ticker_share_raw_max": 0.14420062695924765,
+          "ticker_sign": {
+            "AAPL": 1,
+            "AMD": 1,
+            "AVGO": 1,
+            "JPM": -1,
+            "MU": -1,
+            "NVDA": 1,
+            "QCOM": -1,
+            "XOM": -1
+          },
+          "tickers_delta": 8
+        }
+      },
+      "S-B": {
+        "bullet_1_counts": false,
+        "bullet_2_interval": false,
+        "bullet_3_partition_sign": false,
+        "bullet_4_concentration": true,
+        "bullet_5_admission_artifact": "REQUIRES_ADJUDICATION",
+        "mechanical_pass": false,
+        "summary": {
+          "ambiguous_touch": 0,
+          "candidate_bin_share_max": 0.322884012539185,
+          "control_evidence_unavailable": 0,
+          "dates_delta": 40,
+          "decision_bin_share_max": 0.3542319749216301,
+          "early_statistic": -0.00022581692831745182,
+          "fires_delta": 52,
+          "fires_raw": 319,
+          "interval": [
+            -0.0022060381037848314,
+            0.0019211281291971964
+          ],
+          "late_statistic": null,
+          "no_control": 265,
+          "no_control_and_censored": 22,
+          "no_control_fraction": 0.8307210031347962,
+          "no_control_reasons": {
+            "matched_control_floor_not_met": 265
+          },
+          "reading": "S-B",
+          "selected_censored": 24,
+          "statistic": -0.00022581692831745182,
+          "ticker_fires_delta": {
+            "AAPL": 5,
+            "AMD": 12,
+            "AVGO": 8,
+            "JPM": 5,
+            "MU": 6,
+            "NVDA": 7,
+            "QCOM": 5,
+            "XOM": 4
+          },
+          "ticker_fires_raw": {
+            "AAPL": 38,
+            "AMD": 46,
+            "AVGO": 40,
+            "JPM": 39,
+            "MU": 45,
+            "NVDA": 41,
+            "QCOM": 30,
+            "XOM": 40
+          },
+          "ticker_share_delta_max": 0.23076923076923078,
+          "ticker_share_raw_max": 0.14420062695924765,
+          "ticker_sign": {
+            "AAPL": 1,
+            "AMD": 1,
+            "AVGO": 1,
+            "JPM": -1,
+            "MU": -1,
+            "NVDA": 1,
+            "QCOM": -1,
+            "XOM": -1
+          },
+          "tickers_delta": 8
+        }
+      }
+    }
+  },
+  "study_id_spent": true,
+  "note": "ONE registered run. The study id is spent: attempt-002 persisted outcome values and the publication targets now exist, so the runner refuses any further run (results_artifact_exists). Gate bullet 5 (no systematic admission artifact) is not mechanical and REQUIRES_ADJUDICATION by an independent reviewer. This receipt is evidence of execution, not acceptance.",
+  "generated_at": "2026-10-04T20:50:45+00:00"
+}
