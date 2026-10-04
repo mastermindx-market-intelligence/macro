@@ -62,7 +62,8 @@ def _base(ticker: object, start_session: object, end_session: object) -> dict:
         "window": {
             "start_session": str(start_session),
             "end_session": str(end_session),
-            "observed_session_steps": None,
+            "owner_observation_steps": None,
+            "session_steps": None,
         },
         "status": "UNAVAILABLE",
         "refusals": [],
@@ -173,7 +174,8 @@ def export_market_response(
     out["window"] = {
         "start_session": str(start.date()),
         "end_session": str(end.date()),
-        "observed_session_steps": end_pos - start_pos,
+        "owner_observation_steps": end_pos - start_pos,
+        "session_steps": None,
     }
 
     start_close = _finite_positive(close.at[start, ticker])
