@@ -27,9 +27,7 @@ The project is accepted only when all of these are demonstrated on real current 
 
 ## A. Storage isolation
 
-Dedicated private Research Vault configuration is mandatory for private research reads/writes.
-
-A missing private setting cannot fall through to shared/public R2.
+Provable private Research Vault plane isolation is mandatory for private research reads/writes.\n\nAn explicit research bucket is required; partial research configuration, a research bucket aliasing the configured shared/public bucket, or silent generic endpoint/credential inheritance must not be mistaken for a dedicated private guarantee. Any intentional same-account shared-credential policy must be explicit and security-owner-qualified rather than an accidental fallback.
 
 ## B. Source identity integrity
 
@@ -47,9 +45,7 @@ without ambiguous `content_sha256` semantics.
 
 ## C. Corpus completeness
 
-Every catalog report intended to be text-searchable is either present in canonical full-text retrieval or has a typed exclusion/unavailable state.
-
-No silent `catalog - corpus` backlog is called "Search every published research note."
+Every catalog report intended to be text-searchable is either present in canonical full-text retrieval or has a typed exclusion/unavailable state.\n\nAcceptance measures both ID-set completeness **and body/text health**: non-empty body coverage, text-layer states, PDF-hash coverage, source-vs-stored character consistency, page-boundary coverage and excerpt derivability. A row present in SQLite with unusable text does not satisfy retrieval completeness.\n\nNo silent `catalog - corpus` backlog or silent body-health collapse is called "Search every published research note."
 
 ## D. Full-tail retrieval
 
@@ -234,11 +230,7 @@ Test environment matrix:
 
 | Research env | Shared env | Expected |
 |---|---|---|
-| missing | present | refuse private store |
-| partial | present | refuse |
-| complete distinct | present | success |
-| complete same bucket/plane | present | refuse |
-| explicit local test store | irrelevant | explicit local mode succeeds |
+| research bucket missing | present | refuse private store |\n| research bucket present, config partial | present | refuse |\n| complete distinct dedicated research plane | present | success |\n| research bucket == shared/public bucket | present | refuse |\n| generic endpoint/credential inheritance | present | refuse unless an explicit reviewed security policy permits that exact configuration; never call it dedicated by inference |\n| explicit local test store | irrelevant | explicit local mode succeeds |
 
 Also verify no fallback through an alternate helper/factory path.
 
@@ -249,13 +241,7 @@ Also verify no fallback through an alternate helper/factory path.
 Before connector acceptance, record:
 
 ```text
-catalog_count
-pdf_count
-receipt_count
-corpus_count
-full_text_count
-segment_count
-excerpt_count
+catalog_count\npdf_count\nreceipt_count\ncorpus_count\ncorpus_body_nonempty_count\ncorpus_body_empty_count\ntext_layer_distribution\nvalid_pdf_hash_count\nsource_vs_stored_char_coverage\nexcerpt_derivable_count\nfull_text_count\nsegment_count\nexcerpt_count
 ```
 
 and mismatch sets.
@@ -571,10 +557,7 @@ Use a clean/new authorized ChatGPT conversation with the actual intended develop
 Record:
 
 ```text
-connection/app identity
-server/tool generation
-auth/link state
-tool names discovered
+connection/app identity\nserver/tool generation\nauth/link state\napp/tool refresh generation after the final server contract\ntool names discovered
 research source health
 query
 candidate ids
@@ -703,7 +686,6 @@ These are **not** completion:
 - "a summary question worked";
 - "RIO exists for some reports";
 - "vector search looks good";
-- "catalog says 2,778";
-- "source freshness warning was acknowledged."
+- "catalog says 2,778";\n- "corpus IDs equal catalog IDs" without body-health proof;\n- "source freshness warning was acknowledged."
 
 Only the declared real-path and integrity evidence closes the project.
