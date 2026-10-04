@@ -63,7 +63,9 @@ import json
 import logging
 import os
 import resource
+import shutil
 import sys
+import tempfile
 import time
 from datetime import date, timezone
 from pathlib import Path
@@ -234,6 +236,47 @@ def store_reader(root: Path) -> Callable[[str], pd.DataFrame | None]:
     return reader
 
 
+def reap_spool_orphans(parent: Path, max_age_s: int = 6 * 3600) -> int:
+    """Remove stale ``.spool-*`` dirs under ``parent``; leave fresh ones for live builds."""
+    if not parent.is_dir():
+        return 0
+    now = time.time()
+    removed = 0
+    for entry in parent.iterdir():
+        if not entry.is_dir() or not entry.name.startswith(".spool-"):
+            continue
+        try:
+            if now - entry.stat().st_mtime > max_age_s:
+                shutil.rmtree(entry, ignore_errors=True)
+                removed += 1
+        except OSError:
+            continue
+    return removed
+
+
+def substrate_sink(
+    stream: bool,
+    state: Path | None,
+    *,
+    dry_run: bool = False,
+) -> tuple[Any, Callable[[], None]]:
+    if not stream:
+        return None, lambda: None
+    from engine.entry_radar.pack_spool import ParquetSpoolSink  # noqa: PLC0415
+
+    parent: Path | None
+    if dry_run:
+        parent = None
+    else:
+        parent = (state / "pack") if state is not None else None
+        if parent is not None:
+            parent.mkdir(parents=True, exist_ok=True)
+    tmp = Path(tempfile.mkdtemp(prefix=".spool-", dir=parent))
+    sink = ParquetSpoolSink(tmp / "substrate.parquet")
+    cleanup = lambda: shutil.rmtree(tmp, ignore_errors=True)
+    return sink, cleanup
+
+
 # ---------------------------------------------------------------------------
 # the confirmed-bar G0 / C5 lanes
 # ---------------------------------------------------------------------------
@@ -372,6 +415,9 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
                     help="build, prove and print — write NOTHING")
     ap.add_argument("--nightly", action="store_true",
                     help="assert the nightly lane gate before any durable write")
+    ap.add_argument("--stream-substrate", action="store_true",
+                    help="build the substrate through a parquet spool on disk instead of "
+                         "in memory (P-SCALE-2); the saved pack is identical either way")
     ap.add_argument("--verbose", action="store_true")
     args = ap.parse_args(argv)
     t_main = time.monotonic()
@@ -459,76 +505,140 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
         lanes, c5_runs = slice_lanes(snapshot_tickers, as_of=as_of, slice_dir=slice_dir)
         confirmed_lanes = confirmed_lane_pack_rows(lanes, snapshot_tickers)
 
-    with _stage("build_pack"):
-        pack = lp.build_pack(probe_set=probe_set, store_reader=store_reader(root),
-                             as_of=as_of, built_at=iso(now) or "",
-                             vintage=f"store@{as_of.isoformat()}",
-                             confirmed_lanes=confirmed_lanes)
-    newest = max((row.last_confirmed for row in pack.names
-                  if row.last_confirmed), default=None)
-    print(f"entry-radar-pack as_of={pack.as_of} next_session={pack.next_session} "
-          f"names={len(pack.names)} missing={len(pack.substrate_missing)} "
-          f"store_newest={newest} pack_hash={pack.pack_hash}", flush=True)
-    if newest != as_of.isoformat() and not args.allow_stale_store:
-        print(f"::warning title=entry-radar-pack::the daily store's newest session is "
-              f"{newest}, not the expected {as_of.isoformat()} — REFUSING to publish a "
-              f"pack stamped at a session the store has not reached "
-              f"(--allow-stale-store overrides).  The RTH stale-pack gate is the real "
-              f"protection; this refusal keeps the artifact honest at build time",
+    if state is not None and not args.dry_run:
+        orphans = reap_spool_orphans(state / "pack")
+        if orphans > 0:
+            print(f"entry-radar-pack spool_orphans_removed={orphans}", flush=True)
+
+    sink, cleanup = substrate_sink(
+        args.stream_substrate, state, dry_run=args.dry_run)
+    pack = None
+    try:
+        with _stage("build_pack"):
+            pack = lp.build_pack(probe_set=probe_set, store_reader=store_reader(root),
+                                 as_of=as_of, built_at=iso(now) or "",
+                                 vintage=f"store@{as_of.isoformat()}",
+                                 confirmed_lanes=confirmed_lanes, sink=sink)
+        newest = max((row.last_confirmed for row in pack.names
+                      if row.last_confirmed), default=None)
+        print(f"entry-radar-pack as_of={pack.as_of} next_session={pack.next_session} "
+              f"names={len(pack.names)} missing={len(pack.substrate_missing)} "
+              f"store_newest={newest} pack_hash={pack.pack_hash}", flush=True)
+        print(f"entry-radar-pack substrate={'spool' if args.stream_substrate else 'memory'}",
               flush=True)
-        elapsed = time.monotonic() - t_main
-        print(
-            f"entry-radar-pack stage=total status=refused "
-            f"elapsed_s={elapsed:.3f} {_rss_label()}={_rss_fmt()}",
-            flush=True,
-        )
-        return 5
+        if newest != as_of.isoformat() and not args.allow_stale_store:
+            print(f"::warning title=entry-radar-pack::the daily store's newest session is "
+                  f"{newest}, not the expected {as_of.isoformat()} — REFUSING to publish a "
+                  f"pack stamped at a session the store has not reached "
+                  f"(--allow-stale-store overrides).  The RTH stale-pack gate is the real "
+                  f"protection; this refusal keeps the artifact honest at build time",
+                  flush=True)
+            elapsed = time.monotonic() - t_main
+            print(
+                f"entry-radar-pack stage=total status=refused "
+                f"elapsed_s={elapsed:.3f} {_rss_label()}={_rss_fmt()}",
+                flush=True,
+            )
+            return 5
 
-    # --- 3. the inversion proof ---------------------------------------------
-    with _stage("proof"):
-        proof = lp.build_inversion_proof(pack)
-        pack = pack.with_proof(proof)
-    print(f"entry-radar-pack inversion proof: {proof['cases_total']} case(s), "
-          f"pass={proof['pass']} by_family={proof['by_family']}", flush=True)
-    if not proof["pass"]:
-        for case in proof["failures"][:10]:
-            print(f"::warning title=entry-radar-pack-proof::{case['family']}/"
-                  f"{case['case']} expected {case['expected']!r} observed "
-                  f"{case['observed']!r} at boundary {case['boundary']!r}", flush=True)
-        print("::warning title=entry-radar-pack::inversion proof FAILED — the pack is "
-              "published with proof_failed=true and the RTH evaluator must refuse the "
-              "whole cycle (fail closed)", flush=True)
+        # --- 3. the inversion proof ---------------------------------------------
+        with _stage("proof"):
+            proof = lp.build_inversion_proof(pack)
+            pack = pack.with_proof(proof)
+        print(f"entry-radar-pack inversion proof: {proof['cases_total']} case(s), "
+              f"pass={proof['pass']} by_family={proof['by_family']}", flush=True)
+        if not proof["pass"]:
+            for case in proof["failures"][:10]:
+                print(f"::warning title=entry-radar-pack-proof::{case['family']}/"
+                      f"{case['case']} expected {case['expected']!r} observed "
+                      f"{case['observed']!r} at boundary {case['boundary']!r}", flush=True)
+            print("::warning title=entry-radar-pack::inversion proof FAILED — the pack is "
+                  "published with proof_failed=true and the RTH evaluator must refuse the "
+                  "whole cycle (fail closed)", flush=True)
 
-    # --- 4. clock overlay + the confirmed-bar lanes' ledger events -----------
-    # `lanes`/`c5_runs` were already computed above (step 2) so the pack could
-    # carry `confirmed_lanes`; this step applies the C5 detector RUNS (episodes/
-    # events) those slices produced to the ledger — a different consumption of
-    # the same `slice_lanes()` call, not a second read of the slice store.
-    with _stage("ledger"):
-        ledger = ll.LiveEpisodeLedger.load(state) if state is not None \
-            else ll.LiveEpisodeLedger(None)
-        confirmed_k = {row.ticker: row.confirmed_k for row in pack.names}
+        # --- 4. clock overlay + the confirmed-bar lanes' ledger events -----------
+        # `lanes`/`c5_runs` were already computed above (step 2) so the pack could
+        # carry `confirmed_lanes`; this step applies the C5 detector RUNS (episodes/
+        # events) those slices produced to the ledger — a different consumption of
+        # the same `slice_lanes()` call, not a second read of the slice store.
+        with _stage("ledger"):
+            ledger = ll.LiveEpisodeLedger.load(state) if state is not None \
+                else ll.LiveEpisodeLedger(None)
+            confirmed_k = {row.ticker: row.confirmed_k for row in pack.names}
 
-        deltas = [ll.apply_session_clocks(ledger, as_of_session=pack.as_of,
-                                          confirmed_k_by_name=confirmed_k)]
-        for ticker, run in c5_runs:
-            deltas.append(ledger.apply_run(
-                ticker=ticker, as_of_session=pack.as_of, runs=[run],
-                pass_id=ll.PACK_PASS_ID,
-                context={"bar_availability": {"grain": "confirmed_daily_3d",
-                                              "lane": "terminal_slice"},
-                         "data_quality": "ok",
-                         "freshness": {"pack_as_of": pack.as_of,
-                                       "source": "terminal_indicator_slice"}}))
-        delta = ll.merge_deltas(deltas, as_of_session=pack.as_of, pass_id=ll.PACK_PASS_ID)
-    print(f"entry-radar-pack delta: {len(delta.transitions)} transition(s), "
-          f"{len(delta.events)} event(s), {len(delta.episodes)} episode(s), "
-          f"{len(delta.superseded)} superseded terminal trace(s); "
-          f"g0={lanes['g0']} c5={lanes['c5']}", flush=True)
+            deltas = [ll.apply_session_clocks(ledger, as_of_session=pack.as_of,
+                                              confirmed_k_by_name=confirmed_k)]
+            for ticker, run in c5_runs:
+                deltas.append(ledger.apply_run(
+                    ticker=ticker, as_of_session=pack.as_of, runs=[run],
+                    pass_id=ll.PACK_PASS_ID,
+                    context={"bar_availability": {"grain": "confirmed_daily_3d",
+                                                  "lane": "terminal_slice"},
+                             "data_quality": "ok",
+                             "freshness": {"pack_as_of": pack.as_of,
+                                           "source": "terminal_indicator_slice"}}))
+            delta = ll.merge_deltas(deltas, as_of_session=pack.as_of, pass_id=ll.PACK_PASS_ID)
+        print(f"entry-radar-pack delta: {len(delta.transitions)} transition(s), "
+              f"{len(delta.events)} event(s), {len(delta.episodes)} episode(s), "
+              f"{len(delta.superseded)} superseded terminal trace(s); "
+              f"g0={lanes['g0']} c5={lanes['c5']}", flush=True)
 
-    if args.dry_run:
-        print("dry-run — nothing written (no pack, no ledger, no spool object)",
-              flush=True)
+        if args.dry_run:
+            print("dry-run — nothing written (no pack, no ledger, no spool object)",
+                  flush=True)
+            elapsed = time.monotonic() - t_main
+            print(
+                f"entry-radar-pack stage=total status=done "
+                f"elapsed_s={elapsed:.3f} {_rss_label()}={_rss_fmt()}",
+                flush=True,
+            )
+            return 0
+
+        # --- 5. save the pack ----------------------------------------------------
+        assert state is not None  # guarded above for the non-dry-run path
+        with _stage("save"):
+            pack_path = lp.save_pack(pack, state)
+        print(f"entry-radar-pack saved {pack_path}", flush=True)
+
+        # --- 6. SPOOL, then commit ----------------------------------------------
+        with _stage("spool"):
+            event_spool = ll.EventSpool(
+                local_dir=Path(args.spool_dir) if args.spool_dir else None)
+            stamp_utc = now.astimezone(timezone.utc)
+            health = {
+                "pack": {"as_of": pack.as_of, "pack_hash": pack.pack_hash,
+                         "proof_failed": pack.proof_failed},
+                "probe_set": {"count": int(pack.probe_set.get("count") or 0)},
+                "substrate": {"names": len(pack.names),
+                              "missing": len(pack.substrate_missing)},
+                "lanes": {"g0": lanes["g0"], "c5": lanes["c5"]},
+            }
+            receipt, committed = ll.spool_then_commit(
+                ledger, delta, spool=event_spool, pass_ts=iso(now) or "",
+                session=stamp_utc.date().isoformat(), stamp=stamp_utc.strftime("%H%M%S"),
+                pack_as_of=pack.as_of, pack_hash=pack.pack_hash, health=health)
+            if not committed:
+                print("::warning title=entry-radar-pack::event spool FAILED — this pass's "
+                      f"{len(delta.transitions)} transition(s) are WITHHELD from the ledger and "
+                      "the payload; the next pass re-derives and retries (every address is "
+                      "deterministic, so the retry is exactly-once-effective)", flush=True)
+                return 4
+
+            ledger.compact(as_of_session=pack.as_of)
+            ledger.save()
+            if receipt:
+                print(f"entry-radar-pack spooled {receipt}", flush=True)
+
+            # --- 7. publish the probe set (this lane's production home) --------------
+            payload = probe_set.to_dict()
+            payload["lane"] = {"nightly": bool(args.nightly),
+                               "durable_writes": list(DURABLE_WRITES),
+                               "pack": {"as_of": pack.as_of, "pack_hash": pack.pack_hash}}
+            served = write_artifact(out_dir / ARTIFACT_NAME, payload)
+            if not served and pack_path is None:
+                print("::warning title=entry-radar-pack::pass produced NO output — neither the "
+                      "pack nor the probe-set artifact was written", flush=True)
+                return 3
         elapsed = time.monotonic() - t_main
         print(
             f"entry-radar-pack stage=total status=done "
@@ -536,59 +646,12 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
             flush=True,
         )
         return 0
-
-    # --- 5. save the pack ----------------------------------------------------
-    assert state is not None  # guarded above for the non-dry-run path
-    with _stage("save"):
-        pack_path = lp.save_pack(pack, state)
-    print(f"entry-radar-pack saved {pack_path}", flush=True)
-
-    # --- 6. SPOOL, then commit ----------------------------------------------
-    with _stage("spool"):
-        event_spool = ll.EventSpool(
-            local_dir=Path(args.spool_dir) if args.spool_dir else None)
-        stamp_utc = now.astimezone(timezone.utc)
-        health = {
-            "pack": {"as_of": pack.as_of, "pack_hash": pack.pack_hash,
-                     "proof_failed": pack.proof_failed},
-            "probe_set": {"count": int(pack.probe_set.get("count") or 0)},
-            "substrate": {"names": len(pack.names),
-                          "missing": len(pack.substrate_missing)},
-            "lanes": {"g0": lanes["g0"], "c5": lanes["c5"]},
-        }
-        receipt, committed = ll.spool_then_commit(
-            ledger, delta, spool=event_spool, pass_ts=iso(now) or "",
-            session=stamp_utc.date().isoformat(), stamp=stamp_utc.strftime("%H%M%S"),
-            pack_as_of=pack.as_of, pack_hash=pack.pack_hash, health=health)
-        if not committed:
-            print("::warning title=entry-radar-pack::event spool FAILED — this pass's "
-                  f"{len(delta.transitions)} transition(s) are WITHHELD from the ledger and "
-                  "the payload; the next pass re-derives and retries (every address is "
-                  "deterministic, so the retry is exactly-once-effective)", flush=True)
-            return 4
-
-        ledger.compact(as_of_session=pack.as_of)
-        ledger.save()
-        if receipt:
-            print(f"entry-radar-pack spooled {receipt}", flush=True)
-
-        # --- 7. publish the probe set (this lane's production home) --------------
-        payload = probe_set.to_dict()
-        payload["lane"] = {"nightly": bool(args.nightly),
-                           "durable_writes": list(DURABLE_WRITES),
-                           "pack": {"as_of": pack.as_of, "pack_hash": pack.pack_hash}}
-        served = write_artifact(out_dir / ARTIFACT_NAME, payload)
-        if not served and pack_path is None:
-            print("::warning title=entry-radar-pack::pass produced NO output — neither the "
-                  "pack nor the probe-set artifact was written", flush=True)
-            return 3
-    elapsed = time.monotonic() - t_main
-    print(
-        f"entry-radar-pack stage=total status=done "
-        f"elapsed_s={elapsed:.3f} {_rss_label()}={_rss_fmt()}",
-        flush=True,
-    )
-    return 0
+    finally:
+        if pack is not None:
+            close = getattr(pack.substrate, "close", None)
+            if close is not None:
+                close()
+        cleanup()
 
 
 if __name__ == "__main__":
