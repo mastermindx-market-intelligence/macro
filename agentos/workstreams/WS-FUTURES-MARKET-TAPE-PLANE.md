@@ -89,9 +89,10 @@ do_not_redo:
   - "Do not buy new storage or a new futures plan before measured capacity/entitlement receipts."
 next_action: >
   Consume exact-head CI and independent review for PR #8451, then merge if all release
-  gates pass. Immediately dispatch the read-only futures-tape-probe workflow on protected
-  main to measure external-volume capacity and the existing Massive Futures entitlement;
-  LSE probes automatically remain skipped until LSE_API_KEY is configured out of band.
+  gates pass. Consume the path-triggered read-only futures-tape-probe run that starts when this
+  implementation lands on protected main; it measures external-volume capacity and the
+  existing Massive Futures entitlement. LSE remains an honest skip until LSE_API_KEY is
+  configured out of band.
   Bulk backfill remains held until those exact source/rights/identity receipts exist.
 ---
 
