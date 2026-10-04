@@ -1,0 +1,23 @@
+{
+  "workspace": {
+    "id": "consumer_payments",
+    "title": {"en": "Consumers", "zh": "消费者"},
+    "subtitle": {"en": "", "zh": ""}
+  },
+  "region": {"code": "US", "display_name": "United States", "supported": true},
+  "availability": {"state": "CURRENT"},
+  "headline": {
+    "status": "PRESENT",
+    "state_id": "B",
+    "effective_date": "2026-09-04",
+    "state_label": {"en": "Stressed", "zh": "承压"}
+  },
+  "changes": {
+    "comparability": "COMPARABLE",
+    "prior_effective_date": "2026-08-01",
+    "deltas": [
+      {"metric_id": "retail_sales_level", "prior_value": 1.0, "current_value": 2.0, "delta": 1.0}
+    ]
+  },
+  "axes": {"items": []}
+}

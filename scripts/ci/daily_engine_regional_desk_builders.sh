@@ -41,6 +41,10 @@ if [ -z "$(find data/massive_stock_day -maxdepth 1 -name '*.parquet' -print -qui
 else
   echo "top_maturation: massive_stock_day store present locally — no R2 restore needed"
 fi
+# The store host publishes the skew ledger to R2. Copy it down before emit.
+# If the copy fails, emit still renders the committed ledger and reports that
+# ledger's as-of time. The failure is a warning, not a crash.
+python -m scripts.fetch_r2 --dirs options_skew || echo "::warning title=options-skew-hydrate::options_skew ledger restore from R2 failed - emit renders the committed ledger and reports its ledger_asof"
 # --- clusters: each internally ORDERED by its data deps; clusters mutually independent ---
 cl_markets() {
   brun commodities  "build commodity vector (build_commodities)"         scripts.build_commodities
@@ -78,7 +82,7 @@ cl_gex() {
   brun darkpool     "dark pool desk (build_darkpool_desk)"        scripts.build_darkpool_desk
   brun options_flow "options flow desk (build_options_flow)"     scripts.build_options_flow
   brun flow_desk    "group flow heatmap & market tide (build_flow_desk)" scripts.build_flow_desk
-  brun options_skew "single-name IV skew (build_options_skew)"   scripts.build_options_skew
+  brun options_skew "single-name IV skew (build_options_skew)"   scripts.build_options_skew --emit
   brun options_ivspread "single-name IV spread (build_options_ivspread)" scripts.build_options_ivspread
   # AFTER skew+ivspread: it joins both ledgers into the neutralised feature panel.
   brun options_dislocation "options information-dislocation panel (build_options_dislocation)" scripts.build_options_dislocation

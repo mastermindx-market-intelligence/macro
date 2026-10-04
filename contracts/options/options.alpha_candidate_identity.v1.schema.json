@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "options.alpha_candidate_identity/v1",
+  "title": "Options Alpha candidate identity tuple",
+  "description": "The independently frozen identity tuple for Options Alpha candidates. Feed serialization changes must not silently rekey candidate identities.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "policy_id", "campaign_id", "first_qualifying_campaign_revision_id", "candidate_id"],
+  "properties": {
+    "schema": {"const": "options.alpha_candidate_identity/v1"},
+    "policy_id": {"const": "oa_member_persistent_measured_campaign/v2"},
+    "campaign_id": {"type": "string", "pattern": "^ocam_[a-f0-9]{24}$"},
+    "first_qualifying_campaign_revision_id": {"type": "string", "pattern": "^ocrev_[a-f0-9]{24}$"},
+    "candidate_id": {"type": "string", "pattern": "^oacnd_[a-f0-9]{24}$"}
+  }
+}

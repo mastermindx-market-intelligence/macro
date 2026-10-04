@@ -96,6 +96,51 @@ def _load_json(path: Path) -> dict | None:
     return None
 
 
+def _theme_intel_for_act_now(
+    baskets_json_path: Path,
+    *,
+    observed_at: datetime | None = None,
+    refresh: bool = True,
+) -> dict | None:
+    """Return the China theme-intelligence generation for the Act Now consumer.
+
+    The Asia data-refresh lane owns the fresh close, so it recomputes through
+    the existing theme_scoring owner even when the persisted artifact has the
+    same session date; this catches same-session corrections. Site-only and
+    no-network rerenders reuse the persisted artifact. Nothing is restamped:
+    stale or malformed evidence still fails closed in china_act_now.
+    """
+    persisted_doc = _load_json(baskets_json_path)
+    persisted = (persisted_doc.get("theme_intel")
+                 if isinstance(persisted_doc, dict) else None)
+    if not refresh:
+        return persisted if isinstance(persisted, dict) else None
+
+    try:
+        from engine.theme_scoring import compute_theme_intel
+
+        current = compute_theme_intel("china")
+        if isinstance(current, dict):
+            if observed_at is not None:
+                from lib import cn_calendar
+
+                expected = cn_calendar.expected_last_session(observed_at).isoformat()
+                if current.get("as_of") != expected:
+                    log.warning(
+                        "china Act Now recompute is not on expected settled session "
+                        "(have=%s expected=%s); downstream freshness gate will withhold",
+                        current.get("as_of"),
+                        expected,
+                    )
+            return current
+    except Exception as exc:  # noqa: BLE001 — optional refresh, downstream fails closed
+        log.error(
+            "china Act Now theme-intel refresh failed (%s); preserving source evidence",
+            exc,
+        )
+
+    return persisted if isinstance(persisted, dict) else None
+
 def _no_network_render() -> bool:
     """True for site-only rerender lanes that must reuse committed China caches.
 
@@ -1365,14 +1410,17 @@ def main() -> int:
         act_now_v2 = None
         try:
             from engine.china_act_now import (  # noqa: PLC0415
-                assemble_act_now, load_cycle_rows, load_member_names, load_theme_intel,
+                assemble_act_now, load_cycle_rows, load_member_names,
             )
             cfg = config.load()
             site_dir = Path(cfg["storage"]["site_dir"])
             baskets_json_path = site_dir / "chinabasketdata" / "baskets.json"
             data_dir = Path(cfg["storage"].get("data_dir", "data"))
             forward_log_path = data_dir / "china_sector_cycles" / "forward_log.parquet"
-            theme_intel = load_theme_intel(str(baskets_json_path))
+            theme_intel = _theme_intel_for_act_now(
+                baskets_json_path,
+                refresh=not _no_network_render(),
+            )
             cycle_rows = load_cycle_rows(str(forward_log_path))
             # W8-R7 rider: load basket_turn_cn artifact for bottoming-watch organ chips
             _basket_turn_cn: dict | None = None
@@ -1556,6 +1604,23 @@ def main() -> int:
                 pass
             vm["market_state"] = _ms.market_state_snapshot(
                 latest, _f, latest.get("alerts") or [], profile=CN_PROFILE)
+            # Persist the CN_PROFILE snapshot to its OWN file
+            # (data/china_market_state/latest.json) so the macro spine can ingest it as
+            # a ratified 0-100 source without ever overwriting the US latest.json.
+            # The no-regress guard travels with the engine (market_key="cn"). The
+            # NYSE freshness stamp is suppressed for CN (its own session calendar
+            # governs CN staleness; the macro spine reads caveat_en / caveat_zh on
+            # the row instead). Fast-render dev rerenders skip the write just like
+            # the score-log append. Off the heavy render path: a single json.dump
+            # beside existing parquet writes.
+            try:
+                import os as _osenv_p_cn  # noqa: PLC0415
+                if _osenv_p_cn.environ.get("CHINA_FAST_RENDER"):
+                    pass                  # dev re-render: read-only
+                else:
+                    _ms.persist(vm.get("market_state"), market_key="cn")
+            except Exception as _pc_e:  # noqa: BLE001 — additive, never fatal
+                log.warning("cn market_state persist failed (%s); skipping", _pc_e)
             # Attach contagion block to the post-transform radar dict so rd.contagion
             # resolves in _risk_radar_card.html.j2 (build_site.py idiom, CGL W1).
             # FIX 2: disclose staleness when the CGL artifact predates the page's as_of.

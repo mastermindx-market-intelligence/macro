@@ -33,6 +33,7 @@ import logging
 import os
 import re
 import time
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Generator
@@ -166,7 +167,8 @@ _OPTIONS_TRIGGER_TERMS = re.compile(
     r"pin\s+risk|pinning|options?\s+flow|options|call\s+wall|put\s+wall|"
     r"dealer\s+positioning|open\s+interest|put[/-]call|vanna|charm|straddle|"
     r"iv\s+rank|iv\s+percentile|term\s+structure)\b"
-    r"|\b\d{1,2}dte\b|\bodte\b",
+    r"|\b\d{1,2}dte\b|\bodte\b"
+    r"|(?:期权|期權|隐含波动率|隱含波動率|偏度|伽马|伽瑪|未平仓|未平倉)",
 )
 
 # Liquidity plumbing trigger terms — checked after factor/China, before options/generic.
@@ -473,10 +475,224 @@ def _detect_ticker(question: str) -> str | None:
 
 
 # ---------------------------------------------------------------------------
-# Question classifier → tool budget
+# Question classifier → task profile + legacy tuple
 # ---------------------------------------------------------------------------
 
-def _classify_question(question: str, context_ticker: str | None) -> tuple[int, list[str]]:
+@dataclass(frozen=True)
+class _QuestionProfile:
+    """Deterministic task profile owned by the existing question classifier.
+
+    seed_tools are advisory model-visible names. Some are Brain-gateway tools
+    rather than Ask Brain's narrower read-only registry; the Ask Brain loop uses
+    only the budget today, while Brain already consumes the seed tuple.
+    """
+
+    name: str
+    budget: int
+    seed_tools: tuple[str, ...]
+    grounding_scope: str
+
+
+_SELF_CONTAINED_ASSUMPTION_TERMS = re.compile(
+    r"(?i)\b(supplied\s+assumptions?|given\s+assumptions?|hypothetical|"
+    r"illustrative|scenario|assume(?:d|s|ing)?|using\s+only\s+(?:these|the)\s+"
+    r"(?:numbers|assumptions))\b"
+    r"|(?:给定|給定|假设|假設|情景|场景|場景|仅用|僅用)",
+)
+_SELF_CONTAINED_FINANCE_TERMS = re.compile(
+    r"(?i)\b(eps|p/?e|multiple|revenue|gross\s+margin|operating\s+profit|"
+    r"working\s+capital|capex|capital\s+expenditure|cash\s+flow|valuation|margin)\b"
+    r"|(?:收入|营收|營收|毛利|利润|利潤|现金流|現金流|估值|市盈率|营运资金|營運資金|"
+    r"资本开支|資本開支)",
+)
+_PORTFOLIO_TRIGGER_TERMS = re.compile(
+    r"(?i)\b(my\s+)?(portfolio|holdings?|positions?|watchlist|book)\b|"
+    r"\b(exposure|concentration)\b.*\b(portfolio|holdings?|positions?|book)\b"
+    r"|(?:我的)?(?:组合|組合|持仓|持倉|仓位|倉位|自选|自選).*(?:风险|風險|因子|暴露|集中)",
+)
+_CURRENT_SINGLE_NAME_MOVE_TERMS = re.compile(
+    r"(?i)\bwhy\s+(?:did|is|has)\b.{0,80}\b(move(?:d)?|up|down|rall(?:y|ied)|"
+    r"drop(?:ped)?|fall|fell|rise|rose|sell[ -]?off|sold\s+off)\b|"
+    r"\bwhat\s+happened\s+to\b|\bcatalyst\b|"
+    r"(?:为什么|為什麼).{0,30}(?:涨|漲|跌|大涨|大漲|大跌)|(?:催化|异动|異動)",
+)
+_RATES_DETAIL_PROFILE_TERMS = re.compile(
+    r"(?i)\b(yield\s+curve|curve|steepener|steepening|flattener|inversion|"
+    r"2s10s|duration|term\s+premium|breakeven|real\s+yield|real\s+rates?)\b"
+    r"|(?:收益率曲线|收益率曲線|期限溢价|期限溢價|实际利率|實際利率)",
+)
+_SPECIALIST_FULL_VISIBILITY_TERMS = re.compile(
+    r"(?i)\b(street|sell[- ]side|buy[- ]side|analysts?|institutional|research\s+report|"
+    r"insiders?|congress(?:ional)?\s+trades?|smart\s+money|historical\s+analog(?:ue)?s?|"
+    r"backtest|stage\s+peers?|chart|draw|support|resistance|special[- ]situations?|"
+    r"m&a|merger|acquisition|stage\s+analysis)\b|"
+    r"机构|機構|研报|研報|内部人|內部人|国会交易|國會交易|历史类比|歷史類比|"
+    r"回测|回測|图表|圖表|支撑|支撐|阻力|并购|併購",
+)
+
+_MIXED_MACRO_RATES_TERMS = re.compile(
+    r"(?i)\b("
+    r"treasur\w+|fomc|"
+    r"(?:interest|policy|nominal)\s+rates?|"
+    r"(?:rising|falling|higher|lower|surging|spiking)\s+rates?|"
+    r"(?:after|as|with|because)\s+(?:the\s+)?rates?\s+"
+    r"(?:rise|rose|rising|fall|fell|falling|surge|surged|spike|spiked|jump|jumped|drop|dropped)|"
+    r"rates?\s+(?:sell[ -]?off|shock|hike|cut|repric\w*|surge|spike)|"
+    r"(?:treasury|bond|real)\s+yields?|"
+    r"(?:rising|falling|higher|lower|surging|spiking)\s+yields?|"
+    r"(?:after|as|with|because)\s+yields?\s+"
+    r"(?:rise|rose|rising|fall|fell|falling|surge|surged|spike|spiked|jump|jumped|drop|dropped)|"
+    r"(?:treasury|government|long[- ]?term)\s+bonds?|"
+    r"(?:after|as|with|because)\s+(?:treasury\s+|government\s+)?bonds?\s+"
+    r"(?:sell[ -]?off|sold\s+off|rally|rallied|fall|fell|rise|rose)|"
+    r"bonds?\s+(?:sell[ -]?off|sold\s+off|rally|rallied)|"
+    r"(?:the\s+)?fed(?:eral\s+reserve)?\s+(?:"
+    r"(?:cut|cuts|cutting|hike|hikes|hiked|hiking|raise|raises|raised|raising|"
+    r"lower|lowers|lowered|lowering)(?:\s+rates?)?|"
+    r"policy|meeting|minutes|decision|rate|rates|chair|governor|balance\s+sheet)"
+    r")\b"
+    r"|(?:利率|收益率|美债|美債|降息|加息)",
+)
+
+
+def _macro_rates_discriminator(question: str, subject_ticker: str | None) -> str | None:
+    """Pick one dedicated macro/rates read for a mixed single-name question."""
+    probe = question
+    if subject_ticker:
+        probe = re.sub(rf"\b{re.escape(subject_ticker)}\b", " ", probe)
+    if _RATES_DETAIL_PROFILE_TERMS.search(probe) or _MIXED_MACRO_RATES_TERMS.search(probe):
+        return "get_curve_detail"
+    if _INFLATION_INTELLIGENCE_TRIGGER_TERMS.search(probe):
+        return "read_inflation_intelligence"
+    if _LIQUIDITY_PLUMBING_TRIGGER_TERMS.search(probe):
+        return "read_liquidity_plumbing"
+    return None
+
+
+def _merge_seed_tools(*groups: list[str] | tuple[str, ...]) -> tuple[str, ...]:
+    out: list[str] = []
+    for group in groups:
+        for name in group:
+            if name and name not in out:
+                out.append(name)
+    return tuple(out)
+
+
+# Qualified model-visibility families for Fast/chat.  These names do not grant
+# authorization: Brain must build the full entitlement/page-gated schema first, then
+# intersect it with this candidate surface.  None means fail open to the full authorized
+# surface.  The family shapes were adversarially qualified before gateway consumption;
+# the canonical _QuestionProfile remains the only task classifier.
+_FAST_VISIBLE_TOOL_FAMILIES: dict[str, tuple[str, ...]] = {
+    "single_name_current": (
+        "get_market_events", "get_symbol_context", "get_quote", "get_symbol_intel",
+        "read_company_intelligence", "get_fundamentals", "get_earnings", "get_house_view",
+        "query_spine", "read_contradictions",
+    ),
+    "macro_rates": (
+        "read_world_state", "get_curve_detail", "read_mechanism_pathways",
+        "read_inflation_intelligence", "read_contradictions", "get_market_events",
+        "read_liquidity_plumbing",
+    ),
+    "options_single_name": (
+        "get_quote", "get_symbol_context", "get_market_events", "read_options_entry_state",
+        "explain_options_context", "query_options_confluence", "list_options_contradictions",
+    ),
+    "portfolio_current": (
+        "get_portfolio_brief", "get_watchlist", "read_world_state", "read_factor_state",
+        "list_factor_contradictions", "get_market_events", "read_contradictions",
+    ),
+    "theme_current": (
+        "read_theme_state", "read_theme_thesis", "read_theme_pathways",
+        "read_theme_asymmetry", "read_theme_options_witness", "read_theme_clinical",
+        "read_theme_trade_flows", "get_market_events", "read_world_state",
+    ),
+}
+
+_FAST_VISIBLE_PROFILE_COMPOSITIONS: dict[str, tuple[str, ...]] = {
+    "single_name_current": ("single_name_current",),
+    "macro_rates": ("macro_rates",),
+    "options_single_name": ("options_single_name",),
+    "portfolio_current": ("portfolio_current",),
+    "theme_current": ("theme_current",),
+    "single_name_macro_rates": ("single_name_current", "macro_rates"),
+    "portfolio_options": ("portfolio_current", "options_single_name"),
+}
+
+
+# A family is covered only by a discriminating read from that family. Shared context
+# reads such as get_market_events/read_contradictions deliberately do not witness two
+# families at once: doing so would recreate the mixed-domain false-positive #7406 fixed.
+# This is not a second classifier; it consumes the same _QuestionProfile compositions
+# used by progressive visibility.
+_FAST_EVIDENCE_FAMILY_WITNESSES: dict[str, tuple[str, ...]] = {
+    "single_name_current": (
+        "get_symbol_context", "get_quote", "get_symbol_intel",
+        "read_company_intelligence", "get_fundamentals", "get_earnings",
+        "get_house_view", "query_spine",
+    ),
+    "macro_rates": (
+        "read_world_state", "get_curve_detail", "read_mechanism_pathways",
+        "read_inflation_intelligence", "read_liquidity_plumbing",
+    ),
+    "options_single_name": (
+        "read_options_entry_state", "explain_options_context", "query_options_confluence",
+    ),
+    "portfolio_current": ("get_portfolio_brief", "get_watchlist"),
+    "theme_current": (
+        "read_theme_state", "read_theme_thesis", "read_theme_pathways",
+        "read_theme_asymmetry", "read_theme_options_witness", "read_theme_clinical",
+        "read_theme_trade_flows",
+    ),
+}
+
+
+def _fast_required_evidence_families(
+    profile: _QuestionProfile,
+) -> dict[str, tuple[str, ...]] | None:
+    """Return qualified Fast evidence families, or None for a fail-open profile.
+
+    The values are witness-tool names, not authorization. Brain still builds its complete
+    authorized schema first and may enforce this contract only when every family has an
+    authorized witness. Self-contained scenarios intentionally require no external family.
+    """
+    if profile.name == "self_contained_financial":
+        return {}
+    families = _FAST_VISIBLE_PROFILE_COMPOSITIONS.get(profile.name)
+    if not families:
+        return None
+    required: dict[str, tuple[str, ...]] = {}
+    for name in families:
+        witnesses = _FAST_EVIDENCE_FAMILY_WITNESSES.get(name)
+        if witnesses is None:
+            return None
+        required[name] = witnesses
+    return required
+
+
+def _fast_visible_tool_names(profile: _QuestionProfile) -> tuple[str, ...] | None:
+    """Return qualified Fast model-visible names, or None to retain full authorization.
+
+    This consumes the existing deterministic profile; it does not classify the question
+    again.  Self-contained financial scenarios intentionally expose zero tools.  Mixed
+    profiles compose already-qualified families.  Every unqualified/specialist profile
+    fails open so visibility reduction can never silently erase a required evidence lane.
+    """
+    if profile.name == "self_contained_financial":
+        return ()
+    families = _FAST_VISIBLE_PROFILE_COMPOSITIONS.get(profile.name)
+    if not families:
+        return None
+    tool_families: list[tuple[str, ...]] = []
+    for name in families:
+        tools = _FAST_VISIBLE_TOOL_FAMILIES.get(name)
+        if tools is None:
+            return None
+        tool_families.append(tools)
+    return _merge_seed_tools(*tool_families)
+
+
+def _legacy_classify_question(question: str, context_ticker: str | None) -> tuple[int, list[str]]:
     """Return (budget, seed_tool_names) for the question.
 
     The seed list is a hint for which tools to call first; the model decides
@@ -572,6 +788,126 @@ def _classify_question(question: str, context_ticker: str | None) -> tuple[int, 
         return _BUDGET_REGIME, ["read_world_state"]
     # default
     return _BUDGET_GENERAL, ["read_world_state"]
+
+
+def _question_profile(question: str, context_ticker: str | None) -> _QuestionProfile:
+    """Return the deterministic task profile without narrowing ambiguous questions."""
+    q = question.lower()
+    subject_ticker = _detect_ticker(question) or (
+        str(context_ticker).strip().upper() if context_ticker else None
+    )
+
+    if (
+        _SELF_CONTAINED_ASSUMPTION_TERMS.search(question)
+        and _SELF_CONTAINED_FINANCE_TERMS.search(question)
+    ):
+        return _QuestionProfile(
+            "self_contained_financial", _BUDGET_GENERAL, (), "self_contained"
+        )
+
+    # Specialist evidence lanes are intentionally not progressively narrowed yet.  Keep
+    # the legacy budget/seeds (and therefore the existing seed-plan behavior), but mark
+    # the canonical task profile ambiguous so the gateway exposes every authorized tool.
+    if _SPECIALIST_FULL_VISIBILITY_TERMS.search(question):
+        budget, seeds = _legacy_classify_question(question, context_ticker)
+        return _QuestionProfile("ambiguous", budget, tuple(seeds), "ambiguous")
+
+    if (
+        _PORTFOLIO_TRIGGER_TERMS.search(question)
+        and _OPTIONS_TRIGGER_TERMS.search(question)
+    ):
+        return _QuestionProfile(
+            "portfolio_options",
+            _BUDGET_GENERAL,
+            ("get_portfolio_brief", "read_options_entry_state", "read_world_state"),
+            "ambiguous",
+        )
+
+    if _PORTFOLIO_TRIGGER_TERMS.search(question):
+        return _QuestionProfile(
+            "portfolio_current",
+            _BUDGET_GENERAL,
+            ("get_portfolio_brief", "read_world_state", "read_factor_state"),
+            "portfolio_current",
+        )
+
+    # Options must precede generic "setup for" / context-ticker handling, but
+    # retain the established higher-specificity factor/China/liquidity/theme ordering.
+    if (
+        _OPTIONS_TRIGGER_TERMS.search(question)
+        and not _FACTOR_TRIGGER_TERMS.search(q)
+        and not _CHINA_TRIGGER_TERMS.search(question)
+        and not _LIQUIDITY_PLUMBING_TRIGGER_TERMS.search(q)
+        and not _THEME_TRIGGER_TERMS.search(question)
+    ):
+        seeds: list[str] = ["read_options_entry_state"]
+        if subject_ticker:
+            seeds.append("explain_options_context")
+        if re.search(r"\b(contradict\w*|conflict\w*|tension\w*|borrowed\s+strength)\b", q):
+            seeds.append("list_options_contradictions")
+        if re.search(r"\b(confluence|confirm\w*|align\w*|agree\w*)\b", q):
+            seeds.append("query_options_confluence")
+        return _QuestionProfile(
+            "options_single_name",
+            _BUDGET_OPTIONS,
+            tuple(seeds),
+            "single_name_current" if subject_ticker else "market_current",
+        )
+
+    if subject_ticker and _CURRENT_SINGLE_NAME_MOVE_TERMS.search(question):
+        macro_read = _macro_rates_discriminator(question, subject_ticker)
+        if macro_read:
+            return _QuestionProfile(
+                "single_name_macro_rates",
+                _BUDGET_WHY_FIRED,
+                ("get_market_events", "get_symbol_context", macro_read),
+                "ambiguous",
+            )
+        return _QuestionProfile(
+            "single_name_current",
+            _BUDGET_WHY_FIRED,
+            ("get_market_events", "get_symbol_context", "get_quote"),
+            "single_name_current",
+        )
+
+    budget, seeds = _legacy_classify_question(question, context_ticker)
+    seed_tuple = tuple(seeds)
+
+    if seed_tuple and seed_tuple[0] == "query_spine":
+        return _QuestionProfile(
+            "signal_explanation",
+            budget,
+            seed_tuple,
+            "single_name_current" if subject_ticker else "market_current",
+        )
+    if "read_factor_state" in seed_tuple:
+        return _QuestionProfile(
+            "factor_current", budget, seed_tuple,
+            "single_name_current" if subject_ticker else "market_current",
+        )
+    if "read_china_decision_packet" in seed_tuple:
+        return _QuestionProfile("china_current", budget, seed_tuple, "market_current")
+    if "read_theme_state" in seed_tuple:
+        return _QuestionProfile("theme_current", budget, seed_tuple, "market_current")
+    if (
+        "read_liquidity_plumbing" in seed_tuple
+        or "read_inflation_intelligence" in seed_tuple
+        or _RATES_DETAIL_PROFILE_TERMS.search(question)
+    ):
+        macro_seeds = seed_tuple
+        if _RATES_DETAIL_PROFILE_TERMS.search(question):
+            macro_seeds = _merge_seed_tools(
+                seed_tuple, ("get_curve_detail", "read_mechanism_pathways")
+            )
+        return _QuestionProfile("macro_rates", budget, macro_seeds, "market_current")
+
+    return _QuestionProfile("ambiguous", budget, seed_tuple, "ambiguous")
+
+
+def _classify_question(question: str, context_ticker: str | None) -> tuple[int, list[str]]:
+    """Backward-compatible (budget, seeds) view of the richer task profile."""
+    profile = _question_profile(question, context_ticker)
+    return profile.budget, list(profile.seed_tools)
 
 
 # ---------------------------------------------------------------------------

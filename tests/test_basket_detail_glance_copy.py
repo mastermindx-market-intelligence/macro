@@ -125,5 +125,10 @@ def test_generated_pages_share_the_new_fingerprinted_stylesheet() -> None:
     css = ROOT / "site" / "assets" / "css" / f"{digest}.css"
     assert css.is_file()
     assert hashlib.sha256(css.read_bytes()).hexdigest()[:8] == digest
+    # A valid hash alone can still point to a hand-projected copy that drifts
+    # when a later regional build emits the canonical template bytes.
+    style = re.search(r"<style>(.*?)</style>", _src(), re.S)
+    assert style, "canonical Basket Detail stylesheet is missing"
+    assert css.read_text(encoding="utf-8") == style.group(1)
     text = css.read_text(encoding="utf-8")
     assert ".ftr-anatomy-disclosure > summary" in text
