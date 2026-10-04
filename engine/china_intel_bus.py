@@ -439,8 +439,6 @@ def _visit_discovery_snapshot(
         and last_attempt_instant < last_success_instant
     ):
         clock_errors.append("last_attempt_before_last_success")
-    owner_clock_order_valid = not clock_errors
-
     source_status = owner_health_status
     if (
         owner_health_status == "ok"
@@ -462,6 +460,24 @@ def _visit_discovery_snapshot(
                 continue
             seen_ids.add(aid)
         deduped.append(row)
+
+    # Positive rows may be written before the owner health receipt is updated.
+    # If any persisted observation is newer than the latest valid attempt/success
+    # receipt, the positive remains visible but first-seen and absence authority
+    # are unknown until health catches up.
+    health_receipt_instant = last_attempt_instant or last_success_instant
+    row_observation_instants = [
+        _visit_observed_instant(r.get("system_recorded_at")) for r in deduped
+    ]
+    if (
+        health_receipt_instant is not None
+        and any(
+            inst is not None and inst > health_receipt_instant
+            for inst in row_observation_instants
+        )
+    ):
+        clock_errors.append("row_observation_after_health_receipt")
+    owner_clock_order_valid = not clock_errors
 
     source_event_days = [
         d for d in (_visit_day(r.get("source_published_at")) for r in deduped)
@@ -547,6 +563,7 @@ def _visit_discovery_snapshot(
             else "coverage_start_invalid" if "coverage_start_invalid" in clock_errors
             else "last_success_clock_invalid" if "last_success_clock_invalid" in clock_errors
             else "last_attempt_clock_invalid" if "last_attempt_clock_invalid" in clock_errors
+            else "row_observation_after_health_receipt" if "row_observation_after_health_receipt" in clock_errors
             else "owner_clock_order_invalid" if not owner_clock_order_valid
             else "source_stale" if source_status == "stale"
             else "source_health_not_ok" if source_status != "ok"
@@ -829,7 +846,7 @@ def _visit_discovery_block() -> dict | None:
             has_unscoped_open=has_unscoped,
             exception_ledger_readable=exception_ledger_readable,
             kind_labeler=cv.visit_kind_label,
-            reference_day=date.today(),
+            reference_day=datetime.now(timezone.utc).date(),
             stale_after_days=getattr(
                 cv.ChinaVisitsAdapter, "stale_after_days", _VISIT_DISCOVERY_STALE_AFTER_DAYS
             ),
