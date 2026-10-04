@@ -1,10 +1,17 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-04T06:49:50.629448+00:00",
+  "as_of": "2026-10-04T13:11:44.879487+00:00",
   "posts_seen": 12,
-  "seen_total": 258,
-  "evaluated": 0,
+  "seen_total": 259,
+  "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-10-04-us-leads-international-coalition-to-endorse-kyoto-vision-for-a-golden-age-of-sci",
+      "importance": 35,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }
