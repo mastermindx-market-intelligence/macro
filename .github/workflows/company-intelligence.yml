@@ -101,6 +101,11 @@ jobs:
           # on the next schedule rather than reporting a false incident.
           if [ "$rc" -eq 2 ]; then
             echo "::notice title=company-intelligence::root manifest promotion lost a safe compare-and-swap race"
+          elif [ "$rc" -eq 3 ]; then
+            # Source tree is valid but the qualitative score producer is stale.
+            # Keep v1 held, then still advance the path-independent flagship
+            # event-workspace sibling before returning the incident.
+            echo "::error title=company-intelligence::qualitative earnings score plane stale; v1 root held"
           elif [ "$rc" -ne 0 ]; then
             exit "$rc"
           fi
@@ -120,6 +125,11 @@ jobs:
           fi
           if [ "$rc" -eq 2 ]; then
             exit 0
+          elif [ "$rc" -eq 3 ]; then
+            # The dependent theme/institutional sidecars are intentionally not
+            # published against an unpromoted v1 generation. Event Workspaces
+            # above is independent and has already had its chance to advance.
+            exit "$rc"
           fi
           # This runs only after Company Intelligence returned a true success
           # (never after its safe lost-CAS race). The sidecar reads the exact
