@@ -763,7 +763,7 @@ def load_environment(environ: Mapping[str, str] | None = None) -> EnvironmentPla
     )
 
 
-def _strict_json_object(path: Path) -> dict[str, Any]:
+def _strict_json_object_bytes(raw: bytes) -> dict[str, Any]:
     def reject_constant(_: str) -> None:
         raise ValueError("non-finite JSON")
 
@@ -788,13 +788,12 @@ def _strict_json_object(path: Path) -> dict[str, Any]:
 
     try:
         payload = json.loads(
-            path.read_bytes().decode("utf-8"),
+            raw.decode("utf-8"),
             parse_constant=reject_constant,
             object_pairs_hook=reject_duplicates,
             parse_float=lossless_float,
         )
     except (
-        OSError,
         UnicodeError,
         ValueError,
         json.JSONDecodeError,
@@ -808,6 +807,14 @@ def _strict_json_object(path: Path) -> dict[str, Any]:
     except Exception as exc:
         raise PublicationError("RUN_CONTRACT_INVALID") from exc
     return payload
+
+
+def _strict_json_object(path: Path) -> dict[str, Any]:
+    try:
+        raw = path.read_bytes()
+    except OSError as exc:
+        raise PublicationError("RUN_CONTRACT_INVALID") from exc
+    return _strict_json_object_bytes(raw)
 
 
 def _read_activation_artifact(
@@ -2845,31 +2852,73 @@ def _load_service_wmn_inputs(path: Path | None = None) -> dict[str, Any]:
     The worker never constructs Company Intelligence or Data OS facts here. It
     only consumes the already-composed public-safe owner projection from the
     fixed service handoff path. Missing input is availability, while malformed
-    or mutable-looking input is an integrity failure.
+    or mutable-looking input is an integrity failure. One descriptor owns the
+    metadata checks and bytes so an atomic owner update cannot swap the inode
+    between qualification and consumption.
     """
 
     candidate = _SERVICE_WMN_INPUTS_PATH if path is None else Path(path)
-    if candidate.is_symlink():
+    descriptor: int | None = None
+    flags = os.O_RDONLY | os.O_CLOEXEC
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    elif candidate.is_symlink():
         raise WorkerConfigError("BIOCATALYST_WMN_OWNER_INPUT_INVALID")
+
     try:
-        metadata = candidate.lstat()
+        descriptor = os.open(os.fspath(candidate), flags)
     except FileNotFoundError as exc:
         raise WorkerConfigError("BIOCATALYST_WMN_OWNER_INPUT_UNAVAILABLE") from exc
     except OSError as exc:
         raise WorkerConfigError("BIOCATALYST_WMN_OWNER_INPUT_INVALID") from exc
-    if (
-        not stat.S_ISREG(metadata.st_mode)
-        or metadata.st_nlink != 1
-        or metadata.st_size <= 1
-        or metadata.st_size > _WMN_INPUT_MAX_BYTES
-    ):
-        raise WorkerConfigError("BIOCATALYST_WMN_OWNER_INPUT_INVALID")
+
     try:
-        payload = _strict_json_object(candidate)
-        normalized = validate_wmn_inputs(payload)
-    except (OSError, UnicodeError, ValueError, ContractError) as exc:
+        metadata_before = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(metadata_before.st_mode)
+            or metadata_before.st_nlink != 1
+            or metadata_before.st_size <= 1
+            or metadata_before.st_size > _WMN_INPUT_MAX_BYTES
+        ):
+            raise WorkerConfigError("BIOCATALYST_WMN_OWNER_INPUT_INVALID")
+
+        chunks: list[bytes] = []
+        byte_count = 0
+        while True:
+            chunk = os.read(
+                descriptor,
+                min(64 * 1024, _WMN_INPUT_MAX_BYTES + 1 - byte_count),
+            )
+            if not chunk:
+                break
+            chunks.append(chunk)
+            byte_count += len(chunk)
+            if byte_count > _WMN_INPUT_MAX_BYTES:
+                raise WorkerConfigError("BIOCATALYST_WMN_OWNER_INPUT_INVALID")
+        raw = b"".join(chunks)
+        metadata_after = os.fstat(descriptor)
+        if (
+            len(raw) != metadata_before.st_size
+            or metadata_after.st_dev != metadata_before.st_dev
+            or metadata_after.st_ino != metadata_before.st_ino
+            or metadata_after.st_mode != metadata_before.st_mode
+            or metadata_after.st_nlink != metadata_before.st_nlink
+            or metadata_after.st_size != metadata_before.st_size
+            or metadata_after.st_mtime_ns != metadata_before.st_mtime_ns
+            or metadata_after.st_ctime_ns != metadata_before.st_ctime_ns
+            or metadata_after.st_uid != metadata_before.st_uid
+            or metadata_after.st_gid != metadata_before.st_gid
+        ):
+            raise WorkerConfigError("BIOCATALYST_WMN_OWNER_INPUT_INVALID")
+
+        payload = _strict_json_object_bytes(raw)
+        return validate_wmn_inputs(payload)
+    except WorkerConfigError:
+        raise
+    except (OSError, PublicationError, ContractError) as exc:
         raise WorkerConfigError("BIOCATALYST_WMN_OWNER_INPUT_INVALID") from exc
-    return normalized
+    finally:
+        os.close(descriptor)
 
 
 def run_from_environment(

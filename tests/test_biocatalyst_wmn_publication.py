@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+
+import pytest
 from datetime import date
 from hashlib import sha256
 
@@ -297,3 +299,68 @@ def test_environment_rejects_nonbinary_wmn_enable_flag(tmp_path, monkeypatch):
     plan = worker.load_environment({**environ, "BIOCATALYST_WMN_ENABLED": "true"})
     assert plan.state == "invalid"
     assert plan.error_code == "BIOCATALYST_WMN_ENABLED_INVALID"
+
+
+@pytest.mark.parametrize(
+    "owner_bytes",
+    [
+        b"{]",
+        b"\xff\xfe",
+        b'{"x":1,"x":2}',
+        b'{"x":0.10000000000000001}',
+    ],
+    ids=["syntax", "utf8", "duplicate-key", "lossy-number"],
+)
+def test_environment_worker_invalid_json_is_typed_and_precollection(
+    tmp_path, monkeypatch, owner_bytes
+):
+    state_root, public_root, environ = _environment_for_wmn(tmp_path)
+    owner_path = tmp_path / "owner-inputs" / "what_matters_next_inputs.json"
+    owner_path.parent.mkdir(parents=True)
+    owner_path.write_bytes(owner_bytes)
+    monkeypatch.setattr(worker, "_SERVICE_STATE_ROOT", state_root)
+    monkeypatch.setattr(worker, "_SERVICE_PUBLIC_ROOT", public_root)
+    monkeypatch.setattr(worker, "_SERVICE_WMN_INPUTS_PATH", owner_path)
+
+    calls = {"collector": 0}
+    result = worker.run_from_environment(
+        environ,
+        collector_factory=lambda **_: calls.__setitem__("collector", calls["collector"] + 1),
+        store_factory=lambda _: MemoryStore(),
+        now_fn=lambda: NOW,
+        activation_verifier=lambda _config, _now: None,
+    )
+
+    assert result.exit_code == worker.EXIT_FAILED
+    assert result.status == "failed"
+    assert result.error_code == "BIOCATALYST_WMN_OWNER_INPUT_INVALID"
+    assert calls["collector"] == 0
+    assert not (public_root / "current.json").exists()
+
+
+def test_wmn_owner_cut_rejects_atomic_replacement_during_descriptor_read(tmp_path, monkeypatch):
+    owner_path = tmp_path / "owner-inputs" / "what_matters_next_inputs.json"
+    owner_path.parent.mkdir(parents=True)
+    owner_path.write_text(json.dumps(_wmn_inputs()), encoding="utf-8")
+    replacement = tmp_path / "owner-inputs" / "replacement.json"
+    replacement.write_text("{", encoding="utf-8")
+
+    real_read = worker.os.read
+    swapped = {"done": False}
+
+    def swapping_read(fd, size):
+        if not swapped["done"]:
+            replacement.replace(owner_path)
+            swapped["done"] = True
+        return real_read(fd, size)
+
+    monkeypatch.setattr(worker.os, "read", swapping_read)
+
+    with pytest.raises(
+        worker.WorkerConfigError,
+        match="BIOCATALYST_WMN_OWNER_INPUT_INVALID",
+    ):
+        worker._load_service_wmn_inputs(owner_path)
+
+    assert swapped["done"] is True
+    assert owner_path.read_text(encoding="utf-8") == "{"
