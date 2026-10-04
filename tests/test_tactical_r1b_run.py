@@ -196,6 +196,15 @@ def world(tmp_path_factory):
         (inputs / f"{symbol}.5m.json").write_text(json.dumps(
             {"t": symbol, "tf": "5m", "src": "polygon", "bars": bars.get(symbol, [])}))
     manifest = _write_manifest(root / "manifest.json", inputs, symbols)
+    mp.setattr(
+        s,
+        "_terminal_dependency_probe",
+        lambda root, sha: {
+            "porcelain": "",
+            "toplevel": str(Path(root).resolve()),
+            "blobs": {p: s._sha(Path(root) / p) for p in s.TERMINAL_PINNED_FILES},
+        },
+    )
     try:
         yield SimpleNamespace(root=root, terminal=terminal, inputs=inputs, manifest=manifest,
                               junit=_junit(root / "junit.xml"), sessions=sessions,
@@ -963,6 +972,108 @@ def test_t6f_required_subset_missing_refuses(world, monkeypatch, tmp_path, capsy
     monkeypatch.setattr(s, "_loaded_root_modules", lambda: trimmed)
     assert s.main(_argv(world, _out_dir(tmp_path))) == 2
     assert "code_identity_missing_required:engine/session_digest.py" in capsys.readouterr().err
+
+
+def _honest_terminal_probe(root, sha):
+    return {
+        "porcelain": "",
+        "toplevel": str(Path(root).resolve()),
+        "blobs": {p: s._sha(Path(root) / p) for p in s.TERMINAL_PINNED_FILES},
+    }
+
+
+def test_t7a_terminal_dependency_dirty_refuses(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+
+    def dirty(root, sha):
+        probe = _honest_terminal_probe(root, sha)
+        probe["porcelain"] = " M ingest/intraday_qualification.py\n"
+        return probe
+
+    monkeypatch.setattr(s, "_terminal_dependency_probe", dirty)
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    assert "terminal_dependency_dirty" in capsys.readouterr().err
+    receipt = json.loads((tmp_path / "attempts/attempt-001.json").read_text())
+    assert receipt["stage"] == "inputs"
+    assert receipt["outcome_values_persisted"] is False
+
+
+def test_t7b_terminal_dependency_not_a_root_refuses(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+
+    def nested(root, sha):
+        probe = _honest_terminal_probe(root, sha)
+        probe["toplevel"] = str(tmp_path)
+        return probe
+
+    monkeypatch.setattr(s, "_terminal_dependency_probe", nested)
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    assert "terminal_dependency_not_a_root" in capsys.readouterr().err
+
+
+def test_t7c_terminal_dependency_module_blob_mismatch_refuses(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    path = "ingest/intraday_qualification.py"
+
+    def bad_blob(root, sha):
+        probe = _honest_terminal_probe(root, sha)
+        probe["blobs"][path] = "0" * 64
+        return probe
+
+    monkeypatch.setattr(s, "_terminal_dependency_probe", bad_blob)
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    assert f"terminal_dependency_blob_mismatch:{path}" in capsys.readouterr().err
+
+
+def test_t7d_terminal_dependency_calendar_blob_mismatch_refuses(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    path = "terminal/lib/usEquitySessionProjection.json"
+
+    def bad_blob(root, sha):
+        probe = _honest_terminal_probe(root, sha)
+        probe["blobs"][path] = "0" * 64
+        return probe
+
+    monkeypatch.setattr(s, "_terminal_dependency_probe", bad_blob)
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    assert f"terminal_dependency_blob_mismatch:{path}" in capsys.readouterr().err
+
+
+def test_t7e_rulings_sha_mismatch_refuses(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    edited = tmp_path / "rulings.md"
+    edited.write_bytes(b"edited")
+    monkeypatch.setattr(s, "RULINGS_PATH", edited)
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    assert "rulings_sha_mismatch" in capsys.readouterr().err
+    receipt = json.loads((tmp_path / "attempts/attempt-001.json").read_text())
+    assert receipt["stage"] == "admission"
+    real_rulings = s.ROOT / "research/species/tti_r1b/ANALYSIS_RULINGS_V4.md"
+    assert s._sha(real_rulings) == s.RULINGS_SHA256
+
+
+def test_t7f_terminal_dependency_probe_failure_refuses(world, monkeypatch, tmp_path, capsys):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+
+    def fail(_root, _sha):
+        raise ValueError("terminal_dependency_probe_failed:status")
+
+    monkeypatch.setattr(s, "_terminal_dependency_probe", fail)
+    assert s.main(_argv(world, _out_dir(tmp_path))) == 2
+    assert "terminal_dependency_probe_failed:status" in capsys.readouterr().err
+
+
+def test_t7g_result_records_terminal_dependency_pins(world, monkeypatch, tmp_path):
+    _patch(monkeypatch, world, attempt_root=tmp_path)
+    out = _out_dir(tmp_path)
+    assert s.main(_argv(world, out)) == 0
+    terminal = json.loads((out / "result.json").read_text())["inputs"]["terminal_dependency"]
+    assert terminal["worktree_clean"] is True
+    assert terminal["toplevel"] == str(world.terminal.resolve())
+    expected_blobs = {
+        p: s._sha(world.terminal / p) for p in s.TERMINAL_PINNED_FILES
+    }
+    assert terminal["pinned_blobs"] == expected_blobs
 
 
 def test_t5h_result_lists_prior_attempts_and_listing_hash(run):

@@ -51,6 +51,11 @@ TRIAL_FAMILY = "entry_radar"
 STUDY_ROWS = 60
 UTC = timezone.utc
 RULINGS_PATH = ROOT / "research/species/tti_r1b/ANALYSIS_RULINGS_V4.md"
+RULINGS_SHA256 = "73e1713f19f0edfe886b414f0cf90b5f829b29cf4662d0993c61d351c4230c84"
+TERMINAL_PINNED_FILES = (
+    "ingest/intraday_qualification.py",
+    "terminal/lib/usEquitySessionProjection.json",
+)
 RESULT_PATH = ROOT / "research/species/tti_r1b/RESULT_V4.json"
 REPORT_PATH = ROOT / "research/species/TTI_R1B_V4_REPORT.md"
 D0_MANIFEST_SHA256 = "59c50ed405bd76c083a1d2beb20cf25edd6f4bd892c3e55fd38d21a66bef642b"
@@ -93,6 +98,33 @@ _STATUS_FIELDS = ("touch", "lod_status", "candidate_lod_status", "candidate_lod_
 
 def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _terminal_dependency_probe(terminal_root: Path, sha: str) -> dict[str, Any]:
+    status = subprocess.run(
+        ["git", "-C", str(terminal_root), "status", "--porcelain"],
+        capture_output=True,
+    )
+    if status.returncode != 0:
+        raise ValueError("terminal_dependency_probe_failed:status")
+    porcelain = status.stdout.decode()
+    toplevel_proc = subprocess.run(
+        ["git", "-C", str(terminal_root), "rev-parse", "--show-toplevel"],
+        capture_output=True,
+    )
+    if toplevel_proc.returncode != 0:
+        raise ValueError("terminal_dependency_probe_failed:toplevel")
+    toplevel = toplevel_proc.stdout.decode().strip()
+    blobs: dict[str, str] = {}
+    for path in TERMINAL_PINNED_FILES:
+        shown = subprocess.run(
+            ["git", "-C", str(terminal_root), "show", f"{sha}:{path}"],
+            capture_output=True,
+        )
+        if shown.returncode != 0:
+            raise ValueError(f"terminal_dependency_probe_failed:{path}")
+        blobs[path] = hashlib.sha256(shown.stdout).hexdigest()
+    return {"porcelain": porcelain, "toplevel": toplevel, "blobs": blobs}
 
 
 def _loaded_root_modules() -> dict[str, str]:
@@ -445,10 +477,18 @@ def load_inputs(input_dir: Path, manifest: Path, terminal_root: Path,
     manifest_sha = _sha(manifest)
     if manifest_sha != D0_MANIFEST_SHA256:
         raise ValueError("input_manifest_sha256_mismatch")
-    d0 = r1._load_terminal_module(terminal_root)
     head = r1._git_head(terminal_root)
     if head != cfg["terminal_dependency_sha"]:
         raise ValueError("terminal_dependency_head_mismatch")
+    probe = _terminal_dependency_probe(terminal_root, cfg["terminal_dependency_sha"])
+    if probe["porcelain"].strip():
+        raise ValueError("terminal_dependency_dirty")
+    if Path(probe["toplevel"]).resolve() != Path(terminal_root).resolve():
+        raise ValueError("terminal_dependency_not_a_root")
+    for path in TERMINAL_PINNED_FILES:
+        if _sha(terminal_root / path) != probe["blobs"][path]:
+            raise ValueError(f"terminal_dependency_blob_mismatch:{path}")
+    d0 = r1._load_terminal_module(terminal_root)
     calendar = d0.CalendarProjection.load(terminal_root / "terminal/lib/usEquitySessionProjection.json")
     rows = r1._manifest_map(manifest)
     frames: dict[str, pd.DataFrame] = {}
@@ -477,6 +517,9 @@ def load_inputs(input_dir: Path, manifest: Path, terminal_root: Path,
             "head": head,
             "qualification_module_sha256": _sha(terminal_root / "ingest/intraday_qualification.py"),
             "calendar_sha256": calendar.sha256,
+            "pinned_blobs": probe["blobs"],
+            "worktree_clean": True,
+            "toplevel": probe["toplevel"],
         },
     }
 
@@ -912,6 +955,8 @@ def execute(*, input_dir: Path, manifest: Path, terminal_root: Path, output_dir:
     for name, digest in code_files.items():
         if _reviewed_blob_sha256(code_sha, name) != digest:
             raise ValueError(f"code_identity_not_at_reviewed_head:{name}")
+    if _sha(RULINGS_PATH) != RULINGS_SHA256:
+        raise ValueError("rulings_sha_mismatch")
     identity = {
         "study_id": STUDY_ID, "code_sha": code_sha,
         "prereg_sha256": admitted["prereg_sha256"], "config_sha256": admitted["config_sha256"],
@@ -1178,6 +1223,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         reached = state["stage"]
         text = str(exc)
         if (reached in PRE_INPUT_STAGES or text.startswith("code_identity_")
+                or text.startswith("terminal_dependency_")
                 or (reached not in OUTCOME_STAGES and _REFUSAL_CODE.fullmatch(text))):
             print(f"R1-B study refused: {text}", file=sys.stderr)
         else:
