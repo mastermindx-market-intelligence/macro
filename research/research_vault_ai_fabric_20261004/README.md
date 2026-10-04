@@ -17,6 +17,7 @@ Read in this order:
 4. [03_WORK_PACKAGES_AND_DAG.md](03_WORK_PACKAGES_AND_DAG.md) — dependency graph, collision-safe work packages, delegation envelopes and release sequence.
 5. [04_ACCEPTANCE_SECURITY_AND_EVAL.md](04_ACCEPTANCE_SECURITY_AND_EVAL.md) — exact DONE_WHEN, security/rights gates, retrieval benchmark, denial tests and production canaries.
 6. [05_SOURCE_AND_COLLISION_MAP.md](05_SOURCE_AND_COLLISION_MAP.md) — exact source anchors, stale PR salvage map, paths that may not be independently rewritten, and DO_NOT_REDO.\n7. [06_HARDENING_ADDENDUM_AND_FABLE_START_GATE.md](06_HARDENING_ADDENDUM_AND_FABLE_START_GATE.md) — controlling clarification for private-R2 semantics, body-health census, corpus repair shapes, collision ruling and Fable first-wave gate.\n8. [07_FABLE_ORCHESTRATOR_BRIEF_QA.md](07_FABLE_ORCHESTRATOR_BRIEF_QA.md) — non-authoritative Mastermind Craft authoring QA receipt.
+9. [08_F4_PRODUCER_OUTAGE_DIAGNOSIS.md](08_F4_PRODUCER_OUTAGE_DIAGNOSIS.md) — bounded producer-outage diagnosis, current trigger-owner ruling, release-lineage prerequisite, and exact human re-auth proof gate.
 
 Durable organizational continuation lives in:
 
