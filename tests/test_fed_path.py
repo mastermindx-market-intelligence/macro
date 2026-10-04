@@ -31,10 +31,12 @@ def test_gen_contracts_monthly_rolls_off_asof():
     assert cs[7]["symbols"][0] == "ZQF27.CBT"   # F = January
 
 
-def test_gen_contracts_quarterly_imm_only():
+def test_gen_contracts_quarterly_starts_with_active_reference_quarter():
+    # June 12 is still inside the March SR3 reference quarter. The June-named
+    # contract becomes the active reference quarter on the June IMM boundary.
     qs = rf.gen_contracts("SR3", ["CME"], "quarterly", 4, date(2026, 6, 12))
     months = [(c["year"], c["month"]) for c in qs]
-    assert months == [(2026, 6), (2026, 9), (2026, 12), (2027, 3)]
+    assert months == [(2026, 3), (2026, 6), (2026, 9), (2026, 12)]
     assert all(c["month"] in (3, 6, 9, 12) for c in qs)
 
 
