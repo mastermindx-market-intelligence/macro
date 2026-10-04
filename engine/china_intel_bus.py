@@ -340,9 +340,22 @@ def _visit_discovery_snapshot(
     coverage_day = _visit_day(coverage_start)
     last_success_day = _visit_day(health.get("last_success_utc"))
     last_attempt_day = _visit_day(health.get("last_attempt_utc"))
-    # Keep the pure helper deterministic when called directly: production's
-    # owner reader passes the real current date explicitly below.
-    reference_day = reference_day or last_attempt_day or last_success_day or coverage_day or date.today()
+    # Keep the pure helper deterministic when called directly.  A degraded run
+    # may contain newer positive rows than its frozen last_success clock, so the
+    # fallback reference must include observed row clocks rather than moving the
+    # display window backward. Production passes today's real date explicitly.
+    if reference_day is None:
+        candidate_days = [
+            d for d in (
+                coverage_day,
+                last_success_day,
+                last_attempt_day,
+                *(_visit_day(r.get("source_published_at")) for r in (visits or [])),
+                *(_visit_day(r.get("system_recorded_at")) for r in (visits or [])),
+            )
+            if d is not None
+        ]
+        reference_day = max(candidate_days) if candidate_days else date.today()
 
     # Owner chronology is authority-bearing.  A persisted clock in the future,
     # before the write-once coverage stamp, or an attempt preceding the recorded
