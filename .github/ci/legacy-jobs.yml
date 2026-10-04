@@ -18582,6 +18582,6 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy scipy pyyaml
+        run: pip install pytest pandas numpy scipy pyyaml fastapi
       - name: Options Hub expiry Greek projection and missingness contract
         run: python -m pytest tests/test_options_hub.py tests/test_options_expiry_support.py -q -rs
