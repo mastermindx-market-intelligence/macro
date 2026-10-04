@@ -298,49 +298,34 @@ artifacts:
   - "MERGED #7398 / 60d7551e52c8c7345e1b70edd2a57b9544f88286: research/options_estate/OPTIONS_SIGNAL_CAMPAIGN_OUTCOME_CORRECTION_PREREG_V1.md + machine policy. Quarantine preregistration only. The runtime effective view and natural integrity remain owed."
   - agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-03-product-delivery.md
 next_action: >
-  Terminal #793 is deployed at 8fc1d1a038932c20dbb3d677a614f79445f90d0e. The
-  measured book is browser-proven with stale 2026-09-25 source times, and
-  candidate history is honestly unavailable. Fable's live acceptance failed
-  mobile title geometry and the first-load candidate sentence. The active
-  Terminal repair is #703. It is under CI and it is not deployed. #667 is
-  already merged and included. It is not a pending release. Fable owns #7306
-  updated-base head47ef463e36768cac0b6f49c7946f35351a308ba6 pending checks,
-  and #8201 current-main raw-clock compatibility integration/review. Neither is
-  claimed merged here. Custody is reconciled before each modifier. On
-  Macro, the measured wave stays in progress and is not proven live. The
-  2026-09-17 and 2026-09-18 evidence stays accepted. Source-clock repair
-  #7279 remains merged as fc4efb9fd9ec97cc3e65f9ff9ee157626be5683f, and shared
-  publisher recovery #7263 is already merged. The proofs still owed are two
-  normal post-repair engine survivals for durability #7265, broad-writer
-  exclusion #7193, campaign integrity, and the runtime effective view of
-  merged quarantine #7398 (60d7551e52c8c7345e1b70edd2a57b9544f88286).
-  Episode #8346 (7fdca240e1cfc9263458d9cd8670d06634806ded) is installed, and
-  the natural regular-hours proof is still owed. Campaign #8350
-  (73faa98b8ae49837a17f0c157d2167f85c150325) is source only. Enrichment #7417
-  (1be595c12072b1566b2acd11ccd0561a3a799420) was installed on M1 at 23:42:39Z,
-  and its 23:47:40Z cycle exited 0. That publication is not fresh-market,
-  candidate, calibration, or predictive evidence. Candidate publisher #8358
-  (f78c8accb895275182a48b8d1c05d2be8e38453e) stays inactive until the four
-  preregistered preconditions are cleared and an activation receipt exists.
-  FS5 #8360 is merged source only, as
-  d87d00a46e6a4cdffba667079615e2a4b437aea8. After the second worker timeout and
-  zero-residual cleanup, root integrates methods on the preserved workspace
-  with bounded helper/test leaves. There is no study, no fit, no promotion, and no
-  numerical per-bin threshold. Exact-option #8318 is merged as
-  1df2cc9f692a6d7502379c503b62e3cbe8ffbefd. It is a pure fixture evaluator, and
-  the executable NBBO lifecycle is unproven. B1 #8370 source merged as
-  15af4b7fc1d5216542a4e0970e34f40233975c3d after review and required CI.
-  Runtime is HELD for the exact four-parquet-plus-manifest publisher floor
-  defect from carrier599 comment5974835583; the narrow source-fix fabric is active.
-  The M1 clone is PREPARED_UNBOUND, and the installed Chain Heat receipt is in
-  agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-03-product-delivery.md.
-  That handoff does not reprioritize this program. The M1 storage-guard
-  deletion effect remains unknown and is separate from these installations and
-  from the raw-event retention observation. The next source step is to finish
-  the methods repair on that preserved workspace and obtain an independent
-  exact-head review and protected CI, while the B1 publisher-count fix receives
-  its own tests, independent review and protected CI before runtime binding.
-  Do not deploy #703 until the sole root executor consumes its qualified merge.
+  The latest active root checkpoint is
+  agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-03-product-delivery.md,
+  updated through 2026-10-04T01:14Z. Terminal703 is deployed at
+  c298fa1b831509dd3dcb7553aa34c03d69dd0084, with clean VPS identity and local/public
+  HTTP200; Fable owns independent EN/ZH desktop/tablet/mobile live acceptance.
+  B1 runtime source is installed at201064395fff8e16e958619bf1343eea6d7aca9c after
+  reviewed8370 and publisher-count8374 merges. Existing job schedules and input
+  authorities remain; independent installed readback passed and natural cycles are owed.
+  Preserve the separate Hub ThetaData external-store EINTR; B1 does not fix it.
+  FS5 source8360 is merged. Methods8377 at e3de558fb9ed24c18b08c0a30d8dbe6598e22278
+  passed299 tests and independent review, with hosted CI/merge pending. Calibration
+  stays unavailable, no artifact/study/promotion, and no numerical per-bin law is invented.
+  Fable merged7306 as98c67b7d2c5b89670b5e915c34dbc17d899e6df7 and owns8201
+  current-main clock release at481c059818de0e48895c5f38c29ca99c2bf44891. Independent
+  native source review passed; the attempted GitHub self-approval was rejected and
+  was not bypassed. Preserve ordinary review/CI/merge gates and723 custody.
+  Measured Sep17/18 evidence stays accepted; episode8346 is installed with natural
+  RTH proof owed, campaign8350 is source only, enrichment7417 has a verified natural
+  derivative publication without fresh-market/candidate/calibration/predictive claims.
+  Candidate8358 stays inactive until four preregistered preconditions and an activation
+  receipt exist. Exact-option8318 is a merged fixture evaluator; executable NBBO
+  lifecycle remains unproven. Remaining independent receipts are two normal post-repair
+  engine survivals7265, publisher7263/broad-writer7193 durability, campaign integrity,
+  runtime effective quarantine7398, AD1 admission/capacity, and scientific eligibility.
+  Chain Heat is installed awaiting natural publication. M1 storage-guard deletion
+  effect remains unknown and separate from runtime installation and R2 retention.
+  This is an active checkpoint, not mission completion or company reprioritization.
+
 ---
 
 ## Context
