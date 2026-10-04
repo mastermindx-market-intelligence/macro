@@ -139,7 +139,7 @@
    "TWLO",
    "NTAP"
   ],
-  "plan_universe_n": 473
+  "plan_universe_n": 474
  },
  "themes": {
   "basis": "subsector_rotation.emerging_score",
@@ -390,9 +390,8 @@
     "n_members": 24,
     "n_members_live": 24,
     "n_members_read": 24,
-    "n_members_on_board": 5,
+    "n_members_on_board": 4,
     "members_on_board": [
-     "ANET",
      "APH",
      "CIEN",
      "LRCX",
@@ -402,7 +401,7 @@
      "buy": 1,
      "watch": 2,
      "leaders": 0,
-     "ran": 2
+     "ran": 1
     },
     "pctile": 0.8155,
     "pctile_n": 252,
@@ -470,9 +469,8 @@
     "n_members": 12,
     "n_members_live": 12,
     "n_members_read": 12,
-    "n_members_on_board": 3,
+    "n_members_on_board": 2,
     "members_on_board": [
-     "ANET",
      "CRDO",
      "NVDA"
     ],
@@ -480,7 +478,7 @@
      "buy": 0,
      "watch": 1,
      "leaders": 0,
-     "ran": 2
+     "ran": 1
     },
     "pctile": 0.7679,
     "pctile_n": 252,
@@ -496,9 +494,8 @@
     "n_members": 74,
     "n_members_live": 74,
     "n_members_read": 74,
-    "n_members_on_board": 8,
+    "n_members_on_board": 7,
     "members_on_board": [
-     "ANET",
      "APH",
      "CIEN",
      "CRM",
@@ -511,7 +508,7 @@
      "buy": 1,
      "watch": 3,
      "leaders": 2,
-     "ran": 2
+     "ran": 1
     },
     "pctile": 0.7599,
     "pctile_n": 252,
@@ -1492,7 +1489,7 @@
   "graded_by": "engine.grading.grade_next_bar_return (next-bar fill, survivorship-aware) via engine.name_score_grader's own forward-store ladder",
   "scored_field": "score — name_score.potential_score, the number the US board displays as conviction.score (scripts/build_stock_library.py overwrites c['score'] with the potential score for backward compatibility)",
   "available": true,
-  "n_calls": 171048,
+  "n_calls": 171049,
   "n_frozen_echoes_excluded": 232,
   "n_stamp_dates": 70,
   "stamp_dates": {
