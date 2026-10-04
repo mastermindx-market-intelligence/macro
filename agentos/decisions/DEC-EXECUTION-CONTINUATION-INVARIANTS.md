@@ -208,6 +208,8 @@ release, authority, or another irreversible effect still bind; this removes repe
 administrative ceremony, not safety gates. Persist compact deltas at material milestones
 instead of rewriting unchanged state every turn.
 
+**Verified healthy CI/sweeper wait is a turn-yield boundary, not completion:** `async_unmerged` is allowed only when the exact armed head has the sweeper's required proof anchors genuinely pending or already clean; missing/unpublished proof and `ci_failed_unmerged` remain internal; ownership, merge/live proof and acceptance stay open.
+
 `ACK -> QUEUED -> START -> RUNNING -> DELIVERED -> CI -> MERGED -> PRODUCTION_PROOF ->
 ACCEPTANCE` are nine distinct facts and none implies the next. A checkpoint, a status
 note, or a continuation record describes work and is **never the outcome it describes**.

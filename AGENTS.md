@@ -614,6 +614,8 @@ effect, or other irreversible action; this removes repeated administrative cerem
 not safety gates. Persist compact deltas at material milestones instead of rewriting unchanged
 state every turn.
 
+**Verified healthy CI/sweeper wait is a turn-yield boundary, not completion:** `async_unmerged` is allowed only when the exact armed head has the sweeper's required proof anchors genuinely pending or already clean; missing/unpublished proof and `ci_failed_unmerged` remain internal; ownership, merge/live proof and acceptance stay open.
+
 ### The delivery ladder
 
 `ACK -> QUEUED -> START -> RUNNING -> DELIVERED -> CI -> MERGED -> PRODUCTION_PROOF ->
@@ -956,10 +958,14 @@ on 2026-08-28 while a HOLD-FOR-SOL carrier lawfully waited out a queued CI field
 under an armed watcher; the cost is context × turns and the notes carry zero
 information after the first). When a long external wait is owned by an armed
 watcher or cron, first exhaust other useful in-scope work. If the wait is then the only
-remaining lane and the guard keeps blocking, use the existing escape-ladder threshold
-(any code: 10 consecutive / 15 total); once met, end the turn ONCE with the
-literal `SHIP LOOP BLOCKED:` evidence report — literal first characters, naming
-the PR, exact head, check state, and watcher id plus cadence — then stay quiet:
+remaining lane and the guard keeps blocking, use the threshold for the **actual blocker
+class**: a verified healthy `async_unmerged` CI/sweeper wait is external (2 consecutive /
+3 cumulative external blocks), while a HOLD-FOR-SOL wait, missing/unpublished proof,
+`ci_failed_unmerged`, or other internal unresolved state keeps the any-code 10 consecutive /
+15 total loop-breaker. Never relabel an internal state just to take the short boundary. Once
+the applicable threshold is met, end the turn ONCE with the literal `SHIP LOOP BLOCKED:`
+evidence report — literal first characters, naming the PR, exact head, check state, and
+watcher id plus cadence — then stay quiet:
 no per-Stop hold notes, no tailing your own watcher's output file between ticks.
 Real events (watcher exit, cron fire, task notification, operator message)
 re-invoke the session; that is the only lawful cadence for a parked wait.
@@ -1070,11 +1076,17 @@ still requires every binding check concluded green, and waiting on CI still does
 qualify for the escape ladder, so answer such a block with a one-line hold note rather
 than a fresh poll or a `SHIP LOOP BLOCKED` report. For ordinary work, the guard snapshots pre-existing dirty files,
 then refuses a normal stop while session-created work is uncommitted, unpushed,
-unmerged, awaiting a render, or absent from production. `unmerged` is satisfied by an
-actually-MERGED pull request and by nothing else; an armed `merge-on-green` pull request
-blocks like any other unmerged one. Codex must apply the same state machine semantically
-from this file: ordinary unmerged work is unfinished, while a fully ratified Sol hold is
-PARKED and must not be re-polled or merged.
+unmerged, awaiting a render, or absent from production. Delivery completion of `unmerged`
+still requires an actually-MERGED pull request. An armed `merge-on-green` pull request
+therefore blocks its first Stop like any unfinished PR; however, a **verified healthy
+CI/sweeper wait is a turn-yield boundary, not completion**. When that exact armed head has
+the sweeper's required proof anchors genuinely pending, or already clean with only
+the merge sweep remaining, the guard uses `async_unmerged`: the existing external 2-consecutive /
+3-cumulative boundary may yield the turn after the explicit evidence report, while ownership,
+merge/live proof, and acceptance remain open. Missing/unpublished proof, an unproven head, and
+inherited-base recovery stay ordinary internal `unmerged`; they need bounded diagnosis/action,
+not a cheap wait exit. Codex must apply the same distinction semantically. A fully ratified Sol
+hold remains PARKED and must not be re-polled or merged.
 
 A red that is genuinely this head's files `ci_failed_unmerged`, which is deliberately an
 INTERNAL code (10 consecutive / 15 total, not the external 2/3): the state this rule

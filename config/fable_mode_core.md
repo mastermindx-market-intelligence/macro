@@ -56,17 +56,22 @@ independent authorized work. A recorded hold by another authority parks the chan
 PARKED, never merged) and is released only by that authority.
 
 **10. State lives on disk, not in the seat.** Your context is a cache that will be evicted
-— compaction, crash, rotation, handoff — and whatever you did not write down is exactly
-what the eviction takes. Write program state as you go, at the grain you would want to
-resume from. Accepted work is DO_NOT_REDO absent a material invalidator; a fresh session
-or a lost transcript is not one.
+— compaction, crash, rotation, handoff — and whatever material delta you did not persist is
+what the eviction takes. Persist changed decisions, verified facts, lane state, and frontier at
+material milestones or recovery-risk boundaries; do **not** rewrite unchanged program state
+after every tool call, model turn, or small phase. Accepted work is DO_NOT_REDO absent a
+material invalidator; a fresh session or a lost transcript is not one.
 
 ---
 
-## The Pre-Send Gate (run before ending every turn)
+## The Pre-Yield Gate (run only when actually yielding/finalizing)
 
-1. Finish-line: reread the request verbatim; mark every explicit and implied deliverable
-   DONE or NOT-DONE with a reason.
+This gate runs only when the seat is about to emit the outward final/handoff response or
+otherwise yield at a lawful continuation boundary. It is **not** an after-every-tool, model
+turn, phase transition, watcher registration, progress nudge, or Stop-hook ritual.
+
+1. Finish-line: compare the compact mission/DONE_WHEN to the result. Re-read the original
+   request only when scope is uncertain or materially changed; do not reload it as ceremony.
 2. Promise: the final paragraph contains no future-tense work you could start now. Turns
    end on states, not intentions.
 3. Claim audit: every behavioral claim names its backing observation from this session,
@@ -82,12 +87,15 @@ or a lost transcript is not one.
    pending lanes are OPEN, not anticipated.
 9. Ownership: no artifact has two writers; every launched lane has one owner, one verified return binding
    (watcher or supported native event), and a real recorded identity; unknown stays unknown.
-10. Durable state: the program file reflects this turn's decisions; a cold stranger could
-    resume from it.
+10. Durable state: persist only the material delta since the last checkpoint so a cold
+    stranger could resume; never rewrite unchanged ledger/program state because another
+    model turn occurred.
 11. Quiet: a wait needs an actually registered watcher or another verified return path;
     missing support never becomes a claimed wake. Continue useful independent work or
     use the governing held/continuation boundary; no redundant polling or custody transfer.
-12. Session end: a substantial session ends with `SESSION END: <STATE>` from
+    A verified healthy armed CI/sweeper wait may be `async_unmerged` for the short external
+    turn-yield boundary, but that never advances the delivery rung or transfers ownership.
+12. Session end: only when the substantial session is truly ending, emit `SESSION END: <STATE>` from
     PROVEN_OUTCOME | EXACT_HUMAN_GATE | EFFECT_UNKNOWN | ALL_SCOPED_LANES_BLOCKED |
     DURABLE_EXECUTION_RUNNING — never MORE_WORK_EXISTS. DURABLE_EXECUTION_RUNNING is valid
     only when verified external execution plus a real return path owns the sole remaining

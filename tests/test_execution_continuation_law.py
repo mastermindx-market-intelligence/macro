@@ -258,7 +258,14 @@ def test_case_2_a_wait_owned_outside_the_session_is_never_answered_by_polling(tm
 
     # A block the session itself must act on is NOT a wait: telling it to go do
     # something else would be the opposite error.
-    for code in ("uncommitted", "unpushed", "unsafe_branch", "render_failed"):
+    for code in (
+        "uncommitted",
+        "unpushed",
+        "unsafe_branch",
+        "unmerged",
+        GUARD.CI_FAILED_UNMERGED,
+        "render_failed",
+    ):
         assert "WAIT owned outside" not in _block_reason(tmp_path, capsys, code), code
 
     _on_every_surface(
@@ -267,6 +274,20 @@ def test_case_2_a_wait_owned_outside_the_session_is_never_answered_by_polling(tm
         "Pending CI/release freezes only that",
         "continue that work immediately",
         "external-wait/escape boundary",
+    )
+
+
+def test_case_2b_async_unmerged_is_a_turn_boundary_not_a_delivery_exit():
+    """Only a proven healthy CI/sweeper wait gets the short external Stop boundary."""
+    assert GUARD.ASYNC_UNMERGED in GUARD.EXTERNAL_BLOCKERS
+    assert "unmerged" not in GUARD.EXTERNAL_BLOCKERS
+    assert GUARD.CI_FAILED_UNMERGED not in GUARD.EXTERNAL_BLOCKERS
+    _on_every_surface(
+        "Verified healthy CI/sweeper wait is a turn-yield boundary, not completion",
+        "async_unmerged",
+        "the sweeper's required proof anchors genuinely pending or already clean",
+        "missing/unpublished proof and ci_failed_unmerged remain internal",
+        "ownership, merge/live proof and acceptance stay open",
     )
 
 
@@ -293,6 +314,11 @@ def test_fable_wait_doctrine_and_fallback_match_async_continuation():
     fallback = (ROOT / "config/fable_mode_core.md").read_text(encoding="utf-8")
     assert "accountability is not foreground" in fallback
     assert "sole remaining" in fallback
+    assert "The Pre-Yield Gate" in fallback
+    assert "**not** an after-every-tool" in fallback
+    assert "never rewrite unchanged ledger/program state" in fallback
+    assert "async_unmerged" in fallback
+    assert "The Pre-Send Gate (run before ending every turn)" not in fallback
 
 
 # --------------------------------------------------------------------------------------
