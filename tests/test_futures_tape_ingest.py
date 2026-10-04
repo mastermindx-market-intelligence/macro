@@ -43,6 +43,22 @@ def test_date_chunks_reject_invalid_range() -> None:
         fti._date_chunks("2026-01-01", "2026-01-02", 0)
 
 
+def test_range_backfill_rejects_zero_job_budget(tmp_path: Path) -> None:
+    with pytest.raises(SystemExit, match="--max-jobs"):
+        fti.cmd_backfill_lse_range(
+            type("Args", (), {
+                "max_jobs": 0,
+                "root": str(tmp_path),
+                "reserve_gib": 0.0,
+                "start": "2026-01-01",
+                "end": "2026-01-02",
+                "chunk_days": 1,
+                "symbol": "ES.F",
+                "force": False,
+            })()
+        )
+
+
 def test_storage_root_prefers_environment(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setenv("MMX_FUTURES_TAPE_ROOT", str(tmp_path))
     assert storage_root() == tmp_path
