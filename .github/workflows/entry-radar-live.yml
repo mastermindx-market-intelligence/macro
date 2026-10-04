@@ -211,9 +211,9 @@ jobs:
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: |
           if [ "${DRY_RUN:-}" = "true" ]; then
-            python -m scripts.entry_radar_live_pack --dry-run
+            python -m scripts.entry_radar_live_pack --dry-run --stream-substrate
           else
-            python -m scripts.entry_radar_live_pack
+            python -m scripts.entry_radar_live_pack --stream-substrate
           fi
 
       - name: evaluate one RTH pass against the frozen pack
