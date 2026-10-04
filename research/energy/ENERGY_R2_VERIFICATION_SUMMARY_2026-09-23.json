@@ -1,0 +1,45 @@
+{
+  "artifact_type": "local_research_integrity_and_arithmetic_receipt",
+  "input_file": "ENERGY_R2_RESEARCH_MODEL_2026-09-23.json",
+  "input_sha256": "1457234b8efcdda296cb221a6921dde021b6c3fbdab7bfac91e507860892dd13",
+  "input_git_blob": "08aa53de414ef89f710e187d869388bf795af7d3",
+  "integrity_checks": 21,
+  "arithmetic_and_measurement_checks": 22,
+  "document_integrity_checks": 6,
+  "bridge_arithmetic_checks": 8,
+  "input_artifacts": [
+    {
+      "file": "ENERGY_R2_RESEARCH_MODEL_2026-09-23.json",
+      "sha256": "1457234b8efcdda296cb221a6921dde021b6c3fbdab7bfac91e507860892dd13",
+      "git_blob": "08aa53de414ef89f710e187d869388bf795af7d3"
+    },
+    {
+      "file": "ENERGY_R2_HYDROCARBON_ECONOMICS_2026-09-23.md",
+      "sha256": "73b7f12d8e1612c1fe8a8c99017709d0b6173f770c02ce289a43140bf3314118",
+      "git_blob": "a37a7f11a19963525dcf26acdd4f615d62b07531"
+    },
+    {
+      "file": "ENERGY_R2_RECONCILIATION_AND_POWER_BRIDGE_2026-09-23.md",
+      "sha256": "46ba02f587b02c2d8713496dc47ed3f650d3ac37fb99d1825173abfc03d1f6f5",
+      "git_blob": "0117eaacfa9faf192155f2b1fc7ab7c7daf2105a"
+    }
+  ],
+  "verifier_sha256": "bea4400d19de7d9ef3f8a4958e4c3358ed6f3f439381f4c32e62e105ae9ca993",
+  "check_corrections": [
+    "Corrected a mistyped expected SLB growth constant using an independent exact fraction; no input or tolerance change.",
+    "Replaced a loose substring locator count with an anchored source-row grammar; no source or coverage requirement removed."
+  ],
+  "passed": 57,
+  "failed": 0,
+  "application_tests_run": 0,
+  "claim_limit": "Does not establish source truth beyond cited reads, link availability, complete global coverage, predictive validity, accepted schema, native ingestion, browser proof or research acceptance.",
+  "verifier_git_blob": "8ed026e852c910fc3a0e4cf4fb9024958848467e",
+  "reproduce_command": "python research/energy/verify_energy_r2.py",
+  "full_result_file": "ENERGY_R2_VERIFICATION_2026-09-23.json",
+  "canonical_input_readbacks": {
+    "research_model_commit": "878323493c47bfdb28e32647b9fbc4badd0ae402",
+    "dossiers_commit": "f1f195f420d7c968e1e2bd5315db2f6888a8f734",
+    "bridge_commit": "49d6376ac9073b466e485ba029d1f17bc53ca5d7",
+    "verifier_commit": "366527a737e001efd7f832500e82f4e93277264e"
+  }
+}

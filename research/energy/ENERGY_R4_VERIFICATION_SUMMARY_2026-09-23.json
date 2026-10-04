@@ -1,0 +1,30 @@
+{
+  "artifact_type": "research_integrity_and_arithmetic_receipt",
+  "model_file": "ENERGY_R4_EVIDENCE_MODEL_2026-09-23.json",
+  "model_sha256": "73b967f3fe48ea78d24df8df17ca2ce7f83b234ad778ebbe6d339d0129bb3412",
+  "model_git_blob": "bd43d90eb3cbf20ebf2d507710bd0fcdc2c3201a",
+  "verifier_file": "verify_energy_r4.py",
+  "verifier_sha256": "f8153d628bf7f1ee46bc01a699e8491f6a675fc22d59f727161d94da6c0836a5",
+  "verifier_git_blob": "75d1e2e562d8c74ad8089bff16e0329e16428030",
+  "counts": {
+    "integrity": 16,
+    "source_arithmetic": 32,
+    "hypothetical_arithmetic": 17,
+    "negative_control": 14
+  },
+  "passed": 79,
+  "failed": 0,
+  "application_tests_run": 0,
+  "predictive_backtests_run": 0,
+  "full_source_link_test": false,
+  "claim_limit": "Selected notebook invariants and arithmetic only. Not source-truth certification, complete legal/contract review, production behavior, rights admission, causal validation or investment merit.",
+  "full_result_file": "ENERGY_R4_VERIFICATION_2026-09-23.json",
+  "full_result_sha256": "3f3f06c36c3e530368c7e5a07f270dc589b065a24e0869d746b0d80015cb7b73",
+  "full_result_git_blob": "903c20fbb34ba1bf02deb57d35cc4752aabd8196",
+  "reproduce_command": "python research/energy/verify_energy_r4.py",
+  "canonical_model_commit": "0a91193f87fb3b8b6fabd7b0449200aec529c309",
+  "canonical_verifier_commit": "d55eb78b32fedcbf7af6a552fdfa561d548d307b",
+  "dossier_commit": "2ac3541ce3f8cbb2fc8ac08676639eba6739ca1e",
+  "dossier_git_blob": "4402788175956ef59b8071fb69e76e7665652f02",
+  "dossier_scope": "Immutable native readback; not included in local verifier input. Model and verifier byte identities match their native readbacks."
+}
