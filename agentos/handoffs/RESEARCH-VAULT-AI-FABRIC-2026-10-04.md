@@ -101,3 +101,32 @@ discoveries:
 # Research Vault AI fabric — durable handoff
 
 This record marks the planning/census package as ready for orchestration. It does **not** claim a Fable receiver has picked it up, that an Executive Job exists, or that any implementation/deployment has started.
+
+
+## 2026-10-04 continuation delta — F4 producer diagnosis
+
+New canonical packet artifact:
+
+research/research_vault_ai_fabric_20261004/08_F4_PRODUCER_OUTAGE_DIAGNOSIS.md
+
+Verified delta:
+
+- hourly Research Vault publication continued while source population hard-stopped at 2,778 rows;
+- the last source timestamp remains 2026-09-24T09:28:05Z;
+- accepted incidents #6862 and #7297 prove the same Mac13,1 producer had previously failed from MarketDesk auth expiry and was healthy again on September 18;
+- current trickle source can park SessionExpired accounts indefinitely while the process remains alive;
+- the current PROVEN_LIVE immediate trigger owner remains com.mastermindx.research-feed from #6949;
+- PR #7226 is an unactivated alternative trigger architecture, not current production authority;
+- current extractor release verification still freezes the historical recovery manifest, so legitimate F4 source edits require selective port of the dual-manifest / release-receipt evolution model before modifying source-owned runtime bytes.
+
+Remaining F4 proof boundary:
+
+Exact live host cause is still UNPROVEN until read-only Mac13,1 log/profile inspection. If auth loss is confirmed, recovery requires the human single-writer ceremony against the EXISTING persistent MarketDesk profile: stop exactly com.mastermindx.research-trickle, run marketdesk auth, restart the same LaunchAgent, then prove one new natural report traverses producer -> inbox -> canonical PDF/catalog/corpus/receipt and source freshness returns healthy.
+
+DO_NOT_REDO:
+
+- do not weaken the source freshness deadline;
+- do not create a second MarketDesk profile/producer/scheduler/queue/bucket;
+- do not retire the current feed watcher merely because #7226 exists;
+- do not mutate extractor source while the historical frozen-manifest verifier would reject the release;
+- do not call process presence producer health after SessionExpired.
