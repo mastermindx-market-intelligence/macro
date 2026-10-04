@@ -42,6 +42,7 @@ from lib.dataos.futures_tape import (  # noqa: E402
     sha256_file,
     storage_root,
     utc_now,
+    verify_manifest,
     write_manifest_atomic,
 )
 
@@ -178,14 +179,19 @@ def _write_dataframe_export(df, target: Path, *, source: str, source_role: Sourc
     return manifest
 
 
+def _valid_receipted(root: Path, target: Path) -> bool:
+    receipt = manifest_path(target)
+    return target.is_file() and receipt.is_file() and not verify_manifest(root, receipt)
+
+
 def cmd_backfill_lse(args: argparse.Namespace) -> int:
     root = storage_root(args.root)
     # Keep storage_root() coherent for manifest relative paths inside this process.
     os.environ["MMX_FUTURES_TAPE_ROOT"] = str(root)
     require_capacity(root, args.reserve_gib)
     target = raw_export_path(root, "lse", args.symbol, args.start, args.end)
-    if target.exists() and manifest_path(target).exists() and not args.force:
-        print(json.dumps({"status": "already_present", "path": str(target)}))
+    if _valid_receipted(root, target) and not args.force:
+        print(json.dumps({"status": "already_present_valid", "path": str(target)}))
         return 0
 
     client = _lse_client()
@@ -248,7 +254,7 @@ def cmd_normalize_lse(args: argparse.Namespace) -> int:
         norm["_date"] = norm["timestamp_utc"].dt.strftime("%Y-%m-%d")
         for day, part in norm.groupby("_date", sort=True):
             target = normalized_day_path(root, "lse", args.identity, day)
-            if target.exists() and not args.force:
+            if _valid_receipted(root, target) and not args.force:
                 continue
             frame = part.drop(columns=["_date"]).reset_index(drop=True)
             _write_dataframe_export(
@@ -285,7 +291,7 @@ def cmd_derive_bars(args: argparse.Namespace) -> int:
         bars = bars.rename(columns={"_ts": "window_start_utc"})
         day = path.parent.name.split("=", 1)[-1]
         target = derived_bar_path(root, args.instrument, args.freq, day)
-        if target.exists() and not args.force:
+        if _valid_receipted(root, target) and not args.force:
             continue
         _write_dataframe_export(
             bars, target,
