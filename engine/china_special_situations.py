@@ -1,6 +1,6 @@
 """China Special Situations desk engine.
 
-Fuses six data planes into a schema-versioned, context-only JSON:
+Fuses source-owned context planes into a schema-versioned, context-only JSON:
   NEW  : unlocks, preannouncements, inquiry letters, ST board + history, goodwill
   EXISTING: buybacks, pledge stress, block-trade anomalies, earnings calendar
 
@@ -12,7 +12,7 @@ Rules:
 - NO composite scores, NO buy/sell language
 - Counts, ranks by DISCLOSED magnitudes, dates, links only
 - Direction labels = exchange-reported 预告类型 verbatim
-- Inquiry letters = metadata + link only (no body text)
+- Inquiry letters and CIE-10 contract/order rows = metadata + link only (no body text)
 - ST watch labeled "history accrues from 2026-07 forward" until ≥2 dates present
 
 Unlock ratio note: 占解禁前流通市值比例 is a FRACTION (1.0 = 100%). Engine stores
@@ -824,6 +824,174 @@ def _inquiry_block() -> dict | None:
         return None
 
 
+
+# ── CIE-10: contract / order filing metadata (no body, no materiality inference) ── #
+
+_CONTRACT_CANCEL_RE = re.compile(r"终止|取消|撤销|解除|作废|废止|流标")
+_CONTRACT_PROGRESS_RE = re.compile(r"补充协议|变更|更正|修订|调整|延期|进展|履行|执行情况|补充公告")
+_CONTRACT_AWARD_RE = re.compile(r"中标候选|预中标|中标|成交")
+_CONTRACT_SIGN_RE = re.compile(r"重大合同|签订.{0,8}合同|签署.{0,8}合同|合同签订")
+
+
+def _contract_title_state(title: Any) -> dict:
+    """Typed lifecycle observation derivable from filing TITLE only.
+
+    This function never infers that an award became a binding contract, that a
+    contract became revenue, or that an amendment belongs to another filing.
+    """
+    text = str(title or "")
+    if _CONTRACT_CANCEL_RE.search(text):
+        return {
+            "state": "cancelled_or_terminated",
+            "label": {"en": "Cancellation / termination filing", "zh": "取消 / 终止公告"},
+        }
+    if _CONTRACT_PROGRESS_RE.search(text):
+        return {
+            "state": "amendment_or_progress",
+            "label": {"en": "Amendment / progress filing", "zh": "变更 / 进展公告"},
+        }
+    if _CONTRACT_AWARD_RE.search(text):
+        return {
+            "state": "award_or_candidate_notice",
+            "label": {"en": "Award / candidate notice", "zh": "中标 / 候选公告"},
+        }
+    if _CONTRACT_SIGN_RE.search(text):
+        return {
+            "state": "contract_announcement",
+            "label": {"en": "Contract announcement", "zh": "合同公告"},
+        }
+    return {
+        "state": "contract_metadata_unclassified",
+        "label": {"en": "Contract/order filing", "zh": "合同 / 订单公告"},
+    }
+
+
+def _contract_order_block(window_days: int = 90) -> dict:
+    """Recent major-contract filing metadata from the canonical CNInfo tape.
+
+    CIE-10 stage-1 only: no PDF/body fetch, project-thread guess, amount parser,
+    denominator, counterparty resolution, revenue recognition, or direction.
+    """
+    path = _data_dir() / "china_filings" / "filings.parquet"
+    if not path.exists():
+        return {
+            "asof": None,
+            "status": "missing",
+            "events": [],
+            "n_total": 0,
+            "n_shown": 0,
+            "by_state": {},
+            "coverage_note": "china_filings store not present",
+        }
+
+    try:
+        df = pd.read_parquet(path)
+    except Exception as e:  # noqa: BLE001
+        log.warning("china_special_sits: contract/order filings unreadable (%s)", e)
+        return {
+            "asof": None,
+            "status": "source_failure",
+            "events": [],
+            "n_total": 0,
+            "n_shown": 0,
+            "by_state": {},
+            "coverage_note": "china_filings store unreadable",
+        }
+
+    try:
+        collected = df.get("_collected_at")
+        asof = str(collected.max())[:10] if collected is not None and not df.empty else None
+        if asof:
+            age = (date.today() - date.fromisoformat(asof)).days
+            status = "ok" if age <= 2 else "stale"
+        else:
+            status = "missing"
+
+        if "category" not in df.columns:
+            return {
+                "asof": asof,
+                "status": status,
+                "events": [],
+                "n_total": 0,
+                "n_shown": 0,
+                "by_state": {},
+                "coverage_note": "category field unavailable",
+            }
+
+        fam = df[df["category"] == "major_contract"].copy()
+        if fam.empty:
+            return {
+                "asof": asof,
+                "status": status,
+                "events": [],
+                "n_total": 0,
+                "n_shown": 0,
+                "by_state": {},
+                "coverage_note": (
+                    "No major_contract metadata rows in the observed canonical filing tape"
+                ),
+            }
+
+        fam["_published_day"] = fam.get("publish_ts", "").fillna("").map(
+            lambda v: str(v)[:10] if v else ""
+        )
+        cutoff = (date.today() - timedelta(days=max(int(window_days), 0))).isoformat()
+        fam = fam[fam["_published_day"] >= cutoff].copy()
+        fam = fam.sort_values(
+            ["publish_ts", "announcementId"], ascending=[False, False],
+            na_position="last",
+        )
+
+        projected: list[dict] = []
+        counts: dict[str, int] = {}
+        for _, r in fam.iterrows():
+            state = _contract_title_state(r.get("title"))
+            key = state["state"]
+            counts[key] = counts.get(key, 0) + 1
+            projected.append({
+                "announcement_id": str(r.get("announcementId") or ""),
+                "secCode": str(r.get("sec_code") or ""),
+                "secName": str(r.get("sec_name") or ""),
+                "title": str(r.get("title") or ""),
+                "published_at": str(r.get("publish_ts") or ""),
+                "first_collected_at": str(r.get("_collected_at") or ""),
+                "exchange": str(r.get("exchange") or ""),
+                "source_url": str(r.get("adjunct_url") or ""),
+                "announcement_type_raw": str(r.get("announcement_type_raw") or ""),
+                **state,
+                # Metadata alone has no safe project/thread identity. Never join
+                # a cancellation/amendment to another filing by issuer/date guess.
+                "project_key": None,
+                "thread_identity_state": "unresolved_without_project_key",
+                "materiality_state": "unknown_without_denominator",
+                "economic_realization_state": "not_inferred_from_filing_metadata",
+            })
+
+        return {
+            "asof": asof,
+            "status": status,
+            "window_days": int(window_days),
+            "events": projected[:_MAX_ROWS],
+            "n_total": len(projected),
+            "n_shown": min(len(projected), _MAX_ROWS),
+            "by_state": counts,
+            "coverage_note": (
+                "Metadata-only CNInfo major_contract family; body/project economics not inferred"
+            ),
+        }
+    except Exception as e:  # noqa: BLE001
+        log.warning("china_special_sits: contract/order block failed (%s)", e)
+        return {
+            "asof": None,
+            "status": "source_failure",
+            "events": [],
+            "n_total": 0,
+            "n_shown": 0,
+            "by_state": {},
+            "coverage_note": "contract/order projection failed",
+        }
+
+
 def _preannounce_block() -> dict | None:
     """Earnings preannouncement counts by type + biggest movers."""
     path = _data_dir() / "china_preannounce" / "forecast.parquet"
@@ -1460,6 +1628,7 @@ def scan() -> dict:
     for key, fn in (
         ("unlocks",      _unlock_block),
         ("inquiry",      _inquiry_block),
+        ("contracts",    _contract_order_block),
         ("preannounce",  _preannounce_block),
         ("buyback",      _buyback_block),
         ("pledge",       _pledge_block),
