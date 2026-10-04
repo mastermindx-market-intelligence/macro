@@ -187,6 +187,169 @@ def test_write_dataframe_export_is_atomic_and_receipted(monkeypatch, tmp_path: P
     assert m.relative_path == target.relative_to(tmp_path).as_posix()
 
 
+def test_manifest_round_trips_source_request_window(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("MMX_FUTURES_TAPE_ROOT", str(tmp_path))
+    target = raw_export_path(tmp_path, "lse", "ES.F", "2026-01-01T00:00:00Z", "2026-01-01T12:00:00Z")
+    df = pd.DataFrame({
+        "timestamp": ["2026-01-01T00:00:01Z"],
+        "price": [6700.0],
+    })
+    fti._write_dataframe_export(
+        df,
+        target,
+        source="lse",
+        source_role=SourceRole.VENDOR_CONTINUOUS,
+        source_symbol="ES.F",
+        state=PartitionState.FINAL,
+        request_start="2026-01-01T00:00:00Z",
+        request_end="2026-01-01T12:00:00Z",
+    )
+    loaded = PartitionManifest.from_json(
+        Path(str(target) + ".manifest.json").read_text()
+    )
+    assert loaded.request_start == "2026-01-01T00:00:00Z"
+    assert loaded.request_end == "2026-01-01T12:00:00Z"
+
+
+def test_day_coverage_accepts_two_final_half_day_windows() -> None:
+    base = dict(
+        source="lse",
+        source_role=SourceRole.VENDOR_CONTINUOUS.value,
+        source_symbol="ES.F",
+        relative_path="raw/x.parquet",
+        row_count=1,
+        byte_count=1,
+        sha256="0" * 64,
+        retrieved_at_utc="2026-10-05T00:00:00Z",
+        state=PartitionState.FINAL.value,
+    )
+    first = PartitionManifest(
+        **base,
+        request_start="2026-01-01T00:00:00Z",
+        request_end="2026-01-01T12:00:00Z",
+    )
+    second = PartitionManifest(
+        **base,
+        request_start="2026-01-01T12:00:00Z",
+        request_end="2026-01-02T00:00:00Z",
+    )
+    assert fti._day_is_fully_covered("2026-01-01", [first, second]) is True
+
+
+def test_day_coverage_rejects_gap_and_provisional_window() -> None:
+    base = dict(
+        source="lse",
+        source_role=SourceRole.VENDOR_CONTINUOUS.value,
+        source_symbol="ES.F",
+        relative_path="raw/x.parquet",
+        row_count=1,
+        byte_count=1,
+        sha256="0" * 64,
+        retrieved_at_utc="2026-10-05T00:00:00Z",
+    )
+    first = PartitionManifest(
+        **base,
+        state=PartitionState.FINAL.value,
+        request_start="2026-01-01T00:00:00Z",
+        request_end="2026-01-01T11:00:00Z",
+    )
+    second = PartitionManifest(
+        **base,
+        state=PartitionState.FINAL.value,
+        request_start="2026-01-01T12:00:00Z",
+        request_end="2026-01-02T00:00:00Z",
+    )
+    assert fti._day_is_fully_covered("2026-01-01", [first, second]) is False
+    full_but_provisional = PartitionManifest(
+        **base,
+        state=PartitionState.PROVISIONAL.value,
+        request_start="2026-01-01T00:00:00Z",
+        request_end="2026-01-02T00:00:00Z",
+    )
+    assert fti._day_is_fully_covered("2026-01-01", [full_but_provisional]) is False
+
+
+def test_normalize_combines_split_raw_windows_before_writing_day(
+    monkeypatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("MMX_FUTURES_TAPE_ROOT", str(tmp_path))
+    chunks = [
+        (
+            "2026-01-01T00:00:00Z",
+            "2026-01-01T12:00:00Z",
+            ["2026-01-01T00:00:01Z", "2026-01-01T11:59:59Z"],
+            [6700.0, 6701.0],
+        ),
+        (
+            "2026-01-01T12:00:00Z",
+            "2026-01-02T00:00:00Z",
+            ["2026-01-01T12:00:01Z", "2026-01-01T23:59:59Z"],
+            [6702.0, 6703.0],
+        ),
+    ]
+    for start, end, stamps, prices in chunks:
+        target = raw_export_path(tmp_path, "lse", "ES.F", start, end)
+        fti._write_dataframe_export(
+            pd.DataFrame({"timestamp": stamps, "price": prices, "volume": [1, 1]}),
+            target,
+            source="lse",
+            source_role=SourceRole.VENDOR_CONTINUOUS,
+            source_symbol="ES.F",
+            state=PartitionState.FINAL,
+            request_start=start,
+            request_end=end,
+        )
+
+    args = type("Args", (), {
+        "root": str(tmp_path),
+        "symbol": "ES.F",
+        "identity": "LSE_ES.F",
+        "force": False,
+    })()
+    assert fti.cmd_normalize_lse(args) == 0
+    target = normalized_day_path(tmp_path, "lse", "LSE_ES.F", "2026-01-01")
+    out = pd.read_parquet(target)
+    assert out["price_raw"].tolist() == [6700.0, 6701.0, 6702.0, 6703.0]
+    manifest = PartitionManifest.from_json(
+        Path(str(target) + ".manifest.json").read_text()
+    )
+    assert manifest.state == PartitionState.FINAL.value
+
+
+def test_normalize_marks_partial_day_provisional(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("MMX_FUTURES_TAPE_ROOT", str(tmp_path))
+    target = raw_export_path(
+        tmp_path, "lse", "ES.F",
+        "2026-01-01T00:00:00Z", "2026-01-01T12:00:00Z",
+    )
+    fti._write_dataframe_export(
+        pd.DataFrame({
+            "timestamp": ["2026-01-01T00:00:01Z"],
+            "price": [6700.0],
+            "volume": [1],
+        }),
+        target,
+        source="lse",
+        source_role=SourceRole.VENDOR_CONTINUOUS,
+        source_symbol="ES.F",
+        state=PartitionState.FINAL,
+        request_start="2026-01-01T00:00:00Z",
+        request_end="2026-01-01T12:00:00Z",
+    )
+    args = type("Args", (), {
+        "root": str(tmp_path),
+        "symbol": "ES.F",
+        "identity": "LSE_ES.F",
+        "force": False,
+    })()
+    assert fti.cmd_normalize_lse(args) == 0
+    normalized = normalized_day_path(tmp_path, "lse", "LSE_ES.F", "2026-01-01")
+    manifest = PartitionManifest.from_json(
+        Path(str(normalized) + ".manifest.json").read_text()
+    )
+    assert manifest.state == PartitionState.PROVISIONAL.value
+
+
 def test_backfill_refuses_capped_lse_export(monkeypatch, tmp_path: Path) -> None:
     class FakeClient:
         def catalog(self, category):
