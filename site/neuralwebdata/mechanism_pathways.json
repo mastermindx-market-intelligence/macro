@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.mechanism_pathways.v1",
-  "as_of": "2026-09-30",
+  "as_of": "2026-10-03",
   "display_only": true,
   "not_a_signal": true,
   "authority": {
@@ -25,30 +25,30 @@
   },
   "pathways": [
     {
-      "family": "rates",
-      "driver": "fed_repricing",
+      "family": "real_rate_shock",
+      "driver": "real_rate_shock",
       "pathway_role": "primary",
-      "as_of": "2026-09-30",
-      "direction_en": "hawkish repricing — cuts priced out, front-end up",
-      "direction_zh": "鹰派重定价 — 计入更少降息、前端利率上行",
+      "as_of": "2026-10-03",
+      "direction_en": "Rates / inflation shock",
+      "direction_zh": "利率/通胀冲击",
       "confidence_ceiling": "context_only",
-      "coverage_score": 1.0,
-      "coherence": "supported",
+      "coverage_score": null,
+      "coherence": "partial",
       "stale_legs": [],
       "nodes": [
         {
-          "node_id": "driver_fed_repricing",
-          "as_of": "2026-09-30",
+          "node_id": "driver_real_rate_shock",
+          "as_of": "2026-10-03",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "fed_repricing",
+          "entity": "real_rate_shock",
           "observation": {
-            "en": "hawkish repricing — cuts priced out, front-end up",
-            "zh": "鹰派重定价 — 计入更少降息、前端利率上行"
+            "en": "Rates / inflation shock",
+            "zh": "利率/通胀冲击"
           },
-          "direction": 1,
-          "value": 1.89,
-          "z_or_percentile": 1.45,
+          "direction": "",
+          "value": 83.7,
+          "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "trigger",
@@ -57,111 +57,114 @@
           ]
         },
         {
-          "node_id": "leg_fed_repricing_0",
-          "as_of": "2026-09-30",
-          "domain": "market_drivers",
-          "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "fed-funds futures",
+          "node_id": "transmission_real_rate_order1",
+          "as_of": "2026-10-03",
+          "domain": "transmission",
+          "source_artifact": "data/transmission/latest.json",
+          "entity": "transmission channel",
           "observation": {
-            "en": "fed-funds futures (+5.8σ)",
-            "zh": "联邦基金期货 (+5.8σ)"
+            "en": "Rising real 10y yields lift the discount rate → long-duration equities, REITs and other long-duration assets de-rate first.",
+            "zh": "实际10年期收益率上行抬高贴现率→长久期股票、REITs等长久期资产首先承压。"
           },
-          "direction": "positive",
-          "value": 5.8,
-          "z_or_percentile": 5.8,
-          "source_tier": "display",
+          "direction": "",
+          "value": null,
+          "z_or_percentile": null,
+          "source_tier": "context_only",
           "lag_class": "same_day",
-          "pathway_role": "required_leg",
+          "pathway_role": "transmission_order_1",
           "evidence_refs": [
-            "market_drivers.evidence_legs[0]"
+            "transmission.chains.real_rate.order1"
           ]
         },
         {
-          "node_id": "leg_fed_repricing_1",
-          "as_of": "2026-09-30",
-          "domain": "market_drivers",
-          "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "2y yield",
+          "node_id": "transmission_real_rate_order2",
+          "as_of": "2026-10-03",
+          "domain": "transmission",
+          "source_artifact": "data/transmission/latest.json",
+          "entity": "transmission channel",
           "observation": {
-            "en": "2y yield (+1.5σ)",
-            "zh": "2年期收益率 (+1.5σ)"
+            "en": "Higher US real yields pull capital in → the dollar firms → gold, industrial commodities and EM are pressured.",
+            "zh": "美国实际收益率走高吸引资本流入→美元走强→黄金、工业商品与新兴市场受压。"
           },
-          "direction": "positive",
-          "value": 1.5,
-          "z_or_percentile": 1.5,
-          "source_tier": "display",
-          "lag_class": "same_day",
-          "pathway_role": "required_leg",
+          "direction": "",
+          "value": null,
+          "z_or_percentile": null,
+          "source_tier": "context_only",
+          "lag_class": "days_1_5",
+          "pathway_role": "transmission_order_2",
           "evidence_refs": [
-            "market_drivers.evidence_legs[1]"
+            "transmission.chains.real_rate.order2"
           ]
         },
         {
-          "node_id": "leg_fed_repricing_2",
-          "as_of": "2026-09-30",
-          "domain": "market_drivers",
-          "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "10y yield",
+          "node_id": "transmission_real_rate_order3",
+          "as_of": "2026-10-03",
+          "domain": "transmission",
+          "source_artifact": "data/transmission/latest.json",
+          "entity": "transmission channel",
           "observation": {
-            "en": "10y yield (+2.4σ)",
-            "zh": "10年期收益率 (+2.4σ)"
+            "en": "A firm dollar + soft commodities → energy/materials relative headwind and EM-revenue exporters de-rate; financials are the relative beneficiary as curves steepen.",
+            "zh": "强美元＋商品走软→能源/材料相对承压、新兴市场营收型出口商估值下修；曲线变陡时金融为相对受益者。"
           },
-          "direction": "positive",
-          "value": 2.4,
-          "z_or_percentile": 2.4,
-          "source_tier": "display",
-          "lag_class": "same_day",
-          "pathway_role": "required_leg",
+          "direction": "",
+          "value": null,
+          "z_or_percentile": null,
+          "source_tier": "context_only",
+          "lag_class": "weeks_1_4",
+          "pathway_role": "transmission_order_3",
           "evidence_refs": [
-            "market_drivers.evidence_legs[2]"
+            "transmission.chains.real_rate.order3"
           ]
         }
       ],
       "edges": [
         {
-          "src_node": "driver_fed_repricing",
-          "dst_node": "leg_fed_repricing_0",
-          "mechanism_type": "evidence_leg",
+          "src_node": "driver_real_rate_shock",
+          "dst_node": "transmission_real_rate_order1",
+          "mechanism_type": "transmission_channel",
           "expected_lag": "same_day",
-          "expected_sign": "positive",
-          "observed_sign": "positive",
+          "expected_sign": "",
+          "observed_sign": null,
           "status": "measured",
           "evidence_refs": [
-            "market_drivers.evidence_legs[0]"
+            "transmission.chains.real_rate.order1"
           ]
         },
         {
-          "src_node": "driver_fed_repricing",
-          "dst_node": "leg_fed_repricing_1",
-          "mechanism_type": "evidence_leg",
-          "expected_lag": "same_day",
-          "expected_sign": "positive",
-          "observed_sign": "positive",
+          "src_node": "transmission_real_rate_order1",
+          "dst_node": "transmission_real_rate_order2",
+          "mechanism_type": "transmission_channel",
+          "expected_lag": "days_1_5",
+          "expected_sign": "",
+          "observed_sign": null,
           "status": "measured",
           "evidence_refs": [
-            "market_drivers.evidence_legs[1]"
+            "transmission.chains.real_rate.order2"
           ]
         },
         {
-          "src_node": "driver_fed_repricing",
-          "dst_node": "leg_fed_repricing_2",
-          "mechanism_type": "evidence_leg",
-          "expected_lag": "same_day",
-          "expected_sign": "positive",
-          "observed_sign": "positive",
+          "src_node": "transmission_real_rate_order2",
+          "dst_node": "transmission_real_rate_order3",
+          "mechanism_type": "transmission_channel",
+          "expected_lag": "weeks_1_4",
+          "expected_sign": "",
+          "observed_sign": null,
           "status": "measured",
           "evidence_refs": [
-            "market_drivers.evidence_legs[2]"
+            "transmission.chains.real_rate.order3"
           ]
         }
-      ]
+      ],
+      "coverage_basis": "scare_trigger",
+      "source_trigger": "risk_radar",
+      "scare": "rates"
     },
     {
-      "family": "china",
-      "driver": "china_stimulus",
+      "family": "credit",
+      "driver": "credit_stress",
       "pathway_role": "alternate",
-      "as_of": "2026-09-30",
-      "direction_en": "China risk-off — A-shares/HK & copper lead down",
+      "as_of": "2026-10-03",
+      "direction_en": "credit spreads widening — stress",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
@@ -169,17 +172,17 @@
       "stale_legs": [],
       "nodes": [
         {
-          "node_id": "driver_china_stimulus",
-          "as_of": "2026-09-30",
+          "node_id": "driver_credit_stress",
+          "as_of": "2026-10-03",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "china_stimulus",
+          "entity": "credit_stress",
           "observation": {
-            "en": "China risk-off — A-shares/HK & copper lead down",
+            "en": "credit spreads widening — stress",
             "zh": ""
           },
           "direction": "",
-          "value": 1.3,
+          "value": 1.13,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
@@ -193,11 +196,11 @@
       "coverage_basis": "scare_trigger"
     },
     {
-      "family": "rates",
-      "driver": "real_rate_shock",
+      "family": "fx",
+      "driver": "usd_shock",
       "pathway_role": "alternate",
-      "as_of": "2026-09-30",
-      "direction_en": "real yields rising — restrictive, gold & duration hit",
+      "as_of": "2026-10-03",
+      "direction_en": "dollar surging — squeeze, commodities & EM pressured",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
@@ -205,17 +208,17 @@
       "stale_legs": [],
       "nodes": [
         {
-          "node_id": "driver_real_rate_shock",
-          "as_of": "2026-09-30",
+          "node_id": "driver_usd_shock",
+          "as_of": "2026-10-03",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "real_rate_shock",
+          "entity": "usd_shock",
           "observation": {
-            "en": "real yields rising — restrictive, gold & duration hit",
+            "en": "dollar surging — squeeze, commodities & EM pressured",
             "zh": ""
           },
           "direction": "",
-          "value": 1.27,
+          "value": 0.99,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",

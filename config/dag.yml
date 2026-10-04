@@ -1131,6 +1131,17 @@ lanes:
           catalysts, and writes site/options_catalyst_links/ (envelope + JSONL) with
           the binding-state histogram. Context-only: every authority field false,
           no rank/size/gate, no data/ writes. Non-fatal (continue-on-error).
+      - id: build_options_alpha_candidate_feed
+        module: scripts.build_options_alpha_candidate_feed
+        note: >
+          Serial after the canonical episode and campaign builders and their
+          exact-path publications. Inactive, with no R2 access and no publication
+          journal, when a valid activation receipt is absent. When activated, this
+          step reuses the existing scripts.publish_options_alpha_candidate_r2, the
+          sole publisher of options_alpha/candidate_feed.json and receipt.json.
+          It writes no Git output, adds no second writer, no new ledger, and no
+          new lane. The daily workflow four-success gate is the actual runtime
+          order. This row is only the ordered module inventory.
       - id: build_us_sector_rotation
         module: scripts.build_us_sector_rotation
         note: >

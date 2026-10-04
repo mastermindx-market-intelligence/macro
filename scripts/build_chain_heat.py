@@ -121,14 +121,40 @@ _SIDE_TO_ASK_SHARE: dict[str, float | None] = {
 }
 
 
+# ─── side → category_proxy_share mapping ──────────────────────────────────────
+# A SEPARATE, explicitly named proxy derived from the side CATEGORY only.  It is
+# NOT the legacy ask_share and must never be confused with a measured NBBO: it is
+# a fixed side-category mapping.  "mixed" is a KNOWN proxy value of 0.50 (a
+# side-category midpoint), never a measured neutral.  Unknown sides → None
+# (unknown category).
+#
+#   ~buy  → 0.80
+#   ~sell → 0.20
+#   mixed → 0.50   (known proxy; not measured neutral)
+#   others/None → None (unknown; premium retained in the source denominator)
+_SIDE_TO_CATEGORY_PROXY_SHARE: dict[str, float | None] = {
+    "~buy":  0.80,
+    "~sell": 0.20,
+    "mixed": 0.50,
+}
+
+
 def _enrich_events(events: list[dict]) -> list[dict]:
-    """Inject ask_share from side field so the aggregator can compute lean."""
+    """Inject the legacy ask_share and the category_proxy_share from side.
+
+    Legacy ask_share enrichment is unchanged: it is only set when the event does
+    not already carry one.  category_proxy_share is ALWAYS (re)computed from the
+    side category — a preexisting category_proxy_share input is never trusted,
+    and the value is independent of any legacy ask_share.
+    """
     enriched = []
     for ev in events:
         side = ev.get("side")
         ev_out = dict(ev)
         if "ask_share" not in ev_out:
             ev_out["ask_share"] = _SIDE_TO_ASK_SHARE.get(side)  # type: ignore[assignment]
+        # Always overwrite: never trust a preexisting category_proxy_share.
+        ev_out["category_proxy_share"] = _SIDE_TO_CATEGORY_PROXY_SHARE.get(side)  # type: ignore[assignment]
         enriched.append(ev_out)
     return enriched
 
@@ -150,6 +176,11 @@ def build_envelope(
         option_symbol, ticker, type ("CALL"|"PUT"), strike, expiry, dte,
         total_premium_mn, alert_count, span_minutes, first_seen,
         ask_share, lean, direction_reliability, authority_tier, note (nullable)
+
+    A nested ``category_proxy`` object (when present on the aggregated campaign)
+    is preserved through the envelope unchanged — it is additive and never
+    rewritten into the legacy ``ask_share`` field.  Legacy campaigns that omit
+    it stay legacy (old consumers keep their exact fields/numbers).
 
     aggregate_chain_heat returns 'right' ("CALL"|"PUT"); we rename it to 'type'
     to match the UI interface (ChainHeatCampaign.type in FlowDeskView.tsx).
@@ -203,7 +234,10 @@ def build_envelope(
 def publish_r2(payload: dict, bucket: str) -> None:
     """PUT chain_heat_current.json to R2."""
     client = _r2_client()
-    body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    # Strict JSON BEFORE the destination write: a poisoned (nonfinite) payload
+    # must be refused here with no partial/invalid object ever PUT.  We never
+    # emit Infinity/NaN tokens.
+    body = json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf-8")
     client.put_object(
         Bucket=bucket,
         Key=_PUBLISH_KEY,
@@ -276,8 +310,11 @@ def main(argv: list[str] | None = None) -> int:
         # 5. Publish or write local
         if args.no_publish:
             out_path = "chain_heat_current.json"
+            # Serialize strictly BEFORE opening the destination so a poisoned
+            # payload fails soft with no file written (fail-soft contract).
+            body = json.dumps(payload, ensure_ascii=False, allow_nan=False, indent=2)
             with open(out_path, "w", encoding="utf-8") as fh:
-                json.dump(payload, fh, ensure_ascii=False, indent=2)
+                fh.write(body)
             log.info("wrote local: %s (%d campaigns)", out_path, len(campaigns_raw))
         else:
             bucket = os.environ.get("R2_BUCKET", "")

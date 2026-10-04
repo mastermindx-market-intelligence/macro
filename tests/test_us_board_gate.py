@@ -242,12 +242,57 @@ def test_ungated_path_writes_empty_payload_and_leaves_the_board_whole():
         assert payload["gated"] is False
         assert payload["rows"] == []
         assert payload["cards_html"] == ""
+        assert payload["today_cards_html"] == ""
+        assert payload["today_preview"] == 0
+        assert payload["today_total"] == 0
         assert payload["schema"] == "tier_payload.v1"
         assert payload["page"] == "us_stocks"
 
     # and the shell itself renders the whole board when there is no gate
     html = _render_shell(original, None)
     assert _tickers_in(html) == {f"TIC{i}" for i in range(7)}
+
+
+def test_paid_today_shelf_rides_protected_payload_without_widening_shell():
+    """Full-access Today gets six owner-Featured cards, but anonymous bytes stay at 3."""
+    pytest.importorskip("pandas")
+    pytest.importorskip("plotly")
+    from scripts.build_site import (
+        _split_us_board, _us_today_featured_preview, _write_us_payload,
+    )
+
+    rows = _rows_with_stage(9)
+    for row in rows:
+        row["featured"] = True
+    original = {
+        "buy": rows,
+        "eligible": 9,
+        "ranking": {"featured_count": 9},
+        "as_of": "2026-09-30",
+    }
+    shell_su, gate, locked = _split_us_board(original, 3, gated=True)
+    paid_today = _us_today_featured_preview(original, 6)
+    assert [r["ticker"] for r in paid_today] == [f"TIC{i}" for i in range(6)]
+
+    shell_html = _render_shell(shell_su, gate)
+    for tk in ("TIC3", "TIC4", "TIC5"):
+        assert tk not in shell_html, f"{tk} must stay out of anonymous HTML"
+
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        site = Path(td)
+        _write_us_payload(
+            _env(), site, gate, locked_rows=locked,
+            us_standouts=original, top_setups=None, built="2026-10-01 00:00",
+            today_rows=paid_today,
+        )
+        payload = json.loads((site / "premiumdata" / "us_stocks.json").read_text())
+
+    assert payload["today_preview"] == 6
+    assert payload["today_total"] == 9
+    assert _tickers_in(payload["today_cards_html"]) == {f"TIC{i}" for i in range(6)}
+    assert payload["preview"] == 3
+    assert payload["locked"] == 6
 
 
 def test_board_smaller_than_the_preview_cap_ships_whole():
@@ -273,10 +318,10 @@ def test_us_board_gate_cfg_reads_config_yml_and_is_fail_soft():
     import scripts.build_site as bs
 
     cfg = _us_board_gate_cfg()
-    assert cfg == {"gated": True, "preview_rows": 3,
+    assert cfg == {"gated": True, "preview_rows": 3, "today_preview_rows": 6,
                    "panels": True, "panel_preview_rows": 3}, (
         "config.yml us_board_gate must be {gated: true, preview_rows: 3, "
-        "panels: true, panel_preview_rows: 3} — update this test deliberately "
+        "today_preview_rows: 6, panels: true, panel_preview_rows: 3} — update this test deliberately "
         "if that switch changes")
 
     real_config = bs.config
@@ -289,6 +334,7 @@ def test_us_board_gate_cfg_reads_config_yml_and_is_fail_soft():
     try:
         bs.config = _Boom()
         assert _us_board_gate_cfg() == {"gated": False, "preview_rows": 3,
+                                        "today_preview_rows": 6,
                                         "panels": False,
                                         "panel_preview_rows": 3}, (
             "a config read must NEVER fail the render")
@@ -837,6 +883,8 @@ def test_fold_controls_are_suppressed_while_gated_and_rebuilt_on_hydrate():
     assert '<button class="lst-more act-more"' not in gated
     assert "function restoreFold(" in gated
     assert "hydratePanels(payload)" in gated
+    assert "function hydrateToday(" in gated
+    assert "hydrateToday(payload.today_cards_html, payload.today_preview, payload.today_total)" in gated
 
 
 def test_hydration_targets_every_panel_it_withholds():

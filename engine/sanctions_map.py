@@ -12,6 +12,7 @@ import gzip
 import io
 import json
 import re
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -173,10 +174,16 @@ def _iso3_for_jurisdiction(jurisdiction: str) -> str | None:
 
 
 def _publisher_labels() -> dict[str, tuple[str, str]]:
+    """Map source key → (EN, ZH) publisher for keys whose rights_state is
+    VERIFIED_PUBLIC_REUSE. Unknown keys (and UNVERIFIED_EXCLUDED) are absent
+    so a display-time rights filter is a single `key in _allowed_publishers()`
+    check. PURE."""
     out: dict[str, tuple[str, str]] = {}
     try:
         from engine.europe_news_intel import sources
         for spec in sources() or []:
+            if str(spec.get("rights_state") or "") != "VERIFIED_PUBLIC_REUSE":
+                continue
             key = _cell(spec.get("key"))
             en = _cell(spec.get("publisher"))
             if key and en:
@@ -186,49 +193,118 @@ def _publisher_labels() -> dict[str, tuple[str, str]]:
     return out
 
 
-def _public_news() -> list[dict[str, Any]]:
-    """Today's official-press rows from europe_news_intel.read_events. Never raises."""
+def _allowed_publishers() -> set[str]:
+    """Source keys whose rights_state == VERIFIED_PUBLIC_REUSE. PURE."""
+    return set(_publisher_labels().keys())
+
+
+def _today_utc() -> date:
+    """UTC clock today. Kept off the hot path so tests can monkeypatch."""
+    return datetime.now(timezone.utc).date()
+
+
+def _news_is_recent(latest_asof: str, today: date) -> bool:
+    """True iff latest_asof is today or yesterday (UTC). PURE.
+
+    "Recent" means within the freshness bound — events older than
+    today − 1 day are stale and the page should say so rather than print
+    "Official press today" against days-old rows.
+    """
+    if not latest_asof:
+        return False
+    try:
+        d = date.fromisoformat(str(latest_asof)[:10])
+    except (ValueError, TypeError):
+        return False
+    return d >= (today - timedelta(days=1))
+
+
+def _hoist_common(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    """Each key present ONLY when every row shares that value. PURE.
+
+    Used to render the publisher / jurisdiction label once in the section
+    header instead of repeating it on every row (Doctrine Law 4 — "no per-row
+    repetition of a constant"). Returns an empty dict when nothing is shared.
+    """
+    if not rows:
+        return {}
+    out: dict[str, Any] = {}
+    for k in ("source", "source_zh", "jurisdiction"):
+        vals = {r.get(k) for r in rows}
+        if len(vals) == 1:
+            only = next(iter(vals))
+            if only:
+                out[k] = only
+    return out
+
+
+def _public_news(today: date | None = None) -> tuple[str, list[dict[str, Any]], dict[str, Any]]:
+    """Today's official-press rows from europe_news_intel.read_events.
+
+    Returns ``(state, rows, common)`` where ``state`` is one of:
+
+    * ``"ok"`` — store read, latest day within today-1, every row passed the
+      rights filter; ``rows`` is the filtered list (maybe empty after the
+      rights filter, but never here).
+    * ``"none_recent"`` — store read but the latest day is older than today-1
+      (or the store had no rows at all), OR the rights filter dropped every
+      row; ``rows`` is ``[]``.
+    * ``"unavailable"`` — ``read_events`` raised (missing/unreadable store);
+      ``rows`` is ``[]``.
+
+    ``common`` carries shared publisher / jurisdiction labels for the
+    per-row-constant hoist (D3). Never raises.
+    """
+    if today is None:
+        today = _today_utc()
+    allowed_keys = _allowed_publishers()
     try:
         from engine.europe_news_intel import read_events
         df = read_events()
-        if df is None or len(df) == 0:
-            return []
-        asofs = [_cell(v)[:10] for v in df["asof"].tolist()] if "asof" in df.columns else []
-        asofs = [a for a in asofs if a]
-        day = df
-        if asofs and "asof" in df.columns:
-            latest = max(asofs)
-            day = df[df["asof"].astype(str).str.slice(0, 10) == latest]
-        labels = _publisher_labels()
-        out: list[dict[str, Any]] = []
-        for rec in day.to_dict(orient="records"):
-            title = _cell(rec.get("title"))
-            if not title:
-                continue
-            source_key = _cell(rec.get("source"))
-            en, zh = labels.get(source_key, ("", ""))
-            juris = _cell(rec.get("jurisdiction"))
-            asof = _cell(rec.get("asof"))[:10]
-            seendate = _cell(rec.get("seendate"))[:10]
-            out.append(
-                {
-                    "title": title,
-                    "url": _cell(rec.get("url")),
-                    "source": en,
-                    "source_zh": zh,
-                    "jurisdiction": juris,
-                    "iso3": _iso3_for_jurisdiction(juris),
-                    "asof": asof,
-                    "seendate": seendate,
-                }
-            )
-        out.sort(
-            key=lambda row: (row.get("seendate") or row.get("asof") or "", row.get("title") or ""),
-            reverse=True,
-        )
-        return out
     except Exception:
-        return []
+        return ("unavailable", [], {})
+    if df is None or len(df) == 0 or "asof" not in df.columns:
+        return ("none_recent", [], {})
+    asofs = [_cell(v)[:10] for v in df["asof"].tolist()]
+    asofs = [a for a in asofs if a]
+    if not asofs:
+        return ("none_recent", [], {})
+    latest = max(asofs)
+    if not _news_is_recent(latest, today):
+        return ("none_recent", [], {})
+    day = df[df["asof"].astype(str).str.slice(0, 10) == latest]
+    labels = _publisher_labels()
+    out: list[dict[str, Any]] = []
+    for rec in day.to_dict(orient="records"):
+        title = _cell(rec.get("title"))
+        if not title:
+            continue
+        source_key = _cell(rec.get("source"))
+        if source_key not in allowed_keys:
+            continue
+        en, zh = labels.get(source_key, ("", ""))
+        juris = _cell(rec.get("jurisdiction"))
+        asof = _cell(rec.get("asof"))[:10]
+        seendate = _cell(rec.get("seendate"))[:10]
+        out.append(
+            {
+                "title": title,
+                "url": _cell(rec.get("url")),
+                "source": en,
+                "source_zh": zh,
+                "jurisdiction": juris,
+                "iso3": _iso3_for_jurisdiction(juris),
+                "asof": asof,
+                "seendate": seendate,
+            }
+        )
+    if not out:
+        return ("none_recent", [], {})
+    out.sort(
+        key=lambda row: (row.get("seendate") or row.get("asof") or "", row.get("title") or ""),
+        reverse=True,
+    )
+    return ("ok", out, _hoist_common(out))
 
 
 def _as_of_from_meta(meta: dict) -> str | None:
@@ -256,7 +332,7 @@ def build(
     except Exception:
         code_counts, meta, config_rows, thematic_codes = {}, {}, [], set()
 
-    news = _public_news()
+    news_state, news, news_common = _public_news()
 
     if not code_counts:
         return {
@@ -270,6 +346,8 @@ def build(
             "thematic": [],
             "coverage": None,
             "public_news": news,
+            "public_news_state": news_state,
+            "public_news_common": news_common,
         }
 
     by_code = {row["code"]: row for row in config_rows if row.get("code")}
@@ -341,6 +419,8 @@ def build(
             "thematic": thematic_count,
         },
         "public_news": news,
+        "public_news_state": news_state,
+        "public_news_common": news_common,
     }
 
 
