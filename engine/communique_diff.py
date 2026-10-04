@@ -465,8 +465,21 @@ def compute_events(corpus_rows: list[dict], asof: str,
         )
         document_revisions.extend(revisions)
 
+        # Suppress a correction delta ONLY when the revised source is the sole
+        # source of that phrase on the corresponding side. If an unrelated
+        # document independently carries the same phrase, that occurrence keeps
+        # ordinary novelty eligibility.
+        nonrevision_today = [
+            r for r in today_rows if _source_locator(r) not in revised_locators
+        ]
+        nonrevision_prior = [
+            r for r in prior_rows if _source_locator(r) not in revised_locators
+        ]
+        suppress_appeared -= _window_phrases(nonrevision_today, book)
+        suppress_dropped -= _window_phrases(nonrevision_prior, book)
+
         # appeared / dropped keep full old/new documents in the phrase unions,
-        # suppressing only the correction's own phrase delta.
+        # suppressing only correction-attributable phrase deltas.
         evs, cold_start = diff_organ(
             organ,
             today_rows,
@@ -487,9 +500,15 @@ def compute_events(corpus_rows: list[dict], asof: str,
             prior_days = sorted({_crawl_day(r) for r in prior_rows
                                  if _crawl_day(r) < asof_day}, reverse=True)
             prior_layout: list[dict] = []
+            prior_revised_locators: set[str] = set()
             if prior_days:
                 pd_day = prior_days[0]
                 prior_layout = [r for r in prior_rows if _crawl_day(r) == pd_day]
+                # A correction on the PRIOR comparison day is just as unsafe for
+                # editorial-prominence inference as one observed today.
+                _prior_revisions, _a, _d, prior_revised_locators = (
+                    _document_revision_context(rows, prior_layout, book, pd_day)
+                )
             events.extend(
                 diff_lead_shift(
                     today_rows,
@@ -497,7 +516,7 @@ def compute_events(corpus_rows: list[dict], asof: str,
                     book,
                     organ,
                     asof_day,
-                    revised_locators=revised_locators,
+                    revised_locators=revised_locators | prior_revised_locators,
                 )
             )
 
