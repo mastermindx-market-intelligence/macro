@@ -59,6 +59,18 @@ already delegated. Delegated authority never leaks outside its stated scope.
   whose effect cannot be observed is reconciled on the same carrier that performed
   it; a blind retry or a failover is how one irreversible act becomes two.
 
+## Execution-cycle granularity
+
+**A tool call or Stop-hook re-entry is not a new execution cycle.** Re-run bootstrap,
+carrier/lane census, ownership or permission preflight, planning, watcher reconciliation,
+and full-ledger reconstruction only on a material invalidator: a new user/ruling/carrier
+edge, a worker or watcher return, phase/deliverable completion, candidate-head or contract
+change, a real tool/effect failure, or recovery after restart/compaction. Otherwise resume
+from the exact verified frontier and execute. Targeted fresh checks already required before
+push/merge/release/authority or another irreversible effect still bind; this removes repeated
+administrative ceremony, not safety gates. Persist compact deltas at material milestones
+instead of rewriting unchanged state every turn.
+
 ## The delivery ladder
 
 `ACK -> QUEUED -> START -> RUNNING -> DELIVERED -> CI -> MERGED -> PRODUCTION_PROOF ->

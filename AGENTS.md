@@ -575,6 +575,19 @@ whose effect cannot be observed — a timed-out post, an ambiguous dispatch, a d
 tool call — is reconciled on the same carrier that performed it. A blind retry or a
 failover to another provider is how one irreversible act becomes two.
 
+### Execution-cycle granularity — administration is not the project
+
+**A tool call or Stop-hook re-entry is not a new execution cycle.** Re-run bootstrap,
+carrier/lane census, ownership or permission preflight, planning, watcher reconciliation,
+and full-ledger reconstruction only when a material invalidator exists: a new user/ruling/
+carrier edge, a worker or watcher return, phase/deliverable completion, candidate-head or
+contract change, a real tool/effect failure, or recovery after restart/compaction. Otherwise
+resume from the exact verified frontier and execute the next useful action. A phase may still
+require the targeted fresh checks already mandated before a push, merge, release, authority
+effect, or other irreversible action; this removes repeated administrative ceremony,
+not safety gates. Persist compact deltas at material milestones instead of rewriting unchanged
+state every turn.
+
 ### The delivery ladder
 
 `ACK -> QUEUED -> START -> RUNNING -> DELIVERED -> CI -> MERGED -> PRODUCTION_PROOF ->

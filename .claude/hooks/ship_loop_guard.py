@@ -4148,7 +4148,11 @@ def continuation_directive(code: str, repeat: int, claimed: str = "") -> str:
     """
     parts = [
         "Freeze the blocked lane only. Independent authorized lanes continue, and a "
-        "blocker in one lane is never a finished mission."
+        "blocker in one lane is never a finished mission.",
+        "This Stop re-entry is not a new execution cycle: resume the exact verified "
+        "frontier. Do not restart bootstrap, re-census unchanged lanes, rewrite the "
+        "plan/ledger, or repeat ownership/permission preflight unless a material "
+        "invalidator actually changed."
     ]
     if code in WAITING_BLOCKERS:
         parts.append(
@@ -4335,8 +4339,11 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
                     "execution may continue; a delegation surface being unavailable "
                     "is not a reason to stop. A wait on external machinery is handed "
                     "to a durable watcher or owner while you do parallel work - never "
-                    "spend principal capacity polling. Two equivalent no-delta cycles "
-                    "means change tactic, lane, or owner. Accepted work is "
+                    "spend principal capacity polling. A tool call or Stop-hook re-entry "
+                    "is not a new execution cycle: resume the exact verified frontier instead "
+                    "of restarting bootstrap, census, planning, watcher reconciliation or full "
+                    "ledger reconstruction without a material invalidator. Two equivalent "
+                    "no-delta cycles means change tactic, lane, or owner. Accepted work is "
                     "DO_NOT_REDO unless materially invalidated. EFFECT_UNKNOWN is "
                     "reconciled on the same carrier, never by blind retry or "
                     "failover. ACK, QUEUED, START, RUNNING, DELIVERED, CI, MERGED, "

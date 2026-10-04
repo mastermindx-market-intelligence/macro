@@ -511,6 +511,32 @@ def test_case_7b_all_scoped_lanes_blocked_is_a_diagnostic_not_an_exit(
     assert "'Not my lane'" in emitted["reason"]
 
 
+def test_case_7c_turns_do_not_restart_administrative_bootstrap():
+    """HOOK + LAW + Fable doctrine.
+
+    The observed slow-orchestrator failure is not only CI polling: a seat can restart
+    boot/census/plan/ledger ceremony on each model turn and spend the whole session
+    governing itself. A material cycle is event/phase scoped; Stop re-entry is not one.
+    """
+    _on_every_surface(
+        "A tool call or Stop-hook re-entry is not a new execution cycle",
+        "resume from the exact verified frontier",
+        "this removes repeated administrative ceremony, not safety gates",
+    )
+    directive = GUARD.continuation_directive("unmerged", 1)
+    assert "Stop re-entry is not a new execution cycle" in directive
+    assert "resume the exact verified frontier" in directive
+    assert "Do not restart bootstrap" in directive
+
+    fable = _law_text(".claude/skills/fable-mode/SKILL.md")
+    for clause in (
+        "a cycle is event/phase-scoped, not turn-scoped",
+        "a tool call, a Stop-hook re-entry, a progress nudge",
+        "running it after every tool call turns governance into the work and starves the project",
+    ):
+        assert _clause(clause) in fable
+
+
 # --------------------------------------------------------------------------------------
 # Case 8 — ACK/QUEUED mistaken for START/RUNNING (and every other rung confusion).
 # --------------------------------------------------------------------------------------
@@ -657,6 +683,8 @@ def test_the_session_start_injection_actually_carries_the_law(tmp_path, capsys):
         "independent authorized lanes",
         "bounded direct execution may continue",
         "never spend principal capacity polling",
+        "A tool call or Stop-hook re-entry is not a new execution cycle",
+        "resume the exact verified frontier",
         "no-delta cycles",
         "DO_NOT_REDO unless materially invalidated",
         "reconciled on the same carrier",

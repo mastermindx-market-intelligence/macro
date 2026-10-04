@@ -197,6 +197,17 @@ when a rule is paraphrased:
 - An act whose effect cannot be observed is reconciled on the **same carrier that
   performed it**.
 
+**Execution-cycle granularity (Chairman continuation hardening, 2026-10-04):** a tool
+call or Stop-hook re-entry is not a new execution cycle. Re-run bootstrap, carrier/lane
+census, ownership or permission preflight, planning, watcher reconciliation, and full-ledger
+reconstruction only on a material invalidator: a new user/ruling/carrier edge, a worker or
+watcher return, phase/deliverable completion, candidate-head or contract change, a real
+tool/effect failure, or recovery after restart/compaction. Otherwise resume from the exact
+verified frontier and execute. Targeted fresh checks already required before push, merge,
+release, authority, or another irreversible effect still bind; this removes repeated
+administrative ceremony, not safety gates. Persist compact deltas at material milestones
+instead of rewriting unchanged state every turn.
+
 `ACK -> QUEUED -> START -> RUNNING -> DELIVERED -> CI -> MERGED -> PRODUCTION_PROOF ->
 ACCEPTANCE` are nine distinct facts and none implies the next. A checkpoint, a status
 note, or a continuation record describes work and is **never the outcome it describes**.

@@ -56,9 +56,11 @@ This is what `NOT DONE UNLESS` clauses are made of and what you judge returns ag
 
 ---
 
-## 3. The seat loop — S.1–S.8, in this order, every cycle
+## 3. The seat loop — S.1–S.8, in this order, every material cycle
 
-A seat's work is a cycle, not a stream of reactions. Running the same ordered loop every time is what keeps a long program coherent when the seat's context is not; a cycle that skips a step is how rulings go unread, lanes go unjudged, and state goes unwritten. Templates for every artifact named here are in `references/packets.md`.
+A seat's work is a cycle, not a stream of reactions. **A cycle is event/phase-scoped, not turn-scoped.** A new material cycle begins on a new user/ruling/carrier edge, a worker or watcher return, a phase/deliverable completion, a candidate-head or contract change, a real blocker/effect failure, or recovery after restart/compaction. A tool call, a Stop-hook re-entry, a progress nudge, or another paragraph from the same phase is **not** a new cycle. Do not restart bootstrap, re-census unchanged state, re-check settled ownership/permission, rewrite the plan, reconcile the same watchers, or rewrite the full ledger merely because another turn began. Re-open those facts only on a material invalidator or at a targeted pre-effect gate that already requires a fresh check. Within a cycle, resume from the exact verified frontier and persist compact deltas at material milestones.
+
+Running the ordered loop at those material boundaries is what keeps a long program coherent when the seat's context is not; running it after every tool call turns governance into the work and starves the project. Templates for every artifact named here are in `references/packets.md`.
 
 - **S.1 Read the carrier from the last consumed counterpart edge.** The carrier is wherever the counterpart's rulings arrive — a thread, a PR, an issue, task notifications, a cron's output. Read forward from the last edge you *consumed*, never from your own last post (your posts interleave with their rulings and create dead windows). Consume-then-act: an unconsumed ruling is adjudicated before any act, even if it looks stale. Verify your own seat identity first — your spawn prompt was written before you existed and may already be superseded (L.10).
 - **S.2 Reconcile watchers once.** For each armed lane or watcher, read its sentinel or output file *once* and classify: RUNNING (alive, within budget) · DELIVERED (packet present) · SILENT (alive, past budget, no packet, no new output) · DEAD (process gone, no packet) · THRASHING (alive, repeating the same actions with its record untouched across two cycles). Do not tail a running lane between cycles; its notification is the check.
