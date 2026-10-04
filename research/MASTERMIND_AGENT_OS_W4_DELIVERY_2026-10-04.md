@@ -77,8 +77,8 @@ in the canonical workstream/handoff when they occur; this document does not pred
 The real explicit CLI observation exposed the native three-second Git budget on a slow
 external SSD. A discriminating local Git shim delayed the diff by 3.2 seconds and the
 pre-repair explicit capture returned CAPTURE_UNRECORDED without editing a record.
-The bounded correction permits at most 60 seconds for branch/diff reads only in attended
-non-hook commands. Native hooks retain the three-second Git default and five-second
+The bounded correction permits at most 60 seconds per Git read only in attended
+non-hook commands (branch/path discovery and committed-handoff verification). Native hooks retain the three-second Git default and five-second
 helper boundary. Missing or timed-out evidence still produces an advisory no-op; no
 fallback observation or identity is invented. A PR description with unheaded prose was
 also correctly refused by the canonical parser and repaired as author input.
@@ -95,4 +95,26 @@ selected a historical August handoff and listed the new one as older. Renaming t
 own record to canonical `agentos/handoffs/AGENT-OS-2026-10-04.md` corrects the author input.
 No compiler, incumbent compile test, historical handoff or ranking policy is changed.
 The before artifact is `/tmp/agentos-w4-cold-context.json`; the corrected compiler read is
-required before accepting the machine recovery path.
+completed at 6870247e131192e18564fad069fb9d387b90fd83 and independently passed the required
+workstream/PR/update/latest-handoff recovery. The exact canonical handoff is selected.
+The compiler still exceeds its requested token budget and omits broader discovery/artifact
+sections; those existing completeness limitations remain separate maintenance.
+
+
+## Actual W4 capture and handoff observation
+
+The explicit `ship-capture --pr 8411 --body-file /tmp/agentos-w4-pr.md` command returned
+CAPTURE_UNCOMMITTED with exact claim binding, W4 and PR8411. Its only workstream edits
+were PR8411 and awaiting_ci; Git supplies the update clock when this normal commit ships.
+The independent reader can recover this published record without the originating chat.
+
+Actual `ship-report` found a valid tracked committed handoff but its deep Git diff/log
+reads timed out at three seconds and falsely returned HANDOFF_REMINDER. Two discriminating
+RED tests reproduced the fault: a native TimeoutExpired and an actual 3.2-second attended
+Git subprocess both returned the missing-handoff result. The repair passes the attended
+60-second allowance through all three handoff Git reads and returns HANDOFF_UNAVAILABLE
+for native timeout. Native three-second reads/five-second child boundaries are preserved;
+no unknown evidence is promoted to a missing or successful handoff.
+
+The repaired helper/hold-wrapper subset passed **90 tests in 26.76 seconds**; the
+pre-repair discriminating run failed both timeout cases (four existing cases passed).

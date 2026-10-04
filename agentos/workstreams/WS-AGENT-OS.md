@@ -47,7 +47,8 @@ waves:
     depends_on: [W0]
   - id: W4
     title: "Phase 4 — hook auto-capture at ship-loop boundaries (report-only)"
-    status: in_progress
+    status: awaiting_ci
+    pr: 8411
     depends_on: [W1, W2, W2B]
   - id: MAS28-W0
     title: "MAS-28 — canonical PR-linkage validator V1 records freeze"
@@ -123,9 +124,9 @@ artifacts:
   - research/MASTERMIND_AGENT_OS_V1_CALIBRATION_2026-10-04.md
   - research/MASTERMIND_AGENT_OS_W4_DELIVERY_2026-10-04.md
 next_action: >
-  MAS-28 calibration is accepted via merged PR 8407. Ship the separately reviewed W4
-  candidate through its own current-source PR and exact-head hosted checks, publish
-  the captured wave/PR and handoff, and prove cold recovery before V1 closure. The
+  MAS-28 calibration is accepted via merged PR 8407. W4 PR 8411 is captured on this
+  existing wave; finish its exact-head review and hosted checks, final published-record
+  cold recovery, merge and acceptance before recording V1 closure. The
   current Chairman operation agent-os-v1-closure-20261003-astra-001 remains assigned;
   the canceled MAS-129 carrier is not revived. Agent OS remains the knowledge plane.
 claim:

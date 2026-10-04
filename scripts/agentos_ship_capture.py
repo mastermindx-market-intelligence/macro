@@ -347,7 +347,7 @@ def hook_event(root, payload, *, now=None):
         return _report('CAPTURE_UNRECORDED', error=type(exc).__name__)
 
 
-def handoff_reminder(root, *, branch, now=None):
+def handoff_reminder(root, *, branch, now=None, git_timeout=3):
     """Report only. A different/dirty/old-session handoff cannot stand in for this branch."""
     try:
         root = Path(root).resolve()
@@ -369,12 +369,14 @@ def handoff_reminder(root, *, branch, now=None):
                 if any(p.hard for p in aos.check_handoff({**record, "_body": body}, path)):
                     continue
                 relative = path.relative_to(root).as_posix()
-                _git(root, 'ls-files', '--error-unmatch', '--', relative)
-                _git(root, 'diff', '--quiet', 'HEAD', '--', relative)
-                committed_at = aos._parse_moment(_git(root, 'log', '-1', '--format=%cI', 'HEAD', '--', relative))
+                _git(root, 'ls-files', '--error-unmatch', '--', relative, timeout=git_timeout)
+                _git(root, 'diff', '--quiet', 'HEAD', '--', relative, timeout=git_timeout)
+                committed_at = aos._parse_moment(_git(root, 'log', '-1', '--format=%cI', 'HEAD', '--', relative, timeout=git_timeout))
                 if not claim_at or not committed_at or committed_at < claim_at:
                     continue
                 return _report('HANDOFF_COMMITTED', workstream=key, path=relative)
+            except subprocess.TimeoutExpired:
+                return _report('HANDOFF_UNAVAILABLE', workstream=key, error='TimeoutExpired')
             except (ValueError, OSError, subprocess.SubprocessError):
                 continue
         return _report('HANDOFF_REMINDER', workstream=key,
@@ -431,7 +433,7 @@ def command(args):
                 result = capture_pr(root, branch=branch, body=args.body_file.read_text(encoding='utf-8'),
                                     pr=args.pr, paths=_paths(root, timeout=60))
             elif args.command == 'ship-report':
-                result = handoff_reminder(root, branch=branch)
+                result = handoff_reminder(root, branch=branch, git_timeout=60)
             else:
                 result = edit_claim(root, workstream=args.workstream, branch=branch,
                                     release=args.command == 'release')

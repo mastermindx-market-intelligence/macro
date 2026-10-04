@@ -174,6 +174,8 @@ def test_capture_rejects_body_file_that_traverses_outside_repository(tmp_path):
     ('2026-10-03T20:00:00Z', 'HANDOFF_COMMITTED'),
     ('2026-10-04T00:00:00Z', 'HANDOFF_COMMITTED'),
     ('not-a-date', 'HANDOFF_REMINDER'),
+    ('timeout', 'HANDOFF_UNAVAILABLE'),
+    ('slow-cli', 'HANDOFF_COMMITTED'),
 ])
 def test_valid_committed_same_branch_handoff_clears_reminder(tmp_path, monkeypatch, stamp, expected):
     from scripts import agentos_ship_capture as s
@@ -188,7 +190,32 @@ def test_valid_committed_same_branch_handoff_clears_reminder(tmp_path, monkeypat
                    do_not_redo=['Do not rebuild the accepted work'], danger_areas=['Preserve source custody'])
     path = directory / 'ALPHA-2026-10-04.md'
     path.write_text('---\n' + yaml.safe_dump(handoff, sort_keys=False) + '---\n\nDurable handoff.\n')
-    monkeypatch.setattr(s, '_git', lambda root, *args: stamp if args[0] == 'log' else '')
+    if stamp == 'slow-cli':
+        import argparse, os, sys
+        binary = tmp_path / 'bin'
+        binary.mkdir()
+        git = binary / 'git'
+        git.write_text('#!' + sys.executable + '\nimport sys,time\n' +
+                       'if sys.argv[1] == "branch": print(' + repr(BRANCH) + ')\n' +
+                       'elif sys.argv[1] == "diff": time.sleep(3.2)\n' +
+                       'elif sys.argv[1] == "log": print("2026-10-04T00:00:00Z")\n')
+        git.chmod(0o755)
+        monkeypatch.setenv('PATH', str(binary) + os.pathsep + os.environ['PATH'])
+        monkeypatch.setattr(s.aos, '_ROOT', tmp_path)
+        monkeypatch.setattr(s, '_now', lambda now: NOW)
+        import contextlib, io
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            assert s.command(argparse.Namespace(repo=None, hook=False, command='ship-report')) == 0
+        assert json.loads(output.getvalue())['code'] == expected
+        return
+    def git(root, *args, **kwargs):
+        if stamp == 'timeout':
+            import subprocess
+            assert kwargs.get('timeout', 3) == 3
+            raise subprocess.TimeoutExpired('git', 3)
+        return stamp if args[0] == 'log' else ''
+    monkeypatch.setattr(s, '_git', git)
     assert s.handoff_reminder(tmp_path, branch=BRANCH, now=NOW)['code'] == expected
     handoff['session'] = 'claude/old-branch'
     path.write_text('---\n' + yaml.safe_dump(handoff, sort_keys=False) + '---\n')
