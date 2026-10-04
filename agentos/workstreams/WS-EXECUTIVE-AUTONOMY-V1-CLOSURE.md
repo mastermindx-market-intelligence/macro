@@ -55,35 +55,52 @@ waves:
       the program file for the host owner.
   - id: P3
     title: Canonical worker execution — #811 immutable-commission repair, attempt-bound transport, two governed workers
-    status: in_progress
+    status: todo
     depends_on: [P1]
+    wait:
+      kind: external_action
+      review_after: 2026-10-06
+      condition: >
+        HELD_BY_CHAIRMAN_RULING — Mastermind #1143 issuecomment-5976964871 (2026-10-04T05:33Z)
+        holds multi-worker concurrency and full Autonomy V1 until the parenting-loop canary is
+        proven. Lifts when the #1143 owner re-sequences #811 or the hold is withdrawn on the carrier.
     next_action: >
-      The #811 writer (mastermindx-2) repairs on the same branch per the 7-step spec in Mastermind
-      #811 issuecomment-5976714641; custody tripwire 2026-10-04T06:30Z, after which the principal
-      records a custody transfer on #811 and commissions one bounded external pool lane on the same
-      branch plus an independent review. #1145 merges on its own gates outside the train. The second
-      governed worker realm (codex-pro-01..03 unproven; CF2-H0/CF2-P0/CF2-I) belongs to
-      WS:EXECUTIVE-CAPACITY-FABRIC and needs human realm-authentication ceremonies.
+      Parked under the ruling: the principal commissions no #811 repair lane; at the 2026-10-04T06:30Z
+      custody tripwire it records custody state only. The 7-step repair spec stays in Mastermind #811
+      issuecomment-5976714641 for the incumbent writer (mastermindx-2). #1145 merges on its own gates
+      outside the train. The second governed worker realm (codex-pro-01..03 unproven;
+      CF2-H0/CF2-P0/CF2-I) belongs to WS:EXECUTIVE-CAPACITY-FABRIC and needs human
+      realm-authentication ceremonies.
   - id: P4
     title: Arm the CEO ingress lawfully under the separation law
     status: todo
     depends_on: [P3]
     wait:
       kind: external_action
-      review_after: 2026-10-05
+      review_after: 2026-10-06
       condition: >
-        Sol/Chairman ruling requested 2026-10-04 on Slack C0BSBM78V1N thread 1791083562.416539 and
-        Mastermind #1143: on a2646f45 no lawful order lets a CEO-submit-sink root run on the armed
-        operator harness; option (a) commission the reviewed coexistence/eligibility wave as a
-        V1-train item, (b) PARTIAL rehearsal only, (c) reviewed queued-root re-qualification.
+        HELD_BY_CHAIRMAN_RULING — Mastermind #1143 issuecomment-5976964871 (2026-10-04T05:33Z):
+        "Current priority is not to expand Session Bridge or Autonomy V1"; full Autonomy V1 is held
+        until the parenting-loop canary (ChatGPT parent → one exact already-running child → governed
+        CONTINUE → correlated RESULT → same parent) is proven. The 2026-10-04 coexistence ruling
+        request (options a/b/c on Slack 1791083562.416539 and #1143) is superseded while the hold
+        stands and re-opens when it lifts.
     next_action: >
-      Consume the ruling from the carrier. Under (a), commission the coexistence wave through a
-      bounded worker with independent review and add it to the train; never seat-author the
-      widening. Under (b), label every result PARTIAL and never record AUTONOMY_V1_PROVEN_LIVE.
+      When the hold lifts, re-open the coexistence ruling on the carrier;
+      DSC:CEO-SUBMIT-SINK-AND-ARMED-HARNESS-ARE-MUTUALLY-EXCLUSIVE-ON-MASTER stays binding; never
+      seat-author the widening; a PARTIAL rehearsal never records AUTONOMY_V1_PROVEN_LIVE.
   - id: P5
     title: Live acceptance operation (17 steps) on one bounded Chairman Control Room UI slice
     status: todo
     depends_on: [P4]
+    wait:
+      kind: external_action
+      review_after: 2026-10-06
+      condition: >
+        Held by the same Chairman convergence ruling as P4. The draft product slice (render
+        EFFECT_UNKNOWN roots distinctly) was refuted 2026-10-04 — master a2646f45 already renders it
+        (app/static/chairman_control/control_room.js:1498-1666); a replacement slice is chosen only
+        after the hold lifts.
     next_action: >
       Freeze the spec only after written Sol/Chairman acceptance of the narrower equivalents for
       steps 5, 7, 11, 12 and 14 and a carrier (or ASD-A2 release) for step 8; require the host
@@ -92,13 +109,18 @@ waves:
       child on codex-01 → two READ-only children in parallel (B1 review 1440/390 + independent
       source review) → repair or null → aggregate.
 next_action: >
-  Hold P4 on the coexistence ruling; advance P3 (#811 custody tripwire 2026-10-04T06:30Z) and
-  consume the next carrier edge from the single bounded watcher on #1143, #811 and master.
+  Stay on the Chairman convergence ruling's critical path as integrator: obtain the #1143 owner's
+  writer ruling for the composition slice (integrations/session_bridge/installed.py and
+  scripts/executive_os_phase1c.py have an active writer, draft Mastermind #1191 — do not race it);
+  consume carrier edges from the single bounded watcher on #1143, #811 and master; #811 parked;
+  no host act.
 landmines:
+  - Full Autonomy V1, multi-worker concurrency, consultation and session_summon are held by the Chairman convergence ruling (Mastermind #1143 issuecomment-5976964871) until the parenting loop is proven; a green PR or an installed release does not lift it.
   - "QUEUED is admission only; delivery is not ACK; ACK is not START; CI is not acceptance; merged is not installed; installed is not armed."
   - "The CEO-submit sink and the armed operator harness are mutually exclusive on current source; the runtime sink's not-yet-integrated eligibility gate is not permission."
   - "autonomy-state-v1.json and ceo-submit-state-v1.json are host-owner receipts; the seat reads them and never writes, arms, disarms or restarts."
 do_not_redo:
+  - Do not commission a lane on integrations/session_bridge/installed.py or scripts/executive_os_phase1c.py while draft Mastermind #1191 is an active writer on them; return the carrier/head and the exact remaining proof instead (Mastermind #1143 issuecomment-5977021747).
   - "Do not re-ACK or re-START operation executive-os-autonomy-v1-closure-20261003-fable-001 (ACK 1791083562.416539, START 1791083970.655569)."
   - "Do not reopen the #1218 D8 repair: merged 2026-10-04T04:14:27Z as a2646f45 and installed as Control by the host owner."
   - "Do not open duplicate PRs for #811 or #1219; repairs happen through the incumbent writer or a recorded custody transfer on the carrier."
