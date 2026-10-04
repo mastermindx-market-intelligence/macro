@@ -209,6 +209,55 @@ def test_visit_discovery_stale_ok_health_loses_negative_and_baseline_authority()
     assert snap["examples"][0]["baseline_state"] == "unavailable_source_stale"
 
 
+def test_visit_discovery_future_last_success_fails_closed_without_future_window():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row(
+            "CLK1", "000088", "2026-10-02T09:00:00+08:00",
+            recorded="2026-10-02T10:00:00+00:00",
+        )],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-04T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-04T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+    assert snap["owner_clock_state"] == "invalid"
+    assert "last_success_after_reference" in snap["owner_clock_errors"]
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == "owner_clock_order_invalid"
+    assert snap["observation_end"] == "2026-10-02"
+    assert snap["examples"][0]["baseline_state"] == "blocked_owner_clock_order_invalid"
+
+
+def test_visit_discovery_last_success_before_coverage_fails_closed():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row(
+            "CLK2", "000089", "2026-10-02T09:00:00+08:00",
+            recorded="2026-10-02T10:00:00+00:00",
+        )],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-08-31T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-02T01:00:00+00:00",
+        },
+        coverage_start="2026-09-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+    assert snap["owner_clock_state"] == "invalid"
+    assert "last_success_before_coverage_start" in snap["owner_clock_errors"]
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == "owner_clock_order_invalid"
+    assert snap["examples"][0]["baseline_state"] == "blocked_owner_clock_order_invalid"
+
+
 def test_visit_discovery_degraded_source_keeps_positive_evidence_but_no_quiet_baseline():
     snap = bus._visit_discovery_snapshot(
         [_visit_row("E1", "000004", "2026-10-02T09:00:00+08:00")],
@@ -285,8 +334,38 @@ def test_visit_discovery_block_fails_closed_on_unreadable_owner(monkeypatch):
     out = bus._visit_discovery_block()
     assert out["source_status"] == "source_failure"
     assert out["global_negative_authority"] is False
-    assert out["global_negative_authority_blocker"] == "owner_store_unreadable"
+    assert out["global_negative_authority_blocker"] == "visit_store_unreadable"
     assert out["examples"] == []
+
+
+def test_visit_discovery_unreadable_exception_ledger_preserves_positive_rows(monkeypatch):
+    from collectors import china_visits as cv
+
+    today = bus.date.today().isoformat()
+    row = _visit_row(
+        "LEDGER1", "000077", f"{today}T09:00:00+08:00",
+        recorded=f"{today}T10:00:00+00:00",
+    )
+    monkeypatch.setattr(cv, "read_visits_strict", lambda: [row])
+    monkeypatch.setattr(cv, "read_coverage_exceptions_strict", lambda: None)
+    monkeypatch.setattr(cv, "read_health", lambda: {
+        "status": "ok",
+        "last_success_utc": f"{today}T11:00:00+00:00",
+        "last_attempt_utc": f"{today}T11:00:00+00:00",
+    })
+    monkeypatch.setattr(cv, "read_coverage_start", lambda: "2026-01-01")
+
+    out = bus._visit_discovery_block()
+    assert out is not None
+    assert out["exception_ledger_readable"] is False
+    assert out["n_recent_companies"] == 1
+    assert out["examples"][0]["sec_code"] == "000077"
+    assert out["examples"][0]["recent_count"] == 1
+    assert out["global_negative_authority"] is False
+    assert out["global_negative_authority_blocker"] == \
+        "coverage_exception_ledger_unreadable"
+    assert out["examples"][0]["baseline_state"] == \
+        "blocked_exception_ledger_unreadable"
 
 
 def test_briefing_exposes_visit_discovery_as_context_surface_only(monkeypatch):
