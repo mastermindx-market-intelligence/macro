@@ -605,6 +605,8 @@ def test_case_7g_fable_freshness_checks_are_material_not_per_tool():
         "once at the start of a material cycle",
         "Do not re-read the carrier before ordinary local reads, edits, tests, or each tool call",
         "carrier-mutating / irreversible outward act",
+        "watcher/owner, not the principal reasoning loop",
+        "The principal does not spend model turns running repeated sleep/read/status calls",
     ):
         assert _clause(clause) in adapters
 
@@ -619,6 +621,13 @@ def test_case_7g_fable_freshness_checks_are_material_not_per_tool():
 
     assert _clause("Do not run the full catalog after every small phase") in core
     assert _clause("Re-run only when the material risk changes") in core
+    for clause in (
+        "do not re-read the unchanged carrier before ordinary local reads, edits, tests, or tool calls",
+        "Read it again on a new counterpart event/material cycle",
+        "Persist the material ledger delta before a new material decision",
+        "never rewrite unchanged ledger state because a tool call or small phase ended",
+    ):
+        assert _clause(clause) in core
 
 
 # --------------------------------------------------------------------------------------
