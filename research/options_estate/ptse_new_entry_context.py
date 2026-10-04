@@ -36,6 +36,10 @@ from research.options_estate.ptse_contract import (
     EvidenceRef,
     build_context,
 )
+from research.options_estate.ptse_options_observation import (
+    OptionsRootBinding,
+    adapt_options_hub,
+)
 from research.options_estate.ptse_owner_observation import (
     OwnerArtifactBinding,
     PTSEOwnerAdapterError,
@@ -178,6 +182,11 @@ def build_new_entry_context(
     market_state_binding: OwnerArtifactBinding | None = None,
     regime_vector: Mapping[str, Any] | None = None,
     regime_vector_binding: OwnerArtifactBinding | None = None,
+    options_root_binding: OptionsRootBinding | None = None,
+    options_vol: Mapping[str, Any] | None = None,
+    options_vol_binding: OwnerArtifactBinding | None = None,
+    options_gex: Mapping[str, Any] | None = None,
+    options_gex_binding: OwnerArtifactBinding | None = None,
 ) -> ContextArtifact:
     """Compile one immutable, zero-authority NEW_ENTRY context artifact."""
 
@@ -275,6 +284,39 @@ def build_new_entry_context(
         for fact in facts
     ):
         _fail("OWNER_SESSION_SCOPE_MISMATCH")
+
+    options_supplied = any(
+        value is not None
+        for value in (options_vol, options_vol_binding, options_gex, options_gex_binding)
+    )
+    if options_supplied:
+        if options_root_binding is None:
+            _fail("OPTIONS_ROOT_BINDING_REQUIRED")
+        if options_root_binding.security_id != row.get("security_id"):
+            _fail("OPTIONS_SECURITY_BINDING_MISMATCH")
+        try:
+            options_facts = adapt_options_hub(
+                market_session=binding.market_session,
+                decision_at=binding.decision_at,
+                root_binding=options_root_binding,
+                vol=options_vol,
+                vol_binding=options_vol_binding,
+                gex=options_gex,
+                gex_binding=options_gex_binding,
+            )
+        except PTSEOwnerAdapterError as exc:
+            raise PTSENewEntryContextError("OPTIONS_OWNER_FACT_INVALID") from exc
+        if any(
+            fact.get("source_scope", {}).get("instrument_id") != row.get("security_id")
+            for fact in options_facts
+        ):
+            _fail("OPTIONS_SECURITY_BINDING_MISMATCH")
+        if any(
+            fact.get("source_scope", {}).get("session_scope") != SESSION_SCOPE
+            for fact in options_facts
+        ):
+            _fail("OWNER_SESSION_SCOPE_MISMATCH")
+        facts.extend(options_facts)
 
     grade = _observation_grade(facts)
     if grade in {"RETROSPECTIVE_PIT_UNPROVEN", "PIT_QUALIFIED_REPLAY"}:
