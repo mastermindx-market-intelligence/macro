@@ -226,6 +226,8 @@ def cmd_plan_lse(args: argparse.Namespace) -> int:
 
 
 def cmd_backfill_lse_range(args: argparse.Namespace) -> int:
+    if args.max_jobs < 1:
+        raise SystemExit("--max-jobs must be >= 1")
     root = storage_root(args.root)
     os.environ["MMX_FUTURES_TAPE_ROOT"] = str(root)
     require_capacity(root, args.reserve_gib)
@@ -263,7 +265,9 @@ def cmd_backfill_lse_range(args: argparse.Namespace) -> int:
         "remaining": remaining,
         "max_jobs": args.max_jobs,
     }))
-    return 0 if remaining == 0 else 3
+    # A bounded invocation that used its export-job budget successfully is healthy
+    # even when more windows remain. The next scheduled/operator invocation resumes.
+    return 0
 
 
 def cmd_backfill_lse(args: argparse.Namespace) -> int:
