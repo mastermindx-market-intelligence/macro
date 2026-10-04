@@ -741,21 +741,29 @@ _RESEARCH_PACKET_PLAIN: dict[str, tuple[str, str]] = {
 # No capture groups. `_research_forbidden_filter` uses `re.search` for each
 # boundary and slices the ORIGINAL text so the rejoin is byte-identical to
 # the source.
+# r3 (review N4): ONE marker vocabulary for the splitter, the pre-battery strip and the
+# bare-marker pop — ASCII/CJK bullets (space optional, never a negative number), ASCII
+# numerals (space required, so "1.5%" is not a marker), full-width numerals and
+# punctuation, parenthesised letters/numerals, and CJK ordinals ("一、").
+_RESEARCH_MARK = (
+    r"(?:[-•*+–—・·]+(?=\s*[^\s\d-])"
+    r"|\d{1,2}[.)](?=\s)"
+    r"|(?:\d{1,2}|[０-９]{1,2})[．）]"
+    r"|[０-９]{1,2}[.)]"
+    r"|[(（][0-9０-９a-zA-Z]{1,2}[)）]"
+    r"|[一二三四五六七八九十]{1,3}[、．])"
+)
 _RESEARCH_SENTENCE_SPLIT = re.compile(
     r"(?<=[。！？])\s*"
     r"|(?<=[.!?])\s+(?=[A-Z])"
-    # r2 (review m5): a paragraph break, or a line break that starts a list item, is a
-    # sentence boundary too. Without it "Breadth was mixed.\n- Buy NVDA." was ONE
-    # piece, the trade regex's sentence anchor never saw "Buy" at a sentence start,
-    # and the bulleted imperative shipped unfiltered.
     r"|\n\s*\n\s*"
-    r"|\n\s*(?=(?:[-•*–—]|\d{1,2}[.)])\s)"
+    r"|\n\s*(?=" + _RESEARCH_MARK + r")"
 )
 # A leading list marker ("- ", "• ", "1. ", "2) ") is presentation, not a word: it is
 # removed from the PIECE before the forbidden-output regexes run, so a sentence-anchored
 # imperative is judged on its first word. The original text is never rewritten — the
 # filter still slices the source — this only decides whether the piece is kept.
-_RESEARCH_LIST_MARKER = re.compile(r"^\s*(?:[-•*–—]+|\d{1,2}[.)])\s+")
+_RESEARCH_LIST_MARKER = re.compile(r"^\s*" + _RESEARCH_MARK + r"\s*")
 # Spec (4): a percentage / 0-1 / star / high|medium|low conviction rendered as a
 # judgement — not a published fact such as "breadth was 40%". Match the
 # adjectival form 'confident' as well as the noun 'confidence', so
@@ -828,7 +836,7 @@ _RESEARCH_FALSIFIER = re.compile(r"\bfalsifier\b|\brefuted\b|证伪", re.I)
 #   - "卖出 AAPL。"
 #   - "分化。买入 NVDA。"      (买 right after 。)
 _RESEARCH_TRADE = re.compile(
-    r"(?:^|(?<=[.!?。！？]\s))(?:buy|sell)(?![\w-])\s+\S"
+    r"(?:^|(?<=[.!?。！？:：]\s)|(?<=[—–]\s))(?:buy|sell)(?![\w-])\s+\S"
     r"|\b(?:you\s+should|please)\s+(?:buy|sell)\b"
     r"|\b(?:buy|sell)\s+(?:now|immediately|today)\b"
     r"|\bsize\s+(?:it|the\s+position|your\s+(?:position|size|book))\b"
@@ -839,7 +847,8 @@ _RESEARCH_TRADE = re.compile(
     r"(?:\S+\s+){0,3}(?:price\s+target|target\s+price)\b"
     # Sentence-anchored bare target imperative (set/cut/raise/lower + "a target").
     r"|(?:^|(?<=[.!?。！？]\s))(?:set|cut|raise|lower)\s+(?:\S+\s+){0,3}target\b"
-    r"|(?:^|(?<=[.!?。！？]))\s*(?:请)?(?:买入|卖出)\s+\S",
+    r"|(?:^|(?<=[.!?。！？:：，,]))\s*(?:请)?(?:买入|卖出)"
+    r"(?!压力|意愿|信号|盘|方|量|价|单|力度|机会|时机|点|区|成本|后|前|的|了)\s*\S",
     re.I,
 )
 _RESEARCH_TOOL_RE: re.Pattern[str] | None = None
@@ -1012,7 +1021,10 @@ def _research_user_artifacts(user_jwt: str, outcome: dict | None = None) -> list
         ))
     if outcome is not None:
         if out:
-            outcome["state"] = "ok"
+            # r3 (review N5): one table unreadable while the other returned rows is a
+            # PARTIAL read — the failed table is printed, never silently missing.
+            outcome["state"] = ("partial" if (theses_raw is None or versions_raw is None)
+                                else "ok")
         elif theses_raw is None or versions_raw is None:
             outcome["state"] = "unavailable"
         else:
@@ -1155,6 +1167,9 @@ def _format_used_list(corpus: dict) -> str:
     elif user_read == "unavailable":
         lines.append(_RESEARCH_USER_READ_UNAVAILABLE_EN)
         lines.append(_RESEARCH_USER_READ_UNAVAILABLE_ZH)
+    elif user_read == "partial":
+        lines.append(_RESEARCH_USER_READ_PARTIAL_EN)
+        lines.append(_RESEARCH_USER_READ_PARTIAL_ZH)
     return "\n".join(lines)
 
 
@@ -1162,6 +1177,8 @@ _RESEARCH_USER_READ_EMPTY_EN = "- Your theses — none readable this turn"
 _RESEARCH_USER_READ_EMPTY_ZH = "- 您的论点 — 本轮没有可读取的内容"
 _RESEARCH_USER_READ_UNAVAILABLE_EN = "- Your theses — could not be read this turn"
 _RESEARCH_USER_READ_UNAVAILABLE_ZH = "- 您的论点 — 本轮无法读取"
+_RESEARCH_USER_READ_PARTIAL_EN = "- Your theses — only partly readable this turn (one source could not be read)"
+_RESEARCH_USER_READ_PARTIAL_ZH = "- 您的论点 — 本轮仅部分可读取（有一个来源无法读取）"
 
 # r2 (review M1/M2): characters a model wraps a heading or a canonical sentence in —
 # markdown emphasis/heading marks, quotes, CJK brackets, a trailing colon.
@@ -1169,42 +1186,152 @@ _RESEARCH_TRAILER_WRAP = "*#>_`\"'“”「」【】 \t:："
 _RESEARCH_TRAILER_ASOF = re.compile(r"\((?:as of|截至)\b|（截至")
 
 
-def _research_strip_model_trailer(body: str) -> str:
+# r3 (review N2/N3): a model-written source list is recognised by WHAT it names, never
+# by the exact heading it uses. Any line that is nothing but a source name — however it
+# is bulleted, wrapped, tagged or dated — is the model speaking in the server's voice.
+_RESEARCH_HTML_TAG = re.compile(r"</?[a-zA-Z][^<>]{0,24}>")
+_RESEARCH_HTML_BREAK = re.compile(
+    r"<br\s*/?>|</?(?:ul|ol|li|p|div|h[1-6]|tr|td|th|table)(?:\s[^<>]{0,24})?>", re.I
+)
+_RESEARCH_ASOF_TAIL = re.compile(r"\s*[(（]\s*(?:as\s+of|截至)[^()（）]{0,40}[)）]\s*$", re.I)
+_RESEARCH_SOURCE_HEAD = re.compile(
+    r"^(?:what\s+this\s+read\s+used|sources?(?:\s+(?:used|consulted|read))?(?:\s+this\s+turn)?"
+    r"|references?|artifacts?\s+used"
+    r"|本次阅读用到的内容|本次解读使用了?|本轮使用|使用的来源|参考来源|引用来源|来源|参考|引用)"
+    r"(?:\s*[(（][^()（）]{0,60}[)）])?\s*[:：]?\s*(.*)$",
+    re.I | re.S,
+)
+_RESEARCH_SOURCE_HEAD_MID = re.compile(
+    r"(?<=[.!?。！？])\s*(?:what\s+this\s+read\s+used|sources?\s+used(?:\s+this\s+turn)?"
+    r"|本次阅读用到的内容|本次解读使用了?)\s*[:：]\s*(.*)$",
+    re.I | re.S,
+)
+_RESEARCH_SOURCE_SEP = re.compile(r"\s*(?:[,;，；、]|\band\b|和|及|以及)\s*", re.I)
+_RESEARCH_SOURCE_NOTE = re.compile(r"\s*[—–]+\s*.*$|\s+-+\s+.*$")
+_RESEARCH_SENTENCE_END = re.compile(r"[.!?。！？]")
+_RESEARCH_SERVER_SOURCE_NAMES = (
+    "Live market state packet", "实时市场状态数据包", "Daily briefing", "每日简报",
+    "Your theses", "您的论点", "Your thesis versions", "您的论点版本",
+)
+
+
+def _research_source_names(corpus: dict | None) -> set[str]:
+    names = {n.lower() for n in _RESEARCH_SERVER_SOURCE_NAMES}
+    for art in (corpus or {}).get("artifacts") or []:
+        for key in ("plain_en", "plain_zh"):
+            val = str(art.get(key) or "").strip().lower()
+            if val:
+                names.add(val)
+    return names
+
+
+def _research_item_core(line: str) -> str:
+    """A line reduced to the words a source item would carry: no tag, wrapper, list
+    marker, trailing "(as of …)" or trailing punctuation."""
+    s = _RESEARCH_HTML_TAG.sub("", line or "").strip().strip(_RESEARCH_TRAILER_WRAP).strip()
+    s = _RESEARCH_LIST_MARKER.sub("", s, count=1).strip()
+    s = s.strip(_RESEARCH_TRAILER_WRAP).strip()
+    s = _RESEARCH_ASOF_TAIL.sub("", s).strip()
+    return s.rstrip(".。;；,，").strip().strip(_RESEARCH_TRAILER_WRAP).strip()
+
+
+def _research_is_source_name(core: str, names: set[str]) -> bool:
+    low = (core or "").lower()
+    if not low:
+        return False
+    if low in names:
+        return True
+    head = _RESEARCH_SOURCE_NOTE.sub("", low).strip()   # "<name> — not available this turn"
+    head = _RESEARCH_ASOF_TAIL.sub("", head).strip()      # "<name> (as of …) — note"
+    return bool(head) and head in names
+
+
+def _research_all_source_names(text: str, names: set[str]) -> bool:
+    pieces = [_research_item_core(x) for x in _RESEARCH_SOURCE_SEP.split(text or "")]
+    pieces = [x for x in pieces if x]
+    return bool(pieces) and all(_research_is_source_name(x, names) for x in pieces)
+
+
+def _research_inline_source_list(text: str, names: set[str]) -> bool:
+    """An inline list after a source heading: at least one known name, and every piece
+    reads like an item (short, no sentence punctuation inside it). "What this read used
+    was the daily briefing, which says breadth was thin." has no exact name → prose."""
+    raw = [x for x in _RESEARCH_SOURCE_SEP.split(text or "") if x and x.strip()]
+    cores = [_research_item_core(x) for x in raw]
+    if not cores or not any(_research_is_source_name(x, names) for x in cores):
+        return False
+    for piece, core in zip(raw, cores):
+        inner = piece.strip().rstrip(".。;；,，")
+        if len(core) > 60 or _RESEARCH_SENTENCE_END.search(inner):
+            return False
+    return True
+
+
+def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
     """Remove what the MODEL wrote in the server's voice, before anything is judged.
 
-    r2 (review M1/M2). The grounded directive tells the model to end with a "What this
-    read used" list and the ceiling sentence — so a general-knowledge answer could carry
-    a model-written list naming a real artifact, satisfy ``_research_cites_artifact``
-    through that list alone, and then have its OWN list served verbatim (out-of-corpus
-    names included) because the server appended its list only when the heading was
-    absent. This strips, line-wise: a used-list heading (EN/ZH, markdown-wrapped or
-    not) together with the list items under it (bullets, numbered items, blank lines,
-    bare ``<name> (as of …)`` lines), and any line that is the ceiling or the JWT-absent
-    sentence. The citation check then runs on the PROSE only, and the server's list and
-    ceiling are appended afterwards, unconditionally. Prose is never rewritten.
+    r2 (review M1/M2) stripped the exact "What this read used" heading and the marker
+    lines under it; r3 (review N2/N3) recognises the list by its CONTENT instead. Dropped,
+    line-wise: any line that is the ceiling or the JWT-absent sentence; any line that is
+    nothing but a known source name (the corpus's artifacts plus the names the server
+    itself prints), under any bullet, wrapper, HTML tag, "(as of …)" tail or "— note";
+    any one-line inline list of such names after a source-style heading; and, under a
+    source-style heading (EN/ZH, several spellings, parenthetical or not), the short
+    unpunctuated item lines that follow until prose resumes. A heading-like opener that
+    continues as prose ("What this read used most: …") is kept, and a prose sentence
+    is never deleted for containing "(as of …)". The citation check then runs on the
+    PROSE only, and the server's list and ceiling are appended afterwards,
+    unconditionally. Prose is never rewritten. Residual by design: a prose sentence
+    that NAMES an artifact is a citation — the closed corpus, not this check, is what
+    bounds what the model can know.
     """
     canon = {
         _RESEARCH_CEILING_EN, _RESEARCH_CEILING_ZH,
         _RESEARCH_JWT_ABSENT_EN, _RESEARCH_JWT_ABSENT_ZH,
     }
     canon_bare = {c.rstrip("。.") for c in canon}
-    heads = (_RESEARCH_USED_EN, _RESEARCH_USED_ZH)
+    names = _research_source_names(corpus)
     kept: list[str] = []
-    in_list = False
-    for line in (body or "").split("\n"):
-        core = line.strip().strip(_RESEARCH_TRAILER_WRAP).strip()
+    in_block = False
+    text = body or ""
+    if "<" in text and _RESEARCH_HTML_BREAK.search(text):
+        text = _RESEARCH_HTML_BREAK.sub("\n", text)   # a one-line <ul><li>…</li></ul> is a list
+    for line in text.split("\n"):
+        plain = _RESEARCH_HTML_TAG.sub("", line)
+        core = plain.strip().strip(_RESEARCH_TRAILER_WRAP).strip()
         if not core:
-            if not in_list:
+            if not in_block:
                 kept.append(line)
-            continue
-        if any(core.startswith(h) and len(core) - len(h) <= 24 for h in heads):
-            in_list = True
             continue
         if core in canon or core.rstrip("。.") in canon_bare:
             continue
-        if in_list and (_RESEARCH_LIST_MARKER.match(line) or _RESEARCH_TRAILER_ASOF.search(line)):
+        head = _RESEARCH_SOURCE_HEAD.match(core)
+        if head:
+            rest = head.group(1).strip()
+            if not rest or _research_inline_source_list(rest, names):
+                in_block = True                 # heading alone, or heading + inline list
+                continue
+            # a heading-like opener that continues as prose is the model's own sentence
+        mid = _RESEARCH_SOURCE_HEAD_MID.search(core)
+        if mid and _research_inline_source_list(mid.group(1), names):
+            prefix = core[:mid.start()].rstrip()
+            in_block = True
+            if prefix:
+                kept.append(prefix)
             continue
-        in_list = False
+        item = _research_item_core(plain)
+        if _research_is_source_name(item, names) or _research_all_source_names(item, names):
+            continue                            # a bare source name is never prose
+        # Under a heading, an unmarked line is an item only if it carries NO sentence
+        # punctuation at all (judged on the line itself, before any trailing-period
+        # strip) — a short sentence is prose and stays (review N3).
+        if in_block and (
+            _RESEARCH_LIST_MARKER.match(plain.strip())
+            or _RESEARCH_ASOF_TAIL.search(plain)
+            or (len(item) <= 60 and not _RESEARCH_SENTENCE_END.search(core))
+        ):
+            continue
+        in_block = False
         kept.append(line)
     return "\n".join(kept).strip()
 
@@ -1296,7 +1423,10 @@ def _research_forbidden_filter(text: str) -> tuple[str, bool]:
     return "".join(kept).strip(), withheld
 
 
-_RESEARCH_BARE_MARKER = re.compile(r"^\s*(?:[-•*–—]+|\d{1,2}[.)])\s*$")
+_RESEARCH_BARE_MARKER = re.compile(
+    r"^\s*(?:[-•*+–—・·]+|(?:\d{1,2}|[０-９]{1,2})[.)．）]|[(（][0-9０-９a-zA-Z]{1,2}[)）]"
+    r"|[一二三四五六七八九十]{1,3}[、．])\s*$"
+)
 
 
 def _research_postprocess(answer: str, corpus: dict) -> tuple[str, bool]:
@@ -1306,7 +1436,7 @@ def _research_postprocess(answer: str, corpus: dict) -> tuple[str, bool]:
     ceiling, the JWT sentence — is stripped FIRST, so citation-or-null is judged on the
     prose, and the used list that ships is always the server's.
     """
-    body = _research_strip_model_trailer((answer or "").strip())
+    body = _research_strip_model_trailer((answer or "").strip(), corpus)
     cited = _research_cites_artifact(body, corpus)
     already_null = body.startswith(_RESEARCH_NULL_EN)
     withheld = False
@@ -7959,6 +8089,10 @@ def _stream_display_cut(body: str, hold: int) -> tuple[int, bool]:
     nl = body.find("\n")
     while nl >= 0:                            # COMPLETE lines only — the tail has no \n
         if body[pos:nl].strip() == _NEXT_MARKER:
+            # r3 (review N1): a grounded turn holds EVERYTHING — the seal may not release
+            # the prose before the marker. Global turns keep their cut at the marker.
+            if hold >= _GROUNDED_STREAM_HOLD_ALL:
+                return 0, True
             return _trim_ws_end(body, pos), True
         pos = nl + 1
         nl = body.find("\n", pos)

@@ -1684,3 +1684,162 @@ def test_r2_image_gate_note_is_off_on_a_grounded_turn(tmp_path, stream):
         assert client.calls, grounded
         seen[grounded] = "image reading is a Pro" in _system_text(client.calls[0])
     assert seen == {True: False, False: True}, seen
+
+
+# ---------------------------------------------------------------------------
+# 9. r3 repairs — Opus RO review of head a3a6772b (N1 B, N2 M, N3–N5 m)
+# ---------------------------------------------------------------------------
+
+UNCITED_NEXT_ANSWER = (
+    ("Nvidia will rise 30% next quarter on AI demand; this is general knowledge, "
+     "not from any artifact. " * 3) + "\n[NEXT]\nWhat else?\n"
+)
+
+
+@pytest.mark.parametrize("answer, cited", [
+    (UNCITED_NEXT_ANSWER, False),
+    (LONG_CITING_ANSWER + "\n[NEXT]\nWhat else?\n", True),
+], ids=["uncited", "cited"])
+def test_r3_grounded_stream_hold_survives_the_next_marker(tmp_path, answer, cited):
+    """N1 (B): the [NEXT] seal used to release everything before the marker as a delta,
+    so an uncited grounded answer streamed its general-knowledge prose and the null form
+    arrived as a retract. Under hold-all the seal releases nothing: one delta, no retract,
+    and the delta IS the postprocessed reply."""
+    turn = _drive(tmp_path, stream=True, context=GROUNDED_CTX, answer=answer,
+                  client=_ChunkedClient(answer))
+    deltas = [e for e in turn.events if e.get("type") == "delta"]
+    retracts = [e for e in turn.events if e.get("type") == "retract"]
+    assert len(deltas) == 1 and not retracts, (len(deltas), len(retracts))
+    assert deltas[0]["text"] == turn.reply
+    assert "[NEXT]" not in turn.reply and "What else?" not in turn.reply, turn.reply
+    if cited:
+        assert turn.reply.startswith("The daily briefing says"), turn.reply
+        assert turn.reply.count("sector 39") == 1
+    else:
+        assert turn.reply.startswith(NULL_EN), turn.reply
+        assert "Nvidia" not in turn.reply and "30%" not in turn.reply, turn.reply
+    assert turn.reply.count(USED_EN) == 1 and turn.reply.count(CEILING_EN) == 1, turn.reply
+
+
+def test_r3_stream_display_cut_hold_all_keeps_prose_behind_the_seal():
+    """Unit pin for N1: the marker branch honours hold-all (cut 0, sealed) while a global
+    turn keeps its cut at the marker (the prose before [NEXT] streams)."""
+    body = "prose\n[NEXT]\nq"
+    assert gw._stream_display_cut(body, gw._GROUNDED_STREAM_HOLD_ALL) == (0, True)
+    assert gw._stream_display_cut(body, 256) == (5, True)
+
+
+N2_EVASIONS = {
+    "long_head": ("Oil is up on general knowledge.\n\nSources consulted this turn:\n"
+                  "- Live market state packet (as of 2026-09-12)\n- Invented Desk Note"),
+    "no_markers": ("Oil is up on general knowledge.\n\nWhat this read used:\n"
+                   "Live market state packet\nInvented Desk Note"),
+    "mid_line": ("Oil is up on general knowledge. What this read used: Live market state packet, "
+                 "Daily briefing.\nSummary done."),
+    "html": ("Oil is up on general knowledge.<br><b>Sources</b><ul><li>Live market state packet</li>"
+             "<li>Invented Desk Note</li></ul>"),
+    "alt_head_plus": ("Oil is up on general knowledge.\n\nArtifacts used (this turn):\n"
+                      "+ Live market state packet\n+ Invented Desk Note"),
+    "bare": "Oil is up on general knowledge.\nLive market state packet\nDaily briefing",
+    "refs_inline": "Oil is up on general knowledge.\nReferences: Live market state packet and Daily briefing",
+    "head_inline_mixed": ("Oil is up on general knowledge.\nWhat this read used: Live market state packet, "
+                          "Invented Desk Note."),
+}
+
+
+def _real_corpus(tmp_path) -> dict:
+    corpus = gw._build_research_corpus(_make_research_root(tmp_path), user_jwt="")
+    assert any(a.get("plain_en") == "Live market state packet" for a in corpus["artifacts"]), corpus
+    return corpus
+
+
+@pytest.mark.parametrize("key", sorted(N2_EVASIONS), ids=sorted(N2_EVASIONS))
+def test_r3_model_source_list_is_recognised_by_content_not_format(tmp_path, key):
+    """N2 (M): r2 stripped one exact heading + marker lines, so any other spelling of a
+    model-written source list named a real artifact and bought a citation. The strip now
+    recognises the list by content — every evasion is the null form, the invented source
+    never ships, and the used list that ships is the server's (exactly one)."""
+    corpus = _real_corpus(tmp_path)
+    body, _ = gw._research_postprocess(N2_EVASIONS[key], corpus)
+    assert body.startswith(NULL_EN), body
+    assert "Invented Desk Note" not in body and "general knowledge" not in body, body
+    assert body.count(USED_EN) == 1 and body.count(CEILING_EN) == 1, body
+
+
+@pytest.mark.parametrize("answer", [
+    "The live market state packet shows breadth was thin.",
+    "What this read used was the daily briefing, which says breadth was thin.",
+    "Sources: the live market state packet says breadth was thin today.",
+], ids=["prose-name", "prose-heading-phrase", "prose-after-colon"])
+def test_r3_prose_mention_of_an_artifact_is_still_a_citation(tmp_path, answer):
+    """Residual by design: a prose sentence that NAMES an artifact is a citation — the
+    closed corpus bounds knowledge; the check is a heuristic on the prose."""
+    body, _ = gw._research_postprocess(answer, _real_corpus(tmp_path))
+    assert body.startswith(answer), body
+    assert body.count("\n" + USED_EN + "\n") == 1, body      # the server's heading, once
+
+
+@pytest.mark.parametrize("raw, expected", [
+    ("Breadth was thin.\n\nWhat this read used\n- Daily briefing (as of 2026-09-12)\nSo, energy led.\nEnd.",
+     "Breadth was thin.\n\nSo, energy led.\nEnd."),
+    ("Key reads:\nWhat this read used\n- x\nThe briefing (as of 2026-10-01) flagged energy.\nEnd.",
+     "Key reads:\nThe briefing (as of 2026-10-01) flagged energy.\nEnd."),
+    ("Breadth was thin (as of 2026-09-12). Energy led.", "Breadth was thin (as of 2026-09-12). Energy led."),
+], ids=["short-sentence-under-heading-kept", "asof-inside-prose-kept", "asof-mid-sentence-kept"])
+def test_r3_strip_never_deletes_punctuated_prose(raw, expected):
+    """N3 (m): under a heading, only UNPUNCTUATED short lines are items; a sentence that
+    happens to be short, or to carry "(as of …)" inside it, is prose and stays."""
+    assert gw._research_strip_model_trailer(raw) == expected
+
+
+@pytest.mark.parametrize("raw", [
+    "Breadth was mixed.\n・Buy NVDA.",
+    "Breadth was mixed.\n１．Buy NVDA.",
+    "Breadth was mixed.\n(a) Buy NVDA.",
+    "Breadth was mixed.\n-Buy NVDA.",
+    "Breadth was mixed.\n一、Buy NVDA.",
+    "Breadth was mixed. Our view: buy NVDA.",
+], ids=["katakana-dot", "fullwidth-number", "paren-letter", "no-space-dash", "zh-numeral", "colon"])
+def test_r3_trade_imperative_behind_other_markers_is_withheld(raw):
+    """N4 (m): the r2 marker vocabulary missed fullwidth/CJK markers, "(a)", a dash with
+    no space, and an imperative introduced by a colon."""
+    body, withheld = gw._research_forbidden_filter(raw)
+    assert withheld is True, raw
+    assert body == "Breadth was mixed.", body
+
+
+@pytest.mark.parametrize("raw, expected, withheld", [
+    ("广度分化。买入英伟达。", "广度分化。", True),
+    ("广度分化。请卖出特斯拉。", "广度分化。", True),
+    ("广度分化。卖出压力增加。", "广度分化。卖出压力增加。", False),
+    ("广度分化。买入意愿减弱。", "广度分化。买入意愿减弱。", False),
+    ("Breadth was mixed.\n-5% days were rare.", "Breadth was mixed.\n-5% days were rare.", False),
+    ("Breadth was mixed. Buy-side flows were thin.", "Breadth was mixed. Buy-side flows were thin.", False),
+    # a dash does not split a sentence: the imperative takes its whole sentence with it
+    ("Breadth was mixed — buy NVDA.", "", True),
+], ids=["zh-buy-no-space", "zh-polite-sell", "zh-sell-pressure-kept", "zh-buy-intent-kept",
+        "negative-number-kept", "buy-side-kept", "em-dash-whole-sentence"])
+def test_r3_trade_battery_zh_imperative_and_guarded_compounds(raw, expected, withheld):
+    body, flag = gw._research_forbidden_filter(raw)
+    assert (body, flag) == (expected, withheld), (body, flag)
+
+
+def test_r3_partial_caller_read_is_printed_not_implied(tmp_path):
+    """N5 (m): one caller table unreadable while the other returned rows was reported as
+    "ok". It is a PARTIAL read, and the used list says so in plain words."""
+    versions = [{"id": "v1", "thesis_id": "t1", "version": 1,
+                 "content": {"title": "Energy leads"}, "system_recorded_at": "2026-09-12T00:00:00Z"}]
+
+    def _plane(path, user_jwt, timeout=5):
+        return None if path.startswith("theses?") else versions
+
+    with patch.object(gw, "_user_plane_get", side_effect=_plane) as m:
+        corpus = gw._build_research_corpus(_make_research_root(tmp_path), user_jwt="hdr.pl.sig")
+    assert m.call_count == 2
+    assert corpus["jwt_present"] is True and corpus["user_read"] == "partial", corpus["user_read"]
+    assert any(a.get("plain_en") == "Your thesis versions" for a in corpus["artifacts"]), corpus
+    out = gw._format_used_list(corpus)
+    assert "- Your theses — only partly readable this turn (one source could not be read)" in out, out
+    assert "- 您的论点 — 本轮仅部分可读取（有一个来源无法读取）" in out, out
+    assert "hdr.pl.sig" not in json.dumps(corpus) + out
+    assert gw._format_used_list({"artifacts": [], "jwt_present": True, "user_read": "ok"}).count("partly") == 0
