@@ -217,8 +217,12 @@ miss-rate on the existing harness at `research/context_index/BENCHMARK_RESULTS.m
 that has not yet proven itself in manual use.**
 
 **Work.**
-1. Extend `.claude/hooks/ship_loop_guard.py` (report-only): if the branch matches a workstream's
-   `claim.by` or `owns_paths`, auto-update `updated`, wave `status`, and `prs` on PR creation.
+1. Extend `.claude/hooks/ship_loop_guard.py` at successful PostToolUse PR creation
+   (report-only): bind one current exact `claim.by` or one exact `owns_paths` owner,
+   require canonical Workstream/Wave identity, then capture the existing wave's `pr`
+   and `todo`/`in_progress` -> `awaiting_ci`. Leave the scoped edit for the next normal
+   commit/push. `updated` remains derived from Git (README rule 8); it is never authored.
+   See DEC:AGENTOS-W4-CAPTURE-BOUNDARY for current-source reconciliation.
 2. Stop-hook **reminder** — never a block — when a claimed workstream ends with no handoff.
 3. `agentos claim` / `agentos release` helpers wrapping the advisory claim.
 
