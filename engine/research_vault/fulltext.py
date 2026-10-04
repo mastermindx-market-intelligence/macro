@@ -16,6 +16,7 @@ from typing import Any
 EXTRACTED_TEXT_SCHEMA = "research_vault.extracted_text.v1"
 SEGMENT_SCHEMA = "research_vault.segment.v1"
 REPLAY_EXACT = "EXACT"
+TEXT_LAYER_STATES = frozenset({"full", "thin", "none", "unavailable"})
 
 
 def _sha256(data: bytes) -> str:
@@ -101,12 +102,20 @@ def build_extracted_text(
     extractor_name = _require_text(extractor_name, "extractor_name")
     extractor_version = _require_text(extractor_version, "extractor_version")
     text_layer_state = _require_text(text_layer_state, "text_layer_state")
+    if text_layer_state not in TEXT_LAYER_STATES:
+        raise ValueError("unsupported text_layer_state")
     if page_count is not None and (type(page_count) is not int or page_count < 0):
         raise ValueError("page_count must be a nonnegative int or None")
+    if text is None and text_layer_state != "unavailable":
+        raise ValueError("text=None requires text_layer_state=unavailable")
 
     canonical_text = "" if text is None else text
     if not isinstance(canonical_text, str):
         raise TypeError("text must be str or None")
+    if text is not None and canonical_text == "" and text_layer_state != "none":
+        raise ValueError("empty extracted text requires text_layer_state=none")
+    if canonical_text and text_layer_state in {"none", "unavailable"}:
+        raise ValueError("nonempty extracted text conflicts with text_layer_state")
     encoded = canonical_text.encode("utf-8")
     boundaries = page_boundaries(canonical_text)
 
