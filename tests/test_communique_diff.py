@@ -291,6 +291,66 @@ def test_revision_neutralization_does_not_hide_unrelated_new_phrase():
     assert ("APPEARED", "超常规逆周期调节") in kinds
 
 
+def test_independent_same_day_occurrence_survives_correction_delta_suppression():
+    book = _book()
+    locator = "loc_pboc_overlap"
+    prior = _row(
+        "pboc", "旧版本", "稳中求进",
+        "2026-07-01T01:00:00",
+        url="https://www.pbc.gov.cn/policy/overlap.html",
+    )
+    revised = _row(
+        "pboc", "更正版本", "稳中求进 适度宽松",
+        "2026-07-02T01:00:00",
+        url="https://www.pbc.gov.cn/policy/overlap.html",
+    )
+    independent = _row(
+        "pboc", "独立新文", "实施适度宽松的货币政策",
+        "2026-07-02T02:00:00",
+        url="https://www.pbc.gov.cn/policy/independent-overlap.html",
+    )
+    prior["source_locator_id"] = locator
+    revised["source_locator_id"] = locator
+
+    res = cd.compute_events([prior, revised, independent], "2026-07-02", book=book)
+    kinds = {(e["kind"], e["phrase"]) for e in res["events"]}
+
+    assert res["counts"]["n_document_revisions"] == 1
+    # The correction also adds this phrase, but an unrelated source occurrence
+    # independently earns ordinary novelty eligibility.
+    assert ("APPEARED", "适度宽松") in kinds
+
+
+def test_prior_day_revised_lead_blocks_next_day_lead_shift():
+    book = _book()
+    locator = "loc_pd_prior_revised_lead"
+    prior_old = _row(
+        "peoples_daily", "新质生产力", "",
+        "2026-07-01T01:00:00",
+        url="https://paper.people.com.cn/prior-lead.html",
+        rank=0,
+    )
+    prior_new = _row(
+        "peoples_daily", "房住不炒", "",
+        "2026-07-01T02:00:00",
+        url="https://paper.people.com.cn/prior-lead.html",
+        rank=0,
+    )
+    today = _row(
+        "peoples_daily", "适度宽松", "",
+        "2026-07-02T01:00:00",
+        url="https://paper.people.com.cn/today-lead.html",
+        rank=0,
+    )
+    prior_old["source_locator_id"] = locator
+    prior_new["source_locator_id"] = locator
+
+    res = cd.compute_events([prior_old, prior_new, today], "2026-07-02", book=book)
+    assert res["counts"]["n_lead_shift"] == 0
+
+
+
+
 # --------------------------------------------------------------------------- #
 # cold start
 # --------------------------------------------------------------------------- #
