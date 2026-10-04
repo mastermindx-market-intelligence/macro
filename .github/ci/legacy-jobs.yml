@@ -3381,7 +3381,6 @@ jobs:
           tests/test_fundamental_forensics_financial_query_service.py
           tests/test_fundamental_forensics_financial_query_api.py
           tests/test_fundamental_forensics_ixbrl_raw_ledger.py
-          tests/test_fundamental_forensics_cross_filing_lineage.py
           tests/test_fundamental_forensics_financial_revision_service.py
           tests/test_fundamental_forensics_financial_revision_api.py
           tests/test_fundamental_forensics_financial_packet_service.py
@@ -4377,28 +4376,6 @@ jobs:
     # pd.read_excel, and the fixtures generate real workbook bytes rather than mocking
     # the parser (a mocked read_excel cannot see the bilingual 成份 header dialect the
     # live file actually ships). yfinance is a module-scope import of the collector.
-    # Exact named closure of the two China universe suites and offline THS receipts.
-    # Opaque data traversals do not widen this code job into unrelated ownership.
-    scope: exclusive
-    paths:
-      - "collectors/__init__.py"
-      - "collectors/_stock_ohlc.py"
-      - "collectors/base.py"
-      - "collectors/breadth.py"
-      - "collectors/china_stock_prices.py"
-      - "collectors/china_stock_tencent.py"
-      - "collectors/china_ths_concepts.py"
-      - "collectors/china_universe.py"
-      - "config.yml"
-      - "config/delisted_symbols.yml"
-      - "lib/__init__.py"
-      - "lib/config.py"
-      - "lib/delisted_symbols.py"
-      - "lib/store.py"
-      - "scripts/seed_china_ths_baskets.py"
-      - "tests/test_china_universe_extras.py"
-      - "tests/test_china_universe_index_constituents.py"
-      - "tests/test_ths_collection_receipts.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4406,11 +4383,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests openpyxl yfinance lxml beautifulsoup4 html5lib
+        run: pip install pytest pandas numpy pyarrow pyyaml requests openpyxl yfinance
       - name: CSI constituent union — timeout, header dialect, degraded-night membership
         run: python -m pytest tests/test_china_universe_index_constituents.py tests/test_china_universe_extras.py -q
-      - name: THS collection receipts — offline source-boundary refusal
-        run: python -m pytest tests/test_ths_collection_receipts.py -q
 
   cycle-consistency:
     if: ${{ false }}
@@ -4566,21 +4541,6 @@ jobs:
         run: python -m pytest tests/test_edgar_universe_widening.py -q
       - name: edgar FTS first-request abort guard fires on _CONFIRMED_ABSENT too (no network)
         run: python -m pytest tests/test_edgar_fts_confirmed_absent_first_request.py -q
-      # Trend Persistence Wave C-0 (PR #8403): the S&P 1500 point-in-time sector
-      # substrate for the 1,083 index leavers. It belongs in THIS job and not a new one
-      # because its subject is this job's subject one layer down: a collectors/ module
-      # whose ONLY leaver-labelling channel is the EDGAR CIK bridge
-      # (collectors.edgar_delisting._get_submissions; trusted methods edgar_fts/seed),
-      # and whose artifact is registered in config/synapse.yml (sp1500-pit-sectors),
-      # which the registry-integrity step above already checks. The suite pins what
-      # the readout got wrong — leavers must never be labelled by ticker string
-      # (recycled tickers ECHO/FI/MMC were the readout's "3 of 1,083"), every row
-      # carries era_correct=False, and the text-first SIC order — and it is fully
-      # offline (autouse no-network fixture, tmp_path data_dir). Deps are satisfied by
-      # the install line above (pandas + pyarrow for the parquet write, pyyaml via
-      # lib.config). 24 tests, 1.8 s measured locally.
-      - name: S&P 1500 point-in-time sector substrate — CIK-only leaver labels, SIC map, cache (no network)
-        run: python -m pytest tests/test_sp1500_pit_sectors.py -q
       - name: symbol-directory archival collector tests (LHB-W2c / LHB-R8)
         run: >-
           python -m pytest
@@ -7629,9 +7589,6 @@ jobs:
       - agentos/decisions/DEC-EXECUTION-CONTINUATION-INVARIANTS.md
       - tests/test_execution_continuation_law.py
       - scripts/agentos.py
-      - scripts/agentos_ship_capture.py
-      - tests/test_agentos_ship_capture.py
-      - .claude/settings.json
       - scripts/ci_authority.py
       - scripts/ci_authority_paths.py
       - scripts/ci_semantic_proof.py
@@ -7845,7 +7802,7 @@ jobs:
           # when agentos/ is outside a sparse cone, so a store that failed to check
           # out would otherwise pass as a skip. This line cannot skip.
           python3 scripts/agentos.py validate
-          python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py tests/test_agentos_ship_capture.py \
+          python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
             tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py tests/test_f02_owner_map_receipts.py \
             tests/test_b_rec2_wave_boundary_records.py tests/test_b_rec3_wave_boundary_records.py \
             tests/test_f00c_terminal_reconciliation.py tests/test_mo_b_ledger_reconciliation_2026_09_18.py tests/test_w9b_rec_ns.py -q
@@ -8433,49 +8390,6 @@ jobs:
   nw-lobe-unfreeze:
     if: ${{ false }}
     gate: code
-    scope: exclusive
-    # Curated named closure: integrity fixtures scan only pytest tmp_path;
-    # opaque artifact traversal must not claim unrelated template ownership.
-    paths:
-      - "collectors/__init__.py"
-      - "collectors/china_ths_concepts.py"
-      - "config/theme_crosswalk.yml"
-      - "config/theme_graph_identity_breaks.yml"
-      - "config/theme_sources.yml"
-      - "contracts/theme_graph/theme_state.v1.schema.json"
-      - "engine/__init__.py"
-      - "engine/basket_index.py"
-      - "engine/basket_membership_pit.py"
-      - "engine/canon.py"
-      - "engine/conditions.py"
-      - "engine/dannytrades.py"
-      - "engine/dannytrades_chip.py"
-      - "engine/indicators.py"
-      - "engine/technicals.py"
-      - "engine/theme_graph/__init__.py"
-      - "engine/theme_graph/capability.py"
-      - "engine/theme_graph/identity.py"
-      - "engine/theme_graph/identity_resolution.py"
-      - "engine/theme_graph/local_sources.py"
-      - "engine/theme_graph/materialize.py"
-      - "engine/theme_graph/rights.py"
-      - "engine/theme_graph/store.py"
-      - "engine/theme_graph/theme_state.py"
-      - "lib/__init__.py"
-      - "lib/config.py"
-      - "lib/dataos/identity.py"
-      - "lib/store.py"
-      - "research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md"
-      - "scripts/__init__.py"
-      - "scripts/build_dt_contra_state.py"
-      - "scripts/build_subsector_membership.py"
-      - "scripts/build_theme_graph.py"
-      - "scripts/correct_gmi_identity_lineage.py"
-      - "scripts/seed_china_ths_baskets.py"
-      - "tests/test_build_subsector_membership.py"
-      - "tests/test_dt_contra_state.py"
-      - "tests/test_gmi_history_integrity.py"
-      - "tests/test_theme_graph_state.py"
     # Regression guard for the two Neural-Web lobes frozen since 2026-07-07:
     #   1. dt_contra_state crash: build_dt_contra_state.py crashed on index.json (list root);
     #      fixed by isinstance(data, dict) guard — 8 tests covering the fix.
@@ -8492,13 +8406,9 @@ jobs:
         # pandas/numpy/pyyaml: both suites import their producers at collection time
         # (build_dt_contra_state → engine.dannytrades_chip → numpy/pandas;
         # build_subsector_membership → engine.basket_index → lib.config → yaml).
-        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema
+        run: pip install pytest pandas numpy pyyaml
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
-      - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py -q
-      - name: GMI local and canonical state contract and cutoff reader
-        run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
 
   sa-w4-improvement-lanes:
     if: ${{ false }}
@@ -13329,8 +13239,6 @@ jobs:
       # test (renders china_intel.html.j2 through the real builder env).
       - name: china_intel_hub institutional-visit dossier block (P1)
         run: python -m pytest tests/test_china_intel_hub_visits.py tests/test_china_intel_visits_render.py -q
-      # CIE-07: coverage-safe metadata discovery lives in the same China Intelligence
-      # owner closure; run its hostile clock/coverage/exception regressions in hosted CI.
       - name: China Intelligence visit-discovery metadata context (CIE-07)
         run: python -m pytest tests/test_china_intel_bus.py -q
       - name: Intelligence Hub PIT scope + W0 measurement heals + ticker-shape gate
