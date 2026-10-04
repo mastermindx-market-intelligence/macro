@@ -1,6 +1,6 @@
 {
   "schema": "winner_autopsy_panel.v1",
-  "generated_at": "2026-10-03T20:25:00Z",
+  "generated_at": "2026-10-04T09:47:22Z",
   "display_only": true,
   "horizon_role": "hold_thesis",
   "census": {
@@ -2070,7 +2070,7 @@
   },
   "watch": {
     "available": true,
-    "as_of": "2026-10-03",
+    "as_of": "2026-10-04",
     "state_counts": {
       "breakaway": 72,
       "emerging": 1871,
@@ -7773,6 +7773,26 @@
         }
       },
       {
+        "ticker": "AGYP",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": 99.16,
+        "excess_42d_pp": 99.97,
+        "new_high_63d": true,
+        "dollar_vol_z21": 1.98,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [
+          "extended_after_vertical_move",
+          "chase_risk_elevated"
+        ],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
         "ticker": "MAXNQ",
         "sector": "",
         "benchmark": "SPY",
@@ -7800,26 +7820,6 @@
         "excess_42d_pp": 99.97,
         "new_high_63d": true,
         "dollar_vol_z21": -0.14,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [
-          "extended_after_vertical_move",
-          "chase_risk_elevated"
-        ],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "AGYP",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": 99.16,
-        "excess_42d_pp": 99.97,
-        "new_high_63d": true,
-        "dollar_vol_z21": 1.98,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [
@@ -33428,7 +33428,7 @@
         }
       },
       {
-        "ticker": "PBR.A",
+        "ticker": "PBR-A",
         "sector": "",
         "benchmark": "SPY",
         "state": "continuation",
@@ -33445,7 +33445,7 @@
         }
       },
       {
-        "ticker": "PBR-A",
+        "ticker": "PBR.A",
         "sector": "",
         "benchmark": "SPY",
         "state": "continuation",
@@ -35723,14 +35723,14 @@
         }
       },
       {
-        "ticker": "SAFLY",
+        "ticker": "BWMN",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -0.84,
-        "excess_42d_pp": 26.3,
-        "new_high_63d": true,
-        "dollar_vol_z21": null,
+        "excess_42d_pp": 53.54,
+        "new_high_63d": false,
+        "dollar_vol_z21": -1.17,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -35740,14 +35740,14 @@
         }
       },
       {
-        "ticker": "HWKE",
+        "ticker": "SAFLY",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -0.84,
-        "excess_42d_pp": 83.64,
-        "new_high_63d": false,
-        "dollar_vol_z21": -0.35,
+        "excess_42d_pp": 26.3,
+        "new_high_63d": true,
+        "dollar_vol_z21": null,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -35791,40 +35791,6 @@
         }
       },
       {
-        "ticker": "SYANY",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": -0.84,
-        "excess_42d_pp": 32.03,
-        "new_high_63d": false,
-        "dollar_vol_z21": null,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "BWMN",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": -0.84,
-        "excess_42d_pp": 53.54,
-        "new_high_63d": false,
-        "dollar_vol_z21": -1.17,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
         "ticker": "SLNCF",
         "sector": "",
         "benchmark": "SPY",
@@ -35833,6 +35799,40 @@
         "excess_42d_pp": 166.64,
         "new_high_63d": false,
         "dollar_vol_z21": -0.22,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "HWKE",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": -0.84,
+        "excess_42d_pp": 83.64,
+        "new_high_63d": false,
+        "dollar_vol_z21": -0.35,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "SYANY",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": -0.84,
+        "excess_42d_pp": 32.03,
+        "new_high_63d": false,
+        "dollar_vol_z21": null,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
