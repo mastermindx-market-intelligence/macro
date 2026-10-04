@@ -4747,6 +4747,8 @@ jobs:
       - "collectors/cboe.py"
       - "collectors/china_analyst.py"
       - "collectors/china_credit.py"
+      - "collectors/china_filings.py"
+      - "collectors/china_visits.py"
       - "collectors/china_news.py"
       - "collectors/edgar.py"
       - "collectors/edgar_13f.py"
