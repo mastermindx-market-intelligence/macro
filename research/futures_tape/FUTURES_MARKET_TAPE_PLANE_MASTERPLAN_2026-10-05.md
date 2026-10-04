@@ -138,6 +138,14 @@ Read-only Futures entitlement measurement that reuses the existing
 products/contracts and only tests trades/quotes after an exact contract ticker is
 returned.
 
+### `.github/workflows/futures-tape-probe.yml`
+
+Manual, read-only self-hosted probe lane. It records external-volume capacity, attempts
+the Massive Futures entitlement probe with the already-governed Massive/Polygon secret
+binding, and attempts the LSE catalog probe only when an `LSE_API_KEY` has been
+configured out of band. It has `contents: read`, writes no market data, creates no
+secret/account, and is diagnostic only rather than a new scheduler.
+
 ## 5. On-disk contract
 
 ```
