@@ -184,6 +184,88 @@ def _valid_receipted(root: Path, target: Path) -> bool:
     return target.is_file() and receipt.is_file() and not verify_manifest(root, receipt)
 
 
+def _date_chunks(start: str, end: str, chunk_days: int) -> list[tuple[str, str]]:
+    if chunk_days < 1:
+        raise SystemExit("--chunk-days must be >= 1")
+    try:
+        left = date.fromisoformat(start)
+        stop = date.fromisoformat(end)
+    except ValueError as exc:
+        raise SystemExit("--start/--end must be YYYY-MM-DD") from exc
+    if stop <= left:
+        raise SystemExit("--end must be after --start")
+    out: list[tuple[str, str]] = []
+    cur = left
+    while cur < stop:
+        nxt = min(stop, cur + timedelta(days=chunk_days))
+        out.append((cur.isoformat(), nxt.isoformat()))
+        cur = nxt
+    return out
+
+
+def cmd_plan_lse(args: argparse.Namespace) -> int:
+    root = storage_root(args.root)
+    windows = _date_chunks(args.start, args.end, args.chunk_days)
+    plan = []
+    for start, end in windows:
+        target = raw_export_path(root, "lse", args.symbol, start, end)
+        plan.append({
+            "start": start,
+            "end": end,
+            "path": str(target),
+            "complete": _valid_receipted(root, target),
+        })
+    print(json.dumps({
+        "symbol": args.symbol,
+        "windows": plan,
+        "total": len(plan),
+        "complete": sum(1 for x in plan if x["complete"]),
+        "remaining": sum(1 for x in plan if not x["complete"]),
+    }, indent=2))
+    return 0
+
+
+def cmd_backfill_lse_range(args: argparse.Namespace) -> int:
+    root = storage_root(args.root)
+    os.environ["MMX_FUTURES_TAPE_ROOT"] = str(root)
+    require_capacity(root, args.reserve_gib)
+    windows = _date_chunks(args.start, args.end, args.chunk_days)
+    launched = 0
+    skipped = 0
+    for start, end in windows:
+        target = raw_export_path(root, "lse", args.symbol, start, end)
+        if _valid_receipted(root, target) and not args.force:
+            skipped += 1
+            continue
+        if launched >= args.max_jobs:
+            break
+        rc = cmd_backfill_lse(argparse.Namespace(
+            root=str(root),
+            reserve_gib=args.reserve_gib,
+            symbol=args.symbol,
+            start=start,
+            end=end,
+            force=args.force,
+        ))
+        if rc != 0:
+            return rc
+        launched += 1
+    remaining = 0
+    for start, end in windows:
+        if not _valid_receipted(
+            root, raw_export_path(root, "lse", args.symbol, start, end)
+        ):
+            remaining += 1
+    print(json.dumps({
+        "status": "complete" if remaining == 0 else "partial",
+        "jobs_run": launched,
+        "already_valid": skipped,
+        "remaining": remaining,
+        "max_jobs": args.max_jobs,
+    }))
+    return 0 if remaining == 0 else 3
+
+
 def cmd_backfill_lse(args: argparse.Namespace) -> int:
     root = storage_root(args.root)
     # Keep storage_root() coherent for manifest relative paths inside this process.
@@ -325,6 +407,24 @@ def _build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("probe-lse")
     p.add_argument("--symbol", default="ES.F")
     p.set_defaults(func=cmd_probe_lse)
+
+    p = sub.add_parser("plan-lse")
+    p.add_argument("--symbol", default="ES.F")
+    p.add_argument("--start", required=True)
+    p.add_argument("--end", required=True)
+    p.add_argument("--chunk-days", type=int, default=7)
+    p.set_defaults(func=cmd_plan_lse)
+
+    p = sub.add_parser("backfill-lse-range")
+    p.add_argument("--symbol", default="ES.F")
+    p.add_argument("--start", required=True)
+    p.add_argument("--end", required=True)
+    p.add_argument("--chunk-days", type=int, default=7)
+    p.add_argument("--max-jobs", type=int, default=1,
+                   help="maximum new LSE export jobs this invocation")
+    p.add_argument("--reserve-gib", type=float, default=DEFAULT_RESERVE_GIB)
+    p.add_argument("--force", action="store_true")
+    p.set_defaults(func=cmd_backfill_lse_range)
 
     p = sub.add_parser("backfill-lse")
     p.add_argument("--symbol", default="ES.F")
