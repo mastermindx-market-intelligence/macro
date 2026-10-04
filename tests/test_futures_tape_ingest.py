@@ -28,6 +28,21 @@ from lib.dataos.futures_tape import (
 from scripts import futures_tape_ingest as fti
 
 
+def test_date_chunks_are_bounded_and_cover_range() -> None:
+    assert fti._date_chunks("2026-01-01", "2026-01-20", 7) == [
+        ("2026-01-01", "2026-01-08"),
+        ("2026-01-08", "2026-01-15"),
+        ("2026-01-15", "2026-01-20"),
+    ]
+
+
+def test_date_chunks_reject_invalid_range() -> None:
+    with pytest.raises(SystemExit, match="after"):
+        fti._date_chunks("2026-01-02", "2026-01-02", 7)
+    with pytest.raises(SystemExit, match=">= 1"):
+        fti._date_chunks("2026-01-01", "2026-01-02", 0)
+
+
 def test_storage_root_prefers_environment(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setenv("MMX_FUTURES_TAPE_ROOT", str(tmp_path))
     assert storage_root() == tmp_path
