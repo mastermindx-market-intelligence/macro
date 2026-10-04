@@ -1527,3 +1527,119 @@ def test_up_side_terminal_slots_are_mirrored_not_renamed(tmp_path):
     assert labels["up"]["recovered"] == "GAVE_BACK"
     assert labels["down"]["accepted_lower"] == "ACCEPTED_LOWER"
     assert labels["up"]["accepted_lower"] == "KEPT"
+
+
+# ── K3E MKT-1 owner-native response export ──────────────────────────────────
+# These tests pin the versioned read-only projection of existing LSR/DRL owner
+# state.  Numeric context is allowed while identity/currency/basis/clock/rights
+# qualification remains explicitly unavailable.
+
+def _k3e_mkt1_owner_state(*, residual_end=0.05):
+    import pandas as pd
+
+    idx = pd.to_datetime(["2026-09-29", "2026-09-30", "2026-10-01"])
+    close = pd.DataFrame({"AAPL": [100.0, 105.0, 110.0]}, index=idx)
+    cum = pd.DataFrame({"AAPL": [0.0, 0.02, residual_end]}, index=idx)
+    return {"f": {"close": close}, "cum": cum}
+
+
+def test_k3e_mkt1_export_uses_owner_close_and_cum_and_never_self_qualifies():
+    import math
+
+    import pytest
+
+    from engine.price_pressure.response_export import export_market_response
+
+    out = export_market_response(
+        _k3e_mkt1_owner_state(),
+        ticker="AAPL",
+        start_session="2026-09-29",
+        end_session="2026-10-01",
+    )
+
+    assert out["schema"] == "price_pressure.market_response_export.v1"
+    assert out["owner"] == "engine.price_pressure"
+    assert out["response_model"] == "lsr_p0"
+    assert out["tier"] == "display"
+    assert out["authority"] == "context_only"
+    assert out["financial_influence"] is False
+    assert out["status"] == "RAW_AND_RESIDUAL_CONTEXT"
+    assert out["window"] == {
+        "start_session": "2026-09-29",
+        "end_session": "2026-10-01",
+        "observed_session_steps": 2,
+    }
+    assert out["raw_response"]["state"] == "AVAILABLE_UNQUALIFIED"
+    assert out["raw_response"]["simple_return"] == pytest.approx(0.10)
+    assert out["raw_response"]["log_return"] == pytest.approx(math.log(1.10))
+    assert out["residual_response"]["state"] == "AVAILABLE_UNQUALIFIED"
+    assert out["residual_response"]["log_residual"] == pytest.approx(0.05)
+    assert out["residual_response"]["simple_equivalent"] == pytest.approx(math.expm1(0.05))
+    assert out["residual_response"]["construction"] == "LSR_P0_CUM_LOG1P_RESIDUAL_DELTA"
+
+    qualification = out["qualification"]
+    assert qualification["state"] == "NOT_QUALIFIED"
+    assert qualification["k3e_admissible"] is False
+    assert set(qualification["missing"]) == {
+        "canonical_security_identity_receipt",
+        "currency_receipt",
+        "price_basis_vintage_receipt",
+        "availability_clock_receipt",
+        "source_use_receipt",
+        "calendar_session_receipt",
+        "residual_baseline_receipt",
+    }
+
+
+def test_k3e_mkt1_raw_only_preserves_subject_return_when_residual_is_missing():
+    import pytest
+
+    from engine.price_pressure.response_export import export_market_response
+
+    out = export_market_response(
+        _k3e_mkt1_owner_state(residual_end=float("nan")),
+        ticker="AAPL",
+        start_session="2026-09-29",
+        end_session="2026-10-01",
+    )
+
+    assert out["status"] == "RAW_ONLY"
+    assert out["raw_response"]["simple_return"] == pytest.approx(0.10)
+    assert out["residual_response"]["state"] == "UNAVAILABLE"
+    assert out["residual_response"]["log_residual"] is None
+    assert "RESIDUAL_ENDPOINT_UNAVAILABLE" in out["residual_response"]["reasons"]
+    assert out["qualification"]["k3e_admissible"] is False
+
+
+def test_k3e_mkt1_missing_exact_endpoint_refuses_instead_of_widening():
+    from engine.price_pressure.response_export import export_market_response
+
+    out = export_market_response(
+        _k3e_mkt1_owner_state(),
+        ticker="AAPL",
+        start_session="2026-09-29",
+        end_session="2026-10-02",
+    )
+
+    assert out["status"] == "UNAVAILABLE"
+    assert out["raw_response"]["state"] == "UNAVAILABLE"
+    assert out["residual_response"]["state"] == "UNAVAILABLE"
+    assert "EXACT_ENDPOINT_MISSING" in out["refusals"]
+    assert out["window"]["observed_session_steps"] is None
+
+
+def test_k3e_mkt1_missing_ticker_refuses_without_cross_name_fallback():
+    from engine.price_pressure.response_export import export_market_response
+
+    out = export_market_response(
+        _k3e_mkt1_owner_state(),
+        ticker="MSFT",
+        start_session="2026-09-29",
+        end_session="2026-10-01",
+    )
+
+    assert out["status"] == "UNAVAILABLE"
+    assert out["raw_response"]["state"] == "UNAVAILABLE"
+    assert out["residual_response"]["state"] == "UNAVAILABLE"
+    assert "TICKER_NOT_IN_OWNER_STATE" in out["refusals"]
+    assert out["qualification"]["k3e_admissible"] is False
