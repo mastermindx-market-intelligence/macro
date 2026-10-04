@@ -595,3 +595,40 @@ The addendum controls where earlier text is less precise, particularly:
 - #8438 planning-carrier precedence.
 
 The QA file records a successful non-authoritative Mastermind Craft orchestrator compilation and intentionally does not claim runtime binding or execution authority.
+
+
+---
+
+# 22. Merged Research Intelligence foundations — DO NOT REDO
+
+The older #8430 planning carrier contained useful lineage that was not explicit in the first #8438 draft. These foundations were re-verified through current GitHub PR state and are already merged:
+
+| Foundation | PR | Merge commit | Current ruling |
+|---|---:|---|---|
+| Research Intelligence Object v1 / W1 | #7101 | `0859610dd27e032eba3a34f515cf239110aa35f8` | **DO NOT REDO**; current `engine/research_intelligence/schema.py` + extractor are the starting point |
+| Versioned private RIO persistence / W2 | #7230 | `204541291571ad6012a535621437c608489f2526` | **DO NOT REDO**; salvage #7354 against the landed store, never replay its stale store copy |
+| Brain bilingual/source-bound report evidence | #7079 | `0d352926c4ec9c4e5c972bee524b732d3308c617` | **DO NOT REDO**; exact evidence retrieval already exists over the incumbent stored body |
+| Rights-safe Research Intelligence belief projection | #8027 | `563362aea7d9b532fcd834d44a82b456952c278c` | **DO NOT REDO**; extend the existing projection rather than inventing a ChatGPT-only summary store |
+
+These merge receipts strengthen the salvage law:
+
+```text
+#7461 = tiny unmerged correctness delta
+#7354 = unique deep-read head logic only
+#7522 = Brain RIO-consumer behavior only
+#8090 = longitudinal predecessor logic only
+```
+
+Do not copy old versions of already-merged schema/store/evidence/projection code from those stale branches.
+
+## Unresolved stale identifier from older packet
+
+The older #8430 prose also named a supposed `#7997 Market Cognition parent research carrier`.
+
+A direct PR lookup for #7997 currently returns NOT_FOUND, and a bounded PR search did not recover that exact carrier.
+
+Therefore:
+
+- do not propagate #7997 as a verified dependency;
+- if the concept matters during Fable intake, recover its actual current artifact by title/source owner;
+- absence of this identifier does not block the Research Vault AI Fabric critical path.
