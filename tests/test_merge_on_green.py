@@ -3454,7 +3454,7 @@ def test_one_bad_pull_request_does_not_fail_the_sweep(monkeypatch, capsys):
 
     attempts = 0
 
-    def flaky(_repo, pull, *_a):
+    def flaky(_repo, pull, *_a, **_kwargs):
         nonlocal attempts
         attempts += 1
         if attempts == 1:
@@ -3482,7 +3482,7 @@ def test_a_red_main_blocks_ordinary_pulls_and_allows_one_explicit_repair(
     monkeypatch.setattr(MOG.ProofFreshness, "build", classmethod(lambda *_a, **_k: _freshness()))
     swept: list[int] = []
 
-    def record(_repo, pull, *_a):
+    def record(_repo, pull, *_a, **_kwargs):
         swept.append(pull["number"])
         return "merged"
 
@@ -5127,7 +5127,7 @@ def test_repo_wide_active_proofs_clamp_update_branch_capacity(
     allowances: list[int] = []
 
     def inspect_budget(
-        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked, **_kwargs
     ):
         allowances.append(budget.max_refreshes)
         return "pending"
@@ -5174,7 +5174,7 @@ def test_existing_owner_only_consumes_extra_capacity_until_its_run_is_indexed(
     observed: list[tuple[int, bool]] = []
 
     def inspect_budget(
-        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked, **_kwargs
     ):
         observed.append((budget.max_refreshes, budget.requires_refresh_lease))
         return "pending"
