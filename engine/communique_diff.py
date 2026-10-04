@@ -190,23 +190,42 @@ def _content_fingerprint(row: dict) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest() if text.strip() else ""
 
 
-def _separate_document_revisions(
+def _document_revision_context(
+    all_rows: list[dict],
     today_rows: list[dict],
-    prior_rows: list[dict],
-) -> tuple[list[dict], list[dict], list[dict]]:
-    """Remove same-locator body/title revisions from normal novelty comparison.
+    book: list[dict],
+    asof_day: str,
+) -> tuple[list[dict], set[str], set[str], set[str]]:
+    """Detect today's source revisions against the full prior locator history.
 
-    An official page changing at the same source locator is evidence of a source
-    revision, not automatically evidence that policy language newly appeared or
-    disappeared.  Return clean today/prior rows plus explicit revision receipts.
+    Policy novelty still uses the frozen trailing comparison window, but source
+    revision identity must not: an official page corrected after 31+ quiet days
+    is still a correction of that page.
+
+    Returns:
+      revisions
+      suppress_appeared — phrases added only by a same-locator correction
+      suppress_dropped  — phrases removed only by that correction
+      revised_locators  — explicit source locators revised today
+
+    We preserve the actual old/new documents in ordinary phrase unions.  This is
+    load-bearing: deleting a whole corrected document can itself manufacture an
+    APPEARED/DROPPED event for phrases that were unchanged across the revision or
+    repeated by an independent document.
     """
-    by_locator: dict[str, list[dict]] = {}
-    for r in list(prior_rows) + list(today_rows):
-        by_locator.setdefault(_source_locator(r), []).append(r)
-
     today_ids = {id(r) for r in today_rows}
-    revised_locators: set[str] = set()
+    by_locator: dict[str, list[dict]] = {}
+    for row in all_rows:
+        day = _crawl_day(row)
+        # Historical replay must never inspect a future version.
+        if not day or day > asof_day:
+            continue
+        by_locator.setdefault(_source_locator(row), []).append(row)
+
     revisions: list[dict] = []
+    suppress_appeared: set[str] = set()
+    suppress_dropped: set[str] = set()
+    revised_locators: set[str] = set()
 
     for locator, rows in by_locator.items():
         ordered = sorted(
@@ -219,14 +238,17 @@ def _separate_document_revisions(
         )
         prev: dict | None = None
         for row in ordered:
-            if id(row) not in today_ids:
-                prev = row
-                continue
-            if prev is not None:
+            if id(row) in today_ids and prev is not None:
                 before = _content_fingerprint(prev)
                 after = _content_fingerprint(row)
                 if before and after and before != after:
+                    before_phrases = phrases_in_text(_doc_text(prev), book)
+                    after_phrases = phrases_in_text(_doc_text(row), book)
+                    added = after_phrases - before_phrases
+                    removed = before_phrases - after_phrases
                     revised_locators.add(locator)
+                    suppress_appeared |= added
+                    suppress_dropped |= removed
                     revisions.append({
                         "source_locator_id": locator,
                         "organ": row.get("organ"),
@@ -237,16 +259,14 @@ def _separate_document_revisions(
                         "previous_observed_at": prev.get("_crawled_at"),
                         "supersedes_content_sha256": before,
                         "content_sha256": after,
+                        "added_phrases": sorted(added),
+                        "removed_phrases": sorted(removed),
+                        "unchanged_phrases": sorted(before_phrases & after_phrases),
                         "classification": "SOURCE_CONTENT_CHANGED_UNVERIFIED",
                     })
             prev = row
 
-    if not revised_locators:
-        return today_rows, prior_rows, revisions
-
-    clean_today = [r for r in today_rows if _source_locator(r) not in revised_locators]
-    clean_prior = [r for r in prior_rows if _source_locator(r) not in revised_locators]
-    return clean_today, clean_prior, revisions
+    return revisions, suppress_appeared, suppress_dropped, revised_locators
 
 
 # --------------------------------------------------------------------------- #
@@ -261,7 +281,9 @@ def _event_id(kind: str, organ: str, asof: str, key: str) -> str:
 # core diff — appeared / dropped per organ, lead-shift for People's Daily
 # --------------------------------------------------------------------------- #
 def diff_organ(organ: str, today_rows: list[dict], prior_rows: list[dict],
-               book: list[dict], asof: str) -> tuple[list[dict], bool]:
+               book: list[dict], asof: str, *,
+               suppress_appeared: set[str] | None = None,
+               suppress_dropped: set[str] | None = None) -> tuple[list[dict], bool]:
     """Diff one organ's TODAY documents against its PRIOR-window documents.
 
     Returns (events, cold_start). cold_start=True when there is no prior window
@@ -292,8 +314,15 @@ def diff_organ(organ: str, today_rows: list[dict], prior_rows: list[dict],
                 return {"url": r.get("url", ""), "title": r.get("title", "")}
         return {"url": "", "title": ""}
 
-    appeared = sorted(today_phrases - prior_phrases)
-    dropped = sorted(prior_phrases - today_phrases)
+    # A source correction is evidence, but its own text delta is not ordinary
+    # policy novelty.  Suppress only the changed phrases; keep the full old/new
+    # documents in both unions so revision-neutral phrases still contribute.
+    appeared = sorted(
+        (today_phrases - prior_phrases) - (suppress_appeared or set())
+    )
+    dropped = sorted(
+        (prior_phrases - today_phrases) - (suppress_dropped or set())
+    )
 
     for ph in appeared:
         ev = _evidence(ph)
@@ -325,33 +354,47 @@ def diff_organ(organ: str, today_rows: list[dict], prior_rows: list[dict],
     return events, False
 
 
-def lead_domain(layout_rows: list[dict], book: list[dict]) -> str | None:
-    """The dominant policy DOMAIN of the People's Daily front-page LEAD ITEM(s).
-
-    Reads the lowest-layout_rank documents (the front-page lead) and returns the
-    domain of the first phrase-book phrase they carry (order = prominence, D9).
-    Returns None when the lead carries no known formula. PURE."""
+def _lead_row_and_domain(
+    layout_rows: list[dict],
+    book: list[dict],
+) -> tuple[dict | None, str | None]:
+    """Return the first ranked row carrying a known policy domain."""
     rows = [r for r in layout_rows if int(r.get("layout_rank", -1)) >= 0]
     if not rows:
-        return None
+        return None, None
     rows = sorted(rows, key=lambda r: int(r.get("layout_rank", 0)))
     meta = phrase_meta(book)
-    # scan from the top of the page; first known-phrase domain wins
-    for r in rows:
-        for ph in phrases_in_text(_doc_text(r), book):
+    for row in rows:
+        for ph in phrases_in_text(_doc_text(row), book):
             dom = meta.get(ph, {}).get("domain")
             if dom:
-                return dom
-    return None
+                return row, dom
+    return None, None
+
+
+def lead_domain(layout_rows: list[dict], book: list[dict]) -> str | None:
+    """The dominant policy DOMAIN of the People's Daily front-page LEAD ITEM(s)."""
+    _row, domain = _lead_row_and_domain(layout_rows, book)
+    return domain
 
 
 def diff_lead_shift(today_layout: list[dict], prior_layout: list[dict],
-                    book: list[dict], organ: str, asof: str) -> list[dict]:
+                    book: list[dict], organ: str, asof: str, *,
+                    revised_locators: set[str] | None = None) -> list[dict]:
     """LEAD_SHIFT event when the People's Daily front-page lead DOMAIN changed vs
     the prior comparable day. Needs both days to resolve a lead domain; otherwise
     emits nothing (cold-start for the layout leg). PURE. Never raises."""
-    today_dom = lead_domain(today_layout, book)
-    prior_dom = lead_domain(prior_layout, book)
+    today_row, today_dom = _lead_row_and_domain(today_layout, book)
+    prior_row, prior_dom = _lead_row_and_domain(prior_layout, book)
+    blocked = revised_locators or set()
+    # An in-place correction of the row that defines either side's lead domain
+    # is not editorial prominence evidence.  Fail closed rather than promote the
+    # next row or mint a correction-driven LEAD_SHIFT.
+    if (
+        (today_row is not None and _source_locator(today_row) in blocked)
+        or (prior_row is not None and _source_locator(prior_row) in blocked)
+    ):
+        return []
     if today_dom is None or prior_dom is None or today_dom == prior_dom:
         return []
     return [{
@@ -415,29 +458,48 @@ def compute_events(corpus_rows: list[dict], asof: str,
         if not today_rows:
             continue
 
-        # CIE-09: same-locator source revisions are explicitly preserved but
-        # cannot self-promote into ordinary APPEARED/DROPPED/LEAD_SHIFT novelty.
-        today_cmp, prior_cmp, revisions = _separate_document_revisions(
-            today_rows, prior_rows
+        # CIE-09: detect today's in-place corrections against the FULL
+        # historical locator chain, independently of the novelty lookback.
+        revisions, suppress_appeared, suppress_dropped, revised_locators = (
+            _document_revision_context(rows, today_rows, book, asof_day)
         )
         document_revisions.extend(revisions)
 
-        # appeared / dropped
-        evs, cold_start = diff_organ(organ, today_cmp, prior_cmp, book, asof_day)
+        # appeared / dropped keep full old/new documents in the phrase unions,
+        # suppressing only the correction's own phrase delta.
+        evs, cold_start = diff_organ(
+            organ,
+            today_rows,
+            prior_rows,
+            book,
+            asof_day,
+            suppress_appeared=suppress_appeared,
+            suppress_dropped=suppress_dropped,
+        )
         events.extend(evs)
         if cold_start:
             cold.append(organ)
+
         # lead-shift only for the layout organ (People's Daily); compare today's
-        # lead vs the most recent prior crawl day's lead.
-        if any(int(r.get("layout_rank", -1)) >= 0 for r in today_cmp):
-            prior_days = sorted({_crawl_day(r) for r in prior_cmp
+        # lead vs the most recent prior crawl day's lead. A revised row defining
+        # either lead side blocks that one shift rather than promoting another row.
+        if any(int(r.get("layout_rank", -1)) >= 0 for r in today_rows):
+            prior_days = sorted({_crawl_day(r) for r in prior_rows
                                  if _crawl_day(r) < asof_day}, reverse=True)
             prior_layout: list[dict] = []
             if prior_days:
                 pd_day = prior_days[0]
-                prior_layout = [r for r in prior_cmp if _crawl_day(r) == pd_day]
+                prior_layout = [r for r in prior_rows if _crawl_day(r) == pd_day]
             events.extend(
-                diff_lead_shift(today_cmp, prior_layout, book, organ, asof_day))
+                diff_lead_shift(
+                    today_rows,
+                    prior_layout,
+                    book,
+                    organ,
+                    asof_day,
+                    revised_locators=revised_locators,
+                )
+            )
 
     counts = {
         "n_events": len(events),
