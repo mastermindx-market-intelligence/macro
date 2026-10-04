@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
@@ -274,6 +275,10 @@ _VISIT_DISCOVERY_RECENT_DAYS = 30
 _VISIT_DISCOVERY_BASELINE_DAYS = 90
 _VISIT_DISCOVERY_STALE_AFTER_DAYS = 4  # mirrors ChinaVisitsAdapter / Hub reader
 _VISIT_UNKNOWN_CLASSES = frozenset({"", "not_yet_available", "unresolved", "none", "nan", "<na>"})
+_VISIT_OBSERVED_TS_RE = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$"
+)
+_VISIT_COVERAGE_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
 def _visit_day(value) -> date | None:
@@ -290,20 +295,26 @@ def _visit_day(value) -> date | None:
         return None
 
 
-def _visit_observed_day(value) -> date | None:
-    """Parse a full owner observation timestamp; malformed clocks fail closed."""
+def _visit_observed_instant(value) -> datetime | None:
+    """Parse the complete timezone-aware owner timestamp; partial clocks fail closed."""
     try:
         text = str(value or "").strip()
     except Exception:  # noqa: BLE001
         return None
-    if not text or "T" not in text:
+    if not text or not _VISIT_OBSERVED_TS_RE.fullmatch(text):
         return None
     try:
         parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
     except (TypeError, ValueError):
         return None
-    # Owner observation clocks are timestamps, not loose date prefixes.
-    return parsed.date()
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed.astimezone(timezone.utc)
+
+
+def _visit_observed_day(value) -> date | None:
+    instant = _visit_observed_instant(value)
+    return instant.date() if instant is not None else None
 
 
 
@@ -314,6 +325,8 @@ def _visit_coverage_day(value) -> date | None:
     except Exception:  # noqa: BLE001
         return None
     if not text or text.lower() in {"none", "nan", "nat", "<na>"}:
+        return None
+    if not _VISIT_COVERAGE_DATE_RE.fullmatch(text):
         return None
     try:
         return date.fromisoformat(text)
@@ -372,8 +385,14 @@ def _visit_discovery_snapshot(
     last_success_raw = _visit_text(health.get("last_success_utc"))
     last_attempt_raw = _visit_text(health.get("last_attempt_utc"))
     coverage_day = _visit_coverage_day(coverage_start)
-    last_success_day = _visit_observed_day(health.get("last_success_utc"))
-    last_attempt_day = _visit_observed_day(health.get("last_attempt_utc"))
+    last_success_instant = _visit_observed_instant(health.get("last_success_utc"))
+    last_attempt_instant = _visit_observed_instant(health.get("last_attempt_utc"))
+    last_success_day = (
+        last_success_instant.date() if last_success_instant is not None else None
+    )
+    last_attempt_day = (
+        last_attempt_instant.date() if last_attempt_instant is not None else None
+    )
     # Keep the pure helper deterministic when called directly.  A degraded run
     # may contain newer positive rows than its frozen last_success clock, so the
     # fallback reference must include observed row clocks rather than moving the
@@ -398,9 +417,9 @@ def _visit_discovery_snapshot(
     clock_errors: list[str] = []
     if coverage_raw and coverage_day is None:
         clock_errors.append("coverage_start_invalid")
-    if last_success_raw and last_success_day is None:
+    if last_success_raw and last_success_instant is None:
         clock_errors.append("last_success_clock_invalid")
-    if last_attempt_raw and last_attempt_day is None:
+    if last_attempt_raw and last_attempt_instant is None:
         clock_errors.append("last_attempt_clock_invalid")
     if coverage_day is not None and coverage_day > reference_day:
         clock_errors.append("coverage_start_after_reference")
@@ -415,9 +434,9 @@ def _visit_discovery_snapshot(
         if coverage_day is not None and last_attempt_day < coverage_day:
             clock_errors.append("last_attempt_before_coverage_start")
     if (
-        last_success_day is not None
-        and last_attempt_day is not None
-        and last_attempt_day < last_success_day
+        last_success_instant is not None
+        and last_attempt_instant is not None
+        and last_attempt_instant < last_success_instant
     ):
         clock_errors.append("last_attempt_before_last_success")
     owner_clock_order_valid = not clock_errors
@@ -617,6 +636,8 @@ def _visit_discovery_snapshot(
             baseline_state = "unavailable_source_stale"
         elif source_status != "ok":
             baseline_state = "unavailable_source_health"
+        elif last_success_day is None:
+            baseline_state = "unavailable_last_success_clock"
         elif coverage_day is None or coverage_day > baseline_start:
             baseline_state = "insufficient_observed_history"
         else:
@@ -639,6 +660,18 @@ def _visit_discovery_snapshot(
             first_seen_state = "unknown_due_coverage_exception"
         elif not recent:
             first_seen_state = "no_recent_positive_evidence"
+        elif not exception_ledger_readable:
+            first_seen_state = "unknown_exception_ledger_unreadable"
+        elif has_unscoped_open:
+            first_seen_state = "unknown_unscoped_coverage_exception"
+        elif not owner_clock_order_valid:
+            first_seen_state = "unknown_owner_clock_order_invalid"
+        elif source_status != "ok":
+            first_seen_state = "unknown_source_health"
+        elif coverage_day is None:
+            first_seen_state = "unknown_coverage_start"
+        elif last_success_day is None:
+            first_seen_state = "unknown_last_success_clock"
         elif observation_clock_incomplete:
             first_seen_state = "observation_clock_unavailable"
         elif first_observed_day is None:
