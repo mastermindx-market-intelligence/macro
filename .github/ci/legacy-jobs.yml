@@ -2075,6 +2075,7 @@ jobs:
       - "engine/etf_pulse.py"
       - "engine/event_calendar.py"
       - "engine/extension.py"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
     # Wired 2026-08-02: neither suite was named by ANY run step, so #4297's caution
     # rewrite ran 4 stock_score pins red for a day with no CI signal, and the dossier's
     # prose-matched risk_veto died silently. test_stock_score pins the honesty
@@ -8436,9 +8437,20 @@ jobs:
     paths:
       - "collectors/__init__.py"
       - "collectors/china_ths_concepts.py"
+      - "config/synapse.yml"
       - "config/theme_crosswalk.yml"
       - "config/theme_graph_identity_breaks.yml"
       - "config/theme_sources.yml"
+      - "contracts/theme_graph/capability.v1.schema.json"
+      - "contracts/theme_graph/evidence.v1.schema.json"
+      - "contracts/theme_graph/identity_resolution.v1.schema.json"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "contracts/theme_graph/node_lifecycle.v1.schema.json"
+      - "contracts/theme_graph/ontology_change_report.v1.schema.json"
+      - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
+      - "contracts/theme_graph/ontology_proposal_review.v1.schema.json"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
       - "contracts/theme_graph/theme_state.v1.schema.json"
       - "engine/__init__.py"
       - "engine/basket_index.py"
@@ -8451,12 +8463,20 @@ jobs:
       - "engine/technicals.py"
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/change_report.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/identity_resolution.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      - "engine/theme_graph/membership_evidence.py"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/ontology_inventory.py"
+      - "engine/theme_graph/probation.py"
+      - "engine/theme_graph/proposal_worklist.py"
       - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/security_navigation.py"
       - "engine/theme_graph/store.py"
+      - "engine/theme_graph/structural_navigation.py"
       - "engine/theme_graph/theme_state.py"
       - "lib/__init__.py"
       - "lib/config.py"
@@ -8467,11 +8487,25 @@ jobs:
       - "scripts/build_dt_contra_state.py"
       - "scripts/build_subsector_membership.py"
       - "scripts/build_theme_graph.py"
+      - "scripts/check_theme_graph_contracts.py"
       - "scripts/correct_gmi_identity_lineage.py"
+      - "scripts/explain_theme_changes.py"
+      - "scripts/explain_theme_overlap.py"
+      - "scripts/list_theme_ontology.py"
+      - "scripts/list_theme_proposals.py"
+      - "scripts/propose_basket_ltheme_relations.py"
+      - "scripts/query_theme_ontology.py"
+      - "scripts/query_theme_security.py"
       - "scripts/seed_china_ths_baskets.py"
+      - "scripts/theme_coverage_gaps.py"
+      - "tests/test_basket_membership_pit.py"
       - "tests/test_build_subsector_membership.py"
       - "tests/test_dt_contra_state.py"
       - "tests/test_gmi_history_integrity.py"
+      - "tests/test_theme_graph_contracts.py"
+      - "tests/test_theme_graph_local_plane.py"
+      - "tests/test_theme_graph_materialize.py"
+      - "tests/test_theme_graph_membership_lifecycle.py"
       - "tests/test_theme_graph_state.py"
     # Regression guard for the two Neural-Web lobes frozen since 2026-07-07:
     #   1. dt_contra_state crash: build_dt_contra_state.py crashed on index.json (list root);
@@ -8493,7 +8527,7 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_contracts.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
 
