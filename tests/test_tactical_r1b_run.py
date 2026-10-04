@@ -6,8 +6,6 @@ frozen config, prereg, registration receipt and ledger are used unchanged.
 """
 from __future__ import annotations
 
-import copy
-import functools
 import hashlib
 import inspect
 import json
@@ -16,7 +14,6 @@ import re
 import socket
 import statistics
 import subprocess
-from collections.abc import Mapping
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from types import SimpleNamespace
@@ -227,66 +224,6 @@ def world(tmp_path_factory):
                               symbols=symbols)
     finally:
         mp.undo()
-
-
-_HEAVY_STAGE_CACHE: dict[bytes, Any] = {}
-
-
-def _key_bytes(value: Any) -> bytes:
-    if value is None or isinstance(value, (bool, int, float, str)):
-        return repr(value).encode("utf-8")
-    if isinstance(value, bytes):
-        return value
-    if isinstance(value, date):
-        return value.isoformat().encode("utf-8")
-    if isinstance(value, np.ndarray):
-        return (value.tobytes() + repr(value.shape).encode("utf-8")
-                + str(value.dtype).encode("utf-8"))
-    if isinstance(value, pd.DataFrame):
-        hashed = pd.util.hash_pandas_object(value, index=True).to_numpy().tobytes()
-        return hashed + tuple(value.columns).__repr__().encode() + str(value.dtypes).encode()
-    if isinstance(value, dict):
-        return b"".join(_key_bytes(k) + _key_bytes(v)
-                        for k, v in sorted(value.items(), key=lambda kv: repr(kv[0])))
-    if isinstance(value, (list, tuple)):
-        return b"".join(_key_bytes(v) for v in value)
-    if isinstance(value, Mapping):
-        return b"".join(_key_bytes(k) + _key_bytes(v)
-                        for k, v in sorted(value.items(), key=lambda kv: repr(kv[0])))
-    sha = getattr(value, "sha256", None)
-    if isinstance(sha, str):
-        return f"{type(value).__name__}:{sha}".encode("utf-8")
-    raise TypeError(type(value).__name__)
-
-
-def _stage_cache_key(label: str, args: tuple[Any, ...], kwargs: dict[str, Any]) -> bytes:
-    parts = (label.encode("utf-8"),)
-    for arg in args:
-        parts += (_key_bytes(arg),)
-    for key in sorted(kwargs):
-        parts += (key.encode("utf-8"), _key_bytes(kwargs[key]))
-    return hashlib.sha256(b"\0".join(parts)).digest()
-
-
-def _memoize_callable(label: str, fn: Any) -> Any:
-    @functools.wraps(fn)
-    def wrapped(*args: Any, **kwargs: Any) -> Any:
-        try:
-            key = _stage_cache_key(label, args, kwargs)
-        except TypeError:
-            return fn(*args, **kwargs)
-        if key not in _HEAVY_STAGE_CACHE:
-            _HEAVY_STAGE_CACHE[key] = fn(*args, **kwargs)
-        return copy.deepcopy(_HEAVY_STAGE_CACHE[key])
-    return wrapped
-
-
-def _memoize_heavy_stages(mp: pytest.MonkeyPatch) -> None:
-    mp.setattr(s, "build_days", _memoize_callable("build_days", s.build_days))
-    mp.setattr(s, "measure_event_grid",
-               _memoize_callable("measure_event_grid", s.measure_event_grid))
-    mp.setattr(s.pools, "measure_rows",
-               _memoize_callable("measure_rows", s.pools.measure_rows))
 
 
 def _patch(mp: pytest.MonkeyPatch, world, manifest: Path | None = None,
@@ -955,8 +892,6 @@ def test_t5c_keyboard_interrupt_during_persist_refuses_followup(world, monkeypat
 
 
 def test_t5d_aggregate_abort_blocks_same_code_sha(world, monkeypatch, tmp_path, capsys):
-    # mechanics test — study compute memoized, seat facts R2A3
-    _memoize_heavy_stages(monkeypatch)
     _patch(monkeypatch, world, attempt_root=tmp_path)
     real = s.agg.summarize
 
@@ -1094,8 +1029,6 @@ def test_t6d_unreadable_commit_refuses(world, monkeypatch, tmp_path, capsys):
 
 
 def test_t6e_drift_refuses_before_persist(world, monkeypatch, tmp_path, capsys):
-    # mechanics test — study compute memoized, seat facts R2A3
-    _memoize_heavy_stages(monkeypatch)
     _patch(monkeypatch, world, attempt_root=tmp_path)
     honest = s._loaded_root_modules()
     calls = 0
@@ -1380,8 +1313,6 @@ def test_t8f_test_file_not_at_reviewed_head_refuses(world, monkeypatch, tmp_path
 # --------------------------------------------------------------------------- repair round 1 (t9)
 
 def test_t9a_attempt_root_ignores_home(world, monkeypatch, tmp_path):
-    # mechanics test — study compute memoized, seat facts R2A3
-    _memoize_heavy_stages(monkeypatch)
     import argparse
     import os
     import pwd
@@ -1496,8 +1427,6 @@ def test_t9f_collision(world, monkeypatch, tmp_path, capsys):
 
 
 def test_t9g_unfinalised(world, monkeypatch, tmp_path, capsys):
-    # mechanics test — study compute memoized, seat facts R2A3
-    _memoize_heavy_stages(monkeypatch)
     _patch(monkeypatch, world, attempt_root=tmp_path)
     attempt_dir = tmp_path / "attempts"
     attempt_dir.mkdir(parents=True)
