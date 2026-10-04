@@ -150,7 +150,6 @@
     "tests/test_china_filings_collector.py",
     "tests/test_china_fundamentals.py",
     "tests/test_china_intel_analysis.py",
-    "tests/test_china_intel_bus.py",
     "tests/test_china_intel_hub_command.py",
     "tests/test_china_lowvol.py",
     "tests/test_china_market_drivers.py",
