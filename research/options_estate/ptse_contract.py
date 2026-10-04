@@ -220,7 +220,10 @@ def _time(value: Any, path: str) -> datetime:
         _fail("TIMESTAMP_INVALID", path)
     if parsed.tzinfo is None or parsed.utcoffset() is None:
         _fail("TIMEZONE_REQUIRED", path)
-    return parsed.astimezone(timezone.utc)
+    try:
+        return parsed.astimezone(timezone.utc)
+    except (ValueError, OverflowError):
+        _fail("TIMESTAMP_INVALID", path)
 
 
 def _stamp(record: dict, key: str, path: str) -> datetime:
@@ -559,12 +562,20 @@ class ContextArtifact:
         return self.to_dict()["assessment"]["assessment_id"]
 
 
+def _seal_context(payload: dict) -> ContextArtifact:
+    """Every factory result must fit the same canonical wire bound as its reader."""
+    wire = canonical_json(payload)
+    if len(wire) > MAX_WIRE_BYTES:
+        _fail("PAYLOAD_TOO_LARGE", "$")
+    return ContextArtifact(wire)
+
+
 def build_context(observation: Mapping[str, Any], assessment: Mapping[str, Any]) -> ContextArtifact:
     """Seal caller-supplied owner facts; never invent data, timestamps, expiry or admission."""
     o = _observation(copy.deepcopy(dict(observation)), sealed=False)
     a = _assessment(copy.deepcopy(dict(assessment)), o, sealed=False)
-    return ContextArtifact(canonical_json({"schema_version": SCHEMA, "canonicalization": CANONICALIZATION,
-                                           "observation": o, "assessment": a}))
+    return _seal_context({"schema_version": SCHEMA, "canonicalization": CANONICALIZATION,
+                          "observation": o, "assessment": a})
 
 
 def validate_context(raw: bytes | str) -> ContextArtifact:
@@ -574,7 +585,7 @@ def validate_context(raw: bytes | str) -> ContextArtifact:
         _fail("SCHEMA_NOT_ADMITTED", "$")
     o = _observation(p["observation"], sealed=True)
     _assessment(p["assessment"], o, sealed=True)
-    return ContextArtifact(canonical_json(p))
+    return _seal_context(p)
 
 
 def reconcile_observation(previous: ContextArtifact, candidate: ContextArtifact) -> str:
