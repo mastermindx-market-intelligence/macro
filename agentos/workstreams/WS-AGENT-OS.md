@@ -76,6 +76,13 @@ waves:
       squash carried the rejected defect shape and is historical evidence, not W1
       acceptance. Enforcement remains REPORT_ONLY. MAS-28 itself remains
       BUILT_NOT_PROVEN until the separate calibration stop condition is satisfied.
+  - id: MAS28-CALIBRATION
+    title: "MAS-28 — frozen representative report-only calibration and bounded wire repair"
+    status: in_progress
+    depends_on: [MAS28-W1]
+    next_action: >
+      Calibration and independent source review are complete; ship the evidence and
+      minimal repair through exact-head CI and merge. Retain report-only authority.
 decisions:
   - DEC:AGENTOS-CXI-R12-OVERRULED
   - DEC:AGENTOS-CLAIMS-ARE-NOT-LIVE-ACTIVITY
@@ -88,12 +95,14 @@ decisions:
   - DEC:AGENTOS-NIGHTLY-IS-THE-ONLY-REGENERATOR
   - DEC:MAS28-PR-LINKAGE-VALIDATOR-V1-REPORT-ONLY
   - DEC:MAS28-R028-TARGET-IDENTITY-RECONCILIATION
+  - DEC:MAS28-CALIBRATION-REMAIN-REPORT-ONLY
 discoveries:
   - DSC:GOVERNANCE-JSONL-NOT-TRACKED
   - DSC:EXECUTIVE-OS-NO-PROGRAM-ROW
   - DSC:CENSUS-POSTDATES-PHASE1B
   - DSC:MAS28-AUTHORING-GRAMMAR-DRIFT
   - DSC:MAS28-R028-EVIDENCE-IDENTITY-COLLAPSE
+  - DSC:MAS28-MISSING-INVALID-WIRE
 landmines:
   - "PROVISIONAL PARENT: project-active-build-control's registry row says it does_not_own 'Durable program truth', which is exactly what this workstream owns. No agent-os row exists (see DSC:EXECUTIVE-OS-NO-PROGRAM-ROW for the same gap). Minting one was reverted deliberately: config/mastermind_programs.yml and its generated docs/MASTERMIND_SYSTEM_MAP.md belong to the semantic-system-mapping workstream, which the commissioning brief marks ALREADY ASSIGNED, and editing the generated map conflicted with main within hours. The row is that owner's to add."
   - "Two execution control planes already exist. Anything that gates or dispatches belongs in Mastermind control_plane/ or the Macro hook layer — see invariant I1."
@@ -108,13 +117,12 @@ artifacts:
   - research/MASTERMIND_AGENT_OS_V1_IMPLEMENTATION_PLAN.md
   - research/MASTERMIND_CEO_BRIEF_SPEC.md
 next_action: >
-  MAS-28 W1 implementation is merged and accepted as report-only / BUILT_NOT_PROVEN.
-  The next MAS-28 operation is calibration only: run the representative frozen corpus
-  required by MAS-28, record false positives, false negatives and incomplete observations,
-  and return a recommendation to remain report-only, amend rules, or propose a separate
-  bounded enforcement review. Do not arm a hard gate from W1. The pre-existing Agent OS
-  Phase 4 W4 remains a separate high-blast-radius report-only hook wave and is still todo;
-  this records correction does not commission it.
+  Release the completed MAS-28 calibration and bounded report-wire repair after
+  exact-head CI. DEC:MAS28-CALIBRATION-REMAIN-REPORT-ONLY records the actual scoped
+  result and incomplete-observation limits. The current Chairman operation
+  agent-os-v1-closure-20261003-astra-001 separately commissions W4 implementation,
+  high-blast-radius review, cold recovery and truthful V1 closure. W4 remains
+  unaccepted until those gates pass; the canceled MAS-129 carrier is not revived.
 ---
 
 ## Context
