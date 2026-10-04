@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filing lineage — what was known, and when</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --panel: #ffffff;
+    --panel2: #f0f2f5;
+    --text: #131822;
+    --muted: #616b7c;
+    --line: #dfe3ea;
+    --line-strong: #c3cad6;
+    --ok: #157a52;
+    --ok-bg: #e7f4ee;
+    --warn: #8a5a12;
+    --warn-bg: #fbf1de;
+    --info: #24507f;
+    --info-bg: #e8f0f9;
+    --refuse: #8d2f2f;
+    --refuse-bg: #fbeced;
+    --radius: 14px;
+    --radius-sm: 9px;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1017; --panel: #151a23; --panel2: #1c222d; --text: #e8ecf3;
+      --muted: #97a2b4; --line: #262e3b; --line-strong: #394353;
+      --ok: #59d3a0; --ok-bg: #12291f; --warn: #e3b169; --warn-bg: #2a2111;
+      --info: #7fb3ec; --info-bg: #13202f; --refuse: #ef8f8f; --refuse-bg: #2b1517;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 32px 22px 72px; }
+  header.page { margin-bottom: 26px; }
+  .kicker {
+    font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--muted); font-weight: 650; margin: 0 0 7px;
+  }
+  h1 { font-size: 27px; line-height: 1.22; margin: 0 0 8px; letter-spacing: -.018em; font-weight: 640; }
+  .sub { color: var(--muted); margin: 0; max-width: 62ch; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 20px 22px; margin-bottom: 16px;
+  }
+  .controls { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end; }
+  .ctl { display: flex; flex-direction: column; gap: 6px; }
+  .ctl label { font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); font-weight: 650; }
+  .ctl input, .ctl select {
+    font: inherit; padding: 8px 11px; border-radius: var(--radius-sm);
+    border: 1px solid var(--line-strong); background: var(--panel2); color: var(--text); min-width: 190px;
+  }
+  button.run {
+    font: inherit; font-weight: 600; padding: 9px 20px; border-radius: var(--radius-sm);
+    border: 1px solid transparent; background: var(--text); color: var(--panel); cursor: pointer;
+  }
+  button.run:hover { opacity: .88; }
+  .hint { color: var(--muted); font-size: 12.5px; margin: 12px 0 0; }
+  .answer { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(292px, 1fr)); }
+  .policy { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); padding: 17px 18px; }
+  .policy h3 { margin: 0 0 3px; font-size: 13px; letter-spacing: .03em; text-transform: uppercase; color: var(--muted); font-weight: 650; }
+  .policy .q { font-size: 13px; color: var(--muted); margin: 0 0 13px; min-height: 2.9em; }
+  .val { font: 600 26px/1.15 var(--mono); letter-spacing: -.02em; margin: 0 0 3px; }
+  .val.none { font-size: 16px; font-weight: 550; color: var(--muted); font-family: inherit; }
+  .val-note { font-size: 12px; color: var(--muted); margin: 0 0 13px; }
+  .src { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 11px; margin-top: 3px; }
+  .src dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin: 0; }
+  .src dt { color: var(--muted); }
+  .src dd { margin: 0; color: var(--text); font-family: var(--mono); font-size: 11.5px; overflow-wrap: anywhere; }
+  .tag {
+    display: inline-block; font-size: 11px; font-weight: 640; letter-spacing: .04em;
+    padding: 3px 9px; border-radius: 999px; margin-bottom: 11px;
+  }
+  .tag.value { background: var(--ok-bg); color: var(--ok); }
+  .tag.ne { background: var(--warn-bg); color: var(--warn); }
+  .tag.missing { background: var(--info-bg); color: var(--info); }
+  .verdict { border-left: 3px solid var(--ok); background: var(--ok-bg); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 15px 18px; margin: 0 0 4px; }
+  .verdict.none { border-left-color: var(--warn); background: var(--warn-bg); }
+  .verdict strong { display: block; margin-bottom: 4px; font-size: 15px; }
+  .verdict p { margin: 0; font-size: 13.5px; }
+  table.ev { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 12px; }
+  table.ev th, table.ev td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.ev th { color: var(--muted); font-weight: 620; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
+  table.ev td { font-family: var(--mono); font-size: 11.5px; overflow-wrap: anywhere; }
+  details.drill { margin-top: 14px; }
+  details.drill summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--info); }
+  pre.receipt {
+    background: var(--panel2); border: 1px solid var(--line); border-radius: var(--radius-sm);
+    padding: 13px; overflow-x: auto; font: 11.5px/1.5 var(--mono); margin: 11px 0 0;
+  }
+  .err { color: var(--refuse); background: var(--refuse-bg); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 13.5px; }
+  .foot { color: var(--muted); font-size: 12px; margin-top: 26px; border-top: 1px solid var(--line); padding-top: 14px; }
+  .foot code { font-family: var(--mono); font-size: 11.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="page">
+    <p class="kicker">Financial Intelligence Fabric · cross-filing lineage</p>
+    <h1>What did Apple report — and was that number repeated, revised, or changed?</h1>
+    <p class="sub">
+      Ask the balance sheet a point-in-time question. Every answer names the exact SEC filing it
+      stands on, the cutoff it was true at, and whether a later filing confirmed it.
+    </p>
+  </header>
+
+  <section class="card">
+    <div class="controls">
+      <div class="ctl">
+        <label for="metric">Line item</label>
+        <select id="metric">
+          <option value="total_assets">Total assets</option>
+          <option value="total_liabilities">Total liabilities</option>
+          <option value="current_assets">Current assets</option>
+          <option value="current_liabilities">Current liabilities</option>
+          <option value="stockholders_equity">Stockholders’ equity</option>
+          <option value="cash_and_cash_equivalents">Cash and cash equivalents</option>
+          <option value="inventory_net">Inventory, net</option>
+          <option value="accounts_payable">Accounts payable</option>
+        </select>
+      </div>
+      <div class="ctl">
+        <label for="instant">Balance sheet date</label>
+        <select id="instant">
+          <option value="2025-09-27">2025-09-27 (FY2025 year end)</option>
+          <option value="2026-06-27">2026-06-27 (FY2026 Q3)</option>
+        </select>
+      </div>
+      <div class="ctl">
+        <label for="asof">What was known as of</label>
+        <input id="asof" type="date" value="2026-09-20">
+      </div>
+      <button class="run" id="run" type="button">Answer</button>
+    </div>
+    <p class="hint">
+      The as-of date sets both cutoffs. Move it back before 2026-09-20 and the system forgets it ever
+      learned the two filings were linked — the honest historical answer returns.
+    </p>
+  </section>
+
+  <div id="out"></div>
+
+  <p class="foot">
+    Source: committed SEC golden filing package · <code>POST /api/forensics/v1/financial/query</code> ·
+    delivery <code>committed_golden_fixture</code>, <code>attested=false</code>,
+    <code>production_issuer_service=false</code>. Display only. Not investment advice.
+  </p>
+</div>
+
+<script>
+(function () {
+  var API = '/api/forensics/v1/financial/query';
+  var ENTITY = 'ISS:US-XNAS-AAPL';
+  var POLICIES = [
+    { id: 'latest_known_as_of', title: 'Latest known',
+      q: 'The most recent filing that reported this number, as of your cutoff.' },
+    { id: 'as_reported', title: 'As originally reported',
+      q: 'The number in the filing that first reported it. This never moves.' },
+    { id: 'latest_restated', title: 'Restated',
+      q: 'Only an explicitly typed amendment, recast, restatement or correction appears here.' }
+  ];
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined && text !== null) n.textContent = String(text);
+    return n;
+  }
+
+  function money(v) {
+    if (v === null || v === undefined) return null;
+    var n = Number(v);
+    if (!isFinite(n)) return String(v);
+    var abs = Math.abs(n);
+    if (abs >= 1e9) return (n / 1e9).toFixed(2).replace(/\.00$/, '') + 'B';
+    if (abs >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+    return n.toLocaleString();
+  }
+
+  function query(metric, instant, asof, selection) {
+    var body = {
+      schema: 'fundamental_forensics.financial_query_request/v1',
+      entity_id: ENTITY,
+      policy: {
+        selection: selection,
+        source_snapshot_at: asof + 'T00:00:00Z',
+        recorded_at: asof + 'T12:00:00Z'
+      },
+      metric_ids: [metric],
+      periods: [{ kind: 'instant', start: null, end: instant, label: instant }]
+    };
+    return fetch(API, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      return r.json().then(function (j) { return { status: r.status, body: j }; });
+    });
+  }
+
+  function rootNode(env, metric, instant) {
+    var rec = env && env.receipt;
+    if (!rec) return null;
+    var roots = {};
+    (rec.root_cell_ids || []).forEach(function (id) { roots[id] = 1; });
+    var found = null;
+    (rec.nodes || []).forEach(function (n) {
+      if (roots[n.cell_id] && n.metric_id === metric && n.period && n.period.end === instant) found = n;
+    });
+    return found;
+  }
+
+  function policyCard(spec, node) {
+    var card = el('div', 'policy');
+    card.appendChild(el('h3', null, spec.title));
+    card.appendChild(el('p', 'q', spec.q));
+    var state = node ? node.state : 'missing';
+    var tag = el('span', 'tag ' + (state === 'value' ? 'value' : state === 'not_evaluable' ? 'ne' : 'missing'),
+      state === 'value' ? 'Answerable' : state === 'not_evaluable' ? 'Not evaluable' : 'Nothing to show');
+    card.appendChild(tag);
+
+    if (state === 'value') {
+      card.appendChild(el('p', 'val', '$' + money(node.value)));
+      card.appendChild(el('p', 'val-note', Number(node.value).toLocaleString() + ' ' + (node.unit || '')));
+    } else {
+      card.appendChild(el('p', 'val none', node && node.reason ? node.reason : 'No eligible vintage.'));
+      card.appendChild(el('p', 'val-note', ''));
+    }
+
+    var p = (node && node.provenance) || {};
+    var src = el('div', 'src');
+    var dl = el('dl');
+    function row(k, v) {
+      if (!v) return;
+      dl.appendChild(el('dt', null, k));
+      dl.appendChild(el('dd', null, v));
+    }
+    row('Filing', p.form ? p.form + ' · ' + p.accession : null);
+    row('Filed', p.filed_at);
+    row('Accepted', p.accepted_at);
+    row('Concept', p.concept_qname);
+    row('Occurrence', (p.source_occurrence_ids || [])[0]);
+    if (dl.children.length) { src.appendChild(dl); card.appendChild(src); }
+    return card;
+  }
+
+  function verdict(known, asRep, lineage) {
+    var box = el('div', 'verdict');
+    var strong = el('strong');
+    var body = el('p');
+    var conf = lineage && lineage.confirmations && lineage.confirmations[0];
+
+    if (conf) {
+      strong.textContent = 'Repeated — not revised.';
+      var pe = conf.positive_evidence;
+      body.textContent =
+        'A later filing (' + pe.child_accession + ') reported this exact same number as the original ' +
+        'filing (' + pe.parent_accession + ') — same value, same reported precision, same taxonomy version. ' +
+        'That is a confirmation of the earlier fact, not an amendment, recast, restatement or correction. ' +
+        'The originally reported value is unchanged.';
+    } else if (known && known.state === 'value' && asRep && asRep.state === 'value') {
+      var samePlace = (known.provenance || {}).accession === (asRep.provenance || {}).accession;
+      strong.textContent = samePlace ? 'Reported once.' : 'Two vintages, unlinked.';
+      body.textContent = samePlace
+        ? 'Only one filing in the current source set reports this number for this date. Nothing has confirmed or changed it.'
+        : 'Two filings report this date, but no lineage evidence links them at this cutoff.';
+    } else {
+      box.className = 'verdict none';
+      strong.textContent = 'Not answerable at this cutoff.';
+      body.textContent = (known && known.reason)
+        ? known.reason + ' — the system will not fuse two source vintages by timestamp. It says so rather than guessing.'
+        : 'No eligible source vintage is visible at this cutoff.';
+    }
+    box.appendChild(strong);
+    box.appendChild(body);
+    return box;
+  }
+
+  function evidenceTable(conf) {
+    var pe = conf.positive_evidence;
+    var t = el('table', 'ev');
+    var head = el('tr');
+    ['', 'Original filing', 'Confirming filing'].forEach(function (h) { head.appendChild(el('th', null, h)); });
+    var thead = el('thead'); thead.appendChild(head); t.appendChild(thead);
+    var tb = el('tbody');
+    function r(label, a, b) {
+      var tr = el('tr');
+      tr.appendChild(el('th', null, label));
+      tr.appendChild(el('td', null, a));
+      tr.appendChild(el('td', null, b));
+      tb.appendChild(tr);
+    }
+    r('Accession', pe.parent_accession, pe.child_accession);
+    r('Accepted', pe.parent_accepted_at, pe.child_accepted_at);
+    r('Value', pe.parsed_value, pe.parsed_value);
+    r('Decimals', pe.decimals === null ? '—' : pe.decimals, pe.decimals === null ? '—' : pe.decimals);
+    r('Taxonomy', pe.parent_taxonomy_uri, pe.child_taxonomy_uri);
+    r('Occurrence', conf.parent_occurrence_id, conf.child_occurrence_id);
+    t.appendChild(tb);
+    return t;
+  }
+
+  function render(metric, instant, asof, results, env) {
+    var out = document.getElementById('out');
+    out.textContent = '';
+    var known = results[0], asRep = results[1], restated = results[2];
+    var lineage = env && env.lineage;
+
+    var head = el('section', 'card');
+    head.appendChild(verdict(known, asRep, lineage));
+    if (lineage && lineage.confirmations && lineage.confirmations.length) {
+      var conf = lineage.confirmations[0];
+      head.appendChild(evidenceTable(conf));
+      var d = el('details', 'drill');
+      d.appendChild(el('summary', null, 'Evidence drilldown — the immutable lineage receipt'));
+      var pre = el('pre', 'receipt', JSON.stringify(conf, null, 2));
+      d.appendChild(pre);
+      head.appendChild(d);
+    }
+    out.appendChild(head);
+
+    var grid = el('div', 'answer');
+    POLICIES.forEach(function (spec, i) { grid.appendChild(policyCard(spec, results[i])); });
+    out.appendChild(grid);
+  }
+
+  function run() {
+    var metric = document.getElementById('metric').value;
+    var instant = document.getElementById('instant').value;
+    var asof = document.getElementById('asof').value;
+    var out = document.getElementById('out');
+    out.textContent = '';
+    out.appendChild(el('div', 'card', 'Querying…'));
+
+    Promise.all(POLICIES.map(function (p) { return query(metric, instant, asof, p.id); }))
+      .then(function (res) {
+        var bad = res.filter(function (r) { return r.status !== 200; });
+        if (bad.length) {
+          out.textContent = '';
+          var c = el('div', 'card');
+          c.appendChild(el('div', 'err',
+            'Query refused (HTTP ' + bad[0].status + '): ' + (bad[0].body && bad[0].body.detail || 'unavailable')));
+          out.appendChild(c);
+          return;
+        }
+        var nodes = res.map(function (r) { return rootNode(r.body, metric, instant); });
+        render(metric, instant, asof, nodes, res[0].body);
+      })
+      .catch(function (e) {
+        out.textContent = '';
+        var c = el('div', 'card');
+        c.appendChild(el('div', 'err', 'Request failed: ' + e));
+        out.appendChild(c);
+      });
+  }
+
+  document.getElementById('run').addEventListener('click', run);
+  run();
+})();
+</script>
+</body>
+</html>

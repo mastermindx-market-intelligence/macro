@@ -2,6 +2,41 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-04",
+      "tickers": [
+        "AIO",
+        "AMKR",
+        "ASTH",
+        "COST",
+        "CR",
+        "CTVA",
+        "DLHC",
+        "ECG",
+        "EGBN",
+        "ESE",
+        "FBK",
+        "FIX",
+        "GAP",
+        "KRC",
+        "MRSH",
+        "MYRG",
+        "N",
+        "NTCT",
+        "NYAX",
+        "PANW",
+        "PL",
+        "PORT.U",
+        "PPLI",
+        "RL",
+        "SQQQ",
+        "SYF",
+        "TBBK",
+        "TNDM",
+        "TRIP",
+        "VOO"
+      ]
+    },
+    {
       "as_of": "2026-10-03",
       "tickers": [
         "ATR",
@@ -164,26 +199,6 @@
         "TNDM",
         "WABC",
         "WHR"
-      ]
-    },
-    {
-      "as_of": "2026-09-27",
-      "tickers": [
-        "AEIS",
-        "AMKR",
-        "CNM",
-        "COHU",
-        "KLAC",
-        "MOG-A",
-        "PDFS",
-        "QDEL",
-        "REXR",
-        "SHO",
-        "SIG",
-        "STRL",
-        "VTRS",
-        "WABC",
-        "XRAY"
       ]
     }
   ]
