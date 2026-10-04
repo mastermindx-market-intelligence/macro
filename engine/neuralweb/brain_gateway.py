@@ -862,25 +862,45 @@ _RESEARCH_TRADE_NOUN_EN_VERB = (
     r"|dr(?:ives|ove|iving)|le(?:ads|d|ading)|suggest(?:s|ed)?|indicat(?:es|ed)|point(?:s|ed)?"
     r"|dropped|climbed|widened|narrowed|moved|became|becomes?|drove|outnumber(?:s|ed)?)"
 )
+# r6 (review N21): a verb list can never be complete — "waned", "abated", "swelled",
+# "totaled" were withheld as orders. Any regular past/3sg form after the lone noun is a
+# reporting verb, optionally behind ONE adverb ("clearly eased", "also rose"); an adverb
+# at the clause end ("Buy programs now.") is still an order, and a stop-list keeps
+# s-final function words ("this", "across", "less") from passing as verbs.
+_RESEARCH_TRADE_NOUN_EN_ADV = (
+    r"(?:also|now|still|again|then|already|just|only|even|never|rarely|often|usually|too"
+    r"|soon|later|recently|lately|somewhat|slightly|nearly|almost|barely|hardly|further"
+    r"|[a-z]{3,}ly)"
+)
+_RESEARCH_TRADE_NOUN_EN_ANYVERB = (
+    r"(?!(?:across|towards|plus|unless|thus|perhaps|always|besides|sometimes|regardless"
+    r"|less|this|its|his|hers|ours|yours|theirs|yes|bias|basis|versus|various|previous"
+    r"|serious|obvious|focus|status|bonus|minus|census|consensus|species|series)\b)"
+    r"[a-z]{3,}(?:ed|es|s)\b"
+)
 _RESEARCH_TRADE_NOUN_EN = (
     r"(?!\s+(?:programs?|orders?|volumes?|pressures?|interest|sides?|signals?|flows?"
     r"|imbalances?|ratios?|backs?|activity|demand|appetite|ratings?|lists?)(?![\w-])"
-    r"(?:\s*[.!?,;:—–]|\s*$|\s+" + _RESEARCH_TRADE_NOUN_EN_VERB + r"\b))"
+    r"(?:\s*[.!?,;:—–]|\s*$|\s+(?:" + _RESEARCH_TRADE_NOUN_EN_ADV + r"\s+)?"
+    r"(?:" + _RESEARCH_TRADE_NOUN_EN_VERB + r"|" + _RESEARCH_TRADE_NOUN_EN_ANYVERB + r")\b))"
 )
-# r5 (review N16, ZH): "请买入…" is always an order; a compound noun ("需求", "情绪") is
-# reportative only when a predicate follows and that predicate is not attributive ("旺盛的
-# 板块" names what to buy). Single-character continuations ("买入价", "卖出后") stay guards.
-_RESEARCH_TRADE_ZH_PRED = (
-    r"(?:旺盛|强劲|偏强|偏弱|较强|较弱|明显|增加|增多|减少|减弱|增强|上升|下降|回落|回升|升温|降温"
-    r"|放大|放缓|放量|缩量|萎缩|扩大|缩小|集中|分散|持续|不足|充足|有限|过热|过冷|依然|仍然|开始"
-    r"|逐步|逐渐|主要|来自|同比|环比|回暖|走弱|走强|攀升|下滑|上行|下行|企稳|反弹|加大|加剧|缓解"
-    r"|消退|退潮|涌现|涌入|流入|流出|回流|活跃|清淡|方面|层面"
-    r"|仍|很|较|已|将|正在|继续|不|没|在|为|是|有|达|超过|低于|高于|大|小|高|低|多|少|强|弱|降|升"
-    r"|涨|跌|略|稍|也|都|并|或|与|和|旺|淡|上|中)"
+# r5 (review N16, ZH): "请买入…" is always an order; a compound noun ("需求", "情绪") names
+# what to buy only when an attributive "的" follows it ("旺盛的板块"). r6 (review N22): no
+# predicate list — "减轻", "疲软", "浓厚" were withheld — and a "的" that opens a clause
+# ("较弱的时候", "的变化") is not attributive. "买入价为…" is a price report; "买入价100元
+# 以下的NVDA" is an order (r6, review N20).
+_RESEARCH_TRADE_ZH_CLAUSE = (
+    r"(?:时候|时|话|情况|阶段|时期|背景|环境|状态|过程|同时|原因|结果|影响|变化|趋势|迹象|意义|问题"
+    r"|风险|程度|水平|位置|区间|条件|前提|基础|来源|主因|背后|逻辑|特征|表现|节奏|幅度|速度|持续性"
+    r"|可能性|概率|高低|强弱|多少|大小)"
 )
 _RESEARCH_TRADE = re.compile(
-    r"(?:^|(?<=[.!?。！？:：]\s)|(?<=[—–]\s)|(?<=\bso\s)|(?<=\band\s)|(?<=\bthen\s)|(?<=\bbut\s))"
-    r"(?:buy|sell)(?![\w-])" + _RESEARCH_TRADE_NOUN_EN + r"\s+\S"
+    # r6 (review N19): a clause join is an anchor too — "; buy the dip", ", buy", "—buy",
+    # "(Buy NVDA)" — and "Buy: NVDA" is an order written as a label.
+    r"(?:^|(?<=[.!?。！？:：]\s)|(?<=[;,])|(?<=[;,]\s)|(?<=[—–])|(?<=[—–]\s)|(?<=[(（])"
+    r"|(?<=\bso\s)|(?<=\band\s)|(?<=\bthen\s)|(?<=\bbut\s))"
+    r"(?:buy|sell)(?![\w-])(?!\s+(?:or|and)\s+(?:buy|sell)\b)" + _RESEARCH_TRADE_NOUN_EN + r"\s+\S"
+    r"|(?:^|(?<=[.!?。！？;,]\s)|(?<=[(（]))(?:buy|sell)\s*[:：]\s*(?!\d)\S"
     r"|\b(?:you\s+should|please)\s+(?:buy|sell)\b"
     r"|\b(?:buy|sell)\s+(?:now|immediately|today)\b"
     r"|\bsize\s+(?:it|the\s+position|your\s+(?:position|size|book))\b"
@@ -891,11 +911,13 @@ _RESEARCH_TRADE = re.compile(
     r"(?:\S+\s+){0,3}(?:price\s+target|target\s+price)\b"
     # Sentence-anchored bare target imperative (set/cut/raise/lower + "a target").
     r"|(?:^|(?<=[.!?。！？]\s))(?:set|cut|raise|lower)\s+(?:\S+\s+){0,3}target\b"
-    r"|(?:^|(?<=[.!?。！？:：，,]))\s*(?:请\s*(?:买入|卖出)|(?:买入|卖出)"
-    r"(?!盘|方|单|点|区|后|前|的|了|价(?!格)|量(?!能)|成本|机会|时机"
-    r"|(?:压力|意愿|信号|力度|订单|资金|潮|规模|量能|力量|需求|热情|情绪|行为|操作|价格|数量|金额"
+    r"|(?:^|(?<=[.!?。！？:：，,；;])|(?<=所以)|(?<=然后)|(?<=因此)|(?<=建议)|(?<=应该)|(?<=可以)"
+    r"|(?<=不妨)|(?<=应当)|(?<=优先)|(?<=宜)|(?<=就)|(?<=先)|(?<=再)|(?<=则))"
+    r"\s*(?:请\s*(?:买入|卖出)|(?:买入|卖出)"
+    r"(?!盘|方|单|点|区|后|前|的|了|价(?=[为是在约位附:：])|量(?!能)|成本|机会|时机"
+    r"|(?:压力|意愿|信号|力度|订单|资金(?!面)|潮|规模|量能|力量|需求|热情|情绪|行为|操作|价格|数量|金额"
     r"|比例|占比|活动|兴趣|动能|动力|踩踏|套现|承接)"
-    r"(?:[，,。；;：:！!？?）)、]|$|" + _RESEARCH_TRADE_ZH_PRED + r"(?!.{0,3}的))))\s*\S",
+    r"(?!.{0,4}的(?!" + _RESEARCH_TRADE_ZH_CLAUSE + r"))))\s*\S",
     re.I,
 )
 _RESEARCH_TOOL_RE: re.Pattern[str] | None = None
@@ -1240,6 +1262,7 @@ _RESEARCH_HTML_TAG = re.compile(r"</?[a-zA-Z][^<>]{0,24}>")
 _RESEARCH_HTML_BREAK = re.compile(
     r"<br\s*/?>|</?(?:ul|ol|li|p|div|h[1-6]|tr|td|th|table)(?:\s[^<>]{0,24})?>", re.I
 )
+_RESEARCH_HTML_MARK = "\x1e"                             # r6 N25: heads a line an HTML break opened
 _RESEARCH_FENCE = re.compile(r"^```[\w-]*\s*$")
 _RESEARCH_ASOF_TAIL = re.compile(r"\s*[(（]\s*(?:as\s+of|截至)[^()（）]{0,40}[)）]\s*$", re.I)
 # "<name>, 2 Oct 2026" / "<name> — 2026-10-02" / "<name>（2026年10月2日）": a date is a
@@ -1280,13 +1303,14 @@ _RESEARCH_HEAD_STRONG = (
     r"|source\s+list|reading\s+list"
     r"|(?:data\s+|primary\s+|key\s+|main\s+)?sources?(?:\s+(?:used|consulted|read|cited|referenced))?"
     r"(?:\s+(?:in|for)\s+this\s+(?:read|reply|answer|turn|note))?(?:\s+this\s+turn)?"
-    r"|references?|refs?\.?|artifacts?(?:\s+(?:used|read|cited))?"
-    r"|data\s+used|inputs?(?:\s+(?:used|read))?|materials?(?:\s+(?:used|consulted))?|citations?"
+    r"|references?|artifacts?\s+(?:used|read|cited)"
+    r"|data\s+used|inputs?\s+(?:used|read)|materials?\s+(?:used|consulted)|citations?"
     r"|本次阅读用到的内容|本次解读使用了?|本轮使用|使用的来源|参考来源|引用来源|数据来源|资料来源|信息来源|消息来源"
     r"|参考资料|参考文献|来源|参考|引用|依据|出处"
 )
 _RESEARCH_HEAD_WEAK = (
     r"cited|based\s+on|drawn\s+from|informed\s+by|grounded\s+(?:in|on)|grounding|evidence|per|see(?:\s+also)?"
+    r"|refs?\.?|artifacts?|inputs?|materials?"            # r6 N23: a sector or a cost list, unless qualified
     r"|基于|根据"
 )
 _RESEARCH_SOURCE_HEAD = re.compile(
@@ -1395,6 +1419,40 @@ def _research_name_like(core: str, raw: str) -> bool:
     return len(s.split()) <= 5
 
 
+_RESEARCH_UNKNOWN_NAME_LEAD = re.compile(
+    r"^(?:\d|(?:the|a|an|this|that|these|those|our|my|its|his|her|their|some|any|all|no|each"
+    r"|every|both|several|many|most|few|other|another|such|which|what|how|why|when|where|if|as"
+    r"|at|in|on|of|to|for|by|with|from)\b)"
+)
+
+
+def _research_unknown_name_like(core: str) -> bool:
+    """An INVENTED source (no known match) must still read as a name: never digit-led
+    ("5800 level", "1994 bond rout") and never led by a lowercase determiner or
+    preposition ("the 1994 bond rout"; "The Economist" keeps its capital). r6, review N23."""
+    s = (core or "").strip()
+    return bool(s) and not _RESEARCH_UNKNOWN_NAME_LEAD.match(s)
+
+
+def _research_known_name_list(text: str, names: set[str]) -> bool:
+    """A line that is only a list of names with at least one known ("Desk read, Bloomberg")
+    is a source list even without a heading — the r4 bare-name rule extended to a list
+    (r6, review N24). Unknown pieces must be capitalised or CJK: "Desk read, breadth and
+    leadership" is a title."""
+    raw, cores = _research_source_pieces(text)
+    if len(cores) < 2 or not all(cores):
+        return False
+    if not any(_research_is_source_name(c, names) for c in cores):
+        return False
+    return all(
+        _research_is_source_name(c, names) or (
+            _research_name_like(c, r.strip().rstrip(".。")) and _research_unknown_name_like(c)
+            and (c[:1].isupper() or "\u4e00" <= c[:1] <= "\u9fff")
+        )
+        for r, c in zip(raw, cores)
+    )
+
+
 def _research_item_like(core: str, raw: str) -> bool:
     """A MARKER-LED line under a source heading is an item unless it reads as a
     sentence: ends in sentence punctuation, carries a clause break, or has a verb.
@@ -1435,7 +1493,9 @@ def _research_inline_source_list(text: str, names: set[str], require_known: bool
     if require_known and not any(_research_is_source_name(x, names) for x in cores):
         return False
     return all(
-        _research_is_source_name(c, names) or _research_name_like(c, r.strip().rstrip(".。"))
+        _research_is_source_name(c, names) or (
+            _research_name_like(c, r.strip().rstrip(".。")) and _research_unknown_name_like(c)
+        )
         for r, c in zip(raw, cores)
     )
 
@@ -1504,6 +1564,19 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
     without a year, "(p. 2)", "[1]" and "¹" are decoration. Residual by design: a blank
     line followed by a bare invented name ("Sources:\n\nBloomberg terminal") keeps the
     name, because that shape is indistinguishable from a section title.
+
+    r6 (review N19–N26): orders behind ";" "," "—" "(" and "Buy:" are anchored; a
+    reportative noun phrase needs no verb list (any regular verb form, one adverb
+    allowed); "买入价100元以下的NVDA" is an order and "买入意愿较弱的时候" is not; generic
+    words ("Inputs", "Materials", "Ref", "Artifacts") are headings only when qualified;
+    an invented name must be shaped like one (no digit or lowercase-determiner lead);
+    a list naming a known source ("Desk read, Bloomberg") drops with or without a
+    heading; after a blank line a marked line that is not a known item is the next
+    section (a bare heading + blank + list is still the heading's list); only the blank
+    an HTML break made is markup; "buy or sell" is never one order. Residual by design:
+    "References: The 1994 Rout" (a capitalised invented name) still drops; a bare STRONG
+    heading still drops on trust; "Buy interest this week was strong" (noun + time
+    phrase) and a noun followed by a preposition are still withheld.
     """
     canon = {
         _RESEARCH_CEILING_EN, _RESEARCH_CEILING_ZH,
@@ -1512,13 +1585,13 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
     canon_bare = {c.rstrip("。.") for c in canon}
     names = _research_source_names(corpus)
     text = body or ""
-    html_list = bool("<" in text and _RESEARCH_HTML_BREAK.search(text))
-    if html_list:
-        text = _RESEARCH_HTML_BREAK.sub("\n", text)     # a one-line <ul><li>…</li></ul> is a list
+    if "<" in text and _RESEARCH_HTML_BREAK.search(text):   # a one-line <ul><li>…</li></ul> is a list;
+        text = _RESEARCH_HTML_BREAK.sub("\n" + _RESEARCH_HTML_MARK, text)   # r6 N25: mark ONLY those blanks
     kept: list[str] = []
     in_block = False
     block_gap = False                                    # r5 N15: a blank line inside the block
     source_table = False                                 # r5 N12: inside a table whose header named sources
+    block_items = 0                                      # r6 N26: lines dropped under the current heading
     fence_at: int | None = None                          # index in `kept` of a fence nothing has followed yet
     fence_open = False                                   # inside a ``` block
     fence_popped = False                                 # that block's opening fence was removed
@@ -1538,6 +1611,9 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
         kept.append(value)
 
     for line in text.split("\n"):
+        html_made = line.startswith(_RESEARCH_HTML_MARK)
+        if html_made:
+            line = line[len(_RESEARCH_HTML_MARK):]       # the marker is never emitted
         plain = _RESEARCH_HTML_TAG.sub("", line)
         stripped = plain.strip()
         if _RESEARCH_FENCE.match(stripped):
@@ -1558,8 +1634,9 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
         core = stripped.strip(_RESEARCH_TRAILER_WRAP).strip()
         if not core:
             if in_block:
-                block_gap = not html_list                # the next unmarked line may be a new section
-            else:                                        # (a blank made from <ul>/<li> is markup, not a gap)
+                if not html_made:                        # (a blank made from <ul>/<li> is markup, not a gap)
+                    block_gap = True                     # the next line may be a new section
+            else:
                 kept.append(line)
             continue
         gap, block_gap = block_gap, False
@@ -1568,6 +1645,7 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
         if _RESEARCH_TABLE_ROW.match(stripped):
             if _research_table_row_drops(plain, names, in_block, source_table):
                 _drop()
+                block_items = block_items + 1 if in_block else 1
                 in_block = True
                 source_table = True
                 continue
@@ -1587,6 +1665,7 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
             ):
                 _drop()
                 in_block = True                          # heading alone, or heading + inline list
+                block_items = 1 if rest else 0
                 continue
             # a heading-like opener that continues as prose is the model's own sentence;
             # a bare WEAK word ("See also", "Per") is prose too (r5 N18)
@@ -1595,12 +1674,18 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
             prefix = core[:mid.start()].rstrip()
             _drop()
             in_block = True
+            block_items = 1
             if prefix:
                 kept.append(prefix)
             continue
         item = _research_item_core(plain)
-        if _research_is_source_name(item, names) or _research_all_source_names(item, names):
+        if (
+            _research_is_source_name(item, names)
+            or _research_all_source_names(item, names)
+            or _research_known_name_list(item, names)    # r6 N24: "Desk read, Bloomberg"
+        ):
             _drop()
+            block_items = block_items + 1 if in_block else 1   # a bare name is itself an item
             in_block = True                              # a bare source name is never prose
             continue
         if in_block and not stripped.startswith("#"):
@@ -1608,18 +1693,20 @@ def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
             raw_body = _RESEARCH_LIST_MARKER.sub("", stripped, count=1).strip() if marked else core
             if not raw_body:
                 continue                                 # a marker with nothing after it
-            if gap and not marked:
-                _keep(line)                              # r5 N15: a section title after a blank line
-                continue
-            if marked:
-                colon = _RESEARCH_ITEM_COLON.match(raw_body)
-                if colon and _research_is_source_name(_research_item_core(colon.group(1)), names) and (
-                    _research_name_like(_research_item_core(colon.group(2)), colon.group(2).strip().rstrip(".。"))
-                ):
-                    continue                             # r5 N17: "- Desk read: breadth section" is an item
+            colon = _RESEARCH_ITEM_COLON.match(raw_body) if marked else None
+            colon_known = bool(colon) and _research_is_source_name(_research_item_core(colon.group(1)), names)
+            if gap and block_items and not colon_known:
+                _keep(line)                              # r5 N15 / r6 N26: the next section, marked or not
+                continue                                 # (a bare heading + blank + list is the heading's list)
+            if colon_known and _research_name_like(
+                _research_item_core(colon.group(2)), colon.group(2).strip().rstrip(".。")
+            ):
+                block_items += 1
+                continue                                 # r5 N17: "- Desk read: breadth section" is an item
             if (marked and _research_item_like(item, raw_body)) or (
                 not marked and _research_name_like(item, raw_body)
             ):
+                block_items += 1
                 continue                                 # an invented source under the heading
         _keep(line)
     return "\n".join(kept).strip()

@@ -2148,3 +2148,148 @@ def test_r5_a_bare_weak_heading_word_is_prose():
     r4 opened a block and deleted the prose line after it."""
     raw = "Breadth is thin per the Desk read.\nSee also\nthe curve section"
     assert gw._research_strip_model_trailer(raw, R5_CORPUS) == raw
+
+
+# ---------------------------------------------------------------------------
+# §12 — r6: review N19–N26 of the r5 head (c407d928). Inputs are the reviewer's verbatim
+# probes; every case below failed on the r5 bytes (RED-proved by swapping the gateway).
+# ---------------------------------------------------------------------------
+
+R6_CORPUS = R5_CORPUS
+
+
+@pytest.mark.parametrize("sentence", [
+    "Breadth is thin; buy the dip.", "Breadth is thin, buy the dip.", "Breadth is thin—buy the dip.",
+    "(Buy NVDA.)", "Our stance (buy the dip) is unchanged.", "Buy: NVDA.", "Levels held. Sell: TSLA into strength.",
+])
+def test_r6_orders_behind_clause_joins_are_withheld(sentence):
+    """N19 (M): r5 anchored buy/sell on a sentence start or so/and/then/but, so an order
+    joined by ";" "," "—" or "(" and the label form "Buy: NVDA" passed as prose."""
+    assert gw._research_sentence_forbidden(sentence) is True, sentence
+
+
+@pytest.mark.parametrize("sentence", [
+    "Buy interest waned.", "Sell pressure abated.", "Buy orders swelled.", "Buy volume totaled 2M shares.",
+    "Sell volumes doubled.", "Buy demand softened.", "Sell orders piled up.", "Sell pressure intensified.",
+    "Sell pressure clearly eased.", "Buy interest also rose.",
+    "Analysts upgraded and buy ratings now outnumber sells.",
+    "Breadth is thin per the Desk read. Buy interest waned into the close. Leaders narrowed.",
+])
+def test_r6_reportative_noun_phrases_need_no_verb_list(sentence):
+    """N21 (M, r5 over-correction): the N16 fix excused a lone noun only before a LISTED
+    verb, so "waned" / "abated" / "totaled" / "clearly eased" were withheld as orders.
+    Any regular verb form, optionally behind one adverb, is a report."""
+    assert gw._research_sentence_forbidden(sentence) is False, sentence
+
+
+def test_r6_the_filter_keeps_a_reportative_middle_sentence():
+    text = "Breadth is thin per the Desk read. Buy interest waned into the close. Leaders narrowed."
+    assert gw._research_forbidden_filter(text) == (text, False)
+
+
+@pytest.mark.parametrize("sentence", [
+    "Buy programs now.", "Buy programs across sectors.", "Sell volume into the close.", "Buy orders this week.",
+    "Buy programs daily.", "Our view: buy signals are flashing, so buy NVDA.",
+])
+def test_r6_n16_orders_behind_the_noun_guards_are_still_withheld(sentence):
+    """The N16 controls: an adverb or a preposition after the lone noun is not a verb."""
+    assert gw._research_sentence_forbidden(sentence) is True, sentence
+
+
+@pytest.mark.parametrize("sentence", [
+    "The desk does not say what to do (buy or sell) here.", "Buy or sell signals were mixed.",
+    "Buy: 12 names, Sell: 3 names.", "Buy and sell programs were balanced.",
+])
+def test_r6_buy_or_sell_is_never_one_order(sentence):
+    assert gw._research_sentence_forbidden(sentence) is False, sentence
+
+
+@pytest.mark.parametrize("sentence", [
+    "买入价100元以下的NVDA。", "买入需求旺盛的板块。", "请买入动能强的股票。", "买入资金面宽松受益股。",
+    "所以买入NVDA。", "首先买入龙头。", "跌到位后再买入半导体。",
+])
+def test_r6_zh_orders_are_withheld(sentence):
+    """N20 (M): "买入价100元以下的NVDA" is an order — r5's "价(?!格)" guard read every
+    "买入价…" as a price report. ZH clause openers ("所以", "先", "再") anchor too."""
+    assert gw._research_sentence_forbidden(sentence) is True, sentence
+
+
+@pytest.mark.parametrize("sentence", [
+    "买入价为100元。", "买入价格偏高。", "卖出价格偏低，", "卖出压力减轻。", "买入需求疲软。", "买入兴趣浓厚。",
+    "买入力度加强。", "卖出压力骤增。", "买入意愿较弱的时候，市场容易回调。", "卖出压力较大的时候要小心。",
+    "买入需求的变化值得关注。", "买入价位在100元附近。", "买入意愿较弱，但卖出压力也不大。",
+])
+def test_r6_zh_compound_nouns_are_reportative_unless_attributive(sentence):
+    """N22 (M, r5 over-correction): a predicate list can never be complete ("减轻", "疲软",
+    "浓厚" were withheld), and a "的" opening a clause ("较弱的时候") is not attributive."""
+    assert gw._research_sentence_forbidden(sentence) is False, sentence
+
+
+@pytest.mark.parametrize("raw", [
+    "G.\n\nInputs: oil, wages, rents", "G.\n\nMaterials: copper, lithium, nickel",
+    "G.\n\nMaterials\n- Copper miners lagged\n- Lithium weak", "G.\n\nRef: 5800 level",
+    "G.\n\nArtifacts\n- NVDA\n- TSLA", "G.\n\nReferences: the 1994 bond rout, the 2022 hiking cycle",
+    "Per the Desk read, the cost picture matters.\n\nInputs: oil, wages, rents\n\nOutlook: margins compress.",
+    "Per the Desk read, sector breadth is mixed.\n\nEnergy\n- Oil rose on supply cuts\n\nMaterials\n"
+    "- Copper miners lagged as China demand slowed.\n- Gold miners rallied.\n\nFinancials\n- Banks were steady.",
+], ids=["inputs", "materials-inline", "materials-block", "ref", "artifacts", "references-the", "inputs-doc", "sectors-doc"])
+def test_r6_generic_heading_words_keep_their_content(raw):
+    """N23 (M): "Inputs", "Materials", "Ref", "Artifacts" are a sector, a cost list or a level
+    unless qualified ("Inputs used"); and an invented reference must be shaped like a name
+    ("the 1994 bond rout" is not one)."""
+    assert gw._research_strip_model_trailer(raw, R6_CORPUS) == raw
+
+
+@pytest.mark.parametrize("tail", [
+    "\n\nInputs used: Desk read", "\n\nMaterials consulted: Desk read, Bloomberg", "\n\nArtifacts read: Desk read",
+    "\n\nReferences: FactSet", "\n\nReferences: The 1994 Rout", "\n\nRefs: Desk read",
+], ids=["inputs-used", "materials-consulted", "artifacts-read", "references-invented", "references-capitalised", "refs-known"])
+def test_r6_qualified_heading_words_still_strip(tail):
+    assert gw._research_strip_model_trailer("G." + tail, R6_CORPUS) == "G."
+
+
+@pytest.mark.parametrize("raw, expected", [
+    ("G.\n\nSources:\n\nDesk read, Bloomberg", "G."),
+    ("G.\n\nSources:\n- Desk read\n\nDesk read, Bloomberg", "G."),
+    ("G.\n\nReferences\n\nDesk read; FactSet", "G."),
+    ("G.\n\nSources:\n\nDesk read (2 Oct), Bloomberg terminal", "G."),
+    ("G.\n\nDesk read, Bloomberg", "G."),
+    ("G.\n\nSources:\n\nBloomberg terminal", "G."),
+    ("G.\n\nDesk read, breadth and leadership", "G.\n\nDesk read, breadth and leadership"),
+    ("G.\n\nSources:\n- Desk read\n\nDesk read, breadth and leadership", "G.\n\nDesk read, breadth and leadership"),
+], ids=["after-blank", "after-item-and-blank", "references-semicolon", "with-date", "no-heading",
+        "bare-heading-blank-invented", "title-kept", "title-after-list-kept"])
+def test_r6_a_list_naming_a_known_source_is_a_source_list(raw, expected):
+    """N24 (M): "Desk read, Bloomberg" after a blank line is the source list the heading
+    announced, not the next section; the r4 bare-name rule now covers a list with at
+    least one known name. A bare heading, a blank and an invented name is still the list."""
+    assert gw._research_strip_model_trailer(raw, R6_CORPUS) == expected
+
+
+def test_r6_an_html_break_blank_is_not_a_section_gap():
+    """N25 (M): r5 flagged the WHOLE text as "html" when any break tag appeared, so a
+    "<br>" in paragraph one silenced the N15 gap rule and a later Risks list went with the
+    source line. Only the blank the tag itself made is markup."""
+    raw = "G.<br>\n\nSources: Desk read\n\nRisks\n- Oil shock\n- Credit spreads"
+    out = gw._research_strip_model_trailer(raw, R6_CORPUS)
+    assert out.startswith("G.") and out.endswith("Risks\n- Oil shock\n- Credit spreads"), out
+    assert "Sources" not in out and "\x1e" not in out
+    assert gw._research_strip_model_trailer(
+        "G.\n\nSources:<ul><li>Desk read</li><li>Bloomberg terminal</li></ul>", R6_CORPUS) == "G."
+    assert "\x1e" not in gw._research_strip_model_trailer("G.<br>Risks<br>- Oil shock", R6_CORPUS)
+
+
+@pytest.mark.parametrize("raw, expected", [
+    ("G.\n\nSources: Desk read\n\n- Oil shock", "G.\n\n- Oil shock"),
+    ("G.\n\nSources: Desk read\n\n- Oil shock\n- Credit spreads widen", "G.\n\n- Oil shock\n- Credit spreads widen"),
+    ("G.\n\nSources:\n- Desk read\n\n- Oil shock", "G.\n\n- Oil shock"),
+    ("G.\n\nSources:\n\n- Bloomberg terminal", "G."),
+    ("G.\n\nSources:\n\n- Desk read\n- Bloomberg terminal", "G."),
+    ("G.\n\nSources: Desk read\n\n- Desk read: breadth section", "G."),
+], ids=["one-item", "two-items", "after-list", "bare-heading-blank-list", "bare-heading-blank-known-list", "known-item-after-blank"])
+def test_r6_a_marked_line_after_a_blank_is_the_next_section(raw, expected):
+    """N26 (M): r5's N15 rule kept only an UNMARKED line after a blank, so a bulleted
+    section following the source line was deleted. A marked line that is not a known
+    item is the next section — unless the heading was bare and nothing sat under it yet,
+    in which case the blank is markdown's list separator and the list is the heading's."""
+    assert gw._research_strip_model_trailer(raw, R6_CORPUS) == expected
