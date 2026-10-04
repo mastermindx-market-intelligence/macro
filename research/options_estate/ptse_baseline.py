@@ -86,11 +86,13 @@ class FoldSpec:
     fold_id: str
     fit_cutoff_session: str
     fit_cutoff_at: str
+    embargo_end_session: str
     test_start_session: str
     test_end_session: str
     evaluation_at: str
     cohort_sha256: str
     expected_test_rows: int
+    expected_test_origin_ids: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -114,6 +116,8 @@ class B0Row:
 @dataclass(frozen=True)
 class FoldResult:
     fold_id: str
+    fold_spec_digest: str
+    cohort_sha256: str
     train_rows: int
     purged_unmatured_or_overlapping_train_rows: int
     expected_test_rows: int
@@ -260,17 +264,33 @@ def validate_fold(fold: FoldSpec) -> None:
     if not isinstance(fold.fold_id, str) or not fold.fold_id or len(fold.fold_id) > 128:
         _fail("FOLD_ID_REQUIRED")
     cutoff = _date(fold.fit_cutoff_session)
+    embargo_end = _date(fold.embargo_end_session)
     start = _date(fold.test_start_session)
     end = _date(fold.test_end_session)
     fit_at = _time(fold.fit_cutoff_at)
     eval_at = _time(fold.evaluation_at)
-    if not cutoff < start <= end:
+    if not cutoff <= embargo_end < start <= end:
         _fail("FOLD_ORDER_INVALID")
     if eval_at < fit_at:
         _fail("EVALUATION_BEFORE_FIT")
     _hash(fold.cohort_sha256)
     if type(fold.expected_test_rows) is not int or fold.expected_test_rows < 1:
         _fail("EXPECTED_TEST_ROWS_REQUIRED")
+    if (
+        not isinstance(fold.expected_test_origin_ids, tuple)
+        or len(fold.expected_test_origin_ids) != fold.expected_test_rows
+        or not fold.expected_test_origin_ids
+    ):
+        _fail("COHORT_IDENTITY_REQUIRED")
+    for origin_id in fold.expected_test_origin_ids:
+        _ref(origin_id)
+    if len(set(fold.expected_test_origin_ids)) != len(fold.expected_test_origin_ids):
+        _fail("COHORT_IDENTITY_REQUIRED")
+    if tuple(sorted(fold.expected_test_origin_ids)) != fold.expected_test_origin_ids:
+        _fail("COHORT_IDENTITY_REQUIRED")
+    expected_digest = sha256(_canonical(fold.expected_test_origin_ids)).hexdigest()
+    if fold.cohort_sha256 != expected_digest:
+        _fail("COHORT_DIGEST_MISMATCH")
 
 
 def _row(row: B0Row, mode: str) -> B0Row:
@@ -414,6 +434,7 @@ def run_b0(
         test_end = _date(fold.test_end_session)
         fit_at = _time(fold.fit_cutoff_at)
         eval_at = _time(fold.evaluation_at)
+        fold_spec_digest = sha256(_canonical(fold)).hexdigest()
 
         historical_train = [
             r for r in material
@@ -432,8 +453,9 @@ def run_b0(
             r for r in material
             if test_start <= _date(r.market_session) <= test_end
         ]
-        if len(test_window) > fold.expected_test_rows:
-            _fail("COHORT_COUNT_MISMATCH")
+        observed_test_origins = tuple(sorted(r.origin_id for r in test_window))
+        if observed_test_origins != fold.expected_test_origin_ids:
+            _fail("COHORT_IDENTITY_MISMATCH")
         test = [
             r for r in test_window
             if _time(r.label_matured_at) <= eval_at
@@ -480,6 +502,8 @@ def run_b0(
         results.append(
             FoldResult(
                 fold_id=fold.fold_id,
+                fold_spec_digest=fold_spec_digest,
+                cohort_sha256=fold.cohort_sha256,
                 train_rows=len(train),
                 purged_unmatured_or_overlapping_train_rows=purged,
                 expected_test_rows=fold.expected_test_rows,
