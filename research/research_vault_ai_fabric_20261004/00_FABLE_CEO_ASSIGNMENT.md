@@ -68,8 +68,9 @@ Before any modification:
 The first implementation wave is therefore:
 
 ```text
-fail-closed private R2 binding
+fail-closed private R2 isolation
   + real read-only Vault id-set census
+  + body/text-health census
   + exact classification of corpus/excerpt loss
 ```
 
@@ -83,13 +84,11 @@ Inspect `engine/research_vault/r2_store.py` and the verified Agent OS discovery:
 
 `agentos/discoveries/DSC-RESEARCH-VAULT-FALLS-BACK-TO-SHARED-PUBLIC-BUCKET.md`
 
-Implement a structural fail-closed private-store contract for production Research Vault use.
-
-Production private research must require the dedicated research configuration and refuse silent fallback/alias to the shared public delivery plane. Preserve explicit local/test stores as explicit modes; do not break legitimate hermetic tests to achieve the safety property.
+Implement a structural fail-closed private-store contract for production Research Vault use.\n\nCurrent code already requires an explicit `R2_RESEARCH_BUCKET`; the unresolved risk is that research endpoint/access-key/secret may inherit generic `R2_*` values and no source-level assertion proves the research bucket differs from the configured shared/public bucket. Treat the old discovery as historical evidence and current code as implementation truth. The accepted invariant is provable private-plane isolation: reject partial/aliased configuration, preserve explicit local/test stores, and have the security owner adjudicate whether same-account shared credentials are acceptable rather than silently inheriting them.
 
 Prove the refusal path without exposing credentials.
 
-### B. Run the real id-set census
+### B. Run the real id-set **and body-health** census
 
 Use the existing read-only `scripts/research_vault_census.py` against the actual private Vault.
 
@@ -108,11 +107,9 @@ pdf - catalog
 repo mirror vs canonical catalog
 ```
 
-Do not mutate receipts to "repair" a mismatch before classifying it.
+Do not mutate receipts to "repair" a mismatch before classifying it.\n\nThe August 19 production evidence showed 918 `catalog - corpus` rows. Current excerpt generation proves only 351 body-bearing rows can currently produce excerpts. Measure the current truth rather than extrapolating either count. In addition to ID sets, measure non-empty/empty body rows, body character distributions, `text_layer` states, valid PDF-hash coverage, source-vs-stored character consistency, page-separator/page-count coverage and excerpt-derivable rows. A corpus ID is not proof that its text is usable.
 
-The August 19 production evidence showed 918 `catalog - corpus` rows. Current excerpt generation proves only 351 body-bearing rows can currently produce excerpts. Measure the current truth rather than extrapolating either count.
-
-### C. Repair missing corpus rows through canonical promoted PDFs
+### C. Repair missing **or text-broken** corpus rows through canonical promoted PDFs
 
 If the historical defect is confirmed, implement the previously documented but still absent bounded self-quiescing backfill:
 
@@ -124,9 +121,7 @@ catalog id missing from corpus
  -> row stops being a candidate
 ```
 
-Never delete/replay a receipt just to force re-ingestion.
-
-Report remaining backlog explicitly.
+Never delete/replay a receipt just to force re-ingestion. If a row exists but its body is unusable, repair only under evidence-backed candidate rules from the body-health census; the incumbent `_reextract_bodies` selection is narrower than every possible corruption shape.\n\nReport remaining backlog explicitly.
 
 ### D. Separate source-producer health from publication health
 
