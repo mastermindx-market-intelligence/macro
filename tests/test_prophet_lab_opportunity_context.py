@@ -588,3 +588,55 @@ def test_user_state_watchlist_negative_cannot_be_invented():
         match="watchlist state must remain unjoined",
     ):
         validate_opportunity_context(bad)
+
+
+def test_identity_binding_validator_rejects_malformed_provenance_and_identity_text():
+    binding = _identity_binding()
+
+    bad = deepcopy(binding)
+    bad["identity_source_receipts"][0]["sha256"] = "sha256:x"
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="identity receipt is malformed",
+    ):
+        validate_opportunity_identity_binding(bad)
+
+    bad = deepcopy(binding)
+    bad["identity_source_receipts"][0]["sha256"] = "sha256:" + "G" * 64
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="identity receipt is malformed",
+    ):
+        validate_opportunity_identity_binding(bad)
+
+    bad = deepcopy(binding)
+    bad["identity_source_receipts"][0]["extra"] = "caller-supplied"
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="identity receipt is malformed",
+    ):
+        validate_opportunity_identity_binding(bad)
+
+    bad = deepcopy(binding)
+    bad["decision_date"] = "2026-9-18"
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="decision_date",
+    ):
+        validate_opportunity_identity_binding(bad)
+
+    bad = deepcopy(binding)
+    bad["display_symbol"] = "aapl"
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="display_symbol is not normalized",
+    ):
+        validate_opportunity_identity_binding(bad)
+
+    bad = deepcopy(binding)
+    bad["candidate_state_projection_id"] = "not-a-projection"
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="candidate_state_projection_id is not canonical",
+    ):
+        validate_opportunity_identity_binding(bad)

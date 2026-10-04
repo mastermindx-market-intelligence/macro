@@ -309,20 +309,53 @@ def validate_opportunity_identity_binding(payload: Mapping[str, object]) -> None
         "candidate_state_projection_id",
     ):
         _text(payload.get(field), field)
-    if not str(payload.get("security_id")).startswith("SEC:"):
-        raise OpportunityContextContractError("opportunity identity security_id is not canonical")
+
+    symbol = str(payload.get("display_symbol"))
+    if symbol != symbol.strip().upper():
+        raise OpportunityContextContractError(
+            "opportunity identity display_symbol is not normalized"
+        )
+    try:
+        parsed_decision_date = date.fromisoformat(str(payload.get("decision_date")))
+    except ValueError as exc:
+        raise OpportunityContextContractError(
+            "opportunity identity decision_date is not ISO calendar date"
+        ) from exc
+    if parsed_decision_date.isoformat() != payload.get("decision_date"):
+        raise OpportunityContextContractError(
+            "opportunity identity decision_date is not canonical ISO calendar date"
+        )
+
+    prefixes = {
+        "security_id": "SEC:",
+        "company_id": "ISS:",
+        "episode_id": "pe:",
+        "candidate_generation_id": "peg:",
+        "candidate_state_projection_id": "pcs:",
+    }
+    for field, prefix in prefixes.items():
+        if not str(payload.get(field)).startswith(prefix):
+            raise OpportunityContextContractError(
+                f"opportunity identity {field} is not canonical"
+            )
+
     if payload.get("authority") != ALL_FALSE_AUTHORITY:
         raise OpportunityContextContractError("opportunity identity authority must remain all false")
     receipts = payload.get("identity_source_receipts")
     if not isinstance(receipts, list) or not receipts:
         raise OpportunityContextContractError("opportunity identity receipts are required")
     for receipt in receipts:
+        if not isinstance(receipt, Mapping) or set(receipt) != {"source", "path", "sha256"}:
+            raise OpportunityContextContractError("opportunity identity receipt is malformed")
+        digest = receipt.get("sha256")
         if (
-            not isinstance(receipt, Mapping)
-            or receipt.get("source") != "identity"
+            receipt.get("source") != "identity"
             or not isinstance(receipt.get("path"), str)
-            or not isinstance(receipt.get("sha256"), str)
-            or not str(receipt.get("sha256")).startswith("sha256:")
+            or not receipt.get("path")
+            or not isinstance(digest, str)
+            or len(digest) != 71
+            or not digest.startswith("sha256:")
+            or any(ch not in "0123456789abcdef" for ch in digest[7:])
         ):
             raise OpportunityContextContractError("opportunity identity receipt is malformed")
 
