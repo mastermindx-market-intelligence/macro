@@ -6,7 +6,9 @@ import ast
 import dataclasses
 import hashlib
 import math
+import os
 from pathlib import Path
+from unittest import mock
 
 import numpy as np
 import pandas as pd
@@ -377,3 +379,205 @@ def test_t11b_the_import_check_sees_every_import_form(line: str) -> None:
             hit |= names_live_pack(node.module) or any(
                 alias.name == "live_pack" for alias in node.names)
     assert hit
+
+
+def _full_compact_metadata(**overrides: bytes) -> dict[bytes, bytes]:
+    meta = {
+        b"schema": ps.SCHEMA_COMPACT.encode(),
+        b"tail_close_purpose": ps.TAIL_CLOSE_PURPOSE.encode(),
+        b"canonical_fallback": ps.CANONICAL_FALLBACK.encode(),
+    }
+    meta.update(overrides)
+    return meta
+
+
+def _good_table_rows() -> tuple[pa.Table, list[dict]]:
+    rows = [ps.compact_state_row(n, f, price_basis="adjusted") for n, f in FRAMES.items()]
+    # Mirror write_compact column layout.
+    ordered = sorted(rows, key=lambda r: r.ticker)
+    columns: dict[str, list] = {field.name: [] for field in ps.COMPACT_SCHEMA}
+    for row in ordered:
+        kd, hist = row.kd_state, row.hist_state
+        columns["ticker"].append(row.ticker)
+        columns["state_through"].append(row.state_through)
+        columns["n_rows"].append(row.n_rows)
+        columns["price_basis"].append(row.price_basis)
+        columns["kd_ok"].append(kd is not None)
+        columns["kd_last_close"].append(None if kd is None else kd.last_close)
+        columns["kd_up_prev"].append(None if kd is None else kd.up_prev)
+        columns["kd_dn_prev"].append(None if kd is None else kd.dn_prev)
+        columns["kd_rsi_tail"].append(None if kd is None else list(kd.rsi_tail))
+        columns["kd_rawk_tail"].append(None if kd is None else list(kd.rawk_tail))
+        columns["kd_k_tail"].append(None if kd is None else list(kd.k_tail))
+        columns["hist_ok"].append(hist is not None)
+        columns["hist_fast"].append(None if hist is None else hist.fast)
+        columns["hist_base"].append(None if hist is None else hist.base)
+        columns["hist_sig"].append(None if hist is None else hist.sig)
+        columns["tail_close"].append(list(row.tail_close))
+    arrays = [pa.array(columns[field.name], type=field.type) for field in ps.COMPACT_SCHEMA]
+    table = pa.Table.from_arrays(arrays, schema=ps.COMPACT_SCHEMA)
+    return table, table.to_pylist()
+
+
+def _assert_load_schema_refusal(tmp_path: Path, table: pa.Table) -> None:
+    bad = tmp_path / "bad.parquet"
+    digest = _rewrite(bad, table)
+    with pytest.raises(ps.CompactStateError) as excinfo:
+        ps.load_compact(bad, expected_sha256=digest)
+    assert excinfo.value.reason == "compact_schema"
+
+
+def test_t5a_load_refusals_pin_guards(tmp_path: Path) -> None:
+    table, pyrows = _good_table_rows()
+    a_row = next(r for r in pyrows if r["ticker"] == "A")
+
+    r1 = dict(a_row)
+    r1["hist_ok"] = True
+    r1["hist_fast"] = None
+    _assert_load_schema_refusal(tmp_path, pa.Table.from_pylist([r1], schema=ps.COMPACT_SCHEMA))
+
+    r2 = dict(a_row)
+    r2["kd_ok"] = True
+    tail = list(r2["kd_rsi_tail"])
+    tail[0] = None
+    r2["kd_rsi_tail"] = tail
+    _assert_load_schema_refusal(tmp_path, pa.Table.from_pylist([r2], schema=ps.COMPACT_SCHEMA))
+
+    r3 = dict(a_row)
+    tc = list(r3["tail_close"])
+    tc[-1] = None
+    r3["tail_close"] = tc
+    _assert_load_schema_refusal(tmp_path, pa.Table.from_pylist([r3], schema=ps.COMPACT_SCHEMA))
+
+
+def test_t5b_layout_refusals(tmp_path: Path) -> None:
+    table, pyrows = _good_table_rows()
+    a_row = next(r for r in pyrows if r["ticker"] == "A")
+
+    r4 = dict(a_row)
+    r4["n_rows"] = 0
+    _assert_load_schema_refusal(tmp_path, pa.Table.from_pylist([r4], schema=ps.COMPACT_SCHEMA))
+
+    r5 = dict(a_row)
+    r5["n_rows"] = 10
+    r5["tail_close"] = list(r5["tail_close"]) + [1.0, 2.0]
+    _assert_load_schema_refusal(tmp_path, pa.Table.from_pylist([r5], schema=ps.COMPACT_SCHEMA))
+
+    reversed_rows = list(reversed(pyrows))
+    _assert_load_schema_refusal(
+        tmp_path, pa.Table.from_pylist(reversed_rows, schema=ps.COMPACT_SCHEMA))
+
+    meta = _full_compact_metadata()
+    del meta[b"tail_close_purpose"]
+    _assert_load_schema_refusal(
+        tmp_path, table.replace_schema_metadata(meta))
+
+    bad_purpose = _full_compact_metadata()
+    bad_purpose[b"tail_close_purpose"] = b"canonical_recompute"
+    _assert_load_schema_refusal(
+        tmp_path, table.replace_schema_metadata(bad_purpose))
+
+
+def test_t5c_index_law() -> None:
+    frame = FRAMES["A"]
+    closes = frame["close"].to_numpy()
+    range_frame = pd.DataFrame({"close": closes})
+    with pytest.raises(ps.CompactStateError) as excinfo:
+        ps.compact_state_row("X", range_frame, price_basis="adjusted")
+    assert excinfo.value.reason == "compact_schema"
+
+    rev_index = frame.iloc[::-1].copy()
+    with pytest.raises(ps.CompactStateError) as excinfo:
+        ps.compact_state_row("X", rev_index, price_basis="adjusted")
+    assert excinfo.value.reason == "compact_schema"
+
+    dup = frame.copy()
+    dup_idx = list(dup.index)
+    dup_idx[-1] = dup_idx[-2]
+    dup.index = pd.DatetimeIndex(dup_idx)
+    with pytest.raises(ps.CompactStateError) as excinfo:
+        ps.compact_state_row("X", dup, price_basis="adjusted")
+    assert excinfo.value.reason == "compact_schema"
+
+    ps.compact_state_row("X", frame, price_basis="adjusted")
+
+
+def test_t5d_write_atomic_on_pq_failure(tmp_path: Path) -> None:
+    rows = [ps.compact_state_row(n, f, price_basis="adjusted") for n, f in FRAMES.items()]
+    path = tmp_path / "compact.parquet"
+    before = ps.write_compact(path, rows)
+    old_bytes = path.read_bytes()
+
+    def boom(table: pa.Table, where: str | Path, **kwargs: object) -> None:
+        Path(where).write_bytes(b"partial")
+        raise RuntimeError("pq write failed")
+
+    with mock.patch.object(pq, "write_table", side_effect=boom):
+        with pytest.raises(RuntimeError):
+            ps.write_compact(path, rows)
+    assert path.read_bytes() == old_bytes
+    assert list(tmp_path.glob("*.tmp")) == []
+
+
+def test_t5e_write_atomic_on_replace_failure(tmp_path: Path) -> None:
+    rows = [ps.compact_state_row(n, f, price_basis="adjusted") for n, f in FRAMES.items()]
+    path = tmp_path / "compact.parquet"
+    before = ps.write_compact(path, rows)
+    old_bytes = path.read_bytes()
+
+    with mock.patch.object(os, "replace", side_effect=OSError("replace failed")):
+        with pytest.raises(OSError):
+            ps.write_compact(path, rows)
+    assert path.read_bytes() == old_bytes
+    assert list(tmp_path.glob("*.tmp")) == []
+
+
+def test_t5f_fsync_before_replace(tmp_path: Path) -> None:
+    rows = [ps.compact_state_row("A", FRAMES["A"], price_basis="adjusted")]
+    path = tmp_path / "compact.parquet"
+    calls: list[str] = []
+
+    real_fsync = os.fsync
+    real_replace = os.replace
+
+    def track_fsync(fd: int) -> None:
+        calls.append("fsync")
+        real_fsync(fd)
+
+    def track_replace(src: str | bytes, dst: str | bytes) -> None:
+        calls.append("replace")
+        real_replace(src, dst)
+
+    with mock.patch.object(os, "fsync", side_effect=track_fsync):
+        with mock.patch.object(os, "replace", side_effect=track_replace):
+            ps.write_compact(path, rows)
+    assert calls == ["fsync", "replace"]
+
+
+def test_t5g_write_overwrite(tmp_path: Path) -> None:
+    row_a = ps.compact_state_row("A", FRAMES["A"], price_basis="adjusted")
+    row_b = ps.compact_state_row("B", FRAMES["B"], price_basis="adjusted")
+    path = tmp_path / "compact.parquet"
+    ps.write_compact(path, [row_a])
+    info2 = ps.write_compact(path, [row_a, row_b])
+    loaded = ps.load_compact(path, expected_sha256=info2["sha256"])
+    assert set(loaded) == {"A", "B"}
+
+
+def test_t5h_hash_guard_without_isinstance(tmp_path: Path) -> None:
+    rows = [ps.compact_state_row("A", FRAMES["A"], price_basis="adjusted")]
+    path = tmp_path / "compact.parquet"
+    info = ps.write_compact(path, rows)
+    good = info["sha256"]
+
+    with pytest.raises(ps.CompactStateError) as excinfo:
+        ps.load_compact(path, expected_sha256=None)  # type: ignore[arg-type]
+    assert excinfo.value.reason == "compact_hash_mismatch"
+
+    with pytest.raises(ps.CompactStateError) as excinfo:
+        ps.load_compact(path, expected_sha256=0)  # type: ignore[arg-type]
+    assert excinfo.value.reason == "compact_hash_mismatch"
+
+    with pytest.raises(ps.CompactStateError) as excinfo:
+        ps.load_compact(path, expected_sha256=good.upper())
+    assert excinfo.value.reason == "compact_hash_mismatch"
