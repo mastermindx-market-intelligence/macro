@@ -173,3 +173,49 @@ def test_segment_budget_is_explicit_not_a_hidden_production_default():
         fulltext.build_segments(
             artifact, segmenter_version="page-byte-v1", max_bytes=3
         )
+
+
+def test_text_layer_state_contradictions_fail_closed():
+    with pytest.raises(ValueError, match="requires text_layer_state=unavailable"):
+        fulltext.build_extracted_text(
+            report_id="x",
+            source_pdf_sha256=PDF_A,
+            text=None,
+            extractor_name="pdftotext",
+            extractor_version="poppler-layout-v1",
+            page_count=1,
+            text_layer_state="none",
+        )
+
+    with pytest.raises(ValueError, match="empty extracted text requires"):
+        fulltext.build_extracted_text(
+            report_id="x",
+            source_pdf_sha256=PDF_A,
+            text="",
+            extractor_name="pdftotext",
+            extractor_version="poppler-layout-v1",
+            page_count=1,
+            text_layer_state="full",
+        )
+
+    with pytest.raises(ValueError, match="conflicts with text_layer_state"):
+        fulltext.build_extracted_text(
+            report_id="x",
+            source_pdf_sha256=PDF_A,
+            text="real text",
+            extractor_name="pdftotext",
+            extractor_version="poppler-layout-v1",
+            page_count=1,
+            text_layer_state="none",
+        )
+
+
+def test_pdf_correction_invalidates_old_segment_replay():
+    old = _artifact("same visible text", source_sha=PDF_A)
+    corrected = _artifact("same visible text", source_sha=PDF_B)
+    segment = fulltext.build_segments(
+        old, segmenter_version="page-byte-v1", max_bytes=64
+    )[0]
+
+    with pytest.raises(ValueError, match="source_pdf_sha256"):
+        fulltext.replay_segment(corrected, segment)
