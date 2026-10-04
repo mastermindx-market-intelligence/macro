@@ -661,6 +661,74 @@ def _interval_issues(
     return issues
 
 
+def _v2_interval_issues(
+    value: Any,
+    path: tuple[object, ...] = (),
+    active_container_ids: set[int] | None = None,
+) -> list[ValidationIssue]:
+    """V2 logical lobe intervals allow equality at an aware caller-supplied instant.
+
+    This is composition provenance, not measured runtime latency. Only an
+    explicitly typed lobe_run.v2 gets a nondecreasing run interval; every other
+    interval and all v1 dispatch retain their original strict ordering.
+    """
+    issues: list[ValidationIssue] = []
+    is_container = isinstance(value, (Mapping, list))
+    active = active_container_ids if active_container_ids is not None else set()
+    container_id = id(value)
+    if is_container and container_id in active:
+        return [
+            ValidationIssue(
+                _json_path(path),
+                "schema.cyclic_document",
+                "contract documents must be acyclic JSON trees",
+            )
+        ]
+    if is_container:
+        active.add(container_id)
+    if isinstance(value, Mapping):
+        for first, second, code in (
+            ("valid_from", "valid_to", "interval.valid"),
+            ("transaction_from", "transaction_to", "interval.transaction"),
+            ("started_at", "finished_at", "interval.run"),
+        ):
+            if code == "interval.run" and value.get("contract_id") == _LOBE_V2_CONTRACT_ID:
+                started = _v2_timestamp(value.get(first))
+                finished = _v2_timestamp(value.get(second))
+                issue = None
+                if started is not None and finished is not None and finished < started:
+                    issue = ValidationIssue(
+                        _json_path((*path, second)), code,
+                        "finished_at must not be earlier than started_at for a v2 logical composition",
+                    )
+            else:
+                issue = _ordered_pair_issue(value, path, first, second, code)
+            if issue is not None:
+                issues.append(issue)
+
+        cutoff = _parse_temporal(value.get("knowledge_cutoff"))
+        if cutoff is not None:
+            for successor_key in _KNOWLEDGE_CUTOFF_SUCCESSORS:
+                successor = _parse_temporal(value.get(successor_key))
+                if successor is not None and cutoff > successor:
+                    issues.append(
+                        ValidationIssue(
+                            _json_path((*path, "knowledge_cutoff")),
+                            "interval.knowledge_cutoff",
+                            f"knowledge_cutoff must not be later than {successor_key}",
+                        )
+                    )
+
+        for key in sorted(value, key=lambda item: str(item)):
+            issues.extend(_v2_interval_issues(value[key], (*path, key), active))
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            issues.extend(_v2_interval_issues(item, (*path, index), active))
+    if is_container:
+        active.remove(container_id)
+    return issues
+
+
 def _packet_authority_issues(document: Mapping[str, Any]) -> list[ValidationIssue]:
     caps = document.get("authority_caps")
     if not isinstance(caps, Mapping):
@@ -736,6 +804,397 @@ def _content_hash_issue(
         code,
         f"declared hash {expected} does not match canonical payload hash {actual}",
     )
+
+
+# §0/§9: additive source contracts only. Historical v1 and its accepted waiver
+# remain unchanged; these guards grant no rights, runtime pickup or publication.
+_PACKET_V2_CONTRACT_ID = "sector_intelligence_packet.v2"
+_DOSSIER_V2_CONTRACT_ID = "sector_dossier_read_model.v2"
+_LOBE_V2_CONTRACT_ID = "lobe_run.v2"
+_MANIFEST_V2_CONTRACT_ID = "authority_manifest.v2"
+
+# The accepted STSI input owners, not a second source/clock resolver. Extending
+# this profile requires an explicit owner contract; names never infer aliases.
+_V2_INPUT_POLICY = {
+    "site-baskets": ("site/basketdata/baskets.json", "session", "market_observation", True),
+    "site-action-board": ("site/basketdata/action_board.json", "instant", "market_observation", True),
+    "site-sector-central": ("site/sectordata/sector_central.json", "session", "market_observation", True),
+    "site-subsector-confluence": ("site/marketdata/subsector_confluence.json", "session", "market_observation", True),
+    "site-subsector-rotation": ("site/marketdata/subsector_rotation.json", "session", "market_observation", True),
+    "site-theme-state": ("site/neuralwebdata/theme_state.json", "session", "market_observation", True),
+    "theme-crosswalk": ("config/theme_crosswalk.yml", "static", "static_config", True),
+    "sp500-heatmap": ("site/marketdata/sp500_heatmap.json", "session", "market_observation", True),
+    "site-theme-lanes": ("site/basketdata/theme_lanes.json", "session", "optional_context", False),
+}
+_V2_CORE_INPUTS = frozenset(("site-baskets", "site-action-board", "site-sector-central"))
+
+
+def _v2_timestamp(value: Any) -> datetime | None:
+    """Parse a supplied aware owner instant; never obtain or invent a clock."""
+    if not isinstance(value, str):
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return None
+    return parsed.astimezone(timezone.utc)
+
+
+def _v2_subject_issues(subject: Any, path: str) -> list[ValidationIssue]:
+    if not isinstance(subject, Mapping):
+        return []
+    from engine.theme_graph.identity import local_theme_node_id, theme_node_id
+
+    kind, native = subject.get("kind"), subject.get("native_id")
+    if not isinstance(native, str):
+        return []
+    try:
+        if kind == "sector":
+            expected = f"sector:{native}"
+        elif kind == "canonical_theme":
+            expected = theme_node_id(native)
+        elif kind == "local_theme":
+            expected = local_theme_node_id(subject.get("source_family"), native)
+        else:
+            return []  # Closed schema reports unknown kinds.
+    except ValueError:
+        return [ValidationIssue(path, "subject.identity", "subject must use an incumbent admitted native identity")]
+    if native != native.strip() or subject.get("node_id") != expected:
+        return [ValidationIssue(path, "subject.identity", "node_id must bind the exact native ID and source family without normalization")]
+    return []
+
+
+def _v2_receipt_issues(
+    receipts: Any,
+    *,
+    path: str,
+    cutoff: Any,
+    common_as_of: Any = None,
+) -> list[ValidationIssue]:
+    """Validate declared receipts, preserving nulls and owner-clock semantics."""
+    if not isinstance(receipts, list):
+        return []
+    issues: list[ValidationIssue] = []
+    seen: set[str] = set()
+    upper = _v2_timestamp(cutoff)
+    for index, row in enumerate(receipts):
+        if not isinstance(row, Mapping):
+            continue
+        here = f"{path}[{index}]"
+        source_id = row.get("source_id")
+        if not isinstance(source_id, str):
+            continue
+        if source_id in seen:
+            issues.append(ValidationIssue(here, "receipt.duplicate", "each source_id must occur exactly once"))
+        seen.add(source_id)
+        policy = _V2_INPUT_POLICY.get(source_id)
+        if policy is None:
+            issues.append(ValidationIssue(here, "receipt.owner", "source_id must belong to the admitted STSI owner profile"))
+            continue
+        actual = (row.get("path"), row.get("clock_grain"), row.get("freshness_role"), row.get("required"))
+        if actual != policy:
+            issues.append(ValidationIssue(here, "receipt.policy", "path, grain, role and required flag must match the exact admitted owner"))
+        reasons = row.get("null_reasons")
+        if isinstance(reasons, Mapping):
+            null_fields = {key for key in ("sha256", "as_of", "observed_at") if row.get(key) is None}
+            if set(reasons) != null_fields:
+                issues.append(ValidationIssue(here, "receipt.null_reasons", "null reasons must correspond exactly to null facts"))
+        else:
+            reasons = {}
+
+        available = row.get("state") == "available"
+        static = policy[2] == "static_config"
+        required = policy[3]
+        if required and not available:
+            issues.append(ValidationIssue(here, "receipt.required", "a successful dossier/run cannot omit or mark a required source unavailable"))
+        if available and not isinstance(row.get("sha256"), str):
+            issues.append(ValidationIssue(here, "receipt.hash", "an available source requires its real byte hash"))
+        if static and available:
+            if row.get("as_of") is not None or reasons.get("as_of") != "NOT_APPLICABLE" or row.get("freshness_state") != "not_applicable":
+                issues.append(ValidationIssue(here, "receipt.static", "available static configuration has no market date and is not_applicable"))
+            if row.get("observed_at") is None and reasons.get("observed_at") != "OWNER_CLOCK_UNAVAILABLE":
+                issues.append(ValidationIssue(here, "receipt.static_clock", "an unknown static observation clock remains null with its named reason"))
+        elif row.get("freshness_state") == "not_applicable":
+            issues.append(ValidationIssue(here, "receipt.freshness", "not_applicable is confined to available static configuration"))
+
+        # The supplied cutoff is normalized to UTC by _v2_timestamp. Compare
+        # calendar dates directly; do not invent a midnight observation instant
+        # or let caller-controlled common_as_of admit a future source date.
+        if not static and upper is not None and isinstance(row.get("as_of"), str):
+            try:
+                market_date = date.fromisoformat(row["as_of"])
+            except ValueError:
+                pass  # The closed schema reports malformed date syntax.
+            else:
+                if market_date > upper.date():
+                    date_path = here + (".input_receipt.as_of" if path == "$.source_watermarks" else ".as_of")
+                    issues.append(ValidationIssue(date_path, "receipt.future_date", f"source {source_id} market/context date cannot exceed the knowledge cutoff's UTC date"))
+        observed = _v2_timestamp(row.get("observed_at"))
+        if row.get("observed_at") is not None and observed is None:
+            issues.append(ValidationIssue(here, "receipt.clock", "observation time must be a timezone-aware owner instant"))
+        if upper is not None and observed is not None and observed > upper:
+            issues.append(ValidationIssue(here, "receipt.future", "source observation cannot be newer than the knowledge cutoff"))
+        if available and not static:
+            if not isinstance(row.get("as_of"), str) or observed is None:
+                code = "receipt.required_clock" if required else "receipt.available_clock"
+                issues.append(ValidationIssue(here, code, "available market/context sources need an actual owner date and observation time; unknown facts remain unavailable"))
+        if isinstance(common_as_of, str) and isinstance(row.get("as_of"), str):
+            if row["as_of"] > common_as_of:
+                issues.append(ValidationIssue(here, "receipt.future", "source market date cannot be newer than the common date"))
+            if source_id in _V2_CORE_INPUTS and row["as_of"] != common_as_of:
+                issues.append(ValidationIssue(here, "receipt.core_date", "focused core source dates must equal the supplied common date"))
+        if not available and not required:
+            if row.get("freshness_state") != "unknown":
+                issues.append(ValidationIssue(here, "receipt.unavailable", "unavailable optional data has unknown freshness"))
+            if row.get("sha256") is None:
+                if any(row.get(key) is not None for key in ("as_of", "observed_at")) or any(reasons.get(key) != "SOURCE_MISSING" for key in ("sha256", "as_of", "observed_at")):
+                    issues.append(ValidationIssue(here, "receipt.missing", "a missing optional source has null facts with SOURCE_MISSING reasons"))
+            elif any(reason not in {"SOURCE_UNAVAILABLE", "OWNER_CLOCK_UNAVAILABLE"} for reason in reasons.values()):
+                issues.append(ValidationIssue(here, "receipt.unusable", "preserve known unusable-source evidence and name only its unknown facts"))
+    missing = sorted(source for source, policy in _V2_INPUT_POLICY.items() if policy[3] and source not in seen)
+    if missing:
+        issues.append(ValidationIssue(path, "receipt.required", "required owner receipts are missing: " + ", ".join(missing)))
+    return issues
+
+
+def _v2_packet_issues(document: Mapping[str, Any]) -> list[ValidationIssue]:
+    issues = _v2_subject_issues(document.get("subject"), "$.subject")
+    issue = _content_hash_issue(document, hash_field="packet_hash", excluded_fields=frozenset(("packet_hash",)), code="packet.hash")
+    if issue is not None:
+        issues.append(issue)
+    subject = document.get("subject")
+    if isinstance(subject, Mapping):
+        if document.get("entity_refs") != [subject.get("node_id")]:
+            issues.append(ValidationIssue("$.entity_refs", "subject.packet", "packet primary entity must be its exact typed subject"))
+        if not str(document.get("packet_id", "")).startswith(f"packet:{subject.get('kind')}:"):
+            issues.append(ValidationIssue("$.packet_id", "subject.packet_id", "packet ID must retain the typed subject kind"))
+    return issues
+
+
+def _v2_lobe_issues(document: Mapping[str, Any]) -> list[ValidationIssue]:
+    canonical_json_bytes(document)  # Fail closed on nonfinite/cyclic in-memory values.
+    issues = _v2_subject_issues(document.get("subject"), "$.subject")
+    rows = document.get("source_watermarks")
+    if not isinstance(rows, list):
+        return issues
+    receipts = [row.get("input_receipt") for row in rows if isinstance(row, Mapping)]
+    issues.extend(_v2_receipt_issues(receipts, path="$.source_watermarks", cutoff=document.get("knowledge_cutoff")))
+    known_hashes = sorted({row["sha256"] for row in receipts if isinstance(row, Mapping) and isinstance(row.get("sha256"), str)})
+    if document.get("input_hashes") != known_hashes:
+        issues.append(ValidationIssue("$.input_hashes", "provenance.hash_set", "input_hashes must equal every distinct known receipt hash"))
+    for index, row in enumerate(rows):
+        if not isinstance(row, Mapping) or not isinstance(row.get("input_receipt"), Mapping):
+            continue
+        receipt = row["input_receipt"]
+        here = f"$.source_watermarks[{index}]"
+        if receipt.get("freshness_role") == "static_config":
+            if row.get("state") != "not_applicable" or row.get("watermark") is not None:
+                issues.append(ValidationIssue(here, "provenance.static", "static configuration is hash-bound, without a market watermark"))
+        elif receipt.get("state") == "unavailable":
+            if row.get("state") not in {"unknown", "failed"} or (receipt.get("sha256") is None and row.get("watermark") is not None):
+                issues.append(ValidationIssue(here, "provenance.unavailable", "unavailable source watermark cannot be current or invented"))
+        elif row.get("state") == "not_applicable":
+            issues.append(ValidationIssue(here, "provenance.watermark", "market source watermark is not static configuration"))
+    return issues
+
+
+def _v2_manifest_issues(document: Mapping[str, Any]) -> list[ValidationIssue]:
+    canonical_json_bytes(document)
+    issues = _v2_subject_issues(document.get("subject"), "$.subject")
+    issues.extend(_authority_manifest_issues(document))
+    if document.get("max_authority") not in _FACT_ONLY_AUTHORITIES or document.get("publication_tier") not in {"DISPLAY", "SHADOW"}:
+        issues.append(ValidationIssue("$", "authority.facts_only", "v2 manifests remain A0/A1 DISPLAY/SHADOW facts and explanation"))
+    allowed = document.get("allowed_actions")
+    if isinstance(allowed, list) and any(action not in _FACT_ONLY_ACTIONS for action in allowed):
+        issues.append(ValidationIssue("$.allowed_actions", "authority.facts_only", "v2 manifests allow only observe and explain"))
+    denied = document.get("denied_actions")
+    if isinstance(denied, list) and not _REQUIRED_PACKET_DENIALS.issubset(denied):
+        issues.append(ValidationIssue("$.denied_actions", "authority.facts_only", "v2 manifests must explicitly retain every financial/origination denial"))
+    return issues
+
+
+def _v2_dossier_issues(document: Mapping[str, Any], repo_root: Path) -> list[ValidationIssue]:
+    """Validate the frozen subject/receipt bundle, not owner eligibility or rights."""
+    issues: list[ValidationIssue] = []
+    cutoff = _v2_timestamp(document.get("knowledge_cutoff"))
+    if cutoff is not None and isinstance(document.get("common_as_of"), str):
+        try:
+            common_date = date.fromisoformat(document["common_as_of"])
+        except ValueError:
+            pass  # JSON Schema retains responsibility for malformed dates.
+        else:
+            if common_date > cutoff.date():
+                issues.append(ValidationIssue("$.common_as_of", "dossier.future_common_date", "common_as_of cannot exceed the knowledge cutoff's UTC date"))
+    issue = _content_hash_issue(document, hash_field="dossier_hash", excluded_fields=frozenset(("dossier_hash",)), code="dossier.hash")
+    if issue is not None:
+        issues.append(issue)
+    identity, governance = document.get("identity"), document.get("governance")
+    if not isinstance(identity, Mapping) or not isinstance(governance, Mapping):
+        return issues
+    subject = identity.get("subject")
+    issues.extend(_v2_subject_issues(subject, "$.identity.subject"))
+    receipts = document.get("input_receipts")
+    issues.extend(_v2_receipt_issues(receipts, path="$.input_receipts", cutoff=document.get("knowledge_cutoff"), common_as_of=document.get("common_as_of")))
+    if not isinstance(receipts, list):
+        return issues
+    source_ids = [row.get("source_id") for row in receipts if isinstance(row, Mapping)]
+    if all(isinstance(value, str) for value in source_ids) and source_ids != sorted(source_ids):
+        issues.append(ValidationIssue("$.input_receipts", "provenance.order", "receipts have deterministic source_id ordering"))
+    packet, run, manifest = (governance.get(key) for key in ("packet", "lobe_run", "authority_manifest"))
+    if not all(isinstance(row, Mapping) for row in (packet, run, manifest)):
+        return issues
+    for name, contract_id, row in (
+        ("packet", _PACKET_V2_CONTRACT_ID, packet),
+        ("lobe_run", _LOBE_V2_CONTRACT_ID, run),
+        ("authority_manifest", _MANIFEST_V2_CONTRACT_ID, manifest),
+    ):
+        if row.get("subject") != subject:
+            issues.append(ValidationIssue(f"$.governance.{name}.subject", "governance.subject_binding", "all governance documents must carry the identical typed subject"))
+        try:
+            validate_contract(contract_id, row, repo_root=repo_root)
+        except ContractValidationError as exc:
+            issues.append(ValidationIssue(f"$.governance.{name}", f"governance.{name}_contract", "; ".join(str(value) for value in exc.issues)))
+        except ContractError as exc:
+            issues.append(ValidationIssue(f"$.governance.{name}", f"governance.{name}_contract", str(exc)))
+
+    bindings = (
+        ("packet.lobe_run_ref", packet.get("lobe_run_ref"), run.get("run_id")),
+        ("packet.authority_manifest_ref", packet.get("authority_manifest_ref"), manifest.get("manifest_id")),
+        ("lobe_run.authority_manifest_ref", run.get("authority_manifest_ref"), manifest.get("manifest_id")),
+        ("authority_manifest.artifact_ref", manifest.get("artifact_ref"), packet.get("packet_id")),
+    )
+    for path, actual, expected in bindings:
+        if actual != expected:
+            issues.append(ValidationIssue("$.governance." + path, "governance.binding", "nested reference must bind the exact same generation"))
+    outputs = run.get("output_artifacts")
+    if not isinstance(outputs, list) or outputs != [{"artifact_ref": packet.get("packet_id"), "content_sha256": packet.get("packet_hash"), "row_count": 1}]:
+        issues.append(ValidationIssue("$.governance.lobe_run.output_artifacts", "governance.output_binding", "lobe output must bind the single packet ID and canonical hash"))
+    watermarks = run.get("source_watermarks")
+    embedded = [row.get("input_receipt") for row in watermarks if isinstance(row, Mapping)] if isinstance(watermarks, list) else []
+    if embedded != receipts:
+        issues.append(ValidationIssue("$.governance.lobe_run.source_watermarks", "provenance.receipt_binding", "one exact ordered embedded receipt per admitted dossier receipt is required"))
+
+    if isinstance(subject, Mapping):
+        producer = packet.get("producer")
+        code_version = producer.get("code_version") if isinstance(producer, Mapping) else None
+        source_identity = sorted((row["source_id"], row["sha256"]) for row in receipts if isinstance(row, Mapping) and isinstance(row.get("source_id"), str) and isinstance(row.get("sha256"), str))
+        token = canonical_json_sha256({"subject": subject, "common_as_of": document.get("common_as_of"), "code_version": code_version, "source_identity": source_identity})[:24]
+        kind = subject.get("kind")
+        expected_ids = (
+            ("$.dossier_id", document.get("dossier_id"), f"dossier:{kind}:{token}"),
+            ("$.governance.packet.packet_id", packet.get("packet_id"), f"packet:{kind}:{token}"),
+            ("$.governance.lobe_run.run_id", run.get("run_id"), f"run:sector-federation:{kind}:{token}"),
+            ("$.governance.authority_manifest.manifest_id", manifest.get("manifest_id"), f"authority:sector-dossier:{kind}:{token}"),
+        )
+        for path, actual, expected in expected_ids:
+            if actual != expected:
+                issues.append(ValidationIssue(path, "governance.generation", "ID must bind typed subject, common date, code version and known input hashes"))
+
+    generated = document.get("generated_at")
+    for path, actual in (
+        ("packet.generated_at", packet.get("generated_at")),
+        ("lobe_run.started_at", run.get("started_at")),
+        ("lobe_run.finished_at", run.get("finished_at")),
+        ("authority_manifest.issued_at", manifest.get("issued_at")),
+        ("authority_manifest.valid_from", manifest.get("valid_from")),
+        ("authority_manifest.transaction_from", manifest.get("transaction_from")),
+    ):
+        if actual != generated:
+            issues.append(ValidationIssue("$.governance." + path, "governance.clock_binding", "bundle must use one supplied generation instant"))
+    for name, row in (("packet", packet), ("lobe_run", run)):
+        if row.get("knowledge_cutoff") != document.get("knowledge_cutoff"):
+            issues.append(ValidationIssue(f"$.governance.{name}.knowledge_cutoff", "governance.clock_binding", "knowledge cutoff must bind the same generation"))
+    issued, expiry = _v2_timestamp(generated), _v2_timestamp(manifest.get("expires_at"))
+    if issued is not None and expiry != issued + timedelta(hours=72):
+        issues.append(ValidationIssue("$.governance.authority_manifest.expires_at", "governance.expiry", "the facts-only manifest expires 72 hours after generation"))
+
+    paths = [row["path"] for row in receipts if isinstance(row, Mapping) and isinstance(row.get("path"), str)]
+    def admitted(ref: Any) -> bool:
+        return isinstance(ref, str) and any(ref == path or ref.startswith(path + "#/") for path in paths)
+
+    for field in ("source_refs",):
+        for index, ref in enumerate(identity.get(field, [])):
+            if not admitted(ref):
+                issues.append(ValidationIssue(f"$.identity.{field}[{index}]", "provenance.source_ref", "identity source must bind an admitted receipt path"))
+    for binding in ("tradable_binding", "benchmark_binding"):
+        value = identity.get(binding)
+        if isinstance(value, Mapping):
+            for ref in value.get("source_refs", []):
+                if not admitted(ref):
+                    issues.append(ValidationIssue("$.identity." + binding, "provenance.source_ref", "binding must retain admitted owner evidence"))
+    tradable = identity.get("tradable_binding")
+    expected_security = [tradable.get("value")] if isinstance(tradable, Mapping) and tradable.get("applicability") == "applicable" else []
+    if packet.get("security_refs") != expected_security:
+        issues.append(ValidationIssue("$.governance.packet.security_refs", "subject.security_binding", "security references must equal the applicable owner binding or remain empty"))
+
+    dimensions = document.get("dimensions", [])
+    changes = document.get("material_changes", [])
+    expected_facts = [f"{document.get('dossier_id')}#/dimensions/{row.get('dimension_id')}" for row in dimensions if isinstance(row, Mapping)]
+    expected_changes = [f"{document.get('dossier_id')}#/material_changes/{row.get('change_id')}" for row in changes if isinstance(row, Mapping)]
+    if packet.get("current_fact_refs") != expected_facts or packet.get("material_change_event_refs") != expected_changes:
+        issues.append(ValidationIssue("$.governance.packet", "governance.fact_projection", "packet fact/change refs must be the exact dossier projection"))
+    packet_refs: set[str] = set()
+    for key in ("entity_refs", "security_refs", "current_fact_refs", "material_change_event_refs", "upcoming_event_refs", "feature_snapshot_refs", "prediction_refs", "evidence_claim_refs", "source_record_refs"):
+        values = packet.get(key)
+        if isinstance(values, list):
+            packet_refs.update(ref for ref in values if isinstance(ref, str))
+    for name in ("dimensions", "children", "connected_themes", "material_changes", "watch_conditions", "conflicts"):
+        rows = document.get(name)
+        if not isinstance(rows, list):
+            continue
+        for index, row in enumerate(rows):
+            if not isinstance(row, Mapping):
+                continue
+            refs = row.get("source_refs", [row["source_ref"]] if "source_ref" in row else [])
+            for ref in refs:
+                if not admitted(ref) and not (name == "conflicts" and ref in packet_refs):
+                    issues.append(ValidationIssue(f"$.{name}[{index}]", "provenance.source_ref", "source ref must bind an admitted receipt path or actual packet reference"))
+    for field in ("participation", "concentration"):
+        value = document.get(field)
+        if isinstance(value, Mapping) and not admitted(value.get("source_ref")):
+            issues.append(ValidationIssue("$." + field, "provenance.source_ref", "measurement must retain its admitted owner reference"))
+
+    # Optional absence affects quality, not required-market freshness.
+    market = [row for row in receipts if isinstance(row, Mapping) and row.get("required") is True and row.get("freshness_role") == "market_observation"]
+    stale = sorted(row["source_id"] for row in market if row.get("freshness_state") == "stale")
+    unknown = sorted(row["source_id"] for row in market if row.get("freshness_state") == "unknown")
+    degraded = sorted(row["source_id"] for row in market if row.get("freshness_state") == "degraded" or (isinstance(row.get("as_of"), str) and isinstance(document.get("common_as_of"), str) and row["as_of"] < document["common_as_of"]))
+    clocks = [_v2_timestamp(row.get("observed_at")) for row in market]
+    oldest = min((value for value in clocks if value is not None), default=None)
+    state = "stale" if stale else "unknown" if unknown else "degraded" if degraded else "fresh"
+    freshness = document.get("freshness")
+    if isinstance(freshness, Mapping):
+        if freshness.get("state") != state or freshness.get("common_as_of") != document.get("common_as_of") or freshness.get("evaluated_at") != generated or _v2_timestamp(freshness.get("oldest_required_source_at")) != oldest or freshness.get("stale_source_ids") != stale or freshness.get("degraded_source_ids") != degraded or freshness.get("unknown_source_ids") != unknown or freshness.get("future_source_ids") != []:
+            issues.append(ValidationIssue("$.freshness", "receipt.freshness_projection", "freshness must preserve required-market clocks/states, excluding static and optional absence"))
+    packet_freshness = packet.get("freshness")
+    if isinstance(packet_freshness, Mapping):
+        if packet_freshness.get("state") != state or packet_freshness.get("evaluated_at") != generated or _v2_timestamp(packet_freshness.get("oldest_required_source_at")) != oldest or packet_freshness.get("stale_source_ids") != stale or packet_freshness.get("unknown_source_ids") != unknown:
+            issues.append(ValidationIssue("$.governance.packet.freshness", "receipt.freshness_projection", "packet freshness must preserve the exact market-clock projection"))
+    quality, packet_quality = document.get("quality"), packet.get("quality")
+    if isinstance(quality, Mapping) and isinstance(packet_quality, Mapping):
+        for left, right in (("state", "state"), ("required_completeness", "completeness"), ("point_in_time_safe", "point_in_time_safe"), ("warnings", "warnings")):
+            if quality.get(left) != packet_quality.get(right):
+                issues.append(ValidationIssue("$.quality", "governance.quality_binding", "packet quality must be the exact dossier projection"))
+        required = [row for row in receipts if isinstance(row, Mapping) and row.get("required") is True]
+        completeness = sum(row.get("state") == "available" for row in required) / len(required) if required else 0
+        if quality.get("required_completeness") != completeness or run.get("completeness") != completeness:
+            issues.append(ValidationIssue("$.quality.required_completeness", "receipt.completeness", "completeness is required source availability, never confidence"))
+        incomplete_optional = any(isinstance(row, Mapping) and row.get("required") is False and row.get("state") == "unavailable" for row in receipts)
+        unknown_static_clock = any(isinstance(row, Mapping) and row.get("freshness_role") == "static_config" and row.get("observed_at") is None for row in receipts)
+        if (incomplete_optional or unknown_static_clock) and quality.get("state") == "complete":
+            issues.append(ValidationIssue("$.quality.state", "receipt.quality", "missing optional or historical static clocks remain degraded"))
+        if unknown_static_clock and quality.get("point_in_time_safe") is not False:
+            issues.append(ValidationIssue("$.quality.point_in_time_safe", "receipt.pit", "unknown static history cannot establish PIT availability"))
+
+    # Preserve context-only caps in the dossier as in v1.
+    caps = document.get("authority_caps")
+    if isinstance(caps, Mapping):
+        for key, expected in {"is_context_only": True, "may_rank": False, "may_gate": False, "may_size": False, "may_escalate": False, "may_trade": False, "may_modify_prophet": False}.items():
+            if caps.get(key) is not expected:
+                issues.append(ValidationIssue("$.authority_caps." + key, "authority.context_only", "v2 cannot gain financial decision authority"))
+    return issues
 
 
 def _sector_dossier_issues(
@@ -3988,6 +4447,14 @@ def _biocatalyst_product_acceptance_manifest_issues(
 def _contract_semantic_issues(
     contract_id: str, document: Mapping[str, Any], repo_root: Path
 ) -> list[ValidationIssue]:
+    if contract_id == _DOSSIER_V2_CONTRACT_ID:
+        return _v2_dossier_issues(document, repo_root)
+    if contract_id == _PACKET_V2_CONTRACT_ID:
+        return _v2_packet_issues(document)
+    if contract_id == _LOBE_V2_CONTRACT_ID:
+        return _v2_lobe_issues(document)
+    if contract_id == _MANIFEST_V2_CONTRACT_ID:
+        return _v2_manifest_issues(document)
     if contract_id == _SECTOR_DOSSIER_CONTRACT_ID:
         return _sector_dossier_issues(document, repo_root)
     if contract_id == _PACKET_CONTRACT_ID:
@@ -4266,8 +4733,11 @@ class ContractRegistry:
             # recursive interval or contract-semantic walkers below.
             return tuple(issues)
         try:
-            issues.extend(_interval_issues(document))
-            if requested == _PACKET_CONTRACT_ID and isinstance(document, Mapping):
+            if requested in {_DOSSIER_V2_CONTRACT_ID, _LOBE_V2_CONTRACT_ID}:
+                issues.extend(_v2_interval_issues(document))
+            else:
+                issues.extend(_interval_issues(document))
+            if requested in {_PACKET_CONTRACT_ID, _PACKET_V2_CONTRACT_ID} and isinstance(document, Mapping):
                 issues.extend(_packet_authority_issues(document))
             if isinstance(document, Mapping):
                 issues.extend(

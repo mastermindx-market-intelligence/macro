@@ -10367,6 +10367,8 @@ jobs:
           tests/test_sector_intelligence_ownership.py -q
       - name: BioCatalyst D0a finite reference integrity
         run: python scripts/verify_biocatalyst_d0a_references.py --reference-integrity
+      - name: STSI Packet I v2 — controlled contract and future-date refusal
+        run: python -m pytest tests/test_sector_dossier_contract_v2.py -q
 
   biocatalyst-deploy-integration:
     if: ${{ false }}
