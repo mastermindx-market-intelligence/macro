@@ -1,5 +1,7 @@
 # TOI reconciled execution plan — October 3, 2026
 
+> Continuation evidence: [the complete donor Markdown masterplan](donor_evidence/TOI_Recovery_Masterplan_2026-10-03.md) is now an eighth preserved donor original. Seven-file references below describe the first integration at c55d21d2 and are retained as historical scope, not the current full publication count. [Exact additional publication receipt](DONOR_FULL_PAPER_PUBLICATION.json). The [consumer failure-path proposal](consumer_qualification/README.md) is tested in isolation, not applied/deployed; it opens no W1/W2/W3 gate. The original packet's remaining files and full ZIP are still not claimed uploaded.
+
 **Program:** `WS:TECHNICAL-OPPORTUNITY-INTELLIGENCE`, parent `market-timing-intelligence`.
 **Intent:** the current user requested reconciliation of the newly supplied research packet with the existing research/plans, followed by end-to-end execution.
 **Disposition:** integrate supported research and verified records; preserve competing experiment proposals without automatically adopting either; continue permitted implementation and qualification. **The product and scientific program are incomplete. W3 outcomes and predictive/consumer promotion remain held.**

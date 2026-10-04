@@ -1,5 +1,7 @@
 # TOI CEO start prompt — recommission existing program
 
+**Latest evidence:** the complete donor Markdown paper is now in `donor_evidence/TOI_Recovery_Masterplan_2026-10-03.md` at original SHA256 `69e1ba924306e4c1613c0065667e801072257e71074b7960b3d7fbb76e6761ed`. Read `consumer_qualification/README.md` before reusing its inert patch; 32 source-only cases pass, but the committed statistical-artifact test, current-source adoption, independent review and production proof are outstanding. No native source path was changed. Preserve both recorded platform-refused actions without retry or rerouting.
+
 **Reconciliation update:** Read `TOI_RECONCILED_EXECUTION_PLAN_2026-10-03.md` first. The additional 218-configuration/201-cell proposal is not additive to R0 or Seat B R2. Consume the new parity/source-failure distinctions and fresh W2 record tests; preserve W1 custody restrictions, the action-scoped blocked verification, and the original CI rerun identity. The #8240 compiler is an unmerged dependency, not a main-branch consumer. No outcome or production gate is opened.
 
 You are the receiving TOI program owner under the user's October 3, 2026 instruction to initiate `WS:TECHNICAL-OPPORTUNITY-INTELLIGENCE`, parent `market-timing-intelligence`. This is continuation of the existing program, not a broad architecture research restart.
