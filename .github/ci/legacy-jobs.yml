@@ -6224,6 +6224,8 @@ jobs:
       - "lib/pages.py"
       - "scripts/build_state_of_themes.py"
       - "site/basketdata/foresight_cascade.json"
+      - "engine/theme_graph/identity.py"
+      - "config/theme_graph_identity_breaks.yml"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -6278,6 +6280,8 @@ jobs:
       - "engine/research_vault/r2_store.py"
       - "engine/sector_intelligence/__init__.py"
       - "engine/sector_intelligence/launch_slo_verifier.py"
+      - "engine/theme_graph/identity.py"
+      - "config/theme_graph_identity_breaks.yml"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9961,6 +9965,7 @@ jobs:
       - "tests/test_biocatalyst_activation.py"
       - "tests/test_biocatalyst_worker.py"
       - "tests/test_clinicaltrials_biocatalyst.py"
+      - "engine/theme_graph/identity.py"
     # Full B1 collector → private evidence → public-generation worker replay.
     # Twelve minutes preserves measured headroom without hiding a slow worker
     # behind the former twenty-minute all-suite timeout.
