@@ -192,10 +192,12 @@ _DATA_DIRS = {
 _DATA_DIR_MIN_FILES = 100
 # Per-dir floor overrides for SMALL data-dir stores. The 100-file default is calibrated
 # for the per-ticker parquet stores; a whole-store dir with a fixed, tiny file count
-# would be refused forever. index_gex_history is exactly 4 root parquets + the manifest,
-# so the floor is 5 — "all four roots AND the manifest". 4 would have passed a
-# three-roots-plus-manifest tree, which is precisely the partial rebuild this guard is
-# for; the count is a whole-store floor, not a parquet count.
+# would be refused forever. index_gex_history's floor counts uploadable parquets
+# only: _uploadable drops the collector _manifest.json before _data_dir_syncable.
+# The honest store is four root parquets — SPY, QQQ, IWM, DIA — so the floor is 4.
+# Five described four roots plus that manifest, which is already excluded, and would
+# refuse the real store. Three uploadable parquets is the partial rebuild this guard
+# refuses. Stale extra parquets are not the floor and are not deleted here.
 # price_pressure is 3: latest.json + base_rates.json + events.parquet — "both tracked
 # sidecars AND the parquet". A CI/engine checkout of that dir holds ONLY the tracked
 # JSON (the parquet is gitignored and restored from R2), which is exactly 2, so 3 is
@@ -204,7 +206,7 @@ _DATA_DIR_MIN_FILES = 100
 # night the §10.1 pass files one, which would make a bare checkout 3 files — so the
 # bytes floor below (not the count) is the fence that survives that: a sidecars-only
 # tree is ~73 KB against an ~11 MB store.
-_DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 5, "price_pressure": 3,
+_DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 4, "price_pressure": 3,
                            # MO-PAID-013 W2-2: snapshots.parquet + the tracked
                            # validation_gate.json sidecar. 2 is the bare store;
                            # the bytes floor below is the real discrimination
@@ -234,9 +236,10 @@ _DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 5, "price_pressure": 3,
 # offsite copy of ~10 years of reconstruction. A truncated rebuild (a mid-write
 # _backfill_state.json, one unreadable year) yields a valid-but-short parquet, so it gets
 # both of attention's fences as well: per FILE, refuse an upload smaller than the R2
-# object; per DIR, refuse a tree under the bytes floor. The four parquets measure ~210 KB
-# each (~846 KB with the manifest), so 600 KB is the floor a genuine store clears and a
-# one-or-two-root rebuild does not. The builder's own shrink guard is the first fence;
+# object; per DIR, refuse a tree under the bytes floor. That byte total is the same
+# uploadable set: four root parquets at ~210 KB each, manifest excluded. 600 KB is
+# the floor a genuine four-parquet store clears and a one-or-two-root rebuild does
+# not. The builder's own shrink guard is the first fence;
 # these are the ones that survive a builder bypass.
 #
 # price_pressure takes the DIR fence only, NOT the per-file one (it is not in
