@@ -1,9 +1,12 @@
 """Recompute the producer rule pins cited by `tests/test_rates_command_outlook_readings.py`.
 
 A pin locks the UTF-8 source of one top-level function, one top-level assignment,
-or one dotted key in ``config.yml`` to a sha256, so the test reading the
-version-2 mapping fails when any of those moves and the reviewer has not
-recorded a fresh review entry in ``config/regime_outlook_rule_pins.json``.
+or one dotted key in ``config.yml`` to a sha256 (or a value). Two checks bind:
+the pinned value must match the source, and the pinned value must be either the
+pin's birth value or the ``to`` of a review entry in
+``config/regime_outlook_rule_pins.json`` that names the pin. So when a producer
+moves, pasting the new hash alone still fails — the review entry recording the
+re-read under contract rule R-E is what makes the new hash acceptable.
 Nothing in this file imports ``engine``; it parses each producer with ``ast``
 and hashes the named node's source text by line range.
 """
@@ -26,6 +29,7 @@ MAPPING_PATH = REPO_ROOT / "config" / "regime_outlook_mapping_v2.json"
 CONFIG_YML_PATH = REPO_ROOT / "config.yml"
 
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_SHA_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 def _load_pins() -> dict:
@@ -108,11 +112,54 @@ def review_problems(review: object, pin_names: set[str]) -> list[str]:
         problems.append("changed is missing or empty")
     else:
         for entry in changed:
-            if not isinstance(entry, str):
-                problems.append(f"changed entry {entry!r} is not a string")
-            elif entry not in pin_names:
-                problems.append(f"changed entry {entry!r} is not a known pin name")
+            if not isinstance(entry, dict):
+                problems.append(f"changed entry {entry!r} is not a dict")
+                continue
+            pin = entry.get("pin")
+            if pin not in pin_names:
+                problems.append(f"changed entry {pin!r} is not a known pin name")
+            for side in ("from", "to"):
+                if side not in entry:
+                    problems.append(f"changed entry {pin!r} has no {side!r}")
+                elif isinstance(pin, str) and not pin.startswith("config.yml:") and not (
+                    isinstance(entry[side], str) and _SHA_RE.match(entry[side])
+                ):
+                    problems.append(f"changed entry {pin!r} {side!r} is not a sha256")
+            if "from" in entry and "to" in entry and entry["from"] == entry["to"]:
+                problems.append(f"changed entry {pin!r} records no change")
     return problems
+
+
+def reviewed_values(reviews: object) -> dict[str, list]:
+    """Map each pin name to every ``to`` value some review recorded for it."""
+    out: dict[str, list] = {}
+    if not isinstance(reviews, list):
+        return out
+    for review in reviews:
+        if not isinstance(review, dict):
+            continue
+        for entry in review.get("changed") or []:
+            if isinstance(entry, dict) and "pin" in entry and "to" in entry:
+                out.setdefault(entry["pin"], []).append(entry["to"])
+    return out
+
+
+def acceptance_problems(pin_name: str, current: object, birth: object, reviews: object) -> list[str]:
+    """A pin is accepted at its birth value or at a value a review named as ``to``.
+
+    Anything else is a blind update: the hash (or value) was pasted without the
+    R-E re-read being recorded, which is exactly what the pin file exists to
+    refuse.
+    """
+    if current == birth:
+        return []
+    if current in reviewed_values(reviews).get(pin_name, []):
+        return []
+    return [
+        f"{pin_name} carries {current!r}, which is neither its birth value "
+        f"{birth!r} nor the 'to' of any review entry naming it — a pin is never "
+        f"updated without a review record (contract rule R-E)"
+    ]
 
 
 # --- P1 ----------------------------------------------------------------------
@@ -150,6 +197,7 @@ def test_function_pin_matches_source(entry):
         f"the review in the pin file's reviews list. Never paste a new hash "
         f"without a review entry."
     )
+    assert acceptance_problems(f"{file}:{name}", entry["sha256"], entry["birth_sha256"], pins["reviews"]) == []
 
 
 @pytest.mark.parametrize(
@@ -158,6 +206,7 @@ def test_function_pin_matches_source(entry):
     ids=lambda e: f"{e['file']}:{e['name']}",
 )
 def test_constant_pin_matches_source(entry):
+    pins = _load_pins()
     file = entry["file"]
     name = entry["name"]
     actual = node_sha256(REPO_ROOT / file, name, "constant")
@@ -167,6 +216,7 @@ def test_constant_pin_matches_source(entry):
         f"the review in the pin file's reviews list. Never paste a new hash "
         f"without a review entry."
     )
+    assert acceptance_problems(f"{file}:{name}", entry["sha256"], entry["birth_sha256"], pins["reviews"]) == []
 
 
 # --- P4 ----------------------------------------------------------------------
@@ -200,6 +250,12 @@ def test_config_value_pin_matches(entry):
             f"R-E and record the review in the pin file's reviews list. Never "
             f"paste a new value without a review entry."
         )
+    assert acceptance_problems(
+        f"config.yml:{'.'.join(entry['key'])}",
+        {"present": entry["present"], "value": entry["value"]},
+        {"present": entry["birth_present"], "value": entry["birth_value"]},
+        _load_pins()["reviews"],
+    ) == []
 
 
 # --- P5 ----------------------------------------------------------------------
@@ -248,13 +304,15 @@ def _all_pin_names(pins: dict) -> set[str]:
 def test_review_problems_synthetic():
     pins = _load_pins()
     pin_names = _all_pin_names(pins)
-    sample_pin = next(iter(pin_names))
+    sample_pin = next(n for n in sorted(pin_names) if not n.startswith("config.yml:"))
+    sha_a = "a" * 64
+    sha_b = "b" * 64
 
     valid = {
         "date": "2026-10-03",
         "reviewer": "qa",
         "finding": "ok",
-        "changed": [sample_pin],
+        "changed": [{"pin": sample_pin, "from": sha_a, "to": sha_b}],
     }
     assert review_problems(valid, pin_names) == []
 
@@ -264,11 +322,58 @@ def test_review_problems_synthetic():
     empty_changed = {**valid, "changed": []}
     assert any("changed" in p for p in review_problems(empty_changed, pin_names))
 
-    unknown_pin = {**valid, "changed": ["nonexistent:ghost"]}
+    unknown_pin = {**valid, "changed": [{"pin": "nonexistent:ghost", "from": sha_a, "to": sha_b}]}
     assert any("not a known pin" in p for p in review_problems(unknown_pin, pin_names))
+
+    bare_name = {**valid, "changed": [sample_pin]}
+    assert any("not a dict" in p for p in review_problems(bare_name, pin_names))
+
+    no_to = {**valid, "changed": [{"pin": sample_pin, "from": sha_a}]}
+    assert any("has no 'to'" in p for p in review_problems(no_to, pin_names))
+
+    not_sha = {**valid, "changed": [{"pin": sample_pin, "from": sha_a, "to": "new"}]}
+    assert any("not a sha256" in p for p in review_problems(not_sha, pin_names))
+
+    no_change = {**valid, "changed": [{"pin": sample_pin, "from": sha_a, "to": sha_a}]}
+    assert any("records no change" in p for p in review_problems(no_change, pin_names))
 
     bad_type = "not a dict"
     assert any("not a dict" in p for p in review_problems(bad_type, pin_names))
+
+
+def test_blind_update_is_refused_until_reviewed():
+    """Pasting a new hash without a review entry fails; the review naming it passes."""
+    pins = _load_pins()
+    entry = pins["functions"][0]
+    pin_name = f"{entry['file']}:{entry['name']}"
+    birth = entry["birth_sha256"]
+    moved = "0" * 64
+
+    assert acceptance_problems(pin_name, birth, birth, pins["reviews"]) == []
+    assert acceptance_problems(pin_name, moved, birth, []) != []
+    assert acceptance_problems(pin_name, moved, birth, "not a list") != []
+
+    review = {
+        "date": "2026-10-04",
+        "reviewer": "qa",
+        "finding": "re-read under R-E",
+        "changed": [{"pin": pin_name, "from": birth, "to": moved}],
+    }
+    assert review_problems(review, _all_pin_names(pins)) == []
+    assert acceptance_problems(pin_name, moved, birth, [review]) == []
+    # a review naming a DIFFERENT pin does not excuse this one
+    other = {**review, "changed": [{"pin": f"{pins['functions'][1]['file']}:{pins['functions'][1]['name']}", "from": birth, "to": moved}]}
+    assert acceptance_problems(pin_name, moved, birth, [other]) != []
+
+
+def test_birth_values_are_well_formed():
+    pins = _load_pins()
+    for group in ("functions", "constants"):
+        for entry in pins[group]:
+            assert _SHA_RE.match(entry["birth_sha256"]), f"{group}:{entry['name']} birth_sha256 malformed"
+    for entry in pins["config_values"]:
+        assert "birth_present" in entry and "birth_value" in entry, f"config pin {entry['key']} lacks birth values"
+        assert isinstance(entry["birth_present"], bool)
 
 
 def test_real_reviews_are_well_formed():
