@@ -1281,6 +1281,26 @@ def _loaded_quote_count(quotes: Mapping[str, Any] | None,
     return sum(1 for ticker in tickers if isinstance(book.get(ticker), Mapping))
 
 
+def _episode_rows(ledger: ll.LiveEpisodeLedger | None, session: date | None,
+                  ) -> list[dict[str, Any]] | None:
+    """Episode owner-schema rows for the live payload (product spec §3.3)."""
+    if ledger is None:
+        return None
+    session_iso = session.isoformat() if session is not None else None
+    selected: list[ll.LiveEpisode] = []
+    for episode in ledger.episodes:
+        if not episode.terminal:
+            selected.append(episode)
+            continue
+        if session_iso is None:
+            continue
+        elapsed = ll.sessions_elapsed(episode.market_session, session_iso,
+                                      market="US")
+        if elapsed is not None and elapsed <= 1:
+            selected.append(episode)
+    return ll.iter_episode_dicts(selected)
+
+
 def _refusal_payload(*, state: str, reasons: Sequence[str], now: datetime,
                      session: date | None, pack: lp.LivePack | None,
                      tickers: Sequence[str], state_dir: Path | None,
@@ -1319,6 +1339,10 @@ def _refusal_payload(*, state: str, reasons: Sequence[str], now: datetime,
         "content": {"last_transition_at": None, "events_total": 0,
                     "ledger_hash": _ledger_hash(ledger)},
     }
+    episode_rows = _episode_rows(ledger, session)
+    if episode_rows is not None:
+        health["episodes_count"] = len(episode_rows)
+        health["episodes_schema"] = ll.SCHEMA_LIVE_EPISODE
     payload = {
         "schema": SCHEMA_LIVE_PAYLOAD,
         "asof": _iso(now),
@@ -1334,6 +1358,8 @@ def _refusal_payload(*, state: str, reasons: Sequence[str], now: datetime,
         "research_priority": _empty_priority_board(
             computed_at=_iso(now), cycle_state=state, reason="cycle_refused"),
     }
+    if episode_rows is not None:
+        payload["episodes"] = episode_rows
     return payload, health
 
 
@@ -1626,7 +1652,8 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
     # lags content by one tick is worse than none, because it looks like it works.
     health["content"]["ledger_hash"] = _ledger_hash(ledger)
     payload = _payload(now=now, session=session, pack=pack, results=results,
-                       delta=delta, committed=committed, health=health)
+                       delta=delta, committed=committed, health=health,
+                       ledger=ledger)
     if not dry_run:
         _write_heartbeat(state_dir, _beat_from(health, now=now, session=session))
     exit_code = 4 if not committed else 0
@@ -2397,7 +2424,8 @@ def _priority_lookup(board: Mapping[str, Any]
 
 def _payload(*, now: datetime, session: date, pack: lp.LivePack,
              results: Sequence[NameResult], delta: ll.PendingDelta,
-             committed: bool, health: Mapping[str, Any]) -> dict[str, Any]:
+             committed: bool, health: Mapping[str, Any],
+             ledger: ll.LiveEpisodeLedger) -> dict[str, Any]:
     """``live/entry_radar.json``.  Mechanical copy only — nothing is composed.
 
     A name with ANY non-PROBING lane gets full per-lane detail; a pure-probing
@@ -2413,6 +2441,11 @@ def _payload(*, now: datetime, session: date, pack: lp.LivePack,
                                      results=results, health=health)
     lookup = _priority_lookup(board)
     rows = [_payload_row(r, lookup.get(r.ticker, ())) for r in results]
+    episode_rows = _episode_rows(ledger, session)
+    assert episode_rows is not None
+    if isinstance(health, dict):
+        health["episodes_count"] = len(episode_rows)
+        health["episodes_schema"] = ll.SCHEMA_LIVE_EPISODE
     return {
         "schema": SCHEMA_LIVE_PAYLOAD,
         "asof": _iso(now),
@@ -2422,6 +2455,7 @@ def _payload(*, now: datetime, session: date, pack: lp.LivePack,
                  "spec_hashes": dict(pack.spec_hashes)},
         "authority": _authority_block(),
         "names": rows,
+        "episodes": episode_rows,
         "transitions": [copy.deepcopy(t) for t in delta.transitions] if committed else [],
         "events": [copy.deepcopy(e) for e in delta.events] if committed else [],
         "suppressed": [dict(s) for r in results for s in r.suppressed],
