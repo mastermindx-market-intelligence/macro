@@ -1,0 +1,25 @@
+{# Shared Prophet coverage presentation. All values are owner-computed inputs.
+   This macro performs no candidate selection, entitlement math, freshness arithmetic,
+   de-duplication, or missing-value inference. #}
+{% macro _value(value) -%}
+{%- if value is number and value is not boolean -%}{{ value }}{%- else -%}{{ t('Unavailable','暂缺') }}{%- endif -%}
+{%- endmacro %}
+{% macro coverage(c) -%}
+<style>
+.pv-cov{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 0 10px}
+.pv-cov-cell{min-width:0;border:1px solid var(--line);border-radius:8px;background:var(--panel2);padding:7px 8px;display:grid;gap:2px}
+.pv-cov-k{font-size:8.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:normal}
+.pv-cov-v{font-size:12px;font-weight:750;color:var(--text);overflow-wrap:anywhere}
+.pv-cov-note{grid-column:1/-1;color:var(--muted);font-size:9.5px;line-height:1.45;overflow-wrap:anywhere}
+@media(max-width:600px){.pv-cov{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.pv-cov-cell{padding:6px 7px}}
+</style>
+<div class="pv-cov" data-pv-coverage{% if c.get('as_of') %} data-pv-coverage-as-of="{{ c.as_of|e }}"{% endif %}>
+  <span class="pv-cov-cell"><span class="pv-cov-k">{{ t('Producer total','生产总数') }}</span><strong class="pv-cov-v" data-pv-coverage-producer>{{ _value(c.get('producer_total')) }}</strong></span>
+  <span class="pv-cov-cell"><span class="pv-cov-k">{{ t('Entitled total','权限总数') }}</span><strong class="pv-cov-v" data-pv-coverage-entitled>{{ _value(c.get('entitled_total')) }}</strong></span>
+  <span class="pv-cov-cell"><span class="pv-cov-k">{{ t('Current filter','当前筛选') }}</span><strong class="pv-cov-v" data-pv-coverage-filter>{{ _value(c.get('filter_total')) }}</strong></span>
+  <span class="pv-cov-cell"><span class="pv-cov-k">{{ t('Displayed','已显示') }}</span><strong class="pv-cov-v" data-pv-coverage-displayed>{{ _value(c.get('displayed_total')) }}</strong></span>
+  {%- if c.get('missing_owner_en') or c.get('missing_owner_zh') %}
+  <span class="pv-cov-note" data-pv-coverage-missing-owner>{{ t('Unavailable owner fields','所有者字段暂缺') }}: {{ t(c.get('missing_owner_en') or 'Unavailable', c.get('missing_owner_zh') or c.get('missing_owner_en') or '暂缺')|e }}</span>
+  {%- endif %}
+</div>
+{%- endmacro %}
