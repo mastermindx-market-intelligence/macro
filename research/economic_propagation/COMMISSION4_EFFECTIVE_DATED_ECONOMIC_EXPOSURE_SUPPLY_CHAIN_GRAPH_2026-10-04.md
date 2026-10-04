@@ -14,7 +14,7 @@ Current protected source law:
 - Skillpack: mastermind.sol_skillpack.v1 v1.0.1, bootstrap-major 1 compatible
 - INDEX, ACTIVE_EXECUTION, SESSION_RELIABILITY, RECONCILE_STATE and CLOSEOUT were loaded from that same commit.
 
-Current repository pins:
+Repository pins used for this revision:
 - Macro main: mastermindx-market-intelligence/macro@7bbb4496f0c67f75a8942085db7fa0e539b100c5
 - Terminal master: mastermindx-market-intelligence/mastermind-terminal@a7447db07c50c64d81afcb082374340871e88079
 - Commission 4 pre-revision head: e71e5d48ae8a620797cc8aee46ac9f2de3654145
@@ -25,7 +25,7 @@ Historical archaeology pins retained for lineage:
 - Macro: 1b4edfb438f7ff7edca5097f0c90243a49207d1e
 - Terminal: fb6f5cc39e592e7f9967835a85617b4fef427b09
 
-The original Macro recheck at df5d4acb8703b0a36c25571611c7411553bb4217 is historical, not current. Deep Research reconciled the report through Macro d2904d45fb2bbaf12d3dae4a35eacaaefcc8bad3 and found material post-base Theme Graph changes, including the new shadow ThemeState contract/implementation and graph-history integrity work. A bounded compare from d2904d45 to current main 7bbb4496 found no later Theme Graph, Data OS, identity or economic-propagation code changes.
+The original Macro recheck at df5d4acb8703b0a36c25571611c7411553bb4217 is historical, not current. Deep Research reconciled the report through Macro d2904d45fb2bbaf12d3dae4a35eacaaefcc8bad3 and found material post-base Theme Graph changes, including the new shadow ThemeState contract/implementation and graph-history integrity work. A bounded compare from d2904d45 to deep-research pin 7bbb4496 found no later Theme Graph, Data OS, identity or economic-propagation code changes. A final compatibility recheck observed Macro main at 1b9bdfd2620edf90cebdde747fe66a20f09cec0a, one commit beyond 7bbb4496; that movement touched none of the Theme Graph, Data OS, identity, K3-D/F04 or economic-propagation source paths used by this report.
 
 Resolved repositories remain Mastermind, macro and mastermind-terminal. Research Vault remains a Macro subsystem under engine/research_vault.
 
