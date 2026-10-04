@@ -220,6 +220,109 @@ def test_visit_discovery_malformed_last_attempt_is_not_treated_as_absent():
 
 
 
+def test_visit_discovery_partial_or_naive_owner_timestamps_fail_closed():
+    for bad in (
+        "2026-10-03T01",
+        "2026-10-03T01:00",
+        "2026-10-03T01:00:00",
+    ):
+        snap = bus._visit_discovery_snapshot(
+            [_visit_row(
+                "A-partial", "000016", "2026-10-02T09:00:00+08:00",
+                recorded=bad,
+            )],
+            health={
+                "status": "ok",
+                "last_success_utc": bad,
+            },
+            coverage_start="2026-01-01",
+            open_scoped_codes=set(),
+            has_unscoped_open=False,
+            kind_labeler=_kind_labeler,
+            reference_day=bus.date(2026, 10, 3),
+        )
+        assert snap["global_negative_authority"] is False
+        assert "last_success_clock_invalid" in snap["owner_clock_errors"]
+        assert snap["n_first_observed_recent"] == 0
+        row = snap["examples"][0]
+        assert row["first_seen_state"] == "unknown_owner_clock_order_invalid"
+        assert row["first_observed_system_day"] is None
+
+
+def test_visit_discovery_attempt_before_success_same_day_fails_at_instant_precision():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row("A-order", "000017", "2026-10-02T09:00:00+08:00")],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T23:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+    assert "last_attempt_before_last_success" in snap["owner_clock_errors"]
+    assert snap["global_negative_authority"] is False
+    assert snap["examples"][0]["baseline_state"] == \
+        "blocked_owner_clock_order_invalid"
+    assert snap["examples"][0]["first_seen_state"] == \
+        "unknown_owner_clock_order_invalid"
+
+
+def test_visit_discovery_missing_last_success_cannot_measure_quiet_baseline():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row("A-nosuccess", "000018", "2026-10-02T09:00:00+08:00")],
+        health={"status": "ok"},
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == \
+        "last_success_clock_unavailable"
+    row = snap["examples"][0]
+    assert row["baseline_state"] == "unavailable_last_success_clock"
+    assert row["first_seen_state"] == "unknown_last_success_clock"
+    assert snap["n_first_observed_recent"] == 0
+
+
+def test_visit_discovery_unknown_exception_coverage_cannot_claim_first_seen():
+    visits = [_visit_row("A-except", "000019", "2026-10-02T09:00:00+08:00")]
+
+    unreadable = bus._visit_discovery_snapshot(
+        visits,
+        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        exception_ledger_readable=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+    assert unreadable["examples"][0]["first_seen_state"] == \
+        "unknown_exception_ledger_unreadable"
+    assert unreadable["n_first_observed_recent"] == 0
+
+    unscoped = bus._visit_discovery_snapshot(
+        visits,
+        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=True,
+        exception_ledger_readable=True,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+    assert unscoped["examples"][0]["first_seen_state"] == \
+        "unknown_unscoped_coverage_exception"
+    assert unscoped["n_first_observed_recent"] == 0
+
+
+
 def test_visit_discovery_keeps_precoverage_source_event_as_positive_observation():
     # First production run can legitimately derive a filing published during
     # its bounded lookback before the write-once coverage-start date. The event
