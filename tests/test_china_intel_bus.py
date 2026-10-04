@@ -60,6 +60,191 @@ def test_digest_text_empty_when_nothing_present():
     assert "no surfaces" in bus._digest_text({}).lower()
 
 
+
+# ── CIE-07: coverage-adjusted institutional-visit metadata discovery ──────────
+
+def _visit_row(aid, code, published, *, name="测试公司", exchange="SZ",
+               visitor_class="not_yet_available", title="机构调研活动记录表"):
+    return {
+        "announcement_id": aid,
+        "sec_code": code,
+        "sec_name": name,
+        "exchange": exchange,
+        "title": title,
+        "source_published_at": published,
+        "system_recorded_at": published,
+        "visitor_class": visitor_class,
+    }
+
+
+def _kind_labeler(title):
+    return ("site visit", "特定对象调研") if "特定对象" in str(title) \
+        else ("investor visit", "机构调研")
+
+
+def test_visit_discovery_first_seen_requires_no_preexisting_observation():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row("A1", "000001", "2026-10-02T09:00:00+08:00")],
+        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        coverage_start="2026-09-15",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+    )
+    assert snap["n_recent_companies"] == 1
+    assert snap["n_first_observed_recent"] == 1
+    row = snap["examples"][0]
+    assert row["first_seen_state"] == "first_observed_since_coverage_start"
+    # The plane has not observed a full 90d baseline before this 30d window.
+    assert row["baseline_state"] == "insufficient_observed_history"
+    assert row["recent_vs_baseline_rate_ratio"] is None
+    assert snap["global_negative_authority"] is True
+
+
+def test_visit_discovery_measures_only_fully_observed_baseline():
+    visits = [
+        _visit_row("B1", "600001", "2026-07-01T09:00:00+08:00", exchange="SH"),
+        _visit_row("B2", "600001", "2026-08-01T09:00:00+08:00", exchange="SH"),
+        _visit_row("B3", "600001", "2026-09-20T09:00:00+08:00", exchange="SH"),
+        _visit_row("B4", "600001", "2026-09-25T09:00:00+08:00", exchange="SH"),
+    ]
+    snap = bus._visit_discovery_snapshot(
+        visits,
+        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+    )
+    row = snap["examples"][0]
+    assert row["baseline_state"] == "measured"
+    assert row["recent_count"] == 2
+    assert row["baseline_count"] == 2
+    assert row["recent_activity_higher_than_baseline"] is True
+    assert row["rate_comparison"] == "recent_rate_higher"
+    assert row["recent_vs_baseline_rate_ratio"] is not None
+    assert row["recent_vs_baseline_rate_ratio"] > 1.0
+    assert snap["n_measured_baselines"] == 1
+
+
+def test_visit_discovery_scoped_exception_blocks_company_baseline_not_positive_evidence():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row("C1", "000002", "2026-10-01T09:00:00+08:00")],
+        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        coverage_start="2026-01-01",
+        open_scoped_codes={"000002"},
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+    )
+    row = snap["examples"][0]
+    assert row["recent_count"] == 1
+    assert row["coverage_state"] == "unknown_company_exception"
+    assert row["first_seen_state"] == "unknown_due_coverage_exception"
+    assert row["baseline_state"] == "blocked_company_coverage_exception"
+    assert row["baseline_count"] is None
+    # A scoped exception does not poison every other company globally.
+    assert snap["global_negative_authority"] is True
+
+
+def test_visit_discovery_unscoped_exception_blocks_global_negative_authority():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row("D1", "000003", "2026-10-01T09:00:00+08:00")],
+        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=True,
+        kind_labeler=_kind_labeler,
+    )
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == "unscoped_coverage_exception"
+    assert snap["examples"][0]["baseline_state"] == "blocked_unscoped_coverage_exception"
+
+
+def test_visit_discovery_degraded_source_keeps_positive_evidence_but_no_quiet_baseline():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row("E1", "000004", "2026-10-02T09:00:00+08:00")],
+        health={
+            "status": "upstream_degraded",
+            "last_success_utc": "2026-09-28T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+    )
+    assert snap["n_recent_companies"] == 1
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == "source_health_not_ok"
+    assert snap["examples"][0]["baseline_state"] == "unavailable_source_health"
+
+
+def test_visit_discovery_dedupes_announcement_identity_before_recurrence():
+    same = _visit_row("F1", "000005", "2026-10-01T09:00:00+08:00")
+    snap = bus._visit_discovery_snapshot(
+        [same, dict(same)],
+        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+    )
+    assert snap["n_rows_observed"] == 1
+    assert snap["examples"][0]["recent_count"] == 1
+
+
+def test_visit_discovery_never_promotes_actor_or_rank_authority():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row(
+            "G1", "000006", "2026-10-01T09:00:00+08:00",
+            visitor_class="institution",
+            title="特定对象调研记录",
+        )],
+        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+    )
+    row = snap["examples"][0]
+    # A future body stage may populate a visitor class, but this metadata slice
+    # still refuses actor recurrence without that stage's own acceptance receipt.
+    assert row["visitor_identity_state"] == "actor_enriched_rows_present"
+    assert row["actor_recurrence_state"] == "not_evaluated_without_body_stage_receipt"
+    assert row["may_rank"] is False and row["may_trade"] is False
+    assert "score" not in row and "rank" not in row
+    assert snap["authority"]["may_infer_visitor_identity"] is False
+    assert snap["authority"]["may_claim_predictive_edge"] is False
+
+
+def test_visit_discovery_block_fails_closed_on_unreadable_owner(monkeypatch):
+    from collectors import china_visits as cv
+
+    monkeypatch.setattr(cv, "read_visits_strict", lambda: None)
+    monkeypatch.setattr(cv, "read_coverage_exceptions_strict", lambda: [])
+    out = bus._visit_discovery_block()
+    assert out["source_status"] == "source_failure"
+    assert out["global_negative_authority"] is False
+    assert out["global_negative_authority_blocker"] == "owner_store_unreadable"
+    assert out["examples"] == []
+
+
+def test_briefing_exposes_visit_discovery_as_context_surface_only(monkeypatch):
+    monkeypatch.setattr(bus, "_read_json", lambda rel: None)
+    monkeypatch.setattr(bus, "_visit_discovery_block", lambda: {
+        "schema": "china_visits.discovery_metadata.v1",
+        "is_context_only": True,
+        "asof": "2026-10-03",
+        "authority": {"may_rank": False, "may_trade": False},
+        "examples": [],
+    })
+    b = bus.briefing(asof="2026-10-03")
+    assert b["schema"] == "china_intel.briefing.v6"
+    assert b["visit_discovery"]["authority"]["may_rank"] is False
+    assert "visit_discovery" in b["surfaces_present"]
+    assert b["flagged_tickers"] == []
+    assert b["conviction"] == []
+
+
 # ── v4: policy_phrase block ───────────────────────────────────────────────────
 
 def test_policy_phrase_block_missing_file(monkeypatch):
