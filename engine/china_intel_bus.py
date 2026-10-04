@@ -290,6 +290,22 @@ def _visit_day(value) -> date | None:
         return None
 
 
+def _visit_observed_day(value) -> date | None:
+    """Parse a full owner observation timestamp; malformed clocks fail closed."""
+    try:
+        text = str(value or "").strip()
+    except Exception:  # noqa: BLE001
+        return None
+    if not text or "T" not in text:
+        return None
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    # Owner observation clocks are timestamps, not loose date prefixes.
+    return parsed.date()
+
+
 def _visit_text(value) -> str:
     try:
         if value is None:
@@ -338,8 +354,8 @@ def _visit_discovery_snapshot(
     health = health if isinstance(health, dict) else {}
     owner_health_status = _visit_text(health.get("status")) or "no_coverage"
     coverage_day = _visit_day(coverage_start)
-    last_success_day = _visit_day(health.get("last_success_utc"))
-    last_attempt_day = _visit_day(health.get("last_attempt_utc"))
+    last_success_day = _visit_observed_day(health.get("last_success_utc"))
+    last_attempt_day = _visit_observed_day(health.get("last_attempt_utc"))
     # Keep the pure helper deterministic when called directly.  A degraded run
     # may contain newer positive rows than its frozen last_success clock, so the
     # fallback reference must include observed row clocks rather than moving the
@@ -409,7 +425,7 @@ def _visit_discovery_snapshot(
         if d is not None and d <= reference_day
     ]
     system_observed_days = [
-        d for d in (_visit_day(r.get("system_recorded_at")) for r in deduped)
+        d for d in (_visit_observed_day(r.get("system_recorded_at")) for r in deduped)
         if d is not None
         and d <= reference_day
         and (coverage_day is None or d >= coverage_day)
@@ -518,7 +534,7 @@ def _visit_discovery_snapshot(
         source_day = _visit_day(row.get("source_published_at"))
         if source_day is None:
             continue
-        observed_day = _visit_day(row.get("system_recorded_at"))
+        observed_day = _visit_observed_day(row.get("system_recorded_at"))
         bucket = grouped.setdefault(key, {
             "company_key": key,
             "sec_code": code,
