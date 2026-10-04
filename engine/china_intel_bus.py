@@ -339,7 +339,9 @@ def _visit_discovery_snapshot(
     coverage_day = _visit_day(coverage_start)
     last_success_day = _visit_day(health.get("last_success_utc"))
     last_attempt_day = _visit_day(health.get("last_attempt_utc"))
-    reference_day = reference_day or date.today()
+    # Keep the pure helper deterministic when called directly: production's
+    # owner reader passes the real current date explicitly below.
+    reference_day = reference_day or last_attempt_day or last_success_day or coverage_day or date.today()
     source_status = owner_health_status
     if (
         owner_health_status == "ok"
@@ -657,6 +659,10 @@ def _visit_discovery_block() -> dict | None:
             open_scoped_codes=open_scoped_codes,
             has_unscoped_open=has_unscoped,
             kind_labeler=cv.visit_kind_label,
+            reference_day=date.today(),
+            stale_after_days=getattr(
+                cv.ChinaVisitsAdapter, "stale_after_days", _VISIT_DISCOVERY_STALE_AFTER_DAYS
+            ),
         )
     except Exception as e:  # noqa: BLE001
         log.debug("china_intel_bus: visit discovery block failed (%s)", e)
