@@ -33,6 +33,21 @@ may be silently installed in the trainer. Existing populations, source clocks,
 horizons, 15 CPCV paths, 24-point grid, trial count, era registry and BH-FDR family
 remain unchanged by this draft.
 
+## Denominators are not interchangeable
+
+| Quantity | Permitted role in this candidate |
+| --- | --- |
+| Raw event rows | Descriptive coverage only; never support or independence. |
+| Sum of native global-concurrency weights | The frozen bucket/era support quantity; proposed bin support also uses this absolute scale. Weighted rates, ECE and Brier divide weighted mass by this sum. |
+| Kish N = (sum w)^2 / sum(w^2) | Not used for any display gate, calibration gate or inference claim. It cannot replace the frozen support quantity. |
+| Calendar block equivalents floor(T/H) | Proposed temporal-support prerequisite only, not a proven number of independent observations. |
+
+ECE, Brier and replicate rates are invariant to a common weight rescaling; the
+frozen support gates are not. Therefore rescaling native weights to pass a floor
+is forbidden. The proposed block inference assumes the chosen temporal
+resampling model is adequate; neither the table nor the bootstrap proves
+independence, stationarity, or that dependence stops after H sessions.
+
 ## 1. Evaluation population and proposed weighted bins
 
 Fit isotonic regression only on the earlier calibration_fit population. Evaluate
@@ -64,8 +79,13 @@ A reference dynamic program over prefix weights is:
 It takes O(B G^2) time and O(B G) memory plus backpointers. A later implementation
 must preserve the exact optimum and deterministic tie rule when optimizing it;
 a timeout is an insufficient result, never permission for a partial partition.
-Use stable summation and specify the numeric comparison representation in the
-implementation review before accepting executable parity.
+The proposed reference uses finite IEEE-754 binary64 inputs, math.fsum for group
+and prefix masses, and math.fsum of the prior DP objective and new squared term
+for each candidate. Compare resulting objective values exactly, without an
+epsilon tie or rounded display values; equal values use the lexicographic rule.
+A faster implementation must reproduce this reference partition on the frozen
+synthetic boundary cases. Numeric invariance tests must state their rounding
+tolerance separately from the strict gate comparisons.
 
 ## 2. Proposed support gate — NOT RECOMMENDED FOR RATIFICATION AS WRITTEN
 
@@ -132,8 +152,10 @@ Proposed design, also requiring statistics ratification:
 - Keep the accepted score-bin boundaries fixed.
 - Construct the complete NYSE evaluation anchor calendar, including zero-event
   sessions. Circular moving blocks contain H consecutive calendar sessions.
-- Resample whole sessions with every underlying and print on each selected
-  session. Retain original native weights; repeated selection is bootstrap
+- Draw ceil(T/H) block start indices independently and uniformly from 0..T-1.
+  Concatenate their circular H-session sequences, then truncate to exactly T
+  session indices. Resample each selected session with every underlying and
+  print on it. Retain original native weights; repeated selection is bootstrap
   multiplicity, never a change to the reported original effective N.
 - Use 9,999 attempts. Require at least 20 block equivalents floor(T/H)>=20,
   at least 20 distinct anchor sessions in every occupied bin, and 9,500 valid
@@ -151,7 +173,7 @@ Proposed deterministic seed: SHA-256 of UTF-8
 "weighted-reliability-v1\0{bucket}\0{evaluation_manifest_sha256}", first eight
 digest bytes interpreted unsigned big-endian, NumPy Generator(PCG64(seed)).
 A ratified implementation must also freeze library versions and calendar identity
-in the method receipt, and specify how partial final sampled blocks are truncated.
+in the method receipt.
 
 The 63-session block proposal itself needs about 1,260 evaluation sessions, but
 the proposed native-N=200 gate is far more restrictive. This check adds no model
@@ -165,6 +187,11 @@ effective/era/time support, G<2, an infeasible whole-tie partition, or too few v
 bootstrap replicates yield CALIBRATION_INSUFFICIENT with a specific reason.
 Report safe descriptive metrics and actual counts; gate decisions stay null.
 Insufficiency does not kill a construction and cannot produce an artifact.
+For example, a constant predicted probability has G=1 regardless of row count
+or native weight, so its calibration decisions stay null. Three distinct score
+groups with native masses 199, 0.5 and 0.5 satisfy W=200 but cannot form three
+bins of weight20: the proposed partition is insufficient, and merging down to
+two bins is forbidden. An empty input has no bins and no zero-filled ECE.
 
 For a sufficient, separately admitted evaluation, any ECE, Brier or monotonicity
 failure prevents an artifact. Preserve the existing kill/refit/persistence law:
@@ -195,6 +222,6 @@ capability change. No provider refusal was retried or bypassed.
 
 Open ratification decisions are explicit: support/dependence feasibility; approval
 of the changed nominal-bin wording; approval of the new inference/time gates; and
-the two implementation-level deterministic details identified above. Until all
+the proposed deterministic numeric and bootstrap conventions. Until all
 are closed through the existing owner, frozen v1 and the current no-artifact
 behavior remain authoritative.
