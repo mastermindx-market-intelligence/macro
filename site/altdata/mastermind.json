@@ -1,9 +1,9 @@
 {
   "schema": "altdata.mastermind.v1",
-  "as_of": "2026-10-03",
-  "generated_utc": "2026-10-03T23:19:05.371976+00:00",
+  "as_of": "2026-10-04",
+  "generated_utc": "2026-10-04T13:04:38.739013+00:00",
   "contract": "Actionable alt-data axis for the Mastermind bot. Each signal: signal_score 0-100 (composite of weighted convergence + brain conviction + price confirm \u2212 extension), action \u2208 {ACCUMULATE,WATCH,AVOID}, direction \u2208 {long,short,neutral}, source \u2208 {brain,deterministic}. The bot sizes through its OWN risk framework; this is an input, not an order. Brain calls are graded vs SPY (see calibration). An extended name is never ACCUMULATE. trump_linked / affiliations flag actor ties. rolling_over names (off_high\u2264\u221215% AND 20d<0 AND below 50dma) appear in broken_signals only \u2014 crowd attention, NOT entries. entry_tier (T1/T2/T3) = validated confluence buy gate signal.",
-  "regime_read": "Convergence favors federal technology, semiconductors, and government-services exposure, but signal quality is uneven and the desk has no scored history yet. The clearest non-extended alignments are IBM, MU, AMAT, and BAH; PLTR has the strongest breadth but is already extended and should not be chased.",
+  "regime_read": "Convergence favors federal technology spending, semiconductor capacity, and defense/IT services, but several signals include sentiment or affiliation rather than hard capital flows. With no calls yet scored in the track record, conviction remains modest, and extended PLTR is a watch rather than a chase.",
   "brain_present": true,
   "brain_usable": true,
   "article3": {
@@ -11,7 +11,7 @@
     "lift_lb": null,
     "reason": "insufficient-n: n=17 < min_n=25",
     "evidence_asof": "2026-10-03",
-    "evaluated_at": "2026-10-03T20:06:49+00:00"
+    "evaluated_at": "2026-10-04T09:28:55+00:00"
   },
   "is_context_only": true,
   "calibration": {
@@ -56,13 +56,14 @@
         }
       ],
       "n_affiliated_actors": 1,
-      "thesis": "MU combines government grant acceleration, strong insider-buying pressure, a sizable patent cluster, and uniformly bullish observed social sentiment [gov_grant] [insider_mspr] [patent_cluster] [stocktwits_bull]. The disclosed Ro Khanna affiliation adds a policy-network connection [actor:Ro Khanna], while modest relative strength indicates the setup is not extended.",
+      "thesis": "MU combines government grant growth, strong measured insider buying pressure, a substantial patent cluster, and bullish investor sentiment without being extended [gov_grant] [insider_mspr] [patent_cluster] [stocktwits_bull]. The Ro Khanna affiliation adds a disclosed policy-network connection but is qualitative and should not carry the thesis [actor:Ro Khanna].",
       "second_order": [
-        "Domestic semiconductor capacity \u2014 grant activity implies continued policy support for localized fabrication",
-        "Memory-equipment supply chain \u2014 capacity and technology investment would support semiconductor manufacturing tools"
+        "Semiconductor equipment \u2014 sustained memory investment would support fabrication-tool demand",
+        "AI server supply chain \u2014 stronger memory capacity can relieve an important infrastructure bottleneck",
+        "Domestic semiconductor manufacturing \u2014 grant acceleration points to continued capacity localization"
       ],
       "falsifier": {
-        "text": "Government support stalls while memory pricing or end-demand weakens enough to curtail planned capacity investment.",
+        "text": "Government-supported capacity expands while memory demand, pricing, or insider buying pressure materially weakens.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "MU",
@@ -302,13 +303,14 @@
         }
       ],
       "n_affiliated_actors": 2,
-      "thesis": "PLTR has the broadest convergence in the pack: federal contract acceleration, strong insider-buying pressure, unanimous analyst and social bullishness, retail attention, and disclosed political/fund affiliations [gov_contract_accel] [insider_mspr] [analyst_upgrade_cluster] [stocktwits_bull] [retail_buzz] [actor:Marjorie Taylor Greene] [actor:Cathie Wood]. However, its 60-day relative performance is already above the extension threshold, so the evidence supports watching for a reset rather than chasing.",
+      "thesis": "PLTR has the pack's broadest convergence: accelerating government contracts, strong measured insider buying pressure, unanimous analyst and Stocktwits bullishness, retail attention, and disclosed political/fund affiliations [gov_contract_accel] [insider_mspr] [analyst_upgrade_cluster] [stocktwits_bull] [retail_buzz] [actor:Marjorie Taylor Greene] [actor:Cathie Wood]. However, relative performance is already far beyond the extension threshold, so the evidence supports monitoring the demand trend, not adding after the run.",
       "second_order": [
-        "Federal AI implementation \u2014 contract momentum implies downstream demand for integration, cloud, and secure-data infrastructure",
-        "Government analytics ecosystem \u2014 wider adoption can benefit implementation partners and specialized data-service providers"
+        "BAH \u2014 federal analytics adoption can create implementation and integration demand",
+        "Federal data infrastructure \u2014 contract acceleration implies continued spending on data integration",
+        "Government AI software \u2014 PLTR demand may signal broader agency adoption beyond one vendor"
       ],
       "falsifier": {
-        "text": "Federal contract acceleration fades and insider-buying pressure turns neutral or negative before the shares complete a meaningful relative-strength reset.",
+        "text": "Government contract momentum slows while insider pressure or customer-demand indicators weaken after the extended price move.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "PLTR",
@@ -1167,13 +1169,14 @@
       "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
-      "thesis": "BAH presents a compact but coherent government-services setup: federal contract acceleration, a disclosed Trump-side buy signal, and a special-situation channel are aligned [gov_contract_accel] [trump]. Recent earnings surprise data adds context, though it is not an independent forward signal, and only three channels keep conviction low.",
+      "thesis": "BAH offers a focused federal-services read: government-contract activity is accelerating, the Trump-linked signal is on the buy side, and the special-situation channel adds an independent catalyst [gov_contract_accel] [trump] [special_situation]. The name is not extended, but only three channels align and earnings in 19 days limit confidence.",
       "second_order": [
-        "Federal technology contractors \u2014 accelerating awards suggest broader agency spending rather than a purely company-specific impulse",
-        "Fraud and enforcement analytics \u2014 pending federal fraud-enforcement measures could increase demand for data and implementation services"
+        "PLTR \u2014 increased federal analytics spending could support adjacent software demand",
+        "Federal cybersecurity services \u2014 agency procurement acceleration can lift implementation and security work",
+        "Government systems integrators \u2014 broader contract momentum may extend beyond the prime beneficiary"
       ],
       "falsifier": {
-        "text": "Contract awards normalize before the October 23 earnings report and management does not raise its funded-backlog or demand outlook.",
+        "text": "Federal contract acceleration reverses or upcoming results show that awards are not converting into durable revenue growth.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "BAH",
@@ -1657,13 +1660,14 @@
       "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
-      "thesis": "IBM has a four-channel alignment spanning sharply accelerating federal awards, insider-buying pressure, patent activity, and developer momentum [gov_contract_accel] [insider_mspr] [patent_cluster] [github_momentum]. Its substantial relative underperformance leaves room for rerating, although earnings in 18 days could determine whether the contract signal reaches reported fundamentals.",
+      "thesis": "IBM has the cleanest contrarian alignment: sharply accelerating federal-contract activity coincides with maximum measured insider buying pressure, a large patent cluster, and open-source/model-download momentum [gov_contract_accel] [insider_mspr] [patent_cluster] [github_momentum]. Its substantial recent relative underperformance leaves room for a re-rating, although earnings in 17 days create event risk.",
       "second_order": [
-        "Federal IT modernization \u2014 accelerating awards imply broader demand for implementation, hybrid-cloud, and cybersecurity services",
-        "Enterprise AI infrastructure \u2014 developer adoption and patent activity point to supporting demand beyond model vendors"
+        "BAH \u2014 federal IT and analytics spending could support adjacent government-services demand",
+        "Federal IT modernization \u2014 IBM's contract acceleration implies broader agency technology procurement",
+        "Enterprise AI infrastructure \u2014 model-download and developer momentum suggest downstream deployment demand"
       ],
       "falsifier": {
-        "text": "Federal award momentum reverses and the October 21 earnings report shows no corresponding improvement in enterprise demand or outlook.",
+        "text": "Federal contract activity normalizes without corresponding improvement in enterprise demand or post-earnings relative performance.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "IBM",

@@ -4265,6 +4265,24 @@ def main(argv: list[str] | None = None) -> int:
     # and an option.
     p_ctx.set_defaults(func=cmd_compile_context, _parser=p_ctx)
 
+    # W4 is authored metadata assistance. The command owns no execution state;
+    # keep the adapter lazy so existing read commands retain their import surface.
+    def ship_command(args):
+        from scripts.agentos_ship_capture import command
+        return command(args)
+
+    for name in ("ship-capture", "ship-report", "claim", "release"):
+        p_ship = sub.add_parser(name, help="report-only ship metadata / advisory claim")
+        p_ship.add_argument("--repo", help="repository root (default: this source checkout)")
+        if name in {"claim", "release"}:
+            p_ship.add_argument("workstream", help="exact existing workstream key")
+        else:
+            p_ship.add_argument("--hook", action="store_true", help="consume a native hook payload on stdin")
+        if name == "ship-capture":
+            p_ship.add_argument("--body-file", type=Path, help="exact submitted canonical PR body")
+            p_ship.add_argument("--pr", type=int, help="already-created PR number")
+        p_ship.set_defaults(func=ship_command)
+
     args = parser.parse_args(argv)
     return args.func(args)
 

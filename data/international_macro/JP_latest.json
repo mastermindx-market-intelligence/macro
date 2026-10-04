@@ -8,7 +8,7 @@
   "scope_en": "Japan national economy; Nikkei 225 is market context, not the macro universe.",
   "scope_zh": "日本全国经济；日经225仅作市场背景，并非宏观统计范围。",
   "asof": "2026-10-02",
-  "built": "2026-10-03 19:44 UTC",
+  "built": "2026-10-04 09:06 UTC",
   "regime": {
     "quad": "Q2",
     "name": "Reflation",
@@ -549,7 +549,7 @@
     {
       "metric": "cpi_yoy",
       "asof": "2021-06",
-      "age_days": 1950,
+      "age_days": 1951,
       "state": "stale",
       "label_en": "Inflation",
       "label_zh": "通胀"
@@ -557,7 +557,7 @@
     {
       "metric": "gdp",
       "asof": "2026-04",
-      "age_days": 185,
+      "age_days": 186,
       "state": "stale",
       "label_en": "Growth",
       "label_zh": "增长"
@@ -565,7 +565,7 @@
     {
       "metric": "unemployment",
       "asof": "2026-07",
-      "age_days": 94,
+      "age_days": 95,
       "state": "stale",
       "label_en": "Labour",
       "label_zh": "就业"
@@ -573,7 +573,7 @@
     {
       "metric": "yield_10y",
       "asof": "2026-08",
-      "age_days": 63,
+      "age_days": 64,
       "state": "fresh",
       "label_en": "Rates",
       "label_zh": "利率"
