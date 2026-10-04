@@ -268,6 +268,25 @@ def _manifest_ok_ticker_cik(manifest: dict) -> dict[str, int]:
     return out
 
 
+def _manifest_alias_ticker_cik(manifest: dict) -> dict[str, int]:
+    """Prior alias receipts (ticker:KEY) — durable after store purge (D-B)."""
+    out: dict[str, int] = {}
+    for k, v in manifest.items():
+        if not str(k).startswith("ticker:"):
+            continue
+        if not isinstance(v, dict) or v.get("status") != "alias":
+            continue
+        t = v.get("ticker")
+        cik_val = v.get("cik")
+        if not t or cik_val is None:
+            continue
+        try:
+            out[str(t).upper()] = int(cik_val)
+        except (ValueError, TypeError):
+            pass
+    return out
+
+
 def _store_single_cik_map(store: pd.DataFrame) -> dict[str, int]:
     if store.empty or "ticker" not in store.columns or "cik" not in store.columns:
         return {}
@@ -308,6 +327,7 @@ def resolve_universe(
 
     sec_map = build_cik_map(resolve_order)
     manifest_map = _manifest_ok_ticker_cik(manifest)
+    manifest_alias_map = _manifest_alias_ticker_cik(manifest)
     store_map = _store_single_cik_map(store)
     dead = dead_name if dead_name is not None else {}
 
@@ -318,6 +338,9 @@ def resolve_universe(
             continue
         if u in manifest_map:
             resolved[u] = (manifest_map[u], "manifest")
+            continue
+        if u in manifest_alias_map:
+            resolved[u] = (manifest_alias_map[u], "manifest")
             continue
         if u in store_map:
             resolved[u] = (store_map[u], "store")
@@ -332,7 +355,13 @@ def resolve_universe(
     unresolved = sorted(universe_set - set(resolved))
 
     by_cik: dict[int, list[tuple[str, str]]] = {}
-    for u in universe_upper:
+    alias_scan: list[str] = list(universe_upper)
+    if explicit:
+        for t in explicit:
+            u = str(t).upper()
+            if u not in universe_set and u in resolved:
+                alias_scan.append(u)
+    for u in alias_scan:
         if u not in resolved:
             continue
         cik, src = resolved[u]
@@ -726,6 +755,10 @@ def run_backfill(
     existing_df = load_existing()
     dead_name = _load_dead_name_cik()
     only = {str(t).upper() for t in tickers} if tickers else None
+    universe_set = set(universe_upper)
+    explicit_extra: list[str] = []
+    if only is not None:
+        explicit_extra = sorted(t for t in only if t not in universe_set)
 
     resolved, aliases, unresolved = resolve_universe(
         universe_tickers,
@@ -735,9 +768,15 @@ def run_backfill(
         explicit=only,
     )
 
+    explicit_extra_set = set(explicit_extra)
+    explicit_unresolved = sorted(t for t in explicit_extra if t not in resolved)
+
     labels: dict[int, str] = {}
     cik_sources: dict[int, str] = {}
-    grouped = _group_resolved_by_cik(resolved, universe_upper)
+    group_tickers = list(universe_upper) + [
+        t for t in explicit_extra if t in resolved
+    ]
+    grouped = _group_resolved_by_cik(resolved, group_tickers)
     for cik, members in grouped.items():
         labels[cik] = members[0]
         _, src = resolved[members[0]]
@@ -750,6 +789,13 @@ def run_backfill(
         manifest[f"ticker:{u}"] = {
             "ticker": u,
             "status": "skipped_no_cik",
+            "ts": ts_now,
+        }
+    for u in explicit_unresolved:
+        manifest[f"ticker:{u}"] = {
+            "ticker": u,
+            "status": "skipped_no_cik",
+            "explicit": True,
             "ts": ts_now,
         }
     for alias_t, label in aliases.items():
@@ -780,8 +826,16 @@ def run_backfill(
     n_shards_missing_total = 0
     force_this_base = force or only is not None
 
+    def _cik_named_in_only(cik: int, label: str) -> bool:
+        if only is None:
+            return True
+        if label in only:
+            return True
+        members = grouped.get(cik, [label])
+        return any(m in only for m in members)
+
     for cik, label in sorted(labels.items(), key=lambda x: x[1]):
-        if only is not None and label not in only:
+        if only is not None and not _cik_named_in_only(cik, label):
             n_skipped += 1
             continue
         cik_key = str(cik)
@@ -834,7 +888,7 @@ def run_backfill(
         if n_shards_missing == 0:
             replaced_ciks.add(int(cik))
 
-        manifest[cik_key] = {
+        cik_entry: dict = {
             "ticker": label,
             "status": "ok",
             "n_filings": n_rows,
@@ -842,7 +896,14 @@ def run_backfill(
             "cik_source": cik_sources.get(cik, ""),
             "ts": ts_now,
         }
-        n_fetched += 1
+        if label in explicit_extra_set:
+            cik_entry["explicit"] = True
+        manifest[cik_key] = cik_entry
+        counts_universe_bucket = not (
+            label in explicit_extra_set and label not in universe_set
+        )
+        if counts_universe_bucket:
+            n_fetched += 1
 
         if n_fetched % 50 == 0:
             log.info(
@@ -863,11 +924,18 @@ def run_backfill(
             f"(fetched={n_fetched} skipped={n_skipped} errors={n_error} "
             f"no_submissions={n_no_submissions} unresolved={n_no_cik} aliases={n_alias})"
         )
+    n_explicit_outside = len(explicit_extra)
+    done_extra = (
+        f", +{n_explicit_outside} explicit outside universe"
+        if n_explicit_outside
+        else ""
+    )
     log.info(
         "edgar_earnings_8k: done — %d fetched, %d skipped, %d errors, "
-        "%d unresolved (no CIK), %d aliases of %d universe tickers; "
+        "%d unresolved (no CIK), %d aliases of %d universe tickers%s; "
         "%d shards missing; store=%d rows, %d tickers",
         n_fetched, n_skipped, n_error, n_no_cik, n_alias, n_universe,
+        done_extra,
         n_shards_missing_total,
         len(final_df), final_df["ticker"].nunique() if not final_df.empty else 0,
     )
@@ -895,6 +963,8 @@ def run_backfill(
     cov["unresolved_tickers"] = unresolved
     cov["n_alias"] = n_alias
     cov["aliases"] = aliases
+    cov["n_explicit_extra"] = n_explicit_outside
+    cov["explicit_extra"] = explicit_extra
     cov_path = _coverage_json_path()
     cov_path.parent.mkdir(parents=True, exist_ok=True)
     cov_path.write_text(json.dumps(cov, indent=2))
