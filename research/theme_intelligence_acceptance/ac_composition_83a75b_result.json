@@ -1,0 +1,39 @@
+{
+  "authority": "UNCHANGED_ALL_FALSE",
+  "ci_ownership": {
+    "foresight_cascade_in_scope": true,
+    "lane_c_test_files_present": true,
+    "subsector_suites_registered_in_existing_unrun_subsector_themes": true,
+    "theme_state_receipt_registered_in_existing_thematic_owner": true
+  },
+  "composition_verdict": "PASS",
+  "lane_a": {
+    "head": "c98d079816dfe3dc3ae3d0192ce76a1bbefe43f9",
+    "pr": 7526,
+    "tree": "cb643fd18eaa32b80ef869bd2cd02a6e4d1a92c4"
+  },
+  "lane_c": {
+    "head": "fdd731f18a7634c57cdc83fc80cbe13811ec745e",
+    "pr": 7455,
+    "tree": "364800eb95db9c33255a41acaa76fef10b2564e9"
+  },
+  "lane_f_operation": "theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001",
+  "merge_tree": "83a75b67320c00a73f16b7b4f6e3f57be4882025",
+  "merge_tree_status": "CONFLICT_FREE",
+  "proof_substrate": "READ_ONLY_EXTRACTED_TREE_NO_COMMIT_NO_REF",
+  "release_effect": "NONE",
+  "remaining_gates": [
+    "Lane B immutable return and acceptance",
+    "Lane E immutable return and acceptance",
+    "lawful integration carrier/merge",
+    "publication and deployed-browser proof",
+    "prospective outcomes maturity"
+  ],
+  "schema": "theme_intelligence.a_c_composition_proof.v1",
+  "tests": {
+    "lane_a_theme_semantics": "125 passed, 1 deselected",
+    "lane_c_subsector_family": "106 passed",
+    "lane_c_thematic_state_receipt_builder": "55 passed",
+    "py_compile": "PASS"
+  }
+}
