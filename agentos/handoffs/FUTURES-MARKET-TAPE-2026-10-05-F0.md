@@ -19,12 +19,21 @@ changed:
       resolution, capacity fencing, checksums, atomic manifests and read-only audit.
   - path: scripts/futures_tape_ingest.py
     what: >
-      Added storage/probe/backfill/normalize/derive/audit CLI for the first LSE ES.F lane.
-      LSE source effects require LSE_API_KEY and the official SDK; no credential is created.
+      Added storage/probe/plan/bounded-backfill/normalize/derive/audit CLI for the first
+      LSE ES.F lane. Raw receipts retain exact request windows; at/over-1,000,000-row
+      exports fail closed; split raw windows are unioned before daily normalization;
+      daily outputs remain PROVISIONAL until final request intervals cover the full UTC
+      day without gaps. LSE source effects require LSE_API_KEY and the official SDK;
+      no credential is created.
   - path: scripts/probe_massive_futures.py
     what: >
       Added a read-only ES Futures entitlement probe reusing the existing Massive probe's
       RestProber/key/scrubbing owner; it writes no competing capability manifest.
+  - path: .github/workflows/futures-tape-probe.yml
+    what: >
+      Added a manual read-only self-hosted diagnostic lane for external-volume capacity,
+      the existing Massive Futures entitlement, and an optional LSE ES.F catalog probe
+      when LSE_API_KEY is configured out of band. It has no data-write or secret-creation path.
   - path: config/dataset_registry.yml
     what: >
       Registered raw LSE tape, normalized LSE ticks and derived bars as PROPOSED Data OS
@@ -99,9 +108,10 @@ unresolved:
   - ES.F vendor roll/adjustment semantics remain unproven.
   - No raw tape has been acquired; registry entries intentionally remain PROPOSED.
 next_actions:
-  - Re-run/consume PR #8451 exact-head CI after this Agent OS repair.
-  - If green, mark the PR ready and merge under the normal release gates.
-  - Then on the existing secret-bearing ops host run storage, LSE catalog and Massive Futures probes.
+  - Consume PR #8451 exact-head CI and the requested MastermindX1 independent review.
+  - If all release gates pass, merge under the normal release path.
+  - Dispatch the merged read-only futures-tape-probe workflow on protected main to measure
+    storage and the existing Massive Futures entitlement; LSE remains an honest skip until its key exists.
   - On accepted receipts, start one bounded ES.F backfill window and audit it before full-history work.
 do_not_redo:
   - Do not create another Futures OS/Data OS/scheduler/entitlement ledger.
