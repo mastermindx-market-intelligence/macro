@@ -2,7 +2,7 @@
 workstream: WS:FUTURES-MARKET-TAPE-PLANE
 session: sol/futures-tape-plane-20261005
 model: sol
-ended_because: checkpointed_continuation
+ended_because: ci_handoff
 mission: >
   Initiate and carry the ES-first futures tape plane end to end: ownership, storage,
   source qualification, ingest/normalize/derive/audit implementation, and a perpetual
