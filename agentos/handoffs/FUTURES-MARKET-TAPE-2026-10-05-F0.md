@@ -31,7 +31,7 @@ changed:
       RestProber/key/scrubbing owner; it writes no competing capability manifest.
   - path: .github/workflows/futures-tape-probe.yml
     what: >
-      Added a manual read-only self-hosted diagnostic lane for external-volume capacity,
+      Added a read-only self-hosted diagnostic lane, automatically path-triggered once on protected-main merge, for external-volume capacity,
       the existing Massive Futures entitlement, and an optional LSE ES.F catalog probe
       when LSE_API_KEY is configured out of band. It has no data-write or secret-creation path.
   - path: config/dataset_registry.yml
@@ -110,7 +110,7 @@ unresolved:
 next_actions:
   - Consume PR #8451 exact-head CI and the requested MastermindX1 independent review.
   - If all release gates pass, merge under the normal release path.
-  - Dispatch the merged read-only futures-tape-probe workflow on protected main to measure
+  - Consume the automatically triggered futures-tape-probe run on protected main to measure
     storage and the existing Massive Futures entitlement; LSE remains an honest skip until its key exists.
   - On accepted receipts, start one bounded ES.F backfill window and audit it before full-history work.
 do_not_redo:
