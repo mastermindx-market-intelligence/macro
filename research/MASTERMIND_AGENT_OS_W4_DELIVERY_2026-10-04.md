@@ -70,3 +70,15 @@ The provider protocol was checked against https://code.claude.com/docs/en/hooks 
 bytes. This wave's acceptance still requires exact committed review, hosted checks,
 merge, actual capture publication and a cold-session recovery receipt. Those are recorded
 in the canonical workstream/handoff when they occur; this document does not predeclare them.
+
+
+## Attended filesystem latency correction
+
+The real explicit CLI observation exposed the native three-second Git budget on a slow
+external SSD. A discriminating local Git shim delayed the diff by 3.2 seconds and the
+pre-repair explicit capture returned CAPTURE_UNRECORDED without editing a record.
+The bounded correction permits at most 60 seconds for branch/diff reads only in attended
+non-hook commands. Native hooks retain the three-second Git default and five-second
+helper boundary. Missing or timed-out evidence still produces an advisory no-op; no
+fallback observation or identity is invented. A PR description with unheaded prose was
+also correctly refused by the canonical parser and repaired as author input.

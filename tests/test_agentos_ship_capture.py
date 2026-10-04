@@ -128,7 +128,8 @@ def test_successful_creation_is_bound_to_local_branch_repo_and_submitted_body(tm
     from scripts import agentos_ship_capture as s
     p = record(tmp_path)
     (tmp_path / 'pr-body.md').write_text(BODY)
-    def git(root, *args):
+    def git(root, *args, timeout=3):
+        assert timeout == 3
         if args == ('branch', '--show-current'):
             return BRANCH
         if args == ('remote', 'get-url', 'origin'):
@@ -224,7 +225,7 @@ def test_existing_null_pr_field_is_not_duplicated(tmp_path, value):
 
 def test_path_collection_retains_both_rename_owners(tmp_path, monkeypatch):
     from scripts import agentos_ship_capture as s
-    monkeypatch.setattr(s, '_git', lambda *a: 'R100\0old/source.py\0lib/alpha/new.py\0M\0lib/alpha/x.py\0')
+    monkeypatch.setattr(s, '_git', lambda *a, **kw: 'R100\0old/source.py\0lib/alpha/new.py\0M\0lib/alpha/x.py\0')
     assert s._paths(tmp_path) == ['old/source.py', 'lib/alpha/new.py', 'lib/alpha/x.py']
 
 
@@ -297,3 +298,28 @@ def test_wave_identity_uses_frozen_canonical_length_limit():
     from scripts import agentos_ship_capture as s
     with pytest.raises(ValueError, match='wave'):
         s._header(BODY.replace('Wave: W1', 'Wave: ' + 'W' * 65))
+
+
+def test_explicit_cli_can_capture_after_slow_local_git_observation(tmp_path, monkeypatch, capsys):
+    """A foreground operation may wait for disk; native hooks retain their short deadline."""
+    from scripts import agentos_ship_capture as s
+    import argparse, os, shutil, sys
+    record(tmp_path)
+    (tmp_path / 'config').mkdir()
+    shutil.copyfile(s.aos._ROOT / 'config/pr_linkage_rules.v1.json', tmp_path / 'config/pr_linkage_rules.v1.json')
+    body = tmp_path / 'body.md'
+    body.write_text(BODY)
+    binary = tmp_path / 'bin'
+    binary.mkdir()
+    git = binary / 'git'
+    git.write_text('#!' + sys.executable + '\nimport sys,time\n' +
+                   'if sys.argv[1] == "branch": print(' + repr(BRANCH) + ')\n' +
+                   'elif sys.argv[1] == "diff":\n time.sleep(3.2)\n sys.stdout.write("M\\0lib/alpha/x.py\\0")\n')
+    git.chmod(0o755)
+    monkeypatch.setenv('PATH', str(binary) + os.pathsep + os.environ['PATH'])
+    monkeypatch.setattr(s.aos, '_ROOT', tmp_path)
+    monkeypatch.setattr(s, '_now', lambda now: NOW)
+    args = argparse.Namespace(repo=None, hook=False, command='ship-capture', body_file=body, pr=123)
+    assert s.command(args) == 0
+    assert json.loads(capsys.readouterr().out)['code'] == 'CAPTURE_UNCOMMITTED'
+    assert frontmatter(tmp_path / 'agentos/workstreams/WS-ALPHA.md')['waves'][0]['pr'] == 123

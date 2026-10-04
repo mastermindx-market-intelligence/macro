@@ -254,8 +254,8 @@ def edit_claim(root, *, workstream, branch, release=False, now=None):
         return _report('CLAIM_UNRECORDED', error=type(exc).__name__)
 
 
-def _git(root, *args):
-    result = subprocess.run(['git', *args], cwd=root, capture_output=True, text=True, timeout=3, check=True)
+def _git(root, *args, timeout=3):
+    result = subprocess.run(['git', *args], cwd=root, capture_output=True, text=True, timeout=timeout, check=True)
     return result.stdout.rstrip('\n')
 
 
@@ -302,8 +302,8 @@ def _origin(root):
     return match.group(1)
 
 
-def _paths(root):
-    raw = _git(root, 'diff', '--name-status', '-z', '--find-renames', 'refs/remotes/origin/main...HEAD')
+def _paths(root, *, timeout=3):
+    raw = _git(root, 'diff', '--name-status', '-z', '--find-renames', 'refs/remotes/origin/main...HEAD', timeout=timeout)
     if len(raw) > 1048576:
         raise ValueError('oversized changed path observation')
     fields = raw.split('\0')
@@ -423,12 +423,13 @@ def command(args):
             else:
                 result = hook_event(root, payload)
         else:
-            branch = _git(root, 'branch', '--show-current')
+            # Attended commands can wait for local storage; native hooks keep 3s reads.
+            branch = _git(root, 'branch', '--show-current', timeout=60)
             if args.command == 'ship-capture':
                 if args.body_file.stat().st_size > 262144:
                     raise ValueError('oversized body')
                 result = capture_pr(root, branch=branch, body=args.body_file.read_text(encoding='utf-8'),
-                                    pr=args.pr, paths=_paths(root))
+                                    pr=args.pr, paths=_paths(root, timeout=60))
             elif args.command == 'ship-report':
                 result = handoff_reminder(root, branch=branch)
             else:
