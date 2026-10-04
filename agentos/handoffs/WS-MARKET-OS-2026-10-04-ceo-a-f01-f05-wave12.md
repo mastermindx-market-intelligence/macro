@@ -30,6 +30,8 @@ changed:
     what: "MO-PAID-055 + MO-PAID-084 NOT_BUILT -> BUILT_NOT_PROVEN and MO-PAID-052 NOT_BUILT -> PARTIAL with cells rewritten; MO-DELTA-039 / MO-PAID-081 / MO-PAID-082 notes widened (D88). MO-PAID-056 + MO-DELTA-038 capability_state_c2 NOT_BUILT -> BUILT_NOT_PROVEN with producer/consumer/missing/next cells rewritten (D87; outside-union rows, digest re-pinned). MO-PAID-059 adjudication_notes (+cadence receipt for the 018/059 pair); MO-DELTA-002 missing_contract_or_proof (cadence residual closed) + adjudication_notes; MO-PAID-054 next_bounded_child (+#7100 in flight) + adjudication_notes; MO-DELTA-021 state_delta + next_bounded_child + adjudication_notes (render-lane reason and #7163/#7215 citations corrected). All four are union rows → OUTSIDE_UNION_SHA256 unchanged; no capability_state_c2 moved."
   - path: "tests/test_mo_b_ledger_reconciliation_2026_09_18.py"
     what: "OUTSIDE_UNION_SHA256 re-pinned for D87 (prior digest kept in the comment); D86 assertions on 059/002/054/021; D87 assertions on 056/038; re-pinned again + D88 assertions on 055/084/052/039"
+  - path: "tests/test_b_rec3_wave_boundary_records.py"
+    what: "B-REC-3 wave-boundary fence re-pinned for MO-PAID-084 (byte line + state word BUILT_NOT_PROVEN) per the 2026-09-19 085/088 precedent — the fence went red on the D88 move (ci-pack-2, run 37191244316)"
   - path: "agentos/handoffs/WS-MARKET-OS-2026-10-04-ceo-a-f01-f05-wave12.md"
     what: "this handoff"
 verified:
