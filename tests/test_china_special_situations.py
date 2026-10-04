@@ -44,7 +44,7 @@ def test_scan_all_missing_still_returns_valid_dict(tmp_path, monkeypatch):
     assert "by_ticker" in snap
     assert isinstance(snap["by_ticker"], dict)
     # blocks may be None or empty-state dicts — none should be missing entirely
-    for key in ("unlocks", "inquiry", "preannounce", "buyback", "pledge", "st", "block_trades"):
+    for key in ("unlocks", "inquiry", "contracts", "preannounce", "buyback", "pledge", "st", "block_trades"):
         assert key in snap
 
 
@@ -153,6 +153,139 @@ def test_scan_happy_path_inquiry(tmp_path, monkeypatch):
     assert inq["letters"][0]["has_reply"] is True
     # letter dict must NOT have a 'kind' key (register_claims must not filter on it)
     assert "kind" not in inq["letters"][0]
+
+
+
+# ── CIE-10 contract/order metadata truth ─────────────────────────────────────
+
+def test_contract_title_state_precedence_is_title_only():
+    from engine import china_special_situations as css
+
+    assert css._contract_title_state(
+        "关于重大合同终止暨中标项目取消的公告"
+    )["state"] == "cancelled_or_terminated"
+    assert css._contract_title_state(
+        "关于重大合同履行进展暨签订补充协议的公告"
+    )["state"] == "amendment_or_progress"
+    assert css._contract_title_state(
+        "项目中标候选人公示"
+    )["state"] == "award_or_candidate_notice"
+    assert css._contract_title_state(
+        "关于签订重大合同的公告"
+    )["state"] == "contract_announcement"
+
+
+def test_contract_order_block_preserves_source_clocks_and_unknown_economics(
+    tmp_path, monkeypatch
+):
+    data_dir = tmp_path / "data"
+    monkeypatch.setattr("lib.config.data_dir", lambda: data_dir)
+    monkeypatch.setattr(
+        "lib.config.load",
+        lambda: {"storage": {"site_dir": str(tmp_path / "site")}},
+    )
+
+    now = pd.Timestamp.now(tz="UTC")
+    day = now.strftime("%Y-%m-%d")
+    collected = now.isoformat()
+    p = data_dir / "china_filings" / "filings.parquet"
+    _make_parquet(p, [
+        {
+            "announcementId": "C1", "sec_code": "600001", "sec_name": "测试公司A",
+            "title": "关于签订重大合同的公告",
+            "publish_ts": f"{day}T09:00:00+08:00",
+            "exchange": "sse", "category": "major_contract", "kind": None,
+            "announcement_type_raw": "contract",
+            "adjunct_url": "finalpage/2026-10-03/C1.PDF",
+            "_collected_at": collected,
+        },
+        {
+            "announcementId": "C2", "sec_code": "000002", "sec_name": "测试公司B",
+            "title": "关于中标项目终止的公告",
+            "publish_ts": f"{day}T10:00:00+08:00",
+            "exchange": "szse", "category": "major_contract", "kind": None,
+            "announcement_type_raw": "award",
+            "adjunct_url": "finalpage/2026-10-03/C2.PDF",
+            "_collected_at": collected,
+        },
+        {
+            "announcementId": "I1", "sec_code": "000003", "sec_name": "测试公司C",
+            "title": "交易所问询函",
+            "publish_ts": f"{day}T11:00:00+08:00",
+            "exchange": "szse", "category": "inquiry_letter", "kind": "letter",
+            "announcement_type_raw": "inquiry",
+            "adjunct_url": "finalpage/2026-10-03/I1.PDF",
+            "_collected_at": collected,
+        },
+    ])
+
+    from engine import china_special_situations as css
+    block = css._contract_order_block(window_days=90)
+
+    assert block["status"] == "ok"
+    assert block["n_total"] == 2
+    assert block["n_shown"] == 2
+    assert block["by_state"]["contract_announcement"] == 1
+    assert block["by_state"]["cancelled_or_terminated"] == 1
+
+    by_id = {e["announcement_id"]: e for e in block["events"]}
+    assert set(by_id) == {"C1", "C2"}
+    assert by_id["C1"]["published_at"] == f"{day}T09:00:00+08:00"
+    assert by_id["C1"]["first_collected_at"] == collected
+    assert by_id["C1"]["source_url"] == "finalpage/2026-10-03/C1.PDF"
+    assert by_id["C2"]["state"] == "cancelled_or_terminated"
+
+    for event in by_id.values():
+        assert event["project_key"] is None
+        assert event["thread_identity_state"] == "unresolved_without_project_key"
+        assert event["materiality_state"] == "unknown_without_denominator"
+        assert event["economic_realization_state"] == \
+            "not_inferred_from_filing_metadata"
+
+
+def test_contract_context_never_becomes_special_rank_flag(tmp_path, monkeypatch):
+    data_dir = tmp_path / "data"
+    monkeypatch.setattr("lib.config.data_dir", lambda: data_dir)
+    monkeypatch.setattr(
+        "lib.config.load",
+        lambda: {"storage": {"site_dir": str(tmp_path / "site")}},
+    )
+
+    now = pd.Timestamp.now(tz="UTC")
+    day = now.strftime("%Y-%m-%d")
+    p = data_dir / "china_filings" / "filings.parquet"
+    _make_parquet(p, [{
+        "announcementId": "C3", "sec_code": "600519", "sec_name": "贵州茅台",
+        "title": "关于重大合同履行进展的公告",
+        "publish_ts": f"{day}T09:00:00+08:00",
+        "exchange": "sse", "category": "major_contract", "kind": None,
+        "announcement_type_raw": "contract",
+        "adjunct_url": "finalpage/2026-10-03/C3.PDF",
+        "_collected_at": now.isoformat(),
+    }])
+
+    from engine import china_special_situations as css
+    snap = css.scan()
+    assert snap["contracts"]["n_total"] == 1
+    assert snap["contracts"]["events"][0]["state"] == "amendment_or_progress"
+    # CIE-10 metadata is context only and is deliberately absent from the
+    # command apparatus' by_ticker special flags.
+    assert "600519" not in (snap.get("by_ticker") or {})
+
+
+def test_contract_order_unreadable_store_fails_closed(tmp_path, monkeypatch):
+    data_dir = tmp_path / "data"
+    monkeypatch.setattr("lib.config.data_dir", lambda: data_dir)
+    p = data_dir / "china_filings" / "filings.parquet"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_bytes(b"not-a-parquet")
+
+    from engine import china_special_situations as css
+    block = css._contract_order_block()
+    assert block["status"] == "source_failure"
+    assert block["events"] == []
+    assert block["n_total"] == 0
+    assert "unreadable" in block["coverage_note"]
 
 
 def test_scan_st_history_note_when_one_date(tmp_path, monkeypatch):
