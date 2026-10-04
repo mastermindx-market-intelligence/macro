@@ -15061,3 +15061,28 @@ jobs:
         run: pip install pytest
       - name: recurring briefs producer — slot, body, classify, idempotency (F11 B-F11-7b)
         run: python -m pytest tests/test_recurring_briefs.py -q
+
+  # Expiry-Greek source-truth pack. This intentionally wires the formerly
+  # grandfathered Options Hub suite together with the additive expiry-support
+  # regression so missingness/zero semantics cannot land as a dark test.
+  options-hub-expiry-support:
+    if: ${{ false }}
+    gate: code
+    paths:
+      - "engine/options_hub.py"
+      - "engine/exposure_math.py"
+      - "engine/gex_engine.py"
+      - "engine/greeks.py"
+      - "tests/test_options_hub.py"
+      - "tests/test_options_expiry_support.py"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy scipy pyyaml
+      - name: Options Hub expiry Greek projection and missingness contract
+        run: python -m pytest tests/test_options_hub.py tests/test_options_expiry_support.py -q -rs
