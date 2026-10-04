@@ -297,34 +297,34 @@ artifacts:
   - "MERGED #7395 / 7476142cdcb654b521c7d77eb8f2ef1657148bbd: research/options_estate/OPTIONS_ALPHA_SIGNAL_SCIENCE_PREREG_V1.md + machine policy"
   - "MERGED #7398 / 60d7551e52c8c7345e1b70edd2a57b9544f88286: research/options_estate/OPTIONS_SIGNAL_CAMPAIGN_OUTCOME_CORRECTION_PREREG_V1.md + machine policy. Quarantine preregistration only. The runtime effective view and natural integrity remain owed."
   - agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-03-product-delivery.md
+  - agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-04-installed-source.md
 next_action: >
-  The latest active root checkpoint is
-  agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-03-product-delivery.md,
-  updated through 2026-10-04T01:14Z. Terminal703 is deployed at
-  c298fa1b831509dd3dcb7553aa34c03d69dd0084, with clean VPS identity and local/public
-  HTTP200; Fable owns independent EN/ZH desktop/tablet/mobile live acceptance.
-  B1 runtime source is installed at201064395fff8e16e958619bf1343eea6d7aca9c after
-  reviewed8370 and publisher-count8374 merges. Existing job schedules and input
-  authorities remain; independent installed readback passed and natural cycles are owed.
-  Preserve the separate Hub ThetaData external-store EINTR; B1 does not fix it.
-  FS5 source8360 is merged. Methods8377 merged4176875142889a3c650f041f067d1cb954fedf7e
-  after299 tests, independent review and all required hosted CI. Calibration
-  stays unavailable, no artifact/study/promotion, and no numerical per-bin law is invented.
-  Fable merged7306 as98c67b7d2c5b89670b5e915c34dbc17d899e6df7 and owns8201
-  current-main clock release at481c059818de0e48895c5f38c29ca99c2bf44891. Independent
-  native source review passed; the attempted GitHub self-approval was rejected and
-  was not bypassed. Preserve ordinary review/CI/merge gates and723 custody.
-  Measured Sep17/18 evidence stays accepted; episode8346 is installed with natural
-  RTH proof owed, campaign8350 is source only, enrichment7417 has a verified natural
-  derivative publication without fresh-market/candidate/calibration/predictive claims.
-  Candidate8358 stays inactive until four preregistered preconditions and an activation
-  receipt exist. Exact-option8318 is a merged fixture evaluator; executable NBBO
-  lifecycle remains unproven. Remaining independent receipts are two normal post-repair
-  engine survivals7265, publisher7263/broad-writer7193 durability, campaign integrity,
-  runtime effective quarantine7398, AD1 admission/capacity, and scientific eligibility.
-  Chain Heat is installed awaiting natural publication. M1 storage-guard deletion
-  effect remains unknown and separate from runtime installation and R2 retention.
-  This is an active checkpoint, not mission completion or company reprioritization.
+  Latest installed-source checkpoint:
+  agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-04-installed-source.md.
+  Terminal703 is deployed atc298fa1b831509dd3dcb7553aa34c03d69dd0084 and Fable's
+  independent18-case EN/ZH responsive acceptance passed. Draft723 remains with
+  Fable for current-base integration and actual supported-root producer/API/cache proof.
+  Macro8201 merged565f2d70 and matrix spot repair8383 merged2c912268.
+  Existing M1 liveflow and matrix roots accepted exact2c9122681ab44f1a2f928b4dbec90c68f91e99ae
+  at02:13/02:14Z with clean source, sandboxed probes and protected metadata equality;
+  original schedules remain, no manual job. The first liveflow probe-name mistake
+  rolled back cleanly; its receipt/ref remain and the corrected r2 installed.
+  Index/Hub retain201064 and their prior independent installed readback.
+  Natural cycles, separate Hub ThetaData EINTR, two normal post-repair engine
+  survivals7265, publisher7263/broad-writer7193 durability, campaign integrity and
+  runtime effective quarantine7398 remain unearned. Daily37169452721 is an
+  in-progress post-repair candidate, not a natural-success receipt.
+  FS5 methods8377 are source-accepted with no artifact/study/promotion. Draft8385
+  at0234ea19 corrects parent/subset concurrency support and records Fable
+  UNRATIFIED/REVISE;20/200 and block-monotonicity choices remain unratified,
+  and the required Opus review is unavailable. No calibration law is invented.
+  Enrichment7417 has a verified natural derivative publication, not fresh-market
+  or predictive evidence. Sep17/18 measured-source evidence stays accepted.
+  Candidate8358 remains inactive until four prerequisites and an activation receipt;
+  exact-option8318 still needs prospective executable NBBO/lifecycle proof.
+  AD1 admission/capacity and scientific eligibility remain distinct dependencies.
+  Preserve the M1 storage-guard EFFECT_UNKNOWN evidence and all rollback trees.
+  No mission-completion or unattended-continuation claim is supplied by this checkpoint.
 
 ---
 
