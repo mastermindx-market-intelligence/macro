@@ -8388,6 +8388,30 @@ jobs:
   nw-lobe-unfreeze:
     if: ${{ false }}
     gate: code
+    scope: exclusive
+    # Curated named closure: the state mutation check imports this test itself;
+    # opaque import inference must not claim unrelated code ownership.
+    paths:
+      - "config/theme_graph_identity_breaks.yml"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
+      - "engine/__init__.py"
+      - "engine/basket_index.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/dannytrades.py"
+      - "engine/dannytrades_chip.py"
+      - "engine/indicators.py"
+      - "engine/technicals.py"
+      - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/theme_state.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/store.py"
+      - "scripts/build_dt_contra_state.py"
+      - "scripts/build_subsector_membership.py"
+      - "tests/test_build_subsector_membership.py"
+      - "tests/test_dt_contra_state.py"
+      - "tests/test_theme_graph_state.py"
     # Regression guard for the two Neural-Web lobes frozen since 2026-07-07:
     #   1. dt_contra_state crash: build_dt_contra_state.py crashed on index.json (list root);
     #      fixed by isinstance(data, dict) guard — 8 tests covering the fix.

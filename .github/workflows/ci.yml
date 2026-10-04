@@ -2320,7 +2320,6 @@ on:
       - "tests/test_dt_contra_state.py"
       - "scripts/build_subsector_membership.py"
       - "tests/test_build_subsector_membership.py"
-      - "tests/test_theme_graph_state.py"
       - "data/baskets_nasdaq/membership.json"
       # LHB-R6 quarterly-store enrichment: receivables, inventory, payables,
       # contract_liabilities added to statements_quarterly.parquet (2026-07-12).
