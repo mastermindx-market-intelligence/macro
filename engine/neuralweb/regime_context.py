@@ -74,13 +74,6 @@ def _dict(value: Any) -> dict:
     return value if isinstance(value, dict) else {}
 
 
-def _token(value: Any, *, maximum: int = 72) -> str | None:
-    """Only bounded data tokens, never arbitrary upstream prose/instructions."""
-    if not isinstance(value, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_ .:/+%()-]{0,71}', value):
-        return None
-    return value[:maximum]
-
-
 def _choice(value: Any, allowed: tuple[str, ...], *, issues: list[str] | None = None,
             field: str = '') -> str | None:
     if isinstance(value, str) and value in allowed:
@@ -509,10 +502,10 @@ def compose_context(sources: dict, *, now: datetime,
             'n_members': _count(item.get('n_members'), tid + ':n_members', sub),
             'coverage_fraction': _num(item.get('coverage'), tid + ':coverage_fraction', sub, low=0, high=1),
             'broadening_state': _choice(item.get('broadening_state'),
-            # source: engine/foresight_cascade.py THESIS_STAGES + RE-RATING / GLUT-RISK / WATCH
-            ('PRECIPICE', 'BROADENING', 'RE-RATING', 'GLUT-RISK', 'WATCH',
-             'PRECIPICE (text)', 'BROADENING (text)',
-             'PRECIPICE (fingerprint)', 'BROADENING (fingerprint)'),
+            # producer set, union of engine/theme_revisions.py:
+            #   _accel_state (line 126-135): FLAT_LOW / RISING / ROLLING / MIXED
+            #   _broadening no_history/proxy (line 220 / 193): INSUFFICIENT_HISTORY
+            ('FLAT_LOW', 'RISING', 'ROLLING', 'MIXED', 'INSUFFICIENT_HISTORY'),
             issues=sub, field=tid + ':broadening_state'),
             'uses_broadening_proxy': item.get('broadening_proxy') is True,
         }
@@ -534,10 +527,12 @@ def compose_context(sources: dict, *, now: datetime,
             # source: engine/leadership_crack.py:237 (state_series)
             ('INTACT', 'CRACKING', 'BROKEN'),
             issues=errors, field='owner_state'),
-        'cohort_role': _slug(leaders.get('cohort_role'),
-            # producer: engine/leadership_crack.py:378 emits one literal
-            # 'tracked_ai_no_hardware_damage_monitor'; no closed vocab published;
-            # slug is the bounded contract.
+        'cohort_role': _choice(leaders.get('cohort_role'),
+            # producer: engine/leadership_crack.py:378 emits exactly one literal:
+            # 'tracked_ai_hardware_damage_monitor' (34 chars). The slug cap
+            # (32) silently rejected it; route through _choice with the producer's
+            # exact value set.
+            ('tracked_ai_hardware_damage_monitor',),
             issues=errors, field='cohort_role'),
         'window_sessions': _count(leaders.get('high_window_sessions'), 'window_sessions', errors),
         'median_drawdown_fraction': _num(leaders.get('med_dd'), 'median_drawdown_fraction', errors, low=-1, high=0),
@@ -607,10 +602,12 @@ def _fmt(v, *, signed=False, scale=1.) -> str:
     return text.rstrip('0').rstrip('.')
 
 
-# Priority order for forced-budget omission, MOST-DROPPABLE first.
-# Stale/older/cheaper dimensions lose their row first; rows that survive keep
-# their own date stamp. When the brief fits without dropping anything, this
-# tuple is inert \u2014 `kept` retains its natural add() order and no row is hidden.
+# Priority order for forced-budget omission, MOST-DROPPABLE first (PRIORITY[0]
+# is dropped before PRIORITY[1], etc.). `kept.sort(...)` runs every call so
+# this tuple ALWAYS reorders the rows — it is never inert; "when the brief
+# fits, every row survives" describes the OUTPUT, not the sort itself.
+# Unlisted rows are LEAST-droppable: their sort key is `-inf`, so they land at
+# the front of `kept` and are popped LAST when the budget tightens.
 _RENDER_PRIORITY: tuple[str, ...] = (
     'options_cor3m', 'options_cor1m', 'options_dspx', 'options_vix',
     'earnings_revisions', 'credit', 'style',
@@ -756,12 +753,19 @@ def render_context(ctx: dict, char_budget: int = 2000, *, lang: str = 'en') -> s
     ) + '.') if unavailable else ''
     budget = max(0, int(char_budget))
     kept = list(rows)
-    # Apply the most-droppable-first priority: least-droppable goes to the
-    # front, most-droppable to the back so pop() removes it first when the
-    # budget tightens. Unlisted keys keep their natural insertion order at the
-    # tail (least-droppable).
+    # Apply the most-droppable-first priority: most-droppable lands at the
+    # BACK of `kept` so `kept.pop()` removes it FIRST when the budget tightens;
+    # least-droppable lands at the FRONT and is popped LAST. Unlisted keys
+    # default to `float('inf')` (sort key `-inf`) so they sort to the very
+    # front and are popped LAST of all — i.e. unlisted rows are LEAST-droppable.
     pri = {k: i for i, k in enumerate(_RENDER_PRIORITY)}
-    kept.sort(key=lambda kv: -pri.get(kv[0], -1))
+    # `-pri[k]` reverses the tuple so PRIORITY[0] (`options_cor3m`, the
+    # most-droppable) lands at the end of `kept` and is popped FIRST;
+    # PRIORITY[-1] (`macro`, the least-droppable among listed) lands near
+    # the front and is popped near LAST. Unlisted keys default to
+    # `float('inf')` so they sort to `-inf` (the very front) and are
+    # popped LAST of all — i.e. unlisted rows are LEAST-droppable.
+    kept.sort(key=lambda kv: -pri.get(kv[0], float('inf')))
     omitted: list[str] = []
     while True:
         tail = 'Omitted from compact brief: ' + ', '.join(omitted) + '.' if omitted else ''

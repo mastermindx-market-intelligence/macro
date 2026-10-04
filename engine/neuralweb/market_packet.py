@@ -1701,8 +1701,13 @@ def _render_drivers(p: dict) -> str:
 
 
 def _render_regime_detail(p: dict) -> str:
+    # Single source for the block budget — REGIME_DETAIL_BLOCK_BUDGET is owned
+    # by market_packet and threaded into render_context here explicitly. The
+    # rebudget fallback below remains reachable whenever any dataset exceeds
+    # the budget (e.g. a longer date matrix than the K2 four-date baseline).
     return _regime_context.render_context(
-        p["regime_detail"], lang="zh" if _zh(p) else "en",
+        p["regime_detail"], char_budget=REGIME_DETAIL_BLOCK_BUDGET,
+        lang="zh" if _zh(p) else "en",
     )
 
 
@@ -1929,7 +1934,11 @@ _RENDERERS: dict[str, object] = {
     "SHOCK": ("shock", _render_shock),
     "EVENTS": ("events", _render_events),
     "DRIVERS": ("drivers", _render_drivers),
-    "REGIME_DETAIL": ("regime_detail", _render_regime_detail),
+    # REGIME_DETAIL is intentionally absent: it has its own budget, its own
+    # splice slot (after DRIVERS), and never participates in the base drop
+    # loop. Keeping it here made has_any_base (line 1988) silently include the
+    # block in the base census and made the `elif packet.get("regime_detail")`
+    # branch at the end of render_digest unreachable.
     "RATES": ("rates", _render_rates),
     "VOL": ("vol", _render_vol),
     "BREADTH": ("breadth", _render_breadth),
