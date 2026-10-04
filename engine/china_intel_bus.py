@@ -272,6 +272,7 @@ def _discovery_block() -> dict | None:
 _VISIT_DISCOVERY_SCHEMA = "china_visits.discovery_metadata.v1"
 _VISIT_DISCOVERY_RECENT_DAYS = 30
 _VISIT_DISCOVERY_BASELINE_DAYS = 90
+_VISIT_DISCOVERY_STALE_AFTER_DAYS = 4  # mirrors ChinaVisitsAdapter / Hub reader
 _VISIT_UNKNOWN_CLASSES = frozenset({"", "not_yet_available", "unresolved", "none", "nan", "<na>"})
 
 
@@ -321,6 +322,8 @@ def _visit_discovery_snapshot(
     kind_labeler,
     recent_days: int = _VISIT_DISCOVERY_RECENT_DAYS,
     baseline_days: int = _VISIT_DISCOVERY_BASELINE_DAYS,
+    reference_day: date | None = None,
+    stale_after_days: int = _VISIT_DISCOVERY_STALE_AFTER_DAYS,
 ) -> dict:
     """Descriptive visit-frequency state from the existing P1 tape.
 
@@ -332,9 +335,18 @@ def _visit_discovery_snapshot(
     recent_days = max(int(recent_days), 1)
     baseline_days = max(int(baseline_days), 1)
     health = health if isinstance(health, dict) else {}
-    source_status = _visit_text(health.get("status")) or "no_coverage"
+    owner_health_status = _visit_text(health.get("status")) or "no_coverage"
     coverage_day = _visit_day(coverage_start)
     last_success_day = _visit_day(health.get("last_success_utc"))
+    last_attempt_day = _visit_day(health.get("last_attempt_utc"))
+    reference_day = reference_day or date.today()
+    source_status = owner_health_status
+    if (
+        owner_health_status == "ok"
+        and last_success_day is not None
+        and (reference_day - last_success_day).days > max(int(stale_after_days), 0)
+    ):
+        source_status = "stale"
 
     # Defensive natural-key dedup. The owner already enforces keep-FIRST on
     # announcement_id; this prevents a malformed fixture/consumer from turning
@@ -349,16 +361,27 @@ def _visit_discovery_snapshot(
             seen_ids.add(aid)
         deduped.append(row)
 
-    observed_days = [
+    source_event_days = [
         d for d in (_visit_day(r.get("source_published_at")) for r in deduped)
         if d is not None
     ]
-    if source_status == "ok" and last_success_day is not None:
+    system_observed_days = [
+        d for d in (_visit_day(r.get("system_recorded_at")) for r in deduped)
+        if d is not None
+    ]
+    if last_success_day is not None and owner_health_status == "ok":
         observation_end = last_success_day
-    elif observed_days:
-        # Positive evidence remains observable even when the latest source run
-        # degraded. It does NOT restore negative/baseline authority.
-        observation_end = max(observed_days)
+    elif last_attempt_day is not None:
+        # A degraded/failed attempt is the honest present-tense reference clock.
+        # It grants no negative authority, but prevents a quiet event tape from
+        # moving the 30d window backward to the date of its last positive filing.
+        observation_end = last_attempt_day
+    elif system_observed_days:
+        observation_end = max(system_observed_days)
+    elif source_event_days:
+        # Legacy positive evidence with no system clock: source date is a last
+        # resort for display-window anchoring only, never first-seen authority.
+        observation_end = max(source_event_days)
     else:
         observation_end = last_success_day or coverage_day
 
@@ -375,6 +398,8 @@ def _visit_discovery_snapshot(
         "is_context_only": True,
         "authority": authority,
         "source_status": source_status,
+        "owner_health_status": owner_health_status,
+        "stale_after_days": max(int(stale_after_days), 0),
         "coverage_start": coverage_day.isoformat() if coverage_day else None,
         "observation_end": observation_end.isoformat() if observation_end else None,
         "asof": observation_end.isoformat() if observation_end else None,
@@ -391,6 +416,7 @@ def _visit_discovery_snapshot(
         ),
         "global_negative_authority_blocker": (
             "unscoped_coverage_exception" if has_unscoped_open
+            else "source_stale" if source_status == "stale"
             else "source_health_not_ok" if source_status != "ok"
             else "coverage_start_unavailable" if coverage_day is None
             else "last_success_clock_unavailable" if last_success_day is None
@@ -470,6 +496,8 @@ def _visit_discovery_snapshot(
             baseline_state = "blocked_unscoped_coverage_exception"
         elif company_exception:
             baseline_state = "blocked_company_coverage_exception"
+        elif source_status == "stale":
+            baseline_state = "unavailable_source_stale"
         elif source_status != "ok":
             baseline_state = "unavailable_source_health"
         elif coverage_day is None or coverage_day > baseline_start:
