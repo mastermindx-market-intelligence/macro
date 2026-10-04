@@ -216,6 +216,18 @@ def test_visit_discovery_never_promotes_actor_or_rank_authority():
     assert snap["authority"]["may_claim_predictive_edge"] is False
 
 
+def test_visit_discovery_block_absent_plane_stays_dark(monkeypatch):
+    from collectors import china_visits as cv
+
+    monkeypatch.setattr(cv, "read_visits_strict", lambda: [])
+    monkeypatch.setattr(cv, "read_coverage_exceptions_strict", lambda: [])
+    monkeypatch.setattr(cv, "read_health", lambda: {
+        "status": "no_coverage", "detail": "china_visits has never run",
+    })
+    monkeypatch.setattr(cv, "read_coverage_start", lambda: None)
+    assert bus._visit_discovery_block() is None
+
+
 def test_visit_discovery_block_fails_closed_on_unreadable_owner(monkeypatch):
     from collectors import china_visits as cv
 
@@ -241,6 +253,7 @@ def test_briefing_exposes_visit_discovery_as_context_surface_only(monkeypatch):
     assert b["schema"] == "china_intel.briefing.v6"
     assert b["visit_discovery"]["authority"]["may_rank"] is False
     assert "visit_discovery" in b["surfaces_present"]
+    assert b["surface_asof"]["visit_discovery"] == "2026-10-03"
     assert b["flagged_tickers"] == []
     assert b["conviction"] == []
 
