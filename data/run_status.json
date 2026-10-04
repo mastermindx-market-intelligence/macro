@@ -1815,8 +1815,8 @@
       "status": "ok",
       "n_leaders": 116,
       "base_json": "site/flowtracker/base.json",
-      "as_of": "2026-10-03T18:20:58.006449+00:00",
-      "checked_at": "2026-10-03T18:20:58.006449+00:00"
+      "as_of": "2026-10-04T08:45:44.244375+00:00",
+      "checked_at": "2026-10-04T08:45:44.244375+00:00"
     },
     "broad_flows": {
       "source": "broad_flows",
