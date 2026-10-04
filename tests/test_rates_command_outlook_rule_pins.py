@@ -229,7 +229,11 @@ def review_chain_problems(reviews: object, birth_values: dict[str, object]) -> l
     """Walk ``reviews`` in order; each entry's ``from`` must be the pin's birth value or an earlier entry's ``to``.
 
     Unknown pins, malformed entries and non-dict reviews are left to
-    ``review_problems``; this function judges only the chain.
+    ``review_problems``; this function judges only the chain. The chain is
+    seeded with the CURRENT births only, so a new ``pin_commit`` starts an
+    empty ``reviews`` list by design: entries written against an earlier
+    pin_commit's births are refused, and the earlier reviews remain in
+    version history.
     """
     if not isinstance(reviews, list):
         return ["reviews is not a list"]
@@ -327,7 +331,11 @@ def _dotted(entry: dict) -> str:
 def test_config_value_pin_matches(entry):
     file = entry["file"]
     dotted = _dotted(entry)
-    raw = (REPO_ROOT / file).read_text(encoding="utf-8")
+    assert file == "config.yml", (
+        f"config value pin {dotted} must read config.yml, not {file!r}: a pin "
+        f"pointed at another file is a blind update."
+    )
+    raw = CONFIG_YML_PATH.read_text(encoding="utf-8")
     doc = yaml.safe_load(raw)
     present, value = config_value(doc, entry["key"])
     assert present == entry["present"], (
