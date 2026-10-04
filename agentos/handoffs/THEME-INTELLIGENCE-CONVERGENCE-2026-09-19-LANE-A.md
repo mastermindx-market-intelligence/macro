@@ -240,3 +240,76 @@ Next: commit only the A-owned registry/test/Agent OS delta, rerun the real thesi
 - Exact A+C recomposition on Lane C head `fdd731f18a7634c57cdc83fc80cbe13811ec745e` is conflict-free at tree `652f2d57dcceb341eefbb45230ff1378ba0d8758`; the combined owner suite passed `223 passed, 2 skipped, 1 deselected`.
 - A+C composition receipt: `/Volumes/Mastermind/agent-evidence/theme-intelligence-a-integration-and-semantic-repair-20260920/a-c-composition-9e274-fdd7.json`, SHA-256 `21e91bfe3ff3edd13aa4c8ca0eb5a24a6ed93d8023de9b51734ad7066244dc59`; test-log SHA-256 `cbb05def4aa2bf9c04b41bcd9b44352661a98339d68ac280598b85faf1116557`.
 - These proofs are source/integration evidence only. Lane E is still unreleased, hosted CI must run on the eventual pushed head, and publication/deployed-browser acceptance remains separate.
+
+## 2026-09-22 — Lane A integration lead: Lane E source-contract repair
+
+### Canonical frontier
+
+- Protected Skillpack: Mastermind@9a7ed19091dd82609f8ee405687f16c861c4d8c1; skillpack 1.0.1, bootstrap-major 1.
+- Macro main reconciled on incumbent Lane E carrier from ea194c5d215c64158a828abdc676f47bb7723374.
+- Carrier remains Macro PR #7664 / sol/theme-intelligence-e-v5-delivery-20260921. Rejected predecessor a82e98f23589a4f0eda0f326d980505fb3b86755 is the repair base, not a successor branch.
+- Approved Lane C semantic head fdd731f18a7634c57cdc83fc80cbe13811ec745e is composed by merge, preserving its source history/proof.
+- Lane A PR #7526 / merge 597bedad6cf1240150a5804522b1b75fe3baa2f3 remains DO_NOT_REDO.
+
+### Source repair
+
+- Restored frozen shared component identity templates/_theme_opportunity_visibility.html.j2.
+- Restored frozen acceptance artifacts byte-for-byte: test SHA-256 494ebb516f6c715a9e8c1e7e36a88cf14667b8df9786610ee17e9295760f34f4; fixture SHA-256 008d24ba61b7afcfb41ffa96ddf2af06fff4954235424e180e2e88587898fe9c.
+- Removed rejected duplicate presentation plane: lib/theme_opportunity_card.py, _theme_opportunity_card.html.j2, duplicate card assets/tests.
+- Added one thin direct theme_intelligence.consumer.v1 reader. It presents only leadership / thesis / crowding / entry / evidence-health and originates no score, confidence, summary state, rank, gate, size, escalation, member eligibility, or trade authority.
+- Preserved EN/ZH, UNKNOWN/UNAVAILABLE/STALE/null fail-closed behavior, canonical deep links, and all-false authority.
+
+### Lane C -> Lane A bridge
+
+A real composition gap was found: Lane C preserves one deduplicated subsector_leadership_observations store plus compact leadership_observation_ref references, while Lane A previously consumed only an already-populated leadership_context. A plain merge therefore left leadership unavailable.
+
+scripts/build_state_of_themes.py now dereferences only the accepted Lane C observation relationship when no explicit owner leadership_context exists:
+- one source preserves LEADING / LAGGING / NEUTRAL / UNAVAILABLE verbatim;
+- differing multi-source states remain descriptive OBSERVED with source values preserved, never a new score/rank;
+- observation clock, source family, parent identity and observation ID remain attached;
+- no owner input hash is fabricated; evidence independence fails closed if identity is incomplete;
+- explicit incumbent leadership_context still wins;
+- no ranking/gating/sizing/escalation/trading authority is introduced.
+
+### Shared CI repair
+
+Reused existing unrun-subsector-themes job; no new CI/control plane. It now registers Lane C owner suites, the Lane C->Lane A bridge, Lane A Theme Tracker consumer tests, direct Lane E source tests, and the frozen Lane E source contract. The frozen route-owner assertion is excluded only at the pre-mount package stage and is not rewritten; unchanged 5/5 proof is required in a non-owning route composition overlay.
+
+### Local evidence
+
+- Lane C owner suites: 26 passed.
+- Lane D owner suites: 56 passed, 3 skipped.
+- Lane C -> Lane A bridge: 7 passed.
+- Direct Lane E consumer source suite: 8 passed.
+- Frozen source contract before route mounts: 4 passed, 1 deselected; only the serialized route-owner mount is deferred.
+- Full Lane A/bridge suite: 58 passed, 1 skipped, plus one repository-global check_validated_claims failure reporting 38 unrelated Macro-suite/HK/Canada claims outside Theme Intelligence ownership.
+- check_ui_visual_evidence passes against the working diff.
+- git diff --check passes.
+- Visual evidence reminted from replacement source: 12 EN/ZH, dark/light, desktop/mobile + hover/focus captures; zero horizontal-overflow failures. Fixture-only; no deployment/route-mount claim.
+
+### WHAT MUST NOT BE REDONE
+
+- Do not reopen Lane A WATCH/PRECIPICE semantics.
+- Do not create a third Lane E carrier or another presenter/state/score plane.
+- Do not fabricate Lane C source in static Lane E fixtures.
+- Do not take over route-owner files on #7664. Sector remains serialized behind #7060 and #7384.
+- Do not turn fixture evidence, hosted CI, merge, or deployment into a production-browser claim.
+- Do not absorb the unrelated repository-global validated-claims failure without an owner handoff.
+
+### Exact next action
+
+1. Commit this source repair on the existing #7664 branch.
+2. From that immutable commit, create a non-owning Tracker/Foresight/Radar mount overlay and run the frozen acceptance test unchanged for 5/5.
+3. Re-check current main and remote #7664 for material movement.
+4. Push the same branch without force; require fresh exact-head hosted fences + CI and fresh independent exact-head source review.
+5. Only after source acceptance may merge/release and serialized route mounting proceed. Real deployed-browser proof on all four routes remains owed.
+
+
+### Immutable source/composition proof — 2026-09-22 continuation
+
+- Lane E source-repair commit: e29c1d5dfb8a684805027436fcf58ce6af8323f3; tree bf6bc94d9d55e927996e6f995c0790a0296badea.
+- The unchanged frozen Lane E acceptance test passes 5/5 in a non-owning overlay built from that exact source commit plus only the four previously compatible Tracker/Foresight/Radar mount seams. Overlay receipt hash: a643617c9652b69e456aa839eafb0e6649bd5c6a8a20146c4ce99ea51e242ecd.
+- No route-owner file is committed to #7664 by this proof.
+- Fresh remote reconciliation immediately before push: #7664 remote still a82e98f23589a4f0eda0f326d980505fb3b86755.
+- Macro main advanced to 8b533225517d786bec7939d1d8fbd966ded511dd after the earlier ea194c5d composition. The four new main commits change 514 paths but intersect zero of the 42 Lane E/Lane C source paths; no source-semantic invalidator was found, so no gratuitous re-merge is required.
+- Next effect: push the same #7664 branch without force, then require fresh exact-head hosted fences + CI and independent exact-head source review before merge consideration.

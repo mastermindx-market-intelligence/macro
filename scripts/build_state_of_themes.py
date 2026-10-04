@@ -831,6 +831,9 @@ def compose(root: Path) -> dict[str, Any]:
     chip_crowded = 0
 
     state_themes = (state or {}).get("themes", [])
+    lane_c_leadership_observations = (state or {}).get("subsector_leadership_observations", {})
+    if not isinstance(lane_c_leadership_observations, dict):
+        lane_c_leadership_observations = {}
     for st_th in state_themes:
         tid = st_th.get("theme_id", "")
         asym_th = asym_by_id.get(tid, {})
@@ -1239,6 +1242,12 @@ def compose(root: Path) -> dict[str, Any]:
         else:
             lane_rank = (fav_count - caut_count, stage_sort, present_count)
 
+        leadership_context = st_th.get("leadership_context")
+        if not isinstance(leadership_context, dict):
+            leadership_context = _lane_c_leadership_context(
+                st_th, lane_c_leadership_observations
+            )
+
         themes.append({
             "theme_id": tid,
             "name_en": st_th.get("name_en", tid),
@@ -1282,7 +1291,7 @@ def compose(root: Path) -> dict[str, Any]:
             "pathway_nodes": pathway_nodes,
             "evidence_refs": evidence_refs,
             # Reserved additive joins populated only by the incumbent C/D owners.
-            "leadership_context": st_th.get("leadership_context"),
+            "leadership_context": leadership_context,
             "entry_context": st_th.get("entry_context"),
             # New drawer sections
             "asym_legs_section": asym_legs_section,
@@ -1715,6 +1724,158 @@ def _owner_dimension(raw: Any) -> dict[str, Any]:
             clean[key] = value
     clean.setdefault("state", "UNCONFIRMED")
     return clean
+
+
+
+def _lane_c_leadership_context(
+    theme: dict[str, Any],
+    observation_store: dict[str, Any],
+) -> dict[str, Any] | None:
+    """Join Lane C's accepted closed-session observation without re-scoring it.
+
+    ThemeState keeps one immutable observation in a top-level store and places a
+    compact reference on each consuming theme. This bridge dereferences only that
+    accepted relationship. A single source state's LEADING/LAGGING/NEUTRAL value is
+    preserved verbatim; multiple differing source states remain OBSERVED rather than
+    being collapsed into a new score or rank.
+    """
+    rotation = theme.get("subsector_rotation")
+    if not isinstance(rotation, dict) or not isinstance(observation_store, dict):
+        return None
+    subsectors = rotation.get("subsectors")
+    if not isinstance(subsectors, list):
+        return None
+
+    values: list[dict[str, Any]] = []
+    source_records: list[dict[str, Any]] = []
+    reason_codes: list[str] = []
+    observation_sessions: set[str] = set()
+    computation_times: set[str] = set()
+    bar_states: set[str] = set()
+
+    for subsector in subsectors:
+        if not isinstance(subsector, dict):
+            continue
+        ref = subsector.get("leadership_observation_ref")
+        if not isinstance(ref, dict):
+            continue
+        key = ref.get("observation_key")
+        if not isinstance(key, str) or not key:
+            continue
+        expected_pointer = f"/subsector_leadership_observations/{key.replace('~', '~0').replace('/', '~1')}"
+        if ref.get("json_pointer") not in (None, expected_pointer):
+            continue
+        observation = observation_store.get(key)
+        if not isinstance(observation, dict):
+            continue
+
+        parent = observation.get("parent")
+        parent = parent if isinstance(parent, dict) else {}
+        strength = parent.get("strength_level")
+        strength = strength if isinstance(strength, dict) else {}
+        acceleration = parent.get("acceleration")
+        acceleration = acceleration if isinstance(acceleration, dict) else {}
+        source_state = strength.get("state")
+        if not isinstance(source_state, str) or not source_state:
+            source_state = "UNAVAILABLE" if observation.get("status") == "UNAVAILABLE" else "OBSERVED"
+
+        receipt = observation.get("measurement_receipt")
+        receipt = receipt if isinstance(receipt, dict) else {}
+        clocks = receipt.get("clocks")
+        clocks = clocks if isinstance(clocks, dict) else {}
+        observation_session = (
+            observation.get("asof")
+            or clocks.get("observation_session")
+            or ref.get("asof")
+        )
+        if isinstance(observation_session, str) and observation_session:
+            observation_sessions.add(observation_session)
+        computation = clocks.get("computation_utc")
+        if isinstance(computation, str) and computation:
+            computation_times.add(computation)
+        bar_status = observation.get("bar_status") or receipt.get("bar_status")
+        if isinstance(bar_status, str) and bar_status:
+            bar_states.add(bar_status)
+
+        values.append({
+            "observation_key": key,
+            "status": observation.get("status") or ref.get("status"),
+            "state": source_state,
+            "acceleration": acceleration.get("state"),
+            "asof": observation_session,
+        })
+        for code in observation.get("reason_codes", []) or []:
+            if isinstance(code, str) and code:
+                reason_codes.append(code)
+
+        source_family = observation.get("schema") or ref.get("schema")
+        record: dict[str, Any] = {}
+        if isinstance(source_family, str) and source_family:
+            record["source_family"] = source_family
+        record["parent_identity"] = key
+        if isinstance(observation_session, str) and observation_session:
+            record["observation_session"] = observation_session
+        observation_id = ref.get("observation_id")
+        if isinstance(observation_id, str) and observation_id:
+            record["observation_id"] = observation_id
+        input_hash = (
+            receipt.get("input_hash")
+            or receipt.get("source_input_hash")
+            or observation.get("input_hash")
+            or observation.get("source_input_hash")
+        )
+        if isinstance(input_hash, str) and input_hash:
+            record["input_hash"] = input_hash
+        source_records.append(record)
+
+    if not values:
+        return None
+
+    source_states = {
+        value["state"] for value in values
+        if value.get("state") not in (None, "", "UNAVAILABLE")
+    }
+    if not source_states:
+        state = "UNAVAILABLE"
+    elif len(source_states) == 1:
+        state = next(iter(source_states))
+    else:
+        state = "OBSERVED"
+        reason_codes.append("MULTIPLE_LANE_C_LEADERSHIP_STATES")
+
+    labels = {
+        "LEADING": "Leading",
+        "LAGGING": "Lagging",
+        "NEUTRAL": "Neutral",
+        "OBSERVED": "Multiple source reads",
+        "UNAVAILABLE": "Unavailable",
+    }
+    if len(observation_sessions) > 1:
+        reason_codes.append("MULTIPLE_LANE_C_OBSERVATION_SESSIONS")
+
+    return {
+        "state": state,
+        "label": labels.get(state, state.replace("_", " ").title()),
+        "value": values,
+        "reason_codes": sorted(set(reason_codes)),
+        "source_records": source_records,
+        "clocks": {
+            "observation": (
+                next(iter(observation_sessions))
+                if len(observation_sessions) == 1 else None
+            ),
+            "availability": None,
+            "computation": (
+                next(iter(computation_times))
+                if len(computation_times) == 1 else None
+            ),
+            "publication": None,
+        },
+        "bar_status": {
+            "closed": True if bar_states == {"CLOSED"} else None,
+            "provisional": False if bar_states == {"CLOSED"} else None,
+        },
+    }
 
 
 def _consumer_evidence_identity(
