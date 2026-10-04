@@ -8404,9 +8404,11 @@ jobs:
         # pandas/numpy/pyyaml: both suites import their producers at collection time
         # (build_dt_contra_state → engine.dannytrades_chip → numpy/pandas;
         # build_subsector_membership → engine.basket_index → lib.config → yaml).
-        run: pip install pytest pandas numpy pyyaml
+        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
+      - name: GMI history integrity and refusal before publication
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py -q
 
   sa-w4-improvement-lanes:
     if: ${{ false }}
@@ -11895,8 +11897,6 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_identity.py -q
       - name: theme graph — bitemporal materialization from the membership documents
         run: TZ=UTC python -m pytest tests/test_theme_graph_materialize.py -q
-      - name: theme graph — existing graph/PIT history fail-closed (builder and correction writers)
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py -q
       - name: theme graph — contract guard (incident fixtures + annotation shape)
         run: TZ=UTC python -m pytest tests/test_theme_graph_contracts.py -q
       # V4-D2B3 — node lifecycle correction lineage: the append-only retirement
