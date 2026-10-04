@@ -124,6 +124,8 @@ class PartitionManifest:
     retrieved_at_utc: str
     min_timestamp_utc: str | None = None
     max_timestamp_utc: str | None = None
+    request_start: str | None = None
+    request_end: str | None = None
     schema: str = SCHEMA
 
     def validate(self) -> None:
@@ -136,6 +138,8 @@ class PartitionManifest:
             raise FuturesTapeError(str(exc)) from exc
         if self.row_count < 0 or self.byte_count < 0:
             raise FuturesTapeError("row_count/byte_count must be non-negative")
+        if (self.request_start is None) != (self.request_end is None):
+            raise FuturesTapeError("request_start/request_end must be supplied together")
         if not re.fullmatch(r"[0-9a-f]{64}", self.sha256):
             raise FuturesTapeError("sha256 must be 64 lowercase hex chars")
         p = Path(self.relative_path)
