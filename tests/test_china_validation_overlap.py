@@ -335,6 +335,42 @@ def test_cie18_refuses_development_holdout_overlap():
     assert "development_holdout_overlap" in receipt["validation_errors"]
 
 
+def test_cie18_refuses_holdout_prospective_overlap():
+    record = _cie18_prereg("D")
+    record["prospective_contract"]["start"] = "2025-12-15"
+    receipt = cv.validate_cie18_prereg(record)
+    assert receipt["admitted_for_outcome_read"] is False
+    assert "holdout_prospective_overlap" in receipt["validation_errors"]
+
+
+def test_cie18_refuses_nonpositive_horizon_and_nondevelopment_power():
+    record = _cie18_prereg("D")
+    record["horizon"] = 0
+    record["power"] = {"basis": "final_holdout", "minimum_independent_n": 40}
+    receipt = cv.validate_cie18_prereg(record)
+    assert "horizon_must_be_positive_int" in receipt["validation_errors"]
+    assert "power_contract_must_be_development_only" in receipt["validation_errors"]
+
+
+def test_cie18_trial_budget_cannot_understate_registered_variants():
+    record = _cie18_prereg("D")
+    record["attempted_variants"] = [
+        {"name": "v1"}, {"name": "v2"}, {"name": "v3"},
+    ]
+    record["declared_trial_budget"] = 2
+    receipt = cv.validate_cie18_prereg(record)
+    assert receipt["admitted_for_outcome_read"] is False
+    assert "declared_trial_budget_below_registered_variants" in receipt["validation_errors"]
+
+
+def test_cie18_requires_effective_independent_sample_reporting():
+    record = _cie18_prereg("D")
+    record["clustering"]["effective_n_reported"] = False
+    receipt = cv.validate_cie18_prereg(record)
+    assert receipt["admitted_for_outcome_read"] is False
+    assert "clustering_contract_invalid" in receipt["validation_errors"]
+
+
 def test_cie18_track_o_requires_identical_candidate_population_and_explicit_fallback():
     record = _cie18_prereg("O")
     record["population_identity_rule"] = "roughly_same_candidates"
