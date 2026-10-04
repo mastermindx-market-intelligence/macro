@@ -41,6 +41,45 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Fail closed on private R2 configuration
+        run: |
+          set -euo pipefail
+          /opt/homebrew/bin/python3.12 - <<'PY'
+          import os
+          import sys
+
+          required = (
+              "R2_BUCKET",
+              "R2_RESEARCH_ENDPOINT",
+              "R2_RESEARCH_ACCESS_KEY_ID",
+              "R2_RESEARCH_SECRET_ACCESS_KEY",
+              "R2_RESEARCH_BUCKET",
+          )
+          missing = [
+              name for name in required
+              if not (os.environ.get(name) or "").strip()
+          ]
+          if missing:
+              print(
+                  "::error title=research-vault-census-config::missing required "
+                  "private R2 configuration name(s): " + ", ".join(missing),
+                  flush=True,
+              )
+              sys.exit(2)
+          if os.environ["R2_RESEARCH_BUCKET"].strip() == os.environ["R2_BUCKET"].strip():
+              print(
+                  "::error title=research-vault-census-config::"
+                  "research bucket aliases shared/public bucket",
+                  flush=True,
+              )
+              sys.exit(2)
+          print(
+              "research-vault-census: private R2 configuration names present; "
+              "bucket anti-alias passed",
+              flush=True,
+          )
+          PY
+
       - name: Python 3.12 isolated read runtime
         run: |
           set -euo pipefail
