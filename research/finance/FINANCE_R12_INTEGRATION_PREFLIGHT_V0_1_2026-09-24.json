@@ -1,0 +1,116 @@
+{
+  "schema": "mastermind.research.finance_r12_integration_preflight.v0_1",
+  "state": "RESEARCH_ONLY_INTEGRATION_FREEZE",
+  "operation": "gmi-finance-sector-research-20260923-sol-001",
+  "procedure_commit": "a7d2b3049e5cdc523e91e61a6e9d70a1cb911157",
+  "current_main": "9573cd4d134804fb4cd8c3801ad62a697c3de6d2",
+  "research_pr": {
+    "number": 7786,
+    "head": "9ca6f5b14c33e80ac388771c62405707a84b6270",
+    "merge_base": "668237947e016f679782e41e61c91c9133a5ea99",
+    "implementation_base_allowed": false
+  },
+  "active_dependencies": [
+    {
+      "pr": 7870,
+      "head": "545ece0c7177a56627204e77302cd9c2d4d03f3e",
+      "capability": "shared curation assertion and planned theme-research API/assets/mount",
+      "action": "CONSUME_OR_COORDINATE"
+    },
+    {
+      "pr": 7777,
+      "head": "4122e3b7e1524482216fb156f201f8229c14011b",
+      "capability": "sector_dossier_read_model.v1",
+      "action": "CONSUME_IF_ACCEPTED"
+    },
+    {
+      "pr": 7462,
+      "head": "31706d7322af55696dc7b2e746ec511b08bd51d7",
+      "capability": "theme_graph store/readers",
+      "action": "NO_DIRECT_STORE_WRITE"
+    },
+    {
+      "pr": 7664,
+      "head": "e43c769325311a06724ae211fdcc393ffcf05338",
+      "capability": "build_state_of_themes and theme convergence",
+      "action": "AVOID_BUILDER_COLLISION"
+    },
+    {
+      "pr": 7849,
+      "head": "8edbb0b918be014ee206a24212884d035059e2f1",
+      "capability": "global theme.css design primitives",
+      "action": "SCOPED_ASSETS_CONSUME_TOKENS"
+    },
+    {
+      "pr": 7797,
+      "head": "ac2701b62760cbeda58cf517aaa7050fed4ba395",
+      "capability": "regional sector-detail shared body",
+      "action": "REFERENCE_ONLY"
+    },
+    {
+      "pr": 7669,
+      "head": "2c28d950aa9448fc878bb64d92b228a8f1952bde",
+      "capability": "theme recommendation/entry constraints",
+      "action": "RECHECK_BASKET_DETAIL_CUSTODY"
+    }
+  ],
+  "current_main_absences": [
+    "contracts/theme_graph/curation_assertion.v1.schema.json",
+    "engine/theme_graph/curation_assertion.py",
+    "app/theme_research.py",
+    "site/assets/js/theme-research.js",
+    "site/assets/css/theme-research.css",
+    "contracts/sector_intelligence/sector_dossier_read_model.v1.schema.json"
+  ],
+  "custody_disagreement": {
+    "path": "templates/basket_detail.html.j2",
+    "semiconductor_checkpoint_claim": "#7669 freeze",
+    "fresh_github_file_list": "#7669 does not list path",
+    "disposition": "RECONCILE_AT_IMPLEMENTATION_PICKUP"
+  },
+  "implementation_boundary": {
+    "outer_owner": "sector_intelligence",
+    "finance_projection": "READ_ONLY_CHILD_PROJECTION",
+    "proposed_route": "/api/sector-intelligence/financials/finance/v1",
+    "route_status": "PROPOSAL_REQUIRES_OWNER_RECONCILIATION",
+    "research_pr_must_remain_records_only": true
+  },
+  "first_vertical": {
+    "name": "Financial Rails & Market Infrastructure",
+    "money_movement": [
+      "Card Networks",
+      "Merchant Acquiring / Processing",
+      "Issuer Processing"
+    ],
+    "securities_infrastructure": [
+      "Exchanges & Trading Venues",
+      "Custody & Asset Servicing",
+      "Market / Reference Data",
+      "Ratings / Credit Information",
+      "Indices / Benchmarks / ETF Plumbing"
+    ],
+    "witnesses": [
+      "V",
+      "MA",
+      "FI",
+      "FIS",
+      "CME",
+      "ICE",
+      "NDAQ",
+      "BNY",
+      "STT",
+      "SPGI",
+      "MCO"
+    ]
+  },
+  "authority": {
+    "may_merge_research_pr": false,
+    "may_admit_source": false,
+    "may_mutate_basket": false,
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_trade": false
+  },
+  "next_action": "R13 exact implementation waves and Fable CEO master handoff."
+}

@@ -1,0 +1,1048 @@
+{
+  "schema": "mastermind.research.finance_assertion_packet.v0_1",
+  "state": "RESEARCH_ONLY_NON_CANONICAL",
+  "operation": "gmi-finance-sector-research-20260923-sol-001",
+  "created_on": "2026-09-23",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pull_request": 7786,
+    "branch": "sol/finance-sector-research-20260923",
+    "parent_head": "65ab0947b779a52c8b688843903cac4a2da2aca4"
+  },
+  "procedure": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "commit": "bf764f494b9cd0ecede6234bb472c3344c8e77cc",
+    "skillpack_version": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "research_contract_refs": [
+    "research/finance/FINANCE_BALANCE_SHEET_CREDIT_AND_PRIVATE_CREDIT_RERATING_2026-09-23.md",
+    "research/finance/FINANCE_BALANCE_SHEET_CREDIT_COMPANY_BUSINESS_CENSUS_2026-09-23.md",
+    "research/finance/FINANCE_CREDIT_CAPITAL_AND_VINTAGE_METRIC_DICTIONARY_2026-09-23.md"
+  ],
+  "authority": {
+    "may_create_canonical_identity": false,
+    "may_write_theme_graph": false,
+    "may_admit_source": false,
+    "may_publish_current_paid_payload": false,
+    "may_create_basket_membership": false,
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_trade": false
+  },
+  "global_limitations": [
+    "Ticker values are research hints and are not validated canonical security bindings.",
+    "Values are source-native reported observations, not current consensus, normalized earnings or valuation conclusions.",
+    "Publication dates are null where this pass did not verify the filing acceptance timestamp separately.",
+    "A current exact-source retention receipt and owner admission are not established by this packet.",
+    "No record is an approved graph fact, basket member, recommendation or trade signal."
+  ],
+  "metric_dictionary": "research/finance/FINANCE_CREDIT_CAPITAL_AND_VINTAGE_METRIC_DICTIONARY_2026-09-23.md",
+  "records": [
+    {
+      "record_id": "fin-research-jpm-2025",
+      "issuer_label": "JPMorgan Chase & Co.",
+      "ticker_hint": "JPM",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "consolidated issuer",
+      "economic_modes": ["BALANCE_SHEET_PRINCIPAL", "AGENCY_INTERMEDIARY", "FIDUCIARY", "MARKET_INFRASTRUCTURE_ADJACENCY"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-jpm-2025-rotce",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "return on tangible common equity",
+          "normalized_metric_family": "ROTCE",
+          "value": 20.0,
+          "unit": "percent",
+          "measurement_class": "RATIO",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "as_of_date": null,
+          "balance_basis": "SOURCE_DEFINED_AVERAGE",
+          "annualization_basis": "ACTUAL_FULL_YEAR",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Consolidated reported return; does not establish normalized segment returns or current cost of equity."
+        },
+        {
+          "assertion_id": "fin-jpm-2025-tbvps",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "tangible book value per share",
+          "normalized_metric_family": "TANGIBLE_BOOK_VALUE_PER_SHARE",
+          "value": 107.56,
+          "unit": "USD_per_common_share",
+          "measurement_class": "PER_SHARE_VALUE",
+          "period_start": null,
+          "period_end": null,
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "annualization_basis": "NOT_ANNUALIZED",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Issuer-defined tangible common equity reconciliation controls."
+        }
+      ],
+      "research_rerating_bridge": "normalized ROTCE versus required return; TBVPS compounding; diversified fee/market earnings; credit, funding and capital offsets",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-pnc-2025",
+      "issuer_label": "The PNC Financial Services Group, Inc.",
+      "ticker_hint": "PNC",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "consolidated issuer",
+      "economic_modes": ["BALANCE_SHEET_PRINCIPAL", "AGENCY_INTERMEDIARY"],
+      "source": {
+        "source_family": "ISSUER_10K",
+        "url": "https://investor.pnc.com/sec-filings/all-sec-filings/content/0000713676-26-000020/pnc-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-pnc-2025-nii",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "net interest income",
+          "normalized_metric_family": "NET_INTEREST_INCOME",
+          "value": 14.410,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "balance_basis": "NOT_APPLICABLE",
+          "annualization_basis": "ACTUAL_FULL_YEAR",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Taxable-equivalent/adjustment treatment remains issuer-native."
+        },
+        {
+          "assertion_id": "fin-pnc-2025-nim",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "net interest margin",
+          "normalized_metric_family": "NET_INTEREST_MARGIN",
+          "value": 2.83,
+          "unit": "percent",
+          "measurement_class": "PERIOD_AVERAGE_RATE",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "balance_basis": "SOURCE_DEFINED_AVERAGE",
+          "annualization_basis": "ACTUAL_FULL_YEAR",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Comparable only after native NIM definition and taxable-equivalent basis are retained."
+        },
+        {
+          "assertion_id": "fin-pnc-2025-loans",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "loans",
+          "normalized_metric_family": "LOANS_TOTAL",
+          "value": 331.481,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "annualization_basis": "NOT_ANNUALIZED",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Portfolio composition and held-for-sale treatment remain source-native."
+        },
+        {
+          "assertion_id": "fin-pnc-2025-deposits",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "deposits",
+          "normalized_metric_family": "DEPOSITS_TOTAL",
+          "value": 440.866,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "annualization_basis": "NOT_ANNUALIZED",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Does not establish average balance, mix, beta or stability."
+        },
+        {
+          "assertion_id": "fin-pnc-2025-eps",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "diluted earnings per share",
+          "normalized_metric_family": "DILUTED_EPS",
+          "value": 16.59,
+          "unit": "USD_per_diluted_share",
+          "measurement_class": "PER_SHARE_VALUE",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "annualization_basis": "ACTUAL_FULL_YEAR",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Reported EPS is not normalized earning power."
+        },
+        {
+          "assertion_id": "fin-pnc-2025-tbvps",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "tangible book value per share",
+          "normalized_metric_family": "TANGIBLE_BOOK_VALUE_PER_SHARE",
+          "value": 112.51,
+          "unit": "USD_per_common_share",
+          "measurement_class": "PER_SHARE_VALUE",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Issuer reconciliation controls."
+        },
+        {
+          "assertion_id": "fin-pnc-2025-cet1",
+          "assertion_type": "REPORTED_CAPITAL_MEASURE",
+          "native_metric_name": "standardized CET1 ratio",
+          "normalized_metric_family": "CET1_RATIO",
+          "value": 10.6,
+          "unit": "percent",
+          "measurement_class": "REGULATORY_RATIO",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Standardized rule basis; not tangible common equity or distributable capital."
+        }
+      ],
+      "research_rerating_bridge": "deposit and asset repricing; credit and provision; expense productivity; TBVPS and CET1-supported capital return",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-usb-2026",
+      "issuer_label": "U.S. Bancorp",
+      "ticker_hint": "USB",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "consolidated issuer with banking, payments, trust and wealth businesses",
+      "economic_modes": ["BALANCE_SHEET_PRINCIPAL", "PAYMENT_PROCESSOR", "FIDUCIARY", "AGENCY_INTERMEDIARY"],
+      "source": {
+        "source_family": "SEC_10Q",
+        "urls": [
+          "https://www.sec.gov/Archives/edgar/data/36104/000003610426000024/usb-20260331.htm",
+          "https://www.sec.gov/Archives/edgar/data/36104/000003610426000044/usb-20260630.htm"
+        ],
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [],
+      "research_rerating_bridge": "spread normalization plus payment/trust fee quality, integration expense, credit, capital and TBVPS",
+      "limitations": [
+        "This packet freezes the business-role and rerating grain but does not transcribe a numerical assertion until exact native table locators are reviewed.",
+        "Payments economics and bank balance-sheet economics require separate assertions."
+      ],
+      "review_state": "RESEARCH_CANDIDATE_SOURCE_LOCATOR_PENDING"
+    },
+    {
+      "record_id": "fin-research-tfc-2025-2026q2",
+      "issuer_label": "Truist Financial Corporation",
+      "ticker_hint": "TFC",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "consolidated issuer",
+      "economic_modes": ["BALANCE_SHEET_PRINCIPAL", "AGENCY_INTERMEDIARY"],
+      "sources": [
+        {
+          "source_family": "SEC_10K",
+          "url": "https://www.sec.gov/Archives/edgar/data/92230/000009223026000030/tfc-20251231.htm"
+        },
+        {
+          "source_family": "SEC_10Q",
+          "url": "https://www.sec.gov/Archives/edgar/data/92230/000009223026000099/tfc-20260630.htm"
+        }
+      ],
+      "observed_at": "2026-09-23",
+      "assertions": [
+        {
+          "assertion_id": "fin-tfc-2025-nim",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "net interest margin",
+          "normalized_metric_family": "NET_INTEREST_MARGIN",
+          "value": 3.03,
+          "unit": "percent",
+          "measurement_class": "PERIOD_AVERAGE_RATE",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "balance_basis": "SOURCE_DEFINED_AVERAGE",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Native definition controls."
+        },
+        {
+          "assertion_id": "fin-tfc-2025-deposit-cost",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "average deposit cost",
+          "normalized_metric_family": "DEPOSIT_COST",
+          "value": 1.78,
+          "unit": "percent",
+          "measurement_class": "PERIOD_AVERAGE_RATE",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "balance_basis": "SOURCE_DEFINED_AVERAGE",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Deposit population and all-versus-interest-bearing basis remain source-native."
+        },
+        {
+          "assertion_id": "fin-tfc-2026q2-cet1",
+          "assertion_type": "REPORTED_CAPITAL_MEASURE",
+          "native_metric_name": "CET1 ratio",
+          "normalized_metric_family": "CET1_RATIO",
+          "value": 10.9,
+          "unit": "percent",
+          "measurement_class": "REGULATORY_RATIO",
+          "as_of_date": "2026-06-30",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Rule basis must remain attached."
+        },
+        {
+          "assertion_id": "fin-tfc-2026q2-nco-rate",
+          "assertion_type": "REPORTED_RISK_MEASURE",
+          "native_metric_name": "net charge-off ratio",
+          "normalized_metric_family": "NET_CHARGE_OFF_RATE",
+          "value": 0.50,
+          "unit": "percent_annualized",
+          "measurement_class": "RATIO",
+          "period_start": "2026-04-01",
+          "period_end": "2026-06-30",
+          "balance_basis": "SOURCE_DEFINED_AVERAGE",
+          "annualization_basis": "ANNUALIZED_QUARTER",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Portfolio scope and denominator remain source-native."
+        },
+        {
+          "assertion_id": "fin-tfc-2026q2-tbvps",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "tangible book value per share",
+          "normalized_metric_family": "TANGIBLE_BOOK_VALUE_PER_SHARE",
+          "value": 33.40,
+          "unit": "USD_per_common_share",
+          "measurement_class": "PER_SHARE_VALUE",
+          "as_of_date": "2026-06-30",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Issuer reconciliation controls."
+        }
+      ],
+      "research_rerating_bridge": "simplification, deposit/NII recovery, expense, loss, capital and resumed TBVPS growth",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-cof-discover-2025",
+      "issuer_label": "Capital One Financial Corporation",
+      "ticker_hint": "COF",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "consolidated issuer including acquired Discover businesses",
+      "economic_modes": ["BALANCE_SHEET_PRINCIPAL", "PAYMENT_NETWORK", "PAYMENT_ISSUER", "PAYMENT_ACQUIRER_ADJACENCY"],
+      "sources": [
+        {
+          "source_family": "SEC_10K",
+          "url": "https://www.sec.gov/Archives/edgar/data/927628/000092762826000024/cof-20251231.htm"
+        },
+        {
+          "source_family": "SEC_10Q",
+          "url": "https://www.sec.gov/Archives/edgar/data/927628/000092762826000089/cof-20260630.htm"
+        }
+      ],
+      "observed_at": "2026-09-23",
+      "assertions": [
+        {
+          "assertion_id": "fin-cof-discover-close-2025",
+          "assertion_type": "OWNERSHIP_EVENT",
+          "native_metric_name": "Discover acquisition completion",
+          "normalized_metric_family": "ACQUISITION_CLOSE_EVENT",
+          "value": "COMPLETED",
+          "unit": "state",
+          "measurement_class": "POINT_IN_TIME_RATE",
+          "as_of_date": "2025-05-18",
+          "business_effective_at": "2025-05-18",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "The event does not establish organic growth, synergy realization, current network economics or per-share accretion."
+        }
+      ],
+      "research_rerating_bridge": "organic/acquired card and deposit bridge; day-one CECL; network economics; integration; TBVPS/ROTCE accretion",
+      "review_state": "RESEARCH_CANDIDATE_NUMERIC_TRANSCRIPTION_PENDING"
+    },
+    {
+      "record_id": "fin-research-axp-2025-2026",
+      "issuer_label": "American Express Company",
+      "ticker_hint": "AXP",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "closed-loop network, issuer, acquirer and lender",
+      "economic_modes": ["PAYMENT_NETWORK", "BALANCE_SHEET_PRINCIPAL", "PAYMENT_ISSUER", "PAYMENT_ACQUIRER", "MEMBERSHIP_SERVICE"],
+      "source": {
+        "source_family": "SEC_AND_ISSUER_RESULTS",
+        "url": "https://www.sec.gov/Archives/edgar/data/4962/000000496226000121/axp-20260316.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [],
+      "research_rerating_bridge": "billed business, discount yield, card fees, loan yield, rewards/benefits, funding and credit",
+      "limitations": [
+        "Exact billed-business, loan, fee and credit assertions require source-table locator review.",
+        "Closed-loop network and lending economics must remain separate."
+      ],
+      "review_state": "RESEARCH_CANDIDATE_SOURCE_LOCATOR_PENDING"
+    },
+    {
+      "record_id": "fin-research-syf-2025",
+      "issuer_label": "Synchrony Financial",
+      "ticker_hint": "SYF",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "consolidated partner/private-label card lender",
+      "economic_modes": ["BALANCE_SHEET_PRINCIPAL", "PAYMENT_ISSUER", "PARTNER_PROGRAM_OPERATOR"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1601712/000160171226000006/syf-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-syf-2025-purchase-volume",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "purchase volume",
+          "normalized_metric_family": "CARD_PURCHASE_VOLUME",
+          "value": 182.3,
+          "unit": "USD_billions",
+          "measurement_class": "VOLUME_VALUE",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "annualization_basis": "ACTUAL_FULL_YEAR",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Does not equal receivables or net revenue."
+        },
+        {
+          "assertion_id": "fin-syf-2025-loan-receivables",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "loan receivables",
+          "normalized_metric_family": "CARD_LOAN_RECEIVABLES",
+          "value": 103.8,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Period-end stock; does not establish average receivables, yield or credit quality."
+        },
+        {
+          "assertion_id": "fin-syf-2025-active-accounts",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "active accounts",
+          "normalized_metric_family": "ACTIVE_CARD_ACCOUNTS",
+          "value": 70.7,
+          "unit": "millions_of_accounts",
+          "measurement_class": "COUNT",
+          "as_of_date": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Issuer activity definition controls; account count is not cards or customers."
+        }
+      ],
+      "research_rerating_bridge": "partner volume to receivables; risk-adjusted yield after partner/reward cost; deposit funding; losses and capital",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-ally-2025",
+      "issuer_label": "Ally Financial Inc.",
+      "ticker_hint": "ALLY",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "auto finance, dealer services, insurance and digital bank",
+      "economic_modes": ["BALANCE_SHEET_PRINCIPAL", "DEALER_FINANCE", "DEPOSIT_INSTITUTION", "INSURANCE_ADJACENCY"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/40729/000004072926000005/ally-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-ally-2025-bank-assets",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "Ally Bank assets",
+          "normalized_metric_family": "BANK_ASSETS_TOTAL",
+          "value": 184.6,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Bank-subsidiary population, not necessarily consolidated assets."
+        },
+        {
+          "assertion_id": "fin-ally-2025-deposits",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "deposits",
+          "normalized_metric_family": "DEPOSITS_TOTAL",
+          "value": 151.6,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Does not establish average deposit cost or stability."
+        },
+        {
+          "assertion_id": "fin-ally-2025-auto-assets",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "auto finance assets",
+          "normalized_metric_family": "AUTO_FINANCE_ASSETS",
+          "value": 115.8,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Portfolio composition, leases and commercial/consumer mix remain source-native."
+        },
+        {
+          "assertion_id": "fin-ally-2025-auto-net-revenue",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "auto finance net revenue",
+          "normalized_metric_family": "AUTO_FINANCE_NET_REVENUE",
+          "value": 5.6,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "annualization_basis": "ACTUAL_FULL_YEAR",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Does not establish credit-adjusted profit or capital return."
+        },
+        {
+          "assertion_id": "fin-ally-2025-auto-originations",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "consumer auto originations",
+          "normalized_metric_family": "AUTO_LOAN_ORIGINATIONS",
+          "value": 43.7,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "annualization_basis": "ACTUAL_FULL_YEAR",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Does not establish retained balance, pricing, risk mix or later loss."
+        },
+        {
+          "assertion_id": "fin-ally-2025-dealers",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "dealer relationships",
+          "normalized_metric_family": "AUTO_DEALER_RELATIONSHIPS",
+          "value": 21400,
+          "unit": "dealer_relationships_approximately",
+          "measurement_class": "COUNT",
+          "as_of_date": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Relationship count does not establish active volume or exclusivity."
+        }
+      ],
+      "research_rerating_bridge": "new vintage risk-adjusted yield; deposit funding; recoveries/residuals; normalized ROTCE and TBVPS",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-rkt-2026q2",
+      "issuer_label": "Rocket Companies, Inc.",
+      "ticker_hint": "RKT",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "mortgage production and servicing after Mr. Cooper acquisition",
+      "economic_modes": ["MORTGAGE_ORIGINATOR", "MORTGAGE_SERVICER", "TECHNOLOGY_PLATFORM"],
+      "source": {
+        "source_family": "SEC_10Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1805284/000162828026054577/rkt-20260630.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-rkt-2026q2-originations",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "closed loan origination volume",
+          "normalized_metric_family": "MORTGAGE_ORIGINATIONS",
+          "value": 49.1,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2026-04-01",
+          "period_end": "2026-06-30",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Closed volume is not applications, locks or retained loans."
+        },
+        {
+          "assertion_id": "fin-rkt-2026q2-gos",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "gain-on-sale margin",
+          "normalized_metric_family": "MORTGAGE_GAIN_ON_SALE_MARGIN",
+          "value": 2.48,
+          "unit": "percent",
+          "measurement_class": "RATIO",
+          "period_start": "2026-04-01",
+          "period_end": "2026-06-30",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Issuer numerator/denominator and hedge treatment control."
+        },
+        {
+          "assertion_id": "fin-rkt-2026q2-servicing-upb",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "servicing unpaid principal balance",
+          "normalized_metric_family": "MORTGAGE_SERVICING_UPB",
+          "value": 2.0,
+          "unit": "USD_trillions_approximately",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2026-06-30",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Does not equal MSR fair value, revenue or net servicing profit."
+        },
+        {
+          "assertion_id": "fin-rkt-2026q2-loan-count",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "serviced loans",
+          "normalized_metric_family": "MORTGAGE_SERVICED_LOANS_COUNT",
+          "value": 9.1,
+          "unit": "millions_of_loans_approximately",
+          "measurement_class": "COUNT",
+          "as_of_date": "2026-06-30",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Count does not establish average loan size, owned/subserviced mix or fee yield."
+        }
+      ],
+      "research_rerating_bridge": "production volume and GOS plus servicing cash/MSR/recapture, integration, funding and normalized FCF",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-pfsi-2025",
+      "issuer_label": "PennyMac Financial Services, Inc.",
+      "ticker_hint": "PFSI",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "mortgage production and servicing",
+      "economic_modes": ["MORTGAGE_ORIGINATOR", "MORTGAGE_SERVICER", "INVESTMENT_MANAGER_ADJACENCY"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1745916/000110465926018142/pfsi-20251231x10k.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-pfsi-2025-production-upb",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "production unpaid principal balance",
+          "normalized_metric_family": "MORTGAGE_PRODUCTION_VOLUME",
+          "value": 152.4,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Production UPB is not servicing UPB or revenue."
+        },
+        {
+          "assertion_id": "fin-pfsi-2025-servicing-upb",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "servicing unpaid principal balance",
+          "normalized_metric_family": "MORTGAGE_SERVICING_UPB",
+          "value": 733.6,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Does not equal MSR fair value or net servicing earnings."
+        },
+        {
+          "assertion_id": "fin-pfsi-2025-msr-upb",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "MSR-backed unpaid principal balance",
+          "normalized_metric_family": "MORTGAGE_MSR_BACKED_UPB",
+          "value": 462.0,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Underlying UPB, not MSR asset fair value."
+        },
+        {
+          "assertion_id": "fin-pfsi-2025-production-pretax",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "production segment pretax income",
+          "normalized_metric_family": "MORTGAGE_PRODUCTION_PRETAX_INCOME",
+          "value": 369.9,
+          "unit": "USD_millions_approximately",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Segment/source definition controls."
+        },
+        {
+          "assertion_id": "fin-pfsi-2025-servicing-pretax",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "servicing segment pretax income",
+          "normalized_metric_family": "MORTGAGE_SERVICING_PRETAX_INCOME",
+          "value": 324.9,
+          "unit": "USD_millions_approximately",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Requires MSR valuation/hedge and source segment reconciliation."
+        }
+      ],
+      "research_rerating_bridge": "countercyclical production/servicing mix; MSR/hedge; advances/liquidity; per-share book and cash earnings",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-ares-2025-2026q2",
+      "issuer_label": "Ares Management Corporation",
+      "ticker_hint": "ARES",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "alternative asset manager",
+      "economic_modes": ["FIDUCIARY", "PRIVATE_CREDIT_MANAGER", "FUND_SPONSOR", "CAPITAL_SOLUTIONS_PROVIDER"],
+      "sources": [
+        {
+          "source_family": "SEC_10K",
+          "url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026011413/ares-20251231.htm"
+        },
+        {
+          "source_family": "ISSUER_EARNINGS_PRESENTATION",
+          "url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026051191/a2026q2-ex992earningspre.htm"
+        }
+      ],
+      "observed_at": "2026-09-23",
+      "assertions": [
+        {
+          "assertion_id": "fin-ares-2025-management-fees",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "management fees",
+          "normalized_metric_family": "ASSET_MANAGER_MANAGEMENT_FEES",
+          "value": 3.680,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Does not equal FRE or distributable earnings."
+        },
+        {
+          "assertion_id": "fin-ares-2026q2-aum",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "assets under management",
+          "normalized_metric_family": "ASSETS_UNDER_MANAGEMENT",
+          "value": 671.3,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2026-06-30",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Issuer-native AUM definition; not all AUM pays fees."
+        },
+        {
+          "assertion_id": "fin-ares-2026q2-fpaum",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "fee-paying assets under management",
+          "normalized_metric_family": "FEE_PAYING_AUM",
+          "value": 409.9,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2026-06-30",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Fee base/rate and average-period relationship remain source-native."
+        },
+        {
+          "assertion_id": "fin-ares-2026q2-available-capital",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "available capital",
+          "normalized_metric_family": "ASSET_MANAGER_AVAILABLE_CAPITAL",
+          "value": 170.0,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2026-06-30",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Does not equal deployable current-period revenue or guaranteed investment."
+        },
+        {
+          "assertion_id": "fin-ares-2026q2-not-paying-fees",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "AUM not yet paying fees",
+          "normalized_metric_family": "AUM_NOT_YET_PAYING_FEES",
+          "value": 92.6,
+          "unit": "USD_billions",
+          "measurement_class": "CONTRACTED_NOT_RECOGNIZED",
+          "as_of_date": "2026-06-30",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Potential future fee base; activation timing and conditions remain source-native."
+        },
+        {
+          "assertion_id": "fin-ares-2026q2-fre",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "fee-related earnings",
+          "normalized_metric_family": "FEE_RELATED_EARNINGS",
+          "value": 491.1,
+          "unit": "USD_millions_approximately",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2026-04-01",
+          "period_end": "2026-06-30",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Issuer reconciliation controls; not total GAAP net income."
+        }
+      ],
+      "research_rerating_bridge": "organic FPAUM and fee conversion; FRE margin; deployment; credit performance; acquisition/per-share economics",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-apo-2025",
+      "issuer_label": "Apollo Global Management, Inc.",
+      "ticker_hint": "APO",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "alternative asset management and retirement-services ecosystem",
+      "economic_modes": ["FIDUCIARY", "PRIVATE_CREDIT_MANAGER", "FUND_SPONSOR", "RETIREMENT_SPREAD_BUSINESS"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1858681/000185868126000013/apo-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-apo-2025-aum",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "assets under management",
+          "normalized_metric_family": "ASSETS_UNDER_MANAGEMENT",
+          "value": 938.0,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Issuer-native AUM; does not equal fee-generating AUM."
+        },
+        {
+          "assertion_id": "fin-apo-2025-fgaum",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "fee-generating assets under management",
+          "normalized_metric_family": "FEE_GENERATING_AUM",
+          "value": 709.0,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Fee rates and average balances remain source-native."
+        },
+        {
+          "assertion_id": "fin-apo-2025-fre",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "fee-related earnings",
+          "normalized_metric_family": "FEE_RELATED_EARNINGS",
+          "value": 2.528,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Issuer reconciliation controls."
+        },
+        {
+          "assertion_id": "fin-apo-2025-sre",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "spread-related earnings",
+          "normalized_metric_family": "SPREAD_RELATED_EARNINGS",
+          "value": 3.361,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Spread-related earnings carry different asset/liability/capital risks from FRE."
+        },
+        {
+          "assertion_id": "fin-apo-2025-originations",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "origination volume",
+          "normalized_metric_family": "PRIVATE_CREDIT_ORIGINATION_VOLUME",
+          "value": 309.0,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Does not establish retained exposure, fee revenue, credit quality or end-investor demand."
+        }
+      ],
+      "research_rerating_bridge": "FGAUM/FRE plus retirement spread/capital economics; origination quality; SOTP and required-return transparency",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-owl-2026q1",
+      "issuer_label": "Blue Owl Capital Inc.",
+      "ticker_hint": "OWL",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "alternative asset manager",
+      "economic_modes": ["FIDUCIARY", "PRIVATE_CREDIT_MANAGER", "PERMANENT_CAPITAL_MANAGER", "FUND_SPONSOR"],
+      "source": {
+        "source_family": "ISSUER_EARNINGS_DECK",
+        "url": "https://www.sec.gov/Archives/edgar/data/1823945/000182394526000022/blueowlearningsdeck33126.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-owl-2026q1-aum",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "assets under management",
+          "normalized_metric_family": "ASSETS_UNDER_MANAGEMENT",
+          "value": 314.9,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2026-03-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Issuer-native AUM."
+        },
+        {
+          "assertion_id": "fin-owl-2026q1-fpaum",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "fee-paying assets under management",
+          "normalized_metric_family": "FEE_PAYING_AUM",
+          "value": 188.4,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2026-03-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Fee rates and average-period treatment remain source-native."
+        },
+        {
+          "assertion_id": "fin-owl-2026q1-permanent-capital",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "permanent capital",
+          "normalized_metric_family": "PERMANENT_CAPITAL",
+          "value": 224.8,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2026-03-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Legal/liquidity terms remain vehicle-specific; permanent does not mean risk-free."
+        },
+        {
+          "assertion_id": "fin-owl-2026q1-not-paying-fees",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "AUM not yet paying fees",
+          "normalized_metric_family": "AUM_NOT_YET_PAYING_FEES",
+          "value": 29.9,
+          "unit": "USD_billions",
+          "measurement_class": "CONTRACTED_NOT_RECOGNIZED",
+          "as_of_date": "2026-03-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Potential fee base with source-defined activation conditions."
+        },
+        {
+          "assertion_id": "fin-owl-2026q1-fre",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "fee-related earnings",
+          "normalized_metric_family": "FEE_RELATED_EARNINGS",
+          "value": 393.6,
+          "unit": "USD_millions_approximately",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2026-01-01",
+          "period_end": "2026-03-31",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Issuer reconciliation controls."
+        }
+      ],
+      "research_rerating_bridge": "permanent capital and FPAUM; shadow-AUM conversion; FRE margin; acquisition and per-share economics",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-obdc-2025q4",
+      "issuer_label": "Blue Owl Capital Corporation",
+      "ticker_hint": "OBDC",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "BDC / direct-lending vehicle",
+      "economic_modes": ["BALANCE_SHEET_PRINCIPAL", "REGULATED_INVESTMENT_COMPANY", "EXTERNALLY_MANAGED_VEHICLE"],
+      "source": {
+        "source_family": "ISSUER_EARNINGS_RESULTS",
+        "url": null,
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-obdc-2025q4-nii",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "GAAP net investment income per share",
+          "normalized_metric_family": "BDC_NII_PER_SHARE",
+          "value": 0.38,
+          "unit": "USD_per_share",
+          "measurement_class": "PER_SHARE_VALUE",
+          "period_start": "2025-10-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "One quarter; cash/PIK composition and sustainability require separate evidence."
+        },
+        {
+          "assertion_id": "fin-obdc-2025q4-adjusted-nii",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "adjusted net investment income per share",
+          "normalized_metric_family": "BDC_ADJUSTED_NII_PER_SHARE",
+          "value": 0.36,
+          "unit": "USD_per_share",
+          "measurement_class": "PER_SHARE_VALUE",
+          "period_start": "2025-10-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Issuer reconciliation controls."
+        },
+        {
+          "assertion_id": "fin-obdc-2025q4-dividend",
+          "assertion_type": "REPORTED_DISTRIBUTION_MEASURE",
+          "native_metric_name": "quarterly dividend per share",
+          "normalized_metric_family": "COMMON_DIVIDEND_PER_SHARE",
+          "value": 0.37,
+          "unit": "USD_per_share",
+          "measurement_class": "PER_SHARE_VALUE",
+          "period_start": "2025-10-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Dividend declaration/payment clocks and regular/supplemental state require exact source binding."
+        },
+        {
+          "assertion_id": "fin-obdc-2025q4-nav",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "net asset value per share",
+          "normalized_metric_family": "NAV_PER_SHARE",
+          "value": 14.81,
+          "unit": "USD_per_share",
+          "measurement_class": "PER_SHARE_VALUE",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Fair-value marks are point-in-time estimates, not final recovery values."
+        }
+      ],
+      "research_rerating_bridge": "cash-supported NII/dividend coverage; NAV stability; nonaccruals/marks; leverage/funding and manager alignment",
+      "review_state": "RESEARCH_CANDIDATE_SOURCE_URL_PENDING"
+    },
+    {
+      "record_id": "fin-research-arcc-2025-2026",
+      "issuer_label": "Ares Capital Corporation",
+      "ticker_hint": "ARCC",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "BDC / diversified direct-lending vehicle",
+      "economic_modes": ["BALANCE_SHEET_PRINCIPAL", "REGULATED_INVESTMENT_COMPANY", "EXTERNALLY_MANAGED_VEHICLE"],
+      "source": {
+        "source_family": "SEC_AND_ISSUER_RESULTS",
+        "url": null,
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [],
+      "research_rerating_bridge": "cash/PIK asset yield minus funding/fees/losses; NAV/share and dividend coverage; nonaccruals and leverage",
+      "limitations": [
+        "Exact quarter/year numerical assertions and source locators are held for a subsequent primary-source transcription pass.",
+        "ARCC is a vehicle exposure distinct from Ares Management Corporation."
+      ],
+      "review_state": "RESEARCH_CANDIDATE_SOURCE_LOCATOR_PENDING"
+    }
+  ],
+  "packet_summary": {
+    "records": 15,
+    "canonical_identity_bindings": 0,
+    "approved_basket_memberships": 0,
+    "ranking_or_trade_fields": 0,
+    "records_with_numeric_assertions": 11,
+    "records_held_for_locator_or_numeric_transcription": 4
+  },
+  "exact_next_action": "Review and bind exact native source locators for held records; run deterministic semantic validation; then continue principal research into asset management, wealth, insurance and risk-transfer rerating before drafting the product design and final Fable CEO handoff."
+}

@@ -1,0 +1,156 @@
+{
+  "schema": "mastermind.research.finance_r10f_housing_rbc_measurements.v0_1",
+  "state": "RESEARCH_ONLY_NON_CANONICAL",
+  "operation": "gmi-finance-sector-research-20260923-sol-001",
+  "procedure_commit": "a7d2b3049e5cdc523e91e61a6e9d70a1cb911157",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pull_request": 7786,
+    "branch": "sol/finance-sector-research-20260923",
+    "parent_head": "fbe3a4863513b4e4a7298f96df50387a068f0e40"
+  },
+  "china_housing": {
+    "case_id": "R10-CN-HOUSING-POLICY-20240517",
+    "clocks": {
+      "policy_package": "2024-05-17",
+      "provident_fund_rate_effective": "2024-05-18",
+      "local_implementation": "CITY_SPECIFIC"
+    },
+    "bank_cohort": [
+      "1398.HK",
+      "0939.HK",
+      "1288.HK",
+      "3988.HK",
+      "3968.HK"
+    ],
+    "bank_equal_weight_adjusted_return_pct": {
+      "0": -0.0677,
+      "1": 0.1643,
+      "5": -1.8718,
+      "20": -7.6317,
+      "60": -2.8937,
+      "120": 7.3042,
+      "252": 39.1165,
+      "max_drawdown": -14.3408
+    },
+    "developer_context": [
+      "0688.HK",
+      "1109.HK",
+      "0960.HK"
+    ],
+    "developer_equal_weight_adjusted_return_pct": {
+      "0": 6.0908,
+      "1": 4.979,
+      "5": -2.4663,
+      "20": -11.485,
+      "60": -23.8506,
+      "120": -5.9985,
+      "252": -18.9942,
+      "max_drawdown": -39.9019
+    },
+    "ping_an_adjusted_return_pct": {
+      "0": 5.6977,
+      "20": -12.0079,
+      "60": -18.068,
+      "120": 20.1844,
+      "252": 20.0974,
+      "max_drawdown": -31.6583
+    },
+    "cmb_witness": {
+      "nim_2023_pct": 2.15,
+      "nim_2024_pct": 1.98,
+      "roae_2023_pct": 16.22,
+      "roae_2024_pct": 14.49,
+      "residential_mortgage_balance_2023_rmb_mn": 1376814,
+      "residential_mortgage_balance_2024_rmb_mn": 1403755,
+      "residential_mortgage_npl_2023_pct": 0.37,
+      "residential_mortgage_npl_2024_pct": 0.48,
+      "residential_mortgage_special_mention_2023_pct": 0.95,
+      "residential_mortgage_special_mention_2024_pct": 1.28,
+      "residential_mortgage_ltv_2024_pct": 37.15,
+      "corporate_real_estate_npl_2023_pct": 5.26,
+      "corporate_real_estate_npl_2024_pct": 4.94
+    },
+    "causal_outcome": "UNMEASURED"
+  },
+  "hk_rbc": {
+    "case_id": "R10-HK-RBC-IMPLEMENTATION-20240701",
+    "quantitative_pillar_effective": "2024-07-01",
+    "first_listed_market_observation": "2024-07-02",
+    "aia_company_local": {
+      "old_basis_2023": {
+        "available_capital_usd_bn": 8.924,
+        "regulatory_minimum_capital_usd_bn": 1.952,
+        "solvency_ratio_pct": 457,
+        "regime": "HKIO_PRE_RBC"
+      },
+      "new_basis_2024": {
+        "eligible_capital_usd_bn": 9.144,
+        "prescribed_capital_usd_bn": 3.011,
+        "solvency_ratio_pct": 304,
+        "regime": "HKRBC"
+      },
+      "comparability": "REGIME_BREAK_NOT_LIKE_FOR_LIKE"
+    },
+    "aia_adjusted_return_pct": {
+      "0": -1.0377,
+      "1": 0.283,
+      "5": -2.9245,
+      "20": -0.6604,
+      "60": 20.9788,
+      "120": 5.476,
+      "252": 31.9031,
+      "max_drawdown": -32.998
+    },
+    "prudential_early_adopter": {
+      "effective": "2022-01-01",
+      "july_2024_treatment_status": "ALREADY_ADOPTED",
+      "adjusted_return_pct": {
+        "0": -0.7077,
+        "1": -0.2831,
+        "5": 1.4862,
+        "20": -2.1231,
+        "60": -0.8401,
+        "120": -12.1018,
+        "252": 39.243
+      }
+    },
+    "china_life_non_hkrbc_reference_adjusted_return_pct": {
+      "0": 1.6304,
+      "1": 3.0607,
+      "5": 0.2242,
+      "20": -1.0995,
+      "60": 32.1825,
+      "120": 40.4729,
+      "252": 85.5722
+    },
+    "aia_group_2024": {
+      "vonb_yoy_pct": 18,
+      "opat_per_share_yoy_pct": 12,
+      "ufsg_per_share_yoy_pct": 10,
+      "ev_equity_per_share_yoy_pct": 9,
+      "shareholder_capital_ratio_pct": 236
+    },
+    "causal_outcome": "UNMEASURED"
+  },
+  "authority": {
+    "may_admit_source": false,
+    "may_bind_identity": false,
+    "may_create_basket": false,
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_trade": false
+  },
+  "limitations": [
+    "retrospective mechanism research",
+    "adjusted returns are not quote-price valuation inputs",
+    "China long-horizon market returns overlap later policy packages",
+    "CMB annual changes cannot be attributed solely to May 2024 policy",
+    "old HK solvency ratios are not numerically comparable with HKRBC",
+    "Prudential early-adopted HKRBC in 2022",
+    "historical analyst consensus not established",
+    "no formal causal outcome label promoted"
+  ],
+  "next_action": "Whole-R10 synthesis and adversarial review across all 12 cases, then R11 basket/visualization freeze."
+}
