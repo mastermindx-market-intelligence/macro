@@ -25,6 +25,17 @@ from lib.nyse_calendar import is_session
 from scripts.research import terminal_tactical_r1b_study as s
 
 _REAL_COLLECTED_TEST_IDS = s._collected_test_ids
+_REAL_REVIEWED_BLOB_SHA256 = s._reviewed_blob_sha256
+
+_STUB_COLLECTED_TEST_IDS = lambda files: {  # noqa: E731
+    f"{m}::test_ok" for m in s.REQUIRED_TEST_MODULES
+}
+
+
+@pytest.fixture(autouse=True)
+def _stub_collected_test_ids_for_runner_tests(monkeypatch):
+    """main()'s pytest --collect-only receipt is ~1–20s; production keeps the real call."""
+    monkeypatch.setattr(s, "_collected_test_ids", _STUB_COLLECTED_TEST_IDS)
 
 ROOT = Path(__file__).resolve().parents[1]
 CFG = json.loads((ROOT / "research/species/tti_r1b/config_v4.json").read_text())
@@ -182,8 +193,6 @@ def _write_manifest(path: Path, inputs: Path, symbols) -> Path:
 def world(tmp_path_factory):
     mp = pytest.MonkeyPatch()
     mp.setattr(s, "_reviewed_blob_sha256", lambda code_sha, name: s._sha(s.ROOT / name))
-    mp.setattr(s, "_collected_test_ids",
-               lambda files: {f"{m}::test_ok" for m in s.REQUIRED_TEST_MODULES})
     root = tmp_path_factory.mktemp("r1b_run")
     terminal = root / "terminal_root"
     (terminal / "ingest").mkdir(parents=True)
@@ -951,11 +960,8 @@ def test_t5g_abort_dir_argument_is_rejected(world, monkeypatch, tmp_path):
     assert exc.value.code == 2
 
 
-def test_t6a_loaded_modules_are_hashed_in_identity(world, monkeypatch, tmp_path):
-    _patch(monkeypatch, world, attempt_root=tmp_path)
-    out = _out_dir(tmp_path)
-    assert s.main(_argv(world, out)) == 0
-    identity = json.loads((out / "result.json").read_text())["identity"]
+def test_t6a_loaded_modules_are_hashed_in_identity(run):
+    identity = run.result["identity"]
     assert set(identity["code_files"]) >= set(s.CODE_FILES)
     assert set(identity["code_files"]) == set(s._loaded_root_modules())
     for name in EXTRA_INIT_MODULES:
@@ -973,6 +979,7 @@ def test_t6b_loaded_root_modules_excludes_tests_tree():
 def test_t6g_reviewed_blob_sha256_local_commit(tmp_path, monkeypatch):
     repo, head = _init_pin_repo(tmp_path)
     monkeypatch.setattr(s, "ROOT", repo)
+    monkeypatch.setattr(s, "_reviewed_blob_sha256", _REAL_REVIEWED_BLOB_SHA256)
     digest = s._reviewed_blob_sha256(head, "lib/nyse_calendar.py")
     assert digest == hashlib.sha256(b"pin\n").hexdigest()
 
@@ -980,6 +987,7 @@ def test_t6g_reviewed_blob_sha256_local_commit(tmp_path, monkeypatch):
 def test_t6h_reviewed_blob_unknown_commit_refuses(tmp_path, monkeypatch):
     repo, head = _init_pin_repo(tmp_path)
     monkeypatch.setattr(s, "ROOT", repo)
+    monkeypatch.setattr(s, "_reviewed_blob_sha256", _REAL_REVIEWED_BLOB_SHA256)
     missing = "f" * 40
     with pytest.raises(ValueError, match=f"code_identity_object_unknown:{missing[:12]}"):
         s._reviewed_blob_sha256(missing, "lib/nyse_calendar.py")
@@ -988,6 +996,7 @@ def test_t6h_reviewed_blob_unknown_commit_refuses(tmp_path, monkeypatch):
 def test_t6i_reviewed_blob_not_local_refuses(tmp_path, monkeypatch):
     repo, head = _init_pin_repo(tmp_path)
     monkeypatch.setattr(s, "ROOT", repo)
+    monkeypatch.setattr(s, "_reviewed_blob_sha256", _REAL_REVIEWED_BLOB_SHA256)
     monkeypatch.setattr(s, "_object_local", lambda _repo, sha: sha == head)
     with pytest.raises(ValueError, match=f"code_identity_blob_not_local:{head[:12]}:"):
         s._reviewed_blob_sha256(head, "lib/nyse_calendar.py")
@@ -1143,11 +1152,8 @@ def test_t7f_terminal_dependency_probe_failure_refuses(world, monkeypatch, tmp_p
     assert "terminal_dependency_probe_failed:status" in capsys.readouterr().err
 
 
-def test_t7g_result_records_terminal_dependency_pins(world, monkeypatch, tmp_path):
-    _patch(monkeypatch, world, attempt_root=tmp_path)
-    out = _out_dir(tmp_path)
-    assert s.main(_argv(world, out)) == 0
-    terminal = json.loads((out / "result.json").read_text())["inputs"]["terminal_dependency"]
+def test_t7g_result_records_terminal_dependency_pins(run, world):
+    terminal = run.result["inputs"]["terminal_dependency"]
     assert terminal["worktree_clean"] is True
     assert terminal["toplevel"] == str(world.terminal.resolve())
     expected_blobs = {
@@ -1284,13 +1290,10 @@ def test_t8d_collection_failure_refuses(world, monkeypatch, tmp_path, capsys):
     assert "test_collection_failed" in capsys.readouterr().err
 
 
-def test_t8e_result_records_expected_cases_sha256(world, monkeypatch, tmp_path):
-    _patch(monkeypatch, world, attempt_root=tmp_path)
-    out = _out_dir(tmp_path)
-    assert s.main(_argv(world, out)) == 0
+def test_t8e_result_records_expected_cases_sha256(run):
     forged = {f"{m}::test_ok" for m in s.REQUIRED_TEST_MODULES}
     expected_sha = hashlib.sha256("\n".join(sorted(forged)).encode()).hexdigest()
-    receipt = json.loads((out / "result.json").read_text())["leak_audit"]["test_receipt"]
+    receipt = run.result["leak_audit"]["test_receipt"]
     assert receipt["expected_cases_sha256"] == expected_sha
     assert receipt["collected_from"] == list(s.TEST_FILES)
 
@@ -1444,10 +1447,7 @@ def test_t9g_unfinalised(world, monkeypatch, tmp_path, capsys):
     assert s.main(_argv(world, _out_dir(tmp_path, "run2"))) == 0
 
 
-def test_t9h_schema(world, monkeypatch, tmp_path):
-    _patch(monkeypatch, world, attempt_root=tmp_path)
-    out = _out_dir(tmp_path)
-    assert s.main(_argv(world, out)) == 0
-    result = json.loads((out / "result.json").read_text())
+def test_t9h_schema(run):
+    result = run.result
     assert result["schema"] == "mastermind.tti.r1b.result.v5"
     assert "code_digest" in result and "attempt_root" in result
