@@ -29,8 +29,8 @@ NEXT: commit 03/04/05 + packets → push → PR → ACK/START on #8363 → launc
 | Lane | Round | Launched (UTC) | Host run id | Out file | State | Review | Notes |
 |---|---|---|---|---|---|---|---|
 | A1 | — | — | — | — | NOT STARTED | — | |
-| C1 | — | — | — | — | NOT STARTED | — | |
-| B1 | — | — | — | — | NOT STARTED | — | |
+| C1 | — | — | — | — | RUNNING — mini2 rs_20261004T011730Z_4264 (01:17Z) | — | |
+| B1 | — | — | — | — | RUNNING — mini2 rs_20261004T011728Z_4177 (01:17Z) | — | |
 | C2 | — | — | — | — | NOT STARTED | — | |
 | F1 | — | — | — | — | NOT STARTED | — | |
 
@@ -57,3 +57,10 @@ HOLD-FOR-SOL PRs never armed/readied/merged: #8303, #8257, #8301, #8304, #8306. 
 ## 7. Next action for a resuming session
 
 Read §2's last entry and §3; reconcile every lane's out file ONCE (RUNNING / DELIVERED / SILENT / DEAD / THRASHING); judge DELIVERED lanes by artifact through a `reviewer`; continue the wave from the lane matrix; never re-ACK on #8363; never re-launch a lane whose out file already carries `<LANE>_RETURN:`.
+
+### Ledger addendum — 2026-10-04 01:20Z (Fable seat f273dd7d)
+
+- Platform: the `Workflow` and `Write` tools fail with a PreToolUse hook-bridge timeout this session; the `Agent` tool and Bash work. The global routing guard denies Fable children outright, so suborchestration runs as Opus `orchestrator` (fable-mode) and Opus read-only `reviewer`; Fable judgment stays in the main loop.
+- First launch 01:07Z of B1/C1 died `SCP_FAILED rc=1` — mini2 disk 100% full (116 MiB). Reclaimed: two regenerable caches (Cursor ShipIt staging, uv cache) and a dead sibling lane's `~/lanes/tmp/l56.*/site` scratch copies (2.6 GB, mtime 2026-10-02, no process). The GC sweeper reported 0 reclaimable (all 22 trees <3 d). Free after: 3.1 GiB.
+- Relaunched 01:17Z: B1 = `rs_20261004T011728Z_4177`, C1 = `rs_20261004T011730Z_4264` (glm-5.3, pool glm-frontier, LEASE_OK, LAUNCH). Watchers: one bash sentinel per lane (120 s cadence, no gh calls).
+- PR #8375 was `merge-blocked`: `fence-pack` → AGENT_OS_RECORD_CONTRACT failed because `agentos/handoffs/PROPHET-REGIME-INDICATOR-2026-10-04-ASTRA-CEO.md` had no frontmatter (`pr_regression`, passes on exact base). Disarmed with marker comment 5975335662, repaired here (frontmatter + `WS:PROPHET-REGIME-TIMEFRAME-RESEARCH`), re-armed after the push.

@@ -1,3 +1,70 @@
+---
+workstream: "WS:PROPHET-REGIME-TIMEFRAME-RESEARCH"
+session: >
+  claude/prophet-astra-ceo-program-20261004 (worktree astra-ceo-handoff-4a36a0). Record
+  body authored by Astra CEO (ChatGPT) on PR #8363; frontmatter and takeover state added by
+  the Fable seat session f273dd7d on PR #8375.
+model: sol
+ended_because: blocked
+mission: >
+  Chairman request: improve Prophet across regimes, technical families, timeframes and
+  themes with end-to-end research, implementation and real consumer proof, preserving the
+  large-winner tail while reducing avoidable severe failures; one Prophet platform with
+  separately evaluated strategies, never a universal regime score.
+state_before: >
+  Astra CEO published the accepted intake (00 assignment, 01 research audit, 02 source
+  census) at b598819bcecc, but chapter 03 (masterplan) was blocked by the ChatGPT upload
+  safety check and never retried, and 04/05 were never uploaded. The parent mission was
+  incomplete and no worker, trial or runtime operation had been started.
+changed:
+  - path: research/prophet_v4/astra_regime_indicator_handoff_20261004/00_ASTRA_CEO_ASSIGNMENT.md
+    what: Astra intake — Chairman steering, evidence labels, corrected chapter references.
+  - path: research/prophet_v4/astra_regime_indicator_handoff_20261004/01_RESEARCH_INTAKE_AND_AUDIT.md
+    what: Astra audit of supplied research incl. RS-cutoff and 1.5-ATR-gate NO-GO (not re-run).
+  - path: research/prophet_v4/astra_regime_indicator_handoff_20261004/02_SOURCE_CENSUS_AND_REUSE_MAP.md
+    what: Source census and reuse map incl. V4 custody boundaries and TOI commissions.
+  - path: research/prophet_v4/astra_regime_indicator_handoff_20261004/03_RESEARCH_AND_PRODUCT_MASTERPLAN.md
+    what: Fable-authored masterplan — exit gate, DO_NOT_REDO, decisions D1–D8, designs A1/B1/C1/C2/F1 with falsifiers.
+  - path: research/prophet_v4/astra_regime_indicator_handoff_20261004/04_FABRIC_WORK_PACKAGES.md
+    what: Lane matrix, model routing with escalation reasons, launch/watch/collect recipe, repair protocol.
+  - path: research/prophet_v4/astra_regime_indicator_handoff_20261004/05_ACCEPTANCE_AND_CONTINUATION.md
+    what: Acceptance gates, ledger, lane matrix state, holds, do-not-redo, danger areas.
+  - path: research/prophet_v4/astra_regime_indicator_handoff_20261004/packets/
+    what: LANE_LAW_RESEARCH.txt plus A1/B1/C1/C2/F1 spec packets consumed verbatim by the fabric lanes.
+verified:
+  - claim: Astra's three accepted intake docs and README exist at the accepted commit.
+    command: git show --stat --format=%h b598819bcecc -- research/prophet_v4/astra_regime_indicator_handoff_20261004/
+    result: 4 files, 498 insertions (00, 01, 02, README).
+  - claim: The Fable takeover committed chapters 03/04/05, six packets and results/.gitignore.
+    command: git show --stat --format=%h 848eea066234
+    result: 11 files, 505 insertions.
+  - claim: The incumbent technical canon exposes rsi_macd and stoch_rsi_kd as the identity targets for lane code.
+    command: grep -nE "def (rsi_macd|stoch_rsi_kd)\(" engine/canon.py
+    result: "430: def rsi_macd(close); 437: def stoch_rsi_kd(close)."
+unverified:
+  - claim: Prior broad family-by-regime research is a scoped null (Astra audit).
+    what_would_verify: The pre-registered B1/C2 lanes under masterplan §5 with month-cluster bootstrap and mechanical verdict rules.
+  - claim: W0 PR #6790 merged as db5d20c45db1 while WS-TEMPORAL-GRAIN-INTELLIGENCE still records awaiting_ci.
+    what_would_verify: gh pr view 6790 --json state,mergeCommit and a records-only fix on that workstream by its owner.
+unresolved:
+  - Chapter 03 upload via ChatGPT was blocked and is not retried; the Fable-authored 03 supersedes it.
+  - Parent Prophet mission incomplete; wave-1 lanes B1 and C1 are running on mini2, A1/F1/C2 not started.
+next_actions:
+  - Watch mini2 lanes rs_20261004T011728Z_4177 (B1) and rs_20261004T011730Z_4264 (C1) to DONE; rsync results/<LANE>/.
+  - Run each lane's pytest file and hashes.txt check locally; commission an Opus read-only reviewer per lane.
+  - On B1+C1 ACCEPT launch C2; launch A1 and F1 as fill; seat adjudicates C2 and writes the §7 implication map.
+  - Merge PR #8375 (docs + records), verify against origin/main, then close PR #8363 with an explanatory comment.
+do_not_redo:
+  - Pickup ACK/START on #8363 posted once (comment 5975009284).
+  - The #8303 pilots are consumed evidence (HOLD-FOR-SOL); TOI W1/W2-0 are out of scope under #8332.
+  - V4 incumbents #7581/#7180/#7572 and carrier #6805 are never seized.
+danger_areas:
+  - HOLD PRs #8303/#8257/#8301/#8304/#8306 are never armed, readied or merged by this program.
+  - Lanes write only results/<LANE>/ and never git, data/ or engine/; mini2 disk was 100% full on 2026-10-04 and holds ~3 GiB free.
+  - A sparse local worktree truncates committed artifacts on unredirected data/ writes.
+prs: [8363, 8375]
+---
+
 # Prophet regime / indicator / timeframe / theme mission — Astra handoff v2
 
 **Updated 2026-10-04. Parent mission incomplete. Documentation branch only.** This record does not assign an incumbent worker, transfer source custody, register a trial or start a runtime operation.
