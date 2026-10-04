@@ -19,7 +19,10 @@ ambiguity: scoped
 owns_paths:
   - lib/dataos/futures_tape.py
   - scripts/futures_tape_ingest.py
+  - scripts/probe_massive_futures.py
   - tests/test_futures_tape_ingest.py
+  - tests/test_probe_massive_futures.py
+  - .github/workflows/futures-tape-probe.yml
   - research/futures_tape/
   - agentos/workstreams/WS-FUTURES-MARKET-TAPE-PLANE.md
   - agentos/decisions/DEC-FUTURES-TAPE-
@@ -85,9 +88,11 @@ do_not_redo:
   - "Do not call LSE_ES.F an exchange contract."
   - "Do not buy new storage or a new futures plan before measured capacity/entitlement receipts."
 next_action: >
-  Finish F0 source code + tests + architecture PR; run CI. The first post-merge
-  production action is a credential-bearing LSE/Massive probe plus external-SSD
-  capacity check. Bulk backfill remains held until those exact receipts exist.
+  Consume exact-head CI and independent review for PR #8451, then merge if all release
+  gates pass. Immediately dispatch the read-only futures-tape-probe workflow on protected
+  main to measure external-volume capacity and the existing Massive Futures entitlement;
+  LSE probes automatically remain skipped until LSE_API_KEY is configured out of band.
+  Bulk backfill remains held until those exact source/rights/identity receipts exist.
 ---
 
 # WS:FUTURES-MARKET-TAPE-PLANE
