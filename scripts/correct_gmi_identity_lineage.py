@@ -282,6 +282,11 @@ def compute_correction(*, nodes_df: pd.DataFrame, live_edges: pd.DataFrame,
 
 
 def run(*, dry_run: bool) -> int:
+    try:
+        store.preflight_existing_stores()
+    except store.GraphIntegrityError as exc:
+        log.error("identity correction prior-state integrity refusal: %s", exc)
+        return 1
     today, computed_at = _now()
     breaks_file = identity.breaks_path()
     breaks_rows = _load_breaks_rows(breaks_file)
@@ -322,6 +327,10 @@ def run(*, dry_run: bool) -> int:
     added_edges = store.write_edges(edge_rows, allow_backfill=True)
 
     meta = dict(store.read_meta())
+    # A new correction from a pre-metadata/legacy generation has a real write
+    # clock now; reading the old generation never fabricates its unknown clock.
+    meta.setdefault("computed_at", computed_at)
+    meta.setdefault("engine_version", store.ENGINE_VERSION)
     meta["counts"] = {
         **(meta.get("counts") or {}),
         "nodes": int(len(store.read_nodes())),
