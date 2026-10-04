@@ -22,11 +22,17 @@ def test_T1_in_memory_sink_matches_default_build():
     assert lp.build_inversion_proof(default) == lp.build_inversion_proof(with_sink)
 
 
+def _threshold_cases_without_binding(cases):
+    return [{k: v for k, v in case.items() if k != "substrate_fingerprint"}
+            for case in cases]
+
+
 def test_T2_proof_tap_collects_threshold_cases():
     tap = lp.ProofTapSink(lp.InMemorySink())
     pack = build(sink=tap)
     default = build()
-    assert tap.threshold_cases() == lp._proof_threshold_cases(default)
+    assert _threshold_cases_without_binding(tap.threshold_cases()) == \
+           lp._proof_threshold_cases(default)
     assert tap.threshold_cases()
     assert lp.build_inversion_proof(
         pack, threshold_cases=tap.threshold_cases()) == lp.build_inversion_proof(default)

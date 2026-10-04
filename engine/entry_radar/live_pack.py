@@ -105,8 +105,9 @@ from engine.session_digest import session_window_et
 SCHEMA_LIVE_PACK = "entry_radar.live_pack/v2"
 SCHEMA_INVERSION_PROOF = "entry_radar.inversion_proof/v1"
 
-#: Bumped when :func:`substrate_fingerprint` encoding changes; manifests carrying
-#: any other value (including absent) are refused at load.
+#: Bumped when :func:`substrate_fingerprint` encoding changes.  Absent on a
+#: manifest means v1 (:func:`_substrate_fingerprint_v1`); any other declared
+#: value must match this constant or :func:`load_pack` refuses.
 SUBSTRATE_FINGERPRINT_VERSION = 2
 
 #: The RETIRED v1 label, kept ONLY so :func:`load_pack` can tell a genuinely
@@ -788,6 +789,74 @@ def substrate_fingerprint(frame: pd.DataFrame) -> str:
     return sha16(_fingerprint_rows_slow(frame) if rows is None else rows)
 
 
+def _fingerprint_rows_slow_v1(frame: pd.DataFrame) -> list[list[Any]]:
+    """Pre-v2 reference row builder — date-only index, non-finite as None."""
+    rows: list[list[Any]] = []
+    index = pd.DatetimeIndex(frame.index)
+    for position in range(len(frame)):
+        row: list[Any] = [index[position].date().isoformat()]
+        for column in _SUBSTRATE_COLUMNS:
+            try:
+                value = float(frame[column].iloc[position])
+            except (TypeError, ValueError):
+                value = float("nan")
+            row.append(None if not np.isfinite(value) else value)
+        rows.append(row)
+    return rows
+
+
+def _fingerprint_rows_fast_v1(frame: pd.DataFrame) -> list[list[Any]] | None:
+    index = pd.DatetimeIndex(frame.index)
+    if index.hasnans:
+        return None
+    if len(frame) == 0 or any(column not in frame.columns for column in _SUBSTRATE_COLUMNS):
+        return None
+    columns: list[list[Any]] = []
+    for column in _SUBSTRATE_COLUMNS:
+        series = frame[column]
+        dtype = getattr(series, "dtype", None)
+        if (not isinstance(series, pd.Series) or not isinstance(dtype, np.dtype)
+                or dtype.kind not in "fiu"):
+            return None
+        values = series.to_numpy(dtype=np.float64)
+        cells = values.astype(object)
+        cells[~np.isfinite(values)] = None
+        columns.append(cells.tolist())
+    days = [day.isoformat() for day in index.date]
+    return [list(row) for row in zip(days, *columns)]
+
+
+def _substrate_fingerprint_v1(frame: pd.DataFrame) -> str:
+    """Legacy v1 digest — date-only sessions, non-finite as None."""
+    rows = _fingerprint_rows_fast_v1(frame)
+    return sha16(_fingerprint_rows_slow_v1(frame) if rows is None else rows)
+
+
+def _substrate_fingerprint_for_manifest(manifest: Mapping[str, Any]) -> Callable[[pd.DataFrame], str]:
+    declared = manifest.get("substrate_fingerprint_version")
+    if declared is None:
+        return _substrate_fingerprint_v1
+    if declared == SUBSTRATE_FINGERPRINT_VERSION:
+        return substrate_fingerprint
+    raise LivePackError(
+        "fingerprint_version_mismatch: manifest substrate_fingerprint_version "
+        f"is not {SUBSTRATE_FINGERPRINT_VERSION}")
+
+
+def _manifest_schema_for_hash(manifest: Mapping[str, Any]) -> str:
+    if "schema" in manifest:
+        return str(manifest["schema"])
+    if manifest.get("substrate_fingerprint_version") == SUBSTRATE_FINGERPRINT_VERSION:
+        return SCHEMA_LIVE_PACK
+    return _SCHEMA_LIVE_PACK_V1
+
+
+def _confirmed_lanes_on_disk_are_normalized(raw: Mapping[str, Any],
+                                            probe_tickers: Sequence[str]) -> bool:
+    normalized = confirmed_lanes_snapshot(raw, probe_tickers)
+    return _jsonable(raw) == _jsonable(normalized)
+
+
 def _normalize_confirmed_lane_row(raw: Any) -> dict[str, Any]:
     """One ticker's ``{g0, c5}`` confirmed-lane row, honestly defaulted.
 
@@ -1038,7 +1107,11 @@ class ProofTapSink:
             raise LivePackError("substrate sink reused: add() after finish()")
         cases = threshold_cases_for(row, frozen, next_session=next_session)
         self._inner.add(row, frozen, next_session=next_session)
-        self._cases.extend(cases)       # only once the wrapped sink has taken the frame
+        bound = substrate_fingerprint(frozen)
+        for case in cases:
+            stored = dict(case)
+            stored["substrate_fingerprint"] = bound
+            self._cases.append(stored)
 
     def finish(self) -> Mapping[str, pd.DataFrame]:
         if self._finished:
@@ -1270,12 +1343,10 @@ def threshold_cases_for(row: PackName, frame: pd.DataFrame, *,
             got = margin(oracle, probe)
             observed = None if got is None else bool(got > 0.0)
             expected = solution.holds_at(probe)
-            case = _case("threshold_boundary",
-                         f"{row.ticker}:{solution.condition}:{side}",
-                         boundary=level, direction=side,
-                         expected=expected, observed=observed)
-            case["substrate_fingerprint"] = substrate_fingerprint(frame)
-            out.append(case)
+            out.append(_case("threshold_boundary",
+                             f"{row.ticker}:{solution.condition}:{side}",
+                             boundary=level, direction=side,
+                             expected=expected, observed=observed))
     return out
 
 
@@ -1722,10 +1793,17 @@ def save_pack(pack: LivePack, state_dir: Path | str, *,
     root.mkdir(parents=True, exist_ok=True)
     final = root / pack.as_of
 
+    pack_hash = compute_pack_hash(
+        schema=pack.schema, as_of=pack.as_of, next_session=pack.next_session,
+        price_basis=pack.price_basis, spec_hashes=pack.spec_hashes,
+        probe_tickers=list(pack.probe_set.get("tickers") or ()),
+        names=pack.names, confirmed_lanes=pack.confirmed_lanes)
+    manifest = pack.manifest()
+    manifest["pack_hash"] = pack_hash
     staging = Path(tempfile.mkdtemp(prefix=f".{pack.as_of}.", dir=root))
     try:
         (staging / _MANIFEST_NAME).write_text(
-            json.dumps(pack.manifest(), sort_keys=True, separators=(",", ":"),
+            json.dumps(manifest, sort_keys=True, separators=(",", ":"),
                        allow_nan=False),
             encoding="utf-8")
         substrate_flat.to_parquet(staging / _SUBSTRATE_NAME, index=False)
@@ -1737,7 +1815,7 @@ def save_pack(pack: LivePack, state_dir: Path | str, *,
         if staging is not None and staging.exists():
             shutil.rmtree(staging, ignore_errors=True)
 
-    pointer = {"as_of": pack.as_of, "pack_hash": pack.pack_hash,
+    pointer = {"as_of": pack.as_of, "pack_hash": pack_hash,
                "manifest": f"{_PACK_DIRNAME}/{pack.as_of}/{_MANIFEST_NAME}",
                "built_at": pack.built_at}
     tmp_pointer = root / f".{_POINTER_NAME}.tmp"
@@ -1810,13 +1888,10 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
     # that never carried `confirmed_lanes` as though it did.
     raw_confirmed_lanes = manifest.get("confirmed_lanes") or {}
     names = tuple(PackName.from_dict(row) for row in manifest.get("names") or ())
-    if manifest.get("substrate_fingerprint_version") != SUBSTRATE_FINGERPRINT_VERSION:
-        raise LivePackError(
-            "fingerprint_version_mismatch: manifest substrate_fingerprint_version "
-            f"is not {SUBSTRATE_FINGERPRINT_VERSION}")
+    fingerprint = _substrate_fingerprint_for_manifest(manifest)
     for row in names:
         frame = substrate.get(row.ticker)
-        if frame is None or substrate_fingerprint(frame) != row.substrate_fingerprint:
+        if frame is None or fingerprint(frame) != row.substrate_fingerprint:
             raise LivePackError(
                 f"{row.ticker}: saved substrate does not match the manifest row")
     if substrate:
@@ -1828,21 +1903,23 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
             spec_hashes=dict(manifest.get("spec_hashes") or {}),
             probe_set=dict(manifest.get("probe_set") or {}),
             names=names, substrate=substrate))
-    lane_rows = confirmed_lanes_snapshot(
-        raw_confirmed_lanes, list(raw_confirmed_lanes))
+    probe_tickers = list((manifest.get("probe_set") or {}).get("tickers") or ())
+    lane_rows = confirmed_lanes_snapshot(raw_confirmed_lanes, probe_tickers)
     schema = str(manifest.get("schema") or _SCHEMA_LIVE_PACK_V1)
-    pack_hash = str(manifest.get("pack_hash") or "")
-    recomputed = compute_pack_hash(
-        schema=schema, as_of=str(manifest["as_of"]),
-        next_session=str(manifest["next_session"]),
-        price_basis=str(manifest.get("price_basis") or ch.BASIS_ADJUSTED),
-        spec_hashes=dict(manifest.get("spec_hashes") or {}),
-        probe_tickers=list((manifest.get("probe_set") or {}).get("tickers") or ()),
-        names=names, confirmed_lanes=lane_rows)
-    if recomputed != pack_hash:
-        raise LivePackError("pack_hash_mismatch")
+    stored_hash = str(manifest.get("pack_hash") or "")
+    if stored_hash and _confirmed_lanes_on_disk_are_normalized(
+            raw_confirmed_lanes, probe_tickers):
+        recomputed = compute_pack_hash(
+            schema=_manifest_schema_for_hash(manifest),
+            as_of=str(manifest["as_of"]),
+            next_session=str(manifest["next_session"]),
+            price_basis=str(manifest.get("price_basis") or ch.BASIS_ADJUSTED),
+            spec_hashes=dict(manifest.get("spec_hashes") or {}),
+            probe_tickers=probe_tickers, names=names, confirmed_lanes=lane_rows)
+        if recomputed != stored_hash:
+            raise LivePackError("pack_hash_mismatch")
     return LivePack(
-        schema=str(manifest.get("schema") or _SCHEMA_LIVE_PACK_V1),
+        schema=schema,
         as_of=str(manifest["as_of"]), next_session=str(manifest["next_session"]),
         built_at=str(manifest.get("built_at") or ""),
         price_basis=str(manifest.get("price_basis") or ch.BASIS_ADJUSTED),
@@ -1852,7 +1929,7 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
         substrate=substrate,
         substrate_missing=tuple(dict(row) for row in
                                 manifest.get("substrate_missing") or ()),
-        pack_hash=str(manifest.get("pack_hash") or ""),
+        pack_hash=stored_hash,
         # (S1) Routed through the SAME normalizer `build_pack` uses — a torn or
         # hand-repaired manifest row must not reach the live reader verbatim;
         # this is the production read path, and the module's own firewall
