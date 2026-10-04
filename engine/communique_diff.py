@@ -338,13 +338,23 @@ def diff_organ(organ: str, today_rows: list[dict], prior_rows: list[dict],
     dropped_sources = dropped_evidence_rows if dropped_evidence_rows is not None else prior_rows
 
     def _appeared_evidence(ph: str) -> dict:
+        # Independent evidence wins when it is what restored novelty eligibility.
         for r in appeared_sources:
+            if ph in phrases_in_text(_doc_text(r), book):
+                return {"url": r.get("url", ""), "title": r.get("title", "")}
+        # A revised source may still truthfully evidence phrases unchanged across
+        # the correction.  Because correction-only deltas were already suppressed,
+        # any surviving phrase here is safe to cite from the effective/latest row.
+        for r in today_rows:
             if ph in phrases_in_text(_doc_text(r), book):
                 return {"url": r.get("url", ""), "title": r.get("title", "")}
         return {"url": "", "title": ""}
 
     def _dropped_evidence(ph: str) -> dict:
         for r in dropped_sources:
+            if ph in phrases_in_text(_doc_text(r), book):
+                return {"url": r.get("url", ""), "title": r.get("title", "")}
+        for r in prior_rows:
             if ph in phrases_in_text(_doc_text(r), book):
                 return {"url": r.get("url", ""), "title": r.get("title", "")}
         return {"url": "", "title": ""}
