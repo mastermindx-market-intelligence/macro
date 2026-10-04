@@ -187,6 +187,34 @@ def test_write_dataframe_export_is_atomic_and_receipted(monkeypatch, tmp_path: P
     assert m.relative_path == target.relative_to(tmp_path).as_posix()
 
 
+def test_backfill_refuses_capped_lse_export(monkeypatch, tmp_path: Path) -> None:
+    class FakeClient:
+        def catalog(self, category):
+            assert category == "futures"
+            return [{"symbol": "ES.F"}]
+
+        def history(self, symbol, **kwargs):
+            return pd.DataFrame({
+                "timestamp": ["2026-01-01T00:00:00Z", "2026-01-01T00:00:01Z"],
+                "price": [1.0, 1.25],
+            })
+
+    monkeypatch.setattr(fti, "_lse_client", lambda: FakeClient())
+    monkeypatch.setattr(fti, "LSE_EXPORT_ROW_CAP", 2)
+    args = type("Args", (), {
+        "root": str(tmp_path),
+        "reserve_gib": 0.0,
+        "symbol": "ES.F",
+        "start": "2026-01-01",
+        "end": "2026-01-02",
+        "force": False,
+    })()
+    with pytest.raises(SystemExit, match="capped/incomplete"):
+        fti.cmd_backfill_lse(args)
+    target = raw_export_path(tmp_path, "lse", "ES.F", "2026-01-01", "2026-01-02")
+    assert not target.exists()
+
+
 def test_history_result_accepts_dataframe_and_list(tmp_path: Path) -> None:
     df = pd.DataFrame({"timestamp": ["2026-01-01T00:00:00Z"], "price": [1.0]})
     got = fti._coerce_history_result(df, tmp_path)
