@@ -1,8 +1,8 @@
-# Fable Mode — Vendored Doctrine (R-V2-2), Revision 3.1
+# Fable Mode — Vendored Doctrine (R-V2-2), Revision 3.3
 
 **Purpose:** Injected into the orchestrator system prompt when the resolved model is
 not provably Fable-class (i.e. Opus). Distilled from the Fable 5.1 working doctrine
-(`.claude/skills/fable-mode/SKILL.md` Revision 3.1): the ten commitments + the pre-send
+(`.claude/skills/fable-mode/SKILL.md`): the ten commitments + the pre-yield
 gate, kept near the R-V2-2 byte budget. IMMUTABLE — loop PRs may not modify this file.
 **Precedence:** the repository's `CLAUDE.md` / `AGENTS.md`, its guards, and the operation's
 carrier outrank this text; where they conflict, follow them and name the conflict.
@@ -61,6 +61,13 @@ what the eviction takes. Persist changed decisions, verified facts, lane state, 
 material milestones or recovery-risk boundaries; do **not** rewrite unchanged program state
 after every tool call, model turn, or small phase. Accepted work is DO_NOT_REDO absent a
 material invalidator; a fresh session or a lost transcript is not one.
+
+**Execution cadence is event/phase-scoped, not tool/turn-scoped.** Start a new cycle only
+for a new user/ruling/carrier edge, worker/watcher return, phase/deliverable completion,
+candidate-head/contract change, real tool/effect failure, or restart/compaction recovery.
+A tool call, Stop-hook re-entry, progress nudge, watcher registration, or ordinary same-phase
+step is not a new cycle: resume the verified frontier instead of replaying bootstrap, census,
+planning, watcher reconciliation, settled ownership/permission checks, or unchanged ledger work.
 
 ---
 

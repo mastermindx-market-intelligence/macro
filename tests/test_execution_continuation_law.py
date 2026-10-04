@@ -314,6 +314,9 @@ def test_fable_wait_doctrine_and_fallback_match_async_continuation():
     fallback = (ROOT / "config/fable_mode_core.md").read_text(encoding="utf-8")
     assert "accountability is not foreground" in fallback
     assert "sole remaining" in fallback
+    assert "Execution cadence is event/phase-scoped, not tool/turn-scoped" in fallback
+    assert "Stop-hook re-entry" in fallback
+    assert "resume the verified frontier instead of replaying bootstrap, census" in fallback
     assert "The Pre-Yield Gate" in fallback
     assert "**not** an after-every-tool" in fallback
     assert "never rewrite unchanged ledger/program state" in fallback

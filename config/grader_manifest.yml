@@ -57,9 +57,9 @@ files:
 
     '
 - path: config/fable_mode_core.md
-  sha256: 84d7b8a2494265e04911e575c8a1bd0fa194ef5620a17582fc1b0e5f165b2126
+  sha256: a078d0a01644c7ae59de77924808b53c15207b110082003d87c5776cd5f8e5fd
   role: doctrine
-  notes: 'V2-A vendored Fable-mode doctrine (R-V2-2): ten commitments + pre-send gate,
+  notes: 'V2-A vendored Fable-mode doctrine (R-V2-2): ten commitments + pre-yield gate,
     near the R-V2-2 byte budget. Injected into orchestrator system prompt when model
     is Opus-class. IMMUTABLE — loop PRs may not modify. Runner never reads ~/. 2026-09-24
     hash update ratifies Revision 3 of the fable-mode doctrine (Fable 5.1, seat edition):
@@ -73,7 +73,14 @@ files:
     watcher owns observation, independent authorized work advances immediately, and
     DURABLE_EXECUTION_RUNNING is reserved for the sole remaining verified wait. The
     fitness delta is orchestration latency/capacity only; authority, routing, ladder
-    rungs, acceptance, and injection code are unchanged.
+    rungs, acceptance, and injection code are unchanged. 2026-10-04 Revision 3.3 ratifies
+    event/phase-scoped execution and a pre-yield-only output gate: ordinary tool turns,
+    Stop-hook re-entry, progress nudges, watcher registration, and same-phase steps resume
+    the verified frontier instead of replaying bootstrap/census/planning/ledger ceremony.
+    Material invalidators and targeted pre-effect freshness gates remain intact. The
+    fitness delta is reduced principal administrative latency/context burn only; authority,
+    source custody, effect gates, routing, delivery rungs, acceptance, and injection logic
+    are unchanged.
 
     '
 - path: config/metabolism_schedule.yml
