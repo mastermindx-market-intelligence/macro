@@ -121,6 +121,8 @@ Open carriers to reconcile rather than duplicate:
 - MASTER_PLAN.md — end-to-end build program, dependency DAG, interface contracts, wave acceptance, routing, security, rights, evaluation, and DONE_WHEN.
 - EVIDENCE_LEDGER.md — current-source census, live run evidence, carrier inventory, unknowns, and falsifiers.
 - FABLE_CEO_HANDOFF.md — orchestration-ready takeover instructions and delegation law.
+- INITIAL_WORK_PACKETS.md — dispatch-ready bounded first-wave packets for security, live census, freshness, corpus repair, RIO correctness, and full-text measurement.
+- AUTHORING_QA.md — structural handoff-compiler receipt; explicitly unbound and non-authorizing.
 - ../../agentos/handoffs/QUALITATIVE-RESEARCH-CHATGPT-ACCESS-2026-10-04.md — durable Agent OS handoff into the existing qualitative-intelligence parent.
 
 ## First action
