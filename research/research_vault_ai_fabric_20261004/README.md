@@ -3,7 +3,7 @@
 **Date:** 2026-10-04  
 **Status:** `EXECUTION_MASTERPLAN / FABLE_ORCHESTRATION_READY / NOT_STARTED`  
 **Parent program:** existing `qualitative-intelligence` program — **do not create a new strategic program or control plane**.  
-**Macro source pin for this packet:** `ce53dddb28a0718a4ab656a5306ef7293b6c779c`  
+**Macro authoring source pin for this packet:** `ce53dddb28a0718a4ab656a5306ef7293b6c779c`  \n**Latest bounded compatibility check:** `a8bde76b2642e01e374089b1a759f3ac8e3e3b26` — movement after packet authoring was path-disjoint from the named Research Vault / Research Intelligence / Brain / packet paths at check time.  
 **Protected Mastermind procedure pin:** `28be2ce2d481fd542ec869344e178e5cec4d7d75`  
 **Chairman intent:** make the existing institutional Research Vault directly usable by authorized ChatGPT / Deep Research sessions through a provenance-preserving, rights-safe, read-only research interface, while repairing the integrity gaps that would otherwise make that interface misleading.
 
@@ -16,7 +16,7 @@ Read in this order:
 3. [02_ARCHITECTURE_AND_MASTERPLAN.md](02_ARCHITECTURE_AND_MASTERPLAN.md) — frozen target architecture, ownership, source/text/hash identity, retrieval, segmentation, RIO and MCP design.
 4. [03_WORK_PACKAGES_AND_DAG.md](03_WORK_PACKAGES_AND_DAG.md) — dependency graph, collision-safe work packages, delegation envelopes and release sequence.
 5. [04_ACCEPTANCE_SECURITY_AND_EVAL.md](04_ACCEPTANCE_SECURITY_AND_EVAL.md) — exact DONE_WHEN, security/rights gates, retrieval benchmark, denial tests and production canaries.
-6. [05_SOURCE_AND_COLLISION_MAP.md](05_SOURCE_AND_COLLISION_MAP.md) — exact source anchors, stale PR salvage map, paths that may not be independently rewritten, and DO_NOT_REDO.
+6. [05_SOURCE_AND_COLLISION_MAP.md](05_SOURCE_AND_COLLISION_MAP.md) — exact source anchors, stale PR salvage map, paths that may not be independently rewritten, and DO_NOT_REDO.\n7. [06_HARDENING_ADDENDUM_AND_FABLE_START_GATE.md](06_HARDENING_ADDENDUM_AND_FABLE_START_GATE.md) — controlling clarification for private-R2 semantics, body-health census, corpus repair shapes, collision ruling and Fable first-wave gate.\n8. [07_FABLE_ORCHESTRATOR_BRIEF_QA.md](07_FABLE_ORCHESTRATOR_BRIEF_QA.md) — non-authoritative Mastermind Craft authoring QA receipt.
 
 Durable organizational continuation lives in:
 
@@ -86,10 +86,10 @@ The plan is based on current measured state, not the old product promise:
 - Current catalog metadata coverage: **desk 10/2,778; tags 10/2,778; tickers 0/2,778**.
 - Current FTS body is capped at **60,000 characters per report**; exact facts deep in long notes are not reliably discoverable.
 - Research Intelligence is partly landed but four important continuation PRs remain stale/diverged and must be **salvaged, not wholesale merged**.
-- Research Vault private-store construction still permits fallback from `R2_RESEARCH_*` to generic shared `R2_*`; Agent OS records this as a verified private-to-public bucket landmine.
+- Research Vault requires an explicit `R2_RESEARCH_BUCKET`, but endpoint/access-key/secret may still inherit generic `R2_*` values and the factory does not itself prove the research bucket differs from the configured shared/public bucket. Private-plane isolation is therefore not structurally fail-closed; see the controlling clarification in `06_HARDENING_ADDENDUM_AND_FABLE_START_GATE.md`.
 - Adjacent code overloads `content_sha256`: Vault uses it for **PDF bytes**, while Research Intelligence uses it for **extracted UTF-8 body bytes**. The new interface must disambiguate those domains before producing durable citation identities.
 
-These are not reasons to abandon the existing system. They are exactly why this project must harden the incumbent owners before exposing them to frontier models.
+These are not reasons to abandon the existing system. They are exactly why this project must harden the incumbent owners before exposing them to frontier models.\n\n**Additional P0 distinction:** ID-set integrity is not sufficient retrieval proof. The Fable first wave must measure body/text health (non-empty body coverage, text-layer states, hash/character consistency and excerpt derivability) even when a corpus row exists.
 
 ---
 
