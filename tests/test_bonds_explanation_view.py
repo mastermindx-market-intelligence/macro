@@ -251,7 +251,7 @@ def test_same_slope_opposite_sign_is_horizon_disagreement_not_collapsed_directio
     assert "different windows" in hz["explanation"]["en"].lower()
 
 
-def test_mismatched_source_dates_withhold_joined_mechanism_state_but_keep_dated_evidence():
+def test_regime_date_mismatch_withholds_only_funding_join_not_unrelated_mechanisms():
     bond, transmission, regime = _inputs()
     regime["asof"] = "2026-10-01"
 
@@ -259,11 +259,16 @@ def test_mismatched_source_dates_withhold_joined_mechanism_state_but_keep_dated_
 
     assert view["source_status"]["state"] == "date_mismatch"
     assert view["source_status"]["dates"]["systemic_stress"] == "2026-10-01"
-    assert all(row["state"] == "withheld" for row in view["mechanisms"])
+    assert _mechanism(view, "policy_real_rate")["state"] == "supported"
+    assert _mechanism(view, "growth_cuts")["state"] == "contradicted"
+    assert _mechanism(view, "inflation_reflation")["state"] == "mixed"
+    assert _mechanism(view, "term_premium_supply")["state"] == "supported"
     funding = _mechanism(view, "funding_liquidity")
+    assert funding["state"] == "withheld"
     systemic = next(x for x in funding["contradicts"] if x["family"] == "systemic_funding")
     assert systemic["source_as_of"] == "2026-10-01"
-    assert view["withheld_reason"]["en"]
+    assert funding["withheld_reason"]["en"]
+    assert view["withheld_reason"] is None
 
 
 def test_missing_inputs_become_missing_not_zero_neutral_or_false_confirmation():
@@ -338,7 +343,7 @@ def test_curve_horizon_missing_is_insufficient_not_flat():
     assert hz["current"]["direction"] is None
 
 
-def test_populated_breakeven_family_without_its_own_date_withholds_joined_state():
+def test_populated_breakeven_family_without_its_own_date_withholds_only_inflation_join():
     bond, transmission, regime = _inputs()
     transmission["breakeven_decomp"]["as_of"] = None
 
@@ -346,14 +351,19 @@ def test_populated_breakeven_family_without_its_own_date_withholds_joined_state(
 
     assert view["source_status"]["state"] == "insufficient"
     assert "breakevens" in view["source_status"]["missing_dates"]
-    assert all(row["state"] == "withheld" for row in view["mechanisms"])
     inflation = _mechanism(view, "inflation_reflation")
+    assert inflation["state"] == "withheld"
     be = next(x for x in inflation["supports"] if x["family"] == "breakevens")
     assert be["source_as_of"] is None
-    assert view["withheld_reason"]["en"]
+    assert inflation["withheld_reason"]["en"]
+    assert _mechanism(view, "policy_real_rate")["state"] == "supported"
+    assert _mechanism(view, "growth_cuts")["state"] == "contradicted"
+    assert _mechanism(view, "term_premium_supply")["state"] == "supported"
+    assert _mechanism(view, "funding_liquidity")["state"] == "contradicted"
+    assert view["withheld_reason"] is None
 
 
-def test_populated_systemic_family_without_regime_date_withholds_joined_state():
+def test_populated_systemic_family_without_regime_date_withholds_only_funding_join():
     bond, transmission, regime = _inputs()
     regime["asof"] = None
 
@@ -361,10 +371,16 @@ def test_populated_systemic_family_without_regime_date_withholds_joined_state():
 
     assert view["source_status"]["state"] == "insufficient"
     assert "systemic_stress" in view["source_status"]["missing_dates"]
-    assert all(row["state"] == "withheld" for row in view["mechanisms"])
     funding = _mechanism(view, "funding_liquidity")
+    assert funding["state"] == "withheld"
     systemic = next(x for x in funding["contradicts"] if x["family"] == "systemic_funding")
     assert systemic["source_as_of"] is None
+    assert funding["withheld_reason"]["en"]
+    assert _mechanism(view, "policy_real_rate")["state"] == "supported"
+    assert _mechanism(view, "growth_cuts")["state"] == "contradicted"
+    assert _mechanism(view, "inflation_reflation")["state"] == "mixed"
+    assert _mechanism(view, "term_premium_supply")["state"] == "supported"
+    assert view["withheld_reason"] is None
 
 
 def test_absent_optional_family_is_missing_evidence_not_a_global_date_failure():
@@ -389,6 +405,8 @@ def test_mismatched_breakeven_date_withholds_cross_source_decomposition_claim():
     status = _statuses(row)
 
     assert view["source_status"]["state"] == "date_mismatch"
+    assert row["state"] == "withheld"
+    assert row["withheld_reason"]["en"]
     assert "decomposition" in status["missing"]
     assert "decomposition" not in status["supports"]
     assert "decomposition" not in status["contradicts"]
@@ -405,7 +423,78 @@ def test_mismatched_bond_and_transmission_dates_withhold_term_premium_level_chan
     status = _statuses(row)
 
     assert view["source_status"]["state"] == "date_mismatch"
+    assert row["state"] == "withheld"
+    assert row["withheld_reason"]["en"]
     assert "term_premium_model" in status["missing"]
     assert "term_premium_model" not in status["supports"]
     item = next(x for x in row["missing"] if x["family"] == "term_premium_model")
     assert "dates" in item["claim"]["en"].lower()
+
+
+def test_breakeven_date_mismatch_withholds_only_inflation_join():
+    bond, transmission, regime = _inputs()
+    transmission["breakeven_decomp"]["as_of"] = "2026-10-01"
+
+    view = build_bonds_explanation_view(bond, transmission, regime)
+
+    assert view["source_status"]["state"] == "date_mismatch"
+    assert _mechanism(view, "inflation_reflation")["state"] == "withheld"
+    assert _mechanism(view, "policy_real_rate")["state"] == "supported"
+    assert _mechanism(view, "growth_cuts")["state"] == "contradicted"
+    assert _mechanism(view, "term_premium_supply")["state"] == "supported"
+    assert _mechanism(view, "funding_liquidity")["state"] == "contradicted"
+
+
+def test_curve_horizon_explanation_names_actual_current_window():
+    bond, transmission, regime = _inputs()
+    transmission["yield_curve"]["regime"]["window_d"] = 10
+
+    hz = build_bonds_explanation_view(bond, transmission, regime)["curve_horizons"]
+
+    assert hz["current"]["horizon"] == "10d"
+    assert "10-day and 63-day" in hz["explanation"]["en"]
+    assert "21-day" not in hz["explanation"]["en"]
+
+
+@pytest.mark.parametrize(
+    ("family", "mutate", "affected", "unaffected"),
+    [
+        (
+            "bond_health",
+            lambda b, t, r: b.__setitem__("as_of", "2026-02-30"),
+            {"policy_real_rate", "growth_cuts", "term_premium_supply", "funding_liquidity"},
+            {"inflation_reflation"},
+        ),
+        (
+            "transmission",
+            lambda b, t, r: t.__setitem__("asof", "2026-02-30"),
+            {"policy_real_rate", "growth_cuts", "inflation_reflation", "term_premium_supply"},
+            {"funding_liquidity"},
+        ),
+        (
+            "breakevens",
+            lambda b, t, r: t["breakeven_decomp"].__setitem__("as_of", "2026-02-30"),
+            {"inflation_reflation"},
+            {"policy_real_rate", "growth_cuts", "term_premium_supply", "funding_liquidity"},
+        ),
+        (
+            "systemic_stress",
+            lambda b, t, r: r.__setitem__("asof", "2026-02-30"),
+            {"funding_liquidity"},
+            {"policy_real_rate", "growth_cuts", "inflation_reflation", "term_premium_supply"},
+        ),
+    ],
+)
+def test_impossible_calendar_dates_fail_closed_only_for_consuming_mechanisms(
+    family, mutate, affected, unaffected
+):
+    bond, transmission, regime = _inputs()
+    mutate(bond, transmission, regime)
+
+    view = build_bonds_explanation_view(bond, transmission, regime)
+    states = {row["key"]: row["state"] for row in view["mechanisms"]}
+
+    assert view["source_status"]["state"] == "insufficient"
+    assert family in view["source_status"]["missing_dates"]
+    assert all(states[key] == "withheld" for key in affected)
+    assert all(states[key] != "withheld" for key in unaffected)

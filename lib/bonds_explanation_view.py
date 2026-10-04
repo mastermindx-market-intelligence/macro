@@ -16,6 +16,7 @@ inputs cannot be joined safely.
 from __future__ import annotations
 
 import math
+from datetime import date
 from typing import Any, Mapping
 
 
@@ -45,15 +46,17 @@ def _boolean(value: Any) -> bool | None:
 def _date(value: Any) -> str | None:
     if not isinstance(value, str) or not value.strip():
         return None
-    # Contract dates are ISO-like; the date identity is the first 10 chars only
-    # when it is structurally YYYY-MM-DD.  No clock/freshness inference.
+    # Contract dates may include a time suffix; mechanism joins use only the
+    # calendar-date identity. Impossible dates fail closed rather than becoming
+    # a distinct-looking but invalid source date.
     s = value.strip()
     if len(s) < 10 or s[4:5] != "-" or s[7:8] != "-":
         return None
     ymd = s[:10]
-    if not (ymd[:4].isdigit() and ymd[5:7].isdigit() and ymd[8:10].isdigit()):
+    try:
+        return date.fromisoformat(ymd).isoformat()
+    except ValueError:
         return None
-    return ymd
 
 
 def _direction(change: Any) -> str | None:
@@ -127,6 +130,17 @@ def _split(items: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
         "contradicts": [x for x in items if x["status"] == "contradicts"],
         "missing": [x for x in items if x["status"] == "missing"],
     }
+
+
+def _dates_align(*dates: str | None) -> bool:
+    return bool(dates) and all(value is not None for value in dates) and len(set(dates)) == 1
+
+
+def _withhold_row(row: dict[str, Any], reason: dict[str, str]) -> None:
+    """Withhold only the joined conclusion; preserve its independently dated evidence."""
+    row["state"] = "withheld"
+    row["summary"] = reason
+    row["withheld_reason"] = reason
 
 
 def _source_status(
@@ -209,9 +223,10 @@ def _curve_horizons(transmission: Mapping[str, Any]) -> dict[str, Any]:
         )
     elif current["direction"] == longer["direction"]:
         state = "aligned"
+        current_days = int(current_window)
         explanation = _pair(
-            "The 2s10s directions align across the named 21-day and 63-day windows.",
-            "2s10s在明确标注的21日与63日窗口中方向一致。",
+            f"The 2s10s directions align across the named {current_days}-day and 63-day windows.",
+            f"2s10s在明确标注的{current_days}日与63日窗口中方向一致。",
         )
     else:
         state = "disagreement"
@@ -651,8 +666,9 @@ def build_bonds_explanation_view(
     """Project canonical Bonds evidence into competing explanation rows.
 
     The function is pure: no I/O, clock read, network, scoring, forecasting or
-    mutation.  When source dates disagree the evidence remains visible with its
-    own date, while the joined mechanism state is withheld.
+    mutation. Date admission is mechanism-local: a stale or undated optional
+    family may withhold only the joined conclusion that consumes it, while
+    independent mechanism rows and every dated evidence item remain usable.
     """
     bond = _mapping(bond_health)
     trans = _mapping(transmission)
@@ -665,24 +681,52 @@ def build_bonds_explanation_view(
         _term_premium_supply(bond, trans),
         _funding_liquidity(bond, reg),
     ]
+    rows = {row["key"]: row for row in mechanisms}
+    dates = status["dates"]
+    bond_date = dates["bond_health"]
+    transmission_date = dates["transmission"]
+    breakeven_date = dates["breakevens"]
+    systemic_date = dates["systemic_stress"]
+    breakevens_present = bool(_mapping(trans.get("breakeven_decomp")))
+    systemic_present = bool(_mapping(_mapping(reg.get("conditions")).get("systemic_stress")))
 
+    bond_trans_reason = _pair(
+        "This mechanism joins Bonds and transmission evidence whose calculation dates are missing or different; inspect the dated evidence separately.",
+        "该机制需要合并债券与传导证据，但其计算日期缺失或不一致；请分别查看带日期的证据。",
+    )
+    if not _dates_align(bond_date, transmission_date):
+        for key in ("policy_real_rate", "growth_cuts", "term_premium_supply"):
+            _withhold_row(rows[key], bond_trans_reason)
+
+    if transmission_date is None or (
+        breakevens_present and not _dates_align(transmission_date, breakeven_date)
+    ):
+        _withhold_row(
+            rows["inflation_reflation"],
+            _pair(
+                "This inflation interpretation joins rates and breakeven evidence whose calculation dates are missing or different; keep the readings separate.",
+                "该通胀解释需要合并利率与盈亏平衡证据，但其计算日期缺失或不一致；应分别保留这些读数。",
+            ),
+        )
+
+    if bond_date is None or (
+        systemic_present and not _dates_align(bond_date, systemic_date)
+    ):
+        _withhold_row(
+            rows["funding_liquidity"],
+            _pair(
+                "This funding interpretation joins Bonds plumbing and systemic-stress evidence whose calculation dates are missing or different; keep the readings separate.",
+                "该资金解释需要合并债券资金管道与系统性压力证据，但其计算日期缺失或不一致；应分别保留这些读数。",
+            ),
+        )
+
+    withheld_rows = [row for row in mechanisms if row["state"] == "withheld"]
     withheld_reason = None
-    if status["state"] == "date_mismatch":
+    if len(withheld_rows) == len(mechanisms):
         withheld_reason = _pair(
-            "Joined mechanism states are withheld because the source contracts have different calculation dates; inspect the dated evidence separately.",
-            "由于来源合同的计算日期不同，联合机制状态暂不输出；请分别查看带日期的证据。",
+            "Every mechanism join is withheld because its required calculation dates are missing or incompatible; dated evidence remains visible.",
+            "所有机制的联合结论均因必要计算日期缺失或不兼容而暂不输出；带日期的证据仍保留显示。",
         )
-        for row in mechanisms:
-            row["state"] = "withheld"
-            row["summary"] = withheld_reason
-    elif status["state"] == "insufficient":
-        withheld_reason = _pair(
-            "Joined mechanism states are withheld because a populated required source family lacks its own calculation date, or a core source date is unavailable.",
-            "由于已填充的必要来源缺少自身计算日期，或核心来源日期不可用，联合机制状态暂不输出。",
-        )
-        for row in mechanisms:
-            row["state"] = "withheld"
-            row["summary"] = withheld_reason
 
     return {
         "schema": SCHEMA,
