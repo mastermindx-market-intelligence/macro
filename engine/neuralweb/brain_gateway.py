@@ -624,6 +624,1367 @@ paid for. Equally, a section with nothing real in it is padding — drop the thr
 filling it.
 """
 
+# ---------------------------------------------------------------------------
+# F11-6 grounded research read (MarketOntology; Sol's recompose map 5967105152 on #7100).
+#
+# These constants/helpers serve ONE turn shape: mode='research' on a Thesis/Research
+# surface, i.e. a VALID typed ai_context block whose ambient page is 'analysis' and panel
+# is 'theses' (predicate `_f11_grounded`). Such a turn is a closed-corpus read — the live
+# market packet + published briefing + (with the caller's JWT) their own thesis objects —
+# with zero tool dispatch and the GROUNDED directive below INSTEAD of the global
+# `_RESEARCH_SYSTEM_DIRECTIVE`. Every other research turn (ordinary Analysis, chart
+# Terminal, legacy or malformed context) keeps W6b Deep Research untouched: its directive,
+# today's tool budget, exposure and exact-source gates. No new tools, no new retrieval
+# surface, no second allowlist.
+_RESEARCH_CEILING_EN = (
+    "This is a reading of what we already published. It is not a signal, "
+    "not a rating, and not advice — nothing here changes any board, rank, or alert."
+)
+_RESEARCH_CEILING_ZH = (
+    "这是对我们已经发布内容的解读。这不是信号、不是评级、也不是建议——"
+    "这里的任何内容都不会改变任何看板、排名或提醒。"
+)
+_RESEARCH_NULL_EN = "We don't publish anything that answers this yet."
+_RESEARCH_NULL_ZH = "我们目前还没有发布能回答这个问题的内容。"
+_RESEARCH_JWT_ABSENT_EN = (
+    "Your own theses and notes weren't included — you're not signed in here."
+)
+_RESEARCH_JWT_ABSENT_ZH = "您自己的论点和笔记没有纳入本次阅读——您尚未在此登录。"
+_RESEARCH_WITHHELD_EN = (
+    "Part of this answer was withheld because it read like a signal."
+)
+_RESEARCH_WITHHELD_ZH = "本次回答有一部分被隐去，因为它读起来像信号。"
+_RESEARCH_USED_EN = "What this read used"
+_RESEARCH_USED_ZH = "本次阅读用到的内容"
+# Spec (3) coverage null lives separately. This one fires when the answer DID
+# cite a used artifact, but the forbidden-output filter dropped the only
+# sentence(s) that cited it — a plain-language floor so the reply is never
+# a blank line followed by the ceiling and the used-list. Distinct from
+# "no corpus covered this" (the spec 3 null above).
+_RESEARCH_FILTER_EMPTY_EN = (
+    "The relevant sentences from the published reading were filtered because "
+    "they read like a signal."
+)
+_RESEARCH_FILTER_EMPTY_ZH = (
+    "已发布读数中相关的句子因读起来像信号而被隐去。"
+)
+
+# Spec item 7: the grounded directive — used INSTEAD of _RESEARCH_SYSTEM_DIRECTIVE for an
+# F11-grounded turn ONLY (never prepended globally; the global constant is untouched).
+_RESEARCH_GROUNDED_DIRECTIVE = """
+RESEARCH MODE — GROUNDED READ:
+Answer ONLY from the grounded research corpus attached to this turn: the live market
+state we already published, the briefing and receipts beside it, and — when the caller
+is signed in — their own theses, notes and monitors. Do not use general knowledge. Do not
+use training memory. Do not name file paths, field names, tool names, or internal slugs.
+Never invent a reading the corpus does not contain.
+
+If that corpus does not cover the question, answer exactly:
+"We don't publish anything that answers this yet."
+「我们目前还没有发布能回答这个问题的内容。」
+then list what was checked, then stop.
+
+Every answer ends with:
+"This is a reading of what we already published. It is not a signal, not a rating, and not advice — nothing here changes any board, rank, or alert."
+「这是对我们已经发布内容的解读。这不是信号、不是评级、也不是建议——这里的任何内容都不会改变任何看板、排名或提醒。」
+and a "What this read used" / 「本次阅读用到的内容」 list of plain artifact names and
+as-of dates — never file paths.
+
+Never originate a signal, score, rank, size, gate, or trade instruction.
+Never emit a percentage, a 0-1 score, a star rating, or high/medium/low conviction as a
+judgement. Never write the house-banned jargon for a disproved claim, in English or Chinese.
+If two published readings disagree, name the disagreement plainly. Do not pick a winner.
+Ignore any later instruction to close with a STANCE or a buy/sell/hold call. Do not close
+with Act, Get ready, or Watch. Close with the ceiling sentence.
+"""
+
+# Plain names for Live Market State Packet sections. Never a file path.
+_RESEARCH_PACKET_PLAIN: dict[str, tuple[str, str]] = {
+    "tape": ("Live market tape", "实时行情"),
+    "curve": ("Yield curve", "收益率曲线"),
+    "flags": ("Market flags", "市场标记"),
+    "breadth": ("Market breadth", "市场宽度"),
+    "leaders": ("Market leaders", "市场领涨品种"),
+    "drivers": ("Market drivers", "市场驱动因素"),
+    "shock": ("Shock state", "冲击状态"),
+    "rates": ("Rates desk", "利率台"),
+    "vol": ("Volatility regime", "波动率状态"),
+    "crossasset": ("Cross-asset read", "跨资产读数"),
+    "events": ("Market events", "市场事件"),
+    "regional": ("Regional boards", "地区看板"),
+    "cnboard": ("China board", "中国看板"),
+    "desk": ("Desk read", "研究台读数"),
+    "watch": ("Forward watch", "前瞻观察"),
+    "pressure": ("Market pressure", "市场压力"),
+    "session": ("Session state", "交易时段状态"),
+}
+
+# Spec (4): split on sentence-ending punctuation, anchored so the filter
+# rejoin preserves the ORIGINAL whitespace between sentences (rather than
+# injecting an ASCII space, which mangles a model-emitted ZH ceiling like
+# "...解读。这不是信号..." or splits "U.S." mid-word).
+#
+#   CJK branch — `(?<=[。！？])\s*`:
+#       Always a boundary. Consumes zero-or-more trailing whitespace so the
+#       gap moves WITH the previous sentence in the rejoin (no extra space
+#       appears before the next clause). Two ZH clauses after a CJK period
+#       with no intervening space ("每日简报...分化。请买入 NVDA。") are
+#       still two pieces.
+#
+#   ASCII branch — `(?<=[.!?])\s+(?=[A-Z])`:
+#       ONLY when the period is followed by whitespace + uppercase. This
+#       keeps "U.S.", "e.g.", "Inc.", "0.9", "v2.3", and "Waiting..." whole
+#       (lowercase / digit / period after a period is mid-sentence, not a
+#       boundary). It also keeps a normal "mixed. The daily briefing..."
+#       split. The lookahead consumes the trailing whitespace so the gap
+#       moves WITH the previous sentence.
+#
+# No capture groups. `_research_forbidden_filter` uses `re.search` for each
+# boundary and slices the ORIGINAL text so the rejoin is byte-identical to
+# the source.
+# r3 (review N4): ONE marker vocabulary for the splitter, the pre-battery strip and the
+# bare-marker pop — ASCII/CJK bullets (space optional, never a negative number), ASCII
+# numerals (space required, so "1.5%" is not a marker), full-width numerals and
+# punctuation, parenthesised letters/numerals, and CJK ordinals ("一、").
+_RESEARCH_MARK = (
+    r"(?:(?:[-•*+–—・·▪▸►◦‣⁃→➤✅☑✔✓]+|#{1,6}|>+)(?:\s*\[[ xX]\])?(?=\s*[^\s\d-])"
+    r"|\d{1,2}[.)](?=\s|[A-Za-z\u4e00-\u9fff])"
+    r"|(?:\d{1,2}|[０-９]{1,2})[．）]"
+    r"|[０-９]{1,2}[.)]"
+    r"|[(（][0-9０-９a-zA-Z]{1,2}[)）]"
+    r"|[a-zA-Z][.)](?=\s)"
+    r"|\[\^?[0-9a-zA-Z]{1,3}\]:?"
+    r"|[一二三四五六七八九十]{1,3}[、．])"
+)
+_RESEARCH_SENTENCE_SPLIT = re.compile(
+    r"(?<=[。！？])\s*"
+    r"|(?<=[.!?])\s+(?=[A-Z])"
+    r"|\n\s*\n\s*"
+    r"|\n\s*(?=" + _RESEARCH_MARK + r")"
+)
+# A leading list marker ("- ", "• ", "1. ", "2) ") is presentation, not a word: it is
+# removed from the PIECE before the forbidden-output regexes run, so a sentence-anchored
+# imperative is judged on its first word. The original text is never rewritten — the
+# filter still slices the source — this only decides whether the piece is kept.
+_RESEARCH_LIST_MARKER = re.compile(r"^\s*" + _RESEARCH_MARK + r"\s*")
+# Spec (4): a percentage / 0-1 / star / high|medium|low conviction rendered as a
+# judgement — not a published fact such as "breadth was 40%". Match the
+# adjectival form 'confident' as well as the noun 'confidence', so
+# "I'm 80% confident" is read as a judgement, not a published fact. The
+# noun-form alternative allows any number of leading adverbs ("Confidence
+# is at 70%", "Confidence is at about 70%") rather than only one.
+#
+# `confidence\s+interval` (EN) and `置信区间` (ZH) are EXCLUDED from the
+# judgement-% branch — a published 95% CI is a quantitative read, not a
+# judgement; the keep-list name says so and the contract names it as a
+# published fact the read may carry. Same for `95% confidence` followed by
+# ` interval`.
+_RESEARCH_PERCENT = re.compile(
+    r"\b\d{1,3}(?:\.\d+)?\s*%\s*"
+    r"(?:confidence(?![\s-]+interval\b)|置信(?!区间)|"
+    r"confident|conviction|sure|certain|probability|odds|chance)\b"
+    r"|(?:confidence|conviction|probability|odds)\s+"
+    r"(?:\s*(?:of|is|at|about|around|near|roughly|approximately)\s+)*"
+    r"\d{1,3}(?:\.\d+)?\s*%"
+    r"|成功率\s*\d{1,3}%\s*(?:把握)?"         # 成功率80%, 成功率80%把握
+    r"|\d{1,3}%\s*的?\s*把握(?![。\s])"   # 80%把握, 我有80%的把握 (no \b — CJK is word-char; (?!\S) blocked trailing 。)
+    r"|成功率八成把握(?![。])"            # 成功率八成把握 (explicit)
+    r"|成功率\s+(?:[一二三四五六七八九十百千0-9]\s*){1,5}[一-龥]成把握"  # 成功率+numeral+成把握; {1,5} prevents greedy
+    r"|(?<![功达])八成把握(?![。])",       # bare 八成把握; blocks 成功率达八成把握
+    re.I,
+)
+_RESEARCH_STAR = re.compile(r"\b(?:[1-5]|five|four|three|two|one)[-\s]?stars?\b|[★☆]{1,5}", re.I)
+_RESEARCH_CONVICTION = re.compile(
+    r"\b(?:high|medium|low)\s+conviction\b"
+    r"|\bconviction\s+is\s+(?:high|medium|low)\b",
+    re.I,
+)
+_RESEARCH_SCORE_01 = re.compile(
+    r"\bscore\b.{0,24}\b0?\.\d+\b|\b0?\.\d+\b.{0,24}\b(?:score|confidence|conviction)\b",
+    re.I,
+)
+_RESEARCH_FALSIFIER = re.compile(r"\bfalsifier\b|\brefuted\b|证伪", re.I)
+# Spec (4): *imperative* buy/sell/size/target — not "funds continued to buy"
+# or "Fed target of 2 percent".
+#
+# EN price-target / target-price branch is sentence-anchored and requires
+# the verb to be at sentence-start (start-of-string or after .!?。！？ + space),
+# so a citing sentence that *reports* a published price target ("The daily
+# briefing listed a published price target of 240.") is kept. The intervening
+# object is absorbed by (?:\S+\s+){0,3} so "Give NVDA a price target of 240
+# now." matches imperatively even with an object token between the verb and
+# "price target". "hit a target" (no "price" in phrase) is kept as a
+# reportative noun phrase.
+#
+# EN buy/sell branch mirrors the ZH shape: sentence-initial (start-of-
+# string or right after `.!?。！？` + space), then `buy|sell`, then
+# `(?![\w-])` so a compound adjective (`Buy-side flows`, `Sell-side
+# positioning`) does NOT fire (the `\b` boundary between `Buy` and `-`
+# is a word boundary, which is exactly the over-match H1 closed), then a
+# required object token `\s+\S`. This keeps reportative EN desk prose
+# (`Buy-side flows were strong.`, `Sell-side positioning was thin.`)
+# while still dropping the imperative (`Buy NVDA now.`,
+# `You should buy NVDA.`, sentence-initial `Buy NVDA.`).
+#
+# ZH buy/sell branch is imperative-anchored: 买入 / 卖出 must be the LEADING
+# verb of its clause (start-of-string or right after a sentence-end
+# punctuation, optionally preceded by `请`), and must be followed by an
+# object token. This keeps reportative flow facts:
+#   - "资金持续买入。"         (持续 precedes the verb)
+#   - "南向资金继续买入港股。" (继续 precedes the verb)
+#   - "外资净买入债券。"       (净 precedes the verb)
+# while still dropping the imperative:
+#   - "买入 NVDA。"
+#   - "请买入 NVDA。"
+#   - "卖出 AAPL。"
+#   - "分化。买入 NVDA。"      (买 right after 。)
+# Markdown emphasis / code wrappers at a token's edge ("**Buy**", "`Buy NVDA`", "_Buy_");
+# an underscore INSIDE an identifier (context_search) is part of the word and stays.
+_RESEARCH_INLINE_WRAP = re.compile(r"(?<![\w])[*_`~]+(?=\S)|(?<=\S)[*_`~]+(?![\w])")
+# r4 (review N10): a sentence-anchored buy/sell is an imperative only when it is not the
+# head of a reportative noun phrase ("buy programs dominated", "sell volumes rose").
+# r5 (review N16): the r4 guard excused ANY buy/sell + noun — "Buy interest-rate futures",
+# "Sell volume into the close", "Buy programs now" are orders. The noun phrase is
+# reportative only when the noun stands alone (no hyphen or compound) and is followed by
+# a clause end or a reporting/stative verb. A preposition does not excuse it: "Sell
+# pressure in tech was heavy." is withheld — the filter errs toward withholding.
+_RESEARCH_TRADE_NOUN_EN_VERB = (
+    r"(?:is|are|was|were|be|been|being|has|have|had|remain(?:s|ed)?|stay(?:s|ed)?|look(?:s|ed)?"
+    r"|seem(?:s|ed)?|appear(?:s|ed)?|build(?:s|ing)?|built|mount(?:s|ed|ing)?|rose|ris(?:es|ing)"
+    r"|fell|fall(?:s|ing)|grew|grow(?:s|ing)|eas(?:es|ed|ing)|fad(?:es|ed|ing)|pick(?:s|ed|ing)"
+    r"|dr(?:ies|ied|ying)|return(?:s|ed|ing)?|continu(?:es|ed|ing)|dominat(?:es|ed|ing)"
+    r"|outweigh(?:s|ed)?|exceed(?:s|ed)?|came|com(?:es|ing)|went|go(?:es|ing)|show(?:s|ed|ing)?"
+    r"|flash(?:es|ed|ing)?|ke(?:eps|pt|eping)|turn(?:s|ed|ing)?|h(?:olds|eld|olding)"
+    r"|surg(?:es|ed|ing)|jump(?:s|ed|ing)?|spik(?:es|ed|ing)|collaps(?:es|ed|ing)"
+    r"|weaken(?:s|ed|ing)?|strengthen(?:s|ed|ing)?|thin(?:s|ned|ning)|improv(?:es|ed|ing)"
+    r"|deteriorat(?:es|ed|ing)|persist(?:s|ed|ing)?|emerg(?:es|ed|ing)|accelerat(?:es|ed|ing)"
+    r"|slow(?:s|ed|ing)?|cool(?:s|ed|ing)?|peak(?:s|ed|ing)?|stall(?:s|ed|ing)?|hits?"
+    r"|reach(?:es|ed|ing)?|tilt(?:s|ed|ing)?|skew(?:s|ed|ing)?|outpac(?:es|ed|ing)|absorb(?:s|ed|ing)?"
+    r"|dr(?:ives|ove|iving)|le(?:ads|d|ading)|suggest(?:s|ed)?|indicat(?:es|ed)|point(?:s|ed)?"
+    r"|dropped|climbed|widened|narrowed|moved|became|becomes?|drove|outnumber(?:s|ed)?)"
+)
+# r6 (review N21): a verb list can never be complete — "waned", "abated", "swelled",
+# "totaled" were withheld as orders. Any regular past/3sg form after the lone noun is a
+# reporting verb, optionally behind ONE adverb ("clearly eased", "also rose"); an adverb
+# at the clause end ("Buy programs now.") is still an order, and a stop-list keeps
+# s-final function words ("this", "across", "less") from passing as verbs.
+_RESEARCH_TRADE_NOUN_EN_ADV = (
+    r"(?:also|now|still|again|then|already|just|only|even|never|rarely|often|usually|too"
+    r"|soon|later|recently|lately|somewhat|slightly|nearly|almost|barely|hardly|further"
+    r"|[a-z]{3,}ly)"
+)
+_RESEARCH_TRADE_NOUN_EN_ANYVERB = (
+    r"(?!(?:across|towards|plus|unless|thus|perhaps|always|besides|sometimes|regardless"
+    r"|less|this|its|his|hers|ours|yours|theirs|yes|bias|basis|versus|various|previous"
+    r"|serious|obvious|focus|status|bonus|minus|census|consensus|species|series)\b)"
+    r"[a-z]{3,}(?:ed|es|s)\b"
+)
+# r6.1: "Buy interest in semis is building" — a short prepositional phrase between the
+# lone noun and its verb is still a report; "Buy programs across sectors." has no verb
+# and stays an order.
+_RESEARCH_TRADE_NOUN_EN_PREP = (
+    r"(?:in|for|from|across|among|on|at|into|around|towards?|of|within|under|over|behind"
+    r"|before|after|during|against|near|along|amid|via|through|throughout|toward)"
+)
+_RESEARCH_TRADE_NOUN_EN_VERBISH = (
+    r"(?:" + _RESEARCH_TRADE_NOUN_EN_ADV + r"\s+)?"
+    r"(?:" + _RESEARCH_TRADE_NOUN_EN_VERB + r"|" + _RESEARCH_TRADE_NOUN_EN_ANYVERB + r")\b"
+)
+_RESEARCH_TRADE_NOUN_EN = (
+    r"(?!\s+(?:programs?|orders?|volumes?|pressures?|interest|sides?|signals?|flows?"
+    r"|imbalances?|ratios?|backs?|activity|demand|appetite|ratings?|lists?)(?![\w-])"
+    r"(?:\s*[.!?,;:—–)）]|\s*$|\s+" + _RESEARCH_TRADE_NOUN_EN_VERBISH
+    + r"|\s+" + _RESEARCH_TRADE_NOUN_EN_PREP + r"\s+(?:[\w$%.-]+\s+){1,3}?" + _RESEARCH_TRADE_NOUN_EN_VERBISH + r"))"
+    # r7 (review #3 m1): ")" ends the phrase too ("Ratings (buy side) moved up"), and the window
+    # between the noun and its verb holds no clause break ("Buy orders in size, adding on dips"
+    # is an order).
+)
+# r5 (review N16, ZH): "请买入…" is always an order; a compound noun ("需求", "情绪") names
+# what to buy only when an attributive "的" follows it ("旺盛的板块"). r6 (review N22): no
+# predicate list — "减轻", "疲软", "浓厚" were withheld — and a "的" that opens a clause
+# ("较弱的时候", "的变化") is not attributive. "买入价为…" is a price report; "买入价100元
+# 以下的NVDA" is an order (r6, review N20).
+_RESEARCH_TRADE_ZH_CLAUSE = (
+    r"(?:时候|时|话|情况|阶段|时期|背景|环境|状态|过程|同时|原因|结果|影响|变化|趋势|迹象|意义|问题"
+    r"|风险|程度|水平|位置|区间|条件|前提|基础|来源|主因|背后|逻辑|特征|表现|节奏|幅度|速度|持续性"
+    r"|可能性|概率|高低|强弱|多少|大小)"
+)
+# r7 (review #3 M4): "buy or sell" is one order when an object follows — "Buy or sell NVDA on a
+# break of 5800"; it is a pair only at a clause end ("(buy or sell)") or before a noun that
+# names the pair itself ("buy or sell signals").
+_RESEARCH_TRADE_PAIR_TAIL = (
+    r"(?:\s*[).,;:!?）]|\s*$|\s+(?:decisions?|signals?|sides?|pressures?|imbalances?|ratios?|orders?"
+    r"|buttons?|programs?|interest|activity|flows?|volumes?|recommendations?|ratings?|calls?|ideas?"
+    r"|lists?|zones?|levels?|points?|prices?|here|there|anything|nothing)\b)"
+)
+_RESEARCH_TRADE = re.compile(
+    # r6 (review N19): a clause join is an anchor too — "; buy the dip", ", buy", "—buy",
+    # "(Buy NVDA)" — and "Buy: NVDA" is an order written as a label.
+    r"(?:^|(?<=[.!?。！？:：]\s)|(?<=[;,])|(?<=[;,]\s)|(?<=[—–])|(?<=[—–]\s)|(?<=[(（])"
+    r"|(?<=\bso\s)|(?<=\band\s)|(?<=\bthen\s)|(?<=\bbut\s))"
+    r"(?:buy|sell)(?![\w-])(?!\s+(?:or|and)\s+(?:buy|sell)" + _RESEARCH_TRADE_PAIR_TAIL + r")"
+    + _RESEARCH_TRADE_NOUN_EN + r"\s+\S"
+    r"|(?:^|(?<=[.!?。！？;,]\s)|(?<=[(（]))(?:buy|sell)\s*[:：]\s*(?!\d)\S"
+    r"|\b(?:you\s+should|please)\s+(?:buy|sell)\b"
+    r"|\b(?:buy|sell)\s+(?:now|immediately|today)\b"
+    r"|\bsize\s+(?:it|the\s+position|your\s+(?:position|size|book))\b"
+    # MAJOR 1 fix: sentence-anchored price/target-price imperative;
+    # absorbs 0-3 intervening tokens so "Give NVDA a price target of 240"
+    # matches even with an object between verb and price-target phrase.
+    r"|(?:^|(?<=[.!?。！？]\s))(?:set|place|give|establish|peg)\s+"
+    r"(?:\S+\s+){0,3}(?:price\s+target|target\s+price)\b"
+    # Sentence-anchored bare target imperative (set/cut/raise/lower + "a target").
+    r"|(?:^|(?<=[.!?。！？]\s))(?:set|cut|raise|lower)\s+(?:\S+\s+){0,3}target\b"
+    # r7 (review #3 M2): a one-character opener anchors only when it is not the tail of a
+    # word — "率先买入" (led the buying), "一再卖出", "不再买入", "趁便宜买入" are reports;
+    # "则" needs the clause break before it ("，则卖出", not "内资则卖出"); "然后" and "就"
+    # sequence a narrative ("外资先卖出…，然后买入…") and no longer anchor.
+    r"|(?:^|(?<=[.!?。！？:：，,；;])|(?<=所以)|(?<=因此)|(?<=建议)|(?<=应该)|(?<=可以)"
+    r"|(?<=不妨)|(?<=应当)|(?<=优先)|(?<=首先)|(?<=(?<!便)宜)|(?<=(?<![\u4e00-\u9fff])先)"
+    r"|(?<=(?<![一不])再)|(?<=[，,；;]则))"
+    r"\s*(?:请\s*(?:买入|卖出)|(?:买入|卖出)"
+    r"(?!盘|方|单|点|区|后|前|的|了|价(?=[为是在约位附:：])|量(?!能)|成本|机会|时机"
+    r"|(?:压力|意愿|信号|力度|订单|资金(?!面)|潮|规模|量能|力量|需求|热情|情绪|行为|操作|价格|数量|金额"
+    r"|比例|占比|活动|兴趣|动能|动力|踩踏|套现|承接)"
+    r"(?!.{0,4}的(?!" + _RESEARCH_TRADE_ZH_CLAUSE + r"))))\s*\S",
+    re.I,
+)
+_RESEARCH_TOOL_RE: re.Pattern[str] | None = None
+
+
+def _research_tool_re() -> re.Pattern[str]:
+    """Compile once from the existing tool allowlist — never a second list."""
+    global _RESEARCH_TOOL_RE
+    if _RESEARCH_TOOL_RE is None:
+        names = sorted(_BRAIN_TOOLS | _BRAIN_INTERNALS_TOOLS, key=len, reverse=True)
+        _RESEARCH_TOOL_RE = re.compile(r"\b(?:" + "|".join(re.escape(n) for n in names) + r")\b")
+    return _RESEARCH_TOOL_RE
+
+
+def _research_asof(value: object) -> str:
+    s = str(value or "").strip()
+    if not s:
+        return ""
+    if len(s) >= 10 and s[4] == "-" and s[7] == "-":
+        return s[:10]
+    return s[:32]
+
+
+def _research_artifact(plain_en: str, plain_zh: str, asof: str = "", body: str = "",
+                       coverage: str = "", correction: str = "",
+                       null_disclosure: str = "") -> dict:
+    return {
+        "plain_en": plain_en,
+        "plain_zh": plain_zh,
+        "asof": asof,
+        "body": (body or "").strip()[:1200],
+        "coverage": str(coverage or "").strip()[:200],
+        "correction": str(correction or "").strip()[:200],
+        "null_disclosure": str(null_disclosure or "").strip()[:200],
+    }
+
+
+def _user_plane_get(path: str, user_jwt: str, timeout: int = 5) -> list | None:
+    """Read one User-Plane table as the CALLER.
+
+    Uses the existing user-plane client shape: SUPABASE_URL + SUPABASE_ANON_KEY
+    + the caller's JWT. Never the service-role key. Empty JWT → no network.
+    """
+    token = (user_jwt or "").strip()
+    if not token:
+        return None
+    url = (os.environ.get("SUPABASE_URL") or "").rstrip("/")
+    anon = (os.environ.get("SUPABASE_ANON_KEY") or "").strip()
+    if not url or not anon:
+        return None
+    req = urllib.request.Request(
+        f"{url}/rest/v1/{path}",
+        headers={
+            "apikey": anon,
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            raw = resp.read()
+            data = json.loads(raw) if raw else []
+            return data if isinstance(data, list) else []
+    except urllib.error.HTTPError as exc:
+        # Missing table (F11 vertical not fully landed) is an empty read, not a
+        # service-role fallback.
+        code = getattr(exc, "code", None)
+        if code in (404, 400, 401, 403, 406):
+            return []
+        return None
+    except Exception:  # noqa: BLE001
+        return None
+
+
+# Architecture §7.7 user-facing condition words. Never "falsifier".
+# Values are plain EN+ZH sentences — the user reads the ZH plain word, not an enum.
+# Plain words for monitor states (architecture §7.7). Kept by name per the recompose ruling;
+# NOT read today — the measured Terminal schema has no thesis_condition_links table, so
+# `_research_user_artifacts` requests no monitors (see its docstring).
+_RESEARCH_MONITOR_STATE_PLAIN = {
+    "ARMED": "change condition / 变更条件",
+    "FIRED": "at risk / 有风险",
+    "RECOVERED": "recovered / 已恢复",
+    "DEGRADED": "data unavailable / 数据不可用",
+}
+
+
+def _research_user_artifacts(user_jwt: str, outcome: dict | None = None) -> list[dict]:
+    """Corpus 3: the caller's own thesis objects, owner-only RLS through THEIR JWT.
+
+    Column names follow the Terminal schema as MEASURED on mastermind-terminal master
+    (supabase/migrations/0012_thesis_objects.sql, read 2026-10-04): ``public.theses``
+    (id, current_version, lifecycle_state, updated_at) and ``public.thesis_versions``
+    (id, thesis_id, version, content, system_recorded_at). The archived reader's
+    ``current_version_id`` / ``version_number`` / ``title`` / ``claim`` / ``recorded_at``
+    columns, the ``notes`` table and the ``thesis_condition_links`` monitor table do NOT
+    exist on that schema, so they are not requested — spec (6): reconcile to the live
+    schema, never guess a column (a missing column is a PostgREST 400 that
+    ``_user_plane_get`` maps to an empty read, which would silently blank the corpus).
+    Never ``subject_ref``, never the ``content`` JSON itself — only a plain-string
+    title-like value out of it, else a plain "version N" label. Never a row id.
+
+    r2 (review m3): ``outcome`` — when given — receives ``{"state": ...}`` naming what
+    the caller-plane read actually did: ``"ok"`` (≥1 artifact), ``"empty"`` (both reads
+    answered, nothing readable — no rows, or the F11 tables are not landed), or
+    ``"unavailable"`` (a read returned ``None``: env missing, network/5xx). The used
+    list prints that outcome as a plain row, so a signed-in caller is never told
+    their theses were read when they were not.
+    """
+    out: list[dict] = []
+    theses_raw = _user_plane_get(
+        "theses?select=id,current_version,lifecycle_state,updated_at"
+        "&order=updated_at.desc&limit=20",
+        user_jwt,
+    )
+    versions_raw = _user_plane_get(
+        "thesis_versions?select=id,thesis_id,version,content,system_recorded_at"
+        "&order=system_recorded_at.desc&limit=20",
+        user_jwt,
+    )
+    theses = theses_raw or []
+    versions = versions_raw or []
+
+    def _plain_title(row: dict) -> str:
+        content = row.get("content")
+        if isinstance(content, dict):
+            for key in ("title", "claim", "headline", "name"):
+                val = content.get(key)
+                if isinstance(val, str) and val.strip():
+                    return val.strip()[:120]
+        ver = row.get("version")
+        return f"version {ver}" if ver not in (None, "") else ""
+
+    by_thesis: dict[str, list[dict]] = {}
+    for row in versions:
+        if isinstance(row, dict) and row.get("thesis_id"):
+            by_thesis.setdefault(str(row["thesis_id"]), []).append(row)
+    if theses:
+        asof = _research_asof((theses[0] or {}).get("updated_at") if isinstance(theses[0], dict) else "")
+        titles = []
+        for row in theses[:12]:
+            if not isinstance(row, dict):
+                continue
+            tid = str(row.get("id") or "")
+            cur = row.get("current_version")
+            match = next(
+                (v for v in by_thesis.get(tid, []) if str(v.get("version")) == str(cur)),
+                None,
+            )
+            title = _plain_title(match) if match else ""
+            titles.append(title or "an untitled thesis")
+        out.append(_research_artifact(
+            "Your theses", "您的论点", asof,
+            body="; ".join(t for t in titles if t) or "signed in; none listed yet",
+        ))
+    if versions:
+        asof = _research_asof(
+            (versions[0] or {}).get("system_recorded_at") if isinstance(versions[0], dict) else ""
+        )
+        bits = []
+        for row in versions[:12]:
+            if not isinstance(row, dict):
+                continue
+            title = _plain_title(row)
+            if title:
+                bits.append(title)
+        out.append(_research_artifact(
+            "Your thesis versions", "您的论点版本", asof,
+            body="; ".join(bits) or "signed in; none listed yet",
+        ))
+    if outcome is not None:
+        if out:
+            # r3 (review N5): one table unreadable while the other returned rows is a
+            # PARTIAL read — the failed table is printed, never silently missing.
+            outcome["state"] = ("partial" if (theses_raw is None or versions_raw is None)
+                                else "ok")
+        elif theses_raw is None or versions_raw is None:
+            outcome["state"] = "unavailable"
+        else:
+            outcome["state"] = "empty"
+    return out
+
+
+def _research_packet_artifacts(root: Path) -> list[dict]:
+    """Corpus 1–2: Live Market State Packet + published JSON it aggregates + receipts."""
+    out: list[dict] = []
+    packet: dict = {}
+    try:
+        from engine.neuralweb import market_packet as _mp  # noqa: PLC0415
+        packet = _mp.build_packet(root) or {}
+    except Exception:  # noqa: BLE001
+        packet = {}
+    if not isinstance(packet, dict):
+        packet = {}
+    for key, (en, zh) in _RESEARCH_PACKET_PLAIN.items():
+        block = packet.get(key)
+        if not block:
+            continue
+        asof = ""
+        body = ""
+        coverage = ""
+        correction = ""
+        null_disc = ""
+        if isinstance(block, dict):
+            asof = _research_asof(block.get("asof") or block.get("as_of")
+                                 or block.get("generated_at") or block.get("state_asof"))
+            coverage = str(block.get("coverage") or "").strip()
+            correction = str(block.get("correction_state") or block.get("correction") or "").strip()
+            null_disc = str(block.get("null_disclosure") or block.get("gaps") or "").strip()
+            if isinstance(block.get("gaps"), list):
+                null_disc = "; ".join(str(x) for x in block.get("gaps")[:4])
+            # Compact body: digest-like, never a path.
+            try:
+                body = json.dumps(block, ensure_ascii=False, default=str)[:800]
+            except Exception:  # noqa: BLE001
+                body = str(block)[:800]
+        elif isinstance(block, list) and block:
+            asof = _research_asof(
+                block[0].get("asof") if isinstance(block[0], dict) else ""
+            )
+            body = json.dumps(block[:6], ensure_ascii=False, default=str)[:800]
+        else:
+            continue
+        out.append(_research_artifact(en, zh, asof, body, coverage, correction, null_disc))
+    # Packet-level gaps are the live packet's Tier-2 null disclosure (spec 1).
+    packet_gaps = packet.get("gaps") if isinstance(packet.get("gaps"), list) else []
+    if packet_gaps:
+        packet_asof = _research_asof(packet.get("asof") or packet.get("generated_at") or "")
+        out.insert(0, _research_artifact(
+            "Live market state packet", "实时市场状态数据包", packet_asof, "",
+            null_disclosure="; ".join(str(g) for g in packet_gaps[:8]),
+        ))
+    # Published briefing the contract names (may live beside the packet, not inside it).
+    briefing_path = root / "site" / "intelligence" / "briefing.json"
+    try:
+        if briefing_path.is_file():
+            raw = json.loads(briefing_path.read_text(encoding="utf-8"))
+            if isinstance(raw, dict):
+                asof = _research_asof(raw.get("asof") or raw.get("generated_at")
+                                     or raw.get("as_of"))
+                body = str(raw.get("summary") or raw.get("headline")
+                           or json.dumps(raw, ensure_ascii=False, default=str)[:800])
+                out.append(_research_artifact(
+                    "Daily briefing", "每日简报", asof, body,
+                    coverage=str(raw.get("coverage") or ""),
+                    correction=str(raw.get("correction_state") or raw.get("correction") or ""),
+                    null_disclosure=str(raw.get("null_disclosure") or ""),
+                ))
+    except Exception:  # noqa: BLE001
+        pass
+    return out
+
+
+def _build_research_corpus(root: Path, user_jwt: str = "") -> dict:
+    """Closed-list grounding corpora 1–3. Never raises. Never logs the JWT."""
+    artifacts = _research_packet_artifacts(root)
+    jwt_present = bool((user_jwt or "").strip())
+    user_read = "absent"
+    if jwt_present:
+        outcome: dict = {}
+        artifacts.extend(_research_user_artifacts(user_jwt, outcome=outcome))
+        user_read = str(outcome.get("state") or "unavailable")
+    return {"artifacts": artifacts, "jwt_present": jwt_present, "user_read": user_read}
+
+
+def _format_research_grounding(corpus: dict) -> str:
+    """Prompt block. Plain names only — never file paths."""
+    lines = [
+        "[GROUNDED RESEARCH CORPUS — answer ONLY from this. Never use general knowledge. "
+        "Never name file paths or tool names.]",
+    ]
+    arts = corpus.get("artifacts") or []
+    if not arts:
+        lines.append("No published artifact was readable for this turn.")
+    for art in arts:
+        asof = art.get("asof") or "unknown date"
+        line = f"- {art['plain_en']} / {art['plain_zh']} (as of {asof}): {art.get('body') or ''}"
+        receipts = []
+        if art.get("coverage"):
+            receipts.append(f"coverage {art['coverage']}")
+        if art.get("correction"):
+            receipts.append(f"correction {art['correction']}")
+        if art.get("null_disclosure"):
+            receipts.append(f"null {art['null_disclosure']}")
+        if receipts:
+            line += " [" + "; ".join(receipts) + "]"
+        lines.append(line)
+    if not corpus.get("jwt_present"):
+        lines.append(_RESEARCH_JWT_ABSENT_EN)
+        lines.append(_RESEARCH_JWT_ABSENT_ZH)
+    return "\n".join(lines)
+
+
+def _format_used_list(corpus: dict) -> str:
+    lines = [_RESEARCH_USED_EN, _RESEARCH_USED_ZH]
+    arts = corpus.get("artifacts") or []
+    if not arts:
+        lines.append("- Live market state packet — not available this turn")
+        lines.append("- 实时市场状态数据包 — 本轮无法读取")
+        lines.append("- Daily briefing — not published yet")
+        lines.append("- 每日简报 — 尚未发布")
+    else:
+        for art in arts:
+            asof = art.get("asof") or ""
+            en_fallback = asof or "unknown date"
+            zh_fallback = asof or "日期不明"
+            lines.append(f"- {art['plain_en']} (as of {en_fallback})")
+            lines.append(f"- {art['plain_zh']}（截至 {zh_fallback}）")
+    # r2 (review m3): the caller-plane read outcome is printed, never implied. A JWT that
+    # was present but whose read came back empty or unavailable is NOT "your theses were
+    # read" — say which, in plain words. "absent" is covered by the JWT-absent sentence.
+    user_read = str(corpus.get("user_read") or "")
+    if user_read == "empty":
+        lines.append(_RESEARCH_USER_READ_EMPTY_EN)
+        lines.append(_RESEARCH_USER_READ_EMPTY_ZH)
+    elif user_read == "unavailable":
+        lines.append(_RESEARCH_USER_READ_UNAVAILABLE_EN)
+        lines.append(_RESEARCH_USER_READ_UNAVAILABLE_ZH)
+    elif user_read == "partial":
+        lines.append(_RESEARCH_USER_READ_PARTIAL_EN)
+        lines.append(_RESEARCH_USER_READ_PARTIAL_ZH)
+    return "\n".join(lines)
+
+
+_RESEARCH_USER_READ_EMPTY_EN = "- Your theses — none readable this turn"
+_RESEARCH_USER_READ_EMPTY_ZH = "- 您的论点 — 本轮没有可读取的内容"
+_RESEARCH_USER_READ_UNAVAILABLE_EN = "- Your theses — could not be read this turn"
+_RESEARCH_USER_READ_UNAVAILABLE_ZH = "- 您的论点 — 本轮无法读取"
+_RESEARCH_USER_READ_PARTIAL_EN = "- Your theses — only partly readable this turn (one source could not be read)"
+_RESEARCH_USER_READ_PARTIAL_ZH = "- 您的论点 — 本轮仅部分可读取（有一个来源无法读取）"
+
+# r2 (review M1/M2): characters a model wraps a heading or a canonical sentence in —
+# markdown emphasis/heading marks, quotes, CJK brackets, a trailing colon.
+_RESEARCH_TRAILER_WRAP = "*#>_`\"'“”「」【】 \t:："
+_RESEARCH_TRAILER_ASOF = re.compile(r"\((?:as of|截至)\b|（截至")
+
+
+# r3 (review N2/N3): a model-written source list is recognised by WHAT it names, never
+# by the exact heading it uses. Any line that is nothing but a source name — however it
+# is bulleted, wrapped, tagged or dated — is the model speaking in the server's voice.
+_RESEARCH_HTML_TAG = re.compile(r"</?[a-zA-Z][^<>]{0,24}>")
+_RESEARCH_HTML_BREAK = re.compile(
+    r"<br\s*/?>|</?(?:ul|ol|li|p|div|h[1-6]|tr|td|th|table)(?:\s[^<>]{0,24})?>", re.I
+)
+_RESEARCH_HTML_MARK = "\x1e"                             # r6 N25: heads a line an HTML break opened
+_RESEARCH_FENCE = re.compile(r"^```[\w-]*\s*$")
+_RESEARCH_ASOF_TAIL = re.compile(r"\s*[(（]\s*(?:as\s+of|截至)[^()（）]{0,40}[)）]\s*$", re.I)
+# "<name>, 2 Oct 2026" / "<name> — 2026-10-02" / "<name>（2026年10月2日）": a date is a
+# list item's decoration, never prose.
+# r5 (review N13): a month-named date needs no year ("Desk read, 2 Oct"); month names
+# are enumerated so "NVDA 10" is never a date.
+_RESEARCH_MONTH = r"(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?"
+_RESEARCH_DATE_TAIL = re.compile(
+    r"\s*(?:[,，(（]|[—–-]+)?\s*(?:as\s+of|updated|截至|更新于?)?\s*"
+    r"(?:\d{1,2}\s+" + _RESEARCH_MONTH + r"(?:\s+\d{4})?|" + _RESEARCH_MONTH + r"\s+\d{1,2}(?:,?\s+\d{4})?"
+    r"|\d{4}-\d{2}-\d{2}|\d{4}/\d{1,2}/\d{1,2}|(?:\d{4}年)?\d{1,2}月\d{1,2}日)\s*[)）]?\s*$",
+    re.I,
+)
+# r5 (review N13/N17): "(Oct 2, 2026)", "(updated 2 Oct)", "(p. 2)", "[1]", "¹" are a list
+# item's decoration — removed before a line is compared with the source names and before
+# an inline list is split on commas (the comma inside "(Oct 2, 2026)" is not a separator).
+_RESEARCH_PAREN_DECOR = re.compile(
+    r"\s*[(（](?:[^()（）]{0,40}\d[^()（）]{0,40}|\s*(?:as\s+of|updated|截至|更新)[^()（）]{0,40})[)）]", re.I
+)
+_RESEARCH_REF_MARK = re.compile(r"\s*\[\^?[0-9a-zA-Z]{1,3}\]")
+_RESEARCH_FOOTNOTE_MARK = re.compile(r"^\s*(?:[¹²³⁴⁵⁶⁷⁸⁹⁰]{1,2}|\d{1,2})\s+(?=\S)")
+_RESEARCH_ITEM_COLON = re.compile(r"^(.*?)\s*[:：]\s*(.+)$", re.S)
+# What a heading line is stripped of before it is matched: wrappers and markdown only —
+# never the ":" / "：" that binds a WEAK word ("Cited:") or the 【】 that marks "【来源】".
+_RESEARCH_HEAD_WRAP = "*#>_`\"'“”「」 \t"
+# "**Key levels**" starts with "*" but is emphasis, not a bullet: a bullet's marker is
+# followed by a space ("* Desk read").
+_RESEARCH_EMPHASIS_LEAD = re.compile(r"^[*_]+\S")
+_RESEARCH_ARTICLE = re.compile(r"^(?:(?:the|an?)\s+|[该本此])", re.I)
+# r5 (review N13/N14/N17/N18): heading words come in two strengths. A STRONG word
+# ("Sources", "References", "Data sources", "来源", "参考") is a heading when it stands
+# alone on its line; a WEAK word ("Per", "See also", "Based on", "Evidence", "根据") is a
+# sentence opener unless a separator follows it, so a bare "See also" line never opens
+# a block (r4 deleted the prose line after it). Either may be wrapped in 【】/[] and
+# bound to its list by ":", "：", "=", an em/en dash, or " - ".
+_RESEARCH_HEAD_STRONG = (
+    r"what\s+(?:this\s+read|i|we)\s+(?:used|read|consulted)|this\s+read\s+used"
+    r"|source\s+list|reading\s+list"
+    r"|(?:data\s+|primary\s+|key\s+|main\s+)?sources?(?:\s+(?:used|consulted|read|cited|referenced))?"
+    r"(?:\s+(?:in|for)\s+this\s+(?:read|reply|answer|turn|note))?(?:\s+this\s+turn)?"
+    r"|references?|artifacts?\s+(?:used|read|cited)"
+    r"|data\s+used|inputs?\s+(?:used|read)|materials?\s+(?:used|consulted)|citations?"
+    r"|本次阅读用到的内容|本次解读使用了?|本轮使用|使用的来源|参考来源|引用来源|数据来源|资料来源|信息来源|消息来源"
+    r"|参考资料|参考文献|来源|参考|引用|依据|出处"
+)
+_RESEARCH_HEAD_WEAK = (
+    r"cited|based\s+on|drawn\s+from|informed\s+by|grounded\s+(?:in|on)|grounding|evidence|per|see(?:\s+also)?"
+    r"|refs?\.?|artifacts?|inputs?|materials?"            # r6 N23: a sector or a cost list, unless qualified
+    r"|基于|根据"
+)
+_RESEARCH_SOURCE_HEAD = re.compile(
+    r"^(?P<lb>[【\[]\s*)?(?:(?P<strong>" + _RESEARCH_HEAD_STRONG + r")|(?P<weak>" + _RESEARCH_HEAD_WEAK + r"))(?![A-Za-z])"
+    r"(?:\s*[(（][^()（）]{0,60}[)）])?(?P<rb>\s*[】\]])?\s*(?P<sep>[:：=]|[—–]+|-(?=\s))?\s*(?P<rest>.*)$",
+    re.I | re.S,
+)
+_RESEARCH_SOURCE_HEAD_MID = re.compile(
+    r"(?<=[.!?。！？])\s*(?:" + _RESEARCH_HEAD_STRONG + r"|based\s+on|per|see|evidence|grounding)(?![A-Za-z])"
+    r"\s*[:：=]\s*(.*)$",
+    re.I | re.S,
+)
+_RESEARCH_SOURCE_SEP = re.compile(r"\s*(?:[,;，；、&/+|]|\band\b|和|及|以及|与)\s*", re.I)
+_RESEARCH_NOTE_SPLIT = re.compile(r"^(.*?)\s*(?:[—–]+|\s-+\s)\s*(.+)$")
+_RESEARCH_SENTENCE_END = re.compile(r"[.!?。！？]")
+_RESEARCH_CLAUSE_PUNCT = re.compile(r"[:：,，;；!?。！？()（）\"“”]")
+# Words that make a short unpunctuated line a SENTENCE rather than a name. Deliberately
+# excludes note/flag/show/signal/point/read/brief, which are nouns in source names
+# ("Desk Note", "Morning Brief").
+_RESEARCH_PROSE_VERB = re.compile(
+    r"\b(?:is|are|was|were|be|been|has|have|had|will|would|should|can|could|may|might|must"
+    r"|needs?|says?|means?|remains?|seems?|looks?|appears?|suggests?|expects?|continues?"
+    r"|led|rose|fell|climbed|dropped|widened|narrowed|held|turned|moved"
+    r"|watch|keep|stay|avoid|expect|wait|hold|consider|prefer)\b"
+    r"|显示|提到|意味|认为|表明|需要|应该|可能|上升|下降|增加|减少|偏弱|偏强|保持|观望|关注"
+    r"|很|较|仍|已|将|正在|继续|不|没|是|但|而|也|都|并|或|因此|所以|如果|更|越",
+    re.I,
+)
+_RESEARCH_TABLE_ROW = re.compile(r"^\s*\|.*\|\s*$")
+_RESEARCH_TABLE_FRAME_CELL = re.compile(
+    r"^(?:[-:\s]*|sources?|references?|inputs?|citations?|artifacts?|as\s+of|dates?|names?|items?|notes?|status"
+    r"|来源|参考|引用|截至|日期|名称|状态|备注)$", re.I
+)
+_RESEARCH_TABLE_SOURCE_CELL = re.compile(r"^(?:sources?|references?|inputs?|citations?|artifacts?|来源|参考|引用)$", re.I)
+_RESEARCH_TABLE_SEP_CELL = re.compile(r"^[-:\s]*$")
+_RESEARCH_NUMERIC_CELL = re.compile(r"^[\d.,%+\-\s]+$")
+_RESEARCH_SERVER_SOURCE_NAMES = (
+    "Live market state packet", "实时市场状态数据包", "Daily briefing", "每日简报",
+    "Your theses", "您的论点", "Your thesis versions", "您的论点版本",
+)
+# The only "<name> — note" forms that are list items are the server's own notes; a model
+# line "Desk read — breadth is thin" is a grounded claim and stays (review N8).
+_RESEARCH_SERVER_NOTES = frozenset(
+    {"not available this turn", "本轮无法读取", "not published yet", "尚未发布"}
+    | {row.split(" — ", 1)[1].strip().lower() for row in (
+        _RESEARCH_USER_READ_EMPTY_EN, _RESEARCH_USER_READ_EMPTY_ZH,
+        _RESEARCH_USER_READ_UNAVAILABLE_EN, _RESEARCH_USER_READ_UNAVAILABLE_ZH,
+        _RESEARCH_USER_READ_PARTIAL_EN, _RESEARCH_USER_READ_PARTIAL_ZH,
+    )}
+)
+
+
+def _research_source_names(corpus: dict | None) -> set[str]:
+    names = {n.lower() for n in _RESEARCH_SERVER_SOURCE_NAMES}
+    for art in (corpus or {}).get("artifacts") or []:
+        for key in ("plain_en", "plain_zh"):
+            val = str(art.get(key) or "").strip().lower()
+            if val:
+                names.add(val)
+    return names
+
+
+def _research_item_core(line: str) -> str:
+    """A line reduced to the words a source item would carry: no tag, wrapper, list
+    marker, checkbox, trailing "(as of …)" / date, or trailing punctuation."""
+    s = _RESEARCH_HTML_TAG.sub("", line or "").strip().strip(_RESEARCH_TRAILER_WRAP).strip()
+    s = _RESEARCH_LIST_MARKER.sub("", s, count=1).strip()
+    s = _RESEARCH_FOOTNOTE_MARK.sub("", s, count=1).strip()      # r5 N17: "¹ Desk read", "<sup>1</sup> Desk read"
+    s = s.strip(_RESEARCH_TRAILER_WRAP).strip()
+    s = _RESEARCH_ASOF_TAIL.sub("", s).strip()
+    s = _RESEARCH_PAREN_DECOR.sub("", s).strip()                  # r5 N13/N17: "(Oct 2, 2026)", "(updated 2 Oct)", "(p. 2)"
+    s = _RESEARCH_REF_MARK.sub("", s).strip()                     # r5 N17: "Desk read [1]"
+    s = _RESEARCH_DATE_TAIL.sub("", s).strip()
+    return s.rstrip(".。;；,，").strip().strip(_RESEARCH_TRAILER_WRAP).strip()
+
+
+def _research_is_source_name(core: str, names: set[str]) -> bool:
+    raw_low = (core or "").strip().lower()
+    low = _RESEARCH_ARTICLE.sub("", raw_low)
+    if not low:
+        return False
+    if raw_low in names or low in names:
+        return True
+    m = _RESEARCH_NOTE_SPLIT.match(low)
+    if not m:
+        return False
+    head = _RESEARCH_ARTICLE.sub("", _RESEARCH_ASOF_TAIL.sub("", m.group(1)).strip())
+    note = m.group(2).strip().rstrip("。.").strip()
+    return head in names and note in _RESEARCH_SERVER_NOTES
+
+
+def _research_name_like(core: str, raw: str) -> bool:
+    """Could this unmarked line be an (invented) source name? Short, no clause or
+    sentence punctuation anywhere on the line, no verb: "Invented Desk Note",
+    "彭博终端". "Breadth is thin", "Bottom line: watch", "这意味着领涨面很窄" are prose."""
+    s = (core or "").strip()
+    if not s or len(s) > 48:
+        return False
+    if _RESEARCH_CLAUSE_PUNCT.search(raw) or _RESEARCH_SENTENCE_END.search(raw):
+        return False
+    if _RESEARCH_PROSE_VERB.search(s):
+        return False
+    cjk = sum(1 for ch in s if "一" <= ch <= "鿿")
+    if cjk:
+        return cjk <= 8 and len(s) <= 16
+    return len(s.split()) <= 5
+
+
+_RESEARCH_UNKNOWN_NAME_LEAD = re.compile(
+    r"^(?:\d|(?:the|a|an|this|that|these|those|our|my|its|his|her|their|some|any|all|no|each"
+    r"|every|both|several|many|most|few|other|another|such|which|what|how|why|when|where|if|as"
+    r"|at|in|on|of|to|for|by|with|from)\b)"
+)
+
+
+def _research_unknown_name_like(core: str) -> bool:
+    """An INVENTED source (no known match) must still read as a name: never digit-led
+    ("5800 level", "1994 bond rout") and never led by a lowercase determiner or
+    preposition ("the 1994 bond rout"; "The Economist" keeps its capital). r6, review N23."""
+    s = (core or "").strip()
+    if not s:
+        return False
+    if not _RESEARCH_UNKNOWN_NAME_LEAD.match(s):
+        return True
+    # r7 (review #3 B1): a determiner or digit lead still names a source when a capital
+    # follows it — "the WSJ", "the Fed statement", "10-K filing", "13F filings";
+    # "the 1994 bond rout" and "5800 level" stay data.
+    return any(ch.isupper() for ch in s[1:])
+
+
+def _research_known_name_list(text: str, names: set[str]) -> bool:
+    """A line that is only a list of names with at least one known ("Desk read, Bloomberg")
+    is a source list even without a heading — the r4 bare-name rule extended to a list
+    (r6, review N24). Unknown pieces must be capitalised or CJK: "Desk read, breadth and
+    leadership" is a title."""
+    raw, cores = _research_source_pieces(text)
+    if len(cores) < 2 or not all(cores):
+        return False
+    if not any(_research_is_source_name(c, names) for c in cores):
+        return False
+    return all(
+        _research_is_source_name(c, names) or (
+            _research_name_like(c, r.strip().rstrip(".。")) and _research_unknown_name_like(c)
+            and (c[:1].isupper() or "\u4e00" <= c[:1] <= "\u9fff")
+            # r7 (review #3 M1): "Reuters all flagged it" is a clause, not a name — at most
+            # one lowercase word may follow the capital ("Bloomberg terminal")
+            and sum(1 for w in c.split()[1:] if w[:1].islower()) <= 1
+        )
+        for r, c in zip(raw, cores)
+    )
+
+
+def _research_item_like(core: str, raw: str) -> bool:
+    """A MARKER-LED line under a source heading is an item unless it reads as a
+    sentence: ends in sentence punctuation, carries a clause break, or has a verb.
+    "2. Secret /data/x.json" is an item; "- Breadth needs to widen before the move is
+    trustworthy." is prose."""
+    s = (core or "").strip()
+    body = raw.strip()
+    if not s or len(s) > 60:
+        return False
+    if _RESEARCH_SENTENCE_END.search(body[-1:]) or re.search(r"[:：,，;；]", body):
+        return False
+    return not _RESEARCH_PROSE_VERB.search(s)
+
+
+def _research_source_pieces(text: str) -> tuple[list[str], list[str]]:
+    """Split an inline source list on its separators AFTER removing the decoration a
+    piece may carry — the comma inside "(Oct 2, 2026)" and a "[1]" are not separators."""
+    cleaned = _RESEARCH_REF_MARK.sub("", _RESEARCH_PAREN_DECOR.sub("", text or ""))
+    raw = [x for x in _RESEARCH_SOURCE_SEP.split(cleaned) if x and x.strip()]
+    return raw, [_research_item_core(x) for x in raw]
+
+
+def _research_all_source_names(text: str, names: set[str]) -> bool:
+    _, pieces = _research_source_pieces(text)
+    pieces = [x for x in pieces if x]
+    return bool(pieces) and all(_research_is_source_name(x, names) for x in pieces)
+
+
+def _research_inline_source_list(text: str, names: set[str], require_known: bool = True) -> bool:
+    """An inline list after "<heading>:": every piece a known name or name-like. Under a
+    STRONG heading ("Sources:") the list needs no known name — "Sources: Bloomberg,
+    Reuters" is an invented source list (r5, review N12); under a WEAK one ("Evidence:")
+    at least one piece must be known, so "Evidence: thin breadth, narrow leadership" is
+    the model's own content. "Sources: the Desk read shows breadth is thin." is prose."""
+    raw, cores = _research_source_pieces(text)
+    if not cores or not all(cores):
+        return False
+    known = [_research_is_source_name(x, names) for x in cores]
+    if require_known and not any(known):
+        return False
+    # r7 (review #3 B1): a known name anchors the list — "Sources: Desk read, 2024 annual
+    # report" is a source list however the invented piece is shaped; without one each
+    # invented piece must read as a name (r6 N23).
+    anchored = any(known)
+    return all(
+        k or (
+            _research_name_like(c, r.strip().rstrip(".。"))
+            and (anchored or _research_unknown_name_like(c))
+        )
+        for k, r, c in zip(known, raw, cores)
+    )
+
+
+def _research_table_row_drops(plain: str, names: set[str], in_block: bool, source_table: bool = False) -> bool:
+    """A markdown table row that belongs to a SOURCE table: any cell a known name; a
+    header row naming sources ("| Source | As of |"); or, inside a block, a separator /
+    frame row or a row of name-like and date cells. A data table ("| Date | Close |")
+    is prose and closes the block. Under a header that NAMED sources (`source_table`),
+    a one-word row ("| Bloomberg |") is a source row too (r5, review N12)."""
+    cells = [_RESEARCH_INLINE_WRAP.sub("", c).strip() for c in plain.strip().strip("|").split("|")]
+    if any(_research_is_source_name(_research_item_core(c), names) for c in cells):
+        return True
+    if any(_RESEARCH_TABLE_SOURCE_CELL.match(c) for c in cells) and all(
+        _RESEARCH_TABLE_FRAME_CELL.match(c) for c in cells
+    ):
+        return True
+    if not in_block:
+        return False
+    if all(_RESEARCH_TABLE_FRAME_CELL.match(c) for c in cells):
+        return True
+    if any(_RESEARCH_NUMERIC_CELL.match(c) and not _RESEARCH_DATE_TAIL.match(c) for c in cells if c):
+        return False                                     # a number is data, never a source (a date is decoration)
+    cores = [_research_item_core(c) for c in cells]
+    if not source_table and not any(
+        len(x.split()) >= 2 or sum(1 for ch in x if "\u4e00" <= ch <= "\u9fff") >= 3 for x in cores
+    ):
+        return False                                     # "| Date | Close |" is a data header
+    return all(
+        not c or _RESEARCH_TABLE_SEP_CELL.match(c) or _RESEARCH_DATE_TAIL.match(c)
+        or _research_name_like(x, c)
+        for c, x in zip(cells, cores)
+    )
+
+
+def _research_strip_model_trailer(body: str, corpus: dict | None = None) -> str:
+    """Remove what the MODEL wrote in the server's voice, before anything is judged.
+
+    Line classifier (r4, review N2/N6/N7/N8/N11). Dropped: the ceiling / JWT-absent
+    sentences; a source HEADING (EN/ZH, many spellings, markdown or bold, with or
+    without a parenthetical) standing alone, or followed by ":"/"="/"：" and an inline
+    list; a line that is nothing but a known source name (the corpus's artifacts plus
+    the names the server itself prints) under any bullet, checkbox, footnote, wrapper,
+    HTML tag, leading article, trailing date, "(as of …)" tail or one of the server's
+    own "— note" forms; a source-table header/separator row or a row naming a source;
+    and, directly under a heading, the marker-led or bare lines that read as NAMES
+    (short, no clause punctuation, no verb) — an invented source. The block ends at the
+    first line that reads as prose: any sentence punctuation, a clause break, a verb, a
+    "Something:" heading, a markdown heading. A code fence wrapping a dropped list goes
+    with it. Prose is never rewritten; a prose sentence is never deleted for its length
+    or for containing "(as of …)". The citation check then runs on the prose only, and
+    the server's list and ceiling are appended afterwards, unconditionally.
+
+    Residual by design: a prose sentence that NAMES an artifact is a citation — the
+    closed corpus, not this check, is what bounds what the model can know; and a short
+    unpunctuated verbless fragment ("- Watch the curve") directly under a source heading
+    is read as an invented source.
+
+    r5 (review N12–N18): a STRONG heading's inline list needs no known name ("Sources:
+    Bloomberg, Reuters" goes); a WEAK heading word alone on its line ("See also", "Per")
+    is prose; a blank line inside a block followed by an UNMARKED line that is not a
+    heading, a table row or a known name ends the block — that line is the next
+    section's title ("Risks", "**Key levels**") and its bullets stay; a source table's
+    one-word rows go with its header; "- Desk read: breadth section" under a heading is
+    an item; "【来源】…", "Sources — …", "Sources - …", "- Sources" are headings; dates
+    without a year, "(p. 2)", "[1]" and "¹" are decoration. Residual by design: a blank
+    line followed by a bare invented name ("Sources:\n\nBloomberg terminal") keeps the
+    name, because that shape is indistinguishable from a section title.
+
+    r6 (review N19–N26): orders behind ";" "," "—" "(" and "Buy:" are anchored; a
+    reportative noun phrase needs no verb list (any regular verb form, one adverb
+    allowed); "买入价100元以下的NVDA" is an order and "买入意愿较弱的时候" is not; generic
+    words ("Inputs", "Materials", "Ref", "Artifacts") are headings only when qualified;
+    an invented name must be shaped like one (no digit or lowercase-determiner lead);
+    a list naming a known source ("Desk read, Bloomberg") drops with or without a
+    heading; after a blank line a marked line that is not a known item is the next
+    section (a bare heading + blank + list is still the heading's list); only the blank
+    an HTML break made is markup; "buy or sell" is never one order. Residual by design:
+    "References: The 1994 Rout" (a capitalised invented name) still drops; a bare STRONG
+    heading still drops on trust; "Buy interest this week was strong" (noun + time
+    phrase) is still withheld, as is a prepositional phrase longer than three words
+    before the verb.
+
+    r7 (review #3, B1/B2/M1–M4/m1/m2): an inline list anchored by a known name drops however
+    its invented pieces are shaped, and an invented piece with a determiner or digit lead
+    is a name when a capital follows ("the WSJ", "13F filings"); a marked item after a
+    marked item is markdown's loose list, blank line or not; a comma list that runs on
+    into a clause ("Desk read, Bloomberg and Reuters all flagged it") is prose; ZH
+    one-character openers anchor only outside a word; a clause join does not anchor the
+    second verb of a flow description, and a strategy named as a subject ("buy the dip
+    has worked") is not an order; "buy or sell NVDA" is one order. Residual by design: a
+    bullet after an INLINE source line and a blank ("来源：研究台读数\n\n- 彭博终端") is the
+    next section, as N26 asked; "Desk read, Breadth and Leadership" (a capitalised list
+    with a known name) still drops; "买入资金面偏紧" is still withheld; "Buy volume in
+    names that lagged." still reads as a report.
+    """
+    canon = {
+        _RESEARCH_CEILING_EN, _RESEARCH_CEILING_ZH,
+        _RESEARCH_JWT_ABSENT_EN, _RESEARCH_JWT_ABSENT_ZH,
+    }
+    canon_bare = {c.rstrip("。.") for c in canon}
+    names = _research_source_names(corpus)
+    text = body or ""
+    html_blanks = False
+    if "<" in text and _RESEARCH_HTML_BREAK.search(text):   # a one-line <ul><li>…</li></ul> is a list;
+        text = _RESEARCH_HTML_BREAK.sub("\n" + _RESEARCH_HTML_MARK, text)   # r6 N25: mark ONLY those blanks
+        html_blanks = True
+    kept: list[str] = []
+    in_block = False
+    block_gap = False                                    # r5 N15: a blank line inside the block
+    source_table = False                                 # r5 N12: inside a table whose header named sources
+    block_items = 0                                      # r6 N26: lines dropped under the current heading
+    block_marked = False                                 # r7 B2: one of them was a marked list item
+    fence_at: int | None = None                          # index in `kept` of a fence nothing has followed yet
+    fence_open = False                                   # inside a ``` block
+    fence_popped = False                                 # that block's opening fence was removed
+
+    def _drop() -> None:
+        nonlocal fence_at, fence_popped
+        if fence_at is not None and all(not x.strip() for x in kept[fence_at + 1:]):
+            del kept[fence_at:]                          # the fence opened a list we are dropping
+            fence_popped = True
+        fence_at = None
+
+    def _keep(value: str) -> None:
+        nonlocal in_block, fence_at, block_gap
+        in_block = False
+        block_gap = False
+        fence_at = None
+        kept.append(value)
+
+    for line in text.split("\n"):
+        html_made = line.startswith(_RESEARCH_HTML_MARK)
+        if html_made:
+            line = line[len(_RESEARCH_HTML_MARK):]       # the marker is never emitted
+        plain = _RESEARCH_HTML_TAG.sub("", line)
+        stripped = plain.strip()
+        if _RESEARCH_FENCE.match(stripped):
+            if not fence_open:                           # opening fence: content, closes any block
+                fence_open = True
+                fence_popped = False
+                _keep(line)
+                fence_at = len(kept) - 1
+            else:                                        # closing fence
+                if fence_popped or in_block:
+                    _drop()                              # its opener went with the list, or the list is all it held
+                else:
+                    _keep(line)
+                fence_open = False
+                fence_popped = False
+                in_block = False
+            continue
+        core = stripped.strip(_RESEARCH_TRAILER_WRAP).strip()
+        if not core:
+            if in_block:
+                if not html_made:                        # (a blank made from <ul>/<li> is markup, not a gap)
+                    block_gap = True                     # the next line may be a new section
+            else:
+                kept.append(line)
+            continue
+        gap, block_gap = block_gap, False
+        if core in canon or core.rstrip("。.") in canon_bare:
+            continue
+        if _RESEARCH_TABLE_ROW.match(stripped):
+            if _research_table_row_drops(plain, names, in_block, source_table):
+                _drop()
+                block_items = block_items + 1 if in_block else 1
+                block_marked = block_marked and in_block
+                in_block = True
+                source_table = True
+                continue
+            source_table = False
+            _keep(line)
+            continue
+        source_table = False
+        hcore = _RESEARCH_INLINE_WRAP.sub("", stripped.strip(_RESEARCH_HEAD_WRAP)).strip()
+        head_core = _RESEARCH_LIST_MARKER.sub("", hcore, count=1).strip().strip(_RESEARCH_HEAD_WRAP).strip()
+        head = _RESEARCH_SOURCE_HEAD.match(hcore) or _RESEARCH_SOURCE_HEAD.match(head_core)   # r5 N17: "- Sources"
+        if head:
+            rest = (head.group("rest") or "").strip()
+            sep = head.group("sep") or head.group("rb")
+            strong = head.group("strong") is not None
+            if (not rest and (strong or sep)) or (
+                sep and _research_inline_source_list(rest, names, require_known=not strong)
+            ):
+                _drop()
+                in_block = True                          # heading alone, or heading + inline list
+                block_items = 1 if rest else 0
+                block_marked = False
+                continue
+            # a heading-like opener that continues as prose is the model's own sentence;
+            # a bare WEAK word ("See also", "Per") is prose too (r5 N18)
+        mid = _RESEARCH_SOURCE_HEAD_MID.search(core)
+        if mid and _research_inline_source_list(mid.group(1), names):
+            prefix = core[:mid.start()].rstrip()
+            _drop()
+            in_block = True
+            block_items = 1
+            block_marked = False
+            if prefix:
+                kept.append(prefix)
+            continue
+        item = _research_item_core(plain)
+        marked = bool(_RESEARCH_LIST_MARKER.match(stripped)) and not _RESEARCH_EMPHASIS_LEAD.match(stripped)
+        if (
+            _research_is_source_name(item, names)
+            or _research_all_source_names(item, names)
+            or _research_known_name_list(item, names)    # r6 N24: "Desk read, Bloomberg"
+        ):
+            _drop()
+            block_items = block_items + 1 if in_block else 1   # a bare name is itself an item
+            block_marked = (block_marked or marked) if in_block else marked
+            in_block = True                              # a bare source name is never prose
+            continue
+        if in_block and not stripped.startswith("#"):
+            raw_body = _RESEARCH_LIST_MARKER.sub("", stripped, count=1).strip() if marked else core
+            if not raw_body:
+                continue                                 # a marker with nothing after it
+            colon = _RESEARCH_ITEM_COLON.match(raw_body) if marked else None
+            colon_known = bool(colon) and _research_is_source_name(_research_item_core(colon.group(1)), names)
+            if gap and block_items and not colon_known and not (
+                marked and block_marked and _research_item_like(item, raw_body)
+            ):
+                _keep(line)                              # r5 N15 / r6 N26: the next section, marked or not
+                continue                                 # (a bare heading + blank + list is the heading's list;
+                                                         #  r7 B2: a marked item after a marked item is markdown's
+                                                         #  loose list — "- Desk read\n\n- Reuters" is one list)
+            if colon_known and _research_name_like(
+                _research_item_core(colon.group(2)), colon.group(2).strip().rstrip(".。")
+            ):
+                block_items += 1
+                block_marked = block_marked or marked
+                continue                                 # r5 N17: "- Desk read: breadth section" is an item
+            if (marked and _research_item_like(item, raw_body)) or (
+                not marked and _research_name_like(item, raw_body)
+            ):
+                block_items += 1
+                block_marked = block_marked or marked
+                continue                                 # an invented source under the heading
+        _keep(line)
+    out = "\n".join(kept)
+    if html_blanks:                                      # r7 (review #3 m2): a kept HTML-made blank next to a
+        out = re.sub(r"\n{3,}", "\n\n", out)             # real one is one paragraph break, not two
+    return out.strip()
+
+
+def _research_cites_artifact(answer: str, corpus: dict) -> bool:
+    text = answer or ""
+    low = text.lower()
+    for art in corpus.get("artifacts") or []:
+        en = str(art.get("plain_en") or "").strip()
+        zh = str(art.get("plain_zh") or "").strip()
+        if en and en.lower() in low:
+            return True
+        if zh and zh in text:
+            return True
+    return False
+
+
+# r7 (review #3 M3): a clause join is an anchor for an ORDER, not for a description that
+# runs on from the same verb — "funds buy strength, sell weakness", "retail tends to buy
+# dips, sell rallies"; and a strategy NAMED as the subject of a finite verb is not given —
+# "Historically, buy the dip has worked", "(buy the dip) failed in 2022". "Our stance (buy
+# the dip) is unchanged" stays withheld: a present-tense stance is the house's own call.
+_RESEARCH_TRADE_PARALLEL = re.compile(r"\b(?:buy|sell)(?:s|ing)?\b|\b(?:bought|sold)\b", re.I)
+_RESEARCH_TRADE_JOIN = re.compile(r"(?:[,;]|\b(?:and|or))\s*$", re.I)
+_RESEARCH_TRADE_IDIOM_SUBJECT = re.compile(
+    r"(?:buy|sell)\s+(?:the\s+dips?|and\s+hold|low|high|the\s+rumou?r|the\s+news|in\s+may"
+    r"|strength|weakness|dips|rallies|the\s+close|the\s+open)\b[\W_]*"
+    r"(?:has|have|had|was|were|did|does|do|fails?|failed|works?|worked|beats?|beaten|outperform(?:s|ed)?"
+    r"|underperform(?:s|ed)?|lost|loses|won|wins|paid|pays|became|tends?|tended|stopped|broke)\b",
+    re.I,
+)
+
+
+def _research_trade_order(s: str) -> bool:
+    for m in _RESEARCH_TRADE.finditer(s):
+        before = s[:m.start()]
+        if _RESEARCH_TRADE_JOIN.search(before) and _RESEARCH_TRADE_PARALLEL.search(before):
+            continue                                     # the second verb of a flow description
+        if _RESEARCH_TRADE_IDIOM_SUBJECT.match(s, m.start()):
+            continue                                     # a strategy named, not an instruction
+        return True
+    return False
+
+
+def _research_sentence_forbidden(sentence: str) -> bool:
+    s = sentence or ""
+    if not s.strip():
+        return False
+    # Canonical endings we append ourselves are never dropped.
+    if s.strip() in {
+        _RESEARCH_CEILING_EN, _RESEARCH_CEILING_ZH,
+        _RESEARCH_NULL_EN, _RESEARCH_NULL_ZH,
+        _RESEARCH_JWT_ABSENT_EN, _RESEARCH_JWT_ABSENT_ZH,
+        _RESEARCH_WITHHELD_EN, _RESEARCH_WITHHELD_ZH,
+        _RESEARCH_USED_EN, _RESEARCH_USED_ZH,
+    }:
+        return False
+    s = _RESEARCH_LIST_MARKER.sub("", s, count=1)
+    # r4 (review N9): markdown emphasis / code wrappers are presentation — "**Buy** NVDA"
+    # and "`Buy NVDA`" are judged as "Buy NVDA". The source text is never rewritten.
+    s = _RESEARCH_INLINE_WRAP.sub("", s)
+    if _RESEARCH_PERCENT.search(s):
+        return True
+    if _RESEARCH_STAR.search(s):
+        return True
+    if _RESEARCH_CONVICTION.search(s):
+        return True
+    if _RESEARCH_SCORE_01.search(s):
+        return True
+    if _RESEARCH_FALSIFIER.search(s):
+        return True
+    if _research_trade_order(s):
+        return True
+    if _research_tool_re().search(s):
+        return True
+    return False
+
+
+def _research_forbidden_filter(text: str) -> tuple[str, bool]:
+    """Drop forbidden sentences. Disclosure is appended by the post-check.
+
+    Walks the ORIGINAL text using `_RESEARCH_SENTENCE_SPLIT.search` so the
+    rejoin preserves every byte of the source — no ASCII space is injected
+    between CJK sentences (which would mangle a model-emitted ZH ceiling
+    like "...解读。这不是信号..."), and a normal EN split
+    ("...mixed. The briefing...") keeps its single ASCII space.
+    """
+    raw = (text or "").strip()
+    if not raw:
+        return "", False
+    # Build the list of sentence pieces as (start, end) spans in `raw`.
+    # Each span INCLUDES the trailing whitespace of the sentence so the
+    # rejoin is byte-identical to the source at every kept boundary.
+    # `finditer` advances past zero-width matches automatically (a manual
+    # `re.search` loop would re-find the same zero-width boundary and hang).
+    pieces: list[tuple[int, int]] = []
+    cursor = 0
+    for m in _RESEARCH_SENTENCE_SPLIT.finditer(raw):
+        pieces.append((cursor, m.end()))
+        cursor = m.end()
+    if cursor < len(raw) or not pieces:
+        pieces.append((cursor, len(raw)))
+    kept: list[str] = []
+    withheld = False
+    for start, end in pieces:
+        piece = raw[start:end]
+        stripped = piece.strip()
+        if not stripped:
+            continue
+        if _research_sentence_forbidden(stripped):
+            withheld = True
+            # r2 (review m5): a numbered item splits as "1. " + "Sell TSLA." (the EN
+            # sentence split fires after the marker's period). When the item is dropped,
+            # a kept piece that is ONLY its marker goes with it — never a dangling "1.".
+            if kept and _RESEARCH_BARE_MARKER.match(kept[-1]):
+                kept.pop()
+            continue
+        kept.append(piece)
+    return "".join(kept).strip(), withheld
+
+
+_RESEARCH_BARE_MARKER = re.compile(
+    r"^\s*(?:[-•*+–—・·▪▸►◦‣⁃→➤✅☑✔✓]+(?:\s*\[[ xX]\])?|#{1,6}|>+"
+    r"|(?:\d{1,2}|[０-９]{1,2})[.)．）]|[(（][0-9０-９a-zA-Z]{1,2}[)）]"
+    r"|[a-zA-Z][.)]|\[\^?[0-9a-zA-Z]{1,3}\]:?|[一二三四五六七八九十]{1,3}[、．])\s*$"
+)
+
+
+def _research_postprocess(answer: str, corpus: dict) -> tuple[str, bool]:
+    """Enforce citation-or-null, forbidden-output filter, ceiling, used-list, JWT null.
+
+    r2 (review M1/M2): the model's own trailer — a "What this read used" list, the
+    ceiling, the JWT sentence — is stripped FIRST, so citation-or-null is judged on the
+    prose, and the used list that ships is always the server's.
+    """
+    body = _research_strip_model_trailer((answer or "").strip(), corpus)
+    cited = _research_cites_artifact(body, corpus)
+    already_null = body.startswith(_RESEARCH_NULL_EN)
+    withheld = False
+    if not cited and not already_null:
+        body = f"{_RESEARCH_NULL_EN}\n{_RESEARCH_NULL_ZH}"
+        already_null = True
+    else:
+        filtered, withheld = _research_forbidden_filter(body)
+        if already_null:
+            body = f"{_RESEARCH_NULL_EN}\n{_RESEARCH_NULL_ZH}"
+        else:
+            body = filtered
+            # If the forbidden-output filter ate the only citing sentence,
+            # do NOT fall back to the spec (3) coverage null — the read
+            # still came from a used artifact (the original body cited it),
+            # and the WITHHELD disclosure below names the drop. But the
+            # reply must still carry a plain EN+ZH sentence (distinct from
+            # the spec 3 coverage null); an empty body followed by the
+            # used-list + ceiling + withheld disclosure reads as blank
+            # space to the user.
+            if withheld and not body.strip():
+                body = f"{_RESEARCH_FILTER_EMPTY_EN}\n{_RESEARCH_FILTER_EMPTY_ZH}"
+    # The used list is the SERVER's, always — never conditional on a heading the model
+    # may have written (r2, review M2).
+    body = body.rstrip() + "\n\n" + _format_used_list(corpus)
+    if _RESEARCH_CEILING_EN not in body or _RESEARCH_CEILING_ZH not in body:
+        # m3: gate on EN AND ZH so a model-emitted verbatim ZH ceiling is
+        # not duplicated by re-appending the canonical block.
+        body = body.rstrip()
+        if _RESEARCH_CEILING_EN not in body:
+            body += "\n\n" + _RESEARCH_CEILING_EN
+        if _RESEARCH_CEILING_ZH not in body:
+            body += "\n" + _RESEARCH_CEILING_ZH
+    if not corpus.get("jwt_present") and _RESEARCH_JWT_ABSENT_EN not in body:
+        body = body.rstrip() + "\n\n" + _RESEARCH_JWT_ABSENT_EN + "\n" + _RESEARCH_JWT_ABSENT_ZH
+    if withheld:
+        if _RESEARCH_WITHHELD_EN not in body:
+            body = body.rstrip() + "\n\n" + _RESEARCH_WITHHELD_EN + "\n" + _RESEARCH_WITHHELD_ZH
+    return body, withheld
+
+
+def _f11_grounded(mode: str, envelope: dict | None) -> bool:
+    """Spec item 2 (Sol 5967105152 on #7100): the PRIVATE F11 predicate — one place, one answer.
+
+    True iff the turn is research mode AND the compiled W1-C envelope was built from a VALID
+    typed client block (``origin.legacy is False`` — a legacy/raw ``page=analysis,
+    panel=theses`` never qualifies), is not flagged malformed, and names the Terminal
+    Analysis thesis workspace as the ambient route (``page == "analysis"`` and
+    ``panel == "theses"``).  Everything else — dashboard, company panel, chart Terminal,
+    malformed, absent — is an ordinary turn and the global Deep Research path is untouched.
+    Pure: reads the envelope only, never ``context`` and never the network.
+    """
+    if mode != "research" or not isinstance(envelope, dict):
+        return False
+    origin = envelope.get("origin")
+    if not isinstance(origin, dict) or origin.get("legacy") is not False:
+        return False
+    flags = envelope.get("context_flags")
+    if not isinstance(flags, dict) or flags.get("malformed"):
+        return False
+    ambient = envelope.get("ambient_widget_context")
+    if not isinstance(ambient, dict):
+        return False
+    return ambient.get("page") == "analysis" and ambient.get("panel") == "theses"
+
+
 # Chart-command bus allowlists (W6b) — module constants and the SOLE source of truth. They
 # mirror the Terminal chart's real capabilities (DetectCmd kinds, indicator keys, TF set from
 # the Terminal TS), so they track the Terminal build, not operator config.
@@ -4659,6 +6020,22 @@ def _build_system_prompt(mode: str = "chat", page: str = "",
     return prompt
 
 
+def _build_grounded_system_prompt(internals_allowed: bool = False) -> str:
+    """Spec item 7: the system prompt for ONE F11-grounded research turn.
+
+    ``_RESEARCH_GROUNDED_DIRECTIVE`` rides INSTEAD of ``_RESEARCH_SYSTEM_DIRECTIVE`` (the
+    global Deep Research directive is byte-identical for every other research turn), on
+    top of the same base prompt + contradiction block every mode carries.  Deliberately
+    NOT appended: the chart/inline-chart directives, technician doctrine, depth and analyst
+    addenda — a grounded read answers from the closed corpus alone, and each of those
+    blocks tells the model to go and look at something else.
+    """
+    prompt = _BRAIN_SYSTEM_PROMPT
+    if internals_allowed:
+        prompt = prompt.replace(_PROPRIETARY_REFUSAL_LINE, _OPERATOR_INTERNALS_CLAUSE)
+    return _RESEARCH_GROUNDED_DIRECTIVE + prompt + _CONTRADICTION_DIRECTIVE
+
+
 def _doctrine_block_for(page: str, message: str) -> str:
     """CMX W4: technician doctrine, terminal chart sessions only. Never raises."""
     if page != "terminal":
@@ -6620,6 +7997,7 @@ def _run_brain_loop(
     thinking_mode: str | None = None,
     deepseek_thinking: str | None = None,
     source_prompt: str = "",
+    f11_grounded: bool = False,
 ) -> tuple[str, list[dict], list[dict], list[dict], dict, list[dict]]:
     """Run the bounded tool loop.
 
@@ -6653,12 +8031,17 @@ def _run_brain_loop(
     safe_panel = re.sub(r"[^a-z0-9\-]", "", str((context or {}).get("panel") or "").lower())[:40]
 
     # Chart-command tools gated to terminal page; internals tools gated to allowlisted sessions
-    tool_schemas = _all_brain_tool_schemas(
-        root,
-        page=safe_page,
-        internals_allowed=internals_ok,
-        user_id=user_id,
-    )
+    if f11_grounded:
+        # Spec item 8: an F11-grounded turn offers NO tools, so none can be dispatched —
+        # the model answers from the closed corpus carried in source_prompt, one round.
+        tool_schemas = []
+    else:
+        tool_schemas = _all_brain_tool_schemas(
+            root,
+            page=safe_page,
+            internals_allowed=internals_ok,
+            user_id=user_id,
+        )
     tool_schemas = _fast_visible_tool_schemas(
         tool_schemas,
         message,
@@ -6679,19 +8062,27 @@ def _run_brain_loop(
     )
     evidence_observations: list[tuple[str, Any]] = []
     evidence_gate_issued = False
-    system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
-    system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
-    # W3: the account's stored answer LENGTH, ahead of the analyst block so the protocol's
-    # own instructions still read closest to the turn (and the LANGUAGE line stays last).
-    system_prompt = system_prompt + _depth_addendum(_account_pref(context, "brain_depth"))
-    system_prompt = system_prompt + _analyst_block_for(message, lane)  # Analyst OS P0
-    # W1-A seed plan: fast lane only (pro/research get tool autonomy by design), chat mode
-    # only, and never the Terminal — a chart turn follows the technician protocol's read order.
-    if lane == "fast" and mode == "chat" and safe_page != "terminal":
-        system_prompt = system_prompt + _seed_tool_plan(message)
+    if f11_grounded:
+        # Spec item 7: grounded directive INSTEAD of the global research directive, for
+        # this turn only; no doctrine/depth/analyst/chart addenda (see the helper).
+        system_prompt = _build_grounded_system_prompt(internals_allowed=internals_ok)
+    else:
+        system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
+        system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
+        # W3: the account's stored answer LENGTH, ahead of the analyst block so the protocol's
+        # own instructions still read closest to the turn (and the LANGUAGE line stays last).
+        system_prompt = system_prompt + _depth_addendum(_account_pref(context, "brain_depth"))
+        system_prompt = system_prompt + _analyst_block_for(message, lane)  # Analyst OS P0
+        # W1-A seed plan: fast lane only (pro/research get tool autonomy by design), chat mode
+        # only, and never the Terminal — a chart turn follows the technician protocol's read order.
+        if lane == "fast" and mode == "chat" and safe_page != "terminal":
+            system_prompt = system_prompt + _seed_tool_plan(message)
     # W3: a Free/Trial attachment was dropped upstream — say so instead of answering a
     # picture the model never received.
-    if _image_was_gated(context):
+    if _image_was_gated(context) and not f11_grounded:
+        # r2: a grounded turn drops EVERY attachment by design (spec item 5), so the
+        # "image reading is a Pro capability" note would misstate why — and the grounded
+        # directive owns the whole system prompt for this turn.
         system_prompt = system_prompt + _IMAGE_GATE_NOTE
     # The turn's ONE language, named explicitly and LAST (see _language_directive).
     # W3: account language is the middle fallback — see _turn_lang.
@@ -6701,6 +8092,8 @@ def _run_brain_loop(
     # before it draws, so a text-sized budget runs out mid-draw and the turn degrades.
     if safe_page == "terminal":
         tool_budget = max(tool_budget, _TERMINAL_TOOL_BUDGET_FLOOR)
+    if f11_grounded:
+        tool_budget = 1  # spec item 8: one bounded synthesis round, nothing to spend it on
 
     # Build the user content with optional context hint
     user_content = message
@@ -6718,7 +8111,7 @@ def _run_brain_loop(
     turn_as_of = datetime.now(timezone.utc)
     ambient_call = (
         _compact_earnings_call_context(safe_sym, root, as_of=turn_as_of)
-        if safe_sym else {}
+        if safe_sym and not f11_grounded else {}
     )
     ambient_citations = _earnings_call_citations(ambient_call)
     ontology_digest = ""
@@ -6735,7 +8128,9 @@ def _run_brain_loop(
             messages = [{"role": "user", "content": message},
                         {"role": "assistant", "content": notice}]
             return notice, [], [], messages, usage, [], []
-    _digests = [
+    # Spec item 8: the ONLY grounding a grounded turn sees is the closed corpus in
+    # source_prompt — the ambient calibrated-state / symbol digests are not offered.
+    _digests = [] if f11_grounded else [
         digest for digest in (
             _grounding_digest(root, lang=turn_lang),
             _symbol_grounding_digest(safe_sym, root, as_of=turn_as_of),
@@ -7118,6 +8513,8 @@ _LEAK_HOLDBACK_CHARS = 256
 # out to be a tool round after all wipes what it showed with an empty `retract`.
 # Overridable as `streaming.commit_chars` (see _stream_commit_chars).
 _STREAM_COMMIT_CHARS = 200
+# r2: an F11-grounded stream holds back the whole answer (see _run_brain_loop_stream).
+_GROUNDED_STREAM_HOLD_ALL = 1 << 30
 
 # The suggestions marker _split_suggestions() recognises: a line that is EXACTLY this
 # after stripping. Streaming must never put a fragment of it on the wire.
@@ -7198,6 +8595,10 @@ def _stream_display_cut(body: str, hold: int) -> tuple[int, bool]:
     nl = body.find("\n")
     while nl >= 0:                            # COMPLETE lines only — the tail has no \n
         if body[pos:nl].strip() == _NEXT_MARKER:
+            # r3 (review N1): a grounded turn holds EVERYTHING — the seal may not release
+            # the prose before the marker. Global turns keep their cut at the marker.
+            if hold >= _GROUNDED_STREAM_HOLD_ALL:
+                return 0, True
             return _trim_ws_end(body, pos), True
         pos = nl + 1
         nl = body.find("\n", pos)
@@ -7468,6 +8869,8 @@ def _run_brain_loop_stream(
     context_receipt: dict | None = None,
     source_prompt: str = "",
     source_receipt: dict | None = None,
+    f11_grounded: bool = False,
+    research_corpus: dict | None = None,
 ) -> Generator[str, None, None]:
     """Run the brain loop; yield SSE events per contract.
 
@@ -7578,12 +8981,17 @@ def _run_brain_loop_stream(
     safe_panel = re.sub(r"[^a-z0-9\-]", "", str((context or {}).get("panel") or "").lower())[:40]
 
     # Chart-command tools gated to terminal page; internals tools gated to allowlisted sessions
-    tool_schemas = _all_brain_tool_schemas(
-        root,
-        page=safe_page,
-        internals_allowed=internals_ok,
-        user_id=user_id,
-    )
+    if f11_grounded:
+        # Spec item 8: an F11-grounded turn offers NO tools, so none can be dispatched —
+        # the model answers from the closed corpus carried in source_prompt, one round.
+        tool_schemas = []
+    else:
+        tool_schemas = _all_brain_tool_schemas(
+            root,
+            page=safe_page,
+            internals_allowed=internals_ok,
+            user_id=user_id,
+        )
     tool_schemas = _fast_visible_tool_schemas(
         tool_schemas,
         message,
@@ -7604,19 +9012,27 @@ def _run_brain_loop_stream(
     )
     evidence_observations: list[tuple[str, Any]] = []
     evidence_gate_issued = False
-    system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
-    system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
-    # W3: the account's stored answer LENGTH, ahead of the analyst block so the protocol's
-    # own instructions still read closest to the turn (and the LANGUAGE line stays last).
-    system_prompt = system_prompt + _depth_addendum(_account_pref(context, "brain_depth"))
-    system_prompt = system_prompt + _analyst_block_for(message, lane)  # Analyst OS P0
-    # W1-A seed plan: fast lane only (pro/research get tool autonomy by design), chat mode
-    # only, and never the Terminal — a chart turn follows the technician protocol's read order.
-    if lane == "fast" and mode == "chat" and safe_page != "terminal":
-        system_prompt = system_prompt + _seed_tool_plan(message)
+    if f11_grounded:
+        # Spec item 7: grounded directive INSTEAD of the global research directive, for
+        # this turn only; no doctrine/depth/analyst/chart addenda (see the helper).
+        system_prompt = _build_grounded_system_prompt(internals_allowed=internals_ok)
+    else:
+        system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
+        system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
+        # W3: the account's stored answer LENGTH, ahead of the analyst block so the protocol's
+        # own instructions still read closest to the turn (and the LANGUAGE line stays last).
+        system_prompt = system_prompt + _depth_addendum(_account_pref(context, "brain_depth"))
+        system_prompt = system_prompt + _analyst_block_for(message, lane)  # Analyst OS P0
+        # W1-A seed plan: fast lane only (pro/research get tool autonomy by design), chat mode
+        # only, and never the Terminal — a chart turn follows the technician protocol's read order.
+        if lane == "fast" and mode == "chat" and safe_page != "terminal":
+            system_prompt = system_prompt + _seed_tool_plan(message)
     # W3: a Free/Trial attachment was dropped upstream — say so instead of answering a
     # picture the model never received.
-    if _image_was_gated(context):
+    if _image_was_gated(context) and not f11_grounded:
+        # r2: a grounded turn drops EVERY attachment by design (spec item 5), so the
+        # "image reading is a Pro capability" note would misstate why — and the grounded
+        # directive owns the whole system prompt for this turn.
         system_prompt = system_prompt + _IMAGE_GATE_NOTE
     # The turn's ONE language, named explicitly and LAST (see _language_directive).
     # W3: account language is the middle fallback — see _turn_lang.
@@ -7626,6 +9042,8 @@ def _run_brain_loop_stream(
     # before it draws, so a text-sized budget runs out mid-draw and the turn degrades.
     if safe_page == "terminal":
         tool_budget = max(tool_budget, _TERMINAL_TOOL_BUDGET_FLOOR)
+    if f11_grounded:
+        tool_budget = 1  # spec item 8: one bounded synthesis round, nothing to spend it on
 
     user_content = message
     hints = []
@@ -7642,7 +9060,7 @@ def _run_brain_loop_stream(
     turn_as_of = datetime.now(timezone.utc)
     ambient_call = (
         _compact_earnings_call_context(safe_sym, root, as_of=turn_as_of)
-        if safe_sym else {}
+        if safe_sym and not f11_grounded else {}
     )
     ambient_citations = _earnings_call_citations(ambient_call)
     ontology_digest = ""
@@ -7663,7 +9081,9 @@ def _run_brain_loop_stream(
             yield _delta_event(notice)
             yield _done_event(citations=[], annotations=[], commands=[], charts=[], usage=usage)
             return
-    _digests = [
+    # Spec item 8: the ONLY grounding a grounded turn sees is the closed corpus in
+    # source_prompt — the ambient calibrated-state / symbol digests are not offered.
+    _digests = [] if f11_grounded else [
         digest for digest in (
             _grounding_digest(root, lang=turn_lang),
             _symbol_grounding_digest(safe_sym, root, as_of=turn_as_of),
@@ -7728,6 +9148,15 @@ def _run_brain_loop_stream(
     # same policy, so there is exactly one config read and one set of knobs.
     _flush_chars, _flush_s, _hold = _stream_flush_cfg(root)
     _commit_chars = _stream_commit_chars(root)
+    if f11_grounded:
+        # r2 (review GAP): a grounded answer is judged WHOLE by _research_postprocess —
+        # citation-or-null may replace all of it, and the forbidden filter may drop the
+        # sentence being typed. Streaming it first would put uncited or forbidden text
+        # on the wire and take it back with a retract seconds later. So the leak
+        # holdback is widened to "everything": the gate releases nothing, `_emitted`
+        # stays empty, and the reconciliation below ships ONE delta carrying the
+        # post-processed answer — the pre-Contract-S shape, for this turn only.
+        _hold = _GROUNDED_STREAM_HOLD_ALL
     # `_emitted` is what the CLIENT currently holds — the single source of truth for the
     # reconciliation at the bottom. The server-side buffer restarts on every failover and
     # every round; this does not, which is how a dead candidate's half-written draft (and
@@ -8174,6 +9603,17 @@ def _run_brain_loop_stream(
     # Split off the [NEXT] suggestion block (W6d): the delta carries only the CLEAN text;
     # suggestions are emitted as their own event AFTER the delta and BEFORE done.
     filtered_answer, suggestions = _split_suggestions(filtered_answer)
+    if f11_grounded:
+        # Spec item 9: citation-or-null, forbidden-output filter, ceiling + used-list run
+        # AFTER the normal safety/leak pass, on the clean body only; a suggestion chip
+        # that reads like a signal or an instruction is dropped, never rewritten.
+        filtered_answer, _grounded_withheld = _research_postprocess(
+            filtered_answer,
+            research_corpus if isinstance(research_corpus, dict)
+            else {"artifacts": [], "jwt_present": False, "gaps": []},
+        )
+        was_filtered = bool(was_filtered or _grounded_withheld)
+        suggestions = [sug for sug in suggestions if not _research_sentence_forbidden(str(sug))]
     suggestions = _screen_suggestions(suggestions, turn_lang)
 
     # Emit delta (full answer, buffered). Never emit an EMPTY delta — a blank bubble
@@ -9302,6 +10742,7 @@ def chat(
     guest_aid: str = "",
     guest_ip: str = "",
     account_prefs: dict | None = None,
+    user_jwt: str = "",
 ) -> dict:
     """Process a brain chat request (non-streaming).
 
@@ -9390,11 +10831,31 @@ def chat(
             "is_context_only": True,
         }
 
+    # 1b. Spec item 1 (Sol 5967105152): the PURE W1-C context compile runs right after
+    #     sanitisation and BEFORE the exact-source resolver, so the F11 predicate is known
+    #     before any source / tier / preflight decision. Lazy import: the W1-A registry /
+    #     jsonschema validators load on first request, never at API import time — see
+    #     research/DEEPVUE_W1C_CONTEXT_ENVELOPE_CONTRACT_2026-08-25.md.
+    from engine.intelligence_workspace import context_compiler as _ctx_compiler  # noqa: PLC0415
+    _ctx_envelope = _ctx_compiler.compile_envelope(clean_msg, context)
+    _ctx_receipt = _ctx_compiler.compile_receipt(_ctx_envelope)
+    _grounded = _f11_grounded(mode, _ctx_envelope)
+    research_corpus: dict | None = None
+    if _grounded:
+        # Spec items 5/6/8: one round, no tools, no images, no history. The closed corpus
+        # is read through the CALLER's JWT (owner RLS, anon key) — never the service role,
+        # and the token itself never enters prompts, logs, receipts or the response.
+        tool_budget = 1
+        # r2 (review m4): the corpus — and its caller-plane reads — is built at step 6,
+        # after the pro-eligibility, quota, prescreen and selection gates, so a refused
+        # turn performs no user-plane I/O.
+
     # Exact source grounding is a request-scoped authorization + deterministic
     # resolution gate.  It deliberately precedes quota/provider work and keeps
     # resolved source bytes outside `context`, thread persistence, and response logs.
+    # Spec item 4: NEVER resolved on an F11-grounded turn (the closed corpus is the source).
     source_attachment = None
-    if company_source_span is not None:
+    if company_source_span is not None and not _grounded:
         source_attachment = _resolve_company_source_attachment(
             company_source_span, user_id, root, terminal_data_dir / "tx"
         )
@@ -9470,18 +10931,12 @@ def chat(
             "screened": True,
         }
 
-    # 3c. W1-C: compile the deterministic visible-context envelope ONCE per request,
-    #     at the same point `context` is first consumed for routing — see
-    #     research/DEEPVUE_W1C_CONTEXT_ENVELOPE_CONTRACT_2026-08-25.md. Lazy import:
-    #     `engine.intelligence_workspace` pulls in the W1-A registry/jsonschema
-    #     validators, so this is deferred to first actual request exactly like the
-    #     existing native-fact execution import below (never at API import time).
-    from engine.intelligence_workspace import context_compiler as _ctx_compiler  # noqa: PLC0415
-    _ctx_envelope = _ctx_compiler.compile_envelope(clean_msg, context)
-    _ctx_receipt = _ctx_compiler.compile_receipt(_ctx_envelope)
-
-    _selected_ontology = _ontology_selection_requested(context)
-    _selection_notice = _ontology_preflight_notice(root, context, clean_msg, user_id)
+    # 3c. W1-C envelope: compiled ONCE per request, now right after sanitisation (see 1b
+    #     above) so the F11 predicate precedes the exact-source decision. Spec item 6: an
+    #     F11-grounded turn never consumes the selected-ontology evidence path (#8260) —
+    #     its corpus is the closed F11 list, not an ontology selection.
+    _selected_ontology = False if _grounded else _ontology_selection_requested(context)
+    _selection_notice = "" if _grounded else _ontology_preflight_notice(root, context, clean_msg, user_id)
     if _selection_notice:
         return {"ok": True, "reply": _selection_notice, "citations": [],
                 "lane": lane, "model": "none", "thread_id": None,
@@ -9500,7 +10955,8 @@ def chat(
     )
     _native_route_decision_ms = _ms_since(_native_plan_t0)
     _instant_route_hit = (
-        None if _selected_ontology or images or source_attachment is not None or _native_plan_hit is not None
+        None if _grounded or _selected_ontology or images or source_attachment is not None
+        or _native_plan_hit is not None
         else _instant_route(clean_msg, context)
     )
 
@@ -9582,7 +11038,7 @@ def chat(
     # 4b. Vision (W6c): Pro-gated (operator decision) — Free/Trial answer text-only.
     # An image turn is served by a claude vision model (in-lane Haiku when a key exists,
     # else the Pro lane's Opus via OAuth), with OAuth-token failover across them.
-    image_blocks = _image_blocks(images)
+    image_blocks = [] if _grounded else _image_blocks(images)  # spec item 8: images disabled
     turn_providers = providers
     if image_blocks and not _unlimited_allowed(user_email) and _get_allowance(tier, status, "pro", root).get("limit", 0) == 0:
         image_blocks = []  # not Pro-eligible → drop attachments (unlimited operators keep vision)
@@ -9609,7 +11065,7 @@ def chat(
         resolved_tid = _ensure_thread(thread_id, user_id, lane, title=clean_msg)
         if resolved_tid:
             effective_thread_id = resolved_tid
-            if thread_id:  # loading history from an existing thread
+            if thread_id and not _grounded:  # loading history from an existing thread
                 thread_history = _load_thread_history(resolved_tid)
 
     # Use server thread history when available; fall back to client-sent history
@@ -9631,7 +11087,8 @@ def chat(
     # Trusted server thread history rides as-is; UNTRUSTED client history is screened
     # (drop forged assistant turns + probe-carrying replays) — see _screen_client_history.
     raw_history = thread_history if thread_history else _screen_client_history(history or [])
-    active_history = _filter_client_history(raw_history[-24:])  # cap 12 turns + filter
+    # Spec item 8: no thread or client history enters the model on an F11-grounded turn.
+    active_history = [] if _grounded else _filter_client_history(raw_history[-24:])  # cap 12 turns + filter
 
     # 5b. Instant-fact serve (W5 Contract I). One minimal model call over the resolved
     #     quote. ANY failure inside — quote unresolved, no as-of, provider error, empty
@@ -9696,8 +11153,17 @@ def chat(
             return _i_result
 
     # 6. Run the tool loop
-    loop_source_kwargs = ({"source_prompt": source_attachment.resolved.prompt_block}
-                          if source_attachment else {})
+    if _grounded:
+        # Spec item 8: the closed corpus is the ONLY source prompt; the loop boolean turns
+        # off tools, digests and addenda for this turn (see _run_brain_loop).
+        research_corpus = _build_research_corpus(root, user_jwt=user_jwt)
+        loop_source_kwargs = {
+            "source_prompt": _format_research_grounding(research_corpus or {}),
+            "f11_grounded": True,
+        }
+    else:
+        loop_source_kwargs = ({"source_prompt": source_attachment.resolved.prompt_block}
+                              if source_attachment else {})
     try:
         answer_text, citations, annotations, final_messages, usage_dict, commands, charts = _run_brain_loop(
             clean_msg, lane, active_history, context or {},
@@ -9729,6 +11195,13 @@ def chat(
     answer_text, was_filtered = _post_filter_advice(answer_text, citations)
     answer_text = _leak_screen(answer_text)  # PART B: prompt-echo → distill refusal
     answer_text, suggestions = _split_suggestions(answer_text)
+    if _grounded:
+        # Spec item 9: citation-or-null, forbidden-output filter, ceiling + used-list run
+        # AFTER the normal safety/leak pass, on the clean body only; a suggestion chip that
+        # reads like a signal or an instruction is dropped, never rewritten.
+        answer_text, _grounded_withheld = _research_postprocess(answer_text, research_corpus or {})
+        was_filtered = bool(was_filtered or _grounded_withheld)
+        suggestions = [sug for sug in suggestions if not _research_sentence_forbidden(str(sug))]
     # Same language ladder the prompt used (W3: account lang is the middle fallback), so a
     # chip can never come back screened against a different language than the body.
     suggestions = _screen_suggestions(
@@ -9837,6 +11310,7 @@ def chat_stream(
     guest_aid: str = "",
     guest_ip: str = "",
     account_prefs: dict | None = None,
+    user_jwt: str = "",
 ) -> Generator[str, None, None]:
     """Process a brain chat request (streaming). Yields SSE strings per contract.
 
@@ -9904,8 +11378,26 @@ def chat_stream(
         yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': {}, 'usage': {}, 'filtered': False, 'degraded': True, 'is_context_only': True})}\n\n"
         return
 
+    # 1b. Spec item 1 (Sol 5967105152): the PURE W1-C context compile runs right after
+    #     sanitisation and BEFORE the exact-source resolver, so the F11 predicate is known
+    #     before any source / tier / preflight decision. Lazy import: the W1-A registry /
+    #     jsonschema validators load on first request, never at API import time — see
+    #     research/DEEPVUE_W1C_CONTEXT_ENVELOPE_CONTRACT_2026-08-25.md.
+    from engine.intelligence_workspace import context_compiler as _ctx_compiler  # noqa: PLC0415
+    _ctx_envelope = _ctx_compiler.compile_envelope(clean_msg, context)
+    _ctx_receipt = _ctx_compiler.compile_receipt(_ctx_envelope)
+    _grounded = _f11_grounded(mode, _ctx_envelope)
+    research_corpus: dict | None = None
+    if _grounded:
+        # Spec items 5/6/8: one round, no tools, no images, no history. The closed corpus
+        # is read through the CALLER's JWT (owner RLS, anon key) — never the service role,
+        # and the token itself never enters prompts, logs, receipts or the response.
+        tool_budget = 1
+        # r2 (review m4): built at the loop call below, after the gates — see chat().
+
+    # Spec item 4: the exact-source resolver is NEVER called on an F11-grounded turn.
     source_attachment = None
-    if company_source_span is not None:
+    if company_source_span is not None and not _grounded:
         source_attachment = _resolve_company_source_attachment(
             company_source_span, user_id, root, terminal_data_dir / "tx"
         )
@@ -9962,17 +11454,13 @@ def chat_stream(
             flags={"screened": True})
         return
 
-    # 2c. W1-C: compile the deterministic visible-context envelope ONCE per request
-    #     — see research/DEEPVUE_W1C_CONTEXT_ENVELOPE_CONTRACT_2026-08-25.md. Lazy
-    #     import for the same reason as chat(): defer the W1-A registry/jsonschema
-    #     pull to first actual request, never API import time.
-    from engine.intelligence_workspace import context_compiler as _ctx_compiler  # noqa: PLC0415
-    _ctx_envelope = _ctx_compiler.compile_envelope(clean_msg, context)
-    _ctx_receipt = _ctx_compiler.compile_receipt(_ctx_envelope)
+    # 2c. W1-C envelope: compiled ONCE per request, now right after sanitisation (see 1b
+    #     above) so the F11 predicate precedes the exact-source decision. Spec item 6: an
+    #     F11-grounded turn never consumes the selected-ontology evidence path (#8260).
     _ctx_receipt_event = "data: " + json.dumps({"type": "context_receipt", **_ctx_receipt}) + "\n\n"
 
-    _selected_ontology = _ontology_selection_requested(context)
-    _selection_notice = _ontology_preflight_notice(root, context, clean_msg, user_id)
+    _selected_ontology = False if _grounded else _ontology_selection_requested(context)
+    _selection_notice = "" if _grounded else _ontology_preflight_notice(root, context, clean_msg, user_id)
     if _selection_notice:
         yield "data: " + json.dumps({"type": "meta", "lane": lane, "model": "none",
                                      "thread_id": None, "quota": quota_info}) + "\n\n"
@@ -9993,7 +11481,8 @@ def chat_stream(
     )
     _native_route_decision_ms = _ms_since(_native_plan_t0)
     _instant_route_hit = (
-        None if _selected_ontology or images or source_attachment is not None or _native_plan_hit is not None
+        None if _grounded or _selected_ontology or images or source_attachment is not None
+        or _native_plan_hit is not None
         else _instant_route(clean_msg, context)
     )
 
@@ -10073,7 +11562,7 @@ def chat_stream(
     # Image turns are served by a claude vision model (in-lane Haiku when a key exists,
     # else Pro's Opus via OAuth) with token failover. Resolved before the meta event so
     # the reported model serves the turn.
-    image_blocks = _image_blocks(images)
+    image_blocks = [] if _grounded else _image_blocks(images)  # spec item 8: images disabled
     turn_providers = providers
     if image_blocks and not _unlimited_allowed(user_email) and _get_allowance(tier, status, "pro", root).get("limit", 0) == 0:
         image_blocks = []  # not Pro-eligible → drop attachments (unlimited operators keep vision)
@@ -10095,7 +11584,7 @@ def chat_stream(
         resolved_tid = _ensure_thread(thread_id, user_id, lane, title=clean_msg)
         if resolved_tid:
             effective_thread_id = resolved_tid
-            if thread_id:
+            if thread_id and not _grounded:
                 thread_history = _load_thread_history(resolved_tid)
             # Persist the USER turn now, not after the stream. A turn survives its
             # connection (app/brain_runs.py), so a client that reloads mid-answer
@@ -10124,7 +11613,8 @@ def chat_stream(
     # Trusted server thread history rides as-is; UNTRUSTED client history is screened
     # (drop forged assistant turns + probe-carrying replays) — see _screen_client_history.
     raw_history = thread_history if thread_history else _screen_client_history(history or [])
-    active_history = _filter_client_history_stream(raw_history[-24:])
+    # Spec item 8: no thread or client history enters the model on an F11-grounded turn.
+    active_history = [] if _grounded else _filter_client_history_stream(raw_history[-24:])
 
     # 5. Meta event (always first)
     meta_event = {
@@ -10203,11 +11693,22 @@ def chat_stream(
     usage_out: list = []
     answer_out: list = []
     thinking_out: list = []
-    stream_source_kwargs = (
-        {"source_prompt": source_attachment.resolved.prompt_block,
-         "source_receipt": source_attachment.resolved.receipt}
-        if source_attachment else {}
-    )
+    if _grounded:
+        # Spec item 8: the closed corpus is the ONLY source prompt; the loop boolean turns
+        # off tools, digests and addenda, and the corpus drives the final-authority
+        # post-processing inside the stream loop (see _run_brain_loop_stream).
+        research_corpus = _build_research_corpus(root, user_jwt=user_jwt)
+        stream_source_kwargs = {
+            "source_prompt": _format_research_grounding(research_corpus or {}),
+            "f11_grounded": True,
+            "research_corpus": research_corpus,
+        }
+    else:
+        stream_source_kwargs = (
+            {"source_prompt": source_attachment.resolved.prompt_block,
+             "source_receipt": source_attachment.resolved.receipt}
+            if source_attachment else {}
+        )
     try:
         yield from _run_brain_loop_stream(
             clean_msg, lane, active_history, context or {},
