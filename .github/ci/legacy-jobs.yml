@@ -3381,6 +3381,7 @@ jobs:
           tests/test_fundamental_forensics_financial_query_service.py
           tests/test_fundamental_forensics_financial_query_api.py
           tests/test_fundamental_forensics_ixbrl_raw_ledger.py
+          tests/test_fundamental_forensics_cross_filing_lineage.py
           tests/test_fundamental_forensics_financial_revision_service.py
           tests/test_fundamental_forensics_financial_revision_api.py
           tests/test_fundamental_forensics_financial_packet_service.py
@@ -8434,45 +8435,116 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
-      - "collectors/__init__.py"
-      - "collectors/china_ths_concepts.py"
-      - "config/theme_crosswalk.yml"
-      - "config/theme_graph_identity_breaks.yml"
-      - "config/theme_sources.yml"
-      - "contracts/theme_graph/theme_state.v1.schema.json"
-      - "engine/__init__.py"
-      - "engine/basket_index.py"
-      - "engine/basket_membership_pit.py"
-      - "engine/canon.py"
-      - "engine/conditions.py"
-      - "engine/dannytrades.py"
-      - "engine/dannytrades_chip.py"
-      - "engine/indicators.py"
-      - "engine/technicals.py"
-      - "engine/theme_graph/__init__.py"
-      - "engine/theme_graph/capability.py"
-      - "engine/theme_graph/identity.py"
-      - "engine/theme_graph/identity_resolution.py"
-      - "engine/theme_graph/local_sources.py"
-      - "engine/theme_graph/materialize.py"
-      - "engine/theme_graph/rights.py"
-      - "engine/theme_graph/store.py"
-      - "engine/theme_graph/theme_state.py"
-      - "lib/__init__.py"
-      - "lib/config.py"
-      - "lib/dataos/identity.py"
-      - "lib/store.py"
-      - "research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md"
-      - "scripts/__init__.py"
-      - "scripts/build_dt_contra_state.py"
-      - "scripts/build_subsector_membership.py"
-      - "scripts/build_theme_graph.py"
-      - "scripts/correct_gmi_identity_lineage.py"
-      - "scripts/seed_china_ths_baskets.py"
-      - "tests/test_build_subsector_membership.py"
-      - "tests/test_dt_contra_state.py"
-      - "tests/test_gmi_history_integrity.py"
-      - "tests/test_theme_graph_state.py"
+    - collectors/__init__.py
+    - collectors/china_ths_concepts.py
+    - collectors/equity_earnings.py
+    - config/dataset_registry.yml
+    - config/earnings_story_promotion.yml
+    - config/fundamental_forensics_disclosure_diff.v1.json
+    - config/intelligence_workspace/datapoints.v1.json
+    - config/theme_crosswalk.yml
+    - config/theme_graph_identity_breaks.yml
+    - config/theme_sources.yml
+    - contracts/intelligence_workspace/datapoint_registry.schema.json
+    - contracts/intelligence_workspace/datapoint_value.schema.json
+    - contracts/theme_graph/identity_resolution.v1.schema.json
+    - contracts/theme_graph/ontology_neighborhood.v1.schema.json
+    - contracts/theme_graph/probation_proposal.v1.schema.json
+    - contracts/theme_graph/structural_context.v1.schema.json
+    - contracts/theme_graph/theme_state.v1.schema.json
+    - contracts/theme_graph/theme_structural_context.v2.schema.json
+    - engine/__init__.py
+    - engine/basket_index.py
+    - engine/basket_membership_pit.py
+    - engine/canon.py
+    - engine/company_intelligence/__init__.py
+    - engine/company_intelligence/contracts.py
+    - engine/company_intelligence/documents.py
+    - engine/company_intelligence/event_id_adapter.py
+    - engine/company_intelligence/event_workspace.py
+    - engine/company_intelligence/event_workspace_build.py
+    - engine/company_intelligence/events.py
+    - engine/company_intelligence/health.py
+    - engine/company_intelligence/identity.py
+    - engine/company_intelligence/issuer_profiles.py
+    - engine/company_intelligence/pg_envelope.py
+    - engine/company_intelligence/pg_profile.py
+    - engine/company_intelligence/qa_exchange.py
+    - engine/company_intelligence/qa_reconstruction.py
+    - engine/company_intelligence/views.py
+    - engine/conditions.py
+    - engine/dannytrades.py
+    - engine/dannytrades_chip.py
+    - engine/earnings_catalyst.py
+    - engine/earnings_narrative/contracts.py
+    - engine/earnings_narrative/digest.py
+    - engine/earnings_narrative/promotion.py
+    - engine/earnings_narrative/public_wire.py
+    - engine/earnings_narrative/story.py
+    - engine/earnings_narrative/story_packets.py
+    - engine/earnings_release/binding.py
+    - engine/earnings_release/figures.py
+    - engine/earnings_release/filing_key.py
+    - engine/earnings_release/receipts.py
+    - engine/fundamental_forensics/disclosure_diff.py
+    - engine/fundamental_forensics/models.py
+    - engine/indicators.py
+    - engine/intelligence_workspace/__init__.py
+    - engine/intelligence_workspace/adapters/base.py
+    - engine/intelligence_workspace/adapters/company_intelligence.py
+    - engine/intelligence_workspace/adapters/earnings.py
+    - engine/intelligence_workspace/adapters/industry.py
+    - engine/intelligence_workspace/adapters/quote.py
+    - engine/intelligence_workspace/adapters/stage.py
+    - engine/intelligence_workspace/adapters/technicals.py
+    - engine/intelligence_workspace/adapters/theme.py
+    - engine/intelligence_workspace/contracts.py
+    - engine/intelligence_workspace/entity.py
+    - engine/intelligence_workspace/projection.py
+    - engine/intelligence_workspace/registry.py
+    - engine/intelligence_workspace/resolver.py
+    - engine/intelligence_workspace/runtime.py
+    - engine/neuralweb/company_intelligence_reader.py
+    - engine/press/earnings_adapter.py
+    - engine/quote_resolution.py
+    - engine/technicals.py
+    - engine/theme_graph/__init__.py
+    - engine/theme_graph/capability.py
+    - engine/theme_graph/change_report.py
+    - engine/theme_graph/identity.py
+    - engine/theme_graph/identity_resolution.py
+    - engine/theme_graph/local_sources.py
+    - engine/theme_graph/materialize.py
+    - engine/theme_graph/ontology.py
+    - engine/theme_graph/probation.py
+    - engine/theme_graph/rights.py
+    - engine/theme_graph/store.py
+    - engine/theme_graph/structural_navigation.py
+    - engine/theme_graph/theme_state.py
+    - lib/__init__.py
+    - lib/config.py
+    - lib/dataos/__init__.py
+    - lib/dataos/identity.py
+    - lib/dataos/nulls.py
+    - lib/dataos/price.py
+    - lib/dataos/quality.py
+    - lib/dataos/registry.py
+    - lib/dataos/temporal.py
+    - lib/nyse_calendar.py
+    - lib/store.py
+    - research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md
+    - scripts/__init__.py
+    - scripts/build_dt_contra_state.py
+    - scripts/build_subsector_membership.py
+    - scripts/build_theme_graph.py
+    - scripts/correct_gmi_identity_lineage.py
+    - scripts/query_theme_ontology.py
+    - scripts/seed_china_ths_baskets.py
+    - tests/test_build_subsector_membership.py
+    - tests/test_dt_contra_state.py
+    - tests/test_gmi_history_integrity.py
+    - tests/test_theme_graph_state.py
+    - tests/test_theme_graph_structural_owner_binding.py
     # Regression guard for the two Neural-Web lobes frozen since 2026-07-07:
     #   1. dt_contra_state crash: build_dt_contra_state.py crashed on index.json (list root);
     #      fixed by isinstance(data, dict) guard — 8 tests covering the fix.
@@ -8493,7 +8565,7 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_theme_graph_structural_owner_binding.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
 
