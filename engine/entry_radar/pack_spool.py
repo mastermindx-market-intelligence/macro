@@ -64,6 +64,53 @@ def _table_to_frame(table: pa.Table) -> pd.DataFrame:
     return frame
 
 
+def spool_fingerprints(path: Path | str) -> dict[str, str]:
+    return dict(load_sidecar(path)["fingerprints"])
+
+
+class SpoolSubstrate(Mapping[str, pd.DataFrame]):
+    """Read-only lazy mapping over a finished substrate spool on disk.
+
+    Immutable spool bytes; single-process reader. Not safe against concurrent
+    writers mutating the spool path while this mapping is in use.
+    """
+
+    def __init__(self, path: Path | str) -> None:
+        sidecar = load_sidecar(path)
+        self.path = Path(path)
+        self._row_groups: dict[str, int] = dict(sidecar["row_groups"])
+        self.fingerprints: dict[str, str] = dict(sidecar["fingerprints"])
+        self._parquet: pq.ParquetFile | None = None
+
+    def _open_parquet(self) -> pq.ParquetFile:
+        if self._parquet is None:
+            self._parquet = pq.ParquetFile(self.path)
+        return self._parquet
+
+    def __len__(self) -> int:
+        return len(self._row_groups)
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._row_groups)
+
+    def __contains__(self, key: object) -> bool:
+        return key in self._row_groups
+
+    def __getitem__(self, ticker: str) -> pd.DataFrame:
+        if ticker not in self._row_groups:
+            raise KeyError(ticker)
+        table = self._open_parquet().read_row_group(self._row_groups[ticker])
+        return _table_to_frame(table)
+
+    def __repr__(self) -> str:
+        return f"SpoolSubstrate(path={self.path!r}, n_names={len(self)})"
+
+    def close(self) -> None:
+        if self._parquet is not None:
+            self._parquet.close()
+            self._parquet = None
+
+
 class ParquetSpoolSink:
     """Write each frozen substrate frame to one parquet row group; hold no frames."""
 
@@ -91,7 +138,7 @@ class ParquetSpoolSink:
             self._writer = pq.ParquetWriter(self.path, _PARQUET_SCHEMA)
         self._writer.write_table(table)
 
-    def finish(self) -> Mapping[str, pd.DataFrame]:
+    def finish(self) -> SpoolSubstrate:
         if self._finished:
             raise LivePackError("spool_closed")
         self._finished = True
@@ -111,7 +158,7 @@ class ParquetSpoolSink:
             "columns": list(_FLAT_COLUMNS),
         }
         sidecar_path.write_text(json.dumps(payload, sort_keys=True), encoding="utf-8")
-        return {}
+        return SpoolSubstrate(self.path)
 
 
 def load_sidecar(path: Path | str) -> dict[str, Any]:
