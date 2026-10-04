@@ -2,13 +2,13 @@
 from __future__ import annotations
 
 import types
-from datetime import date
+from datetime import date, datetime, timezone
 
 import pandas as pd
 import pytest
 
 from engine.entry_radar import live_pack as lp
-from tests.test_entry_radar_w4_pack import build, store
+from tests.test_entry_radar_w4_pack import AS_OF, build, frame_from_closes, store
 
 
 def test_T1_in_memory_sink_matches_default_build():
@@ -86,7 +86,7 @@ def test_T4_streamed_pack_is_refused_without_its_tapped_cases(tmp_path):
     assert tapped == lp.build_inversion_proof(default)
     assert tapped["by_family"]["threshold_boundary"]["total"] > 0
     # No frames and no tapped cases: the proof must refuse, not pass without the family.
-    with pytest.raises(lp.LivePackError, match="no frozen frame"):
+    with pytest.raises(lp.LivePackError, match="lacks"):
         lp.build_inversion_proof(pack)
     # The in-memory saver must refuse a pack whose frames were streamed elsewhere.
     with pytest.raises(lp.LivePackError, match="cannot save"):
@@ -151,7 +151,8 @@ def test_T5b_sinks_serve_one_build():
 
 class _RefusingSink:
     def add(self, row: lp.PackName, frozen: pd.DataFrame, *, next_session: date) -> None:
-        raise RuntimeError("inner sink refused the frame")
+        if lp.threshold_case_names(row):
+            raise RuntimeError("inner sink refused the frame")
 
     def finish(self) -> dict[str, pd.DataFrame]:
         return {}
@@ -161,7 +162,127 @@ def test_T5c_tap_keeps_no_case_for_a_frame_the_inner_sink_refused():
     tap = lp.ProofTapSink(_RefusingSink())
     with pytest.raises(RuntimeError, match="inner sink refused"):
         build(sink=tap)
-    assert tap.threshold_cases() == []
+    refused = next(
+        row for row in build().names if lp.threshold_case_names(row))
+    assert lp.threshold_case_names(refused)
+    assert not any(
+        c["case"].startswith(f"{refused.ticker}:") for c in tap.threshold_cases())
+
+
+class _CustomPostSink:
+    def __init__(self, post) -> None:
+        self._frames: dict[str, pd.DataFrame] = {}
+        self._post = post
+
+    def add(self, row: lp.PackName, frozen: pd.DataFrame, *, next_session: date) -> None:
+        self._frames[row.ticker] = frozen
+
+    def finish(self) -> dict[str, pd.DataFrame]:
+        return dict(self._post(self._frames))
+
+
+def _build_with_post_sink(post):
+    tap = lp.ProofTapSink(_CustomPostSink(post))
+    return lp.build_pack(
+        probe_set=sorted(store()),
+        store_reader=lambda t: store().get(t),
+        as_of=AS_OF,
+        built_at=datetime(2026, 8, 15, 2, 0, tzinfo=timezone.utc),
+        sink=tap), tap
+
+
+def test_T4a_swapped_substrate_keys_refuse_save_and_proof(tmp_path):
+    def swap(frames):
+        out = dict(frames)
+        out["STALE"], out["WASH"] = frames["WASH"], frames["STALE"]
+        return out
+
+    pack, _tap = _build_with_post_sink(swap)
+    with pytest.raises(lp.LivePackError, match="fingerprint"):
+        lp.save_pack(pack, tmp_path)
+    assert not lp.pack_root(tmp_path).exists()
+    with pytest.raises(lp.LivePackError):
+        lp.build_inversion_proof(pack)
+
+
+def test_T4b_replaced_substrate_frame_refuse_save_and_proof(tmp_path):
+    def tamper(frames):
+        out = dict(frames)
+        frame = frames["WASH"].copy()
+        frame.iloc[0, frame.columns.get_loc("close")] *= 1.37
+        out["WASH"] = frame
+        return out
+
+    pack, _tap = _build_with_post_sink(tamper)
+    with pytest.raises(lp.LivePackError, match="fingerprint"):
+        lp.save_pack(pack, tmp_path)
+    assert not lp.pack_root(tmp_path).exists()
+    with pytest.raises(lp.LivePackError):
+        lp.build_inversion_proof(pack)
+
+
+def test_T4c_extra_substrate_key_refuse_save_and_proof(tmp_path):
+    def extra(frames):
+        return {**frames, "ZZZ": frames["FLAT"]}
+
+    pack, _tap = _build_with_post_sink(extra)
+    with pytest.raises(lp.LivePackError, match="ZZZ.*not admitted"):
+        lp.save_pack(pack, tmp_path)
+    assert not lp.pack_root(tmp_path).exists()
+    with pytest.raises(lp.LivePackError):
+        lp.build_inversion_proof(pack)
+
+
+def test_T4g_load_pack_refuses_tampered_substrate_parquet(tmp_path):
+    pack = build()
+    proof = lp.build_inversion_proof(pack)
+    lp.save_pack(pack.with_proof(proof), tmp_path)
+    parquet_path = lp.pack_root(tmp_path) / pack.as_of / "substrate.parquet"
+    flat = pd.read_parquet(parquet_path)
+    ticker = pack.names[0].ticker
+    mask = flat["ticker"] == ticker
+    flat.loc[mask, "close"] = flat.loc[mask, "close"] * 1.01
+    flat.to_parquet(parquet_path, index=False)
+    with pytest.raises(lp.LivePackError, match="manifest"):
+        lp.load_pack(tmp_path)
+
+
+def test_T4d_honest_in_memory_sink_save_load_prove(tmp_path):
+    pack = build(sink=lp.InMemorySink())
+    proof = lp.build_inversion_proof(pack)
+    assert proof["pass"]
+    lp.save_pack(pack.with_proof(proof), tmp_path)
+    loaded = lp.load_pack(tmp_path)
+    assert loaded is not None
+    assert loaded.pack_hash == pack.pack_hash
+    assert lp.build_inversion_proof(loaded) == proof
+
+
+class _MinimalInnerSink:
+    def __init__(self) -> None:
+        self._frames: dict[str, pd.DataFrame] = {}
+
+    def add(self, row: lp.PackName, frozen: pd.DataFrame, *, next_session: date) -> None:
+        self._frames[row.ticker] = frozen
+
+    def finish(self) -> dict[str, pd.DataFrame]:
+        return self._frames
+
+
+def test_T4f_sink_reuse_guards():
+    tap = lp.ProofTapSink(_MinimalInnerSink())
+    pack = build(sink=tap)
+    with pytest.raises(lp.LivePackError, match="reused"):
+        tap.add(pack.names[0], pack.substrate[pack.names[0].ticker],
+                next_session=date.fromisoformat(pack.next_session))
+    with pytest.raises(lp.LivePackError, match="reused"):
+        tap.finish()
+
+    sink = lp.InMemorySink()
+    build(sink=sink)
+    with pytest.raises(lp.LivePackError, match="reused"):
+        sink.add(pack.names[0], pack.substrate[pack.names[0].ticker],
+                 next_session=date.fromisoformat(pack.next_session))
 
 
 def test_T6_with_proof_substrate_identity():

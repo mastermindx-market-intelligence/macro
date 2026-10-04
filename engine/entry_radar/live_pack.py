@@ -1147,6 +1147,30 @@ def _case(family: str, name: str, *, boundary: Any, direction: str, expected: An
             "observed": _jsonable(observed), "pass": bool(expected == observed)}
 
 
+def _refuse_substrate_key_mismatch(pack: LivePack) -> None:
+    admitted = {r.ticker for r in pack.names}
+    keys = set(pack.substrate)
+    if keys != admitted:
+        missing = sorted(admitted - keys)
+        extra = sorted(keys - admitted)
+        parts: list[str] = []
+        if missing:
+            parts.append(
+                f"cannot save a pack whose substrate lacks {len(missing)} admitted name(s) "
+                f"(first: {missing[0]}); a streamed substrate is saved by its own writer")
+        if extra:
+            parts.append(f"{extra[0]}: not admitted")
+        raise LivePackError("; ".join(parts))
+
+
+def _refuse_substrate_fingerprint_mismatch(pack: LivePack) -> None:
+    for row in pack.names:
+        frame = pack.substrate[row.ticker]
+        if substrate_fingerprint(frame) != row.substrate_fingerprint:
+            raise LivePackError(
+                f"{row.ticker}: substrate frame does not match the admitted row's fingerprint")
+
+
 def _proof_threshold_cases(pack: LivePack) -> list[dict[str, Any]]:
     """(a) Every solved level, probed from BOTH sides against the oracle itself.
 
@@ -1155,6 +1179,8 @@ def _proof_threshold_cases(pack: LivePack) -> list[dict[str, Any]]:
     is a receipt written from the variable it checks, and cannot fail when the
     level is the thing that is wrong.
     """
+    _refuse_substrate_key_mismatch(pack)
+    _refuse_substrate_fingerprint_mismatch(pack)
     out: list[dict[str, Any]] = []
     for row in pack.names:
         frame = pack.substrate.get(row.ticker)
@@ -1604,11 +1630,8 @@ def current_pack_identity(state_dir: Path | str) -> dict[str, str] | None:
 
 
 def _substrate_frame(pack: LivePack) -> pd.DataFrame:
-    absent = sorted(row.ticker for row in pack.names if row.ticker not in pack.substrate)
-    if absent:
-        raise LivePackError(
-            f"cannot save a pack whose substrate lacks {len(absent)} admitted name(s) "
-            f"(first: {absent[0]}); a streamed substrate is saved by its own writer")
+    _refuse_substrate_key_mismatch(pack)
+    _refuse_substrate_fingerprint_mismatch(pack)
     rows: list[dict[str, Any]] = []
     for ticker in sorted(pack.substrate):
         frame = pack.substrate[ticker]
@@ -1634,6 +1657,7 @@ def save_pack(pack: LivePack, state_dir: Path | str, *,
     complete — the order that makes a crashed build invisible instead of
     half-visible.
     """
+    substrate_flat = _substrate_frame(pack)
     root = pack_root(state_dir)
     root.mkdir(parents=True, exist_ok=True)
     final = root / pack.as_of
@@ -1644,7 +1668,7 @@ def save_pack(pack: LivePack, state_dir: Path | str, *,
             json.dumps(pack.manifest(), sort_keys=True, separators=(",", ":"),
                        allow_nan=False),
             encoding="utf-8")
-        _substrate_frame(pack).to_parquet(staging / _SUBSTRATE_NAME, index=False)
+        substrate_flat.to_parquet(staging / _SUBSTRATE_NAME, index=False)
         if final.exists():
             shutil.rmtree(final)
         os.replace(staging, final)
@@ -1725,6 +1749,12 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
     # (N4): defaulting it to "whatever v2 currently is" would present a pack
     # that never carried `confirmed_lanes` as though it did.
     raw_confirmed_lanes = manifest.get("confirmed_lanes") or {}
+    names = tuple(PackName.from_dict(row) for row in manifest.get("names") or ())
+    for row in names:
+        frame = substrate.get(row.ticker)
+        if frame is None or substrate_fingerprint(frame) != row.substrate_fingerprint:
+            raise LivePackError(
+                f"{row.ticker}: saved substrate does not match the manifest row")
     return LivePack(
         schema=str(manifest.get("schema") or _SCHEMA_LIVE_PACK_V1),
         as_of=str(manifest["as_of"]), next_session=str(manifest["next_session"]),
@@ -1732,7 +1762,7 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
         price_basis=str(manifest.get("price_basis") or ch.BASIS_ADJUSTED),
         spec_hashes=dict(manifest.get("spec_hashes") or {}),
         probe_set=dict(manifest.get("probe_set") or {}),
-        names=tuple(PackName.from_dict(row) for row in manifest.get("names") or ()),
+        names=names,
         substrate=substrate,
         substrate_missing=tuple(dict(row) for row in
                                 manifest.get("substrate_missing") or ()),
