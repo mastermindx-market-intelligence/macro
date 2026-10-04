@@ -15721,6 +15721,8 @@ jobs:
   unrun-template-chips:
     if: ${{ false }}
     gate: code
+    paths:
+      - "tests/test_china_special_situations.py"
     timeout-minutes: 4
     runs-on: ubuntu-latest
     steps:
