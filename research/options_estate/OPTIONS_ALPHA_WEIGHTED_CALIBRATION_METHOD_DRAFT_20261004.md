@@ -6,7 +6,11 @@ Carrier: mastermind-terminal issue 599, operation
 options-alpha-product-integration-20260917-sol-001.
 Author: the assigned root engineering orchestrator, with read-only methodological assistance.
 Required acceptance: the existing Opus statistics review and Fable ratification.
-Neither has been supplied for this packet.
+Fable principal review 5403843781 returned UNRATIFIED / REVISE for head
+ed5617599e73cc2d389c6de29924f5270ef762e6. The proposed 20-per-bin/200-total
+gate and monotonicity/dependence rule are not ratified. This revision records
+corrections and open scientific choices only; frozen v1, trainer behavior and
+no-artifact status remain unchanged. The named Opus review is still missing.
 
 This packet makes the remaining method decision concrete. It does not modify the
 frozen registration, authorize a study, or make calibration available. In particular,
@@ -40,13 +44,15 @@ remain unchanged by this draft.
 | Raw event rows | Descriptive coverage only; never support or independence. |
 | Sum of native global-concurrency weights | The frozen bucket/era support quantity; proposed bin support also uses this absolute scale. Weighted rates, ECE and Brier divide weighted mass by this sum. |
 | Kish N = (sum w)^2 / sum(w^2) | Not used for any display gate, calibration gate or inference claim. It cannot replace the frozen support quantity. |
-| Calendar block equivalents floor(T/H) | Proposed temporal-support prerequisite only, not a proven number of independent observations. |
+| Calendar block equivalents floor(T/b) | Proposed temporal-support prerequisite only, not a proven number of independent observations. |
 
 ECE, Brier and replicate rates are invariant to a common weight rescaling; the
 frozen support gates are not. Therefore rescaling native weights to pass a floor
 is forbidden. The proposed block inference assumes the chosen temporal
 resampling model is adequate; neither the table nor the bootstrap proves
-independence, stationarity, or that dependence stops after H sessions.
+independence, stationarity, or that dependence stops after the proposed block
+length b. Anchor-calendar length T, native label-window length L=H+1 and
+bootstrap block length b are distinct quantities.
 
 ## 1. Evaluation population and proposed weighted bins
 
@@ -98,25 +104,41 @@ tiny-bin rate claims motivates a separate gate; the neighboring era number alone
 does not provide a statistical justification for this particular value.
 
 More importantly, current global concurrency makes this candidate impractical.
-For collapsed native units with equal inclusive windows of length L=H+1,
+Let P be the exact admitted parent population used to compute and install native
+concurrency weights, and let E be its calibration_eval subset. The method receipt
+must identify P by manifest/hash. Evaluation retains those installed weights;
+concurrency must not be recomputed inside E.
 
-    u_i = (1/L) sum over s in W_i of 1/c_s
-    sum_i u_i = covered_NYSE_sessions / L.
+For equal inclusive label-window length L=H+1, let c_P(s) and c_E(s) count the
+collapsed (fill_session, root) units in P and E whose windows cover NYSE session s.
+Then, summing only over sessions covered by E,
 
-The inner sum across units covering a session is one. Repeating prints or adding
-roots on the same covered sessions cannot increase that session's total mass.
-For continuous coverage, the following are approximate covered-session needs:
+    sum_{i in E} u_i = (1/L) sum_s c_E(s)/c_P(s)
+                    <= covered_label_window_sessions(E)/L.
 
-| Primary horizon H | Existing N=30 | Proposed N=200 | N=200 at 252 sessions/year |
+Equality holds only when c_E(s)=c_P(s) on every session covered by E. For H=1,
+windows [0,1] and [1,2] give c_P=[1,2,1]. If E contains only the second unit,
+its retained weight is (1/2)(1/2+1)=0.75, not 2/2=1. Repeating prints cannot
+create mass; expanding the root population does not make this subset equality true.
+
+Consequently N*L covered label-window sessions is a best-case necessary lower
+bound, not an equality when outside-subset units contribute to global concurrency.
+For a continuous evaluation anchor calendar of T sessions, coverage is at most
+T+H, yielding the separate best-case necessary anchor bound T>=N*L-H.
+
+| Primary horizon H | N=30 covered / anchors | N=200 covered / anchors | N=200 anchor years |
 | --- | ---: | ---: | ---: |
-| 5 | 180 | 1,200 | 4.8 years |
-| 21 | 660 | 4,400 | 17.5 years |
-| 63 | 1,920 | 12,800 | 50.8 years |
+| 5 | 180 / 175 | 1,200 / 1,195 | 4.7 |
+| 21 | 660 / 639 | 4,400 / 4,379 | 17.4 |
+| 63 | 1,920 / 1,857 | 12,800 / 12,737 | 50.5 |
 
-These are evaluation-population requirements, not total archive length; other
-disjoint populations need their own support. Boundary and coverage details must
-be reported from actual native intervals. The calculation is a data-free
-consequence of the registered weight formula, not a study or a measured alpha result.
+Years use 252 anchor sessions/year. Any c_E/c_P<1 increases actual requirements;
+calendar length alone supplies no finite sufficient upper bound. Report anchor
+sessions, covered label-window sessions and realized sum_s(c_E/c_P) separately.
+These are evaluation support bounds, not total archive-length requirements or
+admission evidence. Other disjoint populations need their own support. The
+calculation is a data-free consequence of the weight formula, not an empirical
+result. The proposed 20/200 gate remains new and unratified.
 
 Recommendation: do not ratify the 20-per-bin candidate by default. The statistics
 review must either explicitly accept this delay or commission a separately
@@ -151,13 +173,15 @@ Proposed design, also requiring statistics ratification:
 
 - Keep the accepted score-bin boundaries fixed.
 - Construct the complete NYSE evaluation anchor calendar, including zero-event
-  sessions. Circular moving blocks contain H consecutive calendar sessions.
-- Draw ceil(T/H) block start indices independently and uniformly from 0..T-1.
-  Concatenate their circular H-session sequences, then truncate to exactly T
-  session indices. Resample each selected session with every underlying and
-  print on it. Retain original native weights; repeated selection is bootstrap
+  sessions. Circular moving blocks contain b consecutive calendar sessions;
+  b=H is the current unratified candidate, not a consequence of L=H+1.
+- Draw ceil(T/b) block start indices independently and uniformly from 0..T-1.
+  Concatenate their circular b-session sequences, then truncate to exactly T
+  session indices. Select the existing collapsed weighted units anchored on each
+  chosen session, carrying all their event rows with already allocated print
+  weights. Raw-print expansion cannot add mass. Repeated selection is bootstrap
   multiplicity, never a change to the reported original effective N.
-- Use 9,999 attempts. Require at least 20 block equivalents floor(T/H)>=20,
+- Use 9,999 attempts. Require at least 20 block equivalents floor(T/b)>=20,
   at least 20 distinct anchor sessions in every occupied bin, and 9,500 valid
   replicates. These are proposed additional gates, not inherited requirements.
 - A replicate is invalid if a fixed bin has zero/nonfinite weight or any required
@@ -175,7 +199,18 @@ digest bytes interpreted unsigned big-endian, NumPy Generator(PCG64(seed)).
 A ratified implementation must also freeze library versions and calendar identity
 in the method receipt.
 
-The 63-session block proposal itself needs about 1,260 evaluation sessions, but
+The candidate lacks predeclared operating-characteristic objectives. Before
+"monotonicity compatible" may function as a shipping pass, the eligible statistics
+review must specify and support: a maximum familywise false-kill probability for
+flat/nondecreasing curves; minimum power for a defined material reversal magnitude
+and persistence; expected decisions for ties and near-floor sparse bins; and
+acceptable error distortion when dependence lasts beyond b, including the stress
+horizons and adequacy rule. The required error, power, reversal, persistence and
+dependence-envelope values are unset. Until Opus review and Fable ratification
+resolve them, monotonicity gate decisions remain null. No data-free simulation
+or operating-characteristic acceptance evidence is claimed in this packet.
+
+The b=63-session block proposal itself needs about 1,260 evaluation anchor sessions, but
 the proposed native-N=200 gate is far more restrictive. This check adds no model
 selection path, registered verdict cell, p-value or BH-FDR family member. It is
 a calibration diagnostic, not independent evidence of alpha.
@@ -215,9 +250,9 @@ by those tests.
 
 Current review state: a canonical M2 claude-native selector returned
 "native subscription enrollment pending"; no worker was created. Native
-methodological assistance is not the mandatory Opus review. Fable can examine
-this concrete draft, but neither that examination nor generic worker availability
-fills the named review gate. A genuinely eligible review binding is a required
+methodological assistance is not the mandatory Opus review. Fable has examined
+this concrete draft and returned UNRATIFIED / REVISE; neither that examination nor
+generic worker availability fills the named review gate. A genuinely eligible review binding is a required
 capability change. No provider refusal was retried or bypassed.
 
 Open ratification decisions are explicit: support/dependence feasibility; approval
