@@ -515,21 +515,22 @@ Agent OS discovery:
 
 `DSC-RESEARCH-VAULT-FALLS-BACK-TO-SHARED-PUBLIC-BUCKET`
 
-verified that Research Vault R2 client construction does:
+verified that current Research Vault construction has a **mixed isolation contract**:
 
 ```text
+R2_RESEARCH_BUCKET         required explicitly by build_store()
 R2_RESEARCH_ENDPOINT       or R2_ENDPOINT
 R2_RESEARCH_ACCESS_KEY_ID  or R2_ACCESS_KEY_ID
 R2_RESEARCH_SECRET...      or R2_SECRET...
 ```
 
-and can use the generic/shared bucket when the research-specific plane is missing.
+So the historical discovery's broad "everything falls back to the public bucket" wording is stale in one important respect: current `build_store()` no longer constructs an R2 store without an explicit research bucket.
 
-That shared delivery plane is recorded elsewhere as publicly reachable.
+The remaining defect is still P0. Endpoint/credentials may inherit generic shared values, and the factory does not itself reject `R2_RESEARCH_BUCKET == R2_BUCKET` when both are configured. Therefore the code does not structurally prove that the effective Research Vault plane is private and distinct from the shared/public delivery plane.
 
-The API deployment workflow currently supplies the dedicated `R2_RESEARCH_*` secret family, which mitigates the normal deployed path. It does **not** cure the unsafe canonical factory.
+The API deployment workflow currently supplies the dedicated `R2_RESEARCH_*` family, which mitigates the normal deployed path. It does **not** make unsafe fallback/alias semantics acceptable in the canonical factory.
 
-The factory must fail closed for production-private research use before a new external read surface is admitted.
+F1 must establish provable private-plane isolation before a new external read surface is admitted. Whether same-account shared credentials are permissible is a security-owner decision; silent inheritance is not.
 
 ---
 
@@ -612,6 +613,7 @@ The current session did **not** have direct R2 object access. Therefore these re
 - current `CORPUS_IDS` count;
 - current `RECEIPTED_IDS` count;
 - exact current mismatch sets;
+- current corpus **body-health**: non-empty/empty body counts, body-size distribution, `text_layer` distribution, valid PDF hash coverage, source-vs-stored char consistency, page-boundary coverage and excerpt-derivable count;
 - canonical `corpus.sqlite` byte size;
 - total full extracted text bytes;
 - compressed full-text footprint;
