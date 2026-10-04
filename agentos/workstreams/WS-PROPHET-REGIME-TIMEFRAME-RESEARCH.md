@@ -45,9 +45,13 @@ waves:
     status: todo
     depends_on: [W2]
 next_action: >
-  Watch the two running mini2 lanes to DONE, rsync results/<LANE>/ into the program
-  tree, run each lane's pytest and hash check locally, commission the Opus reviewer,
-  and record verdicts in 05_ACCEPTANCE_AND_CONTINUATION.md.
+  Wave 1 shipped (A1, B1, C1, E, F1 accepted; records + 06–09 + DEC/DSC + W1 handoff in
+  the wave-1 results PR). C2 r2 and D0 r3 are DELIVERED on host2 but unreviewed and
+  unshipped because the /Volumes/Mastermind volume has been unreadable since
+  2026-10-04 08:24Z: when readable, copy both records, verify sha256 be4e04d4… /
+  b16f444a…, review each once with a grok-4.6 lane, and open the follow-up PR. Then post
+  the wave RESULT once on #8363 and the W3 owner delivery once on #6805 (rung ≤ MERGED).
+  W2 only as a new pre-registration. See 05 §7 and the W1 handoff.
 ---
 
 # WS:PROPHET-REGIME-TIMEFRAME-RESEARCH
