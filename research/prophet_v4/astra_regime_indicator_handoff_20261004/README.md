@@ -58,3 +58,12 @@ No new raw-data backtest, trial registration, indicator implementation, ranking/
 - Publication carrier: [PR #8363](https://github.com/mastermindx-market-intelligence/macro/pull/8363), branch `docs/prophet-astra-regime-indicator-handoff-20261004`.
 
 The exact commit used to open this README identifies the full packet revision. The PR description carries the final readback/compare receipt when verified. On deliberate receiver assignment, recover current protected procedure, source custody and the next existing-owner dependency before effects; publication alone is not START.
+
+## Fable takeover addendum (2026-10-04)
+
+The Chairman transferred the Astra CEO assignment to Fable orchestration (operation `prophet-astra-ceo-fable-20261004-001`). The missing chapters were authored by the receiving seat — the blocked upload was not retried or rerouted:
+
+- `03_RESEARCH_AND_PRODUCT_MASTERPLAN.md` — frozen wave-1 plan: exit gate, DO_NOT_REDO table, decisions D1–D8, five experimental designs (A1, B1, C1, C2, F1) with pre-declared falsifiers and verdict rules, evaluation contract, product implication map, pre-mortem.
+- `04_FABRIC_WORK_PACKAGES.md` — lane matrix, launch/watch/collect recipe, repair protocol, review and suborchestrator commissions.
+- `05_ACCEPTANCE_AND_CONTINUATION.md` — acceptance gates, DECIDED/FACTS/OPEN/NEXT ledger, lane matrix state, holds, do-not-redo, danger areas, next action.
+- `packets/` — the exact lane packets (shared law + per-lane spec); `results/<LANE>/` — lane outputs (RESULT.md, result.json, code, tests, hashes; parquet panels are not committed).
