@@ -557,6 +557,21 @@ def test_case_7d_ceo_continuation_is_front_loaded_for_bounded_project_docs():
         assert _clause(clause) in early, f"critical front-loaded clause drifted late: {clause}"
 
 
+def test_case_7e_fable_checkpoint_and_wait_language_cannot_reintroduce_stops():
+    fable = _law_text(".claude/skills/fable-mode/SKILL.md")
+    for required in (
+        "Checkpoint, reassess the parent mission, then continue or yield lawfully",
+        "A checkpoint is a save, not a stop",
+        "the watcher owns the next observation; immediately advance another useful lane",
+    ):
+        assert _clause(required) in fable
+    for stale in (
+        "S.8 Checkpoint, then go quiet",
+        "one hold note, then quiet",
+    ):
+        assert _clause(stale) not in fable
+
+
 # --------------------------------------------------------------------------------------
 # Case 8 — ACK/QUEUED mistaken for START/RUNNING (and every other rung confusion).
 # --------------------------------------------------------------------------------------
