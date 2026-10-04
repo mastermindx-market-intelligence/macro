@@ -31,11 +31,20 @@ def protocol(mode="SYNTHETIC"):
         ridge_alpha=1.0,
         min_train_rows=4,
         mode=mode,
+        market="US",
+        cadence="DAILY",
+        session_scope="REGULAR",
+        instrument_id="fixture:SEC:US-ARCX-SPY",
+        forecast_horizon_sessions=5,
         owner_ratification_ref="fixture:owner-ratification:ptse-b0-h5-v1",
         source_manifest_sha256=digest("fixture-source-manifest"),
+        outcome_manifest_sha256=digest("fixture-outcome-manifest"),
         calendar_sha256=digest("fixture-calendar"),
         feature_version="fixture:ptse-b0-features-v1",
         evaluation_partition_ref="fixture:development-partition-v1",
+        prior_history_exposure_ref="fixture:prior-history-exposure-v1",
+        trial_family_ref="fixture:trial-family-b0-v1",
+        embargo_policy_ref="fixture:embargo-policy-v1",
     )
 
 
@@ -87,6 +96,8 @@ FOLD = FoldSpec(
     test_start_session="2026-01-20",
     test_end_session="2026-01-21",
     evaluation_at="2026-01-29T23:00:00Z",
+    cohort_sha256=digest("fixture-fold-1-cohort"),
+    expected_test_rows=2,
 )
 
 
@@ -109,6 +120,20 @@ class PTSEB0Test(unittest.TestCase):
             )
         with self.assertRaisesRegex(B0ContractError, "TARGET_VERSION_MISMATCH"):
             validate_protocol(replace(p, target_version="return.v1"))
+
+    def test_scope_and_outcome_manifest_are_explicit(self):
+        p = protocol()
+        for field, value in (
+            ("market", "OTHER"),
+            ("cadence", "INTRADAY"),
+            ("session_scope", "EXTENDED"),
+            ("forecast_horizon_sessions", 21),
+        ):
+            with self.subTest(field=field):
+                with self.assertRaisesRegex(B0ContractError, "SCOPE_NOT_REGISTERED"):
+                    validate_protocol(replace(p, **{field: value}))
+        with self.assertRaisesRegex(B0ContractError, "DIGEST_REQUIRED"):
+            validate_protocol(replace(p, outcome_manifest_sha256="unknown"))
 
     def test_event_data_is_not_a_dependency(self):
         result = run_b0(protocol(), [FOLD], ROWS)
@@ -182,6 +207,12 @@ class PTSEB0Test(unittest.TestCase):
         ):
             run_b0(protocol(), [FOLD], rows)
 
+    def test_decision_clock_must_match_market_session(self):
+        rows = list(ROWS)
+        rows[0] = replace(rows[0], decision_at="2026-01-03T20:00:00Z")
+        with self.assertRaisesRegex(B0ContractError, "DECISION_SESSION_MISMATCH"):
+            run_b0(protocol(), [FOLD], rows)
+
     def test_label_maturity_cannot_precede_label_end(self):
         rows = list(ROWS)
         rows[0] = replace(
@@ -198,7 +229,29 @@ class PTSEB0Test(unittest.TestCase):
             label_matured_at="2026-02-01T21:00:00Z",
         )
         result = run_b0(protocol(), [FOLD], rows)
+        self.assertEqual(result.fold_results[0].expected_test_rows, 2)
         self.assertEqual(result.fold_results[0].test_rows, 1)
+        self.assertEqual(result.fold_results[0].unevaluable_test_rows, 1)
+
+    def test_missing_test_origin_is_visible_coverage_loss(self):
+        rows = ROWS[:-1]
+        result = run_b0(protocol(), [FOLD], rows)
+        fold = result.fold_results[0]
+        self.assertEqual(fold.expected_test_rows, 2)
+        self.assertEqual(fold.test_rows, 1)
+        self.assertEqual(fold.unevaluable_test_rows, 1)
+
+    def test_more_rows_than_frozen_cohort_is_rejected(self):
+        extra = row(
+            "2026-01-22",
+            "2026-01-29",
+            "2026-01-29T21:00:00Z",
+            0.05,
+            shift=0.5,
+        )
+        widened = replace(FOLD, test_end_session="2026-01-22")
+        with self.assertRaisesRegex(B0ContractError, "COHORT_COUNT_MISMATCH"):
+            run_b0(protocol(), [widened], ROWS + [extra])
 
     def test_no_mature_test_rows_is_non_evaluable(self):
         rows = [
@@ -273,6 +326,8 @@ class PTSEB0Test(unittest.TestCase):
             fit_cutoff_at="2026-01-19T23:00:00Z",
             test_start_session="2026-01-21",
             test_end_session="2026-01-21",
+            cohort_sha256=digest("fixture-fold-2-cohort"),
+            expected_test_rows=1,
         )
         with self.assertRaisesRegex(B0ContractError, "TEST_FOLD_OVERLAP"):
             run_b0(protocol(), [FOLD, second], ROWS)
@@ -289,6 +344,16 @@ class PTSEB0Test(unittest.TestCase):
             left.fold_results[0].p_vector_mse,
         ):
             self.assertTrue(math.isfinite(value))
+
+    def test_result_digest_binds_outcome_artifact_identity(self):
+        left = run_b0(protocol(), [FOLD], ROWS)
+        changed = list(ROWS)
+        changed[-1] = replace(
+            changed[-1],
+            outcome_artifact_sha256=digest("different-outcome-artifact"),
+        )
+        right = run_b0(protocol(), [FOLD], changed)
+        self.assertNotEqual(left.result_digest, right.result_digest)
 
 
 if __name__ == "__main__":
