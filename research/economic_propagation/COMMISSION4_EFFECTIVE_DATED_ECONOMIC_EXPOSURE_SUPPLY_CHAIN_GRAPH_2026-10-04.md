@@ -4,32 +4,44 @@
 **Commission type:** Research / architecture only  
 **Implementation authority:** NONE — this report does not authorize production code, live-pipeline modification, data purchase, portfolio behavior, trading behavior, or new source-decision authority.
 
+
 ## Source and repository receipts
 
-Protected Mastermind source law was re-pinned immediately before publication:
+This deep-research revision was re-pinned immediately before the GitHub update.
 
-- Mastermind: mastermindx-market-intelligence/Mastermind@84df29801d4078724c2b603a136de5aa1532cdfe
-- Skillpack: mastermind.sol_skillpack.v1, version 1.0.1, bootstrap-major 1 compatible
-- Required procedures loaded from that same protected commit:
-  - docs/sol_skills/INDEX.md
-  - docs/sol_skills/ACTIVE_EXECUTION.md
-  - docs/sol_skills/SESSION_RELIABILITY.md
+Current protected source law:
+- Mastermind protected master: mastermindx-market-intelligence/Mastermind@17b9fa1363db6071d338be3373a4fdb11fc0076d
+- Skillpack: mastermind.sol_skillpack.v1 v1.0.1, bootstrap-major 1 compatible
+- INDEX, ACTIVE_EXECUTION, SESSION_RELIABILITY, RECONCILE_STATE and CLOSEOUT were loaded from that same commit.
 
-Research archaeology was performed against:
+Current repository pins:
+- Macro main: mastermindx-market-intelligence/macro@7bbb4496f0c67f75a8942085db7fa0e539b100c5
+- Terminal master: mastermindx-market-intelligence/mastermind-terminal@a7447db07c50c64d81afcb082374340871e88079
+- Commission 4 pre-revision head: e71e5d48ae8a620797cc8aee46ac9f2de3654145
+- Commission 4 pre-revision blob: 297c570f5b7db674cba8d125d1d427ba53b3d788
 
-- Mastermind research pin: 03f7ca04cd5b0a3abf7166221dd77d403c7f95df
-- Macro research pin: 1b4edfb438f7ff7edca5097f0c90243a49207d1e
-- Terminal research pin: fb6f5cc39e592e7f9967835a85617b4fef427b09
+Historical archaeology pins retained for lineage:
+- Mastermind: 03f7ca04cd5b0a3abf7166221dd77d403c7f95df
+- Macro: 1b4edfb438f7ff7edca5097f0c90243a49207d1e
+- Terminal: fb6f5cc39e592e7f9967835a85617b4fef427b09
 
-Before publication, Macro main was rechecked at df5d4acb8703b0a36c25571611c7411553bb4217. The ten commits after the research pin did not modify the graph/K3-D/F04/identity/economic-propagation source surfaces used for this report; the only path match in the bounded compare was an unrelated Options Alpha recovery workstream.
+The original Macro recheck at df5d4acb8703b0a36c25571611c7411553bb4217 is historical, not current. Deep Research reconciled the report through Macro d2904d45fb2bbaf12d3dae4a35eacaaefcc8bad3 and found material post-base Theme Graph changes, including the new shadow ThemeState contract/implementation and graph-history integrity work. A bounded compare from d2904d45 to current main 7bbb4496 found no later Theme Graph, Data OS, identity or economic-propagation code changes.
 
-Resolved repository identities:
+Resolved repositories remain Mastermind, macro and mastermind-terminal. Research Vault remains a Macro subsystem under engine/research_vault.
 
-- Core Mastermind: mastermindx-market-intelligence/Mastermind
-- Macro / Neural Web / Theme Graph / Research Vault: mastermindx-market-intelligence/macro
-- Terminal / charting: mastermindx-market-intelligence/mastermind-terminal
+## Deep-research revision ruling
 
-Research Vault is a Macro subsystem under engine/research_vault rather than a separate canonical repository.
+The central architecture survives, with four P0 compatibility gates now explicit:
+
+1. Graph-1 must not create a second PIT ontology. Data OS already owns the temporal spine and known-at law.
+2. Graph-1 relationship names must be reconciled with existing Theme Graph terms such as SUPPLIES, ENABLES, BOTTLENECK_OF, BENEFITS_FROM and CATALYST_OF.
+3. Data OS owns issuer/security/listing/instrument identity, but product, component, facility, end-market, standard, capacity-resource and policy/program identity ownership must be frozen before automatic Graph-1 admission.
+4. The proposed >=95% role+direction precision gate needs a preregistered minimum sample, relation/source stratification, frozen holdout, adjudicator-disagreement handling and an uncertainty rule; a point estimate alone is insufficient.
+
+Vendor verification strengthens the history-versus-PIT distinction. S&P Business Relationships Analytics currently advertises 600,000+ entities, 1.6 million relationships, history from 2005 and Point In Time = Yes. The core Panjiva Marketplace dataset advertises history from 2007 but Point In Time = No. Exact entitled packages must be tested rather than generalizing a product-family label.
+
+Current-main ThemeState is explicitly shadow-only owner-receipt composition with no independent publication, identity, membership, rights or financial authority. That reinforces a governed Graph-1 projection over owner-native evidence rather than a new all-owning graph.
+
 
 ---
 
@@ -197,6 +209,13 @@ Production materialization remains primarily semantic/membership:
 - source-local theme/subtheme structures.
 
 The graph deliberately refuses to manufacture unsupported company→theme or firm→firm economic relationships.
+
+### Current-main reconciliation after the original publication
+
+Macro main now includes contracts/theme_graph/theme_state.v1.schema.json and engine/theme_graph/theme_state.py. ThemeState is shadow-only, generation-bound composition over qualified owner receipts and explicitly owns no independent graph/PIT/identity/rights selection, store, writer, scheduler or financial authority.
+
+This is relevant but not contradictory: it demonstrates the current estate pattern of owner-native facts plus derived effective_at/known_at state. ThemeState is not the Graph-1 relationship-truth owner. Current Theme Graph still reserves economic edge terms, while Data OS temporal.py remains the canonical PIT vocabulary.
+
 
 ## B2. The economic-share gap is explicitly known
 
@@ -367,6 +386,8 @@ Cohen & Frazzini found historically delayed incorporation of major-customer info
 
 Menzly & Ozbas found cross-predictability across supplier/customer industries, with weaker effects where analyst coverage and institutional ownership were greater.
 
+Chen, Ding & Jiang (2025) report more recent cross-firm return predictability among economically linked firms and argue that analyst expectation stickiness is an important mechanism, especially around earnings announcements. This is mechanism evidence, not permission to assume a durable Mastermind trading alpha.
+
 Mastermind's stricter question should be:
 
 > After controlling for sector, theme, market beta, news, expectations, options, revisions and macro, does point-in-time economic relationship evidence add independent predictive information?
@@ -423,6 +444,8 @@ Examples include S&P/Panjiva, Sayari, Altana, Interos, Everstream and Exiger.
 
 But an operational current-state graph is not automatically appropriate for historical investment research. Historical point-in-time reconstruction, corrections and rights must be separately proven.
 
+Culot et al. (Journal of Supply Chain Management, 2023) document data-fit, classification/accuracy and representativeness problems in commercial supply-chain databases. Coverage counts are discovery inputs, not truth-quality scores; package/version/retrieval receipts and an independent adjudicated gold set are mandatory.
+
 ---
 
 # D. Source landscape
@@ -449,19 +472,28 @@ But an operational current-state graph is not automatically appropriate for hist
 | Everstream | Multi-tier company/facility/material event network | Commercial | Dynamic | Unknown | Dynamic | Commercial | Enterprise-high | Operational disruption overlay |
 | Exiger | Parts/materials/specifications/BOM/supplier graph | Commercial | Dynamic | Unknown | Proprietary | Commercial | Enterprise-high | P2 defense/industrial BOM and alternate-supplier mapping |
 
+
 ## Vendor conclusion
 
 Do **not** select a global vendor yet.
 
 Recommended first commercial evaluation:
-
 1. S&P Business Relationships Analytics;
 2. current FactSet Revere Supply Chain;
 3. LSEG Value Chains only if Mastermind already has a useful entitlement.
 
-Panjiva can be valuable physical evidence, but its Marketplace description marks Point In Time as No; that is not sufficient for historical investment backfilling.
+Deep-research verification strengthens the distinction between history and PIT reconstructability:
+- S&P Business Relationships Analytics advertises 600,000+ entities, 1.6 million relationships, history from 2005 and Point In Time = Yes.
+- S&P Company Relationships advertises Point In Time = Yes with its point-in-time add-on.
+- the core S&P Panjiva Marketplace dataset advertises history from 2007 but Point In Time = No;
+- any date-oriented Panjiva package must bind the exact entitlement/version and pass replay.
 
-Altana/Sayari/Interos/Everstream/Exiger should be evaluated after P0/P1 prove consumer demand for private-company, facility, N-tier or BOM detail.
+Panjiva remains valuable physical evidence, but historical shipments are not automatically historically knowable investment state.
+
+Altana/Sayari/Interos/Everstream/Exiger remain P2 until P0/P1 prove demand for private-company, facility, N-tier or BOM detail.
+
+Every commercial bake-off must preserve retrieval date, exact product/package, version/edition where available, PIT claim, rights/entitlement state, correction/termination semantics, delivery channel and evidence URL/hash. Marketing prose alone is not an admission receipt.
+
 
 ---
 
