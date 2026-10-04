@@ -1,7 +1,7 @@
 {
   "schema": "transmission_chains.v1",
   "asof": "2026-10-02",
-  "built": "2026-10-03 18:01 UTC",
+  "built": "2026-10-04 08:27 UTC",
   "chains": [
     {
       "chain": "credit_spreads_refinancing",
@@ -1518,9 +1518,9 @@
             "en": "Real-rate beneficiary",
             "zh": "实际利率受益"
           },
-          "n": 693,
+          "n": 690,
           "cuts": {},
-          "unevaluable": 1486,
+          "unevaluable": 272,
           "names": [
             "A",
             "AA",
@@ -1576,7 +1576,6 @@
             "APOG",
             "APTV",
             "ARE",
-            "ARI",
             "ARMK",
             "ARR",
             "ARWR",
@@ -2067,7 +2066,6 @@
             "RRR",
             "RS",
             "RVTY",
-            "RWT",
             "RYN",
             "SABR",
             "SAFE",
@@ -2156,7 +2154,6 @@
             "UFPT",
             "UGI",
             "UHS",
-            "UHT",
             "ULTA",
             "UNFI",
             "UNH",
@@ -2462,7 +2459,7 @@
   ],
   "display_only": true,
   "substrate": {
-    "universe": 2946,
+    "universe": 1722,
     "substrate_asof": {
       "min": "2026-05-07",
       "max": "2026-10-03"

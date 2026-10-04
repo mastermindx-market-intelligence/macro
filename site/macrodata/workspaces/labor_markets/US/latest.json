@@ -335,7 +335,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no source component changed value (no-change republication).",
-    "predecessor_generation_id": "labor_markets-US-550c74581d844a9b"
+    "predecessor_generation_id": "labor_markets-US-15079017f3d60627"
   },
   "drivers": {
     "balance_sheet": [
@@ -414,11 +414,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-03T17:06:57Z",
+    "built_at": "2026-10-04T06:25:52Z",
     "calculation_as_of": "2026-10-02",
-    "code_version": "34a3b19628ca449fe8c10d108c1661a4e34272fa",
-    "content_sha256": "15079017f3d60627eaff2f1ca75b1c0e4f6234952975c30135d84ae9a6046171",
-    "generation_id": "labor_markets-US-15079017f3d60627",
+    "code_version": "0d0c1533368aba1cd5f5d1ca3b14df825f540e91",
+    "content_sha256": "4d75e8f03a695c63441da74ee5b541753baabdc2d657e4b1994296eef03f15ba",
+    "generation_id": "labor_markets-US-4d75e8f03a695c63",
     "producer": "engine.market_os.macro_workspaces.labor",
     "rendered_at": null
   },
