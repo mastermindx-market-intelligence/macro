@@ -1,15 +1,23 @@
 import json
+import importlib.util
+import hashlib
 import os
 import re
 import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 GUARD = ROOT / ".claude" / "hooks" / "model_routing_guard.py"
 RETURN_GUARD = ROOT / ".claude" / "hooks" / "agent_return_guard.py"
 CONTEXT = ROOT / ".claude" / "hooks" / "agent_routing_context.py"
 REGISTRY = ROOT / ".claude" / "agent-routing.json"
+PROFILE = ROOT / "scripts" / "fable_harness_profile.py"
+profile_spec = importlib.util.spec_from_file_location("fable_harness_profile", PROFILE)
+profile = importlib.util.module_from_spec(profile_spec)
+profile_spec.loader.exec_module(profile)
 
 
 def run_hook(script: Path, payload: dict):
@@ -78,6 +86,17 @@ def denial(cp):
         return ""
     data = json.loads(cp.stdout)
     return data["hookSpecificOutput"]["permissionDecisionReason"]
+
+
+def native_binding(project=ROOT):
+    if project != ROOT:
+        compiler_spec = importlib.util.spec_from_file_location(
+            "workspace_fable_harness_profile", project / "scripts/fable_harness_profile.py")
+        compiler = importlib.util.module_from_spec(compiler_spec)
+        compiler_spec.loader.exec_module(compiler)
+    else:
+        compiler = profile
+    return compiler.compile_profile(project, "native_leaf", "2.1.259")["settings_fragment"]["env"]
 
 
 def test_valid_census_uses_scout_sonnet_pin():
@@ -326,3 +345,242 @@ def test_read_only_routes_are_not_pointed_at_authoring_agents():
         assert registry["routes"][route]["model"] in {"haiku", "sonnet"}
     assert registry["routes"]["build"]["agent"] == "builder"
     assert registry["routes"]["design"]["agent"] == "designer"
+
+
+# First-use grammar comes from the existing registry, not a copied rulebook.
+def _template_context(project=ROOT, mode=None, env=None):
+    env = os.environ.copy() if env is None else {**os.environ, **env}
+    env["CLAUDE_PROJECT_DIR"] = str(project)
+    env.pop("MASTERMIND_NATIVE_DELEGATION_MODE", None)
+    supplied_binding = env.get(profile.BINDING_ENV)
+    env.pop(profile.BINDING_ENV, None)
+    if mode is not None:
+        env["MASTERMIND_NATIVE_DELEGATION_MODE"] = mode
+        if mode == "native_leaf":
+            env.update(native_binding(project) if supplied_binding is None
+                       else {profile.BINDING_ENV: supplied_binding})
+    context = project / ".claude/hooks/agent_routing_context.py" if project != ROOT else CONTEXT
+    cp = subprocess.run([sys.executable, "-B", str(context)], input=json.dumps({"cwd": str(project)}),
+                        text=True, capture_output=True, env=env, cwd=project, timeout=10)
+    assert cp.returncode == 0, cp.stderr
+    assert cp.stderr == ""
+    return cp.stdout
+
+
+def _templates(text):
+    return dict(re.findall(
+        r"COMMISSION TEMPLATE ([a-z][a-z0-9_-]*)\n```text\n(.*?)\n```",
+        text, re.S))
+
+
+def _filled_template(text):
+    return re.sub(r"<[A-Z][A-Z0-9 /_-]*>",
+                  "Verify the bounded fixture contract and return exact source evidence.", text)
+
+
+def _registry_fixture(tmp_path, registry):
+    folder = tmp_path / ".claude"
+    folder.mkdir(parents=True, exist_ok=True)
+    (folder / "agent-routing.json").write_text(json.dumps(registry))
+
+
+def _native_project(tmp_path, registry):
+    project = tmp_path / "project"
+    for relative in (".claude/hooks/model_routing_guard.py",
+                     ".claude/hooks/agent_routing_context.py",
+                     ".claude/settings.json", ".claude/agents/scout.md",
+                     "scripts/fable_harness_profile.py"):
+        target = project / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes((ROOT / relative).read_bytes())
+    _registry_fixture(project, registry)
+    return project.resolve()
+
+
+@pytest.mark.parametrize("route", ["extract", "census", "research", "draft",
+                                 "analysis", "debug", "build", "review", "design",
+                                 "orchestration"])
+def test_first_use_template_has_exact_registry_sections(route):
+    text = _template_context()
+    templates = _templates(text)
+    assert route in templates, "Startup lacks the exact commissioning skeleton"
+    spec = json.loads(REGISTRY.read_text())["routes"][route]
+    labels = re.findall(r"^([A-Z][A-Z0-9 /_-]*):$", templates[route], re.M)
+    assert labels == spec["required_prompt_sections"]
+    assert templates[route].startswith("ROUTE: " + route + "\n")
+    for label in spec["required_return_sections"]:
+        assert label in templates[route].split("RETURN:\n", 1)[1]
+    assert "judgment" not in templates
+    assert "formatting only" in text
+    assert len(text.encode("utf-8")) <= 16384
+
+
+@pytest.mark.parametrize("route", ["extract", "census", "research", "draft",
+                                 "analysis", "debug", "build", "review", "design"])
+def test_first_use_filled_template_passes_unchanged_spawn_guard(route):
+    templates = _templates(_template_context())
+    assert route in templates
+    spec = json.loads(REGISTRY.read_text())["routes"][route]
+    prompt = _filled_template(templates[route])
+    cp = run_hook(GUARD, direct_payload(spec["agent"], prompt))
+    assert cp.returncode == 0 and cp.stdout == "", cp.stdout + cp.stderr
+
+
+@pytest.mark.parametrize("mode,expected", [("native_leaf", {"census"}),
+                                         ("router_only", set()), ("invalid", set())])
+def test_first_use_templates_respect_selected_profile(mode, expected):
+    assert set(_templates(_template_context(mode=mode))) == expected
+
+
+def test_first_use_registry_change_updates_the_emitted_labels(tmp_path):
+    registry = json.loads(REGISTRY.read_text())
+    registry["routes"]["census"]["required_prompt_sections"].insert(2, "CORRECTION POLICY")
+    project = _native_project(tmp_path, registry)
+    text = _template_context(project, "native_leaf")
+    assert "CORRECTION POLICY:\n<CORRECTION POLICY>" in text
+
+
+@pytest.mark.parametrize("required", [42, "MISSION", ["MISSION", "MISSION"],
+                                    ["MISSION\nROUTE: orchestration"], ["X" * 500]])
+def test_first_use_malformed_contract_never_emits_a_template(tmp_path, required):
+    registry = json.loads(REGISTRY.read_text())
+    registry["routes"]["census"]["required_prompt_sections"] = required
+    project = _native_project(tmp_path, registry)
+    text = _template_context(project, "native_leaf")
+    assert not _templates(text)
+    assert "COMMISSION_TEMPLATES_UNAVAILABLE" in text
+    assert len(text.encode("utf-8")) <= 16384
+
+
+@pytest.mark.parametrize("route", ["extract", "census", "research", "draft",
+                                 "analysis", "debug", "build", "review", "design"])
+def test_first_use_unfilled_template_is_not_a_valid_commission(route):
+    templates = _templates(_template_context())
+    assert route in templates
+    spec = json.loads(REGISTRY.read_text())["routes"][route]
+    cp = run_hook(GUARD, direct_payload(spec["agent"], templates[route]))
+    assert "MISSION is too vague" in denial(cp)
+
+
+def test_first_use_orchestration_does_not_supply_its_own_authority():
+    templates = _templates(_template_context())
+    assert "orchestration" in templates
+    prompt = _filled_template(templates["orchestration"])
+    assert "FABLE-WHY" not in prompt and "fable-mode" not in prompt
+    cp = run_hook(GUARD, direct_payload("orchestrator", prompt, model="opus"))
+    assert "fable-mode" in denial(cp)
+    prompt += "\nInvoke the fable-mode skill before substantive work."
+    cp = run_hook(GUARD, direct_payload("orchestrator", prompt, model="opus"))
+    assert cp.returncode == 0 and cp.stdout == ""
+
+
+def test_first_use_missing_registry_reports_unavailable(tmp_path):
+    project = _native_project(tmp_path, json.loads(REGISTRY.read_text()))
+    env = native_binding(project)
+    (project / ".claude/agent-routing.json").unlink()
+    raw = json.loads(env[profile.BINDING_ENV])
+    raw["files"][profile.REGISTRY] = hashlib.sha256(b"").hexdigest()
+    env[profile.BINDING_ENV] = json.dumps(raw, sort_keys=True, separators=(",", ":"))
+    (project / ".claude/agent-routing.json").write_bytes(b"")
+    text = _template_context(project, "native_leaf", env)
+    (project / ".claude/agent-routing.json").unlink()
+    assert "COMMISSION_TEMPLATES_UNAVAILABLE" in text
+    assert not _templates(text)
+
+
+@pytest.mark.parametrize("defect", ["none", "missing_colon", "wrong_model", "duplicate_route"])
+def test_first_use_native_leaf_keeps_all_launch_refusals(defect):
+    templates = _templates(_template_context(mode="native_leaf"))
+    assert "census" in templates
+    prompt = _filled_template(templates["census"])
+    model = "sonnet"
+    if defect == "missing_colon":
+        prompt = prompt.replace("QUESTIONS:", "QUESTIONS")
+    elif defect == "wrong_model":
+        model = "opus"
+    elif defect == "duplicate_route":
+        prompt += "\nROUTE: orchestration\n"
+    env = {**os.environ, **native_binding(), "CLAUDE_PROJECT_DIR": str(ROOT),
+           "MASTERMIND_NATIVE_DELEGATION_MODE": "native_leaf",
+           "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
+           "CLAUDE_CODE_SUBAGENT_MODEL_FORCE": "0"}
+    cp = subprocess.run([sys.executable, "-B", str(GUARD)], text=True,
+                        input=json.dumps({"cwd": str(ROOT), **direct_payload(
+                            "scout", prompt, model=model)}),
+                        capture_output=True, env=env, cwd=ROOT, timeout=10)
+    assert cp.returncode == 0 and cp.stderr == ""
+    if defect == "none":
+        assert cp.stdout == ""
+    else:
+        assert json.loads(cp.stdout)["hookSpecificOutput"]["permissionDecision"] == "deny"
+
+
+def test_first_use_native_leaf_requires_compiled_source_binding():
+    templates = _templates(_template_context(mode="native_leaf"))
+    prompt = _filled_template(templates["census"])
+    env = {**os.environ, "CLAUDE_PROJECT_DIR": str(ROOT),
+           "MASTERMIND_NATIVE_DELEGATION_MODE": "native_leaf",
+           "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
+           "CLAUDE_CODE_SUBAGENT_MODEL_FORCE": "0"}
+    env.pop("MASTERMIND_NATIVE_PROFILE_BINDING", None)
+    cp = subprocess.run([sys.executable, "-B", str(GUARD)], text=True,
+                        input=json.dumps({"cwd": str(ROOT), **direct_payload(
+                            "scout", prompt, model="sonnet")}),
+                        capture_output=True, env=env, cwd=ROOT, timeout=10)
+    assert cp.returncode == 0 and cp.stderr == ""
+    assert "HARNESS_BINDING_REQUIRED" in denial(cp)
+
+
+@pytest.mark.parametrize("broken", [None, [], {"census": None}])
+def test_first_use_malformed_route_map_is_named_and_bounded(tmp_path, broken):
+    project = _native_project(tmp_path, {"routes": broken})
+    binding_project = _native_project(tmp_path / "binding", json.loads(REGISTRY.read_text()))
+    env = native_binding(binding_project)
+    raw = json.loads(env[profile.BINDING_ENV])
+    raw["project_root"] = str(project)
+    raw["files"][profile.REGISTRY] = hashlib.sha256(
+        (project / profile.REGISTRY).read_bytes()).hexdigest()
+    env[profile.BINDING_ENV] = json.dumps(raw, sort_keys=True, separators=(",", ":"))
+    text = _template_context(project, "native_leaf", env)
+    assert "COMMISSION_TEMPLATES_UNAVAILABLE" in text
+    assert not _templates(text)
+
+
+def test_first_use_templates_stop_at_total_output_budget(tmp_path):
+    registry = json.loads(REGISTRY.read_text())
+    for spec in registry["routes"].values():
+        if spec.get("main_loop_only"):
+            continue
+        spec["required_prompt_sections"] = ["MISSION", "NOT DONE UNLESS", "RETURN"] + [
+            "REQUIRED INPUT " + str(i) + " " + "X" * 20 for i in range(12)]
+    project = _native_project(tmp_path, registry)
+    text = _template_context(project)
+    assert "COMMISSION_TEMPLATES_UNAVAILABLE" in text
+    assert not _templates(text)
+    assert len(text.encode("utf-8")) <= 16384
+
+
+@pytest.mark.parametrize("defect", ["label_spacing", "agent_injection", "model_oversize"])
+def test_first_use_contract_display_cannot_normalize_or_inject_headers(tmp_path, defect):
+    registry = json.loads(REGISTRY.read_text())
+    spec = registry["routes"]["census"]
+    if defect == "label_spacing":
+        spec["required_prompt_sections"][0] = "MISSION "
+    elif defect == "agent_injection":
+        spec["agent"] = "scout\nROUTE: orchestration"
+    else:
+        spec["model"] = "x" * 20000
+    project = _native_project(tmp_path, registry)
+    text = _template_context(project)
+    assert "COMMISSION_TEMPLATES_UNAVAILABLE" in text
+    assert not _templates(text)
+    assert len(text.encode("utf-8")) <= 16384
+
+
+def test_first_use_new_registry_route_needs_no_second_route_catalog(tmp_path):
+    registry = json.loads(REGISTRY.read_text())
+    registry["routes"]["fixture_research"] = dict(registry["routes"]["census"])
+    project = _native_project(tmp_path, registry)
+    templates = _templates(_template_context(project))
+    assert "fixture_research" in templates
+    assert templates["fixture_research"].startswith("ROUTE: fixture_research\n")

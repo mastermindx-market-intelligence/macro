@@ -1,0 +1,216 @@
+{
+  "after": {
+    "cases": [
+      {
+        "case": "leaf_result",
+        "compiled_profile_sha256": "58c533aa5a60c09800518388e0b829a9070cdee59cc8ad8c79a4a9ea9274c007",
+        "denial_codes": [],
+        "leaf_read_value": true,
+        "leaf_requests": 2,
+        "leaf_tools": [
+          "Glob",
+          "Grep",
+          "Read"
+        ],
+        "native_subagent_stats": {
+          "completed": 1,
+          "failed": 0,
+          "max_depth": 1,
+          "spawned": 1,
+          "spawned_by_subagents": 0
+        },
+        "observed_request_models": [
+          "claude-sonnet-5"
+        ],
+        "parent_consumed_result": true,
+        "parent_error_results": 0,
+        "parent_tool_results": 1,
+        "passed": true,
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "timed_out": false
+      },
+      {
+        "case": "ten_fable",
+        "compiled_profile_sha256": "58c533aa5a60c09800518388e0b829a9070cdee59cc8ad8c79a4a9ea9274c007",
+        "denial_codes": [
+          "NATIVE_LEAF_ONLY"
+        ],
+        "leaf_read_value": false,
+        "leaf_requests": 0,
+        "leaf_tools": [],
+        "native_subagent_stats": {
+          "completed": 0,
+          "failed": 0,
+          "max_depth": 0,
+          "spawned": 0,
+          "spawned_by_subagents": 0
+        },
+        "observed_request_models": [
+          "claude-sonnet-5"
+        ],
+        "parent_consumed_result": false,
+        "parent_error_results": 10,
+        "parent_tool_results": 10,
+        "passed": true,
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "timed_out": false
+      },
+      {
+        "case": "router_only",
+        "compiled_profile_sha256": "f223c75b9536dd63bf87c23bf5477ebcc8a7cc7f0915cc2547a8b3eddb2ee69e",
+        "denial_codes": [
+          "No such tool available"
+        ],
+        "leaf_read_value": false,
+        "leaf_requests": 0,
+        "leaf_tools": [],
+        "native_subagent_stats": {
+          "completed": 0,
+          "failed": 0,
+          "max_depth": 0,
+          "spawned": 0,
+          "spawned_by_subagents": 0
+        },
+        "observed_request_models": [
+          "claude-sonnet-5"
+        ],
+        "parent_consumed_result": false,
+        "parent_error_results": 1,
+        "parent_tool_results": 1,
+        "passed": true,
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "timed_out": false
+      },
+      {
+        "case": "premium_override",
+        "compiled_profile_sha256": "58c533aa5a60c09800518388e0b829a9070cdee59cc8ad8c79a4a9ea9274c007",
+        "denial_codes": [
+          "NATIVE_MODEL_PIN_REQUIRED"
+        ],
+        "leaf_read_value": false,
+        "leaf_requests": 0,
+        "leaf_tools": [],
+        "native_subagent_stats": {
+          "completed": 0,
+          "failed": 0,
+          "max_depth": 0,
+          "spawned": 0,
+          "spawned_by_subagents": 0
+        },
+        "observed_request_models": [
+          "claude-sonnet-5"
+        ],
+        "parent_consumed_result": false,
+        "parent_error_results": 1,
+        "parent_tool_results": 1,
+        "passed": true,
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "timed_out": false
+      },
+      {
+        "case": "incomplete_commission",
+        "compiled_profile_sha256": "58c533aa5a60c09800518388e0b829a9070cdee59cc8ad8c79a4a9ea9274c007",
+        "denial_codes": [
+          "Blocked ROUTE census"
+        ],
+        "leaf_read_value": false,
+        "leaf_requests": 0,
+        "leaf_tools": [],
+        "native_subagent_stats": {
+          "completed": 0,
+          "failed": 0,
+          "max_depth": 0,
+          "spawned": 0,
+          "spawned_by_subagents": 0
+        },
+        "observed_request_models": [
+          "claude-sonnet-5"
+        ],
+        "parent_consumed_result": false,
+        "parent_error_results": 1,
+        "parent_tool_results": 1,
+        "passed": true,
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "timed_out": false
+      },
+      {
+        "case": "leaf_turn_limit",
+        "compiled_profile_sha256": "58c533aa5a60c09800518388e0b829a9070cdee59cc8ad8c79a4a9ea9274c007",
+        "denial_codes": [],
+        "leaf_read_value": false,
+        "leaf_requests": 14,
+        "leaf_tools": [
+          "Glob",
+          "Grep",
+          "Read"
+        ],
+        "native_subagent_stats": {
+          "completed": 1,
+          "failed": 0,
+          "max_depth": 1,
+          "spawned": 1,
+          "spawned_by_subagents": 0
+        },
+        "observed_request_models": [
+          "claude-sonnet-5"
+        ],
+        "parent_consumed_result": false,
+        "parent_error_results": 0,
+        "parent_tool_results": 1,
+        "passed": true,
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "timed_out": false
+      }
+    ],
+    "compiler_sha256": "13db4fedf9bb37848f752c8539b1d268d0c71d540190a41d411139f91d33c359",
+    "receipt_file": "native-exact-after-06.json",
+    "receipt_sha256": "6bef1472de9d4d67fc38b950c3c129d2f57d93d6a86a8004b0c940ca2aeec7c8"
+  },
+  "before": {
+    "compiler_sha256": "4624eca32fb9b4fd3139f8148c3ced50e70af42ee28bf0c8d1bb94fb4909135e",
+    "interpretation": "Missing inline hooks allowed an unqualified request to start a Sonnet helper rather than refuse it. This did not demonstrate Opus billing.",
+    "observed_leaf_request_models": [
+      "claude-sonnet-5"
+    ],
+    "passed": false,
+    "receipt_file": "native-exact-before-06.json",
+    "receipt_sha256": "e3c2fc679d0e97a92b52347d457a6565251c6343f030df0ccee444170f247bcd",
+    "requested_override": "opus",
+    "spawned": 1
+  },
+  "binary_sha256": "2b4f7aafdaa65bcc2335f56a4b276317837203f2c5587b1f2a17ca78ad14e36f",
+  "boundaries": {
+    "ambient_settings_sources": false,
+    "cli_usage_is_synthetic": true,
+    "executive_jobs_created": 0,
+    "full_skill_fidelity": false,
+    "production_adoption": false,
+    "real_model_inference": false,
+    "scripted_loopback_provider": true,
+    "served_provider_model_proven": false,
+    "shared_tree_budget": false,
+    "test_added_hooks": false,
+    "ultracode_cognition_tested": false
+  },
+  "cli_version": "2.1.239 (Claude Code)",
+  "driver_sha256": "99eb93036779022c9d709b63373461edb686b04580b370f2645a884dea8533bf",
+  "excluded_preliminary_runs": [
+    "native-exact-before-03.json and native-exact-before-04.json consumed a tool-free prefetch as the task; neither is source-behavior proof. The final driver distinguishes such requests."
+  ],
+  "operation": "fable-native-harness-20260913-sol-001",
+  "schema": "mastermind.fable_native_cli_qualification/v1",
+  "source_predecessor": "0c95fa51c4bd0b79be28e30bf7a8fa263b2ae622",
+  "source_sha256": {
+    ".claude/agent-routing.json": "6d6bd260710c2afee87223e13669d0fc5cdac6c7721d98670584ed71fdb91f37",
+    ".claude/agents/scout.md": "bbdc4882de185cae9316766bca79e71685332a51f89f94b0b8fd65af7c692c72",
+    ".claude/hooks/agent_routing_context.py": "64725ad135eca740cb3a537bf6fb142bcb3e72164e68d66f63970eb9082db8cd",
+    ".claude/hooks/model_routing_guard.py": "95d947ebfb98d78e1cd0968b2c008179586f8ce64ab82c911b5e6f5f7b3e1e22",
+    ".claude/settings.json": "e91a1a7878092cf63b2ded54366e4ef2977432f3c837665fb380f2f667be0b8c"
+  }
+}
