@@ -9092,10 +9092,16 @@ jobs:
     paths:
       - "config/regime_outlook_mapping_v2.json"
       - "engine/rates_command_outlook.py"
+      # The composer (slice E1c) reads the mapping and the evidence rows and
+      # assembles the projection; its suite is offline and lives with the
+      # mapping/readings suites it extends (contract-delta: a new suite must be
+      # named by the job that owns its subject).
+      - "engine/rates_command_outlook_compose.py"
       - "research/macro_regime_intelligence/STATE_PATH_AND_SCIENCE_CONTRACT_2026-10-03.md"
       - "tests/fixtures/regime_outlook/readings_golden_v2.json"
       - "tests/test_rates_command_outlook.py"
       - "tests/test_rates_command_outlook_readings.py"
+      - "tests/test_rates_command_outlook_compose.py"
       - "config.yml"
       - "config/regime_outlook_rule_pins.json"
       - "engine/__init__.py"
@@ -9117,8 +9123,8 @@ jobs:
           python-version: "3.12"
       - name: install test dependencies
         run: pip install pytest pyyaml
-      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings, producer rule pins
-        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py tests/test_rates_command_outlook_rule_pins.py -q
+      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings, producer rule pins, composer
+        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py tests/test_rates_command_outlook_rule_pins.py tests/test_rates_command_outlook_compose.py -q
 
   ric-w2-surface:
     if: ${{ false }}
