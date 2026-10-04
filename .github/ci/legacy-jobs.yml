@@ -1231,6 +1231,7 @@ jobs:
       # Temporal Grain W1A closure
       - "engine/trial_ledger.py"
       - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/contracts.py"
       - "engine/entry_radar/indicator_core.py"
       - "engine/stock_technicals.py"
       - "lib/dataos/__init__.py"
