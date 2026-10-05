@@ -288,8 +288,9 @@ def test_template_withholds_unqualified_uncertainty_and_uses_rule_state_copy():
     assert "Existing carry-unwind scenario rule is inactive." in visible
     assert "confirmed" not in visible.lower()
     assert "95% Wilson" not in visible
-    assert "n_eff" not in visible
+    assert "75.3" not in visible
     assert "Dependence-adjusted interval withheld" in visible
+    assert "n_eff/Wilson shortcut" in visible
     assert "Raw sample" in visible and "226" in visible
     assert "Horizon" in visible and "10 sessions" in visible
 
@@ -439,7 +440,7 @@ def test_inconsistent_canonical_fired_leg_count_withholds_scenario_state():
     assert got["active"] is None
 
 
-def test_impossible_historical_receipt_geometry_is_withheld():
+def test_invalid_legacy_uncertainty_geometry_does_not_invalidate_descriptive_frequency():
     regime = _regime()
     prob = regime["scenarios"][0]["prob"]
     prob["p_cond"] = 0.90
@@ -448,8 +449,10 @@ def test_impossible_historical_receipt_geometry_is_withheld():
     prob["n_raw"] = 10
     prob["n_eff"] = 12.0
     got = _mod().project_carry_funding(_pairs(), regime, _funding())["carry_unwind"]["historical_receipt"]
-    assert got["status"] == "unavailable"
-    assert got["headline_frequency"] is None
+    assert got["status"] == "ok"
+    assert got["headline_frequency"] == 0.90
+    assert "wilson" not in got and "n_eff" not in got
+    assert got["uncertainty"]["status"] == "withheld_unqualified"
 
 
 def test_existing_code_job_owns_carry_suite_and_published_artifact_producers():
