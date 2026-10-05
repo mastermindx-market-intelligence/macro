@@ -17,6 +17,7 @@ Read in this order:
 4. [03_WORK_PACKAGES_AND_DAG.md](03_WORK_PACKAGES_AND_DAG.md) — dependency graph, collision-safe work packages, delegation envelopes and release sequence.
 5. [04_ACCEPTANCE_SECURITY_AND_EVAL.md](04_ACCEPTANCE_SECURITY_AND_EVAL.md) — exact DONE_WHEN, security/rights gates, retrieval benchmark, denial tests and production canaries.
 6. [05_SOURCE_AND_COLLISION_MAP.md](05_SOURCE_AND_COLLISION_MAP.md) — exact source anchors, stale PR salvage map, paths that may not be independently rewritten, and DO_NOT_REDO.\n7. [06_HARDENING_ADDENDUM_AND_FABLE_START_GATE.md](06_HARDENING_ADDENDUM_AND_FABLE_START_GATE.md) — controlling clarification for private-R2 semantics, body-health census, corpus repair shapes, collision ruling and Fable first-wave gate.\n8. [07_FABLE_ORCHESTRATOR_BRIEF_QA.md](07_FABLE_ORCHESTRATOR_BRIEF_QA.md) — non-authoritative Mastermind Craft authoring QA receipt.
+9. [08_EXECUTION_CHECKPOINT_2026-10-05.md](08_EXECUTION_CHECKPOINT_2026-10-05.md) — verified execution delta: F1/F2 merged, F4 producer diagnosis/repair frontier, active F5 exact-replay contract, and current next actions.
 9. [08_F4_PRODUCER_OUTAGE_DIAGNOSIS.md](08_F4_PRODUCER_OUTAGE_DIAGNOSIS.md) — bounded producer-outage diagnosis, current trigger-owner ruling, release-lineage prerequisite, and exact human re-auth proof gate.
 
 Durable organizational continuation lives in:
@@ -133,3 +134,21 @@ This packet is fulfilled only when an authorized real ChatGPT session and a real
 10. survive source correction/revision with stale derivatives detectably invalidated.
 
 MCP server startup, merged code, green unit tests, app creation, plugin installation and one successful tool call are all **intermediate evidence**, not completion.
+
+
+---
+
+## Current execution status
+
+The packet began as an orchestration plan, but execution has now advanced.
+
+- **F1 private R2 source isolation:** merged via #8442.
+- **F2 body-health census + read-only operator lane:** merged via #8443.
+- **RIO claim-array identity correctness:** merged via #8446.
+- **MarketDesk release-lineage prerequisite:** merged via #8452.
+- **F4 producer auth-health recurrence repair:** active in #8472; live Mac13,1 cause/re-auth still a host/human gate.
+- **F5 exact PDF/text/segment replay contract:** active in #8453; dedicated Research Vault contract test now executes the hardened suite.
+- **Live F2 census receipt:** still owed; this GitHub connector cannot dispatch the manual workflow.
+- **F3 corpus repair:** must remain measurement-driven after that live receipt.
+
+A fresh Fable principal should start from the execution checkpoint, not redo F1/F2.
