@@ -1516,3 +1516,55 @@ def test_r25_forex_incomplete_core_read_is_partial_not_ready():
     assert any(value is None for value in out["current_read"].values())
     assert out["data_gaps"] == []
     assert out["status"] == "partial"
+
+
+# R25 DQ-20261005-01: real producer-to-projection mapping, synthetic inputs only.
+_R25_NATIVE_SCENARIO_CASES = [
+    ("mapping_only", {"scenarios": {"carry_unwind": {"active": True, "intensity": 70}}}, ["carry_unwind"], []),
+    ("list_only", {"scenarios": [{"key": "carry_unwind", "active": True, "intensity": 70}]}, ["carry_unwind"], []),
+    ("conflicting_alias", {"active": ["stale_alias"], "scenarios": {"carry_unwind": {"active": True, "intensity": 70}}}, ["carry_unwind"], []),
+    ("canonical_empty", {"active": ["stale_alias"], "scenarios": {"carry_unwind": {"active": False, "intensity": 20}}}, [], []),
+    ("legacy_only", {"active": ["legacy_name"]}, ["legacy_name"], []),
+    ("matching_alias", {"active": ["carry_unwind"], "scenarios": {"carry_unwind": {"active": True, "intensity": 70}}}, ["carry_unwind"], []),
+    ("empty", {}, [], []),
+    ("building_only", {"scenarios": {"carry_unwind": {"active": False, "intensity": 50}}}, [], ["carry_unwind"]),
+]
+
+
+@pytest.mark.parametrize("name,radar,expected,building", _R25_NATIVE_SCENARIO_CASES,
+                         ids=[case[0] for case in _R25_NATIVE_SCENARIO_CASES])
+def test_r25_native_producer_scenario_mapping(tmp_path, monkeypatch, name, radar, expected, building):
+    import socket
+    from engine.neuralweb.world_state import _compose_fx_dollar
+    from scripts.build_macro_context import _build_decision_workspaces
+
+    def forbidden_network(*args, **kwargs):
+        raise AssertionError("R25 native mapping regression permits no network I/O")
+
+    monkeypatch.setattr(socket.socket, "connect", forbidden_network)
+    monkeypatch.setattr(socket, "create_connection", forbidden_network)
+    source = tmp_path / "data" / "forex" / "latest.json"
+    source.parent.mkdir(parents=True)
+    source.write_text(json.dumps({"asof": "2026-10-02", "regime": "fixture", "risk": "fixture",
+                                  "regime_radar": radar}), encoding="utf-8")
+    lobe = _compose_fx_dollar(root=tmp_path)
+    assert isinstance(lobe.get("regime_radar"), dict), "Producer failed before the mapping under test"
+    assert lobe["regime_radar"]["active_scenarios"] == expected
+    assert lobe["regime_radar"]["building_scenarios"] == building
+    result = _build_decision_workspaces(_r25_snapshot(), {"fx_dollar": lobe}, {}, [], "2026-10-02")
+    forex = result["forex"]
+    assert forex["display_only"] is True
+    assert forex["probability_policy"] == "withheld"
+    assert forex["funding_evidence"]["direct_usd_cross_currency_basis"] is None
+    assert forex["mechanism_evidence"]["building_scenarios"] == building
+    assert forex["mechanism_evidence"]["active_scenarios"] == expected
+    assert {"score", "probability", "p_cond", "intensity"}.isdisjoint(set(_walk_keys(result)))
+
+
+def test_r25_native_precanonical_lobe_compatibility():
+    from scripts.build_macro_context import _build_decision_workspaces
+
+    lobe = {"asof": "2026-10-02", "regime": "fixture",
+            "regime_radar": {"active": ["legacy_name"]}}
+    result = _build_decision_workspaces(_r25_snapshot(), {"fx_dollar": lobe}, {}, [], "2026-10-02")
+    assert result["forex"]["mechanism_evidence"]["active_scenarios"] == ["legacy_name"]

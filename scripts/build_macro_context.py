@@ -1565,7 +1565,7 @@ def _build_decision_workspaces(
             "real_rate_regime": desk.get("real_rate_regime"),
             "fed_path_lean": desk.get("fed_path_lean"),
             "liquidity_dir": desk.get("liquidity_dir"),
-            "active_scenarios": list(radar.get("active") or []),
+            "active_scenarios": list(radar.get("active_scenarios", radar.get("active")) or []),
             "building_scenarios": list(radar.get("building_scenarios") or []),
         },
         "transmission": {
