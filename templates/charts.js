@@ -80,13 +80,21 @@
                (k.indexOf('range') > -1 || k.indexOf('autorange') > -1);
       });
       if (!touchedX) return;
-      var upd = visibleYRanges(gd);
-      if (!upd) return;
-      gd._tmLock = true;
-      window.Plotly.relayout(gd, upd).then(
-        function () { gd._tmLock = false; },
-        function () { gd._tmLock = false; }
-      );
+      // Pinch/drag can emit several relayout events in one frame. The old path rescanned
+      // every point in every trace for each event; coalesce to one scan using the chart's
+      // latest layout after Plotly has applied the burst.
+      if (gd._tmRescaleRaf) return;
+      gd._tmRescaleRaf = requestAnimationFrame(function () {
+        gd._tmRescaleRaf = 0;
+        if (gd._tmLock || !gd.isConnected) return;
+        var upd = visibleYRanges(gd);
+        if (!upd) return;
+        gd._tmLock = true;
+        window.Plotly.relayout(gd, upd).then(
+          function () { gd._tmLock = false; },
+          function () { gd._tmLock = false; }
+        );
+      });
     });
   }
 

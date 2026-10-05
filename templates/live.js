@@ -591,7 +591,18 @@
       startTape();
     }
     document.addEventListener("visibilitychange", function () {
-      if (!document.hidden && !_paused) { tick(); if (!_wsSock) { _wsClosed = false; startTape(); } }
+      if (_paused) return;
+      if (document.hidden) {
+        // Browsers throttle hidden timers but still wake them. Stop quote polling and the
+        // socket entirely so background dashboard tabs consume no recurring network/CPU.
+        if (_timer) { clearInterval(_timer); _timer = null; }
+        stopTape();
+        return;
+      }
+      _wsClosed = false;
+      tick();
+      _startTimer();
+      startTape();
     });
   }
   if (document.readyState !== "loading") start();
