@@ -2888,6 +2888,12 @@ jobs:
       # this one glob was the only gap the import-closure contract
       # (test_curated_exclusive_scopes_cover_their_own_import_closure) found.
       - "site/basketdata/fear_greed.json"
+      # engine/neuralweb/regime_context.py SOURCE_PATHS (spread into
+      # engine/neuralweb/market_packet._ROOT_SOURCES) name these two
+      # site/basketdata files — the same market_packet closure edge as
+      # fear_greed.json above (PR #8257).
+      - "site/basketdata/breadth_split.json"
+      - "site/basketdata/vol_weather.json"
       - "site/canadabasketdata/**"
       - "site/chinabasketdata/**"
       - "site/coming-soon.html"
@@ -10373,6 +10379,12 @@ jobs:
       # requires the declared scope to cover these site reads too, or the job
       # silently stops running for edits to them.
       - "site/basketdata/fear_greed.json"
+      # engine/neuralweb/regime_context.py SOURCE_PATHS (spread into
+      # engine/neuralweb/market_packet._ROOT_SOURCES) name these two
+      # site/basketdata files — the same market_packet closure edge as
+      # fear_greed.json above (PR #8257).
+      - "site/basketdata/breadth_split.json"
+      - "site/basketdata/vol_weather.json"
       - "site/canadabasketdata/**"
       - "site/chinabasketdata/**"
       - "site/coming-soon.html"
@@ -12844,6 +12856,12 @@ jobs:
       # (test_curated_exclusive_scopes_cover_their_own_import_closure)
       # requires the declared scope to cover these site reads too.
       - "site/basketdata/fear_greed.json"
+      # engine/neuralweb/regime_context.py SOURCE_PATHS (spread into
+      # engine/neuralweb/market_packet._ROOT_SOURCES) name these two
+      # site/basketdata files — the same market_packet closure edge as
+      # fear_greed.json above (PR #8257).
+      - "site/basketdata/breadth_split.json"
+      - "site/basketdata/vol_weather.json"
       - "site/canadabasketdata/**"
       - "site/chinabasketdata/**"
       - "site/coming-soon.html"
@@ -16632,6 +16650,12 @@ jobs:
       # (test_curated_exclusive_scopes_cover_their_own_import_closure)
       # requires the declared scope to cover these site reads too.
       - "site/basketdata/fear_greed.json"
+      # engine/neuralweb/regime_context.py SOURCE_PATHS (spread into
+      # engine/neuralweb/market_packet._ROOT_SOURCES) name these two
+      # site/basketdata files — the same market_packet closure edge as
+      # fear_greed.json above (PR #8257).
+      - "site/basketdata/breadth_split.json"
+      - "site/basketdata/vol_weather.json"
       - "site/canadabasketdata/**"
       - "site/chinabasketdata/**"
       - "site/coming-soon.html"
