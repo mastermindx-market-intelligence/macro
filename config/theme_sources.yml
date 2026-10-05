@@ -16,7 +16,7 @@
 # this registry governs GMI emissions only — it does not retro-gate owner products.
 
 version: 1
-updated: "2026-08-14"
+updated: "2026-09-24"
 
 families:
   mastermind_curated:
@@ -39,6 +39,97 @@ families:
     source_route: "同花顺 concept boards via collectors/china_ths_concepts.py (complete-or-fail receipts, weekly cadence from 2026-08-15)"
     review: { date: "2026-08-14", by: "gmi-w3a", outcome: "same posture as finviz_themes — internal-only for NEW GMI emissions; existing cn owner surfaces grandfathered; bundle the display decision with the W6 escalation" }
     notes: "Concept names are zh source labels; zh-authored copy laws apply if ever displayed."
+
+  sec_edgar:
+    rights_class: direct_display_ok
+    auth_class: keyless_public
+    source_route: "SEC EDGAR Archives + submissions JSON (www.sec.gov) fetched under the SEC fair-access policy (declared User-Agent, <=10 req/s) by the Earnings Intelligence intake (scripts/refresh_event_workspaces.py) and Filing Forensics source sync"
+    review: { date: "2026-09-24", by: "gmi-semiconductor-b", outcome: "Display basis (qualified 2026-09-24 after Consumer R11, #7870 issuecomment-5809660585): the SEC Website Dissemination policy (sec.gov/about/privacy-information) permits copying and further distribution of website information without SEC permission and asks for attribution; that policy, not 17 U.S.C. §105, is the basis. Issuer-authored filing text and exhibits are NOT federal-government works — §105 covers works of the United States Government only — so house display covers factual inputs, receipted short excerpts and original interpretation with SEC EDGAR attribution and a link to the filing. Whole expressive documents, third-party material attached to a filing, issuer logos/branding and redistribution as a dataset are NOT claimed (auth_class keyless_public keeps licensing_redistribution_ok false). Admitted at the Finance Intelligence registry request (#7870 issuecomment-5809192409); the Semiconductor B witnesses (TSMC 6-K, onsemi 8-K) cite the same family." }
+    notes: "Family for evidence whose original source is an SEC filing. Issuer-authored exhibit text is filed into the public record and stays the issuer's expression; house display is receipted excerpt + attribution, never authorship or full-body reuse. A third-party document merely attached to a filing keeps its own family (unresolved until reviewed)."
+
+
+  # Recognition-only publisher families (Sol #7780 issuecomment-5825621672 item 6,
+  # confirmed 5825811888 item 2). Every row is `unresolved`, so the emission gate
+  # REFUSES it; what these rows buy is an explicit, named refusal with inspected
+  # terms instead of a refusal through ignorance. Prefixes are exact and
+  # path-scoped, never host roots. `example.invalid` is deliberately absent:
+  # fixture-only, unmapped by design.
+  jpx_tdnet_issuer_disclosure:
+    rights_class: unresolved
+    auth_class: keyless_public
+    source_route: "https://www2.jpx.co.jp/disc/ — issuer disclosure pages (TDnet), exact path-scoped prefix"
+    review: { date: "2026-09-25", by: "gmi-semiconductor-b", outcome: "RECOGNITION ONLY per Sol #7780 issuecomment-5825621672 item 6 and 5825811888 item 2 — NOT display approval. Terms prepared by the Robotics R7 qualification (#7780 5825666880) and applied once here by the shared rights owner. rights_class unresolved REFUSES public emission; promoting this family later requires its own reviewed terms." }
+    notes: "auth_class keyless_public is INFERRED from the fixture URLs being keyless. It is NOT an acquisition or retention permission receipt: the qualifying lane fetched no document and every retention_ref is still a placeholder. The host's terms restrict automated collection / text-and-data mining; no auth_class value can express that (gap G4, closed will-not-build by ruling), so it is recorded here instead."
+
+  hkexnews_issuer_disclosure:
+    rights_class: unresolved
+    auth_class: keyless_public
+    source_route: "https://www1.hkexnews.hk/listedco/ — issuer disclosure pages, exact path-scoped prefix"
+    review: { date: "2026-09-25", by: "gmi-semiconductor-b", outcome: "RECOGNITION ONLY per Sol #7780 issuecomment-5825621672 item 6 and 5825811888 item 2 — NOT display approval. Terms prepared by the Robotics R7 qualification (#7780 5825666880) and applied once here by the shared rights owner. rights_class unresolved REFUSES public emission; promoting this family later requires its own reviewed terms." }
+    notes: "auth_class keyless_public is INFERRED from the fixture URLs being keyless. It is NOT an acquisition or retention permission receipt: the qualifying lane fetched no document and every retention_ref is still a placeholder. Same automated-collection / text-and-data-mining restriction as the JPX row, recorded here for the same reason (gap G4)."
+
+  orbbec_vendor_case_study:
+    rights_class: unresolved
+    auth_class: keyless_public
+    source_route: "https://www.orbbec.com/case-studies/ — vendor case studies, exact path-scoped prefix"
+    review: { date: "2026-09-25", by: "gmi-semiconductor-b", outcome: "RECOGNITION ONLY per Sol #7780 issuecomment-5825621672 item 6 and 5825811888 item 2 — NOT display approval. Terms prepared by the Robotics R7 qualification (#7780 5825666880) and applied once here by the shared rights owner. rights_class unresolved REFUSES public emission; promoting this family later requires its own reviewed terms." }
+    notes: "auth_class keyless_public is INFERRED from the fixture URLs being keyless. It is NOT an acquisition or retention permission receipt: the qualifying lane fetched no document and every retention_ref is still a placeholder. A prefix names ONE family, so a second publisher appearing on this host's page (Twinny) cannot be a second family (gap G1, closed will-not-build by ruling); that fact is recorded here rather than expressed in the table. Serving-corpus count is 9 refs."
+
+  parker_vendor_catalogue:
+    rights_class: unresolved
+    auth_class: keyless_public
+    source_route: "https://discover.parker.com/K-Series — ONE exact catalogue page, not a host root"
+    review: { date: "2026-09-25", by: "gmi-semiconductor-b", outcome: "RECOGNITION ONLY per Sol #7780 issuecomment-5825621672 item 6 and 5825811888 item 2 — NOT display approval. Terms prepared by the Robotics R7 qualification (#7780 5825666880) and applied once here by the shared rights owner. rights_class unresolved REFUSES public emission; promoting this family later requires its own reviewed terms." }
+    notes: "auth_class keyless_public is INFERRED from the fixture URLs being keyless. It is NOT an acquisition or retention permission receipt: the qualifying lane fetched no document and every retention_ref is still a placeholder. A later page on this host needs its own registration; this prefix must not be widened to the host."
+
+  robotis_vendor_catalogue:
+    rights_class: unresolved
+    auth_class: keyless_public
+    source_route: "https://www.robotis.com/en/product/ — vendor product pages, exact path-scoped prefix"
+    review: { date: "2026-09-25", by: "gmi-semiconductor-b", outcome: "RECOGNITION ONLY per Sol #7780 issuecomment-5825621672 item 6 and 5825811888 item 2 — NOT display approval. Terms prepared by the Robotics R7 qualification (#7780 5825666880) and applied once here by the shared rights owner. rights_class unresolved REFUSES public emission; promoting this family later requires its own reviewed terms." }
+    notes: "auth_class keyless_public is INFERRED from the fixture URLs being keyless. It is NOT an acquisition or retention permission receipt: the qualifying lane fetched no document and every retention_ref is still a placeholder."
+
+  onex_vendor_product_page:
+    rights_class: unresolved
+    auth_class: keyless_public
+    source_route: "https://www.1x.tech/discover/ — vendor product pages, exact path-scoped prefix"
+    review: { date: "2026-09-25", by: "gmi-semiconductor-b", outcome: "RECOGNITION ONLY per Sol #7780 issuecomment-5825621672 item 6 and 5825811888 item 2 — NOT display approval. Terms prepared by the Robotics R7 qualification (#7780 5825666880) and applied once here by the shared rights owner. rights_class unresolved REFUSES public emission; promoting this family later requires its own reviewed terms." }
+    notes: "auth_class keyless_public is INFERRED from the fixture URLs being keyless. It is NOT an acquisition or retention permission receipt: the qualifying lane fetched no document and every retention_ref is still a placeholder."
+
+  hexagon_robotics_press:
+    rights_class: unresolved
+    auth_class: keyless_public
+    source_route: "https://robotics.hexagon.com/hexagon-robotics-and-schaeffler-deploy-a-fleet-of-aeon-humanoids/ — ONE exact press page, not a host root"
+    review: { date: "2026-09-25", by: "gmi-semiconductor-b", outcome: "RECOGNITION ONLY per Sol #7780 issuecomment-5825621672 item 6 and 5825811888 item 2 — NOT display approval. Terms prepared by the Robotics R7 qualification (#7780 5825666880) and applied once here by the shared rights owner. rights_class unresolved REFUSES public emission; promoting this family later requires its own reviewed terms." }
+    notes: "auth_class keyless_public is INFERRED from the fixture URLs being keyless. It is NOT an acquisition or retention permission receipt: the qualifying lane fetched no document and every retention_ref is still a placeholder. A later page on this host needs its own registration; this prefix must not be widened to the host."
+
+  zebra_press:
+    rights_class: unresolved
+    auth_class: keyless_public
+    source_route: "https://www.zebra.com/us/en/about-zebra/newsroom/press-releases/ — press releases, exact path-scoped prefix"
+    review: { date: "2026-09-25", by: "gmi-semiconductor-b", outcome: "RECOGNITION ONLY per Sol #7780 issuecomment-5825621672 item 6 and 5825811888 item 2 — NOT display approval. Terms prepared by the Robotics R7 qualification (#7780 5825666880) and applied once here by the shared rights owner. rights_class unresolved REFUSES public emission; promoting this family later requires its own reviewed terms." }
+    notes: "auth_class keyless_public is INFERRED from the fixture URLs being keyless. It is NOT an acquisition or retention permission receipt: the qualifying lane fetched no document and every retention_ref is still a placeholder."
+
+  ptc_press:
+    rights_class: unresolved
+    auth_class: keyless_public
+    source_route: "https://www.ptc.com/en/news/ — press releases, exact path-scoped prefix"
+    review: { date: "2026-09-25", by: "gmi-semiconductor-b", outcome: "RECOGNITION ONLY per Sol #7780 issuecomment-5825621672 item 6 and 5825811888 item 2 — NOT display approval. Terms prepared by the Robotics R7 qualification (#7780 5825666880) and applied once here by the shared rights owner. rights_class unresolved REFUSES public emission; promoting this family later requires its own reviewed terms." }
+    notes: "auth_class keyless_public is INFERRED from the fixture URLs being keyless. It is NOT an acquisition or retention permission receipt: the qualifying lane fetched no document and every retention_ref is still a placeholder."
+
+  teradyne_ir_sec_wrapper:
+    rights_class: unresolved
+    auth_class: keyless_public
+    source_route: "https://investors.teradyne.com/sec-filings/ — the issuer's IR wrapper around SEC filings, exact path-scoped prefix"
+    review: { date: "2026-09-25", by: "gmi-semiconductor-b", outcome: "RECOGNITION ONLY per Sol #7780 issuecomment-5825621672 item 6 and 5825811888 item 2 — NOT display approval. Terms prepared by the Robotics R7 qualification (#7780 5825666880) and applied once here by the shared rights owner. rights_class unresolved REFUSES public emission; promoting this family later requires its own reviewed terms." }
+    notes: "auth_class keyless_public is INFERRED from the fixture URLs being keyless. It is NOT an acquisition or retention permission receipt: the qualifying lane fetched no document and every retention_ref is still a placeholder. This is the IR page, NOT the authoritative EDGAR copy: the sec_edgar family above would cover an EDGAR document, but claiming it for a document nobody fetched would assert a source we do not hold. Re-pointing the locator at EDGAR is queued behind a real acquisition receipt."
+
+  stabilus_press:
+    rights_class: unresolved
+    auth_class: keyless_public
+    source_route: "https://group.stabilus.com/news-and-events/press-releases/ — press releases, exact path-scoped prefix"
+    review: { date: "2026-09-25", by: "gmi-semiconductor-b", outcome: "RECOGNITION ONLY per Sol #7780 issuecomment-5825621672 item 6 and 5825811888 item 2 — NOT display approval. Terms prepared by the Robotics R7 qualification (#7780 5825666880) and applied once here by the shared rights owner. rights_class unresolved REFUSES public emission; promoting this family later requires its own reviewed terms." }
+    notes: "auth_class keyless_public is INFERRED from the fixture URLs being keyless. It is NOT an acquisition or retention permission receipt: the qualifying lane fetched no document and every retention_ref is still a placeholder."
 
   # Reserved families — rows uncommented only when an ingestion wave actually lands
   # (the corroboration evidence class ships empty in W3A; directive §29):

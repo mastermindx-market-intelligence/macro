@@ -1,0 +1,293 @@
+{
+  "case_key": "abf_substrate",
+  "expected_regression": "Material and fabricated substrate roles differ; no guessed named procurement",
+  "status": "ready",
+  "synthetic": true,
+  "task_refs": [
+    "T07"
+  ],
+  "query": {
+    "anchor_theme_id": "ai_semiconductors",
+    "slice_key": "hbm_packaging",
+    "view": "composition",
+    "time_mode": "latest",
+    "source_cutoff": null,
+    "recorded_cutoff": null,
+    "offset": 0,
+    "limit": 50,
+    "expected_generation": null
+  },
+  "bundle": {
+    "revision_tuple": [
+      [
+        "assertion",
+        "gmirca_20dcaf92f04ae5be40973f5583c53c6f"
+      ],
+      [
+        "assertion",
+        "gmirca_5daf02508a139882d5dfee4aabbf22d6"
+      ],
+      [
+        "identity",
+        "identity-vintage-003"
+      ],
+      [
+        "identity",
+        "identity-vintage-004"
+      ]
+    ],
+    "rights_revision": "synthetic-rights-0",
+    "assertions": [
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_20dcaf92f04ae5be40973f5583c53c6f",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "material",
+              "manufacturer": "Synthetic Material Supplier Theta",
+              "model": null,
+              "selector": "mat:abf-film",
+              "source_label": "ABF build-up film"
+            },
+            {
+              "configuration": null,
+              "kind": "product",
+              "manufacturer": "Synthetic Substrate Fabricator Iota",
+              "model": null,
+              "selector": "prd:substrate",
+              "source_label": "fabricated ABF substrate"
+            }
+          ],
+          "measure_scope": null,
+          "relation": {
+            "dst_selector": "prd:substrate",
+            "kind": "documented_supply",
+            "src_selector": "mat:abf-film"
+          },
+          "stage": "qualified",
+          "stage_source_language": "film qualified for volume substrate production"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "substrate fabrication output",
+            "any product-role conversion"
+          ],
+          "establishes": [
+            "the film is qualified into the substrate process"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Theta ABF build-up film"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "flow",
+          "unit": null,
+          "value": null,
+          "value_high": null
+        },
+        "predicate": "DOCUMENTED_PRODUCT_INCLUSION",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q1",
+          "region": "TW",
+          "technology_facet": "substrate materials"
+        },
+        "source": {
+          "locator": "para-3",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-02-15T08:00:00Z",
+          "published_at": "2026-02-14",
+          "published_at_grain": "date",
+          "publisher": "Example Materials Wire",
+          "retained_at": "2026-02-15T08:05:00Z",
+          "retention_ref": "retention:abf/theta-film-supply",
+          "source_uri": "https://example.invalid/abf/theta-film-supply"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Material Supplier Theta",
+          "source_platform_label": null,
+          "source_product_label": "Theta ABF build-up film"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_5daf02508a139882d5dfee4aabbf22d6",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "product",
+              "manufacturer": "Synthetic Substrate Fabricator Iota",
+              "model": null,
+              "selector": "prd:substrate",
+              "source_label": "fabricated ABF substrate"
+            },
+            {
+              "configuration": null,
+              "kind": "product",
+              "manufacturer": "Synthetic Package OEM Omicron",
+              "model": null,
+              "selector": "prd:package",
+              "source_label": "advanced package"
+            }
+          ],
+          "measure_scope": null,
+          "relation": {
+            "dst_selector": "prd:package",
+            "kind": "contains",
+            "src_selector": "prd:substrate"
+          },
+          "stage": "catalog",
+          "stage_source_language": "the fabricated substrate is contained in the package bill of materials"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "film material role for the fabricator"
+          ],
+          "establishes": [
+            "the substrate is a contained product in the package"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Iota fabricated ABF substrate"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "flow",
+          "unit": null,
+          "value": null,
+          "value_high": null
+        },
+        "predicate": "DOCUMENTED_PRODUCT_INCLUSION",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q1",
+          "region": "TW",
+          "technology_facet": "substrate products"
+        },
+        "source": {
+          "locator": "para-1",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-03-01T08:00:00Z",
+          "published_at": "2026-02-28",
+          "published_at_grain": "date",
+          "publisher": "Example Packaging Wire",
+          "retained_at": "2026-03-01T08:05:00Z",
+          "retention_ref": "retention:abf/iota-substrate-in-package",
+          "source_uri": "https://example.invalid/abf/iota-substrate-in-package"
+        },
+        "statement_mode": "CATALOG_DESCRIPTION",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Substrate Fabricator Iota",
+          "source_platform_label": null,
+          "source_product_label": "Iota fabricated ABF substrate"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      }
+    ],
+    "identity_results": [
+      {
+        "company_node_id": "co:synth_theta",
+        "source_business_label": "Synthetic Material Supplier Theta",
+        "resolution": "RESOLVED",
+        "security_id": null,
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-03-01T00:00:00Z"
+      },
+      {
+        "company_node_id": null,
+        "source_business_label": "Synthetic Substrate Fabricator Iota",
+        "resolution": "UNRESOLVED",
+        "security_id": null,
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-03-02T00:00:00Z"
+      }
+    ],
+    "event_workspaces": [],
+    "financial_packets": [],
+    "interpretation_blocks": [],
+    "native_refs": [],
+    "omissions": [
+      "event_workspaces_pending_T05",
+      "financial_packets_pending_T05"
+    ]
+  },
+  "expected": {
+    "material_kind": "material",
+    "product_kind": "product",
+    "kinds_never_conflated": true
+  }
+}

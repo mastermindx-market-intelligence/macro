@@ -40,6 +40,7 @@
 {% include "_seo_head.html.j2" %}
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="assets/css/theme-research.css">
 <style>
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.5;margin:0;padding:18px 0 60px;-webkit-font-smoothing:antialiased}
@@ -640,6 +641,15 @@ html[data-theme="dark"] body::before{
   </details>
 </div>
 
+{# Theme-research mounts, one per registered vertical whose anchor is a theme
+   row on this page (shared hook 2). The section's markup and every string in
+   it come from the registration via _theme_research_section.html.j2, so this
+   page no longer carries its own copy of one vertical's anchor, slices and
+   bilingual copy. Empty list → nothing renders. The per-vertical loop sits
+   in the aggregator, not here: this page's last `endfor` is the lanes loop and
+   tests/test_finance_entry_points.py anchors on it with rfind. #}
+{% include "_theme_research_mounts.html.j2" ignore missing %}
+
 <p class="sot-disclosure">{{ t('Everything here describes where each market story sits and what could change it — none of it is a prediction or a trade signal. Updated nightly.', '本页描述每个市场主题所处的位置及可能改变它的因素——皆非预测或交易信号。每晚更新。') }}</p>
 
 {% else %}
@@ -652,6 +662,7 @@ html[data-theme="dark"] body::before{
 </div>{# /wrap #}
 
 <script src="theme.js"></script>
+<script defer src="assets/js/theme-research.js?v=20260924b"></script>
 <script>
 (function(){
   "use strict";
