@@ -144,7 +144,7 @@
  "themes": {
   "basis": "subsector_rotation.emerging_score",
   "days_since_top5_entry_basis": null,
-  "rotation_asof": "2026-10-02",
+  "rotation_asof": "2026-10-05",
   "standouts_asof": "2026-10-02",
   "available": true,
   "themes": [
@@ -390,8 +390,9 @@
     "n_members": 24,
     "n_members_live": 24,
     "n_members_read": 24,
-    "n_members_on_board": 4,
+    "n_members_on_board": 5,
     "members_on_board": [
+     "ANET",
      "APH",
      "CIEN",
      "LRCX",
@@ -401,7 +402,7 @@
      "buy": 1,
      "watch": 2,
      "leaders": 0,
-     "ran": 1
+     "ran": 2
     },
     "pctile": 0.8155,
     "pctile_n": 252,
@@ -417,17 +418,16 @@
     "n_members": 16,
     "n_members_live": 16,
     "n_members_read": 16,
-    "n_members_on_board": 5,
+    "n_members_on_board": 4,
     "members_on_board": [
      "AME",
      "CAT",
-     "DOV",
      "HON",
      "ROK"
     ],
     "present_counts": {
      "buy": 2,
-     "watch": 3,
+     "watch": 2,
      "leaders": 0,
      "ran": 0
     },
@@ -469,8 +469,9 @@
     "n_members": 12,
     "n_members_live": 12,
     "n_members_read": 12,
-    "n_members_on_board": 2,
+    "n_members_on_board": 3,
     "members_on_board": [
+     "ANET",
      "CRDO",
      "NVDA"
     ],
@@ -478,7 +479,7 @@
      "buy": 0,
      "watch": 1,
      "leaders": 0,
-     "ran": 1
+     "ran": 2
     },
     "pctile": 0.7679,
     "pctile_n": 252,
@@ -494,8 +495,9 @@
     "n_members": 74,
     "n_members_live": 74,
     "n_members_read": 74,
-    "n_members_on_board": 7,
+    "n_members_on_board": 8,
     "members_on_board": [
+     "ANET",
      "APH",
      "CIEN",
      "CRM",
@@ -508,7 +510,7 @@
      "buy": 1,
      "watch": 3,
      "leaders": 2,
-     "ran": 1
+     "ran": 2
     },
     "pctile": 0.7599,
     "pctile_n": 252,
@@ -878,13 +880,12 @@
     "n_members": 80,
     "n_members_live": 80,
     "n_members_read": 80,
-    "n_members_on_board": 12,
+    "n_members_on_board": 11,
     "members_on_board": [
      "AME",
      "CAT",
      "CMI",
      "CTAS",
-     "DOV",
      "EME",
      "HON",
      "JBHT",
@@ -895,7 +896,7 @@
     ],
     "present_counts": {
      "buy": 3,
-     "watch": 9,
+     "watch": 8,
      "leaders": 0,
      "ran": 0
     },
@@ -1072,13 +1073,14 @@
     "n_members": 21,
     "n_members_live": 21,
     "n_members_read": 21,
-    "n_members_on_board": 1,
+    "n_members_on_board": 2,
     "members_on_board": [
+     "APA",
      "MPC"
     ],
     "present_counts": {
      "buy": 0,
-     "watch": 0,
+     "watch": 1,
      "leaders": 1,
      "ran": 0
     },

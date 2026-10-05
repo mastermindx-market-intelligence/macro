@@ -2499,6 +2499,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
@@ -10048,6 +10049,8 @@ jobs:
     # empty state / SEO-baked cards), hero + lanes + viewer modal markup, balanced
     # EN/ZH spans, plain-English <title>, compliance copy, and the body-never-leaks
     # projection. jinja2 (already a repo dep) is the only page-build need.
+    # RV F6 subject/Data OS identity bridge (test_research_vault_subjects.py): stdlib +
+    # lib.dataos.identity only, so it runs here with the install line unchanged (#8475).
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -10072,7 +10075,7 @@ jobs:
         # one member, so extending it costs no extra ci-pack venv.
         run: pip install pytest jinja2 pyyaml pypdf boto3
       - name: research vault ingestion-spine + page unit tests
-        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py -q
+        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py -q
 
 
   research-vault-source-lineage:
@@ -10168,6 +10171,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
@@ -10808,6 +10812,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
@@ -12772,6 +12777,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_identity_resolution.py -q
       - name: theme graph — W3A local-theme plane (hostile tests D-M, capability sidecar, rights gate)
         run: TZ=UTC python -m pytest tests/test_theme_graph_local_plane.py -q
+      - name: theme graph — W-C per-use rights verdict (fresh registry snapshot, revocation, ancestry)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_rights_use.py -q
       - name: theme graph — source-rights registry shape + F20 grandfather pin
         run: TZ=UTC python -m pytest tests/test_theme_sources_registry.py -q
       - name: market ontology — GMI exposure composer (shock->theme->company, rights + as-of + typed nulls)
@@ -12901,6 +12908,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
       - "scripts/compile_capital_structure_events.py"
       - "tests/test_dod_budget_live.py"
@@ -13282,6 +13290,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
@@ -17082,6 +17091,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
