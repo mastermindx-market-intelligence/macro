@@ -52,6 +52,8 @@ def bridge_world(production_world):
 
 
 def _publish(root, emitted_at, *, correction=False):
+    # Positive exact-capture reads currently require cutoff == emission. The
+    # distinct-clock refusal tests below keep that owner constraint explicit.
     bundle = theme_state_adapter.capture_owner_bundle(
         root, effective_at=EFFECTIVE, known_at=emitted_at,
     )
@@ -170,6 +172,8 @@ def test_late_assembly_keeps_native_staleness_visible(bridge_world, tmp_path):
     payload, _ = _sidecar(root, projection, tmp_path, as_of="2026-10-11")
     assert payload["theme_state"]["status"] == "stale"
     assert payload["status"] == "partial"
+    assert payload["theme_state"]["as_of"] == "2026-10-11"
+    assert "theme_state_stale" in payload["warnings"]
 
 
 def test_rich_state_is_not_silently_relabelled_as_legacy_cte_input(bridge_world, tmp_path):
@@ -197,3 +201,38 @@ def test_actual_published_sidecar_still_rejects_unversioned_gmi_fields(bridge_wo
         changed["authority"] = "actionable"
     with pytest.raises(ContractError):
         validate_exposure(changed)
+
+
+@pytest.mark.parametrize("known_at,emitted_at,build_refuses", [
+    ("2026-10-05T12:00:00Z", "2026-10-04T12:00:00Z", True),
+    ("2026-10-04T12:00:00Z", "2026-10-05T12:00:00Z", False),
+])
+def test_distinct_capture_and_emission_clocks_do_not_waive_owner_admission(
+    bridge_world, known_at, emitted_at, build_refuses,
+):
+    # This records the existing exact-capture restriction, not proof of a
+    # naturally asynchronous live publisher. Never backdate or replace a clock
+    # to make that still-owed production integration appear accepted.
+    root = bridge_world
+    bundle = theme_state_adapter.capture_owner_bundle(
+        root, effective_at=EFFECTIVE, known_at=known_at,
+    )
+    kwargs = dict(root=root, generated_at=emitted_at,
+                  activation_at="2026-10-06T12:00:00Z",
+                  entry=generation.entry_preflight(root, legacy_api=True))
+    if build_refuses:
+        with pytest.raises(ValueError, match="knowledge cutoff exceeds build instant"):
+            generation.prepare_generation(bundle, **kwargs)
+        assert not (root / generation.CURRENT).exists()
+        return
+    plan = generation.prepare_generation(bundle, **kwargs)
+    generation.publish_generation(root, plan, controlled_verifier=AcceptedFixture())
+    value = reader.read_generation(
+        root, effective_at=EFFECTIVE, known_at=known_at,
+        purpose="research_internal", use_at="2026-10-06T13:00:00Z",
+        controlled_verifier=ReadFixture(),
+    )
+    assert value["status"] == "UNAVAILABLE"
+    assert value["reason_codes"] == ["STATE_NOT_YET_EMITTED"]
+    assert value["state"] is None and value["compatibility"] is None
+    assert reader.legacy_consumer_barrier(root)["available"] is False
