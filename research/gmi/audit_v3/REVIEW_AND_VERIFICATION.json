@@ -1,0 +1,86 @@
+{
+  "mode": "standard Pro; no Deep Research",
+  "reviewers": [
+    {
+      "scope": "Graph, temporal and rights",
+      "disposition": "Scoped pass after three targeted corrections",
+      "corrections": [
+        "Explicit ontology withdrawal and changed-destination acceptance",
+        "Actual measurement admission beyond file/schema presence",
+        "Heterogeneous THS/Finviz/other-family temporal bases"
+      ]
+    },
+    {
+      "scope": "Consumers and shared economic research",
+      "disposition": "Scoped pass after four targeted corrections",
+      "corrections": [
+        "Sector-to-theme dossier version/grain migration",
+        "CTE/Terminal closed schema migration and stopped-upstream semantic age",
+        "Independent W3C dependency",
+        "Common primitives consume existing identity/evidence/curation/rights owners; domain-owned views"
+      ]
+    },
+    {
+      "scope": "Scientific/evaluation design",
+      "disposition": "Scoped pass after three targeted corrections",
+      "corrections": [
+        "Disconfirming evidence retained separately from missing evidence",
+        "Parent-minus-child defined as constituent complement with matched controls",
+        "Alert thresholds trained before confirmation"
+      ]
+    },
+    {
+      "scope": "Original program scope and governance",
+      "disposition": "Final scoped PASS; one mechanical successor-writer clarification applied",
+      "corrections": [
+        "W3C separately reachable; original selection-cutoff, neighborhood and consequence obligations restored",
+        "No forced positive discovery admission",
+        "Publication-family equivalents and no undefined signature gate",
+        "Inline acceptance section and no denominator shrink",
+        "Handoff permits versioned successor within owner while refusing duplicate authority"
+      ]
+    }
+  ],
+  "source_recheck": {
+    "macro": "3d9969c15bba0f57b64da7592c0731cc8a0f2eac",
+    "mastermind": "cb8398a30b27ef6f0c369d803daab45bb28c337e",
+    "terminal": "41b8af2da46614cedd2a485214e53003d4f030fc",
+    "carriers_rechecked": 27,
+    "carrier_head_state_merge_deltas": 0
+  },
+  "reproductions": [
+    {
+      "file": "GRAPH_BOUNDARY_REPRODUCTIONS.json",
+      "exit_code": 0,
+      "exact_json_match": true
+    },
+    {
+      "file": "PROPHET_BOUNDARY_REPRODUCTION.json",
+      "exit_code": 0,
+      "exact_json_match": true
+    },
+    {
+      "file": "W2_RANK_INVARIANCE_CHECK.json",
+      "exit_code": 0,
+      "exact_json_match": true
+    }
+  ],
+  "claims_not_made": [
+    "full pytest or repository CI green",
+    "real corrupt-Parquet decoding",
+    "production incident",
+    "natural live refresh/deployment/browser acceptance",
+    "legal entitlement approval",
+    "predictive usefulness",
+    "Executive/Fabric job pickup"
+  ],
+  "publication": "The authoring session must verify final GitHub commit and byte readback; PR metadata/user handback carries that non-self-referential receipt.",
+  "document_checks": {
+    "json_valid": true,
+    "internal_markdown_targets_checked": 52,
+    "internal_markdown_targets_resolved": true,
+    "portable_material_citations": true,
+    "exact_attachment_digest_preserved": true,
+    "original_blueprint_body_preserved": true
+  }
+}
