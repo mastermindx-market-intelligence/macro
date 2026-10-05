@@ -2104,6 +2104,9 @@ jobs:
       - "site/chinabasketdata/narrative_emergence.json"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      - "contracts/theme_graph/theme_state_generation_read.v2.schema.json"
+      - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
+      - "engine/theme_graph/theme_state_use_reader.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4936,6 +4939,7 @@ jobs:
       - "scripts/build_thematic_state.py"
       - "site/chinabasketdata/narrative_emergence.json"
       - "site/marketdata/subsector_rotation.json"
+      - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -5885,6 +5889,9 @@ jobs:
       - "tests/test_transmission_company_continuation.py"
       - "tests/test_transmission_proposals.py"
       - "tests/test_transmission_publish.py"
+      - "contracts/theme_graph/theme_state_generation_read.v2.schema.json"
+      - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
+      - "engine/theme_graph/theme_state_use_reader.py"
     if: ${{ false }}
     gate: data
     # TXI W1/W3: the transmission chain library (knowledge/transmission/*.yaml), its compiler
@@ -8677,6 +8684,10 @@ jobs:
       - "engine/company_theme_exposure/views.py"
       - "scripts/build_company_theme_exposure.py"
       - "tests/test_gmi_cte_generation_bridge.py"
+      - "contracts/theme_graph/theme_state_generation_read.v2.schema.json"
+      - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
+      - "engine/theme_graph/theme_state_use_reader.py"
+      - "tests/test_theme_state_generation_use_reader.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -8695,7 +8706,7 @@ jobs:
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
-        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_production.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py -q
+        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_production.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py -q
 
   sa-w4-improvement-lanes:
     if: ${{ false }}
@@ -11704,6 +11715,8 @@ jobs:
       - "scripts/build_thematic_state.py"
       - "site/chinabasketdata/narrative_emergence.json"
       - "site/marketdata/subsector_rotation.json"
+      - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
+      - "engine/theme_graph/theme_state_use_reader.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -14970,6 +14983,7 @@ jobs:
       - "scripts/build_thematic_state.py"
       - "site/chinabasketdata/narrative_emergence.json"
       - "site/neuralwebdata/theme_state.json"
+      - "engine/theme_graph/theme_state_use_reader.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -18464,6 +18478,7 @@ jobs:
       - "scripts/build_thematic_state.py"
       - "site/chinabasketdata/narrative_emergence.json"
       - "site/neuralwebdata/theme_state.json"
+      - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
