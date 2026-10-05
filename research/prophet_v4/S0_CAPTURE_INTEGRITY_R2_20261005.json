@@ -1,0 +1,214 @@
+{
+  "base_head": "bf77fa92f55e51da185932fe081c46ca40423e32",
+  "claim_limit": "Synthetic engineering evidence only; no outcome data, ranking, entry, sizing or trading authority.",
+  "cli": {
+    "cases": [
+      {
+        "case": "native-owner-positive",
+        "exit": 0,
+        "input_unchanged": true,
+        "reason": "NONEMPTY_NATIVE_CANDIDATE_CAPTURE",
+        "receipt_sha256": "a7915136d7102a94277036779b7edbbf1642e06ae7215fe36b8c0f42e15fd260",
+        "status": "S0_CAPTURE_PRESENT"
+      },
+      {
+        "case": "contradictory-roster-negative",
+        "exit": 2,
+        "input_unchanged": true,
+        "reason": "INVALID_GROUP_CAPTURE_STATE",
+        "receipt_sha256": "7a97d3fab84f4cf4c2cb0e6b5f71c3a6ab16c0c36d88812692f55c5d21da0acf",
+        "status": "SOURCE_CONFLICT"
+      }
+    ],
+    "source_scope": "synthetic native-owner records -> real CLI; not production nightly"
+  },
+  "h1_admitted": false,
+  "independent_review_accepted": false,
+  "model_fit_executed": false,
+  "mutation_verification": {
+    "all_killed": true,
+    "base_head": "bf77fa92f55e51da185932fe081c46ca40423e32",
+    "checker_sha256": "76032bde33bbba008e8d81d983e7cc7994401e3cf84748c2d9d6a4a72ba3106f",
+    "mutants": {
+      "duplicates": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 1,
+        "killed": true,
+        "log_sha256": "79d623f35e23d812b45ad7574b974a3824b44fbb7c41f66a6726d06da1203aba",
+        "mutant_sha256": "86c01de3c480a35fee84c8afd449d4be9b55f663782aae672dc807a29705c11f",
+        "tests": 1
+      },
+      "forbidden_schema": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 10,
+        "killed": true,
+        "log_sha256": "7418b405e041fd6b53bd97e51a62b2f9cb008f630d2d2fcbfb613e5f08fe1b55",
+        "mutant_sha256": "d49084c0d2da4018384ef0e5c0fe34b547f17f1a0456237ddee913479712d496",
+        "tests": 10
+      },
+      "group_contract": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 2,
+        "killed": true,
+        "log_sha256": "687b7fb3b7ba49615007733fee2e032d35c7d7d87e52047cc481faf7f1186431",
+        "mutant_sha256": "3b7453cfe9b904a52eb26f89ba72e8abd033d518cffc0fef103efe47922f4ada",
+        "tests": 10
+      },
+      "group_digest": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 1,
+        "killed": true,
+        "log_sha256": "cee3b44c49db9e3c8fba2005309f76f76f1f5b3aef05a518e45369e47f1047aa",
+        "mutant_sha256": "f68174bd35ea73ac30c14b45f2bc9a2397d90dc60ee63c4bdbc503ea9b28ee29",
+        "tests": 10
+      },
+      "group_state": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 4,
+        "killed": true,
+        "log_sha256": "6fb1d3ecabef3ec978ca3b52052aba92e98327b047ce286d9134766c949f9404",
+        "mutant_sha256": "817c73c3dba99f6036827efb741e257e9b25d579d03c460b820dc018c9a54e45",
+        "tests": 4
+      },
+      "identity_state": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 4,
+        "killed": true,
+        "log_sha256": "00eb9e5b061097232693fa0ca6e4eb2a7904cb41b53a0ba15cf2cd36cfa4457b",
+        "mutant_sha256": "7d2ceacad9cbd793e90825a075e1efef1822eb105a76c162f0b3e6881e3125d6",
+        "tests": 4
+      },
+      "native_key_types": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 3,
+        "killed": true,
+        "log_sha256": "378011a3ad5df48736d41a368cc0613620aa173e1a99eae5b59fe37eea1284b9",
+        "mutant_sha256": "3cac7d31a98a716274244923865d1347fe95258189d7e30084a49f98b159bd72",
+        "tests": 6
+      },
+      "source_identity": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 3,
+        "killed": true,
+        "log_sha256": "f4cdaf15b4ef206d5925b863e6c02811774adf9dc1f6082ef7408e9e77013549",
+        "mutant_sha256": "04ef34db9cd6de1a03ebb234cc050997261170aa7fc82bef8063fb551fdf601d",
+        "tests": 3
+      }
+    },
+    "observed_at_utc": "2026-10-05T07:05:12.375639+00:00",
+    "operation": "prophet-s0-integrity-repair-r2-20261005-c4-001",
+    "source_restored": true,
+    "tests_sha256": "640e77f6b27fdef3cef468ec6cfaa1f24a49971dbd0508493d86828b07987515"
+  },
+  "operation": "prophet-s0-integrity-repair-r2-20261005-c4-001",
+  "production_nightly_verified": false,
+  "protected_procedure": "7eac3ec252475600147ec9a376b8ca16403ac4c5",
+  "recovered_patch_sha256": "20bf395e09955091610510fcd430059626e1c69e5badb77a75251ef4674a7607",
+  "release_integration": {
+    "checks_bypassed": false,
+    "consolidation_comment": 5991371013,
+    "frozen_main": "8a3310cdf03bc16704d51235172a5bbcf1f9a73e",
+    "full_local_contract_probe": "Not accepted: initial manifest edit assertion failed; its ensuing full contract probe was intentionally terminated on exact owned PID12886 before source repair (parent12859 exited143). Targeted owner closure was then verified; full hosted contract-delta remains required.",
+    "grade_store_materialized": false,
+    "initial_integration_run": {
+      "failed": 4,
+      "passed": 403,
+      "reason": "Sparse checkout lacked two disclosed-gap metadata fixtures and two historical grade-store fixtures. Exact committed gap metadata was restored; two grade-store tests deliberately remain unrun locally.",
+      "skipped": 2
+    },
+    "installed_source_preflight": {
+      "context_vector_sha256": "24d5d39cfc41331c090e1f6dfb3ff7efd34f3845c86219f8142a4a7b4914c424",
+      "effect": "READ_ONLY",
+      "installed_head": "5bde9a52f579f6fd3811fed30186df98be0e5909",
+      "production_claim": false,
+      "s0_source": "ABSENT"
+    },
+    "integrated_head": "e55eb6cf1edd408d672591fcf9661ab54ab572b1",
+    "integration_conflicts": 0,
+    "local_tests": {
+      "deselected": 2,
+      "errors": 0,
+      "failures": 0,
+      "junit_sha256": "44036d91a7f8a22fa63c4fdfceada0c1d3bf57787ba489704bb9427e77e4db0f",
+      "log_sha256": "df408aa0b9941940c85cba7895171e370c2e8e97d2893e681e284627c8d1a66d",
+      "passed": 405,
+      "skipped": 2
+    },
+    "native_writer_consumer_guard": {
+      "junit_sha256": "4a2664e6a75c2beeff6db99e3af51ff14cac2487c7c4dd5e16d3022c70f10bed",
+      "native_cli": {
+        "candidate_head": "674a63f45fbbee5c0815a7c77d59c7dab41e3843",
+        "cli_receipt_sha256": "17277713b5e2a0e8f14bf90b0838c3e6f8d1be892ce94a638dade78fcbba71a3",
+        "coverage": {
+          "context_dims_present": 0.0,
+          "identity_resolved": 1.0,
+          "membership_source_receipt": 1.0,
+          "sole_supported_peer_group": 1.0
+        },
+        "h1_admitted": false,
+        "input_sha256": "38ced7c6e9ff552c66487ac615907b21fd34b40a97f69763f1cc48f69073d390",
+        "input_unchanged": true,
+        "model_fit_executed": false,
+        "rows": 1,
+        "source": "Existing native append_candidates test fixture; real Data OS alias/master adapters, membership owner, canonical writer and real module CLI, with synthetic source inputs. Not production.",
+        "status": "S0_CAPTURE_PRESENT",
+        "stdout_equals_written_receipt": true
+      },
+      "result": "1 passed",
+      "targeted_dependency_closure": {
+        "closure_paths": 980,
+        "manifest_sha256": "d06d03c26c1ca302a5b2221c6c34959927dcb731e63beb54084961fc22a385d8",
+        "owner_job": "unrun-picks-boards",
+        "s0_checker_in_closure": true,
+        "scope": "One changed exclusive owner only; not the full contract-delta gate",
+        "uncovered_paths": []
+      },
+      "test": "tests/test_us_context_vector.py::TestProspectiveOwnerCaptureWiring",
+      "test_source_sha256": "0cd602894f118d389bf638916ef00bb3cf74e7bdf71e7a073784569533265f54"
+    },
+    "parent_head": "410965bd243d94e9f0e528e15f0c97df53fae732",
+    "protected_outcome_read": false,
+    "release_carrier": 8192,
+    "source_review_disposition": "WAIVED_BY_CURRENT_CHAIRMAN",
+    "target_base": "main",
+    "upstream_preserved_carrier": 8091,
+    "waiver_comment": 5991347126
+  },
+  "schema": "mastermind.prophet.s0_integrity_repair.v1",
+  "source_sha256": {
+    "engine/us_context_vector.py": "48cb57b2df47382c15d1455a4310970526648ab0436251305a8dd52752daf990",
+    "scripts/check_prophet_h1_prospective_accrual.py": "76032bde33bbba008e8d81d983e7cc7994401e3cf84748c2d9d6a4a72ba3106f",
+    "tests/test_prophet_h1_prospective_accrual.py": "640e77f6b27fdef3cef468ec6cfaa1f24a49971dbd0508493d86828b07987515"
+  },
+  "test_results": {
+    "coherence-green": {
+      "errors": 0,
+      "failures": 0,
+      "junit_sha256": "a6aabd51213562addeda99187286565fc25f47bf89194377a077d21d6db0f77d",
+      "skipped": 0,
+      "tests": 159
+    },
+    "coherence-red": {
+      "errors": 0,
+      "failures": 14,
+      "junit_sha256": "f35ee77543456abf26187a969008615794801b8a638b46848997e971f70dab1c",
+      "skipped": 0,
+      "tests": 20
+    },
+    "native": {
+      "errors": 0,
+      "failures": 0,
+      "junit_sha256": "ebe7c3e7fd0a08946f4395eecdeea9d6bc691879f4764f7e307df61173797c3a",
+      "skipped": 0,
+      "tests": 139
+    }
+  }
+}
