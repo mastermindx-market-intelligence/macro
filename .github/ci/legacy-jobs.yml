@@ -2045,6 +2045,9 @@ jobs:
     - contracts/theme_graph/selection_cohort_source.v1.schema.json
     - engine/theme_graph/selection_cohort.py
     - engine/theme_graph/selection_cohort_publication.py
+    - contracts/theme_graph/theme_state_generation_read.v2.schema.json
+    - contracts/theme_graph/theme_state_use_read.v1.schema.json
+    - engine/theme_graph/theme_state_use_reader.py
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -4692,6 +4695,7 @@ jobs:
     - site/marketdata/subsector_rotation.json
     - contracts/theme_graph/selection_cohort_read.v1.schema.json
     - contracts/theme_graph/selection_cohort_source.v1.schema.json
+    - contracts/theme_graph/theme_state_use_read.v1.schema.json
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -5452,158 +5456,142 @@ jobs:
         run: python -m pytest tests/test_append_only_base_fence.py -q
 
   transmission-chains:
-    # GMI consumer imports expose opaque engine/scripts fallback, not new
-    # transmission ownership. Keep the measured concrete closure and real
-    # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
-      - "collectors/base.py"
-      - "collectors/fred.py"
-      - "config.yml"
-      - "config/causal_llm.yml"
-      - "config/dataset_registry.yml"
-      - "config/theme_crosswalk.yml"
-      - "config/theme_graph_identity_breaks.yml"
-      - "config/theme_sources.yml"
-      - "config/transmission_proposals.yml"
-      - "contracts/theme_graph/probation_proposal.v1.schema.json"
-      - "contracts/theme_graph/theme_state.v1.schema.json"
-      - "contracts/theme_graph/theme_state.v2.schema.json"
-      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
-      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
-      - "data/**"
-      - "engine/__init__.py"
-      - "engine/basket_membership_pit.py"
-      - "engine/bonds.py"
-      - "engine/canon.py"
-      - "engine/conditions.py"
-      - "engine/government_revenue/federation.py"
-      - "engine/government_revenue/freshness.py"
-      - "engine/indicators.py"
-      - "engine/inputs.py"
-      - "engine/intelligence_workspace/contracts.py"
-      - "engine/intelligence_workspace/entity.py"
-      - "engine/ledger_lane.py"
-      - "engine/neuralweb/__init__.py"
-      - "engine/neuralweb/_dates.py"
-      - "engine/neuralweb/_law.py"
-      - "engine/neuralweb/causal_schema.py"
-      - "engine/neuralweb/contradictions.py"
-      - "engine/neuralweb/envelope.py"
-      - "engine/neuralweb/governance.py"
-      - "engine/neuralweb/mastermind_context.py"
-      - "engine/neuralweb/metabolism.py"
-      - "engine/neuralweb/options_plane.py"
-      - "engine/neuralweb/synapse.py"
-      - "engine/neuralweb/thematic_state.py"
-      - "engine/neuralweb/theme_state_adapter.py"
-      - "engine/neuralweb/theme_state_generation.py"
-      - "engine/neuralweb/theme_state_generation_reader.py"
-      - "engine/neuralweb/world_state.py"
-      - "engine/pit.py"
-      - "engine/pit_lag_recorder.py"
-      - "engine/rate_inflation_transmission.py"
-      - "engine/seasonality/contracts.py"
-      - "engine/theme_graph/__init__.py"
-      - "engine/theme_graph/identity.py"
-      - "engine/theme_graph/identity_resolution.py"
-      - "engine/theme_graph/ontology.py"
-      - "engine/theme_graph/probation.py"
-      - "engine/theme_graph/rights.py"
-      - "engine/theme_graph/store.py"
-      - "engine/theme_graph/theme_state.py"
-      - "engine/theme_graph/theme_state_production.py"
-      - "engine/transmission_calibration.py"
-      - "engine/transmission_chains.py"
-      - "engine/transmission_company_continuation.py"
-      - "engine/transmission_context.py"
-      - "engine/transmission_publish.py"
-      - "engine/trial_ledger.py"
-      - "engine/yield_curve.py"
-      - "engine/yield_momentum.py"
-      - "knowledge/transmission/**"
-      - "lib/__init__.py"
-      - "lib/config.py"
-      - "lib/dataos/__init__.py"
-      - "lib/dataos/identity.py"
-      - "lib/dataos/nulls.py"
-      - "lib/dataos/price.py"
-      - "lib/dataos/quality.py"
-      - "lib/dataos/registry.py"
-      - "lib/dataos/temporal.py"
-      - "lib/nyse_calendar.py"
-      - "lib/pages.py"
-      - "lib/store.py"
-      - "scripts/__init__.py"
-      - "scripts/build_thematic_state.py"
-      - "scripts/build_transmission.py"
-      - "scripts/ingest_transmission_chains.py"
-      - "scripts/propose_transmission_chains.py"
-      - "scripts/run_transmission_proposals.py"
-      - "site/altdata/mastermind.json"
-      - "site/assets/css/**"
-      - "site/basketdata/baskets.json"
-      - "site/basketdata/foresight_cascade.json"
-      - "site/basketdata/narrative_emergence.json"
-      - "site/basketdata/oracle_state.json"
-      - "site/basketdata/radar.json"
-      - "site/basketdata/radar_enriched.json"
-      - "site/basketdata/radar_ticker.json"
-      - "site/chinabasketdata/narrative_emergence.json"
-      - "site/chinastatedata/market_state.json"
-      - "site/factordata/us_standouts.json"
-      - "site/intelligence/briefing.json"
-      - "site/marketdata/subsector_rotation.json"
-      - "site/neuralwebdata/bottom_sensors.json"
-      - "site/neuralwebdata/theme_state.json"
-      - "site/stockdata/**"
-      - "site/transmission.html"
-      - "templates/_*.html.j2"
-      - "templates/transmission.html.j2"
-      - "tests/fixtures/transmission/**"
-      - "tests/test_transmission_calibration.py"
-      - "tests/test_transmission_cascade_monitor.py"
-      - "tests/test_transmission_chains.py"
-      - "tests/test_transmission_chains_nw.py"
-      - "tests/test_transmission_company_continuation.py"
-      - "tests/test_transmission_proposals.py"
-      - "tests/test_transmission_publish.py"
+    - collectors/base.py
+    - collectors/fred.py
+    - config.yml
+    - config/causal_llm.yml
+    - config/dataset_registry.yml
+    - config/theme_crosswalk.yml
+    - config/theme_graph_identity_breaks.yml
+    - config/theme_sources.yml
+    - config/transmission_proposals.yml
+    - contracts/theme_graph/probation_proposal.v1.schema.json
+    - contracts/theme_graph/theme_state.v1.schema.json
+    - contracts/theme_graph/theme_state.v2.schema.json
+    - contracts/theme_graph/theme_state_generation.v1.schema.json
+    - contracts/theme_graph/theme_state_generation_read.v1.schema.json
+    - data/**
+    - engine/__init__.py
+    - engine/basket_membership_pit.py
+    - engine/bonds.py
+    - engine/canon.py
+    - engine/conditions.py
+    - engine/government_revenue/federation.py
+    - engine/government_revenue/freshness.py
+    - engine/indicators.py
+    - engine/inputs.py
+    - engine/intelligence_workspace/contracts.py
+    - engine/intelligence_workspace/entity.py
+    - engine/ledger_lane.py
+    - engine/neuralweb/__init__.py
+    - engine/neuralweb/_dates.py
+    - engine/neuralweb/_law.py
+    - engine/neuralweb/causal_schema.py
+    - engine/neuralweb/contradictions.py
+    - engine/neuralweb/envelope.py
+    - engine/neuralweb/governance.py
+    - engine/neuralweb/mastermind_context.py
+    - engine/neuralweb/metabolism.py
+    - engine/neuralweb/options_plane.py
+    - engine/neuralweb/synapse.py
+    - engine/neuralweb/thematic_state.py
+    - engine/neuralweb/theme_state_adapter.py
+    - engine/neuralweb/theme_state_generation.py
+    - engine/neuralweb/theme_state_generation_reader.py
+    - engine/neuralweb/world_state.py
+    - engine/pit.py
+    - engine/pit_lag_recorder.py
+    - engine/rate_inflation_transmission.py
+    - engine/seasonality/contracts.py
+    - engine/theme_graph/__init__.py
+    - engine/theme_graph/identity.py
+    - engine/theme_graph/identity_resolution.py
+    - engine/theme_graph/ontology.py
+    - engine/theme_graph/probation.py
+    - engine/theme_graph/rights.py
+    - engine/theme_graph/store.py
+    - engine/theme_graph/theme_state.py
+    - engine/theme_graph/theme_state_production.py
+    - engine/transmission_calibration.py
+    - engine/transmission_chains.py
+    - engine/transmission_company_continuation.py
+    - engine/transmission_context.py
+    - engine/transmission_publish.py
+    - engine/trial_ledger.py
+    - engine/yield_curve.py
+    - engine/yield_momentum.py
+    - knowledge/transmission/**
+    - lib/__init__.py
+    - lib/config.py
+    - lib/dataos/__init__.py
+    - lib/dataos/identity.py
+    - lib/dataos/nulls.py
+    - lib/dataos/price.py
+    - lib/dataos/quality.py
+    - lib/dataos/registry.py
+    - lib/dataos/temporal.py
+    - lib/nyse_calendar.py
+    - lib/pages.py
+    - lib/store.py
+    - scripts/__init__.py
+    - scripts/build_thematic_state.py
+    - scripts/build_transmission.py
+    - scripts/ingest_transmission_chains.py
+    - scripts/propose_transmission_chains.py
+    - scripts/run_transmission_proposals.py
+    - site/altdata/mastermind.json
+    - site/assets/css/**
+    - site/basketdata/baskets.json
+    - site/basketdata/foresight_cascade.json
+    - site/basketdata/narrative_emergence.json
+    - site/basketdata/oracle_state.json
+    - site/basketdata/radar.json
+    - site/basketdata/radar_enriched.json
+    - site/basketdata/radar_ticker.json
+    - site/chinabasketdata/narrative_emergence.json
+    - site/chinastatedata/market_state.json
+    - site/factordata/us_standouts.json
+    - site/intelligence/briefing.json
+    - site/marketdata/subsector_rotation.json
+    - site/neuralwebdata/bottom_sensors.json
+    - site/neuralwebdata/theme_state.json
+    - site/stockdata/**
+    - site/transmission.html
+    - templates/_*.html.j2
+    - templates/transmission.html.j2
+    - tests/fixtures/transmission/**
+    - tests/test_transmission_calibration.py
+    - tests/test_transmission_cascade_monitor.py
+    - tests/test_transmission_chains.py
+    - tests/test_transmission_chains_nw.py
+    - tests/test_transmission_company_continuation.py
+    - tests/test_transmission_proposals.py
+    - tests/test_transmission_publish.py
+    - contracts/theme_graph/theme_state_generation_read.v2.schema.json
+    - contracts/theme_graph/theme_state_use_read.v1.schema.json
+    - engine/theme_graph/theme_state_use_reader.py
     if: ${{ false }}
     gate: data
-    # TXI W1/W3: the transmission chain library (knowledge/transmission/*.yaml), its compiler
-    # (engine/transmission_chains.py), the runner (scripts/run_transmission_chains.py), AND the
-    # W3 historical episode miner (engine/transmission_calibration.py + its runner).
-    # The W1 suite exercises the episode state machine (arm→propagate→express / expire / fail),
-    # idempotent same-day re-runs, the fail-loud strict validator + fail-open runtime loader,
-    # and a real-artifact smoke over the four committed seeds (guarded on artifact presence).
-    # The W3 suite exercises the vectorized-metric = point-in-time guarantee, hop-rate recovery
-    # (M/N with n), regime split (per-cell rates + thin→untested), right-censoring, the
-    # calibration merge (fill base_rates + tier promotion + rev-mismatch/absent fail-open), and
-    # null honesty. Wired here AND in pull_request.paths above (the #3357 trap needs both).
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: install deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
-      - name: transmission chains — engine + state machine + validator + smoke
-        run: python -m pytest tests/test_transmission_chains.py -q
-      - name: transmission chains — W4 distribution (publish subset + Cascade Monitor + NW lobes)
-        run: python -m pytest tests/test_transmission_publish.py tests/test_transmission_cascade_monitor.py tests/test_transmission_chains_nw.py -q
-      # MO-J1A (PR #8052): the affected-company continuation — identity round-trip
-      # (VendorAliasTable.resolve → vendor_symbol_for at chain_state.asof) + per-channel
-      # projection. Pure unit (in-memory alias table, no data/). Lives beside the
-      # Cascade Monitor suite because the page it feeds is this job's subject; the
-      # matching ci.yml paths entry lists the engine + test file (#3357 both-halves rule).
-      - name: transmission chains — MO-J1A affected-company continuation (identity law + projection)
-        run: python -m pytest tests/test_transmission_company_continuation.py -q
-      - name: transmission calibration — miner + regime split + merge + null honesty
-        run: python -m pytest tests/test_transmission_calibration.py -q
-      - name: transmission proposals — W5 Loop-C (pack + ingest + gate + Article 1/2)
-        run: python -m pytest tests/test_transmission_proposals.py -q
-
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: install deps
+      run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+    - name: transmission chains — engine + state machine + validator + smoke
+      run: python -m pytest tests/test_transmission_chains.py -q
+    - name: transmission chains — W4 distribution (publish subset + Cascade Monitor + NW lobes)
+      run: python -m pytest tests/test_transmission_publish.py tests/test_transmission_cascade_monitor.py tests/test_transmission_chains_nw.py -q
+    - name: transmission chains — MO-J1A affected-company continuation (identity law + projection)
+      run: python -m pytest tests/test_transmission_company_continuation.py -q
+    - name: transmission calibration — miner + regime split + merge + null honesty
+      run: python -m pytest tests/test_transmission_calibration.py -q
+    - name: transmission proposals — W5 Loop-C (pack + ingest + gate + Article 1/2)
+      run: python -m pytest tests/test_transmission_proposals.py -q
   ontology-explorer:
     if: ${{ false }}
     gate: code
@@ -9058,6 +9046,10 @@ jobs:
     - tests/test_china_standouts_serialization.py
     - tests/test_theme_graph_selection_cohort_publication.py
     - tests/test_us_standouts_cascade_gate.py
+    - contracts/theme_graph/theme_state_generation_read.v2.schema.json
+    - contracts/theme_graph/theme_state_use_read.v1.schema.json
+    - engine/theme_graph/theme_state_use_reader.py
+    - tests/test_theme_state_generation_use_reader.py
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -9075,7 +9067,7 @@ jobs:
     - name: GMI sealed owner, generation integrity, and read-only accepted publications
       run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_production.py tests/test_theme_state_generation.py
         tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py
-        -q
+        tests/test_theme_state_generation_use_reader.py -q
     - name: GMI CTE successor and v1 publisher fixture compatibility
       run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py
         -k 'not live_theme_inputs' -q
@@ -11980,169 +11972,97 @@ jobs:
         run: python -m pytest tests/test_state_of_themes.py -q -k "theme_lanes or byte_identical"
 
   options-estate-guards:
-    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    if: ${{ false }}
     gate: data
-    # OEU M-FIX wiring (2026-07-25): the flow-leaders / market-structure /
-    # options-screener engine+builder suites (plus the neural-web support-map
-    # suite, surfaced unwired by the same audit) were run by ZERO GitHub
-    # workflows — #3496's regression pins (flow_leaders washout-flip truth,
-    # market_structure week_map emission, options_screener denominators) could
-    # silently rot without them. All seven suites are network-free and
-    # tmp-isolated (MM_DATA_GUARD-clean as one batch: 309 tests, no data/ or
-    # site/ writes). The support-map smoke reads only committed inputs
-    # (config/synapse.yml + data/neuralweb/confluence_graph.json), so its
-    # census bands move only via PRs that themselves trigger this job.
-    #
-    # CURATED SCOPE (2026-08-14 wave 3). `scope: exclusive` makes the paths
-    # below REPLACE inference instead of being unioned under it, so the opaque
-    # fallback tier this job used to carry — whole-tree `engine/**`,
-    # `scripts/**`, `site/**`, `templates/**`, `tools/**` claims smeared out of
-    # a subprocess or traversal deep in its closure — stops selecting it. Every
-    # pattern here was generated from the job's OWN import closure (100 files
-    # across eleven directories) and audited for zero misses: no file this job
-    # demonstrably reads lost its owner.
-    #
-    # NOTE for anyone re-deriving this in a SPARSE worktree: `site` is in
-    # `audit_unrun_tests.FIRST_PARTY`, so site/ path literals ARE closure
-    # members — but every literal is admitted through `(ROOT / rel).is_file()`,
-    # which answers False for an omitted tree. Derived sparse, this closure is
-    # 85 files and silently loses all 15 site/ members; derived against a full
-    # checkout it is 100. `data/` is genuinely absent from the closure either
-    # way (the builder excludes it from LITERAL_DIRS by policy), which is why
-    # the `data/**` row below is hand-declared rather than derived.
-    #
-    # This job was named in the wave-2 note in tests/test_ci_pack.py as a rider
-    # that would "stay inferred" alongside dataos-identity-seams. That call is
-    # superseded here, and for the opposite reason to the one that spared
-    # dataos-identity-seams: an `engine/`-heavy closure only degenerates to
-    # fallback breadth when it needs `engine/**`. This one does not. Its 35
-    # engine files are all TOP-LEVEL modules plus four whole subpackages, so
-    # `engine/*` + four `engine/<pkg>/**` covers the closure exactly while
-    # leaving every other engine subpackage — `engine/prophet/**` among them —
-    # outside the declaration. `scripts/` is enumerated file-by-file for the
-    # same reason: `scripts/*` would re-acquire `scripts/build_free_content.py`,
-    # one of the two probes this curation exists to release.
-    #
-    # Measured on the pre-curation manifest (193 jobs), this job matched all
-    # THREE ratchet probes on the fallback tier and none on the owned tier:
-    # templates/index.html, scripts/build_free_content.py, and
-    # engine/prophet/plan_book.py each drop it, -1 job / -13 weight-seconds per
-    # probe. The `site/...` and `data/**` rows are NOT smear carried forward:
-    # engine/neuralweb/*, engine/pick_lab/registry.py, engine/signal_quality.py
-    # and config/synapse.yml name those artifact trees in literal reads. The
-    # site/ rows are DERIVED closure members (see the sparse note above); the
-    # two top-level files are enumerated exactly rather than folded into a
-    # `site/*` glob, matching how flow-surface declares site/coming-soon.html
-    # and site/master_brief.json. `data/**` is hand-declared: the builder
-    # excludes `data` from LITERAL_DIRS by policy, so no data path can ever
-    # appear in the derived tier, and the support-map smoke's committed input
-    # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
-      - "config/**"
-      - "contracts/options/OPTIONS_INTEL_BRIEF_V1.md"
-      - "data/**"
-      - "engine/*"
-      - "engine/government_revenue/**"
-      - "engine/neuralweb/**"
-      - "engine/pick_lab/**"
-      - "engine/seasonality/**"
-      - "lib/*"
-      - "scripts/__init__.py"
-      - "scripts/build_flow_leaders.py"
-      - "scripts/build_market_structure.py"
-      - "scripts/build_market_structure_page.py"
-      - "scripts/build_options_command.py"
-      - "scripts/build_options_intel_brief.py"
-      - "scripts/build_options_screener.py"
-      - "scripts/validate_gex.py"
-      - "site/altdata/**"
-      - "site/basketdata/**"
-      - "site/chinastatedata/**"
-      - "site/factordata/**"
-      - "site/flow_desk.json"
-      - "site/flowleaders/**"
-      - "site/intelligence/**"
-      - "site/leaderradar/**"
-      - "site/neuralwebdata/**"
-      - "site/options.html"
-      - "site/market_structure.html"
-      - "site/options_intel_brief.json"
-      - "site/prophet/index.json"
-      - "templates/market_structure.html.j2"
-      - "templates/options.html.j2"
-      - "tests/test_build_flow_leaders.py"
-      - "tests/test_build_market_structure_page.py"
-      - "tests/test_market_structure_glance_copy.py"
-      - "tests/test_build_options_command.py"
-      - "tests/test_build_options_screener.py"
-      - "tests/test_flow_leaders.py"
-      - "tests/test_market_structure.py"
-      - "tests/test_market_structure_nw.py"
-      - "tests/test_options_gap_discipline.py"
-      - "tests/test_options_intel_brief.py"
-      - "tests/test_options_intel_brief_ui.py"
-      - "tests/test_options_command_aib.py"
-      - "tests/test_support_map.py"
-      - "tools/index.html"
-      - "contracts/theme_graph/probation_proposal.v1.schema.json"
-      - "contracts/theme_graph/theme_state.v1.schema.json"
-      - "contracts/theme_graph/theme_state.v2.schema.json"
-      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
-      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
-      - "engine/theme_graph/__init__.py"
-      - "engine/theme_graph/identity.py"
-      - "engine/theme_graph/identity_resolution.py"
-      - "engine/theme_graph/ontology.py"
-      - "engine/theme_graph/probation.py"
-      - "engine/theme_graph/rights.py"
-      - "engine/theme_graph/store.py"
-      - "engine/theme_graph/theme_state.py"
-      - "engine/theme_graph/theme_state_production.py"
-      - "lib/dataos/identity.py"
-      - "scripts/build_thematic_state.py"
-      - "site/chinabasketdata/narrative_emergence.json"
-      - "site/marketdata/subsector_rotation.json"
+    - config/**
+    - contracts/options/OPTIONS_INTEL_BRIEF_V1.md
+    - data/**
+    - engine/*
+    - engine/government_revenue/**
+    - engine/neuralweb/**
+    - engine/pick_lab/**
+    - engine/seasonality/**
+    - lib/*
+    - scripts/__init__.py
+    - scripts/build_flow_leaders.py
+    - scripts/build_market_structure.py
+    - scripts/build_market_structure_page.py
+    - scripts/build_options_command.py
+    - scripts/build_options_intel_brief.py
+    - scripts/build_options_screener.py
+    - scripts/validate_gex.py
+    - site/altdata/**
+    - site/basketdata/**
+    - site/chinastatedata/**
+    - site/factordata/**
+    - site/flow_desk.json
+    - site/flowleaders/**
+    - site/intelligence/**
+    - site/leaderradar/**
+    - site/neuralwebdata/**
+    - site/options.html
+    - site/market_structure.html
+    - site/options_intel_brief.json
+    - site/prophet/index.json
+    - templates/market_structure.html.j2
+    - templates/options.html.j2
+    - tests/test_build_flow_leaders.py
+    - tests/test_build_market_structure_page.py
+    - tests/test_market_structure_glance_copy.py
+    - tests/test_build_options_command.py
+    - tests/test_build_options_screener.py
+    - tests/test_flow_leaders.py
+    - tests/test_market_structure.py
+    - tests/test_market_structure_nw.py
+    - tests/test_options_gap_discipline.py
+    - tests/test_options_intel_brief.py
+    - tests/test_options_intel_brief_ui.py
+    - tests/test_options_command_aib.py
+    - tests/test_support_map.py
+    - tools/index.html
+    - contracts/theme_graph/probation_proposal.v1.schema.json
+    - contracts/theme_graph/theme_state.v1.schema.json
+    - contracts/theme_graph/theme_state.v2.schema.json
+    - contracts/theme_graph/theme_state_generation.v1.schema.json
+    - contracts/theme_graph/theme_state_generation_read.v1.schema.json
+    - engine/theme_graph/__init__.py
+    - engine/theme_graph/identity.py
+    - engine/theme_graph/identity_resolution.py
+    - engine/theme_graph/ontology.py
+    - engine/theme_graph/probation.py
+    - engine/theme_graph/rights.py
+    - engine/theme_graph/store.py
+    - engine/theme_graph/theme_state.py
+    - engine/theme_graph/theme_state_production.py
+    - lib/dataos/identity.py
+    - scripts/build_thematic_state.py
+    - site/chinabasketdata/narrative_emergence.json
+    - site/marketdata/subsector_rotation.json
+    - contracts/theme_graph/theme_state_use_read.v1.schema.json
+    - engine/theme_graph/theme_state_use_reader.py
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4
-      - name: flow-leaders engine + builder suites (washout-flip pins, pick-lab flow books)
-        run: python -m pytest tests/test_flow_leaders.py tests/test_build_flow_leaders.py -q
-      - name: market-structure engine + nw-context + page suites (week_map emission pins)
-        run: python -m pytest tests/test_market_structure.py tests/test_market_structure_nw.py tests/test_build_market_structure_page.py tests/test_market_structure_glance_copy.py -q
-      # P1 unrun backfill 2026-08-14: tests/test_options_gap_discipline.py joins the
-      # options-screener step.  It was named by no `run:` step in any workflow, so the
-      # GAP DISCIPLINE law — what the screener and flow-leaders builders may publish
-      # across a session gap — was dark while both builders it constrains were covered.
-      # THIS step rather than the flow-leaders one above is deliberate: the suite reads
-      # scripts/build_flow_leaders.py AND scripts/build_options_screener.py, and this
-      # job runs flow-leaders (and market-structure) EARLIER in the step list, so
-      # landing here puts it downstream of both contract suites it depends on.  Within
-      # the step it is appended last for the same reason.  It rides an existing step
-      # because a step is the masking unit (run_ci_pack.py returns on the first non-zero
-      # step, so a later step goes dark behind an earlier red) while pytest reports
-      # every file inside one step; no new job — the manifest is at the narrow-diff
-      # ceiling.  No dependency widened: probed at RUN time it loads only pandas/numpy/
-      # pyarrow/pyyaml, and blocking openpyxl leaves it 38-passed.
-      - name: options-screener builder suite (denominator pins)
-        run: python -m pytest tests/test_build_options_screener.py tests/test_options_gap_discipline.py -q
-      - name: options workspace suite (OEU M-CMD — 4 modes, close-line honesty, payload law)
-        # AD-1 joins this step (not a new job — the manifest is at the narrow-diff
-        # ceiling and a step is the masking unit): the intel-brief engine/producer
-        # contract suite plus the Workspace consumer/parity suite ride with the
-        # workspace they render into. tests/test_options_intel_brief.py includes the
-        # data-feasibility law test, which reads the committed data/polygon_gex store
-        # present on a full CI checkout.
-        run: python -m pytest tests/test_build_options_command.py tests/test_options_intel_brief.py tests/test_options_intel_brief_ui.py tests/test_options_command_aib.py -q
-      - name: neural-web support-map suite (real-synapse census bands)
-        run: python -m pytest tests/test_support_map.py -q
-
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: install minimal deps
+      run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4
+    - name: flow-leaders engine + builder suites (washout-flip pins, pick-lab flow books)
+      run: python -m pytest tests/test_flow_leaders.py tests/test_build_flow_leaders.py -q
+    - name: market-structure engine + nw-context + page suites (week_map emission pins)
+      run: python -m pytest tests/test_market_structure.py tests/test_market_structure_nw.py tests/test_build_market_structure_page.py tests/test_market_structure_glance_copy.py
+        -q
+    - name: options-screener builder suite (denominator pins)
+      run: python -m pytest tests/test_build_options_screener.py tests/test_options_gap_discipline.py -q
+    - name: options workspace suite (OEU M-CMD — 4 modes, close-line honesty, payload law)
+      run: python -m pytest tests/test_build_options_command.py tests/test_options_intel_brief.py tests/test_options_intel_brief_ui.py tests/test_options_command_aib.py
+        -q
+    - name: neural-web support-map suite (real-synapse census bands)
+      run: python -m pytest tests/test_support_map.py -q
   prelaunch-hardening:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
@@ -15178,6 +15098,7 @@ jobs:
     - site/neuralwebdata/theme_state.json
     - engine/theme_graph/selection_cohort.py
     - engine/theme_graph/selection_cohort_publication.py
+    - engine/theme_graph/theme_state_use_reader.py
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -18559,6 +18480,7 @@ jobs:
     - site/neuralwebdata/theme_state.json
     - contracts/theme_graph/selection_cohort_read.v1.schema.json
     - contracts/theme_graph/selection_cohort_source.v1.schema.json
+    - contracts/theme_graph/theme_state_use_read.v1.schema.json
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:

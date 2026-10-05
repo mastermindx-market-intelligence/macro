@@ -17,6 +17,8 @@ from engine.theme_graph import theme_state_production as production
 
 SCHEMA = "neuralweb.theme_state_generation_read.v1"
 SCHEMA_PATH = Path(__file__).resolve().parents[2] / "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
+USE_SCHEMA = "neuralweb.theme_state_generation_read.v2"
+USE_SCHEMA_PATH = SCHEMA_PATH.with_name("theme_state_generation_read.v2.schema.json")
 _AVAILABLE = {"DESCRIPTIVE", "VALID_EMPTY", "STALE", "PENDING"}
 
 @dataclass(frozen=True)
@@ -37,8 +39,8 @@ class ControlledReadVerifier:
     def resolve(self, request):
         raise NotImplementedError
 
-def _base(effective_at, known_at, purpose, use_at):
-    return {"schema": SCHEMA, "status": "UNAVAILABLE", "reason_codes": [],
+def _base(effective_at, known_at, purpose, use_at, *, at_use=False):
+    return {"schema": USE_SCHEMA if at_use else SCHEMA, "status": "UNAVAILABLE", "reason_codes": [],
         "query": {"effective_at": effective_at, "known_at": known_at},
         "purpose": purpose, "use_at": use_at, "publication": None,
         "state_identity": None, "state": None, "compatibility": None,
@@ -126,6 +128,33 @@ def _lineage(ancestry):
 
 def read_generation(root, *, effective_at, known_at, purpose, use_at,
                     node_id=None, controlled_verifier=None):
+    """The original v1 exact-capture read; prior behavior and schema are retained."""
+    return _read_generation(root, effective_at=effective_at, known_at=known_at, purpose=purpose,
+        use_at=use_at, node_id=node_id, controlled_verifier=controlled_verifier, at_use=False)
+
+
+def read_generation_at_use(root, *, effective_at, known_at, purpose, use_at,
+                           node_id=None, controlled_verifier=None):
+    """V2 reads an accepted publication after assembly, not at source capture time.
+
+    Reuses every v1 owner/rights/history gate. Only derived availability is read
+    against actual use_at; the original captured source query must still match.
+    """
+    return _read_generation(root, effective_at=effective_at, known_at=known_at, purpose=purpose,
+        use_at=use_at, node_id=node_id, controlled_verifier=controlled_verifier, at_use=True)
+
+
+def _subject_read(state, *, node_id, effective_at, known_at, purpose, use_at, at_use):
+    if at_use:
+        from engine.theme_graph.theme_state_use_reader import read_subject_at_use
+        return read_subject_at_use(state, node_id=node_id, effective_at=effective_at,
+                                   known_at=known_at, purpose=purpose, use_at=use_at)
+    return production.read_subject(state, node_id=node_id, effective_at=effective_at,
+                                   known_at=known_at, purpose=purpose)
+
+
+def _read_generation(root, *, effective_at, known_at, purpose, use_at,
+                     node_id, controlled_verifier, at_use):
     """Read the current accepted publication at use_at, at its exact source query.
 
     Historical source known_at is distinct from current publication/use_at.
@@ -134,7 +163,7 @@ def read_generation(root, *, effective_at, known_at, purpose, use_at,
     """
     if any(type(value) is not str for value in (effective_at, known_at, purpose, use_at)) or (node_id is not None and type(node_id) is not str):
         raise ValueError("exact string request fields required")
-    answer = _base(effective_at, known_at, purpose, use_at)
+    answer = _base(effective_at, known_at, purpose, use_at, at_use=at_use)
     observed = {}
     def read(path):
         raw = g.read(root, path)
@@ -210,7 +239,9 @@ def read_generation(root, *, effective_at, known_at, purpose, use_at,
             g.fail("UNACCEPTED_HISTORY_TAIL")
         if g.instant(plan["activation_at"]) > use:
             return _refusal(answer, "UNAVAILABLE", "PUBLICATION_NOT_YET_ACTIVATED")
-        if g.instant(state["generated_at"]) > known:
+        if at_use and g.instant(state["generated_at"]) > g.instant(plan["activation_at"]):
+            g.fail("ACTIVATION_BEFORE_EMISSION")
+        if g.instant(state["generated_at"]) > (use if at_use else known):
             return _refusal(answer, "UNAVAILABLE", "STATE_NOT_YET_EMITTED")
         if answer["query"] != plan["query"]:
             return _refusal(answer, "UNAVAILABLE", "EXACT_CAPTURE_QUERY_REQUIRED")
@@ -261,15 +292,26 @@ def read_generation(root, *, effective_at, known_at, purpose, use_at,
             history={"prefix_b64": g.b64(prefix), "length": len(prefix), "sha256": g.sha(prefix),
                 "rows": g.preflight_phase_history(prefix).rows},
             source_clocks=clocks,
-            subject_read=None if node_id is None else production.read_subject(state,
-                node_id=node_id, effective_at=effective_at, known_at=known_at, purpose=purpose))
-        return validate_read_receipt(answer, publication_plan=plan)
+            subject_read=None if node_id is None else _subject_read(state,
+                node_id=node_id, effective_at=effective_at, known_at=known_at, purpose=purpose,
+                use_at=use_at, at_use=at_use))
+        return _validate_read_receipt(answer, publication_plan=plan, at_use=at_use)
     except g.GenerationUnavailable as error:
-        return _refusal(_base(effective_at, known_at, purpose, use_at), "INVALID", error.reason)
+        return _refusal(_base(effective_at, known_at, purpose, use_at, at_use=at_use), "INVALID", error.reason)
     except (ValueError, TypeError, KeyError, AttributeError, OSError) as error:
-        return _refusal(_base(effective_at, known_at, purpose, use_at), "INVALID", "READ_CONTRACT_INVALID")
+        return _refusal(_base(effective_at, known_at, purpose, use_at, at_use=at_use), "INVALID", "READ_CONTRACT_INVALID")
 
 def validate_read_receipt(receipt, *, publication_plan=None):
+    """Validate the original v1 receipt against its exact owner plan witness."""
+    return _validate_read_receipt(receipt, publication_plan=publication_plan, at_use=False)
+
+
+def validate_read_receipt_at_use(receipt, *, publication_plan=None):
+    """Validate v2 clocks and the identical sealed publication/rights boundary."""
+    return _validate_read_receipt(receipt, publication_plan=publication_plan, at_use=True)
+
+
+def _validate_read_receipt(receipt, *, publication_plan, at_use):
     """Validate a receipt against its existing owner's publication-plan witness.
 
     Refusals carry no lineage and remain self-contained. Available payloads need
@@ -279,7 +321,7 @@ def validate_read_receipt(receipt, *, publication_plan=None):
     The plan is not embedded in the wire receipt and no new state store is read.
     """
     production._finite_json(receipt)
-    schema = json.loads(SCHEMA_PATH.read_text())
+    schema = json.loads((USE_SCHEMA_PATH if at_use else SCHEMA_PATH).read_text())
     errors = list(jsonschema.Draft202012Validator(schema).iter_errors(receipt))
     if errors:
         raise ValueError("closed generation read receipt: " + errors[0].message)
@@ -301,9 +343,12 @@ def validate_read_receipt(receipt, *, publication_plan=None):
             "effective_at":state["effective_at"],"known_at":state["known_at"],
             "age_seconds_at_use":(g.instant(receipt["use_at"])-g.instant(state["generated_at"])).total_seconds()}:
         raise ValueError("read state identity mismatch")
-    if (g.instant(state["generated_at"]) > g.instant(receipt["query"]["known_at"])
+    emitted = g.instant(state["generated_at"])
+    activation = g.instant(receipt["publication"]["activation_at"])
+    availability_bound = g.instant(receipt["use_at"] if at_use else receipt["query"]["known_at"])
+    if (emitted > availability_bound or (at_use and emitted > activation)
             or g.instant(receipt["query"]["known_at"]) > g.instant(receipt["use_at"])
-            or g.instant(receipt["publication"]["activation_at"]) > g.instant(receipt["use_at"])):
+            or activation > g.instant(receipt["use_at"])):
         raise ValueError("read future clocks")
     compat = receipt["compatibility"]
     if (g.parse(g.unb64(compat["raw_b64"])) != compat["projection"]
@@ -361,8 +406,8 @@ def validate_read_receipt(receipt, *, publication_plan=None):
     if receipt["source_clocks"] != _source_clocks(state):
         raise ValueError("read native clock inventory mismatch")
     if receipt["subject_read"] is not None:
-        expected = production.read_subject(state, node_id=receipt["subject_read"]["subject_id"],
-            **receipt["query"], purpose=receipt["purpose"])
+        expected = _subject_read(state, node_id=receipt["subject_read"]["subject_id"],
+            **receipt["query"], purpose=receipt["purpose"], use_at=receipt["use_at"], at_use=at_use)
         if receipt["subject_read"] != expected:
             raise ValueError("read subject differs from owner")
     pending = receipt["publication"]["pending_generation_id"]
