@@ -237,6 +237,88 @@ def test_LED2_merge_deltas_dedups_by_address(tmp_path):
     assert len(merged.events) == len(delta.events)
 
 
+def _replayed_trace_row(ledger, run, *, session: date) -> ll.PendingDelta:
+    """The pack lane's shape: the SAME candidate trace re-produced by a stateless
+    replay, stamped with the pack's own ``freshness`` (a different canonical)."""
+    return ledger.apply_run(
+        ticker="WASH", as_of_session=session.isoformat(), runs=[run],
+        pass_id=ll.PACK_PASS_ID,
+        context={"freshness": {"pack_as_of": session.isoformat(),
+                               "source": "terminal_indicator_slice"}})
+
+
+def test_LED2_a_replayed_trace_with_new_freshness_is_a_row_not_a_noop(tmp_path):
+    # Positive control for the precedence tests below: the production shape IS a
+    # differing canonical — every pack re-stamps ``freshness`` — so ``apply_run``
+    # emits a CANDIDATE row for an episode the ledger already holds.
+    ledger, run, _delta = ledger_with_candidate(tmp_path)
+    first = ledger.episodes[0]
+    at_h = ll.session_at_offset(NEXT_SESSION, ll.RESOLVE_HORIZON_SESSIONS)
+    rows = {r["episode_id"]: r for r in _replayed_trace_row(ledger, run, session=at_h).episodes}
+    assert first.episode_id in rows
+    assert rows[first.episode_id]["state"] == "CANDIDATE"
+
+
+@pytest.mark.parametrize("overlay_first", [True, False])
+def test_LED2_merge_deltas_a_terminal_row_outranks_a_replayed_nonterminal_row(
+        tmp_path, overlay_first):
+    # Measured 2026-10-05 on the production ledger: the pack lane merged the §10
+    # overlay's RESOLVED row with the replay's re-stamped CANDIDATE row for the
+    # same episode_id, last-wins kept CANDIDATE, and 44,972 episodes back to
+    # 1965 stayed CANDIDATE forever while each carried its RESOLVED transition.
+    ledger, run, _delta = ledger_with_candidate(tmp_path)
+    first = ledger.episodes[0]
+    at_h = ll.session_at_offset(NEXT_SESSION, ll.RESOLVE_HORIZON_SESSIONS)
+    overlay = ll.apply_session_clocks(ledger, as_of_session=at_h.isoformat(),
+                                      confirmed_k_by_name={})
+    assert [r["state"] for r in overlay.episodes
+            if r["episode_id"] == first.episode_id] == ["RESOLVED"]
+    replay = _replayed_trace_row(ledger, run, session=at_h)
+    order = [overlay, replay] if overlay_first else [replay, overlay]
+    merged = ll.merge_deltas(order, as_of_session=at_h.isoformat(),
+                             pass_id=ll.PACK_PASS_ID)
+    row = next(r for r in merged.episodes if r["episode_id"] == first.episode_id)
+    assert row["state"] == "RESOLVED", \
+        "a replayed CANDIDATE must never overwrite the overlay's RESOLVED row"
+    assert len(merged.transitions) == 1  # the RESOLVED transition, admitted once
+    ledger.commit(merged, spool_receipt=RECEIPT)
+    assert ledger.get(first.episode_id).state == "RESOLVED"
+
+
+def test_LED2_merge_deltas_is_still_last_wins_between_two_nonterminal_rows(tmp_path):
+    # Mutation control: terminal-wins is NOT first-wins.  Two re-stamped
+    # non-terminal rows still merge to the later one.
+    ledger, run, _delta = ledger_with_candidate(tmp_path)
+    first = ledger.episodes[0]
+    s1 = ll.session_at_offset(NEXT_SESSION, 1)
+    s2 = ll.session_at_offset(NEXT_SESSION, 2)
+    merged = ll.merge_deltas([_replayed_trace_row(ledger, run, session=s1),
+                              _replayed_trace_row(ledger, run, session=s2)],
+                             as_of_session=s2.isoformat(), pass_id=ll.PACK_PASS_ID)
+    row = next(r for r in merged.episodes if r["episode_id"] == first.episode_id)
+    assert row["freshness"]["pack_as_of"] == s2.isoformat()
+
+
+def test_LED2_the_pack_lane_order_resolves_a_stale_candidate_end_to_end(tmp_path):
+    # scripts/entry_radar_live_pack.py step 4, verbatim: overlay FIRST, then every
+    # replay, ONE merge, ONE commit.  After the fix the episode is RESOLVED and
+    # the next pack's replay is superseded, not re-admitted.
+    ledger, run, _delta = ledger_with_candidate(tmp_path)
+    first = ledger.episodes[0]
+    at_h = ll.session_at_offset(NEXT_SESSION, ll.RESOLVE_HORIZON_SESSIONS)
+    deltas = [ll.apply_session_clocks(ledger, as_of_session=at_h.isoformat(),
+                                      confirmed_k_by_name={})]
+    deltas.append(_replayed_trace_row(ledger, run, session=at_h))
+    merged = ll.merge_deltas(deltas, as_of_session=at_h.isoformat(),
+                             pass_id=ll.PACK_PASS_ID)
+    ledger.commit(merged, spool_receipt=RECEIPT)
+    assert ledger.get(first.episode_id).state == "RESOLVED"
+    later = ll.session_at_offset(NEXT_SESSION, ll.RESOLVE_HORIZON_SESSIONS + 1)
+    again = _replayed_trace_row(ledger, run, session=later)
+    assert first.episode_id in again.superseded
+    assert not any(r["episode_id"] == first.episode_id for r in again.episodes)
+
+
 # ---------------------------------------------------------------------------
 # LED-3 — append-only
 # ---------------------------------------------------------------------------
