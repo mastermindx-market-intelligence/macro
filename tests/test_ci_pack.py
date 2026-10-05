@@ -4605,6 +4605,12 @@ CURATED_EXCLUSIVE = {
     # exclusive replaces inference, so the declared job must be pinned here
     # or the curated-set contract rejects the manifest.
     "options-signal-campaign-v2",
+    # 2026-10-05 GMI #8455 (lane gmi_a_packing_r1): regime-outlook-mapping's
+    # reader import (world_state -> theme_state_generation_reader ->
+    # theme_graph/thematic_state -> scripts/build_thematic_state.py) was an
+    # opaque code fallback, so every ordinary code PR selected it. The exact
+    # closure is now declared; packing ceilings remain unchanged.
+    "regime-outlook-mapping",
 }
 
 
