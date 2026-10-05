@@ -104,3 +104,22 @@ def test_dollar_trend_scorecard_labels_12_month_horizon():
     zh_flats = re.findall(r"当前空仓[^<{]*", src)
     assert zh_longs and all("12个月" in s for s in zh_longs), zh_longs
     assert zh_flats and all("12个月" in s for s in zh_flats), zh_flats
+
+
+def test_default_dark_tooltips_keep_surface_foreground_contrast():
+    """Dark-first Forex must not render hover/focus popovers white-on-white."""
+    src = _TEMPLATE.read_text(encoding="utf-8")
+
+    # #5479 intentionally made Forex dark-first.  The original tooltip used
+    # --ink as its background; in dark mode that token is foreground ink.
+    assert "setAttribute('data-theme',t||'dark')" in src
+
+    rule = re.search(
+        r'html\[data-theme="dark"\]\s+\.tip-pop\{(?P<body>[^}]*)\}',
+        src,
+    )
+    assert rule, "dark-theme tooltip override is required"
+    body = re.sub(r"\s+", "", rule.group("body"))
+    assert "background:var(--card)" in body
+    assert "color:var(--ink)" in body
+    assert "background:var(--ink)" not in body
