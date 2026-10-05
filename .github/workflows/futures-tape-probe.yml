@@ -1,0 +1,71 @@
+name: futures-tape-probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/futures-tape-probe.yml"
+      - "scripts/futures_tape_ingest.py"
+      - "scripts/probe_massive_futures.py"
+      - "lib/dataos/futures_tape.py"
+  workflow_dispatch:
+    inputs:
+      root:
+        description: "External futures-tape root to capacity-check (read-only)"
+        required: false
+        default: "/Volumes/Mastermind/futures_tape"
+      probe_lse:
+        description: "Attempt LSE ES.F catalog probe when LSE_API_KEY is configured"
+        required: false
+        default: "true"
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: futures-tape-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: [self-hosted, macstudio]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python 3.12
+        run: |
+          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
+          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
+          echo "$VENV/bin" >> "$GITHUB_PATH"
+          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+          "$VENV/bin/python" -m pip install --quiet -r requirements.txt
+
+      - name: Capacity receipt
+        env:
+          MMX_FUTURES_TAPE_ROOT: ${{ inputs.root }}
+        run: python -m scripts.futures_tape_ingest storage --reserve-gib 100
+
+      - name: Massive Futures entitlement receipt
+        env:
+          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
+        run: |
+          if [ -z "$POLYGON_API_KEY" ] && [ -z "$MASSIVE_API_KEY" ]; then
+            echo "::notice title=Massive Futures probe skipped::no existing Massive/Polygon secret is configured on this lane"
+            exit 0
+          fi
+          python -m scripts.probe_massive_futures
+
+      - name: LSE ES.F catalog receipt
+        if: ${{ inputs.probe_lse }}
+        env:
+          LSE_API_KEY: ${{ secrets.LSE_API_KEY }}
+        run: |
+          if [ -z "$LSE_API_KEY" ]; then
+            echo "::notice title=LSE probe skipped::LSE_API_KEY is not configured; no account or secret was created"
+            exit 0
+          fi
+          python -m pip install --quiet 'lse-data[frames]'
+          python -m scripts.futures_tape_ingest probe-lse --symbol ES.F

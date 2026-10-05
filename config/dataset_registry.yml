@@ -907,3 +907,89 @@ datasets:
       HEAD.json. Any unreferenced generation is noncanonical and its receipt cannot
       prove production acceptance. Replay/report receipts remain read-only and cannot
       substitute for a natural nightly; neither may project present-day state backward.
+
+  # ── Futures market tape plane (F0, 2026-10-05) ───────────────────────────
+  - dataset_id: futures.tape.raw.lse
+    layer: L0
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: scripts/futures_tape_ingest.py::cmd_backfill_lse
+    storage: "${MMX_FUTURES_TAPE_ROOT}/raw/source=lse/symbol={symbol}/window={start}_{end}/export.parquet"
+    format: parquet
+    grain: [source_symbol, timestamp]
+    identity:
+      id_column: source_symbol
+      id_type: vendor_symbol
+    temporal_profile: EVENT
+    timezone: UTC
+    frequency: tick
+    vendor: london_strategic_edge
+    conflict_policy: PRIMARY_ONLY
+    quality_checks: [uniqueness, validity, temporal_integrity, completeness]
+    version: "0.1.0"
+    licensing: internal_research_no_raw_redistribution
+    schema:
+      timestamp: {dtype: vendor_defined, nullable: false}
+      price: {dtype: vendor_defined, basis: raw, nullable: false}
+    notes: >
+      LSE ES.F is a vendor-continuous source identity, not an exchange contract.
+      This contract stays PROPOSED until a credential-bearing F0 probe proves the
+      catalog row/history span and the first receipted partition exists.
+
+  - dataset_id: futures.tape.normalized.lse
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: scripts/futures_tape_ingest.py::cmd_normalize_lse
+    storage: "${MMX_FUTURES_TAPE_ROOT}/normalized/ticks/source=lse/instrument={instrument}/date={date}/part-000.parquet"
+    format: parquet
+    grain: [instrument, timestamp_utc]
+    identity:
+      id_column: source_symbol
+      id_type: vendor_symbol
+    temporal_profile: EVENT
+    timezone: UTC
+    frequency: tick
+    conflict_policy: PRIMARY_ONLY
+    quality_checks: [uniqueness, validity, temporal_integrity, completeness]
+    version: "0.1.0"
+    inputs: [futures.tape.raw.lse]
+    schema:
+      timestamp_utc: {dtype: "datetime64[ns, UTC]", nullable: false}
+      price_raw: {dtype: float64, unit: quote_currency, basis: raw, nullable: false}
+      bid_raw: {dtype: float64, unit: quote_currency, basis: raw, nullable: true}
+      ask_raw: {dtype: float64, unit: quote_currency, basis: raw, nullable: true}
+      volume: {dtype: float64, nullable: true}
+      source_symbol: {dtype: string, nullable: false}
+    notes: >
+      Normalization is deterministic and never upgrades vendor-continuous identity
+      into exact-contract truth.
+
+  - dataset_id: futures.bars.derived
+    layer: L3
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: scripts/futures_tape_ingest.py::cmd_derive_bars
+    storage: "${MMX_FUTURES_TAPE_ROOT}/derived/bars/instrument={instrument}/freq={frequency}/date={date}/part-000.parquet"
+    format: parquet
+    grain: [instrument, frequency, window_start_utc]
+    identity:
+      id_column: instrument
+      id_type: source_or_future_id
+    temporal_profile: BARS
+    timezone: UTC
+    frequency: mixed
+    conflict_policy: PRIMARY_ONLY
+    quality_checks: [uniqueness, validity, temporal_integrity]
+    version: "0.1.0"
+    inputs: [futures.tape.normalized.lse]
+    schema:
+      window_start_utc: {dtype: "datetime64[ns, UTC]", nullable: false}
+      open: {dtype: float64, unit: quote_currency, basis: raw, nullable: false}
+      high: {dtype: float64, unit: quote_currency, basis: raw, nullable: false}
+      low: {dtype: float64, unit: quote_currency, basis: raw, nullable: false}
+      close: {dtype: float64, unit: quote_currency, basis: raw, nullable: false}
+      volume: {dtype: float64, nullable: true}
+    notes: >
+      Rebuildable derived bars for explicitly requested grains. Session-aware bars
+      remain a later F3 addition and must not be inferred from naive wall-clock resample.
