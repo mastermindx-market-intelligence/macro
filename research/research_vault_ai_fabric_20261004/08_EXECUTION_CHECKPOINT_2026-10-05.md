@@ -261,6 +261,35 @@ Data OS remains the only exact security-identity authority. `engine.entity_resol
 
 No catalog/backfill/search-filter activation should occur until #8475 passes review and the alias-namespace policy is frozen.
 
+### F6 alias-namespace ruling
+
+The correct exact-symbol semantics for an institutional report are the Data OS **`exchange` historical naming space**.
+
+This is source-backed by `research/MASTERMIND_SECURITY_MASTER_SPEC.md`:
+
+- §6 lists `exchange` as a vendor namespace with `alias_kind=exchange_symbol`;
+- §9.1's MMC→MRSH worked example resolves dated market symbols through `exchange`;
+- `membership` instead means "what this repo keyed it on that day";
+- `yahoo` means what Yahoo called the security.
+
+Current implementation gap:
+
+`scripts/build_security_master.py` currently materializes historical `yahoo` / `membership` / `ledger`, current-catalog `yahoo_fetch` / `store`, and `theme_graph_native`, but not the spec-defined `exchange` namespace.
+
+Current Data OS receipt at this checkpoint reports 6,037 readable alias rows and no accepted `exchange` materialization.
+
+Therefore:
+
+```text
+Research ticker candidate
+    -> DO NOT substitute membership/yahoo
+    -> Data OS exchange alias namespace required
+    -> resolve(exchange, symbol, report_published_date)
+    -> exact security_id | typed UNMAPPED
+```
+
+The needed Data OS builder path is currently touched by open draft #7299. Do **not** create a competing builder writer. The `exchange` alias addition is a Data OS-owner follow-up after that custody is reconciled.
+
 ## 7. Current critical dependency DAG
 
 ```text
