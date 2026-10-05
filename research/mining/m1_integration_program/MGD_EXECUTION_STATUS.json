@@ -4,10 +4,14 @@
   "purpose": "Execution status per MGD obligation for the Mining M1 integration. The canonical obligation TRACE is owned by carrier #7795 and is not reachable from main; this file is the program-owned execution record that cites it.",
   "authority": {
     "status_is_never_inferred_from_a_test_name": true,
-    "rationale": "Planned test names resolve 0/40 on main and 2/40 at #7950, so a name audit reports 38 false gaps. Rows are keyed by obligation id.",
+    "rationale": "Planned test names resolve 0/40 on main and 2/40 at #7950, so a name audit reports 38 false gaps. Rows are keyed by obligation id. SUPERSEDED-IN-PART 2026-09-27 (wave 9): the '0/40 on main' clause was measured BEFORE #7950 merged and main has moved on. Re-measured at HEAD d985e668c4ab: 40/40 rows carry a planned name, 2/40 resolve, so a name audit would report 38 false gaps TODAY. The conclusion and the rule `status_is_never_inferred_from_a_test_name` are unchanged and now rest on a current measurement; only the head the old figure described is gone.",
     "coverage_is_obligation_level_never_task_level": true,
     "task_level_hazard": "The carrier trace carries task 'T04' for all eight T04 rows and NO a/b split -- the split is R-MIN-05's. An earlier version of this file credited coverage with a task-level test, which credited all eight T04 rows to T04a's merge. The verdicts happened to be right; the rule was not, and it would credit a T04b row the same way. Each COVERED row now names the DELIVERED test id that pins it, and the generator asserts each named test exists in the suite.",
-    "renamed_in_delivery": "4 of the 5 covered obligations are pinned by tests RENAMED from their planned names. That is the whole reason a name audit cannot measure this program."
+    "renamed_in_delivery": "RE-MEASURED 2026-09-27 (wave 11), computed from the rows: 4 of the 5 COVERED_SUITE_GREEN obligations (MGD-08/MGD-09/MGD-34/MGD-39) are pinned by tests whose delivered names share nothing with their planned names; MGD-11 kept its planned name. That is the whole reason a name audit cannot measure this program. The sentence that stood here read '4 of the 5 covered obligations' -- it was written when MGD-08 was not yet covered, and wave 11 moved MGD-12 out, so the pair can read the same while describing a different set. Computed here for that reason.",
+    "not_run_is_measured_by_subject_never_by_owning_task": "ADDED 2026-09-27. `coverage_is_obligation_level_never_task_level` was stated for the CREDITING direction only; the denying direction was left open, and 30 rows were statused NOT_RUN from the note 'Owning task <T> has not landed on main' -- a task-level verdict on an obligation-level question. An obligation's OWNING TASK and the task delivering its SUBJECT are different facts: the carrier trace's `task` field is the planned delivery slot for the TEST, never a statement about which code the obligation governs. Six rows moved on measurement (MGD-15/16/17/20/21/22) and two kept their status with corrected reasons (MGD-19/23). THE RULE: status each row clause by clause, by asking which of four places the clause's subject lives in -- (i) merged code, (ii) the shared assertion contract, absent until #7870, (iii) an unlanded task's code, (iv) an unlanded UI. NOT_RUN is lawful only when NO clause's subject is on main. Corollary that cost two wrong verdicts this wave: a delivered test whose docstring cites an obligation may still not PIN it -- check that it exercises the composed payload and not a helper (MGD-19), and that the clause it asserts is the obligation's operative one (MGD-15 clause 2).",
+    "scope_of_the_2026_09_27_subject_reaudit": "SUPERSEDED THE SAME DAY BY WAVE 7 — see `every_row_is_now_subject_measured_2026_09_27_wave_7`. This key bounded WAVE 6's audit; wave 7 closed the surface it named, so the caveat below no longer applies and this file IS now a completed 40-row subject audit. Kept, not deleted, because a lane that inherits a half-remembered 'only 17 rows were measured' must be able to find the correction at the sentence that said it. Wave 6's scope was: RE-MEASURED AND RE-STATUSED: MGD-08 (code defect fixed, COVERED_SUITE_GREEN), MGD-15, MGD-16, MGD-17, MGD-20, MGD-21, MGD-22. RE-MEASURED, STATUS UNCHANGED, REASON REWRITTEN: MGD-19, MGD-23. READ AND ADJUDICATED UNCHANGED on measured grounds: MGD-02/03/05/06/07 (subjects are the unlanded T06 mount/labels and the T08 real-source journeys, which also need G2 before any live figure) and MGD-13/14/25 (their SECOND clauses are already unviolatable in delivered code -- the composer holds NO ownership field at all (0 occurrences in module and schema), copies `measure` verbatim without interpreting it, and orders rows by stable source identity rather than time via `_order_rows_by_stable_source_identity` -- but their FIRST clauses need T02's unlanded basis vocabulary, so NOT_RUN stands). NOT INDIVIDUALLY RE-MEASURED: every remaining NOT_RUN row; their notes still read task-level and must not be treated as subject-measured. Method note: the seven T03 rows were commissioned to an independent read-only audit which hit its turn limit and returned NO verdict, so the adjudication was done in the main loop -- which the routing registry required anyway, since a status adjudication is ROUTE judgment and main-loop-only. Evidence: probe_mgd15.py, probe_t03_seven.py, probe_t03_confirm.py, and 14 named delivered tests re-run green.",
+    "every_row_is_now_subject_measured_2026_09_27_wave_7": "Wave 7 closed the surface wave 6 bounded. The 14 rows wave 6 left with owning-task notes were measured by subject: MGD-24/27/28/29/30 have delivered, green, CONTROLLED pins on main and moved to PARTIAL_BY_CONSTRUCTION; MGD-26/31/32/33/35/36/40 measure their own vocabulary at ZERO occurrences across the delivered module, binding, schema and all seven mining suites; MGD-37/38 are G2 admission gates that no test this program can write could satisfy. All 40 rows now carry a SUBJECT-level measurement and NO row's status rests on whether its owning task has landed. Two deliberate non-moves are recorded ON their rows so a later lane does not 'fix' them: MGD-35 is not SATISFIED_BY_ABSENCE_OF_CAPABILITY even though the wiring that could violate it is absent, because the hazard is entirely future and the row's value is that it is still owed; MGD-38 stays NOT_RUN even though half its vocabulary is delivered, because its unit is a demonstration and half a demonstration is none. SECOND HALF, same day: the eight rows wave 6 'read and adjudicated unchanged' (MGD-02/03/05/06/07/13/14/25) still carried owning-task notes, because their evidence was written into R-MIN-36 and never onto the rows — the same propagation failure this program has now hit three times. Their measurements are on the rows, and MGD-05 MOVED to PARTIAL_BY_CONSTRUCTION on measurement (its anchor binding is delivered and pinned twice). NO row in this ledger now explains its status by whether a task has landed. The three remaining reason-classes are each stated on the row: measured subject-absent (vocabulary at zero occurrences), measured G2-gated (the unit is a real-source demonstration, not a test), and measured operative-clause-blocked (a later clause is unviolatable but the FIRST clause needs unlanded vocabulary). THIRD PART, same wave: MGD-19's clause 2 was the only row the audit identified as PAYLOAD-PINNABLE TODAY — delivered construct, no payload assertion — so the pin was written rather than filed as a note, and the row moved to PARTIAL_BY_CONSTRUCTION. Final counts 6 / 1 / 17 / 13 / 3 = 40.",
+    "status_was_never_justified_by_a_name_until_wave_11": "ADDED 2026-09-27 (wave 11). The rule `status_is_never_inferred_from_a_test_name` has been true of this file's METHOD since wave 6, and five rows nevertheless CARRIED a name as their stated reason: MGD-09/11/12/34/39 all read 'Pinned by a NAMED delivered test in the T04a suite, green on origin/main (53 passed). Name provenance: planned name was X.' At the sentence a reader meets, those five justified a status by the delivered test's name plus a suite-wide pass count, which is exactly what the rule forbids -- and they quoted a pass count that had been stale for two waves. They were also invisible to wave 10's pin-relevance screen, which scores a row's note against the cited test's body: naming NO symbol, they scored 0 of 0 and could not be flagged. That is the same shape MGD-01 had before wave 9, and it is what hid MGD-01's mismatched pin. This also QUALIFIES wave 7's claim that all 40 rows carry a subject measurement: 35 did. All five are now measured by subject, two of them needed a new pin, and one moved status."
   },
   "carrier_trace": {
     "pull_request": 7795,
@@ -20,16 +24,50 @@
     "seat_may_modify": false
   },
   "measured_against": {
-    "origin_main": "f2a2abf706026b18594012f9477552482b14dd05",
+    "origin_main": "7bd3ddbb466e4db0e06306728e4710883f477c4b",
     "delivered_pull_requests": {
       "T01'": 7932,
       "T04a": 7950
     },
     "green_gate": "python3 -m pytest tests/test_mining_composition.py -q",
-    "green_gate_result": "53 passed",
-    "suite_test_functions": 43,
-    "suite_collected_cases": 53,
-    "count_note": "43 test functions collect as 53 cases because one test is parametrized into 11. NEITHER number measures obligation coverage -- the obligation rows below are the measure."
+    "green_gate_result": "61 passed",
+    "suite_test_functions": 49,
+    "suite_collected_cases": 61,
+    "count_note": "RE-MEASURED 2026-09-27 (wave 11): 49 test functions collect as 61 cases (one test is parametrized over the 11 closed cases). The figures that stood here -- '43 test functions collect as 53 cases' -- contradicted their own sibling keys in this same block, which already read 47/59; they were pasted, not computed, and the five rows below quoted the stale 53 as their green proof. NEITHER number measures obligation coverage -- the obligation rows are the measure.",
+    "origin_main_superseded": "was f2a2abf706026b18594012f9477552482b14dd05, measured before waves 7-8; refreshed 2026-09-27 (wave 9)",
+    "pin_integrity": {
+      "question": "does every delivered_test ref name a real def on this checkout?",
+      "command": "split each delivered_test on ',', then require ^def <name>\\( in the named file -- the field is sometimes a LIST and sometimes one string holding several refs, and treating a multi-ref string as one ref reports false dead pins",
+      "rows_with_a_pin": 19,
+      "refs_total": 27,
+      "refs_resolving": 27,
+      "dead_refs": 0
+    },
+    "pin_relevance": {
+      "question": "does each row's delivered_test ASSERT the mechanism the row's own note names? pin_integrity answers only whether the ref RESOLVES, which an unrelated green test satisfies -- resolution is not relevance",
+      "method": "extract every backticked identifier from the note, extract the cited test bodies, and count how many of those identifiers appear in the bodies",
+      "status": "SCREEN, not a gate",
+      "why_not_a_gate": "a pin may legitimately assert a mechanism in different words, so a low score flags a row for READING and never condemns it; both rows it flagged were read by hand before anything changed",
+      "positive_control": "RE-STATED 2026-09-27 (wave 11) WITH ITS REACH. 19 of the 40 rows in this file are SCORABLE by this screen -- a row is scorable only if it carries a delivered_test AND its note names at least one backticked symbol -- and every scorable row scores above zero. The superseded sentence read: '14 of 14 rows whose note names any symbol score above zero, so the instrument does find matches'. That was true and invited the wrong conclusion: it reported the screen's HIT RATE as though it were its COVERAGE. The five rows outside it (MGD-09/11/12/34/39) named no symbol, so they scored 0 of 0, dropped out of the denominator, and carried a test NAME as their stated reason for five waves -- see authority.status_was_never_justified_by_a_name_until_wave_11. Wave 11 grew the reach by making those five notes specific.",
+      "rows_scoring_zero": "none of the 19 scorable rows. Restated in wave 11 because the previous value, 'none', was read as 'no row in this file scores zero' when it meant 'no SCORED row does' -- the unscored rows are not a clean result, they are the absence of one.",
+      "found_and_fixed_this_wave": "MGD-01 scored 0 of 9 (a wave-9 self-inflicted mismatch: a better reason outgrew its pin) and MGD-22 scored 1 of 4, missing is_range/is_consensus",
+      "reach": "19 of 40 rows scored (computed at write time from the rows, never pasted). A screen's REACH belongs beside its score: the rows an instrument EXEMPTS are where its blind spot lives."
+    },
+    "subject_measurement_wave_11": {
+      "what_it_measured": "Each of the five name-pinned COVERED rows against its obligation STATEMENT, read from the carrier trace at eb6f05c097c1 (the statements are not in this file), with the cited test bodies read in full and the claim re-run against live composed payloads.",
+      "obligation_statement_source": "research/mining/MINING_IMPLEMENTATION_TRACE_2026-09-24.json (requirements[].requirement)",
+      "result": "3 of 5 confirmed as stated (MGD-09 two-armed, MGD-34 over all 11 cases against an independent oracle, MGD-39 clause 2). 2 of 5 had a clause NO delivered test reached (MGD-11 clause 2, MGD-39 clause 1) and both were PINNED in this wave with control arms and mutation probes. 1 of 5 moved status on the measurement (MGD-12 -> PARTIAL_BY_CONSTRUCTION) and its recorded mechanism in T08 §5 was withdrawn as wrong.",
+      "limits": "This is a READING, not a gate: it cannot be re-run by a script, because the obligation statements live on an unmerged carrier branch this seat may not modify and the match between a statement and an assertion is a judgement. What IS re-runnable is every figure it produced -- the payload walks, the 11-case authority sweep, the two mutation probes and the green gate -- and those are the numbers recorded above.",
+      "counts_before_this_wave": {
+        "COVERED_SUITE_GREEN": 6,
+        "DEFERRED_LAWFUL": 1,
+        "NOT_RUN": 17,
+        "PARTIAL_BY_CONSTRUCTION": 13,
+        "SATISFIED_BY_ABSENCE_OF_CAPABILITY": 3
+      },
+      "seven_suite_gate": "181 passed across tests/test_mining_composition.py, tests/test_mining_composition_probes.py, tests/test_mining_composition_probes_r2.py, tests/test_mining_composition_probes_r3.py, tests/test_mining_composition_truth_table.py, tests/test_mining_shared_contract.py, tests/test_mining_shared_contract_probes.py (measured at write time).",
+      "follow_on_sweep": "The five rows were found by READING, so all 40 were then screened for the two signatures. Name-as-justification wording: exactly those five, no sixth. A 12-hex sha that is no longer origin/main: zero rows. A pasted pass count that is not the live figure: six rows -- the five, plus MGD-08's '(174 passed)', which is a FALSE POSITIVE of the screen's own making, because 174 was the SEVEN-suite total at closure and the screen compared every count to the single-suite figure. MGD-08 was read before being touched and its receipt is now DATED rather than rewritten. Each signature shipped with a positive control proving it can fire. What the screen cannot see, stated: a figure written in words, a stale count in a sibling record rather than a row note, and a name used as a reason without either phrase -- signature B is wording-bound by construction."
+    }
   },
   "status_vocabulary": {
     "COVERED_SUITE_GREEN": "Obligation's owning task is on main and the suite covering it is green.",
@@ -40,12 +78,11 @@
     "NOT_RUN": "Owning task has not landed on main."
   },
   "counts": {
-    "PARTIAL_BY_CONSTRUCTION": 1,
-    "NOT_RUN": 30,
-    "DEFERRED_LAWFUL": 1,
-    "UNPINNED": 1,
     "COVERED_SUITE_GREEN": 5,
-    "SATISFIED_BY_ABSENCE_OF_CAPABILITY": 2
+    "DEFERRED_LAWFUL": 1,
+    "NOT_RUN": 17,
+    "PARTIAL_BY_CONSTRUCTION": 14,
+    "SATISFIED_BY_ABSENCE_OF_CAPABILITY": 3
   },
   "obligations": [
     {
@@ -53,9 +90,9 @@
       "family": "Reuse",
       "owning_task": "T01",
       "planned_test": "tests/test_mining_shared_contract.py::test_single_shared_kernel",
-      "delivered_test": "tests/test_mining_composition.py::test_mining_definitions_loaded_from_committed_domain_file",
+      "delivered_test": "tests/test_mining_shared_contract.py::test_shared_contract_is_probed_lazily_and_is_two_armed_on_the_unmerged_base, tests/test_mining_shared_contract.py::test_shared_contract_degrade_is_typed_when_the_import_itself_fails, tests/test_mining_shared_contract.py::test_route_unbound_refusal_is_identical_for_entitled_and_unentitled_callers, tests/test_mining_composition.py::test_no_import_of_semiconductor_theme_research_anywhere, tests/test_mining_composition.py::test_mining_definitions_loaded_from_committed_domain_file",
       "status": "PARTIAL_BY_CONSTRUCTION",
-      "note": "Satisfied for every construct T01' actually mints; the remainder is not expressible until a later task mints the construct it would constrain."
+      "note": "MEASURED 2026-09-27 (wave 9); status unchanged, reason replaced. The prior note -- \"satisfied for every construct T01' actually mints; the remainder is not expressible until a later task mints the construct it would constrain\" -- named no construct, no symbol and no falsifier, and this is the program's CORE reuse obligation (planned `test_single_shared_kernel`), so it was the one note in 40 unfalsifiable by inspection. Measured instead: this program CONSUMES the shared contract and REFUSES rather than substituting a local one. `mining_dependency_binding.py:109` holds the shared module as a STRING (`_SHARED_CONTRACT_MODULE = \"engine.theme_graph.curation_assertion\"`); `shared_contract()` resolves it by `importlib.import_module` at :305 and raises `MiningResearchRefusal` when the module is absent (:309) or does not expose BOTH `validate_assertion` and `curation_revision` (:317) -- an incomplete shared kernel is refused, never reimplemented. `client()` at :286 returns a typed `RouteUnbound` and discards entitlement at :293 (`del entitled`), so no route, client framework or publisher is minted here either. The payload declares `schema = 'market_ontology.mining_theme_research/v1'`, this program's own DOCUMENT schema id, which is not a kernel, and `authority` ships all five capability flags False (can_rank, can_gate, can_size, can_originate, can_open_entry). FALSIFIER, so this note cannot rot silently: the row stops being satisfied the moment a local definition of `validate_assertion`/`curation_revision` appears, or `_SHARED_CONTRACT_MODULE` stops being a lazy string import, or any capability flag ships True. The remainder stays PARTIAL_BY_CONSTRUCTION for the reason the prior note gave, which is still correct: a constraint on a construct nothing has minted is not expressible yet. PIN CORRECTED 2026-09-27 (wave 10), status unchanged. The reason above was written in wave 9 and the row still cited `test_mining_definitions_loaded_from_committed_domain_file` ALONE, which asserts the MINING_DEFINITIONS keys and the two anchor themes and NOT ONE of the nine symbols this note names -- so a reader following the citation could not reach the mechanism being claimed. Writing a better reason is what exposed the mismatch. The mechanism was never unpinned: `test_shared_contract_is_probed_lazily_and_is_two_armed_on_the_unmerged_base` pins the lazy probe and both arms, `test_shared_contract_degrade_is_typed_when_the_import_itself_fails` pins the typed degrade, and `test_route_unbound_refusal_is_identical_for_entitled_and_unentitled_callers` pins that entitlement cannot conjure a route. The no-shared-kernel-copy half is pinned by `test_no_import_of_semiconductor_theme_research_anywhere`. The original citation is KEPT as the last ref, because the committed-domain-file fact is a real part of the reuse claim -- it was insufficient, not wrong."
     },
     {
       "obligation_id": "MGD-02",
@@ -64,7 +101,7 @@
       "planned_test": "tests/test_mining_acceptance.py::test_exact_dependency_receipts",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T08 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED SUBJECT 2026-09-27 (wave 7); status unchanged, reason replaced. Two clauses, two different places. 'Exact dependency revisions and integrated release proof are recorded' is unpinnable by construction until T08 — its subject is the final evidence packet, a document, not behaviour any module can carry (same class as MGD-40). 'Candidate-only #7870 is not presented as deployed' is LIVE NOW and has been honoured throughout: every record in this program states #7870 as OPEN/DRAFT, the binding raises `shared_contract_unavailable` rather than pretending the contract exists, and the nine-rung ladder is quoted rather than collapsed. It stays NOT_RUN because no delivered TEST can assert a records property — but a lane must not read that as licence to describe #7870 as landed."
     },
     {
       "obligation_id": "MGD-03",
@@ -73,7 +110,7 @@
       "planned_test": "tests/test_mining_ui.py::test_single_shared_mount",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T06 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED SUBJECT-ABSENT 2026-09-27 (wave 7); status unchanged, reason replaced. This program owns no template, page, stylesheet or component — the binding's docstring states it deliberately owns no kernel, schema, route, publisher or client framework (R-MIN-00/06/21) — so there is nothing on main that could copy a basket or theme page, and no source-writer boundary here to dishonour. The subject is T06's mount on the shared shell. EXPECTED_KEYS is declared by the shared owner's mount template and is absent from `app/` on main, which is the measured form of that gap."
     },
     {
       "obligation_id": "MGD-04",
@@ -89,9 +126,12 @@
       "family": "Workflow",
       "owning_task": "T06",
       "planned_test": "tests/test_mining_ui.py::test_copper_without_primary_basket",
-      "delivered_test": null,
-      "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T06 (clause level, not the trace's task field) has not landed on main."
+      "delivered_test": [
+        "tests/test_mining_composition.py::test_slice_theme_mismatch_refuses",
+        "tests/test_mining_composition.py::test_mining_definitions_loaded_from_committed_domain_file"
+      ],
+      "status": "PARTIAL_BY_CONSTRUCTION",
+      "note": "RE-MEASURED 2026-09-27 (wave 7) — was NOT_RUN on an owning-task note. Clause 1 ('copper is reachable through its ACTUAL theme') is delivered and pinned twice: `SLICE_ANCHORS` binds `mining_copper_economics` to `theme:copper_steel_electrify` — the theme the Chairman's packet names — the committed domain file is asserted to carry that same anchor, and a query that points the copper slice at `theme:rare_earth_critical_min` is REFUSED (`slice_theme_mismatch`) through the real compose path. A wrong-theme read is therefore not expressible. Clause 2 ('the reshoring proxy is not labeled a dedicated copper basket') is measured UNVIOLATABLE here: `reshoring` and `basket` occur ZERO times across the delivered module, binding and all seven suites — the label is T06's page text. PARTIAL because reachability by a USER is the mount, not the anchor map."
     },
     {
       "obligation_id": "MGD-06",
@@ -100,7 +140,7 @@
       "planned_test": "tests/test_mining_acceptance.py::test_w_c_real_source_journey",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T08 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED G2-GATED 2026-09-27 (wave 7); status unchanged, reason replaced. Same class as MGD-37: the obligation's unit is a completed REAL journey (real source -> operation -> valid issuer -> useful economic result -> existing company navigation), and every delivered case is synthetic with `live_admission == 'refused'` by design (R-MIN-06, G2–G6). No test this program can write could satisfy it. It needs G2 admission plus T05's route and T06's navigation. No live Freeport figure may become a fixture or a native receipt before G2."
     },
     {
       "obligation_id": "MGD-07",
@@ -109,16 +149,16 @@
       "planned_test": "tests/test_mining_acceptance.py::test_w_r_real_source_journey",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T08 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED G2-GATED 2026-09-27 (wave 7); status unchanged, reason replaced. Same class as MGD-06 for the W-R slice, with one extra dependency recorded: the conversion, commercial-stage and external/intra-group distinctions it demands are T02/T03 vocabulary, and on main `measure` passes through the composer verbatim (see MGD-23), so even a real journey could not yet keep them distinct. G2 plus T02/T03, in that order. No live MP Materials figure may become a fixture before G2. PREMISE NOW PINNED 2026-09-27 (wave 8): the verbatim passthrough this reason cites is asserted by `test_the_composer_never_interprets_a_submitted_measure` (both slices, nine submitted measures each, including case variants, a trailing space and an unmappable string, so a normalizer or a whitelist-with-fallback cannot satisfy it). That guard protects THIS REASON'S PREMISE, not the obligation, and is NOT partial credit — the limit stated above is unchanged and still governs: a passthrough can no more keep the kinds DISTINCT than interchange them. Status deliberately unchanged. Its only effect is that if the composer ever begins reading a measure's meaning, the suite goes red instead of this reason going quietly stale."
     },
     {
       "obligation_id": "MGD-08",
       "family": "Workflow",
       "owning_task": "T04",
       "planned_test": "tests/test_mining_composition.py::test_two_positive_economic_paths",
-      "delivered_test": null,
-      "status": "UNPINNED",
-      "note": "Clause 1 is pinned. Clause 2 (a wholly empty economic path fails) is NOT pinned by any delivered test. R-MIN-34 rules that `degraded` + `native_blocks == []` + the named absence SATISFIES it, so the owed work is the two-armed pin in T04b, not a behaviour change. NOT a code defect."
+      "delivered_test": "tests/test_mining_composition.py::test_mgd08_clause2_wholly_empty_economic_path_degrades_on_both_slices",
+      "status": "COVERED_SUITE_GREEN",
+      "note": "CLOSED 2026-09-27. Clause 1 was already pinned by the two positive witnesses. Clause 2 is now pinned two-armed across BOTH delivered slices, and closing it required a BEHAVIOUR CHANGE, not only a test: R-MIN-34's \"NOT a code defect\" held on W-C only. On W-R a wholly empty economic path returned `ready` over a panel whose native_blocks, derived and context_block_count were all empty, because the rare-earth slice vocabulary mints `stream_threshold_unknown` on every payload and that code short-circuited `_summarize_status` to `ready` before the native-block channel was consulted. Scoped the threshold clause to the NAMED-ABSENCE receipt `has_named_absence = bool(bundle.omissions)` and tested `has_native_blocks` first, and gated the \"contract explanation is retained\" headline on a non-degraded status. `bool(bundle.financial_packets)` was tried first and refuted by Opus review, verified independently: a packet the module routes out of every channel still counted as submitted, so four junk-packet shapes kept W-R `ready` over an empty panel. Zero of the 11 casebook cases change status, all 7 mining suites green (174 passed AS MEASURED AT CLOSURE on 2026-09-27; that figure is a historical receipt, not a present-tense claim -- re-measured today the same seven suites pass 181, the difference being tests added by later waves). MGD-18 / R-MIN-15 / plan §6 is untouched and stays green because its subject is different: case `missing_stream_threshold` SUBMITS one packet and has it withheld, whereas clause 2's subject submits nothing. Amended at source by R-MIN-35; R-MIN-34's row carries the AMENDED BY marker. This discharges MGD-08 ONLY -- T04b still owes the MGD-10 `period` arm, which is genuinely deferred until T04b mints that field. RESIDUAL STATE, corrected the same day after measuring it: a bundle naming an unrelated omission plus a packet that contributes to no channel still reads `ready`. By the rulings in force this is SATISFIED, not open, because an absence IS named (R-MIN-34's bar). Do NOT dispatch it as a fix: gating readiness on a CONTRIBUTING packet degrades `missing_stream_threshold`, which submits one non-contributing packet and which plan §6 VERBATIM requires `ready`; and minting a receipt at the drop site violates R-MIN-31 §I, which reserves `definition_unqualified:*` for definition fields and assigns a missing measurement datum to the bundle's omission mapping. Closing it means amending one of those frozen positions - an adjudication, not a lane task."
     },
     {
       "obligation_id": "MGD-09",
@@ -127,7 +167,7 @@
       "planned_test": "tests/test_mining_composition.py::test_security_without_issuer_refuses_financial_join",
       "delivered_test": "tests/test_mining_composition.py::test_missing_issuer_refuses_financial_join",
       "status": "COVERED_SUITE_GREEN",
-      "note": "Pinned by a NAMED delivered test in the T04a suite, green on origin/main (53 passed). Name provenance: planned name was test_security_without_issuer_refuses_financial_join."
+      "note": "MEASURED BY SUBJECT 2026-09-27 (wave 11), replacing a note that justified this status by the delivered test's NAME -- which this file's own `status_is_never_inferred_from_a_test_name` forbids. Obligation: a security resolution with missing issuer evidence does not authorize a financial issuer join. TWO-ARMED and the arms matter: the `missing_issuer` fixture omits ONLY the issuer and SUPPLIES a complete economics block (measure, value, basis, stream_threshold, positive_witness), so the financial data IS present to be joined and is refused -- `economics.native_blocks == []`, `limitations == ['missing_issuer']`, status `degraded`. CONTROL on the same slice WITH an issuer (`copper_complete`) admits 1 block, so the refusal is caused by the absent issuer axis and not by absent data. That distinction is the obligation. Name provenance, a fact and never the justification: planned name was test_security_without_issuer_refuses_financial_join. Pinned green on origin/main (61 passed in tests/test_mining_composition.py)."
     },
     {
       "obligation_id": "MGD-10",
@@ -136,16 +176,16 @@
       "planned_test": "tests/test_mining_composition.py::test_current_identity_not_historical_ownership",
       "delivered_test": null,
       "status": "SATISFIED_BY_ABSENCE_OF_CAPABILITY",
-      "note": "No `period` on native blocks and no validity window on identity at this head, so no historical-ownership claim is expressible. T04b carries `period` onto native blocks (T04B_FREEZE_PACKET 4.2), which makes this falsifiable and REQUIRES the two-armed pin in that same PR. NOT a code defect today."
+      "note": "No `period` on native blocks and no validity window on identity at this head, so no historical-ownership claim is expressible. T04b carries `period` onto native blocks (T04B_FREEZE_PACKET 4.2), which makes this falsifiable and REQUIRES the two-armed pin in that same PR. NOT a code defect today. RECEIPTED 2026-09-27 (wave 9): the absence is now measured, not asserted. A probe walked the WHOLE composed payload recursively for all 11 casebook cases -- 60 distinct key paths -- and the POSITIVE CONTROL is that the walk demonstrably reaches identity: it enumerates `companies[].cik`, `companies[].name`, `companies[].role`, `companies[].stable_subject_id`, `native_subjects[].kind`, `native_subjects[].label`. native_blocks carry exactly six keys (basis, measure, sign, source_label, stable_subject_id, value). Matches for period/as_of/valid_from/valid_to/validity/window/effective/historical anywhere in the payload: ZERO. Recorded because the FIRST version of that probe asked `payload[\"issuer\"]` and `payload[\"identity\"]` and NEITHER KEY EXISTS, so it answered NONE vacuously -- which is why the receipt is a whole-payload walk with an enumerated control rather than a field lookup. Independently, `identity_results` is a BUNDLE FIELD whose row CONTENT never originates in this module. All 11 reference sites in `engine/market_ontology/mining_theme_research.py` enumerated, because a claim quantified over every site must list them: :310 is a TEST SEAM that sets the field EMPTY `()`; :332 copies it through unchanged in the omission-appending helper; :473 and :1018 coerce CALLER-supplied rows (`tuple(bundle.get(\"identity_results\", ()))`, empty default); :541, :596, :607 and :676 READ it (`for ident in bundle.identity_results`); :536, :593 and :671 are comments. So the module mints no identity row -- CORRECTED 2026-09-27 (wave 9c): this clause first said \"a BUNDLE INPUT the module only reads (:332/473/541/596/607)\", written from a 5-site grep when there are 11, and :310/:332/:473/:1018 are assembly sites, so the sentence was false as phrased while the conclusion it served was right. Its fixture shape is exactly ['cik','fictional','name'] -- ONE shape across all 11 cases, no validity window; 10 of 11 carry one row and `missing_issuer` carries zero, which is that fixture's purpose. The two-armed pin is still OWED by T04b in the same PR that carries `period` onto native blocks."
     },
     {
       "obligation_id": "MGD-11",
       "family": "Identity",
       "owning_task": "T04",
       "planned_test": "tests/test_mining_composition.py::test_source_only_business_stays_useful",
-      "delivered_test": "tests/test_mining_composition.py::test_source_only_business_stays_useful",
+      "delivered_test": "tests/test_mining_composition.py::test_source_only_business_stays_useful, tests/test_mining_composition.py::test_mgd11_withheld_identity_is_never_invented_and_the_source_stays_useful",
       "status": "COVERED_SUITE_GREEN",
-      "note": "Pinned by a NAMED delivered test in the T04a suite, green on origin/main (53 passed). Name provenance: planned and delivered names agree -- the only one of the five."
+      "note": "MEASURED BY SUBJECT 2026-09-27 (wave 11) and THE MEASUREMENT FOUND HALF THE OBLIGATION UNOBSERVABLE IN ITS OWN PIN, so wave 11 delivered the missing arm. Obligation, two clauses: a source-only description (1) remains useful (2) WITHOUT invented company, asset, security or CIK IDs. Clause 1 is pinned by the pre-existing test and the pin is not vacuous -- the module returns ready|degraded|refused, so `status in {ready, degraded}` genuinely excludes the refused shape; measured `summary.status == 'degraded'`. CLAUSE 2 WAS UNOBSERVABLE THERE: the `source_only` fixture's omission is ECONOMICS, and it SUPPLIES `Ardent Copper Holdings` with CIK `0000000421` -- the cited test is handed the very identifiers the clause is about. Measured on the arm that can see it (`identity_results` emptied on the same case): 3 CIK-shaped payload values bound (`/companies/0/cik`, `/companies/0/stable_subject_id`, `/native_subjects/0/stable_subject_id`) versus ZERO unbound, with `companies == []`, `native_subjects == []` and `summary.status` still `degraded`. Nothing is invented and it stays useful. Now pinned by `test_mgd11_withheld_identity_is_never_invented_and_the_source_stays_useful`, delivered in this wave with that control arm and mutation-probed (injecting an invented issuer when the caller supplies none makes it fail). Name provenance: planned and delivered names agree -- the only one of the five. Pinned green on origin/main (61 passed in tests/test_mining_composition.py)."
     },
     {
       "obligation_id": "MGD-12",
@@ -153,8 +193,8 @@
       "owning_task": "T04",
       "planned_test": "tests/test_mining_composition.py::test_shared_asset_not_duplicate_supply",
       "delivered_test": "tests/test_mining_composition.py::test_duplicate_local_asset_labels_are_not_additional_supply",
-      "status": "COVERED_SUITE_GREEN",
-      "note": "Pinned by a NAMED delivered test in the T04a suite, green on origin/main (53 passed). Name provenance: planned name was test_shared_asset_not_duplicate_supply."
+      "status": "PARTIAL_BY_CONSTRUCTION",
+      "note": "STATUS MOVED 2026-09-27 (wave 11) COVERED_SUITE_GREEN -> PARTIAL_BY_CONSTRUCTION on a subject measurement, and T08 §5's stated mechanism for this row IS WITHDRAWN AS WRONG. Obligation: the same mine/source appearing in MULTIPLE SLICES is not additional physical supply or independent corroboration. §5 recorded that the delivered test 'pins both readings via the same DEDUP PATH'. There is no dedup path: measured, two rows sharing one `stable_subject_id` go in and TWO ROWS COME OUT (1 distinct subject id), and the test asserts `len(industrial_views) == 2` itself. What it actually pins is the identity-stability PRECONDITION -- duplicate labels never fragment into two subjects, so no consumer can read two rows as two mines. The obligation's operative verb has NO CONSTRUCT ON MAIN TO VIOLATE: enumerated over all 11 cases, the entire payload carries exactly three numeric field paths -- `economics.native_blocks[].value` (a reported financial measure), `economics.reported_economic_context.context_block_count`, and `request.page` -- so there is no physical-supply quantity to inflate and no corroboration count to double. POSITIVE CONTROL on that enumeration: the walk does reach deep list members (it found the native_blocks value path), so the absence is measured and not an artefact of a thin fixture. 'Multiple slices' is also not expressible on main: one request carries one `slice_key`. PARTIAL_BY_CONSTRUCTION is the same shape as MGD-17 -- operative verb with no construct, plus a delivered adjacent fact pinned green. Owes its pin in the first PR that mints a supply or corroboration aggregate. Name provenance: planned name was test_shared_asset_not_duplicate_supply. The delivered test remains green (green on origin/main (61 passed in tests/test_mining_composition.py)); its subject is narrower than the obligation, which is the whole finding."
     },
     {
       "obligation_id": "MGD-13",
@@ -163,7 +203,7 @@
       "planned_test": "tests/test_mining_witness_profiles.py::test_attribution_not_applied_twice",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T02 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED SUBJECT 2026-09-27 (wave 6/7); status unchanged, reason replaced — the measurement was recorded in R-MIN-36 but not on this row, which is the hazard this program keeps rediscovering. Clause 2 ('ownership is never applied twice') is UNVIOLATABLE on main: `ownership` occurs ZERO times in the module and ZERO times in the schema, so there is no ownership factor to apply at all, let alone twice. Clause 1 needs T02's basis vocabulary (gross / consolidated / attributable / payable / saleable), which does not exist on main — `engine/company_intelligence/mining_issuer_profiles.py` is absent and `fiscal_scope` occurs zero times in any `issuer_profiles` source. NOT_RUN because the FIRST clause is the operative one."
     },
     {
       "obligation_id": "MGD-14",
@@ -172,34 +212,34 @@
       "planned_test": "tests/test_mining_witness_profiles.py::test_production_is_not_delivery",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T02 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED SUBJECT 2026-09-27 (wave 6/7); status unchanged, reason replaced. Same shape as MGD-23 and measured the same way: the composer copies `measure` VERBATIM onto the block, so production, purchases, inventory, internal transfer and external delivery are neither interpreted nor mapped. Non-interpretation is not enforcement — a passthrough can no more keep the five kinds distinct than it can interchange them — so a test asserting the passthrough would NOT pin this. Needs T02 to mint the kind vocabulary first. PREMISE NOW PINNED 2026-09-27 (wave 8): the verbatim passthrough this reason cites is asserted by `test_the_composer_never_interprets_a_submitted_measure` (both slices, nine submitted measures each, including case variants, a trailing space and an unmappable string, so a normalizer or a whitelist-with-fallback cannot satisfy it). That guard protects THIS REASON'S PREMISE, not the obligation, and is NOT partial credit — the limit stated above is unchanged and still governs: a passthrough can no more keep the kinds DISTINCT than interchange them. Status deliberately unchanged. Its only effect is that if the composer ever begins reading a measure's meaning, the suite goes red instead of this reason going quietly stale."
     },
     {
       "obligation_id": "MGD-15",
       "family": "Measures",
       "owning_task": "T03",
       "planned_test": "tests/test_mining_economic_inputs.py::test_signed_loss_is_not_positive_profit",
-      "delivered_test": null,
-      "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T03 (clause level, not the trace's task field) has not landed on main."
+      "delivered_test": "tests/test_mining_composition_truth_table.py::test_composition_matches_the_frozen_truth_table[signed_loss-row9]",
+      "status": "PARTIAL_BY_CONSTRUCTION",
+      "note": "CORRECTED 2026-09-27 from NOT_RUN. Clause 1 (negatives retain their sign through the native financial route) -- that route is T04a's `native_blocks` path, MERGED at #7950, and it is pinned green through the real compose+validate route by `tests/test_mining_composition_truth_table.py::test_composition_matches_the_frozen_truth_table[signed_loss-row9]` (asserts `block['value'] < 0`) and `tests/test_mining_shared_contract.py::test_expected_oracle_shape_is_pinned_per_case[signed_loss-shape9]` (asserts `value < 0 and sign_preserved is True`, `bundle.omissions == ()`). Measured: -375 submitted -> -375 composed, `sign='-'`, no coercion, status 'ready'. Clause 2 (shared nonnegative fields are not bypassed) is NOT EXPRESSIBLE on main. The SHARED assertion contract is reached by a lazy string import and is NOT importable on main: `mining_dependency_binding.py:295-320` -> MiningResearchRefusal('shared_contract_unavailable', 'engine.theme_graph.curation_assertion is not importable on this checkout (ModuleNotFoundError)'). It lands with #7870. Same seam as T08 §5's MGD-01 row. The delivered mining contract's only nonnegative numerics are `request.page` (>=1) and the derived `context_block_count` (>=0) -- neither a financial value -- and `native_blocks[].value` is sign-unconstrained. I first drafted this row COVERED_SUITE_GREEN and the shared-contract seam refuted it: do NOT re-credit clause 2 before #7870, and owe its pin in the PR that lands it."
     },
     {
       "obligation_id": "MGD-16",
       "family": "Measures",
       "owning_task": "T03",
       "planned_test": "tests/test_mining_economic_inputs.py::test_two_null_bases_are_not_comparable",
-      "delivered_test": null,
-      "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T03 (clause level, not the trace's task field) has not landed on main."
+      "delivered_test": "tests/test_mining_composition.py::test_packet_driven_missing_required_field_withholds_row_and_mints_unqualified",
+      "status": "PARTIAL_BY_CONSTRUCTION",
+      "note": "CORRECTED 2026-09-27 from NOT_RUN. The subject is the COMPARISON channel, delivered by T04a, not unlanded T03 code: a leg missing a required definition field withholds the row and mints `definition_unqualified:<field>` at `mining_theme_research.py:802`. Pinned green by `tests/test_mining_composition.py::test_packet_driven_missing_required_field_withholds_row_and_mints_unqualified` (a leg with no `unit` -> `expectations == []` AND `definition_unqualified:unit`) and by `tests/test_mining_composition.py::test_ir01_both_null_definitions_no_badge_no_model_readable_field` (two null bases -> warning present, no beat/miss/improvement/confirmed-surprise badge). That is exactly 'cannot become comparable because both optional fields are null'. NOT delivered: `currency` and `attribution` are not definition fields on main -- the reserved set is unit / perimeter / basis / management_estimate_vs_actual (`:546-566`). Those two clauses arrive with T03's input definitions and owe pins then. CAUTION for that lane: an absent field must REFUSE, never default -- probe with the field explicitly None as well as absent."
     },
     {
       "obligation_id": "MGD-17",
       "family": "Measures",
       "owning_task": "T03",
       "planned_test": "tests/test_mining_economic_inputs.py::test_incompatible_measurement_refuses_arithmetic",
-      "delivered_test": null,
-      "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T03 (clause level, not the trace's task field) has not landed on main."
+      "delivered_test": "tests/test_mining_composition.py::test_mgd17_refused_comparison_does_not_delete_the_supported_facts",
+      "status": "PARTIAL_BY_CONSTRUCTION",
+      "note": "CORRECTED 2026-09-27 from NOT_RUN. The operative verb is 'refuse dependent arithmetic', and NO dependent arithmetic can exist on main: `economics['derived']` is the literal `[]` on all 11 casebook cases (hardcoded in the payload dict, `mining_theme_research.py` ~:955). No delivered construct can express a violation, so this is absence of capability, not coverage. Becomes falsifiable the moment `derived` is first populated and OWES A PIN IN THAT PR. The mismatch taxonomy itself (wet/dry, product vs contained-metal, stock/flow) does not exist on main either. Its second clause, 'without deleting supported facts', IS delivered and MEASURED -- a refused comparison leaves the supported native block intact (measured: expectations 0, native_blocks 1 @ value 1250, limitations ['definition_unqualified:unit','omitted:expectations'], status 'ready') -- and that survival is now PINNED GREEN by `tests/test_mining_composition.py::test_mgd17_refused_comparison_does_not_delete_the_supported_facts`, delivered in this same wave. That test carries a positive CONTROL arm -- it composes the identical bundle WITHOUT the bad comparison and requires the two native-block lists to be identical -- because 'the block survived' would prove nothing if the pipeline kept blocks unconditionally. Status moved from SATISFIED_BY_ABSENCE_OF_CAPABILITY to PARTIAL_BY_CONSTRUCTION when that pin landed: one clause is now pinned, so 'no delivered construct can express a violation' no longer describes the row. Clause 1 stays absence of capability and still owes its pin in the PR that first populates `derived`."
     },
     {
       "obligation_id": "MGD-18",
@@ -208,61 +248,64 @@
       "planned_test": "tests/test_mining_composition.py::test_missing_threshold_keeps_contract_explanation",
       "delivered_test": null,
       "status": "SATISFIED_BY_ABSENCE_OF_CAPABILITY",
-      "note": "Clause 1 has no field to mis-encode: no ownership field exists on any delivered row or identity. Becomes falsifiable -- and owes a pin in the same PR -- the moment that field is minted."
+      "note": "Clause 1 has no field to mis-encode: no ownership field exists on any delivered row or identity. Becomes falsifiable -- and owes a pin in the same PR -- the moment that field is minted. RECEIPTED 2026-09-27 (wave 9): the absence is now measured, not asserted. A probe walked the WHOLE composed payload recursively for all 11 casebook cases -- 60 distinct key paths -- and the POSITIVE CONTROL is that the walk demonstrably reaches identity: it enumerates `companies[].cik`, `companies[].name`, `companies[].role`, `companies[].stable_subject_id`, `native_subjects[].kind`, `native_subjects[].label`. native_blocks carry exactly six keys (basis, measure, sign, source_label, stable_subject_id, value). Matches for ownership/owner/stake/interest_pct/held_by/parent/subsidiary anywhere in the payload: ZERO. Note `companies[].role` DOES exist and is not an ownership field -- the control proves the probe saw it and did not count it. A pin is still OWED in the same PR that mints an ownership field."
     },
     {
       "obligation_id": "MGD-19",
       "family": "Economics",
       "owning_task": "T03",
       "planned_test": "tests/test_mining_economic_inputs.py::test_ppa_and_internal_sales_not_external_revenue",
-      "delivered_test": null,
-      "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T03 (clause level, not the trace's task field) has not landed on main."
+      "delivered_test": "tests/test_mining_composition.py::test_mgd19_an_intragroup_elimination_reaches_the_payload_with_its_sign",
+      "status": "PARTIAL_BY_CONSTRUCTION",
+      "note": "PINNED 2026-09-27 (wave 7). The wave-6 note measured this correctly and named what was missing: the CONSTRUCT exists on main — a packet `measure='intersegment elimination', value=-120` composes a native block carrying `-120` and `sign='-'` — so this was never absence of capability, and the one delivered test that NAMES MGD-19 (`test_internal_transfer_keeps_elimination_sign`) asserts through `composition._signed_value` while its own comment concedes the casebook exposes no internal-transfer row. **A helper pin is not a pin on the composed payload.** Clause 2 now has a PAYLOAD pin: `tests/test_mining_composition.py::test_mgd19_an_intragroup_elimination_reaches_the_payload_with_its_sign` submits the elimination as a native financial packet and requires it to reach `economics['native_blocks']` with its negative value and sign. Two control arms make it non-vacuous — the same bundle without the elimination must yield exactly one block fewer (a silent drop at the builder mints NO limitation, so nothing else in the payload would reveal it), and the measurement block beside it must be identical across both compositions. The sign was separately measured to be DERIVED and not a constant: +120 composes `sign='+'`, -120 composes `sign='-'`. PARTIAL and not COVERED because clause 1 — product sales and contractual support income remaining separately DEFINED — needs T03's definition vocabulary and is deliberately not claimed. DO NOT credit the helper test to this row."
     },
     {
       "obligation_id": "MGD-20",
       "family": "Economics",
       "owning_task": "T03",
       "planned_test": "tests/test_mining_economic_inputs.py::test_unowned_derivation_not_emitted",
-      "delivered_test": null,
-      "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T03 (clause level, not the trace's task field) has not landed on main."
+      "delivered_test": "",
+      "status": "SATISFIED_BY_ABSENCE_OF_CAPABILITY",
+      "note": "CORRECTED 2026-09-27 from NOT_RUN. Measured: `economics['derived']` is the literal `[]` on all 11 casebook cases, so no displayed derivation exists that could lack receipts -- no delivered construct can express a violation. Strong delivered fact worth recording: the contract ALREADY mandates the receipts this obligation demands. The schema's `derived[]` item requires `stable_subject_id`, `kind`, `value`, `formula_version` and `inputs` with `additionalProperties: False`, and the validator runs on every return path (R-MIN-22) -- so the first populated derivation cannot ship without formula/input receipts. Becomes falsifiable when `derived` is first populated and OWES A PIN IN THAT PR. The obligation's second half, 'the browser does not invent arithmetic', is unlanded T06 and stays outside any main-side verdict."
     },
     {
       "obligation_id": "MGD-21",
       "family": "Economics",
       "owning_task": "T03",
       "planned_test": "tests/test_mining_economic_inputs.py::test_same_horizon_is_not_next_outlook",
-      "delivered_test": null,
-      "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T03 (clause level, not the trace's task field) has not landed on main."
+      "delivered_test": "tests/test_mining_composition.py::test_unsupported_contract_calculation_is_missing_derivation_not_invented_value",
+      "status": "PARTIAL_BY_CONSTRUCTION",
+      "note": "CORRECTED 2026-09-27 from NOT_RUN. The behaviour this obligation protects is delivered and pinned green: a same-horizon revision is refused a derivation rather than relabeled as later-period guidance. Measured on the `same_horizon_revision` case -- omission `next_period_outlook` -> limitation `missing_derivation` (`OMISSION_TO_LIMITATION`), 0 expectations, 0 native blocks. Pinned by `tests/test_mining_composition.py::test_unsupported_contract_calculation_is_missing_derivation_not_invented_value` and by `tests/test_mining_composition_truth_table.py::test_composition_matches_the_frozen_truth_table[same_horizon_revision-row8]` (frozen row (False, 0, 0, RE_DEF | {{'missing_derivation'}})). PARTIAL and not COVERED for one honest reason: the obligation is phrased 'to satisfy `assess_management_sequence`', and that symbol does NOT exist anywhere in the tree (`hasattr(module, 'assess_management_sequence')` is False) -- it appears only in audit prose. So the motive clause cannot be tested and must not be counted; a negative assertion about an absent symbol passes for free. If that consumer is ever minted, this row owes a pin against it in the same PR."
     },
     {
       "obligation_id": "MGD-22",
       "family": "Economics",
       "owning_task": "T03",
       "planned_test": "tests/test_mining_economic_inputs.py::test_management_not_consensus",
-      "delivered_test": null,
-      "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T03 (clause level, not the trace's task field) has not landed on main."
+      "delivered_test": "tests/test_mining_composition_probes_r3.py::test_probe_r3_a_declared_range_or_consensus_is_refused, tests/test_mining_composition_probes_r3.py::test_probe_r3_a_declared_range_on_a_single_leg_is_refused, tests/test_mining_composition_probes_r3.py::test_probe_r3_absent_flags_still_compose_so_false_is_earned_not_assumed, tests/test_mining_composition.py::test_rare_earth_usable_case_carries_slice_definitional_codes_only",
+      "status": "PARTIAL_BY_CONSTRUCTION",
+      "note": "CORRECTED 2026-09-27 from NOT_RUN. Management-vs-consensus distinctness is enforced by the DELIVERED contract, not by unlanded code: the schema pins `expectations[].is_range` and `expectations[].is_consensus` to `const: False`, and the validator runs on every return path, so a payload asserting consensus fails validation rather than shipping. The 'including in labels and summaries' half is delivered too: `_BADGE_VOCABULARY = ('beat','miss','improvement','above','below','confirmed','surprise')` and a badge word reaching the headline mints `definition_unqualified:headline` (~:918-924). Pinned by `tests/test_mining_composition.py::test_rare_earth_usable_case_carries_slice_definitional_codes_only`, which asserts the truthful 'no comparison selected' marker is `definition_unqualified:management_estimate_vs_actual` and NOT a fabricated comparison. PARTIAL because 'house forecasts' is a third category with no delivered field at all -- there is nothing on main to keep distinct from the other two, and it owes a pin when T03 mints it. PIN CORRECTED 2026-09-27 (wave 10), status unchanged. The row cited `test_rare_earth_usable_case_carries_slice_definitional_codes_only`, which asserts four limitation codes and says NOTHING about `is_range` or `is_consensus` -- the `const: False` constraint this note turns on. Those flags are pinned, in the r3 probe suite: a declared range or consensus on the packet is REFUSED, so is one declared on either leg, and `test_probe_r3_absent_flags_still_compose_so_false_is_earned_not_assumed` is the oracle pair that distinguishes a field the module READ from a hardcoded constant -- which matters here because `mining_theme_research.py:817-818` does write both flags as literal `False`. That literal is EARNED, not assumed: the refusal path means it is only reached where False is true. The original citation is kept as the last ref. What remains PARTIAL is unchanged and is not this: MGD-22 still owes its pin in the first PR that mints a `house forecast` field."
     },
     {
       "obligation_id": "MGD-23",
       "family": "Economics",
       "owning_task": "T03",
       "planned_test": "tests/test_mining_economic_inputs.py::test_cash_claims_not_operating_profit",
-      "delivered_test": null,
+      "delivered_test": "",
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T03 (clause level, not the trace's task field) has not landed on main."
+      "note": "REASON CORRECTED 2026-09-27; status unchanged. Measured: the composer is a PASSTHROUGH for `measure` -- submitted 'financing proceeds' composes verbatim as 'financing proceeds', never interpreted or mapped. Non-interpretation is not enforcement: because the composer never reads the measure's meaning, it can neither substitute financing for operating earnings NOR enforce that they stay distinct. So this is not absence of capability and not coverage -- it genuinely needs T03 to mint the input kind vocabulary (financing / cash availability / owned inventory / operating earnings) and then pin non-substitution against it. A test asserting the passthrough would NOT pin this obligation. PREMISE NOW PINNED 2026-09-27 (wave 8): the verbatim passthrough this reason cites is asserted by `test_the_composer_never_interprets_a_submitted_measure` (both slices, nine submitted measures each, including case variants, a trailing space and an unmappable string, so a normalizer or a whitelist-with-fallback cannot satisfy it). That guard protects THIS REASON'S PREMISE, not the obligation, and is NOT partial credit — the limit stated above is unchanged and still governs: a passthrough can no more keep the kinds DISTINCT than interchange them. Status deliberately unchanged. Its only effect is that if the composer ever begins reading a measure's meaning, the suite goes red instead of this reason going quietly stale."
     },
     {
       "obligation_id": "MGD-24",
       "family": "Change",
       "owning_task": "T07",
       "planned_test": "tests/test_mining_updates.py::test_retrospective_not_system_replay",
-      "delivered_test": null,
-      "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T07 (clause level, not the trace's task field) has not landed on main."
+      "delivered_test": [
+        "tests/test_mining_composition.py::test_missing_replay_cutoff_refuses",
+        "tests/test_mining_shared_contract_probes.py::test_probe_latest_time_mode_needs_no_replay_cutoffs"
+      ],
+      "status": "PARTIAL_BY_CONSTRUCTION",
+      "note": "RE-MEASURED 2026-09-27 (wave 7) — was NOT_RUN on an owning-task note. The labelling distinction this obligation demands IS delivered and IS enforced: the request carries `time_mode`, whose delivered values separate `latest` (a reconstruction made now) from `system_replay` (genuinely recorded history), and the two are not interchangeable — `system_replay` with no cutoff raises `replay_cutoffs_required` through the real `compose_mining_research` path, while `latest` with `source_cutoff=None` and `recorded_cutoff=None` validates without raising. Both arms are delivered and green. Recorded honestly: the `latest` arm pins by NOT raising (its only assertion is the always-true `live_admission == 'refused'`), which is weaker than an explicit positive assertion — a lane strengthening this row should assert the admitted shape, not add a new case. PARTIAL and not COVERED because 'labeled differently' also binds what a READER sees, and the prose/table surfaces are unlanded T06/T07."
     },
     {
       "obligation_id": "MGD-25",
@@ -271,7 +314,7 @@
       "planned_test": "tests/test_mining_witness_profiles.py::test_date_only_not_invented_instant",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T02 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED SUBJECT 2026-09-27 (wave 6/7); status unchanged, reason replaced. Clause 2 ('borrow review time as publication') is UNVIOLATABLE on main: `_order_rows_by_stable_source_identity` sorts by `stable_subject_id` ONLY and never by any time field, and nothing in this program reads a clock — so no ordering can be derived from a review timestamp. Clause 1 ('date-only publication cannot prove an unsupported intraday ordering') needs T02's publication-precision vocabulary, absent from main. NOT_RUN on the first clause."
     },
     {
       "obligation_id": "MGD-26",
@@ -280,43 +323,52 @@
       "planned_test": "tests/test_mining_updates.py::test_target_not_aged_into_fact",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T07 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED SUBJECT-ABSENT 2026-09-27 (wave 7); status unchanged, reason replaced. The obligation's whole vocabulary — milestone, target, achieved, deadline, elapsed — occurs ZERO times in the delivered module, binding, schema and all seven mining suites. There is no milestone object and no clock read anywhere in this program's code, so neither clause has a subject on main. This is a measurement of the subject, not a statement about T07's landing."
     },
     {
       "obligation_id": "MGD-27",
       "family": "Change",
       "owning_task": "T07",
       "planned_test": "tests/test_mining_updates.py::test_new_fact_does_not_reuse_old_interpretation",
-      "delivered_test": null,
-      "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T07 (clause level, not the trace's task field) has not landed on main."
+      "delivered_test": "tests/test_mining_composition.py::test_select_mining_evidence_blocks_changed_quantities_with_stale_causal_text",
+      "status": "PARTIAL_BY_CONSTRUCTION",
+      "note": "RE-MEASURED 2026-09-27 (wave 7) — was NOT_RUN on an owning-task note. The subject is T04's delivered refresh guard, merged at #7950, not unlanded T07 code: a refresh that pairs changed quantities with stale causal text is REFUSED (`generation_changed`) through the real `select_mining_evidence` path, and the module states the semantics at `mining_theme_research.py:401` ('a changed source is held; the bound interpretation is stale'). Refusing to emit is stronger than marking stale, so the clause's hazard — a dependent interpretation surviving a source correction — is not expressible on main. PARTIAL because 'preserve predecessor objects ... through native owners' needs T07's object store, which does not exist here; this module is stateless and deletes nothing."
     },
     {
       "obligation_id": "MGD-28",
       "family": "Change",
       "owning_task": "T07",
       "planned_test": "tests/test_mining_updates.py::test_pagination_revision_tuple_coherent",
-      "delivered_test": null,
-      "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T07 (clause level, not the trace's task field) has not landed on main."
+      "delivered_test": [
+        "tests/test_mining_composition.py::test_competing_generation_refuses",
+        "tests/test_mining_shared_contract_probes.py::test_probe_offset_zero_without_expected_generation_is_admitted"
+      ],
+      "status": "PARTIAL_BY_CONSTRUCTION",
+      "note": "RE-MEASURED 2026-09-27 (wave 7) — was NOT_RUN on an owning-task note. 'Not silently mixed generations' is delivered and pinned on the request axis by T01'/T04: a query whose `expected_generation` does not match refuses `generation_changed` through the real compose path, and `expected_generation_required` makes the generation MANDATORY for a paged read while admitting an unpaged one — so a page cannot be served against an unstated generation, which is exactly the silent mixing the clause forbids. PARTIAL because the clause's subjects also include the map, table and prose VIEWS, which are unlanded T06/T07; the delivered half is the tuple's coherence, not its rendering."
     },
     {
       "obligation_id": "MGD-29",
       "family": "Safety",
       "owning_task": "T05",
       "planned_test": "tests/test_mining_private_route.py::test_anonymous_research_never_reads_private",
-      "delivered_test": null,
-      "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T05 (clause level, not the trace's task field) has not landed on main."
+      "delivered_test": [
+        "tests/test_mining_shared_contract.py::test_route_unbound_refusal_is_identical_for_entitled_and_unentitled_callers",
+        "tests/test_mining_shared_contract_probes.py::test_probe_route_unbound_reports_the_harness_read_counter"
+      ],
+      "status": "PARTIAL_BY_CONSTRUCTION",
+      "note": "RE-MEASURED 2026-09-27 (wave 7) — was NOT_RUN on an owning-task note. The delivered T01' harness makes the violation inexpressible and SAYS SO IN CODE: `mining_dependency_binding.py:286-293` takes `entitled` and immediately discards it (`del entitled  # entitlement cannot conjure a route that does not exist on main`), returning a typed `route_unbound` refusal with `read_count == 0` — so no private read can precede an entitlement check, because no read occurs at all, for entitled and unentitled callers alike (the test asserts the two refusals are EQUAL objects). The second pin is the POSITIVE CONTROL and is load-bearing: it sets `harness.read_count = 3` and requires the refusal to report 3, so `read_count == 0` is proven to be a measurement and not a constant. PARTIAL because the obligation's operative subject is the ORDERING inside T05's real private route, and that route exists on neither main nor the shared candidate."
     },
     {
       "obligation_id": "MGD-30",
       "family": "Safety",
       "owning_task": "T05",
       "planned_test": "tests/test_mining_private_route.py::test_public_root_refuses_real_admission",
-      "delivered_test": null,
-      "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T05 (clause level, not the trace's task field) has not landed on main."
+      "delivered_test": [
+        "tests/test_mining_shared_contract.py::test_delivery_validation_refuses_live_admission_for_every_case",
+        "tests/test_mining_shared_contract.py::test_loader_refuses_a_fixture_that_is_not_synthetic"
+      ],
+      "status": "PARTIAL_BY_CONSTRUCTION",
+      "note": "RE-MEASURED 2026-09-27 (wave 7) — was NOT_RUN on an owning-task note. Clause 1 is delivered and pinned across the WHOLE casebook: `validate_delivery_inputs` returns `live_admission == 'refused'` for every one of the parametrized cases, and a fixture that is not synthetic is refused at the loader — real bytes, rights and private objects stay incumbent-owner acts (G2–G6), so full-fidelity admission cannot precede the accepted private binding. Clause 2 ('no public-root or emergency-bucket fallback') is measured UNVIOLATABLE rather than asserted: there is no bucket, public-root or emergency path in the delivered sources at all — the four `fallback` occurrences are a cik fallback and a `source_label` fallback, neither an admission path. PARTIAL because a real fallback can only be introduced, and therefore only be forbidden, by T05's route."
     },
     {
       "obligation_id": "MGD-31",
@@ -325,7 +377,7 @@
       "planned_test": "tests/test_mining_private_route.py::test_warm_rights_revocation_vetoes_emission",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T05 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED SUBJECT-ABSENT 2026-09-27 (wave 7); status unchanged, reason replaced. `revoc`/`revoke`/`warm`/`emission` occur ZERO times in every delivered source. There is no warm process and no emission path to revoke, so the clause has no subject on main. Arrives with T05's route."
     },
     {
       "obligation_id": "MGD-32",
@@ -334,7 +386,7 @@
       "planned_test": "tests/test_mining_ui.py::test_logout_discards_delayed_response",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T06 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED SUBJECT-ABSENT 2026-09-27 (wave 7); status unchanged, reason replaced. `logout`/`account_change`/`cross_user`/`restore` occur ZERO times in every delivered source. There is no session, no account identity and no restorable private state in this program's code — the harness's `client()` performs zero reads — so cross-user restoration is not expressible. Arrives with T06."
     },
     {
       "obligation_id": "MGD-33",
@@ -343,16 +395,16 @@
       "planned_test": "tests/test_mining_private_route.py::test_no_private_payload_or_existence_leak",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T05 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED SUBJECT-ABSENT 2026-09-27 (wave 7); status unchanged, reason replaced. `source_map`/`analytics`/`telemetry`/`disclos` occur ZERO times in every delivered source, and the binding's own docstring records that nothing here performs I/O, network access, identity minting or clock reads. There is no page source, log sink, storage or analytics emitter to disclose through. Arrives with T05."
     },
     {
       "obligation_id": "MGD-34",
       "family": "Safety",
       "owning_task": "T04",
       "planned_test": "tests/test_mining_composition.py::test_authority_literal_false",
-      "delivered_test": "tests/test_mining_composition.py::test_copper_complete_is_ready_and_authority_literal_false, tests/test_mining_composition.py::test_rare_earth_complete_is_ready_and_authority_literal_false",
+      "delivered_test": "tests/test_mining_composition.py::test_copper_complete_is_ready_and_authority_literal_false, tests/test_mining_composition.py::test_rare_earth_complete_is_ready_and_authority_literal_false, tests/test_mining_shared_contract.py::test_every_fixture_is_synthetic_and_all_authority_flags_are_false",
       "status": "COVERED_SUITE_GREEN",
-      "note": "Pinned by a NAMED delivered test in the T04a suite, green on origin/main (53 passed). Name provenance: planned name was test_authority_literal_false; delivered as two tests, one per witness slice."
+      "note": "MEASURED BY SUBJECT 2026-09-27 (wave 11) over ALL 11 CASES against an INDEPENDENT oracle, and the measurement found one of the two cited tests unable to fail. Obligation: every machine-facing rank/gate/size/originate/open-entry flag remains literal false. `AUTHORITY` (mining_dependency_binding.py:96) is exactly those five keys. Measured: for each of the 11 cases the payload's `authority` key set equals a five-key literal WRITTEN IN THE PROBE (not imported from the module under test) and every value is `False` BY IDENTITY -- 0 violations. NEGATIVE CONTROL: a falsy-but-not-False value (`0`) is caught, so `is False` is load-bearing. THE DEFECT FOUND: of the two tests this row cited, `test_rare_earth_complete_is_ready_and_authority_literal_false` asserts only `result['authority'] == _AUTHORITY` where `_AUTHORITY = composition.AUTHORITY` -- a self-comparison to the module's own constant, which would still PASS with every flag flipped True. Only the copper twin adds `all(v is False for v in ...)`, so the payload-side claim rested on one assertion in one test. Now also cites `tests/test_mining_shared_contract.py::test_every_fixture_is_synthetic_and_all_authority_flags_are_false`, which holds a hand-written oracle literal (AUTHORITY_FLAGS, line 21) and is parametrized over all 11 cases -- on the FIXTURE side, which is the input arm the payload tests do not cover. Name provenance: planned name was test_authority_literal_false; delivered as two tests, one per witness slice. Pinned green on origin/main (61 passed in tests/test_mining_composition.py)."
     },
     {
       "obligation_id": "MGD-35",
@@ -361,7 +413,7 @@
       "planned_test": "tests/test_mining_updates.py::test_incumbent_market_outputs_unchanged",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T07 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED SUBJECT-ABSENT 2026-09-27 (wave 7); status unchanged, reason replaced. `incumbent` occurs twice in the delivered sources and BOTH are prose in the binding's docstring, never code; `recommend`, `member_order` and `uncovered` occur zero times. This program's module is purely additive and registers into no incumbent recommender, so it cannot change an incumbent's same-input output — but that is the absence of the WIRING, not a guarantee about it, and the guarantee is exactly what T07 must carry. Deliberately NOT statused SATISFIED_BY_ABSENCE_OF_CAPABILITY: the hazard is entirely in the future, and this row's whole value to a T07 lane is that it is still owed."
     },
     {
       "obligation_id": "MGD-36",
@@ -370,7 +422,7 @@
       "planned_test": "tests/test_mining_ui.py::test_all_viewports_languages_themes",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T06 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED SUBJECT-ABSENT 2026-09-27 (wave 7); status unchanged, reason replaced. `keyboard`/`focus`/`mobile`/`theme_dark` occur ZERO times in every delivered source, and this program owns no template, stylesheet or component. Responsive, focus, EN/ZH and both-theme obligations have no subject until T06 mounts on the shared shell. Note for that lane: both themes are TWO art directions under house law, and token substitution alone is never proof of the light one."
     },
     {
       "obligation_id": "MGD-37",
@@ -379,7 +431,7 @@
       "planned_test": "tests/test_mining_acceptance.py::test_real_source_update_reaches_entitled_browser",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T08 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED G2-GATED 2026-09-27 (wave 7); status unchanged, reason replaced. This is not a missing test but a missing ADMISSION: every delivered case is synthetic and `validate_delivery_inputs` refuses live admission for all of them, by design (R-MIN-06, G2–G6). The obligation explicitly says fixtures or CI alone do not pass, so no test this program can write could satisfy it; it needs a real accepted source revision plus T05's route. No live Freeport or MP Materials figure may become a fixture or a native receipt before G2."
     },
     {
       "obligation_id": "MGD-38",
@@ -388,16 +440,16 @@
       "planned_test": "tests/test_mining_acceptance.py::test_honest_degradation_no_public_fallback",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T08 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED HALF-DELIVERED, G2-GATED 2026-09-27 (wave 7); status unchanged, reason replaced. The honest-degraded half of the vocabulary IS delivered and exercised — `degraded`, `refused` and `missing_derivation` are live statuses with pins — and 'without a public fallback' is unviolatable for the same reason as MGD-30 clause 2 (no fallback path exists). What is missing is the DEMONSTRATION on one real update, which is a G2 admission act, not code. Stays NOT_RUN because the obligation's unit is the demonstration, and half a demonstration is none."
     },
     {
       "obligation_id": "MGD-39",
       "family": "Coverage",
       "owning_task": "T04",
       "planned_test": "tests/test_mining_composition.py::test_coverage_not_global_census",
-      "delivered_test": "tests/test_mining_composition.py::test_partial_coverage_industry_total_stays_null, tests/test_mining_composition.py::test_industry_total_unknown_is_absent_on_w_c_slice, tests/test_mining_composition.py::test_industry_total_unknown_is_minted_iff_slice_vocab_contracts_it",
+      "delivered_test": "tests/test_mining_composition.py::test_partial_coverage_industry_total_stays_null, tests/test_mining_composition.py::test_industry_total_unknown_is_absent_on_w_c_slice, tests/test_mining_composition.py::test_industry_total_unknown_is_minted_iff_slice_vocab_contracts_it, tests/test_mining_composition.py::test_mgd39_coverage_scope_is_named_and_the_total_is_explicitly_null_on_both_slices",
       "status": "COVERED_SUITE_GREEN",
-      "note": "Pinned by a NAMED delivered test in the T04a suite, green on origin/main (53 passed). Name provenance: planned name was test_coverage_not_global_census; delivered as three tests covering partial-neighbourhood visibility and the absent total."
+      "note": "MEASURED BY SUBJECT 2026-09-27 (wave 11) and THE VISIBILITY CLAUSE RESTED ON A FIELD NO TEST ASSERTED, so wave 11 delivered the pin. Obligation, two clauses: (1) partial neighborhoods and later-domain gaps are VISIBLE, (2) two witnesses do not imply complete Mining coverage. Clause 2 is pinned: `authorized_coverage.industry_total is None` on both complete witness cases. CLAUSE 1 was the gap. Two of the three cited tests assert that `industry_total_unknown` is ABSENT on W-C, which read alone says the null total carries no signal on that slice at all; measured, copper's only limitation is `omitted:expectations` while rare-earth carries the code. What actually makes the gap visible is slice-independent and sits in the same object: `authorized_coverage` is PRESENT, `industry_total` is EXPLICITLY null (never omitted), and `count_scope == 'two_closed_definitions'` NAMES the scope. Before this wave `count_scope` had exactly ONE site in the whole tree (mining_theme_research.py:961) and ZERO test assertions. Now pinned by `test_mgd39_coverage_scope_is_named_and_the_total_is_explicitly_null_on_both_slices`, which asserts the declaration on both slices AND the measured slice-scoped contrast ({copper: False, rare_earth: True}), mutation-probed (renaming the scope to 'complete_industry_census' makes it fail). Name provenance: planned name was test_coverage_not_global_census; delivered as three tests covering the code's polarity and the absent total. Pinned green on origin/main (61 passed in tests/test_mining_composition.py)."
     },
     {
       "obligation_id": "MGD-40",
@@ -406,7 +458,7 @@
       "planned_test": "tests/test_mining_acceptance.py::test_delivery_states_remain_distinct",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "No delivered test pins this obligation. Owning task T08 (clause level, not the trace's task field) has not landed on main."
+      "note": "MEASURED SUBJECT-ABSENT 2026-09-27 (wave 7); status unchanged, reason replaced. `acceptance`/`deploy`/`production_proof` occur ZERO times in every delivered source, and rightly so — this obligation's subject is the FINAL EVIDENCE PACKET, a document T08 writes, not behaviour any module can carry. It is satisfied or violated by how that packet reports the nine-rung ladder (ACK → QUEUED → START → RUNNING → DELIVERED → CI → MERGED → PRODUCTION_PROOF → ACCEPTANCE), and 'packet delivery is not START' is its own warning. Unpinnable by construction until T08."
     }
   ]
 }

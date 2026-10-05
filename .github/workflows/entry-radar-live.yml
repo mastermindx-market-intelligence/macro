@@ -211,14 +211,17 @@ jobs:
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: |
           if [ "${DRY_RUN:-}" = "true" ]; then
-            python -m scripts.entry_radar_live_pack --dry-run
+            python -m scripts.entry_radar_live_pack --dry-run --stream-substrate
           else
-            python -m scripts.entry_radar_live_pack
+            python -m scripts.entry_radar_live_pack --stream-substrate
           fi
 
       - name: evaluate one RTH pass against the frozen pack
         env:
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+          # Same opt-in the production unit carries (wave 2b): the backstop publishes the
+          # same catalyst coverage the VPS does. Unset everywhere else, so tests never fetch.
+          ENTRY_RADAR_CATALYST_LIVE: "1"
           # The same R2 data plane every build_* script publishes to. Absent creds
           # → the pass still evaluates and spools nothing, which is honest: the
           # payload says so in health.inputs.spool and the transitions are withheld

@@ -4007,15 +4007,17 @@ SESSION_END_STATES = (
     "PROVEN_OUTCOME",
     "EXACT_HUMAN_GATE",
     "EFFECT_UNKNOWN",
+    "PLATFORM_FAILURE",
     "ALL_SCOPED_LANES_BLOCKED",
     "DURABLE_EXECUTION_RUNNING",
     "MORE_WORK_EXISTS",
 )
-# The one member that is never a lawful stop. It is in the vocabulary precisely so a
-# session can name the state honestly mid-task; naming it as the END state is the
-# contradiction this guard refuses.
-NON_TERMINAL_SESSION_END_STATES = frozenset({"MORE_WORK_EXISTS"})
+# These members are diagnostics, never lawful terminal states. The guard does not infer
+# whether lanes are really blocked; it only refuses a token the session declared about
+# itself. That keeps enforcement auditable without turning this hook into a control plane.
+NON_TERMINAL_SESSION_END_STATES = frozenset({"MORE_WORK_EXISTS", "ALL_SCOPED_LANES_BLOCKED"})
 MORE_WORK_EXISTS = "more_work_exists"
+ALL_SCOPED_LANES_BLOCKED = "all_scoped_lanes_blocked"
 
 # A DECLARATION, never a mention. The marker is required so that a session quoting
 # the law ("MORE_WORK_EXISTS is not a valid stopping state") in its own final message
@@ -4332,9 +4334,12 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
                     "PRODUCTION_PROOF and ACCEPTANCE are distinct facts and none "
                     "implies the next. Before a substantial session ends, state one "
                     "line `SESSION END: <STATE>` with STATE in PROVEN_OUTCOME, "
-                    "EXACT_HUMAN_GATE, EFFECT_UNKNOWN, ALL_SCOPED_LANES_BLOCKED, "
-                    "DURABLE_EXECUTION_RUNNING, MORE_WORK_EXISTS - and "
-                    "MORE_WORK_EXISTS is never a valid stopping state."
+                    "EXACT_HUMAN_GATE, EFFECT_UNKNOWN, PLATFORM_FAILURE, "
+                    "ALL_SCOPED_LANES_BLOCKED, DURABLE_EXECUTION_RUNNING, "
+                    "MORE_WORK_EXISTS - and MORE_WORK_EXISTS plus "
+                    "ALL_SCOPED_LANES_BLOCKED are never valid stopping states. "
+                    "The latter is a diagnostic: internal blockers must be resolved, "
+                    "routed to their canonical owner, or bound to real durable execution."
                 ),
             }
         }
@@ -4485,17 +4490,31 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
     # branch is unaffected either way; the wrapper probes it before any delegation.
     declared = declared_session_end_state(str(payload.get("last_assistant_message") or ""))
     if declared in NON_TERMINAL_SESSION_END_STATES:
-        _block(
-            path,
-            state,
-            payload,
-            MORE_WORK_EXISTS,
-            f"This session classified its own end state as {declared}: authorized "
-            "work remains in scope. That is not a stopping state. Either finish the "
-            "remaining work, or reclassify honestly as PROVEN_OUTCOME, "
-            "EXACT_HUMAN_GATE, EFFECT_UNKNOWN, ALL_SCOPED_LANES_BLOCKED or "
-            "DURABLE_EXECUTION_RUNNING.",
+        code = (
+            ALL_SCOPED_LANES_BLOCKED
+            if declared == "ALL_SCOPED_LANES_BLOCKED"
+            else MORE_WORK_EXISTS
         )
+        if declared == "ALL_SCOPED_LANES_BLOCKED":
+            reason = (
+                "This session classified every current lane as blocked. That is a "
+                "diagnostic, not a stopping state. Internal dependencies are work: "
+                "resolve one, route it to the canonical owner, or prove a real durable "
+                "running owner plus return path. 'Not my lane' forbids conflicting "
+                "mutation; it does not finish the mission. A bounded worker may return "
+                "BLOCKED to its parent. A principal may stop only on PROVEN_OUTCOME, "
+                "an exact external boundary (EXACT_HUMAN_GATE, PLATFORM_FAILURE, "
+                "EFFECT_UNKNOWN), or DURABLE_EXECUTION_RUNNING."
+            )
+        else:
+            reason = (
+                f"This session classified its own end state as {declared}: authorized "
+                "work remains in scope. That is not a stopping state. Either finish the "
+                "remaining work, route/own its internal blockers, or reclassify honestly "
+                "as PROVEN_OUTCOME, EXACT_HUMAN_GATE, PLATFORM_FAILURE, EFFECT_UNKNOWN "
+                "or DURABLE_EXECUTION_RUNNING."
+            )
+        _block(path, state, payload, code, reason)
         return
 
     baseline = state.get("baseline") or {}
@@ -4983,6 +5002,32 @@ def _delegate_to_evaluated_hook(payload: dict[str, Any], raw: bytes) -> bool:
     return True
 
 
+
+def _agentos_assist(root: Path, payload: dict[str, Any]) -> None:
+    """Best-effort PostToolUse annotation; isolated from Stop and its private state."""
+    try:
+        # Most Bash calls are unrelated. Avoid a Python child/store scan for those.
+        command = (payload.get("tool_input") or {}).get("command", "")
+        if payload.get("hook_event_name") != "PostToolUse" or not isinstance(command, str) or not command.startswith("gh pr create "):
+            return
+        result = subprocess.run(
+            [sys.executable, str(root / "scripts/agentos.py"), "ship-capture", "--hook"],
+            cwd=root, input=json.dumps(payload), text=True, capture_output=True, timeout=5,
+        )
+        if result.returncode or len(result.stdout) > 16384:
+            raise ValueError("capture report unavailable")
+        report = json.loads(result.stdout)
+        if report.get("schema") != "agentos.ship_capture.v1" or report.get("enforcement") != "REPORT_ONLY":
+            raise ValueError("unsupported capture report")
+        if report.get("code") == "CAPTURE_UNSUPPORTED":
+            return
+        context = "AGENT OS REPORT_ONLY: " + str(report.get("code")) + ". " + str(report.get("message", ""))
+        _emit({"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": context[:2048]}})
+    except Exception:
+        # No guard_error path, no _block, no state file, no authority inference.
+        print("AGENT OS REPORT_ONLY: capture result unavailable; inspect the record before retrying.", file=sys.stderr)
+
+
 def main() -> None:
     payload, raw = _load_payload_and_raw()
     if payload is None:
@@ -4992,8 +5037,11 @@ def main() -> None:
     root = _repo_root(payload)
     if root is None:
         return
-    path = _state_path(root, payload)
     event = str(payload.get("hook_event_name") or "")
+    if event == "PostToolUse":
+        _agentos_assist(root, payload)
+        return
+    path = _state_path(root, payload)
     try:
         if event == "SessionStart":
             _session_start(root, path, payload)

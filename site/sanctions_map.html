@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,9 +60,9 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="theme.css?v=d58d35e9">
+<link rel="stylesheet" href="theme.css?v=d6d52074">
 <link rel="stylesheet" href="product-nav-icons.css?v=093ad1ea">
-<link rel="stylesheet" href="assets/css/52dc11d5.css?v=52dc11d5">
+<link rel="stylesheet" href="assets/css/1a59ecd9.css?v=1a59ecd9">
 <link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
 </head>
 <body>
@@ -333,10 +334,6 @@
 
   
   
-    
-  
-    
-  
   <figure class="sm-map" role="img"
           aria-label="World map of countries named by active US OFAC sanctions programmes / 现行美国 OFAC 制裁计划点名国家的世界地图"
           >
@@ -529,6 +526,7 @@
     <li data-rung="1"><i></i><span class="l-en">1 programme</span><span class="l-zh">1 项</span></li>
     <li data-rung="0"><i></i><span class="l-en">Not named</span><span class="l-zh">未被点名</span></li>
     <li data-rung="x"><i></i><span class="l-en">Coverage unknown</span><span class="l-zh">覆盖情况未知</span></li>
+    
   </ul>
 
   
@@ -536,35 +534,14 @@
 
 <section id="event-pins" class="panel">
   <div class="sm-modhead">
-    <div class="mx-sec"><h2><span class="l-en">Official press today</span><span class="l-zh">今日官方新闻</span></h2></div>
-    <p class="sm-stance"><span class="l-en">Public official press from Europe, shown on this map.</span><span class="l-zh">欧洲官方公开新闻，显示于本图。</span></p>
+    <div class="mx-sec"><h2><span class="l-en">Official press · last 2 days</span><span class="l-zh">官方新闻 · 近两日</span></h2></div>
+    <p class="sm-stance"><span class="l-en">Public official press from Europe. UK items mark the map; EU, euro-area and EFTA items are listed only.</span><span class="l-zh">欧洲官方公开新闻。英国条目标注于地图；欧盟、欧元区及 EFTA 条目仅列出。</span></p>
+    
+    
+    
   </div>
   
-  <ol class="sm-events">
-    
-    <li>
-      <time>2026-09-26</time>
-      <a href="https://ec.europa.eu/commission/presscorner/detail/en/speech_26_1989" rel="noopener">Wystąpienie komisarza Piotra Serafina podczas XXVI Międzynarodowej Konferencji „Rola chrześcijan w procesie integracji europejskiej” pt. „Europa skazana na podział czy zjednoczenie?”</a>
-      
-      <span class="src"><span class="l-en">European Commission</span><span class="l-zh">欧盟委员会</span></span>
-      
-      
-      <span><span class="l-en">European Union</span><span class="l-zh">欧盟</span></span>
-      
-    </li>
-    
-    <li>
-      <time>2026-09-25</time>
-      <a href="https://ec.europa.eu/commission/presscorner/detail/en/ip_26_1985" rel="noopener">President von der Leyen announces €710 million to support displaced people in Africa and global crisis relief</a>
-      
-      <span class="src"><span class="l-en">European Commission</span><span class="l-zh">欧盟委员会</span></span>
-      
-      
-      <span><span class="l-en">European Union</span><span class="l-zh">欧盟</span></span>
-      
-    </li>
-    
-  </ol>
+  <p class="mx-empty-why sm-null"><span class="l-en">No European official press in the last two days. The map still shows the OFAC list.</span><span class="l-zh">近两日无欧洲官方新闻。地图仍显示 OFAC 名单。</span></p>
   
 </section>
 
@@ -691,7 +668,7 @@
   <p><span class="l-en">Not on this map: shipping chokepoints, military sites, satellite imagery. Those need rights we do not hold.</span><span class="l-zh">本图不包含：航运咽喉、军事设施、卫星影像。这些数据的使用权我们尚未取得。</span></p>
   <p><span class="l-en">Source</span><span class="l-zh">来源</span>: https://www.treasury.gov/ofac/downloads/sdn.csv ·
      <span class="l-en">As of</span><span class="l-zh">截至</span>: 2026-09-23 ·
-     <span class="l-en">Last read</span><span class="l-zh">最近读取</span>: 2026-09-27 ·
+     <span class="l-en">Last read</span><span class="l-zh">最近读取</span>: 2026-09-28 ·
      <span class="l-en">Unresolved country programmes</span><span class="l-zh">未核实国别计划数</span>:
      <span class="tnum">0</span>
      
@@ -702,13 +679,6 @@
 </details>
 </main>
 <script>
-(function(){
-  var map = document.querySelector('.sm-map[data-news-gbr="1"]');
-  if(!map) return;
-  map.querySelectorAll('.wm-c[data-iso3="GBR"]').forEach(function(p){
-    p.setAttribute('data-news', '1');
-  });
-})();
 document.querySelectorAll('.sm-tbl tr[data-iso3]').forEach(function(row){
   row.setAttribute('tabindex', '0');
   var iso3 = row.getAttribute('data-iso3');
@@ -733,7 +703,7 @@ document.querySelectorAll('.sm-tbl tr[data-iso3]').forEach(function(row){
   });
 });
 </script>
-<script src="theme.js?v=3ffc953f" defer></script>
+<script src="theme.js?v=405fef2c" defer></script>
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>

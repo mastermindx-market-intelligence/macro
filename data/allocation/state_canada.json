@@ -2,7 +2,6 @@
   "cash": 0.0,
   "crash": false,
   "eligible": [
-    "ca_asset_mgrs",
     "ca_banks",
     "ca_base_metals",
     "ca_gold",
@@ -10,15 +9,16 @@
     "ca_oil_gas",
     "ca_pipelines",
     "ca_rails_ind",
-    "ca_silver_royalty"
+    "ca_silver_royalty",
+    "ca_tech"
   ],
   "held": [
-    "ca_gold",
     "ca_base_metals",
     "ca_oil_gas",
+    "ca_gold",
     "ca_banks"
   ],
-  "leader": "ca_gold",
+  "leader": "ca_base_metals",
   "names": {
     "ca_asset_mgrs": "Asset Managers & Alternatives",
     "ca_banks": "Big Banks",

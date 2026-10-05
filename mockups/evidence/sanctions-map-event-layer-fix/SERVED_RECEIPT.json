@@ -1,0 +1,10 @@
+{
+  "url": "https://www.mastermind-x.com/sanctions_map.html",
+  "http_status": 200,
+  "observed_at": "2026-10-02T19:47:52Z",
+  "page_sha256": "314a8a00ceba02160414355dc38aab9cbe4c87a1ed9ebbf5dec814489daa5b35",
+  "site_commit": "d2c6171bf0b30200fec972d08a1497ec534fd6ab",
+  "render_source_commit": "e179569208c6",
+  "verified_by": "CEO A seat 587e986f (launch_o21b.sh)",
+  "note": "www.mastermindx.ai / apex returned 525 (known P0, Chairman-routed); the -x.com host served the bytes"
+}
