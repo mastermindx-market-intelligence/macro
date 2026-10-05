@@ -2066,3 +2066,100 @@ def test_input_integrity_j6_rejects_matching_invented_template_and_display(path,
     assert any(item.get("path") == path and item.get("reason") in
                {"money_without_source", "bool_without_source"}
                for item in result["observed"]), result
+
+
+@pytest.mark.parametrize("missing", ["initial_import", "lifecycle", "refusal", "runtime_reasons"])
+def test_vocabulary_integrity_missing_owner_is_unsupported(missing, monkeypatch):
+    soup = BeautifulSoup('<section class="pvs-section">Research details</section>', _pjr.HTML_PARSER)
+    if missing == "initial_import":
+        monkeypatch.setattr(_pjr, "_LANE_IMPORT_ERROR", "sensitive-private-import-location")
+    elif missing == "lifecycle":
+        monkeypatch.setattr(_pjr, "LIFECYCLE_VOCABULARY", frozenset())
+    elif missing == "refusal":
+        monkeypatch.setattr(_pjr, "REFUSAL_ORDER", ())
+    else:
+        monkeypatch.setattr(_pjr, "_runtime_engine_vocabulary",
+                            lambda: (frozenset(), ("ImportError", "sensitive-private-import-location")))
+    result = _pjr._check_j11(soup, "en", {}, {}, "TEST1", [])
+    assert result["status"] == "UNSUPPORTED", result
+    assert _pjr._verdict([result]) == "PARTIAL"
+    assert "sensitive-private-import-location" not in json.dumps(result)
+
+
+def test_vocabulary_integrity_runtime_error_is_unsupported(monkeypatch):
+    def unavailable():
+        raise RuntimeError("sensitive-private-import-location")
+    monkeypatch.setattr(_pjr, "declared_reasons", unavailable)
+    soup = BeautifulSoup('<section class="pvs-section">Research details</section>', _pjr.HTML_PARSER)
+    result = _pjr._check_j11(soup, "en", {}, {}, "TEST1", [])
+    assert result["status"] == "UNSUPPORTED", result
+    assert "sensitive-private-import-location" not in json.dumps(result)
+
+
+def test_vocabulary_integrity_retains_known_leak_failure(monkeypatch):
+    monkeypatch.setattr(_pjr, "LIFECYCLE_VOCABULARY", frozenset())
+    soup = BeautifulSoup('<section class="pvs-section">related_security</section>', _pjr.HTML_PARSER)
+    result = _pjr._check_j11(soup, "en", {}, {}, "TEST1", [])
+    assert result["status"] == "FAIL", result
+
+
+def test_vocabulary_integrity_reads_reason_owner_once(monkeypatch):
+    calls = []
+    def reasons():
+        calls.append(1)
+        return frozenset({"engine_internal_reason"})
+    monkeypatch.setattr(_pjr, "declared_reasons", reasons)
+    soup = BeautifulSoup('<section class="pvs-section">Research details</section>', _pjr.HTML_PARSER)
+    result = _pjr._check_j11(soup, "en", {}, {}, "TEST1", [])
+    assert result["status"] == "PASS", result
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize("with_buy", [True, False])
+def test_scope_integrity_j4_uses_existing_source_row_precedence(with_buy):
+    source = {
+        "buy": [{"ticker": "TEST1", "lane": "buy-native"}] if with_buy else [],
+        "watch": [{"ticker": "TEST1", "lane": "watch-native"}],
+        "candidate_pool": {"rows": [{"ticker": "TEST1", "lane": "pool-native"}]},
+    }
+    expected = _pjr._standouts_payload_row(source, "TEST1")["lane"]
+    result = _pjr._check_j4(source, "TEST1", expected)
+    assert result["status"] == "PASS", result
+    assert result["observed"]["payload_lane"] == expected
+    assert result["observed"]["found_in"] == (["buy"] if with_buy else []) + ["watch", "candidate_pool"]
+
+
+def test_scope_integrity_j4_rejects_lower_priority_row_lane():
+    source = {"buy": [{"ticker": "TEST1", "lane": "buy-native"}],
+              "candidate_pool": {"rows": [{"ticker": "TEST1", "lane": "pool-native"}]}}
+    result = _pjr._check_j4(source, "TEST1", "pool-native")
+    assert result["status"] == "FAIL", result
+
+
+@pytest.mark.parametrize("wrapper", ["TEST1-preview", "test1-preview"])
+def test_scope_integrity_prefixed_selected_body_is_in_scope(wrapper):
+    soup = BeautifulSoup(
+        '<div data-setup-ticker="TEST1"></div>'
+        '<div data-setup-ticker="' + wrapper + '" data-mkt="HK">'
+        '<div class="pv-setup-body" data-native-id="TEST1">'
+        '<a href="hk_board.html">Wrong market</a>'
+        '<div class="mx-error" role="alert">Tracking unavailable</div>'
+        '</div></div>', _pjr.HTML_PARSER)
+    assert len(_pjr._setup_source_bodies(soup, "TEST1")[0]) == 1
+    assert _pjr._check_j10(soup, "TEST1", [])["status"] == "FAIL"
+    result = _pjr._check_j12(soup, {"plans": [{"id": "P1"}]},
+                            {"buy": [{"ticker": "TEST1"}]}, "TEST1", [])
+    assert result["status"] == "FAIL", result
+
+
+def test_scope_integrity_does_not_promote_inert_or_other_security_wrapper():
+    soup = BeautifulSoup(
+        '<div data-setup-ticker="TEST1"></div>'
+        '<template><div data-setup-ticker="TEST1-preview" data-mkt="HK">'
+        '<div class="pv-setup-body" data-native-id="TEST1">Inert</div></div></template>'
+        '<div data-setup-ticker="OTHER-preview" data-mkt="HK">'
+        '<div class="pv-setup-body" data-native-id="OTHER">Other</div></div>',
+        _pjr.HTML_PARSER)
+    assert not _pjr._setup_source_bodies(soup, "TEST1")[0]
+    result = _pjr._check_j10(soup, "TEST1", [])
+    assert result["status"] == "PASS", result

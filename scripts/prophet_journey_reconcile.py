@@ -364,6 +364,14 @@ def _journey_nodes(
     if ticker:
         nodes.extend(_select_all(
             soup, f'[data-setup-ticker="{ticker}"]'))
+    # The detail validator also accepts displayed preview wrappers. Reuse its
+    # selected-body scope rather than letting those bodies escape J10/J12.
+    displayed, _templates = _setup_source_bodies(soup, ticker)
+    for body in displayed:
+        wrapper = body.find_parent(attrs={"data-setup-ticker": True})
+        target = wrapper if wrapper is not None else body
+        if not any(target is node or node in target.parents for node in nodes):
+            nodes.append(target)
     # The linked plan nodes — J8's PLAN CARDS carry ``id="pv-<id>"``
     # (``templates/_prophet_card.html.j2:608``).
     for pid in plan_ids:
@@ -548,18 +556,17 @@ def _check_j4(standouts: dict[str, Any], ticker: str | None,
         return _check_status("N/A", "row in any bucket", "no ticker resolved",
                              where)
     found_in: list[str] = []
-    row: dict[str, Any] | None = None
+    # Use the same source-row precedence as the selected detail checks.
+    row = _standouts_payload_row(standouts, ticker)
     for key in ("buy", "watch"):
         for r in (standouts.get(key) or []):
             if isinstance(r, dict) and str(r.get("ticker", "")).upper() == ticker.upper():
                 found_in.append(key)
-                row = r
                 break
     pool = standouts.get("candidate_pool") or {}
     for r in (pool.get("rows") or []):
         if isinstance(r, dict) and str(r.get("ticker", "")).upper() == ticker.upper():
             found_in.append("candidate_pool")
-            row = r
             break
     if not found_in:
         return _check_status(
@@ -1387,11 +1394,14 @@ def _payload_enum_values(node: Any, fields: Iterable[str],
     return values
 
 
-def _enum_values(standouts: dict[str, Any], index: dict[str, Any]) -> set[str]:
-    """Every internal vocabulary that must never appear as display copy."""
+def _enum_values(standouts: dict[str, Any], index: dict[str, Any],
+                 engine_reasons: frozenset[str] | None = None) -> set[str]:
+    """Every available internal vocabulary that must not appear as display copy."""
     plan_values = _payload_enum_values(index.get("plans") or [], PLAN_ENUM_FIELDS)
     standout_values = _payload_enum_values(standouts, STANDOUTS_ENUM_FIELDS)
-    vocabulary = (declared_reasons() | plan_values | standout_values
+    if engine_reasons is None:
+        engine_reasons = declared_reasons()
+    vocabulary = (engine_reasons | plan_values | standout_values
                   | LIFECYCLE_VOCABULARY | PLAN_RELATION_VOCABULARY)
     return {token for token in vocabulary
             if "_" in token or token in LIFECYCLE_VOCABULARY}
@@ -1485,7 +1495,21 @@ def _check_j11(soup: BeautifulSoup, locale: str,
     if not scopes:
         return _check_status("FAIL", "displayed scopes present",
                              "no displayed scopes", where)
-    banned = _enum_values(standouts, index)
+    missing_vocabulary: list[str] = []
+    if _LANE_IMPORT_ERROR:
+        missing_vocabulary.append("initial_owner_import")
+    if not LIFECYCLE_VOCABULARY:
+        missing_vocabulary.append("lifecycle_vocabulary")
+    if not REFUSAL_ORDER:
+        missing_vocabulary.append("refusal_vocabulary")
+    try:
+        engine_reasons = declared_reasons()
+    except (ImportError, RuntimeError, TypeError, ValueError):
+        # The report records a fixed absence reason, never private exception text.
+        engine_reasons = frozenset()
+    if not engine_reasons:
+        missing_vocabulary.append("runtime_reason_vocabulary")
+    banned = _enum_values(standouts, index, engine_reasons=engine_reasons)
     hits: list[dict[str, Any]] = []
     for node in scopes:
         copied = BeautifulSoup(str(node), HTML_PARSER)
@@ -1498,6 +1522,11 @@ def _check_j11(soup: BeautifulSoup, locale: str,
     if hits:
         return _check_status("FAIL", "no internal enum tokens in displayed text",
                              hits[:20], where)
+    if missing_vocabulary:
+        return _check_status(
+            "UNSUPPORTED", "required owner vocabularies available",
+            {"missing_vocabulary": missing_vocabulary,
+             "scopes_walked": len(scopes)}, where)
     return _check_status("PASS", "no internal enum tokens in displayed text",
                          {"scopes_walked": len(scopes)}, where)
 
