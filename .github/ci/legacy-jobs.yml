@@ -8457,6 +8457,7 @@ jobs:
       - config/theme_graph_identity_breaks.yml
       - config/theme_sources.yml
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
+      - contracts/theme_graph/probation_proposal.v1.schema.json
       - contracts/theme_graph/theme_state.v1.schema.json
       - engine/__init__.py
       - engine/basket_index.py
@@ -8481,6 +8482,7 @@ jobs:
       - engine/theme_graph/materialize.py
       - engine/theme_graph/rights.py
       - engine/theme_graph/ontology.py
+      - engine/theme_graph/probation.py
       - engine/theme_graph/selection_cohort.py
       - engine/theme_graph/selection_cohort_reads.py
       - engine/theme_graph/store.py
