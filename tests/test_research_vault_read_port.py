@@ -58,10 +58,7 @@ def test_status_can_be_successful_while_producer_is_stale():
 def test_stale_source_is_not_an_operational_failure_code():
     assert "SOURCE_STALE" not in read_port.FAILURE_CODES
     with pytest.raises(ValueError, match="unsupported failure"):
-        read_port.failure(
-            "SOURCE_STALE",
-            message="stale historical corpus remains readable",
-        )
+        read_port.failure("SOURCE_STALE")
 
 
 def test_evidence_passage_hashes_literal_utf8_bytes():
@@ -160,7 +157,6 @@ def test_passage_report_identity_must_match_result():
 def test_failure_is_closed_and_sanitized_shape():
     failure = read_port.failure(
         "REPORT_NOT_ENTITLED",
-        message="report is not visible to this caller",
         retryable=False,
     )
     assert failure == {
@@ -194,3 +190,33 @@ def test_status_coverage_ratios_are_bounded():
             full_text_coverage=1.01,
             rio_coverage=0,
         )
+
+
+def test_failure_does_not_accept_caller_supplied_exception_prose():
+    with pytest.raises(TypeError):
+        read_port.failure(
+            "INTERNAL_UNAVAILABLE",
+            message="s3://private-bucket secret=should-never-reflect",
+        )
+
+
+def test_source_degradation_is_closed_code_not_arbitrary_prose():
+    with pytest.raises(ValueError, match="degradation"):
+        read_port.source_state(
+            state="PRODUCER_STALE",
+            catalog_generated_at=None,
+            latest_report_published_at=None,
+            source_age_hours=100,
+            report_count=2778,
+            known_degradation=["bucket=/secret/path"],
+        )
+
+    source = read_port.source_state(
+        state="PRODUCER_STALE",
+        catalog_generated_at=None,
+        latest_report_published_at=None,
+        source_age_hours=100,
+        report_count=2778,
+        known_degradation=["PRODUCER_STALE", "PARTIAL_CORPUS"],
+    )
+    assert source["known_degradation"] == ["PRODUCER_STALE", "PARTIAL_CORPUS"]
