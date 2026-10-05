@@ -4870,3 +4870,4 @@
 {"date":"2026-10-04","ticker":"IR","departed":true,"left_desk":"2026-10-04","last_rank":18,"last_score":37}
 {"date":"2026-10-04","ticker":"MMC","departed":true,"left_desk":"2026-10-04","last_rank":null,"last_score":11}
 {"date":"2026-10-04","ticker":"TXT","departed":true,"left_desk":"2026-10-04","last_rank":null,"last_score":18}
+{"date":"2026-10-04","ticker":"SNOW","rank":25,"score":32,"lean":1,"broken":false}
