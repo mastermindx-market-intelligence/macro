@@ -9291,3 +9291,4 @@
 {"id":"ob-2026-10-04-5e278dfa5e","from":"approved","to":"quarantined","at":"2026-10-05T07:37:50Z","actor":"publisher","note":"clock: stale_session:2026-10-02!=2026-10-05 (kind 'signal' is a tape read; the Monday session has opened)","receipt":null}
 {"id":"ob-2026-10-04-9adbba2b0b","from":"approved","to":"quarantined","at":"2026-10-05T07:37:51Z","actor":"publisher","note":"clock: stale_session:2026-10-02!=2026-10-05 (kind 'signal' is a tape read; the Monday session has opened)","receipt":null}
 {"id":"ob-2026-10-04-8140f3466d","from":"approved","to":"quarantined","at":"2026-10-05T07:37:51Z","actor":"publisher","note":"clock: stale_session:2026-10-02!=2026-10-05 (kind 'signal' is a tape read; the Monday session has opened)","receipt":null}
+{"id":"ob-2026-10-03-ec6c200240","from":"queued","to":"quarantined","at":"2026-10-05T10:31:50Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
