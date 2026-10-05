@@ -317,6 +317,28 @@ def _visit_observed_day(value) -> date | None:
     return instant.date() if instant is not None else None
 
 
+def _visit_source_day(value) -> date | None:
+    """Normalize source publication clocks into the owner's UTC reference day.
+
+    Full timezone-aware timestamps are compared in UTC. A strict date-only value
+    is accepted as an already-day-level source clock; malformed timestamp-like
+    strings fail closed.
+    """
+    instant = _visit_observed_instant(value)
+    if instant is not None:
+        return instant.date()
+    try:
+        text = str(value or "").strip()
+    except Exception:  # noqa: BLE001
+        return None
+    if _VISIT_COVERAGE_DATE_RE.fullmatch(text):
+        try:
+            return date.fromisoformat(text)
+        except ValueError:
+            return None
+    return None
+
+
 
 def _visit_coverage_day(value) -> date | None:
     """Parse the complete date-only coverage stamp; trailing data is invalid."""
@@ -403,7 +425,7 @@ def _visit_discovery_snapshot(
                 coverage_day,
                 last_success_day,
                 last_attempt_day,
-                *(_visit_day(r.get("source_published_at")) for r in (visits or [])),
+                *(_visit_source_day(r.get("source_published_at")) for r in (visits or [])),
                 *(_visit_observed_day(r.get("system_recorded_at")) for r in (visits or [])),
             )
             if d is not None
@@ -439,6 +461,13 @@ def _visit_discovery_snapshot(
         and last_attempt_instant < last_success_instant
     ):
         clock_errors.append("last_attempt_before_last_success")
+    if (
+        owner_health_status == "ok"
+        and last_success_instant is not None
+        and last_attempt_instant is not None
+        and last_attempt_instant != last_success_instant
+    ):
+        clock_errors.append("ok_health_receipt_mismatch")
     # This preliminary status only depends on health's own chronology. Row
     # observation chronology is incorporated below before any authority is emitted.
     health_clock_order_valid = not clock_errors
@@ -472,6 +501,14 @@ def _visit_discovery_snapshot(
     row_observation_instants = [
         _visit_observed_instant(r.get("system_recorded_at")) for r in deduped
     ]
+    row_source_instants = [
+        _visit_observed_instant(r.get("source_published_at")) for r in deduped
+    ]
+    if any(
+        observed is not None and source is not None and observed < source
+        for observed, source in zip(row_observation_instants, row_source_instants)
+    ):
+        clock_errors.append("row_observation_before_source")
     if health_receipt_instant is not None:
         if any(
             inst is not None and inst > health_receipt_instant
@@ -487,7 +524,7 @@ def _visit_discovery_snapshot(
             if observed_instant is not None:
                 continue
             source_instant = _visit_observed_instant(row.get("source_published_at"))
-            source_day = _visit_day(row.get("source_published_at"))
+            source_day = _visit_source_day(row.get("source_published_at"))
             if (
                 source_instant is not None
                 and source_instant > health_receipt_instant
@@ -503,7 +540,7 @@ def _visit_discovery_snapshot(
     owner_clock_order_valid = not clock_errors
 
     source_event_days = [
-        d for d in (_visit_day(r.get("source_published_at")) for r in deduped)
+        d for d in (_visit_source_day(r.get("source_published_at")) for r in deduped)
         if d is not None and d <= reference_day
     ]
     system_observed_days = [
@@ -595,6 +632,8 @@ def _visit_discovery_snapshot(
             else "coverage_start_invalid" if "coverage_start_invalid" in clock_errors
             else "last_success_clock_invalid" if "last_success_clock_invalid" in clock_errors
             else "last_attempt_clock_invalid" if "last_attempt_clock_invalid" in clock_errors
+            else "ok_health_receipt_mismatch" if "ok_health_receipt_mismatch" in clock_errors
+            else "row_observation_before_source" if "row_observation_before_source" in clock_errors
             # Health/coverage chronology is the more fundamental diagnosis and
             # must not be masked by a downstream row-vs-receipt inconsistency.
             else "owner_clock_order_invalid" if not health_clock_order_valid
