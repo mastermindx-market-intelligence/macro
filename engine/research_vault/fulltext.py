@@ -16,6 +16,7 @@ from typing import Any
 EXTRACTED_TEXT_SCHEMA = "research_vault.extracted_text.v1"
 SEGMENT_SCHEMA = "research_vault.segment.v1"
 REPLAY_EXACT = "EXACT"
+SEGMENTER_VERSION = "page-byte-v1"
 TEXT_LAYER_STATES = frozenset({"full", "thin", "none", "unavailable"})
 
 
@@ -27,6 +28,13 @@ def _require_text(value: Any, name: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{name} must be nonempty")
     return value
+
+
+def _require_segmenter_version(value: Any) -> str:
+    version = _require_text(value, "segmenter_version")
+    if version != SEGMENTER_VERSION:
+        raise ValueError("unsupported segmenter_version")
+    return version
 
 
 def _require_sha256(value: Any, name: str) -> str:
@@ -214,7 +222,7 @@ def build_segments(
     separator falls in the latter half of the current byte window, the segment
     ends on that separator; otherwise it uses the largest safe UTF-8 boundary.
     """
-    segmenter_version = _require_text(segmenter_version, "segmenter_version")
+    segmenter_version = _require_segmenter_version(segmenter_version)
     if type(max_bytes) is not int or max_bytes < 4:
         raise ValueError("max_bytes must be an int >= 4")
 
@@ -249,6 +257,7 @@ def build_segments(
                 "report_id": extracted["report_id"],
                 "source_pdf_sha256": extracted["source_pdf_sha256"],
                 "extracted_text_sha256": extracted["extracted_text_sha256"],
+                "extractor_name": extracted["extractor_name"],
                 "extractor_version": extracted["extractor_version"],
                 "segmenter_version": segmenter_version,
                 "segment_max_bytes": max_bytes,
@@ -272,16 +281,23 @@ def replay_segment(
     extracted: dict[str, Any],
     segment: dict[str, Any],
 ) -> str:
-    """Replay and verify one segment exactly from the extracted-text artifact."""
+    """Replay one canonical deterministic segment, not an arbitrary exact slice.
+
+    The declared byte budget selects a segmentation under the only implemented
+    algorithm version. Production selection of that budget remains caller-owned;
+    this pure contract does not authenticate a publisher or a stored manifest.
+    """
     data = _validate_extracted_text(extracted)
     if not isinstance(segment, dict) or segment.get("schema") != SEGMENT_SCHEMA:
         raise ValueError("unsupported segment artifact")
-    for field in ("report_id", "source_pdf_sha256", "extracted_text_sha256"):
+    for field in (
+        "report_id", "source_pdf_sha256", "extracted_text_sha256", "extractor_name"
+    ):
         if segment.get(field) != extracted.get(field):
             raise ValueError(f"segment {field} does not match extracted text")
     if segment.get("extractor_version") != extracted.get("extractor_version"):
         raise ValueError("segment extractor_version does not match extracted text")
-    _require_text(segment.get("segmenter_version"), "segmenter_version")
+    segmenter_version = _require_segmenter_version(segment.get("segmenter_version"))
     if segment.get("replay_state") != REPLAY_EXACT:
         raise ValueError("segment replay_state is not EXACT")
     if type(segment.get("segment_index")) is not int or segment["segment_index"] < 0:
@@ -319,4 +335,16 @@ def replay_segment(
     text = replay.decode("utf-8")
     if segment.get("text") != text:
         raise ValueError("segment stored text mismatch")
+
+    canonical = build_segments(
+        extracted, segmenter_version=segmenter_version, max_bytes=max_bytes
+    )
+    index = segment["segment_index"]
+    if index >= len(canonical):
+        raise ValueError("segment_index is outside canonical segmentation")
+    expected = canonical[index]
+    if segment != expected or any(
+        type(segment[field]) is not type(value) for field, value in expected.items()
+    ):
+        raise ValueError("segment does not match canonical deterministic segment")
     return text
