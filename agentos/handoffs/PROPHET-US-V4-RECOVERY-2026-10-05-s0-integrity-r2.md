@@ -5,12 +5,13 @@ model: sol
 ended_because: ci_handoff
 prs:
 - 8192
+- 8091
 mission_complete: false
 mission: Continue the recovered Continue CEO Project Prophet programme, closing S0
   source-integrity defects without introducing H1 or financial authority.
-state_before: PR8192 bf77 had six demonstrated integrity defect families. A later
-  scratch repair was uncommitted; its139-test and six-mutant work was recovered rather
-  than rebuilt. Another Prophet session retains Q06/8069 and P1a/8444 source custody.
+state_before: PR8192 was stacked on unmerged8091 and rejected by unsupported_base_ref;
+  independent review was an additional waiting condition. The current Chairman waived
+  independent review and requested accelerated delivery.
 changed:
 - path: scripts/check_prophet_h1_prospective_accrual.py
   what: Require regular single-link source capture, recursively outcome-free physical
@@ -45,36 +46,44 @@ verified:
     2026-09-29 --board-definition board-v1 --root <isolated-fixture> --json-out <receipt>
   result: Native owner positive exit0/S0_CAPTURE_PRESENT; contradictory roster exit2/SOURCE_CONFLICT;
     h1_admitted and model_fit_executed false.
+- claim: The complete parent source and S0 verifier compose with current main without
+    conflicts.
+  command: git merge --no-ff 410965bd243d94e9f0e528e15f0c97df53fae732; git merge --no-ff
+    8a3310cdf03bc16704d51235172a5bbcf1f9a73e; native tests across S0, Context Vector,
+    grades, B1 intake and fusion modules
+  result: Integrated e55eb6cf;405 passed/2 skipped/2 historical-grade-store tests
+    deliberately deselected;0 failures. Initial4 missing-fixture failures retained
+    in evidence.
 unverified:
-- claim: Author-distinct whole-candidate acceptance
-  what_would_verify: MastermindX1 review on the new exact head, including the unchanged
-    bf77 strict native snapshot reader and repaired checker.
-- claim: Normal parent release, supported-base CI and prospective production capture
-  what_would_verify: Accept8091 via its owner, normal stack integration onto main,
-    required exact-head CI/review, then first ordinary nightly receipt under the existing
-    owner.
+- claim: Combined-source hosted CI and normal merge
+  what_would_verify: Retarget existing8192 to main, pass its full required checks,
+    expected-head merge and source readback. No independent-review wait remains.
+- claim: Installed source and ordinary prospective capture
+  what_would_verify: Read installed revision after accepted source release; run the
+    verifier on the existing owner-produced ordinary nightly without backfill, manufactured
+    clocks or protected outcomes.
 unresolved:
-- Release HOLD remains; no merge, auto-merge, production activation, trial registration
-  or outcome access.
-- Q06/8069 and P1a/8444 are actively owned by the other recovered Prophet session;
-  do not touch its PID43262 or CI-closure refusal.
-- Current UI/served-model metadata unverified; sol is the schema-supported organizational
-  author label, not a provider-model attestation.
+- Required repository checks and actual release/production proof remain; independent
+  source review was waived, not faked.
+- Other recovered Prophet session retains Q06/8069 and P1a/8444; no source or effect
+  transfer.
+- Parent8091 is preserved unchanged until combined8192 lands, then reconcile incorporation
+  without claiming an independent merge.
 next_actions:
-- Publish the verified candidate through the managed branch and expected-bf77 fast-forward
-  of existing PR8192; reconcile the exact remote head before any replay.
-- Obtain author-distinct whole-source review and consume findings; keep unsupported
-  stacked-base authority HOLD.
-- After parent8091 acceptance, perform normal stack release and verify the first ordinary
-  prospective nightly without reading protected outcomes.
+- Publish this complete candidate to existing8192 and retarget it to main; preserve8091
+  branch and legacy workspaces.
+- Consume native required CI; repair concrete regressions without weakening checks,
+  then expected-head normal merge.
+- Verify installed exact source and the first ordinary producer capture; no trial
+  or financial authority is admitted.
 do_not_redo:
-- Do not rebuild the recovered patch or repeat accepted139/159 results without material
-  invalidation.
 - Do not reopen the repaired strict native snapshot reader; its48cb57b2 source hash
   is unchanged.
 - Do not create a second Prophet programme, reader, store, group selector, outcome
   authority or replacement PR.
 - Do not touch the clean legacy bf77 checkout or old scratch review directory.
+- 'Do not commission another independent review or require parent8091 to merge separately:
+  current Chairman waiver and consolidated-source decision supersede those waits.'
 danger_areas:
 - All tests use synthetic candidate inputs; engineering proof is not H1 admission,
   real-market accuracy or production acceptance.
@@ -82,6 +91,7 @@ danger_areas:
   continuation branch is operation-derived and distinct. No force update.
 - Source-read safety binds one captured byte object to schema, decode and digest.
   Never restore unrestricted reads or outcome projection.
+source_review_disposition: WAIVED_BY_CURRENT_CHAIRMAN
 ---
 
 # S0 integrity repair — recovered CEO continuity
@@ -95,3 +105,9 @@ Managed workspace: `/Volumes/Mastermind/agent-workspaces/macro/web/prophet-s0-in
 The group repair verifies owner-issued membership, rule, basis and roster receipts. It does not select groups or resolve current membership to rewrite history. Explicit missing states remain admissible. Scientific/financial authority stays false.
 
 Current publication/review status belongs to existing PR #8192; cumulative recovery comment5989587949 is the integration frontier. A source commit, test pass, review request or this handoff does not prove merge, installation or ordinary-nightly capture. MISSION_COMPLETE:false.
+
+## Current delivery amendment
+
+The Chairman explicitly waived independent review in the continuing session. PR8192 now carries the complete8091 source plus the repaired verifier, integrated on main8a3310c at e55eb6cf. This replaces the serial release sequence, not any source, CI, privacy, clock or scientific gate. Parent8091 remains preserved until combined-source merge is verified. The other Prophet session retains its own paths. No source was copied from its workspace and no prior refused action was retried.
+
+Combined native qualification is405 passed/2 skipped/2 deliberately unrun historical-grade-store tests. No grade store was materialized. Repository-hosted proof and ordinary-nightly proof remain distinct, and neither is claimed by this checkpoint.

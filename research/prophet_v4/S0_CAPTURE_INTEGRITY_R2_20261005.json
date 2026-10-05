@@ -112,6 +112,36 @@
   "production_nightly_verified": false,
   "protected_procedure": "7eac3ec252475600147ec9a376b8ca16403ac4c5",
   "recovered_patch_sha256": "20bf395e09955091610510fcd430059626e1c69e5badb77a75251ef4674a7607",
+  "release_integration": {
+    "checks_bypassed": false,
+    "consolidation_comment": 5991371013,
+    "frozen_main": "8a3310cdf03bc16704d51235172a5bbcf1f9a73e",
+    "grade_store_materialized": false,
+    "initial_integration_run": {
+      "failed": 4,
+      "passed": 403,
+      "reason": "Sparse checkout lacked two disclosed-gap metadata fixtures and two historical grade-store fixtures. Exact committed gap metadata was restored; two grade-store tests deliberately remain unrun locally.",
+      "skipped": 2
+    },
+    "integrated_head": "e55eb6cf1edd408d672591fcf9661ab54ab572b1",
+    "integration_conflicts": 0,
+    "local_tests": {
+      "deselected": 2,
+      "errors": 0,
+      "failures": 0,
+      "junit_sha256": "44036d91a7f8a22fa63c4fdfceada0c1d3bf57787ba489704bb9427e77e4db0f",
+      "log_sha256": "df408aa0b9941940c85cba7895171e370c2e8e97d2893e681e284627c8d1a66d",
+      "passed": 405,
+      "skipped": 2
+    },
+    "parent_head": "410965bd243d94e9f0e528e15f0c97df53fae732",
+    "protected_outcome_read": false,
+    "release_carrier": 8192,
+    "source_review_disposition": "WAIVED_BY_CURRENT_CHAIRMAN",
+    "target_base": "main",
+    "upstream_preserved_carrier": 8091,
+    "waiver_comment": 5991347126
+  },
   "schema": "mastermind.prophet.s0_integrity_repair.v1",
   "source_sha256": {
     "engine/us_context_vector.py": "48cb57b2df47382c15d1455a4310970526648ab0436251305a8dd52752daf990",
