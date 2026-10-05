@@ -18,7 +18,7 @@ from datetime import date, datetime
 import math
 from typing import Any, Iterable, Mapping
 
-from lib.dataos.identity import VendorAliasTable
+from lib.dataos.identity import IdentityError, VendorAliasTable, parse_id
 
 CANDIDATE_SCHEMA = "research_vault.subject_candidates.v1"
 RESOLUTION_SCHEMA = "research_vault.subject_resolution.v1"
@@ -242,6 +242,17 @@ def resolve_candidates(
             raise ValueError(f"candidates[{index}].source_fields is invalid")
 
         security_id = aliases.resolve(alias_vendor.strip(), symbol, on)
+        if security_id is not None:
+            try:
+                kind, _listing = parse_id(security_id)
+            except IdentityError as exc:
+                raise ValueError(
+                    f"Data OS alias target for {symbol!r} is not a valid security id"
+                ) from exc
+            if kind != "security":
+                raise ValueError(
+                    f"Data OS alias target for {symbol!r} is not a security id"
+                )
         state = RESOLVED if security_id else UNMAPPED
         resolved.append(
             {
