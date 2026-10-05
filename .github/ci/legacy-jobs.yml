@@ -3576,6 +3576,7 @@ jobs:
       - "tests/test_prophet_lab.py"
       - "tests/test_intelligence_vector_units.py"
       - "tests/test_prophet_lab_api.py"
+      - "tests/test_prophet_lab_opportunity_context.py"
       # D5 A7's manifest-authenticated N/N+1 correction chain is hermetic and
       # load-bearing for the Prophet Lab adapter, so its PR owner must be this
       # gate:code job rather than only neural-web-core's nightly data lane.
@@ -3613,6 +3614,7 @@ jobs:
           python -m pytest
           tests/test_prophet_lab.py tests/test_intelligence_vector_units.py
           tests/test_prophet_lab_api.py
+          tests/test_prophet_lab_opportunity_context.py
           tests/test_company_intelligence_workspace_chain.py
           tests/test_prophet_lab_timeparse.py
           tests/test_prophet_lab_commissioning.py
