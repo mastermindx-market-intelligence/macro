@@ -15,6 +15,7 @@ No I/O and no model calls live here.
 from __future__ import annotations
 
 from datetime import date, datetime
+import math
 from typing import Any, Iterable, Mapping
 
 from lib.dataos.identity import VendorAliasTable
@@ -58,7 +59,10 @@ def _publication_date(value: date | datetime | str) -> date:
 def _confidence(value: Any) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return 0.0
-    return max(0.0, min(1.0, float(value)))
+    result = float(value)
+    if not math.isfinite(result):
+        raise ValueError("candidate confidence must be finite")
+    return max(0.0, min(1.0, result))
 
 
 def _add_candidate(
@@ -116,6 +120,9 @@ def discover_candidates(
         raise ValueError("report_id must be nonempty")
     if not isinstance(title, str) or not isinstance(body, str):
         raise TypeError("title/body must be strings")
+
+    if isinstance(source_tickers, (str, bytes)):
+        raise TypeError("source_tickers must be an iterable of symbols, not a string")
 
     bucket: dict[str, dict[str, Any]] = {}
     for raw in source_tickers:
@@ -202,6 +209,9 @@ def resolve_candidates(
     """
     if not isinstance(candidates, Mapping) or candidates.get("schema") != CANDIDATE_SCHEMA:
         raise ValueError("unsupported candidate artifact")
+    report_id = candidates.get("report_id")
+    if not isinstance(report_id, str) or not report_id.strip():
+        raise ValueError("candidate artifact report_id must be nonempty")
     if not isinstance(aliases, VendorAliasTable):
         raise TypeError("aliases must be VendorAliasTable")
     if not isinstance(alias_vendor, str) or not alias_vendor.strip():
@@ -248,7 +258,7 @@ def resolve_candidates(
 
     return {
         "schema": RESOLUTION_SCHEMA,
-        "report_id": str(candidates.get("report_id") or "").strip(),
+        "report_id": report_id.strip(),
         "alias_vendor": alias_vendor.strip(),
         "resolution_date": on.isoformat(),
         "resolved_count": sum(1 for row in resolved if row["resolution_state"] == RESOLVED),
