@@ -138,3 +138,149 @@ DO_NOT_REDO:
 - do not retire the current feed watcher merely because #7226 exists;
 - do not mutate extractor source while the historical frozen-manifest verifier would reject the release;
 - do not call process presence producer health after SessionExpired.
+
+
+## 2026-10-05 05:01 ET — planned context-rotation checkpoint
+
+```text
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+ROTATION_REASON: MANUAL_RETIREMENT / Chairman requested checkpoint + fresh-session handoff
+UNRESOLVED_EFFECTS: none
+```
+
+### Current source/procedure pins
+
+- protected Mastermind: `7eac3ec252475600147ec9a376b8ca16403ac4c5`
+- Skillpack: `mastermind.sol_skillpack.v1` 1.0.1
+- observed Macro main: `8a3310cdf03bc16704d51235172a5bbcf1f9a73e`
+- canonical planning / continuity carrier: PR #8438, branch `sol/research-vault-ai-fabric-masterplan-20261004`
+
+A successor must re-pin both repositories before effects. These pins establish this checkpoint only.
+
+### Verified capability ledger at rotation
+
+#### Merged / do not redo
+
+- F1 private R2 source isolation: PR #8442 merged as `94228ca2555c898a183e9d6f99c23e8eeefd5f64`.
+- F2 body-health census + separate read-only operator workflow: PR #8443 merged as `1d0c17cf298643e3d62a1632815decc8bef74691`.
+- RIO claim-array identity repair: PR #8446 is merged. Do not resurrect #7461.
+- MarketDesk recovery-vs-release lineage split: PR #8452 is merged. Historical recovery provenance stays immutable while current release bytes may evolve under the release manifest/receipt.
+
+#### Active / one writer per carrier
+
+- F5 exact full-text/segment contract: PR #8453, head `4895b47660d817889556757560c004d00951db80`, draft/open.
+  - hosted CI is broadly green, including `research-vault-contract`.
+  - principal review is still blocking on two contract defects:
+    1. segment artifacts/replay must bind `extractor_name`, not only extractor version;
+    2. `replay_segment()` must prove the supplied row equals the canonical deterministic segment for its declared index/version/max-bytes, not merely any valid byte slice.
+  - required adversarial tests: mutate extractor_name, segment_index, segmenter_version, and a recomputed alternate valid byte window; canonical replay must refuse all four.
+  - DO NOT create a second chunk/span abstraction.
+
+- F4 producer auth-health recurrence repair: PR #8472, head `4df909395c2ef2bd1e4c27f23051940b3823c54a`, draft/open.
+  - architecture is accepted directionally: existing MarketDesk SQLite meta + existing feed_probe/feed watcher; no second health DB/scheduler/auth service.
+  - `ci-pack-10 / research-vault-source-lineage` is red: 3 failed / 357 passed.
+  - exact repairs required on the same carrier:
+    1. lineage test must preserve immutable `RECOVERY_SHA256SUMS`, while current `SHA256SUMS` must match `RELEASE_RECEIPT.manifest_sha256` and current payload bytes;
+    2. empty-vault feed fixture must emit the new 7-field typed-auth probe contract;
+    3. canonical-dispatch fixture must emit the same new contract so dispatch is actually reached.
+  - even after source CI passes, production acceptance still requires Mac13,1 readback + exact auth state + human single-writer re-auth only if needed + one natural new report end to end.
+
+- F6 subject/Data OS identity bridge: PR #8475, head `310cd7b9a707af798b1595b5bfbf592b6f428410`, draft/open.
+  - `ci-gate` is currently red because `contract-delta` is red; other observed CI packs are green.
+  - no review comment was present at this checkpoint.
+  - first successor action on this carrier is to inspect the exact `contract-delta` failure; do not guess/fix broadly.
+  - architectural law already frozen: exact report-symbol semantics should use the Data OS `exchange` historical alias namespace, not silently substitute `membership` or `yahoo`; exact Data OS builder custody must be reconciled before adding that namespace.
+
+### F4 producer diagnosis — accepted read-only findings
+
+The September 24 cutoff is upstream of hourly Research Vault ingestion.
+
+Observed hard stop:
+
+```text
+catalog count grew to 2778 by generated_at 2026-09-24T12:12:47Z
+last admitted source published_at = 2026-09-24T09:28:05Z
+later catalog generations keep advancing generated_at but never exceed 2778
+```
+
+Accepted prior incident #6862 proves the same external symptom previously came from MarketDesk persistent-session auth expiry while hourly ingest kept republishing an unchanged catalog.
+
+Current source proves the recurrence mechanism:
+
+```text
+SessionExpired
+  -> account.authed = false
+  -> producer process stays alive
+  -> discovery/downloads skip indefinitely
+  -> dead-driver watchdog never fires because no attempts occur
+  -> feed watcher historically sees process presence, not authenticated producer health
+```
+
+Thus process presence is not producer health.
+
+This is a **high-confidence recurrence class**, not proof that the current Mac13,1 profile is definitely expired. The native host tunnel was unavailable during diagnosis, so the exact live cause remains a host/human gate.
+
+PR #7226 is closed/unmerged and was never production-activated. Do not revive it wholesale or treat it as current trigger authority. The incumbent immediate trigger remains `com.mastermindx.research-feed`.
+
+### Live F2 measurement remains owed
+
+The merged F2 workflow is a dedicated manual read-only proof lane. This session did not produce a live R2 census receipt.
+
+Do not start F3 repair from historical counts or the 351-excerpt symptom alone.
+
+Required order:
+
+```text
+run live read-only F2 census
+  -> classify:
+       A missing corpus rows
+       B existing rows with unusable body
+       typed no-text scans
+       mixed
+  -> admit only the measured F3 repair class
+```
+
+Do not use `research-ingest.yml run_census=true` as read-only acceptance; that workflow also owns ingest/publication effects.
+
+### Exact successor start order
+
+1. Re-pin protected Mastermind + Macro and read this handoff plus `research/research_vault_ai_fabric_20261004/08_EXECUTION_CHECKPOINT_2026-10-05.md`.
+2. Reconcile live heads/custody of #8453, #8472, #8475 before any write.
+3. Advance the smallest ready source blocker:
+   - #8472: repair the three exact source-lineage fixture/test failures;
+   - #8453: repair extractor-name + canonical-segment replay identity;
+   - #8475: inspect and fix only the exact contract-delta failure after current-source review.
+4. Independently obtain the merged F2 live read-only census receipt when an authorized workflow-dispatch surface is available.
+5. Classify/admit F3 only from that receipt.
+6. When Mac13,1 host access is available, inspect exact auth/log/launchd state. If the existing profile is expired, perform the human single-writer ceremony only:
+   - stop exact `com.mastermindx.research-trickle`;
+   - run `marketdesk auth` against the same existing profile;
+   - install the accepted release through the incumbent installer;
+   - restart the same existing LaunchAgents;
+   - prove one natural report traverses MarketDesk -> private inbox -> ingest -> catalog/corpus -> API/product;
+   - prove source freshness returns `SOURCE_FRESH`.
+7. Continue toward F5 materialization / canonical Research Read port only after source/text identity and measured corpus truth are accepted.
+
+### DO_NOT_REDO / danger laws
+
+- Do not create a new Research Vault, corpus authority, vector authority, auth plane, lifecycle, scheduler, queue, producer, MarketDesk profile, health DB or publication plane.
+- Do not redo merged #8442/#8443/#8446/#8452.
+- Do not merge or copy stale #7354/#7522/#8090 wholesale; salvage only reviewed unique deltas when their dependency waves arrive.
+- Do not weaken the source-freshness deadline.
+- Do not delete receipts or replay the historical inbox to force corpus repair.
+- Do not equate catalog freshness with source freshness.
+- Do not equate corpus-row presence with usable text.
+- Do not equate a running `marketdesk trickle` process with authenticated producer health.
+- Do not automate MarketDesk login; re-auth is human/single-writer by source contract.
+- Do not reinterpret RIO v1 `document.content_sha256`; it remains extracted-text SHA, while Vault PDF SHA is a separate byte domain.
+- Do not expose raw R2/S3 operations or model-selectable bucket/root/key/credential.
+- Do not claim Fable pickup, MCP deployment, ChatGPT installation, Deep Research acceptance, or production recovery without their separate evidence.
+
+### Parent mission DONE_WHEN remains unchanged
+
+Mission remains incomplete until the real path proves authorized ChatGPT + Deep Research can discover institutional reports, find tail evidence beyond the old 60k prefix, fetch replayable literal evidence with explicit PDF/text revision identity, distinguish literal source from RIO synthesis, respect entitlements/rights, deny private leakage to unauthorized callers, share one canonical Research Read contract with Brain, and survive source correction with stale derivatives detectably invalidated.
+
+### Fresh-session instruction
+
+Recover from canonical source, not chat history. Treat this checkpoint as durable organizational continuity, not execution authority or source custody. Continue the exact existing carriers; do not restart completed waves.
