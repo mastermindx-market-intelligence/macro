@@ -424,8 +424,15 @@ def test_current_multirevision_retained_correction_phrase_cannot_mint_appeared()
     # X entered through the old A->B correction outside the novelty window.
     # Today's C only retains X, so it must not become a fresh APPEARED event.
     assert ("APPEARED", "适度宽松") not in kinds
-    # Today's genuinely new phrase is still visible as ordinary novelty.
-    assert ("APPEARED", "反内卷") in kinds
+    # C is itself an in-place correction of the same locator. A phrase newly
+    # introduced by that correction belongs in the revision receipt, not the
+    # ordinary policy-novelty stream.
+    assert ("APPEARED", "反内卷") not in kinds
+    assert res["counts"]["n_document_revisions"] >= 1
+    assert any(
+        "反内卷" in (rev.get("added_phrases") or [])
+        for rev in res["document_revisions"]
+    )
 
 
 def test_independent_current_source_preserves_appeared_eligibility_and_provenance():
