@@ -65,6 +65,9 @@ def retain_native_input_manifest(receipt: Any) -> dict:
         facts = receipt.get("facts")
         if not isinstance(facts, list) or len(facts) > MAX_INPUTS:
             raise ValueError("invalid fact census")
+        registry_digest = _string(receipt.get("registry_digest"), 64)
+        if not _HASH.fullmatch(registry_digest):
+            raise ValueError("invalid owner registry")
         inputs, seen = [], set()
         for fact in facts:
             if not isinstance(fact, dict):
@@ -77,7 +80,7 @@ def retain_native_input_manifest(receipt: Any) -> dict:
             if (not _FIELD.fullmatch(field) or not _HASH.fullmatch(fingerprint)
                     or not _HASH.fullmatch(registry) or key in seen
                     or fact.get("status") not in _STATUS
-                    or registry != receipt.get("registry_digest")):
+                    or registry != registry_digest):
                 raise ValueError("inconsistent fact reference")
             seen.add(key)
             inputs.append({"entity": entity, "field_id": field, "fact_fingerprint": fingerprint,
@@ -91,7 +94,7 @@ def retain_native_input_manifest(receipt: Any) -> dict:
         record = {**result, "status": "retained", "coverage": "rendered_typed_facts_only",
                   "native_receipt_sha256": hashlib.sha256(encoded).hexdigest(),
                   "planner_version": _string(receipt.get("planner_version"), 96),
-                  "registry_digest": _string(receipt.get("registry_digest"), 64),
+                  "registry_digest": registry_digest,
                   "inputs": inputs,
                   "relationship_payload_recorded": False,
                   "relationship_present": receipt.get("relationship_receipt") is not None,

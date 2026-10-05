@@ -201,6 +201,25 @@ def test_non_native_requests_never_claim_a_native_input_census():
     assert "native_input_manifest" not in gw._with_retained_context({}, receipt())
 
 
+@pytest.mark.parametrize("registry", [None, "not-a-digest", "A" * 64, "a" * 63, [], {}])
+def test_empty_native_census_still_requires_a_valid_owner_registry(registry):
+    source = native_receipt()
+    source.update(facts=[], registry_digest=registry)
+    result = ni.retain_native_input_manifest(source)
+    assert result["status"] == "unavailable"
+    assert result["reason"] == "invalid_native_receipt"
+    assert "inputs" not in result
+
+
+def test_empty_owner_census_preserves_explicit_failure_without_inventing_inputs():
+    source = native_receipt()
+    source.update(facts=[], failure={"status": "unavailable", "reason_code": "identity_unavailable"})
+    result = ni.retain_native_input_manifest(source)
+    assert result["status"] == "retained"
+    assert result["inputs"] == []
+    assert result["owner_failure_present"] is True
+
+
 @pytest.mark.parametrize("stream", [False, True])
 def test_native_gateway_persists_the_manifest_for_its_actual_rendered_receipt(tmp_path, monkeypatch, stream):
     from tests.test_brain_instant_lane import _gateway_native_execution
