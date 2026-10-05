@@ -353,6 +353,14 @@ class PendingDelta:
                 "superseded": list(self.superseded)}
 
 
+def _row_terminal(row: Mapping[str, Any]) -> bool:
+    """Whether a raw episode row names a terminal §13 state (unknown state → False)."""
+    try:
+        return dt.DetectorState(str(row.get("state") or "")) in dt.TERMINAL_STATES
+    except ValueError:
+        return False
+
+
 def merge_deltas(deltas: Sequence[PendingDelta], *, as_of_session: str,
                  pass_id: str, ticker: str = "*") -> PendingDelta:
     """One pass-wide delta from many per-name ones, deduped by address.
@@ -360,6 +368,19 @@ def merge_deltas(deltas: Sequence[PendingDelta], *, as_of_session: str,
     The spool writes ONE object per pass (the W1 key shape), so the pass needs
     one delta; merging here rather than at the call site keeps the dedup rule in
     exactly one place.
+
+    Two rows for one ``episode_id`` merge TERMINAL-WINS, never last-wins.  The
+    pack lane merges the §10 clock overlay (RESOLVED / EXPIRED rows) with the
+    stateless C5/G0 replays in ONE delta, and a replay re-produces every
+    historical candidate as CANDIDATE stamped with the pack's own ``freshness``
+    — a different canonical, so ``apply_run`` emits the row.  Under last-wins
+    that replayed CANDIDATE overwrote the overlay's RESOLVED row for the same
+    ``episode_id`` while the RESOLVED transition was still admitted, every pack,
+    forever: measured 2026-10-05 on the production ledger — 44,972 CANDIDATE
+    episodes dated back to 1965, each carrying its own RESOLVED transition, a
+    90 MB ``episodes.json``, a 33 MB served payload and 4.8-minute live passes
+    on a 5-minute cadence.  ``commit`` already refuses to update a stored
+    terminal record from a trace; the same precedence holds inside a merge.
     """
     events: dict[str, dict[str, Any]] = {}
     transitions: dict[tuple[str, ...], dict[str, Any]] = {}
@@ -371,7 +392,11 @@ def merge_deltas(deltas: Sequence[PendingDelta], *, as_of_session: str,
         for row in delta.transitions:
             transitions.setdefault(transition_address(row), row)
         for episode in delta.episodes:
-            episodes[str(episode.get("episode_id"))] = episode
+            episode_id = str(episode.get("episode_id"))
+            held = episodes.get(episode_id)
+            if held is not None and _row_terminal(held) and not _row_terminal(episode):
+                continue  # a terminal row never loses a merge to a replayed trace
+            episodes[episode_id] = episode
         superseded |= set(delta.superseded)
     return PendingDelta(
         ticker=ticker, as_of_session=as_of_session, pass_id=pass_id,
