@@ -387,6 +387,89 @@ def test_prior_day_correction_added_phrase_cannot_mint_dropped():
 
 
 
+def test_prior_multirevision_retained_correction_phrase_cannot_mint_dropped():
+    book = _book()
+    locator = "loc_pboc_prior_chain"
+    prior_a = _row(
+        "pboc", "A 初版", "稳中求进",
+        "2026-07-01T01:00:00",
+        url="https://www.pbc.gov.cn/policy/prior-chain.html",
+    )
+    prior_b = _row(
+        "pboc", "B 更正", "稳中求进 适度宽松",
+        "2026-07-01T02:00:00",
+        url="https://www.pbc.gov.cn/policy/prior-chain.html",
+    )
+    prior_c = _row(
+        "pboc", "C 再更正", "稳中求进 适度宽松 反内卷",
+        "2026-07-01T03:00:00",
+        url="https://www.pbc.gov.cn/policy/prior-chain.html",
+    )
+    today = _row(
+        "pboc", "今日文件", "稳中求进",
+        "2026-07-02T01:00:00",
+        url="https://www.pbc.gov.cn/policy/today-chain.html",
+    )
+    for row in (prior_a, prior_b, prior_c):
+        row["source_locator_id"] = locator
+
+    res = cd.compute_events(
+        [prior_a, prior_b, prior_c, today],
+        "2026-07-02",
+        book=book,
+    )
+    kinds = {(e["kind"], e["phrase"]) for e in res["events"]}
+
+    # X first entered through the B correction and C merely retained it.
+    assert ("DROPPED", "适度宽松") not in kinds
+    assert ("DROPPED", "反内卷") not in kinds
+
+
+def test_independent_prior_source_preserves_dropped_eligibility_and_provenance():
+    book = _book()
+    locator = "loc_pboc_prior_chain_independent"
+    prior_a = _row(
+        "pboc", "A 初版", "稳中求进",
+        "2026-07-01T01:00:00",
+        url="https://www.pbc.gov.cn/policy/prior-chain-2.html",
+    )
+    prior_b = _row(
+        "pboc", "B 更正", "稳中求进 适度宽松",
+        "2026-07-01T02:00:00",
+        url="https://www.pbc.gov.cn/policy/prior-chain-2.html",
+    )
+    prior_c = _row(
+        "pboc", "C 再更正", "稳中求进 适度宽松 反内卷",
+        "2026-07-01T03:00:00",
+        url="https://www.pbc.gov.cn/policy/prior-chain-2.html",
+    )
+    independent_prior = _row(
+        "pboc", "独立来源", "实施适度宽松的货币政策",
+        "2026-07-01T04:00:00",
+        url="https://www.pbc.gov.cn/policy/independent-prior-x.html",
+    )
+    today = _row(
+        "pboc", "今日文件", "稳中求进",
+        "2026-07-02T01:00:00",
+        url="https://www.pbc.gov.cn/policy/today-no-x-2.html",
+    )
+    for row in (prior_a, prior_b, prior_c):
+        row["source_locator_id"] = locator
+
+    res = cd.compute_events(
+        [prior_a, prior_b, prior_c, independent_prior, today],
+        "2026-07-02",
+        book=book,
+    )
+    event = next(
+        e for e in res["events"]
+        if e["kind"] == "DROPPED" and e["phrase"] == "适度宽松"
+    )
+    assert event["evidence_url"] == independent_prior["url"]
+    assert event["evidence_title"] == independent_prior["title"]
+
+
+
 def test_same_day_revision_removed_phrase_cannot_mint_appeared():
     book = _book()
     locator = "loc_ndrc_same_day_remove"
