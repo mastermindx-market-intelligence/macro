@@ -2,7 +2,7 @@
 
 **Parent:** Research Vault AI Intelligence Fabric / PR #8438  
 **Protected procedure pin used for this checkpoint:** Mastermind `7eac3ec252475600147ec9a376b8ca16403ac4c5`, Skillpack 1.0.1  
-**Observed Macro main during F4 source work:** `dc59164faa9c7126115dc5f3aaba6984560b421a`  
+**Observed Macro main during latest continuation:** `544d3ca021cc64471fc6ae28c0e790b68e73433b` (movement since earlier F4 work was path-disjoint generated/site output for the new F6 carrier).  
 **State:** execution has begun; the parent mission is **not complete**.
 
 This checkpoint records verified capability movement after the original planning packet. It does not claim Fable pickup, production deployment, private ChatGPT installation, Deep Research acceptance, or Research Vault source recovery.
@@ -151,15 +151,17 @@ immutable recovery manifest:
 
 All nine changed payload files matched their current `SHA256SUMS` entries and the release receipt matched the manifest digest.
 
-At the first bounded CI read:
+Adversarial review on head `4df909395c2ef2bd1e4c27f23051940b3823c54a` found the architecture sound but hosted CI exposed three discriminating source regressions:
 
-- PR mergeable;
-- `ci-authority/main`: success;
-- general fence pack / contract delta still running;
-- one auxiliary merge-queue pilot check was red;
-- no production acceptance claimed.
+1. the lineage suite still assumed current `SHA256SUMS` must equal the immutable recovery hash, which is no longer valid after merged #8452;
+2. an empty-vault feed fixture still emitted the old 3-field probe contract rather than the new 7-field typed-auth contract;
+3. the canonical-dispatch fixture had the same stale probe shape, so dispatch was never reached.
 
-Do not poll unchanged CI merely to extend execution.
+Observed Research Vault source-lineage result: **3 failed, 357 passed**; `ci-gate` was red because that semantic proof was blocking.
+
+Blocking review is recorded on #8472. The active owner must repair those exact tests/contracts on the same carrier. Do not duplicate the source fix elsewhere.
+
+A second acceptance boundary remains: an `AUTH_REQUIRED` line in the incumbent local feed log is useful typed state, but is not by itself externally observed operator-alert proof. Final F4 acceptance still requires host readback, human single-writer re-auth only if actually required, and natural-report proof.
 
 ## 5. F5 exact full-text identity/segment contract — ACTIVE, do not duplicate
 
@@ -194,11 +196,72 @@ with:
 - exact replay;
 - literal private segment text.
 
-Current main has no competing `fulltext.py`; #8453 is mergeable and path-disjoint from later main movement at this checkpoint.
+Current main has no competing `fulltext.py`; #8453 remains the unique F5 carrier.
+
+Principal review on head `4895b47660d817889556757560c004d00951db80` found two contract blockers before this can become the citation-identity substrate:
+
+1. segment artifacts omit `extractor_name` even though the extracted-text identity and stated contract bind extractor name + version;
+2. `replay_segment()` proves an exact byte slice but does not prove the supplied row is the **canonical deterministic segment** for its declared `segment_index / segmenter_version / max_bytes`. A forged alternative exact slice can pass if its text/hash/page fields are recomputed.
+
+Blocking review is recorded on #8453. The preferred correction is to reconstruct canonical segments for the declared algorithm/version/budget and require the supplied row to equal canonical `segments[index]`, with adversarial tests for extractor name, index, segmenter version and alternative valid byte windows.
 
 Do not create a second chunk/segment abstraction.
 
-## 6. Current critical dependency DAG
+## 6. F6 subject metadata / Data OS identity bridge — ACTIVE
+
+Draft PR #8475:
+
+**feat(research-vault): add Data OS subject identity bridge**
+
+Current owned head at this checkpoint:
+
+`f163e40505f5b726be3c1be5052e84453347e7f3`
+
+This is a pure, path-disjoint F6 increment. It does not mutate catalog rows or claim the source has canonical ticker metadata today.
+
+It adds:
+
+### `research_vault.subject_candidates.v1`
+
+- source-provided sidecar ticker candidates at highest source confidence;
+- existing `engine.entity_resolver` output as context-only candidate evidence;
+- title/summary candidate discovery by default;
+- licensed body scanning only by explicit opt-in;
+- symbol/confidence/method/source-field provenance;
+- **no exact `security_id`**;
+- no publisher-text copy into the candidate artifact.
+
+### `research_vault.subject_resolution.v1`
+
+Exact binding requires:
+
+- a caller-supplied canonical `lib.dataos.identity.VendorAliasTable`;
+- an explicit reviewed alias-vendor namespace;
+- the report publication date.
+
+Each candidate becomes either:
+
+```text
+RESOLVED -> exact Data OS security_id
+UNMAPPED -> security_id = null
+```
+
+The bridge refuses to guess whether Research Vault should use `membership`, `store`, `yahoo`, or another Data OS alias namespace. That policy is deliberately left to a reviewed downstream integration decision.
+
+Hardening on the owned carrier also refuses:
+
+- blank forged report IDs;
+- NaN/inf confidence;
+- accidental bare-string `source_tickers` iteration;
+- implicit vendor choice;
+- invalid publication clocks;
+- malformed provenance.
+
+Data OS remains the only exact security-identity authority. `engine.entity_resolver` remains candidate/context-only.
+
+No catalog/backfill/search-filter activation should occur until #8475 passes review and the alias-namespace policy is frozen.
+
+## 7. Current critical dependency DAG
 
 ```text
 F1 source isolation        MERGED
@@ -217,19 +280,26 @@ F2 census tooling          MERGED
                 +--> re-auth only if exact profile proven expired
                 +--> natural-report recovery proof
 
-F5 exact text/segment contract  #8453 ACTIVE
+F5 exact text/segment contract  #8453 ACTIVE / BLOCKING REVIEW
         |
+        +--> canonical-segment identity corrections
         +--> production materialization waits on measured corpus truth
+
+F6 subject/identity bridge       #8475 ACTIVE
+        |
+        +--> explicit alias-namespace policy
+        +--> provenance-bearing metadata backfill only after review
 ```
 
-## 7. Exact next actions
+## 8. Exact next actions
 
 ### Independent source/review work
 
-1. Consume #8472 hosted CI once its material checks return; repair only discriminating failures.
-2. Review #8453 against the PDF/text identity law and accept/salvage rather than duplicate it.
-3. Run the real read-only F2 census through the dedicated operator lane when its merged workflow can be safely dispatched.
-4. Classify F3 from that receipt:
+1. Keep #8472 source custody with its current owner; require repair of the three recorded Research Vault source-lineage failures before acceptance.
+2. Keep #8453 source custody with its current owner; require canonical-segment identity + extractor-name corrections before acceptance.
+3. Review/finish #8475, then freeze the explicit Data OS alias namespace policy before any ticker backfill/search exposure.
+4. Run the real read-only F2 census through the dedicated operator lane when its merged workflow can be safely dispatched.
+5. Classify F3 from that receipt:
    - missing corpus rows;
    - existing rows with unusable bodies;
    - typed no-text scans;
@@ -253,7 +323,7 @@ When the authorized Mac13,1 host carrier is available:
 
 No alternate producer/profile/scheduler/bucket/database may be created to bypass this gate.
 
-## 8. Fable handoff effect
+## 9. Fable handoff effect
 
 The original Fable packet remains useful, but a new Fable principal should **not** restart at F1.
 
@@ -262,7 +332,7 @@ Its current start frontier is:
 ```text
 consume merged F1/F2/#8452
         ->
-review/finish #8472 + #8453
+review/finish #8472 + #8453 + #8475
         ->
 obtain live F2 census
         ->
