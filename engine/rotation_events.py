@@ -1113,6 +1113,368 @@ def closed_recent(ledger_path, n_sessions: int = 5) -> list:
     return list(reversed(rows))
 
 
+
+
+_HISTORY_MODES = frozenset({"all", "replay", "ledger_unmarked"})
+
+
+def _history_iso_date(value, *, field: str) -> str:
+    if not isinstance(value, str):
+        raise ValueError(field)
+    try:
+        parsed = datetime.strptime(value, "%Y-%m-%d")
+    except ValueError:
+        raise ValueError(field) from None
+    if parsed.strftime("%Y-%m-%d") != value:
+        raise ValueError(field)
+    return value
+
+
+def _history_leg_key(value) -> str | None:
+    if isinstance(value, str) and value:
+        return value
+    if isinstance(value, dict):
+        key = value.get("key")
+        if isinstance(key, str) and key:
+            return key
+    return None
+
+
+def _history_invalid(
+    *,
+    source_sha256: str,
+    mode: str,
+    through: str | None,
+    limit: int | None,
+    line: int,
+    code: str,
+    inspected_nonblank_lines: int,
+) -> dict:
+    return {
+        "status": "INVALID",
+        "source_sha256": source_sha256,
+        "query": {"mode": mode, "through": through, "limit": limit},
+        "rows": [],
+        "coverage": {
+            "selected_rows": 0,
+            "event_counts": {"created": 0, "closed": 0},
+            "mode_counts": {
+                "RECONSTRUCTED_REPLAY": 0,
+                "RETAINED_LEDGER_UNMARKED": 0,
+            },
+            "invalid_rows": 1,
+            "inspected_nonblank_lines": inspected_nonblank_lines,
+            "stopped_by": "invalid",
+            "first_uninspected_line": None,
+            "first_observation": None,
+            "last_observation": None,
+        },
+        "error": {"code": code, "line": line},
+    }
+
+
+def read_ledger_history(
+    ledger_path,
+    *,
+    mode: str = "all",
+    through: str | None = None,
+    limit: int | None = None,
+) -> dict:
+    """Strict read-only query over the incumbent Rotation Command JSONL ledger.
+
+    This is a historical reader, not a second ledger or lifecycle owner. It
+    preserves native source rows and their two clocks, keeps reconstructed
+    replay distinct from retained-but-unmarked observations, and fails closed
+    instead of silently shrinking malformed history.
+
+    ``through`` is an observation-date boundary (created ``asof`` / closed
+    ``closed_asof``). Once the first later observation is reached, later rows
+    are not semantically parsed. ``limit`` likewise stops after the requested
+    number of selected rows. Source bytes are hashed for provenance but never
+    modified.
+    """
+    import pathlib
+
+    if mode not in _HISTORY_MODES:
+        raise ValueError("mode must be all, replay, or ledger_unmarked")
+    if through is not None:
+        try:
+            through = _history_iso_date(through, field="through")
+        except ValueError:
+            raise ValueError("through must be YYYY-MM-DD") from None
+    if limit is not None and (
+        isinstance(limit, bool) or not isinstance(limit, int) or limit <= 0
+    ):
+        raise ValueError("limit must be a positive integer")
+
+    path = pathlib.Path(ledger_path)
+    base_coverage = {
+        "selected_rows": 0,
+        "event_counts": {"created": 0, "closed": 0},
+        "mode_counts": {
+            "RECONSTRUCTED_REPLAY": 0,
+            "RETAINED_LEDGER_UNMARKED": 0,
+        },
+        "invalid_rows": 0,
+        "inspected_nonblank_lines": 0,
+        "stopped_by": None,
+        "first_uninspected_line": None,
+        "first_observation": None,
+        "last_observation": None,
+    }
+    query = {"mode": mode, "through": through, "limit": limit}
+
+    if not path.exists():
+        return {
+            "status": "MISSING",
+            "source_sha256": None,
+            "query": query,
+            "rows": [],
+            "coverage": base_coverage,
+            "error": None,
+        }
+
+    try:
+        raw = path.read_bytes()
+    except OSError:
+        coverage = dict(base_coverage)
+        coverage["stopped_by"] = "unreadable"
+        return {
+            "status": "UNREADABLE",
+            "source_sha256": None,
+            "query": query,
+            "rows": [],
+            "coverage": coverage,
+            "error": {"code": "UNREADABLE_SOURCE", "line": None},
+        }
+
+    source_sha256 = hashlib.sha256(raw).hexdigest()
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError:
+        return _history_invalid(
+            source_sha256=source_sha256,
+            mode=mode,
+            through=through,
+            limit=limit,
+            line=1,
+            code="INVALID_UTF8",
+            inspected_nonblank_lines=0,
+        )
+
+    physical_lines = text.splitlines()
+    if not any(line.strip() for line in physical_lines):
+        return {
+            "status": "EMPTY",
+            "source_sha256": source_sha256,
+            "query": query,
+            "rows": [],
+            "coverage": base_coverage,
+            "error": None,
+        }
+
+    selected: list[dict] = []
+    event_counts = {"created": 0, "closed": 0}
+    mode_counts = {
+        "RECONSTRUCTED_REPLAY": 0,
+        "RETAINED_LEDGER_UNMARKED": 0,
+    }
+    inspected = 0
+    stopped_by = None
+    first_uninspected_line = None
+
+    for line_no, line in enumerate(physical_lines, start=1):
+        if not line.strip():
+            continue
+        inspected += 1
+        try:
+            row = json.loads(line)
+        except Exception:  # noqa: BLE001
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="INVALID_JSON",
+                inspected_nonblank_lines=inspected,
+            )
+        if not isinstance(row, dict):
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="INVALID_ROW",
+                inspected_nonblank_lines=inspected,
+            )
+
+        event = row.get("event")
+        if event not in {"created", "closed"}:
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="INVALID_EVENT_KIND",
+                inspected_nonblank_lines=inspected,
+            )
+
+        obs_field = "asof" if event == "created" else "closed_asof"
+        try:
+            observation_date = _history_iso_date(
+                row.get(obs_field), field="observation_clock"
+            )
+        except ValueError:
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="MISSING_OBSERVATION_CLOCK",
+                inspected_nonblank_lines=inspected,
+            )
+
+        if through is not None and observation_date > through:
+            stopped_by = "through"
+            first_uninspected_line = (
+                line_no + 1 if line_no < len(physical_lines) else None
+            )
+            break
+
+        native_id = row.get("id") if event == "created" else row.get("pair_id")
+        if not isinstance(native_id, str) or not native_id:
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="MISSING_IDENTITY",
+                inspected_nonblank_lines=inspected,
+            )
+
+        started = row.get("started")
+        try:
+            started = _history_iso_date(started, field="started")
+        except ValueError:
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="MISSING_STARTED",
+                inspected_nonblank_lines=inspected,
+            )
+
+        from_key = (
+            _history_leg_key(row.get("from_leg"))
+            or _history_leg_key(row.get("donor"))
+            or _history_leg_key(row.get("from_sector"))
+        )
+        to_key = (
+            _history_leg_key(row.get("to_leg"))
+            or _history_leg_key(row.get("receiver"))
+            or _history_leg_key(row.get("to_sector"))
+        )
+        if from_key is None or to_key is None:
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="MISSING_DIRECTION",
+                inspected_nonblank_lines=inspected,
+            )
+
+        recorded_at = row.get("ts")
+        if not isinstance(recorded_at, str) or not recorded_at.strip():
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="MISSING_RECORD_CLOCK",
+                inspected_nonblank_lines=inspected,
+            )
+        try:
+            pd.Timestamp(recorded_at)
+        except Exception:  # noqa: BLE001
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="MISSING_RECORD_CLOCK",
+                inspected_nonblank_lines=inspected,
+            )
+
+        row_mode = (
+            "RECONSTRUCTED_REPLAY"
+            if row.get("replayed") is True
+            else "RETAINED_LEDGER_UNMARKED"
+        )
+        include = (
+            mode == "all"
+            or (mode == "replay" and row_mode == "RECONSTRUCTED_REPLAY")
+            or (
+                mode == "ledger_unmarked"
+                and row_mode == "RETAINED_LEDGER_UNMARKED"
+            )
+        )
+        if not include:
+            continue
+
+        selected.append({
+            "line": line_no,
+            "line_sha256": hashlib.sha256(line.encode("utf-8")).hexdigest(),
+            "mode": row_mode,
+            "observation_date": observation_date,
+            "recorded_at": recorded_at,
+            "native_id": native_id,
+            "lifecycle_id": f"{native_id}@{started}",
+            "from_key": from_key,
+            "to_key": to_key,
+            "row": row,
+        })
+        event_counts[event] += 1
+        mode_counts[row_mode] += 1
+
+        if limit is not None and len(selected) >= limit:
+            stopped_by = "limit"
+            first_uninspected_line = (
+                line_no + 1 if line_no < len(physical_lines) else None
+            )
+            break
+
+    observations = [entry["observation_date"] for entry in selected]
+    return {
+        "status": "OK",
+        "source_sha256": source_sha256,
+        "query": query,
+        "rows": selected,
+        "coverage": {
+            "selected_rows": len(selected),
+            "event_counts": event_counts,
+            "mode_counts": mode_counts,
+            "invalid_rows": 0,
+            "inspected_nonblank_lines": inspected,
+            "stopped_by": stopped_by,
+            "first_uninspected_line": first_uninspected_line,
+            "first_observation": observations[0] if observations else None,
+            "last_observation": observations[-1] if observations else None,
+        },
+        "error": None,
+    }
+
+
 def _label_index(sectors: dict | None = None, universe: dict | None = None) -> dict:
     """{leg-or-series key: (name_en, name_zh)} over every registered v1 leg and v2 series."""
     out: dict = {}
