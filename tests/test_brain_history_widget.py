@@ -172,11 +172,11 @@ def test_malformed_list_keeps_previous_successful_history(page,bad):
 
 def test_drafts_are_partitioned_across_account_switch(page):
     page.locator('#mmb-ta').fill('Private draft A')
-    page.wait_for_timeout(450)
+    page.wait_for_function("localStorage.getItem('mmb_draft_v2:user-A:new')==='Private draft A'")
     page.evaluate("window.__principal='B';window.__onAuth({id:'user-B'});MMBrain.close();MMBrain.open();")
     expect(page.locator('#mmb-ta')).to_have_value('')
     page.locator('#mmb-ta').fill('Private draft B')
-    page.wait_for_timeout(450)
+    page.wait_for_function("localStorage.getItem('mmb_draft_v2:user-B:new')==='Private draft B'")
     page.evaluate("window.__principal='A';window.__onAuth({id:'user-A'});MMBrain.close();MMBrain.open();")
     expect(page.locator('#mmb-ta')).to_have_value('Private draft A')
 
