@@ -3289,6 +3289,9 @@ jobs:
       # tests/test_capital_need.py (F09 guarded capital-need adapter, contract-delta
       # 2026-09-22) rides this step with the debt/cash contract tests: it exercises
       # engine.capital_need plus the same debt-maturity render boundary. No new job.
+      # tests/test_prophet_cycle_equity.py (B17/Q08 original-equity capture) consumes
+      # that same capital_need.v1 contract plus the existing share-count observation
+      # shape. Pure arithmetic/source-bound tests; no new dependency or job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -3299,6 +3302,7 @@ jobs:
           tests/test_debt_maturity.py
           tests/test_cash_runway.py
           tests/test_capital_need.py
+          tests/test_prophet_cycle_equity.py
           tests/test_hk_v37_composer.py
           tests/test_commodity_signals.py
           tests/test_commodity_index.py
