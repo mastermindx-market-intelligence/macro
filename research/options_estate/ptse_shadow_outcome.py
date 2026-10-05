@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from datetime import date
 import hashlib
 import json
 import math
@@ -28,6 +29,8 @@ from research.options_estate.ptse_shadow_enrollment import (
 SCHEMA = "ptse.shadow_outcome_projection/v1-research"
 GRADE_SCHEMA = "us.prophet_grades/v1"
 BENCH = "SPY"
+GRADE_OWNER = "engine.us_prophet_grades"
+GRADE_HORIZONS = (10, 21, 42, 63)
 OUTCOME_TARGET = "prophet.shared_excess_spy_return/v1"
 
 GRADE_BIND_FIELDS = (
@@ -108,12 +111,15 @@ def _finite(value: Any, code: str) -> float:
 
 
 def _date(value: Any, code: str) -> str:
-    if not isinstance(value, str) or len(value) < 10:
+    if not isinstance(value, str) or len(value) != 10:
         _fail(code)
-    day = value[:10]
-    if len(day) != 10 or day[4] != "-" or day[7] != "-":
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError:
         _fail(code)
-    return day
+    if parsed.isoformat() != value:
+        _fail(code)
+    return value
 
 
 def _ref(value: Mapping[str, Any] | None, code: str) -> dict[str, str]:
@@ -131,6 +137,16 @@ def _ref(value: Mapping[str, Any] | None, code: str) -> dict[str, str]:
     ):
         _fail(code)
     return dict(value)
+
+
+def _grade_artifact_id(
+    *,
+    stamp_date: str,
+    ticker: str,
+    board_definition: str,
+    horizon: int,
+) -> str:
+    return f"grade:{stamp_date}:{ticker}:{board_definition}:{horizon}"
 
 
 def _grade_matches(
@@ -178,6 +194,8 @@ def project_shadow_outcome(
 
     if isinstance(horizon, bool) or not isinstance(horizon, int) or horizon <= 0:
         _fail("HORIZON_INVALID")
+    if horizon not in GRADE_HORIZONS:
+        _fail("HORIZON_NOT_ADMITTED")
     if not isinstance(grade_rows, Sequence) or isinstance(grade_rows, (str, bytes)):
         _fail("GRADE_ROWS_INVALID")
 
@@ -232,6 +250,16 @@ def project_shadow_outcome(
             _fail("GRADE_CLOCK_ORDER_INVALID")
 
         owner_ref = _ref(grade_row_ref, "GRADE_ROW_REF_REQUIRED")
+        if owner_ref["owner_ref"] != GRADE_OWNER:
+            _fail("GRADE_OWNER_INVALID")
+        expected_artifact_id = _grade_artifact_id(
+            stamp_date=stamp,
+            ticker=ticker,
+            board_definition=definition,
+            horizon=horizon,
+        )
+        if owner_ref["artifact_id"] != expected_artifact_id:
+            _fail("GRADE_ARTIFACT_ID_MISMATCH")
         if owner_ref["sha256"] != _grade_material_sha256(row):
             _fail("GRADE_ROW_REF_MISMATCH")
 
@@ -264,6 +292,8 @@ __all__ = [
     "AUTHORITY",
     "BENCH",
     "GRADE_BIND_FIELDS",
+    "GRADE_HORIZONS",
+    "GRADE_OWNER",
     "GRADE_SCHEMA",
     "OUTCOME_TARGET",
     "PTSEShadowOutcome",
