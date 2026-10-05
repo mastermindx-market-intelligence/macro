@@ -14587,6 +14587,7 @@ jobs:
       - "scripts/build_themes_heatmap.py"
       - "scripts/build_vector.py"
       - "scripts/check_board_contradictions.py"
+      - "scripts/check_prophet_h1_prospective_accrual.py"
       - "scripts/check_signal_gate_coherence.py"
       # Import-closure entry: scripts/build_stock_library.py lazy-imports
       # scripts/check_stretch_oracle_contract.py, so exclusive scope must name

@@ -24,6 +24,10 @@ changed:
 - path: research/prophet_v4/S0_CAPTURE_INTEGRITY_R2_20261005.json
   what: Bind native test, eight caught mutation, actual CLI and source-restoration
     evidence to exact source hashes.
+- path: tests/test_us_context_vector.py, .github/ci/legacy-jobs.yml
+  what: Extend existing actual native-writer test through the strict S0 consumer;
+    add only the newly exercised checker dependency to its existing exclusive owner.
+    No CI weakening or new job.
 verified:
 - claim: Recovered repair reproduces before further hardening.
   command: python3 -m pytest tests/test_prophet_h1_prospective_accrual.py tests/test_us_context_vector.py
@@ -54,6 +58,12 @@ verified:
   result: Integrated e55eb6cf;405 passed/2 skipped/2 historical-grade-store tests
     deliberately deselected;0 failures. Initial4 missing-fixture failures retained
     in evidence.
+- claim: Actual canonical producer output is protected by a committed strict-verifier
+    regression, with unchanged source bytes and false authority.
+  command: python3 -m pytest tests/test_us_context_vector.py::TestProspectiveOwnerCaptureWiring
+    -q; existing run_ci_pack inference and matcher for the changed exclusive owner
+  result: 1 passed;980 inferred dependency paths,0 uncovered; all commands/gates/weights
+    preserved with one exact dependency path added.
 unverified:
 - claim: Combined-source hosted CI and normal merge
   what_would_verify: Retarget existing8192 to main, pass its full required checks,
@@ -111,3 +121,5 @@ Current publication/review status belongs to existing PR #8192; cumulative recov
 The Chairman explicitly waived independent review in the continuing session. PR8192 now carries the complete8091 source plus the repaired verifier, integrated on main8a3310c at e55eb6cf. This replaces the serial release sequence, not any source, CI, privacy, clock or scientific gate. Parent8091 remains preserved until combined-source merge is verified. The other Prophet session retains its own paths. No source was copied from its workspace and no prior refused action was retried.
 
 Combined native qualification is405 passed/2 skipped/2 deliberately unrun historical-grade-store tests. No grade store was materialized. Repository-hosted proof and ordinary-nightly proof remain distinct, and neither is claimed by this checkpoint.
+
+The main-targeted metadata event cleared ci-authority (run37288282090 SUCCESS) but did not start full CI. This candidate adds the genuinely new native-writer-to-strict-reader regression and its one-path dependency declaration, enabling normal source-push CI on the supported base without empty commits, fake events or workflow changes. The live VPS preflight at installed5bde9a5 shows S0 source absent, so installation is explicitly unproved.

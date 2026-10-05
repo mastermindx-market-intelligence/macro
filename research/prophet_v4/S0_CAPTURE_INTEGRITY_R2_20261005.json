@@ -116,12 +116,20 @@
     "checks_bypassed": false,
     "consolidation_comment": 5991371013,
     "frozen_main": "8a3310cdf03bc16704d51235172a5bbcf1f9a73e",
+    "full_local_contract_probe": "Not accepted: initial manifest edit assertion failed; its ensuing full contract probe was intentionally terminated on exact owned PID12886 before source repair (parent12859 exited143). Targeted owner closure was then verified; full hosted contract-delta remains required.",
     "grade_store_materialized": false,
     "initial_integration_run": {
       "failed": 4,
       "passed": 403,
       "reason": "Sparse checkout lacked two disclosed-gap metadata fixtures and two historical grade-store fixtures. Exact committed gap metadata was restored; two grade-store tests deliberately remain unrun locally.",
       "skipped": 2
+    },
+    "installed_source_preflight": {
+      "context_vector_sha256": "24d5d39cfc41331c090e1f6dfb3ff7efd34f3845c86219f8142a4a7b4914c424",
+      "effect": "READ_ONLY",
+      "installed_head": "5bde9a52f579f6fd3811fed30186df98be0e5909",
+      "production_claim": false,
+      "s0_source": "ABSENT"
     },
     "integrated_head": "e55eb6cf1edd408d672591fcf9661ab54ab572b1",
     "integration_conflicts": 0,
@@ -133,6 +141,38 @@
       "log_sha256": "df408aa0b9941940c85cba7895171e370c2e8e97d2893e681e284627c8d1a66d",
       "passed": 405,
       "skipped": 2
+    },
+    "native_writer_consumer_guard": {
+      "junit_sha256": "4a2664e6a75c2beeff6db99e3af51ff14cac2487c7c4dd5e16d3022c70f10bed",
+      "native_cli": {
+        "candidate_head": "674a63f45fbbee5c0815a7c77d59c7dab41e3843",
+        "cli_receipt_sha256": "17277713b5e2a0e8f14bf90b0838c3e6f8d1be892ce94a638dade78fcbba71a3",
+        "coverage": {
+          "context_dims_present": 0.0,
+          "identity_resolved": 1.0,
+          "membership_source_receipt": 1.0,
+          "sole_supported_peer_group": 1.0
+        },
+        "h1_admitted": false,
+        "input_sha256": "38ced7c6e9ff552c66487ac615907b21fd34b40a97f69763f1cc48f69073d390",
+        "input_unchanged": true,
+        "model_fit_executed": false,
+        "rows": 1,
+        "source": "Existing native append_candidates test fixture; real Data OS alias/master adapters, membership owner, canonical writer and real module CLI, with synthetic source inputs. Not production.",
+        "status": "S0_CAPTURE_PRESENT",
+        "stdout_equals_written_receipt": true
+      },
+      "result": "1 passed",
+      "targeted_dependency_closure": {
+        "closure_paths": 980,
+        "manifest_sha256": "d06d03c26c1ca302a5b2221c6c34959927dcb731e63beb54084961fc22a385d8",
+        "owner_job": "unrun-picks-boards",
+        "s0_checker_in_closure": true,
+        "scope": "One changed exclusive owner only; not the full contract-delta gate",
+        "uncovered_paths": []
+      },
+      "test": "tests/test_us_context_vector.py::TestProspectiveOwnerCaptureWiring",
+      "test_source_sha256": "0cd602894f118d389bf638916ef00bb3cf74e7bdf71e7a073784569533265f54"
     },
     "parent_head": "410965bd243d94e9f0e528e15f0c97df53fae732",
     "protected_outcome_read": false,

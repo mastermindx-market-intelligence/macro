@@ -196,6 +196,27 @@ class TestProspectiveOwnerCaptureWiring:
         assert row["theme_membership_source_sha256"].startswith("sha256:")
         assert row["theme_membership_source_version"] == "2026-08-07"
 
+        # The real native writer must remain consumable by the strict S0 reader.
+        # Synthetic Data OS and membership sources above exercise the actual
+        # adapters and canonical storage, not a hand-assembled verifier envelope.
+        from hashlib import sha256
+        from scripts import check_prophet_h1_prospective_accrual as accrual
+
+        part = ucv._part_path("2026-07-31", tmp_path)
+        original = part.read_bytes()
+        proof = accrual.inspect(
+            expected_session="2026-07-31", board_definition="us_prophet_v1",
+            root=tmp_path,
+        )
+        assert proof["status"] == accrual.STATUS_S0_CAPTURE_PRESENT
+        assert proof["rows"] == 1
+        assert proof["coverage"]["identity_resolved"] == 1.0
+        assert proof["coverage"]["sole_supported_peer_group"] == 1.0
+        assert proof["source_receipt"]["sha256"] == sha256(original).hexdigest()
+        assert part.read_bytes() == original
+        assert proof["h1_admitted"] is False
+        assert proof["model_fit_executed"] is False
+
 
 # --------------------------------------------------------------------------- #
 # 2. PIT discipline
