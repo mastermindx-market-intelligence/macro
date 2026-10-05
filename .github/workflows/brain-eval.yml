@@ -1,7 +1,8 @@
 name: brain-eval
 # Weekly offline answer-quality eval over the Mastermind AI response log
 # (masterplan §3 row 14 / §9 rubric, W2). Grades a sample of the week's answers
-# with an LLM judge on the §9 rubric, plus the frozen operator benchmark case.
+# with an LLM judge on the §9 rubric, plus the frozen operator benchmark and
+# natural-vs-coached analytical reasoning pair.
 #
 # NOT a nightly lane and NOT declared in config/dag.yml on purpose: it renders
 # nothing, commits nothing, and touches no pipeline artifact. Its only outputs are
@@ -25,8 +26,9 @@ concurrency:
 jobs:
   brain-eval:
     runs-on: [self-hosted, macstudio]
-    timeout-minutes: 45     # measured budget: <=150 judge calls + 1 benchmark turn on a
-                            # small model. The script is fail-soft per row, so a slow
+    timeout-minutes: 45     # measured budget: <=150 corpus judge calls + three frozen
+                            # answer turns / three benchmark judge calls. The script is
+                            # fail-soft per row/case, so a slow
                             # provider degrades the sample rather than the run.
     steps:
       - uses: actions/checkout@v4
