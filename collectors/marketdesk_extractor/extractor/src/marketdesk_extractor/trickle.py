@@ -677,9 +677,11 @@ def run_trickle(
                             profile=profile, per_tick_cap=per_tick_cap)
             results.append(tick)
             if not dry_run:
-                _record_producer_auth_health(conn, states, now)
-                # may sys.exit(1) when an account's session cannot be re-opened
+                # May sys.exit(1) when a dead transport cannot be re-opened. A
+                # failed transport restart is not an auth verdict; when recycle
+                # returns normally, project the final per-account auth state.
                 _recycle_dead_sessions(cfg, states)
+                _record_producer_auth_health(conn, states, now)
 
             # per-tick log line + dry-run plan print
             for plan in tick.plans:
