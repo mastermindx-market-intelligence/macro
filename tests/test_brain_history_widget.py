@@ -37,6 +37,7 @@ def page():
                 {id:'11111111-1111-1111-1111-111111111111',title:'Retained investigation A',lane:'fast',updated_at:'2026-10-05T00:00:00Z'},
                 {id:'22222222-2222-2222-2222-222222222222',title:'Retained investigation B',lane:'fast',updated_at:'2026-10-05T00:00:00Z'}]};
               if(window.__principal==='B')body={threads:[]};
+              if(window.__badList!==undefined)body={threads:window.__badList};
               if(window.__holdList)return new Promise(resolve=>{window.__resolveList=()=>resolve({ok:true,status:200,json:()=>Promise.resolve(body)});});
             } else if(url.endsWith('/11111111-1111-1111-1111-111111111111')){
               body={thread:{id:'11111111-1111-1111-1111-111111111111'},messages:[{role:'assistant',content:'Exact retained answer A'}]};
@@ -160,3 +161,10 @@ def test_history_outage_responsive_keyboard_and_touch(page,width,height,lang):
     expect(retry).to_have_count(0)
     expect(page.locator('#mmb-tlist')).to_contain_text('Retained investigation A')
     assert all(r['method']=='GET' for r in page.evaluate('window.__requests'))
+
+
+@pytest.mark.parametrize('bad',[[None],[{}],[{'id':A,'title':{'bad':'shape'},'lane':'fast'}]])
+def test_malformed_list_keeps_previous_successful_history(page,bad):
+    page.evaluate('(bad)=>{window.__badList=bad;MMBrain.close();MMBrain.open();}',bad)
+    expect(page.locator('#mmb-tlist [role="status"]')).to_contain_text('temporarily unavailable')
+    expect(page.locator('#mmb-tlist')).to_contain_text('Retained investigation A')

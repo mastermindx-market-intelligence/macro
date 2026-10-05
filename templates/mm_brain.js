@@ -1973,7 +1973,11 @@
       .then(function (r) { if (!r.ok) { var error = new Error('history unavailable'); error.status = r.status; throw error; } return r.json(); })
       .then(function (d) {
         if (generation !== historyListGeneration || epoch !== historyEpoch) return;
-        if (!d || !Array.isArray(d.threads)) throw new Error('invalid history');
+        if (!d || !Array.isArray(d.threads) || !d.threads.every(function (t) {
+          return t && typeof t.id === 'string' && t.id.length > 0 &&
+            typeof t.title === 'string' && typeof t.lane === 'string' &&
+            (t.updated_at == null || typeof t.updated_at === 'string');
+        })) throw new Error('invalid history');
         historyListUnavailable = false; renderThreads(d.threads);
       }).catch(function (error) {
         if (generation !== historyListGeneration || epoch !== historyEpoch) return;
@@ -2106,7 +2110,7 @@
         if (generation !== historyOpenGeneration || epoch !== historyEpoch) return;
         var old = scroll.querySelector('.mmb-history-error'); if (old) old.remove();
         var error = el('div', 'mmb-history-error mmb-th-empty'); error.setAttribute('role', 'status');
-        error.textContent = L('This conversation could not be loaded. Your current conversation is unchanged.', '此对话暂时无法加载，当前对话未改变。');
+        error.textContent = L('This conversation could not be loaded. The previously displayed messages are still shown.', '此对话暂时无法加载，仍显示此前的消息。');
         scroll.appendChild(error);
       });
   }
