@@ -404,28 +404,41 @@ def _taper_points(s: pd.Series, recent_start: pd.Timestamp, value_fn=None) -> li
     return out
 
 
-def _leadership(close_full: pd.DataFrame, ticker: str, bench: str = "SPY",
-                asof: pd.Timestamp | None = None) -> dict:
-    """RS vs SPY: 63d & 126d relative momentum + above-200d-trend of the ratio.
+RS_HISTORY_MAX_POINTS = 252
+_RS_MIN_ROWS = 210
 
-    Parameters
-    ----------
-    asof : when provided, slice BOTH ticker and benchmark series to ≤ asof
-        before computing RS.  This makes historical/PIT rebuilds explicit and
-        verifiable.  In the live path `closes` is already sliced by compute(),
-        so asof is not strictly required there, but can be passed for clarity.
+
+def _relative_strength_series(
+    close_full: pd.DataFrame,
+    ticker: str,
+    bench: str = "SPY",
+    asof: pd.Timestamp | None = None,
+) -> pd.Series:
+    """The incumbent sector/benchmark relative-strength ratio.
+
+    This is the one source for both the current 21/63-session coordinates and
+    the reconstructed history projection.  Keeping the formula shared prevents
+    the Terminal history trail from drifting away from the current snapshot.
     """
     if ticker not in close_full or bench not in close_full:
-        return {"thin_history": False}
+        return pd.Series(dtype=float)
     t = close_full[ticker].dropna()
     b = close_full[bench].dropna()
     if asof is not None:
         t = t[t.index <= asof]
         b = b[b.index <= asof]
-    rs = (t / b.reindex(t.index).ffill()).dropna()
-    if len(rs) < 210:
-        log.warning("_leadership: %s has only %d RS rows (< 210 min) — thin_history flagged",
-                    ticker, len(rs))
+    return (t / b.reindex(t.index).ffill()).dropna()
+
+
+def _leadership(close_full: pd.DataFrame, ticker: str, bench: str = "SPY",
+                asof: pd.Timestamp | None = None) -> dict:
+    """RS vs SPY: 21d/63d/126d relative momentum + above-200d ratio trend."""
+    rs = _relative_strength_series(close_full, ticker, bench=bench, asof=asof)
+    if rs.empty and (ticker not in close_full or bench not in close_full):
+        return {"thin_history": False}
+    if len(rs) < _RS_MIN_ROWS:
+        log.warning("_leadership: %s has only %d RS rows (< %d min) — thin_history flagged",
+                    ticker, len(rs), _RS_MIN_ROWS)
         return {"thin_history": True, "rs_rows": len(rs)}
     m21 = float(rs.pct_change(21).iloc[-1] * 100)
     m63 = float(rs.pct_change(63).iloc[-1] * 100)
@@ -436,6 +449,41 @@ def _leadership(close_full: pd.DataFrame, ticker: str, bench: str = "SPY",
     # own rollover). 63d stays the quarter lens; 21d is the month lens.
     return {"rs_21d": round(m21, 1), "rs_63d": round(m63, 1), "rs_126d": round(m126, 1),
             "rs_above_trend": bool(rs.iloc[-1] > ma200), "thin_history": False}
+
+
+def _leadership_history(
+    close_full: pd.DataFrame,
+    ticker: str,
+    bench: str = "SPY",
+    asof: pd.Timestamp | None = None,
+    max_points: int = RS_HISTORY_MAX_POINTS,
+) -> list[dict]:
+    """Bounded daily reconstruction of the exact current 21d/63d RS coordinates.
+
+    A point is eligible only once the live owner itself would have had the
+    required 210-row history.  The trail is therefore historical reconstruction
+    from the committed price owner, not a claim that these snapshots were
+    naturally observed at the time.
+    """
+    rs = _relative_strength_series(close_full, ticker, bench=bench, asof=asof)
+    if len(rs) < _RS_MIN_ROWS:
+        return []
+    frame = pd.DataFrame({
+        "rs_21d": rs.pct_change(21) * 100,
+        "rs_63d": rs.pct_change(63) * 100,
+    }).iloc[_RS_MIN_ROWS - 1:].dropna()
+    if frame.empty:
+        return []
+    if max_points > 0:
+        frame = frame.tail(max_points)
+    return [
+        {
+            "date": pd.Timestamp(ts).date().isoformat(),
+            "rs_21d": round(float(row.rs_21d), 1),
+            "rs_63d": round(float(row.rs_63d), 1),
+        }
+        for ts, row in frame.iterrows()
+    ]
 
 
 def _zz_pct_for(full: pd.Series) -> float:
@@ -1020,6 +1068,7 @@ def build_sector(ticker: str, meta: dict, closes: pd.DataFrame,
                 "group": meta["group"], "group_zh": GROUP_ZH.get(meta["group"], meta["group"]),
                 "accent": meta["accent"]})
     _apply_leadership(rec, _leadership(closes, ticker))
+    rec["rs_history"] = _leadership_history(closes, ticker)
     _set_engine_read(rec)    # W0.3: populate engine-owned read after RS is available
     _stamp_hazard(rec, family="sector")   # W4.3: now['hazard'] P(turn ≤ 1m/3m/6m)
     return rec
@@ -1297,6 +1346,15 @@ def compute(asof: str | None = None) -> dict | None:
             "default_window_years": DEFAULT_WINDOW_YEARS,
             "rebaseDate": str(win_start.date()),
             "benchmark": benchmark,
+            "rs_history": {
+                "schema": "sector_cycles.rs_history.v1",
+                "mode": "reconstructed_price_history",
+                "naturally_observed": False,
+                "basis": "tr",
+                "benchmark": benchmark,
+                "horizons_sessions": [21, 63],
+                "max_points_per_sector": RS_HISTORY_MAX_POINTS,
+            },
             "n_sectors": len(sectors),
             "n_baskets": len(baskets),
             "families": [{"key": ns, "label": _AMALGAM_FAMILIES[ns]["label"],
