@@ -284,3 +284,37 @@ def test_resolution_rejects_nonfinite_candidate_confidence(confidence):
             alias_vendor="membership",
             published_at="2026-10-05",
         )
+
+
+def test_resolution_refuses_malformed_dataos_alias_target():
+    table = VendorAliasTable([
+        AliasRow("exchange", "NVDA", "not-a-security-id"),
+    ])
+    candidate = subjects.discover_candidates(
+        report_id="bad-dataos-target",
+        source_tickers=["NVDA"],
+    )
+    with pytest.raises(ValueError, match="valid security id"):
+        subjects.resolve_candidates(
+            candidate,
+            aliases=table,
+            alias_vendor="exchange",
+            published_at="2026-10-05",
+        )
+
+
+def test_resolution_refuses_non_security_dataos_alias_target():
+    table = VendorAliasTable([
+        AliasRow("exchange", "NVDA", "ISS:US-XNAS-NVDA"),
+    ])
+    candidate = subjects.discover_candidates(
+        report_id="issuer-not-security",
+        source_tickers=["NVDA"],
+    )
+    with pytest.raises(ValueError, match="not a security id"):
+        subjects.resolve_candidates(
+            candidate,
+            aliases=table,
+            alias_vendor="exchange",
+            published_at="2026-10-05",
+        )
