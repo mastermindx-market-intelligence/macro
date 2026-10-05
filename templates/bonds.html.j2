@@ -630,6 +630,8 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
         <div class="flag info" style="margin-top:10px">ℹ {{ t('Context only. The same factors helped most with drawdown control, not precise return timing.', '仅供参考。同类因子主要帮助控制回撤，而非精确择时收益。') }}</div>
         {% endif %}
         <div class="dtp-asof" style="margin-top:10px"><span class="l-en">As of {{ as_of }}</span><span class="l-zh">截至 {{ as_of_zh or as_of }}</span></div>
+        <button type="button" class="gbtn gbtn-quiet bonds-duration-open" data-duration-open aria-haspopup="dialog" aria-controls="bonds-duration-dialog" disabled>{{ t('Preview price impact →', '预览价格影响 →') }}</button>
+        <p class="sub faint" data-duration-unavailable>{{ t('Preview unavailable: JavaScript and native dialog support are required. Market information is unaffected.', '预览不可用：需要 JavaScript 与原生对话框支持。市场信息不受影响。') }}</p>
       </div>
 
       <div class="panel" id="stress">
@@ -1472,7 +1474,11 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
   </div>
 </div>
 
+{% include "_bonds_duration.html.j2" %}
 <script src="theme.js"></script>
+<script type="module">
+{% include "_bonds_duration.mjs.j2" %}
+</script>
 <script defer src="illus.js"></script>
 <script>
 /* scroll reveal — cards + hero rise into view (reduced-motion parks them shown) */
