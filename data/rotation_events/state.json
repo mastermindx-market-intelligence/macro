@@ -1,62 +1,5 @@
 {
- "active": {
-  "xlk:software->ai_semis": {
-   "pair_id": "xlk:software->ai_semis",
-   "sector": "xlk",
-   "from_leg": "software",
-   "to_leg": "ai_semis",
-   "started": "2026-09-28",
-   "lapse_count": 4,
-   "last_receipts": {
-    "blowoff": {
-     "peak_date": "2026-08-31",
-     "runup_pct": 0.3275,
-     "runup_z": 1.76,
-     "drawdown_pct": 0.1179,
-     "qualified_by": "abs_runup"
-    },
-    "turn": {
-     "low_date": "2026-09-14",
-     "off_low_pct": 0.1722,
-     "reclaimed": true
-    },
-    "ratio": {
-     "ratio_chg_10s": 0.246,
-     "inflected": false,
-     "ratio_20s_high": true
-    },
-    "asof": "2026-09-29"
-   }
-  },
-  "xlk:software->semicap": {
-   "pair_id": "xlk:software->semicap",
-   "sector": "xlk",
-   "from_leg": "software",
-   "to_leg": "semicap",
-   "started": "2026-09-28",
-   "lapse_count": 4,
-   "last_receipts": {
-    "blowoff": {
-     "peak_date": "2026-08-31",
-     "runup_pct": 0.3275,
-     "runup_z": 1.76,
-     "drawdown_pct": 0.1179,
-     "qualified_by": "abs_runup"
-    },
-    "turn": {
-     "low_date": "2026-09-15",
-     "off_low_pct": 0.1981,
-     "reclaimed": true
-    },
-    "ratio": {
-     "ratio_chg_10s": 0.2815,
-     "inflected": true,
-     "ratio_20s_high": true
-    },
-    "asof": "2026-09-29"
-   }
-  }
- },
+ "active": {},
  "closed": {
   "xlk:legacy_tech->software": "2026-07-06",
   "xlk:ai_semis->software": "2026-07-10",
@@ -76,6 +19,8 @@
   "xlk:memory->semicap": "2026-08-07",
   "xlk:memory->legacy_tech": "2026-08-07",
   "xlk:semicap->memory": "2026-08-25",
-  "xlk:semicap->legacy_tech": "2026-08-25"
+  "xlk:semicap->legacy_tech": "2026-08-25",
+  "xlk:software->ai_semis": "2026-10-02",
+  "xlk:software->semicap": "2026-10-02"
  }
 }

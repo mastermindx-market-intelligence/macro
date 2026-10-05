@@ -1201,7 +1201,7 @@ jobs:
       # comparison on the canonical sign. Hermetic: synthetic closes only, no data/, no
       # network, no dependency beyond this job's install line. Unnamed suites never run.
       - name: entry-radar W1+W2+W3+W4+W4.1+W5+W6 — probe universe, entry_event.v1 store, G0 parity, C1-C5 PIT battery, live pack + episode ledger + live evaluator, live-transport correction, W5 prereg gates + forward evidence, RP1 Research Priority
-        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py tests/test_entry_radar_pack_sink.py tests/test_entry_radar_pack_state.py -q tests/test_entry_radar_live_pack_script.py tests/test_entry_radar_pack_spool.py
+        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_catalyst_attach.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py tests/test_entry_radar_pack_sink.py tests/test_entry_radar_pack_state.py -q tests/test_entry_radar_live_pack_script.py tests/test_entry_radar_pack_spool.py
 
   session-anchor-era:
     # Absolute session-calendar anchor, both eras. The confluence 2D/3D + fortnight
@@ -3381,6 +3381,7 @@ jobs:
           tests/test_fundamental_forensics_financial_query_service.py
           tests/test_fundamental_forensics_financial_query_api.py
           tests/test_fundamental_forensics_ixbrl_raw_ledger.py
+          tests/test_fundamental_forensics_cross_filing_lineage.py
           tests/test_fundamental_forensics_financial_revision_service.py
           tests/test_fundamental_forensics_financial_revision_api.py
           tests/test_fundamental_forensics_financial_packet_service.py
@@ -4376,6 +4377,28 @@ jobs:
     # pd.read_excel, and the fixtures generate real workbook bytes rather than mocking
     # the parser (a mocked read_excel cannot see the bilingual 成份 header dialect the
     # live file actually ships). yfinance is a module-scope import of the collector.
+    # Exact named closure of the two China universe suites and offline THS receipts.
+    # Opaque data traversals do not widen this code job into unrelated ownership.
+    scope: exclusive
+    paths:
+      - "collectors/__init__.py"
+      - "collectors/_stock_ohlc.py"
+      - "collectors/base.py"
+      - "collectors/breadth.py"
+      - "collectors/china_stock_prices.py"
+      - "collectors/china_stock_tencent.py"
+      - "collectors/china_ths_concepts.py"
+      - "collectors/china_universe.py"
+      - "config.yml"
+      - "config/delisted_symbols.yml"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/delisted_symbols.py"
+      - "lib/store.py"
+      - "scripts/seed_china_ths_baskets.py"
+      - "tests/test_china_universe_extras.py"
+      - "tests/test_china_universe_index_constituents.py"
+      - "tests/test_ths_collection_receipts.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4383,9 +4406,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests openpyxl yfinance
+        run: pip install pytest pandas numpy pyarrow pyyaml requests openpyxl yfinance lxml beautifulsoup4 html5lib
       - name: CSI constituent union — timeout, header dialect, degraded-night membership
         run: python -m pytest tests/test_china_universe_index_constituents.py tests/test_china_universe_extras.py -q
+      - name: THS collection receipts — offline source-boundary refusal
+        run: python -m pytest tests/test_ths_collection_receipts.py -q
 
   cycle-consistency:
     if: ${{ false }}
@@ -9153,13 +9178,27 @@ jobs:
     # authored mapping against its own rules, pins its reading table by hash,
     # and compares every condition with the contract's tables. Code-gated on
     # purpose: the job that owns the neighbouring rates-command suites is
-    # data-gated and never runs on a pull request. Offline, stdlib plus pyyaml;
+    # data-gated and never runs on a pull request. Offline; stdlib plus pyyaml
+    # for the mapping suites, pandas-family for the E3 reader suites;
     # no market artifact is read and nothing here ranks, gates or forecasts.
     # The rule-pin suite hashes the source of every producer decision the table
     # cites, so a producer or config edit runs this job and fails until re-read.
+    # E3 readers: world_state / mastermind_context / market_packet carry the
+    # projection verbatim (deep copy, no paraphrase, no re-stamp). Their suites
+    # are offline (tmp_path fixtures) and live here for the composer's reason —
+    # neural-web-core, which owns those modules' base suites, is data-gated and
+    # never runs on a pull request. The readers import the neuralweb modules,
+    # hence the pandas-family install below.
     paths:
       - "config/regime_outlook_mapping_v2.json"
       - "engine/rates_command_outlook.py"
+      # The coverage replay (slice E1r, rule R-I / SH-12) reads the mapping
+      # through the composer at four closed dates. Its suite is pure-path
+      # (synthetic frames, injected producers; pandas only) and its committed
+      # output sits beside the mapping. Named here so contract-delta owns it.
+      - "scripts/regime_outlook_replay.py"
+      - "tests/test_regime_outlook_replay.py"
+      - "config/regime_outlook_replay_v2_sh12.json"
       # The composer (slice E1c) reads the mapping and the evidence rows and
       # assembles the projection; its suite is offline and lives with the
       # mapping/readings suites it extends (contract-delta: a new suite must be
@@ -9182,7 +9221,13 @@ jobs:
       - "engine/yield_curve.py"
       - "engine/yield_momentum.py"
       - "tests/test_rates_command_outlook_rule_pins.py"
-    timeout-minutes: 5
+      - "engine/neuralweb/world_state.py"
+      - "engine/neuralweb/mastermind_context.py"
+      - "engine/neuralweb/market_packet.py"
+      - "tests/test_regime_outlook_reader_world_state.py"
+      - "tests/test_regime_outlook_reader_context.py"
+      - "tests/test_regime_outlook_reader_digest.py"
+    timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9190,9 +9235,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install test dependencies
-        run: pip install pytest pyyaml
-      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings, producer rule pins, composer
-        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py tests/test_rates_command_outlook_rule_pins.py tests/test_rates_command_outlook_compose.py -q
+        run: pip install pytest pyyaml pandas numpy pyarrow jinja2 requests
+      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings, producer rule pins, composer, coverage replay, E3 readers
+        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py tests/test_rates_command_outlook_rule_pins.py tests/test_rates_command_outlook_compose.py tests/test_regime_outlook_replay.py tests/test_regime_outlook_reader_world_state.py tests/test_regime_outlook_reader_context.py tests/test_regime_outlook_reader_digest.py -q
 
   ric-w2-surface:
     if: ${{ false }}
@@ -12117,6 +12162,9 @@ jobs:
       - "tests/fixtures/fms/**"
       - "tests/fixtures/dod_budget/**"
       - "data/government_revenue/fms_staged_objects/**"
+      # FMS publisher convergence imports the served projection itself; exclusive
+      # closure must rerun defense-rail-laws whenever that published source moves.
+      - "site/government-revenue-data/fms-cases.json"
       - "app/**"
       - "collectors/**"
       - "lib/**"
@@ -15271,7 +15319,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx
       - name: brain gateway — lane routing, quota ledger, tool allowlist, SSE event order
-        run: python -m pytest tests/test_brain_gateway.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py -q
+        run: python -m pytest tests/test_brain_gateway.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py -q
       - name: W1-A typed datapoint registry — owners, PIT, rights, consumers, mutations, batching
         run: >-
           python -m pytest
@@ -15802,6 +15850,18 @@ jobs:
   unrun-template-chips:
     if: ${{ false }}
     gate: code
+    paths:
+      - "tests/test_act_now_board_assembler.py"
+      - "tests/test_action_board_lane_split.py"
+      - "tests/test_alert_coverage_recurrence.py"
+      - "tests/test_alert_time_contract.py"
+      - "tests/test_alert_triage.py"
+      - "tests/test_china_special_situations.py"
+      - "tests/test_china_special_situations_truth_wave1.py"
+      - "tests/test_macro_header_compact.py"
+      - "tests/test_okx_retail.py"
+      - "tests/test_w4_us_board.py"
+      - "tests/test_w5b_edge_chips.py"
     timeout-minutes: 4
     runs-on: ubuntu-latest
     steps:
@@ -15853,6 +15913,8 @@ jobs:
       # do with.
       - name: China Special Situations desk — goodwill units, unlock population, inquiry identity, stale-plane authority
         run: python -m pytest tests/test_china_special_situations_truth_wave1.py -q
+      - name: China Special Situations CIE-10 — contract/order metadata lifecycle truth
+        run: python -m pytest tests/test_china_special_situations.py -q
       - name: US board W9-A producer field + cohort math
         run: python -m pytest tests/test_w4_us_board.py -q
       # Alert Command Center — the TIME CONTRACT and the evidence links (Wave 7,

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SHOO-BULL-20260730",
-  "asof": "2026-10-03",
+  "asof": "2026-10-05",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 39.0,
@@ -12,7 +12,7 @@
   "components": {
     "validity": 99.0,
     "progress": 0.0,
-    "pace": 4.7,
+    "pace": 2.0,
     "retention": 0.0,
     "overlay": 59.0
   },
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 0.993,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 142.2,
+    "horizon_pct_used": 146.7,
     "p1": -0.0048,
     "p2": -0.0024,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-06",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 64,
-  "tau": 1.4222
+  "days_elapsed": 66,
+  "tau": 1.4667
 }

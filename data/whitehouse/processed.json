@@ -1547,6 +1547,12 @@
       "at": "2026-10-03T08:05:54.785908+00:00",
       "activated": true,
       "importance": 62
+    },
+    "https://www.whitehouse.gov/?p=52188": {
+      "id": "wh-2026-10-04-us-leads-international-coalition-to-endorse-kyoto-vision-for-a-golden-age-of-sci",
+      "at": "2026-10-04T13:11:44.878204+00:00",
+      "activated": false,
+      "importance": 35
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."
