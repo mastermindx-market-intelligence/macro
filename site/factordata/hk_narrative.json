@@ -2,8 +2,8 @@
   "display_only": true,
   "organ": "hk_narrative",
   "as_of": "2026-10-05",
-  "generated_utc": "2026-10-05T14:54:21+00:00",
-  "freshness": "degraded",
+  "generated_utc": "2026-10-05T14:19:46+00:00",
+  "freshness": "stale",
   "entities": [
     {
       "slug": "alibaba",
