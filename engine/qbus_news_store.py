@@ -869,6 +869,66 @@ class NewsStore:
             ).fetchone()[0]
         )
 
+    def _security_ids_for_item(
+        self, source: str, source_item_id: str
+    ) -> tuple[str, ...]:
+        rows = self._conn.execute(
+            """
+            SELECT security_id
+            FROM news_security_index
+            WHERE source=? AND source_item_id=?
+            ORDER BY security_id
+            """,
+            (source, source_item_id),
+        ).fetchall()
+        return tuple(str(row["security_id"]) for row in rows)
+
+    def _active_cluster_projection(
+        self, cluster_id: str
+    ) -> tuple[NewsRevision, tuple[str, ...], str] | None:
+        """Latest active cluster representative plus all current target securities.
+
+        Used only after current state/index mutation inside the same transaction.
+        It prevents a withdrawal of one syndication member from projecting that
+        withdrawn member's blank fields as the still-live cluster update.
+        """
+        rows = self._conn.execute(
+            """
+            SELECT s.source, s.source_item_id, s.current_revision_id,
+                   s.last_sequence, s.universe_revision, r.revision_json
+            FROM news_cluster_members m
+            JOIN news_states s
+              ON s.source=m.source AND s.source_item_id=m.source_item_id
+            JOIN news_revisions r
+              ON r.revision_id=s.current_revision_id
+            WHERE m.cluster_id=? AND s.status='active'
+            ORDER BY COALESCE(s.last_sequence, -1) DESC,
+                     s.source, s.source_item_id
+            """,
+            (cluster_id,),
+        ).fetchall()
+        if not rows:
+            return None
+        representative = rows[0]
+        security_rows = self._conn.execute(
+            """
+            SELECT DISTINCT i.security_id
+            FROM news_cluster_members m
+            JOIN news_states s
+              ON s.source=m.source AND s.source_item_id=m.source_item_id
+            JOIN news_security_index i
+              ON i.source=s.source AND i.source_item_id=s.source_item_id
+            WHERE m.cluster_id=? AND s.status='active'
+            ORDER BY i.security_id
+            """,
+            (cluster_id,),
+        ).fetchall()
+        return (
+            _revision_from_json(str(representative["revision_json"])),
+            tuple(str(row["security_id"]) for row in security_rows),
+            str(representative["universe_revision"]),
+        )
+
     def _write_change(
         self,
         *,
@@ -877,6 +937,7 @@ class NewsStore:
         cluster_id: str,
         security_ids: Sequence[str],
         universe_revision: str,
+        observed_at: datetime | None = None,
     ) -> int:
         cur = self._conn.execute(
             """
@@ -893,7 +954,7 @@ class NewsStore:
                 cluster_id,
                 _stable_json(list(security_ids)),
                 universe_revision,
-                revision.received_at.isoformat(),
+                (observed_at or revision.received_at).isoformat(),
             ),
         )
         return int(cur.lastrowid)
@@ -962,6 +1023,9 @@ class NewsStore:
                     conflict += 1
                     continue
 
+                previous_security_ids = self._security_ids_for_item(
+                    revision.source, revision.source_item_id
+                )
                 security_ids = (
                     ()
                     if reduction.state.status != "active"
@@ -982,18 +1046,46 @@ class NewsStore:
                     state=reduction.state,
                     security_ids=security_ids,
                 )
-                kind = (
-                    "remove"
-                    if reduction.disposition == "withdrawn"
-                    and self._active_cluster_members(cluster_id) == 0
-                    else "upsert"
+
+                projection_revision = revision
+                projection_universe = item.universe_revision
+                affected_security_ids = tuple(
+                    sorted(set(previous_security_ids) | set(security_ids))
                 )
+                active_members = self._active_cluster_members(cluster_id)
+                if (
+                    reduction.disposition == "withdrawn"
+                    and active_members > 0
+                ):
+                    projection = self._active_cluster_projection(cluster_id)
+                    if projection is None:
+                        raise NewsStoreError(
+                            "qbus_news_store:active_cluster_projection_missing"
+                        )
+                    (
+                        projection_revision,
+                        current_cluster_security_ids,
+                        projection_universe,
+                    ) = projection
+                    affected_security_ids = tuple(
+                        sorted(
+                            set(affected_security_ids)
+                            | set(current_cluster_security_ids)
+                        )
+                    )
+                    kind = "upsert"
+                elif reduction.disposition == "withdrawn":
+                    kind = "remove"
+                else:
+                    kind = "upsert"
+
                 sequence = self._write_change(
                     kind=kind,
-                    revision=revision,
+                    revision=projection_revision,
                     cluster_id=cluster_id,
-                    security_ids=security_ids,
-                    universe_revision=item.universe_revision,
+                    security_ids=affected_security_ids,
+                    universe_revision=projection_universe,
+                    observed_at=revision.received_at,
                 )
                 sequences.append(sequence)
                 self._write_state(
