@@ -24,8 +24,9 @@ Design
   disjoint-segment pace curve plus a reconstructed level path, replays it over the
   append-only PIT archive, and attaches per-node cycle position, turn state
   (bottoming / turned up / topping / turned down) with cross-session confirmation, member
-  breadth, and a parallel fast rank. Every incumbent field here is left byte-identical —
-  the two reads are logged side by side and graded head-to-head by
+  breadth, and a parallel fast rank. The existing formula is retained for complete comparable inputs; incomplete
+  legacy axes are explicitly unmeasured rather than zero-filled. The two reads
+  are logged side by side and graded head-to-head by
   ``engine/subsector_track_record.py``.
 """
 from __future__ import annotations
@@ -60,16 +61,40 @@ MOM_HORIZONS = ["1W", "1M", "3M", "6M", "1Y"]
 WEEKS = {"1W": 1.0, "1M": 4.345, "3M": 13.04, "6M": 26.07, "1Y": 52.14}
 
 
-def _zscore(values: dict[str, float]) -> dict[str, float]:
-    """Cross-sectional z-score of a {key: value} map (robust to tiny n / 0 std)."""
-    keys = [k for k, v in values.items() if v is not None and np.isfinite(v)]
+def _rotation_number(value) -> float | None:
+    """Finite numeric feed value; booleans and numeric-looking strings are not data."""
+    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, float, np.integer, np.floating)):
+        return None
+    try:
+        value = float(value)
+        return value if np.isfinite(value) else None
+    except (TypeError, ValueError, OverflowError):
+        return None
+
+def _rotation_perf(row) -> dict:
+    row = row if isinstance(row, Mapping) else {}
+    return {h: _rotation_number(row.get(h)) for h in HORIZONS}
+
+def _rotation_sort(row: Mapping, field: str = 'emerging_score') -> float:
+    value = _rotation_number(row.get(field))
+    return value if value is not None else float('-inf')
+
+def _zscore(values: dict[str, float]) -> dict[str, float | None]:
+    """Comparable numeric peers only; unavailable values never become zero."""
+    clean = {k: _rotation_number(v) for k, v in values.items()}
+    keys = [k for k, v in clean.items() if v is not None]
+    empty = dict.fromkeys(values, None)
     if len(keys) < 2:
-        return {k: 0.0 for k in values}
-    arr = np.array([values[k] for k in keys], dtype=float)
-    mu, sd = float(arr.mean()), float(arr.std())
+        return empty
+    arr = np.array([clean[k] for k in keys], dtype=float)
+    with np.errstate(over='ignore', invalid='ignore'):
+        mu, sd = float(arr.mean()), float(arr.std())
+    if not np.isfinite(mu) or not np.isfinite(sd):
+        return empty
     if sd <= 1e-9:
-        return {k: 0.0 for k in values}
-    return {k: ((values[k] - mu) / sd if (values[k] is not None and np.isfinite(values[k])) else 0.0)
+        # A known cross-sectional tie is zero deviation; missing values stay absent.
+        return {k: 0.0 if clean[k] is not None else None for k in values}
+    return {k: _rotation_number((clean[k] - mu) / sd) if clean[k] is not None else None
             for k in values}
 
 
@@ -78,57 +103,69 @@ def _nanmean(*xs: float | None) -> float | None:
     return float(np.mean(vals)) if vals else None
 
 
-def _quadrant(rs_ratio: float, rs_mom: float) -> str:
+def _quadrant(rs_ratio: float | None, rs_mom: float | None) -> str:
+    if _rotation_number(rs_ratio) is None or _rotation_number(rs_mom) is None:
+        return 'unavailable'
+    if rs_ratio == 0 and rs_mom == 0:
+        return 'neutral'
     if rs_ratio >= 0:
-        return "leading" if rs_mom >= 0 else "weakening"
-    return "improving" if rs_mom >= 0 else "lagging"
+        return 'leading' if rs_mom >= 0 else 'weakening'
+    return 'improving' if rs_mom >= 0 else 'lagging'
 
 
 def _rotation_metrics(perf_by_key: Mapping[str, Mapping[str, float]]) -> dict[str, dict]:
-    """Core pipeline over {key: {horizon: pct}} → per-key rotation metrics.
+    """Legacy formula on one comparable cohort; incomplete rows stay unmeasured.
 
-    Reused for both subsectors and theme rollups.
+    The four horizons used by the two axes must be available together. This
+    prevents different peer populations at each horizon masquerading as momentum.
+    Full finite comparable inputs retain the existing arithmetic and weights.
     """
-    keys = list(perf_by_key)
-    # market = median subsector at each horizon → relative strength.
+    required = ('1W', '1M', '3M', '6M')
+    clean = {k: _rotation_perf(row) for k, row in perf_by_key.items()}
+    keys = list(clean)
+    peers = [k for k in keys if all(clean[k][h] is not None for h in required)]
+    peer_set = set(peers)
     median = {}
     for h in HORIZONS:
-        col = [perf_by_key[k].get(h) for k in keys]
-        col = [v for v in col if v is not None and np.isfinite(v)]
-        median[h] = float(np.median(col)) if col else None
-
-    rs = {k: {h: ((perf_by_key[k].get(h) - median[h])
-                  if (perf_by_key[k].get(h) is not None and median.get(h) is not None) else None)
+        values = [clean[k][h] for k in peers if clean[k][h] is not None]
+        with np.errstate(over='ignore', invalid='ignore'):
+            median[h] = _rotation_number(np.median(values)) if values else None
+    rs = {k: {h: (_rotation_number(clean[k][h] - median[h])
+                  if clean[k][h] is not None and median[h] is not None else None)
               for h in HORIZONS} for k in keys}
-    # z-score each horizon's RS across keys (the RRG axes live in z-space).
-    zrs = {h: _zscore({k: rs[k][h] for k in keys}) for h in HORIZONS}
-
-    # weekly pace per horizon → acceleration (recent pace vs the 3-month pace).
-    rate = {k: {h: (perf_by_key[k].get(h) / WEEKS[h]
-                    if (h in WEEKS and perf_by_key[k].get(h) is not None) else None)
-                for h in MOM_HORIZONS} for k in keys}
-    accel_raw = {k: ((rate[k]["1W"] - rate[k]["3M"]) if (rate[k]["1W"] is not None and rate[k]["3M"] is not None)
-                     else (rate[k]["1W"] - rate[k]["1M"]) if (rate[k]["1W"] is not None and rate[k]["1M"] is not None)
-                     else None) for k in keys}
-    z_accel = _zscore(accel_raw)
-
-    out: dict[str, dict] = {}
+    zrs = {h: _zscore({k: rs[k][h] if k in peer_set else None for k in keys})
+           for h in HORIZONS}
+    accel = {k: (_rotation_number(clean[k]['1W'] - clean[k]['3M'] / WEEKS['3M'])
+                 if clean[k]['1W'] is not None and clean[k]['3M'] is not None else None)
+             for k in keys}
+    z_accel = _zscore({k: accel[k] if k in peer_set else None for k in keys})
+    out = {}
     for k in keys:
-        rs_ratio = _nanmean(zrs["1M"].get(k), zrs["3M"].get(k)) or 0.0
-        rs_mom = (_nanmean(zrs["1W"].get(k), zrs["1M"].get(k)) or 0.0) \
-            - (_nanmean(zrs["3M"].get(k), zrs["6M"].get(k)) or 0.0)
-        # emerging = accelerating + relative strength improving + recent strength.
-        emerging = 0.5 * z_accel.get(k, 0.0) + 0.8 * rs_mom + 0.3 * (zrs["1W"].get(k) or 0.0)
+        missing = [h for h in required if clean[k][h] is None]
+        ratio = momentum = score = None
+        reason = ('missing_required_horizons' if missing else
+                  'insufficient_comparable_groups' if len(peers) < 2 else None)
+        zs = [zrs[h][k] for h in required]
+        if reason is None and all(v is not None for v in zs) and z_accel[k] is not None:
+            ratio = _rotation_number((zs[1] + zs[2]) / 2)
+            momentum = _rotation_number((zs[0] + zs[1]) / 2 - (zs[2] + zs[3]) / 2)
+            if ratio is not None and momentum is not None:
+                score = _rotation_number(.5 * z_accel[k] + .8 * momentum + .3 * zs[0])
+        if reason is None and score is None:
+            reason = 'nonfinite_derived_metric'
+        if reason is not None:
+            ratio = momentum = score = None
+        def rounded(value, precision=3):
+            return round(value, precision) if value is not None else None
         out[k] = {
-            "perf": {h: (round(perf_by_key[k].get(h), 2) if perf_by_key[k].get(h) is not None else None)
-                     for h in HORIZONS},
-            "rs": {h: (round(rs[k][h], 2) if rs[k][h] is not None else None) for h in MOM_HORIZONS},
-            "rs_ratio": round(rs_ratio, 3),
-            "rs_mom": round(rs_mom, 3),
-            "accel": round(accel_raw[k], 3) if accel_raw[k] is not None else None,
-            "z_accel": round(z_accel.get(k, 0.0), 3),
-            "quadrant": _quadrant(rs_ratio, rs_mom),
-            "emerging_score": round(emerging, 3),
+            'perf': {h: rounded(clean[k][h], 2) for h in HORIZONS},
+            'rs': {h: rounded(rs[k][h], 2) for h in MOM_HORIZONS},
+            'rs_ratio': rounded(ratio), 'rs_mom': rounded(momentum),
+            'accel': rounded(accel[k]), 'z_accel': rounded(z_accel[k]) if reason is None else None,
+            'quadrant': _quadrant(ratio, momentum), 'emerging_score': rounded(score),
+            'rotation_status': 'MEASURED' if reason is None else 'UNAVAILABLE',
+            'rotation_reason': reason, 'rotation_missing_horizons': missing,
+            'rotation_comparison_groups': len(peers),
         }
     return out
 
@@ -256,15 +293,17 @@ def compute_rotation(
                      cross-session confirmation and rotation tails; absent → the turn read
                      runs on today alone and stays unconfirmable (``vol_cold``).
     """
-    member_perf = member_perf or {}
-    # flatten subsectors, attach theme; keep only those with a perf row.
+    member_perf = {t: _rotation_perf(row) for t, row in (member_perf or {}).items()}
+    subsector_perf = {k: _rotation_perf(row) for k, row in subsector_perf.items()}
+    # Flatten expected subsectors; absent performance remains visible and unmeasured.
     meta: dict[str, dict] = {}
     for th in tree:
         theme = str(th.get("theme") or th.get("key") or "").strip()
         for sub in th.get("subsectors", []):
             key = str(sub.get("key") or "").strip()
-            if not key or key not in subsector_perf:
+            if not key:
                 continue
+            subsector_perf.setdefault(key, _rotation_perf(None))
             members = [str(m).strip().upper() for m in (sub.get("members") or []) if str(m).strip()]
             meta[key] = {"name": str(sub.get("name") or key), "theme": theme, "members": members}
 
@@ -288,9 +327,9 @@ def compute_rotation(
             "members": mem_rows[:top_members],
             **met,
         })
-    subsectors.sort(key=lambda s: s["emerging_score"], reverse=True)
+    subsectors.sort(key=_rotation_sort, reverse=True)
     for i, s in enumerate(subsectors):
-        s["rank"] = i + 1
+        s["rank"] = i + 1 if s["emerging_score"] is not None else None
 
     # ── turn read (additive; incumbent fields above are untouched) ──
     sub_turn = attach_turn(
@@ -299,10 +338,10 @@ def compute_rotation(
         member_map={k: m["members"] for k, m in meta.items()},
         member_perf=member_perf)
     # Parallel fast ranking — a second ORDER over the same rows, never a re-sort of them.
-    ranked_v2 = sorted(subsectors, key=lambda s: (s.get("rank_score_v2") or -1e9),
+    ranked_v2 = sorted(subsectors, key=lambda s: _rotation_sort(s, "rank_score_v2"),
                        reverse=True)
     for i, s in enumerate(ranked_v2):
-        s["rank_v2"] = i + 1
+        s["rank_v2"] = i + 1 if _rotation_number(s.get("rank_score_v2")) is not None else None
 
     # theme rollup: each theme = mean of its subsectors' perf per horizon.
     theme_keys = {}
@@ -324,7 +363,8 @@ def compute_rotation(
     sub_by_theme = {t: [s for s in subsectors if s["theme"] == t] for t in theme_keys}
     for theme, subs in theme_keys.items():
         met = theme_metrics[theme]
-        ranked = sorted(sub_by_theme[theme], key=lambda s: s["emerging_score"], reverse=True)
+        ranked = sorted((s for s in sub_by_theme[theme] if s["emerging_score"] is not None),
+                        key=_rotation_sort, reverse=True)
         themes.append({
             "theme": theme, "theme_zh": _NAMES_ZH["themes"].get(theme, theme),
             "n_subs": len(subs),
@@ -332,7 +372,7 @@ def compute_rotation(
             "top_sub_zh": _NAMES_ZH["subsectors"].get(ranked[0]["name"], ranked[0]["name"]) if ranked else None,
             **met,
         })
-    themes.sort(key=lambda t: t["emerging_score"], reverse=True)
+    themes.sort(key=_rotation_sort, reverse=True)
 
     # Theme-level turn read: the archive is subsector-grain, so each historical day's theme
     # perf is re-aggregated the same way today's is (mean of member subsectors per horizon).
@@ -341,21 +381,24 @@ def compute_rotation(
     theme_hist = _theme_history(history, theme_keys) if history else None
     theme_turn = attach_turn(themes, theme_perf, key_of=lambda r: r["theme"],
                              history=theme_hist, asof=asof, min_members=1)
-    ranked_t2 = sorted(themes, key=lambda t: (t.get("rank_score_v2") or -1e9), reverse=True)
+    ranked_t2 = sorted(themes, key=lambda t: _rotation_sort(t, "rank_score_v2"), reverse=True)
     for i, t in enumerate(ranked_t2):
-        t["rank_v2"] = i + 1
+        t["rank_v2"] = i + 1 if _rotation_number(t.get("rank_score_v2")) is not None else None
 
     # highlights — only sensible candidates per bucket. A breadth floor keeps the
     # actionable emerging/fading calls off 1-2-member "subsectors" (those are a
     # stock or two, not a rotation) — signal hygiene, not a fitted parameter.
     MIN_BREADTH = 3
-    emerging = [s["key"] for s in subsectors
-                if s["n_members"] >= MIN_BREADTH and s["rs_mom"] > 0
-                and (s["accel"] is None or s["accel"] >= 0)][:12]
-    fading = [s["key"] for s in sorted(subsectors, key=lambda s: s["rs_mom"])
-              if s["n_members"] >= MIN_BREADTH and s["rs_ratio"] > 0 and s["rs_mom"] < 0][:12]
-    leaders = [s["key"] for s in sorted(subsectors, key=lambda s: s["rs_ratio"], reverse=True)][:12]
-    laggards = [s["key"] for s in sorted(subsectors, key=lambda s: s["rs_ratio"])][:12]
+    eligible = [s for s in subsectors if s['rotation_status'] == 'MEASURED']
+    emerging = [s['key'] for s in eligible
+                if s['n_members'] >= MIN_BREADTH and s['rs_mom'] > 0
+                and s['accel'] is not None and s['accel'] >= 0][:12]
+    fading = [s['key'] for s in sorted(eligible, key=lambda s: s['rs_mom'])
+              if s['n_members'] >= MIN_BREADTH and s['rs_ratio'] > 0 and s['rs_mom'] < 0][:12]
+    leaders = [s['key'] for s in sorted(eligible, key=lambda s: s['rs_ratio'], reverse=True)
+               if s['rs_ratio'] > 0][:12]
+    laggards = [s['key'] for s in sorted(eligible, key=lambda s: s['rs_ratio'])
+                if s['rs_ratio'] < 0][:12]
 
     return {
         "asof": asof or "",
@@ -534,7 +577,9 @@ def build_sectors_array(metrics: dict[str, dict]) -> list[dict]:
             "name_zh": zh_name,
             "theme": "Sector ETFs",
             "theme_zh": "行业ETF",
-            "quadrant": met.get("quadrant", "lagging"),
+            "quadrant": met.get("quadrant", "unavailable"),
+            **{field: met.get(field) for field in ("rotation_status", "rotation_reason",
+              "rotation_missing_horizons", "rotation_comparison_groups")},
             "rs_ratio": met.get("rs_ratio"),
             "rs_mom": met.get("rs_mom"),
             "accel": met.get("accel"),
@@ -542,5 +587,5 @@ def build_sectors_array(metrics: dict[str, dict]) -> list[dict]:
             "perf": perf_out,
             "rs": rs_out,
         })
-    sectors.sort(key=lambda s: (s["emerging_score"] or 0), reverse=True)
+    sectors.sort(key=_rotation_sort, reverse=True)
     return sectors
