@@ -472,14 +472,34 @@ def _visit_discovery_snapshot(
     row_observation_instants = [
         _visit_observed_instant(r.get("system_recorded_at")) for r in deduped
     ]
-    if (
-        health_receipt_instant is not None
-        and any(
+    if health_receipt_instant is not None:
+        if any(
             inst is not None and inst > health_receipt_instant
             for inst in row_observation_instants
-        )
-    ):
-        clock_errors.append("row_observation_after_health_receipt")
+        ):
+            clock_errors.append("row_observation_after_health_receipt")
+
+        # A row with no usable observation clock can still be proven outside the
+        # health receipt when its source event itself occurred later. Preserve
+        # the positive, but refuse absence/baseline/first-seen authority: the
+        # receipt cannot possibly cover an event that had not happened yet.
+        for row, observed_instant in zip(deduped, row_observation_instants):
+            if observed_instant is not None:
+                continue
+            source_instant = _visit_observed_instant(row.get("source_published_at"))
+            source_day = _visit_day(row.get("source_published_at"))
+            if (
+                source_instant is not None
+                and source_instant > health_receipt_instant
+            ) or (
+                source_instant is None
+                and source_day is not None
+                and source_day > health_receipt_instant.date()
+            ):
+                clock_errors.append(
+                    "row_source_after_health_receipt_without_observation_clock"
+                )
+                break
     owner_clock_order_valid = not clock_errors
 
     source_event_days = [
@@ -576,6 +596,7 @@ def _visit_discovery_snapshot(
             else "last_success_clock_invalid" if "last_success_clock_invalid" in clock_errors
             else "last_attempt_clock_invalid" if "last_attempt_clock_invalid" in clock_errors
             else "row_observation_after_health_receipt" if "row_observation_after_health_receipt" in clock_errors
+            else "row_source_after_health_receipt_without_observation_clock" if "row_source_after_health_receipt_without_observation_clock" in clock_errors
             else "owner_clock_order_invalid" if not owner_clock_order_valid
             else "source_stale" if source_status == "stale"
             else "source_health_not_ok" if source_status != "ok"
