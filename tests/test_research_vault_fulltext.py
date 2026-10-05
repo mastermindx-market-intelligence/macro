@@ -219,3 +219,45 @@ def test_pdf_correction_invalidates_old_segment_replay():
 
     with pytest.raises(ValueError, match="source_pdf_sha256"):
         fulltext.replay_segment(corrected, segment)
+
+
+
+def test_mutated_text_layer_state_is_rejected_before_segment_replay():
+    artifact = _artifact("grounded source")
+    artifact["text_layer_state"] = "none"
+    with pytest.raises(ValueError, match="conflicts with text_layer_state"):
+        fulltext.build_segments(
+            artifact, segmenter_version="page-byte-v1", max_bytes=64
+        )
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("extractor_version", "tampered-extractor", "extractor_version"),
+        ("replay_state", "ADDRESS_ONLY", "replay_state"),
+        ("segment_index", -1, "segment_index"),
+        ("segment_max_bytes", 3, "segment_max_bytes"),
+        ("page_start", 99, "page_start"),
+        ("page_end", 99, "page_end"),
+    ],
+)
+def test_segment_provenance_tamper_is_rejected(field, value, message):
+    artifact = _artifact("page one\fpage two", pages=2)
+    segment = fulltext.build_segments(
+        artifact, segmenter_version="page-byte-v1", max_bytes=64
+    )[0]
+    segment[field] = value
+    with pytest.raises(ValueError, match=message):
+        fulltext.replay_segment(artifact, segment)
+
+
+def test_segment_declared_budget_cannot_be_smaller_than_its_byte_span():
+    artifact = _artifact("0123456789abcdefghij")
+    segment = fulltext.build_segments(
+        artifact, segmenter_version="page-byte-v1", max_bytes=20
+    )[0]
+    assert segment["end_byte"] - segment["start_byte"] == 20
+    segment["segment_max_bytes"] = 8
+    with pytest.raises(ValueError, match="byte range"):
+        fulltext.replay_segment(artifact, segment)
