@@ -12,11 +12,17 @@ route, a source, or a pointer.
 """
 from __future__ import annotations
 
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
 import pytest
 
+from engine.biocatalyst.outcome_accrual import (
+    OutcomeAccrualError,
+    append_trial_progression_outcome,
+    build_trial_progression_outcome,
+)
 from engine.biocatalyst.operational_store import (
     KIND_SCOPED_PAYLOAD_KEY_ALLOWANCES,
     MAX_QUERY_LIMIT,
@@ -35,6 +41,7 @@ from engine.biocatalyst.operational_store import (
 from engine.sector_intelligence.contracts import (
     ContractRegistry,
     ContractValidationError,
+    canonical_json_sha256,
 )
 
 
@@ -558,3 +565,322 @@ def test_an_unknown_o1b_record_kind_is_refused(store: OperationalStore) -> None:
             "forecast_snapshot_v2", _forecast_payload(), idempotency_key="fc:1"
         )
     assert error.value.code == "OPERATIONAL_RECORD_KIND_UNKNOWN"
+
+# ---- P5 prospective source-fact -> O1b accrual ----------------------------
+
+SOURCE_NCT = "NCT01234567"
+OUTCOME_CLOCK_OPENED_AT = "2026-08-11T20:20:43.514252Z"
+
+
+def _accrual_with_hash(payload: dict[str, Any], field: str) -> dict[str, Any]:
+    document = deepcopy(payload)
+    document[field] = canonical_json_sha256(document)
+    return document
+
+
+def _accrual_activation(**overrides: Any) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "contract_id": "biocatalyst_family_clock_activation.v1",
+        "schema_version": "1.0.0",
+        "family_id": "trial_progression_termination",
+        "policy_version": "m0a.3",
+        "policy_sha256": "a" * 64,
+        "clock_state": "opened",
+        "evaluated_at": OUTCOME_CLOCK_OPENED_AT,
+        "accrual_start_known_at": OUTCOME_CLOCK_OPENED_AT,
+        "satisfied_preconditions": [
+            "frozen_policy_version",
+            "eligible_source_registration",
+            "o1b_outcome_writer",
+        ],
+        "unsatisfied_preconditions": [],
+        "blockers": [],
+        "ineligible_source_ids": [],
+        "backfill": "forbidden_no_history_recorded",
+        "authority": "facts_and_context_only",
+    }
+    payload.update(overrides)
+    return payload
+
+
+def _accrual_snapshot(
+    *,
+    retrieved_at: str = "2026-10-05T04:00:00Z",
+    transaction_from: str = "2026-10-05T04:00:01Z",
+    source_version: int = 7,
+) -> dict[str, Any]:
+    canonical_study = {"protocolSection": {"identificationModule": {"nctId": SOURCE_NCT}}}
+    content_sha = canonical_json_sha256(canonical_study)
+    payload: dict[str, Any] = {
+        "contract_id": "trial_history_source_snapshot.v1",
+        "schema_version": "1.0.0",
+        "source_snapshot_id": (
+            "ctgov_history_snapshot_NCT01234567_deadbeefdeadbeefdeadbeef"
+        ),
+        "nct_id": SOURCE_NCT,
+        "source_id": "clinicaltrials_gov_record_history",
+        "run_ref": "ctgov_history_run_NCT01234567_deadbeefdeadbeef",
+        "history_index_receipt_ref": (
+            "ctgov_history_receipt_NCT01234567_index_deadbeef"
+        ),
+        "history_version_receipt_ref": (
+            "ctgov_history_receipt_NCT01234567_version_7_deadbeef"
+        ),
+        "source_version": source_version,
+        "display_version": source_version + 1,
+        "source_record_ref": (
+            f"src:ctgov-history:{SOURCE_NCT}:version:{source_version}:sha256:{content_sha}"
+        ),
+        "source_uri": (
+            f"https://clinicaltrials.gov/study/{SOURCE_NCT}"
+            f"?a={source_version + 1}&tab=history"
+        ),
+        "source_submitted_at": "2026-10-05",
+        "source_last_update_submit_qc_at": "2026-10-05",
+        "canonical_study": canonical_study,
+        "canonical_content_sha256": content_sha,
+        "retrieved_at": retrieved_at,
+        "source_fact": True,
+        "current_only": False,
+        "coverage_class": "record_history_complete",
+        "authority": {
+        "classification": "source_fact",
+        "decision_authority": False,
+        "allowed_uses": ["display", "context", "explain"],
+        "forbidden_uses": [
+            "originate_signal",
+            "rank_security",
+            "select_security",
+            "size_position",
+            "gate_decision",
+            "execute_trade",
+            "raise_authority",
+        ],
+    },
+        "transaction_from": transaction_from,
+        "transaction_to": None,
+        "hash_scope": "canonical_payload_excluding_snapshot_payload_sha256",
+    }
+    return _accrual_with_hash(payload, "snapshot_payload_sha256")
+
+def _accrual_fact(
+    *,
+    after_value: Any = "COMPLETED",
+    kind: str = "registry_status_changed",
+    source_version: int = 7,
+) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "contract_id": "trial_registry_change_fact.v1",
+        "schema_version": "1.0.0",
+        "change_fact_id": (
+            "trial_registry_change_NCT01234567_deadbeefdeadbeefdeadbeef"
+        ),
+        "nct_id": SOURCE_NCT,
+        "diff_ref": "trial_history_diff_NCT01234567_deadbeefdeadbeef",
+        "before_source_snapshot_ref": (
+            "ctgov_history_snapshot_NCT01234567_feedfacefeedfacefeedface"
+        ),
+        "after_source_snapshot_ref": (
+            "ctgov_history_snapshot_NCT01234567_deadbeefdeadbeefdeadbeef"
+        ),
+        "before_source_version": source_version - 1,
+        "after_source_version": source_version,
+        "kind": kind,
+        "source_json_paths": ["/protocolSection/statusModule/overallStatus"],
+        "before_value": "RECRUITING",
+        "after_value": after_value,
+        "semantic_method": "deterministic_registry_field_delta.v1",
+        "interpretation": "registry_record_changed",
+        "source_fact": True,
+        "current_only": False,
+        "coverage_class": "record_history_complete",
+        "protocol_change_asserted": False,
+        "materiality_assessed": False,
+        "authority": {
+        "classification": "source_fact",
+        "decision_authority": False,
+        "allowed_uses": ["display", "context", "explain"],
+        "forbidden_uses": [
+            "originate_signal",
+            "rank_security",
+            "select_security",
+            "size_position",
+            "gate_decision",
+            "execute_trade",
+            "raise_authority",
+        ],
+    },
+        "transaction_from": "2026-10-05T04:00:01Z",
+        "transaction_to": None,
+        "hash_scope": "canonical_payload_excluding_fact_payload_sha256",
+    }
+    return _accrual_with_hash(payload, "fact_payload_sha256")
+
+def test_trial_progression_status_change_projects_to_source_native_nonterminal_outcome() -> None:
+    fact = _accrual_fact()
+    payload = build_trial_progression_outcome(
+        fact=fact,
+        after_snapshot=_accrual_snapshot(),
+        activation=_accrual_activation(),
+    )
+    assert payload == {
+        "contract_id": "biocatalyst_outcome_record.v1",
+        "schema_version": "1.0.0",
+        "outcome_id": "oc:trial_progression:" + fact["fact_payload_sha256"][:24],
+        "family_id": "trial_progression_termination",
+        "subject_ref": f"nct:{SOURCE_NCT}",
+        "seed_layer": "study_conduct",
+        "value": "completed",
+        "value_authority": "source_native_status_only",
+        "censoring_state": "right_censored_open_window",
+        "terminality": "non_terminal",
+        "effective_at": "2026-10-05T04:00:00Z",
+        "known_at": "2026-10-05T04:00:00Z",
+        "observed_at": "2026-10-05T04:00:01Z",
+        "evidence_refs": [
+            "internal:ctgov_change_" + fact["fact_payload_sha256"][:32]
+        ],
+        "policy_version": "m0a.3",
+        "resolver_type": "deterministic_source_statement",
+        "revision_of": None,
+    }
+
+
+def test_trial_progression_pre_activation_fact_is_not_backfilled() -> None:
+    assert build_trial_progression_outcome(
+        fact=_accrual_fact(),
+        after_snapshot=_accrual_snapshot(
+            retrieved_at="2026-08-11T20:20:42Z",
+            transaction_from="2026-08-11T20:20:42.500000Z",
+        ),
+        activation=_accrual_activation(),
+    ) is None
+
+
+@pytest.mark.parametrize(
+    "activation",
+    [
+        _accrual_activation(
+            clock_state="closed",
+            accrual_start_known_at=None,
+            blockers=["source_dark"],
+        ),
+        _accrual_activation(family_id="timing_slip"),
+        _accrual_activation(blockers=["unexpected"]),
+    ],
+)
+def test_trial_progression_requires_clean_open_family_clock(
+    activation: dict[str, Any],
+) -> None:
+    with pytest.raises(OutcomeAccrualError):
+        build_trial_progression_outcome(
+            fact=_accrual_fact(),
+            after_snapshot=_accrual_snapshot(),
+            activation=activation,
+        )
+
+
+def test_trial_progression_non_status_fact_and_source_mismatch_fail_closed() -> None:
+    with pytest.raises(OutcomeAccrualError, match="FACT_KIND"):
+        build_trial_progression_outcome(
+            fact=_accrual_fact(kind="study_date_changed"),
+            after_snapshot=_accrual_snapshot(),
+            activation=_accrual_activation(),
+        )
+    with pytest.raises(OutcomeAccrualError, match="SOURCE_BINDING"):
+        build_trial_progression_outcome(
+            fact=_accrual_fact(source_version=8),
+            after_snapshot=_accrual_snapshot(source_version=7),
+            activation=_accrual_activation(),
+        )
+
+
+def test_trial_progression_source_status_must_be_registry_token() -> None:
+    with pytest.raises(OutcomeAccrualError, match="SOURCE_STATUS"):
+        build_trial_progression_outcome(
+            fact=_accrual_fact(after_value={"status": "COMPLETED"}),
+            after_snapshot=_accrual_snapshot(),
+            activation=_accrual_activation(),
+        )
+
+
+def test_trial_progression_requires_complete_registered_owner_contracts() -> None:
+    partial_fact = _accrual_fact()
+    partial_fact.pop("diff_ref")
+    partial_fact["fact_payload_sha256"] = canonical_json_sha256(
+        {key: value for key, value in partial_fact.items() if key != "fact_payload_sha256"}
+    )
+    with pytest.raises(OutcomeAccrualError, match="FACT_INVALID"):
+        build_trial_progression_outcome(
+            fact=partial_fact,
+            after_snapshot=_accrual_snapshot(),
+            activation=_accrual_activation(),
+        )
+
+    partial_snapshot = _accrual_snapshot()
+    partial_snapshot.pop("source_id")
+    partial_snapshot["snapshot_payload_sha256"] = canonical_json_sha256(
+        {
+            key: value
+            for key, value in partial_snapshot.items()
+            if key != "snapshot_payload_sha256"
+        }
+    )
+    with pytest.raises(OutcomeAccrualError, match="SNAPSHOT_INVALID"):
+        build_trial_progression_outcome(
+            fact=_accrual_fact(),
+            after_snapshot=partial_snapshot,
+            activation=_accrual_activation(),
+        )
+
+
+def test_trial_progression_rechecks_fact_and_snapshot_hashes() -> None:
+    forged_fact = _accrual_fact()
+    forged_fact["after_value"] = "WITHDRAWN"
+    with pytest.raises(OutcomeAccrualError, match="FACT_HASH"):
+        build_trial_progression_outcome(
+            fact=forged_fact,
+            after_snapshot=_accrual_snapshot(),
+            activation=_accrual_activation(),
+        )
+
+    forged_snapshot = _accrual_snapshot()
+    forged_snapshot["retrieved_at"] = "2026-10-05T03:00:00Z"
+    with pytest.raises(OutcomeAccrualError, match="SNAPSHOT_HASH"):
+        build_trial_progression_outcome(
+            fact=_accrual_fact(),
+            after_snapshot=forged_snapshot,
+            activation=_accrual_activation(),
+        )
+
+
+def test_trial_progression_append_is_idempotent_on_existing_o1b_store(
+    store: OperationalStore,
+) -> None:
+    fact = _accrual_fact()
+    first = append_trial_progression_outcome(
+        store,
+        fact=fact,
+        after_snapshot=_accrual_snapshot(),
+        activation=_accrual_activation(),
+        recorded_at="2026-10-05T04:00:02.000000Z",
+    )
+    second = append_trial_progression_outcome(
+        store,
+        fact=fact,
+        after_snapshot=_accrual_snapshot(),
+        activation=_accrual_activation(),
+        recorded_at="2026-10-05T04:00:02.000000Z",
+    )
+    assert first is not None and second is not None
+    assert first.record_id == second.record_id
+    assert first.created is True
+    assert second.created is False
+
+    page = store.read("outcome_observation", limit=MAX_QUERY_LIMIT)
+    assert len(page.records) == 1
+    record = page.records[0]
+    assert record["payload"]["family_id"] == "trial_progression_termination"
+    encoded = str(record).casefold()
+    for forbidden in ("ticker", "issuer", "sponsor", "probability", "rank", "score"):
+        assert forbidden not in encoded
