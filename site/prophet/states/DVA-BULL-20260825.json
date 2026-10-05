@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DVA-BULL-20260825",
-  "asof": "2026-10-04",
+  "asof": "2026-10-05",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 46.3,
@@ -12,7 +12,7 @@
   "components": {
     "validity": 100.0,
     "progress": 60.0,
-    "pace": 10.5,
+    "pace": 10.4,
     "retention": 8.9,
     "overlay": 59.0
   },
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.224,
     "dist_to_t1_r": 1.276,
     "dist_to_t2_r": 2.776,
-    "horizon_pct_used": 88.9,
+    "horizon_pct_used": 91.1,
     "p1": 0.1491,
     "p2": 0.0745,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-25",
   "_first_t1_ts": "2026-09-05",
   "_first_t2_ts": "2026-09-16",
-  "days_elapsed": 40,
-  "tau": 0.8889
+  "days_elapsed": 41,
+  "tau": 0.9111
 }

@@ -5,9 +5,11 @@ Two interchangeable backends behind one small interface
 list_prefix / exists / upload_time``):
 
   - :class:`R2Store` — boto3 wrapper on the private bucket ``R2_RESEARCH_BUCKET``.
-    Reuses the account access key (env ``R2_ENDPOINT / R2_ACCESS_KEY_ID /
-    R2_SECRET_ACCESS_KEY``) exactly like ``scripts/publish_r2._client`` but
-    targets a DIFFERENT bucket. Degrades to ``None`` (no-op) when creds absent.
+    Uses the dedicated ``R2_RESEARCH_ENDPOINT / R2_RESEARCH_ACCESS_KEY_ID /
+    R2_RESEARCH_SECRET_ACCESS_KEY`` credential family. Generic ``R2_*``
+    delivery-plane credentials are never inherited implicitly. Degrades to
+    ``None`` (no-op) when the dedicated research configuration is absent or
+    incomplete.
   - :class:`LocalStore` — a filesystem backend rooted at a dir. Selected when
     env ``RESEARCH_LOCAL_STORE=<dir>`` is set. REQUIRED for tests + local
     dry-runs so nothing needs live R2 credentials.
@@ -180,18 +182,26 @@ def _validate_bounded_lengths(*, expected_byte_length: int, max_byte_length: int
 # ---------------------------------------------------------------------------
 
 def _r2_client():
-    """S3 client for R2, or None when creds are absent (graceful no-op).
+    """S3 client for the private Research Vault plane, or None when unavailable.
 
-    Copies scripts/publish_r2._client construction verbatim (region 'auto',
-    s3v4, when_required checksum). A SEPARATE Cloudflare account for the research
-    vault is supported via R2_RESEARCH_ENDPOINT / R2_RESEARCH_ACCESS_KEY_ID /
-    R2_RESEARCH_SECRET_ACCESS_KEY (+ R2_RESEARCH_BUCKET); each falls back to the
-    shared R2_* var when unset (the same-account case).
+    The private research store has its own explicit credential namespace.
+    ``R2_RESEARCH_*`` never inherits generic ``R2_*`` delivery-plane values.
+    Operators intentionally using the same Cloudflare account/credentials may set
+    the dedicated research variables to the same values explicitly; bucket
+    separation is enforced by :func:`build_store`.
     """
-    ep = os.environ.get("R2_RESEARCH_ENDPOINT") or os.environ.get("R2_ENDPOINT")
-    ak = os.environ.get("R2_RESEARCH_ACCESS_KEY_ID") or os.environ.get("R2_ACCESS_KEY_ID")
-    sk = os.environ.get("R2_RESEARCH_SECRET_ACCESS_KEY") or os.environ.get("R2_SECRET_ACCESS_KEY")
-    if not (ep and ak and sk):
+    ep = (os.environ.get("R2_RESEARCH_ENDPOINT") or "").strip()
+    ak = (os.environ.get("R2_RESEARCH_ACCESS_KEY_ID") or "").strip()
+    sk = (os.environ.get("R2_RESEARCH_SECRET_ACCESS_KEY") or "").strip()
+    configured = (ep, ak, sk)
+    if not any(configured):
+        return None
+    if not all(configured):
+        # Names only: never interpolate credential values into logs.
+        log.error(
+            "partial R2_RESEARCH endpoint/access-key/secret configuration — "
+            "refusing private Research Vault client"
+        )
         return None
     import boto3
     from botocore.config import Config
@@ -1058,24 +1068,52 @@ class LocalStore:
 # ---------------------------------------------------------------------------
 
 def build_store(local_dir: str | Path | None = None) -> Store | None:
-    """Build the active store.
+    """Build the active store without crossing the private/public R2 boundary.
 
     Precedence:
       1. explicit ``local_dir`` arg → :class:`LocalStore`.
       2. env ``RESEARCH_LOCAL_STORE`` set → :class:`LocalStore` at that dir.
-      3. env ``R2_RESEARCH_BUCKET`` + R2 creds → :class:`R2Store`.
-      4. otherwise → ``None`` (no store available; caller no-ops like publish_r2).
+      3. explicit, distinct ``R2_RESEARCH_BUCKET`` + complete dedicated
+         ``R2_RESEARCH_*`` endpoint/credential family → :class:`R2Store`.
+      4. otherwise → ``None`` (no private research store available).
+
+    Generic ``R2_*`` credentials are intentionally not a fallback. If the shared
+    delivery bucket is configured, the research bucket must also differ from it.
     """
     if local_dir:
         return LocalStore(local_dir)
     env_local = os.environ.get("RESEARCH_LOCAL_STORE")
     if env_local:
         return LocalStore(env_local)
-    bucket = os.environ.get("R2_RESEARCH_BUCKET")
+
+    bucket = (os.environ.get("R2_RESEARCH_BUCKET") or "").strip()
     if bucket:
+        shared_bucket = (os.environ.get("R2_BUCKET") or "").strip()
+        if shared_bucket and bucket == shared_bucket:
+            log.error(
+                "R2_RESEARCH_BUCKET aliases shared R2_BUCKET — "
+                "refusing private Research Vault store"
+            )
+            return None
         store = R2Store(bucket)
         if store.available:
             return store
-        log.info("R2_RESEARCH_BUCKET set but R2 creds absent — no store")
+        log.info(
+            "R2_RESEARCH_BUCKET set but dedicated R2_RESEARCH endpoint/credentials "
+            "are absent or incomplete — no private store"
+        )
         return None
+
+    if any(
+        (os.environ.get(name) or "").strip()
+        for name in (
+            "R2_RESEARCH_ENDPOINT",
+            "R2_RESEARCH_ACCESS_KEY_ID",
+            "R2_RESEARCH_SECRET_ACCESS_KEY",
+        )
+    ):
+        log.error(
+            "R2_RESEARCH endpoint/credentials configured without R2_RESEARCH_BUCKET "
+            "— refusing private Research Vault store"
+        )
     return None
