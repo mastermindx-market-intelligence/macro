@@ -1700,11 +1700,15 @@ def brain_threads(user: dict = Depends(require_user)):
     """Return thread list for the authenticated user.
 
     Response: {threads: [{id, title, lane, updated_at}]}
-    Empty list when thread store is absent or user has no threads.
+    Empty list only after a successful empty read; store failure is HTTP 503.
     """
     gw = _brain_module()
     user_id = user.get("id") or user.get("email") or "unknown"
-    threads = gw.list_threads(user_id)
+    try:
+        threads = gw.list_threads(user_id)
+    except gw.ThreadStoreUnavailable:
+        raise HTTPException(503, "research history temporarily unavailable",
+                            headers={"Cache-Control": "no-store"}) from None
     return {"threads": threads}
 
 
@@ -1717,7 +1721,11 @@ def brain_thread_detail(thread_id: str, user: dict = Depends(require_user)):
     """
     gw = _brain_module()
     user_id = user.get("id") or user.get("email") or "unknown"
-    result = gw.get_thread(thread_id, user_id)
+    try:
+        result = gw.get_thread(thread_id, user_id)
+    except gw.ThreadStoreUnavailable:
+        raise HTTPException(503, "research history temporarily unavailable",
+                            headers={"Cache-Control": "no-store"}) from None
     if result is None:
         raise HTTPException(404, "thread not found or not authorized")
     return result

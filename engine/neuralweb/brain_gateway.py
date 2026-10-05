@@ -10356,9 +10356,20 @@ def _log_brain_response(**kwargs) -> None:
 # Thread list / detail helpers (for /api/brain/threads routes)
 # ---------------------------------------------------------------------------
 
+class ThreadStoreUnavailable(RuntimeError):
+    """A history read could not establish the stored result."""
+
+
+def _thread_read_rows(path: str) -> list[dict]:
+    rows = _sb_get(path)
+    if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
+        raise ThreadStoreUnavailable("research history temporarily unavailable")
+    return rows
+
+
 def list_threads(user_id: str) -> list[dict]:
-    """Return thread summaries for user_id. Returns [] when store absent."""
-    rows = _sb_get(
+    """Return owned summaries; an unavailable store is never an empty history."""
+    rows = _thread_read_rows(
         f"brain_threads?user_id=eq.{urllib.parse.quote(user_id)}"
         f"&select=id,title,lane,updated_at&order=updated_at.desc&limit=50"
     )
@@ -10378,7 +10389,9 @@ def list_threads(user_id: str) -> list[dict]:
 
 def get_thread(thread_id: str, user_id: str) -> dict | None:
     """Return thread + messages for thread_id owned by user_id. None if not found/not owner."""
-    thread_rows = _sb_get(
+    if not _valid_thread_id(thread_id) or not user_id:
+        return None
+    thread_rows = _thread_read_rows(
         f"brain_threads?id=eq.{urllib.parse.quote(thread_id)}"
         f"&user_id=eq.{urllib.parse.quote(user_id)}&select=id,title,lane,created_at,updated_at&limit=1"
     )
@@ -10386,12 +10399,11 @@ def get_thread(thread_id: str, user_id: str) -> dict | None:
         return None
     thread = thread_rows[0]
 
-    msg_rows = _sb_get(
+    msg_rows = _thread_read_rows(
         f"brain_messages?thread_id=eq.{urllib.parse.quote(thread_id)}"
         f"&select=role,content,created_at&order=created_at.asc&limit=200"
     )
-    messages = msg_rows or []
-    return {"thread": thread, "messages": messages}
+    return {"thread": thread, "messages": msg_rows}
 
 
 def _norm_thread_title(title: str) -> str:

@@ -35,3 +35,12 @@ native fact census.
 Validation is in `tests/test_brain_context_retention.py`, including both gateway
 transports with providers unavailable. `tests/test_deploy_update_self_heal.py`
 also requires future changes to the new import-cached module to restart the API.
+
+History API reads distinguish an unavailable store from a successful empty
+result. Thread lists and details return HTTP 503 with no-store when the existing
+PostgREST read fails or returns a malformed row container; a genuinely empty list
+stays 200 and a successfully absent/foreign thread stays 404. Reads never write
+or rerun an answer. Tests cover all three read stages and unchanged authorization.
+This establishes the API distinction only: the current shared widget still maps
+some failed list requests to an empty list, so its error presentation and retained
+artifact reader remain separate G6 acceptance work.
