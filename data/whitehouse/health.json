@@ -1,10 +1,17 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-05T07:02:03.474190+00:00",
-  "posts_seen": 9,
-  "seen_total": 259,
-  "evaluated": 0,
+  "as_of": "2026-10-05T15:59:45.067323+00:00",
+  "posts_seen": 10,
+  "seen_total": 260,
+  "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-10-02-presidential-message-on-down-syndrome-awareness-month-6778",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }
