@@ -19,6 +19,7 @@ import json
 import os
 from pathlib import Path
 import sqlite3
+from collections.abc import Mapping
 from typing import Iterable, Sequence
 
 from engine.qbus_news_contract import NewsRevision
@@ -48,6 +49,22 @@ class RevisionCollision(NewsStoreError):
 
 class StoreValidationError(NewsStoreError):
     pass
+
+
+class LegacySchemaError(NewsStoreError):
+    pass
+
+
+class LegacyCollision(NewsStoreError):
+    pass
+
+
+@dataclass(frozen=True, slots=True)
+class LegacyImportReceipt:
+    schema: str
+    imported_rows: int
+    duplicate_rows: int
+    total_rows: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -343,6 +360,52 @@ def _validate_token(value: str, field: str, maximum: int = 512) -> str:
     return out
 
 
+def _legacy_columns() -> tuple[str, ...]:
+    # Deferred import avoids making the new store a prerequisite of qbus.v1.
+    from engine import qbus
+    return tuple(qbus.COLUMNS)
+
+
+def _python_scalar(value: object) -> object:
+    # pandas/numpy scalar values expose .item(); qbus v1 rows otherwise contain
+    # only JSON-native scalars after normalize_row.
+    item = getattr(value, "item", None)
+    if callable(item):
+        try:
+            return item()
+        except (TypeError, ValueError):
+            pass
+    if isinstance(value, datetime):
+        return value.isoformat()
+    return value
+
+
+def validate_legacy_rows(rows: Iterable[Mapping[str, object]]) -> tuple[dict, ...]:
+    """Validate a qbus.v1 snapshot without rewriting or normalizing its semantics."""
+    columns = _legacy_columns()
+    expected = set(columns)
+    out: list[dict] = []
+    for raw in rows:
+        if not isinstance(raw, Mapping):
+            raise LegacySchemaError("qbus_news_store:legacy_row_not_mapping")
+        if set(raw.keys()) != expected:
+            raise LegacySchemaError("qbus_news_store:legacy_schema_mismatch")
+        row = {name: _python_scalar(raw[name]) for name in columns}
+        item_id = row["item_id"]
+        if not isinstance(item_id, str) or not item_id or "\x00" in item_id:
+            raise LegacySchemaError("qbus_news_store:legacy_item_id_invalid")
+        # Prove every value can round-trip through the exact durable encoding.
+        try:
+            encoded = _stable_json(row)
+            decoded = json.loads(encoded)
+        except (TypeError, ValueError) as exc:
+            raise LegacySchemaError("qbus_news_store:legacy_row_not_json_safe") from exc
+        if set(decoded.keys()) != expected:
+            raise LegacySchemaError("qbus_news_store:legacy_roundtrip_failed")
+        out.append(row)
+    return tuple(out)
+
+
 def _validate_routed(item: RoutedRevision) -> RoutedRevision:
     if not isinstance(item, RoutedRevision):
         raise StoreValidationError("qbus_news_store:invalid_routed_revision")
@@ -455,6 +518,68 @@ class NewsStore:
             )
             for key, table in mapping.items()
         }
+
+    def import_legacy_rows(
+        self, rows: Iterable[Mapping[str, object]]
+    ) -> LegacyImportReceipt:
+        """Import qbus.v1 rows losslessly without activating a dual writer.
+
+        Exact existing rows are idempotent. A same-item-id byte/field conflict
+        refuses and rolls back the whole batch.
+        """
+        validated = validate_legacy_rows(rows)
+        imported = duplicate = 0
+        self._conn.execute("BEGIN IMMEDIATE")
+        try:
+            row = self._conn.execute(
+                "SELECT COALESCE(MAX(ordinal), -1) FROM legacy_items"
+            ).fetchone()
+            next_ordinal = int(row[0]) + 1
+            for legacy in validated:
+                item_id = str(legacy["item_id"])
+                payload = _stable_json(legacy)
+                existing = self._conn.execute(
+                    "SELECT row_json FROM legacy_items WHERE item_id=?",
+                    (item_id,),
+                ).fetchone()
+                if existing is not None:
+                    if str(existing["row_json"]) != payload:
+                        raise LegacyCollision(
+                            "qbus_news_store:legacy_item_collision"
+                        )
+                    duplicate += 1
+                    continue
+                self._conn.execute(
+                    """
+                    INSERT INTO legacy_items(item_id, ordinal, row_json)
+                    VALUES(?,?,?)
+                    """,
+                    (item_id, next_ordinal, payload),
+                )
+                next_ordinal += 1
+                imported += 1
+            self._conn.execute("COMMIT")
+        except Exception:
+            self._conn.execute("ROLLBACK")
+            raise
+        total = int(
+            self._conn.execute(
+                "SELECT count(*) FROM legacy_items"
+            ).fetchone()[0]
+        )
+        return LegacyImportReceipt(
+            schema=SCHEMA,
+            imported_rows=imported,
+            duplicate_rows=duplicate,
+            total_rows=total,
+        )
+
+    def legacy_rows(self) -> tuple[dict, ...]:
+        """Return imported qbus.v1 rows in their original first-import order."""
+        rows = self._conn.execute(
+            "SELECT row_json FROM legacy_items ORDER BY ordinal ASC"
+        ).fetchall()
+        return tuple(json.loads(str(row["row_json"])) for row in rows)
 
     def _load_state(self, source: str, source_item_id: str) -> NewsState | None:
         row = self._conn.execute(
