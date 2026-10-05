@@ -274,6 +274,9 @@ def test_write_day_retains_changed_content_at_same_source_locator(tmp_path, monk
     url = "https://www.pbc.gov.cn/policy/one.html"
     first = _corpus_row("a1", "原始标题", "适度宽松", "2026-07-02T01:00:00", url=url)
     revised = _corpus_row("a2", "更正标题", "内容变化", "2026-07-02T05:00:00", url=url)
+    locator = coc._source_locator_id("pboc", url)
+    first["source_locator_id"] = locator
+    revised["source_locator_id"] = locator
     coc.write_day([first], d)
     coc.write_day([revised], d)
     corpus = coc.read_corpus()
