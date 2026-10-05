@@ -1,0 +1,11 @@
+{
+  "candidate": "196e0731b30d6b8c303302eff98954e32079856c",
+  "prior_integration_tree": "ad6b4cae105452d1f3487b6d8a16c1f2618250c7",
+  "baseline_test_commit": "8005d6a445e4d653fb3432d11f2990451cecb5b9",
+  "integrated_tree": "9446623a23ead3a3b7597a06c96ab66c7562a998",
+  "current_main": "0a8741220b70bfc3eaf71a15b5581778fad588bd",
+  "current_main_merge_returncode": 0,
+  "current_main_tree": "a80e244b5cab686590fc2a362f23f64bd76e93e0",
+  "relevant_main_movement": [],
+  "production": false
+}
