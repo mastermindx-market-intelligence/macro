@@ -701,12 +701,14 @@ def _production_source(receipt, publication_plan):
     """Validate the existing owner's receipt; no source read or rights resolver."""
     from engine.neuralweb import theme_state_generation as generation
     from engine.neuralweb import theme_state_generation_reader as reader
-    if not isinstance(receipt, Mapping) or receipt.get("schema") != reader.SCHEMA:
+    validators = {reader.SCHEMA: reader.validate_read_receipt,
+                  reader.USE_SCHEMA: reader.validate_read_receipt_at_use}
+    if not isinstance(receipt, Mapping) or receipt.get("schema") not in validators:
         raise ContractError("unsupported production generation read schema")
     if receipt.get("status") == "INVALID":
         raise ContractError("invalid production generation receipt")
     try:
-        reader.validate_read_receipt(receipt, publication_plan=publication_plan)
+        validators[receipt["schema"]](receipt, publication_plan=publication_plan)
     except (ValueError, TypeError, KeyError, AttributeError, OSError, generation.GenerationUnavailable) as exc:
         raise ContractError("production generation receipt/witness invalid") from exc
     return receipt
@@ -719,11 +721,21 @@ def _production_binding(receipt, nodes):
         raise ContractError("production subject identity invalid")
     if receipt["state"] is None and nodes:
         raise ContractError("unavailable source cannot contain production subject reads")
-    reads = [] if receipt["state"] is None else [production.read_subject(
-        receipt["state"], node_id=node, **receipt["query"], purpose=receipt["purpose"])
-        for node in sorted(set(nodes))]
+    from engine.neuralweb import theme_state_generation_reader as generation_reader
+    reads = []
+    if receipt["state"] is not None:
+        for node in sorted(set(nodes)):
+            if receipt["schema"] == generation_reader.USE_SCHEMA:
+                from engine.theme_graph.theme_state_use_reader import read_subject_at_use
+                value = read_subject_at_use(receipt["state"], node_id=node, **receipt["query"],
+                                             purpose=receipt["purpose"], use_at=receipt["use_at"])
+            else:
+                value = production.read_subject(receipt["state"], node_id=node, **receipt["query"],
+                                                purpose=receipt["purpose"])
+            reads.append(value)
     compatibility = receipt["compatibility"]
-    return {"schema": PRODUCTION_BINDING_SCHEMA, "status": receipt["status"],
+    return {"schema": PRODUCTION_BINDING_SCHEMA, "source_read_schema": receipt["schema"],
+            "status": receipt["status"],
             "reason_codes": copy.deepcopy(receipt["reason_codes"]),
             "query": copy.deepcopy(receipt["query"]), "use_at": receipt["use_at"],
             "purpose": receipt["purpose"], "publication": copy.deepcopy(receipt["publication"]),

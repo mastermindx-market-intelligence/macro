@@ -228,7 +228,7 @@ def test_contract_v3_api_is_present():
 
 def test_contract_unsupported_schema_is_not_a_missing_state():
     receipt = refusal_receipt()
-    receipt["schema"] = "neuralweb.theme_state_generation_read.v2"
+    receipt["schema"] = "neuralweb.theme_state_generation_read.v999"
     with pytest.raises(ContractError, match="schema"):
         successor().compose_production_shadow_bundle(
             {}, company_manifest={}, membership={}, crosswalk={},
@@ -669,3 +669,52 @@ def test_real_output_tamper_and_diagnostic_role_are_rejected(qualified_publicati
             contexts, company_manifest=manifest, membership=membership_for("grid"), crosswalk=MAPPED,
             generation_read_receipt=cast, publication_plan=plan,
             company_identity_reads={"HUBB": identity_read}, local_membership_reads={"HUBB": local_read})
+
+
+
+def test_publication_time_read_compiles_actual_later_state_without_clock_relabelling(production_world, tmp_path):
+    from engine.neuralweb import theme_state_adapter as adapter
+    root = production_world
+    emitted = "2026-10-05T12:00:00Z"
+    activated = "2026-10-06T12:00:00Z"
+    use_at = "2026-10-06T13:00:00Z"
+    captured = adapter.capture_owner_bundle(root, effective_at=EFFECTIVE, known_at=KNOWN)
+    plan = generation.prepare_generation(captured, root=root, generated_at=emitted,
+        activation_at=activated, entry=generation.entry_preflight(root, legacy_api=True))
+    generation.publish_generation(root, plan, controlled_verifier=AcceptedFixture())
+    receipt = generation_reader.read_generation_at_use(root, effective_at=EFFECTIVE,
+        known_at=KNOWN, purpose="research_internal", use_at=use_at, controlled_verifier=ReadFixture())
+    assert receipt["schema"] == "neuralweb.theme_state_generation_read.v2"
+    assert receipt["state"] is not None
+    contexts, ci_manifest, _ = finalized_ci(tmp_path, KNOWN)
+    before = tree_bytes(root)
+    exposures, manifest = compose(contexts, ci_manifest, receipt, plan,
+                                 membership=membership_for("grid"), crosswalk=MAPPED)
+    assert tree_bytes(root) == before
+    item = exposures["HUBB"]
+    binding = item["production_generation"]
+    assert binding["source_read_schema"] == receipt["schema"]
+    assert item["generated_at"] == binding["query"]["known_at"] == KNOWN
+    assert binding["state_identity"]["generated_at"] == emitted
+    assert binding["publication"]["activation_at"] == activated
+    assert binding["use_at"] == use_at
+    assert binding["state_identity"]["age_seconds_at_use"] == 90000
+    assert binding["subject_reads"][0]["schema"] == "gmi.theme_state_read/v3"
+    assert binding["subject_reads"][0]["use_at"] == use_at
+    assert binding["subject_reads"][0]["subject"]["eligibility"] == "NOT_QUALIFIED"
+    assert all(value is False for value in item["authority_caps"].values())
+    assert item["materialization_allowed"] is False and manifest["files"] == {}
+    successor().validate_production_manifest(manifest, generation_read_receipt=receipt,
+                                             publication_plan=plan, exposures=exposures)
+    forged = copy.deepcopy(item)
+    forged["production_generation"]["source_read_schema"] = generation_reader.SCHEMA
+    with pytest.raises(ContractError):
+        successor().validate_production_exposure(forged, generation_read_receipt=receipt,
+                                                publication_plan=plan, company_context=contexts["HUBB"])
+    legacy = generation_reader.read_generation(root, effective_at=EFFECTIVE, known_at=KNOWN,
+        purpose="research_internal", use_at=use_at, controlled_verifier=ReadFixture())
+    assert legacy["status"] == "UNAVAILABLE" and legacy["state"] is None
+    held, _ = compose(contexts, ci_manifest, legacy, None,
+                      membership=membership_for("grid"), crosswalk=MAPPED)
+    assert held["HUBB"]["production_generation"]["source_read_schema"] == generation_reader.SCHEMA
+    assert held["HUBB"]["production_generation"]["subject_reads"] == []
