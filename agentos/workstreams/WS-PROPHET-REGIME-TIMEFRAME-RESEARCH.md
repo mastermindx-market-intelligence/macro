@@ -29,13 +29,12 @@ do_not_redo:
 waves:
   - id: W1
     title: Pre-registered wave 1 — A1/B1/C1/C2/F1 fabric lanes, seat adjudication of C2
-    status: in_progress
-    pr: 8375
+    status: done
+    pr: 8445
     next_action: >
-      Collect the B1 and C1 GLM lane returns from mini2 (launcher ids
-      rs_20261004T011728Z_4177 and rs_20261004T011730Z_4264), refute each via an
-      Opus read-only reviewer, repair at most twice, then launch C2 on B1+C1 ACCEPT and
-      A1/F1 as fill.
+      Closed 2026-10-05: all seven lane records shipped (A1/B1/C1/E/F1 in the wave-1
+      results PR #8445, squash 62992f803f1b; C2 r2 + D0 r3 in the follow-up PR) and ruled
+      (05 §1/§3, 09 §0). Only the C2 r2 independent review verdict is still owed to 05 §2.
   - id: W2
     title: Theme-persistence and timeframe transposition follow-ups conditioned on W1 verdicts
     status: todo
@@ -45,13 +44,12 @@ waves:
     status: todo
     depends_on: [W2]
 next_action: >
-  Wave 1 shipped (A1, B1, C1, E, F1 accepted; records + 06–09 + DEC/DSC + W1 handoff in
-  the wave-1 results PR). C2 r2 and D0 r3 are DELIVERED on host2 but unreviewed and
-  unshipped because the /Volumes/Mastermind volume has been unreadable since
-  2026-10-04 08:24Z: when readable, copy both records, verify sha256 be4e04d4… /
-  b16f444a…, review each once with a grok-4.6 lane, and open the follow-up PR. Then post
-  the wave RESULT once on #8363 and the W3 owner delivery once on #6805 (rung ≤ MERGED).
-  W2 only as a new pre-registration. See 05 §7 and the W1 handoff.
+  Wave 1 CLOSED (2026-10-05): A1, B1, C1, E, F1 accepted in the results PR #8445; C2 r2
+  ACCEPTED-WITH-GAP and D0 r3 ACCEPTED-WITH-GAPS in the follow-up PR, both reviewed by
+  artifact (05 §2 ledger addendum 2026-10-05). Owed: the C2 r2 grok-4.6 review verdict
+  (appended to 05 §2; a numeric finding opens one record-only amendment PR) and the
+  follow-up RESULT posted once on #8363. W2 only as a new pre-registration (09 §2 names
+  the C1-W2 construction); lane D is a forward study per DEC:D-LANE-PARKED-AS-FORWARD-STUDY.
 ---
 
 # WS:PROPHET-REGIME-TIMEFRAME-RESEARCH
