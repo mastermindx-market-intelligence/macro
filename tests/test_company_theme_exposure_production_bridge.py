@@ -236,6 +236,19 @@ def test_contract_unsupported_schema_is_not_a_missing_state():
             company_identity_reads={}, local_membership_reads={})
 
 
+def test_contract_unhashable_schema_is_refused_not_a_type_error():
+    for bad in (["neuralweb.theme_state_generation_read.v1", "neuralweb.theme_state_generation_read.v2"],
+                {"schema": "neuralweb.theme_state_generation_read.v1"},
+                {"neuralweb.theme_state_generation_read.v2"}):
+        receipt = refusal_receipt()
+        receipt["schema"] = bad
+        with pytest.raises(ContractError, match="schema"):
+            successor().compose_production_shadow_bundle(
+                {}, company_manifest={}, membership={}, crosswalk={},
+                generation_read_receipt=receipt, publication_plan=None,
+                company_identity_reads={}, local_membership_reads={})
+
+
 def test_contract_invalid_receipt_is_not_a_fabricated_missing_state():
     with pytest.raises(ContractError, match="invalid"):
         successor().compose_production_shadow_bundle(

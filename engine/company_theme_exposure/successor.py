@@ -703,7 +703,8 @@ def _production_source(receipt, publication_plan):
     from engine.neuralweb import theme_state_generation_reader as reader
     validators = {reader.SCHEMA: reader.validate_read_receipt,
                   reader.USE_SCHEMA: reader.validate_read_receipt_at_use}
-    if not isinstance(receipt, Mapping) or receipt.get("schema") not in validators:
+    schema = receipt.get("schema") if isinstance(receipt, Mapping) else None
+    if not isinstance(schema, str) or schema not in validators:
         raise ContractError("unsupported production generation read schema")
     if receipt.get("status") == "INVALID":
         raise ContractError("invalid production generation receipt")
