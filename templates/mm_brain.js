@@ -2893,6 +2893,7 @@
                assistant turn at the tail means the answer already landed and painting
                the replay too would double it. */
             openThread(s.thread_id, function (msgs) {
+              if (epoch !== historyEpoch) return;
               var tail = (msgs && msgs.length) ? msgs[msgs.length - 1] : null;
               if (tail && tail.role === 'assistant') { clearRun(); return; }
               attachFresh(s, 0, st.q);
@@ -3202,6 +3203,11 @@
       allThreads = []; historyListUnavailable = false; threadId = null;
       clearMsgs(); ta.value = ''; pendingImages = []; renderThumbs(); paintThreads();
       quotas = {}; proEligible = false; renderQuota();
+      lastTurn = null; explainPanel = null; fileEl.value = '';
+      if (searchIn) searchIn.value = '';
+      ctxState.pinned = []; ctxState.lastReceipt = null; ctxState.lastHistoricalReceipt = null;
+      ctxState.lastNativeFactReceipt = null; ctxState.lastAppliedRevision = -1; ctxState.revision++;
+      lastCtxView = null; closeCtxInspector(); ctxInspBody.textContent = ''; ctxInspRev.textContent = ''; refreshCtx();
     }
     principalKnown = true; authed = !!user;
     var gate = $('#mmb-gate');
@@ -3395,11 +3401,12 @@
 
   /* ── vision: attach + downscale images ── */
   function addFiles(files) {
+    var epoch = historyEpoch;
     var arr = [].slice.call(files || []);
     arr.forEach(function (f) {
       if (!/^image\//.test(f.type) || pendingImages.length >= MAX_IMAGES) return;
       downscaleImage(f).then(function (dataUri) {
-        if (!dataUri || pendingImages.length >= MAX_IMAGES) return;
+        if (epoch !== historyEpoch || !dataUri || pendingImages.length >= MAX_IMAGES) return;
         pendingImages.push(dataUri); renderThumbs();
       }).catch(function () {});
     });
@@ -3448,8 +3455,8 @@
   function voiceSupported() { return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
   function startVoice() {
     var SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) return;
-    var r = new SR(); r.lang = zh() ? 'zh-CN' : 'en-US'; r.interimResults = false;
-    r.onresult = function (ev) { ta.value = (ta.value + ' ' + ev.results[0][0].transcript).trim(); autosize(); syncSend(); updateCounter(); };
+    var epoch = historyEpoch, r = new SR(); r.lang = zh() ? 'zh-CN' : 'en-US'; r.interimResults = false;
+    r.onresult = function (ev) { if (epoch !== historyEpoch) return; ta.value = (ta.value + ' ' + ev.results[0][0].transcript).trim(); autosize(); syncSend(); updateCounter(); };
     try { r.start(); } catch (e) {}
   }
   /* Hide the mic entirely where Web Speech is unsupported (rather than a dead button). */

@@ -246,3 +246,59 @@ def test_late_stream_bytes_cannot_repopulate_after_account_switch(page):
     page.wait_for_timeout(80)
     expect(page.locator('.mmb-msg')).to_have_count(0)
     expect(page.locator('#mmb-scroll')).not_to_contain_text('Private answer A')
+
+
+def test_account_switch_discards_native_fact_inspector_contents(page):
+    page.evaluate("""() => {
+      window.MM_BRAIN_CFG.symbol=()=> 'AAPL';
+      const original=window.fetch;window.fetch=(url,opts)=>url.endsWith('/brain/stream')?Promise.resolve(new Response(new ReadableStream({start(c){window.__factBytes=c;}}),{headers:{'Content-Type':'text/event-stream'}})):original(url,opts);
+      MMBrain.close();MMBrain.open();
+    }""")
+    page.locator('#mmb-ta').fill('Private research A')
+    page.locator('#mmb-send').click()
+    page.wait_for_function('!!window.__factBytes')
+    page.evaluate("""() => {
+      const events=[{type:'delta',text:'Saved answer A'},{type:'done',native_fact_receipt:{facts:[{field_id:'market.price.last',status:'available',value:'PRIVATE-FACT-A',unit:'text'}]}}];
+      window.__factBytes.enqueue(new TextEncoder().encode(events.map(e=>'data: '+JSON.stringify(e)).join(String.fromCharCode(10,10))+String.fromCharCode(10,10)));window.__factBytes.close();
+    }""")
+    page.locator('[data-act="ctx-toggle"]').click()
+    expect(page.locator('#mmb-ctxinsp-body')).to_contain_text('PRIVATE-FACT-A')
+    page.evaluate("window.__principal='B';MMBrain.setPrincipal('user-B')")
+    expect(page.locator('#mmb-ctxinsp-body')).not_to_contain_text('PRIVATE-FACT-A')
+
+
+def test_late_dictation_cannot_write_into_next_accounts_composer(page):
+    page.evaluate("window.SpeechRecognition=function(){window.__speech=this;this.start=()=>{};};document.querySelector('[data-act=voice]').style.display='';")
+    page.locator('[data-act="voice"]').click()
+    page.evaluate("window.__principal='B';MMBrain.setPrincipal('user-B');window.__speech.onresult({results:[[{transcript:'Private dictation A'}]]});")
+    expect(page.locator('#mmb-ta')).to_have_value('')
+
+
+def test_late_image_decode_cannot_attach_to_next_account(page):
+    page.evaluate("window.FileReader=function(){window.__file=this;this.readAsDataURL=()=>{};};")
+    page.locator('#mmb-file').set_input_files({'name':'private.png','mimeType':'image/png','buffer':b'fixture'})
+    page.wait_for_function('!!window.__file')
+    page.evaluate("window.__principal='B';MMBrain.setPrincipal('user-B');window.__file.result='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aL1sAAAAASUVORK5CYII=';window.__file.onload();")
+    page.wait_for_timeout(150)
+    expect(page.locator('#mmb-thumbs img')).to_have_count(0)
+
+
+def test_late_resumed_thread_cannot_attach_or_delete_next_accounts_run(page):
+    page.evaluate("""() => {
+      sessionStorage.setItem('mm.brain.run.v2:user:user-A',JSON.stringify({id:'held-run-A',q:'Private question A',ts:Date.now()}));
+      const original=window.fetch;window.fetch=(url,opts)=>{
+        if(url.endsWith('/runs/held-run-A'))return Promise.resolve({ok:true,json:()=>Promise.resolve({id:'held-run-A',thread_id:'11111111-1111-1111-1111-111111111111',done:false})});
+        if(url.endsWith('/threads/11111111-1111-1111-1111-111111111111'))return new Promise(resolve=>window.__heldThread=resolve);
+        return original(url,opts);
+      };MMBrain.close();MMBrain.open();
+    }""")
+    page.wait_for_function('!!window.__heldThread')
+    page.evaluate("""() => {
+      window.__principal='B';MMBrain.setPrincipal('user-B');
+      sessionStorage.setItem('mm.brain.run.v2:user:user-B','B-run-must-survive');
+      window.__heldThread({ok:true,json:()=>Promise.resolve({thread:{id:'11111111-1111-1111-1111-111111111111'},messages:[{role:'user',content:'Private question A'}]})});
+    }""")
+    page.wait_for_timeout(80)
+    expect(page.locator('.mmb-msg')).to_have_count(0)
+    assert page.evaluate("sessionStorage.getItem('mm.brain.run.v2:user:user-B')")=='B-run-must-survive'
+    assert not any('/runs/held-run-A/stream' in r['url'] for r in page.evaluate('window.__requests'))
