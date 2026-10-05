@@ -2,7 +2,7 @@
 workstream: "WS:ALPHA-INTELLIGENCE-INTEGRATION"
 session: "fable/program-ceo-information-to-price-20261005"
 model: fable
-ended_because: chairman_program_ceo_handoff
+ended_because: complete
 mission: >
   Take full Program-CEO responsibility for the entire Information-to-Price /
   Adaptive Market Intelligence / Expectation-Market Dynamics program and complete
