@@ -41,6 +41,14 @@ result. Thread lists and details return HTTP 503 with no-store when the existing
 PostgREST read fails or returns a malformed row container; a genuinely empty list
 stays 200 and a successfully absent/foreign thread stays 404. Reads never write
 or rerun an answer. Tests cover all three read stages and unchanged authorization.
-This establishes the API distinction only: the current shared widget still maps
-some failed list requests to an empty list, so its error presentation and retained
-artifact reader remain separate G6 acceptance work.
+The shared widget preserves its last successful list with a visible unavailable
+notice and read-only retry. It commits a selected conversation only after valid
+history arrives; late reads cannot replace a newer selection, new chat or turn.
+An authentication identity change clears the displayed history and invalidates
+pending history reads. Denied list reads discard cached titles. These guards do
+not constitute full account/draft/cache or retained-artifact-reader acceptance.
+
+Browser fixtures cover list/detail outages, recovery, malformed details, late
+responses and owner changes, plus EN/ZH desktop/tablet/390px/320px doubled text,
+keyboard retry and 44px touch targets. They do not prove live two-principal access.
+The current-rights artifact reader and exact production proof remain G6 work.

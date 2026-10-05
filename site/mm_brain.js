@@ -1965,12 +1965,22 @@
   }
 
   /* ── threads ── */
+  var allThreads = [], historyListUnavailable = false, historyOwner = null;
+  var historyEpoch = 0, historyListGeneration = 0, historyOpenGeneration = 0;
   function loadThreads() {
+    var generation = ++historyListGeneration, epoch = historyEpoch;
     withAuth().then(function (h) { return fetch(API + '/api/brain/threads', { headers: h, credentials: 'include' }); })
-      .then(function (r) { return r.ok ? r.json() : { threads: [] }; })
-      .then(function (d) { renderThreads((d && d.threads) || []); }).catch(function () {});
+      .then(function (r) { if (!r.ok) { var error = new Error('history unavailable'); error.status = r.status; throw error; } return r.json(); })
+      .then(function (d) {
+        if (generation !== historyListGeneration || epoch !== historyEpoch) return;
+        if (!d || !Array.isArray(d.threads)) throw new Error('invalid history');
+        historyListUnavailable = false; renderThreads(d.threads);
+      }).catch(function (error) {
+        if (generation !== historyListGeneration || epoch !== historyEpoch) return;
+        if (error && (error.status === 401 || error.status === 403)) allThreads = [];
+        historyListUnavailable = true; paintThreads();
+      });
   }
-  var allThreads = [];
   var PENCIL = '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>';
   var TRASH = '<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"/>';
   function buildThreadItem(t) {
@@ -2049,12 +2059,16 @@
   }
   function findThread(id) { for (var i = 0; i < allThreads.length; i++) if (allThreads[i].id === id) return allThreads[i]; return null; }
   function paintThreads() {
-    if (guestMode) { paintGuestThreads(); return; }   /* guests see the sign-in prompt, not the (empty) list */
-    if (!allThreads.length) { tlist.innerHTML = '<div class="mmb-th-empty">' + L('Your conversations appear here.', '你的对话会显示在这里。') + '</div>'; return; }
+    if (guestMode) { paintGuestThreads(); return; }
+    var notice = historyListUnavailable ? '<div class="mmb-th-empty" role="status">' +
+      L('Research history is temporarily unavailable. Retry to load saved conversations.', '研究历史暂时不可用，请重试以加载已保存的对话。') +
+      (allThreads.length ? ' ' + L('Showing previously loaded conversations.', '以下显示此前加载的对话。') : '') +
+      '<button type="button" class="mmb-retry" data-act="history-retry" style="display:block;min-width:44px;min-height:44px;margin-top:6px">' + L('Retry', '重试') + '</button></div>' : '';
+    if (!allThreads.length) { tlist.innerHTML = notice || '<div class="mmb-th-empty">' + L('Your conversations appear here.', '你的对话会显示在这里。') + '</div>'; return; }
     var q = ((searchIn && searchIn.value) || '').trim().toLowerCase();
     var items = q ? allThreads.filter(function (t) { return (t.title || '').toLowerCase().indexOf(q) !== -1; }) : allThreads;
-    if (!items.length) { tlist.innerHTML = '<div class="mmb-th-empty">' + L('No chats match your search.', '没有匹配的对话。') + '</div>'; return; }
-    tlist.innerHTML = '';
+    if (!items.length) { tlist.innerHTML = notice + '<div class="mmb-th-empty">' + L('No chats match your search.', '没有匹配的对话。') + '</div>'; return; }
+    tlist.innerHTML = notice;
     items.forEach(function (t) { tlist.appendChild(buildThreadItem(t)); });
   }
   function renderThreads(threads) { allThreads = threads || []; paintThreads(); }
@@ -2068,24 +2082,33 @@
   /* openThread(id, done): `done` fires once the messages are painted — the resume path
      needs it so it can attach a still-running turn to the thread it belongs to. */
   function openThread(id, done) {
-    abortStream();   /* switching threads mid-stream must tear the old stream down first */
-    threadId = id;
-    root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.toggle('on', el.dataset.id === id); });
-    withAuth().then(function (h) { return fetch(API + '/api/brain/threads/' + id, { headers: h, credentials: 'include' }); })
-      .then(function (r) { return r.ok ? r.json() : null; })
+    var generation = ++historyOpenGeneration, epoch = historyEpoch;
+    abortStream();
+    withAuth().then(function (h) { return fetch(API + '/api/brain/threads/' + encodeURIComponent(id), { headers: h, credentials: 'include' }); })
+      .then(function (r) { if (!r.ok) throw new Error('history unavailable'); return r.json(); })
       .then(function (d) {
-        if (!d) return;
+        if (generation !== historyOpenGeneration || epoch !== historyEpoch) return;
+        if (!d || !d.thread || d.thread.id !== id || !Array.isArray(d.messages) ||
+            !d.messages.every(function (m) { return m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string'; })) throw new Error('invalid history');
+        threadId = id;
+        root.querySelectorAll('.mmb-ti').forEach(function (node) { node.classList.toggle('on', node.dataset.id === id); });
         clearMsgs(); scroll.textContent = '';
         var lastDay = '';
-        (d.messages || []).forEach(function (m) {
+        d.messages.forEach(function (m) {
           var ms = 0; try { ms = m.created_at ? new Date(m.created_at).getTime() : 0; } catch (e) {}
           if (ms) { var dk = new Date(ms).toDateString(); if (dk !== lastDay) { addDaySep(ms); lastDay = dk; } }
           appendMsg(m.role, m.content, ms || undefined);
         });
         markLastAssistant(); pinned = true; scroll.scrollTop = scroll.scrollHeight;
         ta.value = ''; autosize(); syncSend(); updateCounter(); restoreDraft();
-        if (done) { try { done(d.messages || []); } catch (e) {} }
-      }).catch(function () {});
+        if (done) { try { done(d.messages); } catch (e) {} }
+      }).catch(function () {
+        if (generation !== historyOpenGeneration || epoch !== historyEpoch) return;
+        var old = scroll.querySelector('.mmb-history-error'); if (old) old.remove();
+        var error = el('div', 'mmb-history-error mmb-th-empty'); error.setAttribute('role', 'status');
+        error.textContent = L('This conversation could not be loaded. Your current conversation is unchanged.', '此对话暂时无法加载，当前对话未改变。');
+        scroll.appendChild(error);
+      });
   }
 
   /* ── messages ── */
@@ -2703,6 +2726,7 @@
   /* runStream(payload, showUser): runs one SSE turn. showUser=false skips drawing a new
      user bubble (used by regenerate — the user turn is already on screen). */
   function runStream(payload, showUser) {
+    historyOpenGeneration++;  /* a late history read cannot replace a new or retried turn */
     /* only the latest reply carries follow-up chips — clear any stale rows */
     root.querySelectorAll('.mmb-sugg').forEach(function (n) { n.remove(); });
     var ub = null;
@@ -3146,10 +3170,16 @@
     });
   }
   function toggleSide() { panel.classList.toggle('show-side'); }
-  function newChat() { abortStream(); threadId = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max')) panel.classList.remove('show-side'); }
+  function newChat() { historyOpenGeneration++; abortStream(); threadId = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max')) panel.classList.remove('show-side'); }
 
   /* ── auth wiring ── */
   function onAuth(user) {
+    var owner = user && (user.id || user.email) || null;
+    if (owner !== historyOwner) {
+      historyOwner = owner; historyEpoch++; historyListGeneration++; historyOpenGeneration++;
+      allThreads = []; historyListUnavailable = false; threadId = null;
+      abortStream(); clearMsgs(); ta.value = ''; pendingImages = []; renderThumbs(); paintThreads();
+    }
     authed = !!user;
     var gate = $('#mmb-gate');
     if (authed) {
@@ -3214,6 +3244,7 @@
     else if (a === 'new') newChat();
     else if (a === 'home') location.href = (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'macro.html';
     else if (a === 'search') toggleSearch();
+    else if (a === 'history-retry') { loadThreads(); }
     else if (a === 'search-clear') { searchIn.value = ''; paintThreads(); searchIn.focus(); }
     else if (a === 'voice') startVoice();
     else if (a === 'attach') { if (proEligible) fileEl.click(); else showUpgrade(guestMode ? { feature: 'pro' } : { feature: 'vision' }); }

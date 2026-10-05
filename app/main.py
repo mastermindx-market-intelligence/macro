@@ -1717,7 +1717,7 @@ def brain_thread_detail(thread_id: str, user: dict = Depends(require_user)):
     """Return thread + messages for thread_id owned by the authenticated user.
 
     Response: {thread: {...}, messages: [{role, content, created_at}]}
-    HTTP 404 if not found or not owner.
+    HTTP 404 if not found or not owner; HTTP 503 if history cannot be read.
     """
     gw = _brain_module()
     user_id = user.get("id") or user.get("email") or "unknown"
