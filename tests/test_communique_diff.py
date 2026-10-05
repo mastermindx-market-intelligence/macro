@@ -387,6 +387,93 @@ def test_prior_day_correction_added_phrase_cannot_mint_dropped():
 
 
 
+def test_current_multirevision_retained_correction_phrase_cannot_mint_appeared():
+    book = _book()
+    locator = "loc_pboc_current_chain"
+
+    old_a = _row(
+        "pboc", "A 初版", "稳中求进",
+        "2026-05-01T01:00:00",
+        url="https://www.pbc.gov.cn/policy/current-chain.html",
+    )
+    old_b = _row(
+        "pboc", "B 更正", "稳中求进 适度宽松",
+        "2026-05-02T01:00:00",
+        url="https://www.pbc.gov.cn/policy/current-chain.html",
+    )
+    prior_baseline = _row(
+        "pboc", "近期基线", "稳中求进",
+        "2026-07-01T01:00:00",
+        url="https://www.pbc.gov.cn/policy/recent-baseline.html",
+    )
+    today_c = _row(
+        "pboc", "C 再更正", "稳中求进 适度宽松 反内卷",
+        "2026-07-02T01:00:00",
+        url="https://www.pbc.gov.cn/policy/current-chain.html",
+    )
+    for row in (old_a, old_b, today_c):
+        row["source_locator_id"] = locator
+
+    res = cd.compute_events(
+        [old_a, old_b, prior_baseline, today_c],
+        "2026-07-02",
+        book=book,
+    )
+    kinds = {(e["kind"], e["phrase"]) for e in res["events"]}
+
+    # X entered through the old A->B correction outside the novelty window.
+    # Today's C only retains X, so it must not become a fresh APPEARED event.
+    assert ("APPEARED", "适度宽松") not in kinds
+    # Today's genuinely new phrase is still visible as ordinary novelty.
+    assert ("APPEARED", "反内卷") in kinds
+
+
+def test_independent_current_source_preserves_appeared_eligibility_and_provenance():
+    book = _book()
+    locator = "loc_pboc_current_chain_independent"
+
+    old_a = _row(
+        "pboc", "A 初版", "稳中求进",
+        "2026-05-01T01:00:00",
+        url="https://www.pbc.gov.cn/policy/current-chain-2.html",
+    )
+    old_b = _row(
+        "pboc", "B 更正", "稳中求进 适度宽松",
+        "2026-05-02T01:00:00",
+        url="https://www.pbc.gov.cn/policy/current-chain-2.html",
+    )
+    prior_baseline = _row(
+        "pboc", "近期基线", "稳中求进",
+        "2026-07-01T01:00:00",
+        url="https://www.pbc.gov.cn/policy/recent-baseline-2.html",
+    )
+    today_c = _row(
+        "pboc", "C 再更正", "稳中求进 适度宽松 反内卷",
+        "2026-07-02T01:00:00",
+        url="https://www.pbc.gov.cn/policy/current-chain-2.html",
+    )
+    independent_today = _row(
+        "pboc", "独立今日来源", "实施适度宽松的货币政策",
+        "2026-07-02T02:00:00",
+        url="https://www.pbc.gov.cn/policy/independent-current-x.html",
+    )
+    for row in (old_a, old_b, today_c):
+        row["source_locator_id"] = locator
+
+    res = cd.compute_events(
+        [old_a, old_b, prior_baseline, today_c, independent_today],
+        "2026-07-02",
+        book=book,
+    )
+    event = next(
+        e for e in res["events"]
+        if e["kind"] == "APPEARED" and e["phrase"] == "适度宽松"
+    )
+    assert event["evidence_url"] == independent_today["url"]
+    assert event["evidence_title"] == independent_today["title"]
+
+
+
 def test_prior_multirevision_retained_correction_phrase_cannot_mint_dropped():
     book = _book()
     locator = "loc_pboc_prior_chain"
