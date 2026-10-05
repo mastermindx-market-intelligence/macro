@@ -830,3 +830,43 @@ def test_oev_owner_evidence_market_reflection_stays_neutral_and_failed_gate_stay
         "state": "failed",
         "reason": "risk too high",
     }]
+
+
+def test_terminal_portfolio_nonmatching_open_rows_cannot_prove_no_holding():
+    relation = project_terminal_portfolio_relation(
+        _identity_binding(),
+        http_status=200,
+        payload={"positions": [
+            {"id": "p-msft", "ticker": "MSFT", "status": "open"},
+        ]},
+    )
+    assert relation["state"] == "UNAVAILABLE_DATA"
+    assert relation["open_position_count"] is None
+    assert relation["position_refs"] == []
+    assert relation["reason"] == "PORTFOLIO_OPEN_IDENTITY_CROSSWALK_REQUIRED"
+
+
+def test_terminal_portfolio_closed_other_rows_do_not_block_true_no_open_position():
+    relation = project_terminal_portfolio_relation(
+        _identity_binding(),
+        http_status=200,
+        payload={"positions": [
+            {"id": "p-msft", "ticker": "MSFT", "status": "closed"},
+        ]},
+    )
+    assert relation["state"] == "NO_OPEN_POSITION"
+    assert relation["open_position_count"] == 0
+    assert relation["reason"] is None
+
+
+def test_terminal_portfolio_direct_open_match_still_proves_positive_with_other_rows():
+    relation = project_terminal_portfolio_relation(
+        _identity_binding(),
+        http_status=200,
+        payload={"positions": [
+            {"id": "p-aapl", "ticker": "AAPL", "status": "open"},
+            {"id": "p-msft", "ticker": "MSFT", "status": "open"},
+        ]},
+    )
+    assert relation["state"] == "OPEN_POSITION"
+    assert relation["position_refs"] == [{"position_id": "p-aapl"}]

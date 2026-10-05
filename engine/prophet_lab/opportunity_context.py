@@ -336,10 +336,11 @@ def project_terminal_portfolio_relation(
 ) -> dict[str, object]:
     """Project actual-position state from the canonical Terminal portfolio owner.
 
-    The Terminal owner is ticker-keyed today, not Data-OS-security-keyed. The
-    relation is therefore explicitly CURRENT_STORE_ALIAS and may never be used as
-    permanent identity. No notes, size, entry price, risk or other private fields
-    are copied into OLI; only owner row ids are retained for current open matches.
+    The Terminal owner is ticker-keyed today, not Data-OS-security-keyed. A
+    direct current-alias match can prove a positive holding, and a book with no
+    open rows can prove an empty holding state. Nonmatching open rows cannot prove
+    a negative without a canonical identity crosswalk, so they fail typed-unavailable.
+    No notes, size, entry price, risk or other private fields are copied into OLI.
     """
     validate_opportunity_identity_binding(identity_binding)
     if type(http_status) is not int:
@@ -389,6 +390,7 @@ def project_terminal_portfolio_relation(
     display_symbol = _text(identity_binding.get("display_symbol"), "display_symbol")
     seen_ids: set[str] = set()
     refs: list[dict[str, str]] = []
+    open_position_rows = 0
     for position in positions:
         if not isinstance(position, Mapping):
             raise OpportunityContextContractError("portfolio owner position must be an object")
@@ -404,15 +406,30 @@ def project_terminal_portfolio_relation(
         status = position.get("status")
         if status not in {"open", "closed"}:
             raise OpportunityContextContractError("portfolio owner status is outside open/closed")
-        if ticker == display_symbol and status == "open":
-            refs.append({"position_id": position_id})
+        if status == "open":
+            open_position_rows += 1
+            if ticker == display_symbol:
+                refs.append({"position_id": position_id})
+
+    if refs:
+        state = "OPEN_POSITION"
+        count: int | None = len(refs)
+        reason = None
+    elif open_position_rows == 0:
+        state = "NO_OPEN_POSITION"
+        count = 0
+        reason = None
+    else:
+        state = "UNAVAILABLE_DATA"
+        count = None
+        reason = "PORTFOLIO_OPEN_IDENTITY_CROSSWALK_REQUIRED"
 
     relation = {
         **base,
-        "state": "OPEN_POSITION" if refs else "NO_OPEN_POSITION",
-        "open_position_count": len(refs),
+        "state": state,
+        "open_position_count": count,
         "position_refs": refs,
-        "reason": None,
+        "reason": reason,
     }
     validate_terminal_portfolio_relation(relation)
     return relation
