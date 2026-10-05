@@ -8696,6 +8696,9 @@ jobs:
     #      4 tests covering preserve/no-clobber/no-file/malformed-file paths.
       - "engine/company_intelligence/contracts.py"
       - "engine/company_intelligence/views.py"
+      # 2026-10-05 GMI #8455 round 2: the production-bridge suite imports the package root,
+      # so the job closure now reaches __init__.py (contract-delta finding on the wiring itself).
+      - "engine/company_theme_exposure/__init__.py"
       - "engine/company_theme_exposure/contracts.py"
       - "engine/company_theme_exposure/health.py"
       - "engine/company_theme_exposure/views.py"
@@ -8711,6 +8714,7 @@ jobs:
       - "scripts/publish_company_theme_exposure_r2.py"
       - "tests/test_company_theme_exposure.py"
       - "tests/test_company_theme_exposure_successor.py"
+      - "tests/test_company_theme_exposure_production_bridge.py"
       - "tests/test_publish_company_theme_exposure_r2.py"
       - "tests/test_theme_graph_selection_cohort.py"
       - "collectors/_drip.py"
@@ -9430,7 +9434,7 @@ jobs:
           tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py
           tests/test_theme_state_generation_use_reader.py -q
       - name: GMI CTE successor and v1 publisher fixture compatibility
-        run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py
+        run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py tests/test_company_theme_exposure_production_bridge.py
           -k 'not live_theme_inputs' -q
       - name: GMI finalized selection cohort contract and owner-state interface
         run: 'set -eu
@@ -10227,6 +10231,31 @@ jobs:
       - "lib/store.py"
       - "scripts/__init__.py"
       - "scripts/build_thematic_state.py"
+      # 2026-10-05 GMI #8455 round 2 (contract-delta on head 029fe5b1): the curated closure
+      # above also reaches the site artifacts engine/neuralweb/mastermind_context.py names by
+      # literal (world_state -> theme_state_generation_reader.legacy_consumer_barrier is the new
+      # edge; mastermind_context is the catalog). Declared exactly, widening only; ceilings unchanged.
+      - "site/altdata/mastermind.json"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/oracle_state.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/basketdata/radar_ticker.json"
+      - "site/canadabasketdata/baskets.json"
+      - "site/chinabasketdata/baskets.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/chinastatedata/market_state.json"
+      - "site/factordata/china_standouts.json"
+      - "site/factordata/us_standouts.json"
+      - "site/hkbasketdata/baskets.json"
+      - "site/intelligence/briefing.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/master_brief.json"
+      - "site/neuralwebdata/bottom_sensors.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "site/vol/regime.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
