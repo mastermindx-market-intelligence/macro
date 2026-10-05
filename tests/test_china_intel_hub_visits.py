@@ -462,6 +462,214 @@ class TestCIECompanyEvidence:
 
 
 
+
+
+# --------------------------------------------------------------------------- #
+# CIE-14 — recognition / dependence / contradiction composition
+# --------------------------------------------------------------------------- #
+
+class TestCIE14RecognitionComposition:
+    def test_exact_duplicate_source_event_collapses_without_conviction_multiplication(self):
+        rows = [
+            {
+                "kind": "institutional_visit_filing",
+                "source": "CNInfo",
+                "source_id": "A14-1",
+                "title": "机构调研活动记录表",
+                "source_published_at": "2026-10-01T09:00:00+08:00",
+                "source_url": "https://static.cninfo.com.cn/finalpage/a.pdf",
+            },
+            {
+                "kind": "institutional_visit_filing",
+                "source": "CNInfo",
+                "source_id": "A14-1",
+                "title": "机构调研活动记录表",
+                "source_published_at": "2026-10-01T09:00:00+08:00",
+                "source_url": "https://static.cninfo.com.cn/finalpage/a-restored.pdf",
+            },
+        ]
+        rec = hub._evidence_recognition_block(rows)
+        assert rec["state"] == "single_source_event"
+        assert len(rec["source_event_groups"]) == 1
+        group = rec["source_event_groups"][0]
+        assert group["member_count"] == 2
+        assert group["state"] == "exact_source_identity"
+        assert group["source_address_state"] == "multiple_addresses_observed"
+        assert rec["independent_event_count"] is None
+        assert rec["conviction_multiplier"] is None
+        assert rec["authority"]["may_multiply_conviction"] is False
+
+    def test_cross_source_economic_event_links_only_with_explicit_owner_id(self):
+        rows = [
+            {
+                "kind": "procurement_notice",
+                "source": "CSG",
+                "source_id": "P-1",
+                "economic_event_id": "event:power-grid-001",
+            },
+            {
+                "kind": "issuer_contract_filing",
+                "source": "CNInfo",
+                "source_id": "F-1",
+                "economic_event_id": "event:power-grid-001",
+            },
+        ]
+        rec = hub._evidence_recognition_block(rows)
+        assert rec["state"] == "cross_source_economic_event_linked"
+        assert len(rec["economic_event_groups"]) == 1
+        assert rec["economic_event_groups"][0]["source_count"] == 2
+        assert rec["economic_event_groups"][0]["basis"] == "explicit_owner_id"
+        assert rec["conviction_multiplier"] is None
+
+    def test_translated_or_repeated_copy_does_not_self_assert_dependence(self):
+        rows = [
+            {
+                "kind": "policy_story",
+                "source": "Official",
+                "source_id": "CN-1",
+                "title": "支持先进制造",
+            },
+            {
+                "kind": "policy_story",
+                "source": "NewsWire",
+                "source_id": "EN-1",
+                "title": "Support advanced manufacturing",
+            },
+        ]
+        rec = hub._evidence_recognition_block(rows)
+        assert rec["state"] == "multiple_observations_dependency_unresolved"
+        assert rec["syndication_groups"] == []
+        assert rec["economic_event_groups"] == []
+        assert "syndication_linkage_unresolved" in rec["unresolved_dependencies"]
+        assert "economic_event_linkage_unresolved" in rec["unresolved_dependencies"]
+
+    def test_explicit_syndication_groups_cross_source_copy_without_event_claim(self):
+        rows = [
+            {
+                "kind": "story",
+                "source": "WireA",
+                "source_id": "1",
+                "syndication_id": "synd:abc",
+            },
+            {
+                "kind": "story",
+                "source": "WireB",
+                "source_id": "2",
+                "syndication_id": "synd:abc",
+            },
+        ]
+        rec = hub._evidence_recognition_block(rows)
+        assert rec["state"] == "cross_source_syndication_linked"
+        assert rec["syndication_groups"][0]["source_count"] == 2
+        assert rec["economic_event_groups"] == []
+
+    def test_conflicting_same_source_identity_is_preserved_as_contradiction(self):
+        visits = {
+            "state": "ok",
+            "coverage_start": "2026-09-01",
+            "recent": [
+                {
+                    "announcement_id": "A14-CONFLICT",
+                    "title": "版本一",
+                    "source_published_at": "2026-10-01T09:00:00+08:00",
+                    "system_recorded_at": "2026-10-01T02:00:00+00:00",
+                    "source_url": "https://static.cninfo.com.cn/finalpage/a.pdf",
+                    "visitor_class": "not_yet_available",
+                },
+                {
+                    "announcement_id": "A14-CONFLICT",
+                    "title": "版本二",
+                    "source_published_at": "2026-10-01T09:00:00+08:00",
+                    "system_recorded_at": "2026-10-01T03:00:00+00:00",
+                    "source_url": "https://static.cninfo.com.cn/finalpage/a.pdf",
+                    "visitor_class": "not_yet_available",
+                },
+            ],
+        }
+        packet = hub._company_evidence_block(visits, None, None, None)
+        assert packet["recognition"]["state"] == "source_event_conflict"
+        assert packet["recognition"]["source_event_conflicts"] == [
+            "CNInfo:A14-CONFLICT"
+        ]
+        assert any(
+            x["basis"] == "source_event_identity_conflict"
+            for x in packet["contradictions"]
+        )
+
+    def test_participation_context_never_becomes_actor_identity(self):
+        raw = {
+            "date": "2026-10-03",
+            "regime": "broad_mania",
+            "who_controls": "institutional",
+            "risk": "frothy",
+            "source_contract": {
+                "schema": "china_participation.source_contract.v1",
+                "legs": {"turnover": {}, "broker_rs": {}},
+                "actor_semantics": (
+                    "who_controls is a heuristic participation regime label, "
+                    "not beneficial-owner identity"
+                ),
+                "clock_semantics": {
+                    "collection_clock": "not exposed by this owner"
+                },
+            },
+        }
+        ctx = hub._participation_context_block(raw)
+        assert ctx["status"] == "available"
+        assert ctx["who_controls"] == "institutional"
+        assert ctx["economic_actor_id"] is None
+        assert ctx["actor_identity_state"] ==             "not_inferred_from_participation_regime"
+        assert ctx["authority"]["actor_identity"] == "none"
+        assert ctx["source_contract_schema"] ==             "china_participation.source_contract.v1"
+
+        missing = hub._participation_context_block(None)
+        assert missing["status"] == "unavailable"
+        assert missing["economic_actor_id"] is None
+
+    def test_participation_recognition_context_never_moves_rank_fields(self, monkeypatch):
+        monkeypatch.setattr(hub, "_ths_concepts", lambda _ticker: [])
+        visit_ctx = {
+            "by_code": {},
+            "coverage_start": None,
+            "health": {"status": "no_coverage"},
+        }
+        altdata = _altdata_row("600519.SS")
+        base = hub._dossier(
+            "600519.SS", altdata, None, None, None, None, None, False,
+            gov={}, visit_ctx=visit_ctx, participation_ctx=None,
+        )
+        enriched = hub._dossier(
+            "600519.SS", altdata, None, None, None, None, None, False,
+            gov={}, visit_ctx=visit_ctx,
+            participation_ctx={
+                "date": "2026-10-03",
+                "regime": "broad_mania",
+                "who_controls": "institutional",
+                "risk": "frothy",
+                "source_contract": {
+                    "schema": "china_participation.source_contract.v1",
+                    "legs": {"turnover": {}},
+                },
+            },
+        )
+        for field in (
+            "opportunity_score", "edge_remaining", "stage", "lean",
+            "signal_core", "falsifier_penalty",
+        ):
+            assert base[field] == enriched[field]
+        assert base["company_evidence"]["participation_context"]["status"] ==             "unavailable"
+        assert enriched["company_evidence"]["participation_context"]["status"] ==             "available"
+
+    def test_packet_delta_does_not_invent_cross_run_history(self):
+        packet = hub._company_evidence_block(
+            {"state": "measured_no_event", "coverage_start": "2026-09-01", "recent": []},
+            None, None, None,
+        )
+        assert packet["packet_delta"] == {
+            "state": "unavailable_without_prior_packet_receipt",
+            "basis": "current_packet_only",
+        }
+
 # --------------------------------------------------------------------------- #
 # P1-R3 (durable scoped key-exclusion recovery) — hub-level hostile items
 # --------------------------------------------------------------------------- #
