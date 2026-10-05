@@ -236,6 +236,27 @@ jobs:
         continue-on-error: true
         run: python3 scripts/sync_chat_nav.py
 
+      # ...and the OTHER thing a selftest emits: an annotation. Both the chat-nav
+      # selftest above and check_template_site_sync's PROVE themselves by drifting
+      # a mkdtemp fixture and requiring the guard to go red — and they printed that
+      # red as a `::error::` workflow command. GitHub's annotation collector scrapes
+      # those out of a step's stdout REGARDLESS of its exit status, so a selftest
+      # that PASSED published a red annotation on every PR that ran this pack (run
+      # 36099187934, job 107957833159, PR #7908). The chat-nav one told its reader
+      # to hand-edit templates/chat.html — the practice that guard exists to abolish
+      # — about a file the PR never touched.
+      #
+      # HERE, not only in ci-pack: the defect is emitted by THIS job, and the
+      # template-site-sync legacy job that also carries this suite is `gate: data`,
+      # so the code lane never runs it (run 36125229991 planned 161 of 234 jobs and
+      # template-site-sync was not among them). This lane has no paths: filter, and
+      # its sparse checkout already carries /scripts/, /templates/, /tests/ and
+      # /site/chat.html — the exact pair the suite needs, so nothing here skips.
+      - name: selftest annotation quiet (a green selftest must not annotate the PR)
+        id: selftest_annotation_quiet
+        continue-on-error: true
+        run: python -m pytest tests/test_selftest_annotation_quiet.py -q
+
       - name: publish required fence contexts
         id: publish
         if: always()
@@ -307,6 +328,7 @@ jobs:
           GRADER_LIVE: ${{ steps.grader_live.outcome }}
           CHAT_NAV_SELFTEST: ${{ steps.chat_nav_selftest.outcome }}
           CHAT_NAV_LIVE: ${{ steps.chat_nav_live.outcome }}
+          SELFTEST_ANNOTATION_QUIET: ${{ steps.selftest_annotation_quiet.outcome }}
           PUBLISH: ${{ steps.publish.outcome }}
         run: |
           set -euo pipefail
@@ -315,7 +337,8 @@ jobs:
             "$AGENT_OS_RECORD_CONTRACT" \
             "$CAPABILITY_SELFTEST" "$CAPABILITY_LIVE" \
             "$GRADER_SELFTEST" "$GRADER_LIVE" \
-            "$CHAT_NAV_SELFTEST" "$CHAT_NAV_LIVE" "$PUBLISH"; do
+            "$CHAT_NAV_SELFTEST" "$CHAT_NAV_LIVE" \
+            "$SELFTEST_ANNOTATION_QUIET" "$PUBLISH"; do
             case "$outcome" in
               success|skipped) ;;
               *) echo "::error::fence pack failed ($outcome)"; exit 1 ;;

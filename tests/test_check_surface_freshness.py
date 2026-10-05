@@ -146,6 +146,35 @@ def test_selftest_passes():
     assert sentinel.selftest() == 0
 
 
+def test_selftest_publishes_no_annotation(capsys):
+    """A PASSING selftest must not put a GitHub annotation on a PR.
+
+    Both fixture scenarios now run under a stdout capture. Before that the FRESH
+    scenario's ``run()`` was uncaptured, and it published
+    ``::warning title=hk-discovery-receipt-missing::`` — a receipt that is absent
+    from every mkdtemp fixture by construction, reported with a repo-relative path
+    that reads like a claim about this tree. GitHub's collector scrapes workflow
+    commands out of a step's stdout whatever the step's exit status, so wiring
+    ``--selftest`` into a CI step (which the old comment here anticipated) would
+    have annotated PRs with a finding about a directory that no longer exists.
+
+    Same defect class as the RED annotations scripts/sync_chat_nav.py and
+    scripts/check_template_site_sync.py were publishing from green fence-pack
+    steps until 2026-09-25 — see tests/test_selftest_annotation_quiet.py.
+
+    Quiet, not silent: the fixture's own words are still echoed with the ``::``
+    prefix de-fanged, and each scenario now asserts on that text rather than only
+    on the exit code (``run`` is warn-only and always returns 0).
+    """
+    assert sentinel.selftest() == 0
+    out = capsys.readouterr().out
+    published = [line for line in out.splitlines() if line.startswith("::")]
+    assert not published, (
+        f"the selftest published a GitHub annotation about its own fixture: {published}")
+    assert "selftest: fixture warning::SURFACE STALE:" in out, (
+        f"the stale scenario's warning text must stay visible in the log:\n{out}")
+
+
 # ── escalation: the annotation was never the gap, the reader was ──────────────
 #
 # 2026-08-04: this sentinel emitted EIGHT staleness annotations into a job summary
