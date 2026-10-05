@@ -5677,7 +5677,7 @@ def _ensure_thread(
     return new_id
 
 
-def _with_retained_context(meta: dict, receipt: object) -> dict:
+def _with_retained_context(meta: dict, receipt: object, *, native_receipt: object = None) -> dict:
     """Retain the server compiler receipt on the existing assistant message.
 
     This is context resolution only, not an actual-used-input census, source
@@ -5708,7 +5708,11 @@ def _with_retained_context(meta: dict, receipt: object) -> dict:
             record["receipt"] = json.loads(encoded)
     except (TypeError, ValueError, OverflowError, RecursionError):
         record["reason"] = "invalid_receipt"
-    return {**meta, "retained_context": record}
+    retained = {**meta, "retained_context": record}
+    if native_receipt is not None:
+        from engine.neuralweb.brain_native_inputs import retain_native_input_manifest
+        retained["native_input_manifest"] = retain_native_input_manifest(native_receipt)
+    return retained
 
 
 def _append_message(thread_id: str, role: str, content: str, meta: dict | None = None) -> None:
@@ -9562,7 +9566,8 @@ def chat(
                     _append_message(_nf_thread_id, "user", clean_msg)
                     _append_message(
                         _nf_thread_id, "assistant", _nf_exec.answer,
-                        meta=_with_retained_context(_bum.assistant_meta(None, _nf_exec.answer), _ctx_receipt),
+                        meta=_with_retained_context(_bum.assistant_meta(None, _nf_exec.answer), _ctx_receipt,
+                                                    native_receipt=_nf_receipt),
                     )
                 except Exception:  # noqa: BLE001
                     pass
@@ -10076,7 +10081,8 @@ def chat_stream(
                 from engine.neuralweb import brain_user_memory as _bum  # noqa: PLC0415
                 _append_message(
                     _nf_thread_id, "assistant", _nf_exec.answer,
-                    meta=_with_retained_context(_bum.assistant_meta(None, _nf_exec.answer), _ctx_receipt),
+                    meta=_with_retained_context(_bum.assistant_meta(None, _nf_exec.answer), _ctx_receipt,
+                                                native_receipt=_nf_receipt),
                 )
             except Exception:  # noqa: BLE001
                 pass
