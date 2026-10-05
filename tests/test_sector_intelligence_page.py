@@ -672,7 +672,10 @@ def test_scoped_publication_directories_are_real_and_owned_by_the_build() -> Non
 
     assert (ROOT / "site" / "basket").is_dir()
     assert (ROOT / "site" / "sectors").is_dir()
-    assert "site/basket" in workflow and "build_detail_pages" in basket_builder
+    # Stock details remain a real broad-build output, not a focused publication.
+    # The exact staged-path exclusion is separately exercised below.
+    assert "build_detail_pages" in basket_builder
+    assert "if not sector_intelligence_only:" in basket_builder
     assert "site/sectors" in workflow and "canonical.build_sector_pages" in action_builder
 
 
@@ -761,3 +764,86 @@ def test_focused_basket_mode_stops_before_unrelated_tail() -> None:
     tail = src.index("from scripts.build_anticipation import main as _build_anticipation")
     assert guard < tail
     assert "return 0" in src[guard:tail]
+
+
+def _execute_native_stock_detail_boundary(monkeypatch, site, *, focused, callback):
+    """Execute the actual detail-emission statement from the real producer.
+
+    This isolates its publication boundary without running prices, models, R2,
+    notifications or unrelated nightly work. Both old unguarded and new guarded
+    statements are executable, so the tests discriminate the regression itself.
+    """
+    import ast
+    import logging
+    from pathlib import Path
+    from scripts import build_theme_detail
+
+    source = Path(__file__).resolve().parents[1] / 'scripts/build_baskets.py'
+    parsed = ast.parse(source.read_text())
+    main = next(n for n in parsed.body if isinstance(n, ast.FunctionDef) and n.name == 'main')
+    blocks = [n for n in main.body if any(isinstance(c, ast.Call)
+              and isinstance(c.func, ast.Name) and c.func.id == 'build_detail_pages'
+              for c in ast.walk(n))]
+    assert len(blocks) == 1
+    monkeypatch.setattr(build_theme_detail, 'build_detail_pages', callback)
+    data, env, chart = {'source': 'same dated input'}, object(), {'dates': []}
+    namespace = {'sector_intelligence_only': focused, 'data': data,
+                 'site': site, 'env': env, 'chart': chart, 'log': logging.getLogger(__name__)}
+    exec(compile(ast.fix_missing_locations(ast.Module(body=blocks, type_ignores=[])),
+                 str(source), 'exec'), namespace)
+    return data, env, chart
+
+
+def test_focused_publication_preserves_existing_stock_detail_without_dossiers(monkeypatch, tmp_path):
+    page = tmp_path / 'basket' / 'semis.html'
+    page.parent.mkdir()
+    page.write_text('dated complete page with eleven available stock assessments')
+    original = page.read_bytes()
+    calls = []
+    def missing_dossier_render(*args):
+        calls.append(args)
+        page.write_text('same-date page with zero stock assessments')
+    assert not (tmp_path / 'stockdata').exists()
+    _execute_native_stock_detail_boundary(monkeypatch, tmp_path, focused=True, callback=missing_dossier_render)
+    assert calls == []
+    assert page.read_bytes() == original
+
+
+def test_focused_generation_does_not_use_incidental_stale_host_dossiers(monkeypatch, tmp_path):
+    (tmp_path / 'stockdata').mkdir()
+    (tmp_path / 'stockdata' / 'AMD.json').write_text('{"as_of":"old","conviction":{"score":80}}')
+    calls = []
+    _execute_native_stock_detail_boundary(monkeypatch, tmp_path, focused=True, callback=lambda *args: calls.append(args))
+    assert calls == []  # host residue does not expand this lane's authority
+
+
+def test_broad_build_retains_its_existing_stock_detail_call(monkeypatch, tmp_path):
+    calls = []
+    data, env, chart = _execute_native_stock_detail_boundary(
+        monkeypatch, tmp_path, focused=False, callback=lambda *args: calls.append(args))
+    assert len(calls) == 1
+    assert calls[0] == (data, tmp_path, env, 'us', chart)
+
+
+def test_broad_detail_error_keeps_existing_additive_behavior(monkeypatch, tmp_path, caplog):
+    def unavailable(*args):
+        raise RuntimeError('deliberate unavailable detail')
+    _execute_native_stock_detail_boundary(monkeypatch, tmp_path, focused=False, callback=unavailable)
+    assert 'theme detail pages failed' in caplog.text
+
+
+def test_focused_workflow_stages_sector_outputs_not_stock_detail_pages():
+    import shlex
+    import yaml
+    from pathlib import Path
+    workflow = yaml.safe_load((Path(__file__).resolve().parents[1] / '.github/workflows/sector-intelligence.yml').read_text())
+    staged = []
+    for job in workflow['jobs'].values():
+        for step in job.get('steps', []):
+            for line in str(step.get('run', '')).replace('\\\n', ' ').splitlines():
+                if line.strip().startswith('git add '):
+                    staged.extend(shlex.split(line, comments=True)[2:])
+    assert 'site/basket' not in staged and 'site/basket/' not in staged
+    for required in ['site/basketdata', 'site/sectors', 'site/sector_central.html',
+                     'site/sectordata/sector_central.json', 'site/premiumdata/sector_central.json']:
+        assert required in staged
