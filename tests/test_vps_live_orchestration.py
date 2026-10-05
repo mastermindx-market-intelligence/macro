@@ -1258,6 +1258,37 @@ def test_command_can_publish_private_state_outside_public_root(tmp_path: Path):
     assert target.stat().st_mode & 0o777 == 0o600
 
 
+def test_snapshot_lane_requests_private_quote_provenance(tmp_path: Path):
+    orch = vlo.Orchestrator(
+        live_dir=tmp_path / "public" / "live",
+        state_dir=tmp_path / "state",
+        data_dir=tmp_path / "data",
+    )
+    calls: list[tuple[str, str, list[str]]] = []
+
+    def module(name, module, args, **kwargs):
+        calls.append((name, module, list(args)))
+        if name == "full_quotes":
+            target = orch.state_dir / "quotes_full.json"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(
+                json.dumps(
+                    {
+                        "quotes": {"AAPL": {"price": 100.0}},
+                        "meta": {"requested": 100, "resolved": 100},
+                    }
+                )
+            )
+        return vlo.TaskResult(name, "ok", 0.0)
+
+    orch.module = module  # type: ignore[method-assign]
+    orch.snapshot()
+
+    full = next(call for call in calls if call[0] == "full_quotes")
+    assert full[0:2] == ("full_quotes", "scripts.build_live_quotes")
+    assert "--private-provenance" in full[2]
+
+
 def test_command_does_not_publish_stale_required_output(tmp_path: Path):
     source = tmp_path / "stage" / "overlay.json"
     target = tmp_path / "public" / "overlay.json"
