@@ -13,12 +13,12 @@
     "evidence_sources": {
       "cn": {
         "dataset": "data/china_filings/filings.parquet",
-        "newest_observation": "2026-09-24",
+        "newest_observation": "2026-09-30",
         "provenance": "CNInfo (\u5de8\u6f6e\u8d44\u8baf\u7f51) SSE+SZSE disclosure metadata (collectors/china_filings.py)"
       },
       "hk": {
         "dataset": "data/hk_shorts/positions.parquet + data/hk_shorts/turnover.parquet",
-        "newest_observation": "2026-09-25",
+        "newest_observation": "2026-09-30",
         "provenance": "SFC official Short Position Reports + HKEX official turnover statistics (collectors/hk_shorts.py)"
       }
     },
@@ -63,8 +63,8 @@
     },
     "target_population_source": "data/theme_graph/nodes.parquet (kind=company, market_scope in cn/hk)"
   },
-  "cik_map_snapshot": "2026-09-28",
-  "code_version": "dd89835e5d15d365975f7fa7fabfe195c4aab42b",
+  "cik_map_snapshot": "2026-10-05",
+  "code_version": "5104156de0170c0559dc15bf55d60c09472506d1",
   "coverage": {
     "resolved": 708,
     "total": 718,
@@ -89,7 +89,7 @@
     "reference.issuer_migrations",
     "reference.security_migrations"
   ],
-  "generated_at": "2026-09-28T04:07:53",
+  "generated_at": "2026-10-05T04:25:13",
   "identity_exceptions": [
     {
       "evidence": "SEC Barnes Group 2025-01-27 8-K/Form 25; Barrick Mining 2025-05-07 Form 6-K Exhibit 99.2; Gold.com 2025-11-12 AMRK->NYSE GOLD transfer announcement; config/theme_graph_identity_breaks.yml GOLD",
@@ -105,22 +105,22 @@
     }
   ],
   "inputs": {
-    "config.yml": "78186dd7b079a0d49706bf76a5614327c0c00da51bc6644b11de30d37d86b75c",
+    "config.yml": "b8963682e5f2fe209cee1a604f19e51bbce232992d75c0b26c60a615600a310f",
     "config/delisted_symbols.yml": "6cefebced6f19f7d612078f369e47ae4cd4d23ac35f6ecfbd732f4dd4a6e661a",
     "data/baskets/membership.json": "b968e9812f60494bd02bbc0d5ad4b8dc67dcb90a939426728e9db6befba9678a",
-    "data/breadth/constituents.parquet": "9b55280f49529f253c241c0e2788bdbcc8a4e256c50b2f5a79d66d39291e1f89",
-    "data/china_filings/filings.parquet": "9224c52ab11d138450a0270b67daafb936ea0142b940f38e98ae3e18f5467a33",
-    "data/hk_shorts/positions.parquet": "53b75a60f61df0f7bf64f680c61d65f9cbe02b769e8833edb7ae91a28d2bf355",
-    "data/hk_shorts/turnover.parquet": "4c666952ea5d77d97938477a3f1768e42f8628d982c9762de202546d7fc14739",
-    "data/symbol_directory/cik_map": "cca44810fd452b6c9d76155b0f9469f9ef104195d7aaa7b1ef61c4bd00d06844",
-    "data/symbol_directory/snapshots": "dc32530a79dceb49fbac39c07f41d98594d3fa3372d29eea64b5017083517088",
-    "data/theme_graph/nodes.parquet": "aec75eba73a401fe360c3332a6bdc67ab170368a57dae0c159612138d95bf4e1",
+    "data/breadth/constituents.parquet": "e5c9a998e7539751601cfc7891c9338cff63b498cfd4a037a4d8b16c782fde23",
+    "data/china_filings/filings.parquet": "673a37de4b278bb59490135d8cf2c88ad78af87a9f0ae40fddc0253137b351e8",
+    "data/hk_shorts/positions.parquet": "5a16bec36c5379cf81d0af1e60c9e8cc21575e84bd9c557c48fefd6986d75444",
+    "data/hk_shorts/turnover.parquet": "d9f6246564471d98181860d02126efa3414219d6847fab42e967fc6cf22b86a1",
+    "data/symbol_directory/cik_map": "5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9",
+    "data/symbol_directory/snapshots": "6dcc85d3f84abf9476d9db4ee0083d2e528e86bf4cb14d434e5e39a61558a9a8",
+    "data/theme_graph/nodes.parquet": "c93b4e840bf83b18b53343acd15ecb01c22f38d22d2ff979eea13a6f0910934b",
     "lib/ticker_aliases.py": "6a6da16e40de28e9ac3eb9f319ca6b1a137a479656101b590b9264211e3e70fd"
   },
   "issuer": {
     "era": "issuer_semantic_correction_v1",
     "era_migrations_total": 3,
-    "evidence_snapshot": "2026-09-28",
+    "evidence_snapshot": "2026-10-05",
     "migrations_this_run": 0,
     "multi_security_groups": [
       {
@@ -154,6 +154,7 @@
   "listing_continuity": [
     "ATAI",
     "CSAN",
+    "DBRG",
     "DOMO",
     "KHC",
     "WBS",
@@ -173,10 +174,11 @@
         "SEC:US-XNAS-KHC",
         "SEC:US-XNAS-YYGH",
         "SEC:US-XNYS-CSAN",
+        "SEC:US-XNYS-DBRG",
         "SEC:US-XNYS-WBS"
       ],
-      "reason": "pending-transition fence: 6 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
-      "snapshot_date": "2026-09-28",
+      "reason": "pending-transition fence: 7 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
+      "snapshot_date": "2026-10-05",
       "symbol": "KHC"
     }
   ],
@@ -234,13 +236,13 @@
   },
   "seed_counts": {
     "delisted_keys": 6,
-    "directory_symbols": 13288,
+    "directory_symbols": 13295,
     "gmi_seed_keys": 1239,
     "ticker_fixups": 2,
     "ticker_key_migrations": 1,
     "universe_keys": 713
   },
-  "symbol_directory_snapshot": "2026-09-28",
+  "symbol_directory_snapshot": "2026-10-05",
   "undated_renames": [
     {
       "evidence": "lib/ticker_aliases.py YAHOO_FETCH_ALIASES FI->FISV (vendor LAGS the rename); config.yml breadth.ticker_fixups FISV->FI; no in-repo date for the 2023 change",
@@ -407,6 +409,10 @@
       {
         "code": "CSAN",
         "security_id": "SEC:US-XNYS-CSAN"
+      },
+      {
+        "code": "DBRG",
+        "security_id": "SEC:US-XNYS-DBRG"
       },
       {
         "code": "DOMO",

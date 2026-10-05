@@ -55,6 +55,13 @@ from .metric_registry import (
     MetricRegistry,
 )
 from .periods import CalendarKind, PeriodKind, TypedPeriod
+from .lineage_evidence import (
+    MAX_LINEAGE_RECEIPTS,
+    LineageEvidenceError,
+    LineageEvidenceReceipt,
+    _approved_taxonomy_uri,
+    evaluate_confirmation,
+)
 from .raw_ledger import (
     FactEventType,
     FactContext,
@@ -66,12 +73,20 @@ from .raw_ledger import (
     RawFactOccurrence,
     SourceIdentity,
     TemporalClocks,
+    _canonical_duplicate_representative,
     canonical_json,
     decimal_text,
     parse_utc,
     stable_id,
     utc_text,
 )
+
+# An empty projection for the overwhelmingly common no-evidence path, so a
+# FIF-3A3 query allocates nothing new.
+_EMPTY_ROOT_MAP: Mapping[str, str] = MappingProxyType({})
+
+# Per-engine memo ceiling for confirmation-unified roots.
+MAX_EFFECTIVE_ROOT_CACHE_ENTRIES = 4096
 
 
 QUERY_SCHEMA = "fundamental_forensics.metric_query/v1"
@@ -3990,6 +4005,7 @@ class BitemporalMetricQueryEngine:
         entities: Mapping[str, str] | Iterable[QueryEntity] = (),
         filing_metadata: Mapping[str, FilingMetadata | Mapping[str, Any]] | None = None,
         bounds: QueryBounds | None = None,
+        lineage_evidence: Iterable[LineageEvidenceReceipt] = (),
     ) -> None:
         if isinstance(ledger, RawFactLedger):
             self.ledger = ledger
@@ -4064,6 +4080,14 @@ class BitemporalMetricQueryEngine:
         self._parent_by_occurrence_id = MappingProxyType(parent_by_id)
         self._lineage_by_occurrence_id = MappingProxyType(lineage_by_id)
         self._filing_metadata_by_occurrence = self._freeze_filing_metadata(filing_metadata)
+        # FIF-3A4 cross-filing lineage.  Absent/empty is the FIF-3A3 contract
+        # and must stay byte-identical, so nothing below runs for an empty
+        # bundle.  The ledger itself is untouched: receipts point at unchanged
+        # FILED occurrences and never enter ``self.ledger.events``.
+        self._confirmations_by_logical_key = self._admit_lineage_evidence(lineage_evidence)
+        self._effective_root_cache: dict[
+            tuple[str, datetime, datetime], Mapping[str, str]
+        ] = {}
 
     @staticmethod
     def _normalize_entities(
@@ -5000,6 +5024,289 @@ class BitemporalMetricQueryEngine:
         # or availability clock until an explicitly bound witness is visible.
         return None
 
+    def _admit_lineage_evidence(
+        self,
+        lineage_evidence: Iterable[LineageEvidenceReceipt],
+    ) -> Mapping[str, tuple[LineageEvidenceReceipt, ...]]:
+        """Fail-closed admission of a runtime cross-filing lineage bundle.
+
+        Sol amendment 6: runtime evidence carries **only accepted positive
+        immutable relations**.  A refusal row, a non-confirmation relation, a
+        receipt for a fact this ledger does not contain, or a duplicated
+        parent/child edge is a malformed provider, not a smaller answer.
+        """
+        if isinstance(lineage_evidence, (str, bytes, bytearray)):
+            raise LineageEvidenceError("lineage_evidence must be a bounded collection")
+        receipts = _bounded_collection(
+            lineage_evidence,
+            field_name="lineage_evidence",
+            maximum=MAX_LINEAGE_RECEIPTS,
+        )
+        if not receipts:
+            return MappingProxyType({})
+        by_key: dict[str, list[LineageEvidenceReceipt]] = {}
+        seen_edges: set[tuple[str, str]] = set()
+        for receipt in receipts:
+            if not isinstance(receipt, LineageEvidenceReceipt):
+                raise LineageEvidenceError("lineage_evidence must contain receipts")
+            if not receipt.is_positive_confirmation:
+                raise LineageEvidenceError(
+                    "runtime lineage evidence admits accepted positive relations only"
+                )
+            edge = (receipt.parent_occurrence_id, receipt.child_occurrence_id)
+            if edge in seen_edges:
+                raise LineageEvidenceError("duplicate lineage evidence edge")
+            seen_edges.add(edge)
+            parent = self._event_by_occurrence_id.get(receipt.parent_occurrence_id)
+            child = self._event_by_occurrence_id.get(receipt.child_occurrence_id)
+            if parent is None or child is None:
+                raise LineageEvidenceError("lineage evidence references an unknown occurrence")
+            if parent.logical_key != receipt.logical_key or child.logical_key != receipt.logical_key:
+                raise LineageEvidenceError("lineage evidence logical_key does not bind its facts")
+            # Re-prove the edge against the ledger now, not only per query. A
+            # bundle assembled without ``derive_confirmation_receipts`` cannot
+            # smuggle in an edge the v1 rule would never have minted.
+            evidence = receipt.positive_evidence or {}
+            if evaluate_confirmation(
+                self._accession_group(parent),
+                self._accession_group(child),
+                parent_taxonomy_uri=evidence.get("parent_taxonomy_uri"),
+                child_taxonomy_uri=evidence.get("child_taxonomy_uri"),
+                require_taxonomy_uri=True,
+            ) is not None:
+                raise LineageEvidenceError("lineage evidence is not a v1 positive for this ledger")
+            by_key.setdefault(receipt.logical_key, []).append(receipt)
+        for key, values in by_key.items():
+            accessions: set[str] = set()
+            for receipt in values:
+                for occurrence_id in (receipt.parent_occurrence_id, receipt.child_occurrence_id):
+                    accessions.add(self._event_by_occurrence_id[occurrence_id].source.accession)
+            if len(accessions) > 2:
+                # v1 admits exactly one parent and one child per logical key.
+                # Chained receipts across three filings have no unique parent.
+                raise LineageEvidenceError(
+                    "lineage evidence spans more than two filings for one logical key"
+                )
+        return MappingProxyType(
+            {
+                key: tuple(sorted(values, key=lambda item: item.receipt_id))
+                for key, values in by_key.items()
+            }
+        )
+
+    def _accession_group(
+        self,
+        fact: RawFactOccurrence,
+    ) -> tuple[RawFactOccurrence, ...]:
+        """Every occurrence of this fact's logical key inside its own filing."""
+        key = (fact.source.entity_id, fact.concept_qname, _fact_period_index_key(fact))
+        return tuple(
+            item
+            for item in self._events_by_entity_qname_period.get(key, ())
+            if item.source.accession == fact.source.accession
+            and item.logical_key == fact.logical_key
+        )
+
+    def applied_lineage_evidence(
+        self,
+        matrix: MetricMatrix,
+    ) -> tuple[LineageEvidenceReceipt, ...]:
+        """Confirmation receipts that actually support this matrix's answers.
+
+        Read-only and idempotent: it re-derives eligibility under the matrix's
+        own policy rather than recording hidden state during evaluation. The
+        result is the honest answer to "which other filing supports this
+        number", and it is deliberately **not** folded into
+        ``source_occurrence_ids`` — that tuple feeds revision-adjacent packet
+        machinery, and a confirmation is lineage, never a reported revision.
+        """
+        if not self._confirmations_by_logical_key:
+            return ()
+        policy = matrix.policy
+        selected: set[str] = set()
+        for cell in matrix.cells:
+            provenance = getattr(cell, "provenance", None)
+            if provenance is None or cell.state is not CellState.VALUE:
+                continue
+            selected.update(provenance.source_occurrence_ids or ())
+        if not selected:
+            return ()
+        applied: dict[str, LineageEvidenceReceipt] = {}
+        for occurrence_id in sorted(selected):
+            fact = self._event_by_occurrence_id.get(occurrence_id)
+            if fact is None:
+                continue
+            for receipt in self._confirmations_by_logical_key.get(fact.logical_key, ()):
+                if occurrence_id not in (
+                    receipt.parent_occurrence_id,
+                    receipt.child_occurrence_id,
+                ):
+                    continue
+                if not self._receipt_still_proves_confirmation(receipt, policy):
+                    continue
+                applied[receipt.receipt_id] = receipt
+        return tuple(applied[key] for key in sorted(applied))
+
+    def _receipt_still_proves_confirmation(
+        self,
+        receipt: LineageEvidenceReceipt,
+        policy: QueryPolicy,
+    ) -> bool:
+        """Re-prove a receipt against live facts and both cutoffs.
+
+        A receipt is an assertion about source facts, never a cached answer.
+        Every query re-derives guards 1-10 and 12 from the current ledger and
+        re-checks the receipt's asserted evidence against it, so mutating a
+        confirmed value refuses the relation and restores the unlinked
+        ``NOT_EVALUABLE`` state instead of silently rescuing it.
+        """
+        if receipt.source_known_at > policy.source_snapshot_at:
+            return False
+        if receipt.system_available_at > policy.recorded_at:
+            return False
+        parent = self._event_by_occurrence_id.get(receipt.parent_occurrence_id)
+        child = self._event_by_occurrence_id.get(receipt.child_occurrence_id)
+        if parent is None or child is None:
+            return False
+        # A confirmation cannot make an otherwise invisible fact visible.
+        if not self._event_temporally_eligible(parent, policy):
+            return False
+        if not self._event_temporally_eligible(child, policy):
+            return False
+        evidence = receipt.positive_evidence or {}
+        parent_group = self._visible_accession_group(parent, policy)
+        child_group = self._visible_accession_group(child, policy)
+        if evaluate_confirmation(
+            parent_group,
+            child_group,
+            require_taxonomy_uri=False,
+        ) is not None:
+            return False
+        # Guard 11 (original source taxonomy namespace/version) is attested by
+        # the mint-time receipt because the canonical ledger does not retain the
+        # original Clark URI.  Re-prove that the facts the receipt was minted
+        # against are still exactly these facts.
+        representative = _canonical_duplicate_representative(child_group)
+        parent_representative = _canonical_duplicate_representative(parent_group)
+        parent_uri = evidence.get("parent_taxonomy_uri")
+        child_uri = evidence.get("child_taxonomy_uri")
+        if not parent_uri or parent_uri != child_uri:
+            return False
+        # An attested URI is only believed when it is a policy-approved standard
+        # namespace whose prefix matches the concept the ledger still carries.
+        # Two matching but invented URIs are not evidence of anything.
+        if not _approved_taxonomy_uri(parent_uri, parent_representative.concept_qname):
+            return False
+        if not _approved_taxonomy_uri(child_uri, representative.concept_qname):
+            return False
+        if parent_representative.occurrence_id != receipt.parent_occurrence_id:
+            return False
+        if representative.occurrence_id != receipt.child_occurrence_id:
+            return False
+        if evidence.get("concept_qname") != representative.concept_qname:
+            return False
+        if evidence.get("parsed_value") != decimal_text(representative.parsed_value):
+            return False
+        if evidence.get("decimals") != representative.decimals:
+            return False
+        if evidence.get("precision") != representative.precision:
+            return False
+        if evidence.get("is_nil") is not representative.is_nil:
+            return False
+        if evidence.get("parent_accession") != parent_representative.source.accession:
+            return False
+        if evidence.get("child_accession") != representative.source.accession:
+            return False
+        if receipt.source_known_at != max(
+            parent_representative.accepted_at, representative.accepted_at
+        ):
+            return False
+        return True
+
+    def _visible_accession_group(
+        self,
+        fact: RawFactOccurrence,
+        policy: QueryPolicy,
+    ) -> tuple[RawFactOccurrence, ...]:
+        """Every cutoff-visible occurrence of this fact's logical key in its filing."""
+        key = (fact.source.entity_id, fact.concept_qname, _fact_period_index_key(fact))
+        candidates = self._events_by_entity_qname_period.get(key, ())
+        return tuple(
+            item
+            for item in candidates
+            if item.source.accession == fact.source.accession
+            and item.logical_key == fact.logical_key
+            and self._event_temporally_eligible(item, policy)
+        )
+
+    def _effective_roots(
+        self,
+        logical_key: str,
+        policy: QueryPolicy,
+    ) -> Mapping[str, str]:
+        """Map a root duplicate-group key to its confirmation-unified root.
+
+        Two ``FILED`` groups joined by a cutoff-visible, still-provable
+        confirmation are one vintage family rather than two unlinked roots.
+        This is a general root-unification law keyed on evidence; no issuer,
+        accession, or metric is special-cased.
+        """
+        receipts = self._confirmations_by_logical_key.get(logical_key, ())
+        if not receipts:
+            return _EMPTY_ROOT_MAP
+        cache_key = (logical_key, policy.source_snapshot_at, policy.recorded_at)
+        cached = self._effective_root_cache.get(cache_key)
+        if cached is not None:
+            return cached
+        parent_of: dict[str, str] = {}
+
+        def find(node: str) -> str:
+            root = node
+            while parent_of.get(root, root) != root:
+                root = parent_of[root]
+            while parent_of.get(node, node) != node:
+                parent_of[node], node = root, parent_of[node]
+            return root
+
+        def union(left: str, right: str) -> None:
+            a, b = find(left), find(right)
+            if a == b:
+                return
+            # Deterministic label: the lexicographically smallest member wins,
+            # so an effective root never depends on receipt ordering.
+            low, high = (a, b) if a < b else (b, a)
+            parent_of[high] = low
+
+        for receipt in receipts:
+            if not self._receipt_still_proves_confirmation(receipt, policy):
+                continue
+            parent_meta = self._lineage_by_occurrence_id.get(receipt.parent_occurrence_id)
+            child_meta = self._lineage_by_occurrence_id.get(receipt.child_occurrence_id)
+            if parent_meta is None or child_meta is None:
+                continue
+            parent_of.setdefault(parent_meta.root_duplicate_group_key, parent_meta.root_duplicate_group_key)
+            parent_of.setdefault(child_meta.root_duplicate_group_key, child_meta.root_duplicate_group_key)
+            union(parent_meta.root_duplicate_group_key, child_meta.root_duplicate_group_key)
+        resolved = {node: find(node) for node in parent_of}
+        # v1 admits exactly one parent and one child. A component that has
+        # transitively accumulated a third filing has an ambiguous parent, so
+        # refuse the whole component rather than chaining across vintages: the
+        # cell then keeps the honest unlinked-vintage refusal. Widening this is
+        # a separately adjudicated v2 question, not an implementation detail.
+        sizes: dict[str, int] = {}
+        for label in resolved.values():
+            sizes[label] = sizes.get(label, 0) + 1
+        resolved = {
+            node: label for node, label in resolved.items() if sizes[label] <= 2
+        }
+        projection = MappingProxyType(resolved)
+        # Bounded even if an engine is pooled and callers vary cutoffs: the
+        # cache is a speed aid, never a correctness input, so evicting is safe.
+        if len(self._effective_root_cache) >= MAX_EFFECTIVE_ROOT_CACHE_ENTRIES:
+            self._effective_root_cache.clear()
+        self._effective_root_cache[cache_key] = projection
+        return projection
+
     def _event_temporally_eligible(
         self,
         fact: RawFactOccurrence,
@@ -5154,10 +5461,23 @@ class BitemporalMetricQueryEngine:
 
         # Two visible roots have no attested revision relationship. Filing
         # time and hashes are not a source-fusion policy, so never infer one.
+        #
+        # FIF-3A4: a cutoff-visible, still-provable ``xbrl_confirmation``
+        # receipt is exactly such an explicit relationship. It unifies the two
+        # FILED roots into one effective root. It does not remint either
+        # occurrence, does not create a revision, and does not change depth, so
+        # AS_REPORTED still resolves to the earliest filed root and
+        # LATEST_RESTATED still finds no reported revision vintage.
+        effective_roots = self._effective_roots(next(iter(logical_keys)), policy)
         root_ids = {
-            self._lineage_by_occurrence_id[
-                item[3][0].occurrence_id
-            ].root_duplicate_group_key
+            effective_roots.get(
+                self._lineage_by_occurrence_id[
+                    item[3][0].occurrence_id
+                ].root_duplicate_group_key,
+                self._lineage_by_occurrence_id[
+                    item[3][0].occurrence_id
+                ].root_duplicate_group_key,
+            )
             for item in ordered
             if item[3]
         }

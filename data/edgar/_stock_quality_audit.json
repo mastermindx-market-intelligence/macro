@@ -1,5 +1,5 @@
 {
-"applied": "2026-09-27T05:18:56.938505+00:00",
+"applied": "2026-10-04T06:35:32.923674+00:00",
 "rows_flagged": 24,
 "tickers_flagged": 14,
 "by_flag": {
@@ -512,6 +512,13 @@
 "statements": 52790000.0
 },
 {
+"ticker": "EMAT",
+"fy": 2025,
+"col": "assets",
+"panel": 22491000.0,
+"statements": 6610223.0
+},
+{
 "ticker": "EVEX",
 "fy": 2021,
 "col": "assets",
@@ -617,11 +624,60 @@
 "statements": 1724670000.0
 },
 {
+"ticker": "LENZ",
+"fy": 2023,
+"col": "assets",
+"panel": 70376000.0,
+"statements": 188456000.0
+},
+{
+"ticker": "LOVE",
+"fy": 2021,
+"col": "assets",
+"panel": 369084000.0,
+"statements": 171018871.0
+},
+{
+"ticker": "LUNR",
+"fy": 2022,
+"col": "assets",
+"panel": 67004000.0,
+"statements": 334940408.0
+},
+{
+"ticker": "LXRX",
+"fy": 2019,
+"col": "assets",
+"panel": 417715000.0,
+"statements": 203788000.0
+},
+{
+"ticker": "MAMA",
+"fy": 2021,
+"col": "assets",
+"panel": 30032229.0,
+"statements": 14048325.0
+},
+{
+"ticker": "MCHB",
+"fy": 2024,
+"col": "assets",
+"panel": 16490112000.0,
+"statements": 8123698000.0
+},
+{
 "ticker": "MLKN",
 "fy": 2021,
 "col": "assets",
 "panel": 4465900000.0,
 "statements": 2061900000.0
+},
+{
+"ticker": "NB",
+"fy": 2025,
+"col": "assets",
+"panel": 348013000.0,
+"statements": 43819000.0
 },
 {
 "ticker": "NEOG",
@@ -631,11 +687,137 @@
 "statements": 992929000.0
 },
 {
+"ticker": "NNE",
+"fy": 2024,
+"col": "assets",
+"panel": 134142439.0,
+"statements": 35096170.0
+},
+{
+"ticker": "NNE",
+"fy": 2025,
+"col": "assets",
+"panel": 606056161.0,
+"statements": 228656866.0
+},
+{
+"ticker": "NPWR",
+"fy": 2022,
+"col": "assets",
+"panel": 78137000.0,
+"statements": 351851156.0
+},
+{
+"ticker": "NRDY",
+"fy": 2020,
+"col": "assets",
+"panel": 57274000.0,
+"statements": 450817922.0
+},
+{
+"ticker": "NRGV",
+"fy": 2020,
+"col": "assets",
+"panel": 30382816.0,
+"statements": 209896.0
+},
+{
+"ticker": "NRGV",
+"fy": 2021,
+"col": "assets",
+"panel": 125294000.0,
+"statements": 288026701.0
+},
+{
+"ticker": "NUTX",
+"fy": 2021,
+"col": "assets",
+"panel": 394650043.0,
+"statements": 85733528.0
+},
+{
+"ticker": "NVTS",
+"fy": 2020,
+"col": "assets",
+"panel": 48507000.0,
+"statements": 255028278.0
+},
+{
 "ticker": "OKTA",
 "fy": 2021,
 "col": "assets",
 "panel": 9206000000.0,
 "statements": 3298797000.0
+},
+{
+"ticker": "OKUR",
+"fy": 2023,
+"col": "assets",
+"panel": 35734000.0,
+"statements": 107436000.0
+},
+{
+"ticker": "OUST",
+"fy": 2020,
+"col": "assets",
+"panel": 46414000.0,
+"statements": 201073149.0
+},
+{
+"ticker": "PALI",
+"fy": 2020,
+"col": "assets",
+"panel": 3019000.0,
+"statements": 13049144.0
+},
+{
+"ticker": "PDYN",
+"fy": 2020,
+"col": "assets",
+"panel": 38051000.0,
+"statements": 137336.0
+},
+{
+"ticker": "PLBY",
+"fy": 2020,
+"col": "assets",
+"panel": 412127000.0,
+"statements": 58772057.0
+},
+{
+"ticker": "POWW",
+"fy": 2021,
+"col": "assets",
+"panel": 411204284.0,
+"statements": 179379341.0
+},
+{
+"ticker": "PROK",
+"fy": 2021,
+"col": "assets",
+"panel": 40298000.0,
+"statements": 251200501.0
+},
+{
+"ticker": "PVLA",
+"fy": 2023,
+"col": "assets",
+"panel": 7548000.0,
+"statements": 38680000.0
+},
+{
+"ticker": "PWP",
+"fy": 2020,
+"col": "assets",
+"panel": 542953000.0,
+"statements": 231440619.0
+},
+{
+"ticker": "QSI",
+"fy": 2020,
+"col": "assets",
+"panel": 40592000.0,
+"statements": 116186042.0
 },
 {
 "ticker": "RBC",
@@ -645,11 +827,88 @@
 "statements": 1434260000.0
 },
 {
+"ticker": "RCAT",
+"fy": 2020,
+"col": "assets",
+"panel": 12082563.0,
+"statements": 2808264.0
+},
+{
+"ticker": "RCAT",
+"fy": 2021,
+"col": "assets",
+"panel": 90384682.0,
+"statements": 11693365.0
+},
+{
+"ticker": "RGTI",
+"fy": 2021,
+"col": "assets",
+"panel": 46428000.0,
+"statements": 345822789.0
+},
+{
+"ticker": "RHLD",
+"fy": 2024,
+"col": "assets",
+"panel": 201792000.0,
+"statements": 24653.0
+},
+{
+"ticker": "RJET",
+"fy": 2024,
+"col": "assets",
+"panel": 2767800000.0,
+"statements": 596858000.0
+},
+{
+"ticker": "RUM",
+"fy": 2021,
+"col": "assets",
+"panel": 55801181.0,
+"statements": 300594647.0
+},
+{
+"ticker": "SABS",
+"fy": 2020,
+"col": "assets",
+"panel": 56537933.0,
+"statements": 322205.0
+},
+{
+"ticker": "SBC",
+"fy": 2023,
+"col": "assets",
+"panel": 258805271.0,
+"statements": 21245336.0
+},
+{
+"ticker": "SERV",
+"fy": 2022,
+"col": "assets",
+"panel": 8544071.0,
+"statements": 457.0
+},
+{
 "ticker": "SIRI",
 "fy": 2023,
 "col": "assets",
 "panel": 30056000000.0,
 "statements": 10374000000.0
+},
+{
+"ticker": "SKIN",
+"fy": 2020,
+"col": "assets",
+"panel": 222835000.0,
+"statements": 464001300.0
+},
+{
+"ticker": "SKYH",
+"fy": 2021,
+"col": "assets",
+"panel": 303887000.0,
+"statements": 139114407.0
 },
 {
 "ticker": "SMTC",
@@ -659,11 +918,53 @@
 "statements": 1130911000.0
 },
 {
+"ticker": "SOC",
+"fy": 2023,
+"col": "assets",
+"panel": 711581000.0,
+"statements": 63922821.0
+},
+{
+"ticker": "SOUN",
+"fy": 2021,
+"col": "assets",
+"panel": 49203000.0,
+"statements": 133343944.0
+},
+{
+"ticker": "SPIR",
+"fy": 2020,
+"col": "assets",
+"panel": 44422000.0,
+"statements": 231610511.0
+},
+{
+"ticker": "SPRY",
+"fy": 2021,
+"col": "assets",
+"panel": 61446000.0,
+"statements": 333467000.0
+},
+{
 "ticker": "STEP",
 "fy": 2021,
 "col": "assets",
 "panel": 4036629000.0,
 "statements": 1320772000.0
+},
+{
+"ticker": "TALK",
+"fy": 2020,
+"col": "assets",
+"panel": 32873000.0,
+"statements": 415525183.0
+},
+{
+"ticker": "TECX",
+"fy": 2023,
+"col": "assets",
+"panel": 39399000.0,
+"statements": 101093000.0
 },
 {
 "ticker": "TTWO",
@@ -1030,6 +1331,13 @@
 "statements": 84183000.0
 },
 {
+"ticker": "EMAT",
+"fy": 2025,
+"col": "equity",
+"panel": -654868000.0,
+"statements": -12008870.0
+},
+{
 "ticker": "EVEX",
 "fy": 2020,
 "col": "equity",
@@ -1156,11 +1464,60 @@
 "statements": 2443200000.0
 },
 {
+"ticker": "LEE",
+"fy": 2020,
+"col": "equity",
+"panel": -14354000.0,
+"statements": -31564000.0
+},
+{
+"ticker": "LEE",
+"fy": 2024,
+"col": "equity",
+"panel": -26653000.0,
+"statements": -9889000.0
+},
+{
+"ticker": "LNZA",
+"fy": 2021,
+"col": "equity",
+"panel": -354917000.0,
+"statements": -10739596.0
+},
+{
+"ticker": "LPTH",
+"fy": 2025,
+"col": "equity",
+"panel": 77935088.0,
+"statements": 15644768.0
+},
+{
 "ticker": "LYV",
 "fy": 2023,
 "col": "equity",
 "panel": -52305000.0,
 "statements": -17148000.0
+},
+{
+"ticker": "MAMA",
+"fy": 2025,
+"col": "equity",
+"panel": 52620000.0,
+"statements": 24896000.0
+},
+{
+"ticker": "MCHB",
+"fy": 2023,
+"col": "equity",
+"panel": 2235605000.0,
+"statements": 538387000.0
+},
+{
+"ticker": "MCHB",
+"fy": 2024,
+"col": "equity",
+"panel": 2301868000.0,
+"statements": 396997000.0
 },
 {
 "ticker": "MCK",
@@ -1175,6 +1532,34 @@
 "col": "equity",
 "panel": -387750000.0,
 "statements": -147089000.0
+},
+{
+"ticker": "MVST",
+"fy": 2021,
+"col": "equity",
+"panel": -6474581.0,
+"statements": -320261000.0
+},
+{
+"ticker": "MYPS",
+"fy": 2020,
+"col": "equity",
+"panel": 96079000.0,
+"statements": 5000001.0
+},
+{
+"ticker": "NB",
+"fy": 2024,
+"col": "equity",
+"panel": 6891000.0,
+"statements": 1000000.0
+},
+{
+"ticker": "NB",
+"fy": 2025,
+"col": "equity",
+"panel": 308698000.0,
+"statements": 28323000.0
 },
 {
 "ticker": "NEOG",
@@ -1198,11 +1583,53 @@
 "statements": -15476000.0
 },
 {
-"ticker": "NTNX",
+"ticker": "NNE",
+"fy": 2024,
+"col": "equity",
+"panel": 130057036.0,
+"statements": 31607456.0
+},
+{
+"ticker": "NNE",
+"fy": 2025,
+"col": "equity",
+"panel": 599578789.0,
+"statements": 222568728.0
+},
+{
+"ticker": "NRDY",
 "fy": 2020,
 "col": "equity",
-"panel": -758392000.0,
-"statements": -274977000.0
+"panel": -398461000.0,
+"statements": -75008590.0
+},
+{
+"ticker": "NRGV",
+"fy": 2021,
+"col": "equity",
+"panel": -68666000.0,
+"statements": -18119711.0
+},
+{
+"ticker": "NUVB",
+"fy": 2020,
+"col": "equity",
+"panel": 215084000.0,
+"statements": 5000006.0
+},
+{
+"ticker": "NVTS",
+"fy": 2020,
+"col": "equity",
+"panel": -72424000.0,
+"statements": -26593675.0
+},
+{
+"ticker": "OBIO",
+"fy": 2021,
+"col": "equity",
+"panel": -19780000.0,
+"statements": -3941965.0
 },
 {
 "ticker": "OKTA",
@@ -1240,6 +1667,27 @@
 "statements": 1748400000.0
 },
 {
+"ticker": "PDYN",
+"fy": 2020,
+"col": "equity",
+"panel": 32907000.0,
+"statements": 23550.0
+},
+{
+"ticker": "PLBY",
+"fy": 2020,
+"col": "equity",
+"panel": 83019000.0,
+"statements": 5000008.0
+},
+{
+"ticker": "POWW",
+"fy": 2021,
+"col": "equity",
+"panel": 371129681.0,
+"statements": 160347529.0
+},
+{
 "ticker": "PRI",
 "fy": 2021,
 "col": "equity",
@@ -1254,6 +1702,83 @@
 "statements": 592900000.0
 },
 {
+"ticker": "PWP",
+"fy": 2020,
+"col": "equity",
+"panel": 74183000.0,
+"statements": 5000003.0
+},
+{
+"ticker": "RCAT",
+"fy": 2021,
+"col": "equity",
+"panel": 83340248.0,
+"statements": 5266295.0
+},
+{
+"ticker": "RDW",
+"fy": 2020,
+"col": "equity",
+"panel": 39195000.0,
+"statements": 5000006.0
+},
+{
+"ticker": "RDZN",
+"fy": 2022,
+"col": "equity",
+"panel": -46396575.0,
+"statements": -7756077.0
+},
+{
+"ticker": "RDZN",
+"fy": 2024,
+"col": "equity",
+"panel": -29216325.0,
+"statements": -10073836.0
+},
+{
+"ticker": "RJET",
+"fy": 2022,
+"col": "equity",
+"panel": 991100000.0,
+"statements": 308174000.0
+},
+{
+"ticker": "RJET",
+"fy": 2023,
+"col": "equity",
+"panel": 1045900000.0,
+"statements": 200036000.0
+},
+{
+"ticker": "RJET",
+"fy": 2024,
+"col": "equity",
+"panel": 1110500000.0,
+"statements": 110242000.0
+},
+{
+"ticker": "RR",
+"fy": 2023,
+"col": "equity",
+"panel": 11347000.0,
+"statements": 4809000.0
+},
+{
+"ticker": "RZLT",
+"fy": 2021,
+"col": "equity",
+"panel": 62265000.0,
+"statements": 26099000.0
+},
+{
+"ticker": "SABS",
+"fy": 2020,
+"col": "equity",
+"panel": 39007835.0,
+"statements": 16004.0
+},
+{
 "ticker": "SBH",
 "fy": 2020,
 "col": "equity",
@@ -1261,11 +1786,46 @@
 "statements": 15443000.0
 },
 {
+"ticker": "SERV",
+"fy": 2022,
+"col": "equity",
+"panel": -12452146.0,
+"statements": -123543.0
+},
+{
+"ticker": "SES",
+"fy": 2021,
+"col": "equity",
+"panel": -88322000.0,
+"statements": -41147082.0
+},
+{
+"ticker": "SOUN",
+"fy": 2021,
+"col": "equity",
+"panel": -343237000.0,
+"statements": -163837.0
+},
+{
+"ticker": "SRZN",
+"fy": 2020,
+"col": "equity",
+"panel": 47293000.0,
+"statements": 5000007.0
+},
+{
 "ticker": "STEP",
 "fy": 2021,
 "col": "equity",
 "panel": 775699000.0,
 "statements": 249408000.0
+},
+{
+"ticker": "STRZ",
+"fy": 2022,
+"col": "equity",
+"panel": 883800000.0,
+"statements": 2681600000.0
 },
 {
 "ticker": "TPR",
@@ -1569,11 +2129,25 @@
 "statements": 55000.0
 },
 {
+"ticker": "JAKK",
+"fy": 2020,
+"col": "debt_lt",
+"panel": 174164000.0,
+"statements": 34134000.0
+},
+{
 "ticker": "JJSF",
 "fy": 2023,
 "col": "debt_lt",
 "panel": 7000000.0,
 "statements": 27000000.0
+},
+{
+"ticker": "KINS",
+"fy": 2023,
+"col": "debt_lt",
+"panel": 5663421.0,
+"statements": 25243530.0
 },
 {
 "ticker": "LITE",
@@ -1583,11 +2157,95 @@
 "statements": 2562600000.0
 },
 {
+"ticker": "LMNR",
+"fy": 2022,
+"col": "debt_lt",
+"panel": 40919000.0,
+"statements": 104076000.0
+},
+{
+"ticker": "LPTH",
+"fy": 2023,
+"col": "debt_lt",
+"panel": 326507.0,
+"statements": 1550587.0
+},
+{
+"ticker": "LTRX",
+"fy": 2021,
+"col": "debt_lt",
+"panel": 26520000.0,
+"statements": 2210000.0
+},
+{
+"ticker": "MATV",
+"fy": 2020,
+"col": "debt_lt",
+"panel": 590500000.0,
+"statements": 1267100000.0
+},
+{
+"ticker": "MBUU",
+"fy": 2021,
+"col": "debt_lt",
+"panel": 46697000.0,
+"statements": 139025000.0
+},
+{
 "ticker": "MLKN",
 "fy": 2021,
 "col": "debt_lt",
 "panel": 1340700000.0,
 "statements": 274900000.0
+},
+{
+"ticker": "MLP",
+"fy": 2020,
+"col": "debt_lt",
+"panel": 235000.0,
+"statements": 1035000.0
+},
+{
+"ticker": "NC",
+"fy": 2020,
+"col": "debt_lt",
+"panel": 22182000.0,
+"statements": 44997000.0
+},
+{
+"ticker": "ONEW",
+"fy": 2021,
+"col": "debt_lt",
+"panel": 327008000.0,
+"statements": 103074000.0
+},
+{
+"ticker": "OPK",
+"fy": 2020,
+"col": "debt_lt",
+"panel": 3837000.0,
+"statements": 251205000.0
+},
+{
+"ticker": "OPK",
+"fy": 2021,
+"col": "debt_lt",
+"panel": 1671000.0,
+"statements": 205272000.0
+},
+{
+"ticker": "OPK",
+"fy": 2022,
+"col": "debt_lt",
+"panel": 9290000.0,
+"statements": 256251000.0
+},
+{
+"ticker": "OPTU",
+"fy": 2018,
+"col": "debt_lt",
+"panel": 22653975000.0,
+"statements": 1477200000.0
 },
 {
 "ticker": "OSIS",
@@ -1618,11 +2276,32 @@
 "statements": 463504000.0
 },
 {
+"ticker": "OSS",
+"fy": 2021,
+"col": "debt_lt",
+"panel": 1635724.0,
+"statements": 3728560.0
+},
+{
 "ticker": "PAHC",
 "fy": 2024,
 "col": "debt_lt",
 "panel": 622880000.0,
 "statements": 282289000.0
+},
+{
+"ticker": "PPIH",
+"fy": 2025,
+"col": "debt_lt",
+"panel": 12696000.0,
+"statements": 3669000.0
+},
+{
+"ticker": "QTRX",
+"fy": 2020,
+"col": "debt_lt",
+"panel": 1907000.0,
+"statements": 7587000.0
 },
 {
 "ticker": "RBC",
@@ -1632,11 +2311,60 @@
 "statements": 13495000.0
 },
 {
+"ticker": "RCAT",
+"fy": 2023,
+"col": "debt_lt",
+"panel": 90762.0,
+"statements": 401569.0
+},
+{
+"ticker": "RDZN",
+"fy": 2024,
+"col": "debt_lt",
+"panel": 117121.0,
+"statements": 1472933.0
+},
+{
+"ticker": "RDZN",
+"fy": 2025,
+"col": "debt_lt",
+"panel": 4848067.0,
+"statements": 139775.0
+},
+{
 "ticker": "RGLD",
 "fy": 2021,
 "col": "debt_lt",
 "panel": 95403000.0,
 "statements": 300439000.0
+},
+{
+"ticker": "RJET",
+"fy": 2024,
+"col": "debt_lt",
+"panel": 83786000.0,
+"statements": 259816000.0
+},
+{
+"ticker": "RJET",
+"fy": 2025,
+"col": "debt_lt",
+"panel": 27012000.0,
+"statements": 1025400000.0
+},
+{
+"ticker": "RLGT",
+"fy": 2021,
+"col": "debt_lt",
+"panel": 92091000.0,
+"statements": 24000000.0
+},
+{
+"ticker": "ROAD",
+"fy": 2024,
+"col": "debt_lt",
+"panel": 1183132000.0,
+"statements": 486961000.0
 },
 {
 "ticker": "RUN",
@@ -1653,6 +2381,13 @@
 "statements": 282974000.0
 },
 {
+"ticker": "SENEA",
+"fy": 2022,
+"col": "debt_lt",
+"panel": 399948000.0,
+"statements": 109624000.0
+},
+{
 "ticker": "SKY",
 "fy": 2021,
 "col": "debt_lt",
@@ -1660,11 +2395,18 @@
 "statements": 39330000.0
 },
 {
-"ticker": "SMCI",
-"fy": 2020,
+"ticker": "SLDP",
+"fy": 2022,
 "col": "debt_lt",
-"panel": 20577000.0,
-"statements": 5697000.0
+"panel": 2000.0,
+"statements": 10000.0
+},
+{
+"ticker": "SLNH",
+"fy": 2022,
+"col": "debt_lt",
+"panel": 3841000.0,
+"statements": 13000000.0
 },
 {
 "ticker": "SMCI",
@@ -1686,6 +2428,13 @@
 "col": "debt_lt",
 "panel": 505933000.0,
 "statements": 1371039000.0
+},
+{
+"ticker": "SNDA",
+"fy": 2020,
+"col": "debt_lt",
+"panel": 604729000.0,
+"statements": 72500000.0
 },
 {
 "ticker": "SNDK",
@@ -1721,6 +2470,27 @@
 "col": "debt_lt",
 "panel": 521413000.0,
 "statements": 1118387000.0
+},
+{
+"ticker": "SRI",
+"fy": 2020,
+"col": "debt_lt",
+"panel": 59000.0,
+"statements": 454000.0
+},
+{
+"ticker": "STGW",
+"fy": 2020,
+"col": "debt_lt",
+"panel": 198024000.0,
+"statements": 843184000.0
+},
+{
+"ticker": "STXS",
+"fy": 2021,
+"col": "debt_lt",
+"panel": 243617.0,
+"statements": 973252.0
 },
 {
 "ticker": "SXI",
@@ -2082,13 +2852,6 @@
 "med": 202025000.0
 },
 {
-"ticker": "EMAT",
-"fy_lo": 2021,
-"fy_hi": 2024,
-"col": "equity",
-"med": -7602756.5
-},
-{
 "ticker": "FANG",
 "fy_lo": 2012,
 "fy_hi": 2012,
@@ -2194,20 +2957,6 @@
 "med": 6232500.0
 },
 {
-"ticker": "JILL",
-"fy_lo": 2017,
-"fy_hi": 2021,
-"col": "equity",
-"med": 38565000.0
-},
-{
-"ticker": "JILL",
-"fy_lo": 2023,
-"fy_hi": 2025,
-"col": "equity",
-"med": 105769000.0
-},
-{
 "ticker": "KNF",
 "fy_lo": 2022,
 "fy_hi": 2022,
@@ -2236,13 +2985,6 @@
 "med": 10000.0
 },
 {
-"ticker": "KURA",
-"fy_lo": 2015,
-"fy_hi": 2025,
-"col": "assets",
-"med": 448935000.0
-},
-{
 "ticker": "LASR",
 "fy_lo": 2017,
 "fy_hi": 2017,
@@ -2257,53 +2999,11 @@
 "med": 167775.0
 },
 {
-"ticker": "LIND",
-"fy_lo": 2013,
-"fy_hi": 2025,
-"col": "assets",
-"med": 548658000.0
-},
-{
-"ticker": "MAMA",
-"fy_lo": 2012,
-"fy_hi": 2025,
-"col": "equity",
-"med": 3376957.5
-},
-{
 "ticker": "MARA",
 "fy_lo": 2010,
 "fy_hi": 2019,
 "col": "assets",
 "med": 9787596.0
-},
-{
-"ticker": "MBUU",
-"fy_lo": 2014,
-"fy_hi": 2025,
-"col": "assets",
-"med": 572526500.0
-},
-{
-"ticker": "MDV",
-"fy_lo": 2016,
-"fy_hi": 2025,
-"col": "assets",
-"med": 441462210.5
-},
-{
-"ticker": "MDV",
-"fy_lo": 2016,
-"fy_hi": 2025,
-"col": "equity",
-"med": 152096952.0
-},
-{
-"ticker": "MDXG",
-"fy_lo": 2022,
-"fy_hi": 2025,
-"col": "equity",
-"med": 167912000.0
 },
 {
 "ticker": "MP",
@@ -2320,32 +3020,11 @@
 "med": 101200.0
 },
 {
-"ticker": "MVST",
-"fy_lo": 2019,
-"fy_hi": 2025,
-"col": "assets",
-"med": 984957000.0
-},
-{
 "ticker": "NEXT",
 "fy_lo": 2014,
 "fy_hi": 2014,
 "col": "assets",
 "med": 116885.0
-},
-{
-"ticker": "NEXT",
-"fy_lo": 2015,
-"fy_hi": 2025,
-"col": "assets",
-"med": 221195000.0
-},
-{
-"ticker": "NHP",
-"fy_lo": 2013,
-"fy_hi": 2025,
-"col": "assets",
-"med": 2193705000.0
 },
 {
 "ticker": "NHP",
@@ -2355,53 +3034,11 @@
 "med": 185000.0
 },
 {
-"ticker": "NHP",
-"fy_lo": 2013,
-"fy_hi": 2025,
-"col": "equity",
-"med": 1033696000.0
-},
-{
-"ticker": "NRDY",
-"fy_lo": 2020,
-"fy_hi": 2025,
-"col": "assets",
-"med": 108625500.0
-},
-{
-"ticker": "NRDY",
-"fy_lo": 2020,
-"fy_hi": 2025,
-"col": "equity",
-"med": 43203500.0
-},
-{
-"ticker": "NUTX",
-"fy_lo": 2021,
-"fy_hi": 2025,
-"col": "assets",
-"med": 431751985.0
-},
-{
 "ticker": "OGS",
 "fy_lo": 2013,
 "fy_hi": 2013,
 "col": "debt_lt",
 "med": 1318000.0
-},
-{
-"ticker": "ONDS",
-"fy_lo": 2017,
-"fy_hi": 2025,
-"col": "assets",
-"med": 92164682.0
-},
-{
-"ticker": "ONDS",
-"fy_lo": 2016,
-"fy_hi": 2025,
-"col": "equity",
-"med": 15833297.5
 },
 {
 "ticker": "ONEW",
@@ -2411,13 +3048,6 @@
 "med": 10000.0
 },
 {
-"ticker": "ONEW",
-"fy_lo": 2020,
-"fy_hi": 2025,
-"col": "assets",
-"med": 1526790500.0
-},
-{
 "ticker": "OPAL",
 "fy_lo": 2021,
 "fy_hi": 2021,
@@ -2425,25 +3055,11 @@
 "med": 14000.0
 },
 {
-"ticker": "OPAL",
-"fy_lo": 2022,
-"fy_hi": 2025,
-"col": "equity",
-"med": -313628000.0
-},
-{
 "ticker": "ORGO",
 "fy_lo": 2015,
 "fy_hi": 2015,
 "col": "assets",
 "med": 416271.0
-},
-{
-"ticker": "ORGO",
-"fy_lo": 2016,
-"fy_hi": 2025,
-"col": "assets",
-"med": 377347455.5
 },
 {
 "ticker": "OTIS",
@@ -2460,27 +3076,6 @@
 "med": 870815.0
 },
 {
-"ticker": "PACK",
-"fy_lo": 2018,
-"fy_hi": 2025,
-"col": "assets",
-"med": 1123800000.0
-},
-{
-"ticker": "PAR",
-"fy_lo": 2019,
-"fy_hi": 2025,
-"col": "debt_lt",
-"med": 368355000.0
-},
-{
-"ticker": "PAYS",
-"fy_lo": 2014,
-"fy_hi": 2025,
-"col": "equity",
-"med": 13111934.0
-},
-{
 "ticker": "PBYI",
 "fy_lo": 2010,
 "fy_hi": 2010,
@@ -2489,24 +3084,10 @@
 },
 {
 "ticker": "PBYI",
-"fy_lo": 2011,
-"fy_hi": 2025,
-"col": "assets",
-"med": 222059000.0
-},
-{
-"ticker": "PBYI",
 "fy_lo": 2010,
 "fy_hi": 2010,
 "col": "equity",
 "med": 462.0
-},
-{
-"ticker": "PBYI",
-"fy_lo": 2011,
-"fy_hi": 2025,
-"col": "equity",
-"med": 54372000.0
 },
 {
 "ticker": "PLBY",
@@ -2514,13 +3095,6 @@
 "fy_hi": 2019,
 "col": "assets",
 "med": 100231.0
-},
-{
-"ticker": "PLBY",
-"fy_lo": 2020,
-"fy_hi": 2025,
-"col": "assets",
-"med": 373190500.0
 },
 {
 "ticker": "PLUG",
@@ -2544,46 +3118,11 @@
 "med": 23000.0
 },
 {
-"ticker": "PRTH",
-"fy_lo": 2016,
-"fy_hi": 2025,
-"col": "assets",
-"med": 908223500.0
-},
-{
-"ticker": "PSIX",
-"fy_lo": 2023,
-"fy_hi": 2025,
-"col": "debt_lt",
-"med": 38000.0
-},
-{
-"ticker": "PWP",
-"fy_lo": 2020,
-"fy_hi": 2025,
-"col": "assets",
-"med": 739717500.0
-},
-{
-"ticker": "PWP",
-"fy_lo": 2020,
-"fy_hi": 2025,
-"col": "equity",
-"med": 100251000.0
-},
-{
 "ticker": "PWR",
 "fy_lo": 2014,
 "fy_hi": 2019,
 "col": "debt_lt",
 "med": 573042500.0
-},
-{
-"ticker": "QUBT",
-"fy_lo": 2020,
-"fy_hi": 2025,
-"col": "assets",
-"med": 76433000.0
 },
 {
 "ticker": "RBC",
@@ -2600,27 +3139,6 @@
 "med": -69807000.0
 },
 {
-"ticker": "RDNW",
-"fy_lo": 2016,
-"fy_hi": 2025,
-"col": "assets",
-"med": 393496545.5
-},
-{
-"ticker": "RDNW",
-"fy_lo": 2013,
-"fy_hi": 2020,
-"col": "equity",
-"med": 2831720.5
-},
-{
-"ticker": "REPX",
-"fy_lo": 2022,
-"fy_hi": 2025,
-"col": "debt_lt",
-"med": 238674500.0
-},
-{
 "ticker": "RGTI",
 "fy_lo": 2020,
 "fy_hi": 2020,
@@ -2628,25 +3146,11 @@
 "med": 43309.0
 },
 {
-"ticker": "RGTI",
-"fy_lo": 2021,
-"fy_hi": 2025,
-"col": "assets",
-"med": 203442000.0
-},
-{
 "ticker": "RIOT",
 "fy_lo": 2023,
 "fy_hi": 2023,
 "col": "debt_lt",
 "med": 526000.0
-},
-{
-"ticker": "RIOT",
-"fy_lo": 2024,
-"fy_hi": 2025,
-"col": "debt_lt",
-"med": 585610000.0
 },
 {
 "ticker": "RNG",
@@ -2663,27 +3167,6 @@
 "med": 176330.0
 },
 {
-"ticker": "RPAY",
-"fy_lo": 2018,
-"fy_hi": 2025,
-"col": "assets",
-"med": 1359791000.0
-},
-{
-"ticker": "RUM",
-"fy_lo": 2021,
-"fy_hi": 2025,
-"col": "assets",
-"med": 295712888.0
-},
-{
-"ticker": "RUM",
-"fy_lo": 2021,
-"fy_hi": 2025,
-"col": "equity",
-"med": 251623148.0
-},
-{
 "ticker": "RZLT",
 "fy_lo": 2011,
 "fy_hi": 2011,
@@ -2698,53 +3181,11 @@
 "med": 480.0
 },
 {
-"ticker": "RZLT",
-"fy_lo": 2013,
-"fy_hi": 2025,
-"col": "equity",
-"med": 14688000.0
-},
-{
-"ticker": "SBET",
-"fy_lo": 2025,
-"fy_hi": 2025,
-"col": "assets",
-"med": 2431766000.0
-},
-{
-"ticker": "SBET",
-"fy_lo": 2022,
-"fy_hi": 2024,
-"col": "equity",
-"med": 2084000.0
-},
-{
-"ticker": "SBET",
-"fy_lo": 2025,
-"fy_hi": 2025,
-"col": "equity",
-"med": 2419017000.0
-},
-{
 "ticker": "SKYT",
 "fy_lo": 2020,
 "fy_hi": 2020,
 "col": "equity",
 "med": -16000.0
-},
-{
-"ticker": "SKYT",
-"fy_lo": 2021,
-"fy_hi": 2025,
-"col": "equity",
-"med": 55644000.0
-},
-{
-"ticker": "SLDP",
-"fy_lo": 2021,
-"fy_hi": 2022,
-"col": "debt_lt",
-"med": 6000.0
 },
 {
 "ticker": "SLNH",
@@ -2761,46 +3202,11 @@
 "med": 4845.0
 },
 {
-"ticker": "SLNH",
-"fy_lo": 2013,
-"fy_hi": 2025,
-"col": "assets",
-"med": 7424500.0
-},
-{
-"ticker": "SMA",
-"fy_lo": 2014,
-"fy_hi": 2025,
-"col": "assets",
-"med": 1296827394.0
-},
-{
 "ticker": "SMA",
 "fy_lo": 2013,
 "fy_hi": 2013,
 "col": "equity",
 "med": 1000.0
-},
-{
-"ticker": "SMA",
-"fy_lo": 2014,
-"fy_hi": 2025,
-"col": "equity",
-"med": 344034362.5
-},
-{
-"ticker": "SNDA",
-"fy_lo": 2010,
-"fy_hi": 2024,
-"col": "equity",
-"med": 80433000.0
-},
-{
-"ticker": "SNDA",
-"fy_lo": 2025,
-"fy_hi": 2025,
-"col": "equity",
-"med": -11000.0
 },
 {
 "ticker": "SNEX",
@@ -2818,45 +3224,10 @@
 },
 {
 "ticker": "SOC",
-"fy_lo": 2021,
-"fy_hi": 2025,
-"col": "assets",
-"med": 711581000.0
-},
-{
-"ticker": "SOC",
 "fy_lo": 2020,
 "fy_hi": 2020,
 "col": "equity",
 "med": 23343.0
-},
-{
-"ticker": "SOC",
-"fy_lo": 2021,
-"fy_hi": 2025,
-"col": "equity",
-"med": 339021000.0
-},
-{
-"ticker": "SPCE",
-"fy_lo": 2020,
-"fy_hi": 2020,
-"col": "debt_lt",
-"med": 310000.0
-},
-{
-"ticker": "SPCE",
-"fy_lo": 2024,
-"fy_hi": 2025,
-"col": "debt_lt",
-"med": 348241000.0
-},
-{
-"ticker": "TBCH",
-"fy_lo": 2011,
-"fy_hi": 2025,
-"col": "equity",
-"med": 63387000.0
 },
 {
 "ticker": "TCI",
@@ -2864,13 +3235,6 @@
 "fy_hi": 2010,
 "col": "assets",
 "med": 1384761000.0
-},
-{
-"ticker": "TCI",
-"fy_lo": 2013,
-"fy_hi": 2025,
-"col": "assets",
-"med": 1043044000.0
 },
 {
 "ticker": "TCI",
@@ -2885,13 +3249,6 @@
 "fy_hi": 2012,
 "col": "equity",
 "med": 121016.0
-},
-{
-"ticker": "TCI",
-"fy_lo": 2013,
-"fy_hi": 2025,
-"col": "equity",
-"med": 341807000.0
 },
 {
 "ticker": "TG",

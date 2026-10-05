@@ -136,3 +136,27 @@ def test_mm_brain_template_and_site_copy_stay_identical() -> None:
     if not all(path.exists() for path in COPIES):
         pytest.skip("paired asset absent (sparse checkout)")
     assert COPIES[0].read_bytes() == COPIES[1].read_bytes()
+
+
+@pytest.mark.parametrize("path", COPIES, ids=lambda p: str(p.relative_to(ROOT)))
+def test_host_close_callback_can_restore_exact_page_focus(path: pathlib.Path) -> None:
+    """A host-selected research object may own focus return after Brain closes."""
+    text = _read(path)
+    assert "onClose: fn()->true when the host restored focus" in text
+    assert "typeof CFG.onClose === 'function'" in text
+    assert "hostReturnedFocus = CFG.onClose() === true" in text
+    assert "if (wasInside && !hostReturnedFocus && launch)" in text
+
+
+@pytest.mark.parametrize("path", COPIES, ids=lambda p: str(p.relative_to(ROOT)))
+def test_host_ai_context_is_also_visible_to_the_existing_answer_lane(
+    path: pathlib.Path,
+) -> None:
+    """A host ambient page/panel must reach both receipts and the model hint."""
+    text = _read(path)
+    assert "function buildTurnContext()" in text
+    assert "var aiContext = buildAiContext();" in text
+    assert "ambient && ambient.page" in text
+    assert "ambient && ambient.panel" in text
+    assert "var ctx = buildTurnContext();" in text
+    assert "ctx: buildTurnContext()" in text

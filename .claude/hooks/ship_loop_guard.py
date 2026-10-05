@@ -5002,6 +5002,32 @@ def _delegate_to_evaluated_hook(payload: dict[str, Any], raw: bytes) -> bool:
     return True
 
 
+
+def _agentos_assist(root: Path, payload: dict[str, Any]) -> None:
+    """Best-effort PostToolUse annotation; isolated from Stop and its private state."""
+    try:
+        # Most Bash calls are unrelated. Avoid a Python child/store scan for those.
+        command = (payload.get("tool_input") or {}).get("command", "")
+        if payload.get("hook_event_name") != "PostToolUse" or not isinstance(command, str) or not command.startswith("gh pr create "):
+            return
+        result = subprocess.run(
+            [sys.executable, str(root / "scripts/agentos.py"), "ship-capture", "--hook"],
+            cwd=root, input=json.dumps(payload), text=True, capture_output=True, timeout=5,
+        )
+        if result.returncode or len(result.stdout) > 16384:
+            raise ValueError("capture report unavailable")
+        report = json.loads(result.stdout)
+        if report.get("schema") != "agentos.ship_capture.v1" or report.get("enforcement") != "REPORT_ONLY":
+            raise ValueError("unsupported capture report")
+        if report.get("code") == "CAPTURE_UNSUPPORTED":
+            return
+        context = "AGENT OS REPORT_ONLY: " + str(report.get("code")) + ". " + str(report.get("message", ""))
+        _emit({"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": context[:2048]}})
+    except Exception:
+        # No guard_error path, no _block, no state file, no authority inference.
+        print("AGENT OS REPORT_ONLY: capture result unavailable; inspect the record before retrying.", file=sys.stderr)
+
+
 def main() -> None:
     payload, raw = _load_payload_and_raw()
     if payload is None:
@@ -5011,8 +5037,11 @@ def main() -> None:
     root = _repo_root(payload)
     if root is None:
         return
-    path = _state_path(root, payload)
     event = str(payload.get("hook_event_name") or "")
+    if event == "PostToolUse":
+        _agentos_assist(root, payload)
+        return
+    path = _state_path(root, payload)
     try:
         if event == "SessionStart":
             _session_start(root, path, payload)

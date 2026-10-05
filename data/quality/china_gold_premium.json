@@ -1,6 +1,6 @@
 {
   "schema": "commodity.china_gold_premium_quality.v1",
-  "checked_at": "2026-10-01T20:29:48+00:00",
+  "checked_at": "2026-10-04T09:49:44+00:00",
   "status": "available_fresh",
   "render_consistent": true,
   "machine_projection_consistent": true,
@@ -55,7 +55,7 @@
       "path": "data/gold_china_basis/sge_au9999.parquet",
       "exists": true,
       "rows": 253,
-      "sha256": "8f8a50e930d7855bbec29a5451660262e27b9556d9decf4247637505222581a9",
+      "sha256": "d928735fa21d0c08063bfbc206e3ed402e422e4769c3867cdd0509f479632e15",
       "asof": "2026-09-30T07:30:00+00:00",
       "selected_asof_present": true
     },
@@ -68,9 +68,9 @@
       "column": "cny_per_oz",
       "path": "data/gold_china_basis/xaucny_spot.parquet",
       "exists": true,
-      "rows": 265,
-      "sha256": "37a33672d358002712e8415d0c4a0332aa38f3e44a699da7079714824da97781",
-      "asof": "2026-09-30T07:30:00+00:00",
+      "rows": 267,
+      "sha256": "ff521bc5ff31ea6b3c07edbcbb9a6f7b9a06920cacdb01bff900b0696e2a34ef",
+      "asof": "2026-10-02T07:30:00+00:00",
       "selected_asof_present": true
     }
   ],
