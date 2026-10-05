@@ -1,0 +1,30 @@
+{
+  "source_zip": "TOI_Complete_Research_Packet_2026-10-03.zip",
+  "sha256": "4645f09417e546e8666c928e6dcc1e340da1ff47e386e6fa76374c681568198f",
+  "zip_crc_valid": true,
+  "archive_file_count": 23,
+  "manifest_file_count": 22,
+  "manifest_entries_verified": 22,
+  "local_catalog_ids": 195,
+  "method_family_views": 45,
+  "source_register_records": 147,
+  "configuration_count": 218,
+  "hypothesis_count": 201,
+  "unique_configuration_and_hypothesis_ids": true,
+  "configuration_references": 607,
+  "all_references_resolve": true,
+  "configuration_blocks": {
+    "W3-A": 53,
+    "W3-B": 120,
+    "W3-C": 45
+  },
+  "hypothesis_blocks": {
+    "W3-A": 81,
+    "W3-B": 60,
+    "W3-C": 60
+  },
+  "all_statuses": "PROPOSED_NOT_REGISTERED_HOLD",
+  "initial_check_correction": "Reviewer assertion initially used Daily instead of native clock D; corrected after field inspection. No source changed.",
+  "registered_or_executed_by_reconciliation": 0,
+  "publication_scope": "Seven selected donor originals plus this reconciliation; complete ZIP and other members are not claimed uploaded."
+}

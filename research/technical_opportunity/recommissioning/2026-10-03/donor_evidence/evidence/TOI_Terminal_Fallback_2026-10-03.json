@@ -1,0 +1,254 @@
+{
+  "schema": "toi.recovery_volume_fallback_advisory.v1",
+  "terminal_production_sha": "41b8af2da46614cedd2a485214e53003d4f030fc",
+  "observed_window_utc": "2026-10-03T09:51:58–09:52:13Z",
+  "scope": "Numerical and source-construction discrimination only; no market outcomes",
+  "records": [
+    {
+      "symbol": "AAPL",
+      "date": "2026-09-10",
+      "deltas": [
+        {
+          "bucket_hhmm": "09:30",
+          "source_5m_rows": 48,
+          "live_minus_stored_volume": 25.861787997186184,
+          "binary64_bound": 4.559215005528472e-7,
+          "stored_5m_fractional_volume_rows": 0,
+          "live_4h_fractional": true
+        },
+        {
+          "bucket_hhmm": "13:30",
+          "source_5m_rows": 30,
+          "live_minus_stored_volume": 12.5511220023036,
+          "binary64_bound": 1.2705445584515473e-7,
+          "stored_5m_fractional_volume_rows": 0,
+          "live_4h_fractional": true
+        }
+      ],
+      "sha5m": "39fc317e54f4296a2965d5386f8a005e6c0c2d9c914da4aeaebfdceb5cf1b33c",
+      "sha4h": "2429cb4d081d183561260c3abb70c40e92eae2dda7f73627fb0cca6c02ca362f"
+    },
+    {
+      "symbol": "SPY",
+      "date": "2026-09-10",
+      "deltas": [
+        {
+          "bucket_hhmm": "09:30",
+          "source_5m_rows": 48,
+          "live_minus_stored_volume": 23.098876997828484,
+          "binary64_bound": 2.6570152744653797e-7,
+          "stored_5m_fractional_volume_rows": 0,
+          "live_4h_fractional": true
+        },
+        {
+          "bucket_hhmm": "13:30",
+          "source_5m_rows": 30,
+          "live_minus_stored_volume": 13.787982996553183,
+          "binary64_bound": 9.471680328942966e-8,
+          "stored_5m_fractional_volume_rows": 0,
+          "live_4h_fractional": true
+        }
+      ],
+      "sha5m": "a4602e2f83e0d5ebeb4a0ae8849272350940270d0e646d4ea082f7ea8a595c08",
+      "sha4h": "5cb965a39ffd568f5f0d6bb755db635e07bd3a11c31e00d13ad15db7e4d9f203"
+    },
+    {
+      "symbol": "NVDA",
+      "date": "2026-09-10",
+      "deltas": [
+        {
+          "bucket_hhmm": "09:30",
+          "source_5m_rows": 48,
+          "live_minus_stored_volume": 24.35052900016308,
+          "binary64_bound": 6.34987673553411e-7,
+          "stored_5m_fractional_volume_rows": 0,
+          "live_4h_fractional": true
+        },
+        {
+          "bucket_hhmm": "13:30",
+          "source_5m_rows": 30,
+          "live_minus_stored_volume": 12.573810003697872,
+          "binary64_bound": 1.6414914227880217e-7,
+          "stored_5m_fractional_volume_rows": 0,
+          "live_4h_fractional": true
+        }
+      ],
+      "sha5m": "9a7146dbaf736d74e71e8ecd2f2a7abcad401e44c5bd051582259e2fc8a222b9",
+      "sha4h": "2dceac521e9cc13d120c58b2731c7bded4298840992c6b65b2576e6a14b5ef62"
+    },
+    {
+      "symbol": "JPM",
+      "date": "2026-09-10",
+      "deltas": [
+        {
+          "bucket_hhmm": "09:30",
+          "source_5m_rows": 48,
+          "live_minus_stored_volume": 23.817205999977887,
+          "binary64_bound": 2.0290302771286406e-8,
+          "stored_5m_fractional_volume_rows": 0,
+          "live_4h_fractional": true
+        },
+        {
+          "bucket_hhmm": "13:30",
+          "source_5m_rows": 30,
+          "live_minus_stored_volume": 12.794794999994338,
+          "binary64_bound": 8.614222224423429e-9,
+          "stored_5m_fractional_volume_rows": 0,
+          "live_4h_fractional": true
+        }
+      ],
+      "sha5m": "18eaca4c1659a738101e7cf9491bf0c61bcdca48a469185666ec2fe8131cfcd6",
+      "sha4h": "803d4a23f0b42e4ec52234c6a8ea19d1d79e715112edc3fd31349c5fbc27a85c"
+    },
+    {
+      "symbol": "XOM",
+      "date": "2026-09-10",
+      "deltas": [
+        {
+          "bucket_hhmm": "09:30",
+          "source_5m_rows": 48,
+          "live_minus_stored_volume": 26.28618900012225,
+          "binary64_bound": 7.79925568572537e-8,
+          "stored_5m_fractional_volume_rows": 0,
+          "live_4h_fractional": true
+        },
+        {
+          "bucket_hhmm": "13:30",
+          "source_5m_rows": 30,
+          "live_minus_stored_volume": 14.299089999869466,
+          "binary64_bound": 2.708837598675018e-8,
+          "stored_5m_fractional_volume_rows": 0,
+          "live_4h_fractional": true
+        }
+      ],
+      "sha5m": "da3717b0511fc12fd068614ed87f01bf65945e3d8f12e468699c9f4d937f6218",
+      "sha4h": "0da2448ccb6302aeb34a906ddf2ed125f9523c64dda808b5dc655a2d8109bc1f"
+    },
+    {
+      "symbol": "DINO",
+      "date": "2026-06-15",
+      "tf": "1h",
+      "rows": 6,
+      "times_hhmm": [
+        "10:00",
+        "11:00",
+        "12:00",
+        "13:00",
+        "14:00",
+        "15:00"
+      ],
+      "evidence": {
+        "schema": "terminal.intraday_source_evidence.v1",
+        "authority": "descriptive_only",
+        "symbol": "DINO",
+        "requested_timeframe": "1h",
+        "session": "regular",
+        "timestamp_basis": "market_local_display_epoch",
+        "response_scope": {
+          "requested_date": "2026-06-15",
+          "returned_bars": 6,
+          "first_bar_time": 1781517600,
+          "last_bar_time": 1781535600
+        },
+        "construction": "stored_1h",
+        "source_counts": {
+          "stored_5m": 0,
+          "stored_1h": 6,
+          "live_tail": 0,
+          "unattributed": 0
+        },
+        "assembly_store_reads": [
+          {
+            "base": "5m",
+            "status": "missing",
+            "content_sha256": null
+          },
+          {
+            "base": "1h",
+            "status": "available",
+            "content_sha256": "dfbe5dc5cccb3b7cda2e44cbba0769ca92c98f47e3c31ef8efbfb171e6341356"
+          }
+        ],
+        "store_read_scope": "whole_assembly_not_requested_date",
+        "assembly_clock": {
+          "assembled_at": "2026-10-03T09:52:12.438Z",
+          "served_at": "2026-10-03T09:52:12.439Z",
+          "cache_state": "new_assembly",
+          "cache_age_ms": 1,
+          "meaning": "server_assembly_not_market_data_freshness"
+        },
+        "instrument_identity": "not_verified",
+        "price_adjustment": "not_verified",
+        "volume_adjustment": "not_verified",
+        "completeness": "not_assessed",
+        "point_in_time_availability": "not_verified",
+        "research_admission": "not_assessed",
+        "warnings": [
+          "provider_hourly_open_alignment_not_guaranteed"
+        ]
+      },
+      "sha256": "75deccbe57f8ff3ea35b9891ac2f361d8cca87559eb0130b102f88f1f04a691a"
+    },
+    {
+      "symbol": "DINO",
+      "date": "2026-06-15",
+      "tf": "4h",
+      "rows": 2,
+      "times_hhmm": [
+        "09:30",
+        "13:30"
+      ],
+      "evidence": {
+        "schema": "terminal.intraday_source_evidence.v1",
+        "authority": "descriptive_only",
+        "symbol": "DINO",
+        "requested_timeframe": "4h",
+        "session": "regular",
+        "timestamp_basis": "market_local_display_epoch",
+        "response_scope": {
+          "requested_date": "2026-06-15",
+          "returned_bars": 2,
+          "first_bar_time": 1781515800,
+          "last_bar_time": 1781530200
+        },
+        "construction": "stored_1h",
+        "source_counts": {
+          "stored_5m": 0,
+          "stored_1h": 2,
+          "live_tail": 0,
+          "unattributed": 0
+        },
+        "assembly_store_reads": [
+          {
+            "base": "5m",
+            "status": "missing",
+            "content_sha256": null
+          },
+          {
+            "base": "1h",
+            "status": "available",
+            "content_sha256": "dfbe5dc5cccb3b7cda2e44cbba0769ca92c98f47e3c31ef8efbfb171e6341356"
+          }
+        ],
+        "store_read_scope": "whole_assembly_not_requested_date",
+        "assembly_clock": {
+          "assembled_at": "2026-10-03T09:52:13.404Z",
+          "served_at": "2026-10-03T09:52:13.404Z",
+          "cache_state": "new_assembly",
+          "cache_age_ms": 0,
+          "meaning": "server_assembly_not_market_data_freshness"
+        },
+        "instrument_identity": "not_verified",
+        "price_adjustment": "not_verified",
+        "volume_adjustment": "not_verified",
+        "completeness": "not_assessed",
+        "point_in_time_availability": "not_verified",
+        "research_admission": "not_assessed",
+        "warnings": [
+          "provider_hourly_open_alignment_not_guaranteed"
+        ]
+      },
+      "sha256": "00163d0a4c9ec0e80d7de09a5a401587565eb17f375d51978aec1a8ceff24aae"
+    }
+  ]
+}

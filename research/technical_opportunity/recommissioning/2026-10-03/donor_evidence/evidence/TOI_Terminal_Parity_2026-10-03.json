@@ -1,0 +1,645 @@
+{
+  "schema": "toi.recovery_terminal_parity_advisory.v1",
+  "observed_at": "2026-10-03T09:49:47.293057Z",
+  "terminal_production_sha": "41b8af2da46614cedd2a485214e53003d4f030fc",
+  "scope": "Current production HTTP data-construction parity; no market outcomes, W3 admission or browser proof",
+  "original_receipt_sha256": "257e499a46606836b46d4f8d76f704b2b6bb3eb1221865d14d670d1837e9dd97",
+  "records": [
+    {
+      "kind": "header",
+      "observed_at": "2026-10-03T09:49:47.293057+00:00",
+      "scope": "deterministic source clock/bar parity only; no market outcomes",
+      "symbols": [
+        "AAPL",
+        "SPY",
+        "NVDA",
+        "JPM",
+        "XOM"
+      ],
+      "dates": {
+        "2026-09-10": 960,
+        "2026-03-06": 960,
+        "2026-03-09": 960,
+        "2025-11-28": 780
+      },
+      "oracle": "Terminal projection from Macro112eba2036fd1186e67b914e194f4fa541cfc4df; 09:30 nominal240m clipped actual close; exact OHLC/time; binary64 volume bound",
+      "endpoint": "https://app.mastermind-x.com/api/intraday"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2026-09-10",
+      "checked_at": "2026-10-03T09:49:47.298541+00:00",
+      "pass": false,
+      "date_identity": true,
+      "source_5m_rows": 78,
+      "expected_5m_rows": 78,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "15:55",
+      "four_hour_rows": 2,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": false,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "live_tail",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "0e6efceffe5c4c4c027f80b9e1b1bb16964771c8613dbd41dbd2a856b0f0b5ac"
+        ]
+      ],
+      "response_sha256_5m": "01acc2624338edbf827e764dbe7dd8df381a49ae5168c22c150254240f8d983b",
+      "response_sha256_4h": "1c4c31ce1770af930e0bf6b0b0b06f4ed68be68975416ea7b6dc864cfe9ba425",
+      "research_admission": "not_assessed",
+      "warnings": [
+        "live_tail_construction_not_receipted"
+      ],
+      "assembly_at": "2026-10-03T09:49:51.342Z"
+    },
+    {
+      "symbol": "SPY",
+      "date": "2026-09-10",
+      "checked_at": "2026-10-03T09:49:47.298740+00:00",
+      "pass": false,
+      "date_identity": true,
+      "source_5m_rows": 78,
+      "expected_5m_rows": 78,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "15:55",
+      "four_hour_rows": 2,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": false,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "live_tail",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "96b0bdb88bffcad2ca0006155d3cfa5817593d0a785ac5858797d25e5d6d9f66"
+        ]
+      ],
+      "response_sha256_5m": "c9dcd4072fddf8925a824fc24afe38c793854e364995d5963dd76fb9399c5d17",
+      "response_sha256_4h": "7cc539d5750705b40153b5d72e161138ed71f6e08348167318ba939cca485cec",
+      "research_admission": "not_assessed",
+      "warnings": [
+        "live_tail_construction_not_receipted"
+      ],
+      "assembly_at": "2026-10-03T09:49:50.967Z"
+    },
+    {
+      "symbol": "NVDA",
+      "date": "2026-09-10",
+      "checked_at": "2026-10-03T09:49:47.299042+00:00",
+      "pass": false,
+      "date_identity": true,
+      "source_5m_rows": 78,
+      "expected_5m_rows": 78,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "15:55",
+      "four_hour_rows": 2,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": false,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "live_tail",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "192e065b2c2275484f55459fb6aae0f34aaa463e9034ed4f6f0012da75d1e4bd"
+        ]
+      ],
+      "response_sha256_5m": "275a7a259ade01e0d3f6f44e771d92247ec5cac059eb730be960762149ece780",
+      "response_sha256_4h": "a98791f5da8d7f80a3c76bf55cd9e6a9246fb327e60ba9b6c173088fea5781f5",
+      "research_admission": "not_assessed",
+      "warnings": [
+        "live_tail_construction_not_receipted"
+      ],
+      "assembly_at": "2026-10-03T09:49:50.567Z"
+    },
+    {
+      "symbol": "JPM",
+      "date": "2026-09-10",
+      "checked_at": "2026-10-03T09:49:50.565638+00:00",
+      "pass": false,
+      "date_identity": true,
+      "source_5m_rows": 78,
+      "expected_5m_rows": 78,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "15:55",
+      "four_hour_rows": 2,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": false,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "live_tail",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "350d0c5045e7e34979f59f147fa4f0270d2bc9f79f4d5ef850528840ed384a50"
+        ]
+      ],
+      "response_sha256_5m": "c48cde7ed31b8b991fe596dfd4df566b30430fb7afaa89286b0f0cb0278ec80c",
+      "response_sha256_4h": "e946ac902dfffb7b1fd0a9771250d95185fe2639453443d346a89f1f54d71ed6",
+      "research_admission": "not_assessed",
+      "warnings": [
+        "live_tail_construction_not_receipted"
+      ],
+      "assembly_at": "2026-10-03T09:49:52.814Z"
+    },
+    {
+      "symbol": "XOM",
+      "date": "2026-09-10",
+      "checked_at": "2026-10-03T09:49:50.970280+00:00",
+      "pass": false,
+      "date_identity": true,
+      "source_5m_rows": 78,
+      "expected_5m_rows": 78,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "15:55",
+      "four_hour_rows": 2,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": false,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "live_tail",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "bebc269f4d69e0e9b2eeb3dabae7a74fff02c119b8c19e6425bad5beff798a9b"
+        ]
+      ],
+      "response_sha256_5m": "f81b3cb0f4e6e973a64cb3494d4626aeb5df300ff45ee072d8bea0972fababe0",
+      "response_sha256_4h": "731e1732aeb9be7da5d74d9018a0e3be355f76302d6f0801b24ca8f0213797cc",
+      "research_admission": "not_assessed",
+      "warnings": [
+        "live_tail_construction_not_receipted"
+      ],
+      "assembly_at": "2026-10-03T09:49:53.380Z"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2026-03-06",
+      "checked_at": "2026-10-03T09:49:51.344253+00:00",
+      "pass": true,
+      "date_identity": true,
+      "source_5m_rows": 78,
+      "expected_5m_rows": 78,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "15:55",
+      "four_hour_rows": 2,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": true,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "stored_5m",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "0e6efceffe5c4c4c027f80b9e1b1bb16964771c8613dbd41dbd2a856b0f0b5ac"
+        ]
+      ],
+      "response_sha256_5m": "47be5eaad94d6ca722bd66e70237407d294fea101c555499faa294de9d02355c",
+      "response_sha256_4h": "cb5598af7f7621db29c06c7c69fe68da6dd01edaa110cb45acdd7038c7da96ad",
+      "research_admission": "not_assessed",
+      "warnings": [],
+      "assembly_at": "2026-10-03T09:49:51.342Z"
+    },
+    {
+      "symbol": "SPY",
+      "date": "2026-03-06",
+      "checked_at": "2026-10-03T09:49:52.813773+00:00",
+      "pass": true,
+      "date_identity": true,
+      "source_5m_rows": 78,
+      "expected_5m_rows": 78,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "15:55",
+      "four_hour_rows": 2,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": true,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "stored_5m",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "96b0bdb88bffcad2ca0006155d3cfa5817593d0a785ac5858797d25e5d6d9f66"
+        ]
+      ],
+      "response_sha256_5m": "77af71fa9b2abf0a45d44fddf2eec29f07507774468827cf4cdca6f100e429e3",
+      "response_sha256_4h": "304940347036d41f40554598efd50acbd66d1feeb9c7c6bdfd60bb85d355f5f3",
+      "research_admission": "not_assessed",
+      "warnings": [],
+      "assembly_at": "2026-10-03T09:49:50.967Z"
+    },
+    {
+      "symbol": "NVDA",
+      "date": "2026-03-06",
+      "checked_at": "2026-10-03T09:49:52.820147+00:00",
+      "pass": true,
+      "date_identity": true,
+      "source_5m_rows": 78,
+      "expected_5m_rows": 78,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "15:55",
+      "four_hour_rows": 2,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": true,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "stored_5m",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "192e065b2c2275484f55459fb6aae0f34aaa463e9034ed4f6f0012da75d1e4bd"
+        ]
+      ],
+      "response_sha256_5m": "f5bfd79926994fd4350d63ecb159726cd5668075de5c246122ecc96789e3a135",
+      "response_sha256_4h": "b1d0dc8cca12f151662c62a2ba98f76fa6722584806001bd029c3a8ce7716948",
+      "research_admission": "not_assessed",
+      "warnings": [],
+      "assembly_at": "2026-10-03T09:49:50.567Z"
+    },
+    {
+      "symbol": "JPM",
+      "date": "2026-03-06",
+      "checked_at": "2026-10-03T09:49:53.387332+00:00",
+      "pass": true,
+      "date_identity": true,
+      "source_5m_rows": 78,
+      "expected_5m_rows": 78,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "15:55",
+      "four_hour_rows": 2,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": true,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "stored_5m",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "350d0c5045e7e34979f59f147fa4f0270d2bc9f79f4d5ef850528840ed384a50"
+        ]
+      ],
+      "response_sha256_5m": "21d48f2e5d8b7259894c5d856aaefcd8c823b4b2e8a515cdc5c75c319f24a21b",
+      "response_sha256_4h": "3ae8294e1cd043e01bde1f83b76d18a2d68e25b14a12df697348bfaa88895345",
+      "research_admission": "not_assessed",
+      "warnings": [],
+      "assembly_at": "2026-10-03T09:49:52.814Z"
+    },
+    {
+      "symbol": "XOM",
+      "date": "2026-03-06",
+      "checked_at": "2026-10-03T09:49:54.158847+00:00",
+      "pass": true,
+      "date_identity": true,
+      "source_5m_rows": 78,
+      "expected_5m_rows": 78,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "15:55",
+      "four_hour_rows": 2,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": true,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "stored_5m",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "bebc269f4d69e0e9b2eeb3dabae7a74fff02c119b8c19e6425bad5beff798a9b"
+        ]
+      ],
+      "response_sha256_5m": "953e947c3f568ad3b9a2105b8e75d4c7f2223e42efa10a756047561212c01af1",
+      "response_sha256_4h": "c4ee93dbeb78fc1a8404cffe30a722d57f568b449b7f30292307bb6807f33fd8",
+      "research_admission": "not_assessed",
+      "warnings": [],
+      "assembly_at": "2026-10-03T09:49:53.380Z"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2026-03-09",
+      "checked_at": "2026-10-03T09:49:54.366178+00:00",
+      "pass": true,
+      "date_identity": true,
+      "source_5m_rows": 78,
+      "expected_5m_rows": 78,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "15:55",
+      "four_hour_rows": 2,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": true,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "stored_5m",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "0e6efceffe5c4c4c027f80b9e1b1bb16964771c8613dbd41dbd2a856b0f0b5ac"
+        ]
+      ],
+      "response_sha256_5m": "dd8ff20c8ba72da0df85112d80c8110d9d19db0823f45a168421be63d9bc75d7",
+      "response_sha256_4h": "3d75357108f669c182f6a3024b414a68d735a6a4263917c02666d6ee203eeaea",
+      "research_admission": "not_assessed",
+      "warnings": [],
+      "assembly_at": "2026-10-03T09:49:51.342Z"
+    },
+    {
+      "symbol": "SPY",
+      "date": "2026-03-09",
+      "checked_at": "2026-10-03T09:49:54.438292+00:00",
+      "pass": true,
+      "date_identity": true,
+      "source_5m_rows": 78,
+      "expected_5m_rows": 78,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "15:55",
+      "four_hour_rows": 2,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": true,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "stored_5m",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "96b0bdb88bffcad2ca0006155d3cfa5817593d0a785ac5858797d25e5d6d9f66"
+        ]
+      ],
+      "response_sha256_5m": "2e44beceaea33f3dd16f9ab9d252a168118496622da4de351e92839ce196dcbf",
+      "response_sha256_4h": "2a5eaaeda69cecf25060e4597cd44cb7db5650f0e4b8f3d8f8d3cbc43925c701",
+      "research_admission": "not_assessed",
+      "warnings": [],
+      "assembly_at": "2026-10-03T09:49:50.967Z"
+    },
+    {
+      "symbol": "NVDA",
+      "date": "2026-03-09",
+      "checked_at": "2026-10-03T09:49:55.383664+00:00",
+      "pass": true,
+      "date_identity": true,
+      "source_5m_rows": 78,
+      "expected_5m_rows": 78,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "15:55",
+      "four_hour_rows": 2,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": true,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "stored_5m",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "192e065b2c2275484f55459fb6aae0f34aaa463e9034ed4f6f0012da75d1e4bd"
+        ]
+      ],
+      "response_sha256_5m": "debd488cf631be8423378fa4c9fa09c8fcd6900e6d7daf79f4a581ca0db03192",
+      "response_sha256_4h": "13f0c5041477c7507558e4d1fba155b715ac49411749534075dd9e604b2358b4",
+      "research_admission": "not_assessed",
+      "warnings": [],
+      "assembly_at": "2026-10-03T09:49:50.567Z"
+    },
+    {
+      "symbol": "JPM",
+      "date": "2026-03-09",
+      "checked_at": "2026-10-03T09:49:55.666532+00:00",
+      "pass": true,
+      "date_identity": true,
+      "source_5m_rows": 78,
+      "expected_5m_rows": 78,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "15:55",
+      "four_hour_rows": 2,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": true,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "stored_5m",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "350d0c5045e7e34979f59f147fa4f0270d2bc9f79f4d5ef850528840ed384a50"
+        ]
+      ],
+      "response_sha256_5m": "1c8f775ead3a2f00dec87bb30cecbbfeede23a6c1991d4cac564125a9e2ebf1a",
+      "response_sha256_4h": "c8b4b7f884113fe73b2a55ce9c52b4b9277033a50a378a3d1be34989d933c000",
+      "research_admission": "not_assessed",
+      "warnings": [],
+      "assembly_at": "2026-10-03T09:49:52.814Z"
+    },
+    {
+      "symbol": "XOM",
+      "date": "2026-03-09",
+      "checked_at": "2026-10-03T09:49:55.785424+00:00",
+      "pass": true,
+      "date_identity": true,
+      "source_5m_rows": 78,
+      "expected_5m_rows": 78,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "15:55",
+      "four_hour_rows": 2,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": true,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "stored_5m",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "bebc269f4d69e0e9b2eeb3dabae7a74fff02c119b8c19e6425bad5beff798a9b"
+        ]
+      ],
+      "response_sha256_5m": "50faa7797d2708a91afa82392a8ddbf64e0a05893056d8cd252334f9907eca2d",
+      "response_sha256_4h": "b48dddbac487ef5e848a06c3d3a8883d11f84dd169c7373b57d70079e3b19069",
+      "research_admission": "not_assessed",
+      "warnings": [],
+      "assembly_at": "2026-10-03T09:49:53.380Z"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2025-11-28",
+      "checked_at": "2026-10-03T09:49:56.629759+00:00",
+      "pass": true,
+      "date_identity": true,
+      "source_5m_rows": 42,
+      "expected_5m_rows": 42,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "12:55",
+      "four_hour_rows": 1,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": true,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "stored_5m",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "0e6efceffe5c4c4c027f80b9e1b1bb16964771c8613dbd41dbd2a856b0f0b5ac"
+        ]
+      ],
+      "response_sha256_5m": "8d64fe02c6725602bf2b9866cd7a815cc4d75c709dc7c0c9c08676575dea5e6b",
+      "response_sha256_4h": "e43ef00295cf099de7b562f1db54cfe6d43ff5c15da5877f066190ea31fbd56b",
+      "research_admission": "not_assessed",
+      "warnings": [],
+      "assembly_at": "2026-10-03T09:49:51.342Z"
+    },
+    {
+      "symbol": "SPY",
+      "date": "2025-11-28",
+      "checked_at": "2026-10-03T09:49:56.988041+00:00",
+      "pass": true,
+      "date_identity": true,
+      "source_5m_rows": 42,
+      "expected_5m_rows": 42,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "12:55",
+      "four_hour_rows": 1,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": true,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "stored_5m",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "96b0bdb88bffcad2ca0006155d3cfa5817593d0a785ac5858797d25e5d6d9f66"
+        ]
+      ],
+      "response_sha256_5m": "784110e9816a53b53ebf1962dd8ae919410afbc12695533dfa2d92446011f0ac",
+      "response_sha256_4h": "af087d64af4207e6c467d180f6c3a266544217da58207115dfe28b79f83bd358",
+      "research_admission": "not_assessed",
+      "warnings": [],
+      "assembly_at": "2026-10-03T09:49:50.967Z"
+    },
+    {
+      "symbol": "NVDA",
+      "date": "2025-11-28",
+      "checked_at": "2026-10-03T09:49:57.224319+00:00",
+      "pass": true,
+      "date_identity": true,
+      "source_5m_rows": 42,
+      "expected_5m_rows": 42,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "12:55",
+      "four_hour_rows": 1,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": true,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "stored_5m",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "192e065b2c2275484f55459fb6aae0f34aaa463e9034ed4f6f0012da75d1e4bd"
+        ]
+      ],
+      "response_sha256_5m": "65344df8b6fc955427a4449602d533f686e53330acd083997423239d39a5126a",
+      "response_sha256_4h": "eebdabfe105b1a2176b9106c275d8890c2464db8939a00162a67b7c4ef8cf244",
+      "research_admission": "not_assessed",
+      "warnings": [],
+      "assembly_at": "2026-10-03T09:49:50.567Z"
+    },
+    {
+      "symbol": "JPM",
+      "date": "2025-11-28",
+      "checked_at": "2026-10-03T09:49:57.810944+00:00",
+      "pass": true,
+      "date_identity": true,
+      "source_5m_rows": 42,
+      "expected_5m_rows": 42,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "12:55",
+      "four_hour_rows": 1,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": true,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "stored_5m",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "350d0c5045e7e34979f59f147fa4f0270d2bc9f79f4d5ef850528840ed384a50"
+        ]
+      ],
+      "response_sha256_5m": "e8a92259313b0790516dd5d761659e586d892b098b49ea5cb7c7b0c51479f74b",
+      "response_sha256_4h": "fefdf8dc6db21c81909e29e6eeedd2527cfc6182c8549bd88bdf4f1228377913",
+      "research_admission": "not_assessed",
+      "warnings": [],
+      "assembly_at": "2026-10-03T09:49:52.814Z"
+    },
+    {
+      "symbol": "XOM",
+      "date": "2025-11-28",
+      "checked_at": "2026-10-03T09:49:58.347654+00:00",
+      "pass": true,
+      "date_identity": true,
+      "source_5m_rows": 42,
+      "expected_5m_rows": 42,
+      "source_grid_complete": true,
+      "source_first_hhmm": "09:30",
+      "source_last_hhmm": "12:55",
+      "four_hour_rows": 1,
+      "timestamp_ohlc_exact": true,
+      "volume_binary64_bound_pass": true,
+      "same_store_digests": true,
+      "construction_5m": "stored_5m",
+      "construction_4h": "stored_5m",
+      "store_digests": [
+        [
+          "5m",
+          "available",
+          "bebc269f4d69e0e9b2eeb3dabae7a74fff02c119b8c19e6425bad5beff798a9b"
+        ]
+      ],
+      "response_sha256_5m": "0fcdce20e3716f581ba43b24cae8f1f8b8c9077cb9d551bda5b82a60e64fd0c1",
+      "response_sha256_4h": "8a7c5882dea8f9b305bf425c2940ac910f8ba2869244133f4e1f55468c0d8c43",
+      "research_admission": "not_assessed",
+      "warnings": [],
+      "assembly_at": "2026-10-03T09:49:53.380Z"
+    },
+    {
+      "kind": "summary",
+      "cases": 20,
+      "pass": 15,
+      "fail": 5
+    }
+  ]
+}

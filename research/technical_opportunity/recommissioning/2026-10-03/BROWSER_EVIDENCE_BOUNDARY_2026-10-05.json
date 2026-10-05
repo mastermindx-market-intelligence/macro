@@ -1,0 +1,14 @@
+{
+  "action": "frozen #8428 offline fixture/asset preparation for native visual capture",
+  "source_head": "143dded8a0a0f4f0a7e24396e8d169292135d9e0",
+  "result": "explicit platform block before dispatch",
+  "pid": null,
+  "effect": "NONE_FOR_BLOCKED_CALL",
+  "retried_or_rerouted": false,
+  "earlier_selected_source_assets_preserved": true,
+  "rendered_fixture_pages": 0,
+  "screenshots_captured": 0,
+  "native_visual_receipt_created": false,
+  "source_branch_modified": false,
+  "next_action": "permitted capture under the existing source/evidence owner; adopt through #8428 after source custody and all gates"
+}
