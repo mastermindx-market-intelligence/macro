@@ -248,5 +248,58 @@ class PTSEShadowOutcomeTest(unittest.TestCase):
         self.assertNotIn("volatility", out.outcome_target)
 
 
+    def test_fake_owner_or_wrong_artifact_id_is_refused(self):
+        row = grade()
+        fake_owner = grade_ref(row)
+        fake_owner["owner_ref"] = "attacker.synthetic.owner"
+        with self.assertRaisesRegex(
+            PTSEShadowOutcomeError, "GRADE_OWNER_INVALID"
+        ):
+            project_shadow_outcome(
+                enrollment=enrollment(),
+                grade_rows=[row],
+                horizon=10,
+                grade_row_ref=fake_owner,
+            )
+
+        wrong_id = grade_ref(row)
+        wrong_id["artifact_id"] = "grade:wrong"
+        with self.assertRaisesRegex(
+            PTSEShadowOutcomeError, "GRADE_ARTIFACT_ID_MISMATCH"
+        ):
+            project_shadow_outcome(
+                enrollment=enrollment(),
+                grade_rows=[row],
+                horizon=10,
+                grade_row_ref=wrong_id,
+            )
+
+    def test_impossible_or_timestamp_dates_are_refused(self):
+        for changes, code in (
+            ({"fill_date": "2026-99-99"}, "GRADE_FILL_DATE_INVALID"),
+            ({"mark_date": "2026-02-31"}, "GRADE_MARK_DATE_INVALID"),
+            ({"graded_asof": "2026-10-05T00:00:00Z"}, "GRADE_ASOF_INVALID"),
+        ):
+            with self.subTest(changes=changes):
+                row = grade(**changes)
+                with self.assertRaisesRegex(PTSEShadowOutcomeError, code):
+                    project_shadow_outcome(
+                        enrollment=enrollment(),
+                        grade_rows=[row],
+                        horizon=10,
+                        grade_row_ref=grade_ref(row),
+                    )
+
+    def test_only_shared_grader_horizons_are_admitted(self):
+        with self.assertRaisesRegex(
+            PTSEShadowOutcomeError, "HORIZON_NOT_ADMITTED"
+        ):
+            project_shadow_outcome(
+                enrollment=enrollment(),
+                grade_rows=[],
+                horizon=5,
+            )
+
+
 if __name__ == "__main__":
     unittest.main()
