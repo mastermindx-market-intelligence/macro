@@ -198,7 +198,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "monetary_policy-US-2838887335587d5a"
+    "predecessor_generation_id": "monetary_policy-US-32d953581f8d2522"
   },
   "drivers": {
     "balance_sheet": [
@@ -319,11 +319,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-04T06:25:52Z",
+    "built_at": "2026-10-05T05:51:24Z",
     "calculation_as_of": "2026-10-02",
-    "code_version": "0d0c1533368aba1cd5f5d1ca3b14df825f540e91",
-    "content_sha256": "32d953581f8d2522d64ed1dc0bb296341ebd903b0218ff39b287121ac1fff367",
-    "generation_id": "monetary_policy-US-32d953581f8d2522",
+    "code_version": "c6ae3233359296c85c06dae9c80ae97d6546a548",
+    "content_sha256": "103bbaa3a1e3c687aeb270eba530578f4c0091100a1c232bb0aba7534a13b618",
+    "generation_id": "monetary_policy-US-103bbaa3a1e3c687",
     "producer": "engine.market_os.macro_workspaces.monetary_policy",
     "rendered_at": null
   },
@@ -1219,7 +1219,7 @@
           "value": null
         },
         "unit": "days",
-        "value": 25.0,
+        "value": 24.0,
         "value_type": "count"
       },
       {
@@ -1255,7 +1255,7 @@
           "value": null
         },
         "unit": "days",
-        "value": 26.0,
+        "value": 25.0,
         "value_type": "count"
       },
       {
@@ -1291,7 +1291,7 @@
           "value": null
         },
         "unit": "days",
-        "value": 27.0,
+        "value": 26.0,
         "value_type": "count"
       }
     ]

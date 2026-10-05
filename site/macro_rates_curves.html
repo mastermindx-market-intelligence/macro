@@ -413,7 +413,7 @@
   <div class="mq-context-state">
     <div class="mq-avail">
       <span class="mq-avail-label"><span class="l-en">Data we need today</span><span class="l-zh">今天需要的数据</span></span>
-      <strong class="mq-tone-bad"><span class="l-en">Source failed</span><span class="l-zh">数据源获取失败</span></strong>
+      <strong class="mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></strong>
     </div>
     <dl class="mq-context-meta">
       <div><dt><span class="l-en">Coverage</span><span class="l-zh">覆盖率</span></dt><dd>100.0%</dd></div>
@@ -434,7 +434,7 @@
         <div><dt><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></dt>
              <dd><time>2026-10-05</time></dd></div>
         <div class="mq-nonclock"><dt><span class="l-en">Page built</span><span class="l-zh">页面生成</span></dt>
-             <dd><time>2026-10-05T07:12:28Z</time></dd></div>
+             <dd><time>2026-10-05T07:18:41Z</time></dd></div>
       </dl>
 
   </div>
@@ -515,8 +515,8 @@
         </tr>
         <tr>
           <th scope="row"><span class="l-en">10-year term premium</span><span class="l-zh">10年期期限溢价</span></th>
-          <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
-          <td><span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span></td>
+          <td><span class="mq-chip mq-tone-warn"><span class="l-en">Partial</span><span class="l-zh">部分具备</span></span></td>
+          <td><span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span></td>
           <td><time>2026-09-25</time></td>
         </tr>
         <tr>
@@ -533,8 +533,8 @@
         </tr>
         <tr>
           <th scope="row"><span class="l-en">Interest on reserves</span><span class="l-zh">准备金利息</span></th>
-          <td><span class="mq-chip mq-tone-warn"><span class="l-en">Partial</span><span class="l-zh">部分具备</span></span></td>
-          <td><span class="mq-chip mq-tone-bad"><span class="l-en">Source failed</span><span class="l-zh">数据源获取失败</span></span></td>
+          <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
+          <td><span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span></td>
           <td><time>2026-10-05</time></td>
         </tr>
         <tr>
@@ -880,11 +880,11 @@
   <ul class="mq-diag-list">
     <li class="mq-diag mq-tone-warn">
       <strong><span class="l-en">Required source not current</span><span class="l-zh">必需数据源并非最新</span></strong>
-      <span><span class="l-en">Degraded required components: Interest on reserves.</span><span class="l-zh">降级的必需分项：准备金利息。</span></span>
+      <span><span class="l-en">Degraded required components: 10-year term premium.</span><span class="l-zh">降级的必需分项：10年期期限溢价。</span></span>
     </li>
     <li class="mq-diag mq-tone-warn">
       <strong><span class="l-en">Optional legs degraded</span><span class="l-zh">可选分项已降级</span></strong>
-      <span><span class="l-en">Shown separately, and excluded from the page state: Interest on reserves.</span><span class="l-zh">单独呈现，且不计入本页状态：准备金利息。</span></span>
+      <span><span class="l-en">Shown separately, and excluded from the page state: 10-year term premium.</span><span class="l-zh">单独呈现，且不计入本页状态：10年期期限溢价。</span></span>
     </li>
     <li class="mq-diag mq-tone-neutral">
       <strong><span class="l-en">Scenario execution not available</span><span class="l-zh">情景推演功能不可用</span></strong>
@@ -1722,7 +1722,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Extra yield for lending ten years</span><span class="l-zh">持有十年期债券的额外收益</span></span>
-        <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">1.02</span><span class="l-zh">1.02</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more term compensation demanded</span><span class="l-zh">数值越高＝要求的期限补偿越多</span></p>
@@ -1942,7 +1942,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Iorb level</span><span class="l-zh">准备金利息水平</span></span>
-        <span class="mq-chip mq-tone-bad"><span class="l-en">Source failed</span><span class="l-zh">数据源获取失败</span></span>
+        <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">3.90</span><span class="l-zh">3.90</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher tighter policy stance</span><span class="l-zh">数值越高＝政策立场越紧</span></p>
@@ -2162,7 +2162,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Term premium 10y change 13w</span><span class="l-zh">10年期期限溢价 13 周变化</span></span>
-        <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.34</span><span class="l-zh">0.34</span><span class="mq-metric-unit"><span class="l-en">Pct pts</span><span class="l-zh">百分点</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Positive is term compensation rising over 13w</span><span class="l-zh">正值表示期限补偿在13周内上升</span></p>
@@ -2602,7 +2602,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Corridor effr minus iorb bp</span><span class="l-zh">走廊：有效联邦基金减准备金利息（基点）</span></span>
-        <span class="mq-chip mq-tone-bad"><span class="l-en">Source failed</span><span class="l-zh">数据源获取失败</span></span>
+        <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">−2.00</span><span class="l-zh">−2.00</span><span class="mq-metric-unit"><span class="l-en">bp</span><span class="l-zh">基点</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher leg a trading rich to leg b</span><span class="l-zh">数值越高＝A端相对B端越贵</span></p>
@@ -2712,7 +2712,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Corridor sofr minus iorb bp</span><span class="l-zh">走廊：SOFR 减准备金利息（基点）</span></span>
-        <span class="mq-chip mq-tone-bad"><span class="l-en">Source failed</span><span class="l-zh">数据源获取失败</span></span>
+        <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">−3.00</span><span class="l-zh">−3.00</span><span class="mq-metric-unit"><span class="l-en">bp</span><span class="l-zh">基点</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher leg a trading rich to leg b</span><span class="l-zh">数值越高＝A端相对B端越贵</span></p>
@@ -3723,7 +3723,7 @@
       <article class="mq-source">
         <header>
           <strong><span class="l-en">10-year (THREEFYTP10, via FRED)</span><span class="l-zh">10-year（THREEFYTP10，经FRED）</span></strong>
-          <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
+          <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
         </header>
         <dl class="mq-method-grid">
           <div><dt><span class="l-en">Provider</span><span class="l-zh">提供方</span></dt><dd>FRED (Federal Reserve Bank of St. Louis)</dd></div>
@@ -3907,7 +3907,7 @@
       <article class="mq-source">
         <header>
           <strong><span class="l-en">Interest on Reserve Balances (IORB, via FRED)</span><span class="l-zh">Interest on Reserve Balances（IORB，经FRED）</span></strong>
-          <span class="mq-chip mq-tone-bad"><span class="l-en">Source failed</span><span class="l-zh">数据源获取失败</span></span>
+          <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
         </header>
         <dl class="mq-method-grid">
           <div><dt><span class="l-en">Provider</span><span class="l-zh">提供方</span></dt><dd>FRED (Federal Reserve Bank of St. Louis)</dd></div>
@@ -3957,11 +3957,11 @@
       <dl class="mq-clocks">
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Build stamp</span><span class="l-zh">生成时间</span></span><span class="mq-clock-meaning"><span class="l-en">Producer generation time. Not an economic clock.</span><span class="l-zh">生产端生成时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-10-04T06:25:52Z</time></dd>
+          <dd><time>2026-10-05T05:51:24Z</time></dd>
         </div>
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Page refreshed</span><span class="l-zh">页面更新于</span></span><span class="mq-clock-meaning"><span class="l-en">Static page render time. Not an economic clock.</span><span class="l-zh">静态页面渲染时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-10-05T07:12:28Z</time></dd>
+          <dd><time>2026-10-05T07:18:41Z</time></dd>
         </div>
       </dl>
     </section>
@@ -3971,11 +3971,11 @@
       <dl class="mq-method-grid">
         <div><dt><span class="l-en">Artifact path</span><span class="l-zh">产物路径</span></dt><dd><code>macrodata/workspaces/rates_curves/US/latest.json</code></dd></div>
         <div><dt><span class="l-en">Manifest path</span><span class="l-zh">清单路径</span></dt><dd><code>macrodata/workspaces/manifest.json</code></dd></div>
-        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">048c7ae0ce35920306f22e1a327d2d0f6f9580e2fa90fdd0b994488c3b8a3f4b</code></dd></div>
-        <div><dt><span class="l-en">Bytes</span><span class="l-zh">字节数</span></dt><dd>172751</dd></div>
-        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>rates_curves-US-048c7ae0ce359203</code></dd></div>
+        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">0db7dca5907a822568808b9c9dfcc23ee3c22fe8d5f0fda5125d0cdea4cc0da1</code></dd></div>
+        <div><dt><span class="l-en">Bytes</span><span class="l-zh">字节数</span></dt><dd>172813</dd></div>
+        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>rates_curves-US-0db7dca5907a8225</code></dd></div>
         <div><dt><span class="l-en">Producer</span><span class="l-zh">生产者</span></dt><dd><code>engine.market_os.macro_workspaces.rates_curves</code></dd></div>
-        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>0d0c1533368aba1cd5f5d1ca3b14df825f540e91</code></dd></div>
+        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>c6ae3233359296c85c06dae9c80ae97d6546a548</code></dd></div>
         <div><dt><span class="l-en">Client contract</span><span class="l-zh">客户端契约</span></dt><dd><code>mastermind.macro_workspace_snapshot.v1@1.0.0</code></dd></div>
       </dl>
       <p class="mq-lineage-note"><span class="l-en">The page checked this artifact against the closed schema and recomputed its content hash before rendering. A mismatch renders a refusal page instead of a state.</span><span class="l-zh">本页在渲染前已按封闭 schema 校验该产物并重新计算其内容哈希。若不匹配，将呈现拒绝页面而非任何状态读数。</span></p>

@@ -6170,3 +6170,32 @@ def test_markets_fresh_render_byte_match_is_code_gated_and_runs_exactly_once() -
         if selector in cmds or node in cmds:
             duplicates.append(name)
     assert not duplicates, sorted(duplicates)
+
+
+def test_price_ladder_deterministic_contract_is_owned_by_existing_code_gate(tmp_path: Path) -> None:
+    """Production ladder source AND test-only edits run the deterministic suite."""
+    manifest = _yaml(MANIFEST)
+    owner = manifest["jobs"]["price-basis-census"]
+    suite = "tests/test_price_ladder.py"  # ci-trigger-closure: data — suite NAME for planner/argv checks
+    assert owner["gate"] == "code"
+    assert {"pytest", "pandas", "numpy", "pyarrow"} <= _job_pip_packages(owner)
+    runs = [str(step.get("run") or "") for step in owner["steps"]]
+    pytest_runs = [command for command in runs if " -m pytest " in command]
+    assert len(pytest_runs) == 1
+    assert shlex.split(pytest_runs[0]) == [
+        "python", "-m", "pytest", "tests/test_price_basis_graders.py", suite, "-q",
+        "--deselect", suite + "::test_real_store_cfg_diverges_from_the_cache_by_a_dividend",
+        "--deselect", suite + "::test_real_store_control_non_payers_agree_across_sources",
+        "--deselect", suite + "::test_real_store_ladder_prefers_adjusted_for_a_cached_name",
+    ]
+    assert _job_pip_packages(manifest["jobs"]["dataos-foundation"]) == {"pytest", "pyyaml"}
+    owner_manifest = tmp_path / "price-basis-owner.yml"
+    owner_manifest.write_text(yaml.safe_dump({"jobs": {"price-basis-census": owner}}))
+    jobs, scope_reason = PACK.infer_job_scopes(PACK.load_legacy_jobs(owner_manifest, gate="code"))
+    assert len(jobs) == 1 and jobs[0].is_scoped, scope_reason
+    for changed in (["engine/price_ladder.py"], [suite]):  # ci-trigger-closure: data — synthetic diff
+        selected, reason = PACK.select_jobs(jobs, changed)
+        assert [job.job_id for job in selected] == ["price-basis-census"], reason
+        assert "unowned path" not in reason, reason
+    selected, reason = PACK.select_jobs(jobs, ["tests/test_dataos_price.py"])  # ci-trigger-closure: data — synthetic diff
+    assert not selected, reason

@@ -88,7 +88,7 @@
     "name": "Energy",
     "quadrant": "improving",
     "theme": "Artificial Intelligence",
-    "turn_state": "range"
+    "turn_state": "trending_down"
   },
   "aienterprise": {
     "emerging": false,
@@ -130,7 +130,7 @@
     "name": "Automation",
     "quadrant": "leading",
     "theme": "Industrial Automation",
-    "turn_state": "turn_up"
+    "turn_state": "range"
   },
   "automationdprinting": {
     "emerging": false,
@@ -291,7 +291,7 @@
     "name": "Mining",
     "quadrant": "lagging",
     "theme": "Crypto & Blockchain",
-    "turn_state": "turn_down"
+    "turn_state": "topping"
   },
   "blockchainpayments": {
     "emerging": false,
@@ -403,7 +403,7 @@
     "name": "Biofuels",
     "quadrant": "lagging",
     "theme": "Commodities Agriculture",
-    "turn_state": "turn_down"
+    "turn_state": "range"
   },
   "commagrifertilizers": {
     "emerging": false,
@@ -592,7 +592,7 @@
     "name": "SIEM",
     "quadrant": "weakening",
     "theme": "Cybersecurity",
-    "turn_state": "range"
+    "turn_state": "trending_up"
   },
   "cybersecuritythreatops": {
     "emerging": false,
@@ -746,7 +746,7 @@
     "name": "Workforce",
     "quadrant": "improving",
     "theme": "Education Technology",
-    "turn_state": "range"
+    "turn_state": "bottoming"
   },
   "energybasemajors": {
     "emerging": false,
@@ -760,7 +760,7 @@
     "name": "Nuclear",
     "quadrant": "improving",
     "theme": "Energy Traditional",
-    "turn_state": "range"
+    "turn_state": "trending_down"
   },
   "energybaseoilproduction": {
     "emerging": false,
@@ -774,7 +774,7 @@
     "name": "Oil Refining",
     "quadrant": "weakening",
     "theme": "Energy Traditional",
-    "turn_state": "turn_down"
+    "turn_state": "range"
   },
   "energybaseoilservices": {
     "emerging": false,
@@ -991,7 +991,7 @@
     "name": "Blockchain",
     "quadrant": "weakening",
     "theme": "FinTech",
-    "turn_state": "turn_down"
+    "turn_state": "topping"
   },
   "fintechexchanges": {
     "emerging": false,
@@ -1005,7 +1005,7 @@
     "name": "Insurance",
     "quadrant": "improving",
     "theme": "FinTech",
-    "turn_state": "bottoming"
+    "turn_state": "turn_up"
   },
   "fintechlending": {
     "emerging": false,
@@ -1208,7 +1208,7 @@
     "name": "Security",
     "quadrant": "weakening",
     "theme": "Internet of Things",
-    "turn_state": "range"
+    "turn_state": "trending_up"
   },
   "iotsoftware": {
     "emerging": false,
@@ -1474,7 +1474,7 @@
     "name": "Design Tools",
     "quadrant": "leading",
     "theme": "Semiconductors",
-    "turn_state": "turn_up"
+    "turn_state": "range"
   },
   "semisfoundries": {
     "emerging": true,
@@ -1684,7 +1684,7 @@
     "name": "Data Analytics",
     "quadrant": "improving",
     "theme": "Space Tech",
-    "turn_state": "turn_up"
+    "turn_state": "trending_down"
   },
   "spacedefense": {
     "emerging": false,
@@ -1782,7 +1782,7 @@
     "name": "Maritime",
     "quadrant": "leading",
     "theme": "Transportation & Logistics",
-    "turn_state": "turn_down"
+    "turn_state": "range"
   },
   "transportationnextgen": {
     "emerging": false,
