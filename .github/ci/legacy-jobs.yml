@@ -5448,8 +5448,10 @@ jobs:
         run: python -m pytest tests/test_options_unit_seams.py -q -m "not data_gate"
       # R8 one coverage shape across the four family builders; pins the honesty rules
       # (unknown stays None, never a fabricated 100%; staleness is calendar-derived).
-      - name: options coverage object contract
-        run: python -m pytest tests/test_options_coverage_object.py -q
+      # Shared-universe CLI checks belong with family coverage, not the narrow
+      # ETF-surface job: their import closure includes general product inputs.
+      - name: options coverage object and stock-universe contracts
+        run: python -m pytest tests/test_options_coverage_object.py tests/test_options_universe_expansion.py -q
       # E5: daily.yml invokes collectors.equity_earnings BARE, and that module's __main__
       # used to be a three-ticker smoke test — the whole-universe sweep had never run.
       # Pins the entry point AND the coverage-aware tripwire that could not see it.
