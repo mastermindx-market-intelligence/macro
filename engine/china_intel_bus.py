@@ -508,22 +508,31 @@ def _visit_discovery_snapshot(
         and owner_health_status == "ok"
         and owner_clock_order_valid
     ):
-        observation_end = last_success_day
+        authority_window_end = last_success_day
     elif valid_attempt_day is not None:
-        # A degraded/failed attempt is the honest present-tense reference clock.
-        # It grants no negative authority, but prevents a quiet event tape from
-        # moving the 30d window backward to the date of its last positive filing.
-        observation_end = valid_attempt_day
-    elif system_observed_days:
-        observation_end = max(system_observed_days)
-    elif source_event_days:
-        # Legacy positive evidence with no valid system clock: source date is a
-        # last resort for display-window anchoring only, never first-seen authority.
-        observation_end = max(source_event_days)
+        # A degraded/failed attempt is the honest present-tense authority clock.
+        # It grants no negative authority, but remains the latest receipt-bound
+        # point for deciding what the owner actually proved.
+        authority_window_end = valid_attempt_day
     elif coverage_day is not None and coverage_day <= reference_day:
-        observation_end = coverage_day
+        authority_window_end = coverage_day
     else:
-        observation_end = None
+        authority_window_end = None
+
+    # Presentation is deliberately less strict than authority: a valid positive
+    # row written after the last health receipt must stay visible even though it
+    # cannot authorize first-seen novelty, measured quiet, or absence. Use the
+    # latest in-range positive clock only to keep the display window from hiding
+    # that evidence; all authority fields below remain receipt-gated.
+    display_candidates = [
+        d for d in (
+            authority_window_end,
+            *(system_observed_days or []),
+            *(source_event_days or []),
+        )
+        if d is not None and d <= reference_day
+    ]
+    observation_end = max(display_candidates) if display_candidates else None
 
     authority = {
         "is_context_only": True,
