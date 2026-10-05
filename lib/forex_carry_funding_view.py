@@ -223,29 +223,25 @@ def _receipt(prob: object) -> dict[str, Any]:
                 "semantics": "insufficient_sample_not_forecast"}
     if status != "ok":
         return base
-    vals = {k: _finite(prob.get(k)) for k in
-            ("p_cond", "base_rate", "wilson_lo", "wilson_hi", "n_eff")}
+    vals = {k: _finite(prob.get(k)) for k in ("p_cond", "base_rate")}
     n_raw, horizon = prob.get("n_raw"), prob.get("N")
     valid_prob = all(vals[k] is not None and 0 <= vals[k] <= 1
-                     for k in ("p_cond", "base_rate", "wilson_lo", "wilson_hi"))
-    valid_n = (not isinstance(n_raw, bool) and isinstance(n_raw, int) and n_raw >= 0
-               and not isinstance(horizon, bool) and isinstance(horizon, int) and horizon > 0
-               and vals["n_eff"] is not None and vals["n_eff"] >= 0)
-    valid_geometry = (
-        vals["wilson_lo"] <= vals["p_cond"] <= vals["wilson_hi"]
-        and vals["n_eff"] <= n_raw
-    )
-    if (not valid_prob or not valid_n or vals["wilson_lo"] > vals["wilson_hi"]
-            or not valid_geometry):
+                     for k in ("p_cond", "base_rate"))
+    valid_n = (not isinstance(n_raw, bool) and isinstance(n_raw, int) and n_raw > 0
+               and not isinstance(horizon, bool) and isinstance(horizon, int) and horizon > 0)
+    if not valid_prob or not valid_n:
         return base
     return {
         "status": "ok", "headline_frequency": vals["p_cond"],
         "conditional_frequency": vals["p_cond"], "base_rate": vals["base_rate"],
-        "wilson": [vals["wilson_lo"], vals["wilson_hi"]],
-        "n_raw": n_raw, "n_eff": vals["n_eff"], "horizon_sessions": horizon,
+        "n_raw": n_raw, "horizon_sessions": horizon,
+        "uncertainty": {
+            "status": "withheld_unqualified",
+            "method": "legacy_n_raw_over_horizon_wilson",
+            "reason": "dependence_adjustment_not_qualified",
+        },
         "semantics": "past_conditional_frequency_not_forecast",
     }
-
 
 def _carry_unwind(regime: object) -> dict[str, Any]:
     base = {
