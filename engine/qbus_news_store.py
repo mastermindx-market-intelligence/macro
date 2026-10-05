@@ -23,6 +23,12 @@ from collections.abc import Mapping
 from typing import Iterable, Sequence
 
 from engine.qbus_news_contract import NewsRevision
+from engine.qbus_news_cluster import (
+    ClusterCandidate,
+    ClusterItem,
+    ClusterPolicy,
+    cluster_candidates,
+)
 from engine.qbus_news_reducer import NewsState, reduce_revision
 
 SCHEMA = "qbus.news_store.v1"
@@ -107,6 +113,9 @@ class StoryRow:
     sequence: int
     source: str
     source_item_id: str
+    story_id: str
+    source_count: int
+    item_count: int
     title: str
     url: str
     teaser: str
@@ -131,6 +140,7 @@ class ChangeRow:
     kind: str
     source: str
     source_item_id: str
+    story_id: str
     title: str
     url: str
     teaser: str
@@ -200,12 +210,34 @@ CREATE TABLE IF NOT EXISTS news_security_index (
 CREATE INDEX IF NOT EXISTS idx_news_security_lookup
 ON news_security_index(security_id);
 
+CREATE TABLE IF NOT EXISTS news_clusters (
+    cluster_id TEXT PRIMARY KEY,
+    anchor_story_id TEXT NOT NULL,
+    anchor_title TEXT NOT NULL,
+    anchor_observed_at TEXT NOT NULL,
+    subject_ids_json TEXT NOT NULL,
+    event_family TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS news_cluster_members (
+    source TEXT NOT NULL,
+    source_item_id TEXT NOT NULL,
+    cluster_id TEXT NOT NULL,
+    story_id TEXT NOT NULL,
+    PRIMARY KEY(source, source_item_id),
+    FOREIGN KEY(cluster_id) REFERENCES news_clusters(cluster_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_news_cluster_members_cluster
+ON news_cluster_members(cluster_id);
+
 CREATE TABLE IF NOT EXISTS news_changes (
     sequence INTEGER PRIMARY KEY AUTOINCREMENT,
     kind TEXT NOT NULL CHECK(kind IN ('upsert', 'remove')),
     source TEXT NOT NULL,
     source_item_id TEXT NOT NULL,
     revision_id TEXT NOT NULL,
+    cluster_id TEXT NOT NULL,
     security_ids_json TEXT NOT NULL,
     universe_revision TEXT NOT NULL,
     observed_at TEXT NOT NULL,
@@ -431,6 +463,9 @@ def _redact_story(
     *,
     sequence: int,
     state: NewsState,
+    story_id: str,
+    source_count: int,
+    item_count: int,
     universe_revision: str,
     rights: NewsReadRights,
 ) -> StoryRow:
@@ -438,6 +473,9 @@ def _redact_story(
         sequence=sequence,
         source=state.source,
         source_item_id=state.source_item_id,
+        story_id=story_id,
+        source_count=source_count,
+        item_count=item_count,
         title=state.title if rights.allow_title else "",
         url=state.url if rights.allow_url else "",
         teaser=state.teaser if rights.allow_teaser else "",
@@ -451,9 +489,16 @@ def _redact_story(
 class NewsStore:
     """One local transactional store bound to one provider cursor namespace."""
 
-    def __init__(self, path: Path | str, *, source_key: str) -> None:
+    def __init__(
+        self,
+        path: Path | str,
+        *,
+        source_key: str,
+        cluster_policy: ClusterPolicy | None = None,
+    ) -> None:
         self.path = Path(path)
         self.source_key = _validate_token(source_key, "source_key", 256)
+        self.cluster_policy = cluster_policy or ClusterPolicy()
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._conn = sqlite3.connect(
             str(self.path),
@@ -703,26 +748,149 @@ class NewsStore:
                 (security_id, state.source, state.source_item_id),
             )
 
+    def _existing_cluster_id(self, source: str, source_item_id: str) -> str | None:
+        row = self._conn.execute(
+            """
+            SELECT cluster_id FROM news_cluster_members
+            WHERE source=? AND source_item_id=?
+            """,
+            (source, source_item_id),
+        ).fetchone()
+        return None if row is None else str(row["cluster_id"])
+
+    def _cluster_candidates(self) -> tuple[ClusterCandidate, ...]:
+        rows = self._conn.execute(
+            """
+            SELECT cluster_id, anchor_story_id, anchor_title,
+                   anchor_observed_at, subject_ids_json, event_family
+            FROM news_clusters
+            ORDER BY anchor_observed_at DESC, cluster_id
+            LIMIT ?
+            """,
+            (self.cluster_policy.max_candidates + 1,),
+        ).fetchall()
+        return tuple(
+            ClusterCandidate(
+                cluster_id=str(row["cluster_id"]),
+                anchor_story_id=str(row["anchor_story_id"]),
+                anchor_title=str(row["anchor_title"]),
+                anchor_observed_at=datetime.fromisoformat(
+                    str(row["anchor_observed_at"])
+                ),
+                subject_ids=tuple(json.loads(row["subject_ids_json"])),
+                event_family=str(row["event_family"]),
+            )
+            for row in rows
+        )
+
+    def _ensure_cluster_membership(
+        self,
+        *,
+        state: NewsState,
+        security_ids: Sequence[str],
+    ) -> str:
+        existing = self._existing_cluster_id(
+            state.source, state.source_item_id
+        )
+        if existing is not None:
+            if security_ids:
+                row = self._conn.execute(
+                    "SELECT subject_ids_json FROM news_clusters WHERE cluster_id=?",
+                    (existing,),
+                ).fetchone()
+                current = set(json.loads(row["subject_ids_json"])) if row else set()
+                merged = tuple(sorted(current | set(security_ids)))
+                self._conn.execute(
+                    """
+                    UPDATE news_clusters SET subject_ids_json=?
+                    WHERE cluster_id=?
+                    """,
+                    (_stable_json(list(merged)), existing),
+                )
+            return existing
+
+        incoming = ClusterItem(
+            source=state.source,
+            source_item_id=state.source_item_id,
+            title=state.title,
+            observed_at=state.first_received_at,
+            subject_ids=tuple(security_ids),
+            event_family="",
+        )
+        decision = cluster_candidates(
+            incoming,
+            self._cluster_candidates(),
+            policy=self.cluster_policy,
+        )
+        cluster_id = decision.cluster_id
+        if decision.action == "new":
+            self._conn.execute(
+                """
+                INSERT INTO news_clusters(
+                    cluster_id, anchor_story_id, anchor_title,
+                    anchor_observed_at, subject_ids_json, event_family
+                ) VALUES(?,?,?,?,?,?)
+                """,
+                (
+                    cluster_id,
+                    incoming.story_id,
+                    incoming.title,
+                    incoming.observed_at.isoformat(),
+                    _stable_json(list(incoming.subject_ids)),
+                    incoming.event_family,
+                ),
+            )
+        self._conn.execute(
+            """
+            INSERT INTO news_cluster_members(
+                source, source_item_id, cluster_id, story_id
+            ) VALUES(?,?,?,?)
+            """,
+            (
+                state.source,
+                state.source_item_id,
+                cluster_id,
+                incoming.story_id,
+            ),
+        )
+        return cluster_id
+
+    def _active_cluster_members(self, cluster_id: str) -> int:
+        return int(
+            self._conn.execute(
+                """
+                SELECT count(*)
+                FROM news_cluster_members m
+                JOIN news_states s
+                  ON s.source=m.source AND s.source_item_id=m.source_item_id
+                WHERE m.cluster_id=? AND s.status='active'
+                """,
+                (cluster_id,),
+            ).fetchone()[0]
+        )
+
     def _write_change(
         self,
         *,
         kind: str,
         revision: NewsRevision,
+        cluster_id: str,
         security_ids: Sequence[str],
         universe_revision: str,
     ) -> int:
         cur = self._conn.execute(
             """
             INSERT INTO news_changes(
-                kind, source, source_item_id, revision_id,
+                kind, source, source_item_id, revision_id, cluster_id,
                 security_ids_json, universe_revision, observed_at
-            ) VALUES(?,?,?,?,?,?,?)
+            ) VALUES(?,?,?,?,?,?,?,?)
             """,
             (
                 kind,
                 revision.source,
                 revision.source_item_id,
                 revision.revision_id,
+                cluster_id,
                 _stable_json(list(security_ids)),
                 universe_revision,
                 revision.received_at.isoformat(),
@@ -794,19 +962,36 @@ class NewsStore:
                     conflict += 1
                     continue
 
-                kind = (
-                    "remove"
-                    if reduction.disposition == "withdrawn"
-                    else "upsert"
-                )
                 security_ids = (
                     ()
                     if reduction.state.status != "active"
                     else item.security_ids
                 )
+                cluster_id = self._ensure_cluster_membership(
+                    state=reduction.state,
+                    security_ids=security_ids,
+                )
+                # Materialize the new state/index before deciding whether a
+                # withdrawal removes the whole cluster or only one source item.
+                self._write_state(
+                    reduction.state,
+                    sequence=None,
+                    universe_revision=item.universe_revision,
+                )
+                self._replace_security_index(
+                    state=reduction.state,
+                    security_ids=security_ids,
+                )
+                kind = (
+                    "remove"
+                    if reduction.disposition == "withdrawn"
+                    and self._active_cluster_members(cluster_id) == 0
+                    else "upsert"
+                )
                 sequence = self._write_change(
                     kind=kind,
                     revision=revision,
+                    cluster_id=cluster_id,
                     security_ids=security_ids,
                     universe_revision=item.universe_revision,
                 )
@@ -815,10 +1000,6 @@ class NewsStore:
                     reduction.state,
                     sequence=sequence,
                     universe_revision=item.universe_revision,
-                )
-                self._replace_security_index(
-                    state=reduction.state,
-                    security_ids=security_ids,
                 )
                 if reduction.disposition == "withdrawn":
                     withdrawn += 1
@@ -897,42 +1078,80 @@ class NewsStore:
 
         placeholders = ",".join("?" for _ in rights.allowed_sources)
         params: list[object] = [security_id, *sorted(rights.allowed_sources)]
-        where_cursor = ""
+        having_cursor = ""
         if cursor is not None:
-            where_cursor = " AND s.last_sequence < ?"
+            having_cursor = " HAVING MAX(s.last_sequence) < ?"
             params.append(cursor)
         params.append(limit + 1)
-        rows = self._conn.execute(
+        clusters = self._conn.execute(
             f"""
-            SELECT s.state_json, s.last_sequence, s.universe_revision
+            SELECT m.cluster_id, MAX(s.last_sequence) AS cluster_sequence
             FROM news_security_index i
             JOIN news_states s
               ON s.source=i.source AND s.source_item_id=i.source_item_id
+            JOIN news_cluster_members m
+              ON m.source=s.source AND m.source_item_id=s.source_item_id
             WHERE i.security_id=?
               AND s.status='active'
               AND s.source IN ({placeholders})
-              {where_cursor}
-            ORDER BY s.last_sequence DESC, s.source, s.source_item_id
+            GROUP BY m.cluster_id
+            {having_cursor}
+            ORDER BY cluster_sequence DESC, m.cluster_id
             LIMIT ?
             """,
             tuple(params),
         ).fetchall()
-        has_more = len(rows) > limit
-        selected = rows[:limit]
-        out = tuple(
-            _redact_story(
-                sequence=int(row["last_sequence"]),
-                state=_state_from_json(row["state_json"]),
-                universe_revision=str(row["universe_revision"]),
-                rights=rights,
+        has_more = len(clusters) > limit
+        selected = clusters[:limit]
+        out: list[StoryRow] = []
+        for cluster in selected:
+            cluster_id = str(cluster["cluster_id"])
+            member_params: list[object] = [
+                cluster_id,
+                security_id,
+                *sorted(rights.allowed_sources),
+            ]
+            members = self._conn.execute(
+                f"""
+                SELECT s.state_json, s.last_sequence, s.universe_revision
+                FROM news_cluster_members m
+                JOIN news_states s
+                  ON s.source=m.source AND s.source_item_id=m.source_item_id
+                JOIN news_security_index i
+                  ON i.source=s.source AND i.source_item_id=s.source_item_id
+                WHERE m.cluster_id=?
+                  AND i.security_id=?
+                  AND s.status='active'
+                  AND s.source IN ({placeholders})
+                ORDER BY s.last_sequence DESC, s.source, s.source_item_id
+                """,
+                tuple(member_params),
+            ).fetchall()
+            if not members:
+                continue
+            representative = members[0]
+            states = [
+                _state_from_json(row["state_json"]) for row in members
+            ]
+            out.append(
+                _redact_story(
+                    sequence=int(cluster["cluster_sequence"]),
+                    state=states[0],
+                    story_id=cluster_id,
+                    source_count=len({state.source for state in states}),
+                    item_count=len(states),
+                    universe_revision=str(
+                        representative["universe_revision"]
+                    ),
+                    rights=rights,
+                )
             )
-            for row in selected
-        )
-        next_cursor = out[-1].sequence if out else cursor
+        rows = tuple(out)
+        next_cursor = rows[-1].sequence if rows else cursor
         return NewsSnapshot(
             schema=SCHEMA,
             security_id=security_id,
-            rows=out,
+            rows=rows,
             next_cursor=next_cursor,
             has_more=has_more,
         )
@@ -986,6 +1205,7 @@ class NewsStore:
                     kind=str(row["kind"]),
                     source=str(row["source"]),
                     source_item_id=str(row["source_item_id"]),
+                    story_id=str(row["cluster_id"]),
                     title=(
                         ""
                         if removed or not rights.allow_title
