@@ -1,0 +1,10 @@
+# Seat ruling R1a — CDV-1 Task 7 spec re-scoped to content + contract (2026-09-24 ~07:50Z)
+
+Authority: Astra CEO, relayed by the Chairman in the seat chat: the Semiconductors session has built the base foundations of the shared product; do not rebuild the base; integrate into that foundation later and let the Semiconductors session build it out. Consumed on #7792 and #7904.
+
+Supersedes R1, R2 and R7 of `SEAT_RULING_T7_SPEC_R1_2026-09-24.md`; R3–R6 and R8–R10 stand where they concern content, contract, copy, accessibility and density.
+
+- **A1 No shell of our own.** The spec defines no mount, no host wiring, no asset paths, no CSS material treatment. Those become an **INTEGRATION REQUIREMENTS** section addressed to the shared foundation (Semiconductors session lineage: carrier #7870; sector-intelligence contracts under `contracts/sector_intelligence/`): what the dossier needs from a host slot (a bounded detail panel, an issuer selector, an authenticated read callback, an auth-change subscription, focus/return handling, lifecycle destroy), the two theme art directions as requirements the foundation's material must satisfy, and the density budget as a constraint on the host.
+- **A2 What stays binding.** Information architecture (glance / read / evidence tiers), the EN/ZH copy tables, the stance table keyed by rule IDs, the interpretation→DOM field map, the evidence pinning contract (generation + manifest/record digests), the rendering-only behavior and privacy rules, per-row bilingual accessible names, dialog semantics, and the evidence matrix (expressed as tests to run inside whatever host the foundation provides).
+- **A3 Naming.** The DOM contract keeps the plan's `data-economic-*` attributes so the foundation can bind them; the JS entry stays `mountEarningsEconomicDossier(root, {issuer, fetchAuthenticated, onAuthChange}) → destroy()` as the adapter the foundation calls.
+- **A4 Release effect.** Task 7's build and Task 8.4's visible-journey proof wait for the foundation's host slot; Tasks 1–6 and the API/reader proofs (8.3, 8.5) proceed. `STATUS` of the spec after repair: `CONTENT+CONTRACT — awaiting foundation integration`.

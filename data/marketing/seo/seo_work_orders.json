@@ -1,6 +1,6 @@
 {
   "schema": "seo_work_orders.v1",
-  "as_of": "2026-09-13T17:55:20Z",
+  "as_of": "2026-10-04T18:31:50Z",
   "orders": [
     {
       "id": "missing_description",
@@ -13,14 +13,14 @@
         "canada_stock.html",
         "china_stocks_lab.html",
         "coming-soon.html",
+        "financial_lineage.html",
         "hk_lookup.html",
         "hk_stocks_lab.html",
         "intl_stock.html",
         "qa_bottom_sensors.html",
-        "status.html",
-        "stock.html"
+        "status.html"
       ],
-      "pages_count": 27,
+      "pages_count": 28,
       "suggested_fix": "Add meta description to all core pages",
       "falsifiable_check": "grep 'name=.description' in page source — should be present"
     },
@@ -34,15 +34,15 @@
         "canada_stock.html",
         "china_stocks_lab.html",
         "coming-soon.html",
+        "financial_lineage.html",
         "hk_lookup.html",
         "hk_stocks_lab.html",
         "intl_stock.html",
         "qa_bottom_sensors.html",
         "status.html",
-        "stock.html",
-        "tech_lab.html"
+        "stock.html"
       ],
-      "pages_count": 26,
+      "pages_count": 27,
       "suggested_fix": "Add rel=canonical to all public pages",
       "falsifiable_check": "Check page in browser: view-source should show rel=canonical in <head>"
     },
@@ -105,14 +105,14 @@
         "canada_stock.html",
         "china_stocks_lab.html",
         "coming-soon.html",
+        "financial_lineage.html",
         "hk_lookup.html",
         "hk_stocks_lab.html",
         "intl_stock.html",
         "qa_bottom_sensors.html",
-        "status.html",
-        "stock.html"
+        "status.html"
       ],
-      "pages_count": 27,
+      "pages_count": 28,
       "suggested_fix": "Add og:title, og:description, og:image to all pages",
       "falsifiable_check": "Open Graph debugger or grep meta property=og: — all three present"
     },

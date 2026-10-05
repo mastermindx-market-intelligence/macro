@@ -1,174 +1,179 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-17",
-  "generated_at": "2026-09-19T09:50:39.057522+00:00",
+  "as_of": "2026-10-02",
+  "generated_at": "2026-10-04T10:01:15.073669+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-17-EGBN-20260919095039-1",
-      "ticker": "EGBN",
-      "name": null,
+      "id": "2026-10-02-BJ-20261004100115-1",
+      "ticker": "BJ",
+      "name": "BJ's Wholesale Club",
       "lean": "constructive",
       "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "Building a base with SUE positive (validated leg) and momentum present; entry axis unblocked with off-high and RSI supportive. The constructive lean rests on the risk reshapes: entry is not extended and cycle is not blocked, not on cross-sectional rank.",
+      "horizon_d": 20,
+      "thesis": "The constructive base verdict is supported by the shipped selection ordering and an unblocked entry after a daily turn, while clean accounting and above-average quality provide support. Conviction stays low because the weekly trend is unresolved, the retail basket is lagging, and prior constructive calls have had weak directional accuracy.",
       "evidence": [
-        "SUE z 0.96, fresh 42 days",
-        "Momentum z 1.15",
-        "Entry z 0.91, off-high -3.2%, state TURN SIGNALED",
-        "Cycle not blocked; calm regime"
+        "Verdict: Constructive \u2014 building a base",
+        "Selection axis: 57th percentile",
+        "Entry unblocked; daily bottoming turn",
+        "Quality z 1.05; accounting clean",
+        "Retail basket below long-term trend"
       ],
-      "dissent": "Accounting quality flagged 'watch' and overall quality z negative, suggesting underlying fundamentals may be weaker than the surface momentum.",
+      "dissent": "The unresolved weekly trend and lagging retail basket could make the daily turn a temporary bounce rather than durable relative strength.",
       "falsifier": {
-        "text": "Price breaks back below its recent base and closes lower on the cycle ladder, or SUE freshness decays past 60 days with no new positive surprise.",
+        "text": "The daily turn fails, price loses both the 50-day and 200-day averages, and BJ underperforms the S&P 500 over the next 20 trading days.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "BJ",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 20
+        }
+      },
+      "check_by": "2026-10-30",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-10-02-LRCX-20261004100115-2",
+      "ticker": "LRCX",
+      "name": "Lam Research Corp",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The deterministic profile identifies a leader but applies the validated poor-entry brake: the stock is 13.6% above its 50-day average and 26.5% above its 200-day average. Momentum remains intact, so extension alone does not justify a relative short; watch for a base instead.",
+      "evidence": [
+        "Verdict: Leader \u00b7 poor entry \u2014 wait for a base",
+        "Entry axis: 46th percentile",
+        "13.6% above 50-day average",
+        "26.5% above 200-day average",
+        "Prior cycle was left-translated"
+      ],
+      "dissent": "Strong momentum, positive revisions and a calm risk-on regime could sustain leadership without offering a cleaner entry.",
+      "falsifier": {
+        "text": "LRCX forms a stable base, retains its major moving averages, and then resumes sustained outperformance versus the S&P 500.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-10-30",
+      "engine_verdict": "Leader \u00b7 poor entry \u2014 wait for a base"
+    },
+    {
+      "id": "2026-10-02-EGBN-20261004100115-3",
+      "ticker": "EGBN",
+      "name": "Eagle Bancorp Inc",
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 15,
+      "thesis": "The shipped selection ordering and favorable, unblocked entry support the base-building verdict after a daily momentum turn. The macro-risk tax and weak quality profile materially limit confidence, especially with negative net income and ROE.",
+      "evidence": [
+        "Verdict: Constructive \u2014 building a base",
+        "Entry axis: 64th percentile and unblocked",
+        "Daily momentum crossed up",
+        "Macro risk elevated for a sensitive name",
+        "Quality z -0.67; accounting watch"
+      ],
+      "dissent": "Poor profitability, accounting-quality concerns and elevated macro sensitivity could overwhelm the nascent technical recovery.",
+      "falsifier": {
+        "text": "The bottoming turn fails, price loses the 50-day average, and EGBN underperforms the S&P 500 over the next 15 trading days.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "EGBN",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 21
+          "horizon_d": 15
         }
       },
-      "check_by": "2026-10-16",
+      "check_by": "2026-10-23",
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-09-17-SONO-20260919095039-2",
-      "ticker": "SONO",
-      "name": null,
-      "lean": "constructive",
-      "conviction": "medium",
-      "horizon_d": 21,
-      "thesis": "Strongest confluence on the list: validated insider buying and positive SUE, clean accounting, and building a base with FRESH BUY state. Entry not blocked; risk legs are the support. Bar is honest: a constructive lean here is a relative call, not an alpha claim.",
-      "evidence": [
-        "Insider z 1.5 (validated leg)",
-        "SUE z 0.57, fresh 22 days",
-        "Quality z 1.935, accounting clean",
-        "FRESH BUY, off-high -16.1%"
-      ],
-      "dissent": "Off-high -16.1% means this has already dropped meaningfully; if insider buying stalls or the base fails, the 'building base' read becomes just a breakdown pattern.",
-      "falsifier": {
-        "text": "Price makes a lower low below the recent base, or a new filing shows insiders selling instead of buying.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "SONO",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 21
-        }
-      },
-      "check_by": "2026-10-16",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-09-17-WAT-20260919095039-3",
-      "ticker": "WAT",
-      "name": null,
+      "id": "2026-10-02-DXYZ-20261004100115-4",
+      "ticker": "DXYZ",
+      "name": "Destiny Tech100 (holds SpaceX)",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "No clear edge: SUE sharply negative and momentum flat, with the engine's own verdict neutral. Extended (off-high 0.0%) with a deteriorating Health Care basket caution. No bearish strong enough to short, no constructive leg to stand on.",
+      "horizon_d": 15,
+      "thesis": "The profile explicitly finds no clear edge, with only contextual residual momentum and no quality evidence. The daily turn is offset by a stretched phase, left-translated prior cycle and elevated macro risk, leaving relative direction illegible.",
       "evidence": [
-        "SUE z -2.81",
-        "Selection z -0.26, drivers empty",
-        "Cautions: Health Care basket deteriorating",
-        "HOLD \u2014 EXTENDED, off-high 0.0%"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Selection basis contains only contextual momentum",
+        "No quality axis data",
+        "Daily phase stretched",
+        "Prior cycle left-translated"
       ],
-      "dissent": "Momentum z is only 0.01 and off-high 0.0% shows the price held its highs; a resilient leader could grind higher despite weak SUE.",
+      "dissent": "The fresh swing low, positive MACD and position above both major moving averages could develop into persistent speculative momentum.",
       "falsifier": {
-        "text": "SUE stabilizes or turns positive and momentum z breaks above 0.3 with price making a new high on volume.",
+        "text": "DXYZ establishes a right-translated cycle, keeps both major moving averages, and outperforms the S&P 500 over the next 15 trading days.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-16",
+      "check_by": "2026-10-23",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-17-PLUS-20260919095039-4",
-      "ticker": "PLUS",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "Verdict is neutral despite a FRESH BUY entry: negative SUE and negative momentum offset the positive revisions. Accounting flagged watch. The fresh-buy entry supports not shorting, but there is no validated bull leg to lean constructive.",
-      "evidence": [
-        "SUE z -1.52",
-        "Momentum z -0.34",
-        "Entry z 0.91, FRESH BUY",
-        "Accounting quality watch"
-      ],
-      "dissent": "Positive revisions (z 0.94) and a tailwind profile could mean the negative SUE is already known and the price has reset to an attractive entry.",
-      "falsifier": {
-        "text": "Price holds the FRESH BUY level and SUE turns positive on the next earnings print.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-16",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-09-17-GATX-20260919095039-5",
-      "ticker": "GATX",
-      "name": null,
+      "id": "2026-10-02-PAHC-20261004100115-5",
+      "ticker": "PAHC",
+      "name": "Phibro Animal Health",
       "lean": "constructive",
       "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "Building a base with a positive SUE (validated leg) and constructive band from the engine. Entry is not blocked and off-high -10.2% leaves room. Accounting watch is the only caution and keeps conviction low.",
+      "horizon_d": 20,
+      "thesis": "The constructive base verdict is supported by the shipped selection ordering, an unblocked entry and a fresh daily momentum turn. Confidence remains low because the stock is still below its 200-day average and the quality factor is weak despite clean accounting.",
       "evidence": [
-        "SUE z 0.66, fresh 19 days",
-        "Entry z 0.91, TURN SIGNALED",
-        "Constructive verdict, cycle not blocked",
-        "Accounting quality watch"
+        "Verdict: Constructive \u2014 building a base",
+        "Selection axis: 58th percentile",
+        "Entry axis: 57th percentile and unblocked",
+        "Daily momentum crossed up",
+        "9.5% below 200-day average"
       ],
-      "dissent": "Accounting quality flagged watch with negative quality z, and momentum is essentially flat (0.03), so the 'base' may not actually hold.",
+      "dissent": "The move may be only a countertrend rebound because the longer-term trend remains impaired and operating quality is modest.",
       "falsifier": {
-        "text": "Price slices below the base and closes at a new relative low, or the next filing shows deteriorating receivables/inventory turns.",
+        "text": "PAHC loses the 50-day average, fails to reclaim the 200-day average, and underperforms the S&P 500 over the next 20 trading days.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "GATX",
+          "subject_ticker": "PAHC",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 21
+          "horizon_d": 20
         }
       },
-      "check_by": "2026-10-16",
+      "check_by": "2026-10-30",
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-09-17-USPH-20260919095039-6",
-      "ticker": "USPH",
-      "name": null,
+      "id": "2026-10-02-LOPE-20261004100115-6",
+      "ticker": "LOPE",
+      "name": "Grand Canyon Education",
       "lean": "cautious",
       "conviction": "medium",
-      "horizon_d": 21,
-      "thesis": "Engine verdict is 'Lagging \u2014 relative weakness'; bare signal is genuine (SUE negative, momentum negative, revisions negative). The extension leg supports staying out, but the actual bearish signal justifies a cautious directional lean. Track record shows cautious leans on weak names hit ~76%.",
+      "horizon_d": 20,
+      "thesis": "This is an actual relative-weakness case rather than an extension-only short: the deterministic verdict is lagging, the shipped selection axis is weak, revisions and momentum are negative, and price remains below its 200-day average. The daily bounce tempers but does not erase that bearish relative setup.",
       "evidence": [
-        "SUE z -1.28",
-        "Momentum z -0.8",
-        "Revisions z -0.5",
         "Verdict: Lagging \u2014 relative weakness",
-        "Accounting quality watch"
+        "Selection axis: 36th percentile",
+        "Revision z -1.21",
+        "Momentum z -1.08",
+        "1.8% below 200-day average"
       ],
-      "dissent": "Entry is not blocked and off-high is only -9.1%, so the decline may be shallow; a mean-reversion in revisions would remove the bearish edge quickly.",
+      "dissent": "Positive daily momentum, a recent swing low and solid profitability could turn the rebound into a durable recovery.",
       "falsifier": {
-        "text": "Price reclaims its 50-day and SUE/revisions flip positive on the next earnings, or a high-volume strong up-day breaks the lagging pattern.",
+        "text": "LOPE reclaims and holds above its 200-day average, the weekly trend turns up, and it outperforms the S&P 500 over the next 20 trading days.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "USPH",
+          "subject_ticker": "LOPE",
           "vs": "SPY",
           "op": ">",
           "threshold": 0.05,
-          "horizon_d": 21
+          "horizon_d": 20
         }
       },
-      "check_by": "2026-10-16",
+      "check_by": "2026-10-30",
       "engine_verdict": "Lagging \u2014 relative weakness"
     }
   ],

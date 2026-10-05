@@ -98,9 +98,10 @@ from typing import Any, Callable, Mapping, Protocol, Sequence
 MODULE_REF = "scripts/capture_page_evidence.py"
 # 1.1.0: attributed console errors, failed_responses, honest --routes selection.
 # 1.2.0: failed-load evidence is kept, and target gains resolved_gitdir_or_none.
+# 1.3.0: force_state can capture real hover/focus interaction states by selector.
 # This is stamped into every artifact as provenance, so it moves whenever the
 # emitted shape does — two byte-different manifests must never claim one version.
-TOOL_VERSION = "1.2.0"
+TOOL_VERSION = "1.3.0"
 
 # v2: a console error carries the asset it came from, and a page carries the
 # responses that failed. v1 recorded bare error strings, which the census could
@@ -141,10 +142,12 @@ SYNTHETIC_PAGE_STATE_REASON = "state not synthesizable against static output"
 FORCE_STATE_NAME_RE = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 FORCE_STATE_CLASS_RE = re.compile(r"^\.?([A-Za-z_-][A-Za-z0-9_-]*)$")
 FORCE_STATE_ATTR_RE = re.compile(r"""^\[([A-Za-z_:][-A-Za-z0-9_:.]*)(?:=["']?([^"'\]]*)["']?)?\]$""")
+FORCE_STATE_INTERACTION_RE = re.compile(r"^(hover|focus)\((.+)\)$", re.DOTALL)
 FORCE_STATE_SYNTAX = (
     'expected NAME:TARGET, where NAME is a lowercase slug (it becomes a file-name '
-    'suffix) and TARGET is a class (".is-empty" or "is-empty") or an attribute '
-    'selector ("[data-state=empty]" or "[data-empty]")'
+    'suffix) and TARGET is a class (".is-empty" or "is-empty"), an attribute '
+    'selector ("[data-state=empty]" or "[data-empty]"), or a real browser '
+    'interaction ("hover(.factor-cell)" or "focus(.search-trigger)")'
 )
 FORCE_STATE_REASON = (
     "captured by forced presentation; the page's own data path was not exercised, "
@@ -250,8 +253,8 @@ class ForceState:
     """One forced presentation state: a label plus the hook that turns it on."""
 
     name: str
-    kind: str  # "class" | "attribute"
-    value: str  # the class name, or the attribute value ("" for a bare attribute)
+    kind: str  # "class" | "attribute" | "hover" | "focus"
+    value: str  # class/attribute value, or the CSS selector for an interaction
     attribute: str | None = None
     spec: str = ""  # the raw CLI token, echoed into the manifest verbatim
 
@@ -286,10 +289,23 @@ def parse_force_state(raw: str) -> ForceState:
         return ForceState(
             name=name, kind="attribute", value=attribute.group(2) or "", attribute=attribute.group(1), spec=token
         )
+    interaction = FORCE_STATE_INTERACTION_RE.match(target)
+    if interaction is not None:
+        selector = interaction.group(2).strip()
+        if not selector:
+            raise argparse.ArgumentTypeError(
+                f"--force-state {token!r}: interaction selector is empty; {FORCE_STATE_SYNTAX}"
+            )
+        return ForceState(
+            name=name, kind=interaction.group(1), value=selector, attribute=None, spec=token
+        )
     css_class = FORCE_STATE_CLASS_RE.match(target)
     if css_class is not None:
         return ForceState(name=name, kind="class", value=css_class.group(1), attribute=None, spec=token)
-    raise argparse.ArgumentTypeError(f"--force-state {token!r}: {target!r} is neither a class nor an attribute; {FORCE_STATE_SYNTAX}")
+    raise argparse.ArgumentTypeError(
+        f"--force-state {token!r}: {target!r} is not a class, attribute, hover(), or focus() target; "
+        f"{FORCE_STATE_SYNTAX}"
+    )
 
 
 def parse_force_states(raw_values: Sequence[str]) -> tuple[ForceState, ...]:
@@ -1182,9 +1198,10 @@ def run_capture(
     }
     if force_states:
         manifest["honesty"]["force_states"] = (
-            "a forced state is a class/attribute toggled on <body> before the shot: it "
-            "shows that state's styling, not data the page returned; metrics are measured "
-            "on the rest cells only, and a hook that did not take is recorded as a gap"
+            "a forced state is either a class/attribute toggled on <body> or a real "
+            "browser hover/focus applied to a selector before the shot; it shows that "
+            "state's presentation, not data the page returned; metrics are measured on "
+            "the rest cells only, and a state that did not take is recorded as a gap"
         )
 
     smells = {
@@ -1350,12 +1367,10 @@ def _wait_transient_fx_gone(
         return False
 
 
-# Applied AFTER theme/locale and immediately before the observer and the shot. The
-# forcing is deliberately the smallest thing that works — one class added, or one
-# attribute set, on <body> — because anything cleverer (deleting nodes, faking a
-# fetch) would be this tool synthesizing content, which it does not do. The script
-# reads the hook back off the element and reports what it could confirm, so a page
-# that strips or ignores it is disclosed instead of silently mislabelled.
+# Applied AFTER theme/locale and immediately before the observer and the shot.
+# Class/attribute forcing stays the smallest possible body mutation. Hover/focus
+# forcing below uses the browser's real interaction primitives against a selector;
+# neither path deletes nodes, fakes data, or synthesizes content.
 _FORCE_STATE_SCRIPT = """
 (force) => {
   const el = document.body || document.documentElement;
@@ -1368,6 +1383,29 @@ _FORCE_STATE_SCRIPT = """
   return {applied: el.getAttribute(force.attribute) === force.value ? force.name : null};
 }
 """
+
+def _apply_interaction_force(page: Any, force: ForceState, *, timeout_ms: int = 3000) -> str | None:
+    """Apply one real browser hover/focus state and verify that it actually took.
+
+    This helper is deliberately browser-library agnostic: it consumes only the
+    tiny locator surface Playwright exposes, so hermetic tests can exercise the
+    production decision path without importing or launching a browser.
+    """
+
+    if force.kind not in {"hover", "focus"}:
+        return None
+    try:
+        locator = page.locator(force.value).first
+        if force.kind == "hover":
+            locator.hover(timeout=timeout_ms)
+            applied = locator.evaluate("(el) => el.matches(':hover')")
+        else:
+            locator.focus(timeout=timeout_ms)
+            applied = locator.evaluate("(el) => document.activeElement === el")
+    except Exception:
+        return None
+    return force.name if applied else None
+
 
 # One observer, one page load, one JSON blob. Every number here is a count of
 # something a human could count by hand; none of them is combined into a score.
@@ -1597,8 +1635,15 @@ class _PlaywrightDriver:  # pragma: no cover - needs a browser
             page.wait_for_timeout(self._settle_ms)
             applied_force: str | None = None
             if cell.force_state is not None:
-                forced = page.evaluate(_FORCE_STATE_SCRIPT.strip(), cell.force_state.as_payload()) or {}
-                applied_force = forced.get("applied")
+                if cell.force_state.kind in {"hover", "focus"}:
+                    applied_force = _apply_interaction_force(
+                        page, cell.force_state, timeout_ms=max(1, int(timeout_s * 1000))
+                    )
+                else:
+                    forced = page.evaluate(
+                        _FORCE_STATE_SCRIPT.strip(), cell.force_state.as_payload()
+                    ) or {}
+                    applied_force = forced.get("applied")
                 # The state's own transition has to finish before the shot, or the
                 # screenshot catches the page mid-fade.
                 _wait_transient_fx_gone(page)

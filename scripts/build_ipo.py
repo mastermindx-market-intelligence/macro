@@ -946,6 +946,7 @@ def build() -> str:
         "lockups_approaching": lockvm["summary"].get("approaching"),
         "lockups_just_expired": lockvm["summary"].get("just_expired"),
         "next_lockup": lockvm["summary"].get("next_ticker"),
+        "next_lockup_company": lockvm["summary"].get("next_company"),
         "next_lockup_date": lockvm["summary"].get("next_date"),
         "built": snap["built"],
     }

@@ -969,11 +969,18 @@ header, and the FULL Overview panel; the other eleven panels' figures are emitte
 fourteen workspaces' tables and evidence drawers are the bulk of the current pages, and shipping all of them puts
 the Overview's time-to-read behind markup the reader did not ask for — the failure the brief names.
 
-**Provisional budget, to be re-ratified in this file by P1 (G8, judge D12).** Initial document ≤ 90 KB
-uncompressed / ≤ 28 KB gzip; each fragment ≤ 60 KB uncompressed. These three numbers are estimates, not
-measurements. P1's acceptance requires printing `wc -c` for the fourteen built `site/macro_<slug>.html` pages and
-the current `site/macro_monetary.html`, and **editing these three numbers in this spec** against that measurement
-before P3 opens. No later packet may cite an unmeasured ceiling, and no packet may quietly widen one.
+**Re-ratified by P3 (G8, addendum §5).** Measured on the rebuilt hub at the P3 packet
+(`page_built_at=2026-09-06T00:00:00Z`) against the P2-head baseline:
+
+| | uncompressed | gzip | largest fragment |
+|---|---|---|---|
+| P2-head baseline (`site/macro_monetary.html`) | 94,959 B | 17,153 B | — |
+| P3 hub | 126,557 B | 21,936 B | `money.html` 5,443 B |
+| P3 delta | +31,598 B | +4,783 B | well under the 8 KB fragment ceiling |
+| **Ceiling (baseline + delta + 25% headroom)** | **≤ 134,457 B** | **≤ 23,132 B gzip** | **≤ 8 KB** |
+
+The P1-era 90 KB / 28 KB gzip / 60 KB fragment estimates are retired. No later packet may
+cite an unmeasured ceiling, and no packet may quietly widen one.
 
 Fragments are static files served by the same VPS pull as the rest of `site/`; no API, no auth path, no
 cache-busting beyond the render lane's normal `?v=` stamping.

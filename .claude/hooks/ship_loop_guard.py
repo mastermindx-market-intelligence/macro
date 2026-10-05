@@ -1812,6 +1812,9 @@ def _is_spurious_check(name: str) -> bool:
 #: so on every one of them this context is red BY DESIGN. It is retarget-invalidation
 #: state, not a verdict. `ci-authority/main` stays binding everywhere.
 CI_AUTHORITY_INACTIVE_CONTEXT = "ci-authority/codex/merge-queue-pilot"
+# External Vercel quota failures are not repository proof. Keep this exact-name
+# exclusion mirrored with scripts/merge_on_green.py.
+VERCEL_STATUS_CONTEXT = "Vercel"
 
 
 def _is_non_binding_check(name: str) -> bool:
@@ -1837,7 +1840,12 @@ def _is_non_binding_check(name: str) -> bool:
     "widening is a RULING, not a refactor" contract; this adds exactly one name, and
     that name's redness is a documented property of the workflow that emits it.
     """
-    return _is_spurious_check(name) or str(name or "") == CI_AUTHORITY_INACTIVE_CONTEXT
+    check = str(name or "")
+    return (
+        _is_spurious_check(check)
+        or check == VERCEL_STATUS_CONTEXT
+        or check == CI_AUTHORITY_INACTIVE_CONTEXT
+    )
 
 
 def _open_pull(owner: str, repo: str, branch: str) -> dict[str, Any] | None:
@@ -1899,6 +1907,136 @@ def _split_head_runs(
         elif run.get("conclusion") == "success":
             passed.append(name)
     return red, pending, passed
+
+
+#: The repository-owned proof anchors `scripts/merge_on_green.py` will not merge
+#: without: its `REQUIRED_CI_GATE`, `REQUIRED_FENCE_ANCHOR`,
+#: `REQUIRED_FORK_FENCE_ANCHORS` and `REQUIRED_CI_ANCHORS`. They are literals here
+#: for the reason `_is_spurious_check` gives: this hook is loaded by file path and
+#: may not acquire the sweeper's import graph to answer one question. Change them
+#: here and in the sweeper together, or in neither. `tests/test_ship_loop_guard.py`
+#: compares both the constants and the two verdict functions.
+PROOF_CI_GATE_ANCHOR = "ci-gate"
+PROOF_FENCE_ANCHOR = "fence-pack"
+PROOF_FORK_FENCE_ANCHORS = frozenset({"self-mod-fence", "capability-broker", "grader-manifest"})
+PROOF_CI_PACK_ANCHORS = frozenset(f"ci-pack-{index}" for index in range(12))
+_PROOF_PACK_RE = re.compile(r"^ci-pack-\d+$")
+#: The sweeper's `{"success"} | CLEAN_CONCLUSIONS | INCOMPLETE_CONCLUSIONS`. An
+#: anchor concluding anything else is `blocked`, not merely unproven.
+_PROOF_UNBLOCKED_CONCLUSIONS = frozenset({"success", "neutral", "skipped", "cancelled", "stale"})
+
+
+def _is_actions_check(run: dict[str, Any]) -> bool:
+    """Only GitHub Actions can publish a proof anchor (the sweeper's `is_actions_check`)."""
+    return str(((run.get("app") or {}).get("slug")) or "").lower() == "github-actions"
+
+
+def _proof_anchor_runs(runs: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Newest Actions check run per proof-anchor name (the sweeper's `proof_anchor_runs`)."""
+    anchors: dict[str, dict[str, Any]] = {}
+    wanted = (
+        PROOF_CI_PACK_ANCHORS
+        | {PROOF_FENCE_ANCHOR, PROOF_CI_GATE_ANCHOR}
+        | PROOF_FORK_FENCE_ANCHORS
+    )
+    for run in runs:
+        name = str(run.get("name") or "")
+        if name not in wanted or not _is_actions_check(run):
+            continue
+        previous = anchors.get(name)
+        if previous is None or int(run.get("id") or 0) >= int(previous.get("id") or 0):
+            anchors[name] = run
+    return anchors
+
+
+def _proof_anchor_verdict(runs: list[dict[str, Any]]) -> tuple[str, list[str]]:
+    """The sweeper's affirmative-proof question, asked of the rollup already fetched.
+
+    A copy of `proof_anchor_verdict` in `scripts/merge_on_green.py`, with the same
+    ``(verdict, names)`` answer: ``clean`` only when `ci-gate`, every SCHEDULED
+    `ci-pack-N` and a fence anchor (`fence-pack`, or the three fork fences standing
+    in for a skipped one) concluded `success`.
+
+    The hook needs it because `_split_head_runs` only sorts check runs that EXIST.
+    While a head's ci.yml run is still `pending` (queued behind the same PR's
+    previous-head run in its concurrency group), ci.yml has published nothing, so
+    the fast workflows are the whole rollup and all of them have concluded. #7969
+    was told "every check has concluded clean; the next sweep should merge it" in
+    exactly that state, at ~00:50Z on 2026-09-25, with eleven light checks and no
+    ci.yml check at all. The sweeper refused, because it asks this question; the
+    hook now asks it too. The answer is read off ``runs``, so it costs no REST call.
+
+    The sweeper requires `ci-gate` on EVERY head it considers. ci.yml's `paths:`
+    list includes `**`, and its #5555 comment gives the reason: a faster workflow
+    can otherwise be the only proof visible. Mirroring it therefore means no
+    separate "does ci.yml apply to this PR" test here, either.
+    """
+    anchors = _proof_anchor_runs(runs)
+    required = {
+        str(run.get("name") or "")
+        for run in runs
+        if _PROOF_PACK_RE.match(str(run.get("name") or "")) and _is_actions_check(run)
+    } | {PROOF_CI_GATE_ANCHOR}
+    standard_fence = anchors.get(PROOF_FENCE_ANCHOR)
+    fork_fences_present = PROOF_FORK_FENCE_ANCHORS <= anchors.keys()
+    if standard_fence is not None and (
+        standard_fence.get("conclusion") != "skipped" or not fork_fences_present
+    ):
+        required.add(PROOF_FENCE_ANCHOR)
+    elif fork_fences_present:
+        required.update(PROOF_FORK_FENCE_ANCHORS)
+    else:
+        required.add(PROOF_FENCE_ANCHOR)
+
+    missing = sorted(required - anchors.keys())
+    if missing:
+        return "incomplete", missing
+    pending = sorted(name for name in required if anchors[name].get("status") != "completed")
+    if pending:
+        return "pending", pending
+    bad = sorted(
+        f"{name} ({anchors[name].get('conclusion')})"
+        for name in required
+        if anchors[name].get("conclusion") not in _PROOF_UNBLOCKED_CONCLUSIONS
+    )
+    if bad:
+        return "blocked", bad
+    incomplete = sorted(
+        name for name in required if anchors[name].get("conclusion") != "success"
+    )
+    if incomplete:
+        return "incomplete", incomplete
+    return "clean", sorted(required)
+
+
+def _proof_anchor_gap(runs: list[dict[str, Any]], names: list[str]) -> str:
+    """Why the sweeper will not merge a head, given `_proof_anchor_verdict`'s names.
+
+    Leads with `ci-gate`, the anchor whose absence is the #7969 shape. It is the
+    last proof ci.yml publishes, so while it is missing nothing from the pack run
+    is in the rollup.
+    """
+    gate = _proof_anchor_runs(runs).get(PROOF_CI_GATE_ANCHOR)
+    others = [name for name in names if name.split(" (", 1)[0] != PROOF_CI_GATE_ANCHOR]
+    if gate is None:
+        gap = (
+            "ci.yml has not started or published ci-gate for this head yet — the "
+            "sweeper will not merge until ci-gate concludes"
+        )
+    elif gate.get("status") != "completed" or gate.get("conclusion") != "success":
+        state = gate.get("conclusion") or gate.get("status") or "unknown"
+        gap = (
+            f"ci-gate has not concluded `success` on this head ({state}) — the sweeper "
+            "will not merge until it does"
+        )
+    else:
+        return (
+            f"the sweeper's proof anchors are incomplete on this head "
+            f"({', '.join(others[:8])}) — it will not merge until they conclude `success`"
+        )
+    if others:
+        gap = f"{gap} (also incomplete: {', '.join(others[:8])})"
+    return gap
 
 
 def _main_proof_reds(owner: str, repo: str, reference: str) -> dict[str, str]:
@@ -2099,7 +2237,10 @@ def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[s
         exists to prevent is not also the cheapest one to leave.
       ``unmerged`` — armed and not merged, with nothing red that is THIS head's:
         checks pending, all clean, nothing non-spurious at all, or every red
-        provably inherited from main (`_base_side_pre_merge`). The label means the
+        provably inherited from main (`_base_side_pre_merge`). "All clean" means
+        the sweeper's proof anchors are satisfied (`_proof_anchor_verdict`), not
+        merely that every check in the rollup concluded: before ci.yml starts, the
+        rollup holds only the fast workflows (#7969). The label means the
         sweeper MAY perform the merge; it does not mean this session has finished.
         Stay with the pull request until the merge lands.
 
@@ -2239,13 +2380,31 @@ def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[s
         return CI_FAILED_UNMERGED, detail
     if pending:
         state = "still running: " + ", ".join(pending[:8])
-    elif passed:
-        state = "every check has concluded clean; the next sweep should merge it"
     else:
-        state = (
-            "nothing non-spurious has checked this head, so no sweep will ever merge it "
-            "(an absence of red is not a pass) — push a change CI can see, or merge by hand"
-        )
+        # The buckets above only sort check runs that EXIST. A ci.yml run still queued
+        # in its concurrency group has published none (#7969), so "nothing pending,
+        # something passed" is not the sweeper's clean. Ask its anchor question of the
+        # same rollup instead: no extra REST call.
+        anchor_verdict, anchor_names = _proof_anchor_verdict(runs)
+        probe = f"`gh run list --workflow ci.yml --branch {branch} --limit 3`"
+        if anchor_verdict == "clean":
+            state = "every check has concluded clean; the next sweep should merge it"
+        elif passed:
+            state = (
+                f"{_proof_anchor_gap(runs, anchor_names)}. The checks that have concluded "
+                "are not the whole proof, so this head is NOT concluded-green: never merge "
+                "it by hand before the missing proof concludes (CLAUDE.md 'Merge on "
+                "CONCLUDED checks, never mid-flight', #3867). A queued ci.yml run shows in "
+                f"{probe}, not in the rollup"
+            )
+        else:
+            state = (
+                f"{_proof_anchor_gap(runs, anchor_names)}. No non-spurious check has "
+                f"passed on this head, and an absence of red is not a pass: if {probe} "
+                "shows its ci.yml run queued, wait for it; if none was ever scheduled (a "
+                "dropped webhook, `[skip ci]`), no sweep will ever merge it — push a "
+                "change CI can see"
+            )
     return "unmerged", (
         f"Pull request #{number} is armed with `{MERGE_ON_GREEN_LABEL}` but is NOT merged "
         f"yet — {state}. Arming the label buys a merge you do not have to perform; it does "
@@ -3848,15 +4007,17 @@ SESSION_END_STATES = (
     "PROVEN_OUTCOME",
     "EXACT_HUMAN_GATE",
     "EFFECT_UNKNOWN",
+    "PLATFORM_FAILURE",
     "ALL_SCOPED_LANES_BLOCKED",
     "DURABLE_EXECUTION_RUNNING",
     "MORE_WORK_EXISTS",
 )
-# The one member that is never a lawful stop. It is in the vocabulary precisely so a
-# session can name the state honestly mid-task; naming it as the END state is the
-# contradiction this guard refuses.
-NON_TERMINAL_SESSION_END_STATES = frozenset({"MORE_WORK_EXISTS"})
+# These members are diagnostics, never lawful terminal states. The guard does not infer
+# whether lanes are really blocked; it only refuses a token the session declared about
+# itself. That keeps enforcement auditable without turning this hook into a control plane.
+NON_TERMINAL_SESSION_END_STATES = frozenset({"MORE_WORK_EXISTS", "ALL_SCOPED_LANES_BLOCKED"})
 MORE_WORK_EXISTS = "more_work_exists"
+ALL_SCOPED_LANES_BLOCKED = "all_scoped_lanes_blocked"
 
 # A DECLARATION, never a mention. The marker is required so that a session quoting
 # the law ("MORE_WORK_EXISTS is not a valid stopping state") in its own final message
@@ -4173,9 +4334,12 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
                     "PRODUCTION_PROOF and ACCEPTANCE are distinct facts and none "
                     "implies the next. Before a substantial session ends, state one "
                     "line `SESSION END: <STATE>` with STATE in PROVEN_OUTCOME, "
-                    "EXACT_HUMAN_GATE, EFFECT_UNKNOWN, ALL_SCOPED_LANES_BLOCKED, "
-                    "DURABLE_EXECUTION_RUNNING, MORE_WORK_EXISTS - and "
-                    "MORE_WORK_EXISTS is never a valid stopping state."
+                    "EXACT_HUMAN_GATE, EFFECT_UNKNOWN, PLATFORM_FAILURE, "
+                    "ALL_SCOPED_LANES_BLOCKED, DURABLE_EXECUTION_RUNNING, "
+                    "MORE_WORK_EXISTS - and MORE_WORK_EXISTS plus "
+                    "ALL_SCOPED_LANES_BLOCKED are never valid stopping states. "
+                    "The latter is a diagnostic: internal blockers must be resolved, "
+                    "routed to their canonical owner, or bound to real durable execution."
                 ),
             }
         }
@@ -4326,17 +4490,31 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
     # branch is unaffected either way; the wrapper probes it before any delegation.
     declared = declared_session_end_state(str(payload.get("last_assistant_message") or ""))
     if declared in NON_TERMINAL_SESSION_END_STATES:
-        _block(
-            path,
-            state,
-            payload,
-            MORE_WORK_EXISTS,
-            f"This session classified its own end state as {declared}: authorized "
-            "work remains in scope. That is not a stopping state. Either finish the "
-            "remaining work, or reclassify honestly as PROVEN_OUTCOME, "
-            "EXACT_HUMAN_GATE, EFFECT_UNKNOWN, ALL_SCOPED_LANES_BLOCKED or "
-            "DURABLE_EXECUTION_RUNNING.",
+        code = (
+            ALL_SCOPED_LANES_BLOCKED
+            if declared == "ALL_SCOPED_LANES_BLOCKED"
+            else MORE_WORK_EXISTS
         )
+        if declared == "ALL_SCOPED_LANES_BLOCKED":
+            reason = (
+                "This session classified every current lane as blocked. That is a "
+                "diagnostic, not a stopping state. Internal dependencies are work: "
+                "resolve one, route it to the canonical owner, or prove a real durable "
+                "running owner plus return path. 'Not my lane' forbids conflicting "
+                "mutation; it does not finish the mission. A bounded worker may return "
+                "BLOCKED to its parent. A principal may stop only on PROVEN_OUTCOME, "
+                "an exact external boundary (EXACT_HUMAN_GATE, PLATFORM_FAILURE, "
+                "EFFECT_UNKNOWN), or DURABLE_EXECUTION_RUNNING."
+            )
+        else:
+            reason = (
+                f"This session classified its own end state as {declared}: authorized "
+                "work remains in scope. That is not a stopping state. Either finish the "
+                "remaining work, route/own its internal blockers, or reclassify honestly "
+                "as PROVEN_OUTCOME, EXACT_HUMAN_GATE, PLATFORM_FAILURE, EFFECT_UNKNOWN "
+                "or DURABLE_EXECUTION_RUNNING."
+            )
+        _block(path, state, payload, code, reason)
         return
 
     baseline = state.get("baseline") or {}
@@ -4824,6 +5002,32 @@ def _delegate_to_evaluated_hook(payload: dict[str, Any], raw: bytes) -> bool:
     return True
 
 
+
+def _agentos_assist(root: Path, payload: dict[str, Any]) -> None:
+    """Best-effort PostToolUse annotation; isolated from Stop and its private state."""
+    try:
+        # Most Bash calls are unrelated. Avoid a Python child/store scan for those.
+        command = (payload.get("tool_input") or {}).get("command", "")
+        if payload.get("hook_event_name") != "PostToolUse" or not isinstance(command, str) or not command.startswith("gh pr create "):
+            return
+        result = subprocess.run(
+            [sys.executable, str(root / "scripts/agentos.py"), "ship-capture", "--hook"],
+            cwd=root, input=json.dumps(payload), text=True, capture_output=True, timeout=5,
+        )
+        if result.returncode or len(result.stdout) > 16384:
+            raise ValueError("capture report unavailable")
+        report = json.loads(result.stdout)
+        if report.get("schema") != "agentos.ship_capture.v1" or report.get("enforcement") != "REPORT_ONLY":
+            raise ValueError("unsupported capture report")
+        if report.get("code") == "CAPTURE_UNSUPPORTED":
+            return
+        context = "AGENT OS REPORT_ONLY: " + str(report.get("code")) + ". " + str(report.get("message", ""))
+        _emit({"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": context[:2048]}})
+    except Exception:
+        # No guard_error path, no _block, no state file, no authority inference.
+        print("AGENT OS REPORT_ONLY: capture result unavailable; inspect the record before retrying.", file=sys.stderr)
+
+
 def main() -> None:
     payload, raw = _load_payload_and_raw()
     if payload is None:
@@ -4833,8 +5037,11 @@ def main() -> None:
     root = _repo_root(payload)
     if root is None:
         return
-    path = _state_path(root, payload)
     event = str(payload.get("hook_event_name") or "")
+    if event == "PostToolUse":
+        _agentos_assist(root, payload)
+        return
+    path = _state_path(root, payload)
     try:
         if event == "SessionStart":
             _session_start(root, path, payload)

@@ -1,0 +1,11 @@
+{
+  "former_head": "51e616f0e7339241ab6a2ed125ab53282ee48b12",
+  "integrated_base": "4f4f64931d6e33d61b901c313132a5116e3f0c32",
+  "canonical_css": "f2599f8e",
+  "pages": 121,
+  "old_asset_matches_canonical": false,
+  "old_asset_diff_is_whitespace_only": true,
+  "latest_main_rebake_resolves_older_two_hash_report": true,
+  "additional_generated_page_edits": 0,
+  "new_guard_checks_canonical_template_bytes": true
+}

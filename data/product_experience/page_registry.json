@@ -7677,6 +7677,53 @@
       "notes": []
     },
     {
+      "page_id": "macro:ontology",
+      "repo": "macro",
+      "route": "/ontology.html",
+      "route_kind": "page",
+      "source_template": "templates/ontology.html.j2",
+      "builder": [
+        "scripts/build_ontology_explorer.py"
+      ],
+      "data_sources": [],
+      "access_shell": "anonymous",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "product_nav.capital_and_regimes",
+      "archetype": "instrument_analyzer",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "Which step of the oil-to-rates path is live now?",
+      "owner": "market_ontology_f04_x1",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": true,
+      "bilingual": true,
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "site_access.v1:default_insider"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "config/site_access.yml:115",
+        "scripts/build_ontology_explorer.py:38",
+        "site/ontology.html",
+        "templates/ontology.html.j2",
+        "templates/_navlinks.html.j2:296"
+      ],
+      "notes": [
+        "scoped F04-X1 hand-edit; page_registry.json kept unregenerated per M1 ruling to avoid 4 unclassified sibling rows",
+        "current owner readings served only by authenticated /api/ontology/explorer/v1, not by these static assets"
+      ]
+    },
+    {
       "page_id": "macro:options",
       "repo": "macro",
       "route": "/options.html",

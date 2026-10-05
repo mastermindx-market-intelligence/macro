@@ -1,0 +1,81 @@
+{
+  "schema": "commodity.china_gold_premium_quality.v1",
+  "checked_at": "2026-10-05T09:05:34+00:00",
+  "status": "honest_unavailable",
+  "render_consistent": true,
+  "machine_projection_consistent": true,
+  "available": false,
+  "headline_method": null,
+  "headline_state": "unavailable",
+  "premium_pct": null,
+  "expected_display_source": null,
+  "rendered_display_source": "canonical",
+  "expected_currency": null,
+  "rendered_currency": "USD",
+  "rendered_state": "unavailable",
+  "rendered_source_asof": "",
+  "rendered_premium_pct": null,
+  "source_fresh": false,
+  "source_asof": null,
+  "sources": [],
+  "reason_code": "stale_observation",
+  "official_canonical_available": false,
+  "methods": {
+    "canonical": {
+      "available": false,
+      "fresh": false,
+      "asof": null
+    },
+    "intraday": {
+      "available": false,
+      "fresh": false,
+      "asof": null
+    },
+    "close_proxy": {
+      "available": true,
+      "fresh": false,
+      "asof": "2026-09-30T07:30:00+00:00"
+    }
+  },
+  "history_points": 0,
+  "stats_5_ready": false,
+  "stats_30_ready": false,
+  "violations": [],
+  "source_artifacts": [
+    {
+      "role": "sge",
+      "dataset_id": "commodity.gold.sge_au9999.close",
+      "registry_status": "PRODUCED",
+      "group": "gold_china_basis",
+      "name": "sge_au9999",
+      "column": "rmb_per_g",
+      "path": "data/gold_china_basis/sge_au9999.parquet",
+      "exists": true,
+      "rows": 253,
+      "sha256": "1e5c51a68f913fba6b5e0fcf76238ac9afce7f7a18f002d402b8cbfcb2efe118",
+      "asof": "2026-09-30T07:30:00+00:00",
+      "selected_asof_present": true
+    },
+    {
+      "role": "global",
+      "dataset_id": "commodity.gold.xaucny.close_ref",
+      "registry_status": "PRODUCED",
+      "group": "gold_china_basis",
+      "name": "xaucny_spot",
+      "column": "cny_per_oz",
+      "path": "data/gold_china_basis/xaucny_spot.parquet",
+      "exists": true,
+      "rows": 267,
+      "sha256": "eb86fd5763c5ce2af512d9bb2640b8fe29b081df5887297926865fa23c4677e1",
+      "asof": "2026-10-02T07:30:00+00:00",
+      "selected_asof_present": true
+    }
+  ],
+  "close_proxy_dataos_promotion_ready": false,
+  "close_proxy_dataos_promotion_blockers": [
+    "status is honest_unavailable, not available_fresh",
+    "5-session average is not ready",
+    "30-session range is not ready",
+    "headline method is none, required close_proxy"
+  ]
+}

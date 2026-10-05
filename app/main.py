@@ -1829,7 +1829,8 @@ def _portfolio_load_holdings(uid: str) -> tuple[list[dict], str]:
     Positions mode first: open portfolio_positions (status=open) → shares + entry_price
     (exactly like brain_gateway._tool_get_watchlist). When there are no open positions,
     fall back to the watchlist symbols (equal-weight; shares/entry_price None). Reads via
-    the gateway's service-role _sb_get; any error → empty list (→ empty-book brief).
+    the gateway's service-role `_sb_get`; a failed read returns `unspecified`, and
+    the consuming endpoint fails closed before composing or caching a brief.
 
     W6 / packet amendment A8: this function is the ONLY place that knows which of the two
     queries answered, so it is the only place that can name the population. It is
@@ -1894,7 +1895,8 @@ def portfolio_brief(response: Response, user: dict = Depends(require_user)):
     """Pro-only personalized daily portfolio brief (portfolio_brief.v2).
 
     401 (require_user) → not signed in. 403 {error:pro_required,tier} → not Pro.
-    503 {error:ctx_unavailable} → the nightly ctx artifact is missing/corrupt.
+    503 {error:ctx_unavailable} → the nightly ctx artifact is missing/corrupt;
+    503 {error:portfolio_store_unavailable} → private holdings did not answer.
     Cache: in-process per (uid, ctx-file-mtime, holdings fingerprint), TTL 300s;
     Cache-Control private,no-store.
     """
@@ -1921,6 +1923,15 @@ def portfolio_brief(response: Response, user: dict = Depends(require_user)):
     # Holdings first: the population they carry is part of the cache key (see
     # _holdings_fingerprint), so the lookup cannot happen before the load.
     holdings, population = _portfolio_load_holdings(uid)
+    if population == "unspecified":
+        # The private store did not answer. An unknown book is NOT an empty book: a
+        # 200 here would be composed (and cached for 5 min) as "add names to your
+        # watchlist" — the exact seam Terminal#169 / macro#6819 (C2, 2026-10-04)
+        # named. Fail closed before composing or caching; the Terminal maps 503 to
+        # its existing "unavailable" state and never shows an empty-book CTA.
+        raise HTTPException(
+            503, detail={"error": "portfolio_store_unavailable"}
+        )
 
     now = time.monotonic()
     ckey = (uid, mtime, _holdings_fingerprint(holdings, population))
@@ -1981,7 +1992,8 @@ def portfolio_changes(response: Response, payload: dict = Body(default=None),  #
     Body: {"previous": <state_digest from an earlier brief>}. A missing/blank previous
     is a FIRST visit and returns an empty change list — never a fabricated "everything
     is new". 401 → not signed in. 403 {error:pro_required,tier} → not Pro (same gate as
-    the brief; this endpoint reads the same Pro-tier ctx). 503 → ctx unavailable.
+    the brief; this endpoint reads the same Pro-tier ctx). 503 → ctx or private holdings
+    unavailable; no change digest is emitted from unknown state.
     """
     response.headers["Cache-Control"] = "private, no-store"
     uid = user.get("id") or user.get("email") or ""
@@ -2007,6 +2019,12 @@ def portfolio_changes(response: Response, payload: dict = Body(default=None),  #
         raise HTTPException(503, "portfolio changes unavailable") from exc
 
     holdings, population = _portfolio_load_holdings(uid)
+    if population == "unspecified":
+        # Same boundary as the brief: a failed read must not diff as "every name
+        # left your book" against the client's stored digest.
+        raise HTTPException(
+            503, detail={"error": "portfolio_store_unavailable"}
+        )
     tickers = [r.get("ticker") for r in holdings if isinstance(r, dict)]
     current = snapshot_state(ctx, tickers)
 
@@ -2283,6 +2301,14 @@ app.include_router(intel_hub_market_pulse_router)
 # site-full entitlement and carries an all-false authority block on every read.
 from app.market_memory import router as market_memory_router  # noqa: E402
 app.include_router(market_memory_router)
+
+# F04-X1 WTI Live Trace. /ontology.html is a public shell holding no current
+# value; this is the only route that serves one, behind the same
+# require_user -> enforce_site_full(always=True) authority as the desks above.
+# It composes read-only over the existing transmission artifacts and owns no
+# store, cache, scheduler or second evaluation.
+from app.ontology_explorer import router as ontology_explorer_router  # noqa: E402
+app.include_router(ontology_explorer_router)
 
 # Filing Forensics private state transport. The public page is only a shell;
 # this route enforces the same authenticated site_full entitlement as the paid

@@ -1,0 +1,94 @@
+Error occurred in event listener
+Traceback (most recent call last):
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_page.py", line 308, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 455, in handle
+    raise e
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 442, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 478, in _handle_internal
+    await handler_finished_future
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 469, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_impl_to_api_mapping.py", line 139, in wrapper_func
+    return handler(
+        *list(map(lambda a: self.from_maybe_impl(a), args))[:arg_count]
+    )
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/uiux-basket-load-focus-20260921/research/evidence/uiux-basket-load-focus-20260921/verify_late_load.py", line 40, in <lambda>
+    page.route('**/' + route, lambda request, fixture=fixture: request.fulfill(status=200, content_type='text/html', body=fixture))
+                                                               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py", line 790, in fulfill
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.fulfill(
+        ^^^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        )
+        ^
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 391, in fulfill
+    await self._handle_route(
+    ...<3 lines>...
+    )
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 468, in _handle_route
+    raise e
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 464, in _handle_route
+    await callback()
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 459, in _inner_fulfill
+    await self._race_with_page_close(self._channel.send("fulfill", None, params))
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 564, in _race_with_page_close
+    raise cast(BaseException, fut.exception())
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+TypeError: Route.fulfill: Object of type Request is not JSON serializable
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/uiux-basket-load-focus-20260921/research/evidence/uiux-basket-load-focus-20260921/verify_late_load.py", line 41, in <module>
+    response = page.goto(f'http://127.0.0.1:{server.server_port}/{route}', wait_until='domcontentloaded')
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py", line 9875, in goto
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.goto(
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_page.py", line 560, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py", line 156, in goto
+    await self._channel.send(
+        "goto", self._navigation_timeout, locals_to_params(locals())
+    )
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.goto: Timeout 30000ms exceeded.
+Call log:
+  - navigating to "http://127.0.0.1:54153/basket/ai_semiconductors.html", waiting until "domcontentloaded"
+
+Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed

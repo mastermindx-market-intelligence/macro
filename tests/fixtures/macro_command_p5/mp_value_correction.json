@@ -1,0 +1,31 @@
+{
+  "workspace": {
+    "id": "monetary_policy",
+    "title": {"en": "Policy", "zh": "政策"},
+    "subtitle": {"en": "", "zh": ""}
+  },
+  "region": {"code": "US", "display_name": "United States", "supported": true},
+  "availability": {"state": "CURRENT"},
+  "headline": {
+    "status": "ABSENT",
+    "null_reason": "NOT_APPLICABLE",
+    "effective_date": "2026-09-04",
+    "method_version": "monetary_policy.compose.v1",
+    "hysteresis": {"applied": false, "band": 0, "held_prior": false}
+  },
+  "changes": {"comparability": "NO_EARLIER_PUBLICATION", "deltas": []},
+  "corrections": {
+    "correction_state": "REVISED",
+    "note": "Same reference period as the predecessor print, but one or more owner-native source values changed: this print supersedes the prior one as a revision."
+  },
+  "metrics": {
+    "items": [{
+      "metric_id": "fed_funds_rate",
+      "value": 3.63,
+      "unit": "percent",
+      "definition_version": "v1",
+      "status": "PRESENT"
+    }]
+  },
+  "axes": {"items": []}
+}

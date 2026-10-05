@@ -558,3 +558,51 @@ def test_logo_token_is_runtime_only() -> None:
     assert not re.search(r"\bsk_[A-Za-z0-9_-]{16,}\b", owned_runtime)
     assert "LOGO_DEV_PUBLISHABLE_KEY" in update
     assert "secrets.LOGO_DEV_PUBLISHABLE_KEY" in workflow
+
+
+def test_mobile_shared_chrome_controls_keep_touch_floor() -> None:
+    """Primary mobile chrome controls must not regress below the 40px touch floor."""
+    for source in (THEME_JS, SITE_THEME_JS):
+        assert (
+            ".nav-toggle{display:inline-flex;align-items:center;justify-content:center;"
+            "width:42px;height:40px"
+        ) in source
+        assert ".nav-toggle:focus-visible{outline:2px solid currentColor;" in source
+        assert (
+            ".nav-settings-btn{display:inline-flex;align-items:center;justify-content:center;"
+            "width:40px;height:40px"
+        ) in source
+        assert ".nav-settings-btn:focus-visible{outline:2px solid currentColor;" in source
+        assert ".settings-close{width:40px;height:40px;border-radius:var(--r-sm,10px)" in source
+        assert ".settings-expand{margin-left:auto;width:40px;height:40px;border-radius:var(--r-sm,10px)" in source
+        assert ".settings-pop .lang-toggle{display:inline-flex;align-items:center;position:relative;min-height:40px" in source
+        assert ".settings-pop .lang-toggle:focus-visible{outline:2px solid var(--link,var(--blue));" in source
+        assert ".set-seg-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;touch-action:manipulation}" in source
+        assert ".settings-acct .sa-btn{min-height:40px;touch-action:manipulation}" in source
+        assert ".settings-acct-in .sa-signout{min-height:40px;touch-action:manipulation}" in source
+        assert ".settings-acct-in .sr-main{flex:1;min-width:0;min-height:40px;display:flex;" in source
+        assert ".settings-acct-in .sr-main[role=\"button\"]:focus-visible{outline:2px solid" in source
+        assert "if (t.getAttribute('role') !== 'switch') t.setAttribute('role', 'switch');" in source
+        assert source.count("touch-action:manipulation") >= 9
+
+    mobile = REFRESH_CSS.split("@media (max-width: 560px)", 1)[1].split(
+        "@media (min-width: 901px)", 1
+    )[0]
+    assert ".site-nav.has-nav-toggle .nav-ctrls .terminal-link," in mobile
+    assert "min-height: 40px;" in mobile
+    assert "touch-action: manipulation;" in mobile
+
+    approved = REFRESH_CSS.split("APPROVED MOCKUP — SOURCE-OF-TRUTH PORT", 1)[1]
+    tablet = approved.split("@media (max-width: 900px)", 1)[1].split(
+        "@media (max-width: 560px)", 1
+    )[0]
+    assert ".site-nav.has-nav-toggle .nav-ctrls .terminal-link," in tablet
+    assert "min-height: 40px;" in tablet
+    assert "touch-action: manipulation;" in tablet
+    assert ".site-nav.has-nav-toggle .nav-search.ticker-search," in tablet
+    assert "height: 40px;" in tablet
+
+    interaction = REFRESH_CSS.split(
+        "PREMIUM INTERACTION PARITY — keyboard + touch feedback", 1
+    )[1]
+    assert ".nav-ctrls .terminal-link," in interaction

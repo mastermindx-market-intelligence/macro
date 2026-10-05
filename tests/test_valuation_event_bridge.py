@@ -359,7 +359,12 @@ def test_panel_renders_one_line_per_event_class_with_target_emphasis():
         # The target emphasis span wraps the direction word, not the class label.
         assert '<span class="va-event-target">' in html, f"{cls!r}: target span missing"
         # The typed-null copy must NOT appear alongside a populated bridge.
-        assert "No filing on file yet for this company." not in html, (
+        # Scoped to the visible bridge line: the embedded controls JSON also
+        # carries the typed-null sentence as the proposal's own plain-word
+        # rationale field, and that payload is data, not rendered copy.
+        _line = re.search(r'<p[^>]*id="va-event-bridge"[^>]*>(.*?)</p>', html, re.DOTALL)
+        assert _line, f"{cls!r}: bridge line element missing"
+        assert "No filing on file yet for this company." not in _line[1], (
             f"{cls!r}: typed-null copy leaked into a populated render"
         )
 
