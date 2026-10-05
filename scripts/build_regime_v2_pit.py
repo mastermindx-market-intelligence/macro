@@ -40,9 +40,11 @@ Known honesty bounds (documented, not fixable from this store):
   * The vintage store keeps INITIAL releases only — for GDPNOW that is the first
     nowcast of each quarter; the live intra-quarter updates are genuinely new
     information a real-time reader had but this spine does not.
-  * For diff-window legs (63d / 252d), dates within one window AFTER coverage
-    begins compare a vintage current value against a latest-revised base (seam
-    mixing); flagging is by current-value basis only.
+  * Legacy pit_class remains a current-value source-region label only. Additive
+    macro_window_* columns expose revised/unknown inputs across the actual slow
+    component endpoints and smoothing windows. No score or state is changed.
+  * Initial-release input support is not full-vintage information, market-source
+    availability, fitted-model provenance, or proof of historical forecast issuance.
 
 ADDITIVE: writes ONLY data/regime/regime_v2_pit.parquet and
 data/regime/regime_v2_pit_divergence.json. Never touches regime_history.parquet,
@@ -54,6 +56,7 @@ Usage:  python scripts/build_regime_v2_pit.py [--out-dir data/regime]
 from __future__ import annotations
 
 import argparse
+import datetime as _dt
 import json
 import logging
 import os
@@ -84,6 +87,225 @@ LEGS: dict[str, dict[str, str]] = {
 }
 
 PIT_CLASSES = ("pit_vintage", "revised_latest", "mixed")
+
+# Descriptive dependencies of the existing slow components, not another scoring
+# implementation. Tests bind these to the actual axes.monthly_sign calls and
+# inputs.build_features rolling mean. All offsets refer to aligned feature rows,
+# NOT months, calendar days or exchange sessions. Scoring itself is unchanged.
+MACRO_WINDOW_SPECS = {
+    "payrolls": {"scored_feature": "payrolls", "lag_rows": 63, "smooth_rows": 1, "min_periods": 1},
+    "indpro": {"scored_feature": "indpro", "lag_rows": 252, "smooth_rows": 1, "min_periods": 1},
+    "wei": {"scored_feature": "wei", "lag_rows": 65, "smooth_rows": 1, "min_periods": 1},
+    "gdpnow": {"scored_feature": "gdpnow", "lag_rows": 63, "smooth_rows": 1, "min_periods": 1},
+    "sticky_cpi": {"scored_feature": "sticky_cpi_3m", "lag_rows": 63, "smooth_rows": 63, "min_periods": 21},
+}
+MACRO_WINDOW_COLUMNS = (
+    "macro_window_basis", "macro_window_revised_legs",
+    "macro_window_unknown_legs", "macro_window_active_count",
+)
+
+
+def _per_value_source_dates(source: pd.Series, index: pd.DatetimeIndex) -> pd.Series:
+    """For each row in `index`, the source's last index date <= row date where
+    the source had a finite observation. NaT when no prior finite observation
+    exists in the source.
+
+    Matches `engine/inputs.put()`: duplicate stamps are de-duplicated keeping
+    the LAST row (the value carried by the forward-fill), BEFORE the dropna
+    pass — so a finite-then-NaN duplicate at the same stamp does not resurrect
+    an earlier observation as the per-value source date.
+    """
+    if not isinstance(source, pd.Series) or len(source) == 0:
+        return pd.Series(pd.NaT, index=index)
+    if source.index.has_duplicates:
+        source = source[~source.index.duplicated(keep="last")]
+    finite = source.dropna()
+    if finite.empty:
+        return pd.Series(pd.NaT, index=index)
+    src_idx = pd.DatetimeIndex(finite.index)
+    if src_idx.has_duplicates:
+        src_idx = src_idx[~src_idx.duplicated(keep="last")]
+    # F6: normalise a tz-aware index to naive UTC before comparison; if any
+    # step raises, the leg is UNKNOWN (the caller marks every finite row
+    # unknown_inputs and never lets the exception escape).
+    try:
+        if isinstance(src_idx, pd.DatetimeIndex) and src_idx.tz is not None:
+            src_idx = src_idx.tz_convert("UTC").tz_localize(None)
+        if isinstance(index, pd.DatetimeIndex) and index.tz is not None:
+            compare_index = index.tz_convert("UTC").tz_localize(None)
+        else:
+            compare_index = index
+        if src_idx.hasnans or not src_idx.is_monotonic_increasing:
+            src_idx = src_idx.sort_values()
+        positions = src_idx.searchsorted(compare_index, side="right") - 1
+    except (ValueError, TypeError):
+        return pd.Series(pd.NaT, index=index)
+    out = pd.Series(pd.NaT, index=index)
+    valid = (positions >= 0) & (positions < len(src_idx))
+    if valid.any():
+        out.iloc[valid.nonzero()[0]] = src_idx[positions[valid]]
+    return out
+
+
+def macro_window_provenance(
+    features: pd.DataFrame,
+    active: dict[str, pd.Series],
+    coverage_start: dict[str, pd.Timestamp | None],
+    *,
+    sources: dict[str, pd.Series] | None = None,
+) -> tuple[pd.DataFrame, dict]:
+    """Describe the contributing slow-component inputs, never certify a replay.
+
+    Uses the SAME aligned raw features that the numeric classifier consumed.
+    A difference depends on its two endpoints. Sticky CPI additionally depends
+    on the non-null observations of BOTH rolling means, honoring min_periods;
+    missing observations do not become revised inputs or a uniform embargo.
+
+    Per-value provenance: when `sources` provides an un-forward-filled leg
+    series for a leg, `revised` is set from the per-value source date (the
+    last index date at which the source had a finite observation, carried
+    forward the same way the value is) rather than the row's own date. A
+    forward-filled post-coverage row whose supplying observation predates
+    `first` is therefore still `revised_fallback_inputs`, never
+    `initial_vintage_inputs`. A NaN initial-vintage value never upgrades a
+    label.
+
+    Default path is UNKNOWN. If `sources` is None, or lacks a leg, that
+    leg's per-value source date is UNKNOWN and every row that depends on
+    it resolves to `unknown_inputs`. The forward-filled feature column is
+    never used as its own source — without the un-filled series the
+    function cannot tell an observed value from one carried forward from
+    before coverage, and the conservative label is the only honest one.
+
+    Source-series comparison normalises a timezone-aware source index to
+    naive UTC before lookup; if comparison is still impossible the leg is
+    UNKNOWN, never an exception. None coverage means a known latest-
+    revised fallback. A coverage value that is not a string, date or
+    Timestamp (bool, int, float, NaT, etc.) is unparseable and resolves
+    that leg to UNKNOWN. An absent coverage key or component activity
+    series is UNKNOWN, not proof of inactivity. The legacy pit_class,
+    model inputs, scores and state machine are never modified.
+    """
+    if not isinstance(features, pd.DataFrame):
+        raise ValueError("aligned feature frame required")
+    index = features.index
+    if (not isinstance(index, pd.DatetimeIndex) or index.hasnans
+            or not index.is_unique or not index.is_monotonic_increasing):
+        raise ValueError("unique ordered datetime feature index required")
+    states = pd.DataFrame(index=index)
+    active_count = pd.Series(0, index=index, dtype="int64")
+    for leg, spec in MACRO_WINDOW_SPECS.items():
+        activity = active.get(leg)
+        if not isinstance(activity, pd.Series) or not pd.api.types.is_bool_dtype(activity.dtype):
+            states[leg] = "unknown_inputs"
+            continue
+        activity = activity.reindex(index)
+        is_active = activity.fillna(False).astype(bool)
+        active_count += is_active.astype(int)
+        unknown_activity = activity.isna()
+        raw = features.get(leg, pd.Series(np.nan, index=index))
+        numeric = pd.to_numeric(raw, errors="coerce")
+        finite = pd.Series(np.isfinite(numeric.to_numpy(dtype=float, na_value=np.nan)), index=index)
+        if pd.api.types.is_bool_dtype(raw.dtype):
+            finite[:] = False
+        invalid = raw.notna() & ~finite
+        revised = pd.Series(False, index=index)
+        unknown = invalid.copy()
+        if leg not in coverage_start:
+            unknown |= finite
+        elif coverage_start[leg] is None:
+            revised = finite.copy()
+        else:
+            raw_coverage = coverage_start[leg]
+            # F7: only string/date/Timestamp values are valid coverage starts;
+            # bool/int/float/None-coverage are unparseable -> UNKNOWN.
+            if not isinstance(raw_coverage, (str, pd.Timestamp, _dt.date, np.datetime64)):
+                unknown |= finite
+            else:
+                first = None
+                try:
+                    first = pd.Timestamp(raw_coverage)
+                except (ValueError, TypeError):
+                    first = None
+                if first is None or pd.isna(first) or (first.tzinfo is None) != (index.tz is None):
+                    unknown |= finite
+                else:
+                    # F1: default path is UNKNOWN — the forward-filled feature
+                    # column is never used as its own source.
+                    source = None
+                    if sources is not None and isinstance(sources, dict) and leg in sources:
+                        source = sources[leg]
+                    if not isinstance(source, pd.Series) or len(source) == 0:
+                        unknown |= finite
+                    else:
+                        source_dates = _per_value_source_dates(source, index)
+                        try:
+                            revised = finite & source_dates.notna() & (source_dates < first)
+                            unknown |= finite & source_dates.isna()
+                        except (TypeError, ValueError):
+                            # Defensive: a comparison that cannot be resolved
+                            # (e.g. tz-aware coverage vs. naive source dates
+                            # surviving _per_value_source_dates). The leg's
+                            # finite rows become unknown_inputs rather than
+                            # raising.
+                            log.warning("regime_v2_pit: %s source-date comparison failed; leg marked unknown_inputs", leg)
+                            unknown |= finite
+                            revised = pd.Series(False, index=index)
+        window, minimum, lag = spec["smooth_rows"], spec["min_periods"], spec["lag_rows"]
+        counts = finite.astype(int).rolling(window, min_periods=1).sum()
+        usable = counts >= minimum
+        revised_count = revised.astype(int).rolling(window, min_periods=1).sum()
+        unknown_count = unknown.astype(int).rolling(window, min_periods=1).sum()
+        complete = usable & usable.shift(lag, fill_value=False)
+        has_unknown = (unknown_count + unknown_count.shift(lag).fillna(0)) > 0
+        has_revised = (revised_count + revised_count.shift(lag).fillna(0)) > 0
+        row = pd.Series("not_active", index=index)
+        row.loc[is_active] = "unknown_inputs"
+        known = is_active & complete & ~has_unknown
+        row.loc[known & has_revised] = "revised_fallback_inputs"
+        row.loc[known & ~has_revised] = "initial_vintage_inputs"
+        row.loc[unknown_activity] = "unknown_inputs"
+        states[leg] = row
+
+    unknown_any = states.eq("unknown_inputs").any(axis=1)
+    revised_any = states.eq("revised_fallback_inputs").any(axis=1)
+    basis = pd.Series("no_active_macro_components", index=index)
+    basis.loc[active_count > 0] = "initial_vintage_inputs"
+    basis.loc[revised_any] = "revised_fallback_inputs"
+    basis.loc[unknown_any] = "unknown_inputs"
+
+    def names(status: str) -> pd.Series:
+        result = pd.Series("", index=index)
+        for leg in MACRO_WINDOW_SPECS:
+            mask = states[leg].eq(status)
+            result.loc[mask] = result.loc[mask].map(lambda value: value + "," if value else "") + leg
+        return result
+
+    result = pd.DataFrame({
+        "macro_window_basis": basis,
+        "macro_window_revised_legs": names("revised_fallback_inputs"),
+        "macro_window_unknown_legs": names("unknown_inputs"),
+        "macro_window_active_count": active_count,
+    }, index=index)
+    audit = {
+        "schema": "regime_v2_pit.macro_window_basis.v1",
+        "scope": "active_slow_component_inputs_only",
+        "method": "source_region_and_actual_nonnull_transform_support",
+        "offset_basis": "aligned_business_day_feature_rows_not_exchange_sessions",
+        "dependencies": {key: dict(value) for key, value in MACRO_WINDOW_SPECS.items()},
+        "counts": {str(key): int(value) for key, value in basis.value_counts().items()},
+        "by_leg": {leg: {str(key): int(value) for key, value in states[leg].value_counts().items()}
+                   for leg in MACRO_WINDOW_SPECS},
+        "legacy_pit_class_changed": False,
+        "numeric_model_changed": False,
+        "historical_replay_eligible": False,
+        "market_input_availability_verified": False,
+        "fitted_model_and_state_history_verified": False,
+        "actual_historical_issuance_verified": False,
+        "state_columns_qualified": False,
+        "note": "Initial-vintage input support is not complete as-of information, fitted-model provenance or an issued forecast. macro_window_* columns qualify the slow-component input windows only; they do not qualify quad, pending_quad, or any other state column because confirmation hysteresis can carry a state entered under revised inputs into rows whose inputs are initial-vintage.",
+    }
+    return result, audit
 
 ERAS: dict[str, tuple[str | None, str | None]] = {
     "pre_2008": (None, "2007-12-31"),
@@ -346,6 +568,34 @@ def divergence_audit(pit: pd.DataFrame, rev: pd.DataFrame,
 # --------------------------------------------------------------------------- #
 # Build
 # --------------------------------------------------------------------------- #
+def _state_inheritance(quad: pd.Series | None, basis: pd.Series) -> dict:
+    """Count and first/last date of rows whose `macro_window_basis` is
+    `initial_vintage_inputs` while the start of their current contiguous
+    `quad` run has a different basis. Confirmation hysteresis can carry a
+    state entered under revised inputs into rows whose inputs are
+    initial-vintage, so the `macro_window_*` columns must not be used to
+    qualify `quad`, `pending_quad`, or any other state column. The audit
+    always reports this count so consumers can see the surface area of
+    the effect — `state_columns_qualified` is False regardless of size."""
+    empty = {"n_rows": 0, "first_date": None, "last_date": None}
+    if quad is None or len(quad) == 0 or len(basis) == 0:
+        return empty
+    df = pd.DataFrame({"quad": quad, "basis": basis}).dropna(subset=["quad"])
+    if df.empty:
+        return empty
+    grp = (df["quad"] != df["quad"].shift()).cumsum()
+    df = df.assign(_run_start_basis=df.groupby(grp)["basis"].transform("first"))
+    flagged = df[(df["basis"] == "initial_vintage_inputs")
+                 & (df["_run_start_basis"] != "initial_vintage_inputs")]
+    if flagged.empty:
+        return empty
+    return {
+        "n_rows": int(len(flagged)),
+        "first_date": str(pd.Timestamp(flagged.index[0]).date()),
+        "last_date": str(pd.Timestamp(flagged.index[-1]).date()),
+    }
+
+
 def build_frames(vintages: pd.DataFrame | None = None) -> tuple[pd.DataFrame, dict]:
     """Returns (pit_history_frame, divergence_dict). Pure compute — no writes."""
     from collectors.fred import load_vintages
@@ -392,6 +642,9 @@ def build_frames(vintages: pd.DataFrame | None = None) -> tuple[pd.DataFrame, di
     out["pit_class"] = pc["pit_class"]
     out["fallback_notes"] = pc["fallback_notes"]
     out["vintage_store_asof"] = vintage_store_asof
+    windows, window_audit = macro_window_provenance(f_pit, active, coverage_start, sources=overrides)
+    out = out.join(windows.reindex(out.index))
+    window_audit["state_inheritance"] = _state_inheritance(out.get("quad"), out["macro_window_basis"])
 
     committed = None
     hist_path = config.data_dir() / "regime" / "regime_history.parquet"
@@ -416,6 +669,7 @@ def build_frames(vintages: pd.DataFrame | None = None) -> tuple[pd.DataFrame, di
         }
         for leg, spec in LEGS.items()
     }
+    div["macro_window_provenance"] = window_audit
     div["columns_dropped_vs_regime_history"] = []  # full 29-column parity
     return out, div
 
@@ -464,6 +718,8 @@ def main(argv: list[str] | None = None) -> int:
           f"{h['pct_dates_quad_divergent']}% of comparable dates "
           f"(worst era {h['worst_era']}: {h['worst_era_pct']}%)")
     print(f"pit_class counts: {div['pit_class_counts']}")
+    print(f"slow-component input-window basis: {div['macro_window_provenance']['counts']}")
+    print("Window support is not historical forecast or full replay certification.")
     return 0
 
 
