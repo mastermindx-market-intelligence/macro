@@ -1,5 +1,7 @@
 # TOI CEO start prompt — recommission existing program
 
+**New W1 review artifact:** [grouped repair patch and replay proof](w1_grouped_repair/README.md) address the existing #7107 defects in an isolated copy: four validators and37tests pass. The original pending edits and source branch remain untouched; actual custody, adoption and acceptance are still required. This is not another research proposal or W3 admission.
+
 **October 5 current frontier:** Read `TOI_FIRST_VERTICAL_STEERING_2026-10-05.md` before the historical sections below. S16's planning relationship is adjudicated in #7107/5985330888; the active candidate is the unadmitted 22-slot Daily proposal in #8332/5985350325, not the union of research grids. Bind search-bearing identities inside native config hashing and never infer registration from `effective_n()>0`; see `native_accounting/README.md`. #8428 is a real but unaccepted consumer source change. Its blocked capture preparation grants no retry or visual proof. W1 custody, W2 source/use admission, exact study acceptance, prospective and consumer proof remain owed.
 
 **Text-source completion:** Read `donor_evidence/INTAKE_README.md` for publication scope. All 22 original text members are preserved, including the unregistered 218-configuration and 201-hypothesis tables; the PDF rendering is the only archive member omitted. The donor original README is retained unchanged. No research design, source-custody transfer or W3 admission is inferred from this publication.
