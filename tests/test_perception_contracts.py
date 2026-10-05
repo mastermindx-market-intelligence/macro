@@ -220,12 +220,15 @@ class TestDeescalation:
         rv = assess({"risk_radar": rr, "liquidity_overlay": "neutral"})
         assert rv["present"] and rv["suppressed"]
         assert rv["receding"] is False and rv["turn_confirmed"] is False
-        assert "escalating" in rv["headline_en"]
-        # and with an eligible verdict the green path is intact
+        assert rv["headline_en"] == "Recovery not confirmed — risk warning remains"
+        # Eligibility is necessary but no longer sufficient: without a fresh
+        # liquidity event and measured-clear local veto, the panel stays unconfirmed.
         rr2 = dict(rr)
         rr2["deescalation"] = {**rr["deescalation"], "eligible": True}
         rv2 = assess({"risk_radar": rr2, "liquidity_overlay": "neutral"})
-        assert rv2["receding"] is True
+        assert rv2["receding"] is False
+        assert rv2["turn_confirmed"] is False
+        assert rv2["suppressed"] is True
 
 
 if __name__ == "__main__":
