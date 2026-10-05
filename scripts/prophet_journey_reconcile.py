@@ -827,9 +827,15 @@ def _field_misses(body: Tag, row: dict[str, Any]) -> list[dict[str, Any]]:
             if text not in {en, zh, f"{en} {zh}", f"{zh} {en}"}:
                 misses.append({"path": path, "reason": "bool_mismatch",
                                "text": text, "expected": en})
-        elif path in bool_paths and not (isinstance(raw, str) and raw.strip()):
-            # Nonempty source strings retain the native verbatim-string branch.
-            if text not in unavailable:
+        elif path in bool_paths:
+            # The native nonempty-string branch is verbatim, not a substring
+            # or a translation into boolean truth ("No" is not "Not supplied").
+            if isinstance(raw, str) and raw.strip():
+                expected = " ".join(raw.split())
+                if text != expected:
+                    misses.append({"path": path, "reason": "string_mismatch",
+                                   "text": text, "expected": expected})
+            elif text not in unavailable:
                 misses.append({"path": path, "reason": "bool_without_source",
                                "text": text, "expected": "Not supplied"})
         elif isinstance(raw, str) and raw and path in ("lane", "stage"):

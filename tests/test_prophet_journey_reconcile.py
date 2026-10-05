@@ -2163,3 +2163,15 @@ def test_scope_integrity_does_not_promote_inert_or_other_security_wrapper():
     assert not _pjr._setup_source_bodies(soup, "TEST1")[0]
     result = _pjr._check_j10(soup, "TEST1", [])
     assert result["status"] == "PASS", result
+
+
+@pytest.mark.parametrize("source,shown", [("No", "Not supplied"), ("Yes", "Yesterday"),
+                                        ("原始读数", "其他原始读数说明")])
+def test_input_integrity_boolean_source_string_is_not_a_substring(source, shown):
+    assert _integrity_field("signal.above200", source, shown)
+
+
+@pytest.mark.parametrize("source,shown", [("No", "No"), ("  source   note  ", "source note"),
+                                        ("来源原文", "来源原文")])
+def test_input_integrity_boolean_source_string_remains_verbatim(source, shown):
+    assert _integrity_field("signal.above200", source, shown) == []
