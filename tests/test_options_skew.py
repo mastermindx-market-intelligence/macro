@@ -1620,10 +1620,11 @@ def test_k3e_a8_projection_refuses_boolean_selected_contract_numerics():
 
     out = S.compute_skew_projection(chain)
 
-    assert out["state"] == "UNAVAILABLE"
-    assert out["selected_put"] is None
-    assert "PUT_LEG_UNAVAILABLE" in out["refusals"]
-    assert out["skew"]["value"] is None
+    assert out["state"] == "AVAILABLE_UNQUALIFIED"
+    assert out["selected_put"]["iv"] == pytest.approx(0.45)
+    assert out["selected_put"]["selected_delta"] == pytest.approx(-0.10)
+    assert out["selected_put"]["strike"] == pytest.approx(90.0)
+    assert out["skew"]["value"] == pytest.approx(0.15)
 
 
 def test_k3e_a8_projection_keeps_legacy_skew_result_on_valid_chain():
@@ -1638,3 +1639,22 @@ def test_k3e_a8_projection_keeps_legacy_skew_result_on_valid_chain():
     assert projection["selected_put"]["iv"] == pytest.approx(legacy["otm_put_iv"])
     assert projection["selected_call"]["iv"] == pytest.approx(legacy["atm_call_iv"])
     assert projection["skew"]["value"] == pytest.approx(legacy["skew"])
+
+
+def test_k3e_a8_projection_refuses_nonnumeric_iv_without_raising():
+    chain = _chain("XYZ")
+    chain["iv"] = chain["iv"].astype(object)
+    target_put = (
+        (~chain["is_call"])
+        & (chain["expiry"] == "2026-07-21")
+        & (chain["delta"] == -0.25)
+    )
+    chain.loc[target_put, "iv"] = "not-a-number"
+
+    out = S.compute_skew_projection(chain)
+
+    assert out["state"] == "AVAILABLE_UNQUALIFIED"
+    assert out["selected_put"]["iv"] == pytest.approx(0.45)
+    assert out["selected_put"]["selected_delta"] == pytest.approx(-0.10)
+    assert out["selected_put"]["strike"] == pytest.approx(90.0)
+    assert out["skew"]["value"] == pytest.approx(0.15)

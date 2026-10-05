@@ -125,18 +125,34 @@ def _iv_selection_at_delta(leg, target_delta: float, want_call: bool):
     def is_boolish(value) -> bool:
         return isinstance(value, (bool, np.bool_))
 
-    sub = leg[(leg["is_call"] == want_call) & (leg["iv"] > 0.0)]
+    side = leg["is_call"] == want_call
+    iv_numeric = pd.to_numeric(leg["iv"], errors="coerce")
+    strike_numeric = pd.to_numeric(leg["K"], errors="coerce")
+    iv_bool = leg["iv"].map(is_boolish)
+    strike_bool = leg["K"].map(is_boolish)
+    eligible = (
+        side
+        & (iv_numeric > 0.0)
+        & iv_numeric.notna()
+        & strike_numeric.notna()
+        & ~iv_bool
+        & ~strike_bool
+    )
+    sub = leg.loc[eligible].copy()
     if sub.empty:
         return None
+    sub["_iv_numeric"] = iv_numeric.loc[sub.index]
+    sub["_strike_numeric"] = strike_numeric.loc[sub.index]
+
     d = pd.to_numeric(sub["delta"], errors="coerce")
-    if d.notna().sum() >= 1 and d.abs().between(0.02, 0.98).any():
-        sub = sub.assign(_dd=(d - target_delta).abs())
+    delta_bool = sub["delta"].map(is_boolish)
+    usable_delta = d.notna() & ~delta_bool & d.abs().between(0.02, 0.98)
+    if usable_delta.any():
+        sub = sub.assign(_dd=(d - target_delta).abs().where(usable_delta))
         r = sub.loc[sub["_dd"].idxmin()]
-        if any(is_boolish(r[field]) for field in ("iv", "delta", "K")):
-            return None
-        iv = float(r["iv"])
-        selected_delta = float(r["delta"])
-        strike = float(r["K"])
+        iv = float(r["_iv_numeric"])
+        selected_delta = float(d.loc[r.name])
+        strike = float(r["_strike_numeric"])
         if not all(math.isfinite(v) for v in (iv, selected_delta, strike)):
             return None
         return {
@@ -157,12 +173,12 @@ def _iv_selection_at_delta(leg, target_delta: float, want_call: bool):
     if not math.isfinite(spot) or spot <= 0:
         return None
     target_mny = 1.0 if want_call else 0.95
-    sub = sub.assign(_mm=(sub["K"].astype(float) / spot - target_mny).abs())
+    sub = sub.assign(
+        _mm=(sub["_strike_numeric"] / spot - target_mny).abs()
+    )
     r = sub.loc[sub["_mm"].idxmin()]
-    if any(is_boolish(r[field]) for field in ("iv", "K")):
-        return None
-    iv = float(r["iv"])
-    strike = float(r["K"])
+    iv = float(r["_iv_numeric"])
+    strike = float(r["_strike_numeric"])
     if not all(math.isfinite(v) for v in (iv, strike)):
         return None
     return {
