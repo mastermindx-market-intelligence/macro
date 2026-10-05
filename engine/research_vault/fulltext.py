@@ -141,12 +141,28 @@ def _validate_extracted_text(artifact: dict[str, Any]) -> bytes:
         raise ValueError("unsupported extracted-text artifact")
     _require_text(artifact.get("report_id"), "report_id")
     _require_sha256(artifact.get("source_pdf_sha256"), "source_pdf_sha256")
+    _require_text(artifact.get("extractor_name"), "extractor_name")
+    _require_text(artifact.get("extractor_version"), "extractor_version")
     digest = _require_sha256(
         artifact.get("extracted_text_sha256"), "extracted_text_sha256"
     )
+    state = _require_text(artifact.get("text_layer_state"), "text_layer_state")
+    if state not in TEXT_LAYER_STATES:
+        raise ValueError("unsupported text_layer_state")
+    page_count = artifact.get("page_count")
+    if page_count is not None and (type(page_count) is not int or page_count < 0):
+        raise ValueError("page_count must be a nonnegative int or None")
+    if not isinstance(artifact.get("computed_at"), str):
+        raise ValueError("computed_at must be str")
+
     text = artifact.get("text")
     if not isinstance(text, str):
         raise ValueError("extracted-text artifact text must be str")
+    if text and state in {"none", "unavailable"}:
+        raise ValueError("nonempty extracted text conflicts with text_layer_state")
+    if not text and state in {"full", "thin"}:
+        raise ValueError("empty extracted text conflicts with text_layer_state")
+
     encoded = text.encode("utf-8")
     if _sha256(encoded) != digest:
         raise ValueError("extracted-text artifact text hash mismatch")
@@ -263,6 +279,17 @@ def replay_segment(
     for field in ("report_id", "source_pdf_sha256", "extracted_text_sha256"):
         if segment.get(field) != extracted.get(field):
             raise ValueError(f"segment {field} does not match extracted text")
+    if segment.get("extractor_version") != extracted.get("extractor_version"):
+        raise ValueError("segment extractor_version does not match extracted text")
+    _require_text(segment.get("segmenter_version"), "segmenter_version")
+    if segment.get("replay_state") != REPLAY_EXACT:
+        raise ValueError("segment replay_state is not EXACT")
+    if type(segment.get("segment_index")) is not int or segment["segment_index"] < 0:
+        raise ValueError("segment_index must be a nonnegative int")
+
+    max_bytes = segment.get("segment_max_bytes")
+    if type(max_bytes) is not int or max_bytes < 4:
+        raise ValueError("segment_max_bytes must be an int >= 4")
     start = segment.get("start_byte")
     end = segment.get("end_byte")
     if (
@@ -271,10 +298,23 @@ def replay_segment(
         or start < 0
         or end <= start
         or end > len(data)
+        or end - start > max_bytes
     ):
         raise ValueError("segment byte range is invalid")
+
+    expected_page_start, expected_page_end = _pages_for_span(
+        extracted["page_boundaries"], start, end
+    )
+    if segment.get("page_start") != expected_page_start:
+        raise ValueError("segment page_start does not match extracted text")
+    if segment.get("page_end") != expected_page_end:
+        raise ValueError("segment page_end does not match extracted text")
+
     replay = data[start:end]
-    if _sha256(replay) != segment.get("segment_text_sha256"):
+    expected_digest = _require_sha256(
+        segment.get("segment_text_sha256"), "segment_text_sha256"
+    )
+    if _sha256(replay) != expected_digest:
         raise ValueError("segment text hash mismatch")
     text = replay.decode("utf-8")
     if segment.get("text") != text:
