@@ -1,6 +1,6 @@
 {
   "schema": "prophet.status/v1",
-  "as_of": "2026-09-26T20:45:07+00:00",
+  "as_of": "2026-10-04T10:05:29+00:00",
   "built_by": "engine.neuralweb.prophet_governor",
   "markets": {
     "us": {
@@ -45,19 +45,19 @@
         "process_integrity": null
       },
       "track_history": {
-        "as_of": "2026-09-26",
+        "as_of": "2026-10-04",
         "n_cohorts": null,
         "status": null
       },
       "bottom_ledger": {
-        "as_of": "2026-09-26",
+        "as_of": "2026-10-04",
         "advance_status": "advanced",
         "advance_error": null,
-        "n_newly_graded": 10,
-        "n_accruing": 2744,
-        "n_matured": 73,
-        "pin5": 0.1781,
-        "held_pct": 0.4932,
+        "n_newly_graded": 0,
+        "n_accruing": 2924,
+        "n_matured": 138,
+        "pin5": 0.1304,
+        "held_pct": 0.4855,
         "status": "maturing",
         "reliability": "display-tier bottom-calling learning instrument (policy-free; no ranking/sizing authority) \u2014 measures proximity to the eventual low and floor durability; live cohorts compared against the committed panel baseline as they mature",
         "first_maturity_est": null
@@ -73,18 +73,18 @@
       "data_gaps": [],
       "maturity_state": "accruing",
       "cn_board": {
-        "board_definition": "cn_prophet_v4",
-        "total_rows": 592,
+        "board_definition": "cn_prophet_v4_more_actionable",
+        "total_rows": 542,
         "matured_rows": 0,
         "fill_basis_note": "t1_hl2 \u2014 accruing"
       },
       "fitness_card": {
-        "as_of": "2026-09-26",
+        "as_of": "2026-10-03",
         "hit_quality": null,
         "process_integrity": null
       },
       "audit_scoreboard": {
-        "as_of": "2026-09-26",
+        "as_of": "2026-10-03",
         "status": null,
         "n_matured": null
       },
@@ -133,7 +133,7 @@
       "disclosure": "Prophet Intl signals are a context read, not a graded ranker \u2014 no forward ledger accrues for this board yet.",
       "coverage": {
         "n_markets": 0,
-        "as_of": null,
+        "as_of": "2026-10-02",
         "status": null
       },
       "engine_label": "Prophet Intl",
@@ -186,21 +186,21 @@
           "artifact": "us-audit-scoreboard",
           "path": "site/factordata/us_audit_scoreboard.json",
           "status": "stale",
-          "age_hours": 1196.8,
+          "age_hours": 1378.1,
           "sla_hours": 48.0
         },
         {
           "artifact": "us-track-history",
           "path": "site/factordata/us_track_history.json",
           "status": "ok",
-          "age_hours": 20.8,
+          "age_hours": 10.1,
           "sla_hours": 48.0
         },
         {
           "artifact": "us-board-outcomes",
           "path": "site/factordata/us_board_outcomes.json",
-          "status": "ok",
-          "age_hours": 44.8,
+          "status": "stale",
+          "age_hours": 226.1,
           "sla_hours": 48
         }
       ],
@@ -213,13 +213,13 @@
         {
           "artifact": "site-china-standouts",
           "path": "data/metabolism/fitness/standouts_cn.json",
-          "status": "ok",
-          "age_hours": 20.8,
+          "status": "stale",
+          "age_hours": 34.1,
           "sla_hours": 30.0
         }
       ],
       "data_gap_count": 0,
-      "overall_health": "ok"
+      "overall_health": "degraded"
     },
     "hk": {
       "market": "hk",
@@ -228,7 +228,7 @@
           "artifact": "hk-board-ledger",
           "path": "data/board_ledger/hk_board.parquet",
           "status": "ok",
-          "age_hours": 7.7,
+          "age_hours": 18.3,
           "sla_hours": 48
         }
       ],
@@ -242,7 +242,7 @@
           "artifact": "ca-board-ledger",
           "path": "data/board_ledger/ca_board.parquet",
           "status": "ok",
-          "age_hours": 0.3,
+          "age_hours": 0.2,
           "sla_hours": 48
         }
       ],
@@ -255,13 +255,13 @@
         {
           "artifact": "intl-setups",
           "path": "site/factordata/intl_setups.json",
-          "status": "ok",
-          "age_hours": 1.0,
+          "status": "stale",
+          "age_hours": 58.1,
           "sla_hours": 48
         }
       ],
       "data_gap_count": 0,
-      "overall_health": "ok"
+      "overall_health": "degraded"
     }
   },
   "momoedge_trade_plans": {
@@ -273,28 +273,28 @@
       "open_count": 0,
       "closed_count": 100,
       "outcome_mix": {
-        "NO_ENTRY": 22,
-        "EXPIRED": 49,
-        "INVALIDATED": 22,
-        "T1_HIT": 7
+        "EXPIRED": 44,
+        "INVALIDATED": 13,
+        "NO_ENTRY": 39,
+        "T1_HIT": 4
       }
     },
     "index": {
       "as_of": null,
-      "plan_count": 448
+      "plan_count": 494
     }
   },
   "pick_lab": {
     "block_id": "pick_lab",
     "data_gaps": [],
     "us_lab": {
-      "as_of": "2026-09-25",
+      "as_of": "2026-10-02",
       "book_count": null,
       "fire_count": 0,
       "status": null
     },
     "cn_lab": {
-      "as_of": "2026-09-24",
+      "as_of": "2026-09-30",
       "book_count": null,
       "fire_count": 0,
       "status": null

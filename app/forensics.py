@@ -729,12 +729,21 @@ def attested_history_private_not_found(
 
 
 def _financial_query_provider():
-    """Golden AAPL query provider. Production attested issuer service stays unbuilt."""
+    """Golden AAPL query provider. Production attested issuer service stays unbuilt.
+
+    FIF-3A4 attaches cutoff-visible cross-filing lineage evidence. This does not
+    change delivery: ``attested`` and ``production_issuer_service`` remain false,
+    and the served corpus is still exactly the two committed golden accessions.
+    """
     from engine.fundamental_forensics.ixbrl_raw_ledger import (  # noqa: PLC0415
+        FIF3A4_LINEAGE_AVAILABLE_AT,
         GoldenAaplFinancialQueryProvider,
     )
 
-    return GoldenAaplFinancialQueryProvider(repo_root=REPO)
+    return GoldenAaplFinancialQueryProvider(
+        repo_root=REPO,
+        lineage_evidence_available_at=FIF3A4_LINEAGE_AVAILABLE_AT,
+    )
 
 
 def _financial_revision_provider():

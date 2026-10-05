@@ -19,6 +19,12 @@ owns_paths:
   - engine/fda_scarcity.py
   - tests/test_fda_shortages_generation.py
   - tests/test_fda_supply_probes.py
+  - tests/test_fda_supply_probes_t02r.py
+  - tests/test_fda_supply_probes_t02r2.py
+  - tests/test_fda_supply_probes_t02r3.py
+  - tests/test_fda_supply_probes_t01r.py
+  - tests/test_fda_supply_probes_final.py
+  - tests/test_foresight_cascade.py
 depends_on:
   - WS:GMI-THEME-GRAPH
 decisions:
@@ -36,6 +42,23 @@ do_not_redo:
     Do not add rank/entry/sizing/trade/stage effects from the FDA chip — display-only
     by plan.
   - No target price / expected return / underpricing claims in the first descriptive release.
+  - >-
+    Do not re-pin a wall-clock age assertion to a calendar date (R-D1-MERGE-01,
+    DSC:A-WALL-CLOCK-AGE-ASSERTION-PASSES-ONLY-ON-ITS-AUTHORING-DAY): tests that assert
+    a rendered age must anchor their fixture to the clock the code under test reads.
+  - >-
+    Do not repair an adopted-debt design finding by deleting the product element (R-D1-MERGE-02,
+    DSC:A-DESIGN-RATCHET-REPORTS-WIDER-THAN-IT-BLOCKS): check_design_system.py --mode
+    enforce-added scores the lines a diff ADDS, so a copy-only or translation-only edit adopts
+    its line's inherited debt. Reproduce the gate against the FULL PR diff before pushing a
+    template edit, and move the glyph into the reported-but-never-blocking U+2600-27BF band
+    instead of stripping it.
+  - >-
+    Do not re-hard-code one disjunct's name into a status selected by a disjunction
+    (R-D1-MERGE-03, DSC:A-SYNTHETIC-FIXTURES-NEVER-REACHED-THE-BRANCH-THE-LIVE-FEED-TAKES):
+    MIXED_REPORTED covers current+resolved AND current+discontinued, and its copy must name
+    only the non-zero components. Render the committed production artifact through the engine
+    before merging a data-driven consumer change.
 artifacts:
   - research/healthcare/hc_program/
 waves:
@@ -43,12 +66,13 @@ waves:
     title: >
       T01 supply meaning in the visible FDA consumer; T02 sweep qualification and
       forward history; relevant T08 per-release adjudication.
-    status: in_progress
+    status: awaiting_ci
     next_action: >
-      Adjudicate the independent D1 review on #7788, post START naming carrier
-      claude/healthcare-d1-fda-supply, run lanes hc_t02_fda_sweep then
-      hc_t01_supply_meaning, run Opus red-team, merge, then verify the nightly drip and
-      foresight chip live.
+      D1 is merged (PR #7930). Owed before D1 is done: the render.yml covering run for the
+      merge SHA (templates/foresight.html.j2 changed), then live proof — the next nightly's
+      `fda_shortages: observation ...` receipt line and the
+      data/fda/shortages.parquet.observation.json sidecar on main, plus the rendered
+      foresight chip in EN/ZH and dark/light — and only then PRODUCTION_PROOF on #7788.
   - id: D2
     title: >
       T03 v1.1 shared-branch consumption; T04 private Research Vault binding; T05

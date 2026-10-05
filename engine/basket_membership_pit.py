@@ -85,6 +85,8 @@ import hashlib
 import json
 import logging
 import math
+import os
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -333,6 +335,38 @@ def _read_json(path: Path) -> object | None:
         return None
 
 
+class HistoryIntegrityError(ValueError):
+    """Existing PIT history is unsafe to advance."""
+
+
+class HistoryWriteError(ValueError):
+    """A staged PIT append failed; the prior destination is preserved."""
+
+
+def _validate_history(df: pd.DataFrame, suite: str) -> None:
+    # The owner's legacy schema-union rule remains valid for optional metadata.
+    # A missing membership key or suite cannot be repaired by inventing identity.
+    missing = set((*KEY, "suite")) - set(df.columns)
+    if missing:
+        raise HistoryIntegrityError(f"PIT history missing required columns: {sorted(missing)}")
+    for field in KEY:
+        if not df[field].map(lambda value: isinstance(value, str) and bool(value.strip())).all():
+            raise HistoryIntegrityError(f"PIT history invalid key: {field}")
+    if not df["suite"].eq(suite).all():
+        raise HistoryIntegrityError(f"PIT history contains rows from another suite: {suite}")
+    if df.duplicated(subset=list(KEY)).any():
+        raise HistoryIntegrityError("PIT history duplicate snapshot/member key")
+
+
+def _failed_result(result: dict, exc: ValueError) -> dict:
+    result.update(status="failed", error=type(exc).__name__, reason=str(exc), rows_added=0)
+    if "written" in result:
+        result["written"] = False
+    if "dates" in result:
+        result["dates"] = []
+    return result
+
+
 def read_history(suite: str, *, strict: bool = False) -> pd.DataFrame:
     """The PIT history frame for ``suite``.
 
@@ -345,6 +379,8 @@ def read_history(suite: str, *, strict: bool = False) -> pd.DataFrame:
         if not p.exists():
             return pd.DataFrame(columns=list(COLUMNS))
         df = pd.read_parquet(p)
+        if strict:
+            _validate_history(df, suite)
         for col in COLUMNS:                       # schema union with older writes
             if col not in df.columns:
                 df[col] = None
@@ -352,7 +388,9 @@ def read_history(suite: str, *, strict: bool = False) -> pd.DataFrame:
     except Exception as exc:  # noqa: BLE001
         log.warning("basket_membership_pit: history read failed for %s (%s)", suite, exc)
         if strict:
-            raise
+            if isinstance(exc, HistoryIntegrityError):
+                raise
+            raise HistoryIntegrityError(f"unreadable PIT history for {suite}") from exc
         return pd.DataFrame(columns=list(COLUMNS))
 
 
@@ -463,30 +501,38 @@ def _lane_ok(lane: str | None, what: str, *, suite: str) -> bool:
 
 
 def _append_rows(suite: str, rows: list[dict]) -> int:
-    """Append rows keep-FIRST on KEY. Returns rows ADDED (0 on no-op/failure)."""
+    """Append keep-FIRST; zero means a real no-op, failures are typed exceptions."""
+    prior = read_history(suite, strict=True)
     if not rows:
         return 0
-    try:
-        new = pd.DataFrame(rows, columns=list(COLUMNS))
-        p = history_path(suite)
-        p.parent.mkdir(parents=True, exist_ok=True)
-        if p.exists():
-            prior = read_history(suite)
-            before = len(prior)
-            cols = list(dict.fromkeys([*COLUMNS, *prior.columns]))
-            combined = pd.concat(
-                [prior.reindex(columns=cols), new.reindex(columns=cols)],
-                ignore_index=True,
-            ).drop_duplicates(subset=list(KEY), keep="first")
-        else:
-            before = 0
-            combined = new
-        combined = combined.sort_values(list(KEY), kind="stable").reset_index(drop=True)
-        combined.to_parquet(p, index=False)
-        return int(len(combined) - before)
-    except Exception as exc:  # noqa: BLE001 — a PIT store never breaks a build
-        log.warning("basket_membership_pit: append failed for %s (%s)", suite, exc)
+    new = pd.DataFrame(rows, columns=list(COLUMNS))
+    # Incoming repetitions retain the established keep-FIRST append convention;
+    # duplicate keys already stored are refused because their custody is ambiguous.
+    _validate_history(new.drop_duplicates(subset=list(KEY), keep="first"), suite)
+    before = len(prior)
+    cols = list(dict.fromkeys([*COLUMNS, *prior.columns]))
+    combined = pd.concat(
+        [prior.reindex(columns=cols), new.reindex(columns=cols)], ignore_index=True,
+    ).drop_duplicates(subset=list(KEY), keep="first")
+    combined = combined.sort_values(list(KEY), kind="stable").reset_index(drop=True)
+    added = int(len(combined) - before)
+    if not added:
         return 0
+    p = history_path(suite)
+    tmp = None
+    try:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(dir=p.parent, prefix=p.name + ".", suffix=".tmp",
+                                         delete=False) as staged:
+            tmp = Path(staged.name)
+        combined.to_parquet(tmp, index=False)
+        os.replace(tmp, p)
+    except Exception as exc:  # noqa: BLE001 — preserve the previous destination
+        raise HistoryWriteError(f"PIT append failed for {suite}: {exc}") from exc
+    finally:
+        if tmp is not None:
+            tmp.unlink(missing_ok=True)
+    return added
 
 
 def append_snapshot(suite: str, *, asof: str | None = None,
@@ -503,6 +549,10 @@ def append_snapshot(suite: str, *, asof: str | None = None,
     if not _lane_ok(lane, f"{suite} snapshot", suite=suite):
         result["reason"] = f"lane={lane}"
         return result
+    try:
+        prior = read_history(suite, strict=True)
+    except HistoryIntegrityError as exc:
+        return _failed_result(result, exc)
     doc = _read_json(membership_path(suite))
     if not _baskets(doc):
         result["reason"] = "membership.json missing or empty"
@@ -511,7 +561,6 @@ def append_snapshot(suite: str, *, asof: str | None = None,
 
     date = _text(asof) or pd.Timestamp.utcnow().strftime("%Y-%m-%d")
     result["snapshot_date"] = date
-    prior = read_history(suite)
     if not prior.empty and (prior["snapshot_date"].astype(str) == date).any():
         result["reason"] = "date already stamped"
         return result
@@ -522,7 +571,10 @@ def append_snapshot(suite: str, *, asof: str | None = None,
         log.info("basket_membership_pit: %s — %s (dedup skip)", suite, result["reason"])
         return result
 
-    added = _append_rows(suite, _rows_from_doc(doc, date, suite))
+    try:
+        added = _append_rows(suite, _rows_from_doc(doc, date, suite))
+    except (HistoryIntegrityError, HistoryWriteError) as exc:
+        return _failed_result(result, exc)
     result["written"] = added > 0
     result["rows_added"] = added
     log.info("basket_membership_pit: %s stamped %s (+%d rows)", suite, date, added)
@@ -544,11 +596,15 @@ def backfill_from_json_snapshots(suite: str, *, lane: str | None = None) -> dict
     if not _lane_ok(lane, f"{suite} backfill", suite=suite):
         result["reason"] = f"lane={lane}"
         return result
+    try:
+        prior = read_history(suite, strict=True)
+    except HistoryIntegrityError as exc:
+        return _failed_result(result, exc)
     files = dated_snapshots(suite)
     if not files:
         result["reason"] = "no dated JSON snapshots"
         return result
-    have = set(read_history(suite)["snapshot_date"].astype(str))
+    have = set(prior["snapshot_date"].astype(str))
     concepts = _concept_index(suite)
     rows: list[dict] = []
     for f in files:
@@ -576,7 +632,10 @@ def backfill_from_json_snapshots(suite: str, *, lane: str | None = None) -> dict
     if not rows:
         result["reason"] = "already covered" if not result["unparsed"] else "no readable snapshot"
         return result
-    result["rows_added"] = _append_rows(suite, rows)
+    try:
+        result["rows_added"] = _append_rows(suite, rows)
+    except (HistoryIntegrityError, HistoryWriteError) as exc:
+        return _failed_result(result, exc)
     log.info("basket_membership_pit: %s backfilled %s (+%d rows%s)",
              suite, ",".join(result["dates"]), result["rows_added"],
              f", {len(result['unparsed'])} unparsed" if result["unparsed"] else "")
@@ -601,8 +660,13 @@ def append_all(*, asof: str | None = None, lane: str | None = None,
     for suite in suites:
         try:
             backfill = backfill_from_json_snapshots(suite, lane=lane)
+            if backfill.get("error"):
+                out[suite] = {"error": backfill["error"], "backfill": backfill}
+                continue
             snap = append_snapshot(suite, asof=asof, lane=lane)
             out[suite] = {"backfill": backfill, "snapshot": snap}
+            if snap.get("error"):
+                out[suite]["error"] = snap["error"]
         except Exception as exc:  # noqa: BLE001 — one suite never breaks the other
             log.warning("basket_membership_pit: %s failed (%s)", suite, exc)
             out[suite] = {"error": f"{type(exc).__name__}"}

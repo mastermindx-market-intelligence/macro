@@ -164,3 +164,79 @@ tests/test_market_ontology_half_b_rights_docket.py: >-
   `python -m pytest tests/test_market_ontology_half_b_rights_docket.py -q` in CI
   triage / local verification. Owner: Meta-CEO B wave, lane F09. Delete this row
   if a market-ontology-records CI step is ever commissioned.
+
+# V1 closure calibration remains report-only; never wire real PR verdicts to a gate.
+tests/test_pr_linkage_calibration.py: >-
+  MAS-28 V1 closure offline calibration runner regressions. Owner WS:AGENT-OS / MAS-28.
+  Executed locally with the existing report-only suites and frozen private corpus.
+  Preserves the W0 prohibition on adding a workflow runner for this analyzer.
+  Delete when a separately authorized nonblocking hosted runner names this suite,
+  or the suite is deleted.
+
+# Prophet regime / indicator / timeframe research — wave-1 lane guard suites (PR #8445).
+# Compute-host suites: the lanes' parquet artifacts are kept OFF git by the program's
+# own results/.gitignore (03 §5 / 04 §3), so in CI every fixture is absent by design.
+research/prophet_v4/astra_regime_indicator_handoff_20261004/results/A1/code/test_a1.py: >-
+  Prophet regime/timeframe wave-1 lane A1 (absolute-session anchor / data-contract guard): reads the SPY and sector parquet panels directly. Those
+  artifacts are kept off git by research/prophet_v4/astra_regime_indicator_handoff_20261004/
+  results/.gitignore (program rule 03 §5 / 04 §3: parquets stay on the compute host), so in
+  CI the suite's inputs do not exist and it cannot execute; its receipt is the lane's
+  hashes.txt + RESULT.md pinned beside it, verified on the compute host by the seat before
+  acceptance (`python3 -m pytest <lane>/code -q` + `shasum -c hashes.txt`). Not wired into
+  .github/ci/legacy-jobs.yml because that file is a global CI invalidator (full-suite,
+  ci-authority hit) for a records-only research PR with no engine or signal-contract path.
+  Owner: WS:PROPHET-REGIME-TIMEFRAME-RESEARCH (seat f273dd7d). Delete this row when the lane
+  artifacts are published to R2 and a research-resident CI step adopts the suite, or when
+  the results directory is archived.
+
+research/prophet_v4/astra_regime_indicator_handoff_20261004/results/B1/code/test_B1.py: >-
+  Prophet regime/timeframe wave-1 lane B1 (timeframe-vs-ADX effect; 34 tests incl. the round-5 seat hash pins): reads the 209e2246 panel and d20cd405 pairs parquets directly. Those
+  artifacts are kept off git by research/prophet_v4/astra_regime_indicator_handoff_20261004/
+  results/.gitignore (program rule 03 §5 / 04 §3: parquets stay on the compute host), so in
+  CI the suite's inputs do not exist and it cannot execute; its receipt is the lane's
+  hashes.txt + RESULT.md pinned beside it, verified on the compute host by the seat before
+  acceptance (`python3 -m pytest <lane>/code -q` + `shasum -c hashes.txt`). Not wired into
+  .github/ci/legacy-jobs.yml because that file is a global CI invalidator (full-suite,
+  ci-authority hit) for a records-only research PR with no engine or signal-contract path.
+  Owner: WS:PROPHET-REGIME-TIMEFRAME-RESEARCH (seat f273dd7d). Delete this row when the lane
+  artifacts are published to R2 and a research-resident CI step adopts the suite, or when
+  the results directory is archived.
+
+research/prophet_v4/astra_regime_indicator_handoff_20261004/results/C1/code/test_C1.py: >-
+  Prophet regime/timeframe wave-1 lane C1 (regime AR(1) persistence; BROKEN on lag-21): reads the 9361dbf0 regime parquet and 48449253 cuts directly. Those
+  artifacts are kept off git by research/prophet_v4/astra_regime_indicator_handoff_20261004/
+  results/.gitignore (program rule 03 §5 / 04 §3: parquets stay on the compute host), so in
+  CI the suite's inputs do not exist and it cannot execute; its receipt is the lane's
+  hashes.txt + RESULT.md pinned beside it, verified on the compute host by the seat before
+  acceptance (`python3 -m pytest <lane>/code -q` + `shasum -c hashes.txt`). Not wired into
+  .github/ci/legacy-jobs.yml because that file is a global CI invalidator (full-suite,
+  ci-authority hit) for a records-only research PR with no engine or signal-contract path.
+  Owner: WS:PROPHET-REGIME-TIMEFRAME-RESEARCH (seat f273dd7d). Delete this row when the lane
+  artifacts are published to R2 and a research-resident CI step adopts the suite, or when
+  the results directory is archived.
+
+research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/code/test_E.py: >-
+  Prophet regime/timeframe wave-1 lane E (regime-clock scoped null, 12-test table): its hashes.txt check (7) verifies the sibling lanes' parquet artifacts. Those
+  artifacts are kept off git by research/prophet_v4/astra_regime_indicator_handoff_20261004/
+  results/.gitignore (program rule 03 §5 / 04 §3: parquets stay on the compute host), so in
+  CI the suite's inputs do not exist and it cannot execute; its receipt is the lane's
+  hashes.txt + RESULT.md pinned beside it, verified on the compute host by the seat before
+  acceptance (`python3 -m pytest <lane>/code -q` + `shasum -c hashes.txt`). Not wired into
+  .github/ci/legacy-jobs.yml because that file is a global CI invalidator (full-suite,
+  ci-authority hit) for a records-only research PR with no engine or signal-contract path.
+  Owner: WS:PROPHET-REGIME-TIMEFRAME-RESEARCH (seat f273dd7d). Delete this row when the lane
+  artifacts are published to R2 and a research-resident CI step adopts the suite, or when
+  the results directory is archived.
+
+research/prophet_v4/astra_regime_indicator_handoff_20261004/results/F1/code/test_f1.py: >-
+  Prophet regime/timeframe wave-1 lane F1 (purged-OOS AUC 0.6227 guard): reads the F1 feature parquet directly. Those
+  artifacts are kept off git by research/prophet_v4/astra_regime_indicator_handoff_20261004/
+  results/.gitignore (program rule 03 §5 / 04 §3: parquets stay on the compute host), so in
+  CI the suite's inputs do not exist and it cannot execute; its receipt is the lane's
+  hashes.txt + RESULT.md pinned beside it, verified on the compute host by the seat before
+  acceptance (`python3 -m pytest <lane>/code -q` + `shasum -c hashes.txt`). Not wired into
+  .github/ci/legacy-jobs.yml because that file is a global CI invalidator (full-suite,
+  ci-authority hit) for a records-only research PR with no engine or signal-contract path.
+  Owner: WS:PROPHET-REGIME-TIMEFRAME-RESEARCH (seat f273dd7d). Delete this row when the lane
+  artifacts are published to R2 and a research-resident CI step adopts the suite, or when
+  the results directory is archived.

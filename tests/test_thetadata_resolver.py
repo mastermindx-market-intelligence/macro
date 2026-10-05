@@ -38,8 +38,27 @@ from engine import thetadata_store as tds  # noqa: E402
 # helpers                                                                       #
 # --------------------------------------------------------------------------- #
 
-def _mk_store(p: Path, tiers=("eod",)) -> Path:
-    """Create a directory that passes the content check (>=1 tier subdir)."""
+def _mk_store(p: Path, tiers=("eod",), roots=("AAPL",)) -> Path:
+    """Create a store that passes the content check — the REAL layout,
+    ``{store}/{tier}/{ROOT}/{YEAR}.parquet``.
+
+    AD-1T2b: this helper used to create bare tier DIRECTORIES only, which modelled
+    a store shape that cannot exist in production with data in it, and which the
+    resolver now correctly refuses (a drained store is not a store). Building one
+    real root keeps every precedence assertion below testing precedence — against
+    a store that could actually exist — instead of testing the old hole.
+    """
+    for t in tiers:
+        for r in roots:
+            d = p / t / r
+            d.mkdir(parents=True, exist_ok=True)
+            (d / "2026.parquet").write_bytes(b"")
+    return p
+
+
+def _mk_drained_store(p: Path, tiers=("eod", "oi", "greeks")) -> Path:
+    """The AD-1T2b shape observed on the store-bearing M1 on 2026-09-29: every
+    tier directory present, not one root inside any of them."""
     for t in tiers:
         (p / t).mkdir(parents=True, exist_ok=True)
     return p
@@ -233,3 +252,337 @@ class TestWitnessIncidentRegression:
             "store-absent build must NOT clobber a fresh real NW artifact"
         assert site_out.read_text() == before_site, \
             "store-absent build must NOT clobber a fresh real site artifact"
+
+
+class TestDrainedStoreIsNotAStore:
+    """AD-1T2b — a store whose tier directories are all present but hold zero roots
+    resolves to NOTHING. Observed live on the M1 (m1studio) 2026-09-29 beside a
+    _manifest.json still reading `"status": "healthy", "complete_t1_roots": 372`.
+
+    The old predicate admitted it, and the options-intel producer then published a
+    blank DEGRADED/MIXED_VINTAGE brief over the last good one and exited 0.
+    """
+
+    def test_drained_store_does_not_resolve(self, tmp_path, monkeypatch, isolated_chain):
+        drained = _mk_drained_store(tmp_path / "drained")
+        monkeypatch.setenv("THETADATA_STORE", str(drained))
+        assert tds._has_store_content(drained) is False
+        assert tds._drained_store(drained) is True
+        assert tds.resolve_thetadata_store() is None
+
+    def test_drained_store_raises_under_required(self, tmp_path, monkeypatch,
+                                                 isolated_chain):
+        drained = _mk_drained_store(tmp_path / "drained")
+        monkeypatch.setenv("THETADATA_STORE", str(drained))
+        with pytest.raises(RuntimeError, match="drained"):
+            tds.resolve_thetadata_store(required=True, purpose="ad1t2b")
+
+    def test_a_drained_candidate_falls_through_to_a_real_one(self, tmp_path,
+                                                             monkeypatch,
+                                                             isolated_chain):
+        """Precedence is by CONTENT, not position: a drained higher-priority
+        candidate must not shadow a real store further down the chain."""
+        drained = _mk_drained_store(tmp_path / "drained_env")
+        real = _mk_store(tmp_path / "real_ops_wt")
+        monkeypatch.setenv("THETADATA_STORE", str(drained))
+        monkeypatch.setattr(tds, "_OPS_WT_STORE", real)
+        assert tds.resolve_thetadata_store(purpose="ad1t2b") == real
+
+    def test_one_real_root_is_thinness_and_still_resolves(self, tmp_path,
+                                                         monkeypatch,
+                                                         isolated_chain):
+        """The over-tightening guard: thin-but-real data is a legitimate
+        NO_SIGNAL/INSUFFICIENT_COVERAGE publish, never infrastructure failure."""
+        thin = _mk_store(tmp_path / "thin", tiers=("eod",), roots=("AAPL",))
+        monkeypatch.setenv("THETADATA_STORE", str(thin))
+        assert tds.resolve_thetadata_store(purpose="ad1t2b") == thin
+
+    def test_a_stray_file_in_a_tier_is_not_a_root(self, tmp_path, monkeypatch,
+                                                  isolated_chain):
+        """`.DS_Store` / lock files must not revive the false positive."""
+        d = _mk_drained_store(tmp_path / "stray")
+        (d / "eod" / ".DS_Store").write_text("")
+        (d / "_writer.lock").write_text("")
+        monkeypatch.setenv("THETADATA_STORE", str(d))
+        assert tds.resolve_thetadata_store() is None
+
+
+class TestUnreadableIsNeverDrained:
+    """AD-1T2b regression guard — the tightening must fail OPEN.
+
+    Deciding "does this store hold data" needs a readdir, and on the ops host the
+    three tier dirs are SYMLINKS onto an external volume
+    (scripts/publish_r2.py::_walk_files). Listing them is exactly the operation
+    that is denied or hangs under launchd — which is why
+    scripts/build_options_hub_nightly.py::preflight_store bounds it in a daemon
+    thread and exits 4 on timeout. That guard runs AFTER resolution, so an
+    unbounded or fail-CLOSED readdir inside the resolver would sit in front of
+    the only protection against it, in the one function every consumer calls, and
+    would report an INTACT store as missing across every nightly lane.
+
+    So: only a PROVABLY drained store may be refused. Denied, blocked, errored or
+    probe-disabled must all resolve exactly as they did before this check existed.
+    """
+
+    def test_a_denied_tier_still_resolves_and_is_not_called_drained(self, tmp_path):
+        store = _mk_store(tmp_path / "store", tiers=("eod",), roots=("SPY",))
+        (store / "eod").chmod(0o000)
+        try:
+            assert tds._classify_store(store) == tds._UNKNOWN
+            # The whole point: PRESENT, not drained.
+            assert tds._has_store_content(store) is True
+            assert tds._drained_store(store) is False
+        finally:
+            (store / "eod").chmod(0o755)
+
+    def test_a_denied_tier_resolves_through_the_public_resolver(
+            self, tmp_path, monkeypatch):
+        # DRAINED, not populated: with the tier readable this store is REFUSED,
+        # so the assertions below can only pass because the denial is biting.
+        # A populated store would resolve either way and test nothing.
+        store = _mk_drained_store(tmp_path / "store", tiers=("eod",))
+        monkeypatch.setenv("THETADATA_STORE", str(store))
+        assert tds.resolve_thetadata_store(purpose="pre") is None, (
+            "fixture is not discriminating: it resolves while still readable")
+        (store / "eod").chmod(0o000)
+        try:
+            assert tds.resolve_thetadata_store(purpose="t") == store
+            # required=True must NOT raise on an unreadable store — that is the
+            # false RED this guard exists to prevent.
+            assert tds.resolve_thetadata_store(required=True, purpose="t") == store
+        finally:
+            (store / "eod").chmod(0o755)
+
+    def test_a_blocked_listing_is_bounded_and_resolves(self, tmp_path, monkeypatch):
+        """A hung readdir must not wedge the resolver, and must not read as empty."""
+        store = _mk_drained_store(tmp_path / "store")
+        monkeypatch.setattr(tds, "_STORE_PROBE_S", 0.1)
+
+        real_iterdir = Path.iterdir
+
+        def _slow(self):
+            if self.name in tds._STORE_TIERS:
+                import time
+                time.sleep(5)
+            return real_iterdir(self)
+
+        monkeypatch.setattr(Path, "iterdir", _slow)
+        import time as _t
+        t0 = _t.monotonic()
+        verdict = tds._classify_store(store)
+        elapsed = _t.monotonic() - t0
+        assert verdict == tds._UNKNOWN
+        assert elapsed < 3, f"probe was not bounded: {elapsed:.1f}s"
+        assert tds._has_store_content(store) is True
+
+    def test_probe_disabled_never_claims_emptiness(self, tmp_path, monkeypatch):
+        store = _mk_drained_store(tmp_path / "store")
+        assert tds._classify_store(store) == tds._DRAINED     # control
+        monkeypatch.setattr(tds, "_STORE_PROBE_S", 0)
+        assert tds._classify_store(store) == tds._UNKNOWN
+        assert tds._has_store_content(store) is True
+
+    def test_a_stub_with_no_tiers_needs_no_readdir(self, tmp_path, monkeypatch):
+        """The stub case must stay stat-only — it predates this check."""
+        stub = tmp_path / "stub"
+        stub.mkdir()
+        called = []
+        real_iterdir = Path.iterdir
+        monkeypatch.setattr(
+            Path, "iterdir",
+            lambda self: (called.append(self), real_iterdir(self))[1])
+        assert tds._classify_store(stub) == tds._NO_TIERS
+        assert called == [], f"stub classification performed a readdir: {called}"
+
+
+class TestDrainedFactReachesTheSurfacedMessage:
+    """AD-1T2b — scripts/build_options_intel_brief.py captures the resolver's
+    records and publishes splitlines()[-1] as its CI annotation, so a diagnostic
+    emitted mid-loop never reaches the operator. The terminal line must carry it.
+    """
+
+    def test_terminal_none_line_names_the_drained_candidate(
+            self, tmp_path, monkeypatch, caplog):
+        drained = _mk_drained_store(tmp_path / "drained")
+        monkeypatch.setenv("THETADATA_STORE", str(drained))
+        with caplog.at_level(logging.ERROR, logger=tds.log.name):
+            assert tds.resolve_thetadata_store(purpose="t") is None
+        last = [r.getMessage() for r in caplog.records
+                if r.levelno >= logging.ERROR][-1]
+        assert "resolved store=NONE" in last
+        assert "DRAINED" in last, f"drained fact absent from the surfaced line: {last}"
+        assert str(drained) in last
+
+    def test_required_error_names_the_drained_candidate_and_the_refill_writer(
+            self, tmp_path, monkeypatch):
+        drained = _mk_drained_store(tmp_path / "drained")
+        monkeypatch.setenv("THETADATA_STORE", str(drained))
+        with pytest.raises(RuntimeError) as ei:
+            tds.resolve_thetadata_store(required=True, purpose="t")
+        msg = str(ei.value)
+        assert "DRAINED" in msg and str(drained) in msg
+        assert "backfill_thetadata_eod" in msg
+
+
+class TestDrainedCandidatesDisambiguateNone:
+    """AD-1T2b — `resolve_thetadata_store() is None` stopped meaning one thing.
+
+    Before, None meant "no store anywhere" and writers treated it as a
+    fresh-install permit. After the drained-store refusal it ALSO means "the
+    canonical store exists but is empty", and a writer that cannot tell them
+    apart will mint a SECOND store beside the drained one —
+    scripts/backfill_thetadata_eod.py's second-store guard (AD-1T1 §D/RF3)
+    depends on this helper to keep working.
+    """
+
+    def test_fresh_install_reports_no_drained_candidates(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("THETADATA_STORE", str(tmp_path / "nope"))
+        monkeypatch.setattr(tds, "_OPS_WT_STORE", tmp_path / "also-nope")
+        monkeypatch.setattr(libconfig, "data_dir", lambda: tmp_path / "none")
+        assert tds.drained_store_candidates() == []
+
+    def test_a_drained_canonical_store_is_reported(self, tmp_path, monkeypatch):
+        drained = _mk_drained_store(tmp_path / "drained")
+        monkeypatch.setenv("THETADATA_STORE", str(drained))
+        monkeypatch.setattr(tds, "_OPS_WT_STORE", tmp_path / "nope")
+        monkeypatch.setattr(libconfig, "data_dir", lambda: tmp_path / "none")
+        assert tds.resolve_thetadata_store(purpose="t") is None   # the ambiguity
+        assert tds.drained_store_candidates() == [drained]        # resolved by this
+
+    def test_a_real_store_is_not_reported_drained(self, tmp_path, monkeypatch):
+        real = _mk_store(tmp_path / "real", tiers=("eod",), roots=("SPY",))
+        monkeypatch.setenv("THETADATA_STORE", str(real))
+        monkeypatch.setattr(tds, "_OPS_WT_STORE", tmp_path / "nope")
+        monkeypatch.setattr(libconfig, "data_dir", lambda: tmp_path / "none")
+        assert tds.drained_store_candidates() == []
+
+    def test_an_unreadable_store_is_not_reported_drained(self, tmp_path, monkeypatch):
+        """Fail open here too — refusing a backfill because a store could not be
+        listed would block the one writer that can repair a real drain."""
+        store = _mk_drained_store(tmp_path / "store", tiers=("eod",))
+        monkeypatch.setenv("THETADATA_STORE", str(store))
+        monkeypatch.setattr(tds, "_OPS_WT_STORE", tmp_path / "nope")
+        monkeypatch.setattr(libconfig, "data_dir", lambda: tmp_path / "none")
+        # Readable, this store IS drained — so [] below can only come from the
+        # denial, never from the fixture being empty of tier dirs.
+        assert tds.drained_store_candidates() == [store]
+        (store / "eod").chmod(0o000)
+        try:
+            assert tds.drained_store_candidates() == []
+        finally:
+            (store / "eod").chmod(0o755)
+
+    def test_backfill_actually_consults_the_helper(self):
+        """The guard is only real if the writer wires it in (a helper nobody
+        calls is the same defect as no helper)."""
+        src = (Path(__file__).resolve().parent.parent
+               / "scripts" / "backfill_thetadata_eod.py").read_text()
+        assert "drained_store_candidates" in src, \
+            "backfill no longer consults drained_store_candidates() — its " \
+            "second-store guard is bypassable through the fresh-install path"
+        assert "refusing to mint a second T1 store" in src
+
+
+class TestTheProbeNeverMakesResolutionRaise:
+    """Round-2 review: the bounded probe introduced raise paths where the
+    pre-AD-1T2b resolver had none. engine/options_skew.py load_chain documents
+    "never raises", and scripts/backfill_thetadata_eod.py calls
+    drained_store_candidates() AFTER its own store dir has been mkdir'd, so an
+    escaping traceback there breaks the no-mutation-on-uncertain-resolution
+    property. Refusing to resolve because the probe could not START is the same
+    false RED the probe exists to prevent.
+    """
+
+    def test_thread_creation_failure_fails_open_instead_of_raising(
+            self, tmp_path, monkeypatch):
+        import threading
+        drained = _mk_drained_store(tmp_path / "drained")
+        monkeypatch.setenv("THETADATA_STORE", str(drained))
+
+        def _boom(self):
+            raise RuntimeError("can't start new thread")
+
+        monkeypatch.setattr(threading.Thread, "start", _boom)
+
+        # All three entry points the review found raising.
+        assert tds.resolve_thetadata_store(purpose="t") == drained
+        assert tds.drained_store_candidates() == []
+        assert tds.resolve_thetadata_store(required=True, purpose="t") == drained
+
+    def test_a_drained_store_is_not_called_drained_when_the_probe_cannot_run(
+            self, tmp_path, monkeypatch):
+        """The store really IS drained, but we could not establish it. Fail open."""
+        import threading
+        drained = _mk_drained_store(tmp_path / "drained")
+        monkeypatch.setattr(
+            threading.Thread, "start",
+            lambda self: (_ for _ in ()).throw(RuntimeError("can't start new thread")))
+        assert tds._classify_store(drained) == tds._UNKNOWN
+
+
+class TestAMalformedProbeBudgetNeverBreaksTheImport:
+    """Round-2 review: _STORE_PROBE_S is module scope in THE resolver every
+    consumer imports, so float("") there takes down the whole build. The
+    realistic shape is a workflow `env:` key declared with no value.
+    """
+
+    @pytest.mark.parametrize("raw", ["", "abc", "nan", "  ", "1e", "None"])
+    def test_a_bad_budget_falls_back_to_the_default(self, raw, monkeypatch):
+        monkeypatch.setenv("THETADATA_STORE_PROBE_S", raw)
+        assert tds._probe_budget() == 10.0
+
+    def test_nan_is_rejected_because_it_passes_every_comparison(self, monkeypatch):
+        """NaN is not merely malformed: it survives `<= 0`, so it would reach
+        Thread.join(nan), which raises ValueError."""
+        monkeypatch.setenv("THETADATA_STORE_PROBE_S", "nan")
+        v = tds._probe_budget()
+        assert v == v, "NaN leaked through the budget guard"
+        assert not (v <= 0), "a NaN budget would have passed the disable gate"
+
+    @pytest.mark.parametrize("raw,expected", [("0", 0.0), ("-1", -1.0), ("2.5", 2.5)])
+    def test_valid_budgets_are_preserved(self, raw, expected, monkeypatch):
+        monkeypatch.setenv("THETADATA_STORE_PROBE_S", raw)
+        assert tds._probe_budget() == expected
+
+
+class TestFailingOpenIsNeverSilent:
+    """Round-2 review, the deepest finding: fail-open is correct, but a SILENT
+    _UNKNOWN resolve reproduces the original blank-board incident exactly — the
+    drained store resolves, a blank brief publishes, exit 0, and nothing appears
+    in the Actions summary. If the M1's tier dirs cannot be listed under launchd,
+    _UNKNOWN is the branch that runs, so it must be the loud one.
+    """
+
+    def test_an_unverified_resolve_emits_a_github_annotation(
+            self, tmp_path, monkeypatch, capsys):
+        import threading
+        drained = _mk_drained_store(tmp_path / "drained")
+        monkeypatch.setenv("THETADATA_STORE", str(drained))
+        monkeypatch.setattr(
+            threading.Thread, "start",
+            lambda self: (_ for _ in ()).throw(RuntimeError("can't start new thread")))
+
+        assert tds.resolve_thetadata_store(purpose="t") == drained
+        out = capsys.readouterr().out
+        hits = [ln for ln in out.splitlines()
+                if ln.startswith("::warning title=thetadata-store-unverified::")]
+        # Must START the line: a logger prefixes it and GitHub drops it silently.
+        assert hits, f"no line-start annotation on an unverified resolve: {out!r}"
+        assert str(drained) in hits[0]
+
+    def test_a_verified_resolve_is_silent(self, tmp_path, monkeypatch, capsys):
+        """The annotation must discriminate, not fire on every resolve."""
+        store = _mk_store(tmp_path / "real", roots=("SPY",))
+        monkeypatch.setenv("THETADATA_STORE", str(store))
+        assert tds.resolve_thetadata_store(purpose="t") == store
+        assert "::warning" not in capsys.readouterr().out
+
+    def test_a_drained_refusal_is_not_annotated_as_unverified(
+            self, tmp_path, monkeypatch, capsys):
+        """A PROVABLY drained store is refused, not resolved — the unverified
+        annotation would be a lie there."""
+        drained = _mk_drained_store(tmp_path / "drained")
+        monkeypatch.setenv("THETADATA_STORE", str(drained))
+        monkeypatch.setattr(libconfig, "data_dir", lambda: tmp_path / "nowhere")
+        assert tds.resolve_thetadata_store(purpose="t") is None
+        assert "thetadata-store-unverified" not in capsys.readouterr().out

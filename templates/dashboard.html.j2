@@ -742,8 +742,8 @@
              letter-spacing: .01em; }
   .tm-state-tag { font-size: 11px; font-weight: 700; text-transform: uppercase;
                   letter-spacing: .05em; padding: 2px 8px; border-radius: 10px; }
-  .tm-state-tag.is-live { color: color-mix(in srgb, var(--up) 85%, var(--text));
-                  background: color-mix(in srgb, var(--up) 16%, var(--panel)); }
+  .tm-state-tag.is-live { color: var(--ink-ok, var(--ok));
+                  background: var(--wash-ok); }
   .tm-state-tag.is-hist { color: var(--muted);
                   background: color-mix(in srgb, var(--muted) 16%, var(--panel)); }
   .tm-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
@@ -1790,12 +1790,15 @@
   #us-stocktable-wrap { display:none; }
   #us-standouts.st-table-mode #us-stocktable-wrap { display:block; }
   #us-standouts.st-table-mode .nb-grid-section { display:none; }
-  /* P0 #6185 — source view: exactly one population is on screen at a time. */
-  #us-standouts[data-prophet-src="plans"] #us-candidates { display:none; }
-  #us-standouts[data-prophet-src="candidates"] #us-plan-block { display:none; }
-  /* the Grid/Table view toggle switches the CANDIDATE table; there is no plan
-     table yet (P-MP1-DENSE), so it must never appear under a Plans label. */
-  #us-standouts[data-prophet-src="plans"] #us-st-view-toggle { display:none; }
+  /* Packet 2 — Today | Candidates | Plans: exactly one population on screen. */
+  #us-standouts:not([data-prophet-src="today"]) #us-today { display:none; }
+  #us-standouts:not([data-prophet-src="candidates"]) #us-candidates,
+  #us-standouts:not([data-prophet-src="candidates"]) #us-candidate-pool { display:none; }
+  #us-standouts:not([data-prophet-src="plans"]) #us-plan-block { display:none; }
+  /* Grid/Table belongs to Candidates only; Today reuses canonical cards and
+     Plans remains the historical record wall. */
+  #us-standouts:not([data-prophet-src="candidates"]) #us-st-view-toggle { display:none; }
+  #us-today button.mx-sec-link { border:0; background:transparent; color:var(--link); font:inherit; cursor:pointer; min-height:40px; padding:0 8px; }
   /* count chips row (id matches stocktable.js hard-coded lookup) */
   #st-count-chips { display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; margin:8px 0; }
   .st-chip { display:inline-block; font-size:10px; font-weight:700; padding:2px 9px;
@@ -2172,8 +2175,8 @@
   body.page-macro .cb-count { font-size: 11px; font-weight: 800; padding: 0 7px; border-radius: 8px;
     background: color-mix(in srgb, var(--act) 18%, var(--tile)); color: var(--ink-act, var(--act));
     font-family: var(--num); font-variant-numeric: tabular-nums; }
-  body.page-macro .cb-live { width: 8px; height: 8px; border-radius: 50%; background: var(--up);
-    box-shadow: 0 0 8px var(--up); flex: none; }
+  body.page-macro .cb-live { width: 8px; height: 8px; border-radius: var(--r-pill, 999px); background: var(--ok);
+    box-shadow: 0 0 8px var(--ok); flex: none; }
   body.page-macro .cb-sub { font-size: 12.5px; font-weight: 700; color: var(--ink-2); margin: 0 0 9px;
     display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
   body.page-macro .cb-sub a { margin-left: auto; }
@@ -14649,22 +14652,43 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {# ── d. Inflation Read → glance row: state word + one plain line + ? receipt ── #}
       {# Guard: only render when core inflation values are present (fail-open path leaves them None). #}
       {% if _dlgrc_inf and _dlgrc_inf.core_pce_yoy is not none %}
-      {% set _inf_vst = _dlgrc_inf.vs_target_pp %}
-      {# Anchoring drives the state word + colour; the numbers are demoted to the ? tip. #}
-      {% set _inf_anchor = _dlgrc_inf.anchoring %}
-      {% set _inf_state_en = {'anchored':'Above target','drifting':'Drifting up','unanchored':'Unanchored'}.get(_inf_anchor, 'Above target') %}
-      {% set _inf_state_zh = {'anchored':'高于目标','drifting':'向上漂移','unanchored':'脱锚'}.get(_inf_anchor, '高于目标') %}
-      {% set _inf_col = 'var(--down,#ef4444)' if _inf_anchor == 'unanchored' else ('var(--warn,#f59e0b)' if (_inf_vst is not none and _inf_vst > 0.5) else 'var(--up,#22d97a)') %}
-      {# Plain "how far above target" phrase #}
-      {% set _inf_above_en = ((('%.1f'|format(_inf_vst)) ~ ' points above the Fed’s 2% target') if (_inf_vst is not none) else 'above the Fed’s 2% target') %}
-      {% set _inf_above_zh = ((('高于美联储2%目标 ' ~ ('%.1f'|format(_inf_vst)) ~ ' 个百分点')) if (_inf_vst is not none) else '高于美联储2%目标') %}
+      {% set _inf_vst = _dlgrc_inf.vs_target_pp if (_dlgrc_inf.vs_target_pp is defined and _dlgrc_inf.vs_target_pp is not none) else none %}
+      {# E0-G: the owner's inflation LEVEL token (engine/rate_inflation_transmission.current_state → state.inflation.regime)
+         drives the state word + colour; the owner's EXPECTATIONS token (state.expectations.anchoring) drives the second
+         clause. Both are carried verbatim and both are null-safe: an unknown or missing token reads "being updated",
+         never a default word. The numbers stay demoted to the ? tip. #}
+      {% set _inf_regime = _dlgrc_inf.regime if _dlgrc_inf.regime in ('above target', 'at target', 'below target') else none %}
+      {% set _inf_anchor = _dlgrc_inf.anchoring if _dlgrc_inf.anchoring in ('anchored', 'drifting up', 'drifting down') else none %}
+      {% set _inf_state_en = {'above target':'Above target','at target':'Near target','below target':'Below target'}.get(_inf_regime, 'Being updated') %}
+      {% set _inf_state_zh = {'above target':'高于目标','at target':'接近目标','below target':'低于目标'}.get(_inf_regime, '更新中') %}
+      {# Red only when expectations move the wrong way for the level; green when near target with steady expectations;
+         quiet blue while the level is being re-read; amber for every other state (a miss, or drifting expectations near target). #}
+      {% set _inf_wrong_way = (_inf_regime == 'above target' and _inf_anchor == 'drifting up') or (_inf_regime == 'below target' and _inf_anchor == 'drifting down') %}
+      {% set _inf_col = 'var(--down,#ef4444)' if _inf_wrong_way else ('var(--up,#22d97a)' if (_inf_regime == 'at target' and _inf_anchor == 'anchored') else ('var(--info,#60a5fa)' if _inf_regime is none else 'var(--warn,#f59e0b)')) %}
+      {# Plain level phrase: how far from the Fed's 2% target, in the direction the owner states #}
+      {% set _inf_gap = ('%.1f'|format(_inf_vst|abs)) if (_inf_vst is not none) else none %}
+      {% if _inf_regime == 'above target' %}
+      {% set _inf_level_en = ('still ' ~ _inf_gap ~ ' points above the Fed’s 2% target') if _inf_gap else 'still above the Fed’s 2% target' %}
+      {% set _inf_level_zh = ('仍高于美联储2%目标 ' ~ _inf_gap ~ ' 个百分点') if _inf_gap else '仍高于美联储2%目标' %}
+      {% elif _inf_regime == 'below target' %}
+      {% set _inf_level_en = (_inf_gap ~ ' points below the Fed’s 2% target') if _inf_gap else 'below the Fed’s 2% target' %}
+      {% set _inf_level_zh = ('低于美联储2%目标 ' ~ _inf_gap ~ ' 个百分点') if _inf_gap else '低于美联储2%目标' %}
+      {% elif _inf_regime == 'at target' %}
+      {% set _inf_level_en = 'close to the Fed’s 2% target' %}
+      {% set _inf_level_zh = '接近美联储2%目标' %}
+      {% else %}
+      {% set _inf_level_en = 'being re-read against the Fed’s 2% target' %}
+      {% set _inf_level_zh = '相对美联储2%目标的读数更新中' %}
+      {% endif %}
+      {% set _inf_exp_en = {'anchored':'longer-run expectations look steady','drifting up':'longer-run expectations are drifting up','drifting down':'longer-run expectations are drifting down'}.get(_inf_anchor, 'the longer-run expectations read is being updated') %}
+      {% set _inf_exp_zh = {'anchored':'长期预期看起来稳定','drifting up':'长期预期向上漂移','drifting down':'长期预期向下漂移'}.get(_inf_anchor, '长期预期读数更新中') %}
       <div class="mx5-dlg-eyebrow"><span class="l-en">Inflation Read</span><span class="l-zh">通胀读数</span></div>
       <div class="fbm-row">
         <span class="fbm-row-state" style="color:{{ _inf_col }}"><span class="fbm-row-dot" style="background:{{ _inf_col }}"></span><span class="l-en">{{ _inf_state_en }}</span><span class="l-zh">{{ _inf_state_zh }}</span></span>
-        <span class="fbm-row-line"><span class="l-en">Core prices are still {{ _inf_above_en }}; longer-run expectations look {{ {'anchored':'steady','drifting':'a touch loose','unanchored':'unmoored'}.get(_inf_anchor,'steady') }}.</span><span class="l-zh">核心物价仍{{ _inf_above_zh }}；长期预期看起来{{ {'anchored':'稳定','drifting':'略松动','unanchored':'不稳'}.get(_inf_anchor,'稳定') }}。</span></span>
+        <span class="fbm-row-line"><span class="l-en">Core prices are {{ _inf_level_en }}; {{ _inf_exp_en }}.</span><span class="l-zh">核心物价{{ _inf_level_zh }}；{{ _inf_exp_zh }}。</span></span>
         <span class="fbm-tip"
-          data-tip-en="Core PCE {{ _dlgrc_inf.core_pce_yoy }}% y/y · Core CPI {{ _dlgrc_inf.core_cpi_yoy }}% · 3-month annualized PCE {{ _dlgrc_inf.core_pce_3m_ann }}% · 10y breakeven {{ _dlgrc_inf.breakeven_10y }}% (expectations: {{ _inf_anchor }})."
-          data-tip-zh="核心PCE {{ _dlgrc_inf.core_pce_yoy }}% 同比 · 核心CPI {{ _dlgrc_inf.core_cpi_yoy }}% · 3月年化PCE {{ _dlgrc_inf.core_pce_3m_ann }}% · 10年盈亏平衡 {{ _dlgrc_inf.breakeven_10y }}%（预期：{{ {'anchored':'稳定','drifting':'漂移','unanchored':'脱锚'}.get(_inf_anchor,_inf_anchor) }}）。">?</span>
+          data-tip-en="Core PCE {{ _dlgrc_inf.core_pce_yoy }}% y/y{% if _dlgrc_inf.core_cpi_yoy is not none %} · Core CPI {{ _dlgrc_inf.core_cpi_yoy }}%{% endif %}{% if _dlgrc_inf.core_pce_3m_ann is not none %} · 3-month annualized PCE {{ _dlgrc_inf.core_pce_3m_ann }}%{% endif %}{% if _dlgrc_inf.breakeven_10y is not none %} · 10y breakeven {{ _dlgrc_inf.breakeven_10y }}%{% endif %}{% if _inf_anchor is not none %} (expectations: {{ _inf_anchor }}){% endif %}."
+          data-tip-zh="核心PCE {{ _dlgrc_inf.core_pce_yoy }}% 同比{% if _dlgrc_inf.core_cpi_yoy is not none %} · 核心CPI {{ _dlgrc_inf.core_cpi_yoy }}%{% endif %}{% if _dlgrc_inf.core_pce_3m_ann is not none %} · 3月年化PCE {{ _dlgrc_inf.core_pce_3m_ann }}%{% endif %}{% if _dlgrc_inf.breakeven_10y is not none %} · 10年盈亏平衡 {{ _dlgrc_inf.breakeven_10y }}%{% endif %}{% if _inf_anchor is not none %}（预期：{{ {'anchored':'锚定','drifting up':'向上漂移','drifting down':'向下漂移'}.get(_inf_anchor,_inf_anchor) }}）{% endif %}。">?</span>
       </div>
       {% if _dlgrc_inf.nearest_cpi is defined and _dlgrc_inf.nearest_cpi %}
       {% set _ncpi = _dlgrc_inf.nearest_cpi %}
@@ -15526,13 +15550,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% endif %}{# /policy_lever #}
 
 
-  {# Combined "Regime — now & where it's headed": the current-regime HMM probability and the
-     base-effect forward path, merged into one scorecard (were two near-identical panels).
-     Stage-B: macro mode has this inside the policy tray (sx-policy-v2). Kept here for
-     stocks mode (stocks sees the regime-read panel if policy_lever data is present). #}
-  {% set be_note_en = 'Growth is point-in-time back to 1997; inflation uses latest-revision data until the core-CPI/PCE vintages backfill.' %}
-  {% set be_note_zh = '增长为 1997 年以来的时点数据；通胀在核心 CPI／PCE 修订版历史回填前使用最新修订数据。' %}
-  {% if mode != 'macro' %}{% include "_regime_read_panel.html.j2" %}{% endif %}
+  {# Regime read panel moved out of this macro-only section (MO-PAID-001_FIX_R1): the old
+     `mode != 'macro'` guard here was unreachable (the surrounding `mode == 'macro'`
+     block opens at line 2622 and closes at line 16081 with no else), so the two-axis
+     base-effect forward path rendered on no page. The reachable stocks-mode include
+     now sits below, just after `{% endif %}{# /market_state B4 #}`. #}
 
 
   {# ==================== RELEASE RADAR (MRI PR-D / W11-H MRI-R39) ====================
@@ -16163,10 +16185,15 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     <a class="scx-more" href="macro.html#dlg-risk"><span class="l-en">Risk radar →</span><span class="l-zh">风险雷达 →</span></a>
   </div>
   {% endif %}{# /market_state B4 #}
+  {# Regime — now & where it's headed: the two-axis base-effect forward path (MO-PAID-001).
+     Until 2026-10-02 this include sat inside the macro-only block behind `mode != 'macro'`
+     and therefore rendered on no page (MO-PAID-001_FIX_R1). Stocks mode is its host;
+     `_regime_read_panel.html.j2` hides itself unless latest.base_effect carries both axes. #}
+  {% include "_regime_read_panel.html.j2" %}
   {% if action_board %}
   {% include "_us_act_now_board.html.j2" %}
     {% set _su = us_standouts if (us_standouts and us_standouts.buy) else None %}
-    {{ pv.pv_css() }}
+    {{ pv.pv_css(setup_detail=true) }}
     {# §6.9 R5 — the "passed on tonight" shelf's styles. Emitted ONCE, beside the card
        styles it sits under; the shelf itself renders far below, inside #us-standouts. #}
     {{ pvr.pvr_css() }}
@@ -16432,6 +16459,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {#- publish-together fence: the per-card `Adjusted` mark and the receipt line it is a
         receipt FOR ship as one thing or not at all (spec §7 invariants). -#}
     {% set _bs_adj = (_bs.get('note') == 'confirmed') if _bs else false %}
+    {#- Packet 2 Today source selection. ranking.featured_count is the board owner's
+        own DISPLAY-shelf count, not the candidate-pool featured lane (a different
+        plan-intake question). Missing/zero metadata falls back to Candidates rather
+        than inferring a Today pick from position. -#}
+    {% set _today_declared = ((_su.get('ranking') or {}).get('featured_count')) if _su else none %}
+    {% set _src_default = ('today' if (_su and _today_declared is number and _today_declared is not boolean and _today_declared > 0) else ('candidates' if _su else 'plans')) %}
     {#- `data-board-asof` is the board's vintage in machine-readable form, on the board
         container itself, so a monitor can grade the RENDERED page rather than inferring
         freshness from the artifact it hoped the page was built from (2026-08-26, PR-2 of
@@ -16441,7 +16474,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         late?" with client-side calendar arithmetic and mistake a weekend for an outage.
         Both are absent when the board has no artifact, which is itself the honest signal. -#}
     <div class="panel span12 notable" id="us-standouts"
-         data-prophet-src="{{ 'candidates' if _su else 'plans' }}"
+         data-prophet-src="{{ _src_default }}"
          {%- if _su and _su.get('as_of') %} data-board-asof="{{ _su.as_of|e }}"{% endif %}
          {%- if _su and _su.get('staleness') %} data-board-delayed="{{ '1' if _su.staleness.get('delayed') else '0' }}"{% endif %}
          {%- if _bs and _bs.get('rel') %} data-boardstate="{{ _bs.rel }}"{% endif %}>
@@ -16475,9 +16508,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
            way to REACH the typed Candidates-unavailable state (B5) — gating
            the toggle on `_su` would bake that state and then make it
            permanently unreachable. -#}
-        <span class="st-view-toggle" id="us-src-toggle" role="group" data-tip-en="Switch between the candidate screen and the plan book" data-tip-zh="在候选筛选与计划簿之间切换">
-          <button id="us-src-btn-cand" type="button" aria-selected="{{ 'true' if _su else 'false' }}" data-src="candidates"><span class="l-en">Candidates</span><span class="l-zh">候选</span></button>
-          <button id="us-src-btn-plan" type="button" aria-selected="{{ 'false' if _su else 'true' }}" data-src="plans"><span class="l-en">Plans</span><span class="l-zh">计划</span></button>
+        <span class="st-view-toggle" id="us-src-toggle" role="group" data-tip-en="Switch between Today, Screener, and Plans" data-tip-zh="在今日、筛选器与计划之间切换">
+          {% if _su %}<button id="us-src-btn-today" type="button" aria-selected="{{ 'true' if _src_default == 'today' else 'false' }}" data-src="today"><span class="l-en">Today</span><span class="l-zh">今日</span></button>{% endif %}
+          <button id="us-src-btn-cand" type="button" aria-selected="{{ 'true' if _src_default == 'candidates' else 'false' }}" data-src="candidates"><span class="l-en">Screener</span><span class="l-zh">筛选器</span></button>
+          <button id="us-src-btn-plan" type="button" aria-selected="{{ 'true' if _src_default == 'plans' else 'false' }}" data-src="plans"><span class="l-en">Plans</span><span class="l-zh">计划</span></button>
         </span>
         {# W8-R6: grid/table view toggle (US market) #}
         {% if _su %}
@@ -16597,10 +16631,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          No re-ordering: system order is preserved (CN no-mutation pattern).
          Rendered only when us_standouts.buy is populated (mode=stocks only). #}
       {% if _su %}
+      {% import "_prophet_setup_detail.html.j2" as psd_table %}
       <script type="application/json" id="us-stocktable-data">
       {
         "rows": [{% for _n in _su.buy %}{% if not loop.first %},{% endif %}{
           "ticker":        {{ _n.ticker | tojson }},
+          "setup_detail":  {{ psd_table.table_action(_n, _su.get("as_of")) | string | tojson }},
           "name":          {{ _n.name | tojson }},
           "sector":        {{ (_n.sector or '') | tojson }},
           "lane":          {{ (_n.get('lane') or '') | tojson }},
@@ -16822,6 +16858,45 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           bar a full board a moment later) and marked inert with one plain line
           saying why, rather than shipping dead buttons with no explanation. -#}
       {%- endif -%}
+
+      {#- ═══ PACKET 2 — TODAY ═══════════════════════════════════════════════════════
+          Today is a bounded preview of the board owner's existing buy[].featured
+          shelf, never a new ranker or a positional pick rule. It preserves the
+          candidate card's own entry chip/zone/trigger as the timing authority, so a
+          Featured bounce_wait row remains Wait. Three cards is shell capacity only;
+          paid/full access may hydrate a larger bounded Featured shelf from the
+          protected payload without widening these public bytes. -#}
+      {%- set _today = namespace(rows=[]) -%}
+      {#- Filter the producer-ordered SHELL board directly. The Candidates render list
+          is stage-grouped and would therefore become an accidental Today reranker. -#}
+      {%- for _n in _board -%}
+        {%- if _n.get('featured') -%}
+          {%- set _today.rows = _today.rows + [_n] -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- set _today_visible = _today.rows[:3] -%}
+      {%- set _today_total = (_today_declared if (_today_declared is number and _today_declared is not boolean and _today_declared >= (_today.rows|length)) else (_today.rows|length)) -%}
+      {%- set _today_more = [_today_total - (_today_visible|length), 0] | max -%}
+      <section class="mx-sec" id="us-today" data-today-total="{{ _today_total }}" data-today-visible="{{ _today_visible|length }}">
+        <div class="mx-sec-hd">
+          <h2 class="mx-sec-h2">{{ t('Today', '今日') }}</h2>
+          <span class="mx-sec-total"><span class="l-en"><b>{{ _today_visible|length }}</b> of <b>{{ _today_total }}</b> Featured</span><span class="l-zh">精选 <b>{{ _today_visible|length }}</b> / <b>{{ _today_total }}</b></span></span>
+          <button type="button" class="mx-sec-link" onclick="if(window.USProphetSource){window.USProphetSource.set('candidates')}">{{ t('Open Screener', '打开筛选器') }}</button>
+        </div>
+        <p class="mx-sec-note">{{ t('A preview of the current board’s owner-Featured shelf in its existing order. Featured is not entry permission — the card’s Buy, Near or Wait state still controls timing.', '当前榜单「精选」层的预览，顺序保持不变。精选不等于获准入场——仍以卡片上的买入、接近或等待状态决定时机。') }}</p>
+        {%- if _today_visible %}
+        <div class="nbgrid" id="us-today-grid">
+          {% with items=_today_visible, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh, plan_rel=plan_rel if plan_rel is defined else none %}{% include "_us_board_cards.html.j2" %}{% endwith %}
+        </div>
+        {%- if _today_more > 0 %}
+        <p class="mx-sec-note us-today-remainder"><span class="l-en">{{ _today_more }} more Featured name{{ '' if _today_more == 1 else 's' }} remain in Screener; this three-card preview is not a pick quota.</span><span class="l-zh">另有 {{ _today_more }} 只精选股票保留在筛选器；三张卡只是预览容量，并非选股名额。</span></p>
+        {%- endif %}
+        {%- elif _today_total > 0 %}
+        <div class="mx-empty"><div class="mx-empty-line">{{ t('Featured names exist, but none are visible in this access preview.', '存在精选股票，但当前访问预览中未显示。') }}</div><div class="mx-empty-why">{{ t('Open Screener after access is available; no hidden name is inferred here.', '获得访问权限后请打开筛选器；此处不会推断任何隐藏股票。') }}</div></div>
+        {%- else %}
+        <div class="mx-empty"><div class="mx-empty-line">{{ t('No owner-Featured names on this board.', '当前榜单暂无精选股票。') }}</div><div class="mx-empty-why">{{ t('Screener remains available; zero Featured is not a broken board.', '筛选器仍可使用；精选为零并不代表榜单故障。') }}</div></div>
+        {%- endif %}
+      </section>
       {% endif %}
       {#- ═══ P-MP1-SHELL CENTRAL ACT (MP-1-prophet-board.md §6 row 1) ═══════════════
          The Setups grid re-sources FROM THE PLAN BOOK (site/prophet/index.json,
@@ -16859,6 +16934,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          and no shared id (invariant E2). Nothing inside changes. -#}
       <div id="us-plan-block">
       {{ pv.mx_ladder(_upb, error=_upb_err) }}
+      {%- set _upb_source_asof = (_upb.get('source_asof') if _upb and not _upb_err and _upb.get('source_asof') is string and _upb.get('source_asof')|trim else none) %}
+      {%- set _upb_published_asof = (_upb.get('asof') if _upb and not _upb_err and _upb.get('asof') is string and _upb.get('asof')|trim else none) %}
+      {%- set _upb_board_asof = (_upb.get('source_board_asof') if _upb and not _upb_err and _upb.get('source_board_asof') is string and _upb.get('source_board_asof')|trim else none) %}
+      {%- set _upb_day = _upb_source_asof if _upb_source_asof is string and _upb_source_asof|length == 10 and _upb_source_asof[4] == '-' and _upb_source_asof[7] == '-' and _upb_source_asof[0:4].isdigit() and _upb_source_asof[5:7].isdigit() and _upb_source_asof[8:10].isdigit() else none %}
+      {%- set _upb_published_day = _upb_published_asof if _upb_day and _upb_published_asof is string and _upb_published_asof|length == 10 and _upb_published_asof[4] == '-' and _upb_published_asof[7] == '-' and _upb_published_asof[0:4].isdigit() and _upb_published_asof[5:7].isdigit() and _upb_published_asof[8:10].isdigit() else none %}
+      {%- set _upb_source_day = _upb_board_asof if _upb_day and _upb_board_asof is string and _upb_board_asof|length == 10 and _upb_board_asof[4] == '-' and _upb_board_asof[7] == '-' and _upb_board_asof[0:4].isdigit() and _upb_board_asof[5:7].isdigit() and _upb_board_asof[8:10].isdigit() else none %}
+      <p class="mx-book-clock" id="us-plan-book-asof" data-plan-book-asof="{{ _upb_day if _upb_day is string else '' }}" data-plan-book-published="{{ _upb_published_day if _upb_published_day is string else '' }}" data-plan-book-source-asof="{{ _upb_source_day if _upb_source_day is string else '' }}"><span class="l-en">{% if _upb_day %}Plan records as of {{ _upb_day }}{% if _upb_source_day %} · source board {{ _upb_source_day }}{% endif %}{% if _upb_published_day %} · published {{ _upb_published_day }}{% endif %}{% else %}Plan record date unavailable{% endif %}</span><span class="l-zh">{% if _upb_day %}计划记录截至 {{ _upb_day }}{% if _upb_source_day %} · 来源榜单 {{ _upb_source_day }}{% endif %}{% if _upb_published_day %} · 发布于 {{ _upb_published_day }}{% endif %}{% else %}计划记录日期不可用{% endif %}</span></p>
       {%- if _upb and not _upb_err %}
       {%- if not _upb.get('plans') %}
       {#- Repair round, finding S4: theme.css:1983-1988 states the law —
@@ -16870,7 +16952,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <div class="mx-empty-why">{{ t('No qualifying rows today · refreshes after the next close', '今日无符合条件的条目 · 下一收盘后刷新') }}</div>
       </div>
       {%- else %}
-      <div class="nbgrid" data-showmore-rows="3" id="us-life-grid" data-mp1-grid="1">
+      <div class="nbgrid" data-showmore-rows="3" data-showmore-exclude-life="resolved" id="us-life-grid" data-mp1-grid="1">
       {%- with items=_upb.plans, cand_map=_cand_map, trg_map=_plan_trg_map, episode_map=(us_prophet_episodes or {}) %}{% include "_us_prophet_plan_cards.html.j2" %}{% endwith -%}
       </div>{# end #us-life-grid #}
       {#- Repair round 2, finding R1+R3 (COMMISSIONING ADJUDICATION, replaces
@@ -16932,12 +17014,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- set _life_visible_locked = (life_gate_visible_locked if (life_gate_visible_locked is defined and life_gate_visible_locked is not none) else life_gate.locked) -%}
       <div class="us-tier-wall" id="us-life-wall">
         <div class="us-tw-h">
-          <span class="l-en">{{ _life_visible_locked }} more plan rows in the plan book</span>
-          <span class="l-zh">计划簿中另有 {{ _life_visible_locked }} 条计划</span>
+          <span class="l-en">{{ _life_visible_locked }} more tracked plan rows in this plan book</span>
+          <span class="l-zh">计划簿中还有 {{ _life_visible_locked }} 条跟踪记录</span>
         </div>
         <div class="us-tw-p">
-          <span class="l-en">You're seeing the first {{ _life_visible_preview }} of {{ life_gate.total }} plan rows. Sign in to see the full ranked board, every lifecycle state, and the table view.</span>
-          <span class="l-zh">当前显示 {{ life_gate.total }} 条计划中的前 {{ _life_visible_preview }} 条。登录后可查看完整排名榜单、全部生命周期状态与表格视图。</span>
+          <span class="l-en">You're seeing the first {{ _life_visible_preview }} of {{ life_gate.total }} tracked plan rows. Sign in to see the full tracked plan book and every lifecycle state.</span>
+          <span class="l-zh">当前显示 {{ life_gate.total }} 条跟踪记录中的前 {{ _life_visible_preview }} 条。登录后可查看完整跟踪计划簿与全部生命周期状态。</span>
         </div>
         <div class="us-tw-acts">
           <a class="us-tw-btn" href="plans.html">{{ t('See plans', '查看方案') }}</a>
@@ -16987,7 +17069,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- set _cand_total = (gate.total if gate else _board|length) -%}
       <div class="mx-sec" id="us-candidates">
         <div class="mx-sec-hd">
-          <h2 class="mx-sec-h2">{{ t('Candidates', '候选') }}</h2>
+          <h2 class="mx-sec-h2">{{ t('Screener', '筛选器') }}</h2>
           {#- P0 #6185 (C1): verified mechanism — `t(en, zh)` as called INSIDE
              this file resolves to the `{% macro t(en, zh='') %}` defined at
              the top of dashboard.html.j2 (line ~13), which SHADOWS the
@@ -17048,7 +17130,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
            WL1-PROVCARD-CONTRACT below, tests/test_wl1_lifecycle_
            neutralization.py) re-acquires this grid via that absence. -#}
       <div class="nbgrid" data-showmore-rows="3" id="us-cand-grid">
-      {% with items=_render_list.items, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh %}{% include "_us_board_cards.html.j2" %}{% endwith %}
+      {% with items=_render_list.items, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh, plan_rel=plan_rel if plan_rel is defined else none %}{% include "_us_board_cards.html.j2" %}{% endwith %}
       </div>{# end #us-cand-grid #}
         {#- P0 #6185 (B4) — restored CANDIDATE tier wall, keyed on `gate`
            (not `life_gate` — that key belongs to the plan wall inside
@@ -17138,7 +17220,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          data left up. -#}
       <div class="mx-sec" id="us-candidates">
         <div class="mx-sec-hd">
-          <h2 class="mx-sec-h2">{{ t('Candidates', '候选') }}</h2>
+          <h2 class="mx-sec-h2">{{ t('Screener', '筛选器') }}</h2>
         </div>
         <div class="mx-empty">
           <div class="mx-empty-line">{{ t("Tonight's candidate screen hasn't published — the Plans view below is unaffected.", '今晚的候选筛选尚未发布——下方的计划视图不受影响。') }}</div>
@@ -17531,6 +17613,27 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       }
       var clearBtn = document.getElementById('us-life-clear');
       if (clearBtn) clearBtn.addEventListener('click', function () { setLife(null); });
+      /* A historical record can link to a newer episode in another lifecycle
+         cell. Delegate from the stable panel rather than the replaceable grid,
+         so entitled hydration and show-more do not strand the link. Select the
+         already-loaded target's published lifecycle before the browser performs
+         its native fragment jump. Modified clicks, missing/withheld targets and
+         malformed destinations remain untouched. */
+      box.addEventListener('click', function (e) {
+        if (e.defaultPrevented || (typeof e.button === 'number' && e.button !== 0) ||
+            e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        var link = e.target && e.target.closest ? e.target.closest('a.pv-newer') : null;
+        if (!link || !link.closest('#us-life-grid')) return;
+        var href = link.getAttribute('href') || '';
+        if (href.charAt(0) !== '#') return;
+        var targetId;
+        try { targetId = decodeURIComponent(href.slice(1)); } catch (err) { return; }
+        var target = document.getElementById(targetId);
+        if (!target || !target.closest || !target.closest('#us-life-grid')) return;
+        var targetLife = target.getAttribute('data-life');
+        if (!targetLife || VALID_LIFE.indexOf(targetLife) === -1) return;
+        setLife(targetLife);
+      });
       /* Initial state: query string wins outright. Only when it carries no
          `life` param do we fall back, ONCE, to an inbound legacy #life=
          fragment — read here and never again; the fragment is not re-read on
@@ -18908,17 +19011,32 @@ function _plvHm24(m){
   var h=Math.floor(m/60), mm=m%60;
   return (h<10?'0':'')+h+':'+(mm<10?'0':'')+mm;
 }
-/* An ISO stamp as ET minutes-of-day, or null. Never throws, never guesses. */
-function _plvTsMin(iso){
+/* An ISO stamp as ET minutes and calendar day, or null. Never throws, never guesses. */
+function _plvStamp(iso){
   if(!iso) return null;
   var ms=Date.parse(iso);
   if(!isFinite(ms)) return null;
   var et=_plvEt(new Date(ms));
-  return et?et.min:null;
+  return et?{min:et.min, ymd:et.ymd}:null;
 }
-/* "as of 3:41 pm ET" / "截至 美东 15:41" — ONE as-of for the whole panel (Law 4). */
-function _plvAsOf(m){
-  return L('as of '+_plvHm12(m)+' ET', '截至 美东 '+_plvHm24(m));
+function _plvTsMin(iso){
+  var stamp=_plvStamp(iso);
+  return stamp?stamp.min:null;
+}
+/* The panel's source-owned quote clock, in English and Chinese at once. */
+function _plvAsOfToday(m){
+  return L('quotes as of '+_plvHm12(m)+' ET', '报价截至 美东 '+_plvHm24(m));
+}
+function _plvAsOfPrior(m, ymd){
+  var month=Number(ymd.slice(5,7)), day=Number(ymd.slice(8,10));
+  return L('last read '+_plvMonth(month)+' '+day+', '+_plvHm12(m)+' ET',
+           '上次判读 '+ymd.slice(5,10)+' 美东 '+_plvHm24(m));
+}
+function _plvMonth(month){
+  return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][month-1]||'';
+}
+function _plvAsOfUnavailable(){
+  return L('quote time unavailable', '报价时间不可用');
 }
 function _plvNum(v){
   try{ return Number(v).toLocaleString('en-US'); }catch(e){ return String(v); }
@@ -19325,29 +19443,23 @@ function _plvRender(){
   /* The stamp is the ARTIFACT's own clock — meta.quote_asof, falling back to the pass
      time. Never the browser clock: a local Date.now() would print a fresh-looking time
      over a stale artifact, which is the exact lie the freshness gate exists to prevent. */
-  var stampMin=_plvTsMin(meta.quote_asof)||_plvTsMin(meta.pass_ts);
-  /* No stamp when the newest artifact is from ANOTHER DAY. The as-of is a bare
-     time-of-day, so a previous session's pass would print "as of 4:15 pm ET" at 11:20 in
-     the morning — a stamp that reads as today's. There is no current read to stamp here,
-     and the body line already says exactly that.
-     BUT THE BOX STILL HAS TO HOLD ITS LINE. This is the fourth mode-varying box and the
-     one the first reservation pass missed: at <=340px the header puts the as-of on line 2
-     beside the token, so emptying it collapsed that line and shoved the board 17.00px —
-     the honesty fix above paying for itself in exactly the layout thrash the reserver
-     exists to prevent. A reader on a 320-340px phone would watch the board jump the
-     instant the day's first pass landed. Same mechanism as the other three: reserve the
-     line, show nothing in it.
-     The reserver is a formatter-built stamp at 12:00 — the widest wall clock this box can
-     render (two-digit hour, and the pass window is 09:20-18:30 ET so nothing exceeds it),
-     exact because .plv-asof is tabular-nums. Built by _plvAsOf itself so it cannot drift
-     from the real thing's markup.
-     'on' is ALWAYS the active key: with no stamp it is the empty string, which _plvStack
-     drops, so the reserver holds the box with nothing visible and nothing announced. The
-     reserver must never be the active variant — a visible 12:00 would be a fabricated
-     stamp, which is the very thing the honesty fix removed. */
-  var stampOn=(stampMin!==null&&res.why!=='none_today');
-  _plvStack(asEl, ['on','rsv'],
-            {on:(stampOn?_plvAsOf(stampMin):''), rsv:_plvAsOf(720)}, 'on');
+  var stamp=_plvStamp(meta.quote_asof)||_plvStamp(meta.pass_ts);
+  var stampMin=stamp?stamp.min:null;
+  var stampToday=(stamp!==null&&stamp.ymd===et.ymd);
+  var stampVars={rsv:_plvAsOfToday(720)};
+  if(stamp===null){
+    asEl.dataset.plvAsofState='unavailable';
+    stampVars.unavailable=_plvAsOfUnavailable();
+    _plvStack(asEl, ['unavailable','rsv'], stampVars, 'unavailable');
+  }else if(stampToday){
+    asEl.dataset.plvAsofState='today';
+    stampVars.today=_plvAsOfToday(stampMin);
+    _plvStack(asEl, ['today','rsv'], stampVars, 'today');
+  }else{
+    asEl.dataset.plvAsofState='prior_day';
+    stampVars.prior_day=_plvAsOfPrior(stampMin, stamp.ymd);
+    _plvStack(asEl, ['prior_day','rsv'], stampVars, 'prior_day');
+  }
 
   /* the stance line changes ONLY on a mode change (spec §6.4 rule 5), and all four
      stance lines stay stacked so the box reserves the tallest one at this width */
@@ -19369,11 +19481,21 @@ function _plvRender(){
   }else if(!visRows.length){
     var lastMin=(stampMin===null)?null:stampMin;
     if(mode==='closed'){
-      _plvPaintNone(body, 'Nothing crossed today — last checked '+(lastMin===null?'—':_plvHm12(lastMin))+' ET.',
-                          '今日没有出现上穿 — 最近一次检查 美东 '+(lastMin===null?'—':_plvHm24(lastMin))+'。', null, false);
+      if(lastMin===null){
+        _plvPaintNone(body, 'Nothing crossed today — last check time unavailable.',
+                            '今日没有出现上穿 — 最近一次检查时间不可用。', null, false);
+      }else{
+        _plvPaintNone(body, 'Nothing crossed today — last checked '+_plvHm12(lastMin)+' ET.',
+                            '今日没有出现上穿 — 最近一次检查 美东 '+_plvHm24(lastMin)+'。', null, false);
+      }
     }else{
-      _plvPaintNone(body, 'Nothing crossing yet — last checked '+(lastMin===null?'—':_plvHm12(lastMin))+' ET.',
-                          '尚无新的上穿 — 最近一次检查 美东 '+(lastMin===null?'—':_plvHm24(lastMin))+'。', null, false);
+      if(lastMin===null){
+        _plvPaintNone(body, 'Nothing crossing yet — last check time unavailable.',
+                            '尚无新的上穿 — 最近一次检查时间不可用。', null, false);
+      }else{
+        _plvPaintNone(body, 'Nothing crossing yet — last checked '+_plvHm12(lastMin)+' ET.',
+                              '尚无新的上穿 — 最近一次检查 美东 '+_plvHm24(lastMin)+'。', null, false);
+      }
     }
   }else{
     _plvPaintRows(body, visRows, delay, mode==='closed');
@@ -20140,7 +20262,7 @@ function initStockTableView(){
       },
       tip:{en:'Green dot = entry window open now',zh:'绿点＝现在入场窗口已开'} },
     { key:'name', labelEn:'Name', labelZh:'名称', default:true, sortable:true,
-      fmt:function(v){ return '<b>' + esc(v||'') + '</b>'; }},
+      fmt:function(v,r){ return '<b>' + esc(v||'') + '</b>' + (typeof r.setup_detail === 'string' ? r.setup_detail : ''); }},
     { key:'sector', labelEn:'Sector', labelZh:'板块', default:true, sortable:true,
       fmt:function(v){ if(!v) return '<span class="st-muted">—</span>';
         return b(esc(v), esc(SECZH[v]||v)); }},
@@ -20213,7 +20335,7 @@ function initStockTableView(){
     linkPattern: 'stock.html#{ticker}',
     columns: cols,
     optionLabels: { lane: LANE_LABELS, sector: SECTOR_LABELS },
-    searchPlaceholder: ['Search name…','搜索名称…'],
+    searchPlaceholder: ['Search ticker or name…','搜索代码或名称…'],
     /* P-MP1-SHELL §6/§9/§8 (commissioning follow-up, gap 2) — retires the
        Stage/阶段 filter dropdown AND its count chips (templates/stocktable.js
        _buildFilterRow/_updateCountChips) on the US table ONLY. hk/china/canada
@@ -20223,6 +20345,7 @@ function initStockTableView(){
        on the card grid (.pv-life/.mx-mark) is where that meaning lives now,
        per MP-1 §6's own disposition for this row. */
     stageFilter: false,
+    searchTicker: true,
   };
 
   /* Tier gate (docs/TIER_PREVIEW_PATTERN.md): merges the hydrated payload's
@@ -20277,9 +20400,10 @@ if (document.readyState === 'loading') {
      followed by an equals sign and a quoted string anywhere in this script --
      including in a comment, which ships in the page like any other bytes. */
   function setSrc(mode){
-    if (mode !== 'candidates' && mode !== 'plans') mode = 'candidates';
-    /* the table renders CANDIDATE rows only, so Plans mode must leave table view */
-    if (mode === 'plans' && panel.classList.contains('st-table-mode') &&
+    if (mode !== 'today' && mode !== 'candidates' && mode !== 'plans') mode = 'candidates';
+    if (mode === 'today' && !document.getElementById('us-today')) mode = 'candidates';
+    /* the table renders CANDIDATE rows only, so Today/Plans must leave table view */
+    if (mode !== 'candidates' && panel.classList.contains('st-table-mode') &&
         window.USStockTable && window.USStockTable._setView){
       try { window.USStockTable._setView('grid'); } catch(e){}
     }
@@ -20295,6 +20419,29 @@ if (document.readyState === 'loading') {
     if (b) setSrc(b.getAttribute('data-src'));
   });
   window.USProphetSource = { set: setSrc, get: function(){ return panel.getAttribute('data-prophet-src'); } };
+
+  document.addEventListener('click', function(event){
+    var button = event.target && event.target.closest ? event.target.closest('.pvs-plan-link[data-pvs-plan-target]') : null;
+    if (!button) return;
+    var target = button.getAttribute('data-pvs-plan-target');
+    var dialog = document.getElementById('pv-setup-dialog');
+    if (dialog && dialog.open) {
+      var close = dialog.querySelector('.pvs-close');
+      if (close) close.click();
+    }
+    if (window.USProphetSource) window.USProphetSource.set('plans');
+    var card = document.getElementById(target);
+    if (!card) {
+      document.body.dataset.pvsPlanLinkResult='missing';
+      return;
+    }
+    if (card.classList.contains('sm-hidden')) card.classList.remove('sm-hidden');
+    if (card.classList.contains('sm-reveal')) card.classList.remove('sm-reveal');
+    card.setAttribute('tabindex','-1');
+    card.scrollIntoView({block:'center'});
+    card.focus({preventScroll:true});
+    document.body.dataset.pvsPlanLinkResult='ok';
+  });
 })();
 </script>
 {% if gate or pgate or life_gate %}
@@ -20410,7 +20557,61 @@ if (document.readyState === 'loading') {
     root.dispatchEvent(new Event('candidate-pool-hydrated'));
   }
 
+  function hydrateToday(html, preview, total){
+    if (!html) return;
+    var root = document.getElementById('us-today');
+    preview = Number(preview) || 0;
+    total = Number(total) || 0;
+    if (!root || preview < 1 || total < preview) return;
+
+    /* Parse and validate before touching the shell. The payload owns this bounded
+       shelf; an incomplete/malformed response leaves the honest shell untouched. */
+    var box = document.createElement('template');
+    box.innerHTML = html;
+    var cards = box.content.querySelectorAll('.pvcard[data-ticker]');
+    if (cards.length !== preview) return;
+
+    var grid = root.querySelector('#us-today-grid');
+    if (!grid){
+      grid = document.createElement('div');
+      grid.className = 'nbgrid';
+      grid.id = 'us-today-grid';
+      var intro = root.querySelector('.mx-sec-note');
+      if (intro) intro.insertAdjacentElement('afterend', grid);
+      else root.appendChild(grid);
+    }
+    grid.innerHTML = html;
+    root.querySelectorAll('.mx-empty').forEach(function(el){ el.remove(); });
+    root.setAttribute('data-today-visible', String(preview));
+    root.setAttribute('data-today-total', String(total));
+
+    var totalBox = root.querySelector('.mx-sec-total');
+    if (totalBox){
+      totalBox.innerHTML =
+        '<span class="l-en"><b>' + preview + '</b> of <b>' + total + '</b> Featured</span>' +
+        '<span class="l-zh">精选 <b>' + preview + '</b> / <b>' + total + '</b></span>';
+    }
+
+    var more = Math.max(0, total - preview);
+    var note = root.querySelector('.us-today-remainder');
+    if (more > 0){
+      if (!note){
+        note = document.createElement('p');
+        note.className = 'mx-sec-note us-today-remainder';
+        grid.insertAdjacentElement('afterend', note);
+      }
+      note.innerHTML =
+        '<span class="l-en">' + more + ' more Featured name' + (more === 1 ? '' : 's') +
+        ' remain in Screener; this ' + preview + '-card preview is not a pick quota.</span>' +
+        '<span class="l-zh">另有 ' + more + ' 只精选股票保留在筛选器；这 ' + preview +
+        ' 张卡只是预览容量，并非选股名额。</span>';
+    } else if (note){
+      note.remove();
+    }
+  }
+
   function hydratePanels(payload){
+    hydrateToday(payload.today_cards_html, payload.today_preview, payload.today_total);
     hydrateCandidatePool(payload.candidate_pool_html, payload.candidate_pool_source);
     hydrateLeaderObservations(payload.leader_observations_html);
     appendTo('#us-standouts .topsetups:not(.leaders-strip) .ts-tbl tbody', payload.setups_html);
@@ -20600,6 +20801,7 @@ if (document.readyState === 'loading') {
       freshLifeGrid.className = lifeGrid.className;
       freshLifeGrid.id = 'us-life-grid';
       freshLifeGrid.setAttribute('data-showmore-rows', '3');
+      freshLifeGrid.setAttribute('data-showmore-exclude-life', 'resolved');
       freshLifeGrid.setAttribute('data-mp1-grid', '1');
       freshLifeGrid.innerHTML = lifeGrid.innerHTML + payload.plan_cards_html;
       lifeGrid.parentNode.insertBefore(freshLifeGrid, lifeGrid);

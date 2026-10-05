@@ -37,6 +37,8 @@ anywhere in the module. The percentage uses ``Decimal.quantize`` with
 from __future__ import annotations
 
 import re
+from datetime import date
+from pathlib import Path
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from typing import Any, Mapping, Sequence
 
@@ -68,13 +70,57 @@ RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT = (
 # ---------------------------------------------------------------------------
 
 
+# The CONTRACT publishes exactly one comparison basis. This set used to
+# carry three, so two of them were admitted by ``_validate_case_shape``,
+# projected, and emitted as a document whose root ``comparison_basis`` the
+# contract's enum rejects -- an invalid publication produced by a gate that
+# was WIDER than the thing it gates for. Admission may be narrower than the
+# contract; it may never be wider. Pinned by
+# ``test_module_constants_mirror_the_published_contract``.
 _ALLOWED_COMPARISON_BASIS: frozenset[str] = frozenset(
     {
         "explicit_same_quarter_prior_year",
-        "explicit_same_half_prior_year",
-        "explicit_same_year_prior_year",
     }
 )
+
+# The period_kind each declared comparison basis is ABOUT. ``_select_pair``
+# receives the declared basis and used to ignore it, so the document could
+# stamp ``same_quarter_prior_year_change`` on a pair of half-years.
+_BASIS_PERIOD_KIND: Mapping[str, str] = {
+    "explicit_same_quarter_prior_year": "quarter",
+    "explicit_same_half_prior_year": "half_year",
+    "explicit_same_year_prior_year": "year",
+}
+
+# Generous BANDS, never equalities. Consumer Cyclical is retail: a 4-5-4
+# quarter is 13 or 14 weeks and a fiscal year is 52 or 53 of them, so the
+# calendar answer is wrong here -- the same reason ``_envelope_period_start``
+# refuses to snap a period_start out of a period_end. The bands exist to
+# refuse a 30-day "quarter", not to impose a calendar.
+_PERIOD_KIND_SPAN_DAYS: Mapping[str, tuple[int, int]] = {
+    "quarter": (84, 100),
+    "half_year": (175, 190),
+    "year": (350, 385),
+}
+
+# 52 weeks = 364, 53 weeks = 371, calendar = 365/366. Excludes a half-year
+# (182) and a two-year gap (728) with room to spare.
+_PRIOR_YEAR_GAP_DAYS: tuple[int, int] = (350, 385)
+
+# Three of the four result definitions end "in USD thousands" and carry the
+# quantum ``1_thousand``. Those are CLAIMS about the envelope, not decoration,
+# and they are constants selected by result key -- so a pair reported in EUR
+# at 10**6 used to publish ``unit: EUR, scale_power10: 6`` beside the sentence
+# "in USD thousands", schema-valid and self-contradicting. V1's frozen scope
+# is a PLNT USD-thousands projector; deriving new quantum words or new prose
+# would be inventing display vocabulary this module does not own, so the
+# honest move is to withhold and say why.
+_STATED_DEFINITION_UNIT: str = "USD"
+_STATED_DEFINITION_SCALE: int = 3
+# ``1_thousand`` is a precision claim about the SOURCE, not a formatting
+# preference: a source rounded to the nearest 5 thousand does not support it.
+_STATED_DEFINITION_QUANTUM: str = "1_thousand"
+_DEFINITION_CONTRADICTED = "result_envelope_contradicts_stated_definition"
 
 # Reserved text patterns that MUST never appear in the explanation
 # envelope — implementing frozen-spec section 5's "forbidden conclusions"
@@ -102,25 +148,84 @@ _FORBIDDEN_CONCLUSION_PATTERNS: tuple[tuple[str, str], ...] = (
 # document — frozen-spec section 6 rule 10 and section 5
 # "explanation must expose NO ranking, entry, gating, sizing or
 # origination field".
+#: Authority vocabulary refused anywhere in the emitted document, grouped by
+#: the five categories frozen-spec section 6 rule 10 names.
+#:
+#: The list carries the IMPLEMENTATION vocabulary -- what a violating field
+#: would actually be called -- not only the policy's own words. The original
+#: eight entries were the rule's nouns, and measured against thirty
+#: category-representative keys they caught four: ``sizing`` was refused
+#: while ``position_size``, ``weight`` and ``allocation`` were not. See
+#: DSC:A-BLOCKLIST-WRITTEN-FROM-THE-RULES-PROSE-BLOCKS-THE-RULES-WORDS.
 _FORBIDDEN_BARE_KEYS: frozenset[str] = frozenset(
     {
-        "rank",
-        "score",
-        "entry",
-        "gate",
-        "sizing",
-        "origination",
-        "attractiveness",
-        "composite",
+        # ranking
+        "rank", "ranking", "score", "percentile", "tier", "grade",
+        "conviction", "attractiveness", "composite",
+        # entry
+        "entry", "entry_price", "buy_price", "sell_price",
+        "trigger_price", "target_price", "stop_loss", "timing",
+        # gating
+        "gate", "gating", "eligible", "tradeable", "approved", "pass_fail",
+        # sizing
+        "sizing", "size", "position_size", "weight", "allocation",
+        "notional", "exposure",
+        # origination
+        "origination", "originated_by", "signal", "recommendation",
+        "verdict", "direction", "thesis_direction",
+        # Deliberately ABSENT: "action" and "call". Both are ordinary English
+        # with plausible non-authority readings here ("corporate action", an
+        # earnings call), and the contract's seal already refuses them --
+        # they are outside its property vocabulary. Blocking a generic word
+        # to reach a round number would buy a spurious refusal, not safety.
     }
 )
-# Compound / underscored authority keys (mirrors the finance idiom).
+#: Compound / underscored authority keys (mirrors the finance idiom).
+#:
+#: Matched with ``re.search``, NOT ``re.fullmatch``. Measured 2026-09-27:
+#: under ``fullmatch`` this pattern caught nothing the bare set above did not
+#: already catch -- ``(^|_)(stem)(_|$)`` cannot consume a whole compound
+#: name, so ``composite_score``, ``analyst_rank``, ``conviction_score`` and
+#: ``signal_strength`` all passed the one construct named for catching them.
+#: A bare stem still matches, which is why the dead call looked alive.
+#:
+#: Deliberately NARROWER than the bare set above. This pattern matches on
+#: stem boundaries, so it also judges names that do not exist yet; the bare
+#: set matches exactly and cannot. Stems admitted here are ones with no
+#: plausible non-authority reading in this contract. ``size`` and ``weight``
+#: are excluded on purpose -- ``sample_size`` and ``batch_size`` are ordinary
+#: engineering names, and refusing them would trade a silent leak for a
+#: spurious refusal. Both are still caught exactly by the bare set.
 _FORBIDDEN_COMPOUND_KEY_RE = re.compile(
-    r"(^|_)(rank|score|attractiveness|composite)(_|$)",
+    r"(^|_)(rank|score|attractiveness|composite|conviction|percentile"
+    r"|sizing|entry|gate"
+    r"|allocation|notional|exposure|signal|recommendation|origination"
+    r"|gating)(_|$)",
     re.IGNORECASE,
 )
 
-
+#: Mirrors of the published contract's own constraints. The projection is
+#: the sole author of ``consumer_cyclical_intelligence_read_model.v1``
+#: documents, so anything it cannot express under these patterns is an
+#: absence to be declared -- never a value to be invented or passed
+#: through unchecked. Kept in step with the schema by
+#: ``test_module_constants_mirror_the_published_contract``.
+_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_VALUE_TEXT_RE = re.compile(r"^-?\d+(?:\.\d+)?$")
+_SLUG_RE = re.compile(r"^[a-z][a-z0-9_]*$")
+_ALLOWED_PERIOD_KIND: frozenset[str] = frozenset(
+    {
+        "quarter",
+        "half_year",
+        "year",
+    }
+)
+# NOTE: ``_ALLOWED_DEGRADED_STATE`` was retired with the hand-rolled
+# document check below -- the schema itself is now the authority on what the
+# module may EMIT, and a mirrored constant with no non-schema reader is one
+# more thing to drift. Input-admission constants (``_ALLOWED_PERIOD_KIND``,
+# ``_ALLOWED_COMPARISON_BASIS``) stay: they run before a document exists and
+# must fail fast with a domain message.
 # ---------------------------------------------------------------------------
 # Errors
 # ---------------------------------------------------------------------------
@@ -260,39 +365,27 @@ def _envelope_period_end(fact: Any) -> str:
 
 
 def _envelope_period_start(fact: Any) -> str:
-    """Period start; prefers explicit field, falls back to derived."""
+    """Period start as carried by the source fact -- never derived.
+
+    This function used to fall back to snapping ``period_end`` to a
+    calendar quarter/half/year boundary. That fallback was unreachable
+    from the suite and wrong wherever it *was* reachable: Consumer
+    Cyclical is the retail sector, whose fiscal periods are famously
+    offset from the calendar (the 4-5-4 retail calendar ends in late
+    January). A fiscal quarter ending ``2025-02-01`` derived a start of
+    ``2025-01-01`` -- a valid-looking date describing a 32-day
+    "quarter", roughly two months adrift of the truth.
+
+    A period boundary is a source-bound fact. When the source does not
+    carry one, the honest projection declares the absence through
+    ``degraded_dependencies`` rather than minting a plausible date, so
+    the empty string returned here is an admission failure handled by
+    :func:`_fact_admission_failure`, not a published value.
+    """
     if isinstance(fact, Mapping):
         raw = fact.get("period_start")
         if isinstance(raw, str) and raw:
             return raw
-    period_end = _envelope_period_end(fact)
-    kind = _envelope_period_kind(fact)
-    if not period_end or not kind:
-        return ""
-    parts = period_end.split("-")
-    if len(parts) != 3:
-        return ""
-    try:
-        year = int(parts[0])
-        month = int(parts[1])
-    except ValueError:
-        return ""
-    if kind == "quarter":
-        start_month = ((month - 1) // 3) * 3 + 1
-    elif kind == "half_year":
-        start_month = 1 if month <= 6 else 7
-    elif kind == "year":
-        start_month = 1
-    else:
-        return ""
-    return f"{year:04d}-{start_month:02d}-01"
-
-
-def _envelope_period_end_internal(fact: Any) -> str:
-    if isinstance(fact, Mapping):
-        period_end = fact.get("period_end")
-        if isinstance(period_end, str):
-            return period_end
     return ""
 
 
@@ -418,19 +511,122 @@ def _fact_ref(fact: Any, role: str) -> str:
     return ""
 
 
-def _fact_native_ref_or_default(fact: Mapping[str, Any], role: str) -> str:
-    """Build a fallback ``native_ref`` for facts that omit one.
+# ---------------------------------------------------------------------------
+# Fact admission
+# ---------------------------------------------------------------------------
 
-    The fact envelope per spec section 7 carries ``native_ref`` for
-    retained receipts; for synthetic / unit-test cases that omit it we
-    mint a deterministic label from the fact key + period role.
+
+_ALLOWED_KIND: frozenset[str] = frozenset({"expense_line", "revenue_line"})
+
+# Contract-required envelope fields the source must SPELL, in the module's
+# own reading order. ``event`` is here rather than left to
+# ``_assert_document_matches_contract_shape``: an absent ``event`` used to
+# raise ``CaseShapeError`` and kill the whole case, where every sibling
+# omission withholds one fact and declares it. One bad fact is not a bad
+# case.
+_REQUIRED_SOURCE_TEXT_FIELDS: tuple[str, ...] = (
+    "basis",
+    "definition",
+    "display_quantum",
+    "event",
+    "key",
+    "metric",
+    "perimeter",
+    "role",
+    "unit",
+)
+
+
+def _fact_admission_failure(fact: Any) -> str | None:
+    """Reason this fact cannot be *published* under the contract, else ``None``.
+
+    ``_validate_case_shape`` checks only the case's top-level shape, so a
+    fact may reach the projection missing any envelope field. The emitted
+    ``facts[]`` entries are copied straight from the source, which means
+    an unpublishable fact used to travel all the way into the document
+    and break the very contract this module authors -- a
+    thousands-separated ``"365,223"``, the ordinary human spelling of a
+    financial figure, produced nine schema violations and an
+    ``unavailable`` document.
+
+    Refusal is deliberately not repair: ``"365,223"`` is not normalised
+    to ``365223`` here, because reading a separator is a source-semantics
+    decision this module has no authority to make. Note that
+    :func:`_coerce_decimal_text` already treats such a value as
+    unparseable for *computation*; this gate simply makes publication
+    agree with computation instead of publishing what it could not use.
     """
-    explicit = _envelope_native_ref(fact)
-    if explicit:
-        return explicit
-    key = fact.get("key")
-    key_text = str(key) if isinstance(key, str) and key else "unknown"
-    return "fact:" + key_text + ":" + role
+    if not isinstance(fact, Mapping):
+        return "fact_not_a_mapping"
+    if not _VALUE_TEXT_RE.match(str(fact.get("value_text") or "")):
+        return "fact_value_text_unparseable"
+    if not _DATE_RE.match(_envelope_period_end(fact)):
+        return "fact_period_end_missing_or_malformed"
+    if not _DATE_RE.match(_envelope_period_start(fact)):
+        return "fact_period_start_missing_or_malformed"
+    if _envelope_period_kind(fact) not in _ALLOWED_PERIOD_KIND:
+        return "fact_period_kind_outside_vocabulary"
+
+    # The four checks above guard every field whose ``_envelope_*`` reader
+    # answers a missing source value with an EMPTY sentinel. The rest of the
+    # contract-required envelope is not so lucky: ``_envelope_kind`` answers
+    # ``"financial"``, ``_envelope_unit`` answers ``"USD"``,
+    # ``_envelope_sign_convention`` answers ``"signed_as_reported"`` and
+    # ``_envelope_scale`` answers ``0`` -- all plausible-looking values rather
+    # than sentinels, so no emptiness check could ever have caught them and
+    # the fact sailed into a document this module then declared ``ready``.
+    # Measured on the merged tree: dropping one required field from one fact
+    # produced a ``ready`` document with ``degraded_dependencies: []`` that
+    # violated this module's own contract for ``basis``, ``definition``,
+    # ``display_quantum``, ``evidence``, ``key``, ``kind``, ``perimeter`` and
+    # ``role`` -- and, worse, VALIDATED while lying for ``unit`` (a EUR
+    # issuer published as USD), ``sign_convention`` (assumed, never read) and
+    # ``scale_power10`` (thousands published as units).
+    #
+    # Same ruling as the period boundary, same reason: a minted envelope is a
+    # source-semantics decision this module has no authority to make. Refusal
+    # is not repair -- the fact is withheld and declared, never guessed at.
+    for _field in _REQUIRED_SOURCE_TEXT_FIELDS:
+        _raw = fact.get(_field)
+        if not isinstance(_raw, str) or not _raw:
+            return "fact_" + _field + "_missing_or_malformed"
+    if fact.get("kind") not in _ALLOWED_KIND:
+        return "fact_kind_outside_vocabulary"
+    if fact.get("sign_convention") not in _SIGN_CONVENTION_ENUM:
+        return "fact_sign_convention_missing_or_malformed"
+    # Accept exactly what ``_envelope_scale`` can already read unambiguously;
+    # this closes the fabricated ``0``, it does not tighten the source
+    # grammar. A digit string was always usable and stays usable.
+    _scale = fact.get("scale_power10")
+    if not (
+        (isinstance(_scale, int) and not isinstance(_scale, bool))
+        or (isinstance(_scale, str) and _scale.lstrip("-").isdigit())
+    ):
+        return "fact_scale_power10_missing_or_malformed"
+    if not isinstance(fact.get("evidence"), Mapping):
+        return "fact_evidence_missing_or_malformed"
+    return None
+
+
+def _partition_admissible_facts(
+    facts: Sequence[Any],
+) -> tuple[list[Any], list[tuple[str, str]]]:
+    """Split facts into publishable ones and ``(dependency, reason)`` refusals.
+
+    Refused facts are withheld from pairing as well as from emission, so
+    no result can bind an ``input_ref`` to a fact the document does not
+    carry.
+    """
+    admitted: list[Any] = []
+    refused: list[tuple[str, str]] = []
+    for fact in facts:
+        reason = _fact_admission_failure(fact)
+        if reason is None:
+            admitted.append(fact)
+            continue
+        metric = fact.get("metric") if isinstance(fact, Mapping) else None
+        refused.append((str(metric or "unknown_dependency"), reason))
+    return (admitted, refused)
 
 
 # ---------------------------------------------------------------------------
@@ -498,6 +694,62 @@ def _index_facts_by_metric(
     return out
 
 
+def _as_date(text: str) -> date | None:
+    """Parse an admitted period bound, or ``None`` if it will not parse.
+
+    Admission has already matched ``_DATE_RE`` by the time a fact reaches
+    pairing, so a failure here is not expected -- but an unparseable bound
+    must make the pair INELIGIBLE rather than exempt, so this fails closed.
+    """
+    try:
+        return date.fromisoformat(text)
+    except (TypeError, ValueError):
+        return None
+
+
+def _span_fits_kind(fact: Mapping[str, Any], kind: str) -> bool:
+    """A period must be coherent and roughly the length its kind claims."""
+    start = _as_date(_envelope_period_start(fact))
+    end = _as_date(_envelope_period_end(fact))
+    if start is None or end is None:
+        return False
+    if not start < end:
+        return False
+    low, high = _PERIOD_KIND_SPAN_DAYS[kind]
+    return low <= (end - start).days <= high
+
+
+def _pair_can_be_basis(
+    newest: Mapping[str, Any],
+    older: Mapping[str, Any],
+    comparison_basis: str,
+) -> bool:
+    """Can this pair actually BE the comparison the case declared?
+
+    ``_select_pair`` has always taken ``comparison_basis`` as a parameter and
+    never read it, so the basis was a label applied after the fact: the
+    document could claim ``same_quarter_prior_year_change`` over a prior side
+    seven years off, a prior period whose end preceded its own start, or a
+    30-day "quarter", all at ``availability: ready`` with zero schema errors.
+    The refusal reason for a pair that does not fit the declared basis already
+    exists and is already named ``no_compatible_pair_for_comparison_basis``;
+    this makes it mean what it says.
+    """
+    kind = _BASIS_PERIOD_KIND.get(comparison_basis)
+    if kind is None:
+        return False
+    if _envelope_period_kind(newest) != kind or _envelope_period_kind(older) != kind:
+        return False
+    if not _span_fits_kind(newest, kind) or not _span_fits_kind(older, kind):
+        return False
+    newest_end = _as_date(_envelope_period_end(newest))
+    older_end = _as_date(_envelope_period_end(older))
+    if newest_end is None or older_end is None:
+        return False
+    low, high = _PRIOR_YEAR_GAP_DAYS
+    return low <= (newest_end - older_end).days <= high
+
+
 def _select_pair(
     candidates: Sequence[tuple[int, Mapping[str, Any]]],
     comparison_basis: str,
@@ -539,6 +791,7 @@ def _select_pair(
             and older[3] == newest[3]
             and older[4] == newest[4]
             and older[0] < newest[0]
+            and _pair_can_be_basis(newest[6], older[6], comparison_basis)
         ):
             return (newest[6], older[6])
     return (None, None)
@@ -671,6 +924,27 @@ def _emit_result(result: Mapping[str, Any]) -> dict[str, Any]:
     filled = _result_provenance(
         result, basis=basis, definition=definition, display_quantum=quantum
     )
+    if not key.endswith("_pct") and not filled.get("withheld_reason"):
+        # The USD-thousands family only. The ratio describes itself as a
+        # percentage and says nothing about a currency, so it is unaffected.
+        source = filled.get("current_period_fact")
+        source_quantum = (
+            source.get("display_quantum") if isinstance(source, Mapping) else None
+        )
+        if (
+            filled.get("unit") != _STATED_DEFINITION_UNIT
+            or filled.get("scale_power10") != _STATED_DEFINITION_SCALE
+            or source_quantum != _STATED_DEFINITION_QUANTUM
+        ):
+            filled["value_text"] = None
+            filled["withheld_reason"] = _DEFINITION_CONTRADICTED
+    # ``input_refs`` is a SET of source keys under the contract
+    # (``uniqueItems: true``), and a result whose two sides share one fact
+    # key named it twice. Order-preserving so the current side still reads
+    # first; ``dict.fromkeys`` rather than ``set`` for exactly that reason.
+    refs = filled.get("input_refs")
+    if isinstance(refs, list):
+        filled["input_refs"] = list(dict.fromkeys(refs))
     return {k: v for k, v in filled.items() if k in _CONTRACT_RESULT_KEYS}
 
 
@@ -753,8 +1027,20 @@ def _withheld_result(
         "comparison_basis": None,
         "state": "WITHHELD",
         "input_refs": refs,
-        "current_period_fact": None,
-        "prior_period_fact": None,
+        # A withheld result still has to satisfy ``$defs/result``, which
+        # requires ``event`` and all three period fields. These used to be
+        # dropped, so ``_finalize_result_envelope`` had nothing to read and
+        # emitted ``""`` for each -- three contract violations on an
+        # ordinary input (a flat or negative denominator withholds the
+        # share-of-revenue ratio, which is a normal retail quarter, not an
+        # edge case). Withholding a *value* never justified discarding the
+        # provenance of the facts the value would have come from.
+        "current_period_fact": _fact_to_envelope(new_fact)
+        if isinstance(new_fact, Mapping)
+        else None,
+        "prior_period_fact": _fact_to_envelope(prior_fact)
+        if isinstance(prior_fact, Mapping)
+        else None,
         "withheld_reason": reason,
     }
 
@@ -970,11 +1256,130 @@ def _check_explanation_for_forbidden(explanation: Mapping[str, Any]) -> None:
 # ---------------------------------------------------------------------------
 
 
+_CONTRACT_VALIDATOR: list[Any] = []
+
+
+def _contract_validator() -> Any:
+    """The published schema, read once and reused.
+
+    Lazy import and ``parents[2]`` path resolution mirror
+    ``engine/capital_structure/projection.py``, the nearest sibling that
+    validates its own output against its own contract.
+    """
+    if not _CONTRACT_VALIDATOR:
+        import json as _json
+
+        from jsonschema import Draft202012Validator, FormatChecker
+
+        path = (
+            Path(__file__).resolve().parents[2]
+            / "contracts"
+            / "sector_intelligence"
+            / f"{CONTRACT_ID}.schema.json"
+        )
+        _CONTRACT_VALIDATOR.append(
+            Draft202012Validator(
+                _json.loads(path.read_text(encoding="utf-8")),
+                format_checker=FormatChecker(),
+            )
+        )
+    return _CONTRACT_VALIDATOR[0]
+
+
+def _assert_document_matches_contract_shape(document: Mapping[str, Any]) -> None:
+    """Refuse to return a document that violates the contract we publish.
+
+    This is a positive control, not decoration. Every defect this module
+    has shipped so far shared one shape: a branch no test reached, whose
+    output nothing re-read. A 65-test suite stayed green while the
+    projection emitted empty dates, an out-of-vocabulary ``period_kind``
+    and non-numeric ``value_text`` -- because the suite only ever fed it
+    one pristine fixture, and never asked the document whether it
+    satisfied the schema sitting next to it in the repository.
+
+    The checks below mirror the pattern-bearing constraints of
+    ``consumer_cyclical_intelligence_read_model.v1``. They are cheap,
+    they run on every projection including the degraded ones, and they
+    fail loudly rather than publishing a plausible-looking lie.
+    """
+
+    errors = _contract_validator().iter_errors(dict(document))
+    problems = [
+        (".".join(str(part) for part in error.absolute_path) or "<root>")
+        + ": "
+        + error.message
+        for error in sorted(errors, key=lambda error: list(error.absolute_path))
+    ]
+    if problems:
+        raise CaseShapeError(
+            "projection would emit a document that violates "
+            + CONTRACT_ID
+            + ": "
+            + "; ".join(problems[:8])
+        )
+
+
+def _assert_provenance_pointers_resolve(document: Mapping[str, Any]) -> None:
+    """Refuse a document whose provenance pointer names nothing that exists.
+
+    ``fact.native_ref`` and ``source_records[].record_id`` are the two ends
+    of ONE pointer, spelled in two places. The contract validates each end
+    in isolation, so both pass happily while the pointer dangles -- and a
+    dangling provenance pointer is the exact shape frozen-spec section 4a
+    forbids: a fact that appears source-bound while naming no source.
+
+    This is referential integrity WITHIN one emitted document, which is why
+    it belongs here and not in ``_fact_admission_failure`` -- that gate sees
+    one fact and structurally cannot see ``source_records``.
+
+    A ``null`` ``native_ref`` is left alone deliberately. It is the
+    contract's own "unknown" and DSC:A-MINTING-DEFAULT-IS-INVISIBLE-TO-AN-
+    EMPTINESS-GATE so_what (4) rules that tightening it would refuse
+    otherwise-complete facts to gain nothing. Absence is honest; a pointer
+    to a record that was never declared is not.
+    """
+
+    declared = {
+        record.get("record_id")
+        for record in document.get("source_records") or ()
+        if isinstance(record, Mapping)
+    }
+    orphans = sorted(
+        {
+            str(fact.get("native_ref"))
+            for fact in document.get("facts") or ()
+            if isinstance(fact, Mapping) and fact.get("native_ref") is not None
+        }
+        - declared
+    )
+    if orphans:
+        raise CaseShapeError(
+            "projection would emit facts whose native_ref resolves to no "
+            "declared source record: " + ", ".join(orphans)
+        )
+
+
 def _assert_no_forbidden_authority_keys(document: Mapping[str, Any]) -> None:
     """Walk the document and refuse any forbidden authority / scoring key.
 
     Frozen-spec section 6 rule 10 and section 5: the document exposes
     NO ranking, entry, gating, sizing or origination field.
+
+    THIS GUARD IS THE SECOND LINE, NOT THE FIRST, and saying so is the
+    point of this paragraph. The property above is primarily enforced by
+    ``additionalProperties: false`` on the root and on every composite
+    ``$defs`` of the published contract, checked in
+    ``_assert_document_matches_contract_shape``: a key outside the
+    contract's fixed property vocabulary is refused there whether or not it
+    appears in the blocklist below. Measured 2026-09-27, ``position_size``,
+    ``weight`` and ``recommendation`` were all refused at the shape gate and
+    only ``rank`` at this one.
+
+    Keep both. The seal cannot cover a free-form object added later, nor a
+    name already legal in the contract that acquires an authority meaning;
+    the blocklist cannot cover a name nobody thought of. Neither is
+    redundant, and the failure this docstring now prevents is believing the
+    weaker of the two is the mechanism.
     """
 
     def walk(node: object) -> None:
@@ -985,7 +1390,7 @@ def _assert_no_forbidden_authority_keys(document: Mapping[str, Any]) -> None:
                         raise CaseShapeError(
                             "document carries forbidden authority key: " + k
                         )
-                    if _FORBIDDEN_COMPOUND_KEY_RE.fullmatch(k):
+                    if _FORBIDDEN_COMPOUND_KEY_RE.search(k):
                         raise CaseShapeError(
                             "document carries forbidden authority key: " + k
                         )
@@ -1014,11 +1419,19 @@ def _compose_changes(
 
     Returns ``(ready_results_by_key, degraded_facts)``.
 
-    A fact whose ``value_text`` is unparseable, whose
-    ``native_admitted`` flag is False (research oracle — frozen-spec
-    section 7), or whose pair cannot be located against the
-    ``comparison_basis`` is recorded in ``degraded_facts`` and the
-    corresponding change result is suppressed.
+    A fact whose ``value_text`` is unparseable, or whose pair cannot be
+    located against the ``comparison_basis``, is recorded in
+    ``degraded_facts`` and the corresponding change result is suppressed.
+
+    ``native_admitted`` is NOT in that list and must not be added to it.
+    Frozen-spec section 4a makes it a PROVENANCE LABEL, never a suppression
+    gate -- see the comment at the pairing site below. Every real V1-CORE
+    fact carries ``native_admitted: False`` because PLNT's Q2 2026 exhibit
+    is retained nowhere, so gating here would make this module structurally
+    incapable of its own golden case. This docstring previously claimed the
+    suppression the code 20 lines below explicitly refuses, and cited
+    section 7 for it; a reader who trusted it would have "restored" a gate
+    that breaks the frozen oracle.
 
     The emitted result key is the fact key with a ``_change`` suffix
     (e.g. fact ``total_revenue`` -> result ``total_revenue_change``)
@@ -1115,11 +1528,37 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     _validate_case_shape(case)
 
     comparison_basis = str(case.get("comparison_basis"))
-    facts = case.get("facts") or []
+    facts, refused_facts = _partition_admissible_facts(case.get("facts") or [])
     generated_at_text = _generated_at_text(case)
     source_records = case.get("source_records") or []
 
     ready_results, degraded_facts = _compose_changes(facts, comparison_basis)
+
+    # A fact refused at admission is an absence the consumer must see, so it
+    # is declared here rather than silently dropped. Several facts share one
+    # metric (one per period role), so entries are deduplicated by dependency.
+    #
+    # A refusal SUPERSEDES ``no_compatible_pair_for_comparison_basis`` for the
+    # same dependency rather than losing to it. Both describe one event from
+    # two ends -- the pair is incomplete *because* a side was refused -- and
+    # ``_compose_changes`` keys that reason on the METRIC, which is exactly
+    # what a refusal is keyed on, so the effect lands first and the cause is
+    # deduplicated away. Reporting only the effect tells a consumer there was
+    # no pair to find, when in fact there was one and this module declined to
+    # read half of it. Any other pre-existing reason is left alone; it was not
+    # caused by this refusal.
+    _entry_by_dep: dict[Any, dict[str, Any]] = {}
+    for _d in degraded_facts:
+        if isinstance(_d, Mapping):
+            _entry_by_dep.setdefault(_d.get("dependency"), _d)  # type: ignore[arg-type]
+    for _dep, _reason in refused_facts:
+        _entry = _degraded(_dep, _reason)
+        _existing = _entry_by_dep.get(_entry["dependency"])
+        if _existing is None:
+            _entry_by_dep[_entry["dependency"]] = _entry
+            degraded_facts.append(_entry)
+        elif _existing.get("reason") == "no_compatible_pair_for_comparison_basis":
+            _existing["reason"] = _entry["reason"]
     ready_keys = set(ready_results.keys())
 
     # ``results_by_key`` carries every emitted result, READY and
@@ -1307,8 +1746,14 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     _omitted_keys = [
         r.get("key") for r in all_results if not r.get("inputs_present")
     ]
+    # ``_degraded`` builds a closed ``{dependency, reason, state}`` entry, so
+    # the earlier form of this set read a ``fact_key`` that never existed and
+    # was always ``{None}`` -- a deduplication guard that could not fire. It
+    # is behaviour-neutral today (the two sides use disjoint vocabularies:
+    # fact metrics here, result keys below) and is corrected so it stays that
+    # way by construction rather than by luck.
     _already_degraded = {
-        d.get("fact_key") for d in degraded_facts if isinstance(d, Mapping)
+        d.get("dependency") for d in degraded_facts if isinstance(d, Mapping)
     }
     for _key in _omitted_keys:
         if _key and _key not in _already_degraded:
@@ -1362,6 +1807,8 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     }
 
     _assert_no_forbidden_authority_keys(document)
+    _assert_document_matches_contract_shape(document)
+    _assert_provenance_pointers_resolve(document)
 
     return document
 

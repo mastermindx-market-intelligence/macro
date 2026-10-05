@@ -6835,6 +6835,40 @@ artifacts:
       GICS entries are authoritative; sic_mapped entries are derived from SEC SIC codes.
       FIREWALL: horizon_role=context. No scored_path_surfaces. Display-only context artifact.
 
+  # --- Trend Persistence Wave C-0: S&P 1500 point-in-time sector substrate ---
+  sp1500-pit-sectors:
+    path: data/breadth/sp1500_pit_sectors.parquet
+    format: parquet
+    producer: collectors/sp1500_pit_sectors.py
+    known_extra_writers: []
+    owner_program: engine-fix
+    cadence: on-demand
+    storage: git
+    asof_field: null
+    freshness_sla_hours: 8760
+    schema: implicit
+    tier: display
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers: []
+    external_consumers: []
+    notes: >
+      Trend Persistence Wave C precondition: one row per ticker ever in
+      data/breadth/sp1500_pit_membership.parquet (current members + leavers) with the best
+      available 11-sector label and a basis column (gics_current / sic_current / sic_derived /
+      unlabeled). AS-OF-NOW CAVEAT: no channel supplies the membership-era GICS sector; every
+      label is the current GICS map or the filer's CURRENT SEC SIC mapped to GICS-style sectors,
+      and era_correct is False for every row. LEAVERS ARE LABELED THROUGH THE FILER CIK BRIDGE
+      ONLY (label_join='cik'; SIC mapped text-first, numeric range fallback): ticker-string
+      channels are never consulted for a leaver because its ticker may now belong to a different
+      listing (ticker reuse, e.g. ECHO), and a leaver's CIK is bridged only when dead_name_cik
+      resolved it by edgar_fts or seed (company_tickers/polygon return the CURRENT holder and
+      leave the leaver unlabeled). label_join='ticker' appears only on current members.
+      Coverage receipt:
+      data/breadth/_sp1500_pit_sectors_coverage.json. FIREWALL: horizon_role=context, no
+      scored_path_surfaces, display-only substrate.
+
   # --- Long-Hold label panel (W1 PR-E) ---
   long-hold-labels:
     path: data/research/long_hold_labels.parquet
@@ -12414,6 +12448,7 @@ artifacts:
       - engine/neuralweb/ask_brain.py
       - scripts/build_stock_library.py
       - scripts/build_macro_snapshot.py
+      - engine/credit_momentum.py
     notes: >
       Macro transmission/decomposition snapshot. Breakeven decomp (real rate vs
       inflation compensation), transmission chains (policy rate → credit → activity),
