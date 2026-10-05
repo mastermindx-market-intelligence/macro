@@ -9293,6 +9293,8 @@ jobs:
     # empty state / SEO-baked cards), hero + lanes + viewer modal markup, balanced
     # EN/ZH spans, plain-English <title>, compliance copy, and the body-never-leaks
     # projection. jinja2 (already a repo dep) is the only page-build need.
+    # RV F6 subject/Data OS identity bridge (test_research_vault_subjects.py): stdlib +
+    # lib.dataos.identity only, so it runs here with the install line unchanged (#8475).
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9317,7 +9319,7 @@ jobs:
         # one member, so extending it costs no extra ci-pack venv.
         run: pip install pytest jinja2 pyyaml pypdf boto3
       - name: research vault ingestion-spine + page unit tests
-        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py -q
+        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py -q
 
 
   research-vault-source-lineage:

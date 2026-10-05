@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 import math
+import re
 from typing import Any, Iterable, Mapping
 
 from lib.dataos.identity import IdentityError, VendorAliasTable, parse_id
@@ -40,6 +41,9 @@ def _symbol(value: Any) -> str:
     return raw
 
 
+_ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+
 def _publication_date(value: date | datetime | str) -> date:
     if isinstance(value, datetime):
         return value.date()
@@ -50,6 +54,10 @@ def _publication_date(value: date | datetime | str) -> date:
     raw = value.strip()
     if "T" in raw:
         raw = raw.split("T", 1)[0]
+    # Strict extended form only: date.fromisoformat accepts the basic ``YYYYMMDD``
+    # spelling on Python >= 3.11, which the contract treats as an unusable clock.
+    if not _ISO_DATE_RE.fullmatch(raw):
+        raise ValueError("published_at must start with an ISO date (YYYY-MM-DD)")
     try:
         return date.fromisoformat(raw)
     except ValueError as exc:
