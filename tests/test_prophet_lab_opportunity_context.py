@@ -14,12 +14,14 @@ from engine.prophet_lab.opportunity_context import (
     compose_opportunity_context,
     project_opportunity_evidence_summary,
     project_terminal_portfolio_relation,
+    project_terminal_watchlist_relation,
     resolve_display_alias_to_active_episode,
     select_unique_active_episode_id,
     validate_opportunity_context,
     validate_opportunity_evidence_summary,
     validate_opportunity_identity_binding,
     validate_terminal_portfolio_relation,
+    validate_terminal_watchlist_relation,
 )
 from lib.opportunity_evidence import compose_vector
 from engine.prophet_strategy_definition import (
@@ -210,8 +212,8 @@ def test_context_does_not_accept_or_infer_private_plan_or_forecast_state():
         },
         "watchlist": {
             "state": "NOT_JOINED",
-            "saved": None,
-            "reason": "WATCHLIST_READ_CONTRACT_NOT_ADMITTED",
+            "relation": None,
+            "reason": "WATCHLIST_OWNER_NOT_READ",
         },
         "portfolio": {
             "state": "NOT_JOINED",
@@ -540,8 +542,8 @@ def test_context_joins_portfolio_without_laundering_plan_or_watchlist_state():
     assert out["user_state"]["plan"]["state"] == "NOT_JOINED"
     assert out["user_state"]["watchlist"] == {
         "state": "NOT_JOINED",
-        "saved": None,
-        "reason": "WATCHLIST_READ_CONTRACT_NOT_ADMITTED",
+        "relation": None,
+        "reason": "WATCHLIST_OWNER_NOT_READ",
     }
 
 
@@ -565,17 +567,20 @@ def test_context_refuses_portfolio_relation_from_another_episode_identity():
         )
 
 
-def test_user_state_watchlist_negative_cannot_be_invented():
+def test_user_state_watchlist_relation_must_be_owner_validated():
     out = compose_opportunity_context(projection(), episode_id=eid())
     bad = deepcopy(out)
     bad["user_state"]["watchlist"] = {
         "state": "JOINED",
-        "saved": False,
+        "relation": {
+            "state": "NOT_SAVED",
+            "saved": False,
+        },
         "reason": None,
     }
     with pytest.raises(
         OpportunityContextContractError,
-        match="watchlist state must remain unjoined",
+        match="watchlist relation fields are not closed",
     ):
         validate_opportunity_context(bad)
 
@@ -830,3 +835,153 @@ def test_oev_owner_evidence_market_reflection_stays_neutral_and_failed_gate_stay
         "state": "failed",
         "reason": "risk too high",
     }]
+
+
+def test_terminal_watchlist_relation_counts_only_owned_list_membership():
+    relation = project_terminal_watchlist_relation(
+        _identity_binding(),
+        http_status=200,
+        payload={
+            "lists": [
+                {
+                    "id": "wl-default",
+                    "name": "Default",
+                    "position": 0,
+                    "symbols": [
+                        {"symbol": "AAPL", "section": "Watchlist", "position": 0},
+                        {"symbol": "MSFT", "section": "Watchlist", "position": 1},
+                    ],
+                },
+                {
+                    "id": "wl-swing",
+                    "name": "Swing",
+                    "position": 1,
+                    "symbols": [{"symbol": "AAPL", "section": "Ideas", "position": 0}],
+                },
+            ],
+            "sharedWithMe": [
+                {"id": "shared-1", "symbols": [{"symbol": "AAPL"}]},
+            ],
+        },
+    )
+    assert relation["state"] == "SAVED_TO_OWNED_WATCHLIST"
+    assert relation["saved"] is True
+    assert relation["owned_list_match_count"] == 2
+    assert relation["list_refs"] == [
+        {"list_id": "wl-default"},
+        {"list_id": "wl-swing"},
+    ]
+    assert "name" not in str(relation)
+    validate_terminal_watchlist_relation(relation)
+
+
+def test_terminal_watchlist_relation_shared_membership_is_not_saved_by_you():
+    relation = project_terminal_watchlist_relation(
+        _identity_binding(),
+        http_status=200,
+        payload={
+            "lists": [],
+            "sharedWithMe": [
+                {"id": "shared-1", "symbols": [{"symbol": "AAPL"}]},
+            ],
+        },
+    )
+    assert relation["state"] == "NOT_SAVED"
+    assert relation["saved"] is False
+    assert relation["owned_list_match_count"] == 0
+    assert relation["list_refs"] == []
+
+
+def test_terminal_watchlist_relation_never_turns_owner_failure_into_not_saved():
+    unavailable = project_terminal_watchlist_relation(
+        _identity_binding(),
+        http_status=503,
+        payload={"error": "watchlist unavailable"},
+    )
+    assert unavailable["state"] == "UNAVAILABLE_DATA"
+    assert unavailable["saved"] is None
+    assert unavailable["owned_list_match_count"] is None
+    assert unavailable["reason"] == "WATCHLIST_OWNER_HTTP_503"
+
+    auth = project_terminal_watchlist_relation(
+        _identity_binding(),
+        http_status=401,
+        payload={"error": "unauthenticated"},
+    )
+    assert auth["state"] == "AUTHENTICATION_REQUIRED"
+    assert auth["saved"] is None
+    assert auth["reason"] == "WATCHLIST_AUTHENTICATION_REQUIRED"
+
+
+def test_terminal_watchlist_relation_refuses_malformed_or_duplicate_owner_rows():
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="symbol is not normalized",
+    ):
+        project_terminal_watchlist_relation(
+            _identity_binding(),
+            http_status=200,
+            payload={"lists": [{
+                "id": "wl-1",
+                "symbols": [{"symbol": "aapl"}],
+            }]},
+        )
+
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="duplicate symbol in one list",
+    ):
+        project_terminal_watchlist_relation(
+            _identity_binding(),
+            http_status=200,
+            payload={"lists": [{
+                "id": "wl-1",
+                "symbols": [{"symbol": "AAPL"}, {"symbol": "AAPL"}],
+            }]},
+        )
+
+
+def test_saved_watchlist_and_actual_holding_remain_independent_axes():
+    p = projection()
+    binding = _identity_binding()
+    watch = project_terminal_watchlist_relation(
+        binding,
+        http_status=200,
+        payload={"lists": [{
+            "id": "wl-1",
+            "symbols": [{"symbol": "AAPL"}],
+        }]},
+    )
+    portfolio = project_terminal_portfolio_relation(
+        binding,
+        http_status=200,
+        payload={"positions": []},
+    )
+    out = compose_opportunity_context(
+        p,
+        episode_id=eid(),
+        watchlist_relation=watch,
+        portfolio_relation=portfolio,
+    )
+    assert out["user_state"]["watchlist"]["relation"]["state"] == "SAVED_TO_OWNED_WATCHLIST"
+    assert out["user_state"]["portfolio"]["relation"]["state"] == "NO_OPEN_POSITION"
+    assert out["user_state"]["plan"]["state"] == "NOT_JOINED"
+
+
+def test_context_refuses_watchlist_relation_from_another_episode_identity():
+    p = projection()
+    relation = project_terminal_watchlist_relation(
+        _identity_binding(),
+        http_status=200,
+        payload={"lists": []},
+    )
+    relation["episode_id"] = eid("other")
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="watchlist relation episode_id does not match",
+    ):
+        compose_opportunity_context(
+            p,
+            episode_id=eid(),
+            watchlist_relation=relation,
+        )
