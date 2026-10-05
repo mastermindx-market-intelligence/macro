@@ -77,8 +77,13 @@ Suggested user-facing copy, pending normal owner/UI acceptance:
 The named future dependency remains the research owner's separately preregistered
 **C1-W2 state-variable construction** with the unchanged calibrated control.
 This document does not launch that work, retune the gate or authorize a C2 rerun.
-The C2 r2 paired-bootstrap fixture gap recorded in 09 remains a promotion blocker;
-code reading is not represented as a caught-mutant test.
+The historical C2 r2 paired-bootstrap fixture gap is closed by the
+[round-3 independent review](https://github.com/mastermindx-market-intelligence/macro/blob/544d3ca021cc64471fc6ae28c0e790b68e73433b/research/prophet_v4/astra_regime_indicator_handoff_20261004/reviews/C2_r3/REVIEW.md).
+That review verifies the M7 harness, equality-boundary tests and complete leaf
+attribution while retaining the frozen numerical result and production bootstrap.
+This closes the recorded test/record defects, not C1 qualification or promotion
+authority. Actual C2 remains INSUFFICIENT SUPPORT; its counterfactual remains a
+diagnostic, not a second verdict.
 
 For a future owner-issued generation, keep the original decision branches distinct:
 
