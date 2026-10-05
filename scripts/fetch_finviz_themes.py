@@ -22,8 +22,10 @@ The pure assembly (snapshot → the JSON the frontend reads) lives in
 network.
 
 PIT ARCHIVAL (added 2026-07-04, append-only, zero breaking changes):
-* ``data/themes_heatmap/member_perf_history.jsonl`` — one line per NYSE **session**,
-  compact JSON: {"asof": "YYYY-MM-DD", "subsectors": {...}, "members": {...}}.
+* ``data/themes_heatmap/subsector_perf_history.jsonl`` — one line per NYSE **session**,
+  compact JSON: {"asof": "YYYY-MM-DD", "subsectors": {...}}.
+  Per-member horizon returns are deliberately NOT duplicated into git history; they
+  are reconstructable from the whole-market store (see append_subsector_perf_history).
   Idempotent: if the asof date already exists in the file the append is skipped.
   It used to be one line per CALENDAR day, which is not the same thing: daily.yml
   fires ~22:30 UTC every night INCLUDING weekends, and Finviz themes perf is EOD,

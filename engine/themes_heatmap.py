@@ -20,6 +20,8 @@ from __future__ import annotations
 
 from typing import Mapping, Sequence
 
+from engine import theme_repricing_context as trc
+
 # Eight daily-group timeframes, same keys/labels as the sp500 heatmap so the
 # renderer's tabs/legend/strip are identical. Finviz serves all eight, so every
 # one is ``available``.
@@ -101,6 +103,11 @@ def build_themes_heatmap(
     member_perf    : ``{ticker: {tf: pct}}`` — colours each member row on hover.
     """
     member_perf = member_perf or {}
+    repricing = trc.build_context(
+        tree, subsector_perf, member_perf, asof=asof or "", source=source,
+    )
+    repricing_by_key = {row["key"]: row for row in repricing["subthemes"]}
+    repricing_summary = {k: v for k, v in repricing.items() if k != "subthemes"}
     tiles: list[dict] = []
     sectors: list[dict] = []
     seen_theme: set[str] = set()
@@ -134,6 +141,7 @@ def build_themes_heatmap(
                 "size": max(1, len(members)),
                 "perf": sperf,
                 "members": mem_rows,
+                "repricing": repricing_by_key.get(key),
             })
 
     timeframes = [{**tf, "group": "daily", "available": True} for tf in TIMEFRAMES]
@@ -153,4 +161,5 @@ def build_themes_heatmap(
         "n_tiles": len(tiles),
         "n_members": len(uniq_members),
         "size_basis": "count",
+        "repricing": repricing_summary,
     }
