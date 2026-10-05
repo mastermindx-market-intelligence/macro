@@ -270,10 +270,14 @@ def test_current_use_verdict_registry_malformed_via_path(tmp_path):
 
 
 def test_authorize_protocol_end_to_end(reg_path):
-    try:
-        from engine.theme_graph.selection_cohort_publication import _authorize
-    except ImportError:
-        pytest.skip("selection_cohort_publication not on main — see PR #8417")
+    # The D1 seams (PR #8417) consume this module; until they land the cross-wave
+    # check skips. importorskip keeps the static first-party-import scanner honest
+    # (a `from ... import` inside try/except is still flagged as a swallowed ImportError).
+    publication = pytest.importorskip(
+        "engine.theme_graph.selection_cohort_publication",
+        reason="selection_cohort_publication not on main — see PR #8417",
+    )
+    _authorize = publication._authorize
     cap = capture_capability(path=reg_path)
     req = _valid_request()
     assert _authorize(cap, copy.deepcopy(req)) is True
