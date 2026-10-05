@@ -168,3 +168,81 @@ def test_malformed_list_keeps_previous_successful_history(page,bad):
     page.evaluate('(bad)=>{window.__badList=bad;MMBrain.close();MMBrain.open();}',bad)
     expect(page.locator('#mmb-tlist [role="status"]')).to_contain_text('temporarily unavailable')
     expect(page.locator('#mmb-tlist')).to_contain_text('Retained investigation A')
+
+
+def test_drafts_are_partitioned_across_account_switch(page):
+    page.locator('#mmb-ta').fill('Private draft A')
+    page.wait_for_timeout(450)
+    page.evaluate("window.__principal='B';window.__onAuth({id:'user-B'});MMBrain.close();MMBrain.open();")
+    expect(page.locator('#mmb-ta')).to_have_value('')
+    page.locator('#mmb-ta').fill('Private draft B')
+    page.wait_for_timeout(450)
+    page.evaluate("window.__principal='A';window.__onAuth({id:'user-A'});MMBrain.close();MMBrain.open();")
+    expect(page.locator('#mmb-ta')).to_have_value('Private draft A')
+
+
+def test_unbound_legacy_draft_is_not_restored(page):
+    page.evaluate("localStorage.setItem('mmb_draft_new','Unknown prior owner');MMBrain.close();MMBrain.open();")
+    expect(page.locator('#mmb-ta')).to_have_value('')
+
+
+def test_pending_draft_is_bound_before_thread_switch(page):
+    page.locator('#mmb-ta').fill('New-thread draft')
+    page.locator(f'.mmb-ti[data-id="{A}"] .mmb-ti-body').click()
+    page.wait_for_timeout(450)
+    page.locator('[data-act="new"]:visible').first.click()
+    expect(page.locator('#mmb-ta')).to_have_value('New-thread draft')
+
+
+def test_terminal_principal_entry_clears_previous_account(page):
+    page.locator(f'.mmb-ti[data-id="{A}"] .mmb-ti-body').click()
+    expect(page.locator('.mmb-msg')).to_contain_text('Exact retained answer A')
+    page.evaluate("window.__principal='B';MMBrain.setPrincipal('user-B')")
+    expect(page.locator('.mmb-msg')).to_have_count(0)
+    expect(page.locator('.mmb-ti')).to_have_count(0)
+
+
+def test_unbound_legacy_run_is_not_resumed(page):
+    page.evaluate("sessionStorage.setItem('mm.brain.run',JSON.stringify({id:'legacy-run',q:'Prior account question',ts:Date.now()}));MMBrain.close();MMBrain.open();")
+    page.wait_for_timeout(80)
+    assert not any('legacy-run' in r['url'] for r in page.evaluate('window.__requests'))
+    expect(page.locator('#mmb-scroll')).not_to_contain_text('Prior account question')
+
+
+def test_late_run_status_cannot_restore_previous_principal_question(page):
+    page.evaluate("""() => {
+      sessionStorage.setItem('mm.brain.run.v2:user:user-A',JSON.stringify({id:'retained-run',q:'Private question A',ts:Date.now()}));
+      const original=window.fetch;window.fetch=(url,opts)=>url.endsWith('/runs/retained-run')?new Promise(resolve=>{window.__runStatus=resolve;}):original(url,opts);
+      MMBrain.close();MMBrain.open();
+    }""")
+    page.wait_for_function('!!window.__runStatus')
+    page.evaluate("window.__principal='B';MMBrain.setPrincipal('user-B');window.__runStatus({ok:true,json:()=>Promise.resolve({done:false})});")
+    page.wait_for_timeout(80)
+    expect(page.locator('#mmb-scroll')).not_to_contain_text('Private question A')
+    expect(page.locator('.mmb-msg')).to_have_count(0)
+
+
+def test_account_switch_before_auth_resolution_cannot_submit_old_prompt(page):
+    page.evaluate("""() => {
+      let first=true;window.MDXAuth.client=()=>{if(first){first=false;return new Promise(r=>window.__authClient=r);}return Promise.resolve({auth:{getSession:()=>Promise.resolve({data:{session:null}})}});};
+    }""")
+    page.locator('#mmb-ta').fill('Private unsent question A')
+    page.locator('#mmb-send').click()
+    page.wait_for_function('!!window.__authClient')
+    page.evaluate("window.__principal='B';MMBrain.setPrincipal('user-B');window.__authClient({auth:{getSession:()=>Promise.resolve({data:{session:null}})}})")
+    page.wait_for_timeout(80)
+    assert not any(r['method']=='POST' for r in page.evaluate('window.__requests'))
+    expect(page.locator('.mmb-msg')).to_have_count(0)
+
+
+def test_late_stream_bytes_cannot_repopulate_after_account_switch(page):
+    page.evaluate("""() => {
+      const original=window.fetch;window.fetch=(url,opts)=>url.endsWith('/brain/stream')?Promise.resolve(new Response(new ReadableStream({start(c){window.__bytes=c;}}),{headers:{'Content-Type':'text/event-stream'}})):original(url,opts);
+    }""")
+    page.locator('#mmb-ta').fill('Private question A')
+    page.locator('#mmb-send').click()
+    page.wait_for_function('!!window.__bytes')
+    page.evaluate("window.__principal='B';MMBrain.setPrincipal('user-B');window.__bytes.enqueue(new TextEncoder().encode('data: '+JSON.stringify({type:'delta',text:'Private answer A'})+'\\n\\n'));")
+    page.wait_for_timeout(80)
+    expect(page.locator('.mmb-msg')).to_have_count(0)
+    expect(page.locator('#mmb-scroll')).not_to_contain_text('Private answer A')

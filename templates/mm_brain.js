@@ -1937,9 +1937,11 @@
      operator has enabled free guest access, or 401 when it is off. A 'guest' tier flips the
      widget into guest mode (chat UI, not the sign-in gate); a 401 leaves the gate up. */
   function loadQuotas() {
+    var epoch = historyEpoch;
     withAuth().then(function (h) { return fetch(API + '/api/brain/me', { headers: h, credentials: 'include' }); })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
+        if (epoch !== historyEpoch) return;
         if (!d) { if (!authed) enterGuest(false); return; }
         quotas = d.quotas || {};
         /* Signed-out + tier 'guest' → guest mode ON; signed-out + anything else → gate. */
@@ -1948,7 +1950,7 @@
         proEligible = !!(quotas.pro && quotas.pro.limit !== 0);
         restorePrefs();   /* re-apply the remembered lane (or clear it if Pro just lapsed) */
         renderQuota();
-      }).catch(function () { if (!authed) enterGuest(false); });
+      }).catch(function () { if (epoch === historyEpoch && !authed) enterGuest(false); });
   }
   function renderQuota() {
     var q = quotas[researchMode ? 'pro' : lane];
@@ -1966,7 +1968,7 @@
 
   /* ── threads ── */
   var allThreads = [], historyListUnavailable = false, historyOwner = null;
-  var historyEpoch = 0, historyListGeneration = 0, historyOpenGeneration = 0;
+  var historyEpoch = 0, historyListGeneration = 0, historyOpenGeneration = 0, principalKnown = false;
   function loadThreads() {
     var generation = ++historyListGeneration, epoch = historyEpoch;
     withAuth().then(function (h) { return fetch(API + '/api/brain/threads', { headers: h, credentials: 'include' }); })
@@ -2314,7 +2316,8 @@
        1. re-attach to the run buffer (exact replay, works for guests too);
        2. re-read the thread tail (survives an API restart / a run past its TTL);
        3. only then the "didn't make it through" card, with Retry. */
-  var RUN_KEY = 'mm.brain.run';
+  var RUN_KEY = 'mm.brain.run.v2:';
+  function runKey() { return principalKnown ? RUN_KEY + (historyOwner ? 'user:' + encodeURIComponent(historyOwner) : 'guest') : null; }
   var RUN_MAX_AGE_MS = 25 * 60 * 1000;   /* under the server's 30-min run TTL */
   var RESUME_TRIES = 6;
   var PARK_FALLBACK_MS = 20000;          /* re-check even if visibilitychange never fires */
@@ -2332,16 +2335,17 @@
     /* A finished/stopped turn must never re-arm itself: the cursor bump that follows
        the `done` event would otherwise rewrite the record clearRun() just deleted, and
        the next page load would try to resume a turn that is already on screen. */
-    if (!T.runId || T.doneSeen || T.stopped || !runStore) return;
+    var key = runKey();
+    if (!key || T.epoch !== historyEpoch || !T.runId || T.doneSeen || T.stopped || !runStore) return;
     try {
-      runStore.setItem(RUN_KEY, JSON.stringify({
+      runStore.setItem(key, JSON.stringify({
         id: T.runId, cursor: T.cursor, thread: T.threadId || threadId || null,
         q: (T.payload && T.payload.text) || '', ts: Date.now()
       }));
     } catch (e) {}
   }
-  function loadRun() { try { return JSON.parse((runStore && runStore.getItem(RUN_KEY)) || 'null'); } catch (e) { return null; } }
-  function clearRun() { try { if (runStore) runStore.removeItem(RUN_KEY); } catch (e) {} }
+  function loadRun() { var key = runKey(); try { return JSON.parse((key && runStore && runStore.getItem(key)) || 'null'); } catch (e) { return null; } }
+  function clearRun() { var key = runKey(); try { if (key && runStore) runStore.removeItem(key); } catch (e) {} }
 
   /* Per-turn UI + parse state. Shared by the opening POST and by every later
      re-attachment, so a resumed stream paints into the same bubble it started in. */
@@ -2516,7 +2520,7 @@
     /* `ub` is the user row THIS turn drew (null for a replay — regenerate/retry/resume
        paint no question of their own), so a retract can take back exactly what it put on
        screen and never a row that belongs to an earlier exchange. */
-    return { payload: payload, typing: typing, bub: null, ub: null, stream: null, tl: null,
+    return { epoch: historyEpoch, payload: payload, typing: typing, bub: null, ub: null, stream: null, tl: null,
              suggestions: null, sawDelta: false, doneSeen: false, stopped: false, retracted: false,
              runId: null, threadId: null, cursor: 0, tries: 0, parks: 0 };
   }
@@ -2532,7 +2536,7 @@
     /* A retract hands the prompt straight back to a focused composer, so "Stop, edit,
        send again" happens in a keystroke — and the aborted fetch's rejection lands AFTER
        that. Never let a straggler from a finished turn free the composer of the live one. */
-    if (T && activeStream && activeStream !== T) return;
+    if (T && (T.epoch !== historyEpoch || (activeStream && activeStream !== T))) return;
     streaming = false; streamAbort = null;
     if (activeStream === T) activeStream = null;
     setBusy(false); syncSend();
@@ -2540,6 +2544,7 @@
 
   /* Parse one SSE event. Returns false for the `run` envelope (cursor must not move). */
   function handleEvent(j, T) {
+    if (T.stopped || T.epoch !== historyEpoch) return false;
     if (j.type === 'run') { T.runId = j.run_id; if (j.thread_id) T.threadId = j.thread_id; saveRun(T); return false; }
     T.tries = 0;   /* bytes are flowing again — reset the reconnect backoff */
     if (j.type === 'meta') { if (j.thread_id) { threadId = j.thread_id; T.threadId = j.thread_id; } if (j.quota) { quotas[j.quota.lane] = j.quota; renderQuota(); } }
@@ -2614,6 +2619,7 @@
     var reader = res.body.getReader(), dec = new TextDecoder(), buf = '';
     function pump() {
       return reader.read().then(function (r) {
+        if (T.stopped || T.epoch !== historyEpoch) { try { reader.cancel(); } catch (e) {} return; }
         if (r.done) { finish(T); return; }
         buf += dec.decode(r.value, { stream: true }); var lines = buf.split('\n'); buf = lines.pop() || '';
         lines.forEach(function (ln) {
@@ -2630,6 +2636,7 @@
     return pump();
   }
   function finish(T) {
+    if (T.epoch !== historyEpoch) return;
     if (T.doneSeen || T.stopped) { endTurn(T); loadThreads(); announceDone(); return; }
     /* The stream ended without a `done`: the CONNECTION died, not the turn. */
     recover(T);
@@ -2638,6 +2645,7 @@
      is still being worked on, which is the truth. */
   var parked = null;   /* a turn waiting for the tab to come back to the foreground */
   function recover(T) {
+    if (T.epoch !== historyEpoch) return;
     if (T.doneSeen || T.stopped) { endTurn(T); return; }
     if (!T.runId) { failTurn(T, ''); return; }            /* dropped before we had an id */
     /* A hidden tab is throttled and frequently offline. Retrying into that burns the
@@ -2672,11 +2680,13 @@
     endTurn(T);
   }
   function attachRun(T) {
+    if (T.stopped || T.epoch !== historyEpoch) return;
     var url = API + '/api/brain/runs/' + encodeURIComponent(T.runId) + '/stream?cursor=' + (T.cursor || 0);
     var ac = (typeof AbortController !== 'undefined') ? new AbortController() : null; streamAbort = ac;
     streaming = true; setBusy(true); activeStream = T;
     withAuth().then(function (h) { return fetch(url, { headers: h, credentials: 'include', signal: ac ? ac.signal : undefined }); })
       .then(function (res) {
+        if (T.stopped || T.epoch !== historyEpoch) return;
         if (res.status === 404) { threadTail(T); return; }  /* expired, or the API restarted */
         if (!res.ok || !res.body) { recover(T); return; }
         return readSse(res, T);
@@ -2690,10 +2700,12 @@
      so even a run the registry has forgotten (API restart, past its TTL) left the
      answer behind. Paint the thread's tail if it is the reply we were waiting for. */
   function threadTail(T) {
+    if (T.stopped || T.epoch !== historyEpoch) return;
     if (!threadId || guestMode) { failTurn(T, ''); return; }
     withAuth().then(function (h) { return fetch(API + '/api/brain/threads/' + encodeURIComponent(threadId), { headers: h, credentials: 'include' }); })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
+        if (T.stopped || T.epoch !== historyEpoch) return;
         var msgs = (d && d.messages) || [];
         var last = msgs.length ? msgs[msgs.length - 1] : null;
         if (!last || last.role !== 'assistant' || !last.content) { failTurn(T, ''); return; }
@@ -2713,6 +2725,7 @@
       .catch(function () { failTurn(T, ''); });
   }
   function failTurn(T, msg) {
+    if (T.stopped || T.epoch !== historyEpoch) return;
     if (T.doneSeen) { endTurn(T); return; }
     T.doneSeen = true; clearRun(); parked = null;
     thinkTeardown(T.tl);
@@ -2758,10 +2771,12 @@
     if (streamAbort) { try { streamAbort.abort(); } catch (e) {} }
     var ac = (typeof AbortController !== 'undefined') ? new AbortController() : null; streamAbort = ac;
     withAuth({ 'Content-Type': 'application/json' }).then(function (h) {
+      if (T.stopped || T.epoch !== historyEpoch) return null;
       return fetch(API + '/api/brain/stream', { method: 'POST', headers: h, credentials: 'include', body: body, signal: ac ? ac.signal : undefined });
     }).then(function (res) {
+      if (T.stopped || T.epoch !== historyEpoch || !res) return;
       if (res.status === 401) { T.doneSeen = true; thinkTeardown(T.tl); if (typing.parentNode) typing.remove(); endTurn(T); if (window.MDXAuth && window.MDXAuth.enabled()) window.MDXAuth.open('signin'); else if (CFG.onAuthRequired) { try { CFG.onAuthRequired(); } catch (e) {} } return; }
-      if (res.status === 402) { T.doneSeen = true; thinkTeardown(T.tl); if (typing.parentNode) typing.remove(); endTurn(T); return res.json().then(showUpgrade).catch(function () { showUpgrade({}); }); }
+      if (res.status === 402) { T.doneSeen = true; thinkTeardown(T.tl); if (typing.parentNode) typing.remove(); endTurn(T); return res.json().then(function (d) { if (T.epoch === historyEpoch) showUpgrade(d); }).catch(function () { if (T.epoch === historyEpoch) showUpgrade({}); }); }
       if (!res.ok || !res.body) { failTurn(T, ''); return; }
       return readSse(res, T);
     }).catch(function (err) {
@@ -2860,12 +2875,13 @@
                              fetch lands; without this the turn attaches twice */
   function resumeStoredRun() {
     if (streaming || resuming || !panel.classList.contains('open')) return;
-    var st = loadRun(); if (!st || !st.id) return;
+    var epoch = historyEpoch, st = loadRun(); if (!st || !st.id) return;
     if (!st.ts || (Date.now() - st.ts) > RUN_MAX_AGE_MS) { clearRun(); return; }
     resuming = true;
     withAuth().then(function (h) { return fetch(API + '/api/brain/runs/' + encodeURIComponent(st.id), { headers: h, credentials: 'include' }); })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (s) {
+        if (epoch !== historyEpoch) return;
         if (!s) { clearRun(); return; }        /* gone — the thread store is the record now */
         if (s.cancelled) { clearRun(); return; }
         if (s.thread_id) {
@@ -2892,7 +2908,7 @@
         attachFresh(s, 0, st.q);
       })
       .catch(function () {})
-      .then(function () { resuming = false; });
+      .then(function () { if (epoch === historyEpoch) resuming = false; });
   }
   /* Build a fresh turn around an existing server run and attach to it. `question` is
      carried so a Retry on the error card can still replay the real turn. */
@@ -3179,18 +3195,21 @@
   /* ── auth wiring ── */
   function onAuth(user) {
     var owner = user && (user.id || user.email) || null;
-    if (owner !== historyOwner) {
+    if (!principalKnown || owner !== historyOwner) {
+      if (draftTimer) { clearTimeout(draftTimer); draftTimer = 0; }
+      abortStream(); resuming = false;
       historyOwner = owner; historyEpoch++; historyListGeneration++; historyOpenGeneration++;
       allThreads = []; historyListUnavailable = false; threadId = null;
-      abortStream(); clearMsgs(); ta.value = ''; pendingImages = []; renderThumbs(); paintThreads();
+      clearMsgs(); ta.value = ''; pendingImages = []; renderThumbs(); paintThreads();
+      quotas = {}; proEligible = false; renderQuota();
     }
-    authed = !!user;
+    principalKnown = true; authed = !!user;
     var gate = $('#mmb-gate');
     if (authed) {
       guestMode = false;
       if (gate) gate.remove();
       if (!scroll.querySelector('.mmb-msg') && !$('#mmb-emptystate')) renderEmpty();
-      if (panel.classList.contains('open')) { loadThreads(); loadQuotas(); }
+      if (panel.classList.contains('open')) { loadThreads(); loadQuotas(); restoreDraft(); resumeStoredRun(); }
       showChat(true);
     } else {
       /* Signed out: default to the gate, then probe /api/brain/me — if guest access is on it
@@ -3445,17 +3464,25 @@
   }
 
   /* ── drafts (persist composer text per thread) ── */
-  function draftKey() { return 'mmb_draft_' + (threadId || 'new'); }
+  function draftKey() { return historyOwner ? 'mmb_draft_v2:' + encodeURIComponent(historyOwner) + ':' + encodeURIComponent(threadId || 'new') : null; }
   var draftTimer = 0;
   function saveDraft() {
     if (draftTimer) clearTimeout(draftTimer);
+    var key = draftKey(), value = ta.value, epoch = historyEpoch;
+    if (!key) return;  /* no migration from unbound legacy/guest drafts */
     draftTimer = setTimeout(function () {
-      try { var v = ta.value; if (v) localStorage.setItem(draftKey(), v); else localStorage.removeItem(draftKey()); } catch (e) {}
+      draftTimer = 0;
+      if (epoch !== historyEpoch) return;
+      try { if (value) localStorage.setItem(key, value); else localStorage.removeItem(key); } catch (e) {}
     }, 400);
   }
-  function clearDraft() { try { localStorage.removeItem(draftKey()); } catch (e) {} }
+  function clearDraft() {
+    if (draftTimer) { clearTimeout(draftTimer); draftTimer = 0; }
+    var key = draftKey(); try { if (key) localStorage.removeItem(key); } catch (e) {}
+  }
   function restoreDraft() {
-    try { var v = localStorage.getItem(draftKey()); if (v && !ta.value) { ta.value = v; autosize(); syncSend(); updateCounter(); } } catch (e) {}
+    var key = draftKey();
+    try { var v = key && localStorage.getItem(key); if (v && !ta.value) { ta.value = v; autosize(); syncSend(); updateCounter(); } } catch (e) {}
   }
 
   /* ── slash palette (typing "/" as the first char) ────────────────────────────
@@ -3856,12 +3883,15 @@
   /* ── boot ── */
   function boot() {
     if (window.MDXAuth) { window.MDXAuth.onChange(onAuth); }
+    else if (Object.prototype.hasOwnProperty.call(CFG, 'principal')) onAuth(CFG.principal ? { id: CFG.principal } : null);
     else window.addEventListener('load', function () { if (window.MDXAuth) window.MDXAuth.onChange(onAuth); else { authed = true; showChat(true); } });
   }
   boot();
   initExplain();
 
   window.MMBrain = { open: open, close: close, toggle: toggle, explain: explain,
+    setPrincipal: function (id) { onAuth(typeof id === 'string' && id ? { id: id } : null); },
     expand: function () { var was = panel.classList.contains('open'); if (!was) open(); if (window.innerWidth > 560 && !panel.classList.contains('max')) setTimeout(toggleMax, was ? 0 : 80); },
     mounted: true };
+  window.dispatchEvent(new Event('mm-brain-ready'));
 })();
