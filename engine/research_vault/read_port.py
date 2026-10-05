@@ -60,6 +60,27 @@ FAILURE_CODES = frozenset({
     "INVALID_REQUEST",
     "INTERNAL_UNAVAILABLE",
 })
+_FAILURE_MESSAGES = {
+    "AUTHENTICATION_REQUIRED": "authentication is required",
+    "INSUFFICIENT_SCOPE": "this research operation is not permitted",
+    "REPORT_NOT_FOUND": "research report not found",
+    "REPORT_NOT_ENTITLED": "research report is not visible to this caller",
+    "SOURCE_BODY_UNAVAILABLE": "source body is unavailable",
+    "TEXT_LAYER_UNAVAILABLE": "source text layer is unavailable",
+    "FULL_TEXT_NOT_MATERIALIZED": "full-text derivative is not available",
+    "RETRIEVAL_UNAVAILABLE": "research retrieval is temporarily unavailable",
+    "INVALID_REQUEST": "research request is invalid",
+    "INTERNAL_UNAVAILABLE": "research service is temporarily unavailable",
+}
+DEGRADATION_CODES = frozenset({
+    "PRODUCER_STALE",
+    "PARTIAL_CORPUS",
+    "FULL_TEXT_PARTIAL",
+    "RIO_PARTIAL",
+    "METADATA_PARTIAL",
+    "SCAN_NO_TEXT",
+    "INDEX_REBUILD_PENDING",
+})
 
 _MAX_TEXT_BYTES = 24_000
 _MAX_PASSAGES = 12
@@ -107,9 +128,13 @@ def _nonnegative_int(value: Any, name: str) -> int:
 def failure(
     code: str,
     *,
-    message: str,
     retryable: bool = False,
 ) -> dict[str, Any]:
+    """Return a public-safe failure envelope with no caller-supplied prose.
+
+    Adapters must log internal exception detail through their incumbent audit path,
+    never reflect it through this model-facing contract.
+    """
     if code not in FAILURE_CODES:
         raise ValueError(f"unsupported failure code: {code!r}")
     if type(retryable) is not bool:
@@ -118,7 +143,7 @@ def failure(
         "schema": FAILURE_SCHEMA,
         "ok": False,
         "code": code,
-        "message": _require_text(message, "message", max_len=500),
+        "message": _FAILURE_MESSAGES[code],
         "retryable": retryable,
     }
 
@@ -140,9 +165,10 @@ def source_state(
     report_count = _nonnegative_int(report_count, "report_count")
     degradation: list[str] = []
     for item in known_degradation:
-        text = _require_text(item, "known_degradation item", max_len=240)
-        if text not in degradation:
-            degradation.append(text)
+        if item not in DEGRADATION_CODES:
+            raise ValueError(f"unsupported degradation code: {item!r}")
+        if item not in degradation:
+            degradation.append(item)
         if len(degradation) >= 24:
             break
     return {
