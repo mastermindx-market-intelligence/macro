@@ -16117,6 +16117,23 @@ jobs:
   # pytest+pandas+pyarrow+jinja2 alone left 23 tests red on those two imports.
   # The shared unrun-* install repeated BYTE-FOR-BYTE keeps this job inside the
   # set's single venv instead of adding one.
+      - name: Special Situations pre-event control boundaries
+        run: python -m pytest tests/test_special_situations_validation.py -q
+    paths:
+      - "tests/test_caddy_hub_boundary.py"
+      - "tests/test_deploy_bootstrap_private.py"
+      - "tests/test_gh_quota_guard.py"
+      - "tests/test_live_snapshot_host_guard.py"
+      - "tests/test_m1_macro_consumer_inspector.py"
+      - "tests/test_macro_anon_dependency_guard.py"
+      - "tests/test_no_pages_publish.py"
+      - "tests/test_prophet_r2_boundary.py"
+      - "tests/test_prophet_rescue.py"
+      - "tests/test_prophet_surface_net.py"
+      - "tests/test_signup_email_validation.py"
+      - "tests/test_special_situations_validation.py"
+      - "scripts/validate_special_situations.py"
+
   unrun-hk-board:
     if: ${{ false }}
     gate: data

@@ -30,10 +30,11 @@ METHOD — a synthesis of the two house templates:
     on a degenerate (lag >= n_days) long-run variance.
 
 CONTROL (mirrors the activist gate's passive-13G leg): a pre-event PLACEBO — the same
-tickers entered one quarter (63 bdays) BEFORE the filing. It measures each name's NORMAL
-SPY-relative drift absent the event; the event must beat it. This catches the trap that
-many special-situation names (distressed delistings, busted deals) are already drifting —
-an "edge" that is just the stock's own trend, not the event, fails here.
+tickers entered one quarter (63 bdays) BEFORE the filing. Keep that entry and the full
+requested horizon, but withhold a control whose exit is on/after the focal filing day.
+Business-day lags and observed trading horizons are different calendars. The retained
+prior contrasts are not automatically independent or free of anticipation/other news;
+they test whether post-event drift beats that defined prior-window comparison.
 
 VERDICT: scored iff SOME horizon is valid (n_events >= floor AND n_days >= needed),
 right-signed (mean_abn > 0 and HAC-t > 0), significant (|HAC-t| >= 2.0), AND beats the
@@ -116,9 +117,16 @@ def event_panel() -> pd.DataFrame:
     return first[["tk", "d", "category"]].reset_index(drop=True)
 
 
-def _fwd_abn(closes: pd.DataFrame, spy: pd.Series, tk: str, d: pd.Timestamp, h: int):
-    """SPY-relative forward return over h trading days, entry = first close STRICTLY AFTER
-    `d` (leak-free: excludes the filing-day close). Returns (entry_day, abn) or None."""
+def _fwd_abn(closes: pd.DataFrame, spy: pd.Series, tk: str, d: pd.Timestamp, h: int,
+             *, end_before: pd.Timestamp | None = None):
+    """SPY-relative return over h observations, entering strictly after ``d``.
+
+    ``end_before`` is the original focal filing day for a pre-event control.
+    Its full horizon must end strictly before that day; never shorten the
+    horizon or move its entry to rescue an overlapping control. Daily bars
+    cannot establish whether a close preceded an intraday disclosure.
+    Returns (entry_day, abn) or None. Event windows omit ``end_before``.
+    """
     if tk not in closes.columns or spy is None:
         return None
     s = closes[tk].dropna()
@@ -130,6 +138,8 @@ def _fwd_abn(closes: pd.DataFrame, spy: pd.Series, tk: str, d: pd.Timestamp, h: 
     if loc + h >= len(s):
         return None
     e1 = s.index[loc + h]
+    if end_before is not None and e1 >= pd.Timestamp(end_before).normalize():
+        return None
     try:
         r = s.loc[e1] / s.loc[e0] - 1.0
         sp0, sp1 = spy.asof(e0), spy.asof(e1)
@@ -142,18 +152,25 @@ def _fwd_abn(closes: pd.DataFrame, spy: pd.Series, tk: str, d: pd.Timestamp, h: 
 
 
 def _study(events: pd.DataFrame, closes: pd.DataFrame, spy: pd.Series, shift_bdays: int = 0) -> dict:
-    """Per-horizon daily-calendar-time abnormal-return study. shift_bdays > 0 walks the entry
-    back that many business days for the pre-event placebo baseline."""
+    """Per-horizon daily-calendar-time abnormal-return study.
+
+    A positive shift keeps the existing lagged entry but admits only full
+    windows ending before the focal filing day. Coverage retains every
+    requested row; withheld includes overlap and unavailable/incomplete prices.
+    Earlier windows are not thereby independent or free of other news.
+    """
     out: dict = {}
     for h in _HORIZONS:
         recs = []
         for ev in events.itertuples(index=False):
             d = ev.d - pd.tseries.offsets.BDay(shift_bdays) if shift_bdays else ev.d
-            a = _fwd_abn(closes, spy, ev.tk, d, h)
+            a = _fwd_abn(closes, spy, ev.tk, d, h,
+                         end_before=ev.d if shift_bdays > 0 else None)
             if a is not None:
                 recs.append(a)
+        coverage = {"n_requested": len(events), "n_withheld": len(events) - len(recs)}
         if len(recs) < 10:
-            out[h] = {"n": len(recs)}
+            out[h] = {"n": len(recs), **coverage}
             continue
         edf = pd.DataFrame(recs, columns=["e0", "abn"])
         edf["day"] = edf["e0"].dt.normalize()
@@ -164,6 +181,7 @@ def _study(events: pd.DataFrame, closes: pd.DataFrame, spy: pd.Series, shift_bda
         nw = V.newey_west_tstat(daily.values, lags=h)
         rec = {
             "n": int(len(edf)),
+            **coverage,
             "n_days": int(len(daily)),
             "mean_abn": round(float(edf["abn"].mean()), 4),
             "median_abn": round(float(edf["abn"].median()), 4),
@@ -230,7 +248,8 @@ def main() -> None:
         "n_priceable": int(len(priceable)),
         "method": ("daily calendar-time portfolio · SPY-relative · leak-free entry (first close "
                    "strictly after the EDGAR filing date) · Newey-West HAC lag=horizon · "
-                   "validity bar n_days>=max(6,horizon)"),
+                   "validity bar n_days>=max(6,horizon); "
+                   "control exits strictly before focal filing day"),
         "scored": bool(scored),
         "lead_horizon": best_h,
         "weight": 1.0 if scored else 0.0,
@@ -268,8 +287,9 @@ def main() -> None:
         f"- **Weight ruling: {gate['channel_weight_recommendation']}**", "",
         "## Post-filing SPY-relative abnormal returns (vs pre-event placebo)", "",
         "_Entry is STRICTLY AFTER the filing date, so the announcement pop is already gone — this is "
-        "post-filing DRIFT, not the event jump. The placebo enters the same names one quarter earlier "
-        "to net out each name's normal drift._", "",
+        "post-filing DRIFT, not the event jump. The placebo retains its lagged entry and full "
+        "horizon only when its exit is strictly before the focal filing day. Prior windows are "
+        "not automatically news-free or independent._", "",
         "| Horizon | n | n_days | mean_abn | median | hit | HAC-t | p | valid | placebo mean | placebo HAC-t |",
         "|--:|--:|--:|--:|--:|--:|--:|--:|:--:|--:|--:|",
     ]
@@ -280,6 +300,16 @@ def main() -> None:
             f"{a.get('median_abn','—')} | {a.get('hit_rate','—')} | {a.get('hac_t','—')} | "
             f"{a.get('p','—')} | {'✓' if a.get('valid_hac') else '—'} | "
             f"{p.get('mean_abn','—')} | {p.get('hac_t','—')} |")
+    lines += ["", "## Window coverage", "",
+              "_Withheld includes unavailable/incomplete prices and controls overlapping the focal "
+              "filing day. No shortened or relocated control replaces a withheld window._", "",
+              "| Horizon | Event kept / requested | Event withheld | Control kept / requested | Control withheld |",
+              "|--:|--:|--:|--:|--:|"]
+    for h in _HORIZONS:
+        a, p = ev.get(h, {}), pl.get(h, {})
+        lines.append(
+            f"| {h}d | {a.get('n', 0)} / {a.get('n_requested', 0)} | {a.get('n_withheld', 0)} | "
+            f"{p.get('n', 0)} / {p.get('n_requested', 0)} | {p.get('n_withheld', 0)} |")
     lines += ["", f"_{gate['note']}._", "",
               "_Caveat: the special-situations pipeline is ~6 months old, so even a SCORED reading is "
               "provisional and rests on a daily-HAC (not the activist gate's 2-year monthly cluster). "
