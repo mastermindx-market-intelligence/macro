@@ -88,8 +88,9 @@ waves:
       D2B3 natural-proof reconciliation was NOT executed. Five DECISIONS REQUIRED are carried in
       research/GMI_THEME_GRAPH_CONTINUATION_HANDOFF_2026-10-05.md section 3 (finviz_themes and
       ths_concepts rights class, us_standouts.json family or exclusion, probation relation_events
-      source_ref prefix, D2E release after Sol accepts #8432+#8435). Acceptance closes only after
-      D2C and D2D land and the D2B3 clause is reconciled against the then-current nightly receipt.
+      source_ref prefix, D2E release after Sol accepts #8432+#8435). The census PR #8488 is MERGED
+      (squash 192a46de8be8). Acceptance closes only after D2C and D2D land and the D2B3
+      clause is reconciled against the then-current nightly receipt.
   - id: W3B
     title: "Sole local + canonical ThemeState — gmi-theme-state-w3b-20260827-sol-001"
     status: todo
@@ -111,31 +112,32 @@ waves:
     pr: 8455
     next_action: >
       Wave A 2026-10-05: lineage merge d3195488ef6 plus the data/site integrity remedy 61ed68e2078
-      pushed as an ordinary merge onto #8455 (head 029fe5b17f0f); the PR flipped CONFLICTING to
-      MERGEABLE and ci-authority/fences are green. ci.yml 37300796142 was in flight at record time;
-      the earlier q06 curated-scope red was inherited from main and #8484 landed the cover. The PR is
-      Sol-held DRAFT: one seat result comment, never ready/arm/merge. Never push the stale local
-      lineage branch over the current head.
+      pushed as an ordinary merge onto #8455 (029fe5b17f0f), then the round-2 repair 4b38f2501a3b
+      (legacy-jobs.yml path widenings for regime-outlook-mapping and nw-lobe-unfreeze, the
+      contract-delta remedy). ci.yml 37307906336 on 4b38f2501a3b completed/success 12:45Z; the
+      earlier reds are classified on the carrier (ci-pack-0 q06 inherited, healed by #8484;
+      contract-delta own, closed). PARKED: Sol-held DRAFT, never ready/arm/merge; next act is Sol's
+      release ruling. Never push the stale local lineage branch over the current head.
   - id: W-C
     title: "Current-use rights capture engine/theme_graph/rights_use.py (#8485)"
-    status: awaiting_ci
+    status: done
     pr: 8485
     next_action: >
-      Seat-owned ordinary PR, accepted by artifact and armed merge-on-green 2026-10-05 11:12Z at
-      head 74467f24300a (ci.yml 37299976182 in flight). Merge on concluded green (sweeper, or
-      gh pr merge --squash --match-head-commit on the exact head), then git fetch origin main ALONE
-      and blob-compare its three paths. #8417 depends on this module landing
+      MERGED 2026-10-05T12:44:43Z by the sweeper at head f0991eade1e6, squash fd2552813811;
+      blob-verified on origin/main after a bare git fetch origin main (rights_use.py and its test
+      SAME; legacy-jobs.yml carries the wiring). DO_NOT_REDO. #8417 was re-proved against it
       (DSC:GMI-D1-SEAMS-IMPORT-WAVE-C-RIGHTS-USE).
   - id: W-D1
     title: "W3C seams on the CTE successor — selection cohort publication (#8417)"
     status: in_progress
     pr: 8417
     next_action: >
-      Lane result ACCEPTED at head d02ebf451f1d; PR is Sol-held DRAFT (PARKED). ci.yml 37299950277
-      is red on exactly one unit, tests/test_first_party_import_names.py::test_every_first_party_import_resolves,
-      because selection_cohort_publication.py:48 imports engine.theme_graph.rights_use which exists
-      only on #8485. After #8485 merges: freshness re-read of the carrier, push a plain merge-of-main
-      so a fresh merge-ref run proves the heal, one seat comment. Never vendor rights_use into #8417.
+      Lane result ACCEPTED at d02ebf451f1d. After #8485 merged, the seat re-read the carrier and
+      pushed a plain merge of origin/main fd2552813811 (head 65ee41785e1c, no file edits; local
+      test_first_party_import_names 15 passed); one seat comment classifies both prior reds
+      (ci-pack-0 q06 inherited → #8484; ci-pack-10 import dependency → #8485). CI on 65ee41785e1c
+      and on the path-widening repair head bddb73d9cb9e: ci.yml 37320358321 in flight at record time (expected: ci-pack-0 + contract-delta green; ci-pack-2 inherits main's readiness red until this PR lands, then a plain merge-of-main re-proof); seat classification comment 5995904316. PARKED: Sol-held DRAFT, never ready/arm/merge; release order
+      #8417 → #8486. Never vendor rights_use into #8417.
   - id: W-D2
     title: "Selection-clock qualified reads engine/theme_graph/selection_cohort_reads.py (#8486)"
     status: in_progress
@@ -148,14 +150,22 @@ waves:
       Do not retarget to main before #8417 lands. Release order: #8485 -> #8417 -> #8486.
   - id: W-G
     title: "Independent completion-ruler audit (#8487)"
-    status: awaiting_ci
+    status: done
     pr: 8487
     next_action: >
-      Read-only audit DELIVERED and accepted: 0 of 9 ruler items PROVEN, items 2 and 3
-      HELD_BY_AUTHORITY, the rest PARTIAL or UNPROVEN at pin 2026-10-05T11:27:09Z. Armed
-      merge-on-green 11:35Z at head 5957918bbf34. Two seat caveats are recorded in the continuation
-      handoff (the daily.yml read is stale relative to the natural store; the "do not arm #8485"
-      advice is advisory and the seat's accepted Wave C decision stands).
+      Read-only audit DELIVERED, accepted and MERGED (squash 625d0c71714d, blob-verified): 0 of 9
+      ruler items PROVEN, items 2 and 3 HELD_BY_AUTHORITY, the rest PARTIAL or UNPROVEN at pin
+      2026-10-05T11:27:09Z. Two seat caveats are recorded in the continuation handoff.
+  - id: W-F
+    title: "Terminal / R2 / human-consumer census (#8490)"
+    status: awaiting_ci
+    pr: 8490
+    next_action: >
+      Read-only consumer census DELIVERED by a ubuntu1 cursor composer-2.5 lane (m1 refused auth;
+      deviation recorded), judged by artifact against main 81eb0c9b3993 and Terminal
+      2ca21c44718a (6 MATCH / 1 UNKNOWN: no Terminal consumer for v2/cohort), armed merge-on-green at head b2de5314e76f and merge-blocked by the sweeper on main's ci-pack-2 red (tests/test_agentos_status.py readiness exemplar, healed in the records follow-up PR); merges on the next green sweep — then git fetch origin main ALONE and blob-compare its two paths.
+      The v2/cohort Terminal consumer is a Sol/Chairman product decision,
+      not a lane to spawn; re-census only if the Terminal pin or the C0 writer moves.
   - id: TRANSMISSION-FOLD
     title: "Legacy Transmission/Contagion frontier folded into current owners"
     status: done
