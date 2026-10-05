@@ -1,0 +1,139 @@
+{
+  "schema": "research_source_qualification_note.v1",
+  "status": "ANALYST_PREPARED_RESEARCH_NOT_PRODUCTION_ADMISSION",
+  "procedure_commit": "f590c068880dbb848bda90b80b73dbcb6688d6fc",
+  "macro_inspection_commit": "112eba2036fd1186e67b914e194f4fa541cfc4df",
+  "carrier": {"pr": 7182, "branch": "sol/research-vault-intelligence-design-r2-20260915", "starting_head": "b73ab1588bf0efc4c68b31c2700daf9f00a258e8"},
+  "direct_work_reason": "PRINCIPAL_JUDGMENT for source semantics and rights conflict; LOWER_TOTAL_OVERHEAD for unchanged offline regression.",
+  "catalog_observation": {
+    "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/112eba2036fd1186e67b914e194f4fa541cfc4df/data/research_vault/catalog.json",
+    "generation": "2026-09-16T04:24:32.098110+00:00",
+    "declared_count": 2204,
+    "measurement_kind": "committed_snapshot_fields_read_not_live_four_set_census",
+    "selection": "eight complete leading rows visible in bounded response; purposive, not random or whole-corpus",
+    "sample_ids": ["marketdesk-ifvweti4bl0-81ed6e", "marketdesk-oigknaiqhfi-f22e87", "marketdesk-knd1xcpxblx-4040da", "marketdesk-bbpjjx51pty-8a2f3e", "marketdesk-didbhvbmh6e-e180ec", "marketdesk-28hnibtwani-6afe79", "marketdesk-drr4pjejey5-a7911a", "marketdesk-hlh6q8259ev-dcffbd"],
+    "sample_count": 8,
+    "sample_empty_tickers": 8,
+    "sample_empty_tags": 8,
+    "sample_empty_desk": 8,
+    "sample_needs_metadata_false": 8,
+    "interpretation": "The existing metadata flag is not analytical-quality certification; no global rate or flag defect inferred.",
+    "arithmetic_case": {
+      "doc_id": "marketdesk-hlh6q8259ev-dcffbd",
+      "title": "Daily Asia",
+      "displayed_institution": "UBS",
+      "reported_values": {"new_trillion": "1.2", "baseline_billion": "90", "increase_percent": "33"},
+      "implied_change_percent_approx": "1233.33333333333333333333333333",
+      "baseline_after_33_percent_billion": "119.70",
+      "relation": "arithmetically_inconsistent_as_written",
+      "correct_source_number": null,
+      "source_pdf_verified": false,
+      "faulting_component": null,
+      "automatic_correction_authorized": false
+    }
+  },
+  "sources": [
+    {
+      "id": "ING-JUNE-19", "kind": "publisher_research", "date_printed": "2026-06-19",
+      "title": "FX Daily: US holiday offers Japan intervention window",
+      "url": "https://think.ing.com/articles/fx-daily-us-holiday-offers-japan-intervention-window/",
+      "pdf_url": "https://think.ing.com/downloads/pdf/article/fx-daily-us-holiday-offers-japan-intervention-window",
+      "pdf_pages": 4,
+      "locator": {"printed_page": 2, "section": "EUR: We have updated our forecasts", "parsed_lines": [32, 38]},
+      "pdf_text_read": true, "pdf_visual_pages": [],
+      "visual_note": "Requested page screenshot returned cache miss; HTML and parsed PDF support statement.",
+      "source_bytes_sha256": null, "stored_body_sha256": null, "vault_doc_id": null, "historical_system_available_at": null
+    },
+    {
+      "id": "ING-AUG-06", "kind": "publisher_research", "date_printed": "2026-08-06",
+      "title": "G10 FX Talking: The narrow path to a weaker dollar",
+      "url": "https://think.ing.com/articles/g10-fx-talking-august-2026/",
+      "pdf_url": "https://think.ing.com/downloads/pdf/article/g10-fx-talking-august-2026",
+      "pdf_pages": 14,
+      "locator": {"printed_page": 2, "section": "EUR/USD forecast table"},
+      "pdf_text_read": true, "pdf_visual_pages": [1, 2],
+      "source_bytes_sha256": null, "stored_body_sha256": null, "vault_doc_id": null, "historical_system_available_at": null
+    },
+    {
+      "id": "ING-SEP-03", "kind": "publisher_research", "date_printed": "2026-09-03",
+      "title": "Yield curve dynamics drive the dollar",
+      "url": "https://think.ing.com/articles/fx-monthly-yield-curve-dynamics-drive-the-dollar/",
+      "pdf_url": "https://think.ing.com/downloads/pdf/article/fx-monthly-yield-curve-dynamics-drive-the-dollar",
+      "pdf_pages": 3,
+      "locator": {"printed_page": 1, "section": "Fed hawkishness versus the debasement trade", "parsed_lines": [13, 16]},
+      "pdf_text_read": true, "pdf_visual_pages": [1],
+      "source_bytes_sha256": null, "stored_body_sha256": null, "vault_doc_id": null, "historical_system_available_at": null
+    },
+    {
+      "id": "ING-SEP-07", "kind": "publisher_research", "date_printed": "2026-09-07",
+      "title": "G10 FX Talking: Dollar downtrend delayed",
+      "url": "https://think.ing.com/articles/g10-fx-talking-september-2026/",
+      "pdf_url": "https://think.ing.com/downloads/pdf/article/g10-fx-talking-september-2026",
+      "pdf_pages": 14,
+      "locator": {"printed_page": 1, "section": "Opening forecast change; page 2 for table and graph; page 14 for disclaimer"},
+      "pdf_text_read": true, "pdf_visual_pages": [1, 2],
+      "source_bytes_sha256": null, "stored_body_sha256": null, "vault_doc_id": null, "historical_system_available_at": null
+    }
+  ],
+  "numeric_observations": [
+    {"source": "ING-JUNE-19", "claim_kind": "analyst_forecast", "subject": "EUR/USD", "unit": "USD per EUR", "value": "1.18", "target": {"kind": "year_end", "year": 2026, "year_resolution": "current year from dated source and third/fourth-quarter context", "fixing_convention": null}, "source_origin": "ING research; manual case label, not new identity registry"},
+    {"source": "ING-AUG-06", "claim_kind": "analyst_forecast", "subject": "EUR/USD", "unit": "USD per EUR", "value": "1.17", "target": {"kind": "relative_tenor", "label": "3M", "anchor_date_convention": null, "resolved_date": null}, "source_origin": "ING research; manual case label, not new identity registry"},
+    {"source": "ING-SEP-03", "claim_kind": "analyst_forecast_revision_statement", "subject": "EUR/USD", "unit": "USD per EUR", "value": "1.16", "prior_value_quoted": "1.18", "target": {"kind": "year_end", "year": 2026, "fixing_convention": null}, "prior_record_independent_correspondence": "ING-JUNE-19 supports an earlier same-level, same-year forecast; immediate predecessor not established"},
+    {"source": "ING-SEP-07", "claim_kind": "analyst_forecast_revision_statement", "subject": "EUR/USD", "unit": "USD per EUR", "value": "1.16", "prior_value_quoted": "1.18", "target": {"kind": "year_end", "year": 2026, "fixing_convention": null}, "prior_restatement_located": "ING-SEP-03"},
+    {"source": "ING-SEP-07", "claim_kind": "analyst_forecast", "subject": "EUR/USD", "unit": "USD per EUR", "value": "1.16", "target": {"kind": "relative_tenor", "label": "3M", "anchor_date_convention": null, "resolved_date": null}}
+  ],
+  "relationship_findings": {
+    "earlier_value_corroborated_by_separate_original": true,
+    "earliest_revision_located_in_this_search": "2026-09-03",
+    "first_ever_revision_date": null,
+    "immediate_prior_original_established": false,
+    "continuous_unchanged_history_established": false,
+    "september_7_new_numeric_revision_relative_to_september_3": false,
+    "september_7_all_new_information_absent": null,
+    "same_3M_label_establishes_same_calendar_target": false,
+    "pdf_arrow_legend_revision_meaning_established": false,
+    "graph_series_roles_observed": ["publisher_forecast", "market_forward"],
+    "full_pdf_bytes_available_in_runtime": false,
+    "production_vault_matching_established": false,
+    "operational_historical_replay_proven": false
+  },
+  "rights_observation": {
+    "website_terms": "https://think.ing.com/about/terms-of-use/",
+    "candidate_permission": "Conditional reuse for website content expressly identified as ING-owned, with credit; third-party content excluded.",
+    "report_restriction": {"source": "ING-SEP-07", "printed_page": 14, "meaning": "Report says reproduction, distribution or publication requires prior express consent."},
+    "resolution": "SOURCE_SPECIFIC_CONFLICT_REQUIRES_QUALIFIED_OR_RIGHTSHOLDER_CLARIFICATION",
+    "customer_pdf_redistribution_approved": false,
+    "bulk_processing_and_retention_permission_established": false,
+    "third_party_chart_reuse_approved": false,
+    "legal_priority_adjudicated": false,
+    "scope": "Observation of conflicting texts, not legal advice or a finding of infringement."
+  },
+  "proposed_contract_additions": [
+    "Preserve analyst_forecast distinct from issuer guidance; R3 oracle currently supports guidance/actual only.",
+    "Represent target kind, anchor, calendar convention and period; do not resolve 3M into a date by assumption.",
+    "Separate later-source-quoted prior value, independently captured earlier value, immediate predecessor and first located change.",
+    "Separate repetition of a numerical change from additional interpretation or changed assumptions.",
+    "Treat metadata flag, source integrity, numeric consistency, rights and customer readiness as different properties under existing owners."
+  ],
+  "qualification_cases": [
+    {"id": "Q01", "question": "Does needs_metadata=false certify source or numeric quality?", "sources": ["catalog"], "expected_answer": "No. Preserve existing metadata contract; require separate source/quality checks.", "status": "ANALYST_PREPARED_NOT_INDEPENDENTLY_GRADED"},
+    {"id": "Q02", "question": "Are 1.2 trillion, 90 billion and a 33% increase mutually consistent?", "sources": ["catalog"], "expected_answer": "No. Arithmetic contradicts that relationship; original correct value remains unknown.", "status": "ANALYST_PREPARED_NOT_INDEPENDENTLY_GRADED"},
+    {"id": "Q03", "question": "May the system repair 90 billion to 900 billion automatically?", "sources": ["catalog"], "expected_answer": "No. Plausible correction is not source evidence.", "status": "ANALYST_PREPARED_NOT_INDEPENDENTLY_GRADED"},
+    {"id": "Q04", "question": "Can the two 3M columns be compared as a fixed-date revision?", "sources": ["ING-AUG-06", "ING-SEP-07"], "expected_answer": "No fixed-date revision without matching target/anchor conventions; profile comparison is separately labeled.", "status": "ANALYST_PREPARED_NOT_INDEPENDENTLY_GRADED"},
+    {"id": "Q05", "question": "Is there a primary source supporting the earlier year-end level?", "sources": ["ING-JUNE-19", "ING-SEP-03"], "expected_answer": "Yes, an earlier original supports the old level; immediate predecessor and uninterrupted history remain unknown.", "status": "ANALYST_PREPARED_NOT_INDEPENDENTLY_GRADED"},
+    {"id": "Q06", "question": "Is September 7 a second new numerical reduction after September 3?", "sources": ["ING-SEP-03", "ING-SEP-07"], "expected_answer": "Not on the inspected year-end value; same quoted change is already present earlier. Do not discard other new content automatically.", "status": "ANALYST_PREPARED_NOT_INDEPENDENTLY_GRADED"},
+    {"id": "Q07", "question": "Does September 3 prove the first ever announcement date?", "sources": ["ING-SEP-03"], "expected_answer": "No. It is the earliest located revision in this bounded investigation, not a complete chronology.", "status": "ANALYST_PREPARED_NOT_INDEPENDENTLY_GRADED"},
+    {"id": "Q08", "question": "Are the graph forward curve and ING forecast the same observation type?", "sources": ["ING-SEP-07"], "expected_answer": "No. Preserve series roles; do not infer exact graph numbers by eye.", "status": "ANALYST_PREPARED_NOT_INDEPENDENTLY_GRADED"},
+    {"id": "Q09", "question": "Does an upward arrow prove an upward revision?", "sources": ["ING-AUG-06", "ING-SEP-07"], "expected_answer": "No. Arrow semantics need a legend or source attestation.", "status": "ANALYST_PREPARED_NOT_INDEPENDENTLY_GRADED"},
+    {"id": "Q10", "question": "Do broad website reuse terms settle the report-specific permissions?", "sources": ["ING-SEP-07", "rights"], "expected_answer": "No. Preserve document-specific conflict and ask qualified/rightsholder clarification.", "status": "ANALYST_PREPARED_NOT_INDEPENDENTLY_GRADED"},
+    {"id": "Q11", "question": "Can public original inspection be counted as an authenticated vault/viewer proof?", "sources": ["ING-JUNE-19", "ING-SEP-03", "ING-SEP-07"], "expected_answer": "No. Vault IDs, actual source/body bytes, admission and customer journey remain unverified.", "status": "ANALYST_PREPARED_NOT_INDEPENDENTLY_GRADED"},
+    {"id": "Q12", "question": "Can these forecasts be relabeled issuer guidance to pass the old oracle?", "sources": ["ING-JUNE-19", "ING-SEP-03"], "expected_answer": "No. Explicit analyst-forecast handling is a required contract amendment; fixture labels confer no permissions.", "status": "ANALYST_PREPARED_NOT_INDEPENDENTLY_GRADED"}
+  ],
+  "execution_limits": {"new_automated_extraction_run": false, "new_model_evaluation_run": false, "new_production_tests_run": false, "larger_120_task_benchmark_run": false, "independent_human_gold_review": false, "new_backend_or_store_created": false},
+  "next_gate": {
+    "owner": "Existing Vault/Brain source owner plus source-rights owner",
+    "action": "Provide a permitted, bounded read-only source binding for an existing comparable pair, including existing catalog IDs, canonical PDF/body hashes and locators at one publication generation; then prove existing Brain/viewer path.",
+    "blocked_paths": ["Previously OpenAI-blocked M1 command was not retried", "Opera browser connector not connected", "Original public PDF download to sandbox failed; no full byte hash asserted"],
+    "source_search_miss_is_not_absence": true
+  }
+}

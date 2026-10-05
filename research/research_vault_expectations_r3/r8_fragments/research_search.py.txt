@@ -1,0 +1,74 @@
+@router.get("/api/research/search")
+def research_search(
+    q: str = Query("", max_length=_Q_MAX),
+    institution: str = Query("", max_length=_FACET_MAX),
+    from_: str = Query("", alias="from", max_length=32),
+    to: str = Query("", max_length=32),
+    limit: int = Query(_SEARCH_LIMIT_DEFAULT),
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    """FTS search over the corpus, restricted to CATALOG-ADMITTED ids for every tier.
+
+    Input is clamped (limit ≤ 50) and malformed queries degrade to an empty result.
+
+    Two nested visibility gates, in order:
+
+      1. **catalog admission — universal.** The catalog is the visibility commit
+         (freeze §A) and the corpus is published BEFORE it, so a corpus row whose
+         catalog publish has not landed yet is legitimately AHEAD of the public
+         inventory. Every result, Pro included, is filtered to the ids the current
+         catalog admits; before Wave 4 only the non-Pro branch did this, so a Pro
+         search could surface a report that the vault had not admitted and whose
+         PDF may not exist. If visibility cannot be established at all (no valid
+         catalog anywhere) the route reports ``available: False`` rather than
+         answering from the corpus alone.
+      2. **tier preview — non-Pro only.** Anonymous, free, and Essential callers
+         are then narrowed further to the three public preview reports.
+    """
+    try:
+        lim = int(limit)
+    except (TypeError, ValueError):
+        lim = _SEARCH_LIMIT_DEFAULT
+    lim = max(1, min(_SEARCH_LIMIT_MAX, lim))
+
+    # Establish the admitted id set BEFORE touching the corpus: with no valid
+    # catalog there is no id we can prove is public, so there is nothing to search.
+    try:
+        admitted = _catalog_ids()
+    except HTTPException:
+        return {"items": [], "count": 0, "available": False}
+
+    conn = _corpus_conn()
+    if conn is None:
+        return {"items": [], "count": 0, "available": False}
+
+    try:
+        items = corpus_mod.search(
+            conn,
+            q or "",
+            institution=(institution or None),
+            date_from=(from_ or None),
+            date_to=(to or None),
+            limit=lim,
+        )
+    except Exception as exc:  # noqa: BLE001 — corpus.search already degrades; belt
+        log.debug("research_vault: search failed (%s)", exc)
+        items = []
+    finally:
+        try:
+            conn.close()
+        except Exception:  # noqa: BLE001
+            pass
+
+    # Gate 1 — catalog admission, applied to EVERY tier (see the docstring).
+    items = [item for item in items if str((item or {}).get("id") or "") in admitted]
+
+    # Gate 2 — the non-Pro preview narrowing, applied on top.
+    if not _can_view(_optional_tier(authorization)):
+        preview_ids = {
+            str((item or {}).get("id") or "")
+            for item in _catalog_preview(_load_catalog()).get("items", [])
+        }
+        items = [item for item in items if str((item or {}).get("id") or "") in preview_ids]
+
+    return {"items": items, "count": len(items), "available": True}

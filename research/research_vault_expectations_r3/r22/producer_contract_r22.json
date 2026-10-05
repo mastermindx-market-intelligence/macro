@@ -1,0 +1,138 @@
+{
+  "schema": "research_intelligence.operational_producer.design.v1",
+  "state": "DESIGN_ONLY_NOT_IMPLEMENTED",
+  "program": "qualitative-intelligence",
+  "frozen_wave_identity": "unnumbered operational seam between W1 and W2; NOT W4",
+  "canonical_dependencies": {
+    "W1": {
+      "pr": 7101,
+      "merge": "0859610dd27e032eba3a34f515cf239110aa35f8",
+      "schema": "mastermind.research_intelligence.v1"
+    },
+    "W2": {
+      "pr": 7230,
+      "expected_head_at_design": "fc4c12a1ca073c2ecf6f5e0cc75429259d84ade2"
+    },
+    "W3": {
+      "reader_pr": 7079,
+      "head": "8271ae320732997be4553957e3e2773d1b9e9f1b",
+      "design_comment": 5720608418
+    },
+    "frozen_future": {
+      "W4": "ZeroHedge qualitative adapter",
+      "W5": "longitudinal belief memory",
+      "W6": "cross-document synthesis"
+    }
+  },
+  "source_contract": {
+    "analyzed_body": "exact current Research Vault stored corpus body",
+    "no_pdf_redownload": true,
+    "no_independent_reextract": true,
+    "coverage_inputs": [
+      "text_layer",
+      "char_count",
+      "len(stored_body)",
+      "pages"
+    ],
+    "coverage_states": {
+      "complete_stored_body": "char_count known and char_count <= len(body)",
+      "prefix_only": "char_count known and char_count > len(body)",
+      "coverage_unknown": "char_count missing",
+      "no_text": "text_layer == none",
+      "extraction_unavailable": "text_layer empty/unavailable"
+    },
+    "prefix_only_forbidden_claims": [
+      "complete-report absence",
+      "all risks/falsifiers/assumptions",
+      "whole-document coverage",
+      "answer whose decisive evidence may be outside stored prefix"
+    ]
+  },
+  "freshness": {
+    "body_hash_change": "reanalysis_required",
+    "missing_or_invalid_W2": "reanalysis_required",
+    "prompt_contract_invalid": "reanalysis_required",
+    "prompt_identity_fields": [
+      "id",
+      "source_type",
+      "source_name",
+      "institution",
+      "desk",
+      "title",
+      "published_at"
+    ],
+    "prompt_identity_change": "reanalysis_required",
+    "summary_points_only_change": "no_reanalysis",
+    "tags_tickers_top_pick_only_change": "no_reanalysis",
+    "correction_write": "exact current W2 artifact SHA required; no blind retry"
+  },
+  "rights": {
+    "positive_source_use_required_before_model_call": true,
+    "catalog_presence_not_permission": true,
+    "subscription_not_permission": true,
+    "public_url_not_permission": true,
+    "audience_rights_separate": true
+  },
+  "model": {
+    "use_existing_W1_analyze_vault_report": true,
+    "use_existing_llm_auth": true,
+    "use_existing_ai_costs": true,
+    "caller_supplies_admitted_model_id": true,
+    "canary_candidate_model": "claude-haiku-4-5",
+    "no_new_provider_router": true
+  },
+  "phases": [
+    {
+      "id": "canary",
+      "selection": "explicit permitted report IDs",
+      "scheduled": false,
+      "max_documents": "small bounded operator-set"
+    },
+    {
+      "id": "broad",
+      "condition": "cheap-tier gold quality + rights + measured cost accepted",
+      "selection": "all eligible captured text-bearing reports",
+      "scheduled": "existing scheduler-owned derived lane"
+    },
+    {
+      "id": "selective_fallback",
+      "condition": "cheap-tier quality/cost fails",
+      "selection": "deterministic demand/evidence-gap inputs; no press W-score; no Prophet-only bias"
+    }
+  ],
+  "outcomes": [
+    "created",
+    "unchanged",
+    "corrected",
+    "skipped_current",
+    "skipped_not_eligible",
+    "skipped_no_text",
+    "providers_unavailable",
+    "call_failed",
+    "invalid_model_output",
+    "predecessor_conflict",
+    "effect_unknown",
+    "store_unavailable"
+  ],
+  "golden_cases": [
+    "G1_COMPANY_DEFINITION_CHANGE",
+    "G2_SAME_SOURCE_REVISION_AND_REPEAT",
+    "G3_INDEPENDENT_SOURCE_DISAGREEMENT",
+    "G4_LONG_REPORT_LATE_QUALIFICATION"
+  ],
+  "current_prefix_expectation": "G4 should be partial/abstain if decisive evidence is outside current stored body",
+  "implementation_gate": "explicit Chairman approval required before code under brainstorming approval law",
+  "prohibited_new_planes": [
+    "queue",
+    "candidate database",
+    "source text store",
+    "vector/FTS service",
+    "correction ledger",
+    "entity resolver",
+    "permission mirror",
+    "cost ledger",
+    "model router",
+    "Brain tool",
+    "graph authority"
+  ]
+}
