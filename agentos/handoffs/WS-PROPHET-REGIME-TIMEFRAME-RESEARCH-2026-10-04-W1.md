@@ -88,10 +88,11 @@ next_actions:
 do_not_redo:
   - Never re-run or re-pre-register A1/B1/C1/C2/E/F1 as delivered; a repair round only ever changed tests/record/provenance after the numbers froze (B1 r3 panel, C1 r2 parquet, F1 r3 hazards, C2 rule inputs).
   - Never substitute mini2's D0 r3 artifacts for the host2 record; never retry the blocked ChatGPT chapter-03 upload.
-  - Never launch a fourth D0 round or a third C2 round; both residual gaps are recorded (05 §2, 09 §0) and are promotion-time repairs.
+  - Never launch a fourth D0 round; its residual gaps are recorded (05 §2, 09 §0) and are promotion-time repairs. SUPERSEDED 2026-10-05 for C2 only: one records+tests-only THIRD round ran on the material invalidator of the independent r2 review's closable non-numeric defects (result.json byte-identical, run.py never executed; 05 ledger addendum 2026-10-05). Never launch a FOURTH C2 round.
   - "Pickup ACK/START on carrier #8363 was posted once (comment 5975009284); wave RESULT not yet posted at the time of this record — it is posted ONCE after the results PR merges."
   - No Opus/Sonnet/Haiku subagents anywhere in this program (Chairman 10-04); grok-4.6 external lanes and the Fable main loop only.
 danger_areas:
+  - C2 round 3's hashes.txt pins two seat-scratch inputs by absolute path (round-0 result.json, round-2 REVIEW.md); the check passes only on the seat host — those two lines are not a record defect of the science and are not to be "healed" by editing lane bytes (05 ledger addendum 2026-10-05).
   - results/<LANE>/ directories were untracked on the seat worktree via .git/info/exclude lines; all seven are now lifted (A1/B1/C1/E/F1 for the results PR, C2/D0 for the follow-up PR) and the dirs never carry parquet, DONE sentinels or caches (results/.gitignore).
   - host2's data/theme_graph/{_meta.json,context_history.jsonl,theme_state.json,tree_history.jsonl,edges.parquet} are skip-worktree working copies that differ from commit 052e02d (belief_time 2026-10-01): any D-lane number that depends on the theme-graph vintage (E*, ISO week 40) moves with them — pin the vintage in the record, never chase a prior round's value.
   - host2 (/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/astra-host2-052e02d-690b56cac98b57f7) is DETACHED at 052e02d085b0 and shared by build and review lanes — never checkout/pull/commit there; only one producer per results/<LANE>/ at a time.
