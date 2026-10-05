@@ -1,0 +1,11 @@
+{
+  "source_head": "0677a48fd316d786a67ca1f1e2cd4afb02943605",
+  "files": {
+    "research/china_economy_integration_20260929/r10/base-compatibility.json": "c48b726b3507b4e5378d5f0e85a32e8c5d7a58896846333965b6913e94e30b14",
+    "research/china_economy_integration_20260929/r10/build-proof.json": "7ed486b0d08f38acc109ecb8a4dfab73ef0adfcff46b83e27c9a4029053ae9d9",
+    "research/china_economy_integration_20260929/r10/property-receipt-negative.json": "d34f706223b86754a61c2eab1839560ef7254f93040e8cad0deeda5e1480532c",
+    "research/china_economy_integration_20260929/r10/property-runner-proof.json": "034c866f25b7942bdc30496ab1f49f2c68bbc3e11cda554b4593ccbbcb3465d2",
+    "research/china_economy_integration_20260929/r10/release-proof.json": "13303b7deaeaba2ad02c7967afbac028e6e5a02bdcfa4fa8be944e0693738861",
+    "research/china_economy_integration_20260929/r10/tests.xml": "3d41d8b05c392d16a9c4014b11dceedc04a2ec9e4cc4dbfde023ac39daa39228"
+  }
+}

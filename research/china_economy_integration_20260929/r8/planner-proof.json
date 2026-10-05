@@ -1,0 +1,52 @@
+{
+  "observed_at": "2026-10-03T04:29:58.628067+00:00",
+  "source_only": true,
+  "store_writes": 0,
+  "economic_articles_fetched": 0,
+  "targets": {},
+  "pending": {
+    "industry": {
+      "reason": "not_yet_published",
+      "current_store_period": "2026-08",
+      "expected_period": "2026-09",
+      "latest_index_period": "2026-08"
+    },
+    "retail": {
+      "reason": "not_yet_published",
+      "current_store_period": "2026-08",
+      "expected_period": "2026-09",
+      "latest_index_period": "2026-08"
+    },
+    "investment": {
+      "reason": "not_yet_published",
+      "current_store_period": "2026-08",
+      "expected_period": "2026-09",
+      "latest_index_period": "2026-08"
+    },
+    "pmi": {
+      "reason": "not_yet_published",
+      "current_store_period": "2026-09",
+      "expected_period": "2026-10",
+      "latest_index_period": "2026-09"
+    },
+    "profits": {
+      "reason": "not_yet_published",
+      "current_store_period": "2026-08",
+      "expected_period": "2026-09",
+      "latest_index_period": "2026-08"
+    }
+  },
+  "failures": {},
+  "requests": [
+    {
+      "url": "https://www.stats.gov.cn/robots.txt",
+      "status": 404,
+      "sha256": "6807c84bf35d67496e020c1528303b87d4759933c09817e514a7159ac689d352"
+    },
+    {
+      "url": "https://www.stats.gov.cn/sj/zxfb/",
+      "status": 200,
+      "sha256": "40064f27414db06a7d2eaf62c5fac94d177ed2707db9827b9a679642fe772fcd"
+    }
+  ]
+}

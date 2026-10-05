@@ -1,0 +1,121 @@
+{
+  "operation": "china-macro-evidence-upgrade-20260929-sol-001",
+  "source_head": "80638b56e3040b198c96cdfa63322d68c381a708",
+  "prior_remote": "2e83f6f5211acfc7d6013afc4d70317a99234e87",
+  "protected_pin": "bdf2a972e68a70270c24d4b5d61a4d60edc4f288",
+  "observed_at": "2026-10-03T06:02:19.931633+00:00",
+  "mission_complete": false,
+  "production_acceptance": false,
+  "tests": {
+    "tests": 507,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "new_pytest_cases": 5,
+  "additional_node_cases": "missing/mismatched/corrupt snapshot, previous month, same-month revision, explicit refresh",
+  "negative_control": "new executable Node cases fail original R8 client at mixed-publication admission",
+  "normal_visual_reuse": "R8 80 captures are unchanged normal first paint; eight R9 captures explicitly use synthetic auth/payload to exercise the new outdated state",
+  "real_account_boundary": {
+    "existing_browser_session_tier": "pro",
+    "identity_endpoint_status": 200,
+    "registration_stage_status": 204,
+    "paywall_stage_status": 204,
+    "paywall_stage_verdict": "off",
+    "candidate_content_status": 503,
+    "credential_values_read_or_created": false,
+    "candidate_installed": false
+  },
+  "review_placement": {
+    "channel": "C0C5FCK1F45",
+    "root": "1791006310.137599",
+    "receiver": "none",
+    "peer_reply": "C2 has no admitted Terra receiver; needs_placement unchanged",
+    "worker_started": false
+  },
+  "gates": {
+    "caddy_adapt": "PASS",
+    "existing_gateway_tests": 180,
+    "template_site_sync": 109,
+    "runtime_style": "PASS",
+    "visual_guard": "PASS"
+  },
+  "files": {
+    "base-compatibility.json": {
+      "sha256": "75b64d998a368e0999f0c3e00627aa483f62bbf1d66a371e714cf7e86768e2fe",
+      "bytes": 378
+    },
+    "browser-snapshot.json": {
+      "sha256": "1a1fa0345b9b1dbd438f759d02cec3d9b7e8bca00b73412a56199845c3c2e509",
+      "bytes": 2522
+    },
+    "browser_snapshot_probe.py": {
+      "sha256": "3349f81928cfb60055ceef87a8a1b75e27dda87d52542e78fb64d32244e9466d",
+      "bytes": 4753
+    },
+    "final-build.json": {
+      "sha256": "f7dd4729ce9dc066c7c08ee22dd8869c386000691f02531df39f6c41c489843b",
+      "bytes": 891
+    },
+    "final-tests.xml": {
+      "sha256": "a0ab1224a891bd1e09042ce538601c4c1d9350bd772450b6d6daed766616b3fb",
+      "bytes": 4067947
+    },
+    "full-snapshot-negative.log": {
+      "sha256": "908501a3c289983c2232af225bc7f863f413a088882792cde8df0c0bb324fc71",
+      "bytes": 384
+    },
+    "gateway-tests.xml": {
+      "sha256": "fd748b98f9d401795a462d078400f70530eeca6d94362a340ddf6d6b104cda01",
+      "bytes": 23298
+    },
+    "live-anonymous.json": {
+      "sha256": "2311f1b9aa0dcca69cabd6f9f3e778c0dbbbc3d2fa7f17e63546ff9c8c0acb0e",
+      "bytes": 1995
+    },
+    "live-browser-session.json": {
+      "sha256": "ade98aab4ee9d838734a942a4de529f821095364832aa4e992e0cfa660c0568f",
+      "bytes": 366
+    },
+    "live-pro-auth-stages.json": {
+      "sha256": "c5479f56cf491e2f1dd9758ad8d4abed1a8ff79938cc2928f10f74a668cad4e7",
+      "bytes": 532
+    },
+    "live-pro-paths.json": {
+      "sha256": "d7f7fe70cbef1e277b3884a3c68dbff09d34945858ff6a2309cca3bb01edd11b",
+      "bytes": 1407
+    },
+    "screens/snapshot-refresh-1440-dark-en.png": {
+      "sha256": "ecb6727d9cde480c2603087c5952a7870c51d9457b06f243322159882a4feddd",
+      "bytes": 17775
+    },
+    "screens/snapshot-refresh-1440-dark-zh.png": {
+      "sha256": "33c35a2d6c4ccd729bc8d333ce59b424354e4b0b531bf4c3342016a488cc9d7d",
+      "bytes": 16827
+    },
+    "screens/snapshot-refresh-1440-light-en.png": {
+      "sha256": "a6ca61875cf7c04b569d08fbc9ce07e6e075decfa85d3d3b7aca65c859098ad8",
+      "bytes": 17876
+    },
+    "screens/snapshot-refresh-1440-light-zh.png": {
+      "sha256": "278cde0f6b297ad113ee4e77d893bda39babd4b3ddab4bc35ed427ab49252491",
+      "bytes": 16913
+    },
+    "screens/snapshot-refresh-390-dark-en.png": {
+      "sha256": "7929f18062e6dad5e600d4f1cab8c42d54101e0da7070ab68ab79a0f3d69ec06",
+      "bytes": 17460
+    },
+    "screens/snapshot-refresh-390-dark-zh.png": {
+      "sha256": "5092fd90c24f1bbbafc036e4e2bc4adf13228abde4c3e3245e3ca5903cc596ca",
+      "bytes": 15600
+    },
+    "screens/snapshot-refresh-390-light-en.png": {
+      "sha256": "0884dac7b15989feed354ff07c1947845b95ce40ccb362697fd6c03c222e3505",
+      "bytes": 17469
+    },
+    "screens/snapshot-refresh-390-light-zh.png": {
+      "sha256": "f2c4b38ee44a4b1c7549c1a285b33f301fbf5ef517fc1c809171dfb53ab09952",
+      "bytes": 15697
+    }
+  }
+}

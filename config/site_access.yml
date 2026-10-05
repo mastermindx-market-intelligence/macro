@@ -259,6 +259,14 @@ public:
     # logic only; every analytical payload remains behind the authenticated API.
     - /market_memory.css
     - /market_memory.js
+    # China economy/evidence presentation only. The HTML shell is anonymous;
+    # these files carry styling and interaction logic but no evidence payload,
+    # credentials, ranking, sizing, entry logic, or source rows. The canonical
+    # china_macro_evidence.json remains outside this allowlist.
+    - /china-economy.css
+    - /china-economy.js
+    - /china-macro-evidence.css
+    - /china-macro-evidence.js
     # Shared navigation layout + animated ticker search. Presentation only; the
     # protected stock libraries it reads remain behind the registration wall.
     - /navigation-refresh.css

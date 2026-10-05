@@ -1,0 +1,32 @@
+{
+  "engine/options_sparse_selector.py": {
+    "unchanged_from_base": true,
+    "sha256": "dc8962d5cc40879ac4500da529074af8341393736f484fecf1392a0f8eb71883"
+  },
+  "scripts/build_prophet_option_shadow_lifecycle.py": {
+    "unchanged_from_base": true,
+    "sha256": "f9588e17715910fdcc4c003826bc997cb0f24f0d760f36c69f74e05a499ad4e3"
+  },
+  "tests/test_options_market_memory_local_receipts.py": {
+    "unchanged_from_base": true,
+    "sha256": "61c69439fca0182b3d6bae6269e988e45ed4b9fec1a49857617be8ee358c1587"
+  },
+  "tests/test_options_sparse_selector_runtime.py": {
+    "unchanged_from_base": true,
+    "sha256": "caf4334b4fb8f4d76efd8ca382ac90dcc4c070e582af0d5573278d0a670d56da"
+  },
+  "templates/baskets_china.html.j2": {
+    "unchanged_from_base": true,
+    "sha256": "36a6970cd1ffdd4c23ed2ed575c629c1b2c5afc657d99be8356b1f24606b8720"
+  },
+  "tests/test_china_sector_intelligence_page.py": {
+    "unchanged_from_base": true,
+    "sha256": "9305abe9b0fb1c1d2ee90a091626c9ff40160671dd8186a87a0cc59a96d1263e"
+  },
+  "stub_render": {
+    "baseline_chars": 4774,
+    "current_chars": 4774,
+    "identical": true,
+    "contract_max_chars": 4000
+  }
+}

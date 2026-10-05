@@ -1,0 +1,25 @@
+{
+  "proof_class": "live_existing_pro_session_auth_stage_read",
+  "result": {
+    "rows": [
+      {
+        "endpoint": "/api/regwall/check",
+        "status": 204,
+        "regwall": "allow",
+        "paywall": null,
+        "cache": "no-store"
+      },
+      {
+        "endpoint": "/api/paywall/check",
+        "status": 204,
+        "regwall": null,
+        "paywall": "off",
+        "cache": "private, no-store"
+      }
+    ],
+    "complete": true
+  },
+  "returncode": 0,
+  "error": "",
+  "candidate_content_retrieved": false
+}

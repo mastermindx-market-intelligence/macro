@@ -1,0 +1,17 @@
+{
+  "base": "be0ca1fa3aaf64eec16d89edbd992f5025d2b823",
+  "scope": "local structural contract gate after R3 data-only changes; not GitHub acceptance",
+  "exit": 0,
+  "introduced": 0,
+  "inherited": 0,
+  "log_sha256": "d7402166e57349fdb745518df393de967d47edb51c9b6a276f10d0ed8f00937d",
+  "log_tail": [
+    "contract-delta: probe templates/index.html: head 134 jobs / 5,518 s / 10 packs; base 134 jobs / 5,520 s / 10 packs; ceilings 134 / 5,800 / 10",
+    "contract-delta: probe scripts/build_free_content.py: head 132 jobs / 5,289 s / 9 packs; base 132 jobs / 5,291 s / 9 packs; ceilings 132 / 5,600 / 10",
+    "contract-delta: probe engine/prophet/plan_book.py: head 127 jobs / 5,238 s / 9 packs; base 127 jobs / 5,240 s / 9 packs; ceilings 127 / 5,600 / 10",
+    "contract-delta: head census seconds: closure_and_suites 175.5, probes 73.2, skip_only 15.3, trigger_gaps 24.1",
+    "contract-delta: base census seconds: closure_and_suites 162.8, probes 65.6, skip_only 14.9, trigger_gaps 21.8",
+    "contract-delta: 0 introduced, 0 inherited (base be0ca1fa3aaf)",
+    "contract-delta: wall 349.6 s"
+  ]
+}

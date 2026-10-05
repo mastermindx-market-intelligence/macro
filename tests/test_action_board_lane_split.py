@@ -134,7 +134,7 @@ def _china_block() -> str:
     # actions-lane board. Extract that dialog block.
     src = (ROOT / "templates" / "china.html.j2").read_text()
     start = src.index('<div class="cnx-dlg" id="cnx-dlg-sector">')
-    end = src.index('<div class="cnx-dlg" id="cnx-dlg-policy">', start)
+    end = src.index('<!-- Policy dialog -->', start)
     return src[start:end]
 
 

@@ -1,0 +1,32 @@
+{
+  "scope": "local_unchanged_source_release_gates",
+  "source_head": "3e8238bd9c78e982eab84744574928baea4e01f4",
+  "gates": {
+    "visual": {
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summary": "PASS (no findings)"
+    },
+    "design": {
+      "exit_code": 0,
+      "log_sha256": "fd2da7957ec3f80b6ae72e0e3e3285231d945af2114b61775dd89724c3905acf",
+      "summary": "design-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25435)"
+    },
+    "runtime": {
+      "exit_code": 0,
+      "log_sha256": "609d732c4c30223aa66df144802d16a0af8b283c221bbf3ebe74ad831a72203c",
+      "summary": "runtime style injection guard OK (205 .js files scanned, 44 injecting, 89 total hits \u2014 all within frozen allowances)"
+    },
+    "assets": {
+      "exit_code": 0,
+      "log_sha256": "22ed0adb3cb24c2e8e3033bcda8877a089e23500f3289ed385ce754d6cf0d4ad",
+      "summary": "template\u2194site sync OK (109 pairs checked)"
+    },
+    "agentos": {
+      "exit_code": 0,
+      "log_sha256": "c7ecdc3a7e3833c7b4f47d4c33b34ac6d2835e61bae0b0242773b60f0b77b975",
+      "summary": "agentos: 1380 records (76 workstreams, 375 decisions, 392 discoveries, 537 handoffs) \u2014 0 error(s), 71 warning(s)"
+    }
+  },
+  "production_acceptance": false
+}

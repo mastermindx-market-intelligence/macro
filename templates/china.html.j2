@@ -5,6 +5,10 @@
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
+{# Isolate source text from this legacy page's unescaped local t() macro. #}
+{% import "_china_macro_evidence.html.j2" as cnm %}
+{# Isolate source text from this legacy page's unescaped local t() macro. #}
+{% import "_china_economy_lens.html.j2" as eco_lens %}
 {# Event-calendar impact badge. `importance` is a raw slug (high/med/low) and
    both call sites used to print it straight through `| upper`, so a Chinese
    reader got "HIGH" sitting beside a Chinese event name. #}
@@ -1568,6 +1572,8 @@ html[data-theme="light"] :is(
 html[data-lang="zh"][data-theme="light"] body.page-china .ms-green .cnx-big-score { text-shadow:none; }
 html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score { text-shadow:none; }
 </style>
+  <link rel="stylesheet" href="china-macro-evidence.css">
+  <link rel="stylesheet" href="china-economy.css">
 </head>
 <body class="{{ 'page-china-stocks' if mode == 'stocks' else 'page-china mx4-grid' }}">
 {{ lens.lens_css() }}
@@ -2261,7 +2267,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     {% set _fe_score = (_fe.score if _fe and _fe.score is defined and _fe.score is not none else none) %}
     {% set _fe_label = (_fe.label if _fe and _fe.label is defined else 'Neutral') %}
     {% set _to_pct = (I.turnover.pctile | float) if (I.turnover and I.turnover.get('pctile') is not none) else none %}
-    {% set _sent_dial = (_fe_score | float) if _fe_score is not none else _to_pct %}
+    {% set _sent_dial = (_fe_score | float) if _fe_score is not none else none %}
     {% set _sent_zone = ('fg-greed' if _sent_dial > 60 else ('fg-fear' if _sent_dial < 40 else 'fg-neutral')) if _sent_dial is not none else 'fg-neutral' %}
     {% set _sent_rot = ((_sent_dial / 100 * 180 - 90) | round(1)) if _sent_dial is not none else 0 %}
     <div class="cnx-card {{ _sent_zone }}" role="button" tabindex="0" aria-haspopup="dialog" onclick="cnxOpenDlg('cnx-dlg-sentiment')"
@@ -2322,6 +2328,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       {% else %}
       <div style="font-size:12px;color:var(--muted)">{{ t('Data building…','数据积累中…') }}</div>
       {% endif %}
+      {{ cnm.summary_rows(macro_evidence|default(none), "sentiment") }}
     </div>
 
     {# Sector Temperature card #}
@@ -2351,39 +2358,25 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     </div>
   </div>
 
+  {# Economy is additive within macro mode; existing risk/stock/market sections survive. #}
+  {% if economy_lens is defined and economy_lens %}
+  {{ eco_lens.lens(economy_lens, shell='public') }}
+  {% elif economy_error is defined and economy_error %}
+  <section class="eco" id="china-economy" aria-labelledby="eco-title">
+    <h2 id="eco-title">{{ t('Economy evidence unavailable','经济证据暂不可用') }}</h2>
+    <p>{{ t('This update could not be verified. The existing macro panels remain available.','本次更新未能核验，原有宏观面板仍可使用。') }}</p>
+  </section>
+  {% endif %}
+  {% if economy_publication is defined %}
+  <script id="eco-json" type="application/json">{{ economy_client_publication|default(economy_publication)|tojson }}</script>
+  {% endif %}
   <!-- =============== ROW 3: Policy Monitor + Connect Flows + Macro News =============== -->
   <div class="cnx-rack3">
     {# Policy Monitor card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-policy')">
-      <div class="cnx-ctitle">{{ t('Policy Monitor','政策监控') }}</div>
-      {% if I.pboc %}
-      <div class="cnx-kv"><span class="k">{{ t('PBoC stance','央行立场') }}</span><span class="v"><span class="cnx-stword ok">{{ t(I.pboc.bias, {'easing':'宽松','neutral':'中性','tightening':'收紧'}.get(I.pboc.bias,'')) }}</span></span></div>
-      <div class="cnx-kv"><span class="k">{{ t('Reserve ratio','存准率') }}</span><span class="v">{{ I.pboc.rrr_big }}%</span></div>
-      {% endif %}
-      {% if I.credit %}
-      {% if I.credit.credit_impulse is not none and I.credit.credit_impulse is defined %}
-      <div class="cnx-kv"><span class="k">{{ t('Credit impulse','信贷脉冲') }}</span><span class="v"><span class="cnx-stword {{ 'ok' if I.credit.credit_impulse >= 0 else 'bad' }}">{{ '%+.1f'|format(I.credit.credit_impulse) }}%</span></span></div>
-      {% endif %}
-      {% endif %}
-      {% if CN and CN.tone %}
-      <div class="cnx-kv"><span class="k">{{ t('Official tone','官方基调') }}</span><span class="v"><span class="cnx-stword ok">{{ t(CN.tone.label_en, CN.tone.label_zh) }}</span></span></div>
-      {% endif %}
-      <div class="cnx-foot">{{ t('Easy policy, but new credit is still slowing.','政策宽松，但新信贷仍在放缓。') if (I.credit and I.credit.credit_impulse is defined and I.credit.credit_impulse < 0) else t('Policy context.','政策背景。') }}</div>
-    </div>
+    {{ cnm.glance(macro_evidence|default(none), "policy") }}
 
     {# Connect Flows card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-flows')">
-      <div class="cnx-ctitle">{{ t('Connect Flows','互联通资金') }}</div>
-      {% if I.southbound %}
-      <div class="cnx-bignum" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ '+¥' if I.southbound.net >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.net | abs) / 100) }}亿</div>
-      <div class="cnx-bigsub" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ t('Southbound buying' if I.southbound.net >= 0 else 'Southbound selling', '南向买入' if I.southbound.net >= 0 else '南向卖出') }}</div>
-      <div class="cnx-kv"><span class="k">{{ t('Streak','连续') }}</span><span class="v">{{ I.southbound.pos_days_20 }}/20 {{ t('days','天') }}</span></div>
-      {% endif %}
-      {% if leaderboard and leaderboard.southbound_buy %}
-      <div class="cnx-kv"><span class="k">{{ t('Top buys','主要买入') }}</span><span class="v">{{ leaderboard.southbound_buy[:3] | map(attribute='name_zh') | select | list | join(' · ') or '—' }}</span></div>
-      {% endif %}
-      <div class="cnx-foot">{{ t('Mainland money supporting Hong Kong.','内地资金持续支撑香港。') }}</div>
-    </div>
+    {{ cnm.glance(macro_evidence|default(none), "flows", leaderboard|default(none)) }}
 
     {# What Changed: preserve the Macro News dialog, but orient the glance card
        around recency/change rather than a raw headline dump. #}
@@ -2420,20 +2413,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <!-- =============== ROW 4: Property + AI Brief + Alerts Centre =============== -->
   <div class="cnx-rack3">
     {# Property card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-property')">
-      <div class="cnx-ctitle">{{ t('Property','房地产') }}</div>
-      {% if P %}
-      {% set R = P.regime %}
-      <div class="cnx-bignum" style="color:var(--ink-down, var(--down));font-size:22px">{{ t(R.label_en, R.label_zh) }}</div>
-      <div class="cnx-bigsub" style="color:var(--ink-warn, var(--warn))">{{ t('easing at the margin','边际宽松') if R.tone in ('neutral','pos') else t('still contracting','仍在收缩') }}</div>
-      {% if P.breadth %}
-      <div class="cnx-kv"><span class="k">{{ t('70-city prices','70城价格') }}</span><span class="v">{{ '%+d'|format(P.breadth.new) }} {{ t('net cities','净城市数') }}</span></div>
-      {% endif %}
-      <div class="cnx-foot">{{ t('Still the economy\'s main drag.','仍是经济的主要拖累。') }}</div>
-      {% else %}
-      <div style="font-size:12px;color:var(--muted)">{{ t('Data loading…','数据加载中…') }}</div>
-      {% endif %}
-    </div>
+    {{ cnm.glance(macro_evidence|default(none), "property") }}
 
     {# AI Brief card — v2 teaser: lead with the first key reading + the plain-word
        gist line (falls back to summary on v1 payloads). No raw slugs (doctrine Law 2). #}
@@ -2699,59 +2679,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   </div>
 
   <!-- Sentiment dialog -->
-  <div class="cnx-dlg" id="cnx-dlg-sentiment">
-    <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
-    <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Market Sentiment — Breakdown','市场情绪 — 分解') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
-      <div class="cnx-dlg-body">
-        {% set _fe = latest.fear_euphoria %}
-        {% if _fe and _fe.components %}
-        <div class="cnx-eyebrow">{{ t('Fear ↔ euphoria','恐惧 ↔ 亢奋') }}</div>
-        {% for leg in _fe.components %}
-        <div class="cnx-frow" style="grid-template-columns:190px 1fr 44px">
-          <span>{{ t(leg.label_en or leg.label, leg.label_zh or leg.label) }}</span>
-          <span><div class="cnx-fbar"><i style="width:{{ leg.score }}%;background:{{ 'var(--up)' if leg.score >= 60 else ('var(--warn)' if leg.score >= 40 else 'var(--down)') }}"></i></div></span>
-          <span class="cnx-fscore {{ 'cnx-tt-up' if leg.score >= 60 else ('cnx-tt-dn' if leg.score < 40 else '') }}">{{ leg.score }}</span>
-        </div>
-        {% endfor %}
-        {% if _fe.chart_html %}<div class="chart">{{ _fe.chart_html | safe }}</div>{% endif %}
-        <div class="cnx-sep"></div>
-        {% endif %}
-        <div class="cnx-cols2">
-          <div>
-            <div class="cnx-eyebrow">{{ t('Margin crowd meter','两融拥挤度') }}</div>
-            {% if I.margin %}
-            <div style="display:flex;gap:12px;align-items:baseline;margin:2px 0 6px">
-              <span class="cnx-bignum">{{ I.margin.fin_pct_float }}%</span>
-            </div>
-            <div class="cnx-kv"><span class="k">{{ t('Pctile','分位') }}</span><span class="v">{{ I.margin.pctile }}</span></div>
-            <div class="cnx-kv"><span class="k">{{ t('Maint. ratio','维持担保') }}</span><span class="v">{{ I.margin.guarantee_ratio if I.margin.guarantee_ratio is defined else '—' }}%</span></div>
-            <div class="cnx-kv"><span class="k">{{ t('20d net buy','20日净买入') }}</span>
-              <span class="v {{ 'cnx-tt-up' if (I.margin.net_fin_buy_20d or 0) >= 0 else 'cnx-tt-dn' }}">{{ '%+d'|format(I.margin.net_fin_buy_20d) if I.margin.net_fin_buy_20d is not none else '—' }}</span></div>
-            {% if I.margin.chart_html %}<div class="chart">{{ I.margin.chart_html | safe }}</div>{% endif %}
-            {% endif %}
-          </div>
-          <div>
-            <div class="cnx-eyebrow">{{ t('Sentiment thermometer','情绪温度计') }}</div>
-            {% if I.turnover %}
-            <div style="display:flex;gap:12px;align-items:baseline;margin:2px 0 6px">
-              <span class="cnx-bignum">¥{{ I.turnover.turnover_t }}{{ t('T','万亿') }}</span>
-            </div>
-            <div class="cnx-kv"><span class="k">{{ t('Band','区间') }}</span><span class="v">{{ t(I.turnover.band, {'apathy':'清淡','normal':'正常','active':'活跃','mania':'狂热'}.get(I.turnover.band,'')) }}</span></div>
-            {% if I.turnover.pctile is defined and I.turnover.pctile is not none %}
-            <div class="cnx-kv"><span class="k">{{ t('Turnover heat','成交热度') }}</span><span class="v {{ 'cnx-tt-up' if (I.turnover.pctile|int) >= 80 else '' }}">{{ t_pctile(I.turnover.pctile) }}{{ t(' — near record froth',' — 接近历史极值') if (I.turnover.pctile|int) >= 95 else (t(' — elevated',' — 偏高') if (I.turnover.pctile|int) >= 80 else '') }}</span></div>
-            {% endif %}
-            {% if I.flows and I.flows.limit %}
-            <div class="cnx-kv"><span class="k">{{ t('Limit-up / down','涨停 / 跌停') }}</span><span class="v cnx-tt-up">{{ I.flows.limit.zt }}</span> / <span class="cnx-tt-dn">{{ I.flows.limit.dt }}</span></div>
-            {% endif %}
-            {% if I.turnover.chart_html %}<div class="chart">{{ I.turnover.chart_html | safe }}</div>{% endif %}
-            {% endif %}
-          </div>
-        </div>
-        <div class="cnx-receipt">{{ t('A heads-up, not a scored signal.','仅供参考，不构成评分信号。') }}</div>
-      </div>
-    </div>
-  </div>
+  {{ cnm.panel(macro_evidence|default(none), "sentiment", legacy=latest.fear_euphoria) }}
 
   <!-- Sector dialog -->
   <div class="cnx-dlg" id="cnx-dlg-sector">
@@ -2827,152 +2755,13 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   </div>
 
   <!-- Policy dialog -->
-  <div class="cnx-dlg" id="cnx-dlg-policy">
-    <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
-    <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Policy & Credit — PBoC, Impulse & Tape','政策与信贷 — 央行、脉冲与盘面') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
-      <div class="cnx-dlg-body">
-        <div class="cnx-cols2">
-          <div>
-            <div class="cnx-eyebrow">{{ t('PBoC policy — reserve ratio','央行政策 — 存准率') }}</div>
-            {% if I.pboc %}
-            <div style="display:flex;gap:12px;align-items:baseline;margin:2px 0 8px">
-              <span class="cnx-bignum">{{ I.pboc.rrr_big }}%</span>
-              {% set _pboc_clr = 'var(--up)' if I.pboc.bias == 'easing' else ('var(--warn)' if I.pboc.bias == 'tightening' else 'var(--muted)') %}
-              {% set _pboc_bg = 'rgba(69,184,115,.14)' if I.pboc.bias == 'easing' else ('rgba(224,160,48,.14)' if I.pboc.bias == 'tightening' else 'rgba(128,128,128,.10)') %}
-              <span class="cnx-alert-pill" style="background:{{ _pboc_bg }};color:{{ _pboc_clr }};margin:0">{{ t(I.pboc.bias, {'easing':'宽松','neutral':'中性','tightening':'收紧'}.get(I.pboc.bias,'')) }}</span>
-            </div>
-            <table class="cnx-mt">
-              <tr><th>{{ t('Date','日期') }}</th><th class="r">{{ t('Move','变动') }}</th><th class="r">{{ t('To','至') }}</th></tr>
-              {% for e in (I.pboc.events or [])[:4] %}
-              <tr><td>{{ e.date }}</td><td class="r {{ 'cnx-tt-up' if e.dir == 'cut' else 'cnx-tt-dn' }}">{{ t('cut','降') if e.dir == 'cut' else t('hike','升') }}{% if e.change is not none and e.change is defined %} {{ '%.2f'|format(e.change | abs) }}pp{% endif %}</td><td class="r">{{ e.level }}%</td></tr>
-              {% endfor %}
-            </table>
-            {% endif %}
-            {% if CN and CN.tone %}
-            <div class="cnx-eyebrow" style="margin-top:14px">{{ t('Official tone','官方基调') }}</div>
-            <div class="cnx-kv"><span class="k">{{ t('Band','区间') }}</span><span class="v"><span class="cnx-stword ok">{{ t(CN.tone.label_en, CN.tone.label_zh) }}</span></span></div>
-            <div class="cnx-kv"><span class="k">{{ t('Trend','趋势') }}</span><span class="v">{{ t('firming','走强') if (CN.tone.z or 0) > 0 else t('easing','趋弱') }}</span></div>
-            {% endif %}
-          </div>
-          <div>
-            <div class="cnx-eyebrow">{{ t('Credit impulse & macro tape','信贷脉冲与宏观盘面') }}</div>
-            {% if I.credit %}
-            {% if I.credit.credit_impulse is not none and I.credit.credit_impulse is defined %}
-            <div class="cnx-kv"><span class="k">{{ t('Credit impulse','信贷脉冲') }}</span><span class="v"><span class="cnx-stword {{ 'ok' if I.credit.credit_impulse >= 0 else 'bad' }}">{{ '%+.1f'|format(I.credit.credit_impulse) }}%</span></span></div>
-            {% endif %}
-            {% if I.credit.impulse_html %}<div class="chart">{{ I.credit.impulse_html | safe }}</div>{% endif %}
-            <div class="cnx-kv"><span class="k">{{ t('M1−M2 scissors','M1−M2剪刀差') }}</span><span class="v"><span class="cnx-stword {{ 'ok' if (I.credit.scissors or 0) >= 0 else 'bad' }}">{{ '%+.1f'|format(I.credit.scissors) if I.credit.scissors is defined else '—' }}pp</span></span></div>
-            {% if I.credit.scissors_html %}<div class="chart">{{ I.credit.scissors_html | safe }}</div>{% endif %}
-            {% if I.credit.tape %}<div class="cnx-kv"><span class="k">{{ t('Macro tape','宏观盘面') }}</span><span class="v">{% for tp in I.credit.tape %}<span class="{{ 'cnx-tt-up' if tp.val >= 0 else 'cnx-tt-dn' }}">{{ t(tp.en, tp.zh) }} {{ '%+.1f'|format(tp.val) }}%</span>{% if not loop.last %} · {% endif %}{% endfor %}</span></div>{% endif %}
-            {% endif %}
-            {# Leverage build from cn_participation_json #}
-            {% if cn_participation_json and cn_participation_json.margin_to_mcap is defined and cn_participation_json.margin_to_mcap is not none %}
-            <div class="cnx-kv"><span class="k">{{ t('Margin / market cap','融资余额 / 市值') }}</span><span class="v">{{ '%.2f'|format(cn_participation_json.margin_to_mcap) }}%{% if cn_participation_json.margin_chg_5d is defined and cn_participation_json.margin_chg_5d is not none %} · <span class="{{ 'cnx-tt-up' if cn_participation_json.margin_chg_5d > 0 else ('cnx-tt-dn' if cn_participation_json.margin_chg_5d < 0 else '') }}">5d {{ '%+.2f'|format(cn_participation_json.margin_chg_5d) }}%</span>{% endif %}</span></div>
-            {% endif %}
-          </div>
-        </div>
-        <div class="cnx-receipt">{{ t('Credit-impulse direction is one of the two reads that historically led this market.','信贷脉冲方向是历史上领先该市场的两个读数之一。') }}</div>
-      </div>
-    </div>
-  </div>
+  {{ cnm.panel(macro_evidence|default(none), "policy") }}
 
   <!-- Connect Flows dialog -->
-  <div class="cnx-dlg" id="cnx-dlg-flows">
-    <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
-    <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Connect Flows — Southbound & Smart Money','互联通资金 — 南向与聪明钱') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
-      <div class="cnx-dlg-body">
-        <div class="cnx-cols2">
-          <div>
-            <div class="cnx-eyebrow">{{ t('Southbound flow · mainland → Hong Kong','南向资金 · 内地 → 香港') }}</div>
-            {% if I.southbound %}
-            <div style="display:flex;gap:12px;align-items:baseline;margin:2px 0 8px">
-              <span class="cnx-bignum" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ '+¥' if I.southbound.net >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.net | abs) / 100) }}亿</span>
-            </div>
-            <div class="cnx-kv"><span class="k">{{ t('20-day cumulative','20日累计') }}</span><span class="v {{ 'cnx-tt-up' if I.southbound.cum_20d >= 0 else 'cnx-tt-dn' }}">{{ '+¥' if I.southbound.cum_20d >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.cum_20d | abs) / 100) }}亿</span></div>
-            <div class="cnx-kv"><span class="k">{{ t('Buy-day streak','净买入天数') }}</span><span class="v">{{ I.southbound.pos_days_20 }}/20</span></div>
-            {% if I.southbound.hold_mktcap is defined %}<div class="cnx-kv"><span class="k">{{ t('Total HK holdings','港股持仓市值') }}</span><span class="v">¥{{ (I.southbound.hold_mktcap/10000)|round(1) }}{{ t('T','万亿') }}</span></div>{% endif %}
-            {% if I.southbound.chart_html %}<div class="chart">{{ I.southbound.chart_html | safe }}</div>{% endif %}
-            {% endif %}
-          </div>
-          <div>
-            <div class="cnx-eyebrow">{{ t('Connect leaderboard','互联通龙虎榜') }} · {{ latest.date }}</div>
-            {% if leaderboard %}
-            {% if leaderboard.northbound_turnover %}
-            <div class="cnx-lbl" style="margin-top:0">{{ t('Northbound — most-active A-shares','北向 — 最活跃A股') }}</div>
-            <table class="cnx-mt">
-              <tr><th>{{ t('Stock','股票') }}</th><th class="r">{{ t('Turnover亿','成交亿') }}</th><th class="r">{{ t('Day','当日') }}</th></tr>
-              {% for r in (leaderboard.northbound_turnover or [])[:5] %}
-              <tr><td>{{ r.name_zh or r.name }} <span style="color:var(--muted)">{{ r.ticker }}</span></td>
-                <td class="r">{{ r.turnover }}</td>
-                <td class="r {{ 'cnx-tt-up' if (r.chg or 0) >= 0 else 'cnx-tt-dn' }}">{{ '%+.1f'|format(r.chg) if r.chg is not none else '—' }}%</td></tr>
-              {% endfor %}
-            </table>
-            {% endif %}
-            {% if leaderboard.southbound_buy %}
-            <div class="cnx-lbl">{{ t('Southbound — mainland net','南向 — 内地净买') }}</div>
-            <table class="cnx-mt">
-              <tr><th>{{ t('Buys','买入') }}</th><th class="r">{{ t('Net亿','净亿') }}</th></tr>
-              {% for r in (leaderboard.southbound_buy or [])[:4] %}
-              <tr><td>{{ r.name_zh or r.name }}</td><td class="r cnx-tt-up">{{ '+%.1f'|format(r.net) if r.net is not none else '—' }}</td></tr>
-              {% endfor %}
-            </table>
-            {% endif %}
-            {% endif %}
-          </div>
-        </div>
-        <div class="cnx-receipt">{{ t('A risk-appetite read, not a signal.','风险偏好读数，非交易信号。') }}</div>
-      </div>
-    </div>
-  </div>
+  {{ cnm.panel(macro_evidence|default(none), "flows", leaderboard_data=leaderboard) }}
 
   <!-- Property dialog -->
-  <div class="cnx-dlg" id="cnx-dlg-property">
-    <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
-    <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Property & Fiscal','房地产与财政') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
-      <div class="cnx-dlg-body">
-        {% if P %}
-        {% set R = P.regime %}
-        <div class="cnx-cols2">
-          <div>
-            {% if P.breadth %}
-            <div class="cnx-eyebrow">{{ t('70-city price breadth','70城价格宽度') }}</div>
-            <div style="display:flex;gap:12px;align-items:baseline;margin:2px 0 6px">
-              <span class="cnx-bignum {{ 'cnx-tt-up' if P.breadth.new > 0 else 'cnx-tt-dn' }}">{{ '%+d'|format(P.breadth.new) }}</span>
-              <span style="font-size:11.5px;color:var(--muted)">{{ t('net cities','净城市') }} · {{ P.breadth.rising }}↑ {{ P.breadth.falling }}↓ {{ P.breadth.flat }}→</span>
-            </div>
-            {% if P.breadth.chart_html %}<div class="chart">{{ P.breadth.chart_html | safe }}</div>{% endif %}
-            {% endif %}
-            {% if P.climate %}
-            <div class="cnx-eyebrow">{{ t('Builder climate','景气指数') }}</div>
-            <div class="cnx-kv"><span class="k">{{ t('NBS climate index','国房景气') }}</span><span class="v">{{ P.climate.level }}</span></div>
-            {% if P.climate.chart_html %}<div class="chart">{{ P.climate.chart_html | safe }}</div>{% endif %}
-            {% endif %}
-          </div>
-          <div>
-            {% if P.construction %}
-            <div class="cnx-eyebrow">{{ t('Construction demand','建材需求') }}</div>
-            <div class="cnx-kv"><span class="k">{{ t('Steel + iron-ore gauge','钢铁+铁矿指标') }}</span><span class="v">{{ P.construction.demand_z }}</span></div>
-            {% if P.construction.chart_html %}<div class="chart">{{ P.construction.chart_html | safe }}</div>{% endif %}
-            {% endif %}
-            {% if P.cgb %}
-            <div class="cnx-eyebrow">{{ t('Fiscal & market stress','财政与市场压力') }}</div>
-            <div class="cnx-kv"><span class="k">{{ t('10Y government yield','10年期国债') }}</span><span class="v">{{ P.cgb.y10 }}%</span></div>
-            {% if P.cgb.chart_html %}<div class="chart">{{ P.cgb.chart_html | safe }}</div>{% endif %}
-            {% endif %}
-            {% if P.prop_etf %}
-            <div class="cnx-kv"><span class="k">{{ t('Property stocks','地产股') }}</span><span class="v cnx-tt-dn">{{ P.prop_etf.drawdown }}% {{ t('from','距') }} ATH</span></div>
-            {% if P.prop_etf.chart_html %}<div class="chart">{{ P.prop_etf.chart_html | safe }}</div>{% endif %}
-            {% endif %}
-          </div>
-        </div>
-        {% endif %}
-        <div class="cnx-receipt">{{ t('Tone: stress, easing at the margin. Still the economy\'s main drag.','基调：压力，边际宽松。仍是经济的主要拖累。') }}</div>
-      </div>
-    </div>
-  </div>
+  {{ cnm.panel(macro_evidence|default(none), "property") }}
 
   <!-- AI Brief dialog — aib-* rich structure (ported from dashboard.html.j2; scoped to body.page-china) -->
   <div class="cnx-dlg" id="cnx-dlg-aibrief">
@@ -5134,5 +4923,7 @@ if (document.readyState === 'loading') {
   }, true);
 })();
 </script>
+  <script src="china-macro-evidence.js" defer></script>
+  <script src="china-economy.js" defer></script>
 </body>
 </html>

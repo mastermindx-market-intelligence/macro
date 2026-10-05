@@ -1,0 +1,83 @@
+{
+  "source_head": "400cc35dc68eed38ea9e60bb88abdf89e7247693",
+  "observed_at": "2026-10-03T06:11:23.206523+00:00",
+  "path": "ChinaPropertyAdapter -> collectors.base.run_adapter -> existing local store",
+  "production": false,
+  "result": {
+    "source": "china_property",
+    "status": "ok",
+    "rows": 7677,
+    "last_date": "2026-09-30",
+    "error": null,
+    "notes": [
+      "frozen tail: home_price last=2026-08-01 age=63d",
+      "frozen tail: activity last=2026-08-01 age=63d",
+      "frozen tail: climate last=2025-12-01 age=306d"
+    ],
+    "probed_at": null
+  },
+  "activity_present": true,
+  "property_before": {
+    "home_price.parquet": "fc993ca9e180e2c55b24a6bdf3021feafc0a5f8f8db158155ba76eed616ea059",
+    "climate.parquet": "53810f504674d45bd2f4e3f4707efbf893c9cdd91cc33fbd60d093b53523a32e",
+    "rebar.parquet": "7c4bd6116a2bd1e8fa156473fde32eb78981df31f5250323c05c4014baf782df",
+    "iron_ore.parquet": "ec5cc29dff1c373996de4f0a73a8fb93f43e0faf1e0637bba6b69c65776ed47d",
+    "cgb.parquet": "109abeda02b828de72571105ea5873e061a5dba86ed11f8fb657d1f9875c0fe4"
+  },
+  "activity_rows": 1,
+  "admitted_housing_observations": 4,
+  "errors": {},
+  "observations": [
+    {
+      "metric_id": "housing_sales_area",
+      "period": "2026-08",
+      "value": -12.1,
+      "source_id": "3cb219a5afe606351a761ea3",
+      "observed_at": "2026-10-03T06:11:18.153460+00:00",
+      "raw_response_sha256": "0345aa69391d4b0bb8beebf23d29915bbc41eb95fc070eaf9e760ded96548127"
+    },
+    {
+      "metric_id": "housing_sales_value",
+      "period": "2026-08",
+      "value": -13.0,
+      "source_id": "3cb219a5afe606351a761ea3",
+      "observed_at": "2026-10-03T06:11:18.153460+00:00",
+      "raw_response_sha256": "0345aa69391d4b0bb8beebf23d29915bbc41eb95fc070eaf9e760ded96548127"
+    },
+    {
+      "metric_id": "housing_starts",
+      "period": "2026-08",
+      "value": -24.8,
+      "source_id": "3cb219a5afe606351a761ea3",
+      "observed_at": "2026-10-03T06:11:18.153460+00:00",
+      "raw_response_sha256": "0345aa69391d4b0bb8beebf23d29915bbc41eb95fc070eaf9e760ded96548127"
+    },
+    {
+      "metric_id": "housing_investment",
+      "period": "2026-08",
+      "value": -19.9,
+      "source_id": "3cb219a5afe606351a761ea3",
+      "observed_at": "2026-10-03T06:11:18.153460+00:00",
+      "raw_response_sha256": "0345aa69391d4b0bb8beebf23d29915bbc41eb95fc070eaf9e760ded96548127"
+    }
+  ],
+  "sources": {
+    "3cb219a5afe606351a761ea3": {
+      "id": "3cb219a5afe606351a761ea3",
+      "publisher": "www.stats.gov.cn",
+      "title": "Property development investment",
+      "url": "https://www.stats.gov.cn/sj/zxfb/202609/t20260915_1965310.html",
+      "published_at": "2026-09-15T10:00:00+08:00",
+      "observed_at": "2026-10-03T06:11:18.153460+00:00",
+      "response_sha256": "0345aa69391d4b0bb8beebf23d29915bbc41eb95fc070eaf9e760ded96548127",
+      "history_vintage": "observed published revision",
+      "access_proof": "existing collector receipt",
+      "publication_precision": "as_published",
+      "parser_version": "china-property-activity.v1.1",
+      "value_receipt_verified": true,
+      "receipt_metadata_present": true,
+      "runtime_acceptance_verified": false,
+      "commercial_redistribution_review": "must be checked by release owner"
+    }
+  }
+}

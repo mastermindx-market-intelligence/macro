@@ -82,16 +82,14 @@ def test_t_plain_calls_are_unaffected_by_the_guard():
 # and assert the nesting is gone.
 # ===========================================================================
 def _render_turnover_snippet(pctile: int) -> str:
-    text = (REPO_ROOT / "templates" / "china.html.j2").read_text(encoding="utf-8")
-    macro_match = re.search(r"\{% macro t\(en, zh=''\) -%\}.*?\{%- endmacro %\}", text, re.S)
-    assert macro_match, "china.html.j2's local t() macro definition not found — template drifted"
-    line_match = re.search(r"^.*Turnover heat.*$", text, re.M)
-    assert line_match, "china.html.j2 turnover-heat row not found — template drifted"
-    tmpl_src = macro_match.group(0) + "\n" + line_match.group(0)
-    env = jinja2.Environment(autoescape=False)
-    env.globals.update(t_pctile=i18n.t_pctile)
-    tmpl = env.from_string(tmpl_src)
-    return tmpl.render(I={"turnover": {"pctile": pctile}})
+    # The turnover percentile moved to the shared evidence partial. Render its
+    # actual macro, not a copied fixture or a removed inline row.
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(REPO_ROOT / "templates"),
+                             autoescape=True, undefined=jinja2.StrictUndefined)
+    env.globals["t_pctile"] = i18n.t_pctile
+    template = env.from_string('{% import "_china_macro_evidence.html.j2" as cnm with context %}{{ cnm.percentile_reading(m) }}')
+    return template.render(m={"percentile": {"value": pctile, "n": 252, "window": 252,
+                                               "start": "2025-09-01", "end": "2026-08-31"}})
 
 
 def _spans_are_not_nested(html: str) -> bool:
@@ -117,11 +115,9 @@ def test_china_turnover_row_chinese_word_order_and_only_one_language_pair():
     html = _render_turnover_snippet(82)
     zh_spans = re.findall(r'<span class="l-zh">(.*?)</span>', html, re.S)
     assert "第82百分位" in zh_spans, zh_spans        # the percentile leg specifically
-    # exactly one <l-en, l-zh> pair for the percentile phrase itself (plus the
-    # separate "Turnover heat" label pair and the froth/elevated qualifier pair
-    # — three independent twins total on this row, none nested in another).
-    assert html.count('class="l-en"') == html.count('class="l-zh"')
-    assert html.count('class="l-en"') == 3, html
+    # One percentile phrase, one language pair; labels/questions sit separately
+    # in the real composition macro. No obsolete froth qualifier is invented.
+    assert html.count('class="l-en"') == html.count('class="l-zh"') == 1, html
 
 
 def test_china_turnover_row_old_defect_pattern_is_gone():
@@ -271,3 +267,13 @@ def test_every_ladder_state_view_twin_is_not_the_same_string_anti_pattern(state)
 # parametrized test above — ss.conviction_profile is a pure function over a
 # plain dict for every market (no network/data-file dependency), so a
 # per-market fixture is cheap everywhere and none needed to be skipped.
+
+
+@pytest.mark.parametrize("pctile", [0, None])
+def test_china_percentile_zero_is_not_missing(pctile):
+    html = _render_turnover_snippet(pctile)
+    if pctile is None:
+        assert "cnm-percentile-reading" not in html
+    else:
+        assert "第0百分位" in html and "0th percentile" in html
+        assert html.count('class="l-en"') == html.count('class="l-zh"') == 1

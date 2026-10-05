@@ -1,0 +1,178 @@
+{
+  "question": "Verify whether BASE_SAME is nominal monthly amount growth rather than reported comparable YTD growth",
+  "observed_at": "2026-09-30T00:52:33.130689+00:00",
+  "source_url": "https://datacenter-web.eastmoney.com/api/data/v1/get",
+  "report_name": "RPT_ECONOMY_ASSET_INVEST",
+  "response_sha256": "a7115396ec096129a5bb9be72febb41902b154fbaa725f80e022162c4e6a5445",
+  "http_status": 200,
+  "comparisons": [
+    {
+      "period": "2026-08",
+      "provider_base": 32764,
+      "provider_base_same": -13.51,
+      "provider_base_sequential": -3.52,
+      "provider_cumulative": 293092,
+      "prior_year_base": 37882,
+      "recomputed_monthly_yoy": -13.51,
+      "recomputed_cumulative_yoy": -10.13,
+      "cumulative_difference": 32764,
+      "recomputed_monthly_sequential": -3.52
+    },
+    {
+      "period": "2026-07",
+      "provider_base": 33958,
+      "provider_base_same": -14.19,
+      "provider_base_sequential": -29.04,
+      "provider_cumulative": 260328,
+      "prior_year_base": 39575,
+      "recomputed_monthly_yoy": -14.19,
+      "recomputed_cumulative_yoy": -9.68,
+      "cumulative_difference": 33958,
+      "recomputed_monthly_sequential": -29.04
+    },
+    {
+      "period": "2026-06",
+      "provider_base": 47858,
+      "provider_base_same": -15.6,
+      "provider_base_sequential": 28.58,
+      "provider_cumulative": 226370,
+      "prior_year_base": 56707,
+      "recomputed_monthly_yoy": -15.6,
+      "recomputed_cumulative_yoy": -8.96,
+      "cumulative_difference": 47858,
+      "recomputed_monthly_sequential": 28.58
+    }
+  ],
+  "rows": [
+    {
+      "REPORT_DATE": "2026-08-01 00:00:00",
+      "TIME": "2026年08月份",
+      "BASE": 32764,
+      "BASE_SAME": -13.51,
+      "BASE_SEQUENTIAL": -3.52,
+      "BASE_ACCUMULATE": 293092
+    },
+    {
+      "REPORT_DATE": "2026-07-01 00:00:00",
+      "TIME": "2026年07月份",
+      "BASE": 33958,
+      "BASE_SAME": -14.19,
+      "BASE_SEQUENTIAL": -29.04,
+      "BASE_ACCUMULATE": 260328
+    },
+    {
+      "REPORT_DATE": "2026-06-01 00:00:00",
+      "TIME": "2026年06月份",
+      "BASE": 47858,
+      "BASE_SAME": -15.6,
+      "BASE_SEQUENTIAL": 28.58,
+      "BASE_ACCUMULATE": 226370
+    },
+    {
+      "REPORT_DATE": "2026-05-01 00:00:00",
+      "TIME": "2026年05月份",
+      "BASE": 37219,
+      "BASE_SAME": -17.15,
+      "BASE_SEQUENTIAL": -3.54,
+      "BASE_ACCUMULATE": 178512
+    },
+    {
+      "REPORT_DATE": "2026-04-01 00:00:00",
+      "TIME": "2026年04月份",
+      "BASE": 38585,
+      "BASE_SAME": -12.01,
+      "BASE_SEQUENTIAL": -22.81,
+      "BASE_ACCUMULATE": 141293
+    },
+    {
+      "REPORT_DATE": "2026-03-01 00:00:00",
+      "TIME": "2026年03月份",
+      "BASE": 49987,
+      "BASE_SAME": -1.12,
+      "BASE_SEQUENTIAL": null,
+      "BASE_ACCUMULATE": 102708
+    },
+    {
+      "REPORT_DATE": "2026-02-01 00:00:00",
+      "TIME": "2026年02月份",
+      "BASE": null,
+      "BASE_SAME": null,
+      "BASE_SEQUENTIAL": null,
+      "BASE_ACCUMULATE": 52721
+    },
+    {
+      "REPORT_DATE": "2025-12-01 00:00:00",
+      "TIME": "2025年12月份",
+      "BASE": 41151,
+      "BASE_SAME": -15.21,
+      "BASE_SEQUENTIAL": 17.17,
+      "BASE_ACCUMULATE": 485186
+    },
+    {
+      "REPORT_DATE": "2025-11-01 00:00:00",
+      "TIME": "2025年11月份",
+      "BASE": 35121,
+      "BASE_SAME": -17.59,
+      "BASE_SEQUENTIAL": -6.04,
+      "BASE_ACCUMULATE": 444035
+    },
+    {
+      "REPORT_DATE": "2025-10-01 00:00:00",
+      "TIME": "2025年10月份",
+      "BASE": 37379,
+      "BASE_SAME": -15.52,
+      "BASE_SEQUENTIAL": -17.71,
+      "BASE_ACCUMULATE": 408914
+    },
+    {
+      "REPORT_DATE": "2025-09-01 00:00:00",
+      "TIME": "2025年09月份",
+      "BASE": 45424,
+      "BASE_SAME": -8.41,
+      "BASE_SEQUENTIAL": 19.91,
+      "BASE_ACCUMULATE": 371535
+    },
+    {
+      "REPORT_DATE": "2025-08-01 00:00:00",
+      "TIME": "2025年08月份",
+      "BASE": 37882,
+      "BASE_SAME": -9.32,
+      "BASE_SEQUENTIAL": -4.28,
+      "BASE_ACCUMULATE": 326111
+    },
+    {
+      "REPORT_DATE": "2025-07-01 00:00:00",
+      "TIME": "2025年07月份",
+      "BASE": 39575,
+      "BASE_SAME": -6.26,
+      "BASE_SEQUENTIAL": -30.21,
+      "BASE_ACCUMULATE": 288229
+    },
+    {
+      "REPORT_DATE": "2025-06-01 00:00:00",
+      "TIME": "2025年06月份",
+      "BASE": 56707,
+      "BASE_SAME": -1.18,
+      "BASE_SEQUENTIAL": 26.23,
+      "BASE_ACCUMULATE": 248654
+    },
+    {
+      "REPORT_DATE": "2025-05-01 00:00:00",
+      "TIME": "2025年05月份",
+      "BASE": 44923,
+      "BASE_SAME": 0.71,
+      "BASE_SEQUENTIAL": 2.45,
+      "BASE_ACCUMULATE": 191947
+    },
+    {
+      "REPORT_DATE": "2025-04-01 00:00:00",
+      "TIME": "2025年04月份",
+      "BASE": 43850,
+      "BASE_SAME": 1.13,
+      "BASE_SEQUENTIAL": -13.26,
+      "BASE_ACCUMULATE": 147024
+    }
+  ],
+  "semantic_ruling_not_provider_documentation": true,
+  "source_values_changed": false
+}

@@ -1,0 +1,123 @@
+{
+  "operation": "china-macro-evidence-upgrade-20260929-sol-001",
+  "source_head": "0677a48fd316d786a67ca1f1e2cd4afb02943605",
+  "previous_remote": "61e78896d41fca4de9a4ab0abe37dde0ad2446d3",
+  "source_commits": [
+    "400cc35dc68eed38ea9e60bb88abdf89e7247693",
+    "0677a48fd316d786a67ca1f1e2cd4afb02943605"
+  ],
+  "mission_complete": false,
+  "capability_state": "BUILT_NOT_PROVEN",
+  "protected_pin": "bdf2a972e68a70270c24d4b5d61a4d60edc4f288",
+  "tests": {
+    "tests": 523,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "test_warnings": "4 inherited pytest cleanup PermissionError warnings; no test failures",
+  "property_path": "ChinaPropertyAdapter -> collectors.base.run_adapter -> existing local store",
+  "property_runner_production": false,
+  "property_admitted_housing_observations": 4,
+  "build": {
+    "snapshot_id": "6652faaa79e3f52d4d3cb33962498705def8e70d9a00f34795e78393aa61420b",
+    "client_canonical_parity": true,
+    "property_value_period_parity": [
+      {
+        "economy_metric": "housing_sales_area",
+        "dialog_metric": "property_sales_area",
+        "value": -12.1,
+        "reference_period": "2026-08",
+        "status": "older_period"
+      },
+      {
+        "economy_metric": "housing_sales_value",
+        "dialog_metric": "property_sales_value",
+        "value": -13.0,
+        "reference_period": "2026-08",
+        "status": "older_period"
+      },
+      {
+        "economy_metric": "housing_starts",
+        "dialog_metric": "property_starts",
+        "value": -24.8,
+        "reference_period": "2026-08",
+        "status": "older_period"
+      },
+      {
+        "economy_metric": "housing_investment",
+        "dialog_metric": "property_investment",
+        "value": -19.9,
+        "reference_period": "2026-08",
+        "status": "older_period"
+      }
+    ],
+    "property_headline": "Resale activity is rising; new-home demand and prices need separate checks.",
+    "reference_period": "2026-09",
+    "counts": {
+      "catalog": 128,
+      "valid_current": 25,
+      "diagnostics": 11
+    },
+    "domain_coverage": 1,
+    "pages": {
+      "china.html": {
+        "sha256": "e9ed96b6728344123577cc686430162b4c8cbbec9f8fe01fb5a0db08908fbcbb",
+        "bytes": 821975,
+        "duplicate_ids": 0,
+        "anonymous_deep_templates": 0
+      },
+      "china_stocks.html": {
+        "sha256": "fe93e0b4b71a7cb1645902fe58c22498fb1f58373e73230507d33efdf995c554",
+        "bytes": 1117111,
+        "duplicate_ids": 0,
+        "anonymous_deep_templates": 0
+      }
+    }
+  },
+  "browser": {
+    "scope": "actual_local_property_dialog",
+    "real_gateway": false,
+    "states": 8,
+    "manifest": "mockups/evidence/china-property-r10/manifest.json",
+    "manifest_sha256": "4adc11c77cdf6669fe62fbb48f3cfda0f49e3740e22c7538ed95ed380443b7b4",
+    "uncaught_errors": 0,
+    "document_horizontal_overflow": false,
+    "mobile_wide_elements": "Existing scroll-contained table; 27 table/row descendants exceed viewport, document does not."
+  },
+  "prior_review": {
+    "scope": "R9 publication-consistency delta only",
+    "head": "61e78896d41fca4de9a4ab0abe37dde0ad2446d3",
+    "reviewer": "existing C2 included Chat session",
+    "verdict": "advisory PASS; full-release HOLD",
+    "tests_run_by_reviewer": false,
+    "slack_thread": "C0C5FCK1F45/1791006310.137599",
+    "consumption": "accepted/STOP at1791008957.229449; no automatic next wave"
+  },
+  "structural_gate": {
+    "result": "PASS",
+    "introduced": 0,
+    "inherited": 0,
+    "base": "f496f84a0926be3e5da9d7e01fb318a8d7829bcf",
+    "log_sha256": "4edeb6a7f08cd925c7f487443855ecabf3ddddb8ba636167f5cd88aebb542dbf",
+    "wall_seconds": 426.1
+  },
+  "production_acceptance": false,
+  "local_gates": {
+    "visual_evidence": "PASS",
+    "template_site_sync_pairs": 109,
+    "agentos_errors": 0,
+    "agentos_existing_warnings": 71
+  },
+  "production_readonly_preflight": {
+    "host": "documented macro static origin",
+    "installed_head": "dfc880e68ed77ab7deb6b7d13bbf6259b7a4e682",
+    "branch": "main",
+    "caddy": "active",
+    "api": "active",
+    "candidate_files": "absent",
+    "credentials_read": false,
+    "production_changes": 0,
+    "candidate_installed": false
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "schema": "mastermind.china_economy_robots_adapter_compatibility.r7",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "mission_complete": false,
+  "operation": "china-macro-evidence-upgrade-20260929-sol-001",
+  "procedure": {
+    "mastermind_pin": "ed95002d60d8c0370fae40760a3c21fc8d3fd48f",
+    "index_blob": "4b0189a75d559d963365097485e8509a49c70e23",
+    "skillpack_version": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "parent_head": "2730a51f714a806a0e5a49b9566bb4addad6cd88",
+  "defect": "Adapter.http_get raises HTTPError for robots 404/410 before check_robots can apply the already-reviewed not_published semantics.",
+  "repair": {
+    "scope": "robots response handling only",
+    "admission": "accept raised 404/410 only when the exception carries the exact same-origin robots URL response",
+    "receipt": "retain URL/status/hash/bytes/policy; do not retain body",
+    "all_other_errors": "fail closed as before"
+  },
+  "verification": {
+    "focused_suite": {
+      "passed": 172,
+      "failed": 0,
+      "junit_sha256": "6ea102b8b31c26a1553463e0997b5668c3117da95bbe659915a39a3965f2fdf3"
+    },
+    "source_compile": "PASS",
+    "scoped_diff_check": "PASS",
+    "warning": "pytest temp Chromium cleanup PermissionError only; no test failure"
+  },
+  "files": {
+    "collectors/china_economy_acquisition.py": {
+      "sha256": "05863de3c4258845455118a37b1a7fd7a13e827537197aa601ed9a3a4d89d7e7"
+    },
+    "tests/test_china_economy_acquisition.py": {
+      "sha256": "bda88433ca87c2cd07daa6048c1536475c2d50306b1e98e1bfdb84356af591aa"
+    }
+  }
+}

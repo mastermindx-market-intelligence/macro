@@ -1,0 +1,11 @@
+{
+  "baseline_same_vm": {
+    "bytes": 445156,
+    "gzip": 100289
+  },
+  "integrated_compact": {
+    "bytes": 1238647,
+    "gzip": 199062
+  },
+  "client_payload_bytes": 15855
+}

@@ -1,0 +1,117 @@
+{
+  "scope": "owned worktree candidate; no browser/auth/production proof",
+  "base_implementation": "6ad2d07273dcfaa97093c15d8a3cb7051724591f",
+  "pull_request": 8196,
+  "counts": {
+    "catalog": 128,
+    "valid_current": 53,
+    "diagnostics": 11
+  },
+  "overall_direction_eligible": false,
+  "files": {
+    "china.html": {
+      "sha256": "1961c5ecd4bafb62b00ad5a0bb9bfb8076a6caa7c4cf0bd3b493555e140252bf",
+      "bytes": 1305797,
+      "gzip_bytes": 209270,
+      "duplicate_ids": 0,
+      "h1_count": 0
+    },
+    "china_stocks.html": {
+      "sha256": "8603c9cdee70f6858cf5916615865592c711e8b6dbf5fd81ef8c6ff130a2b48c",
+      "bytes": 1117111,
+      "gzip_bytes": 154851,
+      "duplicate_ids": 0,
+      "h1_count": 1
+    },
+    "theme.css": {
+      "sha256": "ed5a37822a2631d19e7ce74f5254f88f811b1ccf39308352da42114a28363497",
+      "bytes": 219616,
+      "source_site_match": true
+    },
+    "china-economy.css": {
+      "sha256": "446729ffb356bc67e3dde99765e734948dfd5bb769a3c3462fa10ef748a1ffaa",
+      "bytes": 15532,
+      "source_site_match": true
+    },
+    "china-economy.js": {
+      "sha256": "1c0ccca90ee295980322aafaae72024c0e909ef21ccf2714d977d4578e6119c6",
+      "bytes": 5349,
+      "source_site_match": true
+    },
+    "china-macro-evidence.css": {
+      "sha256": "f436793d8510a9d71c968b102e3d7299f1afb82999128e58e8a66c5a40a7febb",
+      "bytes": 13655,
+      "source_site_match": true
+    },
+    "china-macro-evidence.js": {
+      "sha256": "9ca83421e4051c78e72695f951fde343200820a438051aa5ae0f4d5efaeb88ee",
+      "bytes": 10384,
+      "source_site_match": true
+    }
+  },
+  "complete_client_value_parity": true,
+  "new_sections_nested_translation_spans": 0,
+  "focused_suites": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "434",
+      "time": "30.493",
+      "timestamp": "2026-09-29T09:52:20.364401-07:00",
+      "hostname": "m2studio"
+    }
+  ],
+  "design_guard": {
+    "blocking_findings": 0,
+    "log_sha256": "ea4e9047cb0ca28f7832f43e489afde0bb03d1d8d53207473681aef83e3c0696"
+  },
+  "visual_guard": {
+    "satisfied": false,
+    "reason": "missing real browser EVIDENCE.yml captures; prior browser administrator gate unresolved"
+  },
+  "agentos_validation": {
+    "errors": 0,
+    "warnings": 70,
+    "records": 1380
+  },
+  "asset_sync": {
+    "pairs": 109,
+    "passed": true
+  },
+  "contract_delta": {
+    "base": "be0ca1fa3aaf64eec16d89edbd992f5025d2b823",
+    "introduced": 0,
+    "inherited": 0,
+    "exit": 0,
+    "scope": "local repository structural gate; not GitHub exact-head acceptance",
+    "log_sha256": "b8b6a88ab6a70ef73dbcf431d43eb91b362a79f15e6323efb3a15bbe9bd23833"
+  },
+  "commands": {
+    "tests": "python3 -m pytest -q tests/test_action_board_lane_split.py tests/test_analyzer_i18n_percentile.py tests/test_china_economy*.py tests/test_china_macro_evidence*.py tests/test_china_macro_activity.py tests/test_china_connect_evidence.py tests/test_china_connect_leaderboard_render.py tests/test_china_archetype_d_s1.py",
+    "build": "RENDER_NO_DRIP=1 CHINA_VM_DUMP=1 python3 -m scripts.build_china",
+    "design": "python3 scripts/check_design_system.py --mode enforce-added --diff-file <original-base-to-candidate-template-diff>",
+    "contract": "python3 scripts/check_contract_delta.py --base be0ca1fa3aaf64eec16d89edbd992f5025d2b823",
+    "knowledge": "python3 scripts/agentos.py validate",
+    "assets": "python3 scripts/check_template_site_sync.py"
+  },
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "233f980c1fba92a8dc3cd132edf843474ed7139d999d3e9509a4d2fe28db199f",
+    "agentos/discoveries/DSC-CHINA-ECONOMY-RECEIPT-BOUND-SOURCE-INTEGRATION.md": "3c598c0183846895e46897d043f505b508c9266b26649acd8153b83f12e51942",
+    "research/CHINA_ECONOMY_SOURCE_INTEGRATION_20260929.md": "cc9335ab7312a3908b27a9130a07b72874443e847f46af5d224b796facc49e79",
+    "scripts/preview_china_economy.py": "9f967e5448f85d3a5886a8b797dc2ff1ad11e5706a2e68391274cd957df60efd",
+    "scripts/preview_china_macro_evidence.py": "6201fc6924e7f4740731f03dc0e379804b5fad17f6679b9fa5d3220439f827ad",
+    "site/theme.css": "ed5a37822a2631d19e7ce74f5254f88f811b1ccf39308352da42114a28363497",
+    "templates/_china_economy_lens.html.j2": "c4901cd7c6fa5bcc369bf6f4f8cdfaf8de53e553c36b864e9d650999048f4120",
+    "templates/_china_macro_evidence.html.j2": "65ae0f612201ca985acb767212edae2f00f7dd752276afd024897a96b733db72",
+    "templates/china-economy.css": "446729ffb356bc67e3dde99765e734948dfd5bb769a3c3462fa10ef748a1ffaa",
+    "templates/china-macro-evidence.css": "f436793d8510a9d71c968b102e3d7299f1afb82999128e58e8a66c5a40a7febb",
+    "templates/china.html.j2": "d51c67935833fa1ae6672bb3ace902a74f84a947e495890955fdcd20d0c7f7e1",
+    "templates/theme.css": "ed5a37822a2631d19e7ce74f5254f88f811b1ccf39308352da42114a28363497",
+    "tests/test_action_board_lane_split.py": "21b8a1874b931e6ae7fa68f0b037d4c38fcb377dfbcc0db50dd0d46d4edd9e98",
+    "tests/test_analyzer_i18n_percentile.py": "82acd4139690950cb0aa1113fc385ca4f3189e41d32ce26a884df03d68dc7c07",
+    "tests/test_china_economy_view.py": "c05bb1d306dfd9ddf46d115c3aee629ab1e747126d8a329e5528bfb22223a639",
+    "tests/test_china_macro_evidence_view.py": "ce3460a00d2f6e6c30921cafafe7c2d4a94494b6300c1fd2de761b4013108f3d"
+  }
+}

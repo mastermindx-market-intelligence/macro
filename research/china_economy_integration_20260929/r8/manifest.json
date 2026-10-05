@@ -1,0 +1,9 @@
+{
+  "release-tests.xml": "089a6861a8c3909cca1ecc48fb143b914290e442494a0f599b05589c65c2f5e6",
+  "base-compatibility.json": "372c8a6edab07c65e84847e1e3303da2b11e012baecadc9d753d6568697eb326",
+  "release-proof.json": "d09e8f64922bd2aa7a6900458821c791365ff19ef6b02b04db4451d1ae79f428",
+  "browser-auth.json": "373f28b7d270fdbeb83c7e2306b75167b3e1bf2d2a5e85166b3584748a6c6a8f",
+  "local-gates.json": "6ff12780fe780852af6e62e6ea2e690fed8815e4afbd5b16d243e9a99a1d2c36",
+  "planner-proof.json": "83ee335bdd1f48bfe1437d490117916e98bab1d6b7035aff3a45737c52303e09",
+  "dialog-behavior.json": "4e5a681215789dfcf6b1a9d2e2359e388d053ab7bb9472795fb6f5aa5af46401"
+}

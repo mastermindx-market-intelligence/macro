@@ -1,0 +1,56 @@
+{
+  "snapshot_id": "6652faaa79e3f52d4d3cb33962498705def8e70d9a00f34795e78393aa61420b",
+  "client_canonical_parity": true,
+  "property_value_period_parity": [
+    {
+      "economy_metric": "housing_sales_area",
+      "dialog_metric": "property_sales_area",
+      "value": -12.1,
+      "reference_period": "2026-08",
+      "status": "older_period"
+    },
+    {
+      "economy_metric": "housing_sales_value",
+      "dialog_metric": "property_sales_value",
+      "value": -13.0,
+      "reference_period": "2026-08",
+      "status": "older_period"
+    },
+    {
+      "economy_metric": "housing_starts",
+      "dialog_metric": "property_starts",
+      "value": -24.8,
+      "reference_period": "2026-08",
+      "status": "older_period"
+    },
+    {
+      "economy_metric": "housing_investment",
+      "dialog_metric": "property_investment",
+      "value": -19.9,
+      "reference_period": "2026-08",
+      "status": "older_period"
+    }
+  ],
+  "property_headline": "Resale activity is rising; new-home demand and prices need separate checks.",
+  "reference_period": "2026-09",
+  "counts": {
+    "catalog": 128,
+    "valid_current": 25,
+    "diagnostics": 11
+  },
+  "domain_coverage": 1,
+  "pages": {
+    "china.html": {
+      "sha256": "e9ed96b6728344123577cc686430162b4c8cbbec9f8fe01fb5a0db08908fbcbb",
+      "bytes": 821975,
+      "duplicate_ids": 0,
+      "anonymous_deep_templates": 0
+    },
+    "china_stocks.html": {
+      "sha256": "fe93e0b4b71a7cb1645902fe58c22498fb1f58373e73230507d33efdf995c554",
+      "bytes": 1117111,
+      "duplicate_ids": 0,
+      "anonymous_deep_templates": 0
+    }
+  }
+}

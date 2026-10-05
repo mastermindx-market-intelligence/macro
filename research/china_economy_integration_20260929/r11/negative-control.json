@@ -1,0 +1,24 @@
+{
+  "source_head": "511514654a8d637653c6504297f611e4b1fdf181",
+  "execution": "original function from immutable git blob in isolated Python process; current final tests; actual Parquet store",
+  "exit_code": 1,
+  "tests": 3,
+  "failures": 3,
+  "errors": 0,
+  "raw_xml_sha256": "502a1a37a13047bdbf922f4759d7becd9456fb6e73260aee81cdeb107f7c1cfb",
+  "raw_log_sha256": "d6847d564e0685f9ff7e331f32b7bf483edb75c1a1a766fa528b5cd05fe646d7",
+  "cases": [
+    {
+      "name": "test_older_equal_or_null_receipt_cannot_rewind_actual_store[0.54]",
+      "failure": "AssertionError: DataFrame.iloc[:, 3] (column name=\"indpro_mom__response_sha256\") are different\n\nDataFrame.iloc[:, 3] (column name=\"indpro_mom__response_sha256\") values are different (100.0 %)\n[index]: [2026-08-01T00:00:00.000000]\n[left]:  [bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb]\n[right]: [aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]\nAt positional index 0, first diff: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb != aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "name": "test_older_equal_or_null_receipt_cannot_rewind_actual_store[None]",
+      "failure": "AssertionError: Attributes of DataFrame.iloc[:, 0] (column name=\"indpro_mom\") are different\n\nAttribute \"dtype\" are different\n[left]:  float64\n[right]: object"
+    },
+    {
+      "name": "test_stale_receipt_cannot_resurrect_null_withdrawal_after_actual_column_merge",
+      "failure": "AssertionError: DataFrame.iloc[:, 3] (column name=\"indpro_mom__response_sha256\") are different\n\nDataFrame.iloc[:, 3] (column name=\"indpro_mom__response_sha256\") values are different (100.0 %)\n[index]: [2026-08-01T00:00:00.000000]\n[left]:  [3333333333333333333333333333333333333333333333333333333333333333]\n[right]: [2222222222222222222222222222222222222222222222222222222222222222]\nAt positional index 0, first diff: 3333333333333333333333333333333333333333333333333333333333333333 != 2222222222222222222222222222222222222222222222222222222222222222"
+    }
+  ]
+}

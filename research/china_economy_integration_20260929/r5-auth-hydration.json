@@ -1,0 +1,70 @@
+{
+  "schema": "mastermind.china_economy_auth_hydration_receipt.r5",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "mission_complete": false,
+  "operation": "china-macro-evidence-upgrade-20260929-sol-001",
+  "procedure": {
+    "mastermind_pin": "6b91339a3bd7553292068c72d11b4227d30e371b",
+    "index_blob": "94d1af402598894372858793a5b1931019c5fa77",
+    "skillpack_version": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "source": {
+    "parent_head": "556d0450f7a2e9b2ef1904b922bd517a498553b6",
+    "branch": "worktree-china-macro-evidence-20260929-sol-001",
+    "pr": 8196
+  },
+  "defect": "Anonymous INITIAL_SESSION could consume a once-only mdx-auth listener, preventing a later in-place SIGNED_IN event from hydrating the protected economy detail.",
+  "repair": "Keep the existing mdx-auth listener active after anonymous initialization; the existing started guard still permits at most one protected-detail fetch.",
+  "files": {
+    "templates/china-economy.js": {
+      "sha256": "c565b2f6b89115464ce93fbca847368115cee6631f3aa25ccaad5ce72b3f6dae"
+    },
+    "site/china-economy.js": {
+      "sha256": "c565b2f6b89115464ce93fbca847368115cee6631f3aa25ccaad5ce72b3f6dae"
+    },
+    "tests/test_china_economy_page_payload.py": {
+      "sha256": "d2baa9247b5f0d7166bf2b45a3124e0a180a9a0486676c706b6ee2049e96b9af"
+    }
+  },
+  "verification": {
+    "focused_suite": {
+      "passed": 428,
+      "failed": 0,
+      "junit_sha256": "dce2a697011917e3db6eb6f60a64ba7606acb5ec0d640a24722ae1f671c089bb"
+    },
+    "template_site_sync": {
+      "pairs": 109,
+      "status": "PASS"
+    },
+    "javascript_syntax": "PASS",
+    "scoped_diff_check": "PASS",
+    "browser_probe": {
+      "kind": "local Chromium behavior probe with synthetic session object; NOT authenticated gateway proof",
+      "sequence": [
+        "load anonymous page through local HTTP",
+        "allow normal anonymous auth initialization",
+        "replace MDXAuth.client with a test-only session provider",
+        "dispatch SIGNED_IN",
+        "dispatch TOKEN_REFRESHED"
+      ],
+      "protected_detail_fetches": 1,
+      "expected": "later sign-in triggers one fetch; later auth events do not duplicate it",
+      "result": "PASS"
+    }
+  },
+  "unchanged": [
+    "R4 visual layout/CSS",
+    "public-shell/deep-payload access classification",
+    "84/128 current evidence coverage",
+    "2/6 direction-domain coverage",
+    "collector data"
+  ],
+  "unaccepted": [
+    "real signed-in gateway proof",
+    "exact-head CI for this R5 source",
+    "independent review",
+    "production enrollment",
+    "merge/deploy/live proof"
+  ]
+}

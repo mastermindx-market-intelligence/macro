@@ -1,0 +1,13 @@
+{
+  "proof_class": "local_actual_page_browser_with_synthetic_session_and_response_fixtures",
+  "real_gateway_authentication": false,
+  "steps": [
+    "anonymous: zero protected-detail fetches and no deep library",
+    "fixture allow: 128 metric options and functioning measure selection",
+    "sign-out: library, export controls and global detail API cleared",
+    "fixture503: Chinese-only error and explicit retry; no hidden detail",
+    "explicit retry restores functioning detail after fixture recovery"
+  ],
+  "protected_fetches": 3,
+  "result": "PASS"
+}

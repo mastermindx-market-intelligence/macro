@@ -1,0 +1,65 @@
+{
+  "scope": "live_origin_anonymous_predeployment_only",
+  "candidate_head": "2e83f6f5211acfc7d6013afc4d70317a99234e87",
+  "observed_at": "2026-10-03T05:43:54.885626+00:00",
+  "authenticated_session_used": false,
+  "requests": [
+    {
+      "path": "/china.html",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "public, must-revalidate, max-age=60",
+      "vary": "Accept-Encoding",
+      "regwall": null,
+      "paywall": null,
+      "bytes": 261050,
+      "sha256": "b24826f717882225eb9163507cd50ec169b108dfd08f1bb2567c905985754100"
+    },
+    {
+      "path": "/china-economy.js",
+      "status": 401,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "vary": "Cookie",
+      "regwall": "deny",
+      "paywall": null,
+      "bytes": 76,
+      "sha256": "e68ce7107f4408a751efa904c6d36734a7ab83806a4ad93deb2e38cdc6ebc44f"
+    },
+    {
+      "path": "/china-macro-evidence.js",
+      "status": 401,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "vary": "Cookie",
+      "regwall": "deny",
+      "paywall": null,
+      "bytes": 76,
+      "sha256": "e68ce7107f4408a751efa904c6d36734a7ab83806a4ad93deb2e38cdc6ebc44f"
+    },
+    {
+      "path": "/china_economy_detail.json",
+      "status": 401,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "vary": "Cookie",
+      "regwall": "deny",
+      "paywall": null,
+      "bytes": 76,
+      "sha256": "e68ce7107f4408a751efa904c6d36734a7ab83806a4ad93deb2e38cdc6ebc44f",
+      "lock_reason": "authentication_required"
+    },
+    {
+      "path": "/china_macro_evidence.json",
+      "status": 401,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "vary": "Cookie",
+      "regwall": "deny",
+      "paywall": null,
+      "bytes": 76,
+      "sha256": "e68ce7107f4408a751efa904c6d36734a7ab83806a4ad93deb2e38cdc6ebc44f",
+      "lock_reason": "authentication_required"
+    }
+  ]
+}

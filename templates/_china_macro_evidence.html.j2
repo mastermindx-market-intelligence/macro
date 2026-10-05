@@ -1,0 +1,113 @@
+{# Evidence-first additions only. Imported WITH CONTEXT to share the page's t(). #}
+{% macro unit(u) -%}{% autoescape true %}
+{{ t(u, {'CNY bn':'人民币十亿','CNY tn':'人民币万亿','pp':'个百分点','pp of GDP':'GDP百分点','% YoY':'% 同比','net cities':'净城市数','cities':'城','stocks':'只','index':'指数','bp':'基点'}.get(u,u)) }}
+{% endautoescape %}{%- endmacro %}
+{% macro percentile_reading(m) -%}{% autoescape true %}
+{% if m.percentile and m.percentile.value is not none %}<div class="cnm-percentile"><i style="left:{{ m.percentile.value }}%"></i></div><p class="cnm-caveat cnm-percentile-reading">{{ t_pctile(m.percentile.value) }} · n={{ m.percentile.n }}/{{ m.percentile.window }} · {{ m.percentile.start }} → {{ m.percentile.end }}</p>{% endif %}
+{% endautoescape %}{%- endmacro %}
+{% macro status(m) -%}{% autoescape true %}<span class="cnm-status cnm-status--{{ m.status }}">{{ t(m.status_en,m.status_zh) }}</span>{% endautoescape %}{%- endmacro %}
+{% macro metric(m) -%}{% autoescape true %}
+<article class="cnm-metric" data-metric="{{ m.id }}">
+  <div class="cnm-metric-label">{{ t(m.label_en,m.label_zh) }}</div>
+  <div class="cnm-value">{{ m.display }}<span>{{ unit(m.unit) }}</span></div>
+  <div class="cnm-metric-foot"><time datetime="{{ m.reference_date or '' }}">{{ m.get('reference_label') or m.reference_date or '—' }}</time>{{ status(m) }}</div>
+  {% if m.delta_display is not none %}<div class="cnm-delta">{{ m.delta_display }} {{ unit(m.get('delta_unit',m.unit)) }} {{ t('vs previous observation','较前次观测') }} · {{ m.previous_date }}</div>{% endif %}
+</article>
+{% endautoescape %}{%- endmacro %}
+{% macro empty(en, zh) -%}{% autoescape true %}<div class="cnm-empty"><span aria-hidden="true">◎</span><p>{{ t(en,zh) }}</p></div>{% endautoescape %}{%- endmacro %}
+{% macro leaderboard(lb) -%}{% autoescape true %}
+<h3>{{ t('Where disclosed activity is concentrated','披露成交集中在哪里') }}</h3>
+<p class="cnm-subcopy">{{ t('Most-active securities, not the whole market. Amounts stay in each disclosure currency.','仅活跃证券，不代表全市场。金额保留各自披露币种。') }}</p>
+{% if lb and (lb.southbound_buy or lb.southbound_sell or lb.northbound_turnover) %}
+{% for key, en, zh, field, currency in [('southbound_buy','Southbound net buyers','南向净买入','net','HKD'),('southbound_sell','Southbound net sellers','南向净卖出','net','HKD'),('northbound_turnover','Northbound turnover only','北向仅成交额','turnover','CNY')] %}
+{% set rows = lb.get(key,[]) %}
+{% if rows %}<div class="cnm-table-wrap"><table class="cnm-table"><caption>{{ t(en,zh) }} · {{ currency }} {{ t('100m','亿') }} · {{ (lb.get('northbound_date') if key == 'northbound_turnover' else lb.get('southbound_date')) or lb.get('date') or '—' }}</caption>
+<thead><tr><th>{{ t('Security','证券') }}</th><th>{{ t('Venue','通道') }}</th><th class="r">{{ t('Amount','金额') }}</th></tr></thead>
+<tbody>{% for r in rows[:5] %}<tr><td><strong>{{ r.ticker }}</strong><small>{{ r.name_zh or r.name or '—' }}</small></td><td>{{ t(r.get('venue','—'),{'Shanghai':'沪港通','Shenzhen':'深港通'}.get(r.get('venue'),'—')) }}<small>{{ r.get('reference_date','—') }}</small></td><td class="r">{{ '%+.2f'|format(r[field]) if r.get(field) is not none else '—' }}</td></tr>{% endfor %}</tbody></table></div>{% endif %}
+{% endfor %}
+{% else %}{{ empty('The stock-level snapshot is unavailable. Aggregate flows remain separate; no destination or “smart money” claim is inferred.','个股快照暂无可用数据。总量资金独立展示，不据此推断资金去向或“聪明钱”。') }}{% endif %}
+{% if lb and lb.get('warnings') %}<p class="cnm-caveat">{{ lb.warnings | join(' · ') }}</p>{% endif %}
+{% endautoescape %}{%- endmacro %}
+{% macro composition(snapshot, p, lb=none) -%}{% autoescape true %}
+{% if p.id == 'policy' %}
+<h3>{{ t('Who is supplying new financing?','新增融资来自哪里？') }}</h3>
+<p class="cnm-subcopy">{{ t('Latest single-month TSF composition · CNY bn. Negative contributions are retained.','最新单月社融构成·人民币十亿。保留负贡献项。') }}</p>
+{% set tsf_m = (p.metrics|selectattr('id','equalto','tsf_month')|list)[0] %}
+<p class="cnm-caveat">{{ t('Reference period','参考期') }}: {{ tsf_m.get('reference_label') or tsf_m.reference_date or '—' }} · {{ status(tsf_m) }}</p>
+{% set mix = snapshot.tsf_mix %}
+{% if mix %}{% set maxv = namespace(value=1) %}{% for item in mix %}{% if item.value is not none and item.value|abs > maxv.value %}{% set maxv.value=item.value|abs %}{% endif %}{% endfor %}
+<div class="cnm-contributions">{% for item in mix %}<div class="cnm-contribution"><span>{{ t(item.label_en,item.label_zh) }}</span><span class="cnm-contribution-track"><i class="{{ 'negative' if item.value is not none and item.value < 0 else '' }}" style="width:{{ (item.value|abs / maxv.value *100)|round(2) if item.value is not none else 0 }}%"></i></span><strong>{{ '%+.2f'|format(item.value) if item.value is not none else '—' }}</strong></div>{% endfor %}</div>
+{% else %}{{ empty('Financing composition is unavailable; missing components are not zero.','融资构成暂无数据；缺失分项不等于零。') }}{% endif %}
+{% elif p.id == 'property' %}
+<h3>{{ t('Price breadth is not transaction volume','价格广度不等于成交量') }}</h3>
+{% set h = snapshot.home_counts %}
+{% set hf = (p.metrics|selectattr('id','equalto','home_falling')|list)[0] %}
+{% set valid = hf.value is not none and h.cities and h.new_rising is not none and h.new_falling is not none and h.new_flat is not none and h.new_rising + h.new_falling + h.new_flat == h.cities and h.cities <= 70 and h.new_rising >= 0 and h.new_falling >= 0 and h.new_flat >= 0 %}
+{% if valid %}<p class="cnm-subcopy">{{ t('New-home prices, month over month. Each mark represents one counted city, not a named location.','新房价格环比。每个符号代表一座统计城市，并非具体城市定位。') }}</p>
+<div class="cnm-city-grid" aria-hidden="true">{% for i in range(h.new_rising|int) %}<span class="positive">▲</span>{% endfor %}{% for i in range(h.new_falling|int) %}<span class="negative">▼</span>{% endfor %}{% for i in range(h.new_flat|int) %}<span>—</span>{% endfor %}</div>
+<div class="cnm-count-legend"><span>▲ {{ h.new_rising|int }} {{ t('rising','上涨') }}</span><span>▼ {{ h.new_falling|int }} {{ t('falling','下跌') }}</span><span>— {{ h.new_flat|int }} {{ t('unchanged','持平') }}</span></div>
+<p class="cnm-caveat">{{ hf.get('reference_label') or hf.reference_date }} · {{ h.cities|int }}/70 {{ t('cities covered. Read the new-sales / resale split separately above.','城市已覆盖。上方分别展示新房销售与二手房交易变化。') }}</p>
+{% else %}{{ empty('City counts are incomplete or inconsistent. No 70-city distribution is asserted.','城市计数不完整或不一致；不虚构70城分布。') }}{% endif %}
+{% elif p.id == 'flows' %}{{ leaderboard(lb) }}
+{% elif p.id == 'sentiment' %}
+<h3>{{ t('Three different questions','三个不同的问题') }}</h3>
+{% for id,en,zh,question,qzh in [('margin_ratio','Leverage','杠杆','Is positioning crowded?','持仓拥挤吗？'),('turnover','Trading activity','成交活跃度','Is participation unusually active?','参与度异常活跃吗？'),('limit_balance','Speculative breadth','投机广度','Are limit-ups or limit-downs dominant?','涨停还是跌停占优？')] %}
+{% set m = (p.metrics|selectattr('id','equalto',id)|list)[0] %}
+<div class="cnm-question"><div><strong>{{ t(en,zh) }}</strong><span>{{ t(question,qzh) }}</span></div><b>{{ m.display }} <small>{{ unit(m.unit) }}</small></b></div>
+{{ percentile_reading(m) }}
+{% endfor %}
+{% endif %}
+{% endautoescape %}{%- endmacro %}
+{% macro panel(snapshot, key, leaderboard_data=none, legacy=none) -%}{% autoescape true %}
+{% set p = snapshot.panels.get(key) if snapshot else none %}
+<div class="cnx-dlg cnm-dialog" id="cnx-dlg-{{ key }}" data-cnm-dialog>
+  <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()" aria-hidden="true"></div>
+  <section class="cnx-dlg-panel cnm-panel" role="dialog" aria-modal="true" aria-labelledby="cnm-title-{{ key }}" tabindex="-1">
+    <header class="cnx-dlg-head cnm-head"><div><span class="cnm-kicker">{{ t('CHINA / EVIDENCE DESK','中国／证据台') }}</span><h2 id="cnm-title-{{ key }}">{{ t(p.title_en,p.title_zh) if p else t('Macro evidence','宏观证据') }}</h2></div><button type="button" class="cnx-dlg-close cnm-close" onclick="cnxCloseDlg()">{{ t('Close','关闭') }} <span aria-hidden="true">×</span></button></header>
+    <div class="cnx-dlg-body cnm-body">
+    {% if not p %}{{ empty('The evidence snapshot was not built. No values or trading conclusions are substituted.','证据快照尚未生成；不以其他数值或交易结论代替。') }}
+    {% else %}
+      <div class="cnm-brief"><div><div class="cnm-kicker">{{ t('THE TAKEAWAY','一眼看懂') }}</div><h3>{{ t(p.headline_en,p.headline_zh) }}</h3><p>{{ t(p.description_en,p.description_zh) }}</p></div><div class="cnm-coverage"><b>{{ p.recent }}<span>/{{ p.total }}</span></b><span>{{ t('recent readings','近期数据项') }}</span><small>{{ t('As of','截至') }}<br>{{ snapshot.observation_cutoff }}</small></div></div>
+      <div class="cnm-primary">{% for m in p.primary %}{{ metric(m) }}{% endfor %}</div>
+      <div class="cnm-investigate">
+        <section class="cnm-chart-card" data-cnm-chart-card>
+          <div class="cnm-section-head"><h3>{{ t('Inspect the evidence','深入看证据') }}</h3><span class="cnm-context-label">{{ t('Context, not an entry signal','背景，而非入场信号') }}</span></div>
+          {% if p.selected_chart %}
+          <label class="cnm-select-label" for="cnm-chart-select-{{ key }}">{{ t('Measure','指标') }}</label><select id="cnm-chart-select-{{ key }}" data-cnm-select>{% for m in p.chart_metrics %}<option value="{{ m.id }}" {% if m.id == p.selected_chart.id %}selected{% endif %} data-en="{{ m.label_en }}" data-zh="{{ m.label_zh }}">{{ m.label_en }} · {{ m.unit }}</option>{% endfor %}</select>
+          <div class="cnm-chart-toolbar"><span data-cnm-unit>{{ unit(p.selected_chart.unit) }}</span><div class="cnm-ranges" role="group" aria-label="Observation window"><button type="button" data-cnm-range="21">21 {{ t('obs','次') }}</button><button type="button" data-cnm-range="63">63 {{ t('obs','次') }}</button><button type="button" data-cnm-range="252" aria-pressed="true">252 {{ t('obs','次') }}</button><button type="button" data-cnm-range="all">{{ t('All','全部') }}</button></div></div>
+          <div class="cnm-chart" tabindex="0" role="group" aria-label="History chart. Left and right arrow keys inspect observations." data-cnm-plot>{{ p.chart_svg|safe }}</div>
+          <p class="cnm-chart-readout" data-cnm-readout aria-live="polite">{{ t('Move across the chart, or focus it and use arrow keys. Gaps remain gaps.','移动指针，或聚焦后用左右键查看。缺失数据保留断点。') }}</p>
+          <button type="button" class="cnm-export" data-cnm-export>{{ t('Export this history · CSV','导出此历史·CSV') }} ↗</button>
+          <script type="application/json" data-cnm-series>{{ p.chart_config|tojson }}</script>
+          {% else %}{{ empty('Historical data is not yet available for these measures.','这些指标暂未有足够的历史数据。') }}{% endif %}
+        </section>
+        <section class="cnm-context-card">{{ composition(snapshot,p,leaderboard_data) }}</section>
+      </div>
+      <details class="cnm-details"><summary>{{ t('All readings, changes & source quality','全部读数、变化与数据质量') }} <span>{{ p.total }}</span></summary>
+      <div class="cnm-table-wrap"><table class="cnm-table cnm-readings"><thead><tr><th>{{ t('Measure','指标') }}</th><th class="r">{{ t('Latest','最新') }}</th><th class="r">{{ t('Change vs previous','较前次变化') }}</th><th>{{ t('Reference date','参考日期') }}</th><th>{{ t('Evidence','证据状态') }}</th></tr></thead><tbody>
+      {% for m in p.metrics %}<tr><td><a href="#cnm-method-{{ key }}-{{ m.id }}" data-cnm-method-link>{{ t(m.label_en,m.label_zh) }}</a></td><td class="r"><strong>{{ m.display }}</strong> <small>{{ unit(m.unit) }}</small></td><td class="r">{{ m.delta_display if m.delta_display is not none else '—' }}{% if m.delta_display is not none %} {{ unit(m.get('delta_unit',m.unit)) }}<small>{{ m.previous_date }}</small>{% endif %}</td><td><time datetime="{{ m.reference_date or '' }}">{{ m.get('reference_label') or m.reference_date or '—' }}</time></td><td>{{ status(m) }}</td></tr>{% endfor %}
+      </tbody></table></div></details>
+      {% if key == 'policy' and snapshot.rrr_events %}<details class="cnm-details"><summary>{{ t('Policy-event record · not current-rate verification','政策事件记录·并非当前利率核验') }}</summary><div class="cnm-event-list">{% for e in snapshot.rrr_events %}<div><time>{{ e.date }}</time><span>{{ t('Large-bank reserve ratio','大型银行存准率') }}</span><strong>{{ e.level if e.level is not none else '—' }}%</strong><span>{{ '%+.2f'|format(e.change) if e.change is not none else '—' }}pp</span></div>{% endfor %}</div></details>{% endif %}
+      {% if legacy and key == 'sentiment' and legacy.get('components') %}<details class="cnm-details"><summary>{{ t('Existing fear / euphoria components','原有恐惧／亢奋分项') }}</summary><div class="cnm-event-list">{% for leg in legacy.components %}<div><span>{{ t(leg.label_en or leg.label,leg.label_zh or leg.label) }}</span><strong>{{ leg.score }}</strong></div>{% endfor %}</div>{% if legacy.get('chart_html') %}<div class="chart">{{ legacy.chart_html|safe }}</div>{% endif %}<p class="cnm-caveat">{{ t('Preserved legacy context. This panel does not recalibrate its score or trading authority.','保留原有背景。本面板不重新校准评分或交易权限。') }}</p></details>{% endif %}
+      <details class="cnm-details cnm-methods"><summary>{{ t('Definitions, provenance & limitations','定义、来源与局限') }}</summary><p class="cnm-caveat">{{ t('Age guards are calendar-day checks, not a release-calendar guarantee. Current stored revisions are not point-in-time replay. Missing is not zero.','年龄范围是日历日检查，不保证符合发布日历。当前存储版本不等于时点回放。缺失不是零。') }}</p>
+      {% for m in p.metrics %}<section id="cnm-method-{{ key }}-{{ m.id }}" class="cnm-method" tabindex="-1"><h4>{{ t(m.label_en,m.label_zh) }}</h4><p>{{ t(m.method_en,m.method_zh) }}</p>{% if m.note_en %}<p class="cnm-caveat">{{ t(m.note_en,m.note_zh) }}</p>{% endif %}<a href="{{ m.source.url }}" target="_blank" rel="noopener noreferrer">{{ m.source.name }} ↗</a><dl><div><dt>{{ t('Reference','参考') }}</dt><dd>{{ m.get('reference_label') or m.reference_date or '—' }}</dd></div><div><dt>{{ t('Publication','发布') }}</dt><dd>{{ m.source.publication_time or t('Not verified','未核验') }}</dd></div><div><dt>{{ t('Valid observations','有效观测') }}</dt><dd>{{ m.n }}</dd></div><div><dt>{{ t('Age / guard','年龄／范围') }}</dt><dd>{{ m.age_days if m.age_days is not none else '—' }} / {{ m.age_guard_days }} {{ t('calendar days','日历日') }}</dd></div></dl></section>{% endfor %}</details>
+      <footer class="cnm-watch"><span class="cnm-kicker">{{ t('WHAT TO WATCH NEXT','接下来关注') }}</span><p>{{ t(p.watch_en,p.watch_zh) }}</p><a href="china_macro_evidence.json" download>{{ t('Download the same evidence · JSON','下载同一证据·JSON') }} ↗</a><small>{{ t('No ranking, sizing, entry permission or live alert is changed by these observations.','这些观测不改变排名、仓位、入场许可或实时提醒。') }}</small></footer>
+    {% endif %}
+    </div>
+  </section>
+</div>
+{% endautoescape %}{%- endmacro %}
+
+{% macro summary_rows(snapshot, key) -%}{% autoescape true %}
+{% set p = snapshot.panels.get(key) if snapshot else none %}
+{% if p %}<div class="cnm-summary-rows">{% for m in p.primary %}<div class="cnx-kv"><span class="k">{{ t(m.label_en,m.label_zh) }}<small>{{ m.get('reference_label') or m.reference_date or '—' }}</small></span><span class="v">{{ m.display }} {{ unit(m.unit) }}</span></div>{% endfor %}</div><div class="cnx-foot">{{ t(p.headline_en,p.headline_zh) }}</div>
+{% else %}<div class="cnx-foot">{{ t('Evidence snapshot unavailable. No stance is substituted.','证据快照暂无数据，不以其他立场代替。') }}</div>{% endif %}
+{% endautoescape %}{%- endmacro %}
+{% macro glance(snapshot, key, lb=none) -%}{% autoescape true %}
+{% set p = snapshot.panels.get(key) if snapshot else none %}
+<div class="cnx-card cnm-glance" role="button" tabindex="0" aria-haspopup="dialog" onclick="cnxOpenDlg('cnx-dlg-{{ key }}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cnxOpenDlg('cnx-dlg-{{ key }}');}"><div class="cnx-ctitle">{{ t(p.title_en,p.title_zh) if p else t('Macro evidence','宏观证据') }}</div>{{ summary_rows(snapshot,key) }}
+{% if key == 'flows' and lb %}
+{% set _buys = lb.southbound_buy | selectattr('age_days','le',7) | map(attribute='name_zh') | select | unique | list %}
+{% if _buys %}<div class="cnx-kv"><span class="k">{{ t('Disclosed buys','披露净买入') }}</span><span class="v">{{ _buys[:3] | join(' · ') }}</span></div>{% endif %}
+{% endif %}</div>
+{% endautoescape %}{%- endmacro %}

@@ -184,4 +184,8 @@ class ChinaConnectAdapter(Adapter):
         if errors:
             log.info("china_connect: %d/%d legs ok (skipped: %s)",
                      len(frames), len(frames) + len(errors), "; ".join(errors))
+        # Cache failure must not turn healthy aggregate flows into an outage.
+        # Conversely this cache runs AFTER the all-aggregate-legs-failed guard.
+        from collectors.china_connect_top_active import fetch_top_active
+        frames.update(fetch_top_active(self.http_get))
         return frames

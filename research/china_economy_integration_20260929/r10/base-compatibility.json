@@ -1,0 +1,12 @@
+{
+  "source_head": "0677a48fd316d786a67ca1f1e2cd4afb02943605",
+  "main": "f496f84a0926be3e5da9d7e01fb318a8d7829bcf",
+  "merge_base": "650e2ebbe08046bedf10e7eec39def3f62073103",
+  "overlap": [
+    ".github/ci/legacy-jobs.yml",
+    "config.yml"
+  ],
+  "merge_tree_exit": 0,
+  "merge_tree": "3825cad56bc1b257c33993c6f5e236df98e0d97d",
+  "branch_changed": false
+}

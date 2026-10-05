@@ -1,0 +1,26 @@
+{
+  "source_head": "80638b56e3040b198c96cdfa63322d68c381a708",
+  "snapshot_id": "fdb594dcf8e7325d6ee72c74d6b72c92e47b3ed530a38baa72322ddd812ad72d",
+  "all_projections_match_canonical_publication": true,
+  "chart_unit_definition_parity": true,
+  "anonymous_deep_templates": 0,
+  "duplicate_dom_ids": 0,
+  "files": {
+    "china.html": {
+      "bytes": 821880,
+      "sha256": "bf40565f691a829e37fad7f6792bae1d26452d1efdee79ee142b6fc6dda4de97"
+    },
+    "china_stocks.html": {
+      "bytes": 1117111,
+      "sha256": "23d351f2d1832393ccb9884ee72f9b183e4d29cb02d03af73b73d54b778499fa"
+    },
+    "china_economy_detail.json": {
+      "bytes": 555125,
+      "sha256": "5accb190e3d07ed856b41778d5faaabddafa4bbbaa27a2021ccc31df5950606e"
+    },
+    "china_macro_evidence.json": {
+      "bytes": 1038274,
+      "sha256": "c3e3cfddd5feb1e6250f43cbee430483a351d52fda70d56629126c322c16e28b"
+    }
+  }
+}

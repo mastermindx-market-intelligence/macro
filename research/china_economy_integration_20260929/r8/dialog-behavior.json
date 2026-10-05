@@ -1,0 +1,191 @@
+{
+  "proof_class": "local_actual_built_page_and_public_dialogs",
+  "real_gateway": false,
+  "dialogs": [
+    {
+      "id": "cnx-dlg-sentiment",
+      "chart_cards": 1,
+      "csv_export": true,
+      "focus_contained": true
+    },
+    {
+      "id": "cnx-dlg-policy",
+      "chart_cards": 1,
+      "csv_export": true,
+      "focus_contained": true
+    },
+    {
+      "id": "cnx-dlg-property",
+      "chart_cards": 1,
+      "csv_export": true,
+      "focus_contained": true
+    },
+    {
+      "id": "cnx-dlg-flows",
+      "chart_cards": 1,
+      "csv_export": true,
+      "focus_contained": true
+    }
+  ],
+  "mobile_wide_elements": [
+    {
+      "tag": "TABLE",
+      "cls": "cnm-table cnm-readings",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "THEAD",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TBODY",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    },
+    {
+      "tag": "TR",
+      "cls": "",
+      "width": 665,
+      "scrollParent": "tbl-scroll"
+    }
+  ],
+  "launcher_visibility": "hidden during each dialog; restored on close",
+  "uncaught_errors": [],
+  "result": "PASS"
+}
