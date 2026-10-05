@@ -4206,7 +4206,7 @@
       "reason": "version-matched + fresh",
       "calibration_version": "w2.7-loro-v1",
       "calibration_generated_at": "2026-07-02T12:32:51Z",
-      "calibration_age_days": 93
+      "calibration_age_days": 94
     },
     "lag_passport": {
       "basis": "per_leg_schedule",
@@ -9376,7 +9376,7 @@
   },
   "fed_path": {
     "asof": "2026-10-02",
-    "built": "2026-10-04T06:14:05.689771+00:00",
+    "built": "2026-10-05T05:40:19.855160+00:00",
     "policy_rate": 3.88,
     "target_low": 3.75,
     "target_high": 4.0,
@@ -9385,7 +9385,7 @@
       "now": 3.88,
       "m1": 3.9,
       "m3": 4.11,
-      "m6": 4.37,
+      "m6": 4.36,
       "m12": 4.71
     },
     "implied_source_en": "ZQ fed-funds futures",
@@ -9397,7 +9397,7 @@
       "m1": null,
       "m3": null,
       "m6": 4.47,
-      "m12": 4.78
+      "m12": 4.77
     },
     "dots": [
       {
@@ -9421,8 +9421,8 @@
       "horizon_label": "end-2026",
       "horizon_months": 2,
       "fed_dot": 4.1,
-      "market": 4.01,
-      "gap_bp": -9,
+      "market": 4.0,
+      "gap_bp": -10,
       "lean_en": "market \u2248 the Fed",
       "lean_zh": "\u5e02\u573a\u4e0e\u7f8e\u8054\u50a8\u57fa\u672c\u4e00\u81f4"
     },
@@ -9431,8 +9431,8 @@
     "rate_exp_proxy": 0.9,
     "headline_en": "Market prices ~3 hikes over the next 12m (funds 3.88% \u2192 4.71%)",
     "headline_zh": "\u5e02\u573a\u4e3a\u672a\u676512\u4e2a\u6708\u5b9a\u4ef7\u7ea6\u52a0\u606f3\u6b21\uff08\u57fa\u91d1\u5229\u7387 3.88% \u2192 4.71%\uff09",
-    "read_en": "At end-2026 the market implies 4.01% vs the Fed's 4.10% median dot (-9bp \u2014 market \u2248 the Fed). The near-term forward spread is positive \u2014 no cuts priced near-term (+1.03pp).",
-    "read_zh": "\u5728end-2026\uff0c\u5e02\u573a\u9690\u542b 4.01% \u5bf9\u6bd4\u7f8e\u8054\u50a8 4.10% \u7684\u4e2d\u4f4d\u70b9\uff08-9\u57fa\u70b9 \u2014 \u5e02\u573a\u4e0e\u7f8e\u8054\u50a8\u57fa\u672c\u4e00\u81f4\uff09\u3002\u8fd1\u7aef\u8fdc\u671f\u5229\u5dee\u4e3a\u6b63\u2014\u2014\u8fd1\u7aef\u672a\u4e3a\u964d\u606f\u5b9a\u4ef7\uff08+1.03\u4e2a\u767e\u5206\u70b9\uff09\u3002",
+    "read_en": "At end-2026 the market implies 4.00% vs the Fed's 4.10% median dot (-10bp \u2014 market \u2248 the Fed). The near-term forward spread is positive \u2014 no cuts priced near-term (+1.03pp).",
+    "read_zh": "\u5728end-2026\uff0c\u5e02\u573a\u9690\u542b 4.00% \u5bf9\u6bd4\u7f8e\u8054\u50a8 4.10% \u7684\u4e2d\u4f4d\u70b9\uff08-10\u57fa\u70b9 \u2014 \u5e02\u573a\u4e0e\u7f8e\u8054\u50a8\u57fa\u672c\u4e00\u81f4\uff09\u3002\u8fd1\u7aef\u8fdc\u671f\u5229\u5dee\u4e3a\u6b63\u2014\u2014\u8fd1\u7aef\u672a\u4e3a\u964d\u606f\u5b9a\u4ef7\uff08+1.03\u4e2a\u767e\u5206\u70b9\uff09\u3002",
     "note_en": "Display / LLM-context only. The implied path is a market PRICE (the futures-implied funds rate), not a forecast edge, and repricing is REACTIVE \u2014 it moves after data and the Fed, it does not lead. Never scored, never an MRS leg. ZQ/SR3 = keyless CME futures; dots = FRED FEDTARMD (FOMC SEP median). Cite the CME/FRED.",
     "note_zh": "\u4ec5\u4f9b\u5c55\u793a / LLM \u4e0a\u4e0b\u6587\u3002\u9690\u542b\u8def\u5f84\u662f\u5e02\u573a\u4ef7\u683c\uff08\u671f\u8d27\u9690\u542b\u7684\u57fa\u91d1\u5229\u7387\uff09\uff0c\u5e76\u975e\u9884\u6d4b\u4f18\u52bf\uff0c\u4e14\u91cd\u65b0\u5b9a\u4ef7\u662f\u88ab\u52a8\u7684\u2014\u2014\u5b83\u5728\u6570\u636e\u548c\u7f8e\u8054\u50a8\u4e4b\u540e\u53d8\u52a8\uff0c\u5e76\u4e0d\u9886\u5148\u3002\u4ece\u4e0d\u8bc4\u5206\uff0c\u4ece\u4e0d\u4f5c\u4e3a MRS \u9879\u3002ZQ/SR3=\u65e0\u9700\u5bc6\u94a5\u7684 CME \u671f\u8d27\uff1b\u70b9\u9635\u56fe=FRED FEDTARMD\uff08FOMC SEP \u4e2d\u4f4d\u6570\uff09\u3002\u8bf7\u6ce8\u660e CME/FRED\u3002"
   },
@@ -9443,16 +9443,18 @@
     "color": "down",
     "implied_cuts_12m": -3.0,
     "guidance": "tightening",
-    "market_vs_fed_bp": -9.0,
+    "market_vs_fed_bp": -10.0,
     "market_vs_fed_en": "market \u2248 the Fed",
     "market_vs_fed_zh": "\u5e02\u573a\u4e0e\u7f8e\u8054\u50a8\u57fa\u672c\u4e00\u81f4",
     "drivers_en": [
       "market prices ~3.0 hike(s) over 12m",
-      "statement guidance tightening"
+      "statement guidance tightening",
+      "market \u2248 the Fed (-10bp)"
     ],
     "drivers_zh": [
       "\u5e02\u573a\u8ba1\u5165\u672a\u676512\u4e2a\u6708\u7ea63.0\u6b21\u52a0\u606f",
-      "\u58f0\u660e\u6307\u5f15\u504f\u7d27"
+      "\u58f0\u660e\u6307\u5f15\u504f\u7d27",
+      "\u5e02\u573a\u4e0e\u7f8e\u8054\u50a8\u57fa\u672c\u4e00\u81f4\uff08-10bp\uff09"
     ],
     "is_context_only": true,
     "phase0": "display-only \u2014 never scored",
@@ -11822,7 +11824,7 @@
     "note": "Display-only meta-read across cross_asset / market_drivers / conditions / dislocation. A conviction guardrail, never scored."
   },
   "theme_revisions": {
-    "asof": "2026-10-02",
+    "asof": "2026-10-04",
     "n_themes": 18,
     "themes": {
       "nuclear_power": {
@@ -11831,7 +11833,7 @@
         "level_state": "NEGATIVE",
         "est_drift_90d": -0.01,
         "net_up_total": -6.0,
-        "breadth_accel": -0.374,
+        "breadth_accel": -0.674,
         "broadening_state": "MIXED",
         "coverage": 0.88,
         "n_covered": 7,
@@ -11865,7 +11867,7 @@
             "ticker": "CEG",
             "breadth": -0.12,
             "n_analysts": 16,
-            "est_chg_90d": -1.5,
+            "est_chg_90d": -1.9,
             "n_covering": 18,
             "breadth_cov": -0.1111
           },
@@ -11889,13 +11891,13 @@
             "ticker": "BWXT",
             "breadth": 0.46,
             "n_analysts": 11,
-            "est_chg_90d": 1.1,
+            "est_chg_90d": 0.8,
             "n_covering": 17,
             "breadth_cov": 0.2941
           }
         ],
         "breadth_cov": -0.0481,
-        "basis_days": 22
+        "basis_days": 21
       },
       "rare_earth_critical_min": {
         "name": "Rare Earth & Critical Minerals",
@@ -11903,8 +11905,8 @@
         "level_state": "POSITIVE",
         "est_drift_90d": -3.49,
         "net_up_total": -1.0,
-        "breadth_accel": null,
-        "broadening_state": "INSUFFICIENT_HISTORY",
+        "breadth_accel": 0.0,
+        "broadening_state": "MIXED",
         "coverage": 0.57,
         "n_covered": 4,
         "n_members": 7,
@@ -11943,10 +11945,7 @@
           }
         ],
         "breadth_cov": 0.0217,
-        "broadening_proxy": true,
-        "broadening_proxy_state": "RISING",
-        "basis": "drift_30v90",
-        "proxy_drift_diff": 5.91
+        "basis_days": 22
       },
       "data_center_power": {
         "name": "Data Center Power & Cooling",
@@ -12222,12 +12221,12 @@
       },
       "cybersecurity": {
         "name": "Cybersecurity",
-        "breadth": 0.542,
+        "breadth": 0.551,
         "level_state": "POSITIVE",
-        "est_drift_90d": -1.31,
-        "net_up_total": 85.0,
-        "breadth_accel": -0.458,
-        "broadening_state": "ROLLING",
+        "est_drift_90d": -1.34,
+        "net_up_total": 87.0,
+        "breadth_accel": 0.131,
+        "broadening_state": "RISING",
         "coverage": 0.71,
         "n_covered": 5,
         "n_members": 7,
@@ -12249,14 +12248,6 @@
             "breadth_cov": 0.25
           },
           {
-            "ticker": "CRWD",
-            "breadth": 0.78,
-            "n_analysts": 46,
-            "est_chg_90d": -1.3,
-            "n_covering": 53,
-            "breadth_cov": 0.6792
-          },
-          {
             "ticker": "QLYS",
             "breadth": 0.79,
             "n_analysts": 19,
@@ -12271,10 +12262,18 @@
             "est_chg_90d": 2.3,
             "n_covering": 43,
             "breadth_cov": 0.7674
+          },
+          {
+            "ticker": "CRWD",
+            "breadth": 0.83,
+            "n_analysts": 46,
+            "est_chg_90d": -1.3,
+            "n_covering": 53,
+            "breadth_cov": 0.717
           }
         ],
-        "breadth_cov": 0.4831,
-        "basis_days": 22
+        "breadth_cov": 0.4944,
+        "basis_days": 21
       },
       "glp1_obesity": {
         "name": "GLP-1 / Obesity",
@@ -12329,14 +12328,14 @@
       },
       "defense_aerospace": {
         "name": "Defense & Aerospace",
-        "breadth": 0.364,
+        "breadth": 0.341,
         "level_state": "POSITIVE",
-        "est_drift_90d": 1.49,
-        "net_up_total": 97.0,
-        "breadth_accel": 0.268,
-        "broadening_state": "RISING",
-        "coverage": 1.0,
-        "n_covered": 14,
+        "est_drift_90d": 2.03,
+        "net_up_total": 93.0,
+        "breadth_accel": -0.659,
+        "broadening_state": "ROLLING",
+        "coverage": 0.93,
+        "n_covered": 13,
         "n_members": 14,
         "members": [
           {
@@ -12404,17 +12403,17 @@
             "breadth_cov": 0.5217
           }
         ],
-        "breadth_cov": 0.3819,
+        "breadth_cov": 0.3701,
         "basis_days": 21
       },
       "copper_steel_electrify": {
         "name": "Copper, Steel & Electrification",
-        "breadth": 0.673,
+        "breadth": 0.64,
         "level_state": "POSITIVE",
         "est_drift_90d": 6.35,
-        "net_up_total": 32.0,
-        "breadth_accel": 0.24,
-        "broadening_state": "RISING",
+        "net_up_total": 29.0,
+        "breadth_accel": -0.36,
+        "broadening_state": "ROLLING",
         "coverage": 0.83,
         "n_covered": 5,
         "n_members": 6,
@@ -12429,11 +12428,11 @@
           },
           {
             "ticker": "CMC",
-            "breadth": 0.5,
-            "n_analysts": 8,
-            "est_chg_90d": 5.4,
-            "n_covering": 11,
-            "breadth_cov": 0.3636
+            "breadth": 0.33,
+            "n_analysts": 3,
+            "est_chg_90d": 2.9,
+            "n_covering": 10,
+            "breadth_cov": 0.1
           },
           {
             "ticker": "ENS",
@@ -12460,7 +12459,7 @@
             "breadth_cov": 1.0
           }
         ],
-        "breadth_cov": 0.4493,
+        "breadth_cov": 0.4118,
         "basis_days": 22
       },
       "solar": {
@@ -12517,8 +12516,8 @@
         "level_state": "POSITIVE",
         "est_drift_90d": 4.25,
         "net_up_total": 100.0,
-        "breadth_accel": -0.041,
-        "broadening_state": "ROLLING",
+        "breadth_accel": 0.18,
+        "broadening_state": "RISING",
         "coverage": 1.0,
         "n_covered": 8,
         "n_members": 8,
@@ -12559,7 +12558,7 @@
             "ticker": "CGNX",
             "breadth": 1.0,
             "n_analysts": 18,
-            "est_chg_90d": 14.6,
+            "est_chg_90d": 14.7,
             "n_covering": 18,
             "breadth_cov": 1.0
           },
@@ -12597,8 +12596,8 @@
         "level_state": "POSITIVE",
         "est_drift_90d": -0.17,
         "net_up_total": 52.0,
-        "breadth_accel": 0.262,
-        "broadening_state": "RISING",
+        "breadth_accel": -0.173,
+        "broadening_state": "ROLLING",
         "coverage": 0.91,
         "n_covered": 10,
         "n_members": 11,
@@ -12629,9 +12628,9 @@
             "ticker": "COIN",
             "breadth": -0.25,
             "n_analysts": 8,
-            "est_chg_90d": -42.2,
-            "n_covering": 26,
-            "breadth_cov": -0.0769
+            "est_chg_90d": -40.9,
+            "n_covering": 27,
+            "breadth_cov": -0.0741
           },
           {
             "ticker": "RELY",
@@ -12666,7 +12665,7 @@
             "breadth_cov": 0.6
           }
         ],
-        "breadth_cov": 0.2201,
+        "breadth_cov": 0.2193,
         "basis_days": 21
       },
       "medical_devices": {
@@ -12674,9 +12673,9 @@
         "breadth": 0.05,
         "level_state": "FLAT_LOW",
         "est_drift_90d": 0.14,
-        "net_up_total": 28.0,
-        "breadth_accel": -0.783,
-        "broadening_state": "FLAT_LOW",
+        "net_up_total": 24.0,
+        "breadth_accel": 0.405,
+        "broadening_state": "RISING",
         "coverage": 1.0,
         "n_covered": 10,
         "n_members": 10,
@@ -12684,10 +12683,10 @@
           {
             "ticker": "BSX",
             "breadth": -1.0,
-            "n_analysts": 3,
+            "n_analysts": 7,
             "est_chg_90d": -8.3,
             "n_covering": 26,
-            "breadth_cov": -0.1154
+            "breadth_cov": -0.2692
           },
           {
             "ticker": "TMDX",
@@ -12746,7 +12745,7 @@
             "breadth_cov": 0.56
           }
         ],
-        "breadth_cov": 0.1273,
+        "breadth_cov": 0.1091,
         "basis_days": 21
       },
       "diagnostics_lifesci": {
@@ -12755,8 +12754,8 @@
         "level_state": "POSITIVE",
         "est_drift_90d": 2.02,
         "net_up_total": 88.0,
-        "breadth_accel": -0.297,
-        "broadening_state": "ROLLING",
+        "breadth_accel": 0.237,
+        "broadening_state": "RISING",
         "coverage": 1.0,
         "n_covered": 10,
         "n_members": 10,
@@ -12827,18 +12826,18 @@
           }
         ],
         "breadth_cov": 0.4681,
-        "basis_days": 21
+        "basis_days": 22
       },
       "ag_fertilizer": {
         "name": "Agriculture & Fertilizer",
-        "breadth": -0.447,
+        "breadth": -0.466,
         "level_state": "NEGATIVE",
-        "est_drift_90d": -0.98,
-        "net_up_total": -32.0,
-        "breadth_accel": 0.42,
+        "est_drift_90d": -4.17,
+        "net_up_total": -31.0,
+        "breadth_accel": 0.334,
         "broadening_state": "MIXED",
-        "coverage": 1.0,
-        "n_covered": 7,
+        "coverage": 0.86,
+        "n_covered": 6,
         "n_members": 7,
         "members": [
           {
@@ -12869,17 +12868,9 @@
             "ticker": "CF",
             "breadth": -0.6,
             "n_analysts": 5,
-            "est_chg_90d": -0.6,
-            "n_covering": 10,
-            "breadth_cov": -0.3
-          },
-          {
-            "ticker": "CTVA",
-            "breadth": -0.33,
-            "n_analysts": 3,
-            "est_chg_90d": -1.0,
-            "n_covering": 5,
-            "breadth_cov": -0.2
+            "est_chg_90d": 1.2,
+            "n_covering": 11,
+            "breadth_cov": -0.2727
           },
           {
             "ticker": "DE",
@@ -12898,7 +12889,7 @@
             "breadth_cov": 0.25
           }
         ],
-        "breadth_cov": -0.3517,
+        "breadth_cov": -0.3563,
         "basis_days": 22
       },
       "space_satellite": {
@@ -12907,7 +12898,7 @@
         "level_state": "POSITIVE",
         "est_drift_90d": 2.06,
         "net_up_total": 57.0,
-        "breadth_accel": -0.315,
+        "breadth_accel": -0.433,
         "broadening_state": "ROLLING",
         "coverage": 0.45,
         "n_covered": 5,
@@ -12925,7 +12916,7 @@
             "ticker": "BWXT",
             "breadth": 0.46,
             "n_analysts": 11,
-            "est_chg_90d": 1.1,
+            "est_chg_90d": 0.8,
             "n_covering": 17,
             "breadth_cov": 0.2941
           },
@@ -12959,14 +12950,14 @@
       },
       "grid_electrification": {
         "name": "Grid & Electrification",
-        "breadth": 0.355,
+        "breadth": 0.359,
         "level_state": "POSITIVE",
-        "est_drift_90d": 0.99,
-        "net_up_total": 37.0,
-        "breadth_accel": -0.445,
-        "broadening_state": "ROLLING",
-        "coverage": 1.0,
-        "n_covered": 8,
+        "est_drift_90d": 2.0,
+        "net_up_total": 36.0,
+        "breadth_accel": 0.359,
+        "broadening_state": "RISING",
+        "coverage": 0.88,
+        "n_covered": 7,
         "n_members": 8,
         "members": [
           {
@@ -12992,14 +12983,6 @@
             "est_chg_90d": 2.0,
             "n_covering": 26,
             "breadth_cov": 0.0385
-          },
-          {
-            "ticker": "D",
-            "breadth": 0.33,
-            "n_analysts": 3,
-            "est_chg_90d": -0.0,
-            "n_covering": 17,
-            "breadth_cov": 0.0588
           },
           {
             "ticker": "AEP",
@@ -13034,7 +13017,7 @@
             "breadth_cov": 0.9231
           }
         ],
-        "breadth_cov": 0.2387,
+        "breadth_cov": 0.2323,
         "basis_days": 21
       }
     },
@@ -14594,7 +14577,7 @@
     "sign_note": "CONTEXT ONLY \u2014 buyer capex as a bullish confirmer inverts Cooper-Gulen-Schill (high spender capex predicts negative forward returns FOR THE SPENDER). The beneficiary-chain transmission (hyperscaler capex leads chip revenue ~2-4q) is a claim being validated forward by engine/demand_ledger.py \u00b15%-vs-SPY theses \u2014 see chain_track_record for the live score. Until the ledger accumulates graded theses with BY-FDR significance, treat demand_band as directional context, not a confirmed edge.",
     "chain_track_record": {
       "schema": "demand_chain_track_record.v1",
-      "as_of": "2026-10-03",
+      "as_of": "2026-10-04",
       "scored_total": 0,
       "open": 65,
       "unscored_soft": 0,
@@ -15063,7 +15046,7 @@
     "note": "display-only; T3 guidance-gap LANGUAGE leg \u2014 8-K 'raising/lowering guidance' language leads the consensus revision (T4) by days-to-weeks. Coarse directional band, not a numeric beat/miss; >=2 filers to leave NEUTRAL. The numeric gap (vs whisper) is the paid upgrade."
   },
   "altdata_confirmers": {
-    "asof": "2026-10-03",
+    "asof": "2026-10-04",
     "n_themes": 6,
     "themes": {
       "memory_storage": {
@@ -15155,7 +15138,7 @@
     "note": "display-only; leading rerating CONFIRMERS (insider clusters, accelerating federal awards) rolled up from data/altdata/by_ticker.json. Inverse-to-breadth and correlation-penalized in the score \u2014 a confirmer pre-revision is a tell, the same confirmer once revisions are broad is just crowding."
   },
   "foresight_cascade": {
-    "asof": "2026-10-02",
+    "asof": "2026-10-04",
     "n_themes": 18,
     "themes": [
       {
@@ -15163,7 +15146,7 @@
         "name": "Medical Devices",
         "stage": "PRECIPICE (fingerprint)",
         "tier": "P",
-        "rationale": "fingerprint-only (annual member filings) TIGHT while revisions not yet firing \u2014 awaiting real-time physical confirmation \u00b7 policy pipeline: comment close in 5d (2026-10-09); rule effective in 64d; 5 proposed rule(s) last 60d; 14 final rule(s) last 60d",
+        "rationale": "fingerprint-only (annual member filings) TIGHT while revisions not yet firing \u2014 awaiting real-time physical confirmation \u00b7 policy pipeline: comment close in 4d (2026-10-09); rule effective in 63d; 5 proposed rule(s) last 60d; 14 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "fingerprint-only thesis \u2014 awaiting real-time physical confirmation; no entry until FRED bottleneck leg fires",
         "bottleneck_band": "TIGHTENING (fingerprint)",
@@ -15212,7 +15195,7 @@
         "capex_yoy": null,
         "revision_breadth": 0.05,
         "revision_level": "FLAT_LOW",
-        "broadening_state": "FLAT_LOW",
+        "broadening_state": "RISING",
         "est_drift_90d": 0.14,
         "guidance_band": null,
         "guidance_net": null,
@@ -15229,22 +15212,22 @@
         "language_accel": 1.0,
         "policy_reg_chip": {
           "theme": "medical_devices",
-          "summary": "comment close in 5d (2026-10-09); rule effective in 64d; 5 proposed rule(s) last 60d; 14 final rule(s) last 60d",
-          "days_to_comment_close": 5,
-          "days_to_rule_effective": 64,
+          "summary": "comment close in 4d (2026-10-09); rule effective in 63d; 5 proposed rule(s) last 60d; 14 final rule(s) last 60d",
+          "days_to_comment_close": 4,
+          "days_to_rule_effective": 63,
           "prorule_inflow_60d": 5,
           "rule_finalization_60d": 14,
           "next_comment_close_date": "2026-10-09",
           "next_comment_close_title": "Radiology Devices; Reclassification of Digital Breast Tomosynthesis System",
           "evidence_class": "dated-structured"
         },
-        "score": 50.1,
+        "score": 60.0,
         "score_detail": {
-          "score": 50.1,
-          "base": 50.1,
+          "score": 60.0,
+          "base": 60.5,
           "axes": {
             "magnitude": null,
-            "acceleration": 0.5,
+            "acceleration": 0.9,
             "bottleneck": 0.4,
             "pricing_power": 0.71,
             "underpricing": 0.47,
@@ -15252,8 +15235,10 @@
             "timing": 0.4
           },
           "n_axes_live": 5,
-          "caps": [],
-          "verdict": "watch",
+          "caps": [
+            "fingerprint-only (annual XBRL) -> capped at 60"
+          ],
+          "verdict": "constructive",
           "physical_confirmed": false,
           "earliness": 0.4706
         },
@@ -15287,7 +15272,7 @@
         "name": "Nuclear & SMR Power",
         "stage": "PRECIPICE (text)",
         "tier": "P",
-        "rationale": "language signal TIGHT, revisions undetermined \u2014 text-only; awaiting numeric physical confirmation \u00b7 customer capex accelerating (+69% YoY) confirms demand \u00b7 policy pipeline: comment close in 4d (2026-10-08); 3 proposed rule(s) last 60d; 4 final rule(s) last 60d",
+        "rationale": "language signal TIGHT, revisions undetermined \u2014 text-only; awaiting numeric physical confirmation \u00b7 customer capex accelerating (+69% YoY) confirms demand \u00b7 policy pipeline: comment close in 3d (2026-10-08); rule effective in 30d; 4 proposed rule(s) last 60d; 5 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "text-only thesis \u2014 awaiting numeric physical confirmation; no entry until FRED bottleneck leg fires",
         "bottleneck_band": "TIGHT (text)",
@@ -15353,11 +15338,11 @@
         "language_accel": 2.0,
         "policy_reg_chip": {
           "theme": "nuclear_power",
-          "summary": "comment close in 4d (2026-10-08); 3 proposed rule(s) last 60d; 4 final rule(s) last 60d",
-          "days_to_comment_close": 4,
-          "days_to_rule_effective": null,
-          "prorule_inflow_60d": 3,
-          "rule_finalization_60d": 4,
+          "summary": "comment close in 3d (2026-10-08); rule effective in 30d; 4 proposed rule(s) last 60d; 5 final rule(s) last 60d",
+          "days_to_comment_close": 3,
+          "days_to_rule_effective": 30,
+          "prorule_inflow_60d": 4,
+          "rule_finalization_60d": 5,
           "next_comment_close_date": "2026-10-08",
           "next_comment_close_title": "Application for Amendment to Facility Operating License Involving Proposed No Significant Hazards Consideration Determin",
           "evidence_class": "dated-structured"
@@ -15413,7 +15398,7 @@
         "name": "Grid & Electrification",
         "stage": "BROADENING (text)",
         "tier": "P",
-        "rationale": "language signal TIGHT and revisions rising \u2014 text-only; awaiting numeric physical confirmation \u00b7 customer capex accelerating (+69% YoY) confirms demand \u00b7 policy pipeline: comment close in 22d (2026-10-26); 1 final rule(s) last 60d",
+        "rationale": "language signal TIGHT and revisions rising \u2014 text-only; awaiting numeric physical confirmation \u00b7 customer capex accelerating (+69% YoY) confirms demand \u00b7 policy pipeline: comment close in 21d (2026-10-26); 1 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "text-only thesis \u2014 awaiting numeric physical confirmation; no entry until FRED bottleneck leg fires",
         "bottleneck_band": "TIGHT (text)",
@@ -15460,10 +15445,10 @@
         "demand_band": "ACCELERATING",
         "demand_strength": "indirect",
         "capex_yoy": 69.0,
-        "revision_breadth": 0.355,
+        "revision_breadth": 0.359,
         "revision_level": "POSITIVE",
-        "broadening_state": "ROLLING",
-        "est_drift_90d": 0.99,
+        "broadening_state": "RISING",
+        "est_drift_90d": 2.0,
         "guidance_band": null,
         "guidance_net": null,
         "guidance_raisers": null,
@@ -15479,8 +15464,8 @@
         "language_accel": 3.0,
         "policy_reg_chip": {
           "theme": "grid_electrification",
-          "summary": "comment close in 22d (2026-10-26); 1 final rule(s) last 60d",
-          "days_to_comment_close": 22,
+          "summary": "comment close in 21d (2026-10-26); 1 final rule(s) last 60d",
+          "days_to_comment_close": 21,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 0,
           "rule_finalization_60d": 1,
@@ -15491,10 +15476,10 @@
         "score": 50.0,
         "score_detail": {
           "score": 50.0,
-          "base": 68.7,
+          "base": 75.6,
           "axes": {
             "magnitude": 1.0,
-            "acceleration": 0.68,
+            "acceleration": 0.95,
             "bottleneck": null,
             "pricing_power": 0.93,
             "underpricing": 0.41,
@@ -15539,7 +15524,7 @@
         "name": "Space & Satellites",
         "stage": "RE-RATING",
         "tier": "P",
-        "rationale": "language signal present but revisions already broad \u2014 runway maturing, do not chase (text-only) \u00b7 policy pipeline: comment close in 9d (2026-10-13); 4 proposed rule(s) last 60d; 6 final rule(s) last 60d",
+        "rationale": "language signal present but revisions already broad \u2014 runway maturing, do not chase (text-only) \u00b7 policy pipeline: comment close in 8d (2026-10-13); 9 proposed rule(s) last 60d; 6 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "late \u2014 revisions already broad; do not chase, wait for a reset",
         "bottleneck_band": "TIGHT (text)",
@@ -15605,10 +15590,10 @@
         "language_accel": 3.5,
         "policy_reg_chip": {
           "theme": "space_satellite",
-          "summary": "comment close in 9d (2026-10-13); 4 proposed rule(s) last 60d; 6 final rule(s) last 60d",
-          "days_to_comment_close": 9,
+          "summary": "comment close in 8d (2026-10-13); 9 proposed rule(s) last 60d; 6 final rule(s) last 60d",
+          "days_to_comment_close": 8,
           "days_to_rule_effective": null,
-          "prorule_inflow_60d": 4,
+          "prorule_inflow_60d": 9,
           "rule_finalization_60d": 6,
           "next_comment_close_date": "2026-10-13",
           "next_comment_close_title": "Information Collection Being Reviewed by the Federal Communications Commission",
@@ -15665,7 +15650,7 @@
         "name": "Data Center Power & Cooling",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 24d (2026-10-28); 3 proposed rule(s) last 60d; 2 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 23d (2026-10-28); 3 proposed rule(s) last 60d; 2 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "TIGHTENING",
@@ -15731,8 +15716,8 @@
         "language_accel": -0.5,
         "policy_reg_chip": {
           "theme": "data_center_power",
-          "summary": "comment close in 24d (2026-10-28); 3 proposed rule(s) last 60d; 2 final rule(s) last 60d",
-          "days_to_comment_close": 24,
+          "summary": "comment close in 23d (2026-10-28); 3 proposed rule(s) last 60d; 2 final rule(s) last 60d",
+          "days_to_comment_close": 23,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 3,
           "rule_finalization_60d": 2,
@@ -15791,7 +15776,7 @@
         "name": "Memory, HBM & Storage",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 43d (2026-11-16); 3 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 42d (2026-11-16); 3 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -15857,8 +15842,8 @@
         "language_accel": 0.5,
         "policy_reg_chip": {
           "theme": "memory_storage",
-          "summary": "comment close in 43d (2026-11-16); 3 final rule(s) last 60d",
-          "days_to_comment_close": 43,
+          "summary": "comment close in 42d (2026-11-16); 3 final rule(s) last 60d",
+          "days_to_comment_close": 42,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 0,
           "rule_finalization_60d": 3,
@@ -15917,7 +15902,7 @@
         "name": "Semiconductor Equipment (WFE)",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 26d (2026-10-30)",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 25d (2026-10-30)",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -15983,8 +15968,8 @@
         "language_accel": 1.0,
         "policy_reg_chip": {
           "theme": "semicap_equipment",
-          "summary": "comment close in 26d (2026-10-30)",
-          "days_to_comment_close": 26,
+          "summary": "comment close in 25d (2026-10-30)",
+          "days_to_comment_close": 25,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 0,
           "rule_finalization_60d": 0,
@@ -16043,7 +16028,7 @@
         "name": "AI Semiconductors",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 43d (2026-11-16)",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 42d (2026-11-16)",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -16109,8 +16094,8 @@
         "language_accel": -0.22,
         "policy_reg_chip": {
           "theme": "ai_semiconductors",
-          "summary": "comment close in 43d (2026-11-16)",
-          "days_to_comment_close": 43,
+          "summary": "comment close in 42d (2026-11-16)",
+          "days_to_comment_close": 42,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 0,
           "rule_finalization_60d": 0,
@@ -16169,7 +16154,7 @@
         "name": "Copper, Steel & Electrification",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 9d (2026-10-13); 2 proposed rule(s) last 60d; 3 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 8d (2026-10-13); 2 proposed rule(s) last 60d; 3 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -16216,9 +16201,9 @@
         "demand_band": null,
         "demand_strength": null,
         "capex_yoy": null,
-        "revision_breadth": 0.673,
+        "revision_breadth": 0.64,
         "revision_level": "POSITIVE",
-        "broadening_state": "RISING",
+        "broadening_state": "ROLLING",
         "est_drift_90d": 6.35,
         "guidance_band": null,
         "guidance_net": null,
@@ -16235,8 +16220,8 @@
         "language_accel": 0.5,
         "policy_reg_chip": {
           "theme": "copper_steel_electrify",
-          "summary": "comment close in 9d (2026-10-13); 2 proposed rule(s) last 60d; 3 final rule(s) last 60d",
-          "days_to_comment_close": 9,
+          "summary": "comment close in 8d (2026-10-13); 2 proposed rule(s) last 60d; 3 final rule(s) last 60d",
+          "days_to_comment_close": 8,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 2,
           "rule_finalization_60d": 3,
@@ -16247,10 +16232,10 @@
         "score": 45.0,
         "score_detail": {
           "score": 45.0,
-          "base": 66.5,
+          "base": 52.2,
           "axes": {
             "magnitude": null,
-            "acceleration": 0.9,
+            "acceleration": 0.35,
             "bottleneck": 0.35,
             "pricing_power": 1.0,
             "underpricing": 0.56,
@@ -16294,7 +16279,7 @@
         "name": "Rare Earth & Critical Minerals",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 1d (2026-10-05); 2 proposed rule(s) last 60d; 8 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 0d (2026-10-05); 2 proposed rule(s) last 60d; 8 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -16343,7 +16328,7 @@
         "capex_yoy": null,
         "revision_breadth": 0.183,
         "revision_level": "POSITIVE",
-        "broadening_state": "INSUFFICIENT_HISTORY",
+        "broadening_state": "MIXED",
         "est_drift_90d": -3.49,
         "guidance_band": "NEUTRAL",
         "guidance_net": 1,
@@ -16360,8 +16345,8 @@
         "language_accel": 1.0,
         "policy_reg_chip": {
           "theme": "rare_earth_critical_min",
-          "summary": "comment close in 1d (2026-10-05); 2 proposed rule(s) last 60d; 8 final rule(s) last 60d",
-          "days_to_comment_close": 1,
+          "summary": "comment close in 0d (2026-10-05); 2 proposed rule(s) last 60d; 8 final rule(s) last 60d",
+          "days_to_comment_close": 0,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 2,
           "rule_finalization_60d": 8,
@@ -16372,13 +16357,13 @@
         "score": 45.0,
         "score_detail": {
           "score": 45.0,
-          "base": 63.5,
+          "base": 63.4,
           "axes": {
             "magnitude": null,
-            "acceleration": 0.5,
+            "acceleration": 0.45,
             "bottleneck": 0.35,
             "pricing_power": 1.0,
-            "underpricing": 0.94,
+            "underpricing": 1.0,
             "purity": null,
             "timing": 0.4
           },
@@ -16388,7 +16373,7 @@
           ],
           "verdict": "watch",
           "physical_confirmed": true,
-          "earliness": 0.9412
+          "earliness": 1.0
         },
         "size_band": "WATCH",
         "size_note": "nothing actionable yet",
@@ -16398,8 +16383,8 @@
           "band": "WATCH",
           "derisk": false,
           "note": "nothing actionable yet",
-          "earliness": 0.9412,
-          "earliness_tilt": 1.2206,
+          "earliness": 1.0,
+          "earliness_tilt": 1.25,
           "cluster_dilution": {
             "cluster_id": "c2",
             "cluster_size": 1,
@@ -16408,7 +16393,7 @@
           },
           "size_mult_breakdown": {
             "stage_cap": 0.1,
-            "earliness_tilt": 1.2206,
+            "earliness_tilt": 1.25,
             "cluster_dilution": 1.0,
             "product": 0.12
           }
@@ -16419,7 +16404,7 @@
         "name": "Defense & Aerospace",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 1d (2026-10-05); 5 proposed rule(s) last 60d; 6 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 0d (2026-10-05); 5 proposed rule(s) last 60d; 6 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -16466,10 +16451,10 @@
         "demand_band": null,
         "demand_strength": null,
         "capex_yoy": null,
-        "revision_breadth": 0.364,
+        "revision_breadth": 0.341,
         "revision_level": "POSITIVE",
-        "broadening_state": "RISING",
-        "est_drift_90d": 1.49,
+        "broadening_state": "ROLLING",
+        "est_drift_90d": 2.03,
         "guidance_band": null,
         "guidance_net": null,
         "guidance_raisers": null,
@@ -16485,8 +16470,8 @@
         "language_accel": 0.25,
         "policy_reg_chip": {
           "theme": "defense_aerospace",
-          "summary": "comment close in 1d (2026-10-05); 5 proposed rule(s) last 60d; 6 final rule(s) last 60d",
-          "days_to_comment_close": 1,
+          "summary": "comment close in 0d (2026-10-05); 5 proposed rule(s) last 60d; 6 final rule(s) last 60d",
+          "days_to_comment_close": 0,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 5,
           "rule_finalization_60d": 6,
@@ -16497,10 +16482,10 @@
         "score": 45.0,
         "score_detail": {
           "score": 45.0,
-          "base": 62.8,
+          "base": 48.5,
           "axes": {
             "magnitude": null,
-            "acceleration": 0.9,
+            "acceleration": 0.35,
             "bottleneck": 0.35,
             "pricing_power": 0.6,
             "underpricing": 0.77,
@@ -16509,7 +16494,6 @@
           },
           "n_axes_live": 5,
           "caps": [
-            "fingerprint-only (annual XBRL) -> capped at 60",
             "WATCH (late) -> capped at 45"
           ],
           "verdict": "watch",
@@ -16542,39 +16526,164 @@
         }
       },
       {
-        "theme": "fintech_payments",
-        "name": "Fintech & Payments",
+        "theme": "cybersecurity",
+        "name": "Cybersecurity",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 1d (2026-10-05); 6 proposed rule(s) last 60d; 10 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 8d (2026-10-13); 4 proposed rule(s) last 60d; 5 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
         "bottleneck_text_only": false,
         "bottleneck_fingerprint_only": true,
         "fingerprint": {
-          "theme": "fintech_payments",
-          "fingerprint_tightness": 0.0,
-          "leg7_member_inventory": null,
-          "leg8_member_backlog": 0.0,
-          "n_legs_live": 1,
+          "theme": "cybersecurity",
+          "fingerprint_tightness": 0.126,
+          "leg7_member_inventory": 0.083,
+          "leg8_member_backlog": 0.168,
+          "n_legs_live": 2,
           "basis": "annual",
           "provisional": true,
           "components": {
             "leg7_member_inventory": {
-              "value": null,
-              "n_reporting": 2,
-              "latest_fy": 2025,
+              "value": 0.083,
+              "n_reporting": 3,
+              "latest_fy": 2026,
               "min_required": 3,
-              "met_gate": false,
+              "met_gate": true,
               "description": "Median YoY change in inventory days (COGS-based, revenue fallback) across theme members. Uses COGS when available (more accurate), falls back to revenue. Negative YoY (falling) \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
               "weight_provisional": 0.5,
-              "n_cogs_based": 1,
-              "n_revenue_based": 1
+              "n_cogs_based": 3,
+              "n_revenue_based": 0
             },
             "leg8_member_backlog": {
-              "value": 0.0,
-              "n_reporting": 3,
+              "value": 0.168,
+              "n_reporting": 4,
+              "latest_fy": 2026,
+              "min_required": 3,
+              "met_gate": true,
+              "description": "Median YoY RPO (RevenueRemainingPerformanceObligation) growth across theme members. Rising RPO \u2192 more backlog \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
+              "weight_provisional": 0.5
+            }
+          },
+          "_shadow_candidates": {
+            "leg7_weight": 0.5,
+            "leg8_weight": 0.5,
+            "note": "provisional equal-weight; shadow calibration pending (Wave 3a/3b)"
+          }
+        },
+        "tightness": 0.13,
+        "bottleneck_regime": false,
+        "demand_band": null,
+        "demand_strength": null,
+        "capex_yoy": null,
+        "revision_breadth": 0.551,
+        "revision_level": "POSITIVE",
+        "broadening_state": "RISING",
+        "est_drift_90d": -1.34,
+        "guidance_band": null,
+        "guidance_net": null,
+        "guidance_raisers": null,
+        "guidance_cutters": null,
+        "altdata_summary": "1 13f add \u00b7 1 activist 13d",
+        "n_altdata_leading": 0,
+        "altdata_members": [],
+        "glut_band": null,
+        "glut_score": null,
+        "theme_feed_summary": null,
+        "divergence_share": null,
+        "ppi_yoy_latest": null,
+        "language_accel": 1.0,
+        "policy_reg_chip": {
+          "theme": "cybersecurity",
+          "summary": "comment close in 8d (2026-10-13); 4 proposed rule(s) last 60d; 5 final rule(s) last 60d",
+          "days_to_comment_close": 8,
+          "days_to_rule_effective": null,
+          "prorule_inflow_60d": 4,
+          "rule_finalization_60d": 5,
+          "next_comment_close_date": "2026-10-13",
+          "next_comment_close_title": "Mandatory Electronic Filing (e-Filing)",
+          "evidence_class": "dated-structured"
+        },
+        "score": 45.0,
+        "score_detail": {
+          "score": 45.0,
+          "base": 47.1,
+          "axes": {
+            "magnitude": null,
+            "acceleration": 0.9,
+            "bottleneck": 0.35,
+            "pricing_power": 0.56,
+            "underpricing": 0.0,
+            "purity": null,
+            "timing": 0.4
+          },
+          "n_axes_live": 5,
+          "caps": [
+            "WATCH (late) -> capped at 45"
+          ],
+          "verdict": "watch",
+          "physical_confirmed": false,
+          "earliness": 0.0
+        },
+        "size_band": "WATCH",
+        "size_note": "nothing actionable yet",
+        "derisk": false,
+        "size_mult": 0.08,
+        "size_detail": {
+          "band": "WATCH",
+          "derisk": false,
+          "note": "nothing actionable yet",
+          "earliness": 0.0,
+          "earliness_tilt": 0.75,
+          "cluster_dilution": {
+            "cluster_id": "c13",
+            "cluster_size": 1,
+            "enb_cluster": null,
+            "factor": 1.0
+          },
+          "size_mult_breakdown": {
+            "stage_cap": 0.1,
+            "earliness_tilt": 0.75,
+            "cluster_dilution": 1.0,
+            "product": 0.08
+          }
+        }
+      },
+      {
+        "theme": "diagnostics_lifesci",
+        "name": "Diagnostics & Life-Science Tools",
+        "stage": "WATCH",
+        "tier": "P",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 8d (2026-10-13); rule effective in 63d; 1 proposed rule(s) last 60d; 4 final rule(s) last 60d",
+        "entry_ready": false,
+        "entry_note": "not a thesis stage \u2014 no entry",
+        "bottleneck_band": "NEUTRAL",
+        "bottleneck_text_only": false,
+        "bottleneck_fingerprint_only": true,
+        "fingerprint": {
+          "theme": "diagnostics_lifesci",
+          "fingerprint_tightness": 0.065,
+          "leg7_member_inventory": 0.033,
+          "leg8_member_backlog": 0.096,
+          "n_legs_live": 2,
+          "basis": "annual",
+          "provisional": true,
+          "components": {
+            "leg7_member_inventory": {
+              "value": 0.033,
+              "n_reporting": 9,
+              "latest_fy": 2025,
+              "min_required": 3,
+              "met_gate": true,
+              "description": "Median YoY change in inventory days (COGS-based, revenue fallback) across theme members. Uses COGS when available (more accurate), falls back to revenue. Negative YoY (falling) \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
+              "weight_provisional": 0.5,
+              "n_cogs_based": 7,
+              "n_revenue_based": 2
+            },
+            "leg8_member_backlog": {
+              "value": 0.096,
+              "n_reporting": 6,
               "latest_fy": 2025,
               "min_required": 3,
               "met_gate": true,
@@ -16588,15 +16697,15 @@
             "note": "provisional equal-weight; shadow calibration pending (Wave 3a/3b)"
           }
         },
-        "tightness": 0.0,
+        "tightness": 0.06,
         "bottleneck_regime": false,
         "demand_band": null,
         "demand_strength": null,
         "capex_yoy": null,
-        "revision_breadth": 0.196,
+        "revision_breadth": 0.576,
         "revision_level": "POSITIVE",
         "broadening_state": "RISING",
-        "est_drift_90d": -0.17,
+        "est_drift_90d": 2.02,
         "guidance_band": "NEUTRAL",
         "guidance_net": 1,
         "guidance_raisers": 1,
@@ -16609,28 +16718,28 @@
         "theme_feed_summary": null,
         "divergence_share": null,
         "ppi_yoy_latest": null,
-        "language_accel": 1.0,
+        "language_accel": 0.0,
         "policy_reg_chip": {
-          "theme": "fintech_payments",
-          "summary": "comment close in 1d (2026-10-05); 6 proposed rule(s) last 60d; 10 final rule(s) last 60d",
-          "days_to_comment_close": 1,
-          "days_to_rule_effective": null,
-          "prorule_inflow_60d": 6,
-          "rule_finalization_60d": 10,
-          "next_comment_close_date": "2026-10-05",
-          "next_comment_close_title": "OCC Rules Regarding the Availability of OCC Information",
+          "theme": "diagnostics_lifesci",
+          "summary": "comment close in 8d (2026-10-13); rule effective in 63d; 1 proposed rule(s) last 60d; 4 final rule(s) last 60d",
+          "days_to_comment_close": 8,
+          "days_to_rule_effective": 63,
+          "prorule_inflow_60d": 1,
+          "rule_finalization_60d": 4,
+          "next_comment_close_date": "2026-10-13",
+          "next_comment_close_title": "Medicare Program; Regulatory Alignment for Predictable and Immediate Device (RAPID) Coverage Pathway",
           "evidence_class": "dated-structured"
         },
         "score": 45.0,
         "score_detail": {
           "score": 45.0,
-          "base": 50.4,
+          "base": 49.9,
           "axes": {
             "magnitude": null,
             "acceleration": 0.9,
             "bottleneck": 0.35,
-            "pricing_power": 0.5,
-            "underpricing": 0.23,
+            "pricing_power": 0.53,
+            "underpricing": 0.18,
             "purity": null,
             "timing": 0.4
           },
@@ -16640,7 +16749,123 @@
           ],
           "verdict": "watch",
           "physical_confirmed": false,
-          "earliness": 0.2353
+          "earliness": 0.1765
+        },
+        "size_band": "WATCH",
+        "size_note": "nothing actionable yet",
+        "derisk": false,
+        "size_mult": 0.06,
+        "size_detail": {
+          "band": "WATCH",
+          "derisk": false,
+          "note": "nothing actionable yet",
+          "earliness": 0.1765,
+          "earliness_tilt": 0.8382,
+          "cluster_dilution": {
+            "cluster_id": "healthcare",
+            "cluster_size": 3,
+            "enb_cluster": 2.13,
+            "factor": 0.71,
+            "note": "dilution = min(1, ENB=2.1 / size=3) = 0.71"
+          },
+          "size_mult_breakdown": {
+            "stage_cap": 0.1,
+            "earliness_tilt": 0.8382,
+            "cluster_dilution": 0.71,
+            "product": 0.06
+          }
+        }
+      },
+      {
+        "theme": "robotics_automation",
+        "name": "Robotics & Automation",
+        "stage": "WATCH",
+        "tier": "P",
+        "rationale": "supply not tight; nothing actionable yet",
+        "entry_ready": false,
+        "entry_note": "not a thesis stage \u2014 no entry",
+        "bottleneck_band": "NEUTRAL",
+        "bottleneck_text_only": false,
+        "bottleneck_fingerprint_only": true,
+        "fingerprint": {
+          "theme": "robotics_automation",
+          "fingerprint_tightness": -0.015,
+          "leg7_member_inventory": -0.206,
+          "leg8_member_backlog": 0.176,
+          "n_legs_live": 2,
+          "basis": "annual",
+          "provisional": true,
+          "components": {
+            "leg7_member_inventory": {
+              "value": -0.206,
+              "n_reporting": 7,
+              "latest_fy": 2025,
+              "min_required": 3,
+              "met_gate": true,
+              "description": "Median YoY change in inventory days (COGS-based, revenue fallback) across theme members. Uses COGS when available (more accurate), falls back to revenue. Negative YoY (falling) \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
+              "weight_provisional": 0.5,
+              "n_cogs_based": 7,
+              "n_revenue_based": 0
+            },
+            "leg8_member_backlog": {
+              "value": 0.176,
+              "n_reporting": 5,
+              "latest_fy": 2025,
+              "min_required": 3,
+              "met_gate": true,
+              "description": "Median YoY RPO (RevenueRemainingPerformanceObligation) growth across theme members. Rising RPO \u2192 more backlog \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
+              "weight_provisional": 0.5
+            }
+          },
+          "_shadow_candidates": {
+            "leg7_weight": 0.5,
+            "leg8_weight": 0.5,
+            "note": "provisional equal-weight; shadow calibration pending (Wave 3a/3b)"
+          }
+        },
+        "tightness": -0.02,
+        "bottleneck_regime": false,
+        "demand_band": null,
+        "demand_strength": null,
+        "capex_yoy": null,
+        "revision_breadth": 0.879,
+        "revision_level": "POSITIVE",
+        "broadening_state": "RISING",
+        "est_drift_90d": 4.25,
+        "guidance_band": "NEUTRAL",
+        "guidance_net": 1,
+        "guidance_raisers": 1,
+        "guidance_cutters": 0,
+        "altdata_summary": null,
+        "n_altdata_leading": 0,
+        "altdata_members": null,
+        "glut_band": null,
+        "glut_score": null,
+        "theme_feed_summary": null,
+        "divergence_share": null,
+        "ppi_yoy_latest": null,
+        "language_accel": 0.0,
+        "policy_reg_chip": null,
+        "score": 45.0,
+        "score_detail": {
+          "score": 45.0,
+          "base": 52.5,
+          "axes": {
+            "magnitude": null,
+            "acceleration": 0.9,
+            "bottleneck": 0.35,
+            "pricing_power": 0.49,
+            "underpricing": 0.35,
+            "purity": null,
+            "timing": 0.4
+          },
+          "n_axes_live": 5,
+          "caps": [
+            "WATCH (late) -> capped at 45"
+          ],
+          "verdict": "watch",
+          "physical_confirmed": false,
+          "earliness": 0.3529
         },
         "size_band": "WATCH",
         "size_note": "nothing actionable yet",
@@ -16650,17 +16875,17 @@
           "band": "WATCH",
           "derisk": false,
           "note": "nothing actionable yet",
-          "earliness": 0.2353,
-          "earliness_tilt": 0.8677,
+          "earliness": 0.3529,
+          "earliness_tilt": 0.9264,
           "cluster_dilution": {
-            "cluster_id": "c12",
+            "cluster_id": "c6",
             "cluster_size": 1,
             "enb_cluster": null,
             "factor": 1.0
           },
           "size_mult_breakdown": {
             "stage_cap": 0.1,
-            "earliness_tilt": 0.8677,
+            "earliness_tilt": 0.9264,
             "cluster_dilution": 1.0,
             "product": 0.09
           }
@@ -16671,7 +16896,7 @@
         "name": "Agriculture & Fertilizer",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 1d (2026-10-05); rule effective in 5d; 13 proposed rule(s) last 60d; 12 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 0d (2026-10-05); rule effective in 4d; 13 proposed rule(s) last 60d; 12 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "LOOSE",
@@ -16718,10 +16943,10 @@
         "demand_band": null,
         "demand_strength": null,
         "capex_yoy": null,
-        "revision_breadth": -0.447,
+        "revision_breadth": -0.466,
         "revision_level": "NEGATIVE",
         "broadening_state": "MIXED",
-        "est_drift_90d": -0.98,
+        "est_drift_90d": -4.17,
         "guidance_band": "NEUTRAL",
         "guidance_net": 1,
         "guidance_raisers": 1,
@@ -16737,25 +16962,25 @@
         "language_accel": -0.33,
         "policy_reg_chip": {
           "theme": "ag_fertilizer",
-          "summary": "comment close in 1d (2026-10-05); rule effective in 5d; 13 proposed rule(s) last 60d; 12 final rule(s) last 60d",
-          "days_to_comment_close": 1,
-          "days_to_rule_effective": 5,
+          "summary": "comment close in 0d (2026-10-05); rule effective in 4d; 13 proposed rule(s) last 60d; 12 final rule(s) last 60d",
+          "days_to_comment_close": 0,
+          "days_to_rule_effective": 4,
           "prorule_inflow_60d": 13,
           "rule_finalization_60d": 12,
           "next_comment_close_date": "2026-10-05",
           "next_comment_close_title": "Notice of Request for Approval of a New Information Collection; National Animal Health Monitoring System; Poultry 2027 U",
           "evidence_class": "dated-structured"
         },
-        "score": 44.5,
+        "score": 43.4,
         "score_detail": {
-          "score": 44.5,
-          "base": 44.5,
+          "score": 43.4,
+          "base": 43.4,
           "axes": {
             "magnitude": null,
             "acceleration": 0.45,
             "bottleneck": 0.1,
             "pricing_power": 0.36,
-            "underpricing": 1.0,
+            "underpricing": 0.94,
             "purity": null,
             "timing": 0.4
           },
@@ -16763,7 +16988,7 @@
           "caps": [],
           "verdict": "watch",
           "physical_confirmed": false,
-          "earliness": 1.0
+          "earliness": 0.9412
         },
         "size_band": "WATCH",
         "size_note": "nothing actionable yet",
@@ -16773,8 +16998,8 @@
           "band": "WATCH",
           "derisk": false,
           "note": "nothing actionable yet",
-          "earliness": 1.0,
-          "earliness_tilt": 1.25,
+          "earliness": 0.9412,
+          "earliness_tilt": 1.2206,
           "cluster_dilution": {
             "cluster_id": "c8",
             "cluster_size": 1,
@@ -16783,7 +17008,7 @@
           },
           "size_mult_breakdown": {
             "stage_cap": 0.1,
-            "earliness_tilt": 1.25,
+            "earliness_tilt": 1.2206,
             "cluster_dilution": 1.0,
             "product": 0.12
           }
@@ -16867,10 +17092,10 @@
           "source_status": "MIXED_REPORTED",
           "freshness": {
             "capture_qualified": true,
-            "capture_finished_at": "2026-10-03T17:43:57.207022+00:00",
-            "capture_age_s": 45010.664897,
+            "capture_finished_at": "2026-10-04T08:09:42.517622+00:00",
+            "capture_age_s": 77439.438934,
             "source_generation": "2026-10-02",
-            "source_generation_age_days": 2,
+            "source_generation_age_days": 3,
             "stale": null,
             "failed_refresh": null
           }
@@ -16924,39 +17149,39 @@
         }
       },
       {
-        "theme": "robotics_automation",
-        "name": "Robotics & Automation",
+        "theme": "fintech_payments",
+        "name": "Fintech & Payments",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 0d (2026-10-05); 6 proposed rule(s) last 60d; 10 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
         "bottleneck_text_only": false,
         "bottleneck_fingerprint_only": true,
         "fingerprint": {
-          "theme": "robotics_automation",
-          "fingerprint_tightness": -0.015,
-          "leg7_member_inventory": -0.206,
-          "leg8_member_backlog": 0.176,
-          "n_legs_live": 2,
+          "theme": "fintech_payments",
+          "fingerprint_tightness": 0.0,
+          "leg7_member_inventory": null,
+          "leg8_member_backlog": 0.0,
+          "n_legs_live": 1,
           "basis": "annual",
           "provisional": true,
           "components": {
             "leg7_member_inventory": {
-              "value": -0.206,
-              "n_reporting": 7,
+              "value": null,
+              "n_reporting": 2,
               "latest_fy": 2025,
               "min_required": 3,
-              "met_gate": true,
+              "met_gate": false,
               "description": "Median YoY change in inventory days (COGS-based, revenue fallback) across theme members. Uses COGS when available (more accurate), falls back to revenue. Negative YoY (falling) \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
               "weight_provisional": 0.5,
-              "n_cogs_based": 7,
-              "n_revenue_based": 0
+              "n_cogs_based": 1,
+              "n_revenue_based": 1
             },
             "leg8_member_backlog": {
-              "value": 0.176,
-              "n_reporting": 5,
+              "value": 0.0,
+              "n_reporting": 3,
               "latest_fy": 2025,
               "min_required": 3,
               "met_gate": true,
@@ -16970,15 +17195,15 @@
             "note": "provisional equal-weight; shadow calibration pending (Wave 3a/3b)"
           }
         },
-        "tightness": -0.02,
+        "tightness": 0.0,
         "bottleneck_regime": false,
         "demand_band": null,
         "demand_strength": null,
         "capex_yoy": null,
-        "revision_breadth": 0.879,
+        "revision_breadth": 0.196,
         "revision_level": "POSITIVE",
         "broadening_state": "ROLLING",
-        "est_drift_90d": 4.25,
+        "est_drift_90d": -0.17,
         "guidance_band": "NEUTRAL",
         "guidance_net": 1,
         "guidance_raisers": 1,
@@ -16991,18 +17216,28 @@
         "theme_feed_summary": null,
         "divergence_share": null,
         "ppi_yoy_latest": null,
-        "language_accel": 0.0,
-        "policy_reg_chip": null,
-        "score": 38.2,
+        "language_accel": 1.0,
+        "policy_reg_chip": {
+          "theme": "fintech_payments",
+          "summary": "comment close in 0d (2026-10-05); 6 proposed rule(s) last 60d; 10 final rule(s) last 60d",
+          "days_to_comment_close": 0,
+          "days_to_rule_effective": null,
+          "prorule_inflow_60d": 6,
+          "rule_finalization_60d": 10,
+          "next_comment_close_date": "2026-10-05",
+          "next_comment_close_title": "OCC Rules Regarding the Availability of OCC Information",
+          "evidence_class": "dated-structured"
+        },
+        "score": 36.1,
         "score_detail": {
-          "score": 38.2,
-          "base": 38.2,
+          "score": 36.1,
+          "base": 36.1,
           "axes": {
             "magnitude": null,
             "acceleration": 0.35,
             "bottleneck": 0.35,
-            "pricing_power": 0.49,
-            "underpricing": 0.35,
+            "pricing_power": 0.5,
+            "underpricing": 0.23,
             "purity": null,
             "timing": 0.4
           },
@@ -17010,7 +17245,7 @@
           "caps": [],
           "verdict": "low / late",
           "physical_confirmed": false,
-          "earliness": 0.3529
+          "earliness": 0.2353
         },
         "size_band": "WATCH",
         "size_note": "nothing actionable yet",
@@ -17020,143 +17255,19 @@
           "band": "WATCH",
           "derisk": false,
           "note": "nothing actionable yet",
-          "earliness": 0.3529,
-          "earliness_tilt": 0.9264,
+          "earliness": 0.2353,
+          "earliness_tilt": 0.8677,
           "cluster_dilution": {
-            "cluster_id": "c6",
+            "cluster_id": "c12",
             "cluster_size": 1,
             "enb_cluster": null,
             "factor": 1.0
           },
           "size_mult_breakdown": {
             "stage_cap": 0.1,
-            "earliness_tilt": 0.9264,
+            "earliness_tilt": 0.8677,
             "cluster_dilution": 1.0,
             "product": 0.09
-          }
-        }
-      },
-      {
-        "theme": "diagnostics_lifesci",
-        "name": "Diagnostics & Life-Science Tools",
-        "stage": "WATCH",
-        "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 9d (2026-10-13); rule effective in 64d; 1 proposed rule(s) last 60d; 5 final rule(s) last 60d",
-        "entry_ready": false,
-        "entry_note": "not a thesis stage \u2014 no entry",
-        "bottleneck_band": "NEUTRAL",
-        "bottleneck_text_only": false,
-        "bottleneck_fingerprint_only": true,
-        "fingerprint": {
-          "theme": "diagnostics_lifesci",
-          "fingerprint_tightness": 0.065,
-          "leg7_member_inventory": 0.033,
-          "leg8_member_backlog": 0.096,
-          "n_legs_live": 2,
-          "basis": "annual",
-          "provisional": true,
-          "components": {
-            "leg7_member_inventory": {
-              "value": 0.033,
-              "n_reporting": 9,
-              "latest_fy": 2025,
-              "min_required": 3,
-              "met_gate": true,
-              "description": "Median YoY change in inventory days (COGS-based, revenue fallback) across theme members. Uses COGS when available (more accurate), falls back to revenue. Negative YoY (falling) \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
-              "weight_provisional": 0.5,
-              "n_cogs_based": 7,
-              "n_revenue_based": 2
-            },
-            "leg8_member_backlog": {
-              "value": 0.096,
-              "n_reporting": 6,
-              "latest_fy": 2025,
-              "min_required": 3,
-              "met_gate": true,
-              "description": "Median YoY RPO (RevenueRemainingPerformanceObligation) growth across theme members. Rising RPO \u2192 more backlog \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
-              "weight_provisional": 0.5
-            }
-          },
-          "_shadow_candidates": {
-            "leg7_weight": 0.5,
-            "leg8_weight": 0.5,
-            "note": "provisional equal-weight; shadow calibration pending (Wave 3a/3b)"
-          }
-        },
-        "tightness": 0.06,
-        "bottleneck_regime": false,
-        "demand_band": null,
-        "demand_strength": null,
-        "capex_yoy": null,
-        "revision_breadth": 0.576,
-        "revision_level": "POSITIVE",
-        "broadening_state": "ROLLING",
-        "est_drift_90d": 2.02,
-        "guidance_band": "NEUTRAL",
-        "guidance_net": 1,
-        "guidance_raisers": 1,
-        "guidance_cutters": 0,
-        "altdata_summary": null,
-        "n_altdata_leading": 0,
-        "altdata_members": null,
-        "glut_band": null,
-        "glut_score": null,
-        "theme_feed_summary": null,
-        "divergence_share": null,
-        "ppi_yoy_latest": null,
-        "language_accel": 0.0,
-        "policy_reg_chip": {
-          "theme": "diagnostics_lifesci",
-          "summary": "comment close in 9d (2026-10-13); rule effective in 64d; 1 proposed rule(s) last 60d; 5 final rule(s) last 60d",
-          "days_to_comment_close": 9,
-          "days_to_rule_effective": 64,
-          "prorule_inflow_60d": 1,
-          "rule_finalization_60d": 5,
-          "next_comment_close_date": "2026-10-13",
-          "next_comment_close_title": "Medicare Program; Regulatory Alignment for Predictable and Immediate Device (RAPID) Coverage Pathway",
-          "evidence_class": "dated-structured"
-        },
-        "score": 35.6,
-        "score_detail": {
-          "score": 35.6,
-          "base": 35.6,
-          "axes": {
-            "magnitude": null,
-            "acceleration": 0.35,
-            "bottleneck": 0.35,
-            "pricing_power": 0.53,
-            "underpricing": 0.18,
-            "purity": null,
-            "timing": 0.4
-          },
-          "n_axes_live": 5,
-          "caps": [],
-          "verdict": "low / late",
-          "physical_confirmed": false,
-          "earliness": 0.1765
-        },
-        "size_band": "WATCH",
-        "size_note": "nothing actionable yet",
-        "derisk": false,
-        "size_mult": 0.06,
-        "size_detail": {
-          "band": "WATCH",
-          "derisk": false,
-          "note": "nothing actionable yet",
-          "earliness": 0.1765,
-          "earliness_tilt": 0.8382,
-          "cluster_dilution": {
-            "cluster_id": "healthcare",
-            "cluster_size": 3,
-            "enb_cluster": 2.13,
-            "factor": 0.71,
-            "note": "dilution = min(1, ENB=2.1 / size=3) = 0.71"
-          },
-          "size_mult_breakdown": {
-            "stage_cap": 0.1,
-            "earliness_tilt": 0.8382,
-            "cluster_dilution": 0.71,
-            "product": 0.06
           }
         }
       },
@@ -17282,129 +17393,6 @@
             "product": 0.11
           }
         }
-      },
-      {
-        "theme": "cybersecurity",
-        "name": "Cybersecurity",
-        "stage": "WATCH",
-        "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 9d (2026-10-13); 4 proposed rule(s) last 60d; 5 final rule(s) last 60d",
-        "entry_ready": false,
-        "entry_note": "not a thesis stage \u2014 no entry",
-        "bottleneck_band": "NEUTRAL",
-        "bottleneck_text_only": false,
-        "bottleneck_fingerprint_only": true,
-        "fingerprint": {
-          "theme": "cybersecurity",
-          "fingerprint_tightness": 0.126,
-          "leg7_member_inventory": 0.083,
-          "leg8_member_backlog": 0.168,
-          "n_legs_live": 2,
-          "basis": "annual",
-          "provisional": true,
-          "components": {
-            "leg7_member_inventory": {
-              "value": 0.083,
-              "n_reporting": 3,
-              "latest_fy": 2026,
-              "min_required": 3,
-              "met_gate": true,
-              "description": "Median YoY change in inventory days (COGS-based, revenue fallback) across theme members. Uses COGS when available (more accurate), falls back to revenue. Negative YoY (falling) \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
-              "weight_provisional": 0.5,
-              "n_cogs_based": 3,
-              "n_revenue_based": 0
-            },
-            "leg8_member_backlog": {
-              "value": 0.168,
-              "n_reporting": 4,
-              "latest_fy": 2026,
-              "min_required": 3,
-              "met_gate": true,
-              "description": "Median YoY RPO (RevenueRemainingPerformanceObligation) growth across theme members. Rising RPO \u2192 more backlog \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
-              "weight_provisional": 0.5
-            }
-          },
-          "_shadow_candidates": {
-            "leg7_weight": 0.5,
-            "leg8_weight": 0.5,
-            "note": "provisional equal-weight; shadow calibration pending (Wave 3a/3b)"
-          }
-        },
-        "tightness": 0.13,
-        "bottleneck_regime": false,
-        "demand_band": null,
-        "demand_strength": null,
-        "capex_yoy": null,
-        "revision_breadth": 0.542,
-        "revision_level": "POSITIVE",
-        "broadening_state": "ROLLING",
-        "est_drift_90d": -1.31,
-        "guidance_band": null,
-        "guidance_net": null,
-        "guidance_raisers": null,
-        "guidance_cutters": null,
-        "altdata_summary": "1 13f add \u00b7 1 activist 13d",
-        "n_altdata_leading": 0,
-        "altdata_members": [],
-        "glut_band": null,
-        "glut_score": null,
-        "theme_feed_summary": null,
-        "divergence_share": null,
-        "ppi_yoy_latest": null,
-        "language_accel": 1.0,
-        "policy_reg_chip": {
-          "theme": "cybersecurity",
-          "summary": "comment close in 9d (2026-10-13); 4 proposed rule(s) last 60d; 5 final rule(s) last 60d",
-          "days_to_comment_close": 9,
-          "days_to_rule_effective": null,
-          "prorule_inflow_60d": 4,
-          "rule_finalization_60d": 5,
-          "next_comment_close_date": "2026-10-13",
-          "next_comment_close_title": "Mandatory Electronic Filing (e-Filing)",
-          "evidence_class": "dated-structured"
-        },
-        "score": 32.8,
-        "score_detail": {
-          "score": 32.8,
-          "base": 32.8,
-          "axes": {
-            "magnitude": null,
-            "acceleration": 0.35,
-            "bottleneck": 0.35,
-            "pricing_power": 0.56,
-            "underpricing": 0.0,
-            "purity": null,
-            "timing": 0.4
-          },
-          "n_axes_live": 5,
-          "caps": [],
-          "verdict": "low / late",
-          "physical_confirmed": false,
-          "earliness": 0.0
-        },
-        "size_band": "WATCH",
-        "size_note": "nothing actionable yet",
-        "derisk": false,
-        "size_mult": 0.08,
-        "size_detail": {
-          "band": "WATCH",
-          "derisk": false,
-          "note": "nothing actionable yet",
-          "earliness": 0.0,
-          "earliness_tilt": 0.75,
-          "cluster_dilution": {
-            "cluster_id": "c13",
-            "cluster_size": 1,
-            "enb_cluster": null,
-            "factor": 1.0
-          },
-          "size_mult_breakdown": {
-            "stage_cap": 0.1,
-            "earliness_tilt": 0.75,
-            "cluster_dilution": 1.0,
-            "product": 0.08
-          }
-        }
       }
     ],
     "dislocation": {
@@ -17419,7 +17407,7 @@
       "trend": "accelerating"
     },
     "late_line_basis": "percentile_cov",
-    "late_line_threshold": 0.5157,
+    "late_line_threshold": 0.5202,
     "late_line_provisional": true,
     "note": "display-only; STAGE = where the leading edge is. T1 bottleneck LEADS, T2 demand confirms, T3 guidance pre-signals the revision, T4 revisions confirm, exit-risk caps the late ones; the 0-100 score ranks edge+quality. ENTRY is deferred to the dislocation overlay.",
     "scored": true,
@@ -17972,10 +17960,29 @@
     "note": "display-only; CANDIDATE emerging bottlenecks \u2014 industries where a majority of un-tracked companies are independently reporting physical scarcity. A candidate is on PROBATION: never a buy, never auto-added; it earns a tracked slot only when a physical correlate fires. The pre-13D discovery layer."
   },
   "subsector_scan": {
-    "asof": "2026-10-02",
-    "n_subsectors": 61,
+    "asof": "2026-10-04",
+    "n_subsectors": 59,
     "n_scarcity_aligned": 5,
     "subsectors": [
+      {
+        "sector": "Industrials",
+        "sub_industry": "Specialty Industrial Machinery",
+        "n_members": 19,
+        "n_covered": 18,
+        "breadth": 0.497,
+        "level_state": "POSITIVE",
+        "est_drift_90d": 1.93,
+        "broadening_state": "RISING",
+        "n_scarcity": 3,
+        "scarcity_members": [
+          "AME",
+          "PH",
+          "TT"
+        ],
+        "stage": "BROADENING",
+        "rationale": "supply TIGHT and revisions rising \u2014 runway confirmed",
+        "text_only": true
+      },
       {
         "sector": "Healthcare",
         "sub_industry": "Medical Devices",
@@ -17984,7 +17991,7 @@
         "breadth": 0.237,
         "level_state": "POSITIVE",
         "est_drift_90d": 0.42,
-        "broadening_state": "ROLLING",
+        "broadening_state": "RISING",
         "n_scarcity": 2,
         "scarcity_members": [
           "ALGN",
@@ -17998,10 +18005,10 @@
         "sector": "Technology",
         "sub_industry": "Communication Equipment",
         "n_members": 7,
-        "n_covered": 7,
+        "n_covered": 6,
         "breadth": 1.0,
         "level_state": "POSITIVE",
-        "est_drift_90d": 13.84,
+        "est_drift_90d": 15.15,
         "broadening_state": "MIXED",
         "n_scarcity": 2,
         "scarcity_members": [
@@ -18032,25 +18039,6 @@
         "text_only": true
       },
       {
-        "sector": "Industrials",
-        "sub_industry": "Specialty Industrial Machinery",
-        "n_members": 19,
-        "n_covered": 19,
-        "breadth": 0.524,
-        "level_state": "POSITIVE",
-        "est_drift_90d": 2.0,
-        "broadening_state": "ROLLING",
-        "n_scarcity": 3,
-        "scarcity_members": [
-          "AME",
-          "PH",
-          "TT"
-        ],
-        "stage": "RE-RATING",
-        "rationale": "supply TIGHT but revisions already broad \u2014 runway maturing, do not chase",
-        "text_only": true
-      },
-      {
         "sector": "Technology",
         "sub_industry": "Semiconductors",
         "n_members": 14,
@@ -18072,23 +18060,6 @@
         "text_only": true
       },
       {
-        "sector": "Industrials",
-        "sub_industry": "Railroads",
-        "n_members": 4,
-        "n_covered": 4,
-        "breadth": 0.955,
-        "level_state": "POSITIVE",
-        "est_drift_90d": 3.73,
-        "broadening_state": "ROLLING",
-        "n_scarcity": 1,
-        "scarcity_members": [
-          "CSX"
-        ],
-        "stage": "RE-RATING",
-        "rationale": "revisions already broad (bottleneck unknown) \u2014 likely late",
-        "text_only": true
-      },
-      {
         "sector": "Technology",
         "sub_industry": "Semiconductor Equipment & Materials",
         "n_members": 5,
@@ -18104,16 +18075,18 @@
         "text_only": true
       },
       {
-        "sector": "Financial",
-        "sub_industry": "Banks - Diversified",
+        "sector": "Industrials",
+        "sub_industry": "Railroads",
         "n_members": 4,
         "n_covered": 3,
-        "breadth": 0.926,
+        "breadth": 0.939,
         "level_state": "POSITIVE",
-        "est_drift_90d": 2.55,
+        "est_drift_90d": 3.17,
         "broadening_state": "ROLLING",
-        "n_scarcity": 0,
-        "scarcity_members": [],
+        "n_scarcity": 1,
+        "scarcity_members": [
+          "CSX"
+        ],
         "stage": "RE-RATING",
         "rationale": "revisions already broad (bottleneck unknown) \u2014 likely late",
         "text_only": true
@@ -18134,6 +18107,21 @@
         "text_only": true
       },
       {
+        "sector": "Industrials",
+        "sub_industry": "Integrated Freight & Logistics",
+        "n_members": 6,
+        "n_covered": 3,
+        "breadth": 0.861,
+        "level_state": "POSITIVE",
+        "est_drift_90d": 8.85,
+        "broadening_state": "ROLLING",
+        "n_scarcity": 0,
+        "scarcity_members": [],
+        "stage": "RE-RATING",
+        "rationale": "revisions already broad (bottleneck unknown) \u2014 likely late",
+        "text_only": true
+      },
+      {
         "sector": "Technology",
         "sub_industry": "Computer Hardware",
         "n_members": 7,
@@ -18141,7 +18129,7 @@
         "breadth": 0.835,
         "level_state": "POSITIVE",
         "est_drift_90d": 32.22,
-        "broadening_state": "RISING",
+        "broadening_state": "ROLLING",
         "n_scarcity": 1,
         "scarcity_members": [
           "SMCI"
@@ -18185,36 +18173,6 @@
         "text_only": true
       },
       {
-        "sector": "Industrials",
-        "sub_industry": "Integrated Freight & Logistics",
-        "n_members": 6,
-        "n_covered": 4,
-        "breadth": 0.787,
-        "level_state": "POSITIVE",
-        "est_drift_90d": 5.5,
-        "broadening_state": "ROLLING",
-        "n_scarcity": 0,
-        "scarcity_members": [],
-        "stage": "RE-RATING",
-        "rationale": "revisions already broad (bottleneck unknown) \u2014 likely late",
-        "text_only": true
-      },
-      {
-        "sector": "Healthcare",
-        "sub_industry": "Healthcare Plans",
-        "n_members": 6,
-        "n_covered": 5,
-        "breadth": 0.734,
-        "level_state": "POSITIVE",
-        "est_drift_90d": 5.46,
-        "broadening_state": "RISING",
-        "n_scarcity": 0,
-        "scarcity_members": [],
-        "stage": "RE-RATING",
-        "rationale": "revisions already broad (bottleneck unknown) \u2014 likely late",
-        "text_only": true
-      },
-      {
         "sector": "Technology",
         "sub_industry": "Electronic Components",
         "n_members": 6,
@@ -18222,11 +18180,26 @@
         "breadth": 0.713,
         "level_state": "POSITIVE",
         "est_drift_90d": 3.84,
-        "broadening_state": "INSUFFICIENT_HISTORY",
+        "broadening_state": "ROLLING",
         "n_scarcity": 1,
         "scarcity_members": [
           "COHR"
         ],
+        "stage": "RE-RATING",
+        "rationale": "revisions already broad (bottleneck unknown) \u2014 likely late",
+        "text_only": true
+      },
+      {
+        "sector": "Healthcare",
+        "sub_industry": "Diagnostics & Research",
+        "n_members": 12,
+        "n_covered": 12,
+        "breadth": 0.693,
+        "level_state": "POSITIVE",
+        "est_drift_90d": 1.19,
+        "broadening_state": "RISING",
+        "n_scarcity": 0,
+        "scarcity_members": [],
         "stage": "RE-RATING",
         "rationale": "revisions already broad (bottleneck unknown) \u2014 likely late",
         "text_only": true
@@ -18248,12 +18221,12 @@
       },
       {
         "sector": "Healthcare",
-        "sub_industry": "Diagnostics & Research",
-        "n_members": 12,
-        "n_covered": 12,
-        "breadth": 0.681,
+        "sub_industry": "Healthcare Plans",
+        "n_members": 6,
+        "n_covered": 4,
+        "breadth": 0.667,
         "level_state": "POSITIVE",
-        "est_drift_90d": 1.19,
+        "est_drift_90d": 3.63,
         "broadening_state": "ROLLING",
         "n_scarcity": 0,
         "scarcity_members": [],
@@ -18281,10 +18254,10 @@
         "sub_industry": "Software - Infrastructure",
         "n_members": 15,
         "n_covered": 12,
-        "breadth": 0.636,
+        "breadth": 0.64,
         "level_state": "POSITIVE",
-        "est_drift_90d": 1.94,
-        "broadening_state": "ROLLING",
+        "est_drift_90d": 1.98,
+        "broadening_state": "RISING",
         "n_scarcity": 1,
         "scarcity_members": [
           "CDNS"
@@ -18301,7 +18274,7 @@
         "breadth": 0.521,
         "level_state": "POSITIVE",
         "est_drift_90d": 1.17,
-        "broadening_state": "INSUFFICIENT_HISTORY",
+        "broadening_state": "RISING",
         "n_scarcity": 0,
         "scarcity_members": [],
         "stage": "RE-RATING",
@@ -18346,7 +18319,7 @@
         "breadth": 0.507,
         "level_state": "POSITIVE",
         "est_drift_90d": 5.04,
-        "broadening_state": "RISING",
+        "broadening_state": "ROLLING",
         "n_scarcity": 0,
         "scarcity_members": [],
         "stage": "RE-RATING",
@@ -18358,9 +18331,24 @@
         "sub_industry": "Building Materials",
         "n_members": 3,
         "n_covered": 3,
-        "breadth": -0.667,
+        "breadth": -0.651,
         "level_state": "NEGATIVE",
-        "est_drift_90d": -3.62,
+        "est_drift_90d": -4.8,
+        "broadening_state": "MIXED",
+        "n_scarcity": 0,
+        "scarcity_members": [],
+        "stage": "WATCH",
+        "rationale": "revisions present (bottleneck unknown)",
+        "text_only": true
+      },
+      {
+        "sector": "Consumer Cyclical",
+        "sub_industry": "Resorts & Casinos",
+        "n_members": 3,
+        "n_covered": 3,
+        "breadth": -0.595,
+        "level_state": "NEGATIVE",
+        "est_drift_90d": -7.65,
         "broadening_state": "MIXED",
         "n_scarcity": 0,
         "scarcity_members": [],
@@ -18369,11 +18357,11 @@
         "text_only": true
       }
     ],
-    "all_count": 61,
+    "all_count": 59,
     "note": "display-only; the cascade signature (text scarcity x revision breadth) over all 113 sub-industries. The bottleneck is a TEXT-ONLY proxy (EDGAR scarcity language), not FRED-confirmed \u2014 a screen to investigate, not a confirmed thesis. Complements the curated 18-theme cascade and the small-cap discovery layer."
   },
   "foresight_convergence": {
-    "asof": "2026-10-02",
+    "asof": "2026-10-04",
     "n_items": 18,
     "ranked": [
       {
@@ -18490,12 +18478,12 @@
           "altdata": true,
           "edgar_scarcity": true
         },
-        "earliness": 0.941,
+        "earliness": 1.0,
         "earliness_absent": false,
         "earliness_available": true,
         "n_earliness_legs": 3,
         "physical_confirmed": true,
-        "heat": 0.271,
+        "heat": 0.287,
         "score": 45.0,
         "size_band": "WATCH",
         "signals": [
@@ -18650,7 +18638,7 @@
         "n_earliness_legs": 3,
         "physical_confirmed": false,
         "heat": 0.157,
-        "score": 50.1,
+        "score": 60.0,
         "size_band": "WATCH",
         "signals": [
           "edgar_scarcity"
@@ -18727,8 +18715,34 @@
         ]
       },
       {
-        "theme": "fintech_payments",
-        "name": "Fintech & Payments",
+        "theme": "cybersecurity",
+        "name": "Cybersecurity",
+        "stage": "WATCH",
+        "lit_sources": [],
+        "n_lit": 0,
+        "n_available": 3,
+        "source_available": {
+          "physical": true,
+          "demand": false,
+          "guidance": false,
+          "altdata": true,
+          "edgar_scarcity": true
+        },
+        "earliness": 0.0,
+        "earliness_absent": false,
+        "earliness_available": true,
+        "n_earliness_legs": 3,
+        "physical_confirmed": false,
+        "heat": 0.0,
+        "score": 45.0,
+        "size_band": "WATCH",
+        "signals": [],
+        "n_signals": 0,
+        "cross_surface": []
+      },
+      {
+        "theme": "diagnostics_lifesci",
+        "name": "Diagnostics & Life-Science Tools",
         "stage": "WATCH",
         "lit_sources": [],
         "n_lit": 0,
@@ -18740,7 +18754,33 @@
           "altdata": true,
           "edgar_scarcity": true
         },
-        "earliness": 0.235,
+        "earliness": 0.176,
+        "earliness_absent": false,
+        "earliness_available": true,
+        "n_earliness_legs": 3,
+        "physical_confirmed": false,
+        "heat": 0.0,
+        "score": 45.0,
+        "size_band": "WATCH",
+        "signals": [],
+        "n_signals": 0,
+        "cross_surface": []
+      },
+      {
+        "theme": "robotics_automation",
+        "name": "Robotics & Automation",
+        "stage": "WATCH",
+        "lit_sources": [],
+        "n_lit": 0,
+        "n_available": 4,
+        "source_available": {
+          "physical": true,
+          "demand": false,
+          "guidance": true,
+          "altdata": true,
+          "edgar_scarcity": true
+        },
+        "earliness": 0.353,
         "earliness_absent": false,
         "earliness_available": true,
         "n_earliness_legs": 3,
@@ -18766,13 +18806,13 @@
           "altdata": true,
           "edgar_scarcity": true
         },
-        "earliness": 1.0,
+        "earliness": 0.941,
         "earliness_absent": false,
         "earliness_available": true,
         "n_earliness_legs": 3,
         "physical_confirmed": false,
         "heat": 0.0,
-        "score": 44.5,
+        "score": 43.4,
         "size_band": "WATCH",
         "signals": [],
         "n_signals": 0,
@@ -18805,8 +18845,8 @@
         "cross_surface": []
       },
       {
-        "theme": "robotics_automation",
-        "name": "Robotics & Automation",
+        "theme": "fintech_payments",
+        "name": "Fintech & Payments",
         "stage": "WATCH",
         "lit_sources": [],
         "n_lit": 0,
@@ -18818,39 +18858,13 @@
           "altdata": true,
           "edgar_scarcity": true
         },
-        "earliness": 0.353,
+        "earliness": 0.235,
         "earliness_absent": false,
         "earliness_available": true,
         "n_earliness_legs": 3,
         "physical_confirmed": false,
         "heat": 0.0,
-        "score": 38.2,
-        "size_band": "WATCH",
-        "signals": [],
-        "n_signals": 0,
-        "cross_surface": []
-      },
-      {
-        "theme": "diagnostics_lifesci",
-        "name": "Diagnostics & Life-Science Tools",
-        "stage": "WATCH",
-        "lit_sources": [],
-        "n_lit": 0,
-        "n_available": 4,
-        "source_available": {
-          "physical": true,
-          "demand": false,
-          "guidance": true,
-          "altdata": true,
-          "edgar_scarcity": true
-        },
-        "earliness": 0.176,
-        "earliness_absent": false,
-        "earliness_available": true,
-        "n_earliness_legs": 3,
-        "physical_confirmed": false,
-        "heat": 0.0,
-        "score": 35.6,
+        "score": 36.1,
         "size_band": "WATCH",
         "signals": [],
         "n_signals": 0,
@@ -18881,32 +18895,6 @@
         "signals": [],
         "n_signals": 0,
         "cross_surface": []
-      },
-      {
-        "theme": "cybersecurity",
-        "name": "Cybersecurity",
-        "stage": "WATCH",
-        "lit_sources": [],
-        "n_lit": 0,
-        "n_available": 3,
-        "source_available": {
-          "physical": true,
-          "demand": false,
-          "guidance": false,
-          "altdata": true,
-          "edgar_scarcity": true
-        },
-        "earliness": 0.0,
-        "earliness_absent": false,
-        "earliness_available": true,
-        "n_earliness_legs": 3,
-        "physical_confirmed": false,
-        "heat": 0.0,
-        "score": 32.8,
-        "size_band": "WATCH",
-        "signals": [],
-        "n_signals": 0,
-        "cross_surface": []
       }
     ],
     "heating_up": [],
@@ -18920,35 +18908,35 @@
     "note": "W4a rebuild: HEAT = n_lit_sources / n_available_sources [\u00d7 earliness when measured \u2014 dropped, not filled, when absent].  5 distinct data feeds (physical \u00b7 demand \u00b7 guidance \u00b7 altdata \u00b7 edgar_scarcity \u2014 the old subsector_scarcity + discovery_echo were one EDGAR parquet, now counted once). Dark sources leave the denominator \u2014 no outage penalty.  Earliness from engine/foresight_earliness.py (attention-based, Q3); absent below 2 usable legs \u2192 factor DROPPED (not laundered as neutral 0.5).  Physical numeric bonus \u00d71.15 when genuinely TIGHT/SOLD_OUT.  Threshold 0.40 PROVISIONAL.  Meta-driver cards emit for \u22653 co-heating same-cluster themes.  Cross-theme heats reflect agreement among AVAILABLE surfaces only \u2014 themes with different data coverage are not on a fully comparable scale."
   },
   "foresight_analyst": {
-    "regime_read": "Only data_center_power shows coherent multi-surface convergence: tightening physical conditions, accelerating customer demand, and rising management guidance align, though the signal remains a watch rather than a confirmed scarcity regime. Other themes either lack independent confirmation or pair accelerating demand with neutral physical conditions.",
-    "regime_read_zh": "\u76ee\u524d\u53ea\u6709 data_center_power \u5448\u73b0\u8fde\u8d2f\u7684\u591a\u7ef4\u5ea6\u5171\u632f\uff1a\u5b9e\u4f53\u4f9b\u7ed9\u6761\u4ef6\u8d8b\u7d27\u3001\u5ba2\u6237\u9700\u6c42\u52a0\u901f\u3001\u7ba1\u7406\u5c42\u6307\u5f15\u4e0a\u8c03\uff0c\u4f46\u8be5\u4fe1\u53f7\u4ecd\u5904\u4e8e\u89c2\u5bdf\u9636\u6bb5\uff0c\u5c1a\u672a\u5f62\u6210\u5df2\u786e\u8ba4\u7684\u7a00\u7f3a\u683c\u5c40\u3002\u5176\u4ed6\u4e3b\u9898\u8981\u4e48\u7f3a\u5c11\u72ec\u7acb\u9a8c\u8bc1\uff0c\u8981\u4e48\u9700\u6c42\u52a0\u901f\u4f46\u5b9e\u4f53\u4f9b\u7ed9\u4ecd\u5c5e\u4e2d\u6027\u3002",
+    "regime_read": "Only data_center_power shows coherent multi-surface alignment: a tightening physical backdrop, accelerating customer demand, and rising guidance while analyst revisions retain some room to adjust. Other themes rely on a single leg or pair accelerating demand with neutral physical conditions, so they do not qualify.",
+    "regime_read_zh": "\u76ee\u524d\u53ea\u6709 data_center_power \u5448\u73b0\u8fde\u8d2f\u7684\u591a\u7ef4\u5171\u632f\uff1a\u5b9e\u4f53\u74f6\u9888\u8d8b\u7d27\u3001\u5ba2\u6237\u9700\u6c42\u52a0\u901f\u3001\u7ba1\u7406\u5c42\u6307\u5f15\u4e0a\u8c03\uff0c\u540c\u65f6\u5206\u6790\u5e08\u4fee\u6b63\u4ecd\u7559\u6709\u4e00\u5b9a\u8c03\u6574\u7a7a\u95f4\u3002\u5176\u4ed6\u4e3b\u9898\u8981\u4e48\u53ea\u6709\u5355\u4e00\u4fe1\u53f7\uff0c\u8981\u4e48\u9700\u6c42\u52a0\u901f\u4f46\u5b9e\u4f53\u4f9b\u7ed9\u4ecd\u5c5e\u4e2d\u6027\uff0c\u56e0\u6b64\u4e0d\u8db3\u4ee5\u5f62\u6210\u6709\u6548\u6536\u655b\u3002",
     "theses": [
       {
         "theme": "data_center_power",
-        "mechanism": "Accelerating customer deployment is pressing against a physical power-and-cooling system that is beginning to tighten, while management teams are raising guidance in response to the same demand pull [demand] [physical] [guidance]. The alignment suggests operating demand is reaching suppliers before the board classifies supply as fully tight.",
-        "non_obvious": "The hard-to-see pattern is a transition signal: physical conditions are tightening but not yet classified as outright tight, while customer capex and management guidance already point in the same direction [physical] [demand] [guidance]. That sequencing can precede a fully recognized bottleneck, although revision breadth shows the theme is not wholly undiscovered.",
+        "mechanism": "Accelerating customer capex is meeting a physical bottleneck that has begun tightening, giving suppliers enough visibility to raise guidance before analyst revisions appear fully mature [demand] [physical] [guidance].",
+        "non_obvious": "The important pattern is not demand growth alone, but the sequence across independent legs: customers accelerate spending, physical conditions tighten, and management teams raise guidance while revision breadth still leaves some unpriced runway [demand] [physical] [guidance].",
         "kill_criteria": [
-          "The physical bottleneck band loosens to NEUTRAL or weaker while demand remains unchanged [physical].",
-          "The demand band falls from ACCELERATING to NEUTRAL or weaker [demand].",
-          "The guidance band turns from RAISING to NEUTRAL or CUTTING [guidance].",
-          "Guidance raisers disappear, breaking confirmation between customer demand and management commentary [guidance]."
+          "The physical bottleneck loosens from TIGHTENING to NEUTRAL [physical].",
+          "Customer demand falls from ACCELERATING to NEUTRAL or weaker [demand].",
+          "Management guidance stops rising or turns to cuts [guidance].",
+          "Revision breadth broadens materially and then rolls over without continued physical tightening or guidance support [physical] [guidance]."
         ],
         "evidence": [
           {
-            "text": "physical: bottleneck band is TIGHTENING and physically confirmed",
+            "text": "Physical bottleneck: TIGHTENING [physical].",
             "ungrounded": true
           },
           {
-            "text": "demand: demand band is ACCELERATING",
+            "text": "Customer capex demand: ACCELERATING [demand].",
             "ungrounded": true
           },
           {
-            "text": "guidance: guidance band is RAISING with multiple raisers",
+            "text": "Management guidance: RAISING [guidance].",
             "ungrounded": true
           }
         ],
         "evidence_display": [],
-        "dissent": "The board explicitly says supply is not tight, and revision breadth is already fairly broad; the apparent convergence may therefore reflect a recognized demand cycle rather than an early scarcity transition.",
+        "dissent": "The board's own rationale says supply is not yet tight, so the physical leg may represent an early directional change rather than a binding scarcity; if it fails to intensify, the alignment could be ordinary demand strength rather than durable convergence [physical].",
         "confidence": "medium",
         "n_grounded": 0,
         "n_total_evidence": 3,
@@ -18956,12 +18944,12 @@
       }
     ],
     "confidence": "medium",
-    "asof": "2026-10-02",
+    "asof": "2026-10-04",
     "n_theses": 1,
     "disclaimer": "An AI reading of the desk's OWN deterministic convergence \u2014 checkable and forward-graded, never a price forecast."
   },
   "thesis_monitor": {
-    "asof": "2026-10-02",
+    "asof": "2026-10-04",
     "n_open": 11,
     "n_broken": 9,
     "n_weakening": 0,
@@ -19013,14 +19001,14 @@
         "n_criteria": 2,
         "llm_mechanism": null,
         "llm_status": "INTACT",
-        "llm_heat_at_open": 0.426,
+        "llm_heat_at_open": 0.386,
         "llm_heat_now": 0.386,
-        "llm_opened_asof": "2026-10-02",
+        "llm_opened_asof": "2026-10-04",
         "llm_kill_criteria": [
-          "The physical bottleneck moves from TIGHTENING to NEUTRAL or looser.",
-          "Customer demand moves from ACCELERATING to NEUTRAL or decelerating.",
-          "Management guidance moves from RAISING to NEUTRAL or cuts.",
-          "Revision breadth broadens and then rolls over while either the physical or guidance leg weakens."
+          "The physical bottleneck band falls from TIGHTENING to NEUTRAL or looser while demand remains active.",
+          "The demand band falls from ACCELERATING to NEUTRAL or contracting.",
+          "The guidance band moves from RAISING to NEUTRAL or cuts.",
+          "Revision breadth rolls over materially while either physical tightening or guidance support also weakens."
         ]
       },
       {
@@ -19080,7 +19068,7 @@
         "llm_mechanism": null,
         "llm_status": "BROKEN",
         "llm_heat_at_open": 0.287,
-        "llm_heat_now": 0.271,
+        "llm_heat_now": 0.287,
         "llm_opened_asof": "2026-09-23",
         "llm_kill_criteria": [
           "guidance_raisers fails to accumulate (no additional raisings in the next two quarters)",
@@ -20305,7 +20293,7 @@
     }
   },
   "ignition_radar": {
-    "as_of": "2026-10-03",
+    "as_of": "2026-10-04",
     "data_session": "2026-10-02",
     "state": "off",
     "k_count": 0,
@@ -20607,7 +20595,7 @@
       "n_qualifying": 22,
       "null": false,
       "floor": "state in igniting/running (pre-registered ALERT_STATES); empty when nothing clears \u2014 honest null",
-      "as_of": "2026-10-03"
+      "as_of": "2026-10-04"
     },
     "narrow_top": {
       "basket_id": "SMH",
@@ -20621,7 +20609,7 @@
       "phase": null
     },
     "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-    "_timing_s": 2.13,
+    "_timing_s": 1.91,
     "forward_log": {
       "market": "us",
       "n_graded": 16,
@@ -20839,7 +20827,7 @@
         }
       }
     },
-    "_timing_s": 0.12
+    "_timing_s": 0.1
   },
   "mag7_washout": {
     "schema": "mag7_washout.v1",
@@ -20876,8 +20864,8 @@
   },
   "index_momentum": {
     "organ": "index_momentum.v1",
-    "as_of": "2026-10-03",
-    "data_as_of": "2026-10-02",
+    "as_of": "2026-10-04",
+    "data_as_of": "2026-10-05",
     "authority": {
       "rank": false,
       "size": false,
@@ -21042,18 +21030,6 @@
                 "quality_tag": "ordinary",
                 "us_confirm": false,
                 "global_washout_turn": false
-              },
-              {
-                "index": "QQQ",
-                "grid": "1D",
-                "date": "2026-09-04",
-                "direction": "bull",
-                "depth_at_cross": -1.305,
-                "depth_pctile": 42.2,
-                "hist_vel3": 0.458,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
               }
             ]
           },
@@ -21090,30 +21066,6 @@
                 "depth_at_cross": -3.609,
                 "depth_pctile": 26.9,
                 "hist_vel3": -0.343,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
-              },
-              {
-                "index": "QQQ",
-                "grid": "2B",
-                "date": "2026-09-04",
-                "direction": "bull",
-                "depth_at_cross": -3.135,
-                "depth_pctile": 29.2,
-                "hist_vel3": -0.146,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
-              },
-              {
-                "index": "QQQ",
-                "grid": "2B",
-                "date": "2026-09-02",
-                "direction": "bear",
-                "depth_at_cross": -3.291,
-                "depth_pctile": 28.6,
-                "hist_vel3": -0.154,
                 "quality_tag": "ordinary",
                 "us_confirm": false,
                 "global_washout_turn": false
@@ -21317,18 +21269,6 @@
                 "depth_pctile": 29.8,
                 "hist_vel3": -0.884,
                 "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
-              },
-              {
-                "index": "SOXX",
-                "grid": "1D",
-                "date": "2026-09-04",
-                "direction": "bull",
-                "depth_at_cross": -4.657,
-                "depth_pctile": 18.7,
-                "hist_vel3": 0.524,
-                "quality_tag": "trap_zone",
                 "us_confirm": false,
                 "global_washout_turn": false
               }
@@ -21879,18 +21819,6 @@
                 "quality_tag": "ordinary",
                 "us_confirm": false,
                 "global_washout_turn": false
-              },
-              {
-                "index": "000001.SS",
-                "grid": "1D",
-                "date": "2026-09-04",
-                "direction": "bear",
-                "depth_at_cross": 2.925,
-                "depth_pctile": 70.6,
-                "hist_vel3": -0.917,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
               }
             ]
           },
@@ -21947,20 +21875,7 @@
             "pctile_window_days": 1970,
             "fast_reclaim": false,
             "as_of": "2026-09-25",
-            "recent_events": [
-              {
-                "index": "000001.SS",
-                "grid": "W-FRI",
-                "date": "2026-09-04",
-                "direction": "bull",
-                "depth_at_cross": -7.86,
-                "depth_pctile": 11.3,
-                "hist_vel3": 0.748,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
-              }
-            ]
+            "recent_events": []
           }
         }
       },
@@ -22006,18 +21921,6 @@
                 "quality_tag": "ordinary",
                 "us_confirm": false,
                 "global_washout_turn": false
-              },
-              {
-                "index": "510300.SS",
-                "grid": "1D",
-                "date": "2026-09-02",
-                "direction": "bear",
-                "depth_at_cross": -1.975,
-                "depth_pctile": 37.4,
-                "hist_vel3": -0.18,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
               }
             ]
           },
@@ -22054,18 +21957,6 @@
                 "depth_at_cross": -5.456,
                 "depth_pctile": 15.6,
                 "hist_vel3": 0.384,
-                "quality_tag": "trap_zone",
-                "us_confirm": false,
-                "global_washout_turn": false
-              },
-              {
-                "index": "510300.SS",
-                "grid": "2B",
-                "date": "2026-09-04",
-                "direction": "bear",
-                "depth_at_cross": -5.028,
-                "depth_pctile": 17.9,
-                "hist_vel3": -0.21,
                 "quality_tag": "trap_zone",
                 "us_confirm": false,
                 "global_washout_turn": false
@@ -22207,18 +22098,6 @@
                 "quality_tag": "ordinary",
                 "us_confirm": false,
                 "global_washout_turn": false
-              },
-              {
-                "index": "399001.SZ",
-                "grid": "2B",
-                "date": "2026-09-03",
-                "direction": "bear",
-                "depth_at_cross": -7.099,
-                "depth_pctile": 10.5,
-                "hist_vel3": -0.152,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
               }
             ]
           },
@@ -22355,18 +22234,6 @@
                 "quality_tag": "ordinary",
                 "us_confirm": false,
                 "global_washout_turn": false
-              },
-              {
-                "index": "^KS11",
-                "grid": "1D",
-                "date": "2026-09-03",
-                "direction": "bear",
-                "depth_at_cross": -0.826,
-                "depth_pctile": 43.5,
-                "hist_vel3": -0.688,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
               }
             ]
           },
@@ -22421,17 +22288,17 @@
         "region": "INTL",
         "grids": {
           "1D": {
-            "macd": 3.49,
-            "signal": 2.778,
-            "hist": 0.712,
-            "hist_vel3": 0.056,
-            "k": 92.004,
-            "d": 84.68,
-            "depth_pctile": 70.595,
+            "macd": 4.473,
+            "signal": 3.343,
+            "hist": 1.13,
+            "hist_vel3": 0.566,
+            "k": 98.493,
+            "d": 90.702,
+            "depth_pctile": 77.143,
             "pctile_window_bars": 2520,
             "pctile_window_days": 3528,
             "fast_reclaim": false,
-            "as_of": "2026-10-02",
+            "as_of": "2026-10-05",
             "recent_events": [
               {
                 "index": "^TWII",
@@ -22460,45 +22327,32 @@
             ]
           },
           "2B": {
-            "macd": -2.554,
-            "signal": -3.326,
-            "hist": 0.772,
-            "hist_vel3": 0.316,
+            "macd": -1.715,
+            "signal": -2.789,
+            "hist": 1.074,
+            "hist_vel3": 0.352,
             "k": 90.071,
-            "d": 85.319,
-            "depth_pctile": 32.897,
+            "d": 89.698,
+            "depth_pctile": 39.286,
             "pctile_window_bars": 2520,
             "pctile_window_days": 3528,
             "fast_reclaim": false,
-            "as_of": "2026-10-01",
+            "as_of": "2026-10-05",
             "recent_events": []
           },
           "3B": {
-            "macd": -5.253,
-            "signal": -5.779,
-            "hist": 0.525,
-            "hist_vel3": 0.455,
-            "k": 92.052,
-            "d": 84.486,
-            "depth_pctile": 19.128,
-            "pctile_window_bars": 2316,
-            "pctile_window_days": 3242,
+            "macd": -4.531,
+            "signal": -5.363,
+            "hist": 0.831,
+            "hist_vel3": 0.622,
+            "k": 96.555,
+            "d": 90.258,
+            "depth_pctile": 23.392,
+            "pctile_window_bars": 2317,
+            "pctile_window_days": 3244,
             "fast_reclaim": false,
-            "as_of": "2026-09-30",
-            "recent_events": [
-              {
-                "index": "^TWII",
-                "grid": "3B",
-                "date": "2026-09-02",
-                "direction": "bull",
-                "depth_at_cross": -6.755,
-                "depth_pctile": 13.3,
-                "hist_vel3": 0.68,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
-              }
-            ]
+            "as_of": "2026-10-05",
+            "recent_events": []
           },
           "W-FRI": {
             "macd": -0.906,
@@ -22546,7 +22400,7 @@
       ]
     },
     "n_roster": 13,
-    "_timing_s": 2.06
+    "_timing_s": 2.03
   },
   "vol_shock": {
     "score": 37.7,
@@ -22787,14 +22641,14 @@
           "key": "A3_news",
           "label": "News bull-ratio (cohort)",
           "label_zh": "\u65b0\u95fb\u770b\u591a\u6bd4\u4f8b",
-          "value": 0.64,
+          "value": 0.63,
           "sub": null,
           "weight": 0.0,
           "available": false,
           "scored": false,
           "points": null,
-          "note": "cohort news bull-ratio 0.64 \u00b7 young series, scored 0",
-          "note_zh": "\u6210\u5206\u65b0\u95fb\u770b\u591a\u6bd4 0.64 \u00b7 \u6570\u636e\u5c1a\u77ed\uff0c\u8ba1 0",
+          "note": "cohort news bull-ratio 0.63 \u00b7 young series, scored 0",
+          "note_zh": "\u6210\u5206\u65b0\u95fb\u770b\u591a\u6bd4 0.63 \u00b7 \u6570\u636e\u5c1a\u77ed\uff0c\u8ba1 0",
           "color": "#888",
           "pill": "accruing",
           "thin": false
@@ -22819,14 +22673,14 @@
           "key": "A6_crypto",
           "label": "Crypto Fear & Greed (cross-asset)",
           "label_zh": "\u52a0\u5bc6\u6050\u60e7\u8d2a\u5a6a",
-          "value": 67,
+          "value": 70,
           "sub": null,
           "weight": 0.0,
           "available": false,
           "scored": false,
           "points": null,
-          "note": "crypto Fear&Greed 67 (greed) \u00b7 cross-asset confirm, scored 0",
-          "note_zh": "\u52a0\u5bc6\u6050\u60e7\u8d2a\u5a6a 67\uff08\u8d2a\u5a6a\uff09\u00b7 \u8de8\u8d44\u4ea7\u786e\u8ba4\uff0c\u8ba1 0",
+          "note": "crypto Fear&Greed 70 (greed) \u00b7 cross-asset confirm, scored 0",
+          "note_zh": "\u52a0\u5bc6\u6050\u60e7\u8d2a\u5a6a 70\uff08\u8d2a\u5a6a\uff09\u00b7 \u8de8\u8d44\u4ea7\u786e\u8ba4\uff0c\u8ba1 0",
           "color": "#888",
           "pill": "accruing",
           "thin": false
@@ -25268,62 +25122,62 @@
       {
         "ticker": "GC=F",
         "name": "Gold",
-        "price": 4162.3,
+        "price": 4187.3,
         "above50": false,
         "above200": false,
-        "pct_vs_50dma": -5.9,
-        "pct_vs_200dma": -8.5,
-        "rsi14": 31.0,
+        "pct_vs_50dma": -5.3,
+        "pct_vs_200dma": -7.9,
+        "rsi14": 35.0,
         "macd_pos": false,
-        "off_52w_high_pct": -21.7,
-        "season_this": "Oct: +0.1% avg, up 48% of years (n=27)",
-        "season_this_zh": "10\u6708\uff1a\u5e73\u5747 +0.1%\uff0c48% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-        "mom_60d_pct": 0.3
+        "off_52w_high_pct": -21.3,
+        "season_this": "Oct: +0.1% avg, up 52% of years (n=27)",
+        "season_this_zh": "10\u6708\uff1a\u5e73\u5747 +0.1%\uff0c52% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
+        "mom_60d_pct": 3.4
       },
       {
         "ticker": "CL=F",
         "name": "Crude Oil",
-        "price": 91.11,
+        "price": 90.62,
         "above50": true,
         "above200": true,
-        "pct_vs_50dma": 1.4,
-        "pct_vs_200dma": 8.0,
-        "rsi14": 46.0,
+        "pct_vs_50dma": 0.5,
+        "pct_vs_200dma": 7.2,
+        "rsi14": 45.0,
         "macd_pos": false,
-        "off_52w_high_pct": -19.3,
+        "off_52w_high_pct": -19.8,
         "season_this": "Oct: -1.7% avg, up 48% of years (n=27)",
         "season_this_zh": "10\u6708\uff1a\u5e73\u5747 -1.7%\uff0c48% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-        "mom_60d_pct": 4.9
+        "mom_60d_pct": -1.7
       },
       {
         "ticker": "HG=F",
         "name": "Copper",
-        "price": 6.49,
-        "above50": false,
+        "price": 6.62,
+        "above50": true,
         "above200": true,
-        "pct_vs_50dma": -1.5,
-        "pct_vs_200dma": 5.0,
-        "rsi14": 44.0,
+        "pct_vs_50dma": 0.5,
+        "pct_vs_200dma": 7.0,
+        "rsi14": 52.0,
         "macd_pos": false,
-        "off_52w_high_pct": -4.6,
-        "season_this": "Oct: -0.2% avg, up 44% of years (n=27)",
-        "season_this_zh": "10\u6708\uff1a\u5e73\u5747 -0.2%\uff0c44% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-        "mom_60d_pct": 0.6
+        "off_52w_high_pct": -2.7,
+        "season_this": "Oct: -0.2% avg, up 48% of years (n=27)",
+        "season_this_zh": "10\u6708\uff1a\u5e73\u5747 -0.2%\uff0c48% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
+        "mom_60d_pct": 5.0
       },
       {
         "ticker": "DX-Y.NYB",
         "name": "US Dollar",
-        "price": 101.93,
+        "price": 102.0,
         "above50": true,
         "above200": true,
         "pct_vs_50dma": 2.1,
         "pct_vs_200dma": 2.6,
-        "rsi14": 74.0,
+        "rsi14": 75.0,
         "macd_pos": true,
-        "off_52w_high_pct": -0.2,
+        "off_52w_high_pct": -0.1,
         "season_this": "Oct: +0.0% avg, up 46% of years (n=56)",
         "season_this_zh": "10\u6708\uff1a\u5e73\u5747 +0.0%\uff0c46% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=56\uff09",
-        "mom_60d_pct": 0.7
+        "mom_60d_pct": 0.8
       }
     ],
     "evidence": {
@@ -25399,9 +25253,9 @@
   },
   "freshness": {
     "asof": "2026-10-02",
-    "built_at": "2026-10-04T06:15:29Z",
-    "age_days": 2,
-    "age_sessions": 0,
+    "built_at": "2026-10-05T05:41:46Z",
+    "age_days": 3,
+    "age_sessions": 1,
     "max_age_sessions": 1,
     "stale": false,
     "note": "contract asof vs build time; the daily build lands post-close (22:40 UTC) so a consumer reading intraday should expect asof = prior session \u2014 recompute age against built_at at read time."

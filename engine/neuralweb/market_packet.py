@@ -62,6 +62,7 @@ source plus the budget, with a 60 s ceiling — the same mtime-cache idiom as
 """
 from __future__ import annotations
 
+import copy
 import json
 import logging
 import os
@@ -916,6 +917,25 @@ def _rates_block(raw: object) -> dict | None:
     }
     if not any(v not in (None, "") for k, v in block.items() if k != "asof"):
         return None
+    ro = raw.get("regime_outlook")
+    if isinstance(ro, dict) and ro.get("schema_version") == "regime_outlook.v1":
+        # E3: verbatim subset of the projection; family readings are deep-copied, never re-derived.
+        block["regime_outlook"] = {
+            "analysis_cutoff": ro.get("analysis_cutoff"),
+            "mapping_version": ro.get("mapping_version"),
+            "scope": ro.get("scope"),
+            "evidence_clock_range": copy.deepcopy(ro.get("evidence_clock_range")),
+            "paths": [
+                {
+                    "path_id": p.get("path_id"),
+                    "family": p.get("family"),
+                    "family_readings": copy.deepcopy(p.get("family_readings") or []),
+                }
+                for p in (ro.get("conditional_paths") or [])
+                if isinstance(p, dict)
+            ],
+            "source": "data/rates_command/latest.json#regime_outlook",
+        }
     return block
 
 
@@ -1730,7 +1750,68 @@ def _render_rates(p: dict) -> str:
         parts.append(f"term premium {r['term_premium_dir']}")
     if not parts:
         return ""
-    return f"RATES DESK ({_stamp(r.get('asof'))}): " + _SEP.join(parts)
+    line = f"RATES DESK ({_stamp(r.get('asof'))}): " + _SEP.join(parts)
+    ro = r.get("regime_outlook")
+    if isinstance(ro, dict):
+        extra = _render_regime_outlook(ro)
+        if extra:
+            line = line + "\n" + extra
+    return line
+
+
+OUTLOOK_LINE_BUDGET = 380
+_OUTLOOK_SRC = "world_state.rates_command.regime_outlook"
+_OUTLOOK_GLYPH = {"fits": "+", "does_not_fit": "-", "mixed": "~"}
+_OUTLOOK_ORDER = ("fits", "does_not_fit", "mixed")
+
+
+def _outlook_entries(ro: dict, *, fits_only: bool = False) -> list[str]:
+    """One entry per path: `<path_id> +fam -fam ~fam` (fits, then does_not_fit, then mixed; unknown and not_discriminating omitted)."""
+    entries: list[str] = []
+    for row in ro.get("paths") or []:
+        if not isinstance(row, dict):
+            continue
+        pid = row.get("path_id")
+        if not pid:
+            continue
+        toks: list[str] = []
+        for reading in _OUTLOOK_ORDER:
+            if fits_only and reading != "fits":
+                break
+            for fr in row.get("family_readings") or []:
+                if isinstance(fr, dict) and fr.get("reading") == reading and fr.get("evidence_family_id"):
+                    toks.append(_OUTLOOK_GLYPH[reading] + str(fr["evidence_family_id"]))
+        if toks:
+            entries.append(f"{pid} " + " ".join(toks))
+    return entries
+
+
+def _render_regime_outlook(ro: dict, budget: int = OUTLOOK_LINE_BUDGET) -> str:
+    """E3 OUTLOOK line: the projection's own family readings, stamped with its analysis_cutoff.
+
+    Overlapping hypotheses, unordered, never normalised; no numbers after the header.
+    Tier 1 = every reading; tier 2 = fits only; tier 3 = as many fits-only paths as fit; else ''.
+    Language-invariant (the same line in zh).
+    """
+    head = (f"OUTLOOK (read prepared {_stamp(ro.get('analysis_cutoff'))}; "
+            "overlapping paths, unordered; +fits -does-not-fit ~mixed): ")
+    full = _outlook_entries(ro)
+    if not full:
+        return ""
+    line = head + " | ".join(full) + f"; full readings: {_OUTLOOK_SRC}"
+    if len(line) <= budget:
+        return line
+    fits = _outlook_entries(ro, fits_only=True)
+    line = head + " | ".join(fits) + f"; fits only; full readings: {_OUTLOOK_SRC}"
+    if fits and len(line) <= budget:
+        return line
+    tail3 = f"; partial; full readings: {_OUTLOOK_SRC}"
+    kept: list[str] = []
+    for e in fits:
+        if len(head + " | ".join(kept + [e]) + tail3) > budget:
+            break
+        kept.append(e)
+    return (head + " | ".join(kept) + tail3) if kept else ""
 
 
 def _render_vol(p: dict) -> str:
