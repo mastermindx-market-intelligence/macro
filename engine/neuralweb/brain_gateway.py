@@ -5677,6 +5677,40 @@ def _ensure_thread(
     return new_id
 
 
+def _with_retained_context(meta: dict, receipt: object) -> dict:
+    """Retain the server compiler receipt on the existing assistant message.
+
+    This is context resolution only, not an actual-used-input census, source
+    permission, or complete research artifact. Only server-compiled receipts are
+    passed here; client context, source bytes and provider reasoning are absent.
+    Existing history readers deliberately do not expose message meta. A future
+    artifact reader must recheck current source rights before exposing it.
+    Metadata failure must never discard an otherwise persistable answer.
+    """
+    record = {
+        "schema": "brain.retained_context.v1",
+        "scope": "context_resolution_only",
+        "status": "unavailable",
+        "used_inputs_status": "not_recorded",
+    }
+    try:
+        if (not isinstance(receipt, dict)
+                or receipt.get("schema") != "ai_context_receipt.v1"
+                or not isinstance(receipt.get("request_id"), str)
+                or not 1 <= len(receipt["request_id"]) <= 128):
+            raise ValueError("invalid server receipt")
+        encoded = json.dumps(receipt, ensure_ascii=False, allow_nan=False,
+                             separators=(",", ":")).encode("utf-8")
+        if len(encoded) > 65536:
+            record["reason"] = "receipt_too_large"
+        else:
+            record["status"] = "retained"
+            record["receipt"] = json.loads(encoded)
+    except (TypeError, ValueError, OverflowError, RecursionError):
+        record["reason"] = "invalid_receipt"
+    return {**meta, "retained_context": record}
+
+
 def _append_message(thread_id: str, role: str, content: str, meta: dict | None = None) -> None:
     """Append one message to brain_messages.  Best-effort; never raises."""
     try:
@@ -9528,7 +9562,7 @@ def chat(
                     _append_message(_nf_thread_id, "user", clean_msg)
                     _append_message(
                         _nf_thread_id, "assistant", _nf_exec.answer,
-                        meta=_bum.assistant_meta(None, _nf_exec.answer),
+                        meta=_with_retained_context(_bum.assistant_meta(None, _nf_exec.answer), _ctx_receipt),
                     )
                 except Exception:  # noqa: BLE001
                     pass
@@ -9656,7 +9690,7 @@ def chat(
                     from engine.neuralweb import brain_user_memory as _bum  # noqa: PLC0415
                     _append_message(effective_thread_id, "user", clean_msg)
                     _append_message(effective_thread_id, "assistant", _i_res["text"],
-                                    meta=_bum.assistant_meta(None, _i_res["text"]))
+                                    meta=_with_retained_context(_bum.assistant_meta(None, _i_res["text"]), _ctx_receipt))
                 except Exception:  # noqa: BLE001
                     pass
             _i_usage = _i_res.get("usage") or {}
@@ -9743,7 +9777,7 @@ def chat(
         # week" costs one indexed read instead of re-deriving from answer text.
         from engine.neuralweb import brain_user_memory as _bum  # noqa: PLC0415
         _append_message(effective_thread_id, "assistant", answer_text,
-                        meta=_bum.assistant_meta(final_messages, answer_text))
+                        meta=_with_retained_context(_bum.assistant_meta(final_messages, answer_text), _ctx_receipt))
 
     # 9. Cost settlement from response.usage (fix #1: real tokens, never zeros)
     in_tok = int(usage_dict.get("input_tokens") or 0)
@@ -10042,7 +10076,7 @@ def chat_stream(
                 from engine.neuralweb import brain_user_memory as _bum  # noqa: PLC0415
                 _append_message(
                     _nf_thread_id, "assistant", _nf_exec.answer,
-                    meta=_bum.assistant_meta(None, _nf_exec.answer),
+                    meta=_with_retained_context(_bum.assistant_meta(None, _nf_exec.answer), _ctx_receipt),
                 )
             except Exception:  # noqa: BLE001
                 pass
@@ -10167,7 +10201,7 @@ def chat_stream(
                 try:
                     from engine.neuralweb import brain_user_memory as _bum  # noqa: PLC0415
                     _append_message(effective_thread_id, "assistant", _i_res["text"],
-                                    meta=_bum.assistant_meta(None, _i_res["text"]))
+                                    meta=_with_retained_context(_bum.assistant_meta(None, _i_res["text"]), _ctx_receipt))
                 except Exception:  # noqa: BLE001
                     pass
             _i_in = int(_i_usage.get("input_tokens") or 0)
@@ -10243,7 +10277,7 @@ def chat_stream(
         # reading the answer text, which is what every pre-W3 row needs anyway.
         from engine.neuralweb import brain_user_memory as _bum  # noqa: PLC0415
         _append_message(effective_thread_id, "assistant", answer_out[0],
-                        meta=_bum.assistant_meta(None, answer_out[0]))
+                        meta=_with_retained_context(_bum.assistant_meta(None, answer_out[0]), _ctx_receipt))
 
     # 8. Cost record (fix #1: real tokens; fix #2: accumulate ceiling backstop)
     usage_dict = usage_out[0] if usage_out else {}

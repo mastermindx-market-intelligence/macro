@@ -828,3 +828,19 @@ def test_manifest_names_the_single_writer_sources_and_union():
     assert receipt["outside_union_sha256"] == HISTORICAL_OUTSIDE_UNION_SHA256
     assert receipt["source_pr_heads"] == SOURCE_HEADS
     assert receipt["csv_commit"] == "e6ea08107305a95b4eda41782c304206b1cb8439"
+
+
+def test_ceo_a_w13_records_d90_to_d92_without_state_moves():
+    # CEO A W13 (2026-10-05): D90 FIXBIND-01 MERGED (#8464) on 006; D91 #8434 evidence-only note on 027;
+    # D92 CEO B 5987672592 evidence on 003 (#805) and 007 (first natural exercise). No state moves.
+    r = _rows()
+    assert "FIXBIND-01 MERGED" in r["MO-PAID-006"]["adjudication_notes"]
+    assert "#8464" in r["MO-PAID-006"]["adjudication_notes"]
+    assert r["MO-PAID-006"]["capability_state_c2"] == "PROVEN_LIVE"
+    assert "portfolio_changes.v1" in r["MO-PAID-027"]["adjudication_notes"]
+    assert "#805" in r["MO-DELTA-003"]["adjudication_notes"]
+    assert "a885200ff7b3" in r["MO-DELTA-003"]["adjudication_notes"]
+    assert "22:21:55Z" in r["MO-DELTA-007"]["adjudication_notes"]
+    assert "#815" in r["MO-DELTA-007"]["adjudication_notes"]
+    for rid in ("MO-PAID-027", "MO-DELTA-003", "MO-DELTA-007"):
+        assert r[rid]["capability_state_c2"] == "PARTIAL", rid
