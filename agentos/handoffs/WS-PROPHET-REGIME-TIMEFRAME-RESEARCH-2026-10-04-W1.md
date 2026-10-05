@@ -3,9 +3,10 @@ workstream: "WS:PROPHET-REGIME-TIMEFRAME-RESEARCH"
 session: >
   claude/prophet-astra-regime-w1-results-20261004 (Fable seat session f273dd7d, worktree
   astra-ceo-handoff-4a36a0; wave-1 results PR from branch claude/prophet-astra-regime-w1-results-20261004 (number assigned at creation; this record ships inside it)). Successor to the Astra→Fable takeover
-  record PROPHET-REGIME-INDICATOR-2026-10-04-ASTRA-CEO.md (PR #8375).
+  record PROPHET-REGIME-INDICATOR-2026-10-04-ASTRA-CEO.md (PR #8375). Amended 2026-10-05 from
+  branch claude/prophet-astra-regime-w1-c2d0-20261004 (follow-up PR carrying C2 r2 and D0 r3).
 model: fable
-ended_because: blocked
+ended_because: complete
 mission: >
   Wave 1 of the Chairman's Prophet regime / indicator / timeframe / theme program: run the
   pre-registered lanes A1, B1, C1, C2, D, E, F1 on the pinned checkout 052e02d085b0, review
@@ -61,9 +62,12 @@ verified:
   - claim: E round 1 consumed the B1 round-3 panel at load and at write-out.
     command: python3 -c "import json;r=json.load(open('results/E/result.json'))['inputs'];print(r['panel_sha256_load']==r['panel_sha256_write']==r['panel_sha256'])"
     result: True (209e2246…)
-  - claim: "Every delivered round was reviewed by an independent grok-4.6 lane on host2 and ruled by the seat from the review artifact: C1 r4 ACCEPT (07:44Z); E r1 ACCEPT (07:54Z); B1 r4 REQUEST_REPAIR on two record defects (08:20Z) → seat-executed round 5 → ACCEPTED; F1 r4 ACCEPT (08:29Z); C2 r2 and D0 r3 DELIVERED on host2 (08:44Z / 09:14Z; result.json sha256 be4e04d4… / b16f444a… observed by seat watchers) but NOT REVIEWED and NOT SHIPPED here — the host volume became unreadable at 08:24Z before either record was copied; both ship with their reviews in a follow-up PR"
+  - claim: "Every delivered round was reviewed by an independent grok-4.6 lane on host2 and ruled by the seat from the review artifact: C1 r4 ACCEPT (07:44Z); E r1 ACCEPT (07:54Z); B1 r4 REQUEST_REPAIR on two record defects (08:20Z) → seat-executed round 5 → ACCEPTED; F1 r4 ACCEPT (08:29Z); C2 r2 and D0 r3 DELIVERED on host2 (08:44Z / 09:14Z; result.json sha256 be4e04d4… / b16f444a… observed by seat watchers) — the host volume became unreadable at 08:24Z before either record was copied; after it returned (23:30Z) both were copied, sha-verified and shipped in the follow-up PR: D0 r3 ACCEPTED-WITH-GAPS on its grok-4.6 review (PASS / REQUEST_REPAIR on three record defects, ruled non-blocking, no round 4); C2 r2 ACCEPTED-WITH-GAP by the seat from the artifact (mutant M7 survives J1), its grok-4.6 review relaunched after a shim ProcessCensusError"
     command: grep -A3 "^## RESULT" $S/review/{C1_r4,E_r1,B1_r4,F1_r4,C2_r2,D0_r3}/REVIEW.md (seat scratchpad; reviews are not shipped — their rulings are restated in 09_WAVE1_SYNTHESIS_AND_PRODUCT_IMPLICATION.md)
-    result: ACCEPT ×4 as delivered (C1 r4, E r1, F1 r4, and B1 after the seat's round-5 record repair); C2 r2 and D0 r3 DELIVERED on host2 (08:44Z / 09:14Z; result.json sha256 be4e04d4… / b16f444a… observed by seat watchers) but NOT REVIEWED and NOT SHIPPED here — the host volume became unreadable at 08:24Z before either record was copied; both ship with their reviews in a follow-up PR
+    result: "ACCEPT ×4 as delivered (C1 r4, E r1, F1 r4, and B1 after the seat's round-5 record repair); C2 r2 and D0 r3 DELIVERED on host2 (08:44Z / 09:14Z; result.json sha256 be4e04d4… / b16f444a… observed by seat watchers) — the host volume became unreadable at 08:24Z before either record was copied; after it returned (23:30Z) both were copied, sha-verified and shipped in the follow-up PR: D0 r3 ACCEPTED-WITH-GAPS on its grok-4.6 review (PASS / REQUEST_REPAIR on three record defects, ruled non-blocking, no round 4); C2 r2 ACCEPTED-WITH-GAP by the seat from the artifact (mutant M7 survives J1), its grok-4.6 review relaunched after a shim ProcessCensusError"
+  - claim: "C2 r2 and D0 r3 records on host2 verify from the repo root, and B1's round-5 suite passes there (2026-10-05)."
+    command: "cd <host2> && for L in B1 C2 D0; do shasum -a 256 -c research/prophet_v4/astra_regime_indicator_handoff_20261004/results/$L/hashes.txt | grep -vc ': OK$'; done; python3 -m pytest research/prophet_v4/astra_regime_indicator_handoff_20261004/results/B1/code -q"
+    result: B1 0 non-OK, C2 0 of 12, D0 0 of 2848; B1 34 passed (2026-10-05 03:41Z); worktree copies sha256 be4e04d449a61a26… / b16f444ad83741d0…
   - claim: agentos records validate.
     command: python3 scripts/agentos.py validate
     result: exit 0 at commit time (python3 scripts/agentos.py validate — 0 errors, 80 pre-existing warnings)
@@ -73,20 +77,23 @@ unverified:
   - claim: The SCOPED_NULL in E closes only the construction tested (one feature per family, whole-sample terciles, binary P1/P2 partitions, month-cluster bootstrap, Holm over 12).
     what_would_verify: a wave-2 pre-registration on a different construction (e.g. within-era terciles, continuous partitions) — not a re-run of E.
 unresolved:
-  - "C2 r2 and D0 r3: delivered, unreviewed, unshipped — blocked on the host2 volume (`/Volumes/Mastermind`, every directory read hangs or returns EINTR since 2026-10-04 08:24Z; device enumerates, df answers from cache). Operator-owned recovery (physical re-seat / power-cycle); the seat never remounts a shared fleet volume. On readability: copy results/C2 and results/D0 off host2, verify the two shas, launch one grok-4.6 review each, then open the follow-up PR."
-  - "B1 round 5 was seat-executed (record-only; L8 note + B1_RETURN.md) while host2 was unreadable; its full 34-test suite re-run on host2 is still owed (seat copy: 29 passed, 2 env-failed on missing basket data, 3 env-skipped). E's hashes.txt pins B1 round-3 RESULT.md (fe0460d8…), which rounds 4–5 rewrote; E is never rebuilt for it."
+  - "C2 r2 independent grok-4.6 review: relaunched 2026-10-05 03:39Z after the first lane died at launch (shim ProcessCensusError, no deliverable); owner = the seat's one watcher on review/C2_r2/DONE. A numeric finding opens one record-only amendment PR; a finding limited to the recorded M7 fixture gap needs none."
+  - "D0 r3 residual record gaps (reviewer defects 1–3: vintage-moved E*/week-40 leaves, single fold sha instead of two consecutive main() shas, truncated r2→r3 leaf list) are deferred to the first promotion use of those numbers; never a round 4 now."
   - E's hashes.txt pins B1 round 3's RESULT.md; B1 round 4 (record-only) rewrote that file, so that one line no longer verifies against the shipped B1 record while both parquets do. Documented in 05 §3; E is not rebuilt for it.
 next_actions:
+  - "After the follow-up PR merges: post the follow-up RESULT once on #8363 (read forward from the seat's edge 5984741334; the wave RESULT 5984702829, W3 delivery 5984703124 and rung advance 5984741334 are already posted and never re-posted)."
   - "W3 owner handoff (05 §7): deliver the wave-1 evidence to the V4 owners on #6805 as EVIDENCE with the rung stated honestly (≤ MERGED, never PRODUCTION_PROOF or ACCEPTANCE); W2 is a new pre-registration (different E construction; B1/C1 are closed as delivered), never a re-run"
   - Keep lane D as a forward study; its next evaluation date is in DEC:D-LANE-PARKED-AS-FORWARD-STUDY.
   - Any new conditioning claim for Prophet enters through 07_PRODUCT_CONDITIONING_TABLE_SPEC.md, display-tier first (gauntlet is a promotion gate, never a build gate).
 do_not_redo:
   - Never re-run or re-pre-register A1/B1/C1/C2/E/F1 as delivered; a repair round only ever changed tests/record/provenance after the numbers froze (B1 r3 panel, C1 r2 parquet, F1 r3 hazards, C2 rule inputs).
   - Never substitute mini2's D0 r3 artifacts for the host2 record; never retry the blocked ChatGPT chapter-03 upload.
+  - Never launch a fourth D0 round or a third C2 round; both residual gaps are recorded (05 §2, 09 §0) and are promotion-time repairs.
   - "Pickup ACK/START on carrier #8363 was posted once (comment 5975009284); wave RESULT not yet posted at the time of this record — it is posted ONCE after the results PR merges."
   - No Opus/Sonnet/Haiku subagents anywhere in this program (Chairman 10-04); grok-4.6 external lanes and the Fable main loop only.
 danger_areas:
-  - results/<LANE>/ directories are untracked on the seat worktree via .git/info/exclude lines; they must be un-excluded only for the results PR and never carry parquet, DONE sentinels or caches.
+  - results/<LANE>/ directories were untracked on the seat worktree via .git/info/exclude lines; all seven are now lifted (A1/B1/C1/E/F1 for the results PR, C2/D0 for the follow-up PR) and the dirs never carry parquet, DONE sentinels or caches (results/.gitignore).
+  - host2's data/theme_graph/{_meta.json,context_history.jsonl,theme_state.json,tree_history.jsonl,edges.parquet} are skip-worktree working copies that differ from commit 052e02d (belief_time 2026-10-01): any D-lane number that depends on the theme-graph vintage (E*, ISO week 40) moves with them — pin the vintage in the record, never chase a prior round's value.
   - host2 (/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/astra-host2-052e02d-690b56cac98b57f7) is DETACHED at 052e02d085b0 and shared by build and review lanes — never checkout/pull/commit there; only one producer per results/<LANE>/ at a time.
   - The grok pool is fleet-shared with max_active 2; a third lane is refused, so builds and reviews must be slot-managed (out_g/max), never launched blind.
 ---
