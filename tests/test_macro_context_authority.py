@@ -1568,3 +1568,204 @@ def test_r25_native_precanonical_lobe_compatibility():
             "regime_radar": {"active": ["legacy_name"]}}
     result = _build_decision_workspaces(_r25_snapshot(), {"fx_dollar": lobe}, {}, [], "2026-10-02")
     assert result["forex"]["mechanism_evidence"]["active_scenarios"] == ["legacy_name"]
+
+
+# R26-20261005: actual native template consumer, no browser or market-source I/O.
+@pytest.fixture
+def r26_render(tmp_path, monkeypatch):
+    import copy
+    import re
+    import socket
+    from jinja2 import Environment, FileSystemLoader
+    from engine.i18n import tr, td
+    from scripts import build_macro_context as bmc
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("R26 rendering permits no network I/O")
+    monkeypatch.setattr(socket.socket, "connect", forbidden)
+    monkeypatch.setattr(socket, "create_connection", forbidden)
+    vm = bmc._build_view_model(_r25_snapshot(), _r25_world_state(), [], "2026-10-02",
+                              tmp_path, regime_data=_r25_regime_data())
+    env = Environment(loader=FileSystemLoader(str(Path(bmc.__file__).resolve().parents[1] / "templates")),
+                      autoescape=True)
+    env.globals.update(tr=tr, td=td, ASSET_NAMES=bmc.ASSET_NAMES)
+    def render(payload="native"):
+        model = copy.deepcopy(vm)
+        if payload != "native":
+            model["decision_workspaces"] = copy.deepcopy(payload)
+        before = copy.deepcopy(model)
+        html = env.get_template("macro_context.html.j2").render(
+            vm=model, built="2026-10-02 12:00 UTC", today="2026-10-02")
+        assert model == before, "Template must not mutate the source projection"
+        match = re.search(r"<!-- R26 decision evidence -->(.*?)<!-- /R26 decision evidence -->", html, re.S)
+        assert match, "Native Macro Context template has not connected decision_workspaces"
+        return match.group(1), html
+    return render
+
+
+def _r26_payload():
+    from scripts.build_macro_context import _build_decision_workspaces
+    return _build_decision_workspaces(_r25_snapshot(), _r25_world_state(),
+                                      _r25_regime_data(), [], "2026-10-02")
+
+
+def test_r26_native_page_connects_optional_evidence_inside_rates(r26_render):
+    fragment, html = r26_render()
+    assert '<details id="bonds-forex-evidence"' in fragment
+    assert '<summary' in fragment
+    assert ' open' not in fragment.split('>', 1)[0]
+    assert html.index('id="rates"') < html.index('id="bonds-forex-evidence"') < html.index('id="matrix"')
+    assert 'Bonds &amp; Forex' in fragment and '债券与外汇' in fragment
+    assert 'not a trade signal' in fragment and '非交易信号' in fragment
+    assert 'data-domain="bonds"' in fragment and 'data-domain="forex"' in fragment
+
+
+@pytest.mark.parametrize("payload", [None, {}, [], "invalid"])
+def test_r26_missing_or_malformed_projection_is_explained(r26_render, payload):
+    fragment, _ = r26_render(payload)
+    assert 'Evidence unavailable' in fragment
+    assert '证据不可用' in fragment
+    assert 'data-current-read' not in fragment
+
+
+@pytest.mark.parametrize("key,value", [
+    ("schema", "macro_context.decision_workspaces.v999"), ("display_only", False),
+    ("display_only", 1), ("claim_scope", "allocation"), ("probability_policy", "allowed"),
+])
+def test_r26_rejects_unsupported_authority_without_rendering_values(r26_render, key, value):
+    payload = _r26_payload()
+    payload[key] = value
+    payload['bonds']['current_read']['health'] = 'DO_NOT_RENDER_UNTRUSTED'
+    fragment, _ = r26_render(payload)
+    assert 'Evidence unavailable' in fragment
+    assert 'DO_NOT_RENDER_UNTRUSTED' not in fragment
+
+
+@pytest.mark.parametrize("domain", ['bonds', 'forex'])
+def test_r26_domain_authority_failure_keeps_other_domain(r26_render, domain):
+    payload = _r26_payload()
+    payload[domain]['display_only'] = False
+    payload[domain]['current_read'] = {'health': 'DO_NOT_RENDER_UNTRUSTED'}
+    fragment, _ = r26_render(payload)
+    assert 'DO_NOT_RENDER_UNTRUSTED' not in fragment
+    assert 'Evidence unavailable' in fragment
+    assert 'data-current-read' in fragment
+
+
+def test_r26_canonical_empty_does_not_revive_legacy_names(r26_render):
+    payload = _r26_payload()
+    payload['forex']['mechanism_evidence']['active_scenarios'] = []
+    payload['forex']['mechanism_evidence']['active'] = ['STALE_ALIAS']
+    fragment, _ = r26_render(payload)
+    assert 'STALE_ALIAS' not in fragment
+    assert 'No active scenario names supplied' in fragment
+
+
+def test_r26_active_and_building_scenarios_reach_html_without_statistics(r26_render):
+    payload = _r26_payload()
+    payload['forex']['mechanism_evidence']['active_scenarios'] = ['carry_unwind']
+    payload['forex']['mechanism_evidence']['building_scenarios'] = ['policy_divergence']
+    payload['forex']['mechanism_evidence']['p_cond'] = 0.987654321
+    payload['forex']['mechanism_evidence']['intensity'] = 987654321
+    fragment, _ = r26_render(payload)
+    assert 'carry unwind' in fragment.lower()
+    assert 'policy divergence' in fragment.lower()
+    assert '987654321' not in fragment and 'p_cond' not in fragment
+
+
+def test_r26_scenario_objects_cannot_expose_nested_stats(r26_render):
+    payload = _r26_payload()
+    payload['forex']['mechanism_evidence']['active_scenarios'] = [{'score': 'SECRET_SCORE'}, None, 7]
+    fragment, _ = r26_render(payload)
+    assert 'SECRET_SCORE' not in fragment
+    assert 'No active scenario names supplied' in fragment
+
+
+def test_r26_text_is_escaped_not_interpreted_as_markup(r26_render):
+    payload = _r26_payload()
+    attack = '<img src=x onerror="alert(1)"><span class="l-en">untrusted</span>'
+    payload['bonds']['current_read']['health'] = attack
+    payload['bonds']['source_receipts']['bond_health']['path'] = attack
+    payload['forex']['mechanism_evidence']['active_scenarios'] = [attack]
+    payload['bonds']['data_gaps'] = [{'key': 'custom', 'status': 'unavailable', 'note': attack}]
+    fragment, _ = r26_render(payload)
+    assert '<img' not in fragment and 'onerror="alert' not in fragment
+    assert '&lt;img' in fragment
+
+
+def test_r26_source_dates_and_future_warning_are_not_freshness(r26_render):
+    payload = _r26_payload()
+    payload['bonds']['source_receipts']['bond_health'].update(asof='2099-01-01', date_status='future')
+    fragment, _ = r26_render(payload)
+    assert '2099-01-01' in fragment and 'Future-dated source' in fragment
+    assert 'Source dates do not certify vendor freshness' in fragment
+    assert 'not a forecast' in fragment
+
+
+def test_r26_missing_basis_is_not_replaced_by_calm_proxy(r26_render):
+    fragment, _ = r26_render()
+    assert 'Direct USD funding basis unavailable' in fragment
+    assert 'calm' in fragment
+    assert 'not a substitute' in fragment
+
+
+def test_r26_explicit_zero_basis_keeps_its_source_and_unit(r26_render):
+    payload = _r26_payload()
+    payload['forex']['funding_evidence']['direct_usd_cross_currency_basis'] = {
+        'value_bps': 0, 'asof': '2026-10-01', 'source': 'ZERO_BASIS_SOURCE'}
+    fragment, _ = r26_render(payload)
+    assert '0.00 bp' in fragment and 'ZERO_BASIS_SOURCE' in fragment
+
+
+@pytest.mark.parametrize("value", [None, True, float('inf'), float('nan'), '12'])
+def test_r26_bad_basis_values_are_withheld(r26_render, value):
+    payload = _r26_payload()
+    payload['forex']['funding_evidence']['direct_usd_cross_currency_basis'] = {
+        'value_bps': value, 'asof': '2026-10-01', 'source': 'BAD_BASIS_VALUE'}
+    fragment, _ = r26_render(payload)
+    assert 'Direct USD funding basis unavailable' in fragment
+    assert 'BAD_BASIS_VALUE' not in fragment
+
+
+def test_r26_changes_are_descriptive_and_allowlisted(r26_render):
+    payload = _r26_payload()
+    payload['forex']['changes'] = [{'asof': '2026-10-01', 'field': 'usd_trend',
+                                  'from': 'down', 'to': 'mixed', 'probability': 'SECRET_FORECAST'}]
+    fragment, _ = r26_render(payload)
+    assert '2026-10-01' in fragment and 'down' in fragment and 'mixed' in fragment
+    assert 'SECRET_FORECAST' not in fragment
+
+
+def test_r26_present_coverage_does_not_claim_investment_readiness(r26_render):
+    payload = _r26_payload()
+    payload['bonds']['status'] = 'ready'
+    fragment, _ = r26_render(payload)
+    assert 'Supplied fields complete' in fragment
+    assert 'Ready to invest' not in fragment and 'Buy now' not in fragment
+
+
+def test_r26_adds_no_script_form_remote_resource_or_calculation_owner(r26_render):
+    fragment, _ = r26_render()
+    for token in ['<script', '<form', '<iframe', '<input', 'localStorage', 'fetch(', 'http://', 'https://']:
+        assert token not in fragment
+    source = Path('templates/_macro_decision_workspaces.html.j2').read_text()
+    assert '<style' not in source and '--' not in source.replace('<!--', '').replace('-->', '')
+    assert 'build_macro_context' not in source and 'probability' in source  # guard, not an output
+
+
+def test_r26_source_paths_remain_exact_not_prettified(r26_render):
+    fragment, _ = r26_render()
+    assert 'data/bonds/bond_health.json' in fragment
+    assert 'data/transmission/latest.json' in fragment
+    assert 'data/forex/latest.json' in fragment
+
+
+def test_r26_scenario_limit_filters_invalid_rows_before_truncating(r26_render):
+    payload = _r26_payload()
+    payload['forex']['mechanism_evidence']['active_scenarios'] = [None] * 9 + ['carry_unwind']
+    fragment, _ = r26_render(payload)
+    assert 'carry unwind' in fragment.lower()
+    payload['forex']['mechanism_evidence']['active_scenarios'] = ['case_' + str(i) for i in range(10)]
+    fragment, _ = r26_render(payload)
+    assert 'Additional scenario names remain in the source record.' in fragment
+    assert 'case 7' in fragment and 'case 8' not in fragment
