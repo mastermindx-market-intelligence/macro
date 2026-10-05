@@ -1,13 +1,92 @@
 ---
-program: Information→Price / Adaptive Market Intelligence / Expectation-Market Dynamics
+workstream: "WS:ALPHA-INTELLIGENCE-INTEGRATION"
+session: "fable/program-ceo-information-to-price-20261005"
+model: fable
+ended_because: chairman_program_ceo_handoff
+mission: >
+  Take full Program-CEO responsibility for the entire Information-to-Price /
+  Adaptive Market Intelligence / Expectation-Market Dynamics program and complete
+  it end to end through existing canonical owners, using Subagent Fabric for all
+  subordinate execution and preserving every current source/effect/review/rights/
+  evaluation boundary.
+state_before: >
+  The parent mission remained incomplete under #8309. The canonical workstream
+  already named Fable as owner, but the active Sol seat was still performing
+  recovery, reviews, release compatibility, R1 qualification, and component
+  orchestration across source PR #8312, EXP-1 #8337, MKT-1 #8422, A7 #8394,
+  A8 #8467, A9 #8461, A10 #8463, Commission-2 #8402, an EVAL-1 repair branch,
+  and a blocked synthetic PIT-conformance workspace. No exact Fable runtime
+  PICKUP/START had been proven.
+changed:
+  - path: agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-10-05-fable-program-ceo.md
+    what: >
+      Adds the Chairman-directed full Program-CEO activation packet for Fable:
+      complete carrier/capability/effect frontier, exact quoted orchestration
+      instruction, Subagent Fabric hierarchy, priority graph, acceptance ruler,
+      DO_NOT_REDO laws, and closeout obligations.
+verified:
+  - claim: "The canonical workstream already assigns owner=fable."
+    command: "GitHub read of agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md at current Macro main during handoff"
+    result: "owner: fable; status: active; runtime authority remains NONE for the workstream itself."
+  - claim: "The Chairman explicitly assigned the entire program to Fable orchestration and required Subagent Fabric rather than Claude-native subagents."
+    command: "Current live Chairman directive in the active session"
+    result: "Program-CEO transfer and verbatim nested-Fabric instruction captured in this handoff and #8309."
+  - claim: "The handoff packet was written on one records-only branch and published as PR #8480."
+    command: "GitHub branch/create_file/create_pull_request readback"
+    result: "branch handoff/information-to-price-fable-program-ceo-20261005; handoff commit 4076359e847c66df1a64f653dae7c95d026d36f2; PR #8480 open."
+  - claim: "Parent #8309 contains a durable checkpoint for the same handoff."
+    command: "GitHub issue comment write/read receipt"
+    result: "checkpoint comment 5991691092 records the exact Fable authority envelope and current frontier."
+  - claim: "The handoff was transported to the existing #metaceo Slack channel for visibility."
+    command: "Slack send_message to channel C0C5FCK1F45"
+    result: "message timestamp 1791192305.795639; transport/visibility only, not runtime PICKUP."
+unverified:
+  - claim: "A concrete Fable runtime/session has consumed the handoff and STARTed."
+    what_would_verify: "Trusted RuntimeBinding/Fabric/receiver PICKUP_ACK and separate START on an exact eligible Fable surface."
+  - claim: "PR #8480 is merged on current main."
+    what_would_verify: "Exact merge receipt and post-merge readback; current checks must complete/clear or be lawfully adjudicated."
+  - claim: "The full Information-to-Price program is complete."
+    what_would_verify: "All source/identity/rights/eval/science/prospective-consumer/product acceptance and closeout gates defined below."
+unresolved:
+  - "Exact Fable RuntimeBinding/PICKUP/START is not proven; Executive runtime observed during handoff is readonly and root enumeration provenance is partial."
+  - "SRC-A1 PR #8312 remains Draft/unmerged with moving-main integration proof still outstanding; its earlier source tests/reviews remain accepted."
+  - "PID8688 unreferenced common-store write-tree effect remains EFFECT_UNKNOWN and may only be reconciled on the original carrier when lawful."
+  - "The blocked PIT-conformance managed workspace has three verified uncommitted files; typed commit/status prechecks refuse NOT_APPLIED and CI ownership is absent."
+  - "MKT-1, A7, A8, A9 and A10 each retain exact same-carrier repair/release gates described below."
+  - "EVAL-1 positive outcome-access path remains rejected until the incumbent Eval owner closes all authority/clock/schema blockers."
+  - "Yahoo/yfinance expectations remain internal diagnostic/accrual only; model-use/redistribution rights are unqualified."
+  - "Vendor PIT bakeoff remains SAMPLE_REQUIRED; no vendor contact/trial/purchase is authorized by this handoff alone."
+next_actions:
+  - "Fable: pin current protected Mastermind procedure, read #8309 plus this packet, and establish one exact Fable RuntimeBinding/PICKUP before any modifying orchestration."
+  - "Fable: use Subagent Fabric only; create the bounded sub-orchestrator graph in this packet and keep Claude native subagents prohibited."
+  - "Fable: make #8312/current shared-CI integration the first release/integration dependency while preserving PID8688 and typed-precheck fences."
+  - "Fable: consume same-carrier repair returns for #8467, #8461, #8463 and #8394; do not create replacement PRs."
+  - "Fable: drive incumbent Eval OS repair before any held-out outcome access or predictive R4 admission."
+  - "Fable: complete R1 identity/basis/rights qualification and only then advance lawful R4-R6 science, prospective consumer proof and product acceptance."
+do_not_redo:
+  - "Do not rebuild the accepted SRC-A1 audit/acceptance, EXP-1 query, MKT-1 semantic implementation, or Commission-2 research contract."
+  - "Do not create duplicate lifecycle, identity, event, evidence, residual, theme, evaluation, queue, retry, watcher, memory, or control planes."
+  - "Do not replace occupied carriers merely because they are stale; consume their same-carrier repairs."
+  - "Do not close/reopen PRs repeatedly to chase moving main and do not create ancestry-only churn as proof."
+  - "Do not bypass TYPED_GIT_PRECHECK_REFUSED, explicit safety denials, or EFFECT_UNKNOWN by switching tools/accounts/models/carriers."
+  - "Do not replay PID8688 until its exact same-carrier effect is reconciled."
+  - "Do not infer source-use rights from successful acquisition or current alias identity from ticker similarity."
+  - "Do not inspect held outcomes before lawful Eval admission or grant rank/size/trade/capital authority from descriptive context."
+danger_areas:
+  - "Source #8312 owns a shared CI manifest needed by dependent MKT/A8/A10/PIT suites; avoid a second manifest writer."
+  - "Fast-moving main repeatedly invalidates integration identity even when semantic source blobs are stable; semantic review and current integration proof are separate."
+  - "Yahoo/yfinance provider-family identity and current-name alias coverage are not historical owner receipts."
+  - "LLM narrative/history work can leak future model knowledge; freeze model/prompt or use prospective observation where required."
+  - "Reaction residuals are forecast errors, not causal proof of sponsorship, underownership, forced selling, mispricing, or investor motive."
+  - "Nested Fabric orchestration is authorized, but descendants do not inherit Program-CEO, source-writer, retry, merge/release, capital, or procurement authority."
+program: "Information→Price / Adaptive Market Intelligence / Expectation-Market Dynamics"
 parent_issue: 8309
-workstream: WS:ALPHA-INTELLIGENCE-INTEGRATION
 program_ceo: fable
 handoff_type: PROGRAM_CEO_ACTIVATION
 mission_complete: false
-chairman_directive_date: 2026-10-05
-protected_mastermind_pin: 7eac3ec252475600147ec9a376b8ca16403ac4c5
-macro_handoff_base: 5bde9a52f579f6fd3811fed30186df98be0e5909
+chairman_directive_date: "2026-10-05"
+protected_mastermind_pin: "7eac3ec252475600147ec9a376b8ca16403ac4c5"
+macro_handoff_base: "5bde9a52f579f6fd3811fed30186df98be0e5909"
 ---
 
 # Information→Price — Fable Program CEO end-to-end handoff
