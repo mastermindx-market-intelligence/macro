@@ -853,6 +853,16 @@
     .mmb-ta{font-size:16px}
     /* no hardware modifier on a phone — the hint would be a lie AND a squeeze */
     .mmb-box.mmb-typing .mmb-hint{display:none}
+    /* Two rows keep depth and actions usable at 320px and with enlarged text. */
+    .mmb-tools{display:grid;grid-template-columns:44px 44px minmax(0,1fr) 44px}
+    .mmb-tools .sp{display:none}
+    .mmb-seg{grid-row:1;grid-column:1/-1;justify-self:start;max-width:100%;flex-wrap:wrap}
+    .mmb-seg button{min-width:44px;min-height:44px;white-space:normal}
+    .mmb-tools .mmb-tbtn,.mmb-tools .mmb-send{width:44px;min-width:44px;height:44px;min-height:44px;grid-row:2}
+    .mmb-tools [data-act="attach"]{grid-column:1}
+    .mmb-tools [data-act="voice"]{grid-column:2}
+    .mmb-tools .mmb-send{grid-column:4}
+    .mmb-tools .mmb-q{grid-row:2;grid-column:3;min-width:0;white-space:normal;overflow-wrap:anywhere;flex-wrap:wrap}
     .mmb-comp{padding-bottom:calc(14px + env(safe-area-inset-bottom))}}
   /* follow-up suggestion chips (rendered under the latest reply) */
   .mmb-sugg{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-top:8px}

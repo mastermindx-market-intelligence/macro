@@ -302,3 +302,39 @@ def test_late_resumed_thread_cannot_attach_or_delete_next_accounts_run(page):
     expect(page.locator('.mmb-msg')).to_have_count(0)
     assert page.evaluate("sessionStorage.getItem('mm.brain.run.v2:user:user-B')")=='B-run-must-survive'
     assert not any('/runs/held-run-A/stream' in r['url'] for r in page.evaluate('window.__requests'))
+
+
+@pytest.mark.parametrize('width',[320,390,560])
+@pytest.mark.parametrize('lang',['en','zh'])
+@pytest.mark.parametrize('text_scale',[1,2])
+def test_composer_controls_keep_touch_targets_and_reflow(page,width,lang,text_scale):
+    page.set_viewport_size({'width':width,'height':844})
+    page.evaluate("""({lang,scale})=>{
+      document.documentElement.dataset.lang=lang;document.dispatchEvent(new Event('langchange'));
+      document.querySelector('[data-act=voice]').style.display='';
+      const nodes=Array.from(document.querySelectorAll('#mmb-root *')).filter(n=>n.namespaceURI==='http://www.w3.org/1999/xhtml');
+      const sizes=nodes.map(n=>parseFloat(getComputedStyle(n).fontSize));
+      nodes.forEach((n,i)=>{if(sizes[i])n.style.fontSize=(sizes[i]*scale)+'px';});
+    }""",{'lang':lang,'scale':text_scale})
+    page.locator('#mmb-ta').fill('Draft only '+('x'*1850))
+    buttons=page.locator('.mmb-tools button:visible')
+    assert buttons.count()==5
+    boxes=[]
+    for button in buttons.all():
+        button.click(trial=True)
+        box=button.bounding_box();assert box
+        assert box['width']>=44 and box['height']>=44
+        assert box['x']>=0 and box['x']+box['width']<=width
+        assert box['y']>=0 and box['y']+box['height']<=844
+        assert button.evaluate('(node)=>{const b=node.getBoundingClientRect();const hit=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2);return node===hit||node.contains(hit);}')
+        button.focus();expect(button).to_be_focused()
+        boxes.append(box)
+    for i,a in enumerate(boxes):
+        for b in boxes[i+1:]:
+            assert a['x']+a['width']<=b['x'] or b['x']+b['width']<=a['x'] or a['y']+a['height']<=b['y'] or b['y']+b['height']<=a['y']
+    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+    assert all(r['method']=='GET' for r in page.evaluate('window.__requests'))
+    proof=os.environ.get('MM_BRAIN_HISTORY_PROOF_DIR')
+    if proof:
+        folder=Path(proof);folder.mkdir(parents=True,exist_ok=True)
+        page.screenshot(path=str(folder/f'{width}-{lang}-{text_scale}x-composer.png'))
