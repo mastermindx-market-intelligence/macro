@@ -1,7 +1,7 @@
 {
  "schema": "track_ledger/v1",
  "market": "HK",
- "as_of": "2026-10-02",
+ "as_of": "2026-10-05",
  "state": "accruing",
  "bench": {
   "code": "_HSI",
@@ -10,12 +10,12 @@
  },
  "summary": {
   "state": "accruing",
-  "n_calls": 572,
-  "n_logged": 572,
+  "n_calls": 605,
+  "n_logged": 605,
   "n_matured": 289,
   "n_beat": 135,
   "n_lag": 154,
-  "n_suspended": 84,
+  "n_suspended": 100,
   "hit_matured": 0.467,
   "wilson_lo_pct": 41.0,
   "wilson_hi_pct": 52.5,
@@ -25,8 +25,701 @@
  "rows": [
   {
    "t": "0772.HK",
-   "nm": "China Literature",
-   "sec": "Internet & Tech",
+   "nm": null,
+   "sec": null,
+   "grp": "entry_open",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 1,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "1816.HK",
+   "nm": "CGN Power",
+   "sec": "Energy",
+   "grp": "entry_open",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 2,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "1359.HK",
+   "nm": "China Cinda Asset Mgmt",
+   "sec": "Financials & Banks",
+   "grp": "entry_open",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 3,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "6618.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "entry_open",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 4,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "1766.HK",
+   "nm": "CRRC Corporation",
+   "sec": "Industrials & Transport",
+   "grp": "entry_open",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 5,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "1288.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "entry_open",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 6,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "1209.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 7,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "0017.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 8,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "0683.HK",
+   "nm": "Kerry Properties",
+   "sec": "Property",
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 9,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "0012.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 10,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "0019.HK",
+   "nm": "Swire Pacific",
+   "sec": "Exchange & Diversified",
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 11,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "1109.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 12,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "9633.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 13,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "0016.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 14,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "6818.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 15,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "1093.HK",
+   "nm": "CSPC Pharmaceutical",
+   "sec": "Healthcare & Pharma",
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 16,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "1066.HK",
+   "nm": "Shandong Weigao",
+   "sec": "Healthcare & Pharma",
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 17,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "0392.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 18,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "3692.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 19,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "3690.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 20,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "2313.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 21,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "1833.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 22,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "1799.HK",
+   "nm": "Xinte Energy",
+   "sec": "Materials",
+   "grp": "watch",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 23,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "2007.HK",
+   "nm": "Country Garden",
+   "sec": "Property",
+   "grp": "watch",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 24,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "0083.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 25,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "0902.HK",
+   "nm": "Huaneng Power",
+   "sec": "Energy",
+   "grp": "watch",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 26,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "1299.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 27,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "0291.HK",
+   "nm": "China Resources Beer",
+   "sec": "Consumer",
+   "grp": "watch",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 28,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "0316.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 8,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "0005.HK",
+   "nm": "HSBC",
+   "sec": "Financials & Banks",
+   "grp": "setting_up",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 9,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "1072.HK",
+   "nm": "Dongfang Electric",
+   "sec": "Industrials & Transport",
+   "grp": "watch",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 11,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "0151.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 12,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "0883.HK",
+   "nm": "CNOOC",
+   "sec": "Energy",
+   "grp": "watch",
+   "d": "2026-10-02",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 16,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-05"
+  },
+  {
+   "t": "0772.HK",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-09-30",
    "e": null,
@@ -109,8 +802,8 @@
   },
   {
    "t": "1288.HK",
-   "nm": "Agricultural Bank of China",
-   "sec": "Financials & Banks",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-09-30",
    "e": null,
@@ -445,8 +1138,8 @@
   },
   {
    "t": "1833.HK",
-   "nm": "Ping An Healthcare",
-   "sec": "Internet & Tech",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-30",
    "e": null,
@@ -739,8 +1432,8 @@
   },
   {
    "t": "1288.HK",
-   "nm": "Agricultural Bank of China",
-   "sec": "Financials & Banks",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-09-29",
    "e": null,
@@ -949,8 +1642,8 @@
   },
   {
    "t": "1833.HK",
-   "nm": "Ping An Healthcare",
-   "sec": "Internet & Tech",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-29",
    "e": null,
@@ -1222,8 +1915,8 @@
   },
   {
    "t": "1288.HK",
-   "nm": "Agricultural Bank of China",
-   "sec": "Financials & Banks",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-09-25",
    "e": null,
@@ -1306,8 +1999,8 @@
   },
   {
    "t": "1833.HK",
-   "nm": "Ping An Healthcare",
-   "sec": "Internet & Tech",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-25",
    "e": null,
@@ -1348,8 +2041,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-25",
    "e": null,
@@ -1445,9 +2138,7 @@
    "m": false,
    "rk": 1,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
@@ -1466,16 +2157,14 @@
    "m": false,
    "rk": 2,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
   {
    "t": "1288.HK",
-   "nm": "Agricultural Bank of China",
-   "sec": "Financials & Banks",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-09-24",
    "e": null,
@@ -1487,9 +2176,7 @@
    "m": false,
    "rk": 3,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
@@ -1508,9 +2195,7 @@
    "m": false,
    "rk": 4,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
@@ -1529,9 +2214,7 @@
    "m": false,
    "rk": 5,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
@@ -1550,9 +2233,7 @@
    "m": false,
    "rk": 6,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
@@ -1571,9 +2252,7 @@
    "m": false,
    "rk": 7,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
@@ -1592,9 +2271,7 @@
    "m": false,
    "rk": 8,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
@@ -1613,16 +2290,14 @@
    "m": false,
    "rk": 9,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
   {
    "t": "1833.HK",
-   "nm": "Ping An Healthcare",
-   "sec": "Internet & Tech",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-24",
    "e": null,
@@ -1634,9 +2309,7 @@
    "m": false,
    "rk": 10,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
@@ -1655,9 +2328,7 @@
    "m": false,
    "rk": 11,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
@@ -1676,9 +2347,7 @@
    "m": false,
    "rk": 12,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
@@ -1697,9 +2366,7 @@
    "m": false,
    "rk": 13,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
@@ -1718,9 +2385,7 @@
    "m": false,
    "rk": 14,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
@@ -1739,9 +2404,7 @@
    "m": false,
    "rk": 15,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
@@ -1760,16 +2423,14 @@
    "m": false,
    "rk": 16,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
   {
    "t": "6160.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "BeiGene",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-24",
    "e": null,
@@ -1781,9 +2442,7 @@
    "m": false,
    "rk": 17,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-25"
   },
@@ -1846,8 +2505,8 @@
   },
   {
    "t": "1288.HK",
-   "nm": "Agricultural Bank of China",
-   "sec": "Financials & Banks",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-09-23",
    "e": null,
@@ -1998,8 +2657,8 @@
   },
   {
    "t": "1833.HK",
-   "nm": "Ping An Healthcare",
-   "sec": "Internet & Tech",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-23",
    "e": null,
@@ -2074,8 +2733,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-23",
    "e": null,
@@ -2264,8 +2923,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-22",
    "e": null,
@@ -2283,8 +2942,8 @@
   },
   {
    "t": "6160.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "BeiGene",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-22",
    "e": null,
@@ -2530,8 +3189,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-21",
    "e": null,
@@ -3005,8 +3664,8 @@
   },
   {
    "t": "6160.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "BeiGene",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-16",
    "e": null,
@@ -3233,8 +3892,8 @@
   },
   {
    "t": "6160.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "BeiGene",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-15",
    "e": null,
@@ -3442,8 +4101,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-14",
    "e": null,
@@ -3784,8 +4443,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-11",
    "e": null,
@@ -4373,8 +5032,8 @@
   },
   {
    "t": "0934.HK",
-   "nm": "Sinopec Kantons",
-   "sec": "Energy",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-09-09",
    "e": null,
@@ -4487,8 +5146,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-09",
    "e": null,
@@ -4582,8 +5241,8 @@
   },
   {
    "t": "6160.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "BeiGene",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-09",
    "e": null,
@@ -4658,8 +5317,8 @@
   },
   {
    "t": "0934.HK",
-   "nm": "Sinopec Kantons",
-   "sec": "Energy",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-09-08",
    "e": null,
@@ -4829,8 +5488,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-08",
    "e": null,
@@ -4848,8 +5507,8 @@
   },
   {
    "t": "6160.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "BeiGene",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-08",
    "e": null,
@@ -4924,8 +5583,8 @@
   },
   {
    "t": "0934.HK",
-   "nm": "Sinopec Kantons",
-   "sec": "Energy",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-09-07",
    "e": null,
@@ -5095,8 +5754,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-07",
    "e": null,
@@ -5114,8 +5773,8 @@
   },
   {
    "t": "6160.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "BeiGene",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-07",
    "e": null,
@@ -5342,8 +6001,8 @@
   },
   {
    "t": "6160.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "BeiGene",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-04",
    "e": null,
@@ -5760,8 +6419,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-09-01",
    "e": null,
@@ -5969,8 +6628,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-08-31",
    "e": null,
@@ -6026,8 +6685,8 @@
   },
   {
    "t": "6160.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "BeiGene",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-08-31",
    "e": null,
@@ -6881,8 +7540,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-08-27",
    "e": null,
@@ -7508,8 +8167,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-08-25",
    "e": null,
@@ -7755,8 +8414,8 @@
   },
   {
    "t": "1288.HK",
-   "nm": "Agricultural Bank of China",
-   "sec": "Financials & Banks",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-08-24",
    "e": null,
@@ -8173,8 +8832,8 @@
   },
   {
    "t": "1288.HK",
-   "nm": "Agricultural Bank of China",
-   "sec": "Financials & Banks",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-08-21",
    "e": null,
@@ -8287,8 +8946,8 @@
   },
   {
    "t": "2388.HK",
-   "nm": "BOC Hong Kong",
-   "sec": "Financials & Banks",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-21",
    "e": null,
@@ -8382,8 +9041,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-08-21",
    "e": null,
@@ -8439,8 +9098,8 @@
   },
   {
    "t": "6160.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "BeiGene",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-08-21",
    "e": null,
@@ -8553,8 +9212,8 @@
   },
   {
    "t": "1288.HK",
-   "nm": "Agricultural Bank of China",
-   "sec": "Financials & Banks",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-08-20",
    "e": null,
@@ -8724,8 +9383,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-08-20",
    "e": null,
@@ -8838,8 +9497,8 @@
   },
   {
    "t": "1288.HK",
-   "nm": "Agricultural Bank of China",
-   "sec": "Financials & Banks",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-08-19",
    "e": null,
@@ -8990,8 +9649,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-08-19",
    "e": null,
@@ -9180,8 +9839,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-08-18",
    "e": null,
@@ -9579,8 +10238,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": "Orient Overseas",
-   "sec": "Exchange & Diversified",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-13",
    "e": null,
@@ -9731,8 +10390,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": "Orient Overseas",
-   "sec": "Exchange & Diversified",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-12",
    "e": null,
@@ -9769,8 +10428,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-08-12",
    "e": null,
@@ -9883,8 +10542,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-08-11",
    "e": null,
@@ -9921,8 +10580,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": "Orient Overseas",
-   "sec": "Exchange & Diversified",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-11",
    "e": null,
@@ -10092,8 +10751,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-08-10",
    "e": null,
@@ -10187,8 +10846,8 @@
   },
   {
    "t": "1801.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Innovent Biologics",
+   "sec": "Healthcare & Pharma",
    "grp": "entry_open",
    "d": "2026-08-07",
    "e": null,
@@ -10396,8 +11055,8 @@
   },
   {
    "t": "6160.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "BeiGene",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-08-07",
    "e": null,
@@ -11061,11 +11720,11 @@
   }
  ],
  "meta": {
-  "n_total": 572,
+  "n_total": 605,
   "truncated": 0,
   "grain": "board_day",
   "survivorship": {
-   "n_suspended": 84,
+   "n_suspended": 100,
    "note": "no delisting archive — vanished names leave the sample"
   }
  },
@@ -12384,8 +13043,8 @@
    },
    {
     "t": "1288.HK",
-    "nm": "Agricultural Bank of China",
-    "sec": "Financials & Banks",
+    "nm": null,
+    "sec": null,
     "grp": "entry_open",
     "d": "2026-07-27",
     "e": null,
@@ -12840,8 +13499,8 @@
    },
    {
     "t": "0884.HK",
-    "nm": "CIFI Holdings",
-    "sec": "Property",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-07-27",
     "e": null,
@@ -12897,8 +13556,8 @@
    },
    {
     "t": "1288.HK",
-    "nm": "Agricultural Bank of China",
-    "sec": "Financials & Banks",
+    "nm": null,
+    "sec": null,
     "grp": "entry_open",
     "d": "2026-07-24",
     "e": null,
@@ -13372,8 +14031,8 @@
    },
    {
     "t": "0884.HK",
-    "nm": "CIFI Holdings",
-    "sec": "Property",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-07-24",
     "e": null,
@@ -13505,8 +14164,8 @@
    },
    {
     "t": "2388.HK",
-    "nm": "BOC Hong Kong",
-    "sec": "Financials & Banks",
+    "nm": null,
+    "sec": null,
     "grp": "entry_open",
     "d": "2026-07-23",
     "e": null,
@@ -13790,8 +14449,8 @@
    },
    {
     "t": "1288.HK",
-    "nm": "Agricultural Bank of China",
-    "sec": "Financials & Banks",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-23",
     "e": null,
@@ -14094,8 +14753,8 @@
    },
    {
     "t": "0151.HK",
-    "nm": "Want Want China",
-    "sec": "Consumer",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-07-23",
     "e": null,
@@ -14227,8 +14886,8 @@
    },
    {
     "t": "0884.HK",
-    "nm": "CIFI Holdings",
-    "sec": "Property",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-07-23",
     "e": null,
@@ -14474,8 +15133,8 @@
    },
    {
     "t": "2388.HK",
-    "nm": "BOC Hong Kong",
-    "sec": "Financials & Banks",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-21",
     "e": null,
@@ -14797,8 +15456,8 @@
    },
    {
     "t": "0151.HK",
-    "nm": "Want Want China",
-    "sec": "Consumer",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-07-21",
     "e": null,
@@ -14892,8 +15551,8 @@
    },
    {
     "t": "0884.HK",
-    "nm": "CIFI Holdings",
-    "sec": "Property",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-07-21",
     "e": null,
@@ -14987,8 +15646,8 @@
    },
    {
     "t": "1288.HK",
-    "nm": "Agricultural Bank of China",
-    "sec": "Financials & Banks",
+    "nm": null,
+    "sec": null,
     "grp": "entry_open",
     "d": "2026-07-20",
     "e": null,
@@ -15690,8 +16349,8 @@
    },
    {
     "t": "0151.HK",
-    "nm": "Want Want China",
-    "sec": "Consumer",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-07-20",
     "e": null,
@@ -15728,8 +16387,8 @@
    },
    {
     "t": "9868.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "XPeng",
+    "sec": "Auto & EV",
     "grp": "watch",
     "d": "2026-07-20",
     "e": null,
@@ -16431,8 +17090,8 @@
    },
    {
     "t": "9868.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "XPeng",
+    "sec": "Auto & EV",
     "grp": "watch",
     "d": "2026-07-17",
     "e": null,
@@ -16659,8 +17318,8 @@
    },
    {
     "t": "6160.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "BeiGene",
+    "sec": "Healthcare & Pharma",
     "grp": "watch",
     "d": "2026-07-16",
     "e": null,
@@ -16887,8 +17546,8 @@
    },
    {
     "t": "6160.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "BeiGene",
+    "sec": "Healthcare & Pharma",
     "grp": "watch",
     "d": "2026-07-15",
     "e": null,
@@ -17020,8 +17679,8 @@
    },
    {
     "t": "6160.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "BeiGene",
+    "sec": "Healthcare & Pharma",
     "grp": "watch",
     "d": "2026-07-14",
     "e": null,
@@ -17153,8 +17812,8 @@
    },
    {
     "t": "6160.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "BeiGene",
+    "sec": "Healthcare & Pharma",
     "grp": "watch",
     "d": "2026-07-13",
     "e": null,
@@ -17324,8 +17983,8 @@
    },
    {
     "t": "6160.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "BeiGene",
+    "sec": "Healthcare & Pharma",
     "grp": "watch",
     "d": "2026-07-10",
     "e": null,
@@ -17457,8 +18116,8 @@
    },
    {
     "t": "6160.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "BeiGene",
+    "sec": "Healthcare & Pharma",
     "grp": "watch",
     "d": "2026-07-08",
     "e": null,
@@ -17647,8 +18306,8 @@
    },
    {
     "t": "6160.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "BeiGene",
+    "sec": "Healthcare & Pharma",
     "grp": "watch",
     "d": "2026-07-07",
     "e": null,
@@ -17856,8 +18515,8 @@
    },
    {
     "t": "6160.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "BeiGene",
+    "sec": "Healthcare & Pharma",
     "grp": "watch",
     "d": "2026-07-03",
     "e": null,
