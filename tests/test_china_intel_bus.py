@@ -388,6 +388,44 @@ def test_visit_discovery_next_day_post_receipt_positive_stays_visible_without_au
 
 
 
+def test_visit_discovery_unclocked_post_receipt_source_stays_visible_but_blocks_authority():
+    row = _visit_row(
+        "A-unclocked-late", "000022", "2026-10-03T09:00:00+00:00",
+        recorded="2026-10-03T12:00:00+00:00",
+    )
+    row["system_recorded_at"] = None
+
+    snap = bus._visit_discovery_snapshot(
+        [row],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-02T23:00:00+00:00",
+            "last_attempt_utc": "2026-10-02T23:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+
+    assert snap["observation_end"] == "2026-10-03"
+    assert snap["n_recent_companies"] == 1
+    assert snap["examples"][0]["sec_code"] == "000022"
+    assert snap["examples"][0]["recent_count"] == 1
+    assert "row_source_after_health_receipt_without_observation_clock" in \
+        snap["owner_clock_errors"]
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == \
+        "row_source_after_health_receipt_without_observation_clock"
+    assert snap["examples"][0]["first_seen_state"] == \
+        "unknown_owner_clock_order_invalid"
+    assert snap["examples"][0]["baseline_state"] == \
+        "blocked_owner_clock_order_invalid"
+    assert snap["n_first_observed_recent"] == 0
+
+
+
 def test_visit_discovery_keeps_precoverage_source_event_as_positive_observation():
     # First production run can legitimately derive a filing published during
     # its bounded lookback before the write-once coverage-start date. The event
