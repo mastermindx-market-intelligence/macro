@@ -574,6 +574,19 @@ def compute_events(corpus_rows: list[dict], asof: str,
                 str(x) for x in (rev.get("removed_phrases") or [])
             )
 
+        # Current-side attribution also needs the FULL source history. A prior
+        # A->B correction may have introduced X outside the novelty window, and
+        # today's C can retain X while changing something else. The immediate
+        # B->C delta alone would wrongly treat X as fresh ordinary evidence.
+        current_added_by_locator = _retained_correction_added_phrases(
+            rows, effective_today, book, asof_day
+        )
+        for locator, phrases in current_added_by_locator.items():
+            added_by_locator.setdefault(locator, set()).update(phrases)
+        suppress_appeared |= {
+            ph for phrases in current_added_by_locator.values() for ph in phrases
+        }
+
         # The prior comparison side needs full-chain attribution.  Immediate
         # B->C deltas are insufficient when A lacked X, B added X, and effective
         # C retained X while changing something else.  Trace each effective
