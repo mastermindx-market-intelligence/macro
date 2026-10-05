@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-10-05T03:26:49.167001+00:00",
+  "generated_utc": "2026-10-05T05:42:09.028589+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -1091,13 +1091,11 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.45,
+      "alt_score": 2,
+      "alt_weighted": 0.9,
       "alt_channels": [
         "affiliation",
-        "app_demand",
-        "cnbc_pick",
-        "github_momentum"
+        "app_demand"
       ],
       "top_holder": {
         "owner": "VANGUARD GROUP INC",
@@ -1125,11 +1123,12 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 6,
-      "alt_weighted": 2.6,
+      "alt_score": 7,
+      "alt_weighted": 2.9,
       "alt_channels": [
         "affiliation",
         "analyst_upgrade_cluster",
+        "github_momentum",
         "gov_contract_accel",
         "insider_mspr",
         "retail_buzz",
@@ -1258,10 +1257,11 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 5,
-      "alt_weighted": 2.1,
+      "alt_score": 6,
+      "alt_weighted": 2.35,
       "alt_channels": [
         "affiliation",
+        "cnbc_pick",
         "gov_grant",
         "insider_mspr",
         "patent_cluster",
@@ -1383,11 +1383,10 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 1.15,
+      "alt_score": 2,
+      "alt_weighted": 1.0,
       "alt_channels": [
         "affiliation",
-        "stocktwits_bull",
         "trump"
       ],
       "top_holder": {
@@ -1685,19 +1684,35 @@
     },
     {
       "date": "2026-09-30",
+      "form": "425",
+      "company": "Trump Media & Technology Group Corp.",
+      "ticker": null,
+      "items": "",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031536/ex_1020866.htm"
+    },
+    {
+      "date": "2026-09-30",
       "form": "S-4",
       "company": "Trump Media & Technology Group Corp.",
       "ticker": null,
       "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020083.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020752.htm"
     },
     {
       "date": "2026-09-30",
-      "form": "S-1/A",
-      "company": "Cryptex Digital Market Cap ETF",
-      "ticker": "BAGZ",
+      "form": "8-K",
+      "company": "Trump Media & Technology Group Corp.",
+      "ticker": null,
+      "items": "1.01,7.01,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031535/djt20260930_8k.htm"
+    },
+    {
+      "date": "2026-09-30",
+      "form": "S-4",
+      "company": "Trump Media & Technology Group Corp.",
+      "ticker": null,
       "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/2115027/000121390026105231/ea0307021-s1a5_cryptex.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020799.htm"
     },
     {
       "date": "2026-09-30",
@@ -1705,7 +1720,15 @@
       "company": "Trump Media & Technology Group Corp.",
       "ticker": null,
       "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031536/ex_1020866.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031536/djt20260930_425.htm"
+    },
+    {
+      "date": "2026-09-30",
+      "form": "S-4",
+      "company": "Trump Media & Technology Group Corp.",
+      "ticker": null,
+      "items": "",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020083.htm"
     },
     {
       "date": "2026-09-30",
@@ -1725,35 +1748,11 @@
     },
     {
       "date": "2026-09-30",
-      "form": "425",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
+      "form": "S-1/A",
+      "company": "Cryptex Digital Market Cap ETF",
+      "ticker": "BAGZ",
       "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031536/djt20260930_425.htm"
-    },
-    {
-      "date": "2026-09-30",
-      "form": "S-4",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020799.htm"
-    },
-    {
-      "date": "2026-09-30",
-      "form": "8-K",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "1.01,7.01,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031535/djt20260930_8k.htm"
-    },
-    {
-      "date": "2026-09-30",
-      "form": "S-4",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020752.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/2115027/000121390026105231/ea0307021-s1a5_cryptex.htm"
     },
     {
       "date": "2026-09-28",

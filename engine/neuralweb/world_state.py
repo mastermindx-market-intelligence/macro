@@ -1880,6 +1880,11 @@ def _compose_rates_transmission(root: "Path | str | None" = None) -> dict:
         return null_out
 
 
+def _outlook_ok(ro: object) -> bool:
+    """True only for a well-formed regime_outlook.v1 projection; anything else is ignored (pre-E1 artifact)."""
+    return isinstance(ro, dict) and ro.get("schema_version") == "regime_outlook.v1"
+
+
 def _compose_rates_command(root: "Path | str | None" = None) -> dict:
     """Compose rates_command lobe from data/rates_command/latest.json.
 
@@ -1933,6 +1938,10 @@ def _compose_rates_command(root: "Path | str | None" = None) -> dict:
             "display_only": True,
             "authority": False,
         }
+        ro = raw.get("regime_outlook")
+        if _outlook_ok(ro):
+            # E3: the projection itself, verbatim (deep copy); never a paraphrase, never re-stamped.
+            out["regime_outlook"] = copy.deepcopy(ro)
         return _display_only(out)
     except Exception as exc:  # noqa: BLE001
         log.warning("rates_command: compose failed — %s", exc)
