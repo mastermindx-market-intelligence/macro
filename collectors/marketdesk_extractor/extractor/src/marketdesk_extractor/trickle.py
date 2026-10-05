@@ -456,6 +456,32 @@ def _close_sessions(states: list[AccountState]) -> None:
         _close_session(state)
 
 
+def _record_producer_auth_health(conn, states: list[AccountState], observed_at: datetime) -> None:
+    """Project aggregate auth truth into the existing MarketDesk meta table.
+
+    Process presence is not authentication. If at least one configured profile is
+    authenticated the producer is usable; if profiles exist but none are
+    authenticated, operator re-authentication is required. An empty profile set is
+    UNKNOWN rather than healthy.
+    """
+    stamp = observed_at.isoformat()
+    if not states:
+        state = db.AUTH_UNKNOWN
+        reason = "NO_CONFIGURED_PROFILE"
+    elif any(item.authed for item in states):
+        state = db.AUTHENTICATED
+        reason = ""
+    else:
+        state = db.AUTH_REQUIRED
+        reason = "NO_AUTHENTICATED_PROFILE"
+    db.set_producer_auth_health(
+        conn,
+        state=state,
+        observed_at=stamp,
+        reason=reason,
+    )
+
+
 def _recycle_dead_sessions(cfg: Config, states: list[AccountState]) -> None:
     """Recycle any account whose driver has been dead for N consecutive ticks.
 
@@ -651,6 +677,7 @@ def run_trickle(
                             profile=profile, per_tick_cap=per_tick_cap)
             results.append(tick)
             if not dry_run:
+                _record_producer_auth_health(conn, states, now)
                 # may sys.exit(1) when an account's session cannot be re-opened
                 _recycle_dead_sessions(cfg, states)
 
