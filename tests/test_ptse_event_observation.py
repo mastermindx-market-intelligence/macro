@@ -143,7 +143,7 @@ class PTSEEventObservationTest(unittest.TestCase):
                 market_session="2026-10-02", decision_at=DECISION,
             )
 
-    def test_context_only_and_session_are_hard_gates(self):
+    def test_context_only_and_future_snapshot_are_hard_gates(self):
         p = payload()
         p["is_context_only"] = False
         with self.assertRaisesRegex(
@@ -153,10 +153,51 @@ class PTSEEventObservationTest(unittest.TestCase):
                 p, binding(p), market_session="2026-10-02", decision_at=DECISION
             )
         with self.assertRaisesRegex(
-            PTSEEventAdapterError, "EVENT_CALENDAR_SESSION_MISMATCH"
+            PTSEEventAdapterError, "EVENT_CALENDAR_FUTURE_SNAPSHOT"
         ):
             adapt_event_calendar(
                 payload(), binding(), market_session="2026-10-01",
+                decision_at=DECISION,
+            )
+
+    def test_prior_day_owner_snapshot_can_feed_next_market_session(self):
+        p = payload()
+        p["asof"] = "2026-10-01"
+        facts = adapt_event_calendar(
+            p, binding(p),
+            market_session="2026-10-02",
+            decision_at=DECISION,
+        )
+        got = by_id(facts)
+        self.assertEqual(
+            got["event_calendar.next_cpi_at"]["value"],
+            "2026-10-14T12:30:00Z",
+        )
+
+    def test_owner_horizon_is_anchored_to_snapshot_not_shifted_by_market_session(self):
+        p = payload()
+        p["asof"] = "2026-10-01"
+        p["horizon_days"] = 13
+        p["us_macro"] = [copy.deepcopy(p["us_macro"][1])]
+        # CPI on Oct 14 is exactly 13 days after the owner snapshot and remains valid.
+        facts = adapt_event_calendar(
+            p, binding(p),
+            market_session="2026-10-02",
+            decision_at=DECISION,
+        )
+        self.assertEqual(
+            by_id(facts)["event_calendar.next_cpi_at"]["status"],
+            "OBSERVED",
+        )
+        # Oct 15 is 14 days after the owner snapshot. A market-session-anchored
+        # implementation would wrongly admit it because it is only 13 days from Oct 2.
+        p["us_macro"][0]["date"] = "2026-10-15"
+        with self.assertRaisesRegex(
+            PTSEEventAdapterError, "EVENT_OUTSIDE_OWNER_WINDOW"
+        ):
+            adapt_event_calendar(
+                p, binding(p),
+                market_session="2026-10-02",
                 decision_at=DECISION,
             )
 
