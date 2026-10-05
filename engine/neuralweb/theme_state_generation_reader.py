@@ -379,3 +379,53 @@ def validate_read_receipt(receipt, *, publication_plan=None):
     if receipt["purpose"] != "research_internal":
         raise ValueError("read purpose exceeds S1")
     return receipt
+
+
+def legacy_consumer_barrier(root):
+    """Withhold loose legacy answers as soon as any successor family is present.
+
+    This is a read-only compatibility fence, not a generation or rights receipt.
+    An absent successor preserves the existing legacy consumer; malformed,
+    pending, orphaned or accepted successor state never falls back to aliases.
+    Call before legacy payload acquisition and immediately before returning it.
+    Positive machine-context use still requires the existing rights owner to
+    define and wire that use; no purpose, clock, or synthetic verifier is minted.
+    This reader-only addition leaves the eight sealed producer bindings intact.
+    """
+    def unavailable(status, reason):
+        return {"available": False, "display_only": True, "is_context_only": True,
+                "generation_status": status, "reason_codes": [reason],
+                "materialization_allowed": False,
+                "note": "Theme state is unavailable through the legacy consumer."}
+
+    try:
+        root = Path(root)
+        if root.is_symlink():
+            g.fail("FAMILY_SYMLINK")
+        root = root.resolve()
+        current = g.read(root, g.CURRENT)
+        pending_raw = g.read(root, g.PENDING)
+        pending = None
+        if pending_raw is not None:
+            pending = g.parse(pending_raw)
+            g.validate_generation(pending)
+            if (pending["root"] != str(root)
+                    or g.unb64(pending["prior_reference_b64"]) != current):
+                g.fail("PENDING_REFERENCE_SCOPE_MISMATCH")
+        ancestry = g._check_generation_population(
+            root, current, None if pending is None else pending["generation_id"])
+        if ancestry:
+            _lineage(ancestry)
+        # Publication may advance while the metadata is being inspected.
+        if (g.read(root, g.CURRENT) != current
+                or g.read(root, g.PENDING) != pending_raw):
+            g.fail("FAMILY_CHANGED_DURING_READ")
+        if current is None and pending is None:
+            return None
+        if pending is not None:
+            return unavailable("PENDING", "PENDING_GENERATION_OWNS_PREFIX")
+        return unavailable("UNAVAILABLE", "CURRENT_USE_AUTHORITY_UNAVAILABLE")
+    except g.GenerationUnavailable as error:
+        return unavailable("INVALID", error.reason)
+    except (ValueError, TypeError, KeyError, AttributeError, OSError):
+        return unavailable("INVALID", "READ_CONTRACT_INVALID")

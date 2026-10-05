@@ -2081,6 +2081,29 @@ jobs:
     # invariants of engine/stock_score.py (no Buy against the tape, HK never buys,
     # parabolic penalised, missing legs recorded); test_stock_dossier pins the
     # no_buy_reasons contract including the structural risk.veto flag.
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v2.schema.json"
+      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
+      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
+      - "engine/neuralweb/thematic_state.py"
+      - "engine/neuralweb/theme_state_adapter.py"
+      - "engine/neuralweb/theme_state_generation.py"
+      - "engine/neuralweb/theme_state_generation_reader.py"
+      - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
+      - "engine/theme_graph/theme_state.py"
+      - "engine/theme_graph/theme_state_production.py"
+      - "scripts/build_thematic_state.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -2997,6 +3020,15 @@ jobs:
     # asserted against a vendored copy of the Terminal contract (surfaceContract.ts); the
     # greek math is checked against engine/greeks + engine/gex_engine (the EOD source it
     # mirrors), so numpy/pandas/scipy are needed (the greek engine is numpy-vectorized).
+      - "engine/basket_membership_pit.py"
+      - "scripts/build_thematic_state.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4896,6 +4928,14 @@ jobs:
       # `scripts/worktree_sparse.py`. `scope: exclusive` means this list REPLACES
       # inference, so an undeclared dependency stops selecting the job when it changes.
       - "scripts/sparse_guard.py"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v2.schema.json"
+      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
+      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
+      - "scripts/build_thematic_state.py"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/marketdata/subsector_rotation.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9968,6 +10008,10 @@ jobs:
     # B1/B1b/B2 command: the legacy pack runner applies timeout-minutes per
     # logical job.  Eight minutes is generous versus the serial profile while
     # still naming the responsible contract if this lane regresses.
+      - "engine/basket_membership_pit.py"
+      - "scripts/build_thematic_state.py"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -10439,6 +10483,16 @@ jobs:
     # B1b/B2 Record History retrieval, exact-diff replay and public-safe model
     # projection.  This is deliberately independently bounded because its
     # repeated source-evidence verification is the heaviest validation family.
+      - "engine/basket_membership_pit.py"
+      - "scripts/__init__.py"
+      - "scripts/build_thematic_state.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -11509,6 +11563,24 @@ jobs:
       - "tests/test_options_command_aib.py"
       - "tests/test_support_map.py"
       - "tools/index.html"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v2.schema.json"
+      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
+      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/theme_graph/theme_state.py"
+      - "engine/theme_graph/theme_state_production.py"
+      - "lib/dataos/identity.py"
+      - "scripts/build_thematic_state.py"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/marketdata/subsector_rotation.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -12271,6 +12343,10 @@ jobs:
       - "scripts/worktree_sparse.py"
     # Install-dominated like its former host; the two batteries themselves
     # are ~30s.
+      - "scripts/__init__.py"
+      - "scripts/build_thematic_state.py"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -12907,6 +12983,15 @@ jobs:
       # inference, so an undeclared dependency stops selecting the job when it changes.
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
+      - "engine/basket_membership_pit.py"
+      - "scripts/build_thematic_state.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -14750,6 +14835,15 @@ jobs:
     # 5-minute logical-job deadline expired at 300s, and the post-kill
     # `git for-each-ref refs/replace` then exited 128 as infrastructure
     # unknown. 12 minutes covers fusion + board-read + era + stage-analysis.
+      - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/theme_state.py"
+      - "engine/theme_graph/theme_state_production.py"
+      - "scripts/build_thematic_state.py"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/neuralwebdata/theme_state.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -16677,6 +16771,15 @@ jobs:
       # inference, so an undeclared dependency stops selecting the job when it changes.
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
+      - "engine/basket_membership_pit.py"
+      - "scripts/build_thematic_state.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -18213,6 +18316,14 @@ jobs:
       # inference, so an undeclared dependency stops selecting the job when it changes.
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v2.schema.json"
+      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
+      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
+      - "scripts/build_thematic_state.py"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/neuralwebdata/theme_state.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
