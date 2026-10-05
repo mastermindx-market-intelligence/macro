@@ -4498,6 +4498,20 @@ def _regime_context_allowed(user_id: str, root: Path) -> bool:
         return False
 
 
+def _regime_detail_kwargs(user_id: str, root: Path) -> dict:
+    """Keyword set for this turn's `_grounding_digest` call: the entitlement
+    flag ONLY when it is granted.
+
+    A free or anonymous turn therefore calls the pre-existing two-argument
+    shape `_grounding_digest(root, lang=...)`, so every stub written against
+    that shape (tests/test_brain_gateway.py monkeypatches it with
+    `lambda root, lang="en": ""`) keeps working; the paid regime-detail block
+    is requested only where `_regime_context_allowed` says so.
+    """
+    if _regime_context_allowed(user_id, root):
+        return {"include_regime_detail": True}
+    return {}
+
 def _grounding_digest(root: Path, lang: str = "en", *,
                       include_regime_detail: bool = False) -> str:
     """A compact plain-text snapshot of the current calibrated dashboard state, prepended to
@@ -6465,7 +6479,7 @@ def _run_brain_loop(
     _digests = [
         digest for digest in (
             _grounding_digest(root, lang=turn_lang,
-                              include_regime_detail=_regime_context_allowed(user_id, root)),
+                              **_regime_detail_kwargs(user_id, root)),
             _symbol_grounding_digest(safe_sym, root, as_of=turn_as_of),
         ) if digest
     ]
@@ -7375,7 +7389,7 @@ def _run_brain_loop_stream(
     _digests = [
         digest for digest in (
             _grounding_digest(root, lang=turn_lang,
-                              include_regime_detail=_regime_context_allowed(user_id, root)),
+                              **_regime_detail_kwargs(user_id, root)),
             _symbol_grounding_digest(safe_sym, root, as_of=turn_as_of),
         ) if digest
     ]

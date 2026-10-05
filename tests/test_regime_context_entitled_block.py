@@ -541,3 +541,46 @@ def test_authority_flags_and_schema_preserved(tmp_path):
     # The packet-level schema is unchanged
     packet = mp.build_packet(tmp_path, now=NOW, include_regime_detail=True)
     assert packet["regime_detail"]["schema"] == rc.SCHEMA
+
+
+# ---------------------------------------------------------------------------
+# Round 5 — the entitlement keyword reaches _grounding_digest ONLY when granted
+# ---------------------------------------------------------------------------
+
+def test_free_turns_call_grounding_digest_in_the_legacy_two_argument_shape(tmp_path):
+    """A free/anonymous turn must call `_grounding_digest(root, lang=...)`
+    exactly as before the paid block existed, so every pre-existing stub of
+    the two-argument shape (tests/test_brain_gateway.py monkeypatches
+    `lambda root, lang="en": ""`) keeps working; the keyword is passed only
+    on an entitled turn."""
+    import ast
+    from pathlib import Path as _P
+    from engine.neuralweb import brain_gateway as gw
+    monkeypatch = pytest.MonkeyPatch()
+    try:
+        monkeypatch.setattr(gw, "_regime_context_allowed", lambda user_id, root: False)
+        assert gw._regime_detail_kwargs("u", tmp_path) == {}
+        monkeypatch.setattr(gw, "_regime_context_allowed", lambda user_id, root: True)
+        assert gw._regime_detail_kwargs("u", tmp_path) == {"include_regime_detail": True}
+        # The legacy stub shape survives a free turn end to end.
+        monkeypatch.setattr(gw, "_regime_context_allowed", lambda user_id, root: False)
+        monkeypatch.setattr(gw, "_grounding_digest", lambda root, lang="en": "LEGACY")
+        assert gw._grounding_digest(
+            tmp_path, lang="en", **gw._regime_detail_kwargs("u", tmp_path)) == "LEGACY"
+    finally:
+        monkeypatch.undo()
+    # No gateway call site may spell the keyword literally: a literal keyword
+    # reaches a legacy stub even on a free turn and raises TypeError.
+    src = _P("engine/neuralweb/brain_gateway.py").read_text()
+    routed = 0
+    for call in ast.walk(ast.parse(src)):
+        if (isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
+                and call.func.id == "_grounding_digest"):
+            assert not any(kw.arg == "include_regime_detail" for kw in call.keywords), (
+                f"literal include_regime_detail keyword at line {call.lineno}")
+            if any(kw.arg is None and isinstance(kw.value, ast.Call)
+                   and isinstance(kw.value.func, ast.Name)
+                   and kw.value.func.id == "_regime_detail_kwargs"
+                   for kw in call.keywords):
+                routed += 1
+    assert routed >= 2, f"only {routed} chat-loop call(s) route entitlement through _regime_detail_kwargs"

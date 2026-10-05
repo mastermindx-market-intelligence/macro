@@ -59,6 +59,17 @@
     },
     "regen_command": "python3 -c \"import hashlib; [print(f, hashlib.sha256(open(f,'rb').read()).hexdigest()) for f in ['engine/neuralweb/regime_context.py','engine/neuralweb/market_packet.py','tests/test_regime_context.py','tests/test_regime_native_degradation.py','tests/test_regime_degradation_contract.py','tests/test_regime_context_entitled_block.py','tests/test_regime_context_owner_vocabulary.py','.github/ci/legacy-jobs.yml']]\"",
     "test_summary": "1 failed, 514 passed in 2.62s",
+    "head": "c2201c452b156ea3f6d1f0af882048151cb83175"
+  },
+  "round_5": {
+    "base": "c2201c452b156ea3f6d1f0af882048151cb83175",
+    "defect": "ci-pack-9 / unrun-brain-gateway on the r4 merge ref: both chat loops passed include_regime_detail= to _grounding_digest unconditionally, so main's tests/test_brain_gateway.py stubs of the two-argument shape (lambda root, lang=\"en\": \"\" at :6718, :6782, :6901) raised TypeError on free turns (test_brain_loop_injects_ontology_owner_digest_for_ontology_page, test_ontology_exact_selection_sync_stream_permission_parity[2-True-*]). Own red: include_regime_detail has zero occurrences on origin/main.",
+    "fix": "_regime_detail_kwargs(user_id, root) returns {\"include_regime_detail\": True} only when _regime_context_allowed grants it, else {}; both call sites splat it, so a free/anonymous turn calls _grounding_digest(root, lang=...) exactly as main does. New test test_free_turns_call_grounding_digest_in_the_legacy_two_argument_shape pins the helper and, by AST, that no call site spells the keyword literally and both chat loops route through the helper.",
+    "files_sha256": {
+      "engine/neuralweb/brain_gateway.py": "9289cc7aca86bd0bf1d6598e486527f9f5bfbb13bd52b3b84e5c8d2337642870",
+      "tests/test_regime_context_entitled_block.py": "94f33c6607af2f7571977307e3e353204ba38a7f650cea53a778d13c42b07d0c"
+    },
+    "test_summary": "six-suite gate in the sparse repair worktree: 1 failed (data/-dependent committed-artifact test, sparse tree), 515 passed in 2.39s (r4: 514 passed); merge-ref proof: the r5 engine+test bytes (files_sha256 above) really merged with origin/main 9a2f00a560 (merge commit 70ed3a7d, rc=0, no conflicts, -X no-renames) in a sparse verify worktree: tests/test_brain_gateway.py -k 'ontology_owner_digest_for_ontology_page or sync_stream_permission_parity' -> 9 passed (the r4 reds); tests/test_brain_gateway.py + test_brain_evidence_coverage.py + test_brain_tool_economics.py + test_regime_context_entitled_block.py -> 501 passed in 2.83s (python venv with fastapi 0.142.2; the lane host's system python has no fastapi and fails the same selection identically on pure origin/main, so earlier overlay/system-python counts were environmental)",
     "head": "PUSHED_HEAD_PLACEHOLDER"
   },
   "entitled_block": {
