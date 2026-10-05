@@ -15058,7 +15058,12 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: "price-basis census: raw name leg vs adjusted bench (frozen registry, both directions)"
-        run: python -m pytest tests/test_price_basis_graders.py -q
+        # Keep committed-store probes out of the PR code gate; their synthetic twins run.
+        run: >-
+          python -m pytest tests/test_price_basis_graders.py tests/test_price_ladder.py -q
+          --deselect tests/test_price_ladder.py::test_real_store_cfg_diverges_from_the_cache_by_a_dividend
+          --deselect tests/test_price_ladder.py::test_real_store_control_non_payers_agree_across_sources
+          --deselect tests/test_price_ladder.py::test_real_store_ladder_prefers_adjusted_for_a_cached_name
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH A (2026-07-27) ─────────────────────────────
   # The 2026-07-26 census wired the P0–P3 tiers but left P4/P5 (861 suites) as
