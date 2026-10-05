@@ -9178,10 +9178,17 @@ jobs:
     # authored mapping against its own rules, pins its reading table by hash,
     # and compares every condition with the contract's tables. Code-gated on
     # purpose: the job that owns the neighbouring rates-command suites is
-    # data-gated and never runs on a pull request. Offline, stdlib plus pyyaml;
+    # data-gated and never runs on a pull request. Offline; stdlib plus pyyaml
+    # for the mapping suites, pandas-family for the E3 reader suites;
     # no market artifact is read and nothing here ranks, gates or forecasts.
     # The rule-pin suite hashes the source of every producer decision the table
     # cites, so a producer or config edit runs this job and fails until re-read.
+    # E3 readers: world_state / mastermind_context / market_packet carry the
+    # projection verbatim (deep copy, no paraphrase, no re-stamp). Their suites
+    # are offline (tmp_path fixtures) and live here for the composer's reason —
+    # neural-web-core, which owns those modules' base suites, is data-gated and
+    # never runs on a pull request. The readers import the neuralweb modules,
+    # hence the pandas-family install below.
     paths:
       - "config/regime_outlook_mapping_v2.json"
       - "engine/rates_command_outlook.py"
@@ -9214,7 +9221,13 @@ jobs:
       - "engine/yield_curve.py"
       - "engine/yield_momentum.py"
       - "tests/test_rates_command_outlook_rule_pins.py"
-    timeout-minutes: 5
+      - "engine/neuralweb/world_state.py"
+      - "engine/neuralweb/mastermind_context.py"
+      - "engine/neuralweb/market_packet.py"
+      - "tests/test_regime_outlook_reader_world_state.py"
+      - "tests/test_regime_outlook_reader_context.py"
+      - "tests/test_regime_outlook_reader_digest.py"
+    timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9222,9 +9235,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install test dependencies
-        run: pip install pytest pyyaml pandas numpy
-      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings, producer rule pins, composer, coverage replay
-        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py tests/test_rates_command_outlook_rule_pins.py tests/test_rates_command_outlook_compose.py tests/test_regime_outlook_replay.py -q
+        run: pip install pytest pyyaml pandas numpy pyarrow jinja2 requests
+      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings, producer rule pins, composer, coverage replay, E3 readers
+        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py tests/test_rates_command_outlook_rule_pins.py tests/test_rates_command_outlook_compose.py tests/test_regime_outlook_replay.py tests/test_regime_outlook_reader_world_state.py tests/test_regime_outlook_reader_context.py tests/test_regime_outlook_reader_digest.py -q
 
   ric-w2-surface:
     if: ${{ false }}
