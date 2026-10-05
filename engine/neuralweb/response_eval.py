@@ -342,6 +342,11 @@ _JUDGE_A_CHARS = 9000
 _EVAL_DIR = Path(__file__).resolve().parent / "eval"
 DEFAULT_BENCHMARK = "benchmark_bear_steepener_2026-07-29.json"
 ANALYTICAL_PAIR_BENCHMARK = "benchmark_natural_vs_coached_causality_2026-09-19.json"
+REGIME_OUTLOOK_PAIR_BENCHMARK = "benchmark_regime_outlook_pair_2026-10-05.json"
+ANALYTICAL_PAIR_BENCHMARKS: tuple[str, ...] = (
+    ANALYTICAL_PAIR_BENCHMARK,
+    REGIME_OUTLOOK_PAIR_BENCHMARK,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -1377,3 +1382,28 @@ def run_benchmark_pair(
         ),
         "doctrine_fingerprint": _doctrine_fingerprint(),
     }
+
+
+def run_benchmark_pairs(
+    root: Path | None = None,
+    judge_fn: Callable[[str], str | None] | None = None,
+    answer_fn: Callable[[str, str], str | None] | None = None,
+    *,
+    names: tuple[str, ...] = ANALYTICAL_PAIR_BENCHMARKS,
+) -> list[dict]:
+    """Score every frozen analytical pair benchmark under one answerer + one judge.
+
+    Sol's first pair is always first; an absent or malformed extra fixture yields
+    only its own ``benchmark_absent`` / ``benchmark_malformed`` dict and never
+    touches the result for the other names. The answerer and judge factories are
+    resolved ONCE before the loop when not injected so a two-pair eval shares
+    one of each — same contract ``run_benchmark_pair`` enforces per call.
+    """
+    if answer_fn is None:
+        answer_fn = fast_answer_via_llm_auth(root)
+    if judge_fn is None:
+        judge_fn = judge_via_llm_auth(root)
+    return [
+        run_benchmark_pair(root, judge_fn, answer_fn, name=name)
+        for name in names
+    ]

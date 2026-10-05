@@ -304,6 +304,9 @@ def _notice(summary: dict, r2_note: str) -> None:
     )
     pair = summary.get("analytical_pair") or {}
     pair_txt = f"analytical-pair {pair.get('classification') or 'unscored'}"
+    pairs = summary.get("analytical_pairs") or []
+    if len(pairs) >= 2:
+        pair_txt += f" · outlook-pair {pairs[1].get('classification') or 'unscored'}"
     top = ", ".join(f"{t}×{n}" for t, n in (summary.get("tags") or {}).items()) or "none"
     print(
         f"::notice title=brain-eval::{summary.get('iso_week')} "
@@ -398,28 +401,37 @@ def main(argv: list[str] | None = None) -> int:
         # payload the admin panel renders. Keep the score, drop the prose.
         benchmark = {k: v for k, v in benchmark.items() if k not in ("answer", "mech")}
 
-    # 3B. Analytical pair — same evaluator, real gateway prompt hierarchy.
-    analytical_pair: dict = {}
+    # 3B. Analytical pair(s) — same evaluator, real gateway prompt hierarchy.
+    #      Sol's first pair stays first; every name in ANALYTICAL_PAIR_BENCHMARKS
+    #      runs under one answerer + one judge (resolved inside run_benchmark_pairs).
+    analytical_pairs: list[dict] = []
     if args.no_benchmark:
-        analytical_pair = {"error": "skipped_by_flag", "classification": "skipped"}
+        analytical_pairs = [
+            {"error": "skipped_by_flag", "classification": "skipped"}
+            for _ in _re.ANALYTICAL_PAIR_BENCHMARKS
+        ]
     elif args.dry_run:
-        pair_case = _re.load_benchmark(_re.ANALYTICAL_PAIR_BENCHMARK)
-        analytical_pair = {
-            "benchmark_id": pair_case.get("benchmark_id", ""),
-            "error": "dry_run",
-            "classification": "dry_run",
-            "pair_passed": False,
-            "fixture_loaded": bool(pair_case),
-        }
+        analytical_pairs = []
+        for name in _re.ANALYTICAL_PAIR_BENCHMARKS:
+            pair_case = _re.load_benchmark(name)
+            analytical_pairs.append({
+                "benchmark_id": pair_case.get("benchmark_id", ""),
+                "error": "dry_run",
+                "classification": "dry_run",
+                "pair_passed": False,
+                "fixture_loaded": bool(pair_case),
+            })
     else:
-        analytical_pair = _compact_analytical_pair(
-            _re.run_benchmark_pair(root, judge_fn)
-        )
+        analytical_pairs = [
+            _compact_analytical_pair(p)
+            for p in _re.run_benchmark_pairs(root, judge_fn)
+        ]
 
     # 4. Summarise.
     summary = build_summary(results, benchmark, ingest=ingest,
                             refreshed=refreshed, dry_run=args.dry_run)
-    summary["analytical_pair"] = analytical_pair
+    summary["analytical_pairs"] = analytical_pairs
+    summary["analytical_pair"] = analytical_pairs[0] if analytical_pairs else {}
     summary["sidecar_writes"] = written
     out = write_summary(root, summary)
 

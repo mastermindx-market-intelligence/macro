@@ -1,0 +1,46 @@
+{
+  "benchmark_id": "regime-outlook-pair-2026-10-05",
+  "frozen": true,
+  "source": "Synthetic method fixture: the rates-desk + OUTLOOK digest lines rendered by engine.neuralweb.market_packet at macro main d167955630d2699ac9effb9c42c721bbecf35bfc from the committed E3 reader fixture (tests/test_regime_outlook_reader_digest.py::_fixtures). No claim that these readings describe a historical session.",
+  "lane": "fast",
+  "lang": "en",
+  "packet_digest_fixture": "[FROZEN ANALYTICAL BENCHMARK — synthetic; no live tools]\nRATES DESK (2026-09-30): policy 3.88% · implied path m3 4.17% · curve: bear flattener · 10Y breakeven 2.36% · term premium rising\nOUTLOOK (read prepared 09-30 09:43Z; overlapping paths, unordered; +fits -does-not-fit ~mixed): orderly_disinflation +core_pce +labour -treasury_curve ~credit_and_funding | growth_deterioration -treasury_curve; full readings: world_state.rates_command.regime_outlook\nMISSING: the packet carries no probabilities, no ranking between paths and nothing after the read's preparation time; readings are redrawn nightly.",
+  "cases": [
+    {
+      "case_id": "natural",
+      "question_en": "What is the rates outlook telling me right now?",
+      "stance_required": false,
+      "expected_properties": [
+        {"tag": "fact_boundary", "check": "uses only the two supplied lines and invents no number, headline, or path"},
+        {"tag": "overlapping_paths", "check": "keeps orderly_disinflation and growth_deterioration as overlapping hypotheses that can both be live; never collapses to a single regime call"},
+        {"tag": "fit_semantics", "check": "reads + / - / ~ as fits / does-not-fit / mixed; never converts them into odds, probabilities or confidence percentages"},
+        {"tag": "support_and_contradiction", "check": "ties each path to the desk line — e.g. the bear-flattener curve and rising term premium weaken both paths' treasury_curve family"},
+        {"tag": "staleness", "check": "names that the read was prepared 09-30 09:43Z and is redrawn nightly; does not present it as current fact"},
+        {"tag": "discriminator", "check": "names the next observation that would separate the paths, e.g. the next core PCE / labour print or a curve regime change"},
+        {"tag": "unresolved_is_valid", "check": "may conclude the dominant path is unresolved"},
+        {"tag": "no_forced_action", "check": "no buy / sell / hold / duration call for an explanatory question"},
+        {"tag": "plain_words", "check": "describes paths as windows being updated, never as theses refuted, falsified or a falsifier fired"},
+        {"tag": "user_numbers", "check": "uses the desk line's policy rate / implied path / breakeven figures rather than generic commentary"}
+      ],
+      "gold_standard_sentence": "As of the 09-30 read, orderly disinflation fits on core PCE and labour while growth deterioration does not fit on the curve, both read against a bear-flattener with rising term premium; the packet gives no probabilities, so the next inflation and labour prints are the discriminator and nothing here is a trade instruction."
+    },
+    {
+      "case_id": "coached",
+      "question_en": "Read the OUTLOOK line as overlapping paths, not a forecast: for each path say whether it fits, what in the rates-desk line supports or weakens it, how old the read is, and the one observation that would separate the paths — without a probability, a ranking or a trade.",
+      "stance_required": false,
+      "expected_properties": [
+        {"tag": "fact_boundary", "check": "uses only the two supplied lines and invents no number, headline, or path"},
+        {"tag": "overlapping_paths", "check": "lists orderly_disinflation and growth_deterioration as overlapping hypotheses that can both be live; never collapses to a single regime call"},
+        {"tag": "fit_semantics", "check": "reads + / - / ~ as fits / does-not-fit / mixed; never converts them into odds, probabilities or confidence percentages"},
+        {"tag": "support_and_contradiction", "check": "ties each path to the desk line — e.g. the bear-flattener curve and rising term premium weaken both paths' treasury_curve family"},
+        {"tag": "staleness", "check": "names that the read was prepared 09-30 09:43Z and is redrawn nightly; does not present it as current fact"},
+        {"tag": "discriminator", "check": "names the next observation that would separate the paths, e.g. the next core PCE / labour print or a curve regime change"},
+        {"tag": "unresolved_is_valid", "check": "may conclude the dominant path is unresolved"},
+        {"tag": "no_forced_action", "check": "no buy / sell / hold / duration call for an explanatory question"},
+        {"tag": "plain_words", "check": "describes paths as windows being updated, never as theses refuted, falsified or a falsifier fired"},
+        {"tag": "user_numbers", "check": "uses the desk line's policy rate / implied path / breakeven figures rather than generic commentary"}
+      ],
+      "gold_standard_sentence": "As of the 09-30 read, orderly disinflation fits on core PCE and labour while growth deterioration does not fit on the curve, both read against a bear-flattener with rising term premium; the packet gives no probabilities, so the next inflation and labour prints are the discriminator and nothing here is a trade instruction."
+    }
+  ]
+}
