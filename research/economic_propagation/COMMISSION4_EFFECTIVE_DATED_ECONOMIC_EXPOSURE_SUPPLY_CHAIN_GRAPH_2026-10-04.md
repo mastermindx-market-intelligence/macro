@@ -1078,7 +1078,20 @@ Measure:
 - magnitude extraction error;
 - false-edge rate.
 
-Any automatic admission path should preregister a high precision floor. A candidate first gate is **≥95% role+direction precision**, but it is valid only with a preregistered minimum adjudicated sample, relation/source stratification, frozen holdout, adjudicator-disagreement policy and uncertainty criterion such as a lower confidence bound. Error costs may justify a stricter threshold; the threshold may not be weakened after seeing results.
+Any automatic admission path should preregister a high precision floor. A raw precision point estimate is never sufficient.
+
+Candidate automatic-admission law:
+- preregister relation/source strata and adjudication protocol;
+- freeze an untouched temporal holdout;
+- preregister the statistical confidence method;
+- require the **one-sided 95% exact binomial lower confidence bound for role+direction precision to be >=95%** in every promoted stratum;
+- cluster or deduplicate examples that share issuer/document/event evidence so raw row count is not mistaken for independent evidence;
+- record adjudicator disagreement separately;
+- automatically demote/abstain when post-promotion monitoring no longer clears the gate.
+
+As a calibration, even zero observed errors require roughly 59 independent adjudicated cases before a one-sided 95% exact lower bound can exceed 95%; correlated rows from one issuer, document or event do not count as independent cases merely because they are separate rows.
+
+Error costs may justify a stricter threshold. The gate may not be weakened after seeing final results.
 
 Below-gate observations can remain candidate/review evidence.
 
@@ -1210,6 +1223,7 @@ Use:
 
 No promotion from one attractive backtest.
 
+
 ## H9. Counter-thesis and build falsifiers
 
 The favored architecture is wrong or not worth scaling if any of the following survives a fair PIT evaluation:
@@ -1221,7 +1235,18 @@ The favored architecture is wrong or not worth scaling if any of the following s
 - rights restrictions prevent durable internal receipts or required downstream research use;
 - K3-D/F04/Neural Web consumers do not improve decision quality, calibration or falsification when Graph-1 is added.
 
-If these falsifiers hold, retain only the small evidence plane where it remains useful and kill deep-tier expansion. Edge count is never a reason to scale.
+Before pilot start, attach explicit preregistered kill thresholds to at least:
+- maximum unresolved-identity rate;
+- maximum manual-review burden;
+- minimum incremental operating/fundamental information gain;
+- minimum incremental expectation/calibration improvement;
+- maximum rights-blocked fraction;
+- minimum commercial-vendor marginal value versus the public-source baseline.
+
+The Graph-1/2/3 ablation matrix must use rolling/expanding PIT splits, issuer/event clustering, event-overlap embargoes and multiple-testing control. A return result that survives only naive random splits or an uncorrected factor zoo is not promotion evidence.
+
+If the falsifiers or kill thresholds fail, retain only the small evidence plane where it remains useful and kill deep-tier expansion. Edge count is never a rescue criterion.
+
 
 
 ---
@@ -1601,19 +1626,26 @@ Limit automatic/admitted scope to strongly evidenced roles such as:
 Do not broaden ontology merely to maximize edge count.
 
 
+
 ### Required temporal compatibility
 
-Every admitted observation must carry the canonical Data OS clocks required by its TemporalProfile and may carry Graph-1 relationship-validity/provenance metadata only through the frozen crosswalk.
+Every admitted observation must carry the Data OS TemporalProfile and the profile-native clocks required by that owner contract. Graph-1 relationship-validity/provenance metadata may be added only through the frozen crosswalk.
 
 At minimum, the implementation must prove:
-- lawful known_at under the owning profile;
+- canonical known_at/as-of eligibility under lib.dataos.temporal.py;
 - effective relationship interval;
 - source revision/correction lineage;
 - ingestion/provenance timing;
+- temporal precision = INSTANT | DATE | UNKNOWN;
 - processing generation;
 - no persisted as_of field used merely to echo a query cutoff.
 
-Historical replay must enforce both knowledge time and effective time. A field named available_at, observed_at, discovered_at or belief_time may not silently replace Data OS known-at law.
+A source field named known_at, available_at, observed_at, discovered_at or belief_time may not silently replace Data OS known-at law.
+
+Historical replay proof must demonstrate that owner observations are filtered as-of **before** relationship state is derived, or that an explicitly replay-capable served artifact is used. A generic DERIVED latest-state table is not historical replay.
+
+Date-only evidence must fail closed for same-day intraday cutoffs unless a lawful instant can be proven.
+
 
 
 ### Required provenance
@@ -1673,20 +1705,24 @@ At minimum reject:
 - expired relationship remaining active indefinitely.
 
 
+
 ### Gold-set requirement
 
 Before automatic admission, evaluate a stratified adjudicated corpus.
 
 Preregister:
-- relation/source strata and minimum sample per promoted stratum;
-- frozen holdout construction;
-- role+direction precision threshold;
-- uncertainty rule, such as a lower confidence bound;
+- relation/source strata and minimum independent sample per promoted stratum;
+- frozen temporal holdout construction;
+- one-sided 95% exact-binomial confidence method;
+- the requirement that the lower confidence bound for role+direction precision be >=95% in every promoted stratum;
+- issuer/document/event clustering or deduplication rules;
 - adjudicator-disagreement resolution;
 - identity-ambiguity treatment;
-- separate error accounting for direction reversal, false edge, stale edge and missing edge.
+- separate error accounting for direction reversal, false edge, stale edge and missing edge;
+- post-promotion monitoring and automatic demotion/abstention rule.
 
-A candidate first automatic-tier point threshold remains **≥95% role+direction precision**, but promotion requires the preregistered uncertainty criterion as well. The implementation owner may recommend a stricter threshold based on error costs and may not lower the gate after seeing final results.
+The implementation owner may recommend a stricter threshold based on error costs and may not lower the gate after seeing final results. A raw >=95% precision point estimate is not sufficient.
+
 
 
 ### PIT replay proof
@@ -1794,6 +1830,8 @@ Do **not** continue from P0 into commercial procurement, deep-tier mapping, Port
 
 - SEC EDGAR APIs: https://www.sec.gov/search-filings/edgar-application-programming-interfaces
 - SEC EDGAR access/data guidance: https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data
+- SEC filing-status / filing-date guidance: https://www.sec.gov/submit-filings/filer-support-resources/how-do-i-guides/determine-status-my-filing
+- Harvey, Campbell R., Yan Liu, and Heqing Zhu. “... and the Cross-Section of Expected Returns.” Review of Financial Studies / NBER working-paper record. https://www.nber.org/papers/w20592
 - BEA Input-Output Accounts: https://www.bea.gov/data/industries/input-output-accounts-data
 - Census International Trade API: https://www.census.gov/data/developers/data-sets/international-trade.html
 - BTS Freight Analysis Framework: https://www.bts.gov/faf
