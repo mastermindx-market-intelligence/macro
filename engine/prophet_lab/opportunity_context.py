@@ -29,7 +29,6 @@ B3_SCHEMA = "prophet.candidate_state_projection/v1"
 B4_SCHEMA = "prophet.entry_availability/v1"
 IDENTITY_BINDING_SCHEMA = "prophet.lab_opportunity_identity/v1"
 PORTFOLIO_RELATION_SCHEMA = "prophet.lab_portfolio_relation/v1"
-WATCHLIST_RELATION_SCHEMA = "prophet.lab_watchlist_relation/v1"
 OEV_SCHEMA = "opportunity_evidence.vector.v1"
 
 _UNJOINED_USER_STATE = {
@@ -40,8 +39,8 @@ _UNJOINED_USER_STATE = {
     },
     "watchlist": {
         "state": "NOT_JOINED",
-        "relation": None,
-        "reason": "WATCHLIST_OWNER_NOT_READ",
+        "saved": None,
+        "reason": "WATCHLIST_READ_CONTRACT_NOT_ADMITTED",
     },
     "portfolio": {
         "state": "NOT_JOINED",
@@ -328,170 +327,6 @@ def validate_opportunity_identity_binding(payload: Mapping[str, object]) -> None
 
     if payload.get("authority") != ALL_FALSE_AUTHORITY:
         raise OpportunityContextContractError("opportunity identity authority must remain all false")
-
-def project_terminal_watchlist_relation(
-    identity_binding: Mapping[str, object],
-    *,
-    http_status: int,
-    payload: Mapping[str, object] | None = None,
-) -> dict[str, object]:
-    """Project owned WatchStore membership without conflating it with a holding.
-
-    Terminal GET /api/watchlist separates the caller's owned ``lists`` from
-    ``sharedWithMe``. Only owned-list membership answers "saved by you?" here.
-    The store is symbol-keyed today, so the relation is explicitly
-    CURRENT_STORE_ALIAS and never becomes episode/security identity.
-    """
-    validate_opportunity_identity_binding(identity_binding)
-    if type(http_status) is not int:
-        raise OpportunityContextContractError("watchlist owner http_status must be an integer")
-
-    base = {
-        "schema": WATCHLIST_RELATION_SCHEMA,
-        "owner": "mastermind-terminal:/api/watchlist",
-        "join_basis": "CURRENT_STORE_ALIAS",
-        "display_symbol": identity_binding.get("display_symbol"),
-        "security_id": identity_binding.get("security_id"),
-        "identity_epoch": identity_binding.get("identity_epoch"),
-        "episode_id": identity_binding.get("episode_id"),
-        "candidate_generation_id": identity_binding.get("candidate_generation_id"),
-        "candidate_state_projection_id": identity_binding.get("candidate_state_projection_id"),
-        "authority": dict(ALL_FALSE_AUTHORITY),
-    }
-
-    if http_status == 401:
-        relation = {
-            **base,
-            "state": "AUTHENTICATION_REQUIRED",
-            "saved": None,
-            "owned_list_match_count": None,
-            "list_refs": [],
-            "reason": "WATCHLIST_AUTHENTICATION_REQUIRED",
-        }
-        validate_terminal_watchlist_relation(relation)
-        return relation
-
-    if http_status != 200:
-        relation = {
-            **base,
-            "state": "UNAVAILABLE_DATA",
-            "saved": None,
-            "owned_list_match_count": None,
-            "list_refs": [],
-            "reason": f"WATCHLIST_OWNER_HTTP_{http_status}",
-        }
-        validate_terminal_watchlist_relation(relation)
-        return relation
-
-    if not isinstance(payload, Mapping):
-        raise OpportunityContextContractError("watchlist owner payload must be an object")
-    lists = payload.get("lists")
-    if not isinstance(lists, list):
-        raise OpportunityContextContractError("watchlist owner lists must be a list")
-
-    display_symbol = _text(identity_binding.get("display_symbol"), "display_symbol")
-    seen_list_ids: set[str] = set()
-    refs: list[dict[str, str]] = []
-
-    for owned_list in lists:
-        if not isinstance(owned_list, Mapping):
-            raise OpportunityContextContractError("watchlist owner list must be an object")
-        list_id = _text(owned_list.get("id"), "watchlist list id")
-        if list_id in seen_list_ids:
-            raise OpportunityContextContractError("watchlist owner returned a duplicate list id")
-        seen_list_ids.add(list_id)
-        symbols = owned_list.get("symbols")
-        if not isinstance(symbols, list):
-            raise OpportunityContextContractError("watchlist owner symbols must be a list")
-        seen_symbols: set[str] = set()
-        matched = False
-        for row in symbols:
-            if not isinstance(row, Mapping):
-                raise OpportunityContextContractError("watchlist owner symbol row must be an object")
-            symbol = _text(row.get("symbol"), "watchlist symbol")
-            if symbol != symbol.strip().upper():
-                raise OpportunityContextContractError(
-                    "watchlist owner symbol is not normalized current-symbol text"
-                )
-            if symbol in seen_symbols:
-                raise OpportunityContextContractError(
-                    "watchlist owner returned a duplicate symbol in one list"
-                )
-            seen_symbols.add(symbol)
-            if symbol == display_symbol:
-                matched = True
-        if matched:
-            refs.append({"list_id": list_id})
-
-    relation = {
-        **base,
-        "state": "SAVED_TO_OWNED_WATCHLIST" if refs else "NOT_SAVED",
-        "saved": bool(refs),
-        "owned_list_match_count": len(refs),
-        "list_refs": refs,
-        "reason": None,
-    }
-    validate_terminal_watchlist_relation(relation)
-    return relation
-
-
-def validate_terminal_watchlist_relation(payload: Mapping[str, object]) -> None:
-    """Validate the minimal private watchlist relation without reading the owner."""
-    if not isinstance(payload, Mapping):
-        raise OpportunityContextContractError("watchlist relation must be an object")
-    expected = {
-        "schema", "owner", "join_basis", "display_symbol", "security_id",
-        "identity_epoch", "episode_id", "candidate_generation_id",
-        "candidate_state_projection_id", "state", "saved",
-        "owned_list_match_count", "list_refs", "reason", "authority",
-    }
-    if set(payload) != expected:
-        raise OpportunityContextContractError("watchlist relation fields are not closed")
-    if payload.get("schema") != WATCHLIST_RELATION_SCHEMA:
-        raise OpportunityContextContractError("watchlist relation schema mismatch")
-    if payload.get("owner") != "mastermind-terminal:/api/watchlist":
-        raise OpportunityContextContractError("watchlist relation owner mismatch")
-    if payload.get("join_basis") != "CURRENT_STORE_ALIAS":
-        raise OpportunityContextContractError("watchlist relation join basis mismatch")
-    for field in (
-        "display_symbol", "security_id", "identity_epoch", "episode_id",
-        "candidate_generation_id", "candidate_state_projection_id",
-    ):
-        _text(payload.get(field), f"watchlist relation {field}")
-    if payload.get("authority") != ALL_FALSE_AUTHORITY:
-        raise OpportunityContextContractError("watchlist relation authority must remain all false")
-
-    state = payload.get("state")
-    saved = payload.get("saved")
-    count = payload.get("owned_list_match_count")
-    refs = payload.get("list_refs")
-    reason = payload.get("reason")
-    if not isinstance(refs, list):
-        raise OpportunityContextContractError("watchlist relation list_refs must be a list")
-    if any(
-        not isinstance(ref, Mapping)
-        or set(ref) != {"list_id"}
-        or not isinstance(ref.get("list_id"), str)
-        or not ref.get("list_id")
-        for ref in refs
-    ):
-        raise OpportunityContextContractError("watchlist relation list ref is malformed")
-    ids = [str(ref["list_id"]) for ref in refs]
-    if len(ids) != len(set(ids)):
-        raise OpportunityContextContractError("watchlist relation list refs are not unique")
-
-    if state == "SAVED_TO_OWNED_WATCHLIST":
-        if saved is not True or type(count) is not int or count < 1 or count != len(refs) or reason is not None:
-            raise OpportunityContextContractError("saved watchlist relation is incoherent")
-    elif state == "NOT_SAVED":
-        if saved is not False or count != 0 or refs or reason is not None:
-            raise OpportunityContextContractError("unsaved watchlist relation is incoherent")
-    elif state in {"AUTHENTICATION_REQUIRED", "UNAVAILABLE_DATA"}:
-        if saved is not None or count is not None or refs or not isinstance(reason, str) or not reason:
-            raise OpportunityContextContractError("unavailable watchlist relation is incoherent")
-    else:
-        raise OpportunityContextContractError("watchlist relation state is unknown")
-
 
 def project_terminal_portfolio_relation(
     identity_binding: Mapping[str, object],
@@ -902,7 +737,6 @@ def compose_opportunity_context(
     *,
     episode_id: str,
     entry_availability: Mapping[str, object] | None = None,
-    watchlist_relation: Mapping[str, object] | None = None,
     portfolio_relation: Mapping[str, object] | None = None,
     opportunity_evidence: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
@@ -924,30 +758,16 @@ def compose_opportunity_context(
     )
 
     user_state = deepcopy(_UNJOINED_USER_STATE)
-    relation_bindings = {
-        "security_id": row.get("security_id"),
-        "identity_epoch": row.get("identity_epoch"),
-        "episode_id": row.get("episode_id"),
-        "candidate_generation_id": candidate_projection.get("candidate_generation_id"),
-        "candidate_state_projection_id": candidate_projection.get("projection_id"),
-    }
-
-    if watchlist_relation is not None:
-        validate_terminal_watchlist_relation(watchlist_relation)
-        for field, expected in relation_bindings.items():
-            if watchlist_relation.get(field) != expected:
-                raise OpportunityContextContractError(
-                    f"watchlist relation {field} does not match the selected B3 identity"
-                )
-        user_state["watchlist"] = {
-            "state": "JOINED",
-            "relation": deepcopy(dict(watchlist_relation)),
-            "reason": None,
-        }
-
     if portfolio_relation is not None:
         validate_terminal_portfolio_relation(portfolio_relation)
-        for field, expected in relation_bindings.items():
+        bindings = {
+            "security_id": row.get("security_id"),
+            "identity_epoch": row.get("identity_epoch"),
+            "episode_id": row.get("episode_id"),
+            "candidate_generation_id": candidate_projection.get("candidate_generation_id"),
+            "candidate_state_projection_id": candidate_projection.get("projection_id"),
+        }
+        for field, expected in bindings.items():
             if portfolio_relation.get(field) != expected:
                 raise OpportunityContextContractError(
                     f"portfolio relation {field} does not match the selected B3 identity"
@@ -1058,28 +878,8 @@ def validate_opportunity_context(payload: Mapping[str, object]) -> None:
         raise OpportunityContextContractError("private user state fields are not closed")
     if user_state.get("plan") != _UNJOINED_USER_STATE["plan"]:
         raise OpportunityContextContractError("private Plan state must remain owner-controlled")
-    watchlist_state = user_state.get("watchlist")
-    if watchlist_state == _UNJOINED_USER_STATE["watchlist"]:
-        pass
-    elif (
-        isinstance(watchlist_state, Mapping)
-        and set(watchlist_state) == {"state", "relation", "reason"}
-        and watchlist_state.get("state") == "JOINED"
-        and watchlist_state.get("reason") is None
-        and isinstance(watchlist_state.get("relation"), Mapping)
-    ):
-        validate_terminal_watchlist_relation(watchlist_state["relation"])
-        relation = watchlist_state["relation"]
-        for field in (
-            "security_id", "identity_epoch", "episode_id",
-            "candidate_generation_id", "candidate_state_projection_id",
-        ):
-            if relation.get(field) != identity.get(field):
-                raise OpportunityContextContractError(
-                    f"watchlist relation {field} does not match opportunity identity"
-                )
-    else:
-        raise OpportunityContextContractError("private watchlist state is incoherent")
+    if user_state.get("watchlist") != _UNJOINED_USER_STATE["watchlist"]:
+        raise OpportunityContextContractError("watchlist state must remain unjoined")
     portfolio_state = user_state.get("portfolio")
     if portfolio_state == _UNJOINED_USER_STATE["portfolio"]:
         pass
@@ -1123,12 +923,10 @@ __all__ = [
     "compose_opportunity_context",
     "project_opportunity_evidence_summary",
     "project_terminal_portfolio_relation",
-    "project_terminal_watchlist_relation",
     "resolve_display_alias_to_active_episode",
     "select_unique_active_episode_id",
     "validate_opportunity_context",
     "validate_opportunity_evidence_summary",
     "validate_opportunity_identity_binding",
     "validate_terminal_portfolio_relation",
-    "validate_terminal_watchlist_relation",
 ]
