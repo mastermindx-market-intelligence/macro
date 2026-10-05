@@ -1881,3 +1881,188 @@ def test_cli_subprocess_prints_check_and_result_lines():
     assert lines[8] == "J9 PASS all clocks bound to their sources"
     report = json.loads(out.read_text(encoding="utf-8"))
     assert report["generated_by"] == _pjr.GENERATED_BY
+
+
+# Input integrity: source absence must not validate an invented displayed value.
+_INTEGRITY_MONEY_PATHS = (
+    "price", "entry_signal.buy_zone.low", "entry_signal.buy_zone.high",
+    "entry_signal.stop", "hold.invalidation", "entry_signal.chase_above",
+)
+_INTEGRITY_BOOL_PATHS = ("signal.above200", "signal.weekly_bull", "signal.provisional")
+
+
+def _integrity_field(path, value, shown):
+    row = {}
+    node = row
+    pieces = path.split(".")
+    for piece in pieces[:-1]:
+        node = node.setdefault(piece, {})
+    node[pieces[-1]] = value
+    body = BeautifulSoup(
+        '<div class="pv-setup-body"><div data-source-field="' + path
+        + '"><dd>' + shown + '</dd></div></div>', _pjr.HTML_PARSER
+    ).select_one(".pv-setup-body")
+    return _pjr._field_misses(body, row)
+
+
+@pytest.mark.parametrize("path", _INTEGRITY_MONEY_PATHS)
+@pytest.mark.parametrize("value", [None, "", "123.45", True, False,
+                                    float("nan"), float("inf"), float("-inf"), {}, []])
+def test_input_integrity_rejects_invented_money(path, value):
+    assert _integrity_field(path, value, "$123.45")
+
+
+@pytest.mark.parametrize("path", _INTEGRITY_BOOL_PATHS)
+@pytest.mark.parametrize("value", [None, "", 0, 1, float("nan"), {}, []])
+def test_input_integrity_rejects_invented_boolean(path, value):
+    assert _integrity_field(path, value, "Yes 是")
+
+
+@pytest.mark.parametrize("path", _INTEGRITY_MONEY_PATHS + _INTEGRITY_BOOL_PATHS)
+@pytest.mark.parametrize("shown", ["Not supplied", "来源未提供", "Not supplied 来源未提供"])
+def test_input_integrity_accepts_explicit_source_absence(path, shown):
+    assert _integrity_field(path, None, shown) == []
+
+
+@pytest.mark.parametrize("value,shown", [(0, "$0.00"), (12.345, "$12.35"),
+                                        (-2.0, "$-2.00")])
+def test_input_integrity_preserves_valid_money(value, shown):
+    assert _integrity_field("price", value, shown) == []
+
+
+@pytest.mark.parametrize("value,shown", [(True, "Yes"), (True, "是"),
+    (True, "Yes 是"), (False, "No"), (False, "否"), (False, "No 否")])
+def test_input_integrity_preserves_valid_boolean(value, shown):
+    assert _integrity_field("signal.above200", value, shown) == []
+
+
+@pytest.mark.parametrize("value,shown", [(True, "Yesterday"), (False, "Not No"),
+                                       (True, "Yes 否"), (False, "No 是")])
+def test_input_integrity_rejects_ambiguous_boolean_copy(value, shown):
+    assert _integrity_field("signal.above200", value, shown)
+
+
+def test_input_integrity_receipts_bind_consumed_bytes(tmp_path, monkeypatch):
+    """Replace each input immediately after its read; checks must use that read."""
+    page = tmp_path / "page.html"
+    standouts = tmp_path / "standouts.json"
+    index = tmp_path / "index.json"
+    runtime = tmp_path / "prophet_live.json"
+    out = tmp_path / "report.json"
+    original = {
+        page: b'<div id="snapshot-test">original</div>',
+        standouts: b'{"snapshot_test":"original"}',
+        index: b'{"snapshot_test":"original"}',
+        runtime: b'{"snapshot_test":"original"}',
+    }
+    replacement = {
+        page: b'<div id="snapshot-test">replaced</div>',
+        standouts: b'{"snapshot_test":"replaced"}',
+        index: b'{"snapshot_test":"replaced"}',
+        runtime: b'{"snapshot_test":"replaced"}',
+    }
+    for path, content in original.items():
+        path.write_bytes(content)
+    consumed = {}
+    reads = {path: 0 for path in original}
+    original_read = Path.read_bytes
+
+    def replace_after_read(path):
+        content = original_read(path)
+        if path in original:
+            reads[path] += 1
+            path.write_bytes(replacement[path])
+        return content
+
+    def passed(*args, **kwargs):
+        return {"status": "PASS", "expected": "isolated capture control", "observed": {}}
+
+    for number in range(1, 13):
+        monkeypatch.setattr(_pjr, "_check_j" + str(number), passed)
+
+    def check_page(soup, ticker):
+        consumed["page"] = soup.select_one("#snapshot-test").get_text()
+        return passed()
+
+    def check_standouts(soup, ticker, payload):
+        consumed["standouts"] = payload["snapshot_test"]
+        return passed()
+
+    def check_index(soup, payload, ticker):
+        consumed["index"] = payload["snapshot_test"]
+        return passed(), []
+
+    def check_runtime(soup, ix, su, payload, locale, ticker):
+        consumed["runtime"] = payload["snapshot_test"]
+        return passed()
+
+    monkeypatch.setattr(_pjr, "_check_j1", check_page)
+    monkeypatch.setattr(_pjr, "_check_j2", check_standouts)
+    monkeypatch.setattr(_pjr, "_check_j8", check_index)
+    monkeypatch.setattr(_pjr, "_check_j9", check_runtime)
+    monkeypatch.setattr(Path, "read_bytes", replace_after_read)
+    rc = _pjr.run(["--page", str(page), "--standouts", str(standouts),
+                   "--index", str(index), "--ticker", "TEST1", "--out", str(out)])
+    report = json.loads(out.read_text(encoding="utf-8"))
+    assert rc == 0
+    assert consumed == dict.fromkeys(("page", "standouts", "index", "runtime"), "original")
+    assert all(count == 1 for count in reads.values()), reads
+    for name, path in [("page", page), ("standouts", standouts),
+                       ("index", index), ("runtime", runtime)]:
+        assert report["inputs"][name]["sha256"] == hashlib.sha256(original[path]).hexdigest()
+        assert report["inputs"][name]["bytes"] == len(original[path])
+
+
+def test_input_integrity_records_absent_runtime(tmp_path, monkeypatch):
+    page = tmp_path / "page.html"
+    su = tmp_path / "standouts.json"
+    ix = tmp_path / "index.json"
+    out = tmp_path / "report.json"
+    page.write_text("<div></div>", encoding="utf-8")
+    su.write_text("{}", encoding="utf-8")
+    ix.write_text("{}", encoding="utf-8")
+    observed = {}
+
+    def passed(*args, **kwargs):
+        return {"status": "PASS", "expected": "isolated capture control", "observed": {}}
+
+    for number in range(1, 13):
+        monkeypatch.setattr(_pjr, "_check_j" + str(number), passed)
+    monkeypatch.setattr(_pjr, "_check_j8", lambda *args: (passed(), []))
+
+    def runtime_missing(soup, index, standouts, runtime, locale, ticker):
+        observed["runtime"] = runtime
+        return {"status": "UNSUPPORTED", "expected": "runtime absent"}
+
+    monkeypatch.setattr(_pjr, "_check_j9", runtime_missing)
+    rc = _pjr.run(["--page", str(page), "--standouts", str(su),
+                   "--index", str(ix), "--ticker", "TEST1", "--out", str(out)])
+    report = json.loads(out.read_text(encoding="utf-8"))
+    assert rc == 2
+    assert observed["runtime"] is None
+    assert report["inputs"]["runtime"] == {
+        "path": str(page.parent / "prophet_live.json"), "state": "MISSING"
+    }
+
+
+@pytest.mark.parametrize("path,shown", [("price", "$123.45"),
+                                        ("signal.above200", "Yes 是")])
+def test_input_integrity_j6_rejects_matching_invented_template_and_display(path, shown):
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    standouts = _standouts_payload(pool_digest="pool-source-digest")
+    row = _pjr._standouts_payload_row(standouts, "TEST1")
+    target = row
+    pieces = path.split(".")
+    for piece in pieces[:-1]:
+        target = target[piece]
+    target[pieces[-1]] = None
+    fields = soup.select('[data-source-field="' + path + '"] dd')
+    assert len(fields) >= 2, "test needs both displayed and template copies"
+    for field in fields:
+        field.clear()
+        field.append(shown)
+    result = _pjr._check_j6(soup, standouts, "TEST1")
+    assert result["status"] == "FAIL", result
+    assert any(item.get("path") == path and item.get("reason") in
+               {"money_without_source", "bool_without_source"}
+               for item in result["observed"]), result

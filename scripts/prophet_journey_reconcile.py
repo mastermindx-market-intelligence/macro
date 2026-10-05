@@ -246,6 +246,13 @@ def _load_json(path: Path) -> dict[str, Any]:
         return json.load(fh)
 
 
+def _read_input_snapshot(path: Path) -> tuple[bytes, dict[str, Any]]:
+    """Parse and describe the same bytes; no cross-file atomicity is implied."""
+    raw = path.read_bytes()
+    return raw, {"path": str(path), "sha256": hashlib.sha256(raw).hexdigest(),
+                 "bytes": len(raw)}
+
+
 # =========================================================================== #
 # Page parsing — beautifulsoup over the saved outerHTML.
 # =========================================================================== #
@@ -786,24 +793,43 @@ def _field_misses(body: Tag, row: dict[str, Any]) -> list[dict[str, Any]]:
                    "entry_signal.buy_zone.high", "entry_signal.stop",
                    "hold.invalidation", "entry_signal.chase_above")
     bool_paths = ("signal.above200", "signal.weekly_bull", "signal.provisional")
+    unavailable = {"Not supplied", "来源未提供", "Not supplied 来源未提供",
+                   "来源未提供 Not supplied"}
     misses: list[dict[str, Any]] = []
     for field in body.select("[data-source-field]"):
         path = str(field.get("data-source-field", ""))
         raw = _resolve_dotted(row, path)
-        text = (field.select_one("dd").get_text(" ", strip=True)
-                if field.select_one("dd") is not None else "")
-        if path in money_paths and isinstance(raw, (int, float)):
-            expected = f"${raw:.2f}"
-            if text.split(" as of ", 1)[0].strip() != expected:
-                misses.append({"path": path, "reason": "money_mismatch", "text": text, "expected": expected})
+        value_node = field.select_one("dd")
+        text = (" ".join(value_node.get_text(" ", strip=True).split())
+                if value_node is not None else "")
+        if path in money_paths:
+            # Match the native formatter: a bool or non-finite number is not money.
+            finite_number = (isinstance(raw, (int, float))
+                             and not isinstance(raw, bool)
+                             and raw == raw and (raw - raw) == 0)
+            if finite_number:
+                expected = f"${raw:.2f}"
+                if text.split(" as of ", 1)[0].strip() != expected:
+                    misses.append({"path": path, "reason": "money_mismatch",
+                                   "text": text, "expected": expected})
+            elif text not in unavailable:
+                misses.append({"path": path, "reason": "money_without_source",
+                               "text": text, "expected": "Not supplied"})
         elif path in bool_paths and isinstance(raw, bool):
-            accepted = ("Yes", "No") if raw else ("No", "Yes")
-            if not any(token in text for token in (accepted[0], "是" if raw else "否")):
-                misses.append({"path": path, "reason": "bool_mismatch", "text": text})
+            en, zh = ("Yes", "是") if raw else ("No", "否")
+            if text not in {en, zh, f"{en} {zh}", f"{zh} {en}"}:
+                misses.append({"path": path, "reason": "bool_mismatch",
+                               "text": text, "expected": en})
+        elif path in bool_paths and not (isinstance(raw, str) and raw.strip()):
+            # Nonempty source strings retain the native verbatim-string branch.
+            if text not in unavailable:
+                misses.append({"path": path, "reason": "bool_without_source",
+                               "text": text, "expected": "Not supplied"})
         elif isinstance(raw, str) and raw and path in ("lane", "stage"):
             continue
         elif isinstance(raw, str) and raw and raw not in text:
-            misses.append({"path": path, "reason": "string_missing", "text": text, "expected": raw})
+            misses.append({"path": path, "reason": "string_missing",
+                           "text": text, "expected": raw})
     return misses
 
 
@@ -1548,14 +1574,24 @@ def run(argv: list[str] | None = None) -> int:
         print(f"--index not found: {index_path}", file=sys.stderr)
         return 1
 
-    page_sha, page_bytes = _sha256(page_path)
-    standouts_sha, standouts_bytes = _sha256(standouts_path)
-    index_sha, index_bytes = _sha256(index_path)
+    page_raw, page_receipt = _read_input_snapshot(page_path)
+    standouts_raw, standouts_receipt = _read_input_snapshot(standouts_path)
+    index_raw, index_receipt = _read_input_snapshot(index_path)
+    runtime_path = page_path.parent / "prophet_live.json"
+    try:
+        runtime_raw, runtime_receipt = _read_input_snapshot(runtime_path)
+    except FileNotFoundError:
+        runtime_raw = None
+        runtime_receipt = {"path": str(runtime_path), "state": "MISSING"}
+    inputs = {"page": page_receipt, "standouts": standouts_receipt,
+              "index": index_receipt, "runtime": runtime_receipt}
 
-    soup = _parse_page(page_path.read_text(encoding="utf-8"))
+    soup = _parse_page(page_raw.decode("utf-8"))
     ticker = _resolve_ticker(soup, args.ticker)
-    standouts = _load_json(standouts_path)
-    index = _load_json(index_path)
+    standouts = json.loads(standouts_raw.decode("utf-8"))
+    index = json.loads(index_raw.decode("utf-8"))
+    runtime = (json.loads(runtime_raw.decode("utf-8"))
+               if runtime_raw is not None else None)
 
     j1 = _check_j1(soup, ticker)
     j2 = _check_j2(soup, ticker, standouts)
@@ -1578,8 +1614,6 @@ def run(argv: list[str] | None = None) -> int:
         plan_relation=displayed_binding["data-plan-relation"]
         if displayed_binding else None,
         plan_ids=plan_ids, displayed_bodies=displayed_bodies)
-    runtime_path = page_path.parent / "prophet_live.json"
-    runtime = _load_json(runtime_path) if runtime_path.exists() else None
     j9 = _check_j9(soup, index, standouts, runtime, args.locale, ticker)
     j10 = _check_j10(soup, ticker, plan_ids)
     j11 = _check_j11(soup, args.locale, standouts, index, ticker, plan_ids)
@@ -1599,15 +1633,7 @@ def run(argv: list[str] | None = None) -> int:
     report = {
         "schema": SCHEMA,
         "generated_by": GENERATED_BY,
-        "inputs": {
-            "page": {"path": str(page_path), "sha256": page_sha,
-                     "bytes": page_bytes},
-            "standouts": {"path": str(standouts_path),
-                          "sha256": standouts_sha,
-                          "bytes": standouts_bytes},
-            "index": {"path": str(index_path),
-                      "sha256": index_sha, "bytes": index_bytes},
-        },
+        "inputs": inputs,
         "ticker": ticker,
         "locale": args.locale,
         "linked_plan_ids": plan_ids,
