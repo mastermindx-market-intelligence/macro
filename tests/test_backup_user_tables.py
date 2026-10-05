@@ -154,6 +154,49 @@ def test_restore_roundtrip_memory_store_and_receipt(tmp_path, monkeypatch):
     (tmp_path / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
 
 
+def test_gate1_flag_tracks_destination_not_transport():
+    """A psql restore into a real scratch Supabase project still closes GATE-1.
+
+    Regression for the drill of 2026-09-20: the flag was keyed off
+    environment == "scratch-supabase", which is only ever set by the REST path.
+    The runbook prescribes --dest-db-url (the only path that survives the
+    auth.users FKs via session_replication_role=replica), so every correct
+    restore stamped gate1_scratch_supabase: false.
+    """
+    started = datetime(2026, 9, 20, 11, 29, 1, tzinfo=timezone.utc)
+    ended = datetime(2026, 9, 20, 11, 29, 5, tzinfo=timezone.utc)
+    report = {"ok": True, "integrity": "pass", "tables": {}}
+    kw = dict(
+        backup_id="user-tables-20260920T112413Z",
+        started=started,
+        ended=ended,
+        source_as_of=None,
+        verification=report,
+        commands=[],
+    )
+    scratch_dsn = (
+        "postgresql://postgres.hdxmdoodczwrvpobbbqp:pw"
+        "@aws-0-us-west-2.pooler.supabase.com:5432/postgres"
+    )
+    # psql path into a real scratch Supabase project -> closes the gate
+    pg = bak.build_receipt(dest=scratch_dsn, environment="scratch-postgres", **kw)
+    assert pg["gate1_scratch_supabase"] is True
+    # REST path into a real scratch Supabase project -> also closes the gate
+    rest = bak.build_receipt(
+        dest="https://hdxmdoodczwrvpobbbqp.supabase.co",
+        environment="scratch-supabase", **kw)
+    assert rest["gate1_scratch_supabase"] is True
+    # a non-Supabase scratch Postgres does NOT close the gate
+    local = bak.build_receipt(
+        dest="postgresql://u:p@localhost:5432/postgres",
+        environment="scratch-postgres", **kw)
+    assert local["gate1_scratch_supabase"] is False
+    # the in-process fixture never closes the gate, whatever the dest looks like
+    fixture = bak.build_receipt(
+        dest=scratch_dsn, environment="in-process-fixture", **kw)
+    assert fixture["gate1_scratch_supabase"] is False
+
+
 def test_restore_refuses_without_scratch_flag(monkeypatch):
     monkeypatch.setenv("BACKUP_ENCRYPTION_KEY", KEY)
     rc = bak.main([

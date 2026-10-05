@@ -815,7 +815,15 @@ def build_receipt(
         "rto_target_minutes": RTO_TARGET_MINUTES,
         "commands": commands,
         "verification": verification,
-        "gate1_scratch_supabase": environment == "scratch-supabase",
+        # GATE-1 is about the DESTINATION being a real, non-production Supabase
+        # project - not about which transport wrote the rows. The psql path
+        # (--dest-db-url) is the only one that survives the auth.users FKs, so
+        # keying this off "scratch-supabase" alone stamped false on every correct
+        # restore the runbook actually prescribes.
+        "gate1_scratch_supabase": (
+            environment in ("scratch-supabase", "scratch-postgres")
+            and "supabase" in (dest or "").lower()
+        ),
     }
 
 
