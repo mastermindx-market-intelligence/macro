@@ -3494,6 +3494,7 @@ jobs:
     paths:
       - "templates/hk.html.j2"
       - "templates/canada.html.j2"
+      - "templates/_prophet_coverage.html.j2"
       - "templates/stock-dashboard.css"
       - "templates/dashboard-icons.js"
       - "engine/__init__.py"
@@ -3527,6 +3528,7 @@ jobs:
       - "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png"
       - "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png"
       - "tests/test_stock_dashboard_first_frame.py"
+      - "tests/test_p_mp1_shell_nonus_byte_parity.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -3537,6 +3539,8 @@ jobs:
         run: pip install beautifulsoup4 jinja2 pytest
       - name: stock dashboard first-frame source contract
         run: python -m pytest tests/test_stock_dashboard_first_frame.py -q
+      - name: P1a shared Prophet non-US compatibility
+        run: python -m pytest tests/test_p_mp1_shell_nonus_byte_parity.py -q
 
   prophet-lab:
     if: ${{ false }}

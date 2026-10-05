@@ -161,28 +161,3 @@ def test_legacy_generated_ids_remain_unique_before_p0b_composition(market: str) 
     ids = [node.get("id") for node in soup.find_all(attrs={"id": True})]
     duplicates = sorted(node_id for node_id, count in Counter(ids).items() if count > 1)
     assert not duplicates, f"{market}: duplicate generated ids: {duplicates}"
-
-
-def test_canada_shared_coverage_keeps_owner_totals_server_owned():
-    from pathlib import Path
-    template = Path("templates/canada.html.j2").read_text(encoding="utf-8")
-    composer = Path("site/canada-stock-v36.js").read_text(encoding="utf-8")
-    assert "pvc.coverage({" in template
-    assert "'producer_total': _ca_unique_n if _ca_union_known else none" in template
-    assert "'entitled_total': none" in template
-    assert "Plan owner not available for this market" in template
-    assert "data-pv-coverage-filter" in composer
-    assert "data-pv-coverage-displayed" in composer
-    assert "data-pv-coverage-producer" not in composer
-    assert "data-pv-coverage-entitled" not in composer
-
-
-def test_us_candidate_coverage_does_not_infer_entitlement_total():
-    from pathlib import Path
-    source = Path("templates/_us_candidate_pool.html.j2").read_text(encoding="utf-8")
-    assert "'producer_total': _pc.eligible" in source
-    assert "'entitled_total': none" in source
-    assert "'missing_owner_en': 'Entitled total'" in source
-    assert "'missing_owner_zh': '权限总数'" in source
-    assert "data-pv-coverage-filter" in source
-    assert "data-pv-coverage-displayed" in source

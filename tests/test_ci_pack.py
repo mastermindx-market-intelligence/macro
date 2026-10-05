@@ -1579,6 +1579,7 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate(real_m
     manifest = _yaml(MANIFEST)
     code_job = manifest["jobs"]["stock-dashboard-first-frame"]
     code_suite = "tests/test_stock_dashboard_first_frame.py"
+    compatibility_suite = "tests/test_p_mp1_shell_nonus_byte_parity.py"
     data_suite = "tests/test_stock_dashboard_first_frame_data.py"
 
     assert code_job["gate"] == "code"
@@ -1586,6 +1587,7 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate(real_m
     required_paths = {
         "templates/hk.html.j2",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         "templates/canada.html.j2",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "templates/_prophet_coverage.html.j2",  # ci-trigger-closure: data — symbolic planner input, not a source read
         "templates/stock-dashboard.css",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         "templates/dashboard-icons.js",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         "site/hk-stock-v36.js",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
@@ -1612,9 +1614,11 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate(real_m
         "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png",
         "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png",
         code_suite,
+        compatibility_suite,
     }
     assert required_paths <= set(code_job["paths"])
     assert any(code_suite in str(step.get("run") or "") for step in code_job["steps"])
+    assert any(compatibility_suite in str(step.get("run") or "") for step in code_job["steps"])
     assert _job_pip_packages(code_job) == {"beautifulsoup4", "jinja2", "pytest"}
 
     data_job = manifest["jobs"]["engine-render-guards"]
@@ -1628,6 +1632,8 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate(real_m
     for changed in (
         [code_suite],
         ["templates/hk.html.j2"],  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        ["templates/_prophet_coverage.html.j2"],  # ci-trigger-closure: data — symbolic planner input, not a source read
+        [compatibility_suite],
         ["site/canada-stock-v36.js"],  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         ["scripts/render_stock_dashboard_fixture.py"],  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         ["mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json"],

@@ -7,7 +7,7 @@
 {% macro coverage(c) -%}
 <style>
 .pv-cov{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 0 10px}
-.pv-cov-cell{min-width:0;border:1px solid var(--line);border-radius:8px;background:var(--panel2);padding:7px 8px;display:grid;gap:2px}
+.pv-cov-cell{min-width:0;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);padding:7px 8px;display:grid;gap:2px}
 .pv-cov-k{font-size:8.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:normal}
 .pv-cov-v{font-size:12px;font-weight:750;color:var(--text);overflow-wrap:anywhere}
 .pv-cov-note{grid-column:1/-1;color:var(--muted);font-size:9.5px;line-height:1.45;overflow-wrap:anywhere}

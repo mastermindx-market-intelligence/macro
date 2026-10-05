@@ -117,7 +117,7 @@
         {
           "path": "templates/_prophet_coverage.html.j2",
           "role": "jinja_template",
-          "sha256": "dfb90cd7080df797f55d05a9e99938972e0ab3281520ca401817183c298567c9"
+          "sha256": "ff90dc243b598708a7e5f898b24dd1ba47501df6d9d12c90fa32af9ad2bac70c"
         },
         {
           "path": "templates/_risk_radar_card.css.j2",
@@ -156,7 +156,7 @@
         }
       ],
       "output": "canada_stocks.html",
-      "output_sha256": "a60512b7e9623749768def1d5cf572523a82672af3a023a62dbd2bf7a3146595",
+      "output_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
       "owner_cases": {
         "normal": {
           "input_transform": {
@@ -217,7 +217,7 @@
             "sha256": "561e2696a225b71fa1b1dd2e443e506daf20a55813986519cc650f7abaff6747"
           },
           "output": "canada_stocks.html",
-          "output_sha256": "a60512b7e9623749768def1d5cf572523a82672af3a023a62dbd2bf7a3146595",
+          "output_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
           "owner_population": {
             "board": 9,
             "intersection": [],
@@ -275,7 +275,7 @@
             "sha256": "15f0d1d2753fa912c5911ff8c4371db69f596c0e2a0661275960a18c6f9b8f2b"
           },
           "output": "canada_stocks.null-buy.html",
-          "output_sha256": "65436db619e5d5a95681f5be10575ef81afbaeaf19681d907bc350bac00f6777",
+          "output_sha256": "9fc538a14732150efe226d54349b14b0b135599338f6f2647107e7502c2c987d",
           "owner_population": {
             "board": null,
             "intersection": null,
@@ -333,7 +333,7 @@
             "sha256": "4f91a49be717ebde1e9f5683353438f9de7443d7f96751d826dc87b0589e5873"
           },
           "output": "canada_stocks.watch-only.html",
-          "output_sha256": "744944b0e7d63bb43e3b07157749038f888412a85a0d7f046d612f56eea9abb8",
+          "output_sha256": "6f731dc2e4f9545d50062a310c5ae6ff048496efb74e638e9662eb5bae3b3e84",
           "owner_population": {
             "board": 0,
             "intersection": [],
