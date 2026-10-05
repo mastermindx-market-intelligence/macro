@@ -2281,6 +2281,12 @@ app.include_router(earnings_router)
 from app.company_intelligence import router as company_intelligence_router  # noqa: E402
 app.include_router(company_intelligence_router)
 
+# Private low-latency ticker-news reads. The router authenticates + enforces
+# site_full, then independently fails closed on feed-specific display rights
+# before opening the qbus store read-only.
+from app.ticker_news import router as ticker_news_router  # noqa: E402
+app.include_router(ticker_news_router)
+
 # Bounded localhost projection of ONE regular-session quote for the static
 # stock dossiers.  Market-data authority stays with the Terminal Quote Plane —
 # this owns no store, socket, scheduler, or vendor credential, and it may only
