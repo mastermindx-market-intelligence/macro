@@ -1,12 +1,12 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "KMT-BULL-20260922",
-  "asof": "2026-10-04",
+  "asof": "2026-10-05",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 71.0,
+  "management_confidence": 72.0,
   "raw_confidence": 73.3,
-  "delta_vs_base": 11.0,
+  "delta_vs_base": 12.0,
   "recommended_action": "hold",
   "human_state": "On Track",
   "components": {
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.567,
     "dist_to_t1_r": 0.933,
     "dist_to_t2_r": 2.433,
-    "horizon_pct_used": 20.0,
+    "horizon_pct_used": 22.2,
     "p1": 0.3779,
     "p2": 0.1889,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-09-26",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 9,
-  "tau": 0.2
+  "days_elapsed": 10,
+  "tau": 0.2222
 }
