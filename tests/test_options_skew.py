@@ -1486,3 +1486,155 @@ def test_accrue_sole_leg_returns_0_when_store_covers_session_but_panel_is_empty(
     out = capsys.readouterr().out
     assert not [l for l in out.splitlines() if l.startswith("::notice title=options-skew-accrual::")]
     assert _sha256(ledger) == pinned
+
+
+# --------------------------------------------------------------------------- #
+# K3E A8 OPTIONS-Q — owner-side selected-expiry IV/skew projection
+# --------------------------------------------------------------------------- #
+
+def test_k3e_a8_projection_exposes_actual_selected_legs_without_qualification():
+    out = S.compute_skew_projection(_chain("XYZ", put_iv=0.40, call_iv=0.30))
+
+    assert out["schema"] == "options_skew.selection_projection.v1"
+    assert out["state"] == "AVAILABLE_UNQUALIFIED"
+    assert out["owner"] == "engine.options_skew"
+    assert out["owner_schema"] == S.SCHEMA
+    assert out["authority"] == "context_only"
+    assert out["financial_influence"] is False
+    assert out["underlying"] == "XYZ"
+    assert out["requested_tenor_days"] == 30.0
+    assert out["actual_expiry"] == "2026-07-21"
+    assert out["actual_tenor_days"] == pytest.approx(30.0)
+    assert out["tenor_basis"] == {
+        "owner_year_fraction": pytest.approx(30 / 365.0),
+        "day_count_convention": "owner_T_times_365_calendar_days",
+        "settlement_certified": False,
+    }
+    assert out["source_session"] == "2026-06-21"
+
+    put = out["selected_put"]
+    call = out["selected_call"]
+    assert put == {
+        "right": "put",
+        "expiry": "2026-07-21",
+        "target_delta": -0.25,
+        "selected_delta": -0.25,
+        "delta_distance": 0.0,
+        "strike": 95.0,
+        "iv": 0.40,
+        "iv_unit": "decimal",
+        "selection_method": "nearest_delta",
+    }
+    assert call == {
+        "right": "call",
+        "expiry": "2026-07-21",
+        "target_delta": 0.50,
+        "selected_delta": 0.50,
+        "delta_distance": 0.0,
+        "strike": 100.0,
+        "iv": 0.30,
+        "iv_unit": "decimal",
+        "selection_method": "nearest_delta",
+    }
+    assert out["skew"] == {
+        "value": pytest.approx(0.10),
+        "unit": "iv_decimal_difference",
+        "definition": "selected_put_iv_minus_selected_call_iv",
+    }
+    assert out["qualification"]["k3e_admissible"] is False
+    assert out["qualification"]["state"] == "NOT_QUALIFIED"
+    assert {
+        "canonical_underlying_identity_receipt",
+        "source_use_receipt",
+        "quote_clock_receipt",
+        "underlying_clock_receipt",
+        "availability_clock_receipt",
+        "exercise_settlement_receipt",
+        "currency_price_basis_receipt",
+        "multiplier_adjustment_receipt",
+        "rates_dividend_model_receipt",
+        "liquidity_nbbo_receipt",
+        "no_arbitrage_receipt",
+    } <= set(out["qualification"]["missing"])
+    assert out["implied_move"] == {"state": "UNAVAILABLE", "value": None}
+    assert out["event_variance"] == {"state": "UNAVAILABLE", "value": None}
+    assert out["q_density"] == {"state": "UNAVAILABLE", "value": None}
+
+
+def test_k3e_a8_projection_moneyness_fallback_never_claims_delta_observation():
+    chain = _chain("XYZ", put_iv=0.40, call_iv=0.30)
+    chain.loc[:, "delta"] = float("nan")
+
+    out = S.compute_skew_projection(chain)
+
+    assert out["state"] == "AVAILABLE_UNQUALIFIED"
+    assert out["selected_put"]["selection_method"] == "moneyness_fallback"
+    assert out["selected_put"]["selected_delta"] is None
+    assert out["selected_put"]["delta_distance"] is None
+    assert out["selected_call"]["selection_method"] == "moneyness_fallback"
+    assert out["selected_call"]["selected_delta"] is None
+    assert out["selected_call"]["delta_distance"] is None
+    assert out["qualification"]["k3e_admissible"] is False
+    assert "delta_observation_receipt" in out["qualification"]["missing"]
+
+
+def test_k3e_a8_projection_missing_leg_is_typed_unavailable_not_zero():
+    chain = _chain("XYZ")
+    chain = chain[chain["is_call"]]
+
+    out = S.compute_skew_projection(chain)
+
+    assert out["state"] == "UNAVAILABLE"
+    assert out["selected_put"] is None
+    assert out["selected_call"] is not None
+    assert out["skew"]["value"] is None
+    assert "PUT_LEG_UNAVAILABLE" in out["refusals"]
+    assert out["qualification"]["k3e_admissible"] is False
+
+
+def test_k3e_a8_projection_refuses_mixed_underlying_or_source_session():
+    mixed = _chain("XYZ")
+    mixed.loc[mixed.index[-1], "underlying"] = "ABC"
+    out = S.compute_skew_projection(mixed)
+    assert out["state"] == "UNAVAILABLE"
+    assert "MIXED_UNDERLYING" in out["refusals"]
+
+    mixed = _chain("XYZ")
+    mixed.loc[mixed.index[-1], "asof"] = "2026-06-22"
+    out = S.compute_skew_projection(mixed)
+    assert out["state"] == "UNAVAILABLE"
+    assert "MIXED_SOURCE_SESSION" in out["refusals"]
+
+
+def test_k3e_a8_projection_refuses_boolean_selected_contract_numerics():
+    import numpy as np
+
+    chain = _chain("XYZ")
+    chain["iv"] = chain["iv"].astype(object)
+    target_put = (
+        (~chain["is_call"])
+        & (chain["expiry"] == "2026-07-21")
+        & (chain["delta"] == -0.25)
+    )
+    chain.loc[target_put, "iv"] = np.bool_(True)
+
+    out = S.compute_skew_projection(chain)
+
+    assert out["state"] == "UNAVAILABLE"
+    assert out["selected_put"] is None
+    assert "PUT_LEG_UNAVAILABLE" in out["refusals"]
+    assert out["skew"]["value"] is None
+
+
+def test_k3e_a8_projection_keeps_legacy_skew_result_on_valid_chain():
+    chain = _chain("XYZ", put_iv=0.40, call_iv=0.30)
+    legacy = S.compute_skew(chain)
+    projection = S.compute_skew_projection(chain)
+
+    assert legacy is not None
+    assert projection["state"] == "AVAILABLE_UNQUALIFIED"
+    assert projection["underlying"] == legacy["underlying"]
+    assert projection["actual_tenor_days"] == pytest.approx(legacy["tenor_days"])
+    assert projection["selected_put"]["iv"] == pytest.approx(legacy["otm_put_iv"])
+    assert projection["selected_call"]["iv"] == pytest.approx(legacy["atm_call_iv"])
+    assert projection["skew"]["value"] == pytest.approx(legacy["skew"])
