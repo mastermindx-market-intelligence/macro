@@ -1476,6 +1476,7 @@ jobs:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/rights_use.py"
       - "engine/earnings_release/receipts.py"
       - "engine/earnings_release/filing_key.py"
       - "engine/earnings_release/figures.py"
@@ -8481,6 +8482,7 @@ jobs:
       - engine/theme_graph/local_sources.py
       - engine/theme_graph/materialize.py
       - engine/theme_graph/rights.py
+      - engine/theme_graph/rights_use.py
       - engine/theme_graph/selection_cohort.py
       - engine/theme_graph/store.py
       - engine/theme_graph/theme_state.py
@@ -14718,6 +14720,8 @@ jobs:
       - "engine/security_state.py"
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/rights_use.py"
       - "lib/dataos/identity.py"
       # Price-ladder consumers now import the Data OS price vocabulary directly.
       - "lib/dataos/price.py"
