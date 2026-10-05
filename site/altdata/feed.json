@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-04T22:00:05.870415+00:00",
+  "generated_utc": "2026-10-04T23:19:37.382413+00:00",
   "as_of": "2026-10-04",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -27958,20 +27958,20 @@
           "sellers": 2
         },
         {
-          "ticker": "ANET",
-          "buy_usd": 0.0,
-          "sell_usd": 990020219.0,
-          "net_usd": -990020219.0,
-          "buyers": 0,
-          "sellers": 302
-        },
-        {
           "ticker": "NVDA",
           "buy_usd": 0.0,
           "sell_usd": 989524042.0,
           "net_usd": -989524042.0,
           "buyers": 0,
           "sellers": 32
+        },
+        {
+          "ticker": "ANET",
+          "buy_usd": 0.0,
+          "sell_usd": 945986872.0,
+          "net_usd": -945986872.0,
+          "buyers": 0,
+          "sellers": 281
         },
         {
           "ticker": "SNOW",
