@@ -81,6 +81,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml  # noqa: E402
 
+# Use libyaml when available: same PyYAML safe-subset semantics, but the live
+# synapse/overlay files are large enough that the pure-Python scanner dominates a
+# cold derived Intelligence OS rebuild. This is the same loader choice used by
+# admin/config_store.py and falls back to SafeLoader when the C extension is absent.
+_YAML_LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
+
 from engine.intelligence_registry import (  # noqa: E402
     DeskScan,
     audit_content,
@@ -325,7 +331,7 @@ def _load_overlay(root: Path) -> tuple[dict[str, Any] | None, str, bool]:
     if text is None:
         return None, source, False
     try:
-        data = yaml.safe_load(text)
+        data = yaml.load(text, Loader=_YAML_LOADER)
     except yaml.YAMLError:
         return None, "unparseable", False
     if data is None:
@@ -347,7 +353,7 @@ def _qual_ladder_keys(root: Path) -> tuple[set[str] | None, str]:
     if text is None:
         return None, source
     try:
-        data = yaml.safe_load(text)
+        data = yaml.load(text, Loader=_YAML_LOADER)
     except yaml.YAMLError:
         return None, "unparseable"
     if not isinstance(data, dict):
@@ -422,7 +428,7 @@ def build(root: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     # NOT CHECKED path, never as a bare YAMLError traceback (a traceback is a crash, and a
     # crashed gate is indistinguishable from an infrastructure failure in a job log).
     try:
-        synapse = yaml.safe_load(synapse_text)
+        synapse = yaml.load(synapse_text, Loader=_YAML_LOADER)
     except yaml.YAMLError as exc:
         raise SynapseUnavailable(
             f"FATAL: {SYNAPSE_REL} was read from {synapse_source} but does not parse as "

@@ -897,6 +897,44 @@ def test_15_a_failed_provider_rung_with_a_successful_output_stays_healthy():
     assert any(e["plane"] == "provider" for e in rows["a"]["evidence"])
 
 
+def test_provider_events_indexes_rows_once_instead_of_rescanning_per_artifact(
+    tmp_path, monkeypatch
+):
+    """The provider-health join is O(rows + artifacts), while preserving row identity/order."""
+    path = tmp_path / CLI.PROVIDER_HEALTH_REL
+    path.parent.mkdir(parents=True)
+    path.write_text("{}\n" * 100, encoding="utf-8")
+
+    class CountingRow(dict):
+        gets = 0
+
+        def get(self, key, default=None):
+            type(self).gets += 1
+            return super().get(key, default)
+
+    seq = {"i": 0}
+
+    def fake_loads(_line):
+        i = seq["i"]
+        seq["i"] += 1
+        stem = f"p{i % 10}"
+        return CountingRow(event="attempt", ok=False, lane=stem, context=stem, seq=i)
+
+    monkeypatch.setattr(CLI.json, "loads", fake_loads)
+    synapse = {
+        "artifacts": {
+            f"a{i}": {"producer": f"engine/p{i % 10}.py"}
+            for i in range(50)
+        }
+    }
+
+    out = CLI.provider_events(tmp_path, synapse)
+
+    assert len(out["a0"]) == 10
+    assert [row["seq"] for row in out["a0"]] == list(range(0, 100, 10))
+    assert CountingRow.gets < 800
+
+
 def test_16_dependency_bound_is_exact_only_for_single_output_producers():
     doc = synapse_doc(
         a=artifact("data/a.json", producer=PRODUCER_A),
