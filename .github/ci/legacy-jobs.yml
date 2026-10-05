@@ -9095,6 +9095,13 @@ jobs:
     paths:
       - "config/regime_outlook_mapping_v2.json"
       - "engine/rates_command_outlook.py"
+      # The coverage replay (slice E1r, rule R-I / SH-12) reads the mapping
+      # through the composer at four closed dates. Its suite is pure-path
+      # (synthetic frames, injected producers; pandas only) and its committed
+      # output sits beside the mapping. Named here so contract-delta owns it.
+      - "scripts/regime_outlook_replay.py"
+      - "tests/test_regime_outlook_replay.py"
+      - "config/regime_outlook_replay_v2_sh12.json"
       # The composer (slice E1c) reads the mapping and the evidence rows and
       # assembles the projection; its suite is offline and lives with the
       # mapping/readings suites it extends (contract-delta: a new suite must be
@@ -9125,9 +9132,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install test dependencies
-        run: pip install pytest pyyaml
-      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings, producer rule pins, composer
-        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py tests/test_rates_command_outlook_rule_pins.py tests/test_rates_command_outlook_compose.py -q
+        run: pip install pytest pyyaml pandas numpy
+      - name: regime outlook — mapping lint, pinned reading table, contract parity, readings, producer rule pins, composer, coverage replay
+        run: python -m pytest tests/test_rates_command_outlook.py tests/test_rates_command_outlook_readings.py tests/test_rates_command_outlook_rule_pins.py tests/test_rates_command_outlook_compose.py tests/test_regime_outlook_replay.py -q
 
   ric-w2-surface:
     if: ${{ false }}
