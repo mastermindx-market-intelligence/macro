@@ -274,10 +274,29 @@ def lhb() -> dict[str, dict]:
         inst_accum = _clip01(0.5 * _clip01((nbuy - nsell) / 4.0)
                              + 0.5 * _clip01(math.log1p(max(inb * 1e8, 0)) / math.log1p(3e8)))
         leading = bool(inb > 0 and nbuy >= 2)
-        out[t] = {"net_buy_yi": round(net, 2), "inst_net_buy_yi": round(inb, 2),
-                  "n_inst_buy": nbuy, "n_inst_sell": nsell,
-                  "hotmoney_score": round(hot, 3), "inst_accum_score": round(inst_accum, 3),
-                  "leading": leading, "tag": "机构吸筹" if leading else "游资"}
+        out[t] = {
+            "net_buy_yi": round(net, 2),
+            "inst_net_buy_yi": round(inb, 2),
+            "n_inst_buy": nbuy,
+            "n_inst_sell": nsell,
+            "hotmoney_score": round(hot, 3),
+            "inst_accum_score": round(inst_accum, 3),
+            "leading": leading,
+            "tag": "机构吸筹" if leading else "游资",
+            # CIE-13: the upstream institutional table reports aggregate counts
+            # and net amount only.  It does NOT expose stable seat names,
+            # beneficial owners, fund vehicles or manager complexes.  Preserve
+            # the useful aggregate while refusing to mint a named actor.
+            "actor_identity_state": (
+                "aggregate_institutional_seat_counts_only"
+                if (nbuy or nsell or inb)
+                else "no_institutional_seat_split_observed"
+            ),
+            "named_seat_identity": None,
+            "beneficial_actor_identity": None,
+            "actor_identity_authority": "none",
+            "seat_count_semantics": "aggregate_count_not_named_actor",
+        }
     return out
 
 
