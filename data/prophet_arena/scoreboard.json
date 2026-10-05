@@ -1,6 +1,6 @@
 {
   "schema": "prophet_arena.scoreboard/v1",
-  "as_of": "2026-10-04",
+  "as_of": "2026-10-05",
   "tier": "display",
   "authority": {
     "tier": "display",
@@ -71,12 +71,8 @@
   "standing_line_zh": "\u5f71\u5b50\u8bb0\u5f55 \u2014 \u5b9e\u76d8\u7b56\u7565\u4ec5\u5728\u64cd\u4f5c\u8005\u6279\u51c6\u540e\u624d\u4f1a\u66f4\u6539",
   "headline_min_closed": 20,
   "harness_validity": {
-    "c0_plan_ids": [
-      "DOV-BULL-20260930"
-    ],
-    "live_plan_ids": [
-      "DOV-BULL-20260930"
-    ],
+    "c0_plan_ids": [],
+    "live_plan_ids": [],
     "c0_mismatch_count": 0,
     "missing_from_mirror": [],
     "extra_in_mirror": [],
@@ -315,10 +311,10 @@
     }
   ],
   "tonight": {
-    "asof": "2026-10-04",
+    "asof": "2026-10-05",
     "standouts_as_of": "2026-10-02",
     "price_through": "2026-10-02",
-    "observed_at_utc": "2026-10-04T06:25:54.360004+00:00",
+    "observed_at_utc": "2026-10-05T05:51:26.631314+00:00",
     "source_delayed": false,
     "source_unknown": false,
     "source_basis": "panel_majority",
@@ -327,7 +323,7 @@
     "dispersion": {
       "mode": "not_lean_in",
       "state": "lean_out",
-      "artifact_as_of": "2026-10-04",
+      "artifact_as_of": "2026-10-05",
       "stale_sessions": 0,
       "cap": 6,
       "path": "data/dispersion/regime.json"
@@ -356,7 +352,7 @@
           "2B",
           "3B"
         ],
-        "runtime_s": 18.7
+        "runtime_s": 19.4
       }
     },
     "policies": {
@@ -366,7 +362,6 @@
           "FBK",
           "SHOO",
           "ACMR",
-          "CENT",
           "APG",
           "ENS",
           "UTHR",
@@ -393,6 +388,7 @@
           "LOPE",
           "SYF",
           "AVNT",
+          "CENT",
           "SKT",
           "RL",
           "DKS",
@@ -402,15 +398,14 @@
           "ICHR",
           "PL",
           "MYRG",
-          "DOV",
           "TLN",
           "COST",
           "PVH",
           "HLNE",
           "WH",
-          "OMCL",
           "QDEL",
           "KRC",
+          "OMCL",
           "BKE",
           "POWI",
           "ALGM",
@@ -418,26 +413,24 @@
           "WING",
           "TRIP"
         ],
-        "plan_ids": [
-          "DOV-BULL-20260930"
-        ],
-        "n_plans": 1,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 55,
+          "admitted": 54,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "lossless live champion mirror",
           "truncated": 0
         },
         "origination": {
-          "offered": 55,
+          "offered": 54,
           "skipped_duplicate_id": 44,
           "skipped_open_plan": 7,
           "skipped_clock_provenance": 3,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-04",
+          "recorded_at": "2026-10-05",
           "price_basis_date": "2026-10-02",
           "clock_errors": [],
           "validation_failures": [
@@ -466,10 +459,10 @@
               ]
             }
           ],
-          "originated": 1,
+          "originated": 0,
           "validation_failed": 3
         },
-        "ledger_rows_appended": 1,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C1_buy_soon_first": {
@@ -478,19 +471,19 @@
           "FBK",
           "SHOO",
           "ACMR",
-          "CENT",
           "APG",
           "ENS",
           "UTHR",
           "CVCO",
           "ESE",
           "LFUS",
-          "STAA"
+          "STAA",
+          "MD"
         ],
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 55,
+          "admitted": 54,
           "cap": 12,
           "cap_applied": true,
           "act_level_2": 0,
@@ -504,7 +497,7 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-04",
+          "recorded_at": "2026-10-05",
           "price_basis_date": "2026-10-02",
           "clock_errors": [],
           "validation_failures": [
@@ -545,10 +538,10 @@
           "FBK",
           "SHOO",
           "ACMR",
-          "CENT",
           "APG",
           "ENS",
           "UTHR",
+          "CVCO",
           "WMT",
           "AZN",
           "ECHO",
@@ -561,7 +554,7 @@
         ],
         "n_plans": 3,
         "selection": {
-          "admitted": 55,
+          "admitted": 54,
           "cap": 12,
           "cap_applied": true,
           "door_w_offered": 5,
@@ -572,13 +565,13 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 6,
+          "skipped_duplicate_id": 5,
           "skipped_open_plan": 2,
-          "skipped_clock_provenance": 1,
+          "skipped_clock_provenance": 2,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-04",
+          "recorded_at": "2026-10-05",
           "price_basis_date": "2026-10-02",
           "clock_errors": [],
           "validation_failures": [
@@ -589,10 +582,18 @@
               "errors": [
                 "formation_date '2026-09-30' postdates tier_event_date '2026-09-29'"
               ]
+            },
+            {
+              "ticker": "CVCO",
+              "id": "CVCO-BULL-20260930",
+              "stage": "clock_provenance",
+              "errors": [
+                "formation_date '2026-09-30' postdates tier_event_date '2026-09-29'"
+              ]
             }
           ],
           "originated": 3,
-          "validation_failed": 1
+          "validation_failed": 2
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
@@ -603,13 +604,13 @@
           "FBK",
           "SHOO",
           "ACMR",
-          "CENT",
-          "APG"
+          "APG",
+          "ENS"
         ],
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 55,
+          "admitted": 54,
           "cap": 6,
           "cap_applied": true
         },
@@ -621,7 +622,7 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-04",
+          "recorded_at": "2026-10-05",
           "price_basis_date": "2026-10-02",
           "clock_errors": [],
           "validation_failures": [
@@ -646,43 +647,40 @@
           "PAHC",
           "LIN",
           "MKSI",
-          "DOV",
           "BKE"
         ],
-        "plan_ids": [
-          "DOV-BULL-20260930"
-        ],
-        "n_plans": 1,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 55,
+          "admitted": 54,
           "cap": 12,
           "cap_applied": true,
           "align_gate": {
-            "admitted": 6,
+            "admitted": 5,
             "admitted_via_fallback": 2,
-            "excluded_misaligned": 47,
-            "excluded_unreadable": 2,
+            "excluded_misaligned": 49,
+            "excluded_unreadable": 0,
             "basis": "event_atlas weekly align_class == 2 (its full value), falling back to align_now == 3 (its full value) when the name has no weekly event on record; a name the atlas cannot read is excluded, never admitted"
           },
-          "passed_gate": 6,
+          "passed_gate": 5,
           "excluded": 49
         },
         "origination": {
-          "offered": 6,
+          "offered": 5,
           "skipped_duplicate_id": 4,
           "skipped_open_plan": 1,
           "skipped_clock_provenance": 0,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-04",
+          "recorded_at": "2026-10-05",
           "price_basis_date": "2026-10-02",
           "clock_errors": [],
           "validation_failures": [],
-          "originated": 1,
+          "originated": 0,
           "validation_failed": 0
         },
-        "ledger_rows_appended": 1,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C6_time_stop_21": {
@@ -691,7 +689,6 @@
           "FBK",
           "SHOO",
           "ACMR",
-          "CENT",
           "APG",
           "ENS",
           "UTHR",
@@ -718,6 +715,7 @@
           "LOPE",
           "SYF",
           "AVNT",
+          "CENT",
           "SKT",
           "RL",
           "DKS",
@@ -727,15 +725,14 @@
           "ICHR",
           "PL",
           "MYRG",
-          "DOV",
           "TLN",
           "COST",
           "PVH",
           "HLNE",
           "WH",
-          "OMCL",
           "QDEL",
           "KRC",
+          "OMCL",
           "BKE",
           "POWI",
           "ALGM",
@@ -743,26 +740,24 @@
           "WING",
           "TRIP"
         ],
-        "plan_ids": [
-          "DOV-BULL-20260930"
-        ],
-        "n_plans": 1,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 55,
+          "admitted": 54,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "identical to lossless C0 by construction",
           "truncated": 0
         },
         "origination": {
-          "offered": 55,
+          "offered": 54,
           "skipped_duplicate_id": 44,
           "skipped_open_plan": 7,
           "skipped_clock_provenance": 3,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-04",
+          "recorded_at": "2026-10-05",
           "price_basis_date": "2026-10-02",
           "clock_errors": [],
           "validation_failures": [
@@ -791,10 +786,10 @@
               ]
             }
           ],
-          "originated": 1,
+          "originated": 0,
           "validation_failed": 3
         },
-        "ledger_rows_appended": 1,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C7_buy_soon_admitted": {
@@ -803,22 +798,22 @@
           "FBK",
           "SHOO",
           "ACMR",
-          "CENT",
           "APG",
           "ENS",
           "UTHR",
           "CVCO",
           "ESE",
           "LFUS",
-          "STAA"
+          "STAA",
+          "MD"
         ],
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 55,
+          "admitted": 54,
           "cap": 12,
           "cap_applied": true,
-          "admitted_with_widening": 57,
+          "admitted_with_widening": 56,
           "buy_soon_in_board": 2,
           "buy_soon_admitted_by_widening": 2,
           "buy_soon_selected": 0,
@@ -832,7 +827,7 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-04",
+          "recorded_at": "2026-10-05",
           "price_basis_date": "2026-10-02",
           "clock_errors": [],
           "validation_failures": [
