@@ -199,3 +199,69 @@ def test_output_is_strict_json_serializable():
     encoded = json.dumps(out, allow_nan=False, sort_keys=True)
     assert "NaN" not in encoded
     assert "Infinity" not in encoded
+
+
+def test_two_component_composition_refuses_missing_expectation_subject():
+    expectation = _expectation()
+    expectation["semantic_payload"]["query"]["ticker_compat"] = None
+
+    out = compose_descriptive_coupling(expectation, _market())
+
+    assert out["state"] == "REFUSED"
+    assert "SUBJECT_IDENTITY_MISSING" in out["refusals"]
+    assert out["coupling"]["status"] == "REFUSED"
+
+
+def test_two_component_composition_refuses_missing_market_subject():
+    market = _market()
+    market["ticker"] = None
+
+    out = compose_descriptive_coupling(_expectation(), market)
+
+    assert out["state"] == "REFUSED"
+    assert "SUBJECT_IDENTITY_MISSING" in out["refusals"]
+    assert out["coupling"]["status"] == "REFUSED"
+
+
+def test_market_projection_requires_exact_incumbent_owner_envelope():
+    for field, value in [
+        ("owner", "forged.owner"),
+        ("tier", "production"),
+        ("authority", "rank_and_trade"),
+    ]:
+        market = _market()
+        market[field] = value
+
+        out = compose_descriptive_coupling(_expectation(), market)
+
+        assert out["state"] == "REFUSED"
+        assert "MARKET_OWNER_ENVELOPE_UNSUPPORTED" in out["refusals"]
+        assert out["market"]["raw_simple_return"] is None
+
+
+def test_market_projection_refuses_nonfinite_or_boolean_numeric_values():
+    import math
+
+    mutations = [
+        ("raw_response", "simple_return", float("nan")),
+        ("raw_response", "log_return", float("inf")),
+        ("residual_response", "log_residual", float("-inf")),
+        ("residual_response", "simple_equivalent", True),
+        ("window", "owner_observation_steps", True),
+    ]
+    for block, field, value in mutations:
+        market = _market()
+        market[block][field] = value
+
+        out = compose_descriptive_coupling(_expectation(), market)
+
+        assert out["state"] == "REFUSED"
+        assert "MARKET_NUMERIC_INVALID" in out["refusals"]
+        assert out["coupling"]["status"] == "REFUSED"
+        assert out["market"]["raw_simple_return"] is None
+        assert out["market"]["residual_log_return"] is None
+
+        # Refused output itself remains strict JSON.
+        encoded = __import__("json").dumps(out, allow_nan=False, sort_keys=True)
+        assert "NaN" not in encoded
+        assert "Infinity" not in encoded

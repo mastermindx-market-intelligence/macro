@@ -148,6 +148,12 @@ def _market_projection(result: object) -> tuple[dict | None, list[str]]:
         return None, []
     if not isinstance(result, dict) or result.get("schema") != MARKET_SCHEMA:
         return None, ["MARKET_SCHEMA_UNSUPPORTED"]
+    if (
+        result.get("owner") != "engine.price_pressure"
+        or result.get("tier") != "display"
+        or result.get("authority") != "context_only"
+    ):
+        return None, ["MARKET_OWNER_ENVELOPE_UNSUPPORTED"]
     if result.get("financial_influence") is not False:
         return None, ["MARKET_AUTHORITY_UNSUPPORTED"]
 
@@ -169,6 +175,27 @@ def _market_projection(result: object) -> tuple[dict | None, list[str]]:
         else {}
     )
     window = result.get("window") if isinstance(result.get("window"), dict) else {}
+
+    import math
+
+    def valid_optional_number(value: object) -> bool:
+        return value is None or (
+            not isinstance(value, bool)
+            and isinstance(value, (int, float))
+            and math.isfinite(value)
+        )
+
+    copied_numbers = (
+        raw.get("simple_return"),
+        raw.get("log_return"),
+        residual.get("log_residual"),
+        residual.get("simple_equivalent"),
+        window.get("owner_observation_steps"),
+        window.get("session_steps"),
+    )
+    if not all(valid_optional_number(value) for value in copied_numbers):
+        return None, ["MARKET_NUMERIC_INVALID"]
+
     return {
         "state": result.get("status") or "UNAVAILABLE",
         "schema": MARKET_SCHEMA,
@@ -221,11 +248,19 @@ def compose_descriptive_coupling(
         out["rival_explanation"]["code"] = "MARKET_COMPONENT_UNAVAILABLE"
         return out
 
+    expectation_ticker = expectation.get("ticker")
+    market_ticker = market.get("ticker")
     if (
-        expectation.get("ticker")
-        and market.get("ticker")
-        and expectation["ticker"] != market["ticker"]
+        not isinstance(expectation_ticker, str)
+        or not expectation_ticker.strip()
+        or not isinstance(market_ticker, str)
+        or not market_ticker.strip()
     ):
+        out["state"] = "REFUSED"
+        out["refusals"].append("SUBJECT_IDENTITY_MISSING")
+        out["coupling"]["status"] = "REFUSED"
+        return out
+    if expectation_ticker != market_ticker:
         out["state"] = "REFUSED"
         out["refusals"].append("SUBJECT_MISMATCH")
         out["coupling"]["status"] = "REFUSED"
