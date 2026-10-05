@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import hashlib
+import json
+import os
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
@@ -13,19 +16,26 @@ BOARD = "board-v1"
 
 
 def _row(ticker: str = "AAA", **updates):
+    members = sorted({str(ticker), "BBB", "CCC"})
+    member_digest = "sha256:" + hashlib.sha256(
+        json.dumps(members, ensure_ascii=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
     row = {
         "stamp_date": SESSION, "ticker": ticker, "board_definition": BOARD, "lane": "scan",
         "security_id": f"SEC:{ticker}", "issuer_id": f"ISS:{ticker}", "identity_epoch": "epoch_0",
-        "identity_epoch_state": "provisional", "identity_capture_state": "AVAILABLE",
+        "identity_epoch_state": "provisional",
+        "identity_spec_schema": "stock_identity.fingerprint_spec.v1",
+        "identity_spec_hash": "sha256:identity-spec",
+        "identity_capture_state": "RESOLVED",
         "identity_capture_basis": "prospective", "identity_alias_source_sha256": "sha256:a",
         "identity_master_source_sha256": "sha256:b", "cycle_state": "ready", "cycle_label": "Ready",
         "cycle_label_vocab_sha256": "sha256:c", "theme_membership_ids": "basket-x",
         "theme_membership_source_sha256": "sha256:d", "theme_membership_source_version": "v1",
-        "theme_membership_source_curated": SESSION, "theme_membership_basis": "PIT",
+        "theme_membership_source_curated": SESSION, "theme_membership_basis": chk.ucv.MEMBERSHIP_BASIS,
         "theme_capture_group_id": "basket-x", "theme_capture_group_state": "SOLE_ACTIVE_MEMBERSHIP",
         "theme_capture_group_rule": "SOLE_ACTIVE_PIT_MEMBERSHIP_ONLY_V1",
-        "theme_capture_group_weighting": "equal", "theme_capture_member_tickers": "BBB|CCC",
-        "theme_capture_member_set_sha256": "sha256:e", "context_dims": "regime|theme",
+        "theme_capture_group_weighting": "equal", "theme_capture_member_tickers": "|".join(members),
+        "theme_capture_member_set_sha256": member_digest, "context_dims": "regime|theme",
     }
     row.update(updates)
     return row
@@ -87,27 +97,32 @@ def test_nonempty_native_capture_produces_s0_receipt_and_coverage(tmp_path):
     assert r["h1_admitted"] is False
 
 
-def test_identical_duplicate_is_reported_but_not_conflicting(tmp_path):
+def test_identical_duplicate_is_source_conflict(tmp_path):
     row = _row()
     _write(tmp_path, [row, dict(row)])
     r = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
-    assert r["status"] == chk.STATUS_S0_CAPTURE_PRESENT
-    assert r["duplicate_key_rows"] == 2
+    assert r["status"] == chk.STATUS_SOURCE_CONFLICT
+    assert r["reason"] == "DUPLICATE_NATIVE_KEYS"
+    assert r["duplicate_keys"] == [
+        {"stamp_date": SESSION, "ticker": "AAA", "board_definition": BOARD}
+    ]
 
 
 def test_conflicting_native_key_fails_closed(tmp_path):
     _write(tmp_path, [_row(), _row(issuer_id="ISS:OTHER")])
     r = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
     assert r["status"] == chk.STATUS_SOURCE_CONFLICT
-    assert r["reason"] == "CONFLICTING_NATIVE_KEYS"
-    assert r["conflicting_keys"] == [
+    assert r["reason"] == "DUPLICATE_NATIVE_KEYS"
+    assert r["duplicate_keys"] == [
         {"stamp_date": SESSION, "ticker": "AAA", "board_definition": BOARD}
     ]
 
 
 def test_cycle_pair_mismatch_and_group_missingness_are_disclosed(tmp_path):
     _write(tmp_path, [_row(cycle_label=None, theme_capture_group_state="AMBIGUOUS_OVERLAP",
+                           theme_membership_ids="basket-x|basket-y",
                            theme_capture_group_id=None, theme_capture_group_weighting=None,
+                           theme_capture_member_tickers=None,
                            theme_capture_member_set_sha256=None)])
     r = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
     assert r["status"] == chk.STATUS_S0_CAPTURE_PRESENT
@@ -146,10 +161,12 @@ def test_one_current_row_cannot_hide_legacy_rows_in_same_session(tmp_path):
 
 def test_explicit_unavailable_capture_is_not_mistaken_for_legacy(tmp_path):
     _write(tmp_path, [_row(security_id=None, issuer_id=None, identity_epoch=None,
+        identity_epoch_state=None, identity_spec_schema=None, identity_spec_hash=None,
         identity_capture_state="SOURCE_UNAVAILABLE", identity_capture_basis=None,
         cycle_state=None, cycle_label=None, cycle_label_vocab_sha256=None,
         theme_membership_source_sha256=None, theme_capture_group_id=None,
-        theme_capture_group_state="SOURCE_UNAVAILABLE", theme_capture_group_weighting=None,
+        theme_capture_group_state="SOURCE_UNAVAILABLE", theme_capture_group_rule=None,
+        theme_capture_group_weighting=None, theme_capture_member_tickers=None,
         theme_capture_member_set_sha256=None)])
     r = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
     assert r["status"] == chk.STATUS_S0_CAPTURE_PRESENT
@@ -160,7 +177,7 @@ def test_explicit_unavailable_capture_is_not_mistaken_for_legacy(tmp_path):
 def test_optional_column_missing_never_decodes_unrequested_fields(tmp_path, monkeypatch):
     row = _row()
     del row["identity_alias_source_sha256"]
-    row["fwd_ret"] = 999999.0  # Synthetic forbidden-field sentinel, not an outcome.
+    row["unrequested_sentinel"] = 999999.0  # Benign projection sentinel.
     _write(tmp_path, [row])
     original = chk.pq.ParquetFile
     calls = []
@@ -174,6 +191,7 @@ def test_optional_column_missing_never_decodes_unrequested_fields(tmp_path, monk
             assert columns is not None, "unrestricted native read is forbidden"
             assert set(columns).issubset(chk.READ_COLUMNS)
             assert set(columns).isdisjoint(chk.FORBIDDEN)
+            assert "unrequested_sentinel" not in columns
             assert kwargs.get("use_pandas_metadata") is False
             return self.inner.read(*args, **kwargs)
     monkeypatch.setattr(chk.pq, "ParquetFile", ProjectedOnly)
@@ -185,14 +203,13 @@ def test_optional_column_missing_never_decodes_unrequested_fields(tmp_path, monk
 def test_schema_rows_and_receipt_use_one_original_snapshot(tmp_path, monkeypatch):
     part = _write(tmp_path, [_row("ORIGINAL")])
     original_bytes = part.read_bytes()
-    original_read = Path.read_bytes
+    original_snapshot_read = chk._read_canonical_part
     original_loader = chk.ucv.load_candidates
     reads = []
     snapshot_payloads = []
-    def count_original(path):
-        if path == part:
-            reads.append(path)
-        return original_read(path)
+    def count_original(store, path):
+        reads.append(path)
+        return original_snapshot_read(store, path)
     def load_while_source_changes(root=None, **kwargs):
         # Simulate a concurrent atomic producer replacement after snapshot acquisition.
         _write(tmp_path, [_row("LATER"), _row("ANOTHER")])
@@ -200,7 +217,7 @@ def test_schema_rows_and_receipt_use_one_original_snapshot(tmp_path, monkeypatch
         assert supplied == {"2026-09": original_bytes}, "native reader lacks bound byte snapshot"
         snapshot_payloads.append(supplied)
         return original_loader(root, **kwargs)
-    monkeypatch.setattr(Path, "read_bytes", count_original)
+    monkeypatch.setattr(chk, "_read_canonical_part", count_original)
     monkeypatch.setattr(chk.ucv, "load_candidates", load_while_source_changes)
     r = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
     assert r["status"] == chk.STATUS_S0_CAPTURE_PRESENT
@@ -244,7 +261,7 @@ def test_read_failure_cannot_be_reported_as_quiet_capture(tmp_path, monkeypatch)
         if path == part:
             raise PermissionError("synthetic private path detail")
         return original(path)
-    monkeypatch.setattr(Path, "read_bytes", fail_read)
+    monkeypatch.setattr(chk, "_read_canonical_part", lambda store, path: fail_read(path))
     r = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
     assert r["status"] == chk.STATUS_SOURCE_CONFLICT
     assert r["reason"] == "CANDIDATE_PART_UNREADABLE"
@@ -360,3 +377,271 @@ def test_invalid_session_is_rejected_before_storage_lookup(tmp_path, monkeypatch
     monkeypatch.setattr(chk, "_part_path", forbidden_lookup)
     with pytest.raises(ValueError):
         chk.inspect(expected_session=session, board_definition=BOARD, root=tmp_path)
+
+
+# ---------------------------------------------------------------------------
+# Program-CEO S0 trust-boundary regressions — exact producer contract
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("ticker", [123, True, 1.25])
+def test_nontext_native_ticker_cannot_start_s0(tmp_path, ticker):
+    _write(tmp_path, [_row(ticker=ticker)])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] != chk.STATUS_S0_CAPTURE_PRESENT
+
+
+@pytest.mark.parametrize(("value", "expected"), [(7, "7"), (True, "True")])
+def test_nontext_board_definition_cannot_match_by_string_coercion(tmp_path, value, expected):
+    _write(tmp_path, [_row(board_definition=value)])
+    out = chk.inspect(expected_session=SESSION, board_definition=expected, root=tmp_path)
+    assert out["status"] != chk.STATUS_S0_CAPTURE_PRESENT
+
+
+def test_nontext_stamp_date_cannot_match_by_string_coercion(tmp_path):
+    _write(tmp_path, [_row(stamp_date=date(2026, 9, 29))])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] != chk.STATUS_S0_CAPTURE_PRESENT
+
+
+@pytest.mark.parametrize("state", ["NOT_A_REAL_IDENTITY_STATE", 123])
+def test_unrecognized_identity_capture_state_cannot_start_s0(tmp_path, state):
+    _write(tmp_path, [_row(identity_capture_state=state)])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_SOURCE_CONFLICT
+    assert out["reason"] == "INVALID_IDENTITY_CAPTURE_STATE"
+
+
+def test_resolved_identity_requires_ids_epoch_and_spec_metadata(tmp_path):
+    _write(tmp_path, [_row(
+        security_id=None, issuer_id=None, identity_epoch=None,
+        identity_epoch_state=None, identity_spec_schema=None, identity_spec_hash=None,
+    )])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_SOURCE_CONFLICT
+    assert out["reason"] == "INVALID_IDENTITY_CAPTURE_STATE"
+
+
+@pytest.mark.parametrize("state", ["SECURITY_UNRESOLVED"])
+def test_security_unresolved_is_valid_explicit_missingness(tmp_path, state):
+    _write(tmp_path, [_row(
+        identity_capture_state=state, security_id=None, issuer_id=None,
+        identity_epoch=None, identity_epoch_state=None,
+        identity_spec_schema=None, identity_spec_hash=None,
+    )])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_S0_CAPTURE_PRESENT
+    assert out["coverage"]["identity_resolved"] == 0.0
+
+
+def test_issuer_unresolved_preserves_security_binding(tmp_path):
+    _write(tmp_path, [_row(identity_capture_state="ISSUER_UNRESOLVED", issuer_id=None)])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_S0_CAPTURE_PRESENT
+    assert out["coverage"]["identity_resolved"] == 0.0
+
+
+@pytest.mark.parametrize("state", ["IDENTITY_UNAVAILABLE", "SOURCE_UNAVAILABLE"])
+def test_explicit_identity_unavailable_states_are_admissible(tmp_path, state):
+    value = _row(
+        identity_capture_state=state,
+        security_id=None, issuer_id=None, identity_epoch=None,
+        identity_epoch_state=None, identity_spec_schema=None, identity_spec_hash=None,
+        identity_capture_basis=None,
+    )
+    if state == "SOURCE_UNAVAILABLE":
+        value["identity_alias_source_sha256"] = None
+        value["identity_master_source_sha256"] = None
+    _write(tmp_path, [value])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_S0_CAPTURE_PRESENT
+
+
+def test_invalid_decision_date_state_cannot_certify_valid_expected_session(tmp_path):
+    _write(tmp_path, [_row(
+        identity_capture_state="INVALID_DECISION_DATE",
+        security_id=None, issuer_id=None, identity_epoch=None,
+        identity_epoch_state=None, identity_spec_schema=None, identity_spec_hash=None,
+    )])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_SOURCE_CONFLICT
+
+
+@pytest.mark.parametrize("state", ["NOT_A_REAL_GROUP_STATE", 123])
+def test_unrecognized_group_capture_state_cannot_start_s0(tmp_path, state):
+    _write(tmp_path, [_row(theme_capture_group_state=state)])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_SOURCE_CONFLICT
+    assert out["reason"] == "INVALID_GROUP_CAPTURE_STATE"
+
+
+def test_sole_group_requires_id_equal_weight_and_member_witness(tmp_path):
+    _write(tmp_path, [_row(
+        theme_capture_group_id=None, theme_capture_group_weighting=None,
+        theme_capture_member_tickers=None, theme_capture_member_set_sha256=None,
+    )])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_SOURCE_CONFLICT
+
+
+@pytest.mark.parametrize("state", [
+    "NO_ACTIVE_MEMBERSHIP", "AMBIGUOUS_OVERLAP",
+    "UNSUPPORTED_WEIGHTING", "MEMBERSHIP_ROSTER_INCOHERENT",
+])
+def test_nonsole_group_states_remain_admissible_without_sole_facts(tmp_path, state):
+    ids = (None if state == "NO_ACTIVE_MEMBERSHIP" else
+           "basket-x|basket-y" if state == "AMBIGUOUS_OVERLAP" else "basket-x")
+    _write(tmp_path, [_row(
+        theme_membership_ids=ids,
+        theme_capture_group_state=state,
+        theme_capture_group_id=None, theme_capture_group_weighting=None,
+        theme_capture_member_tickers=None, theme_capture_member_set_sha256=None,
+    )])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_S0_CAPTURE_PRESENT
+    assert out["coverage"]["sole_supported_peer_group"] == 0.0
+
+
+def test_group_source_unavailable_remains_admissible_missingness(tmp_path):
+    _write(tmp_path, [_row(
+        theme_membership_source_sha256=None,
+        theme_capture_group_state="SOURCE_UNAVAILABLE", theme_capture_group_rule=None,
+        theme_capture_group_id=None, theme_capture_group_weighting=None,
+        theme_capture_member_tickers=None, theme_capture_member_set_sha256=None,
+    )])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_S0_CAPTURE_PRESENT
+
+
+def test_nonsole_group_state_cannot_retain_sole_group_evidence(tmp_path):
+    _write(tmp_path, [_row(theme_capture_group_state="AMBIGUOUS_OVERLAP")])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_SOURCE_CONFLICT
+
+
+def test_symlink_candidate_part_cannot_certify_canonical_capture(tmp_path):
+    external = tmp_path / "external.parquet"
+    pd.DataFrame([_row()]).to_parquet(external, index=False)
+    store = tmp_path / "data/us_prophet_rank/candidates"
+    store.mkdir(parents=True)
+    (store / "2026-09.parquet").symlink_to(external)
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_SOURCE_CONFLICT
+
+
+def test_symlink_candidate_store_cannot_certify_canonical_capture(tmp_path):
+    external = tmp_path / "external-store"
+    external.mkdir()
+    pd.DataFrame([_row()]).to_parquet(external / "2026-09.parquet", index=False)
+    parent = tmp_path / "data/us_prophet_rank"
+    parent.mkdir(parents=True)
+    (parent / "candidates").symlink_to(external, target_is_directory=True)
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_SOURCE_CONFLICT
+
+
+def test_hardlinked_candidate_part_cannot_certify_canonical_capture(tmp_path):
+    external = tmp_path / "external.parquet"
+    pd.DataFrame([_row()]).to_parquet(external, index=False)
+    part = tmp_path / "data/us_prophet_rank/candidates/2026-09.parquet"
+    part.parent.mkdir(parents=True)
+    os.link(external, part)
+    assert part.stat().st_nlink == 2
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_SOURCE_CONFLICT
+
+
+@pytest.mark.parametrize("field", sorted(chk.FORBIDDEN))
+def test_physical_forbidden_outcome_field_cannot_be_called_redacted(tmp_path, field):
+    _write(tmp_path, [_row(**{field: 0.125})])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_SOURCE_CONFLICT
+    assert out["outcome_redacted"] is False
+    assert out["reason"] == "FORBIDDEN_OUTCOME_COLUMNS_PRESENT"
+    assert any(field in path for path in out["forbidden_schema_paths"])
+
+
+def test_nested_forbidden_outcome_leaf_cannot_be_called_redacted(tmp_path):
+    _write(tmp_path, [_row(extra_payload={"fwd_ret": 0.25})])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_SOURCE_CONFLICT
+    assert out["outcome_redacted"] is False
+    assert out["reason"] == "FORBIDDEN_OUTCOME_COLUMNS_PRESENT"
+    assert "extra_payload.fwd_ret" in out["forbidden_schema_paths"]
+
+
+# Native producer-to-verifier controls: no invented positive witness fixtures.
+def _producer_capture(state="SOLE_ACTIVE_MEMBERSHIP"):
+    meta = {
+        "state": "AVAILABLE", "source_sha256": "sha256:" + "d" * 64,
+        "version": "fixture-v1", "curated": SESSION,
+        "weighting_by_basket": {"basket-x": "equal", "basket-y": "equal"},
+        "members_by_basket": {"basket-x": ["AAA", "BBB"], "basket-y": ["AAA", "CCC"]},
+    }
+    memberships = {"AAA": ["basket-x"]}
+    if state == "SOURCE_UNAVAILABLE":
+        meta, memberships = {"state": "SOURCE_UNAVAILABLE"}, {}
+    elif state == "NO_ACTIVE_MEMBERSHIP":
+        memberships = {}
+    elif state == "AMBIGUOUS_OVERLAP":
+        memberships = {"AAA": ["basket-x", "basket-y"]}
+    elif state == "UNSUPPORTED_WEIGHTING":
+        meta["weighting_by_basket"]["basket-x"] = "market_cap"
+    elif state == "MEMBERSHIP_ROSTER_INCOHERENT":
+        meta["members_by_basket"]["basket-x"] = ["BBB", "CCC"]
+    value = chk.ucv.build_records(
+        {"AAA": {}}, stamp_date=SESSION, board_definition=BOARD,
+        is_buyable=lambda verdict: False,
+        theme_ids=memberships, membership_meta=meta,
+    )[0]
+    assert value["theme_capture_group_state"] == state
+    return value
+
+
+def _member_receipt(members):
+    raw = json.dumps(members, ensure_ascii=True, separators=(",", ":")).encode("utf-8")
+    return "sha256:" + hashlib.sha256(raw).hexdigest()
+
+
+@pytest.mark.parametrize("state", sorted(chk.GROUP_STATES))
+def test_owner_generated_group_states_round_trip(tmp_path, state):
+    _write(tmp_path, [_producer_capture(state)])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_S0_CAPTURE_PRESENT
+    assert out["h1_admitted"] is False
+    assert out["coverage"]["sole_supported_peer_group"] == float(state == "SOLE_ACTIVE_MEMBERSHIP")
+
+
+@pytest.mark.parametrize("updates", [
+    {"theme_capture_group_id": "basket-y"},
+    {"theme_membership_ids": "basket-x|basket-y"},
+    {"theme_membership_ids": None},
+    {"theme_capture_group_rule": "UNOWNED_RULE"},
+    {"theme_membership_basis": "UNOWNED_BASIS"},
+    {"theme_capture_member_set_sha256": "sha256:" + "0" * 64},
+    {"theme_capture_member_tickers": "BBB|CCC", "theme_capture_member_set_sha256": _member_receipt(["BBB", "CCC"])},
+    {"theme_capture_member_tickers": "BBB|AAA", "theme_capture_member_set_sha256": _member_receipt(["BBB", "AAA"])},
+    {"theme_capture_member_tickers": "AAA|AAA|BBB", "theme_capture_member_set_sha256": _member_receipt(["AAA", "AAA", "BBB"])},
+    {"theme_capture_member_tickers": "AAA| BBB", "theme_capture_member_set_sha256": _member_receipt(["AAA", " BBB"])},
+])
+def test_group_receipt_coherence_rejects_contradictory_sole_witness(tmp_path, updates):
+    row = _producer_capture()
+    row.update(updates)
+    _write(tmp_path, [row])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_SOURCE_CONFLICT
+    assert out["reason"] == "INVALID_GROUP_CAPTURE_STATE"
+
+
+@pytest.mark.parametrize(("state", "memberships"), [
+    ("NO_ACTIVE_MEMBERSHIP", "basket-x"),
+    ("AMBIGUOUS_OVERLAP", "basket-x"),
+    ("UNSUPPORTED_WEIGHTING", None),
+    ("MEMBERSHIP_ROSTER_INCOHERENT", "basket-x|basket-y"),
+])
+def test_group_receipt_coherence_rejects_nonsole_population_contradiction(tmp_path, state, memberships):
+    row = _producer_capture(state)
+    row["theme_membership_ids"] = memberships
+    _write(tmp_path, [row])
+    out = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert out["status"] == chk.STATUS_SOURCE_CONFLICT
+    assert out["reason"] == "INVALID_GROUP_CAPTURE_STATE"

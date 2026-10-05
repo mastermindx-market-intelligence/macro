@@ -1,0 +1,144 @@
+{
+  "base_head": "bf77fa92f55e51da185932fe081c46ca40423e32",
+  "claim_limit": "Synthetic engineering evidence only; no outcome data, ranking, entry, sizing or trading authority.",
+  "cli": {
+    "cases": [
+      {
+        "case": "native-owner-positive",
+        "exit": 0,
+        "input_unchanged": true,
+        "reason": "NONEMPTY_NATIVE_CANDIDATE_CAPTURE",
+        "receipt_sha256": "a7915136d7102a94277036779b7edbbf1642e06ae7215fe36b8c0f42e15fd260",
+        "status": "S0_CAPTURE_PRESENT"
+      },
+      {
+        "case": "contradictory-roster-negative",
+        "exit": 2,
+        "input_unchanged": true,
+        "reason": "INVALID_GROUP_CAPTURE_STATE",
+        "receipt_sha256": "7a97d3fab84f4cf4c2cb0e6b5f71c3a6ab16c0c36d88812692f55c5d21da0acf",
+        "status": "SOURCE_CONFLICT"
+      }
+    ],
+    "source_scope": "synthetic native-owner records -> real CLI; not production nightly"
+  },
+  "h1_admitted": false,
+  "independent_review_accepted": false,
+  "model_fit_executed": false,
+  "mutation_verification": {
+    "all_killed": true,
+    "base_head": "bf77fa92f55e51da185932fe081c46ca40423e32",
+    "checker_sha256": "76032bde33bbba008e8d81d983e7cc7994401e3cf84748c2d9d6a4a72ba3106f",
+    "mutants": {
+      "duplicates": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 1,
+        "killed": true,
+        "log_sha256": "79d623f35e23d812b45ad7574b974a3824b44fbb7c41f66a6726d06da1203aba",
+        "mutant_sha256": "86c01de3c480a35fee84c8afd449d4be9b55f663782aae672dc807a29705c11f",
+        "tests": 1
+      },
+      "forbidden_schema": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 10,
+        "killed": true,
+        "log_sha256": "7418b405e041fd6b53bd97e51a62b2f9cb008f630d2d2fcbfb613e5f08fe1b55",
+        "mutant_sha256": "d49084c0d2da4018384ef0e5c0fe34b547f17f1a0456237ddee913479712d496",
+        "tests": 10
+      },
+      "group_contract": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 2,
+        "killed": true,
+        "log_sha256": "687b7fb3b7ba49615007733fee2e032d35c7d7d87e52047cc481faf7f1186431",
+        "mutant_sha256": "3b7453cfe9b904a52eb26f89ba72e8abd033d518cffc0fef103efe47922f4ada",
+        "tests": 10
+      },
+      "group_digest": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 1,
+        "killed": true,
+        "log_sha256": "cee3b44c49db9e3c8fba2005309f76f76f1f5b3aef05a518e45369e47f1047aa",
+        "mutant_sha256": "f68174bd35ea73ac30c14b45f2bc9a2397d90dc60ee63c4bdbc503ea9b28ee29",
+        "tests": 10
+      },
+      "group_state": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 4,
+        "killed": true,
+        "log_sha256": "6fb1d3ecabef3ec978ca3b52052aba92e98327b047ce286d9134766c949f9404",
+        "mutant_sha256": "817c73c3dba99f6036827efb741e257e9b25d579d03c460b820dc018c9a54e45",
+        "tests": 4
+      },
+      "identity_state": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 4,
+        "killed": true,
+        "log_sha256": "00eb9e5b061097232693fa0ca6e4eb2a7904cb41b53a0ba15cf2cd36cfa4457b",
+        "mutant_sha256": "7d2ceacad9cbd793e90825a075e1efef1822eb105a76c162f0b3e6881e3125d6",
+        "tests": 4
+      },
+      "native_key_types": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 3,
+        "killed": true,
+        "log_sha256": "378011a3ad5df48736d41a368cc0613620aa173e1a99eae5b59fe37eea1284b9",
+        "mutant_sha256": "3cac7d31a98a716274244923865d1347fe95258189d7e30084a49f98b159bd72",
+        "tests": 6
+      },
+      "source_identity": {
+        "errors": 0,
+        "exit": 1,
+        "failures": 3,
+        "killed": true,
+        "log_sha256": "f4cdaf15b4ef206d5925b863e6c02811774adf9dc1f6082ef7408e9e77013549",
+        "mutant_sha256": "04ef34db9cd6de1a03ebb234cc050997261170aa7fc82bef8063fb551fdf601d",
+        "tests": 3
+      }
+    },
+    "observed_at_utc": "2026-10-05T07:05:12.375639+00:00",
+    "operation": "prophet-s0-integrity-repair-r2-20261005-c4-001",
+    "source_restored": true,
+    "tests_sha256": "640e77f6b27fdef3cef468ec6cfaa1f24a49971dbd0508493d86828b07987515"
+  },
+  "operation": "prophet-s0-integrity-repair-r2-20261005-c4-001",
+  "production_nightly_verified": false,
+  "protected_procedure": "7eac3ec252475600147ec9a376b8ca16403ac4c5",
+  "recovered_patch_sha256": "20bf395e09955091610510fcd430059626e1c69e5badb77a75251ef4674a7607",
+  "schema": "mastermind.prophet.s0_integrity_repair.v1",
+  "source_sha256": {
+    "engine/us_context_vector.py": "48cb57b2df47382c15d1455a4310970526648ab0436251305a8dd52752daf990",
+    "scripts/check_prophet_h1_prospective_accrual.py": "76032bde33bbba008e8d81d983e7cc7994401e3cf84748c2d9d6a4a72ba3106f",
+    "tests/test_prophet_h1_prospective_accrual.py": "640e77f6b27fdef3cef468ec6cfaa1f24a49971dbd0508493d86828b07987515"
+  },
+  "test_results": {
+    "coherence-green": {
+      "errors": 0,
+      "failures": 0,
+      "junit_sha256": "a6aabd51213562addeda99187286565fc25f47bf89194377a077d21d6db0f77d",
+      "skipped": 0,
+      "tests": 159
+    },
+    "coherence-red": {
+      "errors": 0,
+      "failures": 14,
+      "junit_sha256": "f35ee77543456abf26187a969008615794801b8a638b46848997e971f70dab1c",
+      "skipped": 0,
+      "tests": 20
+    },
+    "native": {
+      "errors": 0,
+      "failures": 0,
+      "junit_sha256": "ebe7c3e7fd0a08946f4395eecdeea9d6bc691879f4764f7e307df61173797c3a",
+      "skipped": 0,
+      "tests": 139
+    }
+  }
+}
