@@ -857,6 +857,22 @@ class NewsStore:
             last_sequence=max(sequences) if sequences else None,
         )
 
+    def commit_observations(
+        self, revisions: Sequence[RoutedRevision]
+    ) -> CommitReceipt:
+        """Commit stream observations without advancing the REST delta cursor.
+
+        The live service owns one serialized writer. Keeping the existing cursor as
+        both expected and next value makes any accidental concurrent cursor move
+        fail before revisions are applied rather than silently rewinding it.
+        """
+        cursor = self.current_cursor()
+        return self.commit(
+            revisions,
+            expected_cursor=cursor,
+            next_cursor=cursor,
+        )
+
     def snapshot(
         self,
         security_id: str,
