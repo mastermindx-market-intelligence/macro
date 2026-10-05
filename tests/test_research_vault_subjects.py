@@ -245,3 +245,42 @@ def test_candidate_rows_reject_malformed_shape_before_identity_resolution():
             alias_vendor="membership",
             published_at="2026-10-05",
         )
+
+
+def test_discovery_rejects_string_ticker_iterable():
+    with pytest.raises(TypeError, match="source_tickers"):
+        subjects.discover_candidates(
+            report_id="string-tickers",
+            source_tickers="NVDA",
+        )
+
+
+def test_resolution_rejects_forged_blank_report_id():
+    candidate = subjects.discover_candidates(
+        report_id="real-report",
+        source_tickers=["NVDA"],
+    )
+    candidate["report_id"] = "   "
+    with pytest.raises(ValueError, match="report_id"):
+        subjects.resolve_candidates(
+            candidate,
+            aliases=VendorAliasTable([]),
+            alias_vendor="membership",
+            published_at="2026-10-05",
+        )
+
+
+@pytest.mark.parametrize("confidence", [float("nan"), float("inf"), -float("inf")])
+def test_resolution_rejects_nonfinite_candidate_confidence(confidence):
+    candidate = subjects.discover_candidates(
+        report_id="finite-confidence",
+        source_tickers=["NVDA"],
+    )
+    candidate["candidates"][0]["confidence"] = confidence
+    with pytest.raises(ValueError, match="finite"):
+        subjects.resolve_candidates(
+            candidate,
+            aliases=VendorAliasTable([]),
+            alias_vendor="membership",
+            published_at="2026-10-05",
+        )
