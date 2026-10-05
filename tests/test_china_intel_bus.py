@@ -426,6 +426,83 @@ def test_visit_discovery_unclocked_post_receipt_source_stays_visible_but_blocks_
 
 
 
+def test_visit_discovery_source_timestamp_uses_utc_reference_domain():
+    # 00:30 in Asia/Shanghai is still the prior UTC date. It must not disappear
+    # merely because the source-local calendar is one day ahead.
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row(
+            "A-tz", "000023", "2026-10-06T00:30:00+08:00",
+            recorded="2026-10-05T16:31:00+00:00",
+        )],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-05T16:31:00+00:00",
+            "last_attempt_utc": "2026-10-05T16:31:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 5),
+    )
+    assert snap["n_recent_companies"] == 1
+    row = snap["examples"][0]
+    assert row["sec_code"] == "000023"
+    assert row["recent_count"] == 1
+    assert snap["observation_end"] == "2026-10-05"
+
+
+def test_visit_discovery_observation_before_source_fails_closed_but_keeps_positive():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row(
+            "A-pre-source", "000024", "2026-10-03T09:00:00+00:00",
+            recorded="2026-10-03T08:59:00+00:00",
+        )],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T10:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T10:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+    assert snap["n_recent_companies"] == 1
+    assert "row_observation_before_source" in snap["owner_clock_errors"]
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == \
+        "row_observation_before_source"
+    assert snap["n_first_observed_recent"] == 0
+
+
+def test_visit_discovery_ok_health_requires_equal_attempt_and_success_receipts():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row(
+            "A-health-mismatch", "000025", "2026-10-03T08:00:00+00:00",
+            recorded="2026-10-03T08:30:00+00:00",
+        )],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-02T23:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T09:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+    assert snap["n_recent_companies"] == 1
+    assert "ok_health_receipt_mismatch" in snap["owner_clock_errors"]
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == \
+        "ok_health_receipt_mismatch"
+    assert snap["n_first_observed_recent"] == 0
+
+
+
 def test_visit_discovery_keeps_precoverage_source_event_as_positive_observation():
     # First production run can legitimately derive a filing published during
     # its bounded lookback before the write-once coverage-start date. The event
