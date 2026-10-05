@@ -135,6 +135,8 @@ def _iv_selection_at_delta(leg, target_delta: float, want_call: bool):
         & (iv_numeric > 0.0)
         & iv_numeric.notna()
         & strike_numeric.notna()
+        & np.isfinite(iv_numeric)
+        & np.isfinite(strike_numeric)
         & ~iv_bool
         & ~strike_bool
     )
@@ -263,11 +265,16 @@ def compute_skew_projection(rows) -> dict:
     Those remain owner dependencies and keep K3E admission false.
     """
     import math
+    from datetime import date, datetime
+    import numpy as np
     import pandas as pd
 
     base_missing = [
         "canonical_underlying_identity_receipt",
         "contract_identity_receipt",
+        "genuine_underlying_reference_receipt",
+        "delta_convention_receipt",
+        "immutable_source_projection_receipt",
         "source_use_receipt",
         "quote_clock_receipt",
         "underlying_clock_receipt",
@@ -297,6 +304,12 @@ def compute_skew_projection(rows) -> dict:
             "settlement_certified": False,
         },
         "source_session": None,
+        "underlying_reference": {
+            "value": None,
+            "source_field": "spot",
+            "clock_qualified": False,
+            "basis_qualified": False,
+        },
         "selected_put": None,
         "selected_call": None,
         "skew": {
@@ -339,55 +352,110 @@ def compute_skew_projection(rows) -> dict:
         return out
     out["underlying"] = next(iter(underlyings))
 
-    sessions = set()
-    for value in rows["asof"].tolist():
+    def canonical_date_token(value):
         try:
             if pd.isna(value):
-                continue
+                return None
         except (TypeError, ValueError):
-            pass
-        text = str(value.date()) if hasattr(value, "date") else str(value)[:10]
-        if text:
-            sessions.add(text)
-    if len(sessions) != 1:
-        out["refusals"].append(
-            "MIXED_SOURCE_SESSION" if len(sessions) > 1 else "SOURCE_SESSION_UNAVAILABLE"
-        )
+            return None
+        if isinstance(value, datetime):
+            return value.date().isoformat()
+        if isinstance(value, date):
+            return value.isoformat()
+        if hasattr(value, "to_pydatetime"):
+            try:
+                return value.to_pydatetime().date().isoformat()
+            except Exception:  # noqa: BLE001
+                return None
+        text = str(value).strip()
+        if not text:
+            return None
+        try:
+            if len(text) == 10:
+                return date.fromisoformat(text).isoformat()
+            return datetime.fromisoformat(text.replace("Z", "+00:00")).date().isoformat()
+        except ValueError:
+            return None
+
+    sessions = []
+    for value in rows["asof"].tolist():
+        token = canonical_date_token(value)
+        if token is None:
+            out["refusals"].append("SOURCE_SESSION_INVALID")
+            return out
+        sessions.append(token)
+    unique_sessions = set(sessions)
+    if len(unique_sessions) != 1:
+        out["refusals"].append("MIXED_SOURCE_SESSION")
         return out
-    out["source_session"] = next(iter(sessions))
+    out["source_session"] = next(iter(unique_sessions))
+
+    def boolish(value):
+        return isinstance(value, (bool, np.bool_))
+
+    if rows["T"].map(boolish).any():
+        out["refusals"].append("TENOR_INPUT_INVALID")
+        return out
+    all_t = pd.to_numeric(rows["T"], errors="coerce")
+    if all_t.isna().any() or (~np.isfinite(all_t)).any() or (all_t <= 0).any():
+        out["refusals"].append("TENOR_INPUT_INVALID")
+        return out
 
     leg = _nearest_expiry(rows)
     if leg is None or getattr(leg, "empty", True):
         out["refusals"].append("EXPIRY_UNAVAILABLE")
         return out
 
-    expiries = {
-        str(value.date()) if hasattr(value, "date") else str(value)[:10]
-        for value in leg["expiry"].tolist()
-        if value is not None
-    }
-    expiries.discard("")
+    expiry_tokens = []
+    for value in leg["expiry"].tolist():
+        token = canonical_date_token(value)
+        if token is None:
+            out["refusals"].append("EXPIRY_DATE_INVALID")
+            return out
+        expiry_tokens.append(token)
+    expiries = set(expiry_tokens)
     if len(expiries) != 1:
         out["refusals"].append("MIXED_SELECTED_EXPIRY")
         return out
     out["actual_expiry"] = next(iter(expiries))
 
-    try:
-        owner_year_fraction = float(pd.to_numeric(leg["T"], errors="coerce").iloc[0])
-        tenor = owner_year_fraction * 365.0
-    except Exception:  # noqa: BLE001
-        owner_year_fraction = float("nan")
-        tenor = float("nan")
+    leg_t = pd.to_numeric(leg["T"], errors="coerce")
     if (
-        not math.isfinite(owner_year_fraction)
-        or owner_year_fraction <= 0
-        or not math.isfinite(tenor)
-        or tenor <= 0
+        leg["T"].map(boolish).any()
+        or leg_t.isna().any()
+        or (~np.isfinite(leg_t)).any()
+        or (leg_t <= 0).any()
     ):
+        out["refusals"].append("TENOR_UNAVAILABLE")
+        return out
+    t_values = [float(value) for value in leg_t.tolist()]
+    if min(t_values) != max(t_values):
+        out["refusals"].append("SELECTED_EXPIRY_T_MISMATCH")
+        return out
+    owner_year_fraction = t_values[0]
+    tenor = owner_year_fraction * 365.0
+    if not math.isfinite(tenor) or tenor <= 0:
         out["refusals"].append("TENOR_UNAVAILABLE")
         return out
     out["actual_tenor_days"] = tenor
     out["tenor_basis"]["owner_year_fraction"] = owner_year_fraction
+
+    if leg["spot"].map(boolish).any():
+        out["refusals"].append("UNDERLYING_REFERENCE_INVALID")
+        return out
+    spot_numeric = pd.to_numeric(leg["spot"], errors="coerce")
+    if (
+        spot_numeric.isna().any()
+        or (~np.isfinite(spot_numeric)).any()
+        or (spot_numeric <= 0).any()
+    ):
+        out["refusals"].append("UNDERLYING_REFERENCE_INVALID")
+        return out
+    spot_values = [float(value) for value in spot_numeric.tolist()]
+    if min(spot_values) != max(spot_values):
+        out["refusals"].append("UNDERLYING_REFERENCE_MISMATCH")
+        return out
+    out["underlying_reference"]["value"] = spot_values[0]
 
     put = _iv_selection_at_delta(leg, _PUT_DELTA, want_call=False)
     call = _iv_selection_at_delta(leg, _CALL_DELTA, want_call=True)

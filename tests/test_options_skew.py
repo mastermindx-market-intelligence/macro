@@ -1658,3 +1658,127 @@ def test_k3e_a8_projection_refuses_nonnumeric_iv_without_raising():
     assert out["selected_put"]["selected_delta"] == pytest.approx(-0.10)
     assert out["selected_put"]["strike"] == pytest.approx(90.0)
     assert out["skew"]["value"] == pytest.approx(0.15)
+
+
+def test_k3e_a8_projection_skips_nonfinite_target_iv_when_valid_alternative_exists():
+    chain = _chain("XYZ")
+    chain["iv"] = chain["iv"].astype(object)
+    target_put = (
+        (~chain["is_call"])
+        & (chain["expiry"] == "2026-07-21")
+        & (chain["delta"] == -0.25)
+    )
+    chain.loc[target_put, "iv"] = float("inf")
+
+    out = S.compute_skew_projection(chain)
+
+    assert out["state"] == "AVAILABLE_UNQUALIFIED"
+    assert out["selected_put"]["iv"] == pytest.approx(0.45)
+    assert out["selected_put"]["selected_delta"] == pytest.approx(-0.10)
+    assert out["selected_put"]["strike"] == pytest.approx(90.0)
+
+
+def test_k3e_a8_projection_skips_nonfinite_target_strike_when_valid_alternative_exists():
+    chain = _chain("XYZ")
+    chain["K"] = chain["K"].astype(object)
+    target_put = (
+        (~chain["is_call"])
+        & (chain["expiry"] == "2026-07-21")
+        & (chain["delta"] == -0.25)
+    )
+    chain.loc[target_put, "K"] = float("inf")
+
+    out = S.compute_skew_projection(chain)
+
+    assert out["state"] == "AVAILABLE_UNQUALIFIED"
+    assert out["selected_put"]["iv"] == pytest.approx(0.45)
+    assert out["selected_put"]["selected_delta"] == pytest.approx(-0.10)
+    assert out["selected_put"]["strike"] == pytest.approx(90.0)
+
+
+def test_k3e_a8_projection_refuses_boolean_tenor_before_expiry_selection():
+    import numpy as np
+
+    chain = _chain("XYZ")
+    chain["T"] = chain["T"].astype(object)
+    chain.loc[chain["expiry"] == "2026-07-21", "T"] = np.bool_(True)
+
+    out = S.compute_skew_projection(chain)
+
+    assert out["state"] == "UNAVAILABLE"
+    assert "TENOR_INPUT_INVALID" in out["refusals"]
+    assert out["actual_expiry"] is None
+    assert out["actual_tenor_days"] is None
+
+
+@pytest.mark.parametrize(
+    ("field", "reason"),
+    [
+        ("expiry", "EXPIRY_DATE_INVALID"),
+        ("asof", "SOURCE_SESSION_INVALID"),
+    ],
+)
+def test_k3e_a8_projection_refuses_noncanonical_calendar_identity(field, reason):
+    chain = _chain("XYZ")
+    chain[field] = "not-a-date"
+
+    out = S.compute_skew_projection(chain)
+
+    assert out["state"] == "UNAVAILABLE"
+    assert reason in out["refusals"]
+
+
+def test_k3e_a8_projection_refuses_mixed_selected_expiry_owner_t():
+    chain = _chain("XYZ")
+    selected = chain["expiry"] == "2026-07-21"
+    indices = chain.index[selected].tolist()
+    chain.loc[indices[-1], "T"] = float(chain.loc[indices[-1], "T"]) + 0.001
+
+    out = S.compute_skew_projection(chain)
+
+    assert out["state"] == "UNAVAILABLE"
+    assert "SELECTED_EXPIRY_T_MISMATCH" in out["refusals"]
+    assert out["actual_tenor_days"] is None
+
+
+@pytest.mark.parametrize("bad_spot", [None, float("inf"), -1.0, True])
+def test_k3e_a8_projection_refuses_invalid_underlying_reference(bad_spot):
+    chain = _chain("XYZ")
+    chain["spot"] = chain["spot"].astype(object)
+    chain.loc[chain["expiry"] == "2026-07-21", "spot"] = bad_spot
+
+    out = S.compute_skew_projection(chain)
+
+    assert out["state"] == "UNAVAILABLE"
+    assert "UNDERLYING_REFERENCE_INVALID" in out["refusals"]
+    assert out["underlying_reference"]["value"] is None
+
+
+def test_k3e_a8_projection_refuses_inconsistent_underlying_reference():
+    chain = _chain("XYZ")
+    selected = chain["expiry"] == "2026-07-21"
+    indices = chain.index[selected].tolist()
+    chain.loc[indices[-1], "spot"] = float(chain.loc[indices[-1], "spot"]) + 1.0
+
+    out = S.compute_skew_projection(chain)
+
+    assert out["state"] == "UNAVAILABLE"
+    assert "UNDERLYING_REFERENCE_MISMATCH" in out["refusals"]
+    assert out["underlying_reference"]["value"] is None
+
+
+def test_k3e_a8_projection_exposes_owner_underlying_reference_but_keeps_it_unqualified():
+    out = S.compute_skew_projection(_chain("XYZ"))
+
+    assert out["state"] == "AVAILABLE_UNQUALIFIED"
+    assert out["underlying_reference"] == {
+        "value": pytest.approx(100.0),
+        "source_field": "spot",
+        "clock_qualified": False,
+        "basis_qualified": False,
+    }
+    assert {
+        "genuine_underlying_reference_receipt",
+        "delta_convention_receipt",
+        "immutable_source_projection_receipt",
+    } <= set(out["qualification"]["missing"])
