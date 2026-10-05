@@ -705,3 +705,7 @@ def test_canonical_digest_vector_is_stable():
     expected_bytes = '{"a":[2,1],"z":"容量"}'.encode("utf-8")
     assert pc._canonical_bytes(value) == expected_bytes
     assert hashlib.sha256(pc._canonical_bytes(value)).hexdigest() == hashlib.sha256(expected_bytes).hexdigest()
+
+# Reset-economics assertions are collected by test_codex_runner_budget.py.
+# Its existing code-gate owner runs on PRs; this capacity owner is data-gated.
+# Keep a single owning import rather than duplicating the whole suite here.
