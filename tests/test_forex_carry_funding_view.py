@@ -136,8 +136,13 @@ def test_historical_receipt_is_past_tense_and_sample_gated():
     assert ok["status"] == "ok"
     assert ok["conditional_frequency"] == 0.157
     assert ok["base_rate"] == 0.105
-    assert ok["wilson"] == [0.092, 0.255]
-    assert ok["n_eff"] == 75.3 and ok["horizon_sessions"] == 10
+    assert ok["n_raw"] == 226 and ok["horizon_sessions"] == 10
+    assert "wilson" not in ok and "n_eff" not in ok
+    assert ok["uncertainty"] == {
+        "status": "withheld_unqualified",
+        "method": "legacy_n_raw_over_horizon_wilson",
+        "reason": "dependence_adjustment_not_qualified",
+    }
     assert ok["semantics"] == "past_conditional_frequency_not_forecast"
 
     insufficient = _mod().project_carry_funding(_pairs(), _regime(status="insufficient"), _funding())["carry_unwind"]["historical_receipt"]
@@ -273,6 +278,20 @@ def test_template_withholds_frequency_when_sample_is_insufficient():
     html = _render(view)
     assert "Insufficient sample" in html
     assert "15.7%" not in html
+
+
+def test_template_withholds_unqualified_uncertainty_and_uses_rule_state_copy():
+    from bs4 import BeautifulSoup
+    view = _mod().project_carry_funding(_pairs(), _regime(status="ok"), _funding())
+    html = _render(view)
+    visible = BeautifulSoup(html, "html.parser").get_text(" ", strip=True)
+    assert "Existing carry-unwind scenario rule is inactive." in visible
+    assert "confirmed" not in visible.lower()
+    assert "95% Wilson" not in visible
+    assert "n_eff" not in visible
+    assert "Dependence-adjusted interval withheld" in visible
+    assert "Raw sample" in visible and "226" in visible
+    assert "Horizon" in visible and "10 sessions" in visible
 
 
 def test_parent_forex_route_includes_exactly_one_carry_funding_component():
