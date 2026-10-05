@@ -29,7 +29,12 @@ changed:
     what: "F0-F17 dependency DAG, collision-safe work packages, routing/delegation boundaries and concrete acceptance for each phase."
   - path: research/research_vault_ai_fabric_20261004/04_ACCEPTANCE_SECURITY_AND_EVAL.md
     what: "Program DONE_WHEN, denial/privacy tests, retrieval benchmark, tail evidence test, RIO/MCP/ChatGPT/Deep Research real-path gates."
-  - path: research/research_vault_ai_fabric_20261004/05_SOURCE_AND_COLLISION_MAP.md\n    what: "Canonical source anchors, stale PR salvage boundaries, hot path collisions, planning-carrier precedence and DO_NOT_REDO."\n  - path: research/research_vault_ai_fabric_20261004/06_HARDENING_ADDENDUM_AND_FABLE_START_GATE.md\n    what: "Controlling clarification of current R2 isolation semantics, body-health census, missing-row vs broken-body repair shapes, planning-carrier collision and exact Fable first-wave gate."\n  - path: research/research_vault_ai_fabric_20261004/07_FABLE_ORCHESTRATOR_BRIEF_QA.md\n    what: "Mastermind Craft orchestrator authoring QA receipt; intentionally UNBOUND_AUTHORING and non-authoritative."
+  - path: research/research_vault_ai_fabric_20261004/05_SOURCE_AND_COLLISION_MAP.md
+    what: "Canonical source anchors, stale PR salvage boundaries, hot path collisions, planning-carrier precedence and DO_NOT_REDO."
+  - path: research/research_vault_ai_fabric_20261004/06_HARDENING_ADDENDUM_AND_FABLE_START_GATE.md
+    what: "Controlling clarification of current R2 isolation semantics, body-health census, missing-row vs broken-body repair shapes, planning-carrier collision and exact Fable first-wave gate."
+  - path: research/research_vault_ai_fabric_20261004/07_FABLE_ORCHESTRATOR_BRIEF_QA.md
+    what: "Mastermind Craft orchestrator authoring QA receipt; intentionally UNBOUND_AUTHORING and non-authoritative."
 verified:
   - claim: "The current catalog contains 2,778 reports and metadata cannot currently support the desired ticker/desk/tag filters."
     command: "Read current data/research_vault/catalog.json and compute fill counts."
@@ -43,7 +48,9 @@ verified:
   - claim: "This defect class predates the current run and has an exact known corpus mechanism."
     command: "Read research/RESEARCH_VAULT_WAVE4_CONTINUATION_HANDOFF_2026-08-19.md; search current main for _backfill_corpus_rows."
     result: "2026-08-19 production census had catalog/pdf/receipt=1412, corpus=494, catalog-corpus=918; safe bounded missing-row backfill was recommended but is still absent on current main."
-  - claim: "Private Research Vault isolation is not structurally fail-closed in the current factory."\n    command: "Read current engine/research_vault/r2_store.py and DSC-RESEARCH-VAULT-FALLS-BACK-TO-SHARED-PUBLIC-BUCKET; reconcile historical discovery wording against current code."\n    result: "Current build_store requires an explicit R2_RESEARCH_BUCKET, so the old full-bucket-fallback wording is stale. Endpoint/key/secret may still inherit generic R2 values and no factory assertion rejects R2_RESEARCH_BUCKET == R2_BUCKET. Normal deployment supplies the dedicated research secret family, but the source contract still needs explicit private-plane isolation."
+  - claim: "Private Research Vault isolation is not structurally fail-closed in the current factory."
+    command: "Read current engine/research_vault/r2_store.py and DSC-RESEARCH-VAULT-FALLS-BACK-TO-SHARED-PUBLIC-BUCKET; reconcile historical discovery wording against current code."
+    result: "Current build_store requires an explicit R2_RESEARCH_BUCKET, so the old full-bucket-fallback wording is stale. Endpoint/key/secret may still inherit generic R2 values and no factory assertion rejects R2_RESEARCH_BUCKET == R2_BUCKET. Normal deployment supplies the dedicated research secret family, but the source contract still needs explicit private-plane isolation."
   - claim: "Adjacent source identity uses two different SHA byte domains."
     command: "Read engine/research_vault probe/corpus facts and engine/research_intelligence/extractor.py::_identity."
     result: "Vault content_sha256 binds canonical PDF bytes; RIO v1 document.content_sha256 binds extracted UTF-8 body bytes. Masterplan freezes explicit source_pdf_sha256 vs extracted_text_sha256 compatibility."
@@ -87,7 +94,8 @@ do_not_redo:
   - "Do not weaken the source freshness guard merely to make research-ingest green."
   - "Do not open public MCP ingress just to prove the private canary; private tunnel comes first."
 danger_areas:
-  - "Research Vault publication and source-content freshness are different clocks; a fresh catalog republish can contain stale source material."\n  - "A green Research Vault ID-set census can still hide a body/text-health collapse; identity completeness and retrieval completeness are separate acceptance axes."
+  - "Research Vault publication and source-content freshness are different clocks; a fresh catalog republish can contain stale source material."
+  - "A green Research Vault ID-set census can still hide a body/text-health collapse; identity completeness and retrieval completeness are separate acceptance axes."
   - "The excerpt collapse guard is protecting a known-better snapshot; editing/deleting it would hide the corpus defect rather than repair it."
   - "Data OS VendorAliasTable is exact security identity owner; engine/entity_resolver is candidate/context resolution only."
   - "Research Intelligence and Research Vault currently overload content_sha256 across different byte domains."
