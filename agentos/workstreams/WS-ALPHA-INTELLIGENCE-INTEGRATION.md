@@ -41,6 +41,9 @@ depends_on:
   - WS:LIVE-ENTRY-RADAR
   - WS:DEFENSE-PROCUREMENT-V3
 artifacts:
+  - agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-10-03-exp1.md
+  - research/alpha_intelligence/expectation_market_dynamics/handoffs/EXP_1.md
+  - research/alpha_intelligence/expectation_market_dynamics/EXP_1_NATIVE_CONSUMER_RECEIPT_2026-10-03.json
   - research/alpha_intelligence/MASTERMIND_ALPHA_INTELLIGENCE_EXPANSION_PASS0_2026-08-18.md
   - research/alpha_intelligence/C0_WAVE0_ADJUDICATION_2026-08-19.md
   - research/alpha_intelligence/C0G_G0_SEAT_ADJUDICATION_2026-08-19.md
@@ -242,6 +245,30 @@ next_action: >
 This is the program-control lane for the Mastermind Alpha Intelligence Expansion
 (operator fanout pack, 2026-08-18). It exists to keep ten responsibilities (A–J)
 reconciled against their canonical owners; it builds nothing itself.
+
+## K3E child consumer preparation — 2026-10-03
+
+The Information-to-Price continuation under Macro #8309 prepared a separate
+EXP-1 declared-capture inspector. Its bounded source-view capability is
+**PARTIAL / independently accepted on native artifacts / publication pending**:
+75 focused tests and ten real paired-Git-blob CLI cases passed. The linked
+EXP-1 handoff and native receipt bind the exact code, inputs, outputs, repairs,
+query limits and still-held publication gates.
+
+Sol accepted SRC-A1 physical proof at
+`63fe5e92d305e34ba8bdd6578ccb56e97076d740`; its canonical acceptance records
+remain pending in PR #8312. Conditional separate EXP-1 preparation was admitted
+after the fresh collision census. This supersedes the earlier source-only
+October `EXP-1 NOT_BUILT` and wait-before-implementation statements for this
+bounded preparation. Source publication and the consumer's own review/checks
+remain prerequisites to dependent canonical publication.
+
+Fable remains the integration owner, runtime authority stays NONE, and broader
+K3, K3-D, canonical K3-E and other keystone states remain unchanged. The
+normalized baseline is always null; raw inspection grants no identity, rights,
+financial comparability, model, rank, sizing or execution authority.
+
+## Program references
 
 The PASS-0 packet — ownership matrix, collision map, capability-adoption map,
 safe/wait lane rulings, perishability verdict, and the K1–K7 merge/dependency
