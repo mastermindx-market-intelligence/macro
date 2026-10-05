@@ -269,3 +269,105 @@ def test_broad_sector_cycles_builder_keeps_last_good_when_engine_has_no_session(
 
     assert build_sector_cycles.main() == 0
     assert last_good.read_text() == "window.SECTOR_CYCLES={old:true};\n"
+
+
+
+# ── Leadership Migration W3A: truthful reconstructed daily RS history ────────
+
+def _rs_history_panel(n: int = 520) -> pd.DataFrame:
+    idx = pd.bdate_range("2024-01-02", periods=n)
+    # A non-linear benchmark plus a smoothly accelerating sector-relative ratio
+    # makes both 21d and 63d legs non-zero and mutation-discriminating.
+    spy = pd.Series(100.0 * np.exp(np.linspace(0.0, 0.24, n)), index=idx)
+    rel = pd.Series(np.exp(np.linspace(-0.12, 0.31, n) ** 3), index=idx)
+    xlk = spy * rel
+    return pd.DataFrame({"SPY": spy, "XLK": xlk}, index=idx)
+
+
+def test_leadership_history_endpoint_matches_live_leadership_formula():
+    panel = _rs_history_panel()
+    live = sc._leadership(panel, "XLK")
+    history = sc._leadership_history(panel, "XLK")
+
+    assert history
+    assert history[-1]["date"] == panel.index[-1].date().isoformat()
+    assert history[-1]["rs_21d"] == live["rs_21d"]
+    assert history[-1]["rs_63d"] == live["rs_63d"]
+
+
+def test_leadership_history_is_bounded_ordered_and_requires_live_eligibility():
+    panel = _rs_history_panel(700)
+    history = sc._leadership_history(panel, "XLK")
+
+    assert len(history) == sc.RS_HISTORY_MAX_POINTS == 252
+    assert [row["date"] for row in history] == sorted(row["date"] for row in history)
+    assert all(set(row) == {"date", "rs_21d", "rs_63d"} for row in history)
+
+    thin = _rs_history_panel(209)
+    assert sc._leadership_history(thin, "XLK") == []
+
+
+def test_leadership_history_asof_does_not_use_future_prices():
+    panel = _rs_history_panel(520)
+    cutoff = panel.index[399]
+    expected = sc._leadership_history(panel, "XLK", asof=cutoff)
+
+    mutated = panel.copy()
+    mutated.loc[mutated.index > cutoff, "XLK"] *= 25.0
+    mutated.loc[mutated.index > cutoff, "SPY"] *= 0.1
+    observed = sc._leadership_history(mutated, "XLK", asof=cutoff)
+
+    assert observed == expected
+    assert observed[-1]["date"] == cutoff.date().isoformat()
+    assert all(row["date"] <= cutoff.date().isoformat() for row in observed)
+
+
+def test_compute_declares_reconstructed_rs_history_contract(monkeypatch):
+    panel = _rs_history_panel(520)
+    monkeypatch.setattr(sc, "yahoo_closes", lambda basis="tr": panel.copy())
+    monkeypatch.setattr(
+        sc.config,
+        "load",
+        lambda: {"engine": {"rs_ranking": {"benchmark": "SPY"}}},
+    )
+
+    def fake_build_sector(ticker, meta, closes, win_start, closes_px=None):
+        if ticker != "XLK":
+            return None
+        live = sc._leadership(closes, ticker)
+        return {
+            "id": "xlk",
+            "ticker": "XLK",
+            "kind": "sector",
+            "name": "Technology",
+            "price": [{"x": 2026.0, "v": 100.0}],
+            "osc": [{"x": 2026.0, "v": 50.0}],
+            "turns": [],
+            "proj": None,
+            "now": {
+                "phase": "Expansion",
+                "pos": 50,
+                "rs_21d": live["rs_21d"],
+                "rs_63d": live["rs_63d"],
+            },
+            "rs_history": sc._leadership_history(closes, ticker),
+        }
+
+    monkeypatch.setattr(sc, "build_sector", fake_build_sector)
+    monkeypatch.setattr(sc, "_load_baskets", lambda: {})
+    monkeypatch.setattr(sc, "build_amalgam_family", lambda *args, **kwargs: [])
+
+    data = sc.compute()
+    assert data is not None
+    assert data["meta"]["rs_history"] == {
+        "schema": "sector_cycles.rs_history.v1",
+        "mode": "reconstructed_price_history",
+        "naturally_observed": False,
+        "basis": "tr",
+        "benchmark": "SPY",
+        "horizons_sessions": [21, 63],
+        "max_points_per_sector": 252,
+    }
+    assert data["sectors"][0]["rs_history"]
+    assert data["sectors"][0]["rs_history"][-1]["rs_21d"] == data["sectors"][0]["now"]["rs_21d"]
+    assert data["sectors"][0]["rs_history"][-1]["rs_63d"] == data["sectors"][0]["now"]["rs_63d"]
