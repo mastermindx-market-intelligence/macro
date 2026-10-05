@@ -61,6 +61,21 @@ waves:
       tuples, atomic duplicate paint, zero nb-px, zero live.js fetches, ExtFeed
       canary at full cap 30->30 zero eviction, Polygon +35 bounded, 68/68 ticker
       links, 0 console errors, route median 0.52s. Receipts on #6741.
+  - id: R1A-T-S
+    title: Terminal extended-hours stability under shared feed churn
+    status: done
+    pr: 616
+    next_action: >
+      PROVEN_LIVE 2026-09-18 on served Terminal generation
+      1f56eae265bdbb69c60ce1c5b63dcea19f1f480e, which contains protected PR #616 merge
+      82ca818be7ea592f7cdb1fb6731cc19f94610593. Live Hub/App files matched the canonical
+      checkout byte-for-byte; QCOM recorded zero ext-LRU evictions since the current Quote Hub
+      restart; and fresh public 1440/390 browser proof showed every regular quote request using
+      view=regular, last-good extended values surviving an injected non-authoritative HTTP 503,
+      and desktop detail/watchlist plus the compact mobile lane advancing coherently after recovery.
+      No further product repair is owed for this wave. A real provider null remains an honest null;
+      unsupported 20:00-04:00 ET coverage must never be fabricated. The separate exact-SHA
+      release-hardening programme in Terminal issue #483 continues under its own acceptance gates.
   - id: R1B
     title: Ordered delta transport (SSE) — measurement-gated decision
     status: todo
