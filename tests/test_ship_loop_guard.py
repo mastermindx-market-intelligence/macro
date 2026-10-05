@@ -3588,19 +3588,21 @@ def test_guard_error_falls_back_to_a_plain_block_when_state_cannot_load(monkeypa
     assert "guard_error" in emitted["reason"] and "boom" in emitted["reason"]
 
 
-# --- an armed pull request is NOT an exit (operator ruling 2026-08-12) ---
+# --- an armed pull request is NOT a DELIVERY exit (operator ruling 2026-08-12) ---
 #
-# From 2026-07-28 to 2026-08-12 an open pull request carrying `merge-on-green`
-# RELEASED the session at this gate: the sweeper owned the merge from there, and
+# A verified healthy pending/clean wait may now yield a TURN through `async_unmerged`,
+# but the delivery rung remains CI and ownership survives. From 2026-07-28 to
+# 2026-08-12 an open pull request carrying `merge-on-green` RELEASED the session as
+# though delivery were complete: the sweeper owned the merge from there, and
 # the worker printed a terminal marker and stopped. The operator removed the rule
 # after it reported an unfinished job as complete — a session emitted the marker
 # and declared itself done while its pull request sat `merge-blocked` on a red
 # check, and the work had to be reopened by hand.
 #
 # The label still works and the sweeper may still perform the merge. What it can
-# no longer do is end a session. `unmerged` is satisfied by an actually-merged
-# pull request and by nothing else, so every test below asserts a BLOCK; the only
-# question the armed pull request answers now is WHICH block, and with what detail.
+# no longer do is prove delivery complete. The first Stop still BLOCKS every unfinished
+# pull request; after that, only a verified healthy CI/sweeper wait may use the short
+# external turn boundary. Genuine red and missing/unpublished proof stay internal.
 
 
 def _pushed_unmerged_session(tmp_path: Path) -> tuple[Path, Path, str]:
@@ -3718,7 +3720,12 @@ def test_an_armed_pull_request_with_checks_pending_does_NOT_release_the_session(
     monkeypatch.setattr(GUARD, "_latest_merged_pr", lambda *_a: None)
     monkeypatch.setattr(GUARD, "_open_pull", lambda *_a: _armed_pr(head))
     monkeypatch.setattr(
-        GUARD, "_head_check_runs", lambda *_a: [_run_stub("ci-pack-1", "in_progress")]
+        GUARD,
+        "_head_check_runs",
+        lambda *_a: [
+            _actions_check("ci-gate", None, 10, status="in_progress"),
+            _actions_check("fence-pack", "success", 11),
+        ],
     )
 
     GUARD._stop(repo, state_path, {"hook_event_name": "Stop"})
@@ -3730,10 +3737,29 @@ def test_an_armed_pull_request_with_checks_pending_does_NOT_release_the_session(
     reason = emitted["reason"]
     assert "unmerged" in reason
     assert "#4242" in reason, "the block must name the pull request it is waiting on"
-    assert "ci-pack-1" in reason, "and what it is waiting on"
+    assert "ci-gate" in reason, "and which required proof anchor is still running"
+    assert "ASYNC release lane" in reason
+    assert "background/native watcher" in reason
+    assert "immediately advance the next independent" in reason
+    assert "NEVER run `gh run watch` synchronously" in reason
     assert state_path.exists(), "a blocked session keeps its state file"
     # The old release path's machine receipt must not survive anywhere.
     assert "CI_HANDOFF" not in reason
+
+
+def test_a_pending_nonproof_check_does_not_fake_an_async_ci_owner(monkeypatch):
+    """Pending light work is insufficient when the sweeper's proof lane is absent."""
+    head = "d" * 40
+    monkeypatch.setattr(GUARD, "_open_pull", lambda *_a: _armed_pr(head))
+    monkeypatch.setattr(
+        GUARD,
+        "_head_check_runs",
+        lambda *_a: [_run_stub("fast-lint", "in_progress")],
+    )
+    code, detail = GUARD._armed_pull_status("acme", "widgets", "claude/feature", head)
+    assert code == "unmerged"
+    assert "does not prove the required ci.yml lane exists" in detail
+    assert "Diagnose once" in detail
 
 
 def test_an_armed_pull_request_with_every_check_green_still_blocks(
@@ -3741,9 +3767,9 @@ def test_an_armed_pull_request_with_every_check_green_still_blocks(
 ):
     """Not even a clean head is an exit. The merge is the exit.
 
-    A concluded-green armed head is precisely when the sweep is about to merge —
-    which is exactly when leaving costs the least and proves the least. The session
-    waits the one sweep out and verifies the merge.
+    A concluded-green armed head is precisely when the sweep is about to merge.
+    Accountability remains with the session, but the pending merge is asynchronous:
+    another independent lane should run while the watcher/sweeper finishes it.
     """
     repo, state_path, head = _pushed_unmerged_session(tmp_path)
     monkeypatch.setattr(
@@ -3816,7 +3842,7 @@ def test_the_unmerged_red_code_is_not_an_external_blocker():
     assert "ci_failed" in GUARD.EXTERNAL_BLOCKERS, "the merged path keeps its mercy exit"
 
 
-def _block_run(state_path, code, *, attempts):
+def _block_run(state_path, code, *, attempts, final_message=None):
     """Drive `_block` `attempts` times with a valid report; return per-attempt blocks."""
     state = {
         "root": "/x",
@@ -3830,9 +3856,8 @@ def _block_run(state_path, code, *, attempts):
     payload = {
         "hook_event_name": "Stop",
         "stop_hook_active": True,
-        "last_assistant_message": (
-            "SHIP LOOP BLOCKED: ci-pack-2 is red on my armed PR #9999; evidence: run 123."
-        ),
+        "last_assistant_message": final_message
+        or "SHIP LOOP BLOCKED: ci-pack-2 is red on my armed PR #9999; evidence: run 123.",
     }
     blocked = []
     for _ in range(attempts):
@@ -3871,6 +3896,40 @@ def test_the_merged_path_keeps_its_two_stop_external_exit(tmp_path):
     blocked = _block_run(state_path, "ci_failed", attempts=3)
     assert blocked[0] is True, "never a first-attempt bailout"
     assert blocked[1] is False, "the external ladder still releases at two"
+
+
+def test_async_unmerged_does_not_yield_just_because_ci_is_external(tmp_path):
+    """A watcher owns observation, not the whole CEO turn.
+
+    The common bad shape was five minutes of implementation followed by a 30-45 minute
+    CI phase that the principal treated as its reason to stop. Even a verified external
+    wait must keep blocking unless the session explicitly says durable execution is the
+    sole remaining work.
+    """
+    assert GUARD.ASYNC_UNMERGED in GUARD.EXTERNAL_BLOCKERS
+    assert GUARD.ASYNC_UNMERGED in GUARD.WAITING_BLOCKERS
+    state_path = tmp_path / "state.json"
+    blocked = _block_run(state_path, GUARD.ASYNC_UNMERGED, attempts=3)
+    assert blocked == [True, True, True]
+    assert GUARD._PROVEN_STAGE_BY_BLOCKER[GUARD.ASYNC_UNMERGED] == "CI"
+
+
+def test_async_unmerged_can_yield_after_explicit_durable_execution_classification(tmp_path):
+    """The short wait boundary survives when CI is truly the sole remaining lane."""
+    state_path = tmp_path / "state.json"
+    message = (
+        "SHIP LOOP BLOCKED: exact head is healthy and one verified watcher owns the "
+        "remaining CI/sweeper wait; every other useful in-scope lane is exhausted.\n"
+        "SESSION END: DURABLE_EXECUTION_RUNNING"
+    )
+    blocked = _block_run(
+        state_path,
+        GUARD.ASYNC_UNMERGED,
+        attempts=3,
+        final_message=message,
+    )
+    assert blocked[0] is True, "never a first-attempt bailout"
+    assert blocked[1] is False, "explicit durable-execution wait may yield at the short boundary"
 
 
 def test_the_unmerged_red_still_reaches_the_any_code_loop_breaker(tmp_path):
@@ -3972,7 +4031,9 @@ def test_a_red_main_is_currently_red_on_is_reported_as_inherited_not_as_yours(
     assert "ci.yml run 77" in detail, "the block must cite the proof it read"
     assert "Fix the cause" not in detail, "there is nothing here for this session to fix"
     assert "--ref main" in detail, "and it must name main's lever"
-    assert "instead of re-dispatching over it" in detail, "with the livelock preflight"
+    assert "instead of re-dispatching or foreground-waiting" in detail
+    assert "asynchronous background/native watcher" in detail
+    assert "advance another independent authorized lane" in detail
 
 
 def test_the_inherited_verdict_still_blocks_and_is_not_an_external_blocker(monkeypatch):
@@ -4173,13 +4234,15 @@ def test_a_spurious_only_red_is_not_a_red_but_is_still_not_a_merge(
         "_head_check_runs",
         lambda *_a: [
             _run_stub("Workers Builds: macro", conclusion="failure"),
-            _run_stub("ci-pack-2", "in_progress"),
+            _actions_check("ci-pack-2", None, 2, status="in_progress"),
         ],
     )
     verdict = _stop_verdict(
         monkeypatch, capsys, repo, state_path, merged_pr=None, open_pull=_armed_pr(head)
     )
-    assert verdict == "unmerged", f"spurious is not a red, but nor is it a merge ({verdict})"
+    assert verdict == GUARD.ASYNC_UNMERGED, (
+        f"spurious red + a real in-progress check is an async wait, got {verdict}"
+    )
 
 
 def test_an_armed_pull_request_with_no_check_runs_blocks_and_says_why(
@@ -4303,8 +4366,9 @@ def test_the_same_head_after_ci_yml_concludes_is_still_called_clean(monkeypatch)
     gate is satisfied and the old advice is true again."""
     _refuse_rest(monkeypatch)
     code, detail = _armed_verdict(monkeypatch, _PR_7969_AFTER_CI_YML)
-    assert code == "unmerged"
+    assert code == GUARD.ASYNC_UNMERGED
     assert "every check has concluded clean; the next sweep should merge it" in detail
+    assert "existing CI/sweeper machinery" in detail
 
 
 @pytest.mark.parametrize(
