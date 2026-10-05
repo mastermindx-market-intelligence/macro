@@ -503,13 +503,18 @@ def test_phase_count_packet_definition():
         "p0": {"delta": -0.01, "ci": [-0.02, -0.001]},  # neg, excl 0
         "p1": {"delta": -0.01, "ci": [-0.02, 0.001]},   # neg, includes 0
         "p2": {"delta": 0.01, "ci": [0.001, 0.02]},     # pos, excl 0
+        "eq0": {"delta": 0.0, "ci": [-0.02, -0.001]},  # DiD exactly 0.0, CI excl 0 — must NOT count
+        "hi0": {"delta": -0.01, "ci": [-0.02, 0.0]},   # DiD < 0, CI upper bound exactly 0.0 — must NOT count
     }
     assert R.phase_count_packet(by_phase, R.PHASES_3D) == 1
+    extra = tuple(R.PHASES_3D) + ("eq0", "hi0")
+    assert R.phase_count_packet(by_phase, extra) == 1
 
 
 def test_cost_curve_monotonic_strict():
     assert R.cost_curve_monotonic_strict(0.14, 0.158, 0.012) is False
     assert R.cost_curve_monotonic_strict(0.20, 0.15, 0.10) is True
+    assert R.cost_curve_monotonic_strict(0.15, 0.15, 0.10) is False
 
 
 # ────────────────────── N3 mapping ──────────────────────

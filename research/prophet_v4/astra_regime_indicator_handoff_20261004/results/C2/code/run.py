@@ -2083,8 +2083,8 @@ def run_mutants() -> list[dict]:
     def m7(src: str) -> str:
         old = """        boot_c = cell_boot_means(draws, m_c, v_c)
         boot_1 = cell_boot_means(draws, m_1, v_1)"""
-        new = """        boot_c = cell_boot_means(make_paired_draws(draws.shape[1], draws.shape[0], np.random.default_rng(1)), m_c, v_c)
-        boot_1 = cell_boot_means(make_paired_draws(draws.shape[1], draws.shape[0], np.random.default_rng(2)), m_1, v_1)"""
+        new = """        boot_c = cell_boot_means(make_paired_draws(draws.shape[1], draws.shape[0], np.random.default_rng()), m_c, v_c)
+        boot_1 = cell_boot_means(make_paired_draws(draws.shape[1], draws.shape[0], np.random.default_rng()), m_1, v_1)"""
         return src.replace(old, new, 1)
 
     def mc1(src: str) -> str:

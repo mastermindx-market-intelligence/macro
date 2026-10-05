@@ -105,6 +105,8 @@ Among 1D events with excess_h21_net > +0.10, share that never received 3D confir
 
 ## Second axis: breadth tercile (narrow vs broad)
 
+report-only analogue — honest-N (n_events / n_months / n_names) not recorded in round 2; not part of the N5 DiD tables
+
 Primary DiD analogue: gap(narrow) − gap(broad), reported only (not used in the verdict).
 
 | grain | cell | H10 Δ | H10 95% CI | H21 Δ | H21 95% CI |
@@ -268,10 +270,12 @@ Mutant → failing test:
 |---|---|---|
 | M5 | test_compute_all_did_sign_under_h10 | test_compute_all_did_sign_under_h10 - AssertionError: J2 FAIL: pooled DiD should be clearly negative (fast gap << persistent gap), got 0.035. Mutant M5 would flip the sign. |
 | M6 | test_compute_all_floors | test_compute_all_floors - AssertionError: J3 FAIL: tiny cell must have meets_floor False; mutant M6 would force True |
-| M7 | test_compute_all_paired_zero | 1 passed, 17 deselected |
+| M7 | test_compute_all_paired_zero | test_compute_all_paired_zero - AssertionError: J1 FAIL: paired bootstrap max \|DiD\| = 1.667e-02; mutant M7 (per-cell month draws) would produce non-zero DiDs |
 | MC1 | test_c1_status_is_read_from_record | test_c1_status_is_read_from_record - AssertionError: assert 'OK' == 'BROKEN' |
 | MC2 | test_verdict_insufficient_when_c1_broken | test_verdict_insufficient_when_c1_broken - AssertionError: assert 'NOT SUPPORTED' == 'INSUFFICIENT SUPPORT' |
 | N3_old_mapping | test_confirmed_share_mapping_by_key | test_confirmed_share_mapping_by_key - assert [False, False, False] == [False, True, True] |
+| N2a | test_phase_count_packet_definition | test_phase_count_packet_definition - AssertionError: assert 3 == 1 |
+| N2b | test_cost_curve_monotonic_strict | test_cost_curve_monotonic_strict - assert True is False |
 
 ## Deviations
 
@@ -288,3 +292,46 @@ Mutant → failing test:
 - C1 controls.status is BROKEN (AR(1) lag-21 of LP = -0.0404); every rotation-conditioned cell is therefore INSUFFICIENT SUPPORT under the pre-declared rule even though every table is computed and reported.
 - B1 grain_effect_3d is NOT SUPPORTED (not INSUFFICIENT); the extra 'B1 INSUFFICIENT on every 3D phase' clause does not fire.
 - Zero 1D events dropped for a missing C1 date (all 1D signal dates are present on the shifted rotation_state_daily index).
+
+## Round 3 (records + tests only)
+
+result.json sha256 (first): `be4e04d449a61a262753e08fdfae32b81f682a53094e6a376908fb9e1cc00a54`
+
+Science is frozen. `run.py` was not executed. No re-estimation, no re-bootstrap, no new science numbers except leaf counts/deltas from files that already exist.
+
+- **D1 DONE.** Mutant M7 is now a true per-cell independent month draw: unseeded `np.random.default_rng()` inside every `gap_pack` call (unique entropy per call; constant seeds 1/2 removed). Applied to `code/_mutants/M7/`. `pytest -k test_compute_all_paired_zero` **FAILED** `test_compute_all_paired_zero` — `AssertionError: J1 FAIL: paired bootstrap max |DiD| = 1.667e-02; mutant M7 (per-cell month draws) would produce non-zero DiDs` (`1 failed, 17 deselected`). Reviewer's unseeded variant was `2.333e-02`; this run is unseeded so the magnitude may differ.
+- **D2 DONE.** Equality-boundary synthetics added to `test_phase_count_packet_definition` (DiD exactly `0.0` with CI excluding zero; DiD `< 0` with CI upper bound exactly `0.0` — both must not count) and `test_cost_curve_monotonic_strict` (`(0.15, 0.15, 0.10)` is False). N2a (`d < 0` → `d <= 0` in `phase_count_packet` / `evaluate_verdict` ok-block, and `hi < 0` → `hi <= 0` in `ci_excludes_zero`) **FAILED** `test_phase_count_packet_definition` — `AssertionError: assert 3 == 1`. N2b (`fast > mid > persistent` → `>=`) **FAILED** `test_cost_curve_monotonic_strict` — `assert True is False`. Unmutated copy: `2 passed, 16 deselected`.
+- **D3 DONE.** `leaf_attribution.json` published. leftover_untagged = 0 (verified by code/leaf_attribution.py). changed_numeric_leaves = **1124**. Round-2 independent flatten reported **83** in-place both-present numeric science-value moves (did / gaps / cost_curve.n / shares / breadth / n_1d), treating each CI array as one leaf and excluding honest-N / era-label rewrites. This round explodes CI bounds (`ci[0]`/`ci[1]`), pairs era-qualified keys with their bare round-0 counterparts, and includes added/removed numeric leaves. In-place both-present (no era pairing, CI exploded) = **194**. (b) C1 record delta moves NOTHING numeric — rotation parquet `9361dbf0…` is byte-identical; **zero leaves** tagged (b).
+
+  Per-class counts (largest abs delta):
+
+  | tag | count | largest_abs_delta path | r0 | now | delta |
+  |---|---:|---|---:|---:|---:|
+  | (a) B1 panel delta | 173 | `cost_curve.2D.mid.n_finite_mfe` | 98972 | 98973 | +1 |
+  | (b) C1 record delta | 0 | — | — | — | — |
+  | (c) 1D-row estimator | 0 | (only as jointly) | — | — | — |
+  | (c) key-merge mapping | 0 | (only as jointly) | — | — | — |
+  | (c) phase_count packet definition | 0 | (no numeric leaf moved) | — | — | — |
+  | (c) strict monotonic | 0 | (no numeric leaf moved) | — | — | — |
+  | (c) verdict-by-code | 0 | (no numeric leaf moved) | — | — | — |
+  | (c) era qualification | 189 | `breadth_axis.2D.by_era.2014-2019 (2015-08-05..2019-12-30).by_phase.p0.h10.ci[0]` | −0.005215664431930249 | −0.005215664431930249 | 0 (key rewrite only) |
+  | (c) honest-N blocks | 654 | — (all added; r0 null) | — | — | — |
+  | (c) cost-curve n is n_finite_mfe | 6 | `cost_curve.2D.mid.n` | 104137 | 98973 | −5164 |
+  | (a)+(c) jointly | 102 | `meta.n_1d_events_joined` | 296635 | 296637 | +2 |
+
+  Pooled 3D H10 DiD (`did.3D.pooled.h10.did` / `.delta`): r0 = 0.003451310614323792; now = 0.0034518154435143936; delta = 5.048291906017272e-07. Among continuous (a) movers the largest abs delta is `gaps.2D.mid.p1.gap_h10` 0.000871397241975842 → 0.0009976107296557342 (Δ +1.262e-4). leftover_untagged = 0 (verified by code/leaf_attribution.py).
+- **D4 DONE.** Caption under `## Second axis: breadth tercile (narrow vs broad)`: `report-only analogue — honest-N (n_events / n_months / n_names) not recorded in round 2; not part of the N5 DiD tables`.
+
+run.py vs `_r2_backup/run.py`: `diff <round2 copy> run.py | grep -c '^[<>]'` = **4**; hunk range `@@ -2083,8 +2083,8 @@` (mutant-harness `m7` only; production `gap_pack` untouched).
+
+pytest (`PYTHONDONTWRITEBYTECODE=1 python3 -m pytest research/prophet_v4/astra_regime_indicator_handoff_20261004/results/C2/code -q -p no:cacheprovider`, `C2_REPO` set):
+
+```
+18 passed in 1.52s
+```
+
+0 failed, 0 skipped.
+
+`shasum -a 256 -c hashes.txt` from checkout root: **17 OK, 0 non-OK**.
+
+result.json sha256 (last): `be4e04d449a61a262753e08fdfae32b81f682a53094e6a376908fb9e1cc00a54`
