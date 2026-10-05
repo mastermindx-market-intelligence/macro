@@ -57,6 +57,14 @@ class StoreValidationError(NewsStoreError):
     pass
 
 
+class StoreUnavailable(NewsStoreError):
+    pass
+
+
+class ReadOnlyStore(NewsStoreError):
+    pass
+
+
 class LegacySchemaError(NewsStoreError):
     pass
 
@@ -157,6 +165,15 @@ class ChangePage:
     has_more: bool
 
 
+@dataclass(frozen=True, slots=True)
+class StoryDetail:
+    schema: str
+    story_id: str
+    source_count: int
+    item_count: int
+    members: tuple[StoryRow, ...]
+
+
 _SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS qbus_meta (
     key TEXT PRIMARY KEY,
@@ -246,6 +263,17 @@ CREATE TABLE IF NOT EXISTS news_changes (
 
 CREATE INDEX IF NOT EXISTS idx_news_changes_item
 ON news_changes(source, source_item_id, sequence);
+
+CREATE TABLE IF NOT EXISTS news_change_targets (
+    sequence INTEGER NOT NULL,
+    security_id TEXT NOT NULL,
+    PRIMARY KEY(sequence, security_id),
+    FOREIGN KEY(sequence) REFERENCES news_changes(sequence)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_news_change_targets_security
+ON news_change_targets(security_id, sequence);
 
 CREATE TABLE IF NOT EXISTS news_cursors (
     source_key TEXT PRIMARY KEY,
@@ -499,6 +527,7 @@ class NewsStore:
         self.path = Path(path)
         self.source_key = _validate_token(source_key, "source_key", 256)
         self.cluster_policy = cluster_policy or ClusterPolicy()
+        self._read_only = False
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._conn = sqlite3.connect(
             str(self.path),
@@ -509,6 +538,49 @@ class NewsStore:
         self._configure()
         self._initialize()
         os.chmod(self.path, 0o600)
+
+    @classmethod
+    def open_readonly(
+        cls,
+        path: Path | str,
+        *,
+        source_key: str,
+        cluster_policy: ClusterPolicy | None = None,
+    ) -> "NewsStore":
+        db = Path(path)
+        if not db.exists() or not db.is_file():
+            raise StoreUnavailable("qbus_news_store:unavailable")
+        obj = cls.__new__(cls)
+        obj.path = db
+        obj.source_key = _validate_token(source_key, "source_key", 256)
+        obj.cluster_policy = cluster_policy or ClusterPolicy()
+        obj._read_only = True
+        try:
+            obj._conn = sqlite3.connect(
+                f"file:{db}?mode=ro",
+                uri=True,
+                timeout=5.0,
+                isolation_level=None,
+            )
+            obj._conn.row_factory = sqlite3.Row
+            obj._conn.execute("PRAGMA query_only=ON")
+            row = obj._conn.execute(
+                "SELECT value FROM qbus_meta WHERE key='schema'"
+            ).fetchone()
+        except sqlite3.Error as exc:
+            try:
+                obj._conn.close()
+            except Exception:
+                pass
+            raise StoreUnavailable("qbus_news_store:unavailable") from exc
+        if row is None or str(row["value"]) != SCHEMA:
+            obj._conn.close()
+            raise StoreSchemaError("qbus_news_store:schema_mismatch")
+        return obj
+
+    def _require_write(self) -> None:
+        if self._read_only:
+            raise ReadOnlyStore("qbus_news_store:read_only")
 
     def __enter__(self) -> "NewsStore":
         return self
@@ -572,6 +644,7 @@ class NewsStore:
         Exact existing rows are idempotent. A same-item-id byte/field conflict
         refuses and rolls back the whole batch.
         """
+        self._require_write()
         validated = validate_legacy_rows(rows)
         imported = duplicate = 0
         self._conn.execute("BEGIN IMMEDIATE")
@@ -957,7 +1030,16 @@ class NewsStore:
                 (observed_at or revision.received_at).isoformat(),
             ),
         )
-        return int(cur.lastrowid)
+        sequence = int(cur.lastrowid)
+        for security_id in tuple(dict.fromkeys(security_ids)):
+            self._conn.execute(
+                """
+                INSERT INTO news_change_targets(sequence, security_id)
+                VALUES(?,?)
+                """,
+                (sequence, security_id),
+            )
+        return sequence
 
     def commit(
         self,
@@ -966,6 +1048,7 @@ class NewsStore:
         expected_cursor: str | None,
         next_cursor: str | None,
     ) -> CommitReceipt:
+        self._require_write()
         routed = tuple(_validate_routed(item) for item in revisions)
         if next_cursor is not None:
             next_cursor = _validate_token(next_cursor, "next_cursor", 4096)
@@ -1248,6 +1331,137 @@ class NewsStore:
             has_more=has_more,
         )
 
+    def story(
+        self,
+        story_id: str,
+        *,
+        rights: NewsReadRights,
+    ) -> StoryDetail | None:
+        story_id = _validate_token(story_id, "story_id", 1024)
+        if not isinstance(rights, NewsReadRights):
+            raise StoreValidationError("qbus_news_store:invalid_rights")
+        if not rights.allowed_sources:
+            return None
+        placeholders = ",".join("?" for _ in rights.allowed_sources)
+        rows = self._conn.execute(
+            f"""
+            SELECT s.state_json, s.last_sequence, s.universe_revision
+            FROM news_cluster_members m
+            JOIN news_states s
+              ON s.source=m.source AND s.source_item_id=m.source_item_id
+            WHERE m.cluster_id=?
+              AND s.status='active'
+              AND s.source IN ({placeholders})
+            ORDER BY s.last_sequence DESC, s.source, s.source_item_id
+            """,
+            (story_id, *sorted(rights.allowed_sources)),
+        ).fetchall()
+        if not rows:
+            return None
+        states = [_state_from_json(row["state_json"]) for row in rows]
+        source_count = len({state.source for state in states})
+        item_count = len(states)
+        members = tuple(
+            _redact_story(
+                sequence=int(row["last_sequence"] or 0),
+                state=state,
+                story_id=story_id,
+                source_count=source_count,
+                item_count=item_count,
+                universe_revision=str(row["universe_revision"]),
+                rights=rights,
+            )
+            for row, state in zip(rows, states)
+        )
+        return StoryDetail(
+            schema=SCHEMA,
+            story_id=story_id,
+            source_count=source_count,
+            item_count=item_count,
+            members=members,
+        )
+
+    def changes_for_security(
+        self,
+        security_id: str,
+        *,
+        after_sequence: int,
+        limit: int,
+        rights: NewsReadRights,
+    ) -> ChangePage:
+        security_id = _validate_token(security_id, "security_id", 1024)
+        if (
+            not isinstance(after_sequence, int)
+            or isinstance(after_sequence, bool)
+            or after_sequence < 0
+        ):
+            raise StoreValidationError("qbus_news_store:invalid_sequence")
+        if not isinstance(limit, int) or isinstance(limit, bool) or not 1 <= limit <= 1000:
+            raise StoreValidationError("qbus_news_store:invalid_limit")
+        if not isinstance(rights, NewsReadRights):
+            raise StoreValidationError("qbus_news_store:invalid_rights")
+        if not rights.allowed_sources:
+            return ChangePage(SCHEMA, (), after_sequence, False)
+
+        placeholders = ",".join("?" for _ in rights.allowed_sources)
+        rows = self._conn.execute(
+            f"""
+            SELECT c.*, r.revision_json
+            FROM news_change_targets t
+            JOIN news_changes c ON c.sequence=t.sequence
+            JOIN news_revisions r ON r.revision_id=c.revision_id
+            WHERE t.security_id=?
+              AND c.sequence > ?
+              AND c.source IN ({placeholders})
+            ORDER BY c.sequence ASC
+            LIMIT ?
+            """,
+            (
+                security_id,
+                after_sequence,
+                *sorted(rights.allowed_sources),
+                limit + 1,
+            ),
+        ).fetchall()
+        return self._change_page(rows, after_sequence=after_sequence, limit=limit, rights=rights)
+
+    def _change_page(
+        self,
+        rows,
+        *,
+        after_sequence: int,
+        limit: int,
+        rights: NewsReadRights,
+    ) -> ChangePage:
+        has_more = len(rows) > limit
+        selected = rows[:limit]
+        out: list[ChangeRow] = []
+        for row in selected:
+            revision = _revision_from_json(row["revision_json"])
+            removed = row["kind"] == "remove"
+            out.append(
+                ChangeRow(
+                    sequence=int(row["sequence"]),
+                    kind=str(row["kind"]),
+                    source=str(row["source"]),
+                    source_item_id=str(row["source_item_id"]),
+                    story_id=str(row["cluster_id"]),
+                    title="" if removed or not rights.allow_title else revision.title,
+                    url="" if removed or not rights.allow_url else revision.url,
+                    teaser="" if removed or not rights.allow_teaser else revision.teaser,
+                    security_ids=tuple(json.loads(row["security_ids_json"])),
+                    universe_revision=str(row["universe_revision"]),
+                    observed_at=datetime.fromisoformat(row["observed_at"]),
+                )
+            )
+        next_sequence = out[-1].sequence if out else after_sequence
+        return ChangePage(
+            schema=SCHEMA,
+            rows=tuple(out),
+            next_sequence=next_sequence,
+            has_more=has_more,
+        )
+
     def changes(
         self,
         *,
@@ -1285,45 +1499,9 @@ class NewsStore:
                 limit + 1,
             ),
         ).fetchall()
-        has_more = len(rows) > limit
-        selected = rows[:limit]
-        out: list[ChangeRow] = []
-        for row in selected:
-            revision = _revision_from_json(row["revision_json"])
-            removed = row["kind"] == "remove"
-            out.append(
-                ChangeRow(
-                    sequence=int(row["sequence"]),
-                    kind=str(row["kind"]),
-                    source=str(row["source"]),
-                    source_item_id=str(row["source_item_id"]),
-                    story_id=str(row["cluster_id"]),
-                    title=(
-                        ""
-                        if removed or not rights.allow_title
-                        else revision.title
-                    ),
-                    url=(
-                        ""
-                        if removed or not rights.allow_url
-                        else revision.url
-                    ),
-                    teaser=(
-                        ""
-                        if removed or not rights.allow_teaser
-                        else revision.teaser
-                    ),
-                    security_ids=tuple(
-                        json.loads(row["security_ids_json"])
-                    ),
-                    universe_revision=str(row["universe_revision"]),
-                    observed_at=datetime.fromisoformat(row["observed_at"]),
-                )
-            )
-        next_sequence = out[-1].sequence if out else after_sequence
-        return ChangePage(
-            schema=SCHEMA,
-            rows=tuple(out),
-            next_sequence=next_sequence,
-            has_more=has_more,
+        return self._change_page(
+            rows,
+            after_sequence=after_sequence,
+            limit=limit,
+            rights=rights,
         )
