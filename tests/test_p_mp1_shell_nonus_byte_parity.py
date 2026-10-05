@@ -5,8 +5,16 @@ rail via the pv_card parameter default (ruling §10.2) — zero rendered-byte
 change on non-US pages, test-pinned." §12 acceptance item 3: "The pv_card
 lifecycle parameter defaults to legacy: non-US templates render byte-identical."
 
-The ONLY file this packet's diff shares with hk.html.j2/china.html.j2/
-canada.html.j2/intl.html.j2 is templates/_prophet_card.html.j2 (each of those
+P1A SUPERSESSION (2026-10-04): the four-market presentation contract now
+intentionally extends shared card anatomy and Canada itself. The old absolute
+"zero rendered-byte change on non-US pages" law no longer governs Canada or
+shared pv_css(). Its important negative laws remain: callers that omit the new
+plan_relation input keep byte-identical pv_card() markup; no US lifecycle leaks;
+HK/China/Intl remain source-byte pinned; Canada is pinned to its deliberate new
+shared coverage/relation anatomy.
+
+The ONLY file this packet's original diff shared with hk.html.j2/china.html.j2/
+canada.html.j2/intl.html.j2 was templates/_prophet_card.html.j2 (each of those
 four does `{% import "_prophet_card.html.j2" as pv %}` then calls
 `pv.pv_css()` once and `pv.pv_card(cx)` per row, with NO `lifecycle`/`id`/
 `life`/`lane_mark` keys — every existing non-US call site). This suite proves,
@@ -181,11 +189,15 @@ def _sha256_text(text: str) -> str:
 # HK/China/Intl pins also fail the clean source baseline. Native init-call
 # parity and the independent shared-CSS pin remain enforced.
 _EXPECTED_TEMPLATE_SHA256: dict[str, str] = {
-    "templates/hk.html.j2": "2fb1a5e1fb8b901e4dc4bc64cc7916542d0acb508547ee445676166b4edad86c",
+    # Current acquisition base bd118c69 already contains the accepted HK source
+    # at this byte identity; P1a does not modify HK in this vertical.
+    "templates/hk.html.j2": "b9d4299a4fafbb5b7d22d97d42d71888c4c7a41ce3c452ed6bb7873f115407e8",
     # Accepted China migration #7054 (a8def4c24d584afe63f148c0d5ba6d8bf95ee506).
     # Only this stale expectation changes; the migrated template is untouched.
     "templates/china.html.j2": "12e2a3e024cef24788504421e111476a72a73c253e89fffe18f730841a24be4a",
-    "templates/canada.html.j2": "878237e4c3d0bef90c2fce108b64cf859d8f67783dede4f77881392c2d1eb7e5",
+    # P1a deliberately adds shared coverage + typed plan-unavailable anatomy to Canada.
+    # HK/China/Intl remain byte-pinned to their prior source.
+    "templates/canada.html.j2": "b108676dbf008cb4e7bcdf8d476d2a21f46d829f193f0639033ea441460817fa",
     "templates/intl.html.j2": "fba1ce6480a4854e864479fa4faf3f45acdedd3da4662f8a95f897f7326c2353",
 }
 
@@ -233,7 +245,9 @@ def _macros():
 #: below proves independently. The pin MECHANISM is untouched — this is a
 #: recomputed value, not a weakened assertion. A legitimate future edit to
 #: pv_css() must recompute and update this hash again.
-_EXPECTED_PV_CSS_SHA256 = "e7dd2cf07a44230d9a1b9a82b335943070ca0bad76e6fc7c1b99aa0625a12258"
+# P1a intentionally adds the low-emphasis shared plan-relation row geometry.
+# Default pv_card() markup still emits no row unless plan_relation is supplied.
+_EXPECTED_PV_CSS_SHA256 = "cdf2c807ecdfe4e322db1a2671b863bd1d261aadca406aec964d1026efc36436"
 
 
 def test_pv_css_is_byte_pinned_post_rollout():

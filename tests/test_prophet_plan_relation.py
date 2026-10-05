@@ -287,3 +287,12 @@ def test_plan_relation_preserves_existing_machine_attribute_sets():
         values = {name: sorted(re.findall(rf'{name}="([^"]*)"', html)) for name in attrs}
         extracted.append(values)
     assert extracted[0] == extracted[1]
+
+
+def test_board_card_maps_same_security_relation_without_claiming_exact_plan():
+    from pathlib import Path
+    source = Path("templates/_us_board_cards.html.j2").read_text(encoding="utf-8")
+    assert "'RELATED_SECURITY' if _card_plan_rel.state == 'related_security'" in source
+    assert "'NONE' if _card_plan_rel.state == 'none'" in source
+    assert "else 'UNAVAILABLE'" in source
+    assert "'EXACT_PLAN'" not in source

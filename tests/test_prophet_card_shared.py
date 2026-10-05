@@ -814,7 +814,7 @@ def test_setup_detail_styles_are_explicit_opt_in_after_acceptance_repair():
     env = _r18_env()
     card = env.get_template("_prophet_card.html.j2").module
     css = str(card.pv_css())
-    assert hashlib.sha256(css.encode()).hexdigest() == "e7dd2cf07a44230d9a1b9a82b335943070ca0bad76e6fc7c1b99aa0625a12258"
+    assert hashlib.sha256(css.encode()).hexdigest() == "cdf2c807ecdfe4e322db1a2671b863bd1d261aadca406aec964d1026efc36436"
     assert ".pvs-audit" not in css
     assert ".pvs-audit" in str(card.pv_css(setup_detail=True))
 
@@ -947,3 +947,40 @@ def test_r22_neutral_status_names_preserve_exact_raw_fields_in_one_disclosure():
             assert text == raw if raw is not None else 'Not supplied' in text
             if raw is not None:
                 assert raw not in human.get_text()
+
+
+def test_plan_relation_row_is_opt_in_and_closed_state_only():
+    from jinja2 import Environment, FileSystemLoader
+    env = Environment(loader=FileSystemLoader("templates"), autoescape=True)
+    env.globals["t"] = lambda en, zh=None: en
+    tpl = env.from_string("{% import '_prophet_card.html.j2' as pv %}{{ pv.pv_card(cx) }}")
+    base = {"href":"#","tk":"AAA","mkt":"us","verb":"wait","stage":1}
+    plain = tpl.render(cx=base)
+    assert "data-plan-relation-state" not in plain
+    for state, label in (
+        ("RELATED_SECURITY", "Related plan exists"),
+        ("NONE", "No related plan"),
+        ("UNAVAILABLE", "Unavailable"),
+    ):
+        rendered = tpl.render(cx={**base, "plan_relation":{"state":state}})
+        assert f'data-plan-relation-state="{state}"' in rendered
+        assert label in rendered
+    invalid = tpl.render(cx={**base, "plan_relation":{"state":"EXACT_BY_TICKER"}})
+    assert 'data-plan-relation-state="UNAVAILABLE"' in invalid
+    assert "EXACT_BY_TICKER" not in invalid
+    forged_exact = tpl.render(cx={**base, "plan_relation":{"state":"EXACT_PLAN"}})
+    assert 'data-plan-relation-state="UNAVAILABLE"' in forged_exact
+    assert "data-plan-id=" not in forged_exact
+    assert "Exact plan" not in forged_exact
+    exact = tpl.render(cx={**base, "plan_relation":{"state":"EXACT_PLAN", "plan_id":" plan-123 "}})
+    assert 'data-plan-relation-state="EXACT_PLAN"' in exact
+    assert 'data-plan-id="plan-123"' in exact
+    assert "Exact plan" in exact
+
+
+def test_shared_card_has_mobile_safe_plan_relation_geometry():
+    from pathlib import Path
+    source = Path("templates/_prophet_card.html.j2").read_text(encoding="utf-8")
+    assert ".pv-pr{" in source
+    assert "overflow-wrap:anywhere" in source
+    assert "data-plan-relation-state" in source
