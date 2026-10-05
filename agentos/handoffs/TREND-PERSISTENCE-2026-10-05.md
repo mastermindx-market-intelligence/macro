@@ -3,7 +3,7 @@ workstream: WS:TREND-PERSISTENCE
 session: claude/ssd-tp-wave-c-close-records-ec2cc69e85d5182d
 model: fable
 ended_because: complete
-prs: [8418]
+prs: [8418, 8459]
 decisions: [DEC:TREND-PERSISTENCE-STOPS-AT-WAVE-C, DEC:TREND-PERSISTENCE-STOPS-AT-WAVE-B]
 mission: >
   Wave C-2 to close. Land the Wave C instrument in Mastermind, make the ONE pre-registered C1
