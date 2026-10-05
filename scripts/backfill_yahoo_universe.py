@@ -43,10 +43,11 @@ The one measured exception proves the point. Stored IBIT had tip ratio 1.002385
 (total return BELOW split-only, which should be impossible) — and a full
 period='max' re-pull of the same name returns tip 1.0 with zero anomalies. So the
 anomaly was an artifact of the collector's WINDOWED upsert leaving pre-window rows
-on a stale basis, not a property of the security or the vendor. A hard gate would
-have refused a real name over a repairable store artifact; the refresh phase below
-heals it instead, because a full re-pull IS the basis heal (lib.store.basis_shifted
-documents why a short window cannot be).
+on a stale basis, not a property of the security or the vendor. The refresh phase
+therefore mirrors the canonical Yahoo collector: probe a short overlap window,
+run lib.store.basis_shifted, and only when that guard detects a re-adjustment (or
+no overlap) perform a full period='max' heal. A failed heal leaves the old archive
+untouched; a short window is never spliced across a known basis shift.
 
 NEVER A DEATH CLAIM
 -------------------
@@ -198,6 +199,10 @@ SHORT_HISTORY_ROWS = 30
 #: house 7-day bar-lag bound (see the module docstring), with a day of slack for a
 #: vendor-slow night that truncates a pass.
 REFRESH_TARGET_CADENCE_D = 6
+#: Daily archive refresh uses the SAME request/guard shape as collectors.yahoo:
+#: a short overlap probe is cheap and stable-history preserving; a real adjustment
+#: basis shift/no-overlap escalates that name to period='max' before any write.
+REFRESH_PROBE_PERIOD = "1mo"
 #: Clamp on the computed per-night refresh size. The floor keeps a small store
 #: moving; the ceiling keeps one pass inside the step's wall-clock budget
 #: (1,500 x 181 ms + 75 batch sleeps ~= 383 s, under the 480 s default).
@@ -686,6 +691,9 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
         "ratio_anomalies": 0, "batch_errors": 0, "budget_exhausted": False,
         "refresh_planned": 0, "refreshed": 0, "refreshable": 0,
         "refresh_cap": 0, "refresh_cadence_d": 0.0, "refresh_ran": False,
+        "refresh_probe_period": REFRESH_PROBE_PERIOD,
+        "refresh_basis_shifted": 0, "refresh_rebased": 0,
+        "refresh_rebase_failed": 0,
         "census": census,
     }
 
@@ -729,10 +737,14 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
     anomalies: dict[str, list[str]] = {}
 
     def _work(tickers: list[str], phase: str) -> None:
-        """Fetch, gate and store one phase's names. Identical path for both phases —
-        the refresh re-pulls period='max' exactly as the backfill does, which is also
-        what makes it the adjustment-basis heal (a full re-pull rebases the whole
-        series; see lib.store.basis_shifted for why a short window cannot)."""
+        """Fetch, gate and store one phase's names.
+
+        Backfill keeps the requested full-history period. Refresh mirrors the
+        canonical Yahoo collector: fetch a short overlap probe, detect a basis
+        shift against the stored archive, and full-refetch ONLY shifted/no-overlap
+        names. A failed full heal drops that name from this run without touching
+        its existing parquet.
+        """
         for i in range(0, len(tickers), max(1, batch_size)):
             if time.monotonic() - t0 > budget_s:
                 report["budget_exhausted"] = True
@@ -744,8 +756,9 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
             if refresh_all and phase == "refresh":
                 report["refresh_attempted"] += len(batch)
                 report["refresh_unattempted"] -= len(batch)
+            fetch_period = REFRESH_PROBE_PERIOD if phase == "refresh" else period
             try:
-                df = download_batch(sorted(set(symbols.values())), period)
+                df = download_batch(sorted(set(symbols.values())), fetch_period)
             except Exception as e:  # noqa: BLE001 — transport failure is not symbol evidence
                 report["batch_errors"] += 1
                 log.warning("%s: batch of %d failed (%s) — no attempt charged to those "
@@ -753,6 +766,7 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
                 time.sleep(sleep_s)
                 continue
 
+            accepted: dict[str, pd.DataFrame] = {}
             for ticker in batch:
                 report["attempted"] += 1
                 sub = None if df is None else slice_symbol(df, symbols[ticker])
@@ -784,15 +798,81 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
                                      max_attempts, phase=phase):
                         report["parked"] += 1
                     continue
-                diag = ratio_report(frame)
+                accepted[ticker] = frame
+
+            # A short adjusted-history probe is safe to splice only when its overlap
+            # is still on the same adjustment basis as the durable archive. This is
+            # the exact guard used by collectors.yahoo.YahooAdapter._rebase_shifted.
+            if phase == "refresh" and accepted:
+                tol = float(adapter.cfg.get("upsert_basis_tol", 1e-3))
+                shifted = [
+                    ticker for ticker, frame in accepted.items()
+                    if store.basis_shifted("yahoo", ticker, frame, tol=tol)
+                ]
+                report["refresh_basis_shifted"] += len(shifted)
+                if shifted:
+                    shifted_symbols = {t: symbols[t] for t in shifted}
+                    try:
+                        full_df = download_batch(
+                            sorted(set(shifted_symbols.values())), "max")
+                    except Exception as e:  # noqa: BLE001 — old bytes remain authoritative
+                        report["batch_errors"] += 1
+                        report["refresh_rebase_failed"] += len(shifted)
+                        log.warning(
+                            "refresh: full-history basis heal failed for %d name(s) "
+                            "(%s) — keeping existing archives untouched",
+                            len(shifted), e,
+                        )
+                        for ticker in shifted:
+                            accepted.pop(ticker, None)
+                    else:
+                        for ticker in shifted:
+                            full_sub = (None if full_df is None else
+                                        slice_symbol(full_df, shifted_symbols[ticker]))
+                            if full_sub is None:
+                                report["no_data"] += 1
+                                report["refresh_rebase_failed"] += 1
+                                accepted.pop(ticker, None)
+                                continue
+                            try:
+                                full_frame = extract_store_frame(
+                                    full_sub, ticker, no_adj_close=no_adj_close)
+                                full_frame = (None if full_frame is None else
+                                              adapter.validate(ticker, full_frame))
+                            except Exception as e:  # noqa: BLE001 — preserve old archive
+                                report["no_data"] += 1
+                                report["refresh_rebase_failed"] += 1
+                                accepted.pop(ticker, None)
+                                log.warning(
+                                    "refresh: full-history basis heal invalid for %s "
+                                    "(%s) — keeping existing archive untouched",
+                                    ticker, e,
+                                )
+                                continue
+                            violation = schema_violation(full_frame)
+                            if violation:
+                                report["schema_rejected"] += 1
+                                report["refresh_rebase_failed"] += 1
+                                schema_rejects.append(
+                                    f"{ticker}: full-history basis heal: {violation}")
+                                accepted.pop(ticker, None)
+                                continue
+                            accepted[ticker] = full_frame
+                            report["refresh_rebased"] += 1
+
+            for ticker, frame in accepted.items():
+                # The merged store is the object diagnostics/state describe. For a
+                # basis-clean short probe, deep history is retained; for a healed
+                # name, the full re-pull owns every date it returned.
+                stored = store.upsert("yahoo", ticker, frame)
+                diag = ratio_report(stored)
                 if diag["anomalies"]:
                     report["ratio_anomalies"] += 1
                     anomalies[ticker] = diag["anomalies"]
-                store.upsert("yahoo", ticker, frame)
                 entry = state.setdefault("done", {}).get(ticker) or {}
                 entry.update({
-                    "rows": int(len(frame)),
-                    "last_obs": frame.index.max().date().isoformat(),
+                    "rows": int(len(stored)),
+                    "last_obs": stored.index.max().date().isoformat(),
                 })
                 # `backfilled` is the provenance date the scan-tier exclusion reads —
                 # set once, on the night the file was CREATED, and never moved by a
@@ -817,7 +897,7 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
                     report["written"] += 1
                 state["done"][ticker] = entry
                 state.get("pending", {}).pop(ticker, None)
-                if len(frame) < SHORT_HISTORY_ROWS:
+                if len(stored) < SHORT_HISTORY_ROWS:
                     report["short_history"] += 1
             time.sleep(sleep_s)
 
