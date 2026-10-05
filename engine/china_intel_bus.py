@@ -595,13 +595,16 @@ def _visit_discovery_snapshot(
             else "coverage_start_invalid" if "coverage_start_invalid" in clock_errors
             else "last_success_clock_invalid" if "last_success_clock_invalid" in clock_errors
             else "last_attempt_clock_invalid" if "last_attempt_clock_invalid" in clock_errors
-            else "row_observation_after_health_receipt" if "row_observation_after_health_receipt" in clock_errors
-            else "row_source_after_health_receipt_without_observation_clock" if "row_source_after_health_receipt_without_observation_clock" in clock_errors
-            else "owner_clock_order_invalid" if not owner_clock_order_valid
+            # Health/coverage chronology is the more fundamental diagnosis and
+            # must not be masked by a downstream row-vs-receipt inconsistency.
+            else "owner_clock_order_invalid" if not health_clock_order_valid
             else "source_stale" if source_status == "stale"
             else "source_health_not_ok" if source_status != "ok"
             else "coverage_start_unavailable" if coverage_day is None
             else "last_success_clock_unavailable" if last_success_day is None
+            else "row_observation_after_health_receipt" if "row_observation_after_health_receipt" in clock_errors
+            else "row_source_after_health_receipt_without_observation_clock" if "row_source_after_health_receipt_without_observation_clock" in clock_errors
+            else "owner_clock_order_invalid" if not owner_clock_order_valid
             else None
         ),
         "n_rows_observed": len(deduped),
