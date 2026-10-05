@@ -5,42 +5,52 @@
 **Implementation authority:** NONE — this report does not authorize production code, live-pipeline modification, data purchase, portfolio behavior, trading behavior, or new source-decision authority.
 
 
+
 ## Source and repository receipts
 
-This deep-research revision was re-pinned immediately before the GitHub update.
+This second-pass deep-research revision was re-pinned immediately before publication.
 
 Current protected source law:
-- Mastermind protected master: mastermindx-market-intelligence/Mastermind@17b9fa1363db6071d338be3373a4fdb11fc0076d
+- Mastermind protected master: mastermindx-market-intelligence/Mastermind@7eac3ec252475600147ec9a376b8ca16403ac4c5
 - Skillpack: mastermind.sol_skillpack.v1 v1.0.1, bootstrap-major 1 compatible
-- INDEX, ACTIVE_EXECUTION, SESSION_RELIABILITY, RECONCILE_STATE and CLOSEOUT were loaded from that same commit.
+- INDEX, ACTIVE_EXECUTION, SESSION_RELIABILITY, RECONCILE_STATE and REVIEW_RETURN were loaded from that same commit.
+- The protected Skillpack files used by this report are byte-identical to the prior 17b9fa1 pin; later Mastermind movement is unrelated to this report's economic-graph semantics.
 
-Repository pins used for this revision:
-- Macro main: mastermindx-market-intelligence/macro@7bbb4496f0c67f75a8942085db7fa0e539b100c5
-- Terminal master: mastermindx-market-intelligence/mastermind-terminal@a7447db07c50c64d81afcb082374340871e88079
-- Commission 4 pre-revision head: e71e5d48ae8a620797cc8aee46ac9f2de3654145
-- Commission 4 pre-revision blob: 297c570f5b7db674cba8d125d1d427ba53b3d788
+Deep-research repository receipts:
+- Commission 4 pre-second-pass head: 47b15a07cb169d311a9a8cabf33999a22c47c20b
+- Commission 4 pre-second-pass blob: fbfffb580ecc6a0eb6ac5bb41dddfae5bf55c37a
+- Macro second-pass Deep Research observation: d4f32cfb3bc5d5041273294175ae1feba582e53b
+- Macro final compatibility recheck: 3a99670fac0bde192df82bb4e9320359badf6d62
+- Terminal deep-research pin: a7447db07c50c64d81afcb082374340871e88079
 
 Historical archaeology pins retained for lineage:
 - Mastermind: 03f7ca04cd5b0a3abf7166221dd77d403c7f95df
 - Macro: 1b4edfb438f7ff7edca5097f0c90243a49207d1e
 - Terminal: fb6f5cc39e592e7f9967835a85617b4fef427b09
 
-The original Macro recheck at df5d4acb8703b0a36c25571611c7411553bb4217 is historical, not current. Deep Research reconciled the report through Macro d2904d45fb2bbaf12d3dae4a35eacaaefcc8bad3 and found material post-base Theme Graph changes, including the new shadow ThemeState contract/implementation and graph-history integrity work. A bounded compare from d2904d45 to deep-research pin 7bbb4496 found no later Theme Graph, Data OS, identity or economic-propagation code changes. A final compatibility recheck observed Macro main at 1b9bdfd2620edf90cebdde747fe66a20f09cec0a, one commit beyond 7bbb4496; that movement touched none of the Theme Graph, Data OS, identity, K3-D/F04 or economic-propagation source paths used by this report.
+The original Macro publication recheck at df5d4acb8703b0a36c25571611c7411553bb4217 and first-pass compatibility observations through 1b9bdfd2620edf90cebdde747fe66a20f09cec0a remain lineage only.
+
+Second-pass Deep Research re-read the live Data OS and Theme Graph contracts at d4f32cfb3bc5d5041273294175ae1feba582e53b. Before this publication, Macro main had advanced 116 commits to 3a99670fac0bde192df82bb4e9320359badf6d62. A bounded compare found no changes to the report's material Data OS, Theme Graph, identity, K3-D/F04 or economic-propagation paths.
+
+The current implementations therefore still establish the same relevant facts:
+- Data OS computes PIT eligibility from a closed TemporalProfile and fails closed when known-at is unanswerable;
+- generic DERIVED data is deliberately not PIT-readable;
+- INTELLIGENCE uses served_at for replay;
+- Theme Graph already reserves SUPPLIES, ENABLES, BOTTLENECK_OF, BENEFITS_FROM and CATALYST_OF;
+- ThemeState is shadow-only owner-receipt composition and refuses same-day historical certainty from date-only knowledge.
 
 Resolved repositories remain Mastermind, macro and mastermind-terminal. Research Vault remains a Macro subsystem under engine/research_vault.
 
-## Deep-research revision ruling
+## Second-pass deep-research ruling
 
-The central architecture survives, with four P0 compatibility gates now explicit:
+The central architecture survives. Four requirements are now binding P0 contract law for the follow-on commission:
 
-1. Graph-1 must not create a second PIT ontology. Data OS already owns the temporal spine and known-at law.
-2. Graph-1 relationship names must be reconciled with existing Theme Graph terms such as SUPPLIES, ENABLES, BOTTLENECK_OF, BENEFITS_FROM and CATALYST_OF.
-3. Data OS owns issuer/security/listing/instrument identity, but product, component, facility, end-market, standard, capacity-resource and policy/program identity ownership must be frozen before automatic Graph-1 admission.
-4. The proposed >=95% role+direction precision gate needs a preregistered minimum sample, relation/source stratification, frozen holdout, adjudicator-disagreement handling and an uncertainty rule; a point estimate alone is insufficient.
+1. **No parallel known-at law.** Graph-1 may expose a computed known_at in a query/result, but canonical PIT eligibility comes from the owning Data OS TemporalProfile and lib.dataos.temporal.known_at(). A separately persisted Graph-1 knowledge clock may not bypass that law.
+2. **Derived state is not automatically PIT-readable.** Historical Graph-1 state must be reconstructed from owner observations already filtered as-of the requested cutoff, or read from an explicitly governed replay-capable served artifact.
+3. **Absence is multidimensional.** Lifecycle, admission, identity, coverage, freshness, contradiction, rights and supersession are orthogonal axes. UNCOVERED, UNKNOWN, RIGHTS_BLOCKED and IDENTITY_UNRESOLVED are never negative relationship evidence.
+4. **Theme Graph translation must be a frozen adapter contract.** Every mapping must declare direction, qualifiers and lossiness or explicit NO_MAPPING. RELATED is never a fallback.
 
-Vendor verification strengthens the history-versus-PIT distinction. S&P Business Relationships Analytics currently advertises 600,000+ entities, 1.6 million relationships, history from 2005 and Point In Time = Yes. The core Panjiva Marketplace dataset advertises history from 2007 but Point In Time = No. Exact entitled packages must be tested rather than generalizing a product-family label.
-
-Current-main ThemeState is explicitly shadow-only owner-receipt composition with no independent publication, identity, membership, rights or financial authority. That reinforces a governed Graph-1 projection over owner-native evidence rather than a new all-owning graph.
+Earlier P0 requirements remain binding: non-security identity ownership must be frozen before automatic cross-source admission; automatic-admission precision must be uncertainty-adjusted and stratified; and exact vendor package/version/entitlement receipts must prove PIT behavior.
 
 
 ---
@@ -563,19 +573,32 @@ COMMON_CUSTOMER and COMMON_SUPPLIER should generally be derived paths, not indep
 
 Never use generic RELATED as propagation evidence.
 
+
 ### Compatibility with existing Theme Graph relationship terms
 
 Current Theme Graph edges.v1 already reserves SUPPLIES, ENABLES, BOTTLENECK_OF, BENEFITS_FROM and CATALYST_OF. Commission 4's role-specific vocabulary is a candidate semantic layer, not permission to create synonyms.
 
+Compatibility MUST be represented by a versioned Graph-1 -> Theme Graph crosswalk contract. Every mapping must declare:
+- Graph-1 relation;
+- Theme Graph relation or NO_MAPPING;
+- direction transform = IDENTITY | REVERSE | NOT_APPLICABLE;
+- required qualifiers;
+- whether the mapping is lossless;
+- governance/version receipt.
+
+An unresolved mapping fails closed. Generic RELATED is never a Graph-1 propagation fallback.
+
 | Commission 4 term | Existing Theme Graph term | Required ruling |
 |---|---|---|
-| SUPPLIES_TO | SUPPLIES | same, narrower, or intentionally distinct semantics |
-| BOTTLENECKED_BY | BOTTLENECK_OF | explicit direction/inversion mapping; never infer |
-| BENEFITS_FROM_POLICY | BENEFITS_FROM | subtype versus separate relation |
-| dependency/enabling relation | ENABLES | determine whether ENABLES is too broad for Graph-1 admission |
-| event/company catalyst relation | CATALYST_OF | keep event causality distinct from commercial truth |
+| SUPPLIES_TO | SUPPLIES | Freeze exact semantics and direction before APPROVED mapping |
+| BOTTLENECKED_BY | BOTTLENECK_OF | BLOCKED until direction/inversion is explicitly frozen |
+| BENEFITS_FROM_POLICY | BENEFITS_FROM | Require policy/mechanism qualifier or NO_MAPPING |
+| dependency/enabling relation | ENABLES | Map only through the approved adapter |
+| event/company catalyst relation | CATALYST_OF | Keep event causality distinct from commercial relationship truth |
+| LICENSES_TO / MANUFACTURES_FOR / DISTRIBUTES_FOR | NO_MAPPING unless separately approved | Remain Graph-1-only rather than flattening to RELATED |
 
-If an existing term is broader than the required economic role, prefer a typed qualifier/subtype or separately governed Graph-1 contract over silently changing the existing enum.
+The adapter must preserve temporal precision. Date-only Theme Graph evidence may not be upcast to an exact historical instant. Use INSTANT | DATE | UNKNOWN and abstain when the requested cutoff cannot be proven.
+
 
 
 ## E4. Minimum logical contracts
@@ -598,7 +621,9 @@ Required semantic fields should include:
 - source text span or structured coordinate;
 - exact identity-resolution receipt;
 - rights state;
-- full temporal clocks;
+- owner temporal_profile;
+- profile-native temporal clocks required by that owner contract;
+- temporal_precision = INSTANT | DATE | UNKNOWN;
 - source revision;
 - processing generation;
 - correction lineage;
@@ -617,11 +642,27 @@ Suggested claim-basis classes:
 
 Only admitted evidence classes should create usable Graph-1 facts.
 
+Canonical Data OS known_at is derived under lib/dataos/temporal.py. Graph-1 MUST NOT create a second independent knowledge clock. If an upstream owner payload itself carries a field named known_at, retain it as explicitly namespaced owner-receipt data; it may not silently replace the canonical Data OS PIT calculation.
+
+
 ### Absence and coverage semantics
 
-economic_relation_state/v1 must distinguish PRESENT, ENDED, REJECTED_CANDIDATE, IDENTITY_UNRESOLVED, RIGHTS_BLOCKED, COVERAGE_ABSENT and UNKNOWN.
+Do not encode lifecycle, admission, identity, coverage, freshness and contradiction in one enum.
 
-Missing is never false. Consumers may not convert COVERAGE_ABSENT, IDENTITY_UNRESOLVED or UNKNOWN into a negative economic relationship.
+economic_relation_state/v1 must carry orthogonal dimensions such as:
+- relation_status = ACTIVE | ENDED | UNKNOWN;
+- admission_status = ADMITTED | REJECTED | BLOCKED;
+- identity_status = RESOLVED | UNRESOLVED;
+- coverage_status = OBSERVED | VALID_EMPTY | UNCOVERED | UNKNOWN;
+- freshness_status = CURRENT | STALE | UNKNOWN;
+- contradiction_status = NONE | DISPUTED;
+- superseded_by = nullable revision reference;
+- rights_status = ADMITTED | BLOCKED | UNKNOWN.
+
+Missing is never false. UNCOVERED, UNKNOWN, RIGHTS_BLOCKED, IDENTITY_UNRESOLVED and REJECTED_CANDIDATE may never be converted into a negative economic relationship assertion.
+
+A negative relationship claim, if ever supported, requires its own explicit evidence contract. It cannot be inferred from absence.
+
 
 
 ### economic_exposure_measure/v1
@@ -658,23 +699,38 @@ Fields should include:
 
 There should not be a generic weight = 0.63.
 
+
 ### economic_relation_state/v1
 
-Resolved effective-dated view over admitted observations:
+Resolved effective-dated projection over admitted observations:
 
-- relationship key;
+- relationship_key = semantic identity of the economic relation, independent of source revision and observation time;
 - canonical source/target references;
-- role/direction;
+- role/direction and identity-defining scope;
 - effective_from/effective_to;
-- known_at;
-- belief_time;
-- state = active | disputed | stale | superseded | unknown;
+- resolved_as_of as query/output metadata, not an independent evidence clock;
+- input temporal-profile receipts and cutoffs;
+- orthogonal lifecycle/admission/identity/coverage/freshness/contradiction/rights axes;
 - corroborating receipts;
 - contradictory receipts;
 - source-family coverage;
-- rights state.
+- correction/supersession lineage.
+
+Keep identities separate:
+- relationship_key = the semantic economic relation;
+- observation_id = one source-backed assertion/version;
+- state_revision_id = one derived/corrected state revision.
+
+A correction to effective dates, a new source version or a corroborating source must not accidentally mint a new economic relationship. Conversely, identity-defining scope such as a distinct product/component may require a distinct relationship_key.
 
 Conflicting observations should coexist and be inspectable; do not average them into one confidence scalar.
+
+The state is a derived projection. Under current Data OS law, a generic DERIVED materialization is not automatically PIT-readable. Historical state MUST either:
+1. be recomputed from owner observations already filtered as-of the requested cutoff under their TemporalProfiles; or
+2. be read from a separately governed replay-capable served artifact.
+
+Today's latest derived state may never be substituted for either path.
+
 
 ### propagation_parameter/v1
 
@@ -712,17 +768,25 @@ Carry:
 - zero automatic trading authority.
 
 
+
 ## E5. Temporal semantics
 
 ### Data OS temporal compatibility is binding
 
 Graph-1 must not establish an independent PIT law. Current Data OS defines event_at, effective_at, published_at, ingested_at, computed_at and served_at, with profile-specific known_at semantics and fail-closed PIT reads.
 
+The binding sequence is:
+
+owner-native clocks + TemporalProfile -> canonical Data OS known_at/as-of eligibility -> Graph-1 projection
+
+not a Graph-1 field named known_at becoming independent PIT authority.
+
 | Commission 4 concept | Canonical treatment |
 |---|---|
 | event_time | Map to Data OS event_at for EVENT sources; otherwise domain period metadata |
-| as_of | Query cutoff, not a stored observation clock merely to echo a read |
-| available_at / known_at | Derive under the owning Data OS TemporalProfile |
+| as_of | Query cutoff; do not persist merely to echo a read |
+| available_at / owner known_at | Source/provenance receipt only unless the owning profile declares it canonical |
+| canonical known_at | Compute through Data OS TemporalProfile / lib.dataos.temporal.known_at() |
 | ingested_at | Reuse Data OS ingested_at |
 | effective_from / effective_to | Relationship-validity interval; define composition with effective_at |
 | observed_at | Source/provenance metadata unless separately promoted |
@@ -731,16 +795,31 @@ Graph-1 must not establish an independent PIT law. Current Data OS defines event
 | source_revision | Reuse/compose with the native owner's revision law |
 | processing_generation | Processing metadata, not a knowledge clock |
 | correction_generation | Append-only correction lineage, not a knowledge clock |
+| temporal_precision | INSTANT | DATE | UNKNOWN; never upcast date-only evidence to an exact instant |
 
 Any new clock-like field requires an explicit Data OS compatibility decision before historical admission.
 
+### DERIVED versus replay-capable state
+
+Current Data OS deliberately makes generic DERIVED datasets non-PIT-readable: computed_at + code_version + input cutoffs prove recomputability, not what the system knew at a historical instant.
+
+A materialized Graph-1 current-state table may therefore be DERIVED and useful for current queries, but historical replay must not read that latest table as historical truth.
+
+For historical cutoff T:
+1. filter every owner observation under its own TemporalProfile to rows lawfully knowable by T;
+2. apply relationship effective-interval and correction rules to that eligible input set;
+3. derive Graph-1 state from those inputs; or
+4. use an explicitly governed replay-capable INTELLIGENCE/served artifact when exact historical system output is required.
+
 ### Economic time versus knowledge time
 
-A 10-K filed on 2026-02-20 may disclose that Customer X represented 18% of 2025 revenue. The economic relationship may be effective during 2025, while known_at cannot precede lawful publication/availability. A 2025 backtest may not use the relationship merely because the filing describes 2025.
+A 10-K filed on 2026-02-20 may disclose that Customer X represented 18% of 2025 revenue. The economic relationship may be effective during 2025, while canonical known_at cannot precede lawful publication/availability under the owner profile. A 2025 backtest may not use the relationship merely because the filing describes 2025.
+
+SEC filing date, EDGAR acceptance, dissemination and Mastermind ingestion are distinct events. Date-only evidence must fail closed for an intraday historical cutoff unless a lawful instant can be proven.
 
 The same rule applies to commercial vendor historical reconstructions. Historical coverage is not historical knowability.
 
-Current ThemeState uses effective_at and known_at for shadow owner-receipt composition. Compatible clocks do not make ThemeState the Graph-1 truth owner.
+Current ThemeState uses effective_at and known_at for shadow owner-receipt composition and refuses same-day instant certainty from date-only knowledge. Compatible clocks do not make ThemeState the Graph-1 truth owner.
 
 
 ## E6. Corrections must be append-only
