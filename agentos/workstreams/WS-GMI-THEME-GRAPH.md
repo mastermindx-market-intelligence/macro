@@ -158,12 +158,15 @@ waves:
       2026-10-05T11:27:09Z. Two seat caveats are recorded in the continuation handoff.
   - id: W-F
     title: "Terminal / R2 / human-consumer census (#8490)"
-    status: awaiting_ci
+    status: done
     pr: 8490
     next_action: >
       Read-only consumer census DELIVERED by a ubuntu1 cursor composer-2.5 lane (m1 refused auth;
       deviation recorded), judged by artifact against main 81eb0c9b3993 and Terminal
-      2ca21c44718a (6 MATCH / 1 UNKNOWN: no Terminal consumer for v2/cohort), armed merge-on-green at head b2de5314e76f and merge-blocked by the sweeper on main's ci-pack-2 red (tests/test_agentos_status.py readiness exemplar, healed in the records follow-up PR); merges on the next green sweep — then git fetch origin main ALONE and blob-compare its two paths.
+      2ca21c44718a (6 MATCH / 1 UNKNOWN: no Terminal consumer for v2/cohort). MERGED 2026-10-05
+      14:46Z as squash d8f08cffd319 (refresh: visible disarm -> plain merge of healed main
+      601f87f39924 -> head 6a21e2b302a1 -> re-arm; run 37323909239 green; merged by hand on the
+      exact head); both census paths blob-verified on origin/main. DO_NOT_REDO.
       The v2/cohort Terminal consumer is a Sol/Chairman product decision,
       not a lane to spawn; re-census only if the Terminal pin or the C0 writer moves.
   - id: TRANSMISSION-FOLD
