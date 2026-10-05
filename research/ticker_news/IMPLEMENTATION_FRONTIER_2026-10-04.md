@@ -57,6 +57,28 @@ Task 2 TDD:
 
 These are isolated source/test proofs, not hosted CI, installed service or production proof. The existing CI estate does not presently name `tests/test_qbus.py`; do not misrepresent automatic PR CI as having exercised these new suites until explicit enrollment/integration proof exists.
 
+## Task 3 execution delta — exact universe + clustering
+
+Task 3 RED was established in the isolated runner: both new suites failed collection because `engine.qbus_news_universe` and `engine.qbus_news_cluster` did not exist. After implementation, the Task 3 suites passed 18/18.
+
+Published commits:
+- universe test `b37915e8d9b606f720c7e1f397ff79e86daf3ca4`
+- universe source `8639c928871f0fb9e3fff1f5bebc41ddad17c999`
+- cluster test `6df9235d76f1e12920691f5c4e2aecb6fd8a8667`
+- cluster source `06bc550f6d7f24745d3504eb1bbd51c29cc16588`
+
+The exact GitHub candidate was then fetched to the host only as a non-custodial verification copy at `/Volumes/Mastermind/agent-workspaces/.verification/ticker-news-8454-06bc550f`. The branch head was verified as `06bc550f6d7f24745d3504eb1bbd51c29cc16588`. Running the actual PR bytes for Tasks 1-3 produced **48 passed in 0.12s** and all four source modules compiled. Exact Git blob identities matched the GitHub readback:
+- contract `c97178cd2e2da54f73eef18e2f5281ae6b0c86c3`
+- contract test `177ca2db2124b41717ccd6533907bb454c3218b5`
+- reducer `a0ebe73cfa15bcc6eef775312c257fba3423c305`
+- reducer test `d51477d6ecfa5f5aa2a9a8a707c758b9ed0d28e5`
+- universe `6febd6b4231e0615f50170bcdb09e2c2e4139315`
+- universe test `40b553821c74dbfa8890192168d28c71b3c97a5f`
+- cluster `31a57871eb4735d501d01cabf3d0e432d99093b0`
+- cluster test `6319a5a215d4ae545c67096a36275a07d087c090`
+
+Behavior now pinned: no fixed 500 cap; share classes stay distinct; incomplete/stale/future membership is held; row validity and knowability are PIT-filtered; ambiguous aliases hold routing; cross-source clustering requires shared canonical security, compatible event family, time window and discriminator-safe immutable-anchor similarity; material numbers, negation/direction, fiscal period and analyst-firm changes prevent false merge; candidate similarity scans are bounded and expose truncation. These proofs remain source-level/exact-head tests, not hosted CI, installed service or natural production evidence.
+
 ## Protocol qualification amendment for Tasks 1 and 5
 
 Read this amendment alongside the spec and plan before implementing their frozen normalizer. These are precision corrections from a fresh primary-document check, not a new provider contract or license:
@@ -73,7 +95,7 @@ Primary references checked 2026-10-04:
 
 ## What remains unbuilt and unproven
 
-Tasks 1-2 are source-built and isolated-test green but not hosted/production proven. Task 3 universe/clustering, owner-internal persistence migration, global adapters, real Macro/Terminal API composition, UI, provider rights, actual host service placement, explicit CI enrollment, independent review, deployment and natural trading-session proof remain open. No paid provider call, new subscription, license acceptance, key disclosure, database migration, source activation or production deployment occurred.
+Tasks 1-3 are source-built and exact-PR-head test green but not hosted/production proven. Owner-internal persistence migration, global adapters, real Macro/Terminal API composition, UI, provider rights, actual host service placement, explicit CI enrollment, independent review, deployment and natural trading-session proof remain open. No paid provider call, new subscription, license acceptance, key disclosure, database migration, source activation or production deployment occurred.
 
 No exact existing Agent OS news workstream ID has yet been resolved. This artifact is implementation/recovery evidence under the existing GitHub carrier, not a fabricated workstream or alternate company-state database. Agent OS association remains an explicit obligation after exact owner discovery.
 
@@ -82,11 +104,11 @@ No exact existing Agent OS news workstream ID has yet been resolved. This artifa
 The Chairman's requested technical fallback is Extra High for the next execution phase. Text cannot switch the selected model/mode. This is not a claim that Pro caused the failure or that Extra High will repair the host registration.
 
 Current next actions:
-1. Execute Task 3 exact-universe qualification and conservative incremental clustering with genuine RED→GREEN tests, on this same PR/source carrier.
-2. Before Task 4 persistence migration, perform the full current qbus reader/writer census and collision check; do not switch the physical store while the local managed-workspace registry remains slow or writer custody is unclear.
+1. Begin Task 4 with the full current qbus reader/writer census and collision check; do not switch the physical store while writer custody or compatibility projection obligations remain unclear.
+2. Implement the transactional owner-internal store only after that census freezes the migration contract and a real RED→GREEN store suite is established.
 3. Keep Task 5 paid-provider activation rights-gated; source adapters can be built against synthetic fixtures first.
 4. Continue through Macro API, Terminal API/UI and acceptance phases only through their incumbent auth/publication/deployment owners. Preserve GMI as a later Related-news consumer, never a prerequisite for direct ticker news.
 
-DO_NOT_REDO: plan/spec authorship; Tasks 1-2 source/TDD unless relevant semantics change; the reconciled failed workspace acquires without changed host evidence; unrelated #7982/#8057/#8186/#7318 work; GMI research. No worker, watcher or pending return exists for this operation.
+DO_NOT_REDO: plan/spec authorship; Tasks 1-3 source/TDD unless relevant semantics change; the reconciled failed workspace acquires without changed host evidence; unrelated #7982/#8057/#8186/#7318 work; GMI research. No worker, watcher or pending return exists for this operation.
 
 This checkpoint supports a user-requested surface/recovery transition. It is not production acceptance, implementation completion, a custody transfer or an assertion that work continues after the Web turn ends.
