@@ -261,3 +261,119 @@ def test_segment_declared_budget_cannot_be_smaller_than_its_byte_span():
     segment["segment_max_bytes"] = 8
     with pytest.raises(ValueError, match="byte range"):
         fulltext.replay_segment(artifact, segment)
+
+
+# Recovery regressions: an exact byte slice is not necessarily the canonical
+# segment identified by the declared algorithm, index, and explicit byte budget.
+def test_segment_binds_extractor_name_and_version():
+    artifact = _artifact("grounded source")
+    segment = fulltext.build_segments(
+        artifact, segmenter_version="page-byte-v1", max_bytes=64
+    )[0]
+    assert segment["extractor_name"] == artifact["extractor_name"]
+    assert segment["extractor_version"] == artifact["extractor_version"]
+
+
+@pytest.mark.parametrize("value", [None, "other-extractor"])
+def test_segment_missing_or_changed_extractor_name_is_refused(value):
+    artifact = _artifact("grounded source")
+    segment = fulltext.build_segments(
+        artifact, segmenter_version="page-byte-v1", max_bytes=64
+    )[0]
+    if value is None:
+        segment.pop("extractor_name", None)
+    else:
+        segment["extractor_name"] = value
+    with pytest.raises(ValueError, match="extractor_name"):
+        fulltext.replay_segment(artifact, segment)
+
+
+@pytest.mark.parametrize("index", [1, 999])
+def test_valid_slice_cannot_claim_a_different_segment_index(index):
+    artifact = _artifact("0123456789abcdefghijklmnopqrstuv")
+    segment = fulltext.build_segments(
+        artifact, segmenter_version="page-byte-v1", max_bytes=8
+    )[0]
+    segment["segment_index"] = index
+    with pytest.raises(ValueError, match="canonical|segment_index"):
+        fulltext.replay_segment(artifact, segment)
+
+
+@pytest.mark.parametrize("version", ["page-byte-v2", "unreviewed-algorithm"])
+def test_unknown_segmenter_version_is_refused_at_build_and_replay(version):
+    artifact = _artifact("0123456789abcdefghij")
+    with pytest.raises(ValueError, match="segmenter_version"):
+        fulltext.build_segments(artifact, segmenter_version=version, max_bytes=8)
+
+    segment = fulltext.build_segments(
+        artifact, segmenter_version="page-byte-v1", max_bytes=8
+    )[0]
+    segment["segmenter_version"] = version
+    with pytest.raises(ValueError, match="segmenter_version"):
+        fulltext.replay_segment(artifact, segment)
+
+
+@pytest.mark.parametrize("start,end", [(1, 7), (2, 8), (0, 7)])
+def test_recomputed_valid_byte_window_is_not_a_canonical_segment(start, end):
+    artifact = _artifact("0123456789abcdefghijklmnopqrstuv", pages=1)
+    segment = fulltext.build_segments(
+        artifact, segmenter_version="page-byte-v1", max_bytes=8
+    )[0]
+    # Hash, text, offsets and page fields all agree with an actual source slice.
+    # Only canonical segmentation distinguishes this from the authentic row.
+    alternate = artifact["text"].encode("utf-8")[start:end]
+    segment.update(
+        start_byte=start,
+        end_byte=end,
+        text=alternate.decode("utf-8"),
+        segment_text_sha256=hashlib.sha256(alternate).hexdigest(),
+    )
+    with pytest.raises(ValueError, match="canonical"):
+        fulltext.replay_segment(artifact, segment)
+
+
+def test_budget_change_cannot_relabel_a_different_canonical_window():
+    artifact = _artifact("0123456789abcdefghijklmnopqrstuv")
+    segment = fulltext.build_segments(
+        artifact, segmenter_version="page-byte-v1", max_bytes=8
+    )[0]
+    segment["segment_max_bytes"] = 12
+    with pytest.raises(ValueError, match="canonical"):
+        fulltext.replay_segment(artifact, segment)
+
+
+@pytest.mark.parametrize("field,value", [("page_start", True), ("page_end", 1.0)])
+def test_canonical_equality_is_type_strict(field, value):
+    artifact = _artifact("0123456789", pages=1)
+    segment = fulltext.build_segments(
+        artifact, segmenter_version="page-byte-v1", max_bytes=64
+    )[0]
+    segment[field] = value
+    with pytest.raises(ValueError, match="canonical"):
+        fulltext.replay_segment(artifact, segment)
+
+
+def test_segment_schema_cannot_carry_unvalidated_extra_fields():
+    artifact = _artifact("grounded source")
+    segment = fulltext.build_segments(
+        artifact, segmenter_version="page-byte-v1", max_bytes=64
+    )[0]
+    segment["unvalidated_identity"] = "other"
+    with pytest.raises(ValueError, match="canonical"):
+        fulltext.replay_segment(artifact, segment)
+
+
+def test_canonical_replay_unicode_whitespace_and_page_matrix():
+    texts = [
+        "A  B\r\nC\tD\n\nE",
+        "\f\finterior empty pages\f",
+        "\U0001f642\u6f22\u5b57\u03b1\u03b2\u03b3\f" * 8,
+        "0123456789" * 80 + "\fTAIL",
+    ]
+    for text in texts:
+        artifact = _artifact(text)
+        for budget in (4, 7, 13, 24, 64):
+            segments = fulltext.build_segments(
+                artifact, segmenter_version="page-byte-v1", max_bytes=budget
+            )
+            assert "".join(fulltext.replay_segment(artifact, s) for s in segments) == text
