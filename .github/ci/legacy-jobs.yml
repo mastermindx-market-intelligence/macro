@@ -1640,6 +1640,9 @@ jobs:
       - "engine/neuralweb/chat_plain_words.py"
       - "engine/neuralweb/company_intelligence_reader.py"
       - "engine/neuralweb/cortex.py"
+      - "engine/neuralweb/mechanism_evidence.py"
+      - "engine/neuralweb/mechanism_pathways.py"
+      - "engine/neuralweb/regime_change_evidence.py"
       - "engine/neuralweb/doctrine.py"
       - "engine/neuralweb/earnings_context_reader.py"
       - "engine/neuralweb/metabolism.py"
@@ -15314,6 +15317,8 @@ jobs:
           tests/test_intelligence_workspace_workspace_layout.py -q
       - name: source-bound report evidence — Brain projection + CI owner law
         run: python -m pytest tests/test_brain_research_evidence.py tests/test_mastermind_ai_evidence_ci_ownership.py -q
+      - name: mechanism evidence qualification through existing Brain read routes
+        run: python -m pytest tests/test_mechanism_evidence.py tests/test_mechanism_pathways.py tests/test_regime_change_evidence.py -q
 
   unrun-macro-panels:
     # commodities / forex / rates / news / policy panels and their calibration guards.
