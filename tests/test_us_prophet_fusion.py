@@ -2208,3 +2208,135 @@ class TestCashFlowReconciliation:
     def test_extreme_cash_gap_returns_typed_overflow(self):
         with pytest.raises(sue_engine.EvidenceError,match="overflow"):
             self.build(ni=-1e308,cfo=1e308,components=[],complete=False,capex=None)
+
+
+# Program-CEO whole-source repair regressions — #8189 / 5968194695
+class TestEarningsWholeSourceRepair:
+    decision = "2026-07-01T21:00:00Z"
+    public = "2026-07-01T20:00:00Z"
+
+    @staticmethod
+    def basis(metric="revenue", *, current=True):
+        return sue_engine.MetricBasis(
+            issuer_id="ISS:A", issuer_name="Issuer A", metric=metric,
+            fiscal_period="FY2026 Q2" if current else "FY2025 Q2",
+            period_role="QUARTER",
+            period_start="2026-04-01" if current else "2025-04-01",
+            period_end="2026-06-30" if current else "2025-06-30",
+            currency="USD", unit="USD_millions", accounting_basis="GAAP",
+            share_basis="NOT_APPLICABLE",
+        )
+
+    @classmethod
+    def actual(cls, value=120.0, *, current=True, event="evt"):
+        return sue_engine.Actual(
+            cls.basis(current=current), value, cls.public, "2026-07-01T20:01:00Z",
+            f"source:{'cur' if current else 'prior'}", event,
+        )
+
+    @classmethod
+    def reported(cls):
+        return sue_engine.reported_change(
+            cls.actual(), cls.actual(100, current=False, event="evt-prior"),
+            decision_at=cls.decision,
+        )
+
+    @classmethod
+    def dossier(cls, **kwargs):
+        return sue_engine.factual_dossier(
+            event_id="evt", issuer_id="ISS:A", decision_at=cls.decision,
+            source_contract_refs=["contract:test"], **kwargs,
+        )
+
+    def test_entry_extreme_finite_inputs_fail_typed_before_infinite_output(self):
+        with pytest.raises(sue_engine.EvidenceError, match="entry scenario arithmetic overflow"):
+            sue_engine.entry_economics(
+                price=1e-308, target=1e308, stop=5e-324,
+                win_cost=0.0, loss_cost=0.0, required_reward_risk=1.0,
+            )
+
+    @pytest.mark.parametrize("value", [1, 0, "false"])
+    def test_reported_child_authority_must_be_literal_false(self, value):
+        item = self.reported()
+        item["rank_authority"] = value
+        with pytest.raises(sue_engine.EvidenceError, match="authoritative child"):
+            self.dossier(reported_changes=[item])
+
+    @pytest.mark.parametrize("value", [1, 0, "false"])
+    def test_entry_permission_must_be_literal_false(self, value):
+        item = sue_engine.entry_economics(
+            price=100, target=120, stop=90, win_cost=0, loss_cost=0,
+            required_reward_risk=2,
+        )
+        item["entry_permission"] = value
+        with pytest.raises(sue_engine.EvidenceError, match="authoritative child"):
+            self.dossier(entry=item)
+
+    def test_dossier_recomputes_reported_arithmetic(self):
+        item = self.reported()
+        item["signed_difference"] = 999.0
+        item["change_pct"] = 999.0
+        with pytest.raises(sue_engine.EvidenceError, match="reported-change .* mismatch"):
+            self.dossier(reported_changes=[item])
+
+    def test_dossier_rejects_reported_source_after_child_decision(self):
+        item = self.reported()
+        item["current_available_at"] = "2099-01-01T00:00:00Z"
+        with pytest.raises(sue_engine.EvidenceError, match="source evidence is from the future"):
+            self.dossier(reported_changes=[item])
+
+    def test_brief_revalidates_reported_child_after_dossier_construction(self):
+        dossier = self.dossier(reported_changes=[self.reported()])
+        dossier["reported_changes"][0]["change_pct"] = 999.0
+        with pytest.raises(sue_engine.EvidenceError, match="reported-change percent mismatch"):
+            sue_engine.earnings_evidence_brief(dossier)
+
+    def test_guidance_delivery_preserves_actual_first_revision_public_time(self):
+        b = self.basis()
+        actual = sue_engine.Actual(
+            b, 125, self.public, "2026-07-01T20:01:00Z", "source:a", "evt")
+        first = sue_engine.IssuerGuidance(
+            b, 100, 110, "2026-04-01T12:00:00Z", "2026-04-01T12:01:00Z",
+            "g1", "source:g1")
+        latest = sue_engine.IssuerGuidance(
+            b, 110, 120, "2026-06-01T12:00:00Z", "2026-06-01T12:01:00Z",
+            "g2", "source:g2")
+        out = sue_engine.guidance_delivery(
+            actual, [first, latest], decision_at=self.decision,
+            source_history_complete=True)
+        assert out["selected_revision_id"] == "g2"
+        assert out["earlier_revision_public_at"] == first.public_at
+
+    def test_guidance_withdrawal_restart_withholds_continuous_earlier_clock(self):
+        b = self.basis()
+        actual = sue_engine.Actual(
+            b, 125, self.public, "2026-07-01T20:01:00Z", "source:a", "evt")
+        first = sue_engine.IssuerGuidance(
+            b, 100, 110, "2026-03-01T12:00:00Z", "2026-03-01T12:01:00Z",
+            "g1", "source:g1")
+        withdrawn = sue_engine.IssuerGuidance(
+            b, None, None, "2026-04-01T12:00:00Z", "2026-04-01T12:01:00Z",
+            "g2", "source:g2", state="WITHDRAWN")
+        restarted = sue_engine.IssuerGuidance(
+            b, 110, 120, "2026-06-01T12:00:00Z", "2026-06-01T12:01:00Z",
+            "g3", "source:g3")
+        out = sue_engine.guidance_delivery(
+            actual, [first, withdrawn, restarted], decision_at=self.decision,
+            source_history_complete=True)
+        assert out["selected_revision_id"] == "g3"
+        assert out["initial_to_latest_midpoint_change"] is None
+        assert out["earlier_revision_public_at"] is None
+
+    def test_same_release_comparative_clocks_remain_valid(self):
+        current = self.actual()
+        prior = self.actual(100, current=False, event="evt-prior")
+        current = sue_engine.Actual(
+            current.basis, current.value, self.public, "2026-07-01T20:01:00Z",
+            current.source_ref, current.event_id)
+        prior = sue_engine.Actual(
+            prior.basis, prior.value, self.public, "2026-07-01T20:01:00Z",
+            prior.source_ref, prior.event_id)
+        change = sue_engine.reported_change(current, prior, decision_at=self.decision)
+        dossier = self.dossier(reported_changes=[change])
+        assert dossier["reported_changes"][0]["change_pct"] == pytest.approx(20.0)
+        assert sue_engine.earnings_evidence_brief(dossier)["schema"] == "prophet.earnings_evidence_brief/v1"

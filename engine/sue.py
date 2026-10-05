@@ -654,16 +654,21 @@ def entry_economics(
         raise EvidenceError("invalid cost or reward/risk requirement")
     upside = target_value - p - win_fee
     loss = p - stop_value + loss_fee
-    if upside <= 0 or not all(isfinite(value) for value in (upside, loss)):
+    if upside <= 0 or loss <= 0 or not all(isfinite(value) for value in (upside, loss)):
         raise EvidenceError("non-positive net scenario upside")
+    total = upside + loss
+    net_reward_risk = upside / loss
+    break_even = loss / total
     ceiling = (target_value - win_fee) / (1 + ratio) + (ratio / (1 + ratio)) * (stop_value - loss_fee)
+    if not all(isfinite(value) for value in (total, net_reward_risk, break_even, ceiling)):
+        raise EvidenceError("entry scenario arithmetic overflow")
     return {
         "schema": SCHEMA,
         "kind": "ENTRY_ECONOMICS",
         "net_upside": upside,
         "scenario_loss": loss,
-        "net_reward_risk": upside / loss,
-        "break_even_target_probability": loss / (upside + loss),
+        "net_reward_risk": net_reward_risk,
+        "break_even_target_probability": break_even,
         "price_ceiling_for_required_reward_risk": ceiling,
         "within_scenario_ceiling": p <= ceiling,
         "estimated_win_probability": None,
@@ -713,6 +718,104 @@ def joint_earnings_state(eps: Mapping[str, Any], revenue: Mapping[str, Any]) -> 
     }
 
 
+
+_REPORTED_CHANGE_NATIVE_FIELDS = frozenset({
+    "schema", "kind", "issuer_id", "issuer_name", "metric", "period_role",
+    "current_fiscal_period", "prior_fiscal_period", "current_value", "prior_value",
+    "signed_difference", "change_fraction", "change_pct",
+    "current_source_ref", "prior_source_ref", "current_event_id", "prior_event_id",
+    "current_available_at", "prior_available_at", "decision_at",
+    "rank_authority", "entry_authority",
+})
+_REPORTED_CHANGE_Q06_FIELDS = frozenset({
+    "schema", "kind", "issuer_id", "issuer_name", "metric", "period_role",
+    "current_fiscal_period", "prior_fiscal_period", "current_value", "prior_value",
+    "units", "currency", "basis", "signed_difference", "change_fraction", "change_pct",
+    "current_event_id", "prior_event_id", "comparison_origin",
+    "current_available_at", "prior_available_at", "decision_at",
+    "economic_id", "field_provenance_id", "source_ref_ids", "source_contract_ref",
+    "rank_authority", "entry_authority",
+})
+_CHILD_AUTHORITY_FIELDS = (
+    "rank_authority", "entry_authority", "policy_authority",
+    "sizing_authority", "trade_authority", "entry_permission",
+)
+
+
+def _require_non_authoritative_child(item: Mapping[str, Any]) -> None:
+    for field in _CHILD_AUTHORITY_FIELDS:
+        if field in item and item[field] is not False:
+            raise EvidenceError("authoritative child cannot enter factual dossier")
+
+
+def _reported_number_matches(observed: Any, expected: float, label: str) -> float:
+    value = finite(observed)
+    if value is None or not isclose(value, expected, rel_tol=1e-12, abs_tol=1e-12):
+        raise EvidenceError(f"reported-change {label} mismatch")
+    return value
+
+
+def _validate_reported_change_evidence(
+    item: Mapping[str, Any], *, issuer_id: str, event_id: str, parent_decision: datetime
+) -> None:
+    """Revalidate mutable reported evidence at every interpretation boundary."""
+    if (not isinstance(item, Mapping) or item.get("schema") != SCHEMA
+            or item.get("kind") != "COMPARABLE_REPORTED_CHANGE"):
+        raise EvidenceError("invalid reported-change evidence")
+    fields = frozenset(item)
+    if fields not in {_REPORTED_CHANGE_NATIVE_FIELDS, _REPORTED_CHANGE_Q06_FIELDS}:
+        raise EvidenceError("reported-change fields are not closed")
+    if item.get("issuer_id") != issuer_id or item.get("current_event_id") != event_id:
+        raise EvidenceError("reported-change identity mismatch")
+    for key in ("issuer_name", "metric", "period_role", "current_fiscal_period",
+                "prior_fiscal_period", "current_event_id", "prior_event_id"):
+        required_text(item.get(key), "reported-change " + key)
+    _require_non_authoritative_child(item)
+
+    child_decision = aware_utc(item.get("decision_at"), "reported-change decision_at")
+    current_available = aware_utc(
+        item.get("current_available_at"), "reported-change current_available_at")
+    prior_available = aware_utc(
+        item.get("prior_available_at"), "reported-change prior_available_at")
+    if current_available > child_decision or prior_available > child_decision:
+        raise EvidenceError("reported-change source evidence is from the future")
+    if child_decision > parent_decision:
+        raise EvidenceError("reported-change evidence is from the future")
+
+    current = finite(item.get("current_value"))
+    prior = finite(item.get("prior_value"))
+    if current is None or prior is None:
+        raise EvidenceError("reported-change values must be finite")
+    expected_difference = current - prior
+    if not isfinite(expected_difference):
+        raise EvidenceError("reported-change difference overflow")
+    _reported_number_matches(item.get("signed_difference"), expected_difference, "difference")
+
+    expected_fraction = None if prior == 0 else expected_difference / abs(prior)
+    if expected_fraction is not None and not isfinite(expected_fraction):
+        expected_fraction = None
+    if expected_fraction is None:
+        if item.get("change_fraction") is not None or item.get("change_pct") is not None:
+            raise EvidenceError("reported-change percentage must be unavailable")
+    else:
+        expected_pct = expected_fraction * 100.0
+        if not isfinite(expected_pct):
+            raise EvidenceError("reported-change percent overflow")
+        _reported_number_matches(item.get("change_fraction"), expected_fraction, "fraction")
+        _reported_number_matches(item.get("change_pct"), expected_pct, "percent")
+
+    if fields == _REPORTED_CHANGE_NATIVE_FIELDS:
+        required_text(item.get("current_source_ref"), "reported-change current_source_ref")
+        required_text(item.get("prior_source_ref"), "reported-change prior_source_ref")
+    else:
+        for key in ("units", "currency", "basis", "comparison_origin", "economic_id",
+                    "field_provenance_id", "source_contract_ref"):
+            required_text(item.get(key), "reported-change " + key)
+        refs = item.get("source_ref_ids")
+        if not isinstance(refs, list) or any(not isinstance(ref, str) or not ref for ref in refs):
+            raise EvidenceError("reported-change source_ref_ids invalid")
+
+
 def factual_dossier(
     *,
     event_id: str,
@@ -742,24 +845,11 @@ def factual_dossier(
 
     decision = aware_utc(decision_at, "decision_at")
 
-    def no_child_authority(item: Mapping[str, Any]) -> None:
-        for field in (
-            "rank_authority", "entry_authority", "policy_authority",
-            "sizing_authority", "trade_authority", "entry_permission",
-        ):
-            if item.get(field) is True:
-                raise EvidenceError("authoritative child cannot enter factual dossier")
-
     for item in reported_changes:
         if not isinstance(item, Mapping):
             raise EvidenceError("dossier evidence must be mappings")
-        if item.get("schema") != SCHEMA or item.get("kind") != "COMPARABLE_REPORTED_CHANGE":
-            raise EvidenceError("invalid reported-change evidence")
-        if item.get("issuer_id") != issuer_id or item.get("current_event_id") != event_id:
-            raise EvidenceError("reported-change identity mismatch")
-        if aware_utc(str(item.get("decision_at")), "reported-change decision_at") > decision:
-            raise EvidenceError("reported-change evidence is from the future")
-        no_child_authority(item)
+        _validate_reported_change_evidence(
+            item, issuer_id=issuer_id, event_id=event_id, parent_decision=decision)
 
     for item in surprises:
         if not isinstance(item, Mapping):
@@ -771,7 +861,7 @@ def factual_dossier(
             raise EvidenceError("surprise identity mismatch")
         if aware_utc(str(item.get("decision_at")), "surprise decision_at") > decision:
             raise EvidenceError("surprise evidence is from the future")
-        no_child_authority(item)
+        _require_non_authoritative_child(item)
 
     for item in revisions:
         if not isinstance(item, Mapping):
@@ -783,7 +873,7 @@ def factual_dossier(
             raise EvidenceError("revision identity mismatch")
         if aware_utc(str(item.get("after")), "revision after") > decision:
             raise EvidenceError("revision evidence is from the future")
-        no_child_authority(item)
+        _require_non_authoritative_child(item)
 
     for item in guidance_results:
         if not isinstance(item, Mapping) or item.get("schema") != SCHEMA or item.get("kind") != "ISSUER_GUIDANCE_DELIVERY":
@@ -793,7 +883,7 @@ def factual_dossier(
             raise EvidenceError("guidance evidence identity mismatch")
         if aware_utc(str(item.get("decision_at"))) > decision:
             raise EvidenceError("guidance evidence is from the future")
-        no_child_authority(item)
+        _require_non_authoritative_child(item)
 
     for item in guidance_updates:
         if (not isinstance(item, Mapping) or item.get("schema") != SCHEMA
@@ -807,7 +897,7 @@ def factual_dossier(
             raise EvidenceError("guidance update is from the future")
         if item.get("actual_result_used") is not False:
             raise EvidenceError("guidance update cannot use future actual result")
-        no_child_authority(item)
+        _require_non_authoritative_child(item)
 
     for item in profit_bridges:
         if (not isinstance(item, Mapping) or item.get("schema") != SCHEMA
@@ -817,7 +907,7 @@ def factual_dossier(
             raise EvidenceError("profitability bridge identity mismatch")
         if aware_utc(str(item.get("decision_at"))) > decision:
             raise EvidenceError("profitability bridge is from the future")
-        no_child_authority(item)
+        _require_non_authoritative_child(item)
 
     for cash in cash_flows:
         _validate_cash_flow_case(cash,issuer_id=issuer_id,event_id=event_id,decision_at=decision_at)
@@ -825,11 +915,11 @@ def factual_dossier(
     if per_share is not None:
         if not isinstance(per_share, Mapping) or per_share.get("schema") != SCHEMA or per_share.get("kind") != "PER_SHARE_BRIDGE":
             raise EvidenceError("invalid per-share evidence")
-        no_child_authority(per_share)
+        _require_non_authoritative_child(per_share)
     if entry is not None:
         if not isinstance(entry, Mapping) or entry.get("schema") != SCHEMA or entry.get("kind") != "ENTRY_ECONOMICS":
             raise EvidenceError("invalid entry evidence")
-        no_child_authority(entry)
+        _require_non_authoritative_child(entry)
 
     if valuation_case is not None:
         _validate_valuation_case(valuation_case, issuer_id=issuer_id,
@@ -1008,7 +1098,7 @@ def guidance_delivery(
             result.update(initial_guidance_midpoint=initial,
                 signed_gap_to_initial_midpoint=total,
                 initial_to_latest_midpoint_change=earlier,
-                earlier_revision_public_at=latest.public_at)
+                earlier_revision_public_at=first.public_at)
     return result
 
 
@@ -1130,9 +1220,8 @@ def earnings_evidence_brief(dossier: Mapping[str, Any]) -> dict[str, Any]:
         return list(value)
 
     for index, change in enumerate(rows("reported_changes")):
-        if (change.get("issuer_id") != issuer or change.get("current_event_id") != event
-                or aware_utc(change.get("decision_at")) > decision):
-            raise EvidenceError("brief reported change identity or clock mismatch")
+        _validate_reported_change_evidence(
+            change, issuer_id=issuer, event_id=event, parent_decision=decision)
         ref = f"reported_changes[{index}]"
         metric = str(change.get("metric") or "reported measure")
         diff = number(change.get("signed_difference"), "reported difference")
