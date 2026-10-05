@@ -4759,7 +4759,43 @@ def _seed_tool_plan(message: str) -> str:
         return ""
 
 
-def _grounding_digest(root: Path, lang: str = "en") -> str:
+def _regime_context_allowed(user_id: str, root: Path) -> bool:
+    """Apply the existing active site_full payload entitlement; fail closed.
+
+    This is a consumer of the canonical resolver, not a new account/tier owner.
+    Do not accept a client-supplied tier, mode, email or page as entitlement.
+    """
+    if not user_id:
+        return False
+    try:
+        ent = _resolve_tier(user_id, root=root)
+        features = ent.get("features")
+        return (
+            normalize_tier(ent.get("tier")) in {"essential", "pro", "unlimited"}
+            and ent.get("status") in {"active", "trialing"}
+            and isinstance(features, list)
+            and "site_full" in features
+        )
+    except Exception:  # noqa: BLE001 - no paid context on a failed entitlement read
+        return False
+
+
+def _regime_detail_kwargs(user_id: str, root: Path) -> dict:
+    """Keyword set for this turn's `_grounding_digest` call: the entitlement
+    flag ONLY when it is granted.
+
+    A free or anonymous turn therefore calls the pre-existing two-argument
+    shape `_grounding_digest(root, lang=...)`, so every stub written against
+    that shape (tests/test_brain_gateway.py monkeypatches it with
+    `lambda root, lang="en": ""`) keeps working; the paid regime-detail block
+    is requested only where `_regime_context_allowed` says so.
+    """
+    if _regime_context_allowed(user_id, root):
+        return {"include_regime_detail": True}
+    return {}
+
+def _grounding_digest(root: Path, lang: str = "en", *,
+                      include_regime_detail: bool = False) -> str:
     """A compact plain-text snapshot of the current calibrated dashboard state, prepended to
     the user's turn so the model always answers from REAL data — not memory — even when a
     weaker (Fast/DeepSeek) model doesn't reliably call a read tool. Never raises.
@@ -4774,7 +4810,8 @@ def _grounding_digest(root: Path, lang: str = "en") -> str:
         # labels, wire zh, curve label) so zh answers reuse canonical desk
         # vocabulary instead of re-translating it. Everything else stays EN and
         # the LANGUAGE directive governs the reply.
-        s = _mp.digest(root, lang=lang)
+        s = (_mp.digest(root, lang=lang, include_regime_detail=True)
+             if include_regime_detail is True else _mp.digest(root, lang=lang))
         if s:
             return s
     except Exception:  # noqa: BLE001
@@ -6771,7 +6808,8 @@ def _run_brain_loop(
             return notice, [], [], messages, usage, [], []
     _digests = [
         digest for digest in (
-            _grounding_digest(root, lang=turn_lang),
+            _grounding_digest(root, lang=turn_lang,
+                              **_regime_detail_kwargs(user_id, root)),
             _symbol_grounding_digest(safe_sym, root, as_of=turn_as_of),
             ontology_digest,
         ) if digest
@@ -7699,7 +7737,8 @@ def _run_brain_loop_stream(
             return
     _digests = [
         digest for digest in (
-            _grounding_digest(root, lang=turn_lang),
+            _grounding_digest(root, lang=turn_lang,
+                              **_regime_detail_kwargs(user_id, root)),
             _symbol_grounding_digest(safe_sym, root, as_of=turn_as_of),
             ontology_digest,
         ) if digest

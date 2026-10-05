@@ -1,0 +1,820 @@
+"""Granular, read-only context for the existing Live Market State Packet.
+
+This is a projection, not a regime/shock classifier or a publication owner. The
+pure composer preserves selected native facts, their dimensions and clocks. It
+has no network, persistence, fitted weights, forecasts, rankings or risk effects.
+The reader opens only fixed product artifacts. Snapshot dates do not certify
+underlying observation time or historical point-in-time availability.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import math
+import re
+from datetime import date, datetime, timezone
+from pathlib import Path
+from typing import Any
+from zoneinfo import ZoneInfo
+
+SOURCE_PATHS = {
+    'regime': 'data/regime/latest.json',
+    'transmission': 'data/transmission/latest.json',
+    'participation': 'site/basketdata/breadth_split.json',
+    'options': 'site/basketdata/vol_weather.json',
+    'dispersion': 'data/dispersion/regime.json',
+    'world_state': 'data/neuralweb/world_state.json',
+    'leadership': 'data/leadership_crack/latest.json',
+}
+# K4: age-based staleness disclosure rule. This is a disclosure rule, NOT a
+# tuned parameter: it tells the consumer when an owner artifact is older than
+# the cadence the site claims to ship at, independent of the producer's own
+# `stale` flag. All artifacts here are nightly-cadence, so 7 days is the
+# default; a larger value only where the producer documents a slower cadence.
+# `engine/neuralweb/market_packet.py` constants QUOTES_STALE_MIN / EVENTS_MAX_AGE_H
+# are intraday wire freshness (minutes/hours) and do not apply to these daily
+# artifacts, so no reuse.
+MAX_AGE_CALENDAR_DAYS: dict[str, int] = {
+    'regime': 7,
+    'transmission': 7,
+    'participation': 7,
+    'options': 7,
+    'dispersion': 7,
+    'world_state': 7,
+    'leadership': 7,
+}
+NY_TZ = ZoneInfo('America/New_York')
+MAX_SOURCE_BYTES = 2 * 1024 * 1024
+SCHEMA = 'market_packet.regime_context.v1'
+QUAD_NAMES = {'Q1': 'Goldilocks', 'Q2': 'Reflation',
+              'Q3': 'Stagflation', 'Q4': 'Growth-scare'}
+# A current observation adapter, never a new membership registry. The full
+# published theme universe is kept; these are explicitly named example cohorts
+# in the compact US briefing, not the output of a new ranking.
+BRIEF_THEME_IDS = ('ai_semiconductors', 'memory_storage', 'data_center_power')
+# Closed classifications of the existing producers, not free-form prompt text.
+MEMBERSHIP_SOURCES = {
+    'regime_one.forward.p_quad (causal filtered HMM)': 'causal_filtered_hmm',
+    'regime_hmm.regime_probs (smoothed fallback)': 'smoothed_hmm_fallback',
+    'uniform': 'uniform_fallback',
+}
+DEGRADATION_REASONS = {
+    'smoothed_hmm_fallback': 'smoothed HMM fallback',
+    'uniform_fallback': 'uniform fallback',
+    'stale_posterior': 'stale posterior',
+    'missing_quantity': 'missing quantity history',
+    'missing_rrp': 'missing RRP buffer',
+    'missing_walcl': 'missing WALCL composition',
+    'owner_reported': 'owner-reported limitation',
+    'unrecognized_owner_value': 'unrecognized owner-bound value',
+}
+
+
+def _dict(value: Any) -> dict:
+    return value if isinstance(value, dict) else {}
+
+
+def _choice(value: Any, allowed: tuple[str, ...], *, issues: list[str] | None = None,
+            field: str = '') -> str | None:
+    if isinstance(value, str) and value in allowed:
+        return value
+    if issues is not None and isinstance(value, str):
+        issues.append('unrecognized_owner_value:' + (field or '?'))
+    return None
+
+
+_OWNER_SLUG_RE = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.+%/-]{0,31}')
+
+# membership_version format: writer scripts/build_ai_adjacency_tag.py:141-156
+# `_source_fingerprint()` joins `finviz:<fv_asof>|membership:<mb_ver>` where each
+# half is `<source_name>:<YYYY-MM-DD>` and the date half is empty when its
+# source is missing. Producer engine/breadth_split.py:232-239,280 emits "" when
+# the sentinel data/breadth/ticker_ai_tag.version is absent — empty = absent,
+# not an unrecognized value.
+_MEMBERSHIP_VERSION_RE = re.compile(
+    r'[a-z0-9_]+:(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?'
+    r'(?:\|[a-z0-9_]+:(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?)*')
+_MEMBERSHIP_VERSION_MAX = 128
+
+
+def _membership_version(value: Any, *, issues: list[str] | None = None,
+                        field: str = 'membership_version') -> str | None:
+    """Strict validator for the membership_version owner-bound string.
+
+    Writer: scripts/build_ai_adjacency_tag.py:141-156 `_source_fingerprint()`
+    returns f"finviz:{fv_asof}|membership:{mb_ver}" — each half is
+    `<source>:<YYYY-MM-DD>` and the date half is empty when its source is
+    missing, so a real emitted value may be e.g. "finviz:2026-06-27|membership:
+    2026-08-07" or "finviz:|membership:2026-08-07". Producer
+    engine/breadth_split.py:232-239,280 emits "" when the sentinel
+    data/breadth/ticker_ai_tag.version is absent; "" is treated as absent, not
+    as an unrecognized value. Any other non-matching input is rejected and
+    `unrecognized_owner_value:<field>` is appended to the row's issues.
+    """
+    if value is None or value == '':
+        return None
+    if (isinstance(value, str) and len(value) <= _MEMBERSHIP_VERSION_MAX
+            and _MEMBERSHIP_VERSION_RE.fullmatch(value)):
+        return value
+    if issues is not None and isinstance(value, str):
+        issues.append('unrecognized_owner_value:' + (field or '?'))
+    return None
+
+
+def _slug(value: Any, *, issues: list[str] | None = None,
+          field: str = '') -> str | None:
+    """Strict owner-bound slug; the only chars beyond alnum are . _ + % / -.
+
+    Use when the producer's vocabulary is not enumerated (a sentinel file, a
+    single literal). Same rejection contract as `_choice`: a non-string or
+    non-matching input is dropped and `unrecognized_owner_value:<field>` is
+    appended to the row's issues.
+    """
+    if isinstance(value, str) and _OWNER_SLUG_RE.fullmatch(value):
+        return value
+    if issues is not None and isinstance(value, str):
+        issues.append('unrecognized_owner_value:' + (field or '?'))
+    return None
+
+
+def _quad(value: Any) -> str | None:
+    return value if isinstance(value, str) and value in QUAD_NAMES else None
+
+
+def _num(value: Any, field: str, issues: list[str], *, low=None, high=None) -> float | None:
+    if value is None:
+        return None
+    try:
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            raise ValueError('not a numeric observation')
+        out = float(value)
+        if not math.isfinite(out) or (low is not None and out < low) or (high is not None and out > high):
+            raise ValueError('not finite or outside semantic range')
+        return out
+    except (ValueError, TypeError, OverflowError):
+        issues.append('invalid_field:' + field)
+        return None
+
+
+def _count(value: Any, field: str, issues: list[str]) -> int | None:
+    n = _num(value, field, issues, low=0)
+    if n is None:
+        return None
+    if not n.is_integer():
+        issues.append('invalid_field:' + field)
+        return None
+    return int(n)
+
+
+def _has_value(value: Any) -> bool:
+    if isinstance(value, dict):
+        return any(_has_value(v) for v in value.values())
+    if isinstance(value, list):
+        return any(_has_value(v) for v in value)
+    return not isinstance(value, bool) and value is not None and value != ''
+
+
+def _native_degradation(raw: dict, kind: str, issues: list[str]) -> dict:
+    """Retain a typed owner flag and only known producer reason categories.
+
+    Degradation is independent of time: a fresh fallback/incomplete composition
+    remains partial, not stale. Unknown prose never becomes a reason or a date.
+    """
+    flag = raw.get('degraded')
+    metadata = {'owner_degraded': flag if isinstance(flag, bool) else None}
+    if flag is not None and not isinstance(flag, bool):
+        issues.append('invalid_field:degraded')
+    if kind == 'membership':
+        metadata['owner_source'] = MEMBERSHIP_SOURCES.get(
+            raw.get('source') if isinstance(raw.get('source'), str) else '', 'unknown')
+    if flag is not True:
+        return metadata
+    reasons = []
+    if kind == 'membership':
+        reason = raw.get('degrade_reason')
+        # Match whole owner messages, including its optional stale suffix. No
+        # keyword search: unrelated or instruction-bearing prose is not evidence.
+        if isinstance(reason, str) and len(reason) <= 160:
+            for prefix, category in (
+                ('causal p_quad missing; smoothed HMM fallback', 'smoothed_hmm_fallback'),
+                ('no P(Quad) producer available; p widened to uniform', 'uniform_fallback'),
+                ('', None),
+            ):
+                pattern = re.escape(prefix) + (r'(?:; p_quad stale \(([1-9][0-9]*)d old\))?' if prefix
+                    else r'p_quad stale \(([1-9][0-9]*)d old\)')
+                match = re.fullmatch(pattern, reason)
+                if match and (match[1] is None or int(match[1]) > 5):
+                    if category:
+                        reasons.append(category)
+                    if reason != prefix:
+                        reasons.append('stale_posterior')
+                    break
+    else:
+        for value, category in (
+            (raw.get('quantity_roc_bn'), 'missing_quantity'),
+            (raw.get('rrp_buffer_bn'), 'missing_rrp'),
+            (_dict(raw.get('composition')).get('d_walcl'), 'missing_walcl'),
+        ):
+            if value is None:
+                reasons.append(category)
+    issues.extend('owner_degraded:' + reason for reason in (reasons or ['owner_reported']))
+    return metadata
+
+
+def _date_info(value: Any, now: datetime) -> dict:
+    out = {'as_of': None, 'precision': None, 'age_calendar_days': None,
+           'future_dated': False, 'known_at': None, 'available_at': None}
+    if not isinstance(value, str):
+        return out
+    try:
+        if re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
+            day = date.fromisoformat(value)
+            out.update(as_of=value, precision='date',
+                       age_calendar_days=(now.date() - day).days,
+                       future_dated=day > now.date())
+        else:
+            dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
+            if dt.tzinfo is None:
+                return out  # a timezone-less clock cannot certify an instant
+            dt = dt.astimezone(timezone.utc)
+            out.update(as_of=dt.isoformat(), precision='datetime',
+                       age_calendar_days=(now.date() - dt.date()).days,
+                       future_dated=dt > now)
+    except (ValueError, TypeError, OverflowError):
+        pass
+    return out
+
+
+def compose_context(sources: dict, *, now: datetime,
+                    source_metadata: dict | None = None,
+                    expected_session: date | None = None) -> dict:
+    """Pure projection of separately captured owner objects, never a PIT replay.
+
+    `now` is an explicit observation cutoff, not a historical issuance claim.
+    Source metadata may carry actual read hashes;
+    neither a hash nor a wrapper clock certifies the input's underlying vintage.
+    """
+    if not isinstance(now, datetime) or now.tzinfo is None:
+        raise ValueError('now must be an explicit timezone-aware datetime')
+    now = now.astimezone(timezone.utc)
+    sources, source_metadata = _dict(sources), _dict(source_metadata)
+    dims: dict[str, dict] = {}
+
+    def emit(name, key, pointer, raw, stamp, values, unit, *, issues=None,
+             clock='owner_snapshot_date', stale=False, scope='US', notes=(),
+             owner_metadata=None, measurement_fields=None):
+        issues = list(issues or [])
+        source = {'artifact': SOURCE_PATHS[key], 'pointer': pointer,
+                  'sha256': _dict(source_metadata.get(key)).get('sha256'),
+                  'clock_semantics': clock, **_date_info(stamp, now)}
+        source.update(owner_metadata or {})
+        source['expected_us_session'] = expected_session.isoformat() if expected_session else None
+        source['session_relation'] = None
+        if source['as_of'] and expected_session:
+            # K7: compare the America/New_York calendar date of the observation,
+            # not the UTC date — a 21:30 ET read on the same session still
+            # belongs to the session that just completed there. Date-only stamps
+            # already represent a NY calendar date and are compared as-is.
+            if source.get('precision') == 'date':
+                day = date.fromisoformat(source['as_of'])
+            else:
+                stamp_dt = datetime.fromisoformat(source['as_of'])
+                if stamp_dt.tzinfo is None:
+                    stamp_dt = stamp_dt.replace(tzinfo=timezone.utc)
+                day = stamp_dt.astimezone(NY_TZ).date()
+            source['session_relation'] = ('same_completed_session' if day == expected_session
+                else 'older_than_completed_session' if day < expected_session else 'after_completed_session')
+        if isinstance(raw, dict):
+            available = _date_info(raw.get('available_at'), now)
+            source['available_at'] = available['as_of']
+            if available['future_dated']:
+                source['future_dated'] = True
+                issues.append('availability_after_observation_cutoff')
+        measured = ({key: values.get(key) for key in measurement_fields}
+                    if measurement_fields is not None else values)
+        age_stale = False
+        if not raw or not _has_value(measured):
+            status = 'missing'; values = {}
+        elif source['as_of'] is None:
+            status = 'unknown_date'; values = {}
+        elif source['future_dated']:
+            status = 'future_dated'; values = {}
+        else:
+            # K4: age-based staleness disclosure, independent of the producer's
+            # `stale` flag. Marked with its own bounded issue so the row keeps
+            # its date and values visible but is excluded from populated_dimensions.
+            age_days = source.get('age_calendar_days')
+            age_limit = MAX_AGE_CALENDAR_DAYS.get(key, 7)
+            age_stale = isinstance(age_days, int) and age_days > age_limit
+            if age_stale:
+                issues.append('age_exceeds_max')
+            effective_stale = stale or age_stale
+            status = 'stale' if effective_stale else ('partial' if issues else 'available')
+        # A source saying "fresh" describes its last build, not this read.
+        # Preserve observation age and do not manufacture an intraday freshness
+        # certification from date-only/uncertified source clocks.
+        dims[name] = {
+            'status': status, 'scope': scope, 'source': source, 'unit': unit,
+            'values': values, 'issues': issues, 'notes': list(notes),
+            'currentness_certified': False, 'age_stale': bool(age_stale),
+        }
+
+    regime = _dict(sources.get('regime'))
+    rf = _dict(regime.get('freshness'))
+    vector = _dict(regime.get('quad_vector'))
+    tm = _dict(vector.get('transition_momentum'))
+    one = _dict(regime.get('regime_one'))
+    macro = _dict(one.get('macro'))
+    errors: list[str] = []
+    emit('macro', 'regime', '/', regime, regime.get('date'), {
+        'confirmed_quad': _quad(regime.get('quad')),
+        'tape_quad': _quad(_dict(one.get('tape')).get('quad')),
+        'economic_quad': _quad(macro.get('quad')),
+        'economic_freshness': _choice(macro.get('worst_freshness'),
+            # source: engine/regime_one.py:135 (fresh/slow/stale/dead/unknown)
+            ('fresh', 'slow', 'stale', 'dead', 'unknown'),
+            issues=errors, field='economic_freshness'),
+        'growth_proxy_score': _num(regime.get('growth_score'), 'growth_proxy_score', errors),
+        'inflation_proxy_score': _num(regime.get('inflation_score'), 'inflation_proxy_score', errors),
+        'transition_state': _choice(regime.get('transition_state'),
+            # source: engine/alerts.py:42-43, engine/transition.py:133
+            ('STABLE', 'WEAKENING', 'TRANSITIONING', 'NEW_REGIME'),
+            issues=errors, field='transition_state'),
+        'quantity_overlay': _choice(regime.get('liquidity_overlay'), ('expanding', 'contracting', 'neutral')),
+        'forecast_probability': None,
+    }, 'owner_proxy_scores_and_labels', issues=errors, stale=rf.get('stale') is True,
+       notes=('Mixed proxy axes are not reported GDP/inflation measurements.',
+              'Membership movement is diagnostic, not a horizon-specific forecast.',
+              'Economic sub-read retains its own stale/slow evidence limitation.'))
+
+    errors = []
+    membership_owner = _native_degradation(vector, 'membership', errors)
+    prob = _dict(vector.get('p'))
+    probabilities = {k: _num(prob.get(k), 'probability:' + k, errors, low=0, high=1)
+                     for k in QUAD_NAMES}
+    if set(prob) != set(QUAD_NAMES) or any(v is None for v in probabilities.values()) or abs(sum(v or 0 for v in probabilities.values()) - 1.) > .001:
+        probabilities = {}
+        if prob:
+            errors.append('invalid_membership_distribution')
+    emit('membership', 'regime', '/quad_vector', vector, vector.get('asof'), {
+        'probabilities': probabilities,
+        'interpretation': 'current_model_membership' if probabilities else None,
+        'gaining_quad': _quad(tm.get('gaining')) if probabilities else None,
+        'losing_quad': _quad(tm.get('losing')) if probabilities else None,
+        'window_sessions': _count(tm.get('window_sessions'), 'window_sessions', errors) if probabilities else None,
+        'forecast_probability': None,
+    }, 'current_membership_distribution', issues=errors,
+       stale=vector.get('stale') is True, owner_metadata=membership_owner,
+       notes=('Current membership is not an issued future forecast.',
+              'A later-fit historical reconstruction is not point-in-time evidence.'))
+
+    trans = _dict(sources.get('transmission'))
+    rates = _dict(_dict(trans.get('state')).get('rates'))
+    errors = []
+    emit('real_rates', 'transmission', '/state/rates', rates, trans.get('asof'), {
+        'level_pct': _num(rates.get('real_10y'), 'level_pct', errors),
+        'change_22d_bp': _num(rates.get('real_10y_chg_22d_bp'), 'change_22d_bp', errors),
+        'change_63d_bp': _num(rates.get('real_10y_chg_63d_bp'), 'change_63d_bp', errors),
+        'percentile_0_1': _num(rates.get('real_10y_pctile'), 'percentile_0_1', errors, low=0, high=1),
+        'owner_direction': _choice(rates.get('direction'), ('rising', 'falling', 'flat', 'stable')),
+        'owner_rate_label': _choice(rates.get('regime'),
+            # source: engine/rate_inflation_transmission.py:228-229
+            ('restrictive', 'accommodative', 'neutral'),
+            issues=errors, field='owner_rate_label'),
+        'acceleration_bp': None,
+    }, 'yield_percent_and_basis_point_change', issues=errors,
+       notes=('Snapshot clock only; underlying real-yield observation clock is not supplied.',
+              'Owner 22d/63d windows retained; no new acceleration is calculated.',
+              'Long real yield is not the short real policy rate relative to neutral.'))
+
+    nominal = _dict(_dict(_dict(trans.get('yield_momentum')).get('series')).get('10y'))
+    velocity = _dict(nominal.get('velocity_bp'))
+    qualified = nominal.get('path_qualified') is True and nominal.get('status') == 'available'
+    errors = []
+    emit('nominal_10y', 'transmission', '/yield_momentum/series/10y', nominal, nominal.get('as_of'), {
+        'level_pct': _num(nominal.get('level'), 'level_pct', errors),
+        'change_5_grid_bp': _num(velocity.get('5d'), 'change_5_grid_bp', errors) if qualified else None,
+        'change_22_grid_bp': _num(velocity.get('22d'), 'change_22_grid_bp', errors) if qualified else None,
+        'change_63_grid_bp': _num(velocity.get('63d'), 'change_63_grid_bp', errors) if qualified else None,
+        'acceleration_bp': _num(nominal.get('acceleration_bp'), 'acceleration_bp', errors) if qualified else None,
+        'horizon_basis': _choice(nominal.get('horizon_basis'),
+            # source: engine/yield_momentum.py:200
+            ('fixed_weekday_grid_intervals',),
+            issues=errors, field='horizon_basis'),
+        'path_qualified': qualified,
+    }, 'yield_percent_and_basis_point_change', issues=errors, clock='source_observation_date',
+       stale=nominal.get('status') == 'stale',
+       owner_metadata={'owner_status': _choice(nominal.get('status'),
+           ('available', 'stale', 'missing', 'invalid_grid', 'insufficient_history'))},
+       measurement_fields=('level_pct', 'change_5_grid_bp', 'change_22_grid_bp',
+                           'change_63_grid_bp', 'acceleration_bp'),
+       notes=('Weekday-grid intervals are not automatically Treasury trading sessions.',
+              'Endpoint change/acceleration does not prove a durable yield peak.'))
+
+    liq = _dict(regime.get('liquidity_quality'))
+    errors = []
+    liquidity_owner = _native_degradation(liq, 'liquidity', errors)
+    emit('liquidity', 'regime', '/liquidity_quality', liq, liq.get('asof'), {
+        'quality_label': _choice(liq.get('label'),
+            # source: engine/regime.py:227 (label_enum)
+            ('benign-expansion', 'stress-expansion', 'neutral',
+             'neutral-hollow', 'contracting', 'unknown'),
+            issues=errors, field='quality_label'),
+        'quantity_change_bn': _num(liq.get('quantity_roc_bn'), 'quantity_change_bn', errors),
+        'rrp_buffer_bn': _num(liq.get('rrp_buffer_bn'), 'rrp_buffer_bn', errors, low=0),
+    }, 'owner_quantity_change_usd_billions', issues=errors,
+       stale=liq.get('stale') is True, owner_metadata=liquidity_owner,
+       notes=('Quantity and composition/stress are separate readings.',))
+    credit = _dict(liq.get('stress_overlay'))
+    errors = []
+    emit('credit', 'regime', '/liquidity_quality/stress_overlay', credit, liq.get('asof'), {
+        'hy_oas_pct': _num(credit.get('hy_oas_pct'), 'hy_oas_pct', errors, low=0),
+        'hy_oas_change_20d_pp': _num(credit.get('hy_oas_chg_20d'), 'hy_oas_change_20d_pp', errors),
+        'nfci_level': _num(credit.get('nfci'), 'nfci_level', errors),
+        'nfci_direction': _choice(credit.get('nfci_trend'),
+            # source: engine/regime.py:200
+            ('tightening', 'loose'),
+            issues=errors, field='nfci_direction'),
+    }, 'oas_percent_change_percentage_points_nfci_index', issues=errors,
+       stale=liq.get('stale') is True,
+       notes=('A negative financial-conditions level may coexist with tightening.',
+              # K6: stress_overlay carries no date field of its own; the stamp
+              # is inherited from the parent liquidity artifact and is NOT the
+              # credit observation date.
+              'Credit clock inherits liquidity_quality.asof; not a credit-only observation date.'))
+    # K6: explicit additive disclosure that the credit row's date is the
+    # liquidity artifact's clock, not an independent credit observation date.
+    dims['credit']['source']['clock_basis'] = 'inherited_from_liquidity_artifact'
+
+    part = _dict(sources.get('participation'))
+    latest, population = _dict(part.get('latest')), _dict(part.get('cohort_sizes'))
+    errors = []
+    pv = {
+        'ai_above_50dma_pct': _num(latest.get('ai_pct50'), 'ai_above_50dma_pct', errors, low=0, high=100),
+        'other_above_50dma_pct': _num(latest.get('nonai_pct50'), 'other_above_50dma_pct', errors, low=0, high=100),
+        'spread_50dma_pp': _num(latest.get('spread_50'), 'spread_50dma_pp', errors, low=-100, high=100),
+        'ai_above_200dma_pct': _num(latest.get('ai_pct200'), 'ai_above_200dma_pct', errors, low=0, high=100),
+        'other_above_200dma_pct': _num(latest.get('nonai_pct200'), 'other_above_200dma_pct', errors, low=0, high=100),
+        'ai_cohort_count': _count(population.get('ai_total'), 'ai_cohort_count', errors),
+        'other_cohort_count': _count(population.get('non_ai'), 'other_cohort_count', errors),
+        'universe_count': _count(population.get('universe'), 'universe_count', errors),
+        'ma_eligible_denominators': None,
+        'history_young': part.get('young') is True,
+        'membership_version': _membership_version(part.get('tag_version'),
+            # writer: scripts/build_ai_adjacency_tag.py:141-156 emits
+            # f"finviz:<fv_asof>|membership:<mb_ver>" (either date empty when
+            # its source is missing). Producer engine/breadth_split.py:232-239,280
+            # emits "" when the sentinel data/breadth/ticker_ai_tag.version is
+            # absent; "" is treated as absent, not unrecognized.
+            issues=errors, field='membership_version'),
+    }
+    emit('participation', 'participation', '/latest', part, part.get('as_of'), pv,
+         'participation_percent_and_percentage_point_spread', issues=errors,
+         stale=part.get('stale') is True,
+         scope='AI-adjacent and other names in the owner price cache',
+         notes=('Cohort counts are not per-indicator eligible denominators.',
+                'Composition/relative prices do not prove literal capital flows.',
+                'Current membership is not historical point-in-time membership.'))
+
+    dispersion = _dict(sources.get('dispersion'))
+    errors = []
+    emit('dispersion', 'dispersion', '/', dispersion, dispersion.get('as_of'), {
+        'percentile_0_1': _num(dispersion.get('dispersion_pctile'), 'percentile_0_1', errors, low=0, high=1),
+        'average_correlation': _num(dispersion.get('avg_corr'), 'average_correlation', errors, low=-1, high=1),
+    }, 'realized_dispersion_percentile_and_correlation', issues=errors,
+       stale=dispersion.get('stale') is True,
+       notes=('Do not equate realized dispersion with option-implied dispersion.',))
+
+    options = _dict(sources.get('options'))
+    chips = options.get('chips') if isinstance(options.get('chips'), list) else []
+    # Duplicate source rows are ambiguous; never select whichever happens to be last.
+    for key, name, unit in (
+        ('vix_level', 'options_vix', 'index_implied_volatility_annualized_pct'),
+        ('dspx', 'options_dspx', 'implied_dispersion_annualized_pct'),
+        ('cor1m', 'options_cor1m', 'implied_correlation_index_points'),
+        ('cor3m', 'options_cor3m', 'implied_correlation_index_points'),
+    ):
+        matches = [(i, c) for i, c in enumerate(chips) if isinstance(c, dict) and c.get('key') == key]
+        errors = []
+        idx, chip = matches[0] if len(matches) == 1 else (0, {})
+        if len(matches) > 1:
+            errors.append('ambiguous_duplicate_chip')
+        emit(name, 'options', f'/chips/{idx}', chip, chip.get('last_date'), {
+            'value': _num(chip.get('value'), 'value', errors, low=-100 if key.startswith('cor') else 0),
+            'trailing_percentile_0_100': _num(chip.get('pctile'), 'trailing_percentile_0_100', errors, low=0, high=100),
+        }, unit, issues=errors, clock='source_observation_date',
+           stale=chip.get('freshness') in ('stale', 'missing'),
+           notes=('Option-implied quantity, not a realized statistic or return forecast.',))
+
+    weather = _dict(_dict(sources.get('world_state')).get('factor_weather'))
+    errors = []
+    emit('style', 'world_state', '/factor_weather', weather, weather.get('factor_state_as_of'), {
+        'owner_style': _choice(weather.get('style_regime'),
+            # source: scripts/build_factor_panel.py:1441-1465
+            ('growth_momentum', 'quality_defense', 'value_cyclical',
+             'junk_rally', 'mixed'),
+            issues=errors, field='owner_style'),
+        'owner_factor_leader': _choice(weather.get('factor_leader'),
+            # source: engine/factor_series.py:38 (SERIES_FACTORS)
+            ('value', 'profitability', 'quality', 'investment', 'payout',
+             'low_vol', 'low_beta', 'composite'),
+            issues=errors, field='owner_factor_leader'),
+        'qqq_spy_change_20d_fraction': _num(weather.get('ratio_qqq_spy_20d'), 'qqq_spy_change_20d_fraction', errors),
+        'iwm_spy_change_20d_fraction': _num(weather.get('ratio_iwm_spy_20d'), 'iwm_spy_change_20d_fraction', errors),
+    }, 'owner_style_and_relative_price_ratio_change', issues=errors,
+       stale=weather.get('stale') is True,
+       notes=('Descriptive factor context, not a new allocation or ranking.',))
+
+    revisions = _dict(regime.get('theme_revisions'))
+    themes, rows, errors = _dict(revisions.get('themes')), {}, []
+    for tid, item in sorted(themes.items(), key=lambda x: str(x[0])):
+        if not isinstance(tid, str) or not re.fullmatch(r'[a-z][a-z0-9_]{0,63}', tid) or not isinstance(item, dict):
+            errors.append('invalid_theme_row'); continue
+        sub: list[str] = []
+        rows[tid] = {
+            'breadth_index': _num(item.get('breadth'), tid + ':breadth_index', sub, low=-1, high=1),
+            'breadth_change': _num(item.get('breadth_accel'), tid + ':breadth_change', sub, low=-2, high=2) if item.get('broadening_proxy') is not True and isinstance(item.get('basis_days'), int) and not isinstance(item.get('basis_days'), bool) and item['basis_days'] > 0 else None,
+            'basis_days': _count(item.get('basis_days'), tid + ':basis_days', sub),
+            'estimate_drift_90d_pct': _num(item.get('est_drift_90d'), tid + ':estimate_drift_90d_pct', sub),
+            'n_covered': _count(item.get('n_covered'), tid + ':n_covered', sub),
+            'n_members': _count(item.get('n_members'), tid + ':n_members', sub),
+            'coverage_fraction': _num(item.get('coverage'), tid + ':coverage_fraction', sub, low=0, high=1),
+            'broadening_state': _choice(item.get('broadening_state'),
+            # producer set, union of engine/theme_revisions.py:
+            #   _accel_state (line 126-135): FLAT_LOW / RISING / ROLLING / MIXED
+            #   _broadening no_history/proxy (line 220 / 193): INSUFFICIENT_HISTORY
+            ('FLAT_LOW', 'RISING', 'ROLLING', 'MIXED', 'INSUFFICIENT_HISTORY'),
+            issues=sub, field=tid + ':broadening_state'),
+            'uses_broadening_proxy': item.get('broadening_proxy') is True,
+        }
+        errors.extend(sub)
+    emit('earnings_revisions', 'regime', '/theme_revisions', revisions, revisions.get('asof'), {
+        'themes': rows,
+        'source_theme_count': _count(revisions.get('n_themes'), 'source_theme_count', errors),
+        'included_theme_count': len(rows) if rows else None,
+    }, 'revision_breadth_index_and_estimate_change_pct', issues=errors,
+       stale=revisions.get('stale') is True, scope='published theme revision cohorts',
+       notes=('Estimate revisions are neither realized earnings nor expected stock returns.',
+              'Theme overlap means rows are not independent corroborating votes.',
+              'Breadth level, change and coverage remain separate; proxy is not observed history.'))
+
+    leaders = _dict(sources.get('leadership'))
+    errors = []
+    emit('leadership_damage', 'leadership', '/', leaders, leaders.get('asof'), {
+        'owner_state': _choice(leaders.get('state'),
+            # source: engine/leadership_crack.py:237 (state_series)
+            ('INTACT', 'CRACKING', 'BROKEN'),
+            issues=errors, field='owner_state'),
+        'cohort_role': _choice(leaders.get('cohort_role'),
+            # producer: engine/leadership_crack.py:378 emits exactly one literal:
+            # 'tracked_ai_hardware_damage_monitor' (34 chars). The slug cap
+            # (32) silently rejected it; route through _choice with the producer's
+            # exact value set.
+            ('tracked_ai_hardware_damage_monitor',),
+            issues=errors, field='cohort_role'),
+        'window_sessions': _count(leaders.get('high_window_sessions'), 'window_sessions', errors),
+        'median_drawdown_fraction': _num(leaders.get('med_dd'), 'median_drawdown_fraction', errors, low=-1, high=0),
+        'index_drawdown_fraction': _num(leaders.get('index_dd'), 'index_drawdown_fraction', errors, low=-1, high=0),
+        'n_fresh': _count(leaders.get('n_fresh'), 'n_fresh', errors),
+        'n_total': _count(leaders.get('n_total'), 'n_total', errors),
+        'state_since': _date_info(leaders.get('state_since'), now)['as_of'],
+    }, 'drawdown_fraction_and_session_window', issues=errors,
+       stale=leaders.get('stale') is True,
+       scope='owner-designated tracked AI-hardware damage cohort',
+       notes=('This fixed damage-monitor cohort is not all current market leaders.',))
+
+    populated = sum(bool(d['values']) and _has_value(d['values']) and not d.get('age_stale')
+                   for d in dims.values())
+    stale_dim_count = sum(1 for d in dims.values() if d.get('age_stale'))
+    return {
+        'schema': SCHEMA, 'scope': 'US; existing regional packet blocks are separate',
+        'observed_at': now.isoformat(), 'expected_us_session': expected_session.isoformat() if expected_session else None, 'dimensions': dims,
+        'coverage': {'total_dimensions': len(dims), 'populated_dimensions': populated,
+                     'missing_dimensions': len(dims) - populated,
+                     'stale_dimensions': stale_dim_count},
+        'historical_replay_eligible': False,
+        'authority': {k: False for k in ('may_rank', 'may_gate', 'may_size', 'may_trade', 'may_forecast', 'may_escalate')},
+        'unmeasured': ['literal_capital_flows', 'valuation_implied_expected_returns',
+                       'causal_identification', 'calibrated_transition_forecasts'],
+    }
+
+
+def read_context(root: Path, *, now: datetime | None = None) -> dict:
+    """Capture bounded product files exactly once. Never runs their producers."""
+    root = Path(root)
+    sources, metadata, gaps = {}, {}, []
+    for key, rel in SOURCE_PATHS.items():
+        try:
+            with (root / rel).open('rb') as stream:
+                data = stream.read(MAX_SOURCE_BYTES + 1)
+            if len(data) > MAX_SOURCE_BYTES:
+                raise ValueError('source exceeds context read limit')
+            payload = json.loads(data)
+            if not isinstance(payload, dict):
+                raise ValueError('source is not an object')
+            sources[key] = payload
+            metadata[key] = {'sha256': hashlib.sha256(data).hexdigest()}
+        except (OSError, ValueError, TypeError, UnicodeError, RecursionError) as exc:
+            sources[key] = None
+            gaps.append({'source': key, 'reason': type(exc).__name__})
+    observed = now or datetime.now(timezone.utc)
+    expected = None
+    try:
+        from lib.nyse_calendar import expected_last_session
+        expected = expected_last_session(observed)
+    except (ImportError, ValueError, TypeError, OverflowError) as exc:
+        gaps.append({'source': 'us_session_calendar', 'reason': type(exc).__name__})
+    ctx = compose_context(sources, now=observed, source_metadata=metadata,
+                          expected_session=expected)
+    ctx['read_gaps'] = gaps
+    return ctx
+
+
+def _fmt(v, *, signed=False, scale=1.) -> str:
+    if v is None:
+        return '?'
+    value = float(v) * scale
+    if not math.isfinite(value):
+        return '?'
+    text = f'{value:+.2f}' if signed else f'{value:.2f}'
+    return text.rstrip('0').rstrip('.')
+
+
+# Priority order for forced-budget omission, MOST-DROPPABLE first (PRIORITY[0]
+# is dropped before PRIORITY[1], etc.). `kept.sort(...)` runs every call so
+# this tuple ALWAYS reorders the rows — it is never inert; "when the brief
+# fits, every row survives" describes the OUTPUT, not the sort itself.
+# Unlisted rows are LEAST-droppable: their sort key is `-inf`, so they land at
+# the front of `kept` and are popped LAST when the budget tightens.
+_RENDER_PRIORITY: tuple[str, ...] = (
+    'options_cor3m', 'options_cor1m', 'options_dspx', 'options_vix',
+    'earnings_revisions', 'credit', 'style',
+    'liquidity', 'nominal_10y', 'real_rates', 'dispersion',
+    'participation', 'membership', 'leadership_damage', 'macro',
+)
+
+
+def render_context(ctx: dict, char_budget: int = 2000, *, lang: str = 'en') -> str:
+    """Bounded complete rows, with limits/omissions retained rather than clipped.
+
+    Default raised from 1800 to 2000 (still <= 2200) so the O(distinct-dates)
+    age header never crowds a valid axis out of the brief on a normal morning.
+    Worst measured length at the K2 four-date matrix (T+0/T+2/T+5/T+6) is
+    ~1938 chars; the +62-char headroom is reserved for the corner case where
+    one more distinct as-of date enters the header.
+    """
+    dims = _dict(_dict(ctx).get('dimensions'))
+    zh = lang == 'zh'
+    rows: list[tuple[str, str]] = []
+    date_ages: dict[str, int | None] = {}
+    unavailable: dict[str, list[str]] = {}
+    reasons = {
+        'missing': 'missing', 'future_dated': 'future date',
+        'unknown_date': 'date unknown',
+    }
+
+    def add(key, label, text):
+        d = _dict(dims.get(key))
+        status = d.get('status')
+        if not d.get('values') or status not in ('available', 'partial', 'stale'):
+            # Do not leak withheld values, dates or arbitrary source error text.
+            # Missingness is evidence too: keep the fixed dimension and reason
+            # through the same paid consumer, including the all-unavailable case.
+            reason = reasons.get(status, 'status unknown' if status else 'missing')
+            if status == 'missing' and _dict(d.get('source')).get('owner_status') == 'stale':
+                reason = 'missing measurement (owner stale)'
+            unavailable.setdefault(reason, []).append(key.replace('_', ' '))
+            return
+        src = _dict(d.get('source'))
+        stamp = src.get('as_of') or '?'
+        # Track distinct as-of dates for the O(distinct-dates) header; record
+        # the youngest age per date so the header can name it once.
+        if stamp != '?':
+            age = src.get('age_calendar_days')
+            prev = date_ages.get(stamp)
+            if prev is None or (isinstance(age, int) and (not isinstance(prev, int) or age < prev)):
+                date_ages[stamp] = age
+        # Per-row suffix no longer carries the calendar-day count \u2014 that cost
+        # grew O(rows) and pushed valid axes out of the 1800-char brief at T+1+.
+        # The header below names each date's age once.
+        suffix = '; stale/last-known' if d.get('status') == 'stale' else ''
+        if d.get('issues'):
+            suffix += '; partial input'
+        if src.get('owner_degraded') is True:
+            qualifications = [DEGRADATION_REASONS[code.removeprefix('owner_degraded:')]
+                for code in d.get('issues', []) if isinstance(code, str)
+                and code.startswith('owner_degraded:')
+                and code.removeprefix('owner_degraded:') in DEGRADATION_REASONS]
+            suffix += '; degraded: ' + ', '.join(qualifications or ['owner-reported limitation'])
+        clock = 'observed' if src.get('clock_semantics') == 'source_observation_date' else 'snapshot'
+        rows.append((key, f'{label} [{clock} {stamp}{suffix}]: {text}'))
+
+    def v(key):
+        return _dict(_dict(dims.get(key)).get('values'))
+
+    x = v('real_rates')
+    add('real_rates', 'Real 10Y' if not zh else '\u5b9e\u964510\u5e74\u671f',
+        f"{_fmt(x.get('level_pct'))}%; owner {x.get('owner_direction') or '?'}; "
+        f"22d {_fmt(x.get('change_22d_bp'), signed=True)}bp, 63d {_fmt(x.get('change_63d_bp'), signed=True)}bp; snapshot date only")
+    x = v('participation')
+    add('participation', 'Participation' if not zh else '\u53c2\u4e0e\u5ea6',
+        f"AI {_fmt(x.get('ai_above_50dma_pct'))}% vs others {_fmt(x.get('other_above_50dma_pct'))}% above 50DMA; "
+        f"cohorts {x.get('ai_cohort_count')}/{x.get('other_cohort_count')}; indicator denominators unreported")
+    x = v('dispersion')
+    # `average_correlation` is a variance-ratio proxy (dispersion.py), not a
+    # measured mean pairwise correlation. Label it so consumers do not read it
+    # as a calibrated average.
+    corr_label = 'correlation proxy (variance ratio)' if not zh else '\u76f8\u5173\u6027\u4ee3\u7406\uff08\u65b9\u5dee\u6bd4\uff09'
+    add('dispersion', 'Realized dispersion' if not zh else '\u5b9e\u73b0\u79bb\u6563\u5ea6',
+        f"percentile {_fmt(x.get('percentile_0_1'), scale=100)}/100; {corr_label} {_fmt(x.get('average_correlation'))}")
+    for key, label in (('options_vix', 'VIX implied index vol'), ('options_dspx', 'DSPX implied dispersion'),
+                       ('options_cor1m', 'COR1M implied correlation'),
+                       ('options_cor3m', 'COR3M implied correlation')):
+        add(key, label, _fmt(v(key).get('value')) + '; unlike measures, not a synthetic spread')
+    x = v('earnings_revisions')
+    themes = _dict(x.get('themes'))
+    selected = [k for k in BRIEF_THEME_IDS if k in themes]
+    detail = []
+    for tid in selected:
+        t = themes[tid]
+        detail.append(f"{tid.replace('_', ' ')} breadth {_fmt(t.get('breadth_index'), signed=True)}, "
+                      f"change {_fmt(t.get('breadth_change'), signed=True)} over {t.get('basis_days') or '?'} calendar days, "
+                      f"coverage {t.get('n_covered')}/{t.get('n_members')}")
+    add('earnings_revisions', 'Estimate revisions (named examples; not stock returns)', '; '.join(detail) or 'No named example covered')
+    x = v('liquidity')
+    add('liquidity', 'Liquidity', f"quality {x.get('quality_label') or '?'}; RRP buffer {_fmt(x.get('rrp_buffer_bn'))}bn")
+    x = v('credit')
+    add('credit', 'Credit/conditions', f"HY OAS {_fmt(x.get('hy_oas_pct'))}%, 20d change {_fmt(x.get('hy_oas_change_20d_pp'), signed=True)}pp; "
+        f"NFCI {_fmt(x.get('nfci_level'))}, {x.get('nfci_direction') or '?'}")
+    x = v('style')
+    add('style', 'Style', f"{x.get('owner_style') or '?'}, owner leader {x.get('owner_factor_leader') or '?'}; "
+        f"QQQ/SPY 20d {_fmt(x.get('qqq_spy_change_20d_fraction'), signed=True, scale=100)}%")
+    x = v('macro')
+    add('macro', 'Macro model', f"confirmed {QUAD_NAMES.get(x.get('confirmed_quad'), '?')}; "
+        f"tape {QUAD_NAMES.get(x.get('tape_quad'), '?')}; economic {QUAD_NAMES.get(x.get('economic_quad'), '?')} "
+        f"({x.get('economic_freshness') or 'freshness unknown'}); {x.get('transition_state') or '?'}; liquidity quantity {x.get('quantity_overlay') or '?'}")
+    x = v('membership')
+    add('membership', 'Model membership, not future odds', f"gaining {QUAD_NAMES.get(x.get('gaining_quad'), '?')}; losing {QUAD_NAMES.get(x.get('losing_quad'), '?')}; window {x.get('window_sessions') or '?'} sessions")
+    x = v('leadership_damage')
+    add('leadership_damage', 'Tracked AI-hardware damage cohort, not all leaders',
+        f"median {_fmt(x.get('median_drawdown_fraction'), scale=100)}% from {x.get('window_sessions') or '?'}-session high; "
+        f"coverage {x.get('n_fresh')}/{x.get('n_total')}")
+    x = v('nominal_10y')
+    add('nominal_10y', 'Nominal 10Y', f"{_fmt(x.get('level_pct'))}%; 5 weekday-grid change "
+        f"{_fmt(x.get('change_5_grid_bp'), signed=True)}bp; acceleration {_fmt(x.get('acceleration_bp'), signed=True)}bp")
+    header = 'REGIME DETAIL [US; source-dated context, not a forecast]:'
+    # Build the per-date age header once. Cost = O(distinct dates) instead of
+    # O(rows). Sort newest-first so the freshest stamp is the obvious anchor.
+    if date_ages:
+        age_for: dict[str, str]
+        age_for = {}
+        for stamp, age in date_ages.items():
+            if isinstance(age, int):
+                if age == 0:
+                    age_for[stamp] = 'today' if not zh else '\u4eca\u65e5'
+                elif age == 1:
+                    age_for[stamp] = '1 day old' if not zh else '1 \u65e5\u65e7'
+                else:
+                    age_for[stamp] = (f'{age} days old'
+                                       if not zh else f'{age} \u65e5\u65e7')
+            else:
+                age_for[stamp] = 'age unknown' if not zh else '\u5e74\u9f84\u4e0d\u8be6'
+        ordered = sorted(date_ages.keys(), reverse=True)
+        header_label = 'As-of dates' if not zh else '\u6570\u636e\u65e5\u671f'
+        dates_line = f'{header_label}: ' + '; '.join(
+            f'{s} ({age_for[s]})' for s in ordered) + '.'
+    else:
+        dates_line = ''
+    caveat = 'Limits: no measured capital transfer, valuation-implied return or calibrated transition forecast. Different dates/scopes are not independent votes.'
+    unavailable_text = ('Unavailable evidence: ' + '; '.join(
+        reason + ': ' + ', '.join(names) for reason, names in unavailable.items()
+    ) + '.') if unavailable else ''
+    budget = max(0, int(char_budget))
+    kept = list(rows)
+    # Apply the most-droppable-first priority: most-droppable lands at the
+    # BACK of `kept` so `kept.pop()` removes it FIRST when the budget tightens;
+    # least-droppable lands at the FRONT and is popped LAST. Unlisted keys
+    # default to `float('inf')` (sort key `-inf`) so they sort to the very
+    # front and are popped LAST of all — i.e. unlisted rows are LEAST-droppable.
+    pri = {k: i for i, k in enumerate(_RENDER_PRIORITY)}
+    # `-pri[k]` reverses the tuple so PRIORITY[0] (`options_cor3m`, the
+    # most-droppable) lands at the end of `kept` and is popped FIRST;
+    # PRIORITY[-1] (`macro`, the least-droppable among listed) lands near
+    # the front and is popped near LAST. Unlisted keys default to
+    # `float('inf')` so they sort to `-inf` (the very front) and are
+    # popped LAST of all — i.e. unlisted rows are LEAST-droppable.
+    kept.sort(key=lambda kv: -pri.get(kv[0], float('inf')))
+    omitted: list[str] = []
+    while True:
+        tail = 'Omitted from compact brief: ' + ', '.join(omitted) + '.' if omitted else ''
+        text = '\n'.join(part for part in (
+            header, dates_line, '\n'.join(t for _, t in kept), unavailable_text, caveat, tail,
+        ) if part)
+        if len(text) <= budget:
+            return text
+        if not kept:
+            # Never clip a reason or silently drop some unavailable dimensions
+            # just to fit. A smaller-than-disclosure budget yields no claim.
+            return ''
+        key, _ = kept.pop()
+        omitted.insert(0, key.replace('_', ' '))

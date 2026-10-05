@@ -1,8 +1,8 @@
 ---
 id: lens_regime
 kind: lens
-version: 1
-title: Regime recognition
+version: 2
+title: Granular regime recognition
 priority: 40
 default: true
 triggers:
@@ -30,17 +30,17 @@ triggers:
   - 轮动
   - 行情
 ---
-REGIME LENS — the pattern across assets IS the regime; no single ticker names it.
-Law: the desk's own regime and driver readings (packet REGIME/DRIVERS blocks, the world-state read) are the calibrated baseline — start from them, then let today's tape refine, never contradict silently. If your tape read and the desk read disagree, show both and mark the read unresolved.
-Recognition, by what moves together:
-- Stocks down + long bonds UP (yields down) + oil down → growth scare / classic flight to safety. Duration is the shelter; cyclicals and small caps hurt most.
-- Stocks down + long bonds DOWN (long yields up) + oil or the dollar up → inflation or supply-side stress; the 60/40 has nowhere to hide. Short-end holding while the long end sells = the market fears inflation and issuance more than recession.
-- Stocks down + yields down + credit spreads jumping + everything correlating → deleveraging / liquidation. In a forced unwind even gold and quality get sold; don't read fundamentals into forced flows.
-- Stocks down hard in one sector, tape calm elsewhere + credit quiet → idiosyncratic repricing (earnings, capex, regulation), not a macro regime. Name the sector story, don't inflate it.
-- Stocks up + yields up gently + copper/oil firm → reflation; up + yields down → easing hopes. Which one matters for what leads next.
-Procedure:
-1) Sort the tape into the closest family above; say which single observation rules the runner-up out ("bonds are down too — so this is not a growth scare").
-2) Check breadth and leadership (packet ROTATION/LEADERS, the movers read): a regime claim needs most of the tape to agree; three names do not make a regime.
-3) Anchor to the desk: quote the calibrated regime/driver reading in plain words, and let it carry the conviction — today's tape adjusts the shading, the desk carries the record.
-Invalidation of this lens itself: on a quiet, mixed tape there is no regime call to make — "mixed tape, no clean regime read today" is complete and correct.
-Worked shape: "Every index is down 2% but the 20-year yield is UP 13 basis points — bonds are falling WITH stocks. That one fact kills the recession-panic story; this is the inflation-shock family, and the oil spike on the wire is the likely driver."
+REGIME LENS — the pattern across assets is evidence, not a single risk-on/risk-off bucket.
+
+A regime is a collection of simultaneous states and relationships. Read REGIME DETAIL alongside TAPE, FLAGS, DRIVERS, BREADTH, LEADERS and REGIONAL. Separate slow economic conditions, faster market structure, a named cohort and an individual security. Quiet indices can conceal substantial dispersion or concentrated leadership; a mixed tape still has a describable environment.
+
+For a regime/environment question:
+1) Describe the material dimensions together: real-rate level AND direction; liquidity quantity AND quality; credit level AND change; participation/leadership; realized versus option-implied dispersion/correlation; earnings-estimate revisions; factor/theme context. Name missing dimensions. Never replace the answer with only a house quadrant or risk-on/off label.
+2) Explain the interaction as an evidence-backed hypothesis. For example, rising real yields can coexist with a strong earnings-revision cohort and weak participation elsewhere. Test that account against the supplied observations rather than assuming the AI story is true. Distinguish measured facts, owner model estimates and your interpretation.
+3) Preserve disagreements. Positive revision breadth with negative broadening is not the same as uniformly improving fundamentals. Expanding liquidity with stress composition is not uncomplicated easing. A stale macro label, a different tape label and changing model membership may coexist. Canonical does not automatically mean calibrated, current or causally identified.
+4) State what is changing, the relevant horizon, and observable conditions that would weaken each explanation or support an alternative. These are conditional watch items, not new signal thresholds, probabilities or trade directives. Distinguish a temporary pause from a confirmed turn; do not promise to front-run a top or bottom.
+5) Use each source's own date and scope. Do not call an old snapshot live, borrow the newest date for every input, treat a damage-monitor cohort as all leaders, or average correlated evidence into confidence. If compact context omitted a dimension, retrieve its existing product evidence when needed or say it is unavailable.
+
+Hard distinctions: relative strength, volume and breadth are NOT direct measurements of capital transferring between assets. Consensus EPS growth/revisions are NOT expected stock returns. A long TIPS real yield is NOT the short real policy rate relative to neutral. DSPX is implied dispersion; VIXEQ is constituent implied volatility; VIX is index implied volatility. Never subtract unlike statistics. Current HMM membership and its movement are NOT horizon-specific future odds. No invented score, forecast probability, beneficiary ranking, position size or risk-policy change.
+
+Answer with a granular current description, the strongest supported mechanism and counterevidence, then the changes worth watching. Present plausible alternative mechanisms when evidence cannot separate them. A useful regime description is not itself proof of timing or allocation skill.

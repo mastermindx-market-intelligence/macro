@@ -1,0 +1,63 @@
+{
+  "schema": "regime_context.review_repair_evidence.v1",
+  "observed_at": "2026-10-03T01:26:49.562109+00:00",
+  "operation": "granular-regime-context-20261001-astra-001",
+  "parent_pr": 7088,
+  "pr": 8257,
+  "procedure_sha": "72676f23d51c72591cb1e88af7c1564bc6637451",
+  "preimage_head": "c6ee5709913a80f430a9278191f96bfb39c946d6",
+  "review_comment": 5945651289,
+  "capability_state": "BUILT_NOT_PROVEN",
+  "mission_complete": false,
+  "repairs": [
+    "retain unavailable-dimension reasons through paid packet and both chat loops",
+    "render or explicitly account for options_cor3m",
+    "assert guest reader zero calls outside fail-soft code"
+  ],
+  "red_reproducer": {
+    "failed": 15,
+    "passed": 16,
+    "deselected": 86,
+    "fixture_correction": "provider prompt may be cached text blocks rather than a string"
+  },
+  "focused_tests": {
+    "passed": 615,
+    "failed": 0,
+    "skipped": 0,
+    "warnings": 4,
+    "command": "python3 -m pytest tests/test_regime_context.py tests/test_market_packet.py tests/test_brain_analyst_doctrine.py tests/test_brain_analyst_wiring.py tests/test_deploy_update_self_heal.py -q"
+  },
+  "gateway_tests": {
+    "passed": 937,
+    "failed": 0,
+    "skipped": 0,
+    "warnings": 9,
+    "scope": "same existing gateway pytest command; overlapping coverage, not summed"
+  },
+  "provider": "fixture transport only; actual prompt assembly and loop completion",
+  "guest_guard_mutation": {
+    "change": "remove only include_regime_detail guard in memory",
+    "result": "KILLED",
+    "source_mutated": false
+  },
+  "source_sha256": {
+    "engine/neuralweb/regime_context.py": "ba1834e59811d4d35501a4e58d556714526f30325f14db09511949ccdf42b840",
+    "engine/neuralweb/market_packet.py": "ede4e518d923047bfe2bad4c6131acb5879ddbf31ac7d87bcff0a62c76277cb7",
+    "tests/test_regime_context.py": "ca24de42d6f6a0ae4d4bd990a2ad24418a0f7fcf8bc1604dbd259794aac9f16c",
+    "agentos/handoffs/RATES-INFLATION-COMMAND-2026-10-01-granular-context-r1.md": "47eac2d65f2ffca93dd89bce80c11a635f51ddd59e1fc3617d501e9167bdcf5a"
+  },
+  "log_sha256": {
+    "focused": "7a129d6e6eacd8450c1d8e99c812f7f72e807c7b431c7683f5936953414542c4",
+    "gateway": "0f74cc49db8a07d98f9f149703b4fd9a5a7b74d19122d4b9850fb4de91edd268"
+  },
+  "runtime": {
+    "python": "3.14.7",
+    "executable": "/opt/homebrew/opt/python@3.14/bin/python3.14"
+  },
+  "limits": [
+    "whole-PR independent approval pending",
+    "new semantic head CI and latest-base integration pending",
+    "no production capture, live inference, forecast validation or capital effect",
+    "earlier denied production capture remains prohibited"
+  ]
+}

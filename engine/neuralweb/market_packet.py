@@ -72,10 +72,20 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from engine.neuralweb import regime_context as _regime_context
+
 log = logging.getLogger(__name__)
 
 PACKET_VERSION = 1
 DEFAULT_CHAR_BUDGET = 4200
+
+# REGIME_DETAIL is rendered under ITS OWN budget and spliced into the kept
+# list after the DRIVERS section (see render_digest). It is intentionally
+# absent from _SECTION_ORDER: an entitled user pays for the block, never the
+# base sections that an unentitled user keeps. DEFAULT_CHAR_BUDGET caps only
+# the BASE section rendering loop, never the block itself.
+REGIME_DETAIL_BLOCK_BUDGET = 2000
+REGIME_DETAIL_INSERT_AFTER = "DRIVERS"
 
 # ---------------------------------------------------------------------------
 # Live-dir resolution ladder
@@ -331,8 +341,10 @@ _SECTION_ORDER: tuple[str, ...] = (
     "HEADER", "TAPE", "CURVE", "FLAGS", "SHOCK", "EVENTS", "DRIVERS",
     "RATES", "VOL", "BREADTH", "LEADERS", "REGIONAL", "CROSSASSET", "CNBOARD", "DESK", "WATCH",
     # PRESSURE sits LAST on purpose: it is single-name display context, so it is
-    # the first thing the char budget should drop. Appending here changes no
-    # existing section's drop priority.
+    # the first thing the char budget should drop. REGIME_DETAIL is NOT in this
+    # order — it is rendered under REGIME_DETAIL_BLOCK_BUDGET and spliced in
+    # after DRIVERS (see render_digest). Adding a section here changes the
+    # base drop loop's eviction order for every base section.
     "PRESSURE",
 )
 _NEVER_DROP: frozenset[str] = frozenset({"HEADER", "TAPE"})
@@ -1163,9 +1175,12 @@ def _events_block(raw: object, now: datetime, gaps: list[str]) -> dict | None:
 # build_packet
 # ---------------------------------------------------------------------------
 
-def build_packet(root: Path, *, now: datetime | None = None) -> dict:
+def build_packet(root: Path, *, now: datetime | None = None,
+                 include_regime_detail: bool = False) -> dict:
     """Assemble the packet from whatever is on disk. Never raises.
 
+    Granular paid context is opt-in after the existing caller entitlement gate.
+    A boolean passed by a trusted server caller is not an HTTP access decision.
     Every block is independent: a missing or corrupt source removes THAT block
     and records a note in ``packet["gaps"]``; it never degrades a neighbour and
     never leaves a block rendered under a borrowed stamp.
@@ -1288,6 +1303,18 @@ def build_packet(root: Path, *, now: datetime | None = None) -> dict:
                 packet["watch"] = watch
         except Exception as exc:  # noqa: BLE001
             gaps.append(f"desk: build failed ({type(exc).__name__})")
+        # Source-dated, orthogonal context; never a new regime or risk verdict.
+        # Kept away from the separately owned calendar insertion after the source loop.
+        try:
+            if include_regime_detail is True:
+                detail = _regime_context.read_context(root, now=now)
+                # An all-unavailable context must reach the renderer as well:
+                # otherwise the paid prompt cannot distinguish absent, undated
+                # and quarantined future evidence from an unrequested section.
+                packet["regime_detail"] = detail
+        except Exception as exc:  # noqa: BLE001 - one context failure is lane-local
+            gaps.append(f"regime_detail: build failed ({type(exc).__name__})")
+
         try:
             pressure = _pressure_block(root, gaps)
             if pressure:
@@ -1693,6 +1720,17 @@ def _render_drivers(p: dict) -> str:
     return head + body + (f" ({'; '.join(tail)})" if tail else "")
 
 
+def _render_regime_detail(p: dict) -> str:
+    # Single source for the block budget — REGIME_DETAIL_BLOCK_BUDGET is owned
+    # by market_packet and threaded into render_context here explicitly. The
+    # rebudget fallback below remains reachable whenever any dataset exceeds
+    # the budget (e.g. a longer date matrix than the K2 four-date baseline).
+    return _regime_context.render_context(
+        p["regime_detail"], char_budget=REGIME_DETAIL_BLOCK_BUDGET,
+        lang="zh" if _zh(p) else "en",
+    )
+
+
 def _render_rates(p: dict) -> str:
     r = p["rates"]
     parts: list[str] = []
@@ -1977,6 +2015,11 @@ _RENDERERS: dict[str, object] = {
     "SHOCK": ("shock", _render_shock),
     "EVENTS": ("events", _render_events),
     "DRIVERS": ("drivers", _render_drivers),
+    # REGIME_DETAIL is intentionally absent: it has its own budget, its own
+    # splice slot (after DRIVERS), and never participates in the base drop
+    # loop. Keeping it here made has_any_base (line 1988) silently include the
+    # block in the base census and made the `elif packet.get("regime_detail")`
+    # branch at the end of render_digest unreachable.
     "RATES": ("rates", _render_rates),
     "VOL": ("vol", _render_vol),
     "BREADTH": ("breadth", _render_breadth),
@@ -2032,27 +2075,78 @@ def render_digest(packet: dict, char_budget: int = DEFAULT_CHAR_BUDGET,
     except Exception as exc:  # noqa: BLE001
         log.debug("market_packet: render_digest failed (%s)", exc)
         return ""
-    if not sections:
+    has_any_base = any(packet.get(key) for key, _fn in _RENDERERS.values())
+    kept: list[tuple[str, str]] = []
+    if has_any_base:
+        header = _HEADER.format(basis=packet.get("basis") or _BASIS_NO_TAPE)
+        kept = [("HEADER", header)] + sections
+        try:
+            budget = int(char_budget)
+        except (TypeError, ValueError):
+            budget = DEFAULT_CHAR_BUDGET
+
+        def total(rows: list[tuple[str, str]]) -> int:
+            return len("\n".join(t for _n, t in rows))
+
+        while total(kept) > budget:
+            idx = next((i for i in range(len(kept) - 1, -1, -1)
+                        if kept[i][0] not in _NEVER_DROP), None)
+            if idx is None:
+                break
+            kept.pop(idx)
+        # If the drop loop left only the HEADER behind AND no block is owed,
+        # the digest is empty (matches the pre-repair contract).
+        if len(kept) <= 1 and not packet.get("regime_detail"):
+            return ""
+    elif packet.get("regime_detail"):
+        # No base sections, but the block is owed. Render HEADER + block so a
+        # sparse/paid prompt still carries the regime context.
+        header = _HEADER.format(basis=packet.get("basis") or _BASIS_NO_TAPE)
+        kept = [("HEADER", header)]
+    else:
+        # Truly empty world — keep pre-repair behaviour.
         return ""
 
-    header = _HEADER.format(basis=packet.get("basis") or _BASIS_NO_TAPE)
-    kept = [("HEADER", header)] + sections
-    try:
-        budget = int(char_budget)
-    except (TypeError, ValueError):
-        budget = DEFAULT_CHAR_BUDGET
+    # REGIME_DETAIL block: opt-in by entitlement, rendered under ITS OWN
+    # budget so it never participates in the base drop loop. For identical
+    # packet inputs, removing the block from the entitled digest must yield
+    # EXACTLY the non-entitled digest — paid users gain the block and never
+    # lose a base section to it.
+    detail_text = ""
+    if packet.get("regime_detail"):
+        try:
+            detail_text = _render_regime_detail(packet) or ""
+        except Exception as exc:  # noqa: BLE001
+            log.debug("market_packet: REGIME_DETAIL render failed (%s)", exc)
+            detail_text = ""
+    if detail_text:
+        # Honour the block's own compact budget so a cap change cannot quietly
+        # break the additive invariant (K1).
+        if len(detail_text) > REGIME_DETAIL_BLOCK_BUDGET:
+            try:
+                detail_text = _regime_context.render_context(
+                    packet["regime_detail"],
+                    char_budget=REGIME_DETAIL_BLOCK_BUDGET,
+                    lang="zh" if _zh(packet) else "en",
+                )
+            except Exception as exc:  # noqa: BLE001
+                log.debug("market_packet: REGIME_DETAIL rebudget failed (%s)",
+                          exc)
+                detail_text = ""
+        if detail_text:
+            insert_after_idx = next(
+                (i for i, (n, _t) in enumerate(kept)
+                 if n == REGIME_DETAIL_INSERT_AFTER),
+                None,
+            )
+            if insert_after_idx is None:
+                # Defensive: DRIVERS missing (rendered empty), splice after
+                # HEADER so the block always lands in the digest.
+                kept.insert(1, ("REGIME_DETAIL", detail_text))
+            else:
+                kept.insert(insert_after_idx + 1,
+                             ("REGIME_DETAIL", detail_text))
 
-    def total(rows: list[tuple[str, str]]) -> int:
-        return len("\n".join(t for _n, t in rows))
-
-    while total(kept) > budget:
-        idx = next((i for i in range(len(kept) - 1, -1, -1)
-                    if kept[i][0] not in _NEVER_DROP), None)
-        if idx is None:
-            break
-        kept.pop(idx)
-    if len(kept) <= 1:
-        return ""
     return "\n".join(t for _n, t in kept)
 
 
@@ -2077,6 +2171,7 @@ _ROOT_SOURCES: tuple[str, ...] = (
     "data/marketing/press/wires.json",
     *(p for r in _REGIONS for p in (r.basket_rel, r.regime_rel)),
     "site/factordata/china_standouts.json", "data/cn_prophet_audit/latest.json",
+    *_regime_context.SOURCE_PATHS.values(),
 )
 
 
@@ -2085,7 +2180,8 @@ def _clock() -> float:
     return time.monotonic()
 
 
-def _cache_key(root: Path, char_budget: int, lang: str = "en") -> tuple:
+def _cache_key(root: Path, char_budget: int, lang: str = "en",
+               include_regime_detail: bool = False) -> tuple:
     """(root, budget) plus the (path, mtime) pair of every source. A source that
     APPEARS or vanishes changes the key as surely as an edited one, because a
     missing file is keyed as None rather than skipped."""
@@ -2100,11 +2196,11 @@ def _cache_key(root: Path, char_budget: int, lang: str = "en") -> tuple:
                 pairs.append((str(p), None))
     except Exception:  # noqa: BLE001
         pass
-    return (str(root), int(char_budget), str(lang), tuple(pairs))
+    return (str(root), int(char_budget), str(lang), include_regime_detail is True, tuple(pairs))
 
 
 def digest(root: Path, char_budget: int = DEFAULT_CHAR_BUDGET,
-           lang: str = "en") -> str:
+           lang: str = "en", *, include_regime_detail: bool = False) -> str:
     """build_packet + render_digest behind a cache. Never raises.
 
     Cached on the source mtimes and the budget, with a 60 s ceiling so a clock-
@@ -2112,13 +2208,14 @@ def digest(root: Path, char_budget: int = DEFAULT_CHAR_BUDGET,
     when nothing on disk moved.
     """
     try:
-        key = _cache_key(root, char_budget, lang)
+        key = _cache_key(root, char_budget, lang, include_regime_detail)
         now = _clock()
         with _CACHE_LOCK:
             hit = _CACHE.get(key)
             if hit is not None and (now - hit[1]) < _CACHE_TTL_S:
                 return hit[0]
-        text = render_digest(build_packet(root), char_budget, lang=lang)
+        text = render_digest(build_packet(root, include_regime_detail=include_regime_detail),
+                             char_budget, lang=lang)
         with _CACHE_LOCK:
             if len(_CACHE) > 64:      # unbounded roots would leak; cheap to rebuild
                 _CACHE.clear()
