@@ -27,6 +27,9 @@ from typing import Any, Callable
 
 import pandas as pd
 
+_ROOT = Path(__file__).resolve().parent.parent  # scripts/* -> repo root; pinned before any engine.* import
+sys.path.insert(0, str(_ROOT))
+
 # Paths to the source files this tool mirrors. Quoted verbatim from the live
 # call shape in `engine/run.py` (lib ~316-328) so reviewers can audit the line.
 LIQUIDITY_QUALITY_CALL = (
