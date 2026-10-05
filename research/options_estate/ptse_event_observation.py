@@ -289,8 +289,11 @@ def adapt_event_calendar(
         _fail("EVENT_CALENDAR_ARTIFACT_REF_MISMATCH")
     if payload.get("schema_version") != 1 or payload.get("is_context_only") is not True:
         _fail("EVENT_CALENDAR_SCHEMA_INVALID")
-    if payload.get("asof") != market_session:
-        _fail("EVENT_CALENDAR_SESSION_MISMATCH")
+
+    source_asof = _date(payload.get("asof"))
+    session_day = _date(market_session)
+    if source_asof > session_day:
+        _fail("EVENT_CALENDAR_FUTURE_SNAPSHOT")
 
     horizon = payload.get("horizon_days")
     if type(horizon) is not int or horizon <= 0 or horizon > 366:
@@ -299,7 +302,6 @@ def adapt_event_calendar(
     if not isinstance(rows, list):
         _fail("EVENT_CALENDAR_ROWS_INVALID")
 
-    session_day = _date(market_session)
     decision = _time(decision_at, "event.decision_at")
     by_type: dict[str, list[tuple[datetime, str]]] = {
         kind: [] for kind in EVENT_TYPES
@@ -323,7 +325,7 @@ def adapt_event_calendar(
             _fail("EVENT_SOURCE_INVALID")
         stamp = _event_timestamp(row)
         day = stamp.astimezone(_ET).date()
-        if day < session_day or (day - session_day).days > horizon:
+        if day < source_asof or (day - source_asof).days > horizon:
             _fail("EVENT_OUTSIDE_OWNER_WINDOW")
         if stamp > decision:
             by_type[kind].append((stamp, source))
