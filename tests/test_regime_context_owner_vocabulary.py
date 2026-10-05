@@ -112,9 +112,10 @@ def _fixture_sources():
         "latest": {"ai_pct50": 70.0, "nonai_pct50": 52.0, "spread_50": 18.0,
                    "ai_pct200": 62.0, "nonai_pct200": 48.0},
         "cohort_sizes": {"ai_total": 30, "non_ai": 240, "universe": 270},
-        # breadth_split.py:233 reads data/breadth/ticker_ai_tag.version as a
-        # free-form version string. The shipped fixture uses a slug-safe value.
-        "tag_version": "v2026-10-01",
+        # writer: scripts/build_ai_adjacency_tag.py:141-156 emits
+        # f"finviz:<fv_asof>|membership:<mb_ver>" — this is the literal value
+        # committed in data/breadth/ticker_ai_tag.version.
+        "tag_version": "finviz:2026-06-27|membership:2026-08-07",
     }
     dispersion = {
         "as_of": "2026-10-01", "stale": False,
@@ -182,7 +183,8 @@ def _populate_root() -> Path:
 
 def test_fixture_cleans_all_owner_rows():
     """Every owner row available, no `unrecognized_owner_value:*` issues,
-    no `partial input` suffix in the REGIME DETAIL block."""
+    no `partial input` suffix in the REGIME DETAIL block. Composed
+    participation membership_version equals the literal the fixture sets."""
     ctx = rc.compose_context(_fixture_sources(), now=NOW)
     unrecognized = []
     for name, dim in ctx["dimensions"].items():
@@ -193,9 +195,78 @@ def test_fixture_cleans_all_owner_rows():
                 unrecognized.append((name, "unrecognized", issue))
     assert not unrecognized, f"round-3 regression: {unrecognized}"
 
+    assert ctx["dimensions"]["participation"]["values"]["membership_version"] == \
+        "finviz:2026-06-27|membership:2026-08-07", \
+        "participation membership_version must equal the literal fixture value"
+
     rendered = rc.render_context(ctx)
     assert "partial input" not in rendered, \
         "rendered REGIME DETAIL block must not carry the partial-input suffix when fixture is clean"
+
+
+# ---------------------------------------------------------------------------
+# membership_version: producer-format positive control, empty-absent contract,
+# and rejection contract. The producer is engine/breadth_split.py:232-239,280;
+# the writer is scripts/build_ai_adjacency_tag.py:141-156
+# `_source_fingerprint()`.
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("value", [
+    # The literal value committed in data/breadth/ticker_ai_tag.version.
+    "finviz:2026-06-27|membership:2026-08-07",
+    # An earlier committed value with a different date.
+    "finviz:2026-06-27|membership:2026-07-03",
+    # Writer output when the finviz source is missing (empty date half).
+    "finviz:|membership:2026-08-07",
+])
+def test_membership_version_accepts_producer_format(value):
+    """Every value the writer at scripts/build_ai_adjacency_tag.py:141-156
+    and the producer at engine/breadth_split.py:232-239,280 can emit must be
+    accepted with ZERO issues."""
+    issues: list[str] = []
+    assert rc._membership_version(value, issues=issues) == value, \
+        f"membership_version value {value!r} must be accepted"
+    assert issues == [], \
+        f"membership_version value {value!r} must not append any issue (got {issues!r})"
+
+
+def test_membership_version_empty_is_absent_not_unrecognized():
+    """Empty / None is ABSENT, not an unrecognized value: no issue appended."""
+    # Direct call.
+    for v in ("", None):
+        issues: list[str] = []
+        assert rc._membership_version(v, issues=issues) is None, \
+            f"empty/None membership_version {v!r} must return None (absent)"
+        assert issues == [], \
+            f"empty/None membership_version {v!r} must not append any issue (got {issues!r})"
+    # Through compose_context: mirror tests/test_regime_context.py:272 by setting
+    # the participation input's `tag_version` to "" and confirm the composed
+    # dimension carries no `unrecognized_owner_value:membership_version` issue.
+    sources = _fixture_sources()
+    sources["participation"]["tag_version"] = ""
+    ctx = rc.compose_context(sources, now=NOW)
+    membership_issues = ctx["dimensions"]["participation"].get("issues", []) or []
+    assert "unrecognized_owner_value:membership_version" not in membership_issues, \
+        f"empty tag_version must not surface as unrecognized_owner_value (issues={membership_issues!r})"
+
+
+@pytest.mark.parametrize("value", [
+    "garbage value!",
+    "FINVIZ:2026-06-27",
+    "finviz:26-06-27",
+    "fixture-membership",
+    "v2026-10-01",
+    "finviz:2026-06-27|",
+    "|".join(["finviz:2026-06-27"] * 8),  # 8*17+7 = 143 chars, over _MEMBERSHIP_VERSION_MAX
+])
+def test_membership_version_rejects_garbage(value):
+    """Anything outside the producer format must return None and append
+    exactly `unrecognized_owner_value:membership_version`."""
+    issues: list[str] = []
+    assert rc._membership_version(value, issues=issues) is None, \
+        f"garbage membership_version {value!r} must return None"
+    assert issues == ["unrecognized_owner_value:membership_version"], \
+        f"garbage membership_version {value!r} must append exactly one issue (got {issues!r})"
 
 
 # ---------------------------------------------------------------------------

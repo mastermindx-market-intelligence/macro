@@ -13,7 +13,7 @@
   "test_summary_round_2": "315 passed in 1.80s",
   "test_command_round_2": "python3 -m pytest tests/test_regime_context.py tests/test_regime_native_degradation.py tests/test_regime_degradation_contract.py tests/test_regime_context_entitled_block.py -q",
   "round_3": {
-    "head": "PUSHED_HEAD_PLACEHOLDER",
+    "head": "ed4535f42f0c87520be09444e864df45e4a3119f",
     "files_sha256": {
       "engine/neuralweb/regime_context.py": "44ccf640ebfb0d292fd499604b6a4ef9c351b81768eec755cf2a12255e74509d",
       "engine/neuralweb/market_packet.py": "27f210ea89ca453be160d7ef21ef1842c31398ca9d0602e54ca95decd65f8d12",
@@ -38,6 +38,28 @@
       "N4": "priority-tuple comment corrected (sort always reorders; unlisted keys are LEAST-droppable, popped LAST) AND code changed: `kept.sort(key=lambda kv: -pri.get(kv[0], float('inf')))` — default `-1` made unlisted sort to the END and drop FIRST, contradicting the comment; default `float('inf')` makes unlisted sort to the FRONT (popped LAST) and also honors the file-level 'MOST-DROPPABLE first' contract (PRIORITY[0] `options_cor3m` now at end of `kept`, popped first).",
       "N5": "_token removed (regime_context.py:77); no callers and no tests import it."
     }
+  },
+  "round_4": {
+    "base": "ed4535f42f0c87520be09444e864df45e4a3119f",
+    "findings_closed": {
+      "R3-1": "membership_version routed through the new dedicated validator _membership_version(regime_context.py), which fullmatches `^[a-z0-9_]+:(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?(?:\\|[a-z0-9_]+:(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?)*$` (cap 128) and treats '' and None as ABSENT, not unrecognized. The producer's 40-char literal 'finviz:2026-06-27|membership:2026-08-07' is accepted with no issue; the producer's empty sentinel-missing value '' returns None with no issue.",
+      "R3-2": "owner-vocabulary fixture (tests/test_regime_context_owner_vocabulary.py:117) now carries the literal 'finviz:2026-06-27|membership:2026-08-07' and the cited writer is scripts/build_ai_adjacency_tag.py:141-156. test_fixture_cleans_all_owner_rows asserts zero unrecognized_owner_value:* issues AND that the composed participation membership_version equals the literal. SCOPE NOTE (seat ruling, binding): tests/test_regime_context.py is NOT in this repair's owned files; its 'fixture-membership' value at :55 is rejected by the new validator but no assertion depends on that row being clean. G1 below proves this.",
+      "R3-3": "round_3.head replaced with the literal 'ed4535f42f0c87520be09444e864df45e4a3119f' (was 'PUSHED_HEAD_PLACEHOLDER')."
+    },
+    "supersedes": "round_3.findings_closed.F3 claim that membership_version was correct: _slug rejected the producer's 40-char finviz:...|membership:... value and the empty value",
+    "files_sha256": {
+      "engine/neuralweb/regime_context.py": "6db3626a34a4ea597b8849e21bc096ee0a54c46695e8a9f7a6ffd58504b6460b",
+      "engine/neuralweb/market_packet.py": "27f210ea89ca453be160d7ef21ef1842c31398ca9d0602e54ca95decd65f8d12",
+      "tests/test_regime_context.py": "1b84b9da0b297d1e91ea459d42178eccbc148dd15f48f39d28cf5e2d198848d3",
+      "tests/test_regime_native_degradation.py": "92e49e665a26063e61b0e6677adeb808dea9701691682668b29d0d9e85dd51d6",
+      "tests/test_regime_degradation_contract.py": "2031eaa98c13c0d3318b39ed1b5877d5b75be9e6b3fbb91ab0e095d8f961422e",
+      "tests/test_regime_context_entitled_block.py": "f8b51019310266566c6016a13bfc5ea547b187ae76b9cb463684c0b2d9414a74",
+      "tests/test_regime_context_owner_vocabulary.py": "6e1c87ebba7dda68e7a6fe397085f75025a8122e5d549ce4d28f1538e041b491",
+      ".github/ci/legacy-jobs.yml": "1d9afa9699a00e4e453e3e450d1a05d655ceded53845358f1dc7688515690a19"
+    },
+    "regen_command": "python3 -c \"import hashlib; [print(f, hashlib.sha256(open(f,'rb').read()).hexdigest()) for f in ['engine/neuralweb/regime_context.py','engine/neuralweb/market_packet.py','tests/test_regime_context.py','tests/test_regime_native_degradation.py','tests/test_regime_degradation_contract.py','tests/test_regime_context_entitled_block.py','tests/test_regime_context_owner_vocabulary.py','.github/ci/legacy-jobs.yml']]\"",
+    "test_summary": "1 failed, 514 passed in 2.62s",
+    "head": "PUSHED_HEAD_PLACEHOLDER"
   },
   "entitled_block": {
     "fixture": "tests/test_regime_context_entitled_block.py:_populate_root",
@@ -76,10 +98,26 @@
   },
   "read_date_matrix": {
     "fixture": "tests/test_regime_degradation_contract.py:_full_sources via _render_at(read_offset_days)",
-    "T+0": {"rendered_length": 1935, "budget_omitted_axes": 0, "stale_rows": 0},
-    "T+2": {"rendered_length": 1941, "budget_omitted_axes": 0, "stale_rows": 0},
-    "T+5": {"rendered_length": 1941, "budget_omitted_axes": 0, "stale_rows": 0},
-    "T+6": {"rendered_length": 1974, "budget_omitted_axes": 0, "stale_rows": 1}
+    "T+0": {
+      "rendered_length": 1935,
+      "budget_omitted_axes": 0,
+      "stale_rows": 0
+    },
+    "T+2": {
+      "rendered_length": 1941,
+      "budget_omitted_axes": 0,
+      "stale_rows": 0
+    },
+    "T+5": {
+      "rendered_length": 1941,
+      "budget_omitted_axes": 0,
+      "stale_rows": 0
+    },
+    "T+6": {
+      "rendered_length": 1974,
+      "budget_omitted_axes": 0,
+      "stale_rows": 1
+    }
   },
   "budget_invariant": {
     "DEFAULT_CHAR_BUDGET": 4200,

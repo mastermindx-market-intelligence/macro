@@ -85,6 +85,41 @@ def _choice(value: Any, allowed: tuple[str, ...], *, issues: list[str] | None = 
 
 _OWNER_SLUG_RE = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.+%/-]{0,31}')
 
+# membership_version format: writer scripts/build_ai_adjacency_tag.py:141-156
+# `_source_fingerprint()` joins `finviz:<fv_asof>|membership:<mb_ver>` where each
+# half is `<source_name>:<YYYY-MM-DD>` and the date half is empty when its
+# source is missing. Producer engine/breadth_split.py:232-239,280 emits "" when
+# the sentinel data/breadth/ticker_ai_tag.version is absent — empty = absent,
+# not an unrecognized value.
+_MEMBERSHIP_VERSION_RE = re.compile(
+    r'[a-z0-9_]+:(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?'
+    r'(?:\|[a-z0-9_]+:(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?)*')
+_MEMBERSHIP_VERSION_MAX = 128
+
+
+def _membership_version(value: Any, *, issues: list[str] | None = None,
+                        field: str = 'membership_version') -> str | None:
+    """Strict validator for the membership_version owner-bound string.
+
+    Writer: scripts/build_ai_adjacency_tag.py:141-156 `_source_fingerprint()`
+    returns f"finviz:{fv_asof}|membership:{mb_ver}" — each half is
+    `<source>:<YYYY-MM-DD>` and the date half is empty when its source is
+    missing, so a real emitted value may be e.g. "finviz:2026-06-27|membership:
+    2026-08-07" or "finviz:|membership:2026-08-07". Producer
+    engine/breadth_split.py:232-239,280 emits "" when the sentinel
+    data/breadth/ticker_ai_tag.version is absent; "" is treated as absent, not
+    as an unrecognized value. Any other non-matching input is rejected and
+    `unrecognized_owner_value:<field>` is appended to the row's issues.
+    """
+    if value is None or value == '':
+        return None
+    if (isinstance(value, str) and len(value) <= _MEMBERSHIP_VERSION_MAX
+            and _MEMBERSHIP_VERSION_RE.fullmatch(value)):
+        return value
+    if issues is not None and isinstance(value, str):
+        issues.append('unrecognized_owner_value:' + (field or '?'))
+    return None
+
 
 def _slug(value: Any, *, issues: list[str] | None = None,
           field: str = '') -> str | None:
@@ -425,9 +460,12 @@ def compose_context(sources: dict, *, now: datetime,
         'universe_count': _count(population.get('universe'), 'universe_count', errors),
         'ma_eligible_denominators': None,
         'history_young': part.get('young') is True,
-        'membership_version': _slug(part.get('tag_version'),
-            # producer: engine/breadth_split.py:233-237 reads an unbounded sentinel
-            # file; no closed vocab published; slug is the bounded contract.
+        'membership_version': _membership_version(part.get('tag_version'),
+            # writer: scripts/build_ai_adjacency_tag.py:141-156 emits
+            # f"finviz:<fv_asof>|membership:<mb_ver>" (either date empty when
+            # its source is missing). Producer engine/breadth_split.py:232-239,280
+            # emits "" when the sentinel data/breadth/ticker_ai_tag.version is
+            # absent; "" is treated as absent, not unrecognized.
             issues=errors, field='membership_version'),
     }
     emit('participation', 'participation', '/latest', part, part.get('as_of'), pv,
